@@ -61,13 +61,6 @@ function(node, args) {
 	return conv;
 };
 
-ZmConv.createFromDomMsg =
-function(node, args) {
-	var conv = new ZmConv(args.appCtxt, node.cid, args.list);
-	conv._loadFromDomMsg(node);
-	return conv;
-};
-
 ZmConv.createFromMsg =
 function(msg, args) {
 	var conv = new ZmConv(args.appCtxt, msg.cid, args.list);
@@ -150,26 +143,34 @@ function(params, result) {
 };
 
 ZmConv.prototype.loadMsgIds =
-function(callback) {
+function(callback, errorCallback, batchCmd) {
 	var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
 	var msgNode = soapDoc.set("c");
-	msgNode.setAttribute("id", conv.id);
+	msgNode.setAttribute("id", this.id);
 	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgIds, callback);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+
+	if (batchCmd) {
+		batchCmd.addRequestParams(soapDoc, respCallback, errorCallback);
+	} else {
+		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	}
 };
 
 ZmConv.prototype._handleResponseLoadMsgIds =
 function(callback, result) {
-	var response = result.getResponse();
-	var resp = response.GetConvResponse.c[0];
-	var msgIds = new Array();
+	var resp = result.getResponse().GetConvResponse.c[0];
+	this.msgIds = [];
+
 	var len = resp.m.length;
 	for (var i = 0; i < len; i++) {
-		msgIds.push(resp.m[i].id);
+		var msgNode = resp.m[i];
+		this.msgIds.push(msgNode.id);
+		msgNode.su = resp.su;
+		// construct ZmMailMsg's so they get cached
+		ZmMailMsg.createFromDom(msgNode, {appCtxt:this._appCtxt});
 	}
-	this.msgIds = msgIds;
-	
-	if (callback) callback.run(result);
+
+	if (callback) { callback.run(result); }
 };
 
 ZmConv.prototype.clear =
@@ -409,21 +410,6 @@ function(convNode) {
 	}
 };
 
-ZmConv.prototype._loadFromDomMsg =
-function(msgNode) {
-	this.date = msgNode.d;
-	this._parseFlags(msgNode.f);
-	this._parseTags(msgNode.t);	
-	if (msgNode.e) {
-		for (var i = 0; i < msgNode.e.length; i++) {
-			this._parseParticipantNode(msgNode.e[i]);
-		}
-	}
-	this.subject = msgNode.su;
-	this.fragment = msgNode.fr;
-	this.msgOpId = msgNode.id;
-};
-
 ZmConv.prototype._loadFromMsg =
 function(msg) {
 	this.date = msg.date;
@@ -436,17 +422,6 @@ function(msg) {
 	this.subject = msg.subject;
 	this.fragment = msg.fragment;
 	this.msgOpId = msg.id;
-};
-
-ZmConv.prototype._loadMsgs = 
-function(convNode) {
-	// for all messages in this conversation,
-	var childNodes = convNode.childNodes;
-	var len = childNodes.length;
-	for (var i = 0; i < len; i++) {
-		if (childNodes[i].nodeName == "m")
-			this.msgs.addFromDom(childNodes[i]);
-	}	
 };
 
 ZmConv.prototype._msgListChangeListener =

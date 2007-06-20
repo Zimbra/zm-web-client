@@ -70,7 +70,7 @@ ZmComposeView.DIALOG_Y = 100;
 
 // Attachment related
 ZmComposeView.UPLOAD_FIELD_NAME	= "attUpload";
-ZmComposeView.FORWARD_ATT_NAME	= "forAtt---" + Dwt.getNextId();
+ZmComposeView.FORWARD_ATT_NAME	= "ZmComposeView_forAttName";
 
 // max # of attachments to show
 ZmComposeView.SHOW_MAX_ATTACHMENTS = AjxEnv.is800x600orLower ? 2 : 3;
@@ -120,9 +120,8 @@ function(params) {
 		this._identitySelect.setSelectedValue(params.identity.id);
 	}
 
-	// used for multiple attachments and to avoid caching (do not remove this!)
-	this._msgAttIdArry = params._msgAttIdArry;
-	this._msgSubArray = params._msgSubArray;
+	// list of msg Id's to add as attachments
+	this._msgIds = params.msgIds;
 
 	this.reset(true);
 
@@ -141,7 +140,7 @@ function(params) {
 	
 	this.getHtmlEditor().moveCaretToTop();
 
-	if (action != ZmOperation.ATTACH_ALL) {
+	if (action != ZmOperation.FORWARD_ATT) {
 		// save extra mime parts
 		var bodyParts = msg ? msg.getBodyParts() : [];
 		for (var i = 0; i < bodyParts.length; i++) {
@@ -307,7 +306,7 @@ function(attId, isDraft) {
 
 	var cd = this._confirmDialog = this._appCtxt.getOkCancelMsgDialog();
 	cd.reset();
-	
+
 	// Is there a subject? If not, ask the user if they want to send anyway.
 	var subject = AjxStringUtil.trim(this._subjectField.value);
 	if (!isDraft && subject.length == 0 && !this._noSubjectOkay) {
@@ -412,8 +411,7 @@ function(attId, isDraft) {
 		msg._instanceDate = this._msg._instanceDate;
 	}
 
-	if (this._action != ZmOperation.NEW_MESSAGE &&
-		this._action != ZmOperation.ATTACH_ALL)
+	if (this._action != ZmOperation.NEW_MESSAGE && !this._msgIds)
 	{
 		var isInviteReply = this._isInviteReply(this._action);
 		if (this._action == ZmOperation.DRAFT) {
@@ -451,10 +449,6 @@ function(attId, isDraft) {
 	if (this._msgAttId) {
 		msg.setMessageAttachmentId(this._msgAttId);
 	}
-
-	if (this._msgAttIdArry) {
-        msg.setMultiMessageAttachmentId(this._msgAttIdArry);
-    }
 
 	return msg;
 };
@@ -1033,9 +1027,7 @@ function(action, toOverride) {
 
 ZmComposeView.prototype._setSubject =
 function(action, msg, subjOverride) {
-	if ((action == ZmOperation.NEW_MESSAGE && subjOverride == null) ||
-		action == ZmOperation.ATTACH_ALL)
-	{
+	if (!msg || (action == ZmOperation.NEW_MESSAGE && subjOverride == null)) {
 		return;
 	}
 
@@ -1124,11 +1116,11 @@ function(action, msg, extraBodyText, incOption) {
 		if (extraBodyText)
 			value = extraBodyText + value;
 	}
-	else if (incOption == ZmSetting.INCLUDE_ATTACH)
+	else if (incOption == ZmSetting.INCLUDE_ATTACH && this._msg)
 	{
 		this._msgAttId = this._msg.id;
 	}
-	else if (action != ZmOperation.ATTACH_ALL)
+	else if (!this._msgIds)
 	{
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
 		var crlf2 = composingHtml ? "<br><br>" : ZmMsg.CRLF2;
@@ -1573,42 +1565,49 @@ function() {
 
 ZmComposeView.prototype._showForwardField =
 function(msg, action, replyPref) {
-	var subj = (msg ? msg.getSubject() : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 	var html = [];
 	var idx = 0;
 
-	if (replyPref == ZmSetting.INCLUDE_ATTACH ||
-		action == ZmOperation.FORWARD_ATT)
-	{
-		html[idx++] = "<table cellspacing=4 cellpadding=0 border=0 width=100%><tr><td width=60 align=right>";
-		html[idx++] = AjxImg.getImageHtml("Attachment");
-		html[idx++] = "</td><td><b>";
-		html[idx++] = subj;
-		html[idx++] = "</b></td></tr></table>";
-
-		this._attachCount = 1;
-	}
-	else if (action == ZmOperation.ATTACH_ALL)
-	{
+	if (this._msgIds && this._msgIds.length) {
 		html[idx++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%>";
-		for (var i = 0; i < this._msgAttIdArry.length; i++) {
+		for (var i = 0; i < this._msgIds.length; i++) {
+			var id = this._msgIds[i];
+			var appCtxt = window.parentController 
+				? window.parentController._appCtxt
+				: this._appCtxt;
+			var attMsg = appCtxt.cacheGet(id);
+			if (!attMsg) { continue; }
+
 			html[idx++] = "<tr><td width=65 align=right>";
 			html[idx++] = AjxImg.getImageHtml("Message");
 			html[idx++] = "</td><td width=1%><input name='";
 			html[idx++] = ZmComposeView.FORWARD_ATT_NAME;
 			html[idx++] = "' type='checkbox' checked='CHECKED' id='";
-			html[idx++] = this._msgAttIdArry[i];
+			html[idx++] = id;
 			html[idx++] = "'></td><td class='nobreak'></td><td><b>";
-			html[idx++] = (this._msgSubArray[i]) || AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-			html[idx++] = "</b></td></tr>";
+			html[idx++] = (attMsg.getSubject() || AjxStringUtil.htmlEncode(ZmMsg.noSubject));
+			html[idx++] = "</b> <span class='ZmConvListFragment'>"
+			html[idx++] = attMsg.getFragment(35);
+			html[idx++] = "</span></td></tr>";
 		}
 		html[idx++] = "</table>";
 
-		if (this._msgAttIdArry.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
+		if (this._msgIds.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 			this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
 			this._attcDiv.style.overflow = "auto";
 		}
-		this._attachCount = this._msgAttIdArry.length;
+		this._attachCount = this._msgIds.length;
+	}
+	else if (replyPref == ZmSetting.INCLUDE_ATTACH ||
+			 action == ZmOperation.FORWARD_ATT)
+	{
+		html[idx++] = "<table cellspacing=4 cellpadding=0 border=0 width=100%><tr><td width=60 align=right>";
+		html[idx++] = AjxImg.getImageHtml("Attachment");
+		html[idx++] = "</td><td><b>";
+		html[idx++] = ((msg ? msg.getSubject() : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject));
+		html[idx++] = "</b></td></tr></table>";
+
+		this._attachCount = 1;
 	}
 	else if (msg && msg.hasAttach)
 	{

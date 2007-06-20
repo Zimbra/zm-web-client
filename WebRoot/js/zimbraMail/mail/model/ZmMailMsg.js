@@ -208,6 +208,21 @@ function() {
 };
 
 /**
+* Returns the fragment. If maxLen is given, will truncate fragment to maxLen and add ellipsis
+*/
+ZmMailMsg.prototype.getFragment =
+function(maxLen) {
+	var frag = this.fragment;
+
+	if (maxLen && frag && frag.length) {
+		frag = frag.substring(0, maxLen);
+		if (this.fragment.length > maxLen)
+			frag += "...";
+	}
+	return frag;
+};
+
+/**
 * Returns the date
 */
 ZmMailMsg.prototype.getDate =
@@ -390,16 +405,6 @@ ZmMailMsg.prototype.setMessageAttachmentId =
 function(id) {
 	this._onChange("messageAttachmentId", id);
 	this._msgAttId = id;
-};
-
-/**
-* Sets the IDs of messages to attach (when attaching multiple msgs)
-* RR
-* @param msgIdArry an array containing ids of all the messages that will be attached
-*/
-ZmMailMsg.prototype.setMultiMessageAttachmentId =
-function(msgIdArry) {
-	this._msgAttIdArry = msgIdArry;
 };
 
 /**
@@ -742,7 +747,7 @@ function(soapDoc, contactList, isDraft, accountName) {
 	if (this.irtMessageId)
 		soapDoc.set("irt", this.irtMessageId, msgNode);
 
-	if (this._attId || this._msgAttId || this._msgAttIdArry ||
+	if (this._attId || this._msgAttId ||
 		(this._forAttIds && this._forAttIds.length))
 	{
 		var attachNode = soapDoc.set("attach", null, msgNode);
@@ -758,7 +763,7 @@ function(soapDoc, contactList, isDraft, accountName) {
 		if (this._forAttIds) {
             for (var i = 0; i < this._forAttIds.length; i++) {
 				// if multiple msgs needs to be attached...
-				if (this._msgAttIdArry && !this.isDraft) {
+				if (!this.isDraft) {
 					var attNode = soapDoc.set("m", null, attachNode);
 					attNode.setAttribute("id", this._forAttIds[i]);
 				} else {

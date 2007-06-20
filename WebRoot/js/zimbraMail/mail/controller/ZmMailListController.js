@@ -356,14 +356,14 @@ function(view, arrowStyle) {
 			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 				buttons.push(ZmOperation.TAG_MENU);
 			}
-			//fixed bug:15460 removed forward menu.
+
 			if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-															  buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+				buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
 			}
 			if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 				buttons.push(ZmOperation.FORWARD);
 			}
-			//
+
 			for (var i = 0; i < buttons.length; i++) {
 				var button = tb.getButton(buttons[i]);
 				if (button) {
@@ -523,62 +523,61 @@ function(ev) {
 // This method may be called with a null ev parameter
 ZmMailListController.prototype._doAction = 
 function(ev, action, extraBodyText, instanceDate, accountName) {
-	// check if user is forwarding more than 1 item
-	var convOrMsgItems;
-	var selCount = this._listView[this._currentView].getSelectionCount();
-	if(selCount > 1 ||
-	   action == ZmOperation.ATTACH_ALL ||
-	   action == ZmOperation.FORWARD_ATT)
-	{
-		convOrMsgItems = this._getConvOrMsgItems(ev ? ev.item : null);
-	}
-
-	// retrieve msg and make sure it's loaded
+	// retrieve the first selected msg
 	var msg = this._getMsg(ev ? ev.item : null);
 	if (!msg) { return; }
 	msg._instanceDate = instanceDate;
 
-	// if html compose is allowed,
-	//   then if opening draft always request html 
-	// 	 otherwise just check if user prefers html or
-	//   msg hasnt been loaded yet and user prefers format of orig. msg
-	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
-	var identity = identityCollection.selectIdentity(msg);
+	// use resolved msg to figure out identity/persona to use for compose
+	var collection = AjxDispatcher.run("GetIdentityCollection");
+	var identity = collection.selectIdentity(msg);
 
-	// always re-resolve forward action if forward toolbar button is clicked
-    if (selCount > 1 || action == ZmOperation.FORWARD_ATT)
-	{
-        action = ZmOperation.ATTACH_ALL;
-    }
-	else if (!action ||
-			 action == ZmOperation.FORWARD_MENU ||
-			 action == ZmOperation.FORWARD)
+	if (!action ||
+		 action == ZmOperation.FORWARD_MENU ||
+		 action == ZmOperation.FORWARD)
 	{
 		action = identity.getForwardOption() == ZmSetting.INCLUDE_ATTACH
-			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
+			? ZmOperation.FORWARD_ATT
+			: ZmOperation.FORWARD_INLINE;
 	}
 
+	// reset the action if user is forwarding multiple mail items
+	var selection = this._listView[this._currentView].getSelection();
+	var selCount = selection.length;
+	if (action == ZmOperation.FORWARD_INLINE && selCount > 1)
+		action = ZmOperation.FORWARD_ATT;
+
+	// if html compose is allowed and if opening draft always request html
+	//   otherwise check if user prefers html or
+	//   msg hasnt been loaded yet and user prefers format of orig. msg
     var htmlEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var prefersHtml = identity.getComposeAsFormat() == ZmSetting.COMPOSE_HTML;
 	var sameFormat = identity.getComposeSameFormat();
-	
+	// Yikes:
 	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg._loaded && sameFormat)))));
 	var inNewWindow = this._app._inNewWindow(ev);
+	var params = {action:action, inNewWindow:inNewWindow, extraBodyText:extraBodyText, accountName:accountName};
 
-	if (action == ZmOperation.ATTACH_ALL) {
-		this.show(this._activeSearch);
-		var item = convOrMsgItems[0];
-		var respCallback = new AjxCallback(this, this._handleResponseDoActionAttMsgs, [action, inNewWindow,  convOrMsgItems, extraBodyText, accountName]);
-		if (item.type == ZmItem.MSG) {
-			item.load(getHtml, action == ZmOperation.DRAFT, respCallback);
-		} else if (item.type == ZmItem.CONV) {
-            if (item.msgs) {
-				item.msgs.clear();
+	if (action == ZmOperation.FORWARD_ATT && selCount > 1) {
+		// get msg Id's for each conversation selected
+		var batchCmd = new ZmBatchCommand(this._appCtxt);
+		var callback = new AjxCallback(this, this._handleLoadMsgIds, [params, selection]);
+		for (var i = 0; i < selCount; i++) {
+			var item = selection[i];
+			if (item.type == ZmItem.CONV) {
+				var cb = new AjxCallback(item, item.loadMsgIds, [null, null]);
+				batchCmd.add(cb);
 			}
-			item.load({query:this.getSearchString(), callback:respCallback});
+		}
+
+		if (batchCmd._cmds.length > 0) {
+			batchCmd.run(callback);
+		} else {
+			this._handleLoadMsgIds(params, selection);
 		}
 	} else {
-		var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText, accountName]);
+		params.msg = msg;
+		var respCallback = new AjxCallback(this, this._handleResponseDoAction, params);
 		msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
 	}
 };
@@ -605,96 +604,26 @@ function(items, markAsSpam, folder) {
 	list.spamItems(items, markAsSpam, folder);
 };
 
-ZmMailListController.prototype._handleResponseDoAction = 
-function(action, inNewWindow, msg, extraBodyText, accountName) {
-	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
-								  extraBodyText: extraBodyText, accountName: accountName});
+ZmMailListController.prototype._handleLoadMsgIds =
+function(params, selection) {
+	var msgIds = new AjxVector();
+	for (var i = 0; i < selection.length; i++) {
+		var item = selection[i];
+		if (item.type == ZmItem.CONV) {
+			msgIds.addList(item.msgIds);
+		} else {
+			if (!msgIds.contains(item.id))
+				msgIds.add(item.id);
+		}
+	}
+	params.msgIds = msgIds.getArray();
+
+	AjxDispatcher.run("Compose", params);
 };
 
-ZmMailListController.prototype._handleResponseDoActionAttMsgs =
-function(action, inNewWindow, convOrMsgArry, extraBodyText, accountName) {
-	// if we try to fwd (same set of) multiple conv twice, then avoid opening multiple windows
-	var _msgAttIdArry = [];
-	var _msgSubArray = [];
-	var msgCount = 0;
-
-	var notLoaded = false;
-	for (var i = 0; i < convOrMsgArry.length; i++)  {
-		if (!convOrMsgArry[i]._loaded) {
-			notLoaded = true;
-			break;
-		}
-	}
-
-	if (notLoaded) {
-		this.show(this._activeSearch);
-		var item = convOrMsgArry[i];
-		var respCallback = new AjxCallback(this, this._handleResponseDoActionAttMsgs, [action, inNewWindow,  convOrMsgArry, extraBodyText, accountName]);
-		if (item.type == ZmItem.MSG) {
-			item.load(false, action == ZmOperation.DRAFT, respCallback);
-		} else if (item.type == ZmItem.CONV) {
-			item.load({query:this.getSearchString(), callback:respCallback});
-		}
-	} else {
-		// flag to avoid opening multiple compose windows
-		this._actionAlreadyHandled = true;
-
-		for (var j = 0; j < convOrMsgArry.length; j++)  {
-			var item = convOrMsgArry[j];
-			if (item.type == ZmItem.MSG) {
-				_msgAttIdArry[msgCount] = item.id;
-				_msgSubArray[msgCount] = item.subject + this._fixFragments(item.fragment);
-				msgCount++;
-			} else if (item.type == ZmItem.CONV) {
-				var msgs = item.msgs.getArray();
-				for (var n = 0; n < msgs.length; n++) {
-					var msg = msgs[n];
-					_msgAttIdArry[msgCount] = msg.id;
-					_msgSubArray[msgCount] = msg.subject + this._fixFragments(msg.fragment);
-					msgCount++;
-				}
-			}
-		}
-
-		_msgAttIdArry = this._removeDupes(_msgAttIdArry);
-        _msgSubArray = this._removeDupes(_msgSubArray);
-		var params = { action:action,
-					inNewWindow:inNewWindow,
-					_msgAttIdArry:_msgAttIdArry,
-					_msgSubArray:_msgSubArray,
-					extraBodyText:extraBodyText,
-					accountName:accountName };
-		var composeMsg = AjxDispatcher.run("Compose", params);
-	}
-};
-
-ZmMailListController.prototype._fixFragments =
-function(fragment) {
-	// max fragment length allowed
-	var fixedFrag = "";
-	var maxLen = 35;
-	if (fragment && fragment.length > 0)
-	{
-		var ellipsis = fragment.length > maxLen ? "..." : "";
-		fixedFrag = ["(", fragment.substring(0, maxLen), ellipsis, ")"].join("");
-	}
-
-    return fixedFrag;
-};
-
-ZmMailListController.prototype._removeDupes =
-function(a) {
-	var dupes = [];
-	var helper = [];
-
-	for (var i = 0; i < a.length; i++) {
-		var val = a[i];
-		if (typeof(helper[val]) == 'undefined') {
-			dupes.push(val);
-			helper[val] = true;
-		}
-	}
-	return dupes;
+ZmMailListController.prototype._handleResponseDoAction =
+function(params) {
+	AjxDispatcher.run("Compose", params);
 };
 
 ZmMailListController.prototype._syncOfflineListener =
@@ -849,21 +778,7 @@ function(item) {
 	return msg;
 };
 
-// XXX: huh?
-ZmMailListController.prototype._getConvOrMsgItems =
-function(item) {
-	var item = (item && (item instanceof ZmMailItem))
-		? item
-		: this._listView[this._currentView].getSelection();
-
-	if (!item || !item[0]) { return null; }
-
-	if (item[0].type == ZmItem.MSG || item[0].type == ZmItem.CONV) {
-		return item;
-	}
-};
-
-ZmMailListController.prototype._getInviteReplyBody = 
+ZmMailListController.prototype._getInviteReplyBody =
 function(type, instanceDate) {
 	var replyBody;
 
@@ -1160,8 +1075,9 @@ function(view, saveSelection, loadIndex, offset, result) {
 	ZmListController.prototype._handleResponsePaginate.apply(this, arguments);
 	
 	var newItem = loadIndex ? this._list.getVector().get(loadIndex) : null;
-	if (newItem)
+	if (newItem) {
 		this._listView[this._currentView].emulateDblClick(newItem);
+	}
 };
 
 // All items in the list view are gone - show "No Results"
@@ -1178,6 +1094,5 @@ function(listView) {
 ZmMailListController.prototype._getSelectedMsg =
 function() {
 	var item = this._listView[this._currentView].getSelection()[0];
-	var msg = (item.type == ZmItem.CONV) ? item.getFirstMsg() : item;
-	return msg;
+	return ((item.type == ZmItem.CONV) ? item.getFirstMsg() : item);
 };
