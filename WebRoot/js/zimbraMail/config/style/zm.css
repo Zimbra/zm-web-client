@@ -3117,7 +3117,8 @@ width:96px;
 
 .ZmBriefcaseItem .ZmThumbnailName,.ZmBriefcaseItemSelected .ZmThumbnailName{
 display:block;
-font-size:12px;
+@FontSize-smaller@
+@FontFamily-html@
 margin:3px 0pt 0pt 0px;
 text-align:center;
 height: 14px;

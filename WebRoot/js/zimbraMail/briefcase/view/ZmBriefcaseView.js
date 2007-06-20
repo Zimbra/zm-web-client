@@ -86,6 +86,10 @@ function(item, params) {
 			}
 	}
 	
+	if(name.length>14){
+		name = name.substring(0,14)+"...";
+	}
+	
 	var div = document.createElement("div");
 	div.className = "ZmBriefcaseItem";
 	
@@ -104,7 +108,7 @@ function(item, params) {
 	var span = document.createElement("span");
 	
 	if(item instanceof ZmBriefcaseItem){
-		span.innerHTML = ["<a href='",item.restUrl,"' target='_blank'>",item.name,"</a>"].join("");
+		span.innerHTML = ["<a href='",item.restUrl,"' target='_blank'>",name,"</a>"].join("");
 	}else{
 		span.innerHTML = item;
 	}
