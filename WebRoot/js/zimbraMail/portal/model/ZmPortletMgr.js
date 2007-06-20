@@ -35,7 +35,8 @@ ZmPortletMgr = function(appCtxt) {
 //
 
 ZmPortletMgr.prototype.createPortlets = function(global) {
-    var portletsCreated = [];
+	global = global != null ? global : false;
+	var portletsCreated = [];
     var manifest = this._appCtxt.getApp(ZmApp.PORTAL).getManifest();
     if (manifest) {
         var portalDef = manifest.portal;
@@ -43,7 +44,8 @@ ZmPortletMgr.prototype.createPortlets = function(global) {
         if (portletDefs) {
             for (var i = 0; i < portletDefs.length; i++) {
                 var portletDef = portletDefs[i];
-                if (portletDef.global != global) continue;
+				var portletGlobal = portletDef.global == "true";
+				if (portletGlobal != global) continue;
                 
                 var id = portletDef.panel && portletDef.panel.id;
                 if (id && !this._portlets[id] && document.getElementById(id)) {

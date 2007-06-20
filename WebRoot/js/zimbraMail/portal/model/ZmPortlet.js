@@ -33,7 +33,7 @@ ZmPortlet = function(appCtxt, list, id, def) {
     this.zimlet = this.zimletCtxt && this.zimletCtxt.handlerObject;
 
     // save data
-    this.global = def.global;
+	this.global = /^true|on|yes$/i.test(def.global);
     this.icon = def.icon;
     this.title = def.title;
     if (this.title) {

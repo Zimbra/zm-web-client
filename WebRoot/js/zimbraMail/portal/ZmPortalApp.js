@@ -79,16 +79,15 @@ ZmPortalApp.prototype.launch = function(callback) {
 };
 
 ZmPortalApp.prototype._handleLoadLaunch = function(callback) {
-    this.activate(true);
+	var controller = this.getPortalController();
+	controller.show();
     ZmApp.prototype.launch.call(this, callback);
 };
 
 ZmPortalApp.prototype.activate = function(active) {
-    var controller = this.getPortalController();
-	if (active) {
-		controller.show();
-    }
-    controller.setPaused(!active);
+	var controller = this.getPortalController();
+	controller.setPaused(!active);
+	ZmApp.prototype.activate.call(this, active);
 };
 
 ZmPortalApp.prototype.getManifest = function(callback) {
@@ -107,7 +106,10 @@ ZmPortalApp.prototype.getManifest = function(callback) {
             }
         }
     }
-    return this._manifest;
+	else if (callback) {
+		callback.run(this._manifest);
+	}
+	return this._manifest;
 };
 
 ZmPortalApp.prototype._handleLoadManifest = function(callback, req) {
@@ -168,4 +170,39 @@ ZmPortalApp.prototype.getPortletMgr = function() {
         this._portletMgr = new ZmPortletMgr(this._appCtxt);
     }
     return this._portletMgr;
+};
+
+//
+// Protected methods
+//
+
+ZmPortalApp.prototype._getOverviewTrees =
+function() {
+	var apps = [];
+	for (var name in ZmApp.CHOOSER_SORT) {
+		apps.push({ name: name, sort: ZmApp.CHOOSER_SORT[name] });
+	}
+	apps.sort(ZmPortalApp.__BY_SORT);
+
+	var appName = null;
+	for (var i = 0; i < apps.length; i++) {
+		var app = apps[i];
+		if (app.name == this._name) continue;
+
+		appName = app.name;
+		break; 
+	}
+	if (appName) {
+		var app = this._appCtxt.getApp(appName);
+		return app._getOverviewTrees();
+	}
+	return null;
+};
+
+//
+// Private functions
+//
+
+ZmPortalApp.__BY_SORT = function(a, b) {
+	return a.sort - b.sort;
 };

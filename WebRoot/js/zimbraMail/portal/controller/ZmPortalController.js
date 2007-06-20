@@ -50,7 +50,7 @@ ZmPortalController.prototype.show = function() {
 
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = this._listView[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, true);
 };
 
@@ -79,7 +79,11 @@ ZmPortalController.prototype._getToolBarOps = function() {
 };
 
 ZmPortalController.prototype._createNewView = function(view) {
-	return new ZmPortalView(this._container, this._appCtxt, this._dropTgt);
+	return new ZmPortalView(this._container, this._appCtxt, this, this._dropTgt);
+};
+
+ZmPortalController.prototype._setViewContents = function(view) {
+	this._listView[view].set();
 };
 
 // listeners

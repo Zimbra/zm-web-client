@@ -30,11 +30,6 @@ ZmPortalView = function(parent, appCtxt, controller, dropTgt) {
         ZmController.PORTAL_VIEW, null, controller, headerList, dropTgt
     );
     this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-
-    this._appCtxt = appCtxt;
-	this._controller = controller;
-
-    this._initializeView();
 }
 ZmPortalView.prototype = new ZmListView;
 ZmPortalView.prototype.constructor = ZmPortalView;
@@ -59,8 +54,10 @@ ZmPortalView.prototype._getHeaderList = function() {
     return [];
 };
 
-ZmPortalView.prototype._initializeView = function() {
-    var callback = new AjxCallback(this, this._initializeView2);
+//ZmPortalView.prototype._initializeView = function() {
+ZmPortalView.prototype.set = function() {
+	if (this._rendered) return;
+	var callback = new AjxCallback(this, this._initializeView2);
     this._appCtxt.getApp(ZmApp.PORTAL).getManifest(callback);
 };
 
@@ -74,4 +71,6 @@ ZmPortalView.prototype._initializeView2 = function(manifest) {
     // create portlets
     var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
     this._portletIds = portletMgr.createPortlets();
+
+	this._rendered = true;
 };

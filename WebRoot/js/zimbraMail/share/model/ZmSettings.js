@@ -263,7 +263,7 @@ function(zimlets, props) {
         }
 
         // create global portlets
-        if (this._appCtxt.get(ZmSettings.PORTAL_ENABLED)) {
+        if (this._appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
             var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
             var portletIds = portletMgr.createPortlets(true);
         }
