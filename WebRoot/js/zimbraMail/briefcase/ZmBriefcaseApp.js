@@ -146,7 +146,7 @@ function() {
 
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
 							 {mainPkg:				"Briefcase",
-							  nameKey:				"briefCase",
+							  nameKey:				"briefcase",
 							  icon:					"URL",
 							  chooserTooltipKey:	"gotoBriefcase",
 							  defaultSearch:		ZmItem.PAGE,
