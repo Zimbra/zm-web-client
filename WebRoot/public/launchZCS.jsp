@@ -1,6 +1,12 @@
-<%@ page session="false" %>
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ page session="true" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="com.zimbra.cs.zclient.ZAuthResult"%>
+<%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
@@ -35,50 +41,23 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK *****
---><%
-	final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
+-->
+<script>
+<%
 	String contextPath = request.getContextPath();
 	if (contextPath.equals("/")) {
 		contextPath = "";
 	}
-	String authToken = request.getParameter("auth");
-	if (authToken != null && authToken.equals("")) {
-		authToken = null;
-	}
 
-	Cookie[] cookies = request.getCookies();
-	if (authToken == null) {
-		if (cookies != null) {
-			for (Cookie cookie : cookies) {
-				if (cookie.getName().equals(AUTH_TOKEN_COOKIE_NAME))
-					authToken = cookie.getValue();
-			}
-		}
-
-		if (authToken == null) {
-			response.sendRedirect(contextPath);
-		}
-	} else {
-		Cookie c = new Cookie(AUTH_TOKEN_COOKIE_NAME, authToken);
-		c.setPath("/");
-		c.setMaxAge(-1);
-		response.addCookie(c);
-	}
-
-	final String SKIN_COOKIE_NAME = "ZM_SKIN";
-	String skin = "sand";
-
+    ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
+    String skin = "";
 	String requestSkin = request.getParameter("skin");
 	if (requestSkin != null) {
 		skin = requestSkin;
-	} else if (cookies != null) {
-		for (Cookie cookie : cookies) {
-			if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
-				skin = cookie.getValue();
-			}
-		}
+	} else if (authResult != null) {
+		skin = authResult.getPrefs().get("zimbraPrefSkin").get(0);
 	}
-	
+
 	String isDev = (String) request.getParameter("dev");
 	if (isDev != null) {
 		request.setAttribute("mode", "mjsf");
@@ -112,21 +91,30 @@
 		offlineMode = application.getInitParameter("offlineMode");
 	}
 %>
+
+		var settings = {
+"dummy":1<c:forEach var="pref" items="${requestScope.authResult.prefs}">,
+"${pref.key}":"${zm:jsEncode(pref.value[0])}"</c:forEach>
+<c:forEach var="attr" items="${requestScope.authResult.attrs}">,
+"${attr.key}":"${zm:jsEncode(attr.value[0])}"</c:forEach>
+		};
+</script>
+
 <link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico">
 <link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <title><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
 
-<script type="text/javascript" language="JavaScript">
+<script>
 	var zJSloading = (new Date()).getTime();
 	appContextPath = "<%=contextPath %>";
 	appCurrentSkin = "<%=skin %>";
-  appExtension   = "<%=ext%>";
+	appExtension   = "<%=ext%>";
 </script>
 
 <jsp:include page="Messages.jsp"/>
-<script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %>"></script>
+<script src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %>"></script>
 <style type="text/css">
 <!--
 @import url(<%= contextPath %>/css/imgs,common,dwt,msgview,login,zm,spellcheck,wiki,<%= skin %>_imgs,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
@@ -154,19 +142,19 @@
                 <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
             </jsp:include>
         <% } else { %>
-            <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script> 
+            <script src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script> 
         <% } %>
     <% }
 %>
-<script type="text/javascript">
+<script>
 AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 </script>
 
-<script type="text/javascript" language="JavaScript">
+<script>
 	zJSloading = (new Date()).getTime() - zJSloading;
 </script>
 
-<script type="text/javascript" language="JavaScript">
+<script>
 	var cacheKillerVersion = "<%=vers%>";
 	function launch() {
 		// quit if this function has already been called
@@ -197,7 +185,7 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 		var offlineMode = "<%= (offlineMode != null) ? offlineMode : "" %>";
 		var isDev = "<%= (isDev != null) ? isDev : "" %>";
 
-		ZmZimbraMail.run({domain:document.domain, app:app, offlineMode:offlineMode, devMode:isDev});
+		ZmZimbraMail.run(document.domain, app, null, offlineMode, isDev);
 	}
 
     //	START DOMContentLoaded
@@ -231,6 +219,7 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
     AjxCore.addOnloadListener(launch);
     AjxCore.addOnunloadListener(ZmZimbraMail.unload);
 </script>
+
 </head>
 <body>
 <noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
@@ -239,6 +228,21 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
     </fmt:param></fmt:message>
 </noscript>
 <script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%>"></script> 
+<%!
+	public class Wrapper extends HttpServletRequestWrapper {
+		public Wrapper(HttpServletRequest req, String skin) {
+			super(req);
+			this.skin = skin;
+		}
+		String skin;
+    	public String getServletPath() { return "/html"; }
+	    public String getPathInfo() { return "/skin.html"; }
+	    public String getRequestURI() { return getServletPath() + getPathInfo(); }
+	    public String getParameter(String name) {
+	    	return name.equals("skin") ? this.skin : super.getParameter(name);
+	    }
+	}
+%>
 <%
 	// NOTE: This inserts raw HTML files from the user's skin
 	//       into the JSP output. It's done *this* way so that
@@ -246,11 +250,7 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 	//       "/html/skin.html" and not as "/public/launch...".
 	out.flush();
 	RequestDispatcher dispatcher = request.getRequestDispatcher("/html/");
-	HttpServletRequest wrappedReq = new HttpServletRequestWrapper(request) {
-    public String getServletPath() { return "/html"; }
-    public String getPathInfo() { return "/skin.html"; }
-    public String getRequestURI() { return getServletPath() + getPathInfo(); }
-	};
+	HttpServletRequest wrappedReq = new Wrapper(request, skin);
 	dispatcher.include(wrappedReq, response);
 %>
 </body>

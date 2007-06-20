@@ -26,14 +26,15 @@
         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
             <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
                       newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-                    prefs="zimbraPrefSkin" attrs="zimbraFeatureContactsEnabled"
+                      prefs="zimbraPrefSkin"
+                      attrs="zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled"
                     />
             <c:choose>
                 <c:when test="${not empty postLoginUrl}">
                     <c:redirect url="${postLoginUrl}"/>
                 </c:when>
                 <c:otherwise>
-                    <jsp:forward page="/public/startZimbraMail.jsp"/>
+                    <jsp:forward page="/public/launchZCS.jsp"/>
                 </c:otherwise>
             </c:choose>
     </c:when>
@@ -44,14 +45,15 @@
             <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
                       varRedirectUrl="postLoginUrl" varAuthResult="authResult"
                       rememberme="${param.zrememberme == '1'}"
-                      prefs="zimbraPrefSkin" attrs="zimbraFeatureContactsEnabled"
+                      prefs="zimbraPrefSkin"
+                      attrs="zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled"
                     />
             <c:choose>
                 <c:when test="${not empty postLoginUrl}">
                     <c:redirect url="${postLoginUrl}"/>
                 </c:when>
                 <c:otherwise>
-                    <jsp:forward page="/public/startZimbraMail.jsp"/>
+                    <jsp:forward page="/public/launchZCS.jsp"/>
                 </c:otherwise>
             </c:choose>
         </c:if>

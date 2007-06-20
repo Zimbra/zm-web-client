@@ -122,39 +122,68 @@ function() {
  * Sets up ZimbraMail, and then starts it by calling its constructor. It is assumed that the
  * CSFE is on the same host.
  *
- * @param domain		[string]	the host that we're running on
- * @param app			[constant]*	starting app
- * @param userShellId	[string]*	DOM ID of containing skin
- * @param offlineMode	[boolean]*	if true, this is the offline client
- * @param devMode		[boolean]*	if true, we are in development environment
+ * @param params		[hash]			hash of params:
+ *        domain		[string]		the host that we're running on
+ *        app			[constant]*		starting app
+ *        offlineMode	[boolean]*		if true, this is the offline client
+ *        devMode		[boolean]*		if true, we are in development environment
+ *        settings		[hash]*			server prefs/attrs
  */
 ZmZimbraMail.run =
-function(domain, app, userShellId, offlineMode, devMode) {
-
+function(params) {
+	
 	// Create the global app context
 	var appCtxt = new ZmAppCtxt();
 	appCtxt.setRememberMe(false);
 
-	// Create the shell
+	// Create and initialize settings
 	var settings = new ZmSettings(appCtxt);
 	appCtxt.setSettings(settings);
+	
+	if (params.settings) {
+		for (var name in params.settings) {
+			var id = settings.getSettingByName(name);
+			if (id) {
+				settings.getSetting(id).setValue(params.settings[name]);
+			}
+		}
+	} else {	
+		var apps = AjxCookie.getCookie(document, ZmLogin.APPS_COOKIE);
+		DBG.println(AjxDebug.DBG1, "apps: " + apps);
+		if (apps) {
+			for (var setting in ZmLogin.APP_LETTER) {
+				var letter = ZmLogin.APP_LETTER[setting];
+				if (apps.indexOf(letter) != -1) {
+					appCtxt.set(setting, true);
+				}
+			}
+		}
+	}
+
+	// Create generic operations
 	ZmOperation.initialize();
 	ZmApp.initialize();
 
-    if (offlineMode) {
+	// Handle offline mode
+    if (params.offlineMode) {
     	DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
     	appCtxt.set(ZmSetting.OFFLINE, true);
     	appCtxt.set(ZmSetting.POLLING_INTERVAL, 60);
     	appCtxt.set(ZmSetting.CONTACTS_ENABLED, true);	// hack until we rewrite login
     }
     
-    if (devMode) {
+    // Handle dev mode
+    if (params.devMode) {
     	DBG.println(AjxDebug.DBG1, "DEV MODE");
     	appCtxt.set(ZmSetting.DEV, true);
     	appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
     }
 
+	// Create the shell
 	var userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
+	if (!userShell) {
+		alert("Could not get user shell - skin file did not load properly");
+	}
 	var shell = new DwtShell({userShell:userShell, docBodyScrollable:false});
 	appCtxt.setShell(shell);
 
@@ -163,19 +192,8 @@ function(domain, app, userShellId, offlineMode, devMode) {
 	// Create upload manager (for sending attachments)
 	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
 
-	var apps = AjxCookie.getCookie(document, ZmLogin.APPS_COOKIE);
-	DBG.println(AjxDebug.DBG1, "apps: " + apps);
-	if (apps) {
-		for (var setting in ZmLogin.APP_LETTER) {
-			var letter = ZmLogin.APP_LETTER[setting];
-			if (apps.indexOf(letter) != -1) {
-				appCtxt.set(setting, true);
-			}
-		}
-	}
-
 	// Go!
-	new ZmZimbraMail(appCtxt, domain, app, userShell);
+	new ZmZimbraMail(appCtxt, params.domain, params.app, userShell);
 };
 
 /**

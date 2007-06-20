@@ -302,7 +302,7 @@ function() {
 ZmCalendarApp.prototype.startup =
 function(result) {
 	if (this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
-		AjxDispatcher.run("ShowMiniCalendar", true);
+		AjxDispatcher.run("ShowMiniCalendar");
 		AjxDispatcher.run("GetReminderController").refresh();
 	} else {
 		var refreshAction = new AjxTimedAction(this, function() {
