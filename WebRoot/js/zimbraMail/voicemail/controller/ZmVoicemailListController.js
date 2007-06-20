@@ -265,19 +265,19 @@ function(ev) {
 	if (this._checkEmail()) {
 		var voicemail = this._getView().getSelection()[0];
 		var contact = voicemail.participants.get(0);
-		this._sendMail(ev, contact ? contact.getEmail() : null);
+		this._sendMail(ev, ZmMsg.voicemailReplySubject, contact ? contact.getEmail() : null);
 	}
 };
 
 ZmVoicemailListController.prototype._forwardListener = 
 function(ev) {
 	if (this._checkEmail()) {
-		this._sendMail(ev);
+		this._sendMail(ev, ZmMsg.voicemailForwardSubject);
 	}
 };
 
 ZmVoicemailListController.prototype._sendMail = 
-function(ev, to) {
+function(ev, subject, to) {
 	var inNewWindow = this._app._inNewWindow(ev);
 	var voicemail = this._getView().getSelection()[0];
     var soapDoc = AjxSoapDoc.create("UploadVoiceMailRequest", "urn:zimbraVoice");
@@ -287,14 +287,14 @@ function(ev, to) {
     var params = {
     	soapDoc: soapDoc, 
     	asyncMode: true,
-		callback: new AjxCallback(this, this._handleResponseUpload, [inNewWindow, to])
+		callback: new AjxCallback(this, this._handleResponseUpload, [inNewWindow, subject, to])
 	};
 	this._appCtxt.getAppController().sendRequest(params);
    
 };
 
 ZmVoicemailListController.prototype._handleResponseUpload = 
-function(inNewWindow, to, response) {
+function(inNewWindow, subject, to, response) {
 	var voicemail = this._getView().getSelection()[0];
 	var mailMsg = new ZmMailMsg(this._appCtxt);
 	mailMsg.getAttachments()[0] = {
@@ -306,20 +306,13 @@ function(inNewWindow, to, response) {
 	mailMsg.hasAttach = true;
 	var id = response._data.UploadVoiceMailResponse.upload[0].id;
 	mailMsg.addAttachmentId(id);
-	var duration = AjxDateUtil.computeDuration(voicemail.duration);
-	var date = AjxDateUtil.computeDateStr(new Date(), voicemail.date);
-	var callingParty = voicemail.getCallingParty(ZmVoiceItem.FROM);
-	var phoneNumber = callingParty.getDisplay();
-	var format = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
-	var message = format == ZmSetting.COMPOSE_HTML ? ZmMsg.voicemailBodyHtml : ZmMsg.voicemailBodyText;
-	var body = AjxMessageFormat.format(message, [phoneNumber, duration, date]);
 	var params = {
 		action: ZmOperation.NEW_MESSAGE, 
 		inNewWindow: inNewWindow, 
 		msg: mailMsg,
 		toOverride: to,
-		subjOverride: ZmMsg.voicemailSubject,
-		extraBodyText: body
+		subjOverride: subject,
+		extraBodyText: ""
 	};
 	AjxDispatcher.run("Compose", params);
 };
