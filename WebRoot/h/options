@@ -12,7 +12,14 @@
 
     <c:choose>
         <c:when test="${zm:actionSet(param, 'actionSave')}">
-            <app:optAction selected="${selected}"/>
+            <c:choose>
+                <c:when test="${selected eq 'voice'}">
+                    <app:optVoiceAction accountindex="0" />
+                </c:when>
+                <c:otherwise>
+                    <app:optAction selected="${selected}"/>
+                </c:otherwise>
+            </c:choose>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionFilterCancel')}">
             <app:status>
@@ -76,6 +83,10 @@
     <%------------------- MAIL FILTERS ------------------%>
     <c:when test="${selected eq 'filters' and mailbox.features.filters}">
         <c:set var="subKey" value="mailFilters"/>
+    </c:when>
+    <%------------------- Voice  ------------------%>
+    <c:when test="${selected eq 'voice' and mailbox.features.voice}">
+        <c:set var="subKey" value="voice"/>
     </c:when>
     <%------------------- ADDRESS BOOK ------------------%>
     <c:when test="${selected eq 'addressbook' and mailbox.features.contacts}">
@@ -145,6 +156,10 @@
                                     <%------------------- MAIL FILTER ------------------%>
                                     <c:when test="${selected eq 'filter' and mailbox.features.filters}">
                                         <app:optMailFilter mailbox="${mailbox}"/>
+                                    </c:when>
+                                    <%------------------- Voice ------------------%>
+                                    <c:when test="${selected eq 'voice' and mailbox.features.voice}">
+                                        <app:optVoice mailbox="${mailbox}"/>
                                     </c:when>
                                     <%------------------- ADDRESS BOOK ------------------%>
                                     <c:when test="${selected eq 'addressbook'}">

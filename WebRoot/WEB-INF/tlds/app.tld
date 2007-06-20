@@ -586,6 +586,16 @@
          <path>/WEB-INF/tags/voice/callListViewToolbar.tag</path>
      </tag-file>
 
+    <tag-file>
+        <name>optVoice</name>
+        <path>/WEB-INF/tags/options/optVoice.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>optVoiceAction</name>
+        <path>/WEB-INF/tags/options/optVoiceAction.tag</path>
+    </tag-file>
+
 </taglib>
 
         

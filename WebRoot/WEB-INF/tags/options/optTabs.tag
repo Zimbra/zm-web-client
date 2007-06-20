@@ -33,6 +33,13 @@
                     <span><fmt:message key="mailFilters"/></span></a>
             </td>
         </c:if>
+        <c:if test="${mailbox.features.voice}">
+            <td class='TabSpacer'/>
+            <td class='Tab ${selected=='voice' ? 'TabSelected' :'TabNormal'}'>
+                <a href="<c:url value="/h/options?selected=voice"/>">
+                    <span><fmt:message key="voice"/></span></a>
+            </td>
+        </c:if>
         <c:if test="${mailbox.features.contacts}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='addressbook' ? 'TabSelected' :'TabNormal'}'>
