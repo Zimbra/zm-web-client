@@ -497,6 +497,7 @@ function(kmm) {
 
 ZmShortcut._getOrgType =
 function(action) {
+	if (!action) { return null; }
 	var orgType;
 	for (var key in ZmShortcut.ACTION_KEY) {
 		var s = ZmShortcut.ACTION_KEY[key];
