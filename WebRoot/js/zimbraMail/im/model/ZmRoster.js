@@ -202,6 +202,12 @@ function(im) {
 					}
 				}
 				// ignore unsubscribed entries for now (TODO FIXME)
+			} else if (not.type == "subscribe") {
+				var view = ZmChatMultiWindowView.getInstance();
+				// it should always be instantiated by this time, but whatever.
+				if (view) {
+					new ZmImSubscribeAuth(view.getActiveWM(), not.from).popup();
+				}
 			} else if (not.type == "subscribed") {
 				var sub = not;
 				if (sub.to) {
@@ -313,6 +319,15 @@ ZmRoster.prototype.startFlashingIcon = function() {
 
 ZmRoster.prototype.stopFlashingIcon = function() {
 	this._imApp.stopFlashingIcon();
+};
+
+ZmRoster.prototype.sendSubscribeAuthorization = function(accept, add, addr) {
+	var sd = AjxSoapDoc.create("IMAuthorizeSubscribeRequest", "urn:zimbraIM");
+	var method = sd.getMethod();
+	method.setAttribute("addr", addr);
+	method.setAttribute("authorized", accept ? "true" : "false");
+	method.setAttribute("add", add ? "true" : "false");
+	this._appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
 };
 
 ZmRoster.prototype.reconnectGateway = function(gw) {

@@ -1815,6 +1815,15 @@ HTML>BODY .appt-selected .appt_allday_body
 	height:24px;
 }
 
+.ZmImSubscribeAuthView {
+  @WindowContainer@
+  padding: 10px;
+  width: 250px;
+  /* must be initially hidden or it will flash when the animation starts */
+  left: -10000px;
+  top: -10000px;
+}
+
 /* ??? REMOVE
 .ZmChatWindow .DwtToolBar .DwtToolbarButton {
 	border: 1px solid #CCCCCC;
