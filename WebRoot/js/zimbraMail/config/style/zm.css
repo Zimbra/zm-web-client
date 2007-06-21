@@ -701,9 +701,12 @@ td.DDSepInvisible div {
 .AlphabetBarCell {
 	text-align:center;
 	@ActiveCursor@
-	width:30px;
-	min-width:30px;
 	border-right-width: 1px;
+	
+#IFDEF GECKO
+	min-width: 30px
+	width:30px;
+#ENDIF
 }
 
 .AlphabetBarDisabled {
