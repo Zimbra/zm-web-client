@@ -68,7 +68,7 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp("NEW_BRIEFCASEITEM", {textKey:"newBriefcase", image:"NewNotebook"});
+	ZmOperation.registerOp("NEW_BRIEFCASEITEM", {textKey:"newBriefcase", image:"NewFolder"});
 	ZmOperation.registerOp("NEW_FILE", {textKey:"uploadNewFile", tooltipKey:"newFile", image:"NewPage"});
 	ZmOperation.registerOp("SHARE_BRIEFCASE", {textKey:"shareFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("MOUNT_BRIEFCASE", {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
@@ -147,7 +147,7 @@ function() {
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
 							 {mainPkg:				"Briefcase",
 							  nameKey:				"briefcase",
-							  icon:					"URL",
+							  icon:					"Folder",
 							  chooserTooltipKey:	"gotoBriefcase",
 							  defaultSearch:		ZmItem.PAGE,
 							  organizer:			ZmOrganizer.BRIEFCASE,
