@@ -158,10 +158,21 @@ function(name) {
 */
 ZmSettings.prototype.loadUserSettings =
 function(callback, errorCallback, accountName) {
+	/***
     var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
     var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName]);
 	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, accountName:accountName,
 												  callback:respCallback, errorCallback:errorCallback});
+	/***/
+	var params = {
+		soapDoc: AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount"),
+		accountName: accountName,
+		asyncMode: true,
+		callback: new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName]),
+		errorCallback: errorCallback
+	};
+	this._appCtxt.getAppController().sendRequest(params);
+	/***/
 };
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
@@ -236,10 +247,11 @@ function(callback, accountName, result) {
 		this._settings[ZmSetting.HTML_COMPOSE_ENABLED].setValue(false);
 	}
 	// load Zimlets
-	if (obj.zimlets && obj.zimlets.zimlet) {
+	// NOTE: only load zimlets if main account
+	if (!accountName && obj.zimlets && obj.zimlets.zimlet) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
-        var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
-        AjxDispatcher.require("Zimlet", true, zimletsCallback);
+		var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
+		AjxDispatcher.require("Zimlet", true, zimletsCallback);
 	}
 
     this.userSettingsLoaded = true;

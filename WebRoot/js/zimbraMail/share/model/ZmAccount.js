@@ -67,7 +67,7 @@ function() {
 };
 
 ZmAccount.prototype.load =
-function(callback) {
+function(callback, batchCmd) {
 	if (!this.loaded) {
 		// create new ZmSetting for this account
 		this.settings = new ZmSettings(this._appCtxt);
@@ -87,7 +87,7 @@ function(callback) {
 		// load user settings retrieved from server now
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
 		var errorCallback = new AjxCallback(this, this._handleErrorLoad);
-		this.settings.loadUserSettings(respCallback, errorCallback, this.name);
+		this.settings.loadUserSettings(respCallback, errorCallback, this.name, batchCmd);
 	} else {
 		if (callback) {	callback.run(); }
 	}
@@ -101,8 +101,18 @@ function(callback, result) {
 	var method = soapDoc.getMethod();
 	method.setAttribute("visible", "1");
 
+	/***
 	var respCallback = new AjxCallback(this, this._handleResponseLoad1, callback);
 	this._appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+	/***/
+	var params = {
+		soapDoc: soapDoc,
+		accountName: this.name,
+		asyncMode: true,
+		callback: new AjxCallback(this, this._handleResponseLoad1, callback)
+	};
+	this._appCtxt.getRequestMgr().sendRequest(params);
+	/***/
 };
 
 ZmAccount.prototype._handleResponseLoad1 =
