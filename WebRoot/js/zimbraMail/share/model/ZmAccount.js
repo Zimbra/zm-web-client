@@ -101,10 +101,6 @@ function(callback, result) {
 	var method = soapDoc.getMethod();
 	method.setAttribute("visible", "1");
 
-	/***
-	var respCallback = new AjxCallback(this, this._handleResponseLoad1, callback);
-	this._appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
-	/***/
 	var params = {
 		soapDoc: soapDoc,
 		accountName: this.name,
@@ -112,7 +108,6 @@ function(callback, result) {
 		callback: new AjxCallback(this, this._handleResponseLoad1, callback)
 	};
 	this._appCtxt.getRequestMgr().sendRequest(params);
-	/***/
 };
 
 ZmAccount.prototype._handleResponseLoad1 =

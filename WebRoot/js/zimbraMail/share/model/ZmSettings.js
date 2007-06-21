@@ -158,12 +158,6 @@ function(name) {
 */
 ZmSettings.prototype.loadUserSettings =
 function(callback, errorCallback, accountName) {
-	/***
-    var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
-    var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName]);
-	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, accountName:accountName,
-												  callback:respCallback, errorCallback:errorCallback});
-	/***/
 	var params = {
 		soapDoc: AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount"),
 		accountName: accountName,
@@ -172,7 +166,6 @@ function(callback, errorCallback, accountName) {
 		errorCallback: errorCallback
 	};
 	this._appCtxt.getAppController().sendRequest(params);
-	/***/
 };
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
