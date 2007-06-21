@@ -8,6 +8,7 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <app:searchTitle var="title" context="${context}"/>
+    <c:set var="phone">${zm:getPhoneFromVoiceQuery(context.query)}</c:set>
 </app:handleError>
 <app:view mailbox="${mailbox}" title="${title}" selected='voice' voice="true" folders="false" tags="false" searches="false" context="${context}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
@@ -37,10 +38,14 @@
 
                             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                             <tr>
+                                <c:url var="url" value="/h/voicemail">
+                                    <c:param name="phone" value="${phone}"/>
+                                    <c:param name="id" value="${hit.voiceMailItemHit.id}"/>
+                                </c:url>
                                 <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="voiceId" value="${hit.voiceMailItemHit.id}"></td>
                                 <td class='Img' nowrap><app:flagImage flagged="${hit.voiceMailItemHit.isFlagged}"/></td>
                             	<td nowrap>${hit.voiceMailItemHit.displayCaller}</td>
-                                <td nowrap><a href="${hit.voiceMailItemHit.soundUrl}"><app:img src="voicemail/PlayMessage.gif" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>
+                                <td nowrap><a href="${url}"><app:img src="voicemail/PlayMessage.gif" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>
                                 <td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.voiceMailItemHit.duration))}</td>
                                 <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.voiceMailItemHit.date))}</td>
                             </tr>
@@ -58,6 +63,6 @@
             </tr>
         </table>
         <input type="hidden" name="doVoiceMailListViewAction" value="1"/>
-        <input type="hidden" name="phone" value="${zm:getPhoneFromVoiceQuery(context.query)}"/>
+        <input type="hidden" name="phone" value="${phone}"/>
     </form>
 </app:view>

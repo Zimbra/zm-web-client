@@ -48,6 +48,23 @@
             </c:otherwise>
         </c:choose>
     </c:when>
+    <c:when test="${zm:actionSet(param, 'actionMarkHeard')}">
+        <zm:markVoiceMailHeard var="result" phone="${phone}" id="${ids}" heard="true"/>
+        <app:status>
+            <fmt:message key="actionVoiceMailMarkedHeard">
+                <fmt:param value="${result.idCount}"/>
+            </fmt:message>
+
+        </app:status>
+    </c:when>
+    <c:when test="${zm:actionSet(param, 'actionMarkUnheard')}">
+        <zm:markVoiceMailHeard var="result" phone="${phone}" id="${ids}" heard="false"/>
+        <app:status>
+            <fmt:message key="actionVoiceMailMarkedUnheard">
+                <fmt:param value="${result.idCount}"/>
+            </fmt:message>
+        </app:status>
+    </c:when>
 </c:choose>
 
 </app:handleError>

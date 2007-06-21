@@ -22,6 +22,9 @@
         <td><div class='vertSep'></div></td>
         <app:button name="actionReplyByEmail" text="actionReplyByEmail" src="mail/Reply.gif" tooltip="actionReplyByEmailTT"/>
         <app:button name="actionForwardByEmail" text="actionForwardByEmail" src="mail/Forward.gif" tooltip="actionForwardByEmailTT"/>
+        <td><div class='vertSep'></div></td>
+        <app:button name="actionMarkHeard" text="actionMarkHeard" src="voicemail/MarkAsHeard.gif" tooltip="actionMarkHeardTT"/>
+        <app:button name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/MarkAsUnheard.gif" tooltip="actionMarkUnheardTT"/>
     </c:set>
 </c:if>
 
