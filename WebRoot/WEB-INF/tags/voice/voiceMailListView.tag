@@ -38,14 +38,21 @@
 
                             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                             <tr>
-                                <c:url var="url" value="/h/voicemail">
-                                    <c:param name="phone" value="${phone}"/>
-                                    <c:param name="id" value="${hit.voiceMailItemHit.id}"/>
-                                </c:url>
                                 <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="voiceId" value="${hit.voiceMailItemHit.id}"></td>
                                 <td class='Img' nowrap><app:flagImage flagged="${hit.voiceMailItemHit.isFlagged}"/></td>
                             	<td nowrap>${hit.voiceMailItemHit.displayCaller}</td>
-                                <td nowrap><a href="${url}"><app:img src="voicemail/PlayMessage.gif" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>
+                                <c:choose>
+                                    <c:when test="${!empty hit.voiceMailItemHit.soundUrl}">
+                                        <c:url var="url" value="/h/voicemail">
+                                            <c:param name="phone" value="${phone}"/>
+                                            <c:param name="id" value="${hit.voiceMailItemHit.id}"/>
+                                        </c:url>
+                                        <td nowrap><a href="${url}"><app:img src="voicemail/PlayMessage.gif" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td nowrap>&nbsp;</td>
+                                    </c:otherwise>
+                                </c:choose>
                                 <td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.voiceMailItemHit.duration))}</td>
                                 <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.voiceMailItemHit.date))}</td>
                             </tr>
