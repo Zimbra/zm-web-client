@@ -760,8 +760,11 @@ function(){
 	if(this.isSystem() && !allowEmptyOp) return;
 	
 	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
-	var deleteSubFolders = (this.id == ZmFolder.ID_TRASH);
-	this._organizerAction({action:"empty",attrs:{recursive: deleteSubFolders}});
+	var params = {action:"empty"};
+	if (this.id == ZmFolder.ID_TRASH) {
+		params.attrs = {recursive:"true"};
+	}
+	this._organizerAction(params);
 };
 
 
