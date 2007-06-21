@@ -53,10 +53,15 @@ function(searchResult, folder) {
 		this._list.setHasMore(searchResult.getAttribute("more"));	
 	this._setup(this._currentView);
 
-	var elements = new Object();
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	this._setView(this._currentView, elements, true);
+    var offset = parseInt(this._activeSearch.getAttribute("offset"));
+    if (this._listView[this._currentView]) {
+        this._listView[this._currentView].setOffset(offset);
+    }
+    var elements = new Object();
+    elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+    elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+    this._setView(this._currentView, elements, true);
+    this._resetNavToolBarButtons(this._currentView);
 };
 
 ZmVoiceListController.prototype.getFolder =
@@ -121,6 +126,14 @@ function(ev) {
 	}
 	var iframeHtml = ["<iframe src='", phone.getCallUrl(),"'></iframe>"].join("");
 	this._callControl.getHtmlElement().innerHTML = iframeHtml;
+};
+
+ZmVoiceListController.prototype._refreshListener =
+function(ev) {
+	if (this._folder) {
+		var app = this._appCtxt.getApp(ZmApp.VOICE);
+		app.search(this._folder);
+	}
 };
 
 ZmVoiceListController.prototype._listActionListener =

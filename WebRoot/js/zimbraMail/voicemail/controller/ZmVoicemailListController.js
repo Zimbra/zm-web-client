@@ -213,14 +213,6 @@ function(items, heard) {
 	this._resetToolbarOperations();
 };
 
-ZmVoicemailListController.prototype._refreshListener = 
-function(ev) {
-	if (this._folder) {
-		var app = this._appCtxt.getApp(ZmApp.VOICE);
-		app.search(this._folder);
-	}
-};
-
 ZmVoicemailListController.prototype._deleteListener = 
 function(ev) {
 	var items = this._getView().getSelection();
