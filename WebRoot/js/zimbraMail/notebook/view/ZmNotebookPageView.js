@@ -653,9 +653,11 @@ ZmNotebookPageView.prototype.fetchInfo = function(path)
 };
 
 ZmNotebookPageView.prototype.refresh = function(restUrl){
-	this.historyLoading = true;
-	if(this._iframe1.contentWindow.location.href){
-	this._iframe1.contentWindow.location.reload();
+	this._controller.historyLoading = true;	
+	if(restUrl){
+		this.loadURL(restUrl);
+	}else if(this._iframe1.contentWindow.location.href){
+		this._iframe1.contentWindow.location.reload();
 	}
 };
 

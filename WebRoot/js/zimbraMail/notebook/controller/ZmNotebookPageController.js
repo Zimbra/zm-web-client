@@ -316,7 +316,7 @@ ZmNotebookPageController.prototype.updateHistory = function() {
 
 ZmNotebookPageController.prototype.refreshCurrentPage = function(){
 	if(this._object && this._listView[ZmController.NOTEBOOK_PAGE_VIEW]){
-	this._listView[ZmController.NOTEBOOK_PAGE_VIEW].refresh();
+	this._listView[ZmController.NOTEBOOK_PAGE_VIEW].refresh(this._object.getRestUrl());
 	}
 };
 
