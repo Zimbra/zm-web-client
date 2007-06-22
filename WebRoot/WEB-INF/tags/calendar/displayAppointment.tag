@@ -315,7 +315,12 @@
                             iframe.frameBorder = 0;
                             iframe.style.border = "none";
                             function resizeAndNullIframe() { resizeIframe(); iframe = null;};
-                            function resizeIframe() { if (iframe !=null) iframe.style.height = iframe.contentWindow.document.body.scrollHeight + "px";};
+                            function resizeIframe() {
+                                if (iframe !=null) {
+                                    iframe.style.height = iframe.contentWindow.document.body.scrollHeight + "px";
+                                    iframe.style.width = iframe.contentWindow.document.body.scrollWidth + "px";
+                                }
+                            };
                             document.getElementById("iframeBody").appendChild(iframe);
                             var doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
                             doc.open();
