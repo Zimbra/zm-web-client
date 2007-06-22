@@ -704,7 +704,7 @@ td.DDSepInvisible div {
 	border-right-width: 1px;
 	
 #IFDEF GECKO
-	min-width: 30px
+
 	width:30px;
 #ENDIF
 }
