@@ -18,10 +18,8 @@
             <jsp:forward page="/h/addcontacts"/>
         </c:when>
         <c:when test="${uploader.isAttachAdd}">
-            <%--
             <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
             <c:set scope="request" var="draftid" value="${draftResult.id}"/>
-            --%>
             <jsp:forward page="/h/attachments"/>
         </c:when>
         <c:when test="${uploader.isAttachCancel}">
