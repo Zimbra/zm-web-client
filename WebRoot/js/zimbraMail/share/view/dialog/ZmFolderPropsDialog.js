@@ -356,7 +356,9 @@ function(row, share) {
 		// public shares have no editable fields, and sent no mail
 		if (share.isPublic() && (action == this._handleEditShare ||
 								 action == this._handleResendShare)) continue;
-		if (share.isGuest() && (action == this._handleResendShare)) continue;
+
+		// Guest share need to have an "resend" options, thus commented.						 
+		//if (share.isGuest() && (action == this._handleResendShare)) continue;
 
 		var link = document.createElement("A");
 		link.href = "#";
