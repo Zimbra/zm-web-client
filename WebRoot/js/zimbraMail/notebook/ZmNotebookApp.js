@@ -149,7 +149,8 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.PAGE,
 								{msgKey:		"searchNotebooks",
 								 tooltipKey:	"searchForPages",
-								 icon:			"SearchNotes"
+								 icon:			"SearchNotes",
+								 setting:		ZmSetting.NOTEBOOK_ENABLED								 
 								});
 };
 
