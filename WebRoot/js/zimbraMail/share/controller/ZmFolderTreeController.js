@@ -98,12 +98,13 @@ function(parent, type, id) {
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed());
 		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
+		parent.enable(ZmOperation.EMPTY_FOLDER, folder.numTotal > 0);
 
 		if (folder.isRemote() && folder.isReadOnly()) {
 			if (folder.parent && folder.parent.isRemote()) {
 				parent.enableAll(false);
 			} else {
-				parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ,ZmOperation.EMPTY_FOLDER], false);
+				parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ, ZmOperation.EMPTY_FOLDER], false);
 			}
 		}
 	} else {	// system folder
@@ -114,9 +115,7 @@ function(parent, type, id) {
 		// "Empty" for Junk and Trash
 		if (nId == ZmFolder.ID_SPAM || nId == ZmFolder.ID_TRASH) {
 			emptyText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
-			parent.enable(ZmOperation.EMPTY_FOLDER,true);
-			//deleteText = (nId == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
-			//parent.enable(ZmOperation.DELETE, true);
+			parent.enable(ZmOperation.EMPTY_FOLDER, folder.numTotal > 0);
 		}
 		// only allow Inbox and Sent system folders to be share-able for now
 		if (!folder.link && (nId == ZmFolder.ID_INBOX || nId == ZmFolder.ID_SENT)) {
