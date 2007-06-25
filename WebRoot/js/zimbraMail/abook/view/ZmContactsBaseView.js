@@ -28,6 +28,8 @@ ZmContactsBaseView = function(parent, className, posStyle, view, controller, hea
 	if (arguments.length == 0) return;
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
 	ZmListView.call(this, parent, className, posStyle, view, ZmItem.CONTACT, controller, headerList, dropTgt);
+
+	this._handleEventType[ZmItem.GROUP] = true;
 };
 
 ZmContactsBaseView.prototype = new ZmListView;

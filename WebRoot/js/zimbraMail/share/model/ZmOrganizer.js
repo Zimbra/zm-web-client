@@ -73,7 +73,8 @@ ZmOrganizer = function(params) {
 	if (params.perm) this.setPermissions(params.perm);
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 
-	this._appCtxt = params.tree._appCtxt;
+	// ugh: appCtxt *really* needs to be GLOBAL
+	this._appCtxt = params.tree ? params.tree._appCtxt : params.appCtxt;
 	if (id && params.tree) {
 		this._appCtxt.cacheSet(id, this);
 		if (this.link) {
@@ -1147,7 +1148,8 @@ function() {
 			this._isRemote = true;
 		} else {
 			var acct = this._appCtxt.getActiveAccount();
-			this._isRemote = ((this.id.indexOf(":") != -1) && (this.id.indexOf(acct.id) != 0));
+			var id = String(this.id);
+			this._isRemote = ((id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0));
 		}
 	}
 	return this._isRemote;
