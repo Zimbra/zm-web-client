@@ -303,11 +303,11 @@ function(msg) {
 	var row = this._getElement(msg, ZmItem.F_ITEM_ROW);
 	if (row) {
 		var folder = this._appCtxt.getById(msg.folderId);
-		var className = null;
+		var className;
 		if (msg.isUnread) {
 			className = "Unread";
 		}
-		if ((folder != null) && folder.isInTrash()) {
+		if (folder && folder.isInTrash()) {
 			className = (className ? (className + " ") : "") + "Trash";
 		}
 		if (msg.isSent) {

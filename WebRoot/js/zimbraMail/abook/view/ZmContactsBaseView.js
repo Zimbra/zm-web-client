@@ -84,8 +84,10 @@ function() {
 
 ZmContactsBaseView.prototype._changeListener =
 function(ev) {
+	var folderId = this._controller.getFolderId();
+
 	// if we dont have a folder, then assume user did a search of contacts
-	if (this._controller.getFolderId() != null || ev.event != ZmEvent.E_MOVE)
+	if (folderId != null || ev.event != ZmEvent.E_MOVE)
 	{
 		ZmListView.prototype._changeListener.call(this, ev);
 
@@ -96,7 +98,6 @@ function(ev) {
 		else if (ev.event == ZmEvent.E_CREATE)
 		{
 			var newContact = ev._details.items[0];
-			var folderId = this._controller.getFolderId();
 
 			// only add this new contact to the listview if this is a simple
 			// folder search and it belongs!
@@ -108,7 +109,8 @@ function(ev) {
 				if (this instanceof ZmContactCardsView)
 					this._layout();
 
-				// always select newly add contact if its been added to the current page of contacts
+				// always select newly added contact if its been added to the
+				// current page of contacts
 				this.setSelection(newContact);
 			}
 		}

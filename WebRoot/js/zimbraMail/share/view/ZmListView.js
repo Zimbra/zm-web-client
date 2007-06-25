@@ -419,6 +419,8 @@ function(clickedEl, bContained) {
 
 ZmListView.prototype.setSelectionCbox =
 function(obj, bContained) {
+	if (!obj) { return; }
+
 	var item = obj.tagName
 		? AjxCore.objectWithId(Dwt.getAttr(obj, "_itemIndex")) : obj;
 	var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
