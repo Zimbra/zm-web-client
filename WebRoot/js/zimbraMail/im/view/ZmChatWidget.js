@@ -117,8 +117,17 @@ ZmChatWidget.prototype.setTyping = function(item, typing) {
 ZmChatWidget.prototype.handleMessage = function(msg) {
 	var str = msg.toHtml(this._objectManager, this.chat, this.__lastFrom);
 	this.__lastFrom = (msg.isSystem && !msg.from) ? "@@system" : msg.from;
-	if (!msg.isSystem)
+	if (!msg.isSystem) {
+		if (this.isImportant()) {
+			// make sure the tab is selected
+			this.parent.setActiveTabWidget(this);
+			if (this._appCtxt.getCurrentAppName() != "IM" &&
+			    !this.isSticky()) {
+				this.setSticky(true);
+			}
+		}
 		this._setUnreadStatus();
+	}
 	return this.handleHtmlMessage(str);
 };
 
@@ -297,6 +306,11 @@ ZmChatWidget.prototype._init = function() {
 	btn.setToolTipContent(ZmMsg.sendByEmail);
 	btn.setImage("Send");
 	btn.addSelectionListener(new AjxListener(this, this._sendByEmailListener));
+
+	var btn = this._importantBtn = new DwtToolBarButton(this._toolbar, DwtButton.TOGGLE_STYLE);
+	btn.setToolTipContent(ZmMsg.imMarkChatImportant);
+	btn.setImage("TaskHigh");
+	btn.addSelectionListener(new AjxListener(this, this._importantListener));
 
 	// this._toolbar.addSeparator("vertSep");
 	new DwtControl(this._toolbar, "vertSep");
@@ -557,39 +571,73 @@ ZmChatWidget.prototype._closeListener = function() {
 	this.close();
 };
 
-ZmChatWidget.prototype._stickyListener = function(ev) {
-	this.parent.saveScrollPositions();
+ZmChatWidget.prototype._importantListener = function(ev) {
 	var button = ev.item;
-	button._mouseOutListener();
-	var sticky = button.isToggled();
+};
+
+ZmChatWidget.prototype.isImportant = function() {
+	return this._importantBtn.isToggled();
+};
+
+ZmChatWidget.prototype.isSticky = function() {
+	return this.getChatWindow()._sticky;
+};
+
+ZmChatWidget.prototype.setSticky = function(sticky, keepPos) {
+	this.parent.saveScrollPositions();
 	var view = ZmChatMultiWindowView.getInstance();
 	var win = this.getChatWindow();
 	var wp = Dwt.toWindow(win.getHtmlElement(), 0, 0);
-	var p, wm;
-	// button.setImage(sticky ? "RoundMinus" : "RoundPlus");
-	win.popdown();
+	var wm;
+	var prevPos = { x: win._loc.x, y: win._loc.y };
 	if (sticky) {
 		wm = view.getShellWindowManager();
 	} else {
 		wm = view.getWindowManager();
 	}
-	p = Dwt.toWindow(wm.getHtmlElement(), 0, 0);
-	if (p.x == Dwt.LOC_NOWHERE) {
-		// kind of ugly; if the WM is "hidden", we get -10000
-		// (Dwt.LOC_NOWHERE) which messes everything up.
-		p.x = 20;
-		p.y = 20;
+	if (keepPos) {
+		// button.setImage(sticky ? "RoundMinus" : "RoundPlus");
+		win.popdown();
+		var p = Dwt.toWindow(wm.getHtmlElement(), 0, 0);
+		if (p.x == Dwt.LOC_NOWHERE) {
+			// kind of ugly; if the WM is "hidden", we get -10000
+			// (Dwt.LOC_NOWHERE) which messes everything up.
+			p.x = 20;
+			p.y = 20;
+		}
+		wp.x -= p.x;
+		wp.y -= p.y;
+	} else {
+		// try to figure out previous position
+		wp = win._prevPos;
+		if (!wp) {
+			if (sticky) {
+				// put it in the bottom-right corner
+				var s = win.getSize();
+				var ws = wm.getSize();
+				pos = { x: ws.x - s.x - 16,
+					y: ws.y - s.y - 40 };
+			} else
+				wp = null; // let the WM figure it out
+		}
 	}
-	wp.x -= p.x;
-	wp.y -= p.y;
-	if (wp.x < 0)
-		wp.x = 0;
-	if (wp.y < 0)
-		wp.y = 0;
+	if (wp) {
+		if (wp.x < 0)
+			wp.x = 0;
+		if (wp.y < 0)
+			wp.y = 0;
+	}
 	wm.manageWindow(win, wp); // does popup automagically
 	win._sticky = sticky;
+	win._prevPos = prevPos;
 	this.parent.restoreScrollPositions();
 	this.parent.updateStickyButtons();
+};
+
+ZmChatWidget.prototype._stickyListener = function(ev) {
+	var button = ev.item;
+	button._mouseOutListener();
+	this.setSticky(button.isToggled(), true);
 };
 
 ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
