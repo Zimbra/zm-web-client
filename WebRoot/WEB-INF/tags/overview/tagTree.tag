@@ -27,7 +27,7 @@
             <th class='Header'> <fmt:message key="tags"/></th>
             
             <th width='1%' align='right' class='ZhTreeEdit'>
-                <a href="${mtagsUrl}"><fmt:message key="TREE_EDIT"/> </a>
+                <a id="MTAGS" href="${mtagsUrl}"><fmt:message key="TREE_EDIT"/> </a>
             </th>
         </tr>
         <c:if test="${expanded}">

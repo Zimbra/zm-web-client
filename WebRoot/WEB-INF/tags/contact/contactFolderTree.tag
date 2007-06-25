@@ -27,7 +27,7 @@
                         <c:param name="sfi" value="${param.sfi}"/>
                     </c:if>
                 </c:url>
-                <a href="${mabUrl}" ><fmt:message key="TREE_EDIT"/></a>
+                <a id="MADDRBOOKS" href="${mabUrl}" ><fmt:message key="TREE_EDIT"/></a>
             </th>
         </tr>
 

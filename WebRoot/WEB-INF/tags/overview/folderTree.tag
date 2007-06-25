@@ -25,7 +25,7 @@
                             <c:param name="sfi" value="${param.sfi}"/>
                         </c:if>
                 </c:url>
-                <a href="${mfoldersUrl}"><fmt:message key="TREE_EDIT"/> </a>
+                <a id="MFOLDERS" href="${mfoldersUrl}"><fmt:message key="TREE_EDIT"/> </a>
             </th>
         </tr>
  
