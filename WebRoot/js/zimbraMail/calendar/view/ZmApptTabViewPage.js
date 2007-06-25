@@ -979,7 +979,14 @@ function(text, el, match) {
 		DBG.println(AjxDebug.DBG1, "ZmApptTabViewPage: match empty in autocomplete callback; text: " + text);
 		return;
 	}
-	var attendee = match.item;
+	var attendee;
+	if (match.item) {
+		attendee = match.item;
+	}
+	else {
+		attendee = new ZmContact(this._appCtxt, null);
+		attendee.setAttr(ZmContact.F_email, match.fullAddress);
+	}
 	var type = el._attType;
 	this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 };

@@ -50,6 +50,7 @@ function ZmContact(appCtxt, id, list, type) {
 
 	list = list || this.canonicalList;
 	type = type || ZmItem.CONTACT;
+	id = id || "pseudo" + this.__pseudoId++;
 	ZmItem.call(this, appCtxt, type, id, list);
 
 	this.attr = {};
@@ -60,6 +61,8 @@ function ZmContact(appCtxt, id, list, type) {
 
 ZmContact.prototype = new ZmItem;
 ZmContact.prototype.constructor = ZmContact;
+
+ZmContact.__pseudoId = 1;  // Used to generate fake IDs
 
 // fields
 ZmContact.F_assistantPhone	= "assistantPhone";
