@@ -108,7 +108,9 @@ function(list, noResultsOk) {
 		var width = this._headerList[i]._width;
 
 		if (field == ZmItem.F_SUBJECT) {
-			htmlArr[idx++] = "<td><div class='newTaskBanner' onclick='ZmTaskListView._handleOnClick(this)'>";
+			htmlArr[idx++] = "<td><div class='newTaskBanner' onclick='ZmTaskListView._handleOnClick(this)' id='";
+			htmlArr[idx++] = Dwt.getNextId(); 									// bug: 17653 - for QA
+			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = ZmMsg.createNewTaskHint;
 			htmlArr[idx++] = "</div></td>";
 		} else {
@@ -249,6 +251,7 @@ function(el) {
 		this._newTaskInputEl.type = "text";
 		this._newTaskInputEl.className = "InlineWidget";
 		this._newTaskInputEl.style.position = "absolute";
+		this._newTaskInputEl.id = Dwt.getNextId();								// bug: 17653 - for QA
 
 		Dwt.setHandler(this._newTaskInputEl, DwtEvent.ONBLUR, ZmTaskListView._handleOnBlur);
 		Dwt.setHandler(this._newTaskInputEl, DwtEvent.ONKEYPRESS, ZmTaskListView._handleKeyPress);
