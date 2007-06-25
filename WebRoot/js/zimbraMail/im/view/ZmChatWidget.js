@@ -615,8 +615,8 @@ ZmChatWidget.prototype.setSticky = function(sticky, keepPos) {
 				// put it in the bottom-right corner
 				var s = win.getSize();
 				var ws = wm.getSize();
-				pos = { x: ws.x - s.x - 16,
-					y: ws.y - s.y - 40 };
+				wp = { x: ws.x - s.x - 16,
+				       y: ws.y - s.y - 40 };
 			} else
 				wp = null; // let the WM figure it out
 		}
