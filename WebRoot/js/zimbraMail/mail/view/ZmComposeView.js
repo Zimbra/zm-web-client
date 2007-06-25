@@ -837,7 +837,9 @@ function(addrVec, used) {
 	var addrs = [];
 	for (var i = 0; i < a.length; i++) {
 		var addr = a[i];
-		var email = addr.getAddress().toLowerCase();
+		var email = addr ? addr.getAddress() : null;
+		if (!email) { continue; }
+		email = email.toLowerCase();
 		if (!used[email])
 			addrs.push(addr);
 		used[email] = true;
