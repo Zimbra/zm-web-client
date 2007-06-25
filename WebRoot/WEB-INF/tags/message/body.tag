@@ -21,8 +21,8 @@
             <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" border="0" frameBorder="0" src="${iframeUrl}"></iframe>
         </noscript>
         <script type="text/javascript">
-            (function() {
-                var isKonqueror = /KHTML/.test(navigator.userAgent);
+        (function() {
+            var isKonqueror = /KHTML/.test(navigator.userAgent);
                 var isIE = ( /MSIE/.test(navigator.userAgent) && !/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
                 var iframe = document.createElement("iframe");
                 iframe.style.width = "100%";
@@ -47,9 +47,9 @@
                 doc.write("${zm:jsEncode(theBody)}");
                 doc.close();
                 try {
-                    if (YAHOO && keydownH && keypressH) {
-                        YAHOO.util.Event.addListener(doc, "keydown", keydownH);
-                        YAHOO.util.Event.addListener(doc, "keypress", keypressH);
+                    if (YAHOO && zimbraKeydownHandler && zimbraKeypressHandler) {
+                        YAHOO.util.Event.addListener(doc, "keydown", zimbraKeydownHandler);
+                        YAHOO.util.Event.addListener(doc, "keypress", zimbraKeypressHandler);
                     }
                 } catch (error) {
                     // ignore

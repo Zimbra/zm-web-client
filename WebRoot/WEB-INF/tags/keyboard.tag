@@ -26,7 +26,6 @@
                     src="<c:url value='/yui/2.2.2/build/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
         </c:if>
         <script type="text/javascript">
-        var zimbraKeyboard = function() {
             var pendingKey = "";
             var timerId = null;
             var actions = {};
@@ -43,7 +42,7 @@
                 for (var k in actions) if (k.indexOf(keySeq) == 0) return true;
                 return false;
             }
-            var keydownH = function(ev, obj) {
+            var zimbraKeydownHandler = function(ev, obj) {
                 handled = false;
                 var el = YAHOO.util.Event.getTarget(ev);
                 if (el == null || (el.nodeName == 'INPUT' && el.type != 'checkbox') || el.nodeName == 'TEXTAREA') {
@@ -89,13 +88,13 @@
                 if (ev && handled) YAHOO.util.Event.stopEvent(ev);
                 return handled;
             }
-            var keypressH = function(ev, obj) {
+            var zimbraKeypressHandler = function(ev, obj) {
                 if (handled) YAHOO.util.Event.stopEvent(ev);
                 return !handled;
             }
             var init = function() {
-                YAHOO.util.Event.addListener(document, "keydown", keydownH);
-                YAHOO.util.Event.addListener(document, "keypress", keypressH);
+                YAHOO.util.Event.addListener(document, "keydown", zimbraKeydownHandler);
+                YAHOO.util.Event.addListener(document, "keypress", zimbraKeypressHandler);
             }
             YAHOO.util.Event.addListener(window, "load", init);
 
@@ -134,7 +133,6 @@
             </c:if>
             </c:if>
             <jsp:doBody/>
-        }();    
         </script>
     </c:set>
 </c:if>
