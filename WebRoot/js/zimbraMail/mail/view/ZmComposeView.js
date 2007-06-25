@@ -71,6 +71,7 @@ ZmComposeView.DIALOG_Y = 100;
 // Attachment related
 ZmComposeView.UPLOAD_FIELD_NAME	= "attUpload";
 ZmComposeView.FORWARD_ATT_NAME	= "ZmComposeView_forAttName";
+ZmComposeView.FORWARD_MSG_NAME	= "ZmComposeView_forMsgName";
 
 // max # of attachments to show
 ZmComposeView.SHOW_MAX_ATTACHMENTS = AjxEnv.is800x600orLower ? 2 : 3;
@@ -281,7 +282,8 @@ function() {
 	}
 
 	// keep track of "uploaded" attachments as well :/
-	val += this._getForwardAttIds().join("");
+	val += this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME).join("");
+	val += this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME).join("");
 
 	return val;
 };
@@ -350,7 +352,8 @@ function(attId, isDraft) {
 	}
 
 	// get list of message part id's for any forwarded attachements
-	var forwardAttIds = this._getForwardAttIds();
+	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME);
+	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME);
 
 	// --------------------------------------------
 	// Passed validation checks, message ok to send
@@ -448,8 +451,9 @@ function(attId, isDraft) {
 	}
 
 	if (this._msgAttId) {
-		msg.setMessageAttachmentId(this._msgAttId);
+		forwardMsgIds.push(this._msgAttId);
 	}
+	msg.setMessageAttachmentId(forwardMsgIds);
 
 	return msg;
 };
@@ -884,9 +888,9 @@ function() {
 };
 
 ZmComposeView.prototype._getForwardAttIds =
-function() {
+function(name) {
 	var forAttIds = [];
-	var forAttList = document.getElementsByName(ZmComposeView.FORWARD_ATT_NAME);
+	var forAttList = document.getElementsByName(name);
 
 	// walk collection of input elements
 	for (var i = 0; i < forAttList.length; i++) {
@@ -1584,7 +1588,7 @@ function(msg, action, replyPref) {
 			html[idx++] = "<tr><td width=65 align=right>";
 			html[idx++] = AjxImg.getImageHtml("Message");
 			html[idx++] = "</td><td width=1%><input name='";
-			html[idx++] = ZmComposeView.FORWARD_ATT_NAME;
+			html[idx++] = ZmComposeView.FORWARD_MSG_NAME;
 			html[idx++] = "' type='checkbox' checked='CHECKED' id='";
 			html[idx++] = id;
 			html[idx++] = "'></td><td class='nobreak'></td><td><b>";
