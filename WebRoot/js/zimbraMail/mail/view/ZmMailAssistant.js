@@ -73,7 +73,7 @@ function(dialog) {
 	var cd = this._confirmDialog = this._appCtxt.getOkCancelMsgDialog();
 	cd.reset();
 	
-	var subject = AjxStringUtil.trim(msg.getSubject());
+	var subject = AjxStringUtil.trim(msg.subject);
 	if ((subject == null || subject == "") && !this._noSubjectOkay) {
     	cd.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
 		cd.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this, dialog);

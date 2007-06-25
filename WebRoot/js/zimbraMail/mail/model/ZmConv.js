@@ -377,11 +377,6 @@ function() {
 };
 
 
-ZmConv.prototype.getSubject = 
-function (){
-	return this.subject;
-};
-
 ZmConv.prototype._loadFromDom =
 function(convNode) {
 	this.numMsgs = convNode.n;

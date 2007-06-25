@@ -200,14 +200,6 @@ function(type) {
 };
 
 /**
-* Returns the subject
-*/
-ZmMailMsg.prototype.getSubject =
-function() {
-	return this.subject;
-};
-
-/**
 * Returns the fragment. If maxLen is given, will truncate fragment to maxLen and add ellipsis
 */
 ZmMailMsg.prototype.getFragment =
@@ -230,38 +222,13 @@ function() {
 	return this.date;
 };
 
-/**
-* Returns the size of the message content
-*/
-ZmMailMsg.prototype.getSize =
-function() {
-	return this.size;
-};
-
-/**
-* Returns the message ID
-*/
-ZmMailMsg.prototype.getId =
-function() {
-	return this.id;
-};
-
-/**
-* Returns the message's conversation ID, if any
-*/
-ZmMailMsg.prototype.getConvId =
-function() {
-	return this.cid;
-};
-
 ZmMailMsg.prototype.getHeaderStr =
 function(hdr) {
 	if (hdr == ZmMailMsg.HDR_DATE) {
 		var formatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.FULL);
 		return this.sentDate ? ZmMailMsg.HDR_KEY[hdr] + ": " + formatter.format(new Date(this.sentDate)) : "";
 	} else if (hdr == ZmMailMsg.HDR_SUBJECT) {
-		var subj = this.getSubject();
-		return subj ? ZmMailMsg.HDR_KEY[hdr] + ": " + subj : "";
+		return this.subject ? ZmMailMsg.HDR_KEY[hdr] + ": " + this.subject : "";
 	} else {
 		var addrs = this.getAddresses(hdr);
 		var addrStr = addrs.toString(", ", true);
@@ -528,7 +495,7 @@ function(callback) {
 		return "";
 	} else {
 		var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, [callback]);
-		ZmMailMsg.fetchMsg({sender: this._appCtxt.getAppController(), msgId: this.getId(), getHtml: false, callback: respCallback});
+		ZmMailMsg.fetchMsg({sender:this._appCtxt.getAppController(), msgId:this.id, getHtml:false, callback:respCallback});
 	}
 };
 
@@ -697,13 +664,7 @@ function(soapDoc, contactList, isDraft, accountName) {
 	// if origId is given, means we're saving a draft or sending a msg that was
 	// originally a reply/forward
 	if (this.origId) {
-		var oid = this.origId;
-		// if dealing with sub-account, normalize the origId
-		if (accountName) {
-			var idx = this.origId.indexOf(":");
-			if (idx > 0) { oid = this.origId.substring(idx+1); }
-		}
-		msgNode.setAttribute("origid", oid);
+		msgNode.setAttribute("origid", this.origId);
 	}
 
 	// if id is given, means we are re-saving a draft
@@ -874,7 +835,7 @@ function(contentPartType, contentPart) {
     	for (var i = 0; i < this._attachments.length; i++) {
     		var attach = this._attachments[i];
 			if (attach[contentPartType] == contentPart) {
-    			return this._appCtxt.getCsfeMsgFetcher() + "id=" + this.getId() + "&part=" + attach.part;
+    			return this._appCtxt.getCsfeMsgFetcher() + "id=" + this.id + "&part=" + attach.part;
     		}
 		}
 	}
@@ -895,7 +856,7 @@ function(findHits) {
 
 	if (this._attachments && this._attachments.length > 0) {
 		var csfeMsgFetchSvc = this._appCtxt.getCsfeMsgFetcher();
-		var hrefRoot = csfeMsgFetchSvc + "id=" + this.getId() + "&amp;part=";
+		var hrefRoot = csfeMsgFetchSvc + "id=" + this.id + "&amp;part=";
 
 		for (var i = 0; i < this._attachments.length; i++) {
     		var attach = this._attachments[i];
@@ -924,7 +885,7 @@ function(findHits) {
 				var html = new Array(5);
 				var j = 0;
 				html[j++] = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(";
-				html[j++] = this.getId();
+				html[j++] = this.id;
 				html[j++] = ",\"";
 				html[j++] = attach.part;
 				html[j++] = "\"); return false;' class='AttLink'>";
@@ -949,7 +910,7 @@ function(findHits) {
 					// check for vcard *first* since we dont care to view it in HTML
 					if (attach.ct == ZmMimeTable.TEXT_VCARD)
 					{
-						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.getId() + ",\"" + attach.part + "\");";
+						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.id + ",\"" + attach.part + "\");";
 						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
 					}
 					else if (attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct) &&
@@ -977,7 +938,7 @@ function(findHits) {
 			props.isHit = findHits && this._isAttInHitList(attach);
 			props.part = attach.part;
 			if (!useCL)
-				props.url = csfeMsgFetchSvc + "id=" + this.getId() + "&part=" + attach.part;
+				props.url = csfeMsgFetchSvc + "id=" + this.id + "&part=" + attach.part;
 
 			// and finally, add to attLink array
 			this._attLinks.push(props);
@@ -1010,6 +971,10 @@ function(msgNode) {
 	if (msgNode.origid) { this.origId = msgNode.origid; }
 	if (msgNode.hp) 	{ this._attHitList = msgNode.hp; }
 	if (msgNode.mid)	{ this.messageId = msgNode.mid; }
+
+	// set the "normalized" Id if this message belongs to a shared folder
+	var idx = this.id.indexOf(":");
+	this.nId = (idx != -1) ? (this.id.substr(idx + 1)) : this.id;
 
 	if (msgNode._convCreateNode) {
 		this._convCreateNode = msgNode._convCreateNode;

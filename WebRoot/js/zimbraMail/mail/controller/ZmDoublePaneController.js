@@ -528,7 +528,7 @@ function(ev) {
 	if (to)	rule.addCondition(new ZmCondition(ZmFilterRule.C_TO, ZmFilterRule.OP_CONTAINS, to.address));
 	var cc = msg.getAddress(AjxEmailAddress.CC);
 	if (cc)	rule.addCondition(new ZmCondition(ZmFilterRule.C_CC, ZmFilterRule.OP_CONTAINS, cc.address));
-	var subj = msg.getSubject();
+	var subj = msg.subject;
 	if (subj) rule.addCondition(new ZmCondition(ZmFilterRule.C_SUBJECT, ZmFilterRule.OP_IS, subj));
 	rule.addAction(new ZmAction(ZmFilterRule.A_KEEP));
 	var dialog = this._appCtxt.getFilterRuleDialog();

@@ -164,7 +164,7 @@ function(ev) {
 		sctrl.fromSearch(fromAddr.getAddress());
 	} else if (msg && ev.field == ZmItem.F_SUBJECT) {
 		var conv = new ZmConv(this._appCtxt); // should probably do search instead
-		conv.id = msg.getConvId();
+		conv.id = msg.cid;
 		conv.msgs.add(msg);
 		conv.msgHitList[msg.id] = msg;
 		AjxDispatcher.run("GetConvController").show(conv);
@@ -187,7 +187,7 @@ function(search) {
 				var ct = mp.getContentType();
 				if (ct.indexOf("image/") === 0) {
 					mp.setMessage(msg);
-					mp.setMessageId(msg.getId());
+					mp.setMessageId(msg.id);
 					var subject = mp.getSubject();
 					if (!subject) {
 						subject = msg.getSubject() || "";

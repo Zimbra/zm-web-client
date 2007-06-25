@@ -421,17 +421,18 @@ function(attId, isDraft) {
 			// check if we're resaving a draft that was originally a reply/forward
 			if (msg.isDraft) {
 				// if so, set both origId and the draft id
-				msg.origId = msg.isReplied || msg.isForwarded ? this._msg.origId : null;
+				msg.origId = msg.isReplied || msg.isForwarded ? this._msg.nId : null;
 				msg.id = this._msg.id;
 			}
 		} else {
 			msg.isReplied = this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL || isInviteReply;
 			msg.isForwarded = this._action == ZmOperation.FORWARD_INLINE || this._action == ZmOperation.FORWARD_ATT;
-			msg.origId = this._msg.id;
+			msg.origId = this._msg.nId;
 		}
 		msg.isInviteReply = isInviteReply;
 		msg.inviteMode = isInviteReply ? this._action : null;
 		msg.irtMessageId = this._msg.messageId;
+		msg.folderId = this._msg.folderId;
 	}
 
 	if (attId) {
@@ -1031,7 +1032,7 @@ function(action, msg, subjOverride) {
 		return;
 	}
 
-	var subj = subjOverride || msg.getSubject();
+	var subj = subjOverride || msg.subject;
 
 	if (action != ZmOperation.DRAFT && subj) {
 		var regex = ZmComposeView.SUBJ_PREFIX_RE;
@@ -1585,7 +1586,7 @@ function(msg, action, replyPref) {
 			html[idx++] = "' type='checkbox' checked='CHECKED' id='";
 			html[idx++] = id;
 			html[idx++] = "'></td><td class='nobreak'></td><td><b>";
-			html[idx++] = (attMsg.getSubject() || AjxStringUtil.htmlEncode(ZmMsg.noSubject));
+			html[idx++] = (attMsg.subject || AjxStringUtil.htmlEncode(ZmMsg.noSubject));
 			html[idx++] = "</b> <span class='ZmConvListFragment'>"
 			html[idx++] = attMsg.getFragment(35);
 			html[idx++] = "</span></td></tr>";
@@ -1604,7 +1605,7 @@ function(msg, action, replyPref) {
 		html[idx++] = "<table cellspacing=4 cellpadding=0 border=0 width=100%><tr><td width=60 align=right>";
 		html[idx++] = AjxImg.getImageHtml("Attachment");
 		html[idx++] = "</td><td><b>";
-		html[idx++] = ((msg ? msg.getSubject() : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject));
+		html[idx++] = ((msg ? msg.subject : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject));
 		html[idx++] = "</b></td></tr></table>";
 
 		this._attachCount = 1;

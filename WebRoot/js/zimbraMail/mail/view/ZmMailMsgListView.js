@@ -201,7 +201,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
 		} else {
 			// msg on its own (TV) shows subject and fragment
-			var subj = msg.getSubject() || ZmMsg.noSubject;
+			var subj = msg.subject || ZmMsg.noSubject;
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj);
 			if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(msg);

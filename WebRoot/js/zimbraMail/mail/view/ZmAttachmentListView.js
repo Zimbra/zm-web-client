@@ -93,7 +93,7 @@ function(attachment, now) {
 		fieldId = this._getFieldId(attachment, ZmItem.F_SUBJECT);
 		htmlArr[idx++] = "<td id='" + fieldId;
 		htmlArr[idx++] = "'>";
-		var subject = attachment.getSubject() || msg.getSubject() || " ";
+		var subject = attachment.getSubject() || msg.subject || " ";
 		htmlArr[idx++] = AjxStringUtil.htmlEncode(subject);
 		htmlArr[idx++] = "</td>";
 	}

@@ -351,14 +351,6 @@ function() {
 };
 
 /**
-* Returns the rule's internal ID.
-*/
-ZmFilterRule.prototype.getId =
-function() {
-	return this.id;
-};
-
-/**
 * Enables or disables the rule.
 *
 * @param active	[boolean]	true if the rule is to be enabled

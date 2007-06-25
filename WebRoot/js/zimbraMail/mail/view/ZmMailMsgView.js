@@ -911,7 +911,7 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "' cellspacing=0 cellpadding=0 border=0 width=100%>";
 
 	// Subject
-	var subject = msg.getSubject() || ZmMsg.noSubject;
+	var subject = msg.subject || ZmMsg.noSubject;
 	htmlArr[idx++] = "<tr><td width='110' class='SubjectCol LabelColName' valign=top>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.subject);
 	htmlArr[idx++] = ": </td><td colspan=3>";
@@ -1471,7 +1471,7 @@ function(msg, preferHtml, callback) {
 
 	// print SUBJECT and DATE
 	html[idx++] = "<td><font size=+1>";
-	html[idx++] = msg.getSubject();
+	html[idx++] = msg.subject;
 	html[idx++] = "</font></td><td align=right><font size=+1>";
 	html[idx++] = msg.sentDate
 		? (new Date(msg.sentDate)).toLocaleString()

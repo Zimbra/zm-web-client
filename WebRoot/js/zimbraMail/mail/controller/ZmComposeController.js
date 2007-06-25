@@ -247,10 +247,13 @@ function(attId, isDraft, callback) {
 			appt.save();
 		}
 	} else {
+		// if shared folder, make sure we send the email on-behalf-of
+		var folder = msg.folderId ? this._appCtxt.getById(msg.folderId) : null;
+		var acctName = (folder && folder.isRemote()) ? folder.getOwner() : this._accountName;
 		var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
 		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
 		var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
-		var resp = msg.send(contactList, isDraft, respCallback, errorCallback, this._accountName);
+		var resp = msg.send(contactList, isDraft, respCallback, errorCallback, acctName);
 
 		// XXX: temp bug fix #4325 - if resp returned, we're processing sync
 		//      request REVERT this bug fix once mozilla fixes bug #295422!
@@ -455,7 +458,7 @@ function(delMsg) {
 	var mailItem, request;
 
 	if (list && list.type == ZmItem.CONV) {
-		mailItem = list.getById(delMsg.getConvId());
+		mailItem = list.getById(delMsg.cid);
 		request = "ConvActionRequest";
 	} else {
 		mailItem = delMsg;

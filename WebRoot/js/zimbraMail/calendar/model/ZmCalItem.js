@@ -129,7 +129,6 @@ ZmCalItem.prototype.getCompNum			= function() { return this.compNum || "0"; }
 ZmCalItem.prototype.getDuration 		= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
 ZmCalItem.prototype.getEndTime 			= function() { return this.endDate.getTime(); }; 	// end time in ms
 ZmCalItem.prototype.getFolder			= function() { /* override */ };
-ZmCalItem.prototype.getId 				= function() { return this.id; }; 					// mail item id on appt instance
 ZmCalItem.prototype.getLocation			= function() { /* override */ };
 ZmCalItem.prototype.getName 			= function() { return this.name || ""; };			// name (aka Subject) of appt
 ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
