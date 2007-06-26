@@ -75,6 +75,9 @@ function() {
 };
 
 
+// Static counter for generating fake ZmContact ids.  (Bug 17862/17892)
+ZmApptTabViewPage.__pseudoIdCounter = 1;
+
 // Consts
 
 ZmApptTabViewPage.UPLOAD_FIELD_NAME = "attUpload";
@@ -984,7 +987,7 @@ function(text, el, match) {
 		attendee = match.item;
 	}
 	else {
-		attendee = new ZmContact(this._appCtxt, null);
+		attendee = new ZmContact(this._appCtxt, 'pseudoId'+this.__pseudoIdCounter++);
 		attendee.setAttr(ZmContact.F_email, match.fullAddress);
 	}
 	var type = el._attType;
