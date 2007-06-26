@@ -7,7 +7,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<fmt:setBundle basename="/msgs/ZhMsg" scope="request"/>
+<fmt:setBundle basename="/msgs/ZmMsg" scope="request"/>
 
 <c:catch var="loginException">
     <c:choose>
@@ -183,8 +183,8 @@
                                     <table width=100%>
                                         <tr>
                                             <td nowrap id='ZloginClientLevelContainer'>
-                                                <fmt:message key="basicClientLoginNotice">
-                                                    <fmt:param><c:url value='/'/></fmt:param>
+                                                <fmt:message key="advancedClientLoginNotice">
+                                                    <fmt:param><c:url value='/h/'/></fmt:param>
                                                 </fmt:message>
                                             </td>
                                         </tr>
