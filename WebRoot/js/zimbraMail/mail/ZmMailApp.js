@@ -847,9 +847,9 @@ function() {
 	if (this._appCtxt.multiAccounts) {
 		// create accordion
 		var accordionId = this.getOverviewPanelContentId();
-		var params = {accordionId:accordionId};
-		var accordion = this._overviewPanelContent = this._opc.createAccordion(params);
+		var accordion = this._overviewPanelContent = this._opc.createAccordion({accordionId:accordionId});
 		accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
+		accordion.addContextListener(new AjxListener(this, this._accordionActionListener));
 		// add an accordion item for each account, and create overview for main account
 		var accts = this._appCtxt.getAccounts();
 		this._overview = {};
@@ -872,10 +872,13 @@ function() {
 
 ZmMailApp.prototype.getOverviewId =
 function(account) {
-	account = !this._appCtxt.multiAccounts ? null : account || this.accordionItem.data.account;
-	return this._appCtxt.multiAccounts ?
-		[this.getOverviewPanelContentId(), account.name].join(":") :
-		ZmApp.prototype.getOverviewPanelContentId.apply(this, arguments);
+	var acctName = "";
+	if (this._appCtxt.multiAccounts) {
+		var acct = account || this.accordionItem.data.account;
+		acctName = acct.name;
+	}
+
+	return ([this.getOverviewPanelContentId(), acctName].join(":"));
 };
 
 ZmMailApp.prototype._accordionSelectionListener =
@@ -893,6 +896,26 @@ function(ev) {
 	}
 	var callback = new AjxCallback(this, this._handleSetActiveAccount, this.accordionItem);
 	this._appCtxt.setActiveAccount(this.accordionItem.data.account, callback);
+};
+
+ZmMailApp.prototype._accordionActionListener =
+function(ev) {
+	var accordionItem = ev.detail;
+	if (accordionItem != this.accordionItem)
+		return false;
+
+	var mouseEv = DwtShell.mouseEvent;
+
+	if (!this._accordionActionMenu) {
+		var menuItems = [ZmOperation.NEW_FOLDER];
+		this._accordionActionMenu = new ZmActionMenu({parent:ev.item, menuItems:menuItems});
+
+		var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
+		var newListener = new AjxListener(ftc, ftc._newListener);
+		this._accordionActionMenu.addSelectionListener(ZmOperation.NEW_FOLDER, newListener);
+	}
+
+	this._accordionActionMenu.popup(0, mouseEv.docX, mouseEv.docY);
 };
 
 ZmMailApp.prototype._handleSetActiveAccount =
