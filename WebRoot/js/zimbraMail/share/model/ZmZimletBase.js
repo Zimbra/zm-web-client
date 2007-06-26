@@ -477,8 +477,9 @@ ZmZimletBase.prototype.setIcon = function(icon) {
 		return;
 	this.xmlObj().icon = icon;
 	var appCtxt = this.getAppCtxt();
+	var app = appCtxt.getCurrentApp()
 	var ctrl = appCtxt.getOverviewController();
-	var treeView = ctrl.getTreeView(ctrl.getOverviewId(), ZmOrganizer.ZIMLET);
+	var treeView = ctrl.getTreeView(app.getOverviewId(), ZmOrganizer.ZIMLET);
 	var treeItem = treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
 	// OMG, what we had to go through!
 	treeItem.setImage(icon);
