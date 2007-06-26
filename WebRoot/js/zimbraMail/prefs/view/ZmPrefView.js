@@ -212,7 +212,7 @@ function(dirtyCheck, noValidation, batchCommand) {
 		var prefs = sections[view] && sections[view].prefs;
 		for (var j = 0, count = prefs ? prefs.length : 0; j < count; j++) {
 			var id = prefs[j];
-			if (!viewPage._prefPresent[id]) continue;
+			if (!viewPage._prefPresent || !viewPage._prefPresent[id]) { continue; }
 			var setup = ZmPref.SETUP[id];
 			if (!this._checkPreCondition(setup.precondition)) {
 				continue;
