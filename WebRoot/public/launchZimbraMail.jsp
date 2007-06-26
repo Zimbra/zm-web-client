@@ -122,7 +122,8 @@
 	var zJSloading = (new Date()).getTime();
 	appContextPath = "<%=contextPath %>";
 	appCurrentSkin = "<%=skin %>";
-  appExtension   = "<%=ext%>";
+	appExtension   = "<%=ext%>";
+	appDevMode     = <%=inDevMode%>;
 </script>
 
 <jsp:include page="Messages.jsp"/>
