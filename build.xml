@@ -263,7 +263,7 @@
     <target name='templates-init'>
         <taskdef name='template'
                  classname='com.zimbra.kabuki.tools.templates.TemplateTask'
-                 classpath='${build.dir}/classes'
+                 classpath='${build.dir}/classes:${common.jars.dir}/commons-cli-2.0.jar'
         />
     </target>
 
@@ -870,7 +870,16 @@ if (ext == null) ext = "";
         <ant dir="${zimbratl.dir}" target="jar" inheritAll="false"/>
     </target>
 
-  <target name="war" depends="external-jar,copy-files-to-build-area, tz, templates, jam-files, inject-build-info, images, i18n">
+    <target name='ajax-jar' depends='compile'>
+        <jar destfile='${dist.dir}/ajax-tools.jar' basedir="${build.dir}/classes">
+            <include name='com/zimbra/kabuki/tools/img/*.class' />
+            <include name='com/zimbra/kabuki/tools/template/*.class' />
+            <exclude name='**/*Task*.class' />
+        </jar>
+        <copy file='${jars.dir}/gifencoder.jar' todir='${dist.dir}' />
+    </target>
+
+  <target name="war" depends="external-jar,copy-files-to-build-area, tz, templates, jam-files, inject-build-info, images, i18n, ajax-jar">
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
@@ -902,7 +911,7 @@ if (ext == null) ext = "";
     </war>
   </target>
 
-	<target name="prod-war" depends="copy-files-to-build-area, templates, inject-build-info, compress-js-files, images, i18n">
+    <target name="prod-war" depends="copy-files-to-build-area, templates, inject-build-info, compress-js-files, images, i18n, ajax-jar">
     <copy file="WebRoot/WEB-INF/web.xml.production" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="true"/>
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
@@ -910,7 +919,7 @@ if (ext == null) ext = "";
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />		
     <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar,gifencoder.jar,commons-cli-1.0.jar"/>
-  	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
+      <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
