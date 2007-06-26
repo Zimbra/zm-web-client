@@ -32,8 +32,6 @@
                 <zm:pref name="zimbraPrefMailInitialSearch" value="${param.zimbraPrefMailInitialSearch}"/>
             </c:if>
 
-            <zm:pref name="zimbraPrefSaveToSent" value="${param.zimbraPrefSaveToSent eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
-
             <c:if test="${mailbox.features.outOfOfficeReply}">
                 <zm:pref name="zimbraPrefOutOfOfficeReplyEnabled" value="${param.zimbraPrefOutOfOfficeReplyEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
                 <zm:pref name="zimbraPrefOutOfOfficeReply" value="${param.zimbraPrefOutOfOfficeReply}"/>
@@ -45,12 +43,19 @@
             </c:if>
 
             <c:if test="${mailbox.features.mailForwarding}">
-                <zm:pref name="zimbraPrefMailForwardingAddress" value="${param.zimbraPrefMailForwardingAddress}"/>
+                <zm:pref name="zimbraPrefMailForwardingAddress" value="${param.FORWARDCHECKED eq 'TRUE' ? param.zimbraPrefMailForwardingAddress : ''}"/>
                 <zm:pref name="zimbraPrefMailLocalDeliveryDisabled" value="${param.zimbraPrefMailLocalDeliveryDisabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             </c:if>
 
             <zm:pref name="zimbraPrefMessageViewHtmlPreferred" value="${param.zimbraPrefMessageViewHtmlPreferred eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <zm:pref name="zimbraPrefDedupeMessagesSentToSelf" value="${param.zimbraPrefDedupeMessagesSentToSelf}"/>
+        </c:when>
+        <%-- COMPOSING --%>
+        <c:when test="${selected eq 'composing'}">
+            <zm:pref name="zimbraPrefReplyIncludeOriginalText" value="${param.zimbraPrefReplyIncludeOriginalText}"/>
+            <zm:pref name="zimbraPrefForwardIncludeOriginalText" value="${param.zimbraPrefForwardIncludeOriginalText}"/>
+            <zm:pref name="zimbraPrefForwardReplyPrefixChar" value="${param.zimbraPrefForwardReplyPrefixChar}"/>
+            <zm:pref name="zimbraPrefSaveToSent" value="${param.zimbraPrefSaveToSent eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
         </c:when>
         <%-- MAIL IDENTITY --%>
         <c:when test="${selected eq 'identity'}">
@@ -62,9 +67,6 @@
             <zm:pref name="zimbraPrefMailSignature" value="${param.zimbraPrefMailSignature}"/>            
             <zm:pref name="zimbraPrefMailSignatureStyle" value="${param.zimbraPrefMailSignatureStyle}"/>
             <zm:pref name="zimbraPrefMailSignatureEnabled" value="${param.zimbraPrefMailSignatureEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
-            <zm:pref name="zimbraPrefReplyIncludeOriginalText" value="${param.zimbraPrefReplyIncludeOriginalText}"/>
-            <zm:pref name="zimbraPrefForwardIncludeOriginalText" value="${param.zimbraPrefForwardIncludeOriginalText}"/>
-            <zm:pref name="zimbraPrefForwardReplyPrefixChar" value="${param.zimbraPrefForwardReplyPrefixChar}"/>
         </c:when>
         <%-- ADDRESS BOOK --%>
         <c:when test="${selected eq 'addressbook'}">

@@ -76,6 +76,10 @@
     <c:when test="${selected eq 'mail'}">
         <c:set var="subKey" value="mail"/>
     </c:when>
+    <%------------------- COMPOSING ------------------%>
+    <c:when test="${selected eq 'composing'}">
+        <c:set var="subKey" value="optionsComposing"/>
+    </c:when>
     <%------------------- MAIL IDENTITY ------------------%>
     <c:when test="${selected eq 'identity'}">
         <c:set var="subKey" value="mailIdentity"/>
@@ -148,6 +152,10 @@
                                     <%------------------- MAIL ------------------%>
                                     <c:when test="${selected eq 'mail'}">
                                         <app:optMail mailbox="${mailbox}"/>
+                                    </c:when>
+                                    <%------------------- COMPOSING ------------------%>
+                                    <c:when test="${selected eq 'composing'}">
+                                        <app:optComposing mailbox="${mailbox}"/>
                                     </c:when>
                                     <%------------------- MAIL IDENTITY ------------------%>
                                     <c:when test="${selected eq 'identity'}">

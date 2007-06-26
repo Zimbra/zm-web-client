@@ -375,6 +375,10 @@
         <path>/WEB-INF/tags/options/optSubToolbar.tag</path>
     </tag-file>
 
+    <tag-file>
+        <name>optComposing</name>
+        <path>/WEB-INF/tags/options/optComposing.tag</path>
+    </tag-file>
 
     <tag-file>
         <name>optMail</name>

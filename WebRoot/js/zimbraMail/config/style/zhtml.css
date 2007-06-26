@@ -1020,3 +1020,20 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 .ZhACTo {z-index:9050;}
 .ZhACCc {z-index:9040;}
 .ZhACBcc {z-index:9030;}
+
+.ZOptionsHeader {
+    padding:5px;
+     background-color:@HeaderColor@; 
+     @FontSize-bigger@
+font-weight:normal;
+     
+
+}
+
+.ZOptionsTableLabel {
+    width: 15%;
+    font-weight: bold;
+	white-space: nowrap;
+	text-align: right;
+    vertical-align: middle;
+}

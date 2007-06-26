@@ -6,38 +6,61 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-
-<table border="0" cellpadding="0" cellspacing="4" width=100%>
-    <tbody>
-        <app:optCheckbox label="autoAddContacts" pref="zimbraPrefAutoAddAddressEnabled"
+ <table border="0" cellpadding="0" cellspacing="10" width=100%>
+     <tr>
+        <td colspan="2" class='ZOptionsHeader' >
+            <fmt:message key="optionsContacts"/>
+        </td>
+     </tr>
+     <tr>
+         <td class='ZOptionsTableLabel'>
+             <label for="itemsPP"><fmt:message key="optionsContactsPerPage"/>
+        :</label>
+         </td>
+         <td>
+              <select name="zimbraPrefMailItemsPerPage" id="itemsPP">
+                 <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
+                 <option
+                         <c:if test="${mailItemsPP eq 10}"> selected</c:if>
+                         >10
+                 </option>
+                 <option
+                         <c:if test="${mailItemsPP eq 25}"> selected</c:if>
+                         >25
+                 </option>
+                 <option
+                         <c:if test="${mailItemsPP eq 50}"> selected</c:if>
+                         >50
+                 </option>
+                 <option
+                         <c:if test="${mailItemsPP eq 100}"> selected</c:if>
+                         >100
+                 </option>
+             </select>
+         </td>
+     </tr>
+     <app:optSeparator/>
+       <tr>
+         <td class='ZOptionsTableLabel'>
+         </td>
+         <td>
+             <app:optCheckbox boxfirst="true" trailingcolon="true"  label="autoAddContacts" pref="zimbraPrefAutoAddAddressEnabled"
                          checked="${mailbox.prefs.autoAddAddressEnabled}"/>
-        <tr>
-            <td nowrap align=right>
-                <label for="perPage"><fmt:message key="numberOfContactsToDisplayPerPage"/>
-                :</label>
-            </td>
-            <td>
-                <select name="zimbraPrefContactsPerPage" id="perPage">
-                    <c:set var="contactsPP" value="${mailbox.prefs.contactsPerPage}"/>
-                    <option
-                            <c:if test="${contactsPP eq 10}"> selected</c:if>
-                            >10
-                    </option>
-                    <option
-                            <c:if test="${contactsPP eq 25}"> selected</c:if>
-                            >25
-                    </option>
-                    <option
-                            <c:if test="${contactsPP eq 50}"> selected</c:if>
-                            >50
-                    </option>
-                    <option
-                            <c:if test="${contactsPP eq 100}"> selected</c:if>
-                            >100
-                    </option>
-                </select>
-            </td>
-        </tr>
-        <app:optSeparator/>
-    </tbody>
+         </td>
+     </tr>
+     <app:optSeparator/>
+     <tr>
+         <td class='ZOptionsTableLabel' colspan=2 style='text-align:left'>
+             <fmt:message key="optionsManageAddressBooks">
+             <fmt:param><fmt:message key="optionsManageAddressBooksPre"/></fmt:param>
+             <fmt:param><a href="maddrbooks"><fmt:message key="optionsManageAddressBooksLink"/></a></fmt:param>
+             </fmt:message>
+         </td>
+     </tr>
+     <tr>
+        <td colspan="2">
+            &nbsp;
+        </td>
+     </tr>
 </table>
+
