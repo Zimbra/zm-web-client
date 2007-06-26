@@ -111,4 +111,9 @@
              <app:optCheckbox boxfirst="true" label="saveToSent" pref="zimbraPrefSaveToSent" checked="${mailbox.prefs.saveToSent}"/>
          </td>
      </tr>
+      <tr>
+        <td colspan="2">
+            &nbsp;
+        </td>
+     </tr>
 </table>

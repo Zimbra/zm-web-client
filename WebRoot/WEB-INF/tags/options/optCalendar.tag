@@ -46,7 +46,17 @@
              </select>
          </td>
      </tr>
-     <app:optSeparator/>
+     <tr>
+        <td colspan="2">
+            &nbsp;
+        </td>
+     </tr>
+     <tr>
+        <td colspan="2" class='ZOptionsHeader' >
+            <fmt:message key="optionsDayWeekView"/>
+        </td>
+     </tr>
+     <tr>
      <tr>
          <td class='ZOptionsTableLabel'>
                  <label for="dayStart"><fmt:message key="calendarDayStartsAt"/>
@@ -79,7 +89,11 @@
              </select>
          </td>
      </tr>
-    
+     <tr>
+        <td colspan="2">
+            &nbsp;
+        </td>
+     </tr>   
     <tr>
         <td colspan="2" class='ZOptionsHeader' >
             <fmt:message key="optionsCreatingAppointments"/>
