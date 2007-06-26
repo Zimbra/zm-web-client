@@ -93,13 +93,13 @@ this:
 			<!-- SEARCH_INCLUDES_SPAM { boolean } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.searchSettingsLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SPAM' 
-													label='Include Junk folder in searches'></div></td>
+													label='<$=ZmMsg.includeJunkFolder$>'></div></td>
 				</tr>
 
 			<!-- SEARCH_INCLUDES_TRASH { boolean } -->
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_TRASH' 
-													label='Include Trash folder in searches'></div></td>
+													label='<$=ZmMsg.includeTrashFolder$>'></div></td>
 				</tr>
 
 			<tr><td colspan=2><hr></td></tr>
@@ -107,7 +107,7 @@ this:
 			<!-- SHOW_SEARCH_STRING { boolean } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.searchLanguageLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_SHOW_SEARCH_STRING' 
-													label='Show advanced search language in search toolbar'></div></td>
+													label='<$=showSearchString$>'></div></td>
 				</tr>
 			</table>
 		</td></tr>
@@ -225,8 +225,8 @@ this:
 				<!-- VIEW_AS_HTML { boolean } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.viewMailAsHtmlLabel$></td>
 					<td class='ZOptionsField'><select id='${id}_VIEW_AS_HTML'>
-												<option value='true'>Inline</option>
-												<option value='false'>As Text</option>
+												<option value='true'><$=ZmMsg.displayAsHTML$></option>
+												<option value='false'><$=ZmMsg.displayAsText$></option>
 											  </select></td>
 				</tr>
 
@@ -235,7 +235,7 @@ this:
 				<!-- READING_PANE_ENABLED { boolean } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.messagePreviewLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_READING_PANE_ENABLED'
-													label='Display message body preview'
+													label='<$=ZmMsg.alwaysShowReadingPane$>'
 												></div></td>
 				</tr>
 				
@@ -244,7 +244,7 @@ this:
 					<$= (!data.isEnabled('READING_PANE_ENABLED') ? ZmMsg.messagePreviewLabel : "&nbsp;") $>
 					</td>
 					<td class='ZOptionsField'><div id='${id}_SHOW_FRAGMENTS'
-													label='Display snippets of messages in email list'
+													label='<$=ZmMsg.showFragments$>'
 												></div></td>
 				</tr>
 
@@ -252,7 +252,7 @@ this:
 				<tr><td class='ZOptionsLabel'>
 					</td>
 					<td class='ZOptionsField'><div id='${id}_OPEN_MAIL_IN_NEW_WIN'
-													label='Double-click opens message in new window'
+													label='<$=ZmMsg.openMailNewWin$>'
 												></div></td>
 				</tr>
 
@@ -297,7 +297,7 @@ this:
 							mail forward no save { boolean } -->
 							<tr><td></td>
 								<td><div id='${id}_MAIL_LOCAL_DELIVERY_DISABLED'>
-									<input type=checkbox> Keep a copy in my Inbox
+									<input type=checkbox> <$=ZmMsg.keepCopyInInbox$>
 								</div></td>
 							</tr>
 
@@ -307,7 +307,7 @@ this:
 						<!-- NOTIF_ADDRESS { email } -->
 							<tr><td colspan=2>	<!-- checkbox -->
 									<div id='${id}_NOTIF_ENABLED'>
-										<input type=checkbox> Send a notification message to:
+										<input type=checkbox> <$=ZmMsg.emailNotificationDescription$>
 									</div>
 								</td>
 							</tr>
@@ -321,7 +321,7 @@ this:
 						<!-- VACATION_MSG { text } -->
 							<tr><td colspan=2>	<!-- checkbox -->
 									<div id='${id}_VACATION_MSG_ENABLED'>
-										<input type=checkbox> Send auto-reply message:
+										<input type=checkbox> <$=ZmMsg.awayMessageEnabled$>
 									</div>
 								</td>
 							</tr>
@@ -375,9 +375,9 @@ this:
 							<td class='ZOptionsField'>
 								<div id='${id}_COMPOSE_AS_FORMAT'>
 									<!-- NOTE: values only demonstrative -->
-									<input type=radio checked> As HTML
+									<input type=radio checked> <$=ZmMsg.composeAsHTML$>
 									<br>
-									<input type=radio> As Text
+									<input type=radio> <$=ZmMsg.composeAsText$>
 								></div>
 							</td>
 
@@ -417,7 +417,7 @@ this:
 				<tr><td></td>
 					<td class='ZOptionsField'>
 						<div id='${id}_NEW_WINDOW_COMPOSE'>
-							<input type=checkbox> Always compose in a new window
+							<input type=checkbox> <$=ZmMsg.composeInNewWin$>
 						</div>
 					</td>
 				</tr>
@@ -429,9 +429,9 @@ this:
 					<td class='ZOptionsField'>
 						<div id='${id}_SAVE_TO_SENT'>
 							<!-- NOTE: values only demonstrative -->
-							<input type=radio> Save a copy to Sent folder
-							<br
-							<input type=radio> Do not save sent messages
+							<input type=radio> <$=ZmMsg.saveToSent$>
+							<br>
+							<input type=radio> <$=ZmMsg.saveToSentNOT$>
 						</div>
 					</td>
 				</tr>
@@ -576,7 +576,7 @@ This section is used for reply options on an identity.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Comcast Phone numbers</td>
+			<td class='ZOptionsHeader'>Phone numbers</td>
 			<td class='ZOptionsHeaderR'>&nbsp;</td>
 		</tr>
 		<tr>
@@ -653,14 +653,14 @@ This section is used for reply options on an identity.
 			<!-- AUTO_ADD_ADDRESS { boolean } -->
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'><div id='${id}_AUTO_ADD_ADDRESS'
-												label='Add new contacts to "Emailed Contacts"'
+												label='<$=ZmMsg.autoAddContacts$>'
 					></div></td>
 				</tr>
 
 			<!-- GAL_AUTOCOMPLETE { boolean } -->
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'><div id='${id}_GAL_AUTOCOMPLETE'
-												label='Auto-complete includes addresses in the Global Address List'
+												label='<$=ZmMsg.galAutocomplete$>'
 					></div></td>
 				</tr>
 			</table>
@@ -842,7 +842,7 @@ This section is used for reply options on an identity.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Email Filters</td>
+			<td class='ZOptionsHeader'><$=ZmMsg.filterRules$></td>
 			<td class='ZOptionsHeaderR'>&nbsp;</td>
 		</tr>
 		<tr>
@@ -890,7 +890,7 @@ This section is used for reply options on an identity.
 			<!-- CAL_ALWAYS_SHOW_MINI_CAL { boolean } -->
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'><div id='${id}_CAL_ALWAYS_SHOW_MINI_CAL'
-												label='Always show mini-calendar'
+												label='<$=ZmMsg.alwaysShowMiniCal$>'
 							></div></td>
 				</tr>
 
@@ -918,7 +918,7 @@ This section is used for reply options on an identity.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Creating Appointments</td>
+			<td class='ZOptionsHeader'><$=ZmMsg.apptCreating$></td>
 			<td class='ZOptionsHeaderR'>&nbsp;</td>
 		</tr>
 		<tr>
@@ -928,7 +928,7 @@ This section is used for reply options on an identity.
 			<!-- CAL_USE_QUICK_ADD { boolean } -->
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'><div id='${id}_CAL_USE_QUICK_ADD'
-												label='Use the QuickAdd dialog when creating new appointments'
+												label='<$=ZmMsg.useQuickAdd$>'
 							></div></td>
 				</tr>
 
@@ -938,7 +938,7 @@ This section is used for reply options on an identity.
 			<!-- CAL_SHOW_TIMEZONE { boolean } -->
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'><div id='${id}_CAL_SHOW_TIMEZONE'
-												label='Show timezones when creating appointments'
+												label='<$=ZmMsg.shouldShowTimezone$>'
 							></div></td>
 				</tr>
 			</table>
@@ -950,7 +950,7 @@ This section is used for reply options on an identity.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Import / Export</td>
+			<td class='ZOptionsHeader'><$=importExport$></td>
 			<td class='ZOptionsHeaderR'>&nbsp;</td>
 		</tr>
 		<tr>
@@ -958,13 +958,8 @@ This section is used for reply options on an identity.
 			<table width=100%>
 
 			<!-- CAL_IMPORT (button) // file input -->
-				<tr><td class='ZOptionsLabel'>Import:</td>
-					<td class='ZOptionsInfo'>
-						If you are using another calendar program, 
-						you can import your existing contacts by saving them in
-						iCalendar (.ics) format.
-						See documentation in that program for help saving in this format.
-					</td>
+				<tr><td class='ZOptionsLabel'><$=ZmMsg.importLabel$></td>
+					<td class='ZOptionsInfo'><$=ZmMsg.importFromICSHint$></td>
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsInfo'>
@@ -975,12 +970,8 @@ This section is used for reply options on an identity.
 			<tr><td colspan=2><hr></td></tr>
 
 			<!-- CAL_EXPORT (button) -->
-				<tr><td class='ZOptionsLabel'>Export:</td>
-					<td class='ZOptionsInfo'>
-						You can export your contacts in the standard iCalendar (.ics)
-						format, then import them into another calendar program.
-						See documentation in the other program for help in importing.
-					</td>
+				<tr><td class='ZOptionsLabel'><$=ZmMsg.exportLabel$></td>
+					<td class='ZOptionsInfo'><$=ZmMsg.exportToICSHint$></td>
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsInfo'>
@@ -1016,7 +1007,7 @@ This section is used for reply options on an identity.
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.imLoginLabel$></td>
 					<td class='ZOptionsField'>
 						<div id='${id}_IM_PREF_AUTO_LOGIN'>
-							<input type='checkbox'> Automatically login to instant messaging services
+							<input type='checkbox'> <$=ZmMsg.imPrefAutoLogin$>
 						</div>
 					</td>
 				</tr>
@@ -1027,7 +1018,7 @@ This section is used for reply options on an identity.
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.imNotificationsLabel$></td>
 					<td class='ZOptionsField'>
 						<div id='${id}_IM_PREF_FLASH_ICON'>
-							<input type='checkbox'> Flash IM icon when a new instant message is received
+							<input type='checkbox'> <$=ZmMsg.imPrefFlashIcon$>
 						</div>
 					</td>
 				</tr>
@@ -1038,7 +1029,7 @@ This section is used for reply options on an identity.
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'>
 						<div id='${id}_IM_PREF_NOTIFY_PRESENCE'>
-							<input type='checkbox'> Show an indicator when buddies are online
+							<input type='checkbox'> <$=ZmMsg.imPrefNotifyPresence$>
 						</div>
 					</td>
 				</tr>
@@ -1047,7 +1038,7 @@ This section is used for reply options on an identity.
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'>
 						<div id='${id}_IM_PREF_NOTIFY_STATUS'>
-							<input type='checkbox'> Show a notification when buddies change online status
+							<input type='checkbox'> <$=ZmMsg.imPrefNotifyStatus$>
 						</div>
 					</td>
 				</tr>
@@ -1062,7 +1053,7 @@ This section is used for reply options on an identity.
 		<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'>&nbsp;</td>
-				<td class='ZOptionsHeader'>General</td>
+				<td class='ZOptionsHeader'><$=ZmMsg.general$></td>
 				<td class='ZOptionsHeaderR'>&nbsp;</td>
 			</tr>
 			<tr>

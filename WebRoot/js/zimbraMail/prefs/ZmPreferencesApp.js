@@ -333,7 +333,7 @@ function() {
 		displayName:		ZmMsg.saveToSent,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
 		orientation:		ZmPref.ORIENT_VERTICAL,
-		displayOptions:		[ "Save a copy to Sent folder", "Do not save sent messages" ],
+		displayOptions:		[ ZmMsg.saveToSent, ZmMsg.saveToSentNOT ],
 		options:			[ true, false ]
 	});
 
