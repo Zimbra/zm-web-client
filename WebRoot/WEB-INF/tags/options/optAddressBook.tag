@@ -14,29 +14,38 @@
      </tr>
      <tr>
          <td class='ZOptionsTableLabel'>
-             <label for="itemsPP"><fmt:message key="optionsContactsPerPage"/>
-        :</label>
+                        <fmt:message key="optionsDisplay"/> :
+
          </td>
          <td>
-              <select name="zimbraPrefMailItemsPerPage" id="itemsPP">
-                 <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
-                 <option
-                         <c:if test="${mailItemsPP eq 10}"> selected</c:if>
-                         >10
-                 </option>
-                 <option
-                         <c:if test="${mailItemsPP eq 25}"> selected</c:if>
-                         >25
-                 </option>
-                 <option
-                         <c:if test="${mailItemsPP eq 50}"> selected</c:if>
-                         >50
-                 </option>
-                 <option
-                         <c:if test="${mailItemsPP eq 100}"> selected</c:if>
-                         >100
-                 </option>
-             </select>
+             <table border="0" cellpadding="0" cellspacing="0">
+                 <tr>
+                     <td>
+                         <select name="zimbraPrefMailItemsPerPage" id="itemsPP">
+                             <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
+                             <option
+                                     <c:if test="${mailItemsPP eq 10}"> selected</c:if>
+                                     >10
+                             </option>
+                             <option
+                                     <c:if test="${mailItemsPP eq 25}"> selected</c:if>
+                                     >25
+                             </option>
+                             <option
+                                     <c:if test="${mailItemsPP eq 50}"> selected</c:if>
+                                     >50
+                             </option>
+                             <option
+                                     <c:if test="${mailItemsPP eq 100}"> selected</c:if>
+                                     >100
+                             </option>
+                         </select>
+                     </td>
+                     <td style='padding-left:5px'>
+                         <label for="itemsPP"><fmt:message key="optionsContactsPerPage"/></label>
+                     </td>
+                 </tr>
+             </table>
          </td>
      </tr>
      <app:optSeparator/>

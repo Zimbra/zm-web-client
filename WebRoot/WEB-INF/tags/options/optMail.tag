@@ -15,29 +15,37 @@
      </tr>
      <tr>
          <td class='ZOptionsTableLabel'>
-             <label for="itemsPP"><fmt:message key="optionsEmailPerPage"/>
-        :</label>
+             <fmt:message key="optionsDisplay"/> :
          </td>
          <td>
-             <select name="zimbraPrefMailItemsPerPage" id="itemsPP">
-                 <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
-                 <option
-                         <c:if test="${mailItemsPP eq 10}"> selected</c:if>
-                         >10
-                 </option>
-                 <option
-                         <c:if test="${mailItemsPP eq 25}"> selected</c:if>
-                         >25
-                 </option>
-                 <option
-                         <c:if test="${mailItemsPP eq 50}"> selected</c:if>
-                         >50
-                 </option>
-                 <option
-                         <c:if test="${mailItemsPP eq 100}"> selected</c:if>
-                         >100
-                 </option>
-             </select>
+             <table border="0" cellpadding="0" cellspacing="0">
+                 <tr>
+                     <td>
+                         <select name="zimbraPrefMailItemsPerPage" id="itemsPP">
+                             <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
+                             <option
+                                     <c:if test="${mailItemsPP eq 10}"> selected</c:if>
+                                     >10
+                             </option>
+                             <option
+                                     <c:if test="${mailItemsPP eq 25}"> selected</c:if>
+                                     >25
+                             </option>
+                             <option
+                                     <c:if test="${mailItemsPP eq 50}"> selected</c:if>
+                                     >50
+                             </option>
+                             <option
+                                     <c:if test="${mailItemsPP eq 100}"> selected</c:if>
+                                     >100
+                             </option>
+                         </select>
+                     </td>
+                     <td style='padding-left:5px'>
+                         <label for="itemsPP"><fmt:message key="optionsEmailPerPage"/></label>
+                     </td>
+                 </tr>
+             </table>
          </td>
      </tr>
 <c:if test="${mailbox.features.conversations}">
@@ -61,13 +69,27 @@
          </td>
      </tr>
 </c:if>
-     <tr>
+     <tr valign="middle">
          <td class='ZOptionsTableLabel'>
              <fmt:message key="optionsDisplayHtml"/>:
          </td>
          <td>
-             <app:optCheckbox boxfirst="true" label="optionsWhenPossible" pref="zimbraPrefMessageViewHtmlPreferred"
-                              checked="${mailbox.prefs.messageViewHtmlPreferred}"/>
+             <table border="0" cellpadding="0" cellspacing="3">
+                 <tr>
+                     <td>
+                         <input id="viewHtml" type="radio" name="zimbraPrefMessageViewHtmlPreferred" value="TRUE" <c:if test="${mailbox.prefs.messageViewHtmlPreferred}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="viewHtml"><fmt:message key="optionsDisplayHtmlAsHtml"/></label>
+                     </td>
+                     <td>
+                         <input id="viewText" type="radio" name="zimbraPrefMessageViewHtmlPreferred" value="FALSE" <c:if test="${not mailbox.prefs.messageViewHtmlPreferred}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="viewText"><fmt:message key="optionsDisplayHtmlAsText"/></label>
+                     </td>
+                 </tr>
+             </table>
          </td>
      </tr>
      <app:optSeparator/>
@@ -197,8 +219,8 @@
               <fmt:message key="optionsMessagesFromMe"/> :
          </td>
          <td>
-             <label for="dupes"><fmt:message key="removeDupesToSelf"/>
-                 :</label>
+             <fmt:message key="removeDupesToSelf"/>
+                 :
          </td>
      </tr>
      <tr>
@@ -206,21 +228,29 @@
               &nbsp;
          </td>
          <td>
-             <select name="zimbraPrefDedupeMessagesSentToSelf" id="dupes">
-                 <c:set var="dedupe" value="${mailbox.prefs.dedupeMessagesSentToSelf}"/>
-                 <option
-                         <c:if test="${dedupe eq 'dedupeNone'}"> selected</c:if> value="dedupeNone">
-                     <fmt:message key="dedupeNone"/>
-                 </option>
-                 <option
-                         <c:if test="${dedupe eq 'secondCopyifOnToOrCC'}"> selected</c:if> value="secondCopyifOnToOrCC">
-                     <fmt:message key="dedupeSecondCopy"/>
-                 </option>
-                 <option
-                         <c:if test="${dedupe eq 'dedupeAll'}"> selected</c:if> value="dedupeAll">
-                     <fmt:message key="dedupeAll"/>
-                 </option>
-             </select>
+             <table border="0" cellpadding="0" cellspacing="3">
+                 <tr>
+                     <c:set var="dedupe" value="${mailbox.prefs.dedupeMessagesSentToSelf}"/>
+                     <td>
+                         <input id="dedupeNone" type="radio" name="zimbraPrefDedupeMessagesSentToSelf" value="dedupeNone" <c:if test="${dedupe eq 'dedupeNone'}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="dedupeNone"><fmt:message key="optionsDedupeNone"/></label>
+                     </td>
+                     <td>
+                         <input id="secondCopy" type="radio" name="zimbraPrefDedupeMessagesSentToSelf" value="secondCopyifOnToOrCC" <c:if test="${dedupe eq 'secondCopyifOnToOrCC'}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="secondCopy"><fmt:message key="optionsDedupeSecondCopy"/></label>
+                     </td>
+                     <td>
+                         <input id="dedupeall" type="radio" name="zimbraPrefDedupeMessagesSentToSelf" value="dedupeAll" <c:if test="${dedupe eq 'dedupeAll'}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="dedupeall"><fmt:message key="optionsDedupeAll"/></label>
+                     </td>
+                 </tr>
+             </table>
          </td>
      </tr>
       <tr>

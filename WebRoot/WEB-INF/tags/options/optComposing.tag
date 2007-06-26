@@ -18,41 +18,51 @@
              <fmt:message key="optionsReplyReplyAll"/> :
          </td>
          <td>
-             <label for="whenReply"><fmt:message key="optionsWhenReplying"/>:</label>
+             <fmt:message key="optionsWhenReplying"/>:
          </td>
      </tr>
      <tr>
          <td class='ZOptionsTableLabel'>
-             &nbsp;
+              &nbsp;
          </td>
          <td>
-         <select name="zimbraPrefReplyIncludeOriginalText" id="whenReply">
-            <option
-                    <c:if test="${mailbox.prefs.replyIncludeNone}"> selected</c:if> value="includeNone">
-                <fmt:message key="includeMenuNone"/>
-            </option>
-            <option
-                    <c:if test="${mailbox.prefs.replyIncludeBody}"> selected</c:if> value="includeBody">
-                <fmt:message key="includeInBody"/>
-            </option>
-            <option
-                    <c:if test="${mailbox.prefs.replyIncludeBodyWithPrefx}"> selected</c:if> value="includeBodyWithPrefix">
-                <fmt:message key="includePrefix"/>
-            </option>
-            <option
-                    <c:if test="${mailbox.prefs.replyIncludeAsAttachment}"> selected</c:if> value="includeAsAttachment">
-                <fmt:message key="includeOriginalAsAttach"/>
-            </option>
-        </select>            
+             <table border="0" cellpadding="0" cellspacing="3">
+                 <tr>
+                     <td>
+                         <input id="replyIncludeBody" type="radio" name="zimbraPrefReplyIncludeOriginalText" value="includeBody" <c:if test="${mailbox.prefs.replyIncludeBody}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="replyIncludeBody"><fmt:message key="optionsIncludeBody"/></label>
+                     </td>
+                     <td>
+                         <input id="replyIncludeBodyWithPrefix" type="radio" name="zimbraPrefReplyIncludeOriginalText" value="includeBodyWithPrefix" <c:if test="${mailbox.prefs.replyIncludeBodyWithPrefx}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="replyIncludeBodyWithPrefix"><fmt:message key="optionsIncludeBodyWithPrefix"/></label>
+                     </td>
+                     <td>
+                         <input id="replyIncludeAsAttachment" type="radio" name="zimbraPrefReplyIncludeOriginalText" value="includeAsAttachment" <c:if test="${mailbox.prefs.replyIncludeAsAttachment}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="replyIncludeAsAttachment"><fmt:message key="optionsIncludeAsAttachment"/></label>
+                     </td>
+                     <td>
+                         <input id="replyIncludeNone" type="radio" name="zimbraPrefReplyIncludeOriginalText" value="includeNone" <c:if test="${mailbox.prefs.replyIncludeNone}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="replyIncludeNone"><fmt:message key="optionsIncludeNone"/></label>
+                     </td>
+                 </tr>
+             </table>
          </td>
      </tr>
-     <app:optSeparator/>     
+     <app:optSeparator/>
      <tr>
          <td class='ZOptionsTableLabel'>
              <fmt:message key="optionsForward"/> :
          </td>
          <td>
-             <label for="whenForward"><fmt:message key="optionsWhenForwarding"/>:</label>
+             <fmt:message key="optionsWhenForwarding"/>:
          </td>
      </tr>
      <tr>
@@ -60,20 +70,28 @@
              &nbsp;
          </td>
          <td>
-             <select name="zimbraPrefForwardIncludeOriginalText" id="whenForward">
-                 <option
-                         <c:if test="${mailbox.prefs.forwardIncludeBody}"> selected</c:if> value="includeBody">
-                     <fmt:message key="includeInBody"/>
-                 </option>
-                 <option
-                         <c:if test="${mailbox.prefs.forwardIncludeBodyWithPrefx}"> selected</c:if> value="includeBodyWithPrefix">
-                     <fmt:message key="includePrefix"/>
-                 </option>
-                 <option
-                         <c:if test="${mailbox.prefs.forwardIncludeAsAttachment}"> selected</c:if> value="includeAsAttachment">
-                     <fmt:message key="includeOriginalAsAttach"/>
-                 </option>
-             </select>
+             <table border="0" cellpadding="0" cellspacing="3">
+                 <tr>
+                     <td>
+                         <input id="forwardIncludeBody" type="radio" name="zimbraPrefForwardIncludeOriginalText" value="includeBody" <c:if test="${mailbox.prefs.forwardIncludeBody}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="forwardIncludeBody"><fmt:message key="optionsIncludeBody"/></label>
+                     </td>
+                     <td>
+                         <input id="forwardIncludeBodyWithPrefix" type="radio" name="zimbraPrefForwardIncludeOriginalText" value="includeBodyWithPrefix" <c:if test="${mailbox.prefs.forwardIncludeBodyWithPrefx}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="forwardIncludeBodyWithPrefix"><fmt:message key="optionsIncludeBodyWithPrefix"/></label>
+                     </td>
+                     <td>
+                         <input id="forwardIncludeAsAttachment" type="radio" name="zimbraPrefForwardIncludeOriginalText" value="includeAsAttachment" <c:if test="${mailbox.prefs.forwardIncludeAsAttachment}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="forwardIncludeAsAttachment"><fmt:message key="optionsIncludeAsAttachment"/></label>
+                     </td>
+                 </tr>
+             </table>
          </td>
      </tr>
      <app:optSeparator/>
@@ -108,7 +126,33 @@
              <fmt:message key="optionsSentMessages"/> :
          </td>
          <td>
-             <app:optCheckbox boxfirst="true" label="saveToSent" pref="zimbraPrefSaveToSent" checked="${mailbox.prefs.saveToSent}"/>
+             <table border="0" cellpadding="0" cellspacing="0">
+                 <tr>
+                     <td>
+                         <input id="saveSent" type="radio" name="zimbraPrefSaveToSent" value="TRUE" <c:if test="${mailbox.prefs.saveToSent}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="saveSent"><fmt:message key="optionsSaveSent"/></label>
+                     </td>
+                 </tr>
+             </table>
+         </td>
+     </tr>
+    <tr>
+         <td class='ZOptionsTableLabel'>
+             &nbsp;
+         </td>
+         <td>
+             <table border="0" cellpadding="0" cellspacing="0">
+                 <tr>
+                     <td>
+                         <input id="dontSave" type="radio" name="zimbraPrefSaveToSent" value="FALSE" <c:if test="${not mailbox.prefs.saveToSent}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="dontSave"><fmt:message key="optionsDontSaveSent"/></label>
+                     </td>
+                 </tr>
+             </table>
          </td>
      </tr>
       <tr>
