@@ -137,6 +137,7 @@
 	if (isDev != null) {
 		request.setAttribute("mode", "mjsf");
 		request.setAttribute("gzip", "false");
+		request.setAttribute("fileExtension", "");
 		request.setAttribute("debug", "1");
 		request.setAttribute("packages", "dev");
 	}
@@ -156,7 +157,7 @@
 	if (vers == null) vers = "";
 
 	String ext = (String) request.getAttribute("fileExtension");
-	if (ext == null) ext = "";
+	if (ext == null || inDevMode) ext = "";
 %><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>

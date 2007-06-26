@@ -84,7 +84,7 @@
 	if (vers == null) vers = "";
 
 	String ext = (String) request.getAttribute("fileExtension");
-	if (ext == null) ext = "";
+	if (ext == null || inDevMode) ext = "";
 	
 	String offlineMode = (String) request.getParameter("offline");
 	if (offlineMode == null) {
