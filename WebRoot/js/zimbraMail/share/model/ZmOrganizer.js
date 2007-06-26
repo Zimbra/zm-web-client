@@ -908,7 +908,8 @@ function() {
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
-		a[i].deleteLocal();
+		var org = a[i];
+		if (org) { org.deleteLocal(); }
 	}
 	this.children.removeAll();
 };
