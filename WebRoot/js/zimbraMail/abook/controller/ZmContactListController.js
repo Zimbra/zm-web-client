@@ -612,5 +612,5 @@ function() {
 	listview.set(this._list);
 	// reset the selection to the first item
 	var list = listview.getList();
-	listview.setSelection(list.get(0));
+	if (list) { listview.setSelection(list.get(0)); }
 };

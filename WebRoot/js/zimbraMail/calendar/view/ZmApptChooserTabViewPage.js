@@ -483,8 +483,7 @@ function(sortBy) {
 		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 			? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			var addrbookList = this._appCtxt.getApp(ZmApp.CONTACTS).getAddrbookList();
-			this._query += " (" + addrbookList.join(" or ") + ")";
+			this._query += (" " + ZmSearchController.QUERY_ISREMOTE);
 		}
 	} else {
 		this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;

@@ -487,18 +487,6 @@ function() {
 	return this._galContactList;
 };
 
-// returns array of all addrbooks (incl. shared but excl. root and Trash)
-ZmContactsApp.prototype.getAddrbookList =
-function() {
-	var addrbookList = [];
-	var folders = this._appCtxt.getFolderTree().asList();
-	for (var i = 0; i < folders.length; i++) {
-		if (folders[i].nId == ZmFolder.ID_ROOT || folders[i].isInTrash()) { continue; }
-		addrbookList.push(folders[i].createQuery());
-	}
-	return addrbookList;
-};
-
 ZmContactsApp.prototype.createFromVCard =
 function(msgId, vcardPartId) {
 	var contact = new ZmContact(this._appCtxt);
