@@ -32,7 +32,7 @@ ZmListView = function(parent, className, posStyle, view, type, controller, heade
 	this.type = type;
 	this._controller = controller;
 	this.setDropTarget(dropTgt);
-	this._viewPrefix = ["V", "_", this.view, "_"].join("");
+	this._viewPrefix = ["V_", this.view, "_"].join("");
 
 	// create listeners for changes to the list model, folder tree, and tag list
 	this._listChangeListener = new AjxListener(this, this._changeListener);
@@ -265,12 +265,14 @@ function(item, field, imageInfo) {
  *     551 			- item ID
  *     _   			- separator
  *     0   			- first participant
+ *
+ * TODO: see if it's faster to create a RegExp once and reuse it
  */
 ZmListView.prototype._parseId =
 function(id) {
-	var m = id.match(/^V_([A-Z]+)_([a-z]*)((DWT)?-?\d+)_?(\d*)$/);
+	var m = id.match(/^V_([A-Z]+)_([a-z]*)_([a-zA-Z0-9:\-]+)_?(\d*)$/);
 	if (m) {
-		return {view:m[1], field:m[2], item:m[3], participant:m[5]};
+		return {view:m[1], field:m[2], item:m[3], participant:m[4]};
 	} else {
 		return null;
 	}
