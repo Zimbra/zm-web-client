@@ -157,7 +157,7 @@ function() {
 		this.setSelection(item);
 };
 
-
+	
 ZmContactAlphabetBar = function(parent, appCtxt, className) {
 	if (arguments.length == 0) return;
 
@@ -243,11 +243,11 @@ function() {
 		html[idx++] = "' onclick='ZmContactAlphabetBar._alphabetClicked(this";
 		if (i > 0) {
 			html[idx++] = ', "';
-			html[idx++] = alphabet[i];
+			html[idx++] = i == 1 ? "0" : alphabet[i];
 			html[idx++] = '"';
 			if (i+1 < cellCount) {
 				html[idx++] = ', "';
-				html[idx++] = alphabet[i+1];
+				html[idx++] = i == 1 ? "9" : alphabet[i+1];
 				html[idx++] = '"';
 			}
 		}
