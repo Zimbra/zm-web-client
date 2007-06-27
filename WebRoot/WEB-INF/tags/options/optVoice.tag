@@ -41,6 +41,7 @@ Stupid: I had to do a second loop that only acts on the selected account......
     <c:set var="selected" value="${(empty param.phone and firstAccount) or (param.phone eq account.phone.name)}"/>
     <c:set var="firstAccount" value="false"/>
     <c:if test="${selected}">
+    <app:getCallFeatures account="${account}" var="features"/>
     <%------------------- Count per page ------------------%>
     <tr>
     </tr>
@@ -48,40 +49,31 @@ Stupid: I had to do a second loop that only acts on the selected account......
     <tr>
         <td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="emailNotification"/></td>
         <td>
-            <input id="emailNotificationActive" type=checkbox name="emailNotificationActive" value="TRUE" <c:if test="${!empty account.callFeatures.voiceMailPrefs.emailNotificationAddress}">checked</c:if>>
+            <input id="emailNotificationActive" type=checkbox name="emailNotificationActive" value="TRUE" <c:if test="${!empty features.voiceMailPrefs.emailNotificationAddress}">checked</c:if>>
             <label for="emailNotificationActive"><fmt:message key="sendEmailNotification"/></label>
-            <input name="emailNotificationAddress" type="text" size="25" value="${account.callFeatures.voiceMailPrefs.emailNotificationAddress}">
+            <input name="emailNotificationAddress" type="text" size="25" value="${features.voiceMailPrefs.emailNotificationAddress}">
         </td>
     </tr>
     <%------------------- Call forwarding ------------------%>
     <tr>
         <td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="callForwarding"/></td>
         <td>
-            <input id="callForwardingAllActive" type=checkbox name="callForwardingAllActive" value="TRUE" <c:if test="${account.callFeatures.callForwardingAll.isActive}">checked</c:if>>
+            <input id="callForwardingAllActive" type=checkbox name="callForwardingAllActive" value="TRUE" <c:if test="${features.callForwardingAll.isActive}">checked</c:if>>
             <label for="callForwardingAllActive"><fmt:message key="forwardAllCalls"/></label>
-            <input name="callForwardingAllNumber" type="text" size="25" value="${account.callFeatures.callForwardingAll.forwardTo}">
+            <input name="callForwardingAllNumber" type="text" size="25" value="${features.callForwardingAll.forwardTo}">
 
             <%------------------- Selective Call forwarding ------------------%>
             <br>
-            <input id="selectiveCallForwardingActive" type=checkbox name="selectiveCallForwardingActive" value="TRUE" <c:if test="${account.callFeatures.selectiveCallForwarding.isActive}">checked</c:if>>
+            <input id="selectiveCallForwardingActive" type=checkbox name="selectiveCallForwardingActive" value="TRUE" <c:if test="${features.selectiveCallForwarding.isActive}">checked</c:if>>
             <label for="selectiveCallForwardingActive"><fmt:message key="forwardSomeCalls"/></label>
-            <input name="selectiveCallForwardingNumber" type="text" size="25" value="${account.callFeatures.selectiveCallForwarding.forwardTo}">
+            <input name="selectiveCallForwardingNumber" type="text" size="25" value="${features.selectiveCallForwarding.forwardTo}">
             <table class="List" width="260px">
                 <tr><th colspan="2"><fmt:message key="forwardCallFrom"/></th></tr>
-                <c:choose>
-                    <c:when test="${param.haveForwardFromList}">
-                        <c:forEach items="${paramValues.forwardNumbers}" var="a">
-                            <app:forwardFromRow phone="${a}"/>
-                        </c:forEach>
-                    </c:when>
-                    <c:otherwise>
-                        <c:forEach items="${account.callFeatures.selectiveCallForwarding.forwardFrom}" var="a">
-                            <app:forwardFromRow phone="${a}"/>
-                        </c:forEach>
-                    </c:otherwise>
-                </c:choose>
-                <c:if test="${zm:actionSet(param, 'actionAdd')}">
-                    <app:forwardFromRow phone="${param.addNumber}"/>
+                <c:forEach items="${features.selectiveCallForwarding.forwardFrom}" var="a">
+                    <app:forwardFromRow phone="${a}"/>
+                </c:forEach>
+                <c:if test="${zm:actionSet(param, 'actionAdd') and !empty param.addNumber}">
+                    <app:forwardFromRow phone="${zm:getPhoneDisplay(param.addNumber)}"/>
                 </c:if>
             </table>
             <input type="hidden" name="haveForwardFromList" value="true">
