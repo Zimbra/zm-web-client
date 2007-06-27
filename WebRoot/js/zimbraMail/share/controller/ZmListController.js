@@ -303,6 +303,7 @@ function(view) {
 ZmListController.prototype._initialize =
 function(view) {
 	this._initializeToolBar(view);
+	this._initializeActionMenu();
 	this._initializeListView(view);
 	this._initializeTabGroup(view);
 };
@@ -342,7 +343,7 @@ function() {
 // toolbar: buttons and listeners
 ZmListController.prototype._initializeToolBar =
 function(view) {
-	if (this._toolbar[view]) return;
+	if (this._toolbar[view]) { return; }
 
 	var buttons = this._getToolBarOps();
 	if (!buttons) return;
@@ -382,7 +383,7 @@ function(view) {
 // list view and its listeners
 ZmListController.prototype._initializeListView =
 function(view) {
-	if (this._listView[view]) return;
+	if (this._listView[view]) { return; }
 
 	this._listView[view] = this._createNewView(view);
 	this._listView[view].addSelectionListener(new AjxListener(this, this._listSelectionListener));
@@ -392,6 +393,8 @@ function(view) {
 // action menu: menu items and listeners
 ZmListController.prototype._initializeActionMenu =
 function() {
+	if (this._actionMenu) { return; }
+
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
 	this._actionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});

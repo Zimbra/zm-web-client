@@ -327,9 +327,6 @@ function(view) {
 		}
     	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
     	this._addMenuListeners(this._participantActionMenu);
-    	//fixed bug:15460 removed forward menu.
-		//this._propagateMenuListeners(this._participantActionMenu, ZmOperation.REPLY_MENU);
-		//this._propagateMenuListeners(this._participantActionMenu, ZmOperation.FORWARD_MENU);
 		this._participantActionMenu.addPopdownListener(this._popdownListener);
 		this._setupTagMenu(this._participantActionMenu);
     }
@@ -340,10 +337,6 @@ function(view, arrowStyle) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._setupViewMenu(view);
-		//fixed bug:15460 removed forward menu.
-		//this._propagateMenuListeners(this._toolbar[view], ZmOperation.REPLY_MENU);
-		//this._propagateMenuListeners(this._toolbar[view], ZmOperation.FORWARD_MENU);
-		//
 		this._setReplyText(this._toolbar[view]);
 		this._toolbar[view].addFiller();
 		arrowStyle = arrowStyle ? arrowStyle : ZmNavToolBar.SINGLE_ARROWS;
@@ -373,8 +366,8 @@ function(view, arrowStyle) {
 		}
 	}
 
-	this._setupDeleteButton(view);
-	this._setupSpamButton(view);
+	this._setupDeleteButton(this._toolbar[view]);
+	this._setupSpamButton(this._toolbar[view]);
 	this._setupReplyForwardOps(this._toolbar[view]);
 	this._setupCheckMailButton(this._toolbar[view]);
 
@@ -389,11 +382,7 @@ ZmMailListController.prototype._initializeActionMenu =
 function() {
 	ZmListController.prototype._initializeActionMenu.call(this);
 
-	var actionMenu = this._actionMenu;
-	//fixed bug:15460 removed forward menu.
-	//this._propagateMenuListeners(actionMenu, ZmOperation.REPLY_MENU);
-	//this._propagateMenuListeners(actionMenu, ZmOperation.FORWARD_MENU);
-	//this._setReplyText(actionMenu);
+	this._setupSpamButton(this._actionMenu);
 	this._setupReplyForwardOps(this._actionMenu);
 };
 
@@ -682,10 +671,10 @@ function() {
 
 // If we're in the Trash folder, change the "Delete" button tooltip
 ZmMailListController.prototype._setupDeleteButton =
-function(view) {
+function(parent) {
 	var inTrashFolder = (this._getSearchFolderId() == ZmFolder.ID_TRASH);
-	var deleteButton = this._toolbar[view].getButton(ZmOperation.DELETE);
-	var deleteMenuButton = this._toolbar[view].getButton(ZmOperation.DELETE_MENU);
+	var deleteButton = parent.getButton(ZmOperation.DELETE);
+	var deleteMenuButton = parent.getButton(ZmOperation.DELETE_MENU);
 	if (deleteButton)
 		deleteButton.setToolTipContent(inTrashFolder ? ZmMsg.deletePermanentTooltip : ZmMsg.deleteTooltip);
 	if (deleteMenuButton)
@@ -694,12 +683,14 @@ function(view) {
 
 // If we're in the Spam folder, the "Spam" button becomes the "Not Spam" button
 ZmMailListController.prototype._setupSpamButton = 
-function(view) {
+function(parent) {
 	var inSpamFolder = (this._getSearchFolderId() == ZmFolder.ID_SPAM);
-	var spamButton = this._toolbar[view].getButton(ZmOperation.SPAM);
-	if (spamButton) {
-		spamButton.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
-		spamButton.setToolTipContent(inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip);
+	var item = parent.getOp(ZmOperation.SPAM);
+	if (item) {
+		item.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
+		if (item.setToolTipContent) {
+			item.setToolTipContent(inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip);
+		}
 	}
 };
 
@@ -707,7 +698,6 @@ ZmMailListController.prototype._setupCheckMailButton =
 function(parent) {
     var folderId = this._getSearchFolderId();
     var folder = this._appCtxt.getById(folderId);
-
     var isInbox = (folderId == ZmFolder.ID_INBOX);
     var isFeed = (folder && folder.isFeed());
     var hasPopAccounts = false;
@@ -735,20 +725,19 @@ function(parent) {
 	}
 };
 
-// If we're in the Spam folder, the "Spam" button becomes the "Not Spam" button
 ZmMailListController.prototype._setupReplyForwardOps =
 function(parent) {
 	var inDraftsFolder = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
 	var ops = [];
-	
+
 	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-													  ops.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+		ops.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
 	}
-			
+
 	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 		ops.push(ZmOperation.FORWARD);
 	}
-	
+
 	ops.push(ZmOperation.EDIT);
 
 	for (var i = 0; i < ops.length; i++) {
