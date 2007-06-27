@@ -910,6 +910,17 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 	@FontSize-biggest@
 }
 
+/* Submit button that's made to look like text in an <a> tag */
+.ZhOptVoiceRemove {
+    padding: 0;
+    margin: 0;
+    border: none;
+    cursor: pointer;
+    @FontSize-normal@
+    @Text@
+    background-color:transparent;
+}
+
 /*
  * Colors, for use in calendar and elsewhere.
  *
