@@ -23,7 +23,12 @@
                     <table width=100% cellpadding=2 cellspacing=0>
                         <tr class='Header'>
                             <th width=20% nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/>
-                            <th width=20% nowrap><fmt:message key="duration"/></th>
+                            <th width=20% nowrap>
+                                <zm:newSortUrl var="durSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'durDesc' or empty context.ss) ? 'durAsc' : 'durDesc'}"/>
+                                <a href="${durSortUrl}">
+                                    <fmt:message key="duration"/>
+                                </a>
+                            </th>
                             <th nowrap>
                                 <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss) ? 'dateAsc' : 'dateDesc'}"/>
                                 <a href="${dateSortUrl}">
