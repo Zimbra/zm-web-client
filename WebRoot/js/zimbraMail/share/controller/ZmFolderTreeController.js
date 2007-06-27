@@ -91,6 +91,7 @@ function(parent, type, id) {
 	
 	var emptyText = ZmMsg.emptyFolder; //ZmMsg.empty + (ZmFolder.MSG_KEY[id]?" "+ZmFolder.MSG_KEY[id] : "");
 	var folder = this._appCtxt.getById(id);
+	var hasContent = ((folder.numTotal > 0) || (folder.children && (folder.children.size() > 0)));
 
 	// user folder or Folders header
 	var nId = ZmOrganizer.normalizeId(id, this.type);
@@ -98,7 +99,7 @@ function(parent, type, id) {
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed());
 		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
-		parent.enable(ZmOperation.EMPTY_FOLDER, folder.numTotal > 0);
+		parent.enable(ZmOperation.EMPTY_FOLDER, hasContent);
 
 		if (folder.isRemote() && folder.isReadOnly()) {
 			if (folder.parent && folder.parent.isRemote()) {
@@ -110,12 +111,13 @@ function(parent, type, id) {
 	} else {	// system folder
 		parent.enableAll(false);
 		// can't create folders under Drafts or Junk
-		if (nId == ZmFolder.ID_INBOX || nId == ZmFolder.ID_SENT || nId == ZmFolder.ID_TRASH)
+		if (nId == ZmFolder.ID_INBOX || nId == ZmFolder.ID_SENT || nId == ZmFolder.ID_TRASH) {
 			parent.enable(ZmOperation.NEW_FOLDER, true);
+		}
 		// "Empty" for Junk and Trash
 		if (nId == ZmFolder.ID_SPAM || nId == ZmFolder.ID_TRASH) {
 			emptyText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
-			parent.enable(ZmOperation.EMPTY_FOLDER, folder.numTotal > 0);
+			parent.enable(ZmOperation.EMPTY_FOLDER, hasContent);
 		}
 		// only allow Inbox and Sent system folders to be share-able for now
 		if (!folder.link && (nId == ZmFolder.ID_INBOX || nId == ZmFolder.ID_SENT)) {
