@@ -80,6 +80,10 @@
     <c:when test="${selected eq 'composing'}">
         <c:set var="subKey" value="optionsComposing"/>
     </c:when>
+    <%------------------- SIGNATURES ------------------%>
+    <c:when test="${selected eq 'signatures'}">
+        <c:set var="subKey" value="optionsSignatures"/>
+    </c:when>
     <%------------------- MAIL IDENTITY ------------------%>
     <c:when test="${selected eq 'identity'}">
         <c:set var="subKey" value="mailIdentity"/>
@@ -156,6 +160,10 @@
                                     <%------------------- COMPOSING ------------------%>
                                     <c:when test="${selected eq 'composing'}">
                                         <app:optComposing mailbox="${mailbox}"/>
+                                    </c:when>
+                                    <%------------------- SIGNATURES ------------------%>
+                                    <c:when test="${selected eq 'signatures'}">
+                                        <app:optSignatures mailbox="${mailbox}"/>
                                     </c:when>
                                     <%------------------- MAIL IDENTITY ------------------%>
                                     <c:when test="${selected eq 'identity'}">

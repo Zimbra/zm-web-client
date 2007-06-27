@@ -27,6 +27,11 @@
                 <span><fmt:message key="optionsComposing"/></span></a>
         </td>
         <td class='TabSpacer'/>
+        <td class='Tab ${selected=='signatures' ? 'TabSelected' :'TabNormal'}'>
+            <a href="<c:url value="/h/options?selected=signatures"/>">
+                <span><fmt:message key="optionsSignatures"/></span></a>
+        </td>
+        <td class='TabSpacer'/>
         <td class='Tab ${selected=='identity' ? 'TabSelected' :'TabNormal'}'>
             <a href="<c:url value="/h/options?selected=identity"/>">
                 <span><fmt:message key="mailIdentity"/></span></a>

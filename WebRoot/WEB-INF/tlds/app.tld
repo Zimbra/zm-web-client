@@ -376,6 +376,11 @@
     </tag-file>
 
     <tag-file>
+        <name>optSignatures</name>
+        <path>/WEB-INF/tags/options/optSignatures.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>optComposing</name>
         <path>/WEB-INF/tags/options/optComposing.tag</path>
     </tag-file>
