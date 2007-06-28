@@ -233,10 +233,18 @@ ZmZimletMgr.prototype._loadStyles = function(zimletArray, zimletNames) {
 //
 
 ZmZimletMgr.prototype.__getIncludes = function(zimletArray, zimletNames, isJS) {
+	console.log("ZmZimletMgr#__getIncludes: ",arguments);
 	// add remote urls
 	var includes = [];
 	for (var i = 0; i < zimletArray.length; i++) {
 		var zimlet = zimletArray[i].zimlet[0];
+		// include messages
+		if (appDevMode) {
+			if (isJS) {
+				includes.push([appContextPath, "/js/msgs/", zimlet.name, ".js"].join(""));
+			}
+		}
+		// include links
 		var links = (isJS ? zimlet.include : zimlet.includeCSS) || [];
 		for (var j = 0; j < links.length; j++) {
 			var url = links[j]._content;
@@ -263,5 +271,6 @@ ZmZimletMgr.prototype.__getIncludes = function(zimletArray, zimletNames, isJS) {
 		includes[i] = [ includes[i], "?v=", cacheKillerVersion ].join("");
 	}
 
+	console.log("includes: ",includes);
 	return includes;
 };
