@@ -175,8 +175,14 @@ function() {
 	return this._tabGroup;
 };
 
-ZmController.prototype._showLoginDialog =
+ZmController.prototype._handleLogin =
 function(bReloginMode) {
+	var url = this._appCtxt.get(ZmSetting.LOGIN_URL);
+	if (url) {
+		ZmZimbraMail.sendRedirect(url);
+		return;
+	}
+	
 	var username = this._appCtxt.getUsername();
 	if (!username) {
 		ZmZimbraMail.logOff();
@@ -260,8 +266,9 @@ function(ex, method, params, restartOnError, obj) {
 		var bReloginMode = true;
 		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
 			// remember the last operation attempted ONLY for expired auth token exception
-			if (method)
+			if (method) {
 				this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};
+			}
 			this._loginDialog.registerCallback(this._loginCallback, this);
 			this._loginDialog.setError(ZmMsg.sessionExpired);
 		} else if (ex.code == ZmCsfeException.SVC_AUTH_REQUIRED) {
@@ -273,7 +280,7 @@ function(ex, method, params, restartOnError, obj) {
 			bReloginMode = false;
 		}
 		this._loginDialog.setReloginMode(bReloginMode);
-		this._showLoginDialog(bReloginMode);
+		this._handleLogin(bReloginMode);
 	} else {
 		// remember the last search attempted for all other exceptions
 		this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};

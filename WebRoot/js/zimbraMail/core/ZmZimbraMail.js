@@ -1013,20 +1013,24 @@ ZmZimbraMail.logOff =
 function() {
 
 	// stop keeping track of user input (if applicable)
-	if (window._zimbraMail)
+	if (window._zimbraMail) {
 		window._zimbraMail.setSessionTimer(false);
+	}
 
 	ZmCsfeCommand.clearAuthToken();
 	
 	window.onbeforeunload = null;
 	
-	var port = (location.port == '80') ? "" : [":", location.port].join("");
-	var locationStr = [location.protocol, "//", location.hostname, port].join("");
-	if (appContextPath) {
-		locationStr = [locationStr, appContextPath].join("");
+	var url = window._zimbraMail ? window._zimbraMail._appCtxt.get(ZmSetting.LOGOUT_URL) : null;
+	if (!url) {
+		var port = (location.port == '80') ? "" : [":", location.port].join("");
+		var locationStr = [location.protocol, "//", location.hostname, port].join("");
+		if (appContextPath) {
+			locationStr = [locationStr, appContextPath].join("");
+		}
+		url = [locationStr, location.search].join("");
 	}
-	locationStr = [locationStr, location.search].join("");
-	ZmZimbraMail.sendRedirect(locationStr);
+	ZmZimbraMail.sendRedirect(url);
 };
 
 ZmZimbraMail._logOffListener = new AjxListener(null, ZmZimbraMail.logOff);
@@ -1058,7 +1062,7 @@ function(locationStr) {
 		var act = new AjxTimedAction(null, ZmZimbraMail.redir, [locationStr]);
 		AjxTimedAction.scheduleAction(act, 1);
 	} else {
-		window.location = locationStr;
+		ZmZimbraMail.redir(locationStr);
 	}
 };
 
