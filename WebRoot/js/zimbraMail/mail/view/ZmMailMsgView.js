@@ -747,6 +747,7 @@ function(container, html, isTextMsg) {
 
 	var displayImages;
 	if (!isTextMsg &&
+		!this._appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) &&
 		(this._msg == null || (this._msg && !this._msg.showImages)) &&
 		/<img/i.test(html))
 	{
@@ -851,7 +852,10 @@ function(container, html, isTextMsg) {
 				var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
 				Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
 			}
-		} else if (this._msg && this._msg.showImages) {
+		}
+		else if (this._appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) ||
+				 (this._msg && this._msg.showImages))
+		{
 			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
 			func.call();
 		}

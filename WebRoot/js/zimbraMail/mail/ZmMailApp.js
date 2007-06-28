@@ -134,6 +134,7 @@ function() {
 			precondition: ZmSetting.MAIL_ENABLED,
 			prefs: [
 				ZmSetting.DEDUPE_MSG_TO_SELF,
+				ZmSetting.DISPLAY_EXTERNAL_IMAGES,
 				ZmSetting.INITIAL_GROUP_MAIL_BY,
 				ZmSetting.INITIAL_SEARCH,
 				ZmSetting.MAIL_FORWARDING_ADDRESS,
@@ -181,6 +182,11 @@ function() {
 		orientation:		ZmPref.ORIENT_HORIZONTAL,
 		displayOptions:		[ZmMsg.dedupeNone, ZmMsg.dedupeSecondCopy, ZmMsg.dedupeAll],
 		options:			[ZmSetting.DEDUPE_NONE, ZmSetting.DEDUPE_SECOND, ZmSetting.DEDUPE_ALL]
+	});
+
+	ZmPref.registerPref("DISPLAY_EXTERNAL_IMAGES", {
+		displayName:		ZmMsg.showExternalImages,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
 	ZmPref.registerPref("FORWARD_INCLUDE_ORIG", {
