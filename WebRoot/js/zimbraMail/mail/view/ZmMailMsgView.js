@@ -747,7 +747,7 @@ function(container, html, isTextMsg) {
 
 	var displayImages;
 	if (!isTextMsg &&
-		!this._appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) &&
+		(!this._appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || this._msg.folderId == ZmOrganizer.ID_SPAM) &&
 		(this._msg == null || (this._msg && !this._msg.showImages)) &&
 		/<img/i.test(html))
 	{
