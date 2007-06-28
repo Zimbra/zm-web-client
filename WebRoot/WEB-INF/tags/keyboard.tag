@@ -120,6 +120,9 @@
             <zm:bindKey message="overview.calendars" url="mcalendars"/>
             </c:if>
             </c:if>
+            <c:if test="${mailbox.features.voice}">
+            <zm:bindKey message="global.GoToVoice" id="TAB_VOICE"/>
+            </c:if>
             <c:if test="${mailbox.features.contacts}">
             <zm:bindKey message="global.NewContact" url="search?st=contact&action=newcontact"/>
             <zm:bindKey message="global.GoToContacts" id="TAB_ADDRESSBOOK"/>

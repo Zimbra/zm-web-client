@@ -13,18 +13,18 @@
         <td><div class='vertSep'></div></td>
         <c:choose>
             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                <app:button  text="actionDelete" name="actionHardDelete" tooltip="actionTrashTT"/>
+                <app:button id="OPDELETE" text="actionDelete" name="actionHardDelete" tooltip="actionTrashTT"/>
             </c:when>
             <c:otherwise>
-                <app:button text="actionDelete" name="actionDelete" tooltip="actionTrashTT"/>
+                <app:button id="OPDELETE" text="actionDelete" name="actionDelete" tooltip="actionTrashTT"/>
             </c:otherwise>
         </c:choose>
         <td><div class='vertSep'></div></td>
-        <app:button name="actionReplyByEmail" text="actionReplyByEmail" src="mail/Reply.gif" tooltip="actionReplyByEmailTT"/>
-        <app:button name="actionForwardByEmail" text="actionForwardByEmail" src="mail/Forward.gif" tooltip="actionForwardByEmailTT"/>
+        <app:button id="OPREPLYBYEMAIL" name="actionReplyByEmail" text="actionReplyByEmail" src="mail/Reply.gif" tooltip="actionReplyByEmailTT"/>
+        <app:button id="OPFORWARDBYEMAIL" name="actionForwardByEmail" text="actionForwardByEmail" src="mail/Forward.gif" tooltip="actionForwardByEmailTT"/>
         <td><div class='vertSep'></div></td>
-        <app:button name="actionMarkHeard" text="actionMarkHeard" src="voicemail/MarkAsHeard.gif" tooltip="actionMarkHeardTT"/>
-        <app:button name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/MarkAsUnheard.gif" tooltip="actionMarkUnheardTT"/>
+        <app:button id="OPHEARD" name="actionMarkHeard" text="actionMarkHeard" src="voicemail/MarkAsHeard.gif" tooltip="actionMarkHeardTT"/>
+        <app:button id="OPUNHEARD" name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/MarkAsUnheard.gif" tooltip="actionMarkUnheardTT"/>
     </c:set>
 </c:if>
 

@@ -18,6 +18,10 @@
             <c:if test="${mailbox.features.conversations}">
                 <app:optShortcutSection section="conversation" suffix="${suffix}"/>
             </c:if>
+            <c:if test="${mailbox.features.voice}">
+                <app:optShortcutSection section="voicemail" suffix="${suffix}"/>
+                <app:optShortcutSection section="call" suffix="${suffix}"/>
+            </c:if>
             <c:if test="${mailbox.features.contacts}">
                 <app:optShortcutSection section="contacts" suffix="${suffix}"/>
             </c:if>

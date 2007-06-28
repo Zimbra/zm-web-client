@@ -77,4 +77,23 @@
         <input type="hidden" name="doVoiceMailListViewAction" value="1"/>
         <input type="hidden" name="phone" value="${phone}"/>
     </form>
+
+    <SCRIPT TYPE="text/javascript">
+        <!--
+        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+        var zdelete = function() { zclick("SOPDELETE"); }
+        var zreply = function() { zclick("SOPREPLYBYEMAIL"); }
+        var zforward = function() { zclick("SOPFORWARDBYEMAIL"); }
+        var zheard = function() { zclick("SOPHEARD"); }
+        var zunheard = function() { zclick("SOPUNHEARD"); }
+        //-->
+    </SCRIPT>
+
+    <app:keyboard cache="voice.voiceMailListView" globals="true" mailbox="${mailbox}" tags="false" folders="false">
+        <zm:bindKey message="voicemail.Delete" func="zdelete"/>
+        <zm:bindKey message="voicemail.Reply" func="zreply"/>
+        <zm:bindKey message="voicemail.Forward" func="zforward"/>
+        <zm:bindKey message="voicemail.MarkHeard" func="zheard"/>
+        <zm:bindKey message="voicemail.MarkUnheard" func="zunheard"/>
+    </app:keyboard>
 </app:view>
