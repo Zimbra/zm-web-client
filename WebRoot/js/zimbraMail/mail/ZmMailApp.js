@@ -879,13 +879,10 @@ function() {
 
 ZmMailApp.prototype.getOverviewId =
 function(account) {
-	var acctName = "";
-	if (this._appCtxt.multiAccounts) {
-		var acct = account || this.accordionItem.data.account;
-		acctName = acct.name;
-	}
-
-	return ([this.getOverviewPanelContentId(), acctName].join(":"));
+	account = !this._appCtxt.multiAccounts ? null : account || this.accordionItem.data.account;
+	return this._appCtxt.multiAccounts ?
+		[this.getOverviewPanelContentId(), account.name].join(":") :
+		ZmApp.prototype.getOverviewPanelContentId.apply(this, arguments);
 };
 
 ZmMailApp.prototype._accordionSelectionListener =
