@@ -57,6 +57,25 @@
             <zm:pref name="zimbraPrefForwardReplyPrefixChar" value="${param.zimbraPrefForwardReplyPrefixChar}"/>
             <zm:pref name="zimbraPrefSaveToSent" value="${param.zimbraPrefSaveToSent eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
         </c:when>
+        <%-- SIGNATURES --%>
+        <c:when test="${selected eq 'signatures'}">
+            <zm:pref name="zimbraPrefMailSignatureStyle" value="${param.zimbraPrefMailSignatureStyle}"/>
+            <zm:pref name="zimbraPrefMailSignatureEnabled" value="${param.zimbraPrefMailSignatureEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
+
+            <c:forEach var="i" begin="0" end="${param.numSignatures}">
+                <c:set var="origSignatureNameKey" value="origSignatureName${i}"/>
+                <c:set var="signatureNameKey" value="signatureName${i}"/>
+                <c:set var="origSignatureValueKey" value="origSignatureValue${i}"/>
+                <c:set var="signatureValueKey" value="signatureValue${i}"/>
+                <c:if test="${(param[origSignatureNameKey] ne param[signatureNameKey]) or
+                (param[origSignatureValueKey] ne param[signtureValueKey])}">
+                    <c:set var="signatureIdKey" value="signatureId${i}"/>
+                    <zm:modifySiganture id="${param[signatureIdKey]}"
+                                        name="${param[signatureNameKey]}" value="${param[signatureValueKey]}"/>
+                    <c:set var="signatureUpdated" value="${true}"/>
+                </c:if>
+            </c:forEach>
+        </c:when>
         <%-- MAIL IDENTITY --%>
         <c:when test="${selected eq 'identity'}">
             <zm:pref name="zimbraPrefFromDisplay" value="${param.zimbraPrefFromDisplay}"/>
@@ -84,8 +103,28 @@
     </c:choose>
 </zm:modifyPrefs>
 
+<c:if test="${selected eq 'signatures' and not empty param.newSignature}">
+    <c:set var="newSignatureWarning" value="${true}" scope="request"/>
+    <c:choose>
+        <c:when test="${empty param.newSignatureName}">
+            <app:status style="Warning"><fmt:message key="optionsNoSignatureName"/></app:status>
+        </c:when>
+        <c:when test="${empty param.newSignatureValue}">
+            <app:status style="Warning"><fmt:message key="optionsNoSignatureValue"/></app:status>
+        </c:when>
+        <c:otherwise>
+            <zm:createSiganture var="sigId" name="${param.newSignatureName}" value="${param.newSignatureValue}"/>
+            <c:set var="updated" value="${true}"/>
+            <c:set var="newSignatureWarning" value="${false}" scope="request"/>
+        </c:otherwise>
+    </c:choose>
+</c:if>
+
 <c:choose>
-    <c:when test="${updated}">
+    <c:when test="${newSignatureWarning}">
+        <%-- do nothing --%>
+    </c:when>
+    <c:when test="${updated or signatureUpdated}">
         <zm:getMailbox var="mailbox" refreshaccount="${true}"/>
         <app:status><fmt:message key="optionsSaved"/></app:status>
     </c:when>

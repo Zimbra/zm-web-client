@@ -1044,11 +1044,9 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 
 .ZOptionsHeader {
     padding:5px;
-     background-color:@HeaderColor@; 
+     background-color:@HeaderColor@;
      @FontSize-bigger@
 font-weight:normal;
-     
-
 }
 
 .ZOptionsTableLabel {

@@ -21,10 +21,6 @@
 
     <c:set target="${sessionScope.keyboardCache}" property="${cache}">
 
-        <c:if test="${not requestScope.yahooDomEvent}">
-            <script type="text/javascript"
-                    src="<c:url value='/yui/2.2.2/build/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
-        </c:if>
         <script type="text/javascript">
             var pendingKey = "";
             var timerId = null;
@@ -135,5 +131,12 @@
         </script>
     </c:set>
 </c:if>
+
+<c:if test="${not requestScope.yahooDomEvent}">
+    <script type="text/javascript"
+            src="<c:url value='/yui/2.2.2/build/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
+</c:if>
+
 ${sessionScope.keyboardCache[cache]}
+
 </c:if>

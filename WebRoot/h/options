@@ -21,6 +21,15 @@
                 </c:otherwise>
             </c:choose>
         </c:when>
+        <c:when test="${selected eq 'signatures'}">
+            <c:forEach var="p" items="${paramValues}">
+                <c:if test="${fn:startsWith(p.key,'actionDeleteSig:')}">
+                    <c:set var="sigId" value="${fn:substringAfter(p.key,'actionDeleteSig:')}"/>
+                    <zm:deleteSiganture id="${sigId}"/>
+                    <app:status><fmt:message key="optionsSignatureDeleted"/></app:status>
+                </c:if>
+            </c:forEach>
+        </c:when>
         <c:when test="${zm:actionSet(param, 'actionFilterCancel')}">
             <app:status>
                 <fmt:message key="${zm:actionSet(param, 'actionNewFilter') ? 'filterCancelCreate' : 'filterCancelModify'}"/>
