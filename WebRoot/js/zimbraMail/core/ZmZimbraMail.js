@@ -612,6 +612,7 @@ function(kickMe) {
         }
         return true;
     } else {
+        this._pollInterval = 100;
         DBG.println(AjxDebug.DBG1, "Ignoring Poll Interval (in instant-notify mode)");
         return false;
     }
@@ -691,8 +692,8 @@ function() {
         var responseCallback = new AjxCallback(this, this._handleResponseDoPoll);
         var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
 
-        this._pollRequest = this.sendRequest({soapDoc: soapDoc, asyncMode: true, callback:responseCallback,
-            errorCallback: errorCallback, noBusyOverlay: true});
+        this._pollRequest = this.sendRequest({soapDoc:soapDoc, asyncMode:true, callback:responseCallback, errorCallback:errorCallback,
+        									  noBusyOverlay:true, timeout:this._appCtxt.get(ZmSetting.INSTANT_NOTIFY_TIMEOUT)});
     } catch (ex) {
         // oops!
         this._handleErrorDoPoll(ex);

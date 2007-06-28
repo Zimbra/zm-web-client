@@ -100,7 +100,9 @@ ZmRequestMgr.prototype.sendRequest =
 function(params) {
 	var reqId = params.reqId = ZmRequestMgr.getNextReqId();
 	var timeout = (params.timeout != null) ? params.timeout : this._stdTimeout;
-	if (timeout) timeout = timeout * 1000; // convert seconds to ms
+	if (timeout) {
+		timeout = timeout * 1000; // convert seconds to ms
+	}
 	var asyncCallback = params.asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [params]) : null;
 	var command = new ZmCsfeCommand();
 	// bug fix #10652 - dont set change token if accountName is specified
