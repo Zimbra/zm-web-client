@@ -233,7 +233,6 @@ ZmZimletMgr.prototype._loadStyles = function(zimletArray, zimletNames) {
 //
 
 ZmZimletMgr.prototype.__getIncludes = function(zimletArray, zimletNames, isJS) {
-	console.log("ZmZimletMgr#__getIncludes: ",arguments);
 	// add remote urls
 	var includes = [];
 	for (var i = 0; i < zimletArray.length; i++) {
@@ -271,6 +270,5 @@ ZmZimletMgr.prototype.__getIncludes = function(zimletArray, zimletNames, isJS) {
 		includes[i] = [ includes[i], "?v=", cacheKillerVersion ].join("");
 	}
 
-	console.log("includes: ",includes);
 	return includes;
 };
