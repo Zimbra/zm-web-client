@@ -23,7 +23,7 @@
                 <td class='List'>
                         <table width=100% cellpadding=2 cellspacing=0>
                             <tr class='Header'>
-                                <th class='CB' nowrap><input id="CHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+                                <th class='CB' nowrap><input id="CHALL" onClick="checkAll(document.zform.voiceId,this)" type=checkbox name="allids"/>
                                 <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
                                 <th width=10% nowrap><fmt:message key="from"/>
                                 <th width=10% nowrap><fmt:message key="message"/></th>
