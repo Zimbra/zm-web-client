@@ -12,6 +12,16 @@
 <body>
 <zm:getUserAgent var="ua"/>
 <p>
+
+    getServerName (${zm:getServerName(pageContext)})
+
+    <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
+    <c:if test="${not empty domainInfo}">
+    <c:forEach var="info" items="${domainInfo.attrs}">
+        key(${info.key}) value(${info.value})<br>
+    </c:forEach>
+    </c:if>
+    
     useragent ${ua.userAgent}
 
 <p>    browser version ${ua.browserVersion}
@@ -19,6 +29,7 @@
 <p>    browser major version ${ua.browserVersion.major}
 
 <p>    browser minor version ${ua.browserVersion.minor}
+
 
     <table border="1">
         <tr><td colspan="2">OS</td></tr>

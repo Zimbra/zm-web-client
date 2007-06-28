@@ -24,7 +24,11 @@
 	   <param-name>zimbra.jsp.session.timeout</param-name>
 	   <param-value>900</param-value>
 	</context-param>
-
+	<context-param>
+        <!-- how long to cache the result of the zm:getDomainInfo tag result  -->
+       <param-name>zimbra.domaininfo.ttl</param-name>
+	   <param-value>60m</param-value>
+	</context-param>
     <context-param>
 	   <param-name>zimbraShowAds</param-name>
 	   <param-value>0</param-value>
