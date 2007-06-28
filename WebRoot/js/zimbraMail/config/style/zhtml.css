@@ -910,6 +910,15 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 	@FontSize-biggest@
 }
 
+.ZhOptVoice .List TD,
+.ZhOptVoice .List TH {
+    padding-left:20px;
+}
+
+ .ZhOptVoiceCBCell {
+     width:23;
+ }
+
 /* Submit button that's made to look like text in an <a> tag */
 .ZhOptVoiceRemove {
     padding: 0;

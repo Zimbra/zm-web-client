@@ -10,7 +10,7 @@
 <c:set var="removeKey">actionRemove${phone}</c:set>
 <c:if test="${!zm:actionSet(param, removeKey)}">
     <tr>
-        <td>${phone}</td>
+        <td width="50%">${phone}</td>
         <td><input class="ZhOptVoiceRemove" type="Submit" title="${title}" value="${title}" name="${removeKey}"></td>
     </tr>
     <input type="hidden" name="forwardNumbers" value="${phone}">
