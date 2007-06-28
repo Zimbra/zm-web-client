@@ -195,10 +195,10 @@ function(im) {
 				if (not.n) {
 					for (var rosterNum=0; rosterNum < not.n.length; rosterNum++) {
 						var rosterItem = not.n[rosterNum];
-//						if (rosterItem.type == "subscribed") {
+						if (rosterItem.type == "subscribed") {
 							var item = new ZmRosterItem(rosterItem.to, list, this._appCtxt, rosterItem.name, null, rosterItem.groups);
 							list.addItem(item);
-//						}
+						}
 					}
 				}
 				// ignore unsubscribed entries for now (TODO FIXME)
