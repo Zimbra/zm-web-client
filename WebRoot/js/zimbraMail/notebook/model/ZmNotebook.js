@@ -148,7 +148,4 @@ function(nbA, nbB) {
 	// sort by calendar name
 	var nbAName = nbA.name.toLowerCase();
 	var nbBName = nbB.name.toLowerCase();
-	if (nbAName < nbBName) return -1;
-	if (nbAName > nbBName) return 1;
-	return 0;
-};
+	return	AjxStringUtil.natCompare(nbAName,nbBName);};
