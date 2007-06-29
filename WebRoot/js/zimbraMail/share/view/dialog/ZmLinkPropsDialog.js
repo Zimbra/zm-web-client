@@ -53,7 +53,8 @@ function(linkInfo, callback) {
 
 		this._notebookSelect.clearOptions();
 		this.__addNotebookChildren(children, "");
-
+		this.notebookChangeListener();
+		
 		this._pageRadioEl.checked = !isUrlLink;
 		this._urlRadioEl.checked = isUrlLink;
 
@@ -261,6 +262,7 @@ function() {
 		var pagePropsId = Dwt.getNextId();
 		var notebookId = Dwt.getNextId();
 		var pageId = Dwt.getNextId();
+		var pageSelectId = Dwt.getNextId();
 		var urlInputId = Dwt.getNextId();
 		var urlTestId = Dwt.getNextId();
 		var titleInputId = Dwt.getNextId();
@@ -295,6 +297,11 @@ function() {
 
 		// create dwt controls
 		this._notebookSelect = new DwtSelect(view);
+		var notebookChange = new AjxListener(this,this.notebookChangeListener);
+		this._notebookSelect.addChangeListener(notebookChange);
+		this._pageSelect = new DwtSelect(view);
+		var pageChange = new AjxListener(this,this.pageChangeListener);
+		this._pageSelect.addChangeListener(pageChange);
 		this._pageInput = new DwtInputField(inputParams);
 		this._pageInput.setRequired(true);
 
@@ -313,7 +320,8 @@ function() {
 
 		var pageProps = new DwtPropertySheet(linkToGroup);
 		pageProps.addProperty(ZmMsg.notebookLabel, "<div id='"+notebookId+"'></div>");
-		pageProps.addProperty(ZmMsg.pageLabel, "<div id='"+pageId+"'></div>");
+		pageProps.addProperty(ZmMsg.pageLabel, "<div id='"+pageSelectId+"'></div>");
+		pageProps.addProperty(ZmMsg.pageNameLabel, "<div id='"+pageId+"'></div>");
 
 		// insert dwt controls
 		var pagePropsEl = document.getElementById(pagePropsId);
@@ -321,6 +329,9 @@ function() {
 
 		var notebookEl = document.getElementById(notebookId);
 		notebookEl.appendChild(this._notebookSelect.getHtmlElement());
+
+		var pageSelectEl = document.getElementById(pageSelectId);
+		pageSelectEl.appendChild(this._pageSelect.getHtmlElement());
 
 		var pageEl = document.getElementById(pageId);
 		pageEl.parentNode.replaceChild(this._pageInput.getHtmlElement(), pageEl);
@@ -406,4 +417,31 @@ function(children, depth) {
 		this.__addNotebookChildren(grandChildren, depth+"&nbsp;");
 		}
 	}
+};
+
+ZmLinkPropsDialog.prototype.notebookChangeListener =
+function(s) {
+	var notebookId = this._notebookSelect.getValue();
+	this._pageSelect.clearOptions();
+	this._pageSelect.setText("Loading...");
+	var pages = this._cache.getPagesInFolder(notebookId);
+	var isEmpty = true;
+	for (var p in pages) {
+		this._pageSelect.addOption(p, false, p);
+		isEmpty = false;
+	}	
+	if(isEmpty){
+		this._pageSelect.setText(ZmMsg.notAvailable);
+		this._pageSelect.disable();
+	}else{
+		this._pageSelect.enable();
+	}
+	this.pageChangeListener();
+};
+
+ZmLinkPropsDialog.prototype.pageChangeListener =
+function(s) {
+	var pageName = this._pageSelect.getValue();
+	this._pageInput.setValue(pageName);
+	ZmLinkPropsDialog._enableFieldsOnEdit(this);
 };
