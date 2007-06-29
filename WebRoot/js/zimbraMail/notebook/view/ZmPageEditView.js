@@ -655,7 +655,8 @@ function(ev) {
 };
 
 ZmPageEditor.prototype._insertLinkListener = function(event) {
-	this._popupLinkPropsDialog();
+	var text = this._getSelectedText();
+	this._popupLinkPropsDialog(null,null,text);
 };
 
 // @param afterTarget	true: insert link after target, false: replace target with link
@@ -780,4 +781,6 @@ function() {
 	ZmHtmlEditor.prototype._onContentInitialized.call(this); // otherwise ALE objects won't be deserialized
 	this.parent._onEditorContentInitialized();	
 	this._resetFormatControls();
+	var action = new AjxTimedAction(this, this.focus);
+	AjxTimedAction.scheduleAction(action, DwtHtmlEditor._INITDELAY + 3);
 };

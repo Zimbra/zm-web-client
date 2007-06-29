@@ -382,7 +382,7 @@ function() {
 	var notebook = treeView ? treeView.getSelected() : null;
 	var page = new ZmPage(this._appCtxt);
 	page.folderId = notebook ? notebook.id : ZmNotebookItem.DEFAULT_FOLDER;
-
+	page.name=this.generateUniqueName(page.folderId);
 	AjxDispatcher.run("GetPageEditController").show(page);
 };
 
@@ -473,4 +473,23 @@ function(parent, name, color) {
 	dialog.popdown();
 	var oc = this._appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.NOTEBOOK)._doCreate(parent, name, color);
+};
+
+ZmNotebookApp.prototype.generateUniqueName =
+function(folderId) {
+	var cache = this.getNotebookCache();
+	var pages = cache.getPagesInFolder(folderId);
+	var pagenames = "";
+	for (var p in pages) {
+		pagenames+=pages[p].name+",";
+	}
+	//first possible pagename page1,page2...
+	for(var i=1;i<100;i++){
+		if(pagenames.indexOf('page'+i+',')<0)
+		{
+			return 'page'+i;
+		}
+	}
+	
+	return 'Untitled';
 };
