@@ -45,6 +45,21 @@ ZmBriefcaseController.prototype.toString = function() {
 // Constants
 ZmBriefcaseController._VIEWS = {};
 ZmBriefcaseController._VIEWS[ZmController.BRIEFCASE_VIEW] = ZmBriefcaseView;
+ZmBriefcaseController._VIEWS[ZmController.BRIEFCASE_DETAIL_VIEW] = ZmDetailListView;
+
+// Stuff for the View menu
+ZmBriefcaseController.GROUP_BY_ICON = {};
+ZmBriefcaseController.GROUP_BY_MSG_KEY = {};
+ZmBriefcaseController.GROUP_BY_VIEWS = [];
+
+ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmController.BRIEFCASE_VIEW]			= "explorerView";
+ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmController.BRIEFCASE_DETAIL_VIEW]	= "detailView";
+
+ZmBriefcaseController.GROUP_BY_ICON[ZmController.BRIEFCASE_VIEW]			= "Folder";
+ZmBriefcaseController.GROUP_BY_ICON[ZmController.BRIEFCASE_DETAIL_VIEW]		= "ListView";
+
+ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmController.BRIEFCASE_VIEW);
+ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmController.BRIEFCASE_DETAIL_VIEW);
 
 ZmBriefcaseController.prototype._foldersMap;
 ZmBriefcaseController.prototype._idMap;
@@ -79,7 +94,7 @@ ZmBriefcaseController.prototype._getNaviToolBarOps = function() {
 
 ZmBriefcaseController.prototype._initializeToolBar = function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
-
+	this._setupViewMenu(view);
 	this._setNewButtonProps(view, ZmMsg.uploadNewFile, "NewPage", "NewPageDis", ZmOperation.NEW_FILE);
 
 	var toolbar = this._toolbar[this._currentView];
@@ -100,7 +115,7 @@ ZmBriefcaseController.prototype._resetOperations = function(toolbarOrActionMenu,
 	var isShared = this.isShared(this._currentFolder);
 	var isReadOnly = this.isReadOnly(this._currentFolder);	
 	var isItemSelected = (num>0);
-	toolbarOrActionMenu.enable([ZmOperation.OPEN_FILE], true && isItemSelected );	
+	toolbarOrActionMenu.enable([ZmOperation.OPEN_FILE], isItemSelected );	
 	toolbarOrActionMenu.enable([ZmOperation.SEND_FILE], isItemSelected );
 	toolbarOrActionMenu.enable([ZmOperation.DELETE], !(isReadOnly && isReadOnly) && isItemSelected);
 	toolbarOrActionMenu.enable([ZmOperation.TAG_MENU], !isShared && isItemSelected);	
@@ -585,6 +600,32 @@ function(){
 	}
 };
 
+ZmBriefcaseController.prototype._viewAsHtmlListener =
+function(){
+
+	var view = this._listView[this._currentView];
+	var items = view.getSelection();	
+	if(!items)
+	return;
+
+	items = items instanceof Array ? items : [ items ];	
+	for(var i = 0;i<items.length;i++){
+		var item = items[i];
+		if(item && item.restUrl){
+			this.viewAsHtml(item.restUrl);
+		}
+	}
+};
+
+ZmBriefcaseController.prototype.viewAsHtml = function(restUrl){
+	if(restUrl.match(/\?/)){
+		restUrl+= "&view=html";
+	}else{
+		restUrl+= "?view=html";
+	}
+	window.open(restUrl);
+};
+
 ZmBriefcaseController.prototype._sendPageListener = function(event) {
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();
@@ -650,4 +691,49 @@ function(folder) {
 ZmBriefcaseController.prototype._resetOpForCurrentView = 
 function(num) {
 	this._resetOperations(this._toolbar[this._currentView], (num?num:0));
+};
+
+ZmBriefcaseController.prototype._setupViewMenu =
+function(view) {
+	var menu = this._setupGroupByMenuItems(view);	
+};
+
+ZmBriefcaseController.prototype._setupGroupByMenuItems =
+function(view) {
+	var appToolbar = this._appCtxt.getCurrentAppToolbar();
+	var menu = appToolbar.getViewMenu(view);
+	if (!menu) {
+		menu = new ZmPopupMenu(appToolbar.getViewButton());
+		appToolbar.setViewMenu(view, menu);
+		for (var i = 0; i < ZmBriefcaseController.GROUP_BY_VIEWS.length; i++) {
+			var id = ZmBriefcaseController.GROUP_BY_VIEWS[i];
+			var mi = menu.createMenuItem(id, {image:ZmBriefcaseController.GROUP_BY_ICON[id],
+											  text:ZmMsg[ZmBriefcaseController.GROUP_BY_MSG_KEY[id]],
+											  style:DwtMenuItem.RADIO_STYLE});
+			mi.setData(ZmOperation.MENUITEM_ID, id);
+			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+			if (id == this._defaultView())
+				mi.setChecked(true, true);
+		}
+	}
+	return menu;
+};
+
+ZmBriefcaseController.CONVERTABLE = {
+	doc:/\.doc$/i,
+	xls:/\.xls$/i,
+	pdf:/\.pdf$/i,
+	ppt:/\.ppt$/i,
+	zip:/\.zip$/i
+};
+
+ZmBriefcaseController.prototype.isConvertable = function(item) {
+	var name = item.name;
+	for(var type in ZmBriefcaseController.CONVERTABLE){
+		var regex = ZmBriefcaseController.CONVERTABLE[type];
+		if(name.match(regex)){
+			return true;
+		}
+	}
+	return false;
 };
