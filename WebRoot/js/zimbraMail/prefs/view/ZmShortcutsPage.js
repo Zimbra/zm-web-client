@@ -55,7 +55,10 @@ ZmShortcutsPage = function(parent, appCtxt, view, controller) {
     this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section.title].join(": ");
 	this._prefId = section.prefs[0]; // our sole pref
 
-	this._organizers = [ZmOrganizer.FOLDER];
+	this._organizers = [];
+	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		this._organizers.push(ZmOrganizer.FOLDER);
+	}
 	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		this._organizers.push(ZmOrganizer.SEARCH);
 	}

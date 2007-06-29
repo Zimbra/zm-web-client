@@ -737,6 +737,40 @@ function(ex) {
 
 ZmZimbraMail.prototype._registerOrganizers =
 function() {
+	ZmOrganizer.registerOrg(ZmOrganizer.FOLDER,
+							{nameKey:			"folder",
+							 defaultFolder:		ZmOrganizer.ID_INBOX,
+							 soapCmd:			"FolderAction",
+							 firstUserId:		256,
+							 orgClass:			"ZmFolder",
+							 treeController:	"ZmFolderTreeController",
+							 labelKey:			"folders",
+							 itemsKey:			"messages",
+							 hasColor:			true,
+							 defaultColor:		ZmOrganizer.C_NONE,
+							 treeType:			ZmOrganizer.FOLDER,
+							 views:				["message", "conversation"],
+							 folderKey:			"mailFolder",
+							 mountKey:			"mountFolder",
+							 createFunc:		"ZmOrganizer.create",
+							 compareFunc:		"ZmFolder.sortCompare",
+							 shortcutKey:		"F"
+							});
+
+	ZmOrganizer.registerOrg(ZmOrganizer.SEARCH,
+							{nameKey:			"savedSearch",
+							 precondition:		ZmSetting.SAVED_SEARCHES_ENABLED,
+							 soapCmd:			"FolderAction",
+							 firstUserId:		256,
+							 orgClass:			"ZmSearchFolder",
+							 treeController:	"ZmSearchTreeController",
+							 labelKey:			"searches",
+							 treeType:			ZmOrganizer.FOLDER,
+							 createFunc:		"ZmSearchFolder.create",
+							 compareFunc:		"ZmFolder.sortCompare",
+							 shortcutKey:		"S"
+							});
+
 	ZmOrganizer.registerOrg(ZmOrganizer.TAG,
 							{nameKey:			"tag",
 							 precondition:		ZmSetting.TAGGING_ENABLED,

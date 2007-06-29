@@ -137,23 +137,9 @@ function() {
 	AjxDispatcher.registerMethod("GetFilterController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterController));
 };
 
-ZmPreferencesApp.prototype._registerSettings =
-function(settings) {
-	var settings = settings || this._appCtxt.getSettings();
-	settings.registerSetting("ALLOW_ANY_FROM_ADDRESS",	{name: "zimbraAllowAnyFromAddress", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	settings.registerSetting("ALLOW_FROM_ADDRESSES",	{name: "zimbraAllowFromAddress", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
-	settings.registerSetting("FILTERS_ENABLED",			{name: "zimbraFeatureFiltersEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN,	defaultValue: false});
-	settings.registerSetting("IDENTITIES_ENABLED",		{name: "zimbraFeatureIdentitiesEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-};
-
 ZmPreferencesApp.prototype._registerOperations =
 function() {
 	AjxDispatcher.setPackageLoadFunction("Preferences", new AjxCallback(this, this._postLoad));
-	ZmOperation.registerOp("ADD_FILTER_RULE", {textKey:"newFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp("EDIT_FILTER_RULE", {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp("MOVE_DOWN_FILTER_RULE", {textKey:"filterMoveDown", image:"DownArrow"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp("MOVE_UP_FILTER_RULE", {textKey:"filterMoveUp", image:"UpArrow"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp("REMOVE_FILTER_RULE", {textKey:"filterRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
 };
 
 ZmPreferencesApp.prototype._registerApp =
@@ -193,7 +179,7 @@ function() {
 			title: ZmMsg.composing,
 			templateId: "zimbraMail.prefs.templates.Pages#Composing",
 			priority: 20,
-			precondition: [ ZmSetting.MAIL_ENABLED, ZmSetting.NOTEBOOK_ENABLED ],
+			precondition: [ ZmSetting.MAIL_ENABLED, ZmSetting.CALENDAR_ENABLED, ZmSetting.NOTEBOOK_ENABLED ],
 			prefs: [
 				ZmSetting.COMPOSE_AS_FORMAT,
 				ZmSetting.COMPOSE_INIT_FONT_COLOR,
@@ -202,32 +188,6 @@ function() {
 				ZmSetting.NEW_WINDOW_COMPOSE,
 				ZmSetting.SAVE_TO_SENT
 			]
-		},
-		IDENTITIES: {
-			title: ZmMsg.identities,
-			templateId: "zimbraMail.prefs.templates.Pages#Identities",
-			priority: 59,
-			precondition: ZmSetting.MAIL_ENABLED,
-			prevs: [
-				ZmSetting.IDENTITIES
-			],
-			manageDirty: true,
-			createView: function(parent, appCtxt, section, controller) {
-				return controller.getIdentityController().getListView();
-			}
-		},
-		ACCOUNTS: {
-			title: ZmMsg.popAccounts,
-			templateId: "zimbraMail.prefs.templates.Pages#Accounts",
-			priority: 60,
-			precondition: ZmSetting.POP_ACCOUNTS_ENABLED,
-			prefs: [
-				ZmSetting.ACCOUNTS
-			],
-			manageDirty: true,
-			createView: function(parent, appCtxt, section, controller) {
-				return AjxDispatcher.run("GetPopAccountsController").getListView();
-			}
 		},
 		SHORTCUTS: {
 			title: ZmMsg.shortcuts,
@@ -411,10 +371,5 @@ function(refresh) {
 
 ZmPreferencesApp.prototype._postLoad =
 function() {
-	for (var i = 0; i < ZmApp.APPS.length; i++) {
-		var app = this._appCtxt.getApp(ZmApp.APPS[i]);
-		if (app._registerPrefs) {
-			app._registerPrefs();
-		}
-	}
+	this._appCtxt.getAppController().runAppFunction("_registerPrefs");
 };

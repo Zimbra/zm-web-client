@@ -223,21 +223,36 @@ function(callback, accountName, result) {
 	}
 
 	// handle settings whose values may depend on other settings
-	this._settings[ZmSetting.GROUP_MAIL_BY].setValue(this.get(ZmSetting.INITIAL_GROUP_MAIL_BY), null, true);
-	if ((this.get(ZmSetting.GROUP_MAIL_BY) == ZmSetting.GROUP_BY_CONV) && !this.get(ZmSetting.CONVERSATIONS_ENABLED)) {
-		this._settings[ZmSetting.GROUP_MAIL_BY].setValue(ZmSetting.GROUP_BY_MESSAGE, null, true);
+	var setting = this._settings[ZmSetting.GROUP_MAIL_BY];
+	if (setting) {
+		setting.setValue(this.get(ZmSetting.INITIAL_GROUP_MAIL_BY), null, true);
+		if ((this.get(ZmSetting.GROUP_MAIL_BY) == ZmSetting.GROUP_BY_CONV) && !this.get(ZmSetting.CONVERSATIONS_ENABLED)) {
+			setting.setValue(ZmSetting.GROUP_BY_MESSAGE, null, true);
+		}
 	}
-	this._settings[ZmSetting.REPLY_TO_ADDRESS].defaultValue = this.get(ZmSetting.USERNAME);
+	setting = this._settings[ZmSetting.REPLY_TO_ADDRESS];
+	if (setting) {
+		setting.defaultValue = this.get(ZmSetting.USERNAME);
+	}
 	if (!this.get(ZmSetting.SEARCH_ENABLED)) {
-		this._settings[ZmSetting.BROWSE_ENABLED].setValue(false, null, true);
+		setting = this._settings[ZmSetting.BROWSE_ENABLED];
+		if (setting) {
+			setting.setValue(false, null, true);
+		}
 	}
 	if (this.get(ZmSetting.FORCE_CAL_OFF)) {
-		this._settings[ZmSetting.CALENDAR_ENABLED].setValue(false, null, true);
+		setting = this._settings[ZmSetting.CALENDAR_ENABLED];
+		if (setting) {
+			setting.setValue(false, null, true);
+		}
 	}
 
 	// bug fix #6787 - disable HTML compose in Safari until design mode is more stable
 	if (AjxEnv.isSafari && !AjxEnv.isSafariNightly) {
-		this._settings[ZmSetting.HTML_COMPOSE_ENABLED].setValue(false);
+		setting = this._settings[ZmSetting.HTML_COMPOSE_ENABLED];
+		if (setting) {
+			setting.setValue(false);
+		}
 	}
 	// load Zimlets
 	// NOTE: only load zimlets if main account

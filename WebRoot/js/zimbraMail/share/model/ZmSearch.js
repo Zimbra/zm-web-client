@@ -74,8 +74,9 @@ ZmSearch = function(appCtxt, params) {
 		this.field						= params.field;
 		this.soapInfo					= params.soapInfo;
 		
-		if (this.query)
+		if (this.query) {
 			this._parseQuery();
+		}
 	}
 	this.isGalSearch = false;
 	this.isCalResSearch = false;
@@ -93,6 +94,8 @@ ZmSearch.JOIN_AND	= 1;
 ZmSearch.JOIN_OR	= 2;
 
 ZmSearch.TYPE_MAP = {};
+
+ZmSearch.DEFAULT_LIMIT = 25;
 
 // Sort By
 var i = 1;
@@ -130,8 +133,11 @@ ZmSearch.SORT_BY[ZmSearch.DUE_DATE_DESC]	= "taskDueDesc";
 ZmSearch.SORT_BY[ZmSearch.DUE_DATE_ASC]		= "taskDueAsc";
 
 ZmSearch.SORT_BY_MAP = {};
-for (var i in ZmSearch.SORT_BY)
-	ZmSearch.SORT_BY_MAP[ZmSearch.SORT_BY[i]] = i;
+(function() {
+	for (var i in ZmSearch.SORT_BY) {
+		ZmSearch.SORT_BY_MAP[ZmSearch.SORT_BY[i]] = i;
+	}
+})();
 
 ZmSearch.FOLDER_QUERY_RE = new RegExp('^in:\\s*"?(' + ZmOrganizer.VALID_PATH_CHARS + '+)"?\\s*$', "i");
 ZmSearch.TAG_QUERY_RE = new RegExp('^tag:\\s*"?(' + ZmOrganizer.VALID_NAME_CHARS + '+)"?\\s*$', "i");
@@ -330,17 +336,26 @@ function(soapDoc) {
 	method.setAttribute("offset", this.offset);
 
 	// always set limit (init to user pref for page size if not provided)
-	this.limit = this.limit || ((this.contactSource && this.types.size() == 1)
-			? this._appCtxt.get(ZmSetting.CONTACTS_PER_PAGE)
-			: this._appCtxt.get(ZmSetting.PAGE_SIZE));
+	if (!this.limit) {
+		if (this.contactSource && this.types.size() == 1) {
+			this.limit = this._appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+		} else if (this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+			this.limit = this._appCtxt.get(ZmSetting.PAGE_SIZE);
+		} else if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			this.limit = this._appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+		} else {
+			this.limit = ZmSearch.DEFAULT_LIMIT;
+		}
+	}
 	method.setAttribute("limit", this.limit);
 
 	// and of course, always set the query
 	soapDoc.set("query", this.query);
 
 	// set search field if provided
-	if (this.field)
+	if (this.field) {
 		method.setAttribute("field", this.field);
+	}
 
 	return method;
 };

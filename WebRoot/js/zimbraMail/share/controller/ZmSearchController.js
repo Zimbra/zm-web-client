@@ -284,9 +284,9 @@ function(searchFor) {
 	searchFor = searchFor || this._searchFor;
 
 	var groupBy;
-	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI ||
-		searchFor == ZmSearchToolBar.FOR_ANY_MI ||
-		searchFor == ZmSearchToolBar.FOR_PAM_MI) {
+	if ((searchFor == ZmSearchToolBar.FOR_MAIL_MI ||
+		 searchFor == ZmSearchToolBar.FOR_ANY_MI ||
+		 searchFor == ZmSearchToolBar.FOR_PAM_MI) && this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 
 		groupBy = this._appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	}
@@ -296,13 +296,18 @@ function(searchFor) {
 
 		types.add(groupBy);
 	} else if (searchFor == ZmSearchToolBar.FOR_ANY_MI)	{
-		types.add(groupBy);
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+		if (groupBy && this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+			types.add(groupBy);
+		}
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			types.add(ZmItem.CONTACT);
-		if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))
+		}
+		if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 			types.add(ZmItem.APPT);
-		if (this._appCtxt.get(ZmSetting.TASKS_ENABLED))
+		}
+		if (this._appCtxt.get(ZmSetting.TASKS_ENABLED)) {
 			types.add(ZmItem.TASK);
+		}
 		if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
 			types.add(ZmItem.PAGE);
 			types.add(ZmItem.DOCUMENT);
@@ -527,6 +532,7 @@ function(ev, id, noSearch) {
 	if (ev && (ev.detail != DwtMenuItem.CHECKED)) { return; }
 
 	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
+	if (!btn) { return; }
 	var item;
 	if (ev) {
 		item = ev.item;
@@ -534,6 +540,7 @@ function(ev, id, noSearch) {
 	} else {
 		item = btn.getMenu().getItemById(ZmSearchToolBar.MENUITEM_ID, id);
 	}
+	if (!item) { return; }
 
 	this._searchFor = id;
 	this._contactSource = (id == ZmSearchToolBar.FOR_GAL_MI) ? ZmSearchToolBar.FOR_GAL_MI : ZmItem.CONTACT;

@@ -87,11 +87,15 @@ function() {
 ZmMailApp.prototype._registerSettings =
 function(settings) {
 	var settings = settings || this._appCtxt.getSettings();
+	settings.registerSetting("ALLOW_ANY_FROM_ADDRESS",			{name:"zimbraAllowAnyFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("ALLOW_FROM_ADDRESSES",			{name:"zimbraAllowFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 	settings.registerSetting("CONVERSATIONS_ENABLED",			{name:"zimbraFeatureConversationsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("DEDUPE_MSG_TO_SELF",				{name:"zimbraPrefDedupeMessagesSentToSelf", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DEDUPE_NONE});
 	settings.registerSetting("DISPLAY_EXTERNAL_IMAGES",			{name:"zimbraPrefDisplayExternalImages", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("FILTERS_ENABLED",					{name:"zimbraFeatureFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:false});
 	settings.registerSetting("FORWARD_INCLUDE_ORIG",			{name:"zimbraPrefForwardIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INCLUDE});
 	settings.registerSetting("GROUP_MAIL_BY",					{type:ZmSetting.T_PREF, defaultValue:ZmSetting.GROUP_BY_MESSAGE});
+	settings.registerSetting("IDENTITIES_ENABLED",				{name:"zimbraFeatureIdentitiesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("INITIAL_GROUP_MAIL_BY",			{name:"zimbraPrefGroupMailBy", type:ZmSetting.T_PREF, defaultValue:ZmSetting.GROUP_BY_MESSAGE});
 	settings.registerSetting("INITIAL_SEARCH",					{name:"zimbraPrefMailInitialSearch", type:ZmSetting.T_PREF, defaultValue:"in:inbox"});
 	settings.registerSetting("INITIAL_SEARCH_ENABLED",			{name:"zimbraFeatureInitialSearchPreferenceEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -132,7 +136,6 @@ function() {
 			title: ZmMsg.mail,
 			templateId: "zimbraMail.prefs.templates.Pages#Mail",
 			priority: 10,
-			precondition: ZmSetting.MAIL_ENABLED,
 			prefs: [
 				ZmSetting.DEDUPE_MSG_TO_SELF,
 				ZmSetting.DISPLAY_EXTERNAL_IMAGES,
@@ -152,11 +155,37 @@ function() {
 				ZmSetting.VIEW_AS_HTML
 			]
 		},
+		IDENTITIES: {
+			title: ZmMsg.identities,
+			templateId: "zimbraMail.prefs.templates.Pages#Identities",
+			priority: 59,
+			precondition: ZmSetting.IDENTITIES_ENABLED,
+			prevs: [
+				ZmSetting.IDENTITIES
+			],
+			manageDirty: true,
+			createView: function(parent, appCtxt, section, controller) {
+				return controller.getIdentityController().getListView();
+			}
+		},
+		ACCOUNTS: {
+			title: ZmMsg.popAccounts,
+			templateId: "zimbraMail.prefs.templates.Pages#Accounts",
+			priority: 60,
+			precondition: ZmSetting.POP_ACCOUNTS_ENABLED,
+			prefs: [
+				ZmSetting.ACCOUNTS
+			],
+			manageDirty: true,
+			createView: function(parent, appCtxt, section, controller) {
+				return AjxDispatcher.run("GetPopAccountsController").getListView();
+			}
+		},
 		SIGNATURES: {
 			title: ZmMsg.signatures,
 			templateId: "zimbraMail.prefs.templates.Pages#Signatures",
 			priority: 30,
-			precondition: false,//ZmSetting.MAIL_ENABLED,
+			precondition: false,
 			prefs: [] // TODO
 		},
 		FILTERS: {
@@ -308,6 +337,7 @@ function() {
 
 ZmMailApp.prototype._registerOperations =
 function() {
+	ZmOperation.registerOp("ADD_FILTER_RULE", {textKey:"newFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp("ADD_SIGNATURE", {textKey:"addSignature"}/*, ZmSetting.SIGNATURE_ENABLED*/);
 	ZmOperation.registerOp("CHECK_MAIL", {textKey:"checkMail", tooltipKey:"checkMailTooltip"});
 	ZmOperation.registerOp("COMPOSE_OPTIONS", {textKey:"options", image:"Preferences"});
@@ -315,6 +345,7 @@ function() {
 	ZmOperation.registerOp("DELETE_MENU", {tooltipKey:"deleteTooltip", image:"Delete"});
 	ZmOperation.registerOp("DETACH_COMPOSE", {tooltipKey:"detachTooltip", image:"OpenInNewWindow"});
 	ZmOperation.registerOp("DRAFT", null, ZmSetting.SAVE_DRAFT_ENABLED);
+	ZmOperation.registerOp("EDIT_FILTER_RULE", {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp("FORWARD", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"});
 	ZmOperation.registerOp("FORWARD_ATT", {textKey:"forwardAtt", tooltipKey:"forwardAtt", image:"Forward"});
 	ZmOperation.registerOp("FORWARD_INLINE", {textKey:"forwardInline", tooltipKey:"forwardTooltip", image:"Forward"});
@@ -331,8 +362,11 @@ function() {
 	ZmOperation.registerOp("INC_SMART", {textKey:"includeMenuSmart"});
 	ZmOperation.registerOp("MARK_READ", {textKey:"markAsRead", image:"ReadMessage"});
 	ZmOperation.registerOp("MARK_UNREAD", {textKey:"markAsUnread", image:"UnreadMessage"});
+	ZmOperation.registerOp("MOVE_DOWN_FILTER_RULE", {textKey:"filterMoveDown", image:"DownArrow"}, ZmSetting.FILTERS_ENABLED);
+	ZmOperation.registerOp("MOVE_UP_FILTER_RULE", {textKey:"filterMoveUp", image:"UpArrow"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp("NEW_MESSAGE", {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage"});
 	ZmOperation.registerOp("NEW_MESSAGE_WIN", {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage"});
+	ZmOperation.registerOp("REMOVE_FILTER_RULE", {textKey:"filterRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
 	ZmOperation.registerOp("REPLY", {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply"});
 	ZmOperation.registerOp("REPLY_ACCEPT", {textKey:"replyAccept", image:"Check"});
 	ZmOperation.registerOp("REPLY_ALL", {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll"});
@@ -397,47 +431,6 @@ function() {
 			return new ZmMailList(ZmItem.ATT, this._appCtxt, search);
 		}, this)
 						});
-};
-
-ZmMailApp.prototype._registerOrganizers =
-function() {
-	ZmOrganizer.registerOrg(ZmOrganizer.FOLDER,
-							{app:				ZmApp.MAIL,
-							 nameKey:			"folder",
-							 defaultFolder:		ZmOrganizer.ID_INBOX,
-							 soapCmd:			"FolderAction",
-							 firstUserId:		256,
-							 orgClass:			"ZmFolder",
-							 treeController:	"ZmFolderTreeController",
-							 labelKey:			"folders",
-							 itemsKey:			"messages",
-							 hasColor:			true,
-							 defaultColor:		ZmOrganizer.C_NONE,
-							 treeType:			ZmOrganizer.FOLDER,
-							 views:				["message", "conversation"],
-							 folderKey:			"mailFolder",
-							 mountKey:			"mountFolder",
-							 createFunc:		"ZmOrganizer.create",
-							 compareFunc:		"ZmFolder.sortCompare",
-							 shortcutKey:		"F"
-							});
-
-	ZmOrganizer.registerOrg(ZmOrganizer.SEARCH,
-							{app:				ZmApp.MAIL,
-							 nameKey:			"savedSearch",
-							 precondition:		ZmSetting.SAVED_SEARCHES_ENABLED,
-							 soapCmd:			"FolderAction",
-							 firstUserId:		256,
-							 orgClass:			"ZmSearchFolder",
-							 treeController:	"ZmSearchTreeController",
-							 labelKey:			"searches",
-							 treeType:			ZmOrganizer.FOLDER,
-							 folderKey:			"mailFolder",
-							 mountKey:			"mountFolder",
-							 createFunc:		"ZmSearchFolder.create",
-							 compareFunc:		"ZmFolder.sortCompare",
-							 shortcutKey:		"S"
-							});
 };
 
 ZmMailApp.prototype._setupSearchToolbar =

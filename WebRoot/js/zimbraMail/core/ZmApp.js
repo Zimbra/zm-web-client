@@ -354,11 +354,19 @@ function() {
 };
 
 /**
- * Returns the list of trees to show in the overview for this app.
+ * Returns the list of trees to show in the overview for this app. Don't show Folders unless
+ * mail is enabled. Other organizer types won't be created unless their apps are enabled, so
+ * we don't need to check for them.
  */
 ZmApp.prototype._getOverviewTrees =
 function() {
-	return ZmApp.OVERVIEW_TREES[this._name];
+	var list = ZmApp.OVERVIEW_TREES[this._name];
+	var newList = [];
+	for (var i = 0, count = list.length; i < count; i++) {
+		if ((list[i] == ZmOrganizer.FOLDER) && !this._appCtxt.get(ZmSetting.MAIL_ENABLED)) { continue; }
+		newList.push(list[i]);
+	}
+	return newList;
 };
 
 /**
