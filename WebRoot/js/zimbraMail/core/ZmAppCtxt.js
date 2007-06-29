@@ -826,3 +826,12 @@ function() {
 	}
 	return this._newBriefcaseDialog;
 };
+
+ZmAppCtxt.prototype.getReplaceDialog =
+function() {
+	if (!this._replaceDialog) {
+		AjxDispatcher.require("Share");
+		this._replaceDialog = new ZmFindnReplaceDialog(this, this._shell);
+	}
+	return this._replaceDialog;
+};
