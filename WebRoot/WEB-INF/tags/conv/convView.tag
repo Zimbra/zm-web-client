@@ -106,8 +106,8 @@
         <zm:bindKey message="global.PreviousPage" id="PREV_PAGE"/>
         <zm:bindKey message="global.NextPage" id="NEXT_PAGE"/>
 
-        <zm:bindKey message="conversation.PreviousConversationPage" id="PREV_CONVPAGE"/>
-        <zm:bindKey message="conversation.NextConversationPage" id="NEXT_CONVPAGE"/>
+        <zm:bindKey message="conversation.PreviousConversationPage" id="PREV_CONV_PAGE"/>
+        <zm:bindKey message="conversation.NextConversationPage" id="NEXT_CONV_PAGE"/>
         <c:if test="${mailbox.features.tagging}">
             <zm:bindKey message="global.Tag" func="function() {zaction('OPTAG{TAGID}')}" alias="tag"/>
         </c:if>
