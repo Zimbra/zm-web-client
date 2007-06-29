@@ -98,7 +98,10 @@
 
 #ZimbraWikiPage .zmwiki-tags {
 	text-align:right;
+	font-family: verdana, arial, sans-serif;
 	@FontSize-normal@
+	color:#999999;
+	white-space:nowrap;
 }
 
 
