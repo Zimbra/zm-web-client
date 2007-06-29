@@ -275,9 +275,11 @@ function(useDefaults) {
 	var prefs = this._section.prefs || [];
 	for (var i = 0; i < prefs.length; i++) {
 		var id = prefs[i];
+		if (!id) { continue; }
 		var setup = ZmPref.SETUP[id];
+		if (!setup) { continue; }
 		var type = setup.displayContainer;
-		if (type == ZmPref.TYPE_PASSWORD) continue; // ignore non-form elements
+		if (type == ZmPref.TYPE_PASSWORD) { continue; } // ignore non-form elements
 		var pref = settings.getSetting(id);
 		var newValue = this._getPrefValue(id, useDefaults, true);
 		if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_CHECKBOX ||
