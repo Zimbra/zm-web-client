@@ -101,8 +101,7 @@ function() {
 	data.expandField = AjxCallback.simpleClosure(this._expandField, this, data);
 
 	this.getContentHtmlElement().innerHTML = AjxTemplate.expand(templateId, data);
-	this.setVisible(false);
-// hide for now
+	this.setVisible(false); // hide until ready
 
     // create controls for prefs, if present in template
 	this._prefPresent = {};

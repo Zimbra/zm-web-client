@@ -92,12 +92,13 @@ function() {
 // Protected methods
 //
 
-ZmPrefSection.prototype._isEnabled = function(data, prefId) {
-    var pref = ZmPref.SETUP[prefId];
-    return pref ? this.parent._checkPreCondition(pref.precondition) : true;
+ZmPrefSection.prototype._isEnabled =
+function(data, prefId) {
+    return this.parent._checkPreCondition(ZmPref.SETUP[prefId]);
 };
 
-ZmPrefSection.prototype._expandField = function(data, prefId) {
+ZmPrefSection.prototype._expandField =
+function(data, prefId) {
     var templateId = this._section.templateId.replace(/#.*$/, "#"+prefId);
     return AjxTemplate.expand(templateId, data);
 };

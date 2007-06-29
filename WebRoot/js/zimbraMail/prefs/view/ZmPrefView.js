@@ -79,7 +79,7 @@ function() {
 	for (var i = 0; i < sections.length; i++) {
 		// does the section meet the precondition?
 		var section = sections[i];
-		if (!this._checkPreCondition(section.precondition)) {
+		if (!this._checkPreCondition(section)) {
 			continue;
 		}
 
@@ -214,7 +214,7 @@ function(dirtyCheck, noValidation, batchCommand) {
 			var id = prefs[j];
 			if (!viewPage._prefPresent || !viewPage._prefPresent[id]) { continue; }
 			var setup = ZmPref.SETUP[id];
-			if (!this._checkPreCondition(setup.precondition)) {
+			if (!this._checkPreCondition(setup)) {
 				continue;
 			}
 
@@ -285,23 +285,47 @@ function() {
 // Protected methods
 //
 
-ZmPrefView.prototype._checkPreCondition = function(precondition) {
-	if (precondition == null) {
+/**
+ * Checks for a precondition on the given object. If one is found, it is
+ * evaluated based on its type. Note that the precondition must be contained
+ * within the object in a property named "precondition".
+ * 
+ * @param obj			[object]	an object, possibly with a "precondition" property.
+ * @param precondition	[object]*	explicit precondition to check
+ */
+ZmPrefView.prototype._checkPreCondition =
+function(obj, precondition) {
+	// No object, nothing to check
+	if (!obj) {
 		return true;
 	}
-	if (AjxUtil.isBoolean(precondition)) {
-		return precondition;
+	// Object lacks "precondition" property, nothing to check
+	if (!("precondition" in obj)) {
+		return true;
 	}
-	if (AjxUtil.isFunction(precondition)) {
-		return precondition(this._appCtxt);
+	var p = precondition || obj.precondition;
+	// Object has a precondition that didn't get defined, probably because its
+	// app is not enabled. That equates to failure for the precondition.
+	if (p == null) {
+		return false;
 	}
-	if (AjxUtil.isArray(precondition)) {
-		for (var i = 0; i < precondition.length; i++) {
-			if (this._checkPreCondition(precondition[i])) {
+	// Precondition is set to true or false
+	if (AjxUtil.isBoolean(p)) {
+		return p;
+	}
+	// Precondition is a function, look at its result
+	if (AjxUtil.isFunction(p)) {
+		return p(this._appCtxt);
+	}
+	// A list of preconditions is ORed together via a recursive call
+	if (AjxUtil.isArray(p)) {
+		for (var i = 0, count = p.length; i < count; i++) {
+			if (this._checkPreCondition(obj, p[i])) {
 				return true;
 			}
 		}
 		return false;
 	}
-	return Boolean(this._appCtxt.get(precondition));
+	// Assume that the precondition is a setting, and return its value
+	return Boolean(this._appCtxt.get(p));
 };
