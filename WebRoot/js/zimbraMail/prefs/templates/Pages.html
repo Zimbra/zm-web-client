@@ -39,7 +39,7 @@ this:
 		</tr>
 		<tr><td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
-			
+
 				<!-- login { choice: ajax | html } -->
 				<!-- TODO: to be implemented
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.loginLabel$></td>
@@ -92,21 +92,21 @@ this:
 
 			<!-- SEARCH_INCLUDES_SPAM { boolean } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.searchSettingsLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SPAM' 
+					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SPAM'
 													label='<$=ZmMsg.includeJunkFolder$>'></div></td>
 				</tr>
 
 			<!-- SEARCH_INCLUDES_TRASH { boolean } -->
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_TRASH' 
+					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_TRASH'
 													label='<$=ZmMsg.includeTrashFolder$>'></div></td>
 				</tr>
 
 			<tr><td colspan=2><hr></td></tr>
-			
+
 			<!-- SHOW_SEARCH_STRING { boolean } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.searchLanguageLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_SHOW_SEARCH_STRING' 
+					<td class='ZOptionsField'><div id='${id}_SHOW_SEARCH_STRING'
 													label='<$=ZmMsg.showSearchString$>'></div></td>
 				</tr>
 			</table>
@@ -209,19 +209,19 @@ this:
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.displayMessagesLabel$></td>
 					<td class='ZOptionsField'><input id='${id}_PAGE_SIZE'></td>
 				</tr>
-			
+
 				<!-- INITIAL_GROUP_MAIL_BY { choice: message | conversation } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.groupMessagesLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_INITIAL_GROUP_MAIL_BY'></div></td>
 				</tr>
-			
+
 				<!-- POLLING_INTERVAL { integer } // mins -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.pollingIntervalLabel$></td>
 					<td class='ZOptionsField'>
 						<input id='${id}_POLLING_INTERVAL' size=3>
 					</td>
 				</tr>
-			
+
 				<!-- VIEW_AS_HTML { boolean } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.viewMailAsHtmlLabel$></td>
 					<td class='ZOptionsField'><select id='${id}_VIEW_AS_HTML'>
@@ -238,7 +238,7 @@ this:
 													label='<$=ZmMsg.alwaysShowReadingPane$>'
 												></div></td>
 				</tr>
-				
+
 				<!-- SHOW_FRAGMENTS { boolean } -->
 				<tr><td class='ZOptionsLabel'>
 					<$= (!data.isEnabled('READING_PANE_ENABLED') ? ZmMsg.messagePreviewLabel : "&nbsp;") $>
@@ -267,7 +267,7 @@ this:
 				-->
 
 				<tr><td colspan=2><hr></td></tr>
-				
+
 				<!-- INITIAL_SEARCH { string } // in:inbox -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.initialMailSearchLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_INITIAL_SEARCH'></div></td>
@@ -290,7 +290,7 @@ this:
 			<tr><td class='ZOptionsLabel'><$=ZmMsg.messageArrivalLabel$></td>
 				<td class='ZOptionsField' style='padding:0px'>
 					<table width=100%>
-		
+
 					<!-- MAIL_FORWARDING_ADDRESS { email } // empty == disabled? -->
 						<tr><td colspan=2>	<!-- checkbox ??? -->
 								<div id='${id}_MAIL_FORWARDING_ADDRESS-ON'>
@@ -312,7 +312,7 @@ this:
 							</tr>
 
 						<tr><td colspan=2><hr></td></tr>
-		
+
 						<!-- NOTIF_ENABLED { boolean } -->
 						<!-- NOTIF_ADDRESS { email } -->
 							<tr><td colspan=2>	<!-- checkbox -->
@@ -324,9 +324,9 @@ this:
 							<tr><td></td>
 								<td><input id='${id}_NOTIF_ADDRESS' title='enter email address'></td>
 							</tr>
-							
+
 						<tr><td colspan=2><hr></td></tr>
-		
+
 						<!-- VACATION_MSG_ENABLED { boolean } -->
 						<!-- VACATION_MSG { text } -->
 							<tr><td colspan=2>	<!-- checkbox -->
@@ -645,7 +645,7 @@ This section is used for reply options on an identity.
 						</select>
 					</td>
 				</tr>
-			
+
 			<!-- CONTACTS_VIEW { choice: cards | list } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.defaultViewLabel$></td>
 					<td class='ZOptionsField'>
@@ -688,7 +688,7 @@ This section is used for reply options on an identity.
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
-			
+
 			<!-- IMPORT (button) // file input -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.importLabel$></td>
 					<td class='ZOptionsInfo'><$=ZmMsg.importFromCSVHint$></td>
@@ -859,7 +859,7 @@ This section is used for reply options on an identity.
 			<td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
 <!-- HOW TO ENCODE ? -->
-			</table>				
+			</table>
 			</td>
 		</tr>
 	</table>
@@ -906,7 +906,7 @@ This section is used for reply options on an identity.
 
 
 			<tr><td colspan=2><hr></td></tr>
-	
+
 			<!-- DELETE_INVITE_ON_REPLY { boolean } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.deleteInviteOnReplyLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_DELETE_INVITE_ON_REPLY'></div></td>
@@ -1024,8 +1024,17 @@ This section is used for reply options on an identity.
 
 				<tr><td colspan=2><hr></td></tr>
 
-				<!-- IM_PREF_FLASH_ICON { boolean } -->
+				<!-- IM_PREF_INSTANT_NOTIFY { boolean } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.imNotificationsLabel$></td>
+					<td class='ZOptionsField'>
+						<div id='${id}_IM_PREF_INSTANT_NOTIFY'>
+							<input type='checkbox'> <$=ZmMsg.imPrefInstantNotify$>
+						</div>
+					</td>
+				</tr>
+
+				<!-- IM_PREF_FLASH_ICON { boolean } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'>
 						<div id='${id}_IM_PREF_FLASH_ICON'>
 							<input type='checkbox'> <$=ZmMsg.imPrefFlashIcon$>

@@ -120,6 +120,12 @@ function() {
 ZmImApp.prototype._registerSettings = function(settings) {
 	settings = settings || this._appCtxt.getSettings();
 
+	settings.registerSetting("IM_PREF_INSTANT_NOTIFY",
+				 { name         : "zimbraPrefIMInstantNotify",
+				   type         : ZmSetting.T_PREF,
+				   dataType     : ZmSetting.D_BOOLEAN,
+				   defaultValue : false });
+
         settings.registerSetting("IM_PREF_AUTO_LOGIN",
 				 { name         : "zimbraPrefIMAutoLogin",
                                    type         : ZmSetting.T_PREF,
@@ -147,6 +153,8 @@ ZmImApp.prototype._registerSettings = function(settings) {
                                    dataType     : ZmSetting.D_BOOLEAN,
 				   defaultValue : true
 				 });
+
+	settings.getSetting(ZmSetting.IM_PREF_INSTANT_NOTIFY).addChangeListener(new AjxListener(this, this._onSettingChange));
 };
 
 ZmImApp.prototype._registerPrefs = function() {
@@ -157,6 +165,7 @@ ZmImApp.prototype._registerPrefs = function() {
 			priority: 90,
 			precondition: ZmSetting.IM_ENABLED,
 			prefs: [
+				ZmSetting.IM_PREF_INSTANT_NOTIFY,
 				ZmSetting.IM_PREF_AUTO_LOGIN,
 				ZmSetting.IM_PREF_FLASH_ICON,
 				ZmSetting.IM_PREF_NOTIFY_PRESENCE,
@@ -167,6 +176,10 @@ ZmImApp.prototype._registerPrefs = function() {
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
 	}
+
+	ZmPref.registerPref("IM_PREF_INSTANT_NOTIFY",
+			    { displayName      : ZmMsg.imPrefInstantNotify,
+			      displayContainer : ZmPref.TYPE_CHECKBOX });
 
 	ZmPref.registerPref("IM_PREF_AUTO_LOGIN",
 			    { displayName      : ZmMsg.imPrefAutoLogin,
@@ -183,6 +196,16 @@ ZmImApp.prototype._registerPrefs = function() {
 	ZmPref.registerPref("IM_PREF_NOTIFY_STATUS",
 			    { displayName      : ZmMsg.imPrefNotifyStatus,
 			      displayContainer : ZmPref.TYPE_CHECKBOX });
+};
+
+ZmImApp.prototype._onSettingChange = function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) return;
+
+	var id = ev.source.id;
+        if (id == ZmSetting.IM_PREF_INSTANT_NOTIFY) {
+		var val = this._appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY);
+		this._appCtxt.getAppController().setInstantNotify(val);
+        }
 };
 
 ZmImApp.prototype.refresh =
@@ -255,6 +278,9 @@ function() {
 			this._roster._handleRequestGateways(this._initialGwResponse);
 		else
 			this._roster._requestGateways();
+		// enable instant notify?
+		if (this._appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY))
+			this._appCtxt.getAppController().setInstantNotify(true);
 	}
 	return this._roster;
 };
