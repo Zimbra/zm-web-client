@@ -101,6 +101,8 @@ function() {
 	data.expandField = AjxCallback.simpleClosure(this._expandField, this, data);
 
 	this.getContentHtmlElement().innerHTML = AjxTemplate.expand(templateId, data);
+	this.setVisible(false);
+// hide for now
 
     // create controls for prefs, if present in template
 	this._prefPresent = {};
@@ -108,6 +110,7 @@ function() {
 	var settings = this._appCtxt.getSettings();
 	for (var i = 0; i < prefs.length; i++) {
 		var id = prefs[i];
+		if (!id) { continue; }
 		var pref = settings.getSetting(id);
 
 		// ignore if there is no container element
@@ -119,7 +122,7 @@ function() {
 
 		// ignore if doesn't meet pre-condition
         var setup = ZmPref.SETUP[id];
-        if (!this.parent._checkPreCondition(setup.precondition)) {
+        if (!this.parent._checkPreCondition(setup)) {
 			continue;
 		}
 
@@ -218,6 +221,7 @@ function() {
 		button.replaceElement(elem);
 	}
 
+	this.setVisible(true);
 	this._hasRendered = true;
 };
 
@@ -670,18 +674,20 @@ function(ev) {
  * Returns true if any of the specified prefs are enabled (or have no
  * preconditions).
  */
-ZmPreferencesPage.prototype._isEnabled = function(data, prefId1 /* ..., prefIdN */) {
+ZmPreferencesPage.prototype._isEnabled =
+function(data, prefId1 /* ..., prefIdN */) {
 	for (var i = 1; i < arguments.length; i++) {
 		var prefId = arguments[i];
-		var pref = ZmPref.SETUP[prefId];
-		if (!pref || this.parent._checkPreCondition(pref.precondition)) {
+		if (!prefId) { return false; }	// setting not created (its app is disabled)
+		if (this.parent._checkPreCondition(ZmPref.SETUP[prefId])) {
 			return true;
 		}
 	}
 	return false;
 };
 
-ZmPreferencesPage.prototype._expandField = function(data, prefId) {
+ZmPreferencesPage.prototype._expandField =
+function(data, prefId) {
 	var templateId = this._section.templateId.replace(/#.*$/, "#"+prefId);
 	return AjxTemplate.expand(templateId, data);
 };

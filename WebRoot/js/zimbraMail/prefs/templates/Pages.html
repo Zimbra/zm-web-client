@@ -81,6 +81,8 @@ this:
 		</td></tr>
 	</table>
 
+	<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
+
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>&nbsp;</td>
@@ -90,17 +92,27 @@ this:
 		<tr><td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
 
+			<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM)) { $>
+			
 			<!-- SEARCH_INCLUDES_SPAM { boolean } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.searchSettingsLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SPAM'
 													label='<$=ZmMsg.includeJunkFolder$>'></div></td>
 				</tr>
+			
+			<$ } $>
+
+			<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
 
 			<!-- SEARCH_INCLUDES_TRASH { boolean } -->
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_TRASH'
 													label='<$=ZmMsg.includeTrashFolder$>'></div></td>
 				</tr>
+
+			<$ } $>
+
+	<$ } $>
 
 			<tr><td colspan=2><hr></td></tr>
 
@@ -421,6 +433,8 @@ this:
 					</td>
 				</tr>
 
+				<$ if (data.isEnabled(ZmSetting.NEW_WINDOW_COMPOSE)) { $>
+				
 				<tr><td></td><td><hr></td></tr>
 
 				<!-- NEW_WINDOW_COMPOSE { boolean } -->
@@ -431,6 +445,10 @@ this:
 						</div>
 					</td>
 				</tr>
+				
+				<$ } $>
+
+				<$ if (data.isEnabled(ZmSetting.SAVE_TO_SENT)) { $>
 
 				<tr><td colspan=2><hr></td></tr>
 
@@ -445,6 +463,8 @@ this:
 						</div>
 					</td>
 				</tr>
+
+				<$ } $>
 
 				<!-- TODO: Add once new identities work is done.
 				<tr><td colspan=2><hr></td></tr>

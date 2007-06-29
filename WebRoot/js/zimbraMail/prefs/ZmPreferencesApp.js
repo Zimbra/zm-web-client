@@ -255,6 +255,7 @@ function() {
 	ZmPref.registerPref("NEW_WINDOW_COMPOSE", {
 		displayName:		ZmMsg.composeInNewWin,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		ZmSetting.MAIL_ENABLED,
 		displaySeparator: 	true
 	});
 
@@ -293,6 +294,7 @@ function() {
 		displayName:		ZmMsg.saveToSent,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
 		orientation:		ZmPref.ORIENT_VERTICAL,
+		precondition:		ZmSetting.MAIL_ENABLED,
 		displayOptions:		[ ZmMsg.saveToSent, ZmMsg.saveToSentNOT ],
 		options:			[ true, false ]
 	});
@@ -300,12 +302,14 @@ function() {
 	ZmPref.registerPref("SEARCH_INCLUDES_SPAM", {
 		displayName:		ZmMsg.includeJunkFolder,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		ZmSetting.MAIL_ENABLED,
 		precondition:		ZmSetting.SPAM_ENABLED
 	});
 
 	ZmPref.registerPref("SEARCH_INCLUDES_TRASH", {
 		displayName:		ZmMsg.includeTrashFolder,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		[ZmSetting.MAIL_ENABLED, ZmSetting.CONTACTS_ENABLED],
 		displaySeparator:	true
 	});
 
