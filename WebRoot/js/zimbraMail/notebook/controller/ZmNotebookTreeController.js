@@ -222,7 +222,11 @@ function(ev, treeView, overviewId) {
 	for (var i = 0; i < organizers.length; i++) {
 		var organizer = organizers[i];
 		var id = organizer.id;
-		if (id == shownPage.id || id == shownPage.folderId) {
+		var parentId  = organizer.parent ? organizer.parent.id : null;
+		if (id == shownPage.id || id == shownPage.folderId || shownPage.id == parentId) {
+			if(id == shownPage.folderId && shownPage.name == ZmNotebook.PAGE_INDEX){
+				shownPage.restUrl = organizer.restUrl;
+			}
 			notebookController.gotoPage(shownPage);
 		}
 	}
