@@ -150,12 +150,113 @@ function() {
 ZmController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
+	
+	// tab navigation shortcut
 	var tabView = this.getTabView ? this.getTabView() : null;
 	if (tabView && tabView.handleKeyAction(actionCode)) {
 		return true;
 	}
+	
+	// check for action code with argument, eg MoveToFolder3
+	var shortcut = ZmShortcut.parseAction(this._appCtxt, "Global", actionCode);
+	if (shortcut) {
+		actionCode = shortcut.baseAction;
+	}
 
-	return false;
+	// shortcuts tied directly to operations
+	var app = ZmApp.ACTION_CODES_R[actionCode];
+	if (app) {
+		var op = ZmApp.ACTION_CODES[actionCode];
+		if (op) {
+			this._appCtxt.getApp(app).handleOp(op);
+			return true;
+		}
+	}
+
+	switch (actionCode) {
+
+		case ZmKeyMap.NEW: {
+			// find default "New" action code for current app
+			app = this._appCtxt.getCurrentAppName();
+			var newActionCode = ZmApp.NEW_ACTION_CODE[app];
+			if (newActionCode) {
+				var op = ZmApp.ACTION_CODES[newActionCode];
+				if (op) {
+					this._appCtxt.getApp(app).handleOp(op);
+					return true;
+				}
+			}
+			break;
+		}
+
+		case ZmKeyMap.NEW_FOLDER:
+		case ZmKeyMap.NEW_TAG:
+			var op = ZmApp.ACTION_CODES[actionCode];
+			if (op) {
+				this._newListener(null, op);
+			}
+			break;
+
+		case ZmKeyMap.GOTO_TAG:
+			var tag = this._appCtxt.getById(shortcut.arg);
+			if (tag) {
+				this._appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
+			}
+			break;
+
+		case ZmKeyMap.SAVED_SEARCH:
+			var searchFolder = this._appCtxt.getById(shortcut.arg);
+			if (searchFolder) {
+				this._appCtxt.getSearchController().redoSearch(searchFolder.search);
+			}
+			break;
+
+		default:
+			return false;
+	}
+	return true;
+};
+
+ZmController.prototype._newListener =
+function(ev, op) {
+	switch (op) {
+		// new organizers
+		case ZmOperation.NEW_FOLDER: {
+			var dialog = this._appCtxt.getNewFolderDialog();
+			if (!this._newFolderCb) {
+				this._newFolderCb = new AjxCallback(this, this._newFolderCallback);
+			}
+			ZmController.showDialog(dialog, this._newFolderCb);
+			break;
+		}
+		case ZmOperation.NEW_TAG: {
+			var dialog = this._appCtxt.getNewTagDialog();
+			if (!this._newTagCb) {
+				this._newTagCb = new AjxCallback(this, this._newTagCallback);
+			}
+			ZmController.showDialog(dialog, this._newTagCb);
+			break;
+		}
+	}
+};
+
+ZmController.prototype._newFolderCallback =
+function(parent, name, color, url) {
+	// REVISIT: Do we really want to close the dialog before we
+	//          know if the create succeeds or fails?
+	var dialog = this._appCtxt.getNewFolderDialog();
+	dialog.popdown();
+
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.FOLDER)._doCreate(parent, name, color, url);
+};
+
+ZmController.prototype._newTagCallback =
+function(params) {
+	var dialog = this._appCtxt.getNewTagDialog();
+	dialog.popdown();
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.TAG)._doCreate(params);
 };
 
 ZmController.prototype._createTabGroup =

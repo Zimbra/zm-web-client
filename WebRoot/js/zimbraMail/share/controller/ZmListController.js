@@ -147,22 +147,6 @@ function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
 	var listView = this._listView[this._currentView];
 
-	// check for action code with argument, eg MoveToFolder3
-	var origActionCode = actionCode;
-	var shortcut = ZmShortcut.parseAction(this._appCtxt, "Global", actionCode);
-	if (shortcut) {
-		actionCode = shortcut.baseAction;
-	}
-
-	var app = ZmApp.ACTION_CODES_R[actionCode];
-	if (app) {
-		var op = ZmApp.ACTION_CODES[actionCode];
-		if (op) {
-			this._appCtxt.getApp(app).handleOp(op);
-			return true;
-		}
-	}
-
 	switch (actionCode) {
 
 		case DwtKeyMap.DBLCLICK:
@@ -185,28 +169,6 @@ function(actionCode) {
 			var button = ntb ? ntb.getButton(ZmOperation.PAGE_BACK) : null;
 			if (button && button.getEnabled()) {
 				this._paginate(this._currentView, false);
-			}
-			break;
-
-		case ZmKeyMap.NEW: {
-			// find default "New" action code for current app
-			app = this._appCtxt.getCurrentAppName();
-			var newActionCode = ZmApp.NEW_ACTION_CODE[app];
-			if (newActionCode) {
-				var op = ZmApp.ACTION_CODES[newActionCode];
-				if (op) {
-					this._appCtxt.getApp(app).handleOp(op);
-					return true;
-				}
-			}
-			break;
-		}
-
-		case ZmKeyMap.NEW_FOLDER:
-		case ZmKeyMap.NEW_TAG:
-			var op = ZmApp.ACTION_CODES[actionCode];
-			if (op) {
-				this._newListener(null, op);
 			}
 			break;
 
@@ -240,22 +202,8 @@ function(actionCode) {
 			}
 			break;
 
-		case ZmKeyMap.GOTO_TAG:
-			var tag = this._appCtxt.getById(shortcut.arg);
-			if (tag) {
-				this._appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
-			}
-			break;
-
-		case ZmKeyMap.SAVED_SEARCH:
-			var searchFolder = this._appCtxt.getById(shortcut.arg);
-			if (searchFolder) {
-				this._appCtxt.getSearchController().redoSearch(searchFolder.search);
-			}
-			break;
-
 		default:
-			return ZmController.prototype.handleKeyAction.call(this, origActionCode);
+			return ZmController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
 };
@@ -526,27 +474,8 @@ function(ev, op, params) {
 		params = params || {};
 		params.ev = ev;
 		this._appCtxt.getApp(app).handleOp(op, params);
-		return;
-	}
-
-	switch (op) {
-		// new organizers
-		case ZmOperation.NEW_FOLDER: {
-			var dialog = this._appCtxt.getNewFolderDialog();
-			if (!this._newFolderCb) {
-				this._newFolderCb = new AjxCallback(this, this._newFolderCallback);
-			}
-			ZmController.showDialog(dialog, this._newFolderCb);
-			break;
-		}
-		case ZmOperation.NEW_TAG: {
-			var dialog = this._appCtxt.getNewTagDialog();
-			if (!this._newTagCb) {
-				this._newTagCb = new AjxCallback(this, this._newTagCallback);
-			}
-			ZmController.showDialog(dialog, this._newTagCb);
-			break;
-		}
+	} else {
+		ZmController.prototype._newListener.apply(this, arguments);
 	}
 };
 
@@ -798,25 +727,6 @@ function(ev) {
 };
 
 // new organizer callbacks
-
-ZmListController.prototype._newFolderCallback =
-function(parent, name, color, url) {
-	// REVISIT: Do we really want to close the dialog before we
-	//          know if the create succeeds or fails?
-	var dialog = this._appCtxt.getNewFolderDialog();
-	dialog.popdown();
-
-	var oc = this._appCtxt.getOverviewController();
-	oc.getTreeController(ZmOrganizer.FOLDER)._doCreate(parent, name, color, url);
-};
-
-ZmListController.prototype._newTagCallback =
-function(params) {
-	var dialog = this._appCtxt.getNewTagDialog();
-	dialog.popdown();
-	var oc = this._appCtxt.getOverviewController();
-	oc.getTreeController(ZmOrganizer.TAG)._doCreate(params);
-};
 
 // Move stuff to a new folder.
 ZmListController.prototype._moveCallback =
