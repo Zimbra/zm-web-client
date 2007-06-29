@@ -19,7 +19,7 @@
             <c:if test="${mailbox.features.skinChange}">
                 <zm:pref name="zimbraPrefSkin" value="${param.zimbraPrefSkin}"/>
             </c:if>
-            <zm:pref name="zimbraPrefTimeZoneId" value="${param.zimbraPrefTimeZoneId}"/>            
+            <zm:pref name="zimbraPrefTimeZoneId" value="${param.zimbraPrefTimeZoneId}"/>
         </c:when>
         <%-- MAIL --%>
         <c:when test="${selected eq 'mail'}">
@@ -61,20 +61,6 @@
         <c:when test="${selected eq 'signatures'}">
             <zm:pref name="zimbraPrefMailSignatureStyle" value="${param.zimbraPrefMailSignatureStyle}"/>
             <zm:pref name="zimbraPrefMailSignatureEnabled" value="${param.zimbraPrefMailSignatureEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
-
-            <c:forEach var="i" begin="0" end="${param.numSignatures}">
-                <c:set var="origSignatureNameKey" value="origSignatureName${i}"/>
-                <c:set var="signatureNameKey" value="signatureName${i}"/>
-                <c:set var="origSignatureValueKey" value="origSignatureValue${i}"/>
-                <c:set var="signatureValueKey" value="signatureValue${i}"/>
-                <c:if test="${(param[origSignatureNameKey] ne param[signatureNameKey]) or
-                (param[origSignatureValueKey] ne param[signtureValueKey])}">
-                    <c:set var="signatureIdKey" value="signatureId${i}"/>
-                    <zm:modifySiganture id="${param[signatureIdKey]}"
-                                        name="${param[signatureNameKey]}" value="${param[signatureValueKey]}"/>
-                    <c:set var="signatureUpdated" value="${true}"/>
-                </c:if>
-            </c:forEach>
         </c:when>
         <%-- MAIL IDENTITY --%>
         <c:when test="${selected eq 'identity'}">
@@ -103,6 +89,34 @@
     </c:choose>
 </zm:modifyPrefs>
 
+<c:if test="${selected eq 'signatures'}">
+    <c:forEach var="i" begin="0" end="${param.numSignatures}">
+        <c:set var="origSignatureNameKey" value="origSignatureName${i}"/>
+        <c:set var="signatureNameKey" value="signatureName${i}"/>
+        <c:set var="origSignatureValueKey" value="origSignatureValue${i}"/>
+        <c:set var="signatureValueKey" value="signatureValue${i}"/>
+        <c:if test="${(param[origSignatureNameKey] ne param[signatureNameKey]) or
+                (param[origSignatureValueKey] ne param[signtureValueKey])}">
+            <c:set var="modSignatureWarning" value="${true}" scope="request"/>
+            <c:choose>
+                <c:when test="${empty param[signatureNameKey]}">
+                    <app:status style="Warning"><fmt:message key="optionsNoSignatureName"/></app:status>
+                </c:when>
+                <c:when test="${empty param[signatureValueKey]}">
+                    <app:status style="Warning"><fmt:message key="optionsNoSignatureValue"/></app:status>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="signatureIdKey" value="signatureId${i}"/>
+                    <zm:modifySiganture id="${param[signatureIdKey]}"
+                                        name="${param[signatureNameKey]}" value="${param[signatureValueKey]}"/>
+                    <c:set var="signatureUpdated" value="${true}"/>
+                    <c:set var="modSignatureWarning" value="${false}" scope="request"/>
+                </c:otherwise>
+            </c:choose>
+        </c:if>
+    </c:forEach>
+</c:if>
+
 <c:if test="${selected eq 'signatures' and not empty param.newSignature}">
     <c:set var="newSignatureWarning" value="${true}" scope="request"/>
     <c:choose>
@@ -121,7 +135,7 @@
 </c:if>
 
 <c:choose>
-    <c:when test="${newSignatureWarning}">
+    <c:when test="${newSignatureWarning or modSignatureWarning}">
         <%-- do nothing --%>
     </c:when>
     <c:when test="${updated or signatureUpdated}">
