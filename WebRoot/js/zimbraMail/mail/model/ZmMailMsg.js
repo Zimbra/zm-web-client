@@ -56,6 +56,8 @@ ZmMailMsg.prototype.constructor = ZmMailMsg;
 ZmMailMsg.ADDRS = [AjxEmailAddress.FROM, AjxEmailAddress.TO, AjxEmailAddress.CC,
 				   AjxEmailAddress.BCC, AjxEmailAddress.REPLY_TO, AjxEmailAddress.SENDER];
 
+ZmMailMsg.COMPOSE_ADDRS = [AjxEmailAddress.TO, AjxEmailAddress.CC, AjxEmailAddress.BCC];
+
 ZmMailMsg.HDR_FROM		= AjxEmailAddress.FROM;
 ZmMailMsg.HDR_TO		= AjxEmailAddress.TO;
 ZmMailMsg.HDR_CC		= AjxEmailAddress.CC;
@@ -679,8 +681,8 @@ function(soapDoc, contactList, isDraft, accountName) {
 		msgNode.setAttribute("idnt", this.identity.id);
 	}
 
-	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
-		var type = ZmComposeView.ADDRS[i];
+	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		this._addAddressNodes(soapDoc, msgNode, type, contactList, isDraft);
 	}
 	this._addFrom(soapDoc, msgNode, accountName);

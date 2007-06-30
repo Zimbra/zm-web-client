@@ -47,7 +47,9 @@ ZmObjectManager = function(view, appCtxt, selectCallback, skipHandlers) {
 	this._objectIdPrefix = "OBJ_PREFIX_";
 	this._objectHandlers = {};
 	// don't include when looking for objects. only used to provide tool tips for images
-	this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);
+	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);
+	}
 
 	// create handlers (see registerHandler below)
 	if (!skipHandlers) {

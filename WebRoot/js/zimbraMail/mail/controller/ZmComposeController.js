@@ -382,8 +382,8 @@ function() {
 	var rootTg = this._appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
 	tg.addMember(this._toolbar);
-	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
-		tg.addMember(this._composeView._field[ZmComposeView.ADDRS[i]]);
+	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+		tg.addMember(this._composeView._field[ZmMailMsg.COMPOSE_ADDRS[i]]);
 	}
 	tg.addMember(this._composeView._subjectField);
 	var mode = this._composeView.getComposeMode();

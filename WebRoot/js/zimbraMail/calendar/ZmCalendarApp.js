@@ -189,7 +189,7 @@ function() {
 	ZmOperation.registerOp("EDIT_REPLY_TENTATIVE", {textKey:"replyTentative", image:"QuestionMark"});
 	ZmOperation.registerOp("INVITE_REPLY_ACCEPT", {textKey:"editReply", image:"Check"});
 	ZmOperation.registerOp("INVITE_REPLY_DECLINE", {textKey:"editReply", image:"Cancel"});
-	ZmOperation.registerOp("INVITE_REPLY_MENU", {textKey:"editReply", image:"Reply"}, null,
+	ZmOperation.registerOp("INVITE_REPLY_MENU", {textKey:"editReply", image:"Reply"}, ZmSetting.MAIL_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmCalendarApp.addInviteReplyMenu, parent);
 	}));
