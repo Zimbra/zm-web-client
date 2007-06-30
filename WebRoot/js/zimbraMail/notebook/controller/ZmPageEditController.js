@@ -305,8 +305,19 @@ ZmPageEditController.prototype._saveResponseHandler = function(content, response
 		wiki.l = this._page.folderId;
 		wiki.name = this._page.name;
 
-		var page = new ZmPage(this._appCtxt);
-		page.set(wiki);
+		var page = cachedPage;		
+		if(page == null){
+		page = new ZmPage(this._appCtxt);
+		}		
+		//page.set(wiki);
+		page.name = this._page.name;
+		page.version = this._page.version;
+		var restUrl = this._page.restUrl;
+		var parts = restUrl.split("/");
+		if(parts && parts[parts.length-1]!=page.name){
+			parts[parts.length-1] =  page.name;
+			page.restUrl = parts.join("/");
+		}
 		cache.putPage(page);
 	}
 	if (popViewWhenSaved) {
