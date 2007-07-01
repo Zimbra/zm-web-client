@@ -138,7 +138,7 @@ ZmBriefcaseController.prototype._resetOperations = function(toolbarOrActionMenu,
 };
 
 ZmBriefcaseController.prototype._getTagMenuMsg = function() {
-	return ZmMsg.tagPage;
+	return ZmMsg.tagFile;
 };
 
 ZmBriefcaseController.prototype._doDelete = function(items,delcallback) {
