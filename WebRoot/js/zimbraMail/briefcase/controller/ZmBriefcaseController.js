@@ -31,6 +31,7 @@ ZmBriefcaseController = function(appCtxt, container, app) {
 
     this._listeners[ZmOperation.OPEN_FILE] = new AjxListener(this, this._openFileListener);	
    	this._listeners[ZmOperation.SEND_FILE] = new AjxListener(this, this._sendPageListener);
+   	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);   	
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 	
@@ -115,6 +116,21 @@ ZmBriefcaseController.prototype._resetOperations = function(toolbarOrActionMenu,
 	var isShared = this.isShared(this._currentFolder);
 	var isReadOnly = this.isReadOnly(this._currentFolder);	
 	var isItemSelected = (num>0);
+	var isViewHtmlEnabled = true;
+
+	var items = this._listView[this._currentView].getSelection();
+	if(items){
+		for(var i=0;i<items.length;i++){
+			var item = items[i];
+			if(!this.isConvertable(item)){
+				isViewHtmlEnabled = false;
+				break;
+			}
+		}
+	}
+	if(this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)){
+	toolbarOrActionMenu.enable([ZmOperation.VIEW_FILE_AS_HTML], isItemSelected && isViewHtmlEnabled );	
+	}	
 	toolbarOrActionMenu.enable([ZmOperation.OPEN_FILE], isItemSelected );	
 	toolbarOrActionMenu.enable([ZmOperation.SEND_FILE], isItemSelected );
 	toolbarOrActionMenu.enable([ZmOperation.DELETE], !(isReadOnly && isReadOnly) && isItemSelected);
@@ -573,6 +589,9 @@ function(ev) {
 ZmBriefcaseController.prototype._getActionMenuOps =
 function() {
 	var list = [ZmOperation.OPEN_FILE,ZmOperation.SEND_FILE];
+	if(this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)){
+	list.push(ZmOperation.VIEW_FILE_AS_HTML);
+	}	
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
@@ -736,4 +755,30 @@ ZmBriefcaseController.prototype.isConvertable = function(item) {
 		}
 	}
 	return false;
+};
+
+ZmBriefcaseController.prototype._viewAsHtmlListener =
+function(){
+
+	var view = this._listView[this._currentView];
+	var items = view.getSelection();	
+	if(!items)
+	return;
+
+	items = items instanceof Array ? items : [ items ];	
+	for(var i = 0;i<items.length;i++){
+		var item = items[i];
+		if(item && item.restUrl){
+			this.viewAsHtml(item.restUrl);
+		}
+	}
+};
+
+ZmBriefcaseController.prototype.viewAsHtml = function(restUrl){
+	if(restUrl.match(/\?/)){
+		restUrl+= "&view=html";
+	}else{
+		restUrl+= "?view=html";
+	}
+	window.open(restUrl);
 };
