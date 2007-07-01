@@ -115,8 +115,8 @@ function() {
 							 itemsKey:			"folders",
 							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["document"],
-							 folderKey:			"notebookFolder",
-							 mountKey:			"mountNotebook",
+							 folderKey:			"briefcase",
+							 mountKey:			"mountFolder",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmBriefcase.sortCompare",
 							 deferrable:		true
