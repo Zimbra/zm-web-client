@@ -560,6 +560,12 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	button.setImage("URL");
 	button.setToolTipContent(ZmMsg.insertLink);
 	button.addSelectionListener(new AjxListener(this, this._insertLinkListener));
+	
+	button = new DwtToolBarButton(this._toolbar2, null);
+	button.setImage("FindReplace");
+	button.setToolTipContent(ZmMsg.findNReplaceTitle);
+	button.addSelectionListener(new AjxListener(this, this._findReplaceListener));
+	
 };
 
 /*** TODO: Add this back later...
@@ -783,4 +789,20 @@ function() {
 	this._resetFormatControls();
 	var action = new AjxTimedAction(this, this.focus);
 	AjxTimedAction.scheduleAction(action, DwtHtmlEditor._INITDELAY + 3);
+};
+
+ZmPageEditor.prototype._findReplaceListener =
+function(){	
+	this.focus();	
+	var sel_findnreplace = this._getSelection();
+	this.range_findnreplace = this._createRange(sel_findnreplace);
+	this._popupReplaceDialog();				
+};
+
+ZmPageEditor.prototype._popupReplaceDialog = function(target, url, text) {
+	var editorInfo = {
+		document: this._getIframeDoc(),editor: this
+	}
+	var dialog = this._appCtxt.getReplaceDialog();
+	dialog.popup(editorInfo);
 };

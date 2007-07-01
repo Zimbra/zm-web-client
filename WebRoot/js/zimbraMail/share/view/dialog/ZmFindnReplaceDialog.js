@@ -40,6 +40,8 @@ ZmFindnReplaceDialog = function(appCtxt, shell, className) {
 	this._findId = Dwt.getNextId();
 	this._replaceId = Dwt.getNextId();
 	this._dirId = Dwt.getNextId();
+	this._dirIdUp = Dwt.getNextId();
+	this._dirIdDown = Dwt.getNextId();
 	this._caseId = Dwt.getNextId();
 	this._wholeWordId = Dwt.getNextId();
 	this._messageId = Dwt.getNextId();
@@ -56,14 +58,14 @@ ZmFindnReplaceDialog = function(appCtxt, shell, className) {
          "<tr><td class='Label' align='left'>",ZmMsg.directionLabel,"</td>",
          "<td colspan=2 id='",this._dirId ,"' align='left'>",
          	"<table cellpadding='3'><tr>",
-         	"<td><input type='radio' name='",this._dirId,"' value='up'></td>","<td class='Label'>",ZmMsg.upLabel,"</td>",
-         	"<td><input type='radio' name='",this._dirId,"' value='down' checked></td>","<td class='Label'>",ZmMsg.downLabel,"</td>",
+         	"<td><input type='radio' id='",this._dirIdUp,"' name='",this._dirId,"' value='up'></td>","<td class='Label'>",ZmMsg.upLabel,"</td>",
+         	"<td><input type='radio' id='",this._dirIdDown,"' name='",this._dirId,"' value='down' checked></td>","<td class='Label'>",ZmMsg.downLabel,"</td>",
          	"</tr></table>",
          "</td></tr>",        
          "<tr><td colspan='3'>",
 		   	"<table cellpadding='3'><tr>",
 		   	"<td class='Label' align='right'><input type='checkbox' id='",this._caseId,"'>",
-		   	"<td class='Label' align='left'>",ZmMsg.casesensitive,"</td>",
+		   	"<td class='Label' align='left'>",ZmMsg.caseSensitive,"</td>",
          	"</tr></table>",
 		 "</td></tr>",		         
          "</table>",          
@@ -164,34 +166,31 @@ ZmFindnReplaceDialog.prototype.replaceAction = function(mode,findOnly)
 {
 	var findVal = this._findInput.getValue();
 	var replaceVal = (findOnly? null : this._replaceInput.getValue());
-	var radioBtns = document.getElementsByName(this._dirId);
-	var casesensitive = false;
-	var backwards = false;
-	if(radioBtns && radioBtns[0] && radioBtns[0].checked){
-		backwards = true;
+	var radioBtns = document.getElementById(this._dirIdUp);
+	var casesensitiveVal = false;
+	var backwardsVal = false;
+	if(radioBtns && radioBtns.checked){
+		backwardsVal = true;
 	}
 	this._caseCheckbox = document.getElementById(this._caseId);
 	
-	if(this._caseCheckbox && this._caseCheckbox.checked)
-	{
+	if(this._caseCheckbox && this._caseCheckbox.checked) {
 		casesensitive = true;
-	}
-
+	}	
+	
 	var params = {
-			string: findVal,
+			searchstring: findVal,
 			replacestring: replaceVal,
 			replacemode : mode,
-			casesensitive : casesensitive,
-			backwards : backwards,
+			casesensitive : casesensitiveVal,
+			backwards : backwardsVal
 		};
-
 	if(this._editorInfo.editor){
 		var editor = this._editorInfo.editor;
+		if(AjxEnv.iIE){
+		editor.focus();
+		}
 		editor.searchnReplace(params);			
-	}
-	
-	if(mode == "none"){	
-		
 	}
 	
 	if (this._callback) {		
