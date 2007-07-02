@@ -382,8 +382,10 @@ ZmMailListController.prototype._initializeActionMenu =
 function() {
 	ZmListController.prototype._initializeActionMenu.call(this);
 
-	this._setupSpamButton(this._actionMenu);
-	this._setupReplyForwardOps(this._actionMenu);
+	if (this._actionMenu) {
+		this._setupSpamButton(this._actionMenu);
+		this._setupReplyForwardOps(this._actionMenu);
+	}
 };
 
 // Groups of mail-related operations
@@ -684,7 +686,9 @@ function(parent) {
 // If we're in the Spam folder, the "Spam" button becomes the "Not Spam" button
 ZmMailListController.prototype._setupSpamButton =
 function(parent) {
-	var item = parent ? parent.getOp(ZmOperation.SPAM) : null;
+	if (!parent) { return; }
+
+	var item = parent.getOp(ZmOperation.SPAM);
 	if (item) {
 		var inSpamFolder = (this._getSearchFolderId() == ZmFolder.ID_SPAM);
 		item.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
@@ -696,6 +700,10 @@ function(parent) {
 
 ZmMailListController.prototype._setupCheckMailButton = 
 function(parent) {
+	if (!parent) { return; }
+    var checkMailBtn = parent.getButton(ZmOperation.CHECK_MAIL);
+    if (!checkMailBtn) { return; }
+
     var folderId = this._getSearchFolderId();
     var folder = this._appCtxt.getById(folderId);
     var isInbox = (folderId == ZmFolder.ID_INBOX);
@@ -708,20 +716,17 @@ function(parent) {
         hasPopAccounts = popAccounts.length > 0;
     }
 
-    var checkMailBtn = parent.getButton(ZmOperation.CHECK_MAIL);
-	if (checkMailBtn) {
-		if (!isInbox && isFeed) {
-			checkMailBtn.setText(ZmMsg.checkFeed);
-			checkMailBtn.setToolTipContent(ZmMsg.checkRssTooltip);
-		}
-		else if (!isInbox && hasPopAccounts) {
-			checkMailBtn.setText(ZmMsg.checkPopMail);
-			checkMailBtn.setToolTipContent(ZmMsg.checkPopMail);
-		}
-		else {
-			checkMailBtn.setText(ZmMsg.checkMail);
-			checkMailBtn.setToolTipContent(ZmMsg.checkMailTooltip);
-		}
+	if (!isInbox && isFeed) {
+		checkMailBtn.setText(ZmMsg.checkFeed);
+		checkMailBtn.setToolTipContent(ZmMsg.checkRssTooltip);
+	}
+	else if (!isInbox && hasPopAccounts) {
+		checkMailBtn.setText(ZmMsg.checkPopMail);
+		checkMailBtn.setToolTipContent(ZmMsg.checkPopMail);
+	}
+	else {
+		checkMailBtn.setText(ZmMsg.checkMail);
+		checkMailBtn.setToolTipContent(ZmMsg.checkMailTooltip);
 	}
 };
 
