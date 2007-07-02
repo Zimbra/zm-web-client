@@ -125,6 +125,26 @@
             </fmt:message>
         </app:status>
     </c:when>
+    <c:when test="${zm:actionSet(param, 'actionEmptyFolderConfirm')}">
+        <c:set var="folder" value="${zm:getFolder(pageContext, param.folderEmptyId)}"/>
+        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderEmptyId)}"/>
+        <c:choose>
+            <c:when test="${empty param.folderEmptyConfirm}">
+                <app:status style="Warning">
+                    <fmt:message key="actionDeleteCheckConfirm"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <zm:emptyFolder id="${param.folderEmptyId}"/>
+                <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderEmptyId)}"/>
+                <app:status>
+                    <fmt:message key="folderEmptied">
+                        <fmt:param value="${folderName}"/>
+                    </fmt:message>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
     <c:when test="${zm:actionSet(param, 'actionMarkRead')}">
         <zm:markFolderRead id="${param.folderId}"/>
         <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderId)}"/>

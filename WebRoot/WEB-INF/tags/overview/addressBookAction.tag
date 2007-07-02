@@ -131,6 +131,25 @@
             </c:otherwise>
         </c:choose>
     </c:when>
+    <c:when test="${not empty uploader.params.actionEmptyFolderConfirm}">
+        <c:set var="folder" value="${zm:getFolder(pageContext, uploader.params.folderEmptyId)}"/>
+        <c:set var="folderName" value="${zm:getFolderName(pageContext, uploader.params.folderEmptyId)}"/>
+        <c:choose>
+            <c:when test="${empty uploader.params.folderEmptyConfirm}">
+                <app:status style="Warning">
+                    <fmt:message key="actionDeleteCheckConfirm"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <zm:emptyFolder id="${uploader.params.folderEmptyId}"/>
+                <app:status>
+                    <fmt:message key="addressBookEmptied">
+                        <fmt:param value="${folderName}"/>
+                    </fmt:message>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
     <c:when test="${not empty uploader.params.actionEmptyFolder}">
         <zm:emptyFolder id="${uploader.params.folderEmptyId}"/>
         <c:set var="folderName" value="${zm:getFolderName(pageContext, uploader.params.folderEmptyId)}"/>

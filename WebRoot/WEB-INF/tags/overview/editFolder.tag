@@ -417,22 +417,67 @@
     </tr>
 </c:if>
 
-<c:if test="${folder.isTrash or folder.isSpam}">
-    <tr>
-        <td colspan=2>
-            <hr>
-        </td>
-    </tr>
-    <tr>
-        <td>&nbsp;</td>
-        <td>
-            <input id="OPEMPTY" class='tbButton' type="submit" name="actionEmptyFolder"
-                   value="<fmt:message key="folderEmptyFolder"/>">
-            <input type="hidden" name="folderEmptyId" value="${folder.id}"/>
-        </td>
-    </tr>
-</c:if>
+<tr>
+    <td colspan=2>
+        <hr>
+    </td>
+</tr>
 
+<c:choose>
+    <c:when test="${folder.isTrash or folder.isSpam}">
+        <tr>
+            <td>&nbsp;</td>
+            <td>
+                <input id="OPEMPTY" class='tbButton' type="submit" name="actionEmptyFolder"
+                       value="<fmt:message key="folderEmptyFolder"/>">
+                <input type="hidden" name="folderEmptyId" value="${folder.id}"/>
+            </td>
+        </tr>
+    </c:when>
+    <c:otherwise>
+        <c:choose>
+            <c:when test="${folder.isAppointmentView}">
+                <fmt:message var="emptyButton" key="folderEmptyCalendar"/>
+                <fmt:message var="emptyConfirm" key="calendarEmptyConfirmation"/>
+            </c:when>
+            <c:when test="${folder.isContactView}">
+                <fmt:message var="emptyButton" key="folderEmptyAddressBook"/>
+                <fmt:message var="emptyConfirm" key="addressBookEmptyConfirmation"/>
+            </c:when>
+            <c:otherwise>
+                <fmt:message var="emptyButton" key="folderEmptyNonTrashFolder"/>
+                <fmt:message var="emptyConfirm" key="folderEmptyNonTrashFolderConfirmation"/>
+            </c:otherwise>
+        </c:choose>
+        <tr>
+            <td colspan=2>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td nowrap>
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <input id="emptyConfirm" name='folderEmptyConfirm' type='checkbox' value="true">
+                        </td>
+                        <td>&nbsp;</td>
+                        <td>
+                            <b><label for="emptyConfirm">${emptyConfirm}</label></b>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+         <tr>
+            <td>&nbsp;</td>
+            <td>
+                <input class='tbButton' type="submit" name="actionEmptyFolderConfirm"
+                       value="${fn:escapeXml(emptyButton)}">
+                <input type="hidden" name="folderEmptyId" value="${folder.id}"/>
+            </td>
+        </tr>
+    </c:otherwise>
+</c:choose>
 
 
 
@@ -453,15 +498,6 @@
         </c:otherwise>
     </c:choose>
     <tr>
-        <td colspan=2>&nbsp;</td>
-    </tr>
-    <tr>
-        <td colspan=2>&nbsp;</td>
-    </tr>
-    <tr>
-        <td colspan=2>&nbsp;</td>
-    </tr>
-    <tr>
         <td colspan=2>
             <hr>
         </td>
@@ -476,7 +512,7 @@
                     </td>
                     <td>&nbsp;</td>
                     <td>
-                            <label for="deleteConfirm">${fn:escapeXml(deleteConfirm)}</label>
+                            <b><label for="deleteConfirm">${fn:escapeXml(deleteConfirm)}</label></b>
                     </td>
                 </tr>
             </table>
