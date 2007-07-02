@@ -8,7 +8,8 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <app:searchTitle var="title" context="${context}"/>
-    <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
+
+    <c:set var="useTo" value="${context.folder.isPlacedCalls}"/>
 </app:handleError>
 <app:view mailbox="${mailbox}" title="${title}" selected='voice' voice="true" folders="false" tags="false" searches="false" context="${context}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>

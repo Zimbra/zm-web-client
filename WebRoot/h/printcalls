@@ -9,6 +9,7 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:computeSearchContext var="context" usecache="true"/>
+    <c:set var="useTo" value="${context.folder.isPlacedCalls}"/>
 </app:handleError>
 
 <html>
@@ -21,9 +22,8 @@
             <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
         </tr></table>
         <hr/>
-<!--
-        Put the name of the folder here
--->
+
+        <h1>${zm:getVoiceFolderName(pageContext, context.folder)}</h1>
         <table class='ZhCallListPrintTable' cellpadding=2 cellspacing=0 >
             <tr class='Header'>
                 <th><fmt:message key="${useTo ? 'to' : 'from'}"/>
