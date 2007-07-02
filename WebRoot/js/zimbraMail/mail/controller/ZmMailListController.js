@@ -682,11 +682,11 @@ function(parent) {
 };
 
 // If we're in the Spam folder, the "Spam" button becomes the "Not Spam" button
-ZmMailListController.prototype._setupSpamButton = 
+ZmMailListController.prototype._setupSpamButton =
 function(parent) {
-	var inSpamFolder = (this._getSearchFolderId() == ZmFolder.ID_SPAM);
-	var item = parent.getOp(ZmOperation.SPAM);
+	var item = parent ? parent.getOp(ZmOperation.SPAM) : null;
 	if (item) {
+		var inSpamFolder = (this._getSearchFolderId() == ZmFolder.ID_SPAM);
 		item.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
 		if (item.setToolTipContent) {
 			item.setToolTipContent(inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip);
@@ -727,6 +727,8 @@ function(parent) {
 
 ZmMailListController.prototype._setupReplyForwardOps =
 function(parent) {
+	if (!parent) { return; }
+
 	var inDraftsFolder = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
 	var ops = [];
 
