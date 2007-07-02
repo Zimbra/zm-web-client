@@ -61,10 +61,12 @@
     <SCRIPT TYPE="text/javascript">
         <!--
         var zprint = function() { var e = document.getElementById("OPPRINT"); window.open(e.href, e.target); }
+        var zcallManager = function() { var e = document.getElementById("OPCALLMANAGER"); window.location = e.href; }
         //-->
     </SCRIPT>
 
     <app:keyboard cache="voice.callListView" globals="true" mailbox="${mailbox}" tags="false" folders="false">
         <zm:bindKey message="call.Print" func="zprint"/>
+        <zm:bindKey message="call.CallManager" func="zcallManager"/>
     </app:keyboard>
 </app:view>

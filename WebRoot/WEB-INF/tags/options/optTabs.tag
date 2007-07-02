@@ -47,7 +47,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='voice' ? 'TabSelected' :'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=voice"/>">
-                    <span><fmt:message key="voice"/></span></a>
+                    <span><fmt:message key="callManager"/></span></a>
             </td>
         </c:if>
         <c:if test="${mailbox.features.contacts}">
