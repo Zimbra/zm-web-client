@@ -13,12 +13,16 @@
         <td><div class='vertSep'></div></td>
         <c:choose>
             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                <app:button id="OPDELETE" text="actionDelete" name="actionHardDelete" tooltip="actionTrashTT"/>
+                <app:button id="OPDELETE" src="common/Trash.gif" name="actionHardDelete" tooltip="actionTrashTT"/>
             </c:when>
             <c:otherwise>
-                <app:button id="OPDELETE" text="actionDelete" name="actionDelete" tooltip="actionTrashTT"/>
+                <app:button id="OPDELETE" src="common/Trash.gif" name="actionDelete" tooltip="actionTrashTT"/>
             </c:otherwise>
         </c:choose>
+        <td nowrap>
+            <zm:currentResultUrl var="printUrl" value="/h/printvoicemails" context="${context}" refresh="true" />
+            <a id="OPPRINT" target="_blank" href="${printUrl}"><app:img src="common/Print.gif" altkey="actionPrint"/></a>
+        </td>
         <td><div class='vertSep'></div></td>
         <app:button id="OPREPLYBYEMAIL" name="actionReplyByEmail" text="actionReplyByEmail" src="mail/Reply.gif" tooltip="actionReplyByEmailTT"/>
         <app:button id="OPFORWARDBYEMAIL" name="actionForwardByEmail" text="actionForwardByEmail" src="mail/Forward.gif" tooltip="actionForwardByEmailTT"/>
