@@ -179,3 +179,26 @@
 		<td> ${date} </td>
 	</tr>
 </template>
+
+<template id='ZmVoicemailListPrintView'>
+	<div class='ZmHead'><b>${name}</b></div>
+	<div class='ZSmallSpacer'></div>
+	<table class="ZmCallListPrintView" cellspacing=0>
+		<tr style='font-weight:bold'>
+            <td><img src='<$= data.appContextPath $>/images/tag/FlagRed.gif'/></td>
+			<td> <$= ZmMsg.from $> </td>
+			<td> <$= ZmMsg.duration $> </td>
+			<td> <$= ZmMsg.received $> </td>
+		</tr>
+		${rows}
+	</table>
+</template>
+
+<template id='ZmVoicemailListPrintViewRow'>
+	<tr>
+		<td><img src='<$= data.appContextPath $>/images/<$= data.flagImage $>'/></td>
+		<td> ${caller} </td>
+		<td> ${duration} </td>
+		<td> ${date} </td>
+	</tr>
+</template>

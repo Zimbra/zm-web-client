@@ -32,7 +32,7 @@ ZmVoicemailListController = function(appCtxt, container, app) {
 
 	this._listeners[ZmOperation.CHECK_VOICEMAIL] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
-	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
+	this._listeners[ZmOperation.DOWNLOAD_VOICEMAIL] = new AjxListener(this, this._downloadListener);
 	this._listeners[ZmOperation.REPLY_BY_EMAIL] = new AjxListener(this, this._replyListener);
 	this._listeners[ZmOperation.FORWARD_BY_EMAIL] = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.AUTO_PLAY] = new AjxListener(this, this._autoPlayListener);
@@ -79,11 +79,13 @@ function() {
 	var list = [];
 	list.push(ZmOperation.CHECK_VOICEMAIL);
 	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.SAVE);
 	list.push(ZmOperation.DELETE);
+    list.push(ZmOperation.PRINT);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.REPLY_BY_EMAIL);
 	list.push(ZmOperation.FORWARD_BY_EMAIL);
+    list.push(ZmOperation.SEP);
+    list.push(ZmOperation.DOWNLOAD_VOICEMAIL);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.AUTO_PLAY);
 	list.push(ZmOperation.SEP);
@@ -104,7 +106,7 @@ function() {
 	list.push(ZmOperation.REPLY_BY_EMAIL);
 	list.push(ZmOperation.FORWARD_BY_EMAIL);
 	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.SAVE);
+	list.push(ZmOperation.DOWNLOAD_VOICEMAIL);
 	list.push(ZmOperation.DELETE);
 	return list;
 };
@@ -120,6 +122,7 @@ ZmVoicemailListController.prototype._resetOperations =
 function(parent, num) {
 	ZmVoiceListController.prototype._resetOperations.call(this, parent, num);
 	parent.enable(ZmOperation.CHECK_VOICEMAIL, true);
+	parent.enable(ZmOperation.PRINT, true);
 	parent.enable(ZmOperation.AUTO_PLAY, this._folder && this._folder.numUnread && !DwtSoundPlugin.isScriptingBroken());
 	
 	var hasHeard = false;
@@ -144,9 +147,9 @@ function(actionCode) {
 	var view = this._getView();
 	var num = view.getSelectionCount();
 	switch (actionCode) {
-		case ZmKeyMap.SAVE:
+		case ZmKeyMap.DOWNLOAD_VOICEMAIL:
 			if (num == 1) {
-				this._saveListener();
+				this._downloadListener();
 			}
 			break;
 		case ZmKeyMap.REPLY:
@@ -238,7 +241,7 @@ function(items) {
 	this._checkReplenish();
 };
 
-ZmVoicemailListController.prototype._saveListener = 
+ZmVoicemailListController.prototype._downloadListener =
 function() {
 	// This scary looking piece of code does not change the page that the browser is
 	// pointing at. Because the server will send back a "Content-Disposition:attachment"

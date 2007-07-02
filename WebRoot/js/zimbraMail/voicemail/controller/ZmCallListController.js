@@ -109,11 +109,3 @@ function(actionCode) {
 };
 
 
-
-ZmCallListController.prototype._printListener =
-function(ev) {
-	var html = this._getView().getPrintHtml();
-	this._appCtxt.getPrintView().renderHtml(html);
-};
-
-

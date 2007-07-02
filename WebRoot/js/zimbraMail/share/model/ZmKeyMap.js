@@ -97,6 +97,7 @@ ZmKeyMap.DBG_2				= "DebugLevel2";
 ZmKeyMap.DBG_3				= "DebugLevel3";
 ZmKeyMap.DBG_TIMING			= "ToggleDebugTiming";
 ZmKeyMap.DEL				= "Delete";
+ZmKeyMap.DOWNLOAD           = "Download";
 ZmKeyMap.EDIT				= "Edit";
 ZmKeyMap.EXPAND				= "Expand";
 ZmKeyMap.FLAG				= "Flag";
