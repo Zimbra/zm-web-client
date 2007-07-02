@@ -417,14 +417,15 @@
     </tr>
 </c:if>
 
-<tr>
-    <td colspan=2>
-        <hr>
-    </td>
-</tr>
+
 
 <c:choose>
     <c:when test="${folder.isTrash or folder.isSpam}">
+        <tr>
+            <td colspan=2>
+                <hr>
+            </td>
+        </tr>
         <tr>
             <td>&nbsp;</td>
             <td>
@@ -434,7 +435,7 @@
             </td>
         </tr>
     </c:when>
-    <c:otherwise>
+    <c:when test="${not folder.isSearchFolder or folder.isMountPoint}">
         <c:choose>
             <c:when test="${folder.isAppointmentView}">
                 <fmt:message var="emptyButton" key="folderEmptyCalendar"/>
@@ -449,6 +450,11 @@
                 <fmt:message var="emptyConfirm" key="folderEmptyNonTrashFolderConfirmation"/>
             </c:otherwise>
         </c:choose>
+        <tr>
+            <td colspan=2>
+                <hr>
+            </td>
+        </tr>
         <tr>
             <td colspan=2>&nbsp;</td>
         </tr>
@@ -476,7 +482,7 @@
                 <input type="hidden" name="folderEmptyId" value="${folder.id}"/>
             </td>
         </tr>
-    </c:otherwise>
+    </c:when>
 </c:choose>
 
 
