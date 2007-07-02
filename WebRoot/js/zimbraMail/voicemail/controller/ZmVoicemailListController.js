@@ -27,15 +27,11 @@ ZmVoicemailListController = function(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmVoiceListController.call(this, appCtxt, container, app);
 
-	this._autoPlayIndex = 0;
-	this._autoPlaying = false;
-
 	this._listeners[ZmOperation.CHECK_VOICEMAIL] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DOWNLOAD_VOICEMAIL] = new AjxListener(this, this._downloadListener);
 	this._listeners[ZmOperation.REPLY_BY_EMAIL] = new AjxListener(this, this._replyListener);
 	this._listeners[ZmOperation.FORWARD_BY_EMAIL] = new AjxListener(this, this._forwardListener);
-	this._listeners[ZmOperation.AUTO_PLAY] = new AjxListener(this, this._autoPlayListener);
 	this._listeners[ZmOperation.MARK_HEARD] = new AjxListener(this, this._markHeardListener);
 	this._listeners[ZmOperation.MARK_UNHEARD] = new AjxListener(this, this._markUnheardListener);
 
@@ -87,7 +83,7 @@ function() {
     list.push(ZmOperation.SEP);
     list.push(ZmOperation.DOWNLOAD_VOICEMAIL);
 	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.AUTO_PLAY);
+	list.push(ZmOperation.CALL_MANAGER);
 	list.push(ZmOperation.SEP);
 	return list;
 };
@@ -114,8 +110,6 @@ function() {
 ZmVoicemailListController.prototype._initializeToolBar =
 function(view) {
 	ZmVoiceListController.prototype._initializeToolBar.call(this, view);
-	var autoPlayButton = this._toolbar[view].getButton(ZmOperation.AUTO_PLAY);
-	autoPlayButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 };
 
 ZmVoicemailListController.prototype._resetOperations = 
@@ -123,7 +117,7 @@ function(parent, num) {
 	ZmVoiceListController.prototype._resetOperations.call(this, parent, num);
 	parent.enable(ZmOperation.CHECK_VOICEMAIL, true);
 	parent.enable(ZmOperation.PRINT, true);
-	parent.enable(ZmOperation.AUTO_PLAY, this._folder && this._folder.numUnread && !DwtSoundPlugin.isScriptingBroken());
+	parent.enable(ZmOperation.CALL_MANAGER, true);
 	
 	var hasHeard = false;
 	var hasUnheard = false;
@@ -172,10 +166,8 @@ function(actionCode) {
 				view.setPlaying(view.getSelection()[0]);
 			}
 			break;
-		case ZmKeyMap.PLAY_ALL:
-			if (this._folder && this._folder.numUnread) {
-				this._autoPlayListener();
-			}
+		case ZmKeyMap.CALL_MANAGER:
+            this._callManagerListener();
 			break;
 		case ZmKeyMap.MARK_HEARD:
 			this._markHeardListener();
@@ -332,23 +324,7 @@ function() {
 	}
 };
 
-ZmVoicemailListController.prototype._autoPlayListener = 
-function() {
-	if (!this._autoPlaying) {
-		var firstUnheard;
-		var list = this._getView().getList();
-		if (!list.size()) {
-			return;
-		}
-		this._autoPlayIndex = -1;
-		this._autoPlayNext();
-		this._autoPlaying = true;
-	} else {
-		this._autoPlaying = false;
-	}
-};
-
-ZmVoicemailListController.prototype._markHeardListener = 
+ZmVoicemailListController.prototype._markHeardListener =
 function(ev) {
 	this._markHeard(this._getView().getSelection(), true);
 };
@@ -356,33 +332,6 @@ function(ev) {
 ZmVoicemailListController.prototype._markUnheardListener = 
 function(ev) {
 	this._markHeard(this._getView().getSelection(), false);
-};
-
-ZmVoicemailListController.prototype._autoPlayNext = 
-function() {
-	var next = null;
-	var list = this._getView().getList();
-	for (var i = this._autoPlayIndex + 1, count = list.size(); i < count; i++) {
-		var voicemail = list.get(i);
-		if (voicemail.isUnheard) {
-			next = voicemail;
-			this._autoPlayIndex = i;
-			break;
-		}
-	}
-	
-	if (next) {
-		this._play(next);
-	} else {
-		this._stopAutoPlay();
-	}
-};
-
-ZmVoicemailListController.prototype._stopAutoPlay = 
-function() {
-	this._autoPlaying = false;
-	var autoPlayButton = this._getToolbar().getButton(ZmOperation.AUTO_PLAY);
-	autoPlayButton.setToggled(false);
 };
 
 ZmVoicemailListController.prototype._play = 
@@ -395,9 +344,6 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var selection = this._getView().getSelection();
 		if (selection.length == 1) {
-			if (this._autoPlaying) {
-				this._stopAutoPlay();
-			}
 			var voicemail = selection[0];
 			this._play(voicemail);
 		}
@@ -422,9 +368,6 @@ function(view, force) {
 // Called while the sound is playing. The event has information about play status.
 ZmVoicemailListController.prototype._soundChangeListener =
 function(event) {
-	if (this._autoPlaying && event.finished) {
-		this._autoPlayNext();
-	}
 	if (event.finished || event.status == DwtSoundPlugin.PLAYABLE) {
 		var playing = this._getView().getPlaying();
 		if (playing) {

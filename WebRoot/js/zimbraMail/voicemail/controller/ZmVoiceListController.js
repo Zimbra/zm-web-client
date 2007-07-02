@@ -27,6 +27,7 @@ ZmVoiceListController = function(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmListController.call(this, appCtxt, container, app);
 	this._listeners[ZmOperation.VOICE_CALL] = new AjxListener(this, this._callListener);
+    this._listeners[ZmOperation.CALL_MANAGER] = new AjxListener(this, this._callManagerListener);
 
 	this._folder = null;
 }
@@ -140,6 +141,19 @@ ZmVoiceListController.prototype._printListener =
 function(ev) {
 	var html = this._getView().getPrintHtml();
 	this._appCtxt.getPrintView().renderHtml(html);
+};
+
+ZmVoiceListController.prototype._callManagerListener =
+function() {
+    var app = this._appCtxt.getAppController().getApp(ZmApp.PREFERENCES);
+    app.launch(new AjxListener(this, this._handleResponseLaunchPrefs));
+};
+
+ZmVoiceListController.prototype._handleResponseLaunchPrefs =
+function() {
+    var app = this._appCtxt.getAppController().getApp(ZmApp.PREFERENCES);
+    var view = app.getPrefController().getPrefsView();
+    view.selectSection("VOICE");
 };
 
 ZmVoiceListController.prototype._listActionListener =

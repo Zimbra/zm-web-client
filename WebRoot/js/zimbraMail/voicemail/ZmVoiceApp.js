@@ -103,7 +103,7 @@ ZmVoiceApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp("CHECK_VOICEMAIL", {textKey:"checkVoicemail", tooltipKey:"checkVoicemailTooltip", image:"Refresh"});
 	ZmOperation.registerOp("CHECK_CALLS", {textKey:"checkCalls", tooltipKey:"checkCallsTooltip", image:"Refresh"});
-	ZmOperation.registerOp("AUTO_PLAY", {textKey:"autoPlay", tooltipKey:"autoPlayTooltip", image:"PlayingMessage"});
+	ZmOperation.registerOp("CALL_MANAGER", {textKey:"callManager", tooltipKey:"callManagerTooltip", image:"CallManager"});
 	ZmOperation.registerOp("MARK_HEARD", {textKey:"markAsHeard", image:"MarkAsHeard"});
 	ZmOperation.registerOp("MARK_UNHEARD", {textKey:"markAsUnheard", image:"MarkAsUnheard"});
 	ZmOperation.registerOp("VIEW_BY_DATE", {textKey:"viewByDate"});
@@ -153,7 +153,7 @@ function() {
 ZmVoiceApp.prototype._registerPrefs = function() {
     var sections = {
         VOICE: {
-            title: ZmMsg.voice,
+            title: ZmMsg.callManager,
             templateId: "zimbraMail.prefs.templates.Pages#Voice",
             priority: 40,
             precondition: ZmSetting.VOICE_ENABLED,

@@ -65,6 +65,8 @@ function() {
     list.push(ZmOperation.CHECK_CALLS);
     list.push(ZmOperation.SEP);
 	list.push(ZmOperation.PRINT);
+    list.push(ZmOperation.SEP);
+    list.push(ZmOperation.CALL_MANAGER);
 	return list;
 };
 
@@ -99,6 +101,9 @@ function() {
 ZmCallListController.prototype.handleKeyAction =
 function(actionCode) {
 	switch (actionCode) {
+        case ZmKeyMap.CALL_MANAGER:
+            this._callManagerListener();
+            break;
 		case ZmKeyMap.PRINT:
 			this._printListener();
 			break;

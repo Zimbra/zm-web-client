@@ -46,7 +46,8 @@ ZmPrefView = function(parent, appCtxt, posStyle, controller) {
 
 	this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = {};
-	this._hasRendered = false;
+    this._tabId = {};
+    this._hasRendered = false;
 
 	this.setVisible(false);
 };
@@ -92,8 +93,9 @@ function() {
 			view = new ZmPreferencesPage(this, this._appCtxt, section, this._controller);
 		}
 		this.prefView[section.id] = view;
-		this.addTab(section.title, view);
-	}
+		var tabId = this.addTab(section.title, view);
+        this._tabId[section.id] = tabId;
+    }
 
 	this.resetKeyBindings();
 	this._hasRendered = true;
@@ -279,6 +281,14 @@ function(dirtyCheck, noValidation, batchCommand) {
 ZmPrefView.prototype.isDirty =
 function() {
 	return this.getChangedPrefs(true, true);
+};
+
+/**
+* Selects the section (tab) with the given id.
+*/
+ZmPrefView.prototype.selectSection =
+function(sectionId) {
+	this.switchToTab(this._tabId[sectionId]);
 };
 
 //
