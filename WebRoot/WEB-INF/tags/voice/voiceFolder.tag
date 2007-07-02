@@ -9,14 +9,16 @@
 
 <c:set var="label" value="${zm:getVoiceFolderName(pageContext, folder)}"/>
 <tr>
-<td nowrap style='padding-left: 0px' class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'>
+<td nowrap style='padding-left: 0' class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'>
     <c:url var="url" value="/h/search">
         <c:param name="st" value="${zm:getVoiceFolderType(folder)}"/>
         <c:param name="sq" value="${zm:getVoiceFolderQuery(folder)}"/>
     </c:url>
     <a href='${url}'>
         <app:img src="${folder.image}" alt='${label}'/>
-        ${label}<c:if test="${folder.hasUnread}"> (${folder.unreadCount}) </c:if>
+        <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>
+            ${label}<c:if test="${folder.hasUnread}"> (${folder.unreadCount}) </c:if>
+        </span>
     </a>
 </td>
 </tr>
