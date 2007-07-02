@@ -19,6 +19,7 @@
             <c:if test="${mailbox.features.skinChange}">
                 <zm:pref name="zimbraPrefSkin" value="${param.zimbraPrefSkin}"/>
             </c:if>
+            <zm:pref name="zimbraPrefTimeZoneId" value="${param.zimbraPrefTimeZoneId}"/>
         </c:when>
         <%-- MAIL --%>
         <c:when test="${selected eq 'mail'}">

@@ -50,5 +50,22 @@
             </tr>
             <app:optSeparator/>
         </c:if>
+        <tr>
+            <td nowrap align=right>
+                <label for="timeZone"><fmt:message key="timeZonePref"/>
+                    :</label>
+            </td>
+            <td>
+                <select name="zimbraPrefTimeZoneId" id="timeZone">
+                    <c:set var="tzpref" value="${mailbox.prefs.timeZoneWindowsId}"/>
+                    <zm:forEachTimeZone var="tz">
+                        <option
+                                <c:if test="${tzpref eq tz.id}">selected</c:if>
+                                value="${fn:escapeXml(tz.id)}">${fn:escapeXml(tz.display)}</option>
+                    </zm:forEachTimeZone>
+                </select>
+            </td>
+        </tr>
+        <app:optSeparator/>
     </tbody>
 </table>
