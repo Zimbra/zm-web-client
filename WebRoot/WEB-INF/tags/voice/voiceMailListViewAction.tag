@@ -22,6 +22,7 @@
         </app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionReplyByEmail') or zm:actionSet(param, 'actionForwardByEmail')}">
+        <c:set var="hits" value="${zm:deserializeVoiceMailItemHits(paramValues.voiceId, paramValues.phone)}"/>
         <c:choose>
             <c:when test="${empty paramValues.voiceId}">
                 <app:status style="Warning">
@@ -33,8 +34,12 @@
                     <fmt:message key="actionVoiceMailTooMany"/>
                 </app:status>
             </c:when>
+            <c:when test="${hits[0].isPrivate}">
+                <app:status style="Warning">
+                    <fmt:message key="actionVoiceMailPrivate"/>
+                </app:status>
+            </c:when>
             <c:otherwise>
-                <c:set var="hits" value="${zm:deserializeVoiceMailItemHits(paramValues.voiceId, paramValues.phone)}"/>
                 <zm:uploadVoiceMail var="uploadId" phone="${phone}" id="${ids}"/>
                 <c:choose>
                     <c:when test="${zm:actionSet(param, 'actionReplyByEmail')}">
