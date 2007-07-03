@@ -879,7 +879,7 @@ function(msg, container, callback) {
 	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
 	if (addr) { addr = addr.address || (AjxStringUtil.htmlEncode(addr.name)); }	// bug fix #17016 - no need to check addr instanceof AjxEmailAddress
 	var sender = msg.getAddress(AjxEmailAddress.SENDER);						// bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
-	var sentBy = sender || addr;
+	var sentBy = sender ? sender.address : addr;
 	var sentByIcon = cl.getContactByEmail(sentBy) ? "Contact" : "NewContact";
 	var obo = sender ? addr : null;
 
