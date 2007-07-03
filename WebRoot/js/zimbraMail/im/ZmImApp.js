@@ -179,7 +179,9 @@ ZmImApp.prototype._registerPrefs = function() {
 
 	ZmPref.registerPref("IM_PREF_INSTANT_NOTIFY",
 			    { displayName      : ZmMsg.imPrefInstantNotify,
-			      displayContainer : ZmPref.TYPE_CHECKBOX });
+			      displayContainer : ZmPref.TYPE_CHECKBOX,
+			      precondition     : ZmSetting.INSTANT_NOTIFY
+			    });
 
 	ZmPref.registerPref("IM_PREF_AUTO_LOGIN",
 			    { displayName      : ZmMsg.imPrefAutoLogin,
