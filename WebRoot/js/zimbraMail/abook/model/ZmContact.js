@@ -150,7 +150,6 @@ ZmContact.F_IM_FIELDS = [ ZmContact.F_imAddress1, ZmContact.F_imAddress2, ZmCont
 
 ZmContact.prototype.toString =
 function() {
-//	return "ZmContact: id = " + this.id + " fullName = " + this.getFullName();
 	return "ZmContact";
 };
 
@@ -747,14 +746,16 @@ function() {
 			this.getAttr(ZmContact.F_email3));
 };
 
-ZmContact.prototype.getIMAddress = function() {
+ZmContact.prototype.getIMAddress =
+function() {
 	return this.getAttr(ZmContact.F_imAddress1) ||
 		this.getAttr(ZmContact.F_imAddress2) ||
 		this.getAttr(ZmContact.F_imAddress3);
 };
 
-ZmContact.prototype.getBuddy = function() {
-	var buddy = null;
+ZmContact.prototype.getBuddy =
+function() {
+	var buddy;
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
 		var roster = AjxDispatcher.run("GetRoster");
 		buddy = roster.getRosterItem(this.getIMAddress());
@@ -805,21 +806,17 @@ function() {
 
 /**
 * Returns HTML for a tool tip for this contact.
+* XXX: we dont cache tooltip info anymore since its too dynamic :/
+*      i.e. IM status can change anytime so always rebuild tooltip and bug 13834
 */
 ZmContact.prototype.getToolTip =
-function(email, isGal) {
-	// update/null if modified
-//	if (!this._toolTip || this._toolTipEmail != email) {
+function(email, isGal, hint) {
+	var subs = { contact: this,
+				 entryTitle: this.getFileAs(),
+				 hint: hint,
+				 buddy: this.getBuddy() };
 
-	// IM status can change anytime so let's always rebuild the tooltip
-	var buddy = this.getBuddy();
-	var subs = { contact	: this,
-		     entryTitle	: this.getFileAs(),
-		     buddy	: buddy };
-	this._toolTip = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#Tooltip", subs);
-	this._toolTipEmail = email;
-//	}
-	return this._toolTip;
+	return (AjxTemplate.expand("zimbraMail.abook.templates.Contacts#Tooltip", subs));
 };
 
 /**
@@ -991,7 +988,7 @@ function(text, delims) {
 // Reset computed fields.
 ZmContact.prototype._resetCachedFields =
 function() {
-	this._fileAs = this._fileAsLC = this._fullName = this._toolTip = null;
+	this._fileAs = this._fileAsLC = this._fullName = null;
 };
 
 // Parse contact node. A contact will only have attr values if its in canonical list.

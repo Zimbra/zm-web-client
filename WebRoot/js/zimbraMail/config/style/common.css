@@ -502,3 +502,15 @@ DIV.vSpace {
 	font-family:Verdana;
 	font-size:13px;
 }
+
+.TooltipHint {
+	font-style: italic;
+	text-align: center;
+	white-space: nowrap;
+}
+
+.TooltipNotInAddrBook {
+	white-space:nowrap;
+	text-align:center;
+	padding: 8px 0px 5px 0px;
+}

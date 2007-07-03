@@ -198,7 +198,7 @@ function(address) {
 		if (!toolTip) {
 			var addrstr = address.toString();
 			if (addrstr) {
-			    toolTip = ["<div style='white-space:nowrap;'><span style='font-weight:bold'", ZmMsg.email, ": </span>", AjxStringUtil.htmlEncode(addrstr), "</div>"].join("");
+				toolTip = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#TooltipNotInAddrBook", {addrstr:addrstr});
 			}
 	    }
 	} catch (ex) {
