@@ -1056,3 +1056,7 @@ font-weight:normal;
 	text-align: right;
     vertical-align: middle;
 }
+
+.ZOptionsHint {
+    @Text-disabled@;
+}

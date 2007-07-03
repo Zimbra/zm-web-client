@@ -381,6 +381,11 @@
     </tag-file>
 
     <tag-file>
+        <name>optAccounts</name>
+        <path>/WEB-INF/tags/options/optAccounts.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>optComposing</name>
         <path>/WEB-INF/tags/options/optComposing.tag</path>
     </tag-file>
@@ -388,11 +393,6 @@
     <tag-file>
         <name>optMail</name>
         <path>/WEB-INF/tags/options/optMail.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>optMailIdentity</name>
-        <path>/WEB-INF/tags/options/optMailIdentity.tag</path>
     </tag-file>
 
     <tag-file>

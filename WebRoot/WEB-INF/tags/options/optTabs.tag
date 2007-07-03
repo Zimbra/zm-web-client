@@ -31,18 +31,6 @@
             <a href="<c:url value="/h/options?selected=signatures"/>">
                 <span><fmt:message key="optionsSignatures"/></span></a>
         </td>
-        <td class='TabSpacer'/>
-        <td class='Tab ${selected=='identity' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=identity"/>">
-                <span><fmt:message key="mailIdentity"/></span></a>
-        </td>
-        <c:if test="${mailbox.features.filters}">
-            <td class='TabSpacer'/>
-            <td class='Tab ${selected=='filter' ? 'TabSelected' :'TabNormal'}'>
-                <a href="<c:url value="/h/options?selected=filter"/>">
-                    <span><fmt:message key="mailFilters"/></span></a>
-            </td>
-        </c:if>
         <c:if test="${mailbox.features.voice}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='voice' ? 'TabSelected' :'TabNormal'}'>
@@ -62,6 +50,18 @@
             <td class='Tab ${selected=='calendar' ? 'TabSelected' :'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=calendar"/>">
                     <span><fmt:message key="calendar"/></span></a>
+            </td>
+        </c:if>
+        <td class='TabSpacer'/>
+        <td class='Tab ${selected=='accounts' ? 'TabSelected' :'TabNormal'}'>
+            <a href="<c:url value="/h/options?selected=accounts"/>">
+                <span><fmt:message key="optionsAccounts"/></span></a>
+        </td>
+        <c:if test="${mailbox.features.filters}">
+            <td class='TabSpacer'/>
+            <td class='Tab ${selected=='filter' ? 'TabSelected' :'TabNormal'}'>
+                <a href="<c:url value="/h/options?selected=filter"/>">
+                    <span><fmt:message key="mailFilters"/></span></a>
             </td>
         </c:if>
         <c:if test="${mailbox.prefs.useKeyboardShortcuts}">

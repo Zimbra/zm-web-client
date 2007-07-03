@@ -145,6 +145,7 @@
          </td>
          <td style='padding-left:20px'>
              <input id="zimbraPrefMailForwardingAddress" size="40" type="text" name='zimbraPrefMailForwardingAddress' autocomplete='off' value="${fn:escapeXml(mailbox.prefs.mailForwardingAddress)}">
+             <span style='padding-left:5px' class='ZOptionsHint'><fmt:message key="optionsEmailAddressHint"/></span>
          </td>
      </tr>
      <tr>
@@ -182,6 +183,7 @@
          </td>
          <td style='padding-left:20px'>
              <input id="zimbraPrefNewMailNotificationAddress" size="40" type="text" name='zimbraPrefNewMailNotificationAddress' autocomplete='off' value="${fn:escapeXml(mailbox.prefs.newMailNotificationAddress)}">
+             <span style='padding-left:5px' class='ZOptionsHint'><fmt:message key="optionsEmailAddressHint"/></span>
          </td>
      </tr>
      <tr>

@@ -93,10 +93,6 @@
     <c:when test="${selected eq 'signatures'}">
         <c:set var="subKey" value="optionsSignatures"/>
     </c:when>
-    <%------------------- MAIL IDENTITY ------------------%>
-    <c:when test="${selected eq 'identity'}">
-        <c:set var="subKey" value="mailIdentity"/>
-    </c:when>
     <%------------------- MAIL FILTERS ------------------%>
     <c:when test="${selected eq 'filters' and mailbox.features.filters}">
         <c:set var="subKey" value="mailFilters"/>
@@ -112,6 +108,10 @@
     <%------------------- ADDRESS BOOK ------------------%>
     <c:when test="${selected eq 'calendar' and mailbox.features.calendar}">
         <c:set var="subKey" value="calendar"/>
+    </c:when>
+    <%------------------- Accounts ------------------%>
+    <c:when test="${selected eq 'accounts'}">
+        <c:set var="subKey" value="optionsAccounts"/>
     </c:when>
     <%------------------- SHORTCUTS ------------------%>
     <c:when test="${selected eq 'shortcuts'}">
@@ -174,10 +174,6 @@
                                     <c:when test="${selected eq 'signatures'}">
                                         <app:optSignatures mailbox="${mailbox}"/>
                                     </c:when>
-                                    <%------------------- MAIL IDENTITY ------------------%>
-                                    <c:when test="${selected eq 'identity'}">
-                                        <app:optMailIdentity mailbox="${mailbox}"/>
-                                    </c:when>
                                     <%------------------- MAIL FILTER ------------------%>
                                     <c:when test="${selected eq 'filter' and mailbox.features.filters}">
                                         <app:optMailFilter mailbox="${mailbox}"/>
@@ -193,6 +189,10 @@
                                     <%------------------- CALENDARW ------------------%>
                                     <c:when test="${selected eq 'calendar'}">
                                         <app:optCalendar mailbox="${mailbox}"/>
+                                    </c:when>
+                                    <%------------------- ACCOUNTS ------------------%>
+                                    <c:when test="${selected eq 'accounts'}">
+                                        <app:optAccounts mailbox="${mailbox}"/>
                                     </c:when>
                                     <%------------------- SHORTCUTS ------------------%>
                                     <c:when test="${selected eq 'shortcuts'}">

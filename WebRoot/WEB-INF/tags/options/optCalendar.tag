@@ -111,8 +111,9 @@
      <tr>
          <td class='ZOptionsTableLabel' colspan=2 style='text-align:left'>
              <fmt:message key="optionsManageCalendars">
-             <fmt:param><fmt:message key="optionsManageCalendarsPre"/></fmt:param>
-             <fmt:param><a href="mcalendars"><fmt:message key="optionsManageCalendarsLink"/></a></fmt:param>
+                 <fmt:param><fmt:message key="optionsManageCalendarsPre"/></fmt:param>
+                 <fmt:param><a href="mcalendars"><fmt:message key="optionsManageCalendarsLink"/></a></fmt:param>
+                 <fmt:param><fmt:message key="optionsManageCalendarsPost"/></fmt:param>
              </fmt:message>
          </td>
      </tr>

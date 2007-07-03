@@ -61,8 +61,9 @@
      <tr>
          <td class='ZOptionsTableLabel' colspan=2 style='text-align:left'>
              <fmt:message key="optionsManageAddressBooks">
-             <fmt:param><fmt:message key="optionsManageAddressBooksPre"/></fmt:param>
-             <fmt:param><a href="maddrbooks"><fmt:message key="optionsManageAddressBooksLink"/></a></fmt:param>
+                 <fmt:param><fmt:message key="optionsManageAddressBooksPre"/></fmt:param>
+                 <fmt:param><a href="maddrbooks"><fmt:message key="optionsManageAddressBooksLink"/></a></fmt:param>
+                 <fmt:param><fmt:message key="optionsManageAddressBooksPost"/></fmt:param>
              </fmt:message>
          </td>
      </tr>

@@ -155,6 +155,16 @@
              </table>
          </td>
      </tr>
+     <app:optSeparator/>
+     <tr>
+         <td class='ZOptionsTableLabel' colspan=2 style='text-align:left'>
+             <fmt:message key="optionsManageAccounts">
+                 <fmt:param><fmt:message key="optionsComposeManageAccountsPre"/></fmt:param>
+                 <fmt:param><a href="options?selected=accounts"><fmt:message key="optionsManageAccountsLink"/></a></fmt:param>
+                 <fmt:param><fmt:message key="optionsManageAccountsPost"/></fmt:param>
+             </fmt:message>
+         </td>
+     </tr>
       <tr>
         <td colspan="2">
             &nbsp;
