@@ -1085,7 +1085,9 @@ function() {
 		? window.parentController._appCtxt
 		: window._zimbraMail._appCtxt;
 
-	window.open(appCtxt.get(ZmSetting.HELP_URI));
+	var url;
+	try { url = skin.hints.help_button.url; } catch (e) { /* ignore */ }
+	window.open(url || appCtxt.get(ZmSetting.HELP_URI));
 };
 
 ZmZimbraMail.sendRedirect =

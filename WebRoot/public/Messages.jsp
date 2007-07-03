@@ -29,6 +29,15 @@ Contributor(s):
 		contextPath = "";
 	}
 
+	String isDev = (String) request.getParameter("dev");
+	if (isDev != null) {
+		request.setAttribute("mode", "mjsf");
+	}
+
+	String mode = (String) request.getAttribute("mode");
+	boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+	boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
+
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
    if (vers == null){
@@ -37,4 +46,4 @@ Contributor(s):
    if (ext == null){
       ext = "";
    }
-%><script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
+%><script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg,ZmMsg.js<%= ext %>?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
