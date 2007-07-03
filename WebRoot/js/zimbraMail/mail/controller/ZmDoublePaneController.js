@@ -275,10 +275,10 @@ function(view, menu, checked, itemId) {
 
 // we overload _doAction for bug fix #3623
 ZmDoublePaneController.prototype._doAction =
-function(ev, action, extraBodyText) {
+function(params) {
 	// first find out if the current message is in HTML
 	var msgView = this._doublePaneView.getMsgView();
-	if (action != ZmOperation.DRAFT && msgView.hasHtmlBody()) {
+	if ((params.action != ZmOperation.DRAFT) && msgView.hasHtmlBody()) {
 		// then find out if the user's preference is Text
 		if (this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_TEXT) {
 			// then find out if a text part currently exists for the message
@@ -290,13 +290,13 @@ function(ev, action, extraBodyText) {
 				// and run it thru the HTML stripper
 				textPart = bodyEl ? AjxStringUtil.convertHtml2Text(bodyEl) : null;
 				// set the text part back into the message
-				if (textPart)
+				if (textPart) {
 					msg.setTextPart(textPart);
+				}
 			}
 		}
 	}
-	// finally, call the base class last
-	ZmMailListController.prototype._doAction.call(this, ev, action, extraBodyText);
+	ZmMailListController.prototype._doAction.apply(this, arguments);
 };
 
 /**
@@ -372,20 +372,32 @@ function(view) {
 	this._doublePaneView._resetSize(sz.x, sz.y);
 };
 
-// Loads and displays the given message. If the message was unread, it gets marked as
-// read, and the conversation may be marked as read as well.
+/**
+ * Loads and displays the given message. If the message was unread, it gets marked as
+ * read, and the conversation may be marked as read as well. Note that we request no
+ * busy overlay during the SOAP call - that's so that a subsequent click within the
+ * double-click threshold can be processed. Otherwise, it's very difficult to generate
+ * a double click because the first click triggers a SOAP request and the ensuing busy
+ * overlay blocks the receipt of the second click.
+ * 
+ * @param msg	[ZmMailMsg]		msg to load
+ */
 ZmDoublePaneController.prototype._doGetMsg =
 function(msg) {
-	if (msg) {
-		var respCallback = new AjxCallback(this, this._handleResponseDoGetMsg, msg);
-		msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
-	} else {
-		DBG.println("XXX: msg not loaded!");
-	}
+	if (!msg) { return; }
+	if (msg.id == this._pendingMsg) { return; }
+
+	msg._loadPending = true;
+	this._pendingMsg = msg.id;
+	var respCallback = new AjxCallback(this, this._handleResponseDoGetMsg, msg);
+	msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, null, true);
 };
 
 ZmDoublePaneController.prototype._handleResponseDoGetMsg =
 function(msg) {
+	if (this._pendingMsg && (msg.id != this._pendingMsg)) { return; }
+	msg._loadPending = false;
+	this._pendingMsg = null;
 	this._doublePaneView.setMsg(msg);
 	this._appCtxt.getSearchController().setEnabled(true);
 };
@@ -443,7 +455,7 @@ function(ev) {
 
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
 		if (item.isDraft) {
-			this._doAction(ev, ZmOperation.DRAFT);
+			this._doAction({ev:ev, action:ZmOperation.DRAFT});
 		} else if (this._appCtxt.get(ZmSetting.OPEN_MAIL_IN_NEW_WIN)) {
 			this._detachListener(null, respCallback);
 		} else if (item.type == ZmItem.CONV) {

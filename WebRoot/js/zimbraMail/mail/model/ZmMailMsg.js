@@ -83,35 +83,40 @@ ZmMailMsg.CONTENT_PART_ID = "ci";
 ZmMailMsg.CONTENT_PART_LOCATION = "cl";
 
 /**
-* Fetches a message from the server.
-*
-* @param sender			[ZmZimbraMail]	provides access to sendRequest()
-* @param msgId			[int]			ID of the msg to be fetched.
-* @param partId 		[int] 			msg part ID (if retrieving attachment part, i.e. rfc/822)
-* @param getHtml		[boolean]		if true, try to fetch html from the server
-* @param callback		[AjxCallback]	async callback
-* @param errorCallback	[AjxCallback]	async error callback
-*/
+ * Fetches a message from the server.
+ *
+ * @param params		[hash]			hash of params:
+ *        sender		[ZmZimbraMail]	provides access to sendRequest()
+ *        msgId			[int]			ID of the msg to be fetched.
+ *        partId 		[int]* 			msg part ID (if retrieving attachment part, i.e. rfc/822)
+ *        getHtml		[boolean]*		if true, try to fetch html from the server
+ *        callback		[AjxCallback]*	async callback
+ *        errorCallback	[AjxCallback]*	async error callback
+ *        noBusyOverlay	[boolean]*		don't put up busy overlay during request
+ */
 ZmMailMsg.fetchMsg =
 function(params) {
 	var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
 	var msgNode = soapDoc.set("m");
 	msgNode.setAttribute("id", params.msgId);
-	if (params.partId)
+	if (params.partId) {
 		msgNode.setAttribute("part", params.partId);
+	}
 	msgNode.setAttribute("read", "1");
 	if (params.getHtml) {
 		msgNode.setAttribute("html", "1");
 	}
 	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback]);
 	var execFrame = new AjxCallback(null, ZmMailMsg.fetchMsg, [params]);
-	params.sender.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
-							   errorCallback: params.errorCallback, execFrame: execFrame});
+	params.sender.sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
+							   errorCallback:params.errorCallback, execFrame:execFrame, noBusyOverlay:params.noBusyOverlay});
 };
 
 ZmMailMsg._handleResponseFetchMsg =
 function(callback, result) {
-	if (callback) callback.run(result);
+	if (callback) {
+		callback.run(result);
+	}
 }
 
 // Public methods
@@ -405,21 +410,27 @@ function(node, args) {
 };
 
 /**
-* Gets the full message object from the back end based on the current message ID, and
-* fills in the message.
-*
-* @param getHtml
-*/
+ * Gets the full message object from the back end based on the current message ID, and
+ * fills in the message.
+ *
+ * @param getHtml		[boolean]*		if true, try to fetch html from the server
+ * @param forceLoad		[boolean]*		if true, get msg from server
+ * @param callback		[AjxCallback]*	async callback
+ * @param errorCallback	[AjxCallback]*	async error callback
+ * @param noBusyOverlay	[boolean]*		don't put up busy overlay during request
+ */
 ZmMailMsg.prototype.load =
-function(getHtml, forceLoad, callback, errorCallback) {
+function(getHtml, forceLoad, callback, errorCallback, noBusyOverlay) {
 	// If we are already loaded, then don't bother loading
 	if (!this._loaded || forceLoad) {
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
-		ZmMailMsg.fetchMsg({sender: this._appCtxt.getAppController(), msgId: this.id, getHtml: getHtml,
-						  	callback: respCallback, errorCallback: errorCallback});
+		ZmMailMsg.fetchMsg({sender:this._appCtxt.getAppController(), msgId:this.id, getHtml:getHtml,
+						  	callback:respCallback, errorCallback:errorCallback, noBusyOverlay:noBusyOverlay});
 	} else {
 		this._markReadLocal(true);
-		if (callback) callback.run(new ZmCsfeResult()); // return exceptionless result
+		if (callback) {
+			callback.run(new ZmCsfeResult()); // return exceptionless result
+		}
 	}
 };
 
@@ -434,8 +445,9 @@ function(callback, result) {
 	}
 
 	// clear all participants (since it'll get re-parsed w/ diff. ID's)
-	if (this.participants)
+	if (this.participants) {
 		this.participants.removeAll();
+	}
 
 	// clear all attachments
 	this._attachments.length = 0;
@@ -444,7 +456,13 @@ function(callback, result) {
 	this._markReadLocal(true);
 
 	// return result so callers can check for exceptions if they want
-	if (callback) callback.run(result);
+	if (this._loadCallback) {
+		// overriding callback (see ZmMsgController::show)
+		this._loadCallback.run(result);
+		this._loadCallback = null;
+	} else if (callback) {
+		callback.run(result);
+	}
 };
 
 ZmMailMsg.prototype.getBodyParts =
@@ -648,13 +666,23 @@ function(isDraft, callback, result) {
 
 	// notify listeners of successful send message
 	if (!isDraft) {
-		if (resp.id || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT))
+		if (resp.id || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
 			this._notifySendListeners();
+		}
 	} else {
 		this._loadFromDom(resp);
+		// bug 7016 - clear cached draft content
+		if (this.cid) {
+			var conv = this._appCtxt.getById(this.cid);
+			if (conv && conv.tempMsg) {
+				conv.tempMsg = this;
+			}
+		}
 	}
 
-	if (callback) callback.run(result);
+	if (callback) {
+		callback.run(result);
+	}
 }
 
 ZmMailMsg.prototype._createMessageNode =

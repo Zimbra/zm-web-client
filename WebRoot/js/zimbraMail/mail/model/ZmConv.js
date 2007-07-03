@@ -345,8 +345,9 @@ function(offset, limit) {
 	// no hot messages, find the most recent message
 	if (msg == null) {
 		for (var i = offset; i < end; i++) {
-			if (msg == null || msg.date < list[i].date)
+			if (msg == null || msg.date < list[i].date) {
 				msg = list[i];
+			}
 		}
 	}
 	
@@ -365,10 +366,8 @@ function() {
 	} else {
 		// otherwise, create a temp msg w/ the msg op Id
 		msg = new ZmMailMsg(this._appCtxt, this.msgOpId);
-		// bug fix #7016 - only cache if not draft otherwise reopening cached 
-		// draft will not have new changes
-		if (!this.isDraft)
-			this.tempMsg = msg;
+		msg.cid = this.id;
+		this.tempMsg = msg;
 	}
 	
 	msg.list = this.msgs || new ZmMailList(ZmItem.MSG, this._appCtxt);

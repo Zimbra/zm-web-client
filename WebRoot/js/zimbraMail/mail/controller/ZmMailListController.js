@@ -158,13 +158,13 @@ function(actionCode) {
 		case ZmKeyMap.FORWARD_INLINE:
 		case ZmKeyMap.FORWARD_ATT:
 			if (!isDrafts && num == 1) {
-				this._doAction(null, ZmMailListController.ACTION_CODE_TO_OP[actionCode]);
+				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode]});
 			}
 			break;
 			
 		case ZmKeyMap.FORWARD:
 			if (!isDrafts && num == 1) {
-				this._doAction(null, ZmOperation.FORWARD);
+				this._doAction({action:ZmOperation.FORWARD});
 			}
 			break;
 			
@@ -502,52 +502,50 @@ function(ev) {
 	if (!action || action == ZmOperation.REPLY_MENU)
 		action = ZmOperation.REPLY;
 
-	this._doAction(ev, action);
+	this._doAction({ev:ev, action:action});
 };
 
 ZmMailListController.prototype._forwardListener =
 function(ev) {
 	var action = ev.item.getData(ZmOperation.KEY_ID);
-	this._doAction(ev, action);
+	this._doAction({ev:ev, action:action});
 };
 
 // This method may be called with a null ev parameter
 ZmMailListController.prototype._doAction = 
-function(ev, action, extraBodyText, instanceDate, accountName) {
+function(params) {
 	// retrieve the first selected msg
-	var msg = this._getMsg(ev ? ev.item : null);
+	var msg = this._getMsg((params && params.ev) ? params.ev.item : null);
 	if (!msg) { return; }
-	msg._instanceDate = instanceDate;
+
+	msg._instanceDate = params.instanceDate;
 
 	// use resolved msg to figure out identity/persona to use for compose
 	var collection = AjxDispatcher.run("GetIdentityCollection");
 	var identity = collection.selectIdentity(msg);
 
-	if (!action ||
-		 action == ZmOperation.FORWARD_MENU ||
-		 action == ZmOperation.FORWARD)
-	{
-		action = identity.getForwardOption() == ZmSetting.INCLUDE_ATTACH
-			? ZmOperation.FORWARD_ATT
-			: ZmOperation.FORWARD_INLINE;
+	var action = params.action;
+	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD)	{
+		action = (identity.getForwardOption() == ZmSetting.INCLUDE_ATTACH) ? ZmOperation.FORWARD_ATT :
+																			 ZmOperation.FORWARD_INLINE;
 	}
 
 	// reset the action if user is forwarding multiple mail items
 	var selection = this._listView[this._currentView].getSelection();
 	var selCount = selection.length;
-	if (action == ZmOperation.FORWARD_INLINE && selCount > 1)
+	if (action == ZmOperation.FORWARD_INLINE && selCount > 1) {
 		action = ZmOperation.FORWARD_ATT;
+	}
 
 	// if html compose is allowed and if opening draft always request html
 	//   otherwise check if user prefers html or
 	//   msg hasnt been loaded yet and user prefers format of orig. msg
     var htmlEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
-	var prefersHtml = identity.getComposeAsFormat() == ZmSetting.COMPOSE_HTML;
+	var prefersHtml = (identity.getComposeAsFormat() == ZmSetting.COMPOSE_HTML);
 	var sameFormat = identity.getComposeSameFormat();
 	// Yikes:
 	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg._loaded && sameFormat)))));
-	var inNewWindow = this._app._inNewWindow(ev);
-	var params = {action:action, inNewWindow:inNewWindow, extraBodyText:extraBodyText, accountName:accountName};
+	params.inNewWindow = this._app._inNewWindow(params.ev);
 
 	if (action == ZmOperation.FORWARD_ATT && selCount > 1) {
 		// get msg Id's for each conversation selected
@@ -568,9 +566,24 @@ function(ev, action, extraBodyText, instanceDate, accountName) {
 		}
 	} else {
 		params.msg = msg;
-		var respCallback = new AjxCallback(this, this._handleResponseDoAction, params);
-		msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
+		if (!msg._loaded) {
+			var respCallback = new AjxCallback(this, this._handleResponseDoAction, params);
+			if (msg._loadPending) {
+				// override any local callback if we're being launched by double-pane view,
+				// so that multiple GetMsgRequest's aren't made
+				msg._loadCallback = respCallback;
+			} else {
+				msg.load(getHtml, (action == ZmOperation.DRAFT), respCallback);
+			}
+		} else {
+			this._handleResponseDoAction(params);
+		}
 	}
+};
+
+ZmMailListController.prototype._handleResponseDoAction =
+function(params) {
+	AjxDispatcher.run("Compose", params);
 };
 
 ZmMailListController.prototype._doMarkRead = 
@@ -609,11 +622,6 @@ function(params, selection) {
 	}
 	params.msgIds = msgIds.getArray();
 
-	AjxDispatcher.run("Compose", params);
-};
-
-ZmMailListController.prototype._handleResponseDoAction =
-function(params) {
 	AjxDispatcher.run("Compose", params);
 };
 
@@ -815,7 +823,7 @@ function(type) {
 ZmMailListController.prototype._editInviteReply =
 function(action, componentId, instanceDate, accountName) {
 	var replyBody = this._getInviteReplyBody(action, instanceDate);
-	this._doAction(null, action, replyBody, instanceDate, accountName);
+	this._doAction({action:action, extraBodyText:replyBody, instanceDate:instanceDate, accountName:accountName});
 };
 
 ZmMailListController.prototype._sendInviteReply = 
@@ -891,7 +899,7 @@ function(ev, callback) {
 
 ZmMailListController.prototype._editListener =
 function(ev) {
-	this._doAction(ev, ZmOperation.DRAFT);
+	this._doAction({ev:ev, action:ZmOperation.DRAFT});
 };
 
 ZmMailListController.prototype._checkMailListener =

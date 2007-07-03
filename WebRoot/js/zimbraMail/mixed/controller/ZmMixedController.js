@@ -255,14 +255,14 @@ function(ev) {
 		} else if (ev.item.type == ZmItem.CONV) {
 			var mailApp = this._appCtxt.getApp(ZmApp.MAIL);
 			if (ev.item.isDraft) {
-				AjxDispatcher.run("GetConvListController")._doAction(ev, ZmOperation.DRAFT);
+				AjxDispatcher.run("GetConvListController")._doAction({ev:ev, action:ZmOperation.DRAFT});
 			} else {
 				AjxDispatcher.run("GetConvController").show(this._activeSearch, ev.item);
 			}
 		} else if (ev.item.type == ZmItem.MSG) {
 			var mailApp = this._appCtxt.getApp(ZmApp.MAIL);
 			if (ev.item.isDraft) {
-				AjxDispatcher.run("GetTradController")._doAction(ev, ZmOperation.DRAFT);
+				AjxDispatcher.run("GetTradController")._doAction({ev:ev, action:ZmOperation.DRAFT});
 			} else {
 				AjxDispatcher.run("GetMsgController").show(ev.item);
 			}

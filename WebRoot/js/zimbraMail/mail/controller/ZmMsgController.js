@@ -66,12 +66,15 @@ function(msg, mode, callback) {
 	this._list = msg.list;
 	if (!msg._loaded) {
 		var respCallback = new AjxCallback(this, this._handleResponseShow, callback);
-		msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
-	} else {
-		this._showMsg();
-		if (callback) {
-			callback.run();
+		if (msg._loadPending) {
+			// override any local callback if we're being launched by double-pane view,
+			// so that multiple GetMsgRequest's aren't made
+			msg._loadCallback = respCallback;
+		} else {
+			msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
 		}
+	} else {
+		this._handleResponseShow(callback);
 	}
 };
 
