@@ -29,14 +29,7 @@
                       prefs="zimbraPrefSkin"
                       attrs="zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled"
                     />
-            <c:choose>
-                <c:when test="${not empty postLoginUrl}">
-                    <c:redirect url="${postLoginUrl}"/>
-                </c:when>
-                <c:otherwise>
-                    <jsp:forward page="/public/launchZCS.jsp"/>
-                </c:otherwise>
-            </c:choose>
+            <%-- continue on at not empty authResult test --%>
     </c:when>
     <c:otherwise>
         <%-- try and use existing cookie if possible --%>
@@ -48,18 +41,22 @@
                       prefs="zimbraPrefSkin"
                       attrs="zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled"
                     />
-            <c:choose>
-                <c:when test="${not empty postLoginUrl}">
-                    <c:redirect url="${postLoginUrl}"/>
-                </c:when>
-                <c:otherwise>
-                    <jsp:forward page="/public/launchZCS.jsp"/>
-                </c:otherwise>
-            </c:choose>
+            <%-- continue on at not empty authResult test --%>
         </c:if>
     </c:otherwise>
     </c:choose>
 </c:catch>
+
+<c:if test="${not empty authResult}">
+    <c:choose>
+        <c:when test="${not empty postLoginUrl}">
+            <c:redirect url="${postLoginUrl}"/>
+        </c:when>
+        <c:otherwise>
+            <jsp:forward page="/public/launchZCS.jsp"/>
+        </c:otherwise>
+    </c:choose>
+</c:if>
 
 <c:if test="${loginException != null}">
     <zm:getException var="error" exception="${loginException}"/>
