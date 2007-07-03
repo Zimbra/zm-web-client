@@ -10,6 +10,7 @@
 	response.setHeader("Pragma", "no-cache");
 %><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <!--
+ launchNewWindow.jsp
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
  *

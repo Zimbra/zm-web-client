@@ -208,7 +208,7 @@
 
 	<welcome-file-list>
         <welcome-file>login</welcome-file>
-        <welcome-file>public/Login.jsp</welcome-file>
+        <welcome-file>public/login.jsp</welcome-file>
 		<welcome-file>public/admin.jsp</welcome-file>
     </welcome-file-list>
 
