@@ -293,13 +293,20 @@ function(inNewWindow, subject, to, response) {
 	mailMsg.hasAttach = true;
 	var id = response._data.UploadVoiceMailResponse.upload[0].id;
 	mailMsg.addAttachmentId(id);
+    var duration = AjxDateUtil.computeDuration(voicemail.duration);
+    var date = AjxDateUtil.computeDateStr(new Date(), voicemail.date);
+    var callingParty = voicemail.getCallingParty(ZmVoiceItem.FROM);
+    var phoneNumber = callingParty.getDisplay();
+    var format = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+    var message = format == ZmSetting.COMPOSE_HTML ? ZmMsg.voicemailBodyHtml : ZmMsg.voicemailBodyText;
+    var body = AjxMessageFormat.format(message, [phoneNumber, duration, date]);
 	var params = {
 		action: ZmOperation.NEW_MESSAGE, 
 		inNewWindow: inNewWindow, 
 		msg: mailMsg,
 		toOverride: to,
 		subjOverride: subject,
-		extraBodyText: ""
+        extraBodyText: body
 	};
 	AjxDispatcher.run("Compose", params);
 };
