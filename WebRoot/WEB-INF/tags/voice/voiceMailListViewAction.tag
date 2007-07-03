@@ -7,7 +7,7 @@
 
 <app:handleError>
 <zm:getMailbox var="mailbox"/>
-<c:set var="ids" value="${fn:join(paramValues.voiceId, ',')}"/>
+<c:set var="ids" value="${zm:deserializeVoiceMailItemIds(paramValues.voiceId, paramValues.phone)}"/>
 <c:set var="phone" value="${fn:join(paramValues.phone, ',')}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
@@ -28,7 +28,13 @@
                     <fmt:message key="actionNoVoiceMailMessageSelected"/>
                 </app:status>
             </c:when>
+            <c:when test="${fn:length(paramValues.voiceId) gt 1}">
+                <app:status style="Warning">
+                    <fmt:message key="actionVoiceMailTooMany"/>
+                </app:status>
+            </c:when>
             <c:otherwise>
+                <c:set var="hits" value="${zm:deserializeVoiceMailItemHits(paramValues.voiceId, paramValues.phone)}"/>
                 <zm:uploadVoiceMail var="uploadId" phone="${phone}" id="${ids}"/>
                 <c:choose>
                     <c:when test="${zm:actionSet(param, 'actionReplyByEmail')}">
@@ -38,12 +44,17 @@
                         <fmt:message key="voiceMailForwardSubject" var="subject"/>
                     </c:otherwise>
                 </c:choose>
+                <fmt:message key="voiceMailBody" var="body">
+                    <fmt:param value="${hits[0].displayCaller}"/>
+                    <fmt:param value="${zm:displayDuration(pageContext, hits[0].duration)}"/>
+                    <fmt:param value="${zm:displayMsgDate(pageContext, hits[0].date)}"/>
+                </fmt:message>
                 <jsp:forward page="/h/compose">
                     <jsp:param name="subject" value="${subject}"/>
-                    <jsp:param name="body" value=""/>
+                    <jsp:param name="body" value="${body}"/>
                     <jsp:param name="attachId" value="${uploadId}"/>
                     <jsp:param name="attachName" value="voicemail.wav"/>
-                    <jsp:param name="attachUrl" value="/service/extension/velodrome/voice/~/voicemail?phone=${phone}&id=${ids}"/>
+                    <jsp:param name="attachUrl" value="${hits[0].soundUrl}"/>
                 </jsp:forward>
             </c:otherwise>
         </c:choose>
