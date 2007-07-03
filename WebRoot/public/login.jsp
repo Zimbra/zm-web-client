@@ -12,7 +12,7 @@
 <c:catch var="loginException">
     <c:choose>
         <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
-            <c:set var="errorCode" value="account.CHANGE_PASSWORD"/>
+            <c:set var="errorCode" value="errorPassChange"/>
             <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
         </c:when>
         <c:when test="${param.loginOp eq 'relogin'}">
@@ -30,20 +30,20 @@
                       attrs="zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled"
                     />
             <%-- continue on at not empty authResult test --%>
-    </c:when>
-    <c:otherwise>
-        <%-- try and use existing cookie if possible --%>
-        <c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
-        <c:if test="${not empty authtoken}">
-            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
-                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-                      rememberme="${param.zrememberme == '1'}"
-                      prefs="zimbraPrefSkin"
-                      attrs="zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled"
-                    />
-            <%-- continue on at not empty authResult test --%>
-        </c:if>
-    </c:otherwise>
+	    </c:when>
+	    <c:otherwise>
+	        <%-- try and use existing cookie if possible --%>
+	        <c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
+	        <c:if test="${not empty authtoken}">
+	            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
+	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
+	                      rememberme="${param.zrememberme == '1'}"
+	                      prefs="zimbraPrefSkin"
+	                      attrs="zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled"
+	                    />
+	            <%-- continue on at not empty authResult test --%>
+	        </c:if>
+	    </c:otherwise>
     </c:choose>
 </c:catch>
 
@@ -53,7 +53,14 @@
             <c:redirect url="${postLoginUrl}"/>
         </c:when>
         <c:otherwise>
-            <jsp:forward page="/public/launchZCS.jsp"/>
+        	<c:choose>
+        		<c:when test="${param.client eq 'advanced'}">
+		            <jsp:forward page="/public/launchZCS.jsp"/>
+        		</c:when>
+        		<c:when test="${param.client eq 'standard'}">
+		            <c:redirect url="/h/search"/>
+        		</c:when>
+		    </c:choose>
         </c:otherwise>
     </c:choose>
 </c:if>
@@ -78,6 +85,12 @@
         </c:forEach>
     </c:forEach>
 </c:url>
+
+<%-- set client select default based on user agent --%>
+<zm:getUserAgent var="ua"/>
+<c:if test="${(ua.isFirefox1_5up ne 'true') and (ua.isIE6up ne 'true')}">
+	<c:set var="selectStandard" value="selected"/>
+</c:if>
 
 <html>
 
@@ -204,11 +217,14 @@
                                     </table>
                                     <table width=100%>
                                         <tr>
-                                            <td nowrap id='ZloginClientLevelContainer'>
-                                                <fmt:message key="advancedClientLoginNotice">
-                                                    <fmt:param><c:url value='/h/'/></fmt:param>
-                                                </fmt:message>
-                                            </td>
+                                        	<td nowrap>
+                                        		Choose the client you would like to use: 
+                                    			<select name="client">
+			                                    	<option value="preferred"> Preferred</option>
+			                                    	<option value="advanced"> Advanced</option>
+			                                    	<option value="standard" ${selectStandard}> Standard</option>
+			                                    </select>
+			                                </td>
                                         </tr>
                                         <tr>
                                             <td nowrap id='ZloginLicenseContainer'>
