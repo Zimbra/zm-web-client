@@ -623,6 +623,8 @@ function() {
 ZmSettings.prototype._registerSkinHints =
 function() {
 
+	if (!(skin && skin.hints)) { return; }
+	
 	var shSetting = this.registerSetting("SKIN_HINTS", {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_HASH});
 	
 	var hints = ["app_chooser.style",
