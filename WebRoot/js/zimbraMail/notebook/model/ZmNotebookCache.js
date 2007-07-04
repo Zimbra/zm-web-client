@@ -683,11 +683,11 @@ ZmNotebookCache.prototype.checkCache = function(params){
 	return item;
 };
 
-ZmNotebookCache.prototype.getItemInfo = function(params)
+ZmNotebookCache.prototype.getItemInfo = function(params,overrideCache)
 {
 		var item = this.checkCache(params);
 		
-		if(item){
+		if(item && !overrideCache){
 			//DBG.println("item found on cache:"+item+","+item.id+",folder:"+item.folderId+","+item.getRestUrl());
 			if(params.callback){
 				params.callback.run(item);

@@ -539,7 +539,7 @@ td.DDSepInvisible div {
 
 /* Outer container */
 .ZmHtmlEditor {
-	@BoxPadding@
+	padding: @TextPaddingSize@;
 }
 
 /* textarea where you type plain-text */
@@ -560,6 +560,25 @@ td.DDSepInvisible div {
 	color:black;
 }
 
+.ZmHtmlEditor .ZmHtmlEditorFooter {
+width: 100%;
+padding-right:5px;
+padding-top:2px;
+}
+
+.ZmHtmlEditor .ZmHtmlEditorFooter td{
+border:1px inset #EEEEEE;
+color:#666666;
+padding: 4px;
+@FontFamily-html@
+@FontSize-smaller@
+font-size-adjust:none;
+font-stretch:normal;
+font-style:normal;
+font-variant:normal;
+font-weight:normal;
+line-height:normal;
+}
 
 
 /* ??? USE? */
@@ -2351,7 +2370,8 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 .ZmPageEditView .Label {
 	@FontFamily-html@
-	@FontSize-bigger@
+	@FontSize-normal@
+	font-weight: bold;
 	text-align: right;
 	width: 1%;
 }

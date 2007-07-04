@@ -75,35 +75,8 @@ ZmPageEditView.prototype._setResponse = function(page) {
 	// set location
 	var appCtxt = this._appCtxt;
 
-	var content;
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
-	if (page.folderId == rootId) {
-		content = this._appCtxt.getById(page.folderId).name;
-	}
-	else {
-		var iconAndName = "<td><wiklet class='ICON' /></td><td><wiklet class='NAME' /></td>";
-		var separator = "<td>&nbsp;&raquo;&nbsp;</td>";
-
-		var a = [ ];
-
-		var folderId = page.folderId;
-		while (folderId != rootId) {
-			var notebook = this._appCtxt.getById(folderId);
-			a.unshift(ZmWikletProcessor.process(appCtxt, notebook, iconAndName));
-			folderId = notebook.parent.id;
-			if (folderId != rootId) {
-				a.unshift(separator);
-			}
-		}
-
-		a.unshift("<table border=0 cellpadding=0 cellspacing=3><tr>");
-		a.push("</tr></table>");
-
-		content = a.join("");
-	}
-
-	this._locationEl.innerHTML = content;
-
+	this._pageEditor.setFooterInfo(page);
+	
 	// set name
 	var name = page.name || "";
 	this._pageNameInput.setValue(name);
@@ -179,7 +152,7 @@ function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 
 	var size = Dwt.getSize(this._inputEl);
-	this._pageEditor.setSize(width, height - size.y);
+	this._pageEditor.setSize(width, height - size.y - 23);
 };
 
 ZmPageEditView.prototype.focus = function() {
@@ -234,13 +207,6 @@ function() {
 	table.cellSpacing = 0;
 	table.cellPadding = 3;
 	table.width = "100%";
-
-	var row = table.insertRow(-1);
-	var labelCell = row.insertCell(-1);
-	labelCell.width = "1%";
-	labelCell.className = "Label";
-	labelCell.innerHTML = ZmMsg.locationLabel;
-	this._locationEl = row.insertCell(-1);
 
 	var row = table.insertRow(-1);
 	var labelCell = row.insertCell(-1);
@@ -805,4 +771,89 @@ ZmPageEditor.prototype._popupReplaceDialog = function(target, url, text) {
 	}
 	var dialog = this._appCtxt.getReplaceDialog();
 	dialog.popup(editorInfo);
+};
+
+ZmPageEditor.prototype._initialize =
+function() {
+	ZmHtmlEditor.prototype._initialize.call(this);
+	this.addFooter();
+};
+
+ZmPageEditor.prototype.addFooter = 
+function() {	
+	var el = this.getHtmlElement();
+	var div = this._footerEl = document.createElement("div");
+	var locationId = Dwt.getNextId(); 
+	var versionId = Dwt.getNextId();
+	var authorId = Dwt.getNextId();
+	var modifiedId = Dwt.getNextId();
+	var footer = [
+			'<table cellpadding="0" cellspacing="0" class="ZmHtmlEditorFooter">',
+			'<tr>',
+			'<td>',ZmMsg.locationLabel,' <span id="',locationId,'"></span></td>',
+			'<td>',ZmMsg.versionLabel,' <span id="',versionId,'"></span></td>',
+			'<td>',ZmMsg.authorLabel,' <span id="',authorId,'"></span></td>',
+			'<td>',ZmMsg.modifiedOnLabel,' <span id="',modifiedId,'"></span></td>',			
+			'</tr>',
+			'</table>'		
+	];
+	
+	div.innerHTML = footer.join("");
+	el.appendChild(div);
+	this._locationEl = document.getElementById(locationId);
+	this._versionEl = document.getElementById(versionId);
+	this._authorEl = document.getElementById(authorId);
+	this._modifiedEl = document.getElementById(modifiedId);
+	
+};
+
+ZmPageEditor.prototype.setFooterInfo = 
+function(page){
+	
+	var appCtxt = this._appCtxt;
+	var content;
+	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	if (page.folderId == rootId) {
+		content = this._appCtxt.getById(page.folderId).name;
+	}else {
+		var separator = "&nbsp;&raquo;&nbsp;";
+		var a = [ ];
+		var folderId = page.folderId;
+		while (folderId != rootId) {
+			var notebook = this._appCtxt.getById(folderId);
+			a.unshift(notebook.name);
+			folderId = notebook.parent.id;
+			if (folderId != rootId) {
+				a.unshift(separator);
+			}
+		}
+		content = a.join("");
+	}
+
+	this._locationEl.innerHTML = content;
+	this._versionEl.innerHTML = (page.version ? page.version : "");
+	this._authorEl.innerHTML = (page.creator ? page.creator : "");
+	this._modifiedEl.innerHTML = (page.createDate ? ZmWiklet._formatDate({type:"shortdateandtime"},page.createDate) : "");	
+};
+
+ZmPageEditor.prototype._initTextMode =
+function(ignorePendingContent) {
+	var htmlEl = this.getHtmlElement();
+	this._textAreaId = "textarea_" + Dwt.getNextId();
+	var textArea = document.createElement("textarea");
+	textArea.className = "DwtHtmlEditorTextArea";
+	textArea.id = this._textAreaId;
+	
+	if(this._footerEl){
+		this._footerEl.parentNode.insertBefore(textArea,this._footerEl);
+	}else{
+		htmlEl.appendChild(textArea);
+	}
+	// We will ignore pending content if we are called from setMode. See setMode for
+	// documentation
+	if (!ignorePendingContent) {
+		textArea.value = this._pendingContent;
+		this._pendingContent = null;
+	}
+	return textArea;
 };
