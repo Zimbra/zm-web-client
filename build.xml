@@ -982,7 +982,7 @@ if (ext == null) ext = "";
   <!-- admin console targets -->
   <target name="admin-dev-sync" depends='templates' description="Admin Quick Sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}">
-      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="public/launch*,js/*/package/**,js/zimbraMail/**,public/Login.jsp,public/launchZimbraMail.jsp,public/ZimbraMail.jsp,public/ZimbraMailNewCompose.jsp,public/Messages.jsp"/>
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="public/launch*,js/*/package/**,js/zimbraMail/**,public/login.jsp,public/Login.jsp,public/launchZimbraMail.jsp,public/ZimbraMail.jsp,public/ZimbraMailNewCompose.jsp,public/Messages.jsp"/>
       <fileset dir='${build.dir}/WebRoot' includes='public/jsp/**'/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
@@ -1042,7 +1042,7 @@ if (ext == null) ext = "";
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/ajax/**,js/zimbra/**,js/zimbraAdmin/**,css/**,skins/**" excludes="js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
       <fileset dir="${build.dir}/WebRoot" includes="js/Boot*.*,js/Ajax*.*,js/XForms*.*,js/Zimbra*.*,js/Admin*.*" excludes="js/AjaxZWC*,js/AjaxLogin*,js/ZimbraLogin*" />
-      <fileset dir="${build.dir}/WebRoot" includes="public/*" excludes="public/launch*,public/Login.jsp,public/SoundPlayer/**,public/Spreadsheet*"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/*" excludes="public/launch*,public/login.jsp,public/Login.jsp,public/SoundPlayer/**,public/Spreadsheet*"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/jsp/Admin.jsp,public/jsp/Ajax.jsp,public/jsp/Boot.jsp,public/jsp/XForms.jsp,public/jsp/Zimbra.jsp"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
@@ -1067,7 +1067,7 @@ if (ext == null) ext = "";
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/ajax/**,js/zimbra/**,js/zimbraAdmin/**,css/**,skins/**" excludes="js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
       <fileset dir="${build.dir}/WebRoot" includes="js/Boot*.*,js/Ajax*.*,js/XForms*.*,js/Zimbra*.*,js/Admin*.*" excludes="js/AjaxZWC*,js/AjaxLogin*,js/ZimbraLogin*" />
-      <fileset dir="${build.dir}/WebRoot" includes="public/*" excludes="public/launch*,public/Login.jsp"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/*" excludes="public/launch*,public/login.jsp,public/Login.jsp"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/jsp/Admin.jsp,public/jsp/Ajax.jsp,public/jsp/Boot.jsp,public/jsp/XForms.jsp,public/jsp/Zimbra.jsp"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
