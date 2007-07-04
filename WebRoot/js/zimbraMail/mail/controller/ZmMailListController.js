@@ -526,7 +526,7 @@ function(params) {
 
 	var action = params.action;
 	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD)	{
-		action = (identity.getForwardOption() == ZmSetting.INCLUDE_ATTACH) ? ZmOperation.FORWARD_ATT :
+		action = params.action = (identity.getForwardOption() == ZmSetting.INCLUDE_ATTACH) ? ZmOperation.FORWARD_ATT :
 																			 ZmOperation.FORWARD_INLINE;
 	}
 
