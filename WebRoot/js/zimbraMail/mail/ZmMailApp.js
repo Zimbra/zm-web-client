@@ -445,7 +445,8 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_MAIL_MI,
 								{msgKey:		"searchMail",
 								 tooltipKey:	"searchMail",
-								 icon:			"Message"
+								 icon:			"Message",
+								 shareIcon:		"SharedMailFolder"
 								});
 };
 

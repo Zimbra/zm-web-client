@@ -234,7 +234,8 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.CONTACT,
 								{msgKey:		"searchContacts",
 								 tooltipKey:	"searchPersonalContacts",
-								 icon:			"ContactsFolder"
+								 icon:			"ContactsFolder",
+								 shareIcon:		"SharedContactsFolder"
 								});
 
 	ZmSearchToolBar.FOR_GAL_MI 	= "FOR GAL";

@@ -544,13 +544,28 @@ function(ev, id) {
 	this._inclSharedItems = this._searchToolBar.includeSharedItems();
 
 	if (id == ZmSearchToolBar.FOR_SHARED_MI) {
-		var icon = this._inclSharedItems ? item.getImage() : menu.getSelectedItem().getImage();
+		var icon = menu.getSelectedItem().getImage();
+		if (this._inclSharedItems) {
+			var selItem = menu.getSelectedItem();
+			var selItemId = selItem ? selItem.getData(ZmSearchToolBar.MENUITEM_ID) : null;
+			icon = selItemId
+				? ((ZmSearchToolBar.SHARE_ICON[selItemId]) || item.getImage())
+				: item.getImage();
+		}
+
 		btn.setImage(icon);
 	} else {
 		// only set search for if a "real" search-type menu item was clicked 
 		this._searchFor = id;
-		if (!this._inclSharedItems)
-			btn.setImage(item.getImage());
+		var icon = item.getImage();
+		if (this._inclSharedItems) {
+			var selItem = menu.getSelectedItem();
+			var selItemId = selItem ? selItem.getData(ZmSearchToolBar.MENUITEM_ID) : null;
+			icon = (selItemId && ZmSearchToolBar.SHARE_ICON[selItemId])
+				? ZmSearchToolBar.SHARE_ICON[selItemId]
+				: ZmSearchToolBar.ICON[ZmSearchToolBar.FOR_SHARED_MI];
+		}
+		btn.setImage(icon);
 		btn.setText(item.getText());
 	}
 

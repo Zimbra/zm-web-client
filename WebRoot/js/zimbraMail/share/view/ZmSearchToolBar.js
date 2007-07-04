@@ -58,7 +58,8 @@ ZmSearchToolBar.SETTING 				= {};									// required setting for menu item to a
 ZmSearchToolBar.MENU_ITEMS 				= [];									// list of menu items
 ZmSearchToolBar.MSG_KEY 				= {};									// text for menu item
 ZmSearchToolBar.TT_MSG_KEY 				= {};									// tooltip text for menu item
-ZmSearchToolBar.ICON 					= {};									// image for menu item
+ZmSearchToolBar.ICON 					= {};									// icon for menu item
+ZmSearchToolBar.SHARE_ICON				= {};									// icon for shared menu item
 
 
 // Public methods
@@ -73,6 +74,7 @@ function(id, params) {
 	if (params.msgKey)		{ ZmSearchToolBar.MSG_KEY[id]		= params.msgKey; }
 	if (params.tooltipKey)	{ ZmSearchToolBar.TT_MSG_KEY[id]	= params.tooltipKey; }
 	if (params.icon)		{ ZmSearchToolBar.ICON[id]			= params.icon; }
+	if (params.shareIcon)	{ ZmSearchToolBar.SHARE_ICON[id]	= params.shareIcon; }
 	if (params.setting)		{ ZmSearchToolBar.SETTING[id]		= params.setting; }
 	ZmSearchToolBar.MENU_ITEMS.push(id);
 };

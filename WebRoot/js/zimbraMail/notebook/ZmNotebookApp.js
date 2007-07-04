@@ -150,6 +150,7 @@ function() {
 								{msgKey:		"searchNotebooks",
 								 tooltipKey:	"searchForPages",
 								 icon:			"Notebook",
+								 shareIcon:		"SharedNotebook",
 								 setting:		ZmSetting.NOTEBOOK_ENABLED								 
 								});
 };

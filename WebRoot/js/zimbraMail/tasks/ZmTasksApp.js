@@ -113,6 +113,7 @@ function() {
 								{msgKey:		"tasks",
 								 tooltipKey:	"searchTasks",
 								 icon:			"TaskList",
+								 shareIcon:		"SharedTaskList",
 								 setting:		ZmSetting.TASKS_ENABLED
 								});
 };
