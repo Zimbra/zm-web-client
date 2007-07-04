@@ -44,8 +44,7 @@
 ZmButtonToolBar = function(params) {
 	if (arguments.length == 0) return;
 
-//    var className = params.className || "ZToolbar";
-    var className = null;
+    var className = params.className || "ZToolbar";
     ZmToolBar.call(this, params.parent, className, params.posStyle);
 	
 	this._buttonStyle = params.buttonClassName;

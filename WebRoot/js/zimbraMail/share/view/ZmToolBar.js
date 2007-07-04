@@ -37,12 +37,9 @@
 * @param posStyle		[constant]*			positioning style
 */
 ZmToolBar = function(parent, className, posStyle) {
-
 	if (arguments.length == 0) return;
-//	className = className ? className : "ZmToolBar";
-	posStyle = posStyle ? posStyle : DwtControl.ABSOLUTE_STYLE;
-		
-	DwtToolBar.call(this, parent, className, posStyle);
+
+	DwtToolBar.call(this, parent, className, (posStyle || DwtControl.ABSOLUTE_STYLE));
 	this._buttons = {};
 };
 
@@ -118,8 +115,7 @@ function(enabled) {
  */
 ZmToolBar.prototype.createButton =
 function(id, params) {
-//	var className = params.className || "DwtToolbarButton";
-	var b = this._buttons[id] = this._createButton(params/*, className*/);
+	var b = this._buttons[id] = this._createButton(params);
 	if (params.image) {
 		b.setImage(params.image);
 	}

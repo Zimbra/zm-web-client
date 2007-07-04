@@ -33,6 +33,7 @@
 *
 * @param appCtxt					[ZmAppCtxt]		the app context
 * @param query						[string]		query string
+?* @param queryHint					[string]*		query string that gets appended to the query but not something the user needs to know about
 * @param types						[AjxVector]		item types to search for
 * @param sortBy						[constant]*		sort order
 * @param offset						[int]*			starting point within result set
@@ -54,6 +55,7 @@ ZmSearch = function(appCtxt, params) {
 
 	if (params) {
 		this.query						= params.query;
+		this.queryHint					= params.queryHint;
 		this.types						= params.types;
 		this.sortBy						= params.sortBy;
 		this.offset						= params.offset;
@@ -298,17 +300,17 @@ function(callback, result) {
 */
 ZmSearch.prototype.getTitle =
 function() {
-	var where = null;
+	var where;
 	if (this.folderId) {
 		var folder = this._appCtxt.getById(this.folderId);
 		if (folder)
 			where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	} else if (this.tagId) {
-			where = this._appCtxt.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+		where = this._appCtxt.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	}
-	var title = where ? [ZmMsg.zimbraTitle, where].join(": ") : 
-						[ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": ");
-	return title;
+	return where
+		? ([ZmMsg.zimbraTitle, where].join(": "))
+		: ([ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": "));
 };
 
 ZmSearch.prototype._getStandardMethod = 
@@ -316,8 +318,9 @@ function(soapDoc) {
 
 	var method = soapDoc.getMethod();
 
-	if (this.sortBy)
+	if (this.sortBy) {
 		method.setAttribute("sortBy", ZmSearch.SORT_BY[this.sortBy]);
+	}
 
 	// bug 5771: add timezone and locale info
 	ZmTimezone.set(soapDoc, AjxTimezone.DEFAULT, null);
@@ -349,8 +352,11 @@ function(soapDoc) {
 	}
 	method.setAttribute("limit", this.limit);
 
-	// and of course, always set the query
-	soapDoc.set("query", this.query);
+	// and of course, always set the query and append the query hint if applicable
+	var query = this.queryHint
+		? ([this.query, " (", this.queryHint, ")"].join(""))
+		: this.query;
+	soapDoc.set("query", query);
 
 	// set search field if provided
 	if (this.field) {

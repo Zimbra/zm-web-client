@@ -67,46 +67,40 @@ function(zimletContext, shell) {
 
 /// Override this function in order to initialize Zimlet internals.  The base
 /// class function should stay no-op.
-ZmZimletBase.prototype.init = function(){};
+ZmZimletBase.prototype.init = function() {};
 
 ZmZimletBase.prototype.toString =
 function() {
 	return this.name;
 };
 
-ZmZimletBase.prototype.getShell = function() {
+ZmZimletBase.prototype.getShell =
+function() {
 	return this._dwtShell;
 };
 
-ZmZimletBase.prototype.getAppCtxt = function() {
+ZmZimletBase.prototype.getAppCtxt =
+function() {
 	return this._appCtxt;
 };
 
 /// Adds a new item in the search domain drop-down.  Pass an icon
 /// class (null for no icon), a label and optionally a listener that
 /// will be called when the item is selected.
-ZmZimletBase.prototype.addSearchDomainItem = function(icon, label, listener) {
+ZmZimletBase.prototype.addSearchDomainItem =
+function(icon, label, listener) {
 	var searchToolbar = this.getAppCtxt().getSearchController().getSearchToolbar();
 	return searchToolbar.createCustomSearchBtn(icon, label, listener);
-
-// 	var menu = searchToolbar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
-// 	var item;
-// 	if (arguments.length == 0 || icon == "separator") {
-// 		item = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
-// 	} else {
-// 		item = DwtMenuItem.create(menu, icon, label, null, true);
-// 		if (listener != null)
-// 			item.addSelectionListener(listener);
-// 	}
-// 	return item;
 };
 
 /// Returns the text entered in the search bar
-ZmZimletBase.prototype.getSearchQuery = function() {
+ZmZimletBase.prototype.getSearchQuery =
+function() {
 	return this.getAppCtxt().getSearchController().getSearchToolbar().getSearchFieldValue();
 };
 
-ZmZimletBase.prototype.getZimletManager = function() {
+ZmZimletBase.prototype.getZimletManager =
+function() {
 	return this.getAppCtxt().getZimletMgr();
 };
 
@@ -143,11 +137,14 @@ function(zmObject) {
 ZmZimletBase.prototype.doDrop =
 function(zmObject) {};
 
-ZmZimletBase.prototype.portletCreated = function(portlet) {
-    DBG.println("portlet created: "+portlet.id);
+ZmZimletBase.prototype.portletCreated =
+function(portlet) {
+    DBG.println("portlet created: " + portlet.id);
 };
-ZmZimletBase.prototype.portletRefreshed = function(portlet) {
-    DBG.println("portlet refreshed: "+portlet.id);
+
+ZmZimletBase.prototype.portletRefreshed =
+function(portlet) {
+    DBG.println("portlet refreshed: " + portlet.id);
 };
 
 // This method is called when the Zimlet panel item is double clicked. This
@@ -211,13 +208,11 @@ function(handlerName) {
 
 // Similar to doubleClicked, but called upon a single click.  Note that this
 // might be called once or twice in the case of a dbl. click too.
-ZmZimletBase.prototype.singleClicked =
-function(canvas) {};
+ZmZimletBase.prototype.singleClicked = function(canvas) {};
 
 // Called when a new message is being viewed.
 // msg and oldMsg are ZmMailMsg objects; oldMsg can be null.
-ZmZimletBase.prototype.onMsgView =
-function(msg, oldMsg) {};
+ZmZimletBase.prototype.onMsgView = function(msg, oldMsg) {};
 
 /* Content Object methods */
 
@@ -383,7 +378,8 @@ function(callback) {
 /**
  * Displays the given error message in the standard error dialog.
  */
-ZmZimletBase.prototype.displayErrorMessage = function(msg, data, title) {
+ZmZimletBase.prototype.displayErrorMessage =
+function(msg, data, title) {
 	if (title == null)
 		title = this.xmlObj("description") + " error";
 	var dlg = this.getAppCtxt().getErrorDialog();
@@ -393,7 +389,8 @@ ZmZimletBase.prototype.displayErrorMessage = function(msg, data, title) {
 	dlg.popup();
 };
 
-ZmZimletBase.prototype.displayStatusMessage = function(msg) {
+ZmZimletBase.prototype.displayStatusMessage =
+function(msg) {
 	this.getAppCtxt().setStatusMsg(msg);
 };
 
@@ -456,7 +453,8 @@ function(propertyName, value, save) {
  * string is returned, an error message will be displayed in the standard
  * dialog.
  */
-ZmZimletBase.prototype.checkProperties = function(props) {
+ZmZimletBase.prototype.checkProperties =
+function(props) {
 	return true;
 };
 
@@ -464,7 +462,8 @@ ZmZimletBase.prototype.checkProperties = function(props) {
  * Called by the framework usually during SOAP calls to provide some end-user
  * feedback.  The default is a nice animated icon defined in Zimbra.
  */
-ZmZimletBase.prototype.setBusyIcon = function() {
+ZmZimletBase.prototype.setBusyIcon =
+function() {
 	this.setIcon("ZimbraIcon DwtWait16Icon");
 };
 
@@ -472,7 +471,8 @@ ZmZimletBase.prototype.setBusyIcon = function() {
  * Call this function to change the Zimlet's icon in the panel tree.  Called by
  * the framework to provide visual feedback during sendRequest() calls.
  */
-ZmZimletBase.prototype.setIcon = function(icon) {
+ZmZimletBase.prototype.setIcon =
+function(icon) {
 	if (!this.xmlObj("zimletPanelItem"))
 		return;
 	this.xmlObj().icon = icon;
@@ -489,7 +489,8 @@ ZmZimletBase.prototype.setIcon = function(icon) {
  * This resets the Zimlet icon to the one originally specified in the XML file,
  * if any.
  */
-ZmZimletBase.prototype.resetIcon = function() {
+ZmZimletBase.prototype.resetIcon =
+function() {
 	this.setIcon(this._origIcon);
 };
 
@@ -553,7 +554,8 @@ function(configName) {
 	return this.xmlObj().getConfig(configName);
 };
 
-ZmZimletBase.prototype.getBoolConfig = function(key, defaultValue) {
+ZmZimletBase.prototype.getBoolConfig =
+function(key, defaultValue) {
 	var val = AjxStringUtil.trim(this.getConfig(key));
 	if (val != null) {
 		if (arguments.length < 2)
@@ -571,26 +573,31 @@ ZmZimletBase.prototype.getBoolConfig = function(key, defaultValue) {
 	return val;
 };
 
-ZmZimletBase.prototype.setEnabled = function(enabled) {
+ZmZimletBase.prototype.setEnabled =
+function(enabled) {
 	if (arguments.length == 0)
 		enabled = true;
 	this.__zimletEnabled = enabled;
 };
 
-ZmZimletBase.prototype.getEnabled = function() {
+ZmZimletBase.prototype.getEnabled =
+function() {
 	return this.__zimletEnabled;
 };
 
-ZmZimletBase.prototype.getUsername = function() {
+ZmZimletBase.prototype.getUsername =
+function() {
 	return this.getAppCtxt().get(ZmSetting.USERNAME);
 };
 
-ZmZimletBase.prototype.getUserID = function() {
+ZmZimletBase.prototype.getUserID =
+function() {
 	return this.getAppCtxt().get(ZmSetting.USERID);
 };
 
 // Make DOM safe id's
-ZmZimletBase.encodeId = function(s) {
+ZmZimletBase.encodeId =
+function(s) {
 	return s.replace(/[^A-Za-z0-9]/g, "");
 };
 
@@ -611,7 +618,8 @@ function(object, context, span) {
 	this.toolTipPoppedDown(span, object, context, document.getElementById("zimletTooltipDiv"));
 };
 
-ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
+ZmZimletBase.prototype.makeCanvas =
+function(canvasData, url) {
 	var canvas = null;
 	var div;
 

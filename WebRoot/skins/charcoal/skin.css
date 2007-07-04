@@ -43,11 +43,6 @@ background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
 	background: #5c5c5c url("@SkinImgDir@/login_bg.png");
 }
 
-/* Email Messages button in Search Bar */
-.ZmSearchToolbar .MessageControl1 {
-	padding-left:5px;
-}
-
 
 
 /* Container that owns the login button */
@@ -80,7 +75,7 @@ background: url("@SkinImgDir@/header_bg_bones.png") repeat-x;*/
 }
 
 /* Search toolbar */
-.ZmSearchToolbar TD{
+.ZmSearchToolbar TD {
 	color: white;
 }
 

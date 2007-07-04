@@ -43,7 +43,7 @@ ZmSearchController.prototype.constructor = ZmSearchController;
 
 
 // Consts
-ZmSearchController.QUERY_ISREMOTE = "(is:remote OR is:local)";
+ZmSearchController.QUERY_ISREMOTE = "is:remote OR is:local";
 
 
 ZmSearchController.prototype.toString =
@@ -162,7 +162,7 @@ function(type) {
 	if (this._searchToolBar) {
 		var menu = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
 		menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
-		this._searchMenuListener(null, type, true);
+		this._searchMenuListener(null, type);
 	}
 };
 
@@ -193,12 +193,14 @@ function() {
     		item.setChecked(true, true);
     }
 
-	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_MENU_BUTTON, new AjxListener(this, this._searchButtonListener));
-	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED))
+	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_BUTTON, new AjxListener(this, this._searchButtonListener));
+	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
 		this._searchToolBar.addSelectionListener(ZmSearchToolBar.BROWSE_BUTTON, new AjxListener(this, this._browseButtonListener));
-	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED))
+	}
+	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		this._searchToolBar.addSelectionListener(ZmSearchToolBar.SAVE_BUTTON, new AjxListener(this, this._saveButtonListener));
-}
+	}
+};
 
 /**
 * Performs a search and displays the results.
@@ -284,16 +286,13 @@ function(searchFor) {
 	searchFor = searchFor || this._searchFor;
 
 	var groupBy;
-	if ((searchFor == ZmSearchToolBar.FOR_MAIL_MI ||
-		 searchFor == ZmSearchToolBar.FOR_ANY_MI ||
-		 searchFor == ZmSearchToolBar.FOR_PAM_MI) && this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-
+	if ((searchFor == ZmSearchToolBar.FOR_MAIL_MI || searchFor == ZmSearchToolBar.FOR_ANY_MI) &&
+		this._appCtxt.get(ZmSetting.MAIL_ENABLED))
+	{
 		groupBy = this._appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	}
 
-	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI ||
-		searchFor == ZmSearchToolBar.FOR_PAM_MI) {
-
+	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI) {
 		types.add(groupBy);
 	} else if (searchFor == ZmSearchToolBar.FOR_ANY_MI)	{
 		if (groupBy && this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
@@ -378,12 +377,9 @@ function(params, noRender, callback, errorCallback) {
 	// if the user explicitly searched for all types, force mixed view
 	var isMixed = (this._searchFor == ZmSearchToolBar.FOR_ANY_MI);
 
-	// XXX: hack -- we have to hack the query string in order for this search to work
-	if (this._searchFor == ZmSearchToolBar.FOR_PAS_MI ||
-		this._searchFor == ZmSearchToolBar.FOR_PAM_MI)
-	{
-		if (params.query.indexOf(ZmSearchController.QUERY_ISREMOTE) == -1)
-			params.query += (" " + ZmSearchController.QUERY_ISREMOTE);	
+	// a query hint is part of the query that the user does not see
+	if (this._inclSharedItems) {
+		params.queryHint = ZmSearchController.QUERY_ISREMOTE;
 	}
 
 	// only set contact source if we are searching for contacts
@@ -528,25 +524,35 @@ function(ev) {
 }
 
 ZmSearchController.prototype._searchMenuListener =
-function(ev, id, noSearch) {
-	if (ev && (ev.detail != DwtMenuItem.CHECKED)) { return; }
-
+function(ev, id) {
 	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
 	if (!btn) { return; }
+
+	var menu = btn.getMenu();
+
 	var item;
 	if (ev) {
 		item = ev.item;
 		id = ev.item.getData(ZmSearchToolBar.MENUITEM_ID);
 	} else {
-		item = btn.getMenu().getItemById(ZmSearchToolBar.MENUITEM_ID, id);
+		item = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, id);
 	}
 	if (!item) { return; }
 
-	this._searchFor = id;
-	this._contactSource = (id == ZmSearchToolBar.FOR_GAL_MI) ? ZmSearchToolBar.FOR_GAL_MI : ZmItem.CONTACT;
+	this._contactSource = (id == ZmSearchToolBar.FOR_GAL_MI)
+		? ZmSearchToolBar.FOR_GAL_MI : ZmItem.CONTACT;
+	this._inclSharedItems = this._searchToolBar.includeSharedItems();
 
-	// set button text
-	btn.setText(item.getText());
+	if (id == ZmSearchToolBar.FOR_SHARED_MI) {
+		var icon = this._inclSharedItems ? item.getImage() : menu.getSelectedItem().getImage();
+		btn.setImage(icon);
+	} else {
+		// only set search for if a "real" search-type menu item was clicked 
+		this._searchFor = id;
+		if (!this._inclSharedItems)
+			btn.setImage(item.getImage());
+		btn.setText(item.getText());
+	}
 
 	// set button tooltip
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
@@ -554,11 +560,7 @@ function(ev, id, noSearch) {
 		var groupBy = this._appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
 	}
-
-	// run search
-	if (!noSearch) {
-		this._searchButtonListener(ev);
-	}
+	btn.setToolTipContent(tooltip);
 };
 
 /**

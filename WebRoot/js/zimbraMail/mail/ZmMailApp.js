@@ -445,15 +445,7 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_MAIL_MI,
 								{msgKey:		"searchMail",
 								 tooltipKey:	"searchMail",
-								 icon:			"SearchMail"
-								});
-
-	ZmSearchToolBar.FOR_PAM_MI 	= "FOR PAM";
-	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_PAM_MI,
-								{msgKey:		"searchPersonalSharedMail",
-								 tooltipKey:	"searchPersonalSharedMail",
-								 icon:			"SearchSharedMail",
-								 setting:		ZmSetting.SHARING_ENABLED
+								 icon:			"Message"
 								});
 };
 

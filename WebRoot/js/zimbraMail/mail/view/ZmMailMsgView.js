@@ -291,9 +291,6 @@ function() {
 	var params = {parent:this, buttons:operationButtonIds, posStyle:DwtControl.STATIC_STYLE,
 				  className:"ZmInviteToolBar", buttonClassName:"DwtToolbarButton"};
 	this._inviteToolbar = new ZmButtonToolBar(params);
-	// get a little space between the buttons.
-	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
-	toolbarHtmlEl.firstChild.cellPadding = "3";
 
 	var inviteToolBarListener = new AjxListener(this, this._inviteToolBarListener);
 	operationButtonIds = this._inviteToolbar.opList;
@@ -333,9 +330,6 @@ function() {
 	var params = {parent:this, buttons:buttonIds, posStyle:DwtControl.STATIC_STYLE,
 				  className:"ZmShareToolBar", buttonClassName:"DwtToolbarButton"};
 	this._shareToolbar = new ZmButtonToolBar(params);
-	// get a little space between the buttons.
-	var toolbarHtmlEl = this._shareToolbar.getHtmlElement();
-	toolbarHtmlEl.firstChild.cellPadding = "3";
 
 	var shareToolBarListener = new AjxListener(this, this._shareToolBarListener);
 	for (var i = 0; i < buttonIds.length; i++) {

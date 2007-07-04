@@ -234,22 +234,14 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.CONTACT,
 								{msgKey:		"searchContacts",
 								 tooltipKey:	"searchPersonalContacts",
-								 icon:			"SearchContacts"
-								});
-
-	ZmSearchToolBar.FOR_PAS_MI 	= "FOR PAS";
-	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_PAS_MI,
-								{msgKey:		"searchPersonalSharedContacts",
-								 tooltipKey:	"searchPersonalSharedContacts",
-								 icon:			"SearchSharedContacts",
-								 setting:		ZmSetting.SHARING_ENABLED
+								 icon:			"ContactsFolder"
 								});
 
 	ZmSearchToolBar.FOR_GAL_MI 	= "FOR GAL";
 	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_GAL_MI,
 								{msgKey:		"searchGALContacts",
 								 tooltipKey:	"searchGALContacts",
-								 icon:			"SearchGAL",
+								 icon:			"GAL",
 								 setting:		ZmSetting.GAL_ENABLED
 								});
 };
