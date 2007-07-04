@@ -51,6 +51,7 @@
 	}
 
     ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
+    String sessionId = authResult.getSessionId();
     String skin = "";
 	String requestSkin = request.getParameter("skin");
 	if (requestSkin != null) {

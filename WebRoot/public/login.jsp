@@ -89,7 +89,7 @@
     <c:redirect url="${loginRedirectUrl}"/>
 </c:if>
 
-<c:url var="formActionUrl" value="/public/login.jsp">
+<c:url var="formActionUrl" value="">
     <c:forEach var="p" items="${paramValues}">
         <c:forEach var='value' items='${p.value}'>
             <c:if test="${(not fn:startsWith(p.key, 'login')) and (p.key ne 'username') and (p.key ne 'password')}">
