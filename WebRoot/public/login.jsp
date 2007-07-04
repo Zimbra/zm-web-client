@@ -226,11 +226,11 @@
                                     <table width=100%>
                                         <tr>
                                         	<td nowrap>
-                                        		Choose the client you would like to use: 
+                                        		<fmt:message key="chooseClient"/> 
                                     			<select name="client">
-			                                    	<option value="preferred"> Preferred</option>
-			                                    	<option value="advanced"> Advanced</option>
-			                                    	<option value="standard" ${selectStandard}> Standard</option>
+			                                    	<option value="preferred"> <fmt:message key="clientPreferred"/></option>
+			                                    	<option value="advanced"> <fmt:message key="clientAdvanced"/></option>
+			                                    	<option value="standard" ${selectStandard}> <fmt:message key="clientStandard"/></option>
 			                                    </select>
 			                                </td>
                                         </tr>
