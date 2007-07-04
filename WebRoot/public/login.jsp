@@ -32,7 +32,7 @@
         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
             <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
                       newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-                      prefs="zimbraPrefSkin"
+                      prefs="zimbraPrefSkin,zimbraPrefClientType"
                       attrs="zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled"
                     />
             <%-- continue on at not empty authResult test --%>
@@ -44,7 +44,7 @@
 	            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
 	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 	                      rememberme="${param.zrememberme == '1'}"
-	                      prefs="zimbraPrefSkin"
+	                      prefs="zimbraPrefSkin,zimbraPrefClientType"
 	                      attrs="zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled"
 	                    />
 	            <%-- continue on at not empty authResult test --%>
@@ -54,18 +54,25 @@
 </c:catch>
 
 <c:if test="${not empty authResult}">
+	<c:set var="client" value="${param.client}"/>
+	<c:if test="${client eq 'preferred'}">
+		<c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType}"/>
+	</c:if>
     <c:choose>
         <c:when test="${not empty postLoginUrl}">
             <c:redirect url="${postLoginUrl}"/>
         </c:when>
         <c:otherwise>
         	<c:choose>
-        		<c:when test="${param.client eq 'advanced'}">
+        		<c:when test="${client eq 'advanced'}">
 		            <jsp:forward page="/public/launchZCS.jsp"/>
         		</c:when>
-        		<c:when test="${param.client eq 'standard'}">
+        		<c:when test="${client eq 'standard'}">
 		            <c:redirect url="/h/search"/>
         		</c:when>
+		        <c:otherwise>
+		            <jsp:forward page="/public/launchZCS.jsp"/>
+		        </c:otherwise>
 		    </c:choose>
         </c:otherwise>
     </c:choose>
