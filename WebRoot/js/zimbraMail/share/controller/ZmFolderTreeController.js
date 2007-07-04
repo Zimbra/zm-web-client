@@ -174,14 +174,14 @@ function() {
 	var list = new Array();
 	list.push(ZmOperation.NEW_FOLDER,
 			  ZmOperation.MARK_ALL_READ,
-			  ZmOperation.EMPTY_FOLDER,
 			  ZmOperation.DELETE,
 			  ZmOperation.RENAME_FOLDER,
 			  ZmOperation.MOVE,
 			  ZmOperation.SHARE_FOLDER,
 			  ZmOperation.EDIT_PROPS,
 			  ZmOperation.EXPAND_ALL,
-			  ZmOperation.SYNC);
+			  ZmOperation.SYNC,
+			  ZmOperation.EMPTY_FOLDER);
 	return list;
 };
 
@@ -323,6 +323,15 @@ function(ev) {
 	ds.reset();
 	ds.registerCallback(DwtDialog.OK_BUTTON, this._emptyShieldYesCallback, this, organizer);
 	ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._emptyShield);
+	
+	var okButton = ds.getButton(DwtDialog.OK_BUTTON);
+	okButton._blur();
+	
+	var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
+	cancelButton._focus(); 
+	
+	ds.associateEnterWithButton(DwtDialog.CANCEL_BUTTON);
+	
 	var confirm = ZmMsg.confirmEmptyFolder;
 	var msg = AjxMessageFormat.format(confirm, organizer.getName());
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
