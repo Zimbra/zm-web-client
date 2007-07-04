@@ -9,6 +9,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setBundle basename="/msgs/ZmMsg" scope="request"/>
 
+<%-- set client select default based on user agent. need this before a potential logout --%>
+<zm:getUserAgent var="ua"/>
+<c:if test="${(ua.isFirefox1_5up ne 'true') and (ua.isIE6up ne 'true')}">
+	<c:set var="selectStandard" value="selected"/>
+</c:if>
+
 <c:catch var="loginException">
     <c:choose>
         <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
@@ -71,7 +77,7 @@
     <fmt:message var="errorMessage" key="${errorCode}"/>
 </c:if>
 
-<c:set var="loginRedirectUrl" value="${zm:getPreLoginRedirectUrl(pageContext, '/public/login.jsp')}"/>
+<c:set var="loginRedirectUrl" value="${zm:getPreLoginRedirectUrl(pageContext, '/')}"/>
 <c:if test="${not empty loginRedirectUrl}">
     <c:redirect url="${loginRedirectUrl}"/>
 </c:if>
@@ -86,11 +92,6 @@
     </c:forEach>
 </c:url>
 
-<%-- set client select default based on user agent --%>
-<zm:getUserAgent var="ua"/>
-<c:if test="${(ua.isFirefox1_5up ne 'true') and (ua.isIE6up ne 'true')}">
-	<c:set var="selectStandard" value="selected"/>
-</c:if>
 
 <html>
 

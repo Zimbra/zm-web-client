@@ -65,7 +65,7 @@
                         &nbsp;
                     </td>
                     <td align=right>
-                        <a href="<c:url value="/h/login?loginOp=logout"/>"><img alt='<fmt:message key="ALT_APP_LINK_LOGOFF"/>' src="<c:url value='/images/common/Logoff.gif'/>" border="0"/> <fmt:message key="logOut"/></a>
+                        <a href="<c:url value="/?loginOp=logout"/>"><img alt='<fmt:message key="ALT_APP_LINK_LOGOFF"/>' src="<c:url value='/images/common/Logoff.gif'/>" border="0"/> <fmt:message key="logOut"/></a>
                     </td>
                 </tr>
             </table>
