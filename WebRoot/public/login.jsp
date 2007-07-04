@@ -56,7 +56,7 @@
 <c:if test="${not empty authResult}">
 	<c:set var="client" value="${param.client}"/>
 	<c:if test="${client eq 'preferred'}">
-		<c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType}"/>
+		<c:set var="client" value="${zm:jsEncode(requestScope.authResult.prefs.zimbraPrefClientType[0])}"/>
 	</c:if>
     <c:choose>
         <c:when test="${not empty postLoginUrl}">

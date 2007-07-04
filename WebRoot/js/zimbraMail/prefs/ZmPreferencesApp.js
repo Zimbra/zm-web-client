@@ -172,7 +172,8 @@ function() {
 				ZmSetting.SEARCH_INCLUDES_TRASH,
 				ZmSetting.SHOW_SEARCH_STRING,
 				ZmSetting.SHOW_SELECTION_CHECKBOX,
-				ZmSetting.SKIN_NAME
+				ZmSetting.SKIN_NAME,
+				ZmSetting.CLIENT_TYPE
 			]
 		},
 		COMPOSING: {
@@ -205,6 +206,14 @@ function() {
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
 	}
+
+	ZmPref.registerPref("CLIENT_TYPE", {
+		displayName:		ZmMsg.clientType,
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_VERTICAL,
+		displayOptions: 	[ZmMsg.clientAdvanced, ZmMsg.clientStandard],
+		options: 			[ZmSetting.CLIENT_ADVANCED, ZmSetting.CLIENT_STANDARD]
+	});
 
 	ZmPref.registerPref("COMPOSE_AS_FORMAT", {
 		displayName:		ZmMsg.composeUsing,
