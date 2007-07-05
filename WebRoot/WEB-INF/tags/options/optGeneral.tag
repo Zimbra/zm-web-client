@@ -13,6 +13,31 @@
             <fmt:message key="optionsLoginOptions"/>
         </td>
      </tr>
+
+     <tr valign="middle">
+         <td class='ZOptionsTableLabel'>
+             <fmt:message key="optionsClientType"/>: <!-- ${mailbox.prefs.clientType} -->
+         </td>
+         <td>
+             <table border="0" cellpadding="0" cellspacing="3">
+                 <tr>
+                     <td>
+                         <input id="clientA" type="radio" name="zimbraPrefClientType" value="advanced" <c:if test="${mailbox.prefs.isAdvancedClient}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="clientA"><fmt:message key="optionsClientAdvanced"/></label>
+                     </td>
+                     <td>
+                         <input id="clientS" type="radio" name="zimbraPrefClientType" value="standard" <c:if test="${mailbox.prefs.isStandardClient}">checked</c:if>/>
+                     </td>
+                     <td>
+                         <label for="clientS"><fmt:message key="optionsClientStandard"/></label>
+                     </td>
+                 </tr>
+             </table>
+         </td>
+     </tr>
+
      <tr>
          <td class='ZOptionsTableLabel'>
              <label for="skinPref"><fmt:message key="SKIN_uiTheme"/>

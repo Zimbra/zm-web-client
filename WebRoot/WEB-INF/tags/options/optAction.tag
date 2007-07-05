@@ -16,6 +16,7 @@
             <zm:pref name="zimbraPrefIncludeSpamInSearch" value="${param.zimbraPrefIncludeSpamInSearch eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <zm:pref name="zimbraPrefIncludeTrashInSearch" value="${param.zimbraPrefIncludeTrashInSearch eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <zm:pref name="zimbraPrefShowSearchString" value="${param.zimbraPrefShowSearchString eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
+            <zm:pref name="zimbraPrefClientType" value="${param.zimbraPrefClientType}"/>
             <c:if test="${mailbox.features.skinChange}">
                 <zm:pref name="zimbraPrefSkin" value="${param.zimbraPrefSkin}"/>
             </c:if>
