@@ -1110,6 +1110,8 @@ if (ext == null) ext = "";
   		</then><else>
   			<echo>Deploy ${param.warfile} to ${webserver.root.dir}/webapps</echo>
   			<ant dir="../ZimbraServer" target="stop-jetty" inheritAll="false"/>
+  	        <delete dir="${webserver.root.dir}/webapps/${param.dirname}"/>
+  	        <delete file="${webserver.root.dir}/webapps/${param.warfilename}"/>    
 			<copy file="${param.warfile}" todir="${webserver.root.dir}/webapps"/>
             <mkdir dir='${webserver.root.dir}/webapps/${param.dirname}' />
             <unzip dest='${webserver.root.dir}/webapps/${param.dirname}' src="${webserver.root.dir}/webapps/${param.warfilename}" /> 
