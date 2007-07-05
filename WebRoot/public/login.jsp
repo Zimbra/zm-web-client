@@ -11,9 +11,7 @@
 
 <%-- set client select default based on user agent. need this before a potential logout --%>
 <zm:getUserAgent var="ua"/>
-<c:if test="${(ua.isFirefox1_5up ne 'true') and (ua.isIE6up ne 'true')}">
-	<c:set var="selectStandard" value="selected"/>
-</c:if>
+<c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up)}"/>
 
 <c:catch var="loginException">
     <c:choose>
@@ -92,7 +90,7 @@
 <c:url var="formActionUrl" value="/">
     <c:forEach var="p" items="${paramValues}">
         <c:forEach var='value' items='${p.value}'>
-            <c:if test="${(not fn:startsWith(p.key, 'login')) and (p.key ne 'username') and (p.key ne 'password')}">
+            <c:if test="${(not fn:startsWith(p.key, 'login')) and (p.key ne 'username') and (p.key ne 'password') and (p.key ne 'zrememberme') and (p.key ne 'client')}">
                 <c:param name="${p.key}" value='${value}'/>
             </c:if>
         </c:forEach>
@@ -226,11 +224,12 @@
                                     <table width=100%>
                                         <tr>
                                         	<td nowrap>
-                                        		<fmt:message key="chooseClient"/> 
-                                    			<select name="client">
-			                                    	<option value="preferred"> <fmt:message key="clientPreferred"/></option>
-			                                    	<option value="advanced"> <fmt:message key="clientAdvanced"/></option>
-			                                    	<option value="standard" ${selectStandard}> <fmt:message key="clientStandard"/></option>
+                                        		<fmt:message key="chooseClient"/>
+                                                <c:set var="client" value="${not empty param.client ? param.client : useStandard ? 'standard' : 'preferred' }"/>                                                
+                                                <select name="client">
+			                                    	<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
+			                                    	<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+			                                    	<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
 			                                    </select>
 			                                </td>
                                         </tr>
