@@ -54,16 +54,16 @@
 </c:catch>
 
 <c:if test="${not empty authResult}">
-	<c:set var="client" value="${param.client}"/>
-	<c:if test="${client eq 'preferred'}">
-		<c:set var="client" value="${zm:jsEncode(requestScope.authResult.prefs.zimbraPrefClientType[0])}"/>
-	</c:if>
     <c:choose>
         <c:when test="${not empty postLoginUrl}">
             <c:redirect url="${postLoginUrl}"/>
         </c:when>
         <c:otherwise>
-        	<c:choose>
+            <c:set var="client" value="${param.client}"/>
+            <c:if test="${empty client or client eq 'preferred'}">
+                <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
+            </c:if> 
+            <c:choose>
         		<c:when test="${client eq 'advanced'}">
 		            <jsp:forward page="/public/launchZCS.jsp"/>
         		</c:when>
