@@ -39,8 +39,7 @@ ZmVoicePrefsView = function(parent, appCtxt, controller) {
     var section = ZmPref.getPrefSectionWithPref(ZmSetting.VOICE_ACCOUNTS);
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
 	this._ui = [
-		new ZmAnonymousRejectionUI(this), 
-		new ZmEmailNotificationUI(this), 
+		new ZmEmailNotificationUI(this),
 		new ZmCallForwardingUI(this),
 		new ZmSelectiveCallForwardingUI(this)
 	];
@@ -62,7 +61,12 @@ function() {
 
 ZmVoicePrefsView.prototype.showMe =
 function() {
-	var callback = new AjxCallback(this, this._handleResponseGetPhones)
+    var contacts = AjxDispatcher.run("GetContacts");
+    this._me = contacts.getMe ? contacts.getMe() : [];
+    if (this._me.length) {
+        contacts.addChangeListener(new AjxListener(this, this._contactsChangeListener));
+    }
+    var callback = new AjxCallback(this, this._handleResponseGetPhones)
 	this._appCtxt.getApp(ZmApp.VOICE).getVoiceInfo(callback);
 };
 
@@ -135,6 +139,7 @@ function(parentElement) {
     parentElement.innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoicePrefsView", id);
     for(var i = 0, count = this._ui.length; i < count; i++) {
     	this._ui[i]._initialize(id);
+        this._ui[i].setMe(this._me);
     }
 };
 
@@ -208,6 +213,33 @@ function(identity, request, result) {
 //	}
 };
 
+ZmVoicePrefsView.prototype._containsMe =
+function(contacts) {
+    for(var contactIndex = 0, contactCount = contacts.length; contactIndex < contactCount; contactIndex++) {
+        var contact = contacts[contactIndex];
+        for (var meIndex = 0, meCount = this._me.length; meIndex < meCount; meIndex++) {
+            var me = this._me[meIndex];
+            if (me.id == contact.id) {
+                return true;
+            }
+        }
+    }
+    return false;
+};
+
+ZmVoicePrefsView.prototype._contactsChangeListener =
+function(ev) {
+	var redraw = false;
+	if (ev.event == ZmEvent.E_MODIFY) {
+        var meChanged = false;
+        var contacts = ev.getDetails().items;
+		if (contacts && this._containsMe(contacts)) {
+            for(var i = 0, count = this._ui.length; i < count; i++) {
+                this._ui[i].setMe(this._me);
+            }
+        }
+	}
+};
 
 
 ZmCallFeatureUI = function(view) {
@@ -253,6 +285,46 @@ function(ev) {
 	this.setEnabled(this._checkbox.isSelected());
 };
 
+ZmCallFeatureUI.prototype._populatePhoneComboBox =
+function(comboBox) {
+    comboBox.removeAll();
+    for (var meIndex = 0, meCount = this._view._me.length; meIndex < meCount; meIndex++) {
+        var me = this._view._me[meIndex];
+        for (var fieldIndex = 0, fieldCount = ZmContact.F_PHONE_FIELDS.length; fieldIndex < fieldCount; fieldIndex++) {
+            var fieldId = ZmContact.F_PHONE_FIELDS[fieldIndex];
+            var phone = me.getAttr(fieldId);
+            if (phone) {
+                var name = ZmPhone.calculateName(phone);
+                var display = ZmPhone.calculateDisplay(name);
+                comboBox.add(display, name, false);
+            }
+        }
+    }
+};
+
+ZmCallFeatureUI.prototype._populateEmailComboBox =
+function(comboBox) {
+    comboBox.removeAll();
+    var accountAddress = this._view._appCtxt.get(ZmSetting.USERNAME);
+    this._comboBox.add(accountAddress, false);
+    for (var meIndex = 0, meCount = this._view._me.length; meIndex < meCount; meIndex++) {
+        var me = this._view._me[meIndex];
+        for (var fieldIndex = 0, fieldCount = ZmContact.F_EMAIL_FIELDS.length; fieldIndex < fieldCount; fieldIndex++) {
+            var fieldId = ZmContact.F_EMAIL_FIELDS[fieldIndex];
+            var email = me.getAttr(fieldId);
+            if (email) {
+                var accountAddressLower = null;
+                if (!accountAddressLower) {
+                    accountAddressLower = accountAddress.toLowerCase();
+                }
+                if (email.toLowerCase != accountAddressLower) {
+                    comboBox.add(email, email, false);
+                }
+            }
+        }
+    }
+};
+
 // "Abstract" methods:
 ZmCallFeatureUI.prototype.getName =
 function() {
@@ -266,45 +338,11 @@ ZmCallFeatureUI.prototype.setEnabled =
 function(enabled) {
 	alert('ZmCallFeatureUI.prototype.setEnabled ' + enabled);
 };
-
-
-/////////////////////////////////////////////////////////////////////////
-
-ZmAnonymousRejectionUI = function(view) {
-	ZmCallFeatureUI.call(this, view);
-	this._checkbox = null;
-}
-ZmAnonymousRejectionUI.prototype = new ZmCallFeatureUI;
-ZmAnonymousRejectionUI.prototype.constructor = ZmAnonymousRejectionUI;
-ZmAnonymousRejectionUI.prototype.toString = 
-function() {
-	return "ZmAnonymousRejectionUI";
-}
-
-ZmAnonymousRejectionUI.prototype.getName =
-function() {
-	return ZmCallFeature.ANONYNOUS_REJECTION;
+ZmCallFeatureUI.prototype.setMe =
+function(me) {
+	alert('ZmCallFeatureUI.prototype.meChanged');
 };
 
-ZmAnonymousRejectionUI.prototype.show =
-function(feature) {
-	// Nothing to do here.
-};
-
-ZmAnonymousRejectionUI.prototype._isValueDirty =
-function() {
-	return false;
-};
-
-ZmAnonymousRejectionUI.prototype.setEnabled =
-function(enabled) {
-	// Nothing to do here.
-};
-
-ZmAnonymousRejectionUI.prototype._initialize =
-function(id) {
-	this._createCheckbox(ZmMsg.anonymousRejectionDescription, id + "_anonymousRejectionCheckbox");
-};
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -351,6 +389,11 @@ function(enabled) {
 	this._comboBox.setEnabled(enabled);
 };
 
+ZmCallForwardingUI.prototype.setMe =
+function() {
+    this._populatePhoneComboBox(this._comboBox);
+};
+
 ZmCallForwardingUI.prototype._getSelectedValue =
 function() {
 	var value = this._comboBox.getValue();
@@ -367,11 +410,6 @@ function(id) {
 	
 	var inputParams = { size:25 }
 	this._comboBox = new DwtComboBox(this._view, inputParams);
-	var phones = this._view._appCtxt.getApp(ZmApp.VOICE).phones;
-	for (var i = 0, count = phones.length; i < count; i++) {
-		var phone = phones[i];
-		this._comboBox.add(phone.getDisplay(), phone.name, false);
-	}
 	this._comboBox.replaceElement(id + "_callForwardingComboBox");
 };
 
@@ -459,6 +497,11 @@ function(enabled) {
 	this._addButton.setEnabled(enabled);
 };
 
+ZmSelectiveCallForwardingUI.prototype.setMe =
+function() {
+    this._populatePhoneComboBox(this._comboBox);
+};
+
 ZmSelectiveCallForwardingUI.prototype._getSelectedValue =
 function() {
 	var value = this._comboBox.getValue();
@@ -543,7 +586,7 @@ ZmEmailNotificationUI = function(view) {
 }
 ZmEmailNotificationUI.prototype = new ZmCallFeatureUI;
 ZmEmailNotificationUI.prototype.constructor = ZmEmailNotificationUI;
-ZmEmailNotificationUI.prototype.toString = 
+ZmEmailNotificationUI.prototype.toString =
 function() {
 	return "ZmEmailNotificationUI";
 }
@@ -560,7 +603,7 @@ function(feature) {
 
 ZmEmailNotificationUI.prototype._isValueDirty =
 function() {
-	if (this._getSelectedValue() != this._feature.data.ft) {
+	if (this._getSelectedValue() != this._feature.data.value) {
 		return true;
 	}
 	return false;
@@ -578,6 +621,11 @@ function(enabled) {
 	this._comboBox.setEnabled(enabled);
 };
 
+ZmEmailNotificationUI.prototype.setMe =
+function() {
+    this._populateEmailComboBox(this._comboBox);
+};
+
 ZmEmailNotificationUI.prototype._getSelectedValue =
 function() {
 	return AjxStringUtil.trim(this._comboBox.getText());
@@ -586,11 +634,9 @@ function() {
 ZmEmailNotificationUI.prototype._initialize =
 function(id) {
 	this._createCheckbox(ZmMsg.emailNotificationDescription, id + "_emailNotificationCheckbox");
-	
+
 	var inputParams = { size:25 }
 	this._comboBox = new DwtComboBox(this._view, inputParams);
-	var accountAddress = this._view._appCtxt.get(ZmSetting.USERNAME);
-	this._comboBox.add(accountAddress, false);
 	this._comboBox.replaceElement(id + "_emailNotificationComboBox");
 };
 
