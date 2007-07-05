@@ -30,7 +30,7 @@ ZmSearchToolBar = function(appCtxt, parent, posStyle) {
 	this._appCtxt = appCtxt;
 
 	// set up "search all" menu item
-	var params = { msgKey:"searchAll", tooltipKey:"searchForAny", icon:"Globe", setting:ZmSetting.MIXED_VIEW_ENABLED };
+	var params = { msgKey:"searchAll", tooltipKey:"searchForAny", icon:"Globe", setting:ZmSetting.MIXED_VIEW_ENABLED, index:0 };
 	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_ANY_MI, params);
 
 	// set up "incl. shared items" menu item
@@ -76,7 +76,13 @@ function(id, params) {
 	if (params.icon)		{ ZmSearchToolBar.ICON[id]			= params.icon; }
 	if (params.shareIcon)	{ ZmSearchToolBar.SHARE_ICON[id]	= params.shareIcon; }
 	if (params.setting)		{ ZmSearchToolBar.SETTING[id]		= params.setting; }
-	ZmSearchToolBar.MENU_ITEMS.push(id);
+
+	// test for null since index value can be zero :)
+	if (params.index == null || params.index < 0 || params.index >= ZmSearchToolBar.MENU_ITEMS.length) {
+		ZmSearchToolBar.MENU_ITEMS.push(id);
+	} else {
+		ZmSearchToolBar.MENU_ITEMS.splice(params.index, 0, id);
+	}
 };
 
 ZmSearchToolBar.prototype.getSearchField =
@@ -148,65 +154,79 @@ function() {
 	return this._searchField ? this._searchField.getValue() : null;
 };
 
-ZmSearchToolBar.prototype.includeSharedItems =
-function() {
-	var include = false;
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		var menu = this._searchMenuButton.getMenu();
-		if (menu) {
-			include = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_SHARED_MI).getChecked();
-		}
-	}
-	return include;
-};
-
 ZmSearchToolBar.prototype.createCustomSearchBtn =
 function(icon, text, listener) {
 	if (!this._customSearchListener) {
 		this._customSearchListener = new AjxListener(this, this._customSearchBtnListener);
 	}
 
-	if (!this._customSearchBtn) {
-		this._customSearchBtn = this._addButton({ buttonId:"_customSearchButton", lbl:text, icon:icon} );
-		this._customSearchBtn.setData("CustomSearchItem", [ icon, text, listener ]);
-		this._customSearchBtn.addSelectionListener(this._customSearchListener);
+	// check if custom search should be a button by checking for the Id against the template
+	var customSearchBtn = document.getElementById(this._htmlElId + "_customSearchButton");
+	if (customSearchBtn) {
+		if (!this._customSearchBtn) {
+			this._customSearchBtn = this._addButton({ buttonId:"_customSearchButton", lbl:text, icon:icon} );
+			this._customSearchBtn.setData("CustomSearchItem", [ icon, text, listener ]);
+			this._customSearchBtn.addSelectionListener(this._customSearchListener);
 
-		// show the separator now that we've added a custom search button
-		var sep = document.getElementById(this._htmlElId + "_customSearchButtonSep");
-		if (sep) {
-			Dwt.setVisible(sep, true);
-		}
-	} else {
-		var menu = this._customSearchBtn.getMenu();
-        var item;
-		if (!menu) {
-			var data = this._customSearchBtn.getData("CustomSearchItem");
-			menu = new DwtMenu(this._customSearchBtn, null, "ActionMenu");
-			this._customSearchBtn.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
-			item = DwtMenuItem.create(menu, data[0], data[1], null, true, DwtMenuItem.RADIO_STYLE, 0);
-			item.setData("CustomSearchItem", data);
-			item.setChecked(true, true);
+			// show the separator now that we've added a custom search button
+			var sep = document.getElementById(this._htmlElId + "_customSearchButtonSep");
+			if (sep) {
+				Dwt.setVisible(sep, true);
+			}
+		} else {
+			var menu = this._customSearchBtn.getMenu();
+			var item;
+			if (!menu) {
+				var data = this._customSearchBtn.getData("CustomSearchItem");
+				menu = new DwtMenu(this._customSearchBtn, null, "ActionMenu");
+				this._customSearchBtn.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
+				item = DwtMenuItem.create(menu, data[0], data[1], null, true, DwtMenuItem.RADIO_STYLE, 0);
+				item.setData("CustomSearchItem", data);
+				item.setChecked(true, true);
+				item.addSelectionListener(this._customSearchListener);
+			}
+			item = DwtMenuItem.create(menu, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 0);
+			item.setData("CustomSearchItem", [icon, text, listener] );
 			item.addSelectionListener(this._customSearchListener);
 		}
-		item = DwtMenuItem.create(menu, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 0);
-		item.setData("CustomSearchItem", [icon, text, listener] );
-		item.addSelectionListener(this._customSearchListener);
-	}
+	} else {
+		var menu = this._searchMenuButton.getMenu();
+		var mi = menu.getItem(0);
+		var addSep = !(mi && mi.getData("CustomSearchItem"));
+		mi = DwtMenuItem.create(menu, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 0, 0);
+		mi.setData("CustomSearchItem", [icon, text, listener]);
+		mi.addSelectionListener(this._customSearchListener);
 
-	return this._customSearchBtn;
+		// only add separator if this is the first custom search menu item
+		if (addSep) {
+			mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE, null, 1);
+		}
+	}
 };
 
 ZmSearchToolBar.prototype._customSearchBtnListener = 
 function(ev) {
 	var item = ev.item;
 	var data = item.getData("CustomSearchItem");
-	if (item instanceof DwtMenuItem) {
-		if (ev.detail != DwtMenuItem.CHECKED) { return; }
-		this._customSearchBtn.setToolTipContent(data[1]);
-		this._customSearchBtn.setData("CustomSearchItem", data);
+	if (this._customSearchBtn) {
+		if (item instanceof DwtMenuItem) {
+			if (ev.detail != DwtMenuItem.CHECKED) { return; }
+			this._customSearchBtn.setToolTipContent(data[1]);
+			this._customSearchBtn.setData("CustomSearchItem", data);
+		}
+		data[2].run(ev); // call original listener
+	} else {
+		this._searchMenuButton.setToolTipContent(data[1]);
+
+		var menu = item.parent;
+		var shareMenuItem = menu ? menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_SHARED_MI) : null;
+		if (shareMenuItem) {
+			shareMenuItem.setEnabled(false);
+		}
+
+		this._searchMenuButton.setImage(data[0]);
+		this._searchMenuButton.setText(data[1]);
 	}
-	// call original listener
-	data[2].run(ev);
 };
 
 
@@ -240,9 +260,8 @@ function() {
 		for (var i = 0; i < ZmSearchToolBar.MENU_ITEMS.length; i++) {
 			var id = ZmSearchToolBar.MENU_ITEMS[i];
 
-			if (id == ZmSearchToolBar.FOR_ANY_MI ||
-				id == ZmSearchToolBar.FOR_SHARED_MI)
-			{
+			// add separator *before* "shared" menu item
+			if (id == ZmSearchToolBar.FOR_SHARED_MI) {
 				if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
 				mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
 			}
@@ -254,6 +273,12 @@ function() {
 				? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
 			mi = DwtMenuItem.create(menu, ZmSearchToolBar.ICON[id], ZmMsg[ZmSearchToolBar.MSG_KEY[id]], null, true, style, 0);
 			mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
+
+			// add separator *after* "all" menu item
+			if (id == ZmSearchToolBar.FOR_ANY_MI) {
+				if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
+				mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+			}
 		}
 
 		this._searchMenuButton.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
@@ -306,6 +331,17 @@ function(button, hint, text, image) {
 	}
 };
 
+ZmSearchToolBar.prototype._handleEnterKeyPress =
+function(ev) {
+	var menu = this._searchMenuButton.getMenu();
+	var data = menu.getSelectedItem().getData("CustomSearchItem");
+	if (data) {
+		data[2].run(ev); // call original listener
+	} else {
+		this._callback.run(this.getSearchFieldValue());
+	}
+};
+
 // Static methods
 
 ZmSearchToolBar._keyPressHdlr =
@@ -316,7 +352,7 @@ function(ev) {
 
     var charCode = DwtKeyEvent.getCharCode(ev);
 	if (charCode == 13 || charCode == 3) {
-		stb._callback.run(stb.getSearchFieldValue());
+		stb._handleEnterKeyPress(ev);
 	    return false;
 	}
 	return true;

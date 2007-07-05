@@ -498,14 +498,24 @@ function(queryString) {
 
 ZmSearchController.prototype._searchButtonListener =
 function(ev) {
-	var queryString = this._searchToolBar.getSearchFieldValue();
-	var userText = (queryString.length > 0);
-	if (queryString)
-		this._currentQuery = null;
-	else
-		queryString = this._currentQuery;
-	this.search({query: queryString, userText: userText});
-}
+	// find out if the custom search menu item is selected and pass it the query
+	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
+	var menu = btn ? btn.getMenu() : null;
+	var mi = menu ? menu.getSelectedItem() : null;
+	var data = mi ? mi.getData("CustomSearchItem") : null;
+	if (data) {
+		data[2].run(ev);
+	} else {
+		var queryString = this._searchToolBar.getSearchFieldValue();
+		var userText = (queryString.length > 0);
+		if (queryString) {
+			this._currentQuery = null;
+		} else {
+			queryString = this._currentQuery;
+		}
+		this.search({query: queryString, userText: userText});
+	}
+};
 
 ZmSearchController.prototype._browseButtonListener =
 function(ev) {
@@ -541,7 +551,14 @@ function(ev, id) {
 
 	this._contactSource = (id == ZmSearchToolBar.FOR_GAL_MI)
 		? ZmSearchToolBar.FOR_GAL_MI : ZmItem.CONTACT;
-	this._inclSharedItems = this._searchToolBar.includeSharedItems();
+
+	this._inclSharedItems = false;
+	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_SHARED_MI);
+	if (sharedMI) {
+		// always re-enable since selecting custom search disables
+		sharedMI.setEnabled(true);
+		this._inclSharedItems = sharedMI.getChecked();
+	}
 
 	if (id == ZmSearchToolBar.FOR_SHARED_MI) {
 		var icon = menu.getSelectedItem().getImage();

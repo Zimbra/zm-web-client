@@ -62,7 +62,6 @@ ZmMailListController = function(appCtxt, container, mailApp) {
 	
 	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) 
 		this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
-	//
     this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._checkMailListener);
 			
