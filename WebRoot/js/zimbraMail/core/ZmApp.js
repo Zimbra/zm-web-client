@@ -69,6 +69,7 @@ ZmApp = function(name, appCtxt, container, parentController) {
 // these are needed statically (before we get user settings)
 ZmApp.CLASS					= {};	// constructor for app class
 ZmApp.SETTING				= {};	// ID of setting that's true when app is enabled
+ZmApp.UPSELL_SETTING		= {};	// ID of setting that's true when app upsell is enabled
 ZmApp.LOAD_SORT				= {};	// controls order in which apps are instantiated
 
 // these are set via registerApp() in app constructor
@@ -94,6 +95,7 @@ ZmApp.OPS					= {};	// IDs of operations for the app
 ZmApp.OPS_R					= {};	// map of operation ID to app
 ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
+ZmApp.UPSELL_URL			= {};	// URL for content of upsell
 
 // assistants for each app; each valu is a hash where the key is the name of the
 // assistant class and the value is the required package
@@ -138,6 +140,7 @@ function() {
  * @param chooserSort		[int]		controls order of apps in app chooser toolbar
  * @param defaultSort		[int]		controls order in which app is chosen as default start app
  * @param trashViewOp		[constant]	menu choice for "Show Only ..." in Trash view
+ * @param upsellUrl			[string]	URL for content of upsell
  */
 ZmApp.registerApp =
 function(app, params) {
@@ -159,6 +162,7 @@ function(app, params) {
 	if (params.chooserSort)			{ ZmApp.CHOOSER_SORT[app]		= params.chooserSort; }
 	if (params.defaultSort)			{ ZmApp.DEFAULT_SORT[app]		= params.defaultSort; }
 	if (params.trashViewOp)			{ ZmApp.TRASH_VIEW_OP[app]		= params.trashViewOp; }
+	if (params.upsellUrl)			{ ZmApp.UPSELL_URL[app]			= params.upsellUrl; }
 
 	if (params.searchTypes) {
 		ZmApp.SEARCH_TYPES_R[app] = {};

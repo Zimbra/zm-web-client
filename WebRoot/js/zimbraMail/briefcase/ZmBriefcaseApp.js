@@ -38,11 +38,12 @@ ZmItem.BRIEFCASE					= ZmEvent.S_BRIEFCASE;
 ZmOrganizer.BRIEFCASE			= ZmEvent.S_BRIEFCASE;
 
 // App-related constants
-ZmApp.BRIEFCASE					= "Briefcase";
-ZmApp.CLASS[ZmApp.BRIEFCASE]		= "ZmBriefcaseApp";
-ZmApp.SETTING[ZmApp.BRIEFCASE]	= ZmSetting.BRIEFCASE_ENABLED;
-ZmApp.LOAD_SORT[ZmApp.BRIEFCASE]	= 60;
-ZmApp.QS_ARG[ZmApp.BRIEFCASE]	= "documents";
+ZmApp.BRIEFCASE							= "Briefcase";
+ZmApp.CLASS[ZmApp.BRIEFCASE]			= "ZmBriefcaseApp";
+ZmApp.SETTING[ZmApp.BRIEFCASE]			= ZmSetting.BRIEFCASE_ENABLED;
+ZmApp.UPSELL_SETTING[ZmApp.BRIEFCASE]	= ZmSetting.BRIEFCASE_UPSELL_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.BRIEFCASE]		= 60;
+ZmApp.QS_ARG[ZmApp.BRIEFCASE]			= "documents";
 
 ZmBriefcaseApp.prototype = new ZmApp;
 ZmBriefcaseApp.prototype.constructor = ZmBriefcaseApp;
@@ -161,7 +162,8 @@ function() {
 							  gotoActionCode:		ZmKeyMap.GOTO_NOTEBOOK,
 							  newActionCode:		ZmKeyMap.NEW_FILE,
 							  chooserSort:			70,
-							  defaultSort:			60
+							  defaultSort:			60,
+							  upsellUrl:			ZmSetting.BRIEFCASE_UPSELL_URL
 							  });
 };
 

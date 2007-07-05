@@ -69,6 +69,7 @@ ZmZimbraMail = function(appCtxt, domain, app, userShell) {
 	}
 
 	this._apps = {};
+	this._upsellView = {};
 	this._activeApp = null;
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
 	this._sessionTimerId = -1;
@@ -536,11 +537,14 @@ function(apps) {
 		return ZmZimbraMail.hashSortCompare(ZmApp.LOAD_SORT, a, b);
 	});
 	
-	// instantiate enabled apps - this will invoke app registration
+	// Instantiate enabled apps, which will invoke app registration.
+	// We also create "upsell" apps, which will only show the content of a URL in an iframe,
+	// to encourage the user to upgrade.
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var app = ZmApp.APPS[i];
 		var setting = ZmApp.SETTING[app];
-		if (!setting || this._appCtxt.get(setting)) {
+		var upsellSetting = ZmApp.UPSELL_SETTING[app];
+		if ((setting && this._appCtxt.get(setting)) || (upsellSetting && this._appCtxt.get(upsellSetting))) {
 			this._createApp(app);
 		}
 	}
@@ -846,9 +850,15 @@ function(appName, force, callback, errorCallback, checkQS) {
     	if (!this._apps[appName]) {
 			this._createApp(appName);
     	}
-		DBG.println(AjxDebug.DBG1, "Launching app " + appName);
-		var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback]);
-		this._apps[appName].launch(respCallback, checkQS);
+    	var appEnabled = this._appCtxt.get(ZmApp.SETTING[appName]);
+		var upsellEnabled = this._appCtxt.get(ZmApp.UPSELL_SETTING[appName]);
+		if (!appEnabled && upsellEnabled) {
+			this._createUpsellView(appName);
+		} else {
+			DBG.println(AjxDebug.DBG1, "Launching app " + appName);
+			var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback]);
+			this._apps[appName].launch(respCallback, checkQS);
+		}
     }
 };
 
@@ -873,9 +883,14 @@ function(appName, view) {
 	// update app chooser
 	this._components[ZmAppViewMgr.C_APP_CHOOSER].setSelected(appName);
 
+	// app not actually enabled if this is result of upsell view push
+   	var appEnabled = this._appCtxt.get(ZmApp.SETTING[appName]);
+
 	// update view menu
-	var toolbar = this._appCtxt.getCurrentAppToolbar();
-	toolbar.showViewMenu(view);
+	if (appEnabled) {
+		var toolbar = this._appCtxt.getCurrentAppToolbar();
+		toolbar.showViewMenu(view);
+	}
 
 	if (this._activeApp != appName) {
 
@@ -891,19 +906,21 @@ function(appName, view) {
 
 	    // switch app
 		this._activeApp = appName;
-		toolbar.setCurrentApp(appName);
-		toolbar.setViewTooltip(view, ZmMsg[ZmApp.VIEW_TOOLTIP[appName]]);
-		if (ZmApp.DEFAULT_SEARCH[appName]) {
-			this._appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName], true);
-		}
-		
-		// set search string value to match current app's last search, if applicable		
-		var app = this._apps[this._activeApp];
-		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(app.currentQuery ? app.currentQuery : "");
-
-		// activate current app
-		if (app) {
-			app.activate(true, view);
+		if (appEnabled) {
+			toolbar.setCurrentApp(appName);
+			toolbar.setViewTooltip(view, ZmMsg[ZmApp.VIEW_TOOLTIP[appName]]);
+			if (ZmApp.DEFAULT_SEARCH[appName]) {
+				this._appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName], true);
+			}
+			
+			// set search string value to match current app's last search, if applicable		
+			var app = this._apps[this._activeApp];
+			this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(app.currentQuery ? app.currentQuery : "");
+	
+			// activate current app
+			if (app) {
+				app.activate(true, view);
+			}
 		}
 	}
 };
@@ -1303,11 +1320,12 @@ function() {
 		if (this._TAB_SKIN_ENABLED && (id == ZmAppChooser.SPACER || id == ZmAppChooser.B_HELP || id == ZmAppChooser.B_LOGOUT)) {
 			continue;
 		}
-		var setting = id ? ZmApp.SETTING[id] : null;
-		if (setting && !this._appCtxt.get(setting)) {
-			continue;
+
+		var setting = ZmApp.SETTING[id];
+		var upsellSetting = ZmApp.UPSELL_SETTING[id];
+		if ((setting && this._appCtxt.get(setting)) || (upsellSetting && this._appCtxt.get(upsellSetting))) {
+			buttons.push(id);
 		}
-		buttons.push(id);
 	}
 	buttons.sort(function(a, b) {
 		return ZmZimbraMail.hashSortCompare(ZmApp.CHOOSER_SORT, a, b);
@@ -1452,6 +1470,31 @@ function() {
 	if (content) {
 		this._appCtxt.getKeyboardMgr().grabFocus(content);
 	}
+};
+
+/**
+ * Creates an "upsell view", which is a placeholder view for an app that's not
+ * enabled but which has a button so that it can be promoted. The app will have
+ * a URL for its upsell content, which we put into an IFRAME.
+ * 
+ * @param appName	[constant]		name of app
+ */
+ZmZimbraMail.prototype._createUpsellView =
+function(appName) {
+	var upsellView = this._upsellView[appName] = new DwtControl(this._shell, null, Dwt.ABSOLUTE_STYLE);
+	var upsellUrl = this._appCtxt.get(ZmApp.UPSELL_URL[appName]);
+	var el = upsellView.getHtmlElement();
+	var htmlArr = [];
+	var idx = 0;
+	htmlArr[idx++] = "<iframe width='100%' height='100%' src='";
+	htmlArr[idx++] = upsellUrl;
+	htmlArr[idx++] = "'>";
+	el.innerHTML = htmlArr.join("");
+	var elements = {};
+	elements[ZmAppViewMgr.C_APP_CONTENT] = upsellView;
+	var viewName = [appName, "upsell"].join("_");
+	this._appViewMgr.createView(viewName, appName, elements, null, true);
+	this._appViewMgr.pushView(viewName);
 };
 
 /**
