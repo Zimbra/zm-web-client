@@ -1,6 +1,6 @@
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page session="true" %>
+<%@ page session="false" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -9,10 +9,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setBundle basename="/msgs/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/msgs/ZMsg" var="zmsg" scope="request"/>
-
-<%-- set client select default based on user agent. need this before a potential logout --%>
-<zm:getUserAgent var="ua"/>
-<c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up)}"/>
 
 <c:catch var="loginException">
     <c:choose>
@@ -226,7 +222,14 @@
                                         <tr>
                                         	<td nowrap>
                                         		<fmt:message key="chooseClient"/>
-                                                <c:set var="client" value="${not empty param.client ? param.client : useStandard ? 'standard' : 'preferred' }"/>                                                
+                                                <c:set var="client" value="${param.client}"/>
+                                                <c:if test="${empty client}">
+                                                    <%-- set client select default based on user agent. --%>
+                                                    <zm:getUserAgent var="ua" session="false"/>
+                                                    <c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up)}"/>
+                                                    <c:set var="client" value="${useStandard ? 'standard' : 'preferred' }"/>                                                
+                                                </c:if>
+
                                                 <select name="client">
 			                                    	<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
 			                                    	<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
