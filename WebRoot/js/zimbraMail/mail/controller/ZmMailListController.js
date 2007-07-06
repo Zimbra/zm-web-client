@@ -530,7 +530,7 @@ function(params) {
 	var selection = this._listView[this._currentView].getSelection();
 	var selCount = selection.length;
 	if (action == ZmOperation.FORWARD_INLINE && selCount > 1) {
-		action = ZmOperation.FORWARD_ATT;
+		action = params.action = ZmOperation.FORWARD_ATT;
 	}
 
 	// if html compose is allowed and if opening draft always request html
