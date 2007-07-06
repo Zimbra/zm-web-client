@@ -120,10 +120,10 @@ function() {
 	var list = this._standardToolBarOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.SPAM);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.TAG_MENU);
+	list.push(ZmOperation.SEP,
+				ZmOperation.SPAM,
+				ZmOperation.SEP,
+				ZmOperation.TAG_MENU);
 	return list;
 };
 

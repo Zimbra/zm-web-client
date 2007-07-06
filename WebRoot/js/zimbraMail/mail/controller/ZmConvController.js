@@ -140,10 +140,11 @@ function(view) {
 */
 ZmConvController.prototype._standardToolBarOps =
 function() {
-	return [ZmOperation.NEW_MENU, ZmOperation.SEP, ZmOperation.CHECK_MAIL,
-			ZmOperation.TAG_MENU, ZmOperation.SEP,
-			ZmOperation.DELETE_MENU, ZmOperation.MOVE,
-			ZmOperation.PRINT];
+	return [ZmOperation.NEW_MENU,
+			ZmOperation.SEP,
+			ZmOperation.CHECK_MAIL,
+			ZmOperation.SEP,
+			ZmOperation.DELETE_MENU, ZmOperation.MOVE, ZmOperation.PRINT];
 }
 
 ZmConvController.prototype._getViewType =

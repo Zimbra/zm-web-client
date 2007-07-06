@@ -46,7 +46,8 @@ ZmNotebookFileController.prototype.toString = function() {
 
 // Public methods
 
-ZmNotebookFileController.prototype.show = function(searchResults, fromUserSearch) {
+ZmNotebookFileController.prototype.show =
+function(searchResults, fromUserSearch) {
 	ZmListController.prototype.show.call(this, searchResults);
 
 	this._fromSearch = fromUserSearch;
@@ -74,26 +75,12 @@ ZmNotebookFileController.prototype.show = function(searchResults, fromUserSearch
 	if (list && list.size() > 0) {
 		this._listView[this._currentView].setSelection(list.get(0));
 	}
-
-	// reset the filter drop down per type of results returned
-	/*** TODO
-	var op = ZmOperation.SHOW_ALL_ITEM_TYPES;
-	if (searchResults.type == ZmItem.CONV || searchResults.type == ZmItem.MSG) {
-		op = ZmOperation.SHOW_ONLY_MAIL;
-	} else if (searchResults.type == ZmItem.CONTACT) {
-		op = ZmOperation.SHOW_ONLY_CONTACTS;
-	}
-	this._setFilterButtonProps(op, true);
-	/***/
 };
 
 // Resets the available options on a toolbar or action menu.
 ZmNotebookFileController.prototype._resetOperations =
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
-	/***
-	parent.enable(ZmOperation.SHOW_ALL_MENU, true);
-	/***/
 
 	var toolbar = this._toolbar[this._currentView];
 	var buttonIds = [ ZmOperation.SEND, ZmOperation.DETACH ];
@@ -103,28 +90,19 @@ function(parent, num) {
 
 // Private and protected methods
 
-ZmNotebookFileController.prototype._getToolBarOps = function() {
-	var list = [];
-	// shared items
-	list.push(
-		ZmOperation.NEW_MENU, /*ZmOperation.REFRESH,*/ ZmOperation.EDIT,
-		ZmOperation.SEP
-	);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+ZmNotebookFileController.prototype._getToolBarOps =
+function() {
+	var list = [ZmOperation.NEW_MENU, ZmOperation.EDIT, ZmOperation.SEP];
+
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		list.push(ZmOperation.TAG_MENU, ZmOperation.SEP);
-	/***
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	/***/
-	list.push(
-		ZmOperation.DELETE,
-		//ZmOperation.SEP,
-		//ZmOperation.ATTACHMENT,
-		ZmOperation.FILLER,
-		ZmOperation.SEND_PAGE,
-		ZmOperation.SEP,
-		ZmOperation.DETACH
-	);
+	}
+
+	list.push(ZmOperation.DELETE,
+				ZmOperation.FILLER,
+				ZmOperation.SEND_PAGE,
+				ZmOperation.SEP,
+				ZmOperation.DETACH);
 	return list;
 };
 
@@ -143,27 +121,6 @@ function(view) {
 	var toolbar = this._toolbar[view];
 	var button = toolbar.getButton(ZmOperation.EDIT);
 	button.setEnabled(false);
-
-	/*** TODO
-	var button = this._toolbar[view].getButton(ZmOperation.SHOW_ALL_MENU);
-	var menu = new ZmPopupMenu(button);
-	button.setMenu(menu);
-	button.noMenuBar = true;
-	var ops = [ZmOperation.SHOW_ALL_ITEM_TYPES, ZmOperation.SEP, ZmOperation.SHOW_ONLY_CONTACTS, ZmOperation.SHOW_ONLY_MAIL];
-	var listener = new AjxListener(this, this._showAllListener);
-	for (var i = 0; i < ops.length; i++) {
-		var op = ops[i];
-		if (op == ZmOperation.SEP) {
-			menu.createSeparator();
-			continue;
-		}
-		var icon = ZmOperation.getProp(op, "image");
-		var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
-		var mi = menu.createMenuItem(op, {image:icon, text:text, style:DwtMenuItem.RADIO_STYLE}, 1);
-		mi.setData(ZmOperation.KEY_ID, op);
-		mi.addSelectionListener(listener);
-	}
-	/***/
 };
 
 ZmNotebookFileController.prototype._initializeActionMenu =
@@ -202,9 +159,9 @@ function() {
 ZmNotebookFileController.prototype._createNewView =
 function(viewType) {
 	var parent = this._container;
-	var className = null;
+	var className;
 	var posStyle = Dwt.ABSOLUTE_STYLE;
-	var mode = null; // ???
+	var mode; // ???
 	var controller = this;
 	var dropTgt = this._dropTgt;
 	var result = new ZmFileListView(parent, className, posStyle, mode, controller, dropTgt);
@@ -227,39 +184,28 @@ function(view) {
 	this._listView[view].set(this._list);
 };
 
-ZmNotebookFileController.prototype._setFilterButtonProps =
-function(op, setChecked) {
-	var icon = ZmOperation.getProp(op, "image");
-	var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
-	var button = this._toolbar[this._currentView].getButton(ZmOperation.SHOW_ALL_MENU);
-	button.setImage(icon);
-	button.setText(text);
-	if (setChecked)
-		button.getMenu().checkItem(ZmOperation.KEY_ID, op, true);
-};
-
 
 // List listeners
 
-ZmNotebookFileController.prototype._editListener = function(event) {
+ZmNotebookFileController.prototype._editListener =
+function(event) {
 	var pageEditController = this._app.getPageEditController();
 	var page = this._listView[this._currentView].getSelection()[0];
 	pageEditController.show(page);
 };
 ZmNotebookFileController.prototype._resetOperations =
 function(toolbarOrActionMenu, num) {
-	if (!toolbarOrActionMenu) return;
+	if (!toolbarOrActionMenu) { return; }
+
 	ZmNotebookController.prototype._resetOperations.call(this, toolbarOrActionMenu, num);
 
 	var selection = this._listView[this._currentView].getSelection();
 
 	var buttons = [ZmOperation.TAG_MENU, ZmOperation.DELETE];
-	var enabled = selection.length > 0;
-	toolbarOrActionMenu.enable(buttons, enabled);
+	toolbarOrActionMenu.enable(buttons, (selection.length > 0));
 
-	var buttons = [ZmOperation.EDIT];
 	var enabled = selection.length == 1 && selection[0].type == ZmItem.PAGE;
-	toolbarOrActionMenu.enable(buttons, enabled);
+	toolbarOrActionMenu.enable([ZmOperation.EDIT], enabled);
 };
 
 // Double click displays an item.
@@ -270,22 +216,24 @@ function(ev) {
 		this._doSelectDblClicked(ev.item);
 	}
 };
-ZmNotebookFileController.prototype._doSelectDblClicked = function(item, fromSearch) {
-	item.type = item instanceof ZmPage ? ZmItem.PAGE : ZmItem.DOCUMENT;
+
+ZmNotebookFileController.prototype._doSelectDblClicked =
+function(item, fromSearch) {
+	item.type = (item instanceof ZmPage) ? ZmItem.PAGE : ZmItem.DOCUMENT;
+
 	if (item.type == ZmItem.PAGE) {
 		var controller = this._app.getNotebookController();
 		controller.show(item, true, this._fromSearch || fromSearch);
-	}
-	else if (item.type == ZmItem.DOCUMENT) {
+	} else if (item.type == ZmItem.DOCUMENT) {
 		var url = item.getRestUrl();
-		// TODO: popup window w/ REST URL
-		var win = open(url, "_new", "");
+		window.open(url, "_new", "");											// TODO: popup window w/ REST URL
 	}
 };
 
 ZmNotebookFileController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
+
 	var actionMenu = this.getActionMenu();
 	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
@@ -296,9 +244,9 @@ function(ev) {
 
 ZmNotebookFileController.prototype._undeleteListener =
 function(ev) {
+	/* TODO
 	var items = this._listView[this._currentView].getSelection();
 
-	/*** TODO
 	// figure out the default for this item should be moved to
 	var folder = null;
 	if (items[0] instanceof ZmContact) {
@@ -312,28 +260,5 @@ function(ev) {
 
 	if (folder)
 		this._doMove(items, folder);
-	/***/
-};
-
-ZmNotebookFileController.prototype._showAllListener =
-function(ev) {
-	if (!ev.item.getChecked()) return;
-
-	/*** TODO
-	var op = ev.item.getData(ZmOperation.KEY_ID);
-	this._setFilterButtonProps(op);
-
-	var searchFor = null;
-	if (op == ZmOperation.SHOW_ONLY_CONTACTS) {
-		searchFor = ZmItem.CONTACT;
-	} else if (op == ZmOperation.SHOW_ONLY_MAIL) {
-		searchFor = ZmSearchToolBar.FOR_MAIL_MI;
-	} else {
-		searchFor = ZmSearchToolBar.FOR_ANY_MI;
-	}
-
-	var sc = this._appCtxt.getSearchController();
-	var types = sc.getTypes(searchFor);
-	sc.redoSearch(this._appCtxt.getCurrentSearch(), null, {types:types, offset:0});
-	/***/
+	*/
 };

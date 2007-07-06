@@ -113,7 +113,7 @@ function() {
 	ZmOperation.registerOp("CLOSE", {textKey:"close", tooltipKey:"closeTooltip", image:"Close"});
 	ZmOperation.registerOp("COMPOSE_FORMAT", {textKey:"format", tooltipKey:"formatTooltip", image:"SwitchFormat"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp("DELETE", {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete"});
-	ZmOperation.registerOp("DETACH", {textKey:"detach", tooltipKey:"detachTT", image:"OpenInNewWindow"});
+	ZmOperation.registerOp("DETACH", {tooltipKey:"detachTT", image:"OpenInNewWindow"});
 	ZmOperation.registerOp("EDIT", {textKey:"edit", tooltipKey:"editTooltip", image:"Edit"});
 	ZmOperation.registerOp("EDIT_PROPS", {textKey:"editProperties", tooltipKey:"editPropertiesTooltip", image:"Properties"});
 	ZmOperation.registerOp("EXPAND_ALL", {textKey:"expandAll", image:"Plus"});
@@ -148,7 +148,6 @@ function() {
 	ZmOperation.registerOp("SHARE_DECLINE", {textKey:"declineShare", image:"Cancel"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("SHARE_FOLDER", {textKey:"shareFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("SHOW_ALL_ITEM_TYPES", {textKey:"showAllItemTypes", image:"Globe"});
-	ZmOperation.registerOp("SHOW_ALL_MENU", {textKey:"showAllItemTypes", image:"Globe"});
 	ZmOperation.registerOp("SPELL_CHECK", {textKey:"spellCheck", image:"SpellCheck"});
 	ZmOperation.registerOp("SYNC", {textKey:"reload", image:"Refresh"});
 	ZmOperation.registerOp("SYNC_OFFLINE", {textKey:"checkMail", tooltipKey:"syncTooltip", image:"Refresh"});

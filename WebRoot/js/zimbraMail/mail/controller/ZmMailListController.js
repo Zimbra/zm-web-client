@@ -301,7 +301,7 @@ function(actionCode) {
 
 ZmMailListController.prototype._setupViewMenu =
 function(view) {
-	var menu = null;
+	var menu;
 	if (this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 		menu = this._setupGroupByMenuItems(view);
 	}
@@ -369,9 +369,6 @@ function(view, arrowStyle) {
 	this._setupSpamButton(this._toolbar[view]);
 	this._setupReplyForwardOps(this._toolbar[view]);
 	this._setupCheckMailButton(this._toolbar[view]);
-
-	var detach = this._toolbar[view].getButton(ZmOperation.DETACH);
-	if (detach) detach.setText(ZmMsg.detach2);
 
 	// reset new button properties
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
