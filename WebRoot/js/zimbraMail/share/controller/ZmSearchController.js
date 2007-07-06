@@ -438,7 +438,10 @@ function(results, search, isMixed) {
 	var folder = this._appCtxt.getById(search.folderId);
 	var isInGal = (this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON).setEnabled(!isInGal);
+		var saveBtn = this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON);
+		if (saveBtn) {
+			saveBtn.setEnabled(!isInGal);
+		}
 	}
 
 	// show results based on type - may invoke package load
