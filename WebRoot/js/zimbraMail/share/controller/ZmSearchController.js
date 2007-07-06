@@ -538,9 +538,6 @@ function(ev) {
 
 ZmSearchController.prototype._searchMenuListener =
 function(ev, id) {
-	// dont process user clicking on the separators :]
-	if (ev && (ev.detail != DwtMenuItem.CHECKED)) { return; }
-
 	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
 	if (!btn) { return; }
 
@@ -553,18 +550,23 @@ function(ev, id) {
 	} else {
 		item = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, id);
 	}
-	if (!item) { return; }
+	if (!item || (!!(item._style & DwtMenuItem.SEPARATOR_STYLE))) { return; }
 
-	this._contactSource = (id == ZmSearchToolBar.FOR_GAL_MI)
-		? ZmSearchToolBar.FOR_GAL_MI : ZmItem.CONTACT;
-
-	this._inclSharedItems = false;
 	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_SHARED_MI);
-	if (sharedMI) {
-		// always re-enable since selecting custom search disables
-		sharedMI.setEnabled(true);
-		this._inclSharedItems = sharedMI.getChecked();
+
+	// enable shared menu item if not a gal search
+	if (id == ZmSearchToolBar.FOR_GAL_MI) {
+		this._contactSource = ZmSearchToolBar.FOR_GAL_MI;
+		if (sharedMI) {
+			sharedMI.setChecked(false, true);
+			sharedMI.setEnabled(false);
+		}
+	} else {
+		this._contactSource = ZmItem.CONTACT;
+		if (sharedMI) { sharedMI.setEnabled(true); }
 	}
+
+	this._inclSharedItems = sharedMI ? sharedMI.getChecked() : false;
 
 	if (id == ZmSearchToolBar.FOR_SHARED_MI) {
 		var icon = menu.getSelectedItem().getImage();
@@ -578,7 +580,7 @@ function(ev, id) {
 
 		btn.setImage(icon);
 	} else {
-		// only set search for if a "real" search-type menu item was clicked 
+		// only set search for if a "real" search-type menu item was clicked
 		this._searchFor = id;
 		var icon = item.getImage();
 		if (this._inclSharedItems) {
