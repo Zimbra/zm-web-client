@@ -535,6 +535,9 @@ function(ev) {
 
 ZmSearchController.prototype._searchMenuListener =
 function(ev, id) {
+	// dont process user clicking on the separators :]
+	if (ev && (ev.detail != DwtMenuItem.CHECKED)) { return; }
+
 	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
 	if (!btn) { return; }
 
