@@ -221,6 +221,7 @@ function(ev) {
 		var menu = item.parent;
 		var shareMenuItem = menu ? menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_SHARED_MI) : null;
 		if (shareMenuItem) {
+			shareMenuItem.setChecked(false, true);
 			shareMenuItem.setEnabled(false);
 		}
 
