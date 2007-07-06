@@ -227,7 +227,7 @@ function(response) {
 	//          message.
 	var controller = this._appCtxt.getAppController();
 	var name = this._nameInputEl.value;
-	var msg = AjxMessageFormat.format(ZMsg.errorAlreadyExists, [name]);
+	var msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
 	controller.popupErrorDialog(msg, null, null, true);
 	return true;
 };

@@ -8,6 +8,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setBundle basename="/msgs/ZmMsg" scope="request"/>
+<fmt:setBundle basename="/msgs/ZMsg" var="zmsg" scope="request"/>
 
 <%-- set client select default based on user agent. need this before a potential logout --%>
 <zm:getUserAgent var="ua"/>
@@ -22,7 +23,7 @@
         <c:when test="${param.loginOp eq 'relogin'}">
             <zm:logout/>
             <c:set var="errorCode" value="${param.loginErrorCode}"/>
-            <fmt:message var="errorMessage" key="${errorCode}"/>
+            <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
         </c:when>
         <c:when test="${param.loginOp eq 'logout'}">
             <zm:logout/>
@@ -79,7 +80,7 @@
 <c:if test="${loginException != null}">
     <zm:getException var="error" exception="${loginException}"/>
     <c:set var="errorCode" value="${error.code}"/>
-    <fmt:message var="errorMessage" key="${errorCode}"/>
+    <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
 </c:if>
 
 <c:set var="loginRedirectUrl" value="${zm:getPreLoginRedirectUrl(pageContext, '/')}"/>
