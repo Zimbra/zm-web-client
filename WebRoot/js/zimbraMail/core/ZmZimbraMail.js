@@ -98,10 +98,6 @@ ZmZimbraMail = function(appCtxt, params) {
 		ZmApp.QS_ARG_R[ZmApp.QS_ARG[i]] = i;
 	}
 
-	if (params.sessionId) {
-//		ZmCsfeCommand.setSessionId(params.sessionId);
-	}
-
 	this.startup(params);
 };
 
@@ -135,7 +131,6 @@ function() {
  *        offlineMode	[boolean]*		if true, this is the offline client
  *        devMode		[boolean]*		if true, we are in development environment
  *        settings		[hash]*			server prefs/attrs
- *        sessionId		[int]*			session ID established during login
  */
 ZmZimbraMail.run =
 function(params) {
@@ -155,7 +150,8 @@ function(params) {
 				settings.getSetting(id).setValue(params.settings[name]);
 			}
 		}
-	} else {	
+	} else {
+		// Note: removing cookie support may affect offline.jsp
 		var apps = AjxCookie.getCookie(document, ZmLogin.APPS_COOKIE);
 		DBG.println(AjxDebug.DBG1, "apps: " + apps);
 		if (apps) {

@@ -51,7 +51,6 @@
 	}
 
     ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
-    String sessionId = authResult.getSessionId();
     String skin = "";
 	String requestSkin = request.getParameter("skin");
 	if (requestSkin != null) {
@@ -187,9 +186,8 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 		var app = "<%= (startApp != null) ? startApp : "" %>";
 		var offlineMode = "<%= (offlineMode != null) ? offlineMode : "" %>";
 		var isDev = "<%= (isDev != null) ? isDev : "" %>";
-		var sessionId = "<%= (sessionId != null) ? sessionId : "" %>";
 
-		ZmZimbraMail.run({domain:document.domain, app:app, offlineMode:offlineMode, devMode:isDev, sessionId:sessionId, settings:settings});
+		ZmZimbraMail.run({domain:document.domain, app:app, offlineMode:offlineMode, devMode:isDev, settings:settings});
 	}
 
     //	START DOMContentLoaded
