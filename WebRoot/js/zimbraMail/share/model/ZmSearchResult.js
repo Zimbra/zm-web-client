@@ -48,7 +48,10 @@ function() {
 
 ZmSearchResult.prototype.getResults =
 function(type) {
-	if (!this._results) { return null; }
+	if (!this._results) {
+		// probably got an exception - return an empty list
+		return ZmItem.RESULTS_LIST[type](this.search);
+	}
 	if (type == ZmItem.MIXED) {
 		var list = new ZmMailList(ZmItem.MIXED, this._appCtxt, this.search);
 		for (var type in this._results) {
