@@ -48,8 +48,10 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	if (!controller.isChildWindow) {
 		// Add change listener to taglist to track changes in tag color
 		this._tagList = this._appCtxt.getTagTree();
-		this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
-		this.addListener(ZmMailMsgView._TAG_CLICK, new AjxListener(this, this._msgTagClicked));
+		if (this._tagList) {
+			this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+			this.addListener(ZmMailMsgView._TAG_CLICK, new AjxListener(this, this._msgTagClicked));
+		}
 	}
 
 	this._setMouseEventHdlrs(); // needed by object manager
@@ -1054,8 +1056,7 @@ function(el, bodyPart, callback, result) {
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {
-	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED) || msg == null)
-		return;
+	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED) || msg == null || !this._tagList) { return; }
 
 	var numTags = msg.tags.length;
 	var table = document.getElementById(this._hdrTableId);
@@ -1084,9 +1085,10 @@ function(msg) {
 	}
 
 	// get sorted list of tags for this msg
-	var ta = new Array();
-	for (var i = 0; i < numTags; i++)
+	var ta = [];
+	for (var i = 0; i < numTags; i++) {
 		ta[i] = this._tagList.getById(msg.tags[i]);
+	}
 	ta.sort(ZmTag.sortCompare);
 
 	var html = new Array();

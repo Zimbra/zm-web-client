@@ -187,8 +187,9 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 		var app = "<%= (startApp != null) ? startApp : "" %>";
 		var offlineMode = "<%= (offlineMode != null) ? offlineMode : "" %>";
 		var isDev = "<%= (isDev != null) ? isDev : "" %>";
+		var sessionId = "<%= (sessionId != null) ? sessionId : "" %>";
 
-		ZmZimbraMail.run({domain:document.domain, app:app, offlineMode:offlineMode, devMode:isDev, settings:settings});
+		ZmZimbraMail.run({domain:document.domain, app:app, offlineMode:offlineMode, devMode:isDev, sessionId:sessionId, settings:settings});
 	}
 
     //	START DOMContentLoaded

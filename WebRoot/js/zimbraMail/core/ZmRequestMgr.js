@@ -317,7 +317,10 @@ function(refresh) {
 	// XXX: temp, get additional share info (see bug #4434)
 	if (refresh.folder) {
 		var respCallback = new AjxCallback(this, this._handleResponseRefreshHandler, [refresh]);
-		this._appCtxt.getFolderTree().getPermissions(null, respCallback, true);
+		var folderTree = this._appCtxt.getFolderTree();
+		if (folderTree) {
+			folderTree.getPermissions(null, respCallback, true);
+		}
 	} else {
 		this._handleResponseRefreshHandler(refresh);
 	}

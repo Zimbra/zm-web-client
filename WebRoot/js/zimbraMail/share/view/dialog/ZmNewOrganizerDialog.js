@@ -265,9 +265,11 @@ function() {
 	this._omit[ZmFolder.ID_SPAM] = true;
 	this._omit[ZmFolder.ID_DRAFTS] = true;
 	this._folderTree = this._appCtxt.getFolderTree();
-	var syncIssuesFolder = this._folderTree.getByName(ZmFolder.SYNC_ISSUES);
-	if (syncIssuesFolder) {
-		this._omit[syncIssuesFolder.id] = true;
+	if (this._folderTree) {
+		var syncIssuesFolder = this._folderTree.getByName(ZmFolder.SYNC_ISSUES);
+		if (syncIssuesFolder) {
+			this._omit[syncIssuesFolder.id] = true;
+		}
 	}
 };
 
@@ -303,7 +305,10 @@ function() {
 			msg = ZmMsg.folderNameNoLocation;
 		}
 	} else {
-		parentFolder = this._appCtxt.getFolderTree().root;
+		var folderTree = this._appCtxt.getFolderTree();
+		if (folderTree) {
+			parentFolder = this._appCtxt.getFolderTree().root;
+		}
 	}
 
 	// make sure parent doesn't already have a child by this name

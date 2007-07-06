@@ -606,7 +606,8 @@ function(search) {
 	var id, type;
 	if (search.folderId) {
 		id = this._getNormalizedId(search.folderId);
-		var folder = this._appCtxt.getFolderTree().getById(id);
+		var folderTree = this._appCtxt.getFolderTree();
+		var folder = folderTree ? folderTree.getById(id) : null;
 		type = folder ? folder.type : ZmOrganizer.FOLDER;
 	} else if (search.tagId) {
 		id = this._getNormalizedId(search.tagId);

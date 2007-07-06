@@ -272,7 +272,9 @@ ZmContactListController.prototype._getMoveParams =
 function() {
 	var params = ZmListController.prototype._getMoveParams.call(this);
 	var omit = {};
-	var folders = this._appCtxt.getFolderTree().getByType(ZmOrganizer.ADDRBOOK);
+	var folderTree = this._appCtxt.getFolderTree();
+	if (!folderTree) { return params; }
+	var folders = folderTree.getByType(ZmOrganizer.ADDRBOOK);
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
 		if (folder.link && folder.isReadOnly()) {

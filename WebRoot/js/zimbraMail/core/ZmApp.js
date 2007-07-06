@@ -459,7 +459,10 @@ function(type) {
 	}
 	this._clearDeferredFolders();
 
-	this._appCtxt.getFolderTree().getPermissions(type);
+	var folderTree = this._appCtxt.getFolderTree();
+	if (folderTree) {
+		folderTree.getPermissions(type);
+	}
 };
 
 ZmApp.prototype._clearDeferredFolders =
@@ -525,7 +528,10 @@ function(create, org) {
 	if (parent && (create.view == ZmOrganizer.VIEWS[org][0])) {
 		parent.notifyCreate(create);
 		// XXX: once bug #4434 is fixed, check if this call is still needed
-		this._appCtxt.getFolderTree().getPermissions(org);
+		var folderTree = this._appCtxt.getFolderTree();
+		if (folderTree) {
+			folderTree.getPermissions(org);
+		}
 		create._handled = true;
 	}
 };

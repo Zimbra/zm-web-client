@@ -30,7 +30,10 @@ ZmConvView = function(parent, controller, dropTgt) {
 	this._changeListener = new AjxListener(this, this._convChangeListener);
 	
 	// add change listener to tree view to catch empty trash action
-	this._appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderChangeListener));
+	var folderTree = this._appCtxt.getFolderTree();
+	if (folderTree) {
+		folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
+	}
 	
 	// Add a change listener to taglist to track tag color changes
 	this._tagList = this._appCtxt.getTagTree();

@@ -41,7 +41,10 @@ ZmListView = function(parent, className, posStyle, view, type, controller, heade
 	if (tagList) {
 		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	}
-	this._appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderChangeListener));
+	var folderTree = this._appCtxt.getFolderTree();
+	if (folderTree) {
+		folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
+	}
 
 	this._handleEventType = {};
 	this._handleEventType[this.type] = true;

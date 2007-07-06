@@ -348,7 +348,8 @@ ZmApptQuickAddDialog.prototype._resetCalendarSelect =
 function(appt) {
 	// get all folders w/ view set to "Appointment" we received from initial refresh block
 	var org = ZmOrganizer.ITEM_ORGANIZER[appt.type];
-	var data = this._appCtxt.getFolderTree().getByType(org);
+	var folderTree = this._appCtxt.getFolderTree();
+	var data = folderTree ? folderTree.getByType(org) : [];
 
 	this._calendarSelect.clearOptions();
 	this._calendarOrgs = [];

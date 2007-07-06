@@ -347,7 +347,10 @@ ZmMailList.prototype.clear =
 function() {
 	// remove listeners for this list from folder tree and tag list
 	if (this._folderChangeListener) {
-		this._appCtxt.getFolderTree().removeChangeListener(this._folderChangeListener);
+		var folderTree = this._appCtxt.getFolderTree();
+		if (folderTree) {
+			folderTree.removeChangeListener(this._folderChangeListener);
+		}
 	}
 	if (this._tagChangeListener) {
 		var tagTree = this._appCtxt.getTagTree();

@@ -502,7 +502,10 @@ function(ev) {
 	if (item) {
 		this._actionedOrganizer = item;
 		if (item.noSuchFolder) {
-			this._appCtxt.getFolderTree().handleDeleteNoSuchFolder(item);
+			var folderTree = this._appCtxt.getFolderTree();
+			if (folderTree) {
+				folderTree.handleDeleteNoSuchFolder(item);
+			}
 			return;
 		}
 	}

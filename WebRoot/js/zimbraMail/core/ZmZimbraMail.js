@@ -24,23 +24,25 @@
  */
 
 /**
-* Creates a controller to run ZimbraMail. Do not call directly, instead use the run()
-* factory method.
-* @constructor
-* @class
-* This class is the "ubercontroller", as it manages all the apps as well as bootstrapping
-* the ZimbraMail application.
-*
-* @param appCtxt	[ZmAppCtxt]		the app context (global storage)
-* @param domain		[string]		current domain
-* @param app		[constant]		starting app
-*/
-ZmZimbraMail = function(appCtxt, domain, app, userShell) {
+ * Creates a controller to run ZimbraMail. Do not call directly, instead use the run()
+ * factory method.
+ * @constructor
+ * @class
+ * This class is the "ubercontroller", as it manages all the apps as well as bootstrapping
+ * the ZimbraMail application.
+ *
+ * @param appCtxt	[ZmAppCtxt]		the app context (global storage)
+ * @param params	[hash]			hash of params:
+ *        domain	[string]		current domain
+ *        app		[constant]		starting app
+ *        userShell	[Element]		top-level skin container
+ */
+ZmZimbraMail = function(appCtxt, params) {
 
 	ZmController.call(this, appCtxt);
 
-	this._userShell = userShell;
-	this._requestMgr = new ZmRequestMgr(appCtxt, this, domain);
+	this._userShell = params.userShell;
+	this._requestMgr = new ZmRequestMgr(appCtxt, this, params.domain);
 
 	// ALWAYS set back reference into our world (also used by unload handler)
 	window._zimbraMail = this;
@@ -96,7 +98,11 @@ ZmZimbraMail = function(appCtxt, domain, app, userShell) {
 		ZmApp.QS_ARG_R[ZmApp.QS_ARG[i]] = i;
 	}
 
-	this.startup({app:app});
+	if (params.sessionId) {
+//		ZmCsfeCommand.setSessionId(params.sessionId);
+	}
+
+	this.startup(params);
 };
 
 ZmZimbraMail.prototype = new ZmController;
@@ -129,6 +135,7 @@ function() {
  *        offlineMode	[boolean]*		if true, this is the offline client
  *        devMode		[boolean]*		if true, we are in development environment
  *        settings		[hash]*			server prefs/attrs
+ *        sessionId		[int]*			session ID established during login
  */
 ZmZimbraMail.run =
 function(params) {
@@ -180,7 +187,7 @@ function(params) {
     }
 
 	// Create the shell
-	var userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
+	var userShell = params.userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
 	if (!userShell) {
 		alert("Could not get user shell - skin file did not load properly");
 	}
@@ -193,7 +200,7 @@ function(params) {
 	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
 
 	// Go!
-	new ZmZimbraMail(appCtxt, params.domain, params.app, userShell);
+	new ZmZimbraMail(appCtxt, params);
 };
 
 /**
@@ -232,14 +239,15 @@ function(hash, a, b) {
 };
 
 /**
-* Loads the app and presents the initial view. First, it gets the user's preferences.
-* Next, it launches the start app (which defaults to mail) and shows the results to
-* the user. Finally, we load contacts in the background.
-*
-* @param app			[constant]*		starting app
-* @param isRelogin		[boolean]*		user has re-authenticated after session timeout
-* @param settings		[hash]*			settings overrides
-*/
+ * Loads the app and presents the initial view. First, it gets the user's preferences.
+ * Next, it launches the start app (which defaults to mail) and shows the results to
+ * the user. Finally, we load contacts in the background.
+ *
+ * @param params		[hash]			hash of params:
+ *        app			[constant]*		starting app
+ *        isRelogin		[boolean]*		user has re-authenticated after session timeout
+ *        settings		[hash]*			settings overrides
+ */
 ZmZimbraMail.prototype.startup =
 function(params) {
 	
@@ -309,21 +317,25 @@ function(params, ex) {
 	return false;
 };
 
-/*
-* Startup: part 2
-* Creates components which have dependencies on the settings, including the overview.
-*
-* @param settings	[Object]		hash of overrides of user settings
-* @param app		[constant]		starting app
-* @param results	[ZmCsfeResult]	result object from load of user settings
-*/
+/**
+ * Startup: part 2
+ * Creates components which have dependencies on the settings, including the overview.
+ *
+ * @param params			[hash]			hash of params:
+ *        app				[constant]		starting app
+ *        settingOverrides	[Object]		hash of overrides of user settings
+ * @param result			[ZmCsfeResult]	result object from load of user settings
+ */
 ZmZimbraMail.prototype._handleResponseStartup =
 function(params, result) {
 
-	if (params && params.settings) {
+	if (params && params.settingOverrides) {
 		this._needOverviewLayout = true;
-		for (var id in params.settings) {
-			this._settings.getSetting(id).setValue(params.settings[id]);
+		for (var id in params.settingOverrides) {
+			var setting = this._settings.getSetting(id);
+			if (setting) {
+				setting.setValue(params.settingOverrides[id]);
+			}
 		}
 	}
 	
@@ -462,7 +474,7 @@ function(settings) {
 	// could have each app do shutdown()
 	DBG.println(AjxDebug.DBG1, "RESTARTING APP");
 	this.reset();
-   	this.startup({settings: settings});
+   	this.startup({settingOverrides:settings});
 };
 
 ZmZimbraMail.prototype.reset =

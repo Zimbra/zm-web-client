@@ -509,7 +509,8 @@ ZmCalItemEditView.prototype._resetFolderSelect =
 function(calItem, mode) {
 	// get all calendar folders
 	var org = ZmOrganizer.ITEM_ORGANIZER[calItem.type];
-	var data = this._appCtxt.getFolderTree().getByType(org);
+	var folderTree = this._appCtxt.getFolderTree();
+	var data = folderTree ? folderTree.getByType(org) : [];
 	var len = data.length;
 
 	// look for calItem's calendar

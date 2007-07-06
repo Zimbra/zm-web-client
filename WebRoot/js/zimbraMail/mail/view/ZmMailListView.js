@@ -59,7 +59,7 @@ function(item) {
 
 ZmMailListView.prototype.set =
 function(list, sortField) {
-	this._folderId = list.search ? list.search.folderId : null;
+	this._folderId = (list && list.search) ? list.search.folderId : null;
 	ZmListView.prototype.set.call(this, list, sortField);
 };
 

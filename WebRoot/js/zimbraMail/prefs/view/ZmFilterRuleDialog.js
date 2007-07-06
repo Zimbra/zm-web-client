@@ -453,7 +453,10 @@ function(conf, field, options, dataValue, rowId, data) {
 		var organizer = null;
 		if (dataValue) {
 			if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
-				organizer = this._appCtxt.getFolderTree().getByPath(dataValue.substring(1), true);
+				var folderTree = this._appCtxt.getFolderTree();
+				if (folderTree) {
+					organizer = folderTree.getByPath(dataValue.substring(1), true);
+				}
 			} else {
 				var tagTree = this._appCtxt.getTagTree();
 				if (tagTree) {

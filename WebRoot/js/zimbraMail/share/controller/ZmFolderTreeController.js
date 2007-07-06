@@ -70,12 +70,14 @@ function(params) {
 		omit[id] = true;		
 	}
     var dataTree = this.getDataTree(params.account);
-    for (var name in ZmFolder.HIDE_NAME) {
-		var folder = dataTree.getByName(name);
-		if (folder) {
-			omit[folder.id] = true;
+    if (dataTree) {
+	    for (var name in ZmFolder.HIDE_NAME) {
+			var folder = dataTree.getByName(name);
+			if (folder) {
+				omit[folder.id] = true;
+			}
 		}
-	}
+    }
 	params.omit = omit;
 	return ZmTreeController.prototype.show.call(this, params);
 };

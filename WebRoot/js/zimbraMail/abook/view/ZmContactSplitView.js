@@ -37,7 +37,10 @@ ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) 
 	this._controller = controller;
 	this._appCtxt = controller._appCtxt;
 
-	this._appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._addrbookTreeListener));
+	var folderTree = this._appCtxt.getFolderTree();
+	if (folderTree) {
+		folderTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
+	}
 	var tagTree = this._appCtxt.getTagTree();
 	if (tagTree) {
 		tagTree.addChangeListener(new AjxListener(this, this._tagChangeListener));
