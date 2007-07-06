@@ -82,7 +82,7 @@
 </template>
 
 <template id='ZmVoicePrefsView'>
-    <table cellspacing=4 cellpadding=4>
+    <table class='ZmVoicePrefsView' cellspacing=4 cellpadding=4>
         <!--
         <tr id='${id}_anonymousRejection' valign='top'>
 	    	<td class='prefLabel'><$= ZmMsg.voicePageSizeLabel $></td>
@@ -96,9 +96,9 @@
 	    <tr><td colspan=2><hr></td></tr>
 	    -->
 	    <tr id='${id}_emailNotification' valign='top'>
-	    	<td class='prefLabel'><$= ZmMsg.emailNotificationLabel $></td>
-	    	<td>
-	    		<table><tr>
+	    	<td class='ZOptionsLabel'><$= ZmMsg.emailNotificationLabel $></td>
+	    	<td class='ZOptionsField'>
+	    		<table cellspacing="1" cellpadding="1"><tr>
 	    			<td><div id='${id}_emailNotificationCheckbox'></div></td>
 	    			<td><div id='${id}_emailNotificationComboBox'></div></td>
 		    	</tr></table>
@@ -107,28 +107,26 @@
 	    <tr><td colspan=2><hr></td></tr>
 
 	    <tr id='${id}_callForwarding' valign='top'>
-	    	<td class='prefLabel'><$= ZmMsg.callForwardingLabel $></td>
-	    	<td>
+	    	<td class='ZOptionsLabel'><$= ZmMsg.callForwardingLabel $></td>
+	    	<td class='ZOptionsField'>
 	    		<table><tr>
 	    			<td><div id='${id}_callForwardingCheckbox'></div></td>
 	    			<td><div id='${id}_callForwardingComboBox'></div></td>
 		    	</tr></table>
-	    	</td>
-	    </tr>
-	    <tr><td colspan=2><hr></td></tr>
-
-	    <tr id='${id}_selectiveCallForwarding' valign='top'>
-	    	<td class='prefLabel'><$= ZmMsg.selectiveCallForwardingLabel $></td>
-	    	<td>
-	    		<table><tr>
+            </td>
+        </tr>
+        <tr>
+            <td class='ZOptionsLabel'>&nbsp;</td>
+            <td class='ZOptionsField'>
+                <table><tr>
 	    			<td><div id='${id}_selectiveCallForwardingCheckbox'></div></td>
 		    		<td><div id='${id}_selectiveCallForwardingComboBox'></div></td>
 		    	</tr></table>
-		    	<div style='padding-left:10'>
+		    	<div style='padding-left:28'>
 					<div class='ZSmallSpacer'></div>
 		    		<div id='${id}_selectiveCallForwardingTableParent'></div>
 					<div class='ZSmallSpacer'></div>
-		    		<table><tr>
+		    		<table style='padding-left:3'><tr>
 			    		<td><b><$= ZmMsg.addLabel $></b></td>
 		    			<td><div id='${id}_selectiveCallForwardingAddInput'></div></td>
 			    		<td><div id='${id}_selectiveCallForwardingAddButton'></div></td>

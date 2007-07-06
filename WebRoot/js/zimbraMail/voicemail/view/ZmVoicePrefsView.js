@@ -295,7 +295,7 @@ function(comboBox) {
             var phone = me.getAttr(fieldId);
             if (phone) {
                 var name = ZmPhone.calculateName(phone);
-                var display = ZmPhone.calculateDisplay(name);
+                var display = [ZmMsg["AB_FIELD_" + fieldId], " ", ZmPhone.calculateDisplay(name)].join("");
                 comboBox.add(display, name, false);
             }
         }
