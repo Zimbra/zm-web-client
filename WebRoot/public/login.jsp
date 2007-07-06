@@ -237,6 +237,11 @@
 			                                    </select>
 			                                </td>
                                         </tr>
+										<tr>
+                                            <td nowrap id='ZloginClientLevelContainer'>
+                                                <fmt:message key="clientLoginNotice"/>
+                                            </td>
+                                        </tr>
                                         <tr>
                                             <td nowrap id='ZloginLicenseContainer'>
                                                 <fmt:message key="splashScreenCopyright"/>
