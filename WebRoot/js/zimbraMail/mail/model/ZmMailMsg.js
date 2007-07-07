@@ -934,6 +934,11 @@ function(findHits) {
 				if (!useCL)
 					props.download = "<a style='text-decoration:underline' class='AttLink' href='" + url + "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>";
 
+				if( (attach.name || attach.filename) && this._appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) ){
+					var onclickStr1 = "ZmMailMsgView.briefcaseCallback(" + this.id + ",\"" + attach.part + "\",\""+props.label+"\");";
+					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
+				}
+
 				if (!useCL) {
 					// check for vcard *first* since we dont care to view it in HTML
 					if (attach.ct == ZmMimeTable.TEXT_VCARD)

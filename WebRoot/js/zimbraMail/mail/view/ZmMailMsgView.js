@@ -1201,11 +1201,11 @@ function() {
 			htmlArr[idx++] = link;
 		}
 
-		if (att.size || att.htmlLink || att.vcardLink || att.download) {
+		if (att.size || att.htmlLink || att.vcardLink || att.download || att.briefcaseLink) {
 			htmlArr[idx++] = "&nbsp;(";
 			if (att.size) {
 				htmlArr[idx++] = att.size;
-				if (att.htmlLink || att.vcardLink)
+				if (att.htmlLink || att.vcardLink || att.briefcaseLink)
 					htmlArr[idx++] = ", ";
 			}
 			if (att.htmlLink) {
@@ -1217,9 +1217,15 @@ function() {
 				htmlArr[idx++] = ZmMsg.addToAddrBook;
 				htmlArr[idx++] = "</a>";
 			}
+			
+			if(att.briefcaseLink) {
+				htmlArr[idx++] = att.briefcaseLink;
+				htmlArr[idx++] = ZmMsg.addToBriefcase;
+				htmlArr[idx++] = "</a>";			
+			}
 
 			if (att.download) {
-				if (att.size || att.htmlLink || att.vcardLink)
+				if (att.size || att.htmlLink || att.vcardLink || att.briefcaseLink)
 					htmlArr[idx++] = ", ";
 
 				htmlArr[idx++] = att.download;
@@ -1633,4 +1639,15 @@ function(csfeUrl, itemId, attachments, htmlArr, idx) {
 	htmlArr[idx++] = "</td></tr></table>";
 
 	return idx;
+};
+
+ZmMailMsgView.briefcaseCallback =
+function(msgId, partId, name) {
+	ZmZimbraMail.unloadHackCallback();
+
+	var appCtxt = window.parentController
+		? window.parentController._appCtxt
+		: window._zimbraMail._appCtxt;
+
+	appCtxt.getApp(ZmApp.BRIEFCASE).createFromAttachment(msgId, partId, name);
 };

@@ -196,7 +196,7 @@ ZmBriefcaseController.prototype._getViewType = function() {
 };
 
 ZmBriefcaseController.prototype._defaultView = function() {
-	return ZmController.BRIEFCASE_VIEW;
+	return ZmController.BRIEFCASE_DETAIL_VIEW;
 };
 
 ZmBriefcaseController.prototype._createNewView = function(view) {
@@ -380,12 +380,20 @@ ZmBriefcaseController.prototype.searchFolder = function(folderId,callback) {
 ZmBriefcaseController.prototype.handleSearchResponse = function(folderId,response,callback){
 
 		var items = [];		
-		
-		if (response && (response.SearchResponse || response._data.SearchResponse)) {
-		
-		var searchResponse = response.SearchResponse || response._data.SearchResponse;
-		var docs = searchResponse.doc || [];
-		for (var i = 0; i < docs.length; i++) {
+		if (response && (response.SearchResponse || response._data.SearchResponse)) {		
+			var searchResponse = response.SearchResponse || response._data.SearchResponse;
+			var docs = searchResponse.doc || [];		
+			items = this.processDocsResponse(docs,folderId);		
+		}
+		if(callback){
+			callback.run(items);
+		}		
+};
+
+ZmBriefcaseController.prototype.processDocsResponse =
+function(docs,folderId){
+	var items = [];
+	for (var i = 0; i < docs.length; i++) {
 			var doc = docs[i];
 			var item = this.getItemById(doc.id);
 			if (!item) {
@@ -401,12 +409,7 @@ ZmBriefcaseController.prototype.handleSearchResponse = function(folderId,respons
 				items.push(item);
 			}
 		}
-		}
-		
-		if(callback){
-			callback.run(items);
-		}
-		
+	return items;
 };
 
 ZmBriefcaseController.prototype.putItem = function(item){

@@ -134,3 +134,36 @@ function() {
 	return notebook && notebook.link;
 };
 
+ZmBriefcaseItem.prototype.createFromAttachment =
+function(msgId, partId, name, folderId) {
+
+	var soapDoc = AjxSoapDoc.create("SaveDocumentRequest", "urn:zimbraMail");
+	var doc = soapDoc.set("doc");
+	doc.setAttribute("l", folderId);
+	var mnode = soapDoc.set("m", null, doc);
+	mnode.setAttribute("id", msgId);
+	mnode.setAttribute("part", partId);
+
+	var respCallback = new AjxCallback(this, this._handleResponseCreateItem,[folderId]);
+	var errorCallback = new AjxCallback(this, this._handleErrorCreateItem);
+	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
+												callback:respCallback,
+												errorCallback:errorCallback});
+	
+};
+
+ZmBriefcaseItem.prototype._handleResponseCreateItem =
+function(folderId,response) {
+	this._appCtxt.getAppController().setStatusMsg(ZmMsg.fileCreated);
+	var copyToDialog =  this._appCtxt.getChooseFolderDialog();
+	copyToDialog.popdown();
+	if (response && (response.SaveDocumentResponse || response._data.SaveDocumentResponse)) {		
+		var bController = AjxDispatcher.run("GetBriefcaseController");
+		bController.removeCachedFolderItems(folderId);		
+	}
+};
+
+ZmBriefcaseItem.prototype._handleErrorCreateItem =
+function(ex) {
+	this._appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateFile, ZmStatusView.LEVEL_CRITICAL);
+};
