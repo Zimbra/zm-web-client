@@ -628,7 +628,15 @@ function(ev) {
 
 ZmPageEditor.prototype._insertLinkListener = function(event) {
 	var text = this._getSelectedText();
-	this._popupLinkPropsDialog(null,null,text);
+	var target = null;
+	var url = null;
+	var el = this._getParentElement();
+	if (el && /^a$/i.test(el.tagName)){
+		target = el;
+		url = el.href;	
+		text = el.innerHTML;
+	}
+	this._popupLinkPropsDialog(target,url,text);
 };
 
 // @param afterTarget	true: insert link after target, false: replace target with link
