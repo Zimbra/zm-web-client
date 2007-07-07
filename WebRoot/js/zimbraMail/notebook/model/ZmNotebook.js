@@ -148,4 +148,26 @@ function(nbA, nbB) {
 	// sort by calendar name
 	var nbAName = nbA.name.toLowerCase();
 	var nbBName = nbB.name.toLowerCase();
-	return	AjxStringUtil.natCompare(nbAName,nbBName);};
+	return	AjxStringUtil.natCompare(nbAName,nbBName);
+};
+
+ZmNotebook.prototype._delete =
+function() {
+	DBG.println(AjxDebug.DBG1, "deleting: " + this.name + ", ID: " + this.id);
+	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
+					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH));
+	// make sure we're not deleting a system object (unless we're emptying SPAM or TRASH)
+	if (this.isSystem() && !isEmptyOp) return;
+
+	var action = isEmptyOp ? "empty" : "delete";
+	var delCallback = new AjxCallback(this,this.deleteCallback);
+	this._organizerAction({action: action,callback:delCallback});
+};
+
+ZmNotebook.prototype.deleteCallback = 
+function(){
+	if(this._isRemote){
+	var app = this._appCtxt.getApp(ZmApp.NOTEBOOK);
+	app.deleteNotify([this.id]);
+	}
+};

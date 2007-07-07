@@ -148,9 +148,32 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 	var buttonIds = [ ZmOperation.SEND_PAGE, ZmOperation.DETACH ];
 	toolbarOrActionMenu.enable(buttonIds, true);
 	var writable = this._object && !this._object.isReadOnly();
-	toolbarOrActionMenu.enable([ZmOperation.EDIT, ZmOperation.DELETE], writable);
+	toolbarOrActionMenu.enable([ZmOperation.EDIT], writable);
+	toolbarOrActionMenu.enable([ZmOperation.DELETE], this.isDeletable());
+
 	var taggable = this._object && !this._object.isShared() && !this._object.isIndex();
 	toolbarOrActionMenu.enable([ZmOperation.TAG_MENU], taggable);
+};
+
+ZmNotebookController.prototype.isDeletable = function(){
+
+	var page = this._object;
+	if(!page)
+	return false;
+	var writable = page && !page.isReadOnly();	
+	if(!page.isIndex()){
+		return writable;
+	}
+	var id = page.id;
+	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);	
+	var notebook = this._appCtxt.getById(id);
+	var notebookId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_NOTEBOOK);
+	var isRoot = (notebook.id == rootId);
+	var isNotebook = (notebook.id == notebookId);
+	var isTopLevel = (!isRoot && notebook.parent.id == rootId);
+	var isLink = notebook.link;
+	var isLinkOrRemote = isLink || notebook.isRemote();
+	return (!isNotebook && (!isLinkOrRemote || (isLink && isTopLevel) || ZmNotebookTreeController.__isAllowed(notebook.parent, ZmShare.PERM_DELETE)));
 };
 
 ZmNotebookController.prototype._getTagMenuMsg = function() {
@@ -162,6 +185,18 @@ ZmNotebookController.prototype._doDelete = function(items,delcallback) {
 	if(!items){
 	items = this._listView[this._currentView].getSelection();
 	}
+	var page = items instanceof Array ? items[0] : items;
+	if(page && page.isIndex() ){
+		var overviewController = this._appCtxt.getOverviewController();
+		var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+		var organizer = this._appCtxt.getById(page.id);
+		var callback = new AjxCallback(treeController, treeController._deleteListener2, [ organizer ]);
+		var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, organizer.name);
+		var dialog = this._appCtxt.getConfirmationDialog();
+		dialog.popup(message, callback);		
+		return;
+	}
+	
 	var dialog = this._appCtxt.getConfirmationDialog();
 	var message = items instanceof Array && items.length > 1 ? ZmMsg.confirmDeleteItemList : null;
 	if (!message) {

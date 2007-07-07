@@ -322,6 +322,9 @@ function(id) {
 	
 	while (treeItem && treeItem.parent) {
 		var parentN = treeItem.parent;
+		if(!(parentN instanceof DwtTreeItem)){
+			return null;
+		}		
 		var treeItems = parentN.getItems();
 		var result = null;
 		if (treeItems && treeItems.length > 1) {
