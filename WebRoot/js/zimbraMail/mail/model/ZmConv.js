@@ -296,17 +296,18 @@ function() {
 ZmConv.prototype.checkMoved = 
 function(folderId) {
 	var msgs = this.msgs.getArray();
-	var bNotify = true;
+	var doNotify = true;
 	for (var i = 0; i < msgs.length; i++) {
 		if (msgs[i].folderId == folderId) {
-			bNotify = false;
+			doNotify = false;
 			break;
 		}
 	}
-	if (bNotify)
+	if (doNotify) {
 		this._notify(ZmEvent.E_MOVE);
+	}
 	
-	return bNotify;
+	return doNotify;
 };
 
 ZmConv.prototype.moveLocal =
@@ -370,7 +371,10 @@ function() {
 		this.tempMsg = msg;
 	}
 	
-	msg.list = this.msgs || new ZmMailList(ZmItem.MSG, this._appCtxt);
+	if (!this.msgs) {
+		this.msgs = msg.list = new ZmMailList(ZmItem.MSG, this._appCtxt);
+		this.msgs.addChangeListener(this._listChangeListener);
+	}
 	
 	return msg;
 };
@@ -420,11 +424,13 @@ function(msg) {
 
 ZmConv.prototype._msgListChangeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_MSG)
-		return;
+	if (ev.type != ZmEvent.S_MSG) {	return; }
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		this._checkTags();
 	} else if (ev.event == ZmEvent.E_FLAGS) {
 		this._checkFlags(ev.getDetail("flags"));
+	} else 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+		// a msg was moved or deleted, see if this conv's row should remain
+		this.checkMoved();
 	}
 };
