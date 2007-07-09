@@ -232,6 +232,10 @@ function() {
 
 ZmRecurrence.prototype.parse =
 function(recurRules) {
+	// bug 16513: This array never gets cleaned.
+	// TODO: Maybe this needs a flag so it doesn't reparse?
+	this.repeatWeeklyDays = null;
+
 	for (var k = 0; k < recurRules.length ; ++k) {
 		var adds = recurRules[k].add;
 		if (!adds) continue;
