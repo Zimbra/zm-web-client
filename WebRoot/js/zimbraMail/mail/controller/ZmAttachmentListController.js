@@ -82,7 +82,9 @@ function() {
 // minimal toolbar
 ZmAttachmentListController.prototype._getToolBarOps =
 function() {
-	return [ZmOperation.NEW_MENU];
+	return [ZmOperation.NEW_MENU,
+			ZmOperation.SEP,
+			ZmOperation.VIEW_MENU];
 }
 
 // no action menu
@@ -95,12 +97,14 @@ ZmAttachmentListController.prototype._initializeToolBar =
 function(view) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
-		this._setupViewMenu(view);
+		this._setupViewMenu(view, true);
 		this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 		this._toolbar[view].addFiller();
 		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS);
 		this._setNavToolBar(tb, view);
-    }
+    } else {
+		this._setupViewMenu(view, false);
+	}
 }
 
 ZmAttachmentListController.prototype._createNewView = 
@@ -110,18 +114,36 @@ function(view) {
 
 // Create menu for View button and add listeners.
 ZmAttachmentListController.prototype._setupViewMenu =
-function(view) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var menu = new ZmPopupMenu(appToolbar.getViewButton());
-	var mi = menu.createMenuItem(ZmController.ATT_LIST_VIEW, {image:"ListView", text:ZmMsg.list});
-	mi.setData(ZmOperation.MENUITEM_ID, ZmController.ATT_LIST_VIEW);
-    mi = menu.createMenuItem(ZmController.ATT_ICON_VIEW, "IconView", ZmMsg.icon);
-	mi.setData(ZmOperation.MENUITEM_ID, ZmController.ATT_ICON_VIEW);
-	
-	var items = menu.getItems();
-	var cnt = menu.getItemCount();
-	for (var i = 0; i < cnt; i++)
-		items[i].addSelectionListener(this._listeners[ZmOperation.VIEW]);
+function(view, firstTime) {
+	var btn;
+
+	if (firstTime) {
+		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+		var menu = viewBtn.getMenu();
+
+		// list view
+		var mi = menu.createMenuItem(ZmController.ATT_LIST_VIEW, {image:"ListView", text:ZmMsg.list});
+		mi.setData(ZmOperation.MENUITEM_ID, ZmController.ATT_LIST_VIEW);
+
+		// icon view
+		mi = menu.createMenuItem(ZmController.ATT_ICON_VIEW, {image:"IconView", text:ZmMsg.icon});
+		mi.setData(ZmOperation.MENUITEM_ID, ZmController.ATT_ICON_VIEW);
+
+		var items = menu.getItems();
+		var cnt = menu.getItemCount();
+		for (var i = 0; i < cnt; i++)
+			items[i].addSelectionListener(this._listeners[ZmOperation.VIEW]);
+	} else {
+		// always set the switched view to be the checked menu item
+		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+		var menu = btn ? btn.getMenu() : null;
+		var mi = menu ? menu.getItemById(ZmOperation.MENUITEM_ID, view) : null;
+		if (mi) { mi.setChecked(true, true); }
+	}
+
+	// always reset the view menu button icon to reflect the current view
+	var icon = view == ZmController.ATT_LIST_VIEW ? "ListView" : "IconView";
+	btn.setImage(icon);
 }
 
 ZmAttachmentListController.prototype._setViewContents =

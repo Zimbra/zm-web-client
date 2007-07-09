@@ -299,15 +299,6 @@ function(actionCode) {
 
 // Private and protected methods
 
-ZmMailListController.prototype._setupViewMenu =
-function(view) {
-	var menu;
-	if (this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
-		menu = this._setupGroupByMenuItems(view);
-	}
-	this._setupReadingPaneMenuItem(view, menu, this._appCtxt.get(ZmSetting.READING_PANE_ENABLED));
-};
-
 // Creates a participant menu in addition to standard initialization.
 ZmMailListController.prototype._initialize =
 function(view) {
@@ -335,7 +326,7 @@ ZmMailListController.prototype._initializeToolBar =
 function(view, arrowStyle) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
-		this._setupViewMenu(view);
+		this._setupViewMenu(view, true);
 		this._setReplyText(this._toolbar[view]);
 		this._toolbar[view].addFiller();
 		arrowStyle = arrowStyle ? arrowStyle : ZmNavToolBar.SINGLE_ARROWS;
@@ -365,6 +356,7 @@ function(view, arrowStyle) {
 		}
 	}
 
+	this._setupViewMenu(view, false);
 	this._setupDeleteButton(this._toolbar[view]);
 	this._setupSpamButton(this._toolbar[view]);
 	this._setupReplyForwardOps(this._toolbar[view]);
@@ -675,6 +667,33 @@ function() {
 	return null;
 };
 
+ZmMailListController.prototype._setupViewMenu =
+function(view, firsTime) {
+	var btn;
+
+	if (firsTime) {
+		var menu;
+		if (this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
+			menu = this._setupGroupByMenuItems(view);
+		}
+		this._setupReadingPaneMenuItem(view, menu, this._appCtxt.get(ZmSetting.READING_PANE_ENABLED));
+
+		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+		if (btn) {
+			btn.noMenuBar = true;
+		}
+	} else {
+		// always set the switched view to be the checked menu item
+		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+		var menu = btn ? btn.getMenu() : null;
+		var mi = menu ? menu.getItemById(ZmOperation.MENUITEM_ID, view) : null;
+		if (mi) { mi.setChecked(true, true); }
+	}
+
+	// always reset the view menu button icon to reflect the current view
+	btn.setImage(ZmMailListController.GROUP_BY_ICON[view]);
+};
+
 // If we're in the Trash folder, change the "Delete" button tooltip
 ZmMailListController.prototype._setupDeleteButton =
 function(parent) {
@@ -939,11 +958,11 @@ function(folderId, optionalType) {
 // Adds "By Conversation" and "By Message" to a view menu
 ZmMailListController.prototype._setupGroupByMenuItems =
 function(view) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var menu = appToolbar.getViewMenu(view);
+	var viewBtn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+	var menu = viewBtn ? viewBtn.getMenu() : null;
 	if (!menu) {
-		menu = new ZmPopupMenu(appToolbar.getViewButton());
-		appToolbar.setViewMenu(view, menu);
+		menu = new ZmPopupMenu(viewBtn);
+		viewBtn.setMenu(menu);
 		for (var i = 0; i < ZmMailListController.GROUP_BY_VIEWS.length; i++) {
 			var id = ZmMailListController.GROUP_BY_VIEWS[i];
 			var mi = menu.createMenuItem(id, {image:ZmMailListController.GROUP_BY_ICON[id],
@@ -986,7 +1005,7 @@ function(parent, num) {
         var folderId = this._getSearchFolderId();
         var folder = this._appCtxt.getById(folderId);
 
-		var item = null;
+		var item;
 		if (num == 1 && (folderId != ZmFolder.ID_DRAFTS)) {
 			var sel = this._listView[this._currentView].getSelection();
 			if (sel && sel.length) {
@@ -996,7 +1015,7 @@ function(parent, num) {
 		var isDrafts = (item && item.isDraft) || (folderId == ZmFolder.ID_DRAFTS);
 		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD, ZmOperation.DETACH], (!isDrafts && num == 1));
 		parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.FORWARD], (!isDrafts && num > 0));
-		parent.enable([ZmOperation.CHECK_MAIL], true);
+		parent.enable([ZmOperation.CHECK_MAIL, ZmOperation.VIEW_MENU], true);
 	}
 };
 

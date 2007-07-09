@@ -48,20 +48,20 @@ ZmListController = function(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmController.call(this, appCtxt, container, app);
 
-	this._toolbar = {};		// ZmButtonToolbar (one per view)
-	this._navToolBar = {};	// ZmNavToolBar (one per view)
-	this._listView = {};	// ZmListView (one per view)
-	this._tabGroups = {};	// DwtTabGroup (one per view)
-	this._list = null;				// ZmList (the data)
-	this._actionMenu = null; 		// ZmActionMenu
+	this._toolbar = {};			// ZmButtonToolbar (one per view)
+	this._navToolBar = {};		// ZmNavToolBar (one per view)
+	this._listView = {};		// ZmListView (one per view)
+	this._tabGroups = {};		// DwtTabGroup (one per view)
+	this._list = null;			// ZmList (the data)
+	this._actionMenu = null; 	// ZmActionMenu
 	this._actionEv = null;
+	this._activeSearch = null;
 
 	this._tagList = this._appCtxt.getTagTree();
 	if (this._tagList) {
 		this._tagChangeLstnr = new AjxListener(this, this._tagChangeListener);
 		this._tagList.addChangeListener(this._tagChangeLstnr);
 	}
-	this._activeSearch = null;
 
 	// create a listener for each operation
 	this._listeners = {};
@@ -77,7 +77,7 @@ ZmListController = function(appCtxt, container, app) {
 	this._listeners[ZmOperation.NEW_MESSAGE] = new AjxListener(this, this._participantComposeListener);
 	this._listeners[ZmOperation.IM] = new AjxListener(this, this._participantImListener);
 	this._listeners[ZmOperation.CONTACT] = new AjxListener(this, this._participantContactListener);
-	this._listeners[ZmOperation.VIEW] = new AjxListener(this, this._viewButtonListener);
+	this._listeners[ZmOperation.VIEW] = new AjxListener(this, this._viewMenuItemListener);
 	this._listeners[ZmOperation.SYNC_OFFLINE] = new AjxListener(this, this._syncOfflineListener);
 
 	this._menuPopdownListener = new AjxListener(this, this._menuPopdownActionListener);
@@ -261,7 +261,7 @@ function(view) {
 
 ZmListController.prototype._standardToolBarOps =
 function() {
-	return [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU,
+	return [ZmOperation.NEW_MENU,
 			ZmOperation.SEP,
 			ZmOperation.DELETE, ZmOperation.MOVE,
 			ZmOperation.PRINT_MENU];
@@ -551,9 +551,11 @@ function() {
 };
 
 // Switch to selected view.
-ZmListController.prototype._viewButtonListener =
+ZmListController.prototype._viewMenuItemListener =
 function(ev) {
-	if (ev.detail == DwtMenuItem.CHECKED || ev.detail == DwtMenuItem.UNCHECKED)	{
+	if (ev.detail == DwtMenuItem.CHECKED ||
+		ev.detail == DwtMenuItem.UNCHECKED)
+	{
 		this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
 	}
 };
@@ -758,6 +760,8 @@ function(items, on) {
 // Tag/untag items
 ZmListController.prototype._doTag =
 function(items, tag, doTag) {
+	if (!(items instanceof Array)) items = [items];
+
 	var list = items[0].list || this._list;
 	list.tagItems(items, tag.id, doTag);
 };
@@ -765,6 +769,8 @@ function(items, tag, doTag) {
 // Remove all tags for given items
 ZmListController.prototype._doRemoveAllTags =
 function(items) {
+	if (!(items instanceof Array)) items = [items];
+
 	var list = items[0].list || this._list;
 	list.removeAllTags(items);
 };
@@ -778,6 +784,8 @@ function(items) {
 */
 ZmListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
+	if (!(items instanceof Array)) items = [items];
+
 	var list = items[0].list || this._list;
 	list.deleteItems(items, hardDelete, attrs);
 };

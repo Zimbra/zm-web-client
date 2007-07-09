@@ -47,8 +47,6 @@ ZmDoublePaneController = function(appCtxt, container, mailApp) {
 	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
 	this._listeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._filterListener);
 	
-	this._viewMenuCallback = new AjxCallback(this, this._checkViewMenu);
-
 	this._listSelectionShortcutDelayAction = new AjxTimedAction(this, this._listSelectionTimedAction);
 };
 
@@ -87,7 +85,6 @@ function(search, item, callback) {
 
 ZmDoublePaneController.prototype._handleResponseShow =
 function(item, callback, results) {
-	this._checkViewMenu();
 	if (callback) {
 		callback.run();
 	}
@@ -111,8 +108,9 @@ function() {
  */
 ZmDoublePaneController.prototype._toggleReadingPane = 
 function(view, toggle) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var menu = appToolbar.getViewButton().getMenu();
+	var viewBtn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
+	var menu = viewBtn.getMenu();
+
 	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);
 	if (toggle) {
 		// toggle display of reading pane
@@ -122,7 +120,6 @@ function(view, toggle) {
 	}
 
 	this._readingPaneOn = mi.getChecked();
-	this._checkViewMenu();
 	this._doublePaneView.toggleView();
 
 	// set msg in msg view if reading pane is being shown
@@ -170,9 +167,6 @@ function(view) {
 	}
 
 	ZmMailListController.prototype._initialize.call(this, view);
-	if (!this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
-		this._appCtxt.getCurrentAppToolbar().setCallback(ZmController.TRAD_VIEW, this._viewMenuCallback);
-	}
 };
 
 ZmDoublePaneController.prototype._getToolBarOps =
@@ -185,7 +179,9 @@ function() {
 				ZmOperation.SEP,
 				ZmOperation.TAG_MENU,
 				ZmOperation.SEP,
-				ZmOperation.DETACH);
+				ZmOperation.DETACH,
+				ZmOperation.SEP,
+				ZmOperation.VIEW_MENU);
 	return list;
 };
 
@@ -255,22 +251,25 @@ function() {
 // Adds a "Reading Pane" checked menu item to a view menu
 ZmDoublePaneController.prototype._setupReadingPaneMenuItem =
 function(view, menu, checked, itemId) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var id = itemId || ZmController.READING_PANE_VIEW;
-	var menu = menu ? menu : appToolbar.getViewMenu(view);
+	var viewBtn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 	if (!menu) {
-		// conversations not enabled
-		menu = new ZmPopupMenu(appToolbar.getViewButton());
+		menu = viewBtn.getMenu();
+		// this means conversations not enabled
+		if (!menu) {
+			menu = new ZmPopupMenu(viewBtn);
+		}
+		viewBtn.setMenu(menu);
 	} else if (menu.getItemCount() > 0) {
 		new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
 	}
+
+	var id = itemId || ZmController.READING_PANE_VIEW;
 	if (!menu._menuItems[id]) {
 		var mi = menu.createMenuItem(id, {image:"SplitPane", text:ZmMsg.readingPane, style:DwtMenuItem.CHECK_STYLE});
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 		mi.setChecked(checked, true);
 	}
-	appToolbar.setViewMenu(view, menu);
 	return menu;
 };
 
@@ -298,25 +297,6 @@ function(params) {
 		}
 	}
 	ZmMailListController.prototype._doAction.apply(this, arguments);
-};
-
-/**
- * Sets the content of the view button if conversations are disabled (in which case
- * "Reading Pane" is the sole menu item).
- */
-ZmDoublePaneController.prototype._checkViewMenu =
-function() {
-	if (this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) { return; }
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var menu = appToolbar.getViewButton().getMenu();
-	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, ZmController.READING_PANE_VIEW);
-	var icon = mi ? mi.getImage() : null;
-	if (icon) {
-		appToolbar._viewButton.setImage(icon);
-	}
-	if (appToolbar._viewLabel) {
-		appToolbar._viewButton.setText(this._readingPaneOn ? ZmMsg.readingPaneOn : ZmMsg.readingPaneOff);
-	}
 };
 
 /*

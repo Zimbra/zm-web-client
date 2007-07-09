@@ -290,6 +290,7 @@ ZmChatListController.prototype._viewButtonListener = function(ev) {
 
 // // Create menu for View button and add listeners.
 // ZmChatListController.prototype._setupViewMenu = function(view) {
+//  XXX: MIHAI: VIEW MENU IS NO LONGER IN ZmCurrentAppToolbar. SEE ZmMailListController
 // 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 // 	var menu = appToolbar.getViewMenu(view);
 // 	if (!menu) {

@@ -88,8 +88,10 @@ function(actionCode) {
 ZmContactController.prototype._getToolBarOps =
 function() {
 	return [ZmOperation.SAVE, ZmOperation.CANCEL,
-			ZmOperation.SEP, ZmOperation.TAG_MENU,
-			ZmOperation.PRINT, ZmOperation.DELETE];
+			ZmOperation.SEP,
+			ZmOperation.PRINT, ZmOperation.DELETE,
+			ZmOperation.SEP,
+			ZmOperation.TAG_MENU];
 };
 
 ZmContactController.prototype._getActionMenuOps =

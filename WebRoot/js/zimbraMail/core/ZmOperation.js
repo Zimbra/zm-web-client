@@ -162,9 +162,11 @@ function() {
 		}));
 	// placeholder for toolbar text
 	ZmOperation.registerOp("TEXT");
-	// XXX: need new icon?
+	// XXX: need new icon? -
+	//      Undelete is stupid. We should either add it for all items types (not just contacts) or just kill it
 	ZmOperation.registerOp("UNDELETE", {textKey:"undelete", tooltipKey:"undelete", image:"MoveToFolder"});
 	ZmOperation.registerOp("VIEW", {textKey:"view", image:"SplitView"});
+	ZmOperation.registerOp("VIEW_MENU", {textKey:"view", image:"SplitPane"});
 	ZmOperation.registerOp("ZIMLET", {image:"ZimbraIcon"});
 };
 

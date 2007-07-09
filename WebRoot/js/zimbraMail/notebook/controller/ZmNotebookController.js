@@ -84,39 +84,41 @@ ZmNotebookController.prototype.switchView = function(view, force) {
 // Overrides ZmListController method, leaving ZmOperation.MOVE off the menu.
 ZmNotebookController.prototype._standardActionMenuOps =
 function() {
-	return [ZmOperation.TAG_MENU, ZmOperation.DELETE,
-			ZmOperation.PRINT];
+	return [ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT];
 };
 
-
-ZmNotebookController.prototype._getToolBarOps = function() {
-	var list = [];
-	list = list.concat(this._getBasicToolBarOps())
+ZmNotebookController.prototype._getToolBarOps =
+function() {
+	var list = this._getBasicToolBarOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._getItemToolBarOps());
-	list.push(ZmOperation.FILLER);
+	list.push(ZmOperation.SEP,
+				ZmOperation.TAG_MENU,
+				ZmOperation.SEP,
+				ZmOperation.FILLER);
 	list = list.concat(this._getNaviToolBarOps());
 	return list;
 };
 
-ZmNotebookController.prototype._getBasicToolBarOps = function() {
-	return [
-		ZmOperation.NEW_MENU, ZmOperation.REFRESH, ZmOperation.EDIT,
-	];
-};
-ZmNotebookController.prototype._getItemToolBarOps = function() {
-	return [ZmOperation.TAG_MENU, ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.PRINT];
-};
-ZmNotebookController.prototype._getNaviToolBarOps = function() {
-	return [
-		ZmOperation.SEND_PAGE,
-		ZmOperation.SEP,
-		ZmOperation.DETACH
-	];
+ZmNotebookController.prototype._getBasicToolBarOps =
+function() {
+	return [ZmOperation.NEW_MENU, ZmOperation.REFRESH, ZmOperation.EDIT];
 };
 
-ZmNotebookController.prototype._initializeToolBar = function(view) {
+ZmNotebookController.prototype._getItemToolBarOps =
+function() {
+	return [ZmOperation.DELETE, ZmOperation.PRINT];
+};
+
+ZmNotebookController.prototype._getNaviToolBarOps =
+function() {
+	return [ZmOperation.SEND_PAGE,
+			ZmOperation.SEP,
+			ZmOperation.DETACH];
+};
+
+ZmNotebookController.prototype._initializeToolBar =
+function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
 	this._setNewButtonProps(view, ZmMsg.createNewPage, "NewPage", "NewPageDis", ZmOperation.NEW_PAGE);
@@ -128,7 +130,7 @@ ZmNotebookController.prototype._initializeToolBar = function(view) {
 		button.setDisabledImage("RefreshDis");
 	}
 
-	var button = toolbar.getButton(ZmOperation.DELETE);
+	button = toolbar.getButton(ZmOperation.DELETE);
 	button.setToolTipContent(ZmMsg.deletePermanentTooltip);
 
 	/***

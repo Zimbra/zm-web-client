@@ -155,13 +155,18 @@ function(view) {
 
 ZmTaskListController.prototype._getToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU];
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
+	var list = [ZmOperation.NEW_MENU,
+				ZmOperation.SEP,
+				ZmOperation.DELETE, ZmOperation.MOVE];
+
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.EDIT);
+
+	list.push(ZmOperation.SEP,
+				ZmOperation.EDIT,
+				ZmOperation.SEP,
+				ZmOperation.TAG_MENU);
+
 	return list;
 };
 
@@ -170,8 +175,6 @@ function(view) {
 	if (this._toolbar[view]) return;
 
 	ZmListController.prototype._initializeToolBar.call(this, view);
-
-//	this._setupViewMenu(view);
 
 	this._setNewButtonProps(view, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
 

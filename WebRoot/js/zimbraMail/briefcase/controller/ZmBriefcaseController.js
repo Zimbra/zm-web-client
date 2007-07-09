@@ -39,7 +39,8 @@ ZmBriefcaseController = function(appCtxt, container, app) {
 ZmBriefcaseController.prototype = new ZmListController;
 ZmBriefcaseController.prototype.constructor = ZmBriefcaseController;
 
-ZmBriefcaseController.prototype.toString = function() {
+ZmBriefcaseController.prototype.toString =
+function() {
 	return "ZmBriefcaseController";
 };
 
@@ -62,89 +63,87 @@ ZmBriefcaseController.GROUP_BY_ICON[ZmController.BRIEFCASE_DETAIL_VIEW]		= "List
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmController.BRIEFCASE_VIEW);
 ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmController.BRIEFCASE_DETAIL_VIEW);
 
-ZmBriefcaseController.prototype._foldersMap;
-ZmBriefcaseController.prototype._idMap;
-
 // Overrides ZmListController method, leaving ZmOperation.MOVE off the menu.
 ZmBriefcaseController.prototype._standardActionMenuOps =
 function() {
-	return [ZmOperation.TAG_MENU, ZmOperation.DELETE,ZmOperation.MOVE];
+	return [ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE];
 };
 
-
-ZmBriefcaseController.prototype._getToolBarOps = function() {
-	var list = [];
-	list = list.concat(this._getBasicToolBarOps())
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._getItemToolBarOps());
-	list.push(ZmOperation.FILLER);
-	list = list.concat(this._getNaviToolBarOps());
-	return list;
+ZmBriefcaseController.prototype._getToolBarOps =
+function() {
+	return [ZmOperation.NEW_MENU,
+			ZmOperation.SEP,
+			ZmOperation.DELETE, ZmOperation.MOVE,
+			ZmOperation.SEP,
+			ZmOperation.TAG_MENU,
+			ZmOperation.SEP,
+			ZmOperation.VIEW_MENU,
+			ZmOperation.FILLER,
+			ZmOperation.SEND_FILE];
 };
 
-ZmBriefcaseController.prototype._getBasicToolBarOps = function() {
-	return [ZmOperation.NEW_MENU];
-};
-ZmBriefcaseController.prototype._getItemToolBarOps = function() {
-	return [ZmOperation.TAG_MENU, ZmOperation.SEP,
-			ZmOperation.DELETE,ZmOperation.MOVE];
-};
-ZmBriefcaseController.prototype._getNaviToolBarOps = function() {
-	return [ZmOperation.SEND_FILE];
-};
+ZmBriefcaseController.prototype._initializeToolBar =
+function(view) {
+	if (!this._toolbar[view]) {
+		ZmListController.prototype._initializeToolBar.call(this, view);
+		this._setupViewMenu(view, true);
+		this._setNewButtonProps(view, ZmMsg.uploadNewFile, "NewPage", "NewPageDis", ZmOperation.NEW_FILE);
 
-ZmBriefcaseController.prototype._initializeToolBar = function(view) {
-	ZmListController.prototype._initializeToolBar.call(this, view);
-	this._setupViewMenu(view);
-	this._setNewButtonProps(view, ZmMsg.uploadNewFile, "NewPage", "NewPageDis", ZmOperation.NEW_FILE);
+		var toolbar = this._toolbar[this._currentView];
+		var button = toolbar.getButton(ZmOperation.REFRESH);
+		if (button) {
+			button.setImage("Refresh");
+			button.setDisabledImage("RefreshDis");
+		}
 
-	var toolbar = this._toolbar[this._currentView];
-	var button = toolbar.getButton(ZmOperation.REFRESH);
-	if (button) {
-		button.setImage("Refresh");
-		button.setDisabledImage("RefreshDis");
+		button = toolbar.getButton(ZmOperation.DELETE);
+		button.setToolTipContent(ZmMsg.deletePermanentTooltip);
+	} else {
+		this._setupViewMenu(view, false);
 	}
-
-	var button = toolbar.getButton(ZmOperation.DELETE);
-	button.setToolTipContent(ZmMsg.deletePermanentTooltip);
-
 };
 
-ZmBriefcaseController.prototype._resetOperations = function(toolbarOrActionMenu, num) {
-	if (!toolbarOrActionMenu) return;
-	ZmListController.prototype._resetOperations.call(this, toolbarOrActionMenu, num);
+ZmBriefcaseController.prototype._resetOperations =
+function(parent, num) {
+	if (!parent) return;
+
+	ZmListController.prototype._resetOperations.call(this, parent, num);
+
 	var isShared = this.isShared(this._currentFolder);
 	var isReadOnly = this.isReadOnly(this._currentFolder);	
 	var isItemSelected = (num>0);
-	var isViewHtmlEnabled = true;
 
-	var items = this._listView[this._currentView].getSelection();
-	if(items){
-		for(var i=0;i<items.length;i++){
-			var item = items[i];
-			if(!this.isConvertable(item)){
-				isViewHtmlEnabled = false;
-				break;
+	if (this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+		var isViewHtmlEnabled = true;
+
+		var items = this._listView[this._currentView].getSelection();
+		if (items) {
+			for (var i=0; i<items.length; i++) {
+				var item = items[i];
+				if (!this.isConvertable(item)) {
+					isViewHtmlEnabled = false;
+					break;
+				}
 			}
 		}
-	}
-	if(this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)){
-	toolbarOrActionMenu.enable([ZmOperation.VIEW_FILE_AS_HTML], isItemSelected && isViewHtmlEnabled );	
+		parent.enable([ZmOperation.VIEW_FILE_AS_HTML], isItemSelected && isViewHtmlEnabled );
 	}	
-	toolbarOrActionMenu.enable([ZmOperation.OPEN_FILE], isItemSelected );	
-	toolbarOrActionMenu.enable([ZmOperation.SEND_FILE], isItemSelected );
-	toolbarOrActionMenu.enable([ZmOperation.DELETE], !(isReadOnly && isReadOnly) && isItemSelected);
-	toolbarOrActionMenu.enable([ZmOperation.TAG_MENU], !isShared && isItemSelected);	
+	parent.enable([ZmOperation.OPEN_FILE, ZmOperation.SEND_FILE], isItemSelected );
+	parent.enable(ZmOperation.DELETE, !(isReadOnly && isReadOnly) && isItemSelected);
+	parent.enable([ZmOperation.TAG_MENU], !isShared && isItemSelected);
+	parent.enable(ZmOperation.VIEW_MENU, true);
 };
 
-ZmBriefcaseController.prototype._getTagMenuMsg = function() {
+ZmBriefcaseController.prototype._getTagMenuMsg =
+function() {
 	return ZmMsg.tagFile;
 };
 
-ZmBriefcaseController.prototype._doDelete = function(items,delcallback) {
+ZmBriefcaseController.prototype._doDelete =
+function(items,delcallback) {
 	
-	if(!items){
-	items = this._listView[this._currentView].getSelection();
+	if (!items) {
+		items = this._listView[this._currentView].getSelection();
 	}
 	var dialog = this._appCtxt.getConfirmationDialog();
 	var message = items instanceof Array && items.length > 1 ? ZmMsg.confirmDeleteItemList : null;
@@ -160,7 +159,8 @@ ZmBriefcaseController.prototype._doDelete = function(items,delcallback) {
 	dialog.popup(message, callback);
 };
 
-ZmBriefcaseController.prototype._doDelete2 = function(items,delcallback) {
+ZmBriefcaseController.prototype._doDelete2 =
+function(items, delcallback) {
 	var ids = ZmBriefcaseController.__itemize(items);
 	if (!ids) return;
 
@@ -191,15 +191,18 @@ ZmBriefcaseController.prototype._doDelete2 = function(items,delcallback) {
 
 // view management
 
-ZmBriefcaseController.prototype._getViewType = function() {
+ZmBriefcaseController.prototype._getViewType =
+function() {
 	return this._currentView;
 };
 
-ZmBriefcaseController.prototype._defaultView = function() {
+ZmBriefcaseController.prototype._defaultView =
+function() {
 	return ZmController.BRIEFCASE_DETAIL_VIEW;
 };
 
-ZmBriefcaseController.prototype._createNewView = function(view) {
+ZmBriefcaseController.prototype._createNewView =
+function(view) {
 	if (!this._listView[view]) {
 		var viewCtor = ZmBriefcaseController._VIEWS[view];
 		this._listView[view] = new viewCtor(this._container, this._appCtxt, this, this._dropTgt);
@@ -208,7 +211,8 @@ ZmBriefcaseController.prototype._createNewView = function(view) {
 	return this._listView[view];
 };
 
-ZmBriefcaseController.prototype._setViewContents = function(view) {
+ZmBriefcaseController.prototype._setViewContents =
+function(view) {
 
 	this._listView[view].set(this._object);
 
@@ -225,19 +229,18 @@ ZmBriefcaseController.prototype._setViewContents = function(view) {
 	}
 };
 
-ZmBriefcaseController.prototype._refreshListener = function(event) {
-
+ZmBriefcaseController.prototype._refreshListener =
+function(event) {
 	//TODO:refresh listener
 };
-
 
 ZmBriefcaseController.prototype._getDefaultFocusItem = 
 function() {
 	return this._toolbar[this._currentView];
 };
 
-
-ZmBriefcaseController.__itemize = function(objects) {
+ZmBriefcaseController.__itemize =
+function(objects) {
 	if (objects instanceof Array) {
 		var ids = [];
 		for (var i = 0; i < objects.length; i++) {
@@ -253,8 +256,9 @@ ZmBriefcaseController.__itemize = function(objects) {
 
 // view management
 
-ZmBriefcaseController.prototype.show = function(folderId, force, fromSearch) {
-	if(folderId == null){
+ZmBriefcaseController.prototype.show =
+function(folderId, force, fromSearch) {
+	if (folderId == null) {
 		folderId = ZmBriefcaseItem.DEFAULT_FOLDER;
 	}
 	
@@ -270,11 +274,11 @@ ZmBriefcaseController.prototype.show = function(folderId, force, fromSearch) {
 	this._forceSwitch = force;
 	var callback = new AjxCallback(this,this.showFolderContents);
 	this.getItemsInFolder(currentFolder,callback);
-	
 };
 
-ZmBriefcaseController.prototype.showFolderContents = function(items){
-	
+ZmBriefcaseController.prototype.showFolderContents =
+function(items) {
+
 	// switch view
 	var view = this._currentView;
 	if (!view) {
@@ -300,7 +304,8 @@ ZmBriefcaseController.prototype.showFolderContents = function(items){
 	
 };
 
-ZmBriefcaseController.prototype.switchView = function(view, force) {
+ZmBriefcaseController.prototype.switchView =
+function(view, force) {
 	var viewChanged = force || view != this._currentView;
 
 	if (viewChanged) {
@@ -320,15 +325,14 @@ ZmBriefcaseController.prototype.switchView = function(view, force) {
 };
 
 ZmBriefcaseController.prototype.searchCallback = 
-function(callback,folderId,results){
-
+function(callback,folderId,results) {
 	var response = results.getResponse();
 	var items = [];
-	if(response){
+	if (response) {
 		this._list = response.getResults(ZmItem.BRIEFCASE);
 		items = this._list.getArray();
-		for(var i=0;i<items.length;i++){
-			if(items[i].folderId!=folderId){
+		for (var i=0; i<items.length; i++) {
+			if (items[i].folderId!=folderId) {
 				items[i].remoteFolderId = items[i].folderId;
 				items[i].folderId = folderId;
 			}
@@ -336,13 +340,13 @@ function(callback,folderId,results){
 		}
 	}
 	
-	if(callback){
+	if (callback) {
 		callback.run(items);
 	}
 };
 
-ZmBriefcaseController.prototype.searchFolder = function(folderId,callback) {
-
+ZmBriefcaseController.prototype.searchFolder =
+function(folderId,callback) {
 	var search = 'inid:"'+folderId+'"';
 	//var sc = this._appCtxt.getSearchController();
 	//var scallback = new AjxCallback(this,this.searchCallback,[callback,folderId]);
@@ -377,63 +381,62 @@ ZmBriefcaseController.prototype.searchFolder = function(folderId,callback) {
 
 };
 
-ZmBriefcaseController.prototype.handleSearchResponse = function(folderId,response,callback){
-
-		var items = [];		
-		if (response && (response.SearchResponse || response._data.SearchResponse)) {		
-			var searchResponse = response.SearchResponse || response._data.SearchResponse;
-			var docs = searchResponse.doc || [];		
-			items = this.processDocsResponse(docs,folderId);		
-		}
-		if(callback){
-			callback.run(items);
-		}		
+ZmBriefcaseController.prototype.handleSearchResponse =
+function (folderId,response,callback) {
+	var items = [];
+	if (response && (response.SearchResponse || response._data.SearchResponse)) {
+		var searchResponse = response.SearchResponse || response._data.SearchResponse;
+		var docs = searchResponse.doc || [];
+		items = this.processDocsResponse(docs,folderId);
+	}
+	if (callback) {
+		callback.run(items);
+	}
 };
 
 ZmBriefcaseController.prototype.processDocsResponse =
-function(docs,folderId){
+function(docs,folderId) {
 	var items = [];
 	for (var i = 0; i < docs.length; i++) {
-			var doc = docs[i];
-			var item = this.getItemById(doc.id);
-			if (!item) {
-				item = new ZmBriefcaseItem(this._appCtxt);
-				item.set(doc);
-				item.folderId = folderId;
-				//item.remoteFolderId = remoteFolderId; // REVISIT
-				this.putItem(item);
-				items.push(item);
-			}
-			else {
-				item.set(doc);
-				items.push(item);
-			}
+		var doc = docs[i];
+		var item = this.getItemById(doc.id);
+		if (!item) {
+			item = new ZmBriefcaseItem(this._appCtxt);
+			item.set(doc);
+			item.folderId = folderId;
+			//item.remoteFolderId = remoteFolderId; // REVISIT
+			this.putItem(item);
+			items.push(item);
 		}
+		else {
+			item.set(doc);
+			items.push(item);
+		}
+	}
 	return items;
 };
 
-ZmBriefcaseController.prototype.putItem = function(item){
-	if(!item){
-//	DBG.println("item not present:"+item);
-	return;
+ZmBriefcaseController.prototype.putItem =
+function(item) {
+	if (!item) {
+		// DBG.println("item not present:"+item);
+		return;
 	}
 
 	this._idMap[item.id] = {item:item,folderId:item.folderId};
 		
-	if(!this._foldersMap[item.folderId]){
+	if (!this._foldersMap[item.folderId]) {
 		this._foldersMap[item.folderId] = {};
 	}
-	
-	var folder = this._foldersMap[item.folderId];	
+
+	var folder = this._foldersMap[item.folderId];
 	folder[item.id] = item;
 //	DBG.println("item:"+item.id+" in folder "+item.folderId+":"+this._foldersMap[item.folderId][item.id]);
-
 };
 
-ZmBriefcaseController.prototype.removeItem = function(item) {
-
-	if(!item)
-	return;
+ZmBriefcaseController.prototype.removeItem =
+function(item) {
+	if (!item) { return; }
 
 	var folderId = item.folderId;
 	if (item.id && this._idMap[item.id]) {
@@ -441,14 +444,13 @@ ZmBriefcaseController.prototype.removeItem = function(item) {
 		delete this._idMap[item.id];
 	}
 
-	if(folderId && item.id){
+	if (folderId && item.id) {
 		var items = this._foldersMap[folderId];	
-		if(items){
-		delete items[item.id];
+		if (items) {
+			delete items[item.id];
 		}
 	}
-	
-	
+
 	/*** REVISIT ***/
 	/*var remoteFolderId = item.remoteFolderId;
 	if (remoteFolderId) {
@@ -466,17 +468,18 @@ ZmBriefcaseController.prototype.removeItem = function(item) {
 	//item.removeChangeListener(this._changeListener);
 };
 
-ZmBriefcaseController.prototype.getItemById = function(itemId){
-	return (this._idMap[itemId]?this._idMap[itemId].item:null);
+ZmBriefcaseController.prototype.getItemById =
+function(itemId) {
+	return (this._idMap[itemId] ? this._idMap[itemId].item : null);
 };
 
-ZmBriefcaseController.prototype.getItemsInFolder = function(folderId,callback) {
-
+ZmBriefcaseController.prototype.getItemsInFolder =
+function(folderId,callback) {
 	folderId = folderId || ZmBriefcaseItem.DEFAULT_FOLDER;
 	if (!this._foldersMap[folderId]) {
 		this._foldersMap[folderId] = {};
 		this.searchFolder(folderId,callback);
-	}else if(callback){	
+	} else if(callback) {
 		callback.run(this._foldersMap[folderId]);
 	}
 };
@@ -486,47 +489,49 @@ function(ev) {
 	ZmListController.prototype._dragListener.call(this, ev);
 };
 
-ZmBriefcaseController.prototype.__popupUploadDialog = function(callback, title) {
-
-	if(!this._currentFolder){
+ZmBriefcaseController.prototype.__popupUploadDialog =
+function(callback, title) {
+	if (!this._currentFolder) {
 		this._currentFolder = ZmOrganizer.ID_BRIEFCASE;
 	}
 		
 	var isShared = this.isShared(this._currentFolder);
 	var isReadOnly = this.isReadOnly(this._currentFolder);	
 	
-	if(isShared && isReadOnly){
+	if (isShared && isReadOnly) {
 		var dialog = this._appCtxt.getMsgDialog();
 		dialog.setMessage(ZmMsg.errorPermission, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();					
-	}else{
+	} else {
 		var dialog = this._appCtxt.getUploadDialog();
 		dialog.popup({id:this._currentFolder},callback, title);
 	}
-	
 };
 
-ZmBriefcaseController.prototype.refreshFolder = function(){
+ZmBriefcaseController.prototype.refreshFolder =
+function() {
 	this.show(this._object);
 };
 
-ZmBriefcaseController.prototype.removeCachedFolderItems = function(folderId){
-	if(!folderId){
+ZmBriefcaseController.prototype.removeCachedFolderItems =
+function(folderId) {
+	if (!folderId) {
 		folderId = this._object;
 	}
-	
+
 	var folder = this._foldersMap[folderId];
-	if(folder){
-		for(var i in folder){
-			if(this._idMap[i]){
-			delete this._idMap[i];
+	if (folder) {
+		for (var i in folder) {
+			if (this._idMap[i]) {
+				delete this._idMap[i];
 			}
 		}
 	}
 	delete this._foldersMap[folderId];
 };
 
-ZmBriefcaseController.prototype.reloadFolder = function(){
+ZmBriefcaseController.prototype.reloadFolder =
+function() {
 	DBG.println(AjxDebug.DBG2,"refresh folder:"+this._object);
 	this.removeCachedFolderItems();
 	this.refreshFolder();
@@ -534,24 +539,23 @@ ZmBriefcaseController.prototype.reloadFolder = function(){
 
 ZmBriefcaseController.prototype.isReadOnly =
 function(folderId) {
-
-	//if one of the ancestor is readonly then no chances of childs being writable		
+	//if one of the ancestor is readonly then no chances of childs being writable
 	var isReadOnly = false;
 	var folder = this._appCtxt.getById(folderId);
 	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
 		folder = folder.parent;
 	}
-	if(folder && folder.isReadOnly()){
+	if (folder && folder.isReadOnly()) {
 		isReadOnly = true;
 	}
-	
+
 	return isReadOnly;
 };
 
 ZmBriefcaseController.prototype.getBriefcaseFolder =
 function(folderId) {
-	var briefcase = null;
+	var briefcase;
 	var folder = this._appCtxt.getById(folderId);
 	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId)) {
@@ -572,7 +576,7 @@ function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
-		if(item && item.restUrl){
+		if (item && item.restUrl) {
 			window.open(item.restUrl);
 		}
 	}
@@ -581,6 +585,7 @@ function(ev) {
 ZmBriefcaseController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
+
 	var actionMenu = this.getActionMenu();
 	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
@@ -592,8 +597,8 @@ function(ev) {
 ZmBriefcaseController.prototype._getActionMenuOps =
 function() {
 	var list = [ZmOperation.OPEN_FILE,ZmOperation.SEND_FILE];
-	if(this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)){
-	list.push(ZmOperation.VIEW_FILE_AS_HTML);
+	if (this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+		list.push(ZmOperation.VIEW_FILE_AS_HTML);
 	}	
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
@@ -601,54 +606,52 @@ function() {
 };
 
 ZmBriefcaseController.prototype.getItemsInFolderFromCache = 
-function(folderId){
+function(folderId) {
 	return this._foldersMap[folderId];
 };
 
 ZmBriefcaseController.prototype._openFileListener =
-function(){
-
+function() {
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();	
-	if(!items)
-	return;
+	if (!items) { return; }
 
 	items = items instanceof Array ? items : [ items ];	
-	for(var i = 0;i<items.length;i++){
+	for (var i = 0; i<items.length; i++) {
 		var item = items[i];
-		if(item && item.restUrl){
+		if (item && item.restUrl) {
 			window.open(item.restUrl);
 		}
 	}
 };
 
 ZmBriefcaseController.prototype._viewAsHtmlListener =
-function(){
-
+function() {
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();	
-	if(!items)
-	return;
+	if (!items) { return; }
 
 	items = items instanceof Array ? items : [ items ];	
-	for(var i = 0;i<items.length;i++){
+	for (var i = 0; i<items.length; i++) {
 		var item = items[i];
-		if(item && item.restUrl){
+		if (item && item.restUrl) {
 			this.viewAsHtml(item.restUrl);
 		}
 	}
 };
 
-ZmBriefcaseController.prototype.viewAsHtml = function(restUrl){
-	if(restUrl.match(/\?/)){
+ZmBriefcaseController.prototype.viewAsHtml =
+function(restUrl) {
+	if (restUrl.match(/\?/)) {
 		restUrl+= "&view=html";
-	}else{
+	} else {
 		restUrl+= "?view=html";
 	}
 	window.open(restUrl);
 };
 
-ZmBriefcaseController.prototype._sendPageListener = function(event) {
+ZmBriefcaseController.prototype._sendPageListener =
+function(event) {
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();
 	items = items instanceof Array ? items : [ items ];
@@ -683,8 +686,7 @@ ZmBriefcaseController.prototype._sendPageListener = function(event) {
 
 		var dialog = this._appCtxt.getConfirmationDialog();
 		dialog.popup(ZmMsg.errorPermissionRequired, callback);
-	}
-	else {
+	} else {
 		this._sendPageListener2(names, urls);
 	}
 };
@@ -716,29 +718,36 @@ function(num) {
 };
 
 ZmBriefcaseController.prototype._setupViewMenu =
-function(view) {
-	var menu = this._setupGroupByMenuItems(view);	
-};
+function(view, firstTime) {
+	var btn;
 
-ZmBriefcaseController.prototype._setupGroupByMenuItems =
-function(view) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var menu = appToolbar.getViewMenu(view);
-	if (!menu) {
-		menu = new ZmPopupMenu(appToolbar.getViewButton());
-		appToolbar.setViewMenu(view, menu);
-		for (var i = 0; i < ZmBriefcaseController.GROUP_BY_VIEWS.length; i++) {
-			var id = ZmBriefcaseController.GROUP_BY_VIEWS[i];
-			var mi = menu.createMenuItem(id, {image:ZmBriefcaseController.GROUP_BY_ICON[id],
-											  text:ZmMsg[ZmBriefcaseController.GROUP_BY_MSG_KEY[id]],
-											  style:DwtMenuItem.RADIO_STYLE});
-			mi.setData(ZmOperation.MENUITEM_ID, id);
-			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-			if (id == this._defaultView())
-				mi.setChecked(true, true);
+	if (firstTime) {
+		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+		var menu = btn.getMenu();
+		if (!menu) {
+			menu = new ZmPopupMenu(btn);
+			btn.setMenu(menu);
+			for (var i = 0; i < ZmBriefcaseController.GROUP_BY_VIEWS.length; i++) {
+				var id = ZmBriefcaseController.GROUP_BY_VIEWS[i];
+				var mi = menu.createMenuItem(id, {image:ZmBriefcaseController.GROUP_BY_ICON[id],
+												  text:ZmMsg[ZmBriefcaseController.GROUP_BY_MSG_KEY[id]],
+												  style:DwtMenuItem.RADIO_STYLE});
+				mi.setData(ZmOperation.MENUITEM_ID, id);
+				mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+				if (id == this._defaultView())
+					mi.setChecked(true, true);
+			}
 		}
+	} else {
+		// always set the switched view to be the checked menu item
+		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+		var menu = btn ? btn.getMenu() : null;
+		var mi = menu ? menu.getItemById(ZmOperation.MENUITEM_ID, view) : null;
+		if (mi) { mi.setChecked(true, true); }
 	}
-	return menu;
+
+	// always reset the view menu button icon to reflect the current view
+	btn.setImage(ZmBriefcaseController.GROUP_BY_ICON[view]);
 };
 
 ZmBriefcaseController.CONVERTABLE = {
@@ -749,7 +758,8 @@ ZmBriefcaseController.CONVERTABLE = {
 	zip:/\.zip$/i
 };
 
-ZmBriefcaseController.prototype.isConvertable = function(item) {
+ZmBriefcaseController.prototype.isConvertable =
+function(item) {
 	var name = item.name;
 	for(var type in ZmBriefcaseController.CONVERTABLE){
 		var regex = ZmBriefcaseController.CONVERTABLE[type];
@@ -761,7 +771,7 @@ ZmBriefcaseController.prototype.isConvertable = function(item) {
 };
 
 ZmBriefcaseController.prototype._viewAsHtmlListener =
-function(){
+function() {
 
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();	
@@ -777,11 +787,12 @@ function(){
 	}
 };
 
-ZmBriefcaseController.prototype.viewAsHtml = function(restUrl){
-	if(restUrl.match(/\?/)){
-		restUrl+= "&view=html";
-	}else{
-		restUrl+= "?view=html";
+ZmBriefcaseController.prototype.viewAsHtml =
+function(restUrl) {
+	if (restUrl.match(/\?/)) {
+		restUrl += "&view=html";
+	} else {
+		restUrl += "?view=html";
 	}
 	window.open(restUrl);
 };

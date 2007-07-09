@@ -895,10 +895,12 @@ function(appName, view) {
    	var appEnabled = this._appCtxt.get(ZmApp.SETTING[appName]);
 
 	// update view menu
-	if (appEnabled) {
-		var toolbar = this._appCtxt.getCurrentAppToolbar();
+/*
+	var toolbar = appEnabled ? this._appCtxt.getCurrentAppToolbar() : null;
+	if (toolbar) {
 		toolbar.showViewMenu(view);
 	}
+*/
 
 	if (this._activeApp != appName) {
 
@@ -915,8 +917,12 @@ function(appName, view) {
 	    // switch app
 		this._activeApp = appName;
 		if (appEnabled) {
-			toolbar.setCurrentApp(appName);
-			toolbar.setViewTooltip(view, ZmMsg[ZmApp.VIEW_TOOLTIP[appName]]);
+/*
+			if (toolbar) {
+				toolbar.setCurrentApp(appName);
+				toolbar.setViewTooltip(view, ZmMsg[ZmApp.VIEW_TOOLTIP[appName]]);
+			}
+*/
 			if (ZmApp.DEFAULT_SEARCH[appName]) {
 				this._appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName], true);
 			}

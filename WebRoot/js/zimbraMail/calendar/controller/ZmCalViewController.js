@@ -43,9 +43,6 @@ ZmCalViewController = function(appCtxt, container, calApp) {
 	var apptEditListener = new AjxListener(this, this._handleApptEditRespondAction);
 	var calViewListener = new AjxListener(this, this._calViewButtonListener);
 
-	ZmCalViewController.OPS = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
-							   ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
-	
 	// get view based on op
 	ZmCalViewController.OP_TO_VIEW = {};
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmController.CAL_DAY_VIEW;
@@ -100,22 +97,6 @@ ZmCalViewController = function(appCtxt, container, calApp) {
 ZmCalViewController.prototype = new ZmListController();
 ZmCalViewController.prototype.constructor = ZmCalViewController;
 
-ZmCalViewController.ICON = {};
-ZmCalViewController.ICON[ZmController.CAL_DAY_VIEW]				= "DayView";
-ZmCalViewController.ICON[ZmController.CAL_WORK_WEEK_VIEW]		= "WorkWeekView";
-ZmCalViewController.ICON[ZmController.CAL_WEEK_VIEW]			= "WeekView";
-ZmCalViewController.ICON[ZmController.CAL_MONTH_VIEW]			= "MonthView";
-ZmCalViewController.ICON[ZmController.CAL_SCHEDULE_VIEW]		= "GroupSchedule";
-
-ZmCalViewController.MSG_KEY = {};
-ZmCalViewController.MSG_KEY[ZmController.CAL_DAY_VIEW]			= "viewDay";
-ZmCalViewController.MSG_KEY[ZmController.CAL_WORK_WEEK_VIEW]	= "viewWorkWeek";
-ZmCalViewController.MSG_KEY[ZmController.CAL_WEEK_VIEW]			= "viewWeek";
-ZmCalViewController.MSG_KEY[ZmController.CAL_MONTH_VIEW]		= "viewMonth";
-ZmCalViewController.MSG_KEY[ZmController.CAL_SCHEDULE_VIEW]		= "viewSchedule";
-
-ZmCalViewController.VIEWS = [ZmController.CAL_DAY_VIEW, ZmController.CAL_WORK_WEEK_VIEW, ZmController.CAL_WEEK_VIEW,
-							 ZmController.CAL_MONTH_VIEW, ZmController.CAL_SCHEDULE_VIEW];
 ZmCalViewController.DEFAULT_APPOINTMENT_DURATION = 3600000;
 
 // maintenance needed on views and/or minical
@@ -217,7 +198,6 @@ function(viewId, startDate) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[ZmController.CAL_VIEW];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._viewMgr;
-	this._appCtxt.getCurrentAppToolbar().setSubView(ZmController.CAL_VIEW, viewId);
 	this._setView(ZmController.CAL_VIEW, elements, true);
 	this._currentView = this._viewMgr.getCurrentViewName();
 	this._listView[this._currentView] = this._viewMgr.getCurrentView();
@@ -386,8 +366,6 @@ function(viewId) {
 
 	ZmListController.prototype._initializeToolBar.call(this, ZmController.CAL_DAY_VIEW);
 
-	this._setupViewMenu(ZmController.CAL_VIEW);
-
 	// NOTE: bug 5720
 	if (AjxEnv.is800x600orLower) {
 		var toolbar = this._toolbar[ZmController.CAL_DAY_VIEW];
@@ -416,27 +394,6 @@ function(viewId) {
 	this._setNavToolBar(tb, ZmController.CAL_VIEW);
 
 	this._setNewButtonProps(viewId, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
-};
-
-// Create menu for View button and add listeners.
-ZmCalViewController.prototype._setupViewMenu =
-function(view) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var menu = appToolbar.getViewMenu(view);
-	if (!menu) {
-		menu = new ZmPopupMenu(appToolbar.getViewButton());
-		this._view_menu_listener = new AjxListener(this, this._viewMenuListener);
-		for (var i = 0; i < ZmCalViewController.VIEWS.length; i++) {
-			var id = ZmCalViewController.VIEWS[i];
-			var mi = menu.createMenuItem(id, {image:ZmCalViewController.ICON[id], text:ZmMsg[ZmCalViewController.MSG_KEY[id]],
-											  style:DwtMenuItem.RADIO_STYLE});
-			mi.setData(ZmOperation.KEY_ID, ZmCalViewController.OPS[i]);
-			mi.setData(ZmOperation.MENUITEM_ID, id);
-			mi.addSelectionListener(this._view_menu_listener);
-		}
-		appToolbar.setViewMenu(view, menu);
-	}
-	return menu;
 };
 
 ZmCalViewController.prototype._setViewContents =
@@ -629,12 +586,6 @@ function() {
 	if (!this._miniCalendar)
 		this._createMiniCalendar();
 	return this._miniCalendar;
-};
-
-ZmCalViewController.prototype._viewMenuListener =
-function(ev) {
-	if (ev.detail == DwtMenuItem.CHECKED)
-		this._calViewButtonListener(ev);
 };
 
 ZmCalViewController.prototype._calViewButtonListener =

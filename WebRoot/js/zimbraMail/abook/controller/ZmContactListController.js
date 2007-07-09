@@ -226,8 +226,12 @@ function(actionCode) {
 ZmContactListController.prototype._getToolBarOps =
 function() {
 	var list = this._standardToolBarOps();
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.EDIT);
+	list.push(ZmOperation.SEP,
+				ZmOperation.EDIT,
+				ZmOperation.SEP,
+				ZmOperation.TAG_MENU,
+				ZmOperation.SEP,
+				ZmOperation.VIEW_MENU);
 	return list;
 };
 
@@ -292,16 +296,18 @@ function() {
 
 ZmContactListController.prototype._initializeToolBar =
 function(view) {
-	if (this._toolbar[view]) return;
-
-	ZmListController.prototype._initializeToolBar.call(this, view);
-	this._setupViewMenu(view);
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
-		this._setNewButtonProps(view, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
-	this._setupPrintMenu(view);
-	this._toolbar[view].addFiller();
-	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
-	this._setNavToolBar(tb, view);
+	if (!this._toolbar[view]) {
+		ZmListController.prototype._initializeToolBar.call(this, view);
+		this._setupViewMenu(view, true);
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+			this._setNewButtonProps(view, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
+		this._setupPrintMenu(view);
+		this._toolbar[view].addFiller();
+		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
+		this._setNavToolBar(tb, view);
+	} else {
+		this._setupViewMenu(view, false);
+	}
 };
 
 ZmContactListController.prototype._initializeActionMenu =
@@ -342,23 +348,36 @@ function(view) {
 
 // Create menu for View button and add listeners.
 ZmContactListController.prototype._setupViewMenu =
-function(view) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var menu = appToolbar.getViewMenu(view);
-	if (!menu) {
-		menu = new ZmPopupMenu(appToolbar.getViewButton());
-		for (var i = 0; i < ZmContactListController.VIEWS.length; i++) {
-			var id = ZmContactListController.VIEWS[i];
-			var mi = menu.createMenuItem(id, {image:ZmContactListController.ICON[id], text:ZmMsg[ZmContactListController.MSG_KEY[id]],
-											  style:DwtMenuItem.RADIO_STYLE});
-			mi.setData(ZmOperation.MENUITEM_ID, id);
-			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-			if (id == view)
-				mi.setChecked(true, true);
+function(view, firstTime) {
+	var btn;
+
+	if (firstTime) {
+		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+		var menu = btn.getMenu();
+		if (!menu) {
+			menu = new ZmPopupMenu(btn);
+			btn.setMenu(menu);
+			for (var i = 0; i < ZmContactListController.VIEWS.length; i++) {
+				var id = ZmContactListController.VIEWS[i];
+				var mi = menu.createMenuItem(id, {image:ZmContactListController.ICON[id],
+													text:ZmMsg[ZmContactListController.MSG_KEY[id]],
+													style:DwtMenuItem.RADIO_STYLE});
+				mi.setData(ZmOperation.MENUITEM_ID, id);
+				mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+				if (id == view)
+					mi.setChecked(true, true);
+			}
 		}
-		appToolbar.setViewMenu(view, menu);
+	} else {
+		// always set the switched view to be the checked menu item
+		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+		var menu = btn ? btn.getMenu() : null;
+		var mi = menu ? menu.getItemById(ZmOperation.MENUITEM_ID, view) : null;
+		if (mi) { mi.setChecked(true, true); }
 	}
-	return menu;
+
+	// always reset the view menu button icon to reflect the current view
+	btn.setImage(ZmContactListController.ICON[view]);
 };
 
 ZmContactListController.prototype._setupPrintMenu =
@@ -387,7 +406,7 @@ function(parent, num) {
 	}
 
 	if (!this.isGalSearch()) {
-		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW], true);
+		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable(ZmOperation.PRINT_MENU, num > 0);
 		if (parent instanceof ZmActionMenu)
 			parent.enable(ZmOperation.PRINT, num == 1);
@@ -415,7 +434,7 @@ function(parent, num) {
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);
-		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW], true);
+		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable([ZmOperation.CONTACT, ZmOperation.NEW_MESSAGE, ZmOperation.PRINT_MENU], num > 0);
 	}
 };

@@ -136,7 +136,9 @@ function() {
 
 ZmMixedController.prototype._getToolBarOps =
 function() {
-	return this._standardToolBarOps();
+	var list = this._standardToolBarOps();
+	list.push(ZmOperation.SEP, ZmOperation.TAG_MENU);
+	return list;
 };
 
 ZmMixedController.prototype._getActionMenuOps =
