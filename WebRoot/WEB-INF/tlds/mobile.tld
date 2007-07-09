@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
+
+    <description>A tag library for mobile client.</description>
+    <tlib-version>1.0</tlib-version>
+
+    <short-name>ZimbraMobileMailTagLibrary</short-name>
+    <uri>com.zimbra.mobileclient</uri>
+
+   <tag-file>
+       <name>convListView</name>
+        <path>/WEB-INF/tags/mobile/moConvListView.tag</path>
+    </tag-file>
+
+
+   <tag-file>
+       <name>convView</name>
+        <path>/WEB-INF/tags/mobile/moConvView.tag</path>
+    </tag-file>
+
+   <tag-file>
+       <name>handleError</name>
+        <path>/WEB-INF/tags/mobile/moHandleError.tag</path>
+    </tag-file>
+
+   <tag-file>
+       <name>view</name>
+        <path>/WEB-INF/tags/mobile/moView.tag</path>
+    </tag-file>
+
+   <tag-file>
+       <name>head</name>
+        <path>/WEB-INF/tags/mobile/moHead.tag</path>
+    </tag-file>
+
+    <tag-file>
+       <name>status</name>
+        <path>/WEB-INF/tags/mobile/moStatus.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>searchTitle</name>
+         <path>/WEB-INF/tags/mobile/moSearchTitle.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>calListView</name>
+         <path>/WEB-INF/tags/mobile/moCalListView.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>calMultiDayView</name>
+         <path>/WEB-INF/tags/mobile/moCalMultiDayView.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>calMultiDay</name>
+         <path>/WEB-INF/tags/mobile/moCalMultiDay.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>dayAppt</name>
+         <path>/WEB-INF/tags/mobile/moDayAppt.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>calendarUrl</name>
+         <path>/WEB-INF/tags/mobile/moCalendarUrl.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>apptView</name>
+         <path>/WEB-INF/tags/mobile/moApptView.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>displayAppointment</name>
+        <path>/WEB-INF/tags/mobile/moDisplayAppointment.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>contactView</name>
+         <path>/WEB-INF/tags/mobile/moContactView.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>displayContact</name>
+        <path>/WEB-INF/tags/mobile/moDisplayContact.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>calendarViewToolbar</name>
+        <path>/WEB-INF/tags/mobile/moCalendarViewToolbar.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>contactListView</name>
+        <path>/WEB-INF/tags/mobile/moContactListView.tag</path>
+     </tag-file>
+
+</taglib>
+
+        

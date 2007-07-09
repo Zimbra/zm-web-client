@@ -1,0 +1,59 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+
+<mo:handleError>
+     
+    <zm:getMailbox var="mailbox"/>
+
+    <c:choose>
+        <c:when test="${not empty param.tz}">
+            <fmt:setTimeZone var="tz" value="${param.tz}" scope="request"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
+        </c:otherwise>
+    </c:choose>
+    
+    <c:choose>
+        <c:when test="${not empty param.date}">
+            <fmt:parseDate timeZone="${tz}" var="date" pattern="yyyyMMdd" value="${param.date}"/>
+            <c:set scope="request" var="dateContext" value="${zm:getCalendarMidnight(date.time, tz)}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
+        </c:otherwise>
+    </c:choose>
+
+    <c:set scope="request" var="calendarQuery" value="${param.sq}"/>
+    
+    <c:if test="${not empty param.refresh}">
+        <zm:clearApptSummaryCache/>
+    </c:if>
+
+    <c:set var="view" value="${not empty param.view ? param.view : 'list'}"/>
+
+    <c:if test="${param.action eq 'view'}">
+         <c:set var="needViewAppt" value="${true}"/>
+   </c:if>
+    
+</mo:handleError>
+
+<mo:handleError>
+<c:choose>
+    <c:when test="${needViewAppt}">
+        <mo:apptView/>
+    </c:when>
+    <c:when test="${view eq 'day'}">
+        <mo:calMultiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
+    </c:when>
+    <c:otherwise>
+        <mo:calListView timezone="${tz}" date="${dateContext}"/>
+    </c:otherwise>
+</c:choose>
+</mo:handleError>

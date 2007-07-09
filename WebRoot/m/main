@@ -1,0 +1,49 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="mob" uri="com.zimbra.mobileclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<mob:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
+    <zm:computeSearchContext var="context" usecache="true"/>
+</mob:handleError>
+<mob:view title="${mailbox.name}" context="${context}" mailbox="${mailbox}">
+    <table width=100% cellspacing="0" cellpadding="0">
+        <tr class='zo_toolbar' width=100%>
+            <td>${fn:escapeXml(mailbox.name)}</td>
+        </tr>
+    </table>
+    <ul>
+        <li>
+            <a href="mosearch">
+                <img src="/zimbra/images/mail/MailApp.gif"/>
+                <fmt:message key="mail"/>
+                <c:if test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if>
+            </a>
+        </li>
+        <c:if test="${mailbox.features.contacts}">
+            <li>
+                <a href="mosearch?st=contact">
+                    <img src="/zimbra/images/contacts/Contact.gif"/>
+                    <fmt:message key="addressBook"/>
+                </a>
+            </li>
+        </c:if>
+        <c:if test="${mailbox.features.calendar}">
+            <li>
+                <a href="mocalendar">
+                    <img src="/zimbra/images/calendar/CalendarApp.gif"/>
+                    <fmt:message key="calendar"/>
+                </a>
+            </li>
+        </c:if>
+        <li><a href="?p=4">
+            <img src="/zimbra/images/common/Preferences.gif"/>
+            <fmt:message key="options"/>
+            </a></li>
+    </ul>
+</mob:view>

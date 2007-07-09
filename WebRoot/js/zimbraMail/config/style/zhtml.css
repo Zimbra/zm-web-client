@@ -793,7 +793,7 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
     color:white;
 }
 
-.ZhCalDAyApptEnd, .ZhCalTimeZone {
+.ZhCalDayApptEnd, .ZhCalTimeZone {
     @Text-disabled@
 }
 
