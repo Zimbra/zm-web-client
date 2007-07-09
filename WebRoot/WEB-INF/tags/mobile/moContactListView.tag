@@ -19,9 +19,7 @@
             <td>
                 <table width=100% cellspacing="0" cellpadding="0">
                     <tr class='zo_toolbar' width=100%>
-                        <td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>
-                        <td><a href="?t=3" class='zo_button'><fmt:message key="inbox"/></a></td>
-                        <td><a zhref="?t=3" class='zo_button'><fmt:message key="edit"/></a></td>
+                        <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
                     </tr>
                 </table>
             </td>

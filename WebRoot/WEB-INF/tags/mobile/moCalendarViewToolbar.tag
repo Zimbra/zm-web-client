@@ -12,7 +12,7 @@
     <mo:calendarUrl var="listViewUrl" date="${dateDf}" view="list"/>
     <mo:calendarUrl var="monthViewUrl" date="${dateDf}" view="month"/>
     <tr class='zo_toolbar' width=100%>
-        <td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>
+        <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
         <td><a href="${listViewUrl}" class='zo_button'><fmt:message key="calViewListShort"/></a></td>
         <td><a href="${dayViewUrl}" class='zo_button'><fmt:message key="calViewDayShort"/></a></td>
         <td><a zhref="${monthViewUrl}" class='zo_button'><fmt:message key="calViewMonthShort"/></a></td>

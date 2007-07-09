@@ -51,7 +51,7 @@
                     <tr class='zo_toolbar' width=100%>
                         <zm:currentResultUrl var="closeurl" value="/m/mosearch" index="${context.currentItemIndex}" context="${context}"/>
 
-                        <td><a href="${closeurl}" class='zo_leftbutton'>${fn:escapeXml(context.backTo)}</a></td>
+                        <td><a href="${closeurl}" class='zo_button'>${fn:escapeXml(context.backTo)}</a></td>
                     </tr>
                 </table>
             </td>

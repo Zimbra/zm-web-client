@@ -361,8 +361,10 @@ body > ul > li > a {
     color:black;
 }
 
-.zo_appt_view_body {
-    background: lightgray;
+.zo_obj_body {
+    /*background: lightgray;*/
+    box-sizing: border-box;
+    background: #c8c8c8 url(/images/mobile/pinstripes.png);
 }
 
 .zo_appt_view {

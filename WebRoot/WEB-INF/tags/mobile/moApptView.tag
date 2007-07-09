@@ -25,7 +25,7 @@
     
 </mo:handleError>
 
-<mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" clazz="zo_appt_view_body">
+<mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" clazz="zo_obj_body">
 
 
     <table width=100% height=100% cellpadding="0" cellspacing="0" border=0>
@@ -35,7 +35,7 @@
                     <tr class='zo_toolbar' width=100%>
                         <mo:calendarUrl var="backurl" />
 
-                        <td><a href="${backurl}" class='zo_leftbutton'>
+                        <td><a href="${backurl}" class='zo_button'>
                             <fmt:message key="close"/>
                         </a></td>
                     </tr>
