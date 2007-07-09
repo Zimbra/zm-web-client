@@ -136,7 +136,7 @@ function(compact) {
 			} else {
 				this._getPlugin();
 			}
-			this._playButton.setToggled(!compact);
+			this._playButton.setSelected(!compact);
 		}
 		this._isCompact = compact;
 
@@ -207,8 +207,8 @@ function() {
 ZmSoundPlayer.prototype._setPlayState =
 function(state) {
 	if (this._isScriptable) {
-		this._playButton.setToggled(state == ZmSoundPlayer._PLAYING);
-		this._pauseButton.setToggled(state == ZmSoundPlayer._PAUSED);
+		this._playButton.setSelected(state == ZmSoundPlayer._PLAYING);
+		this._pauseButton.setSelected(state == ZmSoundPlayer._PAUSED);
 	}
 };
 

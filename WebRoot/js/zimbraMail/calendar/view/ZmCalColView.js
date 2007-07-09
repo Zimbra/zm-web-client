@@ -1815,20 +1815,20 @@ function(ev, apptEl) {
 	return false;	
 }
 
-ZmCalColView.prototype._getApptDndIcon =
+ZmCalColView.prototype._getApptDragProxy =
 function(data) {
 	// set icon
 	var icon = null;
-	if (this._apptDndIconDivId == null) {
+	if (this._apptDragProxyDivId == null) {
 		icon = document.createElement("div");
-		icon.id = this._apptDndIconDivId = Dwt.getNextId();
+		icon.id = this._apptDragProxyDivId = Dwt.getNextId();
 		Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
 		this.shell.getHtmlElement().appendChild(icon);
 		Dwt.setZIndex(icon, Dwt.Z_DND);
 	} else {
-		icon = document.getElementById(this._apptDndIconDivId);
+		icon = document.getElementById(this._apptDragProxyDivId);
 	}
-	icon.className = DwtCssStyle.DROP_NOT_OK;
+	icon.className = DwtCssStyle.NOT_DROPPABLE;
 
 	var appt = data.appt;
 	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
@@ -1911,7 +1911,7 @@ function(ev) {
 			data.startDate = new Date(data.appt.getStartTime());
 			ZmCalColView._restoreApptLoc(data);
             	if (!data.icon) { 
-            	    data.icon = data.view._getApptDndIcon(data);
+            	    data.icon = data.view._getApptDragProxy(data);
         	    }
             	Dwt.setVisible(data.icon, true);
         	}
@@ -1923,13 +1923,13 @@ function(ev) {
         	    if (destDwtObj != obj._lastDestDwtObj || destDwtObj._dropTarget.hasMultipleTargets()) {
             	    //DBG.println("dwtObj = "+destDwtObj._dropTarget);
         			if (destDwtObj._dropTarget._dragEnter(	Dwt.DND_DROP_MOVE, destDwtObj, {data: data.appt}, mouseEv)) {
-	        			//obj._setDnDIconState(true);
-	        			data.icon.className = DwtCssStyle.DROP_OK;
+	        			//obj._setDragProxyState(true);
+	        			data.icon.className = DwtCssStyle.DROPPABLE;
         				obj._dropAllowed = true;
         				destDwtObj._dragEnter(mouseEv);
         			} else {
-        				//obj._setDnDIconState(false);
-	        			data.icon.className = DwtCssStyle.DROP_NOT_OK;
+        				//obj._setDragProxyState(false);
+	        			data.icon.className = DwtCssStyle.NOT_DROPPABLE;
         				obj._dropAllowed = false;
         			}
         			//DBG.println(" dropAllowed = "+obj._dropAllowed);
@@ -1937,8 +1937,8 @@ function(ev) {
         			destDwtObj._dragOver(mouseEv);
         		}
         	} else {
-        		data.icon.className = DwtCssStyle.DROP_NOT_OK;
-        		//obj._setDnDIconState(false);
+        		data.icon.className = DwtCssStyle.NOT_DROPPABLE;
+        		//obj._setDragProxyState(false);
         	}
         	if (obj._lastDestDwtObj && obj._lastDestDwtObj != destDwtObj && obj._lastDestDwtObj._dropTarget && obj._lastDestDwtObj != obj) {
         		obj._lastDestDwtObj._dragLeave(mouseEv);
@@ -2040,7 +2040,7 @@ function(ev) {
         			destDwtObj._drop(mouseEv);
         			destDwtObj._dropTarget._drop({data: data.appt}, mouseEv);
         			//obj._dragSource._endDrag();
-        			//obj._destroyDnDIcon(obj._dndIcon);
+        			//obj._destroyDragProxy(obj._dndProxy);
         			obj._dragging = DwtControl._NO_DRAG;
                  if (data.icon) Dwt.setVisible(data.icon, false);
         		} else {

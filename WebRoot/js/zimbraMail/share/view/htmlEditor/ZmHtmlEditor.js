@@ -1161,18 +1161,18 @@ function(fontSize) {
 ZmHtmlEditor.prototype._rteStateChangeListener =
 function(ev) {
 
-	this._boldButton.setToggled(ev.isBold);
-	this._underlineButton.setToggled(ev.isUnderline);
-	this._italicButton.setToggled(ev.isItalic);
+	this._boldButton.setSelected(ev.isBold);
+	this._underlineButton.setSelected(ev.isUnderline);
+	this._italicButton.setSelected(ev.isItalic);
 	if (this._strikeThruButton)
-		this._strikeThruButton.setToggled(ev.isStrikeThru);
+		this._strikeThruButton.setSelected(ev.isStrikeThru);
 	if (this._subscriptButton)
-		this._subscriptButton.setToggled(ev.isSubscript);
+		this._subscriptButton.setSelected(ev.isSubscript);
 	if (this._superscriptButton)
-		this._superscriptButton.setToggled(ev.isSuperscript);
+		this._superscriptButton.setSelected(ev.isSuperscript);
 
-	this._numberedListButton.setToggled(ev.isOrderedList);
-	this._listButton.setToggled(ev.isUnorderedList);
+	this._numberedListButton.setSelected(ev.isOrderedList);
+	this._listButton.setSelected(ev.isUnorderedList);
 
 	if (ev.color)
 		this._fontColorButton.setColor(ev.color);

@@ -23,19 +23,35 @@
  * ***** END LICENSE BLOCK *****
  */
 
-.MsgHeader .Object, .MsgHeader .Object-activated {
+/****
+ *	PURPOSE:  This file is loaded in for the message body (only) of each message displayed
+ *				in the 'Message Preview Pane'.  It should be minimal in size.
+ ****/
+
+/* USE???  MsgHeader is not shown in the iframe... ? */
+.MsgHeader .Object, 
+.MsgHeader .Object-hover {
 	white-space: nowrap;
 }
 
-.MsgBody-text, .MsgBody-text * { 
-	@Text@
-	font-family: monospace;
+/* entire message body */
+.MsgBody { 
+	@MailMsgBody@
+	padding: 10px;
 }
 
-body.MsgBody { 
-	padding: 10px;
-	@MailMsgBg@
+/* text message font (eg: not HTML) */
+.MsgBody-text, .MsgBody-text * { 
+	@MailMsgBodyText@
+	@MailMsgBodyText-fixed@
 }
+
+/* html message font */
+.MsgBody-html, .MsgBody-html * { 
+	@MailMsgBodyText@
+	@MailMsgBodyText-html@
+}
+
 
 .MsgBody .SignatureText { color: gray; }
 .MsgBody .QuotedText0 { color: purple; }
@@ -47,12 +63,12 @@ body.MsgBody {
 	@Anchor@
 }
 
-.Object-activated {
+.Object-hover {
 	@Anchor-hover@
 }
 
-.Object-triggered {
-	@Anchor-clicked@
+.Object-active {
+	@Anchor-active@
 }
 
 
@@ -65,7 +81,7 @@ a:hover {
 }
 
 a:active {
-	@Anchor-clicked@
+	@Anchor-active@
 }
 
 .POObject {color: blue;}
@@ -76,21 +92,6 @@ a:active {
 	display: none;
 }
 
-pre { /* ripped off from http://cheeaun.phoenity.com/weblog/2005/06/whitespace-and-generated-content.html */
-	white-space: pre; /* CSS2 */
-	#IFDEF GECKO
-	white-space: -moz-pre-wrap; /* Mozilla */
-	#ENDIF
-	#IFDEF OPERA
-	white-space: -o-pre-wrap; /* Opera 7 */
-	white-space: -pre-wrap; /* Opera 4-6 */
-	#ENDIF
-	#IFNDEF GECKO
-	white-space: -hp-pre-wrap; /* HP printers */
-	white-space: pre-wrap; /* CSS 2.1 */
-	white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
-	#ENDIF
-	#IFDEF MSIE
-	word-wrap: break-word; /* IE */
-	#ENDIF
+pre {
+	@WordWrapPRE@
 }

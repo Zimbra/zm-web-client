@@ -135,14 +135,14 @@ function(contact, params) {
 	} else {
 		// create div for DnD
 		div = document.createElement("div");
-		div[DwtListView._STYLE_CLASS] = [base, DwtCssStyle.DND].join("-");
+		div[DwtListView._STYLE_CLASS] = [base, DwtCssStyle.DRAG_PROXY].join("-");
 		// bug fix #3654 - yuck
 		if (AjxEnv.isMozilla) {
 			div.style.overflow = "visible";
 		}
 		div.style.position = "absolute";
 		div.className = div[DwtListView._STYLE_CLASS];
-		if (params.isDnDIcon) {
+		if (params.isDragProxy) {
 			div.style.width = this._cardWidth;
 		}
 		this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
@@ -174,8 +174,8 @@ function(contact, params) {
 	html[idx++] = "</tr>";
 
 	idx = contact.isGroup()
-		? this._getGroupHtml(contact, html, idx, params.isDnDIcon)
-		: this._getContactHtml(contact, html, idx, params.isDnDIcon);
+		? this._getGroupHtml(contact, html, idx, params.isDragProxy)
+		: this._getContactHtml(contact, html, idx, params.isDragProxy);
 
 	html[idx++] = "</table>";
 
@@ -189,7 +189,7 @@ function(contact, params) {
 };
 
 ZmContactCardsView.prototype._getGroupHtml =
-function(contact, html, idx, isDnDIcon) {
+function(contact, html, idx, isDragProxy) {
 	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
 	var members = contact.getGroupMembers().good.getArray();
 	var size = members.length <= 5 ? members.length : Math.min(members.length, 5);
@@ -227,7 +227,7 @@ function(contact, html, idx, isDnDIcon) {
 };
 
 ZmContactCardsView.prototype._getContactHtml =
-function(contact, html, idx, isDnDIcon) {
+function(contact, html, idx, isDragProxy) {
 	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
 
 	html[idx++] = "<tr";
@@ -248,9 +248,9 @@ function(contact, html, idx, isDnDIcon) {
 	html[idx++] = ">";
 	// add first column of work info here
 	if (value = contact.getWorkAddrField()) {
-		html[idx++] = this._getContactField("W", value, isDnDIcon);
+		html[idx++] = this._getContactField("W", value, isDragProxy);
 	} else if (value = contact.getHomeAddrField()) {
-		html[idx++] = this._getContactField("H", value, isDnDIcon);
+		html[idx++] = this._getContactField("H", value, isDragProxy);
 	}
 	html[idx++] = "</tr>";
 
@@ -258,7 +258,7 @@ function(contact, html, idx, isDnDIcon) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getContactField("E", value, isDnDIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getContactField("E", value, isDragProxy, ZmObjectManager.EMAIL);
 		html[idx++] = "</tr>";
 	}
 
@@ -266,13 +266,13 @@ function(contact, html, idx, isDnDIcon) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getContactField("E2", value, isDnDIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getContactField("E2", value, isDragProxy, ZmObjectManager.EMAIL);
 		html[idx++] = "</tr>";
 	} else if (value = contact.getAttr("email3")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getContactField("E3", value, isDnDIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getContactField("E3", value, isDragProxy, ZmObjectManager.EMAIL);
 		html[idx++] = "</tr>";
 	}
 
@@ -285,35 +285,35 @@ function(contact, html, idx, isDnDIcon) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getContactField("W", value, isDnDIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("W", value, isDragProxy, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("workPhone2")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getContactField("W2", value, isDnDIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("W2", value, isDragProxy, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("workFax")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getContactField("F", value, isDnDIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("F", value, isDragProxy, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("mobilePhone")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getContactField("M", value, isDnDIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("M", value, isDragProxy, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("homePhone")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getContactField("H", value, isDnDIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("H", value, isDragProxy, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 
@@ -437,15 +437,15 @@ function(item) {
 	return null;
 };
 
-ZmContactCardsView.prototype._setDnDIconState =
+ZmContactCardsView.prototype._setDragProxyState =
 function(dropAllowed) {
 	if (this._dndImg || !AjxEnv.isLinux) {
-		ZmContactsBaseView.prototype._setDnDIconState.call(this, dropAllowed)
-	} else if (this._dndIcon) {
+		ZmContactsBaseView.prototype._setDragProxyState.call(this, dropAllowed)
+	} else if (this._dndProxy) {
 		// bug fix #3235 - no opacity for linux
-		var addClass = dropAllowed ? DwtCssStyle.DROP_OK : DwtCssStyle.DROP_NOT_OK;
+		var addClass = dropAllowed ? DwtCssStyle.DROPPABLE : DwtCssStyle.NOT_DROPPABLE;
 		var linuxClass = [addClass, DwtCssStyle.LINUX].join("-");
-		this._dndIcon.className = [this._dndIcon._origClassName, linuxClass].join(" ");
+		this._dndProxy.className = [this._dndProxy._origClassName, linuxClass].join(" ");
 	}
 };
 

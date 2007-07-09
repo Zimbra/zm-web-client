@@ -628,8 +628,12 @@ function(components) {
 		if (cont) {
 			var comp = this._components[cid];
 			if (comp && (comp.getZIndex() != Dwt.Z_HIDDEN)) {
-                // save bounds
                 var contBds = Dwt.getBounds(cont);
+				// take insets (border + padding) into account
+				var insets = Dwt.getInsets(cont);
+				Dwt.insetBounds(contBds, insets);
+				
+                // save bounds
                 this._contBounds[cid] = contBds;
 
 				// reset position if skin overrides default of absolute

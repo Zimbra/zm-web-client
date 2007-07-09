@@ -658,7 +658,7 @@ function(ev) {
 	var object = this._objects[span.id];
 	if (!object) {return false;}
 
-	span.className = object.handler.getActivatedClassName(object.object, object.context);
+	span.className = object.handler.getHoveredClassName(object.object, object.context);
 	if (object.handler.hasToolTipText()) {
  		var shell = DwtShell.getShell(window);
 		var manager = shell.getHoverMgr();
@@ -725,7 +725,7 @@ function(ev) {
 	manager.setHoverOutListener(this._hoverOutListener);
 	manager.hoverOut();
 
-	span.className = object.handler.getTriggeredClassName(object.object, object.context);
+	span.className = object.handler.getActiveClassName(object.object, object.context);
 	if (ev.button == DwtMouseEvent.RIGHT) {
 		// NOTE: we need to know if the current view is a dialog since action
 		//       menu needs to be a higher z-index
@@ -752,7 +752,7 @@ function(ev) {
 	var object = this._objects[span.id];
 	if (!object) {return false;}
 
-	span.className = object.handler.getActivatedClassName(object.object, object.context);
+	span.className = object.handler.getHoveredClassName(object.object, object.context);
 	return false;
 };
 

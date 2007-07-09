@@ -67,7 +67,7 @@ FORM {
 	position:relative;
 	width:500;
 	overflow:visible;
-	@WindowOuterContainer-light@
+	@LightWindowOuterBorder@
 }
 
 
@@ -80,7 +80,7 @@ FORM {
 
 /* Cell for the 'body' (notice/form/about/license) */
 #ZLoginBodyContainer {
-	@WindowInnerContainer-light@
+	@LightWindowInnerBorder@
 	@AppBg@
 	padding-top:20px;
 }
@@ -164,7 +164,7 @@ FORM {
 	margin-top:10px;
 	margin-bottom:10px;
 	padding:5px;
-	@OutsetBorder@
+	@NormalOutsetBorder@
 	background-color:@HilightColor@;
 }
 
@@ -289,18 +289,18 @@ FORM {
 }
 
 
-.DwtButton 								{	@NormalButton@					}
-.DwtButton-activated 					{	@NormalButton-hover@			}
-.DwtButton-triggered					{	@NormalButton-clicked@			}	
-.DwtButton-toggled						{	@NormalButton-toggled@			}	
-.DwtButton-disabled						{	@NormalButton-disabled@			}	
-.DwtButton-active						{	@NormalButton-default@			}	
-.DwtButton-focused						{	@NormalButton-focused@			}	
+.DwtButton 								{	@Button@ @ButtonBorder-normal@		}
+.DwtButton-hover 						{	@Button@ @ButtonBorder-hover@			}
+.DwtButton-active						{	@Button@ @ButtonBorder-active@		}	
+.DwtButton-selected						{	@Button@ @ButtonBorder-selected@		}	
+.DwtButton-disabled						{	@Button@ @ButtonBorder-disabled@		}	
+.DwtButton-active						{	@Button@ @ButtonBorder-default@		}	
+.DwtButton-focused						{	@Button@ @ButtonBorder-focused@		}	
 		
-.DwtButton .Text 						{	@NormalButtonText@				}
-.DwtButton-activated .Text				{	@NormalButtonText-hover@		}
-.DwtButton-triggered .Text				{	@NormalButtonText-clicked@		}	
-.DwtButton-toggled .Text				{	@NormalButtonText-clicked@		}	
-.DwtButton-disabled .Text				{	@NormalButtonText-disabled@		}	
-.DwtButton-active .Text					{	@NormalButtonText-default@		}	
-.DwtButton-focused .Text				{	@NormalButtonText-focused@		}	
+.DwtButton .Text 						{	@ButtonText@ @ButtonText-normal@	}
+.DwtButton-hover .Text					{	@ButtonText@ @ButtonText-hover@		}
+.DwtButton-active .Text					{	@ButtonText@ @ButtonText-active@	}	
+.DwtButton-selected .Text				{	@ButtonText@ @ButtonText-active@	}	
+.DwtButton-disabled .Text				{	@ButtonText@ @ButtonText-disabled@	}	
+.DwtButton-active .Text					{	@ButtonText@ @ButtonText-default@	}	
+.DwtButton-focused .Text				{	@ButtonText@ @ButtonText-focused@	}	

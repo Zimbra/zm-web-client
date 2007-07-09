@@ -108,7 +108,7 @@ function(attId) {
 ZmCalItemComposeController.prototype.toggleSpellCheckButton =
 function(toggled) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
-	spellCheckButton.setToggled((toggled || false));
+	spellCheckButton.setSelected((toggled || false));
 };
 
 ZmCalItemComposeController.prototype.initComposeView =

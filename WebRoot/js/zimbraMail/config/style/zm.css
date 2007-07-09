@@ -37,7 +37,7 @@
 * - Use hex RGB values for colors that don't have names (eg:  #EEEEEE)
 * - Try to stick to hex values of   00, 33, 66, 99, AA, FF so they map cleanly to the web palette,
 *    eg: #666666 rather than #616161
-* - Modifiers are lower case, whether they're a class (eg .activated) or tacked on (eg -selected).
+* - Modifiers are lower case, whether they're a class (eg .hover) or tacked on (eg -selected).
 *
 * Classes are laid out in the following general order:
 *	- HTML elements
@@ -91,26 +91,27 @@
 /* Outside container for the banner */
 .BannerBar .quotabar {
 	@ProgressBarContainer@
-	background-color: #FFFFFF;
-	width: 100px;
-	height: 6px;
+	@ProgressBarContainer-unused@
 }
 
 .BannerBar .quotaUsed {
-	@ProgressBarBg-info@
-	height: 6px;
+	@ProgressBarContainer-info@
+	@FixIESizeQuirk@
+	height: 100%;
 }
 
 /* 65% - 85% of quota used */
 .BannerBar .quotaWarning {
-	@ProgressBarBg-warning@
-	height: 6px;
+	@ProgressBarContainer-warning@
+	@FixIESizeQuirk@
+	height: 100%;
 }
 
 /* 85%+ of quota used */
 .BannerBar .quotaCritical {
-	@ProgressBarBg-critical@
-	height: 6px;
+	@ProgressBarContainer-critical@
+	@FixIESizeQuirk@
+	height: 100%;
 }
 
 
@@ -147,6 +148,7 @@
 
 /* Status bar stuff */
 
+/*** DEPRECATED -- REMOVE THIS ***/
 .ZmStatusMainText {
 	@ToastText@
 }
@@ -156,16 +158,13 @@
 }
 
 .ZmStatusInfoToast {
-	@ToastContainer@
-	@ToastBg-info@
+	@ToastContainer-info@
 }
 .ZmStatusWarningToast {
-	@ToastContainer@
-	@ToastBg-warning@
+	@ToastContainer-warning@
 }
 .ZmStatusCriticalToast {
-	@ToastContainer@
-	@ToastBg-critical@
+	@ToastContainer-critical@
 }
 
 .ZmStatusHistory {
@@ -271,6 +270,18 @@ td.DDSepInvisible div {
 	width:100%;
 }
 
+/* the entire search toolbar */
+.ZmSearchToolbar {
+	@FullSize@
+}
+
+/* cell surrounding a cell with contents in the search toolbar */
+.ZmSearchToolbarCell {
+	padding:0px 2px;
+}
+
+/* cell surrounding a separator in the search toolbar */
+.ZmSearchToolbarSeparatorCell {}
 
 
 /*
@@ -301,6 +312,7 @@ td.DDSepInvisible div {
 /* Header for each picker */
 .ZmPicker .DwtToolBar {
 	@WidgetHeaderContainer@
+	@WidgetHeaderContainer-normal@
 	@WidgetHeaderSize-medium@
 }
 
@@ -382,17 +394,14 @@ td.DDSepInvisible div {
 	-- there can be two instances, one for "conversation" view and one for "messages" view */
 .ZmMailMsgView {
 	@FullWidth@
-	@MailMsgBg@
-	@Text@
+	@MailMsgBody@
 }
 
-/* Container for the body of the message */
-.MsgBody {
-	@AppBg@
-	@Text@
-}
+/* Container for the body of the message.
+	Note: actual bg/text of the message is set in file msgview.css */
+.MsgBody {}
 
-/* ??? USE? */
+/* Toolbar for a mail message, eg: to accept an appointment */
 .ZmMailMsgView .ZmToolBar {
 	@InlineToolbarContainer@
 	margin-left: 12px;
@@ -402,25 +411,23 @@ td.DDSepInvisible div {
 
 /* Container for the header of the message */
 .ZmMailMsgView .MsgHeaderTable {
-	padding-top:5px;
-	@WidgetHeaderContainer@
+	@MailMsgHeader@
 }
 
 .ZmMailMsgView .SubjectCol {
 	@FontSize-bigger@
-	@Text@
+	@MailMsgHeaderText@
 }
 
 .ZmMailMsgView .LabelColName {
-	@NoWrap@
-	@Label@		/* ??? bold?*/
+	@MailMsgHeaderLabel@
 	vertical-align: top;
 	text-align: right;
 	padding: 3px 0px 3px 0px;
 }
 
 .ZmMailMsgView .LabelColValue {
-	@Text@
+	@MailMsgHeaderText@
 	white-space: normal;
 	vertical-align: top;
 	padding: 3px;
@@ -443,16 +450,13 @@ td.DDSepInvisible div {
 /* ??? "Displayimages" CLASS REALLY SHOULD BE SHARED WITH "SpellCheckModeDiv"  */
 /* CLASS DEFINED IN spellcheck.css SINCE THEY SHOULD HAVE THE SAME VISUAL LOOK */
 .Displayimages {
-	cursor: pointer;
-	background-color: #FFFFCC;
-	padding: 7px;
-	font-size: 10pt;
-	border-bottom: 1px solid #777777;
+	@WarningContainer@
+	@WarningText@
+	@BottomSeparator@
+	@ActiveCursor@
+	@PanelPadding@
 }
 
-.ZmMailMsgView .Displayimages td {
-	font-size: 10pt;
-}
 
 
 /* ??? USE? */
@@ -500,15 +504,19 @@ td.DDSepInvisible div {
 
 .ZmComposeView .subjectField {
 	@FullWidth@
+/* MOW: why is this here ?  Use normal field defaults instead:
 	border: 1px solid rgb(206,209,201);
 	padding: 3 6 0 6;
+*/
 }
 
 /* to/cc/bcc textareas */
 .ZmComposeView .addresses {
 	@FullWidth@
+/* MOW: why is this here ?  Use normal field defaults instead:
 	border: 1px solid rgb(206,209,201);
 	padding: 3 6 3 6;
+*/
 }
 
 /* textarea where you type in the message? */
@@ -583,20 +591,20 @@ line-height:normal;
 
 /* ??? USE? */
 .ZmHEDialog td.Label {
-	@NoSelect@
+	@DisableSelection@
 	text-align: right;
 	width: 12em;
 	padding-right: 3px;
 }
 .ZmHEDialog td.SmallLabel {
-	@NoSelect@
+	@DisableSelection@
 	text-align: right;
 	padding-right: 3px;
 }
 .ZmHEDialog td.col2 { width: 7em; }
-.ZmHEDialog label { @NoSelect@ }
+.ZmHEDialog label { @DisableSelection@ }
 .ZmHEDialog .ShowPickedColor {
-	@NoSelect@
+	@DisableSelection@
 	border: 1px dashed #888;
 	width: 1.2em;
 	line-height: 1.2em;
@@ -613,14 +621,16 @@ line-height:normal;
 #ENDIF
 /* ??? USED? */
 #IFDEF MSIE
-.ZmComposeTBButton.toggled {
+/* NOTE: this type of selector will NOT work in MSIE ??? */
+.ZmComposeTBButton.selected {
 	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);
 	background-color: white;
 }
 #ENDIF
 
 #IFNDEF MSIE
-.ZmComposeTBButton.toggled {
+/* NOTE: this type of selector will NOT work in MSIE ??? */
+.ZmComposeTBButton.selected {
 	background-color: white;
 }
 #ENDIF
@@ -691,21 +701,16 @@ line-height:normal;
 }
 
 .AlphabetBarDisabled {
-	#IFDEF MSIE
-	filter:alpha(opacity=50);
-	#ENDIF
-    #IFDEF GECKO
-    -moz-opacity:0.5;
-    #ENDIF
-    opacity:0.5;
-	cursor: default;
+	/* TODO:  this was hard-coded to 50% opaque -- why not same as icon? */
+	@HalfOpacity@
+	@InactiveCursor@
 }
 
 
 /* Container for list of contacts */
 /* ??? RENAME */
 .ZmContactSimpleView {
-	@ListContainer@
+	@ListBg@	@ListBorder@
 }
 
 /* ??? WHY IS THIS NECESSARY? */
@@ -865,13 +870,11 @@ line-height:normal;
 	@ContactsCardSize@
 	overflow: hidden;
 	@OverflowEllipsis@
-#IFDEF GECKO
-	-moz-user-select: none;
-#ENDIF
+	@DisableSelection@
 }
 
 .ZmContactCard {
-	@OutsetBorder@
+	@NormalOutsetBorder@
 }
 
 /* "Finish Loading" banner in cards view to initiate GetContactRequest for
@@ -1007,6 +1010,7 @@ line-height:normal;
 /* Container for the head of the calendar grid */
 .calendar_heading {
 	@WidgetHeaderContainer@
+	@WidgetHeaderContainer-normal@
 	height: 20px;			/* ??? SIZE */
 	overflow: hidden;
 }
@@ -2140,7 +2144,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* Container for the set of preference pages (including tabs) */
 .ZmPrefView {
-	@PageBg@
+	@AppBg@
 	@FullSize@
 }
 
@@ -2220,9 +2224,9 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 /* Browse button */
 .ZmIdentityView .DwtButton,
-.ZmIdentityView .DwtButton-activated,
-.ZmIdentityView .DwtButton-triggered,
-.ZmIdentityView .DwtButton-toggled,
+.ZmIdentityView .DwtButton-hover,
+.ZmIdentityView .DwtButton-active,
+.ZmIdentityView .DwtButton-selected,
 .ZmIdentityView .DwtButton-disabled,
 .ZmIdentityView .DwtButton-active,
 .ZmIdentityView .DwtButton-focused {
@@ -2364,7 +2368,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-bottom: @BoxMarginSize@;
 }
 
-.ZmNotebookPageView SPAN.Object, .ZmNotebookPageView SPAN.Object-activated {}
+.ZmNotebookPageView SPAN.Object, .ZmNotebookPageView SPAN.Object-hover {}
 
 .ZmPageEditView {
 }
@@ -3021,68 +3025,61 @@ HTML>BODY .appt-selected .appt_allday_body
  *
  ***************/
 
+.ZAppTab 									{	@AppTab@	@AppTabSpacing@				}
 
-.ZAppTabBorder							{	@ZWidgetBg@		@NormalOutsetBorder@	@AppTab-lighter@	@AppTabRoundCorners@	margin-right:10px;
- #IFDEF MSIE
-  padding-right:3px; margin-right: 12px;
- #ENDIF
-}
-.ZHover		.ZAppTabBorder				{	@ZWidgetBg@								@FullOpacity@		@AppTabRoundCorners@	}
-.ZDisabled	.ZAppTabBorder				{	@ZWidgetBg@ 	@DisabledBorder@		@FullOpacity@		@AppTabRoundCorners@	}
-.ZFocused	.ZAppTabBorder				{	@ZWidgetBg@		@NormalOutsetBorder@	@FullOpacity@		@AppTabRoundCorners@	}
-.ZActive	.ZAppTabBorder				{	@ZWidgetBg@		@NormalOutsetBorder@	@FullOpacity@		@AppTabRoundCorners@	}
-.ZSelected	.ZAppTabBorder				{	@ZWidgetBg@		@NormalOutsetBorder@	@FullOpacity@		@AppTabRoundCorners@	font-weight:bold;	}
+.ZAppTabBorder								{	@AppTabBorder@	@AppTabBorder-normal@	}
+.ZHover		.ZAppTabBorder					{					@AppTabBorder-hover@	}
+.ZDisabled	.ZAppTabBorder					{					@AppTabBorder-disabled@	}
+.ZFocused	.ZAppTabBorder					{					@AppTabBorder-focused@	}
+.ZActive	.ZAppTabBorder					{					@AppTabBorder-active@	}
+.ZSelected	.ZAppTabBorder					{					@AppTabBorder-selected@	}
 
-.ZTab .ZWidgetTitle						{	padding:0 6 0 6; text-align:center; white-space: nowrap; }
+			.ZAppTabTable .ZWidgetTitle		{	@AppTabText@ 	@AppTabText-normal@		}
+.ZHover		.ZAppTabTable .ZWidgetTitle		{					@AppTabText-hover@		}
+.ZDisabled	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-disabled@	}
+.ZFocused	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-focused@	}
+.ZActive	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-active@		}
+.ZSelected	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-selected@	}
 
-/*
-.ZTab .ZLeftIcon  DIV				{	margin-left:5px;}
-.ZTab .ZRightIcon DIV				{	margin-left:2px; margin-right:6px;}
-*/
+
+
+
+/***************
+ *
+ *	Toast -- popup info panel
+ *
+ ***************/
 
 .ZToast {
-  position: absolute;
-  top: -10000; left: -10000;
-  margin-top: 10px;
-  overflow: visible;
-}
-.ZToastBG {
-  #IFDEF MSIE
-  filter: alpha(opacity=95);
-  #ELSE
-  opacity: .95;
-  #ENDIF
-  #IFDEF GECKO
-  -moz-border-radius: 14px;
-  #ENDIF
+	position: absolute;
+	top: -10000; left: -10000;
+	overflow: visible;
+
+	/* change the following to set the top of the toaster */
+	margin-top: 10px;
 }
 .ZToastContent {
-  padding: 1.5em;
+	padding: 1.5em;
 }
+
 .ZToastIcon {
   float: left;
   display: none;
 }
+
 .ZToastText {
-  font-family: sans-serif;
-  font-weight: bold;
-  font-size: 16pt;
-  color: black;
-  text-align: center;
+	@ToastText@
 }
 
-.ZToastInfo .ZToastBG {
-  background-color: lightgreen;
-  border: solid 3px darkgreen;
-}
-.ZToastWarn .ZToastBG {
-  background-color: lightyellow;
-  border: solid 3px yellow;
-}
-.ZToastCrit .ZToastBG {
-  background-color: pink;
-  border: solid 3px red;
-}
+.ZToastBG 				{	@ToastContainer@		}
+
+
+
+.ZToastInfo .ZToastBG 	{	@ToastContainer-info@		}
+.ZToastWarn .ZToastBG 	{	@ToastContainer-warning@	}
+.ZToastCrit .ZToastBG 	{	@ToastContainer-critical@	}
+
+
 
 /*briefcase app*/
 

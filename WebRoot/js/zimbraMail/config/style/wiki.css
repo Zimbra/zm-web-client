@@ -84,7 +84,7 @@
 	@FontSize-normal@
 	color:#999999;
 }
-#ZimbraWikiPage .zmwiki-smallGrayLinks span.Object-activated {
+#ZimbraWikiPage .zmwiki-smallGrayLinks span.Object-hover {
 	@FontSize-normal@
 	color:#666666;
 }

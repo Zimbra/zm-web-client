@@ -97,9 +97,9 @@ function(msg, params) {
 ZmMailMsgListView.prototype._getDivClass =
 function(base, item, params) {
 	var style;
-	if (params.isDnDIcon && params.isMatched) {
-		var one = [base, DwtCssStyle.MATCHED, DwtCssStyle.DND].join("-");
-		var two = [base, DwtCssStyle.DND].join("-");
+	if (params.isDragProxy && params.isMatched) {
+		var one = [base, DwtCssStyle.MATCHED, DwtCssStyle.DRAG_PROXY].join("-");
+		var two = [base, DwtCssStyle.DRAG_PROXY].join("-");
 		style = [one, two].join(" ");							// Row-matched-dnd Row-dnd
 	} else if (params.isMatched) {
 		style = [base, DwtCssStyle.MATCHED].join("-");			// Row-matched

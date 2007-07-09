@@ -691,7 +691,7 @@ function(contact, params) {
 
 	var div = this._getDiv(contact, params);
 	
-	if (params.isDnDIcon) {
+	if (params.isDragProxy) {
 		div.style.width = "175px";
 		div.style.padding = "4px";
 	}
@@ -725,7 +725,7 @@ function(contact, params) {
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
 	htmlArr[idx++] = "</td>";
 
-	if (!params.isDnDIcon) {
+	if (!params.isDragProxy) {
 		// if read only, show lock icon in place of the tag column since we dont
 		// currently support tags for "read-only" contacts (i.e. shares)
 		if (contact.isReadOnly()) {

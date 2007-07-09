@@ -300,12 +300,12 @@ function() {
 		var id = operationButtonIds[i];
 
 		// HACK for IE, which doesn't support multiple classnames. If I
-		// just change the styles, the activated class overrides the basic
-		// activated class definition, thus I have to change what the
-		// activated class name will be for the buttons in the toolbar.
+		// just change the styles, the hovered class overrides the basic
+		// hovered class definition, thus I have to change what the
+		// hovered class name will be for the buttons in the toolbar.
 		var button = this._inviteToolbar.getButton(id);
-		button._activatedClassName = button._className + "-" + DwtCssStyle.ACTIVATED;
-		button._triggeredClassName = button._className + "-" + DwtCssStyle.TRIGGERED;
+		button._hoverClassName = button._className + "-" + DwtCssStyle.HOVER;
+		button._activeClassName = button._className + "-" + DwtCssStyle.ACTIVE;
 
 		this._inviteToolbar.addSelectionListener(id, inviteToolBarListener);
 
@@ -338,12 +338,12 @@ function() {
 		var id = buttonIds[i];
 
 		// HACK for IE, which doesn't support multiple classnames. If I
-		// just change the styles, the activated class overrides the basic
-		// activated class definition, thus I have to change what the
-		// activated class name will be for the buttons in the toolbar.
+		// just change the styles, the hovered class overrides the basic
+		// hovered class definition, thus I have to change what the
+		// hovered class name will be for the buttons in the toolbar.
 		var b = this._shareToolbar.getButton(id);
-		b._activatedClassName = b._className + "-" + DwtCssStyle.ACTIVATED;
-		b._triggeredClassName = b._className + "-" + DwtCssStyle.TRIGGERED;
+		b._hoverClassName = b._className + "-" + DwtCssStyle.HOVER;
+		b._activeClassName = b._className + "-" + DwtCssStyle.ACTIVE;
 
 		this._shareToolbar.addSelectionListener(id, shareToolBarListener);
 	}

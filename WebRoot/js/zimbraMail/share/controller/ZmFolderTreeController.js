@@ -391,8 +391,8 @@ function(ev) {
 						action |= actionData[i].getDefaultDndAction();
 				}
 				plusDiv = actionData.length == 1
-					? ev.dndIcon.firstChild.nextSibling
-					: ev.dndIcon.firstChild.nextSibling.nextSibling;
+					? ev.dndProxy.firstChild.nextSibling
+					: ev.dndProxy.firstChild.nextSibling.nextSibling;
 
 				if (action && plusDiv) {
 					// TODO - what if action is ZmItem.DND_ACTION_BOTH ??

@@ -31,7 +31,7 @@
 */
 ZmCurrentAppToolBar = function(parent, tabStyle) {
 
-	DwtToolBar.call(this, parent, null, Dwt.ABSOLUTE_STYLE);
+	DwtToolBar.call(this, parent, "ZToolbar ZmCurrentAppToolBar", Dwt.ABSOLUTE_STYLE);
 
 	if (!tabStyle) {
 		this._currentAppLabel = new DwtLabel(this, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "currentAppLabel");
@@ -47,7 +47,7 @@ ZmCurrentAppToolBar = function(parent, tabStyle) {
 		this._viewLabel.setText(ZmMsg.view + ":");
 	}
 
-	this._viewButton = new DwtButton(this, null, "DwtToolbarButton");
+	this._viewButton = new DwtToolBarButton(this);
 	if (this._currentAppLabel) {
 		this._viewButton.setText(ZmMsg.view);
 		this._viewButton.setToolTipContent(ZmMsg.view);

@@ -23,46 +23,59 @@
  * ***** END LICENSE BLOCK *****
  */
 .TextSpellChecker { /* try to be as close as possible to the textarea */
-	background-color: #f4f4f4;
 	position: relative;
-	border: 1px solid #000;
-	padding: 2px 1px;
+	@TextArea@
+	@TextArea-normal@
 }
 
 .SpellCheckInputField {
-	border: 1px solid #c00;
-	background-color: #fff;
-	padding: 1px;
-	font: 10pt monospace;
 	position: absolute;
+	@InputField@
+	@FontFamily-fixed@
+	padding: 1px;
 }
 
 .SpellCheckModeDiv {
-	/*
-  margin-right: 2px;
-  font-weight: bold;
-  border: 1px solid #aaa;
-  border-bottom: none;
-  padding: 5px 10px;
-  background-color: #ff8;
-  */
-	cursor: pointer;
-	background-color: #FFFFCC;
-	padding: 6px;
-	font-size: 10pt;
-	border: 1px solid #777777;
+	@WarningContainer@
+	@WarningText@
+	@BottomSeparator@
+	@PanelPadding@
 }
 
 .SpellCheckLink {
-	color: blue; 
-	text-decoration: underline; 
+	@Anchor-hover@
 	cursor: pointer; 
 }
 
-.SpellCheckModeDiv a:link, .SpellCheckModeDiv a:visited { color: #00c; }
-.TextSpellChecker, .TextSpellChecker * { font: 10pt monospace; }
+.SpellCheckModeDiv a:link, 
+.SpellCheckModeDiv a:visited { 
+	@Anchor@ 
+}
 
-.ZM-SPELLCHECK-MISSPELLED { border-bottom: 1px dashed #f88; background: #fc8; cursor: help; }
-.ZM-SPELLCHECK-MISSPELLED2 { border-bottom: 1px dashed red; background: #ff0; z-index: 10; cursor: help; }
-.ZM-SPELLCHECK-FIXED { background: #cfa; border-bottom: 1px dashed green; cursor: help; }
-.ZM-SPELLCHECK-INPROGRESS { background: #caf; cursor: help; }
+.TextSpellChecker, 
+.TextSpellChecker * { 
+	@FontFamily-fixed@
+}
+
+.ZM-SPELLCHECK-MISSPELLED { 
+	border-bottom: 1px dashed; 
+	@WarningContainer@
+	cursor: help; 
+}
+/* USE??? */
+.ZM-SPELLCHECK-MISSPELLED2 { 
+	border-bottom: 1px dashed; 
+	@CriticalContainer@
+	z-index: 10; 
+	cursor: help; 
+}
+.ZM-SPELLCHECK-FIXED { 
+	border-bottom: 1px dashed; 
+	@InfoContainer@
+	cursor: help; 
+}
+/* USE??? */
+.ZM-SPELLCHECK-INPROGRESS { 
+	background: #caf; 
+	cursor: help; 
+}

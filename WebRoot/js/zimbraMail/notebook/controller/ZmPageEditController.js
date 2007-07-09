@@ -409,10 +409,10 @@ function(ev) {
 	}
 };
 ZmPageEditController.prototype.toggleSpellCheckButton =
-function(toggled) {
+function(selected) {
 	var toolbar = this._toolbar[this._currentView];
 	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
-	spellCheckButton.setToggled((toggled || false));
+	spellCheckButton.setSelected((selected || false));
 };
 
 ZmPageEditController.prototype._formatListener = function(ev) {

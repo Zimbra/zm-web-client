@@ -167,7 +167,7 @@ ZmContactAlphabetBar = function(parent, appCtxt, className) {
 	this._createHtml();
 
 	this._all = this._current = document.getElementById(this._alphabetBarId).rows[0].cells[0];
-	this.setToggled(this._all, true);
+	this.setSelected(this._all, true);
 	this._enabled = true;
 };
 
@@ -198,9 +198,9 @@ ZmContactAlphabetBar.prototype.reset =
 function(useCell) {
 	var cell = useCell || this._all;
 
-	this.setToggled(this._current, false);
+	this.setSelected(this._current, false);
 	this._current = cell;
-	this.setToggled(cell, true);
+	this.setSelected(cell, true);
 };
 
 ZmContactAlphabetBar.prototype.setButtonByIndex =
@@ -217,10 +217,10 @@ function() {
 	return this._current;
 };
 
-ZmContactAlphabetBar.prototype.setToggled =
-function(cell, toggle) {
-	cell.className = toggle
-		? "DwtButton-triggered AlphabetBarCell"
+ZmContactAlphabetBar.prototype.setSelected =
+function(cell, selected) {
+	cell.className = selected
+		? "DwtButton-active AlphabetBarCell"
 		: "DwtButton AlphabetBarCell";
 };
 
@@ -283,7 +283,7 @@ function(cell) {
 	var appCtxt = window._zimbraMail._appCtxt;
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
-		cell.className = "DwtButton-activated AlphabetBarCell";
+		cell.className = "DwtButton-hover AlphabetBarCell";
 	}
 };
 
@@ -293,6 +293,6 @@ function(cell) {
 	var appCtxt = window._zimbraMail._appCtxt;
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
-		alphabetBar.setToggled(cell, cell == alphabetBar.getCurrent());
+		alphabetBar.setSelected(cell, cell == alphabetBar.getCurrent());
 	}
 };

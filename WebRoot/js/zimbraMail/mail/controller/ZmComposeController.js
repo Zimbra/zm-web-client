@@ -148,9 +148,9 @@ function(params) {
 };
 
 ZmComposeController.prototype.toggleSpellCheckButton =
-function(toggled) {
+function(selected) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
-	spellCheckButton.setToggled((toggled || false));
+	spellCheckButton.setSelected((selected || false));
 };
 
 /**
@@ -575,7 +575,7 @@ function() {
 	this._optionsMenu[ZmOperation.FORWARD_INLINE] = this._optionsMenu[ZmOperation.FORWARD_ATT];
 	this._optionsMenu[ZmOperation.SHARE] = this._optionsMenu[ZmOperation.NEW_MESSAGE];
 
-	// change default button style to toggle for spell check button
+	// change default button style to select for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 

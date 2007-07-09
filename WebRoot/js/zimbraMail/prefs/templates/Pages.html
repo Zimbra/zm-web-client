@@ -9,18 +9,6 @@ app will iterate the identifier list of known components. If there is a
 container element with that identifer, the appropriate control is created
 and the container element is replaced with that control.
 
-A list of the known components appears at the bottom of this file. Each
-component is written as:
-
-  component name { type : value* } // comment
-
-In order to place the component in a page template, you must join the
-string "${id}" and all parts of the component name with an underscore.
-use this as the container element id. For example, to include the
-component "search include junk", the container element would look like
-this:
-
-  <div id='${id}_search_include_junk'></div>
 -->
 
 <template id='General'>
@@ -31,11 +19,11 @@ this:
 	</table>
   </div>
 
-  <table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+  <table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'><$=ZmMsg.loginOptions$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.loginOptions$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr><td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
@@ -88,11 +76,11 @@ this:
 
 	<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'><$=ZmMsg.searches$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.searches$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr><td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
@@ -140,11 +128,11 @@ this:
   </div>
 
 	<!-- TODO: Is this a customer specific feature?
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Schedule Email Deletion</td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'>Schedule Email Deletion</td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain ZOptionsSectionMainTable' colspan=3>
@@ -213,11 +201,11 @@ this:
 	</table>
 	-->
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'><$=ZmMsg.displayMessages$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.displayMessages$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -295,11 +283,11 @@ this:
 	</table>
 
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'><$=ZmMsg.messagesReceiving$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.messagesReceiving$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -382,12 +370,12 @@ this:
 	</table>
   </div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<!-- TODO: What about intersection with notebook page compose? -->
-			<td class='ZOptionsHeader'><$=ZmMsg.composingMessages$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.composingMessages$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -544,11 +532,11 @@ This section is used for reply options on an identity.
 	</table>
   </div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Signatures</td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'>Signatures</td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -566,11 +554,11 @@ This section is used for reply options on an identity.
 		</tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Using Signatures</td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'>Using Signatures</td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -608,11 +596,11 @@ This section is used for reply options on an identity.
 	</table>
   </div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Phone numbers</td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'>Phone numbers</td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionTable' colspan=3>
@@ -621,11 +609,11 @@ This section is used for reply options on an identity.
 		</tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Call Manager</td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'>Call Manager</td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionTable' colspan=3>
@@ -649,11 +637,11 @@ This section is used for reply options on an identity.
 	</table>
   </div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'><$=ZmMsg.options$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.options$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -704,11 +692,11 @@ This section is used for reply options on an identity.
 	</table>
 
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'><$=ZmMsg.importExport$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.importExport$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -762,11 +750,11 @@ This section is used for reply options on an identity.
 </template>
 
 <template id='Accounts'>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Accounts</td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'>Accounts</td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMainTable' colspan=3>
@@ -783,11 +771,11 @@ This section is used for reply options on an identity.
 		</tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Edit Account</td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'>Edit Account</td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -874,11 +862,11 @@ This section is used for reply options on an identity.
 </template>
 
 <template id='MailFilters'>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'><$=ZmMsg.filterRules$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.filterRules$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -901,11 +889,11 @@ This section is used for reply options on an identity.
 	</table>
   </div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'><$=ZmMsg.general$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.general$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -950,11 +938,11 @@ This section is used for reply options on an identity.
 		</tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'><$=ZmMsg.apptCreating$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.apptCreating$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -982,11 +970,11 @@ This section is used for reply options on an identity.
 	</table>
 
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'><$=ZmMsg.importExport$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.importExport$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -1028,11 +1016,11 @@ This section is used for reply options on an identity.
 	</table>
   </div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'><$=ZmMsg.options$></td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
+			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.options$></td>
+			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
@@ -1094,11 +1082,11 @@ This section is used for reply options on an identity.
 </template>
 
 <template id='Shortcuts'>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr class='ZOptionsHeaderRow'>
-				<td class='ZOptionsHeaderL'>&nbsp;</td>
-				<td class='ZOptionsHeader'><$=ZmMsg.general$></td>
-				<td class='ZOptionsHeaderR'>&nbsp;</td>
+				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+				<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.general$></td>
+				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 			</tr>
 			<tr>
 				<td class='ZOptionsSectionMain' colspan=3>

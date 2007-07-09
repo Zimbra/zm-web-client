@@ -23,10 +23,24 @@
  * ***** END LICENSE BLOCK *****
  */
 
+
+
+
+/****
+
+	TODO 
+		* Do some sort of reset, eg table cell spacing, etc
+		* set default font color on outside so it percolates in to all elements (?)
+		* fix box models ?
+
+ ****/
+
+
 /* 
 * HTML elements - use for global declarations
 */
 
+/* TODO: Unify these two -- for font/size/style we shouldn't have to segregate password|text|etc */
 P, TH, TD, DIV, SELECT, INPUT[type=text], INPUT[type=password], INPUT[type=file], TEXTAREA, BUTTON {
 	@FontFamily-default@
 	@FontSize-normal@
@@ -37,15 +51,6 @@ P, TH, TD, DIV, SELECT, INPUT, TEXTAREA, BUTTON {
 	@FontSize-normal@
 }
 #ENDIF
-
-INPUT[readonly] {
-	@InputField-disabled@
-	cursor: text;
-}
-TEXTAREA[readonly] {
-	@TextArea-disabled@
-	cursor: text;
-}
 
 HTML {
 	@FullSize@
@@ -69,17 +74,35 @@ LEGEND {
 	@FieldSetLabel@
 }
 
+
+/****	
+ 		Generic field borders/styles
+ ****/
+INPUT[readonly] {
+	@InputField-disabled@
+}
+TEXTAREA {
+	@TextArea@ @TextArea-normal@
+}
+TEXTAREA[readonly] {
+	@TextArea-disabled@
+}
+
+
+/* TODO: figure out what we need to do for IE/etc to set the same input styles */
 #IFDEF GECKO
-	/* set for 'text' and 'password' fields explicitly so checkboxes don't get borders */
+	/* set for 'text' and 'password' fields explicitly so checkboxes and radio buttons don't get borders */
 	input[type="text"], 
 	input[type="password"] {
 		@InputField@
+		@InputField-normal@
 	}
 	INPUT[disabled] {
 		@InputField-disabled@
 	}
 	textarea {
 		@TextArea@
+		@TextArea-normal@
 	}
 	
 	input[type="checkbox"] {
@@ -87,6 +110,9 @@ LEGEND {
 	}
 #ENDIF
 
+
+
+/*** Syntactic sugar ***/
 .CompactTable {
 	@CompactTable@
 }
@@ -172,6 +198,7 @@ ZmSectionLabel {
 /* ??? USED */
 .BigHeaderBg {
 	@WidgetHeaderContainer@
+	@WidgetHeaderContainer-normal@
 	@WidgetHeaderSize-big@
 }
 
@@ -244,10 +271,9 @@ ZmSectionLabel {
 /* ??? MARGINS, USE */
 .vertSep {
 	@LeftSeparator@
-	margin-left:1px;
-	padding-right:1px;
-	width:3;
-	height: 16;
+	margin-left:3px;
+	padding-right:3px;
+	height: 20px;
 }
 
 /* Vertical space */
@@ -270,7 +296,7 @@ DIV.vSpace {
 }
 
 .AttLink:active {
-	@Anchor-clicked@
+	@Anchor-active@
 }
 
 /*  ??? WHY ARE THESE DIFFERENT ? */
@@ -287,33 +313,33 @@ DIV.vSpace {
 * Drag N Drop
 */
 
-.DndIcon {
+.DragProxy {
 	@DndOpacity@
 }
 
-.DropNotAllowed {
+.notDroppable {
 	@DndNotAllowedContainer@
 	@DndOpacity@
 }
 
 /* bug fix# 3235 */
-.DropNotAllowed-linux {
+.notDroppable-linux {
 	@DndNotAllowedContainer@
 }
 
-.DropAllowed {
+.droppable {
 	@DndAllowedContainer@
 	@DndOpacity@
 }
 
 /* bug fix# 3235 */
-.DropAllowed-linux {
+.droppable-linux {
 	@DndAllowedContainer@
 }
 
 
 /* Used by the text laid over the multi-select icon to show number of items selected */
-.DndIconTextLabel {
+.DragProxyTextLabel {
 	font-weight: bold;
 	color: white;
 }
@@ -379,59 +405,82 @@ DIV.vSpace {
 /* 
  *  Row display and highlighting in list views
  *	NOTE: these should probably be more specific names!
+ *
+ *	TODO: Have DwtListView leave the 'row' class along with the 'row-selected' etc classes.
+ *			This will allow us to simplify a lot of the below
+ *
+ *	TODO: Disambiguate all of the below!!!
+ *
  */
-.Row, .Row-selected, .Row-matched, .Row-matched-drag, 
-.Row-drag, .Row-selected-drag, .Row-selected-right, .Row-selected-disabled {
+ 
+ /* generic for all row types */
+.Row {
 	@ListItemContainer@
-#IFDEF GECKO
-	-moz-user-select: none;
-#ENDIF
+	@DisableSelection@
 }
 
-.selected, .Row-selected, .Row-selected-drag, .Row-selected-disabled { 
-	@ListItemContainer-selected@
-}
-
-.Row-matched, .Row-matched-dnd { 
-	@ListItemContainer-matched@
-}
-
-.Row-matched td, .Row-matched-dnd td{ 
-	@ListItemText-matched@
-}
-
-.Row-focused {
-	@ListItemContainer-focused@
-}
-
-
-/* ??? what is this used for ?*/
-.Row-selected-right, .Row-drag, .Row-matched-drag { 
-	@ListItemContainer-rightClicked@
-}
-
-.Row-selected table, .Row-selected-drag table, .Row-drag table, 
-.Row-matched-drag table, .Row-selected-right table { 
-	@ListItemText@
-}
-
-.Row table, .Row-selected table, .Row-matched table, .Row-matched-drag table, .Row-dnd table, 
-.Row-selected-drag table, .Row-drag table, .Row-selected-right table {
+.Row TABLE {
 	table-layout: fixed;
+	height:100%;
 }
 
-.Row, .Row-selected, .Row-selected-disabled, .Row-dnd, 
-.Row td, .Row div, .Row-selected td, .Row-matched td, .Row-dnd td, .Row-selected-drag td, 
-.Row-drag td, .Row-matched-drag td, .Row-selected-right td {
+.Row TD {
 	@ListItemText@
 }
+
+/* list row styles (bgs & border) */
+
+.Row						{	@ListItemContainer-normal@			}
+
+.RowOdd						{	@ListItemContainer-alt@				}
+
+.selected, 	/* TODO: used? */
+.Row-selected, 
+.Row-selected-dragProxy, 
+.Row-selected-disabled 		{	@ListItemContainer-selected@		}
+
+.Row-matched, 
+.Row-matched-dragProxy 		{ 	@ListItemContainer-matched@			}
+
+.Row-focused 				{	@ListItemContainer-focused@			}
+
+.Row-selected-actioned 		{	@ListItemContainer-actioned@	}
+
+.Row-dragProxy, 
+.Row-matched-dragProxy 		{	@ListItemContainer-dragProxy@	}
+
+
+/* list row td's (eg: text) */
+
+.Row td						{	@ListItemText-normal@				}
+
+.RowOdd td					{	@ListItemText-alt@					}
+
+.selected td,	/* TODO: used? */
+
+.Row-selected td,
+.Row-selected-dragProxy td,
+.Row-selected-disabled td	{	@ListItemText-selected@				}
+
+.Row-matched td			 	{ 	@ListItemText-matched@				}
+	
+.Row-focused td 			{	@ListItemText-focused@				}
+
+.Row-selected-right td	 	{	@ListItemText-actioned@				}
+
+.Row-dragProxy td, 
+.Row-matched-dragProxy td	{	@ListItemText-dragProxy@			}
+
+
+
+/*** TODO:  clean this the hell up ***/
 
 .Row td.Flag, .Row td.Attach, .Row td.Tag, .Row td.Icon, .Row td.Count,
 .Row-selected td.Flag, .Row-selected td.Attach, .Row-selected td.Tag, .Row-selected td.Icon, .Row-selected td.Count,
-.Row-dnd td.Flag, .Row-dnd td.Attach, .Row-dnd td.Tag, .Row-dnd td.Icon, .Row-dnd td.Count,
-.Row-selected-drag td.Flag, .Row-selected-drag td.Attach, .Row-selected-drag td.Tag, .Row-selected-drag td.Icon, .Row-selected-drag td.Count,
-.Row-matched-drag td.Flag, .Row-matched-drag td.Attach, .Row-matched-drag td.Tag, .Row-matched-drag td.Icon, .Row-matched-drag td.Count,
-.Row-drag td.Flag, .Row-drag td.Attach,.Row-drag td.Tag, .Row-drag td.Icon, .Row-drag td.Count {
+.Row-dragProxy td.Flag, .Row-dragProxy td.Attach, .Row-dragProxy td.Tag, .Row-dragProxy td.Icon, .Row-dragProxy td.Count,
+.Row-selected-dragProxy td.Flag, .Row-selected-dragProxy td.Attach, .Row-selected-dragProxy td.Tag, .Row-selected-dragProxy td.Icon, .Row-selected-dragProxy td.Count,
+.Row-matched-dragProxy td.Flag, .Row-matched-dragProxy td.Attach, .Row-matched-dragProxy td.Tag, .Row-matched-dragProxy td.Icon, .Row-matched-dragProxy td.Count,
+.Row-dragProxy td.Flag, .Row-dragProxy td.Attach,.Row-dragProxy td.Tag, .Row-dragProxy td.Icon, .Row-dragProxy td.Count {
 	text-align: center;
 }
 
@@ -464,7 +513,7 @@ DIV.vSpace {
 
 .dialogOverview {
 	@TreeContainer@
-	@InsetBorder@
+	@NormalInsetBorder@
 	@BoxPadding@
 	height: 200px;		/* ??? SIZE */
 }
@@ -487,8 +536,9 @@ DIV.vSpace {
 	@TreeItemSpacing@
 }
 
-.overviewHeader-Text, .overviewHeader-actioned,
-.overviewHeader-DragOver {
+.overviewHeader-Text, 
+.overviewHeader-actioned,
+.overviewHeader-dragOver {
 	@TreeHeaderText@
 }
 

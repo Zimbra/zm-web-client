@@ -47,14 +47,14 @@ ZmSpreadSheetToolbars.prototype.construction = ZmSpreadSheetToolbars;
 
 // update the toolbar when a different cell was selected in the SpreadSheet widget
 ZmSpreadSheetToolbars.prototype._cellSelected = function(cell) {
-	this._buttons.bold.setToggled(cell.getStyleProp("fontWeight") == "bold");
-	this._buttons.italic.setToggled(cell.getStyleProp("fontStyle") == "italic");
-	this._buttons.underline.setToggled(cell.getStyleProp("textDecoration") == "underline");
-	this._buttons.strike.setToggled(cell.getStyleProp("textDecoration") == "line-through");
+	this._buttons.bold.setSelected(cell.getStyleProp("fontWeight") == "bold");
+	this._buttons.italic.setSelected(cell.getStyleProp("fontStyle") == "italic");
+	this._buttons.underline.setSelected(cell.getStyleProp("textDecoration") == "underline");
+	this._buttons.strike.setSelected(cell.getStyleProp("textDecoration") == "line-through");
 	var align = cell.getStyleProp("textAlign");
-	this._buttons.justifyLeft.setToggled(align == "left");
-	this._buttons.justifyCenter.setToggled(align == "center");
-	this._buttons.justifyRight.setToggled(align == "right");
+	this._buttons.justifyLeft.setSelected(align == "left");
+	this._buttons.justifyCenter.setSelected(align == "center");
+	this._buttons.justifyRight.setSelected(align == "right");
 	if (this._dataField)
 		this._dataField.setValue(cell.getEditValue());
 	this._buttons.typeSelect.setSelectedValue(cell.getType());
@@ -381,26 +381,26 @@ ZmSpreadSheetToolbars.prototype._on_buttonPress = function(ev) {
 		break;
 	    case "Strike":
 		this.applyStyle("textDecoration", btn.isToggled() ? "line-through" : "");
-		this._buttons.underline.setToggled(false);
+		this._buttons.underline.setSelected(false);
 		break;
 	    case "Underline":
 		this.applyStyle("textDecoration", btn.isToggled() ? "underline" : "");
-		this._buttons.strike.setToggled(false);
+		this._buttons.strike.setSelected(false);
 		break;
 	    case "JustifyLeft":
 		this.applyStyle("textAlign", btn.isToggled() ? "left" : "");
-		this._buttons.justifyCenter.setToggled(false);
-		this._buttons.justifyRight.setToggled(false);
+		this._buttons.justifyCenter.setSelected(false);
+		this._buttons.justifyRight.setSelected(false);
 		break;
 	    case "JustifyCenter":
 		this.applyStyle("textAlign", btn.isToggled() ? "center" : "");
-		this._buttons.justifyLeft.setToggled(false);
-		this._buttons.justifyRight.setToggled(false);
+		this._buttons.justifyLeft.setSelected(false);
+		this._buttons.justifyRight.setSelected(false);
 		break;
 	    case "JustifyRight":
 		this.applyStyle("textAlign", btn.isToggled() ? "right" : "");
-		this._buttons.justifyLeft.setToggled(false);
-		this._buttons.justifyCenter.setToggled(false);
+		this._buttons.justifyLeft.setSelected(false);
+		this._buttons.justifyCenter.setSelected(false);
 		break;
 
 		// Insert/remove rows/cols

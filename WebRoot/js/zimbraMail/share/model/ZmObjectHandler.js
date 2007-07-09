@@ -63,25 +63,25 @@ function(obj, context) {
 };
 
 // OVERRIDE if need be
-ZmObjectHandler.prototype.getActivatedClassName =
+ZmObjectHandler.prototype.getHoveredClassName =
 function(obj, context) {
 	var cname = this.getClassName(obj);
-	if (this._cachedClassNameForActivated !== cname) {
-		this._cachedClassNameForActivated = cname;
-		this._classNameActivated = cname + "-" + DwtCssStyle.ACTIVATED;
+	if (this._cachedClassNameForHovered !== cname) {
+		this._cachedClassNameForHovered = cname;
+		this._classNameHovered = cname + "-" + DwtCssStyle.HOVER;
 	}
-	return this._classNameActivated;
+	return this._classNameHovered;
 };
 
 // OVERRIDE if need be
-ZmObjectHandler.prototype.getTriggeredClassName =
+ZmObjectHandler.prototype.getActiveClassName =
 function(obj, context) {
 	var cname = this.getClassName(obj);
-	if (this._cachedClassNameForTriggered !== cname) {
-		this._cachedClassNameForTriggered = cname;
-		this._classNameTriggered = cname + "-" + DwtCssStyle.TRIGGERED;
+	if (this._cachedClassNameForActive !== cname) {
+		this._cachedClassNameForActive = cname;
+		this._classNameActive = cname + "-" + DwtCssStyle.ACTIVE;
 	}
-	return this._classNameTriggered;
+	return this._classNameActive;
 };
 
 ZmObjectHandler.prototype.findObject =

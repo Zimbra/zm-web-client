@@ -12,7 +12,7 @@ function BaseSkin(hints) {
         // skin regions
         skin:           { containers: "skin_outer" },
         quota:          { containers: [ "skin_td_quota_spacer", "skin_td_quota" ] },
-        searchBuilder:  { containers: [ "search_builder_outer", "skin_td_search_builder" ] },
+        searchBuilder:  { containers: [ "skin_container_search_builder_outer", "skin_td_search_builder" ] },
         topToolbar:     { containers: [ "skin_tr_top_toolbar", "!skin_tr_top_toolbar_shim" ] },
         bottomToolbar:  { containers: [ "skin_tr_bottom_toolbar", "!skin_tr_bottom_toolbar_shim" ] },
         treeFooter:     { containers: [ "skin_tr_tree_footer_sep", "skin_tr_tree_footer"] },

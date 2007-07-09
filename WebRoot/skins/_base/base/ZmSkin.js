@@ -1,10 +1,10 @@
 function ZmSkin(hints) {
-    this.hints = ZmSkin.merge(hints, {
+    this.hints = ZmSkin.merge({
         // info
         name:       "@SkinName@",
         version:    "@SkinVersion@",
         logo:       { url: "@LogoURL@" }
-    });
+    }, hints);
 }
 
 //

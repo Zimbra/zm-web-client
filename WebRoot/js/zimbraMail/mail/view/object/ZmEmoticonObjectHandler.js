@@ -103,7 +103,7 @@ function(smiley, context) {
 	return "<b>" + context.sd.tooltip + "</b>";
 };
 
-ZmEmoticonObjectHandler.prototype.getActivatedClassName =
+ZmEmoticonObjectHandler.prototype.getHoveredClassName =
 function(object, context) {
     return this._className;
 }

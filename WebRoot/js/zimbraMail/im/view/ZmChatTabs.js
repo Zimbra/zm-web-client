@@ -75,7 +75,7 @@ ZmChatTabs.prototype.updateStickyButtons = function() {
 	var sticky = !!win._sticky;
 	for (var i = this.__tabs.size(); --i >= 0;) {
 		var chatWidget = this.__tabs.get(i);
-		chatWidget._sticky.setToggled(sticky);
+		chatWidget._sticky.setSelected(sticky);
 	}
 };
 
@@ -231,7 +231,7 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 			this.parent.getWindowManager().takeOver(false);
 		}
 	}));
-	label._getDnDIcon = function() {
+	label._getDragProxy = function() {
 		var icon = document.createElement("div");
 		icon.style.position = "absolute";
 		icon.appendChild(label.getHtmlElement().cloneNode(true));

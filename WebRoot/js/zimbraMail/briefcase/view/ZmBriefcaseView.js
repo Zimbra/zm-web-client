@@ -119,7 +119,7 @@ function(item, params) {
 	div2.appendChild(span);
 	div.appendChild(div2);
 	
-	if (params.isDnDIcon) {
+	if (params.isDragProxy) {
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
 	}
 	
