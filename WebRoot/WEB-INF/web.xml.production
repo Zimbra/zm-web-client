@@ -271,6 +271,7 @@
           <url-pattern>/h/repeat</url-pattern>
           <url-pattern>/h/search</url-pattern>
           <url-pattern>/h/test</url-pattern>
+          <url-pattern>/m/login</url-pattern>
           <url-pattern>/m/main</url-pattern>
           <url-pattern>/m/mosearch</url-pattern>
           <url-pattern>/m/mocalendar</url-pattern>
