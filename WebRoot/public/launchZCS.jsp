@@ -241,7 +241,9 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 	    public String getPathInfo() { return "/skin.html"; }
 	    public String getRequestURI() { return getServletPath() + getPathInfo(); }
 	    public String getParameter(String name) {
-	    	return name.equals("skin") ? this.skin : super.getParameter(name);
+	    	if (name.equals("skin")) return this.skin;
+			if (name.equals("client")) return "advanced";
+			return super.getParameter(name);
 	    }
 	}
 %>
