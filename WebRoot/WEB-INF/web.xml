@@ -129,6 +129,11 @@
 
     <filter-mapping>
         <filter-name>GZIPFilter</filter-name>
+        <url-pattern>/m/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>GZIPFilter</filter-name>
         <url-pattern>/yui/*</url-pattern>
     </filter-mapping>
 
