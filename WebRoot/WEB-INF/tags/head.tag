@@ -18,13 +18,13 @@
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <!-- skin is ${skin} -->
     <style type="text/css">
-       @import url( "<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" );
+       @import url( "<c:url value='/css/common,login,${skin}_imgs,skin.css?client=standard&skin=${skin}&v=${version}'/>" );
     </style>
     <link rel="ICON" type="image/gif" href="<c:url value='/img/loRes/logo/favicon.gif'/>">
     <link rel="SHORTCUT ICON" href="<c:url value='/img/loRes/logo/favicon.ico'/>">
     <jsp:doBody/>
     <script type="text/javascript">
-        <!--
+        
         function checkAll(cb, allbox) {
             if (cb.length)
                 for (i = 0; i < cb.length; i++)
@@ -32,6 +32,10 @@
             else
                 cb.checked = allbox.checked;
         }
-        // -->
+        
 </script>
 </head>
+<c:import url="/h/${skin}"/>
+<c:if test="${empty iconPath}">
+  <c:set value="/images/" var="iconPath" scope="request"/>
+</c:if>

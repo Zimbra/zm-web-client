@@ -50,25 +50,6 @@
             </c:if>
         </form>
     </td>
-    <td>
-        <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
-        <table cellpadding=2 cellspacing=0 width=100%>
-            <tr>
-                <td align=center>
-                    <b>${fn:escapeXml(mailbox.name)}</b>
-                </td>
-            </tr>
-            <tr>
-                <td align=center>
-                    <fmt:message var="unlimited" key="unlimited"/>
-                    <fmt:message key="quotaUsage">
-                        <fmt:param value="${zm:displaySizeFractions(mailbox.size,2)}"/>
-                        <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
-                    </fmt:message>
-                </td>
-            </tr>
-        </table>
-    </td>
 </tr>
 </table>
 
