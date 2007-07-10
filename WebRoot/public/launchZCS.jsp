@@ -58,7 +58,12 @@
 	} else if (authResult != null) {
 		skin = authResult.getPrefs().get("zimbraPrefSkin").get(0);
 	}
-
+    if (authResult != null) {
+        java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
+        if (localePref != null && localePref.size() > 0) {
+            request.setAttribute("localeId", localePref.get(0));
+        }
+    }
 	String isDev = (String) request.getParameter("dev");
 	if (isDev != null) {
 		request.setAttribute("mode", "mjsf");
@@ -91,6 +96,7 @@
 	if (offlineMode == null) {
 		offlineMode = application.getInitParameter("offlineMode");
 	}
+
 %>
 
 		var settings = {

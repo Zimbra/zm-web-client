@@ -1,6 +1,4 @@
 <%@ page session="false" %>
-<%@ page import="com.zimbra.cs.zclient.ZAuthResult"%>
-<%@ page import="java.util.List" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Version: ZPL 1.2
@@ -49,21 +47,15 @@ Contributor(s):
       ext = "";
    }
 
-    ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
     String localeQs = "";
-    if (authResult != null) {
-        java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
-        if (localePref != null && localePref.size() > 0) {
-            String localeId = localePref.get(0);
-            if (localeId != null) {
-                int index = localeId.indexOf("_");
-                if (index == -1) {
-                    localeQs = "&language=" + localeId;
-                } else {
-                    localeQs = "&language=" + localeId.substring(0, index) +
-                               "&country=" + localeId.substring(localeId.length() - 2);
-                }
-            }
+    String localeId = (String) request.getAttribute("localeId");
+    if (localeId != null) {
+        int index = localeId.indexOf("_");
+        if (index == -1) {
+            localeQs = "&language=" + localeId;
+        } else {
+            localeQs = "&language=" + localeId.substring(0, index) +
+                       "&country=" + localeId.substring(localeId.length() - 2);
         }
     }
 
