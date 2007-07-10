@@ -1,4 +1,6 @@
 <%@ page session="false" %>
+<%@ page import="com.zimbra.cs.zclient.ZAuthResult"%>
+<%@ page import="java.util.List" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Version: ZPL 1.2
@@ -23,20 +25,20 @@ Contributor(s):
 
 ***** END LICENSE BLOCK *****
 -->
-<% 
-	String contextPath = request.getContextPath();
-	if(contextPath.equals("/")) {
-		contextPath = "";
-	}
+<%
+    String contextPath = request.getContextPath();
+    if(contextPath.equals("/")) {
+        contextPath = "";
+    }
 
-	String isDev = (String) request.getParameter("dev");
-	if (isDev != null) {
-		request.setAttribute("mode", "mjsf");
-	}
+    String isDev = (String) request.getParameter("dev");
+    if (isDev != null) {
+        request.setAttribute("mode", "mjsf");
+    }
 
-	String mode = (String) request.getAttribute("mode");
-	boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
-	boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
+    String mode = (String) request.getAttribute("mode");
+    boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+    boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
@@ -46,4 +48,24 @@ Contributor(s):
    if (ext == null){
       ext = "";
    }
-%><script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg,ZmMsg.js<%= ext %>?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
+
+    ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
+    String localeQs = "";
+    if (authResult != null) {
+        java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
+        if (localePref != null && localePref.size() > 0) {
+            String localeId = localePref.get(0);
+            if (localeId != null) {
+                int index = localeId.indexOf("_");
+                if (index == -1) {
+                    localeQs = "&language=" + localeId;
+                } else {
+                    localeQs = "&language=" + localeId.substring(0, index) +
+                               "&country=" + localeId.substring(localeId.length() - 2);
+                }
+            }
+        }
+    }
+
+%><script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg,ZmMsg.js<%= ext %>?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%= localeQs %>"></script>
+ 

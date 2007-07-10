@@ -57,6 +57,7 @@ ZmZimbraMail = function(appCtxt, params) {
 	this._settings.getSetting(ZmSetting.QUOTA_USED).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.POLLING_INTERVAL).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.SKIN_NAME).addChangeListener(listener);
+	this._settings.getSetting(ZmSetting.LOCALE_NAME).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.SHORTCUTS).addChangeListener(listener);
 
 	appCtxt.setAppController(this);
@@ -1270,6 +1271,13 @@ function(ev) {
 		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this, [skin]);
 		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
+	} else if (id == ZmSetting.LOCALE_NAME) {
+		var cd = this._confirmDialog = this._appCtxt.getYesNoMsgDialog();
+		cd.reset();
+		var skin = ev.source.getValue();
+		cd.registerCallback(DwtDialog.YES_BUTTON, this._newLocaleYesCallback, this);
+		cd.setMessage(ZmMsg.localeChangeRestart, DwtMessageDialog.WARNING_STYLE);
+		cd.popup();
 	} else if (id == ZmSetting.SHORTCUTS) {
 		this._appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap(this._appCtxt));
 		this._settings._loadShortcuts();
@@ -1284,6 +1292,16 @@ function(skin) {
 	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
 					  "" : ":" + location.port) + location.pathname + qs;
 	DBG.println(AjxDebug.DBG1, "skin change, redirect to: " + locationStr);
+    ZmZimbraMail.sendRedirect(locationStr); // redirect to self to force reload
+};
+
+ZmZimbraMail.prototype._newLocaleYesCallback =
+function(skin) {
+	this._confirmDialog.popdown();
+    window.onbeforeunload = null;
+	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
+					  "" : ":" + location.port) + location.pathname + location.search ;
+	DBG.println(AjxDebug.DBG1, "locale change, redirect to: " + locationStr);
     ZmZimbraMail.sendRedirect(locationStr); // redirect to self to force reload
 };
 

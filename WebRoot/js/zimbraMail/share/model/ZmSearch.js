@@ -324,7 +324,7 @@ function(soapDoc) {
 
 	// bug 5771: add timezone and locale info
 	ZmTimezone.set(soapDoc, AjxTimezone.DEFAULT, null);
-	soapDoc.set("locale", AjxEnv.DEFAULT_LOCALE, null);
+	soapDoc.set("locale", this._appCtxt.get(ZmSetting.LOCALE_NAME), null);
 
 	if (this.lastId != null && this.lastSortVal) {
 		// cursor is used for paginated searches

@@ -27,7 +27,7 @@
         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
             <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
                       newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-                      prefs="zimbraPrefSkin,zimbraPrefClientType"
+                      prefs="zimbraPrefSkin,zimbraPrefClientType,zimbraPrefLocale"
                       attrs="zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled"
                     />
             <%-- continue on at not empty authResult test --%>
@@ -39,7 +39,7 @@
 	            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
 	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 	                      rememberme="${param.zrememberme == '1'}"
-	                      prefs="zimbraPrefSkin,zimbraPrefClientType"
+	                      prefs="zimbraPrefSkin,zimbraPrefClientType,zimbraPrefLocale"
 	                      attrs="zimbraFeatureCalendarEnabled,zimbraFeatureContactsEnabled,zimbraFeatureIMEnabled,zimbraFeatureNotebookEnabled,zimbraFeatureOptionsEnabled,zimbraFeaturePortalEnabled,zimbraFeatureTasksEnabled,zimbraFeatureVoiceEnabled,zimbraFeatureBriefcasesEnabled"
 	                    />
 	            <%-- continue on at not empty authResult test --%>

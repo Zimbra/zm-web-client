@@ -301,7 +301,7 @@ function(callback) {
 	var skinCallback = new AjxCallback(this, this._handleResponseLoadAvailableSkins);
 	command.addNewRequestParams(skinDoc, skinCallback);
 
-	var localeDoc = AjxSoapDoc.create("GetAllLocalesRequest", "urn:zimbraAccount");
+	var localeDoc = AjxSoapDoc.create("GetAvailableLocalesRequest", "urn:zimbraAccount");
 	var localeCallback = new AjxCallback(this, this._handleResponseGetAllLocales);
 	command.addNewRequestParams(localeDoc, localeCallback);
 
@@ -322,7 +322,7 @@ function(result) {
 
 ZmSettings.prototype._handleResponseGetAllLocales =
 function(response) {
-	var locales = response._data.GetAllLocalesResponse.locale;
+	var locales = response._data.GetAvailableLocalesResponse.locale;
 	if (locales && locales.length) {
 		var setting = this._settings[ZmSetting.LOCALES];
 		for (var i = 0, count = locales.length; i < count; i++) {

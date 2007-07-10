@@ -50,6 +50,7 @@ ZmPref.TYPE_IMPORT		= "IMPORT";
 ZmPref.TYPE_EXPORT		= "EXPORT";
 ZmPref.TYPE_SHORTCUTS	= "SHORTCUTS";
 ZmPref.TYPE_CUSTOM		= "CUSTOM";
+ZmPref.TYPE_LOCALES     = "LOCALES";
 
 ZmPref.ORIENT_VERTICAL      = "vertical";
 ZmPref.ORIENT_HORIZONTAL    = "horizontal";

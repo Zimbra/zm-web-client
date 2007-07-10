@@ -265,11 +265,11 @@ function() {
 
 	ZmPref.registerPref("LOCALE_NAME", {
 		displayName:		ZmMsg.selectLanguage,
-		displayContainer:	ZmPref.TYPE_SELECT,
+		displayContainer:	ZmPref.TYPE_LOCALES,
 		images:				[],
 		displayOptions:		[],
-		options:			[],
-		loadFunction:		ZmPref.loadLocales,
+        options:			[],
+        loadFunction:		ZmPref.loadLocales,
 		displaySeparator:	true,
 		precondition:		ZmSetting.LOCALE_CHANGE_ENABLED
 	});

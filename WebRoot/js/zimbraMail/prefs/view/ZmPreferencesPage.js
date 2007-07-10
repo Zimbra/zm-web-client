@@ -49,6 +49,12 @@ ZmPreferencesPage = function(parent, appCtxt, section, controller) {
 	this._dwtObjects = {};
 	this._rendered = false;
 	this._hasRendered = false;
+
+    // Map of ids to locales.
+    this._localeMap = null;
+
+    // Map whose keys are language ids, and whose values are objects with name and array of locale.
+    this._languageMap = null;
 };
 
 ZmPreferencesPage.prototype = new DwtTabViewPage;
@@ -185,6 +191,12 @@ function() {
 			continue;
 		}
 
+        if (type == ZmPref.TYPE_LOCALES) {
+            var control = this._setupLocales(id, setup, value);
+            control.replaceElement(elem);
+            continue;
+        }
+
 		var html = [];
 		var j = 0;
 		var buttonId;
@@ -196,8 +208,8 @@ function() {
 			html[j++] = "wrap='on' style='width:402' rows='4' cols='60'>";
 			html[j++] = value;
 			html[j++] = "</textarea>";
-		}
-		else if (type == ZmPref.TYPE_PASSWORD ||
+        }
+        else if (type == ZmPref.TYPE_PASSWORD ||
 				 type == ZmPref.TYPE_IMPORT ||
 				 type == ZmPref.TYPE_EXPORT) {
 			buttonId = Dwt.getNextId();
@@ -252,7 +264,7 @@ function(id) {
 	var type = setup ? setup.displayContainer : null;
 	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_CHECKBOX ||
 		type == ZmPref.TYPE_RADIO_GROUP ||
-		type == ZmPref.TYPE_INPUT) {
+		type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_LOCALES) {
 		var object = this.getFormObject(id);
 		if (object) {
 			if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
@@ -263,6 +275,9 @@ function(id) {
 			}
 			else if (type == ZmPref.TYPE_RADIO_GROUP) {
 				value = object.getSelectedValue();
+			}
+			else if (type == ZmPref.TYPE_LOCALES) {
+				value = object._localeId;
 			}
 			else {
 				value = object.getValue();
@@ -331,7 +346,10 @@ function(useDefaults) {
 			var curValue = object.getValue();
 			if (newValue != null && (curValue != newValue))
 				object.setValue(newValue);
-		} else {
+        } else if (type == ZmPref.TYPE_LOCALES) {
+            var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
+            this._showLocale(newValue, button);
+        } else {
 			var element = document.getElementById((ZmPref.KEY_ID + id));
 			if (!element || element.value == newValue) continue;
 			if (newValue == null) newValue = "";
@@ -374,15 +392,6 @@ function(parentId, text, width, listener) {
 
 ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
-	/*** TODO
-	if (id == ZmSetting.LOCALE_NAME) {
-		var selObj = new ZmLocaleSelect(this, setup.choices);
-		this.setFormObject(id, selObj);
-		selObj.setSelectedValue(value);
-		return selObj;
-	}
-	/***/
-
 	if (setup.approximateFunction) {
 		value = setup.approximateFunction(value);
 	}
@@ -523,6 +532,104 @@ function(id, setup, value) {
 ZmPreferencesPage.prototype._setupCustom =
 function(id, setup, value) {
 	alert("TODO: override ZmPreferences#_setupCustom");
+};
+
+ZmPreferencesPage.prototype._setupLocales =
+function(id, setup, value) {
+    this._createLocaleData(setup);
+    var button = new DwtButton(this);
+    button.setSize(60, Dwt.DEFAULT);
+    button.setMenu(new AjxListener(this, this._createLocalesMenu, [setup]));
+    this._showLocale(value, button);
+
+    this._dwtObjects[id] = button;
+
+	return button;
+};
+
+ZmPreferencesPage.prototype._showLocale =
+function(localeId, button) {
+    var locale = this._localeMap[localeId];
+    button.setImage(locale.image);
+    button.setText(locale.name);
+    button._localeId = localeId;
+};
+
+ZmPreferencesPage.prototype._createLocaleData =
+function(setup) {
+    if (this._localeMap) {
+        return;
+    }
+
+    this._localeMap = {};
+    this._languageMap = {};
+    var locales = this._appCtxt.get(ZmSetting.LOCALES);
+    for (var i = 0; i < locales.length; i++) {
+        var locale = locales[i];
+        var id = locale.id;
+        var index = id.indexOf("_");
+        var languageId;
+        if (index == -1) {
+            languageId = id;
+        } else {
+            languageId = id.substr(0, index);
+        }
+        if (!this._languageMap[languageId]) {
+            this._languageMap[languageId] = { name: "", locales: [] };
+        }
+        if (index != -1) {
+            var country = id.substring(id.length - 2);
+            var localeObj = {
+                id: id,
+                name: locale.name,
+                image: "Flag" + country
+            };
+            this._languageMap[languageId].locales.push(localeObj);
+            this._localeMap[id] = localeObj;
+        } else {
+            this._languageMap[languageId].name = locale.name;
+        }
+    }
+};
+
+ZmPreferencesPage.prototype._createLocalesMenu =
+function(setup) {
+
+    var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
+    var result = new DwtMenu(button);
+
+    for (var language in this._languageMap) {
+        var array = this._languageMap[language].locales;
+        if (array && array.length == 1) {
+            this._createLocaleItem(result, array[0]);
+        } else if (array.length > 1) {
+            var menuItem = new DwtMenuItem(result, DwtMenuItem.CASCADE_STYLE);
+            menuItem.setText(this._languageMap[language].name)
+            var subMenu = new DwtMenu(result, DwtMenu.DROPDOWN_STYLE);
+            menuItem.setMenu(subMenu);
+            for (var i = 0, count = array.length; i < count; i++) {
+                this._createLocaleItem(subMenu, array[i]);
+            }
+        }
+    }
+    return result;
+};
+
+ZmPreferencesPage.prototype._createLocaleItem =
+function(parent, obj) {
+    var result = new DwtMenuItem(parent);
+    result.setText(obj.name);
+    result.setImage(obj.image);
+    result._localeId = obj.id;
+    result.addSelectionListener(new AjxListener(this, this._localeSelectionListener));
+    return result;
+};
+
+ZmPreferencesPage.prototype._localeSelectionListener =
+function(ev) {
+    var item = ev.dwtObj;
+    var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
+    this._showLocale(item._localeId, button);
 };
 
 // Popup the change password dialog.
@@ -726,97 +833,4 @@ ZmPreferencesPage.__formatLabel = function(prefLabel, prefValue) {
 	return prefLabel.match(/\{/) ? AjxMessageFormat.format(prefLabel, prefValue) : prefLabel;
 };
 
-/*** TODO ***
-//
-// Classes
-//
 
-ZmLocaleSelect = function(parent) {
-	DwtButton.prototype.call(this, parent);
-
-	// initialize global langs
-	if (!ZmLocaleSelect._initialized) {
-		ZmLocaleSelect._initialized = true;
-
-		// gather hierarchy of locales
-		var regex = new RegExp("_.*", "g");
-		var locales = ZmAppCtxt.getFromShell(DwtShell.getShell(window)).get(ZmSetting.LOCALES);
-		for (var i = 0; i < locales.length; i++) {
-			var locale = locales[i];
-			var id = locale.id;
-			var name = locale.name;
-			var lang = id.replace(regex,"");
-			if (!ZmLocaleSelect._locales[lang]) {
-				ZmLocaleSelect._locales[lang] = [];
-			}
-			ZmLocaleSelect._locales[lang].push(locale);
-			ZmLocaleSelect._localeIdMap[id] = locale;
-			ZmLocaleSelect._localeNameMap[name] = locale;
-		}
-
-		// collapse single item languages and sort
-		var langlist = [];
-		for (var lang in ZmLocaleSelect._locales) {
-			var locales = ZmLocaleSelect._locales[lang];
-			if (locales.length == 1) {
-				ZmLocaleSelect._locales[lang] = locales[0];
-				continue;
-			}
-
-		}
-		ZmLocaleSelect._locales.sort(ZmLocaleSelect.__BY_NAME);
-
-		// TODO
-		// create menu
-//		for (var i = 0; i < langlist.length; i++) {
-//			var countries =
-//		}
-	}
-
-	// set menu
-	this.setMenu(ZmLocaleSelect._menu);
-}
-ZmLocaleSelect.prototype = new DwtButton;
-ZmLocaleSelect.prototype.constructor = ZmLocaleSelect;
-
-ZmLocaleSelect.prototype.toString = function() {
-	return "ZmLocaleSelect";
-};
-
-// Constants
-
-ZmLocaleSelect._locales = [];
-ZmLocaleSelect._localeIdMap = {};
-ZmLocaleSelect._localeNameMap = {};
-
-// Data
-
-ZmLocaleSelect.prototype.TEMPLATE = "DwtSelect";
-
-// Public methods
-
-ZmLocaleSelect.getNameFromId = function(id) {
-	return ZmLocaleSelect._localeIdMap && ZmLocaleSelect._localeIdMap[id].name;
-};
-
-ZmLocaleSelect.getIdFromName = function(name) {
-	return ZmLocaleSelect._localeNameMap && ZmLocaleSelect._localeNameMap[name].id;
-};
-
-ZmLocaleSelect.prototype.setSelectedValue = function(id) {
-	var name = ZmLocaleSelect.getNameFromId(id);
-	this.setText(name);
-};
-
-ZmLocaleSelect.prototype.getSelectedValue = function() {
-	var name = this.getText();
-	return ZmLocaleSelect.getIdFromName(name);
-};
-
-ZmLocaleSelect.__BY_NAME = function(a, b) {
-	var aname = a.name;
-	var bname = b.name;
-	if (aname == bname) return 0;
-	return aname < bname ? -1 : 1;
-};
-/***/
