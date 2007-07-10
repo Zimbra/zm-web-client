@@ -20,13 +20,25 @@
         <tr>
             <td>
                 <table width=100% cellspacing="0" cellpadding="0">
-                    <tr class='zo_toolbar' width=100%>
-                        <td align=left style="width:60px">
-                            <mo:searchPageLeft urlTarget="mosearch" context="${context}" keys="false"/>
+                    <tr class='zo_toolbar'>
+                        <td>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
+                                </tr>
+                            </table>
                         </td>
-                        <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
-                        <td align=right style="width:60px">
-                            <mo:searchPageRight urlTarget="mosearch" context="${context}" keys="false"/>
+                        <td align=right>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td>
+                                        <mo:searchPageLeft urlTarget="mosearch" context="${context}" keys="false"/>
+                                    </td>
+                                    <td>
+                                        <mo:searchPageRight urlTarget="mosearch" context="${context}" keys="false"/>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
                 </table>
@@ -92,13 +104,25 @@
         <tr>
             <td>
                 <table width=100% cellspacing="0" cellpadding="0">
-                    <tr class='zo_toolbar' width=100%>
-                        <td align=left style="width:60px">
-                            <mo:searchPageLeft urlTarget="mosearch" context="${context}" keys="false"/>
+                    <tr class='zo_toolbar'>
+                        <td>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
+                                </tr>
+                            </table>
                         </td>
-                        <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
-                        <td align=right style="width:60px">
-                            <mo:searchPageRight urlTarget="mosearch" context="${context}" keys="false"/>
+                        <td align=right>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td>
+                                        <mo:searchPageLeft urlTarget="mosearch" context="${context}" keys="false"/>
+                                    </td>
+                                    <td>
+                                        <mo:searchPageRight urlTarget="mosearch" context="${context}" keys="false"/>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
                 </table>

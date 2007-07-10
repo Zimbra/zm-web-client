@@ -16,5 +16,8 @@
     </a>
 </c:if>
 <c:if test="${!context.searchResult.hasNextPage}">
-    &nbsp;
+    <a class='zo_button' style='color:gray'>
+        <fmt:message key="MO_NEXT"/>
+        <%--<img src="<c:url value='/images/arrows/NextPage.gif'/>" border="0"/> --%>
+    </a>
 </c:if>

@@ -16,6 +16,7 @@
     </a>
 </c:if>
 <c:if test="${!context.searchResult.hasPrevPage}">
-    &nbsp;
-  <%--<a  class='zo_button'><app:img disabled='true' src="arrows/PreviousPage.gif" border="0"/></a> --%>
+        <a class='zo_button' style='color:gray'>
+            <fmt:message key="MO_PREV"/>
+        </a>
 </c:if>
