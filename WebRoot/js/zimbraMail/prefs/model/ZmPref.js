@@ -49,6 +49,7 @@ ZmPref.TYPE_PASSWORD	= "PASSWORD";
 ZmPref.TYPE_IMPORT		= "IMPORT";
 ZmPref.TYPE_EXPORT		= "EXPORT";
 ZmPref.TYPE_SHORTCUTS	= "SHORTCUTS";
+ZmPref.TYPE_CUSTOM		= "CUSTOM";
 
 ZmPref.ORIENT_VERTICAL      = "vertical";
 ZmPref.ORIENT_HORIZONTAL    = "horizontal";

@@ -94,7 +94,7 @@ function() {
 
 ZmPrefSection.prototype._isEnabled =
 function(data, prefId) {
-    return this.parent._checkPreCondition(ZmPref.SETUP[prefId]);
+    return this._controller.checkPreCondition(ZmPref.SETUP[prefId]);
 };
 
 ZmPrefSection.prototype._expandField =

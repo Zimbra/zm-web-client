@@ -38,7 +38,7 @@
 * @param controller			[ZmPrefController]			prefs controller
 */
 ZmPreferencesPage = function(parent, appCtxt, section, controller) {
-
+	if (arguments.length == 0) return;
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 	
 	this._appCtxt = appCtxt;
@@ -47,7 +47,6 @@ ZmPreferencesPage = function(parent, appCtxt, section, controller) {
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section.title].join(": ");
 
 	this._dwtObjects = {};
-	this._createHtml();
 	this._rendered = false;
 	this._hasRendered = false;
 };
@@ -121,7 +120,7 @@ function() {
 
 		// ignore if doesn't meet pre-condition
         var setup = ZmPref.SETUP[id];
-        if (!this.parent._checkPreCondition(setup)) {
+        if (!this._controller.checkPreCondition(setup)) {
 			continue;
 		}
 
@@ -150,67 +149,81 @@ function() {
 		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
 		var type = setup ? setup.displayContainer : null;
+		if (type == ZmPref.TYPE_CUSTOM) {
+			var control = this._setupCustom(id, setup, value);
+			control.replaceElement(elem);
+			continue;
+		}
+
 		if (type == ZmPref.TYPE_SELECT) {
 			var select = this._setupSelect(id, setup, value);
 			select.replaceElement(elem);
+			continue;
 		}
-		else if (type == ZmPref.TYPE_RADIO_GROUP) {
+
+		if (type == ZmPref.TYPE_RADIO_GROUP) {
 			var radio = this._setupRadioGroup(id, setup, value);
 			radio.replaceElement(elem);
+			continue;
 		}
-		else if (type == ZmPref.TYPE_CHECKBOX) {
+
+		if (type == ZmPref.TYPE_CHECKBOX) {
 			var checkbox = this._setupCheckbox(id, setup, value);
 			checkbox.replaceElement(elem);
+			continue;
 		}
-		else if (type == ZmPref.TYPE_INPUT) {
+
+		if (type == ZmPref.TYPE_INPUT) {
 			var input = this._setupInput(id, setup, value);
 			input.replaceElement(elem);
+			continue;
 		}
-		else if (type == ZmPref.TYPE_COLOR) {
+
+		if (type == ZmPref.TYPE_COLOR) {
 			var control = this._setupColor(id, setup, value);
 			control.replaceElement(elem);
+			continue;
+		}
+
+		var html = [];
+		var j = 0;
+		var buttonId;
+		var prefId = ZmPref.KEY_ID + id;
+		if (type == ZmPref.TYPE_TEXTAREA) {
+			html[j++] = "<textarea id='";
+			html[j++] = prefId;
+			html[j++] = "' ";
+			html[j++] = "wrap='on' style='width:402' rows='4' cols='60'>";
+			html[j++] = value;
+			html[j++] = "</textarea>";
+		}
+		else if (type == ZmPref.TYPE_PASSWORD ||
+				 type == ZmPref.TYPE_IMPORT ||
+				 type == ZmPref.TYPE_EXPORT) {
+			buttonId = Dwt.getNextId();
+			html[j++] = "<div id='";
+			html[j++] = buttonId;
+			html[j++] = "'></div>";
 		}
 		else {
-			var html = [];
-			var j = 0;
-			var buttonId;
-			var prefId = ZmPref.KEY_ID + id;
-			if (type == ZmPref.TYPE_TEXTAREA) {
-				html[j++] = "<textarea id='";
-				html[j++] = prefId;
-				html[j++] = "' ";
-				html[j++] = "wrap='on' style='width:402' rows='4' cols='60'>";
-				html[j++] = value;
-				html[j++] = "</textarea>";
-			}
-			else if (type == ZmPref.TYPE_PASSWORD ||
-					 type == ZmPref.TYPE_IMPORT ||
-					 type == ZmPref.TYPE_EXPORT) {
-				buttonId = Dwt.getNextId();
-				html[j++] = "<div id='";
-				html[j++] = buttonId;
-				html[j++] = "'></div>";
-			}
-			else {
-				continue;
-			}
+			continue;
+		}
 
-			elem.innerHTML = html.join("");
+		elem.innerHTML = html.join("");
 
-			if (type == ZmPref.TYPE_PASSWORD) {
-				this._addButton(buttonId, setup.displayName, 50, new AjxListener(this, this._changePasswordListener));
+		if (type == ZmPref.TYPE_PASSWORD) {
+			this._addButton(buttonId, setup.displayName, 50, new AjxListener(this, this._changePasswordListener));
+		}
+		else if (type == ZmPref.TYPE_IMPORT) {
+			this._importDiv = document.getElementById(buttonId);
+			if (this._importDiv) {
+				this._addImportWidgets(this._importDiv, id, setup);
 			}
-            else if (type == ZmPref.TYPE_IMPORT) {
-				this._importDiv = document.getElementById(buttonId);
-				if (this._importDiv) {
-					this._addImportWidgets(this._importDiv, id, setup);
-				}
-			}
-			else if (type == ZmPref.TYPE_EXPORT) {
-				var label = setup.displayName || ZmMsg._export;
-				var btn = this._addButton(buttonId, label, 65, new AjxListener(this, this._exportButtonListener));
-				btn.setData(Dwt.KEY_ID, id);
-			}
+		}
+		else if (type == ZmPref.TYPE_EXPORT) {
+			var label = setup.displayName || ZmMsg._export;
+			var btn = this._addButton(buttonId, label, 65, new AjxListener(this, this._exportButtonListener));
+			btn.setData(Dwt.KEY_ID, id);
 		}
 	}
 
@@ -224,6 +237,14 @@ function() {
 	this._hasRendered = true;
 };
 
+ZmPreferencesPage.prototype.setFormObject = function(id, object) {
+	this._dwtObjects[id] = object;
+};
+
+ZmPreferencesPage.prototype.getFormObject = function(id) {
+	return this._dwtObjects[id]; 
+};
+
 ZmPreferencesPage.prototype.getFormValue =
 function(id) {
 	var value = null;
@@ -232,7 +253,7 @@ function(id) {
 	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_CHECKBOX ||
 		type == ZmPref.TYPE_RADIO_GROUP ||
 		type == ZmPref.TYPE_INPUT) {
-		var object = this._dwtObjects[id];
+		var object = this.getFormObject(id);
 		if (object) {
 			if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
 				value = object.getColor();
@@ -285,7 +306,7 @@ function(useDefaults) {
 		if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_CHECKBOX ||
 			type == ZmPref.TYPE_RADIO_GROUP ||
 			type == ZmPref.TYPE_COLOR) {
-			var obj = this._dwtObjects[id];
+			var obj = this.getFormObject(id);
 			if (!obj) continue;
 
 			if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
@@ -303,12 +324,13 @@ function(useDefaults) {
 					obj.setSelectedValue(newValue);
 			}
 		} else if (type == ZmPref.TYPE_INPUT) {
-			var input = this._dwtObjects[id];
+			var input = this.getFormObject(id);
 			if (!input) continue;
 
-			var curValue = this._dwtObjects[id].getValue();
+			var object = this.getFormObject(id);
+			var curValue = object.getValue();
 			if (newValue != null && (curValue != newValue))
-				this._dwtObjects[id].setValue(newValue);
+				object.setValue(newValue);
 		} else {
 			var element = document.getElementById((ZmPref.KEY_ID + id));
 			if (!element || element.value == newValue) continue;
@@ -331,20 +353,12 @@ function(id, useDefault, convert) {
 	var pref = this._appCtxt.getSettings().getSetting(id);
 	var value = useDefault ? pref.getDefaultValue() : pref.getValue();
 	if (convert) {
-		if (id == ZmSetting.SIGNATURE_STYLE) {
-			value = (value == ZmSetting.SIG_INTERNET);
-		} else if (id == ZmSetting.POLLING_INTERVAL) {
+		if (id == ZmSetting.POLLING_INTERVAL) {
 			value = parseInt(value / 60); // setting stored as seconds, displayed as minutes
 		}
 	}
 
 	return value;
-};
-
-// Creates a table that we can later add preference rows to, and a placeholder DIV for
-// the reset button.
-ZmPreferencesPage.prototype._createHtml =
-function() {
 };
 
 // Add a button to the preferences page
@@ -363,7 +377,7 @@ function(id, setup, value) {
 	/*** TODO
 	if (id == ZmSetting.LOCALE_NAME) {
 		var selObj = new ZmLocaleSelect(this, setup.choices);
-		this._dwtObjects[id] = selObj;
+		this.setFormObject(id, selObj);
 		selObj.setSelectedValue(value);
 		return selObj;
 	}
@@ -374,7 +388,7 @@ function(id, setup, value) {
 	}
 
 	var selObj = new DwtSelect(this);
-	this._dwtObjects[id] = selObj;
+	this.setFormObject(id, selObj);
 
 	var options = setup.options || setup.displayOptions || setup.choices;
 	var isChoices = Boolean(setup.choices);
@@ -444,7 +458,7 @@ function(id, setup, value) {
 	}
 
 	// store radio button group
-	this._dwtObjects[id] = new DwtRadioButtonGroup(radioIds, selectedId);
+	this.setFormObject(id, new DwtRadioButtonGroup(radioIds, selectedId));
 
 	return container;
 };
@@ -452,7 +466,7 @@ function(id, setup, value) {
 ZmPreferencesPage.prototype._setupCheckbox =
 function(id, setup, value) {
 	var checkbox = new DwtCheckbox(this, null, null, value);
-	this._dwtObjects[id] = checkbox;
+	this.setFormObject(id, checkbox);
 	var cboxLabel = ZmPreferencesPage.__formatLabel(setup.displayName, value);
 	checkbox.setText(cboxLabel);
 	checkbox.setSelected(value);
@@ -462,7 +476,7 @@ function(id, setup, value) {
 ZmPreferencesPage.prototype._setupInput =
 function(id, setup, value) {
 	var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: value, size: 40});
-	this._dwtObjects[id] = input;
+	this.setFormObject(id, input);
 	return input;
 };
 
@@ -501,9 +515,14 @@ function(id, setup, value) {
 	picker.setToolTipContent(ZmMsg.fontColor);
 	picker.setColor(value);
 
-	this._dwtObjects[id] = picker;
+	this.setFormObject(id, picker);
 
 	return picker;
+};
+
+ZmPreferencesPage.prototype._setupCustom =
+function(id, setup, value) {
+	alert("TODO: override ZmPreferences#_setupCustom");
 };
 
 // Popup the change password dialog.
@@ -680,7 +699,7 @@ function(data, prefId1 /* ..., prefIdN */) {
 	for (var i = 1; i < arguments.length; i++) {
 		var prefId = arguments[i];
 		if (!prefId) { return false; }	// setting not created (its app is disabled)
-		if (this.parent._checkPreCondition(ZmPref.SETUP[prefId])) {
+		if (this._controller.checkPreCondition(ZmPref.SETUP[prefId])) {
 			return true;
 		}
 	}

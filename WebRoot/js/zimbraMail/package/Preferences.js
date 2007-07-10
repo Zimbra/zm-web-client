@@ -19,6 +19,7 @@ AjxPackage.require("zimbraMail.prefs.view.ZmPrefListView");
 AjxPackage.require("zimbraMail.prefs.view.ZmIdentityView");
 AjxPackage.require("zimbraMail.prefs.view.ZmFilterRulesView");
 AjxPackage.require("zimbraMail.prefs.view.ZmFilterRuleDialog");
+AjxPackage.require("zimbraMail.prefs.view.ZmSignaturesView");
 
 AjxPackage.require("zimbraMail.prefs.controller.ZmPrefController");
 AjxPackage.require("zimbraMail.prefs.controller.ZmPrefListController");

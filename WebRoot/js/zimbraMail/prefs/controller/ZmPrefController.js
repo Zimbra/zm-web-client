@@ -93,6 +93,51 @@ function() {
 	return this._identityController;
 };
 
+/**
+ * Checks for a precondition on the given object. If one is found, it is
+ * evaluated based on its type. Note that the precondition must be contained
+ * within the object in a property named "precondition".
+ *
+ * @param obj			[object]	an object, possibly with a "precondition" property.
+ * @param precondition	[object]*	explicit precondition to check
+ */
+ZmPrefController.prototype.checkPreCondition =
+function(obj, precondition) {
+	// No object, nothing to check
+	if (!obj) {
+		return true;
+	}
+	// Object lacks "precondition" property, nothing to check
+	if (!("precondition" in obj)) {
+		return true;
+	}
+	var p = precondition || obj.precondition;
+	// Object has a precondition that didn't get defined, probably because its
+	// app is not enabled. That equates to failure for the precondition.
+	if (p == null) {
+		return false;
+	}
+	// Precondition is set to true or false
+	if (AjxUtil.isBoolean(p)) {
+		return p;
+	}
+	// Precondition is a function, look at its result
+	if (AjxUtil.isFunction(p)) {
+		return p(this._appCtxt);
+	}
+	// A list of preconditions is ORed together via a recursive call
+	if (AjxUtil.isArray(p)) {
+		for (var i = 0, count = p.length; i < count; i++) {
+			if (this.checkPreCondition(obj, p[i])) {
+				return true;
+			}
+		}
+		return false;
+	}
+	// Assume that the precondition is a setting, and return its value
+	return Boolean(this._appCtxt.get(p));
+};
+
 ZmPrefController.prototype.getKeyMapName =
 function() {
 	return "ZmPrefController";

@@ -64,6 +64,19 @@ function(result) {
 	var obj = result.getResponse().GetInfoResponse;
 	AjxDispatcher.run("GetIdentityCollection").initialize(obj.identities);
 	AjxDispatcher.run("GetDataSourceCollection").initialize(obj.dataSources);
+
+	// TODO: Should this be done the same way as identities and data sources?
+	//       Or is that overkill just to keep a hash of objects?
+	var signatureMap = {};
+	var signatureList = obj.signatures && obj.signatures.signature;
+	if (signatureList) {
+		AjxPackage.require("PreferencesCore");
+		for (var i = 0; i < signatureList.length; i++) {
+			var signature = ZmSignature.createFromJson(signatureList[i]);
+			signatureMap[signature.id] = signature;
+		}
+	}
+	this._appCtxt.set(ZmSetting.SIGNATURES, signatureMap);
 };
 
 ZmPreferencesApp.prototype.launch =

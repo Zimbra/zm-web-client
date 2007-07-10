@@ -191,8 +191,16 @@ function() {
 			title: ZmMsg.signatures,
 			templateId: "zimbraMail.prefs.templates.Pages#Signatures",
 			priority: 30,
-			precondition: false,
-			prefs: [] // TODO
+			precondition: ZmSetting.SIGNATURES_ENABLED,
+			prefs: [
+				ZmSetting.SIGNATURES,
+				ZmSetting.SIGNATURE_STYLE
+				// TODO: signatures enabled pref
+			],
+			manageDirty: true,
+			createView: function(parent, appCtxt, section, controller) {
+				return new ZmSignaturesView(parent, appCtxt, section, controller);
+			}
 		},
 		FILTERS: {
 			title: ZmMsg.filterRules,
@@ -322,7 +330,10 @@ function() {
 	
 	ZmPref.registerPref("SIGNATURE_STYLE", {
 		displayName:		ZmMsg.signatureStyle,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_HORIZONTAL,
+		displayOptions:		[ZmMsg.aboveQuotedText, ZmMsg.atBottomOfMessage],
+		options:			[ZmSetting.SIG_OUTLOOK, ZmSetting.SIG_INTERNET]
 	});
 	
 	ZmPref.registerPref("VACATION_MSG", {
@@ -338,6 +349,10 @@ function() {
 		displayName:		ZmMsg.awayMessageEnabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+	});
+
+	ZmPref.registerPref("SIGNATURES", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 };
 

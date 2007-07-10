@@ -182,6 +182,9 @@ function(value, key, setDefault, skipNotify) {
 		if (key) {
 			this.value[key] = value;
 		}
+		else {
+			this.value = value;
+		}
 	} else if (this.dataType == ZmSetting.D_LIST) {
 		if (value instanceof Array) {
 			this.value = value;

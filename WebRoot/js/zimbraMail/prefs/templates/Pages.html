@@ -28,23 +28,16 @@ and the container element is replaced with that control.
 		<tr><td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
 
-				<!-- login { choice: ajax | html } -->
-				<!-- TODO: to be implemented
+				<!-- login { choice: advanced | standard } -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.loginLabel$></td>
 					<td class='ZOptionsField'>
-						<div id='${id}_login'>
-							<!-- NOTE: values only demonstrative -- >
-							<input type=radio disabled checked> <$=ZmMsg.loginEnhanced$>
+						<div id='${id}_CLIENT_TYPE'>
+							<!-- NOTE: values only demonstrative -->
+							<input type=radio disabled checked> <$=ZmMsg.clientAdvanced$>
 							<br>
-							<input type=radio disabled> <$=ZmMsg.loginLite$>
+							<input type=radio disabled> <$=ZmMsg.clientStandard$>
 						</div>
 					</td>
-				</tr>
-				-->
-
-				<!-- CLIENT_TYPE { string: advanced | standard } // client type -->
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.clientType$></td>
-					<td class='ZOptionsField'><div id='${id}_CLIENT_TYPE'></div></td>
 				</tr>
 
 				<!-- SKIN_NAME { string: sand | ... } // theme -->
@@ -535,19 +528,27 @@ This section is used for reply options on an identity.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader__H'>Signatures</td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.signatures$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
 
-			<!-- SIGNATURES BLOCK: USE SIGNATURE_INSTANCE FOR EACH ONE -->
-				<$ /* OUTPUT SIGNATURES HERE */ $>
+			<!-- SIGNATURES BLOCK: USE Signature FOR EACH ONE -->
+				<tr><td colspan=2>
+						<div id='${id}_SIGNATURES'></div>
+					</td>
+					<td>&nbsp;</td>
+				</tr>
 
 			<!-- ADD SIGNATURE BUTTON -->
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField' colspan=3><div id='${id}_ADD_SIGNATURE'></div></td>
+					<td class='ZOptionsField' align=right>
+						<table><tr><td>
+						<button id='${id}_ADD_SIGNATURE'><$=ZmMsg.addSignature$></button>
+						</td></tr></table>
+					</td>
 				</tr>
 			</table>
 			</td>
@@ -557,25 +558,25 @@ This section is used for reply options on an identity.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader__H'>Using Signatures</td>
+			<td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.signaturesUsing$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
 			<!-- SIGNATURE_ENABLED { choice: automatic | manual } -->
-				<tr><td class='ZOptionsLabel'>Attach Signature:</td>
+				<tr><td class='ZOptionsLabel'><$=ZmMsg.signatureAttachLabel$></td>
 					<td class='ZOptionsField'>
 							<div id='${id}_SIGNATURE_ENABLED'
-								label='Automatically attach my signature to every email I send.'></div>
+								label='<$=ZmMsg.signatureEnabled$>'></div>
 					</td>
 				</tr>
 
 			<tr><td colspan=2><hr></td></tr>
 
 			<!-- SIGNATURE_STYLE { choice: above | below } -->
-				<tr><td class='ZOptionsLabel'>Placement:</td>
-					<td class='ZOptionsInfo'>Place the signature:</td>
+				<tr><td class='ZOptionsLabel'><$=ZmMsg.placementLabel$></td>
+					<td class='ZOptionsInfo'><$=ZmMsg.placeSignature$></td>
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsInfo'>
@@ -585,6 +586,35 @@ This section is used for reply options on an identity.
 			</table>
 			</td>
 		</tr>
+	</table>
+</template>
+
+<!--
+NOTE: When overriding this template, container node MUST have id!
+-->
+<template id='Signature'>
+	<table id='${id}' border=0 cellpadding=0 cellspacing=0>
+	<tr valign=top>
+		<td class='ZOptionsLabel'><$=ZmMsg.signatureNameLabel$></td>
+		<td class='ZOptionsField'>
+			<input id='${id}_SIGNATURE_NAME' size=20>
+		</td>
+		<td class='ZOptionsField'>
+			<div id='${id}_SIGNATURE_DEFAULT'>
+				<input type=radio disabled> <$=ZmMsg.def$>
+			</div>
+		</td>
+		<td class='ZOptionsField'>
+			<button id='${id}_SIGNATURE_DELETE'><$=ZmMsg.del$></button>
+		</td>
+	</tr>
+	<tr valign=top>
+		<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
+		<td class='ZOptionsField' colspan=3>
+			<textarea id='${id}_SIGNATURE' rows=3 cols=55></textarea>
+		</td>
+	</tr>
+	<tr><td colspan=5><HR style='width:95%'></td></tr>
 	</table>
 </template>
 
@@ -1095,22 +1125,6 @@ This section is used for reply options on an identity.
 			</tr>
 		</table>
 </template>
-
-
-
-<template id='SIGNATURE_INSTANCE'>
-	<tr><td class='ZOptionsLabel'>Signature Name:</td>
-		<td class='ZOptionsField'><div id='${id}_SIGNATURE_NAME'></div></td>
-		<td class='ZOptionsField'><div id='${id}_SIGNATURE_DEFAULT'></div></td>
-		<td class='ZOptionsField'><div id='${id}_SIGNATURE_DELETE'></div></td>
-	</tr>
-	<tr><td class='ZOptionsLabel'>&nbsp;</td>
-		<td class='ZOptionsField' colspan=3><div id='${id}_SIGNATURE'></div></td>
-	</tr>
-	<tr><td colspan=4><HR style='width:95%'></td></tr>
-</template>
-
-
 
 <!--
 == General
