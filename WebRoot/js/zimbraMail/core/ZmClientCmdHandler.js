@@ -98,19 +98,9 @@ function(cmdStr, searchController) {
 	} else if (arg0 == "rh") {
 		this._appCtxt.getApp(ZmApp.CALENDAR).getReminderController()._housekeepingAction();
 	} else if (arg0 == "toast") {
-		var delay = argv[1] ? argv[1] : null
-		if (argv[2])	ZmStatusView.ANIMATION_DELAY = argv[2];
-		this._appCtxt.setStatusMsg("Your options have been saved.", null, null, delay);
-		this._appCtxt.setStatusMsg("Unable to save options.", ZmStatusView.LEVEL_WARNING, null, delay);
-		this._appCtxt.setStatusMsg("Message sent.", null, null, delay);
-		this._appCtxt.setStatusMsg("Message not sent.", ZmStatusView.LEVEL_CRITICAL, null, delay);
-		this._appCtxt.setStatusMsg("You have new mail.", null, null, delay);
-		this._appCtxt.setStatusMsg("Silent But Deadly. And very very very very very vervy very very very long!", null, null, delay, ZmStatusView.TRANSITION_INVISIBLE);
-		this._appCtxt.setStatusMsg("Fade In", null, null, delay, ZmStatusView.TRANSITION_FADE_IN);
-		this._appCtxt.setStatusMsg("Slide Left", null, null, delay, ZmStatusView.TRANSITION_SLIDE_LEFT);
-		this._appCtxt.setStatusMsg("Slide Right", null, null, delay, ZmStatusView.TRANSITION_SLIDE_RIGHT);
-		this._appCtxt.setStatusMsg("Slide Down", null, null, delay, ZmStatusView.TRANSITION_SLIDE_DOWN);
-		this._appCtxt.setStatusMsg("Slide Up", null, null, delay, ZmStatusView.TRANSITION_SLIDE_UP);
+		this._appCtxt.setStatusMsg("Your options have been saved.", ZmStatusView.LEVEL_INFO);
+		this._appCtxt.setStatusMsg("Unable to save options.", ZmStatusView.LEVEL_WARNING);
+		this._appCtxt.setStatusMsg("Message not sent.", ZmStatusView.LEVEL_CRITICAL);
 	} else if (arg0 == "get") {
 		if (!argv[1]) return;
 		var item = argv[1];

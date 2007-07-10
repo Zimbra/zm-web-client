@@ -63,7 +63,6 @@ AjxPackage.require("zimbraMail.share.view.dialog.ZmNewSearchDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewTagDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmFolderPropsDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmQuickAddDialog");
-AjxPackage.require("zimbraMail.share.view.dialog.ZmStatusHistoryDialog");
 
 AjxPackage.require("zimbraMail.share.controller.ZmController");
 AjxPackage.require("zimbraMail.share.controller.ZmListController");

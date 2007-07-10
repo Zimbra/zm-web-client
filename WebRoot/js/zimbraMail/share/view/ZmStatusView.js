@@ -23,89 +23,49 @@
  * ***** END LICENSE BLOCK *****
  */
 ZmStatusView = function(parent, className, posStyle) {
-
 	if (arguments.length == 0) return;
-	className = className || "ZmStatus";
-	DwtControl.call(this, parent, className, posStyle);
-	this._setMouseEventHdlrs();
-	this.setCursor("default");
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
-	this.addListener(DwtEvent.ONDBLCLICK,  new AjxListener(this, ZmStatusView.prototype._doubleClickListener));
-	
-	this._createHtml();
-	this.setScrollStyle(Dwt.CLIP);
- 	this._statusQueue = [];
- 	this._statusHistory = []; 	
-	this.addControlListener(new AjxListener(this, this._controlListener));	
-	
-	this._updateClockTimedAction = new AjxTimedAction(this, this._updateClock, null);
-	this._updateClock();
-	this._counter = 0;
-	this.setIconVisible(ZmStatusView.ICON_INBOX, false);
-	this.setIconVisible(ZmStatusView.ICON_IM, false);	
-	this.setIconVisible(ZmStatusView.ICON_BUSY, false);
-}
+	DwtControl.call(this, parent, (className || "ZmStatus"), posStyle);
+
+	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+	this._toast = new ZmToast(this, this._appCtxt);
+	this._statusQueue = [];
+};
 
 ZmStatusView.prototype = new DwtControl;
 ZmStatusView.prototype.constructor = ZmStatusView;
 
+
+// Constants
+
+ZmStatusView.LEVEL_INFO 			= 1;	// informational
+ZmStatusView.LEVEL_WARNING			= 2;	// warning
+ZmStatusView.LEVEL_CRITICAL			= 3;	// critical
+
+
+// Public methods
+
 ZmStatusView.prototype.toString =
 function() {
 	return "ZmStatusView";
-}
-
-//
-// Constants
-//
-
-ZmStatusView.MAX_HISTORY = 50; // max items to store in history
-
-ZmStatusView.ANIMATION_DELAY = 50; // each frame of toast sliding
-ZmStatusView.ANIMATION_NUM_FRAMES = 8; // each frame of toast sliding
-ZmStatusView.STATUS_LIFE = 5000; // status message duration
-
-ZmStatusView.LEVEL_INFO = 1; // informational
-ZmStatusView.LEVEL_WARNING = 2; // warning
-ZmStatusView.LEVEL_CRITICAL = 3; // critical
-
-ZmStatusView.TRANSITION_SLIDE_UP = 1; 
-ZmStatusView.TRANSITION_SLIDE_DOWN = 2;
-ZmStatusView.TRANSITION_SLIDE_LEFT = 3;
-ZmStatusView.TRANSITION_SLIDE_RIGHT = 4;
-ZmStatusView.TRANSITION_FADE_IN = 5;
-ZmStatusView.TRANSITION_INVISIBLE = 6; // add to history, but don't display
-
-ZmStatusView.ICON_INBOX = 1;
-ZmStatusView.ICON_IM = 2;
-ZmStatusView.ICON_BUSY = 3;
-
-ZmStatusView.DEFAULT = { };
-ZmStatusView.DEFAULT[ZmStatusView.LEVEL_INFO] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_UP };
-ZmStatusView.DEFAULT[	ZmStatusView.LEVEL_WARNING] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_DOWN };
-ZmStatusView.DEFAULT[	ZmStatusView.LEVEL_CRITICAL] = { delay: ZmStatusView.STATUS_LIFE, transition: ZmStatusView.TRANSITION_SLIDE_DOWN };
-
-//
-// Public methods
-//
+};
 
 ZmStatusView.prototype.setStatusMsg =
-function(msg, level, detail, delay, transition, position) {
-	if (!level) level = ZmStatusView.LEVEL_INFO;
+function(msg, level, detail) {
+	if (!level) { level = ZmStatusView.LEVEL_INFO; }
 
-	var work = {
-        msg: msg, detail: detail, level: level,
-        transition: transition,
-        date: new Date()
-    };
-	this._updateHistory(work);
-	this._statusQueue.push(work); // always push so we know one is active
+	var work = { msg:msg, level:level, detail:detail, date:new Date() };
+
+	// always push so we know one is active
+	this._statusQueue.push(work);
+
 	if (!this._toast.isPoppedUp()) {
         this._updateStatusMsg();
     }
 };
 
-ZmStatusView.prototype.nextStatus = function() {
+ZmStatusView.prototype.nextStatus =
+function() {
     if (this._statusQueue.length > 0) {
         this._updateStatusMsg();
         return true;
@@ -113,130 +73,44 @@ ZmStatusView.prototype.nextStatus = function() {
     return false;
 };
 
-ZmStatusView.prototype.setIconVisible =
-function(icon, visible) {
-	var id = this._iconIds[icon];
-	if (!id) return;
-	var el = document.getElementById(id);
-	if (el) Dwt.setVisible(el, visible);
-}
 
-//
 // Static functions
-//
 
 ZmStatusView.getClass =
 function(work) {
-	if (work.level == ZmStatusView.LEVEL_CRITICAL) return "ZToastCrit";
-    if (work.level == ZmStatusView.LEVEL_WARNING) return "ZToastWarn";
-    return "ZToastInfo";
-}
+	switch (work.level) {
+		case ZmStatusView.LEVEL_CRITICAL:	return "ZToastCrit";
+		case ZmStatusView.LEVEL_WARNING:	return "ZToastWarn";
+		default: 							return "ZToastInfo";
+	}
+};
 
 ZmStatusView.getImageHtml32 =
 function(work) {
-	if (work.level == ZmStatusView.LEVEL_CRITICAL) return "Critical_32";
-    if (work.level == ZmStatusView.LEVEL_WARNING) return "Warning_32";
-    return "Information_32";
-}
-
-//
-// Protected methods
-//
-
-ZmStatusView.prototype._createHtml =
-function() {
-    var id = this._htmlElId; 
-    this._mainContentDivId = id+"_main";
-    this._iconIds = {};
-    this._iconIds[ZmStatusView.ICON_INBOX] = id+"_inbox";
-	this._iconIds[ZmStatusView.ICON_IM] = id+"_im";
-	this._iconIds[ZmStatusView.ICON_BUSY] = id+"_busy";
-
-    this._toast = new ZmToast(this, this._appCtxt);
-
-    var html = AjxTemplate.expand("zimbraMail.share.templates.Widgets#ZmStatusView", id);
-    this.getHtmlElement().innerHTML = html;
-}
-
-ZmStatusView.prototype._getMainContentEl = function () {
-    return document.getElementById(this._mainContentDivId);
+	switch (work.level) {
+		case ZmStatusView.LEVEL_CRITICAL:	return "Critical_32";
+		case ZmStatusView.LEVEL_WARNING:	return "Warning_32";
+		default: 							return "Information_32";
+	}
 };
 
-ZmStatusView.prototype._setMainText = function(text) {
-	this._getMainContentEl().innerHTML = AjxStringUtil.htmlEncode(text);
-}
 
-ZmStatusView.prototype._replayHistory =
-function(index) {
-	if (index >= this._statusHistory.length) return;
-	var work = this._statusHistory[index];
-	this._statusQueue.push(work); // always push so we know one is active
-	if (this._statusQueue.length == 1) this._updateStatusMsg();
-}
-
-ZmStatusView.prototype._updateHistory =
-function(work) {
-	this._statusHistory.unshift(work);
-	if (this._statusHistory.length > ZmStatusView.MAX_HISTORY) this._statusHistory.pop();
-}
+// Protected methods
 
 ZmStatusView.prototype._updateStatusMsg =
 function() {
     var work = this._statusQueue.shift();
-    while (work && work.transition == ZmStatusView.TRANSITION_INVISIBLE) {
-        work = this._statusQueue.shift();
-    }
-    if (!work) {
-        return;
-    }
+    if (!work) { return; }
 
     var level = ZmStatusView.getClass(work);
-    var text = work.msg;
     var icon = ZmStatusView.getImageHtml32(work);
 
-    this._toast.popup(level, text, icon);
+    this._toast.popup(level, work.msg, icon);
 };
 
-ZmStatusView.prototype._updateClock =
-function() {
-	var now = new Date();
-	this._setMainText(AjxDateUtil.computeTimeString(now));
-	AjxTimedAction.scheduleAction(this._updateClockTimedAction, (60-now.getSeconds()+2) * 1000);
-};
-
-// listeners
-
-ZmStatusView.prototype._controlListener =
-function(ev) {
-};
-
-ZmStatusView.prototype._mouseOverListener = 
-function(ev) {
-	this._mouseOver = true;
-	if (this._statusQueue.length == 0) this._replayHistory(0);
-};
-
-ZmStatusView.prototype._mouseOutListener = 
-function(ev) {
-	this._mouseOver = false;
-};
-
-ZmStatusView.prototype._mouseDownListener = 
-function(ev) {
-};
-
-
-ZmStatusView.prototype._doubleClickListener =
-function(ev) {
-	if (this._historyDialog == null) {
-		this._historyDialog = new ZmStatusHistoryDialog(this.shell, this._appCtxt);
-	}
-	this._historyDialog.initialize(AjxVector.fromArray(this._statusHistory).clone());
-	this._historyDialog.popup();
-};
 
 //
-// Classes
+// ZmToast
 //
 
 ZmToast = function(parent, appCtxt) {
@@ -275,9 +149,11 @@ ZmToast.LEVEL_RE = /\b(ZToastCrit|ZToastWarn|ZToastInfo)\b/g;
 
 ZmToast.prototype.TEMPLATE = "zimbraMail.share.templates.Widgets#ZToast";
 
+
 // Public methods
 
-ZmToast.prototype.popup = function(level, text, icon, loc) {
+ZmToast.prototype.popup =
+function(level, text, icon, loc) {
     this.__clear();
     this._poppedUp = true;
 
@@ -288,38 +164,44 @@ ZmToast.prototype.popup = function(level, text, icon, loc) {
     if (this._textEl) {
         this._textEl.innerHTML = text || "";
     }
-    if (this._iconEl) {
+
+	if (this._iconEl) {
         AjxImg.setImage(this._iconEl, icon, false);
     }
 
     // get transitions
     var location = this._appCtxt.get(ZmSetting.SKIN_HINTS, "toast.location") || loc;
     var transitions = this._appCtxt.get(ZmSetting.SKIN_HINTS, "toast.transitions") || ZmToast.DEFAULT_TRANSITIONS;
-    transitions = [].concat( {type:"position",location:location}, transitions, {type:"hide"} );
+    transitions = [].concat( {type:"position", location:location}, transitions, {type:"hide"} );
 
     // start animation
     this._transitions = transitions;
     this._transition();
 };
 
-ZmToast.prototype.popdown = function() {
+ZmToast.prototype.popdown =
+function() {
     this.__clear();
     Dwt.setLocation(this.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
     this._poppedUp = false;
 };
 
-ZmToast.prototype.isPoppedUp = function() {
+ZmToast.prototype.isPoppedUp =
+function() {
     return this._poppedUp;
 };
 
 // Protected methods
 
-ZmToast.prototype._createHtml = function(templateId) {
+ZmToast.prototype._createHtml =
+function(templateId) {
     var data = { id: this._htmlElId };
     this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
     Dwt.setZIndex(this.getHtmlElement(), Dwt.Z_TOAST);
 };
-ZmToast.prototype._createHtmlFromTemplate = function(templateId, data) {
+
+ZmToast.prototype._createHtmlFromTemplate =
+function(templateId, data) {
     DwtControl.prototype._createHtmlFromTemplate.call(this, templateId, data);
     this._textEl = document.getElementById(data.id+"_text");
     this._iconEl = document.getElementById(data.id+"_icon");
@@ -328,7 +210,8 @@ ZmToast.prototype._createHtmlFromTemplate = function(templateId, data) {
 
 // Protected methods
 
-ZmToast.prototype._transition = function() {
+ZmToast.prototype._transition =
+function() {
     var transition = this._transitions && this._transitions.shift();
     if (!transition) {
         this._poppedUp = false;
@@ -347,7 +230,8 @@ ZmToast.prototype._transition = function() {
     this._funcs[transition.type || "next"]();
 };
 
-ZmToast.prototype._createState = function(transition) {
+ZmToast.prototype._createState =
+function(transition) {
     var state = AjxUtil.createProxy(transition);
     var defaults = ZmToast.DEFAULT_STATE[state.type];
     for (var name in defaults) {
@@ -355,8 +239,11 @@ ZmToast.prototype._createState = function(transition) {
             state[name] = defaults[name];
         }
     }
-    switch (state.type) {
-        case "fade-in": case "fade-out": case "fade": {
+
+	switch (state.type) {
+        case "fade-in":
+		case "fade-out":
+		case "fade": {
             state.value = state.start;
             break;
         }
@@ -366,7 +253,8 @@ ZmToast.prototype._createState = function(transition) {
 
 // Private methods
 
-ZmToast.prototype.__clear = function() {
+ZmToast.prototype.__clear =
+function() {
     clearTimeout(this._actionId);
     clearInterval(this._actionId);
     this._actionId = -1;
@@ -374,7 +262,8 @@ ZmToast.prototype.__clear = function() {
 
 // transition handlers
 
-ZmToast.prototype.__position = function() {
+ZmToast.prototype.__position =
+function() {
     var el = this.getHtmlElement();
     var bsize = Dwt.getSize(this.shell.getHtmlElement());
     var tsize = Dwt.getSize(el);
@@ -399,29 +288,34 @@ ZmToast.prototype.__position = function() {
     this._funcs["next"]();
 };
 
-ZmToast.prototype.__show = function() {
+ZmToast.prototype.__show =
+function() {
     var el = this.getHtmlElement();
     Dwt.setVisible(el, true);
     Dwt.setVisibility(el, true);
     this._funcs["next"]();
 };
 
-ZmToast.prototype.__hide = function() {
+ZmToast.prototype.__hide =
+function() {
     var el = this.getHtmlElement();
     Dwt.setLocation(el, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
     this._funcs["next"]();
 };
 
-ZmToast.prototype.__pause = function() {
+ZmToast.prototype.__pause =
+function() {
     setTimeout(this._funcs["next"], this._state.duration);
 };
 
-ZmToast.prototype.__move = function() {
+ZmToast.prototype.__move =
+function() {
     // TODO
     this._funcs["next"]();
 };
 
-ZmToast.prototype.__fade = function() {
+ZmToast.prototype.__fade =
+function() {
     var opacity = this._state.value;
     var step = this._state.step;
 

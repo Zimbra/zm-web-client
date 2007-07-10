@@ -249,6 +249,6 @@ function(result) {
 		this.setThread(response.IMSendMessageResponse.thread);
 	} catch (ex) {
 		// TODO: better handling
-		this._appCtxt.setStatusMsg(ex, ZmStatusView.LEVEL_CRITICAL, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+		this._appCtxt.setStatusMsg(ex, ZmStatusView.LEVEL_CRITICAL);
 	}
 };

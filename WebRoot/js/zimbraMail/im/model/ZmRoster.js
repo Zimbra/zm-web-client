@@ -170,7 +170,7 @@ function(subscribed) {
 				var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, sub.groups);
 				list.addItem(item);
 				var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
-				this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+				this._appCtxt.setStatusMsg(toast);
 			}
 		}
 	}
@@ -223,7 +223,7 @@ function(im) {
 						list.addItem(item);
 						if (notifications) {
 							var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
-							this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+							this._appCtxt.setStatusMsg(toast);
 						}
 					}
 				} else if (sub.from) {
@@ -251,7 +251,7 @@ function(im) {
 						var is_status = old_pres == ri.getPresence().getShow();
 						if (notifications && ( (!is_status && this._appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
 								       (is_status && this._appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
-							this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+							this._appCtxt.setStatusMsg(toast);
 							var chat = cl.getChatByRosterAddr(p.from);
 							if (chat)
 								chat.addMessage(ZmChatMessage.system(toast));
@@ -284,7 +284,6 @@ function(im) {
 					}
 					if (chat) {
 						if (!this._imApp.isActive()) {
-							this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, true);
 							this.startFlashingIcon();
 						}
 						chat.addMessage(chatMessage);

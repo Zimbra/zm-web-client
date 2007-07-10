@@ -300,7 +300,6 @@ ZmImApp.prototype.startFlashingIcon = function() {
 
 ZmImApp.prototype.stopFlashingIcon = function() {
 	if (this._appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
-		this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, false);
 		this._appCtxt.getAppController().getAppChooserButton("IM").stopFlashing();
 	}
 };

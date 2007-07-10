@@ -146,37 +146,6 @@
 
 
 
-/* Status bar stuff */
-
-/*** DEPRECATED -- REMOVE THIS ***/
-.ZmStatusMainText {
-	@ToastText@
-}
-
-.ZmStatusToastText {
-	@ToastText@
-}
-
-.ZmStatusInfoToast {
-	@ToastContainer-info@
-}
-.ZmStatusWarningToast {
-	@ToastContainer-warning@
-}
-.ZmStatusCriticalToast {
-	@ToastContainer-critical@
-}
-
-.ZmStatusHistory {
-	width: 400px; 				/* ??? SIZE */
-	height: 285px;
-	@BoxMargin@
-	margin-bottom: 0px;
-	overflow: auto;
-}
-
-
-
 /*
  *  Dwt Overrides
  */

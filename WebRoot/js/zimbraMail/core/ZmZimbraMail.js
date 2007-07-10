@@ -436,7 +436,6 @@ function(params) {
 		}
 	}
 	this.activateApp(startApp, false, respCallback, this._errorCallback, checkQS);
-	this.setStatusMsg(ZmMsg.initializationComplete, null, null, null, ZmStatusView.TRANSITION_INVISIBLE);
 };
 
 /*
@@ -1351,13 +1350,8 @@ function() {
 };
 
 ZmZimbraMail.prototype.setStatusMsg =
-function(msg, level, detail, delay, transition) {
-	this._statusView.setStatusMsg(msg, level, detail, delay, transition);
-};
-
-ZmZimbraMail.prototype.setStatusIconVisible =
-function(icon, visible) {
-	this._statusView.setIconVisible(icon, visible);
+function(msg, level, detail) {
+	this._statusView.setStatusMsg(msg, level, detail);
 };
 
 ZmZimbraMail.prototype._appButtonListener =

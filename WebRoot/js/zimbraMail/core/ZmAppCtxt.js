@@ -92,13 +92,8 @@ function() {
 };
 
 ZmAppCtxt.prototype.setStatusMsg =
-function(msg, level, detail, delay, transition) {
-	this._appController.setStatusMsg(msg, level, detail, delay, transition);
-};
-
-ZmAppCtxt.prototype.setStatusIconVisible =
-function(icon, visible) {
-	this._appController.setStatusIconVisible(icon, visible);
+function(msg, level, detail) {
+	this._appController.setStatusMsg(msg, level, detail);
 };
 
 ZmAppCtxt.prototype.getSettings =
