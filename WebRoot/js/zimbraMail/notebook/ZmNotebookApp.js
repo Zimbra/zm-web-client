@@ -155,6 +155,11 @@ function() {
 								});
 };
 
+ZmNotebookApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_NOTEBOOK, ZmOrganizer.NOTEBOOK);
+};
+
 ZmNotebookApp.prototype._registerApp =
 function() {
 	var newItemOps = {};

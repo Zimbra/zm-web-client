@@ -118,6 +118,11 @@ function() {
 								});
 };
 
+ZmTasksApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_TASK_FOLDER, ZmOrganizer.TASKS);
+};
+
 ZmTasksApp.prototype._registerApp =
 function() {
 	var newItemOps = {};

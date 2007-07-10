@@ -247,6 +247,11 @@ function() {
 								});
 };
 
+ZmContactsApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_ADDRBOOK, ZmOrganizer.ADDRBOOK);
+};
+
 ZmContactsApp.prototype._registerApp =
 function() {
 	var newItemOps = {};

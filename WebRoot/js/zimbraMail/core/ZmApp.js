@@ -59,6 +59,7 @@ ZmApp = function(name, appCtxt, container, parentController) {
 	this._registerItems();
 	this._registerOrganizers();
 	this._setupSearchToolbar();
+	this._setupCurrentAppToolbar();
 	this._registerApp();
 
 	this._opc = this._appCtxt.getOverviewController();
@@ -215,24 +216,25 @@ function() {
 }
 
 // Functions called during construction
-ZmApp.prototype._defineAPI			= function() {};
-ZmApp.prototype._registerSettings	= function() {};
-ZmApp.prototype._registerOperations	= function() {};
-ZmApp.prototype._registerItems		= function() {};
-ZmApp.prototype._registerOrganizers	= function() {};
-ZmApp.prototype._setupSearchToolbar	= function() {};
-ZmApp.prototype._registerApp		= function() {};
-ZmApp.prototype._registerPrefs		= function() {};							// called when Preferences pkg is loaded
+ZmApp.prototype._defineAPI				= function() {};
+ZmApp.prototype._registerSettings		= function() {};
+ZmApp.prototype._registerOperations		= function() {};
+ZmApp.prototype._registerItems			= function() {};
+ZmApp.prototype._registerOrganizers		= function() {};
+ZmApp.prototype._setupSearchToolbar		= function() {};
+ZmApp.prototype._setupCurrentAppToolbar = function() {};
+ZmApp.prototype._registerApp			= function() {};
+ZmApp.prototype._registerPrefs			= function() {};						// called when Preferences pkg is loaded
 
 // Functions that apps can override in response to certain events
-ZmApp.prototype.startup				= function(result) {};						// run during startup
-ZmApp.prototype.preNotify			= function(notify) {};						// run before handling notifications
-ZmApp.prototype.deleteNotify		= function(ids) {};							// run on delete notifications
-ZmApp.prototype.createNotify		= function(list) {};						// run on create notifications
-ZmApp.prototype.modifyNotify		= function(list) {};						// run on modify notifications
-ZmApp.prototype.postNotify			= function(notify) {};						// run after handling notifications
-ZmApp.prototype.refresh				= function(refresh) {};						// run when a <refresh> block arrives
-ZmApp.prototype.handleOp			= function(op, params) {};					// handle an operation
+ZmApp.prototype.startup					= function(result) {};					// run during startup
+ZmApp.prototype.preNotify				= function(notify) {};					// run before handling notifications
+ZmApp.prototype.deleteNotify			= function(ids) {};						// run on delete notifications
+ZmApp.prototype.createNotify			= function(list) {};					// run on create notifications
+ZmApp.prototype.modifyNotify			= function(list) {};					// run on modify notifications
+ZmApp.prototype.postNotify				= function(notify) {};					// run after handling notifications
+ZmApp.prototype.refresh					= function(refresh) {};					// run when a <refresh> block arrives
+ZmApp.prototype.handleOp				= function(op, params) {};				// handle an operation
 
 /**
 * Returns the app's name.

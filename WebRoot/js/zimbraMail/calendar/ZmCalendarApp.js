@@ -263,6 +263,11 @@ function() {
 							});
 };
 
+ZmCalendarApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_CALENDAR, ZmOrganizer.CALENDAR);
+};
+
 ZmCalendarApp.prototype._registerApp =
 function() {
 	var newItemOps = {};

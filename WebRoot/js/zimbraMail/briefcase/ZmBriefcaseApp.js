@@ -134,6 +134,11 @@ function() {
 								});*/
 };
 
+ZmBriefcaseApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_BRIEFCASEITEM, ZmOrganizer.BRIEFCASE);
+};
+
 ZmBriefcaseApp.prototype._registerApp =
 function() {
 	var newItemOps = {};

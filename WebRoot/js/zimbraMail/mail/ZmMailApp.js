@@ -450,6 +450,11 @@ function() {
 								});
 };
 
+ZmMailApp.prototype._setupCurrentAppToolbar =
+function() {
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_FOLDER, ZmOrganizer.FOLDER);
+};
+
 ZmMailApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
@@ -1061,4 +1066,3 @@ function(parent) {
 	parent.setMenu(menu);
 	return menu;
 };
- 
