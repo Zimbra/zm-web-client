@@ -6,7 +6,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<zm:getUserAgent var="ua"/>
+<zm:getUserAgent var="ua" session="true"/>
 <c:set var="suffix" value="${ua.isOsWindows ? '.win' : ua.isOsMac ? '.mac' : ua.isOsLinux ? '.linux' :  ''}"/>
 <fmt:bundle basename="/keys/ZhKeys">
     <fmt:message var="sections" key="sections"/>
