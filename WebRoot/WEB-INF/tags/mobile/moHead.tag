@@ -23,7 +23,7 @@
 
     <style type="text/css" media="screen">
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>        
-       @import url( "<c:url value='/css/zmobile.css?v=${version}&debug=1'/>" );
+       @import url( "<c:url value='/css/zmobile.css?v=${version}'/>" );
     </style>
     <jsp:doBody/>
 </head>
