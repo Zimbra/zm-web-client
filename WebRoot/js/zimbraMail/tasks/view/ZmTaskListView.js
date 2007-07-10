@@ -177,12 +177,10 @@ function(htmlArr, idx, task, field, colIdx, params) {
 		htmlArr[idx++] = "%";
 
 	} else if (field == ZmItem.F_DATE) {
-		if (params.isMixedView) {
-			idx = ZmListView.prototype._getCellContents.apply(this, arguments);
-		} else {
-			// date - dont call base class since we *always* want to show date (not time)
-			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(new Date(task.date));
-		}
+		// due date - dont call base class since we *always* want to show date (not time)
+		htmlArr[idx++] = task.endDate != null
+			? AjxDateUtil.simpleComputeDateStr(task.endDate)
+			: "&nbsp;";
 	} else {
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}

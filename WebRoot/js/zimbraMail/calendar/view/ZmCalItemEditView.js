@@ -726,18 +726,16 @@ function(ev) {
 ZmCalItemEditView.prototype._dateCalSelectionListener =
 function(ev) {
 	var parentButton = ev.item.parent.parent;
-
-	// do some error correction... maybe we can optimize this?
-	var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-	var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
 
 	// change the start/end date if they mismatch
 	if (parentButton == this._startDateButton) {
+		var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 		if (ed && (ed.valueOf() < ev.detail.valueOf()))
 			this._endDateField.value = newDate;
 		this._startDateField.value = newDate;
 	} else {
+		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 		if (sd && (sd.valueOf() > ev.detail.valueOf()))
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;

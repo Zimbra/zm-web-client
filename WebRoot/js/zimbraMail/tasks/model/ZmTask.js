@@ -159,8 +159,16 @@ function(node, instNode) {
 
 	if (node.l) this.folderId = node.l;
 	if (node.s) this.size = node.s;					// XXX: do we care?
-	if (node.d) this.date = node.d;					// XXX: modified date?
 	if (node.sf) this.sf = node.sf;
+	if (node.dueDate) {
+		this.endDate = new Date(parseInt(node.dueDate,10));
+	} else {
+		var part = this._getPart(node, comp, "e");
+		var ed = (part && part.length) ? part[0].d : null;
+		this.endDate = ed ? AjxDateUtil.parseServerDateTime(ed) : null;
+		if (this.endDate)
+			this.endDate.setHours(0,0,0);
+	}
 
 	if (node.name || comp) this.name = this._getPart(node, comp, "name");
 	if (node.loc || comp) this.location = this._getPart(node, comp, "loc");
