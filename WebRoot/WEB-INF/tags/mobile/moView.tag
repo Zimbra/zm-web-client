@@ -1,5 +1,6 @@
 <%@ tag body-content="scriptless" %>
 <%@ attribute name="title" rtexprvalue="true" required="true" %>
+<%@ attribute name="scale" rtexprvalue="true" required="false" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
 <%@ attribute name="onload" rtexprvalue="true" required="false" %>
@@ -12,7 +13,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
-<mo:head mailbox="${mailbox}" title="${title}"/>
+<mo:head mailbox="${mailbox}" title="${title}" scale="${scale}"/>
 <body <c:if test="${not empty onload}">onload="${onload}"</c:if> <c:if test="${not empty clazz}">class="${clazz}"</c:if>>
 <jsp:doBody/>
 </body>

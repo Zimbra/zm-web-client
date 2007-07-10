@@ -1,7 +1,7 @@
 
 /*---reset ----------------- */
 
-body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote,th,td {
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote {
 	margin:0;
 	padding:0;
 }
@@ -435,6 +435,33 @@ body > ul > li > a {
     text-decoration: none;
 }
 
+/*** mail ***/
+
+.zo_mv_fname {
+    font-size:medium;
+    color: gray;
+}
+
+.zo_mv_fvalue {
+    padding-left:5px;
+    font-size:medium;
+    color: black;
+}
+
+.zo_mv_subject {
+    font-weight: bold;
+    font-size:medium;
+    color: black;
+}
+
+.zo_mv_date {
+    font-size:small;
+    color:gray;
+}
+
+.zo_mv_body {
+    font-size:medium;
+}
 
 /*
  * Colors, for use in calendar and elsewhere.

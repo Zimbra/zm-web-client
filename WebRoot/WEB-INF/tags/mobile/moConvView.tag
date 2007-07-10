@@ -68,12 +68,12 @@
 
 
         <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-            <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='view' context="${context}"
+            <zm:currentResultUrl var="msgUrl" value="mosearch" cid="${convSummary.id}" id="${hit.id}" action='view' context="${context}"
                                  cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
 
             <c:if test="${empty selectedRow and hit.id eq message.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
             <tr>
-                <td class='zo_m_list_row' onclick="alert(this.getAttribute('href'))" href="${msgUrl}">
+                <td class='zo_m_list_row' onclick='window.location="${zm:jsEncode(msgUrl)}"'>
                     <table width=100%>
                         <tr>
                             <td style='width:40px; ' valign="middle" align="center">
