@@ -330,6 +330,8 @@ function(conv, msg, offset) {
 		this._expandedItems[cid] = [];
 	}
 	this._expandedItems[cid].push(item);
+
+	this._resetColWidth();
 };
 
 ZmConvListView.prototype._collapse =
@@ -348,6 +350,8 @@ function(item) {
 	} else {
 		this._doCollapse(item);
 	}
+
+	this._resetColWidth();
 };
 
 ZmConvListView.prototype._doCollapse =
