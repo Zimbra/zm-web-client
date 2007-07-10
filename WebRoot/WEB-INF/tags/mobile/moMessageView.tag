@@ -40,7 +40,7 @@
             <td class='zo_appt_view'>
                 <c:set var="extImageUrl" value=""/>
                 <c:if test="${empty param.xim}">
-                    <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
+                    <zm:currentResultUrl var="extImageUrl" id="${msg.id}" value="mosearch" action="view" context="${context}" xim="1"/>
                 </c:if>
                 <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
                                      action="compose" paction="view" id="${msg.id}"/>

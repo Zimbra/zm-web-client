@@ -54,6 +54,16 @@
         </td>
     </tr>
     <tr><td colspan=2><hr></td></tr>
+    <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
+        <tr>
+            <td colspan=2 class='DisplayImages' colspan=2>
+                <fmt:message key="externalImages"/>
+                &nbsp;<a id="DISPEXTIMG" href="${externalImageUrl}">
+                <fmt:message key="displayExternalImages"/>
+            </a>
+            </td>
+        </tr>
+    </c:if>
     <tr>
         <td width=100% id="iframeBody" class="zo_mv_body" valign='top' colspan="2">
             <mo:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}"/>
