@@ -55,26 +55,31 @@
     </tr>
     <tr><td colspan=2><hr></td></tr>
     <tr>
-        <td id="iframeBody" class="zo_mv_body" valign='top' colspan="2">
-            <app:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}"/>
+        <td width=100% id="iframeBody" class="zo_mv_body" valign='top' colspan="2">
+            <mo:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}"/>
             <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
             <c:if test="${not empty bodies}">
-                <br/>
                 <c:forEach var="addbody" items="${bodies}" varStatus="bstatus">
-                    <app:body message="${message}" body="${addbody}" mailbox="${mailbox}"
-                              theBody="${zm:getPartHtmlContent(addbody, message)}"/>
+                    <mo:body message="${message}" body="${addbody}" mailbox="${mailbox}"
+                             theBody="${zm:getPartHtmlContent(addbody, message)}"/>
                 </c:forEach>
             </c:if>
-            <c:if test="${not empty message.attachments}">
-                <hr/>
-                <a name="attachments${message.partName}"></a>
-                <mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
-            </c:if>
-                <c:if test="${not empty param.debug}">
-                    <pre>${fn:escapeXml(message)}</pre>
-                </c:if>
         </td>
     </tr>
+
+    <c:if test="${not empty message.attachments}">
+        <tr><td colspan=2><hr/><a name="attachments${message.partName}"></a></td></tr>
+        <tr>
+            <td colspan=2>
+                <mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
+            </td>
+        </tr>
+    </c:if>
+    <c:if test="${not empty param.debug}">
+        <tr><td colspan=2>
+            <pre>${fn:escapeXml(message)}</pre>
+        </td></tr>
+    </c:if>
 </table>
 
 <%--

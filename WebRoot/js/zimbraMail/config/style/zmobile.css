@@ -440,6 +440,7 @@ body > ul > li > a {
 .zo_mv_fname {
     font-size:medium;
     color: gray;
+  text-align: right;
 }
 
 .zo_mv_fvalue {

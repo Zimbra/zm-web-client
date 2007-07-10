@@ -11,7 +11,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 
 <%--compute body up front, so attachments refereneced in multipart/related don't show up --%>
 <c:set var="body" value="${message.body}"/>
@@ -71,51 +71,33 @@
             <tr>
                 <td colspan=2><hr></td>
             </tr>
+
             <tr>
-                <td id="iframeBody" class=MsgBody>
-                    <c:choose>
-                        <c:when test="${body.isTextHtml}">
-                            <c:url var="iframeUrl" value="/h/imessage">
-                                <c:param name="id" value="${message.id}"/>
-                                <c:param name="part" value="${message.partName}"/>
-                                <c:param name="xim" value="${param.xim}"/>
-                            </c:url>
-                            <noscript>
-                                <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" border="0" frameBorder="0" src="${iframeUrl}"></iframe>
-                            </noscript>
-                            <script type="text/javascript">
-                                (function() {
-                                    var iframe = document.createElement("iframe");
-                                    iframe.style.width = "100%";
-                                    iframe.style.height = "20px";
-                                    iframe.scrolling = "auto";
-                                    iframe.marginWidth = 0;
-                                    iframe.marginHeight = 0;
-                                    iframe.border = 0;
-                                    iframe.frameBorder = 0;
-                                    iframe.style.border = "none";
-                                    document.getElementById("iframeBody").appendChild(iframe);
-                                    var doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
-                                    doc.open();
-                                    doc.write("${zm:jsEncode(theBody)}");
-                                    doc.close();
-                                })();
-                            </script>
-                        </c:when>
-                        <c:otherwise>
-                            ${theBody}
-                        </c:otherwise>
-                    </c:choose>
-                    <c:if test="${not empty message.attachments}">
-                        <hr/>
-                        <a name="attachments${message.partName}"/>
-                        <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
-                    </c:if>
-                    <c:if test="${not empty param.debug}">
-                        <pre>${fn:escapeXml(message.mimeStructure)}</pre>
+                <td width=100% id="iframeBody" class="zo_mv_body" valign='top' colspan="2">
+                    <mo:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}"/>
+                    <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
+                    <c:if test="${not empty bodies}">
+                        <c:forEach var="addbody" items="${bodies}" varStatus="bstatus">
+                            <mo:body message="${message}" body="${addbody}" mailbox="${mailbox}"
+                                     theBody="${zm:getPartHtmlContent(addbody, message)}"/>
+                        </c:forEach>
                     </c:if>
                 </td>
             </tr>
+
+            <c:if test="${not empty message.attachments}">
+            <tr><td colspan=2><hr/><a name="attachments${message.partName}"></a></td></tr>
+            <tr>
+                <td colspan=2>
+                    <mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
+                </td>
+            </tr>
+            </c:if>
+            <c:if test="${not empty param.debug}">
+            <tr><td colspan=2>
+                <pre>${fn:escapeXml(message)}</pre>
+            </td></tr>
+            </c:if>
         </table>
     </div>
 

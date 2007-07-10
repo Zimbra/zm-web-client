@@ -116,6 +116,11 @@
         <name>attachments</name>
         <path>/WEB-INF/tags/mobile/moAttachments.tag</path>
      </tag-file>
+
+    <tag-file>
+        <name>body</name>
+        <path>/WEB-INF/tags/mobile/moBody.tag</path>
+     </tag-file>
 </taglib>
 
         
