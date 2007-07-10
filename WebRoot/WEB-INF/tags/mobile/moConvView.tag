@@ -4,6 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <mo:handleError>
 
@@ -151,7 +152,7 @@
                                     <table width=100%>
                                         <tr>
                                             <td style='width:40px; ' valign="middle" align="center">
-                                                <img src="/zimbra/images/mail/MsgStatusReply.gif"/>
+                                                <app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : hit.messageHit.statusImage}"/>
                                             </td>
                                             <td>
                                                 <table width=100%>
