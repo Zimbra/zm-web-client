@@ -10,7 +10,7 @@
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 
 <body>
-<zm:getUserAgent var="ua"/>
+<zm:getUserAgent var="ua" session="true"/>
 <p>
 
     getServerName (${zm:getServerName(pageContext)})
