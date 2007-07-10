@@ -784,7 +784,11 @@ if (ext == null) ext = "";
   ZimbraWebClient webapp, so if there are any java changes, another
   deploy will have to be run.
   -->
-  <target name="dev-sync" depends='templates' description="Web Client Quick Sync">
+  <target name="dev-sync" depends='templates,dev-sync-copy' description="Web Client Quick Sync">
+  </target>
+  
+  <!-- copy files only (without munging templates) -->
+  <target name='dev-sync-copy'>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}" failonerror="false">
         <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="skins/**" />
         <fileset dir="build/WebRoot" includes="skins/**/*.js" />
