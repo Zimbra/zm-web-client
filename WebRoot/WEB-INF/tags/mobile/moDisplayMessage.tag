@@ -56,11 +56,11 @@
     <tr><td colspan=2><hr></td></tr>
     <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
         <tr>
-            <td colspan=2 class='DisplayImages' colspan=2>
-                <fmt:message key="externalImages"/>
-                &nbsp;<a id="DISPEXTIMG" href="${externalImageUrl}">
-                <fmt:message key="displayExternalImages"/>
-            </a>
+            <td colspan=2>
+                <div class='zo_dispimages'>
+                    <fmt:message key="externalImages"/>
+                    &nbsp;<a id="DISPEXTIMG" href="${externalImageUrl}"><fmt:message key="displayExternalImages"/></a>
+                </div>
             </td>
         </tr>
     </c:if>

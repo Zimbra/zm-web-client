@@ -20,6 +20,8 @@
             </c:if>
         </c:forEach>
     </c:if>
+
+    <zm:currentResultUrl var="closeUrl" value="mosearch" context="${context}" action="view" cid="${param.cid}" cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
 </mo:handleError>
 
 <mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" scale="true">

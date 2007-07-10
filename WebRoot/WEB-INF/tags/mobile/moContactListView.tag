@@ -19,7 +19,13 @@
             <td>
                 <table width=100% cellspacing="0" cellpadding="0">
                     <tr class='zo_toolbar' width=100%>
+                        <td align=left style="width:60px">
+                            <mo:searchPageLeft urlTarget="mosearch" context="${context}" keys="false"/>
+                        </td>
                         <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
+                        <td align=right style="width:60px">
+                            <mo:searchPageRight urlTarget="mosearch" context="${context}" keys="false"/>
+                        </td>
                     </tr>
                 </table>
             </td>

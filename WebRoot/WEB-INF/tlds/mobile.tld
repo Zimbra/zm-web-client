@@ -121,6 +121,17 @@
         <name>body</name>
         <path>/WEB-INF/tags/mobile/moBody.tag</path>
      </tag-file>
+
+    <tag-file>
+        <name>searchPageLeft</name>
+        <path>/WEB-INF/tags/mobile/moSearchPageLeft.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>searchPageRight</name>
+        <path>/WEB-INF/tags/mobile/moSearchPageRight.tag</path>
+     </tag-file>
+
 </taglib>
 
         

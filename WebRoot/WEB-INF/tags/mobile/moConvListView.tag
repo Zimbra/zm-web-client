@@ -4,6 +4,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
@@ -20,7 +21,13 @@
             <td>
                 <table width=100% cellspacing="0" cellpadding="0">
                     <tr class='zo_toolbar' width=100%>
+                        <td align=left style="width:60px">
+                            <mo:searchPageLeft urlTarget="mosearch" context="${context}" keys="false"/>
+                        </td>
                         <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
+                        <td align=right style="width:60px">
+                            <mo:searchPageRight urlTarget="mosearch" context="${context}" keys="false"/>
+                        </td>
                     </tr>
                 </table>
             </td>
@@ -79,6 +86,21 @@
                             </td>
                         </tr>
                     </c:forEach>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table width=100% cellspacing="0" cellpadding="0">
+                    <tr class='zo_toolbar' width=100%>
+                        <td align=left style="width:60px">
+                            <mo:searchPageLeft urlTarget="mosearch" context="${context}" keys="false"/>
+                        </td>
+                        <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
+                        <td align=right style="width:60px">
+                            <mo:searchPageRight urlTarget="mosearch" context="${context}" keys="false"/>
+                        </td>
+                    </tr>
                 </table>
             </td>
         </tr>

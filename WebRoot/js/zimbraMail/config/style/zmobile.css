@@ -81,7 +81,7 @@ body > h1 {
     font-size: medium;
     font-weight: bold;
 }
-.zo_toolbar .zo_button {
+.zo_button {
     -webkit-border-image: url(/images/mobile/iPhoneButton.png) 0 5 0 5;
     -webkit-border-radius: 0;
     border-width: 0 5px 0 5px;
@@ -177,6 +177,18 @@ body > ul > li > a {
 /************************************************************************************************/
 
 /* mail */
+
+
+.zo_dispimages {
+        cursor: pointer;
+        background-color: #FFFFCC;
+        padding: 7px;
+        font-size: 10pt;
+        /*border-bottom: 1px solid #777777;*/
+        border:1px solid #333333;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
 
 .zo_m_list_row {
   border-bottom: 1px solid #E0E0E0;
