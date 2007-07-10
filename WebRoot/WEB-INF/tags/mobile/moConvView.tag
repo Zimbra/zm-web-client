@@ -49,7 +49,7 @@
 
 
 
-    <mo:view mailbox="${mailbox}" title="${message.subject}" context="${context}" scale="${convSummary.messageCount eq 1}">
+    <mo:view mailbox="${mailbox}" title="${message.subject}" context="${context}" scale="${true or convSummary.messageCount eq 1}">
 
         <table width=100% cellspacing="0" cellpadding="0">
             <tr>

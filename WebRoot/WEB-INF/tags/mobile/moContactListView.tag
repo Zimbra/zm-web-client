@@ -47,14 +47,41 @@
                 <table width=100% cellpadding="0" cellspacing="0" class='zo_ab_list'>
                     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                         <zm:currentResultUrl var="contactUrl" value="/m/mosearch" action="view" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
-                        <tr onclick='window.location="${zm:jsEncode(contactUrl)}"'>
+                        <tr  onclick='window.location="${zm:jsEncode(contactUrl)}"'>
                             <td style='width:5px'>&nbsp;</td>
                             <td><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
-                            <td>
+                            <td class='zo_ab_list_arrow'>
                                     ${zm:truncate(fn:escapeXml(empty hit.contactHit.fileAsStr ? '<None>' : hit.contactHit.fileAsStr),50, true)}
                             </td>
                         </tr>
                     </c:forEach>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table width=100% cellspacing="0" cellpadding="0">
+                    <tr class='zo_toolbar'>
+                        <td>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td align=right>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td>
+                                        <mo:searchPageLeft urlTarget="mosearch" context="${context}" keys="false"/>
+                                    </td>
+                                    <td>
+                                        <mo:searchPageRight urlTarget="mosearch" context="${context}" keys="false"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
                 </table>
             </td>
         </tr>

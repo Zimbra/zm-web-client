@@ -31,9 +31,13 @@
             <td>
                 <table width=100% cellspacing="0" cellpadding="0">
                     <tr class='zo_toolbar'>
-                        <td><a href="${closeUrl}" class='zo_button'>
-                            <fmt:message key="close"/>
-                        </a></td>
+                        <td>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td><a href="${closeUrl}" class='zo_button'><fmt:message key="close"/></a></td>
+                                </tr>
+                            </table>
+                        </td>
                     </tr>
                 </table>
             </td>

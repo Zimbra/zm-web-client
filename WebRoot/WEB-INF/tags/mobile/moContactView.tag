@@ -12,16 +12,22 @@
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 </mo:handleError>
 
-<mo:view mailbox="${mailbox}" title="${contact.displayFileAs}" context="${null}" clazz="zo_obj_body">
+<mo:view mailbox="${mailbox}" title="${contact.displayFileAs}" context="${null}" clazz="zo_obj_body" scale="true">
 
     <table width=100% cellpadding="0" cellspacing="0" border=0>
         <tr>
             <td>
                 <table width=100% cellspacing="0" cellpadding="0">
                     <tr class='zo_toolbar'>
-                        <td><a href="${closeUrl}" class='zo_button'>
-                            <fmt:message key="close"/>
-                        </a></td>
+                        <td>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td><a href="${closeUrl}" class='zo_button'>
+                                        <fmt:message key="close"/>
+                                    </a></td>
+                                </tr>
+                            </table>
+                        </td>
                     </tr>
                 </table>
             </td>

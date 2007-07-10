@@ -409,6 +409,10 @@ body > ul > li > a {
 }
 
 
+.zo_ab_list_arrow {
+  background: url(/images/mobile/iPhoneArrow.png) no-repeat right center;
+}
+
 .zo_cv_cont {
     border:1px solid #333333;
     -moz-border-radius: 10px;
