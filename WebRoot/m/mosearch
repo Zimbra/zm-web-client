@@ -6,11 +6,11 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
-<mob:handleError>
+<mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
     <zm:computeSearchContext var="context" usecache="true"/>
-</mob:handleError>
+</mo:handleError>
 
  <%-- switch based on context search types --%>
 <c:choose>
