@@ -8,15 +8,17 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<c:if test="${context.searchResult.hasPrevPage}">
+<c:choose>
+<c:when test="${context.searchResult.hasPrevPage}">
     <zm:prevResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
     <a class='zo_button' href="${url}">
         <fmt:message key="MO_PREV"/>
         <%--<img src="<c:url value='/images/arrows/PreviousPage.gif'/>" border="0"/>--%>
     </a>
-</c:if>
-<c:if test="${!context.searchResult.hasPrevPage}">
+</c:when>
+<c:otherwise>
         <a class='zo_button' style='color:gray'>
             <fmt:message key="MO_PREV"/>
         </a>
-</c:if>
+</c:otherwise>
+</c:choose>
