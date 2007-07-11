@@ -560,16 +560,32 @@ if (ext == null) ext = "";
   </target>
 
   <target name='customer-skin' if='env.CUSTOMER_SKIN'>
-	<dirset id='customer.skins.dirset' dir='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot' includes='skins/*'>
-	</dirset>
+	<dirset id='customer.skins.dirset' dir='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot' includes='skins/*' />
 	<pathconvert property='customer.skins.dirs' refid='customer.skins.dirset' pathsep=','>
-		<flattenmapper />	
+		<flattenmapper />
 	</pathconvert>
 	<echo>dirs: ${customer.skins.dirs}</echo>
-	<foreach target='build-skin-images' list='${customer.skins.dirs}' param='skindir'>
-	  <param name="csspathprefix" value="/zimbra/img/"/>
-	  <param name="skinbasedir" value="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot"/>
-	</foreach>
+	<for list='${customer.skins.dirs}' param='skindir'>
+		<sequential>
+			<if>
+				<available file="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot/skins/@{skindir}/img/icons" />
+				<then>
+					<mkdir dir="${build.dir}/WebRoot/skins/@{skindir}/img/icons" />
+					<copy todir="${build.dir}/WebRoot/skins/@{skindir}/img/icons">
+						<fileset dir="img/loRes" />
+					</copy>
+					<copy todir="${build.dir}/WebRoot/skins/@{skindir}/img/icons" overwrite="true">
+						<fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot/skins/@{skindir}/img/icons" />
+					</copy>
+				</then>
+			</if>
+			<antcall target='build-skin-images'>
+				<param name="skindir" value="@{skindir}" />
+				<param name="csspathprefix" value="/zimbra/img/"/>
+				<param name="skinbasedir" value="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot"/>
+			</antcall>
+		</sequential>
+	</for>
   </target>
 
   <target name='package-skin'>
