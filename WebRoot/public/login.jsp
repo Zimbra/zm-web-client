@@ -65,7 +65,10 @@
         		<c:when test="${client eq 'standard'}">
 		            <c:redirect url="/h/search"/>
         		</c:when>
-		        <c:otherwise>
+                <c:when test="${client eq 'mobile'}">
+		            <c:redirect url="/m/main"/>
+        		</c:when>
+                <c:otherwise>
 		            <jsp:forward page="/public/launchZCS.jsp"/>
 		        </c:otherwise>
 		    </c:choose>
@@ -126,6 +129,7 @@
     <title><fmt:message key="zimbraTitle"/></title>
     <c:set var="skin" value="${empty cookie.ZM_SKIN ? 'sand' : cookie.ZM_SKIN.value}"/>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
+    <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;"/>
     <style type="text/css">
          @import url( "<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" );
     </style>
@@ -227,14 +231,18 @@
                                                     <%-- set client select default based on user agent. --%>
                                                     <zm:getUserAgent var="ua" session="false"/>
                                                     <c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up)}"/>
-                                                    <c:set var="client" value="${useStandard ? 'standard' : 'preferred' }"/>                                                
+                                                    <c:set var="useMobile" value="${ua.isiPhone}"/>
+                                                    <c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
                                                 </c:if>
 
                                                 <select name="client">
 			                                    	<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
 			                                    	<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
 			                                    	<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
-			                                    </select>
+                                                    <c:if test="${useMoble or client eq 'mobile'}">
+                                                        <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>                                                        
+                                                    </c:if>
+                                                </select>
 			                                </td>
                                         </tr>
 										<tr>
