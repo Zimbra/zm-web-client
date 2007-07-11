@@ -27,6 +27,7 @@
 <body <c:if test="${not empty onload}">onload="${onload}"</c:if>>
 <c:choose>
 <c:when test="${skin eq 'velodrome2'}">
+<c:set var="iconPath" value="/skins/velodrome2/img/icons" scope="request"/>
 <table id='skin_table_outer' width='100%' border=0 class='skin_table fixed_table' cellspacing=0 cellpadding=0 border=0>
 		<colgroup>
 			<col id='skin_col_L'>
@@ -228,7 +229,7 @@
 </table>
 </c:when>
 <c:otherwise>
-
+<c:set value="/images" var="iconPath" scope="request"/>
 <table width=100% cellpadding="0" cellspacing="0">
     <tr>
         <td class='TopContent' colspan=3  align=right valign=top>&nbsp;</td>
@@ -266,13 +267,13 @@
             <table cellpadding=2 cellspacing=0>
                 <tr>
                     <td align=right>
-                        <a target=_new href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><img alt='<fmt:message key="ALT_APP_LINK_HELP"/>' src="<c:url value='/images/common/Help.gif'/>" border="0"/> <fmt:message key="help"/></a>
+                        <a target=_new href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="common/Help.gif"  border="0"/> <fmt:message key="help"/></a>
                     </td>
                     <td align=right>
                         &nbsp;
                     </td>
                     <td align=right>
-                        <a href="<c:url value="/?loginOp=logout"/>"><img alt='<fmt:message key="ALT_APP_LINK_LOGOFF"/>' src="<c:url value='/images/common/Logoff.gif'/>" border="0"/> <fmt:message key="logOut"/></a>
+                        <a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="common/Logoff.gif" border="0"/> <fmt:message key="logOut"/></a>
                     </td>
                 </tr>
             </table>
