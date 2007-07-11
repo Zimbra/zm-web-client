@@ -11,7 +11,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <%--compute body up front, so attachments refereneced in multipart/related don't show up --%>
 <c:set var="body" value="${message.body}"/>

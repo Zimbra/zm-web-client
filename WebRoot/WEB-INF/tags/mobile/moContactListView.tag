@@ -4,7 +4,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
@@ -49,7 +48,7 @@
                         <zm:currentResultUrl var="contactUrl" value="/m/mosearch" action="view" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
                         <tr  onclick='window.location="${zm:jsEncode(contactUrl)}"'>
                             <td style='width:5px'>&nbsp;</td>
-                            <td><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
+                            <td><mo:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
                             <td class='zo_ab_list_arrow'>
                                     ${zm:truncate(fn:escapeXml(empty hit.contactHit.fileAsStr ? '<None>' : hit.contactHit.fileAsStr),50, true)}
                             </td>

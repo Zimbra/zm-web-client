@@ -7,8 +7,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-
 
 <table cellspacing=5 cellpadding=5>
 <c:forEach var="part" items="${message.attachments}">
@@ -32,7 +30,7 @@
                 <table cellspacing=4>
                     <tr>
                         <td>
-                            <app:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}" title="${fn:escapeXml(part.contentType)}"/>
+                            <mo:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}" title="${fn:escapeXml(part.contentType)}"/>
                         </td>
                         <td>
                             <a href="${url}&disp=a"><b>${fn:escapeXml(pname)}</b></a> (${part.displaySize})

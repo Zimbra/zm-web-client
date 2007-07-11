@@ -1,5 +1,5 @@
 <%@ tag body-content="scriptless" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -18,9 +18,9 @@
             <c:redirect url="/?loginOp=relogin&loginErrorCode=${error.code}"/>
         </c:when>
         <c:otherwise>
-            <app:status style="Critical">
+            <mo:status style="Critical">
                 <fmt:message key="${error.code}"/>
-            </app:status>
+            </mo:status>
             <!-- ${fn:escapeXml(error.stackStrace)} -->
         </c:otherwise>
     </c:choose>
