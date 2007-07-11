@@ -132,6 +132,16 @@
         <path>/WEB-INF/tags/mobile/moSearchPageRight.tag</path>
      </tag-file>
 
+    <tag-file>
+        <name>contactSection</name>
+        <path>/WEB-INF/tags/mobile/moContactSection.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>contactField</name>
+        <path>/WEB-INF/tags/mobile/moContactField.tag</path>
+     </tag-file>
+    
 </taglib>
 
         
