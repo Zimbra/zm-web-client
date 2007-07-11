@@ -8,7 +8,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<c:url value="${iconPath}/${src}" var="src"/>
+<c:url value="${not empty requestScope.iconPath ? requestScope.iconPath : '/images'}/${src}" var="src"/>
 <c:if test="${not empty altkey}"><fmt:message key="${altkey}" var="alt"/></c:if>
 <c:if test="${not empty title}"><fmt:message key="${title}" var="title"/></c:if> 
 <c:if test="${disabled}"><c:set var="clazz" value="${clazz} ImgDisabled"/></c:if>
