@@ -239,7 +239,7 @@
 			                                    	<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
 			                                    	<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
 			                                    	<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
-                                                    <c:if test="${useMoble or client eq 'mobile'}">
+                                                    <c:if test="${useMobile or client eq 'mobile'}">
                                                         <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>                                                        
                                                     </c:if>
                                                 </select>
