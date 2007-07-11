@@ -784,6 +784,11 @@ function(refresh) {
 		var account = this._appCtxt.multiAccounts ? this._appCtxt.getMainAccount() : null;
 		this.resetOverview(this.getOverviewId(account));
 	}
+
+	var inbox = this._appCtxt.getById(ZmFolder.ID_INBOX);
+	if (inbox) {
+		this.setNewMailNotice(inbox);
+	}
 };
 
 ZmMailApp.prototype.handleOp =
@@ -1044,6 +1049,16 @@ function() {
 ZmMailApp.prototype.compose =
 function(params) {
 	AjxDispatcher.run("GetComposeController").doAction(params);
+};
+
+ZmMailApp.prototype.setNewMailNotice =
+function(organizer) {
+	var appChooser = this._appCtxt.getAppController().getAppChooser();
+	if (appChooser) {
+		var mb = appChooser.getButton(ZmApp.MAIL);
+		var icon = (organizer.numUnread > 0) ? "EnvelopeOpen" : "MailApp";
+		mb.setImage(icon);
+	}
 };
 
 /**

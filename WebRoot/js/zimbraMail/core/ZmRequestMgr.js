@@ -308,13 +308,6 @@ function(refresh) {
 	var unread = {};
 	this._loadTree(ZmOrganizer.TAG, unread, refresh.tags);
 	this._loadTree(ZmOrganizer.FOLDER, unread, refresh.folder[0], "folder");
-	
-/*
-	var inbox = this._appCtxt.getById(ZmFolder.ID_INBOX);
-	if (inbox) {
-		this._controller._statusView.setIconVisible(ZmStatusView.ICON_INBOX, inbox.numUnread > 0);
-	}
-*/
 
 	// XXX: temp, get additional share info (see bug #4434)
 	if (refresh.folder) {
@@ -513,11 +506,11 @@ function(ev) {
 			var search = this._appCtxt.getCurrentSearch();
 			if (search && id && (id == search.folderId || id == search.tagId))
 				Dwt.setTitle(search.getTitle());
-/*
-			if (id == ZmFolder.ID_INBOX) {
-				this._controller._statusView.setIconVisible(ZmStatusView.ICON_INBOX,  organizer.numUnread > 0);
+
+			var mailApp = this._appCtxt.getApp(ZmApp.MAIL);
+			if (mailApp) {
+				mailApp.setNewMailNotice(organizer);
 			}
-*/
 		}
 	}
 };

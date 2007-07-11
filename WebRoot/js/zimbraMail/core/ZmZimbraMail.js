@@ -366,7 +366,7 @@ function(params, result) {
 	}
 
 	if (!this._components[ZmAppViewMgr.C_APP_CHOOSER]) {
-		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
+		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._appChooser = this._createAppChooser();
 	}
 
 	var kbMgr = this._appCtxt.getKeyboardMgr();
@@ -1367,11 +1367,6 @@ function() {
 	return appChooser;
 };
 
-ZmZimbraMail.prototype.setStatusMsg =
-function(msg, level, detail) {
-	this._statusView.setStatusMsg(msg, level, detail);
-};
-
 ZmZimbraMail.prototype._appButtonListener =
 function(ev) {
 	try {
@@ -1387,6 +1382,16 @@ function(ev) {
 	} catch (ex) {
 		this._handleException(ex, this._appButtonListener, ev, false);
 	}
+};
+
+ZmZimbraMail.prototype.getAppChooser =
+function() {
+	return this._appChooser;
+};
+
+ZmZimbraMail.prototype.setStatusMsg =
+function(msg, level, detail) {
+	this._statusView.setStatusMsg(msg, level, detail);
 };
 
 ZmZimbraMail.prototype.getKeyMapName =
