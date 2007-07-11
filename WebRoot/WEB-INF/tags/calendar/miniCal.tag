@@ -39,11 +39,11 @@
     <tr class='ZhCalMiniTitlebar'>
         <td align=center>
             <app:calendarUrl var="prevYear" timezone="${timezone}" rawdate="${zm:addYear(date,-1)}"/>
-            <a href="${prevYear}"><img alt='<fmt:message key="ALT_CAL_MINI_PREV_YEAR"/>' src="<c:url value='/images/dwt/FastRevArrowSmall.gif'/>" border="0"/></a>
+            <a href="${prevYear}"><app:img altkey="ALT_CAL_MINI_PREV_YEAR" src="dwt/FastRevArrowSmall.gif" border="0"/></a>
         </td>
         <td align=center>
             <app:calendarUrl var="prevMonth" timezone="${timezone}" rawdate="${zm:addMonth(date,-1)}"/>
-            <a href="${prevMonth}"><img alt='<fmt:message key="ALT_CAL_MINI_PREV_MONTH"/>' src="<c:url value='/images/dwt/RevArrowSmall.gif'/>" border="0"/></a>
+            <a href="${prevMonth}"><app:img altkey="ALT_CAL_MINI_PREV_MONTH" src="dwt/RevArrowSmall.gif" border="0"/></a>
         </td>
         <app:calendarUrl var="todayUrl" nodate="true"/>
         <td align=center nowrap colspan=3 class='ZhCalMiniTitleCell'>
@@ -51,12 +51,12 @@
         </td>
         <td align=center>
             <app:calendarUrl var="nextMonth" timezone="${timezone}" rawdate="${zm:addMonth(date,1)}"/>
-             <a href="${nextMonth}"><img alt='<fmt:message key="ALT_CAL_MINI_NEXT_MONTH"/>' src="<c:url value='/images/dwt/FwdArrowSmall.gif'/>" border="0"/></a>
+             <a href="${nextMonth}"><app:img altkey="ALT_CAL_MINI_NEXT_MONTH" src="dwt/FwdArrowSmall.gif" border="0"/></a>
 
         </td>
         <td align=center>
             <app:calendarUrl var="nextYear" timezone="${timezone}" rawdate="${zm:addYear(date,1)}"/>
-             <a href="${nextYear}"><img alt='<fmt:message key="ALT_CAL_MINI_NEXT_YEAR"/>' src="<c:url value='/images/dwt/FastFwdArrowSmall.gif'/>" border="0"/></a>
+             <a href="${nextYear}"><app:img altkey="ALT_CAL_MINI_NEXT_YEAR" src="dwt/FastFwdArrowSmall.gif" border="0"/></a>
 
         </td>
     </tr>

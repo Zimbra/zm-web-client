@@ -232,7 +232,7 @@
                                         <c:set var="keyOffset" value="${3}"/>
                                         <td style='padding: 0 2px 0 2px'>
                                             <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=accept">
-                                                <img src="<c:url value="/images/common/Check.gif"/>" alt=""/>
+                                                <app:img src="common/Check.gif" alt=""/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyAccept"/></span>
                                             </a>
@@ -240,7 +240,7 @@
                                         <td><div class='vertSep'></div></td>
                                         <td style='padding: 0 2px 0 2px'>
                                             <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=tentative">
-                                                <img src="<c:url value="/images/common/QuestionMark.gif"/>" alt=""/>
+                                                <app:img src="common/QuestionMark.gif" alt=""/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyTentative"/></span>
                                             </a>
@@ -248,7 +248,7 @@
                                         <td><div class='vertSep'></div></td>
                                         <td style='padding: 0 2px 0 2px'>
                                             <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=decline">
-                                                <img src="<c:url value="/images/common/Cancel.gif"/>" alt=""/>
+                                                <app:img src="common/Cancel.gif" alt=""/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyDecline"/></span>
                                             </a>
@@ -267,7 +267,7 @@
                                 <tr>
                                     <td style='padding: 0 2px 0 2px'>
                                         <a target="_blank" href="${newWindowUrl}">
-                                            <img src="<c:url value="/images/common/OpenInNewWindow.gif"/>" alt="<fmt:message key="newWindow"/>" title="<fmt:message key="newWindow"/>"/>
+                                            <app:img src="common/OpenInNewWindow.gif" altkey="newWindow" title="newWindow"/>
                                         </a>
                                     </td>
                                 </tr>

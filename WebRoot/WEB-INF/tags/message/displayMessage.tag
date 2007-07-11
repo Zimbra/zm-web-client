@@ -181,7 +181,7 @@
                                 <c:if test="${showInviteReply}">
                                     <td style='padding: 0 2px 0 2px'>
                                         <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="${composeUrl}&op=accept">
-                                            <img src="<c:url value="/images/common/Check.gif"/>" alt=""/>
+                                            <app:img src="common/Check.gif" alt=""/>
                                             &nbsp;
                                             <span><fmt:message key="replyAccept"/></span>
                                         </a>
@@ -189,7 +189,7 @@
                                     <td><div class='vertSep'></div></td>
                                     <td style='padding: 0 2px 0 2px'>
                                         <a <c:if test="${not isPart}">id="OPTENT"</c:if> href="${composeUrl}&op=tentative">
-                                            <img src="<c:url value="/images/common/QuestionMark.gif"/>" alt=""/>
+                                            <app:img src="common/QuestionMark.gif" alt=""/>
                                             &nbsp;
                                             <span><fmt:message key="replyTentative"/></span>
                                         </a>
@@ -197,7 +197,7 @@
                                     <td><div class='vertSep'></div></td>
                                     <td style='padding: 0 2px 0 2px'>
                                         <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="${composeUrl}&op=decline">
-                                            <img src="<c:url value="/images/common/Cancel.gif"/>" alt=""/>
+                                            <app:img src="common/Cancel.gif" alt=""/>
                                             &nbsp;
                                             <span><fmt:message key="replyDecline"/></span>
                                         </a>
@@ -206,7 +206,7 @@
                                 </c:if>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${composeUrl}&op=reply">
-                                        <img src="<c:url value="/images/mail/Reply.gif"/>" alt=""/>
+                                        <app:img src="mail/Reply.gif" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="reply"/></span>
                                     </a>
@@ -214,7 +214,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${composeUrl}&op=replyAll">
-                                        <img src="<c:url value="/images/mail/ReplyAll.gif"/>" alt=""/>
+                                        <app:img src="mail/ReplyAll.gif" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="replyAll"/></span>
                                     </a>
@@ -222,7 +222,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${composeUrl}&op=forward">
-                                        <img src="<c:url value="/images/mail/Forward.gif"/>" alt=""/>
+                                        <app:img src="mail/Forward.gif" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="forward"/></span>
                                     </a>
@@ -241,7 +241,7 @@
                                             <c:param name="sq" value='conv:"${message.conversationId}"'/>
                                         </c:url>
                                         <a id="OPSHOWCONV" href="${convUrl}">
-                                            <img src="<c:url value="/images/mail/Conversation.gif"/>" alt="<fmt:message key="showConversation"/>" title="<fmt:message key="showConversation"/>"/>
+                                            <app:img src="mail/Conversation.gif" altkey="showConversation" title="showConversation"/>
                                         </a>
                                     </td>
                                 </c:if>
@@ -249,7 +249,7 @@
                                 <c:if test="${not empty newWindowUrl}">
                                 <td style='padding: 0 2px 0 2px'>
                                     <a id="OPNEWWIN" target="_blank" href="${newWindowUrl}">
-                                        <img src="<c:url value="/images/common/OpenInNewWindow.gif"/>" alt="<fmt:message key="newWindow"/>" title="<fmt:message key="newWindow"/>"/>
+                                        <app:img src="common/OpenInNewWindow.gif" altkey="newWindow" title="newWindow"/>
                                     </a>
                                 </td>
                                 </c:if>
@@ -257,7 +257,7 @@
                                 <c:if test="${not isPart}">
                                 <td style='padding: 0 2px 0 2px'>
                                     <a id="OPSHOWORIG" target="_blank" href="/service/home/~/?id=${message.id}&auth=co">
-                                        <img src="<c:url value="/images/mail/Message.gif"/>" alt="<fmt:message key="showOrig"/>" title="<fmt:message key="showOrig"/>"/>
+                                        <app:img src="mail/Message.gif" altkey="showOrig" title="showOrig"/>
                                     </a>
                                     </c:if>
                                 </td>

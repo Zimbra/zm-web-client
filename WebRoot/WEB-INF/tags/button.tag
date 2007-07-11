@@ -10,7 +10,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:if test="${not empty src}">
-<c:url value="/images/${src}" var="src"/>
+  <c:url value="${iconPath}/${src}" var="src"/>
 </c:if>
 <c:if test="${not empty text}"><fmt:message key="${text}" var="text"/></c:if>
 <c:if test="${not empty tooltip}"><fmt:message key="${tooltip}" var="tooltip"/></c:if>
