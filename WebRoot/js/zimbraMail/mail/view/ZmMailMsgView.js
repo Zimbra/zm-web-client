@@ -121,9 +121,9 @@ ZmMailMsgView.prototype.set =
 function(msg) {
 	if (this._msg && (this._msg.id == msg.id)) return;
 
+	var oldMsg = this._msg;
 	this.reset();
 	var contentDiv = this.getHtmlElement();
-	var oldMsg = this._msg;
 	this._msg = msg;
 	this._dateObjectHandlerDate = msg.sentDate
 		? new Date(msg.sentDate)
@@ -369,7 +369,7 @@ function(msg, oldMsg) {
 
 	// notify zimlets that a new message has been opened
 	if (this._appCtxt.zimletsPresent()) {
-		this._appCtxt.getZimletMgr().notifyZimlets("onMsgView", msg, oldMsg);
+		this._appCtxt.getZimletMgr().notifyZimlets("onMsgView", msg, oldMsg, this);
 	}
 };
 
