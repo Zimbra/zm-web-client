@@ -135,7 +135,7 @@ function() {
 * @param used	[Array]		array of addressed that have been used. If not null,
 *		then this method will omit those addresses from the returned vector and
 *		will populate used with the additional new addresses
-* @param addAsContact	[boolean]	true if emails should be converted to ZmContact's
+* @param addAsContact	[boolean]	true if emails should be converted to ZmContacts
 */
 ZmMailMsg.prototype.getAddresses =
 function(type, used, addAsContact) {
