@@ -574,6 +574,10 @@ if (ext == null) ext = "";
 					<copy todir="${build.dir}/WebRoot/skins/@{skindir}/img/icons">
 						<fileset dir="img/loRes" />
 					</copy>
+					<mkdir dir="${build.dir}/WebRoot/skins/@{skindir}/img/icons/dwt"/>
+					<copy todir="${build.dir}/WebRoot/skins/@{skindir}/img/icons/dwt">
+						<fileset dir="${ajaxdwt.images.dir}" />
+					</copy>
 					<copy todir="${build.dir}/WebRoot/skins/@{skindir}/img/icons" overwrite="true">
 						<fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot/skins/@{skindir}/img/icons" />
 					</copy>
