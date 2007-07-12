@@ -834,7 +834,7 @@ line-height:normal;
 .ZmContactCard-selected-right,
 .ZmContactCard-drag,
 .ZmContactCard-selected-drag,
-.ZmContactCard-dnd {
+.ZmContactCard-dragProxy {
 	@AppBg@
 	@ContactsCardSize@
 	overflow: hidden;

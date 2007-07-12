@@ -1,3 +1,188 @@
+<!----------------------------------------------------------------------------->
+<!---------------------------- ZmContactCardsView ----------------------------->
+<!----------------------------------------------------------------------------->
+<template id="CardsView">
+	<center>
+		<table border=0 cellpadding=5 cellspacing=5 id='${cardTableId}'>
+			<$
+				var count = 0;
+				for (var i = 0; i < data.list.length; i++) {
+					var contact = data.list[i];
+					if (count % 2 == 0) {
+			$>
+						<tr>
+					<$ }
+						count++;
+					$>
+
+					<td valign=top id='${id}_contact_<$= contact.id $>'></td>
+
+					<$ if (count % 2 == 0) { $>
+						</tr>
+					<$ } $>
+			<$ } $>
+		</table>
+	</center>
+</template>
+
+<template id="CardsView-NoResults">
+	<center>
+		<div class='NoResults' id='${id}'>
+			<br><br><$= AjxMsg.noResults $>
+		</div>
+	</center>
+</template>
+
+<template id="CardBase">
+	<div ${attrs} id='${id}' _itemIndex='${itemIndex}' style='width:${width}'>
+		<table border=0 width=100% height=100% cellpadding=0 cellspacing=0>
+			<tr class='contactHeader ${headerColor}'>
+				<td width=16>
+					<$= AjxImg.getImageHtml(data.contact.getIcon(), "width:16") $>
+				</td>
+				<td width=100% valign=top>
+					<div class='contactHeader'><$= data.contact.getFileAs() $></div>
+				</td>
+				<$ if (data.tagCellId) { $>
+					<td width=16 id='${tagCellId}'>${tagIcon}</td>
+				<$ } $>
+			</tr>
+			<$ if (data.contact.isGroup()) { $>
+				<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardGroup", {data:data}) $>
+			<$ } else { $>
+				<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardContact", {data:data}) $>
+			<$ } $>
+		</table>
+	</div>
+</template>
+
+<template id="CardGroup">
+	<$
+		var members = data.data.groupMembers;
+		var len = members.length;
+		var size = len <= 5 ? len : Math.min(len, 5);
+	$>
+
+	<tr height=100%>
+		<td colspan=3 valign=top width=100% style='padding-left:2px'>
+			<table border=0>
+				<$ for (var i = 0; i < size; i++) { $>
+					<tr>
+						<td width=20>
+							<$= AjxImg.getImageHtml("Message") $>
+						</td>
+						<td>
+							<nobr><$= AjxStringUtil.htmlEncode(members[i].toString()) $></nobr>
+						</td>
+					</tr>
+				<$ } $>
+
+				<$ if (size < len) { $>
+					<tr>
+						<td colspan=2>
+							<a href="javascript:;" onclick="ZmContactCardsView._moreDetailsCallback('<$= data.data.contact.id $>')">
+								<$= ZmMsg.more $>
+							</a>
+						</td>
+					</tr>
+				<$ } $>
+			</table>
+		</td>
+	</tr>
+</template>
+
+<template id="CardContact">
+	<$
+		var value;
+		var contact = data.data.contact;
+	$>
+
+	<tr>
+		<td colspan=2 valign=top width=100% style='font-weight:bold; padding-left:2px'>
+			<$= contact.getCompanyField() || "&nbsp;" $>
+		</td>
+	</tr>
+	<tr height=100%>
+		<td valign=top colspan=10>
+			<table height=100% border=0 cellpadding=1 cellspacing=1>
+				<tr height=100%>
+					<td valign=top>
+						<table border=0>
+							<$ if (value = contact.getWorkAddrField()) { $>
+								<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardContactField", {data:data, fname:"W", value:value}) $>
+							<$ } else if (value = contact.getHomeAddrField()) { $>
+								<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardContactField", {data:data, fname:"H", value:value}) $>
+							<$ } $>
+
+							<$ if (value = contact.getAttr("email")) { $>
+								<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardContactField", {data:data, fname:"E", value:value, type:ZmObjectManager.EMAIL}) $>
+							<$ } $>
+
+							<$ if (value = contact.getAttr("email2")) { $>
+								<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardContactField", {data:data, fname:"E2", value:value, type:ZmObjectManager.EMAIL}) $>
+							<$ } else if (value = contact.getAttr("email3")) { $>
+								<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardContactField", {data:data, fname:"E3", value:value, type:ZmObjectManager.EMAIL}) $>
+							<$ } $>
+						</table>
+					</td>
+					<td valign=top>
+						<table border=0>
+							<$ if (value = contact.getAttr("workPhone")) { $>
+								<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardContactField", {data:data, fname:"W", value:value, type:ZmObjectManager.PHONE}) $>
+							<$ } $>
+
+							<$ if (value = contact.getAttr("workPhone2")) { $>
+								<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardContactField", {data:data, fname:"W2", value:value, type:ZmObjectManager.PHONE}) $>
+							<$ } $>
+
+							<$ if (value = contact.getAttr("workFax")) { $>
+								<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardContactField", {data:data, fname:"F", value:value, type:ZmObjectManager.PHONE}) $>
+							<$ } $>
+
+							<$ if (value = contact.getAttr("mobilePhone")) { $>
+								<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardContactField", {data:data, fname:"M", value:value, type:ZmObjectManager.PHONE}) $>
+							<$ } $>
+
+							<$ if (value = contact.getAttr("homePhone")) { $>
+								<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardContactField", {data:data, fname:"H", value:value, type:ZmObjectManager.PHONE}) $>
+							<$ } $>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<$ if (!contact.isLoaded) { $>
+		<tr>
+			<td colspan=10 class="FinishLoading" onclick="ZmContactCardsView._loadContact(this, '<$= contact.id $>')">
+				<center><$= ZmMsg.finishLoading $></center>
+			</td>
+		</tr>
+	<$ } $>
+</template>
+
+<template id="CardContactField">
+	<$
+		var newValue = data.data.data.isDnd
+			? data.value
+			: data.data.data.view._generateObject(data.value, data.type)
+	$>
+
+	<tr>
+		<td valign=top class='ZmContactFieldValue'>
+			<$= data.fname $>
+		</td>
+		<td valign=top class='ZmContactField'>
+			<$= AjxStringUtil.nl2br(newValue) $>
+		</td>
+	</tr>
+</template>
+
+
+
+<!----------------------------------------------------------------------------->
+<!-------------------------------- ZmGroupView -------------------------------->
+<!----------------------------------------------------------------------------->
 <template id="GroupView">
 	<!-- title bar -->
 	<table id='${id}_header' cellspacing=0 cellpadding=0 width=100%>
@@ -54,6 +239,11 @@
 	</table>
 </template>
 
+
+
+<!----------------------------------------------------------------------------->
+<!------------------------------ Contact Tooltip ------------------------------>
+<!----------------------------------------------------------------------------->
 <template id="Tooltip">
 	<table cellpadding=0 cellspacing=0 border=0 width=250>
 		<tr>
@@ -169,14 +359,15 @@
 	<$ } $>
 </template>
 
+
+<!----------------------------------------------------------------------------->
+<!---------------------------- ZmOneContactPicker ----------------------------->
+<!----------------------------------------------------------------------------->
 <template id="OneContactPicker">
-  <table>
-    <tr>
-      <td>
-        <label for="${id}_entry"><$= ZmMsg.search $>:</label>
-      </td>
-      <td id="${id}_entryCell">
-      </td>
-    </tr>
-  </table>
+	<table>
+		<tr>
+			<td><label for="${id}_entry"><$= ZmMsg.search $>:</label></td>
+			<td id="${id}_entryCell"></td>
+		</tr>
+	</table>
 </template>
