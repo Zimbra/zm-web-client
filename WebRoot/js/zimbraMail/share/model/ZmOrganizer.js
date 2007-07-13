@@ -754,16 +754,17 @@ function() {
 
 ZmOrganizer.prototype._empty = 
 function(){
-	var allowEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) && 
-					  (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
-	
-	//make sure we're not emptying a system object (unless it's SPAM or THRASH)
-	if(this.isSystem() && !allowEmptyOp) return;
-	
 	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
+	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
+					  (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
+	// make sure we're not emptying a system object (unless it's SPAM or TRASH)
+	if (this.isSystem() && !isEmptyOp) return;
 	var params = {action:"empty"};
 	if (this.id == ZmFolder.ID_TRASH) {
 		params.attrs = {recursive:"true"};
+	}
+	if (this.isRemote()) {
+		params.id = this.getRemoteId();
 	}
 	this._organizerAction(params);
 };
@@ -771,7 +772,8 @@ function(){
 
 ZmOrganizer.prototype.markAllRead =
 function() {
-	this._organizerAction({action: "read", attrs: {l: this.id}});
+	var id = this.isRemote() ? this.getRemoteId() : null;
+	this._organizerAction({action: "read", id: id, attrs: {l: this.id}});
 };
 
 ZmOrganizer.prototype.sync =
@@ -1206,7 +1208,7 @@ function(params) {
 	var soapDoc = AjxSoapDoc.create(cmd + "Request", "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", params.action);
-	actionNode.setAttribute("id", this.id);
+	actionNode.setAttribute("id", params.id || this.id);
 	for (var attr in params.attrs) {
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}

@@ -46,8 +46,7 @@ ZmFolderTreeController = function(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
 	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareAddrBookListener);
 	this._listeners[ZmOperation.MOUNT_FOLDER] = new AjxListener(this, this._mountAddrBookListener);
-	
-	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this,this._emptyListener);
+	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this, this._emptyListener);
 };
 
 ZmFolderTreeController.prototype = new ZmTreeController;
@@ -101,7 +100,7 @@ function(parent, type, id) {
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed());
 		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
-		parent.enable(ZmOperation.EMPTY_FOLDER, hasContent);
+		parent.enable(ZmOperation.EMPTY_FOLDER, (hasContent || folder.link));	// numTotal is not set for shared folders
 
 		if (folder.isRemote() && folder.isReadOnly()) {
 			if (folder.parent && folder.parent.isRemote()) {
@@ -129,7 +128,8 @@ function(parent, type, id) {
 
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
 	if (nId != ZmOrganizer.ID_ROOT && !folder.isReadOnly()) {
-		parent.enable(ZmOperation.MARK_ALL_READ, (folder.numUnread > 0));
+		// always enable for shared folders since we dont get this info from server
+		parent.enable(ZmOperation.MARK_ALL_READ, (folder.numUnread > 0 || folder.link));
 	}
 
 	var op = parent.getOp(ZmOperation.EMPTY_FOLDER);
@@ -319,27 +319,19 @@ function(ev) {
 */
 ZmFolderTreeController.prototype._emptyListener = 
 function(ev) {
-	var organizer = this._getActionedOrganizer(ev);
-	this._pendingActionData = organizer;
+	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
 	var ds = this._emptyShield = this._appCtxt.getOkCancelMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.OK_BUTTON, this._emptyShieldYesCallback, this, organizer);
 	ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._emptyShield);
 	
-	var okButton = ds.getButton(DwtDialog.OK_BUTTON);
-	okButton._blur();
-	
-	var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
-	cancelButton._focus(); 
-	
-	ds.associateEnterWithButton(DwtDialog.CANCEL_BUTTON);
-	
-	var confirm = ZmMsg.confirmEmptyFolder;
-	var msg = AjxMessageFormat.format(confirm, organizer.getName());
+	var msg = AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName());
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	ds.popup();	
-};
 
+	var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
+	cancelButton.focus();
+};
 
 /*
 * Don't allow dragging of system folders.
