@@ -327,10 +327,12 @@ function(ev) {
 	
 	var msg = AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName());
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-	ds.popup();	
-
-	var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
-	cancelButton.focus();
+	ds.popup();
+		
+	if(!(organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash())){
+		var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
+		cancelButton.focus();
+	}
 };
 
 /*
