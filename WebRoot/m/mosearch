@@ -14,9 +14,6 @@
 
  <%-- switch based on context search types --%>
 <c:choose>
-    <c:when test="${context.isConversationSearch and action eq 'view' and not empty param.id}">
-        <mo:messageView context="${context}"/>
-    </c:when>
     <c:when test="${context.isConversationSearch and action eq 'view'}">
         <mo:convView context="${context}"/>
     </c:when>

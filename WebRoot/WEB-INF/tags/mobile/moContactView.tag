@@ -22,7 +22,7 @@
                         <td>
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
-                                    <td><a href="${closeUrl}" class='zo_button'>
+                                    <td><a href="${closeUrl}#cn${contact.id}" class='zo_button'>
                                         <fmt:message key="close"/>
                                     </a></td>
                                 </tr>

@@ -46,7 +46,7 @@
                 <table width=100% cellpadding="0" cellspacing="0" class='zo_ab_list'>
                     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                         <zm:currentResultUrl var="contactUrl" value="/m/mosearch" action="view" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
-                        <tr  onclick='window.location="${zm:jsEncode(contactUrl)}"'>
+                        <tr  onclick='window.location="${zm:jsEncode(contactUrl)}"' id="cn${hit.contactHit.id}">
                             <td style='width:5px'>&nbsp;</td>
                             <td><mo:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
                             <td class='zo_ab_list_arrow'>
