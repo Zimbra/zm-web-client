@@ -185,11 +185,24 @@ function(letter, endLetter) {
 
 	if (query) {
 		var limit = this._listView[this._currentView].getLimit();
+		//Bugfix: 16541 //Dirty fix :-(
+		var callback = new AjxCallback(this, this._searchAlphabetCallback, [this._currentView]);
 		var params = {query:query, types:[ZmItem.CONTACT], offset:0, limit:limit, lastId:0,
-					  lastSortVal:letter, endSortVal:endLetter};
+					  lastSortVal:letter, endSortVal:endLetter ,callback:callback};			  
 		var sc = this._appCtxt.getSearchController();
 		sc.search(params);
 	}
+};
+
+//Bugfix: 16541
+ZmContactListController.prototype._searchAlphabetCallback = function(view){
+	view = view || this._currentView;
+	
+	var se = this._getNavStartEnd(view);
+	if (!se) {return;}
+	var text = AjxMessageFormat.format(ZmMsg.navText1, [se.start, se.end]);
+	this._navToolBar[view].setText(text);
+	return; 
 };
 
 ZmContactListController.prototype.getKeyMapName =
