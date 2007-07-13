@@ -41,16 +41,17 @@
                 </a>
             </li>
         </c:if>
-        <li>
-            <a href="?p=4">
-                <img src="/zimbra/images/common/Preferences.gif"/>
-                <fmt:message key="options"/>
-            </a>
-        </li>
+
         <li>
             <a href="mofolders">
                 <img src="/zimbra/images/mail/MailFolder.gif"/>
                 <fmt:message key="MO_mailFoldersTags"/>
+            </a>
+        </li>
+        <li>
+            <a href="?p=4">
+                <img src="/zimbra/images/common/Preferences.gif"/>
+                <fmt:message key="options"/>
             </a>
         </li>
     </ul>
