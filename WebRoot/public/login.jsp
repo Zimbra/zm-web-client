@@ -157,7 +157,6 @@
                                 </tr>
                             </table>
                         </td>
-                        <td>
                     </tr>
                     <tr>
                         <td id='ZloginBodyContainer'>
