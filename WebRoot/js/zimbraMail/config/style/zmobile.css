@@ -59,11 +59,8 @@ body > h1 {
 }
 
 .zo_toolbar {
-    box-sizing: border-box;
     margin: 0;
     padding: 10px;
-    height: 28px;
-    line-height: 20px;
     font-size: 20px;
     font-weight: bold;
     text-align: center;
@@ -75,9 +72,9 @@ body > h1 {
 }
 
 .zo_toolbar TD {
-    padding:5px 0px;
-    height: 28px;
-    line-height: 28px;
+    border: none;
+    padding:5px 0;
+    line-height: 20px;
     font-size: medium;
     font-weight: bold;
 }
