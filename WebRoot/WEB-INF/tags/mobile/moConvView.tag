@@ -61,7 +61,7 @@
                                     <tr>
                                         <zm:currentResultUrl var="closeurl" value="/m/mosearch" index="${context.currentItemIndex}"
                                                              context="${context}"/>
-                                        <td><a href="${closeurl}#conv${convSummary.id}" class='zo_button'>${fn:escapeXml(context.backTo)}</a></td>
+                                        <td><a href="${closeurl}#conv${convSummary.id}" class='zo_button'><fmt:message key="back"/></a></td>
                                     </tr>
                                 </table>
                             </td>
