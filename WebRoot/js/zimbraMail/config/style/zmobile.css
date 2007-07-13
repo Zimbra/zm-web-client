@@ -110,12 +110,9 @@ body > h1 {
 .zo_leftbutton {
     -webkit-border-image: url(/images/mobile/iPhoneBackButton.png) 0 8 0 14;
     -webkit-border-radius: 0;
-        border-width: 0 8px 0 14px;
+    border-width: 0 8px 0 14px;
     padding: 4px;
-
     margin:5px;
-    font-size: medium;
-    font-weight: bold;
     color: #FFFFFF;
     text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0;
     text-decoration: none;

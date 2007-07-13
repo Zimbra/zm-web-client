@@ -51,118 +51,140 @@
 <mo:view mailbox="${mailbox}" title="${message.subject}" context="${context}"
          scale="${true or convSummary.messageCount eq 1}">
 
-        <table width=100% cellspacing="0" cellpadding="0">
-            <tr>
-                <td>
-                    <table width=100% cellspacing="0" cellpadding="0">
-                        <tr class='zo_toolbar'>
-                            <td>
-                                <table cellspacing="0" cellpadding="0">
-                                    <tr>
-                                        <zm:currentResultUrl var="closeurl" value="/m/mosearch" index="${context.currentItemIndex}"
-                                                             context="${context}"/>
-                                        <td><a href="${closeurl}#conv${convSummary.id}" class='zo_button'><fmt:message key="back"/></a></td>
-                                    </tr>
-                                </table>
-                            </td>
-                            <td align=right>
-                                <table cellspacing="0" cellpadding="0">
-                                    <tr>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${context.hasPrevItem}">
-                                                    <zm:prevItemUrl var="prevItemUrl" value="mosearch" action="view" cursor="${convCursor}" context="${context}" css="${param.css}"/>
-                                                    <a class='zo_button' href="${prevItemUrl}">
-                                                        <fmt:message key="MO_PREV"/>
-                                                    </a>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <a class='zo_button' style='color:gray'>
-                                                        <fmt:message key="MO_PREV"/>
-                                                    </a>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${context.hasNextItem}">
-                                                    <zm:nextItemUrl var="nextItemUrl" value="" action="view" cursor="${convCursor}" context="${context}" css="${param.css}"/>
-                                                    <a class='zo_button' href="${nextItemUrl}">
-                                                        <fmt:message key="MO_NEXT"/>
-                                                            <%--<img src="<c:url value='/images/arrows/PreviousPage.gif'/>" border="0"/>--%>
-                                                    </a>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <a class='zo_button' style='color:gray'>
-                                                        <fmt:message key="MO_NEXT"/>
-                                                    </a>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
+<table width=100% cellspacing="0" cellpadding="0">
 
-            <c:if test="${convSummary.messageCount gt 1 and param.mview eq 1}">
-            <tr>
-                <td>
-                    <table width=100% cellspacing="0" cellpadding="0">
-                        <tr class='zo_toolbar'>
-                            <td>
-                                <table cellspacing="0" cellpadding="0">
-                                    <tr>
-                                        <td>&nbsp;</td>
-                                    </tr>
-                                </table>
-                            </td>
-                            <td align=right>
-                                <table cellspacing="0" cellpadding="0">
-                                    <tr>
-                                        <td>
-                                            <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${param.csi}"/>
-                                            <c:choose>
-                                                <c:when test="${messCursor.hasPrev}">
-                                                    <zm:currentResultUrl var="prevMsgUrl" value="mosearch" action='view' context="${context}" mview="1"
-                                                                         cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
-                                                    <a class='zo_button' href="${prevMsgUrl}">
-                                                        <fmt:message key="MO_PREV"/>
-                                                    </a>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <a class='zo_button' style='color:gray'>
-                                                        <fmt:message key="MO_PREV"/>
-                                                    </a>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                        <td>
-                                            <c:choose>
-                                                <c:when test="${messCursor.hasNext}">
-                                                    <zm:currentResultUrl var="nextMsgUrl" value="mosearch"  action="view" context="${context}" mview="1"
-                                                                         cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
-                                                    <a class='zo_button' href="${nextMsgUrl}">
-                                                        <fmt:message key="MO_NEXT"/>
-                                                    </a>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <a class='zo_button' style='color:gray'>
-                                                        <fmt:message key="MO_NEXT"/>
-                                                    </a>
-                                                </c:otherwise>
-                                            </c:choose>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            </c:if>
+
+<c:choose>
+
+<c:when test="${convSummary.messageCount gt 1 and param.mview eq 1}">
+    <tr>
+        <td>
+            <table width=100% cellspacing="0" cellpadding="0">
+                <tr class='zo_toolbar'>
+                    <td>
+                        <table cellspacing="0" cellpadding="0">
+                            <tr>
+                                <zm:currentResultUrl var="closeUrl" value="mosearch" action='view' context="${context}"
+                                                     cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
+                                <td><a href="${closeUrl}" class='zo_leftbutton'>
+                                    <fmt:message key="backToConv"/>
+                                </a></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td align=right>
+                        <table cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td>
+                                    <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}"
+                                                            index="${param.csi}"/>
+                                    <c:choose>
+                                        <c:when test="${messCursor.hasPrev}">
+                                            <zm:currentResultUrl var="prevMsgUrl" value="mosearch" action='view'
+                                                                 context="${context}" mview="1"
+                                                                 cso="${messCursor.prevOffset}"
+                                                                 csi="${messCursor.prevIndex}" css="${param.css}"/>
+                                            <a class='zo_button' href="${prevMsgUrl}">
+                                                <fmt:message key="MO_PREV"/>
+                                            </a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a class='zo_button' style='color:gray'>
+                                                <fmt:message key="MO_PREV"/>
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${messCursor.hasNext}">
+                                            <zm:currentResultUrl var="nextMsgUrl" value="mosearch" action="view"
+                                                                 context="${context}" mview="1"
+                                                                 cso="${messCursor.nextOffset}"
+                                                                 csi="${messCursor.nextIndex}" css="${param.css}"/>
+                                            <a class='zo_button' href="${nextMsgUrl}">
+                                                <fmt:message key="MO_NEXT"/>
+                                            </a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a class='zo_button' style='color:gray'>
+                                                <fmt:message key="MO_NEXT"/>
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</c:when>
+<c:otherwise>
+    <tr>
+        <td>
+            <table width=100% cellspacing="0" cellpadding="0">
+                <tr class='zo_toolbar'>
+                    <td>
+                        <table cellspacing="0" cellpadding="0">
+                            <tr>
+                                <zm:currentResultUrl var="closeurl" value="/m/mosearch"
+                                                     index="${context.currentItemIndex}"
+                                                     context="${context}"/>
+                                <td><a href="${closeurl}#conv${convSummary.id}" class='zo_button'>
+                                    <fmt:message key="backToConvList"/>
+                                </a></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td align=right>
+                        <table cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${context.hasPrevItem}">
+                                            <zm:prevItemUrl var="prevItemUrl" value="mosearch" action="view"
+                                                            cursor="${convCursor}" context="${context}"
+                                                            css="${param.css}"/>
+                                            <a class='zo_button' href="${prevItemUrl}">
+                                                <fmt:message key="MO_PREV"/>
+                                            </a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a class='zo_button' style='color:gray'>
+                                                <fmt:message key="MO_PREV"/>
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${context.hasNextItem}">
+                                            <zm:nextItemUrl var="nextItemUrl" value="" action="view"
+                                                            cursor="${convCursor}" context="${context}"
+                                                            css="${param.css}"/>
+                                            <a class='zo_button' href="${nextItemUrl}">
+                                                <fmt:message key="MO_NEXT"/>
+                                                    <%--<img src="<c:url value='/images/arrows/PreviousPage.gif'/>" border="0"/>--%>
+                                            </a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <a class='zo_button' style='color:gray'>
+                                                <fmt:message key="MO_NEXT"/>
+                                            </a>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</c:otherwise>
+</c:choose>
 <c:choose>
     <c:when test="${singleMessage}">
         <tr>
