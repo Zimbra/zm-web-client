@@ -38,8 +38,10 @@ body {
     font-family: Helvetica;
     background: #FFFFFF;
     color: #000000;
+#IFDEF IPHONE
     overflow: hidden;
     -webkit-text-size-adjust: none;
+#endif
 }
 
 body > h1 {
@@ -118,7 +120,6 @@ body > h1 {
     text-decoration: none;
     background: none;
 }
-
 
 #homeButton {
     display: block;
