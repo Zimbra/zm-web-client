@@ -234,7 +234,7 @@ function(components, doFit, noSetZ) {
 
 		if (cid == ZmAppViewMgr.C_SASH) {
 			if(this.isSashSupported()){
-				comp.registerCallback(this._sashCallback, this);
+				//comp.registerCallback(this._sashCallback, this);
 			}
 			comp.setCursor("default");
 		}
