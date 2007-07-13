@@ -52,7 +52,18 @@ Stupid: I had to do a second loop that only acts on the selected account......
         <app:getCallFeatures account="${account}" var="features"/>
         <%------------------- Count per page ------------------%>
         <tr>
-        </tr>
+			<td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="optionsDisplay"/> :</td>
+			<td>
+				<select name="numberPerPage">
+					<c:set var="numberPerPage" value="${features.voiceMailPrefs.numberPerPage}"/>
+					<option	<c:if test="${numberPerPage eq 10}"> selected</c:if> >10</option>
+					<option <c:if test="${numberPerPage eq 25}"> selected</c:if> >25</option>
+					<option <c:if test="${numberPerPage eq 50}"> selected</c:if> >50</option>
+					<option <c:if test="${numberPerPage eq 100}"> selected</c:if> >100</option>
+				</select>
+				&nbsp;<fmt:message key="voiceMailsPerPage"/>
+			</td>
+		</tr>
         <%------------------- Email notification ------------------%>
         <tr>
             <td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="emailNotification"/></td>
