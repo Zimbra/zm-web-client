@@ -42,14 +42,14 @@ ZmContactsHelper = function() {};
  * @param errorCallback	[AjxCallback]*	callback to call if error returned from server
  */
 ZmContactsHelper.search =
-function(obj, ascending, respCallback, errorCallback) {
+function(obj, ascending, query, queryHint, respCallback, errorCallback) {
 	if (obj._searchButton) {
 		obj._searchButton.setEnabled(false);
 	}
 
 	var sortBy = ascending ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
-	var params = {query:obj._query, types:types, sortBy:sortBy, offset:0,
+	var params = {query:query, queryHint:queryHint, types:types, sortBy:sortBy, offset:0,
 				  limit:ZmContactsApp.SEARCHFOR_MAX, contactSource:obj._contactSource,
 				  field:"contact"};
 	var search = new ZmSearch(obj._appCtxt, params);

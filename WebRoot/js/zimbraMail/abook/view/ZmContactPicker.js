@@ -120,7 +120,6 @@ function() {
 	// disable search field (hack to fix bleeding cursor)
 	var searchField = document.getElementById(this._searchFieldId);
 	searchField.disabled = true;
-	this._query = null;
 	this._contactSource = null;
 
 	DwtDialog.prototype.popdown.call(this);
@@ -221,16 +220,17 @@ function() {
 
 ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
-	this._query = this._searchCleared
+	var query = this._searchCleared
 		? AjxStringUtil.trim(document.getElementById(this._searchFieldId).value) : "";
-	if (this._query.length) {
+	if (query.length) {
+		var queryHint;
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			var searchFor = this._selectDiv.getSelectedOption().getValue();
 			this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 				? ZmItem.CONTACT
 				: ZmSearchToolBar.FOR_GAL_MI;
 			if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-				this._query += (" " + ZmSearchController.QUERY_ISREMOTE);
+				queryHint = ZmSearchController.QUERY_ISREMOTE;
 			}
 		} else {
 			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)
@@ -240,7 +240,7 @@ function(ev) {
 
 		// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
 		this._chooser.sourceListView.enableSorting(this._contactSource == ZmItem.CONTACT);
-		ZmContactsHelper.search(this, true, this._searchRespCallback, this._searchErrorCallback);
+		ZmContactsHelper.search(this, true, query, queryHint, this._searchRespCallback, this._searchErrorCallback);
 	}
 };
 
@@ -262,7 +262,7 @@ function(result) {
 	this._searchButton.setEnabled(true);
 };
 
-ZmContactPicker.prototype._handleErrorSearch = 
+ZmContactPicker.prototype._handleErrorSearch =
 function() {
 	this._searchButton.setEnabled(true);
 	return false;

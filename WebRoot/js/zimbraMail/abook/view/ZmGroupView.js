@@ -353,8 +353,9 @@ function() {
 
 ZmGroupView.prototype._searchButtonListener =
 function(ev) {
-	this._query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
-	if (this._query.length) {
+	var query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
+	if (query.length) {
+		var queryHint;
 		if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			var searchFor = this._searchInSelect
 				? this._searchInSelect.getSelectedOption().getValue()
@@ -362,12 +363,12 @@ function(ev) {
 			this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 				? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 			if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-				this._query += (" " + ZmSearchController.QUERY_ISREMOTE);
+				queryHint = ZmSearchController.QUERY_ISREMOTE;
 			}
 		} else {
 			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 		}
-		ZmContactsHelper.search(this, true, this._searchRespCallback, this._searchErrorCallback);
+		ZmContactsHelper.search(this, true, query, queryHint, this._searchRespCallback, this._searchErrorCallback);
 	}
 };
 
