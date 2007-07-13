@@ -21,7 +21,7 @@
                         <td>
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
-                                    <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
+                                    <td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>
                                 </tr>
                             </table>
                         </td>

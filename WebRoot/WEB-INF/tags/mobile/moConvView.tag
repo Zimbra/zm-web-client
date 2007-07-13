@@ -12,7 +12,7 @@
     <fmt:message var="emptySubject" key="noSubject"/>
     <c:set var="csi" value="${param.csi}"/>
 
-    <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}"
+    <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" limit="100"
                    context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
     <c:set var="convSummary" value="${convSearchResult.conversationSummary}"/>
     <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"
@@ -132,7 +132,7 @@
                                 <zm:currentResultUrl var="closeurl" value="/m/mosearch"
                                                      index="${context.currentItemIndex}"
                                                      context="${context}"/>
-                                <td><a href="${closeurl}#conv${convSummary.id}" class='zo_button'>
+                                <td><a href="${closeurl}#conv${convSummary.id}" class='zo_leftbutton'>
                                     <fmt:message key="backToConvList"/>
                                 </a></td>
                             </tr>

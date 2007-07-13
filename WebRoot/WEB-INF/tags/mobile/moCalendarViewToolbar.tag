@@ -15,7 +15,7 @@
         <td>
             <table cellpadding="0" cellspacing="0">
                 <tr>
-                    <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
+                    <td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>
                     <td><a href="${listViewUrl}" class='zo_button'><fmt:message key="calViewListShort"/></a></td>
                     <td><a href="${dayViewUrl}" class='zo_button'><fmt:message key="calViewDayShort"/></a></td>
                     <td><a zhref="${monthViewUrl}" class='zo_button'><fmt:message key="calViewMonthShort"/></a></td>
