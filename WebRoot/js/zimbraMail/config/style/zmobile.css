@@ -176,6 +176,26 @@ body > ul > li > a {
 /* mail */
 
 
+.zo_fldr_row  {
+    margin: 0;
+    border-bottom: 1px solid #E0E0E0;
+    padding: 5px;
+    background: url(/images/mobile/iPhoneArrow.png) no-repeat right center;
+    font-size: medium;
+    font-weight: bold;
+}
+.zo_fldr_rowsep  {
+    margin: 0;
+    border-bottom: 1px solid #E0E0E0;
+    padding: 5px;
+    text-align: center;
+    font-size: medium;
+    font-weight: bold;
+    background: lightslategray;
+    color: white;
+    font-weight:bold;
+}
+
 .zo_dispimages {
         cursor: pointer;
         background-color: #FFFFCC;

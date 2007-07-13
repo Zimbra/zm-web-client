@@ -285,6 +285,7 @@
           <url-pattern>/m/main</url-pattern>
           <url-pattern>/m/mosearch</url-pattern>
           <url-pattern>/m/mocalendar</url-pattern>
+          <url-pattern>/m/mofolders</url-pattern>
       </jsp-property-group>
     </jsp-config>
 

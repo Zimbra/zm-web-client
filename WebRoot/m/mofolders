@@ -1,0 +1,64 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<mo:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <fmt:message var="title" key="MO_mailFoldersTags"/>
+</mo:handleError>
+
+<mo:view title="${title}" context="${null}" mailbox="${mailbox}">
+    <table width=100% cellspacing="0" cellpadding="0">
+        <tr class='zo_toolbar' width=100%>
+            <td>${fn:escapeXml(mailbox.name)}</td>
+        </tr>
+    </table>
+    <table width=100% cellspacing="0" cellpadding="0">
+        <tr>
+            <td class='zo_fldr_rowsep'>
+                <fmt:message key="folders"/>
+            </td>
+        </tr>
+        <mo:overviewFolder folder="${mailbox.inbox}"/>
+        <mo:doFolderTree skiproot="${true}" parentid="${mailbox.inbox.id}" skipsystem="false"/>
+
+        <mo:overviewFolder folder="${mailbox.sent}"/>
+        <mo:doFolderTree skiproot="${true}" parentid="${mailbox.sent.id}" skipsystem="false"/>
+
+        <mo:overviewFolder folder="${mailbox.drafts}"/>
+        <mo:doFolderTree skiproot="${true}" parentid="${mailbox.drafts.id}" skipsystem="false"/>
+
+        <mo:overviewFolder folder="${mailbox.spam}"/>
+        <mo:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
+
+        <mo:overviewFolder folder="${mailbox.trash}"/>
+        <mo:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
+
+        <mo:doFolderTree skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}"/>
+
+        <tr>
+            <td class='zo_fldr_rowsep'>
+                <fmt:message key="searches"/>
+            </td>
+        </tr>
+        <zm:forEachFolder var="folder">
+            <c:if test="${folder.isSearchFolder and (folder.depth eq 0)}">
+                <mo:overviewSearchFolder folder="${folder}"/>
+            </c:if>
+        </zm:forEachFolder>
+        <tr>
+            <td class='zo_fldr_rowsep'>
+                <fmt:message key="tags"/>
+            </td>
+        </tr>
+
+        <zm:forEachTag var="tag">
+            <mo:overviewTag calendars="${false}" tag="${tag}"/>
+        </zm:forEachTag>
+    </table>
+</mo:view>
+ 
