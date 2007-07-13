@@ -370,6 +370,29 @@ function() {
 	return this._attId;
 };
 
+ZmMailMsg.prototype.addInlineAttachmentId = function(cid,aid,part){
+	if(!this._inlineAtts) {
+		this._inlineAtts = [];
+	}
+	this._onChange("inlineAttachments",aid);
+	if(aid){
+		this._inlineAtts.push({"cid":cid,"aid":aid});
+	}else if(part){
+		this._inlineAtts.push({"cid":cid,"part":part});
+	}
+};
+
+ZmMailMsg.prototype.setInlineAttachments = function(inlineAtts){
+	if(inlineAtts){
+		this._inlineAtts = inlineAtts;
+	}
+};
+
+ZmMailMsg.prototype.getInlineAttachments = function(){
+	return this._inlineAtts;
+};
+
+
 /**
 * Sets the IDs of messages to attach (as a forward)
 *
@@ -391,6 +414,14 @@ function(ids) {
 	this._onChange("forwardAttIds", ids);
 	this._forAttIds = ids;
 };
+
+ZmMailMsg.prototype._setFilteredForwardAttIds = function(filteredFwdAttIds){
+	
+	this._onChange("filteredForwardAttIds",filteredFwdAttIds);
+	this._filteredFwdAttIds = filteredFwdAttIds;
+	
+};
+
 
 // Actions
 
@@ -721,6 +752,7 @@ function(soapDoc, contactList, isDraft, accountName) {
 	var topNode = soapDoc.set("mp", null, msgNode);
 	topNode.setAttribute("ct", this._topPart.getContentType());
 
+	var inlineAttsHandled = false;
 	// if the top part has sub parts, add them as children
 	var numSubParts = this._topPart.children ? this._topPart.children.size() : 0;
 	if (numSubParts > 0) {
@@ -728,7 +760,38 @@ function(soapDoc, contactList, isDraft, accountName) {
 			var part = this._topPart.children.get(i);
 			var partNode = soapDoc.set("mp", null, topNode);
 			partNode.setAttribute("ct", part.getContentType());
-			soapDoc.set("content", part.getContent(), partNode);
+			
+			//If each part again has subparts, add them as children
+			var numSubSubParts = part.children ? part.children.size():0;
+			if(numSubSubParts > 0){
+				for(var j=0;j<numSubSubParts; j++){
+					var subPart = part.children.get(j);
+					var subPartNode = soapDoc.set("mp",null,partNode);
+					subPartNode.setAttribute("ct",subPart.getContentType());
+					soapDoc.set("content",subPart.getContent(),subPartNode);
+				}
+				//Handle Related SubPart , a specific condition
+				if(part.getContentType() == ZmMimeTable.MULTI_RELATED){
+					//Handle Inline Attachments
+					var inlineAtts = this.getInlineAttachments() || [];
+					for(j=0;j<inlineAtts.length;j++){
+						var inlineAttNode = soapDoc.set("mp",null,partNode);
+						inlineAttNode.setAttribute("ci",inlineAtts[j].cid);
+						var attachNode = soapDoc.set("attach", null, inlineAttNode);
+						if(inlineAtts[j].aid){
+							attachNode.setAttribute("aid", inlineAtts[j].aid);
+						}else{
+							var attachPartNode = soapDoc.set("mp",null,attachNode);
+							var id = (isDraft || this.isDraft) ? (this.id || this.origId) : (this.origId || this.id);
+							attachPartNode.setAttribute("mid", id);
+							attachPartNode.setAttribute("part", inlineAtts[j].part);
+						}
+					}
+				}
+			}else{
+				soapDoc.set("content", part.getContent(), partNode);
+			}
+			//soapDoc.set("content", part.getContent(), partNode);
 		}
 	} else {
 		soapDoc.set("content", this._topPart.getContent(), topNode);
@@ -756,12 +819,20 @@ function(soapDoc, contactList, isDraft, accountName) {
 
 		// attach msg attachments
 		if (this._forAttIds) {
-            for (var i = 0; i < this._forAttIds.length; i++) {
-				var node = soapDoc.set("mp", null, attachNode);
-				// XXX: this looks hacky but we cant send a null ID to the server!
-				var id = (isDraft || this.isDraft) ? (this.id || this.origId) : (this.origId || this.id);
-				node.setAttribute("mid", id);
-				node.setAttribute("part", this._forAttIds[i]);
+			var attIds = this._filteredFwdAttIds ||  this._forAttIds;
+            for (var i = 0; i < attIds.length; i++) {
+				// if multiple msgs needs to be attached...
+				//Bugi: Broken
+				/*if (!this.isDraft) {
+					var attNode = soapDoc.set("m", null, attachNode);
+					attNode.setAttribute("id", attIds[i]);
+				} else {*/
+					var msgPartNode = soapDoc.set("mp", null, attachNode);
+					// XXX: this looks hacky but we cant send a null ID to the server!
+					var id = (isDraft || this.isDraft) ? (this.id || this.origId) : (this.origId || this.id);
+					msgPartNode.setAttribute("mid", id);
+					msgPartNode.setAttribute("part", attIds[i]);
+				//}
 			}
 		}
     }
@@ -972,7 +1043,11 @@ function(findHits) {
 			props.part = attach.part;
 			if (!useCL)
 				props.url = csfeMsgFetchSvc + "id=" + this.id + "&part=" + attach.part;
-
+			
+			if(attach.ci){
+				props.ci = attach.ci;
+			}
+			
 			// and finally, add to attLink array
 			this._attLinks.push(props);
 		}

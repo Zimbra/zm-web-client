@@ -287,6 +287,62 @@ function() {
 	return val;
 };
 
+ZmComposeView.prototype._filterInlineAmongForwardAttIds = function(msg,atts,forwardAttIds){
+	var fwdAttIds = [];
+	for(var i=0; i<forwardAttIds.length; i++){
+		var fwdAtt = forwardAttIds[i];
+		var matched = false;
+		for(var j=0; j<atts.length; j++){
+			if(atts[j].part == fwdAtt){
+				var cid = atts[j].ci;
+				if(cid){
+					cid = cid.substring(1,cid.length-1);
+					msg.addInlineAttachmentId(cid,null,atts[j].part);
+					matched = true;
+				}
+				break;
+			}
+		}
+		if(!matched) fwdAttIds.push(fwdAtt);
+	}
+	return fwdAttIds;
+};
+
+ZmComposeView.prototype._isInline = function(){
+	
+	if(this._uploadViewDialog && this._uploadViewDialog.isInline()) return true;
+	
+	if(this._msg && this._msgAttId && this._msg.id == this._msgAttId) return false;
+	
+	if(this._msg && this._msg.getAttachments()){
+		var atts = this._msg.getAttachments();
+		for(var i=0; i<atts.length; i++){
+			if(atts[i].ci){
+				return true;
+			}
+		}
+	}
+	
+	return false;
+};
+
+ZmComposeView.prototype._fixMultipartRelatedLinks =function(idoc){
+	if(!idoc) return;
+	var images = idoc.getElementsByTagName("img");
+	var inlineCid = [];
+		for (var i = 0; i < images.length; i++) {
+			var dfsrc = images[i].getAttribute("dfsrc");
+			if (dfsrc) {
+				images[i].src = dfsrc;
+				if(dfsrc.substring(0,4 == "cid:")){
+					inlineCid.push(dfsrc.substring(4));
+				}
+			}
+		}
+		return inlineCid;
+};
+
+
 /**
 * Returns the message from the form, after some basic input validation.
 */
@@ -340,6 +396,38 @@ function(attId, isDraft) {
 		return;
 	}
 
+	//Create Msg Object
+	var msg = new ZmMailMsg(this._appCtxt);
+	msg.setSubject(subject);
+	
+	//Handle Inline Attachments
+	var inline = this._isInline();
+	
+	//Removed as I have added relavent code in ZmMailMsg._creatMsgNode()
+	/*if(this._msg && inline){
+		msg.setInlineAttachments(this._msg.getInlineAttachments());
+	}*/
+	
+	if(this._uploadViewDialog && this._uploadViewDialog.isInline() && attId){
+		for(var i =0; i<attId.length;i++){
+			var att = attId[i];
+			var contentType = att.ct;
+			if(contentType && contentType.indexOf("image") != -1){
+				var cid = Dwt.getNextId(); //Change this to more uniqueId
+				msg.addInlineAttachmentId(cid,att.aid);
+				this._htmlEditor.insertImage("cid:"+cid);
+			}else{
+				msg.addAttachmentId(att.aid);
+			}
+		}
+	}else if(attId && typeof attId != "string"){
+		for(var i =0; i<attId.length;i++){
+			msg.addAttachmentId(attId[i].aid);
+		}
+	}else if(attId){
+		msg.addAttachmentId(attId);
+	}
+
 	// check if this is a resend
 	if (this._sendUID && this.backupForm) {
 		// if so, check if user changed anything since canceling the send
@@ -353,6 +441,13 @@ function(attId, isDraft) {
 	// get list of message part id's for any forwarded attachements
 	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME);
 	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME);
+
+	//Handle Inline Attachments as a part of forwardAttIds
+	if(this._msg && this._msg.getAttachments()){
+		var atts = this._msg.getAttachments();
+		var filteredForwardAttIds = this._filterInlineAmongForwardAttIds(msg,atts,forwardAttIds);
+		msg._setFilteredForwardAttIds(filteredForwardAttIds);
+	}
 
 	// --------------------------------------------
 	// Passed validation checks, message ok to send
@@ -372,10 +467,21 @@ function(attId, isDraft) {
 
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
+		this._fixMultipartRelatedLinks(this._htmlEditor._getIframeDoc());
 		var defangedContent = this._htmlEditor.getContent(true);
 		var refangedContent = defangedContent.replace(ZmComposeView.REFANG_RE, ZmComposeView.REFANG_RE_REPLACE);
 		htmlPart.setContent(refangedContent);
-		top.children.add(htmlPart);
+		
+		//Support for Inline
+		if(inline){				
+			var relatedPart = new ZmMimePart();
+			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);			
+			relatedPart.children.add(htmlPart);
+			top.children.add(relatedPart);
+		}else{
+			top.children.add(htmlPart);
+		}
+		//top.children.add(htmlPart);
 	} else {
 		var textPart = this._extraParts ? new ZmMimePart() : top;
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
@@ -395,7 +501,7 @@ function(attId, isDraft) {
 		}
 	}
 
-	var msg = new ZmMailMsg(this._appCtxt);
+	//var msg = new ZmMailMsg(this._appCtxt);
 	msg.setTopPart(top);
 	msg.setSubject(subject);
 	msg.setForwardAttIds(forwardAttIds);
@@ -437,9 +543,9 @@ function(attId, isDraft) {
 		msg.folderId = this._msg.folderId;
 	}
 
-	if (attId) {
+	/*if (attId) {
 		msg.addAttachmentId(attId);
-	}
+	}*/
 
 	if (this._msg) {
 		// replied/forw msg or draft shouldn't have att ID (a repl/forw voicemail mail msg may)
@@ -572,6 +678,11 @@ function() {
 // user just saved draft, update compose view as necessary
 ZmComposeView.prototype.processMsgDraft =
 function(msgDraft) {
+	
+
+	if(this._isInline()){
+		this._handleInline(msgDraft);
+	}
 	this.reEnableDesignMode();
 	this._action = ZmOperation.DRAFT;
 	this._msg = msgDraft;
@@ -583,6 +694,70 @@ function(msgDraft) {
 	// save form state (to check for change later)
 	this._origFormValue = this._formValue();
 };
+
+ZmComposeView.prototype._handleInline = function(msgObj){
+	var  msg = (msgObj) ? msgObj : this._msg;
+	var iDoc = this._htmlEditor._getIframeDoc();
+	var allInlineImagesHandled = this._fixMultipartRelatedImages(msg,iDoc);
+	return allInlineImagesHandled;
+};
+
+//ZmMailMsgView.prototype._fixMultipartRelatedImages =
+ZmComposeView.prototype._fixMultipartRelatedImages =
+function(msg, idoc) {
+	if(!idoc) return;
+	var images = idoc.getElementsByTagName("img");
+	var num = 0;
+	for (var i = 0; i < images.length; i++) {
+		var dfsrc = images[i].getAttribute("dfsrc") || images[i].src;
+		if (dfsrc) {
+			if (dfsrc.substring(0,4) == "cid:") {
+				num++;
+				var cid = "<" + dfsrc.substring(4) + ">";
+				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
+				//Cache cleared, becoz part id's may change. 
+				src = src + "&t=" + (new Date()).getTime();
+				if (src) {
+					images[i].src = src;
+					images[i].setAttribute("dfsrc",dfsrc);
+				}
+			} else if (dfsrc.indexOf("//") == -1) { // check for content-location verison
+				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, dfsrc);
+				//Cache cleared, becoz part id's may change.
+				src = src + "&t=" + (new Date()).getTime();
+				if (src) {
+					num++;
+					images[i].src = src;
+					images[i].setAttribute("dfsrc",dfsrc);
+				}
+			}
+		}
+	}
+	return (num == images.length);
+};
+
+ZmComposeView.prototype.showAttachmentDialog = function(){
+	if (!this._uploadViewDialog) {
+		this._uploadViewDialog = new ZmUploadViewDialog(this.shell, this._appCtxt);
+		this._uploadViewDialog.setButtonListener(ZmUploadViewDialog.ATTACH_BUTTON,new AjxListener(this,this._attachListener));
+	}
+	this._uploadViewDialog.initialize();
+	this._uploadForm = this._uploadViewDialog._uploadForm;
+	if (this._composeMode != DwtHtmlEditor.HTML){
+		this._uploadViewDialog._hideInlineOptionField();
+	}
+	this._uploadViewDialog.popup();
+};
+
+ZmComposeView.prototype._attachListener = function(ev){
+	//Check for attachments already present??
+	//if(!this._gotAttachments()){
+		this._controller._saveDraft();
+	//}
+};
+
+
+
 
 /**
 * Revert compose view to a clean state (usually called before popping compose view)
@@ -798,11 +973,12 @@ function(incAddrs, incSubject) {
 
 ZmComposeView.prototype.cleanupAttachments = 
 function(all) {
-	if (this._uploadForm && this._uploadForm.parentNode) {
-		this._uploadForm.parentNode.removeChild(this._uploadForm);
-	}
-	this._attachmentTable = this._uploadForm = null;
 
+	if(this._uploadViewDialog){
+		this._uploadViewDialog.cleanupAttachments();
+		this._uploadViewDialog.popdown();
+	}
+	
 	if (all) {
 		this._attcDiv.innerHTML = "";
 		this._attcDiv.style.height = "";
@@ -1089,6 +1265,9 @@ function(action, msg, extraBodyText, incOption) {
 		}
 		this._htmlEditor.setContent(body);
 		this._showForwardField(msg, action);
+		
+		this._fixMultipartRelatedImages(msg,this._htmlEditor._getIframeDoc());
+		
 		if (!isInviteReply) {
 			return;
 		}
@@ -1216,6 +1395,8 @@ function(action, msg, extraBodyText, incOption) {
 	}
 	
 	this._showForwardField(msg, action, incOption);
+	
+	this._fixMultipartRelatedImages(msg,this._htmlEditor._getIframeDoc());
 };
 
 ZmComposeView.prototype.resetBody =
@@ -1634,7 +1815,7 @@ function(msg, action, replyPref) {
 					html[idx++] = "' type='checkbox'";
 					if (action == ZmOperation.FORWARD || 
 						action == ZmOperation.FORWARD_INLINE || 
-						action == ZmOperation.DRAFT)
+						action == ZmOperation.DRAFT || att.ci)
 					{
 						html[idx++] = " CHECKED";
 					}
@@ -1897,6 +2078,8 @@ function(type) {
 // Files have been uploaded, re-initiate the send with an attachment ID.
 ZmComposeView.prototype._attsDoneCallback =
 function(isDraft, status, attId) {
+	DBG.println(AjxDebug.DBG1,"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+	DBG.dumpObj(AjxDebug.DBG1,attId);
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
 	if (status == AjxPost.SC_OK) {
 		this._controller.sendMsg(attId, isDraft);

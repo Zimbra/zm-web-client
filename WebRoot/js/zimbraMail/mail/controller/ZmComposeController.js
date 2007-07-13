@@ -824,8 +824,8 @@ function(ev) {
 		this._detachOkCancel.setMessage(ZmMsg.detachAnyway, DwtMessageDialog.WARNING_STYLE);
 		this._detachOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._detachCallback, this);
 	}
-
-	this._composeView.addAttachmentField();
+	this._composeView.showAttachmentDialog();
+	//this._composeView.addAttachmentField();
 };
 
 ZmComposeController.prototype._optionsListener =
