@@ -287,19 +287,16 @@ body > ul > li > a {
     overflow:hidden;*/
 }
 
-.ZhCalDayGrid A:link, .ZhCalDayGrid A:visited, .ZhCalMonthTable A:link, .ZhCalMonthTable A:visited  {
-	color: inherit;
-	text-decoration: none;
+.zo_cal_listi_empty {
+    font-size: medium;
+    font-weight: bold;
+    padding: 5px 0 5px 5px;
+    color:gray;
+    text-align:center;
 }
 
-
-.ZhCalMonthTable a:link, .ZhCalMonthTable a:visited,
-.ZhCalMiniContainer a:link, .ZhCalMiniContainer a:visited,
-    .ZhCalMonthHeaderRow a:link, .ZhCalMonthHeaderRow a:visited { text-decoration: none; color:inherit;}
-
-
 /* day of week label for the month */
-.ZhCalDayHour {
+.zo_cal_dayhour {
     border-bottom: 1px solid #E0E0E0;
 	text-align:center;
     font-size: small;
@@ -312,7 +309,7 @@ body > ul > li > a {
 }
 
 /* header for day view */
-.ZhCalDayHeader, .ZhCalDayHeaderToday {
+.zo_cal_dayheader, .zo_cal_dayheader_today {
 	text-align:center;
     border-bottom: 1px solid #E0E0E0;
     line-height: 2.0em;
@@ -321,9 +318,11 @@ body > ul > li > a {
     font-weight:bold;
 }
 
-.ZhCalDayHeaderToday, .ZhCalDayHeaderToday a:link, .ZhCalDayHeaderToday a:visited {
+.zo_cal_dayheader_today {
     color:lightsteelblue;
 }
+
+.zo_cal_mlist { display: none; }
 
 .zo_cal_mpage {
   background: #D6D6D6; /*#D0D0F0;*/
@@ -342,18 +341,33 @@ body > ul > li > a {
     color: black;
     border-bottom: 1px solid #E0E0E0;
 }
-.zo_cal_mday, .zo_cal_mdayO {
+
+.zo_cal_mday, .zo_cal_mday_select {
    background: #E6E6E6; /*#D0D0F0;*/
+   border: 1px inset gray;
+   vertical-align: middle;
+   text-align: center;
+   padding: 5px;
+}
+
+.zo_cal_mday_text, .zo_cal_mday_textO {
    font-size: larger;
    font-weight:bold;
    color: black;
-   border: 1px inset gray;
-   padding: 5px;
-   vertical-align: middle;
-   text-align: center;
+
 }
-.zo_cal_mdayO {
+
+.zo_cal_mday_appt {
+       text-decoration:underline;
+}
+
+.zo_cal_mday_textO {
    color: gray;
+}
+
+
+.zo_cal_mday_select {
+   background: lightsteelblue;
 }
 
 .zo_cal_dpage {
@@ -621,53 +635,4 @@ body > ul > li > a {
 .GrayDarkC			{ color:#A9A9A9; }
 .GrayLightC			{ color:#D4D4D4; }
 .GrayBgC			{ color:#E9E9E9; }
-
-
-/************************************************************************************************/
-
-.dialog {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    min-height: 468px;
-    z-index: 2;
-    background: rgba(0, 0, 0, 0.8);
-    padding: 0;
-    text-align: right;
-}
-
-fieldset {
-    box-sizing: border-box;
-    width: 100%;
-    margin: 0;
-    border: none;
-    padding: 10px 6px;
-    background: url(/images/mobile/iPhoneToolbar.png) #7388a5 repeat-x;
-}
-
-fieldset > h1 {
-    margin: 0 10px 0 10px;
-    padding: 0;
-    font-size: 20px;
-    font-weight: bold;
-    color: #FFFFFF;
-    text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0;
-    text-align: center;
-}
-
-label {
-    position: absolute;
-    margin: 14px 0 0 6px;
-    font-size: 14px;
-    color: #BBBBBB;
-}
-
-input {
-    box-sizing: border-box;
-    width: 100%;
-    margin: 6px 0 0 0;
-    padding: 6px 6px 6px 44px;
-    font-size: 16px;
-    font-weight: normal;
-}
 

@@ -39,40 +39,7 @@
 </mo:handleError>
 
 
-<table class='ZhCalDayGrid' width=100% height=100% border="0" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
-
-
-<%--
-<tr class='ZhCalMonthHeaderRow'>
-    <td class='ZhCalDayHeader' nowrap align=center width=1% style='border-left:none'>
-        <fmt:formatDate value="${date.time}" pattern="${yearTitleFormat}"/>
-    </td>
-    <c:choose>
-        <c:when test="${scheduleView}">
-            <td class='zo_cal_hsb zo_cal_dsep' height=100%><div style='width:25px'>&nbsp;</div></td>
-        </c:when>
-        <c:otherwise>
-            <td class='zo_cal_hsb' height=100% width=1px>&nbsp;</td>
-        </c:otherwise>
-    </c:choose>
-    <c:forEach var="day" items="${layout.days}">
-        <td nowrap class='zo_cal_dsep ZhCalDayHeader${(day.startTime eq today.timeInMillis and empty day.folderId) ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
-            <c:choose>
-                <c:when test="${not empty day.folderId}">
-                    <c:set var="fname" value="${zm:getFolderName(pageContext, day.folderId)}"/>
-                    ${fn:escapeXml(fname)}
-                </c:when>
-                <c:otherwise>
-                    <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}" action=""/>
-                    <a href="${dayUrl}">
-                        <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
-                        <fmt:formatDate value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
-                    </a>
-                </c:otherwise>
-            </c:choose>
-        </td>
-    </c:forEach>
-</tr> --%>
+<table width=100% height=100% border="0" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
 
 <c:forEach var="row" items="${layout.allDayRows}">
     <tr>
@@ -135,7 +102,7 @@
 <c:forEach var="row" items="${layout.rows}">
     <tr height="100%">
         <c:if test="${row.rowNum % 4 eq 0}">
-            <td valign=top class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
+            <td valign=top class='zo_cal_dayhour' nowrap width=1% rowspan=4 style='border-left:none'>
                 <fmt:formatDate value="${row.date}" type="time" timeStyle="short"/>
             </td>
         </c:if>

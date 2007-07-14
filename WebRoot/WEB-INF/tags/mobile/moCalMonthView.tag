@@ -21,6 +21,7 @@
     <c:set var="prevDate" value="${zm:addMonth(date, -1)}"/>
     <c:set var="nextDate" value="${zm:addMonth(date,  1)}"/>
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
+    <c:set var="currentDay2" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
     <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${zm:addDay(currentDay, 42).timeInMillis}" query="${requestScope.calendarQuery}" varexception="gasException"/>
     <c:if test="${not empty gasException}">
@@ -32,7 +33,7 @@
     </c:if>
 </mo:handleError>
 
-<mo:view mailbox="${mailbox}" title="${title}" context="${null}">
+<mo:view mailbox="${mailbox}" title="${title}" context="${null}" onload="initView()">
 
 <table width=100% cellspacing="0" cellpadding="0">
     <tr>
@@ -76,28 +77,91 @@
     </tr>
     <tr>
         <td>
-            <table width=100% cellpadding="0" cellspacing="0" border=0 class='ZhCalMonthTable'>
-                    <c:forEach var="week" begin="1" end="6">
-                        <tr>
-                            <c:forEach var="dow" begin="1" end="7" varStatus="dowStatus">
-                                <td width=14% class='ZhCalMonthDay${currentDay.timeInMillis eq date.timeInMillis ? 'Selected':''}'>
-                                    <table width=100% cellspacing=0 cellpadding="0">
-                                        <tr>
-                                            <c:set var="T" value="${zm:isSameDate(currentDay, today) ? 'T' : ''}"/>
-                                            <c:set var="O" value="${not zm:isSameMonth(currentDay, date) ? 'O' : ''}"/>
-                                            <td align=right class='zo_cal_mday${O}'>
-                                                <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${dayFormat}"/>
-                                                ${fn:escapeXml(dayTitle)}
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </td>
-                                ${zm:getNextDay(currentDay)}
-                            </c:forEach>
-                        </tr>
-                    </c:forEach>
-                </table>
+            <table width=100% cellpadding="0" cellspacing="0" border=0>
+                <c:forEach var="week" begin="1" end="6">
+                    <tr>
+                        <c:forEach var="dow" begin="1" end="7" varStatus="dowStatus">
+                            <c:set var="cell" value="${week*7+(dow-1)}"/>
+                            <c:set var="T" value="${zm:isSameDate(currentDay, today) ? 'T' : ''}"/>
+                            <c:set var="O" value="${not zm:isSameMonth(currentDay, date) ? 'O' : ''}"/>
+                            <c:set var="sel" value="${zm:isSameDate(currentDay, date) ? '_select' :''}"/>
+                            <c:set var="hasappt" value="${zm:hasAnyAppointments(appts, currentDay.timeInMillis, zm:addDay(currentDay, 1).timeInMillis) ? ' zo_cal_mday_appt' : ''}"/>
+
+                            <td id="cell${cell}" class='zo_cal_mday${sel}' onclick="selectDay(${cell})">
+                                <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${dayFormat}"/>
+                                <span class='zo_cal_mday_text${O}${hasappt}'>${fn:escapeXml(dayTitle)}</span>
+                            </td>
+                            ${zm:getNextDay(currentDay)}
+                        </c:forEach>
+                    </tr>
+                </c:forEach>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <c:forEach var="week" begin="1" end="6">
+                <c:forEach var="dow" begin="1" end="7" varStatus="dowStatus">
+                    <c:set var="dayStart" value="${currentDay2.timeInMillis}"/>
+                    <c:set var="dayEnd" value="${zm:addDay(currentDay2, 1).timeInMillis}"/>
+                    <c:set var="cell" value="${week*7+(dow-1)}"/>
+
+                    <div class='zo_cal_mlist' id="list${cell}" <c:if test="${zm:isSameDate(currentDay2, date)}"> style='display:block'<c:set var="curId" value="${cell}"/></c:if>>
+                        <table width=100% cellpadding="0" cellspacing="0" class='zo_cal_list'>
+                            <c:set var="count" value="${0}"/>
+                            <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
+                                <mo:calendarUrl appt="${appt}" var="apptUrl"/>                                
+                                <tr  onclick='window.location="${zm:jsEncode(apptUrl)}"'>
+                                    <td class='zo_cal_listi_time'>
+                                        <c:choose>
+                                            <c:when test="${appt.allDay}">
+                                                <fmt:message key="apptAllDay"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+
+                                    <td class='zo_cal_listi_subject'>
+                                        <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
+                                            ${fn:escapeXml(subject)}
+                                    </td>
+                                </tr>
+                                <c:set var="count" value="${count+1}"/>
+                            </zm:forEachAppoinment>
+                            <c:if test="${count eq 0}">
+                                <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
+                                <tr><td colspan=2 class="zo_cal_listi_empty">No Appointments</td></tr>
+                            </c:if>
+                            <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
+                                <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
+                                <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
+                        </table>
+                    </div>
+                    ${zm:getNextDay(currentDay2)}
+                </c:forEach>
+            </c:forEach>
         </td>
     </tr>
 </table>
+<script type="text/javascript">
+    var currentCellId = '${curId}';
+  function selectDay(cellId) {
+      var cell = document.getElementById("list"+cellId);
+      if (cell) {
+          if (currentCellId) {
+              document.getElementById("list"+currentCellId).style.display = "none";
+              document.getElementById("cell"+currentCellId).className = "zo_cal_mday";
+          }
+          cell.style.display = "block";
+          document.getElementById("cell"+cellId).className = 'zo_cal_mday_select';
+          currentCellId = cellId;
+      }
+  }
+    
+  function initView() {
+      window.scrollTo(0, 1);
+}
+</script>
 </mo:view>
