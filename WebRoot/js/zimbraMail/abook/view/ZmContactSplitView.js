@@ -123,21 +123,22 @@ function(contact, isGal) {
 		contact.addChangeListener(this._changeListener);
 	}
 
+	var oldContact = this._contact;
 	this._contact = contact;
 
 	if (this._contact.isLoaded) {
-		this._setContact(contact, isGal);
+		this._setContact(contact, isGal, oldContact);
 	} else {
-		var callback = new AjxCallback(this, this._handleResponseLoad, [isGal]);
+		var callback = new AjxCallback(this, this._handleResponseLoad, [isGal, oldContact]);
 		var errorCallback = new AjxCallback(this, this._handleErrorLoad);
 		this._contact.load(callback);
 	}
 };
 
 ZmContactSplitView.prototype._handleResponseLoad =
-function(isGal, contact) {
+function(isGal, contact, oldContact) {
 	if (contact.id == this._contact.id)
-		this._setContact(this._contact, isGal);
+		this._setContact(this._contact, isGal, oldContact);
 };
 
 ZmContactSplitView.prototype._handleErrorLoad =
@@ -228,7 +229,7 @@ function(data, type) {
 };
 
 ZmContactSplitView.prototype._setContact =
-function(contact, isGal) {
+function(contact, isGal, oldContact) {
 
 	// null folderId means user did a search (did not click on a addrbook)
 	var folderId = this._controller.getFolderId();
@@ -266,6 +267,11 @@ function(contact, isGal) {
 	}
 
 	this._contactPart.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView", subs);
+
+	// notify zimlets that a new contact is being shown.
+	if (this._appCtxt.zimletsPresent()) {
+		this._appCtxt.getZimletMgr().notifyZimlets("onContactView", oldContact, contact, this);
+	}
 };
 
 ZmContactSplitView.prototype._getTagHtml =
