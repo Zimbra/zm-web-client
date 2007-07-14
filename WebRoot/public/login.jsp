@@ -2,7 +2,6 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -57,7 +56,7 @@
             <c:set var="client" value="${param.client}"/>
             <c:if test="${empty client or client eq 'preferred'}">
                 <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
-            </c:if> 
+            </c:if>
             <c:choose>
         		<c:when test="${client eq 'advanced'}">
 		            <jsp:forward page="/public/launchZCS.jsp"/>
@@ -169,7 +168,7 @@
                                                 <img alt='<fmt:message key="ALT_ERROR"/>' src="<c:url value='/images/dwt/Critical_32.gif'/>"/>
                                             </td>
                                             <td class='errorText'>
-                                                <c:out value="${errorMessage}"/> 
+                                                <c:out value="${errorMessage}"/>
                                             </td>
                                         </tr>
                                     </table>
@@ -217,7 +216,7 @@
                                                     </tr>
                                                 </table>
                                             </td>
-                                            <td><input type=submit class='zLoginButton' 
+                                            <td><input type=submit class='zLoginButton'
                                                        value="<fmt:message key="login"/>"/></td>
                                         </tr>
                                     </table>
@@ -239,7 +238,7 @@
 			                                    	<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
 			                                    	<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
                                                     <c:if test="${useMobile or client eq 'mobile'}">
-                                                        <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>                                                        
+                                                        <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
                                                     </c:if>
                                                 </select>
 			                                </td>
