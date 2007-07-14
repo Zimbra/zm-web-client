@@ -343,7 +343,7 @@ body > ul > li > a {
     border-bottom: 1px solid #E0E0E0;
 }
 .zo_cal_mday, .zo_cal_mdayO {
-   background: #D6D6D6; /*#D0D0F0;*/
+   background: #E6E6E6; /*#D0D0F0;*/
    font-size: larger;
    font-weight:bold;
    color: black;
