@@ -123,30 +123,39 @@
 						<div id='skin_tree_header_container' class='skin_container'>
 							<table class='skin_table fullSize' cellspacing=0 cellpadding=0>
 								<tr>
-								<td class='TbTop'>
-								<form action='<c:if test="${selected=='contacts'}">
-                          				<zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>										                                    				
-										<c:url value="${currentUrl}"/>' name='zform' </c:if>
-									<c:if test="${selected=='mail'}"><c:url value="/h/mfolders"/>'</c:if> method="post">
-                    				<table width=100% cellspacing=0 >
-                        				<tr>
-                            				<td class='ImgSkin_Toolbar__H'>
-                                				<table cellspacing=0 cellpadding=0 class='Tb'>
-                                    			<tr>
-                                    			<c:if test="${selected !='contacts'}">
-                                    				<app:button name="actionNewFolder" src="common/NewFolder.gif" tooltip="folderNew" text="folderNew"/>
-                                    			</c:if>
-                                    			<c:if test="${selected=='contacts'}">
-                                    				<app:button name="actionNew" src="contacts/NewContact.gif" tooltip="newContact" text="contact"/>
-                                    			</c:if>
-                                    			</tr>
-                             			       </table>
-                          					</td>
-                      					</tr>
-                    	   			</table>
-                    					<input type="hidden" name="doAction" value="1"/>
-    							</form>
-                				</td>
+                                    <td class='TbTop'>
+                                        <c:if test="${selected != 'contacts'}">
+                                              <c:set var="actionURL" value="/h/mfolders"/>
+                                         </c:if>
+                                         <c:if test="${selected eq 'contacts'}">
+                                              <c:set var="actionURL" value="/h/maddrbooks"/>
+                                         </c:if>
+                                         <c:if test="${selected eq 'calendar'}">
+                                              <c:set var="actionURL" value="/h/mcalendars"/>
+                                         </c:if>
+                                         <form method="post" action="${actionURL}" <c:if test="${selected eq 'contacts' or selected eq 'calendar'}">enctype="multipart/form-data" accept-charset="utf-8"</c:if> >
+                                               <table width=100% cellspacing=0 >
+                                                    <tr>
+                                                        <td class='ImgSkin_Toolbar__H'>
+                                                            <table cellspacing=0 cellpadding=0 class='Tb'>
+                                                            <tr>
+                                                            <c:if test="${selected != 'contacts' and selected != 'calendar'}">
+                                                                <app:button name="actionNewFolder" src="common/NewFolder.gif" tooltip="folderNew" text="folderNew"/>
+                                                            </c:if>
+                                                            <c:if test="${selected eq 'contacts'}">
+                                                                <app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
+                                                            </c:if>
+                                                            <c:if test="${selected eq 'calendar'}">
+                                                                <app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
+                                                            </c:if>
+                                                            </tr>
+                                                           </table>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <input type="hidden" name="doAction" value="1"/>
+                                        </form>
+                                    </td>
 								</tr>
 							</table>
 						</div>
