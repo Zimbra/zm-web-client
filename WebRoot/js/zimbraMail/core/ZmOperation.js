@@ -146,7 +146,7 @@ function() {
 	ZmOperation.registerOp("SHARE", {textKey:"share", tooltipKey:"shareTooltip"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("SHARE_ACCEPT", {textKey:"acceptShare", image:"Check"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("SHARE_DECLINE", {textKey:"declineShare", image:"Cancel"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("SHARE_FOLDER", {textKey:"shareFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp("SHARE_FOLDER", {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("SHOW_ALL_ITEM_TYPES", {textKey:"showAllItemTypes", image:"Globe"});
 	ZmOperation.registerOp("SPELL_CHECK", {textKey:"spellCheck", image:"SpellCheck"});
 	ZmOperation.registerOp("SYNC", {textKey:"reload", image:"Refresh"});
