@@ -249,7 +249,7 @@ body > ul > li > a {
 }
 
 .zo_cal_listh {
-    background: lightslategray;
+    background: #A6A6A6; /*#D0D0F0;*/
     color: white;
     font-weight:bold;
 }
@@ -325,13 +325,45 @@ body > ul > li > a {
     color:lightsteelblue;
 }
 
+.zo_cal_mpage {
+  background: #D6D6D6; /*#D0D0F0;*/
+  padding:5px;
+  color: black;
+    font-size: x-large;
+  font-weight: bold;
+  text-align: center;
+}
+
+.zo_cal_mdow {
+    background: #D6D6D6; /*#D0D0F0;*/
+    font-weight: bold;
+    font-size: smaller;
+    text-align: center;
+    color: black;
+    border-bottom: 1px solid #E0E0E0;
+}
+.zo_cal_mday, .zo_cal_mdayO {
+   background: #D6D6D6; /*#D0D0F0;*/
+   font-size: larger;
+   font-weight:bold;
+   color: black;
+   border: 1px inset gray;
+   padding: 5px;
+   vertical-align: middle;
+   text-align: center;
+}
+.zo_cal_mdayO {
+   color: gray;
+}
+
 .zo_cal_dpage {
   border-bottom: 1px solid #E0E0E0;
   padding:5px;
 }
 
 .zo_cal_dpage_row {
-  background-color: lightslategray;
+  background-color: #A6A6A6;
+  color:black;
 }
 
 /* column between hours and appts */

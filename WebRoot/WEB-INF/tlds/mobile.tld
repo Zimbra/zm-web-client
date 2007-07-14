@@ -62,6 +62,11 @@
      </tag-file>
 
     <tag-file>
+        <name>calMonthView</name>
+         <path>/WEB-INF/tags/mobile/moCalMonthView.tag</path>
+     </tag-file>
+
+    <tag-file>
         <name>dayAppt</name>
          <path>/WEB-INF/tags/mobile/moDayAppt.tag</path>
      </tag-file>
