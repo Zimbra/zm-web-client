@@ -56,7 +56,12 @@
 	if (requestSkin != null) {
 		skin = requestSkin;
 	} else if (authResult != null) {
-		skin = authResult.getPrefs().get("zimbraPrefSkin").get(0);
+	    java.util.List<String> prefSkin = authResult.getPrefs().get("zimbraPrefSkin");
+	    if (prefSkin != null && prefSkin.size() >0) {
+	        skin = prefSkin.get(0);
+        } else {
+            skin = "sand"; // TODO: find better default?
+        }
 	}
     if (authResult != null) {
         java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
