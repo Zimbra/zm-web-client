@@ -18,7 +18,7 @@
     </c:when>
     <c:otherwise>
         <c:set var="list">href="${listViewUrl}"</c:set>
-        <c:set var="dayt">href="${dayViewUrl}"</c:set>
+        <c:set var="day">href="${dayViewUrl}"</c:set>
         <c:set var="month">href="${monthViewUrl}"</c:set>
     </c:otherwise>
 </c:choose>
