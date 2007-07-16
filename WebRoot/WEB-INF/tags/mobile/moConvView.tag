@@ -15,6 +15,8 @@
     <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" limit="100"
                    context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
     <c:set var="convSummary" value="${convSearchResult.conversationSummary}"/>
+    <c:set var="singleMessage" value="${convSummary.messageCount eq 1 or not empty param.mview}"/>
+
     <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"
                             index="${context.currentItemIndex}"/>
     <c:set var="message" value="${null}"/>
@@ -24,7 +26,7 @@
             <c:set var="message" value="${convSearchResult.hits[csi].messageHit.message}"/>
         </c:if>
     </c:if>
-    <c:if test="${message eq null}">
+    <c:if test="${message eq null or not empty param.xim}">
         <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
             <c:set var="csi" value="0"/>
         </c:if>
@@ -44,7 +46,6 @@
     <fmt:message var="unknownSender" key="unknownSender"/>
     <c:set var="selectedRow" value="${param.selectedRow}"/>
 
-    <c:set var="singleMessage" value="${convSummary.messageCount eq 1 or not empty param.mview}"/>
 </mo:handleError>
 
 
@@ -191,7 +192,7 @@
             <td class='zo_appt_view'>
                 <c:set var="extImageUrl" value=""/>
                 <c:if test="${empty param.xim}">
-                    <zm:currentResultUrl var="extImageUrl" id="${message.id}" value="mosearch" action="view"
+                    <zm:currentResultUrl var="extImageUrl" id="${message.id}" value="mosearch" action="view" mview="1"
                                          context="${context}" xim="1"/>
                 </c:if>
                 <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
