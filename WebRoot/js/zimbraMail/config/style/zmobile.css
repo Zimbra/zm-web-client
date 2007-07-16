@@ -248,6 +248,24 @@ body > ul > li > a {
     padding-bottom: 8px;
 }
 
+.zo_cal_lpage {
+  border-bottom: 1px solid #E0E0E0;
+  padding:5px;
+}
+
+.zo_cal_lpage_row {
+  background-color: #A6A6A6;
+  color:black;
+}
+.zo_cal_listheader {
+	text-align:center;
+    border-bottom: 1px solid #E0E0E0;
+    line-height: 2.0em;
+    font-size: medium;
+    color:white;
+    font-weight:bold;
+}
+
 .zo_cal_listh {
     background: #A6A6A6; /*#D0D0F0;*/
     color: white;
@@ -410,8 +428,24 @@ body > ul > li > a {
     border:2px solid #333333;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
-	border-top-width:1px;
+    border-top-width:1px;
 	border-bottom-width:1px;
+}
+
+.zo_allday_appt_noright {
+    border-right: none;
+    -moz-border-radius-topright: 0px;
+    -moz-border-radius-bottomright: 0px;
+    -webkit-border-top-right-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+}
+
+.zo_allday_appt_noleft {
+    border-left: none;
+    -moz-border-radius-topleft: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-top-left-radius: 0px;
+    -webkit-border-bottom-left-radius: 0px;
 }
 
 .zo_day_appt {

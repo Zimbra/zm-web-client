@@ -19,11 +19,10 @@
 
 <c:choose>
     <c:when test="${appt.allDay}">
-        <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
-        <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
+        <c:set var="leftclass" value="${appt.startTime lt start ? ' zo_allday_appt_noleft ' : ''}"/>
+        <c:set var="rightclass" value="${appt.endTime gt end ? ' zo_allday_appt_noright ' : ''}"/>
 
-        <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if>
-                class='zo_allday_appt ${color}${needsAction ? 'Dark' : 'Light'}' onclick='window.location="${zm:jsEncode(apptUrl)}"'>
+        <div class='zo_allday_appt${leftclass}${rightclass} ${color}${needsAction ? 'Dark' : 'Light'}' onclick='window.location="${zm:jsEncode(apptUrl)}"'>
             <div class='zo_appt_text'>
                 <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
             </div>

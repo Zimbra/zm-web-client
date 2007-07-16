@@ -15,7 +15,12 @@
     <fmt:message var="titleFormat" key="CAL_MONTH_TITLE_FORMAT"/>
     <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
     <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols" />
-    <c:set var="numDays" value="28"/>
+    <c:set var="numDays" value="30"/>
+
+    <c:set var="prevDate" value="${zm:addDay(date, -numDays)}"/>
+    <c:set var="nextDate" value="${zm:addDay(date,  numDays)}"/>
+    <c:set var="dateEnd" value="${zm:addDay(date,numDays-1)}"/>
+
     <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
     <c:set var="today" value="${zm:getToday(timezone)}"/>
     <c:set var="currentDay" value="${zm:getCalendar(date.timeInMillis,mailbox.prefs.timeZone)}"/>
@@ -42,6 +47,33 @@
         </td>
     </tr>
     <tr>
+            <td>
+                <table width=100% height=100% border="0" cellpadding=0 cellspacing=0>
+                    <tr class='zo_cal_lpage_row'>
+                        <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
+                        <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
+                        <td width=1% class='zo_cal_lpage'>
+                            <a href="${prevUrl}"><img src="/zimbra/images/arrows/PreviousPage.gif"></a>
+                        </td>
+                        <td nowrap class='zo_cal_listheader'>
+                            <fmt:message var="titleFormat" key="MO_CAL_LIST_DATE_FORMAT"/>
+                            <fmt:message key="MO_CAL_LIST_TITLE_FORMAT">
+                                <fmt:param>
+                                    <fmt:formatDate value="${date.time}" pattern="${titleFormat}"/>
+                                </fmt:param>
+                                <fmt:param>
+                                    <fmt:formatDate value="${dateEnd.time}" pattern="${titleFormat}"/>        
+                                </fmt:param>
+                            </fmt:message>
+                        </td>
+                        <td width=1% class='zo_cal_lpage'>
+                            <a href="${nextUrl}"><img src="/zimbra/images/arrows/NextPage.gif"></a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    <tr>
         <td>
             <table width=100% cellpadding="0" cellspacing="0" class='zo_cal_list'>
                 <c:forEach var="day" begin="1" end="${numDays}">                    
@@ -64,6 +96,9 @@
                                 <c:choose>
                                     <c:when test="${appt.allDay}">
                                         <fmt:message key="apptAllDay"/>
+                                    </c:when>
+                                    <c:when test="${appt.startTime lt dayStart}">
+                                        <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="short"/>
                                     </c:when>
                                     <c:otherwise>
                                         <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
