@@ -38,7 +38,7 @@
 <table width=100% cellspacing="0" cellpadding="0">
     <tr>
         <td>
-            <mo:calendarViewToolbar date="${date}"/>
+            <mo:calendarViewToolbar date="${date}" openurl="true"/>
         </td>
     </tr>
     <tr>
@@ -81,15 +81,18 @@
                 <c:forEach var="week" begin="1" end="6">
                     <tr>
                         <c:forEach var="dow" begin="1" end="7" varStatus="dowStatus">
-                            <c:set var="cell" value="${week*7+(dow-1)}"/>
                             <c:set var="T" value="${zm:isSameDate(currentDay, today) ? 'T' : ''}"/>
                             <c:set var="O" value="${not zm:isSameMonth(currentDay, date) ? 'O' : ''}"/>
-                            <c:set var="sel" value="${zm:isSameDate(currentDay, date) ? '_select' :''}"/>
-                            <c:set var="hasappt" value="${zm:hasAnyAppointments(appts, currentDay.timeInMillis, zm:addDay(currentDay, 1).timeInMillis) ? ' zo_cal_mday_appt' : ''}"/>
-
-                            <td id="cell${cell}" class='zo_cal_mday${sel}' onclick="selectDay(${cell})">
+                            <fmt:formatDate var="datef" timeZone="${timezone}" value="${currentDay.time}" pattern="yyyyMMdd"/>
+                            <c:set var="hasappt" value="${zm:hasAnyAppointments(appts, currentDay.timeInMillis, zm:addDay(currentDay, 1).timeInMillis)}"/>
+                            <c:set var="sel" value="${zm:isSameDate(currentDay, date)}"/>
+                            <c:if test="${sel}">
+                                <c:set var="currentHasAppt" value="${hasappt}"/>
+                                <c:set var="curId" value="${datef}"/>
+                            </c:if>
+                            <td id="cell${datef}" class='zo_cal_mday${sel ? '_select' :''}' onclick="selectDay('${datef}')">
                                 <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${dayFormat}"/>
-                                <span class='zo_cal_mday_text${O}${hasappt}'>${fn:escapeXml(dayTitle)}</span>
+                                <span class='zo_cal_mday_text${O}${hasappt ? ' zo_cal_mday_appt':''}'>${fn:escapeXml(dayTitle)}</span>
                             </td>
                             ${zm:getNextDay(currentDay)}
                         </c:forEach>
@@ -98,70 +101,86 @@
             </table>
         </td>
     </tr>
+
     <tr>
         <td>
             <c:forEach var="week" begin="1" end="6">
                 <c:forEach var="dow" begin="1" end="7" varStatus="dowStatus">
                     <c:set var="dayStart" value="${currentDay2.timeInMillis}"/>
                     <c:set var="dayEnd" value="${zm:addDay(currentDay2, 1).timeInMillis}"/>
-                    <c:set var="cell" value="${week*7+(dow-1)}"/>
-
-                    <div class='zo_cal_mlist' id="list${cell}" <c:if test="${zm:isSameDate(currentDay2, date)}"> style='display:block'<c:set var="curId" value="${cell}"/></c:if>>
-                        <table width=100% cellpadding="0" cellspacing="0" class='zo_cal_list'>
-                            <c:set var="count" value="${0}"/>
-                            <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
-                                <mo:calendarUrl appt="${appt}" var="apptUrl"/>                                
-                                <tr  onclick='window.location="${zm:jsEncode(apptUrl)}"'>
-                                    <td class='zo_cal_listi_time'>
-                                        <c:choose>
-                                            <c:when test="${appt.allDay}">
-                                                <fmt:message key="apptAllDay"/>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-
-                                    <td class='zo_cal_listi_subject'>
-                                        <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
-                                            ${fn:escapeXml(subject)}
-                                    </td>
-                                </tr>
-                                <c:set var="count" value="${count+1}"/>
-                            </zm:forEachAppoinment>
-                            <c:if test="${count eq 0}">
-                                <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
-                                <tr><td colspan=2 class="zo_cal_listi_empty">No Appointments</td></tr>
-                            </c:if>
-                            <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
-                                <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
-                                <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
+                    <c:set var="count" value="${0}"/>
+                    <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
+                        <c:if test="${count eq 0}">
+                            <fmt:formatDate var="datef" timeZone="${timezone}" value="${currentDay2.time}" pattern="yyyyMMdd"/>
+                            <div class='zo_cal_mlist' id="list${datef}" <c:if test="${datef eq curId}"> style='display:block'"</c:if>>
+                            <table width=100% cellpadding="0" cellspacing="0" class='zo_cal_list'>
+                        </c:if>
+                        <mo:calendarUrl appt="${appt}" var="apptUrl"/>
+                        <tr  onclick='openURL("${zm:jsEncode(apptUrl)}")'>
+                            <td class='zo_cal_listi_time'>
+                                <c:choose>
+                                    <c:when test="${appt.allDay}">
+                                        <fmt:message key="apptAllDay"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td class='zo_cal_listi_subject'>
+                                <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
+                                    ${fn:escapeXml(subject)}
+                            </td>
+                        </tr>
+                        <c:set var="count" value="${count+1}"/>
+                    </zm:forEachAppoinment>
+                    <c:if test="${count gt 0}">
                         </table>
-                    </div>
+                        </div>
+                    </c:if>
                     ${zm:getNextDay(currentDay2)}
                 </c:forEach>
             </c:forEach>
+            <div class='zo_cal_mlist' id="listempty" <c:if test="${not currentHasAppt}">style='display:block'</c:if>>
+                <table width=100% cellpadding="0" cellspacing="0" class='zo_cal_list'>
+                    <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
+                    <tr><td colspan=2 class="zo_cal_listi_empty">No Appointments</td></tr>
+                </table>
+            </div>
+            <div class='zo_cal_mlist' style='display:block'>
+                <table width=100% cellpadding="0" cellspacing="0" class='zo_cal_list'>
+                    <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
+                    <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
+                    <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
+                </table>
+            </div>
         </td>
     </tr>
+
 </table>
 <script type="text/javascript">
-    var currentCellId = '${curId}';
-  function selectDay(cellId) {
-      var cell = document.getElementById("list"+cellId);
-      if (cell) {
-          if (currentCellId) {
-              document.getElementById("list"+currentCellId).style.display = "none";
-              document.getElementById("cell"+currentCellId).className = "zo_cal_mday";
-          }
-          cell.style.display = "block";
-          document.getElementById("cell"+cellId).className = 'zo_cal_mday_select';
-          currentCellId = cellId;
-      }
-  }
-    
-  function initView() {
-      window.scrollTo(0, 1);
-}
+    var currentDate = '${curId}';
+    function selectDay(datestr) {
+        var cell = document.getElementById("cell"+datestr);
+        if (cell) {
+            if (currentDate) {
+                var list = document.getElementById("list"+currentDate);
+                if (list == null) list = document.getElementById("listempty");
+                list.style.display = "none";
+                document.getElementById("cell"+currentDate).className = "zo_cal_mday";
+            }
+            cell.className = 'zo_cal_mday_select';
+            var nlist = document.getElementById("list"+datestr);
+            if (nlist == null) nlist = document.getElementById("listempty");
+            nlist.style.display = "block";
+            currentDate = datestr;
+        }
+    }
+    function openURL(url) {
+        window.location = url.replace(/date=......../, "date="+currentDate);
+    }
+    function initView() {
+        window.scrollTo(0, 1);
+    }
 </script>
 </mo:view>
