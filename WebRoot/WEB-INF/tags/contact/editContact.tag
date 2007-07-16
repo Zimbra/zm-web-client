@@ -77,7 +77,7 @@
         </tr>
         <tr>
             <td>
-                <textarea id="dlist" rows="40" cols="60" style="width:100%" name="dlist">${not empty param.dlist ? param.dlist : contact.groupMembersPerLine}</textarea>
+                <textarea id="dlist" rows="40" cols="60" style="width:100%" name="dlist">${fn:escapeXml(not empty param.dlist ? param.dlist : contact.groupMembersPerLine)}</textarea>
             </td>
         </tr>
     </c:when>
