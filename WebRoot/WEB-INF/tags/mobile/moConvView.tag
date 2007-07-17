@@ -209,7 +209,16 @@
 
         <tr>
             <td class='zo_m_cv_sub'>
-                    ${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}
+                <table cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <mo:img src="mail/Conversation.gif"/>
+                        </td>
+                        <td style='padding-left:5px;'>
+                           ${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
         <tr>

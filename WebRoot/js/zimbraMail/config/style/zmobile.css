@@ -211,8 +211,9 @@ body > ul > li > a {
 }
 
 .zo_m_cv_sub {
-    font-size: large;
-     border-bottom: 1px solid #E0E0E0;
+    font-size: medium;
+    border-bottom: 1px solid #E0E0E0;
+    padding:5px;
 }
 
 .zo_m_list_from {
