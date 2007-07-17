@@ -35,6 +35,8 @@
 <c:set var="isPart" value="${!empty message.partName}"/>
 
 <c:set var="from" value="${message.displayFrom}"/>
+<c:set var="to" value="${message.displayTo}"/>
+<c:set var="cc" value="${message.displayCc}"/>
 
 <table width=100% cellpadding="0" cellspacing="0">
     <c:if test="${not empty from}">
@@ -43,8 +45,22 @@
         <td class='zo_mv_fvalue'>${fn:escapeXml(from)}</td>
     </tr>
     </c:if>
-    <fmt:message var="noSubject" key="noSubject"/>
+    <c:if test="${not empty to}">
+        <tr><td colspan=2><hr></td></tr>
+        <tr>
+            <td valign='top' class='zo_mv_fname'><fmt:message key="to"/>:</td>
+            <td class='zo_mv_fvalue'>${fn:escapeXml(to)}</td>
+        </tr>
+    </c:if>
+    <c:if test="${not empty cc}">
+        <tr><td colspan=2><hr></td></tr>
+        <tr>
+            <td valign='top' class='zo_mv_fname'><fmt:message key="cc"/>:</td>
+            <td class='zo_mv_fvalue'>${fn:escapeXml(cc)}</td>
+        </tr>
+    </c:if>
     <tr><td colspan=2><hr></td></tr>
+    <fmt:message var="noSubject" key="noSubject"/>
     <tr><td colspan=2 class='zo_mv_subject'>${fn:escapeXml(empty message.subject ? noSubject : message.subject)}</td></tr>
     <tr>
         <td colspan=2 class='zo_mv_date'>
