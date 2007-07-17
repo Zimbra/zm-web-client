@@ -126,7 +126,7 @@
                                                      index="${context.currentItemIndex}"
                                                      context="${context}"/>
                                 <td><a href="${closeurl}#conv${convSummary.id}" class='zo_leftbutton'>
-                                    <fmt:message key="backToConvList"/>
+                                        ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
                                 </a></td>
                                 <td>
                                     <c:choose>

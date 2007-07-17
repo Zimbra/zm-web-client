@@ -37,7 +37,7 @@
                                 <tr>
                                     <td>
                                         <a href="${closeUrl}#msg${msg.id}" class='zo_leftbutton'>
-                                            <fmt:message key="backToMsgList"/>
+                                            ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
                                         </a>
                                     </td>
                                     <td>
