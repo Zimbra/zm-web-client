@@ -238,14 +238,15 @@ function(actionCode) {
 
 ZmContactListController.prototype._getToolBarOps =
 function() {
-	var list = this._standardToolBarOps();
-	list.push(ZmOperation.SEP,
-				ZmOperation.EDIT,
-				ZmOperation.SEP,
-				ZmOperation.TAG_MENU,
-				ZmOperation.SEP,
-				ZmOperation.VIEW_MENU);
-	return list;
+	return [ZmOperation.NEW_MENU,
+			ZmOperation.SEP,
+			ZmOperation.EDIT,
+			ZmOperation.SEP,
+			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT_MENU,
+			ZmOperation.SEP,
+			ZmOperation.TAG_MENU,
+			ZmOperation.SEP,
+			ZmOperation.VIEW_MENU];
 };
 
 ZmContactListController.prototype._getActionMenuOps =
