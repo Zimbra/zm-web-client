@@ -741,7 +741,9 @@ ZmComposeView.prototype.showAttachmentDialog = function(){
 		this._uploadViewDialog = new ZmUploadViewDialog(this.shell, this._appCtxt);
 		this._uploadViewDialog.setButtonListener(ZmUploadViewDialog.ATTACH_BUTTON,new AjxListener(this,this._attachListener));
 	}
+
 	this._uploadViewDialog.initialize();
+
 	this._uploadForm = this._uploadViewDialog._uploadForm;
 	if (this._composeMode != DwtHtmlEditor.HTML){
 		this._uploadViewDialog._hideInlineOptionField();
@@ -750,14 +752,11 @@ ZmComposeView.prototype.showAttachmentDialog = function(){
 };
 
 ZmComposeView.prototype._attachListener = function(ev){
-	//Check for attachments already present??
-	//if(!this._gotAttachments()){
+	if(this._uploadViewDialog.gotAttachments()){
+		this._uploadViewDialog.disableAttachButton();
 		this._controller._saveDraft();
-	//}
+	}
 };
-
-
-
 
 /**
 * Revert compose view to a clean state (usually called before popping compose view)
@@ -2078,9 +2077,8 @@ function(type) {
 // Files have been uploaded, re-initiate the send with an attachment ID.
 ZmComposeView.prototype._attsDoneCallback =
 function(isDraft, status, attId) {
-	DBG.println(AjxDebug.DBG1,"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-	DBG.dumpObj(AjxDebug.DBG1,attId);
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
+	DBG.dumpObj(AjxDebug.DBG1,attId);
 	if (status == AjxPost.SC_OK) {
 		this._controller.sendMsg(attId, isDraft);
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {

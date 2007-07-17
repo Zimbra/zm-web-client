@@ -7,9 +7,12 @@ ZmUploadViewDialog = function(parent, appCtxt) {
 	var attachButton = new DwtDialog_ButtonDescriptor(ZmUploadViewDialog.ATTACH_BUTTON, 
 													  ZmUploadViewDialog.ATTACH, DwtDialog.ALIGN_RIGHT);
 
-	ZmQuickAddDialog.call(this, parent, null, [DwtDialog.CANCEL_BUTTON], [attachButton]);
+	var cancelButton = new DwtDialog_ButtonDescriptor(ZmUploadViewDialog.CANCEL_BUTTON, 
+													  AjxMsg.cancel, DwtDialog.ALIGN_RIGHT);
+													  
+	ZmQuickAddDialog.call(this, parent, null, [DwtDialog.NO_BUTTONS] , [attachButton,cancelButton]);
 	
-	this.setButtonListener(DwtDialog.CANCEL_BUTTON,new AjxListener(this,function(){
+	this.setButtonListener(ZmUploadViewDialog.CANCEL_BUTTON,new AjxListener(this,function(){
 		this.cleanupAttachments();
 		this.popdown();	
 	}));
@@ -17,9 +20,11 @@ ZmUploadViewDialog = function(parent, appCtxt) {
 };
 
 ZmUploadViewDialog.ATTACH_BUTTON = Dwt.getNextId();
+ZmUploadViewDialog.CANCEL_BUTTON = Dwt.getNextId();
 ZmUploadViewDialog.TITLE = "Attach Files to Message";
 ZmUploadViewDialog.ATTACH = "Attach";
 ZmUploadViewDialog.ADD_ATTACHMENT_FIELD = "Add Another Attachment";
+ZmUploadViewDialog.INLINE_OPTION_MSG = "Show image attachments in message body";
 
 ZmUploadViewDialog.UPLOAD_FIELD_NAME = ZmComposeView.UPLOAD_FIELD_NAME;
 
@@ -32,48 +37,50 @@ ZmUploadViewDialog.prototype.constructor = ZmUploadViewDialog;
 
 ZmUploadViewDialog.prototype.initialize = function(){
 	
+
 	this.setTitle(ZmUploadViewDialog.TITLE);
-	
+
 	if(!this._getAttachmentTable()){
-		
+
 		this.setContent(this._getContainer());	
-		
+
 		this._attachmentTable = document.getElementById(this._attachmentTableId);
 		delete this._attachmentTableId;
-	
+
 		this._uploadForm = document.getElementById(this._uploadFormId);
 		delete this._uploadFormId;
-		
+
 		this._uploadForm.setAttribute("action",this._uri);
-		
+
 		this._attachmentButtonTable = document.getElementById(this._attachmentButtonTableId);
 		delete this._attachmentButtonTableId;
-		
+
 		this._inlineOptionTable = document.getElementById(this._inlineOptionTableId);
 		delete this._inlineOptionTableId;
-		
+
 		this._addAttachmentFieldButton();
+		
 		this._addInlineOptionField();
 		
 	}else{
-		this._getAttachmentTable().innerHTML = "";
+		var attTable = this._getAttachmentTable();
+		while(attTable.rows.length > 0){
+			attTable.deleteRow(0);
+		}
+		//this._getAttachmentTable().innerHTML = "";
 	}
 	
 	this._attachCount = 0;
-	
 	if(ZmUploadViewDialog.SHOW_NO_ATTACHMENTS > ZmUploadViewDialog.MAX_NO_ATTACHMENTS){
 		ZmUploadViewDialog.SHOW_NO_ATTACHMENTS = ZmUploadViewDialog.MAX_NO_ATTACHMENTS;
 	}
-	
 	this.addAttachmentField(true);
 	for(var i=1;i<ZmUploadViewDialog.SHOW_NO_ATTACHMENTS;i++){
 		this.addAttachmentField();	
 	}
 	delete i;
-	
 	this._inline = false;
 	this._addInlineOptionField();
-	//this._addFormatField();
 };
 
 ZmUploadViewDialog.prototype._getAttachmentTable = function(){
@@ -120,7 +127,7 @@ function() {
     
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<div width=500 height=400 style='overflow:auto'><form accept-charset='utf-8' method='POST' action='";
+	html[idx++] = "<div style='width:400px;overflow:auto'><form accept-charset='utf-8' method='POST' action='";
 	html[idx++] = uri;
 	html[idx++] = "' id='";
 	html[idx++] = uploadFormId;
@@ -164,7 +171,7 @@ ZmUploadViewDialog.prototype._addInlineOptionField = function(){
 	var html = [];
 	var idx = 0;
 	//Adding inline option
-	html[idx++] = "<input type='checkbox' name='inlineimages' id='inline'>&nbsp; Show image att.'s in msg. body";
+	html[idx++] = "<input type='checkbox' name='inlineimages' id='inline'>&nbsp;"+ ZmUploadViewDialog.INLINE_OPTION_MSG;
 	html = html.join("");
 	
 	var row = attTable.insertRow(-1);
@@ -178,9 +185,15 @@ ZmUploadViewDialog.prototype._addInlineOptionField = function(){
 
 
 ZmUploadViewDialog.prototype._hideInlineOptionField = function(){
+	
 	var attTable = this._getInlineOptionTable();
-	if(!attTable) return;
-	attTable.innerHTML = "";
+	if(!attTable || !attTable.innerHTML || attTable.innerHTML == "") return;
+
+	//attTable.innerHTML = ""; //IE Bug 
+	while(attTable.rows.length > 0){
+		attTable.deleteRow(0);
+	}
+
 	this._inline = false;
 };
 
@@ -215,13 +228,7 @@ ZmUploadViewDialog.prototype._handleInline = function(){
     this._uploadForm.setAttribute("action",this._uri + ((state)?"?fmt=extended":""));
     
     this._inline = (state)?state:false;
-    
-	/*var el = document.getElementById(this._formatFieldId);
-	if(el){
-		el.value = (state)?"extended":"raw";
-		this._uploadForm.setAttribute("action",this._uri + "?fmt="+ el.value);
-	}	*/
-	DBG.println(AjxDebug.DBG3,"_Format:"+this._uploadForm.getAttribute("action"));	
+
 };
 
 
@@ -283,17 +290,36 @@ ZmUploadViewDialog.prototype.addAttachmentField = function(noRemoveLink){
 		var attRemoveLink = document.getElementById(attRemoveId);
 		attRemoveLink["onclick"] = AjxCallback.simpleClosure(this._removeAttachmentField,this,attId);
 	}
-	//this._setEventHandler(attRemoveId, "onClick");
 	// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
 	if (AjxEnv.isIE){
-		//this._setEventHandler(attInputId, "onKeyDown");
 		var attField = document.getElementById(attInputId);
 		attField["onkeydown"] = AjxCallback.simpleClosure(this._handleKeys,this);
 	}
 };
 
+ZmUploadViewDialog.prototype.gotAttachments =
+function() {
+	var atts = document.getElementsByName(ZmUploadViewDialog.UPLOAD_FIELD_NAME);
+	for (var i = 0; i < atts.length; i++)
+		if (atts[i].value.length)
+			return true;
+	return false;
+};
+
+ZmUploadViewDialog.prototype.disableAttachButton = function(){
+	this.setButtonEnabled(ZmUploadViewDialog.ATTACH_BUTTON,false);
+};
+
+ZmUploadViewDialog.prototype.enableAttachButton = function(){
+	this.setButtonEnabled(ZmUploadViewDialog.ATTACH_BUTTON,true);
+};
+
 ZmUploadViewDialog.prototype.cleanupAttachments = function(){
-	this._getAttachmentTable().innerHTML = "";
+	//this._getAttachmentTable().innerHTML = "";
+	var attTable = this._getAttachmentTable();
+	while(attTable.rows.length > 0){
+		attTable.deleteRow(0);
+	}
 	this._attachCount = 0;
 	this.setInlineCheckBox(false);
 };
