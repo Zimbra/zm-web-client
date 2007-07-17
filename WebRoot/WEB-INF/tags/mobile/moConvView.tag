@@ -235,7 +235,7 @@
                                         </td>
                                         <td>
                                             <table width=100%>
-                                                <tr>
+                                                <tr <c:if test="${hit.messageHit.isUnread}">class='zo_m_list_unread'</c:if>>
                                                     <td class='zo_m_list_from'>
                                                         <c:set var="sender" value="${hit.messageHit.displaySender}"/>
                                                             ${fn:escapeXml(empty sender ? unknownSender : sender)}

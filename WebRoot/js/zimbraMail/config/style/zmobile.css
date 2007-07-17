@@ -212,12 +212,14 @@ body > ul > li > a {
 
 .zo_m_cv_sub {
     font-size: large;
-    font-weight: bold;
      border-bottom: 1px solid #E0E0E0;
 }
 
 .zo_m_list_from {
     font-size: large;
+}
+
+.zo_m_list_unread .zo_m_list_from, .zo_m_list_unread .zo_m_cv_sub, .zo_m_list_unread .zo_m_list_from {
     font-weight: bold;
 }
 

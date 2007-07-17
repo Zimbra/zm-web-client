@@ -64,7 +64,7 @@
                                         </td>
                                         <td>
                                             <table width=100%>
-                                                <tr>
+                                                <tr <c:if test="${hit.conversationHit.isUnread}">class='zo_m_list_unread'</c:if>>
                                                     <td class='zo_m_list_from'>
                                                         <c:set var="dispRec" value="${hit.conversationHit.displayRecipients}"/>
                                                             ${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}
