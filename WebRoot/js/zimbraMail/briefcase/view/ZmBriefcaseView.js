@@ -253,3 +253,32 @@ ZmBriefcaseView.prototype._updateDragSelection =
 function(row, select) {
     // TODO: new style to mark drop target  
 };
+
+ZmBriefcaseView.prototype._addRow =
+function(row, index) {
+	if (!row) { return; }
+
+	// bug fix #1894 - check for childNodes length otherwise IE barfs
+	var len = this._parentEl.childNodes.length;
+
+    if (index != null && len > 0 && index != len) {
+        var childNodes = this._parentEl.childNodes;
+        this._parentEl.insertBefore(row, childNodes[index]);
+    } else {
+		this._parentEl.appendChild(row);
+	}
+};
+
+ZmBriefcaseView.prototype.deselectAll =
+function() {
+	var a = this._selectedItems.getArray();
+	var sz = this._selectedItems.size();
+	for (var i = 0; i < sz; i++) {
+        Dwt.delClass(a[i], this._styleRe, this._normalClass);
+    }
+    this._selectedItems.removeAll();
+	this._selAnchor = null;
+
+	if (this._kbAnchor != null && this.hasFocus())
+		Dwt.addClass(this._kbAnchor, this._kbFocusClass);
+};
