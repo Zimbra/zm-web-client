@@ -519,10 +519,13 @@ function(params) {
 	}
 
 	// reset the action if user is forwarding multiple mail items
-	var selection = this._listView[this._currentView].getSelection();
-	var selCount = selection.length;
-	if (action == ZmOperation.FORWARD_INLINE && selCount > 1) {
-		action = params.action = ZmOperation.FORWARD_ATT;
+	var cview = this._listView[this._currentView];
+	if (cview) {
+		var selection = cview.getSelection();
+		var selCount = selection.length;
+		if (action == ZmOperation.FORWARD_INLINE && selCount > 1) {
+			action = params.action = ZmOperation.FORWARD_ATT;
+		}
 	}
 
 	// if html compose is allowed and if opening draft always request html
