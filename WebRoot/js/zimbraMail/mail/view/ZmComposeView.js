@@ -1263,17 +1263,17 @@ function(action, msg, extraBodyText, incOption) {
 			body = bodyPart ? bodyPart.content : null;
 		}
 		this._htmlEditor.setContent(body);
-		this._showForwardField(msg, action);
-		
-		this._fixMultipartRelatedImages(msg,this._htmlEditor._getIframeDoc());
-		
+
 		if (!isInviteReply) {
+			this._showForwardField(msg, action);
+			this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
 			return;
 		}
 	}
 
 	var identity = this.getIdentity();
-	var sigStyle = identity.signatureEnabled && identity.signature ? identity.getSignatureStyle() : null;
+	var sigStyle = (identity.signatureEnabled && identity.signature)
+		? identity.getSignatureStyle() : null;
 
 	var value = sigStyle == ZmSetting.SIG_OUTLOOK
 		? (this._getSignatureSeparator() + this._getSignature())
@@ -1337,14 +1337,14 @@ function(action, msg, extraBodyText, incOption) {
 			 incOption == ZmSetting.INCLUDE || composingHtml) 
 		{
 			var msgText = (action == ZmOperation.FORWARD_INLINE) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
-			var text = ZmMsg.DASHES + " " + msgText + " " + ZmMsg.DASHES + crlf;
+			var text = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES, crlf].join("");
 			for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
 				var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
 				if (hdr) {
-					// bugfix: htmlescape the headers if we're composing in HTML mode.
-					if (composingHtml)
+					if (composingHtml) {
 						hdr = AjxStringUtil.convertToHtml(hdr);
-					text = text + hdr + crlf;
+					}
+					text += (hdr + crlf);
 				}
 			}
 			body = text + crlf + body;
@@ -1375,14 +1375,11 @@ function(action, msg, extraBodyText, incOption) {
 						action == ZmOperation.REPLY_DECLINE ||
 						action == ZmOperation.REPLY_TENTATIVE)
 			{
-				var notes;
-		
 				var bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-				var body = bodyPart ? bodyPart.content : "";
-				body = body.replace(/\r\n/g, "\n");
-		
+				var bodyStr = bodyPart ? (bodyPart.content.replace(/\r\n/g, "\n")) : "";
+
 				// bug 5122: always show original meeting details
-				value = preface + AjxStringUtil.wordWrap(body, ZmComposeView.WRAP_LENGTH, prefix + " ");
+				value = preface + AjxStringUtil.wordWrap(bodyStr, ZmComposeView.WRAP_LENGTH, prefix + " ");
 			}
 		}
 	}
@@ -1392,10 +1389,9 @@ function(action, msg, extraBodyText, incOption) {
 	} else {
 		this._htmlEditor.setContent(value);
 	}
-	
+
 	this._showForwardField(msg, action, incOption);
-	
-	this._fixMultipartRelatedImages(msg,this._htmlEditor._getIframeDoc());
+	this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
 };
 
 ZmComposeView.prototype.resetBody =
