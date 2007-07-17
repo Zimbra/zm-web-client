@@ -20,6 +20,12 @@
     <c:when test="${context.isConversationSearch}">
         <mo:convListView context="${context}"/>
     </c:when>
+    <c:when test="${context.isMessageSearch and action eq 'view'}">
+        <mo:messageView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isMessageSearch}">
+        <mo:messageListView context="${context}"/>
+    </c:when>
     <c:when test="${context.isContactSearch and action eq'view'}">
         <mo:contactView context="${context}"/>
     </c:when>

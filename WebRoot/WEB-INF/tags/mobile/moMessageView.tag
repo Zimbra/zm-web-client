@@ -1,5 +1,5 @@
 <%@ tag body-content="empty" %>
-<%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
+<%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -7,7 +7,8 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
-    <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true" neuterimages="${empty param.xim}"/>
+    <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true"
+                   neuterimages="${empty param.xim}"/>
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
     <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
 
@@ -21,7 +22,7 @@
         </c:forEach>
     </c:if>
 
-    <zm:currentResultUrl var="closeUrl" value="mosearch" context="${context}" action="view" cid="${param.cid}" cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
+    <zm:currentResultUrl var="closeUrl" value="mosearch" context="${context}"/>
 </mo:handleError>
 
 <mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" scale="true">
@@ -34,7 +35,43 @@
                         <td>
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
-                                    <td><a href="${closeUrl}" class='zo_button'><fmt:message key="close"/></a></td>
+                                    <td>
+                                        <a href="${closeUrl}#msg${msg.id}" class='zo_leftbutton'>
+                                            <fmt:message key="backToMsgList"/>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${cursor.hasPrev}">
+                                                <zm:prevItemUrl var="prevMsgUrl" value="mosearch" action='view'
+                                                                cursor="${cursor}" context="${context}"/>
+                                                <a class='zo_button' href="${prevMsgUrl}">
+                                                    <fmt:message key="MO_PREV"/>
+                                                </a>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a class='zo_button' style='color:gray'>
+                                                    <fmt:message key="MO_PREV"/>
+                                                </a>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
+                                        <c:choose>
+                                            <c:when test="${cursor.hasNext}">
+                                                <zm:nextItemUrl var="nextMsgUrl" value="mosearch" action='view'
+                                                                cursor="${cursor}" context="${context}"/>
+                                                <a class='zo_button' href="${nextMsgUrl}">
+                                                    <fmt:message key="MO_NEXT"/>
+                                                </a>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <a class='zo_button' style='color:gray'>
+                                                    <fmt:message key="MO_NEXT"/>
+                                                </a>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
                                 </tr>
                             </table>
                         </td>
@@ -46,12 +83,14 @@
             <td class='zo_appt_view'>
                 <c:set var="extImageUrl" value=""/>
                 <c:if test="${empty param.xim}">
-                    <zm:currentResultUrl var="extImageUrl" id="${msg.id}" value="mosearch" action="view" context="${context}" xim="1"/>
+                    <zm:currentResultUrl var="extImageUrl" id="${msg.id}" value="mosearch" action="view"
+                                         context="${context}" xim="1"/>
                 </c:if>
                 <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
                                      action="compose" paction="view" id="${msg.id}"/>
                 <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
-                <mo:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
+                <mo:displayMessage mailbox="${mailbox}" message="${msg}" externalImageUrl="${extImageUrl}"
+                                   showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
             </td>
         </tr>
     </table>

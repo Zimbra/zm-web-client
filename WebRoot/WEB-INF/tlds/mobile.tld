@@ -10,11 +10,15 @@
     <short-name>ZimbraMobileMailTagLibrary</short-name>
     <uri>com.zimbra.mobileclient</uri>
 
-   <tag-file>
+    <tag-file>
+       <name>messageListView</name>
+        <path>/WEB-INF/tags/mobile/moMessageListView.tag</path>
+    </tag-file>
+
+    <tag-file>
        <name>convListView</name>
         <path>/WEB-INF/tags/mobile/moConvListView.tag</path>
     </tag-file>
-
 
    <tag-file>
        <name>convView</name>

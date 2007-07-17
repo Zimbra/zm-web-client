@@ -44,8 +44,6 @@
         </c:forEach>
     </c:if>
     <fmt:message var="unknownSender" key="unknownSender"/>
-    <c:set var="selectedRow" value="${param.selectedRow}"/>
-
 </mo:handleError>
 
 
@@ -70,12 +68,6 @@
                                 <td><a href="${closeUrl}" class='zo_leftbutton'>
                                     <fmt:message key="backToConv"/>
                                 </a></td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td align=right>
-                        <table cellspacing="0" cellpadding="0">
-                            <tr>
                                 <td>
                                     <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}"
                                                             index="${param.csi}"/>
@@ -136,12 +128,6 @@
                                 <td><a href="${closeurl}#conv${convSummary.id}" class='zo_leftbutton'>
                                     <fmt:message key="backToConvList"/>
                                 </a></td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td align=right>
-                        <table cellspacing="0" cellpadding="0">
-                            <tr>
                                 <td>
                                     <c:choose>
                                         <c:when test="${context.hasPrevItem}">
@@ -215,7 +201,7 @@
                             <mo:img src="mail/Conversation.gif"/>
                         </td>
                         <td style='padding-left:5px;'>
-                           ${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}
+                                ${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}
                         </td>
                     </tr>
                 </table>
@@ -223,7 +209,6 @@
         </tr>
         <tr>
             <td>
-                <zm:currentResultUrl var="currentUrl" value="/m/mosearch" context="${context}"/>
                 <table width=100% cellpadding="0" cellspacing="0" class='zo_m_list'>
 
 
@@ -231,10 +216,6 @@
                         <zm:currentResultUrl var="msgUrl" value="mosearch" cid="${convSummary.id}" id="${hit.id}"
                                              action='view' context="${context}" mview="1"
                                              cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-
-                        <c:if test="${empty selectedRow and hit.id eq message.id}">
-                            <c:set var="selectedRow" value="${status.index}"/>
-                        </c:if>
                         <tr>
                             <td class='zo_m_list_row' onclick='window.location="${zm:jsEncode(msgUrl)}"'>
                                 <table width=100%>
@@ -244,7 +225,11 @@
                                         </td>
                                         <td>
                                             <table width=100%>
-                                                <tr <c:if test="${hit.messageHit.isUnread}">class='zo_m_list_unread'</c:if>>
+                                                <tr
+                                                        <c:if test="${hit.messageHit.isUnread}">
+                                                            class='zo_m_list_unread'
+                                                        </c:if>
+                                                        >
                                                     <td class='zo_m_list_from'>
                                                         <c:set var="sender" value="${hit.messageHit.displaySender}"/>
                                                             ${fn:escapeXml(empty sender ? unknownSender : sender)}
@@ -276,75 +261,3 @@
 </c:choose>
 </table>
 </mo:view>
-
-<%--
-
-
-<tr>
-    <td>
-        <table width=100% cellspacing="0" cellpadding="0">
-            <tr class='zo_toolbar'>
-                <td>
-                    <table cellspacing="0" cellpadding="0">
-                        <tr>
-                            <zm:currentResultUrl var="closeurl" value="/m/mosearch" index="${context.currentItemIndex}"
-                                                 context="${context}"/>
-                            <td><a href="${closeurl}" class='zo_button'>${fn:escapeXml(context.backTo)}</a></td>
-                        </tr>
-                    </table>
-                </td>
-                <td align=right>
-                    <table cellspacing="0" cellpadding="0">
-                        <tr>
-                            <td>
-                                <c:choose>
-                                    <c:when test="${context.hasPrevItem}">
-                                        <zm:prevItemUrl var="prevItemUrl" value="mosearch" action="view"
-                                                        cursor="${convCursor}" context="${context}" css="${param.css}"/>
-                                        <a class='zo_button' href="${prevItemUrl}">
-                                            <fmt:message key="MO_PREV"/>
-                                        </a>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <a class='zo_button' style='color:gray'>
-                                            <fmt:message key="MO_PREV"/>
-                                        </a>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td>
-                                <c:if test="${singleMessage}">
-                                    <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${param.csi}"/>
-
-                                    <c:if test="${messCursor.hasNext}">
-                                        <zm:currentResultUrl var="nextItemUrl" value="mosearch" action="view" context="${context}"
-                                                             cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}"
-                                                             css="${param.css}" mview="1"/>
-                                    </c:if>
-                                </c:if>
-                                <c:if test="${empty nextItemUrl and context.hasNextItem}">
-                                    <zm:nextItemUrl var="nextItemUrl" value="" action="view" cursor="${convCursor}"
-                                                    context="${context}" css="${param.css}"/>
-                                </c:if>
-
-                                <c:choose>
-                                    <c:when test="${not empty nextItemUrl}">
-                                        <a class='zo_button' href="${nextItemUrl}">
-                                            <fmt:message key="MO_NEXT"/>
-                                        </a>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <a class='zo_button' style='color:gray'>
-                                            <fmt:message key="MO_NEXT"/>
-                                        </a>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </td>
-</tr>
---%>

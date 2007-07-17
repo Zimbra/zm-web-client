@@ -22,12 +22,6 @@
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td align=right>
-                            <table cellspacing="0" cellpadding="0">
-                                <tr>
                                     <td>
                                         <mo:searchPageLeft urlTarget="mosearch" context="${context}" keys="false"/>
                                     </td>
@@ -64,13 +58,7 @@
                         <td>
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
-                                    <td><a href="main" class='zo_button'><fmt:message key="MO_MAIN"/></a></td>
-                                </tr>
-                            </table>
-                        </td>
-                        <td align=right>
-                            <table cellspacing="0" cellpadding="0">
-                                <tr>
+                                    <td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>
                                     <td>
                                         <mo:searchPageLeft urlTarget="mosearch" context="${context}" keys="false"/>
                                     </td>
@@ -85,38 +73,4 @@
             </td>
         </tr>
     </table>
-
-
-
-<%--
-                           <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-                               <c:set var="isCurr" value="${hit.contactHit.id == context.currentItem.id}"/>
-                               <tr <c:if test="${hit.contactHit.id == context.currentItem.id}">class='RowSelected'</c:if>>
-                                   <td class='CB' nowrap><input <c:if test="${isCurr}">id="CURRCHECK"</c:if> type=checkbox  name="id" value="${hit.contactHit.id}"></td>
-                                   <c:if test="${mailbox.features.tagging}">
-                                       <td class='Img'><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
-                                   </c:if>
-                                   <td class='Img'><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
-                                   <td ><span style='padding:3px'>
-                                       <zm:currentResultUrl var="contactUrl" value="/h/search" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
-                                       <a  href="${contactUrl}" <c:if test="${isCurr}">id="CURR_ITEM"</c:if>>
-                                               ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '<None>' : hit.contactHit.fileAsStr)}
-                                       </a></span>
-                                   </td>
-                               </tr>
-                           </c:forEach>
-                           <c:if test="${context.searchResult.size eq 0}">
-                               <tr>
-                                   <td colspan="4">
-                                       <div class='NoResults'><fmt:message key="noResultsFound"/></div>
-                                   </td>
-                               </tr>
-                           </c:if>
-                           <c:if test="${false and context.searchResult.size lt 10}">
-                               <c:forEach begin="0" end="${10-context.searchResult.size}">
-                                   <tr><td colspan="4">&nbsp;</td></tr>
-                               </c:forEach>
-                           </c:if>
-   --%>
 </mo:view>
-
