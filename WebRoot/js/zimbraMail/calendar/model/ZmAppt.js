@@ -1708,7 +1708,7 @@ function(soapDoc, method, attachmentId, notifyList, onBehalfOf) {
 	// set display name of organizer
 	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this.organizer);
 	var orgName = orgEmail.getName();
-	if (name) org.setAttribute("d", name);
+	if (orgName) org.setAttribute("d", orgName);
 
 	// handle attachments
 	if (attachmentId != null || (this._validAttachments != null && this._validAttachments.length)) {
