@@ -263,27 +263,20 @@ ZmListController.prototype._standardToolBarOps =
 function() {
 	return [ZmOperation.NEW_MENU,
 			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE,
-			ZmOperation.PRINT_MENU];
+			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT];
 };
 
 ZmListController.prototype._standardActionMenuOps =
 function() {
-	var list = [];
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	return list;
+	return [ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT];
 };
 
 ZmListController.prototype._participantOps =
 function() {
-	var ops = [ZmOperation.SEARCH, ZmOperation.BROWSE,
-		   ZmOperation.NEW_MESSAGE];
-	if (ZmSetting.IM_ENABLED)
+	var ops = [ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE];
+	if (ZmSetting.IM_ENABLED) {
 		ops.push(ZmOperation.IM);
+	}
 	ops.push(ZmOperation.CONTACT);
 	return ops;
 };

@@ -50,7 +50,9 @@ ZmContactListController = function(appCtxt, container, contactsApp) {
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
-	this._listeners[ZmOperation.PRINT_MENU] = new AjxListener(this, this._printContactListener);
+	this._listeners[ZmOperation.PRINT] = null; // override base class to do nothing
+	this._listeners[ZmOperation.PRINT_CONTACT] = new AjxListener(this, this._printContactListener);
+	this._listeners[ZmOperation.PRINT_ADDRBOOK] = new AjxListener(this, this._printAddrBookListener);
 
 	this._parentView = {};
 };
@@ -242,7 +244,7 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.EDIT,
 			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT_MENU,
+			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
 			ZmOperation.SEP,
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP,
@@ -252,8 +254,11 @@ function() {
 ZmContactListController.prototype._getActionMenuOps =
 function() {
 	var list = this._participantOps();
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._standardActionMenuOps());
+	list.push(ZmOperation.SEP,
+				ZmOperation.TAG_MENU,
+				ZmOperation.DELETE,
+				ZmOperation.MOVE,
+				ZmOperation.PRINT_CONTACT);
 	return list;
 };
 
@@ -328,18 +333,17 @@ ZmContactListController.prototype._initializeActionMenu =
 function(view) {
 	ZmListController.prototype._initializeActionMenu.call(this);
 
-	// reset the default listener for print action in action menu
-	var actionMenu = this._actionMenu;
-	actionMenu.removeSelectionListener(ZmOperation.PRINT, this._listeners[ZmOperation.PRINT]);
-	actionMenu.addSelectionListener(ZmOperation.PRINT, this._listeners[ZmOperation.PRINT_MENU]);
+	var mi = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.PRINT_CONTACT);
+	if (mi) {
+		mi.setText(ZmMsg.print);
+	}
 
-	ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
+	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
 };
 
 ZmContactListController.prototype._initializeAlphabetBar =
 function(view) {
-	if (view == this._currentView)
-		return;
+	if (view == this._currentView) { return; }
 
 	var pv = this._parentView[this._currentView];
 	var alphaBar = pv ? pv.getAlphabetBar() : null;
@@ -396,15 +400,22 @@ function(view, firstTime) {
 
 ZmContactListController.prototype._setupPrintMenu =
 function(view) {
-	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT_MENU);
+	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT);
 	if (!printButton) { return; }
+
+	printButton.noMenuBar = true;
 	var menu = new ZmPopupMenu(printButton);
 	printButton.setMenu(menu);
 
-	var id = ZmOperation.PRINT_CONTACTLIST;
+	var id = ZmOperation.PRINT_CONTACT;
 	var mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
 	mi.setData(ZmOperation.MENUITEM_ID, id);
-	mi.addSelectionListener(this._listeners[ZmOperation.PRINT]);
+	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_CONTACT]);
+
+	id = ZmOperation.PRINT_ADDRBOOK;
+	mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
+	mi.setData(ZmOperation.MENUITEM_ID, id);
+	mi.addSelectionListener(this._listeners[ZmOperation.PRINT_ADDRBOOK]);
 };
 
 // Resets the available options on a toolbar or action menu.
@@ -412,18 +423,19 @@ ZmContactListController.prototype._resetOperations =
 function(parent, num) {
 	var printMenuItem;
 	if (parent instanceof ZmButtonToolBar) {
-		var printButton = parent.getButton(ZmOperation.PRINT_MENU);
+		var printButton = parent.getButton(ZmOperation.PRINT);
 		if (printButton) {
-			printMenuItem = printButton.getMenu().getItem(0);
+			printMenuItem = printButton.getMenu().getItem(1);
 			printMenuItem.setText(ZmMsg.printResults);
 		}
 	}
 
+	var printOp = (parent instanceof ZmActionMenu)
+		? ZmOperation.PRINT_CONTACT : ZmOperation.PRINT;
+
 	if (!this.isGalSearch()) {
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
-		parent.enable(ZmOperation.PRINT_MENU, num > 0);
-		if (parent instanceof ZmActionMenu)
-			parent.enable(ZmOperation.PRINT, num == 1);
+		parent.enable(printOp, num > 0);
 
 		// a valid folderId means user clicked on an addrbook
 		if (this._folderId) {
@@ -449,7 +461,7 @@ function(parent, num) {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
-		parent.enable([ZmOperation.CONTACT, ZmOperation.NEW_MESSAGE, ZmOperation.PRINT_MENU], num > 0);
+		parent.enable([ZmOperation.CONTACT, ZmOperation.NEW_MESSAGE, printOp], num > 0);
 	}
 };
 
@@ -558,19 +570,6 @@ function(ev) {
 	AjxDispatcher.run("GetContactController").show(contact, false);
 };
 
-ZmContactListController.prototype._printListener =
-function(ev) {
-	var printView = this._appCtxt.getPrintView();
-	if (this._folderId && !this._list._isShared) {
-		var subList = this._list.getSubList(0, null, this._folderId);
-		printView.renderHtml(ZmContactCardsView.getPrintHtml(subList));
-	} else if ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0) {
-		printView.render(AjxDispatcher.run("GetContacts"));
-	} else {
-		printView.render(this._list);
-	}
-};
-
 ZmContactListController.prototype._printContactListener =
 function(ev) {
 	var printView = this._appCtxt.getPrintView();
@@ -588,6 +587,19 @@ function(ev) {
 	} else {
 		var html = ZmContactCardsView.getPrintHtml(AjxVector.fromArray(contacts));
 		printView.renderHtml(html);
+	}
+};
+
+ZmContactListController.prototype._printAddrBookListener =
+function(ev) {
+	var printView = this._appCtxt.getPrintView();
+	if (this._folderId && !this._list._isShared) {
+		var subList = this._list.getSubList(0, null, this._folderId);
+		printView.renderHtml(ZmContactCardsView.getPrintHtml(subList));
+	} else if ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0) {
+		printView.render(AjxDispatcher.run("GetContacts"));
+	} else {
+		printView.render(this._list);
 	}
 };
 
