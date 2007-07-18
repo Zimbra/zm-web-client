@@ -93,7 +93,17 @@ ZmFindnReplaceDialog.prototype.popup =
 function(editorInfo, callback) {
 	this._editorInfo = editorInfo || {};
 	this._callback = callback;
-	DwtDialog.prototype.popup.call(this);
+    var findVal = "";
+    if(editorInfo) {
+        var editor = editorInfo.editor;
+        findVal = editor._getSelectedText();
+        if(findVal) {
+            findVal = AjxStringUtil.trim(findVal.toString());
+        }
+    }
+    this._findInput.setValue(findVal);
+    this._replaceInput.setValue("");    
+    DwtDialog.prototype.popup.call(this);
 };
 
 ZmFindnReplaceDialog.prototype.popdown =
@@ -175,7 +185,7 @@ ZmFindnReplaceDialog.prototype.replaceAction = function(mode,findOnly)
 	this._caseCheckbox = document.getElementById(this._caseId);
 	
 	if(this._caseCheckbox && this._caseCheckbox.checked) {
-		casesensitive = true;
+		casesensitiveVal = true;
 	}	
 	
 	var params = {
