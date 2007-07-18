@@ -50,11 +50,13 @@ and the container element is replaced with that control.
 				-->
 
 				<!-- LOCALE_NAME { string } // en_US -->
+				<$ if (data.isEnabled(ZmSetting.LOCALE_NAME)) { $>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.languageLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_LOCALE_NAME'></div></td>
 				</tr>
 
 				<tr><td colspan=2><hr></td></tr>
+				<$ } $>
 
 				<!-- PASSWORD (button) -->
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>

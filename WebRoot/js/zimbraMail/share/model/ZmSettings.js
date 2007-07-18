@@ -329,7 +329,7 @@ function(response) {
 			var locale = locales[i];
 			setting.setValue({ name: locale.name, id: locale.id });
 		}
-		this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(count > 0);
+		this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(count > 1);
 	}
 };
 
