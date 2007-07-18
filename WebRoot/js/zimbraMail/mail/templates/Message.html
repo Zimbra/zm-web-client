@@ -33,7 +33,8 @@
 								</table>
 							</td>
 							<td class='LabelColValue'>
-								<$= AjxImg.getImageSpanHtml(data.sentByIcon, "cursor:default", null, "&nbsp;"+data.sentBy) $>&nbsp;&nbsp;<span class='LabelColName'><$= ZmMsg.on $>: </span><span class='LabelColValue'><$= data.dateString $></span>
+								<$= data.sentByIcon ? (AjxImg.getImageSpanHtml(data.sentByIcon, "cursor:default", null, "&nbsp;"+data.sentBy)) : data.sentBy $>&nbsp;&nbsp;
+								<span class='LabelColName'><$= ZmMsg.on $>: </span><span class='LabelColValue'><$= data.dateString $></span>
 							</td>
 						</tr>
 

@@ -876,7 +876,9 @@ function(msg, container, callback) {
 	if (addr) { addr = addr.address || (AjxStringUtil.htmlEncode(addr.name)); }	// bug fix #17016 - no need to check addr instanceof AjxEmailAddress
 	var sender = msg.getAddress(AjxEmailAddress.SENDER);						// bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
 	var sentBy = sender ? sender.address : addr;
-	var sentByIcon = cl.getContactByEmail(sentBy) ? "Contact" : "NewContact";
+	var sentByIcon = cl
+		? (cl.getContactByEmail(sentBy) ? "Contact" : "NewContact")
+		: null;
 	var obo = sender ? addr : null;
 
 	if (this._objectManager) {
@@ -909,12 +911,9 @@ function(msg, container, callback) {
 
 				var email = addrs[j];
 				if (email.address) {
-					var str = this._objectManager
-						? this._objectManager.findObjects(email, true, ZmObjectManager.EMAIL)
+					parts[idx++] = this._objectManager
+						? (this._objectManager.findObjects(email, true, ZmObjectManager.EMAIL))
 						: email.address;
-					var contact = cl.getContactByEmail(email.address);
-					var icon = contact != null ? "Contact" : "NewContact";
-					parts[idx++] = str;
 				} else {
 					parts[idx++] = AjxStringUtil.htmlEncode(email.name);
 				}
