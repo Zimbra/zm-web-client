@@ -128,8 +128,15 @@ body	{	@ChromeBg@	}
 
 #skin_container_search_builder_toolbar	{	
 	@SkinBorderSBToolbar@
-	height:24;
+	height:32px;
+}	
+#IFDEF MSIE
+
+#skin_container_search_builder_toolbar	{	
+	@SkinBorderSBToolbar@
+	height:26px;
 }
+#ENDIF	
 
 #skin_tr_search_builder	{}
 #skin_td_search_builder	{	
