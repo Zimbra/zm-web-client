@@ -871,7 +871,8 @@ function(msg, container, callback) {
 
 	var cl = AjxDispatcher.run("GetContacts");
 	var subject = msg.subject || ZmMsg.noSubject;
-	var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
+	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
+	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : "";
 	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
 	if (addr) { addr = addr.address || (AjxStringUtil.htmlEncode(addr.name)); }	// bug fix #17016 - no need to check addr instanceof AjxEmailAddress
 	var sender = msg.getAddress(AjxEmailAddress.SENDER);						// bug fix #10652 - check invite if sentBy is set (means on-behalf-of)

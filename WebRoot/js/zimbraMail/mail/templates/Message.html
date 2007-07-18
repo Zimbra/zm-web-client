@@ -27,14 +27,23 @@
 							<td>
 								<table align=right border=0 cellpadding=0 cellspacing=0>
 									<tr>
-										<td id='${id}_expandHeader'></td>
-										<td class='LabelColName'><$= ZmMsg.sentBy $>: </td>
+										<td valign=top id='${id}_expandHeader'></td>
+										<td class='LabelColName' style='vertical-align:middle'><$= ZmMsg.sentBy $>: </td>
 									</tr>
 								</table>
 							</td>
-							<td class='LabelColValue'>
-								<$= data.sentByIcon ? (AjxImg.getImageSpanHtml(data.sentByIcon, "cursor:default", null, "&nbsp;"+data.sentBy)) : data.sentBy $>&nbsp;&nbsp;
-								<span class='LabelColName'><$= ZmMsg.on $>: </span><span class='LabelColValue'><$= data.dateString $></span>
+							<td class='LabelColValue' valign=top>
+								<table border=0 cellpadding=0 cellspacing=0>
+									<tr>
+										<$ if (data.sentByIcon) { $>
+											<td valign=top><$= AjxImg.getImageHtml(data.sentByIcon, "cursor:pointer") $></td>
+											<td>&nbsp;</td>
+										<$ } $>
+										<td>${sentBy}&nbsp;&nbsp;</td>
+										<td class='LabelColName'><$= ZmMsg.on $>:</td>
+										<td class='LabelColValue'>${dateString}</td>
+									</tr>
+								</table>
 							</td>
 						</tr>
 
