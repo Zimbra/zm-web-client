@@ -1233,6 +1233,9 @@ function() {
 				htmlArr[idx++] = "</a>";
 			}
 			if (att.briefcaseLink) {
+				if (att.htmlLink || att.vcardLink)
+					htmlArr[idx++] = ", ";
+					
 				htmlArr[idx++] = att.briefcaseLink;
 				htmlArr[idx++] = ZmMsg.addToBriefcase;
 				htmlArr[idx++] = "</a>";			
