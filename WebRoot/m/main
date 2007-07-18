@@ -13,8 +13,25 @@
 </mo:handleError>
 <mo:view title="${mailbox.name}" context="${context}" mailbox="${mailbox}">
     <table width=100% cellspacing="0" cellpadding="0">
-        <tr class='zo_toolbar' width=100%>
-            <td>${fn:escapeXml(mailbox.name)}</td>
+        <tr>
+            <td>
+                <table width=100% cellspacing="0" cellpadding="0">
+                    <tr class='zo_toolbar'>
+                        <td>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td>
+                                        <c:url var="logoutUrl" value="/?loginOp=logout&client=mobile"/>
+                                        <a href="${logoutUrl}" class='zo_button'>
+                                            <fmt:message key="logOut"/>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
         </tr>
     </table>
     <ul>

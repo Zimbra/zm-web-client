@@ -8,7 +8,7 @@
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <tr>
     <c:set var="url" value="mosearch?sfi=${folder.id}"/>
-    <td class='zo_fldr_row' style='padding-left: ${8+folder.depth*8}px'  onclick='window.location="${zm:jsEncode(url)}"'>
+    <td class='zo_fldr' style='padding-left: ${8+folder.depth*8}px'  onclick='window.location="${zm:jsEncode(url)}"'>
         <mo:img alt='${fn:escapeXml(label)}' src="${folder.image}"/>
         ${fn:escapeXml(label)}
     </td>

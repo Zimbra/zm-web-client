@@ -20,7 +20,7 @@
             </c:url>
         </c:otherwise>
     </c:choose>
-    <td class='zo_fldr_row' onclick='window.location="${zm:jsEncode(url)}"'>
+    <td class='zo_fldr${tag.hasUnread ? ' zo_unread' : ''}' onclick='window.location="${zm:jsEncode(url)}"'>
         <mo:img src="${tag.image}" alt='${fn:escapeXml(tag.name)}'/>
         ${fn:escapeXml(tag.name)}
         <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
