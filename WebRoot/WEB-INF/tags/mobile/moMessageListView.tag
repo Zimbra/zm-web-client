@@ -19,6 +19,7 @@
                                 index="${context.currentItemIndex}"/>
         <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
     </c:if>
+    <fmt:message var="emptySubject" key="noSubject"/>
 </mo:handleError>
 
 <mo:view mailbox="${mailbox}" title="${title}" context="${context}" scale="${true}">
@@ -52,36 +53,38 @@
                 <table width=100% cellpadding="0" cellspacing="0" class='zo_m_list'>
 
                     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-                        <zm:currentResultUrl index="${status.index}" var="msgUrl" value="/m/mosearch" action="view" context="${context}" id="${hit.messageHit.id}"/>
+                        <c:set var="mhit" value="${hit.messageHit}"/>
+                        <zm:currentResultUrl index="${status.index}" var="msgUrl" value="/m/mosearch" action="view" context="${context}" id="${mhit.id}"/>
 
-                        <tr id="msg${hit.messageHit.id}">
-                            <td class='zo_m_list_row' onclick='window.location="${zm:jsEncode(msgUrl)}"'>
+                        <tr id="msg${mhit.id}"  onclick='zClickLink("a${mhit.id}")'>
+                            <td class='zo_m_list_row'>
                                 <table width=100%>
                                     <tr>
                                         <td style='width:40px; ' valign="middle" align="center">
-                                            <mo:img src="${(hit.messageHit.isUnread and hit.id == msg.id) ? 'mail/MsgStatusRead.gif' : hit.messageHit.statusImage}"/>
+                                            <mo:img src="${(mhit.isUnread and hit.id == msg.id) ? 'mail/MsgStatusRead.gif' : mhit.statusImage}"/>
                                         </td>
                                         <td>
                                             <table width=100%>
-                                                <tr
-                                                        <c:if test="${hit.messageHit.isUnread}">
-                                                            class='zo_m_list_unread'
-                                                        </c:if>
-                                                        >
+                                                <tr ${mhit.isUnread ? "class='zo_m_list_unread'" : ""}>
                                                     <td class='zo_m_list_from'>
-                                                        <c:set var="sender" value="${hit.messageHit.displaySender}"/>
+                                                        <c:set var="sender" value="${mhit.displaySender}"/>
                                                             ${fn:escapeXml(empty sender ? unknownSender : sender)}
                                                     </td>
                                                     <td nowrap align=right valign=top class='zo_m_list_date'>
-                                                            ${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}
+                                                            ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class='zo_m_list_frag'>
-                                                        <c:out value="${zm:truncate(hit.messageHit.fragment,100,true)}"/>
+                                                    <td class='zo_m_list_sub'>
+                                                       <a id="a${mhit.id}" href="${msgUrl}">${fn:escapeXml(zm:truncate(mhit.subject,60,true))}</a>
                                                     </td>
                                                     <td nowrap class='zo_m_list_size' align=right valign="top">
-                                                            ${fn:escapeXml(zm:displaySize(hit.messageHit.size))}
+                                                            ${fn:escapeXml(zm:displaySize(mhit.size))}
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class='zo_m_list_frag' colspan="2">
+                                                        <c:out value="${zm:truncate(mhit.fragment,100,true)}"/>
                                                     </td>
                                                 </tr>
                                             </table>

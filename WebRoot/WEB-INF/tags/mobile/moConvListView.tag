@@ -49,8 +49,8 @@
                             <zm:currentResultUrl var="convUrl" value="mosearch" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
                         </c:otherwise>
                         </c:choose>
-                        <tr id="conv${hit.conversationHit.id}">
-                            <td class='zo_m_list_row' onclick='window.location="${zm:jsEncode(convUrl)}"'>
+                        <tr id="conv${hit.conversationHit.id}" onclick='zClickLink("a${hit.conversationHit.id}")'>
+                            <td class='zo_m_list_row'>
                                 <table width=100%>
                                     <tr>
                                         <td style='width:5px; '>
@@ -69,7 +69,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td class='zo_m_list_sub'>
-                                                        ${fn:escapeXml(empty hit.conversationHit.subject ? unknownSubject : zm:truncate(hit.conversationHit.subject,50,true))}
+                                                        <a id="a${hit.conversationHit.id}" href="${convUrl}">${fn:escapeXml(empty hit.conversationHit.subject ? unknownSubject : zm:truncate(hit.conversationHit.subject,50,true))}</a>
                                                     </td>
                                                     <td align=right class='zo_m_list_frag'>
                                                         <c:choose>

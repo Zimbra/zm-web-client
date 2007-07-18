@@ -203,6 +203,11 @@ body > ul > li > a {
     -webkit-border-radius: 10px;
 }
 
+.zo_m_list_row A:visited {
+    text-decoration: none;
+    color: inherit;;
+}
+
 .zo_m_list_row {
   border-bottom: 1px solid #E0E0E0;
  /* background: url(../img/iPhoneArrow.png) no-repeat right center;*/

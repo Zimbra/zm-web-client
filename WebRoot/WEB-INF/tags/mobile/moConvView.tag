@@ -216,8 +216,8 @@
                         <zm:currentResultUrl var="msgUrl" value="mosearch" cid="${convSummary.id}" id="${hit.id}"
                                              action='view' context="${context}" mview="1"
                                              cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                        <tr>
-                            <td class='zo_m_list_row' onclick='window.location="${zm:jsEncode(msgUrl)}"'>
+                        <tr onclick='zClickLink("a${hit.messageHit.id}")'>
+                            <td class='zo_m_list_row'>
                                 <table width=100%>
                                     <tr>
                                         <td style='width:40px; ' valign="middle" align="center">
@@ -240,7 +240,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td class='zo_m_list_frag'>
-                                                        <c:out value="${zm:truncate(hit.messageHit.fragment,100,true)}"/>
+                                                        <a id="a${hit.messageHit.id}" href="${msgUrl}">${fn:escapeXml(zm:truncate(hit.messageHit.fragment,100,true))}</a>
                                                     </td>
                                                     <td nowrap class='zo_m_list_size' align=right valign="top">
                                                             ${fn:escapeXml(zm:displaySize(hit.messageHit.size))}
