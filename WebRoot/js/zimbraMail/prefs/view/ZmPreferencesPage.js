@@ -347,9 +347,11 @@ function(useDefaults) {
 			if (newValue != null && (curValue != newValue))
 				object.setValue(newValue);
         } else if (type == ZmPref.TYPE_LOCALES) {
-            var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
-            this._showLocale(newValue, button);
-        } else {
+			if (this._localeMap) {
+				var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
+				this._showLocale(newValue, button);
+			}
+		} else {
 			var element = document.getElementById((ZmPref.KEY_ID + id));
 			if (!element || element.value == newValue) continue;
 			if (newValue == null) newValue = "";
