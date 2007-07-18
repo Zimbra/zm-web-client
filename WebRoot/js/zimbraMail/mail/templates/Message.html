@@ -36,7 +36,11 @@
 								<table border=0 cellpadding=0 cellspacing=0>
 									<tr>
 										<$ if (data.sentByIcon) { $>
-											<td valign=top><$= AjxImg.getImageHtml(data.sentByIcon, "cursor:pointer") $></td>
+											<td valign=top>
+												<a href="javascript:;" onclick="ZmMailMsgView.contactIconCallback('${sentByNormal}', '${sentByIcon}'); return false;">
+													<$= AjxImg.getImageHtml(data.sentByIcon, "cursor:pointer") $>
+												</a>
+											</td>
 											<td>&nbsp;</td>
 										<$ } $>
 										<td>${sentBy}&nbsp;&nbsp;</td>
@@ -80,4 +84,17 @@
 			</tr>
 		</table>
 	</div>
+</template>
+
+<template id='DownloadAll'>
+	<table border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'>
+		<tr>
+			<td style='width:18px'>
+				<$= AjxImg.getImageHtml(ZmMimeTable.getInfo(ZmMimeTable.APP_ZIP).image, "position:relative;") $>
+			</td>
+			<td style='white-space:nowrap'>
+				<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' href='${url}&disp=a&fmt=zip'><$= ZmMsg.downloadAll $></a>
+			</td>
+		</tr>
+	</table>
 </template>

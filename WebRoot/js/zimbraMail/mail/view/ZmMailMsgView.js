@@ -132,7 +132,7 @@ function(msg) {
 		: new Date(msg.date);
 
 	if ((this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
-		msg.isInvite() && msg.getInvite().type != "task" && 
+		msg.isInvite() && msg.getInvite().type != "task" &&
 		!this._controller.isChildWindow)
 	{
 		var invite = msg.getInvite();
@@ -877,6 +877,7 @@ function(msg, container, callback) {
 	if (addr) { addr = addr.address || (AjxStringUtil.htmlEncode(addr.name)); }	// bug fix #17016 - no need to check addr instanceof AjxEmailAddress
 	var sender = msg.getAddress(AjxEmailAddress.SENDER);						// bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
 	var sentBy = sender ? sender.address : addr;
+	var sentByNormal = sentBy;													// non-objectified version
 	var sentByIcon = cl
 		? (cl.getContactByEmail(sentBy) ? "Contact" : "NewContact")
 		: null;
@@ -930,6 +931,7 @@ function(msg, container, callback) {
 		subject: subject,
 		dateString: dateString,
 		sentBy: sentBy,
+		sentByNormal: sentByNormal,
 		sentByIcon: sentByIcon,
 		obo: obo,
 		participants: participants,
@@ -1178,7 +1180,7 @@ function() {
 		htmlArr[idx++] = "<tr><td colspan=";
 		htmlArr[idx++] = ZmMailMsgView.ATTC_COLUMNS;
 		htmlArr[idx++] = ">";
-		idx = ZmMailMsgView._buildZipUrl(this._appCtxt.getCsfeMsgFetcher(), this._msg.id, attLinks, htmlArr, idx);
+		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._appCtxt.getCsfeMsgFetcher(), this._msg.id, attLinks);
 		htmlArr[idx++] = "</td></tr>";
 		rows++;
 	}
@@ -1235,7 +1237,7 @@ function() {
 			if (att.briefcaseLink) {
 				if (att.htmlLink || att.vcardLink)
 					htmlArr[idx++] = ", ";
-					
+
 				htmlArr[idx++] = att.briefcaseLink;
 				htmlArr[idx++] = ZmMsg.addToBriefcase;
 				htmlArr[idx++] = "</a>";			
@@ -1248,7 +1250,7 @@ function() {
 				htmlArr[idx++] = ZmMsg.download;
 				htmlArr[idx++] = "</a>";
 			}
-			
+
 			// Attachment Link Handlers
 			if (ZmMailMsgView._attachmentHandlers) {
 				var contentHandlers = ZmMailMsgView._attachmentHandlers[att.ct];
@@ -1259,7 +1261,7 @@ function() {
 						if (handlerFunc) {
 							htmlArr[idx++] = ", " + handlerFunc.call(this,att);
 						}
-					}	
+					}
 				}
 			}
 
@@ -1286,11 +1288,11 @@ ZmMailMsgView.prototype.addAttachmentLinkHandler = function(contentType,handlerI
 	if(!ZmMailMsgView._attachmentHandlers){
 		ZmMailMsgView._attachmentHandlers = {};
 	}
-	
+
 	if(!ZmMailMsgView._attachmentHandlers[contentType]){
 		ZmMailMsgView._attachmentHandlers[contentType] = {};
 	}
-	
+
 	ZmMailMsgView._attachmentHandlers[contentType][handlerId] = handlerFunc;
 };
 
@@ -1625,6 +1627,26 @@ function(msgId, msgPartId) {
 	ZmMailMsg.fetchMsg({ sender:sender, msgId:msgId, partId:msgPartId, getHtml:getHtml, callback:callback });
 };
 
+ZmMailMsgView.contactIconCallback =
+function(addr, icon) {
+	var appCtxt = window.parentController
+		? window.parentController._appCtxt
+		: window._zimbraMail._appCtxt;
+
+	if (icon == "Contact") {
+		var params = {
+			action: ZmOperation.NEW_MESSAGE,
+			toOverride: (addr + AjxEmailAddress.SEPARATOR)
+		};
+		AjxDispatcher.run("Compose", params);
+	} else {
+		AjxDispatcher.require(["ContactsCore", "Contacts"], false);
+		var contact = new ZmContact(appCtxt);
+		contact.initFromEmail(addr);
+		AjxDispatcher.run("GetContactController").show(contact);
+	}
+};
+
 ZmMailMsgView.vcardCallback =
 function(msgId, vcardPartId) {
 	ZmZimbraMail.unloadHackCallback();
@@ -1637,23 +1659,15 @@ function(msgId, vcardPartId) {
 };
 
 ZmMailMsgView._buildZipUrl =
-function(csfeUrl, itemId, attachments, htmlArr, idx) {
+function(csfeUrl, itemId, attachments) {
 	var url = csfeUrl + "id=" + itemId + "&part=";
 	for (var j = 0; j < attachments.length; j++) {
 		url += attachments[j].part;
 		if (j <= attachments.length)
 			url += ",";
 	}
-	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'><tr>";
-	htmlArr[idx++] = "<td style='width:18px'>";
-	htmlArr[idx++] = AjxImg.getImageHtml(ZmMimeTable.getInfo(ZmMimeTable.APP_ZIP).image, "position:relative;");
-	htmlArr[idx++] = "</td><td style='white-space:nowrap'><a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' href='";
-	htmlArr[idx++] = url;
-	htmlArr[idx++] = "&disp=a&fmt=zip'>";
-	htmlArr[idx++] = ZmMsg.downloadAll;
-	htmlArr[idx++] = "</td></tr></table>";
 
-	return idx;
+	return AjxTemplate.expand("zimbraMail.mail.templates.Message#DownloadAll", {url:url});
 };
 
 ZmMailMsgView.briefcaseCallback =
