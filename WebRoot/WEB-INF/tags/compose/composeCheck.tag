@@ -70,9 +70,8 @@
         </c:when>
     </c:choose>
 </c:if>
-
+</app:handleError>
 
 <c:if test="${needComposeView}">
     <jsp:forward page="/h/compose"/>
 </c:if>
-</app:handleError>
