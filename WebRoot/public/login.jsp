@@ -84,6 +84,12 @@
     <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
 </c:if>
 
+<%
+if (application.getInitParameter("offlineMode") != null)  {
+    request.getRequestDispatcher("/public/offline.jsp").forward(request, response);
+}
+%>
+
 <c:set var="loginRedirectUrl" value="${zm:getPreLoginRedirectUrl(pageContext, '/')}"/>
 <c:if test="${not empty loginRedirectUrl}">
     <c:redirect url="${loginRedirectUrl}"/>
