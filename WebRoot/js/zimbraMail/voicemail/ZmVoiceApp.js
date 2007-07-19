@@ -173,6 +173,12 @@ ZmVoiceApp.prototype._registerPrefs = function() {
     }
 };
 
+ZmVoiceApp.prototype._registerSettings =
+function(settings) {
+	settings = settings || this._appCtxt.getSettings();
+	settings.registerSetting("VOICE_PAGE_SIZE", {name:"zimbraPrefVoiceItemsPerPage", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:25});
+};
+
 // Public methods
 
 ZmVoiceApp.prototype.deleteNotify =
@@ -299,7 +305,8 @@ function(folder, callback, sortBy) {
 		soapInfo: ZmVoiceApp.SOAP_INFO,
 		types: AjxVector.fromArray([folder.getSearchType()]),
 		sortBy: sortBy,
-		query: folder.getSearchQuery()
+		query: folder.getSearchQuery(),
+		limit: this._appCtxt.get(ZmSetting.VOICE_PAGE_SIZE)
 	};
 	var search = new ZmSearch(this._appCtxt, searchParams);	
 	var responseCallback = new AjxCallback(this, this._handleResponseSearch, [folder, callback]);

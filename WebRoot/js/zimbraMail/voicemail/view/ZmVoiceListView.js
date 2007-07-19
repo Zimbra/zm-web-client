@@ -76,6 +76,11 @@ function(item) {
 	return item.getCallingParty(type);
 };
 
+ZmVoiceListView.prototype.getLimit =
+function() {
+	return this._appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
+};
+
 ZmVoiceListView.prototype._getCallType =
 function() {
 	return this._folder ? this._folder.callType : ZmVoiceFolder.VOICEMAIL;

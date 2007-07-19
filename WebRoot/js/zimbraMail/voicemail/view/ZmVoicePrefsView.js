@@ -39,6 +39,7 @@ ZmVoicePrefsView = function(parent, appCtxt, controller) {
     var section = ZmPref.getPrefSectionWithPref(ZmSetting.VOICE_ACCOUNTS);
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
 	this._ui = [
+		new ZmVoicePageSizeUI(this),
 		new ZmEmailNotificationUI(this),
 		new ZmCallForwardingUI(this),
 		new ZmSelectiveCallForwardingUI(this)
@@ -108,7 +109,7 @@ function(ui) {
 	if (list) {
 		var found = false;
 		for (var i = 0, count = list.length; i < count; i++) {
-			if (list[i] == this._phone) {
+			if (list[i].name == ui.getName()) {
 				found = true;
 				break;
 			}
@@ -164,15 +165,23 @@ function(phone, features) {
 
 ZmVoicePrefsView.prototype._validateSelectedItem =
 function(errors) {
-//	alert('ZmVoicePrefsView.prototype._validateSelectedItem');
 };
 
 ZmVoicePrefsView.prototype.addCommand =
 function(batchCommand) {
+	var first = true;
 	for (var i in this._changes) {
 		var phone = this._changes[i].phone;
-		phone.modifyCallFeatures(batchCommand, this._changes[i].list, null);
- 	}
+		var callback = null;
+		if (first) {
+			if (!this._handleResponseObj) {
+				this._handleResponseObj = new AjxCallback(this, this._handleResponse);
+			}
+			callback = this._handleResponseObj;
+			first = false;
+		}
+		phone.modifyCallFeatures(batchCommand, this._changes[i].list, callback);
+	 }
 };
 
 ZmVoicePrefsView.prototype._getItemText =
@@ -183,18 +192,7 @@ function(phone) {
 
 ZmVoicePrefsView.prototype._handleResponse =
 function(identity, request, result) {
-//	var list;
-//	switch (request) {
-//		case "CreateIdentityRequest": list = this._adds; break;
-//		case "ModifyIdentityRequest": list = this._updates; break;
-//		case "DeleteIdentityRequest": list = this._deletes; break;
-//	}
-//	for (var i = 0, count = list.length; i < count; i++) {
-//		if (list[i] == identity) {
-//			list.splice(i,1);
-//			break;
-//		}
-//	}
+	this._changes  = null;
 };
 
 ZmVoicePrefsView.prototype._handleResponseError =
@@ -250,15 +248,18 @@ ZmCallFeatureUI.prototype.setFeature =
 function(feature) {
 	this._feature = feature;
 	this.show(feature);
-	this._checkbox.setSelected(feature.isActive);
-	this._checkbox.setEnabled(feature.isSubscribed);
+	if (this._checkbox) {
+		this._checkbox.setSelected(feature.isActive);
+		this._checkbox.setEnabled(feature.isSubscribed);
+	}
 	this.setEnabled(feature.isActive);
 };
 
 ZmCallFeatureUI.prototype.getFeature =
 function() {
-	this._feature.isActive = this._checkbox.isSelected();
-	return this._feature;
+	var result = this._feature.createProxy();
+	result.isActive = this._checkbox ? this._checkbox.isSelected() : true;
+	return result;
 };
 
 ZmCallFeatureUI.prototype.isDirty =
@@ -266,7 +267,7 @@ function() {
 	if (!this._feature) {
 		return false;
 	}
-	if (this._feature.isActive != this._checkbox.isSelected()) {
+	if (this._checkbox && (this._feature.isActive != this._checkbox.isSelected())) {
 		return true;
 	}
 	return this._isValueDirty();
@@ -340,7 +341,7 @@ function(enabled) {
 };
 ZmCallFeatureUI.prototype.setMe =
 function(me) {
-	alert('ZmCallFeatureUI.prototype.meChanged');
+	// No-op.
 };
 
 
@@ -515,7 +516,7 @@ function() {
 ZmSelectiveCallForwardingUI.prototype._addListener =
 function(ev) {
 	var row = this._getTable().insertRow(-1);
-	row.className = (row.rowIndex % 2) ? DwtListView.ROW_CLASS_ODD : DwtListView.ROW_CLASS_EVEN;
+	row.className = "Row " + ((row.rowIndex % 2) ? DwtListView.ROW_CLASS_ODD : DwtListView.ROW_CLASS_EVEN);
 	var cell = row.insertCell(-1);
 	var args = { text: this._addInput.getValue(), linkId: Dwt.getNextId() };
 	cell.innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoiceSelectiveCallForwardingTableRow", args);
@@ -538,13 +539,13 @@ function(ev) {
 	while (node) {
 		if (node.tagName.toUpperCase() == "TR") {
 			var className = node.className;
-			if (className == DwtListView.ROW_CLASS_ODD || className == DwtListView.ROW_CLASS_EVEN) {
+			if ((className.indexOf(DwtListView.ROW_CLASS_ODD)) != -1 || (className.indexOf(DwtListView.ROW_CLASS_EVEN) != -1)) {
 				var rowIndex = node.rowIndex;
 				var table = this._getTable();
 				table.deleteRow(rowIndex);
 				var rows = table.rows;
 				for (var i = rowIndex || 0, count = rows.length; i < count; i++) {
-					rows[i].className = (i % 2) ? DwtListView.ROW_CLASS_ODD : DwtListView.ROW_CLASS_EVEN;
+					rows[i].className = "Row " + ((i % 2) ? DwtListView.ROW_CLASS_ODD : DwtListView.ROW_CLASS_EVEN);
 				}
 				this._tableIsDirty = true;
 				break;
@@ -638,5 +639,63 @@ function(id) {
 	var inputParams = { size:25 }
 	this._comboBox = new DwtComboBox(this._view, inputParams);
 	this._comboBox.replaceElement(id + "_emailNotificationComboBox");
+};
+
+/////////////////////////////////////////////////////////////////////////
+
+ZmVoicePageSizeUI = function(view) {
+	ZmCallFeatureUI.call(this, view);
+}
+ZmVoicePageSizeUI.prototype = new ZmCallFeatureUI;
+ZmVoicePageSizeUI.prototype.constructor = ZmVoicePageSizeUI;
+ZmVoicePageSizeUI.prototype.toString =
+function() {
+	return "ZmVoicePageSizeUI";
+}
+
+ZmVoicePageSizeUI.prototype.getName =
+function() {
+	return ZmCallFeature.NUMBER_PER_PAGE;
+};
+
+ZmVoicePageSizeUI.prototype.show =
+function(feature) {
+	// No-op.
+};
+
+ZmVoicePageSizeUI.prototype._isValueDirty =
+function() {
+	return this._select.getValue() != this._view._appCtxt.get(ZmSettings.VOICE_PAGE_SIZE);
+};
+
+ZmVoicePageSizeUI.prototype.getFeature =
+function() {
+	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
+	result.data.value = this._select.getValue();
+	return result;
+};
+
+ZmVoicePageSizeUI.prototype.setEnabled =
+function(enabled) {
+	this._select.setEnabled(enabled);
+};
+
+ZmVoicePageSizeUI.prototype._getSelectedValue =
+function() {
+	return this._select.getValue();
+};
+
+ZmVoicePageSizeUI.prototype._initialize =
+function(id) {
+	var current = this._view._appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
+	var choices = ["10", "25", "50", "100"];
+	var options = [];
+	for (var i = 0, count = choices.length; i < count; i++) {
+		var choice = choices[i];
+		var selected = current == choice;
+		options[i] = new DwtSelectOptionData(choice, choice, selected);
+	}
+	this._select = new DwtSelect(this._view, options);
+	this._select.replaceElement(id + "_itemsPerPageSelect");
 };
 

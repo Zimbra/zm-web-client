@@ -83,18 +83,17 @@
 
 <template id='ZmVoicePrefsView'>
     <table class='ZmVoicePrefsView' cellspacing=4 cellpadding=4>
-        <!--
-        <tr id='${id}_anonymousRejection' valign='top'>
-	    	<td class='prefLabel'><$= ZmMsg.voicePageSizeLabel $></td>
-	    	<td>
-	    		<table><tr>
-                    <td> !! TBD !!</td>
-                    <td><$= ZmMsg.voicePageSizeLabel $></td>
-                </tr></table>
+		<tr valign='top'>
+			<td class='ZOptionsLabel'><$= ZmMsg.voicePageSizeLabel $></td>
+			<td class='ZOptionsField'>
+				<table cellspacing="1" cellpadding="1"><tr>
+					<td><div id='${id}_itemsPerPageSelect' style='padding-left:11px;'></div></td>
+					<td>&nbsp;<$= ZmMsg.voicePageSizeDescription $></td>
+				</tr></table>
 			</td>
-	    </tr>
-	    <tr><td colspan=2><hr></td></tr>
-	    -->
+		</tr>
+		<tr><td colspan=2><hr></td></tr>
+
 	    <tr id='${id}_emailNotification' valign='top'>
 	    	<td class='ZOptionsLabel'><$= ZmMsg.emailNotificationLabel $></td>
 	    	<td class='ZOptionsField'>
@@ -144,7 +143,7 @@
 	<table id='${id}_selectiveCallForwardingTable' cellspacing=0 cellpadding=0 width=260>
 		<tr><td class='DwtListView-Column' style='padding-left:6'><b><$= ZmMsg.selectiveCallForwardingHeader $></b></td></tr>
 		<$ for (var i = 0, count = data.phones.length; i < count; i++) { $>
-			<tr class='Line<$= (i % 2) ? 2 : 1 $>'><td>
+			<tr class='Row <$= (i % 2) ? "RowEven" : "RowOdd" $>'><td>
 			<$ var args = { text: data.phones[i], linkId: data.id + '_selectiveCallForwardingRemove_' + i }; $>
 			<$= AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoiceSelectiveCallForwardingTableRow", args) $>
 			</td></tr>
