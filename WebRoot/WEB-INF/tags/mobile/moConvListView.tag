@@ -41,15 +41,16 @@
             <td>
                 <table width=100% cellpadding="0" cellspacing="0" class='zo_m_list'>
                     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+                        <c:set var="chit" value="${hit.conversationHit}"/>
                         <c:choose>
-                            <c:when test="${hit.conversationHit.isDraft}">
-                                <zm:currentResultUrl var="convUrl" value="mosearch" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(hit.conversationHit.id,'-')}" action="compose"/>
+                            <c:when test="${chit.isDraft}">
+                                <zm:currentResultUrl var="convUrl" value="mosearch" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(chit.id,'-')}" action="compose"/>
                             </c:when>
                             <c:otherwise>
-                            <zm:currentResultUrl var="convUrl" value="mosearch" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
+                            <zm:currentResultUrl var="convUrl" value="mosearch" cid="${chit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
                         </c:otherwise>
                         </c:choose>
-                        <tr id="conv${hit.conversationHit.id}" onclick='zClickLink("a${hit.conversationHit.id}")'>
+                        <tr id="conv${chit.id}" onclick='zClickLink("a${chit.id}")'>
                             <td class='zo_m_list_row'>
                                 <table width=100%>
                                     <tr>
@@ -58,29 +59,29 @@
                                         </td>
                                         <td>
                                             <table width=100%>
-                                                <tr <c:if test="${hit.conversationHit.isUnread}">class='zo_m_list_unread'</c:if>>
+                                                <tr <c:if test="${chit.isUnread}">class='zo_m_list_unread'</c:if>>
                                                     <td class='zo_m_list_from'>
-                                                        <c:set var="dispRec" value="${hit.conversationHit.displayRecipients}"/>
+                                                        <c:set var="dispRec" value="${chit.displayRecipients}"/>
                                                             ${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}
                                                     </td>
                                                     <td align=right class='zo_m_list_date' nowrap>
-                                                            ${fn:escapeXml(zm:displayMsgDate(pageContext, hit.conversationHit.date))}
+                                                            ${fn:escapeXml(zm:displayMsgDate(pageContext, chit.date))}
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td class='zo_m_list_sub'>
-                                                        <a id="a${hit.conversationHit.id}" href="${convUrl}">${fn:escapeXml(empty hit.conversationHit.subject ? unknownSubject : zm:truncate(hit.conversationHit.subject,50,true))}</a>
+                                                        <a id="a${chit.id}" href="${convUrl}">${fn:escapeXml(empty chit.subject ? unknownSubject : zm:truncate(chit.subject,50,true))}</a>
                                                     </td>
                                                     <td align=right class='zo_m_list_frag'>
                                                         <c:choose>
-                                                            <c:when test="${hit.conversationHit.messageCount gt 1}">(${hit.conversationHit.messageCount})</c:when>
+                                                            <c:when test="${chit.messageCount gt 1}">(${chit.messageCount})</c:when>
                                                             <c:otherwise>&nbsp;</c:otherwise>
                                                         </c:choose>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td class='zo_m_list_frag' colspan=2>
-                                                            ${fn:escapeXml(zm:truncate(hit.conversationHit.fragment,50,true))}
+                                                            ${fn:escapeXml(zm:truncate(chit.fragment,50,true))}
                                                     </td>
                                                 </tr>
                                             </table>

@@ -213,37 +213,38 @@
 
 
                     <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
+                        <c:set var="mhit" value="${hit.messageHit}"/>
                         <zm:currentResultUrl var="msgUrl" value="mosearch" cid="${convSummary.id}" id="${hit.id}"
                                              action='view' context="${context}" mview="1"
                                              cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                        <tr onclick='zClickLink("a${hit.messageHit.id}")'>
+                        <tr onclick='zClickLink("a${mhit.id}")'>
                             <td class='zo_m_list_row'>
                                 <table width=100%>
                                     <tr>
                                         <td style='width:40px; ' valign="middle" align="center">
-                                            <mo:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : hit.messageHit.statusImage}"/>
+                                            <mo:img src="${(mhit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : mhit.statusImage}"/>
                                         </td>
                                         <td>
                                             <table width=100%>
                                                 <tr
-                                                        <c:if test="${hit.messageHit.isUnread}">
+                                                        <c:if test="${mhit.isUnread}">
                                                             class='zo_m_list_unread'
                                                         </c:if>
                                                         >
                                                     <td class='zo_m_list_from'>
-                                                        <c:set var="sender" value="${hit.messageHit.displaySender}"/>
+                                                        <c:set var="sender" value="${mhit.displaySender}"/>
                                                             ${fn:escapeXml(empty sender ? unknownSender : sender)}
                                                     </td>
                                                     <td nowrap align=right valign=top class='zo_m_list_date'>
-                                                            ${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}
+                                                            ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td class='zo_m_list_frag'>
-                                                        <a id="a${hit.messageHit.id}" href="${msgUrl}">${fn:escapeXml(zm:truncate(hit.messageHit.fragment,100,true))}</a>
+                                                        <a id="a${mhit.id}" href="${msgUrl}">${fn:escapeXml(zm:truncate(mhit.fragment,100,true))}</a>
                                                     </td>
                                                     <td nowrap class='zo_m_list_size' align=right valign="top">
-                                                            ${fn:escapeXml(zm:displaySize(hit.messageHit.size))}
+                                                            ${fn:escapeXml(zm:displaySize(mhit.size))}
                                                     </td>
                                                 </tr>
                                             </table>

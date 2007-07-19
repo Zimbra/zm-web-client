@@ -39,12 +39,13 @@
             <td>
                 <table width=100% cellpadding="0" cellspacing="0" class='zo_ab_list'>
                     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-                        <zm:currentResultUrl var="contactUrl" value="/m/mosearch" action="view" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
-                        <tr  onclick='window.location="${zm:jsEncode(contactUrl)}"' id="cn${hit.contactHit.id}">
+                        <c:set var="chit" value="${hit.contactHit}"/>
+                        <zm:currentResultUrl var="contactUrl" value="/m/mosearch" action="view" id="${chit.id}" index="${status.index}" context="${context}"/>
+                        <tr  onclick='zClickLink("a${chit.id}")' id="cn${chit.id}">
                             <td style='width:5px'>&nbsp;</td>
-                            <td><mo:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
+                            <td><mo:img src="${chit.image}" altkey="${chit.imageAltKey}"/></td>
                             <td class='zo_ab_list_arrow'>
-                                    ${zm:truncate(fn:escapeXml(empty hit.contactHit.fileAsStr ? '<None>' : hit.contactHit.fileAsStr),50, true)}
+                                <a id="a${chit.id}" href="${contactUrl}">${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? '<None>' : chit.fileAsStr),50, true)}</a>
                             </td>
                         </tr>
                     </c:forEach>
