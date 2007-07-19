@@ -37,11 +37,12 @@ ZmItem.CALL						= ZmEvent.S_CALL;
 ZmOrganizer.VOICE				= ZmEvent.S_VOICEMAIL;
 
 // App-related constants
-ZmApp.VOICE						= "Voice";
-ZmApp.CLASS[ZmApp.VOICE]		= "ZmVoiceApp";
-ZmApp.SETTING[ZmApp.VOICE]		= ZmSetting.VOICE_ENABLED;
-ZmApp.LOAD_SORT[ZmApp.VOICE]	= 80;
-ZmApp.QS_ARG[ZmApp.VOICE]		= "voice";
+ZmApp.VOICE							= "Voice";
+ZmApp.CLASS[ZmApp.VOICE]			= "ZmVoiceApp";
+ZmApp.SETTING[ZmApp.VOICE]			= ZmSetting.VOICE_ENABLED;
+ZmApp.UPSELL_SETTING[ZmApp.VOICE]	= ZmSetting.VOICE_UPSELL_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.VOICE]		= 80;
+ZmApp.QS_ARG[ZmApp.VOICE]			= "voice";
 
 ZmVoiceApp.SOAP_INFO = {
 	method: "SearchVoiceRequest", 
@@ -146,7 +147,8 @@ function() {
 							  searchTypes:			[ZmItem.VOICEMAIL],
 							  gotoActionCode:		ZmKeyMap.GOTO_VOICE,
 							  chooserSort:			15,
-							  defaultSort:			15
+							  defaultSort:			15,
+							  upsellUrl:			ZmSetting.VOICE_UPSELL_URL
 							  });
 };
 

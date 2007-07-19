@@ -34,14 +34,13 @@ ZmEvent.S_DOCUMENT				= "DOCUMENT";
 ZmEvent.S_BRIEFCASE				= "BRIEFCASE";
 ZmItem.PAGE						= ZmEvent.S_PAGE;
 ZmItem.DOCUMENT					= ZmEvent.S_DOCUMENT;
-ZmItem.BRIEFCASE					= ZmEvent.S_BRIEFCASE;
+ZmItem.BRIEFCASE				= ZmEvent.S_BRIEFCASE;
 ZmOrganizer.BRIEFCASE			= ZmEvent.S_BRIEFCASE;
 
 // App-related constants
 ZmApp.BRIEFCASE							= "Briefcase";
 ZmApp.CLASS[ZmApp.BRIEFCASE]			= "ZmBriefcaseApp";
 ZmApp.SETTING[ZmApp.BRIEFCASE]			= ZmSetting.BRIEFCASE_ENABLED;
-ZmApp.UPSELL_SETTING[ZmApp.BRIEFCASE]	= ZmSetting.BRIEFCASE_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.BRIEFCASE]		= 60;
 ZmApp.QS_ARG[ZmApp.BRIEFCASE]			= "documents";
 
@@ -167,8 +166,7 @@ function() {
 							  gotoActionCode:		ZmKeyMap.GOTO_NOTEBOOK,
 							  newActionCode:		ZmKeyMap.NEW_FILE,
 							  chooserSort:			70,
-							  defaultSort:			60,
-							  upsellUrl:			ZmSetting.BRIEFCASE_UPSELL_URL
+							  defaultSort:			60
 							  });
 };
 

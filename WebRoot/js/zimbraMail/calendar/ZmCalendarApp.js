@@ -41,11 +41,12 @@ ZmItem.RESOURCE				= ZmEvent.S_RESOURCE;
 ZmOrganizer.CALENDAR		= "CALENDAR";
 
 // App-related constants
-ZmApp.CALENDAR					= "Calendar";
-ZmApp.CLASS[ZmApp.CALENDAR]		= "ZmCalendarApp";
-ZmApp.SETTING[ZmApp.CALENDAR]	= ZmSetting.CALENDAR_ENABLED;
-ZmApp.LOAD_SORT[ZmApp.CALENDAR]	= 40;
-ZmApp.QS_ARG[ZmApp.CALENDAR]	= "calendar";
+ZmApp.CALENDAR							= "Calendar";
+ZmApp.CLASS[ZmApp.CALENDAR]				= "ZmCalendarApp";
+ZmApp.SETTING[ZmApp.CALENDAR]			= ZmSetting.CALENDAR_ENABLED;
+ZmApp.UPSELL_SETTING[ZmApp.CALENDAR]	= ZmSetting.CALENDAR_UPSELL_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.CALENDAR]			= 40;
+ZmApp.QS_ARG[ZmApp.CALENDAR]			= "calendar";
 
 // ms to wait before fetching reminders
 ZmCalendarApp.REMINDER_START_DELAY = 30000;
@@ -298,7 +299,8 @@ function() {
 							  gotoActionCode:		ZmKeyMap.GOTO_CALENDAR,
 							  newActionCode:		ZmKeyMap.NEW_APPT,
 							  chooserSort:			30,
-							  defaultSort:			20
+							  defaultSort:			20,
+							  upsellUrl:			ZmSetting.CALENDAR_UPSELL_URL
 							  });
 };
 

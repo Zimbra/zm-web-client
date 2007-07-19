@@ -47,11 +47,12 @@ ZmItem.GROUP					= ZmEvent.S_GROUP;
 ZmOrganizer.ADDRBOOK			= "ADDRBOOK";
 
 // App-related constants
-ZmApp.CONTACTS					= "Contacts";
-ZmApp.CLASS[ZmApp.CONTACTS]		= "ZmContactsApp";
-ZmApp.SETTING[ZmApp.CONTACTS]	= ZmSetting.CONTACTS_ENABLED;
-ZmApp.LOAD_SORT[ZmApp.CONTACTS]	= 30;
-ZmApp.QS_ARG[ZmApp.CONTACTS]	= "contacts";
+ZmApp.CONTACTS							= "Contacts";
+ZmApp.CLASS[ZmApp.CONTACTS]				= "ZmContactsApp";
+ZmApp.SETTING[ZmApp.CONTACTS]			= ZmSetting.CONTACTS_ENABLED;
+ZmApp.UPSELL_SETTING[ZmApp.CONTACTS]	= ZmSetting.CONTACTS_UPSELL_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.CONTACTS]			= 30;
+ZmApp.QS_ARG[ZmApp.CONTACTS]			= "contacts";
 
 // fields used for autocomplete matching
 ZmContactsApp.AC_VALUE_FULL 	= "fullAddress";
@@ -284,7 +285,8 @@ function() {
 							  newActionCode:		ZmKeyMap.NEW_CONTACT,
 							  trashViewOp:			ZmOperation.SHOW_ONLY_CONTACTS,
 							  chooserSort:			20,
-							  defaultSort:			40
+							  defaultSort:			40,
+							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL
 							  });
 };
 

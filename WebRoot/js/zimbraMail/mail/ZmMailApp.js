@@ -48,11 +48,12 @@ ZmItem.ATT					= ZmEvent.S_ATT;
 ZmOrganizer.FOLDER			= ZmEvent.S_FOLDER;
 
 // App-related constants
-ZmApp.MAIL					= "Mail";
-ZmApp.CLASS[ZmApp.MAIL]		= "ZmMailApp";
-ZmApp.SETTING[ZmApp.MAIL]	= ZmSetting.MAIL_ENABLED;
-ZmApp.LOAD_SORT[ZmApp.MAIL]	= 20;
-ZmApp.QS_ARG[ZmApp.MAIL]	= "mail";
+ZmApp.MAIL							= "Mail";
+ZmApp.CLASS[ZmApp.MAIL]				= "ZmMailApp";
+ZmApp.SETTING[ZmApp.MAIL]			= ZmSetting.MAIL_ENABLED;
+ZmApp.UPSELL_SETTING[ZmApp.MAIL]	= ZmSetting.MAIL_UPSELL_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.MAIL]			= 20;
+ZmApp.QS_ARG[ZmApp.MAIL]			= "mail";
 
 ZmMailApp.prototype = new ZmApp;
 ZmMailApp.prototype.constructor = ZmMailApp;
@@ -498,7 +499,8 @@ function() {
 							  qsViews:				["compose", "msg"],
 							  trashViewOp:			ZmOperation.SHOW_ONLY_MAIL,
 							  chooserSort:			10,
-							  defaultSort:			10
+							  defaultSort:			10,
+							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL
 							  });
 };
 
