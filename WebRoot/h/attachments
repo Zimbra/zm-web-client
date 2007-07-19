@@ -21,7 +21,7 @@
                 <td class='TbBt'>
                     <table cellspacing=0 cellpadding=0 class='Tb'>
                         <tr>
-                            <app:button name="actionAttachDone" src="common/Close.gif" tooltip="done" text="done"/>
+                            <app:button name="actionAttachDone" src="common/Check.gif" tooltip="done" text="done"/>
                             <td><div class='vertSep'></div></td>
                             <app:button name="actionAttachCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
                         </tr>
