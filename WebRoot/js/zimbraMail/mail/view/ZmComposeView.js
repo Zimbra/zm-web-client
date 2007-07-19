@@ -125,9 +125,6 @@ function(params) {
 
 	this.reset(true);
 
-	// create attc. table EVERY time
-	this._createAttachmentsContainer();
-
 	// reset To/Cc/Bcc fields
 	this._showAddressField(AjxEmailAddress.TO, true, true, true);
 	this._showAddressField(AjxEmailAddress.CC, true, true, true);
@@ -287,27 +284,6 @@ function() {
 	return val;
 };
 
-ZmComposeView.prototype._filterInlineAmongForwardAttIds = function(msg,atts,forwardAttIds){
-	var fwdAttIds = [];
-	for(var i=0; i<forwardAttIds.length; i++){
-		var fwdAtt = forwardAttIds[i];
-		var matched = false;
-		for(var j=0; j<atts.length; j++){
-			if(atts[j].part == fwdAtt){
-				var cid = atts[j].ci;
-				if(cid){
-					cid = cid.substring(1,cid.length-1);
-					msg.addInlineAttachmentId(cid,null,atts[j].part);
-					matched = true;
-				}
-				break;
-			}
-		}
-		if(!matched) fwdAttIds.push(fwdAtt);
-	}
-	return fwdAttIds;
-};
-
 ZmComposeView.prototype._isInline = function(){
 	
 	if(this._uploadViewDialog && this._uploadViewDialog.isInline()) return true;
@@ -341,6 +317,28 @@ ZmComposeView.prototype._fixMultipartRelatedLinks =function(idoc){
 		}
 		return inlineCid;
 };
+
+ZmComposeView.prototype._filterInlineAmongForwardAttIds = function(msg,atts,forwardAttIds){
+	var fwdAttIds = [];
+	for(var i=0; i<forwardAttIds.length; i++){
+		var fwdAtt = forwardAttIds[i];
+		var matched = false;
+		for(var j=0; j<atts.length; j++){
+			if(atts[j].part == fwdAtt){
+				var cid = atts[j].ci;
+				if(cid){
+					cid = cid.substring(1,cid.length-1);
+					msg.addInlineAttachmentId(cid,null,atts[j].part);
+					matched = true;
+				}
+				break;
+			}
+		}
+		if(!matched) fwdAttIds.push(fwdAtt);
+	}
+	return fwdAttIds;
+};
+
 
 
 /**
@@ -388,12 +386,6 @@ function(attId, isDraft) {
 		return;
 	} else {
 		this._badAddrsOkay = false;
-	}
-
-	// Handle any attachments
-	if (!attId && this._gotAttachments()) {
-		this._submitAttachments(isDraft);
-		return;
 	}
 
 	//Create Msg Object
@@ -543,10 +535,6 @@ function(attId, isDraft) {
 		msg.folderId = this._msg.folderId;
 	}
 
-	/*if (attId) {
-		msg.addAttachmentId(attId);
-	}*/
-
 	if (this._msg) {
 		// replied/forw msg or draft shouldn't have att ID (a repl/forw voicemail mail msg may)
 		var msgAttId = this._msg.getAttachmentId();
@@ -678,8 +666,6 @@ function() {
 // user just saved draft, update compose view as necessary
 ZmComposeView.prototype.processMsgDraft =
 function(msgDraft) {
-	
-
 	if(this._isInline()){
 		this._handleInline(msgDraft);
 	}
@@ -739,23 +725,14 @@ function(msg, idoc) {
 ZmComposeView.prototype.showAttachmentDialog = function(){
 	if (!this._uploadViewDialog) {
 		this._uploadViewDialog = new ZmUploadViewDialog(this.shell, this._appCtxt);
-		this._uploadViewDialog.setButtonListener(ZmUploadViewDialog.ATTACH_BUTTON,new AjxListener(this,this._attachListener));
+		var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
+		this._uploadViewDialog.setUploadCallback(callback);
 	}
-
-	this._uploadViewDialog.initialize();
-
-	this._uploadForm = this._uploadViewDialog._uploadForm;
+	var inline = true;
 	if (this._composeMode != DwtHtmlEditor.HTML){
-		this._uploadViewDialog._hideInlineOptionField();
+		inline = false;
 	}
-	this._uploadViewDialog.popup();
-};
-
-ZmComposeView.prototype._attachListener = function(ev){
-	if(this._uploadViewDialog.gotAttachments()){
-		this._uploadViewDialog.disableAttachButton();
-		this._controller._saveDraft();
-	}
+	this._uploadViewDialog.popup("Attach Files",inline);
 };
 
 /**
@@ -802,54 +779,6 @@ function(bEnableInputs) {
 
 	// reset state of the spell check button
 	this._controller.toggleSpellCheckButton(false);
-};
-
-/**
-* Adds an attachment file upload field to the compose form.
-*/
-ZmComposeView.prototype.addAttachmentField =
-function() {
-
-	var attTable = this._getAttachmentTable();
-
-	if (this._attachCount == ZmComposeView.SHOW_MAX_ATTACHMENTS) {
-		this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
-		this._attcDiv.style.overflow = "auto";
-	}
-
-	this._attachCount++;
-
-	// add new row
-	var row = attTable.insertRow(-1);
-	var attId = "_att_" + Dwt.getNextId();
-	var attRemoveId = attId + "_r";
-	var attInputId = attId + "_i";
-	row.id = attId;
-
-	// add new cell and build html for inserting file upload input element
-	var	cell = row.insertCell(-1);
-	var html = [];
-	var idx = 0;
-	html[idx++] = "<table cellspacing=2 cellpadding=0 border=0><tr><td><div class='attachText'>";
-	html[idx++] = ZmMsg.attachFile;
-	html[idx++] = ":</div></td><td class='nobreak'><input id='";
-	html[idx++] = attInputId;
-	html[idx++] = "' type='file' name='";
-	html[idx++] = ZmComposeView.UPLOAD_FIELD_NAME;
-	html[idx++] = "' size=40>&nbsp;<span id='";
-	html[idx++] = attRemoveId;
-	html[idx++] = "' onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;'>";
-	html[idx++] = ZmMsg.remove;
-	html[idx++] = "</span></td></tr></table>";
-	cell.innerHTML = html.join("");
-
-	this._setEventHandler(attRemoveId, "onClick", null);
-	// trap key presses in IE for input field so we can ignore ENTER key (bug 961)
-	if (AjxEnv.isIE)
-		this._setEventHandler(attInputId, "onKeyDown", null);
-	this._resetBodySize();
-
-	this._attcDiv.scrollTop = this._attcDiv.scrollHeight;
 };
 
 ZmComposeView.prototype.enableInputs =
@@ -956,9 +885,7 @@ function() {
 */
 ZmComposeView.prototype.isDirty =
 function(incAddrs, incSubject) {
-	// any attachment activity => dirty
-	if (this._gotAttachments())
-		return true;
+	
 	// reply/forward and empty body => not dirty
 	if ((this._action != ZmOperation.NEW_MESSAGE) && (this._htmlEditor.getContent().match(ZmComposeView.EMPTY_FORM_RE)))
 		return false;
@@ -974,7 +901,6 @@ ZmComposeView.prototype.cleanupAttachments =
 function(all) {
 
 	if(this._uploadViewDialog){
-		this._uploadViewDialog.cleanupAttachments();
 		this._uploadViewDialog.popdown();
 	}
 	
@@ -1045,13 +971,6 @@ function(bodyPart, encodeSpace) {
 	}
 
 	return text;
-};
-
-ZmComposeView.prototype._getAttachmentTable =
-function() {
-	if (!this._attachmentTable)
-		this._attachmentTable = this._createAttachmentsContainer();
-	return this._attachmentTable;
 };
 
 // Consistent spot to locate various dialogs
@@ -1263,17 +1182,16 @@ function(action, msg, extraBodyText, incOption) {
 			body = bodyPart ? bodyPart.content : null;
 		}
 		this._htmlEditor.setContent(body);
-
+		
 		if (!isInviteReply) {
 			this._showForwardField(msg, action);
-			this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
+			this._fixMultipartRelatedImages(msg,this._htmlEditor._getIframeDoc());
 			return;
 		}
 	}
 
 	var identity = this.getIdentity();
-	var sigStyle = (identity.signatureEnabled && identity.signature)
-		? identity.getSignatureStyle() : null;
+	var sigStyle = identity.signatureEnabled && identity.signature ? identity.getSignatureStyle() : null;
 
 	var value = sigStyle == ZmSetting.SIG_OUTLOOK
 		? (this._getSignatureSeparator() + this._getSignature())
@@ -1341,7 +1259,7 @@ function(action, msg, extraBodyText, incOption) {
 			for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
 				var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
 				if (hdr) {
-					if (composingHtml) {
+					if (composingHtml){
 						hdr = AjxStringUtil.convertToHtml(hdr);
 					}
 					text += (hdr + crlf);
@@ -1389,9 +1307,9 @@ function(action, msg, extraBodyText, incOption) {
 	} else {
 		this._htmlEditor.setContent(value);
 	}
-
+	
 	this._showForwardField(msg, action, incOption);
-	this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
+	this._fixMultipartRelatedImages(msg,this._htmlEditor._getIframeDoc());
 };
 
 ZmComposeView.prototype.resetBody =
@@ -1704,47 +1622,6 @@ ZmComposeView.prototype.__checkTabInSubject = function(ev) {
 };
 */
 
-ZmComposeView.prototype._submitAttachments =
-function(isDraft) {
-	var callback = new AjxCallback(this, this._attsDoneCallback, [isDraft]);
-	var um = this._appCtxt.getUploadManager();
-	window._uploadManager = um;
-	try {
-		um.execute(callback, this._uploadForm);
-	} catch (ex) {
-		callback.run();
-	}
-};
-
-ZmComposeView.prototype._createAttachmentsContainer =
-function() {
-	var attachmentTableId = Dwt.getNextId();
-	var uploadFormId = Dwt.getNextId();
-	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
-
-	var html = [];
-	var idx = 0;
-	html[idx++] = "<div style='overflow:auto'><form accept-charset='utf-8' method='POST' action='";
-	html[idx++] = uri;
-	html[idx++] = "' id='";
-	html[idx++] = uploadFormId;
-	html[idx++] = "' enctype='multipart/form-data'><input type='hidden' name='_charset_'/><table id='";
-	html[idx++] = attachmentTableId;
-	html[idx++] = "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";
-	html[idx++] = "</form></div>";
-
-	if (this._attcDiv.innerHTML.length) {
-		this._attcDiv.appendChild(Dwt.parseHtmlFragment(html.join("")));
-	} else {
-		this._attcDiv.innerHTML = html.join("");
-	}
-
-	// save reference to upload form
-	this._uploadForm = document.getElementById(uploadFormId);
-	// return reference to newly create attachment table
-	return document.getElementById(attachmentTableId);
-};
-
 ZmComposeView.prototype._showForwardField =
 function(msg, action, replyPref) {
 	var html = [];
@@ -1910,17 +1787,6 @@ function(incAddrs, incSubject) {
 	str = str.replace(/\|+/, "|");
 	return str;
 };
-
-// Returns true if any of the attachment fields is populated
-ZmComposeView.prototype._gotAttachments =
-function() {
-	var atts = document.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME);
-	for (var i = 0; i < atts.length; i++)
-		if (atts[i].value.length)
-			return true;
-	return false;
-};
-
 
 // Listeners
 

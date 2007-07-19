@@ -1,6 +1,6 @@
 
 
-ZmUploadViewDialog = function(parent, appCtxt) {
+ZmUploadViewDialog = function(parent, appCtxt,className) {
 	
 	this._appCtxt = appCtxt;
 	
@@ -10,14 +10,20 @@ ZmUploadViewDialog = function(parent, appCtxt) {
 	var cancelButton = new DwtDialog_ButtonDescriptor(ZmUploadViewDialog.CANCEL_BUTTON, 
 													  AjxMsg.cancel, DwtDialog.ALIGN_RIGHT);
 													  
-	ZmQuickAddDialog.call(this, parent, null, [DwtDialog.NO_BUTTONS] , [attachButton,cancelButton]);
+	DwtDialog.call(this, parent,className, ZmUploadViewDialog.TITLE , [DwtDialog.NO_BUTTONS] , [attachButton,cancelButton]);
 	
 	this.setButtonListener(ZmUploadViewDialog.CANCEL_BUTTON,new AjxListener(this,function(){
 		this.cleanupAttachments();
 		this.popdown();	
 	}));
+	
+	this.initialize();
 		
 };
+
+
+ZmUploadViewDialog.prototype = new DwtDialog;
+ZmUploadViewDialog.prototype.constructor = ZmUploadViewDialog;
 
 ZmUploadViewDialog.ATTACH_BUTTON = Dwt.getNextId();
 ZmUploadViewDialog.CANCEL_BUTTON = Dwt.getNextId();
@@ -31,16 +37,7 @@ ZmUploadViewDialog.UPLOAD_FIELD_NAME = ZmComposeView.UPLOAD_FIELD_NAME;
 ZmUploadViewDialog.MAX_NO_ATTACHMENTS = 10;
 ZmUploadViewDialog.SHOW_NO_ATTACHMENTS = 2;
 
-ZmUploadViewDialog.prototype = new ZmQuickAddDialog;
-ZmUploadViewDialog.prototype.constructor = ZmUploadViewDialog;
-
-
 ZmUploadViewDialog.prototype.initialize = function(){
-	
-
-	this.setTitle(ZmUploadViewDialog.TITLE);
-
-	if(!this._getAttachmentTable()){
 
 		this.setContent(this._getContainer());	
 
@@ -60,27 +57,78 @@ ZmUploadViewDialog.prototype.initialize = function(){
 
 		this._addAttachmentFieldButton();
 		
-		this._addInlineOptionField();
-		
-	}else{
-		var attTable = this._getAttachmentTable();
-		while(attTable.rows.length > 0){
-			attTable.deleteRow(0);
+		this._attachCount = 0;
+		if(ZmUploadViewDialog.SHOW_NO_ATTACHMENTS > ZmUploadViewDialog.MAX_NO_ATTACHMENTS){
+			ZmUploadViewDialog.SHOW_NO_ATTACHMENTS = ZmUploadViewDialog.MAX_NO_ATTACHMENTS;
 		}
-		//this._getAttachmentTable().innerHTML = "";
-	}
+};
+
+ZmUploadViewDialog.prototype.popup = function(title,inline,uploadFieldsCount, showAddAttachmentButton ,loc){
 	
-	this._attachCount = 0;
-	if(ZmUploadViewDialog.SHOW_NO_ATTACHMENTS > ZmUploadViewDialog.MAX_NO_ATTACHMENTS){
-		ZmUploadViewDialog.SHOW_NO_ATTACHMENTS = ZmUploadViewDialog.MAX_NO_ATTACHMENTS;
-	}
+	var dialogTitle = title || ZmUploadViewDialog.TITLE ;
+	this.setTitle(dialogTitle);
+	
+	this.cleanupAttachments();
+	
 	this.addAttachmentField(true);
 	for(var i=1;i<ZmUploadViewDialog.SHOW_NO_ATTACHMENTS;i++){
 		this.addAttachmentField();	
 	}
 	delete i;
-	this._inline = false;
-	this._addInlineOptionField();
+	
+	if(inline) this._addInlineOptionField();
+	else this._hideInlineOptionField();
+	
+	DwtDialog.prototype.popup.call(this,loc);
+	
+};
+
+ZmUploadViewDialog.prototype.popdown = function(){
+	
+	this.cleanupAttachments();
+	
+	DwtDialog.prototype.popdown.call(this);
+	
+};
+
+//Upload Process
+ZmUploadViewDialog.prototype.setUploadCallback = function(callback){
+	if(!callback) callback = false;
+	this.setButtonListener(ZmUploadViewDialog.ATTACH_BUTTON,
+			new AjxListener(this,this.upload,callback));
+};
+
+ZmUploadViewDialog.prototype.upload = function(callback){
+	if(this.gotAttachments()){
+		this.setButtonEnabled(ZmUploadViewDialog.ATTACH_BUTTON,false);
+		this.setButtonEnabled(ZmUploadViewDialog.CANCEL_BUTTON,false);
+		this._submitAttachments(callback);
+	}
+};
+
+
+ZmUploadViewDialog.prototype._submitAttachments = function(callback){
+	
+	var ajxCallback = new AjxCallback(this, this._uploadDoneCallback,[callback]);
+	var um = this._appCtxt.getUploadManager();
+	window._uploadManager = um;
+	try {
+		um.execute(ajxCallback, this._uploadForm);
+	} catch (ex) {
+		ajxCallback.run();
+	}
+};
+
+ZmUploadViewDialog.prototype._uploadDoneCallback = function(callback,status, attId){
+	this.setButtonEnabled(ZmUploadViewDialog.ATTACH_BUTTON,true);
+	this.setButtonEnabled(ZmUploadViewDialog.CANCEL_BUTTON,true);
+	
+	if (status != AjxPost.SC_OK) {
+		var message = AjxMessageFormat.format(ZmMsg.uploadError, status);
+		this._popupErrorDialog(message);
+	} else {
+		callback.run(status,attId);
+	}	
 };
 
 ZmUploadViewDialog.prototype._getAttachmentTable = function(){
@@ -95,21 +143,13 @@ ZmUploadViewDialog.prototype._getInlineOptionTable = function(){
 	return this._inlineOptionTable;
 };
 
-ZmUploadViewDialog.prototype._removeAttachmentField = function(attId){
-	var row = document.getElementById(attId);
-	this._attachmentTable.deleteRow(row.rowIndex);
-		if (--this._attachCount == 0) {
-			return false; // disables following of link
-		}
-	return true;
-};
 
 ZmUploadViewDialog.prototype._handleKeys = function(ev){
 	var key = DwtKeyEvent.getCharCode(ev);
 	return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
 };
 
-//UI getting constructed
+//UI components
 
 ZmUploadViewDialog.prototype._getContainer = function(){	
 	return this._createContainer();
@@ -145,107 +185,6 @@ function() {
 	return html.join("");
 
 };
-
-
-ZmUploadViewDialog.prototype._addFormatField = function(){
-	
-	var formatFieldId = this._formatFieldId = Dwt.getNextId();
-	
-	var attTable = this._getAttachmentTable();;
-	var row = attTable.insertRow(-1);
-	var	cell = row.insertCell(-1);
-	
-	var formatField = document.createElement("input");
-	formatField.type = "hidden";
-	formatField.name = "fmt";
-	formatField.value = "raw";
-	formatField.id = formatFieldId;
-	cell.appendChild(formatField);
-};
-
-ZmUploadViewDialog.prototype._addInlineOptionField = function(){
-	
-	var attTable = this._getInlineOptionTable();
-	if(!attTable) return;
-	this._hideInlineOptionField();
-	var html = [];
-	var idx = 0;
-	//Adding inline option
-	html[idx++] = "<input type='checkbox' name='inlineimages' id='inline'>&nbsp;"+ ZmUploadViewDialog.INLINE_OPTION_MSG;
-	html = html.join("");
-	
-	var row = attTable.insertRow(-1);
-	var cell = row.insertCell(-1);
-	cell.innerHTML = html;
-	
-	var inlineOption = document.getElementById("inline");
-	inlineOption.onclick = AjxCallback.simpleClosure(this._handleInline,this);
-};
-
-
-
-ZmUploadViewDialog.prototype._hideInlineOptionField = function(){
-	
-	var attTable = this._getInlineOptionTable();
-	if(!attTable || !attTable.innerHTML || attTable.innerHTML == "") return;
-
-	//attTable.innerHTML = ""; //IE Bug 
-	while(attTable.rows.length > 0){
-		attTable.deleteRow(0);
-	}
-
-	this._inline = false;
-};
-
-
-ZmUploadViewDialog.prototype.isInline = function(){
-	
-	return ((this._inline)?this._inline:false);
-
-	var checkbox = document.getElementById("inline");
-	if(checkbox && checkbox.checked){
-		return true;
-	}
-	return false;
-};
-
-ZmUploadViewDialog.prototype.setInlineCheckBox = function(state){
-	this._inline = (state)?state:false;
-	var checkbox = document.getElementById("inline");
-	if(checkbox){
-		checkbox.checked = this._inline;
-		this._handleInline();
-	}
-};
-
-ZmUploadViewDialog.prototype._handleInline = function(){
-	
-    var inlineOption = document.getElementById("inline");
-    if(!inlineOption) { this._inline = false; return; }
-    
-    var state = inlineOption.checked;
-    
-    this._uploadForm.setAttribute("action",this._uri + ((state)?"?fmt=extended":""));
-    
-    this._inline = (state)?state:false;
-
-};
-
-
-
-ZmUploadViewDialog.prototype._addAttachmentFieldButton = function(){
-	
-	var attTable = this._getAttachmentButtonTable();
-	var row = attTable.insertRow(-1);
-	var	cell = row.insertCell(-1);
-	
-	var addAttachmentFieldButton = new DwtButton(this);
-	addAttachmentFieldButton.setText(ZmUploadViewDialog.ADD_ATTACHMENT_FIELD);	
-	cell.appendChild(addAttachmentFieldButton.getHtmlElement());
-	addAttachmentFieldButton.addSelectionListener(new AjxListener(this,this.addAttachmentField));
-	
-};
-
 
 ZmUploadViewDialog.prototype.addAttachmentField = function(noRemoveLink){
 	
@@ -297,6 +236,17 @@ ZmUploadViewDialog.prototype.addAttachmentField = function(noRemoveLink){
 	}
 };
 
+
+ZmUploadViewDialog.prototype._removeAttachmentField = function(attId){
+	var row = document.getElementById(attId);
+	this._attachmentTable.deleteRow(row.rowIndex);
+		if (--this._attachCount == 0) {
+			return false; // disables following of link
+		}
+	return true;
+};
+
+
 ZmUploadViewDialog.prototype.gotAttachments =
 function() {
 	var atts = document.getElementsByName(ZmUploadViewDialog.UPLOAD_FIELD_NAME);
@@ -306,20 +256,99 @@ function() {
 	return false;
 };
 
-ZmUploadViewDialog.prototype.disableAttachButton = function(){
-	this.setButtonEnabled(ZmUploadViewDialog.ATTACH_BUTTON,false);
-};
-
-ZmUploadViewDialog.prototype.enableAttachButton = function(){
-	this.setButtonEnabled(ZmUploadViewDialog.ATTACH_BUTTON,true);
-};
 
 ZmUploadViewDialog.prototype.cleanupAttachments = function(){
-	//this._getAttachmentTable().innerHTML = "";
-	var attTable = this._getAttachmentTable();
-	while(attTable.rows.length > 0){
-		attTable.deleteRow(0);
-	}
+	this._cleanTable(this._getAttachmentTable());
 	this._attachCount = 0;
+	this._inline = false;
 	this.setInlineCheckBox(false);
 };
+
+ZmUploadViewDialog.prototype._addAttachmentFieldButton = function(){
+	
+	var attTable = this._getAttachmentButtonTable();
+	var row = attTable.insertRow(-1);
+	var	cell = row.insertCell(-1);
+	
+	var addAttachmentFieldButton = new DwtButton(this);
+	addAttachmentFieldButton.setText(ZmUploadViewDialog.ADD_ATTACHMENT_FIELD);	
+	cell.appendChild(addAttachmentFieldButton.getHtmlElement());
+	addAttachmentFieldButton.addSelectionListener(new AjxListener(this,this.addAttachmentField));
+	
+};
+
+//Handle Inline Option Field
+ZmUploadViewDialog.prototype._addInlineOptionField = function(){
+	
+	var attTable = this._getInlineOptionTable();
+	if(!attTable) return;
+	this._hideInlineOptionField();
+	var html = [];
+	var idx = 0;
+	//Adding inline option
+	html[idx++] = "<input type='checkbox' name='inlineimages' id='inline'>&nbsp;"+ ZmUploadViewDialog.INLINE_OPTION_MSG;
+	html = html.join("");
+	
+	var row = attTable.insertRow(-1);
+	var cell = row.insertCell(-1);
+	cell.innerHTML = html;
+	
+	var inlineOption = document.getElementById("inline");
+	inlineOption.onclick = AjxCallback.simpleClosure(this._handleInline,this);
+};
+
+
+
+ZmUploadViewDialog.prototype._hideInlineOptionField = function(){
+	this._cleanTable(this._getInlineOptionTable());
+	this._inline = false;
+};
+
+
+ZmUploadViewDialog.prototype.isInline = function(){
+	
+	return ((this._inline)?this._inline:false);
+	var checkbox = document.getElementById("inline");
+	if(checkbox && checkbox.checked){
+		return true;
+	}
+	return false;
+};
+
+ZmUploadViewDialog.prototype.setInlineCheckBox = function(state){
+	this._inline = (state)?state:false;
+	var checkbox = document.getElementById("inline");
+	if(checkbox){
+		checkbox.checked = this._inline;
+		this._handleInline();
+	}
+};
+
+ZmUploadViewDialog.prototype._handleInline = function(){
+	
+    var inlineOption = document.getElementById("inline");
+    if(!inlineOption) { this._inline = false; return; }
+    var state = inlineOption.checked;
+    this._uploadForm.setAttribute("action",this._uri + ((state)?"?fmt=extended":""));
+    this._inline = (state)?state:false;
+
+};
+
+
+
+//Utilities
+
+ZmUploadViewDialog.prototype._popupErrorDialog = function(message) {
+	var dialog = this._appCtxt.getMsgDialog();
+	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, this._title);
+	dialog.popup();
+};
+
+
+ZmUploadViewDialog.prototype._cleanTable = function(table){
+	if(!table || !table.rows) return;
+	while(table.rows.length > 0){
+		table.deleteRow(0);
+	}
+};
+
