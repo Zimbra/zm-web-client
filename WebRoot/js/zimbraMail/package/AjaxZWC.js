@@ -10,6 +10,7 @@ AjxPackage.require("ajax.util.AjxBuffer");
 AjxPackage.require("ajax.util.AjxCache");
 AjxPackage.require("ajax.util.AjxTimezoneData");
 AjxPackage.require("ajax.util.AjxTimezone");
+AjxPackage.require("ajax.util.AjxHistoryMgr");
 
 AjxPackage.require("ajax.net.AjxInclude");
 AjxPackage.require("ajax.net.AjxPost");

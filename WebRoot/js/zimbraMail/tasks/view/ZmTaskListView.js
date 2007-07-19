@@ -89,6 +89,10 @@ function() {
 	}
 };
 
+ZmTaskListView.prototype.getTitle =
+function() {
+	return [ZmMsg.zimbraTitle, ZmMsg.tasks].join(": ");
+};
 
 // Private Methods
 

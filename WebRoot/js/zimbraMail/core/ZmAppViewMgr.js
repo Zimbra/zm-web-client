@@ -99,6 +99,13 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 	this._shellSz = this._shell.getSize();
 	this._controlListener = new AjxListener(this, this._shellControlListener);
 	this._shell.addControlListener(this._controlListener);
+	
+	this._historyMgr = this._appCtxt.getHistoryMgr();
+	this._historyMgr.addListener(new AjxListener(this, this._historyChangeListener));
+	this._hashView = {};		// matches numeric hash to its view
+	this._nextHashIndex = 0;	// index for adding to browser history stack
+	this._curHashIndex = 0;		// index of current location in browser history stack
+	this._noHistory = false;	// flag to prevent history ops as result of programmatic push/pop view
 
 	this._lastView = null;		// ID of previously visible view
 	this._currentView = null;	// ID of currently visible view
@@ -116,7 +123,7 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 	this._containers = {};		// containers within the skin
 	this._contBounds = {};		// bounds for the containers
 
-	// view preemption
+	// view pre-emption
 	this._pushCallback = new AjxCallback(this, this.pushView);
 	this._popCallback = new AjxCallback(this, this.popView);
 };
@@ -168,6 +175,9 @@ ZmAppViewMgr.CB_POST_SHOW	= 4;
 
 // used to continue when returning from callbacks
 ZmAppViewMgr.PENDING_VIEW = "ZmAppViewMgr.PENDING_VIEW";
+
+ZmAppViewMgr.BROWSER_BACK		= "BACK";
+ZmAppViewMgr.BROWSER_FORWARD	= "FORWARD";
 
 ZmAppViewMgr._setContainerIds =
 function() {
@@ -377,11 +387,16 @@ function(viewId, appName, elements, callbacks, isAppView, isTransient) {
 ZmAppViewMgr.prototype.pushView =
 function(viewId, force) {
 
+	if (!this._views[viewId]) {
+		// view has not been created, bail
+		return false;
+	}
+	
 	var sashX = null;
 	if(this._components[ZmAppViewMgr.C_SASH]){
 		sashX = this._components[ZmAppViewMgr.C_SASH].getBounds().x;
 	}
-
+	
 	var viewController = null;
 	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
 		viewId = this._pendingView;
@@ -438,6 +453,21 @@ function(viewId, force) {
 	}
 	DBG.println(AjxDebug.DBG2, "hidden (after): " + this._hidden);
 
+	// a view is being pushed - add it to browser history stack unless we're
+	// calling this function as a result of browser Back or Forward
+	if (this._noHistory) {
+		DBG.println(AjxDebug.DBG2, "noHistory: push " + viewId);
+		this._noHistory = false;
+	} else {
+		if (viewId != ZmController.LOADING_VIEW) {
+			this._nextHashIndex++;
+			this._curHashIndex = this._nextHashIndex;
+			this._hashView[this._curHashIndex] = viewId;
+			DBG.println(AjxDebug.DBG2, "adding to browser history: " + this._curHashIndex + "(" + viewId + ")");
+			this._historyMgr.add(this._curHashIndex);
+		}
+	}
+
 	this._layout(this._currentView);
 
 	if (viewController && viewController.setCurrentView) {
@@ -461,7 +491,7 @@ function(viewId, force) {
 /**
 * Hides the currently visible view, and makes the view on top of the hidden stack visible.
 *
-* @param force		don't run callbacks
+* @param force		don't run callbacks (which check if popping is OK)
 * @param viewId		only pop if this is current view
 * @returns			true if the view was popped
 */
@@ -507,6 +537,16 @@ function(force, viewId) {
 	}
 	this._removeFromHidden(this._currentView);
 	DBG.println(AjxDebug.DBG2, "hidden (after): " + this._hidden);
+	DBG.println(AjxDebug.DBG2, "hidden (" + this._hidden.length + " after pop): " + this._hidden);
+
+	// Move one back in the browser history stack so that we stay in sync, unless
+	// we're calling this function as a result of browser Back
+	if (this._noHistory) {
+		DBG.println(AjxDebug.DBG2, "noHistory (pop)");
+		this._noHistory = false;
+	} else {
+		history.back();
+	}
 
 	this.addComponents(this._views[this._currentView]);
 	this._layout(this._currentView);	
@@ -522,7 +562,7 @@ function(force, viewId) {
 * Makes the given view visible, and clears the hidden stack.
 *
 * @param viewId		the ID of the view
-* @param force		ignore preemption callbacks
+* @param force		ignore pre-emption callbacks
 * @returns			true if the view was set
 */
 ZmAppViewMgr.prototype.setView =
@@ -559,6 +599,18 @@ function(show) {
 
 //			this._controller.setActiveApp(this._viewApp[this._pendingView], this._pendingView);
 		}
+	}
+	
+	// If a pop shield has been dismissed and we're not going to show the pending view, and we
+	// got here via press of browser Back/Forward button, then undo that button press so that the
+	// browser history is correct.
+	if (!show) {
+		if (this._browserAction == ZmAppViewMgr.BROWSER_BACK) {
+			history.forward();
+		} else if (this._browserAction == ZmAppViewMgr.BROWSER_FORWARD) {
+			history.back();
+		}
+		this._browserAction = null;
 	}
 	this._pendingAction = this._pendingView = null;
 };
@@ -881,6 +933,37 @@ function(components) {
 			DBG.println("Container bounds for " + cid + ": " + contBds.x + ", " + contBds.y + " | " + contBds.width + " x " + contBds.height);
 		}
 	}
+};
+
+/**
+ * Handles browser Back/Forward. We compare the new index to our current one
+ * to see if the user has gone back or forward. If back, we pop the view,
+ * otherwise we push the appropriate view.
+ * 
+ * @param ev	[AjxEvent]		history event
+ */
+ZmAppViewMgr.prototype._historyChangeListener =
+function(ev) {
+	if (!(ev && ev.data)) { return; }
+	var hashIndex = ev.data;
+	this._noHistory = true;
+	var viewId = this._hashView[hashIndex];
+	if (hashIndex == (this._curHashIndex - 1)) {
+		// Back button has been pressed
+		this._browserAction = ZmAppViewMgr.BROWSER_BACK;
+		this.popView();
+	} else if (hashIndex == (this._curHashIndex + 1)) {
+		// Forward button has been pressed
+		this._browserAction = ZmAppViewMgr.BROWSER_FORWARD;
+		this.pushView(viewId);
+	} else {
+		// Not sure where we are - just push the correct view
+		this._browserAction = null;
+		this.pushView(viewId);
+	}
+	this._curHashIndex = hashIndex;
+	
+	DBG.println(AjxDebug.DBG2, "History change to " + hashIndex + ", new view: " + viewId);
 };
 
 // Handles sash movement. An attempt to move the sash beyond the extent of the overview 

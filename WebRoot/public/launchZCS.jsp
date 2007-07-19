@@ -182,7 +182,7 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 			_timer = null;
 		}
 
-		AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp"
+		AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp";
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		// figure out the debug level
 		var debugLevel = "<%= (debug != null) ? debug : "" %>";
@@ -194,6 +194,7 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 			}
 		}
 
+		AjxHistoryMgr.BLANK_FILE = "<%=contextPath%>/public/blankHistory.html";
 		var app = "<%= (startApp != null) ? startApp : "" %>";
 		var offlineMode = "<%= (offlineMode != null) ? offlineMode : "" %>";
 		var isDev = "<%= (isDev != null) ? isDev : "" %>";

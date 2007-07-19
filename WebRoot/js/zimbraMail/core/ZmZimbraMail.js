@@ -46,7 +46,10 @@ ZmZimbraMail = function(appCtxt, params) {
 
 	// ALWAYS set back reference into our world (also used by unload handler)
 	window._zimbraMail = this;
-
+	
+	// setup history support
+	window.historyMgr = appCtxt.getHistoryMgr();
+	
 	// settings structure and defaults
 	this._settings = appCtxt.getSettings();
 	var branch = appCtxt.get(ZmSetting.BRANCH);

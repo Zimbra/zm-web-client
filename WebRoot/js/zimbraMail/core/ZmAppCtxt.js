@@ -785,6 +785,14 @@ function() {
 	return this._shell.getKeyboardMgr();
 };
 
+ZmAppCtxt.prototype.getHistoryMgr =
+function() {
+	if (!this._historyMgr) {
+		this._historyMgr = new AjxHistoryMgr();
+	}
+	return this._historyMgr;
+};
+
 ZmAppCtxt.prototype.zimletsPresent =
 function() {
 	return this._zimletsPresent;
