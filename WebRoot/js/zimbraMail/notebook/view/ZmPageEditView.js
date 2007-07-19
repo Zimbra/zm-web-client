@@ -643,7 +643,8 @@ ZmPageEditor.prototype._insertLinkListener = function(event) {
 ZmPageEditor.prototype._insertLink = function(link, target, afterTarget) {
 	if (typeof link == "string") {
 		if (target) {
-			var text = document.createTextNode(link);
+			var doc = this._getIframeDoc();
+			var text = doc.createTextNode(link);
 			target.parentNode.replaceChild(text, target);
 		}
 		else {
