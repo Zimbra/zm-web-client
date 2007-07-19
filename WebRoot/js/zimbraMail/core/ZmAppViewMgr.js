@@ -102,10 +102,11 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 	
 	this._historyMgr = this._appCtxt.getHistoryMgr();
 	this._historyMgr.addListener(new AjxListener(this, this._historyChangeListener));
-	this._hashView = {};		// matches numeric hash to its view
-	this._nextHashIndex = 0;	// index for adding to browser history stack
-	this._curHashIndex = 0;		// index of current location in browser history stack
-	this._noHistory = false;	// flag to prevent history ops as result of programmatic push/pop view
+	this._hashView = {};				// matches numeric hash to its view
+	this._nextHashIndex = 0;			// index for adding to browser history stack
+	this._curHashIndex = 0;				// index of current location in browser history stack
+	this._noHistory = false;			// flag to prevent history ops as result of programmatic push/pop view
+	this._ignoreHistoryChange = false;	// don't push/pop view as result of history.back() or history.forward()
 
 	this._lastView = null;		// ID of previously visible view
 	this._currentView = null;	// ID of currently visible view
@@ -545,6 +546,7 @@ function(force, viewId) {
 		DBG.println(AjxDebug.DBG2, "noHistory (pop)");
 		this._noHistory = false;
 	} else {
+		this._ignoreHistoryChange = true;
 		history.back();
 	}
 
@@ -606,8 +608,10 @@ function(show) {
 	// browser history is correct.
 	if (!show) {
 		if (this._browserAction == ZmAppViewMgr.BROWSER_BACK) {
+			this._ignoreHistoryChange = true;
 			history.forward();
 		} else if (this._browserAction == ZmAppViewMgr.BROWSER_FORWARD) {
+			this._ignoreHistoryChange = true;
 			history.back();
 		}
 		this._browserAction = null;
@@ -945,6 +949,11 @@ function(components) {
 ZmAppViewMgr.prototype._historyChangeListener =
 function(ev) {
 	if (!(ev && ev.data)) { return; }
+	if (this._ignoreHistoryChange) {
+		this._ignoreHistoryChange = false;
+		return;
+	}
+	
 	var hashIndex = ev.data;
 	this._noHistory = true;
 	var viewId = this._hashView[hashIndex];
