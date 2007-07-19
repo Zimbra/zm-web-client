@@ -53,14 +53,14 @@
 
 						<$ if (data.obo) { $>
 							<tr>
-								<td width='110' valign='top' class='LabelColName'><$= ZmMsg.onBehalfOf $>: </td>
+								<td width='110' valign='top' class='LabelColName'><$= ZmMsg.onBehalfOf $>:</td>
 								<td class='LabelColValue' colspan=3><$= data.obo $></td>
 							</tr>
 						<$ } $>
 
 						<$ for (var i = 0; i < data.participants.length; i++) { $>
 							<tr>
-								<td width=100 valign='top' class='LabelColName'><$= data.participants[i].prefix $>: </td>
+								<td width=110 valign='top' class='LabelColName'><$= data.participants[i].prefix $>:</td>
 								<td class='LabelColValue'><$= data.participants[i].partStr $></td>
 							</tr>
 						<$ } $>
