@@ -104,11 +104,17 @@
 
 %>
 
+<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/> 
+
 		var settings = {
 "dummy":1<c:forEach var="pref" items="${requestScope.authResult.prefs}">,
 "${pref.key}":"${zm:jsEncode(pref.value[0])}"</c:forEach>
 <c:forEach var="attr" items="${requestScope.authResult.attrs}">,
 "${attr.key}":"${zm:jsEncode(attr.value[0])}"</c:forEach>
+<c:if test="${not empty domainInfo}"> 
+<c:forEach var="info" items="${domainInfo.attrs}">,
+"${info.key}":"${zm:jsEncode(info.value)}"</c:forEach> 
+</c:if>
 		};
 </script>
 
