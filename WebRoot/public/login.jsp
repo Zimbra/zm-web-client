@@ -9,6 +9,9 @@
 <fmt:setBundle basename="/msgs/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/msgs/ZMsg" var="zmsg" scope="request"/>
 
+<%-- this checks and redirects to admin if need be --%>
+<zm:adminRedirect/>
+
 <c:catch var="loginException">
     <c:choose>
         <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
