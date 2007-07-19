@@ -229,9 +229,9 @@
       <$ if (data.isAllAttendees) { $>
         <td style='padding: 5 0 5 0' class='ZmSchedulerAllTd'><$=ZmMsg.allAttendees$></td>
       <$ } else if (data.organizer) { $>
-        <td width=38 align=center class='ZmSchedulerOrgIconTd'><$=AjxImg.getImageHtml("Person")$></td>
+        <td width=40 align=left class='ZmSchedulerOrgIconTd' style='padding-left: 7px;'><$=AjxImg.getImageHtml("Person")$></td>
       <$ } else { $>
-        <td width=38 id='${sched.dwtSelectId}'></td>
+        <td width=50 id='${sched.dwtSelectId}'></td>
       <$ } $>
 
       <$ if (!data.isAllAttendees) { $>

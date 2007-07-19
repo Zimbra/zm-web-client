@@ -383,7 +383,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 			select.addOption(new DwtSelectOption(ZmCalItem.EQUIPMENT, false, null, null, null, "Resource"));
 			select.reparentHtmlElement(selectId);
 			select.addChangeListener(this._selectChangeListener);
-			select.setSize("38");
+			select.setSize("50");
 			select._schedTableIdx = index;
 			sched.selectObj = select;
 		}
