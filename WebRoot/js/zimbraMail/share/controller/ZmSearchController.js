@@ -481,7 +481,7 @@ function(search, isMixed, ex) {
 
 		var msg = ex.getErrorMsg();
 		this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
-		var results = new ZmSearchResult(this._appCtxt);
+		var results = new ZmSearchResult(this._appCtxt, search);
 		results.type = search.types ? search.types.get(0) : null;
 		this._showResults(results, search, isMixed);
 		return true;

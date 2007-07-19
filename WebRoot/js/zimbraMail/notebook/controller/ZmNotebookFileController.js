@@ -129,7 +129,7 @@ function() {
 
 	// based on current search, show/hide undelete menu option
 	var showUndelete = false;
-	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
+	var folderId = this._getSearchFolderId();
 	if (folderId) {
 		var folder = this._appCtxt.getById(folderId);
 		showUndelete = folder && folder.isInTrash();

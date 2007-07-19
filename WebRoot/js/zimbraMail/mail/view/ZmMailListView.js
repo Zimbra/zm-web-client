@@ -65,8 +65,8 @@ function(list, sortField) {
 
 ZmMailListView.prototype.getTitle =
 function() {
-	return this._controller._activeSearch && this._controller._activeSearch.search 
-		? this._controller._activeSearch.search.getTitle() : null;
+	var search = this._controller._activeSearch ? this._controller._activeSearch.search : null;
+	return search ? search.getTitle() : "";
 };
 
 ZmMailListView.prototype.replenish = 

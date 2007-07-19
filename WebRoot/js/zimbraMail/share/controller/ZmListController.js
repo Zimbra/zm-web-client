@@ -934,7 +934,7 @@ function() {
 // this method gets overloaded if folder id is retrieved another way
 ZmListController.prototype._getSearchFolderId = 
 function() {
-	return this._activeSearch.search ? this._activeSearch.search.folderId : null;
+	return (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
 };
 
 // Pagination
@@ -954,7 +954,8 @@ function(search, offset) {
 ZmListController.prototype._search =
 function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 	var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
-	var types = this._activeSearch.search.types; // use types from original search
+	// use types from original search
+	var types = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.types : [];
 	var sc = this._appCtxt.getSearchController();
 	var params = {query: this.getSearchString(), types: types, sortBy: sortBy, offset: offset, limit: limit,
 				  lastId: lastId, lastSortVal: lastSortVal};
@@ -1005,9 +1006,8 @@ function(view, forward, loadIndex) {
 		// figure out if this requires cursor-based paging
 		var list = this._listView[this._currentView].getList();
 		var lastItem = list.getLast();
-		var lastSortVal = (lastItem && lastItem.id)
-			? lastItem.getSortVal(this._activeSearch.search.sortBy)
-			: null;
+		var sortBy = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.sortBy : null;
+		var lastSortVal = (lastItem && lastItem.id && sortBy) ? lastItem.getSortVal(sortBy) : null;
 		var lastId = lastSortVal ? lastItem.id : null;
 
 		// get next page of items from server; note that callback may be overridden
