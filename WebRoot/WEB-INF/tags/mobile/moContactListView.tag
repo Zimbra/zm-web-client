@@ -50,6 +50,9 @@
                         </tr>
                     </c:forEach>
                 </table>
+                <c:if test="${empty context or context.searchResult.size eq 0}">
+                    <div class='zo_noresults'><fmt:message key="noResultsFound"/></div>
+                </c:if>
             </td>
         </tr>
         <tr>

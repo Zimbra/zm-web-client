@@ -246,6 +246,12 @@ body > ul > li > a {
     color: black;
 }
 
+.zo_noresults { 
+	text-align: center;
+	padding: 20px 0px 20px 0px;
+	font-weight: bold;
+    color: gray;
+}
 
 /* calendar */
 .zo_cal_list TD, .zo_ab_list TD {

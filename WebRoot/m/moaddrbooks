@@ -1,0 +1,56 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<mo:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <fmt:message var="title" key="MO_mailFoldersTags"/>
+</mo:handleError>
+
+<mo:view title="${title}" context="${null}" mailbox="${mailbox}">
+    <table width=100% cellspacing="0" cellpadding="0">
+        <tr>
+            <td>
+                <table width=100% cellspacing="0" cellpadding="0">
+                    <tr class='zo_toolbar'>
+                        <td>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <table width=100% cellspacing="0" cellpadding="0">
+        <tr>
+            <td class='zo_fldr_rowsep'>
+                <fmt:message key="addressBooks"/>
+            </td>
+        </tr>
+
+
+        <mo:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
+
+        <mo:overviewFolder types="contact" folder="${mailbox.trash}"/>
+        <mo:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
+
+        <tr>
+            <td class='zo_fldr_rowsep'>
+                <fmt:message key="tags"/>
+            </td>
+        </tr>
+
+        <zm:forEachTag var="tag">
+            <mo:overviewTag calendars="${false}" tag="${tag}" types="contact"/>
+        </zm:forEachTag>
+    </table>
+</mo:view>
+ 

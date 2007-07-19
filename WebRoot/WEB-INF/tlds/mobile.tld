@@ -163,6 +163,10 @@
         <name>doFolderTree</name>
         <path>/WEB-INF/tags/mobile/moDoFolderTree.tag</path>
     </tag-file>
+        <tag-file>
+        <name>doContactFolderTree</name>
+        <path>/WEB-INF/tags/mobile/moDoContactFolderTree.tag</path>
+    </tag-file>
     <tag-file>
         <name>overviewSearchFolder</name>
         <path>/WEB-INF/tags/mobile/moOverviewSearchFolder.tag</path>

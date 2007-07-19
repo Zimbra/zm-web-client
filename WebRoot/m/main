@@ -44,9 +44,9 @@
         </li>
         <c:if test="${mailbox.features.contacts}">
             <li>
-                <a href="mosearch?st=contact">
+                <a href="moaddrbooks">
                     <img src="/zimbra/images/contacts/Contact.gif"/>
-                    <fmt:message key="addressBook"/>
+                    <fmt:message key="addressBooks"/>
                 </a>
             </li>
         </c:if>
@@ -58,7 +58,6 @@
                 </a>
             </li>
         </c:if>
-
         <li>
             <a href="mofolders">
                 <img src="/zimbra/images/mail/MailFolder.gif"/>

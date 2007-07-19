@@ -96,6 +96,9 @@
                         </tr>
                     </c:forEach>
                 </table>
+                <c:if test="${context.searchResult.size == 0}">
+                    <div class='zo_noresults'><fmt:message key="noResultsFound"/></div>
+                </c:if>
             </td>
         </tr>
         <tr>
