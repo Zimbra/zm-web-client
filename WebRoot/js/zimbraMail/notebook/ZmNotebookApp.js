@@ -174,7 +174,7 @@ function() {
 
 	ZmApp.registerApp(ZmApp.NOTEBOOK,
 							 {mainPkg:				"Notebook",
-							  nameKey:				"BETA_documents",
+							  nameKey:				"documents",
 							  icon:					"NoteApp",
 							  chooserTooltipKey:	"goToDocuments",
 							  defaultSearch:		ZmItem.PAGE,
