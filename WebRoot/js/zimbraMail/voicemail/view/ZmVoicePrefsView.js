@@ -480,13 +480,22 @@ ZmSelectiveCallForwardingUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
 	result.data.ft = ZmPhone.calculateName(this._comboBox.getText());
+	var names = this._getFromNumbers();
 	result.data.phone = [];
+	for (var i = 0, count = names.length; i < count; i++) {
+		result.data.phone.push({ a: true, pn: names[i] });
+	}
+	return result;
+};
+
+ZmSelectiveCallForwardingUI.prototype._getFromNumbers =
+function() {
+	var result = [];
 	var rows = this._getTable().rows;
 	for(var i = 1, count = rows.length; i < count; i++) {
 		var cell = rows[i].cells[0].childNodes[0].rows[0].cells[0]; // Byick....surf through the big table structures to find the phone number text.
 		var display = AjxUtil.getInnerText(cell);
-		var name = ZmPhone.calculateName(display);
-		result.data.phone.push({ a: true, pn: name });
+		result.push(ZmPhone.calculateName(display));
 	}
 	return result;
 };
@@ -515,10 +524,28 @@ function() {
 
 ZmSelectiveCallForwardingUI.prototype._addListener =
 function(ev) {
+	var error = null;
+	var value = AjxStringUtil.trim(this._addInput.getValue());
+	if (!value.length) {
+		error = ZmMsg.errorNoPhone;
+	} else {
+		var fromNumbers = this._getFromNumbers();
+		var name = ZmPhone.calculateName(value);
+		for (var i = 0, count = fromNumbers.length; i < count; i++) {
+			if (name == fromNumbers[i]) {
+				error = ZmMsg.errorPhoneNotUnique;
+				break;
+			}
+		}
+	}
+	if (error) {
+		this._view._appCtxt.setStatusMsg(error, ZmStatusView.LEVEL_WARNING);
+		return;
+	}
 	var row = this._getTable().insertRow(-1);
 	row.className = "Row " + ((row.rowIndex % 2) ? DwtListView.ROW_CLASS_ODD : DwtListView.ROW_CLASS_EVEN);
 	var cell = row.insertCell(-1);
-	var args = { text: this._addInput.getValue(), linkId: Dwt.getNextId() };
+	var args = { text: value, linkId: Dwt.getNextId() };
 	cell.innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoiceSelectiveCallForwardingTableRow", args);
 	var link = document.getElementById(args.linkId);
 	link.onclick = this._removeCallbackObj;
@@ -665,7 +692,7 @@ function(feature) {
 
 ZmVoicePageSizeUI.prototype._isValueDirty =
 function() {
-	return this._select.getValue() != this._view._appCtxt.get(ZmSettings.VOICE_PAGE_SIZE);
+	return this._select.getValue() != this._view._appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
 };
 
 ZmVoicePageSizeUI.prototype.getFeature =
