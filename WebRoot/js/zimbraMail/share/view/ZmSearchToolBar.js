@@ -293,16 +293,18 @@ function() {
 	this._saveButton = this._addButton({ setting:ZmSetting.SAVED_SEARCHES_ENABLED,
 										 buttonId:"_saveButton",
 										 lbl:ZmMsg.save,
-										 icon:"Save"
-										 } );
+										 icon:"Save",
+  										 type:"toolbar"} );
+			
+
 
 	// add advanced search button
 	this._browseButton = this._addButton({ setting:ZmSetting.BROWSE_ENABLED,
 											buttonId:"_advancedButton",
 											style: (DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE),
 											lbl:ZmMsg.searchBuilder,
-											icon:"SearchBuilder"
-											} );
+											icon:"SearchBuilder",
+											type:"toolbar"} );
 };
 
 ZmSearchToolBar.prototype._addButton =
