@@ -866,3 +866,31 @@ function(ignorePendingContent) {
 	}
 	return textArea;
 };
+
+ZmPageEditor.prototype._handleEditorEvent = 
+function(ev) {
+	DwtHtmlEditor._KEY2CMDS['s'] = null; 
+	var	retVal = DwtHtmlEditor.prototype._handleEditorEvent.call(this, ev);
+
+	if (DwtKeyEvent.isKeyPressEvent(ev)) {
+		var ke = this._keyEvent;
+		ke.setFromDhtmlEvent(ev);
+		if (ke.ctrlKey) {
+			var key = String.fromCharCode(ke.charCode).toLowerCase();
+			var value = null;
+
+			switch (key) {
+
+				case 's':
+					this._controller._doSave(false);
+					ke._stopPropagation = true;
+					ke._returnValue = false;
+					ke.setToDhtmlEvent(ev);
+					retVal = false;
+					break;
+			}
+		}
+		}
+		
+		return retVal;
+};
