@@ -16,7 +16,7 @@
 <mo:head mailbox="${mailbox}" title="${title}" scale="${scale}"/>
 <body <c:if test="${not empty onload}">onload="${onload}"</c:if> <c:if test="${not empty clazz}">class="${clazz}"</c:if>>
 <c:if test="${not empty requestScope.statusMessage}">
-<table width=100% cellpadding="0" cellspacing="0"><tr><td><div class='${requestScope.statusClass}'>${fn:escapeXml(requestScope.statusMessage)}</div></td></tr></table>
+<table width=100% cellpadding="0" cellspacing="0"><tr><td style='padding:5px'><div class='${requestScope.statusClass}'>${fn:escapeXml(requestScope.statusMessage)}</div></td></tr></table>
 </c:if>
 <jsp:doBody/>
 </body>

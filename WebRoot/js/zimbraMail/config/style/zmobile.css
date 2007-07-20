@@ -44,21 +44,6 @@ body {
 #endif
 }
 
-body > h1 {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 10px;
-    height: 28px;
-    line-height: 20px;
-    font-size: 20px;
-    text-align: center;
-    text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0;
-    text-overflow: ellipsis;
-    color: #FFFFFF;
-    background: url(/images/mobile/iPhoneToolbar.png) #6d84a2 repeat-x;
-    border-bottom: 1px solid #2d3642;
-}
-
 .zo_toolbar {
     margin: 0;
     padding: 10px;
@@ -90,23 +75,6 @@ body > h1 {
     text-decoration: none;
     background: none;
 }
-.button {
-    position: absolute;
-    top: 8px;
-    right: 6px;
-    -webkit-border-image: url(/images/mobile/iPhoneButton.png) 0 5 0 5;
-    -webkit-border-radius: 0;
-    border-width: 0 5px 0 5px;
-    padding: 0;
-    height: 28px;
-    line-height: 28px;
-    font-size: 12px;
-    font-weight: bold;
-    color: #FFFFFF;
-    text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0;
-    text-decoration: none;
-    background: none;
-}
 
 .zo_leftbutton {
     -webkit-border-image: url(/images/mobile/iPhoneBackButton.png) 0 8 0 14;
@@ -120,51 +88,42 @@ body > h1 {
     background: none;
 }
 
-#homeButton {
-    display: block;
-    left: 6px;
-    right: auto;
-    -webkit-border-image: url(/images/mobile/iPhoneBackButton.png) 0 8 0 14;
-    border-width: 0 8px 0 14px;
-}
-
-.goButton {
-    -webkit-border-image: url(/images/mobile/iPhoneGoButton.png) 0 5 0 5;
-    border-width: 0 5px;
-}
-
-body > div,
-body > form,
-body > ul {
-    position: absolute;
-    left: 0;
-    top: 41px;
-    width: 100%;
-    min-height: 418px;
-    margin: 0;
-    padding: 0;
-}
-
-body > ul > li {
-    margin: 0;
+.zo_main_item {
+   margin: 0;
     border-bottom: 1px solid #E0E0E0;
     padding: 0;
     background: url(/images/mobile/iPhoneArrow.png) no-repeat right center;
     font-size: 20px;
-    list-style: none;
 }
 
-body > ul > li > a {
+.zo_main_item > a {
     display: block;
     padding: 8px 32px 8px 8px;
     text-decoration: none;
     color: inherit;
 }
 
-.panel {
-    box-sizing: border-box;
+.zo_main_info_cont {
     padding: 10px;
-    background: #c8c8c8 url(/images/mobile/pinstripes.png);
+}
+
+.zo_main_info {
+    padding: 5px;
+    border:1px solid black;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+
+.zo_main_fname {
+    font-size:medium;
+    color: gray;
+    text-align: right;
+}
+
+.zo_main_fvalue {
+    padding-left:5px;
+    font-size:medium;
+    color: black;
 }
 
 /************************************************************************************************/

@@ -33,42 +33,83 @@
                 </table>
             </td>
         </tr>
-    </table>
-    <ul>
-        <li>
+    <tr>
+        <td class='zo_main_item'>
             <a href="mosearch">
                 <img src="/zimbra/images/mail/MailApp.gif"/>
                 <fmt:message key="mail"/>
                 <c:if test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if>
             </a>
-        </li>
+        </td>
+    </tr>
         <c:if test="${mailbox.features.contacts}">
-            <li>
+            <tr>
+                <td class='zo_main_item'>
                 <a href="moaddrbooks">
                     <img src="/zimbra/images/contacts/Contact.gif"/>
                     <fmt:message key="addressBooks"/>
                 </a>
-            </li>
+                </td>
+            </tr>
         </c:if>
         <c:if test="${mailbox.features.calendar}">
-            <li>
+            <tr>
+                <td class='zo_main_item'>
                 <a href="mocalendar">
                     <img src="/zimbra/images/calendar/CalendarApp.gif"/>
                     <fmt:message key="calendar"/>
                 </a>
-            </li>
+                </td>
+            </tr>
         </c:if>
-        <li>
+        <tr>
+            <td class='zo_main_item'>
             <a href="mofolders">
                 <img src="/zimbra/images/mail/MailFolder.gif"/>
                 <fmt:message key="MO_mailFoldersTags"/>
             </a>
-        </li>
-        <li>
+            </td>
+        </tr>
+        <tr>
+            <td class='zo_main_item'>
             <a href="?p=4">
                 <img src="/zimbra/images/common/Preferences.gif"/>
                 <fmt:message key="options"/>
             </a>
-        </li>
-    </ul>
+            </td>
+        </tr>
+        <tr>
+            <td align='center'>
+            <div class='zo_main_info_cont'>
+                <div class='zo_main_info'>
+                <table>
+                    <%--
+                    <tr>
+                        <td class='zo_main_fname'>
+                            <fmt:message key="MO_username"/>:
+                        </td>
+                        <td class='zo_main_fvalue'>
+                            ${fn:escapeXml(mailbox.name)}
+                        </td>
+                    </tr>
+                    --%>
+                    <tr>
+                        <td class='zo_main_fname'>
+                            <fmt:message key="MO_quota"/>:
+                        </td>
+                        <td class='zo_main_fvalue'>
+                            <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
+                            <fmt:message var="unlimited" key="unlimited"/>
+                            <fmt:message key="MO_quotaUsage">
+                                <fmt:param value="${zm:displaySizeFractions(mailbox.size,2)}"/>
+                                <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
+                            </fmt:message>
+                        </td>
+                    </tr>
+                </table>
+                </div>
+                </div>
+            </td>
+        </tr>
+  </table>
 </mo:view>
