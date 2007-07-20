@@ -682,3 +682,15 @@ body > ul > li > a {
 .GrayLightC			{ color:#D4D4D4; }
 .GrayBgC			{ color:#E9E9E9; }
 
+.StatusInfo, .StatusWarning, .StatusCritical {
+    padding: 5px;
+    font-weight: bold;
+    border:1px solid black;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+
+.StatusInfo     { background-color: lightgreen;}
+.StatusWarning  { background-color: yellow;}
+.StatusCritical { background-color: pink; }
+
