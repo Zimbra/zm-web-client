@@ -1068,6 +1068,7 @@ NOTE: When overriding this template, container node MUST have id!
 				<tr><td colspan=2><hr></td></tr>
 
 				<!-- IM_PREF_INSTANT_NOTIFY { boolean } -->
+<!--
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.imNotificationsLabel$></td>
 					<td class='ZOptionsField'>
 						<div id='${id}_IM_PREF_INSTANT_NOTIFY'>
@@ -1075,9 +1076,10 @@ NOTE: When overriding this template, container node MUST have id!
 						</div>
 					</td>
 				</tr>
+-->
 
 				<!-- IM_PREF_FLASH_ICON { boolean } -->
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+				<tr><td class='ZOptionsLabel'><$=ZmMsg.imNotificationsLabel$></td>
 					<td class='ZOptionsField'>
 						<div id='${id}_IM_PREF_FLASH_ICON'>
 							<input type='checkbox'> <$=ZmMsg.imPrefFlashIcon$>

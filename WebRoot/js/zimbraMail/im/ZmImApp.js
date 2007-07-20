@@ -281,7 +281,7 @@ function() {
 		else
 			this._roster._requestGateways();
 		// enable instant notify?
-		if (this._appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY))
+		if (this._appCtxt.get(ZmSetting.INSTANT_NOTIFY))
 			this._appCtxt.getAppController().setInstantNotify(true);
 	}
 	return this._roster;
