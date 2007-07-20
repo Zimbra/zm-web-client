@@ -162,9 +162,9 @@ body {
     -webkit-border-radius: 10px;
 }
 
-.zo_m_list_row A:visited {
+.zo_m_list_row A {
     text-decoration: none;
-    color: inherit;;
+    
 }
 
 .zo_m_list_row {
@@ -478,7 +478,9 @@ body {
 .zo_ab_list_arrow {
   background: url(/images/mobile/iPhoneArrow.png) no-repeat right center;
 }
-
+.zo_ab_list_arrow A {
+  text-decoration: none;
+}
 .zo_cv_cont {
     border:1px solid #333333;
     -moz-border-radius: 10px;
