@@ -391,11 +391,6 @@ function() {
 		: null;
 };
 
-ZmContact.prototype.getSortVal =
-function(sortBy) {
-	return this.sf;
-};
-
 ZmContact.prototype.getIcon =
 function() {
 	var icon;
@@ -500,10 +495,8 @@ function(attr, batchCmd) {
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr, batchCmd != null]);
-	// TODO - handle errors(?) for create?
 
 	if (batchCmd) {
-		// TODO - add execFrame when ZmBatchCommand API is ready
 		batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
 		var execFrame = new AjxCallback(this, this.create, [attr]);
@@ -576,11 +569,7 @@ function(ex) {
 */
 ZmContact.prototype.modify =
 function(attr, callback) {
-	DBG.println(AjxDebug.DBG1, "ZmContact.modify");
-	if (this.list.isGal) {
-		DBG.println(AjxDebug.DBG1, "Cannot modify GAL contact");
-		return;
-	}
+	if (this.list.isGal) { return; }
 
 	var soapDoc = AjxSoapDoc.create("ModifyContactRequest", "urn:zimbraMail");
 	soapDoc.getMethod().setAttribute("replace", "0");
@@ -1045,7 +1034,7 @@ function(type, shortForm) {
 		var e = new AjxEmailAddress(email, null, name);
 		text = e.toString();
 	} else {
-		text = name ? name : email ? email : "";
+		text = name || email || "";
 	}
 
 	return text;
@@ -1053,8 +1042,9 @@ function(type, shortForm) {
 
 ZmContact.prototype.getPrintHtml =
 function(preferHtml, callback) {
-	return this.isGroup() ? ZmGroupView.getPrintHtml(this, false, this._appCtxt) :
-							ZmContactView.getPrintHtml(this, false, this._appCtxt);
+	return this.isGroup()
+		? ZmGroupView.getPrintHtml(this, false, this._appCtxt)
+		: ZmContactView.getPrintHtml(this, false, this._appCtxt);
 };
 
 // these need to be kept in sync with ZmContact.F_*

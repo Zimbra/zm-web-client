@@ -237,12 +237,6 @@ function() {
 	return this.folderId;
 };
 
-ZmItem.prototype.getSortVal =
-function(sortBy) {
-	// overload me to return the sort val per type of derived ZmItem
-	return null;
-};
-
 /** @deprecated Use getRestUrl. */
 ZmItem.prototype.getUrl =
 function() {

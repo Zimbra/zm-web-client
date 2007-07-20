@@ -59,11 +59,17 @@ ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) 
 	this._contactPart = new DwtComposite(this, "ZmContactInfoView", posStyle);
 	this._contactPart._setAllowSelection();
 
+	this._contactTabView = new DwtTabView(this._contactPart);
+	this._contactTabView.addStateChangeListener(new AjxListener(this, this._tabStateChangeListener));
+
+	this._contactGroupView = new DwtComposite(this._contactPart);
+	this._contactGroupView.setVisible(false);
+
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 
-	this._contactPart._setMouseEventHdlrs(); // needed by object manager
-	// this manages all the detected objects within the view
-	this._objectManager = new ZmObjectManager(this._contactPart, this.shell.getData(ZmAppCtxt.LABEL));
+	this._objectManager = new ZmObjectManager(null, this._appCtxt);
+
+	this._createHtml();
 };
 
 ZmContactSplitView.prototype = new DwtComposite;
@@ -113,8 +119,9 @@ function() {
 ZmContactSplitView.prototype.setContact =
 function(contact, isGal) {
 
-	if (this._objectManager)
+	if (this._objectManager) {
 		this._objectManager.reset();
+	}
 
 	if (!isGal) {
 		// Remove and re-add listeners for current contact if exists
@@ -125,38 +132,78 @@ function(contact, isGal) {
 
 	var oldContact = this._contact;
 	this._contact = contact;
+	this._tabViewHtml = {};
+	this._contactTabView.enable(true);
+	this._contactTabView.switchToTab(1);
 
 	if (this._contact.isLoaded) {
 		this._setContact(contact, isGal, oldContact);
 	} else {
 		var callback = new AjxCallback(this, this._handleResponseLoad, [isGal, oldContact]);
 		var errorCallback = new AjxCallback(this, this._handleErrorLoad);
-		this._contact.load(callback);
+		this._contact.load(callback, errorCallback);
 	}
 };
 
 ZmContactSplitView.prototype._handleResponseLoad =
-function(isGal, contact, oldContact) {
-	if (contact.id == this._contact.id)
+function(isGal, oldContact, resp, contact) {
+	if (contact.id == this._contact.id) {
 		this._setContact(this._contact, isGal, oldContact);
+	}
 };
 
 ZmContactSplitView.prototype._handleErrorLoad =
 function(ex) {
-	this._clear();
+	this.clear();
 	// TODO - maybe display some kind of error?
 };
 
 ZmContactSplitView.prototype.clear =
 function() {
 	// clear the right pane
-	this._contactPart.getHtmlElement().innerHTML = "";
-	this._htmlInitialized = false;
+	this._tabViewHtml = {};
+	var tabIdx = this._contactTabView.getCurrentTab();
+	var view = this._contactTabView.getTabView(tabIdx);
+	if (view) {
+		view.getHtmlElement().innerHTML = "";
+	}
+	this._contactTabView.enable(false);
 };
 
 ZmContactSplitView.prototype.enableAlphabetBar =
 function(enable) {
 	this._alphabetBar.enable(enable);
+};
+
+ZmContactSplitView.prototype._createHtml =
+function() {
+	var params = AjxTemplate.getParams("zimbraMail.abook.templates.Contacts#SplitViewTabs");
+	var tabStr = params ? params["tabs"] : null;
+	this._tabs = tabStr ? tabStr.split(",") : null;
+
+	for (var i = 0; i < this._tabs.length; i++) {
+		var tab = this._tabs[i] = AjxStringUtil.trim(this._tabs[i]);
+		var idx = this._contactTabView.addTab(ZmMsg[tab]);
+		var view = new DwtTabViewPage(this._contactTabView, "ZmContactTabViewPage");
+		view.setScrollStyle(Dwt.SCROLL);
+
+		// reset event handlers for each view so object manager can process
+		view._setMouseEventHdlrs();
+		view.addListener(DwtEvent.ONMOUSEOVER, 	new AjxListener(this._objectManager, this._objectManager._mouseOverListener));
+		view.addListener(DwtEvent.ONMOUSEOUT, 	new AjxListener(this._objectManager, this._objectManager._mouseOutListener));
+		view.addListener(DwtEvent.ONMOUSEDOWN, 	new AjxListener(this._objectManager, this._objectManager._mouseDownListener));
+		view.addListener(DwtEvent.ONMOUSEUP, 	new AjxListener(this._objectManager, this._objectManager._mouseUpListener));
+		view.addListener(DwtEvent.ONMOUSEMOVE, 	new AjxListener(this._objectManager, this._objectManager._mouseMoveListener));
+
+		this._contactTabView.setTabView(idx, view);
+	}
+
+	this._tabViewHtml = {};
+};
+
+ZmContactSplitView.prototype._tabStateChangeListener =
+function(ev) {
+	this._setContact(this._contact, this._isGalSearch);
 };
 
 ZmContactSplitView.prototype._sizeChildren =
@@ -181,10 +228,24 @@ function(width, height) {
 	this._contactPartWidth = contactWidth;
 	this._contactPartHeight = childHeight;
 
-	if (this._htmlInitialized) {
+	this._resizeWidgets();
+};
+
+ZmContactSplitView.prototype._resizeWidgets =
+function() {
+	if (this._contactGroupView.getVisible()) {
+		this._contactGroupView.setSize(this._contactPartWidth, this._contactPartHeight - 40);
+
 		var bodyDiv = document.getElementById(this._contactBodyId);
-		bodyDiv.style.width = this._contactPartWidth;
-		bodyDiv.style.height = this._contactPartHeight - 40;
+		if (bodyDiv) {
+			Dwt.setSize(bodyDiv, this._contactPartWidth, this._contactPartHeight - 40);
+		}
+	}
+
+	if (this._contactTabView.getVisible()) {
+		var tabIdx = this._contactTabView.getCurrentTab();
+		var tabView = this._contactTabView.getTabView(tabIdx);
+		tabView.setSize(this._contactTabView.getSize().x, this._contactPartHeight-30);
 	}
 };
 
@@ -197,6 +258,8 @@ function(ev) {
 		return;
 	}
 
+	var tabIdx = this._contactTabView.getCurrentTab();
+	this._tabViewHtml[tabIdx] = false;
 	this._setContact(ev.source);
 };
 
@@ -230,10 +293,7 @@ function(data, type) {
 
 ZmContactSplitView.prototype._setContact =
 function(contact, isGal, oldContact) {
-
-	// null folderId means user did a search (did not click on a addrbook)
-	var folderId = this._controller.getFolderId();
-	if (folderId && contact.folderId != folderId && !contact.isShared()) { return; }
+	if (!this._tabViewHtml) { return; }
 
 	var addrbook = this._appCtxt.getById(contact.folderId);
 	var color = addrbook ? addrbook.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
@@ -251,25 +311,46 @@ function(contact, isGal, oldContact) {
 		hdrClass: hdrClass,
 		hdrColor: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
 		tagCellId: tagCellId,
-		tagHtml: tagHtml,
-		width: this._contactPartWidth,
-		height: (this._contactPartHeight - 40)
+		tagHtml: tagHtml
 	};
 
-	if (contact.isGroup()) {
+	if (contact.isGroup())
+	{
+		subs.width = this._contactPartWidth;
+		subs.height = (this._contactPartHeight - 40);
 		subs.folderIcon = contact.addrbook.getIcon();
 		subs.folderName = contact.addrbook.getName();
 		subs.groupMembers = contact.getGroupMembers().good.getArray();
-	} else {
+
+		this._contactTabView.setVisible(false);
+		this._contactGroupView.setVisible(true);
+		this._contactGroupView.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitViewGroup", subs);
+	}
+	else
+	{
 		subs.bodyWidth = (this._contactPart.getSize().x / 2);
 		subs.view = this;
 		subs.isGal = isGal;
+
+		this._contactTabView.setVisible(true);
+		this._contactGroupView.setVisible(false);
+
+		// only render HTML for tab if we haven't already
+		var tabIdx = this._contactTabView.getCurrentTab();
+		if (!this._tabViewHtml[tabIdx]) {
+			var tabName = this._tabs[tabIdx-1];
+			var template = "zimbraMail.abook.templates.Contacts#SplitView_" + tabName;
+			var view = this._contactTabView.getTabView(tabIdx);
+			view.getHtmlElement().innerHTML = AjxTemplate.expand(template, subs);
+
+			this._tabViewHtml[tabIdx] = true;
+		}
 	}
 
-	this._contactPart.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView", subs);
+	this._resizeWidgets();
 
 	// notify zimlets that a new contact is being shown.
-	if (this._appCtxt.zimletsPresent()) {
+	if (oldContact && this._appCtxt.zimletsPresent()) {
 		this._appCtxt.getZimletMgr().notifyZimlets("onContactView", oldContact, contact, this);
 	}
 };
@@ -309,7 +390,9 @@ function(folder) {
 	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 	var contactHdrRow = document.getElementById(this._contactHeaderRowId);
-	Dwt.addClass(contactHdrRow, bkgdColor);
+	if (contactHdrRow) {
+		Dwt.addClass(contactHdrRow, bkgdColor);
+	}
 };
 
 ZmContactSplitView.prototype._tagChangeListener =
@@ -442,8 +525,6 @@ function(contact, params) {
 	}
 	div.className = div[DwtListView._STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + " SimpleContact";
 	div[DwtListView._SELECTED_STYLE_CLASS] += " SimpleContact";
-	// XXX: commented out b/c slows down loading contact (DOM tree is too deep!)
-	//div._hoverStyleClass = "SimpleContactHover";
 	div.id = this._getItemId(contact);
 
 	var htmlArr = [];

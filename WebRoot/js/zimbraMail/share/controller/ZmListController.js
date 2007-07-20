@@ -1006,8 +1006,7 @@ function(view, forward, loadIndex) {
 		// figure out if this requires cursor-based paging
 		var list = this._listView[this._currentView].getList();
 		var lastItem = list.getLast();
-		var sortBy = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.sortBy : null;
-		var lastSortVal = (lastItem && lastItem.id && sortBy) ? lastItem.getSortVal(sortBy) : null;
+		var lastSortVal = (lastItem && lastItem.id) ? lastItem.sf : null;
 		var lastId = lastSortVal ? lastItem.id : null;
 
 		// get next page of items from server; note that callback may be overridden

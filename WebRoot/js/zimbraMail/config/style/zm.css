@@ -704,7 +704,9 @@ line-height:normal;
 	@AppBg@	/* ??? */
 }
 
-
+.ZmContactTabViewPage {
+	padding: 5px;
+}
 
 /* Container for big display of one contact  */
 .ZmContactInfoView {
@@ -751,16 +753,20 @@ line-height:normal;
 }
 
 
-/* ??? -> Text */
 .ZmContactInfoView .contactOutput {
 	@Text@
+	vertical-align: top;
+	@FontSize-big@
 }
 
-/* ??? -> ZmFieldLabelRight */
 .ZmContactInfoView .contactLabel {
+	@FontSize-big@
 	@Label@
-	width: 1%;
 	text-align: right;
+	color: #666;
+	vertical-align: top;
+	width: 125px;
+	white-space: nowrap;
 }
 
 

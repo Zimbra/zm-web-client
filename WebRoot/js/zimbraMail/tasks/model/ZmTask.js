@@ -135,11 +135,6 @@ function() {
 	return (this.pComplete == 100) || (this.status == ZmCalItem.STATUS_COMP);
 };
 
-ZmTask.prototype.getSortVal =
-function(sortBy) {
-	return this.sf;
-};
-
 
 // Private/protected methods
 
