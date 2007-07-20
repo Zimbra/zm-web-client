@@ -204,11 +204,14 @@ function(ev, treeView, overviewId) {
 
 	if (ev.type != this.type) return;
 
+	//bug:10268
+	/*	
 	var fields = ev.getDetail("fields");
 	if (!fields || !(fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_REST_URL])) {
 		return;
 	}
-
+	*/
+	
 	var notebookController = AjxDispatcher.run("GetNotebookController");
 	var shownPage = notebookController.getPage();
 	if (!shownPage) {
