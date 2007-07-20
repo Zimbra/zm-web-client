@@ -242,7 +242,7 @@ body	{	@ChromeBg@	}
 #skin_container_app_main, 
 #skin_container_app_main_full	{	
 	@FullSize@
-	@SkinBorderApp@
+	@SkinBorderPage@
 }
 
 
@@ -252,6 +252,15 @@ body	{	@ChromeBg@	}
 }
 
 
+#skin_container_splash_screen {
+	position:absolute;
+	left:0;
+	top:0;
+	width:100%;
+	height:100%;
+	z-index:100000;
+	display:block;
+}
 
 
 .ImgAppBanner	{background-image:url("@AppBannerImg@");  width:@AppBannerWidth@;  height:@AppBannerHeight@;  }
