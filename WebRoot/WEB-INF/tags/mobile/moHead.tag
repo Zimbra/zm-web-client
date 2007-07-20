@@ -26,4 +26,7 @@
        @import url( "<c:url value='/css/zmobile.css?v=${version}'/>" );
     </style>
     <jsp:doBody/>
+    <script type="text/javascript">
+     function zClickLink(id) { var a = document.getElementById(id); if (a) window.location = a.href; }
+    </script>
 </head>
