@@ -47,7 +47,6 @@ ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) 
 	}
 
 	this._tagCellId = Dwt.getNextId();
-	this._contactHeaderRowId = this._htmlElId + "_headerRow";
 	this._contactBodyId = this._htmlElId + "_body";
 
 	// find out if the user's locale has a alphabet defined
@@ -338,6 +337,7 @@ function(contact, isGal, oldContact) {
 		// only render HTML for tab if we haven't already
 		var tabIdx = this._contactTabView.getCurrentTab();
 		if (!this._tabViewHtml[tabIdx]) {
+			subs.tabIdx = tabIdx;
 			var tabName = this._tabs[tabIdx-1];
 			var template = "zimbraMail.abook.templates.Contacts#SplitView_" + tabName;
 			var view = this._contactTabView.getTabView(tabIdx);
@@ -386,12 +386,17 @@ function(contact) {
 
 ZmContactSplitView.prototype._setHeaderColor =
 function(folder) {
-	// set background color of header
-	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
-	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
-	var contactHdrRow = document.getElementById(this._contactHeaderRowId);
+	var headerRowId = this._contactTabView.getVisible()
+		? (this._htmlElId + "_headerRow_" + this._contactTabView.getCurrentTab())
+		: (this._htmlElId + "_headerRow_Group");
+	var contactHdrRow = document.getElementById(headerRowId);
 	if (contactHdrRow) {
-		Dwt.addClass(contactHdrRow, bkgdColor);
+		// set background color of header
+		var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
+		var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
+		contactHdrRow.className = folder.isInTrash()
+			? ("contactHeaderRow Trash " + bkgdColor)
+			: ("contactHeaderRow " + bkgdColor);
 	}
 };
 
