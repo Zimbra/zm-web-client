@@ -210,7 +210,7 @@ body						{	@ChromeBg@	}
 	padding:6 4 5 0;
 #ENDIF
 }
-#skin_border_app_main					{	@SkinBorderApp@		height:100%;		}
+#skin_border_app_main					{	@SkinBorderPage@		height:100%;		}
 #skin_container_app_main				{	
 	height:100%;	margin:4 -4 -3 4;	
 #IFDEF MSIE
