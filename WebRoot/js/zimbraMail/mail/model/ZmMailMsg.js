@@ -82,6 +82,8 @@ ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\
 ZmMailMsg.CONTENT_PART_ID = "ci";
 ZmMailMsg.CONTENT_PART_LOCATION = "cl";
 
+ZmMailMsg._requestHeaders = {};
+
 /**
  * Fetches a message from the server.
  *
@@ -106,18 +108,34 @@ function(params) {
 	if (params.getHtml) {
 		msgNode.setAttribute("html", "1");
 	}
+
+	// Request additional headers
+	for (var hdr in ZmMailMsg._requestHeaders) {
+		var headerNode = soapDoc.set('header', null, msgNode);
+		headerNode.setAttribute('n', hdr);
+	}
+
 	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback]);
 	var execFrame = new AjxCallback(null, ZmMailMsg.fetchMsg, [params]);
 	params.sender.sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
 							   errorCallback:params.errorCallback, execFrame:execFrame, noBusyOverlay:params.noBusyOverlay});
 };
 
+/**
+ * Request additional headers from the server.
+ */
+ZmMailMsg.requestHeader =
+function(hdr) {
+	ZmMailMsg._requestHeaders[hdr] = hdr;
+};
+
+
 ZmMailMsg._handleResponseFetchMsg =
 function(callback, result) {
 	if (callback) {
 		callback.run(result);
 	}
-}
+};
 
 // Public methods
 
@@ -1079,6 +1097,7 @@ function(msgNode) {
 	if (msgNode.origid) { this.origId = msgNode.origid; }
 	if (msgNode.hp) 	{ this._attHitList = msgNode.hp; }
 	if (msgNode.mid)	{ this.messageId = msgNode.mid; }
+	if (msgNode._attrs) { this.attrs = msgNode._attrs; }
 
 	// set the "normalized" Id if this message belongs to a shared folder
 	var idx = this.id.indexOf(":");

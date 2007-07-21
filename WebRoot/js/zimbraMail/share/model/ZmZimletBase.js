@@ -546,7 +546,9 @@ function(propertyName) {
 
 ZmZimletBase.prototype.getMessage =
 function(msg) {
-	return window[this.xmlObj().name][msg];
+	//Missing properties should be catastrophic.
+	var p = window[this.xmlObj().name];
+	return p ? p[msg] : '???'+msg+'???';
 };
 
 ZmZimletBase.prototype.getConfig =
