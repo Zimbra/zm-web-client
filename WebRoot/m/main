@@ -70,6 +70,7 @@
             </a>
             </td>
         </tr>
+        <%--
         <tr>
             <td class='zo_main_item'>
             <a href="?p=4">
@@ -78,6 +79,7 @@
             </a>
             </td>
         </tr>
+        --%>
         <tr>
             <td align='center'>
             <div class='zo_main_info_cont'>

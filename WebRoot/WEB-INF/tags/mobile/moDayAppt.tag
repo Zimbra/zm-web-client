@@ -16,22 +16,22 @@
 <fmt:message var="noSubject" key="noSubject"/>
 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
 <mo:calendarUrl appt="${appt}" var="apptUrl"/>
-
+<c:set var="id" value="a${appt.id}${appt.startTime}"/>
 <c:choose>
     <c:when test="${appt.allDay}">
         <c:set var="leftclass" value="${appt.startTime lt start ? ' zo_allday_appt_noleft ' : ''}"/>
         <c:set var="rightclass" value="${appt.endTime gt end ? ' zo_allday_appt_noright ' : ''}"/>
 
-        <div class='zo_allday_appt${leftclass}${rightclass} ${color}${needsAction ? 'Dark' : 'Light'}' onclick='window.location="${zm:jsEncode(apptUrl)}"'>
+        <div class='${leftclass}${rightclass} ${color}${needsAction ? 'Dark' : 'Light'} zo_allday_appt' onclick='zClickLink("${id}")'>
             <div class='zo_appt_text'>
-                <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
+                <a id="${id}" href="${apptUrl}">${fn:escapeXml(subject)}</a>
             </div>
         </div>
     </c:when>
     <c:otherwise>
-        <div class='${color}${appt.partStatusNeedsAction ? '' : 'Bg'} zo_day_appt' onclick='window.location="${zm:jsEncode(apptUrl)}"'>
+        <div class='${color}${appt.partStatusNeedsAction ? '' : 'Bg'} zo_day_appt' onclick='zClickLink("${id}")'>
             <div class='zo_appt_text'>
-                ${fn:escapeXml(subject)}
+                <a id="${id}" href="${apptUrl}">${fn:escapeXml(subject)}</a>
             </div>
         </div>
     </c:otherwise>

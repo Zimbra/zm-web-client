@@ -76,6 +76,7 @@
     <tr>
         <td>
             <table width=100% cellpadding="0" cellspacing="0" class='zo_cal_list'>
+                <c:set var="id" value="0"/>
                 <c:forEach var="day" begin="1" end="${numDays}">                    
                     <c:set var="count" value="0"/>
                     <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
@@ -91,7 +92,7 @@
                                 </td>
                             </tr>
                         </c:if>
-                        <tr class='zo_cal_listi'>
+                        <tr class='zo_cal_listi'  onclick='zClickLink("a${id}")'>
                             <td class='zo_cal_listi_time'>
                                 <c:choose>
                                     <c:when test="${appt.allDay}">
@@ -106,12 +107,13 @@
                                 </c:choose>
                             </td>
                             <mo:calendarUrl appt="${appt}" var="apptUrl"/>
-                            <td class='zo_cal_listi_subject' onclick='window.location="${zm:jsEncode(apptUrl)}"'>
+                            <td class='zo_cal_listi_subject'>
                                 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
-                                    ${fn:escapeXml(subject)}
+                                    <a id="a${id}" href="${apptUrl}">${fn:escapeXml(subject)}</a>
                             </td>
                         </tr>
                         <c:set var="count" value="${count+1}"/>
+                        <c:set var="id" value="${id+1}"/>
                     </zm:forEachAppoinment>
                     ${zm:getNextDay(currentDay)}
                 </c:forEach>

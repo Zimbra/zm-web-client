@@ -253,9 +253,13 @@ body {
 
 .zo_cal_listi {
     background: white;
-    color: black;
+    color: black;    
 }
 
+.zo_cal_listi A {
+    text-decoration: none;
+    color: black;
+}
 .zo_cal_listi_time {
     text-align: center;
     font-weight: bold;
@@ -393,6 +397,11 @@ body {
 /* half hour bottom */
 .zo_cal_dhhb {
     border-bottom-style: dashed;
+}
+
+.zo_allday_appt A, .zo_day_appt A {
+    text-decoration: none;
+    color: black;
 }
 
 .zo_allday_appt {
