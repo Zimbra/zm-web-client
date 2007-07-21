@@ -53,8 +53,9 @@ ZmPortalApp.prototype._registerApp = function() {
 
 ZmApp.PORTAL                    = "Portal";
 ZmApp.CLASS[ZmApp.PORTAL]		= "ZmPortalApp";
-ZmApp.SETTING[ZmApp.PORTAL]	= ZmSetting.PORTAL_ENABLED;
+ZmApp.SETTING[ZmApp.PORTAL]		= ZmSetting.PORTAL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PORTAL]	= 1;
+ZmApp.QS_ARG[ZmApp.PORTAL]		= "home";
 
 ZmEvent.S_PORTLET   = "PORTLET";
 ZmItem.PORTLET      = ZmEvent.S_PORTLET;
