@@ -126,6 +126,15 @@ body {
     color: black;
 }
 
+.mo_taglist SPAN {
+    vertical-align: middle;  padding-right:5px;
+    font-size: small;
+}
+
+.mo_taglist IMG {
+   vertical-align: middle;
+}
+
 /************************************************************************************************/
 
 /* mail */

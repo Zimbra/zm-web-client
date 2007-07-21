@@ -73,10 +73,18 @@
                                                         <a id="a${chit.id}" href="${convUrl}">${fn:escapeXml(empty chit.subject ? unknownSubject : zm:truncate(chit.subject,50,true))}</a>
                                                     </td>
                                                     <td align=right class='zo_m_list_frag'>
-                                                        <c:choose>
-                                                            <c:when test="${chit.messageCount gt 1}">(${chit.messageCount})</c:when>
-                                                            <c:otherwise>&nbsp;</c:otherwise>
-                                                        </c:choose>
+                                                        <table xwidth=100%>
+                                                            <tr>
+                                                                <c:if test="${chit.isFlagged}"><td><mo:img src="tag/FlagRed.gif"/></td></c:if>
+                                                                <c:if test="${chit.hasTags}"><td><mo:miniTagImage ids="${hit.conversationHit.tagIds}"/></td></c:if>
+                                                                <td>
+                                                                    <c:choose>
+                                                                        <c:when test="${chit.messageCount gt 1}">(${chit.messageCount})</c:when>
+                                                                        <c:otherwise>&nbsp;</c:otherwise>
+                                                                    </c:choose>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
                                                     </td>
                                                 </tr>
                                                 <tr>

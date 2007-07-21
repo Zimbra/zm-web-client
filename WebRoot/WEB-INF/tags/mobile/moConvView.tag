@@ -222,7 +222,11 @@
                                 <table width=100%>
                                     <tr>
                                         <td style='width:40px; ' valign="middle" align="center">
-                                            <mo:img src="${(mhit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : mhit.statusImage}"/>
+                                            <table>
+                                                <tr><td><mo:img src="${(mhit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : mhit.statusImage}"/></td></tr>
+                                                <c:if test="${mhit.isFlagged}"><tr><td><mo:img src="tag/FlagRed.gif"/></td></tr></c:if>
+                                                <c:if test="${mhit.hasTags}"><tr><td><mo:miniTagImage ids="${mhit.tagIds}"/></td></tr></c:if>
+                                            </table>
                                         </td>
                                         <td>
                                             <table width=100%>

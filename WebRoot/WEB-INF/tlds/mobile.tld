@@ -155,6 +155,12 @@
         <name>img</name>
         <path>/WEB-INF/tags/mobile/moImg.tag</path>
      </tag-file>
+
+    <tag-file>
+        <name>miniTagImage</name>
+        <path>/WEB-INF/tags/mobile/moMiniTagImage.tag</path>
+     </tag-file>
+
     <tag-file>
         <name>overviewFolder</name>
         <path>/WEB-INF/tags/mobile/moOverviewFolder.tag</path>

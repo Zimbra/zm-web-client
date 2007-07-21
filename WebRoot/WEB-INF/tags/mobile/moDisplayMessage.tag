@@ -61,13 +61,26 @@
     </c:if>
     <tr><td colspan=2><hr></td></tr>
     <fmt:message var="noSubject" key="noSubject"/>
-    <tr><td colspan=2 class='zo_mv_subject'>${fn:escapeXml(empty message.subject ? noSubject : message.subject)}</td></tr>
+    <tr><td class='zo_mv_subject' colspan=2>${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
+                        <c:if test="${message.isFlagged}">&nbsp;<mo:img src="tag/FlagRed.gif"/></c:if>
+    </td></tr>
     <tr>
         <td colspan=2 class='zo_mv_date'>
             <fmt:message var="dateFmt" key="formatDateSent"/>
             <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/>
         </td>
     </tr>
+    <c:if test="${message.hasTags and mailbox.features.tagging}">
+        <tr>
+            <td valign="middle" class="mo_taglist" colspan=2>
+                <c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
+                <c:forEach items="${tags}" var="tag">
+                    <mo:img src="${tag.miniImage}" alt='${fn:escapeXml(tag.name)}'/>
+                    <span>${fn:escapeXml(tag.name)}</span>
+                </c:forEach>
+            </td>
+        </tr>
+    </c:if>
     <tr><td colspan=2><hr></td></tr>
     <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
         <tr>
