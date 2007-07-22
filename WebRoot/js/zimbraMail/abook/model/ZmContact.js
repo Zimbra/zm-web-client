@@ -287,7 +287,8 @@ function(contact) {
 		}
 		break;
 	}
-	return fa.join("");
+	var fileAs = fa.join("");
+	return fileAs.length ? fileAs : (attr.fullName || "");
 };
 
 /**

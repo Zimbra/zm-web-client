@@ -108,15 +108,21 @@ function() {
 	var mods = {};
 	var foundOne = false;
 
-	// bug fix #648 - always re-compute the full name and add to mods list
-	var fn = [];
+	// compute fullName if first/middle/last fields exist
+	// otherwise assume fullName is a separate field
+	var fullName;
 	var first = this._attr[ZmContact.F_firstName];
 	var middle = this._attr[ZmContact.F_middleName];
 	var last = this._attr[ZmContact.F_lastName];
-	if (first) fn.push(first);
-	if (middle) fn.push(middle);
-	if (last) fn.push(last);
-	var fullName = fn.join(" ");
+	if (first || middle || last) {
+		var fn = [];
+		if (first) fn.push(first);
+		if (middle) fn.push(middle);
+		if (last) fn.push(last);
+		fullName = fn.join(" ");
+	} else {
+		fullName = this._attr[ZmContact.X_fullName];
+	}
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
 	if (this._contact.id == null || this._contact.isGal) {
@@ -281,8 +287,10 @@ ZmContactView.prototype._addSelectOptions =
 function() {
 	var scl = new AjxListener(this, this._selectChangeListener);
 
-	// add select widget for user to choose FileAs
-	if (this._fileAsSelectCellId) {
+	// always test for DOM Id in case it non-existent in template
+	var fileAsCell = document.getElementById(this._fileAsSelectCellId);
+	if (fileAsCell) {
+		// add select widget for user to choose FileAs
 		this._fileAsSelect = new DwtSelect(this);
 		var fileAsSelectOptions = ZmContactView._selectFields["fileAs"];
 		var count = 0;
@@ -294,8 +302,10 @@ function() {
 		this._fileAsSelect._cv = this;
 	}
 
-	// add select widget for user to choose folder
-	if (this._folderCellId) {
+	// always test for DOM Id in case it non-existent in template
+	var folderCell = document.getElementById(this._folderCellId);
+	if (folderCell) {
+		// add select widget for user to choose folder
 		this._folderSelect = new DwtSelect(this);
 		this._folderSelect.reparentHtmlElement(this._folderCellId);
 		this._folderSelect.addChangeListener(scl);
@@ -368,12 +378,17 @@ function() {
 ZmContactView.prototype._setTitle =
 function(title) {
 	var div = document.getElementById(this._titleCellId);
-	var fileAs = title || this._contact.getFileAs();
-	div.innerHTML = fileAs || (this._contact.id ? "&nbsp;" : ZmMsg.newContact);
+	if (div) {
+		var fileAs = title || this._contact.getFileAs();
+		div.innerHTML = fileAs || (this._contact.id ? "&nbsp;" : ZmMsg.newContact);
+	}
 };
 
 ZmContactView.prototype._setTags =
 function() {
+	var tagCell = this._getTagCell();
+	if (!tagCell) { return; }
+
 	// get sorted list of tags for this msg
 	var ta = [];
 	for (var i = 0; i < this._contact.tags.length; i++)
@@ -390,7 +405,7 @@ function() {
 		html[i++] = "&nbsp;";
 	}
 
-	this._getTagCell().innerHTML = html.join("");
+	tagCell.innerHTML = html.join("");
 };
 
 ZmContactView.prototype._getTagCell =
@@ -400,6 +415,8 @@ function() {
 
 ZmContactView.prototype._setFolder =
 function() {
+	if (!this._folderSelect) { return; }
+
 	var match;
 	if (this._contact.id == null) {
 		var clc = AjxDispatcher.run("GetContactListController");
@@ -448,16 +465,18 @@ function() {
 	}
 
 	// set file as
-	if (this._attr.fileAs) {
-		var fa = parseInt(this._attr.fileAs) - 1;
-		// do we have a custom file as?
-		if (fa >= this._fileAsSelect.size()) {
-			// TODO - append to the end of the select list?
+	if (this._fileAsSelect) {
+		if (this._attr.fileAs) {
+			var fa = parseInt(this._attr.fileAs) - 1;
+			// do we have a custom file as?
+			if (fa >= this._fileAsSelect.size()) {
+				// TODO - append to the end of the select list?
+			} else {
+				this._fileAsSelect.setSelected(fa);
+			}
 		} else {
-			this._fileAsSelect.setSelected(fa);
+			this._fileAsSelect.setSelectedValue(1);
 		}
-	} else {
-		this._fileAsSelect.setSelectedValue(1);
 	}
 };
 
@@ -472,7 +491,9 @@ function() {
 
 ZmContactView.prototype._getFields =
 function() {
-	this._folderId = this._folderSelect.getValue();
+	this._folderId = this._folderSelect
+		? this._folderSelect.getValue()
+		: ZmFolder.ID_CONTACTS;
 
 	for (var i = 0; i < this._fields.length; i++) {
 		var fields = this._fields[i];
