@@ -742,7 +742,7 @@
       <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/config/keys/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="ALE/**,public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="ALE/**,public/**" excludes="public/admin.jsp,public/delegatedAuth.html,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
 
         <!-- ======= HTML ========== -->
         <lib dir="${server.build.dir}" includes="zimbrastore.jar"/>
@@ -777,7 +777,7 @@
       <fileset dir="${build.dir}/WebRoot" includes="bhelp/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="ALE/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/config/keys/**,**/xforms/**,**/test/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/delegatedAuth.html,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
 
         <!-- ======= HTML ========== -->
         <lib dir="${server.build.dir}" includes="zimbrastore.jar"/>
@@ -871,7 +871,7 @@
       <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class,**/servlets/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Boot.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheLoRes.html,public/pre-cache.jsp,public/blank.html"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/delegatedAuth.html,public/Boot.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheLoRes.html,public/pre-cache.jsp,public/blank.html"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
     </war>
@@ -891,7 +891,7 @@
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="com/zimbra/kabuki/tools/**,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Boot.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheLoRes.html,public/pre-cache.jsp,public/blank.html"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Boot.jsp,public/delegatedAuth.html,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheLoRes.html,public/pre-cache.jsp,public/blank.html"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
     </war>
