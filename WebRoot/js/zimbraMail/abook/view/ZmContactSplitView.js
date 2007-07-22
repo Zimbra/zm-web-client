@@ -414,7 +414,7 @@ function(clear) {
 			var folder = folderId ? this._appCtxt.getById(folderId) : null;
 			var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 			var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
-			contactHdrRow.className = folder.isInTrash()
+			contactHdrRow.className = folder && folder.isInTrash()
 				? ("contactHeaderRow Trash " + bkgdColor)
 				: ("contactHeaderRow " + bkgdColor);
 		}
