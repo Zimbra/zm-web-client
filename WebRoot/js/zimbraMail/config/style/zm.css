@@ -704,7 +704,11 @@ line-height:normal;
 	@AppBg@	/* ??? */
 }
 
-.ZmContactTabViewPage {
+.ZmContactEditTabViewPage {
+	display: none;
+}
+
+.ZmContactTabViewPage, .ZmContactEditTabViewPage {
 	padding: 5px;
 }
 
@@ -759,14 +763,19 @@ line-height:normal;
 	@FontSize-big@
 }
 
-.ZmContactInfoView .contactLabel {
-	@FontSize-big@
+.ZmContactEditTabViewPage .contactLabel {
 	@Label@
+	width: 1%;
 	text-align: right;
-	color: #666;
-	vertical-align: top;
+}
+
+.ZmContactInfoView .contactLabel {
+	@Label@
+	@FontSize-big@
+	@Text-light@
 	width: 125px;
-	white-space: nowrap;
+	text-align: right;
+	vertical-align: top;
 }
 
 
@@ -786,7 +795,6 @@ line-height:normal;
 }
 
 /* ??? -> ZmFieldLabelRight */
-.ZmContactView .editLabel,
 .ZmTaskEditView .editLabel {
 	@Label@
 	text-align:right;

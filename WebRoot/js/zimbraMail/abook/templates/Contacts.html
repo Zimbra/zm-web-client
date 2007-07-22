@@ -450,7 +450,7 @@
 <!----------------------------------------------------------------------------->
 <template id="GroupView">
 	<!-- title bar -->
-	<table id='${id}_header' cellspacing=0 cellpadding=0 width=100%>
+	<table cellspacing=0 cellpadding=0 width=100%>
 		<tr class='contactHeaderRow' id='${id}_headerRow'>
 			<td width=20><center><$= AjxImg.getImageHtml("Group") $></center></td>
 			<td><div id='${id}_title' class='contactHeader'></div></td>
@@ -507,6 +507,206 @@
 
 
 <!----------------------------------------------------------------------------->
+<!------------------------------- ZmContactView ------------------------------->
+<!----------------------------------------------------------------------------->
+<template id="EditViewTabs" tabs="personal,work,home,other,notes"></template>
+
+<template id="EditView_header">
+	<table cellspacing=0 cellpadding=0 width=100%>
+		<tr class='contactHeaderRow' id='${id}_headerRow'>
+			<td id='${id}_icon' width=20><$= AjxImg.getImageHtml("Contact") $></td>
+			<td id='${id}_title' class='contactHeader'></td>
+			<td id='${id}_tags' align='right'></td>
+		</tr>
+	</table>
+	<div id='${id}_tabs'></div>
+</template>
+
+<template id="EditView_content">
+	<table cellpadding=0 cellspacing=10 border=0 width=100%>
+		<$
+			for (h = 0; h < data.rows.length; h++) {
+				var columns = data.rows[h];
+		$>
+			<$ if (h == 1 && data.sepMsg) { $>
+				<tr><td colspan=10 valign=top class='sectionLabel'><br><br>${sepMsg}</td></tr>
+			<$ } $>
+			<tr>
+				<$
+					for (var i = 0; i < columns.length; i++) {
+						var fields = columns[i];
+				$>
+					<td valign=top>
+						<table cellpadding=0 cellspacing=2 border=0>
+							<$
+								for (var j = 0; j < fields.length; j++) {
+									var entry = fields[j];
+									var subs = { data:data, entry:entry };
+									buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEditEntry", subs);
+								}
+							$>
+						</table>
+					</td>
+				<$ } $>
+			</tr>
+		<$ } $>
+	</table>
+</template>
+
+<template id="EditView_personal">
+	<$
+		var rows = [
+			[
+				[
+					{ lbl: ZmMsg.AB_FIELD_lastName,		field: ZmContact.F_lastName },
+					{ lbl: ZmMsg.AB_FIELD_firstName,	field: ZmContact.F_firstName },
+					{ lbl: ZmMsg.AB_FIELD_middleName,	field: ZmContact.F_middleName },
+					{ lbl: ZmMsg.fileAs,				widgetId: data.fileAsSelectId }
+				],
+				[
+					{ lbl: ZmMsg.AB_FIELD_jobTitle,		field: ZmContact.F_jobTitle },
+					{ lbl: ZmMsg.AB_FIELD_company,		field: ZmContact.F_company },
+					{ lbl: ZmMsg.addressBook,			widgetId: data.folderSelectId }
+				]
+			],
+			[
+				[
+					{ lbl: ZmMsg.AB_FIELD_email,		field: ZmContact.F_email },
+					{ lbl: ZmMsg.AB_FIELD_email2,		field: ZmContact.F_email2 },
+					{ lbl: ZmMsg.AB_FIELD_email3,		field: ZmContact.F_email3 }
+				],
+				[
+					{ lbl: ZmMsg.AB_FIELD_imAddress1,	field: ZmContact.F_imAddress1 },
+					{ lbl: ZmMsg.AB_FIELD_imAddress2,	field: ZmContact.F_imAddress2 },
+					{ lbl: ZmMsg.AB_FIELD_imAddress3,	field: ZmContact.F_imAddress3 }
+				]
+			]
+		];
+		var subs = {data:data, rows:rows, sepMsg:ZmMsg.emailAndIM};
+		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#EditView_content", subs);
+	$>
+</template>
+
+<template id="EditView_work">
+	<$
+		var rows = [
+			[
+				[
+					{ lbl: ZmMsg.AB_FIELD_street,			field: ZmContact.F_workStreet,		isTextArea: true },
+					{ lbl: ZmMsg.AB_FIELD_city,				field: ZmContact.F_workCity },
+					{ lbl: ZmMsg.AB_FIELD_state,			field: ZmContact.F_workState },
+					{ lbl: ZmMsg.AB_FIELD_postalCode,		field: ZmContact.F_workPostalCode},
+					{ lbl: ZmMsg.AB_FIELD_country,			field: ZmContact.F_workCountry},
+					{ lbl: ZmMsg.AB_FIELD_URL,				field: ZmContact.F_workURL}
+				],
+				[
+					{ lbl: ZmMsg.AB_FIELD_workPhone,		field: ZmContact.F_workPhone },
+					{ lbl: ZmMsg.AB_FIELD_workPhone2,		field: ZmContact.F_workPhone2 },
+					{ lbl: ZmMsg.AB_FIELD_workFax,			field: ZmContact.F_workFax },
+					{ lbl: ZmMsg.AB_FIELD_assistantPhone,	field: ZmContact.F_assistantPhone },
+					{ lbl: ZmMsg.AB_FIELD_companyPhone, 	field: ZmContact.F_companyPhone },
+					{ lbl: ZmMsg.AB_FIELD_callbackPhone, 	field: ZmContact.F_callbackPhone }
+				]
+			],
+		];
+		var subs = {data:data, rows:rows};
+		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#EditView_content", subs);
+	$>
+</template>
+
+<template id="EditView_home">
+	<$
+		var rows = [
+			[
+				[
+					{ lbl: ZmMsg.AB_FIELD_street,			field: ZmContact.F_homeStreet,		isTextArea: true },
+					{ lbl: ZmMsg.AB_FIELD_city,				field: ZmContact.F_homeCity },
+					{ lbl: ZmMsg.AB_FIELD_state,			field: ZmContact.F_homeState },
+					{ lbl: ZmMsg.AB_FIELD_postalCode,		field: ZmContact.F_homePostalCode},
+					{ lbl: ZmMsg.AB_FIELD_country,			field: ZmContact.F_homeCountry},
+					{ lbl: ZmMsg.AB_FIELD_URL,				field: ZmContact.F_homeURL}
+				],
+				[
+					{ lbl: ZmMsg.AB_FIELD_homePhone,		field: ZmContact.F_homePhone },
+					{ lbl: ZmMsg.AB_FIELD_homePhone2,		field: ZmContact.F_homePhone2 },
+					{ lbl: ZmMsg.AB_FIELD_homeFax,			field: ZmContact.F_homeFax },
+					{ lbl: ZmMsg.AB_FIELD_mobilePhone,		field: ZmContact.F_mobilePhone },
+					{ lbl: ZmMsg.AB_FIELD_pager, 			field: ZmContact.F_pager },
+					{ lbl: ZmMsg.AB_FIELD_carPhone, 		field: ZmContact.F_carPhone }
+				]
+			],
+		];
+		var subs = {data:data, rows:rows};
+		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#EditView_content", subs);
+	$>
+</template>
+
+<template id="EditView_other">
+	<$
+		var rows = [
+			[
+				[
+					{ lbl: ZmMsg.AB_FIELD_street,			field: ZmContact.F_otherStreet,		isTextArea: true },
+					{ lbl: ZmMsg.AB_FIELD_city,				field: ZmContact.F_otherCity },
+					{ lbl: ZmMsg.AB_FIELD_state,			field: ZmContact.F_otherState },
+					{ lbl: ZmMsg.AB_FIELD_postalCode,		field: ZmContact.F_otherPostalCode},
+					{ lbl: ZmMsg.AB_FIELD_country,			field: ZmContact.F_otherCountry},
+					{ lbl: ZmMsg.AB_FIELD_URL,				field: ZmContact.F_otherURL}
+				],
+				[
+					{ lbl: ZmMsg.AB_FIELD_otherPhone,		field: ZmContact.F_homePhone },
+					{ lbl: ZmMsg.AB_FIELD_otherFax,			field: ZmContact.F_homeFax },
+					{ lbl: ZmMsg.AB_FIELD_birthday,			field: ZmContact.F_birthday,		isDate: true }
+				]
+			],
+		];
+		var subs = {data:data, rows:rows};
+		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#EditView_content", subs);
+	$>
+</template>
+
+<template id="EditView_notes">
+	<table cellpadding=0 cellspacing=10 border=0 width=100%>
+		<tr>
+			<td>
+				<$= ZmMsg.notes $>:<br>
+				<textarea wrap='hard' rows=8 style='width:100%;' name='${id}_name_${tabIdx}' id='${id}_<$= ZmContact.F_notes $>' _field='<$= ZmContact.F_notes $>'></textarea>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id="AddEditEntry">
+	<$
+		var id = data.data.data.id;
+		var tabIdx = data.data.data.tabIdx;
+		var entry = data.entry;
+	$>
+	<tr>
+		<td class='contactLabel' <$= entry.isTextArea ? "valign=top" : "" $>><$= AjxStringUtil.htmlEncode(entry.lbl) $>:</td>
+
+		<$ if (entry.widgetId) { $>
+			<td id='${entry.widgetId}'></td>
+		<$ } else if (entry.isTextArea) { $>
+			<td><textarea wrap='hard' cols=32 rows='<$= AjxEnv.isIE ? 3 : 2 $>' name='<$= id $>_name_<$= tabIdx $>' id='<$= id $>_${entry.field}' _field='${entry.field}'></textarea></td>
+		<$ } else if (entry.isDate) { $>
+			<td>
+				<table border=0 cellpadding=0 cellspacing=0>
+					<tr>
+						<td><input type='text' autocomplete='off' size=8 id='<$= id $>_${entry.field}' name='<$= id $>_name_<$= tabIdx $>' _field='${entry.field}' _isDate='true'></td>
+						<td id='<$= id $>_${entry.field}_button'></td>
+					</tr>
+				</table>
+			</td>
+		<$ } else { $>
+			<td><input type='text' autocomplete='off' size=35 name='<$= id $>_name_<$= tabIdx $>' id='<$= id $>_${entry.field}' _field='${entry.field}'></td>
+		<$ } $>
+	</tr>
+</template>
+
+
+
+<!----------------------------------------------------------------------------->
 <!------------------------------ Contact Tooltip ------------------------------>
 <!----------------------------------------------------------------------------->
 <template id="Tooltip">
@@ -534,21 +734,21 @@
 		<$	} 
 		} else {
 		$>
-			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"fullName"}) $>
-			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"jobTitle"}) $>
-			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"company"}) $>
-			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"mobilePhone"}) $>
-			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"workPhone"}) $>
-			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"homePhone"}) $>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddTooltipEntry", {data:data, field:"fullName"}) $>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddTooltipEntry", {data:data, field:"jobTitle"}) $>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddTooltipEntry", {data:data, field:"company"}) $>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddTooltipEntry", {data:data, field:"mobilePhone"}) $>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddTooltipEntry", {data:data, field:"workPhone"}) $>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddTooltipEntry", {data:data, field:"homePhone"}) $>
 			<$ if (data.contact.isGal) {
 				var emails = data.contact.getEmails();
 				for (var i = 0; i < emails.length && emails.length <= 3; i++) {
 			$>
-					<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"email", val:emails[i]}) $>
+					<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddTooltipEntry", {data:data, field:"email", val:emails[i]}) $>
 			<$	} $>
-				<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"notes", truncate:500}) $>
+				<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddTooltipEntry", {data:data, field:"notes", truncate:500}) $>
 			<$	} else { $>
-				<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"email", val:data.email}) $>
+				<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddTooltipEntry", {data:data, field:"email", val:data.email}) $>
 			<$	} $>
 		<$	} $>
 
@@ -605,7 +805,7 @@
 	<$ } $>
 </template>
 
-<template id="AddEntry">
+<template id="AddTooltipEntry">
 	<$ if (data.val == null) {
 		data.val = data.field == "fullName" ? data.data.contact.getFullName() : data.data.contact.getAttr(data.field);
 	} $>
@@ -634,5 +834,55 @@
 			<td><label for="${id}_entry"><$= ZmMsg.search $>:</label></td>
 			<td id="${id}_entryCell"></td>
 		</tr>
+	</table>
+</template>
+
+
+
+<!----------------------------------------------------------------------------->
+<!---------------------------- PrintView ----------------------------->
+<!----------------------------------------------------------------------------->
+<template id="PrintCardContact">
+	<$
+		var fields = [
+			ZmContact.F_jobTitle,
+			ZmContact.F_company,
+			ZmContact.F_workPhone, 
+			ZmContact.F_mobilePhone,
+			ZmContact.F_email,
+			ZmContact.F_email2,
+			ZmContact.F_email3
+		];
+	$>
+	<table border=0 cellpadding=2 cellspacing=2 width=100%>
+	<tr>
+		<td colspan=2 style='font-family:Arial; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:bold; background-color:#DDDDDD'>
+			<$= data.contact.getFileAs() $>
+		</td>
+	</tr>
+	<tr>
+		<td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden;'>
+			<$= ZmMsg.AB_FIELD_fullName $>:
+		</td>
+		<td style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>
+			<$= data.contact.getFullName() $>
+		</td>
+	</tr>
+
+	<$
+		for (var i = 0; i < fields.length; i++) {
+			var value = AjxStringUtil.htmlEncode(data.contact.getAttr(fields[i]));
+			if (value) {
+	$>
+				<tr>
+					<td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>
+						<$= AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[fields[i]]) $>:
+					</td>
+					<td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>
+						<$= AjxStringUtil.htmlEncode(value) $>
+					</td>
+				</tr>
+			<$ } $>
+		<$ } $>
 	</table>
 </template>

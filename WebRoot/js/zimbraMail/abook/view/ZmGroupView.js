@@ -184,7 +184,7 @@ ZmGroupView.prototype._setFields =
 function() {
 	this._setGroupName();
 	this._setGroupMembers();
-	this._setHeaderColor();
+	this._setHeaderInfo();
 	this._setTitle();
 	this._setTags();
 };
@@ -203,8 +203,7 @@ function() {
 
 ZmGroupView.prototype._createHtml =
 function() {
-	this._contactHeaderId = 	this._htmlElId + "_header";
-	this._contactHeaderRowId = 	this._htmlElId + "_headerRow";
+	this._headerRowId = 		this._htmlElId + "_headerRow";
 	this._titleId = 			this._htmlElId + "_title";
 	this._tagsId = 				this._htmlElId + "_tags";
 	this._groupNameId = 		this._htmlElId + "_groupName";
