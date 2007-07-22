@@ -185,50 +185,44 @@
 <!----------------------------------------------------------------------------->
 <template id="SplitViewTabs" tabs="work,home,other,notes"></template>
 
+<template id="SplitView">
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr class='contactHeaderRow' id='${id}_headerRow'>
+			<td id='${id}_icon' width=20><$= AjxImg.getImageHtml("Contact") $></td>
+			<td id='${id}_title' class='contactHeader'></td>
+			<td id='${id}_tags' align='right'></td>
+		</tr>
+	</table>
+	<div id='${id}_tabs'></div>
+</template>
+
 <template id="SplitView_header">
 	<$
 		var contact		= data.contact;
 		var companyStr	= contact.getCompanyField() || "&nbsp;";
 	$>
-		<tr class='contactHeaderRow ${hdrColor}' id='${id}_headerRow_${tabIdx}'>
-			<td>
-				<table border=0 width=100% cellpadding=0 cellspacing=0>
-					<tr>
-						<td width=20>
-							<center><$= AjxImg.getImageHtml(data.contact.getIcon()) $></center>
-						</td>
-						<td class='${hdrClass}'>
-							<$= data.contact.getFileAs() $>
-						</td>
-						<$ if (data.tagCellId) { $>
-							<td align=right id='${tagCellId}'>${tagHtml}</td>
-						<$ } $>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				<table border=0 cellpadding=2 cellspacing=2 width=100%>
-					<tr>
-						<td width=100% class='companyName'><$= companyStr $></td>
-						<$ if (contact.addrbook) { $>
-							<td width=20><$= AjxImg.getImageHtml(contact.addrbook.getIcon()) $></td>
-							<td class='companyFolder'><$= contact.addrbook.getName() $></td>
-						<$ } else if (data.isGal) { $>
-							<td width=20><$= AjxImg.getImageHtml("GAL") $></td>
-							<td class='companyFolder'><$= ZmMsg.GAL $></td>
-						<$ } $>
-					</tr>
-				</table>
-			</td>
-		</tr>
-		<tr>
-			<td id="${id}_actions">
-				<!-- Place for zimlets to add stuff. -->
-				<!-- TODO: relocate this thing -->
-			</td>
-		</tr>
+	<tr>
+		<td>
+			<table border=0 cellpadding=2 cellspacing=2 width=100%>
+				<tr>
+					<td width=100% class='companyName'><$= companyStr $></td>
+					<$ if (contact.addrbook) { $>
+						<td width=20><$= AjxImg.getImageHtml(contact.addrbook.getIcon()) $></td>
+						<td class='companyFolder'><$= contact.addrbook.getName() $></td>
+					<$ } else if (data.isGal) { $>
+						<td width=20><$= AjxImg.getImageHtml("GAL") $></td>
+						<td class='companyFolder'><$= ZmMsg.GAL $></td>
+					<$ } $>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	<tr>
+		<td id="${id}_actions">
+			<!-- Place for zimlets to add stuff. -->
+			<!-- TODO: relocate this thing -->
+		</td>
+	</tr>
 </template>
 
 <template id="SplitView_work">
@@ -397,23 +391,6 @@
 
 <template id="SplitViewGroup">
 	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
-		<tr class='contactHeaderRow ${hdrColor}' id='${id}_headerRow_Group'>
-			<td width='${width}'>
-				<table border=0 width=100% cellpadding=0 cellspacing=0>
-					<tr>
-						<td width=20>
-							<center><$= AjxImg.getImageHtml(data.contact.getIcon()) $></center>
-						</td>
-						<td class='${hdrClass}'>
-							<$= data.contact.getFileAs() $>
-						</td>
-						<$ if (data.tagCellId) { $>
-							<td align=right id='${tagCellId}'>${tagHtml}</td>
-						<$ } $>
-					</tr>
-				</table>
-			</td>
-		</tr>
 		<tr height=100%>
 			<td colspan=3 valign=top>
 				<div style='width:${width}; height:${height}; overflow:auto' id='${id}_body'>
@@ -509,9 +486,9 @@
 <!----------------------------------------------------------------------------->
 <!------------------------------- ZmContactView ------------------------------->
 <!----------------------------------------------------------------------------->
-<template id="EditViewTabs" tabs="personal,work,home,other,notes"></template>
+<template id="ZmContactViewTabs" tabs="personal,work,home,other,notes"></template>
 
-<template id="EditView_header">
+<template id="ZmContactView">
 	<table cellspacing=0 cellpadding=0 width=100%>
 		<tr class='contactHeaderRow' id='${id}_headerRow'>
 			<td id='${id}_icon' width=20><$= AjxImg.getImageHtml("Contact") $></td>
@@ -522,10 +499,10 @@
 	<div id='${id}_tabs'></div>
 </template>
 
-<template id="EditView_content">
+<template id="ZmContactView_content">
 	<table cellpadding=0 cellspacing=10 border=0 width=100%>
 		<$
-			for (h = 0; h < data.rows.length; h++) {
+			for (var h = 0; h < data.rows.length; h++) {
 				var columns = data.rows[h];
 		$>
 			<$ if (h == 1 && data.sepMsg) { $>
@@ -553,7 +530,7 @@
 	</table>
 </template>
 
-<template id="EditView_personal">
+<template id="ZmContactView_personal">
 	<$
 		var rows = [
 			[
@@ -583,11 +560,11 @@
 			]
 		];
 		var subs = {data:data, rows:rows, sepMsg:ZmMsg.emailAndIM};
-		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#EditView_content", subs);
+		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#ZmContactView_content", subs);
 	$>
 </template>
 
-<template id="EditView_work">
+<template id="ZmContactView_work">
 	<$
 		var rows = [
 			[
@@ -607,14 +584,14 @@
 					{ lbl: ZmMsg.AB_FIELD_companyPhone, 	field: ZmContact.F_companyPhone },
 					{ lbl: ZmMsg.AB_FIELD_callbackPhone, 	field: ZmContact.F_callbackPhone }
 				]
-			],
+			]
 		];
 		var subs = {data:data, rows:rows};
-		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#EditView_content", subs);
+		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#ZmContactView_content", subs);
 	$>
 </template>
 
-<template id="EditView_home">
+<template id="ZmContactView_home">
 	<$
 		var rows = [
 			[
@@ -634,14 +611,14 @@
 					{ lbl: ZmMsg.AB_FIELD_pager, 			field: ZmContact.F_pager },
 					{ lbl: ZmMsg.AB_FIELD_carPhone, 		field: ZmContact.F_carPhone }
 				]
-			],
+			]
 		];
 		var subs = {data:data, rows:rows};
-		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#EditView_content", subs);
+		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#ZmContactView_content", subs);
 	$>
 </template>
 
-<template id="EditView_other">
+<template id="ZmContactView_other">
 	<$
 		var rows = [
 			[
@@ -658,14 +635,14 @@
 					{ lbl: ZmMsg.AB_FIELD_otherFax,			field: ZmContact.F_homeFax },
 					{ lbl: ZmMsg.AB_FIELD_birthday,			field: ZmContact.F_birthday,		isDate: true }
 				]
-			],
+			]
 		];
 		var subs = {data:data, rows:rows};
-		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#EditView_content", subs);
+		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#ZmContactView_content", subs);
 	$>
 </template>
 
-<template id="EditView_notes">
+<template id="ZmContactView_notes">
 	<table cellpadding=0 cellspacing=10 border=0 width=100%>
 		<tr>
 			<td>

@@ -46,29 +46,14 @@ ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) 
 		tagTree.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	}
 
-	this._tagCellId = Dwt.getNextId();
-	this._contactBodyId = this._htmlElId + "_body";
-
-	// find out if the user's locale has a alphabet defined
-	if (ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
-		this._alphabetBar = new ZmContactAlphabetBar(this, this._appCtxt);
-	}
-
-	this._listPart = new ZmContactSimpleView(this, null, posStyle, controller, dropTgt);
-	this._contactPart = new DwtComposite(this, "ZmContactInfoView", posStyle);
-	this._contactPart._setAllowSelection();
-
-	this._contactTabView = new DwtTabView(this._contactPart);
-	this._contactTabView.addStateChangeListener(new AjxListener(this, this._tabStateChangeListener));
-
-	this._contactGroupView = new DwtComposite(this._contactPart);
-	this._contactGroupView.setVisible(false);
-
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
-
 	this._objectManager = new ZmObjectManager(null, this._appCtxt);
 
-	this._createHtml();
+	// create the two panes
+	this._listPart = new ZmContactSimpleView(this, null, posStyle, controller, dropTgt);
+	this._contactPart = new DwtComposite(this, "ZmContactInfoView", posStyle);
+
+	this._initialize();
 };
 
 ZmContactSplitView.prototype = new DwtComposite;
@@ -160,13 +145,21 @@ function(ex) {
 ZmContactSplitView.prototype.clear =
 function() {
 	// clear the right pane
-	this._tabViewHtml = {};
-	var tabIdx = this._contactTabView.getCurrentTab();
-	var view = this._contactTabView.getTabView(tabIdx);
-	if (view) {
-		view.getHtmlElement().innerHTML = "";
+	if (this._contactTabView.getVisible()) {
+		this._tabViewHtml = {};
+		var tabIdx = this._contactTabView.getCurrentTab();
+		var view = this._contactTabView.getTabView(tabIdx);
+		if (view) {
+			view.getHtmlElement().innerHTML = "";
+		}
+		this._contactTabView.enable(false);
+	} else {
+		var groupDiv = document.getElementById(this._contactBodyId);
+		if (groupDiv) {
+			groupDiv.innerHTML = "";
+		}
 	}
-	this._contactTabView.enable(false);
+	this._setHeaderInfo(true);
 };
 
 ZmContactSplitView.prototype.enableAlphabetBar =
@@ -174,8 +167,29 @@ function(enable) {
 	this._alphabetBar.enable(enable);
 };
 
-ZmContactSplitView.prototype._createHtml =
+ZmContactSplitView.prototype._initialize =
 function() {
+	this._iconCellId	= this._htmlElId + "_icon";
+	this._titleCellId	= this._htmlElId + "_title";
+	this._tagCellId		= this._htmlElId + "_tags";
+	this._headerRowId	= this._htmlElId + "_headerRow";
+	this._contactBodyId = this._htmlElId + "_body";
+
+	// find out if the user's locale has a alphabet defined
+	if (ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
+		this._alphabetBar = new ZmContactAlphabetBar(this, this._appCtxt);
+	}
+
+	this._contactPart.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView", {id:this._htmlElId});
+
+	this._contactTabView = new DwtTabView(this._contactPart);
+	this._contactTabView.addStateChangeListener(new AjxListener(this, this._tabStateChangeListener));
+	this._contactTabView.reparentHtmlElement(this._htmlElId + "_tabs");
+
+	this._contactGroupView = new DwtComposite(this._contactPart);
+	this._contactGroupView.setVisible(false);
+	this._contactGroupView.reparentHtmlElement(this._htmlElId + "_tabs");
+
 	var params = AjxTemplate.getParams("zimbraMail.abook.templates.Contacts#SplitViewTabs");
 	var tabStr = params ? params["tabs"] : null;
 	this._tabs = tabStr ? tabStr.split(",") : null;
@@ -184,6 +198,7 @@ function() {
 		var tab = this._tabs[i] = AjxStringUtil.trim(this._tabs[i]);
 		var idx = this._contactTabView.addTab(ZmMsg[tab]);
 		var view = new DwtTabViewPage(this._contactTabView, "ZmContactTabViewPage");
+		view._setAllowSelection();
 		view.setScrollStyle(Dwt.SCROLL);
 
 		// reset event handlers for each view so object manager can process
@@ -239,12 +254,10 @@ function() {
 		if (bodyDiv) {
 			Dwt.setSize(bodyDiv, this._contactPartWidth, this._contactPartHeight - 40);
 		}
-	}
-
-	if (this._contactTabView.getVisible()) {
+	} else {
 		var tabIdx = this._contactTabView.getCurrentTab();
 		var tabView = this._contactTabView.getTabView(tabIdx);
-		tabView.setSize(this._contactTabView.getSize().x, this._contactPartHeight-30);
+		tabView.setSize(this._contactTabView.getSize().x, this._contactPartHeight-65);
 	}
 };
 
@@ -280,7 +293,7 @@ function(ev, treeView) {
 				: this._contact.folderId;
 
 			if (organizer.id == folderId)
-				this._setHeaderColor(organizer);
+				this._setHeaderInfo();
 		}
 	}
 };
@@ -294,23 +307,11 @@ ZmContactSplitView.prototype._setContact =
 function(contact, isGal, oldContact) {
 	if (!this._tabViewHtml) { return; }
 
-	var addrbook = this._appCtxt.getById(contact.folderId);
-	var color = addrbook ? addrbook.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
-	var hdrClass = (addrbook && addrbook.isInTrash()) ? "contactHeader Trash" : "contactHeader";
-	var tagCellId;
-	var tagHtml;
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		tagCellId = this._tagCellId;
-		tagHtml = this._getTagHtml(contact);
-	}
+	this._setHeaderInfo();
 
 	var subs = {
 		id: this._htmlElId,
-		contact: contact,
-		hdrClass: hdrClass,
-		hdrColor: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
-		tagCellId: tagCellId,
-		tagHtml: tagHtml
+		contact: contact
 	};
 
 	if (contact.isGroup())
@@ -356,14 +357,15 @@ function(contact, isGal, oldContact) {
 };
 
 ZmContactSplitView.prototype._getTagHtml =
-function(contact) {
+function() {
 	var html = [];
 	var idx = 0;
 
 	// get sorted list of tags for this msg
+	var tagsList = this._contact.tags;
 	var ta = [];
-	for (var i = 0; i < contact.tags.length; i++) {
-		ta.push(this._appCtxt.getById(contact.tags[i]));
+	for (var i = 0; i < tagsList.length; i++) {
+		ta.push(this._appCtxt.getById(tagsList[i]));
 	}
 	ta.sort(ZmTag.sortCompare);
 
@@ -384,19 +386,38 @@ function(contact) {
 	return html.join("");
 };
 
-ZmContactSplitView.prototype._setHeaderColor =
-function(folder) {
-	var headerRowId = this._contactTabView.getVisible()
-		? (this._htmlElId + "_headerRow_" + this._contactTabView.getCurrentTab())
-		: (this._htmlElId + "_headerRow_Group");
-	var contactHdrRow = document.getElementById(headerRowId);
-	if (contactHdrRow) {
+ZmContactSplitView.prototype._setHeaderInfo =
+function(clear) {
+	// set icon
+	var iconCell = document.getElementById(this._iconCellId);
+	if (iconCell) {
+		iconCell.innerHTML = clear ? "" : AjxImg.getImageHtml(this._contact.getIcon());
+	}
+
+	// set title
+	var titleCell = document.getElementById(this._titleCellId);
+	if (titleCell) {
+		titleCell.innerHTML = clear ? "" : this._contact.getFileAs();
+	}
+
+	// set tags
+	var tagCell = document.getElementById(this._tagCellId);
+	if (tagCell) {
+		tagCell.innerHTML = clear ? "" : this._getTagHtml();
+	}
+
+	if (!clear) {
 		// set background color of header
-		var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
-		var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
-		contactHdrRow.className = folder.isInTrash()
-			? ("contactHeaderRow Trash " + bkgdColor)
-			: ("contactHeaderRow " + bkgdColor);
+		var contactHdrRow = document.getElementById(this._headerRowId);
+		if (contactHdrRow) {
+			var folderId = this._contact.folderId;
+			var folder = folderId ? this._appCtxt.getById(folderId) : null;
+			var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
+			var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
+			contactHdrRow.className = folder.isInTrash()
+				? ("contactHeaderRow Trash " + bkgdColor)
+				: ("contactHeaderRow " + bkgdColor);
+		}
 	}
 };
 
@@ -412,7 +433,7 @@ function(ev) {
 		ev.event == ZmEvent.MODIFY)
 	{
 		var tagCell = document.getElementById(this._tagCellId);
-		tagCell.innerHTML = this._getTagHtml(this._contact);
+		tagCell.innerHTML = this._getTagHtml();
 	}
 };
 

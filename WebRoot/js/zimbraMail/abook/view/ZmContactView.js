@@ -501,13 +501,13 @@ function(contact) {
 		return;
 	}
 
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#EditView_header", {id:this._htmlElId});
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#ZmContactView", {id:this._htmlElId});
 
 	this._contactTabView = new DwtTabView(this);
 	this._contactTabView.addStateChangeListener(new AjxListener(this, this._tabStateChangeListener));
 	this._contactTabView.reparentHtmlElement(this._htmlElId + "_tabs");
 
-	var params = AjxTemplate.getParams("zimbraMail.abook.templates.Contacts#EditViewTabs");
+	var params = AjxTemplate.getParams("zimbraMail.abook.templates.Contacts#ZmContactViewTabs");
 	var tabStr = params ? params["tabs"] : null;
 	this._tabs = tabStr ? tabStr.split(",") : null;
 
@@ -530,7 +530,7 @@ function(contact) {
 		var tab = AjxStringUtil.trim(this._tabs[i]);
 		var idx = subs.tabIdx = this._contactTabView.addTab(ZmMsg[tab]);
 		var view = new DwtTabViewPage(this._contactTabView, "ZmContactEditTabViewPage");
-		var template = "zimbraMail.abook.templates.Contacts#EditView_" + tab;
+		var template = "zimbraMail.abook.templates.Contacts#ZmContactView_" + tab;
 		view.getHtmlElement().innerHTML = AjxTemplate.expand(template, subs);
 		this._contactTabView.setTabView(idx, view);
 		if (i == 0) {
