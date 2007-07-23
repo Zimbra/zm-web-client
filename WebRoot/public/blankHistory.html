@@ -22,12 +22,14 @@
 -->
 
 <html>
-   <script language="JavaScript">
-            function pageLoaded() {
-               window.parent.historyMgr.iframeLoaded(window.location);
-            }
-   </script>
-   <body onload="pageLoaded()">
-      <h1>blank.html - Needed for Internet Explorer's hidden IFrame</h1>
-   </body>
+	<script language="JavaScript">
+		function pageLoaded() {
+			if (window.parent && window.parent.historyMgr) {
+				window.parent.historyMgr.iframeLoaded(window.location);
+			}
+		}
+	</script>
+	<body onload="pageLoaded()">
+		<h1>blank.html - Needed for Internet Explorer's hidden IFrame</h1>
+	</body>
 </html>
