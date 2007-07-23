@@ -184,7 +184,7 @@ function(bad, good) {
 	var body = new ZmMimePart();
 	body.setContentType(ZmMimeTable.TEXT_PLAIN);
 	var bodyText = this._mailFields.body != null ? this._mailFields.body : "";
-	var identity = AjxDispatcher.run("GetIdentityCollection").defaultIdentity;
+	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
 	if (identity.signatureEnabled) {
 		var sig = identity.signature;
 		if (sig != null && sig != "") {

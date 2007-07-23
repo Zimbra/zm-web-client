@@ -110,7 +110,7 @@ function(params) {
 	var accountName = params.accountName;
 	if (!accountName) {
 		var acct = this._appCtxt.getActiveAccount();
-		accountName = (acct && acct.id != ZmAccount.DEFAULT_ID) ? acct.name : null;
+		accountName = (acct && acct.id != ZmZimbraAccount.DEFAULT_ID) ? acct.name : null;
 	}
 	var changeToken = accountName ? null : this._changeToken;
 	var cmdParams = {soapDoc:params.soapDoc, accountName:accountName, useXml:this._useXml,

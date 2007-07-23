@@ -843,7 +843,7 @@ function(content) {
 ZmComposeView.prototype._dispose =
 function() {
 	if (this._identityChangeListenerObj) {
-		var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+		var identityCollection = this._appCtxt.getIdentityCollection();
 		identityCollection.removeChangeListener(this._identityChangeListenerObj);
 	}
 };
@@ -1528,7 +1528,7 @@ function() {
 	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 	this._identitySelect.getHtmlElement().style.width='100%';
 	this._identitySelect.reparentHtmlElement(this._identityCell);
-	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+	var identityCollection = this._appCtxt.getIdentityCollection();
 	if (!this._identityChangeListenerObj) {
 		this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
 	}
@@ -1539,7 +1539,7 @@ function() {
 ZmComposeView.prototype._getIdentityOptions =
 function() {
 	var options = [];
-	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+	var identityCollection = this._appCtxt.getIdentityCollection();
 	var identities = identityCollection.getIdentities();
 	for (var i = 0, count = identities.length; i < count; i++) {
 		var identity = identities[i];
@@ -1583,7 +1583,7 @@ function(ev) {
 
 ZmComposeView.prototype._setIdentityVisibility =
 function() {
-	var identityCount = AjxDispatcher.run("GetIdentityCollection").getSize();
+	var identityCount = this._appCtxt.getIdentityCollection().getSize();
 	var div = document.getElementById(this._identityDivId);
 	var visible = Dwt.getVisible(div);
 	if (visible) {
@@ -1604,7 +1604,7 @@ function() {
 
 ZmComposeView.prototype.getIdentity =
 function() {
-	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+	var identityCollection = this._appCtxt.getIdentityCollection();
 	var id = this._identitySelect.getValue();
 	var result = identityCollection.getById(id);
 	return result ? result : identityCollection.defaultIdentity;

@@ -101,11 +101,12 @@ function() {
 	// expand template
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._section.id);
 	var templateId = this._section.templateId;
-	var data = { id: this._htmlElId };
-	data.isEnabled = AjxCallback.simpleClosure(this._isEnabled, this, data);
-	data.expandField = AjxCallback.simpleClosure(this._expandField, this, data);
-
-	this.getContentHtmlElement().innerHTML = AjxTemplate.expand(templateId, data);
+	var data = {
+		id: this._htmlElId, 
+		isEnabled: AjxCallback.simpleClosure(this._isEnabled, this, data),
+		expandField: AjxCallback.simpleClosure(this._expandField, this, data)
+	};
+	this._createPageHtml(templateId, data);
 	this.setVisible(false); // hide until ready
 
     // create controls for prefs, if present in template
@@ -272,6 +273,9 @@ function(id) {
 			}
 			else if (type == ZmPref.TYPE_CHECKBOX) {
 				value = object.isSelected();
+				if (setup.options) {
+					value = setup.options[Number(value)];
+				}
 			}
 			else if (type == ZmPref.TYPE_RADIO_GROUP) {
 				value = object.getSelectedValue();
@@ -324,7 +328,7 @@ function(useDefaults) {
 			var obj = this.getFormObject(id);
 			if (!obj) continue;
 
-			if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
+			if (type == ZmPref.TYPE_COLOR) {
 				obj.setColor(newValue);
 			}
 			else if (type == ZmPref.TYPE_CHECKBOX) {
@@ -360,6 +364,14 @@ function(useDefaults) {
 	}
 };
 
+//
+// Protected methods
+//
+
+ZmPreferencesPage.prototype._createPageHtml = function(templateId, data) {
+	this.getContentHtmlElement().innerHTML = AjxTemplate.expand(templateId, data);
+};
+
 /*
 * Returns the value of the specified pref, massaging it if necessary.
 *
@@ -392,6 +404,13 @@ function(parentId, text, width, listener) {
 	return button;
 };
 
+ZmPreferencesPage.prototype._setupStatic = function(id, setup, value) {
+	var text = new DwtText(this);
+	this.setFormObject(id, text);
+	text.setText(value);
+	return text;
+};
+
 ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
 	if (setup.approximateFunction) {
@@ -401,7 +420,7 @@ function(id, setup, value) {
 	var selObj = new DwtSelect(this);
 	this.setFormObject(id, selObj);
 
-	var options = setup.options || setup.displayOptions || setup.choices;
+	var options = setup.options || setup.displayOptions || setup.choices || [];
 	var isChoices = Boolean(setup.choices);
 	for (var j = 0; j < options.length; j++) {
 		var optValue = isChoices ? options[j].value : options[j];
@@ -420,6 +439,11 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupRadioGroup =
 function(id, setup, value) {
+	if (setup.approximateFunction) {
+		value = setup.approximateFunction(value);
+	}
+
+	// TODO: Make DwtRadioButtonGroup an instance of DwtComposite
 	var container = new DwtComposite(this);
 
 	// build horizontally-oriented radio group, if needed
@@ -455,7 +479,7 @@ function(id, setup, value) {
 		radioBtn.setValue(optValue);
 
 		var radioId = radioBtn.getInputElement().id;
-		radioIds[radioId] = optValue;
+		radioIds[radioId] = radioBtn;
 		if (isSelected) {
 			radioBtn.setSelected(true);
             selectedId = radioId;

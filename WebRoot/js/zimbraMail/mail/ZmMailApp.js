@@ -162,30 +162,16 @@ function() {
 				ZmSetting.VIEW_AS_HTML
 			]
 		},
-		IDENTITIES: {
-			title: ZmMsg.identities,
-			templateId: "zimbraMail.prefs.templates.Pages#Identities",
-			priority: 59,
-			precondition: ZmSetting.IDENTITIES_ENABLED,
-			prevs: [
-				ZmSetting.IDENTITIES
-			],
-			manageDirty: true,
-			createView: function(parent, appCtxt, section, controller) {
-				return controller.getIdentityController().getListView();
-			}
-		},
 		ACCOUNTS: {
-			title: ZmMsg.popAccounts,
+			title: ZmMsg.accounts,
 			templateId: "zimbraMail.prefs.templates.Pages#Accounts",
 			priority: 60,
-			precondition: ZmSetting.POP_ACCOUNTS_ENABLED,
 			prefs: [
 				ZmSetting.ACCOUNTS
 			],
 			manageDirty: true,
 			createView: function(parent, appCtxt, section, controller) {
-				return AjxDispatcher.run("GetPopAccountsController").getListView();
+				return new ZmAccountsPage(parent, appCtxt, section, controller);
 			}
 		},
 		SIGNATURES: {
@@ -200,7 +186,7 @@ function() {
 			],
 			manageDirty: true,
 			createView: function(parent, appCtxt, section, controller) {
-				return new ZmSignaturesView(parent, appCtxt, section, controller);
+				return new ZmSignaturesPage(parent, appCtxt, section, controller);
 			}
 		},
 		FILTERS: {
@@ -232,13 +218,6 @@ function() {
 	ZmPref.registerPref("DISPLAY_EXTERNAL_IMAGES", {
 		displayName:		ZmMsg.showExternalImages,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("FORWARD_INCLUDE_ORIG", {
-		displayName:		ZmMsg.forwardInclude,
-		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.includeAsAttach, ZmMsg.includeInBody, ZmMsg.includePrefix],
-		options:			[ZmSetting.INCLUDE_ATTACH, ZmSetting.INCLUDE, ZmSetting.INCLUDE_PREFIX]
 	});
 
 	ZmPref.registerPref("INITIAL_GROUP_MAIL_BY", { 
@@ -293,22 +272,6 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 	
-	ZmPref.registerPref("REPLY_INCLUDE_ORIG", {
-		displayName:		ZmMsg.replyInclude,
-		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.dontInclude, ZmMsg.includeAsAttach,
-							 ZmMsg.includeInBody, ZmMsg.includePrefix, ZmMsg.smartInclude],
-		options:			[ZmSetting.INCLUDE_NONE, ZmSetting.INCLUDE_ATTACH,
-							 ZmSetting.INCLUDE, ZmSetting.INCLUDE_PREFIX, ZmSetting.INCLUDE_SMART]
-	});
-	
-	ZmPref.registerPref("REPLY_PREFIX", {
-		displayName:		ZmMsg.prefix,
-		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[">", "|"],
-		displaySeparator:	true
-	});
-	
 	ZmPref.registerPref("REPLY_TO_ADDRESS", {
 		displayName:		ZmMsg.replyToAddress,
 		displayContainer:	ZmPref.TYPE_INPUT,
@@ -353,6 +316,9 @@ function() {
 	});
 
 	ZmPref.registerPref("SIGNATURES", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+	ZmPref.registerPref("ACCOUNTS", {
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
 };
@@ -878,7 +844,7 @@ function() {
 		accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
 		accordion.addContextListener(new AjxListener(this, this._accordionActionListener));
 		// add an accordion item for each account, and create overview for main account
-		var accts = this._appCtxt.getAccounts();
+		var accts = this._appCtxt.getZimbraAccounts();
 		this._overview = {};
 		for (var i in accts) {
 			var data = {appName:ZmApp.MAIL};

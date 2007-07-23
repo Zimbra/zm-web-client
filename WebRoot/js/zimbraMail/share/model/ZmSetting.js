@@ -66,18 +66,19 @@ ZmSetting.prototype = new ZmModel;
 ZmSetting.prototype.constructor = ZmSetting;
 
 // setting types
-ZmSetting.T_CONFIG		= 1;
-ZmSetting.T_PREF		= 2;
-ZmSetting.T_COS			= 3;
+ZmSetting.T_CONFIG		= "config";
+ZmSetting.T_PREF		= "pref";
+ZmSetting.T_COS			= "cos";
+ZmSetting.T_PSEUDO		= "pseudo";
 
 // setting data types
-ZmSetting.D_STRING		= 1; // default type
-ZmSetting.D_INT			= 2;
-ZmSetting.D_BOOLEAN		= 3;
-ZmSetting.D_LDAP_TIME 	= 4;
-ZmSetting.D_HASH 		= 5;
-ZmSetting.D_LIST		= 6;
-ZmSetting.D_NONE		= 7;	// placeholder setting
+ZmSetting.D_STRING		= "string"; // default type
+ZmSetting.D_INT			= "int";
+ZmSetting.D_BOOLEAN		= "boolean";
+ZmSetting.D_LDAP_TIME 	= "ldap_time";
+ZmSetting.D_HASH 		= "hash";
+ZmSetting.D_LIST		= "list";
+ZmSetting.D_NONE		= "NONE";	// placeholder setting
 
 // constants used as setting values
 ZmSetting.CAL_DAY			= "day";

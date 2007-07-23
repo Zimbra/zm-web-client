@@ -101,8 +101,8 @@ ZmSignature.prototype._handleCreateResponse = function(callback, resp) {
 	this.id = resp._data.CreateSignatureResponse.signature[0].id;
 
 	// add to global hash
-	var signatures = this._appCtxt.get(ZmSetting.SIGNATURES);
-	signatures[this.id] = this;
+	var signatures = this._appCtxt.getSignatures();
+	signatures.add(this);
 
 	if (callback) {
 		callback.run();
@@ -111,8 +111,8 @@ ZmSignature.prototype._handleCreateResponse = function(callback, resp) {
 
 ZmSignature.prototype._handleModifyResponse = function(callback, resp) {
 	// promote settings to global signature
-	var signatures = this._appCtxt.get(ZmSetting.SIGNATURES);
-	var signature = signatures[this.id];
+	var signatures = this._appCtxt.getSignatures();
+	var signature = signatures.getById(this.id);
 	signature.name = this.name;
 	signature.value = this.value;
 
@@ -123,8 +123,8 @@ ZmSignature.prototype._handleModifyResponse = function(callback, resp) {
 
 ZmSignature.prototype._handleDeleteResponse = function(callback, resp) {
 	// remove from global hash
-	var signatures = this._appCtxt.get(ZmSetting.SIGNATURES);
-	delete signatures[this.id];
+	var signatures = this._appCtxt.getSignatures();
+	signatures.remove(this);
 
 	if (callback) {
 		callback.run();

@@ -36,7 +36,7 @@ ZmAppCtxt = function() {
 	this._trees = {};
 	this._accounts = {};
 	// create dummy account for startup
-	this._accounts[ZmAccount.DEFAULT_ID] = new ZmAccount(this, ZmAccount.DEFAULT_ID, null, false);
+	this._accounts[ZmZimbraAccount.DEFAULT_ID] = new ZmZimbraAccount(this, ZmZimbraAccount.DEFAULT_ID, null, false);
 
 	// public flags
 	this.inStartup = false;
@@ -98,13 +98,13 @@ function(msg, level, detail) {
 
 ZmAppCtxt.prototype.getSettings =
 function(account) {
-	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmAccount.DEFAULT_ID;
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
 	return this._accounts[id] ? this._accounts[id].settings : null;
 };
 
 ZmAppCtxt.prototype.setSettings = 
 function(settings, account) {
-	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmAccount.DEFAULT_ID;
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
 	if (this._accounts[id]) {
 		this._accounts[id].settings = settings;
 	}
@@ -568,8 +568,8 @@ function(account) {
 	}
 };
 
-ZmAppCtxt.prototype.getAccounts =
-function(id) {
+ZmAppCtxt.prototype.getZimbraAccounts =
+function() {
 	return this._accounts;
 };
 
@@ -586,7 +586,7 @@ function(id) {
 			return account;
 		}
 	}
-	return this._accounts[ZmAccount.DEFAULT_ID];
+	return this._accounts[ZmZimbraAccount.DEFAULT_ID];
 };
 
 /**
@@ -594,7 +594,7 @@ function(id) {
  * when fetching any account-specific data such as settings or folder
  * tree. The account goes and fetches its data if necessary.
  *
- * @param account	[ZmAccount]		account to make active
+ * @param account	[ZmZimbraAccount]		account to make active
  * @param callback	[AjxCallback]*	client callback
  */
 ZmAppCtxt.prototype.setActiveAccount =
@@ -608,19 +608,29 @@ function() {
 	return this._activeAccount;
 };
 
+ZmAppCtxt.prototype.getIdentityCollection = function() {
+	return AjxDispatcher.run("GetIdentityCollection");
+};
+ZmAppCtxt.prototype.getDataSourceCollection = function() {
+	return AjxDispatcher.run("GetDataSourceCollection");
+};
+ZmAppCtxt.prototype.getSignatureCollection = function() {
+	return AjxDispatcher.run("GetSignatureCollection");
+};
+
 ZmAppCtxt.prototype.getTree =
 function(type, account) {
 	if (this.getAppController().isChildWindow()) {
 		return window.parentController._appCtxt.getTree(type, account);
 	}
-	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmAccount.DEFAULT_ID;
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
 	var acct = this._accounts[id];
 	return acct ? acct.trees[ZmOrganizer.TREE_TYPE[type]] : null;
 };
 
 ZmAppCtxt.prototype.setTree =
 function(type, tree, account) {
-	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmAccount.DEFAULT_ID;
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
 	if (this._accounts[id]) {
 		this._accounts[id].trees[type] = tree;
 	}

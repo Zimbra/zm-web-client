@@ -84,16 +84,6 @@ function() {
 };
 
 /**
-* Returns the identity controller.
-*/
-ZmPrefController.prototype.getIdentityController =
-function() {
-	if (!this._identityController)
-		this._identityController = new ZmIdentityController(this._appCtxt, this._container, this._app, this._prefsView);
-	return this._identityController;
-};
-
-/**
  * Checks for a precondition on the given object. If one is found, it is
  * evaluated based on its type. Note that the precondition must be contained
  * within the object in a property named "precondition".
@@ -244,12 +234,55 @@ function () {
 */
 ZmPrefController.prototype._saveListener = 
 function(ev, callback, noPop) {
-    //  try to validate first
-    var list;
+	// is there anything to do?
+	var dirty = this._prefsView.getChangedPrefs(true, true);
+	if (!dirty) {
+		return;
+	}
+
+	// perform pre-save ops, if needed
+	var preSaveCallbacks = this._prefsView.getPreSaveCallbacks();
+	if (preSaveCallbacks && preSaveCallbacks.length > 0) {
+		var continueCallback = new AjxCallback(this, this._doPreSave);
+		continueCallback.args = [continueCallback, preSaveCallbacks, callback, noPop];
+		this._doPreSave.apply(this, continueCallback.args);
+	}
+
+	// do basic save
+	else {
+		this._doSave(callback, noPop);
+	}
+
+};
+
+ZmPrefController.prototype._doPreSave =
+function(continueCallback, preSaveCallbacks, callback, noPop, success) {
+	// cancel save
+	if (success != null && !success) {
+		return;
+	}
+
+	// perform save
+	if (preSaveCallbacks.length == 0) {
+		this._doSave(callback, noPop);
+	}
+
+	// continue pre-save operations
+	else {
+		var preSaveCallback = preSaveCallbacks.shift();
+		preSaveCallback.run(continueCallback);
+	}
+};
+
+ZmPrefController.prototype._doSave = function(callback, noPop) {
 	var batchCommand = new ZmBatchCommand(this._appCtxt);
+
+	//  get changed prefs
+	var list;
 	try {
 		list = this._prefsView.getChangedPrefs(false, false, batchCommand);
-	} catch (e) {
+	}
+	catch (e) {
 		// getChangedPrefs throws an AjxException if any of the values have not passed validation.
 		if (e instanceof AjxException) {
 			this._appCtxt.setStatusMsg(e.msg, ZmStatusView.LEVEL_CRITICAL);
@@ -259,38 +292,10 @@ function(ev, callback, noPop) {
 		return;
 	}
 
-    // now handle pre-save ops, if needed
-    var preSaveCallbacks = this._prefsView.getPreSaveCallbacks();
-    if (preSaveCallbacks && preSaveCallbacks.length > 0) {
-        var continueCallback = new AjxCallback(this, this._doPreSave);
-        continueCallback.args = [continueCallback, preSaveCallbacks, list, batchCommand, callback, noPop];
-        this._doPreSave.apply(this, continueCallback.args);
-    }
-    else {
-        this._doSave(list, batchCommand, callback, noPop);
-    }
-};
+	// save generic settings
+	this._appCtxt.getSettings().save(list, null, batchCommand);
 
-ZmPrefController.prototype._doPreSave =
-function(continueCallback, preSaveCallbacks, list, batchCommand, callback, noPop, success) {
-    // cancel save
-    if (success != null && !success) {
-        return;
-    }
-    // perform save
-    if (preSaveCallbacks.length == 0) {
-        this._doSave(list, batchCommand, callback, noPop);
-        return;
-    }
-    // continue pre-save operations
-    var preSaveCallback = preSaveCallbacks.shift();
-    preSaveCallback.run(continueCallback, batchCommand);
-};
-
-ZmPrefController.prototype._doSave = function(list, batchCommand, callback, noPop) {
-	if (list && list.length) {
-		this._appCtxt.getSettings().save(list, null, batchCommand);
-	} 
+	// save any extra commands that may have been added
 	if (batchCommand.size()) {
 		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [list, callback, noPop]);
 		batchCommand.run(respCallback);

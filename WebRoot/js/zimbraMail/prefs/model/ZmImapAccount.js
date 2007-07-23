@@ -23,41 +23,42 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAccount = function(appCtxt, type, id, name, list) {
+ZmImapAccount = function(appCtxt, id, list) {
 	if (arguments.length == 0) return;
+	ZmDataSource.call(this, appCtxt, ZmAccount.IMAP, id, list);
+};
+ZmImapAccount.prototype = new ZmDataSource;
+ZmImapAccount.prototype.constructor = ZmImapAccount;
 
-	this._appCtxt = appCtxt;
-	this.id = id;
-	this.name = name;
-	this.type = type;
+ZmImapAccount.prototype.toString = function() {
+	return "ZmImapAccount";
 };
 
-ZmAccount.prototype.toString = function() {
-	return "ZmAccount";
-};
+//
+// Constants
+//
+
+ZmAccount.IMAP = "IMAP";
+
+ZmImapAccount.PORT_CLEAR = 143;
+ZmImapAccount.PORT_SSL = 993;
+ZmImapAccount.PORT_DEFAULT = ZmImapAccount.PORT_CLEAR;
+
+//
+// Data
+//
+
+ZmImapAccount.prototype.ELEMENT_NAME = "imap";
+
+// advanced settings
+
+ZmImapAccount.prototype.port = ZmImapAccount.PORT_DEFAULT;
 
 //
 // Public methods
 //
 
-ZmAccount.prototype.setName = function(name) {
-	this.name = name;
-};
-
-ZmAccount.prototype.getName = function() {
-	return this.name;
-};
-
-// sub-classes MUST override this methods
-
-ZmAccount.prototype.setEmail = function(email) {
-	throw this.toString()+"#setEmail";
-};
-
-ZmAccount.prototype.getEmail = function() {
-	throw this.toString()+"#getEmail";
-};
-
-ZmAccount.prototype.getIdentity = function() {
-	throw this.toString()+"#getIdentity";
+ZmImapAccount.prototype.getDefaultPort = function() {
+	var isSsl = this.connectionType == ZmDataSource.CONNECT_SSL;
+	return isSsl ? ZmImapAccount.PORT_SSL : ZmImapAccount.PORT_DEFAULT;
 };

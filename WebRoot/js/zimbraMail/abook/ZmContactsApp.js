@@ -152,14 +152,12 @@ function() {
 	ZmPref.registerPref("GAL_AUTOCOMPLETE_SESSION", {
 		displayName:		ZmMsg.galAutocompleteSession,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.GAL_AUTOCOMPLETE,
-		displaySeparator:	true
+		precondition:		ZmSetting.GAL_AUTOCOMPLETE
 	});
 	
 	ZmPref.registerPref("IMPORT", {
 		displayName:		ZmMsg.importFromCSV,
-		displayContainer:	ZmPref.TYPE_IMPORT,
-		displaySeparator:	false
+		displayContainer:	ZmPref.TYPE_IMPORT
 	});
 };
 

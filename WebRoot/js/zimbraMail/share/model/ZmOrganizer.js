@@ -506,7 +506,7 @@ function(color) {
  * 
  * @param appCtxt	[ZmAppCtxt]		the app context
  * @param id		[int]			ID of a system organizer
- * @param account	[ZmAccount]*	an account
+ * @param account	[ZmZimbraAccount]*	an account
  */
 ZmOrganizer.getSystemId =
 function(appCtxt, id, account) {

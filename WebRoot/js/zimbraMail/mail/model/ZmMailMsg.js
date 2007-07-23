@@ -1093,7 +1093,7 @@ function(msgNode) {
 	if (msgNode.su) 	{ this.subject = msgNode.su; }
 	if (msgNode.fr) 	{ this.fragment = msgNode.fr; }
 	if (msgNode.rt) 	{ this.rt = msgNode.rt; }
-	if (msgNode.idnt)	{ this.identity = AjxDispatcher.run("GetIdentityCollection").getById(msgNode.idnt); }
+	if (msgNode.idnt)	{ this.identity = this._appCtxt.getIdentityCollection().getById(msgNode.idnt); }
 	if (msgNode.origid) { this.origId = msgNode.origid; }
 	if (msgNode.hp) 	{ this._attHitList = msgNode.hp; }
 	if (msgNode.mid)	{ this.messageId = msgNode.mid; }

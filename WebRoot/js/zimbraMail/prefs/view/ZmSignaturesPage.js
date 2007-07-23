@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmSignaturesView = function(parent, appCtxt, section, controller) {
+ZmSignaturesPage = function(parent, appCtxt, section, controller) {
 	if (arguments.length == 0) return;
 	ZmPreferencesPage.call(this, parent, appCtxt, section, controller);
 
@@ -33,31 +33,31 @@ ZmSignaturesView = function(parent, appCtxt, section, controller) {
 	this._minEntries = appCtxt.get(ZmSetting.SIGNATURES_MIN);
 	this._maxEntries = appCtxt.get(ZmSetting.SIGNATURES_MAX);
 };
-ZmSignaturesView.prototype = new ZmPreferencesPage;
-ZmSignaturesView.prototype.constructor = ZmSignaturesView;
+ZmSignaturesPage.prototype = new ZmPreferencesPage;
+ZmSignaturesPage.prototype.constructor = ZmSignaturesPage;
 
-ZmSignaturesView.prototype.toString = function() {
-	return "ZmSignaturesView";
+ZmSignaturesPage.prototype.toString = function() {
+	return "ZmSignaturesPage";
 };
 
 //
 // Data
 //
 
-ZmSignaturesView.prototype.SIGNATURE_TEMPLATE = "zimbraMail.prefs.templates.Pages#Signature";
+ZmSignaturesPage.prototype.SIGNATURE_TEMPLATE = "zimbraMail.prefs.templates.Pages#Signature";
 
 //
 // Public methods
 //
 
-ZmSignaturesView.prototype.getAllSignatures = function(includeEmpty, includeNonModified) {
+ZmSignaturesPage.prototype.getAllSignatures = function(includeEmpty, includeNonModified) {
 	return [].concat(
 		this.getNewSignatures(includeEmpty),
 		this.getModifiedSignatures(includeNonModified)
 	);
 };
 
-ZmSignaturesView.prototype.getNewSignatures = function(includeEmpty) {
+ZmSignaturesPage.prototype.getNewSignatures = function(includeEmpty) {
 	var array = [];
 	for (var id in this._signatureComps) {
 		var comps = this._signatureComps[id];
@@ -73,7 +73,7 @@ ZmSignaturesView.prototype.getNewSignatures = function(includeEmpty) {
 	return array;
 };
 
-ZmSignaturesView.prototype.getDeletedSignatures = function() {
+ZmSignaturesPage.prototype.getDeletedSignatures = function() {
 	var array = [];
 	for (var id in this._deletedSignatures) {
 		var signature = this._deletedSignatures[id];
@@ -82,7 +82,7 @@ ZmSignaturesView.prototype.getDeletedSignatures = function() {
 	return array;
 };
 
-ZmSignaturesView.prototype.getModifiedSignatures = function(includeNonModified) {
+ZmSignaturesPage.prototype.getModifiedSignatures = function(includeNonModified) {
 	var array = [];
 	for (var id in this._signatureComps) {
 		var comps = this._signatureComps[id];
@@ -101,7 +101,7 @@ ZmSignaturesView.prototype.getModifiedSignatures = function(includeNonModified) 
 	return array;
 };
 
-ZmSignaturesView.prototype.reset = function(useDefaults) {
+ZmSignaturesPage.prototype.reset = function(useDefaults) {
 	ZmPreferencesPage.prototype.reset.apply(this, arguments);
 	var signatures = this._appCtxt.get(ZmSetting.SIGNATURES);
 	for (var id in signatures) {
@@ -111,13 +111,13 @@ ZmSignaturesView.prototype.reset = function(useDefaults) {
 
 // saving
 
-ZmSignaturesView.prototype.isDirty = function() {
+ZmSignaturesPage.prototype.isDirty = function() {
 	return	this.getNewSignatures().length > 0 ||
 			this.getDeletedSignatures().length > 0 ||
 			this.getModifiedSignatures().length > 0;
 };
 
-ZmSignaturesView.prototype.validate = function() {
+ZmSignaturesPage.prototype.validate = function() {
 	var signatures = this.getAllSignatures();
 	for (var i = 0; i < signatures.length; i++) {
 		var id = signatures[i]._htmlElId;
@@ -130,11 +130,11 @@ ZmSignaturesView.prototype.validate = function() {
 	return true;
 };
 
-ZmSignaturesView.prototype.getErrorMessage = function() {
+ZmSignaturesPage.prototype.getErrorMessage = function() {
 	return this._errorMsg;
 };
 
-ZmSignaturesView.prototype.addCommand = function(batchCommand) {
+ZmSignaturesPage.prototype.addCommand = function(batchCommand) {
 	// delete signatures
 	var deletedSigs = this.getDeletedSignatures();
 	for (var i = 0; i < deletedSigs.length; i++) {
@@ -175,7 +175,7 @@ ZmSignaturesView.prototype.addCommand = function(batchCommand) {
 // Protected methods
 //
 
-ZmSignaturesView.prototype._setupCustom = function(id, setup, value) {
+ZmSignaturesPage.prototype._setupCustom = function(id, setup, value) {
 	if (id == ZmSetting.SIGNATURES) {
 		// create container control
 		var container = new DwtComposite(this);
@@ -185,7 +185,7 @@ ZmSignaturesView.prototype._setupCustom = function(id, setup, value) {
 		this._defaultRadioGroup = new DwtRadioButtonGroup();
 
 		// populate signatures
-		var signatures = this._appCtxt.get(ZmSetting.SIGNATURES);
+		var signatures = this._appCtxt.getSignatureCollection().getSignatures();
 		var sigNames = AjxUtil.keys(signatures).sort();
 		var lessThanEqual = sigNames.length <= this._maxEntries;
 		var count = lessThanEqual ? sigNames.length : this._maxEntries;
@@ -215,7 +215,7 @@ ZmSignaturesView.prototype._setupCustom = function(id, setup, value) {
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
 };
 
-ZmSignaturesView.prototype._addNewSignature = function(skipControls) {
+ZmSignaturesPage.prototype._addNewSignature = function(skipControls) {
 	// add signature
 	var signature = new ZmSignature(null);
 	signature._new = true;
@@ -226,7 +226,7 @@ ZmSignaturesView.prototype._addNewSignature = function(skipControls) {
 	return signature;
 };
 
-ZmSignaturesView.prototype._addSignature = function(signature) {
+ZmSignaturesPage.prototype._addSignature = function(signature) {
 	signature._htmlElId = [this._htmlElId, Dwt.getNextId()].join("_");
 
 	// create html
@@ -296,7 +296,7 @@ ZmSignaturesView.prototype._addSignature = function(signature) {
 	return comps;
 };
 
-ZmSignaturesView.prototype._resetSignature = function(signature, clear) {
+ZmSignaturesPage.prototype._resetSignature = function(signature, clear) {
 	// remove recently added signature
 	if (clear && signature._new) {
 		var sigEl = document.getElementById(signature._htmlElId);
@@ -326,14 +326,14 @@ ZmSignaturesView.prototype._resetSignature = function(signature, clear) {
 	}
 };
 
-ZmSignaturesView.prototype._resetAddButton = function() {
+ZmSignaturesPage.prototype._resetAddButton = function() {
 	if (this._addSignatureButton) {
 		var more = this.getAllSignatures(true, true).length < this._maxEntries;
 		this._addSignatureButton.setEnabled(more);
 	}
 };
 
-ZmSignaturesView.prototype._resetDeleteButtons = function() {
+ZmSignaturesPage.prototype._resetDeleteButtons = function() {
 	this._deleteState = this.getAllSignatures(true, true).length > this._minEntries; 
 	var text = this._deleteState ? ZmMsg.del : ZmMsg.clear;
 	for (var id in this._signatureComps) {
@@ -346,7 +346,7 @@ ZmSignaturesView.prototype._resetDeleteButtons = function() {
 
 // buttons
 
-ZmSignaturesView.prototype._handleAddButton = function(evt) {
+ZmSignaturesPage.prototype._handleAddButton = function(evt) {
 	var signature = this._addNewSignature();
 
 	// focus input
@@ -361,7 +361,7 @@ ZmSignaturesView.prototype._handleAddButton = function(evt) {
 	this._resetDeleteButtons();
 };
 
-ZmSignaturesView.prototype._handleDeleteButton = function(id, evt) {
+ZmSignaturesPage.prototype._handleDeleteButton = function(id, evt) {
 	var signature = this._signatureComps[id].signature;
 
 	// update controls
@@ -393,23 +393,23 @@ ZmSignaturesView.prototype._handleDeleteButton = function(id, evt) {
 
 // saving
 
-ZmSignaturesView.prototype._handleDeleteResponse = function(signature, resp) {
+ZmSignaturesPage.prototype._handleDeleteResponse = function(signature, resp) {
 	var id = signature._htmlElId;
 	delete this._deletedSignatures[id];
 };
 
-ZmSignaturesView.prototype._handleModifyResponse = function(signature, resp) {
+ZmSignaturesPage.prototype._handleModifyResponse = function(signature, resp) {
 	// Is there anything to do?
 };
 
-ZmSignaturesView.prototype._handleNewResponse = function(signature, resp) {
+ZmSignaturesPage.prototype._handleNewResponse = function(signature, resp) {
 	delete signature._new;
 	this._resetSignature(signature);
 };
 
 // validation
 
-ZmSignaturesView.prototype._validateName = function(id, value) {
+ZmSignaturesPage.prototype._validateName = function(id, value) {
 	var comps = this._signatureComps[id];
 	if (comps.name.getValue().replace(/\s*/g,"") == "" &&
 		comps.value.getValue().replace(/\s*/g,"") != "") {

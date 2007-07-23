@@ -2125,6 +2125,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	height: auto;
 }
 
+.ZOptionsItemsListView .DwtListView-Rows {
+	overflow: visible;
+	height: auto;
+}
+
 /* Container for the set of preference pages (including tabs) */
 .ZmPrefView {
 	@AppBg@
@@ -2189,41 +2194,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .Row .ZmFilterDetailsView td {
 	@NoWrap@
 	vertical-align: middle;
-}
-
-.ZmIdentitiesBox {
-	background-color:@ItemBgColor@;
-}
-
-.ZmIdentityView .Label {
-	text-align: right;
-}
-
-.ZmIdentityView .Hint {
-	@FontSize-smaller@
-}
-.ZmIdentityView .DwtTabBar {
-	@PageBg@
-}
-/* Browse button */
-.ZmIdentityView .DwtButton,
-.ZmIdentityView .DwtButton-hover,
-.ZmIdentityView .DwtButton-active,
-.ZmIdentityView .DwtButton-selected,
-.ZmIdentityView .DwtButton-disabled,
-.ZmIdentityView .DwtButton-active,
-.ZmIdentityView .DwtButton-focused {
-	min-width: 0;
-}
-
-.ZmPopAccountsView {}
-.ZmPopAccountsViewLink {
-    margin-top: 1em;
-    margin-left: 2em;
-}
-.ZmPopAccountsViewLinkOpts {
-    margin-top: 1em;
-    margin-left: 2em;
 }
 
 .infoBox {

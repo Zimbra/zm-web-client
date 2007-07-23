@@ -500,7 +500,7 @@ function(params) {
 	this._accountName = params.accountName;
 	this._msgIds = params.msgIds;
 
-	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+	var identityCollection = this._appCtxt.getIdentityCollection();
 	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
 	params.identity = identity;
 
@@ -560,7 +560,7 @@ function() {
 		}
 	}
 
-	var identity = AjxDispatcher.run("GetIdentityCollection").defaultIdentity;
+	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
 	var canAddSig = this._setAddSignatureVisibility(identity);
 
 	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY,

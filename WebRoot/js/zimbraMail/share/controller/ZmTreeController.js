@@ -224,7 +224,7 @@ function(overviewId) {
  * and shown.
  * 
  * @param overviewId		[constant]		overview ID
- * @param account			[ZmAccount]*	current account
+ * @param account			[ZmZimbraAccount]*	current account
  */
 ZmTreeController.prototype._postSetup =
 function(overviewId, account) {

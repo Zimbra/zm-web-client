@@ -39,6 +39,7 @@ ZmPref.prototype.constructor = ZmPref;
 
 ZmPref.KEY_ID = "prefId_";
 
+ZmPref.TYPE_STATIC		= "STATIC"; // static text
 ZmPref.TYPE_INPUT		= "INPUT";
 ZmPref.TYPE_CHECKBOX	= "CHECKBOX";
 ZmPref.TYPE_COLOR		= "COLOR";
@@ -241,6 +242,20 @@ ZmPref.getPrefSectionWithPref = function(prefId) {
     }
     return null;
 };
+
+/** Returns true if <em>all</em> of the preconditions pass. */
+ZmPref.requireAllPreConditions = function(pre1 /* ..., preN */) {
+	var appCtxt = ZmAppCtxt.getFromShell(DwtShell.getShell(window));
+	var app = appCtxt.getApp(ZmApp.PREFERENCES);
+	var controller = app.getPrefController();
+
+	for (var i = 0; i < arguments.length; i++) {
+		if (!controller.checkPreCondition({}, arguments[i])) {
+			return false;
+		}
+	}
+	return true;
+}
 
 // Make sure the pref sections are init'd
 ZmPref.clearPrefSections();

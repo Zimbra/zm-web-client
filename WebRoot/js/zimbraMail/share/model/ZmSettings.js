@@ -209,18 +209,18 @@ function(callback, accountName, result) {
 		mainAcct.loaded = true;
 		mainAcct.settings = this;
 		// replace dummy account with this one
-		if (this._appCtxt._accounts[ZmAccount.DEFAULT_ID]) {
+		if (this._appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID]) {
 			this._appCtxt._accounts[mainAcct.id] = mainAcct;
-			delete this._appCtxt._accounts[ZmAccount.DEFAULT_ID];
+			delete this._appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID];
 		}
 		this._appCtxt.setActiveAccount(mainAcct);
 	}
 	
 	var accounts = obj.childAccounts ? obj.childAccounts.childAccount : null;
 	if (accounts) {
-		// create a ZmAccount for each child account
+		// create a ZmZimbraAccount for each child account
 		for (var i = 0; i < accounts.length; i++) {
-			var acct = ZmAccount.createFromDom(accounts[i], this._appCtxt);
+			var acct = ZmZimbraAccount.createFromDom(accounts[i], this._appCtxt);
 			this._appCtxt.setAccount(acct);
 			if (acct.visible) {
 				this._appCtxt.multiAccounts = true;

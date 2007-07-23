@@ -509,7 +509,7 @@ function(params) {
 	msg._instanceDate = params.instanceDate;
 
 	// use resolved msg to figure out identity/persona to use for compose
-	var collection = AjxDispatcher.run("GetIdentityCollection");
+	var collection = this._appCtxt.getIdentityCollection();
 	var identity = collection.selectIdentity(msg);
 
 	var action = params.action;

@@ -481,7 +481,7 @@ function() {
 	ZmCsfeCommand.setSessionId(null);	// so we get a refresh block
     this._highestNotifySeen = 0; 		// we have a new session
 
-	var accts = this._appCtxt.getAccounts();
+	var accts = this._appCtxt.getZimbraAccounts();
 	for (var id in accts) {
 		var trees = accts[id].trees;
 	    for (var type in trees) {
