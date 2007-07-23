@@ -147,6 +147,13 @@ function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
 	var listView = this._listView[this._currentView];
 
+	// check for action code with argument, eg MoveToFolder3
+	var origActionCode = actionCode;
+	var shortcut = ZmShortcut.parseAction(this._appCtxt, "Global", actionCode);
+	if (shortcut) {
+		actionCode = shortcut.baseAction;
+	}
+
 	switch (actionCode) {
 
 		case DwtKeyMap.DBLCLICK:
@@ -194,7 +201,7 @@ function(actionCode) {
 
 		case ZmKeyMap.TAG:
 			var items = listView.getSelection();
-			if (items && items.length) {
+			if (items && items.length && shortcut) {
 				var tag = this._appCtxt.getById(shortcut.arg);
 				if (tag) {
 					this._doTag(items, tag, true);
