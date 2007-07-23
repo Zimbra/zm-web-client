@@ -1395,6 +1395,7 @@ ZmAccountsListView.prototype._getHeaderList = function() {
 ZmNewDataSource = function(appCtxt) {
 	var number = ++ZmNewDataSource.ID;
 	var id = "new-dsrc-"+number;
+	this.setType(ZmAccount.POP);
 	ZmDataSource.call(this, appCtxt, ZmAccount.POP, id);
 	this.name = AjxMessageFormat.format("New External Account {0,number}", number); // TODO: i18n
 	this._new = true;
