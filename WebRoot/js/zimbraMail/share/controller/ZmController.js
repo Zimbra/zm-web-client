@@ -37,13 +37,7 @@ ZmController = function(appCtxt, container, app) {
 	
 	this._authenticating = false;
 
-	this._loginDialog = appCtxt.getLoginDialog();
-	this._loginDialog.registerCallback(this._loginCallback, this);
-
 	this._msgDialog = appCtxt.getMsgDialog();
-	
-	this._errorDialog = appCtxt.getErrorDialog();
-    this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 };
 
 // view identifiers - need to be all caps
@@ -133,9 +127,11 @@ function(msg, ex, noExecReset, hideReportButton)  {
 			detailStr = detailStr + prop + " - " + ex[prop] + "\n";				
 		}
 	}
-	this._errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
-	this._errorDialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, !hideReportButton);
-	this._errorDialog.popup();
+	var errorDialog = this._appCtxt.getErrorDialog();
+	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
+	errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
+	errorDialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, !hideReportButton);
+	errorDialog.popup();
 };
 
 ZmController.prototype.setCurrentView =
@@ -291,9 +287,11 @@ function(bReloginMode) {
 		return;
 	}
 	this._authenticating = true;
-	this._loginDialog.setVisible(true, false);
+	var loginDialog = this._appCtxt.getLoginDialog();
+	loginDialog.registerCallback(this._loginCallback, this);
+	loginDialog.setVisible(true, false);
 	try {
-		this._loginDialog.setFocus(username, bReloginMode);
+		loginDialog.setFocus(username, bReloginMode);
 	} catch (ex) {
 		// do nothing. just catch and hope for the best.
 	}
@@ -366,27 +364,27 @@ function(ex, method, params, restartOnError, obj) {
 
 		ZmCsfeCommand.clearAuthToken();
 		var bReloginMode = true;
+		var loginDialog = this._appCtxt.getLoginDialog();
 		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
 			// remember the last operation attempted ONLY for expired auth token exception
 			if (method) {
 				this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};
 			}
-			this._loginDialog.registerCallback(this._loginCallback, this);
-			this._loginDialog.setError(ZmMsg.sessionExpired);
+			loginDialog.registerCallback(this._loginCallback, this);
+			loginDialog.setError(ZmMsg.sessionExpired);
 		} else if (ex.code == ZmCsfeException.SVC_AUTH_REQUIRED) {
 			// bug fix #413 - always logoff if we get a auth required
 			ZmZimbraMail.logOff();
 			return;
 		} else {
-			this._loginDialog.setError(null);
+			loginDialog.setError(null);
 			bReloginMode = false;
 		}
-		this._loginDialog.setReloginMode(bReloginMode);
+		loginDialog.setReloginMode(bReloginMode);
 		this._handleLogin(bReloginMode);
 	} else {
 		// remember the last search attempted for all other exceptions
 		this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};
-		this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 		// bug fix #5603 - error msg for mail.SEND_FAILURE takes an argument
 		var args = null;
         switch (ex.code) {
@@ -439,10 +437,11 @@ function(rememberMe, result) {
 		}
 		this._hideLoginDialog();
 	} catch (ex) {
+		var loginDialog = this._appCtxt.getLoginDialog();
 		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || ex.code == ZmCsfeException.SVC_INVALID_REQUEST) {
-			this._loginDialog.setError(ZmMsg.loginError);
+			loginDialog.setError(ZmMsg.loginError);
 		} else if (ex.code == ZmCsfeException.ACCT_MAINTENANCE_MODE) {
-			this._loginDialog.setError(ZmMsg.errorMaintenanceMode + " " + ZmMsg.errorContact);
+			loginDialog.setError(ZmMsg.errorMaintenanceMode + " " + ZmMsg.errorContact);
 		} else {
 			this.popupErrorDialog(ZmMsg.errorGeneric, ex); 
 		}
@@ -451,9 +450,10 @@ function(rememberMe, result) {
 
 ZmController.prototype._hideLoginDialog =
 function() {
-	this._loginDialog.setVisible(false);
-	this._loginDialog.setError(null);
-	this._loginDialog.clearPassword();
+	var loginDialog = this._appCtxt.getLoginDialog();
+	loginDialog.setVisible(false);
+	loginDialog.setError(null);
+	loginDialog.clearPassword();
 };
 
 /*********** Login dialog Callbacks */
@@ -477,7 +477,7 @@ function() {
 
 ZmController.prototype._errorDialogCallback =
 function() {
-	this._errorDialog.popdown();
+	this._appCtxt.getErrorDialog().popdown();
 	if (!this._execFrame) { return; }
 	if (this._execFrame.restartOnError && !this._authenticating && this._execFrame.func) {
 		this._execFrame.func.apply(this, this._execFrame.args);

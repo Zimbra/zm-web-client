@@ -158,14 +158,12 @@ function() {
 	return this._appController.getAppViewMgr();
 };
 
-ZmAppCtxt.prototype.setClientCmdHdlr =
+ZmAppCtxt.prototype.getClientCmdHandler =
 function(clientCmdHdlr) {
-	this._clientCmdHdlr = clientCmdHdlr;
-};
-
-ZmAppCtxt.prototype.getClientCmdHdlr =
-function() {
-	return this._clientCmdHdlr;
+	if (!this._clientCmdHandler) {
+		this._clientCmdHandler = new ZmClientCmdHandler(this);
+	}
+	return this._clientCmdHandler;
 };
 
 /**
@@ -673,13 +671,12 @@ function() {
 };
 
 ZmAppCtxt.prototype.getUploadManager = 
-function() { 
+function() {
+	if (!this._uploadManager) {
+		// Create upload manager (for sending attachments)
+		this._uploadManager = new AjxPost(this.getUploadFrameId());
+	}
 	return this._uploadManager;
-};
-
-ZmAppCtxt.prototype.setUploadManager = 
-function(uploadManager) {
-	this._uploadManager = uploadManager;
 };
 
 ZmAppCtxt.prototype.getCurrentAppToolbar =

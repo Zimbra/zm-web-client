@@ -42,7 +42,7 @@ ZmApp.BRIEFCASE							= "Briefcase";
 ZmApp.CLASS[ZmApp.BRIEFCASE]			= "ZmBriefcaseApp";
 ZmApp.SETTING[ZmApp.BRIEFCASE]			= ZmSetting.BRIEFCASE_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.BRIEFCASE]		= 60;
-ZmApp.QS_ARG[ZmApp.BRIEFCASE]			= "documents";
+ZmApp.QS_ARG[ZmApp.BRIEFCASE]			= "briefcase";
 
 ZmBriefcaseApp.prototype = new ZmApp;
 ZmBriefcaseApp.prototype.constructor = ZmBriefcaseApp;

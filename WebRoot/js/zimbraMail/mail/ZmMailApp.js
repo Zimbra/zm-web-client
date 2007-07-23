@@ -75,14 +75,13 @@ function() {
 
 ZmMailApp.prototype._defineAPI =
 function() {
-	AjxDispatcher.registerMethod("Compose", "Mail", new AjxCallback(this, this.compose));
-	AjxDispatcher.registerMethod("GetAttachmentListController", "Mail", new AjxCallback(this, this.getAttachmentListController));
-	AjxDispatcher.registerMethod("GetComposeController", ["Mail", "Zimlet"], new AjxCallback(this, this.getComposeController));
-	AjxDispatcher.registerMethod("GetConvController", "Mail", new AjxCallback(this, this.getConvController));
-	AjxDispatcher.registerMethod("GetConvListController", "Mail", new AjxCallback(this, this.getConvListController));
-	AjxDispatcher.registerMethod("GetMsgController", "Mail", new AjxCallback(this, this.getMsgController));
-	AjxDispatcher.registerMethod("GetTradController", "Mail", new AjxCallback(this, this.getTradController));
-	AjxDispatcher.registerMethod("GetMailListController", "Mail", new AjxCallback(this, this.getMailListController));
+	AjxDispatcher.registerMethod("Compose", ["Mail", "MailCore"], new AjxCallback(this, this.compose));
+	AjxDispatcher.registerMethod("GetComposeController", ["MailCore", "Mail", "Zimlet"], new AjxCallback(this, this.getComposeController));
+	AjxDispatcher.registerMethod("GetConvController", ["MailCore", "Mail"], new AjxCallback(this, this.getConvController));
+	AjxDispatcher.registerMethod("GetConvListController", "MailCore", new AjxCallback(this, this.getConvListController));
+	AjxDispatcher.registerMethod("GetMsgController", ["MailCore", "Mail"], new AjxCallback(this, this.getMsgController));
+	AjxDispatcher.registerMethod("GetTradController", "MailCore", new AjxCallback(this, this.getTradController));
+	AjxDispatcher.registerMethod("GetMailListController", "MailCore", new AjxCallback(this, this.getMailListController));
 };
 
 ZmMailApp.prototype._registerSettings =
@@ -388,7 +387,7 @@ function() {
 						 searchType:	"conversation",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
-			AjxDispatcher.require("Mail");
+			AjxDispatcher.require("MailCore");
 			return new ZmMailList(ZmItem.CONV, this._appCtxt, search);
 		}, this)
 						});
@@ -404,7 +403,7 @@ function() {
 						 searchType:	"message",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
-			AjxDispatcher.require("Mail");
+			AjxDispatcher.require("MailCore");
 			return new ZmMailList(ZmItem.MSG, this._appCtxt, search);
 		}, this)
 						});
@@ -474,7 +473,7 @@ function() {
 
 ZmMailApp.prototype.startup =
 function(result) {
-	AjxDispatcher.run("GetComposeController").initComposeView(true);
+//	AjxDispatcher.run("GetComposeController").initComposeView(true);
 	this._groupBy = this._appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
 };
 
@@ -787,12 +786,6 @@ function(inNewWindow) {
 
 ZmMailApp.prototype.launch =
 function(callback, checkQS) {
-	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback, checkQS]);
-	AjxDispatcher.require("Mail", true, loadCallback, null, true);
-};
-
-ZmMailApp.prototype._handleLoadLaunch =
-function(callback, checkQS) {
 	var query;
 	if (checkQS) {
 		if (location && (location.search.match(/\bview=compose\b/))) {
@@ -929,7 +922,7 @@ function(query, callback) {
 ZmMailApp.prototype.showSearchResults =
 function(results, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
-	AjxDispatcher.require("Mail", false, loadCallback, null, true);
+	AjxDispatcher.require("MailCore", false, loadCallback, null, true);
 };
 
 ZmMailApp.prototype._handleLoadShowSearchResults =
@@ -942,14 +935,6 @@ function(results, callback) {
 	if (callback) {
 		callback.run();
 	}
-};
-
-ZmMailApp.prototype.getAttachmentListController =
-function() {
-	if (!this._attachmentListController) {
-		this._attachmentListController = new ZmAttachmentListController(this._appCtxt, this._container, this);
-	}
-	return this._attachmentListController;
 };
 
 ZmMailApp.prototype.getConvListController =

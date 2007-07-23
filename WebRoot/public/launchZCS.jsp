@@ -57,7 +57,7 @@
 		skin = requestSkin;
 	} else if (authResult != null) {
 	    java.util.List<String> prefSkin = authResult.getPrefs().get("zimbraPrefSkin");
-	    if (prefSkin != null && prefSkin.size() >0) {
+	    if (prefSkin != null && prefSkin.size() > 0) {
 	        skin = prefSkin.get(0);
         } else {
             skin = "sand"; // TODO: find better default?
@@ -146,7 +146,7 @@
     String allPackages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
-    		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal";
+    		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal";
     	}
     	allPackages += "," + extraPackages;
     }

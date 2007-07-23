@@ -64,7 +64,6 @@ ZmZimbraMail = function(appCtxt, params) {
 	this._settings.getSetting(ZmSetting.SHORTCUTS).addChangeListener(listener);
 
 	appCtxt.setAppController(this);
-	appCtxt.setClientCmdHdlr(new ZmClientCmdHandler(appCtxt));
 
 	this._shell = appCtxt.getShell();
 
@@ -196,9 +195,6 @@ function(params) {
 
 	appCtxt.setItemCache(new AjxCache());
 
-	// Create upload manager (for sending attachments)
-	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
-
 	// Go!
 	new ZmZimbraMail(appCtxt, params);
 };
@@ -267,7 +263,7 @@ function(params) {
 		var htmlArr = [];
 		var idx = 0;
 		htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1'><tr><td class='NoResults'><br>";
-		htmlArr[idx++] = "Loading...";
+		htmlArr[idx++] = ZmMsg.loading;
 		htmlArr[idx++] = "</td></tr></table>";
 		el.innerHTML = htmlArr.join("");
 		var elements = {};

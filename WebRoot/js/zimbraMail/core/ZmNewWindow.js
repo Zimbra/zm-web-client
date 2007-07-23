@@ -99,9 +99,6 @@ function(domain) {
 	window.onbeforeunload = ZmNewWindow._confirmExitMethod;
 	appCtxt.setShell(shell);
 
-	// Create upload manager (for sending attachments)
-	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
-
 	// create new window and Go!
 	var newWindow = new ZmNewWindow(appCtxt, domain);
     newWindow.startup();
