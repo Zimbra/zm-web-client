@@ -922,7 +922,7 @@ if (ext == null) ext = "";
                includes="*,img/**,js/**,css/**,test/**,skins/**,portals/**"
                excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/config/keys/**"
       />
-      <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/delegatedAuth.html,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
         <lib dir="${server.build.dir}" includes="zimbrastore.jar"/>
         <lib dir="${common.build.dir}" includes="zimbracommon.jar"/>
         <lib dir="${zimbratl.build.dir}" includes="zimbrataglib.jar"/>
@@ -958,7 +958,7 @@ if (ext == null) ext = "";
                includes="*,img/**,js/**,css/**,skins/**,portals/**"
                excludes="js/zimbraAdmin/**,js/Admin*,js/XForms*,**/config/msgs/**,**/config/keys/**,**/xforms/**,**/test/**"
       />
-      <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/delegatedAuth.html,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
 
         <!-- ======= HTML ========== -->
         <lib dir="${server.build.dir}" includes="zimbrastore.jar"/>
