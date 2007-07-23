@@ -72,7 +72,7 @@
 
 <jsp:include page="Boot.jsp"/>
 <%
-    String packages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore,CalendarCore,ContactsCore,PreferencesCore,Mail";
+    String packages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore,CalendarCore,ContactsCore,PreferencesCore,MailCore,Mail";
 
     String extraPackages = request.getParameter("packages");
     if (extraPackages != null) packages += ","+extraPackages;
