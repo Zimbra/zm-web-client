@@ -136,7 +136,8 @@
 <script src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
 <style type="text/css">
 <!--
-@import url(<%= contextPath %>/css/imgs,common,dwt,msgview,login,zm,spellcheck,wiki,<%= skin %>_imgs,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+@import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+@import url(<%= contextPath %>/css/imgs,<%= skin %>_imgs,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
 -->
 </style>
 

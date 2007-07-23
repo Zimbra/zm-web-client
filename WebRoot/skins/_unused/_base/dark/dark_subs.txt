@@ -171,7 +171,7 @@ SkinBorderAppToolbar		= @ToolbarContainer@
 SkinBorderAppChooser		= height:100%;
 SkinBorderTree				= @InsetBg@ @OutsetBorder@								border-top-width:0px;	height:100%;
 SkinBorderMiniCal			= @InsetBg@ @OutsetBorder@	-moz-border-radius:0 0 3 0; 
-SkinBorderApp				= @PageBg@  @OutsetBorder@ 								border-top-width:0px; 	height:100%;
+SkinBorderPage				= @PageBg@  @OutsetBorder@ 								border-top-width:0px; 	height:100%;
 SkinBorderStatus			= @InsetBg@ @OutsetBorder@ 	-moz-border-radius:3 3 0 3;	
 
 
