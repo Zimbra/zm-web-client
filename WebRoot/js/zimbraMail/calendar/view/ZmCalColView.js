@@ -1258,8 +1258,9 @@ function(appt) {
 	var endOfDay = new Date(sd);
 	endOfDay.setHours(23,59,59,999);
 	var et = Math.min(appt.getEndTime(), endOfDay.getTime());
-	if (this._scheduleMode) 
-		return this._getBoundsForCalendar(sd, et - sd.getTime(), appt.folderId);
+	if (this._scheduleMode)
+		return this._getBoundsForCalendar(sd, et - sd.getTime(),
+										  ZmOrganizer.normalizeId(appt.folderId));
 	else
 		return this._getBoundsForDate(sd, et - sd.getTime());
 }
