@@ -1021,9 +1021,9 @@ function() {
 	}
 	html[idx++] = "</tr></table></center>";
 
-	if (!this._appCtxt.get(ZmSetting.SKIN_HINTS, "help_button.hideIcon")) {
+//	if (!this._appCtxt.get(ZmSetting.SKIN_HINTS, "help_button.hideIcon")) {
 		this._usedQuotaField.getHtmlElement().innerHTML = html.join("");
-	}
+//	}
 
 	if (userTooltip || quotaTooltip) {
 		var tooltip = [];
