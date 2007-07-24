@@ -38,6 +38,18 @@ BaseSkin.prototype.show = function(name, state) {
     }
 };
 
+BaseSkin.prototype.gotoPrefs = function(prefPageId) {
+	var appCtxt = this._getAppCtxt();
+	if (appCtxt.getCurrentAppName() != ZmApp.PREFERENCES) {
+		var appController = appCtxt.getAppController();
+		var callback = new AjxCallback(this, this._gotoPrefPage, [prefPageId]);
+		appController.activateApp(ZmApp.PREFERENCES, null, callback);
+	}
+	else {
+		this._gotoPrefPage(prefPageId);
+	}
+};
+
 //
 // Protected methods
 //
@@ -46,4 +58,20 @@ BaseSkin.prototype._showFullScreen = function(state) {
     var componentId = "skin_container_app_top_toolbar";
     var containerId = state == null || state ? "skin_border_app_top_toolbar_full" : "skin_border_app_top_toolbar";
     this._reparentEl(componentId, containerId);
+};
+
+BaseSkin.prototype._gotoPrefPage = function(pageId) {
+	if (pageId == null) return;
+
+	var app = this._getAppCtxt().getApp(ZmApp.PREFERENCES);
+	var controller = app.getPrefController();
+	var view = controller.getPrefsView();
+	view.selectSection(pageId);
+};
+
+BaseSkin.prototype._getAppCtxt = function() {
+	if (!this._appCtxt) {
+		this._appCtxt = ZmAppCtxt.getFromShell(DwtShell.getShell(window));
+	}
+	return this._appCtxt;
 };

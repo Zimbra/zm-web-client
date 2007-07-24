@@ -180,8 +180,8 @@ function() {
 			precondition: ZmSetting.SIGNATURES_ENABLED,
 			prefs: [
 				ZmSetting.SIGNATURES,
-				ZmSetting.SIGNATURE_STYLE
-				// TODO: signatures enabled pref
+				ZmSetting.SIGNATURE_STYLE,
+				ZmSetting.SIGNATURE_ENABLED
 			],
 			manageDirty: true,
 			createView: function(parent, appCtxt, section, controller) {
