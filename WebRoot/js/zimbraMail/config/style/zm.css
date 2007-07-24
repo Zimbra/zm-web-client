@@ -653,7 +653,7 @@ line-height:normal;
 	text-align:center;
 	@ActiveCursor@
 	border-right-width: 1px;
-	
+
 #IFDEF GECKO
 	width:30px;
 #ENDIF
@@ -1866,13 +1866,39 @@ HTML>BODY .appt-selected .appt_allday_body
   left: 5px;
 }
 
+.ZmChatTabs-MemberBar {
+  position: absolute;
+  left: 100%;
+  margin-left: 4px;
+  top: 7px; bottom: 7px;
+  overflow: hidden;
+  display: none;
+}
+
+.DwtResizableWindow-unfocused .ZmChatTabs-MemberBar {
+  @WindowContainer@
+  padding: 3px;
+  border-width: 2px;
+  border-left: none;
+  -moz-border-radius: 0 2px 2px 0;
+}
+
+.DwtResizableWindow-focused .ZmChatTabs-MemberBar {
+  @ToolbarContainer@
+  padding: 3px;
+  border-width: 2px;
+  border-left: none;
+  -moz-border-radius: 0 2px 2px 0;
+}
+
 /* hide the tab bar unless we have 2 or more tabs */
 .ZmChatTabs-TabBarCount-0 /*, .ZmChatTabs-TabBarCount-1 */ { display: none; }
 
-.ZmChatTabs-TabBar .ZmChatTabs-Tab {
+.ZmChatTabs-TabBar .ZmChatTabs-Tab, .DwtResizableWindow-unfocused .ZmChatTabs-TabBar .ZmChatTabs-Tab {
   @WindowContainer@
   float: left;
   padding: 2px 4px;
+  border-width: 2px;
   border-top: none;
   -moz-border-radius-topleft: 0;
   -moz-border-radius-topright: 0;
@@ -1894,6 +1920,7 @@ HTML>BODY .appt-selected .appt_allday_body
   @ToolbarContainer@
   float: left;
   padding: 2px 4px 3px 4px;
+  border-width: 2px;
   border-top: none;
   margin-top: -1px;
   -moz-border-radius-topleft: 0;
@@ -1901,6 +1928,8 @@ HTML>BODY .appt-selected .appt_allday_body
   -moz-border-radius-bottomleft: 2px;
   -moz-border-radius-bottomright: 2px;
 }
+
+.DwtResizableWindow-unfocused .ZmChatTabs-TabBar .ZmChatTabs-Tab-Active { padding: 2px 4px 3px 4px; }
 
 .ZmChatGwIcon {
   width: 44px;
@@ -1916,19 +1945,19 @@ HTML>BODY .appt-selected .appt_allday_body
 .ImgMsnBig { background-image: url("/zimbra/public/tmp/msn.png"); }
 .ImgAolBig { background-image: url("/zimbra/public/tmp/aol.png"); }
 
-.ZmChatGwIcon-offline { 
+.ZmChatGwIcon-offline {
  opacity: 0.3;
 
 #IFDEF MSIE
-      
-	filter: alpha(opacity=30); 
-#ENDIF 
+
+	filter: alpha(opacity=30);
+#ENDIF
 }
 .ZmChatGwIcon-hover {
-   opacity: 0.8; 
+   opacity: 0.8;
   border: 1px solid #aaa; padding: 0;
   background-color: #fff;
-#IFDEF MSIE  
+#IFDEF MSIE
    filter: alpha(opacity=80);
 #ENDIF
 }
@@ -2056,7 +2085,7 @@ HTML>BODY .appt-selected .appt_allday_body
 /* header row for a section -- color/etc comes from graphics */
 .ZOptionsHeaderRow {}
 
-.ZOptionsHeaderL, 
+.ZOptionsHeaderL,
 .ZOptionsHeaderR { }
 .ZOptionsHeader {
  	@FontSize-bigger@
@@ -2071,8 +2100,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ChromeBg@
 	padding:1em;
 }
-.ZOptionsLabel, 
-.ZOptionsLabelTop, 
+.ZOptionsLabel,
+.ZOptionsLabelTop,
 .ZOptionsLabelNarrow,
 .ZOptionsTableLabel {
 	width: 150px;
@@ -2102,7 +2131,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZOptionsInfo {
 	@Text-disabled@		/* TODO: Text-hint ? */
-}	
+}
 
 /* REVISIT: Why do disabled inputs have a fixed height of 20px? */
 .ZOptionsField INPUT[disabled],
