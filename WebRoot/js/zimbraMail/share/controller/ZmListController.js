@@ -328,7 +328,7 @@ function(view) {
 	}
 
 	if (this._appCtxt.zimletsPresent()) {
-		this._appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", this._toolbar[view]);
+		this._appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", this._app, this._toolbar[view]);
 	}
 };
 
