@@ -326,6 +326,10 @@ function(view) {
 		tagMenuButton.noMenuBar = true;
 		this._setupTagMenu(this._toolbar[view]);
 	}
+
+	if (this._appCtxt.zimletsPresent()) {
+		this._appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", this._toolbar[view]);
+	}
 };
 
 // list view and its listeners
