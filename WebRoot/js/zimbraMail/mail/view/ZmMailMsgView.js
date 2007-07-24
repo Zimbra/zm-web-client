@@ -729,6 +729,7 @@ function(origText) {
 		};
 		var html = AjxTemplate.expand("zimbraMail.mail.templates.Message#InformationBar", subs);
 		self.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
+		var div = document.getElementById(subs.id+"_link");
 		Dwt.setHandler(div, DwtEvent.ONCLICK, func);
 	})();
 };
