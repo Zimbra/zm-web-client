@@ -479,6 +479,8 @@ function() {
  * 
  * @param type	[string]	type of notification (delete, create, or modify)
  * @param data	[array]		list of notifications
+ * 
+ * TODO: revisit use of MAIN_PKG, it's hokey
  */
 ZmApp.prototype._deferNotifications =
 function(type, data) {

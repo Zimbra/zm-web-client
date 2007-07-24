@@ -446,7 +446,7 @@ function() {
 	actionCodes[ZmKeyMap.NEW_MESSAGE_WIN]	= ZmOperation.NEW_MESSAGE_WIN;
 	
 	ZmApp.registerApp(ZmApp.MAIL,
-							 {mainPkg:				"Mail",
+							 {mainPkg:				"MailCore",
 							  nameKey:				"mail",
 							  icon:					"MailApp",
 							  chooserTooltipKey:	"goToMail",
