@@ -110,6 +110,7 @@ function() {
 
 	// compute fullName if first/middle/last fields exist
 	// otherwise assume fullName is a separate field
+	var customFileAs;
 	var fullName;
 	var first = this._attr[ZmContact.F_firstName];
 	var middle = this._attr[ZmContact.F_middleName];
@@ -122,17 +123,30 @@ function() {
 		fullName = fn.join(" ");
 	} else {
 		fullName = this._attr[ZmContact.X_fullName];
+		if (fullName) {
+			customFileAs = "8:" + fullName;
+		}
 	}
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
 	if (this._contact.id == null || this._contact.isGal) {
 		for (var a in this._attr) {
-			// bug fix #2982 - convert fileAs value to a String
-			var val = a == ZmContact.F_fileAs ? ("" + this._attr[a]) : AjxStringUtil.trim(this._attr[a]);
-			if ((val && val.length > 0)) {
+			if (a == ZmContact.F_fileAs) {
+				var val;
+				if (customFileAs) {
+					mods[ZmContact.F_fileAs] = customFileAs;
+					foundOne = true;
+					continue;
+				} else {
+					val = ("" + this._attr[a]); // bug #2982 - convert to String
+				}
+			} else {
+				val = AjxStringUtil.trim(this._attr[a]);
+			}
+
+			if (val && val.length > 0) {
 				mods[a] = val;
-				// bug fix #4368 - dont bother saving contact if only field changed was FileAs
-				if (a != ZmContact.F_fileAs)
+				if (a != ZmContact.F_fileAs)	// bug #4368 - dont save if only FileAs changed
 					foundOne = true;
 			} else {
 				val = AjxStringUtil.trim(this._contact.getAttr(a));
@@ -154,8 +168,9 @@ function() {
 			// do some normalizing
 			if (val && AjxUtil.isString(val)) {
 				val = AjxStringUtil.trim(val);
-				if (a == ZmContact.F_fileAs)
-					val = parseInt(val);
+				if (a == ZmContact.F_fileAs) {
+					this._attr[a] = customFileAs || parseInt(val);
+				}
 			}
 
 			if (this._attr[a] != val) {
@@ -172,8 +187,9 @@ function() {
 		}
 
 		// only set the full name if changed
-		if (this._contact.getFullName() != fullName)
+		if (this._contact.getFullName() != fullName) {
 			mods[ZmContact.X_fullName] = fullName;
+		}
 	}
 
 	return foundOne ? mods : null;

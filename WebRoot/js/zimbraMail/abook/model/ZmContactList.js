@@ -168,7 +168,9 @@ function(list) {
 		if (contact._attrs[ZmContact.F_firstName])	{ fn.push(contact._attrs[ZmContact.F_firstName]); }
 		if (contact._attrs[ZmContact.F_middleName])	{ fn.push(contact._attrs[ZmContact.F_middleName]); }
 		if (contact._attrs[ZmContact.F_lastName])	{ fn.push(contact._attrs[ZmContact.F_lastName]); }
-		contact._attrs[ZmContact.X_fullName] = fn.join(" ");
+		if (fn.length) {
+			contact._attrs[ZmContact.X_fullName] = fn.join(" ");
+		}
 		if (contact._attrs[ZmContact.F_firstName])	{ fl.push(contact._attrs[ZmContact.F_firstName]); }
 		if (contact._attrs[ZmContact.F_lastName])	{ fl.push(contact._attrs[ZmContact.F_lastName]); }
 		contact._attrs[ZmContact.X_firstLast] = fl.join(" ");
