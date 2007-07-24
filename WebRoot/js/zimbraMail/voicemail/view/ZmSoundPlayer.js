@@ -239,16 +239,18 @@ function(event) {
 
 ZmSoundPlayer.prototype._pluginChangeListener =
 function(event) {
-	if (this._timeSlider && !this._timeSlider.isDragging()) {
-		if (event.duration != this._timeSlider.getMaximum()) {
-			this._timeSlider.setRange(0, event.duration, event.time);
-		} else if (event.status != DwtSoundPlugin.ERROR) {
-			this._timeSlider.setValue(event.time);
+	if (event.status != DwtSoundPlugin.ERROR) {
+		if (this._timeSlider && !this._timeSlider.isDragging()) {
+			if (event.duration != this._timeSlider.getMaximum()) {
+				this._timeSlider.setRange(0, event.duration, event.time);
+			} else if (event.status != DwtSoundPlugin.ERROR) {
+				this._timeSlider.setValue(event.time);
+			}
+			this._setStatus(event.time);
 		}
-		this._setStatus(event.time);
-	}
-	if (event.finished) {
-		this._setPlayState(ZmSoundPlayer._NONE);
+		if (event.finished) {
+			this._setPlayState(ZmSoundPlayer._NONE);
+		}
 	}
 	this.notifyListeners(DwtEvent.ONCHANGE, event);
 };

@@ -293,7 +293,7 @@ function(inNewWindow, subject, to, response) {
 	mailMsg.hasAttach = true;
 	var id = response._data.UploadVoiceMailResponse.upload[0].id;
 	mailMsg.addAttachmentId(id);
-    var duration = AjxDateUtil.computeDuration(voicemail.duration);
+	var duration = AjxDateUtil.computeDuration(voicemail.duration);
     var date = AjxDateUtil.computeDateStr(new Date(), voicemail.date);
     var callingParty = voicemail.getCallingParty(ZmVoiceItem.FROM);
     var phoneNumber = callingParty.getDisplay();
@@ -380,6 +380,9 @@ function(event) {
 		if (playing) {
 			this._markHeard([playing], true);
 		}
+	}
+	if (event.status == DwtSoundPlugin.ERROR) {
+		this._appCtxt.setStatusMsg(event.errorDetail, ZmStatusView.LEVEL_CRITICAL);
 	}
 };
 
