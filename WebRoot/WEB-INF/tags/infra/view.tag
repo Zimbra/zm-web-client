@@ -23,7 +23,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <app:head mailbox="${mailbox}" title="${title}"/>
-    <!-- skin is ${skin} -->
+<c:set var="skin" value="${not empty sessionScope.skin ? sessionScope.skin : (not empty mailbox.prefs.skin ? mailbox.prefs.skin : 'sand')}" />
+<!-- skin is ${skin} -->
 <body <c:if test="${not empty onload}">onload="${onload}"</c:if>>
 <c:choose>
 <c:when test="${skin eq 'velodrome2'}">
