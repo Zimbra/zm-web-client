@@ -183,9 +183,25 @@
 <!----------------------------------------------------------------------------->
 <!---------------------------- ZmContactSplitView ----------------------------->
 <!----------------------------------------------------------------------------->
-<template id="SplitViewTabs" tabs="work,home,other,notes"></template>
-
 <template id="SplitView">
+	<table border=0 cellpadding=0 cellspacing=5 width=100% height=100%>
+		<tr>
+			<td id='${id}_alphabetbar' colspan=2></td>
+		</tr>
+		<tr height=100%>
+			<td width=200 valign=top id='${id}_listview'></td>
+			<td valign=top id='${id}_contentCell'>
+				<div class='ZmContactInfoView' id='${id}_content' style='overflow:auto'>
+					<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView_header", data) $>
+				</div>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id="SplitView_tabs" tabs="work,home,other,notes"></template>
+
+<template id="SplitView_header">
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='contactHeaderRow' id='${id}_headerRow'>
 			<td id='${id}_icon' width=20><$= AjxImg.getImageHtml("Contact") $></td>
@@ -196,7 +212,7 @@
 	<div id='${id}_tabs'></div>
 </template>
 
-<template id="SplitView_header">
+<template id="SplitView_title">
 	<$
 		var contact		= data.contact;
 		var companyStr	= contact.getCompanyField() || "&nbsp;";
@@ -217,12 +233,6 @@
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td id="${id}_actions">
-			<!-- Place for zimlets to add stuff. -->
-			<!-- TODO: relocate this thing -->
-		</td>
-	</tr>
 </template>
 
 <template id="SplitView_work">
@@ -240,7 +250,7 @@
 		var hasWorkPhone= workPhone || workPhone2 || workFax || workAsst || workCompany || workCallback;
 	$>
 	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
-		<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView_header", data) $>
+		<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView_title", data) $>
 		<tr height=100%>
 			<td valign=top>
 				<table border=0 cellpadding=2 cellspacing=2>
@@ -276,7 +286,7 @@
 		var hasHomePhone= homePhone || homePhone2 || homeFax || mobile || pager;
 	$>
 	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
-		<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView_header", data) $>
+		<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView_title", data) $>
 		<tr height=100%>
 			<td colspan=3 valign=top>
 				<table border=0 cellpadding=2 cellspacing=2>
@@ -311,7 +321,7 @@
 	$>
 
 	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
-		<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView_header", data) $>
+		<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView_title", data) $>
 		<tr height=100%>
 			<td colspan=3 valign=top>
 				<table border=0 cellpadding=2 cellspacing=2>
@@ -335,7 +345,7 @@
 		var notes = data.view._generateObject(data.contact.getAttr(ZmContact.F_notes));
 	$>
 	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
-		<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView_header", data) $>
+		<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView_title", data) $>
 		<tr height=100%>
 			<td colspan=3 valign=top>
 				<table border=0 cellpadding=2 cellspacing=2>
@@ -390,34 +400,28 @@
 </template>
 
 <template id="SplitViewGroup">
-	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
-		<tr height=100%>
-			<td colspan=3 valign=top>
-				<div style='width:${width}; height:${height}; overflow:auto' id='${id}_body'>
-					<table border=0 cellpadding=2 cellspacing=2 width=100%>
-						<tr>
-							<td width=100%>
-								<table border=0>
-									<$ for (var i = 0; i < data.groupMembers.length; i++) { $>
-										<tr>
-											<td width=20><$= AjxImg.getImageHtml("Message") $></td>
-											<td><nobr><$= AjxStringUtil.htmlEncode(data.groupMembers[i].toString()) $></nobr></td>
-										</tr>
-									<$ } $>
-								</table>
-							</td>
-							<td width=20 valign=top>
-								<$= AjxImg.getImageHtml(data.folderIcon) $>
-							</td>
-							<td class='companyFolder' valign=top>
-								<$= data.folderName $>
-							</td>
-						</tr>
+	<div id='${id}_body'>
+		<table border=0 cellpadding=2 cellspacing=2 width=100%>
+			<tr>
+				<td width=100%>
+					<table border=0>
+						<$ for (var i = 0; i < data.groupMembers.length; i++) { $>
+							<tr>
+								<td width=20><$= AjxImg.getImageHtml("Message") $></td>
+								<td><nobr><$= AjxStringUtil.htmlEncode(data.groupMembers[i].toString()) $></nobr></td>
+							</tr>
+						<$ } $>
 					</table>
-				</div>
-			</td>
-		</tr>
-	</table>
+				</td>
+				<td width=20 valign=top>
+					<$= AjxImg.getImageHtml(data.folderIcon) $>
+				</td>
+				<td class='companyFolder' valign=top>
+					<$= data.folderName $>
+				</td>
+			</tr>
+		</table>
+	</div>
 </template>
 
 
@@ -479,6 +483,30 @@
 			</td>
 		</tr>
 	</table>
+</template>
+
+<!----------------------------------------------------------------------------->
+<!------------------------------- ZmAlphabetBar ------------------------------->
+<!----------------------------------------------------------------------------->
+<template id="ZmAlphabetBar">
+	<center>
+		<table class='AlphabetBarTable' border=0 cellpadding=0 cellspacing=0 width=80% id='${id}_alphabet'>
+			<tr>
+				<$ for (var i = 0; i < data.numLetters; i++) { $>
+					<td _idx='<$= i $>' onclick='ZmContactAlphabetBar._alphabetClicked(this
+						<$ if (i > 0) { $>
+							, "<$= i == 1 ? '0' : data.alphabet[i] $>"
+							<$ if (i+1 < data.numLetters) { $>
+								, "<$= i == 1 ? '9' : data.alphabet[i+1] $>"
+							<$ } $>
+						<$ } $>
+						); return false;' class='DwtButton AlphabetBarCell' onmouseover='ZmContactAlphabetBar._onMouseOver(this)' onmouseout='ZmContactAlphabetBar._onMouseOut(this)' <$= (i>0) ? " style='border-left-width:0;'>" : ">" $>
+						<$= data.alphabet[i] $>
+					</td>
+				<$ } $>
+			</tr>
+		</table>
+	</center>
 </template>
 
 

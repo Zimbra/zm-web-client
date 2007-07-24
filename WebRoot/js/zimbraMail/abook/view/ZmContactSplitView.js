@@ -37,6 +37,8 @@ ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) 
 	this._controller = controller;
 	this._appCtxt = controller._appCtxt;
 
+	this.setScrollStyle(Dwt.CLIP);
+
 	var folderTree = this._appCtxt.getFolderTree();
 	if (folderTree) {
 		folderTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
@@ -49,11 +51,7 @@ ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) 
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 	this._objectManager = new ZmObjectManager(null, this._appCtxt);
 
-	// create the two panes
-	this._listPart = new ZmContactSimpleView(this, null, posStyle, controller, dropTgt);
-	this._contactPart = new DwtComposite(this, "ZmContactInfoView", posStyle);
-
-	this._initialize();
+	this._initialize(controller, dropTgt);
 };
 
 ZmContactSplitView.prototype = new DwtComposite;
@@ -83,15 +81,15 @@ function() {
 	return this._alphabetBar;
 };
 
-ZmContactSplitView.prototype.setSize = 
+ZmContactSplitView.prototype.setSize =
 function(width, height) {
-	DwtComposite.prototype.setSize.call(this, width-10, height-10);
+	DwtComposite.prototype.setSize.call(this, width, height);
 	this._sizeChildren(width, height);
 };
 
 ZmContactSplitView.prototype.setBounds = 
 function(x, y, width, height) {
-	DwtComposite.prototype.setBounds.call(this, x, y, width-10, height-10);
+	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 	this._sizeChildren(width, height);
 };
 
@@ -168,29 +166,42 @@ function(enable) {
 };
 
 ZmContactSplitView.prototype._initialize =
-function() {
+function(controller, dropTgt) {
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView", {id:this._htmlElId});
+
+	// alphabet bar based on *optional* existence in template and msg properties
+	var alphaDivId = this._htmlElId + "_alphabetbar";
+	var alphaDiv = document.getElementById(alphaDivId);
+	if (alphaDiv && ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
+		this._alphabetBar = new ZmContactAlphabetBar(this, this._appCtxt);
+		this._alphabetBar.reparentHtmlElement(alphaDivId);
+	}
+
+	// create listview based on *required* existence in template
+	var listviewCellId = this._htmlElId + "_listview";
+	var listviewCell = document.getElementById(listviewCellId);
+	this._listPart = new ZmContactSimpleView(this, controller, dropTgt);
+	this._listPart.reparentHtmlElement(listviewCellId);
+
+	// define well-known Id's
 	this._iconCellId	= this._htmlElId + "_icon";
 	this._titleCellId	= this._htmlElId + "_title";
 	this._tagCellId		= this._htmlElId + "_tags";
 	this._headerRowId	= this._htmlElId + "_headerRow";
 	this._contactBodyId = this._htmlElId + "_body";
 
-	// find out if the user's locale has a alphabet defined
-	if (ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
-		this._alphabetBar = new ZmContactAlphabetBar(this, this._appCtxt);
-	}
-
-	this._contactPart.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView", {id:this._htmlElId});
-
-	this._contactTabView = new DwtTabView(this._contactPart);
+	// create DwtTabGroup for contacts
+	this._contactTabView = new DwtTabView(this, null, Dwt.STATIC_STYLE);
 	this._contactTabView.addStateChangeListener(new AjxListener(this, this._tabStateChangeListener));
 	this._contactTabView.reparentHtmlElement(this._htmlElId + "_tabs");
 
-	this._contactGroupView = new DwtComposite(this._contactPart);
+	// contact groups is not child of DwtTabGroup
+	this._contactGroupView = new DwtComposite(this);
 	this._contactGroupView.setVisible(false);
 	this._contactGroupView.reparentHtmlElement(this._htmlElId + "_tabs");
 
-	var params = AjxTemplate.getParams("zimbraMail.abook.templates.Contacts#SplitViewTabs");
+	// add tabs to DwtTabGroup based on template
+	var params = AjxTemplate.getParams("zimbraMail.abook.templates.Contacts#SplitView_tabs");
 	var tabStr = params ? params["tabs"] : null;
 	this._tabs = tabStr ? tabStr.split(",") : null;
 
@@ -222,43 +233,14 @@ function(ev) {
 
 ZmContactSplitView.prototype._sizeChildren =
 function(width, height) {
-	var padding = 5;		// css padding value (see ZmContactSplitView css class)
-	var listWidth = 200;	// fixed width size of list view
-
-	// calc. height for children of this view
-	var alphabetBarHeight = this._alphabetBar ? ZmContactSplitView.ALPHABET_HEIGHT : null;
-	var childHeight = (height - (padding * 2)) - (alphabetBarHeight || 0);
-	// always set the list part width to 200px (should be in css?)
-	this._listPart.setSize(listWidth, childHeight);
-	this._listPart.setLocation(Dwt.DEFAULT, (alphabetBarHeight || Dwt.DEFAULT));
-
-	// explicitly set the size for the xform part
-	var listSize = this._listPart.getSize();
-	var contactWidth = width - ((padding * 5) + listWidth);
-	var contactXPos = (padding * 3) + listWidth;
-	this._contactPart.setSize(contactWidth, childHeight);
-	this._contactPart.setLocation(contactXPos, (alphabetBarHeight || Dwt.DEFAULT));
-
-	this._contactPartWidth = contactWidth;
-	this._contactPartHeight = childHeight;
-
-	this._resizeWidgets();
-};
-
-ZmContactSplitView.prototype._resizeWidgets =
-function() {
-	if (this._contactGroupView.getVisible()) {
-		this._contactGroupView.setSize(this._contactPartWidth, this._contactPartHeight - 40);
-
-		var bodyDiv = document.getElementById(this._contactBodyId);
-		if (bodyDiv) {
-			Dwt.setSize(bodyDiv, this._contactPartWidth, this._contactPartHeight - 40);
-		}
-	} else {
-		var tabIdx = this._contactTabView.getCurrentTab();
-		var tabView = this._contactTabView.getTabView(tabIdx);
-		tabView.setSize(this._contactTabView.getSize().x, this._contactPartHeight-65);
-	}
+	var listviewCell = document.getElementById(this._htmlElId + "_listview");
+/*
+	var bounds = Dwt.getBounds(listviewCell);
+	var insets = Dwt.getInsets(listviewCell);
+	Dwt.insetBounds(bounds, insets);
+*/
+	var size = Dwt.getSize(listviewCell);
+	this._listPart.setSize(size.x, size.y);
 };
 
 ZmContactSplitView.prototype._contactChangeListener =
@@ -316,8 +298,6 @@ function(contact, isGal, oldContact) {
 
 	if (contact.isGroup())
 	{
-		subs.width = this._contactPartWidth;
-		subs.height = (this._contactPartHeight - 40);
 		subs.folderIcon = contact.addrbook.getIcon();
 		subs.folderName = contact.addrbook.getName();
 		subs.groupMembers = contact.getGroupMembers().good.getArray();
@@ -328,7 +308,6 @@ function(contact, isGal, oldContact) {
 	}
 	else
 	{
-		subs.bodyWidth = (this._contactPart.getSize().x / 2);
 		subs.view = this;
 		subs.isGal = isGal;
 
@@ -347,8 +326,6 @@ function(contact, isGal, oldContact) {
 			this._tabViewHtml[tabIdx] = true;
 		}
 	}
-
-	this._resizeWidgets();
 
 	// notify zimlets that a new contact is being shown.
 	if (oldContact && this._appCtxt.zimletsPresent()) {
@@ -452,9 +429,8 @@ function(tagId) {
 // ZmContactSimpleView
 // - a simple contact list view (contains only full name)
 //////////////////////////////////////////////////////////////////////////////
-ZmContactSimpleView = function(parent, className, posStyle, controller, dropTgt) {
-	className = className || "ZmContactSimpleView";
-	ZmContactsBaseView.call(this, parent, className, posStyle, ZmController.CONTACT_SIMPLE_VIEW, controller, null, dropTgt);
+ZmContactSimpleView = function(parent, controller, dropTgt) {
+	ZmContactsBaseView.call(this, parent, "ZmContactSimpleView", null, ZmController.CONTACT_SIMPLE_VIEW, controller, null, dropTgt);
 };
 
 ZmContactSimpleView.prototype = new ZmContactsBaseView;

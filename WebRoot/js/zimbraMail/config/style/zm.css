@@ -645,15 +645,6 @@ line-height:normal;
  * ZmContactSplitView -- list of contacts w/display of one contact to the right
  */
 
-/* Outer container for both panes */
-.ZmContactSplitView {
-	@BoxPadding@
-}
-
-.ZmContactAlphabetBar {
-	padding-top: 5px;
-}
-
 .AlphabetBarTable {
 	background-color:@WidgetBgColor@
 }
@@ -664,7 +655,6 @@ line-height:normal;
 	border-right-width: 1px;
 	
 #IFDEF GECKO
-
 	width:30px;
 #ENDIF
 }
@@ -679,15 +669,9 @@ line-height:normal;
 /* Container for list of contacts */
 /* ??? RENAME */
 .ZmContactSimpleView {
-	@ListBg@	@ListBorder@
-}
-
-/* ??? WHY IS THIS NECESSARY? */
-.ZmContactSimpleView .SimpleContact,
-.ZmContactSimpleView .SimpleContact-right,
-.ZmContactSimpleView .SimpleContact-drag {
-	width: 100%;
-	overflow-x: hidden;
+	@ListBg@
+	@ListBorder@
+	overview: auto;
 }
 
 .ZmContactSimpleView .SimpleContact-right,
@@ -716,6 +700,7 @@ line-height:normal;
 .ZmContactInfoView {
 	@AppBg@
 	@AppBorder@
+	@FullSize@
 	overflow: hidden;
 }
 
