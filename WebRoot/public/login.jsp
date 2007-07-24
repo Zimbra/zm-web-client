@@ -98,7 +98,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 <c:url var="formActionUrl" value="/">
     <c:forEach var="p" items="${paramValues}">
         <c:forEach var='value' items='${p.value}'>
-            <c:if test="${(not fn:startsWith(p.key, 'login')) and (p.key ne 'username') and (p.key ne 'password') and (p.key ne 'zrememberme') and (p.key ne 'client')}">
+            <c:if test="${(not fn:startsWith(p.key, 'login')) and (p.key ne 'username') and (p.key ne 'password') and (p.key ne 'zrememberme') and (p.key ne 'zlastserver') and (p.key ne 'client')}">
                 <c:param name="${p.key}" value='${value}'/>
             </c:if>
         </c:forEach>
