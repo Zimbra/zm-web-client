@@ -20,8 +20,8 @@
 		</html>
 	</advanced>	
 	<standard>
-		<css>
-			<file>../velodrome2/zhtml.css</file>
+	    <css>
+			<file>../../css/zhtml.css</file>
 		</css>
 	</standard>
 </skin>
