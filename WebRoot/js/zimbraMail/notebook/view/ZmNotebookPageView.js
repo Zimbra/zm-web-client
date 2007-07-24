@@ -96,17 +96,13 @@ function(page) {
 
 ZmNotebookPageView.getPrintHtml =
 function(page, appCtxt) {
-	if (!ZmNotebookPageView._objectMgr) {
-		ZmNotebookPageView._objectMgr = new ZmObjectManager(null, appCtxt, null, true);
-		var handler = new ZmNotebookObjectHandler(this._appCtxt);
-		ZmNotebookPageView._objectMgr.addHandler(handler, ZmNotebookObjectHandler.TYPE, 1);
-		ZmNotebookPageView._objectMgr.sortHandlers();
+	var nbController = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookController();
+	if( nbController._getViewType()  == ZmController.NOTEBOOK_PAGE_VIEW ) {
+		var view = nbController._getViewType();
+		if(nbController._listView[view] && nbController._listView[view]._iframe){
+			return nbController._listView[view]._iframe.contentWindow.document.documentElement.innerHTML;
+		}
 	}
-	var html = ZmNotebookPageView._generateContent(page, appCtxt);
-	var node = Dwt.parseHtmlFragment("<div>" + html + "</div>");
-	ZmNotebookPageView._fixLinks(node);
-	ZmNotebookPageView._findObjects(ZmNotebookPageView._objectMgr, node);
-	return node.innerHTML;
 };
 
 ZmNotebookPageView.prototype.getTitle =

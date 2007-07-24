@@ -144,6 +144,7 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 	if (!toolbarOrActionMenu) return;
 	ZmListController.prototype._resetOperations.call(this, toolbarOrActionMenu, num);
 	toolbarOrActionMenu.enable(ZmOperation.REFRESH, true);
+	toolbarOrActionMenu.enable(ZmOperation.PRINT, true);
 	//toolbarOrActionMenu.enable(ZmOperation.ATTACHMENT, true);
 	//toolbarOrActionMenu.enable(ZmOperation.DETACH, false);
 
