@@ -109,6 +109,8 @@ ZmIdentity.prototype.whenInFolderIds = [];
 // Public methods
 //
 
+// fields
+
 ZmIdentity.prototype.getField =
 function(fieldId) {
 	return this[ZmIdentity.FIELDS[fieldId].name];
@@ -131,6 +133,44 @@ ZmIdentity.prototype.save = function(callback, errorCallback, batchCmd) {
 
 ZmIdentity.prototype.doDelete = function(callback, errorCallback, batchCmd) {
 	return this._doRequest("Delete", this._handleDeleteResponse, callback, errorCallback, batchCmd);
+};
+
+// TODO: remove these obsolete methods once compose is fixed to use account settings
+
+ZmIdentity.prototype.getUseWhenSentTo = function() {
+	return this.useWhenSentTo;
+};
+
+ZmIdentity.prototype.getComposeSameFormat = function() {
+	return this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
+};
+
+ZmIdentity.prototype.getComposeAsFormat = function() {
+	return this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+};
+
+ZmIdentity.prototype.getPrefix = function() {
+	return this._appCtxt.get(ZmSetting.REPLY_PREFIX);
+};
+
+ZmIdentity.prototype.getForwardOption = function() {
+	return this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
+};
+
+ZmIdentity.prototype.getReplyOption = function() {
+	return this._appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
+};
+
+ZmIdentity.prototype.getSignatureStyle = function() {
+	return this._appCtxt.get(ZmSetting.SIGNATURE_STYLE);
+};
+
+ZmIdentity.prototype.getAdvancedIdentity = function() {
+	return this.isDefault ? this : this._appCtxt.getIdentityCollection().defaultIdentity;
+};
+
+ZmIdentity.prototype.setAllDefaultAdvancedFields = function() {
+	// NOP
 };
 
 //
