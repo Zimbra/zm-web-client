@@ -110,7 +110,6 @@ function() {
 
 	// compute fullName if first/middle/last fields exist
 	// otherwise assume fullName is a separate field
-	var customFileAs;
 	var fullName;
 	var first = this._attr[ZmContact.F_firstName];
 	var middle = this._attr[ZmContact.F_middleName];
@@ -124,29 +123,22 @@ function() {
 	} else {
 		fullName = this._attr[ZmContact.X_fullName];
 		if (fullName) {
-			customFileAs = "8:" + fullName;
+			this._attr[ZmContact.F_fileAs] = "8:" + fullName;
 		}
 	}
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
 	if (this._contact.id == null || this._contact.isGal) {
 		for (var a in this._attr) {
-			if (a == ZmContact.F_fileAs) {
-				var val;
-				if (customFileAs) {
-					mods[ZmContact.F_fileAs] = customFileAs;
-					foundOne = true;
-					continue;
-				} else {
-					val = ("" + this._attr[a]); // bug #2982 - convert to String
-				}
-			} else {
-				val = AjxStringUtil.trim(this._attr[a]);
-			}
+			// always convert to String since some values may be Int's
+			var val = (a == ZmContact.F_fileAs)
+				? ("" + this._attr[a])
+				: (AjxStringUtil.trim(this._attr[a]));
 
 			if (val && val.length > 0) {
 				mods[a] = val;
-				if (a != ZmContact.F_fileAs)	// bug #4368 - dont save if only FileAs changed
+				// bug #4368 - dont save if only FileAs changed unless custom
+				if (a != ZmContact.F_fileAs)
 					foundOne = true;
 			} else {
 				val = AjxStringUtil.trim(this._contact.getAttr(a));
@@ -169,7 +161,10 @@ function() {
 			if (val && AjxUtil.isString(val)) {
 				val = AjxStringUtil.trim(val);
 				if (a == ZmContact.F_fileAs) {
-					this._attr[a] = customFileAs || parseInt(val);
+					var parsed = parseInt(val);
+					// only set val to parsed if not custom fileAs
+					if (parsed != ZmContact.FA_CUSTOM)
+						val = parsed;
 				}
 			}
 
