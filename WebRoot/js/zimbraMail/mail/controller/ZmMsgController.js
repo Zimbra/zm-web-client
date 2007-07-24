@@ -168,7 +168,7 @@ function(view, arrowStyle) {
 };
 
 // message view has no view menu button
-ZmMsgController.prototype._setupViewMenu = function(view, firsTime) {};
+ZmMsgController.prototype._setupViewMenu = function(view, firstTime) {};
 
 ZmMsgController.prototype._getActionMenuOps =
 function() {

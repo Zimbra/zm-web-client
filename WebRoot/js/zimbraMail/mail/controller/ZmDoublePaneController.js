@@ -442,7 +442,7 @@ function(ev) {
 		} else if (item.type == ZmItem.CONV) {
 			AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this, respCallback);
 		} else if (item.type == ZmItem.MSG) {
-			AjxDispatcher.run("GetMsgController").show(item, null, respCallback);
+			AjxDispatcher.run("GetMsgController").show(item, this._msgControllerMode, respCallback);
 		}
 	} else {
 		if (this._readingPaneOn) {
