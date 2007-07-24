@@ -725,8 +725,8 @@ function(email, strictName) {
 };
 
 ZmContact.prototype.initFromPhone =
-function(phone) {
-	this.setAttr(ZmContact.F_companyPhone, phone);
+function(phone, field) {
+	this.setAttr(field || ZmContact.F_companyPhone, phone);
 };
 
 ZmContact.prototype.getEmail =
