@@ -9,6 +9,9 @@
 <fmt:setBundle basename="/msgs/ZmMsg" scope="request"/>
 <fmt:setBundle basename="/msgs/ZMsg" var="zmsg" scope="request"/>
 
+<%-- query params to ignore when constructing form port url or redirect url --%>
+<c:set var="ignoredQueryParams" value="loginOp,loginNewPassword,loginConfirmNewPassword,loginErrorCode,username,password,zrememberme,zlastserver,client"/>
+
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 
@@ -65,11 +68,27 @@
 		            <jsp:forward page="/public/launchZCS.jsp"/>
         		</c:when>
         		<c:when test="${client eq 'standard'}">
-		            <c:redirect url="/h/search"/>
+		            <c:redirect url="/h/search">
+                        <c:forEach var="p" items="${paramValues}">
+                            <c:forEach var='value' items='${p.value}'>
+                                <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                    <c:param name="${p.key}" value='${value}'/>
+                                </c:if>
+                            </c:forEach>
+                        </c:forEach>
+                    </c:redirect>
         		</c:when>
                 <c:when test="${client eq 'mobile'}">
-		            <c:redirect url="/m/main"/>
-        		</c:when>
+		            <c:redirect url="/m/main">
+                            <c:forEach var="p" items="${paramValues}">
+                                <c:forEach var='value' items='${p.value}'>
+                                    <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                        <c:param name="${p.key}" value='${value}'/>
+                                    </c:if>
+                                </c:forEach>
+                            </c:forEach>
+                    </c:redirect>
+                </c:when>
                 <c:otherwise>
 		            <jsp:forward page="/public/launchZCS.jsp"/>
 		        </c:otherwise>
@@ -98,7 +117,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 <c:url var="formActionUrl" value="/">
     <c:forEach var="p" items="${paramValues}">
         <c:forEach var='value' items='${p.value}'>
-            <c:if test="${(not fn:startsWith(p.key, 'login')) and (p.key ne 'username') and (p.key ne 'password') and (p.key ne 'zrememberme') and (p.key ne 'zlastserver') and (p.key ne 'client')}">
+            <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
                 <c:param name="${p.key}" value='${value}'/>
             </c:if>
         </c:forEach>
