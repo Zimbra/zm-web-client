@@ -235,14 +235,14 @@ function() {
 		}
 		else if (type == ZmPref.TYPE_EXPORT) {
 			var label = setup.displayName || ZmMsg._export;
-			var btn = this._addButton(buttonId, label, 65, new AjxListener(this, this._exportButtonListener));
+			var btn = this._addButton(buttonId, label, 110, new AjxListener(this, this._exportButtonListener));
 			btn.setData(Dwt.KEY_ID, id);
 		}
 	}
 
 	var elem = document.getElementById([this._htmlElId,"DEFAULTS_RESTORE"].join("_"));
 	if (elem) {
-		var button = this._addButton(this._resetId, ZmMsg.restoreDefaults, 100, new AjxListener(this, this._resetListener));
+		var button = this._addButton(this._resetId, ZmMsg.restoreDefaults, 110, new AjxListener(this, this._resetListener));
 		button.replaceElement(elem);
 	}
 
@@ -536,7 +536,7 @@ function(buttonDiv, settingId, setup) {
 
 	// set up import button
 	var btnLabel = setup ? setup.displayName : ZmMsg._import;
-	this._importBtn = this._addButton(buttonDiv.id, btnLabel, 65, new AjxListener(this, this._importButtonListener));
+	this._importBtn = this._addButton(buttonDiv.id, btnLabel, 100, new AjxListener(this, this._importButtonListener));
 	if (settingId) {
 		this._importBtn.setData(Dwt.KEY_ID, settingId);
 	}
