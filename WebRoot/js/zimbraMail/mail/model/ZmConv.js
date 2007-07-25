@@ -264,13 +264,15 @@ function(flags) {
 */
 ZmConv.prototype._checkTags = 
 function() {
-	newTags = {};
-	allTags = {};
+	var newTags = {};
+	var allTags = {};
 	
-	for (var tagId in this.tagHash)
+	for (var tagId in this.tagHash) {
 		allTags[tagId] = true;
+	}
 
 	var msgs = this.msgs.getArray();
+	if (!(msgs && msgs.length)) { return; }
 	for (var i = 0; i < msgs.length; i++) {
 		for (var tagId in msgs[i].tagHash) {
 			newTags[tagId] = true;
@@ -281,16 +283,19 @@ function() {
 	var notify = false;
 	for (var tagId in allTags) {
 		if (!this.tagHash[tagId] && newTags[tagId]) {
-			if (this.tagLocal(tagId, true))
+			if (this.tagLocal(tagId, true)) {
 				notify = true;
+			}
 		} else if (this.tagHash[tagId] && !newTags[tagId]) {
-			if (this.tagLocal(tagId, false))
+			if (this.tagLocal(tagId, false)) {
 				notify = true;
+			}
 		}
 	}
 
-	if (notify)
+	if (notify) {
 		this._notify(ZmEvent.E_TAGS);
+	}
 };
 
 ZmConv.prototype.checkMoved = 
