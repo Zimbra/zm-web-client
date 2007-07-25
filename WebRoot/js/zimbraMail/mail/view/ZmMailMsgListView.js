@@ -237,7 +237,7 @@ ZmMailMsgListView.prototype._changeListener =
 function(ev) {
 
 	var msg = ev.item;
-	if (ev.handled || !this._handleEventType[msg.type]) { return; }
+	if (ev.handled || !msg || !this._handleEventType[msg.type]) { return; }
 
 	// only update if we're currently visible or we're the view underneath
 	if (this._mode &&
