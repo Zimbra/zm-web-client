@@ -272,7 +272,7 @@ function(show) {
 ZmPageEditView.prototype._getDialogXY =
 function() {
 	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
-	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + ZmComposeView.DIALOG_Y);
+	return new DwtPoint(loc.x + ZmPageEditView.DIALOG_X, loc.y + ZmPageEditView.DIALOG_Y);
 };
 
 //
