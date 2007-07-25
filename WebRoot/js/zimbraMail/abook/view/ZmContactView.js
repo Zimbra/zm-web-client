@@ -707,15 +707,11 @@ function(ev) {
 
 ZmContactView.getPrintHtml =
 function(contact, abridged, appCtxt) {
-	var html;
 	// make sure it's a real ZmContact
 	var real = contact.list._realizeContact(contact);
-
-	if (abridged) {
-		html = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#PrintCardContact", {contact:real});
-	} else {
-		// TODO
-	}
-
-	return html;
+	var subs = {
+		contact: real,
+		abridged: abridged
+	};
+	return (AjxTemplate.expand("zimbraMail.abook.templates.Contacts#PrintContact", subs));
 };

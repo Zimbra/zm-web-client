@@ -489,34 +489,23 @@ function(ev) {
 
 ZmGroupView.getPrintHtml =
 function(contact, abridged, appCtxt) {
-	contact = contact.list._realizeContact(contact); // make sure it's a real ZmContact
-	var members = contact.getGroupMembers().good.getArray();
-
-	var html = new Array();
-	var idx = 0;
+	// make sure it's a real ZmContact
+	var real = contact.list._realizeContact(contact);
+	var members = real.getGroupMembers().good.getArray();
 
 	var size = (members.length <= 5 || !abridged)
 		? members.length
 		: Math.min(members.length, 5);
 
-	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100%>";
-	html[idx++] = "<tr><td style='font-family:Arial; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:bold; background-color:#DDDDDD'>";
-	html[idx++] = contact.getFileAs();
-	html[idx++] = "</td></tr>";
+	var hasMore = (abridged && size < members.length);
 
-	for (var i = 0; i < size; i++) {
-		html[idx++] = "<tr><td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>";
-		html[idx++] = AjxStringUtil.htmlEncode(members[i].toString());
-		html[idx++] = "</td></tr>";
-	}
-	if (abridged && size < members.length) {
-		html[idx++] = "<tr><td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>";
-		html[idx++] = ZmMsg.more;
-		html[idx++] = "</td></tr>";
-	}
-	html[idx++] = "</table>";
-
-	return html.join("");
+	var subs = {
+		fileAs: real.getFileAs(),
+		members: members,
+		size: size,
+		hasMore: hasMore
+	};
+	return (AjxTemplate.expand("zimbraMail.abook.templates.Contacts#PrintGroup", subs));
 };
 
 
