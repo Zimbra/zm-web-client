@@ -27,55 +27,6 @@
 
 
 
-<template id="ListOptionPage">
-<table id='${id}_outer' class='fullSize' cellspacing=0 cellpadding=0>
-<tr>
-	<td class='ZmOptionsFormListCell'>
-		<table class='ZmOptionsFormListTable' cellspacing=0 cellpadding=0>
-			<colgroup><col width=50%><col width=50%></colgroup>
-			<tr><td height=100% colspan=2 valign=top>
-				<div id='${id}_list' class='ZmOptionsFormList'>List</div>
-			</td></tr>
-			<tr><td class='ZmOptionsFormListButtonCell'  style='padding-right:5px;'>
-					<button id='${id}_add_button' style='width:100%;'>Add</button>
-				</td>
-				<td class='ZmOptionsFormListButtonCell' style='padding-left:5px;'>
-					<button id='${id}_remove_button' style='width:100%;'>Remove</button>
-				</td>
-			</tr>
-
-		</table>
-	</td>
-	<td class='ZmOptionsFormFormCell' valign=bottom>
-		<table style='height:100%;width:100%;' cellspacing=0 cellpadding=0 >
-			<$ if (data.showInfoBox) { $>
-				<tr id="${id}_infoBox_container">
-					<td><$= AjxTemplate.expand("zimbraMail.prefs.templates.Widgets#infoBox", data) $></td>
-				</tr>
-			<$ } $>
-			<tr>
-				<td>
-					<div class='ZSubPanelHead'>
-						<$ if (data.showInfoBox) { $>
-							<div id='${id}_help_button' class='ImgInformation ZInfoBoxImg' onclick='Dwt.toggle("${id}_infoBox_container")'></div>
-						<$ } $>
-						${_labels.detailsHeader}
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td id='${id}_form_container' class='ZmOptionsFormCell' style='height:100%;' valign=top >
-<!--					<div class='ZScrollContainerOuter' id='${id}_form_container'></div>	-->
-				</td>
-			</tr>
-		</table>
-	</td>
-</tr>
-</table>
-</template>
-
-
-
 <!--
 	@param		id 				Outer id of the entire form, applied to field names etc
 	@content	${id}_foo		Foo label

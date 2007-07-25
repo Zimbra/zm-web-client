@@ -37,26 +37,54 @@
 * @param prefsView		[ZmPreferencesView]	the preferences view
 */
 ZmVoicePrefsController = function(appCtxt, container, prefsApp, prefsView) {
-	ZmPrefListController.call(this, appCtxt, container, prefsApp, prefsView);
+	ZmController.call(this, appCtxt, container, prefsApp);
 
+	this._prefsView = prefsView;
 	this._listView = new ZmVoicePrefsView(prefsView._parent, appCtxt, this);
     this._count = 0;
 };
 
-ZmVoicePrefsController.prototype = new ZmPrefListController();
+ZmVoicePrefsController.prototype = new ZmController();
 ZmVoicePrefsController.prototype.constructor = ZmVoicePrefsController;
+
+/**
+* Returns the list view.
+*/
+ZmVoicePrefsController.prototype.getListView =
+function() {
+	return this._listView;
+};
+
+ZmVoicePrefsController.prototype.getPrefsView =
+function() {
+	return this._prefsView;
+};
 
 ZmVoicePrefsController.prototype._setup =
 function() {
-	ZmPrefListController.prototype._setup.call(this);
-	
-	this._listView.getAddButton().setVisible(false);
-	this._listView.getRemoveButton().setVisible(false);
-
+	// Fill in the list view.
 	var listControl = this._listView.getList();
+	listControl.addSelectionListener(new AjxListener(this, this._listSelectionListener));
+	listControl.set(this._getListData());
+
 	var list = listControl.getList();
 	if (list.size()) {
 		listControl.setSelection(list.get(0));
+	}
+};
+
+/*
+* Handles left-clicking on an item.
+*
+* @param	[DwtEvent]		the click event
+*/
+ZmVoicePrefsController.prototype._listSelectionListener =
+function(ev) {
+	if (ev.detail == DwtListView.ITEM_SELECTED) {
+		var listView = this._listView.getList();
+		var selection = listView.getSelection()[0];
+		this._listView.validate();
+		this._listView.setItem(selection);
 	}
 };
 

@@ -24,17 +24,16 @@
  */
 
 // TODOs
-// Clean up the interface for the ui class.
-// Implement the rest of the interface for a prefs page...cancelling, etc.
 // Somewhere in here, I need to create proxies of the features. (Or maybe as an easy hack, just work directly on the model. It's not used anywhere else.)
 
 
 ZmVoicePrefsView = function(parent, appCtxt, controller) {
-	var labels = { listHeader: ZmMsg.phoneNumbers, detailsHeader: ZmMsg.callSettings };
+	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 
-	ZmPrefListView.call(this, parent, appCtxt, controller, labels, "ZmVoicePrefsView", DwtControl.STATIC_STYLE);
 	this._appCtxt = appCtxt;
 	this._controller = controller;
+	this._hasRendered = false;
+	this._item = null;
 	
     var section = ZmPref.getPrefSectionWithPref(ZmSetting.VOICE_ACCOUNTS);
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
@@ -47,12 +46,35 @@ ZmVoicePrefsView = function(parent, appCtxt, controller) {
 	this._changes = null;
 };
 
-ZmVoicePrefsView.prototype = new ZmPrefListView;
+ZmVoicePrefsView.prototype = new DwtTabViewPage;
 ZmVoicePrefsView.prototype.constructor = ZmVoicePrefsView;
  
 ZmVoicePrefsView.prototype.toString =
 function() {
 	return "ZmVoicePrefsView";
+};
+
+ZmVoicePrefsView.prototype.hasRendered =
+function () {
+	return this._hasRendered;
+};
+
+ZmVoicePrefsView.prototype.getList =
+function() {
+	return this._list;
+};
+
+ZmVoicePrefsView.prototype.setItem =
+function(item) {
+	this._item = item;
+//TODO: Retarded.
+	this._getChanges();
+	this.showItem(item);
+};
+
+ZmVoicePrefsView.prototype.validate =
+function() {
+	return true;
 };
 
 ZmVoicePrefsView.prototype.getTitle =
@@ -62,18 +84,36 @@ function() {
 
 ZmVoicePrefsView.prototype.showMe =
 function() {
+	Dwt.setTitle(this._title);
+	if (this._hasRendered) return;
+
     var contacts = AjxDispatcher.run("GetContacts");
     this._me = contacts.getMe ? contacts.getMe() : [];
     if (this._me.length) {
         contacts.addChangeListener(new AjxListener(this, this._contactsChangeListener));
     }
-    var callback = new AjxCallback(this, this._handleResponseGetPhones)
-	this._appCtxt.getApp(ZmApp.VOICE).getVoiceInfo(callback);
+	this._appCtxt.getApp(ZmApp.VOICE).getVoiceInfo(new AjxCallback(this, this._handleResponseGetVoiceInfo));
 };
 
-ZmVoicePrefsView.prototype._handleResponseGetPhones =
+ZmVoicePrefsView.prototype._handleResponseGetVoiceInfo =
 function() {
-	ZmPrefListView.prototype.showMe.call(this);
+	var id = this._htmlElId;
+	var data = { id: id };
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoicePrefsView", data);
+
+	// Create the list view and the contents of the detail pane.
+	this._list = new ZmPhoneList(this, this._appCtxt);
+	this._list.replaceElement(id + "_list");
+	this._list.enableSorting(false);
+
+	for(var i = 0, count = this._ui.length; i < count; i++) {
+		this._ui[i]._initialize(id);
+		this._ui[i].setMe(this._me);
+	}
+
+	this._controller._setup();
+
+	this._hasRendered = true;
 };
 
 ZmVoicePrefsView.prototype.isDirty =
@@ -125,32 +165,12 @@ function(ui) {
 ZmVoicePrefsView.prototype.reset =
 function() {
 	this._changes = null;
-	this.showItem(this._item, true);
-	this.clearAllErrors();
-};
-
-ZmVoicePrefsView.prototype._showInfoBox =
-function() {
-	return false;
-};
-
-ZmVoicePrefsView.prototype._createDetails =
-function(parentElement) {
-    var id = this._htmlElId;
-    parentElement.innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoicePrefsView", id);
-    for(var i = 0, count = this._ui.length; i < count; i++) {
-    	this._ui[i]._initialize(id);
-        this._ui[i].setMe(this._me);
-    }
+	this.showItem(this._item);
 };
 
 ZmVoicePrefsView.prototype.showItem =
-function(phone, ignoreChanges) {
-	if (!ignoreChanges) {
-		this._getChanges();
-	}
+function(phone) {
 //Retarded: saving a reference to the phone here, even though the parent class has it (as _item).
-//Even more retarded because IdentityView does the same retarded thing.
 	this._phone = phone;
 	phone.getCallFeatures(new AjxCallback(this, this._handleResponseGetFeatures, phone));
 };
@@ -161,10 +181,6 @@ function(phone, features) {
 		var feature = features[this._ui[i].getName()];
 		this._ui[i].setFeature(feature);
 	}
-};
-
-ZmVoicePrefsView.prototype._validateSelectedItem =
-function(errors) {
 };
 
 ZmVoicePrefsView.prototype.addCommand =
@@ -184,31 +200,9 @@ function(batchCommand) {
 	 }
 };
 
-ZmVoicePrefsView.prototype._getItemText =
-function(phone) {
-	return phone.getDisplay();
-};
-
-
 ZmVoicePrefsView.prototype._handleResponse =
 function(identity, request, result) {
 	this._changes  = null;
-};
-
-ZmVoicePrefsView.prototype._handleResponseError =
-function(identity, request, result) {
-//	var message;
-//	if (result.code == ZmCsfeException.IDENTITY_EXISTS) {
-//	    message = AjxMessageFormat.format(ZmMsg.errorIdentityAlreadyExists, identity.name);
-//	} else {
-//		message = ZmCsfeException.getErrorMsg(result.code);
-//	}
-//	if (message) {
-//	    var dialog = this._appCtxt.getMsgDialog();
-//		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
-//		dialog.popup();
-//	    return true;
-//	}
 };
 
 ZmVoicePrefsView.prototype._containsMe =
@@ -238,7 +232,6 @@ function(ev) {
         }
 	}
 };
-
 
 ZmCallFeatureUI = function(view) {
 	this._view = view;
@@ -726,3 +719,29 @@ function(id) {
 	this._select.replaceElement(id + "_itemsPerPageSelect");
 };
 
+/*
+* ZmPhoneList
+* The list of phone accounts.
+*/
+ZmPhoneList = function(parent, appCtxt) {
+	var headerList = [new DwtListHeaderItem(1, ZmMsg.number, null, null)];
+	DwtListView.call(this, parent, "ZmPhoneList", null, headerList);
+
+	this._appCtxt = appCtxt;
+
+	this.setMultiSelect(false);
+};
+
+ZmPhoneList.prototype = new DwtListView;
+ZmPhoneList.prototype.constructor = ZmPhoneList;
+
+ZmPhoneList.prototype.toString =
+function() {
+	return "ZmPhoneList";
+};
+
+ZmPhoneList.prototype._getCellContents =
+function(htmlArr, idx, phone, field, colIdx, params) {
+	htmlArr[idx++] = AjxStringUtil.htmlEncode(phone.getDisplay(), true);
+	return idx;
+};

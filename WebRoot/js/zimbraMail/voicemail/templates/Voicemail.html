@@ -82,61 +82,91 @@
 </template>
 
 <template id='ZmVoicePrefsView'>
-    <table class='ZmVoicePrefsView' cellspacing=4 cellpadding=4>
-		<tr valign='top'>
-			<td class='ZOptionsLabel'><$= ZmMsg.voicePageSizeLabel $></td>
-			<td class='ZOptionsField'>
-				<table cellspacing="1" cellpadding="1"><tr>
-					<td><div id='${id}_itemsPerPageSelect' style='padding-left:11px;'></div></td>
-					<td>&nbsp;<$= ZmMsg.voicePageSizeDescription $></td>
-				</tr></table>
-			</td>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<!-- General -->
+		<tr class='ZOptionsHeaderRow'>
+			  <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			  <td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.general$></td>
+			  <td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
-		<tr><td colspan=2><hr></td></tr>
+		<tr><td class='ZOptionsSectionMain' colspan=3>
+			<table cellspacing=4 cellpadding=4>
+				<tr valign='top'>
+					<td class='ZOptionsLabel'><$= ZmMsg.voicePageSizeLabel $></td>
+					<td class='ZOptionsField'>
+						<table cellspacing="1" cellpadding="1"><tr>
+							<td><div id='${id}_itemsPerPageSelect' style='padding-left:11px;'></div></td>
+							<td>&nbsp;<$= ZmMsg.voicePageSizeDescription $></td>
+						</tr></table>
+					</td>
+				</tr>
+			</table>
+		</td></tr>
+	</table>
 
-	    <tr id='${id}_emailNotification' valign='top'>
-	    	<td class='ZOptionsLabel'><$= ZmMsg.emailNotificationLabel $></td>
-	    	<td class='ZOptionsField'>
-	    		<table cellspacing="1" cellpadding="1"><tr>
-	    			<td><div id='${id}_emailNotificationCheckbox'></div></td>
-	    			<td><div id='${id}_emailNotificationComboBox'></div></td>
-		    	</tr></table>
-	    	</td>
-	    </tr>
-	    <tr><td colspan=2><hr></td></tr>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<!-- Call Manager -->
+		<tr class='ZOptionsHeaderRow'>
+			  <td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
+			  <td class='ZOptionsHeader ImgPrefsHeader__H'><$=ZmMsg.callManager $></td>
+			  <td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
+		</tr>
+		<tr><td class='ZOptionsSectionMain' colspan=3>
+			<table cellspacing=4 cellpadding=4>
+				<tr>
+					<td class='ZOptionsLabel'></td>
+					<td class='ZOptionsField'>
+						<div style='margin-left:28;width:260;'>
+							<div><$= ZmMsg.voicePrefsInstruction $></div>
+							<div class='ZSmallSpacer'></div>
+							<div id='${id}_list'>List</div>
+						</div>
+					</td>
+				</tr>
+				<tr id='${id}_emailNotification' valign='top'>
+					<td class='ZOptionsLabel'><$= ZmMsg.emailNotificationLabel $></td>
+					<td class='ZOptionsField'>
+						<table cellspacing="1" cellpadding="1"><tr>
+							<td><div id='${id}_emailNotificationCheckbox'></div></td>
+							<td><div id='${id}_emailNotificationComboBox'></div></td>
+						</tr></table>
+					</td>
+				</tr>
+				<tr><td colspan=2 class='ZSmallSpacer'></td></tr>
 
-	    <tr id='${id}_callForwarding' valign='top'>
-	    	<td class='ZOptionsLabel'><$= ZmMsg.callForwardingLabel $></td>
-	    	<td class='ZOptionsField'>
-	    		<table><tr>
-	    			<td><div id='${id}_callForwardingCheckbox'></div></td>
-	    			<td><div id='${id}_callForwardingComboBox'></div></td>
-		    	</tr></table>
-            </td>
-        </tr>
-        <tr>
-            <td class='ZOptionsLabel'>&nbsp;</td>
-            <td class='ZOptionsField'>
-                <table><tr>
-	    			<td><div id='${id}_selectiveCallForwardingCheckbox'></div></td>
-		    		<td><div id='${id}_selectiveCallForwardingComboBox'></div></td>
-		    	</tr></table>
-		    	<div style='padding-left:28'>
-					<div class='ZSmallSpacer'></div>
-		    		<div id='${id}_selectiveCallForwardingTableParent'></div>
-					<div class='ZSmallSpacer'></div>
-		    		<table style='padding-left:3'><tr>
-			    		<td><b><$= ZmMsg.addLabel $></b></td>
-		    			<td><div id='${id}_selectiveCallForwardingAddInput'></div></td>
-			    		<td><div id='${id}_selectiveCallForwardingAddButton'></div></td>
-			    	</tr></table>
-					<div class='ZSmallSpacer'></div>
-			    	<div style='padding-left: 16'><$= ZmMsg.selectiveCallForwardingRules$></div>
-		    	</div>
-	    	</td>
-	    </tr>
-	    
-    </table>
+				<tr id='${id}_callForwarding' valign='top'>
+					<td class='ZOptionsLabel'><$= ZmMsg.callForwardingLabel $></td>
+					<td class='ZOptionsField'>
+						<table><tr>
+							<td><div id='${id}_callForwardingCheckbox'></div></td>
+							<td><div id='${id}_callForwardingComboBox'></div></td>
+						</tr></table>
+					</td>
+				</tr>
+				<tr>
+					<td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+						<table><tr>
+							<td><div id='${id}_selectiveCallForwardingCheckbox'></div></td>
+							<td><div id='${id}_selectiveCallForwardingComboBox'></div></td>
+						</tr></table>
+						<div style='padding-left:28'>
+							<div class='ZSmallSpacer'></div>
+							<div id='${id}_selectiveCallForwardingTableParent'></div>
+							<div class='ZSmallSpacer'></div>
+							<table style='padding-left:3'><tr>
+								<td><b><$= ZmMsg.addLabel $></b></td>
+								<td><div id='${id}_selectiveCallForwardingAddInput'></div></td>
+								<td><div id='${id}_selectiveCallForwardingAddButton'></div></td>
+							</tr></table>
+							<div class='ZSmallSpacer'></div>
+							<div style='padding-left: 16'><$= ZmMsg.selectiveCallForwardingRules$></div>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</td></tr>
+	</table>
 </template>
 
 <template id='ZmVoiceSelectiveCallForwardingTable'>
