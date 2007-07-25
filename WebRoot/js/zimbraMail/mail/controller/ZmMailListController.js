@@ -671,10 +671,10 @@ function() {
 };
 
 ZmMailListController.prototype._setupViewMenu =
-function(view, firsTime) {
+function(view, firstTime) {
 	var btn;
 
-	if (firsTime) {
+	if (firstTime) {
 		var menu;
 		if (this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 			menu = this._setupGroupByMenuItems(view);
@@ -1110,11 +1110,9 @@ function(listView) {
 };
 
 /**
- * Returns the first selected msg. If we are showing convs, returns the first
- * msg in the first selected conv.
+ * Returns the first selected msg.
  */
 ZmMailListController.prototype._getSelectedMsg =
 function() {
-	var item = this._listView[this._currentView].getSelection()[0];
-	return ((item.type == ZmItem.CONV) ? item.getFirstMsg() : item);
+	return this._listView[this._currentView].getSelection()[0];
 };

@@ -124,7 +124,7 @@ function(view, toggle) {
 
 	// set msg in msg view if reading pane is being shown
 	if (this._readingPaneOn) {
-		this._setSelectedMsg();
+		this._setSelectedItem();
 	}
 
 	// need to reset special dbl-click handling for list view
@@ -228,22 +228,16 @@ function(view) {
 	this._doublePaneView.setItem(this._item);
 };
 
-ZmDoublePaneController.prototype._setSelectedMsg =
-function() {
-	var selCnt = this._listView[this._currentView].getSelectionCount();
-	if (selCnt == 1) {
-		// Check if currently displaying selected element in message view
-		var msg = this._getSelectedMsg();
-		if (!msg) { return; }
-		if (!msg._loaded) {
-			this._appCtxt.getSearchController().setEnabled(false);
-			this._doGetMsg(msg);
-		} else {
-			this._doublePaneView.setMsg(msg);
-			if (msg.isUnread) {
-				// msg was cached, then marked unread
-				this._doMarkRead([msg], true);
-			}
+ZmDoublePaneController.prototype._displayMsg =
+function(msg) {
+	if (!msg._loaded) {
+		this._appCtxt.getSearchController().setEnabled(false);
+		this._doGetMsg(msg);
+	} else {
+		this._doublePaneView.setMsg(msg);
+		if (msg.isUnread) {
+			// msg was cached, then marked unread
+			this._doMarkRead([msg], true);
 		}
 	}
 };
@@ -437,12 +431,12 @@ function(ev) {
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
 		if (item.isDraft) {
 			this._doAction({ev:ev, action:ZmOperation.DRAFT});
+			return true;
 		} else if (this._appCtxt.get(ZmSetting.OPEN_MAIL_IN_NEW_WIN)) {
 			this._detachListener(null, respCallback);
-		} else if (item.type == ZmItem.CONV) {
-			AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this, respCallback);
-		} else if (item.type == ZmItem.MSG) {
-			AjxDispatcher.run("GetMsgController").show(item, this._msgControllerMode, respCallback);
+			return true;
+		} else {
+			return false;
 		}
 	} else {
 		if (this._readingPaneOn) {
@@ -457,7 +451,7 @@ function(ev) {
 				this._listSelectionShortcutDelayActionId = AjxTimedAction.scheduleAction(this._listSelectionShortcutDelayAction,
 																						 ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY);
 			} else {
-				this._setSelectedMsg();
+				this._setSelectedItem();
 			}
 	    } else {
 			var msg = currView.getSelection()[0];
@@ -475,7 +469,7 @@ function(item) {
 		this._list.markRead([item], true);
 	}
 	// make sure correct msg is displayed in msg pane when user returns
-	this._setSelectedMsg();
+	this._setSelectedItem();
 };
 
 ZmDoublePaneController.prototype._listSelectionTimedAction =
@@ -483,7 +477,17 @@ function() {
 	if (this._listSelectionShortcutDelayActionId) {
 		AjxTimedAction.cancelAction(this._listSelectionShortcutDelayActionId);
 	}
-	this._setSelectedMsg();
+	this._setSelectedItem();
+};
+
+ZmDoublePaneController.prototype._setSelectedItem =
+function() {
+	var selCnt = this._listView[this._currentView].getSelectionCount();
+	if (selCnt == 1) {
+		var msg = this._getSelectedMsg();
+		if (!msg) { return; }
+		this._displayMsg(msg);
+	}
 };
 
 ZmDoublePaneController.prototype._listActionListener =

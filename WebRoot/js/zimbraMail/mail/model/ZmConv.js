@@ -329,17 +329,17 @@ function(offset, limit) {
 	var numMsgs = this.msgs.size();
 
 	// normalize offset/limit if necessary
-	if (offset >= numMsgs || offset < 0)
-		return;
+	if (offset >= numMsgs || offset < 0) { return; }
 	
-	var end = offset + limit > numMsgs ? numMsgs : offset+limit;
+	var end = (offset + limit > numMsgs) ? numMsgs : offset + limit;
 	var list = this.msgs.getArray();
 	
 	var msg;
 	for (var i = offset; i < end; i++) {
 		if (list[i].isInHitList()) {
-			if (msg == null || msg.date < list[i].date)
+			if (msg == null || msg.date < list[i].date) {
 				msg = list[i];
+			}
 		}
 	}
 

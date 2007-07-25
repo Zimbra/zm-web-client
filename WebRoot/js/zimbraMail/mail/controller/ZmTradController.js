@@ -38,6 +38,7 @@
 */
 ZmTradController = function(appCtxt, container, mailApp) {
 	ZmDoublePaneController.call(this, appCtxt, container, mailApp);
+	this._msgControllerMode = ZmController.TRAD_VIEW;
 };
 
 ZmTradController.prototype = new ZmDoublePaneController;
@@ -120,6 +121,17 @@ function(params) {
 	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
 	params.fetch = this._readingPaneOn;
 	params.markRead = true;
+};
+
+ZmTradController.prototype._listSelectionListener =
+function(ev) {
+	var item = ev.item;
+	if (!item) { return; }
+	var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
+	if (!handled && ev.detail == DwtListView.ITEM_DBL_CLICKED) {
+		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
+		AjxDispatcher.run("GetMsgController").show(item, this._msgControllerMode, respCallback);
+	}
 };
 
 // Callbacks
