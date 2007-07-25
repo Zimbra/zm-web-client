@@ -166,7 +166,7 @@ function() {
 	ZmOperation.registerOp("CONTACT");	// placeholder
 	ZmOperation.registerOp("EDIT_CONTACT", {textKey:"AB_EDIT_CONTACT", image:"Edit"});
 	ZmOperation.registerOp("MOUNT_ADDRBOOK", {textKey:"mountAddrBook", image:"ContactsFolder"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("NEW_ADDRBOOK", {textKey:"newAddrBook", tooltipKey:"newAddrBookTooltip", image:"NewContact"});
+	ZmOperation.registerOp("NEW_ADDRBOOK", {textKey:"newAddrBook", tooltipKey:"newAddrBookTooltip", image:"NewContactsFolder"});
 	ZmOperation.registerOp("NEW_CONTACT", {textKey:"newContact", tooltipKey:"newContactTooltip", image:"NewContact"});
 	ZmOperation.registerOp("NEW_GROUP", {textKey:"newGroup", tooltipKey:"newGroupTooltip", image:"NewGroup"});
 	ZmOperation.registerOp("PRINT_CONTACT", {textKey:"printContact", image:"Print"}, ZmSetting.PRINT_ENABLED);
