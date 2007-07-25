@@ -282,7 +282,7 @@
       </jsp-property-group>
     </jsp-config>
 
-<!-- uncomment this block to force redirect from http to https
+<!-- REDIRECTBEGIN
     <security-constraint>
         <web-resource-collection>
         <web-resource-name>force https</web-resource-name>
@@ -292,6 +292,6 @@
             <transport-guarantee>CONFIDENTIAL</transport-guarantee>
         </user-data-constraint>
     </security-constraint>
--->
+REDIRECTEND -->
 
 </web-app>
