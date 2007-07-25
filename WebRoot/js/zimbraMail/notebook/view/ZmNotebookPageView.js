@@ -192,11 +192,11 @@ ZmNotebookPageView.prototype._createHtml = function() {
 	Dwt.setScrollStyle(element, Dwt.SCROLL);
 
 	if(!AjxEnv.isSafari) {		
-		var params = {parent: this, className: "ZmNotebookIframe", hidden: false, html: '',
+		var params = {parent: this, className: "ZmNotebookIframe", hidden: false, html: '<body></body>',
 		      	  	  posStyle: DwtControl.STATIC_STYLE,useKbMgmt: true, onload: "ZmNotebookPageView._iframeOnLoad(this)"};
 		this._diframe = new DwtIframe(params);
 		this._iframe = this._diframe.getIframe();
-		var params1 = {parent: this, hidden: true, html: '', onload: "ZmNotebookPageView._iframeOnLoad1(this)"};
+		var params1 = {parent: this, hidden: true, html: '<body></body>', onload: "ZmNotebookPageView._iframeOnLoad1(this)"};
 		this._diframe1 = new DwtIframe(params1);
 		this._diframe1.setVisible(false);
 		this._iframe1 = this._diframe1.getIframe();	
