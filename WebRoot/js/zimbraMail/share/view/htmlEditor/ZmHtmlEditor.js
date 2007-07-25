@@ -95,6 +95,7 @@ function(mode, convert) {
 	DwtHtmlEditor.prototype.setMode.call(this, mode, convert);
 
 	if (mode == DwtHtmlEditor.HTML) {
+		this._createToolbars();
 		this._resetFormatControls();
 	}
 
@@ -551,8 +552,9 @@ function(x, y) {
 
 ZmHtmlEditor.prototype._initialize =
 function() {
-	// Bug #4920: optimization breaks height computation. Always create toolbars for now.
-	this._createToolbars();
+	if (this._mode == DwtHtmlEditor.HTML) {
+		this._createToolbars();
+	}
 	DwtHtmlEditor.prototype._initialize.call(this);
 };
 
