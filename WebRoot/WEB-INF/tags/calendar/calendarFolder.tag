@@ -26,7 +26,7 @@
                 </c:otherwise>
             </c:choose>
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
-            ${fn:escapeXml(label)}
+            ${zm:truncate(fn:escapeXml(label),17,true)}
         </a>
 
     </td>

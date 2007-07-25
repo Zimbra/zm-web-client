@@ -20,7 +20,7 @@
         <a href='${url}'>
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
             <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>
-            ${fn:escapeXml(label)}
+             ${zm:truncate(fn:escapeXml(label),20,true)}
             </span>
         </a>
     </td>
