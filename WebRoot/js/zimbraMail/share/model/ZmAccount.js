@@ -48,7 +48,7 @@ ZmAccount.prototype.getName = function() {
 	return this.name;
 };
 
-// sub-classes MUST override this methods
+// sub-classes MUST override these methods
 
 ZmAccount.prototype.setEmail = function(email) {
 	throw this.toString()+"#setEmail";

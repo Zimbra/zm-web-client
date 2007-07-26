@@ -87,7 +87,7 @@ ZmDataSourceCollection.prototype.importMail = function(accounts) {
             var account = accounts[i];
             sourceMap[account.id] = account;
 
-            var dsrc = soapDoc.set("dsrc");
+            var dsrc = soapDoc.set(account.ELEMENT_NAME);
             dsrc.setAttribute("id", account.id);
         }
 
@@ -114,10 +114,12 @@ ZmDataSourceCollection.prototype.add = function(item) {
 	else if (item.type == ZmAccount.IMAP) {
 		this._imapMap[item.id] = item;
 	}
+	this._appCtxt.getIdentityCollection().add(item.getIdentity());
 	this._notify(ZmEvent.E_CREATE, {item:item});
 };
 
 ZmDataSourceCollection.prototype.modify = function(item) {
+	this._appCtxt.getIdentityCollection().notifyModify(item.getIdentity(), true);
     this._notify(ZmEvent.E_MODIFY, {item:item});
 };
 
@@ -125,6 +127,7 @@ ZmDataSourceCollection.prototype.remove = function(item) {
     delete this._itemMap[item.id];
 	delete this._pop3Map[item.id];
 	delete this._imapMap[item.id];
+	this._appCtxt.getIdentityCollection().remove(item.getIdentity());
     this._notify(ZmEvent.E_DELETE, {item:item});
 };
 
@@ -133,7 +136,7 @@ ZmDataSourceCollection.prototype.initialize = function(dataSources) {
 
     var popAccounts = dataSources.pop3 || [];
     for (var i = 0; i < popAccounts.length; i++) {
-        var pop3 = new ZmPopAccount(this._appCtxt);
+        var pop3 = new ZmPopAccount(this._appCtxt, popAccounts[i].id);
         pop3.setFromJson(popAccounts[i]);
         this.add(pop3);
     }

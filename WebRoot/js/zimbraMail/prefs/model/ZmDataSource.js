@@ -27,7 +27,9 @@ ZmDataSource = function(appCtxt, type, id, list) {
 	if (arguments.length == 0) return;
 	ZmAccount.call(this, appCtxt, type, id, null, list);
 	this.port = this.getDefaultPort();
-	this.identity = new ZmIdentity(appCtxt, id);
+	this.identity = new ZmIdentity(appCtxt);
+	this.identity.id = id;
+	this.identity.isFromDataSource = true;
 	// defensive programming
 	this.identity.create = null;
 	this.identity.save = null;
@@ -289,11 +291,19 @@ ZmDataSource.prototype.setFromJson = function(obj) {
 		var pname = ZmDataSource.IDENTITY_ATTRS[aname];
 		identity[pname] = avalue;
 	}
+	this._setupIdentity();
 };
 
 //
 // Protected methods
 //
+
+
+ZmDataSource.prototype._setupIdentity = function() {
+	this.identity.useWhenSentTo = true;
+	this.identity.whenSentToAddresses = [ this.getEmail() ];
+	this.identity.name = this.name;
+};
 
 ZmDataSource.prototype._loadFromDom = function(data) {
 	this.setFromJson(data);
@@ -302,6 +312,8 @@ ZmDataSource.prototype._loadFromDom = function(data) {
 ZmDataSource.prototype._handleCreateResponse = function(callback, result) {
 	var resp = result._data.CreateDataSourceResponse;
 	this.id = resp[this.ELEMENT_NAME][0].id;
+	this.identity.id = this.id;
+	this._setupIdentity();
 	delete this._new;
 	delete this._dirty;
 

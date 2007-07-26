@@ -149,6 +149,11 @@ function(data) {
 	}
 };
 
+ZmIdentityCollection.prototype.notifyModify =
+function(identity, isRename) {
+	this._notify(ZmEvent.E_MODIFY, { item: identity, rename: isRename } );
+};
+
 //
 // Protected methods
 //

@@ -104,6 +104,7 @@ ZmIdentity.prototype.useWhenSentTo = false;
 ZmIdentity.prototype.whenSentToAddresses = [];
 ZmIdentity.prototype.useWhenInFolder = false;
 ZmIdentity.prototype.whenInFolderIds = [];
+ZmIdentity.prototype.isFromDataSource = false;
 
 //
 // Public methods
@@ -276,7 +277,7 @@ ZmIdentity.prototype._handleSaveResponse = function(callback, result, response) 
 
 	// TODO: Is this necessary?
 	var rename = this.hasOwnProperty("name");
-	collection._notify(ZmEvent.E_MODIFY, { item: this, rename: rename } );
+	collection.notifyModify(this, rename);
 
 	if (callback) {
 		callback.run(this, request, result);

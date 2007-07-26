@@ -321,7 +321,7 @@ ZmAccountsPage.prototype.reset = function(useDefaults) {
 	var identities = identityCollection.getIdentities();
 	for (var i = 0; i < identities.length; i++) {
 		var identity = identities[i];
-		if (identity.isDefault) continue;
+		if (identity.isDefault || identity.isFromDataSource) continue;
 
 		var persona = new ZmPersona(appCtxt, identity);
 		this._accounts.add(ZmAccountsPage.__createProxy(persona));
