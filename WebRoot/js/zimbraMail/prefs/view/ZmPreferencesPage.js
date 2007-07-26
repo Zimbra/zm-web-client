@@ -258,15 +258,22 @@ ZmPreferencesPage.prototype.getFormObject = function(id) {
 	return this._dwtObjects[id]; 
 };
 
+/**
+ * Returns the value of the preference control.
+ *
+ * @param id		[string]		The preference identifier.
+ * @param setup		[object]		(Optional) The preference descriptor.
+ * @param control	[DwtControl|*]	(Optional) The preference control.
+ */
 ZmPreferencesPage.prototype.getFormValue =
-function(id) {
+function(id, setup, control) {
+	setup = setup || ZmPref.SETUP[id];
 	var value = null;
-	var setup = ZmPref.SETUP[id];
 	var type = setup ? setup.displayContainer : null;
 	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_CHECKBOX ||
 		type == ZmPref.TYPE_RADIO_GROUP ||
 		type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_LOCALES) {
-		var object = this.getFormObject(id);
+		var object = control || this.getFormObject(id);
 		if (object) {
 			if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
 				value = object.getColor();
@@ -287,16 +294,73 @@ function(id) {
 				value = object.getValue();
 			}
 		}
+		// TODO: user valueFunction
 		if (id == ZmSetting.POLLING_INTERVAL) {
 			value = value * 60; // convert minutes to seconds
 		}
-	} else {
+	}
+	else {
 		var prefId = ZmPref.KEY_ID + id;
 		var element = document.getElementById(prefId);
 		if (!element) return null;
 		value = element.value;
 	}
-	return value;
+	return setup && setup.valueFunction ? setup.valueFunction(value) : value;
+};
+
+/**
+ * Returns the value of the preference control.
+ *
+ * @param id		[string]		The preference identifier.
+ * @param value		[ANY]			The preference value.
+ * @param setup		[object]		(Optional) The preference descriptor.
+ * @param control	[DwtControl|*]	(Optional) The preference control.
+ */
+ZmPreferencesPage.prototype.setFormValue = function(id, value, setup, control) {
+	setup = setup || ZmPref.SETUP[id];
+	value = setup && setup.displayFunction ? setup.displayFunction(value) : value;
+	var type = setup ? setup.displayContainer : null;
+	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_CHECKBOX ||
+		type == ZmPref.TYPE_RADIO_GROUP ||
+		type == ZmPref.TYPE_COLOR) {
+		var object = control || this.getFormObject(id);
+		if (!object) return;
+
+		if (type == ZmPref.TYPE_COLOR) {
+			object.setColor(value);
+		}
+		else if (type == ZmPref.TYPE_CHECKBOX) {
+			object.setSelected(value);
+		}
+		else if (type == ZmPref.TYPE_RADIO_GROUP) {
+			object.setSelectedValue(value);
+		}
+		else {
+			var curValue = object.getValue();
+			if (value != null && (curValue != value))
+				object.setSelectedValue(value);
+		}
+	}
+	else if (type == ZmPref.TYPE_INPUT) {
+		var object = control || this.getFormObject(id);
+		if (!object) return;
+
+		var curValue = object.getValue();
+		if (value != null && (curValue != value))
+			object.setValue(value);
+	}
+	else if (type == ZmPref.TYPE_LOCALES) {
+		if (this._localeMap) {
+			var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
+			this._showLocale(value, button);
+		}
+	}
+	else {
+		var element = control || document.getElementById((ZmPref.KEY_ID + id));
+		if (!element || element.value == value) return;
+
+		element.value = value || "";
+	}
 };
 
 ZmPreferencesPage.prototype.getTitle =
@@ -322,45 +386,7 @@ function(useDefaults) {
 		if (type == ZmPref.TYPE_PASSWORD) { continue; } // ignore non-form elements
 		var pref = settings.getSetting(id);
 		var newValue = this._getPrefValue(id, useDefaults, true);
-		if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_CHECKBOX ||
-			type == ZmPref.TYPE_RADIO_GROUP ||
-			type == ZmPref.TYPE_COLOR) {
-			var obj = this.getFormObject(id);
-			if (!obj) continue;
-
-			if (type == ZmPref.TYPE_COLOR) {
-				obj.setColor(newValue);
-			}
-			else if (type == ZmPref.TYPE_CHECKBOX) {
-				obj.setSelected(newValue);
-			}
-			else if (type == ZmPref.TYPE_RADIO_GROUP) {
-				obj.setSelectedValue(newValue);
-			}
-			else {
-				var curValue = obj.getValue();
-				if (newValue != null && (curValue != newValue))
-					obj.setSelectedValue(newValue);
-			}
-		} else if (type == ZmPref.TYPE_INPUT) {
-			var input = this.getFormObject(id);
-			if (!input) continue;
-
-			var object = this.getFormObject(id);
-			var curValue = object.getValue();
-			if (newValue != null && (curValue != newValue))
-				object.setValue(newValue);
-        } else if (type == ZmPref.TYPE_LOCALES) {
-			if (this._localeMap) {
-				var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
-				this._showLocale(newValue, button);
-			}
-		} else {
-			var element = document.getElementById((ZmPref.KEY_ID + id));
-			if (!element || element.value == newValue) continue;
-			if (newValue == null) newValue = "";
-			element.value = newValue;
-		}
+		this.setFormValue(id, newValue);
 	}
 };
 
@@ -385,6 +411,7 @@ function(id, useDefault, convert) {
 	var pref = this._appCtxt.getSettings().getSetting(id);
 	var value = useDefault ? pref.getDefaultValue() : pref.getValue();
 	if (convert) {
+		// TODO: user displayFunction
 		if (id == ZmSetting.POLLING_INTERVAL) {
 			value = parseInt(value / 60); // setting stored as seconds, displayed as minutes
 		}
@@ -465,12 +492,13 @@ function(id, setup, value) {
 	// add options
 	var options = setup.options || setup.displayOptions || setup.choices;
 	var isChoices = setup.choices;
+	var isDisplayString = AjxUtil.isString(setup.displayOptions);
 
 	var radioIds = {};
 	var selectedId;
 	for (var i = 0; i < options.length; i++) {
 		var optValue = isChoices ? options[i].value : options[i];
-		var optLabel = isChoices ? options[i].label : setup.displayOptions[i];
+		var optLabel = isChoices ? options[i].label : (isDisplayString ? setup.displayOptions : setup.displayOptions[i]);
 		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
 		var isSelected = value == optValue; 
 

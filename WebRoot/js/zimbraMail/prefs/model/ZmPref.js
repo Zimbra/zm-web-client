@@ -104,6 +104,14 @@ function(interval) {
 	}
 };
 
+ZmPref.int2DurationDay = function(intValue) {
+	return intValue != 0 ? intValue + "d" : intValue;
+};
+
+ZmPref.durationDay2Int = function(durValue) {
+	return parseInt(durValue, 10); // NOTE: parseInt ignores non-digits
+};
+
 ZmPref.approximateInterval =
 function(value) {
 	// get sorted copy of options

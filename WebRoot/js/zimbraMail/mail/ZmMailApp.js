@@ -105,6 +105,11 @@ function(settings) {
 	settings.registerSetting("MAIL_FORWARDING_ADDRESS",			{name:"zimbraPrefMailForwardingAddress", type:ZmSetting.T_PREF});
 	settings.registerSetting("MAIL_FORWARDING_ENABLED",			{name:"zimbraFeatureMailForwardingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_FROM_ADDRESS",				{name:"zimbraPrefFromAddress", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LIST });
+	settings.registerSetting("MAIL_LIFETIME_INBOX_READ",		{name:"zimbraPrefInboxReadLifetime", type:ZmSetting.T_PREF, defaultValue:"0"}); // dataType: DURATION
+	settings.registerSetting("MAIL_LIFETIME_INBOX_UNREAD",		{name:"zimbraPrefInboxUnreadLifetime", type:ZmSetting.T_PREF, defaultValue:"45d"}); // dataType: DURATION
+	settings.registerSetting("MAIL_LIFETIME_JUNK",				{name:"zimbraPrefJunkLifetime", type:ZmSetting.T_PREF, defaultValue:"3d"}); // dataType: DURATION
+	settings.registerSetting("MAIL_LIFETIME_SENT",				{name:"zimbraPrefSentLifetime", type:ZmSetting.T_PREF, defaultValue:"30d"}); // dataType: DURATION
+	settings.registerSetting("MAIL_LIFETIME_TRASH",				{name:"zimbraPrefTrashLifetime", type:ZmSetting.T_PREF, defaultValue:"1d"}); // dataType: DURATION
 	settings.registerSetting("MAIL_LOCAL_DELIVERY_DISABLED",	{name:"zimbraPrefMailLocalDeliveryDisabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("NEW_WINDOW_COMPOSE",				{name:"zimbraPrefComposeInNewWindow", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("NOTIF_ADDRESS",					{name:"zimbraPrefNewMailNotificationAddress", type:ZmSetting.T_PREF});
@@ -148,6 +153,11 @@ function() {
 				ZmSetting.INITIAL_GROUP_MAIL_BY,
 				ZmSetting.INITIAL_SEARCH,
 				ZmSetting.MAIL_FORWARDING_ADDRESS,
+				ZmSetting.MAIL_LIFETIME_INBOX_READ,
+				ZmSetting.MAIL_LIFETIME_INBOX_UNREAD,
+				ZmSetting.MAIL_LIFETIME_JUNK,
+				ZmSetting.MAIL_LIFETIME_SENT,
+				ZmSetting.MAIL_LIFETIME_TRASH,
 				ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED,
 				ZmSetting.NOTIF_ADDRESS,
 				ZmSetting.NOTIF_ENABLED,
@@ -235,7 +245,7 @@ function() {
 		displaySeparator:	false,
 		precondition:		ZmSetting.INITIAL_SEARCH_ENABLED
 	});
-	
+
 	ZmPref.registerPref("MAIL_FORWARDING_ADDRESS", {
 		displayName:		ZmMsg.mailForwardingAddress,
 		displayContainer:	ZmPref.TYPE_INPUT,
@@ -243,7 +253,58 @@ function() {
 		errorMessage:       ZmMsg.invalidEmail,
 		precondition:		ZmSetting.MAIL_FORWARDING_ENABLED
 	});
-		
+
+	ZmPref.registerPref("MAIL_LIFETIME_INBOX_READ", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_HORIZONTAL,
+		displayOptions:		[ ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationDays,
+							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationDays,
+							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationNever ],
+		options:			[ 30, 45, 60, 90, 120, 0 ],
+		displayFunction:	ZmPref.durationDay2Int,
+		valueFunction:		ZmPref.int2DurationDay
+	});
+
+	ZmPref.registerPref("MAIL_LIFETIME_INBOX_UNREAD", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_HORIZONTAL,
+		displayOptions:		[ ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationDays,
+							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationDays,
+							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationNever ],
+		options:			[ 30, 45, 60, 90, 120, 0 ],
+		displayFunction:	ZmPref.durationDay2Int,
+		valueFunction:		ZmPref.int2DurationDay
+	});
+
+	ZmPref.registerPref("MAIL_LIFETIME_JUNK", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_HORIZONTAL,
+		displayOptions:		ZmMsg.lifetimeDurationDays,
+		options:			[ 1, 3, 7, 30 ],
+		displayFunction:	ZmPref.durationDay2Int,
+		valueFunction:		ZmPref.int2DurationDay
+	});
+
+	ZmPref.registerPref("MAIL_LIFETIME_SENT", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_HORIZONTAL,
+		displayOptions:		[ ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationDays,
+							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationDays,
+							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationNever ],
+		options:			[ 30, 45, 60, 90, 120, 0 ],
+		displayFunction:	ZmPref.durationDay2Int,
+		valueFunction:		ZmPref.int2DurationDay
+	});
+
+	ZmPref.registerPref("MAIL_LIFETIME_TRASH", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_HORIZONTAL,
+		displayOptions:		ZmMsg.lifetimeDurationDays,
+		options:			[ 1, 3, 7, 30 ],
+		displayFunction:	ZmPref.durationDay2Int,
+		valueFunction:		ZmPref.int2DurationDay
+	});
+
 	ZmPref.registerPref("MAIL_LOCAL_DELIVERY_DISABLED", {
 		displayName:		ZmMsg.mailDeliveryDisabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
