@@ -64,7 +64,14 @@ ZmApptEditView.SHOWAS_OPTIONS = [
 	{ label: ZmMsg.free, 				value: "F", 	selected: false },
 	{ label: ZmMsg.replyTentative, 		value: "T", 	selected: false },
 	{ label: ZmMsg.busy, 				value: "B", 	selected: true  },
-	{ label: ZmMsg.outOfOffice,			value: "O", 	selected: false }];
+	{ label: ZmMsg.outOfOffice,			value: "O", 	selected: false }
+];
+
+ZmApptEditView.PRIVACY_OPTIONS = [
+	{ label: ZmMsg._public,				value: "PUB",	selected: true	},
+	{ label: ZmMsg._private,			value: "PRI"					},
+	{ label: ZmMsg.confidential,		value: "CON"					}
+];
 
 
 // Public Methods
@@ -242,6 +249,7 @@ function(calItem) {
 	ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
 
 	calItem.freeBusy = this._showAsSelect.getValue();
+	calItem.privacy = this._privacySelect.getValue();
 
 	// set the start date by aggregating start date/time fields
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
@@ -276,6 +284,7 @@ function(calItem, mode) {
 
 	this._attInputField[ZmCalItem.LOCATION].setValue(calItem.getLocation());
 	this._showAsSelect.setSelectedValue(calItem.freeBusy);
+	this._privacySelect.setSelectedValue(calItem.privacy);
 
 	// reset the date/time values based on current time
 	var sd = new Date(calItem.startDate.getTime());
@@ -349,7 +358,7 @@ function() {
 	this._allDayCheckboxId 	= this._htmlElId + "_allDayCheckbox";
 	this._repeatDescId 		= this._htmlElId + "_repeatDesc";
     this._startTimeAtLblId  = this._htmlElId + "_startTimeAtLbl";
-    this._endTimeAtLblId  = this._htmlElId + "_endTimeAtLbl";
+    this._endTimeAtLblId	= this._htmlElId + "_endTimeAtLbl";
 
     var subs = {
 		id: this._htmlElId,
@@ -396,7 +405,15 @@ function(width) {
 	}
 	this._showAsSelect.reparentHtmlElement(this._htmlElId + "_showAsSelect");
 
-	// time ZmTimeSelect
+	// privacy DwtSelect
+	this._privacySelect = new DwtSelect(this);
+	for (var j = 0; j < ZmApptEditView.PRIVACY_OPTIONS.length; j++) {
+		var option = ZmApptEditView.PRIVACY_OPTIONS[j];
+		this._privacySelect.addOption(option.label, option.selected, option.value);
+	}
+	this._privacySelect.reparentHtmlElement(this._htmlElId + "_privacySelect");
+
+		// time ZmTimeSelect
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 	this._startTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.START);
 	this._startTimeSelect.reparentHtmlElement(this._htmlElId + "_startTimeSelect");
@@ -533,6 +550,7 @@ function(excludeAttendees) {
 	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalItem.LOCATION].getArray(), ZmCalItem.LOCATION));
 	vals.push(ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalItem.EQUIPMENT].getArray(), ZmCalItem.EQUIPMENT));
 	vals.push(this._showAsSelect.getValue());
+	vals.push(this._privacySelect.getValue());
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 	startDate = this._startTimeSelect.getValue(startDate);

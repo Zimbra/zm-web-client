@@ -330,7 +330,7 @@ function(list, type, includeDisplayName) {
 };
 
 ZmApptViewHelper._allDayItemHtml =
-function(appt,id, body_style, controller) {
+function(appt, id, body_style, controller) {
 	var isNew = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION;
 	var isAccepted = appt.ptst == ZmCalItem.PSTATUS_ACCEPT;
 	var color = ZmCalendarApp.COLORS[controller.getCalendarColor(appt.folderId)];
@@ -345,10 +345,10 @@ function(appt,id, body_style, controller) {
 		starttime: appt.getDurationText(true, true),
 		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
-		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr()
-	};	
-	var template = "calendar_appt_allday";
-    return AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#"+template, subs);
+		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
+		icon: appt.isPrivate() ? "ReadOnly" : null
+	};
+    return AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#calendar_appt_allday", subs);
 };
 
 

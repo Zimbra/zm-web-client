@@ -1274,6 +1274,7 @@ line-height:normal;
 .appt_new_time					{	@SmallBoxPadding@;	font-weight:bold;	color:white;							}
 .appt_end_time					{	@SmallBoxPadding@;						color:#666666;	@NoWrap@	}
 .appt_location					{	@SmallBoxPadding@;						}
+.appt_icon						{ 	position: relative; float: right;		}
 
 .appt_top_sash,
 .appt_bottom_sash{

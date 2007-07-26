@@ -48,10 +48,10 @@ ZmApptQuickAddDialog = function(parent, appCtxt) {
 	DBG.timePt("ZmQuickAddDialog constructor", true);
 
 	this._appCtxt = appCtxt;
-
 	this._attendees = {};
 
-	this.setContent(this._setHtml());
+	var html = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ZmApptQuickAddDialog", {id: this._htmlElId});
+	this.setContent(html);
 	this.setTitle(ZmMsg.quickAddAppt);
 	DBG.timePt("create content");
 
@@ -95,6 +95,7 @@ function(appt) {
 		this._endTimeSelect.set(appt.endDate);
 	}
 	this._showAsSelect.setSelectedValue("B");
+	this._privacySelect.setSelectedValue("PUB");
 	this._resetCalendarSelect(appt);
 	this._repeatSelect.setSelectedValue("NON");
 	this._repeatDescField.innerHTML = "";
@@ -123,6 +124,7 @@ function() {
 	// save field values of this view w/in given appt
 	appt.setName(this._subjectField.getValue());
 	appt.freeBusy = this._showAsSelect.getValue();
+	appt.privacy = this._privacySelect.getValue();
 	var calId = this._calendarSelect.getValue();
 	appt.setFolderId(calId);
 	appt.setOrganizer(this._calendarOrgs[calId]);
@@ -179,90 +181,7 @@ function(loc) {
 
 // Private / protected methods
 
-ZmApptQuickAddDialog.prototype._setHtml = 
-function() {
-	this._subjectFieldId	= Dwt.getNextId();
-	this._locationFieldId	= Dwt.getNextId();
-	this._showAsSelectId	= Dwt.getNextId();
-	this._calSelectId		= Dwt.getNextId();
-	this._calLabelId		= Dwt.getNextId();
-	this._startDateFieldId	= Dwt.getNextId();
-	this._startMiniCalBtnId = Dwt.getNextId();
-	this._startTimeSelectId = Dwt.getNextId();
-	this._endDateFieldId	= Dwt.getNextId();
-	this._endMiniCalBtnId	= Dwt.getNextId();
-	this._endTimeSelectId	= Dwt.getNextId();
-	this._repeatSelectId	= Dwt.getNextId();
-	this._repeatDescId 		= Dwt.getNextId();
-	this._calRowId          = Dwt.getNextId();
-
-    var html = [];
-	var i = 0;
-
-	html[i++] = "<table border=0 width=330>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField'><div style='width:70px'><sup>*</sup>";
-	html[i++] = ZmMsg.subject;
-	html[i++] = ":</div></td><td colspan=2 id='";
-	html[i++] = this._subjectFieldId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.location;
-	html[i++] = ":</td><td colspan=2 id='";
-	html[i++] = this._locationFieldId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.showAs;
-	html[i++] = "</td><td colspan=2 id='";
-	html[i++] = this._showAsSelectId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "<tr id='" + this._calRowId + "'><td class='ZmApptTabViewPageField' id='";
-	html[i++] = this._calLabelId;
-	html[i++] = "'>";
-	html[i++] = ZmMsg.calendar;
-	html[i++] = ":</td><td colspan=2 id='";
-	html[i++] = this._calSelectId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td></td></tr>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.startTime;
-	html[i++] = ":</td><td colspan=2>";
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
-	html[i++] = "<td>";
-	html[i++] = "<input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='";
-	html[i++] = this._startDateFieldId;
-	html[i++] = "'></td><td id='";
-	html[i++] = this._startMiniCalBtnId;
-	html[i++] = "'></td><td>&nbsp;</td><td>@</td><td>&nbsp;</td><td id='";
-	html[i++] = this._startTimeSelectId;
-	html[i++] = "'></td></tr></table>";
-	html[i++] = "</td></tr>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.endTime;
-	html[i++] = ":</td><td colspan=2>";
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
-	html[i++] = "<td>";
-	html[i++] = "<input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='";
-	html[i++] = this._endDateFieldId;
-	html[i++] = "'></td><td id='";
-	html[i++] = this._endMiniCalBtnId;
-	html[i++] = "'></td><td>&nbsp;</td><td>@</td><td>&nbsp;</td><td id='";
-	html[i++] = this._endTimeSelectId;
-	html[i++] = "'></td></tr></table>";
-	html[i++] = "</td></tr>";
-	html[i++] = "<tr><td></td></tr>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.repeat;
-	html[i++] = ":</td><td id='";
-	html[i++] = this._repeatSelectId;
-	html[i++] = "'></td><td><span class='ZmApptTabViewPageField' style='width:100%' id='";
-	html[i++] = this._repeatDescId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "</table>";
-
-	return html.join("");	
-};
-
-ZmApptQuickAddDialog.prototype._createDwtObjects = 
+ZmApptQuickAddDialog.prototype._createDwtObjects =
 function() {
 
 	// create DwtInputField's
@@ -272,16 +191,14 @@ function() {
 											validationStyle:DwtInputField.CONTINUAL_VALIDATION});
 	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
-	this._subjectField.reparentHtmlElement(this._subjectFieldId);
-	delete this._subjectFieldId;
+	this._subjectField.reparentHtmlElement(this._htmlElId + "_subject");
 
 	this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION});
 	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
-	this._locationField.reparentHtmlElement(this._locationFieldId);
-	delete this._locationFieldId;
+	this._locationField.reparentHtmlElement(this._htmlElId + "_location");
 
 	// create DwtSelects
 	this._showAsSelect = new DwtSelect(this);
@@ -289,30 +206,37 @@ function() {
 		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
 		this._showAsSelect.addOption(option.label, option.selected, option.value);
 	}
-	this._showAsSelect.reparentHtmlElement(this._showAsSelectId);
+	this._showAsSelect.reparentHtmlElement(this._htmlElId + "_showAs");
+
+	this._privacySelect = new DwtSelect(this);
+	for (var j = 0; j < ZmApptEditView.PRIVACY_OPTIONS.length; j++) {
+		var option = ZmApptEditView.PRIVACY_OPTIONS[j];
+		this._privacySelect.addOption(option.label, option.selected, option.value);
+	}
+	this._privacySelect.reparentHtmlElement(this._htmlElId + "_privacy");
+
 
 	this._calendarSelect = new DwtSelect(this);
-	this._calendarSelect.reparentHtmlElement(this._calSelectId);
-	delete this._calSelectId;
+	this._calendarSelect.reparentHtmlElement(this._htmlElId + "_calendar");
 
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
-	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
+	var startMiniCalId = this._htmlElId + "_startMiniCal";
+	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, startMiniCalId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
+	var endMiniCalId = this._htmlElId + "_endMiniCal";
+	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, endMiniCalId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
 
 	// create selects for Time section
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 	
 	this._startTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.START);
 	this._startTimeSelect.addChangeListener(timeSelectListener);
-	this._startTimeSelect.reparentHtmlElement(this._startTimeSelectId);
-	delete this._startTimeSelectId;
+	this._startTimeSelect.reparentHtmlElement(this._htmlElId + "_startTime");
 
 	this._endTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.END);
 	this._endTimeSelect.addChangeListener(timeSelectListener);
-	this._endTimeSelect.reparentHtmlElement(this._endTimeSelectId);
-	delete this._endTimeSelectId;
+	this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_endTime");
 
 	this._repeatSelect = new DwtSelect(this);
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
@@ -320,18 +244,19 @@ function() {
 		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
-	var repeatCell = document.getElementById(this._repeatSelectId);
-	if (repeatCell)
+	var repeatCell = document.getElementById(this._htmlElId + "_repeat");
+	if (repeatCell) {
 		repeatCell.appendChild(this._repeatSelect.getHtmlElement());
-	delete this._repeatSelectId;
+	}
 };
 
 ZmApptQuickAddDialog.prototype._cacheFields = 
 function() {
-	this._calLabelField 	= document.getElementById(this._calLabelId); 		delete this._calLabelId;
-	this._startDateField 	= document.getElementById(this._startDateFieldId);	delete this._startDateFieldId;
-	this._endDateField 		= document.getElementById(this._endDateFieldId);	delete this._endDateFieldId;
-	this._repeatDescField 	= document.getElementById(this._repeatDescId);		delete this._repeatDescId;
+	this._calLabelField 	= document.getElementById(this._htmlElId + "_calendarLabel");
+	this._calendarRow		= document.getElementById(this._htmlElId + "_calendarRow");
+	this._startDateField 	= document.getElementById(this._htmlElId + "_startDate");
+	this._endDateField 		= document.getElementById(this._htmlElId + "_endDate");
+	this._repeatDescField 	= document.getElementById(this._htmlElId + "_repeatDesc");
 };
 
 ZmApptQuickAddDialog.prototype._addEventHandlers = 
@@ -364,7 +289,7 @@ function(appt) {
 	}
 
 	var len = this._calendarSelect.size();
-	Dwt.setVisible(document.getElementById(this._calRowId), len > 1);
+	Dwt.setVisible(this._calendarRow, len > 1);
 
     this._calendarSelect.setSelectedValue(appt.folderId);
 };

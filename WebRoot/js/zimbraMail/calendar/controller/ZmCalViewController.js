@@ -955,7 +955,7 @@ function(startDate, endDate, folderId, shiftKey) {
 	if (endDate)
 		appt.setEndDate(endDate);
 	appt.setAllDayEvent(true);
-	appt.setFreeBusy("F");
+	appt.freeBusy = "F";
 	this._showQuickAddDialog(appt, shiftKey);
 };
 
@@ -997,7 +997,7 @@ function(appt) {
 	try {
 		// if we have an appointment, go get all the details.
 		if (!appt.__creating) {
-			var calendar = this._appCtxt.getById(appt.folderId);
+			var calendar = appt.getFolder();
 			var isSynced = Boolean(calendar.url);
 			if (appt.isReadOnly() || isSynced) {
 				var mode = appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
@@ -1271,19 +1271,23 @@ function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 	parent.enableAll(true);
 	var currViewName = this._viewMgr.getCurrentViewName();
-	if (currViewName == ZmController.CAL_APPT_VIEW) {
+	if (currViewName == ZmController.CAL_APPT_VIEW)
+	{
 		// disable DELETE since CAL_APPT_VIEW is a read-only view
 		parent.enable([ZmOperation.DELETE, ZmOperation.CAL_REFRESH, ZmOperation.TODAY], false);
 	}
-	else {
+	else
+	{
 		this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
 		var currView = this._viewMgr.getCurrentView();
 		var appt = currView ? currView.getSelection()[0] : null;
 		var isReadOnly = appt ? appt.isReadOnly() : false;
-		var calendar = appt && this._appCtxt.getById(appt.folderId);
+		var calendar = appt && appt.getFolder();
 		var isSynced = Boolean(calendar && calendar.url);
 		var disabled = isSynced || isReadOnly;
+		var isPrivate = appt && appt.isPrivate() && calendar.isRemote();
 		parent.enable(ZmOperation.DELETE, !disabled);
+		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
 	}
 	// disable button for current view
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
@@ -1298,10 +1302,17 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_SELECTED) {
 		this._viewMgr.getCurrentView()._apptSelected();
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		// open a appointment view
-		this._apptIndexShowing = this._list.indexOf(ev.item);
-		this._apptFromView = this._viewMgr.getCurrentView();
-		this._showAppointmentDetails(ev.item);
+		var appt = ev.item;
+		if (appt.isPrivate() && appt.getFolder().isRemote()) {
+			var msgDialog = this._appCtxt.getMsgDialog();
+			msgDialog.setMessage(ZmMsg.apptIsPrivate, DwtMessageDialog.INFO_STYLE);
+			msgDialog.popup();
+		} else {
+			// open a appointment view
+			this._apptIndexShowing = this._list.indexOf(appt);
+			this._apptFromView = this._viewMgr.getCurrentView();
+			this._showAppointmentDetails(ev.item);
+		}
 	}
 };
 
@@ -1311,7 +1322,7 @@ function(ev) {
 	var appt = actionMenu.__appt;
 	delete actionMenu.__appt;
 
-	var calendar = this._appCtxt.getById(appt.folderId);
+	var calendar = appt.getFolder();
 	var isSynced = Boolean(calendar.url);
 	if (appt.isReadOnly() || isSynced) {
 		// always get details on appt as if we're editing series (since its read only)
@@ -1511,7 +1522,8 @@ function(appt, actionMenu) {
 	var calendar = this.getCheckedCalendar(appt.getLocalFolderId());
 	var share = calendar && calendar.link ? calendar.shares[0] : null;
 	var workflow = share ? share.isWorkflow() : true;
-	var enabled = !isOrganizer && workflow;
+	var isPrivate = appt.isPrivate() && calendar.isRemote();
+	var enabled = !isOrganizer && workflow && !isPrivate;
 
 	// reply action menu
 	actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && appt.ptst != ZmCalItem.PSTATUS_ACCEPT);

@@ -724,9 +724,12 @@ function(appt) {
 	var id = this._getItemId(appt);
 	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
 	var location = appt.getLocation() ? "<i>"+AjxStringUtil.htmlEncode(appt.getLocation())+"</i>" : "";
-	
+	var tree = this._appCtxt.getFolderTree();
+	var calendar = tree.getById(appt.folderId);
+	var isRemote = Boolean(calendar.url);
+
 	var is30 = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
-	
+
 	var subs = {
 		id: id,
 		body_style: "",
@@ -737,7 +740,8 @@ function(appt) {
 		starttime: appt.getDurationText(true, true),
 		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate))+this._padding,
 		location: location,
-		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr()
+		status: (appt.isOrganizer() ? "" : appt.getParticipantStatusStr()),
+		icon: ((appt.isPrivate()) ? "ReadOnly" : null)
 	};	
 	
 	var template;
@@ -758,11 +762,7 @@ function(appt) {
 	div.innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#"+template, subs);
 
 	// if (we can edit this appt) then create sash....
-	var tree = this._appCtxt.getFolderTree();
-	var calendar = tree.getById(appt.folderId);
-	var isRemote = Boolean(calendar.url);
-	 if (!appt.isReadOnly() && !appt.isAllDayEvent() && !isRemote) {
-	
+	if (!appt.isReadOnly() && !appt.isAllDayEvent() && !isRemote) {
 		if (appt._fanoutLast || (!appt._fanoutFirst && (!appt._fanoutNum))) {
 			var bottom = document.createElement("div");
 			//sash.id = id+"_sash";

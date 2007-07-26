@@ -430,6 +430,12 @@ function(compNum) {
 	return this.components[cn] ? this.components[cn].fb : null;
 };
 
+ZmInvite.prototype.getPrivacy =
+function(compNum) {
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn]["class"] : null;
+};
+
 ZmInvite.prototype.getLocation =
 function(compNum) {
 	var cn = compNum || 0;

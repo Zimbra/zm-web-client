@@ -30,6 +30,7 @@ ZmAppt = function(appCtxt, list, noinit) {
 	if (noinit) return;
 
 	this.freeBusy = "B"; 														// Free/Busy status (F|B|T|O) (free/busy/tentative/outofoffice)
+	this.privacy = "PUB";														// Privacy class (PUB|PRI|CON) (public/private/confidential)
 	this.transparency = "O";
 	this.startDate = new Date();
 	this.endDate = new Date(this.startDate.getTime() + (30*60*1000));
@@ -97,9 +98,6 @@ function() {
 			(this._attendees[ZmCalItem.EQUIPMENT] && this._attendees[ZmCalItem.EQUIPMENT].length));
 };
 
-
-// Setters
-ZmAppt.prototype.setFreeBusy 			= function(fb) 			{ this.freeBusy = fb || "B"; };
 
 
 // Public methods
@@ -378,6 +376,11 @@ function(message, subject) {
 	this._attendees[ZmCalItem.PERSON] = addrs.getArray();
 };
 
+ZmAppt.prototype.isPrivate =
+function() {
+	return (this.privacy != "PUB");
+};
+
 
 
 // Private / Protected methods
@@ -385,6 +388,7 @@ function(message, subject) {
 ZmAppt.prototype._setExtrasFromMessage =
 function(message) {
 	this.freeBusy = message.invite.getFreeBusy();
+	this.privacy = message.invite.getPrivacy();
 
 	// parse out attendees for this invite
 	this._attendees[ZmCalItem.PERSON] = [];
@@ -488,6 +492,7 @@ ZmAppt.prototype._loadFromDom =
 function(calItemNode, instNode) {
 	ZmCalItem.prototype._loadFromDom.call(this, calItemNode, instNode);
 
+	this.privacy = this._getAttr(calItemNode, instNode, "class");
 	this.transparency = this._getAttr(calItemNode, instNode, "transp");
 	this.otherAttendees = this._getAttr(calItemNode, instNode, "otherAtt");
 	this.setAttendees(this._getAttr(calItemNode, instNode, "loc"), ZmCalItem.LOCATION);
@@ -527,6 +532,7 @@ function(soapDoc, inv, comp) {
 	ZmCalItem.prototype._addExtrasToSoap.call(this, soapDoc, inv, comp);
 
 	comp.setAttribute("fb", this.freeBusy);
+	comp.setAttribute("class", this.privacy);
 	comp.setAttribute("transp", this.transparency);
 };
 
