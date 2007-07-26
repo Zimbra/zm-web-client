@@ -10,9 +10,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<table width=100% cellspacing=0>
-<tr height=35 >
-    <td style='width:80%' height=25 nowrap class='SearchBar'>
+<table width=100% cellspacing=0 align='right'>
+<tr height=35>
+    <td height=25 nowrap class='SearchBar'>
         <c:choose>
             <c:when test="${calendars}">
                 <app:calendarUrl var="searchUrl"/>
@@ -26,9 +26,16 @@
             <c:if test="${voice}">
                 <c:set var="query"></c:set>
             </c:if>
-            &nbsp;<label for="searchField"><fmt:message key="find"/> :</label>
-            <input id="searchField" class="searchField" style='width:50%' maxlength=2048 name=sq value="${query}">
-            &nbsp;<fmt:message key="in"/>&nbsp;
+            <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+            <!-- td>
+            <label for="searchField"><fmt:message key="find"/> :</label>
+			</td -->
+            <td class='ImgField_L'></td>            
+            <td><input id="searchField" class="searchField" maxlength=2048 name=sq value="${query}"></td>
+            <td class='ImgField_R'></td>
+            <td>&nbsp;<fmt:message key="in"/>&nbsp;</td>
+            <td style='padding-left: 2px;'>
             <c:choose>
                 <c:when test="${param.st eq 'contact'}"><c:set var="isContact" value="${true}"/></c:when>
                 <c:otherwise><c:set var="isMail" value="${true}"/></c:otherwise>
@@ -42,12 +49,16 @@
                     <option <c:if test="${calendars}">selected </c:if> value="appointment"/><fmt:message key="searchPersonalCalendars"/>
                 </c:if>
             </select>
+            </td>
+            <td style='padding-left: 2px;'>
             <input class="SearchButton" type=submit name=search value="<fmt:message key="search"/>">
             <c:if test="${calendars}">
                 <c:if test="${not empty param.tz}"><input type="hidden" name="tz" value='${param.tz}'/></c:if>
                 <c:if test="${not empty param.date}"><input type="hidden" name="date" value='${param.date}'/></c:if>
                 <c:if test="${not empty param.view}"><input type="hidden" name="view" value='${param.view}'/></c:if>
             </c:if>
+            </td>
+            </tr></table>
         </form>
     </td>
 </tr>

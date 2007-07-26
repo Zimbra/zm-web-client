@@ -42,7 +42,7 @@
 			<td class='ImgSkin_Chrome_R1__H' colspan=3>
 				<table width=100% cellspacing=0 cellpadding=0>
 				<tr>
-					<td class='R1Text' style='padding-left:5px;'>Hi,</td>
+					<td class='R1Text' style='padding-left:5px;'>hi,</td>
 					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(mailbox.defaultIdentity.fromDisplay)}</b></nobr></div></td>
 					<td id='#skin_container_logoff_lite' class='R1Link'> <a href="<c:url value="/h/login?loginOp=logout"/>"><nobr>Log Off</nobr></a></td>
 					<td class='R1Sep'>|</td>
@@ -69,19 +69,17 @@
 			<td><div class='ImgSkin_Chrome_R2_L'></div></td>
 			<td class='ImgSkin_Chrome_R2__H' colspan=3>
 				
-				<table width=100% cellspacing=0 cellpadding=0>
+				<table width=100% cellspacing=0 cellpadding=0 border='0'>
 				<tr>
-					<td><div id='skin_container_app_name'  width='100%'><nobr><span style='font-color:black;font-weight:bold;'>SmartZone<sup style='font-size:.5em'>TM</sup></span> Message Center</nobr></div></td>
-					<td width=100%><div id='skin_container_status' class='skin_container'>
+					<td class='ImgSkin_Chrome_Logo' style='padding-left: 157px;'></td>
+					<td id='skin_container_app_name' style='padding-top: 0px;'><nobr>communications center</nobr></td>
+					<td width='76%'><div id='skin_container_status' class='skin_container'>
 					<app:appStatus/>
 					</div></td>
-					<td id='skin_td_search' class='ImgSkin_Chrome_R1__H'>
-						<div style='position:relative;width:100%;height:100%;'>
-							<!-- search box -->
-							<div id='skin_container_search' class='skin_container'>
+					<td id='skin_td_search' align='right' width='450'>
+						
+							<!-- search box -->				
 							<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}"/>					
-							</div>
-						</div>
 					</td>
 				</tr>
 				</table>

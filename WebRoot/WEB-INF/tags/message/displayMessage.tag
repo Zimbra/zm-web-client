@@ -176,7 +176,7 @@
             <table width=100% >
                 <tr valign="middle">
                     <td nowrap align=left style='padding-left: 5px'>
-                        <table cellspacing=4 cellpadding=0 class='Tb'>
+                        <table cellspacing=0 cellpadding=0 class='Tb'>
                             <tr>
                                 <c:if test="${showInviteReply}">
                                     <td style='padding: 0 2px 0 2px'>
@@ -231,7 +231,7 @@
                         </table>
                     </td>
                     <td nowrap align=right style='padding-right: 5px;'>
-                        <table cellspacing=4 cellpadding=0 class='Tb'>
+                        <table cellspacing=0 cellpadding=0 class='Tb'>
                             <tr>
                                 <c:if test="${showconvlink and not fn:startsWith(message.conversationId, '-')}">
                                     <td style='padding: 0 2px 0 2px'>
