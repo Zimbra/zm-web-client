@@ -210,7 +210,7 @@ function(actionCode) {
 			break;
 
 		default:
-			return ZmController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmController.prototype.handleKeyAction.call(this, origActionCode);
 	}
 	return true;
 };

@@ -195,14 +195,14 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.GOTO_TAG:
-			var tag = this._appCtxt.getById(shortcut.arg);
+			var tag = shortcut ? this._appCtxt.getById(shortcut.arg) : null;
 			if (tag) {
 				this._appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
 			}
 			break;
 
 		case ZmKeyMap.SAVED_SEARCH:
-			var searchFolder = this._appCtxt.getById(shortcut.arg);
+			var searchFolder = shortcut ? this._appCtxt.getById(shortcut.arg) : null;
 			if (searchFolder) {
 				this._appCtxt.getSearchController().redoSearch(searchFolder.search);
 			}
