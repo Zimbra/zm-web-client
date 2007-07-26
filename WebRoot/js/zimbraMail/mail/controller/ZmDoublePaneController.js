@@ -273,13 +273,14 @@ function(params) {
 	// first find out if the current message is in HTML
 	var msgView = this._doublePaneView.getMsgView();
 	var msg = this._getMsg();
+	var msgViewMsg = msgView.getMsg();
 	var format = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 
 	// if msg shown in msgview matches current msg and
 	// we're not processing a draft msg and
 	// msgview has rendered an html msg and
 	// the user's compose pref is in text/plain
-	if (msgView.getMsg().id == msg.id &&
+	if (msgViewMsg && msgViewMsg.id == msg.id &&
 		params.action != ZmOperation.DRAFT &&
 		msgView.hasHtmlBody() &&
 		format == ZmSetting.COMPOSE_TEXT)
