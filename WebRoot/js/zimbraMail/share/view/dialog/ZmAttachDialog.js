@@ -156,6 +156,13 @@ ZmAttachDialog.prototype.uploadFiles = function(){
 	}
 };
 
+ZmAttachDialog.prototype.cancelUploadFiles = function(){
+	if(this._um && this._um instanceof AjxPost){
+		this._um.cancel();
+	}
+	this._defaultCancelListener();
+};
+
 ZmAttachDialog.prototype.setUploadCallback = function(callback){
 	if(!callback) callback = false;
 	this._uploadCallback = callback;
@@ -165,7 +172,8 @@ ZmAttachDialog.prototype.upload = function(callback, uploadForm){
 	
 	if(!callback) callback = false;
 	this.setButtonEnabled(DwtDialog.OK_BUTTON,false);
-	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON,false);
+	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON,true);
+	this.setFooter("Attaching files...");
 	this._processUpload(callback,uploadForm);
 	
 };
@@ -173,26 +181,52 @@ ZmAttachDialog.prototype.upload = function(callback, uploadForm){
 ZmAttachDialog.prototype._processUpload = function(callback,uploadForm){
 	
 	var ajxCallback = new AjxCallback(this, this._uploadDoneCallback,[callback]);
-	var um = this._appCtxt.getUploadManager();
+	var um = this._um = this._appCtxt.getUploadManager();
 	window._uploadManager = um;
+
 	try {
 		um.execute(ajxCallback, uploadForm);
 	} catch (ex) {
 		ajxCallback.run();
+		this._um = null;
 	}
 };
 
 ZmAttachDialog.prototype._uploadDoneCallback = function(callback,status, attId){
+	
 	this.setButtonEnabled(DwtDialog.OK_BUTTON,true);
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON,true);
-	if (status != AjxPost.SC_OK) {
-		var message = AjxMessageFormat.format(ZmMsg.uploadError, status);
-		var dialog = this._appCtxt.getMsgDialog();
-		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, this._title);
-		dialog.popup();
+	this._um = null;
+	
+	if(status == AjxPost.SC_OK){
+		
+		this._tabView.switchToTab(this._tabView.getCurrentTab());
+		if(callback){
+			callback.run(status,attId);
+		}
+		
+	}else if (status == AjxPost.SC_UNAUTHORIZED) {
+		
+		// auth failed during att upload - let user relogin, continue with compose action
+		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
+		this._appCtxt.getAppController()._handleException(ex, callback);
+		
 	} else {
-		callback.run(status,attId);
-	}	
+		
+		// bug fix #2131 - handle errors during attachment upload.
+		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
+		
+		switch (status) {
+			// add other error codes/message here as necessary
+			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
+			default: 									msg += " "; break;
+		}
+		var dialog = this._appCtxt.getMsgDialog();
+		dialog.setMessage(msg,DwtMessageDialog.CRITICAL_STYLE,this._title);
+		dialog.popup();
+		
+	}
+	this.setFooter(((status == AjxPost.SC_OK)?  "Finished attaching files." : "Error while attaching files."));
 };
 
 //MyComputer: Add MyComputer Tab View
@@ -202,7 +236,10 @@ ZmAttachDialog.prototype._addMyComputerTab = function(){
 	var tabKey = this.addTab("MY_COMPUTER",ZmMsg.myComputer,this._myComputerTabView);
 	var okCallback = new AjxCallback(this,this.uploadFiles);
 	this.addOkListener(tabKey,okCallback);
+	var cancelCallback = new AjxCallback(this,this.cancelUploadFiles);
+	this.addCancelListener(tabKey,cancelCallback);
 };
+
 
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx//
 
@@ -479,3 +516,4 @@ ZmMyComputerTabView.prototype._handleKeys = function(ev){
 	var key = DwtKeyEvent.getCharCode(ev);
 	return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
 };
+
