@@ -41,6 +41,17 @@ ZmDataSourceCollection.prototype.getItems = function() {
 	return AjxUtil.values(this._itemMap);
 };
 
+ZmDataSourceCollection.prototype.getItemsFor = function(folderId) {
+    var accounts = [];
+    for (var id in this._itemMap) {
+        var account = this._itemMap[id];
+        if (account.folderId == folderId && account.enabled) {
+            accounts.push(account);
+        }
+    }
+    return accounts;
+};
+
 ZmDataSourceCollection.prototype.getPopAccounts = function() {
     return AjxUtil.values(this._pop3Map);
 };
@@ -69,6 +80,10 @@ ZmDataSourceCollection.prototype.getImapAccountsFor = function(folderId) {
         }
     }
     return accounts;
+};
+
+ZmDataSourceCollection.prototype.importMailFor = function(folderId) {
+	this.importMail(this.getItemsFor(folderId));
 };
 
 ZmDataSourceCollection.prototype.importPopMailFor = function(folderId) {

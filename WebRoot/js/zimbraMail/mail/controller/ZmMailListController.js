@@ -735,21 +735,23 @@ function(parent) {
     var folder = this._appCtxt.getById(folderId);
     var isInbox = (folderId == ZmFolder.ID_INBOX);
     var isFeed = (folder && folder.isFeed());
-    var hasPopAccounts = false;
+    var hasExternalAccounts = false;
 
-    if (folder && !isInbox && !isFeed && this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
+	// TODO: also consider if IMAP is enabled
+	var isEnabled = this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED);
+	if (folder && !isInbox && !isFeed && isEnabled) {
         var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-        var popAccounts = dsCollection.getPopAccountsFor(folderId);
-        hasPopAccounts = popAccounts.length > 0;
+        var dataSources = dsCollection.getItemsFor(folderId);
+        hasExternalAccounts = dataSources.length > 0;
     }
 
 	if (!isInbox && isFeed) {
 		checkMailBtn.setText(ZmMsg.checkFeed);
 		checkMailBtn.setToolTipContent(ZmMsg.checkRssTooltip);
 	}
-	else if (!isInbox && hasPopAccounts) {
-		checkMailBtn.setText(ZmMsg.checkPopMail);
-		checkMailBtn.setToolTipContent(ZmMsg.checkPopMail);
+	else if (!isInbox && hasExternalAccounts) {
+		checkMailBtn.setText(ZmMsg.checkExternalMail);
+		checkMailBtn.setToolTipContent(ZmMsg.checkExternalMail);
 	}
 	else {
 		checkMailBtn.setText(ZmMsg.checkMail);
@@ -929,21 +931,23 @@ function() {
 
     var isInbox = (folderId == ZmFolder.ID_INBOX);
     var isFeed = (folder && folder.isFeed());
-    var hasPopAccounts = false;
+    var hasExternalAccounts = false;
 
-    if (folder && !isFeed && this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
+	// TODO: also consider if IMAP is enabled
+	var isEnabled = this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED); 
+	if (folder && !isFeed && isEnabled) {
         dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-        var dataSources = dsCollection.getPopAccountsFor(folderId);
-        hasPopAccounts = dataSources.length > 0;
+        var dataSources = dsCollection.getItemsFor(folderId);
+        hasExternalAccounts = dataSources.length > 0;
     }
 
     if (isFeed) {
         folder.sync();
     } else {
-        if (hasPopAccounts) {
-            dsCollection.importPopMailFor(folderId);
+        if (hasExternalAccounts) {
+            dsCollection.importMailFor(folderId);
         }
-        if (isInbox || !hasPopAccounts) {
+        if (isInbox || !hasExternalAccounts) {
         	this._app._mailSearch();
         }
     }

@@ -137,24 +137,30 @@ function(parent, type, id) {
 		op.setText(emptyText);
 	}
 
-    // are there any pop accounts associated to this folder?
+    // are there any external accounts associated to this folder?
     var button = parent.getOp(ZmOperation.SYNC);
     if (button) {
         button.setEnabled(true);
         button.setVisible(true);
         if (folder.isFeed()) {
             button.setText(ZmMsg.checkFeed);
-        } else if (this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
-            var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-            var popAccounts = dsCollection.getPopAccountsFor(folder.id);
-            if (popAccounts.length > 0) {
-                button.setText(ZmMsg.checkPopMail);
-            } else {
-                button.setVisible(false);
-            }
-        } else {
-            button.setVisible(false);
         }
+		else {
+			// TODO: also consider if IMAP is enabled
+			var isEnabled = this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED);
+			if (isEnabled) {
+				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+				var dataSources = dsCollection.getItemsFor(folder.id);
+				if (dataSources.length > 0) {
+					button.setText(ZmMsg.checkExternalMail);
+				} else {
+					button.setVisible(false);
+				}
+			}
+			else {
+				button.setVisible(false);
+			}
+		}
     }
 };
 
@@ -256,10 +262,10 @@ function(appCtxt) {
 ZmFolderTreeController.prototype._doSync =
 function(folder) {
     var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-    var popAccounts = dsCollection.getPopAccountsFor(folder.id);
+    var dataSources = dsCollection.getItemsFor(folder.id);
 
-    if (popAccounts.length > 0) {
-        dsCollection.importPopMailFor(folder.id);
+    if (dataSources.length > 0) {
+        dsCollection.importMailFor(folder.id);
     }
     else {
         ZmTreeController.prototype._doSync.call(this, folder);
