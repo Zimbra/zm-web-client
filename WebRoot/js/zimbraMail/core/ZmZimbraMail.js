@@ -968,6 +968,8 @@ function() {
 		this._setUserInfoLink("ZmZimbraMail.conditionalLogOff();", "Logoff", text, "skin_container_logoff", hideIcon);
 	}
 
+	var data = {};
+
 	var login = this._appCtxt.get(ZmSetting.USERNAME);
 	var username = (this._appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
 	if (username) {
@@ -983,6 +985,14 @@ function() {
 	var size = AjxUtil.formatSize(usedQuota, false, 1);
 	var quotaTooltip = null;
 
+	data['login'] = login;
+	data['username'] = username;
+	data['quota'] = quota;
+	data['usedQuota'] = usedQuota;
+	data['size'] = size;
+
+
+	/*
 	var html = [];
 	var idx = 0;
 	html[idx++] = "<center><table border=0 cellpadding=0 cellspacing=0 class='BannerBar'><tr";
@@ -1016,10 +1026,28 @@ function() {
 		html[idx++] = "</td>";
 	}
 	html[idx++] = "</tr></table></center>";
+	*/
+	var quotaTemplateId;
+	if (quota) {
+		quotaTemplateId = 'UsedLimited';
+		data['limit'] = AjxUtil.formatSize(data.quota, false, 1);
+		data['percent'] = Math.min(Math.round((data.usedQuota / data.quota) * 100), 100);
+		data['desc'] = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.percent+'%', data.limit]);
+		var tooltipDesc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.size, data.limit]);
+		quotaTooltip = [ZmMsg.quota, ": ", data.percent, "% ", '('+tooltipDesc+')'].join("");
+	}
+	else {
+		data['desc'] = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [size]);
+		quotaTemplateId = 'UsedUnlimited';
+	}
 
 //	if (!this._appCtxt.get(ZmSetting.SKIN_HINTS, "help_button.hideIcon")) {
-		this._usedQuotaField.getHtmlElement().innerHTML = html.join("");
+		//this._usedQuotaField.getHtmlElement().innerHTML = html.join("");
 //	}
+	data['id'] = this._usedQuotaField._htmlElId;
+	this._usedQuotaField.getHtmlElement().innerHTML =
+		AjxTemplate.expand('zimbraMail.share.templates.Quota#'+quotaTemplateId,
+							data)
 
 	if (userTooltip || quotaTooltip) {
 		var tooltip = [];
