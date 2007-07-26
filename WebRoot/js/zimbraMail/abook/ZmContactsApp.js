@@ -37,6 +37,7 @@ ZmContactsApp = function(appCtxt, container, parentController) {
 	ZmApp.call(this, ZmApp.CONTACTS, appCtxt, container, parentController);
 
 	this._initialized = false;
+	this._contactsLoaded = false;
 };
 
 // Organizer and item-related constants
@@ -291,10 +292,12 @@ function() {
 
 // App API
 
+/*
 ZmContactsApp.prototype.startup =
 function(result) {
 	AjxDispatcher.run("GetContacts");
 };
+*/
 
 /**
  * Checks for the creation of an address book or a mount point to one. Regular
@@ -468,7 +471,10 @@ function(callback, errorCallback) {
 
 ZmContactsApp.prototype._handleResponseGetContactList =
 function(callback) {
-	if (callback && callback.run) callback.run(this._contactList);
+	this.contactsLoaded = true;
+	if (callback && callback.run) {
+		callback.run(this._contactList);
+	}
 };
 
 // NOTE: calling method should handle exceptions!

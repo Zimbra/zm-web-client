@@ -870,18 +870,19 @@ function(container, html, isTextMsg) {
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
 
-	var cl = AjxDispatcher.run("GetContacts");
+	var cl = this._appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded ? AjxDispatcher.run("GetContacts") : null;
 	var subject = msg.subject || ZmMsg.noSubject;
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : "";
 	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
-	if (addr) { addr = addr.address || (AjxStringUtil.htmlEncode(addr.name)); }	// bug fix #17016 - no need to check addr instanceof AjxEmailAddress
+	if (addr) {
+		// bug fix #17016 - no need to check addr instanceof AjxEmailAddress
+		addr = addr.address || (AjxStringUtil.htmlEncode(addr.name));
+	}
 	var sender = msg.getAddress(AjxEmailAddress.SENDER);						// bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
 	var sentBy = sender ? sender.address : addr;
 	var sentByNormal = sentBy;													// non-objectified version
-	var sentByIcon = cl
-		? (cl.getContactByEmail(sentBy) ? "Contact" : "NewContact")
-		: null;
+	var sentByIcon = cl	? (cl.getContactByEmail(sentBy) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
 
 	if (this._objectManager) {
