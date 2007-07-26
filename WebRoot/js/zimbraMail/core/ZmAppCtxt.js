@@ -161,6 +161,7 @@ function() {
 ZmAppCtxt.prototype.getClientCmdHandler =
 function(clientCmdHdlr) {
 	if (!this._clientCmdHandler) {
+		AjxDispatcher.require("Extras");
 		this._clientCmdHandler = new ZmClientCmdHandler(this);
 	}
 	return this._clientCmdHandler;
