@@ -271,11 +271,11 @@ function(id, setup, control) {
 	var value = null;
 	var type = setup ? setup.displayContainer : null;
 	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_CHECKBOX ||
-		type == ZmPref.TYPE_RADIO_GROUP ||
+		type == ZmPref.TYPE_RADIO_GROUP || type == ZmPref.TYPE_COLOR ||
 		type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_LOCALES) {
 		var object = control || this.getFormObject(id);
 		if (object) {
-			if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
+			if (type == ZmPref.TYPE_COLOR) {
 				value = object.getColor();
 			}
 			else if (type == ZmPref.TYPE_CHECKBOX) {
