@@ -96,7 +96,7 @@ function(htmlArr, idx, voicemail, field, colIdx, params) {
 	if (field == ZmVoiceListView.F_CALLER) {
 		htmlArr[idx++] = this._getCallerNameHtml(voicemail);
 	} else if (field == ZmVoiceListView.F_DATE) {
-		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, voicemail.date);
+		htmlArr[idx++] = AjxDateUtil.computeWordyDateStr(params.now, voicemail.date);
 	}
 	
 	return idx;

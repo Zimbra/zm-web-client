@@ -45,7 +45,7 @@ function() {
 ZmVoicemailListView.FROM_WIDTH		= 190;
 ZmVoicemailListView.PLAYING_WIDTH	= null; // Auto
 ZmVoicemailListView.PRIORITY_WIDTH	= ZmListView.COL_WIDTH_ICON;
-ZmVoicemailListView.DATE_WIDTH		= 120;
+ZmVoicemailListView.DATE_WIDTH		= 180;
 
 ZmVoicemailListView.F_PLAYING		= "pl";
 ZmVoicemailListView.F_PRIORITY		= "py";
