@@ -184,6 +184,15 @@ function(callback, accountName, result) {
 	if (obj.lifetime) {
 		this._settings[ZmSetting.TOKEN_LIFETIME].setValue(obj.lifetime);
 	}
+	if (obj.accessed) {
+		this._settings[ZmSetting.LAST_ACCESS].setValue(obj.accessed);
+	}
+	if (obj.prevSession) {
+		this._settings[ZmSetting.PREVIOUS_SESSION].setValue(obj.prevSession);
+	}
+	if (obj.recent) {
+		this._settings[ZmSetting.RECENT_MESSAGES].setValue(obj.recent);
+	}
 	if (obj.used) {
 		this._settings[ZmSetting.QUOTA_USED].setValue(obj.used);
 	}
@@ -583,7 +592,10 @@ function() {
 	this.registerSetting("USERID",							{name:"zimbraId", type:ZmSetting.T_COS});
 	this.registerSetting("USERNAME",						{type:ZmSetting.T_COS});
 	this.registerSetting("CN",								{name:"cn", type:ZmSetting.T_COS});
-	
+	this.registerSetting("LAST_ACCESS",						{type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
+	this.registerSetting("PREVIOUS_SESSION",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
+	this.registerSetting("RECENT_MESSAGES",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
+
 	// CLIENT SIDE FEATURE SUPPORT
 	this.registerSetting("ATTACHMENT_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("ATT_VIEW_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
