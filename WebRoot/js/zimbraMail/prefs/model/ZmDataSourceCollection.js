@@ -187,31 +187,56 @@ function(sourceMap, delayMs) {
 
 ZmDataSourceCollection.prototype._checkStatusResponse =
 function(sourceMap, result) {
-    var status = result._data.GetImportStatusResponse.dsrc;
-    if (!status) return;
+	var dataSources = [];
 
-    for (var i = 0; i < status.length; i++) {
-        var dsrc = status[i];
-        if (!dsrc.isRunning) {
-            var source = sourceMap[dsrc.id];
-            if (sourceMap[dsrc.id]) {
-                delete sourceMap[dsrc.id];
-                if (dsrc.success) {
-                    var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadSuccess, source.name);
-                    this._appCtxt.setStatusMsg(message);
-                }
-                else {
-                    var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadFailure, source.name);
-                    this._appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
-                    var dialog = this._appCtxt.getErrorDialog();
-                    dialog.setMessage(message, dsrc.error, DwtMessageDialog.CRITICAL_STYLE);
-                    dialog.popup();
-                }
-            }
-        }
-    }
+	// gather sources from the response
+	var popSources = result._data.GetImportStatusResponse.pop3;
+	if (popSources) {
+		for (var i in popSources) {
+			dataSources.push(popSources[i]);
+		}
+	}
+	var imapSources = result._data.GetImportStatusResponse.imap;
+	if (imapSources) {
+		for (var i in imapSources) {
+			dataSources.push(imapSources[i]);
+		}
+	}
+	var genericSources = result._data.GetImportStatusResponse.dsrc;
+	if (genericSources) {
+		for (var i in genericSources) {
+			dataSources.push(genericSources[i]);
+		}
+	}
 
-    if (AjxUtil.keys(sourceMap).length > 0) {
-        this._checkStatus(sourceMap, 2000);
-    }
+	// is there anything to do?
+	if (dataSources.length == 0) return;
+
+	// report status
+	for (var i = 0; i < dataSources.length; i++) {
+		var dsrc = dataSources[i];
+		// NOTE: Only report the ones we were asked to; forget others
+		if (!dsrc.isRunning && sourceMap[dsrc.id]) {
+			var source = sourceMap[dsrc.id];
+			if (sourceMap[dsrc.id]) {
+				delete sourceMap[dsrc.id];
+				if (dsrc.success) {
+					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadSuccess, source.name);
+					this._appCtxt.setStatusMsg(message);
+				}
+				else {
+					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadFailure, source.name);
+					this._appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
+					var dialog = this._appCtxt.getErrorDialog();
+					dialog.setMessage(message, dsrc.error, DwtMessageDialog.CRITICAL_STYLE);
+					dialog.popup();
+				}
+			}
+		}
+	}
+
+	// continue checking status
+	if (AjxUtil.keys(sourceMap).length > 0) {
+		this._checkStatus(sourceMap, 2000);
+	}
 };
