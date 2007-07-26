@@ -459,6 +459,14 @@ function() {
 	return this._uploadDialog;
 };
 
+ZmAppCtxt.prototype.getAttachDialog = function() {
+	if(!this._attachDialog){
+		AjxDispatcher.require("Share");
+		this._attachDialog = new ZmAttachDialog(this, this._shell);
+	}
+	return this._attachDialog;
+};
+
 ZmAppCtxt.prototype.getUploadConflictDialog =
 function() {
 	if (!this._uploadConflictDialog) {

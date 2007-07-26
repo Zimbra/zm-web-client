@@ -286,7 +286,10 @@ function() {
 
 ZmComposeView.prototype._isInline = function(){
 	
-	if(this._uploadViewDialog && this._uploadViewDialog.isInline()) return true;
+	if(this._attachDialog){
+		 var myComputerViewPage = this._attachDialog.getTabViewPage("MY_COMPUTER");
+		 return myComputerViewPage.isInline();
+	}
 	
 	if(this._msg && this._msgAttId && this._msg.id == this._msgAttId) return false;
 	
@@ -400,7 +403,7 @@ function(attId, isDraft) {
 		msg.setInlineAttachments(this._msg.getInlineAttachments());
 	}*/
 	
-	if(this._uploadViewDialog && this._uploadViewDialog.isInline() && attId){
+	if(this._attachDialog && inline && attId){
 		for(var i =0; i<attId.length;i++){
 			var att = attId[i];
 			var contentType = att.ct;
@@ -723,16 +726,22 @@ function(msg, idoc) {
 };
 
 ZmComposeView.prototype.showAttachmentDialog = function(){
-	if (!this._uploadViewDialog) {
-		this._uploadViewDialog = new ZmUploadViewDialog(this.shell, this._appCtxt);
-		var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
-		this._uploadViewDialog.setUploadCallback(callback);
+	
+	var attachDialog = this._appCtxt.getAttachDialog();
+	
+	var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
+	attachDialog.setUploadCallback(callback);
+	
+	var myComputerViewPage = attachDialog.getTabViewPage("MY_COMPUTER");
+	if(myComputerViewPage && this._composeMode == DwtHtmlEditor.HTML){
+		myComputerViewPage.showInlineOption();
+	}else{
+		myComputerViewPage.hideInlineOption();
 	}
-	var inline = true;
-	if (this._composeMode != DwtHtmlEditor.HTML){
-		inline = false;
-	}
-	this._uploadViewDialog.popup("Attach Files",inline);
+	
+	attachDialog.popup();
+	
+	this._attachDialog = attachDialog;
 };
 
 /**
@@ -899,10 +908,6 @@ function(incAddrs, incSubject) {
 
 ZmComposeView.prototype.cleanupAttachments = 
 function(all) {
-
-	if(this._uploadViewDialog){
-		this._uploadViewDialog.popdown();
-	}
 	
 	if (all) {
 		this._attcDiv.innerHTML = "";
