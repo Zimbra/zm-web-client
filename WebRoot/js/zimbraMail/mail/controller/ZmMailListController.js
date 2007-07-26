@@ -459,6 +459,7 @@ function(ev) {
 				}
 			}
 		}
+		this._setupSpamButton(this._participantActionMenu);
 		this._enableFlags(this._participantActionMenu, bHasUnread, bHasRead);
 		this._participantActionMenu.popup(0, ev.docX, ev.docY);
 	} else {
