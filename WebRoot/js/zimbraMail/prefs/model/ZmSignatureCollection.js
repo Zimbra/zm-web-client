@@ -66,6 +66,24 @@ ZmSignatureCollection.prototype.getSignatures = function() {
 	return AjxUtil.values(this._idMap);
 };
 
+ZmSignatureCollection.prototype.getSignatureOptions = function() {
+	// collect signatures
+	var signatures = [];
+	for (var id in this._idMap) {
+		signatures.push(this._idMap[id]);
+	}
+	signatures.sort(ZmSignatureCollection.BY_NAME);
+
+	// create options
+	var options = [];
+	options.push(new DwtSelectOptionData("", "Do Not Attach Signature" )); // TODO: i18n
+	for (var i = 0; i < signatures.length; i++) {
+		var signature = signatures[i];
+		options.push(new DwtSelectOptionData(signature.id, signature.name));
+	}
+	return options;
+};
+
 ZmSignatureCollection.prototype.getById = function(id) {
 	return this._idMap[id];
 };
@@ -88,4 +106,12 @@ ZmSignatureCollection.prototype.initialize = function(data) {
 		var signature = ZmSignature.createFromJson(signatures[i]);
 		this.add(signature);
 	}
+};
+
+//
+// Static functions
+//
+
+ZmSignatureCollection.BY_NAME = function(a, b) {
+	return a.name - b.name;
 };

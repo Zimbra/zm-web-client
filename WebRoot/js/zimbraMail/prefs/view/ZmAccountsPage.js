@@ -883,12 +883,9 @@ ZmAccountsPage.prototype._resetAccountListView = function(accountOrIndex) {
 ZmAccountsPage.prototype._resetSignatureSelect = function(select) {
 	var selectedValue = select.getValue();
 	select.clearOptions();
-	select.addOption("Do Not Attach Signature", true, ""); // TODO: i18n
-	var collection = this._appCtxt.getSignatureCollection();
-	var signatures = collection.getSignatures();
-	for (var i = 0; i < signatures.length; i++) {
-		var signature = signatures[i];
-		select.addOption(signature.name, false, signature.id);
+	var options = this._appCtxt.getSignatureCollection().getSignatureOptions();
+	for (var i = 0; i < options.length; i++) {
+		select.addOption(options[i]);
 	}
 	select.setSelectedValue(selectedValue);
 };

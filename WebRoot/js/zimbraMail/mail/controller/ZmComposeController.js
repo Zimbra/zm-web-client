@@ -330,17 +330,21 @@ function(initHide, composeMode) {
 	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	    this._composeView.enableInputs(false);
 	}
-	this._composeView.getIdentitySelect().addChangeListener(new AjxListener(this, this._identityChangeListener));
+
+	var identitySelect = this._composeView.getIdentitySelect();
+	var signatureSelect = this._composeView.getSignatureSelect();
+	identitySelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [true]));
+	signatureSelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [false]));
 };
 
 ZmComposeController.prototype._identityChangeListener =
-function(event) {
+function(setSignature, event) {
 	if (!this._composeView.isDirty()) {
-		this._applyIdentityToBody();
+		this._applyIdentityToBody(setSignature);
 	} else {
 		var dialog = this._appCtxt.getYesNoMsgDialog();
 		dialog.reset();
-		dialog.registerCallback(DwtDialog.YES_BUTTON, this._identityChangeYesCallback, this, [dialog]);
+		dialog.registerCallback(DwtDialog.YES_BUTTON, this._identityChangeYesCallback, this, [dialog, setSignature]);
 		dialog.registerCallback(DwtDialog.NO_BUTTON, this._identityChangeNoCallback, this, [dialog]);
 		dialog.setMessage(ZmMsg.identityChangeWarning, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();
@@ -348,8 +352,8 @@ function(event) {
 };
 
 ZmComposeController.prototype._identityChangeYesCallback =
-function(dialog) {
-	this._applyIdentityToBody();
+function(dialog, setSignature) {
+	this._applyIdentityToBody(setSignature);
 	dialog.popdown();
 };
 
@@ -361,8 +365,11 @@ function(dialog) {
 };
 
 ZmComposeController.prototype._applyIdentityToBody =
-function() {
+function(setSignature) {
 	var identity = this._composeView.getIdentity();
+	if (setSignature) {
+		this._composeView.getSignatureSelect().setSelectedValue(identity.signature);
+	}
 	var newMode = this._getComposeMode(this._msg, identity);
 	if (newMode != this._composeView.getComposeMode()) {
 		this._composeView.setComposeMode(newMode);
@@ -594,7 +601,7 @@ function() {
 ZmComposeController.prototype._setAddSignatureVisibility =
 function(identity) {
 	if (!identity) { return false; }
-	var canAddSig = (!identity.signatureEnabled && identity.signature);
+	var canAddSig = Boolean(identity.signature);
 	var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 	if (signatureButton) {
 		signatureButton.setVisible(canAddSig);

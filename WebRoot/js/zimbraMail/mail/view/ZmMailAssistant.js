@@ -185,7 +185,7 @@ function(bad, good) {
 	body.setContentType(ZmMimeTable.TEXT_PLAIN);
 	var bodyText = this._mailFields.body != null ? this._mailFields.body : "";
 	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
-	if (identity.signatureEnabled) {
+	if (Boolean(identity.signature)) {
 		var sig = identity.signature;
 		if (sig != null && sig != "") {
 			bodyText = bodyText + "\n" + 

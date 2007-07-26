@@ -55,8 +55,13 @@ ZmComposeView = function(parent, controller, composeMode) {
 ZmComposeView.prototype = new DwtComposite;
 ZmComposeView.prototype.constructor = ZmComposeView;
 
+ZmComposeView.prototype.toString = function() {
+	return "ZmComposeView";
+};
 
-// Consts
+//
+// Constants
+//
 
 // Consts related to compose fields
 ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR_CC,
@@ -88,12 +93,15 @@ ZmComposeView.ADDR_SETTING = {}; // XXX: may not be necessary anymore?
 
 ZmComposeView.WRAP_LENGTH = 72;
 
-// Public methods
+//
+// Data
+//
 
-ZmComposeView.prototype.toString =
-function() {
-	return "ZmComposeView";
-};
+ZmComposeView.prototype.TEMPLATE = "zimbraMail.mail.templates.Message#Compose";
+
+//
+// Public methods
+//
 
 /**
 * Sets the current view, based on the given action. The compose form is
@@ -118,6 +126,7 @@ function(params) {
 	}
 	if (params.identity) {
 		this._identitySelect.setSelectedValue(params.identity.id);
+		this._signatureSelect.setSelectedValue(params.identity.signature || "");
 	}
 
 	// list of msg Id's to add as attachments
@@ -852,22 +861,27 @@ function(content) {
 ZmComposeView.prototype._dispose =
 function() {
 	if (this._identityChangeListenerObj) {
-		var identityCollection = this._appCtxt.getIdentityCollection();
-		identityCollection.removeChangeListener(this._identityChangeListenerObj);
+		var collection = this._appCtxt.getIdentityCollection();
+		collection.removeChangeListener(this._identityChangeListenerObj);
+	}
+	if (this._signatureChangeListenerObj) {
+		var collection = this._appCtxt.getSignatureCollection();
+		collection.removeChangeListener(this._signatureChangeListenerObj);
 	}
 };
 
 ZmComposeView.prototype._getSignature =
 function() {
-	var identity = this.getIdentity();
-	
-	var sig = identity.signature;
-	if (!sig) return;
+	var signatureId = this._signatureSelect.getValue();
+	if (!signatureId) return;
 
+	var signature = this._appCtxt.getSignatureCollection().getById(signatureId);
+
+	var sig = signature.value;
 	var newLine = this._getSignatureNewLine();
-	if (this._composeMode == DwtHtmlEditor.HTML)
+	if (this._composeMode == DwtHtmlEditor.HTML) {
 		sig = AjxStringUtil.htmlEncodeSpace(sig);
-
+	}
 	return sig + newLine;
 };
 
@@ -1196,11 +1210,9 @@ function(action, msg, extraBodyText, incOption) {
 	}
 
 	var identity = this.getIdentity();
-	var sigStyle = identity.signatureEnabled && identity.signature ? identity.getSignatureStyle() : null;
-
-	var value = sigStyle == ZmSetting.SIG_OUTLOOK
-		? (this._getSignatureSeparator() + this._getSignature())
-		: "";
+	var sig = this._getSignature();
+	var sigStyle = sig ? identity.getSignatureStyle() : null;
+	var value = sigStyle == ZmSetting.SIG_OUTLOOK ? (this._getSignatureSeparator() + sig) : "";
 
 	// get reply/forward prefs as necessary
 	if (!incOption) {
@@ -1370,13 +1382,6 @@ function(composeMode) {
 	this._button = {};
 	this._field = {};
 	this._internalId = AjxCore.assignId(this);
-	// init element IDs for address fields
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		this._divId[type] = Dwt.getNextId();
-		this._buttonTdId[type] = Dwt.getNextId();
-		this._fieldId[type] = Dwt.getNextId();
-	}
 
 	// init html
 	this._createHtml();
@@ -1400,7 +1405,20 @@ function(composeMode) {
 	this._attachCount = 0;
 
 	// init listeners
-	this.addControlListener(new AjxListener(this, ZmComposeView.prototype._controlListener));
+	this.addControlListener(new AjxListener(this, this._controlListener));
+};
+
+ZmComposeView.prototype._createHtml = function(templateId) {
+	var data = { id: this._htmlElId };
+	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
+};
+
+ZmComposeView.prototype._createHtmlFromTemplate = function(templateId, data) {
+	DwtComposite.prototype._createHtmlFromTemplate.call(this, templateId, data);
+
+	// global identifiers
+	this._identityDivId = data.id+"_identity_row";
+	this._signatureDivId = data.id+"_signature_row";
 
 	// init autocomplete list
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
@@ -1415,130 +1433,86 @@ function(composeMode) {
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 
-	// init To/CC/BCC buttons and their event handlers
+	// process compose fields
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		if (this._contactPickerEnabled) {
-			this._button[type] = new DwtButton(this);
-			var typeStr = AjxEmailAddress.TYPE_STRING[type];
-			this._button[type].setText(ZmMsg[typeStr] + ":");
+		var typeStr = AjxEmailAddress.TYPE_STRING[type];
 
-			var buttonTd = document.getElementById(this._buttonTdId[type]);
-			buttonTd.appendChild(this._button[type].getHtmlElement());
-			buttonTd.addrType = type;
+		// save identitifiers
+		this._divId[type] = [data.id, typeStr, "row"].join("_");
+		this._buttonTdId[type] = [data.id, typeStr, "picker"].join("_");
+		this._fieldId[type] = [data.id, typeStr, "control"].join("_");
 
-			this._button[type].addSelectionListener(new AjxListener(this, this._addressButtonListener));
-			this._button[type].addrType = type;
-		}
-
+		// save field control
 		this._field[type] = document.getElementById(this._fieldId[type]);
 		this._field[type].addrType = type;
 
-		// autocomplete-related handlers
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			this._acAddrSelectList.handle(this._field[type]);
-		} else {
-			if (!AjxEnv.isSafari || AjxEnv.isSafariNightly)
-				this._setEventHandler(this._fieldId[type], "onKeyUp");
-		}
-	}
-};
-
-ZmComposeView.prototype._createHtml =
-function() {
-	var subjectFieldId = Dwt.getNextId();
-	var attcDivId = Dwt.getNextId();
-	this._identityDivId = Dwt.getNextId();
-	var identityCellId = Dwt.getNextId();
-	var div = document.createElement("div");
-
-	var html = [];
-	var idx = 0;
-
-	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
-
-	// create identity selector
-	html[idx++] = "<tr><td><div id='";
-	html[idx++] = this._identityDivId;
-	html[idx++] = "'><table cellspacing=4 cellpadding=0 border=0 width=100%><tr><td width=";
-	html[idx++] = AjxEnv.isIE ? "60" : "64";
-	html[idx++] = " align=right>";
-	html[idx++] = ZmMsg.from;
-	html[idx++] = ":</td><td id='";
-	html[idx++] = identityCellId;
-	html[idx++] = "'></td></tr></div></table></div></td></tr>";
-
-	// create address elements
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
-		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		html[idx++] = "<tr><td><div id='";
-		html[idx++] = this._divId[type];
-		html[idx++] = "'";
-		html[idx++] = (type != AjxEmailAddress.TO) ? " style='display: none;'>" : ">";
-		html[idx++] = "<table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
+		// create picker
 		if (this._contactPickerEnabled) {
-			html[idx++] = "<td valign=top width=60 id='";
-			html[idx++] = this._buttonTdId[type];
-			html[idx++] = "'></td>";
-		} else {
-			var typeStr = AjxEmailAddress.TYPE_STRING[type];
-			var addrStr = ZmMsg[typeStr] + ":";
-			html[idx++] = "<td width=60 align='right' valign='top' id='";
-			html[idx++] = this._buttonTdId[type];
-			html[idx++] = "'>";
-			html[idx++] = addrStr;
-			html[idx++] = "</td>";
+			var pickerId = this._buttonTdId[type];
+			var pickerEl = document.getElementById(pickerId);
+			if (pickerEl) {
+				var button = new DwtButton(this);
+				button.setText(pickerEl.innerHTML);
+				button.replaceElement(pickerEl);
+
+				button.addSelectionListener(new AjxListener(this, this._addressButtonListener));
+				button.addrType = type;
+
+				// autocomplete-related handlers
+				if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+					this._acAddrSelectList.handle(this._field[type]);
+				}
+				else if (!AjxEnv.isSafari || AjxEnv.isSafariNightly) {
+					this._setEventHandler(this._fieldId[type], "onKeyUp");
+				}
+
+				this._button[type] = button;
+			}
 		}
-		html[idx++] = "<td><textarea id='";
-		html[idx++] = this._fieldId[type];
-		html[idx++] = "' rows=1 class='addresses' style='";
-		html[idx++] = AjxEnv.isSafari && !AjxEnv.isSafariNightly
-			? "height:52px;" : "height:21px; overflow:hidden";
-		html[idx++] = "'></textarea></td>";
-		html[idx++] = "</tr></table></div></td></tr>";
 	}
-
-	// create subject field
-	html[idx++] = "<tr><td><table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
-	html[idx++] = "<td width=";
-	html[idx++] = AjxEnv.isIE ? "60" : "64";
-	html[idx++] = " align='right'>";
-	html[idx++] = ZmMsg.subject;
-	html[idx++] = ":</td>";
-	html[idx++] = "<td><table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
-	html[idx++] = "<td><input autocomplete='off' type='text' id='";
-	html[idx++] = subjectFieldId;
-	html[idx++] = "' class='subjectField'></td>";
-	html[idx++] = "</tr></table></td>";
-	html[idx++] = "</tr></table></td></tr>";
-
-	// create element for adding attachments
-	html[idx++] = "<tr><td><div id='";
-	html[idx++] = attcDivId;
-	html[idx++] = "' /></td></tr>";
-
-	html[idx++] = "</table>";
-
-	div.innerHTML = html.join("");
-	this.getHtmlElement().appendChild(div);
 
 	// save reference to DOM objects per ID's
-	this._subjectField = document.getElementById(subjectFieldId);
-//	this._subjectField.onkeydown = AjxCallback.simpleClosure(this.__checkTabInSubject, this);
-	this._attcDiv = document.getElementById(attcDivId);
-	this._identityCell = document.getElementById(identityCellId);
-	
-	var options = this._getIdentityOptions();
-	this._identitySelect = new DwtSelect(this, options);
+	this._headerEl = document.getElementById(data.id+"_header");
+	this._subjectField = document.getElementById(data.id+"_subject_control");
+	this._attcDiv = document.getElementById(data.id+"_attachments_div");
+
+	// initialize identity select
+	var identityOptions = this._getIdentityOptions();
+	this._identitySelect = new DwtSelect(this, identityOptions);
 	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 	this._identitySelect.getHtmlElement().style.width='100%';
-	this._identitySelect.reparentHtmlElement(this._identityCell);
+
 	var identityCollection = this._appCtxt.getIdentityCollection();
 	if (!this._identityChangeListenerObj) {
 		this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
 	}
 	identityCollection.addChangeListener(this._identityChangeListenerObj);
-	this._setIdentityVisibility();
+
+	this._identitySelect.replaceElement(data.id+"_identity_control");
+	this._setIdentityVisible();
+
+	// initialize signature select
+	var signatureOptions = this._getSignatureOptions();
+	this._signatureSelect = new DwtSelect(this, signatureOptions);
+	this._signatureSelect.setToolTipContent(ZmMsg.chooseSignature);
+	this._signatureSelect.getHtmlElement().style.width='100%';
+
+	/***
+	if (identityOptions.length > 0) {
+		var identity = this._appCtxt.getIdentityCollection().getById(identityOptions[0].value);
+		this._signatureSelect.setSelectedValue(identity.signature || "");
+	}
+	/***/
+
+	var signatureCollection = this._appCtxt.getSignatureCollection();
+	if (!this._signatureChangeListenerObj) {
+		this._signatureChangeListenerObj = new AjxListener(this, this._signatureChangeListener);
+	}
+	signatureCollection.addChangeListener(this._signatureChangeListenerObj);
+
+	this._signatureSelect.replaceElement(data.id+"_signature_control");
+	this._setSignatureVisible();
 };
 
 ZmComposeView.prototype._getIdentityOptions =
@@ -1566,7 +1540,7 @@ function(identity) {
 ZmComposeView.prototype._identityChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_CREATE) {
-		this._setIdentityVisibility();
+		this._setIdentityVisible();
 		var identity = ev.getDetail("item");
 		var text = this._getIdentityText(identity);
 		var option = new DwtSelectOptionData(identity.id, text);
@@ -1578,7 +1552,7 @@ function(ev) {
 		for (var i = 0, count = options.length; i < count; i++)	 {
 			this._identitySelect.addOption(options[i]);
 		}
-		this._setIdentityVisibility();
+		this._setIdentityVisible();
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var identity = ev.getDetail("item");
 		var text = this._getIdentityText(identity);
@@ -1586,25 +1560,58 @@ function(ev) {
 	}
 };
 
-ZmComposeView.prototype._setIdentityVisibility =
-function() {
-	var identityCount = this._appCtxt.getIdentityCollection().getSize();
+ZmComposeView.prototype._setIdentityVisible = function() {
+	if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) return;
+
 	var div = document.getElementById(this._identityDivId);
-	var visible = Dwt.getVisible(div);
-	if (visible) {
-		if ((identityCount < 2) || !this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) {
-			Dwt.setVisible(div, false);
+	if (!div) return;
+
+	var visible = this._appCtxt.getIdentityCollection().getSize() > 1;
+	Dwt.setVisible(div, visible);
+};
+
+ZmComposeView.prototype._getSignatureOptions = function() {
+	return this._appCtxt.getSignatureCollection().getSignatureOptions();
+};
+
+ZmComposeView.prototype._signatureChangeListener = function(ev) {
+	if (ev.event == ZmEvent.E_CREATE) {
+		this._setSignatureVisible();
+		var signature = ev.getDetail("item");
+		var option = new DwtSelectOptionData(signature.id, signature.name);
+		this._signatureSelect.addOption(option);
+	}
+	else if (ev.event == ZmEvent.E_DELETE) {
+		// DwtSelect doesn't support removing an option, so recreate the whole thing.
+		this._signatureSelect.clearOptions();
+		var options = this._getSignatureOptions();
+		for (var i = 0, count = options.length; i < count; i++)	 {
+			this._signatureSelect.addOption(options[i]);
 		}
-	} else {
-		if (identityCount >= 2) {
-			Dwt.setVisible(div, true);
-		}
+		this._setSignatureVisible();
+	}
+	else if (ev.event == ZmEvent.E_MODIFY) {
+		var signature = ev.getDetail("item");
+		this._signatureSelect.rename(signature.id, signature.name);
 	}
 };
 
-ZmComposeView.prototype.getIdentitySelect =
-function() {
+ZmComposeView.prototype._setSignatureVisible = function() {
+	if (!this._appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) return;
+
+	var div = document.getElementById(this._signatureDivId);
+	if (!div) return;
+
+	var visible = this._appCtxt.getSignatureCollection().getSize() > 1;
+	Dwt.setVisible(div, visible);
+};
+
+ZmComposeView.prototype.getIdentitySelect = function() {
 	return this._identitySelect;
+};
+
+ZmComposeView.prototype.getSignatureSelect = function() {
+	return this._signatureSelect;
 };
 
 ZmComposeView.prototype.getIdentity =
@@ -1615,103 +1622,47 @@ function() {
 	return result ? result : identityCollection.defaultIdentity;
 };
 
-/*
-ZmComposeView.prototype.__checkTabInSubject = function(ev) {
-	if (AjxEnv.isIE)
-		ev = window.event;
-	if (ev.keyCode == 9) {
-		this._htmlEditor.focus();
-		setTimeout(AjxCallback.simpleClosure(this._htmlEditor.focus, this._htmlEditor), 10);
-		return false;
-	}
-};
-*/
-
 ZmComposeView.prototype._showForwardField =
 function(msg, action, replyPref) {
-	var html = [];
-	var idx = 0;
+	var html = "";
 
 	if (this._msgIds && this._msgIds.length) {
-		html[idx++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%>";
+		var appCtxt = window.parentController ? window.parentController._appCtxt : this._appCtxt;
+		var messages = [];
 		for (var i = 0; i < this._msgIds.length; i++) {
-			var id = this._msgIds[i];
-			var appCtxt = window.parentController 
-				? window.parentController._appCtxt
-				: this._appCtxt;
-			var attMsg = appCtxt.cacheGet(id);
-			if (!attMsg) { continue; }
+			var message = appCtxt.cacheGet(this._msgIds[i]);
+			if (!message) continue;
 
-			html[idx++] = "<tr><td width=65 align=right>";
-			html[idx++] = AjxImg.getImageHtml("Message");
-			html[idx++] = "</td><td width=1%><input name='";
-			html[idx++] = ZmComposeView.FORWARD_MSG_NAME;
-			html[idx++] = "' type='checkbox' checked='CHECKED' id='";
-			html[idx++] = id;
-			html[idx++] = "'></td><td class='nobreak'></td><td><b>";
-			html[idx++] = (attMsg.subject || AjxStringUtil.htmlEncode(ZmMsg.noSubject));
-			html[idx++] = "</b> <span class='ZmConvListFragment'>"
-			html[idx++] = attMsg.getFragment(35);
-			html[idx++] = "</span></td></tr>";
+			messages.push(message);
 		}
-		html[idx++] = "</table>";
 
-		if (this._msgIds.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
+		var data = { messages: messages };
+		html = AjxTemplate.expand("zimbraMail.mail.templates.Message#ForwardMessages", data);
+
+		if (messages.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 			this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
 			this._attcDiv.style.overflow = "auto";
 		}
-		this._attachCount = this._msgIds.length;
+
+		this._attachCount = messages.length;
 	}
-	else if (replyPref == ZmSetting.INCLUDE_ATTACH ||
-			 action == ZmOperation.FORWARD_ATT)
-	{
-		html[idx++] = "<table cellspacing=4 cellpadding=0 border=0 width=100%><tr><td width=60 align=right>";
-		html[idx++] = AjxImg.getImageHtml("Attachment");
-		html[idx++] = "</td><td><b>";
-		html[idx++] = ((msg ? msg.subject : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject));
-		html[idx++] = "</b></td></tr></table>";
+	else if (replyPref == ZmSetting.INCLUDE_ATTACH ||action == ZmOperation.FORWARD_ATT) {
+		var data = { message: msg };
+		html = AjxTemplate.expand("zimbraMail.mail.templates.Message#ForwardOneMessage", data);
 
 		this._attachCount = 1;
 	}
-	else if (msg && msg.hasAttach)
-	{
+	else if (msg && msg.hasAttach) {
 		var attLinks = msg.getAttachmentLinks();
 		if (attLinks.length > 0) {
-			html[idx++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%>";
-			for (var i = 0; i < attLinks.length; i++) {
-				var att = attLinks[i];
-				html[idx++] = "<tr><td width=65 align=right>";
-				// only add icon for first attachment
-				if (i == 0) {
-					html[idx++] = AjxImg.getImageHtml("Attachment");
-				}
-				html[idx++] = "</td><td width=1%>";
-				if (action != ZmOperation.NEW_MESSAGE) { // Disallow unchecking of attachments inserted automatically.
-					html[idx++] = "<input name='";
-					html[idx++] = ZmComposeView.FORWARD_ATT_NAME;
-					html[idx++] = "' type='checkbox'";
-					if (action == ZmOperation.FORWARD || 
-						action == ZmOperation.FORWARD_INLINE || 
-						action == ZmOperation.DRAFT || att.ci)
-					{
-						html[idx++] = " CHECKED";
-					}
-					html[idx++] = " id='";
-					html[idx++] = att.part;
-					html[idx++] = "'>";
-				}
-				html[idx++] = "</td><td class='nobreak'>";
-				html[idx++] = att.link;
-				html[idx++] = AjxStringUtil.htmlEncode(att.label);
-				html[idx++] = "</a>";
-				if (att.size) {
-					html[idx++] = "&nbsp;(";
-					html[idx++] = att.size;
-					html[idx++] = ")";
-				}
-				html[idx++] = "</td></tr>";
-			}
-			html[idx++] = "</table>";
+			var data = {
+				attachments: attLinks,
+				isNew: action == ZmOperation.NEW_MESSAGE,
+				isForward: action == ZmOperation.FORWARD,
+				isForwardInline: action == ZmOperation.FORWARD_INLINE,
+				isDraft: action == ZmOperation.DRAFT
+			};
+			html = AjxTemplate.expand("zimbraMail.mail.templates.Message#ForwardAttachments", data);
 
 			if (attLinks.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 				this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
@@ -1722,7 +1673,7 @@ function(msg, action, replyPref) {
 		}
 	}
 
-	this._attcDiv.innerHTML = html.join("");
+	this._attcDiv.innerHTML = html;
 };
 
 // Miscellaneous methods
@@ -1732,7 +1683,7 @@ function() {
 	if (size.x <= 0 || size.y <= 0)
 		return;
 
-	var height = size.y - Dwt.getSize(this.getHtmlElement().firstChild).y;
+	var height = size.y - Dwt.getSize(this._headerEl).y;
 	this._htmlEditor.setSize(size.x, height);
 };
 
