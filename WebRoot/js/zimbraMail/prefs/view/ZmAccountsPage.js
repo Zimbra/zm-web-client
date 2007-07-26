@@ -368,11 +368,14 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 	// make sure that the current object proxy is up-to-date
 	this._setAccountFields(this._currentAccount, this._currentSection);
 
+	// error handling
+	var errorCallback = new AjxCallback(this, this._handleSaveError);
+	this._hack_saveErrors = [];
+
 	// delete accounts
 	var addedCommands = false;
 	for (var i = 0; i < this._deletedAccounts.length; i++) {
 		var callback = null;
-		var errorCallback = null;
 		this._deletedAccounts[i].doDelete(callback, errorCallback, batchCmd);
 		addedCommands = true;
 	}
@@ -389,7 +392,6 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 
 		if (account._dirty) {
 			var callback = null;
-			var errorCallback = null;
 			account.save(callback, errorCallback, batchCmd);
 			addedCommands = true;
 		}
@@ -398,7 +400,6 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 	// add new accounts
 	for (var i = 0; i < newAccounts.length; i++) {
 		var callback = null;
-		var errorCallback = null;
 		newAccounts[i].create(callback, errorCallback, batchCmd);
 		addedCommands = true;
 	}
@@ -413,8 +414,7 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 		soapDoc.getMethod().setAttribute("wait", "0"); // do not wait
 
 		var callback = new AjxCallback(this, this._handleCleanUp);
-		var errorCallback = null;
-		batchCmd.addNewRequestParams(soapDoc, callback, errorCallback);
+		batchCmd.addNewRequestParams(soapDoc, callback, null);
 	}
 };
 
@@ -1082,7 +1082,8 @@ ZmAccountsPage.prototype._updateEmailCell = function(email) {
 
 ZmAccountsPage.prototype._handleTypeChange = function(evt) {
 	var radio = this._currentSection.controls["ACCOUNT_TYPE"];
-	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_TYPE, radio.getSelectedValue());
+	var type = ZmAccountsListView.TYPES[radio.getSelectedValue()] || "???";
+	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_TYPE, type);
 	this._handleTypeOrSslChange(evt);
 };
 
@@ -1252,7 +1253,16 @@ ZmAccountsPage.prototype._handlePreSaveFinish = function(continueCallback) {
 
 // post-save callbacks
 
+ZmAccountsPage.prototype._handleSaveError = function(ex) {
+	this._hack_saveErrors.push(ex.msg);
+};
+
 ZmAccountsPage.prototype._handleCleanUp = function() {
+	if (this._hack_saveErrors.length > 0) {
+		var errors = this._hack_saveErrors.join("<br>");
+		this._appCtxt.setStatusMsg(errors, ZmStatusView.LEVEL_CRITICAL);
+		throw errors;
+	}
 	this.reset();
 };
 
@@ -1298,10 +1308,10 @@ ZmAccountsListView.prototype.toString = function() {
 // Constants
 
 ZmAccountsListView.TYPES = {};
-ZmAccountsListView.TYPES[ZmAccount.ZIMBRA]					= "Primary"; // TODO: i18n
-ZmAccountsListView.TYPES[ZmAccount.POP]						= ZmAccount.POP;
-ZmAccountsListView.TYPES[ZmAccount.IMAP]					= ZmAccount.IMAP;
-ZmAccountsListView.TYPES[ZmAccount.PERSONA]					= "Persona"; // TODO: i18n
+ZmAccountsListView.TYPES[ZmAccount.ZIMBRA]					= ZmMsg.accountTypePrimary;
+ZmAccountsListView.TYPES[ZmAccount.POP]						= ZmMsg.accountTypePop;
+ZmAccountsListView.TYPES[ZmAccount.IMAP]					= ZmMsg.accountTypeImap;
+ZmAccountsListView.TYPES[ZmAccount.PERSONA]					= ZmMsg.accountTypePersona;
 
 ZmAccountsListView.WIDTH_NAME	= 150;
 //ZmAccountsListView.WIDTH_STATUS	= 20;
