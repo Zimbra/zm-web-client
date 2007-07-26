@@ -250,25 +250,49 @@ if (application.getInitParameter("offlineMode") != null)  {
                                     </table>
                                     <table width=100%>
                                         <tr>
-                                        	<td nowrap>
-                                        		<fmt:message key="chooseClient"/>
-                                                <c:set var="client" value="${param.client}"/>
-                                                <c:if test="${empty client}">
-                                                    <%-- set client select default based on user agent. --%>
-                                                    <zm:getUserAgent var="ua" session="false"/>
-                                                    <c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up)}"/>
-                                                    <c:set var="useMobile" value="${ua.isiPhone}"/>
-                                                    <c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
-                                                </c:if>
+                                        	<td nowrap align='center'>
+                                                <div class='ZLoginSeparator' style='margin-top:0px'></div>
+												<fmt:message key="chooseClient"/>&nbsp;
+												<c:set var="client" value="${param.client}"/>
+												<c:if test="${empty client}">
+													<%-- set client select default based on user agent. --%>
+													<zm:getUserAgent var="ua" session="false"/>
+													<c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up)}"/>
+													<c:set var="useMobile" value="${ua.isiPhone}"/>
+													<c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
+												</c:if>
 
-                                                <select name="client">
-			                                    	<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
-			                                    	<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
-			                                    	<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
-                                                    <c:if test="${useMobile or client eq 'mobile'}">
-                                                        <option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
-                                                    </c:if>
-                                                </select>
+												<select name="client" onchange='clientChange(this.options[this.selectedIndex].value)'>
+													<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
+													<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
+													<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
+													<c:if test="${useMobile or client eq 'mobile'}">
+														<option value="mobile"  <c:if test="${client eq 'mobile'}">selected</c:if>> <fmt:message key="clientMobile"/></option>
+													</c:if>
+												</select>
+												
+												<script language='javascript'>
+													// show a message if the should be using the 'standard' client, but have chosen 'advanced' instead
+													function clientChange(selectValue) {
+														var it = document.getElementById("ZLoginUnsupported");
+														it.style.display = (("standard" != 'preferred' && selectValue == 'advanced') ? 'block' : 'none');
+													}
+												
+													// if they have JS, write out a "what's this?" link that shows the message below
+													function showWhatsThis() {
+														var it = document.getElementById("ZLoginWhatsThis");
+														it.style.display = (it.style.display == "block" ? "none" : "block");
+													}
+													document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/></a>");
+												</script>
+											</td>
+										</tr>
+										<tr>
+											<td align='center'>
+                                                <div id='ZLoginWhatsThis' class='ZLoginInfoMessage' style='display:none'><fmt:message key="clientWhatsThisMessage"/></div>
+                                                <div id='ZLoginUnsupported' class='ZLoginInfoMessage' style='display:none'><fmt:message key="clientUnsupported"/></div>
+
+                                                <div class='ZLoginSeparator'></div>
 			                                </td>
                                         </tr>
 										<tr>

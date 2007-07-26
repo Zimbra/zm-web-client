@@ -95,23 +95,23 @@
 }
 
 .BannerBar .quotaUsed {
+	height: 100%;
 	@ProgressBarContainer-info@
 	@FixIESizeQuirk@
-	height: 100%;
 }
 
 /* 65% - 85% of quota used */
 .BannerBar .quotaWarning {
+	height: 100%;
 	@ProgressBarContainer-warning@
 	@FixIESizeQuirk@
-	height: 100%;
 }
 
 /* 85%+ of quota used */
 .BannerBar .quotaCritical {
+	height: 100%;
 	@ProgressBarContainer-critical@
 	@FixIESizeQuirk@
-	height: 100%;
 }
 
 

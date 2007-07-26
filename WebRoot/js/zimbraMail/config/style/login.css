@@ -87,7 +87,7 @@ FORM {
 
 /* Cell for the 'license' (copyright, etc) */
 #ZLoginLicenseContainer {
-	padding-top:20px;
+	padding-top:5px;
 	padding-bottom:5px;
 	text-align:center;
 	vertical-align:bottom;
@@ -101,8 +101,14 @@ FORM {
 	padding-bottom:5px;
 	text-align:center;
 	vertical-align:bottom;
-	font-size:9px;
+	@FontSize-smaller@
 }
+
+/* What's this anchor */
+#ZLoginWhatsThisAnchor {
+	@FontSize-smaller@
+}
+
 
 /*
  *	Banner (top) zone
@@ -132,7 +138,8 @@ FORM {
 /* Name of the app -- eg:  'Collaboration Suite' */
 #ZLoginAppName {
 	margin-top:5px;
-	width:100%;
+	margin-bottom:5px;
+	width:95%;
 	text-align:right;
 	@FontSize-biggest@
 }
@@ -182,8 +189,8 @@ FORM {
 /* Panel that contains all versions of the login panel */
 #ZLoginFormPanel {
 	position:relative;
-	left:10%;
-	width:80%;
+	left:5%;
+	width:90%;
 }
 
 
@@ -271,6 +278,23 @@ FORM {
 }
 
 
+
+/* Container to show an info message to the user */
+.ZLoginInfoMessage {
+	@ToastContainer@
+	@ToastContainer-warning@
+	width:80%;
+	margin:10px;
+	@BoxPadding@
+}
+
+/* Separator in the login dialog */
+.ZLoginSeparator {
+	position:relative;
+	width:100%;	
+	@BottomSeparator@
+	margin:10px 0px;
+}
 
 
 
