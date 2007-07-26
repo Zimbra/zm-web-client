@@ -272,21 +272,28 @@ ZmDoublePaneController.prototype._doAction =
 function(params) {
 	// first find out if the current message is in HTML
 	var msgView = this._doublePaneView.getMsgView();
-	if ((params.action != ZmOperation.DRAFT) && msgView.hasHtmlBody()) {
-		// then find out if the user's preference is Text
-		if (this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_TEXT) {
-			// then find out if a text part currently exists for the message
-			var msg = this._getMsg();
-			var textPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-			if (!textPart) {
-				// if not, get the DOM tree for the IFRAME create for the HTML message
-				var bodyEl = msgView.getHtmlBodyElement();
-				// and run it thru the HTML stripper
-				textPart = bodyEl ? AjxStringUtil.convertHtml2Text(bodyEl) : null;
-				// set the text part back into the message
-				if (textPart) {
-					msg.setTextPart(textPart);
-				}
+	var msg = this._getMsg();
+	var format = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+
+	// if msg shown in msgview matches current msg and
+	// we're not processing a draft msg and
+	// msgview has rendered an html msg and
+	// the user's compose pref is in text/plain
+	if (msgView.getMsg().id == msg.id &&
+		params.action != ZmOperation.DRAFT &&
+		msgView.hasHtmlBody() &&
+		format == ZmSetting.COMPOSE_TEXT)
+	{
+		// find out if a text part exists for msg
+		var textPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+		if (!textPart) {
+			// if not, get DOM tree from msgview's IFRAME created for the HTML msg
+			var bodyEl = msgView.getHtmlBodyElement();
+			// run it thru the HTML stripper
+			textPart = bodyEl ? AjxStringUtil.convertHtml2Text(bodyEl) : null;
+			// and set the text part back into the message
+			if (textPart) {
+				msg.setTextPart(textPart);
 			}
 		}
 	}
