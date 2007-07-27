@@ -105,7 +105,7 @@ function(interval) {
 };
 
 ZmPref.int2DurationDay = function(intValue) {
-	return intValue != 0 ? intValue + "d" : intValue;
+	return intValue != null && intValue != 0 ? intValue + "d" : intValue;
 };
 
 ZmPref.durationDay2Int = function(durValue) {
