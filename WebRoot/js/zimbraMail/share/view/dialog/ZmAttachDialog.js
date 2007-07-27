@@ -422,8 +422,8 @@ ZmMyComputerTabView.prototype.addAttachmentField = function(noRemoveLink){
 	var html = [];
 	var idx = 0;
 	html[idx++] = "<table cellspacing=2 cellpadding=0 border=0><tr><td><div class='attachText'>";
-	html[idx++] = ZmMsg.attachFile;
-	html[idx++] = ":</div></td><td class='nobreak'><input id='";
+	html[idx++] = ["Attach File ",this._attachCount,":"].join("");
+	html[idx++] = "</div></td><td class='nobreak'><input id='";
 	html[idx++] = attInputId;
 	html[idx++] = "' type='file' name='";
 	html[idx++] = ZmMyComputerTabView.UPLOAD_FIELD_NAME;
