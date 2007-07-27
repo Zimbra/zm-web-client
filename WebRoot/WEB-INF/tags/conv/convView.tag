@@ -158,7 +158,7 @@
                                                  <c:if test="${mailbox.features.tagging}">
                                                 <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG"/>
                                                 </c:if>
-                                                <th class='MsgStatusImg' nowrap>
+                                                <th class='MsgStatusImg' nowrap>&nbsp;
                                                 <th width=10% nowrap>
                                                     <zm:currentResultUrl var="fromSortUrl" value="search" action="view" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                                                 <a href="${fromSortUrl}"><fmt:message key="from"/></a>

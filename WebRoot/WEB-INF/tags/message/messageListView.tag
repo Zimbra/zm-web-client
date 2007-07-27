@@ -38,7 +38,7 @@
                              <c:if test="${mailbox.features.tagging}">
                             <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG_TAG"/>
                             </c:if>
-                            <th class='MsgStatusImg' nowrap>
+                            <th class='MsgStatusImg' nowrap>&nbsp;
                             <th width=10%>
                                 <zm:newSortUrl var="fromSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                             <a href="${fromSortUrl}">
