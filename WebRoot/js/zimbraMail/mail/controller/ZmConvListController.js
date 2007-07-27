@@ -198,7 +198,9 @@ function(ev) {
 ZmConvListController.prototype._handleResponseListSelectionListener =
 function(item) {
 	// make sure correct msg is displayed in msg pane when user returns
-	this._setSelectedItem();
+	if (this._readingPaneOn) {
+		this._setSelectedItem();
+	}
 };
 
 /**
