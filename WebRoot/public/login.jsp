@@ -257,7 +257,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 												<c:if test="${empty client}">
 													<%-- set client select default based on user agent. --%>
 													<zm:getUserAgent var="ua" session="false"/>
-													<c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up)}"/>
+													<c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up or ua.isCamino)}"/>
 													<c:set var="useMobile" value="${ua.isiPhone}"/>
 													<c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
 												</c:if>
