@@ -162,9 +162,8 @@ ZmAttachDialog.prototype.uploadFiles = function(){
 };
 
 ZmAttachDialog.prototype.cancelUploadFiles = function(){
-	if(this._um && ( this._um instanceof AjxPost)){
-		this._um.cancel();
-	}
+	//Fix this, as this needs feature request like AjxPost.getRequestId()
+	//We need to cancel the actual request, but we are for now just closing the window
 	this._defaultCancelListener();
 };
 
@@ -186,14 +185,13 @@ ZmAttachDialog.prototype.upload = function(callback, uploadForm){
 ZmAttachDialog.prototype._processUpload = function(callback,uploadForm){
 	
 	var ajxCallback = new AjxCallback(this, this._uploadDoneCallback,[callback]);
-	var um = this._um = this._appCtxt.getUploadManager();
+	var um = this._appCtxt.getUploadManager();
 	window._uploadManager = um;
 
 	try {
 		um.execute(ajxCallback, uploadForm);
 	} catch (ex) {
 		ajxCallback.run();
-		this._um = null;
 	}
 };
 
@@ -201,7 +199,6 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback,status, attId){
 	
 	this.setButtonEnabled(DwtDialog.OK_BUTTON,true);
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON,true);
-	this._um = null;
 	
 	if(status == AjxPost.SC_OK){
 		
