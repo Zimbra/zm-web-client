@@ -973,11 +973,21 @@ ZmMailApp.prototype._mailSearch =
 function(query, callback) {
 	query = query || this._appCtxt.get(ZmSetting.INITIAL_SEARCH);
 	var types = new AjxVector();
-	types.add(this.getGroupMailBy());
-
-	var params = {query:query, callback:callback, types:types};
+	var type = this.getGroupMailBy();
+	types.add(type);
+	var params = {query:query, callback:callback, types:types, fetch:Boolean(type == ZmItem.MSG)};
 	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
 	this._appCtxt.getSearchController().search(params);
+};
+
+ZmMailApp.prototype.getSearchParams =
+function(params) {
+	params = params || {};
+	var mc = this.getMailListController();
+	if (mc._readingPaneOn && (this.getGroupMailBy() == ZmItem.MSG)) {
+		params.fetch = true;
+	}
+	return params;
 };
 
 ZmMailApp.prototype.showSearchResults =

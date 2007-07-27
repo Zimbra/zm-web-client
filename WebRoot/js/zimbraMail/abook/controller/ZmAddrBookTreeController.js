@@ -172,8 +172,7 @@ function(folder) {
 
 		// force a search if user clicked Trash folder or share
 		if (folder.id == ZmFolder.ID_TRASH || folder.link) {
-			var types = sc.getTypes(ZmItem.CONTACT);
-			sc.search({query:folder.createQuery(), types:types, fetch:true, sortBy:ZmSearch.NAME_ASC});
+			sc.search({query:folder.createQuery(), searchFor:ZmItem.CONTACT, fetch:true, sortBy:ZmSearch.NAME_ASC});
 		} else {
 			capp.showFolder(folder);
 		}

@@ -237,11 +237,11 @@ function(folder) {
 		if (folder.isInTrash()) {
 			var app = this._appCtxt.getCurrentAppName();
 			// if other apps add Trash to their folder tree, set appropriate type here:
-			if (app == ZmApp.CONTACTS)
+			if (app == ZmApp.CONTACTS) {
 				searchFor = ZmItem.CONTACT;
+			}
 		}
-		var types = searchController.getTypes(searchFor);
-		searchController.search({query: folder.createQuery(), types: types});
+		searchController.search({query:folder.createQuery(), searchFor:searchFor});
 	}
 };
 

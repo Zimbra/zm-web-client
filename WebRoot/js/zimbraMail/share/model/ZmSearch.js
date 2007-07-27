@@ -210,17 +210,21 @@ function(params) {
 			var a = this.types.getArray();
 			if (a.length) {
 				var typeStr = [];
-				for (var i = 0; i < a.length; i++)
+				for (var i = 0; i < a.length; i++) {
 					typeStr.push(ZmSearch.TYPE[a[i]]);
+				}
 				method.setAttribute("types", typeStr.join(","));
 				// special handling for showing participants ("To" instead of "From")
-				if (this.folderId == ZmFolder.ID_SENT || this.folderId == ZmFolder.ID_DRAFTS || this.folderId == ZmFolder.ID_OUTBOX)
+				if (this.folderId == ZmFolder.ID_SENT || this.folderId == ZmFolder.ID_DRAFTS || this.folderId == ZmFolder.ID_OUTBOX) {
 					method.setAttribute("recip", "1");
+				}
 				// if we're prefetching the first hit message, also mark it as read
-				if (this.fetch)
+				if (this.fetch) {
 					method.setAttribute("fetch", "1");
-				if (this.markRead)
+				}
+				if (this.markRead) {
 					method.setAttribute("read", "1");
+				}
 			}
 		}
 	}

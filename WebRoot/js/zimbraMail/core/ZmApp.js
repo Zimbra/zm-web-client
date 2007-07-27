@@ -425,6 +425,17 @@ function(item) {
 };
 
 /**
+ * Provides a mechanism for an app to add to search params.
+ * 
+ * @param params	[hash]*		a hash of arguments for the search (see ZmSearchController::search)
+ */
+ZmApp.prototype.getSearchParams =
+function(params) {
+	params = params || {};
+	return params;
+};
+
+/**
  * Default function to run after an app's main package has been loaded.
  */
 ZmApp.prototype._postLoad =

@@ -149,10 +149,10 @@ function() {
 // Actions
 
 /*
-* Called when a left click occurs (by the tree view listener). A search for
+* Called when a left click occurs (by the tree view listener). A search for items with
 * the tag will be performed.
 *
-* @param tag		ZmTag		tag that was clicked
+* @param tag		[ZmTag]		tag that was clicked
 */
 ZmTagTreeController.prototype._itemClicked =
 function(tag) {
@@ -168,8 +168,7 @@ function(tag) {
 		searchFor = ZmSearchToolBar.FOR_MAIL_MI;
 	}
 
-	var types = sc.getTypes(searchFor);
-	sc.search({query: 'tag:"' + tag.name + '"', types: types});
+	sc.search({query:'tag:"' + tag.name + '"', searchFor:searchFor});
 };
 
 // Listeners

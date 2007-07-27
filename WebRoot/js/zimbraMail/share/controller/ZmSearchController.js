@@ -203,24 +203,25 @@ function() {
 };
 
 /**
-* Performs a search and displays the results.
-*
-* @param query			[string]			search string
-* @param types			[Array]*			item types to search for
-* @param sortBy			[constant]*			sort constraint
-* @param offset			[int]*				starting point in list of matching items
-* @param limit			[int]*				maximum number of items to return
-* @param searchId		[int]*				ID of owning search folder (if any)
-* @param prevId			[int]*				ID of last items displayed (for pagination)
-* @param prevSortBy		[constant]*			previous sort order (for pagination)
-* @param noRender		[boolean]*			if true, results will not be passed to controller
-* @param userText		[boolean]*			true if text was typed by user into search box
-* @param callback		[AjxCallback]*		async callback
-* @param errorCallback	[AjxCallback]*		async callback to run if there is an exception
-*/
+ * Performs a search and displays the results.
+ *
+ * @param query			[string]			search string
+ * @param searchFor		[constant]*			semantic type to search for
+ * @param types			[Array]*			item types to search for
+ * @param sortBy		[constant]*			sort constraint
+ * @param offset		[int]*				starting point in list of matching items
+ * @param limit			[int]*				maximum number of items to return
+ * @param searchId		[int]*				ID of owning search folder (if any)
+ * @param prevId		[int]*				ID of last items displayed (for pagination)
+ * @param prevSortBy	[constant]*			previous sort order (for pagination)
+ * @param noRender		[boolean]*			if true, results will not be passed to controller
+ * @param userText		[boolean]*			true if text was typed by user into search box
+ * @param callback		[AjxCallback]*		async callback
+ * @param errorCallback	[AjxCallback]*		async callback to run if there is an exception
+ */
 ZmSearchController.prototype.search =
 function(params) {
-	if (!(params.query && params.query.length)) return;
+	if (!(params.query && params.query.length)) { return; }
 
 	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
@@ -240,15 +241,15 @@ function(callback, result) {
 };
 
 /**
-* Performs the given search. It takes a ZmSearch, rather than constructing one out of the currently selected menu
-* choices. Aside from re-executing a search, it can be used to perform a canned search.
-*
-* @param search			[ZmSearch]			search object
-* @param noRender		[boolean]*			if true, results will not be passed to controller
-* @param changes		[Object]*			hash of changes to make to search
-* @param callback		[AjxCallback]*		async callback
-* @param errorCallback	[AjxCallback]*		async callback to run if there is an exception
-*/
+ * Performs the given search. It takes a ZmSearch, rather than constructing one out of the currently selected menu
+ * choices. Aside from re-executing a search, it can be used to perform a canned search.
+ *
+ * @param search			[ZmSearch]			search object
+ * @param noRender		[boolean]*			if true, results will not be passed to controller
+ * @param changes		[Object]*			hash of changes to make to search
+ * @param callback		[AjxCallback]*		async callback
+ * @param errorCallback	[AjxCallback]*		async callback to run if there is an exception
+ */
 ZmSearchController.prototype.redoSearch =
 function(search, noRender, changes, callback, errorCallback) {
 	var params = {};
@@ -266,8 +267,9 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.soapInfo		= search.soapInfo;
 
 	if (changes) {
-		for (var key in changes)
+		for (var key in changes) {
 			params[key] = changes[key];
+		}
 	}
 
 	this._doSearch(params, noRender, callback, errorCallback);
@@ -277,13 +279,13 @@ function(search, noRender, changes, callback, errorCallback) {
  * Assembles a list of item types to return based on a search menu value (which can
  * be passed in).
  *
- * @param searchFor		the value of a search menu item (see ZmSearchToolBar)
+ * @param params			[Object]		a hash of arguments for the search (see search() method)
  * TODO: APPS
  */
 ZmSearchController.prototype.getTypes =
-function(searchFor) {
+function(params) {
 	var types = new AjxVector();
-	searchFor = searchFor || this._searchFor;
+	var searchFor = params.searchFor;
 
 	var groupBy;
 	if ((searchFor == ZmSearchToolBar.FOR_MAIL_MI || searchFor == ZmSearchToolBar.FOR_ANY_MI) &&
@@ -348,17 +350,18 @@ function(types) {
 	return sortBy;
 }
 
-/*
-* Performs the search.
-*
-* @param params			[Object]		a hash of arguments for the search (see search() method)
-* @param noRender		[boolean]*		if true, the search results will not be rendered
-* @param callback		[AjxCallback]*	callback
-* @param errorCallback	[AjxCallback]*	error callback
-*/
+/**
+ * Performs the search.
+ *
+ * @param params		[hash]			a hash of arguments for the search (see search() method)
+ * @param noRender		[boolean]*		if true, the search results will not be rendered
+ * @param callback		[AjxCallback]*	callback
+ * @param errorCallback	[AjxCallback]*	error callback
+ */
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
+	params.searchFor = params.searchFor || this._searchFor;
 	if (this._appCtxt.zimletsPresent()) {
 		this._appCtxt.getZimletMgr().notifyZimlets("onSearch", params.query);
 	}
@@ -369,13 +372,17 @@ function(params, noRender, callback, errorCallback) {
 		this._searchToolBar.setEnabled(false);
 	}
 
-	// get types from search menu if not passed in
-	var types = params.types || this.getTypes();
-	if (types instanceof Array) // convert array to AjxVector if necessary
+	// get types from search type if not passed in explicitly
+	var types = params.types || this.getTypes(params);
+	if (types instanceof Array) { // convert array to AjxVector if necessary
 		types = AjxVector.fromArray(types);
+	}
+	if (params.searchFor == ZmSearchToolBar.FOR_MAIL_MI) {
+		params = this._appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
+	}	
 
 	// if the user explicitly searched for all types, force mixed view
-	var isMixed = (this._searchFor == ZmSearchToolBar.FOR_ANY_MI);
+	var isMixed = (params.searchFor == ZmSearchToolBar.FOR_ANY_MI);
 
 	// a query hint is part of the query that the user does not see
 	if (this._inclSharedItems) {
@@ -392,8 +399,9 @@ function(params, noRender, callback, errorCallback) {
 
 	var search = new ZmSearch(this._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, isMixed, callback]);
-	if (!errorCallback)
+	if (!errorCallback) {
 		errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
+	}
 	search.execute({callback: respCallback, errorCallback: errorCallback});
 };
 
