@@ -27,6 +27,9 @@ ZmAttachDialog = function(appCtxt, shell, className) {
 	
 	this._tabKeys = {};
 	
+	var okButton = this.getButton(DwtDialog.OK_BUTTON);
+	okButton.setText("Attach");
+	
 	//Add Default MyComputer tab
 	this._addMyComputerTab();
 }
@@ -153,11 +156,13 @@ ZmAttachDialog.prototype.uploadFiles = function(){
 	var tabView = this._tabView.getTabView(tabKey);
 	if(tabView && tabView.gotAttachments()){
 		this.upload(this._uploadCallback,tabView.getUploadForm());
+	}else{
+		this.setFooter("Add atleast one file to attach");
 	}
 };
 
 ZmAttachDialog.prototype.cancelUploadFiles = function(){
-	if(this._um && this._um instanceof AjxPost){
+	if(this._um && ( this._um instanceof AjxPost)){
 		this._um.cancel();
 	}
 	this._defaultCancelListener();
@@ -249,7 +254,7 @@ ZmMyComputerTabView = function(parent,appCtxt,className,posStyle) {
 	if (arguments.length == 0) return;
 	
 	this._appCtxt = appCtxt;
-	className = className || "DwtTabViewPage";
+	//className = className || "DwtTabViewPage";
 	DwtTabViewPage.call(this,parent,className,Dwt.STATIC_STYLE);
 	
 	this.setScrollStyle(Dwt.SCROLL);
