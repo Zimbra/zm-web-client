@@ -618,7 +618,7 @@ ZmHtmlEditor.prototype._createToolbars =
 function() {
 	// NOTE: overload this method to place toolbars differently.
 	if (!this._toolbar1) {
-		var tb = this._toolbar1 = new DwtToolBar(this, "ZToolbar", DwtControl.RELATIVE_STYLE, 2);
+		var tb = this._toolbar1 = new DwtToolBar(this, "ZToolbar", DwtControl.RELATIVE_STYLE, 2, null, null, null, 0);
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 
 		// Default is to have ONE toolbar now

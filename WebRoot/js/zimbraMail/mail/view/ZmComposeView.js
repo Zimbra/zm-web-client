@@ -1445,7 +1445,9 @@ ZmComposeView.prototype._createHtmlFromTemplate = function(templateId, data) {
 
 		// save field control
 		this._field[type] = document.getElementById(this._fieldId[type]);
-		this._field[type].addrType = type;
+		if (this._field[type]) {
+			this._field[type].addrType = type;
+		}
 
 		// create picker
 		if (this._contactPickerEnabled) {
@@ -1462,8 +1464,7 @@ ZmComposeView.prototype._createHtmlFromTemplate = function(templateId, data) {
 				// autocomplete-related handlers
 				if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 					this._acAddrSelectList.handle(this._field[type]);
-				}
-				else if (!AjxEnv.isSafari || AjxEnv.isSafariNightly) {
+				} else if (!AjxEnv.isSafari || AjxEnv.isSafariNightly) {
 					this._setEventHandler(this._fieldId[type], "onKeyUp");
 				}
 
