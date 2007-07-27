@@ -25,7 +25,7 @@
  
 ZmFilterRulesView = function(parent, appCtxt, controller) {
 
-	DwtTabViewPage.call(this, parent, "ZmFilterRulesView");
+	DwtTabViewPage.call(this, parent, "ZmPreferencesPage ZmFilterRulesView");
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
@@ -55,7 +55,29 @@ function() {
     this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
 	if (this._hasRendered) return;
 
-	this._controller._setup();
+	// create the html
+	var data = { id: this._htmlElId };
+	var html = AjxTemplate.expand("zimbraMail.prefs.templates.Pages#MailFilters", data);
+	this.getHtmlElement().innerHTML = html;
+
+	// create toolbar
+	var toolbarEl = document.getElementById(data.id+"_toolbar");
+	if (toolbarEl) {
+		var buttons = this._controller.getToolbarButtons();
+		this._toolbar = new ZmButtonToolBar({parent:this, buttons:buttons, posStyle:Dwt.STATIC_STYLE});
+		this._toolbar.replaceElement(toolbarEl);
+	}
+
+	// create list view
+	var listViewEl = document.getElementById(data.id+"_list");
+	if (listViewEl) {
+		this._listView = new ZmFilterListView(this, this._appCtxt, this._controller);
+		this._listView.replaceElement(listViewEl);
+	}
+
+	// initialize controller
+	this._controller.initialize(this._toolbar, this._listView);
+
 	this._hasRendered = true;
 };
 
@@ -67,6 +89,14 @@ function () {
 ZmFilterRulesView.prototype.getTitle =
 function() {
 	return this._title;
+};
+
+ZmFilterRulesView.prototype.getToolbar = function() {
+	return this._toolbar;
+};
+
+ZmFilterRulesView.prototype.getListView = function() {
+	return this._listView;
 };
 
 // View is always in sync with rules
@@ -174,11 +204,7 @@ function(ev) {
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: change listener");
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var index = ev.getDetail("index");
-		this._controller._setListView();
-		var rule = index ? this._rules.getRuleByIndex(index) : null;
-		if (rule) {
-			this.setSelection(rule);
-		}
+		this._controller.resetListView();
 	}
 };
 

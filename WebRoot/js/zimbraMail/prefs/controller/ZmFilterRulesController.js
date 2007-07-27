@@ -64,81 +64,57 @@ function() {
 	return this._filterRulesView;
 };
 
-/*
-* Creates the initial filter rules UI.
-*/
-ZmFilterRulesController.prototype._setup =
-function() {
-	if (this._toolbar && this._listView) return;
-
-	this._initializeToolBar();
-	this._initializeListView();
-};
-
-/*
-* Sets up the filter rules toolbar.
-*/
-ZmFilterRulesController.prototype._initializeToolBar =
-function() {
-	var buttons = [ZmOperation.ADD_FILTER_RULE,
-				   ZmOperation.SEP,
-				   ZmOperation.EDIT_FILTER_RULE,
-				   ZmOperation.SEP,
-				   ZmOperation.REMOVE_FILTER_RULE,
-				   ZmOperation.FILLER,
-				   ZmOperation.MOVE_UP_FILTER_RULE,
-				   ZmOperation.SEP,
-				   ZmOperation.MOVE_DOWN_FILTER_RULE];
-	
-	this._toolbar = new ZmButtonToolBar({parent:this._filterRulesView, buttons:buttons, posStyle:Dwt.STATIC_STYLE});
-
-	// add listeners
-	buttons = this._toolbar.opList;
-	for (var i = 0; i < buttons.length; i++) {
-		var id = buttons[i];
-		if (this._buttonListeners[id]) {
-			this._toolbar.addSelectionListener(id, this._buttonListeners[id]);
+ZmFilterRulesController.prototype.initialize = function(toolbar, listView) {
+	if (toolbar) {
+		var buttons = this.getToolbarButtons();
+		for (var i = 0; i < buttons.length; i++) {
+			var id = buttons[i];
+			if (this._buttonListeners[id]) {
+				toolbar.addSelectionListener(id, this._buttonListeners[id]);
+			}
 		}
+		this._resetOperations(toolbar, 0);
 	}
-	this._resetOperations(this._toolbar, 0);
+
+	if (listView) {
+		listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
+		this.resetListView();
+	}
 };
 
-/*
-* Creates the list view of the rules set and displays the rules.
-*/
-ZmFilterRulesController.prototype._initializeListView =
-function() {
-	this._listView = new ZmFilterListView(this._filterRulesView, this._appCtxt, this);
-	this._listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
-	this._setListView();
+ZmFilterRulesController.prototype.getToolbarButtons = function() {
+	return [ZmOperation.ADD_FILTER_RULE,
+			ZmOperation.SEP,
+			ZmOperation.EDIT_FILTER_RULE,
+			ZmOperation.SEP,
+			ZmOperation.REMOVE_FILTER_RULE,
+			ZmOperation.FILLER,
+			ZmOperation.MOVE_UP_FILTER_RULE,
+			ZmOperation.SEP,
+			ZmOperation.MOVE_DOWN_FILTER_RULE
+	];
 };
 
-/*
-* Displays the given list of rules.
-*
-* @param list		[Array]		list of rules to show
-* @param index		[int]*		index of rule to select
-*/
-ZmFilterRulesController.prototype._setListView =
-function(list, index) {
-	DBG.println(AjxDebug.DBG3, "FILTER RULES: set list view");
-	if (list) {
-		this._handleResponseSetListView(list, index);
-		this._listView.set(list);
-	} else {
-		var respCallback = new AjxCallback(this, this._handleResponseSetListView, [list, index]);
-		this._rules.loadRules(false, respCallback);
-	}
+ZmFilterRulesController.prototype.resetListView = function(callback) {
+	var listView = this._filterRulesView.getListView();
+	if (!listView) return;
+
+	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [listView, callback]);
+	this._rules.loadRules(false, respCallback);
 };
 
 ZmFilterRulesController.prototype._handleResponseSetListView =
-function(list, index, result) {
-	list = list ? list : result.getResponse().clone();
-	this._listView.set(list);
-	index = index ? index : 0;
-	var rule = this._rules.getRuleByIndex(index);
-	if (rule)
-		this._listView.setSelection(rule);
+function(listView, callback, result) {
+	listView.set(result.getResponse().clone());
+
+	var rule = this._rules.getRuleByIndex(0);
+	if (rule) {
+		listView.setSelection(rule);
+	}
+
+	if (callback) {
+		callback.run();
+	}
 };
 
 /*
@@ -151,7 +127,9 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		this._editListener(ev);
 	} else {
-		this._resetOperations(this._toolbar, this._listView.getSelectionCount(), this._listView.getSelection());
+		var toolbar = this._filterRulesView.getToolbar();
+		var listView = this._filterRulesView.getListView();
+		this._resetOperations(toolbar, listView.getSelectionCount(), listView.getSelection());
 	}
 };
 
@@ -162,7 +140,10 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._addListener =
 function(ev) {
-	var sel = this._listView.getSelection();
+	var listView = this._filterRulesView.getListView();
+	if (!listView) return;
+
+	var sel = listView.getSelection();
 	var refRule = sel.length ? sel[sel.length - 1] : null;
 	this._appCtxt.getFilterRuleDialog().popup(null, false, refRule);
 };
@@ -174,7 +155,10 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._editListener =
 function(ev) {
-	var sel = this._listView.getSelection();
+	var listView = this._filterRulesView.getListView();
+	if (!listView) return;
+
+	var sel = listView.getSelection();
 	this._appCtxt.getFilterRuleDialog().popup(sel[0], true);
 };
 
@@ -185,7 +169,10 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._removeListener =
 function(ev) {
-	var sel = this._listView.getSelection();
+	var listView = this._filterRulesView.getListView();
+	if (!listView) return;
+
+	var sel = listView.getSelection();
 	
 	var filter = sel[0];
 	//bug:16053 changed getYesNoCancelMsgDialog to getYesNoMsgDialog
@@ -216,7 +203,10 @@ function(rule) {
 */
 ZmFilterRulesController.prototype._moveUpListener =
 function(ev) {
-	var sel = this._listView.getSelection();
+	var listView = this._filterRulesView.getListView();
+	if (!listView) return;
+
+	var sel = listView.getSelection();
 	this._rules.moveUp(sel[0]);
 };
 
@@ -227,7 +217,10 @@ function(ev) {
 */
 ZmFilterRulesController.prototype._moveDownListener =
 function(ev) {
-	var sel = this._listView.getSelection();
+	var listView = this._filterRulesView.getListView();
+	if (!listView) return;
+
+	var sel = listView.getSelection();
 	this._rules.moveDown(sel[0]);
 };
 

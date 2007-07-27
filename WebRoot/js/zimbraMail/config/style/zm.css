@@ -2145,6 +2145,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	height: auto;
 }
 
+.ZmFilterRulesView .DwtListView-Rows {
+	overflow: visible;
+	height: auto;
+}
+
 /* Container for the set of preference pages (including tabs) */
 .ZmPrefView {
 	@AppBg@

@@ -898,6 +898,17 @@ and the container element is replaced with that control.
 </template>
 
 <template id='MailFilters'>
+	<div align=right>
+	<table class='ZOptionsDefaultsTable'>
+		<tr><td class='ZOptionsDefaultsField'>
+			<!-- filters manage themselves for now -->
+			<div style='visibility:hidden'>
+				<div id='${id}_DEFAULTS_RESTORE'></div>
+			</div>
+		</td></tr>
+	</table>
+	</div>
+
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
@@ -907,7 +918,8 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
-				<!-- TODO: filter list -->
+				<tr><td><div id='${id}_toolbar'></div></td></tr>
+				<tr><td><div id='${id}_list'></div></td></tr>
 			</table>
 			</td>
 		</tr>

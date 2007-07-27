@@ -376,7 +376,7 @@ function() {
 	var prefsView = prefController.getPrefsView();
     var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
     if (section && prefsView && prefsView.getView(section.id)) {
-		prefController.getFilterRulesController()._setListView();
+		prefController.getFilterRulesController().resetListView();
     }
 };
 
