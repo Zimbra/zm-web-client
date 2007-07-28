@@ -203,6 +203,7 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback,status, attId){
 	if(status == AjxPost.SC_OK){
 		
 		this._tabView.switchToTab(this._tabView.getCurrentTab());
+		this.setFooter("Finished attaching files.");
 		if(callback){
 			callback.run(status,attId);
 		}
@@ -227,8 +228,8 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback,status, attId){
 		dialog.setMessage(msg,DwtMessageDialog.CRITICAL_STYLE,this._title);
 		dialog.popup();
 		
+		this.setFooter("Error while attaching files.")
 	}
-	this.setFooter(((status == AjxPost.SC_OK)?  "Finished attaching files." : "Error while attaching files."));
 };
 
 //MyComputer: Add MyComputer Tab View
