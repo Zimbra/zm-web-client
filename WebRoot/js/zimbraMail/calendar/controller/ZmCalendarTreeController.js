@@ -175,7 +175,7 @@ function(ev, treeView, overviewId) {
 	if (ev.type != this.type) return;
 	
 	var fields = ev.getDetail("fields") || {};
-	if (ev.event == ZmEvent.E_CREATE || (ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_FLAGS])) {
+	if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_DELETE || (ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_FLAGS])) {
 		var app = this._appCtxt.getApp(ZmApp.CALENDAR);
 		var controller = app.getCalController();
 		controller._updateCheckedCalendars();
