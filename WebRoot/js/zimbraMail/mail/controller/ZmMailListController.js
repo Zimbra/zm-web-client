@@ -91,6 +91,7 @@ ZmMailListController.GROUP_BY_VIEWS = [];
 ZmMailListController.ACTION_CODE_TO_FOLDER = {};
 ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_INBOX]		= ZmFolder.ID_INBOX;
 ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_DRAFTS]	= ZmFolder.ID_DRAFTS;
+ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_JUNK]		= ZmFolder.ID_SPAM;
 ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_SENT]		= ZmFolder.ID_SENT;
 ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_TRASH]		= ZmFolder.ID_TRASH;
 
@@ -169,6 +170,7 @@ function(actionCode) {
 			
 		case ZmKeyMap.GOTO_INBOX:
 		case ZmKeyMap.GOTO_DRAFTS:
+		case ZmKeyMap.GOTO_JUNK:
 		case ZmKeyMap.GOTO_SENT:
 		case ZmKeyMap.GOTO_TRASH:
 			this._folderSearch(ZmMailListController.ACTION_CODE_TO_FOLDER[actionCode]);

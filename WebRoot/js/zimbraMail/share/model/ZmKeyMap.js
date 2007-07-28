@@ -110,6 +110,7 @@ ZmKeyMap.FORWARD_INLINE		= "ForwardInline";
 ZmKeyMap.GOTO_CALENDAR		= "GoToCalendar";
 ZmKeyMap.GOTO_CONTACTS		= "GoToContacts";
 ZmKeyMap.GOTO_DRAFTS		= "GoToDrafts";
+ZmKeyMap.GOTO_JUNK			= "GoToJunk";
 ZmKeyMap.GOTO_FOLDER		= "GoToFolder";		// takes NNN
 ZmKeyMap.GOTO_IM			= "GoToIm";
 ZmKeyMap.GOTO_INBOX			= "GoToInbox";
