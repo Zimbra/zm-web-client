@@ -697,19 +697,6 @@ function(attachmentId, callback, errorCallback, notifyList) {
 	this._sendRequest(soapDoc, accountName, callback, errorCallback);
 };
 
-ZmCalItem.prototype.move =
-function(folderId, callback, errorCallback) {
-	var soapDoc = AjxSoapDoc.create("ItemActionRequest", "urn:zimbraMail");
-	var accountName = null;
-
-	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("id", this.id);
-	actionNode.setAttribute("op", "move");
-	actionNode.setAttribute("l", folderId);
-
-	this._sendRequest(soapDoc, accountName, callback, errorCallback);
-};
-
 ZmCalItem.prototype.cancel =
 function(mode, msg, callback, errorCallback) {
 	this.setViewMode(mode);

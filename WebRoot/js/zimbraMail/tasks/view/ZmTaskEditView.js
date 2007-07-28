@@ -119,15 +119,17 @@ function(calItem) {
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 
-	if (startDate)
+	if (startDate) {
 		calItem.setStartDate(startDate, true);
-	else
+	} else {
 		calItem.startDate = null;	// explicitly null out in case item has old data
+	}
 
-	if (endDate)
+	if (endDate) {
 		calItem.setEndDate(endDate, true);
-	else
+	} else {
 		calItem.endDate = null;		// explicitly null out in case item has old data
+	}
 
 	calItem.setAllDayEvent(true);
 	calItem.pComplete = this._pCompleteSelect.getValue();
@@ -249,6 +251,7 @@ function(excludeAttendees) {
 	vals.push(this._subjectField.getValue());
 	vals.push(this._location.getValue());
 	vals.push(this._prioritySelect.getValue());
+	vals.push(this._folderSelect.getValue());
 	vals.push("" + this._statusCheckbox.checked);
 	vals.push(this._pCompleteSelect.getValue());
 	vals.push(this._statusSelect.getValue());

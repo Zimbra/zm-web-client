@@ -292,24 +292,11 @@ function(calItem, attId, notifyList) {
 		var callback = new AjxCallback(this, this._handleResponseSave, calItem);
 		var errorCallback = new AjxCallback(this, this._handleErrorSave);
 		calItem.save(attId, callback, errorCallback, notifyList);
-	} else {
-		this._handleResponseSave(calItem);
 	}
 };
 
 ZmCalItemComposeController.prototype._handleResponseSave =
 function(calItem) {
-	if (calItem.viewMode != ZmCalItem.MODE_NEW &&
-		calItem._orig && calItem._orig.folderId != calItem.folderId)
-	{
-		calItem.move(calItem.folderId, new AjxCallback(this, this._handleResponseCleanup));
-	} else {
-		this._handleResponseCleanup();
-	}
-};
-
-ZmCalItemComposeController.prototype._handleResponseCleanup =
-function() {
 	this._composeView.cleanup();
 };
 
