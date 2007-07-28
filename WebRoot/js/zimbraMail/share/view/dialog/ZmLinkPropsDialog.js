@@ -191,7 +191,7 @@ ZmLinkPropsDialog._enableFieldsOnEdit =
 function(dialog) {
 	var enabled = false;
 	if (dialog._pageRadioEl && dialog._pageRadioEl.checked) {
-		enabled = dialog._pageInput.getValue().replace(/^\s+(.*)\s+$/,"$1") != "";
+		enabled = true;
 	}
 	else {
 		enabled = dialog._urlInput.getValue().replace(/^\s+(.*)\s+$/,"$1") != "";
@@ -427,8 +427,10 @@ function(s) {
 	var pages = this._cache.getPagesInFolder(notebookId);
 	var isEmpty = true;
 	for (var p in pages) {
-		this._pageSelect.addOption(p, false, p);
-		isEmpty = false;
+		if(p != "_Index"){
+			this._pageSelect.addOption(p, false, p);
+			isEmpty = false;
+		}
 	}	
 	if(isEmpty){
 		this._pageSelect.setText(ZmMsg.notAvailable);
