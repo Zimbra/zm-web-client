@@ -9,7 +9,19 @@
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
-    <zm:computeSearchContext var="context" usecache="true"/>
+    <c:choose>
+        <c:when test="${not empty param.actionSearch}">
+            <c:if test="${not empty param.sq_size}"><c:set var="sq_size" value=" ${param.sq_size_comp}:${fn:trim(param.sq_size)}${param.sq_size_units}"/></c:if>
+            <c:if test="${not empty param.sq_from}"><c:set var="sq_from" value=' from:(${param.sq_from})'/></c:if>
+            <c:if test="${not empty param.sq_subject}"><c:set var="sq_subject" value=' subject:(${param.sq_subject})'/></c:if>
+            <c:if test="${not empty param.sq_tocc}"><c:set var="sq_tocc" value=' (to:(${param.sq_tocc}) or cc:(${param.sq_tocc}))'/></c:if>
+            <c:set var="sq">${param.sq_folder}${param.sq_tag}${param.sq_unread}${param.sq_flagged}${sq_subject}${sq_tocc}${sq_from}${sq_size}</c:set>
+        </c:when>
+        <c:otherwise>
+            <c:set var="sq" value="${param.sq}"/>
+        </c:otherwise>
+    </c:choose>
+    <zm:computeSearchContext var="context" usecache="true" query="${sq}"/>
 </mo:handleError>
 
  <%-- switch based on context search types --%>

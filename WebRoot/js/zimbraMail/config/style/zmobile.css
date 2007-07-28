@@ -64,6 +64,18 @@ body {
     font-size: medium;
     font-weight: bold;
 }
+
+.zo_tb_submit {
+    padding-left:15px;
+}
+.zo_tb_submit INPUT {
+    padding:4px;
+    font-size: medium;
+    color: #000000;
+    text-decoration: none;
+    background: none;
+}
+
 .zo_button {
     -webkit-border-image: url(/images/mobile/iPhoneButton.png) 0 5 0 5;
     -webkit-border-radius: 0;
@@ -134,6 +146,35 @@ body {
 .mo_taglist IMG {
    vertical-align: middle;
 }
+
+.zo_query_fname {
+    font-size: medium;
+    font-weight: normal;
+    color: gray; /*#BBBBBB;*/
+    text-align:right;
+    /*padding-left: 5px;*/
+}
+
+.zo_query_fvalue {
+    color: black;
+    text-decoration: none;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 6px 6px 6px 6px;
+    font-size: medium;
+    font-weight: normal;
+    vertical-align: middle;
+}
+.zo_query_fvalue INPUT, .zo_query_fvalue SELECT {
+    color: black;
+    text-decoration: none;
+    box-sizing: border-box;
+    vertical-align: middle;
+    padding: 6px 6px 6px 0px;
+    font-size: medium;
+    font-weight: normal;
+}
+
 
 /************************************************************************************************/
 

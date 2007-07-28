@@ -279,6 +279,7 @@
           <url-pattern>/m/mocalendar</url-pattern>
           <url-pattern>/m/mofolders</url-pattern>
           <url-pattern>/m/moaddrbooks</url-pattern>
+          <url-pattern>/m/moquery</url-pattern>
       </jsp-property-group>
     </jsp-config>
 

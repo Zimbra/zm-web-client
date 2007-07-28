@@ -9,15 +9,14 @@
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
-    <zm:computeSearchContext var="context" usecache="true"/>
 </mo:handleError>
-<mo:view title="${mailbox.name}" context="${context}" mailbox="${mailbox}">
+<mo:view title="${mailbox.name}" context="${null}" mailbox="${mailbox}">
     <table width=100% cellspacing="0" cellpadding="0">
         <tr>
             <td>
                 <table width=100% cellspacing="0" cellpadding="0">
                     <tr class='zo_toolbar'>
-                        <td>
+                        <td align=right>
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td>
@@ -67,6 +66,14 @@
             <a href="mofolders">
                 <img src="/zimbra/images/mail/MailFolder.gif"/>
                 <fmt:message key="MO_mailFoldersTags"/>
+            </a>
+            </td>
+        </tr>
+        <tr>
+            <td class='zo_main_item'>
+            <a href="moquery">
+                <img src="/zimbra/images/common/Search.gif"/>
+                <fmt:message key="search"/>
             </a>
             </td>
         </tr>
