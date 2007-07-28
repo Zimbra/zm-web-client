@@ -954,9 +954,9 @@ function() {
 };
 
 ZmMailListController.prototype._folderSearch =
-function(folderId, searchFor) {
+function(folderId) {
 	var searchController = this._appCtxt.getSearchController();
-	searchController.search({query: "in:" + ZmFolder.QUERY_NAME[folderId], searchFor:searchFor || ZmSearchToolBar.FOR_ANY_MI});
+	searchController.search({query:"in:" + ZmFolder.QUERY_NAME[folderId]});
 };
 
 // Miscellaneous
