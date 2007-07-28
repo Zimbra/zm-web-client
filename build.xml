@@ -1146,6 +1146,11 @@ if (ext == null) ext = "";
             <unzip dest='${webserver.root.dir}/webapps/${param.dirname}' src="${webserver.root.dir}/webapps/${param.warfilename}" /> 
             <ant dir="../ZimbraServer" target="start-jetty" inheritAll="false"/>
   		</else></if>
-  	</target>
+		<if><available file='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/Zimlet' />
+			<then>
+				<ant dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/Zimlet" target="deploy-zimlets" inheritAll="false" />
+			</then>
+		</if>
+	  </target>
 
 </project>
