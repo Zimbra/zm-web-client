@@ -13,7 +13,7 @@
     <c:set var="csi" value="${param.csi}"/>
 
     <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" limit="100"
-                   context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="false" sort="${param.css}"/>
+                   context="${context}" fetch="none" markread="false" sort="${param.css}"/>
     <c:set var="convSummary" value="${convSearchResult.conversationSummary}"/>
     <c:set var="singleMessage" value="${convSummary.messageCount eq 1 or not empty param.mview}"/>
 
