@@ -201,8 +201,6 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback,status, attId){
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON,true);
 	
 	if(status == AjxPost.SC_OK){
-		
-		this._tabView.switchToTab(this._tabView.getCurrentTab());
 		this.setFooter("Finished attaching files.");
 		if(callback){
 			callback.run(status,attId);

@@ -923,6 +923,14 @@ function(incAddrs, incSubject) {
 ZmComposeView.prototype.cleanupAttachments = 
 function(all) {
 	
+	var attachDialog = this._attachDialog;
+	if(attachDialog && attachDialog.isPoppedUp()){
+		var tabView = attachDialog.getTabView();
+		if( tabView.getCurrentTab() == attachDialog.getTabKey("MY_COMPUTER")){
+			tabView.switchToTab(tabView.getCurrentTab());
+		}
+	}
+	
 	if (all) {
 		this._attcDiv.innerHTML = "";
 		this._attcDiv.style.height = "";
