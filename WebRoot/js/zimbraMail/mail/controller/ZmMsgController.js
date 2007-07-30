@@ -41,6 +41,11 @@ ZmMsgController = function(appCtxt, container, mailApp) {
 	ZmMailListController.call(this, appCtxt, container, mailApp);
 };
 
+ZmMsgController.MODE_TO_CONTROLLER = {};
+ZmMsgController.MODE_TO_CONTROLLER[ZmController.TRAD_VIEW]		= "GetTradController";
+ZmMsgController.MODE_TO_CONTROLLER[ZmController.CONV_VIEW]		= "GetConvController";
+ZmMsgController.MODE_TO_CONTROLLER[ZmController.CONVLIST_VIEW]	= "GetConvListController";
+
 ZmMsgController.prototype = new ZmMailListController;
 ZmMsgController.prototype.constructor = ZmMsgController;
 
@@ -233,10 +238,8 @@ function(view) {
 
 ZmMsgController.prototype._paginate = 
 function(view, bPageForward) {
-	// NOTE: do not call base class.
-	var controller = AjxDispatcher.run((this._mode == ZmController.TRAD_VIEW) ? "GetTradController" :
-																				"GetConvController");
-
+	// NOTE: do not call base class
+	var controller = AjxDispatcher.run(ZmMsgController.MODE_TO_CONTROLLER[this._mode]);
 	if (controller) {
 		controller.pageItemSilently(this._msg, bPageForward);
 		this._resetNavToolBarButtons(view);

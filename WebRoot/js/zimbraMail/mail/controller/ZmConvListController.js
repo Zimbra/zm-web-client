@@ -39,6 +39,7 @@
  */
 ZmConvListController = function(appCtxt, container, mailApp) {
 	ZmDoublePaneController.call(this, appCtxt, container, mailApp);
+	this._msgControllerMode = ZmController.CONVLIST_VIEW;
 };
 
 ZmConvListController.prototype = new ZmDoublePaneController;
@@ -189,7 +190,11 @@ function(ev) {
 		if (!handled) {
 			if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 				var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
-				AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this, respCallback);
+				if (item.type == ZmItem.MSG) {
+					AjxDispatcher.run("GetMsgController").show(item, this._msgControllerMode, respCallback);
+				} else {
+					AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this, respCallback);
+				}
 			}
 		}
 	}
