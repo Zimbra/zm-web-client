@@ -646,17 +646,14 @@ line-height:normal;
  */
 
 .AlphabetBarTable {
-	background-color:@WidgetBgColor@
+	background-color:@WidgetBgColor@;
+	table-layout:fixed;
 }
 
 .AlphabetBarCell {
 	text-align:center;
 	@ActiveCursor@
 	border-right-width: 1px;
-
-#IFDEF GECKO
-	width:30px;
-#ENDIF
 }
 
 .AlphabetBarDisabled {
