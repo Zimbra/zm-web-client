@@ -1024,6 +1024,8 @@ function(parent, num) {
 		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD, ZmOperation.DETACH], (!isDrafts && num == 1));
 		parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.FORWARD], (!isDrafts && num > 0));
 		parent.enable([ZmOperation.CHECK_MAIL, ZmOperation.VIEW_MENU], true);
+	} else {
+		parent.enable([ZmOperation.SPAM], (!isDrafts && num > 0));
 	}
 };
 
