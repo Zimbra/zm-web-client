@@ -113,5 +113,5 @@ ZmSignatureCollection.prototype.initialize = function(data) {
 //
 
 ZmSignatureCollection.BY_NAME = function(a, b) {
-	return a.name - b.name;
+	return a.name.localeCompare(b.name);
 };
