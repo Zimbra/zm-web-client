@@ -36,7 +36,7 @@ ZmContactView = function(parent, appCtxt, controller) {
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 	this._dateFormatter = new AjxDateFormat("yyyy-MM-dd");
 
-	this.setScrollStyle(Dwt.CLIP);
+	this.setScrollStyle(Dwt.SCROLL);
 };
 
 ZmContactView.prototype = new DwtComposite;
@@ -279,19 +279,9 @@ function() {
 
 ZmContactView.prototype._sizeChildren =
 function(width, height) {
-	/*
-	var contentDiv = document.getElementById(this._contentId);
-	if (contentDiv)
-		Dwt.setSize(contentDiv, width, (height-45));
-
-	var contactHeader = document.getElementById(this._contactHeaderId);
-	if (contactHeader)
-		Dwt.setSize(contactHeader, width);
-
-	var contactHeaderDiv = document.getElementById(this._fieldIds[ZmContactView.F_contactTitle]);
-	if (contactHeaderDiv)
-		Dwt.setSize(contactHeaderDiv, "100%");
-*/
+	var tabIdx = this._contactTabView.getCurrentTab();
+	var tabView = this._contactTabView.getTabView(tabIdx);
+	tabView.setSize(width);
 };
 
 ZmContactView.prototype._addSelectOptions =
@@ -613,6 +603,8 @@ function(ev) {
 
 	// always set focus to the first input-type element in the tab
 	fields[0].focus();
+
+	this._sizeChildren();
 };
 
 ZmContactView.prototype._tagChangeListener =
