@@ -248,6 +248,8 @@
 		var workCallback= contact.getAttr(ZmContact.F_callbackPhone);
 		var workURL 	= contact.getAttr(ZmContact.F_workURL);
 		var hasWorkPhone= workPhone || workPhone2 || workFax || workAsst || workCompany || workCallback;
+		var imageUrl 	= contact.getImageUrl();
+		var hasImage 	= (imageUrl ? true: false);
 	$>
 	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
 		<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView_title", data) $>
@@ -266,6 +268,10 @@
 						<tr><td><br></td></tr>
 					<$ } $>
 					<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_workURL, value:workURL, type:ZmObjectManager.URL}) $>
+					<$ if (hasImage) { $>
+						<tr><td><br></td></tr>
+						<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitViewImage", {data:data, label:ZmMsg.AB_FIELD_image, value:imageUrl, type:ZmObjectManager.URL}) $>					
+					<$ } $>
 				</table>
 			</td>
 		</tr>
@@ -396,6 +402,20 @@
 		<$ if (data.addSep) { $>
 			<tr><td><br></td></tr>
 		<$ } $>
+	<$ } $>
+</template>
+
+<template id="SplitViewImage">
+	<tr>
+		<td class='contactLabel'>
+			${label}:
+		</td>
+		<td class='contactImage'>
+			<img border='0' width='100px' height='100px' src=${value}>
+		</td>
+	</tr>
+	<$ if (data.addSep) { $>
+		<tr><td><br></td></tr>
 	<$ } $>
 </template>
 
@@ -533,8 +553,8 @@
 			for (var h = 0; h < data.rows.length; h++) {
 				var columns = data.rows[h];
 		$>
-			<$ if (h == 1 && data.sepMsg) { $>
-				<tr><td colspan=10 valign=top class='sectionLabel'><br><br>${sepMsg}</td></tr>
+			<$ if (data.sepMsg && data.sepMsg[h]) { $>
+				<tr><td colspan=10 valign=top class='sectionLabel'><br><br><$=data.sepMsg[h] $></td></tr>
 			<$ } $>
 			<tr>
 				<$
@@ -585,9 +605,18 @@
 					{ lbl: ZmMsg.AB_FIELD_imAddress2,	field: ZmContact.F_imAddress2 },
 					{ lbl: ZmMsg.AB_FIELD_imAddress3,	field: ZmContact.F_imAddress3 }
 				]
+			],
+			[
+				[	
+					{ lbl: ZmMsg.AB_FIELD_image,		field: ZmContact.F_image,			isImage: true }
+				]
+				/*,
+				[
+					{ lbl: ZmMsg.AB_FIELD_attachment,   field: ZmContact.F_attachment,		isAttachment: true }
+				]*/
 			]
 		];
-		var subs = {data:data, rows:rows, sepMsg:ZmMsg.emailAndIM};
+		var subs = {data:data, rows:rows, sepMsg:{1:ZmMsg.emailAndIM,2:ZmMsg.addPhoto}};
 		buffer[_i++] = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#ZmContactView_content", subs);
 	$>
 </template>
@@ -688,8 +717,9 @@
 		var entry = data.entry;
 	$>
 	<tr>
-		<td class='contactLabel' <$= entry.isTextArea ? "valign=top" : "" $>><$= AjxStringUtil.htmlEncode(entry.lbl) $>:</td>
-
+		<$ if(!entry.isImage) { $>
+			<td class='contactLabel' <$= entry.isTextArea ? "valign=top" : "" $>><$= AjxStringUtil.htmlEncode(entry.lbl) $>:</td>
+		<$ } $>
 		<$ if (entry.widgetId) { $>
 			<td id='${entry.widgetId}'></td>
 		<$ } else if (entry.isTextArea) { $>
@@ -703,13 +733,38 @@
 					</tr>
 				</table>
 			</td>
+		<$ } else if (entry.isImage) { $>
+			<td colspan='2'>
+				<table border=0 cellpadding=0 cellspacing=0>
+					<tr>
+						<td><img id='<$= id$>_${entry.field}_img' style='display:block' width='100' height='100'></td>
+						<td style='padding-left:10px'>
+							<div>
+								<span>Add new Photo</span><br\>
+								<span>
+									<form id='<$=id $>_${entry.field}_form' accept-charset='utf-8' method='POST' enctype='multipart/form-data'>
+										<input type='file' id='<$= id$>_${entry.field}_input' name='<$=id $>_name_<$= tabIdx$>' _isImage = 'true' _field='${entry.field}'>
+									</form>
+								</span>
+							</div>
+							<div>
+								<a id='<$=id $>_${entry.field}_remove' href='javascript:;'>Remove Photo</a>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
 		<$ } else { $>
 			<td><input type='text' autocomplete='off' size=35 name='<$= id $>_name_<$= tabIdx $>' id='<$= id $>_${entry.field}' _field='${entry.field}'></td>
 		<$ } $>
 	</tr>
 </template>
 
-
+<form accept-charset='utf-8' method='POST' action='";
+	html[idx++] = this._uri;
+	html[idx++] = "' id='";
+	html[idx++] = uploadFormId;
+	html[idx++] = "' enctype='multipart/form-data'></form>";
 
 <!----------------------------------------------------------------------------->
 <!------------------------------ Contact Tooltip ------------------------------>

@@ -445,6 +445,18 @@ function() {
 	}
 };
 
+ZmContactView.prototype._setImage = function(el,value){
+	//fix this: After getting image/UI change this
+	if(!value) {
+		this._image.src = "http://www.ithou.org/files/pictures/default-photo.jpg";
+		return;
+	}
+	el.setAttribute("_part",value.part);
+	el.setAttribute("_size",value.size);
+	el.setAttribute("_ct",value.ct);
+	this._image.src = this._contact.getImageUrl();
+};
+
 ZmContactView.prototype._setValues =
 function() {
 	// set field values for each tab
@@ -454,12 +466,16 @@ function() {
 			var el = fields[j];
 			var field = Dwt.getAttr(el, "_field");
 			var value = (this._attr[field]) || "";
-
+			var isImage = (!!(Dwt.getAttr(el,"_isImage")));
+			var isAttachment = (!!(Dwt.getAttr(el,"_isAttachment")));
 			var isDate = (!!(Dwt.getAttr(el, "_isDate")));
 			if (isDate) {
 				var val = this._dateFormatter.parse(value);
 				el.value = val ? AjxDateUtil.simpleComputeDateStr(val) : "";
-			} else {
+			}else if(isImage){
+				 el.value = "";
+				 this._setImage(el,value);
+			}else {
 				el.value = value;
 			}
 		}
@@ -502,7 +518,12 @@ function() {
 			var el = fields[j];
 			var field = Dwt.getAttr(el, "_field");
 			var isDate = (!!(Dwt.getAttr(el, "_isDate")));
-			if (el.value != "") {
+			var isImage = (!!(Dwt.getAttr(el,"_isImage")));
+			var isAttachment = (!!(Dwt.getAttr(el,"_isAttachment")));
+			if(isImage || isAttachment){
+				this._attr[field] = ( el.getAttribute("_aid") ? ["aid_",el.getAttribute("_aid")].join("") : (el.getAttribute("_part") ? ["part_",el.getAttribute("_part")].join("") : ""));
+				console.log("AttachmentField:"+this._attr[field]);
+			}else if (el.value != "" || field == ZmContact.F_image) {
 				if (isDate) {
 					var bdate = AjxDateUtil.simpleParseDateStr(el.value);
 					this._attr[field] = this._dateFormatter.format(bdate);
@@ -540,14 +561,16 @@ function(contact) {
 	this._iconCellId		= this._htmlElId + "_icon";
 	this._tagCellId			= this._htmlElId + "_tags";
 	this._titleCellId		= this._htmlElId + "_title";
-
+	this._imageCellId		= this._htmlElId + "_image";
+	
 	var subs = {
 		id: this._htmlElId,
 		fileAsSelectId: this._fileAsSelectCellId,
-		folderSelectId: this._folderCellId
+		folderSelectId: this._folderCellId,
 	};
 
 	this._fields = [];
+	var defaultTab;
 	for (var i = 0; i < this._tabs.length; i++) {
 		var tab = AjxStringUtil.trim(this._tabs[i]);
 		var idx = subs.tabIdx = this._contactTabView.addTab(ZmMsg[tab]);
@@ -556,20 +579,105 @@ function(contact) {
 		view.getHtmlElement().innerHTML = AjxTemplate.expand(template, subs);
 		this._contactTabView.setTabView(idx, view);
 		if (i == 0) {
+			defaultTab = idx;
 			view.setVisible(true);
 		}
 
 		this._fields.push(document.getElementsByName(this._htmlElId + "_name_" + idx));
 	}
-
+	
+	this._contactTabView.switchToTab(defaultTab);
+	
 	// add widgets
 	this._addSelectOptions();
 	this._addDateCalendars();
+	
+	this._handleImage();
 
 	// add onKeyUp handlers
 	this._installOnKeyUpHandler();
 
 	this._htmlInitialized = true;
+};
+
+ZmContactView.prototype._handleImage = function(){
+	
+	this._image = document.getElementById(this._imageCellId+"_img");
+	//this._photo.src = "http://www.ithou.org/files/pictures/default-photo.jpg";
+	
+	var imageInput = this._imageInput = document.getElementById(this._imageCellId+"_input");
+	imageInput.onchange = AjxCallback.simpleClosure(this._uploadImage,this);
+	imageInput.setAttribute("accept","image/gif,image/jpeg,image/png");
+	
+	var imageRemove = document.getElementById(this._imageCellId+"_remove");
+	imageRemove.onclick = AjxCallback.simpleClosure(this._removeImage,this,imageRemove);
+	
+	this._uploadForm = document.getElementById(this._imageCellId+"_form");
+	var uri = [ location.protocol,"//", document.domain, this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI)].join("");
+	this._uploadForm.setAttribute("action",uri);
+	
+};
+
+ZmContactView.prototype._updateImage = function(status,attId){
+	this._image.src = ["/service/content/proxy?aid=",attId].join("");
+	this._imageInput.setAttribute("_aid",attId);
+	console.log("attId:"+attId);
+};
+
+ZmContactView.prototype._uploadImage = function(){
+	
+	if(this._imageInput.value == ""){
+		return;
+	}
+	
+	var callback = new AjxCallback(this,this._updateImage);
+	var ajxCallback = new AjxCallback(this, this._uploadImageDone,[callback]);
+	var um = this._appCtxt.getUploadManager();
+	window._uploadManager = um;
+
+	try {
+		um.execute(ajxCallback, this._uploadForm);
+	} catch (ex) {
+		ajxCallback.run();
+		this._um = null;
+	}
+};
+
+ZmContactView.prototype._uploadImageDone = function(callback,status,attId){
+	
+	if(status == AjxPost.SC_OK){
+		if(callback){
+			callback.run(status,attId);
+		}
+		
+	}else if (status == AjxPost.SC_UNAUTHORIZED) {
+		
+		// auth failed during att upload - let user relogin, continue with compose action
+		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
+		this._appCtxt.getAppController()._handleException(ex, callback);
+		
+	} else {
+		
+		// bug fix #2131 - handle errors during attachment upload.
+		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
+		
+		switch (status) {
+			// add other error codes/message here as necessary
+			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
+			default: 									msg += " "; break;
+		}
+		var dialog = this._appCtxt.getMsgDialog();
+		dialog.setMessage(msg,DwtMessageDialog.CRITICAL_STYLE,this._title);
+		dialog.popup();
+		
+	}
+};
+
+
+ZmContactView.prototype._removeImage = function(el){
+	this._imageInput.removeAttribute("_aid");
+	this._imageInput.removeAttribute("_part");
+	this._setImage(el,null);
 };
 
 ZmContactView.prototype._getTabGroupMembers =
@@ -603,7 +711,7 @@ function(ev) {
 
 	// always set focus to the first input-type element in the tab
 	fields[0].focus();
-
+	
 	this._sizeChildren();
 };
 

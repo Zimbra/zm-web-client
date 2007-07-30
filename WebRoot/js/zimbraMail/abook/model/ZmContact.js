@@ -112,6 +112,10 @@ ZmContact.F_workState		= "workState";
 ZmContact.F_workStreet		= "workStreet";
 ZmContact.F_workURL			= "workURL";
 
+//XYZ: Contact image
+ZmContact.F_image			= "image";
+ZmContact.F_attachment		= "attachment";
+
 // IM addresses
 ZmContact.F_imAddress1 = "imAddress1";
 ZmContact.F_imAddress2 = "imAddress2";
@@ -147,6 +151,9 @@ ZmContact.F_PHONE_FIELDS = [
 	ZmContact.F_otherPhone, ZmContact.F_workPhone, ZmContact.F_workPhone2
 ];
 ZmContact.F_IM_FIELDS = [ ZmContact.F_imAddress1, ZmContact.F_imAddress2, ZmContact.F_imAddress3 ];
+
+//XYZ: Attachment Fields
+ZmContact.F_ATT_FIELDS = [ZmContact.F_image];
 
 ZmContact.prototype.toString =
 function() {
@@ -491,7 +498,18 @@ function(attr, batchCmd) {
 	for (var name in attr) {
 		if (name == ZmContact.F_folderId)
 			continue;
-		var a = soapDoc.set("a", attr[name], cn);
+		//XYZ: Handle Image Fields
+		var a;
+  		if(name == ZmContact.F_image){
+  			a = soapDoc.set("a",null,cn);
+  			console.log("Create:"+attr[name]);
+  			if(attr[name].indexOf("aid_") != -1)
+  				a.setAttribute("aid",attr[name].substring(4));
+  			else
+  				a.setAttribute("part",attr[name].substring(5));	
+  		}else{
+  		    a = soapDoc.set("a", attr[name], cn);	
+  		}
 		a.setAttribute("n", name);
 	}
 
@@ -584,7 +602,20 @@ function(attr, callback) {
 	for (var name in attr) {
 		if (name == ZmContact.F_folderId)
 			continue;
-		var a = soapDoc.set("a", attr[name], cn);
+		
+		//XYZ: Modify Image Handled
+		var a;
+  		if(name == ZmContact.F_image){
+  			a = soapDoc.set("a", null, cn);
+  			if(attr[name].indexOf("aid_") != -1)
+  				a.setAttribute("aid",attr[name].substring(4));
+  			else if(attr[name].indexOf("part_") != -1)
+  				a.setAttribute("part",attr[name].substring(5));	
+  		}else{
+  			a = soapDoc.set("a", attr[name], cn);
+  		}		
+			
+		//var a = soapDoc.set("a", attr[name], cn);
 		a.setAttribute("n", name);
 		continueRequest = true;
 	}
@@ -827,6 +858,14 @@ function() {
 	return this.id ? this.getFileAs() : ZmMsg.newContact;
 };
 
+//XYZ: Get Image URL
+ZmContact.prototype.getImageUrl = function() {
+  	var image = this.getAttr(ZmContact.F_image);
+  	if(!image || !image.part) return null;  	
+  	return  [this._appCtxt.getCsfeMsgFetcher(),"id=",this.id,"&part=",image.part,"&t=",(new Date()).getTime()].join("");
+};
+
+
 // company field has a getter b/c fileAs may be the Company name so
 // company field should return "last, first" name instead *or*
 // prepend the title if fileAs is not Company (assuming it exists)
@@ -1067,7 +1106,11 @@ ZmContact._AB_FIELD = {
 	imAddress1: ZmMsg.AB_FIELD_imAddress1,
 	imAddress2: ZmMsg.AB_FIELD_imAddress2,
 	imAddress3: ZmMsg.AB_FIELD_imAddress3,
-
+	
+	//contact Image
+	image: ZmMsg.AB_FIELD_image,
+	attachment: ZmMsg.AB_FIELD_attachment,
+	
 	// work address
 	workStreet: ZmMsg.AB_FIELD_street,
 	workCity: ZmMsg.AB_FIELD_city,
