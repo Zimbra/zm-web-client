@@ -26,7 +26,6 @@
 ZmVoiceListController = function(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmListController.call(this, appCtxt, container, app);
-	this._listeners[ZmOperation.VOICE_CALL] = new AjxListener(this, this._callListener);
     this._listeners[ZmOperation.CALL_MANAGER] = new AjxListener(this, this._callManagerListener);
 
 	this._folder = null;
@@ -115,20 +114,6 @@ function(ev) {
 	return contact;
 };
 
-ZmVoiceListController.prototype._callListener =
-function(ev) {
-	// Point an iframe at the callto url, which will launch the client's callto application.
-	var view = this._getView()
-	var item = view.getSelection()[0];
-	var phone = view.getCallingParty(item);
-	if (!this._callControl) {
-		this._callControl = new DwtControl(this._appCtxt.getShell());
-		this._callControl.setVisible(false);
-	}
-	var iframeHtml = ["<iframe src='", phone.getCallUrl(),"'></iframe>"].join("");
-	this._callControl.getHtmlElement().innerHTML = iframeHtml;
-};
-
 ZmVoiceListController.prototype._refreshListener =
 function(ev) {
 	if (this._folder) {
@@ -176,16 +161,6 @@ function(ev) {
 		this._setContactText(contact != null);
 	}
 
-	// Update the call item to show the number it'll call.
-	var callItem = actionMenu.getMenuItem(ZmOperation.VOICE_CALL);
-	if (callItem.getEnabled()) {
-		var phone = view.getCallingParty(item);
-		var text = AjxMessageFormat.format(ZmMsg.callNumber, phone.getDisplay());
-		callItem.setText(text);
-	} else {
-		callItem.setText(ZmMsg.call);
-	}
-	
 	actionMenu.popup(0, ev.docX, ev.docY);
 };
 

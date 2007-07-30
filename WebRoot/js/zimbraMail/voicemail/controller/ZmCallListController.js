@@ -72,12 +72,10 @@ function() {
 
 ZmCallListController.prototype._getActionMenuOps =
 function() {
-	var	list = [];
-	list.push(ZmOperation.VOICE_CALL);
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		list.push(ZmOperation.CONTACT);
+		return [ZmOperation.CONTACT];
 	}
-	return list;
+	return null;
 };
 
 ZmCallListController.prototype._initializeToolBar =
