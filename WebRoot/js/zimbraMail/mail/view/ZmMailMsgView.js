@@ -153,6 +153,7 @@ function(msg) {
 			 this._appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) &&
 			 msg.share && msg.folderId != ZmFolder.ID_TRASH)
 	{
+		AjxDispatcher.require("Share");
 		var action = msg.share.action;
         var isNew = action == ZmShare.NEW;
         var isEdit = action == ZmShare.EDIT;
