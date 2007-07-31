@@ -73,7 +73,7 @@
                             </c:choose>
                             <c:if test="${empty selectedRow and hit.messageHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
-                            <tr id="R${status.index}" class='ZhRow ${hit.messageHit.isUnread ? ' Unread':''}${ selectedRow eq status.index ? ' RowSelected' : ''}'>
+                            <tr onclick='zSelectRow(event,"A${status.index}")' id="R${status.index}" class='ZhRow ${hit.messageHit.isUnread ? ' Unread':''}${ selectedRow eq status.index ? ' RowSelected' : ''}'>
                                 <td class='CB' nowrap><input id="C${status.index}" type=checkbox name="id" value="${hit.messageHit.id}"></td>
                                 <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
                                  <c:if test="${mailbox.features.tagging}">
@@ -81,8 +81,7 @@
                                 </c:if>
                                 <td class='MsgStatusImg' align=center><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
                                 <td><%-- allow wrap --%>
-                                    <c:set var="dispAddr" value="${hit.messageHit.displayAddresses}"/>
-                                    <a href="${currentItemUrl}">${fn:escapeXml(empty dispAddr ? unknownRecipient :  dispAddr)}</a>
+                                    <c:set var="dispAddr" value="${hit.messageHit.displayAddresses}"/>${fn:escapeXml(empty dispAddr ? unknownRecipient :  dispAddr)}
                                 </td>
                                 <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td > <%-- allow this col to wrap --%>
@@ -172,6 +171,7 @@
     var zread = function() { zaction("OPREAD"); }
     var zunread = function() { zaction("OPUNREAD"); }
     var zjunk = function() { zclick("SOPSPAM"); }
+    function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
     //-->
 </SCRIPT>
 

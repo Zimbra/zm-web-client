@@ -22,19 +22,20 @@
         <td class='ZhApptSel'>
 </c:if>
 <c:set var="needImages" value="${appt.otherAttendees or appt.exception or appt.hasTags or appt.isFlagged}"/>
+<c:set var="apptId" value="APPT${appt.id}${appt.startTime lt start ? start : appt.startTime}"/>
 
 <c:choose>
     <c:when test="${appt.allDay}">
         <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
         <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
 
-        <table <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if>
+        <table onclick='zSelectRow(event,"${apptId}")' <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if>
                 class='ZhCalDayAllDayAppt${needsAction ? 'New ' : ' '} ${color}${needsAction ? 'Dark' : 'Light'}'
 
                 width="100%" height="100%" border="0" cellspacing="0" cellpadding="1">
             <tr>
                 <td>
-                    <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
+                    <a id="${apptId}" href="${apptUrl}">${fn:escapeXml(subject)}</a>
                 </td>
                 <c:if test="${needImages}">
                     <td width=1% align=right>
@@ -64,7 +65,7 @@
         </table>
     </c:when>
     <c:when test="${appt.duration gt 1000*60*15}">
-        <table class='ZhCalDayAppt${needsAction ? 'New' : ''}' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
+        <table onclick='zSelectRow(event,"${apptId}")' class='ZhCalDayAppt${needsAction ? 'New' : ''}' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
                 <td colspan="${needImages ? 1 : 2}" nowrap class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}' valign=top>
                     <c:choose>
@@ -103,7 +104,7 @@
             </tr>
             <tr>
                 <td colspan=2 height=100% class='${color}${needsAction ? '' : 'Bg'}' valign=top>
-                    <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
+                    <a id="${apptId}" href="${apptUrl}">${fn:escapeXml(subject)}</a>
                 </td>
             </tr>
             <c:if test="${appt.duration gt zm:MSECS_PER_HOUR()}">

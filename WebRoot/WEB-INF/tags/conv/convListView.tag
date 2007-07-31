@@ -48,35 +48,36 @@
                             </tr>
 
                             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+                                <c:set var="convHit" value="${hit.conversationHit}"/>
                                 <c:choose>
-                                    <c:when test="${hit.conversationHit.isDraft}">
-                                        <zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(hit.conversationHit.id,'-')}" action="compose"/>
+                                    <c:when test="${convHit.isDraft}">
+                                        <zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(convHit.id,'-')}" action="compose"/>
                                     </c:when>
                                     <c:otherwise>
                                         <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <c:if test="${empty selectedRow and hit.conversationHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
-                                <tr id="R${status.index}" class='ZhRow ${hit.conversationHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
-                                    <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="id" value="${hit.conversationHit.id}"></td>
-                                    <td class='Img'><app:flagImage flagged="${hit.conversationHit.isFlagged}"/></td>
+                                <c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
+                                <c:set var="aid" value="A${status.index}"/>
+                                <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='ZhRow ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
+                                    <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="id" value="${convHit.id}"></td>
+                                    <td class='Img'><app:flagImage flagged="${convHit.isFlagged}"/></td>
                                     <c:if test="${mailbox.features.tagging}">
-                                        <td class='Img'><app:miniTagImage ids="${hit.conversationHit.tagIds}"/></td>
+                                        <td class='Img'><app:miniTagImage ids="${convHit.tagIds}"/></td>
                                     </c:if>
                                     <td><%-- allow this column to wrap --%>
-                                        <c:set var="dispRec" value="${hit.conversationHit.displayRecipients}"/>
-                                        <a href="${convUrl}">${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}</a>
+                                        <c:set var="dispRec" value="${convHit.displayRecipients}"/>${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}
                                     </td>
-                                    <td class='Img'><app:attachmentImage attachment="${hit.conversationHit.hasAttachment}"/></td>
+                                    <td class='Img'><app:attachmentImage attachment="${convHit.hasAttachment}"/></td>
                                     <td><%-- allow this column to wrap --%>
-                                        <a href="${convUrl}" id="A${status.index}">
-                                            <c:set var='subj' value="${empty hit.conversationHit.subject ? unknownSubject : zm:truncate(hit.conversationHit.subject,100,true)}"/>
+                                        <a href="${convUrl}" id="${aid}">
+                                            <c:set var='subj' value="${empty convHit.subject ? unknownSubject : zm:truncate(convHit.subject,100,true)}"/>
                                             <c:out value="${subj}"/>
-                                            <c:if test="${mailbox.prefs.showFragments and not empty hit.conversationHit.fragment and fn:length(subj) lt 90}">
-                                                <span class='Fragment'> - <c:out value="${zm:truncate(hit.conversationHit.fragment,100-fn:length(subj),true)}"/></span>
+                                            <c:if test="${mailbox.prefs.showFragments and not empty convHit.fragment and fn:length(subj) lt 90}">
+                                                <span class='Fragment'> - <c:out value="${zm:truncate(convHit.fragment,100-fn:length(subj),true)}"/></span>
                                             </c:if>
                                         </a>
-                                        <c:if test="${hit.conversationHit.id == context.currentItem.id}">
+                                        <c:if test="${convHit.id == context.currentItem.id}">
                                             <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
                                             <c:if test="${cursor.hasPrev}">
                                                 <zm:prevItemUrl var="prevItemUrl" value="search" cursor="${cursor}" context="${context}" usecache="true"/>
@@ -88,9 +89,9 @@
                                             </c:if>
                                         </c:if>
                                     </td>
-                                    <td nowrap><c:if test="${hit.conversationHit.messageCount > 1}">(${hit.conversationHit.messageCount})&nbsp;</c:if><c:if
-                                            test="${hit.conversationHit.messageCount < 2}">&nbsp</c:if></td>
-                                    <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.conversationHit.date))}</td>
+                                    <td nowrap><c:if test="${convHit.messageCount > 1}">(${convHit.messageCount})&nbsp;</c:if><c:if
+                                            test="${convHit.messageCount < 2}">&nbsp</c:if></td>
+                                    <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, convHit.date))}</td>
                                 </tr>
                             </c:forEach>
                         </table>
@@ -137,6 +138,7 @@
         var zread = function() { zaction("OPREAD"); }
         var zunread = function() { zaction("OPUNREAD"); }
         var zjunk = function() { zclick("SOPSPAM"); }
+        function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
         //-->
     </SCRIPT>
 

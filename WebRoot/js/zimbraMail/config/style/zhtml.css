@@ -800,11 +800,13 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 
 .ZhCalDayAllDayAppt, .ZhCalDayAllDayApptNew {
 	padding: 1 @BoxPaddingSize@ 1 @BoxPaddingSize@;
+    cursor: pointer;
 }
 
 .ZhCalDayAppt, .ZhCalDayApptNew {
 	border:1px solid;
   	border-color:#AAAAAA #333333 #333333 #AAAAAA;
+    cursor: pointer;
 }
 
 .ZhCalDayApptNew, .ZhCalDayAllDayApptNew, .ZhCalMonthAllDayApptNew {

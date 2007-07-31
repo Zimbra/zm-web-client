@@ -41,7 +41,7 @@
                            </tr>
                            <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                                <c:set var="isCurr" value="${hit.contactHit.id == context.currentItem.id}"/>
-                               <tr <c:if test="${hit.contactHit.id == context.currentItem.id}">class='RowSelected'</c:if>>
+                               <tr onclick='zSelectRow(event,"A${status.index}")' <c:if test="${hit.contactHit.id == context.currentItem.id}">class='RowSelected'</c:if>>
                                    <td class='CB' nowrap><input <c:if test="${isCurr}">id="CURRCHECK"</c:if> type=checkbox  name="id" value="${hit.contactHit.id}"></td>
                                    <c:if test="${mailbox.features.tagging}">
                                        <td class='Img'><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
@@ -49,7 +49,7 @@
                                    <td class='Img'><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
                                    <td ><span style='padding:3px'>
                                        <zm:currentResultUrl var="contactUrl" value="/h/search" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
-                                       <a  href="${contactUrl}" <c:if test="${isCurr}">id="CURR_ITEM"</c:if>>
+                                       <a  href="${contactUrl}" id="A${status.index}">
                                                ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '<None>' : hit.contactHit.fileAsStr)}
                                        </a></span>
                                        <c:if test="${hit.contactHit.id == context.currentItem.id}">
@@ -103,6 +103,7 @@
     <!--
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
     //-->
    </SCRIPT>
 

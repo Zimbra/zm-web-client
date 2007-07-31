@@ -76,6 +76,7 @@
         var zunread = function() { zaction("OPUNREAD"); }
         var zjunk = function() { zclick("SOPSPAM"); }
         var zmarkall = function() { zclick("SOPMARKALL"); }
+        function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
         //-->
     </SCRIPT>
 
@@ -176,21 +177,20 @@
 
                                                 <c:if test="${empty selectedRow and hit.id eq message.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
-
-                                                <tr id="R${status.index}" class='ZhRow${hit.messageHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
+                                                <c:set var="aid" value="A${hit.id}"/>
+                                                <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='ZhRow${hit.messageHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                     <td class='CB' nowrap><input _ignore="1" id="C${status.index}" <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
                                                     <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
                                                     <c:if test="${mailbox.features.tagging}">
                                                         <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                                     </c:if>
                                                     <td class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : hit.messageHit.statusImage}" altkey="${(hit.messageHit.isUnread and hit.id == message.id) ? 'ALT_MSG_STATUS_READ' : hit.messageHit.statusImageAltKey}"/></td>
-                                                    <td nowrap><a href="${msgUrl}">
-                                                        <c:set var="sender" value="${hit.messageHit.displaySender}"/>
-                                                            ${fn:escapeXml(empty sender ? unknownSender : sender)}
-                                                    </a></td>
+                                                    <td nowrap>
+                                                        <c:set var="sender" value="${hit.messageHit.displaySender}"/>${fn:escapeXml(empty sender ? unknownSender : sender)}
+                                                    </td>
                                                     <td class='Img' ><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                                     <td ><%-- allow this column to wrap --%>
-                                                        <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
+                                                        <a id="${aid}" href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
                                                         <c:if test="${hit.id == message.id}">
                                                             <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                             <c:if test="${messCursor.hasPrev}">
