@@ -115,11 +115,11 @@ SUBMIT,
 	border-top-width:0px;
 }
 
-
 .List TD {
 	@ListItemContainer@
 	@ListItemContainer-normal@
 	padding-right: 6px;
+    background-color: inherit;
 }
 
 .List TH {
