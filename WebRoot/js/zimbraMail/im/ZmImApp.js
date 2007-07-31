@@ -30,6 +30,7 @@ ZmImApp = function(appCtxt, container) {
 	// IM is enabled, so show Chats folder
 	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
+        ZmImApp.INSTANCE = this;
 };
 
 // Organizer and item-related constants
@@ -52,6 +53,12 @@ ZmApp.QS_ARG[ZmApp.IM]		= "chat";
 
 ZmImApp.prototype = new ZmApp;
 ZmImApp.prototype.constructor = ZmImApp;
+
+ZmImApp.loggedIn = function() {
+        return ZmImApp.INSTANCE
+                && ( ZmImApp.INSTANCE._appCtxt.get("IM_PREF_AUTO_LOGIN") ||
+                     ZmImApp.INSTANCE._roster );
+};
 
 ZmImApp.prototype.toString =
 function() {

@@ -449,7 +449,7 @@ function(ev) {
 		// show participant menu
 		this._setTagMenu(this._participantActionMenu);
 		this._actionEv.address = address;
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && ZmImApp.loggedIn()) {
 			var contacts = AjxDispatcher.run("GetContacts");
 			var c = this._actionEv.contact = contacts.getContactByEmail(this._actionEv.address.getAddress());
 			this._setContactText(c != null);

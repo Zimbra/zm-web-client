@@ -776,7 +776,7 @@ function() {
 ZmContact.prototype.getBuddy =
 function() {
 	var buddy;
-	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
 		var roster = AjxDispatcher.run("GetRoster");
 		buddy = roster.getRosterItem(this.getIMAddress());
 	}
