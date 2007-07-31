@@ -228,7 +228,7 @@ ZmImApp.prototype.handleOp = function(op) {
 ZmImApp.prototype.postNotify =
 function(notify) {
 	if (notify.im) {
-		AjxDispatcher.run("GetRoster").handleNotification(notify.im);
+                AjxDispatcher.run("GetRoster").pushNotification(notify.im);
 	}
 };
 
@@ -276,10 +276,6 @@ ZmImApp.prototype.getRoster =
 function() {
 	if (!this._roster) {
 		this._roster = new ZmRoster(this._appCtxt, this);
-		if (this._initialGwResponse)
-			this._roster._handleRequestGateways(this._initialGwResponse);
-		else
-			this._roster._requestGateways();
 		// enable instant notify?
 		if (this._appCtxt.get(ZmSetting.INSTANT_NOTIFY))
 			this._appCtxt.getAppController().setInstantNotify(true);
@@ -344,28 +340,4 @@ ZmImApp.prototype.getOverviewPanelContent = function() {
 	if (!this._imOvw)
 		this._imOvw = new ZmImOverview(this._appCtxt, this._container);
 	return this._imOvw;
-};
-
-ZmImApp.prototype.startup = function() {
-
-	var sd = AjxSoapDoc.create("IMGatewayListRequest", "urn:zimbraIM");
-	this._appCtxt.getAppController().sendRequest(
-		{ soapDoc   : sd,
-		  asyncMode : true,
-		  callback  : new AjxCallback(this, function(args) {
-			  this._initialGwResponse = args;
-		  })
-		}
-	);
-
-// 	var sd = AjxSoapDoc.create("IMGetRosterRequest", "urn:zimbraIM");
-// 	this._appCtxt.getAppController().sendRequest(
-// 		{ soapDoc   : sd,
-// 		  asyncMode : true,
-// 		  callback  : new AjxCallback(this, function(args) {
-// 			  this._initialRosterResponse = args;
-// 		  })
-// 		}
-// 	);
-
 };
