@@ -128,6 +128,10 @@ function(parent, num) {
 	}
 	parent.enable(ZmOperation.MARK_HEARD, hasUnheard);
 	parent.enable(ZmOperation.MARK_UNHEARD, hasHeard);
+	if (!this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		parent.enable(ZmOperation.REPLY_BY_EMAIL, false);
+		parent.enable(ZmOperation.FORWARD_BY_EMAIL, false);
+	}
 };
 
 ZmVoicemailListController.prototype.getKeyMapName =
@@ -146,12 +150,12 @@ function(actionCode) {
 			}
 			break;
 		case ZmKeyMap.REPLY:
-			if (num == 1) {
+			if ((num == 1) && this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 				this._replyListener();
 			}
 			break;
 		case ZmKeyMap.FORWARD:
-			if (num == 1) {
+			if ((num == 1) && this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 				this._forwardListener();
 			}
 			break;
