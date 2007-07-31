@@ -96,16 +96,15 @@ function(buttonId, addrs, str) {
 	}
 
 	// reset search field
-	var searchField = document.getElementById(this._searchFieldId);
-	searchField.disabled = false;
-	searchField.focus();
+	this._searchField.disabled = false;
+	this._searchField.focus();
 	if (str) {
-		searchField.className = "";
-		searchField.value = str;
+		this._searchField.className = "";
+		this._searchField.value = str;
 		this._searchCleared = true;
 	} else {
-		searchField.className = "searchFieldHint";
-		searchField.value = ZmMsg.contactPickerHint;
+		this._searchField.className = "searchFieldHint";
+		this._searchField.value = ZmMsg.contactPickerHint;
 		this._searchCleared = false;
 	}
 
@@ -118,8 +117,7 @@ function(buttonId, addrs, str) {
 ZmContactPicker.prototype.popdown =
 function() {
 	// disable search field (hack to fix bleeding cursor)
-	var searchField = document.getElementById(this._searchFieldId);
-	searchField.disabled = true;
+	this._searchField.disabled = true;
 	this._contactSource = null;
 
 	DwtDialog.prototype.popdown.call(this);
@@ -127,45 +125,14 @@ function() {
 
 ZmContactPicker.prototype._contentHtml =
 function() {
-	this._searchFieldId	= Dwt.getNextId();
-	this._searchBtnTdId	= Dwt.getNextId();
-	this._listSelectId	= Dwt.getNextId();
-	this._chooserDivId	= Dwt.getNextId();
+	var showSelect = (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
+					  this._appCtxt.get(ZmSetting.GAL_ENABLED));
+	var subs = {
+		id: this._htmlElId,
+		showSelect: showSelect
+	};
 
-	var html = [];
-	var idx = 0;
-
-	html[idx++] = "<div class='ZmContactPicker'>";
-	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1 width=100%><tr><td>";
-	// add search input field and search button
-	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td width=20 valign=middle>";
-	html[idx++] = AjxImg.getImageHtml("Search");
-	html[idx++] = "</td><td><input type='text' autocomplete='off' size=30 nowrap id='";
-	html[idx++] = this._searchFieldId;
-	html[idx++] = "'>&nbsp;</td><td id='";
-	html[idx++] = this._searchBtnTdId;
-	html[idx++] = "'></td></tr></table>";
-	html[idx++] = "</td><td align=right>";
-	// add placeholder for drop down select widget
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-		this._appCtxt.get(ZmSetting.GAL_ENABLED))
-	{
-		html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td class='Label nobreak'>";
-		html[idx++] = ZmMsg.showNames;
-		html[idx++] = ":&nbsp;</td><td id='";
-		html[idx++] = this._listSelectId;
-		html[idx++] = "'></td></tr></table>";
-	}
-	html[idx++] = "</td></tr></table>";
-
-	// placeholder for the chooser
-	html[idx++] = "<div id='";
-	html[idx++] = this._chooserDivId;
-	html[idx++] = "'></div>";
-
-	html[idx++] = "</div>";
-
-	return html.join("");
+	return (AjxTemplate.expand("zimbraMail.abook.templates.Contacts#ZmContactPicker", subs));
 };
 
 // called only when ZmContactPicker is first created. Sets up initial layout.
@@ -176,17 +143,16 @@ function() {
 	this.setContent(this._contentHtml());
 
 	// add search button
-	var searchSpan = document.getElementById(this._searchBtnTdId);
+	var searchCellId = this._htmlElId + "_searchButton";
 	this._searchButton = new DwtButton(this);
 	this._searchButton.setText(ZmMsg.search);
 	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
-	searchSpan.appendChild(this._searchButton.getHtmlElement());
+	this._searchButton.reparentHtmlElement(searchCellId);
 
 	// add select menu
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-		this._appCtxt.get(ZmSetting.GAL_ENABLED))
-	{
-		var listSelect = document.getElementById(this._listSelectId);
+	var selectCellId = this._htmlElId + "_listSelect";
+	var selectCell = document.getElementById(selectCellId);
+	if (selectCell) {
 		this._selectDiv = new DwtSelect(this);
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
@@ -194,25 +160,25 @@ function() {
 			if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
 				this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
 		}
-		if (this._appCtxt.get(ZmSetting.GAL_ENABLED))
+		if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+		}
 
-		listSelect.appendChild(this._selectDiv.getHtmlElement());
+		this._selectDiv.reparentHtmlElement(selectCellId);
 	}
 
 	// add chooser
 	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo, appCtxt:this._appCtxt});
-	var chooserDiv = document.getElementById(this._chooserDivId);
-	chooserDiv.appendChild(this._chooser.getHtmlElement());
+	this._chooser.reparentHtmlElement(this._htmlElId + "_chooser");
 	this._chooser.resize(this.getSize().x, ZmContactPicker.CHOOSER_HEIGHT);
 
     // init listeners
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 
-	var searchField = document.getElementById(this._searchFieldId);
-	Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmContactPicker._keyPressHdlr);
-	Dwt.setHandler(searchField, DwtEvent.ONCLICK, ZmContactPicker._onclickHdlr);
+	this._searchField = document.getElementById(this._htmlElId + "_searchField");
+	Dwt.setHandler(this._searchField, DwtEvent.ONKEYPRESS, ZmContactPicker._keyPressHdlr);
+	Dwt.setHandler(this._searchField, DwtEvent.ONCLICK, ZmContactPicker._onclickHdlr);
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
 };
 
@@ -220,8 +186,7 @@ function() {
 
 ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
-	var query = this._searchCleared
-		? AjxStringUtil.trim(document.getElementById(this._searchFieldId).value) : "";
+	var query = this._searchCleared ? AjxStringUtil.trim(this._searchField.value) : "";
 	if (query.length) {
 		var queryHint;
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
@@ -317,8 +282,7 @@ ZmContactPicker._onclickHdlr =
 function(ev) {
 	var stb = DwtUiEvent.getDwtObjFromEvent(ev);
 	if (!stb._searchCleared) {
-		var searchField = document.getElementById(stb._searchFieldId);
-		searchField.className = searchField.value = "";
+		stb._searchField.className = stb._searchField.value = "";
 		stb._searchCleared = true;
 	}
 };
@@ -367,7 +331,8 @@ function(item, list) {
 */
 ZmContactChooserSourceListView = function(parent, appCtxt) {
 	DwtChooserListView.call(this, parent, DwtChooserListView.SOURCE);
-	this.getHtmlElement().style.overflowX = "hidden";
+
+	this.setScrollStyle(Dwt.CLIP);
 	this._appCtxt = appCtxt;
 };
 
@@ -425,7 +390,7 @@ ZmContactChooserTargetListView = function(parent, showType, appCtxt) {
 
 	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET);
 
-	this.getHtmlElement().style.overflowX = "hidden";
+	this.setScrollStyle(Dwt.CLIP);
 	this._appCtxt = appCtxt;
 };
 
