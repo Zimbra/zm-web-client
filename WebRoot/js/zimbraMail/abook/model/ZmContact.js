@@ -502,7 +502,6 @@ function(attr, batchCmd) {
 		var a;
   		if(name == ZmContact.F_image){
   			a = soapDoc.set("a",null,cn);
-  			console.log("Create:"+attr[name]);
   			if(attr[name].indexOf("aid_") != -1)
   				a.setAttribute("aid",attr[name].substring(4));
   			else

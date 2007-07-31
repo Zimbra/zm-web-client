@@ -448,13 +448,13 @@ function() {
 ZmContactView.prototype._setImage = function(el,value){
 	//fix this: After getting image/UI change this
 	if(!value) {
-		this._image.src = "http://www.ithou.org/files/pictures/default-photo.jpg";
+		this._image.setAttribute("src","http://www.ithou.org/files/pictures/default-photo.jpg");
 		return;
 	}
 	el.setAttribute("_part",value.part);
 	el.setAttribute("_size",value.size);
 	el.setAttribute("_ct",value.ct);
-	this._image.src = this._contact.getImageUrl();
+	this._image.setAttribute("src",this._contact.getImageUrl());
 };
 
 ZmContactView.prototype._setValues =
@@ -522,7 +522,6 @@ function() {
 			var isAttachment = (!!(Dwt.getAttr(el,"_isAttachment")));
 			if(isImage || isAttachment){
 				this._attr[field] = ( el.getAttribute("_aid") ? ["aid_",el.getAttribute("_aid")].join("") : (el.getAttribute("_part") ? ["part_",el.getAttribute("_part")].join("") : ""));
-				console.log("AttachmentField:"+this._attr[field]);
 			}else if (el.value != "" || field == ZmContact.F_image) {
 				if (isDate) {
 					var bdate = AjxDateUtil.simpleParseDateStr(el.value);
@@ -603,7 +602,6 @@ function(contact) {
 ZmContactView.prototype._handleImage = function(){
 	
 	this._image = document.getElementById(this._imageCellId+"_img");
-	//this._photo.src = "http://www.ithou.org/files/pictures/default-photo.jpg";
 	
 	var imageInput = this._imageInput = document.getElementById(this._imageCellId+"_input");
 	imageInput.onchange = AjxCallback.simpleClosure(this._uploadImage,this);
@@ -619,9 +617,8 @@ ZmContactView.prototype._handleImage = function(){
 };
 
 ZmContactView.prototype._updateImage = function(status,attId){
-	this._image.src = ["/service/content/proxy?aid=",attId].join("");
+	this._image.setAttribute("src",["/service/content/proxy?aid=",attId].join(""));
 	this._imageInput.setAttribute("_aid",attId);
-	console.log("attId:"+attId);
 };
 
 ZmContactView.prototype._uploadImage = function(){
