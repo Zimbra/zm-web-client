@@ -72,7 +72,7 @@
         <select name="sq_folder" style='width:100%'>
             <option value=""><fmt:message key="MO_selectFolder"/>
                 <zm:forEachFolder var="folder">
-                <c:if test="${(folder.isMailView or folder.isContactView or folder.isAppointmentView) and not folder.isSearchFolder}">
+                <c:if test="${(folder.isMailView or folder.isContactView) and not (folder.isSearchFolder or folder.isChats)}">
             <option value=' in:"${folder.rootRelativePath}"'/>
                 ${fn:escapeXml(folder.rootRelativePath)}
             </c:if>
