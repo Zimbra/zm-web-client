@@ -604,15 +604,21 @@ ZmContactView.prototype._handleImage = function(){
 	this._image = document.getElementById(this._imageCellId+"_img");
 	
 	var imageInput = this._imageInput = document.getElementById(this._imageCellId+"_input");
-	imageInput.onchange = AjxCallback.simpleClosure(this._uploadImage,this);
-	imageInput.setAttribute("accept","image/gif,image/jpeg,image/png");
+	if(imageInput){
+		imageInput.onchange = AjxCallback.simpleClosure(this._uploadImage,this);
+		imageInput.setAttribute("accept","image/gif,image/jpeg,image/png");
+	}
 	
 	var imageRemove = document.getElementById(this._imageCellId+"_remove");
-	imageRemove.onclick = AjxCallback.simpleClosure(this._removeImage,this,imageRemove);
+	if(imageRemove){
+		imageRemove.onclick = AjxCallback.simpleClosure(this._removeImage,this,imageRemove);
+	}
 	
 	this._uploadForm = document.getElementById(this._imageCellId+"_form");
-	var uri = [ location.protocol,"//", document.domain, this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI)].join("");
-	this._uploadForm.setAttribute("action",uri);
+	if(this._uploadForm){
+		var uri = [ location.protocol,"//", document.domain, this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI)].join("");
+		this._uploadForm.setAttribute("action",uri);
+	}
 	
 };
 
