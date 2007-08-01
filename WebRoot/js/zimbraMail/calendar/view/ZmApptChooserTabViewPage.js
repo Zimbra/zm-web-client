@@ -48,6 +48,7 @@ ZmApptChooserTabViewPage = function(parent, appCtxt, attendees, controller, type
 	this.type = type;
 
 	this.setScrollStyle(DwtControl.CLIP);
+	this._offset = 0;
 	this._rendered = false;
 	this._searchFields = {};
 	this._searchFieldIds = {};
@@ -62,7 +63,7 @@ ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_EMAIL]		= "email";
 ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_WORK_PHONE]	= "AB_FIELD_workPhone";
 ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_HOME_PHONE]	= "AB_FIELD_homePhone";
 ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_LOCATION]	= "location";
-ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_CONTACT]		= "contact";
+ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_CONTACT]	= "contact";
 ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_CAPACITY]	= "capacity";
 
 ZmApptChooserTabViewPage.COL_IMAGE = {};
@@ -75,7 +76,7 @@ ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_EMAIL]		= null;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_WORK_PHONE]	= 100;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_HOME_PHONE]	= 100;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_LOCATION]	= null;
-ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CONTACT]		= 150;
+ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CONTACT]	= 150;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CAPACITY]	= 50;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_NOTES]		= 30;
 
@@ -229,6 +230,11 @@ function(newWidth, newHeight) {
 ZmApptChooserTabViewPage.prototype.cleanup =
 function() {
 	this._chooser.reset();
+
+	if (this._prevButton && this._nextButton) {
+		this._prevButton.setEnabled(false);
+		this._nextButton.setEnabled(false);
+	}
 };
 
 ZmApptChooserTabViewPage.prototype.isValid =
@@ -296,10 +302,21 @@ function() {
 		var addMultLocsCheckbox = (this.type == ZmCalItem.LOCATION && j == fields.length - 1);
 		i = this._getSearchFieldHtml(sf, html, i, addButton, addMultLocsCheckbox);
 		if (!isEven || j == fields.length - 1) {
+			if (this.type == ZmCalItem.PERSON) {
+				this._prevButtonId = Dwt.getNextId();
+				this._nextButtonId = Dwt.getNextId();
+				html[i++] = "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+				html[i++] = "<td id='";
+				html[i++] = this._prevButtonId;
+				html[i++] = "'></td><td id='";
+				html[i++] = this._nextButtonId;
+				html[i++] = "'></td>";
+			}
+
 			html[i++] = "</tr>";
 		}
 	}
-			
+
 	html[i++] = "</table></div>";
 
 	// placeholder for the chooser's source list view
@@ -363,7 +380,8 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 		html[i++] = "<td id='";
 		html[i++] = this._searchBtnTdId;
 		html[i++] = "'></td>";
-	} else if (addMultLocsCheckbox) {
+	}
+	else if (addMultLocsCheckbox) {
 		this._multLocsCheckboxId = Dwt.getNextId();
 		html[i++] = "<td><table border=0 cellpadding=0 cellspacing=0><tr><td>";
 		html[i++] = "<input type='checkbox' id='";
@@ -402,7 +420,24 @@ function() {
 		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 	}
-   
+
+	// add paging buttons
+	if (this._prevButtonId && this._nextButtonId) {
+		var pageListener = new AjxListener(this, this._pageListener);
+
+		this._prevButton = new DwtButton(this);
+		this._prevButton.setImage("LeftArrow");
+		this._prevButton.addSelectionListener(pageListener);
+		this._prevButton.reparentHtmlElement(this._prevButtonId);
+		this._prevButton.setEnabled(false);
+
+		this._nextButton = new DwtButton(this);
+		this._nextButton.setImage("RightArrow");
+		this._nextButton.addSelectionListener(pageListener);
+		this._nextButton.reparentHtmlElement(this._nextButtonId);
+		this._nextButton.setEnabled(false);
+	}
+
 	// add chooser
 	this._chooser = new ZmApptChooser(this, null, this._appCtxt);
 	var chooserSourceListViewDiv = document.getElementById(this._chooserSourceListViewDivId);
@@ -445,10 +480,22 @@ function(tabGroup) {
 ZmApptChooserTabViewPage.prototype._searchButtonListener = 
 function(ev) {
 	if (this.type == ZmCalItem.PERSON) {
+		this._offset = 0;
 		this.searchContacts();
 	} else {
 		this.searchCalendarResources();
 	}
+};
+
+ZmApptChooserTabViewPage.prototype._pageListener =
+function(ev) {
+	if (ev.item == this._prevButton) {
+		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
+	} else {
+		this._offset += ZmContactsApp.SEARCHFOR_MAX;
+	}
+
+	this.searchContacts();
 };
 
 /*
@@ -475,14 +522,15 @@ ZmApptChooserTabViewPage.prototype.searchContacts =
 function(sortBy) {
 	var id = this._searchFieldIds[ZmApptChooserTabViewPage.SF_ATT_NAME];
 	this._query = AjxStringUtil.trim(document.getElementById(id).value);
-	if (!this._query.length) return;
+	if (!this._query.length) { return; }
 
+	var queryHint;
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var searchFor = this._selectDiv.getSelectedOption().getValue();
 		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 			? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			this._query += (" " + ZmSearchController.QUERY_ISREMOTE);
+			queryHint= ZmSearchController.QUERY_ISREMOTE;
 		}
 	} else {
 		this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
@@ -490,10 +538,15 @@ function(sortBy) {
 	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
 	this._chooser.sourceListView.enableSorting(this._contactSource == ZmItem.CONTACT);
 
-	sortBy = sortBy ? sortBy : ZmApptChooserTabViewPage.SORT_BY[this.type];
-	var types = AjxVector.fromArray([ZmItem.CONTACT]);
-	var params = {query: this._query, types: types, sortBy: sortBy, offset: 0,
-				  limit: ZmContactsApp.SEARCHFOR_MAX, contactSource: this._contactSource};
+	var params = {
+		query: this._query,
+		queryHint: queryHint,
+		types: (AjxVector.fromArray([ZmItem.CONTACT])),
+		sortBy: (sortBy || ZmApptChooserTabViewPage.SORT_BY[this.type]),
+		offset: this._offset,
+		limit: ZmContactsApp.SEARCHFOR_MAX,
+		contactSource: this._contactSource
+	};
 	var search = new ZmSearch(this._appCtxt, params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchContacts)});
 };
@@ -502,6 +555,13 @@ function(sortBy) {
 ZmApptChooserTabViewPage.prototype._handleResponseSearchContacts = 
 function(result) {
 	var resp = result.getResponse();
+
+	if (this._prevButton && this._nextButton) {
+		var more = resp.getAttribute("more");
+		this._prevButton.setEnabled(this._offset > 0);
+		this._nextButton.setEnabled(more);
+	}
+
 	var list = resp.getResults(ZmItem.CONTACT).getArray();
 	var list1 = [];
 	for (var i = 0; i < list.length; i++) {
