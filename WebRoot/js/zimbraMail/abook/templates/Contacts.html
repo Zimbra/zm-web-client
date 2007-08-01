@@ -481,22 +481,25 @@
 					<legend class='groupFieldset'><$= ZmMsg.addMembers $></legend>
 					<table border=0>
 						<tr>
-							<td class='editLabel'><$= ZmMsg.find $>:</td>
+							<td align=right><$= ZmMsg.find $>:</td>
 							<td><input type='text' id='${id}_searchField'></td>
 							<td id='${id}_searchButton'></td>
 						</tr>
 						<$ if (data.showSearchIn) { $>
 						<tr>
-							<td class='editLabel'><$= ZmMsg.searchIn $>:</td>
+							<td align=right><$= ZmMsg.searchIn $>:</td>
 							<td colspan=2 id='${id}_listSelect'></td>
 						</tr>
 						<$ } $>
 					</table>
 					<div class='groupMembers' id='${id}_listView'></div>
-					<table border=0 cellpadding=3 cellspacing=2>
+					<table border=0 cellpadding=3 cellspacing=2 width=100%>
 						<tr>
 							<td id='${id}_addButton'></td>
 							<td id='${id}_addAllButton'></td>
+							<td width=100%></td>
+							<td id='${id}_prevButton'></td>
+							<td id='${id}_nextButton'></td>
 						</tr>
 					</table>
 				</fieldset>

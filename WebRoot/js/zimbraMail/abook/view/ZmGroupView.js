@@ -28,6 +28,9 @@ ZmGroupView = function(parent, appCtxt, controller) {
 
 	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
+
+	this.setScrollStyle(Dwt.CLIP);
+	this._offset = 0;
 };
 
 ZmGroupView.prototype = new ZmContactView;
@@ -175,6 +178,38 @@ function() {
 	this._listview.removeAll(true);
 	this._addButton.setEnabled(false);
 	this._addAllButton.setEnabled(false);
+	this._prevButton.setEnabled(false);
+	this._nextButton.setEnabled(false);
+};
+
+ZmGroupView.prototype.search =
+function() {
+	var query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
+	if (query.length) {
+		var queryHint;
+		if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			var searchFor = this._searchInSelect
+				? this._searchInSelect.getSelectedOption().getValue()
+				: ZmContactsApp.SEARCHFOR_CONTACTS;
+			this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
+				? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+			if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
+				queryHint = ZmSearchController.QUERY_ISREMOTE;
+			}
+		} else {
+			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+		}
+		var params = {
+			obj: this,
+			ascending: true,
+			query: query,
+			queryHint: queryHint,
+			offset: this._offset,
+			respCallback: this._searchRespCallback,
+			errorCallback: this._searchErrorCallback
+		}
+		ZmContactsHelper.search(params);
+	}
 };
 
 
@@ -207,46 +242,44 @@ function() {
 	this._titleId = 			this._htmlElId + "_title";
 	this._tagsId = 				this._htmlElId + "_tags";
 	this._groupNameId = 		this._htmlElId + "_groupName";
-	this._groupMembersId = 		this._htmlElId + "_groupMembers";
 	this._searchFieldId = 		this._htmlElId + "_searchField";
-	this._listSelectId = 		this._htmlElId + "_listSelect";
-	this._searchButtonId = 		this._htmlElId + "_searchButton";
-	this._listViewId = 			this._htmlElId + "_listView";
-	this._addButtonId = 		this._htmlElId + "_addButton";
-	this._addAllButtonId = 		this._htmlElId + "_addAllButton";
 
-	var showSearchIn = this._appCtxt.get(ZmSetting.SHARING_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED);
-	var params = {id:this._htmlElId, showSearchIn:showSearchIn};
+	var showSearchIn = this._appCtxt.get(ZmSetting.SHARING_ENABLED) ||
+					   this._appCtxt.get(ZmSetting.GAL_ENABLED);
+	var params = {
+		id:this._htmlElId,
+		showSearchIn:showSearchIn
+	};
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#GroupView", params);
 	this._htmlInitialized = true;
 };
 
 ZmGroupView.prototype._addWidgets =
 function() {
-	this._groupMembers = document.getElementById(this._groupMembersId);
+	this._groupMembers = document.getElementById(this._htmlElId + "_groupMembers");
 
 	// add select menu
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) ||
-		this._appCtxt.get(ZmSetting.GAL_ENABLED))
-	{
+	var selectId = this._htmlElId + "_listSelect";
+	var selectCell = document.getElementById(selectId);
+	if (selectCell) {
 		this._searchInSelect = new DwtSelect(this);
 		this._searchInSelect.addOption(ZmMsg.contacts, true, ZmContactsApp.SEARCHFOR_CONTACTS);
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
 			this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
 		if (this._appCtxt.get(ZmSetting.GAL_ENABLED))
 			this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
-		this._searchInSelect.reparentHtmlElement(this._listSelectId);
+		this._searchInSelect.reparentHtmlElement(selectId);
 	}
 
 	// add "Search" button
 	this._searchButton = new DwtButton(this);
 	this._searchButton.setText(ZmMsg.search);
 	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
-	this._searchButton.reparentHtmlElement(this._searchButtonId);
+	this._searchButton.reparentHtmlElement(this._htmlElId + "_searchButton");
 
 	// add list view for search results
 	this._listview = new ZmGroupListView(this);
-	this._listview.reparentHtmlElement(this._listViewId);
+	this._listview.reparentHtmlElement(this._htmlElId + "_listView");
 	this._listview.addSelectionListener(new AjxListener(this, this._selectionListener));
 	this._listview.setUI(null, true); // renders headers and empty list
 	this._listview._initialized = true;
@@ -256,15 +289,29 @@ function() {
 	this._addButton = new DwtButton(this);
 	this._addButton.setText(ZmMsg.add);
 	this._addButton.addSelectionListener(addListener);
-	this._addButton.reparentHtmlElement(this._addButtonId);
+	this._addButton.reparentHtmlElement(this._htmlElId + "_addButton");
 	this._addButton.setEnabled(false);
 
 	// add "Add All" button
 	this._addAllButton = new DwtButton(this);
 	this._addAllButton.setText(ZmMsg.addAll);
 	this._addAllButton.addSelectionListener(addListener);
-	this._addAllButton.reparentHtmlElement(this._addAllButtonId);
+	this._addAllButton.reparentHtmlElement(this._htmlElId + "_addAllButton");
 	this._addAllButton.setEnabled(false);
+
+	var pageListener = new AjxListener(this, this._pageListener);
+	// add paging buttons
+	this._prevButton = new DwtButton(this);
+	this._prevButton.setImage("LeftArrow");
+	this._prevButton.addSelectionListener(pageListener);
+	this._prevButton.reparentHtmlElement(this._htmlElId + "_prevButton");
+	this._prevButton.setEnabled(false);
+
+	this._nextButton = new DwtButton(this);
+	this._nextButton.setImage("RightArrow");
+	this._nextButton.addSelectionListener(pageListener);
+	this._nextButton.reparentHtmlElement(this._htmlElId + "_nextButton");
+	this._nextButton.setEnabled(false);
 };
 
 ZmGroupView.prototype._installKeyHandlers =
@@ -352,31 +399,8 @@ function() {
 
 ZmGroupView.prototype._searchButtonListener =
 function(ev) {
-	var query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
-	if (query.length) {
-		var queryHint;
-		if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			var searchFor = this._searchInSelect
-				? this._searchInSelect.getSelectedOption().getValue()
-				: ZmContactsApp.SEARCHFOR_CONTACTS;
-			this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
-				? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
-			if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-				queryHint = ZmSearchController.QUERY_ISREMOTE;
-			}
-		} else {
-			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
-		}
-		var params = {
-			obj: this,
-			ascending: true,
-			query: query,
-			quertHint: queryHint,
-			respCallback: this._searchRespCallback,
-			errorCallback: this._searchErrorCallback
-		}
-		ZmContactsHelper.search(params);
-	}
+	this._offset = 0;
+	this.search();
 };
 
 ZmGroupView.prototype._selectionListener =
@@ -388,6 +412,17 @@ function(ev) {
 	} else {
 		this._addButton.setEnabled(selection.length > 0);
 	}
+};
+
+ZmGroupView.prototype._pageListener =
+function(ev) {
+	if (ev.item == this._prevButton) {
+		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
+	} else {
+		this._offset += ZmContactsApp.SEARCHFOR_MAX;
+	}
+
+	this.search();
 };
 
 ZmGroupView.prototype._addListener =
@@ -434,19 +469,17 @@ function() {
 ZmGroupView.prototype._handleResponseSearch =
 function(result) {
 	var resp = result.getResponse();
+
+	var more = resp.getAttribute("more");
+	this._prevButton.setEnabled(this._offset > 0);
+	this._nextButton.setEnabled(more);
+
 	var list = ZmContactsHelper._processSearchResponse(resp);
 	this._listview.setItems(list);
+
 	this._addButton.setEnabled(list.length > 0);
 	this._addAllButton.setEnabled(list.length > 0);
 	this._searchButton.setEnabled(true);
-
-	var more = resp.getAttribute("more");
-	if (more) {
-		var dlg = this._appCtxt.getMsgDialog();
-		dlg.reset();
-		dlg.setMessage(ZmMsg.errorSearchNotExpanded, DwtMessageDialog.WARNING_STYLE);
-		dlg.popup();
-	}
 };
 
 ZmGroupView.prototype._handleErrorSearch =

@@ -112,8 +112,8 @@ function(buttonId, addrs, str) {
 	}
 
 	// reset paging buttons
-	this._pageLeftButton.setEnabled(false);
-	this._pageRightButton.setEnabled(false);
+	this._prevButton.setEnabled(false);
+	this._nextButton.setEnabled(false);
 
 	DwtDialog.prototype.popup.call(this);
 };
@@ -217,17 +217,18 @@ function() {
 	this._chooser.resize(this.getSize().x, ZmContactPicker.CHOOSER_HEIGHT);
 
 	// add paging buttons
-	this._pageLeftButton = new DwtButton(this);
-	this._pageLeftButton.setText(ZmMsg.previous);
-	this._pageLeftButton.setImage("LeftArrow");
-	this._pageLeftButton.addSelectionListener(new AjxListener(this, this._pageListener));
-	this._pageLeftButton.reparentHtmlElement(this._htmlElId + "_pageLeft");
+	var pageListener = new AjxListener(this, this._pageListener);
+	this._prevButton = new DwtButton(this);
+	this._prevButton.setText(ZmMsg.previous);
+	this._prevButton.setImage("LeftArrow");
+	this._prevButton.addSelectionListener(pageListener);
+	this._prevButton.reparentHtmlElement(this._htmlElId + "_pageLeft");
 
-	this._pageRightButton = new DwtButton(this);
-	this._pageRightButton.setText(ZmMsg.next);
-	this._pageRightButton.setImage("RightArrow");
-	this._pageRightButton.addSelectionListener(new AjxListener(this, this._pageListener));
-	this._pageRightButton.reparentHtmlElement(this._htmlElId + "_pageRight");
+	this._nextButton = new DwtButton(this, DwtLabel.IMAGE_RIGHT);
+	this._nextButton.setText(ZmMsg.next);
+	this._nextButton.setImage("RightArrow");
+	this._nextButton.addSelectionListener(pageListener);
+	this._nextButton.reparentHtmlElement(this._htmlElId + "_pageRight");
 
 	var pageContainer = document.getElementById(this._htmlElId + "_paging");
 	if (pageContainer) {
@@ -257,8 +258,8 @@ function(result) {
 	var resp = result.getResponse();
 
 	var more = resp.getAttribute("more");
-	this._pageLeftButton.setEnabled(this._offset > 0);
-	this._pageRightButton.setEnabled(more);
+	this._prevButton.setEnabled(this._offset > 0);
+	this._nextButton.setEnabled(more);
 
 	var info = resp.getAttribute("info");
 	if (info && info[0].wildcard[0].expanded == "0") {
@@ -287,7 +288,7 @@ function() {
 
 ZmContactPicker.prototype._pageListener =
 function(ev) {
-	if (ev.item == this._pageLeftButton) {
+	if (ev.item == this._prevButton) {
 		this._offset -= ZmContactsApp.SEARCHFOR_MAX;
 	} else {
 		this._offset += ZmContactsApp.SEARCHFOR_MAX;

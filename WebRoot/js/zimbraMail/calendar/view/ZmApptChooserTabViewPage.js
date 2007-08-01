@@ -284,7 +284,7 @@ function() {
 	html[i++] = this._searchTableId;
 	html[i++] = "'>";
 
-	html[i++] = "<table border=0 cellpadding=1 cellspacing=1 width=100%><tr>";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=3><tr>";
 	
 	for (var j = 0; j < fields.length; j++) {
 		var isEven = ((j % 2) == 0);
@@ -350,13 +350,12 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 		html[i++] = "<td align='right'>";
 		html[i++] = ZmMsg[ZmApptChooserTabViewPage.SF_LABEL[id]];
 		html[i++] = ":&nbsp;</td><td>";
-
 		html[i++] = Dwt.CARET_HACK_BEGIN;
 		html[i++] = "<input type='text' autocomplete='off' size=30 nowrap id='";
 		html[i++] = this._searchFieldIds[id];
 		html[i++] = "' />";
 		html[i++] = Dwt.CARET_HACK_END;
-		html[i++] = "&nbsp;</td>";
+		html[i++] = "</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
 	}
 
 	if (addButton) {
