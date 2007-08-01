@@ -867,6 +867,7 @@ line-height:normal;
 	@NoWrap@
 	@OverflowEllipsis@
 	padding: 3 0 3 2;
+	cursor: pointer;
 }
 
 .ZmContactCard-selected .contactHeader,
