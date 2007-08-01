@@ -172,10 +172,24 @@ body {
     font-weight: normal;
 }
 
+.zo_vertsep {
+border-left: 1px solid #a29a87;
+margin-left:3px;
+padding-right:3px;
+height: 20px;
+}
 
 /************************************************************************************************/
 
 /* mail */
+
+
+.zo_msgops A {
+#IFDEF IPHONE
+  text-decoration: none;
+  color: black;
+#ENDIF
+}
 
 .zo_msgcompose {
 	/*@FontFamily-fixed@*/

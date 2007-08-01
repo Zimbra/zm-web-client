@@ -86,7 +86,7 @@
                     <zm:currentResultUrl var="extImageUrl" id="${msg.id}" value="mosearch" action="view"
                                          context="${context}" xim="1"/>
                 </c:if>
-                <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
+                <zm:currentResultUrl var="composeUrl" value="mosearch" context="${context}"
                                      action="compose" paction="view" id="${msg.id}"/>
                 <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
                 <mo:displayMessage mailbox="${mailbox}" message="${msg}" externalImageUrl="${extImageUrl}"
