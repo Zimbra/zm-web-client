@@ -100,7 +100,7 @@ function() {
 ZmMixedApp.prototype.showSearchResults =
 function(results, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
-	AjxDispatcher.require(["Mail", "Mixed"], false, loadCallback, null, true);
+	AjxDispatcher.require(["MailCore", "Mail", "Mixed"], false, loadCallback, null, true);
 };
 
 ZmMixedApp.prototype._handleLoadShowSearchResults =

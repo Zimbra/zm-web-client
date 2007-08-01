@@ -112,13 +112,13 @@ function(item, params) {
 		listViewClass = ZmContactSimpleView;
 		this._emulateListView(listViewClass, funcs);
 	} else if (item.type == ZmItem.CONV) {
-		AjxDispatcher.require("Mail");
+		AjxDispatcher.require(["MailCore", "Mail"]);
 		funcs = funcs.concat(["_getFragmentSpan", "_getFragmentHtml",
 							  "_getParticipantHtml", "_fitParticipants"]);
 		listViewClass = ZmConvListView;
 		this._emulateListView(listViewClass, funcs);
 	} else if (item.type == ZmItem.MSG) {
-		AjxDispatcher.require("Mail");
+		AjxDispatcher.require(["MailCore", "Mail"]);
 		funcs = funcs.concat(["_getFragmentSpan", "_getFragmentHtml"]);
 		listViewClass = ZmMailMsgListView;
 		this._emulateListView(listViewClass, funcs);
