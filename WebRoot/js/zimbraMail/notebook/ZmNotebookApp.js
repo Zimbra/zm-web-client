@@ -134,6 +134,8 @@ function() {
 							 treeController:	"ZmNotebookTreeController",
 							 labelKey:			"notebooks",
 							 itemsKey:			"documents",
+							 hasColor:			true,
+							 defaultColor:		ZmOrganizer.C_NONE,							 			
 							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["wiki"],
 							 folderKey:			"notebookFolder",
