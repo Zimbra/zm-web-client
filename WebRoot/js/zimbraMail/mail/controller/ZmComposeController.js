@@ -297,6 +297,11 @@ function(ex) {
 		msg = ZmMsg.cancelSendMsgWarning;
 		this._composeView.setBackupForm();
 		return true;
+	} else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED){
+		if(this._composeView._attachDialog){
+			this._composeView._attachDialog.popdown();
+			msg = ZmMsg.errorQuotaExceeded;
+		}
 	}
 	if (msg) {
 		this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
