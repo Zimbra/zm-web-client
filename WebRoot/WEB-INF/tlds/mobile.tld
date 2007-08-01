@@ -165,22 +165,37 @@
         <name>overviewFolder</name>
         <path>/WEB-INF/tags/mobile/moOverviewFolder.tag</path>
     </tag-file>
+
     <tag-file>
         <name>doFolderTree</name>
         <path>/WEB-INF/tags/mobile/moDoFolderTree.tag</path>
     </tag-file>
-        <tag-file>
+
+    <tag-file>
         <name>doContactFolderTree</name>
         <path>/WEB-INF/tags/mobile/moDoContactFolderTree.tag</path>
     </tag-file>
+
     <tag-file>
         <name>overviewSearchFolder</name>
         <path>/WEB-INF/tags/mobile/moOverviewSearchFolder.tag</path>
      </tag-file>
+
     <tag-file>
         <name>overviewTag</name>
         <path>/WEB-INF/tags/mobile/moOverviewTag.tag</path>
      </tag-file>
+
+    <tag-file>
+        <name>composeCheck</name>
+        <path>/WEB-INF/tags/mobile/moComposeCheck.tag</path>
+     </tag-file>
+
+    <tag-file>
+        <name>attachment</name>
+        <path>/WEB-INF/tags/mobile/moAttachment.tag</path>
+     </tag-file>
+
 </taglib>
 
         

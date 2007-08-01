@@ -26,7 +26,7 @@
                                     <fmt:message key="MO_MAIN"/>
                                 </a>
                             </td>
-                            <td style='padding-left:15px' class='zo_tb_submit'>
+                            <td style='padding-left:5px' class='zo_tb_submit'>
                                 <input name="actionSearch" type="submit" value="Search">
                             </td>
                         </tr>

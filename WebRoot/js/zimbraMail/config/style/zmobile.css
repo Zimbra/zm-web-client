@@ -65,9 +65,6 @@ body {
     font-weight: bold;
 }
 
-.zo_tb_submit {
-    padding-left:15px;
-}
 .zo_tb_submit INPUT {
     padding:4px;
     font-size: medium;
@@ -179,6 +176,22 @@ body {
 /************************************************************************************************/
 
 /* mail */
+
+.zo_msgcompose {
+	/*@FontFamily-fixed@*/
+	font-size: medium;
+}
+
+.zo_mc_fname {
+    font-size:medium;
+    color: gray;
+  text-align: right;
+}
+
+.zo_mc_fvalue, .zo_mc_fvalue TEXTAREA, .zo_mc_fvalue INPUT {
+    font-size:medium;
+    color: black;
+}
 
 
 .zo_fldr  {

@@ -8,6 +8,7 @@
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
+    <mo:composeCheck/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
     <c:choose>
         <c:when test="${not empty param.actionSearch}">

@@ -8,6 +8,7 @@
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
+    <mo:composeCheck/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
 </mo:handleError>
 <mo:view title="${mailbox.name}" context="${null}" mailbox="${mailbox}">
@@ -16,6 +17,18 @@
             <td>
                 <table width=100% cellspacing="0" cellpadding="0">
                     <tr class='zo_toolbar'>
+                        <td>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td>
+                                        <c:url var="composeUrl" value="main?action=compose"/>
+                                        <a href="${composeUrl}" class='zo_button'>
+                                            <fmt:message key="compose"/>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
                         <td align=right>
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
