@@ -5,9 +5,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <c:set var="yahooDomEvent" value="true" scope="request"/>
-<script type="text/javascript" src="<c:url value='/yui/2.2.2/build/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.2.2/build/connection/connection-min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.2.2/build/autocomplete/autocomplete-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.3.0/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.3.0/connection/connection-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.3.0/autocomplete/autocomplete-min.js'/>"></script>
 
 <script type="text/javascript">
     var zimbraAutoComplete = function() {
