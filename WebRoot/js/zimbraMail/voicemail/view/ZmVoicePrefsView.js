@@ -581,11 +581,6 @@ function(id) {
 	
 	var inputParams = { size:25 }
 	this._comboBox = new DwtComboBox(this._view, inputParams);
-	var phones = this._view._appCtxt.getApp(ZmApp.VOICE).phones;
-	for (var i = 0, count = phones.length; i < count; i++) {
-		var phone = phones[i];
-		this._comboBox.add(phone.getDisplay(), phone.name, false);
-	}
 	this._comboBox.replaceElement(id + "_selectiveCallForwardingComboBox");
 	
 	var addParams = { parent: this._view, size: 25 };
