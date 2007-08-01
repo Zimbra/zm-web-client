@@ -1273,7 +1273,7 @@ ZmAccountsPage.prototype._handleCleanUp = function() {
 ZmAccountsPage.__ACCOUNT_COMPARATOR = function(a, b) {
 	if (a.type == ZmAccount.ZIMBRA && a.isMain) return -1;
 	if (b.type == ZmAccount.ZIMBRA && b.isMain) return 1;
-	return a.getName() - b.getName();
+	return a.getName().localeCompare(b.getName());
 };
 
 ZmAccountsPage.__createProxy = function(account) {
