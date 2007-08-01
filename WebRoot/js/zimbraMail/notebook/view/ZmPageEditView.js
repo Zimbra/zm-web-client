@@ -84,7 +84,7 @@ ZmPageEditView.prototype._setResponse = function(page) {
 	this._showRenameWarning(false);
 
 	// set content
-	var content = page.getContent() || "";
+	var content = page.getContent() || "<br>";
 	this.setContent(content);
 	this._page = page;
 
