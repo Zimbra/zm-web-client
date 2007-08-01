@@ -223,7 +223,7 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback,status, attId){
 			default: 									msg += " "; break;
 		}
 		var dialog = this._appCtxt.getMsgDialog();
-		dialog.setMessage(msg,DwtMessageDialog.CRITICAL_STYLE,this._title);
+		dialog.setMessage(msg,DwtMessageDialog.CRITICAL_STYLE);
 		dialog.popup();
 		
 		this.setFooter("Error while attaching files.")
