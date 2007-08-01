@@ -186,6 +186,10 @@ function(overviewId, account) {
 
 ZmSearchTreeController.prototype._treeItemTypeMatch =
 function(treeItem, types) {
+	if (!types) {
+		// assume that no types specified means "allow all"
+		return true;
+	}
 	var search = treeItem.getData(Dwt.KEY_OBJECT);
 	if (search._typeMatch && search._typeMatch(types)) {
 		return true;
