@@ -167,3 +167,43 @@ ZmFileListView.__typify = function(array, type) {
 	}
 };
 
+ZmFileListView.prototype._changeListener =
+function(ev) {
+	var item = ev.item || ev.getDetail("items");
+	var items = (item instanceof Array) ? item : [item];
+	for(var i in items) {
+		this._handleChangeItem(ev,items[i]);
+	}
+};
+
+ZmFileListView.prototype._handleChangeItem =
+function(ev,item) {
+
+	if (ev.handled || !this._handleEventType[item.type] && (this.type != ZmItem.MIXED)) { return; }
+	
+	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
+		DBG.println(AjxDebug.DBG2, "ZmListView: TAG");
+		this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
+	}
+	
+	if (ev.event == ZmEvent.E_FLAGS) { // handle "flagged" and "has attachment" flags
+		DBG.println(AjxDebug.DBG2, "ZmListView: FLAGS");
+		var flags = ev.getDetail("flags");
+		for (var j = 0; j < flags.length; j++) {
+			var flag = flags[j];
+			var on = item[ZmItem.FLAG_PROP[flag]];
+			if (flag == ZmItem.FLAG_FLAGGED) {
+				this._setImage(item, ZmItem.F_FLAG, on ? "FlagRed" : null);
+			} else if (flag == ZmItem.FLAG_ATTACH) {
+				this._setImage(item, ZmItem.F_ATTACHMENT, on ? "Attachment" : null);
+			}
+		}
+	}
+	
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+		DBG.println(AjxDebug.DBG2, "ZmListView: DELETE or MOVE");
+        this.removeItem(item, true);
+        this._controller._app._checkReplenishListView = this;
+		this._controller._resetToolbarOperations();		
+	}
+};

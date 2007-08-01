@@ -230,7 +230,10 @@ function(ev, treeView, overviewId) {
 			if(id == shownPage.folderId && shownPage.name == ZmNotebook.PAGE_INDEX){
 				shownPage.restUrl = organizer.restUrl;
 			}
-			notebookController.gotoPage(shownPage);
+			var appViewMgr = this._appCtxt.getAppViewMgr();
+			if( appViewMgr.getCurrentViewId() != ZmController.NOTEBOOK_FILE_VIEW ) {
+				notebookController.gotoPage(shownPage);
+			}
 		}
 	}
 };

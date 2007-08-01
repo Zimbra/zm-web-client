@@ -31,6 +31,7 @@
 ZmNotebookFileController = function(appCtxt, container, app) {
 	ZmNotebookController.call(this, appCtxt, container, app);
 
+	this._listChangeListener = new AjxListener(this,this._fileListChangeListener);
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 
@@ -56,8 +57,16 @@ function(searchResults, fromUserSearch) {
 
 	this._list = searchResults.getResults(ZmItem.MIXED);
 	if (this._activeSearch) {
-		if (this._list)
+		if (this._list) {
+			var items = this._list.getArray();
+			if(items){
+				var list = ((items instanceof Array) && items.length>0) ? items[0].list : items.list;
+				if(list) {
+					list.addChangeListener(this._listChangeListener);
+				}
+			}		
 			this._list.setHasMore(this._activeSearch.getAttribute("more"));
+		}
 
 		var newOffset = parseInt(this._activeSearch.getAttribute("offset"));
 		if (this._listView[this._currentView])
@@ -261,4 +270,42 @@ function(ev) {
 	if (folder)
 		this._doMove(items, folder);
 	*/
+};
+
+ZmNotebookFileController.prototype._doDelete = 
+function(items) {
+	if(!items) return;
+	var list = items instanceof Array ? items[0].list : items.list;
+	var callback = new AjxCallback(this,this.deleteCallback,[list]);
+	ZmNotebookController.prototype._doDelete.call(this,items,callback);
+};
+
+ZmNotebookController.prototype.deleteCallback = 
+function(list,result) {
+	var response = result.getResponse();
+	var resp = response["ItemActionResponse"]
+	var actionedItems = new Array();
+	var view = this._listView[this._currentView];
+	if (resp && resp.action) {
+		var ids = resp.action.id.split(",");
+		if (ids) {
+			for (var i = 0; i < ids.length; i++) {
+				var item = list.getById(ids[i]);
+				if (item) {
+					actionedItems.push(item);
+				}
+			}
+		}
+	}
+	this._list._notify(ZmEvent.E_DELETE, {items: actionedItems});
+};
+
+
+ZmNotebookFileController.prototype._fileListChangeListener = 
+function(ev) {
+	if(ev.handled) return;
+	var details = ev._details;
+	if(!details) return;
+	var items = details.items
+	this._list._notify(ev.event,{items:items})
 };

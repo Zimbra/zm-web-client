@@ -189,7 +189,7 @@ ZmNotebookController.prototype._doDelete = function(items,delcallback) {
 	items = this._listView[this._currentView].getSelection();
 	}
 	var page = items instanceof Array ? items[0] : items;
-	if(page && page.isIndex() ){
+	if(page && ( page instanceof ZmPage ) && page.isIndex() ){
 		var overviewController = this._appCtxt.getOverviewController();
 		var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
 		var organizer = this._appCtxt.getById(page.id);
