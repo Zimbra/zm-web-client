@@ -565,7 +565,7 @@ function(contact) {
 	var subs = {
 		id: this._htmlElId,
 		fileAsSelectId: this._fileAsSelectCellId,
-		folderSelectId: this._folderCellId,
+		folderSelectId: this._folderCellId
 	};
 
 	this._fields = [];
