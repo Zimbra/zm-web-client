@@ -367,7 +367,15 @@ function(ev) {
 		} else {
 			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 		}
-		ZmContactsHelper.search(this, true, query, queryHint, this._searchRespCallback, this._searchErrorCallback);
+		var params = {
+			obj: this,
+			ascending: true,
+			query: query,
+			quertHint: queryHint,
+			respCallback: this._searchRespCallback,
+			errorCallback: this._searchErrorCallback
+		}
+		ZmContactsHelper.search(params);
 	}
 };
 
