@@ -16,7 +16,7 @@
             <c:if test="${not empty param.sq_from}"><c:set var="sq_from" value=' from:(${param.sq_from})'/></c:if>
             <c:if test="${not empty param.sq_subject}"><c:set var="sq_subject" value=' subject:(${param.sq_subject})'/></c:if>
             <c:if test="${not empty param.sq_tocc}"><c:set var="sq_tocc" value=' (to:(${param.sq_tocc}) or cc:(${param.sq_tocc}))'/></c:if>
-            <c:set var="sq">${param.sq_folder}${param.sq_tag}${param.sq_unread}${param.sq_flagged}${sq_subject}${sq_tocc}${sq_from}${sq_size}</c:set>
+            <c:set var="sq">${param.sq}${param.sq_folder}${param.sq_tag}${param.sq_unread}${param.sq_flagged}${sq_subject}${sq_tocc}${sq_from}${sq_size}</c:set>
         </c:when>
         <c:otherwise>
             <c:set var="sq" value="${param.sq}"/>
