@@ -156,18 +156,17 @@ function() {
 */
 ZmTagTreeController.prototype._itemClicked =
 function(tag) {
-	var sc = this._appCtxt.getSearchController();
 	var app = this._appCtxt.getCurrentAppName();
 
 	var searchFor;
-	if (app == ZmApp.CONTACTS) {
-		searchFor = ZmItem.CONTACT;
-	} else if (app == ZmApp.NOTEBOOK) {
-		searchFor = ZmItem.PAGE;
-	} else {
-		searchFor = ZmSearchToolBar.FOR_MAIL_MI;
+	switch (app) {
+		case ZmApp.CONTACTS:	searchFor = ZmItem.CONTACT; break;
+		case ZmApp.NOTEBOOK:	searchFor = ZmItem.PAGE; break;
+		case ZmApp.TASKS:		searchFor = ZmItem.TASK; break;
+		default: 				searchFor = ZmSearchToolBar.FOR_MAIL_MI; break;
 	}
 
+	var sc = this._appCtxt.getSearchController();
 	sc.search({query:'tag:"' + tag.name + '"', searchFor:searchFor});
 };
 
