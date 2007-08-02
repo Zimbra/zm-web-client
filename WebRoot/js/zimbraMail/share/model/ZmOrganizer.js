@@ -580,10 +580,7 @@ ZmOrganizer.prototype.getToolTip =
 function(force) {
 	if (this.numTotal == null) { return ""; }
 	if (!this._tooltip || force) {
-		var subs = {itemText:ZmMsg[ZmOrganizer.ITEMS_KEY[this.type]], numTotal:this.numTotal, sizeTotal:this.sizeTotal};
-		if (!subs.itemText || (this.nId == ZmFolder.ID_TRASH)) {
-			subs.itemText = ZmMsg.items;
-		}
+		var subs = {itemText:this._getItemsText(), numTotal:this.numTotal, sizeTotal:this.sizeTotal};
 		this._tooltip = AjxTemplate.expand("zimbraMail.share.templates.App#FolderTooltip", subs);
 	}
 	return this._tooltip;
@@ -1332,4 +1329,13 @@ function(name, showUnread, noMarkup) {
 		name = ["<del>", name, "</del>"].join("");
 	}
 	return name;
+};
+
+ZmOrganizer.prototype._getItemsText =
+function() {
+	var result = ZmMsg[ZmOrganizer.ITEMS_KEY[this.type]];
+	if (!result || (this.nId == ZmFolder.ID_TRASH)) {
+		result = ZmMsg.items;
+	}
+	return result;
 };

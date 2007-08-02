@@ -176,3 +176,11 @@ function(folderA, folderB) {
 	return 0;
 };
 
+ZmVoiceFolder.prototype._getItemsText =
+function() {
+	if (this.callType == ZmVoiceFolder.VOICEMAIL || this.callType == ZmVoiceFolder.TRASH) {
+		return ZmMsg.voicemailMessages;
+	} else {
+		return ZmMsg.calls;
+	}
+};
