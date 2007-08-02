@@ -103,6 +103,12 @@ function() {
 	return icon;
 };
 
+ZmAddrBook.prototype.supportsPublicAccess =
+function() {
+	// AddrBook's can be accessed outside of ZCS (i.e. REST)
+	return true;
+};
+
 ZmAddrBook.create =
 function(appCtxt, params) {
 	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");

@@ -70,6 +70,12 @@ function() {
 		: (this.link ? "SharedTaskList" : "TaskList");
 };
 
+ZmTaskFolder.prototype.supportsPublicAccess =
+function() {
+	// Task's can be accessed outside of ZCS (i.e. REST)
+	return true;
+};
+
 ZmTaskFolder.prototype.setFreeBusy =
 function(exclude, callback, errorCallback) {
 	if (this.excludeFreeBusy == exclude) return;

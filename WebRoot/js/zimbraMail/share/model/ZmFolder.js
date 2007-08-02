@@ -235,6 +235,12 @@ function(id) {
 	return false;
 };
 
+ZmFolder.prototype.supportsPublicAccess =
+function() {
+	// mail folders cannot be accessed outside of ZCS
+	return false;
+};
+
 /**
 * Handles the creation of a folder or search folder. This folder is the parent
 * of the newly created folder. A folder may hold a folder or search folder,

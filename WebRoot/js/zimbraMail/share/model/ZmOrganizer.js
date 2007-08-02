@@ -671,6 +671,12 @@ function() {
 	this.shares = null;
 };
 
+ZmOrganizer.prototype.supportsPublicAccess =
+function() {
+	// overload per organizer type
+	return true;
+};
+
 // XXX: temp method until we get better *server* support post Birdseye! (see bug #4434)
 // DO NOT REMOVE OR I WILL HUNT YOU DOWN AND SHOOT YOU.
 ZmOrganizer.prototype.setPermissions =

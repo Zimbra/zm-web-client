@@ -76,13 +76,14 @@ function(mode, object, share) {
 	var isUserShare = share ? share.isUser() || share.isGroup() : true;
 	var isGuestShare = share ? share.isGuest() : false;
 	var isPublicShare = share ? share.isPublic() : false;
+	var supportsPublic = object.supportsPublicAccess();
 
 	this._userRadioEl.checked = isUserShare;
 	this._userRadioEl.disabled = !isNewShare;
 	this._guestRadioEl.checked = isGuestShare;
-	this._guestRadioEl.disabled = !isNewShare;
+	this._guestRadioEl.disabled = !isNewShare || !supportsPublic;
 	this._publicRadioEl.checked = isPublicShare;
-	this._publicRadioEl.disabled = !isNewShare;
+	this._publicRadioEl.disabled = !isNewShare || !supportsPublic;
 
 	var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 	this._handleShareWith(type);
