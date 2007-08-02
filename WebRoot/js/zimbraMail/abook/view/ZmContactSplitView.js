@@ -330,7 +330,7 @@ function(contact, isGal, oldContact) {
 
 			// notify zimlets that a new contact is being shown.
 			if (this._appCtxt.zimletsPresent()) {
-				this._appCtxt.getZimletMgr().notifyZimlets("onContactView", this._htmlElId, tabIdx);
+				this._appCtxt.getZimletMgr().notifyZimlets("onContactView", contact, this._htmlElId, tabIdx);
 			}
 		}
 	}
