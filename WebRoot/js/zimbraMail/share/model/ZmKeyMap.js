@@ -388,7 +388,7 @@ function(str, kmm) {
 		var result = ZmShortcut._parse(chunks[i], kmm);
 		if (result instanceof Array) {
 			shortcuts = shortcuts.concat(result);
-		} else {
+		} else if (result) {
 			shortcuts.push(result);
 		}
 	}
@@ -411,6 +411,7 @@ function(str, kmm) {
  */
 ZmShortcut._parseOld =
 function(str) {
+	if (!str) { return null; }
 	var p = str.split("=");
 	var p1 = p[0].split(".");
 	var action = p1[1];
@@ -442,8 +443,9 @@ function(str, kmm) {
 		ZmShortcut._getShortcuts(kmm);
 	}
 
-	var p = str.split(",");
 	var shortcuts = [];
+	if (!str) { return shortcuts; }
+	var p = str.split(",");
 	var key = p[0];
 	var actionKey = ZmShortcut.ACTION_KEY[key];
 	var arg = p[1];
