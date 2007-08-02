@@ -44,7 +44,7 @@
 				<tr>
 					<td class='R1Text' style='padding-left:5px;'>hi,</td>
 					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(mailbox.defaultIdentity.fromDisplay)}</b></nobr></div></td>
-					<td id='#skin_container_logoff_lite' class='R1Link'> <a href="<c:url value="/h/login?loginOp=logout"/>"><nobr>Log Off</nobr></a></td>
+					<td id='#skin_container_logoff_lite' class='R1Link'> <a href="<c:url value="/?loginOp=logout"/>"><nobr>Log Off</nobr></a></td>
 					<td class='R1Sep'>|</td>
 					<td class='R1Link'><nobr><a href=#>My Account</a></nobr></td>
 					<td width=100%>&nbsp;</td>
