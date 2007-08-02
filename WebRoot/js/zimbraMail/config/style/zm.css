@@ -2277,17 +2277,6 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /*
- *	Change password dialog
- */
-.ZmChangePasswordDialogCell {
-	white-space: nowrap;
-	overflow: hidden;
-	text-align: right;
-	width: 1%;
-}
-
-
-/*
  *	Login dialog
  */
 .ZmLoginDialog {
