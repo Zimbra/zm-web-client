@@ -327,6 +327,7 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_STOP] = {
 };
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG] = {
 		param:			ZmFilterRule.TYPE_SELECT,
+		// NOTE: If you change the order of these options, also change _setPreconditions!!!
 		pOptions:		[{label: ZmMsg.asRead, value: "read"}, {label: ZmMsg.asFlagged, value: "flagged"}]
 };
 ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
@@ -341,6 +342,7 @@ ZmFilterRule.ACTIONS_LIST = [ZmFilterRule.A_KEEP, ZmFilterRule.A_DISCARD, ZmFilt
 
 ZmFilterRule._setPreconditions =
 function() {
+	ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG].pOptions[1].precondition = ZmSetting.FLAGGING_ENABLED;
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG].precondition = ZmSetting.TAGGING_ENABLED;
 	ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD].precondition = ZmSetting.MAIL_FORWARDING_ENABLED;
 };

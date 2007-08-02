@@ -2214,6 +2214,13 @@ HTML>BODY .appt-selected .appt_allday_body
 	vertical-align: middle;
 }
 
+.ZmFilterRuleDialog .FilterRuleSection {
+	margin-left: 2em;
+	#IFDEF GECKO
+	border: 1px dotted #555555;
+	#ENDIF
+}
+
 .infoBox {
 	margin:0px 5px 10px 0px;
 	background-color:#FFF6BF;

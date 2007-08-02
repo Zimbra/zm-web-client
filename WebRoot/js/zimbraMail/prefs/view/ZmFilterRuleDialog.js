@@ -47,7 +47,9 @@ ZmFilterRuleDialog = function(appCtxt) {
 	this._rules = AjxDispatcher.run("GetFilterRules");
 	this._rules.loadRules(); // make sure rules are loaded (for when we save)
 
+	// set content
 	this.setContent(this._contentHtml());
+	this._setConditionSelect();
 
 	// create these listeners just once
 	this._rowChangeLstnr	= new AjxListener(this, this._rowChangeListener);
@@ -109,11 +111,8 @@ function(rule, editMode, referenceRule) {
 	var stopField = document.getElementById(this._stopCheckboxId);
 	stopField.checked = (!editMode);
 
-	var anyRadioField = document.getElementById(this._anyRadioId);
-	var allRadioField = document.getElementById(this._allRadioId);
 	var checkAll = (rule && (rule.getGroupOp() == ZmFilterRule.GROUP_ALL));
-	anyRadioField.checked = !checkAll;
-	allRadioField.checked = checkAll;
+	this._conditionSelect.setSelectedValue(checkAll ? ZmFilterRule.GROUP_ALL : ZmFilterRule.GROUP_ANY);
 
 	this._rule = rule ? rule : ZmFilterRule.DUMMY_RULE;
 	this._renderTable(this._rule, true);	// conditions
@@ -138,82 +137,43 @@ function() {
 */
 ZmFilterRuleDialog.prototype._contentHtml =
 function() {
-	this._nameInputId = Dwt.getNextId();
-	this._activeCheckboxId = Dwt.getNextId();
-	this._groupSelectId = Dwt.getNextId();
-	this._anyRadioId = Dwt.getNextId();
-	this._allRadioId = Dwt.getNextId();
-	this._conditionsTableId = Dwt.getNextId();
-	this._actionsTableId = Dwt.getNextId();
-	this._stopCheckboxId = Dwt.getNextId();
+	// identifiers
+	var id = this._htmlElId;
+	this._nameInputId = id+"_name";
+	this._activeCheckboxId = id+"_active";
+	this._groupSelectId = id+"_group";
+	this._conditionId = id+"_condition";
+	this._conditionsTableId = id+"_conditions";
+	this._actionsTableId = id+"_actions";
+	this._stopCheckboxId = id+"_stop";
 
-	var html = [];
-	var i = 0;
-	
-	html[i++] = "<div>";
-	html[i++] = "<table width='100%'><tr><td width='1%' nowrap>";
-	html[i++] = ZmMsg.filterName;
-	html[i++] = ":</td><td>";
-    html[i++] = Dwt.CARET_HACK_BEGIN;
-	html[i++] = "<input type='text' width=100 id='";
-	html[i++] = this._nameInputId;
-	html[i++] = "'/>";
-    html[i++] = Dwt.CARET_HACK_END;
-	html[i++] = "</td>";
-	html[i++] = "<td width='1%' style='align:right;'><input type='checkbox' name='cbActive' checked id='";
-	html[i++] = this._activeCheckboxId;
-	html[i++] = "'> ";
-	html[i++] = ZmMsg.active;
-	html[i++] = "</td></tr></table><div class='vSpace'></div>";
+	// content html
+	return AjxTemplate.expand("zimbraMail.prefs.templates.Pages#MailFilterRule", id);
+};
 
-	html[i++] = "<fieldset";
-	if (AjxEnv.isMozilla)
-		html[i++] = " style='border:1px dotted #555555'";
-	html[i++] = "><legend style='color:#555555'>";
-	html[i++] = ZmMsg.filterConditions;
-	html[i++] = "</legend>";
+ZmFilterRuleDialog.prototype._setConditionSelect = function() {
+	var message = new DwtMessageComposite(this);
+	var callback = new AjxCallback(this, this._createConditionControl);
+	message.setFormat(ZmMsg.filterCondition, callback);
 
-	html[i++] = "<input checked value='anyof' type='radio' name='anyAll' id='";
-	html[i++] = this._anyRadioId;
-	html[i++] = "'>";
-	html[i++] = ZmMsg.anyCondition;
-	html[i++] = "<input value='allof' type='radio' name='anyAll' id='";
-	html[i++] = this._allRadioId;
-	html[i++] = "'>";
-	html[i++] = ZmMsg.allConditions;
+	var conditionEl = document.getElementById(this._htmlElId+"_condition");
+	message.appendElement(conditionEl);
+};
 
-	html[i++] = "<div class='vSpace'></div>";
-	
-	html[i++] = "<div style='overflow:auto; height:72px'><table width='100%' border=0 cellpadding=0 cellspacing=0 id='";
-	html[i++] = this._conditionsTableId;
-	html[i++] = "'><tbody></tbody></table></div>";
+ZmFilterRuleDialog.prototype._createConditionControl = function(parent, segment, i) {
+	if (segment.getIndex() == 0) {
+		var format = segment.getSegmentFormat();
+		var limits = format.getLimits();
+		var formats = format.getFormats();
+		var values = [ZmFilterRule.GROUP_ANY, ZmFilterRule.GROUP_ALL];
 
-	html[i++] = "</fieldset>";
-
-	html[i++] = "<div class='vSpace'></div>";
-
-	html[i++] = "<fieldset";
-	if (AjxEnv.isMozilla)
-		html[i++] = " style='border:1px dotted #555555'";
-	html[i++] = "><legend style='color:#555555'>";
-	html[i++] = ZmMsg.filterActions;
-	html[i++] = "</legend>";
-
-	html[i++] = "<div style='overflow:auto; height:60px'><table width='100%' border=0 cellpadding=0 cellspacing=0 id='";
-	html[i++] = this._actionsTableId;
-	html[i++] = "'><tbody></tbody></table></div>";
-
-	html[i++] = "<div class='vSpace'></div>";
-
-	html[i++] = "<input type='checkbox' name='cbStop' checked id='";
-	html[i++] = this._stopCheckboxId;
-	html[i++] = "'> ";
-	html[i++] = ZmMsg.stopFilterProcessing;
-	html[i++] = "</fieldset>";
-
-	html[i++] = "</div>";
-	
-	return html.join("");
+		var select = this._conditionSelect = new DwtSelect(parent);
+		for (var i = 0; i < values.length; i++) {
+			// TODO: guard against badly specified message
+			select.addOption(formats[i].toPattern(), i == 0, values[i]);
+		};
+		return select;
+	}
 };
 
 /*
@@ -394,12 +354,15 @@ function(conf, field, options, dataValue, rowId, data) {
 		}
 		for (var i = 0; i < options.length; i++) {
 			var o = options[i];
+			// skip if the action or this option is disabled
 			if (isMainSelect && !isCondition) {
-				// skip action if it's disabled
 				var actionCfg = ZmFilterRule.ACTIONS[o];
 				if (actionCfg.precondition && !this._appCtxt.get(actionCfg.precondition)) {
 					continue;
 				}
+			}
+			if (o.precondition && !this._appCtxt.get(o.precondition)) {
+				continue;
 			}
 			var value, label;
 			if (isMainSelect) {
@@ -717,7 +680,7 @@ function(ev) {
 	    return;
 	}
 	var active = document.getElementById(this._activeCheckboxId).checked;
-	var anyAll = document.getElementById(this._anyRadioId).checked ? "anyof" : "allof";
+	var anyAll = this._conditionSelect.getValue();
 
 	// adding a rule always starts with dummy
 	if (this._editMode) {
