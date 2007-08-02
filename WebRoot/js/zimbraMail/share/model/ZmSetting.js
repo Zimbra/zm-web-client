@@ -109,6 +109,9 @@ ZmSetting.INCLUDE_SMART		= "includeSmart";
 ZmSetting.LICENSE_BAD		= "bad";					// license status (network only)
 ZmSetting.LICENSE_GOOD		= "good";
 ZmSetting.LICENSE_GRACE		= "inGracePeriod";
+ZmSetting.PROTO_HTTP		= "http:";
+ZmSetting.PROTO_HTTPS		= "https:";
+ZmSetting.PROTO_MIXED		= "mixed";
 ZmSetting.SIG_INTERNET		= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK		= "outlook";
 

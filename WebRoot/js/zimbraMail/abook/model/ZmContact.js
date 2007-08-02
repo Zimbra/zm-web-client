@@ -858,10 +858,12 @@ function() {
 };
 
 //XYZ: Get Image URL
-ZmContact.prototype.getImageUrl = function() {
+ZmContact.prototype.getImageUrl =
+function() {
   	var image = this.getAttr(ZmContact.F_image);
-  	if(!image || !image.part) return null;  	
-  	return  [this._appCtxt.getCsfeMsgFetcher(),"id=",this.id,"&part=",image.part,"&t=",(new Date()).getTime()].join("");
+  	if(!image || !image.part) { return null; }
+  	var msgFetchUrl = this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+  	return  [msgFetchUrl, "&id=", this.id, "&part=", image.part, "&t=", (new Date()).getTime()].join("");
 };
 
 

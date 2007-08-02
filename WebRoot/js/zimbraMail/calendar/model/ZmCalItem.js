@@ -807,7 +807,8 @@ function() {
 */
 ZmCalItem.prototype.getAttachListHtml =
 function(attach, hasCheckbox) {
-	var hrefRoot = "href='" + this._appCtxt.getCsfeMsgFetcher() + "id=" + this.invId + "&amp;part=";
+  	var msgFetchUrl = this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+	var hrefRoot = "href='" + msgFetchUrl + "&id=" + this.invId + "&amp;part=";
 
 	// gather meta data for this attachment
 	var mimeInfo = ZmMimeTable.getInfo(attach.ct);

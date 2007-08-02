@@ -407,28 +407,19 @@ function(list, callback, result) {
 // Set defaults which are determined dynamically (which can't be set in static code).
 ZmSettings.prototype._setDefaults =
 function() {
-	var value;
-
-	var noPort = (location.port == "" || location.port == "80");
-    var portPrefix = noPort ? "" : ":" + location.port;
-
-	// CSFE_SERVER_URI
-	value = portPrefix + "/service/soap/";
-	if (location.search && location.search.indexOf("host=") != -1) {
-		value += location.search;
-	}
+	var value = AjxUtil.formatUrl({host:document.domain, path:"/service/soap/", qsReset:true});
 	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value, null, false, true);
 
 	// CSFE_MSG_FETCHER_URI
-	value = portPrefix + "/service/home/~/?auth=co&";
+	value = AjxUtil.formatUrl({host:document.domain, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co"}});
 	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value, null, false, true);
 	
 	// CSFE_UPLOAD_URI
-	value = portPrefix + "/service/upload";
+	value = AjxUtil.formatUrl({host:document.domain, path:"/service/upload", qsReset:true});
 	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value, null, false, true);
 	
 	// CSFE EXPORT URI
-	value = portPrefix + "/service/home/~/?auth=co&id={0}&fmt=csv";
+	value = AjxUtil.formatUrl({host:document.domain, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co", id:"{0}", fmt:"csv"}});
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 	
 	// default sorting preferences
@@ -509,6 +500,7 @@ function() {
 	this.registerSetting("LOG_REQUEST",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("LOGO_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com"});
 	this.registerSetting("OFFLINE",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("PROTOCOL_MODE",					{type:ZmSetting.T_CONFIG, defaultValue:ZmSetting.PROTO_HTTP});
 	this.registerSetting("TIMEOUT",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:30}); // seconds
 	this.registerSetting("USE_XML",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	

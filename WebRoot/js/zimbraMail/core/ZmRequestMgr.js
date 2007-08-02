@@ -34,16 +34,15 @@
  * 
  * @param appCtxt		[ZmAppCtxt]		the app context
  * @param controller	[ZmController]	main controller
- * @param domain		[string]		current domain
  */
-ZmRequestMgr = function(appCtxt, controller, domain) {
+ZmRequestMgr = function(appCtxt, controller) {
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 	
 	this._appCtxt.setRequestMgr(this);
 
-	ZmCsfeCommand.setServerUri(location.protocol + "//" + domain + appCtxt.get(ZmSetting.CSFE_SERVER_URI));
+	ZmCsfeCommand.setServerUri(appCtxt.get(ZmSetting.CSFE_SERVER_URI));
 	var cv = appCtxt.get(ZmSetting.CLIENT_VERSION);
 	ZmCsfeCommand.clientVersion = (!cv || cv.indexOf('@') == 0) ? "dev build" : cv;
 	

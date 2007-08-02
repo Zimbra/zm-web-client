@@ -1,6 +1,6 @@
 <%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page session="false" %>
+<%@ page session="false" import="javax.naming.*" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -44,6 +44,18 @@
  * ***** END LICENSE BLOCK *****
 -->
 <script>
+<%!
+	private static String protocolMode = null;
+	static {
+		try {
+			Context initCtx = new InitialContext();
+			Context envCtx = (Context) initCtx.lookup("java:comp/env");
+			protocolMode = (String) envCtx.lookup("protocolMode");
+		} catch (NamingException ne) {
+			protocolMode = "http";
+		}
+	}
+%>
 <%
 	String contextPath = request.getContextPath();
 	if (contextPath.equals("/")) {
@@ -205,8 +217,9 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 		var app = "<%= (startApp != null) ? startApp : "" %>";
 		var offlineMode = "<%= (offlineMode != null) ? offlineMode : "" %>";
 		var isDev = "<%= (isDev != null) ? isDev : "" %>";
+		var protocolMode = "<%=protocolMode%>";
 
-		ZmZimbraMail.run({domain:document.domain, app:app, offlineMode:offlineMode, devMode:isDev, settings:settings});
+		ZmZimbraMail.run({app:app, offlineMode:offlineMode, devMode:isDev, settings:settings, protocolMode:protocolMode});
 	}
 
     //	START DOMContentLoaded

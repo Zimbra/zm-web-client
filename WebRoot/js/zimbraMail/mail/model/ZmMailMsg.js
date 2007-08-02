@@ -952,7 +952,7 @@ function(contentPartType, contentPart) {
     	for (var i = 0; i < this._attachments.length; i++) {
     		var attach = this._attachments[i];
 			if (attach[contentPartType] == contentPart) {
-    			return this._appCtxt.getCsfeMsgFetcher() + "id=" + this.id + "&part=" + attach.part;
+    			return this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&part=" + attach.part;
     		}
 		}
 	}
@@ -972,8 +972,7 @@ function(findHits) {
 	this._attLinks = [];
 
 	if (this._attachments && this._attachments.length > 0) {
-		var csfeMsgFetchSvc = this._appCtxt.getCsfeMsgFetcher();
-		var hrefRoot = csfeMsgFetchSvc + "id=" + this.id + "&amp;part=";
+		var hrefRoot = this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&amp;part=";
 
 		for (var i = 0; i < this._attachments.length; i++) {
     		var attach = this._attachments[i];
@@ -1060,7 +1059,7 @@ function(findHits) {
 			props.isHit = findHits && this._isAttInHitList(attach);
 			props.part = attach.part;
 			if (!useCL)
-				props.url = csfeMsgFetchSvc + "id=" + this.id + "&part=" + attach.part;
+				props.url = this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&part=" + attach.part;
 			
 			if(attach.ci){
 				props.ci = attach.ci;

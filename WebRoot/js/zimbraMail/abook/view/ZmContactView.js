@@ -609,17 +609,15 @@ ZmContactView.prototype._handleImage = function(){
 		imageInput.setAttribute("accept","image/gif,image/jpeg,image/png");
 	}
 	
-	var imageRemove = document.getElementById(this._imageCellId+"_remove");
+	var imageRemove = document.getElementById(this._imageCellId + "_remove");
 	if(imageRemove){
 		imageRemove.onclick = AjxCallback.simpleClosure(this._removeImage,this,imageRemove);
 	}
 	
-	this._uploadForm = document.getElementById(this._imageCellId+"_form");
-	if(this._uploadForm){
-		var uri = [ location.protocol,"//", document.domain, this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI)].join("");
-		this._uploadForm.setAttribute("action",uri);
+	this._uploadForm = document.getElementById(this._imageCellId + "_form");
+	if (this._uploadForm) {
+		this._uploadForm.setAttribute("action", this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
 	}
-	
 };
 
 ZmContactView.prototype._updateImage = function(status,attId){

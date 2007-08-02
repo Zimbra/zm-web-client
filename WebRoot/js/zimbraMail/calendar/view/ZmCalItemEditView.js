@@ -564,7 +564,7 @@ function() {
 	this._attachDivId = Dwt.getNextId();
 
 	html[i++] = "<form style='margin:0;padding:0' method='POST' action='";
-	html[i++] = (location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
+	html[i++] = this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	html[i++] = "' id='";
 	html[i++] = this._uploadFormId;
 	html[i++] = "' enctype='multipart/form-data'><div id='";

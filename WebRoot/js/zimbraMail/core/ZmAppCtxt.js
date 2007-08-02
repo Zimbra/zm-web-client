@@ -477,15 +477,6 @@ function() {
 	return this._uploadConflictDialog;
 };
 
-ZmAppCtxt.prototype.getChangePasswordDialog =
-function() {
-	if (!this._changePasswordDialog) {
-		AjxDispatcher.require("Extras");
-		this._changePasswordDialog = new ZmChangePasswordDialog(this._shell);
-	}
-	return this._changePasswordDialog;
-}
-
 ZmAppCtxt.prototype.clearAllDialogs =
 function() {
 	this.clearFolderDialogs();
@@ -537,7 +528,6 @@ function() {
 	this._filterRuleDialog = null;
 	this._confirmDialog = null;
 	this._pickTagDialog = null;
-	this._changePasswordDialog = null;
 	this._renameTagDialog = null;
 };
 
@@ -786,14 +776,6 @@ function(key) {
 ZmAppCtxt.prototype.getById =
 function(id) {
 	return this._itemCache ? this._itemCache.get(id) : null;
-};
-
-ZmAppCtxt.prototype.getCsfeMsgFetcher = 
-function() {
-	if (!this._csfeMsgFetchSvc) {
-		this._csfeMsgFetchSvc = location.protocol + "//" + document.domain + this.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-	}
-	return this._csfeMsgFetchSvc;
 };
 
 ZmAppCtxt.prototype.getKeyboardMgr =

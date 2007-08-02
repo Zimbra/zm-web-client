@@ -613,22 +613,22 @@ function(doc) {
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
 	var attachments = this._msg.getAttachments();
-	var csfeMsgFetch = this._appCtxt.getCsfeMsgFetcher();
+	var csfeMsgFetch = this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
 	for (var i = 0; i < attachments.length; i++) {
 		var att = attachments[i];
 
-		if (att.foundInMsgBody) continue;
+		if (att.foundInMsgBody) { continue; }
 
 		var src = img.getAttribute("src") || img.getAttribute("dfsrc");
 		if (src && src.indexOf(csfeMsgFetch) == 0) {
-			var mpId = src.substring(src.lastIndexOf("=")+1);
+			var mpId = src.substring(src.lastIndexOf("=") + 1);
 			if (mpId == att.part) {
 				att.foundInMsgBody = true;
 				break;
 			}
 		} else if (att.cl) {
-			var filename = src.substring(src.lastIndexOf("/")+1);
+			var filename = src.substring(src.lastIndexOf("/") + 1);
 			if (filename == att.filename) {
 				att.foundInMsgBody = true;
 				break;
@@ -1183,7 +1183,7 @@ function() {
 		htmlArr[idx++] = "<tr><td colspan=";
 		htmlArr[idx++] = ZmMailMsgView.ATTC_COLUMNS;
 		htmlArr[idx++] = ">";
-		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._appCtxt.getCsfeMsgFetcher(), this._msg.id, attLinks);
+		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), this._msg.id, attLinks);
 		htmlArr[idx++] = "</td></tr>";
 		rows++;
 	}
@@ -1663,11 +1663,12 @@ function(msgId, vcardPartId) {
 
 ZmMailMsgView._buildZipUrl =
 function(csfeUrl, itemId, attachments) {
-	var url = csfeUrl + "id=" + itemId + "&part=";
+	var url = csfeUrl + "&id=" + itemId + "&part=";
 	for (var j = 0; j < attachments.length; j++) {
 		url += attachments[j].part;
-		if (j <= attachments.length)
+		if (j <= attachments.length) {
 			url += ",";
+		}
 	}
 
 	return AjxTemplate.expand("zimbraMail.mail.templates.Message#DownloadAll", {url:url});

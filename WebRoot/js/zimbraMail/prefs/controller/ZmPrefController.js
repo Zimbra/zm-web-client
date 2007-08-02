@@ -327,36 +327,6 @@ function() {
 	this._appCtxt.getAppViewMgr().popView();
 };
 
-ZmPrefController.prototype._changePassword =
-function(oldPassword, newPassword) {
-	var soapDoc = AjxSoapDoc.create("ChangePasswordRequest", "urn:zimbraAccount");
-	soapDoc.set("oldPassword", oldPassword);
-	soapDoc.set("password", newPassword);
-	var accountNode = soapDoc.set("account", this._appCtxt.get(ZmSetting.USERNAME));
-	accountNode.setAttribute("by", "name");
-
-	var respCallback = new AjxCallback(this, this._handleResponseChangePassword);
-	var errorCallback = new AjxCallback(this, this._handleErrorChangePassword);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
-												  callback: respCallback, errorCallback: errorCallback});
-};
-
-ZmPrefController.prototype._handleResponseChangePassword =
-function(result) {
-	this._appCtxt.getChangePasswordDialog().popdown();
-	this._appCtxt.setStatusMsg(ZmMsg.passwordChangeSucceeded);
-};
-
-ZmPrefController.prototype._handleErrorChangePassword =
-function(ex) {
-	if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED) {
-		this._appCtxt.getChangePasswordDialog().showMessageDialog(ZmMsg.oldPasswordIsIncorrect);
-		return true;
-	} else {
-		return false;
-	}
-};
-
 ZmPrefController.prototype._preHideCallback =
 function(view, force) {
 	ZmController.prototype._preHideCallback.call(this);

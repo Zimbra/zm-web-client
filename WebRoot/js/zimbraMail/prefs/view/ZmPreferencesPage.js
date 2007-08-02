@@ -545,7 +545,7 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._addImportWidgets =
 function(buttonDiv, settingId, setup) {
-	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+	var uri = this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 
 	var importDivId = this._htmlElId+"_import";
 	var isAddrBookImport = settingId == ZmSetting.IMPORT; 
@@ -689,9 +689,11 @@ function(ev) {
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
-	var passwordDialog = this._appCtxt.getChangePasswordDialog();
-	passwordDialog.registerCallback(DwtDialog.OK_BUTTON, this._controller._changePassword, this._controller);
-	passwordDialog.popup();
+	var args = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
+	var proto = this._appCtxt.get(ZmSetting.PROTOCOL_MODE);
+	proto = (proto == ZmSetting.PROTO_MIXED) ? ZmSetting.PROTO_HTTPS : ZmSetting.PROTO_HTTP;
+	var url = AjxUtil.formatUrl({protocol:proto, path:"/zimbra/h/changepass", qsReset:true});
+	window.open(url, "_blank", args);
 };
 
 ZmPreferencesPage.prototype._exportButtonListener =

@@ -345,7 +345,7 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
 	container.style.marginLeft = "1em";
 	container.style.marginBottom = "0.5em";
 	
-	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+	var uri = this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	container.innerHTML = [
 		"<form id='",this._formId,"' method='POST' action='",uri,"' enctype='multipart/form-data'>",
 			"<table id='",this._tableId,"' cellspacing=4 cellpadding=0 border=0>",

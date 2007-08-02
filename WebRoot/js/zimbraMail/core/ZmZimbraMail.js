@@ -33,7 +33,6 @@
  *
  * @param appCtxt	[ZmAppCtxt]		the app context (global storage)
  * @param params	[hash]			hash of params:
- *        domain	[string]		current domain
  *        app		[constant]		starting app
  *        userShell	[Element]		top-level skin container
  */
@@ -42,7 +41,7 @@ ZmZimbraMail = function(appCtxt, params) {
 	ZmController.call(this, appCtxt);
 
 	this._userShell = params.userShell;
-	this._requestMgr = new ZmRequestMgr(appCtxt, this, params.domain);
+	this._requestMgr = new ZmRequestMgr(appCtxt, this);
 
 	// ALWAYS set back reference into our world (also used by unload handler)
 	window._zimbraMail = this;
@@ -129,11 +128,11 @@ function() {
  * CSFE is on the same host.
  *
  * @param params		[hash]			hash of params:
- *        domain		[string]		the host that we're running on
  *        app			[constant]*		starting app
  *        offlineMode	[boolean]*		if true, this is the offline client
  *        devMode		[boolean]*		if true, we are in development environment
  *        settings		[hash]*			server prefs/attrs
+ *        protocolMode	[constant]*		http, https, or mixed
  */
 ZmZimbraMail.run =
 function(params) {
@@ -184,6 +183,10 @@ function(params) {
     	appCtxt.set(ZmSetting.DEV, true);
     	appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
     }
+
+	if (params.protocolMode) {
+		appCtxt.set(ZmSetting.PROTOCOL_MODE, params.protocolMode);
+	}
 
 	// Create the shell
 	var userShell = params.userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
@@ -250,9 +253,8 @@ function(params) {
 	this._appCtxt.inStartup = true;
 	if (typeof(skin) == "undefined") {
 		DBG.println(AjxDebug.DBG1, "No skin!");
-		var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
-					  "" : ":" + location.port) + "/public/skinError.jsp?skin=" + appCurrentSkin;
-		ZmZimbraMail.sendRedirect(locationStr);
+		var url = AjxUtil.formatUrl({path:"/public/skinError.jsp", qsArgs:{skin:appCurrentSkin}, qsReset:true});
+		ZmZimbraMail.sendRedirect(url);
         return;
     }
 
@@ -1107,12 +1109,7 @@ function() {
 	
 	var url = window._zimbraMail ? window._zimbraMail._appCtxt.get(ZmSetting.LOGOUT_URL) : null;
 	if (!url) {
-		var port = (location.port == '80') ? "" : [":", location.port].join("");
-		var locationStr = [location.protocol, "//", location.hostname, port].join("");
-		if (appContextPath) {
-			locationStr = [locationStr, appContextPath].join("");
-		}
-		url = [locationStr, location.search].join("");
+		url = AjxUtil.formatUrl({path:appContextPath});
 	}
 	ZmZimbraMail.sendRedirect(url);
 };
@@ -1315,21 +1312,18 @@ ZmZimbraMail.prototype._newSkinYesCallback =
 function(skin) {
 	this._confirmDialog.popdown();
     window.onbeforeunload = null;
-    var qs = AjxStringUtil.queryStringSet(location.search, "skin", skin);
-	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
-					  "" : ":" + location.port) + location.pathname + qs;
-	DBG.println(AjxDebug.DBG1, "skin change, redirect to: " + locationStr);
-    ZmZimbraMail.sendRedirect(locationStr); // redirect to self to force reload
+    var url = AjxUtil.formatUrl({qsArgs:{skin:skin}});
+	DBG.println(AjxDebug.DBG1, "skin change, redirect to: " + url);
+    ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
 ZmZimbraMail.prototype._newLocaleYesCallback =
 function(skin) {
 	this._confirmDialog.popdown();
     window.onbeforeunload = null;
-	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
-					  "" : ":" + location.port) + location.pathname + location.search ;
-	DBG.println(AjxDebug.DBG1, "locale change, redirect to: " + locationStr);
-    ZmZimbraMail.sendRedirect(locationStr); // redirect to self to force reload
+    var url = AjxUtil.formatUrl();
+	DBG.println(AjxDebug.DBG1, "skin change, redirect to: " + url);
+    ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
 ZmZimbraMail.prototype._createBanner =
