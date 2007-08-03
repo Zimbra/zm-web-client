@@ -146,7 +146,7 @@ ZmPreferencesApp.prototype._registerApp =
 function() {
 	ZmApp.registerApp(ZmApp.PREFERENCES,
 							 {mainPkg:				"Preferences",
-							  nameKey:				"options",
+							  nameKey:				"preferences",
 							  icon:					"Preferences",
 							  chooserTooltipKey:	"goToOptions",
 							  button:				ZmAppChooser.B_OPTIONS,
