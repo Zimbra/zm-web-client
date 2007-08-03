@@ -33,9 +33,7 @@ ZmRoster = function(appCtxt, imApp) {
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
 	this._imApp = imApp;
 
-        this._requestGateways();
-
-	this.reload();
+        this.refresh();
 };
 
 ZmRoster.prototype = new ZmModel;
@@ -184,6 +182,11 @@ ZmRoster.prototype.pushNotification = function(im) {
                 this._notificationBuffer.push(im);
         } else
                 this.handleNotification(im);
+};
+
+ZmRoster.prototype.refresh = function() {
+        this._requestGateways();
+        this.reload();
 };
 
 /**

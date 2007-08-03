@@ -219,7 +219,11 @@ ZmImApp.prototype._onSettingChange = function(ev) {
 
 ZmImApp.prototype.refresh =
 function() {
-//	AjxDispatcher.run("GetRoster").reload();
+        if (this._roster) {
+                // better not call getRoster() here since we don't
+                // want to reinit. IM if it wasn't already.
+	        this._roster.refresh();
+        }
 };
 
 ZmImApp.prototype.handleOp = function(op) {
