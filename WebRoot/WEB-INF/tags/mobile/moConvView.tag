@@ -44,10 +44,12 @@
         </c:forEach>
     </c:if>
     <fmt:message var="unknownSender" key="unknownSender"/>
+
+    <c:set var="subject" value="${not empty message ? message.subject : convSearchResult.hits[0].messageHit.subject}"/>
 </mo:handleError>
 
 
-<mo:view mailbox="${mailbox}" title="${message.subject}" context="${context}"
+<mo:view mailbox="${mailbox}" title="${subject}" context="${context}"
          scale="${true or convSummary.messageCount eq 1}">
 
 <table width=100% cellspacing="0" cellpadding="0">
@@ -65,9 +67,12 @@
                             <tr>
                                 <zm:currentResultUrl var="closeUrl" value="mosearch" action='view' context="${context}"
                                                      cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
-                                <td><a href="${closeUrl}" class='zo_leftbutton'>
-                                    <fmt:message key="backToConv"/>
-                                </a></td>
+                                <td><a href="${closeUrl}" class='zo_leftbutton'><fmt:message key="backToConv"/></a></td>
+                                <td>
+                                    <a class='zo_button' href="#action">
+                                        <a class='zo_button' href="#action"><fmt:message key="MO_actions"/></a>
+                                    </a>
+                                </td>
                                 <td>
                                     <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}"
                                                             index="${param.csi}"/>
@@ -128,6 +133,11 @@
                                 <td><a href="${closeurl}#conv${convSummary.id}" class='zo_leftbutton'>
                                         ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
                                 </a></td>
+                                <c:if test="${singleMessage}">
+                                <td>
+                                    <a class='zo_button' href="#action"><fmt:message key="MO_actions"/></a>
+                                </td>
+                                </c:if> 
                                 <td>
                                     <c:choose>
                                         <c:when test="${context.hasPrevItem}">
@@ -163,6 +173,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
+
                             </tr>
                         </table>
                     </td>
@@ -189,6 +200,123 @@
             </td>
         </tr>
 
+
+
+        <tr>
+            <td>
+                 <zm:currentResultUrl var="actionUrl" value="mosearch" context="${context}" mview="1"
+                                     action="view" id="${message.id}"/>
+                <form id="action" action="${actionUrl}" method="post">
+                    <input type="hidden" name="doMessageAction" value="1"/>
+                    <table width=100% cellspacing="0" cellpadding="2">
+                        <tr><td colspan=2><hr></td></tr>
+                        <tr class='zo_action'>
+                            <td colspan=2>
+                                <table cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${not message.isUnread}">
+                                                    <input name="actionMarkUnread" type="submit" value="<fmt:message key="actionMarkUnread"/>">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <input name="actionMarkRead" type="submit" value="<fmt:message key="actionMarkRead"/>">
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td style='padding-left:5px'>
+                                            <c:choose>
+                                                <c:when test="${not message.isFlagged}">
+                                                    <input name="actionFlag" type="submit" value="<fmt:message key="actionAddFlag"/>">
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <input name="actionUnflag" type="submit" value="<fmt:message key="actionRemoveFlag"/>">
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr><td colspan=2><hr></td></tr>
+                        <tr class='zo_action'>
+                            <td colspan=2>
+                                <table cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td>
+                                            <input name="actionMove" type="submit" value="<fmt:message key="actionMove"/>">
+                                        </td>
+                                        <td style='padding-left:5px'>
+                                            <select name="folderId">
+                                                <option value="" selected/><fmt:message key="moveAction"/>
+                                                <zm:forEachFolder var="folder">
+                                                    <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                                                        <option value="${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                                                    </c:if>
+                                                </zm:forEachFolder>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                            <c:set var="tagsToAdd" value="${zm:getAvailableTags(pageContext,message.tagIds,true)}"/>
+                            <c:set var="tagsToRemove" value="${zm:getAvailableTags(pageContext,message.tagIds,false)}"/>
+                            <c:if test="${not empty tagsToAdd}">
+                                <tr><td colspan=2><hr></td></tr>
+                                <tr class='zo_action'>
+                                    <td colspan=2>
+                                        <table cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td>
+                                                    <input name="actionAddTag" type="submit" value="<fmt:message key="MO_actionAddTag"/>">
+                                                </td>
+                                                <td style='padding-left:5px'>
+                                                    <select name="tagId">
+                                                        <c:forEach var="tag" items="${tagsToAdd}">
+                                                            <option value="${tag.id}" />${fn:escapeXml(tag.name)}
+                                                        </c:forEach>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </c:if>
+                            <c:if test="${not empty tagsToRemove}">
+                                <tr><td colspan=2><hr></td></tr>
+                                <tr class='zo_action'>
+                                    <td colspan=2>
+                                        <table cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td>
+                                                    <input name="actionRemoveTag" type="submit" value="<fmt:message key="MO_actionRemoveTag"/>">
+                                                </td>
+                                                <td style='padding-left:5px'>
+                                                    <select name="tagRemoveId">
+                                                        <c:forEach var="tag" items="${tagsToRemove}">
+                                                            <option value="${tag.id}" />${fn:escapeXml(tag.name)}
+                                                        </c:forEach>
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </c:if>
+                        </c:if>
+                        <tr><td colspan=2><hr></td></tr>
+                        <tr class='zo_action'>
+                            <td colspan=2>
+                                <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>">
+                            </td>
+                        </tr>
+                        <tr><td colspan=2><hr></td></tr>
+                    </table>
+                </form>
+            </td>
+        </tr>
     </c:when>
     <c:otherwise>
 
@@ -201,7 +329,7 @@
                             <mo:img src="mail/Conversation.gif"/>
                         </td>
                         <td style='padding-left:5px;'>
-                                ${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}
+                                ${fn:escapeXml(empty subject ? emptySubject : subject)}
                         </td>
                     </tr>
                 </table>

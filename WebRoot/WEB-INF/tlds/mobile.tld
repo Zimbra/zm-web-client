@@ -196,6 +196,10 @@
         <path>/WEB-INF/tags/mobile/moAttachment.tag</path>
      </tag-file>
 
+    <tag-file>
+        <name>messageAction</name>
+        <path>/WEB-INF/tags/mobile/moMessageAction.tag</path>
+     </tag-file>
 </taglib>
 
         

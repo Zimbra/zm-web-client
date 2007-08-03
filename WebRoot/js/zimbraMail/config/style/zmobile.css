@@ -41,7 +41,7 @@ body {
 #IFDEF IPHONE
     overflow: hidden;
     -webkit-text-size-adjust: none;
-#endif
+#ENDIF
 }
 
 .zo_toolbar {
@@ -189,6 +189,13 @@ height: 20px;
   text-decoration: none;
   color: black;
 #ENDIF
+}
+
+.zo_action INPUT, .zo_action SELECT {
+    padding:4px;
+    font-size: medium;
+    color: #000000;
+    text-decoration: none;
 }
 
 .zo_msgcompose {
