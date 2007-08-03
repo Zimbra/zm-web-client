@@ -192,6 +192,7 @@ ZmImOverview.prototype._createBuddy = function(type, buddy) {
 	}
 	var label = buddy.getDisplayName();
 	var icon = buddy.getPresence().getIcon();
+        var items = [];
 	for (var i = 0; i < groups.length; ++i) {
 		var parent = this.getGroupItem(groups[i]);
 		var item = new DwtTreeItem(parent,
@@ -202,6 +203,7 @@ ZmImOverview.prototype._createBuddy = function(type, buddy) {
 		item.getToolTipContent = AjxCallback.simpleClosure(buddy.getToolTip, buddy);
 		item.setData("ZmImOverview.data", { type: type, buddy: buddy });
 		item.setDragSource(this._im_dragSrc);
+                items.push(item);
 		parent.setExpanded(true);
 		var a = this._itemsById[buddy.getAddress()];
 		if (!a)
@@ -209,6 +211,7 @@ ZmImOverview.prototype._createBuddy = function(type, buddy) {
 		a.add(item);
 		// this._allItems.add(item);
 	}
+        this.applyFilters(items);
 };
 
 ZmImOverview.prototype._modifyBuddy = function(fields, buddy) {
@@ -234,6 +237,7 @@ ZmImOverview.prototype._modifyBuddy = function(fields, buddy) {
 				item.condClassName(fields[ZmRosterItem.F_TYPING], "ZmRosterItem-typing");
 			}
 		}, this);
+                this.applyFilters(items.getArray());
 	}
 };
 
