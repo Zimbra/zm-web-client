@@ -46,6 +46,14 @@ function() {
 	return "ZmVoicemailListController";
 };
 
+ZmVoicemailListController.prototype.show =
+function(searchResult, folder) {
+	if (this._folder && (folder != this._folder)) {
+		this._getView().stopPlaying(true);
+	}
+	ZmVoiceListController.prototype.show.call(this, searchResult, folder)
+};
+
 ZmVoicemailListController.prototype._defaultView =
 function() {
 	return ZmController.VOICEMAIL_VIEW;
