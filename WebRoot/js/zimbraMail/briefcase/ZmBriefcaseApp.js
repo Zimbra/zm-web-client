@@ -424,7 +424,7 @@ function(msgId, partId, name) {
 ZmBriefcaseApp.prototype._getCopyParams =
 function() {
 	var org = ZmOrganizer.BRIEFCASE;
-	var title = ZmMsg.addToBriefcase;
+	var title = ZmMsg.addToBriefcaseTitle;
 	return {treeIds:[org], overviewId:"ZmListController",
 			title:title, description:ZmMsg.targetFolder};
 };
