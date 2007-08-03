@@ -1,35 +1,35 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
- 
+
 /**
  * Creates and initializes the mail application.
  * @constructor
  * @class
  * The mail app manages and displays mail messages. Messages may be grouped
  * into conversations. New messages are created through a composer.
- * 
+ *
  * @author Conrad Damon
  */
 ZmMailApp = function(appCtxt, container, parentController) {
@@ -66,7 +66,7 @@ function() {
 	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE]	= ZmItem.MSG;
 };
 
-ZmMailApp.prototype.toString = 
+ZmMailApp.prototype.toString =
 function() {
 	return "ZmMailApp";
 };
@@ -229,14 +229,14 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
-	ZmPref.registerPref("INITIAL_GROUP_MAIL_BY", { 
+	ZmPref.registerPref("INITIAL_GROUP_MAIL_BY", {
 		displayName:		ZmMsg.groupMailBy,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		[ZmMsg.message, ZmMsg.conversation],
 		options:			[ZmSetting.GROUP_BY_MESSAGE, ZmSetting.GROUP_BY_CONV],
 		precondition:		ZmSetting.CONVERSATIONS_ENABLED
 	});
-	
+
 	ZmPref.registerPref("INITIAL_SEARCH", {
 		displayName:		ZmMsg.initialMailSearch,
 		displayContainer:	ZmPref.TYPE_INPUT,
@@ -311,7 +311,7 @@ function() {
 		displaySeparator:	true,
 		precondition:		ZmSetting.MAIL_FORWARDING_ENABLED
 	});
-	
+
 	ZmPref.registerPref("NOTIF_ADDRESS", {
 		displayName:		ZmMsg.mailNotifAddress,
 		displayContainer:	ZmPref.TYPE_INPUT,
@@ -320,25 +320,25 @@ function() {
 		precondition:		ZmSetting.NOTIF_FEATURE_ENABLED,
 		displaySeparator:	true
 	});
-	
+
 	ZmPref.registerPref("NOTIF_ENABLED", {
 		displayName:		ZmMsg.mailNotifEnabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		ZmSetting.NOTIF_FEATURE_ENABLED
 	});
-	
+
 	ZmPref.registerPref("OPEN_MAIL_IN_NEW_WIN", {
 		displayName:		ZmMsg.openMailNewWin,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-	
+
 	ZmPref.registerPref("REPLY_TO_ADDRESS", {
 		displayName:		ZmMsg.replyToAddress,
 		displayContainer:	ZmPref.TYPE_INPUT,
 		validationFunction: ZmPref.validateEmail,
 		errorMessage:       ZmMsg.invalidEmail
 	});
-	
+
 	ZmPref.registerPref("SIGNATURE", {
 		displayName:		ZmMsg.signature,
 		displayContainer:	ZmPref.TYPE_TEXTAREA,
@@ -346,12 +346,12 @@ function() {
 		errorMessage:       AjxMessageFormat.format(ZmMsg.invalidSignature, ZmPref.MAX_LENGTH[ZmSetting.SIGNATURE]),
 		displaySeparator:	true
 	});
-	
+
 	ZmPref.registerPref("SIGNATURE_ENABLED", {
 		displayName:		ZmMsg.signatureEnabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-	
+
 	ZmPref.registerPref("SIGNATURE_STYLE", {
 		displayName:		ZmMsg.signatureStyle,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
@@ -359,7 +359,7 @@ function() {
 		displayOptions:		[ZmMsg.aboveQuotedText, ZmMsg.atBottomOfMessage],
 		options:			[ZmSetting.SIG_OUTLOOK, ZmSetting.SIG_INTERNET]
 	});
-	
+
 	ZmPref.registerPref("VACATION_MSG", {
 		displayName:		ZmMsg.awayMessage,
 		displayContainer:	ZmPref.TYPE_TEXTAREA,
@@ -368,7 +368,7 @@ function() {
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
 		displaySeparator:	true
 	});
-	
+
 	ZmPref.registerPref("VACATION_MSG_ENABLED", {
 		displayName:		ZmMsg.awayMessageEnabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
@@ -505,7 +505,7 @@ function() {
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_MESSAGE]		= ZmOperation.NEW_MESSAGE;
 	actionCodes[ZmKeyMap.NEW_MESSAGE_WIN]	= ZmOperation.NEW_MESSAGE_WIN;
-	
+
 	ZmApp.registerApp(ZmApp.MAIL,
 							 {mainPkg:				"MailCore",
 							  nameKey:				"mail",
@@ -557,7 +557,7 @@ function(result) {
 ZmMailApp.prototype.preNotify =
 function(notify) {
 	if (!(notify.deleted && notify.created && notify.modified))	{ return notify; }
-	
+
 	// first, see if we are deleting any virtual convs (which have negative IDs)
 	var virtConvDeleted = false;
 	var deletedIds = notify.deleted.id.split(",");
@@ -593,7 +593,7 @@ function(notify) {
 	}
 	if (!gotNewConv) { return notify; }
 
-	// last thing to confirm virt conv promotion is msg changing cid	
+	// last thing to confirm virt conv promotion is msg changing cid
 	var msgMoved = false;
 	var newToOldCid = {};
 	var modList = ZmRequestMgr._getObjList(notify.modified);
@@ -620,18 +620,18 @@ function(notify) {
 		}
 	}
 	if (!msgMoved) { return notify; }
-	
+
 	// We're promoting a virtual conv. Normalize the notifications object, and
 	// process a preliminary notif that will update the virtual conv's ID to its
 	// new value.
-	
+
 	// First, remove the virt conv from the list of deleted IDs
 	if (newDeletedIds.length) {
 		notify.deleted.id = newDeletedIds.join(",");
 	} else {
 		delete notify.deleted;
 	}
-	
+
 	// if the first msg matched the current search, we'll want to use the conv
 	// create node to create the conv later, so save it
 	for (var id in createdMsgs) {
@@ -651,7 +651,7 @@ function(notify) {
 		node._newId = cid;
 		newMods.push(node);
 	}
-	
+
 	// Go ahead and process these changes, which will change the ID of each promoted conv
 	// from its virtual (negative) ID to its real (positive) one. That will replace the DOM
 	// IDs of that conv's elements with ones that reflect the new conv ID.
@@ -660,7 +660,7 @@ function(notify) {
 		mods["c"] = newMods;
 		this._appCtxt.getRequestMgr()._handleModifies(mods);
 	}
-	
+
 	// process the normalized notifications
 	return notify;
 };
@@ -672,7 +672,7 @@ function(notify) {
  * <p>
  * Since the offline client may receive hundreds of create notifications at a time, we
  * make sure a create notification is relevant before creating a mail object.</p>
- * 
+ *
  * @param creates	[hash]		hash of create notifications
  */
 ZmMailApp.prototype.createNotify =
@@ -725,7 +725,7 @@ function(creates, force) {
 
 /**
  * Handles the creates for the given type of mail item.
- * 
+ *
  * @param creates	[array]			list of JSON create nodes
  * @param type		[constant]		mail item type
  * @param items		[hash]			hash of created mail items
@@ -743,7 +743,7 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		create._handled = true;
-		
+
 		if (!this._checkCreate(create, type, currList, sortBy, cutoff)) {
 			continue;
 		}
@@ -761,7 +761,7 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
  * Checks a mail create to make sure it will result in a UI change, so that we don't
  * process it unnecessarily. The major motivation for doing this is handling a large
  * sync for the offline client, where we get a flood of mail creates.
- * 
+ *
  * @param create	[object]		the JSON node for the create
  * @param type		[constant]		mail item type
  * @param currList	[ZmMailList]	list currently being displayed to user
@@ -890,7 +890,7 @@ function() {
 	if (this._overviewPanelContent) {
 		return this._overviewPanelContent;
 	}
-	
+
 	if (this._appCtxt.multiAccounts) {
 		// create accordion
 		var accordionId = this.getOverviewPanelContentId();
@@ -904,7 +904,7 @@ function() {
 			var data = {appName:ZmApp.MAIL};
 			var acct = data.account = accts[i];
 			if (acct.visible) {
-				var item = accordion.addAccordionItem({title:acct.name, data:data});
+				var item = accordion.addAccordionItem({title:acct.getDisplayName(), data:data});
 				acct.itemId = item.id;
 				if (acct.isMain) {
 					this._activateAccordionItem(item);
@@ -1024,7 +1024,7 @@ function() {
 	return this._convController;
 };
 
-ZmMailApp.prototype.getTradController = 
+ZmMailApp.prototype.getTradController =
 function() {
 	if (!this._tradController) {
 		this._tradController = new ZmTradController(this._appCtxt, this._container, this);
@@ -1060,7 +1060,7 @@ function() {
 
 /**
  * Begins a compose session by presenting a form to the user.
- * 
+ *
  * @param action		[constant]		new message, reply, forward, or an invite action
  * @param inNewWindow	[boolean]*		if true, we are in detached window
  * @param msg			[ZmMailMsg]*	the original message (reply/forward), or address (new message)

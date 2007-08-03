@@ -113,12 +113,13 @@ function(settings, account) {
 /**
  * Returns the value of a setting.
  *
- * @param id	[constant]		setting ID
- * @param key	[string]*		setting key (for settings that are of the hash type)
+ * @param id		[constant]		setting ID
+ * @param key		[string]*		setting key (for settings that are of the hash type)
+ * @param account	[ZmAccount]*	account to get the ZmSettings instance for
  */
 ZmAppCtxt.prototype.get =
-function(id, key) {
-	return this.getSettings().get(id, key);
+function(id, key, account) {
+	return this.getSettings(account).get(id, key);
 };
 
 /**

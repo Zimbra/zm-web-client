@@ -50,42 +50,56 @@ ZmZimbraAccount = function(appCtxt, id, name, visible, list) {
 ZmZimbraAccount.prototype = new ZmAccount;
 ZmZimbraAccount.prototype.constructor = ZmZimbraAccount;
 
-ZmZimbraAccount.prototype.toString = function() {
+ZmZimbraAccount.prototype.toString =
+function() {
 	return "ZmZimbraAccount";
 };
+
 
 //
 // Constants
 //
 
-ZmAccount.ZIMBRA = "Zimbra";
+ZmAccount.ZIMBRA			= "Zimbra";
+ZmZimbraAccount.DEFAULT_ID	= "main";
 
-ZmZimbraAccount.DEFAULT_ID = "main";
 
 //
 // Public methods
 //
 
-ZmZimbraAccount.prototype.setName = function(name) {
+ZmZimbraAccount.prototype.setName =
+function(name) {
 	var identity = this.getIdentity();
 	// TODO: If no identity and name is set, should create one!
 	if (!identity) return;
 	identity.name = name;
 };
 
-ZmZimbraAccount.prototype.getName = function() {
+ZmZimbraAccount.prototype.getName =
+function() {
 	var identity = this.getIdentity();
 	if (!identity) return this.settings.get(ZmSetting.DISPLAY_NAME);
 	return identity.name;
 }
 
-ZmZimbraAccount.prototype.setEmail = function(email) {} // IGNORE
+ZmZimbraAccount.prototype.setEmail =
+function(email) {} // IGNORE
 
-ZmZimbraAccount.prototype.getEmail = function() {
+ZmZimbraAccount.prototype.getEmail =
+function() {
 	return this.name;
 };
 
-ZmZimbraAccount.prototype.getIdentity = function() {
+ZmZimbraAccount.prototype.getDisplayName =
+function() {
+	return this.isMain
+		? this.settings.get(ZmSetting.DISPLAY_NAME)
+		: this.displayName;
+};
+
+ZmZimbraAccount.prototype.getIdentity =
+function() {
 	return this.isMain ? this._appCtxt.getIdentityCollection().defaultIdentity : null;
 };
 
@@ -102,11 +116,14 @@ function(callback, batchCmd) {
 		// create new ZmSetting for this account
 		this.settings = new ZmSettings(this._appCtxt);
 
+		// check "{APP}_ENABLED" state against main account's settings
+		var mainAcct = this._appCtxt.getMainAccount();
+
 		// for all *loaded* apps, add their app-specific settings
 		for (var i = 0; i < ZmApp.APPS.length; i++) {
 			var appName = ZmApp.APPS[i];
 			var setting = ZmApp.SETTING[appName];
-			if (setting && this._appCtxt.get(setting)) {
+			if (setting && this._appCtxt.get(setting, null, mainAcct)) {
 				var app = this._appCtxt.getApp(appName);
 				if (app) {
 					app._registerSettings(this.settings);
@@ -123,7 +140,8 @@ function(callback, batchCmd) {
 	}
 };
 
-ZmZimbraAccount.prototype.save = function(callback, errorCallback, batchCmd) {
+ZmZimbraAccount.prototype.save =
+function(callback, errorCallback, batchCmd) {
 	var identity = this.getIdentity();
 	return identity.save(callback, errorCallback, batchCmd);
 };
@@ -175,4 +193,11 @@ function(node) {
 	this.id = node.id;
 	this.name = node.name;
 	this.visible = node.visible;
+
+	try {
+		var data = node.attrs[0].attr[0];
+		this.displayName = data && data.name == "displayName" ? data._content : this.email;
+	} catch(ex) {
+		// do nothing
+	}
 };

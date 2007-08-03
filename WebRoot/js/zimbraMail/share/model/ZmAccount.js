@@ -32,7 +32,8 @@ ZmAccount = function(appCtxt, type, id, name, list) {
 	this.type = type;
 };
 
-ZmAccount.prototype.toString = function() {
+ZmAccount.prototype.toString =
+function() {
 	return "ZmAccount";
 };
 
@@ -40,24 +41,29 @@ ZmAccount.prototype.toString = function() {
 // Public methods
 //
 
-ZmAccount.prototype.setName = function(name) {
+ZmAccount.prototype.setName =
+function(name) {
 	this.name = name;
 };
 
-ZmAccount.prototype.getName = function() {
+ZmAccount.prototype.getName =
+function() {
 	return this.name;
 };
 
 // sub-classes MUST override these methods
 
-ZmAccount.prototype.setEmail = function(email) {
+ZmAccount.prototype.setEmail =
+function(email) {
 	throw this.toString()+"#setEmail";
 };
 
-ZmAccount.prototype.getEmail = function() {
+ZmAccount.prototype.getEmail =
+function() {
 	throw this.toString()+"#getEmail";
 };
 
-ZmAccount.prototype.getIdentity = function() {
+ZmAccount.prototype.getIdentity =
+function() {
 	throw this.toString()+"#getIdentity";
 };
