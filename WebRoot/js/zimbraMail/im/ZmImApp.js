@@ -56,7 +56,7 @@ ZmImApp.prototype.constructor = ZmImApp;
 
 ZmImApp.loggedIn = function() {
         return ZmImApp.INSTANCE
-                && ( ZmImApp.INSTANCE._appCtxt.get("IM_PREF_AUTO_LOGIN") ||
+                && ( ZmImApp.INSTANCE._appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN) ||
                      ZmImApp.INSTANCE._roster );
 };
 
@@ -131,7 +131,7 @@ ZmImApp.prototype._registerSettings = function(settings) {
 				 { name         : "zimbraPrefIMInstantNotify",
 				   type         : ZmSetting.T_PREF,
 				   dataType     : ZmSetting.D_BOOLEAN,
-				   defaultValue : false });
+				   defaultValue : true });
 
         settings.registerSetting("IM_PREF_AUTO_LOGIN",
 				 { name         : "zimbraPrefIMAutoLogin",
@@ -211,7 +211,7 @@ ZmImApp.prototype._onSettingChange = function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 
 	var id = ev.source.id;
-        if (id == ZmSetting.IM_PREF_INSTANT_NOTIFY) {
+        if (id == ZmSetting.IM_PREF_INSTANT_NOTIFY && this._appCtxt.get(ZmSetting.INSTANT_NOTIFY)) {
 		var val = this._appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY);
 		this._appCtxt.getAppController().setInstantNotify(val);
         }
@@ -284,7 +284,8 @@ function() {
 	if (!this._roster) {
 		this._roster = new ZmRoster(this._appCtxt, this);
 		// enable instant notify?
-		if (this._appCtxt.get(ZmSetting.INSTANT_NOTIFY))
+		if (this._appCtxt.get(ZmSetting.INSTANT_NOTIFY) &&
+                    this._appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY))
 			this._appCtxt.getAppController().setInstantNotify(true);
 	}
 	return this._roster;
