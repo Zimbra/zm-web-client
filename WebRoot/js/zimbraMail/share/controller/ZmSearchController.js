@@ -554,11 +554,11 @@ function(ev, id) {
 	var item;
 	if (ev) {
 		item = ev.item;
-		id = ev.item.getData(ZmSearchToolBar.MENUITEM_ID);
 	} else {
 		item = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, id);
 	}
 	if (!item || (!!(item._style & DwtMenuItem.SEPARATOR_STYLE))) { return; }
+	id = item.getData(ZmSearchToolBar.MENUITEM_ID);
 
 	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_SHARED_MI);
 

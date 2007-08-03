@@ -207,6 +207,7 @@ function(icon, text, listener) {
 ZmSearchToolBar.prototype._customSearchBtnListener = 
 function(ev) {
 	var item = ev.item;
+	if (!item) { return; }
 	var data = item.getData("CustomSearchItem");
 	if (this._customSearchBtn) {
 		if (item instanceof DwtMenuItem) {

@@ -298,6 +298,11 @@ ZmMailListView.prototype._changeListener =
 function(ev) {
 
 	var item = ev.item;
+	if (!item) {
+		var items = ev.getDetail("items");
+		item = (items && items.length) ? items[0] : null;
+	}
+	if (!item) { return; }
 	if (ev.handled || !this._handleEventType[item.type]) { return; }
 
 	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" flag
