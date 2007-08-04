@@ -80,11 +80,11 @@ function(organizer) {
 	}
 	DwtDialog.prototype.popup.call(this);
 
-	if (organizer.id != ZmCalendar.ID_CALENDAR &&
+	if (organizer.id != ZmOrganizer.ID_CALENDAR &&
 		organizer.id != ZmOrganizer.ID_NOTEBOOK &&
 		organizer.id != ZmOrganizer.ID_ADDRBOOK &&
 		organizer.id != ZmOrganizer.ID_TASKS &&
-		organizer.id != ZmFolder.ID_AUTO_ADDED)
+		organizer.id != ZmOrganizer.ID_AUTO_ADDED)
 	{
 		this._nameInputEl.focus();
 	}
@@ -166,11 +166,11 @@ function(event) {
 	// rename folder
 	var callback = new AjxCallback(this, this._handleColor);
 	var organizer = this._organizer;
-	if (organizer.id != ZmCalendar.ID_CALENDAR &&
+	if (organizer.id != ZmOrganizer.ID_CALENDAR &&
 		organizer.id != ZmOrganizer.ID_NOTEBOOK &&
 		organizer.id != ZmOrganizer.ID_ADDRBOOK &&
 		organizer.id != ZmOrganizer.ID_TASKS &&
-		organizer.id != ZmFolder.ID_AUTO_ADDED)
+		organizer.id != ZmOrganizer.ID_AUTO_ADDED)
 	{
 		var name = this._nameInputEl.value;
 		if (organizer.name != name) {
@@ -252,10 +252,10 @@ function(event) {
 	}
 	if (!organizer) return;
 	
-	if (organizer.id == ZmCalendar.ID_CALENDAR ||
+	if (organizer.id == ZmOrganizer.ID_CALENDAR ||
 		organizer.id == ZmOrganizer.ID_NOTEBOOK ||
 		organizer.id == ZmOrganizer.ID_ADDRBOOK ||
-		organizer.id == ZmFolder.ID_AUTO_ADDED)
+		organizer.id == ZmOrganizer.ID_AUTO_ADDED)
 	{
 		this._nameOutputEl.innerHTML = AjxStringUtil.htmlEncode(organizer.name);
 		this._nameOutputEl.style.display = "block";
