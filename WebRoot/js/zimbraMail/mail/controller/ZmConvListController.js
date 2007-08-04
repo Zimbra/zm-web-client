@@ -239,7 +239,7 @@ ZmConvListController.prototype._getSelectedMsg =
 function() {
 	var item = this._listView[this._currentView].getSelection()[0];
 	if (!item) { return null; }
-	return (item.type == ZmItem.CONV) ? item.getHotMsg(this._mailListView.getOffset(), this._mailListView.getLimit()) : item;
+	return (item.type == ZmItem.CONV) ? item.getHotMsg(0, this._mailListView.getLimit()) : item;
 };
 
 ZmConvListController.prototype._toggle =
