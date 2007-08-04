@@ -1592,7 +1592,7 @@ function(self, iframe) {
 		iframe.style.height = h + "px";
                 iframe.style.width = "100%";
                 var w = doc.body.scrollWidth;
-                if (w < self.getW())
+                if (w > self.getW())
 		        iframe.style.width = w + "px";
 	}
 };
