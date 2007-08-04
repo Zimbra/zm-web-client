@@ -37,7 +37,6 @@
 /* entire message body */
 .MsgBody { 
 	@MailMsgBody@
-	padding: 10px;
 }
 
 /* text message font (eg: not HTML) */

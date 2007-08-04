@@ -1564,7 +1564,7 @@ ZmMailMsgView._resetIframeHeight =
 function(self, iframe) {
 	var h;
 	if (ZmMailMsgView.SCROLL_WITH_IFRAME) {
-		h = self.getH() - 2;
+		h = self.getH() - 7;
 		function substract(el) {
 			if (el) {
 				if (typeof el == "string")
@@ -1590,8 +1590,10 @@ function(self, iframe) {
 		var doc = iframe.contentWindow.document;
 		h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
 		iframe.style.height = h + "px";
-		var w = doc.body.scrollWidth;
-		iframe.style.width = w + "px";
+                iframe.style.width = "100%";
+                var w = doc.body.scrollWidth;
+                if (w < self.getW())
+		        iframe.style.width = w + "px";
 	}
 };
 
