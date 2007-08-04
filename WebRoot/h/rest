@@ -1,0 +1,23 @@
+<%
+	String zid = "zimbra-internal-dispatch";
+	String auth = "zimbra-authToken";
+	String tan = "zimbra-target-account-name";
+	String tai = "zimbra-target-account-id";
+	String tii = "zimbra-target-item-id";
+	String tit = "zimbra-target-item-type";
+	String tic = "zimbra-target-item-color";
+	String tiv = "zimbra-target-item-view";
+
+	ServletRequest req = pageContext.getRequest();
+	ServletOutputStream output = pageContext.getResponse().getOutputStream();
+	output.println("<pre>");
+	output.println(zid + ": " + req.getAttribute(zid));
+	output.println(auth + ": " + req.getAttribute(auth));
+	output.println(tan + ": " + req.getAttribute(tan));
+	output.println(tai + ": " + req.getAttribute(tai));
+	output.println(tii + ": " + req.getAttribute(tii));
+	output.println(tit + ": " + req.getAttribute(tit));
+	output.println(tic + ": " + req.getAttribute(tic));
+	output.println(tiv + ": " + req.getAttribute(tiv));
+	output.println("</pre>");
+%>

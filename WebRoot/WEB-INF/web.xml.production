@@ -268,6 +268,7 @@
           <url-pattern>/h/mtags</url-pattern>
           <url-pattern>/h/options</url-pattern>
           <url-pattern>/h/repeat</url-pattern>
+          <url-pattern>/h/rest</url-pattern>
           <url-pattern>/h/search</url-pattern>
           <url-pattern>/h/test</url-pattern>
           <url-pattern>/m/login</url-pattern>
