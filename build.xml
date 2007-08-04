@@ -1132,20 +1132,25 @@ if (ext == null) ext = "";
         <ant dir="${server.dir}" target="restart-webserver" />
     </target>
 
-    <target name="deploy-war">
-  		<if><isset property="use-tomcat"/><then>
-  			<echo>Deploy ${param.warfile} to ${deploy.url}${param.path}</echo>
+	<target name="deploy-war">
+	<if><isset property="use-tomcat"/><then>
+		<echo>Deploy ${param.warfile} to ${deploy.url}${param.path}</echo>
 			<deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}" path="${param.path}" war="${param.warfile}" update="true"/>
-  		</then><else>
-  			<echo>Deploy ${param.warfile} to ${webserver.root.dir}/webapps</echo>
-  			<ant dir="../ZimbraServer" target="stop-jetty" inheritAll="false"/>
-  	        <delete dir="${webserver.root.dir}/webapps/${param.dirname}"/>
-  	        <delete file="${webserver.root.dir}/webapps/${param.warfilename}"/>    
+	</then><else>
+		<echo>Deploy ${param.warfile} to ${webserver.root.dir}/webapps</echo>
+			<property name='webapp.dir' value='${webserver.root.dir}/webapps/${param.dirname}' />
+			<property name='webapp.file' value='${webserver.root.dir}/webapps/${param.warfilename}' />
+			<ant dir="../ZimbraServer" target="stop-jetty" inheritAll="false"/>
+			<delete dir="${webapp.dir}"/>
+			<delete file="${webapp.file}"/>
 			<copy file="${param.warfile}" todir="${webserver.root.dir}/webapps"/>
-            <mkdir dir='${webserver.root.dir}/webapps/${param.dirname}' />
-            <unzip dest='${webserver.root.dir}/webapps/${param.dirname}' src="${webserver.root.dir}/webapps/${param.warfilename}" /> 
-            <ant dir="../ZimbraServer" target="start-jetty" inheritAll="false"/>
-  		</else></if>
+			<mkdir dir='${webapp.dir}' />
+			<unzip dest='${webapp.dir}' src="${webapp.file}" />
+			<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailPort%%" value="7070" />
+			<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailURL%%" value="${mail.url}" />
+			<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraAdminURL%%" value="${admin.url}" />
+			<ant dir="../ZimbraServer" target="start-jetty" inheritAll="false"/>
+		</else></if>
 		<if><available file='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/Zimlet' />
 			<then>
 				<ant dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/Zimlet" target="deploy-zimlets" inheritAll="false" />
