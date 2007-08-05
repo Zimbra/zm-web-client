@@ -1,23 +1,19 @@
-<%
-	String zid = "zimbra-internal-dispatch";
-	String auth = "zimbra-authToken";
-	String tan = "zimbra-target-account-name";
-	String tai = "zimbra-target-account-id";
-	String tii = "zimbra-target-item-id";
-	String tit = "zimbra-target-item-type";
-	String tic = "zimbra-target-item-color";
-	String tiv = "zimbra-target-item-view";
-
-	ServletRequest req = pageContext.getRequest();
-	ServletOutputStream output = pageContext.getResponse().getOutputStream();
-	output.println("<pre>");
-	output.println(zid + ": " + req.getAttribute(zid));
-	output.println(auth + ": " + req.getAttribute(auth));
-	output.println(tan + ": " + req.getAttribute(tan));
-	output.println(tai + ": " + req.getAttribute(tai));
-	output.println(tii + ": " + req.getAttribute(tii));
-	output.println(tit + ": " + req.getAttribute(tit));
-	output.println(tic + ": " + req.getAttribute(tic));
-	output.println(tiv + ": " + req.getAttribute(tiv));
-	output.println("</pre>");
-%>
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ page session="false" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setBundle basename="/msgs/ZhMsg" scope="request"/>
+<pre>
+    zimbra_internal_dispatch: (${requestScope.zimbra_internal_dispatch})
+    zimbra_authToken: (${requestScope.zimbra_authToken})
+    zimbra_target_account_name: (${requestScope.zimbra_target_account_name})
+    zimbra_target_account_id: (${requestScope.zimbra_target_account_id})
+    zimbra_target_item_id: (${requestScope.zimbra_target_item_id})
+    zimbra_target_item_type: (${requestScope.zimbra_target_item_type})
+    zimbra_target_item_color: (${requestScope.zimbra_target_item_color})
+    zimbra_target_item_view: (${requestScope.zimbra_target_item_view})    
+</pre>
