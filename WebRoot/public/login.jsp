@@ -273,7 +273,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 													// show a message if the should be using the 'standard' client, but have chosen 'advanced' instead
 													function clientChange(selectValue) {
 														var it = document.getElementById("ZLoginUnsupported");
-														it.style.display = (("standard" != 'preferred' && selectValue == 'advanced') ? 'block' : 'none');
+														it.style.display = (("${client}" == 'standard' && selectValue == 'advanced') ? 'block' : 'none');
 													}
 												
 													// if they have JS, write out a "what's this?" link that shows the message below
