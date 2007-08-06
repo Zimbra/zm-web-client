@@ -25,7 +25,7 @@
 
 ZmAttachDialog = function(appCtxt, shell, className) {
 	
-	className = className || "DwtDialog";
+	className = className || "ZmAttachDialog";
 	var title = ZmMsg.attachFile;
 	DwtDialog.call(this, shell, className, title);
 
