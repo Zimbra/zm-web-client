@@ -293,72 +293,77 @@ function() {
 	return val;
 };
 
-ZmComposeView.prototype._isInline = function(){
-	
-	if(this._attachDialog){
-		 var myComputerViewPage = this._attachDialog.getTabViewPage("MY_COMPUTER");
-		 return myComputerViewPage.isInline();
+ZmComposeView.prototype._isInline =
+function() {
+	if (this._attachDialog) {
+		 var tvp = this._attachDialog.getTabViewPage("MY_COMPUTER");
+		 return tvp.isInline();
 	}
-	
-	if(this._msg && this._msgAttId && this._msg.id == this._msgAttId) return false;
-	
-	if(this._msg && this._msg.getAttachments()){
+
+	if (this._msg && this._msgAttId && this._msg.id == this._msgAttId) {
+		return false;
+	}
+
+	if (this._msg && this._msg.getAttachments()) {
 		var atts = this._msg.getAttachments();
-		for(var i=0; i<atts.length; i++){
-			if(atts[i].ci){
+		for (var i = 0; i < atts.length; i++) {
+			if (atts[i].ci) {
 				return true;
 			}
 		}
 	}
-	
+
 	return false;
 };
 
-ZmComposeView.prototype._fixMultipartRelatedLinks =function(idoc){
-	if(!idoc) return;
+ZmComposeView.prototype._fixMultipartRelatedLinks =
+function(idoc) {
+	if (!idoc) { return; }
+
 	var images = idoc.getElementsByTagName("img");
 	var inlineCid = [];
-		for (var i = 0; i < images.length; i++) {
-			var dfsrc = images[i].getAttribute("dfsrc");
-			if (dfsrc) {
-				images[i].src = dfsrc;
-				if(dfsrc.substring(0,4 == "cid:")){
-					inlineCid.push(dfsrc.substring(4));
-				}
+	for (var i = 0; i < images.length; i++) {
+		var dfsrc = images[i].getAttribute("dfsrc");
+		if (dfsrc) {
+			images[i].src = dfsrc;
+			if(dfsrc.substring(0,4 == "cid:")){
+				inlineCid.push(dfsrc.substring(4));
 			}
 		}
-		return inlineCid;
+	}
+	return inlineCid;
 };
 
-ZmComposeView.prototype._filterInlineAmongForwardAttIds = function(msg,atts,forwardAttIds){
+ZmComposeView.prototype._filterInlineAmongForwardAttIds =
+function(msg, atts, forwardAttIds) {
 	var fwdAttIds = [];
-	for(var i=0; i<forwardAttIds.length; i++){
+	for (var i=0; i < forwardAttIds.length; i++) {
 		var fwdAtt = forwardAttIds[i];
 		var matched = false;
-		for(var j=0; j<atts.length; j++){
-			if(atts[j].part == fwdAtt){
+		for (var j=0; j < atts.length; j++) {
+			if (atts[j].part == fwdAtt) {
 				var cid = atts[j].ci;
-				if(cid){
-					cid = cid.substring(1,cid.length-1);
-					msg.addInlineAttachmentId(cid,null,atts[j].part);
+				if (cid) {
+					cid = cid.substring(1, cid.length-1);
+					msg.addInlineAttachmentId(cid, null, atts[j].part);
 					matched = true;
 				}
 				break;
 			}
 		}
-		if(!matched) fwdAttIds.push(fwdAtt);
+		if (!matched) {
+			fwdAttIds.push(fwdAtt);
+		}
 	}
 	return fwdAttIds;
 };
-
-
 
 /**
 * Returns the message from the form, after some basic input validation.
 */
 ZmComposeView.prototype.getMsg =
 function(attId, isDraft) {
-	//Check destination addresses.
+	// Check destination addresses.
 	var addrs = this._collectAddrs();
 
 	// Any addresses at all provided? If not, bail.
@@ -400,7 +405,7 @@ function(attId, isDraft) {
 		this._badAddrsOkay = false;
 	}
 
-	//Create Msg Object
+	// Create Msg Object
 	var msg = new ZmMailMsg(this._appCtxt);
 	msg.setSubject(subject);
 	
@@ -412,23 +417,23 @@ function(attId, isDraft) {
 		msg.setInlineAttachments(this._msg.getInlineAttachments());
 	}*/
 	
-	if(this._attachDialog && inline && attId){
-		for(var i =0; i<attId.length;i++){
+	if (this._attachDialog && inline && attId) {
+		for (var i = 0; i < attId.length; i++) {
 			var att = attId[i];
 			var contentType = att.ct;
-			if(contentType && contentType.indexOf("image") != -1){
+			if (contentType && contentType.indexOf("image") != -1) {
 				var cid = Dwt.getNextId(); //Change this to more uniqueId
 				msg.addInlineAttachmentId(cid,att.aid);
 				this._htmlEditor.insertImage("cid:"+cid);
-			}else{
+			} else {
 				msg.addAttachmentId(att.aid);
 			}
 		}
-	}else if(attId && typeof attId != "string"){
-		for(var i =0; i<attId.length;i++){
+	} else if(attId && typeof attId != "string") {
+		for (var i = 0; i < attId.length; i++) {
 			msg.addAttachmentId(attId[i].aid);
 		}
-	}else if(attId){
+	} else if (attId) {
 		msg.addAttachmentId(attId);
 	}
 
@@ -447,7 +452,7 @@ function(attId, isDraft) {
 	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME);
 
 	//Handle Inline Attachments as a part of forwardAttIds
-	if(this._msg && this._msg.getAttachments()){
+	if (this._msg && this._msg.getAttachments()) {
 		var atts = this._msg.getAttachments();
 		var filteredForwardAttIds = this._filterInlineAmongForwardAttIds(msg,atts,forwardAttIds);
 		msg._setFilteredForwardAttIds(filteredForwardAttIds);
@@ -477,12 +482,12 @@ function(attId, isDraft) {
 		htmlPart.setContent(refangedContent);
 		
 		//Support for Inline
-		if(inline){				
+		if (inline) {
 			var relatedPart = new ZmMimePart();
 			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);			
 			relatedPart.children.add(htmlPart);
 			top.children.add(relatedPart);
-		}else{
+		} else {
 			top.children.add(htmlPart);
 		}
 		//top.children.add(htmlPart);
@@ -523,8 +528,7 @@ function(attId, isDraft) {
 		msg._instanceDate = this._msg._instanceDate;
 	}
 
-	if (this._action != ZmOperation.NEW_MESSAGE && !this._msgIds)
-	{
+	if (this._action != ZmOperation.NEW_MESSAGE && !this._msgIds) {
 		var isInviteReply = this._isInviteReply(this._action);
 		if (this._action == ZmOperation.DRAFT) {
 			msg.isReplied = this._msg.rt == "r";
@@ -535,6 +539,7 @@ function(attId, isDraft) {
 				// if so, set both origId and the draft id
 				msg.origId = msg.isReplied || msg.isForwarded ? this._msg.nId : null;
 				msg.id = this._msg.id;
+				msg.nId = this._msg.nId;
 			}
 		} else {
 			msg.isReplied = this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL || isInviteReply;
@@ -639,8 +644,9 @@ function(params) {
 	this._subjectField.value = params.subj || "";
 	this._htmlEditor.setContent(params.body || "");
 
-	if (params.forwardHtml)
+	if (params.forwardHtml) {
 		this._attcDiv.innerHTML = params.forwardHtml;
+	}
 	if (params.identityId) {
 		this._identitySelect.setSelectedValue(params.identityId);
 	}
@@ -651,8 +657,9 @@ function(params) {
 	// bug 14322 -- in Windows Firefox, DEL/BACKSPACE don't work
 	// when composing in new window until we (1) enter some text
 	// or (2) resize the window (!).  I chose the latter.
-	if (AjxEnv.isGeckoBased && AjxEnv.isWindows)
+	if (AjxEnv.isGeckoBased && AjxEnv.isWindows) {
 		window.resizeBy(1, 1);
+	}
 };
 
 ZmComposeView.prototype.setFocus =
@@ -660,10 +667,12 @@ function() {
 	// set the cursor to either to To address for new message or a forward
 	if (this._action == ZmOperation.NEW_MESSAGE || 
 		this._action == ZmOperation.FORWARD_INLINE || 
-		this._action == ZmOperation.FORWARD_ATT) {
-
+		this._action == ZmOperation.FORWARD_ATT)
+	{
 		this._appCtxt.getKeyboardMgr().grabFocus(this._field[AjxEmailAddress.TO]);
-	} else {
+	}
+	else
+	{
 		// otherwise set cursor to the beginning of first line
 		this._setBodyFieldFocus();
 	}
@@ -671,14 +680,15 @@ function() {
 
 ZmComposeView.prototype.reEnableDesignMode =
 function() {
-	if (this._composeMode == DwtHtmlEditor.HTML)
+	if (this._composeMode == DwtHtmlEditor.HTML) {
 		this._htmlEditor.reEnableDesignMode();
+	}
 };
 
 // user just saved draft, update compose view as necessary
 ZmComposeView.prototype.processMsgDraft =
 function(msgDraft) {
-	if(this._isInline()){
+	if (this._isInline()) {
 		this._handleInline(msgDraft);
 	}
 	this.reEnableDesignMode();
@@ -693,17 +703,17 @@ function(msgDraft) {
 	this._origFormValue = this._formValue();
 };
 
-ZmComposeView.prototype._handleInline = function(msgObj){
-	var  msg = (msgObj) ? msgObj : this._msg;
+ZmComposeView.prototype._handleInline =
+function(msgObj) {
+	var msg = (msgObj) ? msgObj : this._msg;
 	var iDoc = this._htmlEditor._getIframeDoc();
-	var allInlineImagesHandled = this._fixMultipartRelatedImages(msg,iDoc);
-	return allInlineImagesHandled;
+	return (this._fixMultipartRelatedImages(msg,iDoc));
 };
 
-//ZmMailMsgView.prototype._fixMultipartRelatedImages =
 ZmComposeView.prototype._fixMultipartRelatedImages =
 function(msg, idoc) {
-	if(!idoc) return;
+	if (!idoc) { return; }
+
 	var images = idoc.getElementsByTagName("img");
 	var num = 0;
 	for (var i = 0; i < images.length; i++) {
@@ -734,22 +744,22 @@ function(msg, idoc) {
 	return (num == images.length);
 };
 
-ZmComposeView.prototype.showAttachmentDialog = function(){
-	
+ZmComposeView.prototype.showAttachmentDialog =
+function() {
 	var attachDialog = this._appCtxt.getAttachDialog();
-	
 	var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
 	attachDialog.setUploadCallback(callback);
-	
-	var myComputerViewPage = attachDialog.getTabViewPage("MY_COMPUTER");
-	if(myComputerViewPage && this._composeMode == DwtHtmlEditor.HTML){
-		myComputerViewPage.showInlineOption();
-	}else{
-		myComputerViewPage.hideInlineOption();
+
+	var tvp = attachDialog.getTabViewPage("MY_COMPUTER");
+
+	if (tvp && this._composeMode == DwtHtmlEditor.HTML) {
+		tvp.showInlineOption();
+	} else {
+		tvp.hideInlineOption();
 	}
-	
+
 	attachDialog.popup();
-	
+
 	this._attachDialog = attachDialog;
 };
 
@@ -802,9 +812,9 @@ function(bEnableInputs) {
 ZmComposeView.prototype.enableInputs =
 function(bEnable) {
 	// disable input elements so they dont bleed into top zindex'd view
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++)
+	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		this._field[ZmMailMsg.COMPOSE_ADDRS[i]].disabled = !bEnable;
-
+	}
 	this._subjectField.disabled = this._bodyField.disabled = !bEnable;
 };
 
@@ -847,10 +857,11 @@ function(content) {
 			repl = "<br>----- ";
 		}
 
-		if (content.match(regexp))
+		if (content.match(regexp)) {
 			content = content.replace(regexp, [sep, sig, newLine, repl].join(""));
-		else
+		} else {
 			content = [content, sep, sig].join("");
+		}
 	} else {
 		content = [content, sep, sig].join("");
 	}
@@ -873,7 +884,7 @@ function() {
 ZmComposeView.prototype._getSignature =
 function() {
 	var signatureId = this._signatureSelect.getValue();
-	if (!signatureId) return;
+	if (!signatureId) { return; }
 
 	var signature = this._appCtxt.getSignatureCollection().getById(signatureId);
 
@@ -889,15 +900,15 @@ ZmComposeView.prototype._getSignatureSeparator =
 function() {
 	var newLine = this._getSignatureNewLine();
 	var sep = newLine + newLine;
-	if (this.getIdentity().getSignatureStyle() == ZmSetting.SIG_INTERNET)
+	if (this.getIdentity().getSignatureStyle() == ZmSetting.SIG_INTERNET) {
 		sep = sep + "-- " + newLine;
-		
+	}
 	return sep;
 };
 
 ZmComposeView.prototype._getSignatureNewLine =
 function() {
-	return (this._composeMode == DwtHtmlEditor.HTML) ? "<br>" : "\n";
+	return ((this._composeMode == DwtHtmlEditor.HTML) ? "<br>" : "\n");
 };
 
 /**
@@ -908,35 +919,40 @@ function() {
 */
 ZmComposeView.prototype.isDirty =
 function(incAddrs, incSubject) {
-	
 	// reply/forward and empty body => not dirty
-	if ((this._action != ZmOperation.NEW_MESSAGE) && (this._htmlEditor.getContent().match(ZmComposeView.EMPTY_FORM_RE)))
+	if ((this._action != ZmOperation.NEW_MESSAGE) &&
+		(this._htmlEditor.getContent().match(ZmComposeView.EMPTY_FORM_RE)))
+	{
 		return false;
+	}
+
 	var curFormValue = this._formValue(incAddrs, incSubject);
+
 	// empty subject and body => not dirty
-	if (curFormValue.match(ZmComposeView.EMPTY_FORM_RE))
+	if (curFormValue.match(ZmComposeView.EMPTY_FORM_RE)) {
 		return false;
+	}
+
 	// subject or body has changed => dirty
 	return (curFormValue != this._origFormValue);
 };
 
 ZmComposeView.prototype.cleanupAttachments = 
 function(all) {
-	
 	var attachDialog = this._attachDialog;
-	if(attachDialog && attachDialog.isPoppedUp()){
+	if (attachDialog && attachDialog.isPoppedUp()) {
 		var tabView = attachDialog.getTabView();
-		if( tabView.getCurrentTab() == attachDialog.getTabKey("MY_COMPUTER")){
+		if (tabView.getCurrentTab() == attachDialog.getTabKey("MY_COMPUTER")) {
 			tabView.switchToTab(tabView.getCurrentTab());
 		}
 	}
-	
+
 	if (all) {
 		this._attcDiv.innerHTML = "";
 		this._attcDiv.style.height = "";
 		this._attachCount = 0;
 	}
-	
+
 	// make sure att IDs don't get reused
 	if (this._msg) {
 		this._msg._attId = null;
@@ -946,7 +962,7 @@ function(all) {
 // Private / protected methods
 
 ZmComposeView.prototype._isInviteReply =
-function(action){
+function(action) {
 	return (action == ZmOperation.REPLY_ACCEPT ||
 			action == ZmOperation.REPLY_CANCEL ||
 			action == ZmOperation.REPLY_DECLINE ||
@@ -1028,7 +1044,7 @@ function(cv, ev) {
 	var field = document.getElementById(cv._divId[element.addrType]);
 	var offset = Dwt.getLocation(field).y - this.getLocation().y
 
-	return new DwtPoint(75, offset + Dwt.getSize(element).y + 6);
+	return (new DwtPoint(75, offset + Dwt.getSize(element).y + 6));
 };
 
 ZmComposeView.prototype._acCompHandler =
@@ -1049,8 +1065,7 @@ function(ev, acListView, result) {
 
 ZmComposeView.prototype._adjustAddrHeight =
 function(textarea, skipResetBodySize) {
-	if (AjxEnv.isSafari && !AjxEnv.isSafariNightly)
-		return;
+	if (AjxEnv.isSafari && !AjxEnv.isSafariNightly) { return; }
 
 	if (textarea.value.length == 0) {
 		textarea.style.height = "21px";
@@ -1416,12 +1431,14 @@ function(composeMode) {
 	this.addControlListener(new AjxListener(this, this._controlListener));
 };
 
-ZmComposeView.prototype._createHtml = function(templateId) {
+ZmComposeView.prototype._createHtml =
+function(templateId) {
 	var data = { id: this._htmlElId };
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
 };
 
-ZmComposeView.prototype._createHtmlFromTemplate = function(templateId, data) {
+ZmComposeView.prototype._createHtmlFromTemplate =
+function(templateId, data) {
 	DwtComposite.prototype._createHtmlFromTemplate.call(this, templateId, data);
 
 	// global identifiers
@@ -1569,7 +1586,8 @@ function(ev) {
 	}
 };
 
-ZmComposeView.prototype._setIdentityVisible = function() {
+ZmComposeView.prototype._setIdentityVisible =
+function() {
 	if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) return;
 
 	var div = document.getElementById(this._identityDivId);
@@ -1579,11 +1597,13 @@ ZmComposeView.prototype._setIdentityVisible = function() {
 	Dwt.setVisible(div, visible);
 };
 
-ZmComposeView.prototype._getSignatureOptions = function() {
+ZmComposeView.prototype._getSignatureOptions =
+function() {
 	return this._appCtxt.getSignatureCollection().getSignatureOptions();
 };
 
-ZmComposeView.prototype._signatureChangeListener = function(ev) {
+ZmComposeView.prototype._signatureChangeListener =
+function(ev) {
 	if (ev.event == ZmEvent.E_CREATE) {
 		this._setSignatureVisible();
 		var signature = ev.getDetail("item");
@@ -1605,7 +1625,8 @@ ZmComposeView.prototype._signatureChangeListener = function(ev) {
 	}
 };
 
-ZmComposeView.prototype._setSignatureVisible = function() {
+ZmComposeView.prototype._setSignatureVisible =
+function() {
 	if (!this._appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) return;
 
 	var div = document.getElementById(this._signatureDivId);
@@ -1615,11 +1636,13 @@ ZmComposeView.prototype._setSignatureVisible = function() {
 	Dwt.setVisible(div, visible);
 };
 
-ZmComposeView.prototype.getIdentitySelect = function() {
+ZmComposeView.prototype.getIdentitySelect =
+function() {
 	return this._identitySelect;
 };
 
-ZmComposeView.prototype.getSignatureSelect = function() {
+ZmComposeView.prototype.getSignatureSelect =
+function() {
 	return this._signatureSelect;
 };
 
