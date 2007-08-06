@@ -370,7 +370,9 @@ ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
 };
 
 ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
-	var url = actionUrl.target;
+	//All URL's to have REST substitutions
+	var url = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, actionUrl.target, props || this._propsById);
+	//var url = actionUrl.target;
 	var param = [];
 	if (actionUrl.param) {
 		var a = actionUrl.param;
@@ -628,7 +630,10 @@ function(xslt, canvas, result) {
 	// TODO:  instead of changing innerHTML, maybe append
 	// the dom tree to the canvas.
 	if (xslt) {
-		html = xslt.transformToString(resp);
+		html = xslt.transformToString(resp);		
+		// If we don't have HTML at this point, we probably have a HTML fragment.
+       if (!html) html = result.text;
+		
 	} else {
 		html = resp.innerHTML;
 	}
