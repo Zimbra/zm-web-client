@@ -331,7 +331,7 @@ function(parent, oldOp, newOp, text, image, disImage) {
  * there's stuff on either side of it.
  */
 ZmOperation.filterOperations =
-function(appCtxt, list) {
+function(list) {
 	var newList = [];
 	if (!(list && list.length)) { return newList; }
 	

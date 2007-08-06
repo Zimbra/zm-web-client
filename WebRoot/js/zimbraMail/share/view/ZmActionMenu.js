@@ -53,7 +53,7 @@ ZmActionMenu = function(params) {
 		menuItems = null;
 	}
 	// weed out disabled ops, save list of ones that make it
-	this.opList = ZmOperation.filterOperations(this._appCtxt, menuItems);
+	this.opList = ZmOperation.filterOperations(menuItems);
 	var extraItems = params.extraMenuItems;
 	this._menuItems = ZmOperation.createOperations(this, this.opList, params.overrides);
 }

@@ -92,7 +92,6 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 
 	this._shell = shell;
 	this._controller = controller;
-	this._appCtxt = controller._appCtxt;
 	this._isNewWindow = isNewWindow;
 	this._hasSkin = hasSkin;
 
@@ -101,7 +100,7 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 	this._shell.addControlListener(this._controlListener);
 	this._sashSupported = (document.getElementById("skin_table_tree") != null);
 
-	this._historyMgr = this._appCtxt.getHistoryMgr();
+	this._historyMgr = appCtxt.getHistoryMgr();
 	this._historyMgr.addListener(new AjxListener(this, this._historyChangeListener));
 	this._hashView = {};				// matches numeric hash to its view
 	this._nextHashIndex = 0;			// index for adding to browser history stack
@@ -230,7 +229,7 @@ function(components, doFit, noSetZ) {
 		this._components[cid] = comp;
 		if (this._hasSkin) {
 			if (!this._containers[cid]) {
-				var contId = this._appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[cid]);
+				var contId = appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[cid]);
 				var contEl = document.getElementById(contId);
 				if (!contEl) {
 					throw new AjxException("Skin container '" + contId + "' not found.");
@@ -705,7 +704,7 @@ function(components) {
                 this._contBounds[cid] = contBds;
 
 				// reset position if skin overrides default of absolute
-				var position = this._appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
+				var position = appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
 				var compEl = comp.getHtmlElement();
 				if (position) {
 					compEl.style.position = position;
@@ -783,8 +782,8 @@ function(view, force, isNewView) {
 		}
 	}
 
-	if (!this._isNewWindow && this._appCtxt.zimletsPresent()) {
-		this._appCtxt.getZimletMgr().notifyZimlets("onShowView", view, isNewView);
+	if (!this._isNewWindow && appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onShowView", view, isNewView);
 	}
 
 	return okToContinue;

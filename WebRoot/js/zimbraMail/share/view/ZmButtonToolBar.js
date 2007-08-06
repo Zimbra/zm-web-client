@@ -59,7 +59,7 @@ ZmButtonToolBar = function(params) {
 		buttons = null;
 	}
 	// weed out disabled ops, save list of ones that make it
-	this.opList = ZmOperation.filterOperations(this._appCtxt, buttons);
+	this.opList = ZmOperation.filterOperations(buttons);
 	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 };
 
