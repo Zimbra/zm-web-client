@@ -17,7 +17,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<c:if test="${empty view}"><c:set var="view" value="month"/></c:if>
+<c:if test="${empty view}"><c:set var="view" value="${empty param.view ? 'month' : param.view}"/></c:if>
 
 <c:set var='view' value='${not empty view ? view : param.view}'/>
 <c:url value="${not empty value ? value : ''}" var="urlVar">
