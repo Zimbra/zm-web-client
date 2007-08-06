@@ -37,7 +37,7 @@
  */
 ZmNewWindow = function() {
 
-	ZmController.call(this, appCtxt);
+	ZmController.call(this);
 
 	appCtxt.setAppController(this);
 

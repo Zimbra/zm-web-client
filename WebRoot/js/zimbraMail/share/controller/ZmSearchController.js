@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmSearchController = function(appCtxt, container) {
+ZmSearchController = function(container) {
 
-	ZmController.call(this, appCtxt, container);
+	ZmController.call(this, container);
 
 	this._inited = false;
 
@@ -34,8 +34,9 @@ ZmSearchController = function(appCtxt, container) {
 	this._contactSource = ZmItem.CONTACT;
 	this._results = null;
 
-	if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
+	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		this._setView();
+	}
 }
 
 ZmSearchController.prototype = new ZmController;
@@ -65,7 +66,7 @@ ZmSearchController.prototype.dateSearch =
 function(d) {
     d = d || new Date();
     var date = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
-	var groupBy = this._appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
+	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	var query = "date:" + date;
 	this.search({query:query, types:[groupBy]});
 };
@@ -73,7 +74,7 @@ function(d) {
 ZmSearchController.prototype.fromSearch =
 function(address) {
 	// always search for mail when doing a "from: <address>" search
-	var groupBy = this._appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
+	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	var query = "from:(" + address + ")";
 	this.search({query:query, types:[groupBy]});
 };
@@ -119,8 +120,8 @@ function(forceShow, callback) {
 
 ZmSearchController.prototype._handleLoadShowBrowseView =
 function(callback) {
-	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);
-	var bvc = this._browseViewController = new ZmBrowseController(this._appCtxt, this._searchPanel);
+	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);
+	var bvc = this._browseViewController = new ZmBrowseController(this._searchPanel);
 	bvc.setBrowseViewVisible(true);
 	if (callback) {
 		callback.run(bvc.getBrowseView());
@@ -135,7 +136,7 @@ function() {
 
 ZmSearchController.prototype.setSearchField =
 function(searchString) {
-	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && this._searchToolBar)
+	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && this._searchToolBar)
 		this._searchToolBar.setSearchFieldValue(searchString);
 	else
 		this._currentQuery = searchString;
@@ -171,7 +172,7 @@ function() {
 	// Create search panel - a composite is needed because the search builder
 	// element (ZmBrowseView) is added to it (can't add it to the toolbar)
 	this._searchPanel = new DwtComposite(this._container, "SearchPanel", Dwt.ABSOLUTE_STYLE);
-	this._searchToolBar = new ZmSearchToolBar(this._appCtxt, this._searchPanel);
+	this._searchToolBar = new ZmSearchToolBar(appCtxt, this._searchPanel);
 
 	var tg = this._createTabGroup();
 	tg.addMember(this._searchToolBar.getSearchField());
@@ -194,10 +195,10 @@ function() {
     }
 
 	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_BUTTON, new AjxListener(this, this._searchButtonListener));
-	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
+	if (appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
 		this._searchToolBar.addSelectionListener(ZmSearchToolBar.BROWSE_BUTTON, new AjxListener(this, this._browseButtonListener));
 	}
-	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		this._searchToolBar.addSelectionListener(ZmSearchToolBar.SAVE_BUTTON, new AjxListener(this, this._saveButtonListener));
 	}
 };
@@ -225,7 +226,7 @@ function(params) {
 
 	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
-		this._appCtxt.getClientCmdHandler().execute((params.query.substr(5)), this);
+		appCtxt.getClientCmdHandler().execute((params.query.substr(5)), this);
 		return;
 	}
 
@@ -289,32 +290,32 @@ function(params) {
 
 	var groupBy;
 	if ((searchFor == ZmSearchToolBar.FOR_MAIL_MI || searchFor == ZmSearchToolBar.FOR_ANY_MI) &&
-		this._appCtxt.get(ZmSetting.MAIL_ENABLED))
+		appCtxt.get(ZmSetting.MAIL_ENABLED))
 	{
-		groupBy = this._appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
+		groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	}
 
 	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI) {
 		types.add(groupBy);
 	} else if (searchFor == ZmSearchToolBar.FOR_ANY_MI)	{
-		if (groupBy && this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		if (groupBy && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 			types.add(groupBy);
 		}
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			types.add(ZmItem.CONTACT);
 		}
-		if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 			types.add(ZmItem.APPT);
 		}
-		if (this._appCtxt.get(ZmSetting.TASKS_ENABLED)) {
+		if (appCtxt.get(ZmSetting.TASKS_ENABLED)) {
 			types.add(ZmItem.TASK);
 		}
-		if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+		if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
 			types.add(ZmItem.PAGE);
 			types.add(ZmItem.DOCUMENT);
 		}
 	} else if (searchFor == ZmSearchToolBar.FOR_PAS_MI)	{
-		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 			types.add(ZmItem.CONTACT);
 		}
 	} else {
@@ -343,7 +344,7 @@ function(types) {
 		}
 
 		if (viewType) {
-			sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, viewType);
+			sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
 		}
 	}
 
@@ -362,12 +363,12 @@ ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
 	params.searchFor = params.searchFor || this._searchFor;
-	if (this._appCtxt.zimletsPresent()) {
-		this._appCtxt.getZimletMgr().notifyZimlets("onSearch", params.query);
+	if (appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onSearch", params.query);
 	}
 
 	if (this._searchToolBar) {
-		var value = (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
+		var value = (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
 		this._searchToolBar.setSearchFieldValue(value);
 		this._searchToolBar.setEnabled(false);
 	}
@@ -378,7 +379,7 @@ function(params, noRender, callback, errorCallback) {
 		types = AjxVector.fromArray(types);
 	}
 	if (params.searchFor == ZmSearchToolBar.FOR_MAIL_MI) {
-		params = this._appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
+		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
 	}	
 
 	// if the user explicitly searched for all types, force mixed view
@@ -397,7 +398,7 @@ function(params, noRender, callback, errorCallback) {
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
 	params.types = types;
 
-	var search = new ZmSearch(this._appCtxt, params);
+	var search = new ZmSearch(appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, isMixed, callback]);
 	if (!errorCallback) {
 		errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
@@ -417,7 +418,7 @@ ZmSearchController.prototype._handleResponseDoSearch =
 function(search, noRender, isMixed, callback, result) {
 	var results = result.getResponse();
 
-	this._appCtxt.setCurrentSearch(search);
+	appCtxt.setCurrentSearch(search);
 	DBG.timePt("execute search", true);
 
 	if (this._searchToolBar)
@@ -443,9 +444,9 @@ function(results, search, isMixed) {
 	DBG.timePt("handle search results");
 
 	// determine if we need to default to mixed view
-	var folder = this._appCtxt.getById(search.folderId);
+	var folder = appCtxt.getById(search.folderId);
 	var isInGal = (this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
-	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		var saveBtn = this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON);
 		if (saveBtn) {
 			saveBtn.setEnabled(!isInGal);
@@ -455,15 +456,15 @@ function(results, search, isMixed) {
 	// show results based on type - may invoke package load
 	var resultsType = isMixed ? ZmItem.MIXED : results.type;
 	var loadCallback = new AjxCallback(this, this._handleLoadShowResults, [results, search]);
-	var app = this._appCtxt.getApp(ZmItem.APP[resultsType]);
+	var app = appCtxt.getApp(ZmItem.APP[resultsType]);
 	app.currentQuery = search.query;
 	app.showSearchResults(results, loadCallback, isInGal, search.folderId);
-	this._appCtxt.getAppController().focusContentPane();
+	appCtxt.getAppController().focusContentPane();
 };
 
 ZmSearchController.prototype._handleLoadShowResults =
 function(results, search) {
-	this._appCtxt.setCurrentList(results.getResults(results.type));
+	appCtxt.setCurrentList(results.getResults(results.type));
 	this._updateOverview(search);
 	DBG.timePt("render search results");
 };
@@ -488,8 +489,8 @@ function(search, isMixed, ex) {
 		(ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER && !(ex.data.itemId && ex.data.itemId.length))) {
 
 		var msg = ex.getErrorMsg();
-		this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
-		var results = new ZmSearchResult(this._appCtxt, search);
+		appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+		var results = new ZmSearchResult(appCtxt, search);
 		results.type = search.types ? search.types.get(0) : null;
 		this._showResults(results, search, isMixed);
 		return true;
@@ -536,7 +537,7 @@ function(ev) {
 ZmSearchController.prototype._saveButtonListener =
 function(ev) {
 	if (this._results && this._results.search) {
-		var stc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
+		var stc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
 		if (!stc._newCb) {
 			stc._newCb = new AjxCallback(stc, stc._newCallback);
 		}
@@ -605,7 +606,7 @@ function(ev, id) {
 	// set button tooltip
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
 	if (id == ZmSearchToolBar.FOR_MAIL_MI) {
-		var groupBy = this._appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
+		var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
 	}
 	btn.setToolTipContent(tooltip);
@@ -622,7 +623,7 @@ function(search) {
 	var id, type;
 	if (search.folderId) {
 		id = this._getNormalizedId(search.folderId);
-		var folderTree = this._appCtxt.getFolderTree();
+		var folderTree = appCtxt.getFolderTree();
 		var folder = folderTree ? folderTree.getById(id) : null;
 		type = folder ? folder.type : ZmOrganizer.FOLDER;
 	} else if (search.tagId) {
@@ -632,7 +633,7 @@ function(search) {
 		id = this._getNormalizedId(search.searchId);
 		type = ZmOrganizer.SEARCH;
 	}
-	var app = this._appCtxt.getCurrentApp();
+	var app = appCtxt.getCurrentApp();
 	var overview = app.getOverview();
 	if (!overview) { return; }
 	if (id) {
@@ -651,7 +652,7 @@ ZmSearchController.prototype._getNormalizedId =
 function(id) {
 	var nid = id;
 
-	var acct = this._appCtxt.getActiveAccount();
+	var acct = appCtxt.getActiveAccount();
 	if (!acct.isMain) {
 		nid = acct.id + ":" + id;
 	}

@@ -79,7 +79,7 @@ function(callback) {
 ZmPreferencesApp.prototype.getPrefController =
 function() {
 	if (!this._prefController) {
-		this._prefController = new ZmPrefController(appCtxt, this._container, this);
+		this._prefController = new ZmPrefController(this._container, this);
 	}
 	return this._prefController;
 };

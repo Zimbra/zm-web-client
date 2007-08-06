@@ -1043,7 +1043,7 @@ function() {
 ZmMailApp.prototype.getComposeController =
 function() {
 	if (!this._composeController) {
-		this._composeController = new ZmComposeController(appCtxt, this._container, this);
+		this._composeController = new ZmComposeController(this._container, this);
 	}
 	return this._composeController;
 };

@@ -46,7 +46,8 @@
 ZmListController = function(appCtxt, container, app) {
 
 	if (arguments.length == 0) return;
-	ZmController.call(this, appCtxt, container, app);
+	ZmController.call(this, container, app);
+	this._appCtxt = appCtxt;
 
 	this._toolbar = {};			// ZmButtonToolbar (one per view)
 	this._navToolBar = {};		// ZmNavToolBar (one per view)

@@ -24,20 +24,19 @@
  */
 
 /**
-* Creates a new appointment controller to manage appointment creation/editing.
-* @constructor
-* @class
-* This class manages appointment creation/editing.
-*
-* @author Parag Shah
-*
-* @param appCtxt	[ZmAppCtxt]		the application context
-* @param container	[DwtComposite]	the containing element
-* @param calApp		[ZmApp]			a handle to the [calendar|task] application
-*/
-ZmCalItemComposeController = function(appCtxt, container, app) {
-	if (arguments.length == 0) return;
-	ZmController.call(this, appCtxt, container, app);
+ * Creates a new appointment controller to manage appointment creation/editing.
+ * @constructor
+ * @class
+ * This class manages appointment creation/editing.
+ *
+ * @author Parag Shah
+ *
+ * @param container	[DwtComposite]	the containing element
+ * @param calApp	[ZmApp]			a handle to the [calendar|task] application
+ */
+ZmCalItemComposeController = function(container, app) {
+	if (arguments.length == 0) { return; }
+	ZmController.call(this, container, app);
 };
 
 ZmCalItemComposeController.prototype = new ZmController;
@@ -85,7 +84,7 @@ function() {
 		return true;
 	}
 
-	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
+	var ps = this._popShield = appCtxt.getYesNoCancelMsgDialog();
 	ps.reset();
 	ps.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
 	ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
@@ -167,7 +166,7 @@ function(actionCode) {
 
 
 		case ZmKeyMap.HTML_FORMAT:
-			if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+			if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 				var mode = this._composeView.getComposeMode();
 				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 				this._formatListener(null, newMode);
@@ -219,7 +218,7 @@ function() {
 	
 	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL,ZmOperation.SEP];
 	
-	if(this._appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))
+	if(appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))
 		buttons.push(ZmOperation.ATTACHMENT);
 	
 	buttons.push( ZmOperation.SEP, ZmOperation.SPELL_CHECK,ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
@@ -233,7 +232,7 @@ function() {
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
-	if(this._appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))
+	if(appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))
 		this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));
 
 	// change default button style to toggle for spell check button
@@ -243,7 +242,7 @@ function() {
 		spellCheckButton.setText("");
 	}
 
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var formatButton = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 		var m = new DwtMenu(formatButton);
 		formatButton.setMenu(m);
@@ -268,8 +267,8 @@ function() {
 ZmCalItemComposeController.prototype._setFormatBtnItem =
 function(skipNotify) {
 	// based on preference, set the compose mode
-	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
-	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+	var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+	var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	var composeMode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 
@@ -280,7 +279,7 @@ function(skipNotify) {
 
 ZmCalItemComposeController.prototype._showErrorMessage =
 function(errorMsg) {
-	var dialog = this._appCtxt.getMsgDialog();
+	var dialog = appCtxt.getMsgDialog();
 	var msg = ZmMsg.errorSaving + (errorMsg ? (":<p>" + errorMsg) : ".");
 	dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	dialog.popup();
@@ -426,7 +425,7 @@ function() {
 	this._popShield.popdown();
 	if (this._doSave()) {
 		this._app.popView(true);
-		this._appCtxt.getAppViewMgr().showPendingView(true);
+		appCtxt.getAppViewMgr().showPendingView(true);
 	}
 };
 
@@ -434,7 +433,7 @@ ZmCalItemComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	this._app.popView(true);
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	appCtxt.getAppViewMgr().showPendingView(true);
 	this._composeView.cleanup();
 };
 

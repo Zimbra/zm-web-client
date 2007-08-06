@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBrowseController = function(appCtxt, parent) {
+ZmBrowseController = function(parent) {
 
-	ZmController.call(this, appCtxt);
+	ZmController.call(this);
     var pickers = this._allPickers = this._getPickers();
 	this._browseView = new ZmBrowseView(this._shell, pickers);
 	this._toolbar = new ZmBrowseToolBar(this._shell, pickers);
@@ -43,7 +43,7 @@ ZmBrowseController = function(appCtxt, parent) {
 	var components = {};
 	components[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR] = this._toolbar;
 	components[ZmAppViewMgr.C_SEARCH_BUILDER] = this._browseView;
-	this._appCtxt.getAppViewMgr().addComponents(components, true);
+	appCtxt.getAppViewMgr().addComponents(components, true);
 
 	this._searchBuilderOpened = false;
 };
@@ -59,18 +59,18 @@ function() {
 ZmBrowseController.prototype._getPickers =
 function() {
 	var list = ZmPicker.DEFAULT_PICKERS;
-	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		list.push(ZmPicker.SEARCH);
 	}
     list.push(ZmPicker.SIZE);
-	if (this._appCtxt.zimletsPresent()) {
-	    var idxZimlets = this._appCtxt.getZimletMgr().getIndexedZimlets();
+	if (appCtxt.zimletsPresent()) {
+	    var idxZimlets = appCtxt.getZimletMgr().getIndexedZimlets();
 	    if (idxZimlets.length) {
 	    	list.push(ZmPicker.ZIMLET);
 	    }
 	}
 	list.push(ZmPicker.FLAG);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		list.push(ZmPicker.TAG);
 	}
 	list.push(ZmPicker.TIME);
@@ -80,7 +80,7 @@ function() {
 
 ZmBrowseController.prototype.getBrowseView =
 function() {
-	return (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) ? this._browseView : null;
+	return (appCtxt.get(ZmSetting.BROWSE_ENABLED)) ? this._browseView : null;
 };
 
 ZmBrowseController.prototype.getBrowseViewVisible =
@@ -98,7 +98,7 @@ function(visible) {
 		H = tbl.offsetHeight;
 	}
 
-	this._appCtxt.getAppViewMgr().showSearchBuilder(visible);
+	appCtxt.getAppViewMgr().showSearchBuilder(visible);
 
 	if (AjxEnv.isGeckoBased && skin.getTopAdContainer) {
 		tbl.style.height = H + "px";
@@ -109,12 +109,12 @@ function(visible) {
 
 	// hack to fix bug 10222 - skin doesn't size correctly first time
 	if (visible && !this._searchBuilderOpened) {
-		this._appCtxt.getAppViewMgr().showSearchBuilder(!visible);
-		this._appCtxt.getAppViewMgr().showSearchBuilder(visible);
+		appCtxt.getAppViewMgr().showSearchBuilder(!visible);
+		appCtxt.getAppViewMgr().showSearchBuilder(visible);
 		this._searchBuilderOpened = true;
 	}
 
-	var searchCtlr = this._appCtxt.getSearchController();
+	var searchCtlr = appCtxt.getSearchController();
 	this._browseViewVisible = visible;
 	if (visible) {
 		if (this._browseView.getPickers().size() == 0) {
@@ -172,7 +172,7 @@ function(doSearch) {
 		}
 	}
 
-	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		// so we can select search folder in overview
 		var a = this._pickers[ZmPicker.SEARCH].getArray();
 		this._searchId = null;
@@ -186,16 +186,16 @@ function(doSearch) {
 		this._query = newQuery;
 		DBG.println(AjxDebug.DBG3, "Browse query: " + this._query);
 		if (doSearch) {
-			this._appCtxt.getSearchController().search({query: this._query, searchId: this._searchId});
+			appCtxt.getSearchController().search({query: this._query, searchId: this._searchId});
 		} else {
-			this._appCtxt.getSearchController().setSearchField(this._query);
+			appCtxt.getSearchController().setSearchField(this._query);
 		}
 	}
 }
 
 ZmBrowseController.prototype._executeQuery =
 function() {
-	this._appCtxt.getSearchController().search({query: this._query, searchId: this._searchId});
+	appCtxt.getSearchController().search({query: this._query, searchId: this._searchId});
 };
 
 ZmBrowseController.prototype._resetListener =
@@ -274,7 +274,7 @@ function(ev) {
 ZmBrowseController.prototype._clearQuery =
 function() {
 	this._query = "";
-	this._appCtxt.getSearchController().setSearchField("");
+	appCtxt.getSearchController().setSearchField("");
 };
 
 ZmBrowseController.prototype._pickerListener =

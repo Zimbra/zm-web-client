@@ -24,20 +24,19 @@
  */
 
 /**
-* Creates a new, empty filter rules controller.
-* @constructor
-* @class
-* Manages the filter rules page, which has a button toolbar and a list view of the rules.
-*
-* @author Conrad Damon
-*
-* @param appCtxt		[ZmAppCtxt]			the app context
-* @param container		[DwtShell]			the shell
-* @param prefsApp		[ZmPreferencesApp]	the preferences app
-*/
-ZmFilterRulesController = function(appCtxt, container, prefsApp, prefsView) {
+ * Creates a new, empty filter rules controller.
+ * @constructor
+ * @class
+ * Manages the filter rules page, which has a button toolbar and a list view of the rules.
+ *
+ * @author Conrad Damon
+ *
+ * @param container		[DwtShell]			the shell
+ * @param prefsApp		[ZmPreferencesApp]	the preferences app
+ */
+ZmFilterRulesController = function(container, prefsApp, prefsView) {
 
-	ZmController.call(this, appCtxt, container, prefsApp);
+	ZmController.call(this, container, prefsApp);
 
 	ZmFilterRule._setPreconditions();
 
@@ -45,7 +44,7 @@ ZmFilterRulesController = function(appCtxt, container, prefsApp, prefsView) {
 	this._rules = AjxDispatcher.run("GetFilterRules");
 	this._filterRulesView = new ZmFilterRulesView(this._prefsView._parent, appCtxt, this);
 	
-	this._buttonListeners = new Object();
+	this._buttonListeners = {};
 	this._buttonListeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._addListener);
 	this._buttonListeners[ZmOperation.EDIT_FILTER_RULE] = new AjxListener(this, this._editListener);
 	this._buttonListeners[ZmOperation.REMOVE_FILTER_RULE] = new AjxListener(this, this._removeListener);
@@ -145,7 +144,7 @@ function(ev) {
 
 	var sel = listView.getSelection();
 	var refRule = sel.length ? sel[sel.length - 1] : null;
-	this._appCtxt.getFilterRuleDialog().popup(null, false, refRule);
+	appCtxt.getFilterRuleDialog().popup(null, false, refRule);
 };
 
 /*
@@ -159,7 +158,7 @@ function(ev) {
 	if (!listView) return;
 
 	var sel = listView.getSelection();
-	this._appCtxt.getFilterRuleDialog().popup(sel[0], true);
+	appCtxt.getFilterRuleDialog().popup(sel[0], true);
 };
 
 /*
@@ -176,7 +175,7 @@ function(ev) {
 	
 	var filter = sel[0];
 	//bug:16053 changed getYesNoCancelMsgDialog to getYesNoMsgDialog
-	var ds = this._deleteShield = this._appCtxt.getYesNoMsgDialog();
+	var ds = this._deleteShield = appCtxt.getYesNoMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
 	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, filter);

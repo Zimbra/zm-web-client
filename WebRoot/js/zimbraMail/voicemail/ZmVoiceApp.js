@@ -420,7 +420,7 @@ function() {
 	if (!this._voicePrefsController) {
         var prefsView = AjxDispatcher.run("GetPrefController").getPrefsView();
         var prefsApp = appCtxt.getApp(ZmApp.PREFERENCES);
-        this._voicePrefsController = new ZmVoicePrefsController(appCtxt, this._container, prefsApp, prefsView);
+        this._voicePrefsController = new ZmVoicePrefsController(this._container, prefsApp, prefsView);
 	}
 	return this._voicePrefsController;
 };

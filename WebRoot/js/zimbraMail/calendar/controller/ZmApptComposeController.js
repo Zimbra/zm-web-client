@@ -24,20 +24,19 @@
  */
 
 /**
-* Creates a new appointment controller to manage appointment creation/editing.
-* @constructor
-* @class
-* This class manages appointment creation/editing.
-*
-* @author Parag Shah
-*
-* @param appCtxt	[ZmAppCtxt]		the application context
-* @param container	[DwtComposite]	the containing element
-* @param app		[ZmCalendarApp]	a handle to the calendar application
-*/
-ZmApptComposeController = function(appCtxt, container, app) {
+ * Creates a new appointment controller to manage appointment creation/editing.
+ * @constructor
+ * @class
+ * This class manages appointment creation/editing.
+ *
+ * @author Parag Shah
+ *
+ * @param container	[DwtComposite]	the containing element
+ * @param app		[ZmCalendarApp]	a handle to the calendar application
+ */
+ZmApptComposeController = function(container, app) {
 
-	ZmCalItemComposeController.call(this, appCtxt, container, app);
+	ZmCalItemComposeController.call(this, container, app);
 
 	this._addedAttendees = [];
 	this._removedAttendees = [];
@@ -94,7 +93,7 @@ function(startTime, endTime, emailList, callback) {
 	soapDoc.setMethodAttribute("e", endTime);
 	soapDoc.setMethodAttribute("uid", emailList);
 
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
 };
 
 ZmApptComposeController.prototype._createComposeView =
@@ -106,7 +105,7 @@ ZmApptComposeController.prototype._setComposeTabGroup =
 function(setFocus) {
 	DBG.println(AjxDebug.DBG2, "_setComposeTabGroup");
 	var tg = this._createTabGroup();
-	var rootTg = this._appCtxt.getRootTabGroup();
+	var rootTg = appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
 	tg.addMember(this._toolbar);
 	var tabView = this._composeView.getTabView(this._composeView.getCurrentTab());

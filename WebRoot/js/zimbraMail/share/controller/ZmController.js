@@ -23,16 +23,15 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmController = function(appCtxt, container, app) {
+ZmController = function(container, app) {
 
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 
-	this._appCtxt = appCtxt;
 	this._container = container;
 	this._app = app;
 	
 	this._shell = appCtxt.getShell();
-	this._appViews = new Object();   
+	this._appViews = {};
 	this._currentView = null;
 	
 	this._authenticating = false;
@@ -127,7 +126,7 @@ function(msg, ex, noExecReset, hideReportButton)  {
 			detailStr = detailStr + prop + " - " + ex[prop] + "\n";				
 		}
 	}
-	var errorDialog = this._appCtxt.getErrorDialog();
+	var errorDialog = appCtxt.getErrorDialog();
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 	errorDialog.setMessage(msg, detailStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
 	errorDialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, !hideReportButton);
@@ -155,7 +154,7 @@ function(actionCode) {
 	}
 	
 	// check for action code with argument, eg MoveToFolder3
-	var shortcut = ZmShortcut.parseAction(this._appCtxt, "Global", actionCode);
+	var shortcut = ZmShortcut.parseAction(appCtxt, "Global", actionCode);
 	if (shortcut) {
 		actionCode = shortcut.baseAction;
 	}
@@ -165,7 +164,7 @@ function(actionCode) {
 	if (app) {
 		var op = ZmApp.ACTION_CODES[actionCode];
 		if (op) {
-			this._appCtxt.getApp(app).handleOp(op);
+			appCtxt.getApp(app).handleOp(op);
 			return true;
 		}
 	}
@@ -174,12 +173,12 @@ function(actionCode) {
 
 		case ZmKeyMap.NEW: {
 			// find default "New" action code for current app
-			app = this._appCtxt.getCurrentAppName();
+			app = appCtxt.getCurrentAppName();
 			var newActionCode = ZmApp.NEW_ACTION_CODE[app];
 			if (newActionCode) {
 				var op = ZmApp.ACTION_CODES[newActionCode];
 				if (op) {
-					this._appCtxt.getApp(app).handleOp(op);
+					appCtxt.getApp(app).handleOp(op);
 					return true;
 				}
 			}
@@ -195,16 +194,16 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.GOTO_TAG:
-			var tag = shortcut ? this._appCtxt.getById(shortcut.arg) : null;
+			var tag = shortcut ? appCtxt.getById(shortcut.arg) : null;
 			if (tag) {
-				this._appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
+				appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
 			}
 			break;
 
 		case ZmKeyMap.SAVED_SEARCH:
-			var searchFolder = shortcut ? this._appCtxt.getById(shortcut.arg) : null;
+			var searchFolder = shortcut ? appCtxt.getById(shortcut.arg) : null;
 			if (searchFolder) {
-				this._appCtxt.getSearchController().redoSearch(searchFolder.search);
+				appCtxt.getSearchController().redoSearch(searchFolder.search);
 			}
 			break;
 
@@ -219,7 +218,7 @@ function(ev, op) {
 	switch (op) {
 		// new organizers
 		case ZmOperation.NEW_FOLDER: {
-			var dialog = this._appCtxt.getNewFolderDialog();
+			var dialog = appCtxt.getNewFolderDialog();
 			if (!this._newFolderCb) {
 				this._newFolderCb = new AjxCallback(this, this._newFolderCallback);
 			}
@@ -227,7 +226,7 @@ function(ev, op) {
 			break;
 		}
 		case ZmOperation.NEW_TAG: {
-			var dialog = this._appCtxt.getNewTagDialog();
+			var dialog = appCtxt.getNewTagDialog();
 			if (!this._newTagCb) {
 				this._newTagCb = new AjxCallback(this, this._newTagCallback);
 			}
@@ -241,18 +240,18 @@ ZmController.prototype._newFolderCallback =
 function(parent, name, color, url) {
 	// REVISIT: Do we really want to close the dialog before we
 	//          know if the create succeeds or fails?
-	var dialog = this._appCtxt.getNewFolderDialog();
+	var dialog = appCtxt.getNewFolderDialog();
 	dialog.popdown();
 
-	var oc = this._appCtxt.getOverviewController();
+	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.FOLDER)._doCreate(parent, name, color, url);
 };
 
 ZmController.prototype._newTagCallback =
 function(params) {
-	var dialog = this._appCtxt.getNewTagDialog();
+	var dialog = appCtxt.getNewTagDialog();
 	dialog.popdown();
-	var oc = this._appCtxt.getOverviewController();
+	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.TAG)._doCreate(params);
 };
 
@@ -275,19 +274,19 @@ function() {
 
 ZmController.prototype._handleLogin =
 function(bReloginMode) {
-	var url = this._appCtxt.get(ZmSetting.LOGIN_URL);
+	var url = appCtxt.get(ZmSetting.LOGIN_URL);
 	if (url) {
 		ZmZimbraMail.sendRedirect(url);
 		return;
 	}
 	
-	var username = this._appCtxt.getUsername();
+	var username = appCtxt.getUsername();
 	if (!username) {
 		ZmZimbraMail.logOff();
 		return;
 	}
 	this._authenticating = true;
-	var loginDialog = this._appCtxt.getLoginDialog();
+	var loginDialog = appCtxt.getLoginDialog();
 	loginDialog.registerCallback(this._loginCallback, this);
 	loginDialog.setVisible(true, false);
 	try {
@@ -301,7 +300,7 @@ function(bReloginMode) {
 // called by a preHideCallback.
 ZmController.prototype._saveFocus = 
 function() {
-	var currentFocusMember = this._appCtxt.getRootTabGroup().getFocusMember();
+	var currentFocusMember = appCtxt.getRootTabGroup().getFocusMember();
 	var myTg = this.getTabGroup();
 	this._savedFocusMember = (currentFocusMember && myTg && myTg.contains(currentFocusMember)) ? currentFocusMember : null;
 	return this._savedFocusMember;
@@ -312,9 +311,9 @@ function() {
 // postShowCallback.
 ZmController.prototype._restoreFocus = 
 function(focusItem, noFocus) {
-	var rootTg = this._appCtxt.getRootTabGroup();
+	var rootTg = appCtxt.getRootTabGroup();
 	var myTg = this.getTabGroup();
-	var kbMgr = this._appCtxt.getKeyboardMgr();
+	var kbMgr = appCtxt.getKeyboardMgr();
 
 	if (rootTg && myTg) {
 		focusItem = focusItem || this._savedFocusMember || this._getDefaultFocusItem() || rootTg.getFocusMember();
@@ -364,7 +363,7 @@ function(ex, method, params, restartOnError, obj) {
 
 		ZmCsfeCommand.clearAuthToken();
 		var bReloginMode = true;
-		var loginDialog = this._appCtxt.getLoginDialog();
+		var loginDialog = appCtxt.getLoginDialog();
 		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
 			// remember the last operation attempted ONLY for expired auth token exception
 			if (method) {
@@ -412,7 +411,7 @@ function(ex) {
 */
 ZmController.prototype._doAuth = 
 function(username, password, rememberMe) {
-	var auth = new ZmAuthenticate(this._appCtxt);
+	var auth = new ZmAuthenticate(appCtxt);
 	var respCallback = new AjxCallback(this, this._handleResponseDoAuth, rememberMe);
 	auth.execute(username, password, respCallback);
 };
@@ -422,7 +421,7 @@ function(rememberMe, result) {
 	try {
 		result.getResponse();
 		this._authenticating = false;
-		this._appCtxt.setRememberMe(rememberMe);
+		appCtxt.setRememberMe(rememberMe);
 		if (this._execFrame instanceof AjxCallback) {
 			// exec frame for an async call is a callback
 			this._execFrame.run();
@@ -433,11 +432,11 @@ function(rememberMe, result) {
 		} else {
 			// if no exec frame, start over
 			ZmCsfeCommand.setSessionId(null);								// so we get a refresh block
-			this._appCtxt.getAppController().startup({isRelogin: true});	// restart application
+			appCtxt.getAppController().startup({isRelogin: true});	// restart application
 		}
 		this._hideLoginDialog();
 	} catch (ex) {
-		var loginDialog = this._appCtxt.getLoginDialog();
+		var loginDialog = appCtxt.getLoginDialog();
 		if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED || ex.code == ZmCsfeException.SVC_INVALID_REQUEST) {
 			loginDialog.setError(ZmMsg.loginError);
 		} else if (ex.code == ZmCsfeException.ACCT_MAINTENANCE_MODE) {
@@ -450,7 +449,7 @@ function(rememberMe, result) {
 
 ZmController.prototype._hideLoginDialog =
 function() {
-	var loginDialog = this._appCtxt.getLoginDialog();
+	var loginDialog = appCtxt.getLoginDialog();
 	loginDialog.setVisible(false);
 	loginDialog.setError(null);
 	loginDialog.clearPassword();
@@ -477,7 +476,7 @@ function() {
 
 ZmController.prototype._errorDialogCallback =
 function() {
-	this._appCtxt.getErrorDialog().popdown();
+	appCtxt.getErrorDialog().popdown();
 	if (!this._execFrame) { return; }
 	if (this._execFrame.restartOnError && !this._authenticating && this._execFrame.func) {
 		this._execFrame.func.apply(this, this._execFrame.args);

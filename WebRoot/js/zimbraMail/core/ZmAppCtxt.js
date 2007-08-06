@@ -174,7 +174,7 @@ function(clientCmdHdlr) {
 ZmAppCtxt.prototype.getSearchController =
 function() {
 	if (!this._searchController) {
-		this._searchController = new ZmSearchController(this, this._shell);
+		this._searchController = new ZmSearchController(this._shell);
 	}
 	return this._searchController;
 };
@@ -185,7 +185,7 @@ function() {
 ZmAppCtxt.prototype.getOverviewController =
 function() {
 	if (!this._overviewController) {
-		this._overviewController = new ZmOverviewController(this, this._shell);
+		this._overviewController = new ZmOverviewController(this._shell);
 	}
 	return this._overviewController;
 };

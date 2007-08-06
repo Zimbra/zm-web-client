@@ -35,12 +35,11 @@
  *
  * @author Conrad Damon
  * 
- * @param appCtxt	[ZmAppCtxt]		app context
  * @param container	[DwtControl]	top-level container
  */
-ZmOverviewController = function(appCtxt, container) {
+ZmOverviewController = function(container) {
 
-	ZmController.call(this, appCtxt, container);
+	ZmController.call(this, container);
 	
 	this._overview = {};
 	this._accordion = {};
@@ -95,7 +94,7 @@ function(accordionId) {
 ZmOverviewController.prototype.createOverview =
 function(params) {
 	params.parent = params.parent || this._shell;
-	var overview = this._overview[params.overviewId] = new ZmOverview(params, this, this._appCtxt);
+	var overview = this._overview[params.overviewId] = new ZmOverview(params, this, appCtxt);
 
 	return overview;
 };
@@ -120,7 +119,7 @@ function(treeId) {
 	if (!treeId) { return null; }
 	if (!this._controller[treeId]) {
 		var treeControllerCtor = eval(ZmOverviewController.CONTROLLER[treeId]);
-		this._controller[treeId] = new treeControllerCtor(this._appCtxt);
+		this._controller[treeId] = new treeControllerCtor(appCtxt);
 	}
 	return this._controller[treeId];
 };
@@ -132,7 +131,7 @@ function(treeId) {
  */
 ZmOverviewController.prototype.getTreeData =
 function(treeId) {
-	return treeId ? this._appCtxt.getTree(treeId) : null;
+	return treeId ? appCtxt.getTree(treeId) : null;
 };
 
 /**

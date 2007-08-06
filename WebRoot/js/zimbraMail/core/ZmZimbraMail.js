@@ -37,7 +37,7 @@
  */
 ZmZimbraMail = function(params) {
 
-	ZmController.call(this, appCtxt);
+	ZmController.call(this);
 
 	this._userShell = params.userShell;
 	this._requestMgr = new ZmRequestMgr(this);

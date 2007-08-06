@@ -24,20 +24,19 @@
  */
 
 /**
-* Creates a new, voice prefs controller.
-* @constructor
-* @class
-* Manages the voice prefs page.
-*
-* @author Dave Comfort
-*
-* @param appCtxt		[ZmAppCtxt]			the app context
-* @param container		[DwtShell]			the shell
-* @param prefsApp		[ZmPreferencesApp]	the preferences app
-* @param prefsView		[ZmPreferencesView]	the preferences view
-*/
-ZmVoicePrefsController = function(appCtxt, container, prefsApp, prefsView) {
-	ZmController.call(this, appCtxt, container, prefsApp);
+ * Creates a new, voice prefs controller.
+ * @constructor
+ * @class
+ * Manages the voice prefs page.
+ *
+ * @author Dave Comfort
+ *
+ * @param container		[DwtShell]			the shell
+ * @param prefsApp		[ZmPreferencesApp]	the preferences app
+ * @param prefsView		[ZmPreferencesView]	the preferences view
+ */
+ZmVoicePrefsController = function(container, prefsApp, prefsView) {
+	ZmController.call(this, container, prefsApp);
 
 	this._prefsView = prefsView;
 	this._listView = new ZmVoicePrefsView(prefsView._parent, appCtxt, this);
@@ -91,7 +90,7 @@ function(ev) {
 ZmVoicePrefsController.prototype._getListData =
 function() {
 	var result = new AjxVector();
-	var app = this._appCtxt.getApp(ZmApp.VOICE);
+	var app = appCtxt.getApp(ZmApp.VOICE);
 	for (var i = 0, count = app.phones.length; i < count; i++) {
 		result.add(app.phones[i]);
 	}

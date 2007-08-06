@@ -41,7 +41,8 @@
 ZmTreeController = function(appCtxt, type, dropTgt) {
 
 	if (arguments.length == 0) return;
-	ZmController.call(this, appCtxt);
+	ZmController.call(this);
+	this._appCtxt = appCtxt;
 
 	this.type = type;
 	this._opc = appCtxt.getOverviewController();

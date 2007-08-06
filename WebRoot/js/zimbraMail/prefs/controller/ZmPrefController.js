@@ -24,20 +24,19 @@
  */
 
 /**
-* Creates a new, empty preferences controller.
-* @constructor
-* @class
-* Manages the options pages.
-*
-* @author Conrad Damon
-*
-* @param appCtxt		the app context
-* @param container		the shell
-* @param prefsApp		the preferences app
-*/
-ZmPrefController = function(appCtxt, container, prefsApp) {
+ * Creates a new, empty preferences controller.
+ * @constructor
+ * @class
+ * Manages the options pages.
+ *
+ * @author Conrad Damon
+ *
+ * @param container		the shell
+ * @param prefsApp		the preferences app
+ */
+ZmPrefController = function(container, prefsApp) {
 
-	ZmController.call(this, appCtxt, container, prefsApp);
+	ZmController.call(this, container, prefsApp);
 
 	this._listeners = {};
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
@@ -79,7 +78,7 @@ function() {
 ZmPrefController.prototype.getFilterRulesController =
 function() {
 	if (!this._filterRulesController)
-		this._filterRulesController = new ZmFilterRulesController(this._appCtxt, this._container, this._app, this._prefsView);
+		this._filterRulesController = new ZmFilterRulesController(this._container, this._app, this._prefsView);
 	return this._filterRulesController;
 };
 
@@ -113,7 +112,7 @@ function(obj, precondition) {
 	}
 	// Precondition is a function, look at its result
 	if (AjxUtil.isFunction(p)) {
-		return p(this._appCtxt);
+		return p(appCtxt);
 	}
 	// A list of preconditions is ORed together via a recursive call
 	if (AjxUtil.isArray(p)) {
@@ -125,7 +124,7 @@ function(obj, precondition) {
 		return false;
 	}
 	// Assume that the precondition is a setting, and return its value
-	return Boolean(this._appCtxt.get(p));
+	return Boolean(appCtxt.get(p));
 };
 
 ZmPrefController.prototype.getKeyMapName =
@@ -187,7 +186,7 @@ function() {
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-		this._prefsView = new ZmPrefView(this._container, this._appCtxt, Dwt.ABSOLUTE_STYLE, this);
+		this._prefsView = new ZmPrefView(this._container, appCtxt, Dwt.ABSOLUTE_STYLE, this);
 		var elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
@@ -218,7 +217,7 @@ function () {
 ZmPrefController.prototype._initializeTabGroup = 
 function () {
 	var tg = this._createTabGroup();
-	var rootTg = this._appCtxt.getRootTabGroup();
+	var rootTg = appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
 	tg.addMember(this._toolbar);
 };
@@ -275,7 +274,7 @@ function(continueCallback, preSaveCallbacks, callback, noPop, success) {
 };
 
 ZmPrefController.prototype._doSave = function(callback, noPop) {
-	var batchCommand = new ZmBatchCommand(this._appCtxt);
+	var batchCommand = new ZmBatchCommand(appCtxt);
 
 	//  get changed prefs
 	var list;
@@ -285,7 +284,7 @@ ZmPrefController.prototype._doSave = function(callback, noPop) {
 	catch (e) {
 		// getChangedPrefs throws an AjxException if any of the values have not passed validation.
 		if (e instanceof AjxException) {
-			this._appCtxt.setStatusMsg(e.msg, ZmStatusView.LEVEL_CRITICAL);
+			appCtxt.setStatusMsg(e.msg, ZmStatusView.LEVEL_CRITICAL);
 		} else {
 			throw e;
 		}
@@ -293,7 +292,7 @@ ZmPrefController.prototype._doSave = function(callback, noPop) {
 	}
 
 	// save generic settings
-	this._appCtxt.getSettings().save(list, null, batchCommand);
+	appCtxt.getSettings().save(list, null, batchCommand);
 
 	// save any extra commands that may have been added
 	if (batchCommand.size()) {
@@ -308,7 +307,7 @@ ZmPrefController.prototype._doSave = function(callback, noPop) {
 ZmPrefController.prototype._handleResponseSaveListener = 
 function(list, callback, noPop, result) {
 	if (list.length) {
-		this._appCtxt.setStatusMsg(ZmMsg.optionsSaved);
+		appCtxt.setStatusMsg(ZmMsg.optionsSaved);
 	}
 
 	var hasFault = result && result._data && result._data.BatchResponse
@@ -316,7 +315,7 @@ function(list, callback, noPop, result) {
 
 	if (!noPop && (!result || !hasFault)) {
 		// pass force flag - we just saved, so we know view isn't dirty
-		this._appCtxt.getAppViewMgr().popView(true);
+		appCtxt.getAppViewMgr().popView(true);
 	}
 	
 	if (callback) callback.run(result);
@@ -324,7 +323,7 @@ function(list, callback, noPop, result) {
 
 ZmPrefController.prototype._backListener = 
 function() {
-	this._appCtxt.getAppViewMgr().popView();
+	appCtxt.getAppViewMgr().popView();
 };
 
 ZmPrefController.prototype._preHideCallback =
@@ -347,7 +346,7 @@ ZmPrefController.prototype.popShield =
 function() {
 	if (!this._prefsView.isDirty()) return true;
 
-	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
+	var ps = this._popShield = appCtxt.getYesNoCancelMsgDialog();
 	ps.reset();
 	ps.setMessage(ZmMsg.confirmExitPreferences, DwtMessageDialog.WARNING_STYLE);
 	ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
@@ -368,7 +367,7 @@ function() {
 ZmPrefController.prototype._handleResponsePopShieldYesCallback =
 function() {
 	this._app.popView(true);
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 ZmPrefController.prototype._popShieldNoCallback =
@@ -376,13 +375,13 @@ function() {
 	this._prefsView.reset();
 	this._popShield.popdown();
 	this._app.popView(true);
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 ZmPrefController.prototype._popShieldCancelCallback =
 function() {
 	this._popShield.popdown();
-	this._appCtxt.getAppViewMgr().showPendingView(false);
+	appCtxt.getAppViewMgr().showPendingView(false);
 };
 
 ZmPrefController.prototype._getDefaultFocusItem = 

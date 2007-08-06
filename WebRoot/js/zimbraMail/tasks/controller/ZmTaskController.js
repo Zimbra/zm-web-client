@@ -24,20 +24,19 @@
  */
 
 /**
-* Creates a new appointment controller to manage appointment creation/editing.
-* @constructor
-* @class
-* This class manages appointment creation/editing.
-*
-* @author Parag Shah
-*
-* @param appCtxt	[ZmAppCtxt]		the application context
-* @param container	[DwtComposite]	the containing element
-* @param calApp		[ZmApp]			a handle to the [calendar|task] application
-*/
-ZmTaskController = function(appCtxt, container, app) {
-	if (arguments.length == 0) return;
-	ZmCalItemComposeController.call(this, appCtxt, container, app);
+ * Creates a new appointment controller to manage appointment creation/editing.
+ * @constructor
+ * @class
+ * This class manages appointment creation/editing.
+ *
+ * @author Parag Shah
+ *
+ * @param container	[DwtComposite]	the containing element
+ * @param calApp	[ZmApp]			a handle to the [calendar|task] application
+ */
+ZmTaskController = function(container, app) {
+	if (arguments.length == 0) { return; }
+	ZmCalItemComposeController.call(this, container, app);
 };
 
 ZmTaskController.prototype = new ZmCalItemComposeController;
@@ -68,18 +67,18 @@ function(calItem) {
 	if (calItem && calItem._orig)
 		calItem._orig.message = null;
 
-	this._appCtxt.setStatusMsg(ZmMsg.taskSaved);
+	appCtxt.setStatusMsg(ZmMsg.taskSaved);
 };
 
 ZmTaskController.prototype._createComposeView =
 function() {
-	return (new ZmTaskEditView(this._container, this._appCtxt, this));
+	return (new ZmTaskEditView(this._container, appCtxt, this));
 };
 
 ZmTaskController.prototype._setComposeTabGroup =
 function(setFocus) {
 	var tg = this._createTabGroup();
-	var rootTg = this._appCtxt.getRootTabGroup();
+	var rootTg = appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
 	tg.addMember(this._toolbar);
 	this._composeView._addTabGroupMembers(tg);

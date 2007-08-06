@@ -24,30 +24,29 @@
  */
 
 /**
-* @constructor
-* @class
-*
-* @param appCtxt		app context
-* @param container		containing shell
-*/
-ZmChatListController = function(appCtxt, container, imApp) {
-	if (arguments.length == 0) return;
+ * @constructor
+ * @class
+ *
+ * @param container		containing shell
+ */
+ZmChatListController = function(container, imApp) {
+	if (arguments.length == 0) { return; }
 
-	ZmController.call(this, appCtxt, container, imApp);
+	ZmController.call(this, container, imApp);
 
-	this._toolbar = new Object;		// ZmButtonToolbar (one per view)
-	this._listView = new Object;	// ZmListView (one per view)
+	this._toolbar = {};		// ZmButtonToolbar (one per view)
+	this._listView = {};	// ZmListView (one per view)
 	this._list = imApp.getRoster().getChatList();		// ZmChatList (the data)
 
-    	this._listeners = new Object();
+   	this._listeners = {};
 	this._listeners[ZmOperation.VIEW] = new AjxListener(this, this._viewButtonListener);
 	this._listeners[ZmOperation.NEW_MENU] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 
-	this._viewFactory = new Object();
+	this._viewFactory = {};
 	this._viewFactory[ZmController.IM_CHAT_MULTI_WINDOW_VIEW] = ZmChatMultiWindowView;
 
-	this._parentView = new Object();
+	this._parentView = {};
 
 	// listen for roster list changes
 	this._rosterListListener = new AjxListener(this, this._rosterListChangeListener);
@@ -159,7 +158,7 @@ function() {
 
 ZmChatListController.prototype._defaultView =
 function() {
-	return (this._appCtxt.get(ZmSetting.IM_VIEW) == "tabbed") ? ZmController.IM_CHAT_TAB_VIEW : ZmController.IM_CHAT_MULTI_WINDOW_VIEW;
+	return (appCtxt.get(ZmSetting.IM_VIEW) == "tabbed") ? ZmController.IM_CHAT_TAB_VIEW : ZmController.IM_CHAT_MULTI_WINDOW_VIEW;
 };
 
 ZmChatListController.prototype._initializeToolBar = function(view) {
@@ -291,7 +290,7 @@ ZmChatListController.prototype._viewButtonListener = function(ev) {
 // // Create menu for View button and add listeners.
 // ZmChatListController.prototype._setupViewMenu = function(view) {
 //  XXX: MIHAI: VIEW MENU IS NO LONGER IN ZmCurrentAppToolbar. SEE ZmMailListController
-// 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
+// 	var appToolbar = appCtxt.getCurrentAppToolbar();
 // 	var menu = appToolbar.getViewMenu(view);
 // 	if (!menu) {
 // 		var menu = new ZmPopupMenu(appToolbar.getViewButton());
@@ -313,7 +312,7 @@ ZmChatListController.prototype._viewButtonListener = function(ev) {
 
 ZmChatListController.prototype._refreshListener = function(ev) {
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 };
 
 // // Create some new thing, via a dialog. If just the button has been pressed (rather than
@@ -388,7 +387,7 @@ ZmChatListController.prototype.chatWithRosterItem = function(item, text) {
 };
 
 ZmChatListController.prototype.chatWithRosterItems = function(items, chatName) {
-	chat = new ZmChat(Dwt.getNextId(), chatName, this._appCtxt, this);
+	chat = new ZmChat(Dwt.getNextId(), chatName, appCtxt, this);
 	for (var i=0; i < items.length; i++) {
 		chat.addRosterItem(items[i]);
 	}

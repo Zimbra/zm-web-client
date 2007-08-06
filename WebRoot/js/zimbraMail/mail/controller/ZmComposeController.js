@@ -24,19 +24,18 @@
  */
 
 /**
-* Creates a new compose controller to manage message composition.
-* @constructor
-* @class
-* This class manages message composition.
-*
-* @author Conrad Damon
-* @param appCtxt		the application context
-* @param container		the containing element
-* @param mailApp		a handle to the mail application
-*/
-ZmComposeController = function(appCtxt, container, mailApp) {
+ * Creates a new compose controller to manage message composition.
+ * @constructor
+ * @class
+ * This class manages message composition.
+ *
+ * @author Conrad Damon
+ * @param container		the containing element
+ * @param mailApp		a handle to the mail application
+ */
+ZmComposeController = function(container, mailApp) {
 
-	ZmController.call(this, appCtxt, container, mailApp);
+	ZmController.call(this, container, mailApp);
 
 	this._action = null;
 
@@ -87,7 +86,7 @@ ZmComposeController = function(appCtxt, container, mailApp) {
 
 	this._dialogPopdownListener = new AjxListener(this, this._dialogPopdownActionListener);
 
-	var settings = this._appCtxt.getSettings();
+	var settings = appCtxt.getSettings();
 	var scl = this._settingsChangeListener = new AjxListener(this, this._settingsChangeListener);
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
 		settings.getSetting(ZmComposeController.SETTINGS[i]).addChangeListener(scl);
@@ -112,7 +111,7 @@ function() {
 */
 ZmComposeController.prototype.dispose =
 function() {
-	var settings = this._appCtxt.getSettings();
+	var settings = appCtxt.getSettings();
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
 		settings.getSetting(ZmComposeController.SETTINGS[i]).removeChangeListener(this._settingsChangeListener);
 	}
@@ -134,7 +133,7 @@ function() {
 ZmComposeController.prototype.doAction =
 function(params) {
 	if (params.inNewWindow) {
-		var newWinObj = this._appCtxt.getNewWindow();
+		var newWinObj = appCtxt.getNewWindow();
 
 		// this is how child window knows what to do once loading:
 		newWinObj.command = "compose";
@@ -172,7 +171,7 @@ function() {
 	var sendUID = this._composeView.getSendUID();
 
 	// this is how child window knows what to do once loading:
-	var newWinObj = this._appCtxt.getNewWindow();
+	var newWinObj = appCtxt.getNewWindow();
 	newWinObj.command = "composeDetach";
 	newWinObj.params = {action:this._action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml, body:body,
 					  composeMode:composeMode, identityId:identityId, accountName:this._accountName,
@@ -185,8 +184,8 @@ function() {
 		return true;
 	}
 
-	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
-	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+	var ps = this._popShield = appCtxt.getYesNoCancelMsgDialog();
+	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		ps.reset();
 		ps.setMessage(ZmMsg.askSaveDraft, DwtMessageDialog.WARNING_STYLE);
 		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
@@ -248,7 +247,7 @@ function(attId, isDraft, callback) {
 		}
 	} else {
 		// if shared folder, make sure we send the email on-behalf-of
-		var folder = msg.folderId ? this._appCtxt.getById(msg.folderId) : null;
+		var folder = msg.folderId ? appCtxt.getById(msg.folderId) : null;
 		var acctName = (folder && folder.isRemote()) ? folder.getOwner() : this._accountName;
 		var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
 		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
@@ -347,7 +346,7 @@ function(setSignature, event) {
 	if (!this._composeView.isDirty()) {
 		this._applyIdentityToBody(setSignature);
 	} else {
-		var dialog = this._appCtxt.getYesNoMsgDialog();
+		var dialog = appCtxt.getYesNoMsgDialog();
 		dialog.reset();
 		dialog.registerCallback(DwtDialog.YES_BUTTON, this._identityChangeYesCallback, this, [dialog, setSignature]);
 		dialog.registerCallback(DwtDialog.NO_BUTTON, this._identityChangeNoCallback, this, [dialog]);
@@ -391,7 +390,7 @@ function(setSignature) {
 ZmComposeController.prototype._setComposeTabGroup =
 function() {
 	var tg = this._createTabGroup();
-	var rootTg = this._appCtxt.getRootTabGroup();
+	var rootTg = appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
 	tg.addMember(this._toolbar);
 	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
@@ -416,7 +415,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SAVE: // Save to draft
-			if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+			if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 				this._saveDraft();
 			}
 			break;
@@ -435,7 +434,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.HTML_FORMAT:
-			if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+			if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 				var mode = this._composeView.getComposeMode();
 				var identity = this._composeView.getIdentity();
 				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
@@ -484,7 +483,7 @@ function(delMsg) {
 	actionNode.setAttribute("op", "delete");
 
 	var async = window.parentController == null;
-	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:async});
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:async});
 };
 
 /**
@@ -512,7 +511,7 @@ function(params) {
 	this._accountName = params.accountName;
 	this._msgIds = params.msgIds;
 
-	var identityCollection = this._appCtxt.getIdentityCollection();
+	var identityCollection = appCtxt.getIdentityCollection();
 	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
 	params.identity = identity;
 
@@ -548,12 +547,12 @@ function() {
 
 	var buttons = [ZmOperation.SEND];
 
-	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
+	if (appCtxt.get(ZmSetting.IM_ENABLED))
 		buttons.push(ZmOperation.IM);
 
 	buttons.push(ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
 	
-	if (this._appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))    
+	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))    
 		buttons.push(ZmOperation.ATTACHMENT);
 		     
 	buttons.push(ZmOperation.SPELL_CHECK, ZmOperation.ADD_SIGNATURE, ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
@@ -572,7 +571,7 @@ function() {
 		}
 	}
 
-	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
+	var identity = appCtxt.getIdentityCollection().defaultIdentity;
 	var canAddSig = this._setAddSignatureVisibility(identity);
 
 	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY,
@@ -623,7 +622,7 @@ function(action) {
 	if (isReply) {
 		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.SEP);
 	}
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		list.push(ZmOperation.FORMAT_HTML, ZmOperation.FORMAT_TEXT, ZmOperation.SEP);
 	}
 	list.push(ZmOperation.SHOW_BCC);
@@ -675,7 +674,7 @@ function(composeMode, identity) {
 	var menu = this._optionsMenu[this._action];
 	if (!menu) return;
 
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		menu.checkItem(ZmHtmlEditor._VALUE, composeMode, true);
 	}
 	var isReply = (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL);
@@ -688,7 +687,7 @@ function(composeMode, identity) {
 			menu.checkItem(ZmOperation.KEY_ID, this._action, true);
 		}
 	}
-	menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(this._appCtxt.get(ZmSetting.SHOW_BCC), true);
+	menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(appCtxt.get(ZmSetting.SHOW_BCC), true);
 
 	button.setMenu(menu);
 };
@@ -698,7 +697,7 @@ function(msg, identity) {
 	// depending on COS/user preference set compose format
 	var composeMode = DwtHtmlEditor.TEXT;
 
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		if ((this._action == ZmOperation.REPLY ||
 			this._action == ZmOperation.REPLY_ALL ||
 			this._action == ZmOperation.FORWARD_INLINE ||
@@ -717,7 +716,7 @@ function(msg, identity) {
 		}
 		else if (this._action == ZmOperation.NEW_MESSAGE)
 		{
-			if (this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML)
+			if (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML)
 				composeMode = DwtHtmlEditor.HTML;
 		}
 		else if (this._action == ZmOperation.DRAFT)
@@ -757,10 +756,10 @@ function(isDraft, msg, resp) {
 			window.onbeforeunload = null;
 			window.parentController.setStatusMsg(ZmMsg.messageSent);
 		} else {
-			this._appCtxt.setStatusMsg(ZmMsg.messageSent);
+			appCtxt.setStatusMsg(ZmMsg.messageSent);
 		}
 
-		if (resp || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
+		if (resp || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
 			this._composeView.reset(false);
 
 			// if the original message was a draft, we need to nuke it
@@ -775,12 +774,12 @@ function(isDraft, msg, resp) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.parentController.setStatusMsg(ZmMsg.draftSaved);
 		} else {
-			this._appCtxt.setStatusMsg(ZmMsg.draftSaved);
+			appCtxt.setStatusMsg(ZmMsg.draftSaved);
 		}
 		this._composeView.processMsgDraft(msg);
 	}
-	if (this._appCtxt.get(ZmSetting.OFFLINE)) {
-		this._appCtxt.getAppController().sendSync();
+	if (appCtxt.get(ZmSetting.OFFLINE)) {
+		appCtxt.getAppController().sendSync();
 	}
 };
 
@@ -939,7 +938,7 @@ function(ev) {
 	if (id == ZmSetting.SHOW_BCC) {
 		var menu = this._optionsMenu[this._action];
 		if (menu)
-			menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(this._appCtxt.get(ZmSetting.SHOW_BCC), true);
+			menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(appCtxt.get(ZmSetting.SHOW_BCC), true);
 	}
 };
 
@@ -978,7 +977,7 @@ function() {
 	this._popShield.removePopdownListener(this._dialogPopdownListener);
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
-	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		// save as draft
 		this.sendMsg(null, true);
 	} else {
@@ -991,7 +990,7 @@ function() {
 	}
 
 	this._app.popView(true);
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 // Called as: No, don't save as draft
@@ -1001,7 +1000,7 @@ function() {
 	this._popShield.removePopdownListener(this._dialogPopdownListener);
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
-	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
 		} else {
@@ -1009,9 +1008,9 @@ function() {
 		}
 
 		this._app.popView(true);
-		this._appCtxt.getAppViewMgr().showPendingView(true);
+		appCtxt.getAppViewMgr().showPendingView(true);
 	} else {
-		this._appCtxt.getAppViewMgr().showPendingView(false);
+		appCtxt.getAppViewMgr().showPendingView(false);
 		this._composeView.reEnableDesignMode();
 	}
 };
@@ -1036,7 +1035,7 @@ function() {
 ZmComposeController.prototype._cancelViewPop =
 function() {
 	this._composeView.enableInputs(true);
-	this._appCtxt.getAppViewMgr().showPendingView(false);
+	appCtxt.getAppViewMgr().showPendingView(false);
 	this._composeView.reEnableDesignMode();
 };
 

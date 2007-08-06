@@ -278,8 +278,9 @@ ZmImApp.prototype.isActive = function() {
 
 ZmImApp.prototype.getChatListController =
 function() {
-	if (!this._chatListController)
-		this._chatListController = new ZmChatListController(appCtxt, this._container, this);
+	if (!this._chatListController) {
+		this._chatListController = new ZmChatListController(this._container, this);
+	}
 	return this._chatListController;
 };
 
