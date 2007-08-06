@@ -109,6 +109,9 @@ function(params) {
 	this._folderTreeView = this._getOverview().getTreeView(this._orgType);
 
 	if (this._folderTreeView) {
+		// bug #18533 - always make sure header item is visible in "MoveTo" dialog
+		this._folderTreeView.getHeaderItem().setVisible(true, true);
+
 		// remove checkboxes if treeview has them as re-enable selection
 		this._folderTreeView.showCheckboxes(false);
 

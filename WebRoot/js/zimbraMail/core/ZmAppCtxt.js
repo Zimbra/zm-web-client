@@ -493,7 +493,6 @@ function() {
 	this._newFolderDialog = null;
 	this._newSearchDialog = null;
 	this._renameFolderDialog = null;
-	this._moveToFolderDialog = null;
 	this._folderPropsDialog = null;
 	this._chooseFolderDialog = null;
 };

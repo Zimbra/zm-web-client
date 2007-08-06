@@ -53,7 +53,10 @@ function(folder) {
 	if (this._folderTreeCellId) {
 		this._setOverview({treeIds:this._treeIds, omit:this._omit, fieldId:this._folderTreeCellId});
 		if (this._folderTreeView) {
-			folder = folder ? folder : this._folderTree.root;
+			// bug #18533 - always make sure header item is visible in "New" dialog
+			this._folderTreeView.getHeaderItem().setVisible(true, true);
+
+			folder = folder || this._folderTree.root;
 			this._folderTreeView.setSelected(folder);
 			if (folder.id == ZmOrganizer.ID_ROOT) {
 				var ti = this._folderTreeView.getTreeItemById(folder.id);
