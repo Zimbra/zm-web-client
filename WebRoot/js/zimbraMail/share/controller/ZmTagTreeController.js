@@ -24,15 +24,14 @@
  */
 
 /**
-* Creates a tag tree controller.
-* @constructor
-* @class
-* This class controls a tree display of tags.
-*
-* @author Conrad Damon
-* @param appCtxt	[ZmAppCtxt]		app context
-*/
-ZmTagTreeController = function(appCtxt) {
+ * Creates a tag tree controller.
+ * @constructor
+ * @class
+ * This class controls a tree display of tags.
+ *
+ * @author Conrad Damon
+ */
+ZmTagTreeController = function() {
 
 	var list = [];
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
@@ -49,7 +48,7 @@ ZmTagTreeController = function(appCtxt) {
 		list.push("ZmPage");
 		list.push("ZmDocument");
 	}
-	ZmTreeController.call(this, appCtxt, ZmOrganizer.TAG, new DwtDropTarget(list));
+	ZmTreeController.call(this, ZmOrganizer.TAG, new DwtDropTarget(list));
 
 	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_TAG] = new AjxListener(this, this._renameListener);
@@ -93,11 +92,12 @@ function() {
 */
 ZmTagTreeController.prototype.resetOperations = 
 function(parent, type, id) {
-	var tag = this._appCtxt.getById(id);
+	var tag = appCtxt.getById(id);
 	parent.enableAll(true);
-	if (tag.isSystem())
+	if (tag.isSystem()) {
 		parent.enable([ZmOperation.RENAME_TAG, 
 					   ZmOperation.TAG_COLOR_MENU, ZmOperation.DELETE], false);
+	}
 	parent.enable(ZmOperation.MARK_ALL_READ, (tag && (tag.numUnread > 0)));
 };
 
@@ -105,7 +105,7 @@ function(parent, type, id) {
 
 ZmTagTreeController.prototype._getDataTree =
 function() {
-	return this._appCtxt.getTagTree();
+	return appCtxt.getTagTree();
 };
 
 /*
@@ -135,7 +135,7 @@ function() {
 */
 ZmTagTreeController.prototype._getNewDialog =
 function() {
-	return this._appCtxt.getNewTagDialog();
+	return appCtxt.getNewTagDialog();
 };
 
 /*
@@ -143,7 +143,7 @@ function() {
 */
 ZmTagTreeController.prototype._getRenameDialog =
 function() {
-	return this._appCtxt.getRenameTagDialog();
+	return appCtxt.getRenameTagDialog();
 };
 
 // Actions
@@ -156,7 +156,7 @@ function() {
 */
 ZmTagTreeController.prototype._itemClicked =
 function(tag) {
-	var app = this._appCtxt.getCurrentAppName();
+	var app = appCtxt.getCurrentAppName();
 
 	var searchFor;
 	switch (app) {
@@ -166,7 +166,7 @@ function(tag) {
 		default: 				searchFor = ZmSearchToolBar.FOR_MAIL_MI; break;
 	}
 
-	var sc = this._appCtxt.getSearchController();
+	var sc = appCtxt.getSearchController();
 	sc.search({query:'tag:"' + tag.name + '"', searchFor:searchFor});
 };
 
@@ -181,7 +181,7 @@ function(tag) {
 ZmTagTreeController.prototype._deleteListener = 
 function(ev) {
 	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
-	var ds = this._deleteShield = this._appCtxt.getYesNoCancelMsgDialog();
+	var ds = this._deleteShield = appCtxt.getYesNoCancelMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
 	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);

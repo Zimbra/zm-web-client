@@ -23,10 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTaskTreeController = function(appCtxt, type, dropTgt) {
-	if (arguments.length == 0) return;
+ZmTaskTreeController = function() {
 
-	ZmFolderTreeController.call(this, appCtxt, (type || ZmOrganizer.TASKS), dropTgt);
+	ZmFolderTreeController.call(this, ZmOrganizer.TASKS);
 
 	this._listeners[ZmOperation.NEW_TASK_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_TASKFOLDER] = new AjxListener(this, this._shareTaskFolderListener);
@@ -48,7 +47,7 @@ function() {
 ZmTaskTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
-	var folder = this._appCtxt.getById(id);
+	var folder = appCtxt.getById(id);
 
 	parent.enableAll(true);
 	if (folder) {
@@ -75,14 +74,14 @@ function() {
 */
 ZmTaskTreeController.prototype._getNewDialog =
 function() {
-	return this._appCtxt.getNewTaskFolderDialog();
+	return appCtxt.getNewTaskFolderDialog();
 };
 
 // Returns a list of desired header action menu operations
 ZmTaskTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ ZmOperation.NEW_TASK_FOLDER ];
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED))
 		ops.push(ZmOperation.MOUNT_TASK_FOLDER);
 	return ops;
 };
@@ -91,14 +90,14 @@ function() {
 ZmTaskTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [];
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED))
 		ops.push(ZmOperation.SHARE_TASKFOLDER);
 	ops.push(ZmOperation.DELETE, ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);
 	return ops;
 };
 
 ZmTaskTreeController.prototype._getDropTarget =
-function(appCtxt) {
+function() {
 	return (new DwtDropTarget(["ZmTask"]));
 };
 
@@ -108,12 +107,12 @@ function(appCtxt) {
 ZmTaskTreeController.prototype._shareTaskFolderListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
-	this._appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
+	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
 };
 
 ZmTaskTreeController.prototype._mountTaskFolderListener =
 function(ev) {
-	this._appCtxt.getMountFolderDialog().popup(ZmOrganizer.TASKS);
+	appCtxt.getMountFolderDialog().popup(ZmOrganizer.TASKS);
 };
 
 ZmTaskTreeController.prototype._deleteListener =
@@ -122,7 +121,7 @@ function(ev) {
 	var callback = new AjxCallback(this, this._deleteListener2, [organizer]);
 	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteTaskFolder, organizer.name);
 
-	this._appCtxt.getConfirmationDialog().popup(message, callback);
+	appCtxt.getConfirmationDialog().popup(message, callback);
 };
 
 ZmTaskTreeController.prototype._deleteListener2 =
@@ -139,5 +138,5 @@ function(organizer) {
 */
 ZmTaskTreeController.prototype._itemClicked =
 function(folder) {
-	this._appCtxt.getApp(ZmApp.TASKS).search(folder);
+	appCtxt.getApp(ZmApp.TASKS).search(folder);
 };

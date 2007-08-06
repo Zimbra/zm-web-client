@@ -23,10 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmVoiceTreeController = function(appCtxt, type, dropTgt) {
-	if (arguments.length == 0) return;
+ZmVoiceTreeController = function() {
 
-	ZmFolderTreeController.call(this, appCtxt, (type || ZmOrganizer.VOICE), dropTgt);
+	ZmFolderTreeController.call(this, ZmOrganizer.VOICE);
 	this._voiceApp = appCtxt.getApp(ZmApp.VOICE);
 }
 
@@ -61,7 +60,7 @@ function(overviewId) {
 
 	// expand all root account folders
 	var view = this._treeView[overviewId];
-	var app = this._appCtxt.getApp(ZmApp.VOICE);
+	var app = appCtxt.getApp(ZmApp.VOICE);
 	for (var i = 0; i < app.phones.length; i++) {
 		var root = app.phones[i].folderTree.root;
 		var ti = this._treeView[overviewId].getTreeItemById(root.id);
@@ -85,7 +84,7 @@ function(overviewId) {
 
 ZmVoiceTreeController.prototype.resetOperations =
 function(parent, type, id) {
-	var folder = this._appCtxt.getById(id);
+	var folder = appCtxt.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
 };
 
@@ -102,7 +101,7 @@ function() {
 };
 
 ZmVoiceTreeController.prototype._getDropTarget =
-function(appCtxt) {
+function() {
 	return (new DwtDropTarget(["ZmVoicemail"]));
 };
 
@@ -120,6 +119,6 @@ function() {
 */
 ZmVoiceTreeController.prototype._itemClicked =
 function(folder) {
-	this._appCtxt.getApp(ZmApp.VOICE).search(folder);
+	appCtxt.getApp(ZmApp.VOICE).search(folder);
 };
 

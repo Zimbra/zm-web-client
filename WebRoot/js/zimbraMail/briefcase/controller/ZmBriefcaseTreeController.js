@@ -23,13 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBriefcaseTreeController = function(appCtxt, type, dropTgt) {
+ZmBriefcaseTreeController = function(type, dropTgt) {
 	
 	type = type ? type : ZmOrganizer.BRIEFCASE;
 
 	dropTgt = dropTgt ? dropTgt : null;
 	
-	ZmTreeController.call(this, appCtxt, type, dropTgt);
+	ZmTreeController.call(this, type, dropTgt);
 
 	this._listeners[ZmOperation.NEW_BRIEFCASEITEM] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_BRIEFCASE] = new AjxListener(this, this._shareBriefcaseListener);
@@ -49,12 +49,12 @@ ZmBriefcaseTreeController.prototype.toString = function() {
 
 ZmBriefcaseTreeController.prototype.resetOperations =
 function(actionMenu, type, id) {
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
 	if (actionMenu && id != rootId) {
-		var briefcase = this._appCtxt.getById(id);
+		var briefcase = appCtxt.getById(id);
 		if (!briefcase) { return; }
 
-		var briefcaseId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_BRIEFCASE);
+		var briefcaseId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_BRIEFCASE);
 		var isRoot = (briefcase.id == rootId);
 		var isBriefcase = (briefcase.id == briefcaseId);
 		var isTopLevel = (!isRoot && briefcase.parent.id == rootId);
@@ -70,7 +70,7 @@ function(actionMenu, type, id) {
 		menuItem.setDisabledImage("NewSectionDis");
 		menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR));
 
-		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 			isBriefcase = (!isRoot && briefcase.parent.id == rootId);
 			menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_BRIEFCASE);
 			//menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
@@ -110,7 +110,7 @@ ZmBriefcaseTreeController.__isAllowed = function(organizer, perm) {
 ZmBriefcaseTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ ZmOperation.NEW_BRIEFCASEITEM ];
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.MOUNT_BRIEFCASE);
 	}
 	ops.push(
@@ -134,11 +134,11 @@ function() {
 ZmBriefcaseTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [ ZmOperation.NEW_BRIEFCASEITEM ];
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.MOUNT_BRIEFCASE);
 	}
 	ops.push(ZmOperation.SEP);
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_BRIEFCASE);
 	}
 	ops.push(
@@ -157,7 +157,7 @@ function() {
 };
 
 ZmBriefcaseTreeController.prototype._getNewDialog = function() {
-	return this._appCtxt.getNewBriefcaseDialog();
+	return appCtxt.getNewBriefcaseDialog();
 };
 
 ZmBriefcaseTreeController.prototype.getTreeStyle =
@@ -173,15 +173,15 @@ function(briefcase) {
 	briefcaseController.show(briefcase.id);
 	
 	/*
-	if (this._appCtxt.getCurrentViewId() != ZmController.NOTEBOOK_PAGE_VIEW) {
-		this._appCtxt.getAppViewMgr().setView(ZmController.NOTEBOOK_PAGE_VIEW);
+	if (appCtxt.getCurrentViewId() != ZmController.NOTEBOOK_PAGE_VIEW) {
+		appCtxt.getAppViewMgr().setView(ZmController.NOTEBOOK_PAGE_VIEW);
 	};
 
 	var notebookController = AjxDispatcher.run("GetNotebookController");
 	notebookController.show(notebook.id, true);
 
-	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
-		var searchController = this._appCtxt.getSearchController();
+	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
+		var searchController = appCtxt.getSearchController();
 		var search = ["in:\"", notebook.getSearchPath(), '"' ].join("");
 		searchController.setDefaultSearchType(ZmItem.PAGE, true);
 		searchController.setSearchField(search);
@@ -235,7 +235,7 @@ function(ev) {
 	var briefcase = this._pendingActionData;
 	var share = null;
 
-	var sharePropsDialog = this._appCtxt.getSharePropsDialog();
+	var sharePropsDialog = appCtxt.getSharePropsDialog();
 	sharePropsDialog.popup(ZmSharePropsDialog.NEW, briefcase, share);
 };
 
@@ -244,7 +244,7 @@ function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	var briefcase = this._pendingActionData;
 
-	var dialog = this._appCtxt.getMountFolderDialog();
+	var dialog = appCtxt.getMountFolderDialog();
 	dialog.popup(ZmOrganizer.BRIEFCASE, briefcase.id/*, ...*/);
 };
 
@@ -268,7 +268,7 @@ ZmBriefcaseTreeController.prototype._deleteListener = function(ev) {
 	var callback = new AjxCallback(this, this._deleteListener2, [ organizer ]);
 	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteBriefcaseItem, organizer.name);
 
-	var dialog = this._appCtxt.getConfirmationDialog();
+	var dialog = appCtxt.getConfirmationDialog();
 	dialog.popup(message, callback);
 };
 
@@ -292,7 +292,7 @@ function(params) {
 	var message;
 	/*
 	// bug: 9406 (short term fix, waiting for backend support)
-	var notebookId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_NOTEBOOK);
+	var notebookId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_NOTEBOOK);
 	var folderId = (params.parent && params.parent.id) || notebookId;
 	var cache = AjxDispatcher.run("GetNotebookCache");
 	if (cache.getPageByName(folderId, params.name)) {
@@ -300,7 +300,7 @@ function(params) {
 	}
 
 	if (message) {
-		var dialog = this._appCtxt.getMsgDialog();
+		var dialog = appCtxt.getMsgDialog();
 		dialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();
 		return;
@@ -313,7 +313,7 @@ ZmBriefcaseTreeController.prototype._getItems =
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
 	if (treeView) {
-		var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
 		var root = treeView.getTreeItemById(rootId);
 		if (root) {
 			return root.getItems();

@@ -23,12 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNotebookTreeController = function(appCtxt, type, dropTgt) {
+ZmNotebookTreeController = function() {
 	
-	type = type ? type : ZmOrganizer.NOTEBOOK;
-	dropTgt = dropTgt ? dropTgt : null;
-	
-	ZmTreeController.call(this, appCtxt, type, dropTgt);
+	ZmTreeController.call(this, ZmOrganizer.NOTEBOOK, dropTgt);
 
 	this._listeners[ZmOperation.NEW_NOTEBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);
@@ -57,12 +54,12 @@ ZmNotebookTreeController.prototype.toString = function() {
 
 ZmNotebookTreeController.prototype.resetOperations =
 function(actionMenu, type, id) {
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
 	if (actionMenu && id != rootId) {
-		var notebook = this._appCtxt.getById(id);
+		var notebook = appCtxt.getById(id);
 		if (!notebook) { return; }
 
-		var notebookId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_NOTEBOOK);
+		var notebookId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_NOTEBOOK);
 		var isRoot = (notebook.id == rootId);
 		var isNotebook = (notebook.id == notebookId);
 		var isTopLevel = (!isRoot && notebook.parent.id == rootId);
@@ -78,7 +75,7 @@ function(actionMenu, type, id) {
 		menuItem.setDisabledImage("NewSectionDis");
 		menuItem.setEnabled(!isLinkOrRemote || ZmNotebookTreeController.__isAllowed(notebook, ZmShare.PERM_CREATE_SUBDIR));
 
-		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 			isNotebook = (!isRoot && notebook.parent.id == rootId);
 			menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_NOTEBOOK);
 			//menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
@@ -117,7 +114,7 @@ ZmNotebookTreeController.__isAllowed = function(organizer, perm) {
 ZmNotebookTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ ZmOperation.NEW_NOTEBOOK ];
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.MOUNT_NOTEBOOK);
 	}
 	ops.push(
@@ -141,11 +138,11 @@ function() {
 ZmNotebookTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [ ZmOperation.NEW_NOTEBOOK ];
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.MOUNT_NOTEBOOK);
 	}
 	ops.push(ZmOperation.SEP);
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_NOTEBOOK);
 	}
 	ops.push(
@@ -164,7 +161,7 @@ function() {
 };
 
 ZmNotebookTreeController.prototype._getNewDialog = function() {
-	return this._appCtxt.getNewNotebookDialog();
+	return appCtxt.getNewNotebookDialog();
 };
 
 ZmNotebookTreeController.prototype.getTreeStyle =
@@ -175,15 +172,15 @@ function() {
 // Method that is run when a tree item is left-clicked
 ZmNotebookTreeController.prototype._itemClicked =
 function(notebook) {
-	if (this._appCtxt.getCurrentViewId() != ZmController.NOTEBOOK_PAGE_VIEW) {
-		this._appCtxt.getAppViewMgr().setView(ZmController.NOTEBOOK_PAGE_VIEW);
+	if (appCtxt.getCurrentViewId() != ZmController.NOTEBOOK_PAGE_VIEW) {
+		appCtxt.getAppViewMgr().setView(ZmController.NOTEBOOK_PAGE_VIEW);
 	};
 
 	var notebookController = AjxDispatcher.run("GetNotebookController");
 	notebookController.show(notebook.id, true);
 
-	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
-		var searchController = this._appCtxt.getSearchController();
+	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
+		var searchController = appCtxt.getSearchController();
 		var search = ["in:\"", notebook.getSearchPath(), '"' ].join("");
 		searchController.setDefaultSearchType(ZmItem.PAGE, true);
 		searchController.setSearchField(search);
@@ -230,7 +227,7 @@ function(ev, treeView, overviewId) {
 			if(id == shownPage.folderId && shownPage.name == ZmNotebook.PAGE_INDEX){
 				shownPage.restUrl = organizer.restUrl;
 			}
-			var appViewMgr = this._appCtxt.getAppViewMgr();
+			var appViewMgr = appCtxt.getAppViewMgr();
 			if( appViewMgr.getCurrentViewId() != ZmController.NOTEBOOK_FILE_VIEW ) {
 				notebookController.gotoPage(shownPage);
 			}
@@ -243,11 +240,11 @@ ZmNotebookTreeController.prototype._newNotebookListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 
-	var overviewController = this._appCtxt.getOverviewController();
+	var overviewController = appCtxt.getOverviewController();
 	var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
-	var folder = this._appCtxt.getById(this._pendingActionData.id);
+	var folder = appCtxt.getById(this._pendingActionData.id);
 
-	var newNotebookDialog = this._appCtxt.getNewNotebookDialog();
+	var newNotebookDialog = appCtxt.getNewNotebookDialog();
 	newNotebookDialog.setParentFolder(folder);
 	newNotebookDialog.popup();
 };
@@ -260,7 +257,7 @@ function(ev) {
 	var notebook = this._pendingActionData;
 	var share = null;
 
-	var sharePropsDialog = this._appCtxt.getSharePropsDialog();
+	var sharePropsDialog = appCtxt.getSharePropsDialog();
 	sharePropsDialog.popup(ZmSharePropsDialog.NEW, notebook, share);
 };
 
@@ -269,7 +266,7 @@ function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	var notebook = this._pendingActionData;
 
-	var dialog = this._appCtxt.getMountFolderDialog();
+	var dialog = appCtxt.getMountFolderDialog();
 	dialog.popup(ZmOrganizer.NOTEBOOK, notebook.id/*, ...*/);
 };
 
@@ -324,7 +321,7 @@ ZmNotebookTreeController.prototype._deleteListener = function(ev) {
 	var callback = new AjxCallback(this, this._deleteListener2, [ organizer ]);
 	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, organizer.name);
 
-	var dialog = this._appCtxt.getConfirmationDialog();
+	var dialog = appCtxt.getConfirmationDialog();
 	dialog.popup(message, callback);
 };
 ZmNotebookTreeController.prototype._deleteListener2 = function(organizer) {
@@ -347,7 +344,7 @@ function(params) {
 	var message;
 
 	// bug: 9406 (short term fix, waiting for backend support)
-	var notebookId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_NOTEBOOK);
+	var notebookId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_NOTEBOOK);
 	var folderId = (params.parent && params.parent.id) || notebookId;
 	var cache = AjxDispatcher.run("GetNotebookCache");
 	if (cache.getPageByName(folderId, params.name)) {
@@ -355,7 +352,7 @@ function(params) {
 	}
 
 	if (message) {
-		var dialog = this._appCtxt.getMsgDialog();
+		var dialog = appCtxt.getMsgDialog();
 		dialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();
 		return;
@@ -368,7 +365,7 @@ ZmNotebookTreeController.prototype._getItems =
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
 	if (treeView) {
-		var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
 		var root = treeView.getTreeItemById(rootId);
 		if (root) {
 			return root.getItems();

@@ -24,18 +24,17 @@
  */
 
 /**
-* Creates a saved search tree controller.
-* @constructor
-* @class
-* This class controls a tree display of saved searches.
-*
-* @author Conrad Damon
-* @param appCtxt	[ZmAppCtxt]		app context
-*/
-ZmSearchTreeController = function(appCtxt) {
+ * Creates a saved search tree controller.
+ * @constructor
+ * @class
+ * This class controls a tree display of saved searches.
+ *
+ * @author Conrad Damon
+ */
+ZmSearchTreeController = function() {
 
 	var dropTgt = new DwtDropTarget("ZmSearchFolder");
-	ZmFolderTreeController.call(this, appCtxt, ZmOrganizer.SEARCH, dropTgt);
+	ZmFolderTreeController.call(this, ZmOrganizer.SEARCH, dropTgt);
 
 	this._listeners[ZmOperation.RENAME_SEARCH] = new AjxListener(this, this._renameListener);
 	
@@ -71,7 +70,7 @@ function(params) {
 		this._treeView[id] = this._setup(id);
 	}
 	// mixed app should be filtered based on the previous app!
-	var appController = this._appCtxt.getAppController();
+	var appController = appCtxt.getAppController();
 	var activeApp = appController.getActiveApp();
 	var prevApp = appController.getPreviousApp();
 	var searchTypes = this._searchTypes[id] =
@@ -97,7 +96,7 @@ function(params) {
 ZmSearchTreeController.prototype.resetOperations = 
 function(parent, type, id) {
 	parent.enableAll(true);
-	var search = this._appCtxt.getById(id);
+	var search = appCtxt.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
 };
 
@@ -135,7 +134,7 @@ function() {
 */
 ZmSearchTreeController.prototype._getNewDialog =
 function() {
-	return this._appCtxt.getNewSearchDialog();
+	return appCtxt.getNewSearchDialog();
 };
 
 /*
@@ -146,7 +145,7 @@ function() {
 */
 ZmSearchTreeController.prototype._itemClicked =
 function(searchFolder) {
-	var searchController = this._appCtxt.getSearchController();
+	var searchController = appCtxt.getSearchController();
 	searchController.redoSearch(searchFolder.search);
 };
 
@@ -178,7 +177,7 @@ function(overviewId, account) {
 	var treeView = this._treeView[overviewId];
 	if (!overviewId || !treeView) { return;	}
 
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT, account);
+	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT, account);
 	var hideMe = (this._hideEmpty[overviewId] && this._hideEmpty[overviewId][this.type]);
 	var hide = (hideMe && !this._treeItemTypeMatch(treeView.getTreeItemById(rootId), this._searchTypes[overviewId]));
 	this._treeView[overviewId].setVisible(!hide);

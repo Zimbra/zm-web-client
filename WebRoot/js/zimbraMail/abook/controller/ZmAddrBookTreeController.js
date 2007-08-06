@@ -24,24 +24,17 @@
  */
 
 /**
-* Creates an address book tree controller.
-* @constructor
-* @class
-* This class is a controller for the tree view used by the address book 
-* application. This class uses the support provided by ZmOperation. 
-*
-* @author Parag Shah
-* @param appCtxt	[ZmAppCtxt]		main (singleton) app context
-* @param type		[constant]		type of organizer we are displaying/controlling
-* @param dropTgt	[DwtDropTgt]	drop target for this type
-*/
-ZmAddrBookTreeController = function(appCtxt, type, dropTgt) {
-	if (arguments.length === 0) return;
+ * Creates an address book tree controller.
+ * @constructor
+ * @class
+ * This class is a controller for the tree view used by the address book 
+ * application. This class uses the support provided by ZmOperation. 
+ *
+ * @author Parag Shah
+ */
+ZmAddrBookTreeController = function() {
 
-	type = type || ZmOrganizer.ADDRBOOK;
-	dropTgt = dropTgt || (new DwtDropTarget("ZmContact"));
-
-	ZmFolderTreeController.call(this, appCtxt, type, dropTgt);
+	ZmFolderTreeController.call(this, ZmOrganizer.ADDRBOOK);
 
 	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
@@ -77,7 +70,7 @@ function(parent, type, id) {
 		deleteText = ZmMsg.emptyTrash;
 	} else {
 		parent.enableAll(true);
-		var addrBook = this._appCtxt.getById(id);
+		var addrBook = appCtxt.getById(id);
 		if (addrBook) {
 			if (addrBook.isSystem()) {
 				parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
@@ -95,6 +88,11 @@ function(parent, type, id) {
 
 
 // Protected methods
+
+ZmAddrBookTreeController.prototype._getDropTarget =
+function() {
+	return (new DwtDropTarget(["ZmContact"]));
+};
 
 ZmAddrBookTreeController.prototype._getAllowedSubTypes =
 function() {
@@ -128,11 +126,11 @@ function() {
 // Returns the dialog for organizer creation
 ZmAddrBookTreeController.prototype._getNewDialog =
 function() {
-	return this._appCtxt.getNewAddrBookDialog();
+	return appCtxt.getNewAddrBookDialog();
 };
 
 ZmAddrBookTreeController.prototype._getDropTarget =
-function(appCtxt) {
+function() {
 	return (new DwtDropTarget(["ZmContact"]));
 };
 
@@ -142,12 +140,12 @@ function(appCtxt) {
 ZmAddrBookTreeController.prototype._shareAddrBookListener = 
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
-	this._appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
+	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
 };
 
 ZmAddrBookTreeController.prototype._mountAddrBookListener =
 function(ev) {
-	this._appCtxt.getMountFolderDialog().popup(ZmOrganizer.ADDRBOOK);
+	appCtxt.getMountFolderDialog().popup(ZmOrganizer.ADDRBOOK);
 };
 
 /*
@@ -165,10 +163,10 @@ function(folder) {
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
 	} else {
-		var sc = this._appCtxt.getSearchController();
+		var sc = appCtxt.getSearchController();
 		sc.setDefaultSearchType(ZmItem.CONTACT, true);
 
-		var capp = this._appCtxt.getApp(ZmApp.CONTACTS);
+		var capp = appCtxt.getApp(ZmApp.CONTACTS);
 
 		// force a search if user clicked Trash folder or share
 		if (folder.id == ZmFolder.ID_TRASH || folder.link) {

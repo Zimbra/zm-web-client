@@ -119,7 +119,7 @@ function(treeId) {
 	if (!treeId) { return null; }
 	if (!this._controller[treeId]) {
 		var treeControllerCtor = eval(ZmOverviewController.CONTROLLER[treeId]);
-		this._controller[treeId] = new treeControllerCtor(appCtxt);
+		this._controller[treeId] = new treeControllerCtor(treeId);
 	}
 	return this._controller[treeId];
 };

@@ -34,15 +34,13 @@
  *
  * @author Conrad Damon
  * 
- * @param appCtxt	[ZmAppCtxt]		app context
  * @param type		[constant]		type of organizer we are displaying/controlling
  * @param dropTgt	[DwtDropTgt]	drop target for this type
  */
-ZmTreeController = function(appCtxt, type, dropTgt) {
+ZmTreeController = function(type, dropTgt) {
 
 	if (arguments.length == 0) return;
 	ZmController.call(this);
-	this._appCtxt = appCtxt;
 
 	this.type = type;
 	this._opc = appCtxt.getOverviewController();
@@ -192,10 +190,10 @@ function() {
 
 ZmTreeController.prototype.getDataTree =
 function(account) {
-	account = account || this._appCtxt.getActiveAccount();
+	account = account || appCtxt.getActiveAccount();
 	var dataTree = this._dataTree[account.id];
 	if (!dataTree) {
-		dataTree = this._dataTree[account.id] = this._appCtxt.getTree(this.type, account);
+		dataTree = this._dataTree[account.id] = appCtxt.getTree(this.type, account);
 		if (dataTree) {
 			this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
 			dataTree.addChangeListener(this._dataChangeListener);
@@ -232,7 +230,7 @@ function(overviewId, account) {
 	if (!this.isCheckedStyle && !ZmOrganizer.HAS_COLOR[this.type]) { return; }
 
 	var treeView = this.getTreeView(overviewId);
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT, account);
+	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT, account);
 	var rootTreeItem = treeView.getTreeItemById(rootId);
 	if (!rootTreeItem) { return; }
 	if (this.isCheckedStyle) {
@@ -419,7 +417,7 @@ function(params) {
 	var funcName = ZmOrganizer.CREATE_FUNC[this.type];
 	if (funcName) {
 		var func = eval(funcName);
-		func(this._appCtxt, params);
+		func(appCtxt, params);
 	}
 };
 
@@ -503,7 +501,7 @@ function(ev) {
 	if (item) {
 		this._actionedOrganizer = item;
 		if (item.noSuchFolder) {
-			var folderTree = this._appCtxt.getFolderTree();
+			var folderTree = appCtxt.getFolderTree();
 			if (folderTree) {
 				folderTree.handleDeleteNoSuchFolder(item);
 			}
@@ -630,7 +628,7 @@ function(ev, treeView, overviewId) {
 					} else {
 						node.setDndText(organizer.getName());
 					}
-					this._appCtxt.getAppViewMgr().updateTitle();
+					appCtxt.getAppViewMgr().updateTitle();
 				}
 				if (parentNode) {
 					parentNode.setExpanded(true);
@@ -721,7 +719,7 @@ function(ev) {
 ZmTreeController.prototype._moveListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
-	var moveToDialog = this._appCtxt.getChooseFolderDialog();
+	var moveToDialog = appCtxt.getChooseFolderDialog();
 	if (!this._moveCb) {
 		this._moveCb = new AjxCallback(this, this._moveCallback);
 	}
@@ -778,7 +776,7 @@ function(ev) {
  */
 ZmTreeController.prototype._editPropsListener = 
 function(ev) {
-	var folderPropsDialog = this._appCtxt.getFolderPropsDialog();
+	var folderPropsDialog = appCtxt.getFolderPropsDialog();
 	folderPropsDialog.popup(this._getActionedOrganizer(ev));
 };
 
@@ -852,7 +850,7 @@ function(organizer, name) {
 ZmTreeController.prototype._moveCallback =
 function(folder) {
 	this._doMove(this._pendingActionData, folder);
-	this._clearDialog(this._appCtxt.getChooseFolderDialog());
+	this._clearDialog(appCtxt.getChooseFolderDialog());
 };
 
 /**

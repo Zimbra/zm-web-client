@@ -23,12 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCalendarTreeController = function(appCtxt, type, dropTgt) {
-	if (arguments.length == 0) return;
-	type = type ? type : ZmOrganizer.CALENDAR;
-	dropTgt = dropTgt ? dropTgt : null;
-	
-	ZmTreeController.call(this, appCtxt, type, dropTgt);
+ZmCalendarTreeController = function() {
+
+	ZmTreeController.call(this, ZmOrganizer.CALENDAR);
 
 	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);
@@ -92,13 +89,13 @@ function(overviewId, listener) {
 ZmCalendarTreeController.prototype.resetOperations = 
 function(actionMenu, type, id) {
 	if (actionMenu) {
-		var calendar = this._appCtxt.getById(id);
+		var calendar = appCtxt.getById(id);
 		if (calendar) {
 			actionMenu.enable(ZmOperation.SHARE_CALENDAR, !calendar.link);
 			actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());
 		}
 		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_CALENDAR);
-		var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
 		if (id == rootId) {
 			var items = this._getItems(this._actionedOverviewId);
 			var foundChecked = false;
@@ -118,7 +115,7 @@ function(actionMenu, type, id) {
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_CALENDAR];
-	if (this._appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
+	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		ops.push(ZmOperation.MOUNT_CALENDAR);
 	}
 	ops.push(ZmOperation.CHECK_ALL);
@@ -131,7 +128,7 @@ function() {
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [];
-	if (this._appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
+	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		ops.push(ZmOperation.SHARE_CALENDAR);
 	}
 	ops.push(ZmOperation.DELETE);
@@ -163,7 +160,7 @@ function() {
 */
 ZmCalendarTreeController.prototype._getNewDialog =
 function() {
-	return this._appCtxt.getNewCalendarDialog();
+	return appCtxt.getNewCalendarDialog();
 };
 
 // Listener callbacks
@@ -176,7 +173,7 @@ function(ev, treeView, overviewId) {
 	
 	var fields = ev.getDetail("fields") || {};
 	if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_DELETE || (ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_FLAGS])) {
-		var app = this._appCtxt.getApp(ZmApp.CALENDAR);
+		var app = appCtxt.getApp(ZmApp.CALENDAR);
 		var controller = app.getCalController();
 		controller._updateCheckedCalendars();
 		controller._refreshAction(true);
@@ -224,13 +221,13 @@ function(ev) {
 	var calendar = this._pendingActionData;
 	var share = null;
 	
-	var sharePropsDialog = this._appCtxt.getSharePropsDialog();
+	var sharePropsDialog = appCtxt.getSharePropsDialog();
 	sharePropsDialog.popup(ZmSharePropsDialog.NEW, calendar, share);
 };
 
 ZmCalendarTreeController.prototype._mountCalListener =
 function(ev) {
-	var dialog = this._appCtxt.getMountFolderDialog();
+	var dialog = appCtxt.getMountFolderDialog();
 	dialog.popup(ZmOrganizer.CALENDAR/*, ...*/);
 };
 
@@ -239,7 +236,7 @@ ZmCalendarTreeController.prototype._deleteListener = function(ev) {
 	var callback = new AjxCallback(this, this._deleteListener2, [ organizer ]);
 	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteCalendar, organizer.name);
 
-	var dialog = this._appCtxt.getConfirmationDialog();
+	var dialog = appCtxt.getConfirmationDialog();
 	dialog.popup(message, callback);
 };
 ZmCalendarTreeController.prototype._deleteListener2 = function(organizer) {
@@ -261,7 +258,7 @@ ZmCalendarTreeController.prototype._getItems =
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
 	if (treeView) {
-		var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
 		var root = treeView.getTreeItemById(rootId);
 		if (root) {
 			return root.getItems();

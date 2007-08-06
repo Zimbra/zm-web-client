@@ -24,23 +24,23 @@
  */
 
 /**
-* Creates a folder tree controller.
-* @constructor
-* @class
-* This class controls a tree display of folders.
-*
-* @author Conrad Damon
-* @param appCtxt	[ZmAppCtxt]		app context
-* @param type		[constant]*		type of organizer we are displaying/controlling (folder or search)
-* @param dropTgt	[DwtDropTgt]	drop target for this type
-*/
-ZmFolderTreeController = function(appCtxt, type, dropTgt) {
+ * Creates a folder tree controller.
+ * @constructor
+ * @class
+ * This class controls a tree display of folders.
+ *
+ * @author Conrad Damon
+ * 
+ * @param type		[constant]		type of organizer we are displaying/controlling (folder or search)
+ * @param dropTgt	[DwtDropTgt]*	drop target for this type
+ */
+ZmFolderTreeController = function(type, dropTgt) {
 
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 
 	type = type ? type : ZmOrganizer.FOLDER;
-	dropTgt = dropTgt ? dropTgt : this._getDropTarget(appCtxt);
-	ZmTreeController.call(this, appCtxt, type, dropTgt);
+	dropTgt = dropTgt ? dropTgt : this._getDropTarget();
+	ZmTreeController.call(this, type, dropTgt);
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
@@ -91,7 +91,7 @@ ZmFolderTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	
 	var emptyText = ZmMsg.emptyFolder; //ZmMsg.empty + (ZmFolder.MSG_KEY[id]?" "+ZmFolder.MSG_KEY[id] : "");
-	var folder = this._appCtxt.getById(id);
+	var folder = appCtxt.getById(id);
 	var hasContent = ((folder.numTotal > 0) || (folder.children && (folder.children.size() > 0)));
 
 	// user folder or Folders header
@@ -147,7 +147,7 @@ function(parent, type, id) {
         }
 		else {
 			// TODO: also consider if IMAP is enabled
-			var isEnabled = this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED);
+			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED);
 			if (isEnabled) {
 				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
 				var dataSources = dsCollection.getItemsFor(folder.id);
@@ -206,7 +206,7 @@ function() {
 */
 ZmFolderTreeController.prototype._getNewDialog =
 function() {
-	return this._appCtxt.getNewFolderDialog();
+	return appCtxt.getNewFolderDialog();
 };
 
 /*
@@ -214,7 +214,7 @@ function() {
 */
 ZmFolderTreeController.prototype._getRenameDialog =
 function() {
-	return this._appCtxt.getRenameFolderDialog();
+	return appCtxt.getRenameFolderDialog();
 };
 
 /*
@@ -232,10 +232,10 @@ function(folder) {
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
 	} else {
-		var searchController = this._appCtxt.getSearchController();
+		var searchController = appCtxt.getSearchController();
 		var searchFor = ZmSearchToolBar.FOR_MAIL_MI;
 		if (folder.isInTrash()) {
-			var app = this._appCtxt.getCurrentAppName();
+			var app = appCtxt.getCurrentAppName();
 			// if other apps add Trash to their folder tree, set appropriate type here:
 			if (app == ZmApp.CONTACTS) {
 				searchFor = ZmItem.CONTACT;
@@ -247,7 +247,7 @@ function(folder) {
 
 // override this method if you want different drop targets
 ZmFolderTreeController.prototype._getDropTarget =
-function(appCtxt) {
+function() {
 	var list = ["ZmFolder", "ZmSearchFolder"];
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		list.push("ZmMailMsg");
@@ -302,7 +302,7 @@ function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 	if (organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash()) {
 		this._pendingActionData = organizer;
-		var ds = this._deleteShield = this._appCtxt.getOkCancelMsgDialog();
+		var ds = this._deleteShield = appCtxt.getOkCancelMsgDialog();
 		ds.reset();
 		ds.registerCallback(DwtDialog.OK_BUTTON, this._deleteShieldYesCallback, this, organizer);
 		ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._deleteShield);
@@ -311,7 +311,7 @@ function(ev) {
 		ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		ds.popup();
     } else {
-		this._doMove(organizer, this._appCtxt.getById(ZmFolder.ID_TRASH));
+		this._doMove(organizer, appCtxt.getById(ZmFolder.ID_TRASH));
 	}
 };
 
@@ -326,7 +326,7 @@ function(ev) {
 ZmFolderTreeController.prototype._emptyListener = 
 function(ev) {
 	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
-	var ds = this._emptyShield = this._appCtxt.getOkCancelMsgDialog();
+	var ds = this._emptyShield = appCtxt.getOkCancelMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.OK_BUTTON, this._emptyShieldYesCallback, this, organizer);
 	ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._emptyShield);
@@ -418,12 +418,12 @@ function(ev) {
 ZmFolderTreeController.prototype._shareAddrBookListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
-	this._appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
+	appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
 };
 
 ZmFolderTreeController.prototype._mountAddrBookListener =
 function(ev) {
-	this._appCtxt.getMountFolderDialog().popup(ZmOrganizer.FOLDER);
+	appCtxt.getMountFolderDialog().popup(ZmOrganizer.FOLDER);
 };
 
 

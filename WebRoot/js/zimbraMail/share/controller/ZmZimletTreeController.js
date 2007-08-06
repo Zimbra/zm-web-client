@@ -23,22 +23,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmZimletTreeController = function(appCtxt, type, dropTgt) {
-	if (arguments.length === 0) {return;}
+ZmZimletTreeController = function() {
 
-	type = type ? type : ZmOrganizer.ZIMLET;
-	if (!dropTgt) {
-		var list = ["ZmFolder"];
-		if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-			list.push("ZmMailMsg");
-			list.push("ZmConv");
-		}
-		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			list.push("ZmContact");
-		}
-		dropTgt = new DwtDropTarget(list);
+	var list = ["ZmFolder"];
+	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		list.push("ZmMailMsg");
+		list.push("ZmConv");
 	}
-	ZmTreeController.call(this, appCtxt, type, dropTgt);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		list.push("ZmContact");
+	}
+	dropTgt = new DwtDropTarget(list);
+	ZmTreeController.call(this, ZmOrganizer.ZIMLET, dropTgt);
 
 	this._eventMgrs = {};
 }
@@ -108,7 +104,7 @@ function(ev, treeView, overviewId) {
 
 ZmZimletTreeController.prototype._getDataTree =
 function() {
-	return this._appCtxt.getZimletTree();
+	return appCtxt.getZimletTree();
 };
 
 // Returns a list of desired header action menu operations
