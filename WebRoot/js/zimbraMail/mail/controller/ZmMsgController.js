@@ -109,7 +109,7 @@ function() {
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	this._setView(this._currentView, elements, false, this.isChildWindow);
+	this._setView(this._currentView, elements, false, appCtxt.isChildWindow);
 };
 
 ZmMsgController.prototype.getKeyMapName =
@@ -137,7 +137,7 @@ function(actionCode) {
 
 ZmMsgController.prototype._getToolBarOps = 
 function() {
-	if (this.isChildWindow) {
+	if (appCtxt.isChildWindow) {
 		return [ZmOperation.PRINT, ZmOperation.CLOSE];
 	} else {
 		var list = this._standardToolBarOps();
@@ -155,7 +155,7 @@ function() {
 
 ZmMsgController.prototype._initializeToolBar = 
 function(view, arrowStyle) {
-	if (!this.isChildWindow) {
+	if (!appCtxt.isChildWindow) {
 		ZmMailListController.prototype._initializeToolBar.call(this, view, arrowStyle);
 	} else {
 		var buttons = this._getToolBarOps();
@@ -223,7 +223,7 @@ function(view) {
 ZmMsgController.prototype._resetNavToolBarButtons = 
 function(view) {
 	// NOTE: we purposely do not call base class here!
-	if (!this.isChildWindow) {
+	if (!appCtxt.isChildWindow) {
 		var list = this._msg.list.getVector();
 		
 		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, list.get(0) != this._msg);

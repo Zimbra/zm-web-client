@@ -1855,12 +1855,12 @@ function() {
  	}
 	// bug fix# 3209
 	// - hide the dialog instead of popdown (since window will go away anyway)
-	if (AjxEnv.isNav && this._controller.isChildWindow) {
+	if (AjxEnv.isNav && appCtxt.isChildWindow) {
 		this._confirmDialog.setVisible(false);
 	}
 
 	// dont make any calls after sendMsg if child window since window gets destroyed
-	if (this._controller.isChildWindow && !AjxEnv.isNav) {
+	if (appCtxt.isChildWindow && !AjxEnv.isNav) {
 		this._controller.sendMsg();
 	} else {
 		// bug fix #3251 - call popdown BEFORE sendMsg

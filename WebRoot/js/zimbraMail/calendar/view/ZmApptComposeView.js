@@ -252,10 +252,12 @@ function(tabKey) {
 		this._apptEditView.reEnableDesignMode();
 	} else {
 		var buttons = [ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK];
-		if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
+		if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 			buttons.push(ZmOperation.COMPOSE_FORMAT);
-		if (!this.isChildWindow)
+		}
+		if (!appCtxt.isChildWindow) {
 			buttons.push(ZmOperation.DETACH_COMPOSE);
+		}
 		toolbar.enable(buttons, false);
 		this._apptEditView.enableInputs(false);
 	}

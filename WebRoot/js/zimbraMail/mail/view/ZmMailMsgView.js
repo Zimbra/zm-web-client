@@ -43,11 +43,11 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	this._expandDivId = Dwt.getNextId();
 
 	// do we add a close button in the header section?
-	this._hasHeaderCloseBtn = (this._mode == ZmController.MSG_VIEW && !this._controller.isChildWindow);
+	this._hasHeaderCloseBtn = (this._mode == ZmController.MSG_VIEW && !appCtxt.isChildWindow);
 
 	this.setScrollStyle(ZmMailMsgView.SCROLL_WITH_IFRAME ? DwtControl.CLIP : DwtControl.SCROLL);
 
-	if (!controller.isChildWindow) {
+	if (!appCtxt.isChildWindow) {
 		// Add change listener to taglist to track changes in tag color
 		this._tagList = this._appCtxt.getTagTree();
 		if (this._tagList) {
@@ -59,7 +59,7 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	this._setMouseEventHdlrs(); // needed by object manager
 
 	// XXX: for now, turn off object handling in new window
-	if (!controller.isChildWindow) {
+	if (!appCtxt.isChildWindow) {
 		this._objectManager = true;
 	}
 
@@ -133,7 +133,7 @@ function(msg) {
 
 	if ((this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
 		msg.isInvite() && msg.getInvite().type != "task" &&
-		!this._controller.isChildWindow)
+		!appCtxt.isChildWindow)
 	{
 		var invite = msg.getInvite();
 		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
@@ -356,7 +356,7 @@ function() {
 
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg) {
-	if (!this._controller.isChildWindow) {
+	if (!appCtxt.isChildWindow) {
 		if (this._mode == ZmController.MSG_VIEW) {
 			this._setTags(msg);
 			// Remove listener for current msg if it exists
@@ -859,7 +859,7 @@ function(container, html, isTextMsg) {
 		}
 	}
 
-	if (isTextMsg || this._controller.isChildWindow) {
+	if (isTextMsg || appCtxt.isChildWindow) {
 		this._setAttachmentLinks();
 	}
 

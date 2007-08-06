@@ -533,8 +533,7 @@ function() {
 
 ZmAppCtxt.prototype.getRootTabGroup =
 function() {
-	var isChildWin = this.getAppController().isChildWindow();
-	if (isChildWin) {
+	if (this.isChildWindow) {
 		if (!this._childWinTabGrp) {
 			this._childWinTabGrp = new DwtTabGroup("CHILD_WINDOW");
 		}
@@ -543,7 +542,7 @@ function() {
 			this._rootTabGrp = new DwtTabGroup("ROOT");
 		}
 	}
-	return isChildWin ? this._childWinTabGrp : this._rootTabGrp;
+	return this.isChildWindow ? this._childWinTabGrp : this._rootTabGrp;
 }
 
 ZmAppCtxt.prototype.getShell =
@@ -617,7 +616,7 @@ ZmAppCtxt.prototype.getSignatureCollection = function() {
 
 ZmAppCtxt.prototype.getTree =
 function(type, account) {
-	if (this.getAppController().isChildWindow()) {
+	if (this.isChildWindow) {
 		return window.parentController._appCtxt.getTree(type, account);
 	}
 	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;

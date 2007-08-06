@@ -101,7 +101,7 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 		function launch() {
 			AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp"
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
-			ZmNewWindow.run(document.domain);
+			ZmNewWindow.run();
 		}
 		AjxCore.addOnloadListener(launch);
 		AjxCore.addOnunloadListener(ZmNewWindow.unload);

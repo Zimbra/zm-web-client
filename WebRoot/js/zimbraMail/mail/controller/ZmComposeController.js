@@ -449,7 +449,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.NEW_WINDOW:
-			if (!this.isChildWindow) {
+			if (!appCtxt.isChildWindow) {
 				this._detachListener();
 			}
 			break;
@@ -558,11 +558,11 @@ function() {
 		     
 	buttons.push(ZmOperation.SPELL_CHECK, ZmOperation.ADD_SIGNATURE, ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
 
-	if (!this.isChildWindow) {
+	if (!appCtxt.isChildWindow) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
 
-	var className = this.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
+	var className = appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className});
 
 	for (var i = 0; i < this._toolbar.opList.length; i++) {
@@ -753,7 +753,7 @@ function(mode) {
 ZmComposeController.prototype._processSendMsg =
 function(isDraft, msg, resp) {
 	if (!isDraft) {
-		if (this.isChildWindow && window.parentController) {
+		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
 			window.parentController.setStatusMsg(ZmMsg.messageSent);
 		} else {
@@ -772,7 +772,7 @@ function(isDraft, msg, resp) {
 		}
 	} else {
 		// TODO - disable save draft button indicating a draft was saved
-		if (this.isChildWindow && window.parentController) {
+		if (appCtxt.isChildWindow && window.parentController) {
 			window.parentController.setStatusMsg(ZmMsg.draftSaved);
 		} else {
 			this._appCtxt.setStatusMsg(ZmMsg.draftSaved);
@@ -983,7 +983,7 @@ function() {
 		this.sendMsg(null, true);
 	} else {
 		// cancel
-		if (this.isChildWindow && window.parentController) {
+		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
 		} else {
 			this._composeView.reset(false);
@@ -1002,7 +1002,7 @@ function() {
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
-		if (this.isChildWindow && window.parentController) {
+		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
 		} else {
 			this._composeView.reset(false);

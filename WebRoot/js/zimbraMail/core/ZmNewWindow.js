@@ -24,21 +24,18 @@
  */
 
 /**
-* Creates a controller to run ZmNewWindow. Do not call directly, instead use
-* the run() factory method.
-* @constructor
-* @class
-* This class is the controller for a window created outside the main client
-* window. It is a very stripped down and specialized version of ZmZimbraMail.
-* The child window is single-use; it does not support switching among multiple
-* views.
-*
-* @author Parag Shah
-*
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param domain		[string]	current domain
-*/
-ZmNewWindow = function(appCtxt, domain) {
+ * Creates a controller to run ZmNewWindow. Do not call directly, instead use
+ * the run() factory method.
+ * @constructor
+ * @class
+ * This class is the controller for a window created outside the main client
+ * window. It is a very stripped down and specialized version of ZmZimbraMail.
+ * The child window is single-use; it does not support switching among multiple
+ * views.
+ *
+ * @author Parag Shah
+ */
+ZmNewWindow = function() {
 
 	ZmController.call(this, appCtxt);
 
@@ -49,7 +46,7 @@ ZmNewWindow = function(appCtxt, domain) {
 
 	// Register keymap and global key action handler w/ shell's keyboard manager
 	this._kbMgr = appCtxt.getKeyboardMgr();
-	if (this._appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
+	if (appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
 		this._kbMgr.enable(true);
 		this._kbMgr.registerKeyMap(new ZmKeyMap(appCtxt));
 		this._kbMgr.pushDefaultHandler(this);
@@ -69,13 +66,11 @@ function() {
 // Public methods
 
 /**
-* Sets up ZmNewWindow, and then starts it by calling its constructor. It is assumed that the
-* CSFE is on the same host.
-*
-* @param domain		[string]	the host that we're running on
-*/
+ * Sets up ZmNewWindow, and then starts it by calling its constructor. It is assumed that the
+ * CSFE is on the same host.
+ */
 ZmNewWindow.run =
-function(domain) {
+function() {
 
 	// inherit parent window's debug level but only enable debug window if not already open
 	DBG.setDebugLevel(window.opener.DBG._level, true);
@@ -85,12 +80,14 @@ function(domain) {
 	}
 
 	// Create the global app context
-	var appCtxt = new ZmAppCtxt();
+	window.appCtxt = new ZmAppCtxt();
+	window.appCtxt.isChildWindow = true;
 
 	// XXX: DO NOT MOVE THIS LINE
 	// redefine ZmSetting from parent window since it loses this info.
-	appCtxt.setSettings(window.parentController._appCtxt.getSettings());
-	ZmSetting = window.opener["ZmSetting"];
+	var parentAppCtxt = window.opener.appCtxt;
+	appCtxt.setSettings(parentAppCtxt.getSettings());
+	window.ZmSetting = window.opener.ZmSetting;
 
 	ZmOperation.initialize();
 	ZmApp.initialize();
@@ -100,7 +97,8 @@ function(domain) {
 	appCtxt.setShell(shell);
 
 	// create new window and Go!
-	var newWindow = new ZmNewWindow(appCtxt, domain);
+	var newWindow = new ZmNewWindow();
+	newWindow._parentAppCtxt = parentAppCtxt;
     newWindow.startup();
 };
 
@@ -109,27 +107,20 @@ function(domain) {
 */
 ZmNewWindow.unload =
 function(ev) {
-	if (window.opener == null || window.parentController == null)
-		return;
+	if (!window.opener || !window.parentController) { return; }
 
-	// is there a better way to get a ref to the compose controller?
-	var shell = AjxCore.objectWithId(window._dwtShell);
-	var appCtxt = shell ? shell.getData(ZmAppCtxt.LABEL) : null;
-	var mailApp = appCtxt ? appCtxt.getApp(ZmApp.MAIL) : null;
-	if (mailApp) {
-		if (window.command == "compose" || window.command == "composeDetach") {
-			// compose controller adds listeners to parent window's list so we
-			// need to remove them before closing this window!
-			var cc = AjxDispatcher.run("GetComposeController");
-			if (cc) {
-				cc.dispose();
-			}
-		} else if (window.command == "msgViewDetach") {
-			// msg controller (as a ZmListController) adds listener to tag list
-			var mc = mailApp.getMsgController();
-			if (mc) {
-				mc.dispose();
-			}
+	if (window.command == "compose" || window.command == "composeDetach") {
+		// compose controller adds listeners to parent window's list so we
+		// need to remove them before closing this window!
+		var cc = AjxDispatcher.run("GetComposeController");
+		if (cc) {
+			cc.dispose();
+		}
+	} else if (window.command == "msgViewDetach") {
+		// msg controller (as a ZmListController) adds listener to tag list
+		var mc = appCtxt.getApp(ZmApp.MAIL).getMsgController();
+		if (mc) {
+			mc.dispose();
 		}
 	}
 
@@ -139,12 +130,12 @@ function(ev) {
 };
 
 /**
-* Presents a view based on a command passed through the window object. Possible commands are:
-*
-* compose			compose window launched in child window
-* composeDetach		compose window detached from client
-* msgViewDetach		msg view detached from client
-*/
+ * Presents a view based on a command passed through the window object. Possible commands are:
+ *
+ * compose			compose window launched in child window
+ * composeDetach		compose window detached from client
+ * msgViewDetach		msg view detached from client
+ */
 ZmNewWindow.prototype.startup =
 function() {
 
@@ -152,7 +143,7 @@ function() {
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
 	}
 
-	var rootTg = this._appCtxt.getRootTabGroup();
+	var rootTg = appCtxt.getRootTabGroup();
 	var startupFocusItem;
 
 	// get params from parent window b/c of Safari bug #7162
@@ -171,8 +162,8 @@ function() {
     this._createEnabledApps(apps);
 
 	// inherit parent's identity collection
-	var parentPrefsApp = window.parentController._appCtxt.getApp(ZmApp.PREFERENCES);
-	this._appCtxt.getApp(ZmApp.PREFERENCES)._identityCollection = parentPrefsApp.getIdentityCollection();
+	var parentPrefsApp = this._parentAppCtxt.getApp(ZmApp.PREFERENCES);
+	appCtxt.getApp(ZmApp.PREFERENCES)._identityCollection = parentPrefsApp.getIdentityCollection();
 
 	// depending on the command, do the right thing
 	if (window.command == "compose" || window.command == "composeDetach") {
@@ -219,7 +210,7 @@ function() {
 		startupFocusItem = msgController.getCurrentView();
 	}
 
-	var kbMgr = this._appCtxt.getKeyboardMgr();
+	var kbMgr = appCtxt.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);
 	kbMgr.grabFocus(startupFocusItem);
 };
@@ -237,8 +228,9 @@ function(params) {
 */
 ZmNewWindow.prototype.setStatusMsg =
 function(msg, level, detail, delay, transition) {
-	if (window.parentController)
+	if (window.parentController) {
 		window.parentController.setStatusMsg(msg, level, detail, delay, transition);
+	}
 };
 
 /**
@@ -248,8 +240,9 @@ function(msg, level, detail, delay, transition) {
 */
 ZmNewWindow.prototype.getApp =
 function(appName) {
-	if (!this._apps[appName])
+	if (!this._apps[appName]) {
 		this._createApp(appName);
+	}
 	return this._apps[appName];
 };
 
@@ -264,14 +257,9 @@ function() {
 // App view mgr calls this, we don't need it to do anything.
 ZmNewWindow.prototype.setActiveApp = function() {};
 
-ZmNewWindow.prototype.isChildWindow =
-function() {
-	return true;
-};
-
 ZmNewWindow.prototype.getKeyMapName =
 function() {
-	var ctlr = this._appCtxt.getCurrentController();
+	var ctlr = appCtxt.getCurrentController();
 	if (ctlr && ctlr.getKeyMapName) {
 		return ctlr.getKeyMapName();
 	}
@@ -282,7 +270,7 @@ ZmNewWindow.prototype.handleKeyAction =
 function(actionCode, ev) {
 	switch (actionCode) {
 		default: {
-			var ctlr = this._appCtxt.getCurrentController();
+			var ctlr = appCtxt.getCurrentController();
 			if (ctlr && ctlr.handleKeyAction) {
 				return ctlr.handleKeyAction(actionCode, ev);
 			} else {
@@ -314,13 +302,13 @@ function(apps) {
 		return ZmZimbraMail.hashSortCompare(ZmApp.LOAD_SORT, a, b);
 	});
 
-	this._appCtxt.set(ZmSetting.IM_ENABLED, false);	// defaults to true in LDAP
+	appCtxt.set(ZmSetting.IM_ENABLED, false);	// defaults to true in LDAP
 
 	// instantiate enabled apps - this will invoke app registration
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var app = ZmApp.APPS[i];
 		var setting = ZmApp.SETTING[app];
-		if (!setting || this._appCtxt.get(setting)) {
+		if (!setting || appCtxt.get(setting)) {
 			this._createApp(app);
 		}
 	}
@@ -331,7 +319,7 @@ ZmNewWindow.prototype._createApp =
 function(appName) {
 	if (this._apps[appName]) return;
 	var appClass = eval(ZmApp.CLASS[appName]);
-	this._apps[appName] = new appClass(this._appCtxt, this._shell, window.parentController);
+	this._apps[appName] = new appClass(appCtxt, this._shell, window.parentController);
 };
 
 ZmNewWindow.prototype._deepCopyMsg =
@@ -341,11 +329,10 @@ function(msg) {
 	var oldSearch = msg.list.search;
 
 	if (oldSearch) {
-		newSearch = new ZmSearch(this._appCtxt);
+		newSearch = new ZmSearch(appCtxt);
 
 		for (var i in oldSearch) {
-			if ((typeof oldSearch[i] == "object") || (typeof oldSearch[i] == "function"))
-				continue;
+			if ((typeof oldSearch[i] == "object") || (typeof oldSearch[i] == "function")) { continue; }
 			newSearch[i] = oldSearch[i];
 		}
 
@@ -358,19 +345,17 @@ function(msg) {
 	}
 
 	// initialize new ZmMailList
-	var newMailList = new ZmMailList(msg.list.type, this._appCtxt, newSearch);
+	var newMailList = new ZmMailList(msg.list.type, appCtxt, newSearch);
 	for (var i in msg.list) {
-		if ((typeof msg.list[i] == "object") || (typeof msg.list[i] == "function"))
-			continue;
+		if ((typeof msg.list[i] == "object") || (typeof msg.list[i] == "function")) { continue; }
 		newMailList[i] = msg.list[i];
 	}
 
 	// finally, initialize new ZmMailMsg
-	var newMsg = new ZmMailMsg(this._appCtxt, msg.id, newMailList);
+	var newMsg = new ZmMailMsg(appCtxt, msg.id, newMailList);
 
 	for (var i in msg) {
-		if ((typeof msg[i] == "object") || (typeof msg[i] == "function"))
-			continue;
+		if ((typeof msg[i] == "object") || (typeof msg[i] == "function")) { continue; }
 		newMsg[i] = msg[i];
 	}
 
@@ -413,12 +398,7 @@ function(msg) {
 
 ZmNewWindow._confirmExitMethod =
 function(ev) {
-	if (window.parentController &&
-		(window.command == "compose" || window.command == "composeDetach"))
-	{
-		// is there a better way to get a ref to the compose controller?
-		var shell = AjxCore.objectWithId(window._dwtShell);
-		var appCtxt = shell ? shell.getData(ZmAppCtxt.LABEL) : null;
+	if (window.parentController && (window.command == "compose" || window.command == "composeDetach")) {
 		var cc = AjxDispatcher.run("GetComposeController");
 		// only show native confirmation dialog if compose view is dirty
 		if (cc && cc._composeView.isDirty()) {
