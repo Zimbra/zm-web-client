@@ -880,10 +880,10 @@ if (ext == null) ext = "";
          complete delete the service directory. zimbra-native.jar
          opens a shared library so it should not be in a war file
          which can be redeployed.-->
-        <condition property="war.include" value="ldap.jar,log4j*.jar">
+        <condition property="war.include" value="log4j*.jar">
                 <isset property="use-tomcat"/>
         </condition>
-        <!-- jetty loads jetty-util*.jar, log4j*.jar and slf4j*.jar, and ldap.jar conflicts with jetty naming stuff  -->
+        <!-- jetty loads jetty-util*.jar, log4j*.jar and slf4j*.jar -->
         <condition property="war.include" value="dummy.jar">
                 <isset property="use-jetty"/>
         </condition>
