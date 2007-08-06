@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+        version="2.0">
+
+    <description>A tag library for rest-related pages.</description>
+    <tlib-version>1.0</tlib-version>
+
+    <short-name>ZimbraRestMailTagLibrary</short-name>
+    <uri>com.zimbra.restclient</uri>
+
+   <tag-file>
+       <name>head</name>
+       <path>/WEB-INF/tags/rest/restHead.tag</path>
+    </tag-file>
+
+   <tag-file>
+       <name>view</name>
+       <path>/WEB-INF/tags/rest/restView.tag</path>
+    </tag-file>
+
+   <tag-file>
+       <name>status</name>
+       <path>/WEB-INF/tags/rest/restStatus.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>calendar</name>
+        <path>/WEB-INF/tags/rest/restCalendar.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>handleError</name>
+        <path>/WEB-INF/tags/rest/restHandleError.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>monthView</name>
+        <path>/WEB-INF/tags/rest/restMonthView.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>multiDayView</name>
+        <path>/WEB-INF/tags/rest/restMultiDayView.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>multiDay</name>
+        <path>/WEB-INF/tags/rest/restMultiDay.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>monthAppt</name>
+        <path>/WEB-INF/tags/rest/restMonthAppt.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>dayAppt</name>
+        <path>/WEB-INF/tags/rest/restDayAppt.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>calendarUrl</name>
+        <path>/WEB-INF/tags/rest/restCalendarUrl.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>calendarViewToolbar</name>
+        <path>/WEB-INF/tags/rest/restCalendarViewToolbar.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>calendarViewBottomToolbar</name>
+        <path>/WEB-INF/tags/rest/restCalendarViewBottomToolbar.tag</path>
+    </tag-file>
+
+</taglib>
+
+        

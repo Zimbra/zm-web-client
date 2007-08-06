@@ -2,33 +2,41 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="rest" uri="com.zimbra.restclient" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="request"/>
-<html>
 
-<head>
-    <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
+<fmt:setTimeZone var="timezone" value="${zm:getTimeZone(not empty param.tz ? param.tz : requestScope.zimbra_target_account_prefTimeZoneId)}" scope="request"/>
 
-        <style type="text/css">
-       @import url( "<c:url value='/css/common,login,sand_imgs,skin.css?client=standard&skin=sand&v=${version}'/>" );
-    </style>
-</head>
+<c:set var="type" value="${requestScope.zimbra_target_item_type}"/>
+<c:set var="view" value="${requestScope.zimbra_target_item_view}"/>
 
+<zm:getMailbox var="mailbox" restauthtoken="${requestScope.zimbra_authToken}" resttargetaccountid="${requestScope.zimbra_target_account_id}"/>
 
-<body>
-<pre>
-    zimbra_internal_dispatch: (${requestScope.zimbra_internal_dispatch})
-    zimbra_authToken: (${requestScope.zimbra_authToken})
-    zimbra_target_account_name: (${requestScope.zimbra_target_account_name})
-    zimbra_target_account_id: (${requestScope.zimbra_target_account_id})
-    zimbra_target_item_id: (${requestScope.zimbra_target_item_id})
-    zimbra_target_item_type: (${requestScope.zimbra_target_item_type})
-    zimbra_target_item_color: (${requestScope.zimbra_target_item_color})
-    zimbra_target_item_view: (${requestScope.zimbra_target_item_view})    
-</pre>
+<!-- ${pageContext.request.requestURL} ====  ${requestScope.zimbra_request_uri} -->
+<c:choose>
+    <c:when test="${(type eq 'folder' or type eq 'mountpoint') and (view eq 'appointment')}">
+        <rest:calendar mailbox="${mailbox}" timezone="${timezone}"/>
+    </c:when>
+    <c:otherwise>
+        <rest:view title="">
+        <pre>
+            zimbra_internal_dispatch: (${requestScope.zimbra_internal_dispatch})
+            zimbra_authToken: (${requestScope.zimbra_authToken})
+            zimbra_target_account_name: (${requestScope.zimbra_target_account_name})
+            zimbra_target_account_id: (${requestScope.zimbra_target_account_id})
+            zimbra_target_item_id: (${requestScope.zimbra_target_item_id})
+            zimbra_target_item_type: (${requestScope.zimbra_target_item_type})
+            zimbra_target_item_color: (${requestScope.zimbra_target_item_color})
+            zimbra_target_item_view: (${requestScope.zimbra_target_item_view})
+            zimbra_target_account_prefTimeZoneId: (${requestScope.zimbra_target_account_prefTimeZoneId})
+            zimbra_target_account_prefSkin: (${requestScope.zimbra_target_account_prefSkin})
+        </pre>
+        </rest:view>         
+    </c:otherwise>
+</c:choose>
 
 <%--
     <fmt:message var="dayFormat" key="CAL_MONTH_DAY_FORMAT"/>
@@ -40,7 +48,7 @@
 <c:set var="date" value="${zm:getToday(timezone)}"/>
 <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
 
-<zm:getMailbox var="mailbox" restauthtoken="${requestScope.zimbra_authToken}" resttargetaccountid="${requestScope.zimbra_target_account_id}"/>
+
 <zm:getAppointmentSummaries box="${mailbox}" timezone="${timezone}" var="appts" folderid="${requestScope.zimbra_target_item_id}" start="${today.timeInMillis}" end="${zm:addDay(today, 42).timeInMillis}" varexception="gasException"/>
 
 SIZE(${appts.size})
@@ -110,7 +118,4 @@ SIZE(${appts.size})
             </td>
         </tr>
      </table>
-</body>
-</html>
-
 --%>
