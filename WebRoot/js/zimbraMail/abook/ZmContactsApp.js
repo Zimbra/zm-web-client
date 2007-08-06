@@ -32,9 +32,9 @@
  * 
  * @author Conrad Damon
  */
-ZmContactsApp = function(appCtxt, container, parentController) {
+ZmContactsApp = function(container, parentController) {
 
-	ZmApp.call(this, ZmApp.CONTACTS, appCtxt, container, parentController);
+	ZmApp.call(this, ZmApp.CONTACTS, container, parentController);
 
 	this._initialized = false;
 	this._contactsLoaded = false;
@@ -85,7 +85,7 @@ function() {
 
 ZmContactsApp.prototype._registerSettings =
 function(settings) {
-	var settings = settings || this._appCtxt.getSettings();
+	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("AUTO_ADD_ADDRESS",			{name: "zimbraPrefAutoAddAddressEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("CONTACTS_PER_PAGE",			{name: "zimbraPrefContactsPerPage", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 25});
 	settings.registerSetting("CONTACTS_VIEW",				{name: "zimbraPrefContactsInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CV_LIST});
@@ -190,7 +190,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("ContactsCore");
-			return new ZmContactList(this._appCtxt, search, search ? search.isGalSearch || search.isGalAutocompleteSearch : null);
+			return new ZmContactList(appCtxt, search, search ? search.isGalSearch || search.isGalAutocompleteSearch : null);
 		}, this)
 						});
 
@@ -314,7 +314,7 @@ function(creates, force) {
 		var list = creates[name];
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
-			if (this._appCtxt.cacheGet(create.id)) { continue; }
+			if (appCtxt.cacheGet(create.id)) { continue; }
 	
 			if (name == "folder") {
 				this._handleCreateFolder(create, ZmOrganizer.ADDRBOOK);
@@ -348,7 +348,7 @@ function(op) {
 		case ZmOperation.NEW_CONTACT:
 		case ZmOperation.NEW_GROUP: {
 			var type = (op == ZmOperation.NEW_GROUP) ? ZmItem.GROUP : null;
-			var contact = new ZmContact(this._appCtxt, null, null, type);
+			var contact = new ZmContact(appCtxt, null, null, type);
 			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [contact]);
 			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 			break;
@@ -368,8 +368,8 @@ function(contact) {
 
 ZmContactsApp.prototype._handleLoadNewAddrBook =
 function() {
-	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
-	var dialog = this._appCtxt.getNewAddrBookDialog();
+	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
+	var dialog = appCtxt.getNewAddrBookDialog();
 	if (!this._newAddrBookCb) {
 		this._newAddrBookCb = new AjxCallback(this, this._newAddrBookCallback);
 	}
@@ -390,8 +390,8 @@ function(callback) {
 	var clc = AjxDispatcher.run("GetContactListController");
 	if (!this._initialized) {
 		// set search toolbar field manually
-		if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
-			var folder = this._appCtxt.getById(ZmFolder.ID_CONTACTS);
+		if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
+			var folder = appCtxt.getById(ZmFolder.ID_CONTACTS);
 			if (folder) {
 				this.currentQuery = folder.createQuery();
 			}
@@ -427,9 +427,9 @@ function(results, callback, isInGal, folderId) {
 ZmContactsApp.prototype.showFolder = 
 function(folder) {
 	// we manually set search bar's field since contacts dont always make search requests
-	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
+	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
 		var query = folder.createQuery();
-		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(query);
+		appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(query);
 	}
 	var clc = AjxDispatcher.run("GetContactListController");
 	clc.show(this._contactList, null, folder.id);
@@ -451,7 +451,7 @@ function(callback, errorCallback) {
 			if (this._parentController) {
 				this._contactList = this._parentController.getApp(ZmApp.CONTACTS).getContactList();
 			} else {
-				this._contactList = new ZmContactList(this._appCtxt);
+				this._contactList = new ZmContactList(appCtxt);
 				var respCallback = new AjxCallback(this, this._handleResponseGetContactList, callback);
 				this._contactList.load(respCallback, errorCallback);
 			}
@@ -482,7 +482,7 @@ ZmContactsApp.prototype.getGalContactList =
 function() {
 	if (!this._galContactList) {
 		try {
-			this._galContactList = new ZmContactList(this._appCtxt, null, true);
+			this._galContactList = new ZmContactList(appCtxt, null, true);
 			this._galContactList.load();
 		} catch (ex) {
 			this._galContactList = null;
@@ -494,21 +494,21 @@ function() {
 
 ZmContactsApp.prototype.createFromVCard =
 function(msgId, vcardPartId) {
-	var contact = new ZmContact(this._appCtxt);
+	var contact = new ZmContact(appCtxt);
 	contact.createFromVCard(msgId, vcardPartId);
 };
 
 ZmContactsApp.prototype.getContactListController =
 function() {
 	if (!this._contactListController)
-		this._contactListController = new ZmContactListController(this._appCtxt, this._container, this);
+		this._contactListController = new ZmContactListController(appCtxt, this._container, this);
 	return this._contactListController;
 };
 
 ZmContactsApp.prototype.getContactController =
 function() {
 	if (this._contactController == null)
-		this._contactController = new ZmContactController(this._appCtxt, this._container, this);
+		this._contactController = new ZmContactController(appCtxt, this._container, this);
 	return this._contactController;
 };
 
@@ -516,9 +516,9 @@ ZmContactsApp.prototype._newAddrBookCallback =
 function(parent, name, color) {
 	// REVISIT: Do we really want to close the dialog before we
 	//          know if the create succeeds or fails?
-	var dialog = this._appCtxt.getNewAddrBookDialog();
+	var dialog = appCtxt.getNewAddrBookDialog();
 	dialog.popdown();
 
-	var oc = this._appCtxt.getOverviewController();
+	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.ADDRBOOK)._doCreate(parent, name, color);
 };

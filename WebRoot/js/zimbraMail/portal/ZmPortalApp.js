@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPortalApp = function(appCtxt, container, parentController) {
-	ZmApp.call(this, ZmApp.PORTAL, appCtxt, container, parentController);
+ZmPortalApp = function(container, parentController) {
+	ZmApp.call(this, ZmApp.PORTAL, container, parentController);
 }
 
 ZmPortalApp.prototype = new ZmApp;
@@ -94,7 +94,7 @@ ZmPortalApp.prototype.activate = function(active) {
 ZmPortalApp.prototype.getManifest = function(callback) {
     if (!this._manifest) {
         // load the portal manifest
-        var portalName = this._appCtxt.get(ZmSetting.PORTAL_NAME);
+        var portalName = appCtxt.get(ZmSetting.PORTAL_NAME);
         if (portalName) {
             var timestamp = new Date().getTime(); 
             var params = {
@@ -161,14 +161,14 @@ ZmPortalApp.prototype._handleLoadManifest = function(callback, req) {
 
 ZmPortalApp.prototype.getPortalController = function() {
 	if (!this._portalController) {
-		this._portalController = new ZmPortalController(this._appCtxt, this._container, this);
+		this._portalController = new ZmPortalController(appCtxt, this._container, this);
 	}
 	return this._portalController;
 };
 
 ZmPortalApp.prototype.getPortletMgr = function() {
     if (!this._portletMgr) {
-        this._portletMgr = new ZmPortletMgr(this._appCtxt);
+        this._portletMgr = new ZmPortletMgr(appCtxt);
     }
     return this._portletMgr;
 };
@@ -194,7 +194,7 @@ function() {
 		break; 
 	}
 	if (appName) {
-		var app = this._appCtxt.getApp(appName);
+		var app = appCtxt.getApp(appName);
 		return app._getOverviewTrees();
 	}
 	return null;

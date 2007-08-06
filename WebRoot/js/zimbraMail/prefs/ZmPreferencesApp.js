@@ -28,8 +28,8 @@
 * Application for the preferences UI. This is where the preferences
 * hook into the overall application.
 */
-ZmPreferencesApp = function(appCtxt, container) {
-	ZmApp.call(this, ZmApp.PREFERENCES, appCtxt, container);
+ZmPreferencesApp = function(container) {
+	ZmApp.call(this, ZmApp.PREFERENCES, container);
 };
 
 // Organizer and item-related constants
@@ -63,7 +63,6 @@ function() {
 ZmPreferencesApp.prototype.startup =
 function(result) {
 	var obj = result.getResponse().GetInfoResponse;
-	var appCtxt = this._appCtxt;
 	appCtxt.getIdentityCollection().initialize(obj.identities);
 	AjxDispatcher.run("GetDataSourceCollection").initialize(obj.dataSources);
 	appCtxt.getSignatureCollection().initialize(obj.signatures);
@@ -80,7 +79,7 @@ function(callback) {
 ZmPreferencesApp.prototype.getPrefController =
 function() {
 	if (!this._prefController) {
-		this._prefController = new ZmPrefController(this._appCtxt, this._container, this);
+		this._prefController = new ZmPrefController(appCtxt, this._container, this);
 	}
 	return this._prefController;
 };
@@ -88,20 +87,20 @@ function() {
 ZmPreferencesApp.prototype.getFilterController =
 function() {
 	if (!this._filterController)
-		this._filterController = new ZmFilterController(this._appCtxt, this._container, this);
+		this._filterController = new ZmFilterController(appCtxt, this._container, this);
 	return this._filterController;
 };
 
 ZmPreferencesApp.prototype.getFilterRules =
 function() {
 	if (!this._filterRules)
-		this._filterRules = new ZmFilterRules(this._appCtxt);
+		this._filterRules = new ZmFilterRules(appCtxt);
 	return this._filterRules;
 };
 
 ZmPreferencesApp.prototype.getDataSourceCollection = function() {
 	if (!this._dataSourceCollection) {
-		this._dataSourceCollection = new ZmDataSourceCollection(this._appCtxt);
+		this._dataSourceCollection = new ZmDataSourceCollection(appCtxt);
 	}
 	return this._dataSourceCollection;
 };
@@ -109,14 +108,14 @@ ZmPreferencesApp.prototype.getDataSourceCollection = function() {
 ZmPreferencesApp.prototype.getIdentityCollection =
 function() {
 	if (!this._identityCollection) {
-		this._identityCollection = new ZmIdentityCollection(this._appCtxt);
+		this._identityCollection = new ZmIdentityCollection(appCtxt);
 	}
 	return this._identityCollection;
 };
 
 ZmPreferencesApp.prototype.getSignatureCollection = function() {
 	if (!this._signatureCollection) {
-		this._signatureCollection = new ZmSignatureCollection(this._appCtxt);
+		this._signatureCollection = new ZmSignatureCollection(appCtxt);
 	}
 	return this._signatureCollection;
 };
@@ -396,7 +395,7 @@ function() {
 ZmPreferencesApp.prototype._handleLoadLaunch =
 function(callback) {
 	var respCallback = new AjxCallback(this, this._handleResponseLaunch, [callback]);
-	this._appCtxt.getSettings().loadSkinsAndLocales(respCallback);
+	appCtxt.getSettings().loadSkinsAndLocales(respCallback);
 };
 
 ZmPreferencesApp.prototype._handleResponseLaunch =
@@ -414,5 +413,5 @@ function(refresh) {
 
 ZmPreferencesApp.prototype._postLoad =
 function() {
-	this._appCtxt.getAppController().runAppFunction("_registerPrefs");
+	appCtxt.getAppController().runAppFunction("_registerPrefs");
 };

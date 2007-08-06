@@ -32,9 +32,9 @@
  *
  * @author Conrad Damon
  */
-ZmMailApp = function(appCtxt, container, parentController) {
+ZmMailApp = function(container, parentController) {
 
-	ZmApp.call(this, ZmApp.MAIL, appCtxt, container, parentController);
+	ZmApp.call(this, ZmApp.MAIL, container, parentController);
 };
 
 // Organizer and item-related constants
@@ -86,7 +86,7 @@ function() {
 
 ZmMailApp.prototype._registerSettings =
 function(settings) {
-	var settings = settings || this._appCtxt.getSettings();
+	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("ALLOW_ANY_FROM_ADDRESS",			{name:"zimbraAllowAnyFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("ALLOW_FROM_ADDRESSES",			{name:"zimbraAllowFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
 	settings.registerSetting("COMPOSE_SAME_FORMAT",				{name:"zimbraPrefForwardReplyInOriginalFormat", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -449,7 +449,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("MailCore");
-			return new ZmMailList(ZmItem.CONV, this._appCtxt, search);
+			return new ZmMailList(ZmItem.CONV, appCtxt, search);
 		}, this)
 						});
 
@@ -465,7 +465,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("MailCore");
-			return new ZmMailList(ZmItem.MSG, this._appCtxt, search);
+			return new ZmMailList(ZmItem.MSG, appCtxt, search);
 		}, this)
 						});
 
@@ -476,7 +476,7 @@ function() {
 						 node:			"mp",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
-			return new ZmMailList(ZmItem.ATT, this._appCtxt, search);
+			return new ZmMailList(ZmItem.ATT, appCtxt, search);
 		}, this)
 						});
 };
@@ -535,7 +535,7 @@ function() {
 ZmMailApp.prototype.startup =
 function(result) {
 //	AjxDispatcher.run("GetComposeController").initComposeView(true);
-	this._groupBy = this._appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
+	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
 };
 
 /**
@@ -612,7 +612,7 @@ function(notify) {
 				createdConvs[mod.cid].m = [{id:id}];
 				// go ahead and update the msg cid, since it's used in
 				// notification processing for creates
-				var msg = this._appCtxt.getById(id);
+				var msg = appCtxt.getById(id);
 				if (msg) {
 					msg.cid = mod.cid;
 				}
@@ -658,7 +658,7 @@ function(notify) {
 	if (newMods.length) {
 		var mods = {};
 		mods["c"] = newMods;
-		this._appCtxt.getRequestMgr()._handleModifies(mods);
+		appCtxt.getRequestMgr()._handleModifies(mods);
 	}
 
 	// process the normalized notifications
@@ -685,7 +685,7 @@ function(creates, force) {
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
 
-			if (this._appCtxt.cacheGet(create.id))
+			if (appCtxt.cacheGet(create.id))
 				continue;
 
 			this._handleCreateLink(create, ZmOrganizer.FOLDER);
@@ -700,7 +700,7 @@ function(creates, force) {
 	// 	- we are currently in a mail view
 	//	- the view is the result of a simple folder search
 	// TODO: support simple tag search
-	var currList = this._appCtxt.getCurrentList();
+	var currList = appCtxt.getCurrentList();
 	if (!(currList && currList instanceof ZmMailList)) { return; }
 
 	// for CV, folderId will correspond to parent list view
@@ -710,7 +710,7 @@ function(creates, force) {
 
 	var sortBy = currList.search.sortBy;
 	var a = currList.getArray();
-	var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE);
+	var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
 	var last = (a && a.length >= limit) ? a[a.length - 1] : null;
 	var cutoff = last ? last.date : null;
 	DBG.println(AjxDebug.DBG2, "cutoff = " + cutoff + ", list size = " + a.length);
@@ -750,7 +750,7 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 
 		DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + nodeName);
 		var itemClass = eval(ZmList.ITEM_CLASS[type]);
-		var item = itemClass.createFromDom(create, {appCtxt:this._appCtxt}, true);
+		var item = itemClass.createFromDom(create, {appCtxt:appCtxt}, true);
 		items[item.id] = item;
 		gotMail = true;
 	}
@@ -791,7 +791,7 @@ function(create, type, currList, sortBy, cutoff) {
 	}
 
 	// ignore stuff we already have
-	if (this._appCtxt.cacheGet(create.id) || create._wasVirtConv) {
+	if (appCtxt.cacheGet(create.id) || create._wasVirtConv) {
 		return false;
 	}
 
@@ -808,12 +808,12 @@ function(notify) {
 
 ZmMailApp.prototype.refresh =
 function(refresh) {
-	if (!this._appCtxt.inStartup) {
-		var account = this._appCtxt.multiAccounts ? this._appCtxt.getMainAccount() : null;
+	if (!appCtxt.inStartup) {
+		var account = appCtxt.multiAccounts ? appCtxt.getMainAccount() : null;
 		this.resetOverview(this.getOverviewId(account));
 	}
 
-	var inbox = this._appCtxt.getById(ZmFolder.ID_INBOX);
+	var inbox = appCtxt.getById(ZmFolder.ID_INBOX);
 	if (inbox) {
 		this.setNewMailNotice(inbox);
 	}
@@ -881,7 +881,7 @@ function(params, ex) {
 	{
 		// reset the params so we default to searching the inbox which *will* work
 		var newParams = {query:"in:inbox", callback:params.callback, errorCallback:null, types:params.types};
-		this._appCtxt.getSearchController().search(newParams);
+		appCtxt.getSearchController().search(newParams);
 	}
 };
 
@@ -891,14 +891,14 @@ function() {
 		return this._overviewPanelContent;
 	}
 
-	if (this._appCtxt.multiAccounts) {
+	if (appCtxt.multiAccounts) {
 		// create accordion
 		var accordionId = this.getOverviewPanelContentId();
 		var accordion = this._overviewPanelContent = this._opc.createAccordion({accordionId:accordionId});
 		accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
 		accordion.addContextListener(new AjxListener(this, this._accordionActionListener));
 		// add an accordion item for each account, and create overview for main account
-		var accts = this._appCtxt.getZimbraAccounts();
+		var accts = appCtxt.getZimbraAccounts();
 		this._overview = {};
 		for (var i in accts) {
 			var data = {appName:ZmApp.MAIL};
@@ -919,8 +919,8 @@ function() {
 
 ZmMailApp.prototype.getOverviewId =
 function(account) {
-	account = !this._appCtxt.multiAccounts ? null : account || this.accordionItem.data.account;
-	return this._appCtxt.multiAccounts ?
+	account = !appCtxt.multiAccounts ? null : account || this.accordionItem.data.account;
+	return appCtxt.multiAccounts ?
 		[this.getOverviewPanelContentId(), account.name].join(":") :
 		ZmApp.prototype.getOverviewPanelContentId.apply(this, arguments);
 };
@@ -930,8 +930,8 @@ function(ev) {
 	if (!ZmApp.prototype._accordionSelectionListener.apply(this, arguments)) { return; }
 
 	// hide and clear advanced search since it may have overviews for previous account
-	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
-		var searchCtlr = this._appCtxt.getSearchController();
+	if (appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
+		var searchCtlr = appCtxt.getSearchController();
 		var bvc = searchCtlr._browseViewController;
 		if (bvc) {
 			bvc.removeAllPickers();
@@ -939,7 +939,7 @@ function(ev) {
 		}
 	}
 	var callback = new AjxCallback(this, this._handleSetActiveAccount, this.accordionItem);
-	this._appCtxt.setActiveAccount(this.accordionItem.data.account, callback);
+	appCtxt.setActiveAccount(this.accordionItem.data.account, callback);
 };
 
 ZmMailApp.prototype._accordionActionListener =
@@ -954,7 +954,7 @@ function(ev) {
 		var menuItems = [ZmOperation.NEW_FOLDER];
 		this._accordionActionMenu = new ZmActionMenu({parent:ev.item, menuItems:menuItems});
 
-		var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
+		var ftc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
 		var newListener = new AjxListener(ftc, ftc._newListener);
 		this._accordionActionMenu.addSelectionListener(ZmOperation.NEW_FOLDER, newListener);
 	}
@@ -964,20 +964,20 @@ function(ev) {
 
 ZmMailApp.prototype._handleSetActiveAccount =
 function(accordionItem) {
-	this._appCtxt.getAppController()._setUserInfo();
+	appCtxt.getAppController()._setUserInfo();
 	this._activateAccordionItem(accordionItem);
 	this._mailSearch();
 };
 
 ZmMailApp.prototype._mailSearch =
 function(query, callback) {
-	query = query || this._appCtxt.get(ZmSetting.INITIAL_SEARCH);
+	query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH);
 	var types = new AjxVector();
 	var type = this.getGroupMailBy();
 	types.add(type);
 	var params = {query:query, callback:callback, types:types, fetch:Boolean(type == ZmItem.MSG)};
 	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
-	this._appCtxt.getSearchController().search(params);
+	appCtxt.getSearchController().search(params);
 };
 
 ZmMailApp.prototype.getSearchParams =
@@ -1011,7 +1011,7 @@ function(results, callback) {
 ZmMailApp.prototype.getConvListController =
 function() {
 	if (!this._convListController) {
-		this._convListController = new ZmConvListController(this._appCtxt, this._container, this);
+		this._convListController = new ZmConvListController(appCtxt, this._container, this);
 	}
 	return this._convListController;
 };
@@ -1019,7 +1019,7 @@ function() {
 ZmMailApp.prototype.getConvController =
 function() {
 	if (!this._convController) {
-		this._convController = new ZmConvController(this._appCtxt, this._container, this);
+		this._convController = new ZmConvController(appCtxt, this._container, this);
 	}
 	return this._convController;
 };
@@ -1027,7 +1027,7 @@ function() {
 ZmMailApp.prototype.getTradController =
 function() {
 	if (!this._tradController) {
-		this._tradController = new ZmTradController(this._appCtxt, this._container, this);
+		this._tradController = new ZmTradController(appCtxt, this._container, this);
 	}
 	return this._tradController;
 };
@@ -1035,25 +1035,22 @@ function() {
 ZmMailApp.prototype.getMsgController =
 function() {
 	if (!this._msgController) {
-		this._msgController = new ZmMsgController(this._appCtxt, this._container, this);
+		this._msgController = new ZmMsgController(appCtxt, this._container, this);
 	}
 	return this._msgController;
 };
 
-/**
- * @param appCtxt	[ZmAppCtxt]*	new window passes in its own app ctxt
- */
 ZmMailApp.prototype.getComposeController =
 function() {
 	if (!this._composeController) {
-		this._composeController = new ZmComposeController(this._appCtxt, this._container, this);
+		this._composeController = new ZmComposeController(appCtxt, this._container, this);
 	}
 	return this._composeController;
 };
 
 ZmMailApp.prototype.getMailListController =
 function() {
-	var groupMailBy = this._appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	var groupMailBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return (groupMailBy == ZmSetting.GROUP_BY_CONV) ? AjxDispatcher.run("GetConvListController") :
 													  AjxDispatcher.run("GetTradController");
 };
@@ -1077,7 +1074,7 @@ function(params) {
 
 ZmMailApp.prototype.setNewMailNotice =
 function(organizer) {
-	var appChooser = this._appCtxt.getAppController().getAppChooser();
+	var appChooser = appCtxt.getAppController().getAppChooser();
 	if (appChooser) {
 		var mb = appChooser.getButton(ZmApp.MAIL);
 		var icon = (organizer.numUnread > 0) ? "EnvelopeOpen" : "MailApp";
@@ -1091,7 +1088,7 @@ function(organizer) {
 */
 ZmMailApp.prototype.getGroupMailBy =
 function() {
-	var setting = this._groupBy || this._appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	var setting = this._groupBy || appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return setting ? ZmMailApp.GROUP_MAIL_BY_ITEM[setting] : ZmItem.MSG;
 };
 

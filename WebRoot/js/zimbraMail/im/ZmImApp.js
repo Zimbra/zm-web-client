@@ -23,14 +23,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmImApp = function(appCtxt, container) {
+ZmImApp = function(container) {
 
-	ZmApp.call(this, ZmApp.IM, appCtxt, container);
+	ZmApp.call(this, ZmApp.IM, container);
 
 	// IM is enabled, so show Chats folder
 	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
-        ZmImApp.INSTANCE = this;
+	ZmImApp.INSTANCE = this;
 };
 
 // Organizer and item-related constants
@@ -125,7 +125,7 @@ function() {
 };
 
 ZmImApp.prototype._registerSettings = function(settings) {
-	settings = settings || this._appCtxt.getSettings();
+	settings = settings || appCtxt.getSettings();
 
 	settings.registerSetting("IM_PREF_INSTANT_NOTIFY",
 				 { name         : "zimbraPrefIMInstantNotify",
@@ -211,9 +211,9 @@ ZmImApp.prototype._onSettingChange = function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 
 	var id = ev.source.id;
-        if (id == ZmSetting.IM_PREF_INSTANT_NOTIFY && this._appCtxt.get(ZmSetting.INSTANT_NOTIFY)) {
-		var val = this._appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY);
-		this._appCtxt.getAppController().setInstantNotify(val);
+        if (id == ZmSetting.IM_PREF_INSTANT_NOTIFY && appCtxt.get(ZmSetting.INSTANT_NOTIFY)) {
+		var val = appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY);
+		appCtxt.getAppController().setInstantNotify(val);
         }
 };
 
@@ -267,7 +267,7 @@ function(active) {
 
 ZmImApp.prototype.getRosterTreeController = function() {
 	if (!this._rosterTreeController) {
-		this._rosterTreeController = new ZmRosterTreeController(this._appCtxt);
+		this._rosterTreeController = new ZmRosterTreeController(appCtxt);
 	}
 	return this._rosterTreeController;
 };
@@ -279,18 +279,18 @@ ZmImApp.prototype.isActive = function() {
 ZmImApp.prototype.getChatListController =
 function() {
 	if (!this._chatListController)
-		this._chatListController = new ZmChatListController(this._appCtxt, this._container, this);
+		this._chatListController = new ZmChatListController(appCtxt, this._container, this);
 	return this._chatListController;
 };
 
 ZmImApp.prototype.getRoster =
 function() {
 	if (!this._roster) {
-		this._roster = new ZmRoster(this._appCtxt, this);
+		this._roster = new ZmRoster(appCtxt, this);
 		// enable instant notify?
-		if (this._appCtxt.get(ZmSetting.INSTANT_NOTIFY) &&
-                    this._appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY))
-			this._appCtxt.getAppController().setInstantNotify(true);
+		if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) &&
+                    appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY))
+			appCtxt.getAppController().setInstantNotify(true);
 	}
 	return this._roster;
 };
@@ -301,14 +301,14 @@ function() {
 };
 
 ZmImApp.prototype.startFlashingIcon = function() {
-	if (this._appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
-		this._appCtxt.getAppController().getAppChooserButton("IM").startFlashing();
+	if (appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
+		appCtxt.getAppController().getAppChooserButton("IM").startFlashing();
 	}
 };
 
 ZmImApp.prototype.stopFlashingIcon = function() {
-	if (this._appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
-		this._appCtxt.getAppController().getAppChooserButton("IM").stopFlashing();
+	if (appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
+		appCtxt.getAppController().getAppChooserButton("IM").stopFlashing();
 	}
 };
 
@@ -350,6 +350,6 @@ ZmImApp.prototype.prepareVisuals = function() {
 
 ZmImApp.prototype.getOverviewPanelContent = function() {
 	if (!this._imOvw)
-		this._imOvw = new ZmImOverview(this._appCtxt, this._container);
+		this._imOvw = new ZmImOverview(appCtxt, this._container);
 	return this._imOvw;
 };

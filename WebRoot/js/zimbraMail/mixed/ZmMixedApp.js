@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmMixedApp = function(appCtxt, container) {
+ZmMixedApp = function(container) {
 
-	ZmApp.call(this, ZmApp.MIXED, appCtxt, container);
+	ZmApp.call(this, ZmApp.MIXED, container);
 };
 
 // Organizer and item-related constants
@@ -85,7 +85,7 @@ ZmMixedApp.prototype._getOverviewTrees =
 function() {
 	var list = ZmApp.OVERVIEW_TREES[this._name];
 	var trees = [];
-	var prevApp = this._appCtxt.getAppController().getPreviousApp();
+	var prevApp = appCtxt.getAppController().getPreviousApp();
 	for (var i = 0; i < list.length; i++) {
 		var id = list[i];
 		if ((prevApp == ZmApp.CONTACTS && id == ZmOrganizer.FOLDER) ||
@@ -114,6 +114,6 @@ function(results, callback) {
 ZmMixedApp.prototype.getMixedController =
 function() {
 	if (!this._mixedController)
-		this._mixedController = new ZmMixedController(this._appCtxt, this._container, this);
+		this._mixedController = new ZmMixedController(appCtxt, this._container, this);
 	return this._mixedController;
 };

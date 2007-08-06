@@ -24,24 +24,22 @@
  */
 
 /**
-* Creates a new app object.
-* @constructor
-* @class
-* This class is a base class for app classes. "App" is a useful abstraction for a set of related
-* functionality, such as mail, address book, or calendar. Looked at another way, an app is a 
-* collection of one or more controllers.
-*
-* @param name				[string]		the name of the app
-* @param appCtxt			[ZmAppCtxt]		global app context
-* @param container			[DwtControl]	control that contains components
-* @param parentController	[ZmController]*	parent window controller (set by the child window)
-*/
-ZmApp = function(name, appCtxt, container, parentController) {
+ * Creates a new app object.
+ * @constructor
+ * @class
+ * This class is a base class for app classes. "App" is a useful abstraction for a set of related
+ * functionality, such as mail, address book, or calendar. Looked at another way, an app is a 
+ * collection of one or more controllers.
+ *
+ * @param name				[string]		the name of the app
+ * @param container			[DwtControl]	control that contains components
+ * @param parentController	[ZmController]*	parent window controller (set by the child window)
+ */
+ZmApp = function(name, container, parentController) {
 
 	if (arguments.length == 0) return;
 	
 	this._name = name;
-	this._appCtxt = appCtxt;
 	this._appViewMgr = appCtxt.getAppViewMgr();
 	this._container = container;
 	this._parentController = parentController;
@@ -62,7 +60,7 @@ ZmApp = function(name, appCtxt, container, parentController) {
 	this._setupCurrentAppToolbar();
 	this._registerApp();
 
-	this._opc = this._appCtxt.getOverviewController();
+	this._opc = appCtxt.getOverviewController();
 }
 
 // app information ("_R" means "reverse map")
@@ -307,7 +305,7 @@ function(reset) {
 	if (reset) {
 		this._overviewPanelContent = null;
 	}
-	this._appCtxt.getAppViewMgr().setComponent(ZmAppViewMgr.C_TREE, this.getOverviewPanelContent());
+	appCtxt.getAppViewMgr().setComponent(ZmAppViewMgr.C_TREE, this.getOverviewPanelContent());
 };
 
 /**
@@ -369,7 +367,7 @@ function() {
 	var list = ZmApp.OVERVIEW_TREES[this._name];
 	var newList = [];
 	for (var i = 0, count = list.length; i < count; i++) {
-		if ((list[i] == ZmOrganizer.FOLDER) && !this._appCtxt.get(ZmSetting.MAIL_ENABLED)) { continue; }
+		if ((list[i] == ZmOrganizer.FOLDER) && !appCtxt.get(ZmSetting.MAIL_ENABLED)) { continue; }
 		newList.push(list[i]);
 	}
 	return newList;
@@ -464,7 +462,7 @@ ZmApp.prototype._createDeferredFolders =
 function(type) {
 	for (var i = 0; i < this._deferredFolders.length; i++) {
 		var params = this._deferredFolders[i];
-		var parent = this._appCtxt.getById(params.obj.l);
+		var parent = appCtxt.getById(params.obj.l);
 		var folder = ZmFolderTree.createFolder(params.type, parent, params.obj, params.tree, params.path);
 		parent.children.add(folder); // necessary?
 		folder.parent = parent;
@@ -472,7 +470,7 @@ function(type) {
 	}
 	this._clearDeferredFolders();
 
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
 		folderTree.getPermissions(type);
 	}
@@ -524,13 +522,13 @@ function() {
 // determine whether action should be in new window or not
 ZmApp.prototype._inNewWindow =
 function(ev) {
-	var setting = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
+	var setting = appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
 	return !ev ? setting : ((!setting && ev && ev.shiftKey) || (setting && ev && !ev.shiftKey));
 };
 
 ZmApp.prototype._handleCreateFolder =
 function(create, org) {
-	var parent = this._appCtxt.getById(create.l);
+	var parent = appCtxt.getById(create.l);
 	if (parent && (create.view == ZmOrganizer.VIEWS[org][0])) {
 		parent.notifyCreate(create);
 		create._handled = true;
@@ -539,11 +537,11 @@ function(create, org) {
 
 ZmApp.prototype._handleCreateLink =
 function(create, org) {
-	var parent = this._appCtxt.getById(create.l);
+	var parent = appCtxt.getById(create.l);
 	if (parent && (create.view == ZmOrganizer.VIEWS[org][0])) {
 		parent.notifyCreate(create);
 		// XXX: once bug #4434 is fixed, check if this call is still needed
-		var folderTree = this._appCtxt.getFolderTree();
+		var folderTree = appCtxt.getFolderTree();
 		if (folderTree) {
 			folderTree.getPermissions(org);
 		}

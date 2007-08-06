@@ -23,11 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCalendarApp = function(appCtxt, container) {
+ZmCalendarApp = function(container) {
 
-	ZmApp.call(this, ZmApp.CALENDAR, appCtxt, container);
+	ZmApp.call(this, ZmApp.CALENDAR, container);
 
-	var settings = this._appCtxt.getSettings();
+	var settings = appCtxt.getSettings();
 	var listener = new AjxListener(this, this._settingsChangeListener);
 	settings.getSetting(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL).addChangeListener(listener);
 	settings.getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK).addChangeListener(listener);
@@ -85,7 +85,7 @@ function() {
 
 ZmCalendarApp.prototype._registerSettings =
 function(settings) {
-	var settings = settings || this._appCtxt.getSettings();
+	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("CAL_ALWAYS_SHOW_MINI_CAL",	{name: "zimbraPrefCalendarAlwaysShowMiniCal", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("CAL_EXPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_FIRST_DAY_OF_WEEK",		{name: "zimbraPrefCalendarFirstDayOfWeek", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0});
@@ -236,7 +236,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("CalendarCore");
-			return new ZmResourceList(this._appCtxt, null, search);
+			return new ZmResourceList(appCtxt, null, search);
 		}, this)
 						});
 };
@@ -309,8 +309,8 @@ function() {
 
 ZmCalendarApp.prototype.startup =
 function(result) {
-	if (this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
-		var minicalFetchDelay = this._appCtxt.inStartup ? ZmCalendarApp.MINICAL_FETCH_DELAY : 0;
+	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
+		var minicalFetchDelay = appCtxt.inStartup ? ZmCalendarApp.MINICAL_FETCH_DELAY : 0;
 		AjxDispatcher.run("ShowMiniCalendar", true, minicalFetchDelay);
 	}
 	var refreshAction = new AjxTimedAction(this, function() {
@@ -321,7 +321,7 @@ function(result) {
 
 ZmCalendarApp.prototype.refresh =
 function(refresh) {
-	if (!this._appCtxt.inStartup) {
+	if (!appCtxt.inStartup) {
 		AjxDispatcher.run("GetCalController").refreshHandler(refresh);
 	}
 	this._handleRefresh();
@@ -348,7 +348,7 @@ function(creates, force) {
 		var list = creates[name];
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
-			if (this._appCtxt.cacheGet(create.id)) { continue; }
+			if (appCtxt.cacheGet(create.id)) { continue; }
 	
 			if (name == "folder") {
 				this._handleCreateFolder(create, ZmOrganizer.CALENDAR);
@@ -395,8 +395,8 @@ function() {
 
 ZmCalendarApp.prototype._handleLoadNewCalendar =
 function() {
-	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
-	var dialog = this._appCtxt.getNewCalendarDialog();
+	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
+	var dialog = appCtxt.getNewCalendarDialog();
 	if (!this._newCalendarCb) {
 		this._newCalendarCb = new AjxCallback(this, this._newCalendarCallback);
 	}
@@ -459,7 +459,7 @@ ZmCalendarApp.prototype.activate =
 function(active, view, date) {
 	ZmApp.prototype.activate.apply(this, arguments);
 
-	var show = active || this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
+	var show = active || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
 	AjxDispatcher.run("ShowMiniCalendar", show);
 };
 
@@ -470,38 +470,38 @@ function(show, delay) {
 	if (!this._active) {
 		mc.setSelectionMode(DwtCalendar.DAY);
 	}
-	this._appCtxt.getAppViewMgr().showTreeFooter(show);
+	appCtxt.getAppViewMgr().showTreeFooter(show);
 };
 
 ZmCalendarApp.prototype.getCalController =
 function() {
 	if (!this._calController)
-		this._calController = new ZmCalViewController(this._appCtxt, this._container, this);
+		this._calController = new ZmCalViewController(appCtxt, this._container, this);
 	return this._calController;
 };
 
 ZmCalendarApp.prototype.getReminderController =
 function() {
 	if (!this._reminderController)
-		this._reminderController = new ZmReminderController(this._appCtxt, this.getCalController());
+		this._reminderController = new ZmReminderController(appCtxt, this.getCalController());
 	return this._reminderController;
 };
 
 ZmCalendarApp.prototype.getApptComposeController = 
 function() {
 	if (!this._apptController)
-		this._apptController = new ZmApptComposeController(this._appCtxt, this._container, this);
+		this._apptController = new ZmApptComposeController(appCtxt, this._container, this);
 	return this._apptController;
 };
 
 ZmCalendarApp.prototype.loadResources = 
 function() {
-	this._locations = new ZmResourceList(this._appCtxt, ZmCalItem.LOCATION);
+	this._locations = new ZmResourceList(appCtxt, ZmCalItem.LOCATION);
 	this._locations.isCanonical = true;
-	this._equipment = new ZmResourceList(this._appCtxt, ZmCalItem.EQUIPMENT);
+	this._equipment = new ZmResourceList(appCtxt, ZmCalItem.EQUIPMENT);
 	this._equipment.isCanonical = true;
-	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var batchCmd = new ZmBatchCommand(this._appCtxt);
+	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var batchCmd = new ZmBatchCommand(appCtxt);
 		batchCmd.add(new AjxCallback(this._locations, this._locations.load));
 		batchCmd.add(new AjxCallback(this._equipment, this._equipment.load));
 		batchCmd.run();
@@ -610,10 +610,10 @@ ZmCalendarApp.prototype._newCalendarCallback =
 function(parent, name, color, url, excludeFb) {
 	// REVISIT: Do we really want to close the dialog before we
 	//          know if the create succeeds or fails?
-	var dialog = this._appCtxt.getNewCalendarDialog();
+	var dialog = appCtxt.getNewCalendarDialog();
 	dialog.popdown();
 
-	var oc = this._appCtxt.getOverviewController();
+	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.CALENDAR)._doCreate(parent, name, color, url, excludeFb);
 };
 

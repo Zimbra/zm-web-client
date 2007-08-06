@@ -950,7 +950,7 @@ function(appName) {
 	if (!appName || this._apps[appName]) return;
 	DBG.println(AjxDebug.DBG1, "Creating app " + appName);
 	var appClass = eval(ZmApp.CLASS[appName]);
-	this._apps[appName] = new appClass(appCtxt, this._shell);
+	this._apps[appName] = new appClass(this._shell);
 };
 
 ZmZimbraMail.prototype._setUserInfo = 

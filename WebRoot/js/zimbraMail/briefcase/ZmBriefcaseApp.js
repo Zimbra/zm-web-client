@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBriefcaseApp = function(appCtxt, container, parentController) {
+ZmBriefcaseApp = function(container, parentController) {
 
-	ZmApp.call(this, ZmApp.BRIEFCASE, appCtxt, container, parentController);
+	ZmApp.call(this, ZmApp.BRIEFCASE, container, parentController);
 }
 
 // Organizer and item-related constants
@@ -92,7 +92,7 @@ function() {
 						 resultsList:
 						AjxCallback.simpleClosure(function(search) {
 						AjxDispatcher.require("BriefcaseCore");
-						return new ZmBriefcaseItemList(this._appCtxt, search, ZmItem.BRIEFCASE);
+						return new ZmBriefcaseItemList(appCtxt, search, ZmItem.BRIEFCASE);
 						}, this)
 						});
 
@@ -182,7 +182,7 @@ function(ids, force) {
 	var folderInUse = false;
 	var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
 	var shownFolder = briefcaseController._object;
-	var overviewController = this._appCtxt.getOverviewController();
+	var overviewController = appCtxt.getOverviewController();
 	var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
 	var treeView = treeController.getTreeView(this.getOverviewId());
 	
@@ -204,7 +204,7 @@ function(ids, force) {
 	for (var i = 0; i < ids.length; i++) {
 	
 		briefcaseController.removeItem({id:ids[i]});
-		this._appCtxt.cacheRemove(ids[i]);
+		appCtxt.cacheRemove(ids[i]);
 	}
 	
 	if(nextData && folderInUse){
@@ -244,7 +244,7 @@ function(creates, force) {
 		var list = creates[name];
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
-			if (this._appCtxt.cacheGet(create.id)) { continue; }	
+			if (appCtxt.cacheGet(create.id)) { continue; }	
 			if (name == "folder") {				
 				this._handleCreateFolder(create, ZmOrganizer.BRIEFCASE);		
 			}else if (name == "link") {
@@ -252,7 +252,7 @@ function(creates, force) {
 			}else if (name == "doc") {				
 				//DBG.println(AjxDebug.DBG1, "ZmBriefcaseApp: handling CREATE for node: " + name);
 				// REVISIT: use app context item cache				
-				//var doc = new ZmBriefcaseItem(this._appCtxt);
+				//var doc = new ZmBriefcaseItem(appCtxt);
 				//doc.set(create);
 				//bcController.putItem(doc);
 			}
@@ -283,7 +283,7 @@ function(modifies, force) {
 				// REVISIT: Use app context item cache
 				var doc = briefcaseController.getItemById(id);
 				if (!doc) {
-					doc = new ZmBriefcaseItem(this._appCtxt);
+					doc = new ZmBriefcaseItem(appCtxt);
 					doc.set(mod);
 				}
 				else {
@@ -329,8 +329,8 @@ function(folder,filenames) {
 
 ZmBriefcaseApp.prototype._handleLoadNewBriefcaseItem =
 function() {
-	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
-	var dialog = this._appCtxt.getNewBriefcaseDialog();
+	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
+	var dialog = appCtxt.getNewBriefcaseDialog();
 	if (!this._newNotebookCb) {
 		this._newNotebookCb = new AjxCallback(this, this._newBriefcaseCallback);
 	}
@@ -383,7 +383,7 @@ function(active) {
 ZmBriefcaseApp.prototype.getFileController = function() {
 	if (!this._fileController) {
 		//TODO:search controller for briefcase
-	//	this._fileController = new ZmBriefcaseFileController(this._appCtxt, this._container, this);
+	//	this._fileController = new ZmBriefcaseFileController(appCtxt, this._container, this);
 	}
 	return this._fileController;
 };
@@ -391,15 +391,15 @@ ZmBriefcaseApp.prototype.getFileController = function() {
 
 ZmBriefcaseApp.prototype._newBriefcaseCallback =
 function(parent, name, color) {
-	var dialog = this._appCtxt.getNewBriefcaseDialog();
+	var dialog = appCtxt.getNewBriefcaseDialog();
 	dialog.popdown();
-	var oc = this._appCtxt.getOverviewController();
+	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.BRIEFCASE)._doCreate(parent, name, color);
 };
 
 ZmBriefcaseApp.prototype.getBriefcaseController = function() {
 	if (!this._briefcaseController) {
-		this._briefcaseController = new ZmBriefcaseController(this._appCtxt, this._container, this);		
+		this._briefcaseController = new ZmBriefcaseController(appCtxt, this._container, this);		
 	}
 	return this._briefcaseController;
 };
@@ -415,7 +415,7 @@ function(msgId, partId, name) {
 	if(this._deferredFolders.length != 0){
 		this._createDeferredFolders(ZmApp.BRIEFCASE);
 	}
-	var copyToDialog = this._copyToDialog = this._appCtxt.getChooseFolderDialog();
+	var copyToDialog = this._copyToDialog = appCtxt.getChooseFolderDialog();
 	var _chooseCb = new AjxCallback(this, this._chooserCallback,[msgId,partId,name]);
 	ZmController.showDialog(copyToDialog, _chooseCb, this._getCopyParams());
 };
@@ -441,10 +441,10 @@ function(msgId, partId, name, folderId,items) {
 
 	var bController = this.getBriefcaseController();
 	if( bController.isReadOnly(folderId) ){
-		ZmOrganizer._showErrorMsg(this._appCtxt, ZmMsg.errorPermission);	
+		ZmOrganizer._showErrorMsg(appCtxt, ZmMsg.errorPermission);	
 		return;
 	}else if(bController.isShared(folderId)) {
-		ZmOrganizer._showErrorMsg(this._appCtxt,ZmMsg.sharedFolderNotSupported);
+		ZmOrganizer._showErrorMsg(appCtxt,ZmMsg.sharedFolderNotSupported);
 		return;
 	}
 
@@ -457,10 +457,10 @@ function(msgId, partId, name, folderId,items) {
 		}
 	}
 	if(!itemFound){	
-		var srcData = new ZmBriefcaseItem(this._appCtxt);	
+		var srcData = new ZmBriefcaseItem(appCtxt);	
 		srcData.createFromAttachment(msgId, partId, name, folderId);
 	}else{
 		var	msg = AjxMessageFormat.format(ZmMsg.errorFileAlreadyExists, name);
-		ZmOrganizer._showErrorMsg(this._appCtxt, msg);
+		ZmOrganizer._showErrorMsg(appCtxt, msg);
 	}
 };

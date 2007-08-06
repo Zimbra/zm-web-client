@@ -23,10 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmVoiceApp = function(appCtxt, container, parentController) {
+ZmVoiceApp = function(container, parentController) {
 	this.phones = [];
 	this.accordionItem = null; // Currently selected accordion item.
-	ZmApp.call(this, ZmApp.VOICE, appCtxt, container, parentController);
+	ZmApp.call(this, ZmApp.VOICE, container, parentController);
 }
 
 // Organizer and item-related constants
@@ -80,7 +80,7 @@ function() {
 						 searchType:	"voicemail",
 						 resultsList:	AjxCallback.simpleClosure(function(search) {
 											AjxDispatcher.require("Voicemail");
-											return new ZmVoiceList(this._appCtxt, ZmItem.VOICEMAIL, search);
+											return new ZmVoiceList(appCtxt, ZmItem.VOICEMAIL, search);
 										}, this)
 
 						});
@@ -95,7 +95,7 @@ function() {
 						 searchType:	"calllog",
 						 resultsList:	AjxCallback.simpleClosure(function(search) {
 											AjxDispatcher.require("Voicemail");
-											return new ZmVoiceList(this._appCtxt, ZmItem.CALL, search);
+											return new ZmVoiceList(appCtxt, ZmItem.CALL, search);
 										}, this)
 						});
 };
@@ -174,7 +174,7 @@ ZmVoiceApp.prototype._registerPrefs = function() {
 
 ZmVoiceApp.prototype._registerSettings =
 function(settings) {
-	settings = settings || this._appCtxt.getSettings();
+	settings = settings || appCtxt.getSettings();
 	settings.registerSetting("VOICE_PAGE_SIZE", {name:"zimbraPrefVoiceItemsPerPage", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:25});
 };
 
@@ -203,7 +203,7 @@ function() {
 
 	// create accordion
 	var accordionId = this._name;
-	var opc = this._appCtxt.getOverviewController();
+	var opc = appCtxt.getOverviewController();
 	var params = {accordionId:accordionId};
 	var accordion = this._overviewPanelContent = opc.createAccordion(params);
 	accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
@@ -236,7 +236,7 @@ function(callback) {
 	    	asyncMode: true,
 			callback: respCallback
 		};
-		this._appCtxt.getAppController().sendRequest(params);
+		appCtxt.getAppController().sendRequest(params);
 	} else if (callback) {
 		callback.run();
 	}
@@ -247,12 +247,12 @@ function(callback, response) {
 	var phones = response._data.GetVoiceInfoResponse.phone;
 	for (var i = 0, count = phones.length; i < count; i++) {
 		var obj = phones[i];
-		var phone = new ZmPhone(this._appCtxt);
+		var phone = new ZmPhone(appCtxt);
 		phone._loadFromDom(obj);
 		this.phones.push(phone);
 
 		if (obj.folder && obj.folder.length) {
-			phone.folderTree = new ZmVoiceFolderTree(this._appCtxt);
+			phone.folderTree = new ZmVoiceFolderTree(appCtxt);
 			phone.folderTree.loadFromJs(obj.folder[0], phone);
 		}
 	}
@@ -269,7 +269,7 @@ function(ev) {
 
 	// Save most recent search.
 	if (this.accordionItem) {
-		var folder = this._appCtxt.getCurrentController().getFolder();
+		var folder = appCtxt.getCurrentController().getFolder();
 		if (folder && folder.phone == this.accordionItem.data.phone) {
 			this.accordionItem.data.lastFolder = folder;
 		}
@@ -305,9 +305,9 @@ function(folder, callback, sortBy) {
 		types: AjxVector.fromArray([folder.getSearchType()]),
 		sortBy: sortBy,
 		query: folder.getSearchQuery(),
-		limit: this._appCtxt.get(ZmSetting.VOICE_PAGE_SIZE)
+		limit: appCtxt.get(ZmSetting.VOICE_PAGE_SIZE)
 	};
-	var search = new ZmSearch(this._appCtxt, searchParams);	
+	var search = new ZmSearch(appCtxt, searchParams);	
 	var responseCallback = new AjxCallback(this, this._handleResponseSearch, [folder, callback]);
 	search.execute({ callback: responseCallback });
 };
@@ -360,7 +360,7 @@ function(items, op, attributes, callback) {
     	asyncMode: true,
 		callback: callback
 	};
-	this._appCtxt.getAppController().sendRequest(params);
+	appCtxt.getAppController().sendRequest(params);
 };
 
 ZmVoiceApp.prototype.launch =
@@ -402,7 +402,7 @@ function(name) {
 ZmVoiceApp.prototype.getVoiceController =
 function() {
 	if (!this._voiceController) {
-		this._voiceController = new ZmVoicemailListController(this._appCtxt, this._container, this);
+		this._voiceController = new ZmVoicemailListController(appCtxt, this._container, this);
 	}
 	return this._voiceController;
 };
@@ -410,7 +410,7 @@ function() {
 ZmVoiceApp.prototype.getCallListController =
 function() {
 	if (!this._callListController) {
-		this._callListController = new ZmCallListController(this._appCtxt, this._container, this);
+		this._callListController = new ZmCallListController(appCtxt, this._container, this);
 	}
 	return this._callListController;
 };
@@ -419,8 +419,8 @@ ZmVoiceApp.prototype.GetVoicePrefsController =
 function() {
 	if (!this._voicePrefsController) {
         var prefsView = AjxDispatcher.run("GetPrefController").getPrefsView();
-        var prefsApp = this._appCtxt.getApp(ZmApp.PREFERENCES);
-        this._voicePrefsController = new ZmVoicePrefsController(this._appCtxt, this._container, prefsApp, prefsView);
+        var prefsApp = appCtxt.getApp(ZmApp.PREFERENCES);
+        this._voicePrefsController = new ZmVoicePrefsController(appCtxt, this._container, prefsApp, prefsView);
 	}
 	return this._voicePrefsController;
 };

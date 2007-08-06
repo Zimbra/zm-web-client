@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNotebookApp = function(appCtxt, container, parentController) {
+ZmNotebookApp = function(container, parentController) {
 
-	ZmApp.call(this, ZmApp.NOTEBOOK, appCtxt, container, parentController);
+	ZmApp.call(this, ZmApp.NOTEBOOK, container, parentController);
 }
 
 // Organizer and item-related constants
@@ -100,7 +100,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("NotebookCore");
-			return new ZmPageList(this._appCtxt, search);
+			return new ZmPageList(appCtxt, search);
 		}, this)
 						});
 
@@ -116,7 +116,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("NotebookCore");
-			return new ZmPageList(this._appCtxt, search, ZmItem.DOCUMENT);
+			return new ZmPageList(appCtxt, search, ZmItem.DOCUMENT);
 		}, this)
 						});
 };
@@ -206,7 +206,7 @@ function(ids, force) {
 	var pageInUse = false;
 	var notebookController = AjxDispatcher.run("GetNotebookController");
 	var shownPage = notebookController.getPage();
-	var overviewController = this._appCtxt.getOverviewController();
+	var overviewController = appCtxt.getOverviewController();
 	var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
 	var treeView = treeController.getTreeView(this.getOverviewId());
 	if(!treeView){
@@ -233,7 +233,7 @@ function(ids, force) {
 			cache.removePage(page);
 			page.notifyDelete();							
 		}
-		this._appCtxt.cacheRemove(ids[i]);
+		appCtxt.cacheRemove(ids[i]);
 	}
 	
 	if(nextData && pageInUse){
@@ -269,7 +269,7 @@ function(creates, force) {
 		var list = creates[name];
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
-			if (this._appCtxt.cacheGet(create.id)) { continue; }
+			if (appCtxt.cacheGet(create.id)) { continue; }
 	
 			if (name == "folder") {
 				this._handleCreateFolder(create, ZmOrganizer.NOTEBOOK);
@@ -279,7 +279,7 @@ function(creates, force) {
 				DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
 				// REVISIT: use app context item cache
 				var cache = this.getNotebookCache();
-				var page = new ZmPage(this._appCtxt);
+				var page = new ZmPage(appCtxt);
 				page.set(create);
 				cache.putPage(page);
 	
@@ -295,7 +295,7 @@ function(creates, force) {
 				DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
 				// REVISIT: use app context item cache
 				var cache = this.getNotebookCache();
-				var doc = new ZmDocument(this._appCtxt);
+				var doc = new ZmDocument(appCtxt);
 				doc.set(create);
 				cache.putDocument(doc);
 			}
@@ -321,7 +321,7 @@ function(modifies, force) {
 				var cache = this.getNotebookCache();
 				var page = cache.getPageById(id);
 				if (!page) {
-					page = new ZmPage(this._appCtxt);
+					page = new ZmPage(appCtxt);
 					page.set(mod);
 					cache.putPage(page);
 				} else {
@@ -346,7 +346,7 @@ function(modifies, force) {
 				var cache = this.getNotebookCache();
 				var doc = cache.getDocumentById(id);
 				if (!doc) {
-					doc = new ZmDocument(this._appCtxt);
+					doc = new ZmDocument(appCtxt);
 					doc.set(mod);
 					cache.putDocument(doc);
 				}
@@ -383,12 +383,12 @@ function(op) {
 
 ZmNotebookApp.prototype._handleLoadNewPage =
 function() {
-	var overviewController = this._appCtxt.getOverviewController();
+	var overviewController = appCtxt.getOverviewController();
 	var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
 	var treeView = treeController.getTreeView(this.getOverviewId());
 
 	var notebook = treeView ? treeView.getSelected() : null;
-	var page = new ZmPage(this._appCtxt);
+	var page = new ZmPage(appCtxt);
 	page.folderId = notebook ? notebook.id : ZmNotebookItem.DEFAULT_FOLDER;
 	page.name=this.generateUniqueName(page.folderId);
 	AjxDispatcher.run("GetPageEditController").show(page);
@@ -396,8 +396,8 @@ function() {
 
 ZmNotebookApp.prototype._handleLoadNewNotebook =
 function() {
-	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
-	var dialog = this._appCtxt.getNewNotebookDialog();
+	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
+	var dialog = appCtxt.getNewNotebookDialog();
 	if (!this._newNotebookCb) {
 		this._newNotebookCb = new AjxCallback(this, this._newNotebookCallback);
 	}
@@ -448,21 +448,21 @@ function(active) {
 
 ZmNotebookApp.prototype.getNotebookController = function() {
 	if (!this._notebookController) {
-		this._notebookController = new ZmNotebookPageController(this._appCtxt, this._container, this);
+		this._notebookController = new ZmNotebookPageController(appCtxt, this._container, this);
 	}
 	return this._notebookController;
 };
 
 ZmNotebookApp.prototype.getPageEditController = function() {
 	if (!this._pageController) {
-		this._pageController = new ZmPageEditController(this._appCtxt, this._container, this);
+		this._pageController = new ZmPageEditController(appCtxt, this._container, this);
 	}
 	return this._pageController;
 };
 
 ZmNotebookApp.prototype.getFileController = function() {
 	if (!this._fileController) {
-		this._fileController = new ZmNotebookFileController(this._appCtxt, this._container, this);
+		this._fileController = new ZmNotebookFileController(appCtxt, this._container, this);
 	}
 	return this._fileController;
 };
@@ -470,16 +470,16 @@ ZmNotebookApp.prototype.getFileController = function() {
 ZmNotebookApp.prototype.getNotebookCache =
 function() {
 	if (!this._notebookCache) {
-		this._notebookCache = new ZmNotebookCache(this._appCtxt);
+		this._notebookCache = new ZmNotebookCache(appCtxt);
 	}
 	return this._notebookCache;
 };
 
 ZmNotebookApp.prototype._newNotebookCallback =
 function(parent, name, color) {
-	var dialog = this._appCtxt.getNewNotebookDialog();
+	var dialog = appCtxt.getNewNotebookDialog();
 	dialog.popdown();
-	var oc = this._appCtxt.getOverviewController();
+	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.NOTEBOOK)._doCreate(parent, name, color);
 };
 

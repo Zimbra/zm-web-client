@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTasksApp = function(appCtxt, container) {
+ZmTasksApp = function(container) {
 
-	ZmApp.call(this, ZmApp.TASKS, appCtxt, container);
+	ZmApp.call(this, ZmApp.TASKS, container);
 };
 
 // Organizer and item-related constants
@@ -79,7 +79,7 @@ function() {
 						 resultsList:
 		   AjxCallback.simpleClosure(function(search) {
 			   AjxDispatcher.require("TasksCore");
-			   return new ZmTaskList(this._appCtxt, search);
+			   return new ZmTaskList(appCtxt, search);
 		   }, this)
 						});
 };
@@ -180,13 +180,13 @@ function(op, params) {
 ZmTasksApp.prototype._handleLoadNewTask =
 function(params) {
 	var folderId = params ? params.folderId : null;
-	AjxDispatcher.run("GetTaskController").show((new ZmTask(this._appCtxt, null, null, folderId)));
+	AjxDispatcher.run("GetTaskController").show((new ZmTask(appCtxt, null, null, folderId)));
 };
 
 ZmTasksApp.prototype._handleLoadNewTaskFolder =
 function() {
-	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
-	var dialog = this._appCtxt.getNewTaskFolderDialog();
+	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
+	var dialog = appCtxt.getNewTaskFolderDialog();
 	if (!this._newTaskFolderCb) {
 		this._newTaskFolderCb = new AjxCallback(this, this._newTaskFolderCallback);
 	}
@@ -208,14 +208,14 @@ function(creates, force) {
 		var list = creates[name];
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
-			if (this._appCtxt.cacheGet(create.id)) { continue; }
+			if (appCtxt.cacheGet(create.id)) { continue; }
 	
 			if (name == "folder") {
 				this._handleCreateFolder(create, ZmOrganizer.TASKS);
 			} else if (name == "link") {
 				this._handleCreateLink(create, ZmOrganizer.TASKS);
 			} else if (name == "task") {
-				var currList = this._appCtxt.getCurrentList();
+				var currList = appCtxt.getCurrentList();
 				if (currList && (currList instanceof ZmTaskList)) {
 					currList.notifyCreate(create);
 				}
@@ -254,7 +254,7 @@ function(results, callback, folderId) {
 ZmTasksApp.prototype.getTaskListController =
 function() {
 	if (!this._taskListController) {
-		this._taskListController = new ZmTaskListController(this._appCtxt, this._container, this);
+		this._taskListController = new ZmTaskListController(appCtxt, this._container, this);
 	}
 	return this._taskListController;
 };
@@ -262,7 +262,7 @@ function() {
 ZmTasksApp.prototype.getTaskController =
 function() {
 	if (!this._taskController)
-		this._taskController = new ZmTaskController(this._appCtxt, this._container, this);
+		this._taskController = new ZmTaskController(appCtxt, this._container, this);
 	return this._taskController;
 };
 
@@ -276,7 +276,7 @@ function(msg, date) {
 
 ZmTasksApp.prototype._msgLoadedCallback =
 function(mailItem, date, subject) {
-	var t = new ZmTask(this._appCtxt);
+	var t = new ZmTask(appCtxt);
 	t.setStartDate(AjxDateUtil.roundTimeMins(date, 30));
 	t.setFromMailMessage(mailItem, subject);
 	this.getTaskController().show(t, ZmCalItem.MODE_NEW);
@@ -286,7 +286,7 @@ function(mailItem, date, subject) {
 ZmTasksApp.prototype.search =
 function(folder, startDate, endDate, callback) {
 	var query = folder ? folder.createQuery() : "in:tasks";
-	var sc = this._appCtxt.getSearchController();
+	var sc = appCtxt.getSearchController();
 	sc.search({query:query, types:[ZmItem.TASK], callback:callback});
 };
 
@@ -295,8 +295,8 @@ function(folder, startDate, endDate, callback) {
 
 ZmTasksApp.prototype._newTaskFolderCallback =
 function(parent, name, color) {
-	var dialog = this._appCtxt.getNewTaskFolderDialog();
+	var dialog = appCtxt.getNewTaskFolderDialog();
 	dialog.popdown();
-	var oc = this._appCtxt.getOverviewController();
+	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.TASKS)._doCreate(parent, name, color);
 };
