@@ -1611,7 +1611,7 @@ ZmComposeView.prototype._setSignatureVisible = function() {
 	var div = document.getElementById(this._signatureDivId);
 	if (!div) return;
 
-	var visible = this._appCtxt.getSignatureCollection().getSize() > 1;
+	var visible = this._appCtxt.getSignatureCollection().getSize() > 0;
 	Dwt.setVisible(div, visible);
 };
 
