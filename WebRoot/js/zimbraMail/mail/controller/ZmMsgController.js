@@ -290,6 +290,11 @@ function() {
 	return this._msg;
 };
 
+ZmMsgController.prototype._getSelectedMsg =
+function() {
+	return this._msg;
+};
+
 ZmMsgController.prototype.setMsg =
 function (msg) {
 	this._msg = msg;
