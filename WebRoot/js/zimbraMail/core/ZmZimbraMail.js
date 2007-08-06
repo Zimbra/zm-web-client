@@ -67,9 +67,7 @@ ZmZimbraMail = function(appCtxt, params) {
 	this._shell = appCtxt.getShell();
 
 	if (location.search && (location.search.indexOf("nss=1") != -1)) {
-		this._splashScreen = null;
-	} else {
-   	    this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
+		this._killSplash();
 	}
 
 	this._apps = {};
@@ -946,9 +944,10 @@ function() {
 
 ZmZimbraMail.prototype._killSplash =
 function() {
-	if (this._splashScreen)	{
-		this._splashScreen.setVisible(false);
-	}
+	// 	Splash screen is now a part of the skin, loaded in statically via the JSP 
+	//	as a well-known ID.  To hide the splash screen, just hide that div.
+	var splashDiv = Dwt.byId("skin_container_splash_screen");
+	if (splashDiv) Dwt.hide(splashDiv);
 };
 
 // Creates an app object, which doesn't necessarily do anything just yet.

@@ -144,3 +144,47 @@
 
 </div>
 <!-- END SKIN -->
+<!-- BEGIN SPLASH SCREEN -->
+<div id='skin_container_splash_screen'>
+	<script language='javascript'>
+		function showCompanyUrl() {
+			window.open('<fmt:message key="splashScreenCompanyURL/>', '_blank');
+		}
+	</script>
+	<table style='width:100%;height:100%'>
+		<tr><td align=center valign=middle>
+			 <div id='ZLoginPanel'>
+				<table class='zLoginTable' width='100%' cellpadding=0 cellspacing=0>
+					<tr><td id='ZLoginHeaderContainer'><center>
+							<table class='zLoginTable'>
+								<tr><td id='ZLoginBannerContainer'>
+										<div id='ZLoginBannerPanel'>
+											<table class='zLoginTable'><tr>
+												<td><div style='cursor:pointer' id='ZLoginBannerImage' class='ImgLoginBanner' 
+														 onclick='showCompanyUrl()'></div></td>
+												<td valign=top id='ZLoginShortVersion'></td>
+											</tr></table>
+											<div id='ZLoginAppName'><fmt:message key="splashScreenAppName"/></div>
+										</div>
+									</td>
+								</tr>
+							</table>
+						</center></td>
+					</tr>
+					<tr><td id='ZLoginBodyContainer'>
+							<div id='ZLoginLoadingPanel'>
+								<table><tr><td></td><td id='ZLoginLoadingMsg'><fmt:message key="splashScreenLoading"/></td></tr></table>
+							</div>
+							<table class='zLoginTable' width='100%' cellpadding=0 cellspacing=0>
+								<tr>
+									<td id='ZLoginLicenseContainer'><fmt:message key="splashScreenCopyright"/></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			 </div>
+		</td></tr>
+	</table>
+</div>
+<!-- END SPLASH SCREEN -->

@@ -521,6 +521,7 @@ function() {
 	this.registerSetting("SKIN_SEARCH_BUILDER_TR_ID",		{type:ZmSetting.T_CONFIG, defaultValue:"skin_tr_search_builder"});
 	this.registerSetting("SKIN_SEARCH_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_search"});
 	this.registerSetting("SKIN_SHELL_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_outer"});
+	this.registerSetting("SKIN_SPLASH_SCREEN_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_splash_screen"});
 	this.registerSetting("SKIN_STATUS_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_status"});
 	this.registerSetting("SKIN_STATUS_ROW_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_tr_status"});
 	this.registerSetting("SKIN_TREE_FOOTER_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_tree_footer"});
