@@ -563,7 +563,7 @@ function(ev) {
  * @isInDialog 					true if mini cal is inside a DwtDialog (otherwise z-index will be too low)
 */
 ZmCalendarApp.createMiniCalButton =
-function(parent, buttonId, dateButtonListener, dateCalSelectionListener, appCtxt, isInDialog) {
+function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDialog) {
 	// create button
 	var dateButton = new DwtButton(parent);
 	dateButton.addDropDownSelectionListener(dateButtonListener);

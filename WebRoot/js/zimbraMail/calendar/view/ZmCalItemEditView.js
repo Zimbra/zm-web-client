@@ -483,8 +483,8 @@ function(width) {
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 	// start/end date DwtCalendar's
-	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId+"_startMiniCalBtn", dateButtonListener, dateCalSelectionListener, this._appCtxt);
-	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId+"_endMiniCalBtn", dateButtonListener, dateCalSelectionListener, this._appCtxt);
+	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId+"_startMiniCalBtn", dateButtonListener, dateCalSelectionListener);
+	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId+"_endMiniCalBtn", dateButtonListener, dateCalSelectionListener);
 
 	// notes ZmHtmlEditor
 	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, this._appCtxt);

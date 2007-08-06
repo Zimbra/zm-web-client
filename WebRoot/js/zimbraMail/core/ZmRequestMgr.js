@@ -32,15 +32,13 @@
  *
  * @author Conrad Damon
  * 
- * @param appCtxt		[ZmAppCtxt]		the app context
  * @param controller	[ZmController]	main controller
  */
-ZmRequestMgr = function(appCtxt, controller) {
+ZmRequestMgr = function(controller) {
 
-	this._appCtxt = appCtxt;
 	this._controller = controller;
 	
-	this._appCtxt.setRequestMgr(this);
+	appCtxt.setRequestMgr(this);
 
 	ZmCsfeCommand.setServerUri(appCtxt.get(ZmSetting.CSFE_SERVER_URI));
 	var cv = appCtxt.get(ZmSetting.CLIENT_VERSION);
@@ -54,9 +52,9 @@ ZmRequestMgr = function(appCtxt, controller) {
 	this._pendingRequests = {};
 	this._modifyHandled = {};
 
-	this._useXml = this._appCtxt.get(ZmSetting.USE_XML);
-	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
-	this._stdTimeout = this._appCtxt.get(ZmSetting.TIMEOUT);
+	this._useXml = appCtxt.get(ZmSetting.USE_XML);
+	this._logRequest = appCtxt.get(ZmSetting.LOG_REQUEST);
+	this._stdTimeout = appCtxt.get(ZmSetting.TIMEOUT);
 
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);
 };
@@ -108,7 +106,7 @@ function(params) {
 	// (since we're executing on someone else's mbox)
 	var accountName = params.accountName;
 	if (!accountName) {
-		var acct = this._appCtxt.getActiveAccount();
+		var acct = appCtxt.getActiveAccount();
 		accountName = (acct && acct.id != ZmZimbraAccount.DEFAULT_ID) ? acct.name : null;
 	}
 	var changeToken = accountName ? null : this._changeToken;
@@ -311,7 +309,7 @@ function(refresh) {
 	// XXX: temp, get additional share info (see bug #4434)
 	if (refresh.folder) {
 		var respCallback = new AjxCallback(this, this._handleResponseRefreshHandler, [refresh]);
-		var folderTree = this._appCtxt.getFolderTree();
+		var folderTree = appCtxt.getFolderTree();
 		if (folderTree) {
 			folderTree.getPermissions(null, respCallback, true);
 		}
@@ -329,11 +327,11 @@ function(refresh) {
 ZmRequestMgr.prototype._loadTree =
 function(type, unread, obj, objType, account) {
 	var isTag = (type == ZmOrganizer.TAG);
-	var tree = this._appCtxt.getTree(type, account);
+	var tree = appCtxt.getTree(type, account);
 	if (!tree) {
-		tree = isTag ? new ZmTagTree(this._appCtxt) : new ZmFolderTree(this._appCtxt);
+		tree = isTag ? new ZmTagTree(appCtxt) : new ZmFolderTree(appCtxt);
 	}
-	this._appCtxt.setTree(type, tree, account);
+	appCtxt.setTree(type, tree, account);
 	tree.addChangeListener(this._unreadListener);
 	tree.getUnreadHash(unread);
 	tree.reset();
@@ -382,11 +380,11 @@ function(deletes) {
 	for (var i = 0; i < ids.length; i++) {
 		var id = ids[i];
 		if (!id) { continue; }
-		var item = this._appCtxt.cacheGet(id);
+		var item = appCtxt.cacheGet(id);
 		DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling delete notif for ID " + id);
 		if (item) {
 			item.notifyDelete();
-			this._appCtxt.cacheRemove(id);
+			appCtxt.cacheRemove(id);
 			item = null;
 		}
 	}
@@ -409,17 +407,17 @@ function(creates) {
 			var create = list[i];
 			if (create._handled) { continue; }
 			// ignore create notif for item we already have (except tags, which can reuse IDs)
-			if (this._appCtxt.cacheGet(create.id) && name != "tag") { continue; }
+			if (appCtxt.cacheGet(create.id) && name != "tag") { continue; }
 	
 			DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
 			if (name == "tag") {
-				var tagTree = this._appCtxt.getTagTree();
+				var tagTree = appCtxt.getTagTree();
 				if (tagTree) {
 					tagTree.root.notifyCreate(create);
 				}
 			} else if (name == "folder" || name == "search") {
 				var parentId = create.l;
-				var parent = this._appCtxt.getById(parentId);
+				var parent = appCtxt.getById(parentId);
 				if (parent) {
 					parent.notifyCreate(create, (name == "search"));
 				}
@@ -455,7 +453,7 @@ function(modifies) {
 				setting.notifyModify(mod);
 				continue;
 			} else {
-				var item = this._appCtxt.cacheGet(mod.id);
+				var item = appCtxt.cacheGet(mod.id);
 				if (item) {
 					item.notifyModify(mod);
 				}
@@ -502,11 +500,11 @@ function(ev) {
 		var organizer = organizers ? organizers[0] : null;
 		var id = organizer ? organizer.id : null;
 		if (fields && fields[ZmOrganizer.F_UNREAD]) {
-			var search = this._appCtxt.getCurrentSearch();
+			var search = appCtxt.getCurrentSearch();
 			if (search && id && (id == search.folderId || id == search.tagId))
 				Dwt.setTitle(search.getTitle());
 
-			var mailApp = this._appCtxt.getApp(ZmApp.MAIL);
+			var mailApp = appCtxt.getApp(ZmApp.MAIL);
 			if (mailApp) {
 				mailApp.setNewMailNotice(organizer);
 			}

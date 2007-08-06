@@ -318,7 +318,7 @@ ZmContactView.prototype._addDateCalendars =
 function() {
 	var dateBtnListener = new AjxListener(this, this._dateButtonListener);
 	var dateSelListener = new AjxListener(this, this._dateSelectionListener);
-	ZmCalendarApp.createMiniCalButton(this, this._birthdayButtonId, dateBtnListener, dateSelListener, this._appCtxt);
+	ZmCalendarApp.createMiniCalButton(this, this._birthdayButtonId, dateBtnListener, dateSelListener);
 };
 
 ZmContactView.prototype._installOnKeyUpHandler =

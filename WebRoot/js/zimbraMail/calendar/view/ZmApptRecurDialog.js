@@ -761,7 +761,7 @@ function() {
 	// create mini calendar button for end by field
 	var dateButtonListener = new AjxListener(this, this._endByButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
-	ZmCalendarApp.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
+	ZmCalendarApp.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener, true);
 
 	// create all DwtInputField's
 	this._createInputs();

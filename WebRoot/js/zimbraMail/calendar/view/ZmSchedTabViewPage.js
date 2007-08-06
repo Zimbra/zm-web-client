@@ -467,8 +467,8 @@ function() {
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt);
-	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt);
+	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener);
+	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener);
 
 	var navBarListener = new AjxListener(this, this._navBarListener);
 	this._navToolbar = new ZmNavToolBar(this, DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);

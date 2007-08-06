@@ -23,26 +23,25 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmClientCmdHandler = function(appCtxt) {
-	this._appCtxt = appCtxt;
-	this._settings = new Object();
+ZmClientCmdHandler = function() {
+	this._settings = {};
 };
 
 ZmClientCmdHandler.prototype.execute =
 function(cmdStr, searchController) {
 
-	if (!cmdStr) return;
+	if (!cmdStr) { return; }
 
 	cmdStr = AjxStringUtil.trim(cmdStr, true);
 	
-	if (cmdStr == "") return;
+	if (cmdStr == "") { return; }
 	
 	cmdStr = cmdStr.toLowerCase();
 	var argv = cmdStr.split(/\s/);
 	var arg0 = argv[0];
 
 	if (arg0 == "debug") {
-		if (!argv[1]) return;
+		if (!argv[1]) { return; }
 		if (argv[1] == "t") {
 			var on = DBG._showTiming;
 			var newState = on ? "off" : "on";
@@ -58,7 +57,7 @@ function(cmdStr, searchController) {
 		var feature = argv[1].toUpperCase();
 		var setting = "ZmSetting." + feature + "_ENABLED"
 		var id = eval(setting);
-		var on = this._appCtxt.get(id);
+		var on = appCtxt.get(id);
 		if (on == undefined) {
 			this._alert("No such setting: " + setting);
 			return;
@@ -66,57 +65,57 @@ function(cmdStr, searchController) {
 		var newState = on ? "off" : "on";
 		alert("Turning " + feature + " support " + newState);
 		this._settings[id] = !on;
-		this._appCtxt.getAppController().restart(this._settings);
+		appCtxt.getAppController().restart(this._settings);
 	} else if (arg0 == "instant_notify") {
 		var on = false;
 		if (argv[1] && argv[1] == 1) {
 			on = true;
 		}
 		this._alert("Set instant notify to "+ (on ? "ON" : "OFF"));
-		this._appCtxt.getAppController().setInstantNotify(on);
+		appCtxt.getAppController().setInstantNotify(on);
 	} else if (arg0 == "poll") {
 		if (!argv[1]) return;
-		this._appCtxt.set(ZmSetting.POLLING_INTERVAL, argv[1]);
-		var pi = this._appCtxt.get(ZmSetting.POLLING_INTERVAL); // LDAP time format converted to seconds
-		if (this._appCtxt.getAppController().setPollInterval()) {
+		appCtxt.set(ZmSetting.POLLING_INTERVAL, argv[1]);
+		var pi = appCtxt.get(ZmSetting.POLLING_INTERVAL); // LDAP time format converted to seconds
+		if (appCtxt.getAppController().setPollInterval()) {
 			this._alert("Set polling interval to " + pi + " seconds");
 		} else {
 			this._alert("Ignoring polling interval b/c we are in Instant_Polling mode ($set:instant_notify 0|1)");
 		}
 	} else if (arg0 == "noop") {
-		this._appCtxt.getAppController().sendNoOp();
+		appCtxt.getAppController().sendNoOp();
 		this._alert("Sent NoOpRequest");
 	} else if (arg0 == "a") {
 		if (!this._assistantDialog) {
 			AjxDispatcher.require("Assistant");
-			this._assistantDialog = new ZmAssistantDialog(this._appCtxt);
+			this._assistantDialog = new ZmAssistantDialog(appCtxt);
 		}
 		searchController.setSearchField("");
 		this._assistantDialog.popup();
 	} else if (arg0 == "rr") {		
-		this._appCtxt.getApp(ZmApp.CALENDAR).getReminderController().refresh();
+		appCtxt.getApp(ZmApp.CALENDAR).getReminderController().refresh();
 	} else if (arg0 == "rh") {
-		this._appCtxt.getApp(ZmApp.CALENDAR).getReminderController()._housekeepingAction();
+		appCtxt.getApp(ZmApp.CALENDAR).getReminderController()._housekeepingAction();
 	} else if (arg0 == "toast") {
-		this._appCtxt.setStatusMsg("Your options have been saved.", ZmStatusView.LEVEL_INFO);
-		this._appCtxt.setStatusMsg("Unable to save options.", ZmStatusView.LEVEL_WARNING);
-		this._appCtxt.setStatusMsg("Message not sent.", ZmStatusView.LEVEL_CRITICAL);
+		appCtxt.setStatusMsg("Your options have been saved.", ZmStatusView.LEVEL_INFO);
+		appCtxt.setStatusMsg("Unable to save options.", ZmStatusView.LEVEL_WARNING);
+		appCtxt.setStatusMsg("Message not sent.", ZmStatusView.LEVEL_CRITICAL);
 	} else if (arg0 == "get") {
 		if (!argv[1]) return;
 		var item = argv[1];
 		if (item == "version") {		
 			alert("Client Information\n\n" +
-			      "Client Version: " + this._appCtxt.get(ZmSetting.CLIENT_VERSION) + "\n" +
-			      "Client Release: " + this._appCtxt.get(ZmSetting.CLIENT_RELEASE) + "\n" +
-			      "    Build Date: " + this._appCtxt.get(ZmSetting.CLIENT_DATETIME));
+			      "Client Version: " + appCtxt.get(ZmSetting.CLIENT_VERSION) + "\n" +
+			      "Client Release: " + appCtxt.get(ZmSetting.CLIENT_RELEASE) + "\n" +
+			      "    Build Date: " + appCtxt.get(ZmSetting.CLIENT_DATETIME));
 		}
 	} else if (arg0 == "refresh") {
 		ZmCsfeCommand.setSessionId(null);
-		this._appCtxt.getAppController().sendNoOp();
+		appCtxt.getAppController().sendNoOp();
 	}
 };
 
 ZmClientCmdHandler.prototype._alert = 
 function(msg, level) {
-	this._appCtxt.setStatusMsg(msg, level);
+	appCtxt.setStatusMsg(msg, level);
 };

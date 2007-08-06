@@ -40,7 +40,7 @@ ZmZimbraMail = function(params) {
 	ZmController.call(this, appCtxt);
 
 	this._userShell = params.userShell;
-	this._requestMgr = new ZmRequestMgr(appCtxt, this);
+	this._requestMgr = new ZmRequestMgr(this);
 
 	// ALWAYS set back reference into our world (also used by unload handler)
 	window._zimbraMail = this;
