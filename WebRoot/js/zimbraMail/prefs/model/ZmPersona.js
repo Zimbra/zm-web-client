@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPersona = function(appCtxt, identity, list) {
-	if (arguments.length == 0) return;
-	ZmAccount.call(this, appCtxt, ZmAccount.PERSONA, identity.id, null, list);
+ZmPersona = function(identity, list) {
+	ZmAccount.call(this, ZmAccount.PERSONA, identity.id, null, list);
 	identity.sendFromDisplay = identity.sendFromDisplay || appCtxt.get(ZmSetting.DISPLAY_NAME);
 	identity.sendFromAddress = identity.sendFromAddress || appCtxt.get(ZmSetting.USERNAME);
 	this.identity = identity;

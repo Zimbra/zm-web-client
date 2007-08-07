@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDataSource = function(appCtxt, type, id, list) {
+ZmDataSource = function(type, id, list) {
 	if (arguments.length == 0) return;
-	ZmAccount.call(this, appCtxt, type, id, null, list);
+	ZmAccount.call(this, type, id, null, list);
 	this.port = this.getDefaultPort();
 	this.identity = new ZmIdentity(appCtxt);
 	this.identity.id = id;
@@ -171,7 +171,7 @@ function(callback, errorCallback, batchCommand) {
 		callback: respCallback,
 		errorCallback: errorCallback
 	};
-	return this._appCtxt.getAppController().sendRequest(params);
+	return appCtxt.getAppController().sendRequest(params);
 };
 
 ZmDataSource.prototype.save =
@@ -210,7 +210,7 @@ function(callback, errorCallback, batchCommand) {
 		callback: respCallback,
 		errorCallback: errorCallback
 	};
-	return this._appCtxt.getAppController().sendRequest(params);
+	return appCtxt.getAppController().sendRequest(params);
 };
 
 ZmDataSource.prototype.doDelete =
@@ -232,7 +232,7 @@ function(callback, errorCallback, batchCommand) {
 		callback: respCallback,
 		errorCallback: errorCallback
 	};
-	return this._appCtxt.getAppController().sendRequest(params);
+	return appCtxt.getAppController().sendRequest(params);
 };
 
 ZmDataSource.prototype.testConnection =
@@ -259,7 +259,7 @@ function(callback, errorCallback, batchCommand) {
 		callback: callback,
 		errorCallback: errorCallback
 	};
-	return this._appCtxt.getAppController().sendRequest(params);
+	return appCtxt.getAppController().sendRequest(params);
 };
 
 ZmDataSource.prototype.getPort = function() {
@@ -317,7 +317,7 @@ ZmDataSource.prototype._handleCreateResponse = function(callback, result) {
 	delete this._new;
 	delete this._dirty;
 
-	this._appCtxt.getDataSourceCollection().add(this);
+	appCtxt.getDataSourceCollection().add(this);
 
 	if (callback) {
 		callback.run();
@@ -327,7 +327,7 @@ ZmDataSource.prototype._handleCreateResponse = function(callback, result) {
 ZmDataSource.prototype._handleSaveResponse = function(callback, result) {
 	delete this._dirty;
 
-	var collection = this._appCtxt.getDataSourceCollection();
+	var collection = appCtxt.getDataSourceCollection();
 	// NOTE: By removing and adding it again, we make this proxy the
 	//       base datasource object in the collection.
 	collection.remove(this);
@@ -339,7 +339,7 @@ ZmDataSource.prototype._handleSaveResponse = function(callback, result) {
 };
 
 ZmDataSource.prototype._handleDeleteResponse = function(callback, result) {
-	this._appCtxt.getDataSourceCollection().remove(this);
+	appCtxt.getDataSourceCollection().remove(this);
 
 	if (callback) {
 		callback.run();

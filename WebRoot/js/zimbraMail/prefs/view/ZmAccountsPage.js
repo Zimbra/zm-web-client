@@ -323,7 +323,7 @@ ZmAccountsPage.prototype.reset = function(useDefaults) {
 		var identity = identities[i];
 		if (identity.isDefault || identity.isFromDataSource) continue;
 
-		var persona = new ZmPersona(appCtxt, identity);
+		var persona = new ZmPersona(identity);
 		this._accounts.add(ZmAccountsPage.__createProxy(persona));
 	}
 
@@ -1403,7 +1403,7 @@ ZmNewDataSource = function(appCtxt) {
 	var number = ++ZmNewDataSource.ID;
 	var id = "new-dsrc-"+number;
 	this.setType(ZmAccount.POP);
-	ZmDataSource.call(this, appCtxt, ZmAccount.POP, id);
+	ZmDataSource.call(this, ZmAccount.POP, id);
 	this.name = AjxMessageFormat.format("New External Account {0,number}", number); // TODO: i18n
 	this._new = true;
 };
@@ -1435,13 +1435,13 @@ ZmNewDataSource.prototype.setType = function(type) {
 // New persona class
 //
 
-ZmNewPersona = function(appCtxt) {
+ZmNewPersona = function() {
 	var number = ++ZmNewPersona.ID;
 	var id = "new-persona-"+number;
 	var name = AjxMessageFormat.format("New Persona {0,number}", number); // TODO: i18n
 	var identity = new ZmIdentity(appCtxt, name);
 	identity.id = id;
-	ZmPersona.call(this, appCtxt, identity);
+	ZmPersona.call(this, identity);
 	this.id = id;
 	this._new = true;
 };

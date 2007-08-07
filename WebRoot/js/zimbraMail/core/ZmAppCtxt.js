@@ -36,7 +36,7 @@ ZmAppCtxt = function() {
 	this._trees = {};
 	this._accounts = {};
 	// create dummy account for startup
-	this._accounts[ZmZimbraAccount.DEFAULT_ID] = new ZmZimbraAccount(this, ZmZimbraAccount.DEFAULT_ID, null, false);
+	this._accounts[ZmZimbraAccount.DEFAULT_ID] = new ZmZimbraAccount(ZmZimbraAccount.DEFAULT_ID, null, false);
 
 	// public flags
 	this.inStartup = false;

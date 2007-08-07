@@ -23,10 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAccount = function(appCtxt, type, id, name, list) {
-	if (arguments.length == 0) return;
+ZmAccount = function(type, id, name, list) {
+	if (arguments.length == 0) { return; }
 
-	this._appCtxt = appCtxt;
 	this.id = id;
 	this.name = name;
 	this.type = type;

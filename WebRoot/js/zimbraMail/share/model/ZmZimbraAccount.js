@@ -32,21 +32,20 @@
  *
  * @author Parag Shah
  *
- * @param appCtxt		[ZmAppCtxt]		the app context
  * @param id			[string]*		unique ID for this account
  * @param name			[string]*		email address
  * @param visible		[boolean]*		if true, make this account available in the overview (child accounts)
  */
-ZmZimbraAccount = function(appCtxt, id, name, visible, list) {
-	if (arguments.length == 0) return;
+ZmZimbraAccount = function(id, name, visible, list) {
 
-	ZmAccount.call(this, appCtxt, ZmAccount.ZIMBRA, id, name, list);
+	ZmAccount.call(this, ZmAccount.ZIMBRA, id, name, list);
 	this.visible = (visible !== false);
 
 	this.settings = null;
 	this.trees = {};
 	this.loaded = false;
 };
+
 ZmZimbraAccount.prototype = new ZmAccount;
 ZmZimbraAccount.prototype.constructor = ZmZimbraAccount;
 
@@ -101,12 +100,12 @@ function() {
 
 ZmZimbraAccount.prototype.getIdentity =
 function() {
-	return this.isMain ? this._appCtxt.getIdentityCollection().defaultIdentity : null;
+	return this.isMain ? appCtxt.getIdentityCollection().defaultIdentity : null;
 };
 
 ZmZimbraAccount.createFromDom =
-function(node, appCtxt) {
-	var acct = new ZmZimbraAccount(appCtxt);
+function(node) {
+	var acct = new ZmZimbraAccount();
 	acct._loadFromDom(node);
 	return acct;
 };
@@ -115,17 +114,17 @@ ZmZimbraAccount.prototype.load =
 function(callback, batchCmd) {
 	if (!this.loaded) {
 		// create new ZmSetting for this account
-		this.settings = new ZmSettings(this._appCtxt);
+		this.settings = new ZmSettings(appCtxt);
 
 		// check "{APP}_ENABLED" state against main account's settings
-		var mainAcct = this._appCtxt.getMainAccount();
+		var mainAcct = appCtxt.getMainAccount();
 
 		// for all *loaded* apps, add their app-specific settings
 		for (var i = 0; i < ZmApp.APPS.length; i++) {
 			var appName = ZmApp.APPS[i];
 			var setting = ZmApp.SETTING[appName];
-			if (setting && this._appCtxt.get(setting, null, mainAcct)) {
-				var app = this._appCtxt.getApp(appName);
+			if (setting && appCtxt.get(setting, null, mainAcct)) {
+				var app = appCtxt.getApp(appName);
 				if (app) {
 					app._registerSettings(this.settings);
 				}
@@ -165,7 +164,7 @@ function(callback, result) {
 		asyncMode: true,
 		callback: new AjxCallback(this, this._handleResponseLoad1, callback)
 	};
-	this._appCtxt.getRequestMgr().sendRequest(params);
+	appCtxt.getRequestMgr().sendRequest(params);
 };
 
 ZmZimbraAccount.prototype._handleResponseLoad1 =
@@ -173,8 +172,8 @@ function(callback, result) {
 	var resp = result.getResponse().GetFolderResponse;
 	var folders = resp ? resp.folder[0] : null;
 	if (folders) {
-		this._appCtxt.getRequestMgr()._loadTree(ZmOrganizer.FOLDER, null, resp.folder[0], "folder", this);
-		this._appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp.tags, null, this);
+		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.FOLDER, null, resp.folder[0], "folder", this);
+		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp.tags, null, this);
 	}
 
 	this.loaded = true;

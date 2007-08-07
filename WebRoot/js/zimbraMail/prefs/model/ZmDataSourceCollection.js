@@ -151,14 +151,14 @@ ZmDataSourceCollection.prototype.initialize = function(dataSources) {
 
     var popAccounts = dataSources.pop3 || [];
     for (var i = 0; i < popAccounts.length; i++) {
-        var pop3 = new ZmPopAccount(this._appCtxt, popAccounts[i].id);
+        var pop3 = new ZmPopAccount(popAccounts[i].id);
         pop3.setFromJson(popAccounts[i]);
         this.add(pop3);
     }
 
 	var imapAccounts = dataSources.imap || [];
 	for (var i = 0; i < imapAccounts.length; i++) {
-		var imap = new ZmImapAccount(this._appCtxt);
+		var imap = new ZmImapAccount();
 		imap.setFromJson(imapAccounts[i]);
 		this.add(imap);
 	}

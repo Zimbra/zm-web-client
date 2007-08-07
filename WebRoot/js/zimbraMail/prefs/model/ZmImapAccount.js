@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmImapAccount = function(appCtxt, id, list) {
-	if (arguments.length == 0) return;
-	ZmDataSource.call(this, appCtxt, ZmAccount.IMAP, id, list);
+ZmImapAccount = function(id, list) {
+	ZmDataSource.call(this, ZmAccount.IMAP, id, list);
 };
 ZmImapAccount.prototype = new ZmDataSource;
 ZmImapAccount.prototype.constructor = ZmImapAccount;
