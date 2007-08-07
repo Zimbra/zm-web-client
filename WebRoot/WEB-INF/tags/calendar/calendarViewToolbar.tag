@@ -75,7 +75,7 @@
                     <td>
             <a <c:if test="${keys}">id="PREV_PAGE"</c:if> href="${prevUrl}"><app:img altkey="ALT_PAGE_PREVIOUS" src="arrows/LeftArrow.gif" border="0"/></a>
                     </td>
-                    <td>
+                    <td class='ZhCalPager'>
             ${fn:escapeXml(title)}
                     </td>
                     <td>

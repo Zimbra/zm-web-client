@@ -660,12 +660,20 @@ A:visited { color: blue; }
 .ZhCalDayHeader, .ZhCalDayHeaderToday {
 	@PageHeaderBg@
 	@PageHeaderText@
-	@Label@
+	@FontSize-big@
+    @Label@
 	text-align:center;
 	@BottomSeparator@
 	line-height: 2.0em;
 }
 
+.ZhCalPager {
+	@PageHeaderText@
+	@FontSize-big@
+    @Label@
+	text-align:center;
+	
+}
 
 .ZhCalMonthHeaderRow a:link, .ZhCalMonthHeaderRow a:visited {
 	@Text@
