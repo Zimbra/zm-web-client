@@ -93,9 +93,10 @@ function() {
 
 ZmZimbraAccount.prototype.getDisplayName =
 function() {
-	return this.isMain
+	var dispName = this.isMain
 		? this.settings.get(ZmSetting.DISPLAY_NAME)
 		: this.displayName;
+	return (dispName || this.name);
 };
 
 ZmZimbraAccount.prototype.getIdentity =
