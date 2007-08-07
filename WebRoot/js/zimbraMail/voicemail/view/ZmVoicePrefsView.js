@@ -172,7 +172,9 @@ ZmVoicePrefsView.prototype.showItem =
 function(phone) {
 //Retarded: saving a reference to the phone here, even though the parent class has it (as _item).
 	this._phone = phone;
-	phone.getCallFeatures(new AjxCallback(this, this._handleResponseGetFeatures, phone));
+	var callback = new AjxCallback(this, this._handleResponseGetFeatures, phone);
+	var errorCallback = new AjxCallback(this, this._handleErrorGetFeatures); 
+	phone.getCallFeatures(callback, errorCallback);
 };
 
 ZmVoicePrefsView.prototype._handleResponseGetFeatures =
@@ -180,6 +182,17 @@ function(phone, features) {
 	for(var i = 0, count = this._ui.length; i < count; i++) {
 		var feature = features[this._ui[i].getName()];
 		this._ui[i].setFeature(feature);
+	}
+};
+
+ZmVoicePrefsView.prototype._handleErrorGetFeatures =
+function(csfeException) {
+	for(var i = 0, count = this._ui.length; i < count; i++) {
+		var ui = this._ui[i];
+		ui.setEnabled(false);
+		if (ui._checkbox) {
+			ui._checkbox.setEnabled(false);
+		}
 	}
 };
 

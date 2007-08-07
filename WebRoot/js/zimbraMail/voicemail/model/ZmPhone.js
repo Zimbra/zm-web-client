@@ -115,7 +115,7 @@ function(node) {
 /////////////////////////////////////////////////////
 
 ZmPhone.prototype.getCallFeatures = 
-function(callback) {
+function(callback, errorCallback) {
 	if (this._featuresDefined) {
 		if (callback) {
 			callback.run(this._features);
@@ -134,7 +134,8 @@ function(callback) {
 	    var params = {
 	    	soapDoc: soapDoc, 
 	    	asyncMode: true,
-			callback: respCallback
+			callback: respCallback,
+			errorCallback: errorCallback
 		};
 		this._appCtxt.getAppController().sendRequest(params);
 	}
