@@ -999,10 +999,12 @@ function(findHits) {
 
 			// handle rfc/822 attachments differently
 			if (attach.ct == ZmMimeTable.MSG_RFC822) {
-				var html = new Array(5);
+				var html = [];
 				var j = 0;
 				html[j++] = "<a href='javascript:;' onclick='ZmMailMsgView.rfc822Callback(";
+				html[j++] = '"';
 				html[j++] = this.id;
+				html[j++] = '"';
 				html[j++] = ",\"";
 				html[j++] = attach.part;
 				html[j++] = "\"); return false;' class='AttLink'>";
