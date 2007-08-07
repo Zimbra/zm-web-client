@@ -24,6 +24,8 @@
  */
 
 ZmPersona = function(identity, list) {
+	if (arguments.length == 0) { return; }
+	
 	ZmAccount.call(this, ZmAccount.PERSONA, identity.id, null, list);
 	identity.sendFromDisplay = identity.sendFromDisplay || appCtxt.get(ZmSetting.DISPLAY_NAME);
 	identity.sendFromAddress = identity.sendFromAddress || appCtxt.get(ZmSetting.USERNAME);

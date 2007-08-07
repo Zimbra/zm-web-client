@@ -37,7 +37,7 @@
  */
 ZmNewWindow = function() {
 
-	ZmController.call(this);
+	ZmController.call(this, null);
 
 	appCtxt.setAppController(this);
 
@@ -48,7 +48,7 @@ ZmNewWindow = function() {
 	this._kbMgr = appCtxt.getKeyboardMgr();
 	if (appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
 		this._kbMgr.enable(true);
-		this._kbMgr.registerKeyMap(new ZmKeyMap(appCtxt));
+		this._kbMgr.registerKeyMap(new ZmKeyMap());
 		this._kbMgr.pushDefaultHandler(this);
 	}
 

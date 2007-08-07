@@ -411,7 +411,7 @@ function(ex) {
 */
 ZmController.prototype._doAuth = 
 function(username, password, rememberMe) {
-	var auth = new ZmAuthenticate(appCtxt);
+	var auth = new ZmAuthenticate();
 	var respCallback = new AjxCallback(this, this._handleResponseDoAuth, rememberMe);
 	auth.execute(username, password, respCallback);
 };

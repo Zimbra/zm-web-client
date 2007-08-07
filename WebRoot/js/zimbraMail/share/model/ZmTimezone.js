@@ -23,18 +23,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTimezone = function() {
-}
+ZmTimezone = function() {}
 
 // Static methods
 
 ZmTimezone.getDefault = function() {
 	var shell = DwtShell.getShell(window);
-	var appCtxt = ZmAppCtxt.getFromShell(shell);
 	var serverId = appCtxt.get(ZmSetting.DEFAULT_CALENDAR_TIMEZONE);
 	var clientId = serverId ? AjxTimezone.getClientId(serverId) : AjxTimezone.DEFAULT;
 	return clientId;
 };
+
 ZmTimezone.getDefaultRule = function() {
 	var clientId = ZmTimezone.getDefault();
 	var timezone = AjxTimezone.getRule(clientId);

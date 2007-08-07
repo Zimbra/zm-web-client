@@ -38,12 +38,9 @@
  * 
  * @author Ross Dargahi
  * @author Conrad Damon
- * 
- * @param appCtxt		[ZmAppCtxt]		the app context
  */
-ZmKeyMap = function(appCtxt) {
+ZmKeyMap = function() {
 	
-	this._appCtxt = appCtxt;
 	ZmKeyMap._setPreconditions();
 	DwtKeyMap.call(this);
 	this._load(this._map, ZmKeys, ZmKeyMap.MAP_NAME);
@@ -287,7 +284,7 @@ function(mapName) {
 	var mapPre = ZmKeyMap.MAP_PRECONDITION[mapName];
 	if (!mapPre) { return true; }
 	if (typeof mapPre == "string" || typeof mapPre == "number") {
-		return this._appCtxt.get(mapPre)
+		return appCtxt.get(mapPre)
 	} else if (typeof mapPre == "function") {
 		return mapPre();
 	}
@@ -310,7 +307,7 @@ function(mapName, action) {
 	var pre = mapPre[action];
 	if (!pre) { return true; }
 	if (typeof pre == "string" || typeof pre == "number") {
-		return this._appCtxt.get(pre);
+		return appCtxt.get(pre);
 	} else if (typeof pre == "function") {
 		return pre();
 	}

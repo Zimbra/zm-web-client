@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDomainTree = function(appCtxt) {
+ZmDomainTree = function() {
 	ZmModel.call(this);
-	this._appCtxt = appCtxt;
 };
 
 ZmDomainTree.prototype = new ZmModel;
@@ -49,7 +48,7 @@ function(callback) {
 	soapDoc.getMethod().setAttribute("browseBy", "domains");
 
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 ZmDomainTree.prototype._handleResponseLoad =

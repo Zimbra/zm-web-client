@@ -23,11 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAttachmentTypeList = function(appCtxt) {
-	if (arguments.length == 0) return;
+ZmAttachmentTypeList = function() {
 	ZmModel.call(this, ZmEvent.S_ATT);
-
-	this._appCtxt = appCtxt;
 };
 
 ZmAttachmentTypeList.prototype = new ZmModel;
@@ -61,7 +58,7 @@ function(callback) {
 	soapDoc.getMethod().setAttribute("browseBy", "attachments");
 
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 ZmAttachmentTypeList.prototype._handleResponseLoad =

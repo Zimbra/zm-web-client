@@ -132,7 +132,7 @@ function(event) {
 	var dialog = share._appCtxt.getFolderPropsDialog();
 
 	// create share info
-	var tmpShare = new ZmShare({appCtxt: share._appCtxt, object: share.object});
+	var tmpShare = new ZmShare({object:share.object});
 	tmpShare.grantee.id = share.grantee.id;
 	tmpShare.grantee.email = share.grantee.name;
 	tmpShare.grantee.name = share.grantee.name;

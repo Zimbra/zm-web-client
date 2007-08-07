@@ -1129,7 +1129,7 @@ function(msgNode) {
 		var shareXmlDoc = AjxXmlDoc.createFromXml(msgNode.shr[0].content);
 		try {
 			AjxDispatcher.require("Share");
-			this.share = ZmShare.createFromDom(shareXmlDoc.getDoc(), this._appCtxt);
+			this.share = ZmShare.createFromDom(shareXmlDoc.getDoc());
 			this.share._msgId = msgNode.id;
 		} catch (ex) {
 			// not a version we support, ignore

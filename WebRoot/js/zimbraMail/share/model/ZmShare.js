@@ -57,7 +57,6 @@
  *
  * @author Andy Clark
  * 
- * @param appCtxt		[ZmAppCtxt]		the app context
  * @param object		[object]		what is being shared
  * @param granteeType	[constant]*		sharee (everyone, or a single user)
  * @param granteeId		[string]*		a unique ID for the grantee
@@ -71,7 +70,7 @@ ZmShare = function(params) {
 	this.grantor = {};
 	this.link = {};
 
-	this._appCtxt = params.appCtxt;
+	if (!params) { return; }
 	this.object = params.object;
 	this.grantee.type = params.granteeType;
 	this.grantee.id = params.granteeId;
@@ -197,9 +196,9 @@ ZmShare.ACTIONS[ZmShare.ROLE_MANAGER]	= ZmShare.getRoleActions(ZmShare.ROLE_MANA
 // Static methods
 
 ZmShare.createFromDom =
-function(doc, appCtxt) {
+function(doc) {
 	// NOTE: This code initializes share info from the Zimbra share format, v0.1
-	var share = new ZmShare({appCtxt: appCtxt});
+	var share = new ZmShare();
 	
 	var shareNode = doc.documentElement;
 	share.version = shareNode.getAttribute("version");
@@ -293,9 +292,9 @@ function(view) {
 // Static methods
 
 ZmShare.createFromJs =
-function(parent, grant, appCtxt) {
-	return new ZmShare({appCtxt: appCtxt, object: parent, granteeType: grant.gt,
-						granteeId: grant.zid, granteeName: grant.d, perm: grant.perm, inherit: grant.inh});
+function(parent, grant) {
+	return new ZmShare({object:parent, granteeType:grant.gt, granteeId:grant.zid,
+						granteeName:grant.d, perm:grant.perm, inherit:grant.inh});
 };
 
 // Public methods
@@ -365,12 +364,12 @@ function(name, color, replyType, notes, callback) {
 		"color": color,
 		"view": this.link.view
 	};
-	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		if (this.link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0]) {
 			params.f = ZmOrganizer.FLAG_CHECKED;
 		}
 	}
-	ZmMountpoint.create(this._appCtxt, params, respCallback, errorCallback);
+	ZmMountpoint.create(params, respCallback, errorCallback);
 };
 
 ZmShare.prototype._handleResponseAccept =
@@ -400,7 +399,7 @@ function(name, ex) {
 		ex = null;
 	}
 		
-	this._appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
+	appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
 	return true;
 };
 
@@ -532,7 +531,7 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 	if (batchCmd) {
 		batchCmd.addRequestParams(soapDoc, respCallback, errorCallback);
 	} else {
-		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+		appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
 													  callback: respCallback, errorCallback: errorCallback});
 	}
 };
@@ -556,7 +555,7 @@ function(ex) {
 		ex = null;
 	}
 
-	this._appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
+	appCtxt.getAppController().popupErrorDialog(message, ex, null, true);
 	return true;
 };
 
@@ -573,7 +572,7 @@ function(mode, isCompose, addrs) {
 	topPart.children.add(htmlPart);
 	topPart.children.add(xmlPart);
 
-	var msg = new ZmMailMsg(this._appCtxt);
+	var msg = new ZmMailMsg(appCtxt);
 	var toEmail, fromEmail;
 	if (mode == ZmShare.ACCEPT || mode == ZmShare.DECLINE) {
 		msg.setAddress(AjxEmailAddress.FROM, new AjxEmailAddress(this.grantee.email, AjxEmailAddress.FROM));

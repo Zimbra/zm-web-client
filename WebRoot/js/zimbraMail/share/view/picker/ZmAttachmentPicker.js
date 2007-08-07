@@ -146,7 +146,7 @@ function(parent) {
 	// set up attachment tree widget
 	this._tree = new DwtTree(picker, DwtTree.CHECKEDITEM_STYLE);
 	this._tree.addSelectionListener(new AjxListener(this, this._treeListener));	
-	var attachTypeList = new ZmAttachmentTypeList(this.shell.getData(ZmAppCtxt.LABEL));
+	var attachTypeList = new ZmAttachmentTypeList();
 	var respCallback = new AjxCallback(this, this._handleResponseSetupPicker, [attachTypeList, this._tree, treeId]);
 	attachTypeList.load(respCallback);
 };

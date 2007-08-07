@@ -220,7 +220,7 @@ function(shares, result) {
 			var addr = new AjxEmailAddress(email, AjxEmailAddress.TO);
 			addrs.add(addr);
 
-			var tmpShare = new ZmShare({appCtxt: this._appCtxt, object: share.object});
+			var tmpShare = new ZmShare({object:share.object});
 
 			tmpShare.grantee.id = share.grantee.id;
 			tmpShare.grantee.email = email;
@@ -263,7 +263,7 @@ function(shares, result) {
 ZmSharePropsDialog.prototype._setUpShare =
 function(share) {
 	if (!share) {
-		share = new ZmShare({appCtxt: this._appCtxt, object: this._object});
+		share = new ZmShare({object:this._object});
 	}
 	share.link.inh = (this._inheritEl && this._inheritEl.checked);
 	

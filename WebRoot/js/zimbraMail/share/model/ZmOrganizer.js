@@ -680,7 +680,7 @@ ZmOrganizer.prototype.setPermissions =
 function(permission) {
 	if (this.shares == null) {
 		AjxDispatcher.require("Share");
-		var share = new ZmShare({appCtxt: this._appCtxt, organizer: this, perm: permission});
+		var share = new ZmShare({organizer:this, perm:permission});
 		this.addShare(share);
 	} else {
 		// lets just assume we're dealing w/ a link (which should only have one share)
@@ -874,7 +874,7 @@ function(obj, details) {
 		if (obj.acl.grant && obj.acl.grant.length) {
 			AjxDispatcher.require("Share");
 			for (var i = 0; i < obj.acl.grant.length; i++) {
-				share = ZmShare.createFromJs(this, obj.acl.grant[i], this._appCtxt);
+				share = ZmShare.createFromJs(this, obj.acl.grant[i]);
 				this.addShare(share);
 			}
 		}
@@ -1289,7 +1289,7 @@ function(obj) {
 		var shares = [];
 		for (var i = 0; i < obj.acl.grant.length; i++) {
 			var grant = obj.acl.grant[i];
-			shares[i] = ZmShare.createFromJs(this, grant, this._appCtxt);
+			shares[i] = ZmShare.createFromJs(this, grant);
 		}
 		this.setShares(shares);
 	}

@@ -52,7 +52,7 @@ function() {
  * @param params		[Object]		A hash of the request attributes and values.
  */
 ZmMountpoint.create =
-function(appCtxt, params, callback, errorCallback) {
+function(params, callback, errorCallback) {
 	var soapDoc = AjxSoapDoc.create("CreateMountpointRequest", "urn:zimbraMail");
 
 	var linkNode = soapDoc.set("link");

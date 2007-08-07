@@ -37,7 +37,7 @@
  */
 ZmZimbraMail = function(params) {
 
-	ZmController.call(this);
+	ZmController.call(this, null);
 
 	this._userShell = params.userShell;
 	this._requestMgr = new ZmRequestMgr(this);
@@ -371,7 +371,7 @@ function(params, result) {
 	if (appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
 		// Register our keymap and global key action handler with the shell's keyboard manager
 		kbMgr.enable(true);
-		kbMgr.registerKeyMap(new ZmKeyMap(appCtxt));
+		kbMgr.registerKeyMap(new ZmKeyMap());
 		kbMgr.pushDefaultHandler(this);
 
 		DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
@@ -1294,7 +1294,7 @@ function(ev) {
 		cd.setMessage(ZmMsg.localeChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
 	} else if (id == ZmSetting.SHORTCUTS) {
-		appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap(appCtxt));
+		appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap());
 		this._settings._loadShortcuts();
 	}
 };

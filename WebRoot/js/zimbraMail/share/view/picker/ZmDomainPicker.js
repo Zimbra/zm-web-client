@@ -98,7 +98,7 @@ function(parent) {
 	
 	// Note: should probably maintain canonical domain tree in app ctxt
 	if (ZmDomainPicker.root == null) {
-		ZmDomainPicker.root = new ZmDomainTree(this.shell.getData(ZmAppCtxt.LABEL));
+		ZmDomainPicker.root = new ZmDomainTree();
 		var respCallback = new AjxCallback(this, this._handleResponseSetupPicker, [html, idx, picker, fromId, toId]);
 		ZmDomainPicker.root.load(respCallback);
 	} else {

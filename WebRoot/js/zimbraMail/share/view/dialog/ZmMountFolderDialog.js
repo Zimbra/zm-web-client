@@ -194,7 +194,7 @@ function(event) {
 	var callback = new AjxCallback(this, this.popdown);
 	var errorCallback = new AjxCallback(this, this._handleCreateError);
 
-	ZmMountpoint.create(appCtxt, params, callback, errorCallback)
+	ZmMountpoint.create(params, callback, errorCallback)
 };
 
 ZmMountFolderDialog.prototype._handleCreateError =

@@ -25,7 +25,7 @@
 
 ZmBrowseController = function(parent) {
 
-	ZmController.call(this);
+	ZmController.call(this, null);
     var pickers = this._allPickers = this._getPickers();
 	this._browseView = new ZmBrowseView(this._shell, pickers);
 	this._toolbar = new ZmBrowseToolBar(this._shell, pickers);
