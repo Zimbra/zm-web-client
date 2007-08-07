@@ -110,7 +110,7 @@ function(color) {
 };
 
 ZmTag.create =
-function(appCtxt, params) {
+function(params) {
 	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
 	var tagNode = soapDoc.set("tag");
 	var name = AjxEnv.isSafari && !AjxEnv.isSafariNightly
@@ -120,12 +120,12 @@ function(appCtxt, params) {
 	if (color && (color != ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG])) {
 		tagNode.setAttribute("color", color);
 	}
-	var errorCallback = new AjxCallback(null, ZmTag._handleErrorCreate, [appCtxt, params]);
+	var errorCallback = new AjxCallback(null, ZmTag._handleErrorCreate, params);
 	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
 };
 
 ZmTag._handleErrorCreate =
-function(appCtxt, params, ex) {
+function(params, ex) {
 	if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
 		var msg = AjxMessageFormat.format(ZmMsg.errorInvalidName, params.name);
 		var msgDialog = appCtxt.getMsgDialog();

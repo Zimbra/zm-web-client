@@ -32,12 +32,10 @@
  * 
  * @author Conrad Damon
  * 
- * @param appCtxt	[ZmAppCtxt]		the app context
  * @param type		[constant]*		organizer type
  */
-ZmFolderTree = function(appCtxt, type) {
-	
-	ZmTree.call(this, type, appCtxt);
+ZmFolderTree = function(type) {
+	ZmTree.call(this, type);
 };
 
 ZmFolderTree.prototype = new ZmTree;
@@ -100,7 +98,6 @@ function(parent, obj, tree, elementType, path) {
 			DBG.println(AjxDebug.DBG1, "No known type for view " + obj.view);
 			return;
 		}
-		var appCtxt = tree._appCtxt;
 		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type]) {
 			var app = appCtxt.getApp(ZmOrganizer.APP[type]);
 			app.addDeferredFolder(type, obj, tree, path);
@@ -154,7 +151,7 @@ function(folder, obj, tree, path) {
 	}
 
 	// offline client cannot handle mountpoints
-	if (obj.link && obj.link.length && !tree._appCtxt.get(ZmSetting.OFFLINE)) {
+	if (obj.link && obj.link.length && !appCtxt.get(ZmSetting.OFFLINE)) {
 		for (var i = 0; i < obj.link.length; i++) {
 			var link = obj.link[i];
 			var childFolder = ZmFolderTree.createFromJs(folder, link, tree, "link", path);
@@ -230,8 +227,8 @@ function(organizerType, zid, rid) {
 
 				// Change its appearance in the tree.
 				if (!treeView) {
-					var overviewId = this._appCtxt.getAppController().getOverviewId();
-					treeView = this._appCtxt.getOverviewController().getTreeView(overviewId, organizerType);
+					var overviewId = appCtxt.getAppController().getOverviewId();
+					treeView = appCtxt.getOverviewController().getTreeView(overviewId, organizerType);
 				}
 				var node = treeView.getTreeItemById(items[i].id);
 				node.setText(items[i].getName(true));
@@ -254,10 +251,10 @@ function(organizerType, zid, rid) {
 */
 ZmFolderTree.prototype.handleDeleteNoSuchFolder =
 function(organizer) {
-	var ds = this._appCtxt.getYesNoMsgDialog();
+	var ds = appCtxt.getYesNoMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteOrganizerYesCallback, this, [organizer, ds]);
-	ds.registerCallback(DwtDialog.NO_BUTTON, this._appCtxt.getAppController()._clearDialog, this, ds);
+	ds.registerCallback(DwtDialog.NO_BUTTON, appCtxt.getAppController()._clearDialog, this, ds);
 	var msg = AjxMessageFormat.format(ZmMsg.confirmDeleteMissingFolder, organizer.getName(false, 0, true));
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	ds.popup();
@@ -267,7 +264,7 @@ function(organizer) {
 ZmFolderTree.prototype._deleteOrganizerYesCallback =
 function(organizer, dialog) {
 	organizer._delete();
-	this._appCtxt.getAppController()._clearDialog(dialog);
+	appCtxt.getAppController()._clearDialog(dialog);
 };
 
 // This method is used to retrieve permissions on folders that can be *shared*
@@ -289,7 +286,7 @@ function(type, callback, skipNotify) {
 		}
 
 		var respCallback = new AjxCallback(this, this._handleResponseGetShares, [callback, skipNotify]);
-		this._appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+		appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	} else {
 		if (callback) { callback.run(); }
 	}
@@ -327,11 +324,11 @@ function(callback, skipNotify, result) {
 		for (var i = 0; i < resp.length; i++) {
 			var link = resp[i].link ? resp[i].link[0] : null;
 			if (link) {
-				var share = this._appCtxt.getById(link.id);
+				var share = appCtxt.getById(link.id);
 				if (share) share.setPermissions(link.perm);
 
 				if (link.folder && link.folder.length > 0) {
-					var parent = this._appCtxt.getById(link.id);
+					var parent = appCtxt.getById(link.id);
 					if (parent) {
 						for (var j = 0; j < link.folder.length; j++)
 							parent.notifyCreate(link.folder[j], false, skipNotify);
@@ -381,7 +378,7 @@ function(batchResp) {
  */
 ZmFolderTree.prototype._markNoSuchFolder =
 function(zids, rids) {
-	var treeData = this._appCtxt.getFolderTree();
+	var treeData = appCtxt.getFolderTree();
 	var items = treeData && treeData.root
 		? treeData.root.children.getArray()
 		: null;

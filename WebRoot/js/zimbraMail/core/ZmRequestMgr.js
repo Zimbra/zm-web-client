@@ -329,7 +329,7 @@ function(type, unread, obj, objType, account) {
 	var isTag = (type == ZmOrganizer.TAG);
 	var tree = appCtxt.getTree(type, account);
 	if (!tree) {
-		tree = isTag ? new ZmTagTree(appCtxt) : new ZmFolderTree(appCtxt);
+		tree = isTag ? new ZmTagTree() : new ZmFolderTree();
 	}
 	appCtxt.setTree(type, tree, account);
 	tree.addChangeListener(this._unreadListener);

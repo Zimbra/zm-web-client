@@ -57,7 +57,7 @@ function(params) {
 	params.contactSource = o._contactSource;
 	params.field = "contact";
 
-	var search = new ZmSearch(o._appCtxt, params);
+	var search = new ZmSearch(params);
 	search.execute({callback:params.respCallback, errorCallback:params.errorCallback});
 };
 

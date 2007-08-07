@@ -239,7 +239,7 @@ function(overviewId, account) {
 	if (!this.isCheckedStyle && !ZmOrganizer.HAS_COLOR[this.type]) { return; }
 
 	var treeView = this.getTreeView(overviewId);
-	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT, account);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, account);
 	var rootTreeItem = treeView.getTreeItemById(rootId);
 	if (!rootTreeItem) { return; }
 	if (this.isCheckedStyle) {
@@ -426,7 +426,7 @@ function(params) {
 	var funcName = ZmOrganizer.CREATE_FUNC[this.type];
 	if (funcName) {
 		var func = eval(funcName);
-		func(appCtxt, params);
+		func(params);
 	}
 };
 

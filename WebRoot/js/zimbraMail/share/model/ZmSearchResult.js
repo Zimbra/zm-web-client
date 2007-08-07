@@ -23,10 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmSearchResult = function(appCtxt, search) {
+ZmSearchResult = function(search) {
 	if (!search) { return; }
 	this._results = {};
-	this._appCtxt = appCtxt;
 	this.search = search;
 };
 
@@ -53,7 +52,7 @@ function(type) {
 		return ZmItem.RESULTS_LIST[type](this.search);
 	}
 	if (type == ZmItem.MIXED) {
-		var list = new ZmMailList(ZmItem.MIXED, this._appCtxt, this.search);
+		var list = new ZmMailList(ZmItem.MIXED, appCtxt, this.search);
 		for (var type in this._results) {
 			var results = this._results[type];
 			if (results && results.size()) {
@@ -145,7 +144,7 @@ function(respEl, contactSource) {
 	} else if (numTypes == 2 && (currentType == ZmItem.PAGE || currentType == ZmItem.DOCUMENT)) {
 		this.type = ZmItem.PAGE;
 	} else {
-		this.type = this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED) ? ZmItem.MIXED : currentType;
+		this.type = appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED) ? ZmItem.MIXED : currentType;
 	}
 
 	return this.type;

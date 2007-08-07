@@ -443,7 +443,7 @@ ZmNotebookPageView.prototype.addColumn = function(doc)
 	
 	var folder = this._appCtxt.getById(object.folderId);
 	var isReadOnly = false;
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
 		folder = folder.parent;
 	}

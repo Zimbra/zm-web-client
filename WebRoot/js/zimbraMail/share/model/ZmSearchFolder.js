@@ -28,7 +28,7 @@ ZmSearchFolder = function(params) {
 	ZmFolder.call(this, params);
 	
 	if (params.query) {
-		this.search = new ZmSearch(params.tree._appCtxt, {query:params.query, types:params.types,
+		this.search = new ZmSearch({query:params.query, types:params.types,
 								   sortBy:params.sortBy, searchId:params.id});
 	}
 };
@@ -36,7 +36,7 @@ ZmSearchFolder = function(params) {
 ZmSearchFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
 
 ZmSearchFolder.create =
-function(appCtxt, params) {
+function(params) {
 	var soapDoc = AjxSoapDoc.create("CreateSearchFolderRequest", "urn:zimbraMail");
 	var searchNode = soapDoc.set("search");
 	var name = AjxEnv.isSafari && !AjxEnv.isSafariNightly
@@ -57,7 +57,7 @@ function(appCtxt, params) {
 		searchNode.setAttribute("sortBy", ZmSearch.SORT_BY[params.search.sortBy]);
 	}
 	searchNode.setAttribute("l", params.parent.id);
-	var errorCallback = new AjxCallback(null, ZmOrganizer._handleErrorCreate, [appCtxt, params]);
+	var errorCallback = new AjxCallback(null, ZmOrganizer._handleErrorCreate, params);
 	var appController = appCtxt.getAppController();
 	appController.sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
 };
@@ -95,11 +95,13 @@ ZmSearchFolder.prototype.getToolTip = function() {};
 */
 ZmSearchFolder.prototype._getNewParent =
 function(parentId) {
-	var parent = this._appCtxt.getById(parentId);
-	if (parent) return parent;
+	var parent = appCtxt.getById(parentId);
+	if (parent) {
+		return parent;
+	}
 	
 	var type = (this.parent.type == ZmOrganizer.SEARCH) ? ZmOrganizer.FOLDER : ZmOrganizer.SEARCH;
-	return this._appCtxt.getById(parentId); 
+	return appCtxt.getById(parentId); 
 };
 
 /**

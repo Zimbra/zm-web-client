@@ -23,21 +23,21 @@
  * ***** END LICENSE BLOCK *****
  */
 /**
-* Creates a new tab view that can be used to choose attendees, locations, or equipment.
-* @constructor
-* @class
-* This class allows the user to search for attendees, locations, or
-* equipment. It presents a chooser which allows the user to select items from
-* the search results.
-*
-* @author Conrad Damon
-*
-* @param parent		[DwtComposite]				the element that created this view
-* @param appCtxt 	[ZmAppCtxt]					app context
-* @param attendees	[hash]						attendees/locations/equipment
-* @param controller	[ZmApptComposeController]	the appt compose controller
-* @param type		[constant]					chooser page type
-*/
+ * Creates a new tab view that can be used to choose attendees, locations, or equipment.
+ * @constructor
+ * @class
+ * This class allows the user to search for attendees, locations, or
+ * equipment. It presents a chooser which allows the user to select items from
+ * the search results.
+ *
+ * @author Conrad Damon
+ *
+ * @param parent		[DwtComposite]				the element that created this view
+ * @param appCtxt 		[ZmAppCtxt]					app context
+ * @param attendees		[hash]						attendees/locations/equipment
+ * @param controller	[ZmApptComposeController]	the appt compose controller
+ * @param type			[constant]					chooser page type
+ */
 ZmApptChooserTabViewPage = function(parent, appCtxt, attendees, controller, type) {
 
 	DwtTabViewPage.call(this, parent, "ZmApptChooserTabViewPage");
@@ -547,7 +547,7 @@ function(sortBy) {
 		limit: ZmContactsApp.SEARCHFOR_MAX,
 		contactSource: this._contactSource
 	};
-	var search = new ZmSearch(this._appCtxt, params);
+	var search = new ZmSearch(params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchContacts)});
 };
 
@@ -604,7 +604,7 @@ function(sortBy) {
 	}
 	var params = {sortBy: sortBy, offset: 0, limit: ZmContactsApp.SEARCHFOR_MAX, conds: conds,
 				  attrs: ZmApptChooserTabViewPage.ATTRS[this.type]};
-	var search = new ZmSearch(this._appCtxt, params);
+	var search = new ZmSearch(params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchCalendarResources)});
 };
 

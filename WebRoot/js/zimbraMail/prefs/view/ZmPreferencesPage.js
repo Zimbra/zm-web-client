@@ -751,7 +751,7 @@ function(ev) {
 
 ZmPreferencesPage.prototype._importOkCallback =
 function(dialog, folder) {
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	if (folder && folder.id && folder.id != rootId) {
 		dialog.popdown();
 		this._importBtn.setEnabled(false);
@@ -831,7 +831,7 @@ function(ex) {
 
 ZmPreferencesPage.prototype._exportOkCallback =
 function(dialog, settingId, folder) {
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	if (folder && folder.id && folder.id != rootId) {
 		var portPrefix = (location.port == "" || location.port == "80")
 			? ""

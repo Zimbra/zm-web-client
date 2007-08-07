@@ -973,9 +973,10 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 	// add any additional params...
 	this._getMoreSearchParams(params);
 
-	var search = new ZmSearch(appCtxt, params);
-	if (isCurrent)
+	var search = new ZmSearch(params);
+	if (isCurrent) {
 		this._currentSearch = search;
+	}
 
 	appCtxt.getSearchController().redoSearch(search, true, null, callback);
 };

@@ -51,7 +51,7 @@
 */
 ZmOrganizer = function(params) {
 
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 	
 	this.type = params.type;
 	var id = this.id = params.id;
@@ -73,13 +73,11 @@ ZmOrganizer = function(params) {
 	if (params.perm) this.setPermissions(params.perm);
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 
-	// ugh: appCtxt *really* needs to be GLOBAL
-	this._appCtxt = params.tree ? params.tree._appCtxt : params.appCtxt;
 	if (id && params.tree) {
-		this._appCtxt.cacheSet(id, this);
+		appCtxt.cacheSet(id, this);
 		if (this.link) {
 			// also store under ID that items use for parent folder ("l" attribute in node)
-			this._appCtxt.cacheSet([this.zid, this.rid].join(":"), this);
+			appCtxt.cacheSet([this.zid, this.rid].join(":"), this);
 		}
 	}
 
@@ -213,7 +211,7 @@ ZmOrganizer.ORG_CLASS = {};
 // package required to construct organizer
 ZmOrganizer.ORG_PACKAGE = {};
 
-// function that creates this organizer; args: appCtxt, params
+// function that creates this organizer
 ZmOrganizer.CREATE_FUNC = {};
 
 // msg key for text for tree view header item
@@ -316,16 +314,15 @@ ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
  * Generic function for creating an organizer via CreateFolderRequest. Attribute pairs can
  * be passed in and will become attributes of the folder node in the request.
  * 
- * @param appCtxt	[ZmAppCtxt]		the app context
  * @param params	[hash]			attribute pairs
  */
 ZmOrganizer.create =
-function(appCtxt, params) {
+function(params) {
 	// create SOAP command
 	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 	var folderNode = soapDoc.set("folder");
 
-	var errorCallback = params.errorCallback || new AjxCallback(null, ZmOrganizer._handleErrorCreate, [appCtxt, params]);
+	var errorCallback = params.errorCallback || new AjxCallback(null, ZmOrganizer._handleErrorCreate, params);
 	var type = params.type;
 
 	// set attributes
@@ -350,7 +347,7 @@ function(appCtxt, params) {
 };
 
 ZmOrganizer._handleErrorCreate =
-function(appCtxt, params, ex) {
+function(params, ex) {
 	if (!params.url && !params.name) { return false; }
 	
 	var msg;
@@ -362,7 +359,7 @@ function(appCtxt, params, ex) {
 	}
 
 	if (msg) {
-		ZmOrganizer._showErrorMsg(appCtxt, msg);
+		ZmOrganizer._showErrorMsg(msg);
 		return true;
 	}
 
@@ -370,7 +367,7 @@ function(appCtxt, params, ex) {
 };
 
 ZmOrganizer._showErrorMsg =
-function(appCtxt, msg) {
+function(msg) {
 	var msgDialog = appCtxt.getMsgDialog();
 	msgDialog.reset();
 	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
@@ -430,7 +427,7 @@ ZmOrganizer.prototype._handlePostCreatePath =
 function(path, attrs, callback, errorCallback, response) {
 	debugger;
 	var folderId = response.CreateFolderResponse.folder.id;
-	var organizer = this._appCtxt.getById(folderId);
+	var organizer = appCtxt.getById(folderId);
 	if (path != "") {
 		organizer.create(path, attrs, callback, errorCallback, postCallback);
 	}
@@ -504,12 +501,11 @@ function(color) {
  * is a child account, the system ID is returned unchanged. For child
  * accounts, the ID consists of the account ID and the local ID.
  * 
- * @param appCtxt	[ZmAppCtxt]		the app context
  * @param id		[int]			ID of a system organizer
  * @param account	[ZmZimbraAccount]*	an account
  */
 ZmOrganizer.getSystemId =
-function(appCtxt, id, account) {
+function(id, account) {
 	account = account || appCtxt.getActiveAccount();
 	return (account && !account.isMain) ? [account.id, id].join(":") : id;
 };
@@ -620,7 +616,7 @@ function() {
 
 	// if server doesn't tell us what URL to use, do our best to generate
 	var loc = document.location;
-	var uname = this.owner || this._appCtxt.get(ZmSetting.USERNAME);
+	var uname = this.owner || appCtxt.get(ZmSetting.USERNAME);
 	var host = loc.host;
 
 	var m = uname.match(/^(.*)@(.*)$/);
@@ -727,7 +723,7 @@ function(attrs) {
 */
 ZmOrganizer.prototype.move =
 function(newParent) {
-	var newId = (newParent.nId > 0) ? newParent.id : ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	var newId = (newParent.nId > 0) ? newParent.id : ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	if ((newId == this.id || newId == this.parent.id) ||
 		(this.type == ZmOrganizer.FOLDER && (ZmOrganizer.normalizeId(newId, this.type) == ZmFolder.ID_SPAM)) ||
 		(newParent.isChildOf(this))) {
@@ -791,15 +787,15 @@ function() {
 	// select next reasonable organizer if the currently selected
 	// organizer is the one being deleted or is a descendent of the
 	// one being deleted
-	var overviewController = this._appCtxt.getOverviewController();
+	var overviewController = appCtxt.getOverviewController();
 	var treeController = overviewController.getTreeController(this.type);
-	var overviewId = this._appCtxt.getCurrentApp().getOverviewId();
+	var overviewId = appCtxt.getCurrentApp().getOverviewId();
 	var treeView = treeController.getTreeView(overviewId);
 	var organizer = treeView && treeView.getSelected();
 	if (organizer && (organizer == this || organizer.isChildOf(this))) {
 		var folderId = this.parent.id;
 		if (this.parent.nId == ZmOrganizer.ID_ROOT) {
-			folderId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.DEFAULT_FOLDER[this.type]);
+			folderId = ZmOrganizer.getSystemId(ZmOrganizer.DEFAULT_FOLDER[this.type]);
 		}
 		var skipNotify = false;
 		treeView.setSelected(folderId, skipNotify);
@@ -1115,7 +1111,7 @@ function (organizer) {
 */
 ZmOrganizer.prototype._getNewParent =
 function(parentId) {
-	return this._appCtxt.getById(parentId);
+	return appCtxt.getById(parentId);
 };
 
 ZmOrganizer.prototype.isUnder =
@@ -1153,7 +1149,7 @@ function() {
 		if (this.zid != null) {
 			this._isRemote = true;
 		} else {
-			var acct = this._appCtxt.getActiveAccount();
+			var acct = appCtxt.getActiveAccount();
 			var id = String(this.id);
 			this._isRemote = ((id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0));
 		}
@@ -1219,8 +1215,8 @@ function(params) {
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
-		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
-														   callback: respCallback, errorCallback: params.errorCallback });
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
+											    callback:respCallback, errorCallback:params.errorCallback});
 	}
 };
 

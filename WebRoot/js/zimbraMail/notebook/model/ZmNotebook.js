@@ -167,7 +167,7 @@ function() {
 ZmNotebook.prototype.deleteCallback = 
 function(){
 	if(this._isRemote){
-	var app = this._appCtxt.getApp(ZmApp.NOTEBOOK);
+	var app = appCtxt.getApp(ZmApp.NOTEBOOK);
 	app.deleteNotify([this.id]);
 	}
 };

@@ -256,7 +256,7 @@ function(callback, response) {
 		this.phones.push(phone);
 
 		if (obj.folder && obj.folder.length) {
-			phone.folderTree = new ZmVoiceFolderTree(appCtxt);
+			phone.folderTree = new ZmVoiceFolderTree();
 			phone.folderTree.loadFromJs(obj.folder[0], phone);
 		}
 	}
@@ -324,7 +324,7 @@ function(folder, callback, sortBy) {
 		query: folder.getSearchQuery(),
 		limit: appCtxt.get(ZmSetting.VOICE_PAGE_SIZE)
 	};
-	var search = new ZmSearch(appCtxt, searchParams);	
+	var search = new ZmSearch(searchParams);	
 	var responseCallback = new AjxCallback(this, this._handleResponseSearch, [folder, callback]);
 	search.execute({ callback: responseCallback });
 };

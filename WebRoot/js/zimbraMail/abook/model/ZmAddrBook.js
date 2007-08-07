@@ -110,7 +110,7 @@ function() {
 };
 
 ZmAddrBook.create =
-function(appCtxt, params) {
+function(params) {
 	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 	var folderNode = soapDoc.set("folder");
 	var name = (AjxEnv.isSafari && !AjxEnv.isSafariNightly)	? AjxStringUtil.xmlEncode(params.name) : params.name;
@@ -119,13 +119,13 @@ function(appCtxt, params) {
 	folderNode.setAttribute("color", params.color || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK]);
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK][0]);
 
-	var errorCallback = new AjxCallback(null, ZmAddrBook._handleErrorCreate, [appCtxt, params]);
+	var errorCallback = new AjxCallback(null, ZmAddrBook._handleErrorCreate, params);
 	var appController = appCtxt.getAppController();
 	appController.sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
 };
 
 ZmAddrBook._handleErrorCreate =
-function(appCtxt, params, ex) {
+function(params, ex) {
 	if (params.name && ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS) {
 		var msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [params.name]);
 		var msgDialog = appCtxt.getMsgDialog();
@@ -172,7 +172,7 @@ function(what) {
 				if (!invalid && item.folderId) {
 					invalid = true;
 					for (var i = 0; i < items.length; i++) {
-						var tree = this._appCtxt.getById(items[i].folderId);
+						var tree = appCtxt.getById(items[i].folderId);
 						if (tree != this) {
 							invalid = false;
 							break;

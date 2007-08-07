@@ -821,7 +821,7 @@ function(page){
 	
 	var appCtxt = this._appCtxt;
 	var content;
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	if (page.folderId == rootId) {
 		content = this._appCtxt.getById(page.folderId).name;
 	}else {

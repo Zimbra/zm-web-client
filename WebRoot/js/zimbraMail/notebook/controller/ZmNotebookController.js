@@ -168,9 +168,9 @@ ZmNotebookController.prototype.isDeletable = function(){
 		return writable;
 	}
 	var id = page.id;
-	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);	
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);	
 	var notebook = appCtxt.getById(id);
-	var notebookId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_NOTEBOOK);
+	var notebookId = ZmOrganizer.getSystemId(ZmOrganizer.ID_NOTEBOOK);
 	var isRoot = (notebook.id == rootId);
 	var isNotebook = (notebook.id == notebookId);
 	var isTopLevel = (!isRoot && notebook.parent.id == rootId);

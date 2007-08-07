@@ -192,7 +192,7 @@ ZmWiklet.register(
 			var imgName = "Page";
 			var item = context.getItem();
 			if (item instanceof ZmNotebook) {
-				var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+				var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 				imgName = (item.parent.id == rootId) ? "Notebook" : "Section";
 			}
 			return ["<div class='Img",imgName," _pageIcon'></div>"].join("");
@@ -633,7 +633,7 @@ ZmWiklet.register(
 			var notebook = context.getNotebookById(item.folderId || (item.parent && item.parent.id));
 
 			var trail = [];
-			var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+			var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 			while (notebook.id != rootId) {
 				trail.unshift(notebook);
 				notebook = context.getNotebookById(notebook.parent.id);

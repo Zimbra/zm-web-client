@@ -95,7 +95,7 @@ function(actionMenu, type, id) {
 			actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());
 		}
 		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_CALENDAR);
-		var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		if (id == rootId) {
 			var items = this._getItems(this._actionedOverviewId);
 			var foundChecked = false;
@@ -258,7 +258,7 @@ ZmCalendarTreeController.prototype._getItems =
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
 	if (treeView) {
-		var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		var root = treeView.getTreeItemById(rootId);
 		if (root) {
 			return root.getItems();

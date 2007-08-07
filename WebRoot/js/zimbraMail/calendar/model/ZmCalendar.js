@@ -67,19 +67,19 @@ function() {
  * creation needs custom error handling.
  */
 ZmCalendar.create =
-function(appCtxt, params) {
-	params.errorCallback = new AjxCallback(null, ZmCalendar._handleErrorCreate, [appCtxt, params]);
-	ZmOrganizer.create(appCtxt, params);
+function(params) {
+	params.errorCallback = new AjxCallback(null, ZmCalendar._handleErrorCreate, params);
+	ZmOrganizer.create(params);
 };
 
 ZmCalendar._handleErrorCreate =
-function(appCtxt, params, ex) {
+function(params, ex) {
 	if (params.url && (ex.code == ZmCsfeException.SVC_PARSE_ERROR)) {
 		msg = AjxMessageFormat.format(ZmMsg.calFeedInvalid, params.url);
-		ZmOrganizer._showErrorMsg(appCtxt, msg);
+		ZmOrganizer._showErrorMsg(msg);
 		return true;
 	} else {
-		return ZmOrganizer._handleErrorCreate(appCtxt, param, ex);
+		return ZmOrganizer._handleErrorCreate(param, ex);
 	}
 };
 

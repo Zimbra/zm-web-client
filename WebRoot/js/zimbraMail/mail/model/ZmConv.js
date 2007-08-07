@@ -86,7 +86,7 @@ function(params) {
 
 	var sortBy = params.sortBy ? params.sortBy : ZmSearch.DATE_DESC;
 	var offset = params.offset ? params.offset : 0;
-	var limit = params.limit ? params.limit : this.list._appCtxt.get(ZmSetting.PAGE_SIZE);
+	var limit = params.limit ? params.limit : appCtxt.get(ZmSetting.PAGE_SIZE);
 	
 	if (this.msgs) {
 		if (this._sortBy != sortBy) {
@@ -112,7 +112,7 @@ function(params) {
 	
 	var types = AjxVector.fromArray([ZmItem.MSG]);
 	var searchParams = {query:params.query, types:types, sortBy:sortBy, offset:offset, limit:limit};
-	var search = new ZmSearch(this.list._appCtxt, searchParams);
+	var search = new ZmSearch(searchParams);
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, params);
 	search.getConv(this.id, respCallback, params.getFirstMsg);
 };

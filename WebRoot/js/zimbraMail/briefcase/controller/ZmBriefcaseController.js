@@ -542,7 +542,7 @@ function(folderId) {
 	//if one of the ancestor is readonly then no chances of childs being writable
 	var isReadOnly = false;
 	var folder = appCtxt.getById(folderId);
-	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
 		folder = folder.parent;
 	}
@@ -557,7 +557,7 @@ ZmBriefcaseController.prototype.getBriefcaseFolder =
 function(folderId) {
 	var briefcase;
 	var folder = appCtxt.getById(folderId);
-	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId)) {
 		folder = folder.parent;
 	}

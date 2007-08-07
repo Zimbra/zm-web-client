@@ -386,7 +386,7 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 		// TODO: Handle case where current folder owner is not me
 		//       because absolute paths should be relative to where
 		//       the link was followed. [Q] Should they?
-		var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		notebook = this._appCtxt.getById(rootId);
 		link = link.substr(1);
 	}

@@ -152,7 +152,7 @@ function(params) {
 	params.organizer = root;
 	this._render(params);
 	ti.setExpanded(true);
-	if (this._dataTree._appCtxt.get(ZmSetting.SKIN_HINTS, "noOverviewHeaders")) {
+	if (appCtxt.get(ZmSetting.SKIN_HINTS, "noOverviewHeaders")) {
 		ti.setVisible(false, true);
 	}
 };

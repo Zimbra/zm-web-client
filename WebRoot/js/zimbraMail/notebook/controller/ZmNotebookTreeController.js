@@ -54,12 +54,12 @@ ZmNotebookTreeController.prototype.toString = function() {
 
 ZmNotebookTreeController.prototype.resetOperations =
 function(actionMenu, type, id) {
-	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	if (actionMenu && id != rootId) {
 		var notebook = appCtxt.getById(id);
 		if (!notebook) { return; }
 
-		var notebookId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_NOTEBOOK);
+		var notebookId = ZmOrganizer.getSystemId(ZmOrganizer.ID_NOTEBOOK);
 		var isRoot = (notebook.id == rootId);
 		var isNotebook = (notebook.id == notebookId);
 		var isTopLevel = (!isRoot && notebook.parent.id == rootId);
@@ -344,7 +344,7 @@ function(params) {
 	var message;
 
 	// bug: 9406 (short term fix, waiting for backend support)
-	var notebookId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_NOTEBOOK);
+	var notebookId = ZmOrganizer.getSystemId(ZmOrganizer.ID_NOTEBOOK);
 	var folderId = (params.parent && params.parent.id) || notebookId;
 	var cache = AjxDispatcher.run("GetNotebookCache");
 	if (cache.getPageByName(folderId, params.name)) {
@@ -365,7 +365,7 @@ ZmNotebookTreeController.prototype._getItems =
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
 	if (treeView) {
-		var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		var root = treeView.getTreeItemById(rootId);
 		if (root) {
 			return root.getItems();

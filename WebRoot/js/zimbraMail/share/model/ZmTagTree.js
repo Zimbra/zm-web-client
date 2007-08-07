@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTagTree = function(appCtxt) {
+ZmTagTree = function() {
 
-	ZmTree.call(this, ZmOrganizer.TAG, appCtxt);
+	ZmTree.call(this, ZmOrganizer.TAG);
 };
 
 ZmTagTree.prototype = new ZmTree;

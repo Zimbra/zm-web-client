@@ -102,7 +102,7 @@ ZmPage.prototype.getNotebook =
 function() {
 	if (!this._notebook) {
 		var folder = this._appCtxt.getById(this.folderId);
-		var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		while (folder && folder.parent && (folder.parent.id != rootId)) {
 			folder = folder.parent;
 		}
@@ -125,7 +125,7 @@ function() {
 	//if one of the ancestor is readonly then no chances of childs being writable		
 	var isReadOnly = false;
 	var folder = this._appCtxt.getById(this.folderId);
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
 		folder = folder.parent;
 	}

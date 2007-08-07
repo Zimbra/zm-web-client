@@ -328,7 +328,7 @@ function(msg) {
 	var oldSearch = msg.list.search;
 
 	if (oldSearch) {
-		newSearch = new ZmSearch(appCtxt);
+		newSearch = new ZmSearch();
 
 		for (var i in oldSearch) {
 			if ((typeof oldSearch[i] == "object") || (typeof oldSearch[i] == "function")) { continue; }

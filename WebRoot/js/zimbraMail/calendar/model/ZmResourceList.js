@@ -24,18 +24,18 @@
  */
 
 /**
-* Create a new, empty calendar resources list.
-* @constructor
-* @class
-* This class represents a list of calendar resources. A calendar resource can be a
-* location or a piece of equipment. All calendar resource records are stored in the GAL.
-*
-* @author Conrad Damon
-*
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param resType	[constant]		type of resources (location or equipment)
-* @param search		[ZmSearch]*		search that generated this list
-*/
+ * Create a new, empty calendar resources list.
+ * @constructor
+ * @class
+ * This class represents a list of calendar resources. A calendar resource can be a
+ * location or a piece of equipment. All calendar resource records are stored in the GAL.
+ *
+ * @author Conrad Damon
+ *
+ * @param appCtxt	[ZmAppCtxt]		the app context
+ * @param resType	[constant]		type of resources (location or equipment)
+ * @param search		[ZmSearch]*		search that generated this list
+ */
 ZmResourceList = function(appCtxt, resType, search) {
 	ZmContactList.call(this, appCtxt, search, true, ZmItem.RESOURCE);
 
@@ -66,7 +66,7 @@ function(batchCmd) {
 	var value = (this.resType == ZmCalItem.LOCATION) ? ZmResource.ATTR_LOCATION : ZmResource.ATTR_EQUIPMENT;
 	conds.push({attr: ZmResource.F_type, op: "eq", value: value});
 	var params = {conds: conds, join: ZmSearch.JOIN_OR, attrs: ZmResourceList.ATTRS};
-	var search = new ZmSearch(this._appCtxt, params);
+	var search = new ZmSearch(params);
 	
 	search.execute({callback: new AjxCallback(this, this._handleResponseLoad), batchCmd: batchCmd});
 };

@@ -1075,8 +1075,8 @@ function(str, aclv, callback) {
 	}
 	var sortBy = ZmSearch.NAME_DESC;
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
-	var params = {query: str, types: types, sortBy: sortBy, offset: 0, limit: ZmContactList.AC_MAX, isGalAutocompleteSearch: true};
-	var search = new ZmSearch(this._appCtxt, params);
+	var params = {query:str, types:types, sortBy:sortBy, offset:0, limit:ZmContactList.AC_MAX, isGalAutocompleteSearch:true};
+	var search = new ZmSearch(params);
 	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, aclv, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [aclv, callback]);
 	search.execute({callback: respCallback, errorCallback: errorCallback, timeout: ZmContactList.AC_GAL_TIMEOUT,

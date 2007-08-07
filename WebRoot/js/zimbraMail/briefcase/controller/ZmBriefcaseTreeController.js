@@ -49,12 +49,12 @@ ZmBriefcaseTreeController.prototype.toString = function() {
 
 ZmBriefcaseTreeController.prototype.resetOperations =
 function(actionMenu, type, id) {
-	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	if (actionMenu && id != rootId) {
 		var briefcase = appCtxt.getById(id);
 		if (!briefcase) { return; }
 
-		var briefcaseId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_BRIEFCASE);
+		var briefcaseId = ZmOrganizer.getSystemId(ZmOrganizer.ID_BRIEFCASE);
 		var isRoot = (briefcase.id == rootId);
 		var isBriefcase = (briefcase.id == briefcaseId);
 		var isTopLevel = (!isRoot && briefcase.parent.id == rootId);
@@ -292,7 +292,7 @@ function(params) {
 	var message;
 	/*
 	// bug: 9406 (short term fix, waiting for backend support)
-	var notebookId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_NOTEBOOK);
+	var notebookId = ZmOrganizer.getSystemId(ZmOrganizer.ID_NOTEBOOK);
 	var folderId = (params.parent && params.parent.id) || notebookId;
 	var cache = AjxDispatcher.run("GetNotebookCache");
 	if (cache.getPageByName(folderId, params.name)) {
@@ -313,7 +313,7 @@ ZmBriefcaseTreeController.prototype._getItems =
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
 	if (treeView) {
-		var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		var root = treeView.getTreeItemById(rootId);
 		if (root) {
 			return root.getItems();

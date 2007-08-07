@@ -398,7 +398,7 @@ function(params, noRender, callback, errorCallback) {
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
 	params.types = types;
 
-	var search = new ZmSearch(appCtxt, params);
+	var search = new ZmSearch(params);
 	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, isMixed, callback]);
 	if (!errorCallback) {
 		errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
@@ -490,7 +490,7 @@ function(search, isMixed, ex) {
 
 		var msg = ex.getErrorMsg();
 		appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
-		var results = new ZmSearchResult(appCtxt, search);
+		var results = new ZmSearchResult(search);
 		results.type = search.types ? search.types.get(0) : null;
 		this._showResults(results, search, isMixed);
 		return true;

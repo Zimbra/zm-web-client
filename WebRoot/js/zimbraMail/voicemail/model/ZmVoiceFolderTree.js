@@ -29,13 +29,10 @@
  * @class
  * This class represents a tree of voicemail folders.
  * 
- * @author Conrad Damon
- * 
- * @param appCtxt	[ZmAppCtxt]		the app context
+ * @author Dave Comfort
  */
-ZmVoiceFolderTree = function(appCtxt) {
-	
-	ZmTree.call(this, ZmOrganizer.VOICE, appCtxt);
+ZmVoiceFolderTree = function() {
+	ZmTree.call(this, ZmOrganizer.VOICE);
 };
 
 ZmVoiceFolderTree.prototype = new ZmTree;
