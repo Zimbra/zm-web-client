@@ -496,6 +496,9 @@ function(field, itemIdx) {
 	} else if (field == ZmItem.F_FROM) {
 		tooltip = (this._headerList[itemIdx]._sortable)
 			? ZmMsg.sortByFrom : ZmMsg.from;
+	} else if ( field == ZmItem.F_SIZE){
+		tooltip = (this._headerList[itemIdx]._sortable)
+			? ZmMsg.sortBySize : ZmMsg.sizeToolTip;
 	}
 	return tooltip;
 };
