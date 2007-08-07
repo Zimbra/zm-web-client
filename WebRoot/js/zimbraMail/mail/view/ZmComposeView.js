@@ -940,10 +940,7 @@ ZmComposeView.prototype.cleanupAttachments =
 function(all) {
 	var attachDialog = this._attachDialog;
 	if (attachDialog && attachDialog.isPoppedUp()) {
-		var tabView = attachDialog.getTabView();
-		if (tabView.getCurrentTab() == attachDialog.getTabKey("MY_COMPUTER")) {
-			tabView.switchToTab(tabView.getCurrentTab());
-		}
+		attachDialog.popdown();
 	}
 
 	if (all) {
