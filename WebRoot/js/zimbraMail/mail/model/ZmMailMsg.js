@@ -703,8 +703,15 @@ function(contactList, isDraft, callback, errorCallback, accountName) {
 
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
 		var execFrame = new AjxCallback(this, this.send, [contactList, isDraft, callback, errorCallback]);
-		var params = {soapDoc:soapDoc, isInvite:false, isDraft:isDraft, callback:respCallback, errorCallback:errorCallback, execFrame:execFrame};
-
+		var params = {
+			soapDoc: soapDoc,
+			isInvite: false,
+			isDraft: isDraft,
+			accountName: aName,
+			callback: respCallback,
+			errorCallback: errorCallback,
+			execFrame: execFrame
+		};
 		return this._sendMessage(params);
 	}
 };
@@ -1203,15 +1210,21 @@ function(soapDoc, parent, type, contactList, isDraft) {
 
 ZmMailMsg.prototype._addFrom =
 function(soapDoc, parent, accountName) {
-	if (accountName) {
+	if (accountName)
+	{
+		var from = soapDoc.set("e", null, parent);
+		from.setAttribute("t", "f");
+		from.setAttribute("a", accountName);
+
+		var sender = soapDoc.set("e", null, parent);
+		sender.setAttribute("t", "s");
+		sender.setAttribute("a", this._appCtxt.getMainAccount().getEmail());
+	}
+	else if (this.identity)
+	{
 		var e = soapDoc.set("e", null, parent);
 		e.setAttribute("t", "f");
-		e.setAttribute("a", accountName);
-	} else if (this.identity) {
-		var e = soapDoc.set("e", null, parent);
-		e.setAttribute("t", "f");
-		var address = this.identity.sendFromAddress;
-		e.setAttribute("a", address);
+		e.setAttribute("a", this.identity.sendFromAddress);
 		var name = this.identity.sendFromDisplay;
 		if (name) {
 			e.setAttribute("p", name);
