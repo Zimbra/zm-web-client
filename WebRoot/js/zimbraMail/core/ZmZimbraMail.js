@@ -1100,7 +1100,7 @@ function() {
 	
 	window.onbeforeunload = null;
 	
-	var url = window._zimbraMail ? window._zimbraMail._appCtxt.get(ZmSetting.LOGOUT_URL) : null;
+	var url = appCtxt.get(ZmSetting.LOGOUT_URL);
 	if (!url) {
 		url = AjxUtil.formatUrl({path:appContextPath});
 	}

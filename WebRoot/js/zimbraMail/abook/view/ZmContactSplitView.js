@@ -418,8 +418,7 @@ function(ev) {
 
 ZmContactSplitView._tagClicked =
 function(tagId) {
-	var appCtxt = window._zimbraMail._appCtxt;
-	var sc = appCtxt ? appCtxt.getSearchController() : null;
+	var sc = appCtxt.getSearchController();
 	if (sc) {
 		var tag = appCtxt.getById(tagId);
 		var query = 'tag:"' + tag.name + '"';

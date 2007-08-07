@@ -241,7 +241,6 @@ function() {
 ZmContactAlphabetBar._alphabetClicked =
 function(cell, letter, endLetter) {
 	// get reference to alphabet bar - ugh
-	var appCtxt = window._zimbraMail._appCtxt;
 	var clc = AjxDispatcher.run("GetContactListController");
 	var alphabetBar = clc.getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
@@ -253,7 +252,6 @@ function(cell, letter, endLetter) {
 ZmContactAlphabetBar._onMouseOver =
 function(cell) {
 	// get reference to alphabet bar - ugh
-	var appCtxt = window._zimbraMail._appCtxt;
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
 		cell.className = "DwtButton-hover AlphabetBarCell";
@@ -263,7 +261,6 @@ function(cell) {
 ZmContactAlphabetBar._onMouseOut =
 function(cell) {
 	// get reference to alphabet bar - ugh
-	var appCtxt = window._zimbraMail._appCtxt;
 	var alphabetBar = AjxDispatcher.run("GetContactListController").getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
 		alphabetBar.setSelected(cell, cell == alphabetBar.getCurrent());

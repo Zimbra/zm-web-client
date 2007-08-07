@@ -373,7 +373,6 @@ function(list) {
 
 ZmContactCardsView._loadContact =
 function(cell, contactId) {
-	var appCtxt = window._zimbraMail._appCtxt;
 	var contact = appCtxt.cacheGet(contactId);
 	if (contact && !contact.isLoaded) {
 		var clc = AjxDispatcher.run("GetContactListController");
