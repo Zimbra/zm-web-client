@@ -22,11 +22,11 @@
  *
  * ***** END LICENSE BLOCK *****
  */
-ZmCalItem = function(appCtxt, type, list, id, folderId) {
+ZmCalItem = function(type, list, id, folderId) {
 
 	if (arguments.length == 0) { return; }
 
-	ZmItem.call(this, appCtxt, type, id, list);
+	ZmItem.call(this, type, id, list);
 
 	this.id = id || -1;
 	this.uid = -1; // iCal uid of appt
@@ -169,7 +169,7 @@ ZmCalItem.prototype.getLocalFolderId =
 function() {
 	var fid = this.folderId;
 	if (this.isShared()) {
-		var folder = this._appCtxt.getById(this.folderId);
+		var folder = appCtxt.getById(this.folderId);
 		if (folder)
 			fid = folder.id;
 	}
@@ -464,12 +464,12 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 	var seriesMode = mode == ZmCalItem.MODE_EDIT_SERIES;
 	if (this.message == null) {
 		var id = seriesMode ? (this._seriesInvId || this.invId) : this.invId;
-		this.message = new ZmMailMsg(this._appCtxt, id);
+		this.message = new ZmMailMsg(id);
 		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, this.message, callback]);
 		var respErrorCallback = !ignoreOutOfDate
 			? (new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]))
 			: errorCallback;
-		this.message.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, respErrorCallback);
+		this.message.load(appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, respErrorCallback);
 	} else {
 		this.setFromMessage(this.message, mode);
 		if (callback)
@@ -490,7 +490,7 @@ function(mode, callback, errorCallback, ex) {
 			callback: respCallback,
 			errorCallback: errorCallback
 		};
-		this._appCtxt.getAppController().sendRequest(params);
+		appCtxt.getAppController().sendRequest(params);
 		return true;
 	}
 	if (errorCallback) {
@@ -807,7 +807,7 @@ function() {
 */
 ZmCalItem.prototype.getAttachListHtml =
 function(attach, hasCheckbox) {
-  	var msgFetchUrl = this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+  	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 	var hrefRoot = "href='" + msgFetchUrl + "&id=" + this.invId + "&amp;part=";
 
 	// gather meta data for this attachment
@@ -846,7 +846,7 @@ function(attach, hasCheckbox) {
 	html[i++] = attach.filename;
 	html[i++] = "</a>";
 
-	var addHtmlLink = (this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) &&
+	var addHtmlLink = (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) &&
 					  attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct));
 
 	if (sizeText || addHtmlLink) {
@@ -888,7 +888,7 @@ function(attach, hasCheckbox) {
 
 ZmCalItem.prototype._getTextSummaryTime =
 function(isEdit, fieldstr, extDate, start, end, hasTime) {
-	var showingTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
+	var showingTimezone = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
 
 	var buf = [];
 	var i = 0;
@@ -1057,14 +1057,14 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	this._addNotesToSoap(soapDoc, m);
 
 	// set organizer
-	var user = this._appCtxt.get(ZmSetting.USERNAME);
+	var user = appCtxt.get(ZmSetting.USERNAME);
 	var organizer = this.organizer || user;
 	var org = soapDoc.set("or", null, comp);
 	org.setAttribute("a", organizer);
 	// if on-behalf of, set sentBy
 	if (organizer != user) org.setAttribute("sentBy", user);
 	// set display name of organizer
-	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this.organizer);
+	var orgEmail = ZmApptViewHelper.getOrganizerEmail(appCtxt, this.organizer);
 	var orgName = orgEmail.getName();
 	if (orgName) org.setAttribute("d", orgName);
 
@@ -1196,7 +1196,7 @@ ZmCalItem.prototype._sendRequest =
 function(soapDoc, accountName, callback, errorCallback) {
 	var responseName = soapDoc.getMethod().nodeName.replace("Request", "Response");
 	var respCallback = new AjxCallback(this, this._handleResponseSend, [responseName, callback]);
-	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, accountName:accountName, callback:respCallback, errorCallback:errorCallback});
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, accountName:accountName, callback:respCallback, errorCallback:errorCallback});
 };
 
 ZmCalItem.prototype._loadFromDom =

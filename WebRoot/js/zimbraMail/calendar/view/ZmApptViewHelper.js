@@ -24,15 +24,15 @@
  */
 
 /**
-* Does nothing.
-* @constructor
-* @class
-* This static class provides utility functions for dealing with appointments
-* and their related forms and views.
-*
-* @author Parag Shah
-* @author Conrad Damon
-*/
+ * Does nothing.
+ * @constructor
+ * @class
+ * This static class provides utility functions for dealing with appointments
+ * and their related forms and views.
+ *
+ * @author Parag Shah
+ * @author Conrad Damon
+ */
 
 /**
  * ZmApptViewHelper
@@ -228,8 +228,8 @@ function(appCtxt, item, type, strictText, strictEmail) {
 
 		if (!attendee && !strictEmail) {
 			// AjxEmailAddress has name and email, init a new contact/resource from those
-			attendee = (type == ZmCalItem.PERSON) ? new ZmContact(appCtxt) :
-													new ZmResource(appCtxt, type);
+			attendee = (type == ZmCalItem.PERSON) ? new ZmContact(null) :
+													new ZmResource(type);
 			attendee.initFromEmail(item, true);
 		}
 	} else if (typeof item == "string") {
@@ -243,11 +243,11 @@ function(appCtxt, item, type, strictText, strictEmail) {
 			attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
 			if (!attendee && !strictEmail) {
 				if (type == ZmCalItem.PERSON) {
-					attendee = new ZmContact(appCtxt);
+					attendee = new ZmContact(null);
 				} else if (type == ZmCalItem.LOCATION) {
-					attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmCalItem.LOCATION);
+					attendee = new ZmResource(null, ZmApptViewHelper._locations, ZmCalItem.LOCATION);
 				} else if (type == ZmCalItem.EQUIPMENT) {
-					attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._equipment, ZmCalItem.EQUIPMENT);
+					attendee = new ZmResource(null, ZmApptViewHelper._equipment, ZmCalItem.EQUIPMENT);
 				}
 				attendee.initFromEmail(email, true);
 			} else if (type == ZmCalItem.PERSON) {
@@ -266,7 +266,7 @@ function(appCtxt, item, type, strictText, strictEmail) {
 		// non-email string: initialize as a resource if it's a location, since
 		// those can be free-text
 		if (!attendee && type == ZmCalItem.LOCATION && !strictText && ZmApptViewHelper._locations) {
-			attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmCalItem.LOCATION);
+			attendee = new ZmResource(null, ZmApptViewHelper._locations, ZmCalItem.LOCATION);
 			attendee.setAttr(ZmResource.F_name, item);
 			attendee.setAttr(ZmResource.F_type, ZmResource.ATTR_LOCATION);
 			ZmApptViewHelper._locations.updateHashes(attendee);

@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDocument = function(appCtxt, id, list) {
-	if (arguments.length == 0) return;
-	ZmNotebookItem.call(this, appCtxt, ZmItem.DOCUMENT, id, list);
+ZmDocument = function(id, list) {
+	ZmNotebookItem.call(this, ZmItem.DOCUMENT, id, list);
 }
 ZmDocument.prototype = new ZmNotebookItem;
 ZmDocument.prototype.constructor = ZmDocument;
@@ -41,7 +40,7 @@ ZmDocument.prototype.contentType;
 // Static functions
 
 ZmDocument.createFromDom = function(node, args) {
-	var doc = new ZmDocument(args.appCtxt, node.id, args.list);
+	var doc = new ZmDocument(node.id, args.list);
 	doc.set(node);
 	return doc;
 };

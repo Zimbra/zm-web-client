@@ -24,33 +24,32 @@
  */
 
 /**
-* Creates an empty list of items of the given type.
-* @constructor
-* @class
-* This class represents a list of items (ZmItem objects). Any SOAP method that can be
-* applied to a list of item IDs is represented here, so that we can perform an action
-* on multiple items with just one CSFE call. For the sake of convenience, a hash 
-* matching item IDs to items is maintained. Items are assumed to have an 'id'
-* property.
-* <p>
-* The calls are made asynchronously. We are assuming that any action taken will result
-* in a notification, so the action methods generally do not have an async callback 
-* chain and thus are leaf nodes. An exception is moving conversations. We don't
-* know enough from the ensuing notifications (which only indicate that messages have
-* moved), we need to update the UI based on the response.</p>
-*
-* @author Conrad Damon
-* @param type		[constant]		item type
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param search		[ZmSearch]*		search that generated this list
-*/
-ZmList = function(type, appCtxt, search) {
+ * Creates an empty list of items of the given type.
+ * @constructor
+ * @class
+ * This class represents a list of items (ZmItem objects). Any SOAP method that can be
+ * applied to a list of item IDs is represented here, so that we can perform an action
+ * on multiple items with just one CSFE call. For the sake of convenience, a hash 
+ * matching item IDs to items is maintained. Items are assumed to have an 'id'
+ * property.
+ * <p>
+ * The calls are made asynchronously. We are assuming that any action taken will result
+ * in a notification, so the action methods generally do not have an async callback 
+ * chain and thus are leaf nodes. An exception is moving conversations. We don't
+ * know enough from the ensuing notifications (which only indicate that messages have
+ * moved), we need to update the UI based on the response.</p>
+ *
+ * @author Conrad Damon
+ * 
+ * @param type		[constant]		item type
+ * @param search	[ZmSearch]*		search that generated this list
+ */
+ZmList = function(type, search) {
 
 	if (arguments.length == 0) return;
 	ZmModel.call(this, type);
 
 	this.type = type;
-	this._appCtxt = appCtxt;
 	this.search = search;
 	
 	this._vector = new AjxVector();
@@ -126,7 +125,7 @@ function(args) {
 	var item;
 	var obj = eval(ZmList.ITEM_CLASS[this.type]);
 	if (obj) {
-		item = new obj(this._appCtxt, this);
+		item = new obj(this);
 		item.create(args);
 	}
 
@@ -213,7 +212,7 @@ ZmList.prototype.set =
 function(respNode) {
 	this.clear();
 	var nodes = respNode.childNodes;
-	var args = {appCtxt: this._appCtxt, list: this};
+	var args = {list:this};
 	for (var i = 0; i < nodes.length; i++) {
 		var node = nodes[i];
 		if (node.nodeName == ZmList.NODE[this.type]) {
@@ -221,8 +220,9 @@ function(respNode) {
 			if (parseInt(node.getAttribute("l")) == ZmFolder.ID_TRASH && (this.type != ZmItem.CONTACT))
 				continue;
 			var obj = eval(ZmList.ITEM_CLASS[this.type]);
-			if (obj)
+			if (obj) {
 				this.add(obj.createFromDom(node, args));
+			}
 		}
 	}
 }
@@ -235,12 +235,14 @@ function(respNode) {
 */
 ZmList.prototype.addFromDom = 
 function(node, args) {
-	if (!args) args = new Object();
-	args.appCtxt = this._appCtxt;
+	if (!args) {
+		args = {};
+	}
 	args.list = this;
 	var obj = eval(ZmList.ITEM_CLASS[this.type]);
-	if (obj)
+	if (obj) {
 		this.add(obj.createFromDom(node, args));
+	}
 }
 
 /* 
@@ -395,7 +397,7 @@ function(result) {
 	var resp = result.getResponse();
 	if (resp.length > 0) {
 		var msg = AjxMessageFormat.format(ZmMsg.itemCopied, resp.length);
-		this._appCtxt.getAppController().setStatusMsg(msg);
+		appCtxt.getAppController().setStatusMsg(msg);
 	}
 };
 
@@ -421,7 +423,7 @@ function(items, hardDelete, attrs) {
 	var toDelete = new Array();	
 	for (var i = 0; i < items.length; i++) {
 		var folderId = items[i].getFolderId();
-		var folder = this._appCtxt.getById(folderId);
+		var folder = appCtxt.getById(folderId);
 		if (hardDelete || (folder && folder.isInTrash()))
 			toDelete.push(items[i]);
 		else
@@ -430,7 +432,7 @@ function(items, hardDelete, attrs) {
 
 	// soft delete - items moved to Trash
 	if (toMove.length)
-		this.moveItems(toMove, this._appCtxt.getById(ZmFolder.ID_TRASH), attrs);
+		this.moveItems(toMove, appCtxt.getById(ZmFolder.ID_TRASH), attrs);
 
 	// hard delete - items actually deleted from data store
 	if (toDelete.length)
@@ -454,7 +456,7 @@ ZmList.prototype.notifyCreate =
 function(node) {
 	var obj = eval(ZmList.ITEM_CLASS[this.type]);
 	if (obj) {
-		var item = obj.createFromDom(node, {appCtxt: this._appCtxt, list: this});
+		var item = obj.createFromDom(node, {list:this});
 		this.add(item, this._sortIndex(item));
 		this.createLocal(item);
 		this._notify(ZmEvent.E_CREATE, {items: [item]});
@@ -523,7 +525,7 @@ function(params, batchCmd) {
 	if (batchCmd) {
 		batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
-		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
+		appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
 	}
 };
 
@@ -622,7 +624,7 @@ function(item) {
 
 ZmList.prototype._redoSearch = 
 function(ctlr) {
-	var sc = this._appCtxt.getSearchController();
+	var sc = appCtxt.getSearchController();
 	sc.redoSearch(ctlr._currentSearch);
 };
 
@@ -637,8 +639,8 @@ function(ev) {
 
 	var folder = ev.getDetail("organizers")[0];
 	var fields = ev.getDetail("fields");
-	var ctlr = this._appCtxt.getCurrentController();
-	var isCurrentList = (this._appCtxt.getCurrentList() == this);
+	var ctlr = appCtxt.getCurrentController();
+	var isCurrentList = (appCtxt.getCurrentList() == this);
 
 	if (ev.event == ZmEvent.E_DELETE && ev.source instanceof ZmFolder && ev.source.id == ZmFolder.ID_TRASH) {
 		// user emptied trash - reset a bunch of stuff w/o having to redo the search
@@ -651,7 +653,7 @@ function(ev) {
 		var oldPath = ev.getDetail("oldPath");
 		if (ctlr._currentSearch.hasFolderTerm(oldPath)) {
 			ctlr._currentSearch.replaceFolderTerm(oldPath, folder.getPath());
-			this._appCtxt.getSearchController().setSearchField(ctlr._currentSearch.query);
+			appCtxt.getSearchController().setSearchField(ctlr._currentSearch.query);
 		}
 	}
 };
@@ -662,8 +664,8 @@ function(ev) {
 
 	var tag = ev.getDetail("organizers")[0];
 	var fields = ev.getDetail("fields");
-	var ctlr = this._appCtxt.getCurrentController();
-	if (!ctlr || (this._appCtxt.getCurrentList() != this)) {
+	var ctlr = appCtxt.getCurrentController();
+	if (!ctlr || (appCtxt.getCurrentList() != this)) {
 		return;
 	}
 	
@@ -672,7 +674,7 @@ function(ev) {
 		var oldName = ev.getDetail("oldName");
 		if (ctlr._currentSearch && ctlr._currentSearch.hasTagTerm(oldName)) {
 			ctlr._currentSearch.replaceTagTerm(oldName, tag.getName());
-			this._appCtxt.getSearchController().setSearchField(ctlr._currentSearch.query);
+			appCtxt.getSearchController().setSearchField(ctlr._currentSearch.query);
 		}
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		// Remove tag from any items that have it
@@ -693,7 +695,7 @@ function(ev) {
 		// view msgs or open convs, but disable pagination and sorting since they're based
 		// on the current query.
 		if (ctlr._currentSearch && ctlr._currentSearch.hasTagTerm(tag.getName())) {
-			var viewId = this._appCtxt.getCurrentViewId();
+			var viewId = appCtxt.getCurrentViewId();
 			ctlr.enablePagination(false, viewId);
 			var view = ctlr.getCurrentView();
 			if (view && view.enableSorting)
@@ -701,7 +703,7 @@ function(ev) {
 			if (viewId == ZmController.CONVLIST_VIEW)
 				ctlr._currentSearch.query = "is:read is:unread";
 			ctlr._currentSearch.tagId = null;
-			this._appCtxt.getSearchController().setSearchField("");
+			appCtxt.getSearchController().setSearchField("");
 		}
 	}
 };

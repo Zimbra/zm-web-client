@@ -295,7 +295,7 @@ function(ev, subject, to) {
 ZmVoicemailListController.prototype._handleResponseUpload = 
 function(inNewWindow, subject, to, response) {
 	var voicemail = this._getView().getSelection()[0];
-	var mailMsg = new ZmMailMsg(appCtxt);
+	var mailMsg = new ZmMailMsg();
 	mailMsg.getAttachments()[0] = {
 		name: "voicemail.wav", 
 		ct: "audio/x-wave",

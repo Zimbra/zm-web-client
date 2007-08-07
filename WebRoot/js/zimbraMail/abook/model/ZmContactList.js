@@ -24,35 +24,34 @@
  */
 
 /**
-* Create a new, empty contact list.
-* @constructor
-* @class
-* This class represents a list of contacts. It may be a user contact list, or the
-* global address list (aka GAL). A hash matching email addresses to contacts is
-* maintained for convenience.
-* <p>
-* Full contact data (attributes and their values) is only loaded once, so there is
-* only one instance of this class that is fully populated. Other instances (such as
-* those created by a search) will have minimal data, and will get their attribute
-* values from the canonical list.</p>
-* <p>
-* Also, loading has been optimized by delaying the creation of ZmContact objects until
-* they are needed. That has a big impact on IE, and not much on Firefox. Loading a subset
-* of attributes did not have much impact on load time, probably because a large majority
-* of contacts contain only those minimal fields.</p>
-*
-* @author Conrad Damon
-*
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param search		[ZmSearch]*		search that generated this list
-* @param isGal		[boolean]*		if true, this is a list of GAL contacts
-* @param type		[constant]*		item type
-*/
-ZmContactList = function(appCtxt, search, isGal, type) {
+ * Create a new, empty contact list.
+ * @constructor
+ * @class
+ * This class represents a list of contacts. It may be a user contact list, or the
+ * global address list (aka GAL). A hash matching email addresses to contacts is
+ * maintained for convenience.
+ * <p>
+ * Full contact data (attributes and their values) is only loaded once, so there is
+ * only one instance of this class that is fully populated. Other instances (such as
+ * those created by a search) will have minimal data, and will get their attribute
+ * values from the canonical list.</p>
+ * <p>
+ * Also, loading has been optimized by delaying the creation of ZmContact objects until
+ * they are needed. That has a big impact on IE, and not much on Firefox. Loading a subset
+ * of attributes did not have much impact on load time, probably because a large majority
+ * of contacts contain only those minimal fields.</p>
+ *
+ * @author Conrad Damon
+ *
+ * @param search	[ZmSearch]*		search that generated this list
+ * @param isGal		[boolean]*		if true, this is a list of GAL contacts
+ * @param type		[constant]*		item type
+ */
+ZmContactList = function(search, isGal, type) {
 
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 	type = type ? type : ZmItem.CONTACT;
-	ZmList.call(this, type, appCtxt, search);
+	ZmList.call(this, type, search);
 
 	this.isGal = (isGal === true);
 	this.isCanonical = false;
@@ -120,7 +119,7 @@ function(callback, errorCallback) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
 	DBG.timePt("requesting contact list", true);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
 												  callback: respCallback, errorCallback: errorCallback});
 };
 
@@ -138,7 +137,7 @@ function(callback, result) {
 	}
 	this._setGalAutocompleteEnabled();
     var listener = new AjxListener(this, this._settingsChangeListener);
-	var settings = this._appCtxt.getSettings();
+	var settings = appCtxt.getSettings();
 	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE).addChangeListener(listener);
 	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION).addChangeListener(listener);
 
@@ -216,7 +215,7 @@ function(contact, idx) {
 	if (contact instanceof ZmContact)
 		return contact;
 
-	var args = {appCtxt: this._appCtxt, list: this};
+	var args = {list:this};
 	var obj = eval(ZmList.ITEM_CLASS[this.type]);
 	var realContact = obj ? obj.createFromDom(contact, args) : null;
 
@@ -360,8 +359,8 @@ ZmContactList.prototype.moveItems =
 function(items, folder, attrs) {
 	if (!(items instanceof Array)) items = [items];
 
-	var moveBatchCmd = new ZmBatchCommand(this._appCtxt);
-	var loadBatchCmd = new ZmBatchCommand(this._appCtxt);
+	var moveBatchCmd = new ZmBatchCommand(appCtxt);
+	var loadBatchCmd = new ZmBatchCommand(appCtxt);
 	var softMove = [];
 	var hardMove = [];
 
@@ -413,10 +412,10 @@ function(result) {
 	//      shares, we manually notify - TEMP UNTIL WE GET BETTER SERVER SUPPORT
 	var ids = resp[0].action.id.split(",");
 	for (var i = 0; i < ids.length; i++) {
-		var contact = this._appCtxt.cacheGet(ids[i]);
+		var contact = appCtxt.cacheGet(ids[i]);
 		if (contact && contact.isShared()) {
 			contact.notifyDelete();
-			this._appCtxt.getItemCache().clear(ids[i]);
+			appCtxt.getItemCache().clear(ids[i]);
 		}
 	}
 };
@@ -437,7 +436,7 @@ function(batchCmd, folder, result, contact) {
 
 ZmContactList.prototype._getCopyCmd =
 function(contact, folder) {
-	var temp = new ZmContact(this._appCtxt, null, this);
+	var temp = new ZmContact(null, this);
 	for (var j in contact.attr)
 		temp.attr[j] = contact.attr[j];
 	temp.attr[ZmContact.F_folderId] = folder.id;
@@ -523,7 +522,7 @@ function(item, details) {
 	if (this.isCanonical) {
 		// Remove traces of old contact - NOTE: we pass in null for the ID on
 		// PURPOSE to avoid overwriting the existing cached contact
-		var oldContact = new ZmContact(this._appCtxt, null, this);
+		var oldContact = new ZmContact(null, this);
 		oldContact.id = details.contact.id;
 		oldContact.attr = details.oldAttr;
 		this._updateHashes(oldContact, false);
@@ -542,7 +541,7 @@ function(item, details) {
 
 	// reset addrbook property
 	if (contact.addrbook && (contact.addrbook.id != contact.folderId)) {
-		contact.addrbook = this._appCtxt.getById(contact.folderId);
+		contact.addrbook = appCtxt.getById(contact.folderId);
 	}
 };
 
@@ -635,7 +634,7 @@ function(str, callback, aclv) {
 	// though we could still search the GAL)
 	if (!this.isLoaded) {
 		if (this._showStatus) {
-			this._appCtxt.setStatusMsg(ZmMsg.autocompleteNotReady, ZmStatusView.LEVEL_WARNING);
+			appCtxt.setStatusMsg(ZmMsg.autocompleteNotReady, ZmStatusView.LEVEL_WARNING);
 			this._showStatus = false; // only show status message once
 		}
 		callback.run(null);
@@ -755,7 +754,7 @@ function(str) {
 	}
 	var result = {};
 	if (!this._userDomain) {
-		var uname = this._appCtxt.get(ZmSetting.USERNAME);
+		var uname = appCtxt.get(ZmSetting.USERNAME);
 		if (uname) {
 			var a = uname.split("@");
 			if (a && a.length) {
@@ -1053,9 +1052,9 @@ function(contact, doAdd) {
 
 ZmContactList.prototype._setGalAutocompleteEnabled =
 function() {
-	this._galAutocompleteEnabled = (this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE) &&
-									this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_SESSION) &&
-									this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED));
+	this._galAutocompleteEnabled = (appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE) &&
+									appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_SESSION) &&
+									appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED));
 };
 
 /*
@@ -1161,10 +1160,10 @@ function(aclv, callback, ex) {
 	aclv.setWaiting(false);
 	if (ex.code == AjxException.CANCELED) {
 		this._galFailures++;
-		this._appCtxt.setStatusMsg(ZmMsg.galAutocompleteTimedOut);
+		appCtxt.setStatusMsg(ZmMsg.galAutocompleteTimedOut);
 		if (this._galFailures >= ZmContactList.AC_GAL_FAILURES) {
-			this._appCtxt.setStatusMsg(ZmMsg.galAutocompleteFailure);
-			var settings = this._appCtxt.getSettings();
+			appCtxt.setStatusMsg(ZmMsg.galAutocompleteFailure);
+			var settings = appCtxt.getSettings();
 			var setting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION);
 			setting.setValue(false);
             AjxDispatcher.run("GetPrefController").setDirty("CONTACTS", true);

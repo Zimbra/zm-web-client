@@ -24,33 +24,32 @@
  */
 
 /**
-* Creates an empty contact.
-* @constructor
-* @class
-* This class represents a contact (typically a person) with all its associated versions
-* of email address, home and work addresses, phone numbers, etc. Contacts can be filed/sorted
-* in different ways, with the default being Last, First. A contact is an item, so
-* it has tagging and flagging support, and belongs to a list.
-* <p>
-* Most of a contact's data is kept in attributes. These include name, phone, etc. Meta-data and
-* data common to items are not kept in attributes. These include flags, tags, folder, and
-* modified/created dates. Since the attribute data for contacts is loaded only once, a contact
-* gets its attribute values from that canonical list.</p>
-*
-* @param appCtxt	[ZmAppCtxt]			the app context
-* @param id			[int]*				unique ID
-* @param list		[ZmContactList]*	list that contains this contact
-* @param type		[constant]*			item type
-*/
-ZmContact = function(appCtxt, id, list, type) {
-	if (arguments.length == 0) return;
+ * Creates an empty contact.
+ * @constructor
+ * @class
+ * This class represents a contact (typically a person) with all its associated versions
+ * of email address, home and work addresses, phone numbers, etc. Contacts can be filed/sorted
+ * in different ways, with the default being Last, First. A contact is an item, so
+ * it has tagging and flagging support, and belongs to a list.
+ * <p>
+ * Most of a contact's data is kept in attributes. These include name, phone, etc. Meta-data and
+ * data common to items are not kept in attributes. These include flags, tags, folder, and
+ * modified/created dates. Since the attribute data for contacts is loaded only once, a contact
+ * gets its attribute values from that canonical list.</p>
+ *
+ * @param id		[int]*				unique ID
+ * @param list		[ZmContactList]*	list that contains this contact
+ * @param type		[constant]*			item type
+ */
+ZmContact = function(id, list, type) {
+	if (arguments.length == 0) { return; }
 
 	// handle to canonical list (for contacts that are part of search results)
 	this.canonicalList = AjxDispatcher.run("GetContacts");
 
 	list = list || this.canonicalList;
 	type = type || ZmItem.CONTACT;
-	ZmItem.call(this, appCtxt, type, id, list);
+	ZmItem.call(this, type, id, list);
 
 	this.attr = {};
 	this.isGal = (this.list && this.list.isGal);
@@ -171,11 +170,11 @@ function() {
 ZmContact.createFromDom =
 function(node, args) {
 	// check global cache for this item first
-	var contact = args.appCtxt.cacheGet(node.id);
+	var contact = appCtxt.cacheGet(node.id);
 
 	// make sure the revision hasnt changed, otherwise contact is out of date
 	if (contact == null || (contact && contact.rev != node.rev)) {
-		contact = new ZmContact(args.appCtxt, node.id, args.list);
+		contact = new ZmContact(node.id, args.list);
 		contact._loadFromDom(node);
 	} else {
 		contact.list = args.list || AjxDispatcher.run("GetContacts");
@@ -343,7 +342,7 @@ function(callback, errorCallback, batchCmd) {
 	if (batchCmd) {
 		batchCmd.addRequestParams(soapDoc, respCallback, errorCallback);
 	} else {
-		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc,
+		appCtxt.getAppController().sendRequest({soapDoc: soapDoc,
 													  asyncMode: true,
 													  callback: respCallback,
 													  errorCallback: errorCallback});
@@ -518,7 +517,7 @@ function(attr, batchCmd) {
 		batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
 		var execFrame = new AjxCallback(this, this.create, [attr]);
-		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
 	}
 };
 
@@ -542,11 +541,11 @@ function(attr, isBatchMode, result) {
 				this.setAttr(a, attr[a]);
 		}
 		var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
-		this._appCtxt.getAppController().setStatusMsg(msg);
+		appCtxt.getAppController().setStatusMsg(msg);
 	} else {
 		var msg = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
 		var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
-		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL, detail);
+		appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL, detail);
 	}
 };
 
@@ -563,7 +562,7 @@ function(msgId, vcardPartId) {
 	var errorCallback = new AjxCallback(this, this._handleErrorCreateVCard);
 	var execFrame = new AjxCallback(this, this.create, [msgId, vcardPartId]);
 
-	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
 												callback:respCallback,
 												errorCallback:errorCallback,
 												execFrame:execFrame});
@@ -571,12 +570,12 @@ function(msgId, vcardPartId) {
 
 ZmContact.prototype._handleResponseCreateVCard =
 function(result) {
-	this._appCtxt.getAppController().setStatusMsg(ZmMsg.contactCreated);
+	appCtxt.getAppController().setStatusMsg(ZmMsg.contactCreated);
 };
 
 ZmContact.prototype._handleErrorCreateVCard =
 function(ex) {
-	this._appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateContact, ZmStatusView.LEVEL_CRITICAL);
+	appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateContact, ZmStatusView.LEVEL_CRITICAL);
 };
 
 /**
@@ -622,7 +621,7 @@ function(attr, callback) {
 	if (continueRequest) {
 		var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
 		var execFrame = new AjxCallback(this, this.modify, [attr]);
-		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
 	} else {
 		if (attr[ZmContact.F_folderId]) {
 			this._setFolder(attr[ZmContact.F_folderId]);
@@ -637,7 +636,7 @@ function(attr, callback, result) {
 	var id = cn ? cn.id : null;
 
 	if (id && id == this.id) {
-		this._appCtxt.setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
+		appCtxt.setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
 		// the revision for this contact has changed -- we should refetch it
 		// ONLY DO THIS FOR SHARED CONTACT since normal contacts are handled by notifications
 		if (cn.rev && cn.rev != this.rev && this.isShared()) {
@@ -650,7 +649,7 @@ function(attr, callback, result) {
 	} else {
 		var msg = ZmMsg.errorModifyContact;
         var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
-        this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL, detail);
+        appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL, detail);
 	}
 	// NOTE: we no longer process callbacks here since notification handling
 	//       takes care of everything
@@ -681,7 +680,7 @@ function(newFolderId) {
 	if (this.folderId == newFolderId) return;
 
 	// moving out of a share or into one is handled differently (create then hard delete)
-	var newFolder = this._appCtxt.getById(newFolderId)
+	var newFolder = appCtxt.getById(newFolderId)
 	if (this.isShared() || (newFolder && newFolder.link)) {
 		if (this.list) {
 			this.list.moveItems(this, newFolder);
@@ -694,7 +693,7 @@ function(newFolderId) {
 		cn.setAttribute("l", newFolderId);
 
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, [false]);
-		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	}
 };
 
@@ -776,7 +775,7 @@ function() {
 ZmContact.prototype.getBuddy =
 function() {
 	var buddy;
-	if (this._appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
+	if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
 		var roster = AjxDispatcher.run("GetRoster");
 		buddy = roster.getRosterItem(this.getIMAddress());
 	}
@@ -862,7 +861,7 @@ ZmContact.prototype.getImageUrl =
 function() {
   	var image = this.getAttr(ZmContact.F_image);
   	if(!image || !image.part) { return null; }
-  	var msgFetchUrl = this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+  	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
   	return  [msgFetchUrl, "&id=", this.id, "&part=", image.part, "&t=", (new Date()).getTime()].join("");
 };
 
@@ -1048,7 +1047,7 @@ function(node) {
 
 	// check if the folderId is found in our address book (otherwise, we assume 
 	// this contact to be a shared contact)
-	this.addrbook = this._appCtxt.getById(this.folderId);
+	this.addrbook = appCtxt.getById(this.folderId);
 
 	// dont process tags/flags for shared contacts until we get server support
 	if (!this.isShared()) {
@@ -1084,8 +1083,8 @@ function(type, shortForm) {
 ZmContact.prototype.getPrintHtml =
 function(preferHtml, callback) {
 	return this.isGroup()
-		? ZmGroupView.getPrintHtml(this, false, this._appCtxt)
-		: ZmContactView.getPrintHtml(this, false, this._appCtxt);
+		? ZmGroupView.getPrintHtml(this, false, appCtxt)
+		: ZmContactView.getPrintHtml(this, false, appCtxt);
 };
 
 // these need to be kept in sync with ZmContact.F_*

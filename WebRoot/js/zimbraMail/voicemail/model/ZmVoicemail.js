@@ -24,19 +24,17 @@
  */
 
 /**
-* Creates a voicemail.
-* @constructor
-* @class
-* This class represents a voiemail.
-*
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param id			[int]			unique ID
-* @param list		[ZmVoiceList]	list that contains this item
-*/
-ZmVoicemail = function(appCtxt, id, list) {
+ * Creates a voicemail.
+ * @constructor
+ * @class
+ * This class represents a voiemail.
+ *
+ * @param id		[int]			unique ID
+ * @param list		[ZmVoiceList]	list that contains this item
+ */
+ZmVoicemail = function(id, list) {
 
-	if (arguments.length == 0) return;
-	ZmVoiceItem.call(this, appCtxt, ZmItem.VOICEMAIL, id, list);
+	ZmVoiceItem.call(this, ZmItem.VOICEMAIL, id, list);
 
 	this.isUnheard = false;
 	this.soundUrl = null;
@@ -58,7 +56,7 @@ function() {
 */
 ZmVoicemail.createFromDom =
 function(node, args) {
-	var result = new ZmVoicemail(args.appCtxt, node.id, args.list);
+	var result = new ZmVoicemail(node.id, args.list);
 	result._loadFromDom(node);
 	return result;
 };

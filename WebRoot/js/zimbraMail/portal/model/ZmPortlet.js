@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPortlet = function(appCtxt, list, id, def) {
-    ZmItem.call(this, appCtxt, ZmItem.PORTLET, id, list);
+ZmPortlet = function(list, id, def) {
+    ZmItem.call(this, ZmItem.PORTLET, id, list);
 
     // save zimlet
     var zimletMgr = appCtxt.getZimletMgr();

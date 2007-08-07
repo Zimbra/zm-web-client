@@ -23,12 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBriefcaseItem = function(appCtxt, type, id, list) {
-	if (arguments.length == 0) return;
+ZmBriefcaseItem = function(type, id, list) {
 	if(!type){
 		type = ZmItem.BRIEFCASE;
 	}
-	ZmItem.call(this, appCtxt, type, id, list);
+	ZmItem.call(this, type, id, list);
 	this.folderId = ZmBriefcaseItem.DEFAULT_FOLDER;
 }
 ZmBriefcaseItem.prototype = new ZmItem;
@@ -55,7 +54,7 @@ ZmBriefcaseItem.prototype.version = 0;
 // Static functions
 
 ZmBriefcaseItem.createFromDom = function(node, args) {
-	var item = new ZmBriefcaseItem(args.appCtxt, args.type || -1, node.id, args.list);
+	var item = new ZmBriefcaseItem(args.type || -1, node.id, args.list);
 	item.set(node);
 	return item;
 };
@@ -63,7 +62,7 @@ ZmBriefcaseItem.createFromDom = function(node, args) {
 // Public methods
 
 ZmBriefcaseItem.prototype.getPath = function(dontIncludeThisName) {
-	var notebook = this._appCtxt.getById(this.folderId);
+	var notebook = appCtxt.getById(this.folderId);
 	var name = !dontIncludeThisName ? this.name : "";
 	return [ notebook.getPath(), "/", name ].join("");
 };
@@ -71,7 +70,7 @@ ZmBriefcaseItem.prototype.getPath = function(dontIncludeThisName) {
 ZmBriefcaseItem.prototype.getRestUrl = function(dontIncludeThisName) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
 
-	var notebook = this._appCtxt.getById(this.folderId);
+	var notebook = appCtxt.getById(this.folderId);
 	/*if (notebook) {
 		url = url.replace(/^.*\/([^\/]+)$/, notebook.getRestUrl()+"$1");
 	}*/
@@ -103,7 +102,7 @@ function() {
 
 	//if one of the ancestor is readonly then no chances of childs being writable		
 	var isReadOnly = false;
-	var folder = this._appCtxt.getById(this.folderId);
+	var folder = appCtxt.getById(this.folderId);
 	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
 		folder = folder.parent;
@@ -118,7 +117,7 @@ function() {
 ZmBriefcaseItem.prototype.getBriefcaseFolder =
 function() {
 	if (!this._briefcase) {
-		var folder = this._appCtxt.getById(this.folderId);
+		var folder = appCtxt.getById(this.folderId);
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		while (folder && folder.parent && (folder.parent.id != rootId)) {
 			folder = folder.parent;
@@ -146,7 +145,7 @@ function(msgId, partId, name, folderId) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseCreateItem,[folderId]);
 	var errorCallback = new AjxCallback(this, this._handleErrorCreateItem);
-	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
 												callback:respCallback,
 												errorCallback:errorCallback});
 	
@@ -154,8 +153,8 @@ function(msgId, partId, name, folderId) {
 
 ZmBriefcaseItem.prototype._handleResponseCreateItem =
 function(folderId,response) {
-	this._appCtxt.getAppController().setStatusMsg(ZmMsg.fileCreated);
-	var copyToDialog =  this._appCtxt.getChooseFolderDialog();
+	appCtxt.getAppController().setStatusMsg(ZmMsg.fileCreated);
+	var copyToDialog =  appCtxt.getChooseFolderDialog();
 	copyToDialog.popdown();
 	if (response && (response.SaveDocumentResponse || response._data.SaveDocumentResponse)) {		
 		var bController = AjxDispatcher.run("GetBriefcaseController");
@@ -165,5 +164,5 @@ function(folderId,response) {
 
 ZmBriefcaseItem.prototype._handleErrorCreateItem =
 function(ex) {
-	this._appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateFile, ZmStatusView.LEVEL_CRITICAL);
+	appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateFile, ZmStatusView.LEVEL_CRITICAL);
 };

@@ -217,7 +217,7 @@ function(list, numAppts) {
 	for (var i = 0; i < numAppts; i++) {
 		var appt = list.get(i);
 		if (appt.message == null) {
-			appt.message = new ZmMailMsg(this._appCtxt, appt.invId);
+			appt.message = new ZmMailMsg(appt.invId);
 			needToLoad[appt.invId] = appt.message;
 			apptHash[appt.invId] = appt;
 			makeBatchReq = true;

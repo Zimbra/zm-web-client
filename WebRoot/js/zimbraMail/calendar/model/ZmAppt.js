@@ -22,11 +22,9 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-ZmAppt = function(appCtxt, list, noinit) {
+ZmAppt = function(list, noinit) {
 
-	if (arguments.length == 0) { return; }
-	
-	ZmCalItem.call(this, appCtxt, ZmItem.APPT, list);
+	ZmCalItem.call(this, ZmItem.APPT, list);
 	if (noinit) return;
 
 	this.freeBusy = "B"; 														// Free/Busy status (F|B|T|O) (free/busy/tentative/outofoffice)
@@ -131,7 +129,7 @@ function(appt) {
 
 ZmAppt.createFromDom =
 function(apptNode, instNode, args) {
-	var appt = new ZmAppt(args.appCtxt, args.list);
+	var appt = new ZmAppt(args.list);
 	appt._loadFromDom(apptNode, instNode);
 
 	return appt;
@@ -139,7 +137,7 @@ function(apptNode, instNode, args) {
 
 ZmAppt.prototype.getFolder =
 function() {
-	return this._appCtxt.getById(this.folderId);
+	return appCtxt.getById(this.folderId);
 };
 
 /**
@@ -153,10 +151,10 @@ function(controller) {
 	if (!this._toolTip) {
         var organizer = this.getOrganizer();
         var sentBy = this.getSentBy();
-        var userName = this._appCtxt.get(ZmSetting.USERNAME);
+        var userName = appCtxt.get(ZmSetting.USERNAME);
         if (sentBy || (organizer && organizer != userName)) {
-            if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-                var contactsApp = this._appCtxt.getAppController().getApp(ZmApp.CONTACTS);
+            if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+                var contactsApp = appCtxt.getAppController().getApp(ZmApp.CONTACTS);
                 // NOTE: ZmContactsApp#getContactList expects to be called in an
                 //       asynchronous way but we need the data right away. Instead
                 //       of reworking this code or the getContactList method to be
@@ -173,7 +171,7 @@ function(controller) {
                     if (!addr) continue;
                     
                     if (addr == userName) {
-                        addrs[i] = this._appCtxt.get(ZmSetting.DISPLAY_NAME);
+                        addrs[i] = appCtxt.get(ZmSetting.DISPLAY_NAME);
                         continue;
                     }
                     var contact = contactList && contactList.getContactByEmail(addr);
@@ -230,8 +228,8 @@ function(isHtml) {
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
 	
-	var organizer = this.organizer ? this.organizer : this._appCtxt.get(ZmSetting.USERNAME);
-	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this.organizer).toString();
+	var organizer = this.organizer ? this.organizer : appCtxt.get(ZmSetting.USERNAME);
+	var orgEmail = ZmApptViewHelper.getOrganizerEmail(appCtxt, this.organizer).toString();
 	var orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
 	var params = [ ZmMsg.organizer + ":", orgText, "" ];
 	buf[i++] = formatter.format(params);
@@ -356,7 +354,7 @@ function(list, type) {
 	this._attendees[type] = [];
 	list = (list instanceof Array) ? list : [list];
 	for (var i = 0; i < list.length; i++) {
-		var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, list[i], type);
+		var attendee = ZmApptViewHelper.getAttendeeFromItem(appCtxt, list[i], type);
 		if (attendee) {
 			this._attendees[type].push(attendee);
 		}
@@ -369,7 +367,7 @@ function(message, subject) {
 
 	// Only unique names in the attendee list, plus omit our own name
 	var used = {};
-	used[this._appCtxt.get(ZmSetting.USERNAME)] = true;
+	used[appCtxt.get(ZmSetting.USERNAME)] = true;
 	var addrs = message.getAddresses(AjxEmailAddress.FROM, used, true);
 	addrs.addList(message.getAddresses(AjxEmailAddress.CC, used, true));
 	addrs.addList(message.getAddresses(AjxEmailAddress.TO, used, true));
@@ -399,7 +397,7 @@ function(message) {
 			var addr = attendees[i].url;
 			var name = attendees[i].d;
 			var email = new AjxEmailAddress(addr, null, name);
-			var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, email, ZmCalItem.PERSON);
+			var attendee = ZmApptViewHelper.getAttendeeFromItem(appCtxt, email, ZmCalItem.PERSON);
 			if (attendee) {
 				this._attendees[ZmCalItem.PERSON].push(attendee);
 				this._origAttendees.push(attendee);
@@ -415,7 +413,7 @@ function(message) {
 	var locations = AjxEmailAddress.split(message.invite.getLocation());
 	if (locations) {
 		for (var i = 0; i < locations.length; i++) {
-			var location = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, locations[i], ZmCalItem.LOCATION);
+			var location = ZmApptViewHelper.getAttendeeFromItem(appCtxt, locations[i], ZmCalItem.LOCATION);
 			if (location && location.isLocation()) {
 				this._attendees[ZmCalItem.LOCATION].push(location);
 				this._origLocations.push(location);
@@ -430,11 +428,11 @@ function(message) {
 	if (resources) {
 		for (var i = 0; i < resources.length; i++) {
 			// see if it's a known location
-			var location = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, resources[i].url, ZmCalItem.LOCATION, true, true);
+			var location = ZmApptViewHelper.getAttendeeFromItem(appCtxt, resources[i].url, ZmCalItem.LOCATION, true, true);
 			if (location) {
 				continue;
 			}
-			var equipment = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, resources[i].url, ZmCalItem.EQUIPMENT);
+			var equipment = ZmApptViewHelper.getAttendeeFromItem(appCtxt, resources[i].url, ZmCalItem.EQUIPMENT);
 			if (equipment) {
 				this._attendees[ZmCalItem.EQUIPMENT].push(equipment);
 				this._origEquipment.push(equipment);
@@ -446,7 +444,7 @@ function(message) {
 
 ZmAppt.prototype._getTextSummaryTime =
 function(isEdit, fieldstr, extDate, start, end, hasTime) {
-	var showingTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
+	var showingTimezone = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
 
 	var buf = [];
 	var i = 0;
@@ -605,10 +603,10 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 
 		// bug fix #9768 - auto add attendee if not in addrbook
 		if (type == ZmCalItem.PERSON &&
-			this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-			this._appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS))
+			appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+			appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS))
 		{
-			var clc = this._appCtxt.getApp(ZmApp.CONTACTS).getContactList();
+			var clc = appCtxt.getApp(ZmApp.CONTACTS).getContactList();
 			if (!clc.getContactByEmail(address))
 				e.setAttribute("add", "1");
 		}

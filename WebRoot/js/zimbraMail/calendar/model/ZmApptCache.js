@@ -24,7 +24,6 @@
  */
 
 ZmApptCache = function(calViewController, appCtxt) {
-	if (arguments.length == 0) return;
 	this._calViewController = calViewController;
 	this._appCtxt = appCtxt;
 	this.clearCache();
@@ -307,7 +306,7 @@ function(context, result) {
 		for (var i = 0; i < folderIds.length; i++) {
 			var folderId = folderIds[i];
 
-			var apptList = new ZmApptList(this._appCtxt);
+			var apptList = new ZmApptList();
 			apptList.loadFromSummaryJs(folder2List[folderId]);
 
 			// TODO: no need to cache remote ids for now?

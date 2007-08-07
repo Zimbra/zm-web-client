@@ -24,18 +24,18 @@
  */
 
 /**
-* Creates an empty list of voicemails.
-* @constructor
-* @class
-* This class represents a list of voicemails.
-*
-* @author Dave Comfort
-* @param appCtxt	global app context
-* @param type		type of thing in the list
-* @param search		the search that generated this list
-*/
-ZmVoiceList = function(appCtxt, type, search) {
-	ZmList.call(this, type, appCtxt, search);
+ * Creates an empty list of voicemails.
+ * @constructor
+ * @class
+ * This class represents a list of voicemails.
+ *
+ * @author Dave Comfort
+ * 
+ * @param type		type of thing in the list
+ * @param search	the search that generated this list
+ */
+ZmVoiceList = function(type, search) {
+	ZmList.call(this, type, search);
 	this.folder = null;
 };
 

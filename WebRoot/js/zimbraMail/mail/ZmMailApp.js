@@ -449,7 +449,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("MailCore");
-			return new ZmMailList(ZmItem.CONV, appCtxt, search);
+			return new ZmMailList(ZmItem.CONV, search);
 		}, this)
 						});
 
@@ -465,7 +465,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("MailCore");
-			return new ZmMailList(ZmItem.MSG, appCtxt, search);
+			return new ZmMailList(ZmItem.MSG, search);
 		}, this)
 						});
 
@@ -476,7 +476,7 @@ function() {
 						 node:			"mp",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
-			return new ZmMailList(ZmItem.ATT, appCtxt, search);
+			return new ZmMailList(ZmItem.ATT, search);
 		}, this)
 						});
 };

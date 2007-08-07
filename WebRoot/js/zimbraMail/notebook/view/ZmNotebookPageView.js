@@ -609,7 +609,7 @@ ZmNotebookPageView.prototype.createNewPage = function(iSrc){
 	name = unescape(name);			
 	var cpage = this._controller.getPage();
 	if(cpage.folderId){	
-			var item = new ZmPage(this._appCtxt);
+			var item = new ZmPage();
 			item.name = name;					
 			item.folderId = cpage.folderId;
 			var controller = AjxDispatcher.run("GetPageEditController");

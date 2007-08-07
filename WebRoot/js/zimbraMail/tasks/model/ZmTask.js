@@ -24,17 +24,17 @@
  */
 
 /**
-*
-* @constructor
-* @class
-*
-* @author Parag Shah
-*
-* @param id			[int]			numeric ID
-* @param name		[string]		name
-*/
-ZmTask = function(appCtxt, list, id, folderId) {
-	ZmCalItem.call(this, appCtxt, ZmItem.TASK, list, id, folderId);
+ *
+ * @constructor
+ * @class
+ *
+ * @author Parag Shah
+ *
+ * @param id		[int]			numeric ID
+ * @param name		[string]		name
+ */
+ZmTask = function(list, id, folderId) {
+	ZmCalItem.call(this, ZmItem.TASK, list, id, folderId);
 
 	this.priority = ZmCalItem.PRIORITY_NORMAL;
 	this.pComplete = 0;
@@ -73,7 +73,7 @@ function(task) {
 ZmTask.createFromDom =
 function(taskNode, args, instNode) {
 	// NOTE: passing ID implies this item should get cached!
-	var task = new ZmTask(args.appCtxt, args.list, taskNode.id);
+	var task = new ZmTask(args.list, taskNode.id);
 	task._loadFromDom(taskNode, instNode);
 
 	return task;
@@ -92,7 +92,7 @@ ZmTask.prototype.getIcon				= function() { return "Task"; };
 ZmTask.prototype.getLocation			= function() { return this.location || ""; };
 ZmTask.prototype.getFolder =
 function() {
-	return this._appCtxt.getById(this.folderId);
+	return appCtxt.getById(this.folderId);
 };
 
 ZmCalItem.prototype.getSummary =

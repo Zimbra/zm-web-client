@@ -1606,7 +1606,7 @@ function(myId, tagId) {
 ZmMailMsgView._detachCallback =
 function(appCtxt, result) {
 	var resp = result.getResponse().GetMsgResponse;
-	var msg = new ZmMailMsg(appCtxt, resp.m[0].id);
+	var msg = new ZmMailMsg(resp.m[0].id);
 	msg._loadFromDom(resp.m[0]);
 	// bug fix #8868 - force load for rfc822 msgs since they may not return any content
 	msg._loaded = true;
@@ -1641,7 +1641,7 @@ function(addr, icon) {
 		AjxDispatcher.run("Compose", params);
 	} else {
 		AjxDispatcher.require(["ContactsCore", "Contacts"], false);
-		var contact = new ZmContact(appCtxt);
+		var contact = new ZmContact(null);
 		contact.initFromEmail(addr);
 		AjxDispatcher.run("GetContactController").show(contact);
 	}

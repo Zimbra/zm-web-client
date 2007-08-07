@@ -23,13 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmChat = function(id, chatName, appCtxt, chatList) {
+ZmChat = function(id, chatName, chatList) {
 //	if (id == null) id = rosterItem.getAddress() + "_chat";
 	if (chatList == null) chatList = appCtxt.getApp(ZmApp.IM).getRoster().getChatList();
-	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, chatList);
+	ZmItem.call(this, ZmItem.CHAT, id, chatList);
 	this._sendMessageCallbackObj = new AjxCallback(this, this._sendMessageCallback);
 	this._messages = [];
-	this._rosterItemList = new ZmRosterItemList(appCtxt);
+	this._rosterItemList = new ZmRosterItemList();
 	this._isGroupChat = false;
 	this._chatName = chatName;
 	this._thread = null;
@@ -193,7 +193,7 @@ function(text) {
 	method.setAttribute("thread", thread);
 	method.setAttribute("op", "close");
 	// TODO: error handling
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 };
 
 /**
@@ -212,7 +212,7 @@ ZmChat.prototype.sendMessage = function(text, typing) {
 	if (text != null)
 		soapDoc.set("body", text, message);
 	// TODO: error handling
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj});
 };
 
 ZmChat.prototype.sendByEmail = function() {
@@ -249,6 +249,6 @@ function(result) {
 		this.setThread(response.IMSendMessageResponse.thread);
 	} catch (ex) {
 		// TODO: better handling
-		this._appCtxt.setStatusMsg(ex, ZmStatusView.LEVEL_CRITICAL);
+		appCtxt.setStatusMsg(ex, ZmStatusView.LEVEL_CRITICAL);
 	}
 };

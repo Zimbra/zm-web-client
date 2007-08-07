@@ -24,19 +24,16 @@
  */
 
 /**
-* Creates a phone call.
-* @constructor
-* @class
-* This class represents a phone call.
-*
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param id			[int]			unique ID
-* @param list		[ZmVoiceList]	list that contains this item
-*/
-ZmCall = function(appCtxt, id, list) {
-
-	if (arguments.length == 0) return;
-	ZmVoiceItem.call(this, appCtxt, ZmItem.VOICEMAIL, id, list);
+ * Creates a phone call.
+ * @constructor
+ * @class
+ * This class represents a phone call.
+ *
+ * @param id		[int]			unique ID
+ * @param list		[ZmVoiceList]	list that contains this item 
+ */
+ZmCall = function(id, list) {
+	ZmVoiceItem.call(this, ZmItem.VOICEMAIL, id, list);
 }
 
 ZmCall.prototype = new ZmVoiceItem;
@@ -55,7 +52,7 @@ function() {
 */
 ZmCall.createFromDom =
 function(node, args) {
-	var result = new ZmCall(args.appCtxt, node.id, args.list);
+	var result = new ZmCall(node.id, args.list);
 	result._loadFromDom(node);
 	return result;
 };

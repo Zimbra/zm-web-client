@@ -24,15 +24,13 @@
  */
 
 /**
-* Create a new, empty appt list.
-* @constructor
-* @class
-* This class represents a list of appts.
-*
-*/
-ZmApptList = function(appCtxt) {
-	
-	ZmList.call(this, ZmItem.APPT, appCtxt);
+ * Create a new, empty appt list.
+ * @constructor
+ * @class
+ * This class represents a list of appts.
+ */
+ZmApptList = function() {
+	ZmList.call(this, ZmItem.APPT);
 };
 
 ZmApptList.prototype = new ZmList;
@@ -51,7 +49,7 @@ function(appts) {
 		var apptNode = appts[i];
 		var instances = apptNode ? apptNode.inst : null;
 		if (instances) {
-			var args = {appCtxt: this._appCtxt, list: this};
+			var args = {list:this};
 			for (var j = 0; j < instances.length; j++) {
 				var instNode = instances[j];
 				var appt = ZmAppt.createFromDom(apptNode, instNode, args);
@@ -172,7 +170,7 @@ function(orig, result, startTime, endTime) {
 // doesn't clone appts
 ZmApptList.prototype.getSubset =
 function(startTime, endTime) {
-	var result  = new ZmApptList(this._appCtxt);
+	var result  = new ZmApptList();
 	var list = this.getVector();
 	var size = list.size();
 	for (var i=0; i < size; i++) {

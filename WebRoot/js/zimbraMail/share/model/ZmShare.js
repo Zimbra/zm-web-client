@@ -572,7 +572,7 @@ function(mode, isCompose, addrs) {
 	topPart.children.add(htmlPart);
 	topPart.children.add(xmlPart);
 
-	var msg = new ZmMailMsg(appCtxt);
+	var msg = new ZmMailMsg();
 	var toEmail, fromEmail;
 	if (mode == ZmShare.ACCEPT || mode == ZmShare.DECLINE) {
 		msg.setAddress(AjxEmailAddress.FROM, new AjxEmailAddress(this.grantee.email, AjxEmailAddress.FROM));

@@ -22,8 +22,8 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-ZmChatList = function(appCtxt, roster) {
-	ZmList.call(this, ZmItem.CHAT, appCtxt);
+ZmChatList = function(roster) {
+	ZmList.call(this, ZmItem.CHAT);
 	this._roster = roster;
 };
 
@@ -63,9 +63,9 @@ ZmChatList.prototype.getChatByRosterAddr = function(addr, autoCreate) {
 	if (item == null) {
 		// not in our buddy list, create temp
 		var presence = new ZmRosterPresence(ZmRosterPresence.SHOW_UNKNOWN);
-		item = new ZmRosterItem(addr, this, this._appCtxt, addr, presence, null);
+		item = new ZmRosterItem(addr, this, addr, presence, null);
 	}
-	chat = new ZmChat(Dwt.getNextId(), item.getDisplayName(), this._appCtxt, this);
+	chat = new ZmChat(Dwt.getNextId(), item.getDisplayName(), this);
 	chat.addRosterItem(item);
 	// listeners take care of rest...
 	this.addChat(chat);

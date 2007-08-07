@@ -390,7 +390,7 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 ZmNotebookController.prototype._sendPageListener2 =
 function(names, urls, inNewWindow) {
 	var action = ZmOperation.NEW_MESSAGE;
-	var msg = new ZmMailMsg(appCtxt);
+	var msg = new ZmMailMsg();
 	var toOverride = null;
 	var subjOverride = new AjxListFormat().format(names);
 	var extraBodyText = urls.join("\n");

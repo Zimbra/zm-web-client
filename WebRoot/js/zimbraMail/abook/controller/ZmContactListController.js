@@ -108,7 +108,7 @@ function(searchResult, bIsGalSearch, folderId) {
 
 		if (bIsGalSearch) {
 			if (this._list == null)
-				this._list = new ZmContactList(appCtxt, searchResult.search, true);
+				this._list = new ZmContactList(searchResult.search, true);
 			this._list._isShared = false;
 		} else {
 			// find out if we just searched for a shared address book

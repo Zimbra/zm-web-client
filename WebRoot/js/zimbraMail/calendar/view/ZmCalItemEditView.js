@@ -23,21 +23,21 @@
  * ***** END LICENSE BLOCK *****
  */
 /**
-* Creates a new calendar item edit view.
-* @constructor
-* @class
-* This is the main screen for creating/editing a calendar item. It provides
-* inputs for the various appointment/task details.
-*
-* @author Parag Shah
-*
-* @param parent				[DwtControl]				some container
-* @param appCtxt 			[ZmAppCtxt]					app context
-* @param attendees			[hash]*						attendees/locations/equipment
-* @param controller			[ZmController]				the compose controller for this view
-* @param dateInfo			[object]*					hash of date info
-* @param posStyle			[String]*					[static|relative|absolute]
-*/
+ * Creates a new calendar item edit view.
+ * @constructor
+ * @class
+ * This is the main screen for creating/editing a calendar item. It provides
+ * inputs for the various appointment/task details.
+ *
+ * @author Parag Shah
+ *
+ * @param parent				[DwtControl]				some container
+ * @param appCtxt 			[ZmAppCtxt]					app context
+ * @param attendees			[hash]*						attendees/locations/equipment
+ * @param controller			[ZmController]				the compose controller for this view
+ * @param dateInfo			[object]*					hash of date info
+ * @param posStyle			[String]*					[static|relative|absolute]
+ */
 ZmCalItemEditView = function(parent, appCtxt, attendees, controller, dateInfo, posStyle) {
 	if (arguments.length == 0) return;
 
@@ -295,7 +295,7 @@ function() {
 ZmCalItemEditView.prototype.getOrganizer =
 function() {
 	var folderId = this._folderSelect.getValue();
-	var organizer = new ZmContact(this._appCtxt);
+	var organizer = new ZmContact(null);
 	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this._calendarOrgs[folderId]), true);
 
 	return organizer;

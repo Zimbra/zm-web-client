@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmRosterItemList = function(appCtxt) {
-	ZmList.call(this, ZmItem.ROSTER_ITEM, appCtxt);
+ZmRosterItemList = function() {
+	ZmList.call(this, ZmItem.ROSTER_ITEM);
 };
 
 ZmRosterItemList.prototype = new ZmList;

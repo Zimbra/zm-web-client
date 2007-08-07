@@ -24,19 +24,18 @@
  */
 
 /**
-* Creates a conversation.
-* @constructor
-* @class
-* This class represents a conversation, which is a collection of mail messages
-* which have the same subject.
-*
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param id			[int]			unique ID
-* @param list		[ZmMailList]	list that contains this conversation
-*/
-ZmConv = function(appCtxt, id, list) {
+ * Creates a conversation.
+ * @constructor
+ * @class
+ * This class represents a conversation, which is a collection of mail messages
+ * which have the same subject.
+ *
+ * @param id		[int]			unique ID
+ * @param list		[ZmMailList]	list that contains this conversation
+ */
+ZmConv = function(id, list) {
 
-	ZmMailItem.call(this, appCtxt, ZmItem.CONV, id, list);
+	ZmMailItem.call(this, ZmItem.CONV, id, list);
 	
 	// conversations are always sorted by date desc initially
 	this._sortBy = ZmSearch.DATE_DESC;
@@ -56,14 +55,14 @@ function() {
 
 ZmConv.createFromDom =
 function(node, args) {
-	var conv = new ZmConv(args.appCtxt, node.id, args.list);
+	var conv = new ZmConv(node.id, args.list);
 	conv._loadFromDom(node);
 	return conv;
 };
 
 ZmConv.createFromMsg =
 function(msg, args) {
-	var conv = new ZmConv(args.appCtxt, msg.cid, args.list);
+	var conv = new ZmConv(msg.cid, args.list);
 	conv._loadFromMsg(msg);
 	return conv;
 };
@@ -152,7 +151,7 @@ function(callback, errorCallback, batchCmd) {
 	if (batchCmd) {
 		batchCmd.addRequestParams(soapDoc, respCallback, errorCallback);
 	} else {
-		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+		appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	}
 };
 
@@ -167,7 +166,7 @@ function(callback, result) {
 		this.msgIds.push(msgNode.id);
 		msgNode.su = resp.su;
 		// construct ZmMailMsg's so they get cached
-		ZmMailMsg.createFromDom(msgNode, {appCtxt:this._appCtxt});
+		ZmMailMsg.createFromDom(msgNode);
 	}
 
 	if (callback) { callback.run(result); }
@@ -197,7 +196,7 @@ function(obj) {
 	if (obj._newId != null) {
 		this._oldId = this.id;
 		this.id = obj._newId;
-		this._appCtxt.cacheSet(this.id, this);	// make sure we can get it from cache via new ID
+		appCtxt.cacheSet(this.id, this);	// make sure we can get it from cache via new ID
 		if (this.msgs) {
 			this.msgs.convId = this.id;
 			var a = this.msgs.getArray();
@@ -222,7 +221,7 @@ function(obj) {
 
 ZmConv.prototype.getPrintHtml =
 function(preferHtml, callback) {
-	ZmConvListView.getPrintHtml(this, preferHtml, callback, this._appCtxt);
+	ZmConvListView.getPrintHtml(this, preferHtml, callback, appCtxt);
 };
 
 ZmConv.prototype._checkFlags = 
@@ -371,13 +370,13 @@ function() {
 		msg = this.tempMsg;
 	} else {
 		// otherwise, create a temp msg w/ the msg op Id
-		msg = new ZmMailMsg(this._appCtxt, this.msgOpId);
+		msg = new ZmMailMsg(this.msgOpId);
 		msg.cid = this.id;
 		this.tempMsg = msg;
 	}
 	
 	if (!this.msgs) {
-		this.msgs = msg.list = new ZmMailList(ZmItem.MSG, this._appCtxt);
+		this.msgs = msg.list = new ZmMailList(ZmItem.MSG);
 		this.msgs.addChangeListener(this._listChangeListener);
 	}
 	

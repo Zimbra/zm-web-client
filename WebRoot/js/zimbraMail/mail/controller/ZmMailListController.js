@@ -851,7 +851,7 @@ function(action, componentId, instanceDate, accountName) {
 
 ZmMailListController.prototype._sendInviteReply = 
 function(type, componentId, instanceDate, accountName) {
-	var msg = new ZmMailMsg(appCtxt);
+	var msg = new ZmMailMsg();
 	var contactList = AjxDispatcher.run("GetContacts");
 	
 	msg._origMsg = this._getMsg();
@@ -861,7 +861,7 @@ function(type, componentId, instanceDate, accountName) {
 	msg.isInviteReply = true;
 	var replyBody = this._getInviteReplyBody(type, instanceDate);
 	if (replyBody != null) {
-		var dummyAppt = new ZmAppt(appCtxt);
+		var dummyAppt = new ZmAppt();
 		dummyAppt.setFromMessage(msg._origMsg);
 
 		var tcontent = dummyAppt.getTextSummary() + "\n" + replyBody;

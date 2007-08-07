@@ -571,7 +571,7 @@ function(result) {
 			var workPhone = contact.getAttr(ZmContact.F_workPhone);
 			var homePhone = contact.getAttr(ZmContact.F_homePhone);
 			for (var j = 0; j < emails.length; j++) {
-				var clone = new ZmContact(this._appCtxt);
+				var clone = new ZmContact(null);
 				clone._fullName = contact.getFullName();
 				clone.folderId = contact.folderId;
 				clone.setAttr(ZmContact.F_workPhone, workPhone);

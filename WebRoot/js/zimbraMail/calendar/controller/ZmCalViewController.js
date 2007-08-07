@@ -23,18 +23,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
-/*
-	The strategy for the calendar is to leverage the list view stuff by creating a single
-	view (i.e. ZmCalViewMgr) and have it manage the schedule views (e.g. week, month) and
-	a single calendar view (the calendar widget to the right). Each of the schedule views
-	will be a list view that are managed by the ZmCalViewMgr.
-
-	To do this we have to trick the ZmListController. Specifically we have only one toolbar and
-	directly manipulate this._toolbar elements to point to a single instance of the toolbar. We also
-	directly replace:
-
-	ZmListControl.prototype.initializeToolBar
-*/
+/**
+ *	The strategy for the calendar is to leverage the list view stuff by creating a single
+ *	view (i.e. ZmCalViewMgr) and have it manage the schedule views (e.g. week, month) and
+ *	a single calendar view (the calendar widget to the right). Each of the schedule views
+ *	will be a list view that are managed by the ZmCalViewMgr.
+ *
+ *	To do this we have to trick the ZmListController. Specifically we have only one toolbar and
+ *	directly manipulate this._toolbar elements to point to a single instance of the toolbar. We also
+ *	directly replace:
+ *
+ *	ZmListControl.prototype.initializeToolBar
+ */
 
 ZmCalViewController = function(container, calApp) {
 	ZmListController.call(this, container, calApp);
@@ -778,7 +778,7 @@ function(ev) {
 
 ZmCalViewController.prototype._newApptObject =
 function(startDate, duration, folderId) {
-	var newAppt = new ZmAppt(appCtxt);
+	var newAppt = new ZmAppt();
 	newAppt.setStartDate(AjxDateUtil.roundTimeMins(startDate, 30));
 	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmCalViewController.DEFAULT_APPOINTMENT_DURATION));
 	newAppt.resetRepeatWeeklyDays();

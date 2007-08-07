@@ -60,7 +60,7 @@ ZmPortletMgr.prototype.createPortlets = function(global) {
 
 ZmPortletMgr.prototype.createPortlet = function(id, portletDef) {
     // create portlet
-    var portlet = new ZmPortlet(this._appCtxt, null, id, portletDef);
+    var portlet = new ZmPortlet(null, id, portletDef);
     this._portlets[id] = portlet;
 
     // notify portlet creation or add to list to notify later

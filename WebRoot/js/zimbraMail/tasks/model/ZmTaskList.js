@@ -24,15 +24,14 @@
  */
 
 /**
-* Create a new task list.
-* @constructor
-* @class
-* This class represents a list of tasks.
-*
-*/
-ZmTaskList = function(appCtxt, search) {
-	if (arguments.length == 0) return;
-	ZmList.call(this, ZmItem.TASK, appCtxt, search);
+ * Create a new task list.
+ * @constructor
+ * @class
+ * This class represents a list of tasks.
+ *
+ */
+ZmTaskList = function(search) {
+	ZmList.call(this, ZmItem.TASK, search);
 };
 
 ZmTaskList.prototype = new ZmList;

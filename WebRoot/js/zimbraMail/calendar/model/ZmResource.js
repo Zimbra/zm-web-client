@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmResource = function(appCtxt, id, list, resType) {
+ZmResource = function(id, list, resType) {
 	id = id ? id : Dwt.getNextId();
-	ZmContact.call(this, appCtxt, id, list, ZmItem.RESOURCE);
+	ZmContact.call(this, id, list, ZmItem.RESOURCE);
 	
 	this.resType = resType;
 };
@@ -48,12 +48,12 @@ ZmResource.ATTR_EQUIPMENT	= "Equipment";
 */
 ZmResource.createFromDom =
 function(node, args) {
-	var resource = new ZmResource(args.appCtxt, node.id, args.list);
+	var resource = new ZmResource(node.id, args.list);
 	resource._loadFromDom(node);
 	resource.resType = (resource.getAttr(ZmResource.F_type) == ZmResource.ATTR_LOCATION) ?
 						ZmCalItem.LOCATION : ZmCalItem.EQUIPMENT;
 	if (!resource.list) {
-		var calApp = args.appCtxt.getApp(ZmApp.CALENDAR);
+		var calApp = appCtxt.getApp(ZmApp.CALENDAR);
 		resource.list = (resource.resType == ZmCalItem.LOCATION) ? calApp.getLocations() :
 																   calApp.getEquipment();
 	}

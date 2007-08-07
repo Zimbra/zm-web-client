@@ -387,7 +387,7 @@ ZmChatListController.prototype.chatWithRosterItem = function(item, text) {
 };
 
 ZmChatListController.prototype.chatWithRosterItems = function(items, chatName) {
-	chat = new ZmChat(Dwt.getNextId(), chatName, appCtxt, this);
+	chat = new ZmChat(Dwt.getNextId(), chatName, this);
 	for (var i=0; i < items.length; i++) {
 		chat.addRosterItem(items[i]);
 	}

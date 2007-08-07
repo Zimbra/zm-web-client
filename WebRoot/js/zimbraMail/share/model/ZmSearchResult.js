@@ -52,7 +52,7 @@ function(type) {
 		return ZmItem.RESULTS_LIST[type](this.search);
 	}
 	if (type == ZmItem.MIXED) {
-		var list = new ZmMailList(ZmItem.MIXED, appCtxt, this.search);
+		var list = new ZmMailList(ZmItem.MIXED, this.search);
 		for (var type in this._results) {
 			var results = this._results[type];
 			if (results && results.size()) {

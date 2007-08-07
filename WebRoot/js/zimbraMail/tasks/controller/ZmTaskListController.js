@@ -24,7 +24,7 @@
  */
 
 ZmTaskListController = function(container, app) {
-	if (arguments.length == 0) { return; }
+
 	ZmListController.call(this, container, app);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -109,7 +109,7 @@ ZmTaskListController.prototype.quickSave =
 function(name, callback) {
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
 
-	var task = new ZmTask(appCtxt, this._list, null, folderId);
+	var task = new ZmTask(this._list, null, folderId);
 	task.setName(name);
 	task.setViewMode(ZmCalItem.MODE_NEW);
 	task.location = "";

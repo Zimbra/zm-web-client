@@ -24,29 +24,28 @@
  */
 
 /**
-* Creates an item of the given type.
-* @constructor
-* @class
-* An item is a piece of data that may contain user content. Most items are taggable. Currently,
-* the following things are items: conversation, message, attachment, appointment, and contact.
-* <p>
-* An item typically appears in the context of a containing list. Its event handling
-* is generally handled by the list so we avoid having the same listeners on each item. If we
-* create a context where an item stands alone outside a list context, then the item will have
-* its own listeners and do its own notification handling.</p>
-*
-* @author Conrad Damon
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param type		[constant]		type of object (conv, msg, etc)
-* @param id			[int]			unique ID
-* @param list		[ZmList]		list that contains this item
-*/
-ZmItem = function(appCtxt, type, id, list) {
+ * Creates an item of the given type.
+ * @constructor
+ * @class
+ * An item is a piece of data that may contain user content. Most items are taggable. Currently,
+ * the following things are items: conversation, message, attachment, appointment, and contact.
+ * <p>
+ * An item typically appears in the context of a containing list. Its event handling
+ * is generally handled by the list so we avoid having the same listeners on each item. If we
+ * create a context where an item stands alone outside a list context, then the item will have
+ * its own listeners and do its own notification handling.</p>
+ *
+ * @author Conrad Damon
+ * 
+ * @param type		[constant]		type of object (conv, msg, etc)
+ * @param id			[int]			unique ID
+ * @param list		[ZmList]		list that contains this item
+ */
+ZmItem = function(type, id, list) {
 
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 	ZmModel.call(this, type);
 
-	this._appCtxt = appCtxt;
 	this.type = type;
 	this.id = id;
 	this.list = list;
@@ -55,7 +54,7 @@ ZmItem = function(appCtxt, type, id, list) {
 	this.tagHash = {};
 	this.folderId = 0;
 	
-	if (id && appCtxt) {
+	if (id) {
 		appCtxt.cacheSet(id, this);
 	}
 };
@@ -183,7 +182,6 @@ function(id) {
 	}
 	if (!ZmItem.SHORT_ID_RE) {
 		var shell = DwtShell.getShell(window);
-		var appCtxt = ZmAppCtxt.getFromShell(shell);
 		ZmItem.SHORT_ID_RE = new RegExp(appCtxt.get(ZmSetting.USERID) + ':', "gi");
 	}
 	return id.replace(ZmItem.SHORT_ID_RE, '');
@@ -252,7 +250,7 @@ function() {
 
 	// if server doesn't tell us what URL to use, do our best to generate
 	var organizerType = ZmOrganizer.ITEM_ORGANIZER[this.type];
-	var organizer = this._appCtxt.getById(this.folderId);
+	var organizer = appCtxt.getById(this.folderId);
 	var url = [
 		organizer.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)
 	].join("");
@@ -271,7 +269,7 @@ function() {
 	if (!this.tags.length) {
 		tagImageInfo = "Blank_16";
 	} else if (this.tags.length == 1) {
-		var tag = this._appCtxt.getById(this.tags[0]);
+		var tag = appCtxt.getById(this.tags[0]);
 		var color = tag ? tag.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 		tagImageInfo = ZmTag.COLOR_MINI_ICON[color];
 	} else {
@@ -309,7 +307,7 @@ function() {
 		if (this.id == -1) {
 			this._isShared = false;
 		} else {
-			var acct = this._appCtxt.getActiveAccount();
+			var acct = appCtxt.getActiveAccount();
 			this._isShared = ((this.id.indexOf(":") != -1) && (this.id.indexOf(acct.id) != 0));
 		}
 	}

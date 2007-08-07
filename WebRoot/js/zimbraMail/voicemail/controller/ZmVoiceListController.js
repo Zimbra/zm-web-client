@@ -109,7 +109,7 @@ function(params) {
 ZmVoiceListController.prototype._createNewContact =
 function(ev) {
 	var item = ev.item;
-	var contact = new ZmContact(appCtxt);
+	var contact = new ZmContact(null);
 	contact.initFromPhone(this._getView().getCallingParty(item).getDisplay());
 	return contact;
 };

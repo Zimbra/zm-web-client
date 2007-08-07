@@ -22,9 +22,9 @@
  *
  * ***** END LICENSE BLOCK *****
  */
-ZmRosterItem = function(id, list, appCtxt, name, presence, groupNames) {
+ZmRosterItem = function(id, list, name, presence, groupNames) {
 	if (arguments.length > 0) {
-		ZmItem.call(this, appCtxt, ZmOrganizer.ROSTER_ITEM, id, list);
+		ZmItem.call(this, ZmOrganizer.ROSTER_ITEM, id, list);
 		this.name = name;
 		this.presence = presence || new ZmRosterPresence();
 		this.groupNames = groupNames;
@@ -66,7 +66,7 @@ function(id, name, groupNames, doDelete) {
 	if (name) method.setAttribute("name", name);
 	if (groupNames) method.setAttribute("groups", groupNames);
 	method.setAttribute("op", doDelete ? "remove" : "add");
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 };
 
 ZmRosterItem.prototype.getPresence =

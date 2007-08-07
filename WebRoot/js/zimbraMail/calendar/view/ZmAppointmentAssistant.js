@@ -24,7 +24,7 @@
  */
 
 ZmAppointmentAssistant = function(appCtxt) {
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 	ZmAssistant.call(this, appCtxt, ZmMsg.createNewAppt, ZmMsg.ASST_CMD_APPOINTMENT, ZmMsg.ASST_CMD_SUM_APPOINTMENT);
 };
 
@@ -63,7 +63,7 @@ function() {
 
 ZmAppointmentAssistant.prototype.getAppt =
 function() {
-	var appt = new ZmAppt(this._appCtxt);
+	var appt = new ZmAppt();
 	appt.setStartDate(this._apptData.startDate);
 	appt.setEndDate(this._apptData.endDate ? this._apptData.endDate : this._apptData.startDate);
 	appt.setAllDayEvent(this._apptData.startTime == null);

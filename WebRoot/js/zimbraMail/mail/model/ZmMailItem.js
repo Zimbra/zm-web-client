@@ -24,21 +24,20 @@
  */
 
 /**
-* Creates a mail item.
-* @constructor
-* @class
-* This class represents a mail item, which may be a conversation or a mail
-* message.
-*
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param type		[constant]		type of object (conv or msg)
-* @param id			[int]			unique ID
-* @param list		[ZmMailList]	list that contains this mail item
-*/
-ZmMailItem = function(appCtxt, type, id, list) {
+ * Creates a mail item.
+ * @constructor
+ * @class
+ * This class represents a mail item, which may be a conversation or a mail
+ * message.
+ *
+ * @param type		[constant]		type of object (conv or msg)
+ * @param id		[int]			unique ID
+ * @param list		[ZmMailList]	list that contains this mail item
+ */
+ZmMailItem = function(type, id, list) {
 
-	if (arguments.length == 0) return;
-	ZmItem.call(this, appCtxt, type, id, list);
+	if (arguments.length == 0) { return; }
+	ZmItem.call(this, type, id, list);
 
 	this._loaded = false;
 	this._initializeParticipants();

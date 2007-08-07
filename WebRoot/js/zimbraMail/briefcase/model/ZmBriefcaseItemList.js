@@ -23,11 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBriefcaseItemList = function(appCtxt, search, type) {
-
-	ZmList.call(this, type || ZmItem.BRIEFCASE, appCtxt, search);
-
+ZmBriefcaseItemList = function(search, type) {
+	ZmList.call(this, type || ZmItem.BRIEFCASE, search);
 }
+
 ZmBriefcaseItemList.prototype = new ZmList;
 ZmBriefcaseItemList.prototype.constructor = ZmBriefcaseItemList;
 

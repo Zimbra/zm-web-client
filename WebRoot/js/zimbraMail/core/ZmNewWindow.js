@@ -344,14 +344,14 @@ function(msg) {
 	}
 
 	// initialize new ZmMailList
-	var newMailList = new ZmMailList(msg.list.type, appCtxt, newSearch);
+	var newMailList = new ZmMailList(msg.list.type, newSearch);
 	for (var i in msg.list) {
 		if ((typeof msg.list[i] == "object") || (typeof msg.list[i] == "function")) { continue; }
 		newMailList[i] = msg.list[i];
 	}
 
 	// finally, initialize new ZmMailMsg
-	var newMsg = new ZmMailMsg(appCtxt, msg.id, newMailList);
+	var newMsg = new ZmMailMsg(msg.id, newMailList);
 
 	for (var i in msg) {
 		if ((typeof msg[i] == "object") || (typeof msg[i] == "function")) { continue; }

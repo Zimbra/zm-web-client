@@ -180,7 +180,7 @@ function(msg, type, value, bad, good) {
 // bad is a vector that gets filled with bad addresses
 ZmMailAssistant.prototype.getMessage =
 function(bad, good) { 
-	var msg = new ZmMailMsg(this._appCtxt);
+	var msg = new ZmMailMsg();
 	var body = new ZmMimePart();
 	body.setContentType(ZmMimeTable.TEXT_PLAIN);
 	var bodyText = this._mailFields.body != null ? this._mailFields.body : "";

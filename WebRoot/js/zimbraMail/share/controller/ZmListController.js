@@ -24,25 +24,25 @@
  */
 
 /**
-* Creates a new, empty list controller. It must be initialized before it can be used.
-* @constructor
-* @class
-* This class is a base class for any controller that manages lists of items (eg mail or
-* contacts). It consolidates handling of list functionality (eg selection) and of common
-* operations such as tagging and deletion. Operations may be accessed by the user through
-* either the toolbar or an action menu. The public method show() gets everything going,
-* and then the controller just handles events.
-*
-* <p>Support is also present for handling multiple views (eg contacts).</p>
-*
-* <p>Controllers for single items may extend this class, since the functionality needed is
-* virtually the same. An item can be thought of as the degenerate form of a list.</p>
-*
-* @author Conrad Damon
-* 
-* @param container	containing shell
-* @param app		containing app
-*/
+ * Creates a new, empty list controller. It must be initialized before it can be used.
+ * @constructor
+ * @class
+ * This class is a base class for any controller that manages lists of items (eg mail or
+ * contacts). It consolidates handling of list functionality (eg selection) and of common
+ * operations such as tagging and deletion. Operations may be accessed by the user through
+ * either the toolbar or an action menu. The public method show() gets everything going,
+ * and then the controller just handles events.
+ *
+ * <p>Support is also present for handling multiple views (eg contacts).</p>
+ * 
+ *   <p>Controllers for single items may extend this class, since the functionality needed is
+ *  virtually the same. An item can be thought of as the degenerate form of a list.</p>
+ *
+ *  @author Conrad Damon
+ *  
+ * @param container	containing shell
+ * @param app		containing app
+ */
 ZmListController = function(container, app) {
 
 	if (arguments.length == 0) { return; }
@@ -663,7 +663,7 @@ function() {
 
 ZmListController.prototype._createNewContact =
 function(ev) {
-	var contact = new ZmContact(appCtxt);
+	var contact = new ZmContact(null);
 	contact.initFromEmail(ev.address);
 	return contact;
 };

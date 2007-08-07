@@ -24,7 +24,6 @@
  */
 
 ZmTasksApp = function(container) {
-
 	ZmApp.call(this, ZmApp.TASKS, container);
 };
 
@@ -79,7 +78,7 @@ function() {
 						 resultsList:
 		   AjxCallback.simpleClosure(function(search) {
 			   AjxDispatcher.require("TasksCore");
-			   return new ZmTaskList(appCtxt, search);
+			   return new ZmTaskList(search);
 		   }, this)
 						});
 };
@@ -180,7 +179,7 @@ function(op, params) {
 ZmTasksApp.prototype._handleLoadNewTask =
 function(params) {
 	var folderId = params ? params.folderId : null;
-	AjxDispatcher.run("GetTaskController").show((new ZmTask(appCtxt, null, null, folderId)));
+	AjxDispatcher.run("GetTaskController").show((new ZmTask(null, null, folderId)));
 };
 
 ZmTasksApp.prototype._handleLoadNewTaskFolder =
@@ -277,7 +276,7 @@ function(msg, date) {
 
 ZmTasksApp.prototype._msgLoadedCallback =
 function(mailItem, date, subject) {
-	var t = new ZmTask(appCtxt);
+	var t = new ZmTask();
 	t.setStartDate(AjxDateUtil.roundTimeMins(date, 30));
 	t.setFromMailMessage(mailItem, subject);
 	this.getTaskController().show(t, ZmCalItem.MODE_NEW);

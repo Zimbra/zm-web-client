@@ -286,7 +286,7 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 				var word = wikiResp[i].w[0];
 				var page = this.getPageById(word.id);
 				if (!page) {
-					page = new ZmPage(this._appCtxt);
+					page = new ZmPage();
 					page.set(word);
 					if (page.folderId != folderId) {
 						page.id = 0;
@@ -305,7 +305,7 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 		// check for mandatory pages
 		for (var specialName in ZmNotebookCache._SPECIAL_CONTENT) {
 			if (this._foldersMap[folderId].pages[specialName]) continue;
-			var page = new ZmPage(this._appCtxt);
+			var page = new ZmPage();
 			page.name = specialName;
 			page.folderId = folderId;
 			page.setContent(ZmNotebookCache._SPECIAL_CONTENT[specialName]);
@@ -446,7 +446,7 @@ ZmNotebookCache.prototype._getPageByLinkResponse = function(response) {
 	if (word) {
 		var page = this.getPageById(word.id);
 		if (!page) {
-			page = new ZmPage(this._appCtxt);
+			page = new ZmPage();
 			page.set(word);
 			this.putPage(page);
 		}
@@ -515,7 +515,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 			var word = words[i];
 			var item = this.getPageById(word.id);
 			if (!item) {
-				item = new ZmPage(this._appCtxt);
+				item = new ZmPage();
 				item.set(word);
 				item.folderId = folderId;
 				item.remoteFolderId = remoteFolderId; // REVISIT
@@ -530,7 +530,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 			var doc = docs[i];
 			var item = this.getDocumentById(doc.id);
 			if (!item) {
-				item = new ZmDocument(this._appCtxt);
+				item = new ZmDocument();
 				item.set(doc);
 				item.folderId = folderId;
 				item.remoteFolderId = remoteFolderId; // REVISIT
@@ -635,7 +635,7 @@ ZmNotebookCache.prototype._processResponse = function(searchResponse)
 			var word = words[i];
 			var item = this.getPageById(word.id);
 			if (!item) {
-				item = new ZmPage(this._appCtxt);
+				item = new ZmPage();
 				item.set(word);
 				item.folderId = word.l || ZmNotebookItem.DEFAULT_FOLDER;
 				this.putPage(item);
@@ -650,7 +650,7 @@ ZmNotebookCache.prototype._processResponse = function(searchResponse)
 			var doc = docs[i];
 			var item = this.getDocumentById(doc.id);
 			if (!item) {
-				item = new ZmDocument(this._appCtxt);
+				item = new ZmDocument();
 				item.set(doc);
 				item.folderId = doc.l || ZmNotebookItem.DEFAULT_FOLDER;
 				this.putDocument(item);
@@ -750,18 +750,18 @@ ZmNotebookCache.prototype.handleGetItemResponse = function(params,response)
 			var item = null;
 
 			if(folderResp){
-				item = new ZmPage(this._appCtxt);
+				item = new ZmPage();
 				item.set(folderResp);
 				item.folderId = folderResp.id || ZmNotebookItem.DEFAULT_FOLDER;
 				item.name = "_Index";
 			}
 			if(wikiResp){
-				item = new ZmPage(this._appCtxt);
+				item = new ZmPage();
 				item.set(wikiResp);
 				item.folderId = wikiResp.l || ZmNotebookItem.DEFAULT_FOLDER;
 			}
 			if(linkResp){
-				item = new ZmPage(this._appCtxt);
+				item = new ZmPage();
 				item.set(linkResp);
 				item.folderId = linkResp.id || ZmNotebookItem.DEFAULT_FOLDER;
 				item.remoteFolderId = (linkResp && linkResp.zid) ? linkResp.zid + ":" + linkResp.rid : undefined;

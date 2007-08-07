@@ -28,8 +28,6 @@
 // ZmChatListController and rename to ZmImController or something.
 
 ZmRosterTreeController = function(appCtxt) {
-	if (arguments.length === 0) { return; }
-
 	this._imApp = appCtxt.getApp(ZmApp.IM);
 	this._confirmDeleteRosterItemFormatter = new AjxMessageFormat(ZmMsg.imConfirmDeleteRosterItem);
 
@@ -159,7 +157,7 @@ function(ev) {
 				var item = list.getByAddr(addr);
 				if (!item)
 					// create a temporary item
-					item = new ZmRosterItem(addr, list, this._appCtxt, contact.getAttendeeText(),
+					item = new ZmRosterItem(addr, list, contact.getAttendeeText(),
 								new ZmRosterPresence(ZmRosterPresence.SHOW_UNKNOWN,
 										     null,
 										     ZmMsg.unknown));
@@ -187,7 +185,7 @@ function(addr, rname, groups) {
 
 ZmRosterTreeController.prototype._imCreateContactListener = function(ev) {
 	var item = ev.buddy;
-	var contact = new ZmContact(this._appCtxt);
+	var contact = new ZmContact(null);
 	contact.setAttr(ZmContact.F_imAddress1, item.getAddress());
 	AjxDispatcher.run("GetContactController").show(contact, true);
 };

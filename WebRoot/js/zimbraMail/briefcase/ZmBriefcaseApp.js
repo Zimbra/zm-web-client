@@ -92,7 +92,7 @@ function() {
 						 resultsList:
 						AjxCallback.simpleClosure(function(search) {
 						AjxDispatcher.require("BriefcaseCore");
-						return new ZmBriefcaseItemList(appCtxt, search, ZmItem.BRIEFCASE);
+						return new ZmBriefcaseItemList(search, ZmItem.BRIEFCASE);
 						}, this)
 						});
 
@@ -252,7 +252,7 @@ function(creates, force) {
 			}else if (name == "doc") {				
 				//DBG.println(AjxDebug.DBG1, "ZmBriefcaseApp: handling CREATE for node: " + name);
 				// REVISIT: use app context item cache				
-				//var doc = new ZmBriefcaseItem(appCtxt);
+				//var doc = new ZmBriefcaseItem();
 				//doc.set(create);
 				//bcController.putItem(doc);
 			}
@@ -283,7 +283,7 @@ function(modifies, force) {
 				// REVISIT: Use app context item cache
 				var doc = briefcaseController.getItemById(id);
 				if (!doc) {
-					doc = new ZmBriefcaseItem(appCtxt);
+					doc = new ZmBriefcaseItem();
 					doc.set(mod);
 				}
 				else {
@@ -457,7 +457,7 @@ function(msgId, partId, name, folderId,items) {
 		}
 	}
 	if(!itemFound){	
-		var srcData = new ZmBriefcaseItem(appCtxt);	
+		var srcData = new ZmBriefcaseItem();	
 		srcData.createFromAttachment(msgId, partId, name, folderId);
 	}else{
 		var	msg = AjxMessageFormat.format(ZmMsg.errorFileAlreadyExists, name);

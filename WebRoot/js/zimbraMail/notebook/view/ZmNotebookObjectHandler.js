@@ -250,7 +250,7 @@ function(context) {
 			var notebook = this._getNotebook(folderId, path);
 			if (notebook) {
 				// NOTE: We assume the page is new if there's no entry in the cache.
-				item = new ZmPage(this._appCtxt);
+				item = new ZmPage();
 				item.name = path.replace(/^.*\//,"");
 				item.folderId = notebook.id;
 			}

@@ -24,18 +24,17 @@
  */
 
 /**
-* Creates a new (empty) mail message.
-* @constructor
-* @class
-* This class represents a mail message.
-*
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param id			[int]			unique ID
-* @param list		[ZmMailList]	list that contains this message
-*/
-ZmMailMsg = function(appCtxt, id, list) {
+ * Creates a new (empty) mail message.
+ * @constructor
+ * @class
+ * This class represents a mail message.
+ *
+ * @param id		[int]			unique ID
+ * @param list		[ZmMailList]	list that contains this message
+ */
+ZmMailMsg = function(id, list) {
 
-	ZmMailItem.call(this, appCtxt, ZmItem.MSG, id, list);
+	ZmMailItem.call(this, ZmItem.MSG, id, list);
 
 	this._inHitList = false;
 	this._attHitList = [];
@@ -171,7 +170,7 @@ function(type, used, addAsContact) {
 					var cl = AjxDispatcher.run("GetContacts");
 					contact = cl.getContactByEmail(email);
 					if (contact == null) {
-						contact = new ZmContact(this._appCtxt);
+						contact = new ZmContact(null);
 						contact.initFromEmail(addr);
 					}
 				}
@@ -453,7 +452,7 @@ ZmMailMsg.prototype._setFilteredForwardAttIds = function(filteredFwdAttIds){
 */
 ZmMailMsg.createFromDom =
 function(node, args) {
-	var msg = new ZmMailMsg(args.appCtxt, node.id, args.list);
+	var msg = new ZmMailMsg(node.id, args.list);
 	msg._loadFromDom(node);
 	return msg;
 };
@@ -473,7 +472,7 @@ function(getHtml, forceLoad, callback, errorCallback, noBusyOverlay) {
 	// If we are already loaded, then don't bother loading
 	if (!this._loaded || forceLoad) {
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
-		ZmMailMsg.fetchMsg({sender:this._appCtxt.getAppController(), msgId:this.id, getHtml:getHtml,
+		ZmMailMsg.fetchMsg({sender:appCtxt.getAppController(), msgId:this.id, getHtml:getHtml,
 						  	callback:respCallback, errorCallback:errorCallback, noBusyOverlay:noBusyOverlay});
 	} else {
 		this._markReadLocal(true);
@@ -563,7 +562,7 @@ function(callback) {
 		return "";
 	} else {
 		var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, [callback]);
-		ZmMailMsg.fetchMsg({sender:this._appCtxt.getAppController(), msgId:this.id, getHtml:false, callback:respCallback});
+		ZmMailMsg.fetchMsg({sender:appCtxt.getAppController(), msgId:this.id, getHtml:false, callback:respCallback});
 	}
 };
 
@@ -685,7 +684,7 @@ function(contactList, isDraft, callback, errorCallback, accountName) {
 	var aName = accountName;
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
-		var acct = this._appCtxt.getActiveAccount();
+		var acct = appCtxt.getActiveAccount();
 		if (acct && !acct.isMain)
 			aName = acct.name;
 	}
@@ -722,14 +721,14 @@ function(isDraft, callback, result) {
 
 	// notify listeners of successful send message
 	if (!isDraft) {
-		if (resp.id || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
+		if (resp.id || !appCtxt.get(ZmSetting.SAVE_TO_SENT)) {
 			this._notifySendListeners();
 		}
 	} else {
 		this._loadFromDom(resp);
 		// bug 7016 - clear cached draft content
 		if (this.cid) {
-			var conv = this._appCtxt.getById(this.cid);
+			var conv = appCtxt.getById(this.cid);
 			if (conv && conv.tempMsg) {
 				conv.tempMsg = this;
 			}
@@ -879,7 +878,7 @@ function(params) {
 
 	// bug fix #4325 - its safer to make sync request when dealing w/ new window
 	if (window.parentController) {
-		var resp = this._appCtxt.getAppController().sendRequest({soapDoc:params.soapDoc, errorCallback:params.errorCallback, execFrame:params.execFrame});
+		var resp = appCtxt.getAppController().sendRequest({soapDoc:params.soapDoc, errorCallback:params.errorCallback, execFrame:params.execFrame});
 		if (!resp) return; // bug fix #9154
 
 		if (resp.SendInviteReplyResponse) {
@@ -892,7 +891,7 @@ function(params) {
 			return resp.SendMsgResponse;
 		}
 	} else {
-		this._appCtxt.getAppController().sendRequest({ soapDoc:params.soapDoc,
+		appCtxt.getAppController().sendRequest({ soapDoc:params.soapDoc,
 														asyncMode:true,
 														callback:respCallback,
 														errorCallback:params.errorCallback,
@@ -960,7 +959,7 @@ function(contentPartType, contentPart) {
     	for (var i = 0; i < this._attachments.length; i++) {
     		var attach = this._attachments[i];
 			if (attach[contentPartType] == contentPart) {
-    			return this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&part=" + attach.part;
+    			return appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&part=" + attach.part;
     		}
 		}
 	}
@@ -980,7 +979,7 @@ function(findHits) {
 	this._attLinks = [];
 
 	if (this._attachments && this._attachments.length > 0) {
-		var hrefRoot = this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&amp;part=";
+		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&amp;part=";
 
 		for (var i = 0; i < this._attachments.length; i++) {
     		var attach = this._attachments[i];
@@ -1032,7 +1031,7 @@ function(findHits) {
 				if (!useCL)
 					props.download = "<a style='text-decoration:underline' class='AttLink' href='" + url + "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>";
 
-				if( (attach.name || attach.filename) && this._appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) ){
+				if( (attach.name || attach.filename) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) ){
 					var onclickStr1 = "ZmMailMsgView.briefcaseCallback(" + this.id + ",\"" + attach.part + "\",\""+props.label+"\");";
 					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
 				}
@@ -1045,7 +1044,7 @@ function(findHits) {
 						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
 					}
 					else if (attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct) &&
-						this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML))
+						appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML))
 					{
 						// set the anchor html for the HTML version of this attachment on the server
 						props.htmlLink = "<a style='text-decoration:underline' target='_blank' class='AttLink' href='" + url + "&view=html" + "'>";
@@ -1069,7 +1068,7 @@ function(findHits) {
 			props.isHit = findHits && this._isAttInHitList(attach);
 			props.part = attach.part;
 			if (!useCL)
-				props.url = this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&part=" + attach.part;
+				props.url = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&part=" + attach.part;
 			
 			if(attach.ci){
 				props.ci = attach.ci;
@@ -1102,7 +1101,7 @@ function(msgNode) {
 	if (msgNode.su) 	{ this.subject = msgNode.su; }
 	if (msgNode.fr) 	{ this.fragment = msgNode.fr; }
 	if (msgNode.rt) 	{ this.rt = msgNode.rt; }
-	if (msgNode.idnt)	{ this.identity = this._appCtxt.getIdentityCollection().getById(msgNode.idnt); }
+	if (msgNode.idnt)	{ this.identity = appCtxt.getIdentityCollection().getById(msgNode.idnt); }
 	if (msgNode.origid) { this.origId = msgNode.origid; }
 	if (msgNode.hp) 	{ this._attHitList = msgNode.hp; }
 	if (msgNode.mid)	{ this.messageId = msgNode.mid; }
@@ -1118,7 +1117,7 @@ function(msgNode) {
 
 	// update conv's folder list
 	if (msgNode.cid && msgNode.l) {
-		var conv = this._appCtxt.getById(msgNode.cid);
+		var conv = appCtxt.getById(msgNode.cid);
 		if (conv) {
 			conv.folders[msgNode.l] = true;
 		}
@@ -1196,7 +1195,7 @@ function(soapDoc, parent, type, contactList, isDraft) {
 		e.setAttribute("a", email);
 
 		// tell server to add this email to address book if not found
-		if (contactList && !isDraft && this._appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) &&
+		if (contactList && !isDraft && appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) &&
 			!contactList.getContactByEmail(email)) {
 
 			DBG.println(AjxDebug.DBG2, "adding contact: " + email);

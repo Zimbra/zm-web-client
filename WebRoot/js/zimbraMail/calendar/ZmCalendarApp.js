@@ -236,7 +236,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("CalendarCore");
-			return new ZmResourceList(appCtxt, null, search);
+			return new ZmResourceList(null, search);
 		}, this)
 						});
 };
@@ -498,9 +498,9 @@ function() {
 
 ZmCalendarApp.prototype.loadResources = 
 function() {
-	this._locations = new ZmResourceList(appCtxt, ZmCalItem.LOCATION);
+	this._locations = new ZmResourceList(ZmCalItem.LOCATION);
 	this._locations.isCanonical = true;
-	this._equipment = new ZmResourceList(appCtxt, ZmCalItem.EQUIPMENT);
+	this._equipment = new ZmResourceList(ZmCalItem.EQUIPMENT);
 	this._equipment.isCanonical = true;
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var batchCmd = new ZmBatchCommand(appCtxt);

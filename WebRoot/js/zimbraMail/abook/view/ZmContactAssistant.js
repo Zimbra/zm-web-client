@@ -171,7 +171,7 @@ function(addr, type) {
 
 ZmContactAssistant.prototype.getContact =
 function() {
-	var contact = new ZmContact(this._appCtxt);
+	var contact = new ZmContact(null);
 	for (var key in this._contactFields) {
 		if (this._contactFields[key]) {
 			contact.setAttr(key, this._contactFields[key]);

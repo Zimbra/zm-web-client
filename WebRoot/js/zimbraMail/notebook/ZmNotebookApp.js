@@ -100,7 +100,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("NotebookCore");
-			return new ZmPageList(appCtxt, search);
+			return new ZmPageList(search);
 		}, this)
 						});
 
@@ -116,7 +116,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("NotebookCore");
-			return new ZmPageList(appCtxt, search, ZmItem.DOCUMENT);
+			return new ZmPageList(search, ZmItem.DOCUMENT);
 		}, this)
 						});
 };
@@ -279,7 +279,7 @@ function(creates, force) {
 				DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
 				// REVISIT: use app context item cache
 				var cache = this.getNotebookCache();
-				var page = new ZmPage(appCtxt);
+				var page = new ZmPage();
 				page.set(create);
 				cache.putPage(page);
 	
@@ -295,7 +295,7 @@ function(creates, force) {
 				DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
 				// REVISIT: use app context item cache
 				var cache = this.getNotebookCache();
-				var doc = new ZmDocument(appCtxt);
+				var doc = new ZmDocument();
 				doc.set(create);
 				cache.putDocument(doc);
 			}
@@ -321,7 +321,7 @@ function(modifies, force) {
 				var cache = this.getNotebookCache();
 				var page = cache.getPageById(id);
 				if (!page) {
-					page = new ZmPage(appCtxt);
+					page = new ZmPage();
 					page.set(mod);
 					cache.putPage(page);
 				} else {
@@ -346,7 +346,7 @@ function(modifies, force) {
 				var cache = this.getNotebookCache();
 				var doc = cache.getDocumentById(id);
 				if (!doc) {
-					doc = new ZmDocument(appCtxt);
+					doc = new ZmDocument();
 					doc.set(mod);
 					cache.putDocument(doc);
 				}
@@ -388,7 +388,7 @@ function() {
 	var treeView = treeController.getTreeView(this.getOverviewId());
 
 	var notebook = treeView ? treeView.getSelected() : null;
-	var page = new ZmPage(appCtxt);
+	var page = new ZmPage();
 	page.folderId = notebook ? notebook.id : ZmNotebookItem.DEFAULT_FOLDER;
 	page.name=this.generateUniqueName(page.folderId);
 	AjxDispatcher.run("GetPageEditController").show(page);

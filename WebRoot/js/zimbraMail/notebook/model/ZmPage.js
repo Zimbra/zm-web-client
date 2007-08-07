@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPage = function(appCtxt, id, list) {
-	if (arguments.length == 0) return;
-	ZmNotebookItem.call(this, appCtxt, ZmItem.PAGE, id, list);
+ZmPage = function(id, list) {
+	ZmNotebookItem.call(this, ZmItem.PAGE, id, list);
 }
 ZmPage.prototype = new ZmNotebookItem;
 ZmPage.prototype.constructor = ZmPage;
@@ -43,16 +42,16 @@ ZmPage.prototype._notebook;
 
 // Static functions
 
-ZmPage.load = function(appCtxt, folderId, name, version, callback, errorCallback, traverseUp) {
-	var page = new ZmPage(appCtxt);
+ZmPage.load = function(folderId, name, version, callback, errorCallback, traverseUp) {
+	var page = new ZmPage();
 	page.folderId = folderId;
 	page.name = name;
 	page.load(version, callback, errorCallback, traverseUp);
 	return page;
 };
 
-ZmPage.save = function(appCtxt, folderId, name, content, callback, errorCallback) {
-	var page = new ZmPage(appCtxt);
+ZmPage.save = function(folderId, name, content, callback, errorCallback) {
+	var page = new ZmPage();
 	page.folderId = folderId;
 	page.name = name;
 	page._content = content;
@@ -60,9 +59,9 @@ ZmPage.save = function(appCtxt, folderId, name, content, callback, errorCallback
 };
 
 ZmPage.createFromDom = function(node, args) {
-	var page = new ZmPage(args.appCtxt, null, args.list);
+	var page = new ZmPage(null, args.list);
 	page.set(node);
-	var notebookApp = args.appCtxt.getApp(ZmApp.NOTEBOOK);
+	var notebookApp = appCtxt.getApp(ZmApp.NOTEBOOK);
 	var cache = notebookApp.getNotebookCache();
 	cache.putPage(page);
 	return page;
@@ -101,7 +100,7 @@ ZmPage.prototype.getContent = function(callback, errorCallback) {
 ZmPage.prototype.getNotebook =
 function() {
 	if (!this._notebook) {
-		var folder = this._appCtxt.getById(this.folderId);
+		var folder = appCtxt.getById(this.folderId);
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		while (folder && folder.parent && (folder.parent.id != rootId)) {
 			folder = folder.parent;
@@ -124,7 +123,7 @@ function() {
 	
 	//if one of the ancestor is readonly then no chances of childs being writable		
 	var isReadOnly = false;
-	var folder = this._appCtxt.getById(this.folderId);
+	var folder = appCtxt.getById(this.folderId);
 	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
 		folder = folder.parent;
@@ -167,7 +166,7 @@ function(callback, errorCallback) {
 		errorCallback: errorCallback,
 		execFrame: null
 	};
-	var appController = this._appCtxt.getAppController();
+	var appController = appCtxt.getAppController();
 	appController.sendRequest(params);
 };
 
@@ -214,7 +213,7 @@ function(version, callback, errorCallback, traverseUp) {
 		noBusyOverlay: false
 	};
 	
-	var appController = this._appCtxt.getAppController();
+	var appController = appCtxt.getAppController();
 	var response = appController.sendRequest(params);
 	if (!params.asyncMode) {
 		this._loadHandleResponse(callback, response);
@@ -223,7 +222,7 @@ function(version, callback, errorCallback, traverseUp) {
 
 ZmPage.prototype.getPrintHtml =
 function(preferHtml, callback) {
-	return ZmNotebookPageView.getPrintHtml(this, this._appCtxt);
+	return ZmNotebookPageView.getPrintHtml(this, appCtxt);
 };
 
 /***

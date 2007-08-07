@@ -24,22 +24,22 @@
  */
 
 /**
-* Creates an empty list of mail items.
-* @constructor
-* @class
-* This class represents a list of mail items (conversations, messages, or
-* attachments). We retain a handle to the search that generated the list for
-* two reasons: so that we can redo the search if necessary, and so that we
-* can get the folder ID if this list represents folder contents.
-*
-* @author Conrad Damon
-* @param type		type of mail item (see ZmItem for constants)
-* @param appCtxt	global app context
-* @param search		the search that generated this list
-*/
-ZmMailList = function(type, appCtxt, search) {
+ * Creates an empty list of mail items.
+ * @constructor
+ * @class
+ * This class represents a list of mail items (conversations, messages, or
+ * attachments). We retain a handle to the search that generated the list for
+ * two reasons: so that we can redo the search if necessary, and so that we
+ * can get the folder ID if this list represents folder contents.
+ *
+ * @author Conrad Damon
+ * 
+ * @param type		type of mail item (see ZmItem for constants)
+ * @param search	the search that generated this list
+ */
+ZmMailList = function(type, search) {
 
-	ZmList.call(this, type, appCtxt, search);
+	ZmList.call(this, type, search);
 
 	this.convId = null; // for msg list within a conv
 
@@ -134,7 +134,7 @@ function(markAsSpam, folder, result) {
 		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
 
 		var msg = markAsSpam ? ZmMsg.markedAsJunk : ZmMsg.markedAsNotJunk;
-		this._appCtxt.setStatusMsg(AjxMessageFormat.format(msg, movedItems.length));
+		appCtxt.setStatusMsg(AjxMessageFormat.format(msg, movedItems.length));
 	}
 };
 
@@ -149,7 +149,7 @@ function(markAsSpam, folder, result) {
 ZmMailList.prototype.deleteItems =
 function(items, folder, attrs) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
-		var searchFolder = this.search ? this._appCtxt.getById(this.search.folderId) : null;
+		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isInTrash()) {
 			if (!attrs) attrs = {};
 			attrs.tcon = ZmFolder.TCON_CODE[ZmFolder.ID_TRASH];
@@ -234,9 +234,9 @@ function(convs, msgs) {
 			if (!conv && msgMatches) {
 				// msg will have _convCreateNode if it is 2nd msg and caused promotion of virtual conv;
 				// the conv node will have proper count and subject
-				var args = {appCtxt:this._appCtxt, list:this};
+				var args = {list:this};
 				conv = msg._convCreateNode ? ZmConv.createFromDom(msg._convCreateNode, args) :
-											 this._appCtxt.getById(cid);
+											 appCtxt.getById(cid);
 				if (!conv) {
 					conv = ZmConv.createFromMsg(msg, args);
 				}
@@ -249,7 +249,7 @@ function(convs, msgs) {
 			}
 			if (conv && !(conv.msgs && conv.msgs.getById(id))) {
 				if (!conv.msgs) {
-					conv.msgs = new ZmMailList(ZmItem.MSG, this._appCtxt);
+					conv.msgs = new ZmMailList(ZmItem.MSG);
 					conv.msgs.addChangeListener(conv._listChangeListener);
 				}
 				var index = conv.msgs._getSortIndex(msg, conv._sortBy);
@@ -347,13 +347,13 @@ ZmMailList.prototype.clear =
 function() {
 	// remove listeners for this list from folder tree and tag list
 	if (this._folderChangeListener) {
-		var folderTree = this._appCtxt.getFolderTree();
+		var folderTree = appCtxt.getFolderTree();
 		if (folderTree) {
 			folderTree.removeChangeListener(this._folderChangeListener);
 		}
 	}
 	if (this._tagChangeListener) {
-		var tagTree = this._appCtxt.getTagTree();
+		var tagTree = appCtxt.getTagTree();
 		if (tagTree) {
 			tagTree.removeChangeListener(this._tagChangeListener);
 		}
@@ -405,8 +405,8 @@ function(ev) {
 	if (this.size() == 0) return;
 
 	var flag = ev.getDetail("flag");
-	var view = this._appCtxt.getCurrentViewId();
-	var ctlr = this._appCtxt.getCurrentController();
+	var view = appCtxt.getCurrentViewId();
+	var ctlr = appCtxt.getCurrentController();
 
 	if (ev.event == ZmEvent.E_FLAGS && (flag == ZmItem.FLAG_UNREAD)) {
 		if (this.type == ZmItem.CONV) {

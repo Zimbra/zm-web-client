@@ -24,16 +24,16 @@
  */
 
 /**
-* Creates a new compose view. The view does not display itself on construction.
-* @constructor
-* @class        
-* This class provides a form for composing a message.
-*
-* @author Conrad Damon
-* @param parent			[DwtControl]		the element that created this view
-* @param controller		[ZmController]		controller managing this view
-* @param composeMode 	[constant]			passed in so detached window knows which mode to be in on startup
-*/
+ * Creates a new compose view. The view does not display itself on construction.
+ * @constructor
+ * @class        
+ * This class provides a form for composing a message.
+ *
+ * @author Conrad Damon
+ * @param parent		[DwtControl]		the element that created this view
+ * @param controller	[ZmController]		controller managing this view
+ * @param composeMode 	[constant]			passed in so detached window knows which mode to be in on startup
+ */
 ZmComposeView = function(parent, controller, composeMode) {
 
 	DwtComposite.call(this, parent, "ZmComposeView", Dwt.ABSOLUTE_STYLE);
@@ -405,7 +405,7 @@ function(attId, isDraft) {
 	}
 
 	// Create Msg Object
-	var msg = new ZmMailMsg(appCtxt);
+	var msg = new ZmMailMsg();
 	msg.setSubject(subject);
 	
 	//Handle Inline Attachments
@@ -509,7 +509,7 @@ function(attId, isDraft) {
 		}
 	}
 
-	//var msg = new ZmMailMsg(appCtxt);
+	//var msg = new ZmMailMsg();
 	msg.setTopPart(top);
 	msg.setSubject(subject);
 	msg.setForwardAttIds(forwardAttIds);

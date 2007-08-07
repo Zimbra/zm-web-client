@@ -23,9 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPageList = function(appCtxt, search, type) {
-	ZmList.call(this, type || ZmItem.PAGE, appCtxt, search);
+ZmPageList = function(search, type) {
+	ZmList.call(this, type || ZmItem.PAGE, search);
 }
+
 ZmPageList.prototype = new ZmList;
 ZmPageList.prototype.constructor = ZmPageList;
 

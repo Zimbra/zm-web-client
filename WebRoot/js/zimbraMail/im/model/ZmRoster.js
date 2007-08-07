@@ -27,7 +27,7 @@ ZmRoster = function(appCtxt, imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
 
 	this._appCtxt = appCtxt;
-        this._notificationBuffer = [];
+    this._notificationBuffer = [];
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
@@ -51,7 +51,7 @@ function() {
 ZmRoster.prototype.getChatList =
 function() {
 	if (!this._chatList)
-		this._chatList = new ZmChatList(this._appCtxt, this);
+		this._chatList = new ZmChatList(this);
 	return this._chatList;
 };
 
@@ -70,7 +70,7 @@ function(addr) {
 ZmRoster.prototype.getRosterItemList =
 function() {
 	if (!this._rosterItemList) {
-		this._rosterItemList = new ZmRosterItemList(this._appCtxt);
+		this._rosterItemList = new ZmRosterItemList();
 	}
 	return this._rosterItemList;
 };
@@ -112,7 +112,7 @@ function(args) {
 			if (item.subscription == "TO" || item.subscription == "BOTH") {
 				var rp = new ZmRosterPresence();
 				rp.setFromJS(item.presence);
-				var rosterItem = new ZmRosterItem(item.addr, list, this._appCtxt, item.name, rp, item.groups);
+				var rosterItem = new ZmRosterItem(item.addr, list, item.name, rp, item.groups);
 				list.addItem(rosterItem);
 			}
 		}
@@ -168,7 +168,7 @@ function(subscribed) {
 				// mod
 			} else {
 				// create
-				var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, sub.groups);
+				var item = new ZmRosterItem(sub.to, list, sub.name, null, sub.groups);
 				list.addItem(item);
 				var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
 				this._appCtxt.setStatusMsg(toast);
@@ -210,7 +210,7 @@ function(im) {
 					for (var rosterNum=0; rosterNum < not.n.length; rosterNum++) {
 						var rosterItem = not.n[rosterNum];
 						if (rosterItem.type == "subscribed") {
-							var item = new ZmRosterItem(rosterItem.to, list, this._appCtxt, rosterItem.name, null, rosterItem.groups);
+							var item = new ZmRosterItem(rosterItem.to, list, rosterItem.name, null, rosterItem.groups);
 							list.addItem(item);
 						}
 					}
@@ -233,7 +233,7 @@ function(im) {
 						// mod
 					} else {
 						// create
-						var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, sub.groups);
+						var item = new ZmRosterItem(sub.to, list, sub.name, null, sub.groups);
 						list.addItem(item);
 						if (notifications) {
 							var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);

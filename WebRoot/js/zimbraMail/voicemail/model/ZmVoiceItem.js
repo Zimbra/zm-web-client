@@ -24,19 +24,18 @@
  */
 
 /**
-* Creates a voice item.
-* @constructor
-* @class
-* This "abstract" class represents a voicemail or phone call.
-*
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param id			[int]			unique ID
-* @param list		[ZmVoiceList]	list that contains this item
-*/
-ZmVoiceItem = function(appCtxt, type, id, list) {
+ * Creates a voice item.
+ * @constructor
+ * @class
+ * This abstract class represents a voicemail or phone call.
+ *
+ * @param id		[int]			unique ID
+ * @param list		[ZmVoiceList]	list that contains this item
+ */
+ZmVoiceItem = function(type, id, list) {
 
-	if (arguments.length == 0) return;
-	ZmItem.call(this, appCtxt, type, id, list);
+	if (arguments.length == 0) { return; }
+	ZmItem.call(this, type, id, list);
 
 	this.id = null;
 	this.date = 0;
@@ -87,7 +86,7 @@ function(node) {
 		for(var i = 0, count = node.cp.length; i < count; i++) {
 			var party = node.cp[i];
 // Consider keeping a cache of calling parties. There's going to be a lot of repetition here....			
-			var callingParty = new ZmCallingParty(this._appCtxt);
+			var callingParty = new ZmCallingParty(appCtxt);
 			callingParty._loadFromDom(node.cp[i]);
 			this._callingParties[callingParty.type] = callingParty;
 		}

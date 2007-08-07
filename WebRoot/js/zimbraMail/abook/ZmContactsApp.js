@@ -190,7 +190,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("ContactsCore");
-			return new ZmContactList(appCtxt, search, search ? search.isGalSearch || search.isGalAutocompleteSearch : null);
+			return new ZmContactList(search, search ? search.isGalSearch || search.isGalAutocompleteSearch : null);
 		}, this)
 						});
 
@@ -348,7 +348,7 @@ function(op) {
 		case ZmOperation.NEW_CONTACT:
 		case ZmOperation.NEW_GROUP: {
 			var type = (op == ZmOperation.NEW_GROUP) ? ZmItem.GROUP : null;
-			var contact = new ZmContact(appCtxt, null, null, type);
+			var contact = new ZmContact(null, null, type);
 			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [contact]);
 			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 			break;
@@ -451,7 +451,7 @@ function(callback, errorCallback) {
 			if (this._parentController) {
 				this._contactList = this._parentController.getApp(ZmApp.CONTACTS).getContactList();
 			} else {
-				this._contactList = new ZmContactList(appCtxt);
+				this._contactList = new ZmContactList(null);
 				var respCallback = new AjxCallback(this, this._handleResponseGetContactList, callback);
 				this._contactList.load(respCallback, errorCallback);
 			}
@@ -482,7 +482,7 @@ ZmContactsApp.prototype.getGalContactList =
 function() {
 	if (!this._galContactList) {
 		try {
-			this._galContactList = new ZmContactList(appCtxt, null, true);
+			this._galContactList = new ZmContactList(null, true);
 			this._galContactList.load();
 		} catch (ex) {
 			this._galContactList = null;
@@ -494,7 +494,7 @@ function() {
 
 ZmContactsApp.prototype.createFromVCard =
 function(msgId, vcardPartId) {
-	var contact = new ZmContact(appCtxt);
+	var contact = new ZmContact(null);
 	contact.createFromVCard(msgId, vcardPartId);
 };
 

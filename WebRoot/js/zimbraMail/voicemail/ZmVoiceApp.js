@@ -80,7 +80,7 @@ function() {
 						 searchType:	"voicemail",
 						 resultsList:	AjxCallback.simpleClosure(function(search) {
 											AjxDispatcher.require("Voicemail");
-											return new ZmVoiceList(appCtxt, ZmItem.VOICEMAIL, search);
+											return new ZmVoiceList(ZmItem.VOICEMAIL, search);
 										}, this)
 
 						});
@@ -95,7 +95,7 @@ function() {
 						 searchType:	"calllog",
 						 resultsList:	AjxCallback.simpleClosure(function(search) {
 											AjxDispatcher.require("Voicemail");
-											return new ZmVoiceList(appCtxt, ZmItem.CALL, search);
+											return new ZmVoiceList(ZmItem.CALL, search);
 										}, this)
 						});
 };

@@ -24,7 +24,6 @@
  */
 
 ZmTaskAssistant = function(appCtxt) {
-	if (arguments.length == 0) return;
 	ZmAssistant.call(this, appCtxt, ZmMsg.createNewTask, ZmMsg.ASST_CMD_TASK, ZmMsg.ASST_CMD_SUM_TASK);
 };
 
@@ -63,7 +62,7 @@ function() {
 
 ZmTaskAssistant.prototype.getTask =
 function() {
-	var task = new ZmTask(this._appCtxt);
+	var task = new ZmTask();
 	if (this._taskData.startDate) task.setStartDate(this._taskData.startDate);
 	if (this._taskData.endDate) task.setEndDate(this._taskData.endDate);
 	task.setAllDayEvent(true);
