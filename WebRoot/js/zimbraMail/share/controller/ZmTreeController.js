@@ -195,14 +195,22 @@ function(account) {
 	if (!dataTree) {
 		dataTree = this._dataTree[account.id] = appCtxt.getTree(this.type, account);
 		if (dataTree) {
-			this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
-			dataTree.addChangeListener(this._dataChangeListener);
+			dataTree.addChangeListener(this._getTreeChangeListener());
 		}
 	}
 	return dataTree;
 }
 
 // Private and protected methods
+
+
+ZmTreeController.prototype._getTreeChangeListener =
+function() {
+	if (!this._dataChangeListener) {
+		this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
+	}
+	return this._dataChangeListener;
+};
 
 /**
  * Performs initialization.

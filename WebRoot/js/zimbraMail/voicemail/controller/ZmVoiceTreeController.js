@@ -45,6 +45,7 @@ function(phone) {
 	var dataTree = this._dataTree[phone.name];
 	if (!dataTree) {
 		dataTree = this._dataTree[phone.name] = phone.folderTree;
+		dataTree.addChangeListener(this._getTreeChangeListener());
 	}
 	return dataTree;
 };
