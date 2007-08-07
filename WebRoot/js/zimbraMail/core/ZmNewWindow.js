@@ -318,7 +318,7 @@ ZmNewWindow.prototype._createApp =
 function(appName) {
 	if (this._apps[appName]) return;
 	var appClass = eval(ZmApp.CLASS[appName]);
-	this._apps[appName] = new appClass(appCtxt, this._shell, window.parentController);
+	this._apps[appName] = new appClass(this._shell, window.parentController);
 };
 
 ZmNewWindow.prototype._deepCopyMsg =
