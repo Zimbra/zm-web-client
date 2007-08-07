@@ -249,6 +249,7 @@ function() {
 	// This scary looking piece of code does not change the page that the browser is
 	// pointing at. Because the server will send back a "Content-Disposition:attachment"
 	// header for this url, the browser opens a dialog to let the user save the file.
+	ZmZimbraMail.unloadHackCallback();
 	var voicemail = this._getView().getSelection()[0];
 	document.location = this._getAttachmentUrl(voicemail);
 };
