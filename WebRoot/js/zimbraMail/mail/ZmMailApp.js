@@ -511,7 +511,7 @@ function() {
 							  nameKey:				"mail",
 							  icon:					"MailApp",
 							  chooserTooltipKey:	"goToMail",
-							  viewTooltipKey:		"displayMail",
+							  viewTooltipKey:		"displayMailToolTip",
 							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
 							  organizer:			ZmOrganizer.FOLDER,
 							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],

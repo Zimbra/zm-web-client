@@ -382,7 +382,7 @@ function() {
 	});
 
 	ZmPref.registerPref("VIEW_AS_HTML", {
-		displayName:		ZmMsg.viewMailAsHtml,
+		displayName:		ZmMsg.displayMail,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
         orientation:        ZmPref.ORIENT_HORIZONTAL,
         displayOptions:     [ZmMsg.displayAsHTML, ZmMsg.displayAsText],
