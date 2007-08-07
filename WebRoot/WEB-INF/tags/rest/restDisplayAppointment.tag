@@ -209,10 +209,11 @@
         <td id="iframeBody" class=MsgBody>
             <c:choose>
                 <c:when test="${body.isTextHtml}">
-                    <c:url var="iframeUrl" value="/h/imessage">
-                        <c:param name="id" value="${message.id}"/>
-                        <c:param name="part" value="${message.partName}"/>
-                        <c:param name="xim" value="${param.xim}"/>
+                    <c:url var="iframeUrl" value="">
+                        <c:param name="action" value="imessage"/>
+                        <c:param name="im_id" value="${message.id}"/>
+                        <c:param name="im_part" value="${message.partName}"/>
+                        <c:param name="im_xim" value="${param.xim}"/>
                     </c:url>
                     <noscript>
                         <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" border="0" frameBorder="0" src="${iframeUrl}"></iframe>
@@ -242,14 +243,6 @@
                             doc.open();
                             doc.write("${zm:jsEncode(theBody)}");
                             doc.close();
-                            try {
-                                if (YAHOO && keydownH && keypressH) {
-                                    YAHOO.util.Event.addListener(doc, "keydown", keydownH);
-                                    YAHOO.util.Event.addListener(doc, "keypress", keypressH);
-                                }
-                            } catch (error) {
-                                // ignore
-                            }
                             //if (keydownH) doc.onkeydown = keydownH;
                             //if (keypressH) doc.onkeypress = keypressH;
                             setTimeout(resizeIframe, 10);

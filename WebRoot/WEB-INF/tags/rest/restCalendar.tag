@@ -30,6 +30,17 @@
 
 <rest:handleError>
 <c:choose>
+    <c:when test="${param.action eq 'imessage'}">
+        <zm:getMessage box="${mailbox}" var="message" id="${param.im_id}" markread="false"  part="${param.im_part}" neuterimages="${empty param.im_xim}"/>
+        <c:if test="${not empty param.bodypart}">
+            <c:set var="body" value="${zm:getPart(message, param.bodypart)}"/>
+        </c:if>
+        <c:if test="${empty body}">
+            <c:set var="body" value="${message.body}"/>
+        </c:if>
+        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+        ${zm:getPartHtmlContent(body, message)}
+    </c:when>
     <c:when test="${param.action eq 'view'}">
         <rest:apptView mailbox="${mailbox}"/>
     </c:when>
