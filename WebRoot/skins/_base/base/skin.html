@@ -148,7 +148,7 @@
 <div id='skin_container_splash_screen'>
 	<script language='javascript'>
 		function showCompanyUrl() {
-			window.open('<fmt:message key="splashScreenCompanyURL/>', '_blank');
+			window.open(ZmMsg.splashScreenCompanyURL, '_blank');
 		}
 	</script>
 	<table style='width:100%;height:100%'>
@@ -164,7 +164,7 @@
 														 onclick='showCompanyUrl()'></div></td>
 												<td valign=top id='ZLoginShortVersion'></td>
 											</tr></table>
-											<div id='ZLoginAppName'><fmt:message key="splashScreenAppName"/></div>
+											<div id='ZLoginAppName'><!-- ZmMsg.splashScreenAppName --></div>
 										</div>
 									</td>
 								</tr>
@@ -173,11 +173,11 @@
 					</tr>
 					<tr><td id='ZLoginBodyContainer'>
 							<div id='ZLoginLoadingPanel'>
-								<table><tr><td></td><td id='ZLoginLoadingMsg'><fmt:message key="splashScreenLoading"/></td></tr></table>
+								<table><tr><td></td><td id='ZLoginLoadingMsg'><!-- ZmMsg.splashScreenLoading --></td></tr></table>
 							</div>
 							<table class='zLoginTable' width='100%' cellpadding=0 cellspacing=0>
 								<tr>
-									<td id='ZLoginLicenseContainer'><fmt:message key="splashScreenCopyright"/></td>
+									<td id='ZLoginLicenseContainer'><!-- ZmMsg.splashScreenCopyright --></td>
 								</tr>
 							</table>
 						</td>

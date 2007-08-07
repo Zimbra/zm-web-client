@@ -289,5 +289,14 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 	HttpServletRequest wrappedReq = new Wrapper(request, skin);
 	dispatcher.include(wrappedReq, response);
 %>
+<script>
+
+	Dwt.populateText(
+		"ZLoginAppName",			ZmMsg.splashScreenAppName,
+		"ZLoginLoadingMsg",			ZmMsg.splashScreenLoading,
+		"ZLoginLicenseContainer",	ZmMsg.splashScreenCopyright	
+	); 
+	
+</script>
 </body>
 </html>
