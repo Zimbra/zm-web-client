@@ -173,11 +173,7 @@ ZmPortalApp.prototype.getPortletMgr = function() {
     return this._portletMgr;
 };
 
-//
-// Protected methods
-//
-
-ZmPortalApp.prototype._getOverviewTrees =
+ZmPortalApp.prototype.getOverviewPanelContent =
 function() {
 	var apps = [];
 	for (var name in ZmApp.CHOOSER_SORT) {
@@ -191,11 +187,11 @@ function() {
 		if (app.name == this._name) continue;
 
 		appName = app.name;
-		break; 
+		break;
 	}
 	if (appName) {
 		var app = appCtxt.getApp(appName);
-		return app._getOverviewTrees();
+		return app.getOverviewPanelContent();
 	}
 	return null;
 };

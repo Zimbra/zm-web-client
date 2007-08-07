@@ -205,19 +205,23 @@ function() {
 	var accordionId = this._name;
 	var opc = appCtxt.getOverviewController();
 	var params = {accordionId:accordionId};
-	var accordion = this._overviewPanelContent = opc.createAccordion(params);
-	accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
+	this._overviewPanelContent = opc.createAccordion(params);
+	this._overviewPanelContent.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
 
-	for (var i = 0; i < this.phones.length; i++) {
-		var phone = this.phones[i];
-		var data = {phone:phone, lastFolder:null, appName:this._name};
-		var item = accordion.addAccordionItem({title:phone.getDisplay(), data:data});
-		if (i == 0) {
-			this._activateAccordionItem(item);
-		}
+	if (!this.phones.length) {
+		// GetVoiceInfo hasn't been called yet.
+		var currentApp = this._appCtxt.getCurrentApp();
+		this.getVoiceInfo(new AjxCallback(this, this._handleResponseGetOverviewPanelContent, [currentApp]));
+	} else {
+		this._createAccordionItems();
 	}
-
 	return this._overviewPanelContent;
+};
+
+
+ZmVoiceApp.prototype._handleResponseGetOverviewPanelContent =
+function(currentApp) {
+	this._createAccordionItems();
 };
 
 ZmVoiceApp.prototype.getOverviewId =
@@ -258,6 +262,19 @@ function(callback, response) {
 	}
 	if (callback) {
 		callback.run();
+	}
+};
+
+ZmVoiceApp.prototype._createAccordionItems =
+function() {
+	var data = {lastFolder:null, appName:this._name};
+	for (var i = 0; i < this.phones.length; i++) {
+		var phone = this.phones[i];
+		data.phone = phone;
+		var item = this._overviewPanelContent.addAccordionItem({title:phone.getDisplay(), data:data});
+		if (i == 0) {
+			this._activateAccordionItem(item);
+		}
 	}
 };
 
