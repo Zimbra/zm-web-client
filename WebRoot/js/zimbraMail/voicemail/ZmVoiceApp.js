@@ -248,6 +248,12 @@ function(callback) {
 
 ZmVoiceApp.prototype._handleResponseVoiceInfo =
 function(callback, response) {
+	var callback = new AjxCallback(this, this._handleResponseVoiceInfo2, [callback, response]);
+	AjxPackage.require({ name: "Voicemail", callback: callback });
+};
+
+ZmVoiceApp.prototype._handleResponseVoiceInfo2 =
+function(callback, response) {
 	var phones = response._data.GetVoiceInfoResponse.phone;
 	for (var i = 0, count = phones.length; i < count; i++) {
 		var obj = phones[i];
