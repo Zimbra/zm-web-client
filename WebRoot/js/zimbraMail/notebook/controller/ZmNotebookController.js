@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNotebookController = function(appCtxt, container, app) {
-	if (arguments.length == 0) return;
-	ZmListController.call(this, appCtxt, container, app);
+ZmNotebookController = function(container, app) {
+	if (arguments.length == 0) { return; }
+	ZmListController.call(this, container, app);
 
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
@@ -168,9 +168,9 @@ ZmNotebookController.prototype.isDeletable = function(){
 		return writable;
 	}
 	var id = page.id;
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);	
-	var notebook = this._appCtxt.getById(id);
-	var notebookId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_NOTEBOOK);
+	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);	
+	var notebook = appCtxt.getById(id);
+	var notebookId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_NOTEBOOK);
 	var isRoot = (notebook.id == rootId);
 	var isNotebook = (notebook.id == notebookId);
 	var isTopLevel = (!isRoot && notebook.parent.id == rootId);
@@ -190,17 +190,17 @@ ZmNotebookController.prototype._doDelete = function(items,delcallback) {
 	}
 	var page = items instanceof Array ? items[0] : items;
 	if(page && ( page instanceof ZmPage ) && page.isIndex() ){
-		var overviewController = this._appCtxt.getOverviewController();
+		var overviewController = appCtxt.getOverviewController();
 		var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-		var organizer = this._appCtxt.getById(page.id);
+		var organizer = appCtxt.getById(page.id);
 		var callback = new AjxCallback(treeController, treeController._deleteListener2, [ organizer ]);
 		var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, organizer.name);
-		var dialog = this._appCtxt.getConfirmationDialog();
+		var dialog = appCtxt.getConfirmationDialog();
 		dialog.popup(message, callback);		
 		return;
 	}
 	
-	var dialog = this._appCtxt.getConfirmationDialog();
+	var dialog = appCtxt.getConfirmationDialog();
 	var message = items instanceof Array && items.length > 1 ? ZmMsg.confirmDeleteItemList : null;
 	if (!message) {
 		if (!this._confirmDeleteFormatter) {
@@ -237,7 +237,7 @@ ZmNotebookController.prototype._doDelete2 = function(items,delcallback) {
 		noBusyOverlay: false
 	};
 
-	var appController = this._appCtxt.getAppController();
+	var appController = appCtxt.getAppController();
 	var response = appController.sendRequest(params);
 	return response;
 };
@@ -255,7 +255,7 @@ ZmNotebookController.prototype._defaultView = function() {
 ZmNotebookController.prototype._createNewView = function(view) {
 	if (!this._listView[view]) {
 		var viewCtor = ZmNotebookController._VIEWS[view];
-		this._listView[view] = new viewCtor(this._container, this._appCtxt, this, this._dropTgt);
+		this._listView[view] = new viewCtor(this._container, appCtxt, this, this._dropTgt);
 	}
 	return this._listView[view];
 };
@@ -265,7 +265,7 @@ ZmNotebookController.prototype._setViewContents = function(view) {
 
 	// Select the appropriate notebook in the tree view.
 	if (this._object) {
-		var overviewController = this._appCtxt.getOverviewController();
+		var overviewController = appCtxt.getOverviewController();
 		var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
 		var treeView = treeController.getTreeView(this._app.getOverviewId());
 		if (treeView) {
@@ -278,7 +278,7 @@ ZmNotebookController.prototype._setViewContents = function(view) {
 
 /*** TODO: This will be exposed later.
 ZmNotebookController.prototype._setViewMenu = function(view) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
+	var appToolbar = appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewMenu(view);
 	if (!menu) {
 		var listener = this._listeners[ZmOperation.VIEW];
@@ -327,10 +327,10 @@ ZmNotebookController.prototype._editListener = function(event) {
 
 /***
 ZmNotebookController.prototype._uploadListener = function(event) {
-	var notebook = this._appCtxt.getById(this._folderId || ZmNotebookItem.DEFAULT_FOLDER);
+	var notebook = appCtxt.getById(this._folderId || ZmNotebookItem.DEFAULT_FOLDER);
 	var callback = null;
 
-	var dialog = this._appCtxt.getUploadDialog();
+	var dialog = appCtxt.getUploadDialog();
 	dialog.popup(notebook, callback);
 };
 /***/
@@ -363,10 +363,10 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 		}		
 		
 		urls.push(url);
-		names.push(ZmWikletProcessor.process(this._appCtxt, item, content));
+		names.push(ZmWikletProcessor.process(appCtxt, item, content));
 		if (noprompt) continue;
 
-		notebook = this._appCtxt.getById(item.folderId);
+		notebook = appCtxt.getById(item.folderId);
 		shares = notebook && notebook.shares;
 		if (shares) {
 			for (var j = 0; j < shares.length; j++) {
@@ -379,7 +379,7 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 		var args = [names, urls, inNewWindow];
 		var callback = new AjxCallback(this, this._sendPageListener2, args);
 
-		var dialog = this._appCtxt.getConfirmationDialog();
+		var dialog = appCtxt.getConfirmationDialog();
 		dialog.popup(ZmMsg.errorPermissionRequired, callback);
 	}
 	else {
@@ -390,7 +390,7 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 ZmNotebookController.prototype._sendPageListener2 =
 function(names, urls, inNewWindow) {
 	var action = ZmOperation.NEW_MESSAGE;
-	var msg = new ZmMailMsg(this._appCtxt);
+	var msg = new ZmMailMsg(appCtxt);
 	var toOverride = null;
 	var subjOverride = new AjxListFormat().format(names);
 	var extraBodyText = urls.join("\n");

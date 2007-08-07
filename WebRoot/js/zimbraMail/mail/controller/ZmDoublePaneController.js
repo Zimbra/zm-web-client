@@ -24,21 +24,21 @@
  */
 
 /**
-* Creates a new, empty double pane controller.
-* @constructor
-* @class
-* This class manages the two-pane view. The top pane contains a list view of 
-* items, and the bottom pane contains the selected item content.
-*
-* @author Parag Shah
-* @param appCtxt	app context
-* @param container	containing shell
-* @param mailApp	containing app
-*/
-ZmDoublePaneController = function(appCtxt, container, mailApp) {
+ * Creates a new, empty double pane controller.
+ * @constructor
+ * @class
+ * This class manages the two-pane view. The top pane contains a list view of 
+ * items, and the bottom pane contains the selected item content.
+ *
+ * @author Parag Shah
+ * 
+ * @param container	containing shell
+ * @param mailApp	containing app
+ */
+ZmDoublePaneController = function(container, mailApp) {
 
-	if (arguments.length == 0) return;
-	ZmMailListController.call(this, appCtxt, container, mailApp);
+	if (arguments.length == 0) { return; }
+	ZmMailListController.call(this, container, mailApp);
 	this._readingPaneOn = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -231,7 +231,7 @@ function(view) {
 ZmDoublePaneController.prototype._displayMsg =
 function(msg) {
 	if (!msg._loaded) {
-		this._appCtxt.getSearchController().setEnabled(false);
+		appCtxt.getSearchController().setEnabled(false);
 		this._doGetMsg(msg);
 	} else {
 		this._doublePaneView.setMsg(msg);
@@ -274,7 +274,7 @@ function(params) {
 	var msgView = this._doublePaneView.getMsgView();
 	var msg = this._getMsg();
 	var msgViewMsg = msgView.getMsg();
-	var format = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+	var format = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 
 	// if msg shown in msgview matches current msg and
 	// we're not processing a draft msg and
@@ -373,7 +373,7 @@ function(msg) {
 	msg._loadPending = true;
 	this._pendingMsg = msg.id;
 	var respCallback = new AjxCallback(this, this._handleResponseDoGetMsg, msg);
-	msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, null, true);
+	msg.load(appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, null, true);
 };
 
 ZmDoublePaneController.prototype._handleResponseDoGetMsg =
@@ -382,7 +382,7 @@ function(msg) {
 	msg._loadPending = false;
 	this._pendingMsg = null;
 	this._doublePaneView.setMsg(msg);
-	this._appCtxt.getSearchController().setEnabled(true);
+	appCtxt.getSearchController().setEnabled(true);
 };
 
 ZmDoublePaneController.prototype._resetOperations = 
@@ -396,7 +396,7 @@ function(parent, num) {
 		isDraft = item.isDraft;
 	}
 	parent.enable(ZmOperation.SHOW_ORIG, isMsg);
-	if (this._appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
 		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg);
 	}
 	parent.enable(ZmOperation.DETACH, isMsg && !isDraft);
@@ -431,7 +431,7 @@ function(ev) {
 		var div = Dwt.findAncestor(ev.target, "_itemIndex");
 		this._mailListView._itemSelected(div, ev);
 
-		if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+		if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 			this._mailListView.setSelectionHdrCbox(false);
 			this._mailListView.setSelectionCbox(ev.item, false);
 		}
@@ -440,7 +440,7 @@ function(ev) {
 		if (item.isDraft) {
 			this._doAction({ev:ev, action:ZmOperation.DRAFT});
 			return true;
-		} else if (this._appCtxt.get(ZmSetting.OPEN_MAIL_IN_NEW_WIN)) {
+		} else if (appCtxt.get(ZmSetting.OPEN_MAIL_IN_NEW_WIN)) {
 			this._detachListener(null, respCallback);
 			return true;
 		} else {
@@ -515,7 +515,7 @@ function(ev) {
 	var msg = this._getSelectedMsg();
 	if (!msg) { return; }
 
-	var msgFetchUrl = this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id;
+	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id;
 	// create a new window w/ generated msg based on msg id
 	window.open(msgFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 };
@@ -536,7 +536,7 @@ function(ev) {
 	var subj = msg.subject;
 	if (subj) rule.addCondition(new ZmCondition(ZmFilterRule.C_SUBJECT, ZmFilterRule.OP_IS, subj));
 	rule.addAction(new ZmAction(ZmFilterRule.A_KEEP));
-	var dialog = this._appCtxt.getFilterRuleDialog();
+	var dialog = appCtxt.getFilterRuleDialog();
 	dialog.popup(rule);
 };
 

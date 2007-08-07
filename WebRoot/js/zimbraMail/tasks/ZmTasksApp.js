@@ -254,15 +254,16 @@ function(results, callback, folderId) {
 ZmTasksApp.prototype.getTaskListController =
 function() {
 	if (!this._taskListController) {
-		this._taskListController = new ZmTaskListController(appCtxt, this._container, this);
+		this._taskListController = new ZmTaskListController(this._container, this);
 	}
 	return this._taskListController;
 };
 
 ZmTasksApp.prototype.getTaskController =
 function() {
-	if (!this._taskController)
-		this._taskController = new ZmTaskController(appCtxt, this._container, this);
+	if (!this._taskController) {
+		this._taskController = new ZmTaskController(this._container, this);
+	}
 	return this._taskController;
 };
 

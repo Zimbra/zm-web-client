@@ -388,10 +388,6 @@ function(cell, contactId) {
 
 ZmContactCardsView._moreDetailsCallback =
 function(contactId) {
-	var appCtxt = window.parentController
-		? window.parentController._appCtxt
-		: window._zimbraMail._appCtxt;
-
 	var contact = AjxDispatcher.run("GetContacts").getById(contactId);
 	AjxDispatcher.run("GetContactController").show(contact);
 };

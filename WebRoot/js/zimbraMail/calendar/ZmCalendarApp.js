@@ -475,8 +475,9 @@ function(show, delay) {
 
 ZmCalendarApp.prototype.getCalController =
 function() {
-	if (!this._calController)
-		this._calController = new ZmCalViewController(appCtxt, this._container, this);
+	if (!this._calController) {
+		this._calController = new ZmCalViewController(this._container, this);
+	}
 	return this._calController;
 };
 
@@ -489,8 +490,9 @@ function() {
 
 ZmCalendarApp.prototype.getApptComposeController = 
 function() {
-	if (!this._apptController)
-		this._apptController = new ZmApptComposeController(appCtxt, this._container, this);
+	if (!this._apptController) {
+		this._apptController = new ZmApptComposeController(this._container, this);
+	}
 	return this._apptController;
 };
 

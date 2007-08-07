@@ -24,21 +24,21 @@
  */
 
 /**
-* Creates a new, empty conversation controller.
-* @constructor
-* @class
-* This class manages the two-pane conversation view. The top pane contains a list
-* view of the messages in the conversation, and the bottom pane contains the current
-* message.
-*
-* @author Conrad Damon
-* @param appCtxt	app context
-* @param container	containing shell
-* @param mailApp	containing app
-*/
-ZmConvController = function(appCtxt, container, mailApp) {
+ * Creates a new, empty conversation controller.
+ * @constructor
+ * @class
+ * This class manages the two-pane conversation view. The top pane contains a list
+ * view of the messages in the conversation, and the bottom pane contains the current
+ * message.
+ *
+ * @author Conrad Damon
+ * 
+ * @param container	containing shell
+ * @param mailApp	containing app
+ */
+ZmConvController = function(container, mailApp) {
 
-	ZmDoublePaneController.call(this, appCtxt, container, mailApp);
+	ZmDoublePaneController.call(this, container, mailApp);
 
 	this._convDeleteListener = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
@@ -206,9 +206,9 @@ function() {
 // Tag in the summary area clicked, do a tag search.
 ZmConvController.prototype._convTagClicked =
 function(tagId) {
-	var tag = this._appCtxt.getById(tagId);
+	var tag = appCtxt.getById(tagId);
 	var query = 'tag:"' + tag.name + '"';
-	var searchController = this._appCtxt.getSearchController();
+	var searchController = appCtxt.getSearchController();
 	searchController.search({query: query});
 }
 
@@ -271,7 +271,7 @@ function() {
 	}
 	
 	// Don't pop unless we're currently visible!
-	var currViewId = this._appCtxt.getCurrentViewId();
+	var currViewId = appCtxt.getCurrentViewId();
 
 	// bug fix #4356 - if currViewId is compose (among other restrictions) then still pop
 	var popAnyway = false;
@@ -384,7 +384,7 @@ function() {
 ZmConvController.prototype._search = 
 function(view, offset, limit, callback) {
 
-	var sortby = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
+	var sortby = appCtxt.get(ZmSetting.SORTING_PREF, view);
 	this._conv.load({query:this.getSearchString(), sortBy:sortby, offset:offset, limit:limit, callback:callback});
 }
 

@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPageEditController = function(appCtxt, container, app) {
-	ZmListController.call(this, appCtxt, container, app);
+ZmPageEditController = function(container, app) {
+	ZmListController.call(this, container, app);
 
 	ZmPageEditController.RADIO_GROUP = {};
 	ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_HTML_SOURCE]	= 1;
@@ -92,13 +92,13 @@ function() {
 		ZmOperation.SEP
 	);
 	/***
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		list.push(
 			ZmOperation.TAG_MENU,
 			ZmOperation.SEP
 		);
 	}
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+	if (appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
 	list.push(
 		ZmOperation.DELETE,
@@ -111,7 +111,7 @@ function() {
 		ZmOperation.FILLER
 	);
 
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
+	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
 		list.push(ZmOperation.COMPOSE_FORMAT);
 
 	return list;
@@ -137,7 +137,7 @@ function(view) {
 	}
 
 	// NOTE: probably cleaner to use ZmActionMenu, which knows about operations
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 		var menu = new ZmPopupMenu(button);
 		var items = [
@@ -176,7 +176,7 @@ function() {
 ZmPageEditController.prototype._createNewView =
 function(view) {
 	if (!this._pageEditView) {
-		this._pageEditView = new ZmPageEditView(this._container, this._appCtxt, this);
+		this._pageEditView = new ZmPageEditView(this._container, appCtxt, this);
 	}
 	return this._pageEditView;
 };
@@ -187,7 +187,7 @@ function(view, elements, isAppView, clear, pushOnly, isTransient) {
 
 	this._format = this._format || ZmPageEditor.DEFAULT;
 
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var toolbar = this._toolbar[view];
 		var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 		var menu = button.getMenu();
@@ -225,14 +225,14 @@ function(popViewWhenSaved) {
 	}
 
 	// bug: 9406 (short term fix, waiting for backend support)
-	var notebook = this._appCtxt.getById(this._page.folderId || ZmOrganizer.ID_NOTEBOOK);
+	var notebook = appCtxt.getById(this._page.folderId || ZmOrganizer.ID_NOTEBOOK);
 	if (notebook && notebook.getChild(name)) {
 		message = AjxMessageFormat.format(ZmMsg.errorInvalidPageOrSectionName, name);
 	}
 
 	if (message) {
 		var style = DwtMessageDialog.WARNING_STYLE;
-		var dialog = this.warngDlg = this._appCtxt.getMsgDialog();
+		var dialog = this.warngDlg = appCtxt.getMsgDialog();
 		dialog.setMessage(message, style);
 		dialog.popup();
 	    dialog.registerCallback(DwtDialog.OK_BUTTON, this._focusPageInput, this);
@@ -294,7 +294,7 @@ ZmPageEditController.prototype._saveResponseHandler = function(content, response
 	}
 
 	this._pageEditView.pageSaved(content);
-	this._appCtxt.setStatusMsg(ZmMsg.pageSaved);
+	appCtxt.setStatusMsg(ZmMsg.pageSaved);
 
 	var popViewWhenSaved = this._popViewWhenSaved;
 
@@ -344,7 +344,7 @@ ZmPageEditController.prototype._saveResponseHandler = function(content, response
 ZmPageEditController.prototype._saveResponseHandlerShowNote =
 function(id) {
 	this._showPage(id);
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._saveErrorResponseHandler =
@@ -359,7 +359,7 @@ function(content, response) {
 			version: data["ver"][0]
 		};
 
-		var dialog = this._appCtxt.getPageConflictDialog();
+		var dialog = appCtxt.getPageConflictDialog();
 		var conflictCallback = new AjxCallback(this, this._saveConflictHandler, [content]);
 		dialog.popup(conflict, conflictCallback);
 
@@ -394,10 +394,10 @@ function(ev) {
 /***
 ZmPageEditController.prototype._addDocsListener =
 function(ev) {
-	var notebook = this._appCtxt.getById(this._page.folderId || ZmNotebookItem.DEFAULT_FOLDER);
+	var notebook = appCtxt.getById(this._page.folderId || ZmNotebookItem.DEFAULT_FOLDER);
 	var callback = null;
 
-	var dialog = this._appCtxt.getUploadDialog();
+	var dialog = appCtxt.getUploadDialog();
 	dialog.popup(notebook, callback);
 };
 /***/
@@ -463,7 +463,7 @@ function(view, force) {
 		return true;
 	}
 
-	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
+	var ps = this._popShield = appCtxt.getYesNoCancelMsgDialog();
 	ps.reset();
 	ps.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
 	ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
@@ -484,13 +484,13 @@ function() {
 	this._popShield.popdown();
 	this._app.popView(true);
 	this._showCurrentPage();
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._popShieldDismissCallback =
 function() {
 	this._popShield.popdown();
-	this._appCtxt.getAppViewMgr().showPendingView(false);
+	appCtxt.getAppViewMgr().showPendingView(false);
 };
 
 ZmPageEditController.prototype.updatePageInfo =

@@ -24,12 +24,11 @@
  */
 
 /**
-* @param appCtxt		app context
-* @param container		containing shell
-* @param app			containing app
-*/
-ZmNotebookFileController = function(appCtxt, container, app) {
-	ZmNotebookController.call(this, appCtxt, container, app);
+ * @param container		containing shell
+ * @param app			containing app
+ */
+ZmNotebookFileController = function(container, app) {
+	ZmNotebookController.call(this, container, app);
 
 	this._listChangeListener = new AjxListener(this,this._fileListChangeListener);
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -103,7 +102,7 @@ ZmNotebookFileController.prototype._getToolBarOps =
 function() {
 	var list = [ZmOperation.NEW_MENU, ZmOperation.EDIT, ZmOperation.SEP];
 
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		list.push(ZmOperation.TAG_MENU, ZmOperation.SEP);
 	}
 
@@ -140,7 +139,7 @@ function() {
 	var showUndelete = false;
 	var folderId = this._getSearchFolderId();
 	if (folderId) {
-		var folder = this._appCtxt.getById(folderId);
+		var folder = appCtxt.getById(folderId);
 		showUndelete = folder && folder.isInTrash();
 	}
 	var actionMenu = this._actionMenu;
@@ -264,7 +263,7 @@ function(ev) {
 		folder = new ZmFolder({id: ZmOrganizer.ID_CALENDAR});
 	} else {
 		var folderId = items[0].isDraft ? ZmFolder.ID_DRAFTS : ZmFolder.ID_INBOX;
-		folder = this._appCtxt.getById(folderId);
+		folder = appCtxt.getById(folderId);
 	}
 
 	if (folder)

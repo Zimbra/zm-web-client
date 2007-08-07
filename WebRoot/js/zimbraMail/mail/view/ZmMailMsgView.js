@@ -1623,9 +1623,7 @@ function(appCtxt, msg) {
 
 ZmMailMsgView.rfc822Callback =
 function(msgId, msgPartId) {
-	var appCtxt = window.parentController
-		? window.parentController._appCtxt
-		: window._zimbraMail._appCtxt;
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var sender = appCtxt.getAppController();
 	var callback = new AjxCallback(null, ZmMailMsgView._detachCallback, [appCtxt]);
@@ -1634,10 +1632,7 @@ function(msgId, msgPartId) {
 
 ZmMailMsgView.contactIconCallback =
 function(addr, icon) {
-	var appCtxt = window.parentController
-		? window.parentController._appCtxt
-		: window._zimbraMail._appCtxt;
-
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	if (icon == "Contact") {
 		var params = {
 			action: ZmOperation.NEW_MESSAGE,
@@ -1656,10 +1651,7 @@ ZmMailMsgView.vcardCallback =
 function(msgId, vcardPartId) {
 	ZmZimbraMail.unloadHackCallback();
 
-	var appCtxt = window.parentController
-		? window.parentController._appCtxt
-		: window._zimbraMail._appCtxt;
-
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	appCtxt.getApp(ZmApp.CONTACTS).createFromVCard(msgId, vcardPartId);
 };
 
@@ -1680,9 +1672,7 @@ ZmMailMsgView.briefcaseCallback =
 function(msgId, partId, name) {
 	ZmZimbraMail.unloadHackCallback();
 
-	var appCtxt = window.parentController
-		? window.parentController._appCtxt
-		: window._zimbraMail._appCtxt;
 
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	appCtxt.getApp(ZmApp.BRIEFCASE).createFromAttachment(msgId, partId, name);
 };

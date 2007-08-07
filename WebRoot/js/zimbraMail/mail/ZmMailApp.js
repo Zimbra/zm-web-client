@@ -1011,7 +1011,7 @@ function(results, callback) {
 ZmMailApp.prototype.getConvListController =
 function() {
 	if (!this._convListController) {
-		this._convListController = new ZmConvListController(appCtxt, this._container, this);
+		this._convListController = new ZmConvListController(this._container, this);
 	}
 	return this._convListController;
 };
@@ -1019,7 +1019,7 @@ function() {
 ZmMailApp.prototype.getConvController =
 function() {
 	if (!this._convController) {
-		this._convController = new ZmConvController(appCtxt, this._container, this);
+		this._convController = new ZmConvController(this._container, this);
 	}
 	return this._convController;
 };
@@ -1027,7 +1027,7 @@ function() {
 ZmMailApp.prototype.getTradController =
 function() {
 	if (!this._tradController) {
-		this._tradController = new ZmTradController(appCtxt, this._container, this);
+		this._tradController = new ZmTradController(this._container, this);
 	}
 	return this._tradController;
 };
@@ -1035,7 +1035,7 @@ function() {
 ZmMailApp.prototype.getMsgController =
 function() {
 	if (!this._msgController) {
-		this._msgController = new ZmMsgController(appCtxt, this._container, this);
+		this._msgController = new ZmMsgController(this._container, this);
 	}
 	return this._msgController;
 };

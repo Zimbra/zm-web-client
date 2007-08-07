@@ -399,7 +399,7 @@ function(parent, name, color) {
 
 ZmBriefcaseApp.prototype.getBriefcaseController = function() {
 	if (!this._briefcaseController) {
-		this._briefcaseController = new ZmBriefcaseController(appCtxt, this._container, this);		
+		this._briefcaseController = new ZmBriefcaseController(this._container, this);		
 	}
 	return this._briefcaseController;
 };

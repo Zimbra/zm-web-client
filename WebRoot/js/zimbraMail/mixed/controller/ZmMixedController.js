@@ -24,19 +24,19 @@
  */
 
 /**
-* Creates an empty mixed view controller.
-* @constructor
-* @class
-* This class manages a view of heterogeneous items.
-*
-* @author Conrad Damon
-* @param appCtxt		app context
-* @param container		containing shell
-* @param mixedApp		containing app
-*/
-ZmMixedController = function(appCtxt, container, mixedApp) {
+ * Creates an empty mixed view controller.
+ * @constructor
+ * @class
+ * This class manages a view of heterogeneous items.
+ *
+ * @author Conrad Damon
+ * 
+ * @param container		containing shell
+ * @param mixedApp		containing app
+ */
+ZmMixedController = function(container, mixedApp) {
 
-	ZmMailListController.call(this, appCtxt, container, mixedApp);
+	ZmMailListController.call(this, container, mixedApp);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -126,7 +126,7 @@ function() {
 	var showUndelete = false;
 	var folderId = this._getSearchFolderId();
 	if (folderId) {
-		var folder = this._appCtxt.getById(folderId);
+		var folder = appCtxt.getById(folderId);
 		showUndelete = folder && folder.isInTrash();
 	}
 	var actionMenu = this._actionMenu;
@@ -202,25 +202,25 @@ function(ev) {
 		if (ev.item.type == ZmItem.CONTACT || ev.item.type == ZmItem.GROUP) {
 			AjxDispatcher.run("GetContactController").show(ev.item);
 		} else if (ev.item.type == ZmItem.CONV) {
-			var mailApp = this._appCtxt.getApp(ZmApp.MAIL);
+			var mailApp = appCtxt.getApp(ZmApp.MAIL);
 			if (ev.item.isDraft) {
 				AjxDispatcher.run("GetConvListController")._doAction({ev:ev, action:ZmOperation.DRAFT});
 			} else {
 				AjxDispatcher.run("GetConvController").show(this._activeSearch, ev.item);
 			}
 		} else if (ev.item.type == ZmItem.MSG) {
-			var mailApp = this._appCtxt.getApp(ZmApp.MAIL);
+			var mailApp = appCtxt.getApp(ZmApp.MAIL);
 			if (ev.item.isDraft) {
 				AjxDispatcher.run("GetTradController")._doAction({ev:ev, action:ZmOperation.DRAFT});
 			} else {
 				AjxDispatcher.run("GetMsgController").show(ev.item);
 			}
 		} else if (ev.item.type == ZmItem.TASK) {
-			var app = this._appCtxt.getApp(ZmApp.TASKS);
+			var app = appCtxt.getApp(ZmApp.TASKS);
 			// XXX: prompt user if task is recurring!
 			AjxDispatcher.run("GetTaskController").show(ev.item, ZmCalItem.MODE_EDIT);
 		} else if (ev.item.type == ZmItem.PAGE || ev.item.type == ZmItem.DOCUMENT) {
-			this._appCtxt.getApp(ZmApp.NOTEBOOK).getFileController()._doSelectDblClicked(ev.item, true);
+			appCtxt.getApp(ZmApp.NOTEBOOK).getFileController()._doSelectDblClicked(ev.item, true);
 		}
 	}
 };
@@ -246,7 +246,7 @@ function(ev) {
 	var miUndelete = actionMenu.getMenuItem(ZmOperation.UNDELETE);
 	var miMoveTo = actionMenu.getMenuItem(ZmOperation.MOVE);
 	var folderId = this._getSearchFolderId();
-	var folder = this._appCtxt.getById(folderId);
+	var folder = appCtxt.getById(folderId);
 
 	if (folder && folder.isInTrash()) {
 		// only want to show Undelete menu item if contact(s) is selected
@@ -282,12 +282,12 @@ function(ev) {
 	// figure out the default for this item should be moved to
 	var folder;
 	if (items[0] instanceof ZmContact) {
-		folder = new ZmFolder({id: ZmOrganizer.ID_ADDRBOOK, appCtxt:this._appCtxt});
+		folder = new ZmFolder({id: ZmOrganizer.ID_ADDRBOOK, appCtxt:appCtxt});
 	} else if (items[0] instanceof ZmAppt) {
-		folder = new ZmFolder({id: ZmOrganizer.ID_CALENDAR, appCtxt:this._appCtxt});
+		folder = new ZmFolder({id: ZmOrganizer.ID_CALENDAR, appCtxt:appCtxt});
 	} else {
 		var folderId = items[0].isDraft ? ZmFolder.ID_DRAFTS : ZmFolder.ID_INBOX;
-		folder = this._appCtxt.getById(folderId);
+		folder = appCtxt.getById(folderId);
 	}
 
 	if (folder) {

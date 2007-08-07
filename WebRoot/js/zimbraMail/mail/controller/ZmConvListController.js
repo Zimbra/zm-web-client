@@ -33,12 +33,11 @@
  *
  * @author Conrad Damon
  *
- * @param appCtxt	app context
  * @param container	containing shell
  * @param mailApp	containing app
  */
-ZmConvListController = function(appCtxt, container, mailApp) {
-	ZmDoublePaneController.call(this, appCtxt, container, mailApp);
+ZmConvListController = function(container, mailApp) {
+	ZmDoublePaneController.call(this, container, mailApp);
 	this._msgControllerMode = ZmController.CONVLIST_VIEW;
 };
 
@@ -73,7 +72,7 @@ function(search) {
 
 	// call base class
 	ZmDoublePaneController.prototype.show.call(this, search, this._list);
-	this._appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_CONV);
+	appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_CONV);
 //	this._resetNavToolBarButtons(ZmController.CONVLIST_VIEW);
 };
 
@@ -249,7 +248,7 @@ function(item, getFirstMsg) {
 	} else {
 		var conv = item, msg = null, offset = 0;
 		if (item.type == ZmItem.MSG) {
-			conv = this._appCtxt.getById(item.cid);
+			conv = appCtxt.getById(item.cid);
 			msg = item;
 			offset = this._mailListView._msgOffset[item.id];
 		}
@@ -290,7 +289,7 @@ ZmConvListController.prototype._paginateConv =
 function(conv, offset, callback) {
 	var list = conv.msgs;
 	// see if we're out of msgs and the server has more
-	var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE);
+	var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
 	if (offset && ((offset + limit > list.size()) && list.hasMore())) {
 		// figure out how many items we need to fetch
 		var delta = (offset + limit) - list.size();

@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmContactController = function(appCtxt, container, abApp) {
+ZmContactController = function(container, abApp) {
 
-	ZmListController.call(this, appCtxt, container, abApp);
+	ZmListController.call(this, container, abApp);
 
 	this._viewFactory = {};
 	this._viewFactory[ZmController.CONTACT_VIEW] = ZmContactView;
@@ -109,7 +109,7 @@ function() {
 ZmContactController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {
-		this._listView[view] = new this._viewFactory[view](this._container, this._appCtxt, this);
+		this._listView[view] = new this._viewFactory[view](this._container, appCtxt, this);
 	}
 };
 
@@ -154,7 +154,7 @@ function(view) {
 	if (this._tabGroups[view]) return;
 
 	this._tabGroups[view] = this._createTabGroup();
-	var rootTg = this._appCtxt.getRootTabGroup();
+	var rootTg = appCtxt.getRootTabGroup();
 	this._tabGroups[view].newParent(rootTg);
 	this._tabGroups[view].addMember(this._toolbar[view]);
 };
@@ -201,8 +201,8 @@ function(ev, bIsPopCallback) {
 				} else {
 					this._doModify(contact, mods);
 				}
-				if (this._appCtxt.zimletsPresent()) {
-					this._appCtxt.getZimletMgr().notifyZimlets("onContactModified",
+				if (appCtxt.zimletsPresent()) {
+					appCtxt.getZimletMgr().notifyZimlets("onContactModified",
 						ZmZimletContext._translateZMObject(contact), mods);
 				}
 			} else {
@@ -215,12 +215,12 @@ function(ev, bIsPopCallback) {
 				var msg = this._currentView == ZmController.GROUP_VIEW
 					? ZmMsg.emptyGroup
 					: ZmMsg.emptyContact;
-				this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+				appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 			} else {
 				var msg = this._currentView == ZmController.GROUP_VIEW
 					? ZmMsg.groupSaved
 					: ZmMsg.contactSaved;
-				this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);
+				appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);
 			}
 		}
 
@@ -230,7 +230,7 @@ function(ev, bIsPopCallback) {
 		}
 	} catch (ex) {
 		if (AjxUtil.isString(ex)) {
-			var ed = this._appCtxt.getMsgDialog();
+			var ed = appCtxt.getMsgDialog();
 			var msg = ZmMsg.errorSaving + (ex ? (":<p>" + ex) : ".");
 			ed.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 			ed.popup();
@@ -266,7 +266,7 @@ function(view, force) {
 		return true;
 	}
 
-	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
+	var ps = this._popShield = appCtxt.getYesNoCancelMsgDialog();
 	ps.reset();
 	ps.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
 	ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
@@ -282,7 +282,7 @@ function() {
 	this._popShield.popdown();
 
 	this._app.popView(true);
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	appCtxt.getAppViewMgr().showPendingView(true);
 
 	this._listView[this._currentView].cleanup();
 };
@@ -292,7 +292,7 @@ function() {
 	this._popShield.popdown();
 
 	this._app.popView(true);
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	appCtxt.getAppViewMgr().showPendingView(true);
 
 	this._listView[this._currentView].cleanup();
 };

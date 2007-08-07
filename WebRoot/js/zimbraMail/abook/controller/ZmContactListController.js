@@ -24,23 +24,23 @@
  */
 
 /**
-* Creates an empty contact list controller.
-* @constructor
-* @class
-* This class manages list views of contacts. So far there are two different list
-* views, one that shows the contacts in a traditional list format, and the other
-* which shows them as business cards. Since there are two views, we need to keep
-* track of which is the current view.
-*
-* @author Roland Schemers
-* @author Conrad Damon
-* @param appCtxt		app context
-* @param container		containing shell
-* @param contactsApp	containing app
-*/
-ZmContactListController = function(appCtxt, container, contactsApp) {
+ * Creates an empty contact list controller.
+ * @constructor
+ * @class
+ * This class manages list views of contacts. So far there are two different list
+ * views, one that shows the contacts in a traditional list format, and the other
+ * which shows them as business cards. Since there are two views, we need to keep
+ * track of which is the current view.
+ *
+ * @author Roland Schemers
+ * @author Conrad Damon
+ * 
+ * @param container		containing shell
+ * @param contactsApp	containing app
+ */
+ZmContactListController = function(container, contactsApp) {
 
-	ZmListController.call(this, appCtxt, container, contactsApp);
+	ZmListController.call(this, container, contactsApp);
 
 	this._viewFactory = {};
 	this._viewFactory[ZmController.CONTACT_CARDS_VIEW] = ZmContactCardsView;
@@ -108,11 +108,11 @@ function(searchResult, bIsGalSearch, folderId) {
 
 		if (bIsGalSearch) {
 			if (this._list == null)
-				this._list = new ZmContactList(this._appCtxt, searchResult.search, true);
+				this._list = new ZmContactList(appCtxt, searchResult.search, true);
 			this._list._isShared = false;
 		} else {
 			// find out if we just searched for a shared address book
-			var addrbook = folderId ? this._appCtxt.getById(folderId) : null;
+			var addrbook = folderId ? appCtxt.getById(folderId) : null;
 			this._list._isShared = addrbook ? addrbook.link : false;
 		}
 
@@ -151,7 +151,7 @@ function(view, force, initialized) {
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
 		if (this.isGalSearch())
-			this._appCtxt.getSearchController().setDefaultSearchType(ZmSearchToolBar.FOR_GAL_MI, true);
+			appCtxt.getSearchController().setDefaultSearchType(ZmSearchToolBar.FOR_GAL_MI, true);
 
 		this._setTabGroup(this._tabGroups[view]);
 		this._restoreFocus();
@@ -182,7 +182,7 @@ function() {
 ZmContactListController.prototype.searchAlphabet =
 function(letter, endLetter) {
 	var folderId = this._folderId || ZmFolder.ID_CONTACTS;
-	var folder = this._appCtxt.getById(folderId);
+	var folder = appCtxt.getById(folderId);
 	var query = folder ? folder.createQuery() : null;
 
 	if (query) {
@@ -191,7 +191,7 @@ function(letter, endLetter) {
 		var callback = new AjxCallback(this, this._searchAlphabetCallback, [this._currentView]);
 		var params = {query:query, types:[ZmItem.CONTACT], offset:0, limit:limit, lastId:0,
 					  lastSortVal:letter, endSortVal:endLetter ,callback:callback};			  
-		var sc = this._appCtxt.getSearchController();
+		var sc = appCtxt.getSearchController();
 		sc.search(params);
 	}
 };
@@ -223,7 +223,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.PRINT:
-			if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
 				this._printContactListener();
 			}
 			break;
@@ -269,7 +269,7 @@ function() {
 
 ZmContactListController.prototype._defaultView =
 function() {
-	return (this._appCtxt.get(ZmSetting.CONTACTS_VIEW) == "cards") ? ZmController.CONTACT_CARDS_VIEW : ZmController.CONTACT_SIMPLE_VIEW;
+	return (appCtxt.get(ZmSetting.CONTACTS_VIEW) == "cards") ? ZmController.CONTACT_CARDS_VIEW : ZmController.CONTACT_SIMPLE_VIEW;
 };
 
 ZmContactListController.prototype._createNewView =
@@ -295,7 +295,7 @@ ZmContactListController.prototype._getMoveParams =
 function() {
 	var params = ZmListController.prototype._getMoveParams.call(this);
 	var omit = {};
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = appCtxt.getFolderTree();
 	if (!folderTree) { return params; }
 	var folders = folderTree.getByType(ZmOrganizer.ADDRBOOK);
 	for (var i = 0; i < folders.length; i++) {
@@ -438,7 +438,7 @@ function(parent, num) {
 
 		// a valid folderId means user clicked on an addrbook
 		if (this._folderId) {
-			var folder = this._appCtxt.getById(this._folderId);
+			var folder = appCtxt.getById(this._folderId);
 			var isShare = folder && folder.link;
 			var canEdit = (folder == null || !folder.isReadOnly());
 
@@ -503,7 +503,7 @@ function(ev) {
 		if (this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
 			this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		var folder = this._appCtxt.getById(ev.item.folderId);
+		var folder = appCtxt.getById(ev.item.folderId);
 		if (!this.isGalSearch() && (folder == null || !folder.isReadOnly())) {
 			AjxDispatcher.run("GetContactController").show(ev.item);
 		}
@@ -529,7 +529,7 @@ function(ev) {
 		ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT, ZmMsg.AB_EDIT_GROUP);
 	} else {
 		this._setContactText(!this.isGalSearch());
-		if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+		if (appCtxt.get(ZmSetting.IM_ENABLED)) {
 			var buddy = contact.getBuddy();
 			actionMenu.getOp(ZmOperation.IM).setEnabled(buddy != null);
 			if (buddy) {
@@ -571,7 +571,7 @@ function(ev) {
 
 ZmContactListController.prototype._printContactListener =
 function(ev) {
-	var printView = this._appCtxt.getPrintView();
+	var printView = appCtxt.getPrintView();
 	var contacts = this._listView[this._currentView].getSelection();
 	if (contacts.length == 1) {
 		var contact = contacts[0];
@@ -591,7 +591,7 @@ function(ev) {
 
 ZmContactListController.prototype._printAddrBookListener =
 function(ev) {
-	var printView = this._appCtxt.getPrintView();
+	var printView = appCtxt.getPrintView();
 	if (this._folderId && !this._list._isShared) {
 		var subList = this._list.getSubList(0, null, this._folderId);
 		printView.renderHtml(ZmContactCardsView.getPrintHtml(subList));
@@ -604,7 +604,7 @@ function(ev) {
 
 ZmContactListController.prototype._handleResponsePrintLoad =
 function(result, contact) {
-	this._appCtxt.getPrintView().render(contact);
+	appCtxt.getPrintView().render(contact);
 };
 
 // Returns the type of item in the underlying list

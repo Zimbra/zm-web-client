@@ -22,9 +22,9 @@
  *
  * ***** END LICENSE BLOCK *****
  */
-ZmBriefcaseController = function(appCtxt, container, app) {
-	if (arguments.length == 0) return;
-	ZmListController.call(this, appCtxt, container, app);
+ZmBriefcaseController = function(container, app) {
+	if (arguments.length == 0) { return; }
+	ZmListController.call(this, container, app);
 	
 	this._foldersMap = {};
 	this._idMap = {};
@@ -113,7 +113,7 @@ function(parent, num) {
 	var isReadOnly = this.isReadOnly(this._currentFolder);	
 	var isItemSelected = (num>0);
 
-	if (this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		var isViewHtmlEnabled = true;
 
 		var items = this._listView[this._currentView].getSelection();
@@ -145,7 +145,7 @@ function(items,delcallback) {
 	if (!items) {
 		items = this._listView[this._currentView].getSelection();
 	}
-	var dialog = this._appCtxt.getConfirmationDialog();
+	var dialog = appCtxt.getConfirmationDialog();
 	var message = items instanceof Array && items.length > 1 ? ZmMsg.confirmDeleteItemList : null;
 	if (!message) {
 		if (!this._confirmDeleteFormatter) {
@@ -184,7 +184,7 @@ function(items, delcallback) {
 		noBusyOverlay: false
 	};
 
-	var appController = this._appCtxt.getAppController();
+	var appController = appCtxt.getAppController();
 	var response = appController.sendRequest(params);
 	return response;
 };
@@ -205,7 +205,7 @@ ZmBriefcaseController.prototype._createNewView =
 function(view) {
 	if (!this._listView[view]) {
 		var viewCtor = ZmBriefcaseController._VIEWS[view];
-		this._listView[view] = new viewCtor(this._container, this._appCtxt, this, this._dropTgt);
+		this._listView[view] = new viewCtor(this._container, appCtxt, this, this._dropTgt);
 	}
 	this._listView[view].setDragSource(this._dragSrc);
 	return this._listView[view];
@@ -218,7 +218,7 @@ function(view) {
 
 	// Select the appropriate notebook in the tree view.
 	if (this._object) {
-		var overviewController = this._appCtxt.getOverviewController();
+		var overviewController = appCtxt.getOverviewController();
 		var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
 		var treeView = treeController.getTreeView(this._app.getOverviewId());
 		if (treeView) {
@@ -290,10 +290,10 @@ function(items) {
 	// REVISIT: Need to do proper list management! For now we fake
 	//          a list of a single item so that operations like
 	//          tagging and delete work.
-	this._list = new ZmList(ZmItem.PAGE, this._appCtxt);
+	this._list = new ZmList(ZmItem.PAGE, appCtxt);
 	
 	if (this._object) {
-		var item = new ZmBriefcaseItem(this._appCtxt);
+		var item = new ZmBriefcaseItem(appCtxt);
 		item.id = this._object;		
 		this._list.add(item);
 	}
@@ -348,7 +348,7 @@ function(callback,folderId,results) {
 ZmBriefcaseController.prototype.searchFolder =
 function(folderId,callback) {
 	var search = 'inid:"'+folderId+'"';
-	//var sc = this._appCtxt.getSearchController();
+	//var sc = appCtxt.getSearchController();
 	//var scallback = new AjxCallback(this,this.searchCallback,[callback,folderId]);
 	//sc.search({query:search, types:[ZmItem.BRIEFCASE],callback:scallback});
 	//return;	
@@ -374,7 +374,7 @@ function(folderId,callback) {
 	};
 	// NOTE: Need to keep track of request params for response handler
 		
-	var appController = this._appCtxt.getAppController();
+	var appController = appCtxt.getAppController();
 	var response = appController.sendRequest(params);
 
 	this.handleSearchResponse(folderId,response,callback);
@@ -401,7 +401,7 @@ function(docs,folderId) {
 		var doc = docs[i];
 		var item = this.getItemById(doc.id);
 		if (!item) {
-			item = new ZmBriefcaseItem(this._appCtxt);
+			item = new ZmBriefcaseItem(appCtxt);
 			item.set(doc);
 			item.folderId = folderId;
 			//item.remoteFolderId = remoteFolderId; // REVISIT
@@ -499,11 +499,11 @@ function(callback, title) {
 	var isReadOnly = this.isReadOnly(this._currentFolder);	
 	
 	if (isShared && isReadOnly) {
-		var dialog = this._appCtxt.getMsgDialog();
+		var dialog = appCtxt.getMsgDialog();
 		dialog.setMessage(ZmMsg.errorPermission, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();					
 	} else {
-		var dialog = this._appCtxt.getUploadDialog();
+		var dialog = appCtxt.getUploadDialog();
 		dialog.popup({id:this._currentFolder},callback, title);
 	}
 };
@@ -541,8 +541,8 @@ ZmBriefcaseController.prototype.isReadOnly =
 function(folderId) {
 	//if one of the ancestor is readonly then no chances of childs being writable
 	var isReadOnly = false;
-	var folder = this._appCtxt.getById(folderId);
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	var folder = appCtxt.getById(folderId);
+	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
 		folder = folder.parent;
 	}
@@ -556,8 +556,8 @@ function(folderId) {
 ZmBriefcaseController.prototype.getBriefcaseFolder =
 function(folderId) {
 	var briefcase;
-	var folder = this._appCtxt.getById(folderId);
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	var folder = appCtxt.getById(folderId);
+	var rootId = ZmOrganizer.getSystemId(appCtxt, ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId)) {
 		folder = folder.parent;
 	}
@@ -597,7 +597,7 @@ function(ev) {
 ZmBriefcaseController.prototype._getActionMenuOps =
 function() {
 	var list = [ZmOperation.OPEN_FILE,ZmOperation.SEND_FILE];
-	if (this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+	if (appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		list.push(ZmOperation.VIEW_FILE_AS_HTML);
 	}	
 	list.push(ZmOperation.SEP);
@@ -671,7 +671,7 @@ function(event) {
 
 		if (noprompt) continue;
 
-		briefcase = this._appCtxt.getById(item.folderId);
+		briefcase = appCtxt.getById(item.folderId);
 		shares = briefcase && briefcase.shares;
 		if (shares) {
 			for (var j = 0; j < shares.length; j++) {
@@ -684,7 +684,7 @@ function(event) {
 		var args = [names, urls, inNewWindow];
 		var callback = new AjxCallback(this, this._sendPageListener2, args);
 
-		var dialog = this._appCtxt.getConfirmationDialog();
+		var dialog = appCtxt.getConfirmationDialog();
 		dialog.popup(ZmMsg.errorPermissionRequired, callback);
 	} else {
 		this._sendPageListener2(names, urls);
@@ -694,7 +694,7 @@ function(event) {
 ZmBriefcaseController.prototype._sendPageListener2 =
 function(names, urls, inNewWindow) {
 	var action = ZmOperation.NEW_MESSAGE;
-	var msg = new ZmMailMsg(this._appCtxt);
+	var msg = new ZmMailMsg(appCtxt);
 	var toOverride = null;
 	var subjOverride = new AjxListFormat().format(names);
 	var extraBodyText = urls.join("\n");
@@ -706,7 +706,7 @@ function(names, urls, inNewWindow) {
 ZmBriefcaseController.prototype._moveCallback =
 function(folder) {
 	this._doMove(this._pendingActionData, folder, null, true);
-	this._clearDialog(this._appCtxt.getChooseFolderDialog());
+	this._clearDialog(appCtxt.getChooseFolderDialog());
 	this._pendingActionData = null;
 	this.removeCachedFolderItems(folder.id);
 	this.reloadFolder();

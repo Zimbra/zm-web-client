@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNotebookPageController = function(appCtxt, container, app) {
-	ZmNotebookController.call(this, appCtxt, container, app);
+ZmNotebookPageController = function(container, app) {
+	ZmNotebookController.call(this, container, app);
 
 	this._listeners[ZmOperation.PAGE_BACK] = new AjxListener(this, this._pageBackListener);
 	this._listeners[ZmOperation.PAGE_FORWARD] = new AjxListener(this, this._pageForwardListener);
@@ -169,7 +169,7 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 	// REVISIT: Need to do proper list management! For now we fake
 	//          a list of a single item so that operations like
 	//          tagging and delete work.
-	this._list = new ZmList(ZmItem.PAGE, this._appCtxt);
+	this._list = new ZmList(ZmItem.PAGE, appCtxt);
 	if (this._object) {
 		this._list.add(this._object);
 	}
@@ -223,11 +223,11 @@ ZmNotebookPageController.prototype._enableNaviButtons = function() {
 	var toolbar = this._toolbar[this._currentView];
 	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
 	button.setEnabled(enabled && this._place > 0);
-	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[this._place - 1], ZmMsg.goBack);
+	ZmNotebookPageController.__setButtonToolTip(appCtxt, button, this._history[this._place - 1], ZmMsg.goBack);
 
 	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
 	button.setEnabled(enabled && this._place + 1 < this._history.length);
-	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[this._place + 1], ZmMsg.goForward);
+	ZmNotebookPageController.__setButtonToolTip(appCtxt, button, this._history[this._place + 1], ZmMsg.goForward);
 };
 
 // listeners
@@ -307,7 +307,7 @@ ZmNotebookPageController.prototype.updateHistory = function() {
 	// REVISIT: Need to do proper list management! For now we fake
 	//          a list of a single item so that operations like
 	//          tagging and delete work.
-	this._list = new ZmList(ZmItem.PAGE, this._appCtxt);
+	this._list = new ZmList(ZmItem.PAGE, appCtxt);
 	if (this._object) {
 		this._list.add(this._object);
 	}

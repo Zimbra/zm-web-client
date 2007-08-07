@@ -25,7 +25,7 @@
 
 ZmNotebookTreeController = function() {
 	
-	ZmTreeController.call(this, ZmOrganizer.NOTEBOOK, dropTgt);
+	ZmTreeController.call(this, ZmOrganizer.NOTEBOOK);
 
 	this._listeners[ZmOperation.NEW_NOTEBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);

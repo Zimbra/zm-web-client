@@ -1121,10 +1121,7 @@ ZmZimbraMail.helpLinkCallback =
 function() {
 	ZmZimbraMail.unloadHackCallback();
 
-	var appCtxt = window.parentController
-		? window.parentController._appCtxt
-		: window._zimbraMail._appCtxt;
-
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var url;
 	try { url = skin.hints.help_button.url; } catch (e) { /* ignore */ }
 	window.open(url || appCtxt.get(ZmSetting.HELP_URI));

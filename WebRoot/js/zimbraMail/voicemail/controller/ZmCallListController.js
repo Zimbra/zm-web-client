@@ -23,10 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCallListController = function(appCtxt, container, app) {
-	if (arguments.length == 0) return;
+ZmCallListController = function(container, app) {
+	if (arguments.length == 0) { return; }
 	
-	ZmVoiceListController.call(this, appCtxt, container, app);
+	ZmVoiceListController.call(this, container, app);
     this._listeners[ZmOperation.CHECK_CALLS] = new AjxListener(this, this._refreshListener);
 
 }
@@ -72,7 +72,7 @@ function() {
 
 ZmCallListController.prototype._getActionMenuOps =
 function() {
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		return [ZmOperation.CONTACT];
 	}
 	return null;

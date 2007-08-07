@@ -24,21 +24,21 @@
  */
 
 /**
-* Creates an empty message controller.
-* @constructor
-* @class
-* This class controls the display and management of a single message in the content area. Since it
-* needs to handle pretty much the same operations as a list, it extends ZmMailListController.
-*
-* @author Parag Shah
-* @author Conrad Damon
-* @param appCtxt	app context
-* @param container	containing shell
-* @param mailApp	containing app
-*/
-ZmMsgController = function(appCtxt, container, mailApp) {
+ * Creates an empty message controller.
+ * @constructor
+ * @class
+ * This class controls the display and management of a single message in the content area. Since it
+ * needs to handle pretty much the same operations as a list, it extends ZmMailListController.
+ *
+ * @author Parag Shah
+ * @author Conrad Damon
+ * 
+ * @param container	containing shell
+ * @param mailApp	containing app 
+ */
+ZmMsgController = function(container, mailApp) {
 
-	ZmMailListController.call(this, appCtxt, container, mailApp);
+	ZmMailListController.call(this, container, mailApp);
 };
 
 ZmMsgController.MODE_TO_CONTROLLER = {};
@@ -76,7 +76,7 @@ function(msg, mode, callback) {
 			// so that multiple GetMsgRequest's aren't made
 			msg._loadCallback = respCallback;
 		} else {
-			msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
+			msg.load(appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
 		}
 	} else {
 		this._handleResponseShow(callback);
@@ -106,7 +106,7 @@ ZmMsgController.prototype._showMsg =
 function() {
 	this._setup(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	var elements = new Object();
+	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, false, appCtxt.isChildWindow);

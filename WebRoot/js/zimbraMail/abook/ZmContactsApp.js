@@ -500,15 +500,17 @@ function(msgId, vcardPartId) {
 
 ZmContactsApp.prototype.getContactListController =
 function() {
-	if (!this._contactListController)
-		this._contactListController = new ZmContactListController(appCtxt, this._container, this);
+	if (!this._contactListController) {
+		this._contactListController = new ZmContactListController(this._container, this);
+	}
 	return this._contactListController;
 };
 
 ZmContactsApp.prototype.getContactController =
 function() {
-	if (this._contactController == null)
-		this._contactController = new ZmContactController(appCtxt, this._container, this);
+	if (this._contactController == null) {
+		this._contactController = new ZmContactController(this._container, this);
+	}
 	return this._contactController;
 };
 

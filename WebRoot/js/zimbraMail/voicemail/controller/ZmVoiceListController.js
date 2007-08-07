@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmVoiceListController = function(appCtxt, container, app) {
-	if (arguments.length == 0) return;
-	ZmListController.call(this, appCtxt, container, app);
+ZmVoiceListController = function(container, app) {
+	if (arguments.length == 0) { return; }
+	ZmListController.call(this, container, app);
     this._listeners[ZmOperation.CALL_MANAGER] = new AjxListener(this, this._callManagerListener);
 
 	this._folder = null;
@@ -109,7 +109,7 @@ function(params) {
 ZmVoiceListController.prototype._createNewContact =
 function(ev) {
 	var item = ev.item;
-	var contact = new ZmContact(this._appCtxt);
+	var contact = new ZmContact(appCtxt);
 	contact.initFromPhone(this._getView().getCallingParty(item).getDisplay());
 	return contact;
 };
@@ -117,7 +117,7 @@ function(ev) {
 ZmVoiceListController.prototype._refreshListener =
 function(ev) {
 	if (this._folder) {
-		var app = this._appCtxt.getApp(ZmApp.VOICE);
+		var app = appCtxt.getApp(ZmApp.VOICE);
 		app.search(this._folder);
 	}
 };
@@ -125,18 +125,18 @@ function(ev) {
 ZmVoiceListController.prototype._printListener =
 function(ev) {
 	var html = this._getView().getPrintHtml();
-	this._appCtxt.getPrintView().renderHtml(html);
+	appCtxt.getPrintView().renderHtml(html);
 };
 
 ZmVoiceListController.prototype._callManagerListener =
 function() {
-    var app = this._appCtxt.getAppController().getApp(ZmApp.PREFERENCES);
+    var app = appCtxt.getAppController().getApp(ZmApp.PREFERENCES);
     app.launch(new AjxListener(this, this._handleResponseLaunchPrefs));
 };
 
 ZmVoiceListController.prototype._handleResponseLaunchPrefs =
 function() {
-    var app = this._appCtxt.getAppController().getApp(ZmApp.PREFERENCES);
+    var app = appCtxt.getAppController().getApp(ZmApp.PREFERENCES);
     var view = app.getPrefController().getPrefsView();
     view.selectSection("VOICE");
 };
@@ -151,7 +151,7 @@ function(ev) {
 	var item = ev.item;
 	
 	// Update the add/edit contact item.
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var contact = item.participants ? item.participants.getArray()[0] : null;
 		var newOp = contact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 		var newText = contact? null : ZmMsg.AB_ADD_CONTACT;
@@ -163,4 +163,3 @@ function(ev) {
 
 	actionMenu.popup(0, ev.docX, ev.docY);
 };
-

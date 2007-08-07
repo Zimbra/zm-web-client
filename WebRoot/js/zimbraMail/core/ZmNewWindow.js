@@ -85,7 +85,7 @@ function() {
 
 	// XXX: DO NOT MOVE THIS LINE
 	// redefine ZmSetting from parent window since it loses this info.
-	var parentAppCtxt = window.opener.appCtxt;
+	window.parentAppCtxt = window.opener.appCtxt;
 	appCtxt.setSettings(parentAppCtxt.getSettings());
 	window.ZmSetting = window.opener.ZmSetting;
 
@@ -98,7 +98,6 @@ function() {
 
 	// create new window and Go!
 	var newWindow = new ZmNewWindow();
-	newWindow._parentAppCtxt = parentAppCtxt;
     newWindow.startup();
 };
 
@@ -162,7 +161,7 @@ function() {
     this._createEnabledApps(apps);
 
 	// inherit parent's identity collection
-	var parentPrefsApp = this._parentAppCtxt.getApp(ZmApp.PREFERENCES);
+	var parentPrefsApp = parentAppCtxt.getApp(ZmApp.PREFERENCES);
 	appCtxt.getApp(ZmApp.PREFERENCES)._identityCollection = parentPrefsApp.getIdentityCollection();
 
 	// depending on the command, do the right thing

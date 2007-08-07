@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPortalController = function(appCtxt, container, app) {
-	if (arguments.length == 0) return;
-	ZmListController.call(this, appCtxt, container, app);
+ZmPortalController = function(container, app) {
+	if (arguments.length == 0) { return; }
+	ZmListController.call(this, container, app);
 
     // TODO: Where does this really belong?
     ZmOperation.registerOp("PAUSE_TOGGLE", {textKey:"pause", image:"Pause", style: DwtButton.TOGGLE_STYLE});
@@ -58,7 +58,7 @@ ZmPortalController.prototype.setPaused = function(paused) {
     var view = this._listView[this._currentView];
     var portletIds = view && view.getPortletIds();
     if (portletIds && portletIds.length > 0) {
-        var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+        var portletMgr = appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
         for (var i = 0; i < portletIds.length; i++) {
             var portlet = portletMgr.getPortletById(portletIds[i]);
             portlet.setPaused(paused);
@@ -79,7 +79,7 @@ ZmPortalController.prototype._getToolBarOps = function() {
 };
 
 ZmPortalController.prototype._createNewView = function(view) {
-	return new ZmPortalView(this._container, this._appCtxt, this, this._dropTgt);
+	return new ZmPortalView(this._container, appCtxt, this, this._dropTgt);
 };
 
 ZmPortalController.prototype._setViewContents = function(view) {

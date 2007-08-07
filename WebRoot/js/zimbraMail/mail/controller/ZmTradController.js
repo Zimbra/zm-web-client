@@ -24,20 +24,20 @@
  */
 
 /**
-* Creates a new, empty "traditional view" controller.
-* @constructor
-* @class
-* This class manages the two-pane message view. The top pane contains a list
-* view of the messages in the conversation, and the bottom pane contains the current
-* message.
-*
-* @author Parag Shah
-* @param appCtxt	app context
-* @param container	containing shell
-* @param mailApp	containing app
-*/
-ZmTradController = function(appCtxt, container, mailApp) {
-	ZmDoublePaneController.call(this, appCtxt, container, mailApp);
+ * Creates a new, empty "traditional view" controller.
+ * @constructor
+ * @class
+ * This class manages the two-pane message view. The top pane contains a list
+ * view of the messages in the conversation, and the bottom pane contains the current
+ * message.
+ *
+ * @author Parag Shah
+ * 
+ * @param container	containing shell
+ * @param mailApp	containing app
+ */
+ZmTradController = function(container, mailApp) {
+	ZmDoublePaneController.call(this, container, mailApp);
 	this._msgControllerMode = ZmController.TRAD_VIEW;
 };
 
@@ -72,7 +72,7 @@ function(search) {
 
 	// call base class
 	ZmDoublePaneController.prototype.show.call(this, search, this._list);
-	this._appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_MSG);
+	appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_MSG);
 	this._resetNavToolBarButtons(ZmController.TRAD_VIEW);
 };
 

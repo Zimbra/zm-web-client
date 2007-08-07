@@ -39,15 +39,14 @@
 * virtually the same. An item can be thought of as the degenerate form of a list.</p>
 *
 * @author Conrad Damon
-* @param appCtxt	app context
+* 
 * @param container	containing shell
 * @param app		containing app
 */
-ZmListController = function(appCtxt, container, app) {
+ZmListController = function(container, app) {
 
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 	ZmController.call(this, container, app);
-	this._appCtxt = appCtxt;
 
 	this._toolbar = {};			// ZmButtonToolbar (one per view)
 	this._navToolBar = {};		// ZmNavToolBar (one per view)
@@ -58,7 +57,7 @@ ZmListController = function(appCtxt, container, app) {
 	this._actionEv = null;
 	this._activeSearch = null;
 
-	this._tagList = this._appCtxt.getTagTree();
+	this._tagList = appCtxt.getTagTree();
 	if (this._tagList) {
 		this._tagChangeLstnr = new AjxListener(this, this._tagChangeListener);
 		this._tagList.addChangeListener(this._tagChangeLstnr);
@@ -150,7 +149,7 @@ function(actionCode) {
 
 	// check for action code with argument, eg MoveToFolder3
 	var origActionCode = actionCode;
-	var shortcut = ZmShortcut.parseAction(this._appCtxt, "Global", actionCode);
+	var shortcut = ZmShortcut.parseAction(appCtxt, "Global", actionCode);
 	if (shortcut) {
 		actionCode = shortcut.baseAction;
 	}
@@ -182,13 +181,13 @@ function(actionCode) {
 
 		case ZmKeyMap.PRINT:
 		case ZmKeyMap.PRINT_ALL:
-			if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
 				this._printListener();
 			}
 			break;
 
 		case ZmKeyMap.UNTAG:
-			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+			if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 				var items = listView.getSelection();
 				if (items && items.length) {
 					this._doRemoveAllTags(items);
@@ -203,7 +202,7 @@ function(actionCode) {
 		case ZmKeyMap.TAG:
 			var items = listView.getSelection();
 			if (items && items.length && shortcut) {
-				var tag = this._appCtxt.getById(shortcut.arg);
+				var tag = appCtxt.getById(shortcut.arg);
 				if (tag) {
 					this._doTag(items, tag, true);
 				}
@@ -328,8 +327,8 @@ function(view) {
 		this._setupTagMenu(this._toolbar[view]);
 	}
 
-	if (this._appCtxt.zimletsPresent()) {
-		this._appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", this._app, this._toolbar[view]);
+	if (appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", this._app, this._toolbar[view]);
 	}
 };
 
@@ -352,7 +351,7 @@ function() {
 	if (!menuItems) return;
 	this._actionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
 	this._addMenuListeners(this._actionMenu);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setupTagMenu(this._actionMenu);
 	}
 };
@@ -374,7 +373,7 @@ function(view) {
 	if (this._tabGroups[view]) return;
 
 	this._tabGroups[view] = this._createTabGroup();
-	this._tabGroups[view].newParent(this._appCtxt.getRootTabGroup());
+	this._tabGroups[view].newParent(appCtxt.getRootTabGroup());
 	this._tabGroups[view].addMember(this._toolbar[view]);
 	this._tabGroups[view].addMember(this._listView[view]);
 };
@@ -425,7 +424,7 @@ function(ev) {
 	} else {
 		var lv = this._listView[this._currentView];
 
-		if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+		if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 			if (!ev.ctrlKey) {
 				lv.setSelectionHdrCbox(false);
 				lv.setSelectionCbox(ev.item, false);
@@ -444,7 +443,7 @@ ZmListController.prototype._listActionListener =
 function(ev) {
 	this._actionEv = ev;
 	var actionMenu = this.getActionMenu();
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED))
 		this._setTagMenu(actionMenu);
 	this._resetOperations(actionMenu, this._listView[this._currentView].getSelectionCount());
 };
@@ -478,7 +477,7 @@ function(ev, op, params) {
 	if (app) {
 		params = params || {};
 		params.ev = ev;
-		this._appCtxt.getApp(app).handleOp(op, params);
+		appCtxt.getApp(app).handleOp(op, params);
 	} else {
 		ZmController.prototype._newListener.apply(this, arguments);
 	}
@@ -494,7 +493,7 @@ function(ev) {
 // Tag/untag items.
 ZmListController.prototype._tagListener =
 function(item) {
-	if (this._appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
+	if (appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
 		var tagEvent = item.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = item.getData(ZmTagMenu.KEY_TAG_ADDED);
 		var items = this._listView[this._currentView].getSelection();
@@ -502,7 +501,7 @@ function(item) {
 			this._doTag(items, item.getData(Dwt.KEY_OBJECT), true);
 		} else if (tagEvent == ZmEvent.E_CREATE) {
 			this._pendingActionData = this._listView[this._currentView].getSelection();
-			var newTagDialog = this._appCtxt.getNewTagDialog();
+			var newTagDialog = appCtxt.getNewTagDialog();
 			if (!this._newTagCb) {
 				this._newTagCb = new AjxCallback(this, this._newTagCallback);
 			}
@@ -521,7 +520,7 @@ ZmListController.prototype._printListener =
 function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	var item = (items instanceof Array) ? items[0] : items;
-	this._appCtxt.getPrintView().render(item);
+	appCtxt.getPrintView().render(item);
 };
 
 ZmListController.prototype._backListener =
@@ -539,7 +538,7 @@ function(ev) {
 ZmListController.prototype._moveListener =
 function(ev) {
 	this._pendingActionData = this._listView[this._currentView].getSelection();
-	var moveToDialog = this._appCtxt.getChooseFolderDialog();
+	var moveToDialog = appCtxt.getChooseFolderDialog();
 	if (!this._moveCb) {
 		this._moveCb = new AjxCallback(this, this._moveCallback);
 	}
@@ -567,7 +566,7 @@ function(ev) {
 
 ZmListController.prototype._syncOfflineListener =
 function(ev) {
-	this._appCtxt.getAppController().sendSync();
+	appCtxt.getAppController().sendSync();
 };
 
 // Navbar listeners
@@ -575,7 +574,7 @@ function(ev) {
 ZmListController.prototype._navBarListener =
 function(ev) {
 	// skip listener for non-current views
-	if (this._appCtxt.getAppViewMgr().getCurrentViewId() != this._getViewType())
+	if (appCtxt.getAppViewMgr().getCurrentViewId() != this._getViewType())
 		return;
 
 	var op = ev.item.getData(ZmOperation.KEY_ID);
@@ -593,14 +592,14 @@ function(ev) {
 ZmListController.prototype._participantSearchListener =
 function(ev) {
 	var name = this._actionEv.address.getAddress();
-	this._appCtxt.getSearchController().fromSearch(name);
+	appCtxt.getSearchController().fromSearch(name);
 };
 
 // Browse based on email address
 ZmListController.prototype._participantBrowseListener =
 function(ev) {
 	var name = this._actionEv.address.getAddress();
-	this._appCtxt.getSearchController().fromBrowse(name);
+	appCtxt.getSearchController().fromBrowse(name);
 };
 
 // Compose message to participant
@@ -664,7 +663,7 @@ function() {
 
 ZmListController.prototype._createNewContact =
 function(ev) {
-	var contact = new ZmContact(this._appCtxt);
+	var contact = new ZmContact(appCtxt);
 	contact.initFromEmail(ev.address);
 	return contact;
 };
@@ -723,7 +722,7 @@ function(ev) {
 ZmListController.prototype._tagChangeListener =
 function(ev) {
 	// only process if current view is this view!
-	if (this._appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
+	if (appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
 		if (ev.type == ZmEvent.S_TAG && ev.event == ZmEvent.E_CREATE && this._pendingActionData) {
 			var tag = ev.getDetail("organizers")[0];
 			this._doTag(this._pendingActionData, tag, true);
@@ -739,7 +738,7 @@ function(ev) {
 ZmListController.prototype._moveCallback =
 function(folder) {
 	this._doMove(this._pendingActionData, folder, null, true);
-	this._clearDialog(this._appCtxt.getChooseFolderDialog());
+	this._clearDialog(appCtxt.getChooseFolderDialog());
 	this._pendingActionData = null;
 };
 
@@ -965,20 +964,20 @@ function(search, offset) {
 
 ZmListController.prototype._search =
 function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
-	var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
+	var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
 	// use types from original search
 	var types = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.types : [];
-	var sc = this._appCtxt.getSearchController();
+	var sc = appCtxt.getSearchController();
 	var params = {query: this.getSearchString(), types: types, sortBy: sortBy, offset: offset, limit: limit,
 				  lastId: lastId, lastSortVal: lastSortVal};
 	// add any additional params...
 	this._getMoreSearchParams(params);
 
-	var search = new ZmSearch(this._appCtxt, params);
+	var search = new ZmSearch(appCtxt, params);
 	if (isCurrent)
 		this._currentSearch = search;
 
-	this._appCtxt.getSearchController().redoSearch(search, true, null, callback);
+	appCtxt.getSearchController().redoSearch(search, true, null, callback);
 };
 
 /*
@@ -1252,7 +1251,7 @@ ZmListController.prototype._getNumTotal =
 function() {
 	var folderId = this._getSearchFolderId();
 	if (folderId) {
-		var folder = this._appCtxt.getById(folderId);
+		var folder = appCtxt.getById(folderId);
 		if (folder) {
 			return folder.numTotal;
 		}

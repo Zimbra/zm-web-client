@@ -617,7 +617,7 @@ ZmAppCtxt.prototype.getSignatureCollection = function() {
 ZmAppCtxt.prototype.getTree =
 function(type, account) {
 	if (this.isChildWindow) {
-		return window.parentController._appCtxt.getTree(type, account);
+		return parentAppCtxt.getTree(type, account);
 	}
 	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
 	var acct = this._accounts[id];

@@ -161,7 +161,7 @@ ZmPortalApp.prototype._handleLoadManifest = function(callback, req) {
 
 ZmPortalApp.prototype.getPortalController = function() {
 	if (!this._portalController) {
-		this._portalController = new ZmPortalController(appCtxt, this._container, this);
+		this._portalController = new ZmPortalController(this._container, this);
 	}
 	return this._portalController;
 };

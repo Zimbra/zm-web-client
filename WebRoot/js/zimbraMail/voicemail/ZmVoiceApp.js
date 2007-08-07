@@ -419,7 +419,7 @@ function(name) {
 ZmVoiceApp.prototype.getVoiceController =
 function() {
 	if (!this._voiceController) {
-		this._voiceController = new ZmVoicemailListController(appCtxt, this._container, this);
+		this._voiceController = new ZmVoicemailListController(this._container, this);
 	}
 	return this._voiceController;
 };
@@ -427,7 +427,7 @@ function() {
 ZmVoiceApp.prototype.getCallListController =
 function() {
 	if (!this._callListController) {
-		this._callListController = new ZmCallListController(appCtxt, this._container, this);
+		this._callListController = new ZmCallListController(this._container, this);
 	}
 	return this._callListController;
 };

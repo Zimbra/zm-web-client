@@ -448,21 +448,21 @@ function(active) {
 
 ZmNotebookApp.prototype.getNotebookController = function() {
 	if (!this._notebookController) {
-		this._notebookController = new ZmNotebookPageController(appCtxt, this._container, this);
+		this._notebookController = new ZmNotebookPageController(this._container, this);
 	}
 	return this._notebookController;
 };
 
 ZmNotebookApp.prototype.getPageEditController = function() {
 	if (!this._pageController) {
-		this._pageController = new ZmPageEditController(appCtxt, this._container, this);
+		this._pageController = new ZmPageEditController(this._container, this);
 	}
 	return this._pageController;
 };
 
 ZmNotebookApp.prototype.getFileController = function() {
 	if (!this._fileController) {
-		this._fileController = new ZmNotebookFileController(appCtxt, this._container, this);
+		this._fileController = new ZmNotebookFileController(this._container, this);
 	}
 	return this._fileController;
 };

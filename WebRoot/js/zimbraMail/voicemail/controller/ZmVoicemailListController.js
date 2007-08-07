@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmVoicemailListController = function(appCtxt, container, app) {
-	if (arguments.length == 0) return;
-	ZmVoiceListController.call(this, appCtxt, container, app);
+ZmVoicemailListController = function(container, app) {
+	if (arguments.length == 0) { return; }
+	ZmVoiceListController.call(this, container, app);
 
 	this._listeners[ZmOperation.CHECK_VOICEMAIL] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
@@ -99,7 +99,7 @@ function() {
 ZmVoicemailListController.prototype._getActionMenuOps =
 function() {
 	var list = []
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		list.push(ZmOperation.CONTACT);
 	}
 	list.push(ZmOperation.SEP);
@@ -136,7 +136,7 @@ function(parent, num) {
 	}
 	parent.enable(ZmOperation.MARK_HEARD, hasUnheard);
 	parent.enable(ZmOperation.MARK_UNHEARD, hasHeard);
-	if (!this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		parent.enable(ZmOperation.REPLY_BY_EMAIL, false);
 		parent.enable(ZmOperation.FORWARD_BY_EMAIL, false);
 	}
@@ -158,12 +158,12 @@ function(actionCode) {
 			}
 			break;
 		case ZmKeyMap.REPLY:
-			if ((num == 1) && this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+			if ((num == 1) && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 				this._replyListener();
 			}
 			break;
 		case ZmKeyMap.FORWARD:
-			if ((num == 1) && this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+			if ((num == 1) && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 				this._forwardListener();
 			}
 			break;
@@ -203,7 +203,7 @@ function(items, heard) {
 	}
 	if (changeItems.length) {
 		var callback = new AjxCallback(this, this._handleResponseMarkHeard, [changeItems, heard]);
-		var app = this._appCtxt.getApp(ZmApp.VOICE);
+		var app = appCtxt.getApp(ZmApp.VOICE);
 		app.markItemsHeard(changeItems, heard, callback);
 	}
 };
@@ -288,14 +288,14 @@ function(ev, subject, to) {
     	asyncMode: true,
 		callback: new AjxCallback(this, this._handleResponseUpload, [inNewWindow, subject, to])
 	};
-	this._appCtxt.getAppController().sendRequest(params);
+	appCtxt.getAppController().sendRequest(params);
    
 };
 
 ZmVoicemailListController.prototype._handleResponseUpload = 
 function(inNewWindow, subject, to, response) {
 	var voicemail = this._getView().getSelection()[0];
-	var mailMsg = new ZmMailMsg(this._appCtxt);
+	var mailMsg = new ZmMailMsg(appCtxt);
 	mailMsg.getAttachments()[0] = {
 		name: "voicemail.wav", 
 		ct: "audio/x-wave",
@@ -309,7 +309,7 @@ function(inNewWindow, subject, to, response) {
     var date = AjxDateUtil.computeDateStr(new Date(), voicemail.date);
     var callingParty = voicemail.getCallingParty(ZmVoiceItem.FROM);
     var phoneNumber = callingParty.getDisplay();
-    var format = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+    var format = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
     var message = format == ZmSetting.COMPOSE_HTML ? ZmMsg.voicemailBodyHtml : ZmMsg.voicemailBodyText;
     var body = AjxMessageFormat.format(message, [phoneNumber, duration, date]);
 	var params = {
@@ -329,12 +329,12 @@ function() {
 	var voicemail = this._getView().getSelection()[0];
 	if (voicemail.isPrivate) {
 		message = ZmMsg.errorPrivateVoicemail;
-	} else if (!this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+	} else if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		//TODO: Check the contents of this message....		
 		message = ZmMsg.sellEmail;
 	}
 	if (message) {
-		var dialog = this._appCtxt.getMsgDialog();
+		var dialog = appCtxt.getMsgDialog();
 		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
 		dialog.popup();
 		return false;
@@ -372,7 +372,7 @@ function(ev) {
 // Called when user clicks for help with plugins.
 ZmVoicemailListController.prototype._pluginHelpListener =
 function(event) {
-	var dialog = this._appCtxt.getMsgDialog();
+	var dialog = appCtxt.getMsgDialog();
 	var message = AjxEnv.isIE ? ZmMsg.missingPluginHelpIE : ZmMsg.missingPluginHelp;
 	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
 	dialog.popup();
@@ -394,7 +394,6 @@ function(event) {
 		}
 	}
 	if (event.status == DwtSoundPlugin.ERROR) {
-		this._appCtxt.setStatusMsg(event.errorDetail, ZmStatusView.LEVEL_CRITICAL);
+		appCtxt.setStatusMsg(event.errorDetail, ZmStatusView.LEVEL_CRITICAL);
 	}
 };
-

@@ -35,21 +35,20 @@ ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) 
 	DwtComposite.call(this, parent, className, posStyle);
 
 	this._controller = controller;
-	this._appCtxt = controller._appCtxt;
 
 	this.setScrollStyle(Dwt.CLIP);
 
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
 		folderTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
 	}
-	var tagTree = this._appCtxt.getTagTree();
+	var tagTree = appCtxt.getTagTree();
 	if (tagTree) {
 		tagTree.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	}
 
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
-	this._objectManager = new ZmObjectManager(null, this._appCtxt);
+	this._objectManager = new ZmObjectManager(null, appCtxt);
 
 	this._initialize(controller, dropTgt);
 };
@@ -176,7 +175,7 @@ function(controller, dropTgt) {
 	var alphaDivId = this._htmlElId + "_alphabetbar";
 	var alphaDiv = document.getElementById(alphaDivId);
 	if (alphaDiv && ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
-		this._alphabetBar = new ZmContactAlphabetBar(this, this._appCtxt);
+		this._alphabetBar = new ZmContactAlphabetBar(this, appCtxt);
 		this._alphabetBar.reparentHtmlElement(alphaDivId);
 	}
 
@@ -274,7 +273,7 @@ function(ev, treeView) {
 		for (var i = 0; i < organizers.length; i++) {
 			var organizer = organizers[i];
 			var folderId = this._contact.isShared()
-				? this._appCtxt.getById(this._contact.folderId).id
+				? appCtxt.getById(this._contact.folderId).id
 				: this._contact.folderId;
 
 			if (organizer.id == folderId)
@@ -329,8 +328,8 @@ function(contact, isGal, oldContact) {
 			this._tabViewHtml[tabIdx] = true;
 
 			// notify zimlets that a new contact is being shown.
-			if (this._appCtxt.zimletsPresent()) {
-				this._appCtxt.getZimletMgr().notifyZimlets("onContactView", contact, this._htmlElId, tabIdx);
+			if (appCtxt.zimletsPresent()) {
+				appCtxt.getZimletMgr().notifyZimlets("onContactView", contact, this._htmlElId, tabIdx);
 			}
 		}
 	}
@@ -345,7 +344,7 @@ function() {
 	var tagsList = this._contact.tags;
 	var ta = [];
 	for (var i = 0; i < tagsList.length; i++) {
-		ta.push(this._appCtxt.getById(tagsList[i]));
+		ta.push(appCtxt.getById(tagsList[i]));
 	}
 	ta.sort(ZmTag.sortCompare);
 
@@ -391,7 +390,7 @@ function(clear) {
 		var contactHdrRow = document.getElementById(this._headerRowId);
 		if (contactHdrRow) {
 			var folderId = this._contact.folderId;
-			var folder = folderId ? this._appCtxt.getById(folderId) : null;
+			var folder = folderId ? appCtxt.getById(folderId) : null;
 			var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 			var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 			contactHdrRow.className = folder && folder.isInTrash()
@@ -470,7 +469,7 @@ function(ev) {
 	var folderId = this._controller.getFolderId();
 	if (!folderId && ev.event == ZmEvent.E_MOVE) {
 		var contact = ev._details.items[0];
-		var folder = this._appCtxt.getById(contact.folderId);
+		var folder = appCtxt.getById(contact.folderId);
 		var row = this._getElement(contact, ZmItem.F_ITEM_ROW);
 		if (row) {
 			row.className = folder && folder.isInTrash()
@@ -540,7 +539,7 @@ function(contact, params) {
 	idx = this._getRow(htmlArr, idx, contact, params);
 
 	// checkbox selection
-	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
 		idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(contact, ZmItem.F_SELECTION));
 		htmlArr[idx++] = "</center></td>";
@@ -563,7 +562,7 @@ function(contact, params) {
 			htmlArr[idx++] = "<td width=16>";
 			htmlArr[idx++] = AjxImg.getImageHtml("ReadOnly");
 			htmlArr[idx++] = "</td>";
-		} else if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		} else if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 			// otherwise, show tag if there is one
 			htmlArr[idx++] = "<td style='vertical-align:middle;' width=16 class='Tag'>";
 			idx = this._getImageHtml(htmlArr, idx, contact.getTagImageInfo(), this._getFieldId(contact, ZmItem.F_TAG));

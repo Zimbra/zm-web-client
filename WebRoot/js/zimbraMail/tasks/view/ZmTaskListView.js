@@ -359,20 +359,14 @@ function(ev) {
 
 ZmTaskListView._handleOnClick =
 function(div) {
-	var appCtxt = window.parentController
-		? window.parentController._appCtxt
-		: window._zimbraMail._appCtxt;
-
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
 	tlv._handleNewTaskClick(div);
 };
 
 ZmTaskListView._handleOnBlur =
 function(ev) {
-	var appCtxt = window.parentController
-		? window.parentController._appCtxt
-		: window._zimbraMail._appCtxt;
-
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
 	tlv.saveNewTask();
 };
@@ -381,10 +375,7 @@ ZmTaskListView._handleKeyPress =
 function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
 
-	var appCtxt = window.parentController
-		? window.parentController._appCtxt
-		: window._zimbraMail._appCtxt;
-
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
 
 	if (key == DwtKeyEvent.KEY_ENTER) {

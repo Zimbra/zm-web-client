@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTaskListController = function(appCtxt, container, app) {
-	if (arguments.length == 0) return;
-	ZmListController.call(this, appCtxt, container, app);
+ZmTaskListController = function(container, app) {
+	if (arguments.length == 0) { return; }
+	ZmListController.call(this, container, app);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -56,7 +56,7 @@ function(list, folderId) {
 
 		// XXX: WHY?
 		// find out if we just searched for a shared address book
-		var folder = this._appCtxt.getById(folderId);
+		var folder = appCtxt.getById(folderId);
 		this._list._isShared = folder ? folder.link : false;
 		this._list.setHasMore(list.getAttribute("more"));
 	}
@@ -109,7 +109,7 @@ ZmTaskListController.prototype.quickSave =
 function(name, callback) {
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
 
-	var task = new ZmTask(this._appCtxt, this._list, null, folderId);
+	var task = new ZmTask(appCtxt, this._list, null, folderId);
 	task.setName(name);
 	task.setViewMode(ZmCalItem.MODE_NEW);
 	task.location = "";
@@ -198,7 +198,7 @@ function(parent, num) {
 	// a valid folderId means user clicked on an addrbook
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
 	if (folderId) {
-		var folder = this._appCtxt.getById(folderId);
+		var folder = appCtxt.getById(folderId);
 		var isShare = folder && folder.link;
 		var canEdit = (folder == null || !folder.isReadOnly());
 
@@ -231,7 +231,7 @@ function(task, mode) {
 		this._showTypeDialog(task, ZmCalItem.MODE_DELETE);
 	} else {
 		var callback = new AjxCallback(this, this._handleDelete, [task]);
-		this._appCtxt.getConfirmationDialog().popup(ZmMsg.confirmCancelTask, callback);
+		appCtxt.getConfirmationDialog().popup(ZmMsg.confirmCancelTask, callback);
 	}
 };
 
