@@ -72,12 +72,14 @@
             <td style='padding:20px'>
 
     <table width=100% height=100% cellpadding="0" cellspacing="0" border=0>
+        <c:if test="${param.notoolbar ne '1'}">
         <tr>
             <td class='TbTop'>
                 <rest:calendarViewToolbar timezone="${timezone}" today="${today}" date="${date}" prevDate="${prevDate}"
                                          nextDate="${nextDate}" title="${tbTitle}" context="${context}" keys="true"/>
             </td>
         </tr>
+        </c:if>
         <tr>
             <td class='ZhAppContent'>
                 ${multiDay}

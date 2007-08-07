@@ -39,12 +39,16 @@
 </rest:handleError>
 
 <rest:view title="${title}">
-
+<!--
+tz=timezone  date=YYYYMMDD   view=day|workWeek|week|month  notoolbar=1
+skin=skin-name color=defaultColor(0)|blue(1)|cyan(2)|green(3)|purple(4)|red(5)|yellow(6)|pink(7)|gray(8)|orange(9)
+-->
     <table width=100% cellpadding="0" cellspacing="0" border=0>
         <tr>
             <td style='padding:20px'>
 
                 <table width=100% cellpadding="0" cellspacing="0" border=0>
+                    <c:if test="${param.notoolbar ne '1'}">
                     <tr>
                         <td class='TbTop'>
                             <rest:calendarViewToolbar today="${today}" date="${date}" timezone="${timezone}"
@@ -52,6 +56,7 @@
                                                       context="${context}" keys="true"/>
                         </td>
                     </tr>
+                    </c:if>
                     <tr>
                         <td class='ZhAppContent'>
                             <table width=100% class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
@@ -104,7 +109,7 @@
                                                         <tr>
                                                             <td>
                                                                 <rest:monthAppt
-                                                                        color="${zm:getFolderStyleColor(requestScope.zimbra_target_item_color, 'appointment')}"
+                                                                        color="${zm:getFolderStyleColor(requestScope.itemColor, 'appointment')}"
                                                                         appt="${appt}" start="${dayStart}"
                                                                         end="${dayEnd}" timezone="${timezone}"/>
                                                             </td>

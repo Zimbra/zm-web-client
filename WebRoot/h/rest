@@ -12,17 +12,18 @@
 
 <c:set var="type" value="${requestScope.zimbra_target_item_type}"/>
 <c:set var="view" value="${requestScope.zimbra_target_item_view}"/>
+<c:set var="itemColor" value="${not empty param.color ? param.color : requestScope.zimbra_target_item_color}" scope="request"/>
 
 <zm:getMailbox var="mailbox" restauthtoken="${requestScope.zimbra_authToken}" resttargetaccountid="${requestScope.zimbra_target_account_id}"/>
 
-<!-- ${pageContext.request.requestURL} ====  ${requestScope.zimbra_request_uri} -->
 <c:choose>
     <c:when test="${(type eq 'folder' or type eq 'mountpoint') and (view eq 'appointment')}">
         <rest:calendar mailbox="${mailbox}" timezone="${timezone}"/>
     </c:when>
     <c:otherwise>
         <rest:view title="">
-        <pre>
+            <fmt:message key="unsupportedRestView"/>
+        <!--
             zimbra_internal_dispatch: (${requestScope.zimbra_internal_dispatch})
             zimbra_authToken: (${requestScope.zimbra_authToken})
             zimbra_target_account_name: (${requestScope.zimbra_target_account_name})
@@ -34,6 +35,7 @@
             zimbra_target_account_prefTimeZoneId: (${requestScope.zimbra_target_account_prefTimeZoneId})
             zimbra_target_account_prefSkin: (${requestScope.zimbra_target_account_prefSkin})
         </pre>
+        -->
         </rest:view>         
     </c:otherwise>
 </c:choose>

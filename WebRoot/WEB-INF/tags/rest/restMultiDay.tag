@@ -89,7 +89,7 @@
                 <c:choose>
                     <c:when test="${not empty cell.appt}">
                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
-                            <rest:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${timezone}" color="${zm:getFolderStyleColor(requestScope.zimbra_target_item_color, 'appointment')}"/>
+                            <rest:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${timezone}" color="${zm:getFolderStyleColor(requestScope.itemColor, 'appointment')}"/>
                     </c:when>
                     <c:otherwise>
                         &nbsp;
@@ -155,7 +155,7 @@
 
                     <td <c:if test="${diffDay}">class='ZhCalDaySEP' </c:if> valign=top height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
-                        <rest:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${cell.day.startTime}" end="${cell.day.endTime}" timezone="${timezone}" color="${zm:getFolderStyleColor(requestScope.zimbra_target_item_color, 'appointment')}"/>
+                        <rest:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${cell.day.startTime}" end="${cell.day.endTime}" timezone="${timezone}" color="${zm:getFolderStyleColor(requestScope.itemColor, 'appointment')}"/>
                     </td>
                 </c:when>
                 <c:when test="${empty cell.appt}">

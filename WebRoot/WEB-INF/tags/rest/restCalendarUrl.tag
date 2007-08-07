@@ -26,7 +26,10 @@
     </c:if>
     <c:if test="${not empty param.numdays and view eq 'day'}"><c:param name='numdays' value='${param.numdays}'/></c:if>
     <c:if test="${not empty param.tz}"><c:param name='tz' value='${param.tz}'/></c:if>
-    <c:if test="${not empty param.sq or not empty sq}"><c:param name='sq' value='${not empty sq ? sq : param.sq}'/></c:if> 
+    <c:if test="${not empty param.skin}"><c:param name='skin' value='${param.skin}'/></c:if>
+    <c:if test="${not empty param.color}"><c:param name='color' value='${param.color}'/></c:if>
+    <c:if test="${not empty param.notoolbar}"><c:param name='notoolbar' value='${param.notoolbar}'/></c:if>
+    <c:if test="${not empty param.sq or not empty sq}"><c:param name='sq' value='${not empty sq ? sq : param.sq}'/></c:if>
     <c:choose>
         <c:when test="${not empty rawdate}">
             <c:param name='date'><fmt:formatDate timeZone="${timezone}" value="${rawdate.time}" pattern="yyyyMMdd"/></c:param>

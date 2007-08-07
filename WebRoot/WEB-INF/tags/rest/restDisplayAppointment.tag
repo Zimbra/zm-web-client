@@ -23,7 +23,7 @@
 </c:set>
 
 <c:set var="appt" value="${invite.component}"/>
-<c:set var="color" value="${zm:getFolderStyleColor(requestScope.zimbra_target_item_color, 'appointment')}"/>
+<c:set var="color" value="${zm:getFolderStyleColor(requestScope.itemColor, 'appointment')}"/>
 
 <fmt:message var="noSubject" key="noSubject"/>
 
