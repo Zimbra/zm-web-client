@@ -587,6 +587,7 @@ function(on) {
         }
         this._kickPolling(true);
     } else {
+        this._pollInstantNotifications = false;
         this.setPollInterval(true);
     }
 }
@@ -728,20 +729,20 @@ function(ex) {
   			ex.code != ZmCsfeException.SVC_AUTH_REQUIRED &&
   			ex.code != ZmCsfeException.NO_AUTH_TOKEN);
   };
-  
-ZmZimbraMail.prototype._handleResponseDoPoll =
-function(ex) {
-    this._pollRequest = null;
-    // restart poll timer if we didn't get an exception
 
-   	this._kickPolling(true);
-};
 
 ZmZimbraMail.prototype._handleResponseDoPoll =
-function(ex) {
+function(result) {
     this._pollRequest = null;
-    // restart poll timer if we didn't get an exception
-   	this._kickPolling(true);
+    var noopResult = result.getResponse().NoOpResponse;
+    if (noopResult.waitDisallowed) {
+        // go back to polling mode b/c the server doesn't
+        // want us to use instant notify.
+        this.setInstantNotify(false);
+    }  else {
+        // restart poll timer if we didn't get an exception
+   	    this._kickPolling(true);
+    }
 };
 
 ZmZimbraMail.prototype._registerOrganizers =
