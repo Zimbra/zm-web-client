@@ -30,17 +30,20 @@
 
 <rest:handleError>
 <c:choose>
+    <c:when test="${param.action eq 'view'}">
+        <rest:apptView mailbox="${mailbox}"/>
+    </c:when>
     <c:when test="${view eq 'day'}">
-        <rest:multiDayView timezone="${timezone}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
+        <rest:multiDayView mailbox="${mailbox}" timezone="${timezone}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
     </c:when>
     <c:when test="${view eq 'workWeek'}">
-        <rest:multiDayView timezone="${timezone}" date="${dateContext}" view='${view}' numdays="5"/>
+        <rest:multiDayView mailbox="${mailbox}" timezone="${timezone}" date="${dateContext}" view='${view}' numdays="5"/>
     </c:when>
     <c:when test="${view eq 'week'}">
-        <rest:multiDayView timezone="${timezone}" date="${dateContext}" view='${view}' numdays="7"/>
+        <rest:multiDayView mailbox="${mailbox}" timezone="${timezone}" date="${dateContext}" view='${view}' numdays="7"/>
     </c:when>
     <c:when test="${view eq 'schedule'}">
-        <rest:multiDayView timezone="${timezone}" date="${dateContext}" numdays="1" view="${view}"/>
+        <rest:multiDayView mailbox="${mailbox}" timezone="${timezone}" date="${dateContext}" numdays="1" view="${view}"/>
     </c:when>
     <c:otherwise>
         <rest:monthView mailbox="${mailbox}" timezone="${timezone}" date="${dateContext}"/>

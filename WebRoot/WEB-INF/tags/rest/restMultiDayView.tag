@@ -2,6 +2,7 @@
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
 <%@ attribute name="numdays" rtexprvalue="true" required="true" %>
 <%@ attribute name="view" rtexprvalue="true" required="true" %>
+<%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -9,12 +10,12 @@
 <%@ taglib prefix="rest" uri="com.zimbra.restclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <rest:handleError>
-    <zm:getMailbox var="mailbox"/>
+
     <fmt:setTimeZone value="${timezone}"/>
     <c:set var="context" value="${null}"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
-
-    <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
+    <c:set var="firstDOW" value="${requestScope.zimbra_target_account_prefCalendarFirstDayOfWeek}"/>
+    <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, firstDOW, view)}"/>
     <c:set var="scheduleView" value="${view eq 'schedule'}"/>
     <c:choose>
         <c:when test="${scheduleView}">
@@ -48,7 +49,8 @@
     <c:set var="checkedCalendars" value="${requestScope.zimbra_target_item_id}"/>
 
     <%-- fetch mini cal appts first, so they are in cache, as well as any data neded by this view --%>
-    <c:set var="startOfMonth" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
+
+    <c:set var="startOfMonth" value="${zm:getFirstDayOfMonthView(date, firstDOW)}"/>
     <zm:getAppointmentSummaries box="${mailbox}" timezone="${timezone}" var="minicalappts" folderid="${checkedCalendars}" start="${startOfMonth.timeInMillis}" end="${zm:addDay(startOfMonth, 42).timeInMillis}" query="${requestScope.calendarQuery}" varexception="gasException"/>
     <c:if test="${not empty gasException}">
         <zm:getException var="error" exception="${gasException}"/>

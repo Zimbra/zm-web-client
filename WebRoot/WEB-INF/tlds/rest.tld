@@ -75,6 +75,18 @@
         <path>/WEB-INF/tags/rest/restCalendarViewBottomToolbar.tag</path>
     </tag-file>
 
+    <tag-file>
+        <name>displayAppointment</name>
+        <path>/WEB-INF/tags/rest/restDisplayAppointment.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>apptView</name>
+        <path>/WEB-INF/tags/rest/restApptView.tag</path>
+    </tag-file>
+
+
+
 </taglib>
 
         
