@@ -42,10 +42,9 @@ ZmComposeView = function(parent, controller, composeMode) {
 
 	this._onMsgDataChange = new AjxCallback(this, this._onMsgDataChange);
 
-	this._appCtxt = controller._appCtxt;
 	this._controller = controller;
-	this._contactPickerEnabled = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-								 this._appCtxt.get(ZmSetting.GAL_ENABLED);
+	this._contactPickerEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
+								 appCtxt.get(ZmSetting.GAL_ENABLED);
 	this._initialize(composeMode);
 
 	// make sure no unnecessary scrollbars show up
@@ -137,7 +136,7 @@ function(params) {
 	// reset To/Cc/Bcc fields
 	this._showAddressField(AjxEmailAddress.TO, true, true, true);
 	this._showAddressField(AjxEmailAddress.CC, true, true, true);
-	this._showAddressField(AjxEmailAddress.BCC, this._appCtxt.get(ZmSetting.SHOW_BCC), true, true);
+	this._showAddressField(AjxEmailAddress.BCC, appCtxt.get(ZmSetting.SHOW_BCC), true, true);
 
 	// populate fields based on the action and user prefs
 	this._setAddresses(action, params.toOverride);
@@ -376,7 +375,7 @@ function(attId, isDraft) {
 	    return;
 	}
 
-	var cd = this._confirmDialog = this._appCtxt.getOkCancelMsgDialog();
+	var cd = this._confirmDialog = appCtxt.getOkCancelMsgDialog();
 	cd.reset();
 
 	// Is there a subject? If not, ask the user if they want to send anyway.
@@ -406,7 +405,7 @@ function(attId, isDraft) {
 	}
 
 	// Create Msg Object
-	var msg = new ZmMailMsg(this._appCtxt);
+	var msg = new ZmMailMsg(appCtxt);
 	msg.setSubject(subject);
 	
 	//Handle Inline Attachments
@@ -510,7 +509,7 @@ function(attId, isDraft) {
 		}
 	}
 
-	//var msg = new ZmMailMsg(this._appCtxt);
+	//var msg = new ZmMailMsg(appCtxt);
 	msg.setTopPart(top);
 	msg.setSubject(subject);
 	msg.setForwardAttIds(forwardAttIds);
@@ -591,7 +590,7 @@ function(type, addr) {
 ZmComposeView.prototype.setComposeMode =
 function(composeMode) {
 	if (composeMode == DwtHtmlEditor.TEXT ||
-		(composeMode == DwtHtmlEditor.HTML && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))) {
+		(composeMode == DwtHtmlEditor.HTML && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))) {
 
 		var curMember = (this._composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
 
@@ -669,7 +668,7 @@ function() {
 		this._action == ZmOperation.FORWARD_INLINE || 
 		this._action == ZmOperation.FORWARD_ATT)
 	{
-		this._appCtxt.getKeyboardMgr().grabFocus(this._field[AjxEmailAddress.TO]);
+		appCtxt.getKeyboardMgr().grabFocus(this._field[AjxEmailAddress.TO]);
 	}
 	else
 	{
@@ -746,7 +745,7 @@ function(msg, idoc) {
 
 ZmComposeView.prototype.showAttachmentDialog =
 function() {
-	var attachDialog = this._appCtxt.getAttachDialog();
+	var attachDialog = appCtxt.getAttachDialog();
 	var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
 	attachDialog.setUploadCallback(callback);
 
@@ -872,11 +871,11 @@ function(content) {
 ZmComposeView.prototype._dispose =
 function() {
 	if (this._identityChangeListenerObj) {
-		var collection = this._appCtxt.getIdentityCollection();
+		var collection = appCtxt.getIdentityCollection();
 		collection.removeChangeListener(this._identityChangeListenerObj);
 	}
 	if (this._signatureChangeListenerObj) {
-		var collection = this._appCtxt.getSignatureCollection();
+		var collection = appCtxt.getSignatureCollection();
 		collection.removeChangeListener(this._signatureChangeListenerObj);
 	}
 };
@@ -886,7 +885,7 @@ function() {
 	var signatureId = this._signatureSelect.getValue();
 	if (!signatureId) { return; }
 
-	var signature = this._appCtxt.getSignatureCollection().getById(signatureId);
+	var signature = appCtxt.getSignatureCollection().getById(signatureId);
 
 	var sig = signature.value;
 	var newLine = this._getSignatureNewLine();
@@ -1124,11 +1123,11 @@ function(action, toOverride) {
 	{
 		// Prevent user's login name and aliases from going into To: or Cc:
 		var used = {};
-		var uname = this._appCtxt.get(ZmSetting.USERNAME);
+		var uname = appCtxt.get(ZmSetting.USERNAME);
 		if (uname) {
 			used[uname.toLowerCase()] = true;
 		}
-		var aliases = this._appCtxt.get(ZmSetting.MAIL_ALIASES);
+		var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
 		for (var i = 0, count = aliases.length; i < count; i++) {
 			used[aliases[i].toLowerCase()] = true;
 		}
@@ -1310,7 +1309,7 @@ function(action, msg, extraBodyText, incOption) {
 		} else {
 			var from = msg.getAddress(AjxEmailAddress.FROM);
 			if (!from && msg.isSent)
-				from = this._appCtxt.get(ZmSetting.USERNAME);
+				from = appCtxt.get(ZmSetting.USERNAME);
 			var preface = "";
 			if (from) {
 				if (!ZmComposeView._replyPrefixFormatter) {
@@ -1410,20 +1409,20 @@ function(composeMode) {
 	this._createHtml();
 
 	// init compose view w/ based on user prefs
-	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
-	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+	var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+	var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	var defaultCompMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 	this._composeMode = composeMode || defaultCompMode;
 
 	// init html editor
-	this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode, this._appCtxt);
+	this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode, appCtxt);
 //	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 	this._bodyField = document.getElementById(this._bodyFieldId);
 
 	// misc. inits
-	this._msgDialog = this._appCtxt.getMsgDialog();
+	this._msgDialog = appCtxt.getMsgDialog();
 	this.setScrollStyle(DwtControl.SCROLL);
 	this._attachCount = 0;
 
@@ -1446,8 +1445,8 @@ function(templateId, data) {
 	this._signatureDivId = data.id+"_signature_row";
 
 	// init autocomplete list
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var contactsClass = this._appCtxt.getApp(ZmApp.CONTACTS);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getAcListLoc, [this]);
 		var compCallback = (!AjxEnv.isSafari || AjxEnv.isSafariNightly) ? (new AjxCallback(this, this._acCompHandler)) : null;
@@ -1487,7 +1486,7 @@ function(templateId, data) {
 				button.addrType = type;
 
 				// autocomplete-related handlers
-				if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+				if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 					this._acAddrSelectList.handle(this._field[type]);
 				} else if (!AjxEnv.isSafari || AjxEnv.isSafariNightly) {
 					this._setEventHandler(this._fieldId[type], "onKeyUp");
@@ -1509,7 +1508,7 @@ function(templateId, data) {
 	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 	this._identitySelect.getHtmlElement().style.width='100%';
 
-	var identityCollection = this._appCtxt.getIdentityCollection();
+	var identityCollection = appCtxt.getIdentityCollection();
 	if (!this._identityChangeListenerObj) {
 		this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
 	}
@@ -1526,12 +1525,12 @@ function(templateId, data) {
 
 	/***
 	if (identityOptions.length > 0) {
-		var identity = this._appCtxt.getIdentityCollection().getById(identityOptions[0].value);
+		var identity = appCtxt.getIdentityCollection().getById(identityOptions[0].value);
 		this._signatureSelect.setSelectedValue(identity.signature || "");
 	}
 	/***/
 
-	var signatureCollection = this._appCtxt.getSignatureCollection();
+	var signatureCollection = appCtxt.getSignatureCollection();
 	if (!this._signatureChangeListenerObj) {
 		this._signatureChangeListenerObj = new AjxListener(this, this._signatureChangeListener);
 	}
@@ -1544,7 +1543,7 @@ function(templateId, data) {
 ZmComposeView.prototype._getIdentityOptions =
 function() {
 	var options = [];
-	var identityCollection = this._appCtxt.getIdentityCollection();
+	var identityCollection = appCtxt.getIdentityCollection();
 	var identities = identityCollection.getIdentities();
 	for (var i = 0, count = identities.length; i < count; i++) {
 		var identity = identities[i];
@@ -1588,18 +1587,18 @@ function(ev) {
 
 ZmComposeView.prototype._setIdentityVisible =
 function() {
-	if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) return;
+	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) return;
 
 	var div = document.getElementById(this._identityDivId);
 	if (!div) return;
 
-	var visible = this._appCtxt.getIdentityCollection().getSize() > 1;
+	var visible = appCtxt.getIdentityCollection().getSize() > 1;
 	Dwt.setVisible(div, visible);
 };
 
 ZmComposeView.prototype._getSignatureOptions =
 function() {
-	return this._appCtxt.getSignatureCollection().getSignatureOptions();
+	return appCtxt.getSignatureCollection().getSignatureOptions();
 };
 
 ZmComposeView.prototype._signatureChangeListener =
@@ -1627,12 +1626,12 @@ function(ev) {
 
 ZmComposeView.prototype._setSignatureVisible =
 function() {
-	if (!this._appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) return;
+	if (!appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) return;
 
 	var div = document.getElementById(this._signatureDivId);
 	if (!div) return;
 
-	var visible = this._appCtxt.getSignatureCollection().getSize() > 0;
+	var visible = appCtxt.getSignatureCollection().getSize() > 0;
 	Dwt.setVisible(div, visible);
 };
 
@@ -1648,7 +1647,7 @@ function() {
 
 ZmComposeView.prototype.getIdentity =
 function() {
-	var identityCollection = this._appCtxt.getIdentityCollection();
+	var identityCollection = appCtxt.getIdentityCollection();
 	var id = this._identitySelect.getValue();
 	var result = identityCollection.getById(id);
 	return result ? result : identityCollection.defaultIdentity;
@@ -1659,7 +1658,8 @@ function(msg, action, replyPref) {
 	var html = "";
 
 	if (this._msgIds && this._msgIds.length) {
-		var appCtxt = window.parentController ? window.parentController._appCtxt : this._appCtxt;
+		// use main window's appCtxt
+		var appCtxt = appCtxt.isChildWindow ? window.parentController._parentAppCtxt : appCtxt;
 		var messages = [];
 		for (var i = 0; i < this._msgIds.length; i++) {
 			var message = appCtxt.cacheGet(this._msgIds[i]);
@@ -1728,7 +1728,7 @@ function(type, show, skipNotify, skipFocus) {
 	this._field[type].noTab = !show;
 	var setting = ZmComposeView.ADDR_SETTING[type];
 	if (setting) {
-		this._appCtxt.set(setting, show, null, false, skipNotify);
+		appCtxt.set(setting, show, null, false, skipNotify);
 	}
 	this._resetBodySize();
 };
@@ -1790,7 +1790,7 @@ function(ev, addrType) {
 			{ id: AjxEmailAddress.TO,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.TO]] },
 			{ id: AjxEmailAddress.CC,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.CC]] },
 			{ id: AjxEmailAddress.BCC,	label: ZmMsg[AjxEmailAddress.TYPE_STRING[AjxEmailAddress.BCC]] }];
-		this._contactPicker = new ZmContactPicker(this._appCtxt, buttonInfo);
+		this._contactPicker = new ZmContactPicker(appCtxt, buttonInfo);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOkCallback, this);
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancelCallback, this);
 	}
@@ -1848,7 +1848,7 @@ function(args) {
 		if (key == DwtKeyEvent.KEY_TAB) {
 			var toField = document.getElementById(this._fieldId[AjxEmailAddress.TO]);
 			if (toField) {
-				this._appCtxt.getKeyboardMgr().grabFocus(toField);
+				appCtxt.getKeyboardMgr().grabFocus(toField);
 			}
 			rv = false;
 		}
@@ -1897,7 +1897,7 @@ ZmComposeView.prototype._noSubjectCancelCallback =
 function() {
 	this.enableInputs(true);
 	this._confirmDialog.popdown();
-	this._appCtxt.getKeyboardMgr().grabFocus(this._subjectField);
+	appCtxt.getKeyboardMgr().grabFocus(this._subjectField);
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
 };
@@ -1918,7 +1918,7 @@ function(type) {
 	this._badAddrsOkay = false;
 	this._confirmDialog.popdown();
 	if (this._using[type]) {
-		this._appCtxt.getKeyboardMgr().grabFocus(this._field[type]);
+		appCtxt.getKeyboardMgr().grabFocus(this._field[type]);
 	}
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
