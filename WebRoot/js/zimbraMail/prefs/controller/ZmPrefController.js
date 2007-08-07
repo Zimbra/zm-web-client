@@ -236,6 +236,7 @@ function(ev, callback, noPop) {
 	// is there anything to do?
 	var dirty = this._prefsView.getChangedPrefs(true, true);
 	if (!dirty) {
+		this._appCtxt.getAppViewMgr().popView(true);
 		return;
 	}
 
