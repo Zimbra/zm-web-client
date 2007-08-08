@@ -169,7 +169,7 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 	// REVISIT: Need to do proper list management! For now we fake
 	//          a list of a single item so that operations like
 	//          tagging and delete work.
-	this._list = new ZmList(ZmItem.PAGE, appCtxt);
+	this._list = new ZmList(ZmItem.PAGE);
 	if (this._object) {
 		this._list.add(this._object);
 	}
@@ -223,11 +223,11 @@ ZmNotebookPageController.prototype._enableNaviButtons = function() {
 	var toolbar = this._toolbar[this._currentView];
 	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
 	button.setEnabled(enabled && this._place > 0);
-	ZmNotebookPageController.__setButtonToolTip(appCtxt, button, this._history[this._place - 1], ZmMsg.goBack);
+	ZmNotebookPageController.__setButtonToolTip(button, this._history[this._place - 1], ZmMsg.goBack);
 
 	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
 	button.setEnabled(enabled && this._place + 1 < this._history.length);
-	ZmNotebookPageController.__setButtonToolTip(appCtxt, button, this._history[this._place + 1], ZmMsg.goForward);
+	ZmNotebookPageController.__setButtonToolTip(button, this._history[this._place + 1], ZmMsg.goForward);
 };
 
 // listeners
@@ -274,7 +274,7 @@ ZmNotebookPageController.prototype._showIndex = function(folderId) {
 // Private functions
 //
 
-ZmNotebookPageController.__setButtonToolTip = function(appCtxt, button, pageRef, defaultValue) {
+ZmNotebookPageController.__setButtonToolTip = function(button, pageRef, defaultValue) {
 	var text = pageRef ? pageRef.name : defaultValue;
 	if (text == ZmNotebook.PAGE_INDEX) {
 		var notebook = appCtxt.getById(pageRef.folderId);
@@ -307,7 +307,7 @@ ZmNotebookPageController.prototype.updateHistory = function() {
 	// REVISIT: Need to do proper list management! For now we fake
 	//          a list of a single item so that operations like
 	//          tagging and delete work.
-	this._list = new ZmList(ZmItem.PAGE, appCtxt);
+	this._list = new ZmList(ZmItem.PAGE);
 	if (this._object) {
 		this._list.add(this._object);
 	}

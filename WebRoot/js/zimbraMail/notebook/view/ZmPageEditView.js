@@ -23,10 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPageEditView = function(parent, appCtxt, controller) {
+ZmPageEditView = function(parent, controller) {
 	DwtComposite.call(this, parent, "ZmPageEditView", DwtControl.ABSOLUTE_STYLE);
 	
-	this._appCtxt = appCtxt;
 	this._controller = controller;
 	
 	this._createHtml();
@@ -48,7 +47,6 @@ function() {
 ZmPageEditView.DIALOG_X = 50;
 ZmPageEditView.DIALOG_Y = 100;
 
-ZmPageEditView.prototype._appCtxt;
 ZmPageEditView.prototype._controller;
 
 ZmPageEditView.prototype._locationEl;
@@ -73,8 +71,6 @@ function(page) {
 };
 ZmPageEditView.prototype._setResponse = function(page) {
 	// set location
-	var appCtxt = this._appCtxt;
-
 	this._pageEditor.setFooterInfo(page);
 	
 	// set name
@@ -194,7 +190,7 @@ function() {
 	Dwt.setHandler(titleInputEl, DwtEvent.ONCHANGE, ZmPageEditView._onNameChange);
 	Dwt.setHandler(titleInputEl, DwtEvent.ONKEYPRESS, ZmPageEditView._onNameChange);
 
-	this._pageEditor = new ZmPageEditor(this, null, null, DwtHtmlEditor.HTML, this._appCtxt, this._controller);
+	this._pageEditor = new ZmPageEditor(this, null, null, DwtHtmlEditor.HTML, this._controller);
 	// HACK: Notes are always HTML format, regardless of the COS setting.
 	this._pageEditor.isHtmlEditingSupported = new Function("return true");
 	var textAreaEl = this._pageEditor.getHtmlElement();
@@ -279,9 +275,9 @@ function() {
 // ZmPageEditor class
 //
 
-ZmPageEditor = function(parent, posStyle, content, mode, appCtxt, controller) {
+ZmPageEditor = function(parent, posStyle, content, mode, controller) {
 	if (arguments.length == 0) return;
-	ZmHtmlEditor.call(this, parent, posStyle, content, mode, appCtxt, true /* enable ace */);
+	ZmHtmlEditor.call(this, parent, posStyle, content, mode, true /* enable ace */);
 	this._controller = controller;
 }
 ZmPageEditor.prototype = new ZmHtmlEditor;
@@ -603,9 +599,9 @@ ZmPageEditor.prototype._insertObjectsListener = function(event, func, title) {
 
 ZmPageEditor.prototype.__popupUploadDialog = function(callback, title) {
 	var page = this._controller.getPage();
-	var notebook = this._appCtxt.getById(page.folderId);
+	var notebook = appCtxt.getById(page.folderId);
 
-	var dialog = this._appCtxt.getUploadDialog();
+	var dialog = appCtxt.getUploadDialog();
 	dialog.popup(notebook, callback, title);
 };
 
@@ -689,7 +685,7 @@ ZmPageEditor.prototype._popupLinkPropsDialog = function(target, url, text) {
 	if (!this._insertLinkCallback) {
 		this._insertLinkCallback = new AjxCallback(this, this._insertLink);
 	}
-	var dialog = this._appCtxt.getLinkPropsDialog();
+	var dialog = appCtxt.getLinkPropsDialog();
 	dialog.popup(linkInfo, this._insertLinkCallback);
 };
 
@@ -778,7 +774,7 @@ ZmPageEditor.prototype._popupReplaceDialog = function(target, url, text) {
 	var editorInfo = {
 		document: this._getIframeDoc(),editor: this
 	}
-	var dialog = this._appCtxt.getReplaceDialog();
+	var dialog = appCtxt.getReplaceDialog();
 	dialog.popup(editorInfo);
 };
 
@@ -819,17 +815,16 @@ function() {
 ZmPageEditor.prototype.setFooterInfo = 
 function(page){
 	
-	var appCtxt = this._appCtxt;
 	var content;
 	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	if (page.folderId == rootId) {
-		content = this._appCtxt.getById(page.folderId).name;
+		content = appCtxt.getById(page.folderId).name;
 	}else {
 		var separator = "&nbsp;&raquo;&nbsp;";
 		var a = [ ];
 		var folderId = page.folderId;
 		while (folderId != rootId) {
-			var notebook = this._appCtxt.getById(folderId);
+			var notebook = appCtxt.getById(folderId);
 			a.unshift(notebook.name);
 			folderId = notebook.parent.id;
 			if (folderId != rootId) {

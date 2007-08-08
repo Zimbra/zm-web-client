@@ -470,7 +470,7 @@ ZmNotebookApp.prototype.getFileController = function() {
 ZmNotebookApp.prototype.getNotebookCache =
 function() {
 	if (!this._notebookCache) {
-		this._notebookCache = new ZmNotebookCache(appCtxt);
+		this._notebookCache = new ZmNotebookCache();
 	}
 	return this._notebookCache;
 };

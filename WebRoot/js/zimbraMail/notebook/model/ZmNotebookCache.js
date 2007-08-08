@@ -23,8 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNotebookCache = function(appCtxt) {
-	this._appCtxt = appCtxt;
+ZmNotebookCache = function() {
 	this.clearCache();
 	this._changeListener = new AjxListener(this, this._handleChange);
 }
@@ -67,8 +66,6 @@ ZmNotebookCache._SPECIAL_CONTENT[ZmNotebook.PAGE_CHROME] = [
 // Data
 //
 
-ZmNotebookCache.prototype._appCtxt;
-
 ZmNotebookCache.prototype._idMap;
 ZmNotebookCache.prototype._foldersMap;
 ZmNotebookCache.prototype._pathMap;
@@ -84,9 +81,9 @@ ZmNotebookCache.prototype._changeListener;
 
 ZmNotebookCache.prototype.fillCache = 
 function(folderId, callback, errorCallback) {
-	var tree = this._appCtxt.getFolderTree();
+	var tree = appCtxt.getFolderTree();
 	/***
-	var notebook = this._appCtxt.getById(folderId);
+	var notebook = appCtxt.getById(folderId);
 	var path = notebook.getSearchPath();
 	var search = 'in:"'+path+'"';
 	/***/
@@ -116,7 +113,7 @@ function(folderId, callback, errorCallback) {
 		args[0] = params;
 	}
 	
-	var appController = this._appCtxt.getAppController();
+	var appController = appCtxt.getAppController();
 	var response = appController.sendRequest(params);
 	
 	if (!params.asyncMode) {
@@ -275,7 +272,7 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 			errorCallback: null
 		};
 
-		var appController = this._appCtxt.getAppController();
+		var appController = appCtxt.getAppController();
 		var response = appController.sendRequest(params);
 
 		// add found pages to the cache
@@ -373,7 +370,7 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 			errorCallback: null
 		};
 
-		var appController = this._appCtxt.getAppController();
+		var appController = appCtxt.getAppController();
 		var response = appController.sendRequest(params);
 
 		// handle response
@@ -387,15 +384,15 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 		//       because absolute paths should be relative to where
 		//       the link was followed. [Q] Should they?
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
-		notebook = this._appCtxt.getById(rootId);
+		notebook = appCtxt.getById(rootId);
 		link = link.substr(1);
 	}
 	if (!notebook) {
-		var app = this._appCtxt.getApp(ZmApp.NOTEBOOK);
+		var app = appCtxt.getApp(ZmApp.NOTEBOOK);
 		var controller = app.getNotebookController();
 		var currentPage = controller.getPage();
 		var folderId = (currentPage && currentPage.folderId) || ZmOrganizer.ID_NOTEBOOK;
-		notebook = this._appCtxt.getById(folderId);
+		notebook = appCtxt.getById(folderId);
 	}
 
 	// link: Foo/Bar
@@ -505,7 +502,7 @@ ZmNotebookCache.prototype.makeProxyPage = function(page, folderId) {
 
 ZmNotebookCache.prototype._fillCacheResponse = 
 function(requestParams, folderId, callback, errorCallback, response) {
-	var notebook = this._appCtxt.getById(folderId);
+	var notebook = appCtxt.getById(folderId);
 	var remoteFolderId = (notebook && notebook.zid) ? notebook.zid + ":" + notebook.rid : undefined;
 	// add pages to folder map in cache
 	if (response && (response.SearchResponse || response._data.SearchResponse)) {
@@ -552,7 +549,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 			var headerEl = soapDoc.getHeader();
 			headerEl.parentNode.removeChild(headerEl);
 
-			var appController = this._appCtxt.getAppController();
+			var appController = appCtxt.getAppController();
 			var response = appController.sendRequest(requestParams);
 
 			if (!requestParams.asyncMode) {
@@ -576,7 +573,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 			callback: handleResponse,
 			errorCallback: errorCallback
 		};
-		var appController = this._appCtxt.getAppController();
+		var appController = appCtxt.getAppController();
 		appController.sendRequest(params);
 	}
 	
@@ -589,17 +586,17 @@ function(requestParams, folderId, callback, errorCallback, response) {
 ZmNotebookCache.prototype._fillCacheResponse2 =
 function(folderId, callback, errorCallback, response) {
 
-	var tree = this._appCtxt.getFolderTree();
+	var tree = appCtxt.getFolderTree();
 	var resp = response.GetFolderResponse || (response._data && response._data.GetFolderResponse);
 	var folder = resp.folder && resp.folder[0];
 	var folders = folder && folder.folder;
-	var parent = this._appCtxt.getById(folderId);
+	var parent = appCtxt.getById(folderId);
 	if (folders && parent) {
 		for (var i = 0; i < folders.length; i++) {
 			var obj = folders[i];
 
 			// remove sub-tree if it already exists
-			var notebook = this._appCtxt.getById(obj.id);
+			var notebook = appCtxt.getById(obj.id);
 			if (notebook) {
 				parent.children.remove(notebook);
 				notebook._notify(ZmEvent.E_DELETE);
@@ -722,7 +719,7 @@ ZmNotebookCache.prototype.getItemInfo = function(params,overrideCache)
 			accountName: params.accountName		
 		};
 		
-		var appController = this._appCtxt.getAppController();
+		var appController = appCtxt.getAppController();
 		var response = appController.sendRequest(reqParams);
 		
 		if(!asyncMode && response){

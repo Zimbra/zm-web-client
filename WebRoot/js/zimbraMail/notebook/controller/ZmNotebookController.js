@@ -255,7 +255,7 @@ ZmNotebookController.prototype._defaultView = function() {
 ZmNotebookController.prototype._createNewView = function(view) {
 	if (!this._listView[view]) {
 		var viewCtor = ZmNotebookController._VIEWS[view];
-		this._listView[view] = new viewCtor(this._container, appCtxt, this, this._dropTgt);
+		this._listView[view] = new viewCtor(this._container, this, this._dropTgt);
 	}
 	return this._listView[view];
 };
@@ -363,7 +363,7 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 		}		
 		
 		urls.push(url);
-		names.push(ZmWikletProcessor.process(appCtxt, item, content));
+		names.push(ZmWikletProcessor.process(item, content));
 		if (noprompt) continue;
 
 		notebook = appCtxt.getById(item.folderId);

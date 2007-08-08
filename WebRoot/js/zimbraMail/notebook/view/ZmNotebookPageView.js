@@ -23,10 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNotebookPageView = function(parent, appCtxt, controller, dropTgt) {
+ZmNotebookPageView = function(parent, controller, dropTgt) {
 	DwtComposite.call(this, parent, "ZmNotebookPageView", DwtControl.ABSOLUTE_STYLE);
 	
-	this._appCtxt = appCtxt;
 	this._controller = controller;
 
 	this._USE_IFRAME = true;
@@ -47,7 +46,6 @@ function() {
 
 // Data
 
-ZmNotebookPageView.prototype._appCtxt;
 ZmNotebookPageView.prototype._controller;
 
 // Public methods
@@ -77,7 +75,7 @@ function(page) {
 			return;
 		}
 
-		var content = ZmNotebookPageView._generateContent(page, this._appCtxt);
+		var content = ZmNotebookPageView._generateContent(page);
 
 		//DBG.showTiming(true);
 		//DBG.timePt("-- ZmNotebookPageView#set --");
@@ -95,7 +93,7 @@ function(page) {
 };
 
 ZmNotebookPageView.getPrintHtml =
-function(page, appCtxt) {
+function(page) {
 	var nbController = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookController();
 	if( nbController._getViewType()  == ZmController.NOTEBOOK_PAGE_VIEW ) {
 		var view = nbController._getViewType();
@@ -112,7 +110,7 @@ function() {
 		return ZmMsg.zimbraTitle;
 	}
 	var folderId = page.getFolderId();
-	var notebook = this._appCtxt.getById(folderId);
+	var notebook = appCtxt.getById(folderId);
 	var notebookName = (notebook?notebook.getName():"");
 	return [ZmMsg.zimbraTitle, notebookName].join(": ");
 };
@@ -162,7 +160,7 @@ function(element) {
 };
 
 ZmNotebookPageView._generateContent =
-function(page, appCtxt) {
+function(page) {
 	if (!page) {
 		return "";
 	}
@@ -176,7 +174,7 @@ function(page, appCtxt) {
 		var pageContent = page.getContent();
 		content = chromeContent.replace(ZmWiklet.RE_CONTENT, pageContent);
 	}
-	return ZmWikletProcessor.process(appCtxt, page, content);
+	return ZmWikletProcessor.process(page, content);
 };
 
 ZmNotebookPageView._findObjects =
@@ -227,7 +225,7 @@ ZmNotebookPageView.prototype._getObjectMgr =
 function() {
 	if (!this._objectMgr) {
 		this._objectMgr = new ZmObjectManager(this);
-		var handler = new ZmNotebookObjectHandler(this._appCtxt);
+		var handler = new ZmNotebookObjectHandler();
 		this._objectMgr.addHandler(handler, ZmNotebookObjectHandler.TYPE, 1);
 		this._objectMgr.sortHandlers();
 	}
@@ -285,7 +283,7 @@ ZmNotebookPageView.prototype.processPageInfo = function(iSrc,t){
 		return;
 	}
 
-	var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
+	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
 
 	try{
 
@@ -441,7 +439,7 @@ ZmNotebookPageView.prototype.addColumn = function(doc)
 
 	var object = this._controller._object;
 	
-	var folder = this._appCtxt.getById(object.folderId);
+	var folder = appCtxt.getById(object.folderId);
 	var isReadOnly = false;
 	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
@@ -451,7 +449,7 @@ ZmNotebookPageView.prototype.addColumn = function(doc)
 		isReadOnly = true;
 	}	
 	
-	var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();	
+	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();	
 	
 	var tblBodyObj = table.tBodies[0];
 	for (var i=0; i<tblBodyObj.rows.length; i++) {
@@ -513,7 +511,7 @@ ZmNotebookPageView.prototype.editPage = function(pageName){
 
 var controller = this._controller;
 var object = controller._object;
-var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
+var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
 var iPage = cache.getPageByName(object.folderId,pageName);
 
 if(!iPage)
@@ -528,7 +526,7 @@ ZmNotebookPageView.prototype.deletePage = function(pageName){
 
 var controller = this._controller;
 var object = controller._object;
-var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
+var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
 var iPage = cache.getPageByName(object.folderId,pageName);
 
 if(!iPage)
@@ -669,7 +667,7 @@ ZmNotebookPageView.prototype.fetchInfo = function(path)
 	}
 
 	if(wikiPath && accountName) {
-		var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
+		var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
 		var callback = new AjxCallback(this,this.handleItemResponse);
 		cache.getItemInfo({path:wikiPath,accountName:accountName,callback:callback});		
 	}			
@@ -697,9 +695,9 @@ ZmNotebookPageView.prototype.handleItemResponse = function(item){
 			this._controller.historyLoading = null;
 			}
 			
-			var overviewController = this._appCtxt.getOverviewController();
+			var overviewController = appCtxt.getOverviewController();
 			var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-			var notebookApp = this._appCtxt.getApp(ZmApp.NOTEBOOK);
+			var notebookApp = appCtxt.getApp(ZmApp.NOTEBOOK);
 			var treeView = treeController.getTreeView(notebookApp.getOverviewId());
 			if (treeView) {
 				var folderId = this._controller._object.getFolderId();
@@ -713,7 +711,7 @@ ZmNotebookPageView.prototype.handleItemResponse = function(item){
 ZmNotebookPageView.prototype.fixCrossDomainReference = function(url){
 
 	var refURL = window.location.protocol+"//"+window.location.host;
-	var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();	
+	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();	
 	var urlParts = cache.parseURL(url);
 	if(urlParts.authority!=window.location.host){
 		var oldRef = urlParts.protocol +"://"+ urlParts.authority;

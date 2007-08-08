@@ -176,7 +176,7 @@ function() {
 ZmPageEditController.prototype._createNewView =
 function(view) {
 	if (!this._pageEditView) {
-		this._pageEditView = new ZmPageEditView(this._container, appCtxt, this);
+		this._pageEditView = new ZmPageEditView(this._container, this);
 	}
 	return this._pageEditView;
 };

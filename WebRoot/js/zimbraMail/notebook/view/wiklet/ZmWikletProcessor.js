@@ -33,12 +33,12 @@ ZmWikletProcessor._data;
 
 // Static functions
 
-ZmWikletProcessor.process = function(appCtxt, item, content) {
+ZmWikletProcessor.process = function(item, content) {
 	// global values needed by _replaceWiklet
 	var notebookApp = appCtxt.getApp(ZmApp.NOTEBOOK);
 	var cache = notebookApp.getNotebookCache();
 
-    ZmWikletProcessor._context = new ZmWikletContext(appCtxt, cache);
+    ZmWikletProcessor._context = new ZmWikletContext(cache);
 	ZmWikletProcessor._context.pushItem(item);
     ZmWikletProcessor._data = [];
 

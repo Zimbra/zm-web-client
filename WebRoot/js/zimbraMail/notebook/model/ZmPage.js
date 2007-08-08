@@ -222,7 +222,7 @@ function(version, callback, errorCallback, traverseUp) {
 
 ZmPage.prototype.getPrintHtml =
 function(preferHtml, callback) {
-	return ZmNotebookPageView.getPrintHtml(this, appCtxt);
+	return ZmNotebookPageView.getPrintHtml(this);
 };
 
 /***
