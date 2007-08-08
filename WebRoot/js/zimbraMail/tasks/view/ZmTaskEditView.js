@@ -23,10 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTaskEditView = function(parent, appCtxt, controller) {
-	if (arguments.length == 0) return;
-
-	ZmCalItemEditView.call(this, parent, appCtxt, null, controller, null, DwtControl.ABSOLUTE_STYLE);
+ZmTaskEditView = function(parent, controller) {
+	ZmCalItemEditView.call(this, parent, null, controller, null, DwtControl.ABSOLUTE_STYLE);
 };
 
 ZmTaskEditView.prototype = new ZmCalItemEditView;
@@ -172,7 +170,7 @@ function() {
 		id: this._htmlElId,
 		height: (this.parent.getSize().y - 30),
 		locationId: (this._htmlElId + "_location"),
-		isGalEnabled: this._appCtxt.get(ZmSetting.GAL_ENABLED),
+		isGalEnabled: appCtxt.get(ZmSetting.GAL_ENABLED),
 		isAppt: false
 	};
 

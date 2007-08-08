@@ -72,7 +72,7 @@ function(calItem) {
 
 ZmTaskController.prototype._createComposeView =
 function() {
-	return (new ZmTaskEditView(this._container, appCtxt, this));
+	return (new ZmTaskEditView(this._container, this));
 };
 
 ZmTaskController.prototype._setComposeTabGroup =
