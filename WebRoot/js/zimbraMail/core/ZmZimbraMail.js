@@ -1264,7 +1264,7 @@ function(ev) {
 	if (zm) {
 		// cancel old timer and start a new one
 		AjxTimedAction.cancelAction(zm._sessionTimerId);
-		var timeout = zm._appCtxt.get(ZmSetting.IDLE_SESSION_TIMEOUT) * 1000;
+		var timeout = appCtxt.get(ZmSetting.IDLE_SESSION_TIMEOUT) * 1000;
 		zm._sessionTimerId = AjxTimedAction.scheduleAction(zm._sessionTimer, timeout);
 	}
 	DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER RESET (" + (new Date()).toLocaleString() + ")");
