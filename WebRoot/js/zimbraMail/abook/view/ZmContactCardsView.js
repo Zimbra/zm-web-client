@@ -40,7 +40,7 @@ ZmContactCardsView = function(parent, className, posStyle, controller, dropTgt) 
 
 	this.addControlListener(new AjxListener(this, this._controlListener));
 
-	this._addrbookTree = this._appCtxt.getFolderTree();
+	this._addrbookTree = appCtxt.getFolderTree();
 	this._addrbookTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
 
 	this._htmlAttrs = this._getHtmlAttributes();
@@ -119,7 +119,7 @@ function(contact, params) {
 		: ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 	var tagCellId;
 	var tagIcon;
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		tagCellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
 		var fieldId = this._getFieldId(contact, ZmItem.F_TAG);
 		tagIcon = AjxImg.getImageHtml(contact.getTagImageInfo(), null, ["id='", fieldId, "'"].join(""));
