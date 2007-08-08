@@ -84,7 +84,12 @@ function(organizer) {
 		organizer.id != ZmOrganizer.ID_NOTEBOOK &&
 		organizer.id != ZmOrganizer.ID_ADDRBOOK &&
 		organizer.id != ZmOrganizer.ID_TASKS &&
-		organizer.id != ZmOrganizer.ID_AUTO_ADDED)
+		organizer.id != ZmOrganizer.ID_AUTO_ADDED &&
+		organizer.id != ZmOrganizer.ID_INBOX && 
+		organizer.id != ZmOrganizer.ID_OUTBOX &&
+		organizer.id != ZmOrganizer.ID_CHATS &&
+		organizer.id != ZmOrganizer.ID_TASKS && 
+		organizer.id != ZmOrganizer.ID_BRIEFCASE )
 	{
 		this._nameInputEl.focus();
 	}
@@ -170,7 +175,12 @@ function(event) {
 		organizer.id != ZmOrganizer.ID_NOTEBOOK &&
 		organizer.id != ZmOrganizer.ID_ADDRBOOK &&
 		organizer.id != ZmOrganizer.ID_TASKS &&
-		organizer.id != ZmOrganizer.ID_AUTO_ADDED)
+		organizer.id != ZmOrganizer.ID_AUTO_ADDED &&
+		organizer.id != ZmOrganizer.ID_INBOX &&
+		organizer.id != ZmOrganizer.ID_OUTBOX &&
+		organizer.id != ZmOrganizer.ID_CHATS &&
+		organizer.id != ZmOrganizer.ID_TASKS && 
+		organizer.id != ZmOrganizer.ID_BRIEFCASE )
 	{
 		var name = this._nameInputEl.value;
 		if (organizer.name != name) {
@@ -255,7 +265,12 @@ function(event) {
 	if (organizer.id == ZmOrganizer.ID_CALENDAR ||
 		organizer.id == ZmOrganizer.ID_NOTEBOOK ||
 		organizer.id == ZmOrganizer.ID_ADDRBOOK ||
-		organizer.id == ZmOrganizer.ID_AUTO_ADDED)
+		organizer.id == ZmOrganizer.ID_AUTO_ADDED ||
+		organizer.id == ZmOrganizer.ID_INBOX ||
+		organizer.id == ZmOrganizer.ID_OUTBOX || 
+		organizer.id == ZmOrganizer.ID_CHATS ||
+		organizer.id == ZmOrganizer.ID_TASKS || 
+		organizer.id == ZmOrganizer.ID_BRIEFCASE )
 	{
 		this._nameOutputEl.innerHTML = AjxStringUtil.htmlEncode(organizer.name);
 		this._nameOutputEl.style.display = "block";
