@@ -23,15 +23,15 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPageConflictDialog = function(appCtxt, shell, className) {
+ZmPageConflictDialog = function(shell, className) {
 	className = className || "ZmPageConflictDialog";
 	var title = ZmMsg.saveConflict;
 	var standardButtons = [ DwtDialog.CANCEL_BUTTON ];
 	DwtDialog.call(this, shell, className, title, standardButtons);
-	this._appCtxt = appCtxt;
 
 	this._createContentHtml();
 }
+
 ZmPageConflictDialog.prototype = new DwtDialog;
 ZmPageConflictDialog.prototype.constructor = ZmPageConflictDialog;
 

@@ -28,7 +28,7 @@ ZmRenameFolderDialog = function(parent, className) {
 	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameFolder});
 
 	this._setNameField(this._nameFieldId);
-	this._folderTree = this._appCtxt.getFolderTree();
+	this._folderTree = appCtxt.getFolderTree();
 }
 
 ZmRenameFolderDialog.prototype = new ZmDialog;

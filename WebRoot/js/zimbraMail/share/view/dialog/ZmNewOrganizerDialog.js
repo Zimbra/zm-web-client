@@ -267,7 +267,7 @@ function() {
 	this._omit = {};
 	this._omit[ZmFolder.ID_SPAM] = true;
 	this._omit[ZmFolder.ID_DRAFTS] = true;
-	this._folderTree = this._appCtxt.getFolderTree();
+	this._folderTree = appCtxt.getFolderTree();
 	if (this._folderTree) {
 		var syncIssuesFolder = this._folderTree.getByName(ZmFolder.SYNC_ISSUES);
 		if (syncIssuesFolder) {
@@ -308,9 +308,9 @@ function() {
 			msg = ZmMsg.folderNameNoLocation;
 		}
 	} else {
-		var folderTree = this._appCtxt.getFolderTree();
+		var folderTree = appCtxt.getFolderTree();
 		if (folderTree) {
-			parentFolder = this._appCtxt.getFolderTree().root;
+			parentFolder = appCtxt.getFolderTree().root;
 		}
 	}
 

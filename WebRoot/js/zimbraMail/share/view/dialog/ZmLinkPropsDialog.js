@@ -23,12 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmLinkPropsDialog = function(appCtxt, shell, className) {
+ZmLinkPropsDialog = function(shell, className) {
 	className = className || "ZmLinkPropsDialog";
 	DwtDialog.call(this, shell, className, ZmMsg.linkProperties);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
-
-	this._appCtxt = appCtxt;
 
 	this._cache = AjxDispatcher.run("GetNotebookCache");
 
@@ -47,8 +45,8 @@ function(linkInfo, callback) {
 	this._callback = callback;
 
 	var isUrlLink = this._linkInfo.url;
-	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
-		var root = this._appCtxt.getById(ZmOrganizer.ID_ROOT);
+	if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+		var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
 		var children = root.children.getArray();
 
 		this._notebookSelect.clearOptions();
@@ -217,7 +215,7 @@ function(event) {
 		var link;
 		if (this._pageRadioEl && this._pageRadioEl.checked) {
 			var notebookId = this._notebookSelect.getValue();
-			var notebook = this._appCtxt.getById(notebookId);
+			var notebook = appCtxt.getById(notebookId);
 			var value = AjxStringUtil.trim(this._pageInput.getValue());
 			link = [
 				"[[",
@@ -255,7 +253,7 @@ function() {
 	this._titleInput = new DwtInputField(inputParams);
 
 	// setup dialog controls for notebook
-	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+	if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
 		// create ids
 		var typePageId = Dwt.getNextId();
 		var typeUrlId = Dwt.getNextId();
@@ -394,7 +392,7 @@ function() {
 
 	// create properties
 	var props = new DwtPropertySheet(view);
-	if (!this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+	if (!appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
 		props.addProperty(linkUrlLabel, this._urlInput);
 	}
 	props.addProperty(ZmMsg.linkTitleLabel, this._titleInput);

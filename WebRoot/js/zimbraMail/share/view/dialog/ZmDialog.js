@@ -24,21 +24,21 @@
  */
 
 /**
-* Creates an empty ZmDialog.
-* @constructor
-* @class
-* This class is a base class for miscellaneous organizer-related dialogs.
-*
-* @author Conrad Damon
-*
-* @param parent				[DwtControl]	parent widget
-* @param msgDialog			[DwtMsgDialog]*	message dialog
-* @param className			[string]*		CSS class
-* @param title				[string]*		dialog title
-* @param standardButtons	[array]*		list of standard buttons to show
-* @param extraButtons		[Array]*		buttons to show in addition to standard set
-* @param view				[DwtControl]*	dialog contents
-*/
+ * Creates an empty ZmDialog.
+ * @constructor
+ * @class
+ * This class is a base class for miscellaneous organizer-related dialogs.
+ *
+ * @author Conrad Damon
+ *
+ * @param parent				[DwtControl]	parent widget
+ * @param msgDialog			[DwtMsgDialog]*	message dialog
+ * @param className			[string]*		CSS class
+ * @param title				[string]*		dialog title
+ * @param standardButtons	[array]*		list of standard buttons to show
+ * @param extraButtons		[Array]*		buttons to show in addition to standard set
+ * @param view				[DwtControl]*	dialog contents
+ */
 ZmDialog = function(params) {
 
 	if (arguments.length == 0) return;
@@ -50,14 +50,12 @@ ZmDialog = function(params) {
 		this.setContent(this._contentHtml());
 	}
 
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-
 	if (this._button[DwtDialog.OK_BUTTON]) {
 		this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	}
 
 	this._overview = {};
-	this._opc = this._appCtxt.getOverviewController();
+	this._opc = appCtxt.getOverviewController();
 	this._tabGroupComplete = false;
 };
 
@@ -118,7 +116,7 @@ function(fieldId) {
 ZmDialog.prototype.getOverviewId =
 function() {
 	var base = this.toString();
-	return this._appCtxt.multiAccounts ? [base, this._appCtxt.getActiveAccount().name].join(":") : base;
+	return appCtxt.multiAccounts ? [base, appCtxt.getActiveAccount().name].join(":") : base;
 };
 
 /**
@@ -200,7 +198,7 @@ function() {
 
 ZmDialog.prototype._showError =
 function(msg, loc) {
-	var msgDialog = this._appCtxt.getMsgDialog();
+	var msgDialog = appCtxt.getMsgDialog();
 	msgDialog.reset();
 	loc = loc ? loc : new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
     msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);

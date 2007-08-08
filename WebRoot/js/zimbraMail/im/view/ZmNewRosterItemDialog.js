@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNewRosterItemDialog = function(parent, appCtxt) {
+ZmNewRosterItemDialog = function(parent) {
 	DwtDialog.call(this, parent, null, ZmMsg.createNewRosterItem);
-	this._appCtxt = appCtxt;
 
 	this._init();
 };
@@ -161,11 +160,10 @@ ZmNewRosterItemDialog.prototype.setAddress = function(newAddress, readonly) {
 
 
 ZmNewRosterItemDialog.prototype._initAddressAutocomplete = function() {
-	if (this._addressAutocomplete || !this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+	if (this._addressAutocomplete || !appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 		return;
 
-	var shell = this._appCtxt.getShell();
-	var contactsApp = shell ? shell.getData(ZmAppCtxt.LABEL).getApp(ZmApp.CONTACTS) : null;
+	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 	var contactsList = contactsApp ? contactsApp.getContactList : null;
 	var params = { parent	  : shell,
 		       dataClass  : contactsApp,
@@ -179,8 +177,7 @@ ZmNewRosterItemDialog.prototype._initAddressAutocomplete = function() {
 ZmNewRosterItemDialog.prototype._initGroupAutocomplete = function() {
 	if (this._groupAutocomplete) return;
 
-	var shell = this._appCtxt.getShell();
-	var imApp = shell ? shell.getData(ZmAppCtxt.LABEL).getApp(ZmApp.IM) : null;
+	var imApp = appCtxt.getApp(ZmApp.IM);
 	var groupList = imApp ? imApp.getAutoCompleteGroups : null;
 	var params = { parent	  : shell,
 		       dataClass  : imApp,
@@ -193,7 +190,7 @@ ZmNewRosterItemDialog.prototype._initGroupAutocomplete = function() {
 };
 
 ZmNewRosterItemDialog.prototype._showError = function(msg, loc) {
-	var msgDialog = this._appCtxt.getMsgDialog();
+	var msgDialog = appCtxt.getMsgDialog();
 	msgDialog.reset();
 	loc = loc ? loc : new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
 	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);

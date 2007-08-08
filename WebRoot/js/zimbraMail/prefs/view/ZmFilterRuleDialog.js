@@ -24,26 +24,23 @@
  */
 
 /**
-* Creates a dialog for specifying a filter rule. Can be used for either add or edit.
-* @constructor
-* @class
-* This class presents a dialog which a user can use to add or edit a filter rule.
-* A filter rule consists of conditions and actions (at least one of each). Different
-* types of conditions and actions require different fields to specify them, so they
-* are presented in a table in which all columns are not necessarily occupied.
-* <p>
-* First the HTML is laid out, then DWT objects that are needed for input are plugged
-* in.</p>
-*
-* @author Conrad Damon
-*
-* @param appCtxt	[ZmAppCtxt]			the app context
-*/
-ZmFilterRuleDialog = function(appCtxt) {
+ * Creates a dialog for specifying a filter rule. Can be used for either add or edit.
+ * @constructor
+ * @class
+ * This class presents a dialog which a user can use to add or edit a filter rule.
+ * A filter rule consists of conditions and actions (at least one of each). Different
+ * types of conditions and actions require different fields to specify them, so they
+ * are presented in a table in which all columns are not necessarily occupied.
+ * <p>
+ * First the HTML is laid out, then DWT objects that are needed for input are plugged
+ * in.</p>
+ *
+ * @author Conrad Damon
+ */
+ZmFilterRuleDialog = function() {
 
 	DwtDialog.call(this, appCtxt.getShell(), "ZmFilterRuleDialog", ZmMsg.selectAddresses);
 
-	this._appCtxt = appCtxt;
 	this._rules = AjxDispatcher.run("GetFilterRules");
 	this._rules.loadRules(); // make sure rules are loaded (for when we save)
 
@@ -58,7 +55,7 @@ ZmFilterRuleDialog = function(appCtxt) {
 	this._plusMinusLstnr	= new AjxListener(this, this._plusMinusListener);
 	this._browseLstnr		= new AjxListener(this, this._browseListener);
 	
-	this._msgDialog = this._appCtxt.getMsgDialog();
+	this._msgDialog = appCtxt.getMsgDialog();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this._conditionErrorFormatter = new AjxMessageFormat(ZmMsg.filterErrorCondition);
 	this._actionErrorFormatter = new AjxMessageFormat(ZmMsg.filterErrorAction);
@@ -198,7 +195,7 @@ function(rule, isCondition) {
 			// don't show action if it's disabled
 			var action = o.name;
 			var actionCfg = ZmFilterRule.ACTIONS[action];
-			if (actionCfg.precondition && !this._appCtxt.get(actionCfg.precondition)) {
+			if (actionCfg.precondition && !appCtxt.get(actionCfg.precondition)) {
 				continue;
 			}
 		}
@@ -357,11 +354,11 @@ function(conf, field, options, dataValue, rowId, data) {
 			// skip if the action or this option is disabled
 			if (isMainSelect && !isCondition) {
 				var actionCfg = ZmFilterRule.ACTIONS[o];
-				if (actionCfg.precondition && !this._appCtxt.get(actionCfg.precondition)) {
+				if (actionCfg.precondition && !appCtxt.get(actionCfg.precondition)) {
 					continue;
 				}
 			}
-			if (o.precondition && !this._appCtxt.get(o.precondition)) {
+			if (o.precondition && !appCtxt.get(o.precondition)) {
 				continue;
 			}
 			var value, label;
@@ -416,12 +413,12 @@ function(conf, field, options, dataValue, rowId, data) {
 		var organizer = null;
 		if (dataValue) {
 			if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
-				var folderTree = this._appCtxt.getFolderTree();
+				var folderTree = appCtxt.getFolderTree();
 				if (folderTree) {
 					organizer = folderTree.getByPath(dataValue.substring(1), true);
 				}
 			} else {
-				var tagTree = this._appCtxt.getTagTree();
+				var tagTree = appCtxt.getTagTree();
 				if (tagTree) {
 					organizer = tagTree.getByName(dataValue);
 				}
@@ -588,8 +585,8 @@ function(ev) {
 	var dialog;
 	var button = ev.item;
 	var type = button.getData(ZmFilterRuleDialog.BROWSE_TYPE);
-	var dialog = (type == ZmFilterRule.TYPE_FOLDER_PICKER) ? this._appCtxt.getChooseFolderDialog() :
-															 this._appCtxt.getPickTagDialog();
+	var dialog = (type == ZmFilterRule.TYPE_FOLDER_PICKER) ? appCtxt.getChooseFolderDialog() :
+															 appCtxt.getPickTagDialog();
 	dialog.reset();
 	dialog.setTitle((type == ZmFilterRule.TYPE_FOLDER_PICKER) ? ZmMsg.chooseFolder : ZmMsg.chooseTag);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, ev.item);
@@ -606,7 +603,7 @@ ZmFilterRuleDialog.prototype._browseSelectionCallback =
 function(button, organizer) {
 	var type = button.getData(ZmFilterRuleDialog.BROWSE_TYPE);
 	var isFolder = (type == ZmFilterRule.TYPE_FOLDER_PICKER);
-	var dialog = isFolder ? this._appCtxt.getChooseFolderDialog() : this._appCtxt.getPickTagDialog();
+	var dialog = isFolder ? appCtxt.getChooseFolderDialog() : appCtxt.getPickTagDialog();
 	if (organizer) {
 		button.setText(organizer.getName(false, null, true));
 		var value = isFolder ? "/" + organizer.getPath(false, false, null, true, true) :

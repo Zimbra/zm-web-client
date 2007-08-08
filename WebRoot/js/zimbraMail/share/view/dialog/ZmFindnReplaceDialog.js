@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmFindnReplaceDialog = function(appCtxt, shell, className) {
+ZmFindnReplaceDialog = function(shell, className) {
 	className = className || "ZmFindnReplaceDialog";
 	
 	var findBtn = new DwtDialog_ButtonDescriptor(ZmFindnReplaceDialog.FIND_BUTTON, 
@@ -35,8 +35,6 @@ ZmFindnReplaceDialog = function(appCtxt, shell, className) {
 	
 	DwtDialog.call(this, shell, className, ZmMsg.findNReplaceTitle,[DwtDialog.CANCEL_BUTTON],[findBtn,replaceBtn,replaceAllBtn]);
 
-	this._appCtxt = appCtxt;
-	
 	this._findId = Dwt.getNextId();
 	this._replaceId = Dwt.getNextId();
 	this._dirId = Dwt.getNextId();

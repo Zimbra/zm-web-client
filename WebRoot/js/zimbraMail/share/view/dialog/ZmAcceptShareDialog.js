@@ -23,13 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAcceptShareDialog = function(appCtxt, parent, className) {
+ZmAcceptShareDialog = function(parent, className) {
 	className = className || "ZmAcceptShareDialog";
 	DwtDialog.call(this, parent, className, ZmMsg.acceptShare, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
 	this.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._handleYesButton));
 	this.setButtonListener(DwtDialog.NO_BUTTON, new AjxListener(this, this._handleNoButton));
-	
-	this._appCtxt = appCtxt;
 	
 	this.setView(this._createView());
 	

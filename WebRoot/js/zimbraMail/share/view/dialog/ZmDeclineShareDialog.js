@@ -23,15 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDeclineShareDialog = function(appCtxt, parent, className) {
+ZmDeclineShareDialog = function(parent, className) {
 	className = className || "ZmDeclineShareDialog";
 	var title = ZmMsg.declineShare;
 	var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON ];
 	DwtDialog.call(this, parent, className, title, buttons);
 	this.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._handleYesButton));
 
-	this._appCtxt = appCtxt;
-	
 	// create controls
 	this._confirmMsgEl = document.createElement("DIV");
 	this._confirmMsgEl.style.fontWeight = "bold";

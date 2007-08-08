@@ -25,13 +25,11 @@
 
 ZmPickTagDialog = function(parent, className) {
 
-	if (arguments.length == 0) return;
-
 	var newButton = new DwtDialog_ButtonDescriptor(ZmPickTagDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
 	var params = {parent:parent, className:className, title:ZmMsg.pickATag, extraButtons:[newButton]};
 	ZmDialog.call(this, params);
 
-	this._tagTree = this._appCtxt.getTagTree();
+	this._tagTree = appCtxt.getTagTree();
 	this._tagTree.addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._creatingTag = false;
@@ -75,7 +73,7 @@ function() {
 
 ZmPickTagDialog.prototype._showNewDialog = 
 function() {
-	var dialog = this._appCtxt.getNewTagDialog();
+	var dialog = appCtxt.getNewTagDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
 	dialog.popup();
@@ -83,7 +81,7 @@ function() {
 
 ZmPickTagDialog.prototype._newCallback = 
 function(parent, name) {
-	this._appCtxt.getNewTagDialog().popdown();
+	appCtxt.getNewTagDialog().popdown();
 	var ttc = this._opc.getTreeController(ZmOrganizer.TAG);
 	ttc._doCreate(parent, name);
 	this._creatingTag = true;
@@ -102,7 +100,7 @@ function(ev) {
 ZmPickTagDialog.prototype._okButtonListener = 
 function(ev) {
 	// Reset the msg dialog (it is a shared resource)
-	var msgDialog = this._appCtxt.getMsgDialog();
+	var msgDialog = appCtxt.getMsgDialog();
 	msgDialog.reset();
 	var loc = new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
 	var selectedTag = this._tagTreeView.getSelected();

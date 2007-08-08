@@ -78,7 +78,7 @@ function() {
 	
 	// make sure tag name doesn't already exist
 	if (!msg) {
-		var tagTree = this._appCtxt.getTagTree();
+		var tagTree = appCtxt.getTagTree();
 		if (tagTree) {
 			var t = tagTree.getByName(name);
 			if (t && (t.id != this._tag.id)) {

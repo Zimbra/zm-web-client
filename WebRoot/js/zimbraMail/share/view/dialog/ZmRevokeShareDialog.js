@@ -23,15 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmRevokeShareDialog = function(appCtxt, parent, className) {
+ZmRevokeShareDialog = function(parent, className) {
 	className = className || "ZmRevokeShareDialog";
 	var title = ZmMsg.revokeShare;
 	var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON ];
 	DwtDialog.call(this, parent, className, title, buttons);
 	this.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._handleYesButton));
 	
-	this._appCtxt = appCtxt;
-
 	var view = this._createView();
 	this.setView(view);
 
@@ -78,9 +76,9 @@ function() {
 	if (replyType != ZmShareReply.NONE && sendMail) {
 		// initialize rest of share information
 		share.grantee.email = share.grantee.name || share.grantee.id;
-		share.grantor.id = this._appCtxt.get(ZmSetting.USERID);
-		share.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
-		share.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME) || share.grantor.email;
+		share.grantor.id = appCtxt.get(ZmSetting.USERID);
+		share.grantor.email = appCtxt.get(ZmSetting.USERNAME);
+		share.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME) || share.grantor.email;
 		share.link.id = share.object.id;
 		share.link.name = share.object.name;
 		share.link.view = ZmOrganizer.getViewName(share.object.type);

@@ -193,7 +193,7 @@ function() {
 ZmAppCtxt.prototype.getLoginDialog =
 function() {
 	if (!this._loginDialog) {
-		this._loginDialog = new ZmLoginDialog(this._shell, this);
+		this._loginDialog = new ZmLoginDialog(this._shell);
 	}
 	return this._loginDialog;
 };
@@ -303,7 +303,7 @@ ZmAppCtxt.prototype.getPageConflictDialog =
 function() {
 	if (!this._pageConflictDialog) {
 		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._pageConflictDialog = new ZmPageConflictDialog(this, this._shell);
+		this._pageConflictDialog = new ZmPageConflictDialog(this._shell);
 	}
 	return this._pageConflictDialog;
 };
@@ -321,7 +321,7 @@ ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
 	if (!this._newRosterItemDialog) {
 		AjxDispatcher.require("IM");
-		this._newRosterItemDialog = new ZmNewRosterItemDialog(this._shell, this);
+		this._newRosterItemDialog = new ZmNewRosterItemDialog(this._shell);
 	}
 	return this._newRosterItemDialog;
 };
@@ -330,7 +330,7 @@ ZmAppCtxt.prototype.getIMGatewayLoginDialog =
 function() {
 	if (!this._imGatewayLoginDialog) {
 		AjxDispatcher.require("IM");
-		this._imGatewayLoginDialog = new ZmExternalGatewayDlg(this._shell, this);
+		this._imGatewayLoginDialog = new ZmExternalGatewayDlg(this._shell);
 	}
 	return this._imGatewayLoginDialog;
 };
@@ -373,7 +373,7 @@ function() {
 ZmAppCtxt.prototype.getFolderPropsDialog =
 function() {
 	if (!this._folderPropsDialog) {
-		this._folderPropsDialog = new ZmFolderPropsDialog(this, this._shell);
+		this._folderPropsDialog = new ZmFolderPropsDialog(this._shell);
 	}
 	return this._folderPropsDialog;
 };
@@ -382,7 +382,7 @@ ZmAppCtxt.prototype.getLinkPropsDialog =
 function() {
 	if (!this._linkPropsDialog) {
 		AjxDispatcher.require("Share");
-		this._linkPropsDialog = new ZmLinkPropsDialog(this, this._shell);
+		this._linkPropsDialog = new ZmLinkPropsDialog(this._shell);
 	}
 	return this._linkPropsDialog;
 };
@@ -391,7 +391,7 @@ ZmAppCtxt.prototype.getSharePropsDialog =
 function() {
 	if (!this._sharePropsDialog) {
 		AjxDispatcher.require("Share");
-		this._sharePropsDialog = new ZmSharePropsDialog(this, this._shell);
+		this._sharePropsDialog = new ZmSharePropsDialog(this._shell);
 	}
 	return this._sharePropsDialog;
 };
@@ -400,7 +400,7 @@ ZmAppCtxt.prototype.getAcceptShareDialog =
 function() {
 	if (!this._acceptShareDialog) {
 		AjxDispatcher.require("Share");
-		this._acceptShareDialog = new ZmAcceptShareDialog(this, this._shell);
+		this._acceptShareDialog = new ZmAcceptShareDialog(this._shell);
 	}
 	return this._acceptShareDialog;
 };
@@ -409,7 +409,7 @@ ZmAppCtxt.prototype.getDeclineShareDialog =
 function() {
 	if (!this._declineShareDialog) {
 		AjxDispatcher.require("Share");
-		this._declineShareDialog = new ZmDeclineShareDialog(this, this._shell);
+		this._declineShareDialog = new ZmDeclineShareDialog(this._shell);
 	}
 	return this._declineShareDialog;
 };
@@ -418,7 +418,7 @@ ZmAppCtxt.prototype.getRevokeShareDialog =
 function() {
 	if (!this._revokeShareDialog) {
 		AjxDispatcher.require("Share");
-		this._revokeShareDialog = new ZmRevokeShareDialog(this, this._shell);
+		this._revokeShareDialog = new ZmRevokeShareDialog(this._shell);
 	}
 	return this._revokeShareDialog;
 };
@@ -427,7 +427,7 @@ ZmAppCtxt.prototype.getMountFolderDialog =
 function() {
 	if (!this._mountFolderDialog) {
 		AjxDispatcher.require("Share");
-		this._mountFolderDialog = new ZmMountFolderDialog(this, this._shell);
+		this._mountFolderDialog = new ZmMountFolderDialog(this._shell);
 	}
 	return this._mountFolderDialog;
 };
@@ -439,7 +439,7 @@ ZmAppCtxt.prototype.getFilterRuleDialog =
 function() {
 	if (!this._filterRuleDialog) {
 		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
-		this._filterRuleDialog = new ZmFilterRuleDialog(this);
+		this._filterRuleDialog = new ZmFilterRuleDialog();
 	}
 	return this._filterRuleDialog;
 };
@@ -456,7 +456,7 @@ ZmAppCtxt.prototype.getUploadDialog =
 function() {
 	if (!this._uploadDialog) {
 		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._uploadDialog = new ZmUploadDialog(this, this._shell);
+		this._uploadDialog = new ZmUploadDialog(this._shell);
 	}
 	return this._uploadDialog;
 };
@@ -464,7 +464,7 @@ function() {
 ZmAppCtxt.prototype.getAttachDialog = function() {
 	if(!this._attachDialog){
 		AjxDispatcher.require("Share");
-		this._attachDialog = new ZmAttachDialog(this, this._shell);
+		this._attachDialog = new ZmAttachDialog(this._shell);
 	}
 	return this._attachDialog;
 };
@@ -473,7 +473,7 @@ ZmAppCtxt.prototype.getUploadConflictDialog =
 function() {
 	if (!this._uploadConflictDialog) {
 		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._uploadConflictDialog = new ZmUploadConflictDialog(this, this._shell);
+		this._uploadConflictDialog = new ZmUploadConflictDialog(this._shell);
 	}
 	return this._uploadConflictDialog;
 };
@@ -831,7 +831,7 @@ ZmAppCtxt.prototype.getReplaceDialog =
 function() {
 	if (!this._replaceDialog) {
 		AjxDispatcher.require("Share");
-		this._replaceDialog = new ZmFindnReplaceDialog(this, this._shell);
+		this._replaceDialog = new ZmFindnReplaceDialog(this._shell);
 	}
 	return this._replaceDialog;
 };

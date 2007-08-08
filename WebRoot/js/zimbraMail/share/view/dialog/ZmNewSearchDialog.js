@@ -31,7 +31,7 @@ ZmNewSearchDialog = function(parent, className) {
 	this._omit[ZmFolder.ID_SPAM] = true;
 	this._omit[ZmFolder.ID_DRAFTS] = true;
 	this._setNameField(this._nameFieldId);
-	this._folderTree = this._appCtxt.getFolderTree();
+	this._folderTree = appCtxt.getFolderTree();
 }
 
 ZmNewSearchDialog.prototype = new ZmDialog;

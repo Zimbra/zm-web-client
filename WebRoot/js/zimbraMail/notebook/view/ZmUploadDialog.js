@@ -23,14 +23,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmUploadDialog = function(appCtxt, shell, className) {
+ZmUploadDialog = function(shell, className) {
 	className = className || "ZmUploadDialog";
 	var title = ZmMsg.uploadDocs;
 	DwtDialog.call(this, shell, className, title);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._upload));
-	this._appCtxt = appCtxt;
 	this._createUploadHtml();
 }
+
 ZmUploadDialog.prototype = new DwtDialog;
 ZmUploadDialog.prototype.constructor = ZmUploadDialog;
 
@@ -114,7 +114,7 @@ ZmUploadDialog.prototype._upload = function(){
 	var callback = new AjxCallback(this, this._uploadSaveDocs, [files]);
 	var uploadForm = document.getElementById(this._formId);
 
-	var uploadMgr = this._appCtxt.getUploadManager();
+	var uploadMgr = appCtxt.getUploadManager();
 	window._uploadManager = uploadMgr;
 	try {
 		uploadMgr.execute(callback, uploadForm);
@@ -131,7 +131,7 @@ ZmUploadDialog.prototype._popupErrorDialog = function(message) {
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
 
-	var dialog = this._appCtxt.getMsgDialog();
+	var dialog = appCtxt.getMsgDialog();
 	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, this._title);
 	dialog.popup();
 };
@@ -184,7 +184,7 @@ function(files, status, guids) {
 		errorCallback: null,
 		execFrame: null
 	};	
-	var appController = this._appCtxt.getAppController();
+	var appController = appCtxt.getAppController();
 	appController.sendRequest(params);
 };
 
@@ -238,7 +238,7 @@ function(files, status, guids, response) {
 	var conflictCount = conflicts.length;
 	var action = this._selector.getValue();
 	if (conflictCount > 0 && action == ZmUploadDialog.ACTION_ASK) {
-		var dialog = this._appCtxt.getUploadConflictDialog();
+		var dialog = appCtxt.getUploadConflictDialog();
 		if (!this._conflictCallback) {
 			this._conflictCallback = new AjxCallback(this, this._uploadSaveDocs2);
 		}
@@ -345,7 +345,7 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
 	container.style.marginLeft = "1em";
 	container.style.marginBottom = "0.5em";
 	
-	var uri = this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+	var uri = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	container.innerHTML = [
 		"<form id='",this._formId,"' method='POST' action='",uri,"' enctype='multipart/form-data'>",
 			"<table id='",this._tableId,"' cellspacing=4 cellpadding=0 border=0>",

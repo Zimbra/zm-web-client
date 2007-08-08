@@ -23,13 +23,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmUploadConflictDialog = function(appCtxt, shell, className) {
+ZmUploadConflictDialog = function(shell, className) {
 	className = className || "ZmUploadConflictDialog";
 	var title = ZmMsg.uploadConflict;
 	var standardButtons = [ DwtDialog.OK_BUTTON ];
 	DwtDialog.call(this, shell, className, title, standardButtons);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._resolve));
-	this._appCtxt = appCtxt;
 
 	this._mineId = this._htmlElId+"_mine";
 	this._theirsId = this._htmlElId+"_theirs";

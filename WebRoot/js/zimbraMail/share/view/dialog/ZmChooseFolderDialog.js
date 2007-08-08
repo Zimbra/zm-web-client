@@ -73,7 +73,7 @@ function(params) {
 	var omit = params.omit || {};
 	omit[ZmFolder.ID_DRAFTS] = true;
 	var treeIds = (params.treeIds && params.treeIds.length) ? params.treeIds : [ZmOrganizer.FOLDER];
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = appCtxt.getFolderTree();
 
 	if (params.skipReadOnly) {
 		// omit any folders that are read only
@@ -102,7 +102,7 @@ function(params) {
 	
 	// use an overview ID that comprises calling class, this class, and current account
 	var base = [this.toString(), params.overviewId].join("-");
-	var overviewId = this._appCtxt.multiAccounts ? [base, this._appCtxt.getActiveAccount().name].join(":") : base;
+	var overviewId = appCtxt.multiAccounts ? [base, appCtxt.getActiveAccount().name].join(":") : base;
 	this._setOverview({treeIds:treeIds, omit:omit, fieldId:this._folderTreeCellId, overviewId:overviewId});
 
 	this._orgType = params.orgType || treeIds[0];

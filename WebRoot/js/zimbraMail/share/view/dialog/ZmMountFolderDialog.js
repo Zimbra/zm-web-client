@@ -23,16 +23,15 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmMountFolderDialog = function(appCtxt, shell, className) {
+ZmMountFolderDialog = function(shell, className) {
 	className = className || "ZmMountFolderDialog";
 	var title = ZmMsg[ZmOrganizer.MOUNT_KEY[ZmOrganizer.FOLDER]];
 	DwtDialog.call(this, shell, className, title);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
-	this._appCtxt = appCtxt;
 
 	// create auto-completer
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var dataClass = this._appCtxt.getApp(ZmApp.CONTACTS);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var dataClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var dataLoader = dataClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, [this]);
 		var compCallback = new AjxCallback(this, this._handleCompletionData, [this]);
@@ -177,7 +176,6 @@ function(dialog) {
 
 ZmMountFolderDialog.prototype._handleOkButton =
 function(event) {
-	var appCtxt = this._appCtxt;
 	var params = {
 		"l": this._folderId,
 		"name": this._nameInput.getValue(),
@@ -186,7 +184,7 @@ function(event) {
 		"view": ZmOrganizer.VIEWS[this._organizerType][0] || ZmOrganizer.VIEWS[ZmOrganizer.FOLDER][0],
 		"color": this._colorSelect.getValue()
 	};
-	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		if (this._organizerType == ZmOrganizer.CALENDAR) {
 			params.f = ZmOrganizer.FLAG_CHECKED;
 		}
@@ -204,7 +202,7 @@ function(response) {
 		code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
 		var msg = ZmCsfeException.getErrorMsg(code);
 
-		var controller = this._appCtxt.getAppController();
+		var controller = appCtxt.getAppController();
 		controller.popupErrorDialog(msg, null, null, true);
 
 		return true;

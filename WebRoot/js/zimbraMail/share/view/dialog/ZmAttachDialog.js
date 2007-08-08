@@ -23,14 +23,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAttachDialog = function(appCtxt, shell, className) {
+ZmAttachDialog = function(shell, className) {
 	
 	className = className || "ZmAttachDialog";
 	var title = ZmMsg.attachFile;
 	DwtDialog.call(this, shell, className, title);
 
-	this._appCtxt = appCtxt;
-	
 	//Initialize
 	this._createBaseHtml();
 	
@@ -209,7 +207,7 @@ ZmAttachDialog.prototype.upload = function(callback, uploadForm){
 ZmAttachDialog.prototype._processUpload = function(callback,uploadForm){
 	
 	var ajxCallback = new AjxCallback(this, this._uploadDoneCallback,[callback]);
-	var um = this._appCtxt.getUploadManager();
+	var um = appCtxt.getUploadManager();
 	window._uploadManager = um;
 
 	try {
@@ -234,7 +232,7 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback,status, attId){
 		
 		// auth failed during att upload - let user relogin, continue with compose action
 		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
-		this._appCtxt.getAppController()._handleException(ex, callback);
+		appCtxt.getAppController()._handleException(ex, callback);
 		
 	} else {
 		
@@ -246,7 +244,7 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback,status, attId){
 			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
 			default: 									msg += " "; break;
 		}
-		var dialog = this._appCtxt.getMsgDialog();
+		var dialog = appCtxt.getMsgDialog();
 		dialog.setMessage(msg,DwtMessageDialog.CRITICAL_STYLE);
 		dialog.popup();
 		
@@ -257,7 +255,7 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback,status, attId){
 //MyComputer: Add MyComputer Tab View
 
 ZmAttachDialog.prototype._addMyComputerTab = function(){
-	this._myComputerTabView = new ZmMyComputerTabView(this._tabView, this._appCtxt);
+	this._myComputerTabView = new ZmMyComputerTabView(this._tabView);
 	var tabKey = this.addTab("MY_COMPUTER",ZmMsg.myComputer,this._myComputerTabView);
 	var okCallback = new AjxCallback(this,this.uploadFiles);
 	this.addOkListener(tabKey,okCallback);
@@ -269,11 +267,10 @@ ZmAttachDialog.prototype._addMyComputerTab = function(){
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx//
 
 //MyComputer TabViewPage
-ZmMyComputerTabView = function(parent,appCtxt,className,posStyle) {	
+ZmMyComputerTabView = function(parent,className,posStyle) {	
 	
 	if (arguments.length == 0) return;
 	
-	this._appCtxt = appCtxt;
 	//className = className || "DwtTabViewPage";
 	DwtTabViewPage.call(this,parent,className,Dwt.STATIC_STYLE);
 	
@@ -307,7 +304,7 @@ ZmMyComputerTabView.prototype.hideMe = function(){
 //Create UI for MyComputer
 ZmMyComputerTabView.prototype._createHtml = function(){
 	
-	this._uri = this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+	this._uri = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	
 	var attachmentTableId = this._attachmentTableId = Dwt.getNextId();
 	var uploadFormId = this._uploadFormId = Dwt.getNextId();

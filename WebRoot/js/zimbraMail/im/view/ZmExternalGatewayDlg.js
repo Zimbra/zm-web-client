@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmExternalGatewayDlg = function(parent, appCtxt) {
+ZmExternalGatewayDlg = function(parent) {
 	var logoutBtn = new DwtDialog_ButtonDescriptor(ZmExternalGatewayDlg.LOGOUT_BUTTON,
 						       ZmMsg.logOff,
 						       DwtDialog.ALIGN_LEFT);

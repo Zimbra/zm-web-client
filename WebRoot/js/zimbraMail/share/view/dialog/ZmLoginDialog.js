@@ -23,11 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmLoginDialog = function(parent, appCtxt, className) {
+ZmLoginDialog = function(parent, className) {
 	
     className = className || "ZmLoginDialog";
     DwtComposite.call(this, parent, className, DwtControl.ABSOLUTE_STYLE);
-	this._appCtxt = appCtxt;
     this._origClassName = className;
     this._xparentClassName = className + "-Transparent";
     this.setBounds(0, 0, "100%", "100%");
@@ -103,7 +102,7 @@ function(visible, transparentBg) {
 	DwtComposite.prototype.setVisible.call(this, visible);
 
 	// Disable keyboard nav for re-login dialog
-	var kbm = this._appCtxt.getKeyboardMgr();
+	var kbm = appCtxt.getKeyboardMgr();
 	if (kbm) {
 		if (visible) {
 		   	if (kbm.isEnabled()) {
@@ -153,7 +152,7 @@ function() {
 	}
 	if (this._callback) {
 		var password = ZLoginFactory.get(ZLoginFactory.PASSWORD_ID).value;
-		var rememberMe = this._appCtxt.rememberMe();
+		var rememberMe = appCtxt.rememberMe();
 		this._callback.run(username, password, rememberMe);		
 	}
 };

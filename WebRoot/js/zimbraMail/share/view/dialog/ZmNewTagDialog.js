@@ -101,7 +101,7 @@ function() {
 	var msg = ZmTag.checkName(name);
 
 	// make sure tag doesn't already exist
-	var tagTree = this._appCtxt.getTagTree();
+	var tagTree = appCtxt.getTagTree();
 	if (!msg && tagTree && tagTree.getByName(name)) {
 		msg = ZmMsg.tagNameExists
 	}
@@ -119,7 +119,7 @@ function(ev) {
 ZmNewTagDialog.prototype._getNextColor =
 function() {
 	var colorUsed = {};
-	var tagTree = this._appCtxt.getTagTree();
+	var tagTree = appCtxt.getTagTree();
 	if (!tagTree) {
 		return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 	}

@@ -23,16 +23,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmSharePropsDialog = function(appCtxt, shell, className) {
+ZmSharePropsDialog = function(shell, className) {
 	className = className || "ZmSharePropsDialog";
 	DwtDialog.call(this, shell, className, ZmMsg.shareProperties);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 	
-	this._appCtxt = appCtxt;
-
 	// create auto-completer	
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var dataClass = this._appCtxt.getApp(ZmApp.CONTACTS);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var dataClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var dataLoader = dataClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, [this]);
 		var compCallback = new AjxCallback(this, this._handleCompletionData, [this]);
@@ -227,9 +225,9 @@ function(shares, result) {
 			tmpShare.grantee.name = share.grantee.name;
 
 			// REVISIT: What if you have delegated access???
-			tmpShare.grantor.id = this._appCtxt.get(ZmSetting.USERID);
-			tmpShare.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
-			tmpShare.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME) || tmpShare.grantor.email;
+			tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID);
+			tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME);
+			tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME) || tmpShare.grantor.email;
 
 			tmpShare.link.perm = share.link.perm;
 			tmpShare.link.id = tmpShare.object.id;
