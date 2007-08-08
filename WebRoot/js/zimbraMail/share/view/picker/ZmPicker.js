@@ -27,7 +27,6 @@ ZmPicker = function(parent, id) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, "ZmPicker", DwtControl.ABSOLUTE_STYLE);
 
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._header = new DwtToolBar(this);
 	this._label = new DwtLabel(this._header, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmPickerLabel");
 	this._header.addFiller();
@@ -241,7 +240,7 @@ ZmPicker.prototype.dispose =
 function() {
 	DwtComposite.prototype.dispose.call(this);
 	if (this._treeView) {
-		var opc = this._appCtxt.getOverviewController();
+		var opc = appCtxt.getOverviewController();
 		this._overview.clear();
 	}
 };
@@ -249,7 +248,7 @@ function() {
 ZmPicker.prototype._setOverview =
 function(overviewId, parent, types) {
 	this._picker.setScrollStyle(Dwt.CLIP);
-	var opc = this._appCtxt.getOverviewController();
+	var opc = appCtxt.getOverviewController();
 	var params = {overviewId:overviewId, parent:parent,	headerClass:"DwtTreeItem",
 				  treeStyle:DwtTree.CHECKEDITEM_STYLE};
 	var overview = this._overview = opc.createOverview(params);

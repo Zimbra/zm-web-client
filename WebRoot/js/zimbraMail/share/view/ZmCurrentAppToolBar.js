@@ -24,16 +24,15 @@
  */
 
 /**
-* This toolbar sits above the overview and represents the current app. It has a
-* label that tells the user what the current app is, and an optional View
-* button/menu for switching views within the current app.
-* @class
-*/
-ZmCurrentAppToolBar = function(parent, appCtxt) {
+ * This toolbar sits above the overview and represents the current app. It has a
+ * label that tells the user what the current app is, and an optional View
+ * button/menu for switching views within the current app.
+ * @class
+ */
+ZmCurrentAppToolBar = function(parent) {
 
 	DwtToolBar.call(this, parent, null, Dwt.ABSOLUTE_STYLE);
 
-	this._appCtxt = appCtxt;
 	this._newFolderBtn = new DwtToolBarButton(this);
 	this._newFolderBtn.setVisible(false);
 	this._newFolderBtn.addSelectionListener(new AjxListener(this, this._newFolderListener));
@@ -93,7 +92,7 @@ function(ev) {
 	var org = ZmCurrentAppToolBar.NEW_FOLDER_ORGANIZER[this._currentApp];
 	if (org) {
 		var op = ZmCurrentAppToolBar.NEW_FOLDER_OPERATION[this._currentApp];
-		var tc = this._appCtxt.getOverviewController().getTreeController(org);
+		var tc = appCtxt.getOverviewController().getTreeController(org);
 		var callback = new AjxListener(tc, tc._newListener, op);
 		if (callback) { callback.run(); }
 	}

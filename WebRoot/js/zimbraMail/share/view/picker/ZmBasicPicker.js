@@ -27,7 +27,7 @@ ZmBasicPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.BASIC);
 	
-	var settings = this._appCtxt.getSettings();
+	var settings = appCtxt.getSettings();
 	var listener = new AjxListener(this, this._settingsChangeListener);
 	settings.getSetting(ZmSetting.SEARCH_INCLUDES_SPAM).addChangeListener(listener);
 	settings.getSetting(ZmSetting.SEARCH_INCLUDES_TRASH).addChangeListener(listener);
@@ -82,9 +82,9 @@ function(parent) {
 	html[i++] = this._makeRow(ZmMsg.subject, subjectId);
 	html[i++] = this._makeRow(ZmMsg.content, contentId);
 	
-	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		inSpamId = Dwt.getNextId();
-		checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM) ? " checked" : "";
+		checked = appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM) ? " checked" : "";
 		html[i++] = "<tr valign='middle'>";
 		html[i++] = "<td align='right'><input type='checkbox'";
 		html[i++] = checked;
@@ -96,7 +96,7 @@ function(parent) {
 		html[i++] = "</td>";
 		html[i++] = "</tr>";
 	}
-	checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH) ? " checked" : "";
+	checked = appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH) ? " checked" : "";
 	html[i++] = "<tr valign='middle'>";
 	html[i++] = "<td align='right'><input type='checkbox'";
 	html[i++] = checked;
@@ -114,7 +114,7 @@ function(parent) {
 	this._to = this._setupField(toId);
 	this._subject= this._setupField(subjectId);
 	this._content = this._setupField(contentId);
-	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED)) {
+	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		this._inSpam = this._setupCheckbox(inSpamId);
 	}
 	this._inTrash = this._setupCheckbox(inTrashId);
@@ -193,8 +193,8 @@ function() {
 	
 	// Sort out "Check Trash/Spam" pref vs checkbox
 	var query2 = [];
-	var checkSpamPref = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM);
-	var checkTrashPref = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH);
+	var checkSpamPref = appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM);
+	var checkTrashPref = appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH);
 	var checkSpamCheckbox = (this._inSpam && this._inSpam.checked);
 	var checkTrashCheckbox = (this._inTrash && this._inTrash.checked);
 	
@@ -229,10 +229,10 @@ function(ev) {
 	
 	var setting = ev.source;
 	if (setting.id == ZmSetting.SEARCH_INCLUDES_SPAM) {
-		this._inSpam.checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM);
+		this._inSpam.checked = appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM);
 		this._updateQuery();
 	} else	if (setting.id == ZmSetting.SEARCH_INCLUDES_TRASH) {
-		this._inTrash.checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH);
+		this._inTrash.checked = appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH);
 		this._updateQuery();
 	}
 };

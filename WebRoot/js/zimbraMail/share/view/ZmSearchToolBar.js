@@ -23,11 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmSearchToolBar = function(appCtxt, parent, posStyle) {
+ZmSearchToolBar = function(parent, posStyle) {
 
 	DwtComposite.call(this, parent, "ZmSearchToolbar");
-
-	this._appCtxt = appCtxt;
 
 	// set up "search all" menu item
 	var params = { msgKey:"searchAll", tooltipKey:"searchForAny", icon:"Globe", setting:ZmSetting.MIXED_VIEW_ENABLED, index:0 };
@@ -269,7 +267,7 @@ function() {
 			}
 
 			var setting = ZmSearchToolBar.SETTING[id];
-			if (setting && !this._appCtxt.get(setting)) { continue; }
+			if (setting && !appCtxt.get(setting)) { continue; }
 
 			var style = id == ZmSearchToolBar.FOR_SHARED_MI
 				? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
@@ -310,7 +308,7 @@ function() {
 
 ZmSearchToolBar.prototype._addButton =
 function(params) {
-	if (params.setting && !this._appCtxt.get(params.setting)) { return; }
+	if (params.setting && !appCtxt.get(params.setting)) { return; }
 
 	var button;
 	var buttonId = this._htmlElId + params.buttonId;

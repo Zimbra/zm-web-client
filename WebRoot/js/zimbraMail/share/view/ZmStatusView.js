@@ -23,12 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 ZmStatusView = function(parent, className, posStyle) {
-	if (arguments.length == 0) return;
 
 	DwtControl.call(this, parent, (className || "ZmStatus"), posStyle);
 
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	this._toast = new ZmToast(this, this._appCtxt);
+	this._toast = new ZmToast(this);
 	this._statusQueue = [];
 };
 
@@ -113,10 +111,9 @@ function() {
 // ZmToast
 //
 
-ZmToast = function(parent, appCtxt) {
+ZmToast = function(parent) {
     DwtControl.call(this, parent.shell, "ZToast", Dwt.ABSOLUTE_STYLE);
     this._statusView = parent;
-    this._appCtxt = appCtxt;
     this._createHtml();
 
     this._funcs = {};
@@ -170,8 +167,8 @@ function(level, text, icon, loc) {
     }
 
     // get transitions
-    var location = this._appCtxt.get(ZmSetting.SKIN_HINTS, "toast.location") || loc;
-    var transitions = this._appCtxt.get(ZmSetting.SKIN_HINTS, "toast.transitions") || ZmToast.DEFAULT_TRANSITIONS;
+    var location = appCtxt.get(ZmSetting.SKIN_HINTS, "toast.location") || loc;
+    var transitions = appCtxt.get(ZmSetting.SKIN_HINTS, "toast.transitions") || ZmToast.DEFAULT_TRANSITIONS;
     transitions = [].concat( {type:"position", location:location}, transitions, {type:"hide"} );
 
     // start animation

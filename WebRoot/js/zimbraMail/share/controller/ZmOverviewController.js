@@ -94,7 +94,7 @@ function(accordionId) {
 ZmOverviewController.prototype.createOverview =
 function(params) {
 	params.parent = params.parent || this._shell;
-	var overview = this._overview[params.overviewId] = new ZmOverview(params, this, appCtxt);
+	var overview = this._overview[params.overviewId] = new ZmOverview(params, this);
 
 	return overview;
 };

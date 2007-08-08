@@ -813,7 +813,7 @@ ZmAppCtxt.prototype.getPrintView =
 function() {
 	if (!this._printView) {
 		AjxDispatcher.require("Extras");
-		this._printView = new ZmPrintView(this);
+		this._printView = new ZmPrintView();
 	}
 	return this._printView;
 };

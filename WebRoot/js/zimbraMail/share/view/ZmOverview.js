@@ -46,16 +46,14 @@
  *        hideEmpty				[hash]*					IDs of trees to hide if they lack data
  *        noTooltips			[boolean]*				if true, don't show tooltips for tree items
  * @param controller			[ZmOverviewController]	the overview controller
- * @param appCtxt				[ZmAppCtxt]				the app context
  */
-ZmOverview = function(params, controller, appCtxt) {
+ZmOverview = function(params, controller) {
 	
 	var overviewClass = params.overviewClass ? params.overviewClass : "ZmOverview";
 	DwtComposite.call(this, params.parent, overviewClass, params.posStyle);
 	
 	this.id = params.overviewId;
 	this._controller = controller;
-	this._appCtxt = appCtxt;
 
 	this.setScrollStyle(params.scroll || Dwt.SCROLL);
 
@@ -107,8 +105,7 @@ function(treeIds, omit) {
 ZmOverview.prototype.setTreeView =
 function(treeId, omit) {
 	// check for false since setting precondition is optional (can be null)
-	if (this._appCtxt.get(ZmOrganizer.PRECONDITION[treeId]) === false)
-		return;
+	if (appCtxt.get(ZmOrganizer.PRECONDITION[treeId]) === false) { return; }
 
 	var treeController = this._controller.getTreeController(treeId);
 	if (this._treeHash[treeId]) {

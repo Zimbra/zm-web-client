@@ -23,9 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPrintView = function(appCtxt) {
-	this._appCtxt = appCtxt;
-};
+ZmPrintView = function() {}
 
 ZmPrintView.prototype.toString =
 function () {
@@ -34,7 +32,7 @@ function () {
 
 ZmPrintView.prototype.render = 
 function(item) {
-	var preferHtml = this._appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	var preferHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var respCallback = new AjxCallback(this, this._handleResponseRender, item);
 	var html = item.getPrintHtml(preferHtml, respCallback);
 	if (html) {
@@ -63,7 +61,7 @@ function(item) {
 			: null;
 
 		var subs = {
-			username: this._appCtxt.get(ZmSetting.USERNAME),
+			username: appCtxt.get(ZmSetting.USERNAME),
 			appContextPath: appContextPath,
 			cacheKillerVersion: cacheKillerVersion,
 			onloadStr: onloadStr,
@@ -81,7 +79,7 @@ function(item) {
 	}
 	else
 	{
-		this._appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
+		appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
 	}
 
 	// cleanup

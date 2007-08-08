@@ -24,51 +24,51 @@
  */
 
 /**
-* Creates a new autocomplete list. The list isn't populated or displayed until some
-* autocompletion happens. Takes a data class and loader, so that when data is needed (it's
-* loaded lazily), the loader can be called on the data class.
-* @constructor
-* @class
-* This class implements autocomplete functionality. It has two main parts: matching data based
-* on keystroke events, and displaying/managing the list of matches. This class is theoretically
-* neutral concerning the data that gets matched (as long as its class has an autocompleteMatch()
-* method), and the field that it's being called from.
-* <p>
-* The data class's autocompleteMatch() method should returns a list of matches, where each match is
-* an object with the following properties:</p>
-* <table border="1">
-* <tr><td>data</td><td>the object being matched</td></tr>
-* <tr><td>text</td><td>the text to display for this object in the list</td></tr>
-* <tr><td>[key1]</td><td>a string that may be used to replace the typed text<td></tr>
-* <tr><td>[keyN]</td><td>a string that may be used to replace the typed text<td></tr>
-* </table>
-* </p><p>
-* The data class will also need a method isUniqueValue(str), which returns true if the given string
-* maps to a single match.
-* </p><p>
-* The calling client also specifies the key in the match result for the string that will be used
-* to replace the typed text (also called the "completion string"). For example, the completion 
-* string for matching contacts could be a full address, or just the email.
-* </p>
-* 
-* @author Conrad Damon
-* @param parent				[DwtComposite]		the element that created this list
-* @param className			[string]*			CSS class
-* @param dataClass			[function]			the class that has the data loader
-* @param dataLoader			[function]			a method of dataClass that returns data to match against
-* @param matchValue			[string]			name of field in match result to use for completion
-* @param separator			[string]*			separator (gets added to the end of a match)
-* @param locCallback		[AjxCallback]		callback into client to get desired location of autocomplete list
-* @param compCallback		[AjxCallback]*		callback into client to notify it that completion happened
-* @param keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
-* @param keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
-*/
+ * Creates a new autocomplete list. The list isn't populated or displayed until some
+ * autocompletion happens. Takes a data class and loader, so that when data is needed (it's
+ * loaded lazily), the loader can be called on the data class.
+ * @constructor
+ * @class
+ * This class implements autocomplete functionality. It has two main parts: matching data based
+ * on keystroke events, and displaying/managing the list of matches. This class is theoretically
+ * neutral concerning the data that gets matched (as long as its class has an autocompleteMatch()
+ * method), and the field that it's being called from.
+ * <p>
+ * The data class's autocompleteMatch() method should returns a list of matches, where each match is
+ * an object with the following properties:</p>
+ * <table border="1">
+ * <tr><td>data</td><td>the object being matched</td></tr>
+ * <tr><td>text</td><td>the text to display for this object in the list</td></tr>
+ * <tr><td>[key1]</td><td>a string that may be used to replace the typed text<td></tr>
+ * <tr><td>[keyN]</td><td>a string that may be used to replace the typed text<td></tr>
+ * </table>
+ * </p><p>
+ * The data class will also need a method isUniqueValue(str), which returns true if the given string
+ * maps to a single match.
+ * </p><p>
+ * The calling client also specifies the key in the match result for the string that will be used
+ * to replace the typed text (also called the "completion string"). For example, the completion 
+ * string for matching contacts could be a full address, or just the email.
+ * </p>
+ * 
+ * @author Conrad Damon
+ * 
+ * @param parent				[DwtComposite]		the element that created this list
+ * @param className			[string]*			CSS class
+ * @param dataClass			[function]			the class that has the data loader
+ * @param dataLoader			[function]			a method of dataClass that returns data to match against
+ * @param matchValue			[string]			name of field in match result to use for completion
+ * @param separator			[string]*			separator (gets added to the end of a match)
+ * @param locCallback		[AjxCallback]		callback into client to get desired location of autocomplete list
+ * @param compCallback		[AjxCallback]*		callback into client to notify it that completion happened
+ * @param keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
+ * @param keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
+ */
 ZmAutocompleteListView = function(params) {
 
 	var className = params.className ? params.className : "ZmAutocompleteListView";
 	DwtComposite.call(this, params.parent, className, DwtControl.ABSOLUTE_STYLE);
 
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._dataClass = params.dataClass;
 	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
@@ -87,7 +87,7 @@ ZmAutocompleteListView = function(params) {
 	this._outsideListener = new AjxListener(null, ZmAutocompleteListView._outsideMouseDownListener);
 
 	// only trigger matching after a sufficient pause
-	this._acInterval = this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
+	this._acInterval = appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
 	this._acAction = new AjxTimedAction(null, this._autocompleteAction);
 	this._acActionId = -1;
 

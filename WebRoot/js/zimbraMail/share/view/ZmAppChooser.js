@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAppChooser = function(parent, className, buttons, useTabs, appCtxt) {
+ZmAppChooser = function(parent, className, buttons, useTabs) {
 
 	className = className || "ZmAppChooser";
 	var tbStyle = useTabs ? DwtToolBar.HORIZ_STYLE : DwtToolBar.VERT_STYLE;

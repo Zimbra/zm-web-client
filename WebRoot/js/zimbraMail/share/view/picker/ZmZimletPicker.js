@@ -26,7 +26,6 @@
 ZmZimletPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.ZIMLET);
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 }
 
 ZmZimletPicker.prototype = new ZmPicker();
@@ -49,7 +48,7 @@ function(tree, text, imageInfo, type) {
 ZmZimletPicker.prototype._setupPicker =
 function(parent) {
     this._zimlets = {};
-    var idxZimlets = this._appCtxt.getZimletMgr().getIndexedZimlets()
+    var idxZimlets = appCtxt.getZimletMgr().getIndexedZimlets()
     if (idxZimlets.length) {
         var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
         tree.addSelectionListener(new AjxListener(this, ZmZimletPicker.prototype._treeListener));
