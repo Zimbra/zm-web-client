@@ -34,14 +34,12 @@
  *
  * @author Conrad Damon
  *
- * @param appCtxt	[ZmAppCtxt]*	the app context
  * @param noInit	[boolean]*		if true, skip initialization
  */
-ZmSettings = function(appCtxt, noInit) {
+ZmSettings = function(noInit) {
 
 	ZmModel.call(this, ZmEvent.S_SETTING);
 
-	this._appCtxt = appCtxt;
 	this._settings = {};	// settings by ID
 	this._nameToId = {};	// map to get from server setting name to setting ID
 	
@@ -171,7 +169,7 @@ function(callback, errorCallback, accountName) {
 		callback: new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName]),
 		errorCallback: errorCallback
 	};
-	this._appCtxt.getAppController().sendRequest(params);
+	appCtxt.getAppController().sendRequest(params);
 };
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
@@ -210,7 +208,7 @@ function(callback, accountName, result) {
 	// represents the user who logged in. If family mailbox is enabled, that account
 	// is a parent account with dominion over child accounts.
 	if (!accountName) {
-		var mainAcct = this._appCtxt.getMainAccount();
+		var mainAcct = appCtxt.getMainAccount();
 		mainAcct.id = obj.id;
 		mainAcct.name = obj.name;
 		mainAcct.visible = true;
@@ -218,21 +216,21 @@ function(callback, accountName, result) {
 		mainAcct.loaded = true;
 		mainAcct.settings = this;
 		// replace dummy account with this one
-		if (this._appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID]) {
-			this._appCtxt._accounts[mainAcct.id] = mainAcct;
-			delete this._appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID];
+		if (appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID]) {
+			appCtxt._accounts[mainAcct.id] = mainAcct;
+			delete appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID];
 		}
-		this._appCtxt.setActiveAccount(mainAcct);
+		appCtxt.setActiveAccount(mainAcct);
 	}
 	
 	var accounts = obj.childAccounts ? obj.childAccounts.childAccount : null;
 	if (accounts) {
 		// create a ZmZimbraAccount for each child account
 		for (var i = 0; i < accounts.length; i++) {
-			var acct = ZmZimbraAccount.createFromDom(accounts[i], this._appCtxt);
-			this._appCtxt.setAccount(acct);
+			var acct = ZmZimbraAccount.createFromDom(accounts[i]);
+			appCtxt.setAccount(acct);
 			if (acct.visible) {
-				this._appCtxt.multiAccounts = true;
+				appCtxt.multiAccounts = true;
 			}
 		}
 	}
@@ -286,7 +284,6 @@ function(callback, accountName, result) {
 
 ZmSettings.prototype._loadZimlets =
 function(zimlets, props) {
-    var appCtxt = this._appCtxt;
     appCtxt.getZimletMgr().loadZimlets(zimlets, props);
 
     if (zimlets && zimlets.length) {
@@ -298,8 +295,8 @@ function(zimlets, props) {
         }
 
         // create global portlets
-        if (this._appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
-            var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+        if (appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
+            var portletMgr = appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
             var portletIds = portletMgr.createPortlets(true);
         }
     }
@@ -307,7 +304,7 @@ function(zimlets, props) {
 
 ZmSettings.prototype.loadSkinsAndLocales =
 function(callback) {
-	var command = new ZmBatchCommand(this._appCtxt);
+	var command = new ZmBatchCommand(appCtxt);
 
 	var skinDoc = AjxSoapDoc.create("GetAvailableSkinsRequest", "urn:zimbraAccount");
 	var skinCallback = new AjxCallback(this, this._handleResponseLoadAvailableSkins);
@@ -381,7 +378,7 @@ function(list, callback, batchCommand) {
 		if (batchCommand) {
 			batchCommand.addNewRequestParams(soapDoc, respCallback, null, "ModifyPrefsRequest");
 		} else {
-			this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+			appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 		}
 	}
 };
@@ -439,7 +436,7 @@ function() {
  */
 ZmSettings.prototype._loadShortcuts =
 function() {
-	var kbm = this._appCtxt.getKeyboardMgr();
+	var kbm = appCtxt.getKeyboardMgr();
 	var kmm = kbm.__keyMapMgr;
 	var scString = this.get(ZmSetting.SHORTCUTS);
 	if (!scString || !kmm) { return; }

@@ -139,7 +139,7 @@ function(params) {
 	appCtxt.setRememberMe(false);
 
 	// Create and initialize settings
-	var settings = new ZmSettings(appCtxt);
+	var settings = new ZmSettings();
 	appCtxt.setSettings(settings);
 	
 	if (params.settings) {

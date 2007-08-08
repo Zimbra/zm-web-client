@@ -114,7 +114,7 @@ ZmZimbraAccount.prototype.load =
 function(callback, batchCmd) {
 	if (!this.loaded) {
 		// create new ZmSetting for this account
-		this.settings = new ZmSettings(appCtxt);
+		this.settings = new ZmSettings();
 
 		// check "{APP}_ENABLED" state against main account's settings
 		var mainAcct = appCtxt.getMainAccount();
