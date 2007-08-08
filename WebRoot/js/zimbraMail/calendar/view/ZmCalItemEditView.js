@@ -485,7 +485,7 @@ function(width) {
 	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId+"_endMiniCalBtn", dateButtonListener, dateCalSelectionListener);
 
 	// notes ZmHtmlEditor
-	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, appCtxt);
+	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
 	this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
 };
 

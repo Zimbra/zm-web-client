@@ -28,9 +28,8 @@
  *
  * @author Ross Dargahi
  */
-ZmHtmlEditor = function(parent, posStyle, content, mode, appCtxt, withAce) {
+ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	if (arguments.length == 0) return;
-	this._appCtxt = appCtxt;
 	this._toolbars = [];
 
 	// ACE?
@@ -82,7 +81,7 @@ function() {
 	var isSupported = DwtHtmlEditor.prototype.isHtmlEditingSupported.call(this);
 	if (isSupported) {
 		// browser supports html edit but check if user pref allows it
-		isSupported = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+		isSupported = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	}
 
 	return isSupported;
@@ -172,7 +171,7 @@ function(callback) {
 
 	if (/\S/.test(text)) {
 		AjxDispatcher.require("Extras");
-		this._spellChecker = new ZmSpellChecker(this, this._appCtxt);
+		this._spellChecker = new ZmSpellChecker(this);
 		this._spellCheck = null;
 		this._spellCheckSuggestionListenerObj = new AjxListener(this, this._spellCheckSuggestionListener);
 		if (!this.onExitSpellChecker) {
@@ -245,9 +244,9 @@ function(keepModeDiv) {
 
 ZmHtmlEditor.prototype._resetFormatControls =
 function() {
-	this._fontFamilyButton.setText(this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
-	this._fontSizeButton.setText(this._getFontSizeLabel(this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
-	this._fontColorButton.setColor(this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
+	this._fontFamilyButton.setText(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
+	this._fontSizeButton.setText(this._getFontSizeLabel(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
+	this._fontColorButton.setColor(appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
 	this._styleMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.PARAGRAPH, true);
 	this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT, true);
 
@@ -285,9 +284,9 @@ function() {
 	var doc = this._getIframeDoc();
 	var style = doc.body.style;
 
-	style.fontFamily = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-	style.fontSize = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-	style.color = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+	style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+	style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+	style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
 };
 
 ZmHtmlEditor.prototype.highlightMisspelledWords =
@@ -686,7 +685,7 @@ function(tb) {
 	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
 	this._underlineButton.addSelectionListener(listener);
 
-	this._appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", this, tb);
+	appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", this, tb);
 };
 
 ZmHtmlEditor.prototype._createToolBar2 =
@@ -742,7 +741,7 @@ function(tb) {
 		b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
 	}
 
-	this._appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", this, tb);
+	appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", this, tb);
 };
 
 ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
@@ -980,13 +979,13 @@ function() {
 		var i = 0;
 		head[i++] = "<style type='text/css'>";
 		head[i++] = "body { font-family: '";
-		head[i++] =  this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+		head[i++] =  appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 		head[i++] = "'; ";
 		head[i++] = "font-size: ";
-		head[i++] = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+		head[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 		head[i++] = "; ";
 		head[i++] = "color: ";
-		head[i++] = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+		head[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
 		head[i++] = "}";
 		head[i++] = "</style>";
 
@@ -1514,16 +1513,16 @@ function(words) {
 	if (words && words.available) {
 		var misspelled = words.misspelled;
 		if (misspelled == null || misspelled.length == 0) {
-			this._appCtxt.setStatusMsg(ZmMsg.noMisspellingsFound, ZmStatusView.LEVEL_INFO);
+			appCtxt.setStatusMsg(ZmMsg.noMisspellingsFound, ZmStatusView.LEVEL_INFO);
 		} else {
             var msg = AjxMessageFormat.format(ZmMsg.misspellingsResult, misspelled.length);
-            this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+            appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 
 			this.highlightMisspelledWords(misspelled);
 			wordsFound = true;
 		}
 	} else {
-		this._appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);
+		appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);
 	}
 
 	if (this._mode == DwtHtmlEditor.HTML)

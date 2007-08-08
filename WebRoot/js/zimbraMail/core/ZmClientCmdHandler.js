@@ -88,7 +88,7 @@ function(cmdStr, searchController) {
 	} else if (arg0 == "a") {
 		if (!this._assistantDialog) {
 			AjxDispatcher.require("Assistant");
-			this._assistantDialog = new ZmAssistantDialog(appCtxt);
+			this._assistantDialog = new ZmAssistantDialog();
 		}
 		searchController.setSearchField("");
 		this._assistantDialog.popup();

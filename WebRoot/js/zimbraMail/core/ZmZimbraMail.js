@@ -1463,7 +1463,7 @@ function(actionCode, ev) {
 		case ZmKeyMap.ASSISTANT: {
 			if (!this._assistantDialog) {
 				AjxDispatcher.require("Assistant");
-				this._assistantDialog = new ZmAssistantDialog(appCtxt);
+				this._assistantDialog = new ZmAssistantDialog();
 			}
 			this._assistantDialog.popup();
 			break;

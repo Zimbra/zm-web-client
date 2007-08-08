@@ -1413,7 +1413,7 @@ function(composeMode) {
 	this._composeMode = composeMode || defaultCompMode;
 
 	// init html editor
-	this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode, appCtxt);
+	this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode);
 //	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 	this._bodyField = document.getElementById(this._bodyFieldId);

@@ -24,14 +24,14 @@
  */
 
 /**
-* Creates a new reminder controller to manage the reminder dialog and status area
-*
-* need following timed actions:
-* 1) one for refreshing our "cache" of upcoming appts to notify on
-* 2) one for when to next popup the reminder dialog. 
-*    by default, next appt start time minus lead time pref (i..e, 5 minutes before).
-*    but, also could be controlled by snooze prefs.
-*/
+ * Creates a new reminder controller to manage the reminder dialog and status area
+ *
+ * need following timed actions:
+ * 1) one for refreshing our "cache" of upcoming appts to notify on
+ * 2) one for when to next popup the reminder dialog. 
+ *    by default, next appt start time minus lead time pref (i..e, 5 minutes before).
+ *    but, also could be controlled by snooze prefs.
+ */
 ZmReminderController = function(appCtxt, calController) {
 	this._calController = calController;
 	this._appCtxt = appCtxt;
@@ -224,7 +224,7 @@ function(appt) {
 ZmReminderController.prototype.getReminderDialog =
 function() {
 	if (this._reminderDialog == null) {
-		this._reminderDialog = new ZmReminderDialog(this._appCtxt.getShell(), this._appCtxt, this, this._calController);
+		this._reminderDialog = new ZmReminderDialog(this._appCtxt.getShell(), this, this._calController);
 	}
 	return this._reminderDialog;
 };

@@ -23,23 +23,23 @@
  * ***** END LICENSE BLOCK *****
  */
 /**
-* Creates a generic quick add dialog (which basically mean it has different 
-* than regular dialogs). See "DwtSemiModalDialog" in Ajax widget templates
-* for cosmetics.
-* @constructor
-* @class
-* This class represents a modal dialog which has at least a title and the 
-* standard buttons (OK/Cancel).
-* widgets (i.e. buttons, etc) as necessary.
-* <p>
-* Dialogs always hang off the main shell since their stacking order is managed 
-* through z-index.
-*
-* @author Parag Shah
-* @param parent				parent widget (the shell)
-* @param appCtxt 			singleton appCtxt
-*/
-ZmApptQuickAddDialog = function(parent, appCtxt) {
+ * Creates a generic quick add dialog (which basically mean it has different 
+ * than regular dialogs). See "DwtSemiModalDialog" in Ajax widget templates
+ * for cosmetics.
+ * @constructor
+ * @class
+ * This class represents a modal dialog which has at least a title and the 
+ * standard buttons (OK/Cancel).
+ * widgets (i.e. buttons, etc) as necessary.
+ * <p>
+ * Dialogs always hang off the main shell since their stacking order is managed 
+ * through z-index.
+ *
+ * @author Parag Shah
+ * 
+ * @param parent				parent widget (the shell)
+ */
+ZmApptQuickAddDialog = function(parent) {
 	// create extra "more details" button to be added at the footer of DwtDialog
 	var moreDetailsButton = new DwtDialog_ButtonDescriptor(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, 
 														   ZmMsg.moreDetails, DwtDialog.ALIGN_LEFT);
@@ -47,7 +47,6 @@ ZmApptQuickAddDialog = function(parent, appCtxt) {
 	ZmQuickAddDialog.call(this, parent, null, null, [moreDetailsButton]);
 	DBG.timePt("ZmQuickAddDialog constructor", true);
 
-	this._appCtxt = appCtxt;
 	this._attendees = {};
 
 	var html = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ZmApptQuickAddDialog", {id: this._htmlElId});
@@ -104,9 +103,9 @@ function(appt) {
 	this._attendees[ZmCalItem.LOCATION] = new AjxVector();	// list of ZmResource
 	
 	// autocomplete for locations
-	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var shell = this._appCtxt.getShell();
-		var resourcesClass = this._appCtxt.getApp(ZmApp.CALENDAR);
+	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var shell = appCtxt.getShell();
+		var resourcesClass = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations,
 					  matchValue: ZmContactsApp.AC_VALUE_NAME};
 		this._acLocationsList = new ZmAutocompleteListView(params);
@@ -273,7 +272,7 @@ ZmApptQuickAddDialog.prototype._resetCalendarSelect =
 function(appt) {
 	// get all folders w/ view set to "Appointment" we received from initial refresh block
 	var org = ZmOrganizer.ITEM_ORGANIZER[appt.type];
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = appCtxt.getFolderTree();
 	var data = folderTree ? folderTree.getByType(org) : [];
 
 	this._calendarSelect.clearOptions();

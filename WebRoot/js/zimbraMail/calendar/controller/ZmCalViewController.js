@@ -932,7 +932,7 @@ function(appt, shiftKey) {
 	if ((useQuickAdd && !shiftKey) || (!useQuickAdd && shiftKey)) {
 		if (this._quickAddDialog == null) {
 			AjxDispatcher.require(["CalendarCore", "Calendar"]);
-			this._quickAddDialog = new ZmApptQuickAddDialog(this._shell, appCtxt);
+			this._quickAddDialog = new ZmApptQuickAddDialog(this._shell);
 			this._quickAddDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
 			this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
 		}

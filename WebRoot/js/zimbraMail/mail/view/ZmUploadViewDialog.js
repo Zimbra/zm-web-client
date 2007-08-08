@@ -23,9 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmUploadViewDialog = function(parent, appCtxt,className) {
-	
-	this._appCtxt = appCtxt;
+ZmUploadViewDialog = function(parent, className) {
 	
 	var attachButton = new DwtDialog_ButtonDescriptor(ZmUploadViewDialog.ATTACH_BUTTON, 
 													  ZmUploadViewDialog.ATTACH, DwtDialog.ALIGN_RIGHT);
@@ -133,7 +131,7 @@ ZmUploadViewDialog.prototype.upload = function(callback){
 ZmUploadViewDialog.prototype._submitAttachments = function(callback){
 	
 	var ajxCallback = new AjxCallback(this, this._uploadDoneCallback,[callback]);
-	var um = this._appCtxt.getUploadManager();
+	var um = appCtxt.getUploadManager();
 	window._uploadManager = um;
 	try {
 		um.execute(ajxCallback, this._uploadForm);
@@ -181,7 +179,7 @@ ZmUploadViewDialog.prototype._getContainer = function(){
 ZmUploadViewDialog.prototype._createContainer =
 function() {
 	
-	var uri = this._uri = this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+	var uri = this._uri = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 
 	var attachmentTableId = this._attachmentTableId = Dwt.getNextId();
 	var uploadFormId = this._uploadFormId = Dwt.getNextId();
@@ -362,7 +360,7 @@ ZmUploadViewDialog.prototype._handleInline = function(){
 //Utilities
 
 ZmUploadViewDialog.prototype._popupErrorDialog = function(message) {
-	var dialog = this._appCtxt.getMsgDialog();
+	var dialog = appCtxt.getMsgDialog();
 	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, this._title);
 	dialog.popup();
 };

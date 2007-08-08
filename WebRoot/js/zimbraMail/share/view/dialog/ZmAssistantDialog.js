@@ -23,11 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-/**
-*
-* @param appCtxt	[ZmAppCtxt]			the app context
-*/
-ZmAssistantDialog = function(appCtxt) {
+ZmAssistantDialog = function() {
 
 	var helpButton = new DwtDialog_ButtonDescriptor(ZmAssistantDialog.HELP_BUTTON, ZmMsg.help, DwtDialog.ALIGN_LEFT);
 														   
@@ -37,28 +33,26 @@ ZmAssistantDialog = function(appCtxt) {
 	DwtDialog.call(this, appCtxt.getShell(), "ZmAssistantDialog", ZmMsg.zimbraAssistant, null, [helpButton, extraButton]);
 //	ZmQuickAddDialog.call(this, appCtxt.getShell(), null, null, []);
 
-	this._appCtxt = appCtxt;
-
 	this.setContent(this._contentHtml());
 	this._initContent();
-	this._msgDialog = this._appCtxt.getMsgDialog();
+	this._msgDialog = appCtxt.getMsgDialog();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setButtonListener(ZmAssistantDialog.EXTRA_BUTTON, new AjxListener(this, this._extraButtonListener));	
 	this.setButtonListener(ZmAssistantDialog.HELP_BUTTON, new AjxListener(this, this._helpButtonListener));
 
 	// only trigger matching after a sufficient pause
-	this._parseInterval = 75; //this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
+	this._parseInterval = 75; //appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
 	this._parseTimedAction = new AjxTimedAction(this, this._parseAction);
 	this._parseActionId = -1;
 
-	ZmAssistantDialog.initializeAssistants(appCtxt);
+	ZmAssistantDialog.initializeAssistants();
 };
 
 //ZmAssistantDialog.prototype = new ZmQuickAddDialog;
 ZmAssistantDialog.prototype = new DwtDialog;
 ZmAssistantDialog.prototype.constructor = ZmAssistantDialog;
 
-ZmAssistantDialog.initializeAssistants = function(appCtxt) {
+ZmAssistantDialog.initializeAssistants = function() {
 	if (!ZmAssistantDialog._handlerInit) {
 		ZmAssistant.register(new ZmVersionAssistant());
 		ZmAssistant.register(new ZmDebugAssistant());

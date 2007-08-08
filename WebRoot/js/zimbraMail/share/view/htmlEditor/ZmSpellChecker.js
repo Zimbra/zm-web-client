@@ -24,20 +24,19 @@
  */
 
 /**
-* Makes server request to check spelling of given text.
-* @constructor
-* @class
-* Use this class to check spelling of any text via check() method.
-*
-* TODO: we may want to move this class out into its own file later...
-*
-* @author Mihai Bazon
-* @param parent			the parent needing spell checking
-* @param appCtxt		the application context
-*/
-ZmSpellChecker = function(parent, appCtxt) {
+ * Makes server request to check spelling of given text.
+ * @constructor
+ * @class
+ * Use this class to check spelling of any text via check() method.
+ *
+ * TODO: we may want to move this class out into its own file later...
+ *
+ * @author Mihai Bazon
+ * 
+ * @param parent		the parent needing spell checking
+ */
+ZmSpellChecker = function(parent) {
 	this._parent = parent;
-	this._appCtxt = appCtxt;
 };
 
 
@@ -53,7 +52,7 @@ function(text, callback) {
 	soapDoc.getMethod().appendChild(soapDoc.getDoc().createTextNode(text));
 
 	var callback = new AjxCallback(this, this._checkCallback, callback);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: callback});
 };
 
 ZmSpellChecker.prototype._checkCallback =
