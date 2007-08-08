@@ -24,7 +24,7 @@
  */
 
 ZmChatWidget = function(parent, posStyle) {
-	if (arguments.length == 0) return;
+
 	DwtComposite.call(this, parent, "ZmChatWidget", posStyle);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
@@ -323,7 +323,7 @@ ZmChatWidget.prototype._init = function() {
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content.setScrollStyle(Dwt.SCROLL);
 
-	this._objectManager = new ZmObjectManager(this._content, this._appCtxt);
+	this._objectManager = new ZmObjectManager(this._content);
 	// add YM Emoticons if zimlet installed
 	var YM_smileys = this._appCtxt.getZimletMgr().zimletExists("com_zimbra_ymemoticons");
 	if (YM_smileys) {

@@ -47,7 +47,6 @@ function(zimletContext, shell) {
 	this._passRpcErrors = false;
 	this._zimletContext = zimletContext;
 	this._dwtShell = shell;
-	this._appCtxt = shell.getData(ZmAppCtxt.LABEL);
 	this._origIcon = this.xmlObj().icon;
 	this.__zimletEnabled = true;
 	this.name = this.xmlObj().name;
@@ -60,7 +59,6 @@ function(zimletContext, shell) {
 		if (contentObj.type) {
 			this.type = contentObj.type;
 		}
-		// note the _appCtxt is already initialized above
 		ZmObjectHandler.prototype.init.call(this, this.type, contentObj["class"]);
 	}
 };
@@ -79,29 +77,24 @@ function() {
 	return this._dwtShell;
 };
 
-ZmZimletBase.prototype.getAppCtxt =
-function() {
-	return this._appCtxt;
-};
-
 /// Adds a new item in the search domain drop-down.  Pass an icon
 /// class (null for no icon), a label and optionally a listener that
 /// will be called when the item is selected.
 ZmZimletBase.prototype.addSearchDomainItem =
 function(icon, label, listener) {
-	var searchToolbar = this.getAppCtxt().getSearchController().getSearchToolbar();
+	var searchToolbar = appCtxt.getSearchController().getSearchToolbar();
 	return searchToolbar.createCustomSearchBtn(icon, label, listener);
 };
 
 /// Returns the text entered in the search bar
 ZmZimletBase.prototype.getSearchQuery =
 function() {
-	return this.getAppCtxt().getSearchController().getSearchToolbar().getSearchFieldValue();
+	return appCtxt.getSearchController().getSearchToolbar().getSearchFieldValue();
 };
 
 ZmZimletBase.prototype.getZimletManager =
 function() {
-	return this.getAppCtxt().getZimletMgr();
+	return appCtxt.getZimletMgr();
 };
 
 ZmZimletBase.prototype.xmlObj =
@@ -382,7 +375,7 @@ ZmZimletBase.prototype.displayErrorMessage =
 function(msg, data, title) {
 	if (title == null)
 		title = this.xmlObj("description") + " error";
-	var dlg = this.getAppCtxt().getErrorDialog();
+	var dlg = appCtxt.getErrorDialog();
 	dlg.reset();
 	dlg.setMessage(msg, data, DwtMessageDialog.WARNING_STYLE, title);
 	dlg.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
@@ -391,7 +384,7 @@ function(msg, data, title) {
 
 ZmZimletBase.prototype.displayStatusMessage =
 function(msg) {
-	this.getAppCtxt().setStatusMsg(msg);
+	this.appCtxt.setStatusMsg(msg);
 };
 
 ZmZimletBase.prototype.getResource =
@@ -476,7 +469,6 @@ function(icon) {
 	if (!this.xmlObj("zimletPanelItem"))
 		return;
 	this.xmlObj().icon = icon;
-	var appCtxt = this.getAppCtxt();
 	var app = appCtxt.getCurrentApp()
 	var ctrl = appCtxt.getOverviewController();
 	var treeView = ctrl.getTreeView(app.getOverviewId(), ZmOrganizer.ZIMLET);
@@ -589,12 +581,12 @@ function() {
 
 ZmZimletBase.prototype.getUsername =
 function() {
-	return this.getAppCtxt().get(ZmSetting.USERNAME);
+	return appCtxt.get(ZmSetting.USERNAME);
 };
 
 ZmZimletBase.prototype.getUserID =
 function() {
-	return this.getAppCtxt().get(ZmSetting.USERID);
+	return appCtxt.get(ZmSetting.USERID);
 };
 
 // Make DOM safe id's

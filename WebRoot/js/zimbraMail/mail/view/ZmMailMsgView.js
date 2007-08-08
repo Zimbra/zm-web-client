@@ -417,7 +417,7 @@ function() {
 	// objectManager will be 'true' at create time, after that it will be the real object
 	if (this._objectManager === true) {
 		// this manages all the detected objects within the view
-		this._objectManager = new ZmObjectManager(this, this._appCtxt);
+		this._objectManager = new ZmObjectManager(this);
 	}
 };
 

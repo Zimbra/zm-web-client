@@ -23,8 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmZimletMgr = function(appCtxt) {
-	this._appCtxt = appCtxt;
+ZmZimletMgr = function() {
 	this._ZIMLETS = [];
 	this._ZIMLETS_BY_ID = {};
 	this._CONTENT_ZIMLETS = [];
@@ -60,7 +59,7 @@ function(zimletArray, userProps) {
     for (var i = 0; i < zimletArray.length; i++)
 		this._ZIMLETS_BY_ID[zimletArray[i].zimlet[0].name] = true;
 	for(var i=0; i < zimletArray.length; i++) {
-		var z = new ZmZimletContext(i, zimletArray[i], this._appCtxt);
+		var z = new ZmZimletContext(i, zimletArray[i]);
 		this._ZIMLETS[i] = this._ZIMLETS_BY_ID[z.name] = z;
 	}
 	if (userProps) {
@@ -74,10 +73,10 @@ function(zimletArray, userProps) {
 	}
 	var panelZimlets = this.getPanelZimlets();
  	if(panelZimlets && panelZimlets.length > 0) {
-		var zimletTree = this._appCtxt.getZimletTree();
+		var zimletTree = appCtxt.getZimletTree();
 	 	if (!zimletTree) {
 	 		zimletTree = new ZmFolderTree(ZmOrganizer.ZIMLET);
-	 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
+	 		appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
 	 	}
 	 	zimletTree.reset();
 	 	zimletTree.loadFromJs(panelZimlets, "zimlet");

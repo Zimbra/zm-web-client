@@ -226,7 +226,7 @@ ZmNotebookPageView.prototype._createHtml = function() {
 ZmNotebookPageView.prototype._getObjectMgr =
 function() {
 	if (!this._objectMgr) {
-		this._objectMgr = new ZmObjectManager(this, this._appCtxt);
+		this._objectMgr = new ZmObjectManager(this);
 		var handler = new ZmNotebookObjectHandler(this._appCtxt);
 		this._objectMgr.addHandler(handler, ZmNotebookObjectHandler.TYPE, 1);
 		this._objectMgr.sortHandlers();

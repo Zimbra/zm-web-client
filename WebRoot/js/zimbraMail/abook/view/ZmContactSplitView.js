@@ -48,7 +48,7 @@ ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) 
 	}
 
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
-	this._objectManager = new ZmObjectManager(null, appCtxt);
+	this._objectManager = new ZmObjectManager();
 
 	this._initialize(controller, dropTgt);
 };

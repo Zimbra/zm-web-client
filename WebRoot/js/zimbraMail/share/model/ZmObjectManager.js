@@ -24,31 +24,30 @@
  */
 
 /**
-* Object mananger class - use this class to hilite objects w/in a given view
-* @constructor
-* @class
-*
-* @author
-* @param view			the view this manager is going to hilite for
-* @param appCtxt 		the global ZmAppCtxt
-* @param selectCallback AjxCallback triggered when user clicks on hilited object
-* 						(provide if you want to do something before the clicked
-* 						on object opens its corresponding view)
-* @param skipHandlers 	true to avoid adding the standard handlers
-*/
-ZmObjectManager = function(view, appCtxt, selectCallback, skipHandlers) {
+ * Object mananger class - use this class to hilite objects w/in a given view
+ * @constructor
+ * @class
+ *
+ * @author Kevin Henrikson
+ * 
+ * @param view			the view this manager is going to hilite for
+ * @param appCtxt 		the global ZmAppCtxt
+ * @param selectCallback AjxCallback triggered when user clicks on hilited object
+ * 						(provide if you want to do something before the clicked
+ * 						on object opens its corresponding view)
+ * @param skipHandlers 	true to avoid adding the standard handlers
+ */
+ZmObjectManager = function(view, selectCallback, skipHandlers) {
 
-	if (arguments.length < 1) {return;}
 	//DBG.println(AjxDebug.DBG2, "ZmObjectManager created by: " + view);
 	this._view = view;
-	this._appCtxt = appCtxt;
 	this._selectCallback = selectCallback;
 	this._uuid = Dwt.getNextId();
 	this._objectIdPrefix = "OBJ_PREFIX_";
 	this._objectHandlers = {};
 	// don't include when looking for objects. only used to provide tool tips for images
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED) && window["ZmImageAttachmentObjectHandler"]) {
-		this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);
+		this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler();
 	}
 
 	// create handlers (see registerHandler below)
@@ -125,8 +124,8 @@ function(obj) {
 };
 
 ZmObjectManager.prototype.getHandlers = function() {
-    if (!this.initialized && this._appCtxt && this._appCtxt.zimletsPresent()) {
-        var zimletMgr = this._appCtxt.getZimletMgr();
+    if (!this.initialized && appCtxt.zimletsPresent()) {
+        var zimletMgr = appCtxt.getZimletMgr();
         if (zimletMgr.isLoaded()) {
             this.initialized = true;
             var zimlets = zimletMgr.getContentZimlets();
@@ -172,9 +171,9 @@ function() {
 		obj = c[i];
 		var	zim = obj;
 		var type = obj.TYPE;
-		if (this._appCtxt.zimletsPresent()) {
+		if (appCtxt.zimletsPresent()) {
 			if (!(obj instanceof ZmZimletBase)) {
-				zim = new obj(this._appCtxt);
+				zim = new obj();
 			}
 		}
 		if (obj.useType) {
@@ -199,7 +198,7 @@ function() {
 
 ZmObjectManager.prototype.objectsCount =
 function() {
-	return (this._appCtxt.zimletsPresent()) ? this._appCtxt.getZimletMgr().getContentZimlets().length : 0;
+	return (appCtxt.zimletsPresent()) ? appCtxt.getZimletMgr().getContentZimlets().length : 0;
 };
 
 ZmObjectManager.prototype.getImageAttachmentHandler =

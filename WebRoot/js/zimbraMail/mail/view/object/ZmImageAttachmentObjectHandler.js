@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmImageAttachmentObjectHandler = function(appCtxt) {
-	ZmObjectHandler.call(this, appCtxt,ZmImageAttachmentObjectHandler.TYPE);
+ZmImageAttachmentObjectHandler = function() {
+	ZmObjectHandler.call(this, ZmImageAttachmentObjectHandler.TYPE);
 }
 
 ZmImageAttachmentObjectHandler.prototype = new ZmObjectHandler;

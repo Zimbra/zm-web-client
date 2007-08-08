@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmZimletContext = function(id, zimlet, appCtxt) {
-	this._appCtxt = appCtxt;
+ZmZimletContext = function(id, zimlet) {
+
 	// sanitize JSON here
 	this.json = ZmZimletContext.sanitize(zimlet, "zimlet", ZmZimletContext.RE_ARRAY_ELEMENTS);
 
@@ -182,20 +182,20 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	}
 	this.handlerObject._init(this, DwtShell.getShell(window));
 	if (this.contentObject) {
-		this._appCtxt.getZimletMgr().registerContentZimlet(this.handlerObject, this.type, this.priority);
+		appCtxt.getZimletMgr().registerContentZimlet(this.handlerObject, this.type, this.priority);
 	}
 	this.handlerObject.init();
 	this.handlerObject._zimletContext = this;
 	// If it has an _id then we need to make sure the treeItem
 	// is up-to-date now that the i18n files have loaded.
 	if(this._id) {
-		var tree = this._appCtxt.getZimletTree();
+		var tree = appCtxt.getZimletTree();
 		var zimletItem = tree.getById(this._id);
 		zimletItem.resetNames();
 	}
 
     // initialize portlets
-    if (this._appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
+    if (appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
         var params = {
             name: "Portal",
             callback: new AjxCallback(this, this._finished_loadIncludes2)
@@ -207,7 +207,7 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 };
 
 ZmZimletContext.prototype._finished_loadIncludes2 = function() {
-    var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+    var portletMgr = appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
     portletMgr.zimletLoaded(this);
 };
 

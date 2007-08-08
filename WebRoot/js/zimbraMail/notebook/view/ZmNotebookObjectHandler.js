@@ -23,9 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNotebookObjectHandler = function(appCtxt) {
-	ZmObjectHandler.call(this, appCtxt, ZmNotebookObjectHandler.TYPE);
+ZmNotebookObjectHandler = function() {
+	ZmObjectHandler.call(this, ZmNotebookObjectHandler.TYPE);
 };
+
 ZmNotebookObjectHandler.prototype = new ZmObjectHandler;
 ZmNotebookObjectHandler.prototype.constructor = ZmNotebookObjectHandler;
 
@@ -130,7 +131,7 @@ function(obj, span, ev, context) {
 		if (!this._formatter) {
 			this._formatter = new AjxMessageFormat(ZmMsg.pageNotFound);
 		}
-		var appController = this._appCtxt.getAppController();
+		var appController = appCtxt.getAppController();
 		var message = this._formatter.format(context.keyword);
 		appController.popupErrorDialog(message, null, null, true);
 		return;
@@ -263,7 +264,7 @@ function(context) {
 };
 
 ZmNotebookObjectHandler.prototype._getNotebook = function(folderId, path) {
-	var organizer = this._appCtxt.getById(folderId);
+	var organizer = appCtxt.getById(folderId);
 	if (path.match('/')) {
 		var parts = path.replace(/^\//,"").replace(/\/[^\/]*$/,"").split('/');
 		for (var i = 0; i < parts.length; i++) {

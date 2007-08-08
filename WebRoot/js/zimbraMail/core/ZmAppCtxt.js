@@ -24,14 +24,14 @@
  */
 
 /**
-* Does nothing.
-* @constructor
-* @class
-* This class is a container for stuff that the overall app may want to know about. That
-* includes environment information (such as whether the browser in use is public), and
-* stuff that is common to the app as a whole (such as tags). The methods are almost all
-* just getters and setters.
-*/
+ * Does nothing.
+ * @constructor
+ * @class
+ * This class is a container for stuff that the overall app may want to know about. That
+ * includes environment information (such as whether the browser in use is public), and
+ * stuff that is common to the app as a whole (such as tags). The methods are almost all
+ * just getters and setters.
+ */
 ZmAppCtxt = function() {
 	this._trees = {};
 	this._accounts = {};
@@ -804,7 +804,7 @@ ZmAppCtxt.prototype.getZimletMgr =
 function() {
 	if (!this._zimletMgr) {
 		AjxDispatcher.require("Zimlet");
-		this._zimletMgr = new ZmZimletMgr(this);
+		this._zimletMgr = new ZmZimletMgr();
 	}
 	return this._zimletMgr;
 };

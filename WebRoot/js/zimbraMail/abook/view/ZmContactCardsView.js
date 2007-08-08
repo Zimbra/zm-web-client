@@ -31,7 +31,7 @@ ZmContactCardsView = function(parent, className, posStyle, controller, dropTgt) 
 
 	this._setMouseEventHdlrs(); // needed by object manager
 	// this manages all the detected objects within the view
-	this._objectManager = new ZmObjectManager(this, this.shell.getData(ZmAppCtxt.LABEL));
+	this._objectManager = new ZmObjectManager(this);
 
 	// find out if the user's locale has a alphabet defined
 	if (ZmMsg.alphabet && ZmMsg.alphabet.length>0) {

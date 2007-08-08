@@ -24,9 +24,9 @@
  */
 
 // This class is currently not being used and has been removed from the build
-ZmEmoticonObjectHandler = function(appCtxt) {
+ZmEmoticonObjectHandler = function() {
 
-	ZmObjectHandler.call(this, appCtxt, ZmEmoticonObjectHandler.TYPE);
+	ZmObjectHandler.call(this, ZmEmoticonObjectHandler.TYPE);
 
 	this._emoticons = [
 	   { smiley: ">:)", image: "DevilEmoticon", tooltip: ZmMsg.devil },
