@@ -160,6 +160,7 @@ ZmPortalApp.prototype._handleLoadManifest = function(callback, req) {
 };
 
 ZmPortalApp.prototype.getPortalController = function() {
+	AjxDispatcher.require("Portal");
 	if (!this._portalController) {
 		this._portalController = new ZmPortalController(this._container, this);
 	}
@@ -167,6 +168,7 @@ ZmPortalApp.prototype.getPortalController = function() {
 };
 
 ZmPortalApp.prototype.getPortletMgr = function() {
+	AjxDispatcher.require("Portal");
     if (!this._portletMgr) {
         this._portletMgr = new ZmPortletMgr(appCtxt);
     }
