@@ -149,7 +149,7 @@ function(actionCode) {
 
 	// check for action code with argument, eg MoveToFolder3
 	var origActionCode = actionCode;
-	var shortcut = ZmShortcut.parseAction(appCtxt, "Global", actionCode);
+	var shortcut = ZmShortcut.parseAction("Global", actionCode);
 	if (shortcut) {
 		actionCode = shortcut.baseAction;
 	}

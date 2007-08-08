@@ -84,7 +84,7 @@ function(organizer, list) {
 	list.push(organizer);
 	var children = organizer.children.getArray();
     // bug:19180 disable shared folders in desktop client
-    if (children.link && children.link.length && !this._appCtxt.get(ZmSetting.OFFLINE)) {
+    if (children.link && children.link.length && !appCtxt.get(ZmSetting.OFFLINE)) {
         for (var i = 0; i < children.length; i++) {
             this._addToList(children[i], list);
         }

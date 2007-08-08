@@ -936,7 +936,7 @@ ZmHtmlEditor.prototype._ace_finishedLoading = function(ifr, name, data) {
 			} catch(ex) {
 				--self._ace_componentsLoading;
 				// throw new DwtException("Can't deserialize ALE component", DwtException.INTERNAL_ERROR, ex);
-				var dlg = self._appCtxt.getErrorDialog();
+				var dlg = appCtxt.getErrorDialog();
 				dlg.setMessage(ZmMsg.aleError, ex.msg || ex.toString(), DwtMessageDialog.WARNING_STYLE, "ALE error");
 				dlg.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
 				dlg.popup();

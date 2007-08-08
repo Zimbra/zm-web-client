@@ -31,7 +31,6 @@
  * @author Kevin Henrikson
  * 
  * @param view			the view this manager is going to hilite for
- * @param appCtxt 		the global ZmAppCtxt
  * @param selectCallback AjxCallback triggered when user clicks on hilited object
  * 						(provide if you want to do something before the clicked
  * 						on object opens its corresponding view)
