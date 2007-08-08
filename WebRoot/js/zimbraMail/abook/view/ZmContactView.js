@@ -205,14 +205,18 @@ function() {
 
 ZmContactView.prototype.isValid =
 function() {
-	var bdayId = this._htmlElId + "_birthday";
-	var dateField = document.getElementById(bdayId);
-	if (dateField) {
-		var dateStr = AjxStringUtil.trim(dateField.value);
-		if (dateStr.length) {
-			var aDate = AjxDateUtil.simpleParseDateStr(dateStr);
-			if (isNaN(aDate) || aDate == null)
-				throw ZmMsg.errorBirthdayDate;
+	var dateCells = document.getElementsByName(this._htmlElId + "_dateButtonName");
+	for (var i = 0; i < dateCells.length; i++) {
+		var buttonId = dateCells[i].id;
+		var dateFieldId = buttonId.substring(0, buttonId.indexOf("_button"));
+		var dateField = document.getElementById(dateFieldId);
+		if (dateField) {
+			var dateStr = AjxStringUtil.trim(dateField.value);
+			if (dateStr.length) {
+				var aDate = AjxDateUtil.simpleParseDateStr(dateStr);
+				if (isNaN(aDate) || aDate == null)
+					throw ZmMsg.errorDate;
+			}
 		}
 	}
 
@@ -318,7 +322,11 @@ ZmContactView.prototype._addDateCalendars =
 function() {
 	var dateBtnListener = new AjxListener(this, this._dateButtonListener);
 	var dateSelListener = new AjxListener(this, this._dateSelectionListener);
-	ZmCalendarApp.createMiniCalButton(this, this._birthdayButtonId, dateBtnListener, dateSelListener);
+	var dateCells = document.getElementsByName(this._htmlElId + "_dateButtonName");
+	for (var i = 0; i < dateCells.length; i++) {
+		var buttonId = dateCells[i].id;
+		ZmCalendarApp.createMiniCalButton(this, buttonId, dateBtnListener, dateSelListener);
+	}
 };
 
 ZmContactView.prototype._installOnKeyUpHandler =
@@ -343,8 +351,8 @@ function(field, isDate) {
 	if (e && e.value != undefined) {
 		if (e.value != "") {
 			if (isDate) {
-				var bdate = AjxDateUtil.simpleParseDateStr(e.value);
-				this._attr[field] = this._dateFormatter.format(bdate);
+				var parsedDate = AjxDateUtil.simpleParseDateStr(e.value);
+				this._attr[field] = this._dateFormatter.format(parsedDate);
 			} else {
 				this._attr[field] = e.value;
 			}
@@ -445,10 +453,11 @@ function() {
 	}
 };
 
-ZmContactView.prototype._setImage = function(el,value){
+ZmContactView.prototype._setImage =
+function(el,value) {
 	//fix this: After getting image/UI change this
-	if(!value) {
-		this._image.setAttribute("src","http://www.ithou.org/files/pictures/default-photo.jpg");
+	if (!value) {
+		this._image.setAttribute("src", "http://www.ithou.org/files/pictures/default-photo.jpg");
 		return;
 	}
 	el.setAttribute("_part",value.part);
@@ -472,10 +481,10 @@ function() {
 			if (isDate) {
 				var val = this._dateFormatter.parse(value);
 				el.value = val ? AjxDateUtil.simpleComputeDateStr(val) : "";
-			}else if(isImage){
+			} else if(isImage) {
 				 el.value = "";
 				 this._setImage(el,value);
-			}else {
+			} else {
 				el.value = value;
 			}
 		}
@@ -520,9 +529,9 @@ function() {
 			var isDate = (!!(Dwt.getAttr(el, "_isDate")));
 			var isImage = (!!(Dwt.getAttr(el,"_isImage")));
 			var isAttachment = (!!(Dwt.getAttr(el,"_isAttachment")));
-			if(isImage || isAttachment){
-				this._attr[field] = ( el.getAttribute("_aid") ? ["aid_",el.getAttribute("_aid")].join("") : (el.getAttribute("_part") ? ["part_",el.getAttribute("_part")].join("") : ""));
-			}else if (el.value != "" || field == ZmContact.F_image) {
+			if (isImage || isAttachment) {
+				this._attr[field] = (el.getAttribute("_aid") ? ["aid_",el.getAttribute("_aid")].join("") : (el.getAttribute("_part") ? ["part_",el.getAttribute("_part")].join("") : ""));
+			} else if (el.value != "" || field == ZmContact.F_image) {
 				if (isDate) {
 					var bdate = AjxDateUtil.simpleParseDateStr(el.value);
 					this._attr[field] = this._dateFormatter.format(bdate);
@@ -553,7 +562,6 @@ function(contact) {
 	var tabStr = params ? params["tabs"] : null;
 	this._tabs = tabStr ? tabStr.split(",") : null;
 
-	this._birthdayButtonId	= this._htmlElId + "_birthday_button";
 	this._fileAsSelectCellId= this._htmlElId + "_fileAs";
 	this._folderCellId 		= this._htmlElId + "_folder";
 	this._headerRowId		= this._htmlElId + "_headerRow";
@@ -599,40 +607,39 @@ function(contact) {
 	this._htmlInitialized = true;
 };
 
-ZmContactView.prototype._handleImage = function(){
-	
-	this._image = document.getElementById(this._imageCellId+"_img");
-	
-	var imageInput = this._imageInput = document.getElementById(this._imageCellId+"_input");
-	if(imageInput){
-		imageInput.onchange = AjxCallback.simpleClosure(this._uploadImage,this);
-		imageInput.setAttribute("accept","image/gif,image/jpeg,image/png");
+ZmContactView.prototype._handleImage =
+function() {
+	this._image = document.getElementById(this._imageCellId + "_img");
+
+	var imageInput = this._imageInput = document.getElementById(this._imageCellId + "_input");
+	if (imageInput) {
+		imageInput.onchange = AjxCallback.simpleClosure(this._uploadImage, this);
+		imageInput.setAttribute("accept", "image/gif,image/jpeg,image/png");
 	}
-	
+
 	var imageRemove = document.getElementById(this._imageCellId + "_remove");
-	if(imageRemove){
-		imageRemove.onclick = AjxCallback.simpleClosure(this._removeImage,this,imageRemove);
+	if (imageRemove) {
+		imageRemove.onclick = AjxCallback.simpleClosure(this._removeImage, this,imageRemove);
 	}
-	
+
 	this._uploadForm = document.getElementById(this._imageCellId + "_form");
 	if (this._uploadForm) {
 		this._uploadForm.setAttribute("action", this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
 	}
 };
 
-ZmContactView.prototype._updateImage = function(status,attId){
-	this._image.setAttribute("src",["/service/content/proxy?aid=",attId].join(""));
+ZmContactView.prototype._updateImage =
+function(status,attId) {
+	this._image.setAttribute("src", ["/service/content/proxy?aid=",attId].join(""));
 	this._imageInput.setAttribute("_aid",attId);
 };
 
-ZmContactView.prototype._uploadImage = function(){
-	
-	if(this._imageInput.value == ""){
-		return;
-	}
-	
-	var callback = new AjxCallback(this,this._updateImage);
-	var ajxCallback = new AjxCallback(this, this._uploadImageDone,[callback]);
+ZmContactView.prototype._uploadImage =
+function() {
+	if (this._imageInput.value == "") { return; }
+
+	var callback = new AjxCallback(this, this._updateImage);
+	var ajxCallback = new AjxCallback(this, this._uploadImageDone, [callback]);
 	var um = this._appCtxt.getUploadManager();
 	window._uploadManager = um;
 
@@ -644,24 +651,20 @@ ZmContactView.prototype._uploadImage = function(){
 	}
 };
 
-ZmContactView.prototype._uploadImageDone = function(callback,status,attId){
-	
-	if(status == AjxPost.SC_OK){
-		if(callback){
+ZmContactView.prototype._uploadImageDone =
+function(callback, status, attId) {
+	if (status == AjxPost.SC_OK) {
+		if (callback) {
 			callback.run(status,attId);
 		}
-		
-	}else if (status == AjxPost.SC_UNAUTHORIZED) {
-		
+	} else if (status == AjxPost.SC_UNAUTHORIZED) {
 		// auth failed during att upload - let user relogin, continue with compose action
 		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
 		this._appCtxt.getAppController()._handleException(ex, callback);
-		
 	} else {
-		
 		// bug fix #2131 - handle errors during attachment upload.
 		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
-		
+
 		switch (status) {
 			// add other error codes/message here as necessary
 			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
@@ -670,12 +673,11 @@ ZmContactView.prototype._uploadImageDone = function(callback,status,attId){
 		var dialog = this._appCtxt.getMsgDialog();
 		dialog.setMessage(msg,DwtMessageDialog.CRITICAL_STYLE,this._title);
 		dialog.popup();
-		
 	}
 };
 
-
-ZmContactView.prototype._removeImage = function(el){
+ZmContactView.prototype._removeImage =
+function(el) {
 	this._imageInput.removeAttribute("_aid");
 	this._imageInput.removeAttribute("_part");
 	this._setImage(el,null);
@@ -751,8 +753,9 @@ function(ev) {
 
 ZmContactView.prototype._dateButtonListener =
 function(ev) {
-	var bdayId = this._htmlElId + "_birthday";
-	var dateField = document.getElementById(bdayId);
+	var buttonId = ev.item.getData(Dwt.KEY_ID);
+	var dateFieldId = buttonId.substring(0, buttonId.indexOf("_button"));
+	var dateField = document.getElementById(dateFieldId);
 	var aDate = dateField ? AjxDateUtil.simpleParseDateStr(dateField.value) : null;
 
 	// if date was input by user and its fubar, reset to today's date
@@ -768,9 +771,12 @@ function(ev) {
 
 ZmContactView.prototype._dateSelectionListener =
 function(ev) {
-	var bdayId = this._htmlElId + "_birthday";
-	var dateField = document.getElementById(bdayId);
-	dateField.value = AjxDateUtil.simpleComputeDateStr(ev.detail);
+	var buttonId = ev.item.getData(Dwt.KEY_ID);
+	var dateFieldId = buttonId.substring(0, buttonId.indexOf("_button"));
+	var dateField = document.getElementById(dateFieldId);
+	if (dateField) {
+		dateField.value = AjxDateUtil.simpleComputeDateStr(ev.detail);
+	}
 };
 
 

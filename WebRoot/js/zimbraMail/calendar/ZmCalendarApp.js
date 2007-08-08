@@ -569,8 +569,10 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	// create button
 	var dateButton = new DwtButton(parent);
 	dateButton.addDropDownSelectionListener(dateButtonListener);
-	if (AjxEnv.isIE)
+	dateButton.setData(Dwt.KEY_ID, buttonId);
+	if (AjxEnv.isIE) {
 		dateButton.setSize("20");
+	}
 
 	// create menu for button
 	var calMenu = new DwtMenu(dateButton, null, null, null, isInDialog);
@@ -580,6 +582,7 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 
 	// create mini cal for menu for button
 	var cal = new DwtCalendar(calMenu);
+	cal.setData(Dwt.KEY_ID, buttonId);
 	cal.setSkipNotifyOnPage(true);
 	var fdow = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
 	cal.setFirstDayOfWeek(fdow);
