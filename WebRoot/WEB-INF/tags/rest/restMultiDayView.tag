@@ -65,7 +65,7 @@
 
 </rest:handleError>
 
-<rest:view title="${pageTitle}">
+<rest:view title="${pageTitle}" rssfeed="${true}">
 
        <table width=100% cellpadding="0" cellspacing="0" border=0>
         <tr>
