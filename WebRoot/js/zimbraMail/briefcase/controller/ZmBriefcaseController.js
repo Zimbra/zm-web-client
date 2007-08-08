@@ -290,7 +290,7 @@ function(items) {
 	// REVISIT: Need to do proper list management! For now we fake
 	//          a list of a single item so that operations like
 	//          tagging and delete work.
-	this._list = new ZmList(ZmItem.PAGE, appCtxt);
+	this._list = new ZmList(ZmItem.PAGE);
 	
 	if (this._object) {
 		var item = new ZmBriefcaseItem();
@@ -401,7 +401,7 @@ function(docs,folderId) {
 		var doc = docs[i];
 		var item = this.getItemById(doc.id);
 		if (!item) {
-			item = new ZmBriefcaseItem(appCtxt);
+			item = new ZmBriefcaseItem();
 			item.set(doc);
 			item.folderId = folderId;
 			//item.remoteFolderId = remoteFolderId; // REVISIT
