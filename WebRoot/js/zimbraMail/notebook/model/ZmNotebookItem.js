@@ -74,7 +74,7 @@ ZmNotebookItem.prototype.getRestUrl = function(dontIncludeThisName) {
 	}*/
 
 	if (dontIncludeThisName) {
-		url = url.replace(/[^\/]+$/,"");
+		url = url.replace(new RegExp(("/"+this.name+"(/)?$")),"");
 	}
 	return url;
 };

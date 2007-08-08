@@ -657,16 +657,22 @@ ZmNotebookPageView.prototype.fetchInfo = function(path)
 	var wikiPath = null;	
 	var parts = path.split("/");	
 	if(parts.length>=3 && parts[0] == "home"){
-		var accountName = parts[1];
+		accountName = parts[1];
 		var len = parts.length;
 		var newParts = parts.splice(2,len-2);
 		wikiPath = newParts.join("/");	
-		//DBG.println(AjxDebug.DBG1,'path='+wikiPath+","+accountName);
+	}else if(parts.length>=4 && parts[0] == "service" && parts[1] == "home"){
+		accountName = parts[2];
+		var len = parts.length;
+		var newParts = parts.splice(3,len-3);
+		wikiPath = newParts.join("/");	
+	}
+
+	if(wikiPath && accountName) {
 		var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
 		var callback = new AjxCallback(this,this.handleItemResponse);
-		cache.getItemInfo({path:wikiPath,accountName:accountName,callback:callback});
-	}
-			
+		cache.getItemInfo({path:wikiPath,accountName:accountName,callback:callback});		
+	}			
 };
 
 ZmNotebookPageView.prototype.refresh = function(restUrl){
