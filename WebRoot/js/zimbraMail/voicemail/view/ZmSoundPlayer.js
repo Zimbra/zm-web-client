@@ -297,14 +297,14 @@ function() {
     	"zimbraMail.voicemail.templates.Voicemail#ZmSoundPlayerNoScript";
 
     element.innerHTML = AjxTemplate.expand(template, id);
-	this._playButton = new DwtButton(this);
+	this._playButton = new DwtBorderlessButton(this);
 	this._playButton.replaceElement(id + "_play");
 	this._playButton.setImage("Play");
 	this._playButton.setToolTipContent(ZmMsg.play);
 	this._playButton.addSelectionListener(new AjxListener(this, this.play));
 
     if (this._isScriptable) {
-		this._pauseButton = new DwtButton(this);
+		this._pauseButton = new DwtBorderlessButton(this);
 		this._pauseButton.replaceElement(id + "_pause");
 		this._pauseButton.setImage("Pause");
 		this._pauseButton.setToolTipContent(ZmMsg.pause);
