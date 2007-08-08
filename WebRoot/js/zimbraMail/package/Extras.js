@@ -5,7 +5,6 @@
  * 	- DwtSpinner: used by ZmTableEditor
  *  - ZmClientCmdHandler: handles special search cmds
  * 	- ZmPrintView: print an item or a list of items
- * 	- ZmChangePasswordDialog: change login password
  * 	- ZmChooseFolderDialog: export contacts, tie identity to folder,
  *							pop mail to folder, move mail or folder,
  *							create a filter, create a folder shortcut
