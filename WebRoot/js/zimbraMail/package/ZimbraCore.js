@@ -42,7 +42,6 @@ AjxPackage.require("zimbraMail.share.view.ZmButtonToolBar");
 AjxPackage.require("zimbraMail.share.view.ZmNavToolBar");
 AjxPackage.require("zimbraMail.share.view.ZmSearchToolBar");
 AjxPackage.require("zimbraMail.share.view.ZmAutocompleteListView");
-AjxPackage.require("zimbraMail.share.view.ZmSplashScreen");
 AjxPackage.require("zimbraMail.share.view.ZmTreeView");
 AjxPackage.require("zimbraMail.share.view.ZmTagMenu");
 AjxPackage.require("zimbraMail.share.view.ZmListView");
