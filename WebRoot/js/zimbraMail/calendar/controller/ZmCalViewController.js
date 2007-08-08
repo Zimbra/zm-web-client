@@ -77,7 +77,7 @@ ZmCalViewController = function(container, calApp) {
 
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
-	this._apptCache = new ZmApptCache(this, appCtxt);
+	this._apptCache = new ZmApptCache(this);
 	ZmCalViewController.OPS = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
 							   ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
 

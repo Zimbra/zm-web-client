@@ -181,19 +181,18 @@ function(date, list, controller, noheader) {
 };
 
 /*
-* Takes a string, AjxEmailAddress, or contact/resource and returns
-* a ZmContact or a ZmResource. If the attendee cannot be found in
-* contacts, locations, or equipment, a new contact or
-* resource is created and initialized.
-*
-* @param appCtxt		[ZmAppCtxt]		the app context
-* @param item			[object]		string, AjxEmailAddress, ZmContact, or ZmResource
-* @param type			[constant]*		attendee type
-* @param strictText		[boolean]*		if true, new location will not be created from free text
-* @param strictEmail	[boolean]*		if true, new attendee will not be created from email address
-*/
+ * Takes a string, AjxEmailAddress, or contact/resource and returns
+ * a ZmContact or a ZmResource. If the attendee cannot be found in
+ * contacts, locations, or equipment, a new contact or
+ * resource is created and initialized.
+ *
+ * @param item			[object]		string, AjxEmailAddress, ZmContact, or ZmResource
+ * @param type			[constant]*		attendee type
+ * @param strictText	[boolean]*		if true, new location will not be created from free text
+ * @param strictEmail	[boolean]*		if true, new attendee will not be created from email address
+ */
 ZmApptViewHelper.getAttendeeFromItem =
-function(appCtxt, item, type, strictText, strictEmail) {
+function(item, type, strictText, strictEmail) {
 
 	if (!item || !type) return null;
 
@@ -289,13 +288,12 @@ function(addr, type) {
 };
 
 /**
-* Returns a AjxEmailAddress for the organizer.
-*
-* @param appCtxt	[ZmAppCtxt]		the app context
-* @param organizer	[string]*		organizer's email address
-*/
+ * Returns a AjxEmailAddress for the organizer.
+ *
+ * @param organizer	[string]*		organizer's email address
+ */
 ZmApptViewHelper.getOrganizerEmail =
-function(appCtxt, organizer) {
+function(organizer) {
 	var orgAddress = organizer ? organizer : appCtxt.get(ZmSetting.USERNAME);
 	var orgName = (orgAddress == appCtxt.get(ZmSetting.USERNAME)) ? appCtxt.get(ZmSetting.DISPLAY_NAME) : null;
 	return new AjxEmailAddress(orgAddress, null, orgName);

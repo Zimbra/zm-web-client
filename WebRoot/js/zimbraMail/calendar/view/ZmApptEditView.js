@@ -620,7 +620,7 @@ function(type, useException) {
 		var attendee = this._getAttendeeByName(type, item);
 		attendee = attendee || this._getAttendeeByItem(item, type);
 		if (!attendee) {
-			attendee = ZmApptViewHelper.getAttendeeFromItem(appCtxt, item, type);
+			attendee = ZmApptViewHelper.getAttendeeFromItem(item, type);
 		}
 		if (attendee) {
 			attendees.add(attendee);

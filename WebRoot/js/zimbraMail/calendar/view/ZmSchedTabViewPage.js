@@ -562,7 +562,7 @@ function(inputEl, attendee, useException) {
 				this._resetRow(sched, false, type, true);
 			}
 		}
-		attendee = attendee ? attendee : ZmApptViewHelper.getAttendeeFromItem(appCtxt, value, type, true);
+		attendee = attendee ? attendee : ZmApptViewHelper.getAttendeeFromItem(value, type, true);
 		if (attendee) {
 			var email = attendee.getEmail();
 			this._emailToIdx[email] = idx;

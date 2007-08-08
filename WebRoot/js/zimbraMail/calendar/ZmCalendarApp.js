@@ -484,7 +484,7 @@ function() {
 ZmCalendarApp.prototype.getReminderController =
 function() {
 	if (!this._reminderController)
-		this._reminderController = new ZmReminderController(appCtxt, this.getCalController());
+		this._reminderController = new ZmReminderController(this.getCalController());
 	return this._reminderController;
 };
 

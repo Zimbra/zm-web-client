@@ -32,18 +32,17 @@
  *    by default, next appt start time minus lead time pref (i..e, 5 minutes before).
  *    but, also could be controlled by snooze prefs.
  */
-ZmReminderController = function(appCtxt, calController) {
+ZmReminderController = function(calController) {
 	this._calController = calController;
-	this._appCtxt = appCtxt;
 	this._apptState = {};	// keyed on appt.getUniqueId(true)
 	this._cachedAppts = new AjxVector(); // set of appts in cache from refresh
 	this._activeAppts = new AjxVector(); // set of appts we are actively reminding on
 	this._housekeepingTimedAction = new AjxTimedAction(this, this._housekeepingAction);
 	this._refreshTimedAction = new AjxTimedAction(this, this.refresh);
-	var settings = this._appCtxt.getSettings();
+	var settings = appCtxt.getSettings();
 	var listener = new AjxListener(this, this._settingsChangeListener);
 	settings.getSetting(ZmSetting.CAL_REMINDER_WARNING_TIME).addChangeListener(listener);
-	this._warningTime = this._appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+	this._warningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 };
 
 ZmReminderController.prototype.constructor = ZmReminderController;
@@ -224,7 +223,7 @@ function(appt) {
 ZmReminderController.prototype.getReminderDialog =
 function() {
 	if (this._reminderDialog == null) {
-		this._reminderDialog = new ZmReminderDialog(this._appCtxt.getShell(), this, this._calController);
+		this._reminderDialog = new ZmReminderDialog(appCtxt.getShell(), this, this._calController);
 	}
 	return this._reminderDialog;
 };

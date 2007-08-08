@@ -294,7 +294,7 @@ ZmCalItemEditView.prototype.getOrganizer =
 function() {
 	var folderId = this._folderSelect.getValue();
 	var organizer = new ZmContact(null);
-	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(appCtxt, this._calendarOrgs[folderId]), true);
+	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(this._calendarOrgs[folderId]), true);
 
 	return organizer;
 };

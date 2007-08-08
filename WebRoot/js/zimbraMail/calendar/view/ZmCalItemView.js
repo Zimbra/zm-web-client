@@ -114,7 +114,7 @@ function() {
 	var organizer = attendees ? this._calItem.getOrganizer() : null;
 
 	var hasHtmlPart = (this._calItem.notesTopPart && this._calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
-	var mode = (hasHtmlPart && this._appCtxt.get(ZmSetting.VIEW_AS_HTML))
+	var mode = (hasHtmlPart && appCtxt.get(ZmSetting.VIEW_AS_HTML))
 			? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
 	var bodyPart = this._calItem.getNotesPart(mode);
 
@@ -156,7 +156,7 @@ function(calItem) {
 
 	// content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
-	var mode = (hasHtmlPart && this._appCtxt.get(ZmSetting.VIEW_AS_HTML))
+	var mode = (hasHtmlPart && appCtxt.get(ZmSetting.VIEW_AS_HTML))
 		? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
 
 	var bodyPart = calItem.getNotesPart(mode);

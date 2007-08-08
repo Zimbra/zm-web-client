@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmApptCache = function(calViewController, appCtxt) {
+ZmApptCache = function(calViewController) {
 	this._calViewController = calViewController;
-	this._appCtxt = appCtxt;
 	this.clearCache();
 };
 
@@ -210,7 +209,7 @@ function(start, end, fanoutAllDay, folderIds, callback) {
 
 		// map remote folder ids into local ones while processing search since
 		// server wont do it for us (see bug 7083)
-		var folder = this._appCtxt.getById(fid);
+		var folder = appCtxt.getById(fid);
 		var rid = folder ? folder.getRemoteId() : fid;
 		folderIdMapper[rid] = fid;
 
@@ -248,9 +247,9 @@ function(context, cursorId, sortVal) {
 
 	if (context.callback) {
 		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [context]);
-		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	} else {
-		var response = this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
+		var response = appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
 		var csfeResult = new ZmCsfeResult(response, false);
 		return this._getApptSummariesResponse(context, csfeResult);
 	}

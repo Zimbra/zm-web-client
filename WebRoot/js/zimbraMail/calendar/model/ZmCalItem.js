@@ -1064,7 +1064,7 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	// if on-behalf of, set sentBy
 	if (organizer != user) org.setAttribute("sentBy", user);
 	// set display name of organizer
-	var orgEmail = ZmApptViewHelper.getOrganizerEmail(appCtxt, this.organizer);
+	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
 	var orgName = orgEmail.getName();
 	if (orgName) org.setAttribute("d", orgName);
 

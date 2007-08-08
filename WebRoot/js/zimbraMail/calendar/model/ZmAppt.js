@@ -229,7 +229,7 @@ function(isHtml) {
 	buf[i++] = "\n";
 	
 	var organizer = this.organizer ? this.organizer : appCtxt.get(ZmSetting.USERNAME);
-	var orgEmail = ZmApptViewHelper.getOrganizerEmail(appCtxt, this.organizer).toString();
+	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer).toString();
 	var orgText = isHtml ? AjxStringUtil.htmlEncode(orgEmail) : orgEmail;
 	var params = [ ZmMsg.organizer + ":", orgText, "" ];
 	buf[i++] = formatter.format(params);
@@ -354,7 +354,7 @@ function(list, type) {
 	this._attendees[type] = [];
 	list = (list instanceof Array) ? list : [list];
 	for (var i = 0; i < list.length; i++) {
-		var attendee = ZmApptViewHelper.getAttendeeFromItem(appCtxt, list[i], type);
+		var attendee = ZmApptViewHelper.getAttendeeFromItem(list[i], type);
 		if (attendee) {
 			this._attendees[type].push(attendee);
 		}
@@ -397,7 +397,7 @@ function(message) {
 			var addr = attendees[i].url;
 			var name = attendees[i].d;
 			var email = new AjxEmailAddress(addr, null, name);
-			var attendee = ZmApptViewHelper.getAttendeeFromItem(appCtxt, email, ZmCalItem.PERSON);
+			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalItem.PERSON);
 			if (attendee) {
 				this._attendees[ZmCalItem.PERSON].push(attendee);
 				this._origAttendees.push(attendee);
@@ -413,7 +413,7 @@ function(message) {
 	var locations = AjxEmailAddress.split(message.invite.getLocation());
 	if (locations) {
 		for (var i = 0; i < locations.length; i++) {
-			var location = ZmApptViewHelper.getAttendeeFromItem(appCtxt, locations[i], ZmCalItem.LOCATION);
+			var location = ZmApptViewHelper.getAttendeeFromItem(locations[i], ZmCalItem.LOCATION);
 			if (location && location.isLocation()) {
 				this._attendees[ZmCalItem.LOCATION].push(location);
 				this._origLocations.push(location);
@@ -428,11 +428,11 @@ function(message) {
 	if (resources) {
 		for (var i = 0; i < resources.length; i++) {
 			// see if it's a known location
-			var location = ZmApptViewHelper.getAttendeeFromItem(appCtxt, resources[i].url, ZmCalItem.LOCATION, true, true);
+			var location = ZmApptViewHelper.getAttendeeFromItem(resources[i].url, ZmCalItem.LOCATION, true, true);
 			if (location) {
 				continue;
 			}
-			var equipment = ZmApptViewHelper.getAttendeeFromItem(appCtxt, resources[i].url, ZmCalItem.EQUIPMENT);
+			var equipment = ZmApptViewHelper.getAttendeeFromItem(resources[i].url, ZmCalItem.EQUIPMENT);
 			if (equipment) {
 				this._attendees[ZmCalItem.EQUIPMENT].push(equipment);
 				this._origEquipment.push(equipment);
