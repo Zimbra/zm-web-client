@@ -252,14 +252,13 @@ if (application.getInitParameter("offlineMode") != null)  {
                                                 <div class='ZLoginSeparator' style='margin-top:0px'></div>
 												<fmt:message key="chooseClient"/>&nbsp;
 												<c:set var="client" value="${param.client}"/>
-												<c:if test="${empty client}">
+                                                <zm:getUserAgent var="ua" session="false"/>
+                                                <c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up or ua.isCamino)}"/>
+                                                <c:if test="${empty client}">
 													<%-- set client select default based on user agent. --%>
-													<zm:getUserAgent var="ua" session="false"/>
-													<c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up or ua.isCamino)}"/>
 													<c:set var="useMobile" value="${ua.isiPhone}"/>
 													<c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
 												</c:if>
-
 												<select name="client" onchange='clientChange(this.options[this.selectedIndex].value)'>
 													<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
 													<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
@@ -272,13 +271,14 @@ if (application.getInitParameter("offlineMode") != null)  {
 												<script language='javascript'>
 													// show a message if the should be using the 'standard' client, but have chosen 'advanced' instead
 													function clientChange(selectValue) {
-														var it = document.getElementById("ZLoginUnsupported");
-														it.style.display = (("${client}" == 'standard' && selectValue == 'advanced') ? 'block' : 'none');
+                                                        var useStandard = ${useStandard ? 'true' : 'false'};
+                                                        var it = document.getElementById("ZLoginUnsupported");
+														it.style.display = (("${client}" == 'standard' && selectValue == 'advanced' && useStandard) ? 'block' : 'none');
 													}
 												
 													// if they have JS, write out a "what's this?" link that shows the message below
 													function showWhatsThis() {
-														var it = document.getElementById("ZLoginWhatsThis");
+                                                        var it = document.getElementById("ZLoginWhatsThis");
 														it.style.display = (it.style.display == "block" ? "none" : "block");
 													}
 													document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/></a>");
