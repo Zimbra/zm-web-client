@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmContactAssistant = function(appCtxt) {
-	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt, ZmMsg.createNewContact, ZmMsg.ASST_CMD_CONTACT, ZmMsg.ASST_CMD_SUM_CONTACT);
+ZmContactAssistant = function() {
+	ZmAssistant.call(this, ZmMsg.createNewContact, ZmMsg.ASST_CMD_CONTACT, ZmMsg.ASST_CMD_SUM_CONTACT);
 	this._commandIndex = {};	
 	this._sortedFields = [];
 	for (var i in ZmContactAssistant._CONTACT_FIELDS) {

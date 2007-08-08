@@ -503,7 +503,7 @@ function() {
 	this._equipment = new ZmResourceList(ZmCalItem.EQUIPMENT);
 	this._equipment.isCanonical = true;
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var batchCmd = new ZmBatchCommand(appCtxt);
+		var batchCmd = new ZmBatchCommand();
 		batchCmd.add(new AjxCallback(this._locations, this._locations.load));
 		batchCmd.add(new AjxCallback(this._equipment, this._equipment.load));
 		batchCmd.run();

@@ -543,7 +543,7 @@ function(params) {
 
 	if (action == ZmOperation.FORWARD_ATT && selCount > 1) {
 		// get msg Id's for each conversation selected
-		var batchCmd = new ZmBatchCommand(appCtxt);
+		var batchCmd = new ZmBatchCommand();
 		var callback = new AjxCallback(this, this._handleLoadMsgIds, [params, selection]);
 		for (var i = 0; i < selCount; i++) {
 			var item = selection[i];

@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDebugAssistant = function(appCtxt) {
-	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt, "Debugging Info", ".debug");
+ZmDebugAssistant = function() {
+	ZmAssistant.call(this, "Debugging Info", ".debug");
 };
 
 ZmDebugAssistant.prototype = new ZmAssistant();

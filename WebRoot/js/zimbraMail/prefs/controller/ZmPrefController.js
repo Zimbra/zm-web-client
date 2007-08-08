@@ -275,7 +275,7 @@ function(continueCallback, preSaveCallbacks, callback, noPop, success) {
 };
 
 ZmPrefController.prototype._doSave = function(callback, noPop) {
-	var batchCommand = new ZmBatchCommand(appCtxt);
+	var batchCommand = new ZmBatchCommand();
 
 	//  get changed prefs
 	var list;

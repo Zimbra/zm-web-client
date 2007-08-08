@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAppointmentAssistant = function(appCtxt) {
-	if (arguments.length == 0) { return; }
-	ZmAssistant.call(this, appCtxt, ZmMsg.createNewAppt, ZmMsg.ASST_CMD_APPOINTMENT, ZmMsg.ASST_CMD_SUM_APPOINTMENT);
+ZmAppointmentAssistant = function() {
+	ZmAssistant.call(this, ZmMsg.createNewAppt, ZmMsg.ASST_CMD_APPOINTMENT, ZmMsg.ASST_CMD_SUM_APPOINTMENT);
 };
 
 ZmAppointmentAssistant.prototype = new ZmAssistant();
@@ -50,7 +49,7 @@ function(dialog) {
 
 ZmAppointmentAssistant.prototype.extraButtonHandler =
 function(dialog) {
-	var calApp = this._appCtxt.getApp(ZmApp.CALENDAR);
+	var calApp = appCtxt.getApp(ZmApp.CALENDAR);
 	var cc = calApp.getCalController();
 	cc.newAppointment(this.getAppt(), ZmCalItem.MODE_NEW_FROM_QUICKADD, true); // dirty bit
 	return true;
@@ -191,7 +190,7 @@ function(dialog, verb, args) {
 	this._setField(ZmMsg.location, locStr, adata.location == null, false);	
 	this._setField(ZmMsg.notes, notesStr, adata.notes == null, false);
 
-	var cc = this._appCtxt.getApp(ZmApp.CALENDAR).getCalController();
+	var cc = appCtxt.getApp(ZmApp.CALENDAR).getCalController();
 	var agenda = cc.getDayToolTipText(adata.startDate, true);
 	this._setField(ZmMsg.agenda, agenda, false, false);
 	//this._setOptField(ZmMsg.repeat, repeat, false, true);

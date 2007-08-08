@@ -299,7 +299,7 @@ function(ev) {
 		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
 		calendar.setChecked(ev.item.getChecked());
 	} else if (ev.items && ev.items.length) {
-		var batchCmd = new ZmBatchCommand(appCtxt);
+		var batchCmd = new ZmBatchCommand();
 		for (var i = 0; i < ev.items.length; i++) {
 			var item = ev.items[i];
 			var calendar = item.getData(Dwt.KEY_OBJECT);

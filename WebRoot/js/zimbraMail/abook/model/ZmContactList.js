@@ -359,8 +359,8 @@ ZmContactList.prototype.moveItems =
 function(items, folder, attrs) {
 	if (!(items instanceof Array)) items = [items];
 
-	var moveBatchCmd = new ZmBatchCommand(appCtxt);
-	var loadBatchCmd = new ZmBatchCommand(appCtxt);
+	var moveBatchCmd = new ZmBatchCommand();
+	var loadBatchCmd = new ZmBatchCommand();
 	var softMove = [];
 	var hardMove = [];
 

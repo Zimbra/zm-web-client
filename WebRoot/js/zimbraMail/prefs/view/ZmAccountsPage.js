@@ -1206,7 +1206,7 @@ ZmAccountsPage.prototype._handlePreSave = function(continueCallback) {
 		if (account.type == ZmAccount.POP || account.type == ZmAccount.IMAP) {
 			if (account.folderId != ZmOrganizer.ID_INBOX) {
 				if (!batchCmd) {
-					batchCmd = new ZmBatchCommand(this._appCtxt, false)
+					batchCmd = new ZmBatchCommand(false)
 				}
 
 				var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");

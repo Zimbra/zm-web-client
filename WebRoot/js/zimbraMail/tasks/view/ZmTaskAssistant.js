@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTaskAssistant = function(appCtxt) {
-	ZmAssistant.call(this, appCtxt, ZmMsg.createNewTask, ZmMsg.ASST_CMD_TASK, ZmMsg.ASST_CMD_SUM_TASK);
+ZmTaskAssistant = function() {
+	ZmAssistant.call(this, ZmMsg.createNewTask, ZmMsg.ASST_CMD_TASK, ZmMsg.ASST_CMD_SUM_TASK);
 };
 
 ZmTaskAssistant.prototype = new ZmAssistant();
@@ -49,7 +49,7 @@ function(dialog) {
 
 ZmTaskAssistant.prototype.extraButtonHandler =
 function(dialog) {
-	var app = this._appCtxt.getApp(ZmApp.TASKS);
+	var app = appCtxt.getApp(ZmApp.TASKS);
 	var tc = app.getTaskController();
 	tc.show(this.getTask(), ZmCalItem.MODE_NEW_FROM_QUICKADD);
 	return true;

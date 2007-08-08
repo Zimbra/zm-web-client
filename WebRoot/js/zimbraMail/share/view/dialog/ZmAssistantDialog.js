@@ -60,9 +60,9 @@ ZmAssistantDialog.prototype.constructor = ZmAssistantDialog;
 
 ZmAssistantDialog.initializeAssistants = function(appCtxt) {
 	if (!ZmAssistantDialog._handlerInit) {
-		ZmAssistant.register(new ZmVersionAssistant(appCtxt));
-		ZmAssistant.register(new ZmDebugAssistant(appCtxt));
-		// ZmAssistant.register(new ZmCallAssistant(appCtxt));
+		ZmAssistant.register(new ZmVersionAssistant());
+		ZmAssistant.register(new ZmDebugAssistant());
+		// ZmAssistant.register(new ZmCallAssistant());
 		for (var i = 0; i < ZmApp.APPS.length; i++) {
 			var app = ZmApp.APPS[i];
 			var setting = ZmApp.SETTING[app];
@@ -73,7 +73,7 @@ ZmAssistantDialog.initializeAssistants = function(appCtxt) {
 						var pkg = assistants[asstName];
 						AjxDispatcher.require(pkg);
 						var asst = eval(asstName);
-						ZmAssistant.register(new asst(appCtxt));
+						ZmAssistant.register(new asst());
 					}
 				}
 			}

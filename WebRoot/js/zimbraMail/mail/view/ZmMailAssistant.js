@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmMailAssistant = function(appCtxt) {
-	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt, ZmMsg.createNewMsg, ZmMsg.ASST_CMD_MAIL, ZmMsg.ASST_CMD_SUM_MAIL);
+ZmMailAssistant = function() {
+	ZmAssistant.call(this, ZmMsg.createNewMsg, ZmMsg.ASST_CMD_MAIL, ZmMsg.ASST_CMD_SUM_MAIL);
 };
 
 ZmMailAssistant.prototype = new ZmAssistant();
@@ -70,7 +69,7 @@ function(dialog) {
 	var good = new AjxVector();
 	var msg = this.getMessage(bad, good);
 
-	var cd = this._confirmDialog = this._appCtxt.getOkCancelMsgDialog();
+	var cd = this._confirmDialog = appCtxt.getOkCancelMsgDialog();
 	cd.reset();
 	
 	var subject = AjxStringUtil.trim(msg.subject);
@@ -111,7 +110,7 @@ function(dialog) {
 
 ZmMailAssistant.prototype._handleResponseSendMsg =
 function(dialog) {
-	this._appCtxt.setStatusMsg(ZmMsg.messageSent);	
+	appCtxt.setStatusMsg(ZmMsg.messageSent);	
 	dialog.popdown();
 };
 
@@ -184,7 +183,7 @@ function(bad, good) {
 	var body = new ZmMimePart();
 	body.setContentType(ZmMimeTable.TEXT_PLAIN);
 	var bodyText = this._mailFields.body != null ? this._mailFields.body : "";
-	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
+	var identity = appCtxt.getIdentityCollection().defaultIdentity;
 	if (Boolean(identity.signature)) {
 		var sig = identity.signature;
 		if (sig != null && sig != "") {

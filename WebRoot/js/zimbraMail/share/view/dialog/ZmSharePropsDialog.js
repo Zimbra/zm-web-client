@@ -189,7 +189,7 @@ function(event) {
 	}
 	
 	// Since we may be sharing with multiple users, use a batch command
-	var batchCmd = new ZmBatchCommand(this._appCtxt);
+	var batchCmd = new ZmBatchCommand();
 	var perm = this._getSelectedRole();
 	var args = isGuestShare ? this._passwordInput.getValue() : null;
 	for (var i = 0; i < shares.length; i++) {

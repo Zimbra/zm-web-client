@@ -304,7 +304,7 @@ function(zimlets, props) {
 
 ZmSettings.prototype.loadSkinsAndLocales =
 function(callback) {
-	var command = new ZmBatchCommand(appCtxt);
+	var command = new ZmBatchCommand();
 
 	var skinDoc = AjxSoapDoc.create("GetAvailableSkinsRequest", "urn:zimbraAccount");
 	var skinCallback = new AjxCallback(this, this._handleResponseLoadAvailableSkins);

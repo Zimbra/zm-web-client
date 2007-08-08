@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCalendarAssistant = function(appCtxt) {
-	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt, ZmMsg.openCalendar, ZmMsg.ASST_CMD_CALENDAR, ZmMsg.ASST_CMD_SUM_CALENDAR);
+ZmCalendarAssistant = function() {
+	ZmAssistant.call(this, ZmMsg.openCalendar, ZmMsg.ASST_CMD_CALENDAR, ZmMsg.ASST_CMD_SUM_CALENDAR);
 };
 
 ZmCalendarAssistant.prototype = new ZmAssistant();
@@ -33,7 +32,7 @@ ZmCalendarAssistant.prototype.constructor = ZmCalendarAssistant;
 
 ZmCalendarAssistant.prototype.okHandler =
 function(dialog) {
-	var calApp = this._appCtxt.getApp(ZmApp.CALENDAR);
+	var calApp = appCtxt.getApp(ZmApp.CALENDAR);
 	//calApp.activate(true, this._view, this._startDate);	
 	var cc = calApp.getCalController();
 	cc.setDate(this._startDate);

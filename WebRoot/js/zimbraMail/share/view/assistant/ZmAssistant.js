@@ -23,13 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAssistant = function(appCtxt, title, command, commandSummary) {
-	if (arguments.length == 0) return;
-	this._appCtxt = appCtxt;
+ZmAssistant = function(title, command, commandSummary) {
+	if (arguments.length == 0) { return; }
 	this._objectManager = new ZmObjectManager();
     try {
-        if (window.ZmDate10ObjectHandler)
-		     this._objectManager.addHandler(new ZmDate10ObjectHandler(appCtxt), ZmObjectManager.DATE, 100);
+        if (window.ZmDate10ObjectHandler) {
+		     this._objectManager.addHandler(new ZmDate10ObjectHandler(), ZmObjectManager.DATE, 100);
+        }
     } catch(e) {
 
     }

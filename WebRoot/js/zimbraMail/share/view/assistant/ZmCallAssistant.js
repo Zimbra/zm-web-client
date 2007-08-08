@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCallAssistant = function(appCtxt) {
-	if (arguments.length == 0) return;
-	ZmAssistant.call(this, appCtxt, ZmMsg.call, ZmMsg.ASST_CMD_CALL);
+ZmCallAssistant = function() {
+	ZmAssistant.call(this, ZmMsg.call, ZmMsg.ASST_CMD_CALL);
 };
 
 ZmCallAssistant.prototype = new ZmAssistant();
