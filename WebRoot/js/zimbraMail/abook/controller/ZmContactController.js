@@ -83,6 +83,21 @@ function(actionCode) {
 	return true;
 };
 
+ZmContactController.prototype.changeTabGroup =
+function(tabIdx, prevTabIdx) {
+	var tg = this._tabGroups[this._currentView][tabIdx];
+	if (!tg) {
+		tg = this._createTabGroup(tabIdx);
+	}
+
+	this._setTabGroup(tg);
+
+	var rootTg = appCtxt.getRootTabGroup();
+	var prevTg = this._tabGroups[this._currentView][prevTabIdx];
+	rootTg.replaceMember(prevTg, tg);
+};
+
+
 // Private methods (mostly overrides of ZmListController protected methods)
 
 ZmContactController.prototype._getToolBarOps =
@@ -135,34 +150,45 @@ function() {
 
 ZmContactController.prototype._setViewContents =
 function(view) {
-	this._listView[view].set(this._contact, this._contactDirty);
-	if (this._contactDirty) delete this._contactDirty;
-	// can't add all the fields until the view has been created
-	if (!this._tabGroupDone[view]) {
-		var list = this._listView[view]._getTabGroupMembers();
-		for (var i = 0; i < list.length; i++) {
-			this._tabGroups[view].addMember(list[i]);
-		}
-		this._tabGroupDone[view] = true;
-	} else {
-		this._setTabGroup(this._tabGroups[view]);
+	var cv = this._listView[view];
+	cv.set(this._contact, this._contactDirty);
+	if (this._contactDirty) {
+		delete this._contactDirty;
 	}
+
+	// create a tab group for the first tab
+	var tabIdx = cv._contactTabView.getCurrentTab();
+	if (!this._tabGroups[view][tabIdx]) {
+		this._tabGroup = this._createTabGroup(tabIdx);
+	}
+};
+
+ZmContactController.prototype._createTabGroup =
+function(tabIdx) {
+	var tgName = this.toString() + "_" + tabIdx;
+	var tg = this._tabGroups[this._currentView][tabIdx] = new DwtTabGroup(tgName);
+	tg.newParent(appCtxt.getRootTabGroup());
+	tg.addMember(this._toolbar[this._currentView]);
+
+	var list = this._listView[this._currentView]._getTabGroupMembers(tabIdx);
+	for (var i = 0; i < list.length; i++) {
+		tg.addMember(list[i]);
+	}
+
+	return tg;
 };
 
 ZmContactController.prototype._initializeTabGroup =
 function(view) {
-	if (this._tabGroups[view]) return;
+	if (this._tabGroups[view]) { return; }
 
-	this._tabGroups[view] = this._createTabGroup();
-	var rootTg = appCtxt.getRootTabGroup();
-	this._tabGroups[view].newParent(rootTg);
-	this._tabGroups[view].addMember(this._toolbar[view]);
+	// this view has multiple tab groups (since there are multiple tabs)
+	this._tabGroups[view] = {};
 };
 
 ZmContactController.prototype._paginate =
 function(view, bPageForward) {
-	// TODO
-	DBG.println("TODO - page to next/previous contact");
+	// TODO? - page to next/previous contact
 };
 
 ZmContactController.prototype._resetOperations =

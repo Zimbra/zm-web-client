@@ -34,6 +34,7 @@ ZmContactView = function(parent, controller) {
 	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 	this._dateFormatter = new AjxDateFormat("yyyy-MM-dd");
+	this._currentTabIdx = 1;
 
 	this.setScrollStyle(Dwt.SCROLL);
 };
@@ -547,7 +548,9 @@ function() {
 ZmContactView.prototype._createHtml =
 function(contact) {
 	if (this._htmlInitialized) {
+		// always switch to the first tab
 		this._contactTabView.switchToTab(1);
+		this._resetTabView(1);
 		return;
 	}
 
@@ -604,6 +607,19 @@ function(contact) {
 	this._installOnKeyUpHandler();
 
 	this._htmlInitialized = true;
+};
+
+ZmContactView.prototype._resetTabView =
+function(tabIdx) {
+	// reset the tab group since the current tab may have change
+	this._controller.changeTabGroup(tabIdx, this._currentTabIdx);
+
+	// update the new current tab idx
+	this._currentTabIdx = tabIdx;
+
+	// set focus to the first input-type element in the tab
+	var fields = this._fields[tabIdx-1];
+	fields[0].focus();
 };
 
 ZmContactView.prototype._handleImage =
@@ -683,8 +699,9 @@ function(el) {
 };
 
 ZmContactView.prototype._getTabGroupMembers =
-function() {
-	return this._fields[0];
+function(tabIdx) {
+	tabIdx = tabIdx || this._contactTabView.getCurrentTab();
+	return (this._fields[tabIdx-1]);
 };
 
 ZmContactView.prototype._getDefaultFocusItem =
@@ -709,11 +726,8 @@ function(ev) {
 	if (!this._htmlInitialized) { return; }
 
 	var tabIdx = this._contactTabView.getCurrentTab();
-	var fields = this._fields[tabIdx-1];
+	this._resetTabView(tabIdx);
 
-	// always set focus to the first input-type element in the tab
-	fields[0].focus();
-	
 	this._sizeChildren();
 };
 
