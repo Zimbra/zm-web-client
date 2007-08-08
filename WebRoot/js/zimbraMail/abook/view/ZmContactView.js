@@ -23,12 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmContactView = function(parent, appCtxt, controller) {
+ZmContactView = function(parent, controller) {
 	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, "ZmContactView", DwtControl.ABSOLUTE_STYLE);
 
-	this._appCtxt = appCtxt;
 	this._controller = controller;
 
 	this._tagList = appCtxt.getTagTree();
@@ -367,7 +366,7 @@ ZmContactView.prototype._setHeaderInfo =
 function() {
 	// set the appropriate header color
 	var folderId = this._contact.folderId;
-	var folder = folderId ? this._appCtxt.getById(folderId) : null;
+	var folder = folderId ? appCtxt.getById(folderId) : null;
 	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 
@@ -434,7 +433,7 @@ function() {
 		match = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
 	}
 
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = appCtxt.getFolderTree();
 	var folders = folderTree ? folderTree.getByType(ZmOrganizer.ADDRBOOK) : [];
 
 	// for now, always re-populate folders DwtSelect
@@ -624,7 +623,7 @@ function() {
 
 	this._uploadForm = document.getElementById(this._imageCellId + "_form");
 	if (this._uploadForm) {
-		this._uploadForm.setAttribute("action", this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
+		this._uploadForm.setAttribute("action", appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
 	}
 };
 
@@ -640,7 +639,7 @@ function() {
 
 	var callback = new AjxCallback(this, this._updateImage);
 	var ajxCallback = new AjxCallback(this, this._uploadImageDone, [callback]);
-	var um = this._appCtxt.getUploadManager();
+	var um = appCtxt.getUploadManager();
 	window._uploadManager = um;
 
 	try {
@@ -660,7 +659,7 @@ function(callback, status, attId) {
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {
 		// auth failed during att upload - let user relogin, continue with compose action
 		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
-		this._appCtxt.getAppController()._handleException(ex, callback);
+		appCtxt.getAppController()._handleException(ex, callback);
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
 		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
@@ -670,7 +669,7 @@ function(callback, status, attId) {
 			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
 			default: 									msg += " "; break;
 		}
-		var dialog = this._appCtxt.getMsgDialog();
+		var dialog = appCtxt.getMsgDialog();
 		dialog.setMessage(msg,DwtMessageDialog.CRITICAL_STYLE,this._title);
 		dialog.popup();
 	}
@@ -813,7 +812,7 @@ function(ev) {
 };
 
 ZmContactView.getPrintHtml =
-function(contact, abridged, appCtxt) {
+function(contact, abridged) {
 	// make sure it's a real ZmContact
 	var real = contact.list._realizeContact(contact);
 	var subs = {

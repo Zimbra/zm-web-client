@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmGroupView = function(parent, appCtxt, controller) {
-	ZmContactView.call(this, parent, appCtxt, controller);
+ZmGroupView = function(parent, controller) {
+	ZmContactView.call(this, parent, controller);
 
 	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
@@ -167,7 +167,7 @@ ZmGroupView.prototype.setBounds =
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 	Dwt.setSize(this._groupMembers, Dwt.DEFAULT, height-100);
-	var fudge = (this._appCtxt.get(ZmSetting.GAL_ENABLED) || this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+	var fudge = (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
 		? 185 : 160;
 	this._listview.setSize(Dwt.DEFAULT, height-fudge);
 };
@@ -187,7 +187,7 @@ function() {
 	var query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
 	if (query.length) {
 		var queryHint;
-		if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			var searchFor = this._searchInSelect
 				? this._searchInSelect.getSelectedOption().getValue()
 				: ZmContactsApp.SEARCHFOR_CONTACTS;
@@ -197,7 +197,7 @@ function() {
 				queryHint = ZmSearchController.QUERY_ISREMOTE;
 			}
 		} else {
-			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+			this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 		}
 		var params = {
 			obj: this,
@@ -244,8 +244,8 @@ function() {
 	this._groupNameId = 		this._htmlElId + "_groupName";
 	this._searchFieldId = 		this._htmlElId + "_searchField";
 
-	var showSearchIn = this._appCtxt.get(ZmSetting.SHARING_ENABLED) ||
-					   this._appCtxt.get(ZmSetting.GAL_ENABLED);
+	var showSearchIn = appCtxt.get(ZmSetting.SHARING_ENABLED) ||
+					   appCtxt.get(ZmSetting.GAL_ENABLED);
 	var params = {
 		id:this._htmlElId,
 		showSearchIn:showSearchIn
@@ -264,9 +264,9 @@ function() {
 	if (selectCell) {
 		this._searchInSelect = new DwtSelect(this);
 		this._searchInSelect.addOption(ZmMsg.contacts, true, ZmContactsApp.SEARCHFOR_CONTACTS);
-		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+		if (appCtxt.get(ZmSetting.SHARING_ENABLED))
 			this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-		if (this._appCtxt.get(ZmSetting.GAL_ENABLED))
+		if (appCtxt.get(ZmSetting.GAL_ENABLED))
 			this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
 		this._searchInSelect.reparentHtmlElement(selectId);
 	}
@@ -372,7 +372,7 @@ ZmGroupView.prototype._getFolderId =
 function() {
 	var id = ZmFolder.ID_CONTACTS;
 	if (this._contact.id == null) {
-		var clc = this._appCtxt.getApp(ZmApp.CONTACTS).getContactListController();
+		var clc = appCtxt.getApp(ZmApp.CONTACTS).getContactListController();
 		id = clc._folderId;
 	} else {
 		if (this._contact.addrbook)
@@ -529,7 +529,7 @@ function(ev) {
 };
 
 ZmGroupView.getPrintHtml =
-function(contact, abridged, appCtxt) {
+function(contact, abridged) {
 	// make sure it's a real ZmContact
 	var real = contact.list._realizeContact(contact);
 	var members = real.getGroupMembers().good.getArray();

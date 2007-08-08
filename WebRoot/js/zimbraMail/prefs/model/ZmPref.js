@@ -23,9 +23,6 @@
  * ***** END LICENSE BLOCK *****
  */
 
-/**
- *
- */
 ZmPref = function(id, name, dataType) {
 
 	ZmSetting.call(this, id, name, ZmSetting.T_PREF, dataType);

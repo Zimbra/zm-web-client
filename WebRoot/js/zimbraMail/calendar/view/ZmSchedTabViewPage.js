@@ -865,7 +865,7 @@ ZmSchedTabViewPage.prototype._contactPickerListener =
 function(ev) {
 	if (!this._contactPicker) {
 		AjxDispatcher.require("ContactsCore");
-		this._contactPicker = new ZmContactPicker(appCtxt);
+		this._contactPicker = new ZmContactPicker();
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
 	}
 	this._cpButton = ev.item;

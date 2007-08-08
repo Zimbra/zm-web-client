@@ -109,7 +109,7 @@ function() {
 ZmContactController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {
-		this._listView[view] = new this._viewFactory[view](this._container, appCtxt, this);
+		this._listView[view] = new this._viewFactory[view](this._container, this);
 	}
 };
 

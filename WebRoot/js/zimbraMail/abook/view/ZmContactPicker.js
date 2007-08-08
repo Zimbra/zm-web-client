@@ -24,23 +24,22 @@
  */
 
 /**
-* Creates a dialog that lets the user select addresses from a contact list.
-* @constructor
-* @class
-* This class creates and manages a dialog that lets the user select addresses
-* from a contact list. Two lists are maintained, one with contacts to select
-* from, and one that contains the selected addresses. Between them are buttons
-* to shuffle addresses back and forth between the two lists.
-*
-* @author Conrad Damon
-* @param appCtxt		[ZmAppCtxt]		app context
-* @param buttonInfo		[array]			transfer button IDs and labels
-*/
-ZmContactPicker = function(appCtxt, buttonInfo) {
+ * Creates a dialog that lets the user select addresses from a contact list.
+ * @constructor
+ * @class
+ * This class creates and manages a dialog that lets the user select addresses
+ * from a contact list. Two lists are maintained, one with contacts to select
+ * from, and one that contains the selected addresses. Between them are buttons
+ * to shuffle addresses back and forth between the two lists.
+ *
+ * @author Conrad Damon
+ * 
+ * @param buttonInfo		[array]			transfer button IDs and labels
+ */
+ZmContactPicker = function(buttonInfo) {
 
 	DwtDialog.call(this, appCtxt.getShell(), null, ZmMsg.selectAddresses);
 
-	this._appCtxt = appCtxt;
 	this._buttonInfo = buttonInfo;
 	this._initialized = false;
 	this._offset = 0;
@@ -135,8 +134,8 @@ function() {
 	var query = this._searchCleared ? AjxStringUtil.trim(this._searchField.value) : "";
 	if (query.length) {
 		var queryHint;
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-			this._appCtxt.get(ZmSetting.GAL_ENABLED))
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+			appCtxt.get(ZmSetting.GAL_ENABLED))
 		{
 			var searchFor = this._selectDiv.getSelectedOption().getValue();
 			this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
@@ -147,7 +146,7 @@ function() {
 			}
 		}
 		else {
-			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)
+			this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
 				? ZmItem.CONTACT
 				: ZmSearchToolBar.FOR_GAL_MI;
 		}
@@ -169,8 +168,8 @@ function() {
 
 ZmContactPicker.prototype._contentHtml =
 function() {
-	var showSelect = (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-					  this._appCtxt.get(ZmSetting.GAL_ENABLED));
+	var showSelect = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
+					  appCtxt.get(ZmSetting.GAL_ENABLED));
 	var subs = {
 		id: this._htmlElId,
 		showSelect: showSelect
@@ -198,13 +197,13 @@ function() {
 	var selectCell = document.getElementById(selectCellId);
 	if (selectCell) {
 		this._selectDiv = new DwtSelect(this);
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
 
-			if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+			if (appCtxt.get(ZmSetting.SHARING_ENABLED))
 				this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
 		}
-		if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
 		}
 
@@ -212,7 +211,7 @@ function() {
 	}
 
 	// add chooser
-	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo, appCtxt:this._appCtxt});
+	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
 	this._chooser.reparentHtmlElement(this._htmlElId + "_chooser");
 	this._chooser.resize(this.getSize().x, ZmContactPicker.CHOOSER_HEIGHT);
 
@@ -263,7 +262,7 @@ function(result) {
 
 	var info = resp.getAttribute("info");
 	if (info && info[0].wildcard[0].expanded == "0") {
-		var d = this._appCtxt.getMsgDialog();
+		var d = appCtxt.getMsgDialog();
 		d.setMessage(ZmMsg.errorSearchNotExpanded);
 		d.popup();
 	} else {
@@ -360,7 +359,6 @@ function(ev) {
 * @param buttonInfo		[array]			transfer button IDs and labels
 */
 ZmContactChooser = function(params) {
-	this._appCtxt = params.appCtxt;
 	DwtChooser.call(this, params);
 };
 
@@ -369,12 +367,12 @@ ZmContactChooser.prototype.constructor = ZmContactChooser;
 
 ZmContactChooser.prototype._createSourceListView =
 function() {
-	return new ZmContactChooserSourceListView(this, this._appCtxt);
+	return new ZmContactChooserSourceListView(this);
 };
 
 ZmContactChooser.prototype._createTargetListView =
 function() {
-	return new ZmContactChooserTargetListView(this, (this._buttonInfo.length > 1), this._appCtxt);
+	return new ZmContactChooserTargetListView(this, (this._buttonInfo.length > 1));
 };
 
 /*
@@ -391,13 +389,12 @@ function(item, list) {
 /***********************************************************************************/
 
 /**
-* This class creates a specialized source list view for the contact chooser.
-*/
-ZmContactChooserSourceListView = function(parent, appCtxt) {
+ * This class creates a specialized source list view for the contact chooser.
+ */
+ZmContactChooserSourceListView = function(parent) {
 	DwtChooserListView.call(this, parent, DwtChooserListView.SOURCE);
 
 	this.setScrollStyle(Dwt.CLIP);
-	this._appCtxt = appCtxt;
 };
 
 ZmContactChooserSourceListView.prototype = new DwtChooserListView;
@@ -447,15 +444,14 @@ function(html, idx, item, field, colIdx, params) {
 /***********************************************************************************/
 
 /**
-* This class creates a specialized target list view for the contact chooser.
-*/
-ZmContactChooserTargetListView = function(parent, showType, appCtxt) {
+ * This class creates a specialized target list view for the contact chooser.
+ */
+ZmContactChooserTargetListView = function(parent, showType) {
 	this._showType = showType; // call before base class since base calls getHeaderList
 
 	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET);
 
 	this.setScrollStyle(Dwt.CLIP);
-	this._appCtxt = appCtxt;
 };
 
 ZmContactChooserTargetListView.prototype = new DwtChooserListView;

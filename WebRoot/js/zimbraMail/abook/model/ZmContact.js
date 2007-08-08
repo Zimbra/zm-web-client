@@ -1083,8 +1083,8 @@ function(type, shortForm) {
 ZmContact.prototype.getPrintHtml =
 function(preferHtml, callback) {
 	return this.isGroup()
-		? ZmGroupView.getPrintHtml(this, false, appCtxt)
-		: ZmContactView.getPrintHtml(this, false, appCtxt);
+		? ZmGroupView.getPrintHtml(this, false)
+		: ZmContactView.getPrintHtml(this, false);
 };
 
 // these need to be kept in sync with ZmContact.F_*

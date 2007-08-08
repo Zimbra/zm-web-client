@@ -71,22 +71,19 @@ ZmOneContactPicker.prototype.reset = function() {
 };
 
 ZmOneContactPicker.prototype._initAutocomplete = function() {
-	var shell = DwtShell.getShell(window);
-	var appCtxt = ZmAppCtxt.getFromShell(shell);
-        var acCallback = new AjxCallback(this, this._autocompleteCallback);
-
-        if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-                var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
-                var contactsLoader = contactsClass.getContactList;
-                var params = { parent	    : shell,
-			       dataClass    : contactsClass,
-			       dataLoader   : contactsLoader,
-                               matchValue   : ZmContactsApp.AC_VALUE_FULL,
-			       compCallback : acCallback
-			     };
-                this._acContactsList = new ZmAutocompleteListView(params);
-                this._acContactsList.handle(this._contactField.getInputElement());
-        }
+    var acCallback = new AjxCallback(this, this._autocompleteCallback);
+    if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+            var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
+            var contactsLoader = contactsClass.getContactList;
+            var params = { parent	    : shell,
+		       dataClass    : contactsClass,
+		       dataLoader   : contactsLoader,
+                           matchValue   : ZmContactsApp.AC_VALUE_FULL,
+		       compCallback : acCallback
+		     };
+            this._acContactsList = new ZmAutocompleteListView(params);
+            this._acContactsList.handle(this._contactField.getInputElement());
+    }
 };
 
 ZmOneContactPicker.prototype._autocompleteCallback = function(text, el, match) {
