@@ -1217,7 +1217,7 @@ function(soapDoc, parent, accountName) {
 
 		var sender = soapDoc.set("e", null, parent);
 		sender.setAttribute("t", "s");
-		sender.setAttribute("a", this._appCtxt.getMainAccount().getEmail());
+		sender.setAttribute("a", appCtxt.getMainAccount().getEmail());
 	}
 	else if (this.identity)
 	{
