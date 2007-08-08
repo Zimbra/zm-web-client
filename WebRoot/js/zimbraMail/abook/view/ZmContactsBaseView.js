@@ -71,7 +71,7 @@ function(address) {
 
 ZmContactsBaseView.prototype.getLimit =
 function() {
-	return this._appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+	return appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
 };
 
 ZmContactsBaseView.prototype.getListView =
@@ -158,12 +158,10 @@ function() {
 };
 
 	
-ZmContactAlphabetBar = function(parent, appCtxt) {
-	if (arguments.length == 0) return;
+ZmContactAlphabetBar = function(parent) {
 
 	DwtComposite.call(this, parent);
 
-	this._appCtxt = appCtxt;
 	this._createHtml();
 
 	this._all = this._current = document.getElementById(this._alphabetBarId).rows[0].cells[0];

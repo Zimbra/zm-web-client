@@ -175,7 +175,7 @@ function(controller, dropTgt) {
 	var alphaDivId = this._htmlElId + "_alphabetbar";
 	var alphaDiv = document.getElementById(alphaDivId);
 	if (alphaDiv && ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
-		this._alphabetBar = new ZmContactAlphabetBar(this, appCtxt);
+		this._alphabetBar = new ZmContactAlphabetBar(this);
 		this._alphabetBar.reparentHtmlElement(alphaDivId);
 	}
 

@@ -36,12 +36,11 @@ ZmListView = function(parent, className, posStyle, view, type, controller, heade
 
 	// create listeners for changes to the list model, folder tree, and tag list
 	this._listChangeListener = new AjxListener(this, this._changeListener);
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	var tagList = this._appCtxt.getTagTree();
+	var tagList = appCtxt.getTagTree();
 	if (tagList) {
 		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	}
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
 		folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
 	}
@@ -74,6 +73,8 @@ ZmListView.FIELD_CLASS[ZmItem.F_ATTACHMENT]	= "Attach";
 ZmListView.ITEM_FLAG_CLICKED 				= DwtListView._LAST_REASON + 1;
 ZmListView.DEFAULT_REPLENISH_THRESHOLD		= 0;
 
+ZmListView.prototype._getHeaderList = function() {};
+
 ZmListView.prototype.getController =
 function() {
 	return this._controller;
@@ -99,7 +100,7 @@ function(defaultColumnSort) {
 
 ZmListView.prototype.getLimit = 
 function() {
-	return this._appCtxt.get(ZmSetting.PAGE_SIZE);
+	return appCtxt.get(ZmSetting.PAGE_SIZE);
 };
 
 ZmListView.prototype.getReplenishThreshold =
@@ -159,7 +160,7 @@ function() {
 ZmListView.prototype._folderChangeListener = 
 function(ev) {
 	// make sure this is current list view
-	if (this._appCtxt.getCurrentController() != this._controller) { return; }
+	if (appCtxt.getCurrentController() != this._controller) { return; }
 	// see if it will be handled by app's postNotify()
 	if (this._controller._app._checkReplenishListView == this) { return; }
 
@@ -340,7 +341,7 @@ function(ev, div) {
 
 ZmListView.prototype._itemClicked =
 function(clickedEl, ev) {
-	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) &&
+	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) &&
 		ev.button == DwtMouseEvent.LEFT)
 	{
 		if (!ev.shiftKey && !ev.ctrlKey) {
@@ -376,7 +377,7 @@ ZmListView.prototype._columnClicked =
 function(clickedCol, ev) {
 	DwtListView.prototype._columnClicked.call(this, clickedCol, ev);
 
-	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		var list = this.getList();
 		var size = list ? list.size() : null;
 		if (size > 0) {
@@ -454,14 +455,14 @@ ZmListView.prototype.setSelectedItems =
 function(selectedArray) {
 	DwtListView.prototype.setSelectedItems.call(this, selectedArray);
 
-	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		this._checkSelectedItems(true);
 	}
 };
 
 ZmListView.prototype.deselectAll =
 function() {
-	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		this._checkSelectedItems(false);
 	}
 
@@ -529,7 +530,7 @@ function(item) {
 	if (!item) { return };
 	var numTags = item.tags.length;
 	if (!numTags) { return };
-	var tagList = this._appCtxt.getTagTree();
+	var tagList = appCtxt.getTagTree();
 	var tags = item.tags;
 	var html = [];
 	var idx = 0;
@@ -640,7 +641,7 @@ function(columnItem, bSortAsc) {
 
 	if (sortBy) {
 		this._sortByString = sortBy;
-		this._appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
+		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
 	}
 };
 

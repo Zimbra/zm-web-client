@@ -23,12 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDetailListView = 	function(parent, appCtxt, controller, dropTgt) {
+ZmDetailListView = 	function(parent, controller, dropTgt) {
 
-	if (arguments.length == 0) return;
 	// save data
 	//this._folderId = null;
-	this._appCtxt = appCtxt;
 	this._controller = controller;
 
 	// call super constructor
@@ -76,10 +74,10 @@ ZmDetailListView.prototype._getHeaderList = function(parent) {
 	// Columns: tag, name, type, size, date, owner, folder
 	var headers = [];
 	
-	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		headers.push(new DwtListHeaderItem(ZmItem.F_SELECTION, null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.selection));
 	}	
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		headers.push(
 			new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmDetailListView.COLWIDTH_ICON, null, null, true, ZmMsg.tag)
 		);
@@ -135,7 +133,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_PARTICIPANT) {
 		var creator = item.creator.split("@");
 		var cname = creator[0];
-		var uname = this._appCtxt.get(ZmSetting.USERNAME);
+		var uname = appCtxt.get(ZmSetting.USERNAME);
 		if (uname) {
 			var user = uname.split("@");
 			if (creator[1] != user[1]) {
@@ -146,7 +144,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		htmlArr[idx++] = cname;
 		htmlArr[idx++] = "</span>";
 	} else if (field == ZmItem.F_FOLDER) {
-		var notebook = this._appCtxt.getById(item.folderId);
+		var notebook = appCtxt.getById(item.folderId);
 		var path = notebook ? notebook.getPath() : item.folderId;
 		htmlArr[idx++] = path;
 	} else {

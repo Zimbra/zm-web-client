@@ -91,7 +91,7 @@ function(msg) {
 ZmMailMsgListView.prototype._addParams =
 function(msg, params) {
 	// bug fix #3595 - dont hilite if search was in:<folder name>
-	params.isMatched = (msg.isInHitList() && (this._mode == ZmController.CONV_VIEW) && !this._appCtxt.getCurrentSearch().folderId);
+	params.isMatched = (msg.isInHitList() && (this._mode == ZmController.CONV_VIEW) && !appCtxt.getCurrentSearch().folderId);
 };
 
 ZmMailMsgListView.prototype._getDivClass =
@@ -114,7 +114,7 @@ ZmMailMsgListView.prototype._getRowClass =
 function(msg) {
 	var classes = [];
 	if (this._mode == ZmController.CONV_VIEW) {
-		var folder = this._appCtxt.getById(msg.folderId);
+		var folder = appCtxt.getById(msg.folderId);
 		if (folder && folder.isInTrash()) {
 			classes.push("Trash");
 		}
@@ -203,7 +203,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 			// msg on its own (TV) shows subject and fragment
 			var subj = msg.subject || ZmMsg.noSubject;
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj);
-			if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
+			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(msg);
 			}
 		}
@@ -213,7 +213,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		htmlArr[idx++] = "<nobr id='";
 		htmlArr[idx++] = this._getFieldId(msg, field);
 		htmlArr[idx++] = "'>"; // required for IE bug
-		var folder = this._appCtxt.getById(msg.folderId);
+		var folder = appCtxt.getById(msg.folderId);
 		if (folder) {
 			htmlArr[idx++] = folder.getName();
 		}
@@ -241,8 +241,8 @@ function(ev) {
 
 	// only update if we're currently visible or we're the view underneath
 	if (this._mode &&
-		(this._mode != this._appCtxt.getCurrentViewId()) &&
-		(this._mode != this._appCtxt.getAppViewMgr().getLastViewId())) { return; }
+		(this._mode != appCtxt.getCurrentViewId()) &&
+		(this._mode != appCtxt.getAppViewMgr().getLastViewId())) { return; }
 
 	if ((ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) && this._mode == ZmController.CONV_VIEW) {
 		if (!this._controller.handleDelete()) {
@@ -288,7 +288,7 @@ ZmMailMsgListView.prototype._changeFolderName =
 function(msg) {
 	var folderCell = this._getElement(msg, ZmItem.F_FOLDER);
 	if (folderCell) {
-		var folder = this._appCtxt.getById(msg.folderId);
+		var folder = appCtxt.getById(msg.folderId);
 		if (folder) {
 			folderCell.innerHTML = folder.getName();
 		}
@@ -302,7 +302,7 @@ ZmMailMsgListView.prototype._changeTrashStatus =
 function(msg) {
 	var row = this._getElement(msg, ZmItem.F_ITEM_ROW);
 	if (row) {
-		var folder = this._appCtxt.getById(msg.folderId);
+		var folder = appCtxt.getById(msg.folderId);
 		var className;
 		if (msg.isUnread) {
 			className = "Unread";
@@ -321,8 +321,6 @@ function(msg) {
 
 ZmMailMsgListView.prototype._getHeaderList =
 function(parent) {
-	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
-	var appCtxt = shell.getData(ZmAppCtxt.LABEL); // this._appCtxt not set until parent constructor is called
 
 	var hList = [];
 
@@ -370,7 +368,7 @@ function(columnItem, bSortAsc) {
 			}
 		} else {
 			var params = {query: searchString, types: [ZmItem.MSG], sortBy: this._sortByString, limit: this.getLimit()};
-			this._appCtxt.getSearchController().search(params);
+			appCtxt.getSearchController().search(params);
 		}
 	}
 };

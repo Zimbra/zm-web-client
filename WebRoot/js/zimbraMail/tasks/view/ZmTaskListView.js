@@ -24,8 +24,6 @@
  */
 
 ZmTaskListView = function(parent, controller, dropTgt) {
-	if (arguments.length == 0) return;
-
 	var headerList = this._getHeaderList(parent);
 	ZmListView.call(this, parent, null, Dwt.ABSOLUTE_STYLE, ZmController.TASKLIST_VIEW, ZmItem.TASK, controller, headerList, dropTgt);
 };
@@ -237,13 +235,13 @@ function(columnItem, bSortAsc) {
 
 	if (sortBy) {
 		this._sortByString = sortBy;
-		this._appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
+		appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
 	}
 
 	if (this.getList().size() > 1 && this._sortByString) {
 		var searchString = this._controller.getSearchString();
 		var params = {query:searchString, types:[ZmItem.TASK], sortBy:this._sortByString, limit:this.getLimit()};
-		this._appCtxt.getSearchController().search(params);
+		appCtxt.getSearchController().search(params);
 	}
 };
 
@@ -278,8 +276,6 @@ function(ev) {
 
 ZmTaskListView.prototype._getHeaderList =
 function(parent) {
-	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
-	var appCtxt = shell.getData(ZmAppCtxt.LABEL);
 
 	var hList = [];
 

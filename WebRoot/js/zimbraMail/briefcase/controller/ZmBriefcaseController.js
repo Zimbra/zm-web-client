@@ -205,7 +205,7 @@ ZmBriefcaseController.prototype._createNewView =
 function(view) {
 	if (!this._listView[view]) {
 		var viewCtor = ZmBriefcaseController._VIEWS[view];
-		this._listView[view] = new viewCtor(this._container, appCtxt, this, this._dropTgt);
+		this._listView[view] = new viewCtor(this._container, this, this._dropTgt);
 	}
 	this._listView[view].setDragSource(this._dragSrc);
 	return this._listView[view];

@@ -23,16 +23,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNotebookFileView = function(parent, appCtxt, controller) {
+ZmNotebookFileView = function(parent, controller) {
 	var className = null;
 	var posStyle = null;
 	var mode = null;
 	var dropTgt = null;
 	ZmListView.call(this, parent, className, posStyle, mode, controller, dropTgt);
 
-	this._appCtxt = appCtxt;
 	this._controller = controller;
 }
+
 ZmNotebookFileView.prototype = new ZmListView;
 ZmNotebookFileView.prototype.constructor = ZmNotebookFileView;
 
@@ -44,7 +44,6 @@ ZmNotebookFileView.prototype.toString = function() {
 // Data
 //
 
-ZmNotebookFileView.prototype._appCtxt;
 ZmNotebookFileView.prototype._controller;
 
 ZmNotebookFileView.prototype._fileListView;

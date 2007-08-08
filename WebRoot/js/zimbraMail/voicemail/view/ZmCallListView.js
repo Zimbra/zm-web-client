@@ -24,7 +24,6 @@
  */
 
 ZmCallListView = function(parent, controller, dropTgt) {
-	if (arguments.length == 0) return;
 	var headerList = this._getHeaderList();
 	ZmVoiceListView.call(this, parent, null, Dwt.ABSOLUTE_STYLE, ZmController.CALLLIST_VIEW, ZmItem.CALL, controller, headerList, dropTgt);
 }
@@ -109,7 +108,7 @@ function(columnItem, bSortAsc) {
 		case ZmVoiceListView.F_DATE: sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC; break;
 		default: break;
 	}
-	this._appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
+	appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
 };
 
 ZmCallListView.prototype._getHeaderTooltip =

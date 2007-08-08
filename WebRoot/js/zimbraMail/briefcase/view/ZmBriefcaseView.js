@@ -22,13 +22,12 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-ZmBriefcaseView = function(parent, appCtxt, controller, dropTgt) {
+ZmBriefcaseView = function(parent, controller, dropTgt) {
 	// call super constructor
 	var headerList = null;//no headers for this view
 	var view = ZmController.BRIEFCASE_VIEW;
 	ZmListView.call(this, parent, "ZmBriefcaseView", DwtControl.ABSOLUTE_STYLE, view, ZmItem.DOCUMENT, controller, headerList, dropTgt);
 	
-	this._appCtxt = appCtxt;
 	this._controller = controller;
 
 	this._USE_IFRAME = true;
@@ -50,7 +49,6 @@ function() {
 
 // Data
 
-ZmBriefcaseView.prototype._appCtxt;
 ZmBriefcaseView.prototype._controller;
 
 // Public methods

@@ -78,7 +78,7 @@ function(item) {
 
 ZmVoiceListView.prototype.getLimit =
 function() {
-	return this._appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
+	return appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
 };
 
 ZmVoiceListView.prototype._getCallType =

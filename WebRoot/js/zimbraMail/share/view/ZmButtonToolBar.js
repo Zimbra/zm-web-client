@@ -49,8 +49,6 @@ ZmButtonToolBar = function(params) {
 	
 	this._buttonStyle = params.buttonClassName;
 
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-
 	// standard buttons default to New/Tag/Print/Delete
 	var buttons = params.buttons;
 	if (!buttons) {

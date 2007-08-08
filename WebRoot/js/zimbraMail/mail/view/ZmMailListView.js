@@ -93,7 +93,7 @@ function() {
 	// if not in Sent/Drafts, deep dive into query to be certain		
 	if (!isSentFolder && !isDraftsFolder) {
 		// check for is:sent or is:draft w/in search query
-		var query = this._appCtxt.getCurrentSearch().query;
+		var query = appCtxt.getCurrentSearch().query;
 		var idx = query.indexOf(":");
 		if (idx) {
 			var prefix = AjxStringUtil.trim(query.substring(0, idx));
@@ -165,7 +165,7 @@ function(field, item, ev, div, match) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
 		}
 	} else if (field == ZmItem.F_FOLDER) {
-		var folder = this._appCtxt.getById(item.folderId);
+		var folder = appCtxt.getById(item.folderId);
 		if (folder && folder.parent) {
 			var name = folder.getName();
 			var path = folder.getPath();
@@ -186,8 +186,8 @@ function(address) {
 	try {
 		var toolTip;
 		var addr = address.getAddress();
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
-			var contactApp = ZmAppCtxt.getFromShell(this.shell).getApp(ZmApp.CONTACTS);
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
+			var contactApp = appCtxt.getApp(ZmApp.CONTACTS);
 			var contacts = AjxDispatcher.run("GetContacts");
 			var contact = contacts ? contacts.getContactByEmail(addr) : null;
 			if (contact) {
@@ -202,7 +202,7 @@ function(address) {
 			}
 	    }
 	} catch (ex) {
-		this._appCtxt.getAppController()._handleException(ex, contactApp.getContactList, null, false, contactApp);
+		appCtxt.getAppController()._handleException(ex, contactApp.getContactList, null, false, contactApp);
 	}
 	return toolTip;
 };

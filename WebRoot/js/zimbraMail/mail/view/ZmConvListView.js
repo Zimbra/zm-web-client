@@ -135,8 +135,6 @@ function(item) {
 
 ZmConvListView.prototype._getHeaderList =
 function(parent) {
-	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
-	var appCtxt = shell.getData(ZmAppCtxt.LABEL); // this._appCtxt not set until parent constructor is called
 
 	var hList = [];
 
@@ -208,7 +206,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		} else if (field == ZmItem.F_SUBJECT) {
 			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = item.subject ? AjxStringUtil.htmlEncode(item.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-			if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
+			if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
 				htmlArr[idx++] = this._getFragmentSpan(item);
 			}
 			htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
@@ -311,7 +309,7 @@ function(conv, msg, offset) {
 		// work with entire list of conv's msgs, using offset
 		var a = msgList.getArray();
 		if (!(a && a.length)) { return; }
-		var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE);
+		var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
 		offset = this._msgOffset[item.id] || 0;
 		var num = Math.min(limit, msgList.size() - offset);
 		for (var i = 0; i < num; i++) {
@@ -405,11 +403,11 @@ function(item) {
 	if (item.type == ZmItem.CONV) {
 		expandable = (item.numMsgs > 1);
 	} else {
-		var conv = this._appCtxt.getById(item.cid);
+		var conv = appCtxt.getById(item.cid);
 		
 		var a = conv.msgs ? conv.msgs.getArray() : null;
 		if (a && a.length) {
-			var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE);
+			var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
 			var idx = null;
 			for (var i = 0; i < a.length; i++) {
 				if (a[i].id == item.id) {
@@ -441,7 +439,7 @@ function(item) {
 	if (item && this._expandable[item.id]) {
 		this._controller._toggle(item);
 	} else if (item.type == ZmItem.MSG && this._expanded[item.cid]) {
-		var conv = this._appCtxt.getById(item.cid);
+		var conv = appCtxt.getById(item.cid);
 		this._controller._toggle(conv);
 		this.setSelection(conv, true);
 	}
@@ -456,7 +454,7 @@ function(columnItem, bSortAsc) {
 	if (this.getList().size() > 1 && this._sortByString) {
 		var searchString = this._controller.getSearchString();
 		var params = {query:searchString, types:[ZmItem.CONV], sortBy:this._sortByString, limit:this.getLimit()};
-		this._appCtxt.getSearchController().search(params);
+		appCtxt.getSearchController().search(params);
 	}
 };
 
@@ -477,12 +475,12 @@ function(ev) {
 	// prevent redundant handling for same item due to multiple change listeners
 	// (msg will notify containing conv, and then notif for same conv gets processed)
 	if (ev.event != ZmEvent.E_DELETE && ev.event != ZmEvent.E_CREATE) {
-		this._appCtxt.getRequestMgr()._modifyHandled[item.id] = true;
+		appCtxt.getRequestMgr()._modifyHandled[item.id] = true;
 	}
 	
 	// msg moved or deleted	
 	if (!isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
-		var	conv = this._appCtxt.getById(item.cid);
+		var	conv = appCtxt.getById(item.cid);
 		ev.handled = true;
 		if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
 			// msg marked as Junk, or deleted via Empty Trash
@@ -496,7 +494,7 @@ function(ev) {
 		} else {
 			// if this conv now has no msgs that match current search, remove it
 			var removeConv = true;
-			var folderId = this._appCtxt.getCurrentSearch().folderId;
+			var folderId = appCtxt.getCurrentSearch().folderId;
 			if (folderId) {
 				var msgs = conv.msgs.getArray();
 				for (var i = 0; i < msgs.length; i++) {
@@ -535,7 +533,7 @@ function(ev) {
 	if (!isConv && (ev.event == ZmEvent.E_CREATE)) {
 		if (this._expanded[item.cid]) {
 			var div = this._createItemHtml(item, {now:this._now});
-			var conv = this._appCtxt.getById(item.cid);
+			var conv = appCtxt.getById(item.cid);
 			var convIndex = this._getRowIndex(conv);
 			var sortIndex = ev.getDetail("sortIndex");
 			var msgIndex = sortIndex ? sortIndex[item.id] || 0 : 0;
@@ -658,7 +656,7 @@ function(id, field) {
 
 // XXX: test, also handle msgs
 ZmConvListView.getPrintHtml =
-function(conv, preferHtml, callback, appCtxt) {
+function(conv, preferHtml, callback) {
 
 	// first, get list of all msg id's for this conversation
 	if (conv.msgIds == null) {
@@ -666,7 +664,7 @@ function(conv, preferHtml, callback, appCtxt) {
 		var msgNode = soapDoc.set("c");
 		msgNode.setAttribute("id", conv.id);
 
-		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, appCtxt, callback]);
+		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, callback]);
 		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	} else {
 		ZmConvListView._printMessages(conv, preferHtml, appCtxt, callback);
@@ -674,18 +672,18 @@ function(conv, preferHtml, callback, appCtxt) {
 };
 
 ZmConvListView._handleResponseGetPrintHtml =
-function(conv, preferHtml, appCtxt, callback, result) {
+function(conv, preferHtml, appCtxt, result) {
 	var resp = result.getResponse().GetConvResponse.c[0];
 	var msgIds = new Array();
 	var len = resp.m.length;
 	for (var i = 0; i < len; i++)
 		msgIds.push(resp.m[i].id);
 	conv.msgIds = msgIds;
-	ZmConvListView._printMessages(conv, preferHtml, appCtxt, callback);
+	ZmConvListView._printMessages(conv, preferHtml, callback);
 };
 
 ZmConvListView._printMessages =
-function(conv, preferHtml, appCtxt, callback) {
+function(conv, preferHtml, callback) {
 	// XXX: optimize? Once these msgs are d/l'ed should they be cached?
 	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
 	soapDoc.setMethodAttribute("onerror", "continue");
@@ -701,12 +699,12 @@ function(conv, preferHtml, appCtxt, callback) {
 			msgNode.setAttribute("html", "1");
 		msgRequest.appendChild(msgNode);
 	}
-	var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetMessages, [conv, preferHtml, appCtxt, callback]);
+	var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetMessages, [conv, preferHtml, callback]);
 	window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 ZmConvListView._handleResponseGetMessages =
-function(conv, preferHtml, appCtxt, callback, result) {
+function(conv, preferHtml, callback, result) {
 	var resp = result.getResponse().BatchResponse.GetMsgResponse;
 
 	var html = new Array();
@@ -721,7 +719,7 @@ function(conv, preferHtml, appCtxt, callback, result) {
 
 	for (var i = 0; i < resp.length; i++) {
 		var msgNode = resp[i].m[0];
-		var msg = ZmMailMsg.createFromDom(msgNode, {appCtxt:appCtxt, list:null});
+		var msg = ZmMailMsg.createFromDom(msgNode, {list:null});
 		html[idx++] = ZmMailMsgView.getPrintHtml(msg, preferHtml);
 		if (i < resp.length - 1)
 			html[idx++] = "<hr>";

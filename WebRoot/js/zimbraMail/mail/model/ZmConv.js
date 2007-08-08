@@ -221,7 +221,7 @@ function(obj) {
 
 ZmConv.prototype.getPrintHtml =
 function(preferHtml, callback) {
-	ZmConvListView.getPrintHtml(this, preferHtml, callback, appCtxt);
+	ZmConvListView.getPrintHtml(this, preferHtml, callback);
 };
 
 ZmConv.prototype._checkFlags = 

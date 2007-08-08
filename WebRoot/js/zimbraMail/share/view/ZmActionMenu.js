@@ -43,8 +43,6 @@ ZmActionMenu = function(params) {
 
 	ZmPopupMenu.call(this, params.parent, null, params.dialog);
 
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-
 	// standard menu items default to Tag/Print/Delete
 	var menuItems = params.menuItems;
 	if (!menuItems) {

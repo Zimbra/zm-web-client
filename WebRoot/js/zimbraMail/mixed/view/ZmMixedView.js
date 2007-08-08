@@ -70,8 +70,6 @@ function(list, sortField) {
 
 ZmMixedView.prototype._getHeaderList =
 function(parent) {
-	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
-	var appCtxt = shell.getData(ZmAppCtxt.LABEL); // this._appCtxt not set until parent constructor is called
 
 	var hList = [];
 
@@ -184,7 +182,7 @@ function(field, item, ev, div, match) {
 
 ZmMixedView.prototype._changeListener =
 function(ev) {
-	if (this._appCtxt.getAppViewMgr().getCurrentViewId() != this.view)
+	if (appCtxt.getAppViewMgr().getCurrentViewId() != this.view)
 		return;
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {

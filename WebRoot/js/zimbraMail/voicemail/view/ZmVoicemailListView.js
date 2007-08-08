@@ -24,7 +24,6 @@
  */
 
 ZmVoicemailListView = function(parent, controller, dropTgt) {
-	if (arguments.length == 0) return;
 	var headerList = this._getHeaderList(parent);
 	ZmVoiceListView.call(this, parent, "DwtListView ZmVoicemailListView", Dwt.ABSOLUTE_STYLE, ZmController.VOICEMAIL_VIEW, ZmItem.VOICEMAIL, controller, headerList, dropTgt);
 
@@ -114,8 +113,6 @@ function() {
 
 ZmVoicemailListView.prototype._getHeaderList =
 function(parent) {
-	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
-	var appCtxt = shell.getData(ZmAppCtxt.LABEL); // this._appCtxt not set until parent constructor is called
 
 	var headerList = [];
 
@@ -260,7 +257,7 @@ function(row, index) {
 
 ZmVoicemailListView.prototype._helpListener =
 function(ev) {
-	var dialog = this._appCtxt.getMsgDialog();
+	var dialog = appCtxt.getMsgDialog();
 	var message = AjxEnv.isIE ? ZmMsg.missingPluginHelpIE : ZmMsg.missingPluginHelp;
 	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
 	dialog.popup();
@@ -289,7 +286,7 @@ function(columnItem, bSortAsc) {
 		case ZmVoiceListView.F_DATE: sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC; break;
 		default: break;
 	}
-	this._appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
+	appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
 };
 
 ZmVoicemailListView.prototype._getHeaderTooltip =

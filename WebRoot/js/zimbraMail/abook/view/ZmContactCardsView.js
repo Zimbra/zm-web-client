@@ -35,7 +35,7 @@ ZmContactCardsView = function(parent, className, posStyle, controller, dropTgt) 
 
 	// find out if the user's locale has a alphabet defined
 	if (ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
-		this._alphabetBar = new ZmContactAlphabetBar(this, this._appCtxt);
+		this._alphabetBar = new ZmContactAlphabetBar(this);
 	}
 
 	this.addControlListener(new AjxListener(this, this._controlListener));
