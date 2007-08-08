@@ -282,9 +282,9 @@ function(ev) {
 	// figure out the default for this item should be moved to
 	var folder;
 	if (items[0] instanceof ZmContact) {
-		folder = new ZmFolder({id: ZmOrganizer.ID_ADDRBOOK, appCtxt:appCtxt});
+		folder = new ZmFolder({id: ZmOrganizer.ID_ADDRBOOK});
 	} else if (items[0] instanceof ZmAppt) {
-		folder = new ZmFolder({id: ZmOrganizer.ID_CALENDAR, appCtxt:appCtxt});
+		folder = new ZmFolder({id: ZmOrganizer.ID_CALENDAR});
 	} else {
 		var folderId = items[0].isDraft ? ZmFolder.ID_DRAFTS : ZmFolder.ID_INBOX;
 		folder = appCtxt.getById(folderId);
