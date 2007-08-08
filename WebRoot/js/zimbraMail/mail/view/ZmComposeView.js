@@ -1656,7 +1656,7 @@ function(msg, action, replyPref) {
 
 	if (this._msgIds && this._msgIds.length) {
 		// use main window's appCtxt
-		var appCtxt = appCtxt.isChildWindow ? window.parentController._parentAppCtxt : appCtxt;
+		var appCtxt = window.parentAppCtxt || window.appCtxt;
 		var messages = [];
 		for (var i = 0; i < this._msgIds.length; i++) {
 			var message = appCtxt.cacheGet(this._msgIds[i]);

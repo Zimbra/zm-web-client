@@ -147,7 +147,7 @@ function(actionCode) {
 	
 	// check for action code with argument, eg MoveToFolder3
 	var origActionCode = actionCode;
-	var shortcut = ZmShortcut.parseAction(appCtxt, "ZmMailListController", actionCode);
+	var shortcut = ZmShortcut.parseAction("ZmMailListController", actionCode);
 	if (shortcut) {
 		actionCode = shortcut.baseAction;
 	}
@@ -912,7 +912,7 @@ function(ev, callback) {
 
 	if (msg) {
 		if (msg._loaded) {
-			ZmMailMsgView.detachMsgInNewWindow(appCtxt, msg);
+			ZmMailMsgView.detachMsgInNewWindow(msg);
 		} else {
 			ZmMailMsgView.rfc822Callback(msg.id);
 		}

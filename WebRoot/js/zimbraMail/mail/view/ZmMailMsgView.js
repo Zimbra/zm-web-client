@@ -1670,7 +1670,6 @@ ZmMailMsgView.briefcaseCallback =
 function(msgId, partId, name) {
 	ZmZimbraMail.unloadHackCallback();
 
-
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	appCtxt.getApp(ZmApp.BRIEFCASE).createFromAttachment(msgId, partId, name);
 };

@@ -750,7 +750,7 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 
 		DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + nodeName);
 		var itemClass = eval(ZmList.ITEM_CLASS[type]);
-		var item = itemClass.createFromDom(create, {appCtxt:appCtxt}, true);
+		var item = itemClass.createFromDom(create, {}, true);
 		items[item.id] = item;
 		gotMail = true;
 	}

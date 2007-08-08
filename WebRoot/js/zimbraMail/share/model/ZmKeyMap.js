@@ -467,7 +467,7 @@ function(str, kmm) {
 };
 
 ZmShortcut.parseAction =
-function(appCtxt, mapName, action) {
+function(mapName, action) {
 	var kmm = appCtxt.getKeyboardMgr().__keyMapMgr;	
 	var m = action.match(/([a-zA-Z]+)(\d+)/);
 	if (m && m.length) {
