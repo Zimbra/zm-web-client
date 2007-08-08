@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAccountsPage = function(parent, appCtxt, section, controller) {
-	if (arguments.length == 0) return;
-	ZmPreferencesPage.call(this, parent, appCtxt, section, controller);
+ZmAccountsPage = function(parent, section, controller) {
+
+	ZmPreferencesPage.call(this, parent, section, controller);
 
 	this._sectionDivs = {};
 
@@ -305,7 +305,6 @@ ZmAccountsPage.prototype.reset = function(useDefaults) {
 	this._deletedAccounts = [];
 
 	// add various account types
-	var appCtxt = this._appCtxt;
 	var mainAccount = appCtxt.getMainAccount();
 	// NOTE: We create proxies of all of the account objects so that we can
 	//       store temporary values while editing.
@@ -567,7 +566,7 @@ ZmAccountsPage.prototype._setControlValue = function(id, section, value) {
 		value = !value;
 	}
 	else if (id == "WHEN_IN_FOLDER_LIST") {
-		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
 		var folderIds = value;
 		var array = new Array(value);
 		var seenComma = false;
@@ -606,7 +605,7 @@ ZmAccountsPage.prototype._getControlValue = function(id, section) {
 	if (!control || !setup) return null;
 
 	if (id == "WHEN_IN_FOLDER_LIST") {
-		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
 		var root = tree.getById(ZmOrganizer.ID_ROOT);
 
 		var folderPaths = control.getValue().replace(/\s*(;|,)\s*/g,"$1").split(/;|,/);
@@ -777,7 +776,7 @@ ZmAccountsPage.prototype._setupRadioGroup = function(id, setup, value) {
 
 ZmAccountsPage.prototype._setupSelect = function(id, setup, value) {
 	var isEmailSelect = id == "FROM_EMAIL" || id == "REPLY_TO_EMAIL";
-	if (isEmailSelect && this._appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS)) {
+	if (isEmailSelect && appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS)) {
 		var params = {
 			parent: this,
 			hint: ZmMsg.addressHint
@@ -806,15 +805,15 @@ ZmAccountsPage.prototype._setupSelect = function(id, setup, value) {
 
 	var select = ZmPreferencesPage.prototype._setupSelect.apply(this, arguments);
 	if (isEmailSelect) {
-		var accountAddress = this._appCtxt.get(ZmSetting.USERNAME);
+		var accountAddress = appCtxt.get(ZmSetting.USERNAME);
 		select.addOption(accountAddress, false, accountAddress);
 
-		var addresses = this._appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES);
+		var addresses = appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES);
 		for (var i = 0; i < addresses.length; i++) {
 			select.addOption(addresses[i], false, addresses[i]);
 		}
 
-		var aliases = this._appCtxt.get(ZmSetting.MAIL_ALIASES);
+		var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
 		for (var i = 0; i < aliases.length; i++) {
 			select.addOption(aliases[i], false, aliases[i]);
 		}
@@ -822,7 +821,7 @@ ZmAccountsPage.prototype._setupSelect = function(id, setup, value) {
 		select.addChangeListener(new AjxListener(this, this._handleFromEmail));
 	}
 	else if (id == "SIGNATURE") {
-		var collection = this._appCtxt.getSignatureCollection();
+		var collection = appCtxt.getSignatureCollection();
 		collection.addChangeListener(new AjxListener(this, this._resetSignatureSelect, [select]));
 		this._resetSignatureSelect(select);
 	}
@@ -877,13 +876,13 @@ ZmAccountsPage.prototype._resetAccountListView = function(accountOrIndex) {
 		}
 		account = list.get(index);
 	}
-	this._accountListView.setSelection(account || this._appCtxt.getMainAccount());
+	this._accountListView.setSelection(account || appCtxt.getMainAccount());
 };
 
 ZmAccountsPage.prototype._resetSignatureSelect = function(select) {
 	var selectedValue = select.getValue();
 	select.clearOptions();
-	var options = this._appCtxt.getSignatureCollection().getSignatureOptions();
+	var options = appCtxt.getSignatureCollection().getSignatureOptions();
 	for (var i = 0; i < options.length; i++) {
 		select.addOption(options[i]);
 	}
@@ -1029,14 +1028,14 @@ ZmAccountsPage.prototype._handleDeleteButton = function(evt) {
 };
 
 ZmAccountsPage.prototype._handleAddExternalButton = function(evt) {
-	var account = new ZmNewDataSource(this._appCtxt);
+	var account = new ZmNewDataSource();
 	this._accounts.add(account);
 	this._accounts.sort(ZmAccountsPage.__ACCOUNT_COMPARATOR);
 	this._resetAccountListView(account);
 };
 
 ZmAccountsPage.prototype._handleAddPersonaButton = function(evt) {
-	var persona = new ZmNewPersona(this._appCtxt);
+	var persona = new ZmNewPersona();
 	this._accounts.add(persona);
 	this._accounts.sort(ZmAccountsPage.__ACCOUNT_COMPARATOR);
 	this._resetAccountListView(persona);
@@ -1145,7 +1144,7 @@ function(button, dataSource, result) {
 			message = dsrc.error;
 			level = ZmStatusView.LEVEL_CRITICAL;
 		}
-		this._appCtxt.setStatusMsg(message, level, detail);
+		appCtxt.setStatusMsg(message, level, detail);
 	}
 };
 
@@ -1177,7 +1176,7 @@ ZmAccountsPage.prototype._handleFolderButton = function(evt) {
 	if (!this._folderAddCallback) {
 		this._folderAddCallback = new AjxCallback(this, this._handleFolderAdd);
 	}
-	var dialog = this._appCtxt.getChooseFolderDialog();
+	var dialog = appCtxt.getChooseFolderDialog();
 	ZmController.showDialog(dialog, this._folderAddCallback);
 };
 
@@ -1188,7 +1187,7 @@ ZmAccountsPage.prototype._handleFolderAdd = function(folder) {
 
 	folders.push(folder.id);
 	this._setControlValue("WHEN_IN_FOLDER_LIST", section, folders);
-	this._appCtxt.getChooseFolderDialog().popdown();
+	appCtxt.getChooseFolderDialog().popdown();
 };
 
 // pre-save callbacks
@@ -1260,7 +1259,7 @@ ZmAccountsPage.prototype._handleSaveError = function(ex) {
 ZmAccountsPage.prototype._handleCleanUp = function() {
 	if (this._hack_saveErrors.length > 0) {
 		var errors = this._hack_saveErrors.join("<br>");
-		this._appCtxt.setStatusMsg(errors, ZmStatusView.LEVEL_CRITICAL);
+		appCtxt.setStatusMsg(errors, ZmStatusView.LEVEL_CRITICAL);
 		throw errors;
 	}
 	this.reset();
@@ -1399,7 +1398,7 @@ ZmAccountsListView.prototype._getHeaderList = function() {
 // New data source class
 //
 
-ZmNewDataSource = function(appCtxt) {
+ZmNewDataSource = function() {
 	var number = ++ZmNewDataSource.ID;
 	var id = "new-dsrc-"+number;
 	this.setType(ZmAccount.POP);
@@ -1439,7 +1438,7 @@ ZmNewPersona = function() {
 	var number = ++ZmNewPersona.ID;
 	var id = "new-persona-"+number;
 	var name = AjxMessageFormat.format("New Persona {0,number}", number); // TODO: i18n
-	var identity = new ZmIdentity(appCtxt, name);
+	var identity = new ZmIdentity(name);
 	identity.id = id;
 	ZmPersona.call(this, identity);
 	this.id = id;

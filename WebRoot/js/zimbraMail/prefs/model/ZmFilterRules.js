@@ -24,22 +24,18 @@
  */
 
 /**
-* Creates an empty ZmFilterRules.
-* @constructor
-* @class
-* ZmFilterRules represents a set of filter rules. The rules are maintained in a vector, and have
-* an order. Each rule is a ZmFilterRule. They can be added and edited via a ZmFilterRuleDialog.
-*
-* @author Conrad Damon
-*
-* @param appCtxt	[ZmAppCtxt]		app context
-*/
-ZmFilterRules = function(appCtxt) {
+ * Creates an empty ZmFilterRules.
+ * @constructor
+ * @class
+ * ZmFilterRules represents a set of filter rules. The rules are maintained in a vector, and have
+ * an order. Each rule is a ZmFilterRule. They can be added and edited via a ZmFilterRuleDialog.
+ *
+ * @author Conrad Damon
+ */
+ZmFilterRules = function() {
 
 	ZmModel.call(this, ZmEvent.S_FILTER);
 
-	this._appCtxt = appCtxt;
-	
 	this._vector = new AjxVector();
 	this._ruleIdHash = {};
 	this._ruleNameHash = {};
@@ -196,7 +192,7 @@ function(force, callback) {
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: load rules");
 	var soapDoc = AjxSoapDoc.create("GetRulesRequest", "urn:zimbraMail");
 	var respCallback = new AjxCallback(this, this._handleResponseLoadRules, [callback]);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 	
 ZmFilterRules.prototype._handleResponseLoadRules = 
@@ -336,7 +332,7 @@ function(index, notify, callback, errorCallback) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseSaveRules, [index, notify, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSaveRules);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
 												  callback: respCallback, errorCallback: errorCallback});
 };
 
@@ -344,7 +340,7 @@ ZmFilterRules.prototype._handleResponseSaveRules =
 function(index, notify, callback, result) {
 	if (notify)
 		this._notify(ZmEvent.E_MODIFY, {index: index});
-	this._appCtxt.setStatusMsg(ZmMsg.filtersSaved);
+	appCtxt.setStatusMsg(ZmMsg.filtersSaved);
 	if (callback) callback.run(result);
 };
 
@@ -358,7 +354,7 @@ function(index, notify, callback, result) {
 ZmFilterRules.prototype._handleErrorSaveRules =
 function(ex) {
 	if (ex.code == ZmCsfeException.SVC_PARSE_ERROR || ex.code == ZmCsfeException.SVC_INVALID_REQUEST) {
-		var msgDialog = this._appCtxt.getMsgDialog();
+		var msgDialog = appCtxt.getMsgDialog();
 		msgDialog.setMessage([ZmMsg.filterError, " ", ex.msg].join(""), DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
 	    var respCallback = new AjxCallback(this, this._handleResponseHandleErrorSaveRules);

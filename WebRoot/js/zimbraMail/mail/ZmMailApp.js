@@ -179,8 +179,8 @@ function() {
 				ZmSetting.ACCOUNTS
 			],
 			manageDirty: true,
-			createView: function(parent, appCtxt, section, controller) {
-				return new ZmAccountsPage(parent, appCtxt, section, controller);
+			createView: function(parent, section, controller) {
+				return new ZmAccountsPage(parent, section, controller);
 			}
 		},
 		SIGNATURES: {
@@ -194,8 +194,8 @@ function() {
 				ZmSetting.SIGNATURE_ENABLED
 			],
 			manageDirty: true,
-			createView: function(parent, appCtxt, section, controller) {
-				return new ZmSignaturesPage(parent, appCtxt, section, controller);
+			createView: function(parent, section, controller) {
+				return new ZmSignaturesPage(parent, section, controller);
 			}
 		},
 		FILTERS: {
@@ -207,7 +207,7 @@ function() {
 				ZmSetting.FILTERS
 			],
 			manageChanges: true,
-			createView: function(parent, appCtxt, section, controller) {
+			createView: function(parent, section, controller) {
 				return controller.getFilterRulesController().getFilterRulesView();
 			}
 		}

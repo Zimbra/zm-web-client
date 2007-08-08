@@ -24,31 +24,30 @@
  */
 
 /**
-* Creates an empty shortcuts page.
-* @constructor
-* @class
-* This class represents a page that allows the user to specify custom
-* keyboard shortcuts. Currently, we limit custom shortcuts to actions
-* that involve a folder, tag, or saved search. The user specifies a 
-* number to refer to a particular organizer, which binds the shortcut
-* to that organizer. For example, the user might assign the folder
-* "test" the number 3, and then the shortcut "M,3" would move mail to
-* that folder.
-* <p>
-* Only a single pref (the user's shortcuts gathered together in a string)
-* is represented.</p>
-*
-* @author Conrad Damon
-* @param parent				[DwtControl]				the containing widget
-* @param appCtxt			[ZmAppCtxt]					the app context
-* @param view				[constant]					which page we are
-* @param controller			[ZmPrefController]			prefs controller
-*/
-ZmShortcutsPage = function(parent, appCtxt, view, controller) {
+ * Creates an empty shortcuts page.
+ * @constructor
+ * @class
+ * This class represents a page that allows the user to specify custom
+ * keyboard shortcuts. Currently, we limit custom shortcuts to actions
+ * that involve a folder, tag, or saved search. The user specifies a 
+ * number to refer to a particular organizer, which binds the shortcut
+ * to that organizer. For example, the user might assign the folder
+ * "test" the number 3, and then the shortcut "M,3" would move mail to
+ * that folder.
+ * <p>
+ * Only a single pref (the user's shortcuts gathered together in a string)
+ * is represented.</p>
+ *
+ * @author Conrad Damon
+ * 
+ * @param parent			[DwtControl]				the containing widget
+ * @param view				[constant]					which page we are
+ * @param controller		[ZmPrefController]			prefs controller
+ */
+ZmShortcutsPage = function(parent, view, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmShortcutsPage");
 	
-	this._appCtxt = appCtxt;
 	this._view = view; // which preferences page we are
 	this._controller = controller;
     var section = ZmPref.getPrefSectionMap()[view];
@@ -66,7 +65,7 @@ ZmShortcutsPage = function(parent, appCtxt, view, controller) {
 		this._organizers.push(ZmOrganizer.TAG);
 	}
 
-	this._scTabView = new ZmShortcutsPageTabView(this, appCtxt, controller, this._organizers, this._prefId );
+	this._scTabView = new ZmShortcutsPageTabView(this, controller, this._organizers, this._prefId );
 	var element = this._scTabView.getHtmlElement();
 	element.parentNode.removeChild(element);
 	var parent = document.getElementById(this._scTabViewId);
@@ -114,7 +113,7 @@ function() {
 	this._scTabView.show();
 	
 	// save the current value (for checking later if it changed)
-	var pref = this._appCtxt.getSettings().getSetting(this._prefId);
+	var pref = appCtxt.getSettings().getSetting(this._prefId);
 	pref.origValue = this._getPrefValue(this._prefId);
 };
 
@@ -142,7 +141,7 @@ ZmShortcutsPage.prototype.reset = function() {};
 ZmShortcutsPage.prototype._getPrefValue =
 function(id, useDefault, convert) {
 	var value = null;
-	var pref = this._appCtxt.getSettings().getSetting(id);
+	var pref = appCtxt.getSettings().getSetting(id);
 	return useDefault ? pref.getDefaultValue() : pref.getValue();
 };
 
@@ -188,26 +187,24 @@ function(ev) {
  * searches.
  * 
  * @param parent			[DwtControl]		the containing widget
- * @param appCtxt			[ZmAppCtxt]			the app context
  * @param controller		[ZmPrefController]	prefs controller
  * @param organizers		[array]				list of organizer types to handle
  * @param prefId			[int]				ID of shortcuts setting
  */
-ZmShortcutsPageTabView = function(parent, appCtxt, controller, organizers, prefId) {
+ZmShortcutsPageTabView = function(parent, controller, organizers, prefId) {
 
     DwtTabView.call(this, parent, "ZmPrefView");
 
 	this._parent = parent;
-    this._appCtxt = appCtxt;
 	this._controller = controller;
-	this._organizers = this._appCtxt.get(ZmSetting.SHORTCUT_ALIASES_ENABLED) ? organizers : [];
+	this._organizers = appCtxt.get(ZmSetting.SHORTCUT_ALIASES_ENABLED) ? organizers : [];
 	this._tabBar.setVisible(this._organizers.length > 1);
 
 	this._scTabView = {};
 	this._hasRendered = false;
 
 	this._setting = appCtxt.get(prefId);
-	var kbm = this._appCtxt.getKeyboardMgr();
+	var kbm = appCtxt.getKeyboardMgr();
 	var kmm = kbm.__keyMapMgr;
 	this._shortcuts = ZmShortcut.parse(this._setting, kmm);
 };
@@ -234,14 +231,14 @@ function() {
 
 	// shortcut list
 	var view = ZmShortcutsPageTabView.SHORTCUTS_LIST;
-	var viewObj = new ZmShortcutsPageTabViewList(this._parent, this._appCtxt, this._controller);
+	var viewObj = new ZmShortcutsPageTabViewList(this._parent, this._controller);
 	this._scTabView[view] = viewObj;
 	this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view]);
 
 	// custom shortcuts
 	for (var i = 0; i < this._organizers.length; i++) {
 		view = this._organizers[i];
-        viewObj = new ZmShortcutsPageTabViewCustom(this._parent, this._appCtxt, view, this._controller, this._setting, this._shortcuts);
+        viewObj = new ZmShortcutsPageTabViewCustom(this._parent, view, this._controller, this._setting, this._shortcuts);
 		this._scTabView[view] = viewObj;
 		this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view]);
 	}
@@ -302,16 +299,13 @@ function(delta) {
  * available.
  *
  * @param parent			[DwtControl]				the containing widget
- * @param appCtxt			[ZmAppCtxt]					the app context
  * @param controller		[ZmPrefController]			prefs controller
  */
-ZmShortcutsPageTabViewList = function(parent, appCtxt, controller) {
+ZmShortcutsPageTabViewList = function(parent, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmShortcutsPageTabViewList");
 	
-	this._appCtxt = appCtxt;
 	this._controller = controller;
-
 	this._hasRendered = false;
 };
 
@@ -353,7 +347,7 @@ function() {
 
 ZmShortcutsPageTabViewList.prototype._getKeysHtml =
 function(keys, mapNames, html, i) {
-	var kmm = this._appCtxt.getKeyboardMgr().__keyMapMgr;	
+	var kmm = appCtxt.getKeyboardMgr().__keyMapMgr;	
 	var mapDesc = {};
 	var maps = [];
 	var actionDesc = {};
@@ -500,17 +494,15 @@ function(key) {
  *
  * @author Conrad Damon
  * @param parent			[DwtControl]				the containing widget
- * @param appCtxt			[ZmAppCtxt]					the app context
  * @param organizer			[constant]					which organizer this page handles
  * @param controller		[ZmPrefController]			prefs controller
  * @param setting			[string]					value of user's custom shortcuts pref
  * @param shortcuts			[array]						list of ZmShortcut (parsed from setting)
  */
-ZmShortcutsPageTabViewCustom = function(parent, appCtxt, organizer, controller, setting, shortcuts) {
+ZmShortcutsPageTabViewCustom = function(parent, organizer, controller, setting, shortcuts) {
 
 	DwtTabViewPage.call(this, parent, "ZmShortcutsPageTabViewCustom");
 	
-	this._appCtxt = appCtxt;
 	this._organizer = organizer;
 	this._controller = controller;
 	this._setting = setting;
@@ -593,7 +585,7 @@ function() {
 
 ZmShortcutsPageTabViewCustom.prototype.getShortcuts =
 function() {
-	var kbm = this._appCtxt.getKeyboardMgr();
+	var kbm = appCtxt.getKeyboardMgr();
 	var kmm = kbm.__keyMapMgr;
 	var shortcuts = [], numToData = {}, dataToNum = {};
 	for (var id in this._inputs) {
@@ -631,7 +623,7 @@ function() {
 		numToData[num] = data;
 		dataToNum[data] = num;
 
-		var tree = this._appCtxt.getTree(this._organizer);
+		var tree = appCtxt.getTree(this._organizer);
 		var organizer = (this._organizer == ZmOrganizer.FOLDER) ? tree.getByPath(data, true) :
 																  tree.getByName(data);
 		if (!organizer) { continue; }
@@ -837,7 +829,7 @@ function(shortcut) {
 	button.setSize(bWidth, bHeight);
 	var organizer = null, value = "";
 	if (shortcut) {
-		organizer = this._appCtxt.getById(shortcut.arg);
+		organizer = appCtxt.getById(shortcut.arg);
 		if (organizer) {
 			value = (org == ZmOrganizer.FOLDER) ? organizer.getPath(false, false, null, true, true) :
 												  organizer.getName(false, null, true);
@@ -921,9 +913,9 @@ function(ev) {
 	var dialog, treeIds, params;
 	var button = ev.item;
 	if (this._organizer == ZmOrganizer.TAG) {
-		dialog = this._appCtxt.getPickTagDialog();
+		dialog = appCtxt.getPickTagDialog();
 	} else {
-		dialog = this._appCtxt.getChooseFolderDialog();
+		dialog = appCtxt.getChooseFolderDialog();
 		treeIds = [this._organizer];
 		var title = (this._organizer == ZmOrganizer.SEARCH) ? ZmMsg.chooseSearch : ZmMsg.chooseFolder;
 		var overviewId = [this.toString(), this._organizer].join("-");

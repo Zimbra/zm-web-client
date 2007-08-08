@@ -24,17 +24,17 @@
  */
 
 /**
-* Creates an empty filter rule. Conditions and actions will need to be added.
-* @constructor
-* @class
-* ZmFilterRule represents a filter rule. A rule includes one or more conditions
-* and one or more actions.
-*
-* @author Conrad Damon
-*
-* @param name	[string]*	rule name
-* @param active	[boolean]*	true if the rule is enabled
-*/
+ * Creates an empty filter rule. Conditions and actions will need to be added.
+ * @constructor
+ * @class
+ * ZmFilterRule represents a filter rule. A rule includes one or more conditions
+ * and one or more actions.
+ *
+ * @author Conrad Damon
+ *
+ * @param name	[string]*	rule name
+ * @param active	[boolean]*	true if the rule is enabled
+ */
 ZmFilterRule = function(name, active) {
 	this.name = name;
 	this.groupOp = ZmFilterRule.GROUP_ANY;
@@ -464,7 +464,7 @@ function() {
 * Returns true if the rule is enabled.
 */
 ZmFilterRule.prototype.hasValidAction =
-function(appCtxt) {
+function() {
 	var len = this.actions.length;
 	for (var i = 0; i < len; i++) {
 		var action = this.actions[i].name;

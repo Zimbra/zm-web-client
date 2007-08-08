@@ -1,6 +1,30 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.2
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.2 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ *
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
+ * All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK *****
+ */
+
 ZmSignature = function(id) {
 	this.id = id;
-	this._appCtxt = ZmAppCtxt.getFromShell(DwtShell.getShell(window));
 };
 
 ZmSignature.prototype.toString = function() {
@@ -20,7 +44,6 @@ ZmSignature.prototype.value = "";
 //
 
 ZmSignature.createFromJson = function(object) {
-	var appCtxt = ZmAppCtxt.getFromShell(DwtShell.getShell(window));
 	var signature = new ZmSignature(object.id);
 	signature.setFromJson(object);
 	return signature;
@@ -86,7 +109,7 @@ function(method, idOnly, respCallback, errorCallback, batchCmd) {
 		return;
 	}
 
-	var appController = this._appCtxt.getAppController();
+	var appController = appCtxt.getAppController();
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: Boolean(respCallback),
@@ -101,7 +124,7 @@ ZmSignature.prototype._handleCreateResponse = function(callback, resp) {
 	this.id = resp._data.CreateSignatureResponse.signature[0].id;
 
 	// add to global hash
-	var signatures = this._appCtxt.getSignatureCollection();
+	var signatures = appCtxt.getSignatureCollection();
 	signatures.add(this);
 
 	if (callback) {
@@ -111,7 +134,7 @@ ZmSignature.prototype._handleCreateResponse = function(callback, resp) {
 
 ZmSignature.prototype._handleModifyResponse = function(callback, resp) {
 	// promote settings to global signature
-	var signatures = this._appCtxt.getSignatureCollection();
+	var signatures = appCtxt.getSignatureCollection();
 	var signature = signatures.getById(this.id);
 	signature.name = this.name;
 	signature.value = this.value;
@@ -123,7 +146,7 @@ ZmSignature.prototype._handleModifyResponse = function(callback, resp) {
 
 ZmSignature.prototype._handleDeleteResponse = function(callback, resp) {
 	// remove from global hash
-	var signatures = this._appCtxt.getSignatureCollection();
+	var signatures = appCtxt.getSignatureCollection();
 	signatures.remove(this);
 
 	if (callback) {

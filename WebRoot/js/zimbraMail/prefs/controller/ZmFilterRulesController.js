@@ -42,7 +42,7 @@ ZmFilterRulesController = function(container, prefsApp, prefsView) {
 
 	this._prefsView = prefsView;
 	this._rules = AjxDispatcher.run("GetFilterRules");
-	this._filterRulesView = new ZmFilterRulesView(this._prefsView._parent, appCtxt, this);
+	this._filterRulesView = new ZmFilterRulesView(this._prefsView._parent, this);
 	
 	this._buttonListeners = {};
 	this._buttonListeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._addListener);

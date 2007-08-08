@@ -24,24 +24,22 @@
  */
 
 /**
-* Creates an empty view of the preference pages.
-* @constructor
-* @class
-* This class represents a tabbed view of the preference pages.
-*
-* @author Conrad Damon
-*
-* @param parent				[DwtControl]				the containing widget
-* @param appCtxt			[ZmAppCtxt]					the app context
-* @param posStyle			[constant]					positioning style
-* @param controller			[ZmPrefController]			prefs controller
-*/
-ZmPrefView = function(parent, appCtxt, posStyle, controller) {
+ * Creates an empty view of the preference pages.
+ * @constructor
+ * @class
+ * This class represents a tabbed view of the preference pages.
+ *
+ * @author Conrad Damon
+ *
+ * @param parent			[DwtControl]				the containing widget
+ * @param posStyle			[constant]					positioning style
+ * @param controller		[ZmPrefController]			prefs controller
+ */
+ZmPrefView = function(parent, posStyle, controller) {
 
 	DwtTabView.call(this, parent, "ZmPrefView", posStyle);
 
 	this._parent = parent;
-	this._appCtxt = appCtxt;
 	this._controller = controller;
 
 	this.setScrollStyle(DwtControl.SCROLL);
@@ -87,10 +85,10 @@ function() {
 		// add section as a tab
 		var view;
 		if (section.createView) {
-			view = section.createView(this._parent, this._appCtxt, section, this._controller);
+			view = section.createView(this._parent, section, this._controller);
 		}
 		else {
-			view = new ZmPreferencesPage(this, this._appCtxt, section, this._controller);
+			view = new ZmPreferencesPage(this, section, this._controller);
 		}
 		this.prefView[section.id] = view;
 		var tabId = this.addTab(section.title, view);
@@ -180,7 +178,7 @@ ZmPrefView.prototype.getPreSaveCallbacks = function() {
 */
 ZmPrefView.prototype.getChangedPrefs =
 function(dirtyCheck, noValidation, batchCommand) {
-	var settings = this._appCtxt.getSettings();
+	var settings = appCtxt.getSettings();
 	var list = [];
 	var errorStr = "";
 	var sections = ZmPref.getPrefSectionMap();

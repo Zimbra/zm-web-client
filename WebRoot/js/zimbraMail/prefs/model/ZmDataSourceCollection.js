@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDataSourceCollection = function(appCtxt) {
+ZmDataSourceCollection = function() {
     ZmModel.call(this, ZmEvent.S_DATA_SOURCE);
-    this._appCtxt = appCtxt;
     this._itemMap = {};
     this._pop3Map = {};
 	this._imapMap = {};
@@ -113,7 +112,7 @@ ZmDataSourceCollection.prototype.importMail = function(accounts) {
             callback: callback,
             errorCallback: null
         };
-        this._appCtxt.getAppController().sendRequest(params);
+        appCtxt.getAppController().sendRequest(params);
     }
 };
 
@@ -129,12 +128,12 @@ ZmDataSourceCollection.prototype.add = function(item) {
 	else if (item.type == ZmAccount.IMAP) {
 		this._imapMap[item.id] = item;
 	}
-	this._appCtxt.getIdentityCollection().add(item.getIdentity());
+	appCtxt.getIdentityCollection().add(item.getIdentity());
 	this._notify(ZmEvent.E_CREATE, {item:item});
 };
 
 ZmDataSourceCollection.prototype.modify = function(item) {
-	this._appCtxt.getIdentityCollection().notifyModify(item.getIdentity(), true);
+	appCtxt.getIdentityCollection().notifyModify(item.getIdentity(), true);
     this._notify(ZmEvent.E_MODIFY, {item:item});
 };
 
@@ -142,7 +141,7 @@ ZmDataSourceCollection.prototype.remove = function(item) {
     delete this._itemMap[item.id];
 	delete this._pop3Map[item.id];
 	delete this._imapMap[item.id];
-	this._appCtxt.getIdentityCollection().remove(item.getIdentity());
+	appCtxt.getIdentityCollection().remove(item.getIdentity());
     this._notify(ZmEvent.E_DELETE, {item:item});
 };
 
@@ -180,7 +179,7 @@ function(sourceMap, delayMs) {
         errorCallback: null
     };
 
-    var appController = this._appCtxt.getAppController();
+    var appController = appCtxt.getAppController();
     var action = new AjxTimedAction(appController, appController.sendRequest, [params]);
     AjxTimedAction.scheduleAction(action, delayMs || 2000);
 };
@@ -222,12 +221,12 @@ function(sourceMap, result) {
 				delete sourceMap[dsrc.id];
 				if (dsrc.success) {
 					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadSuccess, source.name);
-					this._appCtxt.setStatusMsg(message);
+					appCtxt.setStatusMsg(message);
 				}
 				else {
 					var message = AjxMessageFormat.format(ZmMsg.dataSourceLoadFailure, source.name);
-					this._appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
-					var dialog = this._appCtxt.getErrorDialog();
+					appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
+					var dialog = appCtxt.getErrorDialog();
 					dialog.setMessage(message, dsrc.error, DwtMessageDialog.CRITICAL_STYLE);
 					dialog.popup();
 				}

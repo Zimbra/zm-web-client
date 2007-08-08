@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmSignatureCollection = function(appCtxt) {
+ZmSignatureCollection = function() {
 	ZmModel.call(this, ZmEvent.S_SIGNATURE);
-	this._appCtxt = appCtxt;
 	this._idMap = {};
 	this._nameMap= {};
 	this._size = 0;

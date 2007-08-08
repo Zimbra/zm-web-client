@@ -23,9 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmIdentityCollection = function(appCtxt) {
+ZmIdentityCollection = function() {
 	ZmModel.call(this, ZmEvent.S_IDENTITY);
-	this._appCtxt = appCtxt;
 	this.defaultIdentity = null;
 	this._idToIdentity = {};
 	this._addressToIdentity = {};
@@ -105,7 +104,7 @@ function(identity) {
 
 ZmIdentityCollection.prototype.selectIdentity =
 function(mailMsg) {
-	if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) {
+	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) {
 		return this.defaultIdentity;
 	}
 
@@ -143,7 +142,7 @@ function(data) {
 	}
 	var identities = data.identity;
 	for (var i = 0, count = identities ? identities.length : 0; i < count; i++) {
-		var identity = new ZmIdentity(this._appCtxt, '');
+		var identity = new ZmIdentity('');
 		identity._loadFromDom(identities[i]);
 		this.add(identity);
 	}

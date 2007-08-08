@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmSignaturesPage = function(parent, appCtxt, section, controller) {
-	if (arguments.length == 0) return;
-	ZmPreferencesPage.call(this, parent, appCtxt, section, controller);
+ZmSignaturesPage = function(parent, section, controller) {
+
+	ZmPreferencesPage.call(this, parent, section, controller);
 
 	this._signatureComps = {};
 	this._deletedSignatures = {};
@@ -103,7 +103,7 @@ ZmSignaturesPage.prototype.getModifiedSignatures = function(includeNonModified) 
 
 ZmSignaturesPage.prototype.reset = function(useDefaults) {
 	ZmPreferencesPage.prototype.reset.apply(this, arguments);
-	var signatures = this._appCtxt.get(ZmSetting.SIGNATURES);
+	var signatures = appCtxt.get(ZmSetting.SIGNATURES);
 	for (var id in signatures) {
 		this._resetSignature(signatures[id]);//, true);
 	}
@@ -185,7 +185,7 @@ ZmSignaturesPage.prototype._setupCustom = function(id, setup, value) {
 		this._defaultRadioGroup = new DwtRadioButtonGroup();
 
 		// populate signatures
-		var signatures = this._appCtxt.getSignatureCollection().getSignatures();
+		var signatures = appCtxt.getSignatureCollection().getSignatures();
 		var sigNames = AjxUtil.keys(signatures).sort();
 		var lessThanEqual = sigNames.length <= this._maxEntries;
 		var count = lessThanEqual ? sigNames.length : this._maxEntries;

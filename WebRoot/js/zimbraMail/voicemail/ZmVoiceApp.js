@@ -162,7 +162,7 @@ ZmVoiceApp.prototype._registerPrefs = function() {
                 ZmSetting.VOICE_ACCOUNTS
             ],
             manageDirty: true,
-            createView: function(parent, appCtxt, section, controller) {
+            createView: function(parent, section, controller) {
                 return AjxDispatcher.run("GetVoicePrefsController").getListView();
             }
         }

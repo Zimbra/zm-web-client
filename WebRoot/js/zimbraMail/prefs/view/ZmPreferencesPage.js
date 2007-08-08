@@ -24,24 +24,23 @@
  */
 
 /**
-* Creates an empty preferences page of the given type.
-* @constructor
-* @class
-* This class represents a single page of preferences available by selecting one of the
-* preference tabs. During construction, skeletal HTML is created. The preferences
-* aren't added until the page becomes visible.
-*
-* @author Conrad Damon
-* @param parent				[DwtControl]				the containing widget
-* @param appCtxt			[ZmAppCtxt]					the app context
-* @param section			[object]					which page we are
-* @param controller			[ZmPrefController]			prefs controller
-*/
-ZmPreferencesPage = function(parent, appCtxt, section, controller) {
+ * Creates an empty preferences page of the given type.
+ * @constructor
+ * @class
+ * This class represents a single page of preferences available by selecting one of the
+ * preference tabs. During construction, skeletal HTML is created. The preferences
+ * aren't added until the page becomes visible.
+ *
+ * @author Conrad Damon
+ * 
+ * @param parent			[DwtControl]				the containing widget
+ * @param section			[object]					which page we are
+ * @param controller		[ZmPrefController]			prefs controller
+ */
+ZmPreferencesPage = function(parent, section, controller) {
 	if (arguments.length == 0) return;
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 	
-	this._appCtxt = appCtxt;
 	this._section = section;
 	this._controller = controller;
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section.title].join(": ");
@@ -112,7 +111,7 @@ function() {
     // create controls for prefs, if present in template
 	this._prefPresent = {};
 	var prefs = this._section.prefs || [];
-	var settings = this._appCtxt.getSettings();
+	var settings = appCtxt.getSettings();
 	for (var i = 0; i < prefs.length; i++) {
 		var id = prefs[i];
 		if (!id) { continue; }
@@ -133,7 +132,7 @@ function() {
 
         // perform load function
 		if (setup.loadFunction) {
-			setup.loadFunction(this._appCtxt, setup);
+			setup.loadFunction(setup);
             if (setup.options.length <= 1) {
 				continue;
 			}
@@ -143,7 +142,7 @@ function() {
 		pref.origValue = this._getPrefValue(id);
 		var value = this._getPrefValue(id, false, true);
 		/***
-		if (id == ZmSetting.SHOW_FRAGMENTS && !this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
+		if (id == ZmSetting.SHOW_FRAGMENTS && !appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 			setup.displayName = ZmMsg.showFragmentsMsg;
 		}
 		/***/
@@ -375,7 +374,7 @@ function() {
 */
 ZmPreferencesPage.prototype.reset =
 function(useDefaults) {
-	var settings = this._appCtxt.getSettings();
+	var settings = appCtxt.getSettings();
 	var prefs = this._section.prefs || [];
 	for (var i = 0; i < prefs.length; i++) {
 		var id = prefs[i];
@@ -408,7 +407,7 @@ ZmPreferencesPage.prototype._createPageHtml = function(templateId, data) {
 ZmPreferencesPage.prototype._getPrefValue =
 function(id, useDefault, convert) {
 	var value = null;
-	var pref = this._appCtxt.getSettings().getSetting(id);
+	var pref = appCtxt.getSettings().getSetting(id);
 	var value = useDefault ? pref.getDefaultValue() : pref.getValue();
 	if (convert) {
 		// TODO: user displayFunction
@@ -545,7 +544,7 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._addImportWidgets =
 function(buttonDiv, settingId, setup) {
-	var uri = this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+	var uri = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 
 	var importDivId = this._htmlElId+"_import";
 	var isAddrBookImport = settingId == ZmSetting.IMPORT; 
@@ -617,7 +616,7 @@ function(setup) {
 
     this._localeMap = {};
     this._languageMap = {};
-    var locales = this._appCtxt.get(ZmSetting.LOCALES);
+    var locales = appCtxt.get(ZmSetting.LOCALES);
     for (var i = 0; i < locales.length; i++) {
         var locale = locales[i];
         var id = locale.id;
@@ -690,7 +689,7 @@ function(ev) {
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
 	var args = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
-	var proto = this._appCtxt.get(ZmSetting.PROTOCOL_MODE);
+	var proto = appCtxt.get(ZmSetting.PROTOCOL_MODE);
 	proto = (proto == ZmSetting.PROTO_MIXED) ? ZmSetting.PROTO_HTTPS : ZmSetting.PROTO_HTTP;
 	var url = AjxUtil.formatUrl({protocol:proto, path:"/zimbra/h/changepass", qsReset:true});
 	window.open(url, "_blank", args);
@@ -700,7 +699,7 @@ ZmPreferencesPage.prototype._exportButtonListener =
 function(ev) {
 	var settingId = ev.dwtObj.getData(Dwt.KEY_ID);
 
-	var dialog = this._appCtxt.getChooseFolderDialog();
+	var dialog = appCtxt.getChooseFolderDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._exportOkCallback, this, [dialog, settingId]);
 
@@ -734,7 +733,7 @@ function(ev) {
 	var val = fileInput ? AjxStringUtil.trim(fileInput.value) : null;
 
 	if (val) {
-		var dialog = this._appCtxt.getChooseFolderDialog();
+		var dialog = appCtxt.getChooseFolderDialog();
 		dialog.reset();
 		dialog.setTitle(ZmMsg._import);
 		dialog.registerCallback(DwtDialog.OK_BUTTON, this._importOkCallback, this, dialog);
@@ -757,7 +756,7 @@ function(dialog, folder) {
 		this._importBtn.setEnabled(false);
 
 		var callback = new AjxCallback(this, this._importDoneCallback, folder.id);
-		var um = this._appCtxt.getUploadManager();
+		var um = appCtxt.getUploadManager();
 		window._uploadManager = um;
 		um.execute(callback, document.getElementById(this._uploadFormId));
 	}
@@ -765,7 +764,7 @@ function(dialog, folder) {
 
 ZmPreferencesPage.prototype._importDoneCallback =
 function(folderId, status, aid) {
-	var appCtlr = this._appCtxt.getAppController();
+	var appCtlr = appCtxt.getAppController();
 	var settingId = this._importBtn.getData(Dwt.KEY_ID);
 
 	if (status == 200) {
@@ -790,7 +789,7 @@ function(folderId, status, aid) {
 		}
 		var respCallback = new AjxCallback(this, this._handleResponseFinishImport, [aid, settingId]);
 		var errorCallback = new AjxCallback(this, this._handleErrorFinishImport);
-		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
 													  callback:respCallback, errorCallback:errorCallback,
 													  timeout:ZmPreferencesPage.IMPORT_TIMEOUT});
 	} else {
@@ -810,7 +809,7 @@ function(aid, settingId, result) {
 		var resp = result.getResponse().ImportAppointmentsResponse.appt[0];
 		msg = AjxMessageFormat.format(ZmMsg.apptsImportedResult, Number(resp.n));
 	}
-	this._appCtxt.getAppController().setStatusMsg(msg);
+	appCtxt.getAppController().setStatusMsg(msg);
 	this._importBtn.setEnabled(true);
 };
 
@@ -821,7 +820,7 @@ function(ex) {
 	if (ex.code == ZmCsfeException.MAIL_UNABLE_TO_IMPORT_CONTACTS ||
 		ex.code == ZmCsfeException.MAIL_UNABLE_TO_IMPORT_APPOINTMENTS)
 	{
-		var errDialog = this._appCtxt.getErrorDialog();
+		var errDialog = appCtxt.getErrorDialog();
 		errDialog.setMessage(ex.getErrorMsg(), ex.msg, DwtMessageDialog.WARNING_STYLE);
 		errDialog.popup();
 		return true;
@@ -850,7 +849,7 @@ function(dialog, settingId, folder) {
 ZmPreferencesPage.prototype._resetListener =
 function(ev) {
 	this.reset(true);
-	this._appCtxt.setStatusMsg(ZmMsg.defaultsRestored);
+	appCtxt.setStatusMsg(ZmMsg.defaultsRestored);
 };
 
 /**

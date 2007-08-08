@@ -24,22 +24,20 @@
  */
 
 /**
-* Creates an empty preferences section of the given type.
-* @constructor
-* @class
-* This class represents a single page of preferences available by selecting one of the
-* preference tabs. During construction, skeletal HTML is created. The preferences
-* aren't added until the page becomes visible.
-*
-* @param parent				[DwtControl]				the containing widget
-* @param appCtxt			[ZmAppCtxt]					the app context
-* @param view				[constant]					which page we are
-* @param controller			[ZmPrefController]			prefs controller
-*/
-ZmPrefSection = function(parent, appCtxt, section, controller) {
+ * Creates an empty preferences section of the given type.
+ * @constructor
+ * @class
+ * This class represents a single page of preferences available by selecting one of the
+ * preference tabs. During construction, skeletal HTML is created. The preferences
+ * aren't added until the page becomes visible.
+ *
+ * @param parent			[DwtControl]				the containing widget
+ * @param view				[constant]					which page we are
+ * @param controller		[ZmPrefController]			prefs controller
+ */
+ZmPrefSection = function(parent, section, controller) {
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 
-	this._appCtxt = appCtxt;
 	this._section = section; // which preferences page we are
 	this._controller = controller;
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section.title].join(": ");

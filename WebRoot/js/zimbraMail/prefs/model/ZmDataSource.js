@@ -27,7 +27,7 @@ ZmDataSource = function(type, id, list) {
 	if (arguments.length == 0) return;
 	ZmAccount.call(this, type, id, null, list);
 	this.port = this.getDefaultPort();
-	this.identity = new ZmIdentity(appCtxt);
+	this.identity = new ZmIdentity();
 	this.identity.id = id;
 	this.identity.isFromDataSource = true;
 	// defensive programming

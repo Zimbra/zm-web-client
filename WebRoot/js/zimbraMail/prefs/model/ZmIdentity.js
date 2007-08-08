@@ -22,10 +22,7 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-ZmIdentity = function(appCtxt, name) {
-	if (arguments.length == 0) return;
-	
-	this._appCtxt = appCtxt;
+ZmIdentity = function(name) {
 	this.name = name;
 };
 
@@ -143,31 +140,31 @@ ZmIdentity.prototype.getUseWhenSentTo = function() {
 };
 
 ZmIdentity.prototype.getComposeSameFormat = function() {
-	return this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
+	return appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
 };
 
 ZmIdentity.prototype.getComposeAsFormat = function() {
-	return this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+	return appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 };
 
 ZmIdentity.prototype.getPrefix = function() {
-	return this._appCtxt.get(ZmSetting.REPLY_PREFIX);
+	return appCtxt.get(ZmSetting.REPLY_PREFIX);
 };
 
 ZmIdentity.prototype.getForwardOption = function() {
-	return this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
+	return appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
 };
 
 ZmIdentity.prototype.getReplyOption = function() {
-	return this._appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
+	return appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
 };
 
 ZmIdentity.prototype.getSignatureStyle = function() {
-	return this._appCtxt.get(ZmSetting.SIGNATURE_STYLE);
+	return appCtxt.get(ZmSetting.SIGNATURE_STYLE);
 };
 
 ZmIdentity.prototype.getAdvancedIdentity = function() {
-	return this.isDefault ? this : this._appCtxt.getIdentityCollection().defaultIdentity;
+	return this.isDefault ? this : appCtxt.getIdentityCollection().defaultIdentity;
 };
 
 ZmIdentity.prototype.setAllDefaultAdvancedFields = function() {
@@ -223,7 +220,7 @@ function(requestType, respFunction, callback, errorCallback, batchCmd) {
 		errorCallback: errorCallback
 	};
 
-	return this._appCtxt.getAppController().sendRequest(params);
+	return appCtxt.getAppController().sendRequest(params);
 };
 
 ZmIdentity.prototype._loadFromDom =
@@ -260,7 +257,7 @@ ZmIdentity.prototype._handleCreateResponse = function(callback, result, response
 	delete this._new;
 	delete this._dirty;
 
-	var collection = this._appCtxt.getIdentityCollection();
+	var collection = appCtxt.getIdentityCollection();
 	collection.add(this);
 
 	if (callback) {
@@ -271,7 +268,7 @@ ZmIdentity.prototype._handleCreateResponse = function(callback, result, response
 ZmIdentity.prototype._handleSaveResponse = function(callback, result, response) {
 	delete this._dirty;
 
-	var collection = this._appCtxt.getIdentityCollection();
+	var collection = appCtxt.getIdentityCollection();
 	collection.remove(this);
 	collection.add(this);
 
@@ -285,7 +282,7 @@ ZmIdentity.prototype._handleSaveResponse = function(callback, result, response) 
 };
 
 ZmIdentity.prototype._handleDeleteResponse = function(callback, result, response) {
-	var collection = this._appCtxt.getIdentityCollection();
+	var collection = appCtxt.getIdentityCollection();
 	collection.remove(this);
 
 	if (callback) {

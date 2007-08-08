@@ -112,7 +112,7 @@ function(obj, precondition) {
 	}
 	// Precondition is a function, look at its result
 	if (AjxUtil.isFunction(p)) {
-		return p(appCtxt);
+		return p();
 	}
 	// A list of preconditions is ORed together via a recursive call
 	if (AjxUtil.isArray(p)) {
@@ -186,8 +186,8 @@ function() {
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-		this._prefsView = new ZmPrefView(this._container, appCtxt, Dwt.ABSOLUTE_STYLE, this);
-		var elements = new Object();
+		this._prefsView = new ZmPrefView(this._container, Dwt.ABSOLUTE_STYLE, this);
+		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
 		this._app.createView(ZmController.PREF_VIEW, elements, callbacks, true);
@@ -236,7 +236,7 @@ function(ev, callback, noPop) {
 	// is there anything to do?
 	var dirty = this._prefsView.getChangedPrefs(true, true);
 	if (!dirty) {
-		this._appCtxt.getAppViewMgr().popView(true);
+		appCtxt.getAppViewMgr().popView(true);
 		return;
 	}
 

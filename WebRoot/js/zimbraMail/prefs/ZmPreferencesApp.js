@@ -24,10 +24,10 @@
  */
 
 /**
-* @class
-* Application for the preferences UI. This is where the preferences
-* hook into the overall application.
-*/
+ * @class
+ * Application for the preferences UI. This is where the preferences
+ * hook into the overall application.
+ */
 ZmPreferencesApp = function(container) {
 	ZmApp.call(this, ZmApp.PREFERENCES, container);
 };
@@ -87,20 +87,21 @@ function() {
 ZmPreferencesApp.prototype.getFilterController =
 function() {
 	if (!this._filterController)
-		this._filterController = new ZmFilterController(appCtxt, this._container, this);
+		this._filterController = new ZmFilterController(this._container, this);
 	return this._filterController;
 };
 
 ZmPreferencesApp.prototype.getFilterRules =
 function() {
-	if (!this._filterRules)
-		this._filterRules = new ZmFilterRules(appCtxt);
+	if (!this._filterRules) {
+		this._filterRules = new ZmFilterRules();
+	}
 	return this._filterRules;
 };
 
 ZmPreferencesApp.prototype.getDataSourceCollection = function() {
 	if (!this._dataSourceCollection) {
-		this._dataSourceCollection = new ZmDataSourceCollection(appCtxt);
+		this._dataSourceCollection = new ZmDataSourceCollection();
 	}
 	return this._dataSourceCollection;
 };
@@ -108,14 +109,14 @@ ZmPreferencesApp.prototype.getDataSourceCollection = function() {
 ZmPreferencesApp.prototype.getIdentityCollection =
 function() {
 	if (!this._identityCollection) {
-		this._identityCollection = new ZmIdentityCollection(appCtxt);
+		this._identityCollection = new ZmIdentityCollection();
 	}
 	return this._identityCollection;
 };
 
 ZmPreferencesApp.prototype.getSignatureCollection = function() {
 	if (!this._signatureCollection) {
-		this._signatureCollection = new ZmSignatureCollection(appCtxt);
+		this._signatureCollection = new ZmSignatureCollection();
 	}
 	return this._signatureCollection;
 };
@@ -200,8 +201,8 @@ function() {
 			prefs: [
 				ZmSetting.SHORTCUTS
 			],
-			createView: function(parent, appCtxt, section, controller) {
-				return new ZmShortcutsPage(parent, appCtxt, section.id, controller);
+			createView: function(parent, section, controller) {
+				return new ZmShortcutsPage(parent, section.id, controller);
 			}
 		}
 	};

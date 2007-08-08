@@ -23,11 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
  
-ZmFilterRulesView = function(parent, appCtxt, controller) {
+ZmFilterRulesView = function(parent, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage ZmFilterRulesView");
 
-	this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._prefsController = AjxDispatcher.run("GetPrefController");
 	
@@ -71,7 +70,7 @@ function() {
 	// create list view
 	var listViewEl = document.getElementById(data.id+"_list");
 	if (listViewEl) {
-		this._listView = new ZmFilterListView(this, this._appCtxt, this._controller);
+		this._listView = new ZmFilterListView(this, this._controller);
 		this._listView.replaceElement(listViewEl);
 	}
 
@@ -105,11 +104,10 @@ ZmFilterRulesView.prototype.reset = function() {};
 /*
 * ZmFilterListView
 */
-ZmFilterListView = function(parent, appCtxt, controller) {
+ZmFilterListView = function(parent, controller) {
 	var headerList = this._getHeaderList();
 	DwtListView.call(this, parent, "ZmFilterListView", null, headerList);	
 
-	this._appCtxt = appCtxt;
 	this._rules = AjxDispatcher.run("GetFilterRules");
 	
 	this._controller = controller;
@@ -142,7 +140,7 @@ function(list) {
 	var len = list.size();
 	for (var i = 0; i < len; i++) {
 		var rule = list.get(i);
-		if (rule.hasValidAction(this._appCtxt)) {
+		if (rule.hasValidAction()) {
 			list1.add(rule);
 		}
 	}

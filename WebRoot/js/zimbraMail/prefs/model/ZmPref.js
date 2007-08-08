@@ -56,7 +56,7 @@ ZmPref.ORIENT_HORIZONTAL    = "horizontal";
 // custom functions for loading and validation
 
 ZmPref.loadSkins =
-function(appCtxt, setup) {
+function(setup) {
 	var skins = appCtxt.get(ZmSetting.AVAILABLE_SKINS);
 	for (var i = 0; i < skins.length; i++) {
 		var skin = skins[i];
@@ -69,7 +69,7 @@ function(appCtxt, setup) {
 };
 
 ZmPref.loadLocales =
-function(appCtxt, setup) {
+function(setup) {
 	var locales = appCtxt.get(ZmSetting.LOCALES);
 	for (var i = 0; i < locales.length; i++) {
 		var locale = locales[i];
@@ -91,7 +91,7 @@ function(emailStr) {
 
 ZmPref.validatePollingInterval =
 function(interval) {
-	var minimum = window._zimbraMail._appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL);
+	var minimum = appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL);
 	if (interval && minimum && interval >= minimum) {
 		return true;
 	} else {
@@ -250,7 +250,6 @@ ZmPref.getPrefSectionWithPref = function(prefId) {
 
 /** Returns true if <em>all</em> of the preconditions pass. */
 ZmPref.requireAllPreConditions = function(pre1 /* ..., preN */) {
-	var appCtxt = ZmAppCtxt.getFromShell(DwtShell.getShell(window));
 	var app = appCtxt.getApp(ZmApp.PREFERENCES);
 	var controller = app.getPrefController();
 
