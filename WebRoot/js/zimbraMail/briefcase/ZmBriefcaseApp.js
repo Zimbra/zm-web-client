@@ -383,7 +383,7 @@ function(active) {
 ZmBriefcaseApp.prototype.getFileController = function() {
 	if (!this._fileController) {
 		//TODO:search controller for briefcase
-	//	this._fileController = new ZmBriefcaseFileController(appCtxt, this._container, this);
+	//	this._fileController = new ZmBriefcaseFileController(this._container, this);
 	}
 	return this._fileController;
 };
@@ -441,10 +441,10 @@ function(msgId, partId, name, folderId,items) {
 
 	var bController = this.getBriefcaseController();
 	if( bController.isReadOnly(folderId) ){
-		ZmOrganizer._showErrorMsg(appCtxt, ZmMsg.errorPermission);	
+		ZmOrganizer._showErrorMsg(ZmMsg.errorPermission);	
 		return;
 	}else if(bController.isShared(folderId)) {
-		ZmOrganizer._showErrorMsg(appCtxt,ZmMsg.sharedFolderNotSupported);
+		ZmOrganizer._showErrorMsg(ZmMsg.sharedFolderNotSupported);
 		return;
 	}
 
@@ -461,6 +461,6 @@ function(msgId, partId, name, folderId,items) {
 		srcData.createFromAttachment(msgId, partId, name, folderId);
 	}else{
 		var	msg = AjxMessageFormat.format(ZmMsg.errorFileAlreadyExists, name);
-		ZmOrganizer._showErrorMsg(appCtxt, msg);
+		ZmOrganizer._showErrorMsg(msg);
 	}
 };

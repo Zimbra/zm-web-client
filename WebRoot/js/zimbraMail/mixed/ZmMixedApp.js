@@ -114,6 +114,6 @@ function(results, callback) {
 ZmMixedApp.prototype.getMixedController =
 function() {
 	if (!this._mixedController)
-		this._mixedController = new ZmMixedController(appCtxt, this._container, this);
+		this._mixedController = new ZmMixedController(this._container, this);
 	return this._mixedController;
 };
