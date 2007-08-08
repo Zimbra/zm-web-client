@@ -56,7 +56,7 @@ ZmImApp.prototype.constructor = ZmImApp;
 
 ZmImApp.loggedIn = function() {
         return ZmImApp.INSTANCE
-                && ( ZmImApp.INSTANCE._appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN) ||
+                && ( appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN) ||
                      ZmImApp.INSTANCE._roster );
 };
 
@@ -267,7 +267,7 @@ function(active) {
 
 ZmImApp.prototype.getRosterTreeController = function() {
 	if (!this._rosterTreeController) {
-		this._rosterTreeController = new ZmRosterTreeController(appCtxt);
+		this._rosterTreeController = new ZmRosterTreeController();
 	}
 	return this._rosterTreeController;
 };
@@ -287,7 +287,7 @@ function() {
 ZmImApp.prototype.getRoster =
 function() {
 	if (!this._roster) {
-		this._roster = new ZmRoster(appCtxt, this);
+		this._roster = new ZmRoster(this);
 		// enable instant notify?
 		if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) &&
                     appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY))
@@ -351,6 +351,6 @@ ZmImApp.prototype.prepareVisuals = function() {
 
 ZmImApp.prototype.getOverviewPanelContent = function() {
 	if (!this._imOvw)
-		this._imOvw = new ZmImOverview(appCtxt, this._container);
+		this._imOvw = new ZmImOverview(this._container);
 	return this._imOvw;
 };

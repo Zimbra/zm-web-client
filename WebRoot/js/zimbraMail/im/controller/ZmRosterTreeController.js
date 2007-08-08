@@ -27,11 +27,10 @@
 // more than one place.  Should merge this class with
 // ZmChatListController and rename to ZmImController or something.
 
-ZmRosterTreeController = function(appCtxt) {
+ZmRosterTreeController = function() {
 	this._imApp = appCtxt.getApp(ZmApp.IM);
 	this._confirmDeleteRosterItemFormatter = new AjxMessageFormat(ZmMsg.imConfirmDeleteRosterItem);
 
-	this._appCtxt = appCtxt;
 	this._listeners = {};
 	this._listeners[ZmOperation.NEW_ROSTER_ITEM] = new AjxListener(this, this._newRosterItemListener);
 	this._listeners[ZmOperation.IM_NEW_CHAT] = new AjxListener(this, this._imNewChatListener);
@@ -51,7 +50,7 @@ ZmRosterTreeController.prototype.toString = function() {
 
 ZmRosterTreeController.prototype._deleteListener =
 function(ev) {
-	var ds = this._deleteShield = this._appCtxt.getYesNoCancelMsgDialog();
+	var ds = this._deleteShield = appCtxt.getYesNoCancelMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, ev.buddy);
 	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
@@ -84,7 +83,7 @@ ZmRosterTreeController.prototype._imToggleOffline = function(ev) {
 };
 
 ZmRosterTreeController.prototype._imGatewayLoginListener = function(ev) {
-	var dlg = this._appCtxt.getIMGatewayLoginDialog();
+	var dlg = appCtxt.getIMGatewayLoginDialog();
 	if (!this._registerGatewayCb) {
 		this._registerGatewayCb = new AjxCallback(this, this._registerGatewayCallback);
 	}
@@ -94,13 +93,13 @@ ZmRosterTreeController.prototype._imGatewayLoginListener = function(ev) {
 };
 
 ZmRosterTreeController.prototype._registerGatewayCallback = function(service, screenName, password) {
-	this._appCtxt.getIMGatewayLoginDialog().popdown();
+	appCtxt.getIMGatewayLoginDialog().popdown();
 	AjxDispatcher.run("GetRoster").registerGateway(service, screenName, password);
 };
 
 ZmRosterTreeController.prototype._newRosterItemListener =
 function(ev) {
-	var newDialog = this._appCtxt.getNewRosterItemDialog();
+	var newDialog = appCtxt.getNewRosterItemDialog();
 	newDialog.setTitle(ZmMsg.createNewRosterItem);
 	if (!this._newRosterItemCb) {
 		this._newRosterItemCb = new AjxCallback(this, this._newRosterItemCallback);
@@ -116,7 +115,7 @@ function(ev) {
 
 ZmRosterTreeController.prototype._editRosterItemListener =
 function(ev) {
-	var newDialog = this._appCtxt.getNewRosterItemDialog();
+	var newDialog = appCtxt.getNewRosterItemDialog();
 	newDialog.setTitle(ZmMsg.editRosterItem);
 	if (!this._newRosterItemCb) {
 		this._newRosterItemCb = new AjxCallback(this, this._newRosterItemCallback);
@@ -179,7 +178,7 @@ function(ev) {
 // Create a roster item
 ZmRosterTreeController.prototype._newRosterItemCallback =
 function(addr, rname, groups) {
-	this._appCtxt.getNewRosterItemDialog().popdown();
+	appCtxt.getNewRosterItemDialog().popdown();
 	this._imApp.getRoster().createRosterItem(addr, rname, groups);
 };
 

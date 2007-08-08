@@ -1,9 +1,33 @@
-ZmImOverview = function(appCtxt, parent) {
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.2
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.2 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ * 
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
+ * All Rights Reserved.
+ * 
+ * Contributor(s):
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+
+ZmImOverview = function(parent) {
 	DwtComposite.call(this, parent, null, Dwt.ABSOLUTE_STYLE);
 
 	this.setScrollStyle(DwtControl.SCROLL);
 
-	this._appCtxt = appCtxt;
 	this._groupItems = {};
 	this._itemsById = {};
 	// this._allItems = new AjxVector();
@@ -54,7 +78,7 @@ ZmImOverview.prototype._dragListener = function(ev) {
 
 ZmImOverview.prototype._actionMenuListener = function(ev) {
 	var operation = ev.item.getData(ZmOperation.KEY_ID);
-	var ctrl = this._appCtxt.getApp("IM").getRosterTreeController();
+	var ctrl = appCtxt.getApp("IM").getRosterTreeController();
 	var listener = ctrl._listeners[operation];
 	if (listener) {
 		var data = this._actionedItem.getData("ZmImOverview.data");
@@ -116,11 +140,11 @@ ZmImOverview.prototype._treeSelectionListener = function(ev) {
 		this._actionedItem = ev.item;
 		menu.popup(0, ev.docX, ev.docY);
 	} else if (ev.detail == DwtTree.ITEM_SELECTED && buddy) {
-		var ctrl = this._appCtxt.getApp("IM").getChatListController();
+		var ctrl = appCtxt.getApp("IM").getChatListController();
 		ctrl.selectChatForRosterItem(buddy);
 	} else if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
 		if (buddy) {
-			var ctrl = this._appCtxt.getApp("IM").getChatListController();
+			var ctrl = appCtxt.getApp("IM").getChatListController();
 			ctrl.chatWithRosterItem(buddy);
 		} else if (group) {
 			ev.item.setExpanded(!ev.item.getExpanded());
@@ -158,7 +182,7 @@ ZmImOverview.prototype._init = function() {
 	this._rootItem.setText(ZmMsg.buddyList);
 
 	// Zimbra Assistant buddy
-	var assistant = new ZmAssistantBuddy(buddyList, this._appCtxt);
+	var assistant = new ZmAssistantBuddy(buddyList);
 	this._createBuddy("assistant", assistant);
 
 	var createBuddy = AjxCallback.simpleClosure(this._createBuddy, this, "buddy");
@@ -426,7 +450,7 @@ ZmImOverview.FILTER_SEARCH = {
 			// initiate chat with the first item, if found
 			if (this._firstFilterItem) {
 				var rti = this._firstFilterItem.getData("ZmImOverview.data").buddy;
-				var clc = this._appCtxt.getApp("IM").getChatListController();
+				var clc = appCtxt.getApp("IM").getChatListController();
 				clc.chatWithRosterItem(rti);
 
 				// and clear value to reset filters

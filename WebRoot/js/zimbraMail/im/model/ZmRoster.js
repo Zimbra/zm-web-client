@@ -23,17 +23,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmRoster = function(appCtxt, imApp) {
+ZmRoster = function(imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
 
-	this._appCtxt = appCtxt;
     this._notificationBuffer = [];
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
 	this._imApp = imApp;
 
-        this.refresh();
+    this.refresh();
 };
 
 ZmRoster.prototype = new ZmModel;
@@ -58,7 +57,7 @@ function() {
 ZmRoster.prototype.getMyAddress =
 function() {
     if (this._myAddress == null)
-		this._myAddress = this._appCtxt.get(ZmSetting.USERNAME);
+		this._myAddress = appCtxt.get(ZmSetting.USERNAME);
     return this._myAddress;
 };
 
@@ -96,7 +95,7 @@ function() {
 	this.getRosterItemList().removeAllItems();
 	var soapDoc = AjxSoapDoc.create("IMGetRosterRequest", "urn:zimbraIM");
 	var respCallback = new AjxCallback(this, this._handleResponseReload);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 ZmRoster.prototype._handleResponseReload =
@@ -135,7 +134,7 @@ function(addr, name, groups) {
 	if (name) method.setAttribute("name", name);
 	if (groups) method.setAttribute("groups", groups);
 	method.setAttribute("op", "add");
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 };
 
 /**
@@ -148,7 +147,7 @@ function(show, priority, showStatus) {
 	presence.setAttribute("show", show);
 	if (priority) presence.setAttribute("priority", priority);
 	if (showStatus) soapDoc.set("status", showStatus, presence);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
@@ -171,7 +170,7 @@ function(subscribed) {
 				var item = new ZmRosterItem(sub.to, list, sub.name, null, sub.groups);
 				list.addItem(item);
 				var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
-				this._appCtxt.setStatusMsg(toast);
+				appCtxt.setStatusMsg(toast);
 			}
 		}
 	}
@@ -237,7 +236,7 @@ function(im) {
 						list.addItem(item);
 						if (notifications) {
 							var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
-							this._appCtxt.setStatusMsg(toast);
+							appCtxt.setStatusMsg(toast);
 						}
 					}
 				} else if (sub.from) {
@@ -263,9 +262,9 @@ function(im) {
 						ri._notifyPresence();
 						var toast = this._presenceToastFormatter.format([ri.getDisplayName(), ri.getPresence().getShowText()]);
 						var is_status = old_pres == ri.getPresence().getShow();
-						if (notifications && ( (!is_status && this._appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
-								       (is_status && this._appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
-							this._appCtxt.setStatusMsg(toast);
+						if (notifications && ( (!is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
+								       (is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
+							appCtxt.setStatusMsg(toast);
 							var chat = cl.getChatByRosterAddr(p.from);
 							if (chat)
 								chat.addMessage(ZmChatMessage.system(toast));
@@ -273,7 +272,7 @@ function(im) {
 					}
 				}
 			} else if (not.type == "message") {
-				this._appCtxt.getApp(ZmApp.IM).prepareVisuals();
+				appCtxt.getApp(ZmApp.IM).prepareVisuals();
 				var msg = not;
 				var buddy = this.getRosterItem(msg.from);
 				if (msg.body == null || msg.body.length == 0) {
@@ -304,7 +303,7 @@ function(im) {
 					}
 				}
 			} else if (not.type == "leftchat") {
-				this._appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
+				appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
 				var lc = not;
 				var chat = this.getChatList().getChatByThread(lc.thread);
 				if (chat) {
@@ -318,7 +317,7 @@ function(im) {
 				var gw = this.getGatewayByType(not.service);
 				gw.setState(not.name || null, not.state);
 				if (not.state == ZmImGateway.STATE.BAD_AUTH) {
-					this._appCtxt.setStatusMsg(ZmMsg.errorNotAuthenticated, ZmStatusView.LEVEL_WARNING);
+					appCtxt.setStatusMsg(ZmMsg.errorNotAuthenticated, ZmStatusView.LEVEL_WARNING);
 				}
 			} else if (not.type == "invited") {
 				// console.log("Found INVITED!");
@@ -348,7 +347,7 @@ ZmRoster.prototype.modifyChatRequest = function(thread, op, addr, message) {
 			method.appendChild(txt);
 		}
 	}
-	this._appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
+	appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
 };
 
 ZmRoster.prototype.sendSubscribeAuthorization = function(accept, add, addr) {
@@ -357,7 +356,7 @@ ZmRoster.prototype.sendSubscribeAuthorization = function(accept, add, addr) {
 	method.setAttribute("addr", addr);
 	method.setAttribute("authorized", accept ? "true" : "false");
 	method.setAttribute("add", add ? "true" : "false");
-	this._appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
+	appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
 };
 
 ZmRoster.prototype.reconnectGateway = function(gw) {
@@ -365,7 +364,7 @@ ZmRoster.prototype.reconnectGateway = function(gw) {
 	var method = sd.getMethod();
 	method.setAttribute("op", "reconnect");
 	method.setAttribute("service", gw.type);
-	this._appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
+	appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
 	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
@@ -374,7 +373,7 @@ ZmRoster.prototype.unregisterGateway = function(service, screenName) {
 	var method = sd.getMethod();
 	method.setAttribute("op", "unreg");
 	method.setAttribute("service", service);
-	this._appCtxt.getAppController().sendRequest({ soapDoc	 : sd,
+	appCtxt.getAppController().sendRequest({ soapDoc	 : sd,
 						       asyncMode : true });
 	this.__avoidNotifyTimeout = new Date().getTime();
 };
@@ -386,7 +385,7 @@ ZmRoster.prototype.registerGateway = function(service, screenName, password) {
 	method.setAttribute("service", service);
 	method.setAttribute("name", screenName);
 	method.setAttribute("password", password);
-	this._appCtxt.getAppController().sendRequest({ soapDoc	 : sd,
+	appCtxt.getAppController().sendRequest({ soapDoc	 : sd,
 						       asyncMode : true
 						     });
 	this.__avoidNotifyTimeout = new Date().getTime();
@@ -398,7 +397,7 @@ ZmRoster.prototype.registerGateway = function(service, screenName, password) {
 
 ZmRoster.prototype._requestGateways = function() {
 	var sd = AjxSoapDoc.create("IMGatewayListRequest", "urn:zimbraIM");
-	var response = this._appCtxt.getAppController().sendRequest(
+	var response = appCtxt.getAppController().sendRequest(
 		{ soapDoc   : sd,
 		  asyncMode : false
 		}

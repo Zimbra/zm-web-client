@@ -23,15 +23,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAssistantBuddy = function(list, appCtxt) {
+ZmAssistantBuddy = function(list) {
 	var assistant_rp = new ZmRosterPresence(ZmRosterPresence.SHOW_ONLINE, null, null);
 	assistant_rp.getIcon = function() {
 		return "ZimbraIcon";
 	};
-	ZmRosterItem.call(this, ZmAssistantBuddy.ADDR, list, appCtxt,
-			  ZmMsg.zimbraAssistant, assistant_rp);
+	ZmRosterItem.call(this, ZmAssistantBuddy.ADDR, list, ZmMsg.zimbraAssistant, assistant_rp);
 
-	this._msgDialog = this._appCtxt.getMsgDialog();
+	this._msgDialog = appCtxt.getMsgDialog();
 	this.shell = appCtxt.getShell(); // FIXME: not sure this is needed, but it's accessed in some Assistant objects
 
 	AjxDispatcher.require("Assistant");
@@ -191,7 +190,7 @@ ZmAssistantBuddy.prototype.chatStarted = function(chat, widget) {
 	);
 
 	// make sure assistants are ready to go
-	ZmAssistantDialog.initializeAssistants(this._appCtxt);
+	ZmAssistantDialog.initializeAssistants();
 
 	// this.handleInput({ str: "", sel_start: 0, sel_end: 0 });
 	this._setDefault();
