@@ -23,27 +23,26 @@
  * ***** END LICENSE BLOCK *****
  */
 /**
-* Creates a new appointment tab.
-* @constructor
-* @class
-* This is the main screen for creating/editing an appointment. It provides inputs
-* for the various appointment details.
-*
-* @author Parag Shah
-*
-* @param parent				[DwtComposite]				the appt compose view
-* @param appCtxt 			[ZmAppCtxt]					app context
-* @param attendees			[hash]						attendees/locations/equipment
-* @param controller			[ZmApptComposeController]	the appt compose controller
-* @param dateInfo			[object]					hash of date info
-*/
-ZmApptTabViewPage = function(parent, appCtxt, attendees, controller, dateInfo) {
+ * Creates a new appointment tab.
+ * @constructor
+ * @class
+ * This is the main screen for creating/editing an appointment. It provides inputs
+ * for the various appointment details.
+ *
+ * @author Parag Shah
+ *
+ * @param parent			[DwtComposite]				the appt compose view
+ * @param attendees			[hash]						attendees/locations/equipment
+ * @param controller		[ZmApptComposeController]	the appt compose controller
+ * @param dateInfo			[object]					hash of date info
+ */
+ZmApptTabViewPage = function(parent, attendees, controller, dateInfo) {
 	if (arguments.length == 0) return;
 
 	DwtTabViewPage.call(this, parent);
 
 	this._controller = controller;
-	this._editView = new ZmApptEditView(this, appCtxt, attendees, controller, dateInfo);
+	this._editView = new ZmApptEditView(this, attendees, controller, dateInfo);
 };
 
 ZmApptTabViewPage.prototype = new DwtTabViewPage;

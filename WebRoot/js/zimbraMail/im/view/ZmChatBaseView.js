@@ -34,7 +34,6 @@ ZmChatBaseView = function(parent, className, posStyle, controller, view) {
 	this._controller = controller;
 	this.view = view;	
 	this._evtMgr = new AjxEventMgr();	 
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._listChangeListener = new AjxListener(this, this._changeListener);	
 	this._createHtml();
 }

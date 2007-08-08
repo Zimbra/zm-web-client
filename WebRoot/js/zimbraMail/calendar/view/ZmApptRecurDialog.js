@@ -24,20 +24,20 @@
  */
 
 /**
-* Creates a new appointment recurrence dialog. The view displays itself on construction.
-* @constructor
-* @class
-* This class provides a dialog for creating/editing recurrences for an appointment
-*
-* @author Parag Shah
-* @param parent			the element that created this view
-* @param appCtxt 		the singleton app context
-* @param className 		optional class name for this view
-*/
-ZmApptRecurDialog = function(parent, appCtxt, className) {
+ * Creates a new appointment recurrence dialog. The view displays itself on construction.
+ * @constructor
+ * @class
+ * This class provides a dialog for creating/editing recurrences for an appointment
+ *
+ * @author Parag Shah
+ * 
+ * @param parent			the element that created this view
+ * @param className 		optional class name for this view
+ */
+ZmApptRecurDialog = function(parent, className) {
 
 	DwtDialog.call(this, parent, className, ZmMsg.customRepeat);
-	this._appCtxt = appCtxt;
+
 	// set html content once (hence, in ctor)
 	this.setContent(this._setHtml());
 	this._createRepeatSections();

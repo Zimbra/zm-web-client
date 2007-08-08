@@ -667,12 +667,12 @@ function(conv, preferHtml, callback) {
 		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, callback]);
 		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	} else {
-		ZmConvListView._printMessages(conv, preferHtml, appCtxt, callback);
+		ZmConvListView._printMessages(conv, preferHtml, callback);
 	}
 };
 
 ZmConvListView._handleResponseGetPrintHtml =
-function(conv, preferHtml, appCtxt, result) {
+function(conv, preferHtml, result) {
 	var resp = result.getResponse().GetConvResponse.c[0];
 	var msgIds = new Array();
 	var len = resp.m.length;

@@ -26,7 +26,6 @@
 ZmChatWidget = function(parent, posStyle) {
 
 	DwtComposite.call(this, parent, "ZmChatWidget", posStyle);
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
 	this._init();
 };
@@ -121,7 +120,7 @@ ZmChatWidget.prototype.handleMessage = function(msg) {
 		if (this.isImportant()) {
 			// make sure the tab is selected
 			this.parent.setActiveTabWidget(this);
-			if (this._appCtxt.getCurrentAppName() != "IM" &&
+			if (appCtxt.getCurrentAppName() != "IM" &&
 			    !this.isSticky()) {
 				this.setSticky(true);
 			}
@@ -325,7 +324,7 @@ ZmChatWidget.prototype._init = function() {
 
 	this._objectManager = new ZmObjectManager(this._content);
 	// add YM Emoticons if zimlet installed
-	var YM_smileys = this._appCtxt.getZimletMgr().zimletExists("com_zimbra_ymemoticons");
+	var YM_smileys = appCtxt.getZimletMgr().zimletExists("com_zimbra_ymemoticons");
 	if (YM_smileys) {
 		this._objectManager.addHandler(YM_smileys.handlerObject);
 		this._objectManager.sortHandlers();
@@ -353,7 +352,7 @@ ZmChatWidget.prototype._getAddToBuddyListTooltip = function() {
 };
 
 ZmChatWidget.prototype._addToBuddyListListener = function() {
-	this._appCtxt.getApp("IM").getRosterTreeController()._newRosterItemListener(
+	appCtxt.getApp("IM").getRosterTreeController()._newRosterItemListener(
 		{
 			name	: this.chat.getRosterItem().getDisplayName(),
 			address	: this.chat.getRosterItem().getAddress()

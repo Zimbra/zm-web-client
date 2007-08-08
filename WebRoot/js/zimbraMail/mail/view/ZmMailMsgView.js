@@ -36,7 +36,6 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	this._tagRowId = Dwt.getNextId();
 	this._tagCellId = Dwt.getNextId();
 	this._attLinksId = Dwt.getNextId();
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
 	// expand/collapse vars
 	this._expandHeader = true;
@@ -49,7 +48,7 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 
 	if (!appCtxt.isChildWindow) {
 		// Add change listener to taglist to track changes in tag color
-		this._tagList = this._appCtxt.getTagTree();
+		this._tagList = appCtxt.getTagTree();
 		if (this._tagList) {
 			this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 			this.addListener(ZmMailMsgView._TAG_CLICK, new AjxListener(this, this._msgTagClicked));
@@ -131,7 +130,7 @@ function(msg) {
 		? new Date(msg.sentDate)
 		: new Date(msg.date);
 
-	if ((this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
+	if ((appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
 		msg.isInvite() && msg.getInvite().type != "task" &&
 		!appCtxt.isChildWindow)
 	{
@@ -149,8 +148,8 @@ function(msg) {
 			contentDiv.appendChild(tEl);
 		}
 	}
-	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-			 this._appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) &&
+	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
+			 appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) &&
 			 msg.share && msg.folderId != ZmFolder.ID_TRASH)
 	{
 		AjxDispatcher.require("Share");
@@ -172,7 +171,7 @@ function(msg) {
 
 ZmMailMsgView.prototype.__hasMountpoint =
 function(share) {
-	var tree = this._appCtxt.getFolderTree();
+	var tree = appCtxt.getFolderTree();
 	return tree
 		? this.__hasMountpoint2(tree.root, share.grantor.id, share.link.id)
 		: false;
@@ -371,8 +370,8 @@ function(msg, oldMsg) {
 	this.getHtmlElement().scrollTop = 0;
 
 	// notify zimlets that a new message has been opened
-	if (this._appCtxt.zimletsPresent()) {
-		this._appCtxt.getZimletMgr().notifyZimlets("onMsgView", msg, oldMsg, this);
+	if (appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onMsgView", msg, oldMsg, this);
 	}
 };
 
@@ -613,7 +612,7 @@ function(doc) {
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
 	var attachments = this._msg.getAttachments();
-	var csfeMsgFetch = this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
 	for (var i = 0; i < attachments.length; i++) {
 		var att = attachments[i];
@@ -742,7 +741,7 @@ function(container, html, isTextMsg) {
 
 	var displayImages;
 	if (!isTextMsg &&
-		(!this._appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || this._msg.folderId == ZmOrganizer.ID_SPAM) &&
+		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || this._msg.folderId == ZmOrganizer.ID_SPAM) &&
 		(this._msg == null || (this._msg && !this._msg.showImages)) &&
 		/<img/i.test(html))
 	{
@@ -851,7 +850,7 @@ function(container, html, isTextMsg) {
 				Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
 			}
 		}
-		else if (this._appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) ||
+		else if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) ||
 				 (this._msg && this._msg.showImages))
 		{
 			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
@@ -871,7 +870,7 @@ function(container, html, isTextMsg) {
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
 
-	var cl = this._appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded ? AjxDispatcher.run("GetContacts") : null;
+	var cl = appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded ? AjxDispatcher.run("GetContacts") : null;
 	var subject = msg.subject || ZmMsg.noSubject;
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : "";
@@ -989,7 +988,7 @@ function(msg, container, callback) {
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
-			if (bodyPart.ct == ZmMimeTable.TEXT_HTML && this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
+			if (bodyPart.ct == ZmMimeTable.TEXT_HTML && appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 				this._makeIframeProxy(el, bodyPart.content, false);
 			} else {
 				// otherwise, get the text part if necessary
@@ -1072,7 +1071,7 @@ function(el, bodyPart, callback, result) {
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {
-	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED) || msg == null || !this._tagList) { return; }
+	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED) || msg == null || !this._tagList) { return; }
 
 	var numTags = msg.tags.length;
 	var table = document.getElementById(this._hdrTableId);
@@ -1183,7 +1182,7 @@ function() {
 		htmlArr[idx++] = "<tr><td colspan=";
 		htmlArr[idx++] = ZmMailMsgView.ATTC_COLUMNS;
 		htmlArr[idx++] = ">";
-		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), this._msg.id, attLinks);
+		htmlArr[idx++] = ZmMailMsgView._buildZipUrl(appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), this._msg.id, attLinks);
 		htmlArr[idx++] = "</td></tr>";
 		rows++;
 	}
@@ -1401,9 +1400,9 @@ function(ev) {
 
 ZmMailMsgView.prototype._msgTagClicked =
 function(tagId) {
-	var tag = this._appCtxt.getById(tagId);
+	var tag = appCtxt.getById(tagId);
 	var query = 'tag:"' + tag.name + '"';
-	var searchController = this._appCtxt.getSearchController();
+	var searchController = appCtxt.getSearchController();
 	searchController.search({query: query});
 };
 
@@ -1604,18 +1603,18 @@ function(myId, tagId) {
 };
 
 ZmMailMsgView._detachCallback =
-function(appCtxt, result) {
+function(result) {
 	var resp = result.getResponse().GetMsgResponse;
 	var msg = new ZmMailMsg(resp.m[0].id);
 	msg._loadFromDom(resp.m[0]);
 	// bug fix #8868 - force load for rfc822 msgs since they may not return any content
 	msg._loaded = true;
 
-	ZmMailMsgView.detachMsgInNewWindow(appCtxt, msg);
+	ZmMailMsgView.detachMsgInNewWindow(msg);
 };
 
 ZmMailMsgView.detachMsgInNewWindow =
-function(appCtxt, msg) {
+function(msg) {
 	var newWinObj = appCtxt.getNewWindow(true);
 	newWinObj.command = "msgViewDetach";
 	newWinObj.params = { msg:msg };
@@ -1626,13 +1625,12 @@ function(msgId, msgPartId) {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var sender = appCtxt.getAppController();
-	var callback = new AjxCallback(null, ZmMailMsgView._detachCallback, [appCtxt]);
+	var callback = new AjxCallback(null, ZmMailMsgView._detachCallback);
 	ZmMailMsg.fetchMsg({ sender:sender, msgId:msgId, partId:msgPartId, getHtml:getHtml, callback:callback });
 };
 
 ZmMailMsgView.contactIconCallback =
 function(addr, icon) {
-	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	if (icon == "Contact") {
 		var params = {
 			action: ZmOperation.NEW_MESSAGE,

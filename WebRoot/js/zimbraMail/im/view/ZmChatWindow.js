@@ -26,7 +26,6 @@
 ZmChatWindow = function(parent, chat, sticky, initialSize) {
 	if (arguments.length == 0) return;
 	DwtResizableWindow.call(this, parent);
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	if (!initialSize)
 		initialSize = { x: 400, y: 200 };
 	this._init(chat, sticky, initialSize);

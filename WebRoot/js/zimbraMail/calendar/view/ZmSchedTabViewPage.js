@@ -24,25 +24,23 @@
  */
 
 /**
-* Creates a new tab view for scheduling appointment attendees.
-* @constructor
-* @class
-* This class displays free/busy information for an appointment's attendees. An
-* attendee may be a person, a location, or equipment.
-*
-* @author Parag Shah
-*
-* @param parent				[ZmApptComposeView]			the appt compose view
-* @param appCtxt 			[ZmAppCtxt]					app context
-* @param attendees			[hash]						attendees/locations/equipment
-* @param controller			[ZmApptComposeController]	the appt compose controller
-* @param dateInfo			[object]					hash of date info
-*/
-ZmSchedTabViewPage = function(parent, appCtxt, attendees, controller, dateInfo) {
+ * Creates a new tab view for scheduling appointment attendees.
+ * @constructor
+ * @class
+ * This class displays free/busy information for an appointment's attendees. An
+ * attendee may be a person, a location, or equipment.
+ * 
+ *  @author Parag Shah
+ *
+ * @param parent			[ZmApptComposeView]			the appt compose view
+ * @param attendees			[hash]						attendees/locations/equipment
+ * @param controller		[ZmApptComposeController]	the appt compose controller
+ * @param dateInfo			[object]					hash of date info
+ */
+ZmSchedTabViewPage = function(parent, attendees, controller, dateInfo) {
 
 	DwtTabViewPage.call(this, parent);
 
-	this._appCtxt = appCtxt;
 	this._attendees = attendees;
 	this._controller = controller;
 	this._dateInfo = dateInfo;
@@ -57,13 +55,13 @@ ZmSchedTabViewPage = function(parent, appCtxt, attendees, controller, dateInfo) 
 	this._allAttendeesSlot = null;
 
 	this._attTypes = [ZmCalItem.PERSON];
-	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		this._attTypes.push(ZmCalItem.LOCATION);
 		this._attTypes.push(ZmCalItem.EQUIPMENT);
 	}
 
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
-	this._kbMgr = this._appCtxt.getShell().getKeyboardMgr();
+	this._kbMgr = appCtxt.getShell().getKeyboardMgr();
 };
 
 ZmSchedTabViewPage.prototype = new DwtTabViewPage;
@@ -261,14 +259,14 @@ function() {
 
 ZmSchedTabViewPage.prototype._initAutocomplete =
 function() {
-	var shell = this._appCtxt.getShell();
+	var shell = appCtxt.getShell();
 	var acCallback = new AjxCallback(this, this._autocompleteCallback);
 	var keyUpCallback = new AjxCallback(this, this._autocompleteKeyUpCallback);
 	this._acList = {};
 
 	// autocomplete for attendees
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var contactsClass = this._appCtxt.getApp(ZmApp.CONTACTS);
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader, separator: "",
 					  matchValue: ZmContactsApp.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback};
@@ -276,8 +274,8 @@ function() {
 		this._acList[ZmCalItem.PERSON] = this._acContactsList;
 	}
 	// autocomplete for locations/equipment
-	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var resourcesClass = this._appCtxt.getApp(ZmApp.CALENDAR);
+	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var resourcesClass = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations, separator: "",
 					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback};
 		this._acLocationsList = new ZmAutocompleteListView(params);
@@ -564,7 +562,7 @@ function(inputEl, attendee, useException) {
 				this._resetRow(sched, false, type, true);
 			}
 		}
-		attendee = attendee ? attendee : ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, value, type, true);
+		attendee = attendee ? attendee : ZmApptViewHelper.getAttendeeFromItem(appCtxt, value, type, true);
 		if (attendee) {
 			var email = attendee.getEmail();
 			this._emailToIdx[email] = idx;
@@ -765,7 +763,7 @@ ZmSchedTabViewPage.prototype._setTimezoneVisible =
 function(dateInfo) {
     var showTimezone = !dateInfo.isAllDay;
     if (showTimezone) {
-        showTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
+        showTimezone = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
                        dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
     }
     Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
@@ -867,7 +865,7 @@ ZmSchedTabViewPage.prototype._contactPickerListener =
 function(ev) {
 	if (!this._contactPicker) {
 		AjxDispatcher.require("ContactsCore");
-		this._contactPicker = new ZmContactPicker(this._appCtxt);
+		this._contactPicker = new ZmContactPicker(appCtxt);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
 	}
 	this._cpButton = ev.item;

@@ -43,22 +43,9 @@ ZmAppCtxt = function() {
 	this.multiAccounts = false;
 };
 
-ZmAppCtxt.LABEL = "appCtxt";
-
 ZmAppCtxt.prototype.toString =
 function() {
 	return "ZmAppCtxt";
-};
-
-/**
-* Gets the app context from the given shell.
-*
-* @param shell		the shell
-* @returns			the app context
-*/
-ZmAppCtxt.getFromShell =
-function(shell) {
-	return shell.getData(ZmAppCtxt.LABEL);
 };
 
 ZmAppCtxt.prototype.rememberMe =
@@ -553,7 +540,6 @@ function() {
 ZmAppCtxt.prototype.setShell =
 function(shell) {
 	this._shell = shell;
-	shell.setData(ZmAppCtxt.LABEL, this);
 };
 
 ZmAppCtxt.prototype.setAccount =

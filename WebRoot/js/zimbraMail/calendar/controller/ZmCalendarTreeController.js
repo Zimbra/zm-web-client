@@ -115,7 +115,7 @@ function(actionMenu, type, id) {
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_CALENDAR];
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !this._appCtxt.get(ZmSetting.OFFLINE)) {
+	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !appCtxt.get(ZmSetting.OFFLINE)) {
 		ops.push(ZmOperation.MOUNT_CALENDAR);
 	}
 	ops.push(ZmOperation.CHECK_ALL);
@@ -128,7 +128,7 @@ function() {
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [];
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !this._appCtxt.get(ZmSetting.OFFLINE)) {
+	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !appCtxt.get(ZmSetting.OFFLINE)) {
 		ops.push(ZmOperation.SHARE_CALENDAR);
 	}
 	ops.push(ZmOperation.DELETE);
@@ -239,6 +239,7 @@ ZmCalendarTreeController.prototype._deleteListener = function(ev) {
 	var dialog = appCtxt.getConfirmationDialog();
 	dialog.popup(message, callback);
 };
+
 ZmCalendarTreeController.prototype._deleteListener2 = function(organizer) {
 	this._doDelete(organizer);
 }

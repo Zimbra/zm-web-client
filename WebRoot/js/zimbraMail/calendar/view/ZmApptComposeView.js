@@ -24,29 +24,28 @@
  */
 
 /**
-* Creates a new appointment view. The view does not display itself on construction.
-* @constructor
-* @class
-* This class provides a form for creating/editing appointments. It is a tab view with
-* five tabs: the appt form, a scheduling page, and three pickers (one each for finding
-* attendees, locations, and equipment). The attendee data (people, locations, and
-* equipment are all attendees) is maintained here centrally, since it is presented and
-* can be modified in each of the five tabs.
-*
-* @author Parag Shah
-*
-* @param parent			[DwtShell]					the element that created this view
-* @param className 		[string]*					class name for this view
-* @param calApp			[ZmCalendarApp]				a handle to the owning calendar application
-* @param controller		[ZmApptComposeController]	the controller for this view
-*/
+ * Creates a new appointment view. The view does not display itself on construction.
+ * @constructor
+ * @class
+ * This class provides a form for creating/editing appointments. It is a tab view with
+ * five tabs: the appt form, a scheduling page, and three pickers (one each for finding
+ * attendees, locations, and equipment). The attendee data (people, locations, and
+ * equipment are all attendees) is maintained here centrally, since it is presented and
+ * can be modified in each of the five tabs.
+ *
+ * @author Parag Shah
+ *
+ * @param parent			[DwtShell]					the element that created this view
+ * @param className 		[string]*					class name for this view
+ * @param calApp			[ZmCalendarApp]				a handle to the owning calendar application
+ * @param controller		[ZmApptComposeController]	the controller for this view
+ */
 ZmApptComposeView = function(parent, className, calApp, controller) {
 
 	className = className ? className : "ZmApptComposeView";
 	DwtTabView.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
 
 	this.setScrollStyle(DwtControl.CLIP);
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._app = calApp;
 	this._controller = controller;
 	
@@ -73,15 +72,15 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 	this._evt = new ZmEvent(ZmEvent.S_CONTACT);
 	this._evtMgr = new AjxEventMgr();
 	
-	this._msgDialog = this._appCtxt.getMsgDialog();
+	this._msgDialog = appCtxt.getMsgDialog();
 
 	this._tabIds = [ZmApptComposeView.TAB_APPOINTMENT];
-	if (this._appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
+	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		this._tabIds.push(ZmApptComposeView.TAB_SCHEDULE);
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._tabIds.push(ZmApptComposeView.TAB_ATTENDEES);
 		}
-		if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			this._tabIds.push(ZmApptComposeView.TAB_LOCATIONS);
 			this._tabIds.push(ZmApptComposeView.TAB_EQUIPMENT);
 		}
@@ -199,7 +198,7 @@ function() {
 ZmApptComposeView.prototype.setComposeMode = 
 function(composeMode) {
 	if (composeMode == DwtHtmlEditor.TEXT || 
-		(composeMode == DwtHtmlEditor.HTML && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
+		(composeMode == DwtHtmlEditor.HTML && appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
 	{
 		this._apptEditView.setComposeMode(composeMode);
 	}
@@ -252,7 +251,7 @@ function(tabKey) {
 		this._apptEditView.reEnableDesignMode();
 	} else {
 		var buttons = [ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK];
-		if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+		if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 			buttons.push(ZmOperation.COMPOSE_FORMAT);
 		}
 		if (!appCtxt.isChildWindow) {
@@ -457,23 +456,23 @@ function(id) {
 	var tabPage;
 	switch (id) {
 		case ZmApptComposeView.TAB_APPOINTMENT : {
-			tabPage = new ZmApptTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._dateInfo);
+			tabPage = new ZmApptTabViewPage(this, this._attendees, this._controller, this._dateInfo);
 			break;
 		}
 		case ZmApptComposeView.TAB_SCHEDULE : {
-			tabPage = new ZmSchedTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._dateInfo);
+			tabPage = new ZmSchedTabViewPage(this, this._attendees, this._controller, this._dateInfo);
 			break;
 		}
 		case ZmApptComposeView.TAB_ATTENDEES : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmCalItem.PERSON);
+			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalItem.PERSON);
 			break;
 		}
 		case ZmApptComposeView.TAB_LOCATIONS : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmCalItem.LOCATION);
+			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalItem.LOCATION);
 			break;
 		}
 		case ZmApptComposeView.TAB_EQUIPMENT : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmCalItem.EQUIPMENT);
+			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalItem.EQUIPMENT);
 			break;
 		}
 	}

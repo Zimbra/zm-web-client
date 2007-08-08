@@ -33,16 +33,14 @@
  * @author Conrad Damon
  *
  * @param parent		[DwtComposite]				the element that created this view
- * @param appCtxt 		[ZmAppCtxt]					app context
  * @param attendees		[hash]						attendees/locations/equipment
  * @param controller	[ZmApptComposeController]	the appt compose controller
  * @param type			[constant]					chooser page type
  */
-ZmApptChooserTabViewPage = function(parent, appCtxt, attendees, controller, type) {
+ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
 
 	DwtTabViewPage.call(this, parent, "ZmApptChooserTabViewPage");
 
-	this._appCtxt = appCtxt;
 	this._attendees = attendees;
 	this._controller = controller;
 	this.type = type;
@@ -53,7 +51,7 @@ ZmApptChooserTabViewPage = function(parent, appCtxt, attendees, controller, type
 	this._searchFields = {};
 	this._searchFieldIds = {};
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
-	this._kbMgr = this._appCtxt.getShell().getKeyboardMgr();
+	this._kbMgr = appCtxt.getShell().getKeyboardMgr();
 };
 
 ZmApptChooserTabViewPage.COL_LABEL = {};
@@ -353,7 +351,7 @@ ZmApptChooserTabViewPage.prototype._getSearchFieldHtml =
 function(id, html, i, addButton, addMultLocsCheckbox) {
 	if (id == ZmApptChooserTabViewPage.SF_SOURCE) {
 		// no need for source select if contacts and GAL aren't both supported
-		if (!(this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED))) {
+		if (!(appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.get(ZmSetting.GAL_ENABLED))) {
 			html[i++] = "<td>&nbsp;</td>";
 		} else {
 			this._listSelectId = this._searchFieldIds[id];
@@ -415,7 +413,7 @@ function() {
 		var listSelect = document.getElementById(this._listSelectId);
 		this._selectDiv = new DwtSelect(this);
 		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
-		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+		if (appCtxt.get(ZmSetting.SHARING_ENABLED))
 			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
 		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
@@ -439,7 +437,7 @@ function() {
 	}
 
 	// add chooser
-	this._chooser = new ZmApptChooser(this, null, this._appCtxt);
+	this._chooser = new ZmApptChooser(this);
 	var chooserSourceListViewDiv = document.getElementById(this._chooserSourceListViewDivId);
 	var sourceListView = this._chooser.getSourceListView();
 	chooserSourceListViewDiv.appendChild(sourceListView);
@@ -525,7 +523,7 @@ function(sortBy) {
 	if (!this._query.length) { return; }
 
 	var queryHint;
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var searchFor = this._selectDiv.getSelectedOption().getValue();
 		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 			? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
@@ -533,7 +531,7 @@ function(sortBy) {
 			queryHint= ZmSearchController.QUERY_ISREMOTE;
 		}
 	} else {
-		this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 	}
 	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
 	this._chooser.sourceListView.enableSorting(this._contactSource == ZmItem.CONTACT);
@@ -657,14 +655,12 @@ function(ev) {
 /***********************************************************************************/
 
 /**
-* This class creates a specialized chooser for the attendee picker.
-*
-* @param parent			[DwtComposite]	the attendee tab view
-* @param buttonInfo		[array]			transfer button IDs and labels
-* @param appCtxt		[ZmAppCtxt]		global app context
-*/
-ZmApptChooser = function(parent, buttonInfo, appCtxt) {
-	this._appCtxt = appCtxt;
+ * This class creates a specialized chooser for the attendee picker.
+ *
+ * @param parent			[DwtComposite]	the attendee tab view
+ * @param buttonInfo		[array]			transfer button IDs and labels
+ */
+ZmApptChooser = function(parent, buttonInfo) {
 	var selectStyle = (parent.type == ZmCalItem.LOCATION) ? DwtChooser.SINGLE_SELECT : null;
 	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.VERT_STYLE,
 						   mode: DwtChooser.MODE_MOVE, selectStyle: selectStyle, allButtons: true});
@@ -675,12 +671,12 @@ ZmApptChooser.prototype.constructor = ZmApptChooser;
 
 ZmApptChooser.prototype._createSourceListView =
 function() {
-	return new ZmApptChooserListView(this, DwtChooserListView.SOURCE, this.parent.type, this._appCtxt);
+	return new ZmApptChooserListView(this, DwtChooserListView.SOURCE, this.parent.type);
 };
 
 ZmApptChooser.prototype._createTargetListView =
 function() {
-	return new ZmApptChooserListView(this, DwtChooserListView.TARGET, this.parent.type, this._appCtxt);
+	return new ZmApptChooserListView(this, DwtChooserListView.TARGET, this.parent.type);
 };
 
 ZmApptChooser.prototype._notify =
@@ -703,20 +699,18 @@ function(item, list) {
 /***********************************************************************************/
 
 /**
-* This class creates a specialized source list view for the contact chooser. The items
-* it manages are of type ZmContact or its subclass ZmResource.
-*
-* @param parent			[DwtChooser]	chooser that owns this list view
-* @param type			[constant]		list view type (source or target)
-* @param chooserType	[constant]		type of owning chooser (attendee/location/resource)
-* @param appCtxt 		[ZmAppCtxt] 	global app context
-*/
-ZmApptChooserListView = function(parent, type, chooserType, appCtxt) {
+ * This class creates a specialized source list view for the contact chooser. The items
+ * it manages are of type ZmContact or its subclass ZmResource.
+ *
+ * @param parent		[DwtChooser]	chooser that owns this list view
+ * @param type			[constant]		list view type (source or target)
+ * @param chooserType	[constant]		type of owning chooser (attendee/location/resource)
+ */
+ZmApptChooserListView = function(parent, type, chooserType) {
 
 	this._chooserType = chooserType;
 	DwtChooserListView.call(this, parent, type);
 
-	this._appCtxt = appCtxt;
 	this._notes = {};
 };
 
@@ -756,7 +750,7 @@ function(html, idx, item, field, colIdx, params) {
 		if (item.isGal) {
 			name = ZmMsg.GAL;
 		} else {
-			var folder = this._appCtxt.getById(item.folderId);
+			var folder = appCtxt.getById(item.folderId);
 			name = folder ? folder.name : "";
 		}
 		html[idx++] = name;

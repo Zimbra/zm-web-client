@@ -23,34 +23,32 @@
  * ***** END LICENSE BLOCK *****
  */
 /**
-* Creates a new calendar item edit view.
-* @constructor
-* @class
-* This is the main screen for creating/editing an appointment. It provides
-* inputs for the various appointment details.
-*
-* @author Parag Shah
-*
-* @param parent				[DwtControl]				some container
-* @param appCtxt 			[ZmAppCtxt]					app context
-* @param attendees			[hash]						attendees/locations/equipment
-* @param dateInfo			[object]					hash of date info
-* @param controller			[ZmController]				the compose controller for this view
-*/
-ZmApptEditView = function(parent, appCtxt, attendees, controller, dateInfo) {
-	if (arguments.length == 0) return;
+ * Creates a new calendar item edit view.
+ * @constructor
+ * @class
+ * This is the main screen for creating/editing an appointment. It provides
+ * inputs for the various appointment details.
+ *
+ * @author Parag Shah
+ *
+ * @param parent			[DwtControl]				some container
+ * @param attendees			[hash]						attendees/locations/equipment
+ * @param dateInfo			[object]					hash of date info
+ * @param controller		[ZmController]				the compose controller for this view
+ */
+ZmApptEditView = function(parent, attendees, controller, dateInfo) {
 
-	ZmCalItemEditView.call(this, parent, appCtxt, attendees, controller, dateInfo);
+	ZmCalItemEditView.call(this, parent, attendees, controller, dateInfo);
 
 	// cache so we dont keep calling appCtxt
-	this.GROUP_CALENDAR_ENABLED = this._appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
+	this.GROUP_CALENDAR_ENABLED = appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED);
 
 	this._attTypes = [];
 	if (this.GROUP_CALENDAR_ENABLED) {
 		this._attTypes.push(ZmCalItem.PERSON);
 	}
 	this._attTypes.push(ZmCalItem.LOCATION);
-	if (this._appCtxt.get(ZmSetting.GAL_ENABLED) && this.GROUP_CALENDAR_ENABLED) {
+	if (appCtxt.get(ZmSetting.GAL_ENABLED) && this.GROUP_CALENDAR_ENABLED) {
 		this._attTypes.push(ZmCalItem.EQUIPMENT);
 	}
 };
@@ -207,7 +205,7 @@ function(tabGroup) {
 	tabGroup.addMember(this._subjectField);
 	tabGroup.addMember(this._attInputField[ZmCalItem.LOCATION]);
 	tabGroup.addMember(this._attInputField[ZmCalItem.PERSON]);
-	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		tabGroup.addMember(this._attInputField[ZmCalItem.EQUIPMENT]);
 	}
 	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
@@ -367,7 +365,7 @@ function() {
 		personId: this._attTdId[ZmCalItem.PERSON],
 		equipmentId: this._attTdId[ZmCalItem.EQUIPMENT],
 		currDate: (AjxDateUtil.simpleComputeDateStr(new Date())),
-		isGalEnabled: this._appCtxt.get(ZmSetting.GAL_ENABLED),
+		isGalEnabled: appCtxt.get(ZmSetting.GAL_ENABLED),
 		isAppt: true,
 		isGroupCalEnabled: this.GROUP_CALENDAR_ENABLED
 	};
@@ -431,22 +429,22 @@ function(width) {
     // NOTE: tzone select is initialized later
 
 	// init auto-complete widget if contacts app enabled
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this._initAutocomplete();
 	}
 };
 
 ZmApptEditView.prototype._initAutocomplete =
 function() {
-	var shell = this._appCtxt.getShell();
+	var shell = appCtxt.getShell();
 	var acCallback = new AjxCallback(this, this._autocompleteCallback);
 	this._acList = {};
 
 	// autocomplete for attendees
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 		this.GROUP_CALENDAR_ENABLED)
 	{
-		var contactsClass = this._appCtxt.getApp(ZmApp.CONTACTS);
+		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader,
 					  matchValue: ZmContactsApp.AC_VALUE_FULL, compCallback: acCallback};
@@ -455,8 +453,8 @@ function() {
 		this._acList[ZmCalItem.PERSON] = this._acContactsList;
 	}
 
-	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var resourcesClass = this._appCtxt.getApp(ZmApp.CALENDAR);
+	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var resourcesClass = appCtxt.getApp(ZmApp.CALENDAR);
 
 		// autocomplete for locations
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations,
@@ -524,7 +522,7 @@ ZmApptEditView.prototype._setTimezoneVisible =
 function(dateInfo) {
     var showTimezone = !dateInfo.isAllDay;
     if (showTimezone) {
-        showTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
+        showTimezone = appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
                        dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
     }
     Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
@@ -622,7 +620,7 @@ function(type, useException) {
 		var attendee = this._getAttendeeByName(type, item);
 		attendee = attendee || this._getAttendeeByItem(item, type);
 		if (!attendee) {
-			attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, item, type);
+			attendee = ZmApptViewHelper.getAttendeeFromItem(appCtxt, item, type);
 		}
 		if (attendee) {
 			attendees.add(attendee);

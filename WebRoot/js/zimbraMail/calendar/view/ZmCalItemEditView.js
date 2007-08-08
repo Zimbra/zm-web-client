@@ -31,19 +31,17 @@
  *
  * @author Parag Shah
  *
- * @param parent				[DwtControl]				some container
- * @param appCtxt 			[ZmAppCtxt]					app context
+ * @param parent			[DwtControl]				some container
  * @param attendees			[hash]*						attendees/locations/equipment
- * @param controller			[ZmController]				the compose controller for this view
+ * @param controller		[ZmController]				the compose controller for this view
  * @param dateInfo			[object]*					hash of date info
  * @param posStyle			[String]*					[static|relative|absolute]
  */
-ZmCalItemEditView = function(parent, appCtxt, attendees, controller, dateInfo, posStyle) {
-	if (arguments.length == 0) return;
+ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle) {
+	if (arguments.length == 0) { return; }
 
 	DwtComposite.call(this, parent, null, posStyle);
 
-	this._appCtxt = appCtxt;
 	this._attendees = attendees;
 	this._controller = controller;
 	this._dateInfo = dateInfo;
@@ -51,15 +49,15 @@ ZmCalItemEditView = function(parent, appCtxt, attendees, controller, dateInfo, p
 	this.setScrollStyle(DwtControl.CLIP);
 	this._rendered = false;
 
-	var bComposeEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
-	var composeFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+	var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+	var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 	this._composeMode = bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML
 		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 
 	this._repeatSelectDisabled = false;
 	this._attachCount = 0;
 
-	this._kbMgr = this._appCtxt.getShell().getKeyboardMgr();
+	this._kbMgr = appCtxt.getShell().getKeyboardMgr();
 };
 
 ZmCalItemEditView.prototype = new DwtComposite;
@@ -296,7 +294,7 @@ ZmCalItemEditView.prototype.getOrganizer =
 function() {
 	var folderId = this._folderSelect.getValue();
 	var organizer = new ZmContact(null);
-	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(this._appCtxt, this._calendarOrgs[folderId]), true);
+	organizer.initFromEmail(ZmApptViewHelper.getOrganizerEmail(appCtxt, this._calendarOrgs[folderId]), true);
 
 	return organizer;
 };
@@ -402,8 +400,8 @@ function(calItem, mode) {
 ZmCalItemEditView.prototype._setContent =
 function(calItem) {
 	// set notes/content (based on compose mode per user prefs)
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) &&
-		this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML)
+	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) &&
+		appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML)
 	{
 		this.setComposeMode(DwtHtmlEditor.HTML);
 		this._notesHtmlEditor.setContent(calItem.getNotesPart(ZmMimeTable.TEXT_HTML));
@@ -487,7 +485,7 @@ function(width) {
 	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId+"_endMiniCalBtn", dateButtonListener, dateCalSelectionListener);
 
 	// notes ZmHtmlEditor
-	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, this._appCtxt);
+	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, appCtxt);
 	this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
 };
 
@@ -509,7 +507,7 @@ ZmCalItemEditView.prototype._resetFolderSelect =
 function(calItem, mode) {
 	// get all calendar folders
 	var org = ZmOrganizer.ITEM_ORGANIZER[calItem.type];
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = appCtxt.getFolderTree();
 	var data = folderTree ? folderTree.getByType(org) : [];
 	var len = data.length;
 
@@ -564,7 +562,7 @@ function() {
 	this._attachDivId = Dwt.getNextId();
 
 	html[i++] = "<form style='margin:0;padding:0' method='POST' action='";
-	html[i++] = this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+	html[i++] = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	html[i++] = "' id='";
 	html[i++] = this._uploadFormId;
 	html[i++] = "' enctype='multipart/form-data'><div id='";
@@ -627,7 +625,7 @@ function() {
 ZmCalItemEditView.prototype._submitAttachments =
 function() {
 	var callback = new AjxCallback(this, this._attsDoneCallback);
-	var um = this._appCtxt.getUploadManager();
+	var um = appCtxt.getUploadManager();
 	window._uploadManager = um;
 	um.execute(callback, document.getElementById(this._uploadFormId));
 };
@@ -636,7 +634,7 @@ ZmCalItemEditView.prototype._showRecurDialog =
 function(repeatType) {
 	if (!this._repeatSelectDisabled) {
 		if (!this._recurDialog) {
-			this._recurDialog = new ZmApptRecurDialog(this._appCtxt.getShell(), this._appCtxt);
+			this._recurDialog = new ZmApptRecurDialog(appCtxt.getShell());
 			this._recurDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._recurOkListener));
 			this._recurDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
 		}
@@ -686,7 +684,7 @@ function(ev, isHover) {
 			? "default" : "pointer";
 
 		if (this._rdfTooltip == null) {
-			this._rdfTooltip = this._appCtxt.getShell().getToolTip();
+			this._rdfTooltip = appCtxt.getShell().getToolTip();
 		}
 
 		var content = "<div style='width:300px'>" + this._repeatDescField.innerHTML + "</div>";

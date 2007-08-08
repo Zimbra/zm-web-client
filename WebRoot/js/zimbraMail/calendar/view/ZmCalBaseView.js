@@ -53,8 +53,6 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view) {
 	this._selEv = new DwtSelectionEvent(true);
 	this._actionEv = new DwtListViewActionEvent(true);	
 	
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-
 	// END LIST-RELATED
 		
 	this._timeRangeStart = 0;
@@ -87,7 +85,7 @@ function() {
 
 ZmCalBaseView.prototype.firstDayOfWeek =
 function() {
-	return this._appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
+	return appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
 }
 
 ZmCalBaseView.prototype.addViewActionListener =

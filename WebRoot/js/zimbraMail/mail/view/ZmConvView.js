@@ -30,13 +30,13 @@ ZmConvView = function(parent, controller, dropTgt) {
 	this._changeListener = new AjxListener(this, this._convChangeListener);
 	
 	// add change listener to tree view to catch empty trash action
-	var folderTree = this._appCtxt.getFolderTree();
+	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
 		folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
 	}
 	
 	// Add a change listener to taglist to track tag color changes
-	this._tagList = this._appCtxt.getTagTree();
+	this._tagList = appCtxt.getTagTree();
 	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	
 	this._controller = controller;
@@ -173,7 +173,7 @@ function() {
 	html[idx++] = "'></div></td><td id='";
 	html[idx++] = closeBtnCellId;
 	html[idx++] = "'></td><td></td></tr>";
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		html[idx++] = "<tr><td colspan=4>";
 		html[idx++] = "<div class='Tags' id='";
 		html[idx++] = tagDivId;
@@ -194,7 +194,7 @@ function() {
 	// save the necessary DOM objects we just created
 	this._subjectDiv = document.getElementById(subjDivId);
 
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._tagDiv = document.getElementById(tagDivId);
 		Dwt.setSize(this._tagDiv, Dwt.DEFAULT, ZmConvView._TAGLIST_HEIGHT);
 		Dwt.setVisible(this._tagDiv, false);
@@ -210,7 +210,7 @@ function(subject) {
 
 ZmConvView.prototype._setTags =
 function(conv) {
-	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) return;
+	if (!appCtxt.get(ZmSetting.TAGGING_ENABLED)) return;
 
 	var numTags = conv.tags.length;
 	var origVis = Dwt.getVisible(this._tagDiv);
@@ -288,7 +288,7 @@ function(ev) {
 		var list = this._conv.msgs.getArray();
 		var len = list.length; // save original length
 		for (var i = 0; i < list.length; i++) {
-			var folder = this._appCtxt.getById(list[i].folderId);
+			var folder = appCtxt.getById(list[i].folderId);
 			if (folder.isInTrash()) {
 				this._mailListView.removeItem(list[i]);
 				this._conv.msgs.remove(list[i], true);
@@ -297,7 +297,7 @@ function(ev) {
 		}
 		
 		// reset navigation buttons if necessary
-		var pageSize = this._appCtxt.get(ZmSetting.PAGE_SIZE);
+		var pageSize = appCtxt.get(ZmSetting.PAGE_SIZE);
 		this._conv.numMsgs = this._conv.msgs.size();
 		if (len > pageSize && this._conv.numMsgs < pageSize) {
 			this._controller._resetNavToolBarButtons(this._controller._getViewType());

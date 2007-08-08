@@ -29,7 +29,6 @@ ZmDoublePaneView = function(parent, className, posStyle, mode, controller, dropT
 	DwtComposite.call(this, parent, className, posStyle);
 
 	this._controller = controller;
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._initHeader();
 	this._mailListView = this._createMailListView(mode, controller, dropTgt);
 	this._msgSash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", ZmDoublePaneView.SASH_THRESHOLD, Dwt.ABSOLUTE_STYLE);

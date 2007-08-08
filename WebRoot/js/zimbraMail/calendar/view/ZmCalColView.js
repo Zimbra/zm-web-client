@@ -724,7 +724,7 @@ function(appt) {
 	var id = this._getItemId(appt);
 	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
 	var location = appt.getLocation() ? "<i>"+AjxStringUtil.htmlEncode(appt.getLocation())+"</i>" : "";
-	var tree = this._appCtxt.getFolderTree();
+	var tree = appCtxt.getFolderTree();
 	var calendar = tree.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
 
@@ -1670,7 +1670,7 @@ function(ev, div) {
 	ZmCalBaseView.prototype._mouseUpAction.call(this, ev, div);
 	if (div._type == ZmCalBaseView.TYPE_DAY_HEADER && !this._scheduleMode) {
 		var date = this._days[div._dayIndex].date;
-		var cc = this._appCtxt.getCurrentController();
+		var cc = appCtxt.getCurrentController();
 
 		if (this.getNumDays() > 1) {
 			cc.setDate(date);
@@ -1787,7 +1787,7 @@ function(ev, apptEl) {
 		return false;
 
 	var appt = AjxCore.objectWithId(apptEl._itemIndex);
-	var tree = this._appCtxt.getFolderTree();
+	var tree = appCtxt.getFolderTree();
 	var calendar = tree.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
 	if (appt.isReadOnly() || appt.isAllDayEvent() || (appt._fanoutNum > 0) || isRemote) return false;

@@ -68,13 +68,13 @@ ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
 };
 
 ZmChatMultiWindowView.prototype.getActiveWM = function() {
-	return this._appCtxt.getCurrentAppName() != "IM"
+	return appCtxt.getCurrentAppName() != "IM"
 		? this.getShellWindowManager()
 		: this.getWindowManager();
 };
 
 ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
-	var activeApp = this._appCtxt.getCurrentAppName();
+	var activeApp = appCtxt.getCurrentAppName();
 	if (!win)
 		win = this.__useTab;
 	this.__useTab = null;
@@ -154,7 +154,7 @@ function() {
 		};
 
 		btn.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, function(gw, ev) {
-			var imApp = this._appCtxt.getApp(ZmApp.IM);
+			var imApp = appCtxt.getApp(ZmApp.IM);
 			var treeController = imApp.getRosterTreeController();
 			treeController._imGatewayLoginListener({ gwType : gw.type });
 		}, [ gw ]));
