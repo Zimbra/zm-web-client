@@ -169,11 +169,12 @@ function() {
 	var identityId = this._composeView.getIdentity().id;
 	var backupForm = this._composeView.backupForm;
 	var sendUID = this._composeView.getSendUID();
+	var action = this._composeView._action || this._action;
 
 	// this is how child window knows what to do once loading:
 	var newWinObj = appCtxt.getNewWindow();
 	newWinObj.command = "composeDetach";
-	newWinObj.params = {action:this._action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml, body:body,
+	newWinObj.params = {action:action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml, body:body,
 					  composeMode:composeMode, identityId:identityId, accountName:this._accountName,
 					  backupForm:backupForm, sendUID:sendUID, msgIds:this._msgIds, forAttIds:this._forAttIds};
 };
