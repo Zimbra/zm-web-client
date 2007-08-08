@@ -23,8 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPortletMgr = function(appCtxt) {
-    this._appCtxt = appCtxt;
+ZmPortletMgr = function() {
     this._portlets = {};
     this._loadedZimlets = {};
     this._delayedPortlets = {};
@@ -37,7 +36,7 @@ ZmPortletMgr = function(appCtxt) {
 ZmPortletMgr.prototype.createPortlets = function(global) {
 	global = global != null ? global : false;
 	var portletsCreated = [];
-    var manifest = this._appCtxt.getApp(ZmApp.PORTAL).getManifest();
+    var manifest = appCtxt.getApp(ZmApp.PORTAL).getManifest();
     if (manifest) {
         var portalDef = manifest.portal;
         var portletDefs = portalDef && portalDef.portlets;
@@ -112,7 +111,7 @@ ZmPortletMgr.prototype.zimletLoaded = function(zimletCtxt) {
 ZmPortletMgr.prototype._portletCreated = function(portlet, zimletCtxt) {
     // get zimlet context, if needed
     if (!zimletCtxt) {
-        zimletCtxt = this._appCtxt.getZimletMgr().getZimletsHash()[portlet.zimletName];
+        zimletCtxt = appCtxt.getZimletMgr().getZimletsHash()[portlet.zimletName];
     }
 
     // create view

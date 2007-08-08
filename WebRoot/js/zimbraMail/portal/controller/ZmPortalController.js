@@ -79,7 +79,7 @@ ZmPortalController.prototype._getToolBarOps = function() {
 };
 
 ZmPortalController.prototype._createNewView = function(view) {
-	return new ZmPortalView(this._container, appCtxt, this, this._dropTgt);
+	return new ZmPortalView(this._container, this, this._dropTgt);
 };
 
 ZmPortalController.prototype._setViewContents = function(view) {

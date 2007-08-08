@@ -170,7 +170,7 @@ ZmPortalApp.prototype.getPortalController = function() {
 ZmPortalApp.prototype.getPortletMgr = function() {
 	AjxDispatcher.require("Portal");
     if (!this._portletMgr) {
-        this._portletMgr = new ZmPortletMgr(appCtxt);
+        this._portletMgr = new ZmPortletMgr();
     }
     return this._portletMgr;
 };
