@@ -39,13 +39,11 @@ BaseSkin.prototype.show = function(name, state) {
 };
 
 BaseSkin.prototype.gotoApp = function(appId, callback) {
-	var appCtxt = this._getAppCtxt();
 	var appController = appCtxt.getAppController();
 	appController.activateApp(appId, null, callback);
 };
 
 BaseSkin.prototype.gotoPrefs = function(prefPageId) {
-	var appCtxt = this._getAppCtxt();
 	if (appCtxt.getCurrentAppName() != ZmApp.PREFERENCES) {
 		var callback = new AjxCallback(this, this._gotoPrefPage, [prefPageId]);
 		this.gotoApp(ZmApp.PREFERENCES, callback);
@@ -68,15 +66,8 @@ BaseSkin.prototype._showFullScreen = function(state) {
 BaseSkin.prototype._gotoPrefPage = function(pageId) {
 	if (pageId == null) return;
 
-	var app = this._getAppCtxt().getApp(ZmApp.PREFERENCES);
+	var app = appCtxt.getApp(ZmApp.PREFERENCES);
 	var controller = app.getPrefController();
 	var view = controller.getPrefsView();
 	view.selectSection(pageId);
-};
-
-BaseSkin.prototype._getAppCtxt = function() {
-	if (!this._appCtxt) {
-		this._appCtxt = ZmAppCtxt.getFromShell(DwtShell.getShell(window));
-	}
-	return this._appCtxt;
 };
