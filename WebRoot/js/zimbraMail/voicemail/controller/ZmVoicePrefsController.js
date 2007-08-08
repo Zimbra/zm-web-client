@@ -39,7 +39,7 @@ ZmVoicePrefsController = function(container, prefsApp, prefsView) {
 	ZmController.call(this, container, prefsApp);
 
 	this._prefsView = prefsView;
-	this._listView = new ZmVoicePrefsView(prefsView._parent, appCtxt, this);
+	this._listView = new ZmVoicePrefsView(prefsView._parent, this);
     this._count = 0;
 };
 

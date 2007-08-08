@@ -30,8 +30,7 @@
 * This class represents a phone.
 *
 */
-ZmPhone = function(appCtxt) {
-	this._appCtxt = appCtxt;
+ZmPhone = function() {
 	this.name = null;				// The internal representation of the phone.
 	this.used = null;				// Amount of quota used.
 	this.limit = null;				// Quota size.
@@ -137,7 +136,7 @@ function(callback, errorCallback) {
 			callback: respCallback,
 			errorCallback: errorCallback
 		};
-		this._appCtxt.getAppController().sendRequest(params);
+		appCtxt.getAppController().sendRequest(params);
 	}
 };
 
@@ -177,11 +176,11 @@ function() {
 	this._features = {};
 	for(var i = 0, count = ZmCallFeature.CALL_FEATURES.length; i < count; i++) {
 		var name = ZmCallFeature.CALL_FEATURES[i];
-		this._features[name] = new ZmCallFeature(this._appCtxt, name, false);
+		this._features[name] = new ZmCallFeature(name, false);
 	}
 	for(var i = 0, count = ZmCallFeature.VOICE_FEATURES.length; i < count; i++) {
 		var name = ZmCallFeature.VOICE_FEATURES[i];
-		this._features[name] = new ZmCallFeature(this._appCtxt, name, true);
+		this._features[name] = new ZmCallFeature(name, true);
 	}
 };
 

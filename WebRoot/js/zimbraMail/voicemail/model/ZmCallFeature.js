@@ -32,8 +32,7 @@
 * the JSON data. Whoever uses this class just has to know how to deal with the data.
 *
 */
-ZmCallFeature = function(appCtxt, name, isVoicemailPref) {
-	this._appCtxt = appCtxt;
+ZmCallFeature = function(name, isVoicemailPref) {
 	
 	this.name = name;
 	this.isSubscribed = false;
@@ -122,7 +121,7 @@ function(feature) {
 	}
 	// For NUMBER_PER_PAGE, update the global setting. 
 	if (this.name == ZmCallFeature.NUMBER_PER_PAGE) {
-		this._appCtxt.set(ZmSetting.VOICE_PAGE_SIZE, this.data.value);
+		appCtxt.set(ZmSetting.VOICE_PAGE_SIZE, this.data.value);
 	}
 };
 

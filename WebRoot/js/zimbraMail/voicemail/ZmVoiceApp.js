@@ -210,7 +210,7 @@ function() {
 
 	if (!this.phones.length) {
 		// GetVoiceInfo hasn't been called yet.
-		var currentApp = this._appCtxt.getCurrentApp();
+		var currentApp = appCtxt.getCurrentApp();
 		this.getVoiceInfo(new AjxCallback(this, this._handleResponseGetOverviewPanelContent, [currentApp]));
 	} else {
 		this._createAccordionItems();
@@ -257,7 +257,7 @@ function(callback, response) {
 	var phones = response._data.GetVoiceInfoResponse.phone;
 	for (var i = 0, count = phones.length; i < count; i++) {
 		var obj = phones[i];
-		var phone = new ZmPhone(appCtxt);
+		var phone = new ZmPhone();
 		phone._loadFromDom(obj);
 		this.phones.push(phone);
 

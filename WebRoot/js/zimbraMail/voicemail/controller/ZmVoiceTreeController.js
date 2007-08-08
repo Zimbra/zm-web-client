@@ -122,4 +122,3 @@ ZmVoiceTreeController.prototype._itemClicked =
 function(folder) {
 	appCtxt.getApp(ZmApp.VOICE).search(folder);
 };
-

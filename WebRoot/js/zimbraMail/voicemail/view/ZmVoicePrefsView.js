@@ -27,10 +27,9 @@
 // Somewhere in here, I need to create proxies of the features. (Or maybe as an easy hack, just work directly on the model. It's not used anywhere else.)
 
 
-ZmVoicePrefsView = function(parent, appCtxt, controller) {
+ZmVoicePrefsView = function(parent, controller) {
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 
-	this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._hasRendered = false;
 	this._item = null;
@@ -92,7 +91,7 @@ function() {
     if (this._me.length) {
         contacts.addChangeListener(new AjxListener(this, this._contactsChangeListener));
     }
-	this._appCtxt.getApp(ZmApp.VOICE).getVoiceInfo(new AjxCallback(this, this._handleResponseGetVoiceInfo));
+	appCtxt.getApp(ZmApp.VOICE).getVoiceInfo(new AjxCallback(this, this._handleResponseGetVoiceInfo));
 };
 
 ZmVoicePrefsView.prototype._handleResponseGetVoiceInfo =
@@ -102,7 +101,7 @@ function() {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoicePrefsView", data);
 
 	// Create the list view and the contents of the detail pane.
-	this._list = new ZmPhoneList(this, this._appCtxt);
+	this._list = new ZmPhoneList(this);
 	this._list.replaceElement(id + "_list");
 	this._list.enableSorting(false);
 
@@ -312,7 +311,7 @@ function(comboBox) {
 ZmCallFeatureUI.prototype._populateEmailComboBox =
 function(comboBox) {
     comboBox.removeAll();
-    var accountAddress = this._view._appCtxt.get(ZmSetting.USERNAME);
+    var accountAddress = appCtxt.get(ZmSetting.USERNAME);
     this._comboBox.add(accountAddress, false);
     for (var meIndex = 0, meCount = this._view._me.length; meIndex < meCount; meIndex++) {
         var me = this._view._me[meIndex];
@@ -545,7 +544,7 @@ function(ev) {
 		}
 	}
 	if (error) {
-		this._view._appCtxt.setStatusMsg(error, ZmStatusView.LEVEL_WARNING);
+		appCtxt.setStatusMsg(error, ZmStatusView.LEVEL_WARNING);
 		return;
 	}
 	var row = this._getTable().insertRow(-1);
@@ -693,7 +692,7 @@ function(feature) {
 
 ZmVoicePageSizeUI.prototype._isValueDirty =
 function() {
-	return this._select.getValue() != this._view._appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
+	return this._select.getValue() != appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
 };
 
 ZmVoicePageSizeUI.prototype.getFeature =
@@ -715,7 +714,7 @@ function() {
 
 ZmVoicePageSizeUI.prototype._initialize =
 function(id) {
-	var current = this._view._appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
+	var current = appCtxt.get(ZmSetting.VOICE_PAGE_SIZE);
 	var choices = ["10", "25", "50", "100"];
 	var options = [];
 	for (var i = 0, count = choices.length; i < count; i++) {
@@ -731,11 +730,9 @@ function(id) {
 * ZmPhoneList
 * The list of phone accounts.
 */
-ZmPhoneList = function(parent, appCtxt) {
+ZmPhoneList = function(parent) {
 	var headerList = [new DwtListHeaderItem(1, ZmMsg.number, null, null)];
 	DwtListView.call(this, parent, "ZmPhoneList", null, headerList);
-
-	this._appCtxt = appCtxt;
 
 	this.setMultiSelect(false);
 };
