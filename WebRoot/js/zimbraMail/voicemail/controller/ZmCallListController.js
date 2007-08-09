@@ -89,6 +89,9 @@ function(parent, num) {
 	if (parent) {
 		parent.enableAll(true);
 	}
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		parent.enable(ZmOperation.CONTACT, num == 1);
+	}
 };
 
 ZmCallListController.prototype.getKeyMapName =
