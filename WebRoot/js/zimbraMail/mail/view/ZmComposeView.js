@@ -793,7 +793,7 @@ function(bEnableInputs) {
 	this._resetBodySize();
 
 	this._msgAttId = null;
-	this._origFormValue = null;
+	this._origFormValue = "";
 
 	// reset dirty shields
 	this._noSubjectOkay = this._badAddrsOkay = false;
