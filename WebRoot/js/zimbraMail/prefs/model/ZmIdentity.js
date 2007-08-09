@@ -181,7 +181,12 @@ function(requestType, respFunction, callback, errorCallback, batchCmd) {
 	var identityNode = soapDoc.set("identity");
 
 	var name = this.isDefault ? ZmIdentity.DEFAULT_NAME : this.name;
-	identityNode.setAttribute("name", name);
+	if (requestType != "Create") {
+		identityNode.setAttribute("id", this.id);
+	}
+	else {
+		identityNode.setAttribute("name", this.name);
+	}
 	if (requestType != "Delete") {
 		for (var i in ZmIdentity.FIELDS) {
 			var field = ZmIdentity.FIELDS[i];
