@@ -615,8 +615,10 @@ function(convId) {
 	if (msgRows && msgRows.length) {
 		for (var i = 0; i < msgRows.length; i++) {
 			var row = document.getElementById(msgRows[i]);
-			this._selectedItems.remove(row);
-			this._parentEl.removeChild(row);
+			if (row) {
+				this._selectedItems.remove(row);
+				this._parentEl.removeChild(row);
+			}
 		}
 	}
 };
