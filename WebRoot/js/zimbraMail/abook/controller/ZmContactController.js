@@ -156,10 +156,12 @@ function(view) {
 		delete this._contactDirty;
 	}
 
-	// create a tab group for the first tab
-	var tabIdx = cv._contactTabView.getCurrentTab();
-	if (!this._tabGroups[view][tabIdx]) {
-		this._tabGroup = this._createTabGroup(tabIdx);
+	if (cv._contactTabView) {
+		// create a tab group for the first tab
+		var tabIdx = cv._contactTabView.getCurrentTab();
+		if (!this._tabGroups[view][tabIdx]) {
+			this._tabGroup = this._createTabGroup(tabIdx);
+		}
 	}
 };
 
