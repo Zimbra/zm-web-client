@@ -1165,11 +1165,11 @@ function(action, toOverride) {
 
 ZmComposeView.prototype._setSubject =
 function(action, msg, subjOverride) {
-	if (!msg || (action == ZmOperation.NEW_MESSAGE && subjOverride == null)) {
+	if ((action == ZmOperation.NEW_MESSAGE && subjOverride == null)) {
 		return;
 	}
-
-	var subj = subjOverride || msg.subject;
+	
+	var subj = subjOverride || ( (msg) ? msg.subject : "" );
 
 	if (action != ZmOperation.DRAFT && subj) {
 		var regex = ZmComposeView.SUBJ_PREFIX_RE;
