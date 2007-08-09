@@ -92,13 +92,13 @@ function(parent, type, id) {
 // Returns a list of desired header action menu operations
 ZmVoiceTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.EXPAND_ALL];
+	return null;
 };
 
 // Returns a list of desired action menu operations
 ZmVoiceTreeController.prototype._getActionMenuOps =
 function() {
-	return [ZmOperation.EXPAND_ALL];
+	return null;
 };
 
 ZmVoiceTreeController.prototype._getDropTarget =
