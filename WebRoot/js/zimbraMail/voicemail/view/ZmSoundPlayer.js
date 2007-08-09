@@ -319,6 +319,7 @@ function() {
 		this._statusId = id + "_status";
     }
 	this.setCompact(true);
+	this.setSize(1, Dwt.DEFAULT); // Allows mouse events to go to parent control.
 };
 
 
