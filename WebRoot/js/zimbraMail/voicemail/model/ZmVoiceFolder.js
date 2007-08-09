@@ -164,6 +164,12 @@ function(delta) {
 	this.notifyModify( { u: newValue } );
 };
 
+ZmVoiceFolder.get =
+function(phone, folderType) {
+	var folderId = [folderType, "-", phone.name].join("");
+	return phone.folderTree.getById(folderId);
+};
+
 ZmVoiceFolder.sortCompare =
 function(folderA, folderB) {
 	if ((folderA instanceof ZmVoiceFolder) && (folderB instanceof ZmVoiceFolder)) {

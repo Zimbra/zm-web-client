@@ -303,8 +303,7 @@ function(ev) {
 	var folder = this.accordionItem.data.lastFolder;
 	var phone = this.accordionItem.data.phone;
 	if (!folder) {
-		var folderId = ZmVoiceFolder.VOICEMAIL_ID + "-" + phone.name;
-		folder = phone.folderTree.getById(folderId);
+		folder = ZmVoiceFolder.get(phone, ZmVoiceFolder.VOICEMAIL_ID);
 	}
 	if (folder) {
 		// Highlight the folder.
