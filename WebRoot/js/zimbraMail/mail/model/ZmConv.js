@@ -146,6 +146,13 @@ function(callback, errorCallback, batchCmd) {
 	var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
 	var msgNode = soapDoc.set("c");
 	msgNode.setAttribute("id", this.id);
+
+	// Request additional headers
+	for (var hdr in ZmMailMsg.getAdditionalHeaders()) {
+		var headerNode = soapDoc.set('header', null, msgNode);
+		headerNode.setAttribute('n', hdr);
+	}
+
 	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgIds, callback);
 
 	if (batchCmd) {

@@ -79,6 +79,13 @@ ZmSearch = function(params) {
 	}
 	this.isGalSearch = false;
 	this.isCalResSearch = false;
+
+	if (ZmSearch._mailEnabled == null) {
+		ZmSearch._mailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
+		if (ZmSearch._mailEnabled) {
+			AjxDispatcher.require("MailCore");
+		}
+	}
 };
 
 // Search types
@@ -321,6 +328,14 @@ function(soapDoc) {
 
 	if (this.sortBy) {
 		method.setAttribute("sortBy", ZmSearch.SORT_BY[this.sortBy]);
+	}
+
+	if (ZmSearch._mailEnabled) {
+		var headerNode;
+		for (var hdr in ZmMailMsg.getAdditionalHeaders()) {
+			headerNode = soapDoc.set('header', null, null);
+			headerNode.setAttribute('n', hdr);
+		}
 	}
 
 	// bug 5771: add timezone and locale info

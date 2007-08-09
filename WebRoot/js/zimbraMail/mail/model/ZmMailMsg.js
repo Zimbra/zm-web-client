@@ -81,6 +81,8 @@ ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\
 ZmMailMsg.CONTENT_PART_ID = "ci";
 ZmMailMsg.CONTENT_PART_LOCATION = "cl";
 
+// Additional headers to request.  Also used by ZmConv and ZmSearch
+//     via getAdditionalHeaders().
 ZmMailMsg._requestHeaders = {};
 
 /**
@@ -109,7 +111,7 @@ function(params) {
 	}
 
 	// Request additional headers
-	for (var hdr in ZmMailMsg._requestHeaders) {
+	for (var hdr in ZmMailMsg.getAdditionalHeaders()) {
 		var headerNode = soapDoc.set('header', null, msgNode);
 		headerNode.setAttribute('n', hdr);
 	}
@@ -127,6 +129,11 @@ ZmMailMsg.requestHeader =
 function(hdr) {
 	ZmMailMsg._requestHeaders[hdr] = hdr;
 };
+
+ZmMailMsg.getAdditionalHeaders =
+function() {
+	return ZmMailMsg._requestHeaders;
+}
 
 
 ZmMailMsg._handleResponseFetchMsg =
