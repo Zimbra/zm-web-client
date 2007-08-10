@@ -165,7 +165,7 @@ ZmNewRosterItemDialog.prototype._initAddressAutocomplete = function() {
 
 	var contactsApp = appCtxt.getApp(ZmApp.CONTACTS);
 	var contactsList = contactsApp ? contactsApp.getContactList : null;
-	var params = { parent	  : shell,
+	var params = { parent	  : appCtxt.getShell(),
 		       dataClass  : contactsApp,
 		       dataLoader : contactsList,
 		       matchValue : ZmContactsApp.AC_VALUE_EMAIL
@@ -179,7 +179,7 @@ ZmNewRosterItemDialog.prototype._initGroupAutocomplete = function() {
 
 	var imApp = appCtxt.getApp(ZmApp.IM);
 	var groupList = imApp ? imApp.getAutoCompleteGroups : null;
-	var params = { parent	  : shell,
+	var params = { parent	  : appCtxt.getShell(),
 		       dataClass  : imApp,
 		       dataLoader : groupList,
 		       matchValue : "text",
