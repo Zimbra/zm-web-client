@@ -80,7 +80,7 @@
 				<$ if (size < len) { $>
 					<tr>
 						<td colspan=2>
-							<a href="javascript:;" onclick="ZmContactCardsView._moreDetailsCallback('<$= data.data.contact.id $>')">
+							<a href="javascript:;" onclick="ZmContactCardsView._moreDetailsCallback('<$= data.data.contact.id $>'); return false">
 								<$= ZmMsg.more $>
 							</a>
 						</td>
