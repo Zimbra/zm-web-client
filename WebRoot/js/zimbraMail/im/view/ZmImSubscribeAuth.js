@@ -24,12 +24,12 @@
  */
 
 ZmImSubscribeAuth = function(parent, buddy) {
-	DwtComposite.call(this, parent, "ZmImSubscribeAuthView", DwtControl.ABSOLUTE_STYLE);
-	this._buddy = buddy;
-	this._init();
+	ZmImNotification.call(this, parent);
+        this._buddy = buddy;
+        this._init();
 };
 
-ZmImSubscribeAuth.prototype = new DwtComposite;
+ZmImSubscribeAuth.prototype = new ZmImNotification;
 ZmImSubscribeAuth.prototype.constructor = ZmImSubscribeAuth;
 
 ZmImSubscribeAuth.prototype._init = function() {
@@ -42,51 +42,6 @@ ZmImSubscribeAuth.prototype._init = function() {
 	btn.setText("OK");
 	btn.reparentHtmlElement(document.getElementById(base_id + "_buttons"));
 	btn.addSelectionListener(new AjxListener(this, this._okClicked));
-
-	this._anim = new AjxAnimation({ onUpdate : new AjxCallback(this, this._animUpdate),
-					length   : 20,
-					speed    : 25
-				      });
-};
-
-ZmImSubscribeAuth.prototype.popup = function() {
-	var area = this.parent.getSize();
-	var size = this.getSize();
-	this.setLocation(area.x - size.x - 20,
-			 area.y);
-	this._interval = { start : area.y,
-			   stop	 : area.y - size.y - 20,
-			   vert  : true
-			 };
-	this._anim.f = AjxAnimation.f_decelerate;
-	this._anim.onStop = null;
-	this._anim.start();
-};
-
-ZmImSubscribeAuth.prototype.popdown = function() {
-	var area = this.parent.getSize();
-	// assuming already popped up
-	var pos = this.getLocation();
-	this._interval = { start : pos.x,
-			   stop	 : area.x,
-			   vert  : false
-			 };
-	this._anim.f = AjxAnimation.f_accelerate;
-	this._anim.onStop = new AjxCallback(this, this.dispose);
-	this._anim.start();
-};
-
-ZmImSubscribeAuth.prototype._animUpdate = function(pos, a) {
-	var x = a.map(pos, this._interval.start, this._interval.stop);
-	if (this._interval.vert) {
-		// popup (vertical)
-		this.setLocation(Dwt.DEFAULT, x);
-		Dwt.setOpacity(this.getHtmlElement(), a.map(pos, 0, 100));
-	} else {
-		// popdown (horiz.)
-		this.setLocation(x, Dwt.DEFAULT);
-		Dwt.setOpacity(this.getHtmlElement(), a.map(pos, 100, 0));
-	}
 };
 
 ZmImSubscribeAuth.prototype._okClicked = function() {

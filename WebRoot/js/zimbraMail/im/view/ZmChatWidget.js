@@ -36,11 +36,6 @@ ZmChatWidget.prototype.constructor = ZmChatWidget;
 ZmChatWidget.prototype._setChat = function(chat) {
 	this.chat = chat;
 	var item = chat.getRosterItem();
-// 	if (this.chat.getRosterSize() > 1 && this._memberListView == null) {
-// 		this._memberListView = new ZmChatMemberListView(this, this.chat._getRosterItemList());
-// 		this._controlListener();
-// 		this._updateGroupChatTitle();
-// 	}
 	chat.addChangeListener(this._chatChangeListenerListener);
 	this._rosterItemChangeListener(item, null, true);
 	item.chatStarted(chat, this);
@@ -87,7 +82,15 @@ ZmChatWidget.prototype._rosterItemChangeListener = function(item, fields, setAll
 	}
 };
 
-ZmChatWidget.prototype._chatChangeListener = function(ev, treeView) {
+ZmChatWidget.prototype._getMemberListView = function() {
+	var ml = this._memberListView;
+	if (!ml) {
+		ml = this._memberListView = new DwtComposite(this);
+	}
+	return ml;
+};
+
+ZmChatWidget.prototype._chatChangeListener = function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var fields = ev.getDetail("fields");
 		var msg = fields[ZmChat.F_MESSAGE];
@@ -96,6 +99,8 @@ ZmChatWidget.prototype._chatChangeListener = function(ev, treeView) {
 		if (ZmChat.F_TYPING in fields) {
 			this.setTyping(ev.getDetail("item"), fields[ZmChat.F_TYPING]);
 		}
+	} else if (ev.event == ZmEvent.E_CREATE) {
+                // console.log("Added item");
 	}
 };
 
@@ -182,17 +187,17 @@ ZmChatWidget.prototype.setInputContent = function(text) {
 };
 
 ZmChatWidget.prototype.addRosterItem = function(item) {
-	var forceTitle = false;
-	if (this.chat.getRosterSize() > 0 && this._memberListView == null) {
-		if (!this.chat.isGroupChat()) {
-			this.chat.setName(ZmMsg.imGroupChat);
-			forceTitle = true;
-		}
-		this._memberListView = new ZmChatMemberListView(this, this.chat._getRosterItemList());
-		this._controlListener();
-	}
-	this.chat.addRosterItem(item);
-	this._updateGroupChatTitle(forceTitle);
+// 	var forceTitle = false;
+// 	if (this.chat.getRosterSize() > 0 && this._memberListView == null) {
+// 		if (!this.chat.isGroupChat()) {
+// 			this.chat.setName(ZmMsg.imGroupChat);
+// 			forceTitle = true;
+// 		}
+// 		this._memberListView = new ZmChatMemberListView(this, this.chat._getRosterItemList());
+// 		this._controlListener();
+// 	}
+// 	this.chat.addRosterItem(item);
+// 	this._updateGroupChatTitle(forceTitle);
 };
 
 ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
@@ -322,11 +327,15 @@ ZmChatWidget.prototype._init = function() {
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content.setScrollStyle(Dwt.SCROLL);
 
+	var dropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
+	this._content.setDropTarget(dropTgt);
+	dropTgt.addDropListener(new AjxListener(this, this._dropOnContentListener));
+
 	this._objectManager = new ZmObjectManager(this._content);
 	// add YM Emoticons if zimlet installed
 	var YM_smileys = appCtxt.getZimletMgr().zimletExists("com_zimbra_ymemoticons");
 	if (YM_smileys) {
-		this._objectManager.addHandler(YM_smileys.handlerObject);
+		// this._objectManager.addHandler(YM_smileys.handlerObject);
 		this._objectManager.sortHandlers();
 	}
 
@@ -637,6 +646,18 @@ ZmChatWidget.prototype._stickyListener = function(ev) {
 	var button = ev.item;
 	button._mouseOutListener();
 	this.setSticky(button.isToggled(), true);
+};
+
+ZmChatWidget.prototype._dropOnContentListener = function(ev) {
+	var srcData = ev.srcData;
+	if (ev.action == DwtDropEvent.DRAG_DROP) {
+		var item = ev.srcData;
+		var roster = AjxDispatcher.run("GetRoster");
+		roster.modifyChatRequest(this.chat.getConfThread(),
+					 "adduser", item.getAddress(),
+					 "Join my conference..." // XXX: customize this
+					);
+	}
 };
 
 ZmChatWidget.prototype._dropOnTitleListener = function(ev) {

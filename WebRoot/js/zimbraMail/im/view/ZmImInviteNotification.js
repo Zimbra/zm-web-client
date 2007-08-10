@@ -1,0 +1,64 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.2
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.2 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ *
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
+ * All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK *****
+ */
+
+ZmImInviteNotification = function(parent, not /* notification */) {
+	ZmImNotification.call(this, parent);
+        this._not = not;
+        this._init();
+};
+
+ZmImInviteNotification.prototype = new ZmImNotification;
+ZmImInviteNotification.prototype.constructor = ZmImInviteNotification;
+
+ZmImInviteNotification.prototype._init = function() {
+	var base_id = this._baseId = Dwt.getNextId();
+	this.setContent(AjxTemplate.expand("zimbraMail.im.templates.Chat#InviteNotification", {
+						   id	 : base_id
+					   }));
+
+        document.getElementById(base_id + "_title").innerHTML =
+                AjxMessageFormat.format(ZmMsg.imInviteNotification, [ this._not.addr ]);
+
+        document.getElementById(base_id + "_content").innerHTML = this._not._content;
+
+	var btn = new DwtButton(this);
+	btn.setText("Accept");
+	btn.reparentHtmlElement(document.getElementById(base_id + "_buttonOK"));
+	btn.addSelectionListener(new AjxListener(this, this._okClicked));
+
+        var btn = new DwtButton(this);
+        btn.setText("Deny");
+        btn.reparentHtmlElement(document.getElementById(base_id + "_buttonCancel"));
+        // just popdown when invitation denied, since the API doesn't allow us to say "Deny"
+        btn.addSelectionListener(new AjxListener(this, this.popdown));
+};
+
+ZmImInviteNotification.prototype._okClicked = function() {
+        // FIXME: we should use not.thread, but it's messed up.
+        // not.addr should actually be the buddy that invited us, while not.thread should be the conversation thread id
+        // however, currently not.addr is the full conversation thread id, while not.thread is only the suffix (upto '@').
+        AjxDispatcher.run("GetRoster").joinChatRequest(this._not.addr /* not.thread */);
+	this.popdown();
+};

@@ -30,6 +30,7 @@ ZmRoster = function(imApp) {
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
+        this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
 	this._imApp = imApp;
 
     this.refresh();
@@ -302,13 +303,22 @@ function(im) {
 						chat.addMessage(chatMessage);
 					}
 				}
+                        } else if (not.type == "enteredchat") {
+                                // console.log("JOIN: %o", not);
+                                appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
+                                var chat = this.getChatList().getChatByThread(not.thread);
+                                if (chat) {
+                                        chat.addMessage(ZmChatMessage.system(this._enteredChatFormatter.format([not.addr])));
+                                        chat.addRosterItem(this.getRosterItem(not.addr));
+                                }
 			} else if (not.type == "leftchat") {
+                                // console.log("LEFT: %o", not);
 				appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
-				var lc = not;
-				var chat = this.getChatList().getChatByThread(lc.thread);
+				var chat = this.getChatList().getChatByThread(not.thread);
 				if (chat) {
-					chat.addMessage(ZmChatMessage.system(this._leftChatFormatter.format([lc.addr])));
-					chat.setThread(null);
+					chat.addMessage(ZmChatMessage.system(this._leftChatFormatter.format([not.addr])));
+                                        chat.removeRosterItem(this.getRosterItem(not.addr));
+					// chat.setThread(null); // ?
 				}
 			} else if (not.type == "otherLocation") {
 				var gw = this.getGatewayByType(not.service);
@@ -320,7 +330,11 @@ function(im) {
 					appCtxt.setStatusMsg(ZmMsg.errorNotAuthenticated, ZmStatusView.LEVEL_WARNING);
 				}
 			} else if (not.type == "invited") {
-				// console.log("Found INVITED!");
+                                var view = ZmChatMultiWindowView.getInstance();
+				// it should always be instantiated by this time, but whatever.
+				if (view) {
+                                        new ZmImInviteNotification(view.getActiveWM(), not).popup();
+				}
 			}
 		}
 	}
@@ -333,6 +347,23 @@ ZmRoster.prototype.startFlashingIcon = function() {
 
 ZmRoster.prototype.stopFlashingIcon = function() {
 	this._imApp.stopFlashingIcon();
+};
+
+ZmRoster.prototype.joinChatRequest = function(thread) {
+        // <FIXME>: the following doesn't work (server says "unknown method IMJoinChatRequest")
+//         var sd = AjxSoapDoc.create("IMJoinChatRequest", "urn:zimbraIM");
+//         var method = sd.getMethod();
+//         method.setAttribute("thread", thread);
+//         appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
+
+        // WORKAROUND: send "/join " + thread
+	var soapDoc = AjxSoapDoc.create("IMSendMessageRequest", "urn:zimbraIM");
+	var method = soapDoc.getMethod();
+	var message = soapDoc.set("message");
+	message.setAttribute("thread", thread);
+	message.setAttribute("addr", thread);
+	soapDoc.set("body", "/join " + thread, message);
+	appCtxt.getAppController().sendRequest({ soapDoc: soapDoc, asyncMode: true });
 };
 
 ZmRoster.prototype.modifyChatRequest = function(thread, op, addr, message) {

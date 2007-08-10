@@ -1770,7 +1770,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	height:24px;
 }
 
-.ZmImSubscribeAuthView {
+.ZmImNotification {
   @WindowContainer@
   padding: 10px;
   width: 250px;

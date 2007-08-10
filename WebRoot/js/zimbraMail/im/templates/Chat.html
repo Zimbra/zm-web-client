@@ -18,7 +18,6 @@
     <tr>
       <td id="${id}_inputLayout" style="height: 1px">
         <div style="overflow:auto"><!-- Firefox caret hack -->
-<!--          <input class="ZmChatWindowInput" style="width: 100%; height: auto;" type="text" id="${id}_input" /> -->
           <textarea class="ZmChatWindowInput" style="width: 100%; height: 3em;" id="${id}_input"></textarea>
         </div>
       </td>
@@ -179,6 +178,27 @@
       <td colspan="2" style="text-align: center; padding-top: 10px">
         <table align="center" cellspacing="0" cellpadding="0" style="width: 5em">
           <tr><td id="${id}_buttons"></td></tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</template>
+
+<template id="InviteNotification">
+  <table width="100%">
+    <tr>
+      <td style="text-align: center; font-weight: bold; padding-bottom: 10px;" id="${id}_title"></td>
+    </tr>
+    <tr>
+      <td id="${id}_content"></td>
+    </tr>
+    <tr>
+      <td style="text-align: center; padding-top: 10px;">
+        <table align="center" cellspacing="0" cellpadding="0" style="width: 5em">
+          <tr>
+            <td style="padding-right: 5px" id="${id}_buttonOK"></td>
+            <td id="${id}_buttonCancel"></td>
+          </tr>
         </table>
       </td>
     </tr>
