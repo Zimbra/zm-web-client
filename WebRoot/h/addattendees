@@ -136,8 +136,8 @@ if (k == 13) { document.getElementById("doSearch").click();return false;} else {
     </tr>
 </table>
 
-
     <input type="hidden" name="apptFolderId" value="${fn:escapeXml(compose.apptFolderId)}"/>
+    <input type="hidden" name="classProp" value="${fn:escapeXml(compose.classProp)}"/>
     <input type="hidden" name="invId" value="${fn:escapeXml(compose.inviteId)}"/>
     <input type="hidden" name="exInvId" value="${fn:escapeXml(compose.exceptionInviteId)}"/>
     <input type="hidden" name="useInstance" value="${fn:escapeXml(compose.useInstance ? '1' : '0') }"/>

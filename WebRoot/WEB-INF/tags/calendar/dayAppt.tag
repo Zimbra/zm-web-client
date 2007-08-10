@@ -21,7 +21,7 @@
         <tr>
         <td class='ZhApptSel'>
 </c:if>
-<c:set var="needImages" value="${appt.otherAttendees or appt.exception or appt.hasTags or appt.isFlagged}"/>
+<c:set var="needImages" value="${appt.otherAttendees or appt.exception or appt.hasTags or appt.isFlagged or appt.classConfidential or appt.classPrivate}"/>
 <c:set var="apptId" value="APPT${appt.id}${appt.startTime lt start ? start : appt.startTime}"/>
 
 <c:choose>
@@ -56,6 +56,9 @@
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
                                     <td><app:flagImage flagged="${appt.isFlagged}"/></td>
+                                </c:if>
+                                <c:if test="${appt.classPrivate or appt.classConfidential}">
+                                    <td><app:img src="contacts/ReadOnly.gif"/></td>
                                 </c:if>
                             </tr>
                         </table>
@@ -96,6 +99,9 @@
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
                                     <td><app:flagImage flagged="${appt.isFlagged}"/></td>
+                                </c:if>
+                                <c:if test="${appt.classPrivate or appt.classConfidential}">
+                                    <td><app:img src="contacts/ReadOnly.gif"/></td>
                                 </c:if>
                             </tr>
                         </table>
@@ -149,7 +155,10 @@
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
                                     <td><app:flagImage flagged="${appt.isFlagged}"/></td>
-                                </c:if>                                
+                                </c:if>
+                                <c:if test="${appt.classPrivate or appt.classConfidential}">
+                                    <td><app:img src="contacts/ReadOnly.gif"/></td>
+                                </c:if>
                             </tr>
                         </table>
                     </td>

@@ -218,12 +218,26 @@
                                                 <tr>
                                                     <td width="1%" align="right"><label for="showAs"><fmt:message key="showAs"/>:</label></td>
                                                     <td>
-                                                        <select name="freeBusyStatus" id="showAs">
-                                                            <option <c:if test="${compose.freeBusyStatus eq 'F'}">selected </c:if>value="F"><fmt:message key="free"/>
-                                                            <option <c:if test="${compose.freeBusyStatus eq 'T'}">selected </c:if> value="T"><fmt:message key="tentative"/>
-                                                            <option <c:if test="${compose.freeBusyStatus eq 'B'}">selected </c:if> value="B"><fmt:message key="busy"/>
-                                                            <option <c:if test="${compose.freeBusyStatus eq 'O'}">selected </c:if> value="O"><fmt:message key="outOfOffice"/>
-                                                        </select>
+                                                        <table cellpadding="0" cellspacing="0">
+                                                            <tr>
+                                                                <td>
+                                                                    <select name="freeBusyStatus" id="showAs">
+                                                                        <option <c:if test="${compose.freeBusyStatus eq 'F'}">selected </c:if>value="F"><fmt:message key="free"/>
+                                                                        <option <c:if test="${compose.freeBusyStatus eq 'T'}">selected </c:if> value="T"><fmt:message key="tentative"/>
+                                                                        <option <c:if test="${compose.freeBusyStatus eq 'B'}">selected </c:if> value="B"><fmt:message key="busy"/>
+                                                                        <option <c:if test="${compose.freeBusyStatus eq 'O'}">selected </c:if> value="O"><fmt:message key="outOfOffice"/>
+                                                                    </select>
+                                                                </td>
+                                                                <td style="padding-left:15px" zwidth="1%" nowrap align="right"><label for="markAs"><fmt:message key="markAs"/>:</label></td>
+                                                                <td style="padding-left:5px">
+                                                                    <select name="classProp" id="markAs">
+                                                                        <option <c:if test="${compose.classProp eq 'PUB'}">selected </c:if> value="PUB"><fmt:message key="public"/>
+                                                                        <option <c:if test="${compose.classProp eq 'PRI'}">selected </c:if> value="PRI"><fmt:message key="private"/>
+                                                                        <option <c:if test="${compose.classProp eq 'CON'}">selected </c:if> value="CON"><fmt:message key="confidential"/>
+                                                                    </select>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
                                                     </td>
                                                 </tr>
 
