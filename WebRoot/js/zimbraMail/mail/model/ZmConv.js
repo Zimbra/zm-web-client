@@ -306,6 +306,7 @@ function() {
 
 ZmConv.prototype.checkMoved = 
 function(folderId) {
+	if (!folderId) { return; }
 	var msgs = this.msgs.getArray();
 	var doNotify = true;
 	for (var i = 0; i < msgs.length; i++) {
@@ -442,6 +443,6 @@ function(ev) {
 		this._checkFlags(ev.getDetail("flags"));
 	} else 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		// a msg was moved or deleted, see if this conv's row should remain
-		this.checkMoved();
+		this.checkMoved(this.getFolderId());
 	}
 };
