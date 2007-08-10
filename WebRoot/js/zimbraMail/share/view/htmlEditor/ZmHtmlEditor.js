@@ -690,7 +690,7 @@ function(tb) {
 
 ZmHtmlEditor.prototype._createToolBar2 =
 function(tb) {
-	this._fontColorButton = new ZmHtmlEditorColorPicker(tb);
+	this._fontColorButton = new ZmHtmlEditorColorPicker(tb,null,"ZToolbarButton");
 	this._fontColorButton.dontStealFocus();
 	this._fontColorButton.setImage("FontColor");
 	this._fontColorButton.showColorDisplay(true);
@@ -1113,7 +1113,7 @@ ZmHtmlEditor.prototype._createFontFamilyMenu =
 function(tb) {
 	this._fontFamilyButton = new DwtToolBarButton(tb);
 	this._fontFamilyButton.dontStealFocus();
-	this._fontFamilyButton.setSize("115");
+	this._fontFamilyButton.setSize(Dwt.DEFAULT);
 	this._fontFamilyButton.setAlign(DwtLabel.ALIGN_LEFT);
 	var menu = new ZmPopupMenu(this._fontFamilyButton);
 	var listener = new AjxListener(this, this._fontFamilyListener);
@@ -1625,8 +1625,8 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 		}, this);
 };
 
-ZmHtmlEditorColorPicker = function(parent) {
-    DwtButtonColorPicker.call(this, parent);
+ZmHtmlEditorColorPicker = function(parent,style,className) {
+    DwtButtonColorPicker.call(this, parent,style,className);
 }
 ZmHtmlEditorColorPicker.prototype = new DwtButtonColorPicker;
 ZmHtmlEditorColorPicker.prototype.constructor = ZmHtmlEditorColorPicker;
