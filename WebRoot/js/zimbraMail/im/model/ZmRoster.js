@@ -453,22 +453,21 @@ ZmRoster.prototype._handleRequestGateways = function(resp) {
 // 	if (!resp || !resp.IMGatewayListResponse)
 // 		return;
  	var a = resp.IMGatewayListResponse.service;
-	if (a && a.length) {
-		var defaultGateway = { type   : "XMPP",
-				       domain : "XMPP" };
-		a.unshift(defaultGateway);
-		var byService = {};
-		var byDomain = {};
-		for (var i = 0; i < a.length; ++i) {
-			var gw = a[i] = new ZmImGateway(a[i]);
-			byService[a[i].type.toLowerCase()] = gw;
-			byDomain[a[i].domain.toLowerCase()] = gw;
-		}
-		this._gateways = { byService : byService,
-				   byDomain  : byDomain,
-				   array     : a
-				 };
+        if (!a)
+                a = [];
+	a.unshift({ type   : "XMPP",
+		    domain : "XMPP" });
+	var byService = {};
+	var byDomain = {};
+	for (var i = 0; i < a.length; ++i) {
+		var gw = a[i] = new ZmImGateway(a[i]);
+		byService[a[i].type.toLowerCase()] = gw;
+		byDomain[a[i].domain.toLowerCase()] = gw;
 	}
+	this._gateways = { byService : byService,
+			   byDomain  : byDomain,
+			   array     : a
+			 };
         for (var i = 0; i < this._notificationBuffer.length; ++i)
                 this.handleNotification(this._notificationBuffer[i]);
         this._notificationBuffer = [];
