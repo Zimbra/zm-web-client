@@ -255,7 +255,7 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_FILE]			= ZmSetting.BRIEFCASE_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmSetting.BRIEFCASE_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_IM]			= ZmSetting.IM_ENABLED;
-	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_TASK]			= ZmSetting.TASKS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_TASKS]			= ZmSetting.TASKS_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TASK]			= ZmSetting.TASKS_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_TAG]			= ZmSetting.TAGGING_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TAG]			= ZmSetting.TAGGING_ENABLED;
@@ -281,14 +281,17 @@ function() {
  */
 ZmKeyMap.prototype._checkMap =
 function(mapName) {
+	var result;
 	var mapPre = ZmKeyMap.MAP_PRECONDITION[mapName];
-	if (!mapPre) { return true; }
-	if (typeof mapPre == "string" || typeof mapPre == "number") {
-		return appCtxt.get(mapPre)
+	if (!mapPre) {
+		result = true;
+	} else if (typeof mapPre == "string" || typeof mapPre == "number") {
+		result = appCtxt.get(mapPre);
 	} else if (typeof mapPre == "function") {
-		return mapPre();
+		result = mapPre();
 	}
-	return true;
+	this._checkedMap[mapName] = result;
+	return result;
 };
 
 /**
@@ -301,7 +304,8 @@ function(mapName) {
  */
 ZmKeyMap.prototype._checkAction =
 function(mapName, action) {
-	if (!this._checkMap(mapName)) { return false; }
+	if ((this._checkedMap[mapName] === false) ||
+		(!this._checkedMap[mapName] && !this._checkMap(mapName))) { return false; }
 	var mapPre = ZmKeyMap.ACTION_PRECONDITION[mapName];
 	if (!mapPre) { return true; }
 	var pre = mapPre[action];
