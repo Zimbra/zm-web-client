@@ -1061,8 +1061,6 @@ function(ev, acListView, result) {
 
 ZmComposeView.prototype._adjustAddrHeight =
 function(textarea, skipResetBodySize) {
-	if (AjxEnv.isSafari && !AjxEnv.isSafariNightly) { return; }
-
 	if (textarea.value.length == 0) {
 		textarea.style.height = "21px";
 

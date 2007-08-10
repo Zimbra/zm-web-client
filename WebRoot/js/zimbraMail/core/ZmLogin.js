@@ -103,7 +103,7 @@ function(ev, skipBrowserCheck) {
 */
 ZmLogin.isSupportedBrowser =
 function() {
-	return AjxEnv.isIE6up || AjxEnv.isMozilla1_4up || AjxEnv.isFirefox1up || AjxEnv.isSafari;
+	return AjxEnv.isIE6up || AjxEnv.isMozilla1_4up || AjxEnv.isFirefox1up || AjxEnv.isSafari3;
 };
 
 /**

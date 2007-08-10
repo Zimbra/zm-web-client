@@ -72,10 +72,6 @@ function() {
 ZmFolderPicker.prototype._treeListener =
 function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
- 		// bug fix #7057 - remove when new version of safari is release
- 		// see http://bugs.webkit.org/show_bug.cgi?id=7279
- 		if (AjxEnv.isSafari && !AjxEnv.isSafariNightly)
- 			ev.item._checkBox.checked = !ev.item._checkBox.checked;
  		var ti = ev.item;
  		var checked = ti.getChecked();
  		var folder = ti.getData(Dwt.KEY_OBJECT);

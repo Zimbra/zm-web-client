@@ -176,7 +176,7 @@ function() {
 			this._commandEl.value = assistant.getCommand()+ " ";
 			// bug fix #8776
 			if (AjxEnv.isSafari) {
-				var len = this._commandEl.value.length
+				var len = this._commandEl.value.length;
 				this._commandEl.setSelectionRange(len, len);
 			}
 		}

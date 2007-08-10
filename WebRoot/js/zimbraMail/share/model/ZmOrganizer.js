@@ -330,9 +330,7 @@ function(params) {
 	for (var i in params) {
 		if (i == "type" || i == "errorCallback") { continue; }
 		var value = params[i];
-		if (i == "name") {
-			value = (AjxEnv.isSafari && !AjxEnv.isSafariNightly) ? AjxStringUtil.xmlEncode(value) : value;
-		} else if (i == "color") {
+		if (i == "color") {
 			// no need to save color if missing or default
 			if (!value || (value == ZmOrganizer.DEFAULT_COLOR[type])) {
 				value = null;
@@ -693,8 +691,7 @@ ZmOrganizer.prototype.getIcon = function() {};
 */
 ZmOrganizer.prototype.rename =
 function(name, callback, errorCallback) {
-	if (name == this.name) return;
-	name = (AjxEnv.isSafari && !AjxEnv.isSafariNightly)	? AjxStringUtil.xmlEncode(name) : name;
+	if (name == this.name) { return };
 	this._organizerAction({action: "rename", attrs: {name: name}, callback: callback, errorCallback: errorCallback});
 };
 

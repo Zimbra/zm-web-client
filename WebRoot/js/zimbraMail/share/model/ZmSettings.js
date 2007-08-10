@@ -260,13 +260,6 @@ function(callback, accountName, result) {
 		}
 	}
 
-	// bug fix #6787 - disable HTML compose in Safari until design mode is more stable
-	if (AjxEnv.isSafari && !AjxEnv.isSafariNightly) {
-		setting = this._settings[ZmSetting.HTML_COMPOSE_ENABLED];
-		if (setting) {
-			setting.setValue(false);
-		}
-	}
 	// load Zimlets
 	// NOTE: only load zimlets if main account
 	if (!accountName && obj.zimlets && obj.zimlets.zimlet) {

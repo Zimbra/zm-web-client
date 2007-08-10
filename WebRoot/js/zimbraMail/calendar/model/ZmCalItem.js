@@ -676,17 +676,11 @@ function(attachmentId, callback, errorCallback, notifyList) {
 			// bug fix #4697 (part 2)
             var timezone = this.getOrigTimezone();
             if (!this.startsInUTC && timezone) {
-				var tz = AjxEnv.isSafari && !AjxEnv.isSafariNightly
-					? AjxStringUtil.xmlEncode(timezone) : timezone;
-				exceptId.setAttribute("tz", tz);
+				exceptId.setAttribute("tz", timezone);
 			}
-			if (AjxEnv.isSafari && !AjxEnv.isSafariNightly)
-				sd = AjxStringUtil.xmlEncode(sd);
 			exceptId.setAttribute("d", sd);
 		} else {
 			var sd = AjxDateUtil.getServerDate(this.getOrigStartDate());
-			if (AjxEnv.isSafari && !AjxEnv.isSafariNightly)
-				sd = AjxStringUtil.xmlEncode(sd);
 			exceptId.setAttribute("d", sd);
 		}
 	} else {
@@ -740,9 +734,7 @@ function(mode, callback, msg, result) {
 			var format = allDay ? AjxDateUtil.getServerDate : AjxDateUtil.getServerDateTime;
 			inst.setAttribute("d", format(this.getOrigStartDate()));
 			if (!allDay && this.timezone) {
-				var tz = AjxEnv.isSafari && !AjxEnv.isSafariNightly
-					? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
-				inst.setAttribute("tz", tz);
+				inst.setAttribute("tz", this.timezone);
 
 				var clientId = AjxTimezone.getClientId(this.timezone);
 				ZmTimezone.set(soapDoc, clientId, null, true);
@@ -1102,9 +1094,7 @@ function(soapDoc, inv, comp) {
 	if (this.timezone) {
 		var clientId = AjxTimezone.getClientId(this.timezone);
 		ZmTimezone.set(soapDoc, clientId, inv, true);
-
-		tz = AjxEnv.isSafari && !AjxEnv.isSafariNightly
-			? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
+		tz = this.timezone;
 	}
 
 	// start date

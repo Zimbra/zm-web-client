@@ -192,7 +192,6 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		}
 
 	} else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 		if (this._mode == ZmController.CONV_VIEW || this._mode == ZmController.CONVLIST_VIEW) {
 			// msg within a conv shows just the fragment
 			if (this._mode == ZmController.CONVLIST_VIEW) {
@@ -207,7 +206,6 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 				htmlArr[idx++] = this._getFragmentSpan(msg);
 			}
 		}
-		htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
 
 	} else if (field == ZmItem.F_FOLDER) {
 		htmlArr[idx++] = "<nobr id='";

@@ -498,7 +498,7 @@ function() {
 	html.append("</div>");
 	html.append("</td></tr>");
 	html.append("<tr><td>");
-	html.append("<div id='", this._daysId, "' class=calendar_month_body", AjxEnv.isSafari ? " style='overflow:auto'" : "", ">");
+	html.append("<div id='", this._daysId, "' class=calendar_month_body>");
 	
 	html.append("<table id='", this._bodyId, "' class=calendar_month_table>");
 	html.append("<colgroup>");

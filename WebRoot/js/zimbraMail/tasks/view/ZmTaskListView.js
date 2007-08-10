@@ -163,13 +163,11 @@ function(htmlArr, idx, task, field, colIdx, params) {
 		htmlArr[idx++] = task.organizer || "&nbsp";
 
 	} else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 		if (params.isMixedView) {
 			htmlArr[idx++] = task.name ? AjxStringUtil.htmlEncode(task.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 		} else {
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
 		}
-		htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
 
 	} else if (field == ZmItem.F_STATUS) {
 		htmlArr[idx++] = ZmCalItem.getLabelForStatus(task.status);

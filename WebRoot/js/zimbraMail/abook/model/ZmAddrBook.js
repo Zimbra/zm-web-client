@@ -113,8 +113,7 @@ ZmAddrBook.create =
 function(params) {
 	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 	var folderNode = soapDoc.set("folder");
-	var name = (AjxEnv.isSafari && !AjxEnv.isSafariNightly)	? AjxStringUtil.xmlEncode(params.name) : params.name;
-	folderNode.setAttribute("name", name);
+	folderNode.setAttribute("name", params.name);
 	folderNode.setAttribute("l", params.parent.id);
 	folderNode.setAttribute("color", params.color || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK]);
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK][0]);
