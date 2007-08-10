@@ -398,7 +398,8 @@ function(ex, method, params, restartOnError, obj) {
 ZmController.prototype._hideSendReportBtn =
 function(ex) {
 	return ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS ||
-		   ex.code == ZmCsfeException.MAIL_MAINTENANCE_MODE;
+		   ex.code == ZmCsfeException.MAIL_MAINTENANCE_MODE ||
+		   ex.code == ZmCsfeException.NETWORK_ERROR;
 };
 
 /*
