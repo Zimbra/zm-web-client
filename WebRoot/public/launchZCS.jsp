@@ -43,7 +43,6 @@
  *
  * ***** END LICENSE BLOCK *****
 -->
-<script>
 <%!
 	private static String protocolMode = null;
 	static {
@@ -115,44 +114,77 @@
 	}
 
 %>
-
-<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/> 
-
-		var settings = {
-"dummy":1<c:forEach var="pref" items="${requestScope.authResult.prefs}">,
-"${pref.key}":"${zm:jsEncode(pref.value[0])}"</c:forEach>
-<c:forEach var="attr" items="${requestScope.authResult.attrs}">,
-"${attr.key}":"${zm:jsEncode(attr.value[0])}"</c:forEach>
-<c:if test="${not empty domainInfo}"> 
-<c:forEach var="info" items="${domainInfo.attrs}">,
-"${info.key}":"${zm:jsEncode(info.value)}"</c:forEach> 
-</c:if>
-		};
-</script>
-
 <link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico">
 <link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <title><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
-
-<script>
-	var zJSloading = (new Date()).getTime();
-	appContextPath = "<%=contextPath %>";
-	appCurrentSkin = "<%=skin %>";
-	appExtension   = "<%=ext%>";
-	appDevMode     = <%=inDevMode%>;
-</script>
-
-<jsp:include page="Messages.jsp"/>
-<script src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
 <style type="text/css">
 <!--
 @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
 @import url(<%= contextPath %>/css/imgs,<%= skin %>_imgs,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
 -->
 </style>
-
+</head>
+<body>
+<noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
+    <fmt:message key="errorJavaScriptRequired"><fmt:param>
+    <c:url context="/zimbra" value='/h/'></c:url>
+    </fmt:param></fmt:message>
+</noscript>
+<%!
+	public class Wrapper extends HttpServletRequestWrapper {
+		public Wrapper(HttpServletRequest req, String skin) {
+			super(req);
+			this.skin = skin;
+		}
+		String skin;
+    	public String getServletPath() { return "/html"; }
+	    public String getPathInfo() { return "/skin.html"; }
+	    public String getRequestURI() { return getServletPath() + getPathInfo(); }
+	    public String getParameter(String name) {
+	    	if (name.equals("skin")) return this.skin;
+			if (name.equals("client")) return "advanced";
+			return super.getParameter(name);
+	    }
+	}
+%>
+<%
+	// NOTE: This inserts raw HTML files from the user's skin
+	//       into the JSP output. It's done *this* way so that
+	//       the SkinResources servlet sees the request URI as
+	//       "/html/skin.html" and not as "/public/launch...".
+	out.flush();
+	RequestDispatcher dispatcher = request.getRequestDispatcher("/html/");
+	HttpServletRequest wrappedReq = new Wrapper(request, skin);
+	dispatcher.include(wrappedReq, response);
+%>
+<script>
+	function populateText(){
+		if(arguments.length == 0 ) return;
+		var node, index = 0, length = arguments.length;
+		while(index < length){
+			node = document.getElementById(arguments[index]);
+			if(node) node.appendChild(document.createTextNode(arguments[index+1]));
+			index += 2;
+		}
+	}
+	
+	populateText(
+		"ZLoginAppName",			"<fmt:message key="splashScreenAppName"/>",
+		"ZLoginLoadingMsg",			"<fmt:message key="splashScreenLoading"/>",
+		"ZLoginLicenseContainer",	"<fmt:message key="splashScreenCopyright"/>"
+	); 
+	
+	var zJSloading = (new Date()).getTime();
+	appContextPath = "<%=contextPath %>";
+	appCurrentSkin = "<%=skin %>";
+	appExtension   = "<%=ext%>";
+	appDevMode     = <%=inDevMode%>;
+	
+</script>
+<jsp:include page="Messages.jsp"/>
+<script src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
 <jsp:include page="Boot.jsp"/>
 <%
     String allPackages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";
@@ -178,15 +210,26 @@
         <% } %>
     <% }
 %>
-<script>
-AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
-</script>
+
+<script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%>"></script>
 
 <script>
+
+	AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 	zJSloading = (new Date()).getTime() - zJSloading;
-</script>
 
-<script>
+	<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/> 
+		var settings = {
+			"dummy":1<c:forEach var="pref" items="${requestScope.authResult.prefs}">,
+			"${pref.key}":"${zm:jsEncode(pref.value[0])}"</c:forEach>
+			<c:forEach var="attr" items="${requestScope.authResult.attrs}">,
+			"${attr.key}":"${zm:jsEncode(attr.value[0])}"</c:forEach>
+			<c:if test="${not empty domainInfo}"> 
+			<c:forEach var="info" items="${domainInfo.attrs}">,
+			"${info.key}":"${zm:jsEncode(info.value)}"</c:forEach> 
+			</c:if>
+		};
+
 	var cacheKillerVersion = "<%=vers%>";
 	function launch() {
 		// quit if this function has already been called
@@ -252,51 +295,6 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 
     AjxCore.addOnloadListener(launch);
     AjxCore.addOnunloadListener(ZmZimbraMail.unload);
-</script>
-
-</head>
-<body>
-<noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
-    <fmt:message key="errorJavaScriptRequired"><fmt:param>
-    <c:url context="/zimbra" value='/h/'></c:url>
-    </fmt:param></fmt:message>
-</noscript>
-<script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%>"></script> 
-<%!
-	public class Wrapper extends HttpServletRequestWrapper {
-		public Wrapper(HttpServletRequest req, String skin) {
-			super(req);
-			this.skin = skin;
-		}
-		String skin;
-    	public String getServletPath() { return "/html"; }
-	    public String getPathInfo() { return "/skin.html"; }
-	    public String getRequestURI() { return getServletPath() + getPathInfo(); }
-	    public String getParameter(String name) {
-	    	if (name.equals("skin")) return this.skin;
-			if (name.equals("client")) return "advanced";
-			return super.getParameter(name);
-	    }
-	}
-%>
-<%
-	// NOTE: This inserts raw HTML files from the user's skin
-	//       into the JSP output. It's done *this* way so that
-	//       the SkinResources servlet sees the request URI as
-	//       "/html/skin.html" and not as "/public/launch...".
-	out.flush();
-	RequestDispatcher dispatcher = request.getRequestDispatcher("/html/");
-	HttpServletRequest wrappedReq = new Wrapper(request, skin);
-	dispatcher.include(wrappedReq, response);
-%>
-<script>
-
-	Dwt.populateText(
-		"ZLoginAppName",			ZmMsg.splashScreenAppName,
-		"ZLoginLoadingMsg",			ZmMsg.splashScreenLoading,
-		"ZLoginLicenseContainer",	ZmMsg.splashScreenCopyright	
-	); 
-	
 </script>
 </body>
 </html>
