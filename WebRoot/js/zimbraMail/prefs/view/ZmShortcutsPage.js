@@ -98,7 +98,7 @@ function() {
 	Dwt.setTitle(this._title);
 	this._controller._resetOperations(this._controller._toolbar, this._view);
 	var dirty = this._controller.isDirty(this._view);
-	if (this._hasRendered && !dirty) return;
+	if (this._hasRendered && !dirty) { return; }
 
 	this._prefPresent = {};
 	this._prefPresent[this._prefId] = true;
@@ -227,13 +227,15 @@ function() {
 
 ZmShortcutsPageTabView.prototype.show =
 function() {
-	if (this._hasRendered) return;
+	if (this._hasRendered) { return; }
 
 	// shortcut list
-	var view = ZmShortcutsPageTabView.SHORTCUTS_LIST;
-	var viewObj = new ZmShortcutsPageTabViewList(this._parent, this._controller);
-	this._scTabView[view] = viewObj;
-	this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view]);
+	if (appCtxt.get(ZmSetting.SHORTCUT_LIST_ENABLED)) {
+		var view = ZmShortcutsPageTabView.SHORTCUTS_LIST;
+		var viewObj = new ZmShortcutsPageTabViewList(this._parent, this._controller);
+		this._scTabView[view] = viewObj;
+		this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view]);
+	}
 
 	// custom shortcuts
 	for (var i = 0; i < this._organizers.length; i++) {

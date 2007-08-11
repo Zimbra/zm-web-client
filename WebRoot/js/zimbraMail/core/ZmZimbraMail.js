@@ -113,6 +113,14 @@ ZmZimbraMail._PREFS_ID	= 1;
 ZmZimbraMail._HELP_ID	= 2;
 ZmZimbraMail._LOGOFF_ID	= 3;
 
+// Event types
+ZmZimbraMail.E_STARTUP = "STARTUP";
+
+// Event handling - needs to be static so it can be used before ZmZimbraMail has
+// been constructed
+ZmZimbraMail._evt = new ZmEvent();
+ZmZimbraMail._evtMgr = new AjxEventMgr();
+
 // Public methods
 
 ZmZimbraMail.prototype.toString =
@@ -232,6 +240,28 @@ function(hash, a, b) {
 	if (appA > appB) { return 1; }
 	if (appA < appB) { return -1; }
 	return 0;
+};
+
+/**
+ * Adds a listener for the given event type.
+ *
+ * @param type		[constant]		event type
+ * @param listener	[AjxListener]	a listener
+ */
+ZmZimbraMail.addListener =
+function(type, listener) {
+	return ZmZimbraMail._evtMgr.addListener(type, listener);
+};
+
+/**
+ * Removes a listener for the given event type.
+ *
+ * @param type		[constant]		event type
+ * @param listener	[AjxListener]	a listener
+ */
+ZmZimbraMail.removeListener =
+function(type, listener) {
+	return ZmZimbraMail._evtMgr.removeListener(type, listener);    	
 };
 
 /**
@@ -456,6 +486,7 @@ function() {
 	}
 	AjxDispatcher.enableLoadFunctions(true);
 	appCtxt.inStartup = false;
+	ZmZimbraMail._evtMgr.notifyListeners(ZmZimbraMail.E_STARTUP, ZmZimbraMail._evt);
 };
 
 /**
