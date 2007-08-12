@@ -48,17 +48,17 @@
 					<td class='R1Sep'>|</td>
 					<td class='R1Link'><nobr><a href="/h/options?selected=accounts">My Account</a></nobr></td>
 					<td width=100%>&nbsp;</td>
-					<td class='R1Link'><nobr><a href="www.comcast.net">comcast.net</a></nobr></td>
+					<td class='R1Link'><nobr><a href="http://www.comcast.net" target=_new >comcast.net</a></nobr></td>
 					<td class='R1Sep'>|</td>
 					<td><div class=ImgHelp></div></td>
 					<td>&nbsp;</td>
-					<td class='R1Link' id='skin_container_help_lite'> <a target=_new href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><fmt:message key="help"/></a></td>
+					<td class='R1Link' id='skin_container_help_lite'> <a target=_new href="<c:url value="http://www.comcast.net/help/"/>"><fmt:message key="help"/></a></td>
 					<td>&nbsp;&nbsp;</td>
 					<td><div class=ImgPadlock></div></td>
-					<td class='R1Link'><nobr>&nbsp;<a href=#>Security</a></nobr></td>
+					<td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/security/" target=_new>Security</a></nobr></td>
 					<td>&nbsp;&nbsp;</td>
 					<td><div class=ImgInformation></div></td>
-					<td class='R1Link'><nobr>&nbsp;<a href=#>Ask comcast</a></nobr></td>
+					<td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/providers/askcomcast/popup.html" target=_new >Ask comcast</a></nobr></td>
 				</tr>
 				</table>
 			</td>
