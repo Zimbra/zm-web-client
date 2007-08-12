@@ -40,8 +40,10 @@
     </SCRIPT>
 
     <app:keyboard cache="mail.messageView" globals="true" mailbox="${mailbox}" folders="true" tags="true">
+        <c:if test="${mailbox.features.flagging}">
         <zm:bindKey message="mail.Flag" func="zflag"/>
         <zm:bindKey message="mail.UnFlag" func="zunflag"/>
+        </c:if>
         <zm:bindKey message="mail.MarkRead" func="zread"/>
         <zm:bindKey message="mail.MarkUnread" func="zunread"/>
         <zm:bindKey message="mail.Spam" func="zjunk"/>

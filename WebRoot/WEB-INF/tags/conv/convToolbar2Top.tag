@@ -31,8 +31,10 @@
                     <option value="" selected/><fmt:message key="moreActions"/>
                     <option value="read"/><fmt:message key="actionMarkRead"/>
                     <option value="unread"/><fmt:message key="actionMarkUnread"/>
+                    <c:if test="${mailbox.features.flagging}">
                     <option value="flag"/><fmt:message key="actionAddFlag"/>
                     <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
+                    </c:if>
                     <option disabled /><fmt:message key="actionOptSep"/>
                     <option disabled /><fmt:message key="actionAddTag"/>
                     <zm:forEachTag var="tag">

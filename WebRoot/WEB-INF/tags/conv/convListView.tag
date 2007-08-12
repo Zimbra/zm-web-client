@@ -28,7 +28,9 @@
                         <table width=100% cellpadding=2 cellspacing=0>
                             <tr class='Header'>
                                 <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+                                <c:if test="${mailbox.features.flagging}">
                                 <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
+                                </c:if>
                                 <c:if test="${mailbox.features.tagging}">
                                 <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG_TAG"/>
                                 </c:if>
@@ -61,7 +63,9 @@
                                 <c:set var="aid" value="A${status.index}"/>
                                 <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='ZhRow ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
                                     <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="id" value="${convHit.id}"></td>
+                                    <c:if test="${mailbox.features.flagging}">
                                     <td class='Img'><app:flagImage flagged="${convHit.isFlagged}"/></td>
+                                    </c:if>
                                     <c:if test="${mailbox.features.tagging}">
                                         <td class='Img'><app:miniTagImage ids="${convHit.tagIds}"/></td>
                                     </c:if>
@@ -143,9 +147,10 @@
     </SCRIPT>
 
     <app:keyboard cache="mail.convListView" globals="true" mailbox="${mailbox}" tags="true" folders="true">
-
+        <c:if test="${mailbox.features.flagging}">
         <zm:bindKey message="mail.Flag" func="zflag"/>
         <zm:bindKey message="mail.UnFlag" func="zunflag"/>
+        </c:if>
         <zm:bindKey message="mail.MarkRead" func="zread"/>
         <zm:bindKey message="mail.MarkUnread" func="zunread"/>
         <zm:bindKey message="mail.Spam" func="zjunk"/>

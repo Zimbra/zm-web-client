@@ -146,7 +146,7 @@
                                                 <span>${fn:escapeXml(tag.name)}</span>
                                             </c:forEach>
                                         </c:if> 
-                                        <c:if test="${message.isFlagged}">
+                                        <c:if test="${mailbox.features.flagging and message.isFlagged}">
                                             <app:img altkey='ALT_FLAGGED' src="tag/FlagRed.gif"/>
                                         </c:if>
                                     </td>

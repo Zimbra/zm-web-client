@@ -38,8 +38,10 @@
             <option value="" selected/><fmt:message key="moreActions"/>
             <option <c:if test="${keys}">id="OPREAD" </c:if> value="read"/><fmt:message key="actionMarkRead"/>
             <option <c:if test="${keys}">id="OPUNREAD" </c:if> value="unread"/><fmt:message key="actionMarkUnread"/>
+            <c:if test="${mailbox.features.flagging}">
             <option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"/><fmt:message key="actionAddFlag"/>
             <option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"/><fmt:message key="actionRemoveFlag"/>
+            </c:if>
             <app:tagOptions mailbox="${mailbox}"/>
         </select>
         </td>

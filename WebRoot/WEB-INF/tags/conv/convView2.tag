@@ -65,7 +65,11 @@
                                                         <td style='border:none' width=1% nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>
                                                     </tr>
                                                     <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
-                                                        <td class='Bottom Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
+                                                        <td class='Bottom Img'>
+                                                            <c:if test="${mailbox.features.flagging}">
+                                                                <app:flagImage flagged="${hit.messageHit.isFlagged}"/>
+                                                            </c:if>
+                                                        </td>
                                                         <td class='Bottom Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                                         <td nowrap colspan=3 class='Bottom'>
                                                             <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,50, true))}</span></a>
@@ -103,7 +107,7 @@
                                                             <c:forEach items="${tags}" var="tag">
                                                                 <app:img src="${tag.miniImage}"/> <span>${fn:escapeXml(tag.name)}</span>
                                                             </c:forEach>
-                                                            <c:if test="${convSummary.flagged}">
+                                                            <c:if test="${mailbox.features.flagging and convSummary.flagged}">
                                                                 <app:img src="tag/FlagRed.gif"/>
                                                             </c:if>
                                                         </span>

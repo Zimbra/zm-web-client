@@ -82,8 +82,10 @@
 
     <app:keyboard cache="mail.convView" globals="true" mailbox="${mailbox}" folders="true" tags="true">
         <zm:bindKey message="mail.MarkAllRead" func="zmarkall"/>
+        <c:if test="${mailbox.features.flagging}">
         <zm:bindKey message="mail.Flag" func="zflag"/>
         <zm:bindKey message="mail.UnFlag" func="zunflag"/>
+        </c:if>
         <zm:bindKey message="mail.MarkRead" func="zread"/>
         <zm:bindKey message="mail.MarkUnread" func="zunread"/>
         <zm:bindKey message="mail.Spam" func="zjunk"/>
@@ -141,7 +143,7 @@
                                                              <app:img alt='${fn:escapeXml(tag.name)}' src="${tag.miniImage}"/> <span>${fn:escapeXml(tag.name)}</span>
                                                          </c:forEach>
                                                      </c:if>
-                                                    <c:if test="${convSummary.flagged}">
+                                                    <c:if test="${mailbox.features.flagging and convSummary.flagged}">
                                                         <app:img altkey='ALT_FLAGGED' src="tag/FlagRed.gif"/>
                                                     </c:if>
                                                 </span>
@@ -155,8 +157,10 @@
                                         <table width=100% cellpadding=0 cellspacing=0>
                                             <tr>
                                                 <th class='CB'nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+                                                <c:if test="${mailbox.features.flagging}">
                                                 <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
-                                                 <c:if test="${mailbox.features.tagging}">
+                                                </c:if>
+                                                <c:if test="${mailbox.features.tagging}">
                                                 <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG"/>
                                                 </c:if>
                                                 <th class='MsgStatusImg' nowrap>&nbsp;
@@ -180,7 +184,9 @@
                                                 <c:set var="aid" value="A${hit.id}"/>
                                                 <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='ZhRow${hit.messageHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                     <td class='CB' nowrap><input _ignore="1" id="C${status.index}" <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
+                                                    <c:if test="${mailbox.features.flagging}">
                                                     <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
+                                                    </c:if>
                                                     <c:if test="${mailbox.features.tagging}">
                                                         <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                                     </c:if>
