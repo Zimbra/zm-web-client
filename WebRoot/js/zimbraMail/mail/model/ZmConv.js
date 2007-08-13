@@ -173,7 +173,7 @@ function(callback, result) {
 		this.msgIds.push(msgNode.id);
 		msgNode.su = resp.su;
 		// construct ZmMailMsg's so they get cached
-		ZmMailMsg.createFromDom(msgNode);
+		ZmMailMsg.createFromDom(msgNode,this.list);
 	}
 
 	if (callback) { callback.run(result); }
