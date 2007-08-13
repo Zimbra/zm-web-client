@@ -251,4 +251,9 @@ function(parent, numSel, sel) {
 		parent.enable(ZmOperation.MOVE_UP_FILTER_RULE, false);
 		parent.enable(ZmOperation.MOVE_DOWN_FILTER_RULE, false);
 	}
+
+    //bug:19183 Disable editing filter rules in desktop client
+    if(this.appCtxt.get(ZmSetting.OFFLINE)) {
+        parent.enable(ZmOperation.EDIT_FILTER_RULE,false);
+    }
 };
