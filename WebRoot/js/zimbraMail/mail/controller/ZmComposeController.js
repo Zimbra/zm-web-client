@@ -299,8 +299,8 @@ function(ex) {
 		return true;
 	} else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED){
 		if(this._composeView._attachDialog){
-			this._composeView._attachDialog.popdown();
-			msg = ZmMsg.errorQuotaExceeded;
+			msg = ZmMsg.errorQuotaExceeded;			
+			this._composeView._attachDialog.setFooter('You have exceeded your mail quota. Please remove some attachments and try again.' );
 		}
 	}
 	if (msg) {
