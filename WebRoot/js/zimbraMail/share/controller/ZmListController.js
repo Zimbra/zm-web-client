@@ -280,11 +280,16 @@ function() {
 
 ZmListController.prototype._participantOps =
 function() {
-	var ops = [ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE];
+	var ops = [ZmOperation.SEARCH, ZmOperation.BROWSE];
+	if(ZmSetting.MAIL_ENABLED) {
+		ops.push(ZmOperation.NEW_MESSAGE);
+	}
 	if (ZmSetting.IM_ENABLED) {
 		ops.push(ZmOperation.IM);
 	}
-	ops.push(ZmOperation.CONTACT);
+	if(ZmSetting.CONTACTS_ENABLED) {
+		ops.push(ZmOperation.CONTACT);
+	}
 	return ops;
 };
 
