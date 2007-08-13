@@ -138,8 +138,8 @@ ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS]	= true;
 
 // Hide folders migrated from Outlook mailbox
 ZmFolder.HIDE_NAME = {};
-ZmFolder.HIDE_NAME["Journal"]	= true;
-ZmFolder.HIDE_NAME["Notes"]		= true;
+//ZmFolder.HIDE_NAME["Journal"]	= true;
+//ZmFolder.HIDE_NAME["Notes"]		= true;
 //ZmFolder.HIDE_NAME["Outbox"]		= true;
 //ZmFolder.HIDE_NAME["Tasks"]		= true;
 
