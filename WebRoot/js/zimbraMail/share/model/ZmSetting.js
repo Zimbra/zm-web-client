@@ -115,6 +115,21 @@ ZmSetting.PROTO_MIXED		= "mixed";
 ZmSetting.SIG_INTERNET		= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK		= "outlook";
 
+// remove this block when offline.jsp upgrades
+ZmSetting.APPS_COOKIE			= "ZM_APPS";
+ZmSetting.APP_LETTER = {};
+ZmSetting.APP_LETTER[ZmSetting.PORTAL_ENABLED]		= "p";
+ZmSetting.APP_LETTER[ZmSetting.MAIL_ENABLED]		= "m";
+ZmSetting.APP_LETTER[ZmSetting.CALENDAR_ENABLED]	= "c";
+ZmSetting.APP_LETTER[ZmSetting.CONTACTS_ENABLED]	= "a";
+ZmSetting.APP_LETTER[ZmSetting.OPTIONS_ENABLED]		= "o";
+ZmSetting.APP_LETTER[ZmSetting.IM_ENABLED]			= "i";
+ZmSetting.APP_LETTER[ZmSetting.NOTEBOOK_ENABLED]	= "n";
+ZmSetting.APP_LETTER[ZmSetting.BRIEFCASE_ENABLED]	= "b";
+ZmSetting.APP_LETTER[ZmSetting.TASKS_ENABLED]		= "t";
+ZmSetting.APP_LETTER[ZmSetting.MIXED_VIEW_ENABLED]	= "x";
+ZmSetting.APP_LETTER[ZmSetting.VOICE_ENABLED]		= "v";
+
 ZmSetting.prototype.toString =
 function() {
 	return this.name + ": " + this.value;

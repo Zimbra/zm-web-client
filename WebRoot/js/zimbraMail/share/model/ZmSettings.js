@@ -384,9 +384,6 @@ function(list, callback, result) {
 		for (var i = 0; i < list.length; i++) {
 			var setting = list[i];
 			setting.origValue = setting.value;
-			if (setting.id == ZmSetting.SKIN_NAME) {
-				ZmLogin.setCookie(ZmLogin.SKIN_COOKIE, setting.getValue());
-			}
 			setting._notify(ZmEvent.E_MODIFY);
 		}
 	}

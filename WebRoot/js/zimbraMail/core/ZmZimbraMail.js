@@ -159,11 +159,11 @@ function(params) {
 		}
 	} else {
 		// Note: removing cookie support may affect offline.jsp
-		var apps = AjxCookie.getCookie(document, ZmLogin.APPS_COOKIE);
+		var apps = AjxCookie.getCookie(document, ZmSetting.APPS_COOKIE);
 		DBG.println(AjxDebug.DBG1, "apps: " + apps);
 		if (apps) {
-			for (var setting in ZmLogin.APP_LETTER) {
-				var letter = ZmLogin.APP_LETTER[setting];
+			for (var setting in ZmSetting.APP_LETTER) {
+				var letter = ZmSetting.APP_LETTER[setting];
 				if (apps.indexOf(letter) != -1) {
 					appCtxt.set(setting, true);
 				}
