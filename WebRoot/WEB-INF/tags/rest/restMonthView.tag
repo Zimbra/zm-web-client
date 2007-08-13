@@ -39,10 +39,8 @@
 </rest:handleError>
 
 <rest:view title="${title}" rssfeed="${true}">
-<!-- | ${requestScope.zimbra_request_uri} | ${requestScope.zimbra_target_item_path} | ${requestScope.zimbra_target_item_name} |
-tz=timezone  date=YYYYMMDD   view=day|workWeek|week|month  notoolbar=1
-skin=skin-name color=defaultColor(0)|blue(1)|cyan(2)|green(3)|purple(4)|red(5)|yellow(6)|pink(7)|gray(8)|orange(9)
--->
+<!-- tz=timezone  date=YYYYMMDD   view=day|workWeek|week|month  notoolbar=1
+skin=skin-name color=defaultColor(0)|blue(1)|cyan(2)|green(3)|purple(4)|red(5)|yellow(6)|pink(7)|gray(8)|orange(9) -->
     <table width=100% cellpadding="0" cellspacing="0" border=0>
         <tr>
             <td style='padding:20px'>

@@ -32,7 +32,7 @@
     <zm:apptMultiDayLayout timezone="${timezone}"
             schedule=""
             var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
-            hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
+            hourstart="${requestScope.zimbra_target_account_prefCalendarDayHourStart}" hourend="${requestScope.target_account_prefCalendarDayHourEnd}"/>
 </rest:handleError>
 
 <table class='ZhCalDayGrid' width=100% height=100% border="0" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
