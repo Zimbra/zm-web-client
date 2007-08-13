@@ -1032,8 +1032,15 @@ function(findHits) {
 				}
 
 				props.link = "<a target='_blank' class='AttLink' href='" + url + "'>";
-				if (!useCL)
-					props.download = "<a style='text-decoration:underline' class='AttLink' href='" + url + "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>";
+				if (!useCL) {
+					props.download = [
+							"<a style='text-decoration:underline' class='AttLink' href='",
+							url,
+							appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)
+								? "' target='_blank'>"
+								: "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>"
+						].join("");
+				}
 
 				if( (attach.name || attach.filename) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) ){
 					var onclickStr1 = "ZmMailMsgView.briefcaseCallback(" + this.id + ",\"" + attach.part + "\",\""+props.label+"\");";
