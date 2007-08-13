@@ -25,7 +25,7 @@
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, firstDOW)}"/>
 
     <zm:getAppointmentSummaries box="${mailbox}" timezone="${timezone}" var="appts"
-                                folderid="${requestScope.zimbra_target_item_id}" start="${currentDay.timeInMillis}"
+                                folderid="${not empty param.folderIds ? param.folderIds : requestScope.zimbra_target_item_id}" start="${currentDay.timeInMillis}"
                                 end="${zm:addDay(currentDay, 42).timeInMillis}" query="${requestScope.calendarQuery}"
                                 varexception="gasException"/>
 
@@ -39,7 +39,7 @@
 </rest:handleError>
 
 <rest:view title="${title}" rssfeed="${true}">
-<!-- tz=timezone  date=YYYYMMDD   view=day|workWeek|week|month  notoolbar=1
+<!-- tz=timezone  date=YYYYMMDD   view=day|workWeek|week|month  notoolbar=1 folderIds=[...]
 skin=skin-name color=defaultColor(0)|blue(1)|cyan(2)|green(3)|purple(4)|red(5)|yellow(6)|pink(7)|gray(8)|orange(9) -->
     <table width=100% cellpadding="0" cellspacing="0" border=0>
         <tr>

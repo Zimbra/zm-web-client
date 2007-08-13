@@ -21,7 +21,7 @@
     <c:set var="today" value="${zm:getToday(timezone)}"/>
     <c:set var="rangeEnd" value="${zm:addDay(currentDay,numdays).timeInMillis}"/>
 
-    <zm:getAppointmentSummaries  box="${mailbox}" timezone="${timezone}" var="appts" folderid="${requestScope.zimbra_target_item_id}" start="${currentDay.timeInMillis}" end="${rangeEnd}" query="${query}" varexception="gasException"/>
+    <zm:getAppointmentSummaries  box="${mailbox}" timezone="${timezone}" var="appts" folderid="${not empty param.folderIds ? param.folderIds : requestScope.zimbra_target_item_id}" start="${currentDay.timeInMillis}" end="${rangeEnd}" query="${query}" varexception="gasException"/>
     <c:if test="${not empty gasException}">
         <zm:getException var="error" exception="${gasException}"/>
         <rest:status style="Critical">

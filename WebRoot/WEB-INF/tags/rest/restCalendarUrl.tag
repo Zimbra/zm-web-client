@@ -29,6 +29,7 @@
     <c:if test="${not empty param.skin}"><c:param name='skin' value='${param.skin}'/></c:if>
     <c:if test="${not empty param.color}"><c:param name='color' value='${param.color}'/></c:if>
     <c:if test="${not empty param.notoolbar}"><c:param name='notoolbar' value='${param.notoolbar}'/></c:if>
+    <c:if test="${not empty param.folderIds}"><c:param name='folderIds' value='${param.folderIds}'/></c:if>
     <c:if test="${not empty param.sq or not empty sq}"><c:param name='sq' value='${not empty sq ? sq : param.sq}'/></c:if>
     <c:choose>
         <c:when test="${not empty rawdate}">
