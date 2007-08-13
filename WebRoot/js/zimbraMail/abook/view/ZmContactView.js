@@ -513,6 +513,11 @@ function() {
 	this._setTags();
 	this._setFolder();
 	this._setValues();
+
+	// notify zimlets that a new contact is being shown.
+	if (appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onContactEdit", this._contact.getEmail(), this._htmlElId);
+	}
 };
 
 ZmContactView.prototype._getFields =
