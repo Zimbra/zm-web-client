@@ -42,7 +42,7 @@
         ${zm:getPartHtmlContent(body, message)}
     </c:when>
     <c:when test="${param.action eq 'view'}">
-        <rest:apptView mailbox="${mailbox}"/>
+        <rest:apptView mailbox="${mailbox}" timezone="${timezone}"/>
     </c:when>
     <c:when test="${view eq 'day'}">
         <rest:multiDayView mailbox="${mailbox}" timezone="${timezone}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>

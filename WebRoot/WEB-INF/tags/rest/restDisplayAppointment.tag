@@ -7,6 +7,7 @@
 <%@ attribute name="externalImageUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="composeUrl" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="newWindowUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
+<%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -82,20 +83,20 @@
 
                                     <c:choose>
                                         <c:when test="${param.useInstance eq '1' and (not empty param.instStartTime and not empty param.instDuration)}">
-                                            <c:set var="startDateCal" value="${zm:getCalendar(param.instStartTime, mailbox.prefs.timeZone)}"/>
-                                            <c:set var="endDateCal" value="${zm:getCalendar(param.instStartTime + param.instDuration, mailbox.prefs.timeZone)}"/>
+                                            <c:set var="startDateCal" value="${zm:getCalendar(param.instStartTime, timezone)}"/>
+                                            <c:set var="endDateCal" value="${zm:getCalendar(param.instStartTime + param.instDuration, timezone)}"/>
                                             <c:set var="startDate" value="${startDateCal.time}"/>
                                             <c:set var="endDate" value="${endDateCal.time}"/>
                                         </c:when>
                                         <c:otherwise>
                                             <c:set var="startDate" value="${appt.start.date}"/>
                                             <c:set var="endDate" value="${appt.computedEndDate}"/>
-                                            <c:set var="startDateCal" value="${zm:getCalendar(startDate.time, mailbox.prefs.timeZone)}"/>
-                                            <c:set var="endDateCal" value="${zm:getCalendar(endDate.time, mailbox.prefs.timeZone)}"/>
+                                            <c:set var="startDateCal" value="${zm:getCalendar(startDate.time, timezone)}"/>
+                                            <c:set var="endDateCal" value="${zm:getCalendar(endDate.time, timezone)}"/>
                                         </c:otherwise>
                                     </c:choose>
-                                    ${fn:escapeXml(zm:getApptDateBlurb(pageContext, mailbox.prefs.timeZone, startDate.time, endDate.time, appt.allDay))}
-                                    &nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneWindowsId}</span>
+                                    ${fn:escapeXml(zm:getApptDateBlurb(pageContext, timezone, startDate.time, endDate.time, appt.allDay))}
+                                    &nbsp;<span class='ZhCalTimeZone'>${fn:escapeXml(zm:getWindowsId(timezone))}</span>
                                 </td>
                             </tr>
                             <c:if test="${appt.exception}">
@@ -147,7 +148,7 @@
                                         :
                                     </td>
                                     <td class='MsgHdrValue'>
-                                        ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, appt.start.date))}
+                                        ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,timezone, appt.start.date))}
                                     </td>
                                 </tr>
                             </c:if>
@@ -155,17 +156,9 @@
                     </td>
                     <td valign='top'>
                         <table width=100% cellpadding=2 cellspacing=0 border=0>
-
-                            <c:if test="${message.hasTags or message.isFlagged}">
+                            <c:if test="${message.isFlagged}">
                                 <tr>
                                     <td nowrap align='right' class='Tags'>
-                                        <c:if test="${mailbox.features.tagging}">
-                                            <c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
-                                            <c:forEach items="${tags}" var="tag">
-                                                <app:img src="${tag.miniImage}" alt='${fn:escapeXml(tag.name)}'/>
-                                                <span>${fn:escapeXml(tag.name)}</span>
-                                            </c:forEach>
-                                        </c:if> 
                                         <c:if test="${message.isFlagged}">
                                             <app:img altkey='ALT_FLAGGED' src="tag/FlagRed.gif"/>
                                         </c:if>
@@ -258,7 +251,7 @@
             <c:if test="${false and not empty message.attachments}">
                 <hr/>
                 <a name="attachments${message.partName}"/>
-                <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
+                <%-- <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/> --%>
             </c:if>
                 <c:if test="${not empty param.debug}">
                     <pre>${fn:escapeXml(message.mimeStructure)}</pre>

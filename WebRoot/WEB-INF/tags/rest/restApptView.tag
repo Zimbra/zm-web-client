@@ -1,5 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
+<%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -17,7 +18,7 @@
             <c:set var="compNum" value="${empty param.invCompNum ? 0 : param.invCompNum}"/>
         </c:otherwise>
     </c:choose>
-    <zm:getMessage box="${mailbox}" var="msg" id="${id}" markread="true" neuterimages="${empty param.xim}"/>
+    <zm:getMessage box="${mailbox}" var="msg" id="${id}" markread="true" neuterimages="${empty param.xim}" wanthtml="${true}"/>
     <c:set var="invite" value="${msg.invite}"/>
     <c:set var="isInstance" value="${param.useInstance eq '1'}"/>
 
@@ -81,7 +82,7 @@
                                              --%>
                                 <rest:calendarUrl var="composeUrl" id="${id}" action="compose" paction="view" apptFromParam="${true}" inviteReplyInst="${isInstance ? param.instStartTime : ''}"  inviteReplyAllDay="${isInstance and invite.component.allDay ? '1' : ''}"/>
                                 <%-- <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/> --%>
-                                <rest:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}"
+                                <rest:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}" timezone="${timezone}"
                                                         showInviteReply="${not readOnly}" externalImageUrl="${extImageUrl}" composeUrl="${composeUrl}" newWindowUrl=""/>
                             </td>
                         </tr>
