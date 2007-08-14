@@ -10,7 +10,7 @@
 <table width=100% cellspacing=0 class='Tb'>
     <tr>
         <td align=left class=TbBt>
-            <a href="${requestScope.zimbra_target_item_name}.ics"><app:img src="calendar/CalendarApp.gif"/></a>
+            <a href="${requestScope.zimbra_target_item_name}.ics"><app:img src="calendar/CalendarApp.gif"/><span>${requestScope.zimbra_target_item_name}.ics</span></a>
         </td>
         <td align='right' class='ZhCalTimeZone'>
             ${fn:escapeXml(zm:getWindowsId(timezone))}
