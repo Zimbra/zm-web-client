@@ -75,7 +75,7 @@ function(name) {
 };
 
 ZmSearchResult.prototype.set =
-function(respEl, contactSource) {
+function(respEl) {
 
 	if (!this.search) { return; }
 	this._respEl = respEl;
@@ -83,13 +83,14 @@ function(respEl, contactSource) {
 	var foundType = {};
 	var numTypes = 0;
 	var currentType, defaultType;
+	var isGalSearch = this.search.isGalSearch;
 	
 	var _st = new Date();
 	var count = 0;
-	if (this.search.isGalSearch || this.search.isCalResSearch) {
+	if (isGalSearch || this.search.isCalResSearch) {
 		// process JS eval result for SearchGalRequest
-		currentType = defaultType = this.search.isGalSearch ? ZmItem.CONTACT : ZmItem.RESOURCE;
-		var data = this.search.isGalSearch ? respEl.cn : respEl.calresource;
+		currentType = defaultType = isGalSearch ? ZmItem.CONTACT : ZmItem.RESOURCE;
+		var data = isGalSearch ? respEl.cn : respEl.calresource;
 		if (data) {
 			if (!this._results[currentType]) {
 				// create list as needed - may invoke package load
@@ -97,6 +98,11 @@ function(respEl, contactSource) {
 			}
 			for (var j = 0; j < data.length; j++) {
 				this._results[currentType].addFromDom(data[j]);
+			}
+
+			// manually sort gal results since server won't do it for us :(
+			if (isGalSearch) {
+				this._results[currentType].getArray().sort(ZmSearchResult._sortGalResults)
 			}
 			count = data.length;
 		}
@@ -132,7 +138,7 @@ function(respEl, contactSource) {
 	if (!count) {
 		this._results[defaultType] = ZmItem.RESULTS_LIST[defaultType](this.search);
 	}
-	if ((this.search.isGalSearch || this.search.isGalAutocompleteSearch) && this._results[ZmItem.CONTACT]) {
+	if ((isGalSearch || this.search.isGalAutocompleteSearch) && this._results[ZmItem.CONTACT]) {
 		this._results[ZmItem.CONTACT].setIsGal(true);
 	}
 	
@@ -148,4 +154,11 @@ function(respEl, contactSource) {
 	}
 
 	return this.type;
+};
+
+ZmSearchResult._sortGalResults =
+function(a, b) {
+	var af = a.getFileAs().toLowerCase();
+	var bf = b.getFileAs().toLowerCase();
+	return af < bf ? -1 : (af > bf ? 1 : 0);
 };

@@ -264,7 +264,7 @@ function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result)
 		response = response.SearchResponse;
 	}
 	var searchResult = new ZmSearchResult(this);
-	searchResult.set(response, this.contactSource);
+	searchResult.set(response);
 	result.set(searchResult);
 	
 	if (callback) {
