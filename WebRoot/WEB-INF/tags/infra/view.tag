@@ -223,12 +223,12 @@
 			<td id='skin_td_R4' class='ImgSkin_Chrome_R4__H' colspan=5>
 				<table width=100% id='skin_table_R4' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 					<tr>
-						<td style='text-align:left;padding-left:20px;'>&copy; 2006 Comcast Cable Communications</td>
-						<td>Privacy Statement</td>
-						<td>Terms of Service</td>
-						<td>Contact Us</td>
-						<td>Add Comcast Services</td>
-						<td>Tell Us What You Think</td>
+						<td style='text-align:left;padding-left:20px;'>&copy; 2007 Comcast Cable Communications</td>
+						<td><a href="http://www.comcast.net/privacy/" target="_new">Privacy Statement</a></td>
+						<td><a href="http://www.comcast.net/terms/" target="_new">Terms of Service</a></td>
+						<td><a href="http://www.comcast.net/help/contact" target="_new">Contact Us</a></td>
+						<td><a href="http://www.comcast.com/shop/buyflow/default.ashx" target="_new">Add Comcast Services</a></td>
+						<td><a href="http://www.comcastsupport.com/sdcxuser/lachat/user/webmailfeedback.asp" target="_new">Tell Us What You Think</a></td>
 						<td width=1 align=right><div class='ImgSkin_Customer_Logo_Bottom'></div></td>
 					</tr>
 				</table>
