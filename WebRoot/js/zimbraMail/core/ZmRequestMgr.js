@@ -443,20 +443,20 @@ function(modifies) {
 	this._controller.runAppFunction("modifyNotify", modifies);
 
 	for (var name in modifies) {
+		if (name == "mbx") {
+			var setting = this._controller._settings.getSetting(ZmSetting.QUOTA_USED);
+			setting.notifyModify({_name:name, s:modifies[name].s});
+			continue;
+		}
+
 		var list = modifies[name];
 		for (var i = 0; i < list.length; i++) {
 			var mod = list[i];
 			if (mod._handled || this._modifyHandled[mod.id]) { continue; }
 			DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling modified notif for ID " + mod.id + ", node type = " + name);
-			if (name == "mbx") {
-				var setting = this._controller._settings.getSetting(ZmSetting.QUOTA_USED);
-				setting.notifyModify(mod);
-				continue;
-			} else {
-				var item = appCtxt.cacheGet(mod.id);
-				if (item) {
-					item.notifyModify(mod);
-				}
+			var item = appCtxt.cacheGet(mod.id);
+			if (item) {
+				item.notifyModify(mod);
 			}
 		}
 	}

@@ -995,8 +995,6 @@ function() {
 		this._setUserInfoLink("ZmZimbraMail.conditionalLogOff();", "Logoff", text, "skin_container_logoff", hideIcon);
 	}
 
-	var data = {};
-
 	var login = appCtxt.get(ZmSetting.USERNAME);
 	var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
 	if (username) {
@@ -1010,112 +1008,57 @@ function() {
 	var quota = appCtxt.get(ZmSetting.QUOTA);
 	var usedQuota = (appCtxt.get(ZmSetting.QUOTA_USED)) || 0;
 	var size = AjxUtil.formatSize(usedQuota, false, 1);
-	var quotaTooltip = null;
 
-	data['login'] = login;
-	data['username'] = username;
-	data['quota'] = quota;
-	data['usedQuota'] = usedQuota;
-	data['size'] = size;
+	var data = {
+		login: login,
+		username: username,
+		quota: quota,
+		usedQuota: usedQuota,
+		size: size
+	};
 
-
-	/*
-	var html = [];
-	var idx = 0;
-	html[idx++] = "<center><table border=0 cellpadding=0 cellspacing=0 class='BannerBar'><tr";
-	html[idx++] = AjxEnv.isLinux ? " style='line-height: 13px'" : ""; // bug #3355;
-	html[idx++] = "><td class='BannerTextQuota'>";
-	html[idx++] = ZmMsg.quota;
-	html[idx++] = ": </td>";
-	if (quota) {
-		var limit = AjxUtil.formatSize(quota, false, 1);
-		var percent = Math.min(Math.round((usedQuota / quota) * 100), 100);
-		
-		// set background color based on percent used
-		var progressClassName = "quotaUsed";
-		if (percent < 85 && percent > 65)
-			progressClassName = "quotaWarning";
-		else if (percent >= 85)
-			progressClassName = "quotaCritical";
-
-		html[idx++] = "<td><div class='quotabar'><div style='width: ";
-		html[idx++] = percent;
-		html[idx++] = ";' class='";
-		html[idx++] = progressClassName;
-		html[idx++] = "'></div></div></td>";
-
-		var desc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [size, limit]);
-		quotaTooltip = [ZmMsg.quota, ": ", percent, "% ", desc].join("");
-	} else {
-		var desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [size]);
-		html[idx++] = "<td class='BannerTextQuota'>";
-		html[idx++] = desc;
-		html[idx++] = "</td>";
-	}
-	html[idx++] = "</tr></table></center>";
-	*/
+	var quotaTooltip;
 	var quotaTemplateId;
 	if (quota) {
 		quotaTemplateId = 'UsedLimited';
-		data['limit'] = AjxUtil.formatSize(data.quota, false, 1);
-		data['percent'] = Math.min(Math.round((data.usedQuota / data.quota) * 100), 100);
-		data['desc'] = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.percent+'%', data.limit]);
-		var tooltipDesc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.size, data.limit]);
+		data.limit = AjxUtil.formatSize(data.quota, false, 1);
+		data.percent = Math.min(Math.round((data.usedQuota / data.quota) * 100), 100);
+		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.percent+'%', data.limit]);
+		var tooltipDesc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [size, data.limit]);
 		quotaTooltip = [ZmMsg.quota, ": ", data.percent, "% ", '('+tooltipDesc+')'].join("");
 	}
 	else {
-		data['desc'] = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [size]);
+		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [size]);
 		quotaTemplateId = 'UsedUnlimited';
 	}
 
-//	if (!appCtxt.get(ZmSetting.SKIN_HINTS, "help_button.hideIcon")) {
-		//this._usedQuotaField.getHtmlElement().innerHTML = html.join("");
-//	}
 	data['id'] = this._usedQuotaField._htmlElId;
-	this._usedQuotaField.getHtmlElement().innerHTML =
-		AjxTemplate.expand('zimbraMail.share.templates.Quota#'+quotaTemplateId,
-							data)
+	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('zimbraMail.share.templates.Quota#'+quotaTemplateId, data)
 
 	if (userTooltip || quotaTooltip) {
-		var tooltip = [];
-		idx = 0;
-		tooltip[idx++] = "<table>";
-		if (userTooltip) {
-			tooltip[idx++] = "<tr><td>";
-			tooltip[idx++] = userTooltip;
-			tooltip[idx++] = "</td></tr>";
-		}
-		if (quotaTooltip) {
-			tooltip[idx++] = "<tr><td><center>";
-			tooltip[idx++] = quotaTooltip;
-			tooltip[idx++] = "</center></td></tr>";
-		}
-		tooltip[idx++] = "</table>";
-		this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(tooltip.join(""));
-		this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(tooltip.join(""));
+		var subs = {
+			userTooltip: userTooltip,
+			quotaTooltip: quotaTooltip
+		};
+		var html = AjxTemplate.expand('zimbraMail.share.templates.Quota#Tooltip', subs);
+		this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
+		this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(html);
 	}
 };
 
 ZmZimbraMail.prototype._setUserInfoLink =
 function(staticFunc, icon, lbl, id, hideIcon) {
-	var html = [];
-	var i = 0;
-	html[i++] = "<table border=0 cellpadding=1 cellspacing=1 align=right width=1%><tr>";
-	if (!hideIcon) {
-		html[i++] = "<td align=right><a href='javascript:;' onclick='";
-		html[i++] = staticFunc;
-		html[i++] = "'>";
-		html[i++] = AjxImg.getImageHtml(icon, null, "border=0");
-		html[i++] = "</a></td>";
-	}
-	html[i++] = "<td width=1% align=right style='white-space:nowrap; font-weight:bold'><a href='javascript:;' onclick='";
-	html[i++] = staticFunc;
-	html[i++] = "'>";
-	html[i++] = lbl;
-	html[i++] = "</a></td></tr></table>";
+	var subs = {
+		staticFunc: staticFunc,
+		icon: icon,
+		lbl: lbl,
+		hideIcon: hideIcon
+	};
 
 	var cell = document.getElementById(id);
-	if (cell) cell.innerHTML = html.join("");
+	if (cell) {
+		cell.innerHTML = AjxTemplate.expand('zimbraMail.share.templates.App#UserInfo', subs);
+	}
 };
 
 // Listeners

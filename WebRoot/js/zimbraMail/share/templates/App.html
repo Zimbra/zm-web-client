@@ -43,6 +43,21 @@
 	</div>
 </template>
 
+<template id="UserInfo">
+	<table border=0 cellpadding=1 cellspacing=1 align=right width=1%>
+		<tr>
+			<$ if (!data.hideIcon) { $>
+				<td align=right>
+					<a href='javascript:;' onclick='${staticFunc}'><$= AjxImg.getImageHtml(data.icon, null, "border=0") $></a>
+				</td>
+			<$ } $>
+			<td width=1% align=right style='white-space:nowrap; font-weight:bold'>
+				<a href='javascript:;' onclick='${staticFunc}'>${lbl}</a>
+			</td>
+		</tr>
+	</table>
+</template>
+
 <template id="PrintView">
 	<html>
 		<head>
