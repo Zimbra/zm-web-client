@@ -281,15 +281,19 @@ function() {
 ZmListController.prototype._participantOps =
 function() {
 	var ops = [ZmOperation.SEARCH, ZmOperation.BROWSE];
-	if(ZmSetting.MAIL_ENABLED) {
+
+	if (ZmSetting.MAIL_ENABLED) {
 		ops.push(ZmOperation.NEW_MESSAGE);
 	}
+
 	if (ZmSetting.IM_ENABLED) {
 		ops.push(ZmOperation.IM);
 	}
-	if(ZmSetting.CONTACTS_ENABLED) {
+
+	if (ZmSetting.CONTACTS_ENABLED) {
 		ops.push(ZmOperation.CONTACT);
 	}
+
 	return ops;
 };
 

@@ -143,9 +143,12 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		idx = this._getImageHtml(htmlArr, idx, msg.getStatusIcon(), this._getFieldId(msg, field));
 		htmlArr[idx++] = "</center>";
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
-		if (this._mode == ZmController.TRAD_VIEW && (msg.folderId == ZmFolder.ID_SENT ||
-			msg.folderId == ZmFolder.ID_DRAFTS || msg.folderId == ZmFolder.ID_OUTBOX)) {
-
+		// setup participants list for Sent/Drafts/Outbox folders
+		if (this._mode == ZmController.TRAD_VIEW &&
+			(msg.folderId == ZmFolder.ID_SENT ||
+			 msg.folderId == ZmFolder.ID_DRAFTS ||
+			 msg.folderId == ZmFolder.ID_OUTBOX))
+		{
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
 	
 			// default to FROM addresses if no TO: found
@@ -175,8 +178,9 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 					}
 				}
 			}
-
-		} else {
+		}
+		else
+		{
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 			if (fromAddr) {
 				if (this._mode == ZmController.CONVLIST_VIEW) {
