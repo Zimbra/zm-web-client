@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmContactView = function(parent, controller) {
+ZmContactView = function(parent, controller, isMyCardView) {
 	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, "ZmContactView", DwtControl.ABSOLUTE_STYLE);
@@ -35,6 +35,7 @@ ZmContactView = function(parent, controller) {
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 	this._dateFormatter = new AjxDateFormat("yyyy-MM-dd");
 	this._currentTabIdx = 1;
+	this._isMyCardView = isMyCardView;
 
 	this.setScrollStyle(Dwt.SCROLL);
 };
@@ -565,7 +566,8 @@ function(contact) {
 	this._contactTabView.addStateChangeListener(new AjxListener(this, this._tabStateChangeListener));
 	this._contactTabView.reparentHtmlElement(this._htmlElId + "_tabs");
 
-	var params = AjxTemplate.getParams("zimbraMail.abook.templates.Contacts#ZmContactViewTabs");
+	var tabTemplate = this._isMyCardView ? "zimbraMail.abook.templates.Contacts#ZmContactViewMyCardTabs" : "zimbraMail.abook.templates.Contacts#ZmContactViewTabs";
+	var params = AjxTemplate.getParams(tabTemplate);
 	var tabStr = params ? params["tabs"] : null;
 	this._tabs = tabStr ? tabStr.split(",") : null;
 

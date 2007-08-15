@@ -66,8 +66,9 @@ ZmContactList = function(search, isGal, type) {
 	this._loadCount = 0;
 	this._showStatus = true;
 	this._galFailures = 0;
+    this._myCard = null;
 
-	this._acMatchFields = ZmContactList.AC_FIELDS;
+    this._acMatchFields = ZmContactList.AC_FIELDS;
 };
 
 ZmContactList.prototype = new ZmList;
@@ -551,9 +552,19 @@ function(item) {
 	this._updateAcList(item, true);
 };
 
+ZmContactList.prototype.getMyCard =
+function() {
+    if (this._myCard) {
+        this._realizeContact(this._myCard);
+        return this._myCard;
+    } else {
+        return null;
+    }
+};
+
 ZmContactList.prototype._updateHashes =
 function(contact, doAdd) {
-	// Update email hash.
+    // Update email hash.
 	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
 		var email = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
 		if (email) {
@@ -589,6 +600,26 @@ function(contact, doAdd) {
 			else
 				delete this._imAddressToContact[imaddr];
 		}
+	}
+
+	// Update my card.
+	if (ZmContact.getAttr(contact, ZmContact.X_isMyCard) == "TRUE") {
+		if (!this._myCard) {
+			var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
+			var params = {
+				id: ZmOrganizer.ID_MY_CARD,
+				name: ZmMsg.myCard,
+				parent: root,
+				tree: root.tree,
+				type: ZmOrganizer.ADDRBOOK,
+				numTotal: 1
+			};
+			var addrBook = new ZmAddrBook(params);
+			root.children.add(addrBook);
+			addrBook._notify(ZmEvent.E_CREATE)
+		}
+		this._myCard = contact;
+		contact._isMyCard = true;
 	}
 };
 

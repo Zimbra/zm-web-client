@@ -27,10 +27,6 @@ ZmContactController = function(container, abApp) {
 
 	ZmListController.call(this, container, abApp);
 
-	this._viewFactory = {};
-	this._viewFactory[ZmController.CONTACT_VIEW] = ZmContactView;
-	this._viewFactory[ZmController.GROUP_VIEW] = ZmGroupView;
-
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
 
@@ -116,15 +112,29 @@ function() {
 
 ZmContactController.prototype._getViewType =
 function() {
-	return this._contact.isGroup()
-		? ZmController.GROUP_VIEW
-		: ZmController.CONTACT_VIEW;
+	if (this._contact.isGroup()) {
+		return ZmController.GROUP_VIEW; 
+	} else if (this._contact.isMyCard && this._contact.isMyCard()) {
+		return ZmController.MY_CARD_VIEW;
+	} else {
+		return ZmController.CONTACT_VIEW;
+	}
 };
 
 ZmContactController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {
-		this._listView[view] = new this._viewFactory[view](this._container, this);
+		switch (view) {
+			case ZmController.CONTACT_VIEW:
+		    	this._listView[view] = new ZmContactView(this._container, this, false);
+				break;
+			case ZmController.GROUP_VIEW:
+		    	this._listView[view] = new ZmGroupView(this._container, this);
+				break;
+			case ZmController.MY_CARD_VIEW:
+		    	this._listView[view] = new ZmContactView(this._container, this, true);
+				break;
+		}
 	}
 };
 
@@ -205,6 +215,10 @@ function(parent, num) {
 		parent.enable(ZmOperation.TAG_MENU, false);
 	} else {
 		ZmListController.prototype._resetOperations.call(this, parent, num);
+	}
+
+	if (this._contact.isMyCard()) {
+		parent.enable([ZmOperation.DELETE], false);
 	}
 };
 

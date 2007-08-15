@@ -767,7 +767,27 @@
 	html[idx++] = this._uri;
 	html[idx++] = "' id='";
 	html[idx++] = uploadFormId;
-	html[idx++] = "' enctype='multipart/form-data'></form>";
+	html[idx++] = "' enctype='multipart/form-data'>
+</form>";
+
+
+<template id="ZmContactViewMyCardTabs" tabs="myCardHome,myCardWork"></template>
+
+<template id="ZmContactView_myCardWork">
+    <!-- Use the standard work tab contents. Other skins can override this. -->
+    <$
+        _i = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#ZmContactView_work", data, buffer);
+    $>
+</template>
+<template id="ZmContactView_myCardHome">
+    <!-- Use the standard home tab contents. Other skins can override this. -->
+    <$
+		_i = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#ZmContactView_home", data, buffer);
+    $>
+</template>
+
+
+		
 
 <!----------------------------------------------------------------------------->
 <!------------------------------ Contact Tooltip ------------------------------>

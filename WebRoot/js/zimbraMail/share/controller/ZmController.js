@@ -67,6 +67,7 @@ ZmController.LOADING_VIEW				= "LOADING";
 ZmController.MIXED_VIEW					= "MX";
 ZmController.MSG_NEW_WIN_VIEW			= "MSGNW"; // needed for HACK (see ZmMailMsg)
 ZmController.MSG_VIEW 					= "MSG";
+ZmController.MY_CARD_VIEW				= "MYC";
 ZmController.NOTEBOOK_FILE_VIEW			= "NBF";
 ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= "NBPE";
 ZmController.NOTEBOOK_PAGE_VIEW			= "NBP";

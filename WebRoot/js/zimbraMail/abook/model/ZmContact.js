@@ -127,6 +127,7 @@ ZmContact.F_dlist			= "dlist";
 ZmContact.X_fileAs			= "fileAs";
 ZmContact.X_firstLast		= "firstLast";
 ZmContact.X_fullName		= "fullName";
+ZmContact.X_isMyCard		= "ismycard";
 
 // GAL fields
 ZmContact.GAL_MODIFY_TIMESTAMP = "modifyTimeStamp";
@@ -609,12 +610,13 @@ function(attr, callback) {
   				a.setAttribute("aid",attr[name].substring(4));
   			else if(attr[name].indexOf("part_") != -1)
   				a.setAttribute("part",attr[name].substring(5));	
-  		}else{
+  		} else {
   			a = soapDoc.set("a", attr[name], cn);
-  		}		
-			
+  		}
+
 		//var a = soapDoc.set("a", attr[name], cn);
 		a.setAttribute("n", name);
+
 		continueRequest = true;
 	}
 
@@ -934,6 +936,11 @@ ZmContact.prototype.getOtherAddrField =
 function(instance) {
 	var attrs = this.getAttrs();
 	return this._getAddressField(attrs.otherStreet, attrs.otherCity, attrs.otherState, attrs.otherPostalCode, attrs.otherCountry);
+};
+
+ZmContact.prototype.isMyCard =
+function() {
+	return this.list && (this.list.getMyCard() == this);
 };
 
 ZmContact.prototype._getAddressField =

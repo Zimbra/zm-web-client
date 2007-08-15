@@ -98,6 +98,7 @@ function() {
 	else if (this.nId == ZmFolder.ID_TRASH)			{ icon = "Trash"; }
 	else if (this.link)								{ icon = "SharedContactsFolder"; }
 	else if (this.nId == ZmFolder.ID_AUTO_ADDED)	{ icon = "EmailedContacts"; }
+	else if (this.nId == ZmOrganizer.ID_MY_CARD)	{ icon = "Person"; }
 	else											{ icon = "ContactsFolder"; }
 
 	return icon;
@@ -140,6 +141,10 @@ function(params, ex) {
 ZmAddrBook.prototype.mayContain =
 function(what) {
 	if (!what) return true;
+
+	if (this.id == ZmOrganizer.ID_MY_CARD) {
+		return false;
+	}
 
 	if (what instanceof ZmAddrBook) {
 		// allow non-system folders in Trash to be dragged ONLY to root OR

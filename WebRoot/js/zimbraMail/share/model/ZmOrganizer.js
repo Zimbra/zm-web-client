@@ -111,6 +111,7 @@ ZmOrganizer.ID_OUTBOX    		= 254;
 ZmOrganizer.ID_ZIMLET			= -1000;  // zimlets need a range.  start from -1000 incrementing up.
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
+ZmOrganizer.ID_MY_CARD			= -15;
 
 // default folder for org type
 ZmOrganizer.DEFAULT_FOLDER = {};

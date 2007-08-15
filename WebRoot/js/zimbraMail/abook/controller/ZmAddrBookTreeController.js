@@ -68,6 +68,8 @@ function(parent, type, id) {
 		parent.enableAll(false);
 		parent.enable(ZmOperation.DELETE, true);
 		deleteText = ZmMsg.emptyTrash;
+	} else if (id == ZmOrganizer.ID_MY_CARD){
+		parent.enableAll(false);
 	} else {
 		parent.enableAll(true);
 		var addrBook = appCtxt.getById(id);
@@ -157,7 +159,11 @@ function(ev) {
 */
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
-	if (folder.type == ZmOrganizer.SEARCH) {
+	if (folder.id == ZmOrganizer.ID_MY_CARD) {
+		var controller = AjxDispatcher.run("GetContactController");
+		var contacts = AjxDispatcher.run("GetContacts");
+		controller.show(contacts.getMyCard());
+	} else if (folder.type == ZmOrganizer.SEARCH) {
 		// if the clicked item is a search (within the folder tree), hand
 		// it off to the search tree controller
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
