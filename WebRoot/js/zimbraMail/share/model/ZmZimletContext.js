@@ -452,7 +452,7 @@ ZmZimletContext._zmObjectTransformers = {
 			// ret.flagged      = oi.getFlagged();
 			ret.unread       = oi.isUnread;
 			ret.attachment   = oi._attachments.length > 0;
-			ret.attlinks     = oi._attLinks;
+			ret.attlinks     = oi._attLinks || oi.getAttachmentLinks();
 			// ret.forwarded      = oi.isForwarded();
 			ret.sent         = oi.isSent;
 			ret.replied      = oi.isReplied;
@@ -481,13 +481,11 @@ ZmZimletContext._zmObjectTransformers = {
 			ret.participants = oi.participants.getArray();
 			ret.numMsgs      = oi.numMsgs;
 			ret.tags         = oi.tags;
-			// ret.flagged      = oi.getFlagged();
 			ret.unread       = oi.isUnread;
-			// ret.attachment   = oi._attachments ?;
-			// ret.sent         = oi.isSent;
 			
 			// Use first message... maybe should be getHotMsg()?
 			ret.body         = ZmZimletContext._getMsgBody(oi.getFirstMsg());
+			
 			all[i] = ret;
 		}
 		if(all.length == 1) {
