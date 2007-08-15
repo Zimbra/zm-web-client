@@ -411,10 +411,9 @@ function(viewId) {
  * Creates the mini-calendar widget that sits below the overview.
  * 
  * @param date		[Date]*		date to highlight (defaults to today)
- * @param delay		[int]		ms to delay before fetching appts
  */
 ZmCalViewController.prototype._createMiniCalendar =
-function(date, delay) {
+function(date) {
 	date = date ? date : new Date();
 
 	this._miniCalendar = new DwtCalendar(this._container, null, DwtControl.ABSOLUTE_STYLE, this.firstDayOfWeek());
@@ -444,7 +443,7 @@ function(date, delay) {
 		workingWeek[i] = (d > 0 && d < 6);
 	}
 	this._miniCalendar.setWorkingWeek(workingWeek);
-	this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL, delay);
+	this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
 
 	// add mini-calendar to skin
 	var components = {};
@@ -1690,10 +1689,10 @@ function(work, view, list) {
 };
 
 ZmCalViewController.prototype._scheduleMaintenance =
-function(work, delay) {
+function(work) {
 	// schedule timed action
 	if (this._pendingWork == ZmCalViewController.MAINT_NONE) {
-		AjxTimedAction.scheduleAction(this._maintTimedAction, delay || 0);
+		AjxTimedAction.scheduleAction(this._maintTimedAction, 0);
 	}
 	this._pendingWork |= work;
 };
