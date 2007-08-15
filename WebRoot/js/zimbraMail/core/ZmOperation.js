@@ -281,7 +281,8 @@ function(parent, id, opHash, index) {
 	} else if (id == ZmOperation.FILLER) {	// toolbar only
 		parent.addFiller(null, index);
 	} else {
-		opHash[id] = parent.createOp(id, opDesc, index);
+		if(index) opDesc.index = index;
+		opHash[id] = parent.createOp(id, opDesc );
 	}
 	var callback = ZmOperation.CALLBACK[id];
 	if (callback) {
