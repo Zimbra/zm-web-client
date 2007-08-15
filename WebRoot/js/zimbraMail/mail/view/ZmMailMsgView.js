@@ -721,16 +721,20 @@ function(origText) {
 	};
 	// avoid closure memory leaks
 	(function() {
-		self._highlightObjectsId = Dwt.getNextId();
-		var subs = {
-			id: self._highlightObjectsId,
-			text: ZmMsg.objectsNotDisplayed,
-			link: ZmMsg.hiliteObjects
-		};
-		var html = AjxTemplate.expand("zimbraMail.mail.templates.Message#InformationBar", subs);
-		self.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
-		var div = document.getElementById(subs.id+"_link");
-		Dwt.setHandler(div, DwtEvent.ONCLICK, func);
+		var infoBarDiv = document.getElementById(self._infoBarId);
+		if (infoBarDiv) {
+			self._highlightObjectsId = Dwt.getNextId();
+			var subs = {
+				id: self._highlightObjectsId,
+				text: ZmMsg.objectsNotDisplayed,
+				link: ZmMsg.hiliteObjects
+			};
+			var html = AjxTemplate.expand("zimbraMail.mail.templates.Message#InformationBar", subs);
+			infoBarDiv.appendChild(Dwt.parseHtmlFragment(html));
+
+			var div = document.getElementById(subs.id+"_link");
+			Dwt.setHandler(div, DwtEvent.ONCLICK, func);
+		}
 	})();
 };
 
@@ -748,15 +752,15 @@ function(container, html, isTextMsg) {
 		// prevent appending the "Display Images" info bar more than once
 		var dispImagesDiv = document.getElementById(this._displayImagesId);
 		if (!dispImagesDiv) {
-			var subs = {
-				id: this._displayImagesId,
-				text: ZmMsg.externalImages,
-				link: ZmMsg.displayExternalImages
-			};
-			var extImagesHtml = AjxTemplate.expand("zimbraMail.mail.templates.Message#InformationBar", subs);
-			displayImages = Dwt.parseHtmlFragment(extImagesHtml);
 			var infoBarDiv = document.getElementById(this._infoBarId);
 			if (infoBarDiv) {
+				var subs = {
+					id: this._displayImagesId,
+					text: ZmMsg.externalImages,
+					link: ZmMsg.displayExternalImages
+				};
+				var extImagesHtml = AjxTemplate.expand("zimbraMail.mail.templates.Message#InformationBar", subs);
+				displayImages = Dwt.parseHtmlFragment(extImagesHtml);
 				infoBarDiv.appendChild(displayImages);
 			}
 		}
