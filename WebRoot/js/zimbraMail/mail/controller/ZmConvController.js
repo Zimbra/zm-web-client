@@ -340,16 +340,22 @@ ZmConvController.prototype._resetOperations =
 function(parent, num) {
 	ZmDoublePaneController.prototype._resetOperations.call(this, parent, num);
 
-	var canDelete = true;
-	if (this._getSearchFolderId() != ZmFolder.ID_TRASH) {
-		// if all selected items are deleted, then disable delete button
-		// XXX: hmmm, that also disables "Delete Conv" in the menu
-		canDelete = false;
-		var selItems = this._listView[this._currentView].getSelection();
-		for (var i = 0; i < selItems.length; i++) {
-			if (selItems[i] && selItems[i].folderId != ZmFolder.ID_TRASH) {
-				canDelete = true;
-				break;
+	var canDelete = false;
+	var folderId = this._getSearchFolderId();
+	var folder = folderId ? appCtxt.getById(folderId) : null;
+
+	if (!folder || (folder && !folder.isReadOnly())) {
+		canDelete = true;
+		if (folderId != ZmFolder.ID_TRASH) {
+			// if all selected items are deleted, then disable delete button
+			// XXX: hmmm, that also disables "Delete Conv" in the menu
+			canDelete = false;
+			var selItems = this._listView[this._currentView].getSelection();
+			for (var i = 0; i < selItems.length; i++) {
+				if (selItems[i] && selItems[i].folderId != ZmFolder.ID_TRASH) {
+					canDelete = true;
+					break;
+				}
 			}
 		}
 	}
