@@ -230,13 +230,14 @@ function(response) {
 
 ZmFolderPropsDialog.prototype._handleRenameError =
 function(response) {
-	// REVISIT: This should be handled generically. But the server doesn't
-	//          send back the information necessary to generate the error
-	//          message.
-	var controller = appCtxt.getAppController();
-	var name = this._nameInputEl.value;
-	var msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
-	controller.popupErrorDialog(msg, null, null, true);
+	var value = this._nameInputEl.value;
+	var msg, detail;
+	if (response.code == ZmCsfeException.MAIL_ALREADY_EXISTS) {
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [value]);
+	} else if (response.code == ZmCsfeException.MAIL_IMMUTABLE) {
+		msg = AjxMessageFormat.format(ZmMsg.errorCannotRename, [value]);
+	}
+	appCtxt.getAppController().popupErrorDialog(msg, response.msg, null, true);
 	return true;
 };
 
@@ -258,24 +259,14 @@ function(event) {
 	} else {
 		organizer = this._organizer;
 	}
-	if (!organizer) return;
+	if (!organizer) { return; }
 	
-	if (organizer.id == ZmOrganizer.ID_CALENDAR ||
-		organizer.id == ZmOrganizer.ID_NOTEBOOK ||
-		organizer.id == ZmOrganizer.ID_ADDRBOOK ||
-		organizer.id == ZmOrganizer.ID_AUTO_ADDED ||
-		organizer.id == ZmOrganizer.ID_INBOX ||
-		organizer.id == ZmOrganizer.ID_OUTBOX || 
-		organizer.id == ZmOrganizer.ID_CHATS ||
-		organizer.id == ZmOrganizer.ID_TASKS || 
-		organizer.id == ZmOrganizer.ID_BRIEFCASE )
-	{
+	if (organizer.isSystem()) {
 		this._nameOutputEl.innerHTML = AjxStringUtil.htmlEncode(organizer.name);
 		this._nameOutputEl.style.display = "block";
 		this._nameInputEl.style.display = "none";
 	}
-	else
-	{
+	else {
 		this._nameInputEl.value = organizer.name;
 		this._nameInputEl.style.display = "block";
 		this._nameOutputEl.style.display = "none";
