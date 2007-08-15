@@ -453,6 +453,7 @@ ZmZimletContext._zmObjectTransformers = {
 			// ret.flagged      = oi.getFlagged();
 			ret.unread       = oi.isUnread;
 			ret.attachment   = oi._attachments.length > 0;
+			ret.attlinks     = oi._attLinks || oi.getAttachmentLinks();
 			// ret.forwarded      = oi.isForwarded();
 			ret.sent         = oi.isSent;
 			ret.replied      = oi.isReplied;

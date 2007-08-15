@@ -142,6 +142,39 @@ function(callback, result) {
 	if (callback) callback.run(result);
 };
 
+
+
+//Fixme: Needs some changes to fetch messages from the cache. 
+ZmConv.prototype.loadMsgs = function(callback){
+	
+	var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
+	var msgNode = soapDoc.set("c");
+	msgNode.setAttribute("id", this.id);
+	msgNode.setAttribute("fetch","all");
+
+	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgs, callback);
+
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+
+};
+
+ZmConv.prototype._handleResponseLoadMsgs = function(callback, result){
+
+	var resp = result.getResponse().GetConvResponse.c[0];
+	var len  = resp.m.length;
+	var msgs = [];
+	for( var i=0 ; i < len ; i++ ) {
+		var msgNode = resp.m[i];
+		var msg = ZmMailMsg.createFromDom(msgNode,this.msgs);
+		msgs.push(msg);
+	}
+	
+	if (callback) { callback.run(msgs); }
+};
+
+
+
+
 ZmConv.prototype.clear =
 function() {
 	if (this.msgs) {
