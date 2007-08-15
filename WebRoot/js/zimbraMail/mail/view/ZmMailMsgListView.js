@@ -144,10 +144,11 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		htmlArr[idx++] = "</center>";
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
 		// setup participants list for Sent/Drafts/Outbox folders
-		if (this._mode == ZmController.TRAD_VIEW &&
-			(msg.folderId == ZmFolder.ID_SENT ||
-			 msg.folderId == ZmFolder.ID_DRAFTS ||
-			 msg.folderId == ZmFolder.ID_OUTBOX))
+		var folder = appCtxt.getById(msg.folderId);
+		if (this._mode == ZmController.TRAD_VIEW && folder &&
+			(folder.isUnder(ZmFolder.ID_SENT) ||
+			 folder.isUnder(ZmFolder.ID_DRAFTS) ||
+			 folder.isUnder(ZmFolder.ID_OUTBOX)))
 		{
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
 	

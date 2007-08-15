@@ -85,12 +85,12 @@ function(newHeight) {
 
 ZmMailListView.prototype._isSentOrDraftsFolder = 
 function() {
-	var isSentFolder = (this._folderId == ZmFolder.ID_SENT);
-	var isDraftsFolder = (this._folderId == ZmFolder.ID_DRAFTS);
+	var folder = appCtxt.getById(this._folderId);
+	var isSentFolder = folder && folder.isUnder(ZmFolder.ID_SENT);
+	var isDraftsFolder = folder && folder.isUnder(ZmFolder.ID_DRAFTS);
 
 	// XXX: is the code below necessary?
-	
-	// if not in Sent/Drafts, deep dive into query to be certain		
+	// if not in Sent/Drafts, deep dive into query to be certain
 	if (!isSentFolder && !isDraftsFolder) {
 		// check for is:sent or is:draft w/in search query
 		var query = appCtxt.getCurrentSearch().query;
@@ -98,9 +98,9 @@ function() {
 		if (idx) {
 			var prefix = AjxStringUtil.trim(query.substring(0, idx));
 			if (prefix == "is") {
-				var folder = AjxStringUtil.trim(query.substring(idx+1));
-				isSentFolder = folder == ZmFolder.QUERY_NAME[ZmFolder.ID_SENT];
-				isDraftsFolder = folder == ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS];
+				var folderStr = AjxStringUtil.trim(query.substring(idx+1));
+				isSentFolder = folderStr == ZmFolder.QUERY_NAME[ZmFolder.ID_SENT];
+				isDraftsFolder = folderStr == ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS];
 			}
 		}
 	}
@@ -121,15 +121,9 @@ function(item, field) {
 
 ZmMailListView.prototype._getFragmentSpan =
 function(item) {
-	var html = [];
-	var idx = 0;
-	html[idx++] = "<span class='ZmConvListFragment' id='";
-	html[idx++] = this._getFieldId(item, ZmItem.F_FRAGMENT);
-	html[idx++] = "'>";
-	html[idx++] = this._getFragmentHtml(item);
-	html[idx++] = "</span>";
-	
-	return html.join("");
+	return ["<span class='ZmConvListFragment' id='",
+			this._getFieldId(item, ZmItem.F_FRAGMENT),
+			"'>", this._getFragmentHtml(item), "</span>"].join("");
 };
 
 ZmMailListView.prototype._getFragmentHtml =

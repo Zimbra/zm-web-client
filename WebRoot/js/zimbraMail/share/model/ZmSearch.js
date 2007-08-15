@@ -219,7 +219,12 @@ function(params) {
 				}
 				method.setAttribute("types", typeStr.join(","));
 				// special handling for showing participants ("To" instead of "From")
-				if (this.folderId == ZmFolder.ID_SENT || this.folderId == ZmFolder.ID_DRAFTS || this.folderId == ZmFolder.ID_OUTBOX) {
+				var folder = appCtxt.getById(this.folderId);
+				if (folder &&
+					folder.isUnder(ZmFolder.ID_SENT) ||
+					folder.isUnder(ZmFolder.ID_DRAFTS) ||
+					folder.isUnder(ZmFolder.ID_OUTBOX))
+				{
 					method.setAttribute("recip", "1");
 				}
 				// if we're prefetching the first hit message, also mark it as read
