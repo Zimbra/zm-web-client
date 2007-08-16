@@ -294,3 +294,33 @@ function(ev) {
 		this._doMove(items, folder);
 	}
 };
+
+ZmMixedController.prototype._deleteListener =
+function(ev) {
+	// Disallow my card delete.
+	var items = this._listView[this._currentView].getSelection();
+	for (var i = 0, count = items.length; i < count; i++) {
+		var item = items[i];
+		if ((item instanceof ZmContact) && item.isMyCard()) {
+			appCtxt.setStatusMsg(ZmMsg.errorMyCardDelete, ZmStatusView.LEVEL_WARNING);
+			return;
+		}
+	}
+
+	ZmMailListController.prototype._deleteListener.call(this, ev);
+};
+
+ZmMixedController.prototype._moveListener =
+function(ev) {
+	// Disallow my card move.
+	var items = this._listView[this._currentView].getSelection();
+	for (var i = 0, count = items.length; i < count; i++) {
+		var item = items[i];
+		if ((item instanceof ZmContact) && item.isMyCard()) {
+			appCtxt.setStatusMsg(ZmMsg.errorMyCardMove, ZmStatusView.LEVEL_WARNING);
+			return;
+		}
+	}
+
+	ZmMailListController.prototype._moveListener.call(this, ev);
+};

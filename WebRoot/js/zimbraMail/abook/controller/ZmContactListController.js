@@ -441,20 +441,9 @@ function(parent, num) {
 			var folder = appCtxt.getById(this._folderId);
 			var isShare = folder && folder.link;
 			var canEdit = (folder == null || !folder.isReadOnly());
-			var canMove = canEdit;
-			if (canMove) {
-				var view = this._listView[this._currentView];
-				var selection = view.getSelection();
-				for (var i = 0, count = selection.length; i < count; i++) {
-					if (selection[i].isMyCard()) {
-						canMove = false;
-						break;
-					}
-				}
-			}
 
 			parent.enable([ZmOperation.TAG_MENU], !isShare && num > 0);
-			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canMove && num > 0);
+			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1);
 
 			if (printMenuItem) {
@@ -650,7 +639,16 @@ function(view, bPageForward) {
 
 ZmContactListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
+	// Disallow my card delete.
+	for (var i = 0, count = items.length; i < count; i++) {
+		if (items[i].isMyCard()) {
+			appCtxt.setStatusMsg(ZmMsg.errorMyCardDelete, ZmStatusView.LEVEL_WARNING);
+			return;
+		}
+	}
+
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
+
 	// if more contacts to show,
 	var size = this._listView[this._currentView].getSelectedItems().size();
 	if (size == 0) {
@@ -662,6 +660,20 @@ function(items, hardDelete, attrs) {
 	}
 };
 
+ZmContactListController.prototype._moveListener =
+function(ev) {
+	// Disallow my card move.
+	var items = this._listView[this._currentView].getSelection();
+	for (var i = 0, count = items.length; i < count; i++) {
+		if (items[i].isMyCard()) {
+			appCtxt.setStatusMsg(ZmMsg.errorMyCardMove, ZmStatusView.LEVEL_WARNING);
+			return;
+		}
+	}
+
+	ZmListController.prototype._moveListener.call(this, ev);
+};
+
 ZmContactListController.prototype._checkReplenish =
 function() {
 	// reset the listview
@@ -671,3 +683,4 @@ function() {
 	var list = listview.getList();
 	if (list) { listview.setSelection(list.get(0)); }
 };
+
