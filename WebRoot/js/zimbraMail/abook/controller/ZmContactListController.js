@@ -441,9 +441,20 @@ function(parent, num) {
 			var folder = appCtxt.getById(this._folderId);
 			var isShare = folder && folder.link;
 			var canEdit = (folder == null || !folder.isReadOnly());
+			var canMove = canEdit;
+			if (canMove) {
+				var view = this._listView[this._currentView];
+				var selection = view.getSelection();
+				for (var i = 0, count = selection.length; i < count; i++) {
+					if (selection[i].isMyCard()) {
+						canMove = false;
+						break;
+					}
+				}
+			}
 
 			parent.enable([ZmOperation.TAG_MENU], !isShare && num > 0);
-			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
+			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canMove && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1);
 
 			if (printMenuItem) {
