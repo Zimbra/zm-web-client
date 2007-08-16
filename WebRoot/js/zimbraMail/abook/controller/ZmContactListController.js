@@ -300,7 +300,7 @@ function() {
 	var folders = folderTree.getByType(ZmOrganizer.ADDRBOOK);
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
-		if (folder.link && folder.isReadOnly()) {
+		if ((folder.link && folder.isReadOnly()) || (folder.id == ZmOrganizer.ID_MY_CARD)) {
 			omit[folder.id] = true;
 		}
 	}
