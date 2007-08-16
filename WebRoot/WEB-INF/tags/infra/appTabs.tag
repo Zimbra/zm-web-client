@@ -46,6 +46,15 @@
             </td>
             <td class='TabSpacerR'/>
         </c:if>
+        <c:if test="${mailbox.features.tasks}">
+            <td class='TabSpacer'/>
+            <td class='Tab ${selected=='tasks' ? 'TabSelected' :'TabNormal'}'>
+                <a id='TAB_TASKS' href="<c:url value="/h/search?st=task"/>">
+                    <span id='tab_ikon_tasks'><app:img src="tasks/TaskList.gif" altkey='ALT_APP_TASK'/></span><span><fmt:message
+                        key="tasks"/></span></a>
+            </td>
+            <td class='TabSpacerR'/>
+        </c:if>
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
             <a id='TAB_OPTIONS' href="<c:url value="/h/options"/>">

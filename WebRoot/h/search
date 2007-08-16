@@ -68,6 +68,9 @@
     <c:when test="${context.isContactSearch}">
         <app:contactListView context="${context}"/>
     </c:when>
+    <c:when test="${context.isTaskSearch}">
+        <app:taskListView context="${context}"/>
+    </c:when>
     <c:when test="${context.isVoiceMailSearch}">
         <app:voiceMailListView context="${context}"/>
     </c:when>

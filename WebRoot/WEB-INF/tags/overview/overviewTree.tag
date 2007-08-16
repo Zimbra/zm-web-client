@@ -4,6 +4,7 @@
 <%@ attribute name="contacts" rtexprvalue="true" required="false" %>
 <%@ attribute name="voice" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
+<%@ attribute name="tasks" rtexprvalue="true" required="false" %>
 <%@ attribute name="minical" rtexprvalue="true" required="false" %>
 <%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Calendar" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
@@ -18,6 +19,7 @@
 
 <c:if test="${folders}"><app:folderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
 <c:if test="${calendars}"><app:calendarFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
+<c:if test="${tasks}"><app:taskFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
 <c:if test="${contacts}"><app:contactFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
 <c:if test="${voice}"><app:voiceFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
 <c:if test="${mailbox.features.savedSearches}">

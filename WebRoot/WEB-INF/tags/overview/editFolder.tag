@@ -8,7 +8,7 @@
 
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:choose>
-    <c:when test="${folder.isAppointmentView or folder.isContactView}">
+    <c:when test="${folder.isAppointmentView or folder.isContactView or folder.isTaskView}">
         <c:set var="colorStyle" value="${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}"/>
     </c:when>
     <c:otherwise>
@@ -66,6 +66,19 @@
                                 </c:otherwise>
                             </c:choose>
                         </c:when>
+                        <c:when test="${folder.isTaskView}">
+                            <c:choose>
+                                <c:when test="${folder.isSystemFolder}">
+                                    <fmt:message key="taskListSystem"/>
+                                </c:when>
+                                <c:when test="${folder.isMountPoint}">
+                                    <fmt:message key="taskListShared"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <fmt:message key="taskListUser"/>
+                                </c:otherwise>
+                            </c:choose>
+                        </c:when>
                         <c:otherwise>
                             <c:choose>
                                 <c:when test="${folder.isSystemFolder}">
@@ -98,7 +111,7 @@
                                 <fmt:message key="folderItemCount">
                                 <fmt:param value="${folder.messageCount}"/>
                                 </fmt:message>
-                                <c:if test="${folder.unreadCount gt 0 and not (folder.isDrafts or folder.isContactView or folder.isAppointmentView)}">
+                                <c:if test="${folder.unreadCount gt 0 and not (folder.isDrafts or folder.isContactView or folder.isAppointmentView or folder.isTaskView)}">
                                    &nbsp;
                                     <fmt:message key="folderItemUnreadCount">
                                         <fmt:param value="${folder.unreadCount}"/>
@@ -173,7 +186,7 @@
 </c:if>
 
 <%---------- color----------%>
-<c:if test="${folder.isAppointmentView or folder.isContactView}">
+<c:if test="${folder.isAppointmentView or folder.isContactView or folder.isTaskView}">
     <tr>
         <td nowrap align='right'>
             <label for="folderColor"><fmt:message key="color"/>
@@ -330,7 +343,7 @@
 </c:if>
 
 <%---------- save ----------%>
-<c:if test="${not folder.isSystemFolder or (folder.isAppointmentView or folder.isContactView)}">
+<c:if test="${not folder.isSystemFolder or (folder.isAppointmentView or folder.isContactView or folder.isTaskView)}">
     <tr>
         <td>&nbsp;</td>
         <td>
@@ -402,7 +415,7 @@
     </c:if>
 </c:if>
 
-<c:if test="${folder.unreadCount gt 0 and not (folder.isDrafts or folder.isSearchFolder or folder.isMountPoint or folder.isContactView or folder.isAppointmentView)}">
+<c:if test="${folder.unreadCount gt 0 and not (folder.isDrafts or folder.isSearchFolder or folder.isMountPoint or folder.isContactView or folder.isAppointmentView or folder.isTaskView)}">
     <tr>
         <td colspan=2>
             <hr>
@@ -440,6 +453,10 @@
             <c:when test="${folder.isAppointmentView}">
                 <fmt:message var="emptyButton" key="folderEmptyCalendar"/>
                 <fmt:message var="emptyConfirm" key="calendarEmptyConfirmation"/>
+            </c:when>
+            <c:when test="${folder.isTaskView}">
+                <fmt:message var="emptyButton" key="folderEmptyTaskList"/>
+                <fmt:message var="emptyConfirm" key="taskListEmptyConfirmation"/>
             </c:when>
             <c:when test="${folder.isContactView}">
                 <fmt:message var="emptyButton" key="folderEmptyAddressBook"/>
@@ -493,6 +510,10 @@
         <c:when test="${folder.isAppointmentView}">
             <fmt:message var="deleteButton" key="calendarDelete"/>
             <fmt:message var="deleteConfirm" key="calendarDeleteConfirmation"/>
+        </c:when>
+        <c:when test="${folder.isTaskView}">
+            <fmt:message var="deleteButton" key="taskListDelete"/>
+            <fmt:message var="deleteConfirm" key="taskListDeleteConfirmation"/>
         </c:when>
         <c:when test="${folder.isContactView}">
             <fmt:message var="deleteButton" key="addressBookDelete"/>

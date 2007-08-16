@@ -5,6 +5,7 @@
 <%@ attribute name="contacts" rtexprvalue="true" required="false" %>
 <%@ attribute name="voice" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
+<%@ attribute name="tasks" rtexprvalue="true" required="false" %>
 <%@ attribute name="minical" rtexprvalue="true" required="false" %>
 <%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Calendar" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
@@ -79,7 +80,7 @@
 					<td id='skin_td_search' align='right' width='450'>
 						
 							<!-- search box -->				
-							<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}"/>					
+							<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}"/>					
 					</td>
 				</tr>
 				</table>
@@ -164,7 +165,7 @@
 							<div id='skin_container_tree' class='skin_container'>
 							
 							<c:if test="${empty editmode}">			            	
-        			        <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>		            		
+        			        <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>		            		
         					</c:if>
         
 							</div>
@@ -251,7 +252,7 @@
             </a>
         </td>
         <td colspan=1 valign=top class='TopContent'>
-            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}"/>
+            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}"/>
         </td>
         <td>
             <app:appTopUser mailbox="${mailbox}" keys="${keys}" />
@@ -290,7 +291,7 @@
     <tr>
         <c:if test="${empty editmode}">
             <td valign=top class='Overview'>
-                <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+                <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
             </td>
         </c:if>
         <c:set var="adsOn" value="${!empty ads}"/>

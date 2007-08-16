@@ -2,6 +2,7 @@
 <%@ attribute name="query" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
+<%@ attribute name="tasks" rtexprvalue="true" required="false" %>
 <%@ attribute name="voice" rtexprvalue="true" required="false" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
@@ -47,6 +48,9 @@
                 </c:if>
                 <c:if test="${mailbox.features.calendar}">
                     <option <c:if test="${calendars}">selected </c:if> value="appointment"/><fmt:message key="searchPersonalCalendars"/>
+                </c:if>
+                <c:if test="${mailbox.features.tasks}">
+                    <option <c:if test="${tasks}">selected </c:if> value="task"/><fmt:message key="searchPersonalTaskLists"/>
                 </c:if>
             </select>
             </td>

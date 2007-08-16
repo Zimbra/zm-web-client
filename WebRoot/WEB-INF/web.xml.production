@@ -266,6 +266,7 @@
           <url-pattern>/h/message</url-pattern>
           <url-pattern>/h/mfolders</url-pattern>
           <url-pattern>/h/mtags</url-pattern>
+          <url-pattern>/h/mtasks</url-pattern>
           <url-pattern>/h/options</url-pattern>
           <url-pattern>/h/repeat</url-pattern>
           <url-pattern>/h/rest</url-pattern>

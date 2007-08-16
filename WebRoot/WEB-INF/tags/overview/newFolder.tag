@@ -1,5 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="calendar" rtexprvalue="true" required="false" %>
+<%@ attribute name="tasklist" rtexprvalue="true" required="false" %>
 <%@ attribute name="addressbook" rtexprvalue="true" required="false" %>
 <%@ attribute name="search" rtexprvalue="true" required="false" %>
 <%@ attribute name="url" rtexprvalue="true" required="false" %>
@@ -29,6 +30,14 @@
         <fmt:message var="folderType" key="${link ? 'addressBookShared' : 'addressBookUser'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
         <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'appointment')}"/>
+    </c:when>
+    <c:when test="${tasklist}">
+        <fmt:message var="label" key="taskListNew"/>
+        <fmt:message var="createLabel" key="createTaskList"/>
+        <c:set var="icon" value="${link ? 'tasks/SharedTaskList.gif' : 'tasks/TaskList.gif'}"/>
+        <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'gray' : param.newFolderColor}"/>
+        <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'task')}"/>
+        <fmt:message var="folderType" key="${link ? 'taskListShared' : 'taskListUser'}"/>
     </c:when>
     <c:otherwise>
         <c:set var="newFolderStyleColor" value="Gray"/>
@@ -82,7 +91,7 @@
     </tr>
 
 <c:choose>
-    <c:when test="${not calendar and not addressbook}">
+    <c:when test="${not (calendar or addressbook or tasklist)}">
     <tr>
         <td nowrap align='right'>
             <label for="parentFolder">
@@ -149,7 +158,19 @@
                 <input id="ownersAbName" name='newFolderOwnersAddressBook' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersAddressBook)}">
                 <input name='newFolderOwnersAddressBookVisible' type='hidden' value='TRUE'/>
             </td>
-        </tr>           
+        </tr>
+        </c:if>
+        <c:if test="${tasklist}">
+         <tr>
+            <td nowrap align=right>
+                <label for="ownersTlName"><fmt:message key="ownersTaskListName"/>
+                :</label>
+            </td>
+            <td>
+                <input id="ownersTlName" name='newFolderOwnersTaskList' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersTaskList)}">
+                <input name='newFolderOwnersTaskListVisible' type='hidden' value='TRUE'/>
+            </td>
+        </tr>
         </c:if>
         <c:if test="${calendar}">
             <tr>
@@ -165,7 +186,7 @@
         </c:if>
     </c:if>
 
-    <c:if test="${calendar or addressbook}">
+    <c:if test="${calendar or addressbook or tasklist}">
         <tr>
             <td nowrap align='right'>
                 <label for="color"><fmt:message key="color"/>

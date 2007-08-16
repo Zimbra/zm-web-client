@@ -25,6 +25,31 @@
         <path>/WEB-INF/tags/contact/contactListViewAction.tag</path>
     </tag-file>
 
+    <tag-file>
+        <name>taskListView</name>
+        <path>/WEB-INF/tags/task/taskListView.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>taskListAction</name>
+        <path>/WEB-INF/tags/overview/taskListAction.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>taskListViewToolbar</name>
+        <path>/WEB-INF/tags/task/taskListViewToolbar.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>taskFolder</name>
+        <path>/WEB-INF/tags/task/taskFolder.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>taskFolderTree</name>
+        <path>/WEB-INF/tags/task/taskFolderTree.tag</path>
+    </tag-file>
+    
    <tag-file>
        <name>convListView</name>
         <path>/WEB-INF/tags/conv/convListView.tag</path>
