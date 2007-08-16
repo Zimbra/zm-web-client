@@ -619,7 +619,6 @@ function(contact, doAdd) {
 			addrBook._notify(ZmEvent.E_CREATE)
 		}
 		this._myCard = contact;
-		contact._isMyCard = true;
 	}
 };
 
