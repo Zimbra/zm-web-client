@@ -517,7 +517,7 @@ function() {
 
 	// notify zimlets that a new contact is being shown.
 	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("onContactEdit", this._contact.getEmail(), this._htmlElId);
+		appCtxt.getZimletMgr().notifyZimlets("onContactEdit", this, this._contact, this._htmlElId);
 	}
 };
 
