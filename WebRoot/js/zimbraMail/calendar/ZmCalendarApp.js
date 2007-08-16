@@ -50,7 +50,7 @@ ZmApp.QS_ARG[ZmApp.CALENDAR]			= "calendar";
 
 // ms to wait before fetching reminders
 ZmCalendarApp.REMINDER_START_DELAY = 30000;
-ZmCalendarApp.MINICAL_FETCH_DELAY = 35000;
+ZmCalendarApp.MINICAL_DELAY = 20000;
 
 ZmCalendarApp.COLORS = [];
 // these need to match CSS rules
@@ -310,9 +310,12 @@ function() {
 ZmCalendarApp.prototype.startup =
 function(result) {
 	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
-		var minicalFetchDelay = appCtxt.inStartup ? ZmCalendarApp.MINICAL_FETCH_DELAY : 0;
-		AjxDispatcher.run("ShowMiniCalendar", true, minicalFetchDelay);
+		var miniCalAction = new AjxTimedAction(this, function() {
+				AjxDispatcher.run("ShowMiniCalendar", true);
+			});
+		AjxTimedAction.scheduleAction(miniCalAction, ZmCalendarApp.MINICAL_DELAY);
 	}
+
 	var refreshAction = new AjxTimedAction(this, function() {
 			AjxDispatcher.run("GetReminderController").refresh();
 		});
@@ -466,7 +469,7 @@ function(active, view, date) {
 ZmCalendarApp.prototype.showMiniCalendar =
 function(show, delay) {
 	var mc = this.getCalController().getMiniCalendar(delay);
-	mc.setSkipNotifyOnPage(show && !this._active);	
+	mc.setSkipNotifyOnPage(show && !this._active);
 	if (!this._active) {
 		mc.setSelectionMode(DwtCalendar.DAY);
 	}
