@@ -879,14 +879,10 @@ function(msg, container, callback) {
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : "";
 	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown;
-	if (addr) {
-		// bug fix #17016 - no need to check addr instanceof AjxEmailAddress
-		addr = addr.address || (AjxStringUtil.htmlEncode(addr.name));
-	}
-	var sender = msg.getAddress(AjxEmailAddress.SENDER);						// bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
-	var sentBy = sender ? sender.address : addr;
-	var sentByNormal = sentBy;													// non-objectified version
-	var sentByIcon = cl	? (cl.getContactByEmail(sentBy) ? "Contact" : "NewContact")	: null;
+	var sender = msg.getAddress(AjxEmailAddress.SENDER); // bug fix #10652 - check invite if sentBy is set (means on-behalf-of)
+	var sentBy = (sender && sender.address) ? sender : addr;
+	var sentByAddr = sentBy.address; // non-objectified version
+	var sentByIcon = cl	? (cl.getContactByEmail(sentByAddr) ? "Contact" : "NewContact")	: null;
 	var obo = sender ? addr : null;
 
 	if (this._objectManager) {
@@ -900,6 +896,11 @@ function(msg, container, callback) {
 		dateString	= this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE);
 		if (obo) {
 			obo		= this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
+		}
+	} else {
+		sentBy = AjxStringUtil.htmlEncode(sentBy.toString());
+		if (obo) {
+			obo = AjxStringUtil.htmlEncode(obo.toString());
 		}
 	}
 
@@ -937,7 +938,7 @@ function(msg, container, callback) {
 		subject: subject,
 		dateString: dateString,
 		sentBy: sentBy,
-		sentByNormal: sentByNormal,
+		sentByNormal: sentByAddr,
 		sentByIcon: sentByIcon,
 		obo: obo,
 		participants: participants,
