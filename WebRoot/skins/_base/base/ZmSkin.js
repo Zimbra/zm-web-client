@@ -16,6 +16,7 @@ ZmSkin.prototype.show = function(name, state) {
     if (containers) {
         if (typeof containers == "function") {
             containers(this, state);
+			skin._reflowApp();
             return;
         }
         if (typeof containers == "string") {
@@ -27,6 +28,7 @@ ZmSkin.prototype.show = function(name, state) {
             var inverse = ocontainer != ncontainer;
             this._showEl(ncontainer, inverse ? !state : state);
         }
+		skin._reflowApp();
     }
 };
 
