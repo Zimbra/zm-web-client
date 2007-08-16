@@ -406,7 +406,9 @@ function(params, result) {
 
 		DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
 		var rootTg = appCtxt.getRootTabGroup();
-		rootTg.addMember(appCtxt.getSearchController().getTabGroup());
+		if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+			rootTg.addMember(appCtxt.getSearchController().getTabGroup());
+		}
 		var appChooserTg = new DwtTabGroup("ZmAppChooser");
 		appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
 		if (this._TAB_SKIN_ENABLED) {
@@ -951,7 +953,10 @@ function(appName, view) {
 			
 			// set search string value to match current app's last search, if applicable		
 			var app = this._apps[this._activeApp];
-			appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(app.currentQuery ? app.currentQuery : "");
+			var stb = appCtxt.getSearchController().getSearchToolbar();
+			if (stb) {
+				stb.setSearchFieldValue(app.currentQuery ? app.currentQuery : "");
+			}
 	
 			// activate current app
 			if (app) {
@@ -1449,8 +1454,11 @@ function(actionCode, ev) {
 		}
 		
 		case ZmKeyMap.FOCUS_SEARCH_BOX: {
-			var searchBox = appCtxt.getSearchController().getSearchToolbar().getSearchField();
-			appCtxt.getKeyboardMgr().grabFocus(searchBox);
+			var stb = appCtxt.getSearchController().getSearchToolbar();
+			if (stb) {
+				var searchBox = stb.getSearchField();
+				appCtxt.getKeyboardMgr().grabFocus(searchBox);
+			}
 			break;
 		}
 

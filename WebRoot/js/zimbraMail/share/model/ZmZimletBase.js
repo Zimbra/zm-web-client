@@ -83,13 +83,14 @@ function() {
 ZmZimletBase.prototype.addSearchDomainItem =
 function(icon, label, listener) {
 	var searchToolbar = appCtxt.getSearchController().getSearchToolbar();
-	return searchToolbar.createCustomSearchBtn(icon, label, listener);
+	return searchToolbar ? searchToolbar.createCustomSearchBtn(icon, label, listener) : null;
 };
 
 /// Returns the text entered in the search bar
 ZmZimletBase.prototype.getSearchQuery =
 function() {
-	return appCtxt.getSearchController().getSearchToolbar().getSearchFieldValue();
+	var searchToolbar = appCtxt.getSearchController().getSearchToolbar();
+	return searchToolbar ? searchToolbar.getSearchFieldValue() : null;
 };
 
 ZmZimletBase.prototype.getZimletManager =

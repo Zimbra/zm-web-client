@@ -429,7 +429,10 @@ function(folder) {
 	// we manually set search bar's field since contacts dont always make search requests
 	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
 		var query = folder.createQuery();
-		appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(query);
+		var stb = appCtxt.getSearchController().getSearchToolbar();
+		if (stb) {
+			stb.setSearchFieldValue(query);
+		}
 	}
 	var clc = AjxDispatcher.run("GetContactListController");
 	clc.show(this._contactList, null, folder.id);
