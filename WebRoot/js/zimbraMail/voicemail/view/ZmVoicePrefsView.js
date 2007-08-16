@@ -86,12 +86,26 @@ function() {
 	Dwt.setTitle(this._title);
 	if (this._hasRendered) return;
 
-    var contacts = AjxDispatcher.run("GetContacts");
-    this._me = contacts.getMe ? contacts.getMe() : [];
-    if (this._me.length) {
-        contacts.addChangeListener(new AjxListener(this, this._contactsChangeListener));
-    }
+	var params = {
+		method: "GetContacts",
+		callback: new AjxCallback(this, this._handleResponseContactsLoaded),
+		preLoadOk: false
+	};
+	AjxDispatcher.run(params);
 	appCtxt.getApp(ZmApp.VOICE).getVoiceInfo(new AjxCallback(this, this._handleResponseGetVoiceInfo));
+};
+
+ZmVoicePrefsView.prototype._handleResponseContactsLoaded =
+function(contacts) {
+	this._myCard = contacts.getMyCard();
+	if (this._myCard) {
+		contacts.addChangeListener(new AjxListener(this, this._contactsChangeListener));
+		if (this._hasRendered) {
+			for(var i = 0, count = this._ui.length; i < count; i++) {
+				this._ui[i].updateMyCard();
+			}
+		}
+	}
 };
 
 ZmVoicePrefsView.prototype._handleResponseGetVoiceInfo =
@@ -107,7 +121,7 @@ function() {
 
 	for(var i = 0, count = this._ui.length; i < count; i++) {
 		this._ui[i]._initialize(id);
-		this._ui[i].setMe(this._me);
+		this._ui[i].updateMyCard();
 	}
 
 	this._controller._setup();
@@ -217,16 +231,12 @@ function(identity, request, result) {
 	this._changes  = null;
 };
 
-ZmVoicePrefsView.prototype._containsMe =
+ZmVoicePrefsView.prototype._containsMyCard =
 function(contacts) {
-    for(var contactIndex = 0, contactCount = contacts.length; contactIndex < contactCount; contactIndex++) {
-        var contact = contacts[contactIndex];
-        for (var meIndex = 0, meCount = this._me.length; meIndex < meCount; meIndex++) {
-            var me = this._me[meIndex];
-            if (me.id == contact.id) {
-                return true;
-            }
-        }
+    for(var i = 0, count = contacts.length; i < count; i++) {
+		if (contacts[i] == this._myCard) {
+			return true;
+		}
     }
     return false;
 };
@@ -235,11 +245,10 @@ ZmVoicePrefsView.prototype._contactsChangeListener =
 function(ev) {
 	var redraw = false;
 	if (ev.event == ZmEvent.E_MODIFY) {
-        var meChanged = false;
         var contacts = ev.getDetails().items;
-		if (contacts && this._containsMe(contacts)) {
+		if (contacts && this._containsMyCard(contacts)) {
             for(var i = 0, count = this._ui.length; i < count; i++) {
-                this._ui[i].setMe(this._me);
+                this._ui[i].updateMyCard();
             }
         }
 	}
@@ -294,18 +303,17 @@ function(ev) {
 ZmCallFeatureUI.prototype._populatePhoneComboBox =
 function(comboBox) {
     comboBox.removeAll();
-    for (var meIndex = 0, meCount = this._view._me.length; meIndex < meCount; meIndex++) {
-        var me = this._view._me[meIndex];
-        for (var fieldIndex = 0, fieldCount = ZmContact.F_PHONE_FIELDS.length; fieldIndex < fieldCount; fieldIndex++) {
-            var fieldId = ZmContact.F_PHONE_FIELDS[fieldIndex];
-            var phone = me.getAttr(fieldId);
-            if (phone) {
-                var name = ZmPhone.calculateName(phone);
-                var display = [ZmMsg["AB_FIELD_" + fieldId], " ", ZmPhone.calculateDisplay(name)].join("");
-                comboBox.add(display, name, false);
-            }
-        }
-    }
+	var myCard = this._view._myCard;
+	if (myCard) {
+		for (var fieldIndex = 0, fieldCount = ZmContact.F_PHONE_FIELDS.length; fieldIndex < fieldCount; fieldIndex++) {
+			var fieldId = ZmContact.F_PHONE_FIELDS[fieldIndex];
+			var phone = myCard.getAttr(fieldId);
+			if (phone) {
+				var name = ZmPhone.calculateName(phone);
+				comboBox.add(ZmPhone.calculateDisplay(name), name, false);
+			}
+		}
+	}
 };
 
 ZmCallFeatureUI.prototype._populateEmailComboBox =
@@ -313,22 +321,22 @@ function(comboBox) {
     comboBox.removeAll();
     var accountAddress = appCtxt.get(ZmSetting.USERNAME);
     this._comboBox.add(accountAddress, false);
-    for (var meIndex = 0, meCount = this._view._me.length; meIndex < meCount; meIndex++) {
-        var me = this._view._me[meIndex];
-        for (var fieldIndex = 0, fieldCount = ZmContact.F_EMAIL_FIELDS.length; fieldIndex < fieldCount; fieldIndex++) {
-            var fieldId = ZmContact.F_EMAIL_FIELDS[fieldIndex];
-            var email = me.getAttr(fieldId);
-            if (email) {
-                var accountAddressLower = null;
-                if (!accountAddressLower) {
-                    accountAddressLower = accountAddress.toLowerCase();
-                }
-                if (email.toLowerCase != accountAddressLower) {
-                    comboBox.add(email, email, false);
-                }
-            }
-        }
-    }
+	var myCard = this._view._myCard;
+	if (myCard) {
+		for (var fieldIndex = 0, fieldCount = ZmContact.F_EMAIL_FIELDS.length; fieldIndex < fieldCount; fieldIndex++) {
+			var fieldId = ZmContact.F_EMAIL_FIELDS[fieldIndex];
+			var email = myCard.getAttr(fieldId);
+			if (email) {
+				var accountAddressLower = null;
+				if (!accountAddressLower) {
+					accountAddressLower = accountAddress.toLowerCase();
+				}
+				if (email.toLowerCase != accountAddressLower) {
+					comboBox.add(email, email, false);
+				}
+			}
+		}
+	}
 };
 
 // "Abstract" methods:
@@ -344,8 +352,8 @@ ZmCallFeatureUI.prototype.setEnabled =
 function(enabled) {
 	alert('ZmCallFeatureUI.prototype.setEnabled ' + enabled);
 };
-ZmCallFeatureUI.prototype.setMe =
-function(me) {
+ZmCallFeatureUI.prototype.updateMyCard =
+function() {
 	// No-op.
 };
 
@@ -395,7 +403,7 @@ function(enabled) {
 	this._comboBox.setEnabled(enabled);
 };
 
-ZmCallForwardingUI.prototype.setMe =
+ZmCallForwardingUI.prototype.updateMyCard =
 function() {
     this._populatePhoneComboBox(this._comboBox);
 };
@@ -512,7 +520,7 @@ function(enabled) {
 	this._addButton.setEnabled(enabled);
 };
 
-ZmSelectiveCallForwardingUI.prototype.setMe =
+ZmSelectiveCallForwardingUI.prototype.updateMyCard =
 function() {
     this._populatePhoneComboBox(this._comboBox);
 };
@@ -649,7 +657,7 @@ function(enabled) {
 	this._comboBox.setEnabled(enabled);
 };
 
-ZmEmailNotificationUI.prototype.setMe =
+ZmEmailNotificationUI.prototype.updateMyCard =
 function() {
     this._populateEmailComboBox(this._comboBox);
 };
