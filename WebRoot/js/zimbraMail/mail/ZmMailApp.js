@@ -541,12 +541,6 @@ function() {
 
 // App API
 
-ZmMailApp.prototype.startup =
-function(result) {
-//	AjxDispatcher.run("GetComposeController").initComposeView(true);
-	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
-};
-
 /**
  * Normalize the notifications that occur when a virtual conv gets promoted to a real conv.
  * For example, a virtual conv with ID -676 and one msg (ID 676) receives a second msg (ID 677)
@@ -879,6 +873,7 @@ function(callback, checkQS) {
 		}
 	}
 
+	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
 	this._mailSearch(query, callback);
 };
 

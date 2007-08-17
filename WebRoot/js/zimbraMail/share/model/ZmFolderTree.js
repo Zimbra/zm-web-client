@@ -295,7 +295,6 @@ function(type, callback, skipNotify) {
 ZmFolderTree.prototype._getItemsWithoutPerms =
 function(type) {
 	var needPerms = [];
-	// NOTE: we dont list ZmOrganizer.FOLDER here b/c mail folders are not yet share-able
 	var orgs = type ? [type] : [ZmOrganizer.FOLDER, ZmOrganizer.CALENDAR, ZmOrganizer.TASKS, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
 
 	for (var j = 0; j < orgs.length; j++) {
@@ -306,8 +305,9 @@ function(type) {
 		var items = this.getByType(org);
 
 		for (var i = 0; i < items.length; i++) {
-			if (items[i].link && items[i].shares == null)
+			if (items[i].link && items[i].shares == null) {
 				needPerms.push(items[i].id);
+			}
 		}
 	}
 

@@ -127,6 +127,8 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 	// view pre-emption
 	this._pushCallback = new AjxCallback(this, this.pushView);
 	this._popCallback = new AjxCallback(this, this.popView);
+	
+	this._createLoadingView();
 };
 
 // components
@@ -235,6 +237,9 @@ function(components, doFit, noSetZ) {
 					throw new AjxException("Skin container '" + contId + "' not found.");
 				}
 				this._containers[cid] = contEl;
+				if (doFit) {
+					contEl.innerHTML = "";
+				}
 			}
 			list.push(cid);
 		}
@@ -677,6 +682,21 @@ function(pendingAction) {
 };
 
 // Private methods
+
+ZmAppViewMgr.prototype._createLoadingView =
+function() {
+	var loadingView = new DwtControl(this._shell, "DwtListView", Dwt.ABSOLUTE_STYLE);
+	var el = loadingView.getHtmlElement();
+	var htmlArr = [];
+	var idx = 0;
+	htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1'><tr><td class='NoResults'><br>";
+	htmlArr[idx++] = ZmMsg.loading;
+	htmlArr[idx++] = "</td></tr></table>";
+	el.innerHTML = htmlArr.join("");
+	var elements = {};
+	elements[ZmAppViewMgr.C_APP_CONTENT] = loadingView;
+	this.createView(ZmController.LOADING_VIEW, null, elements);
+};
 
 // Locates and sizes the given list of components to fit within their containers.
 ZmAppViewMgr.prototype._fitToContainer =

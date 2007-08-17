@@ -287,17 +287,6 @@ function(params) {
 
 	if (!this._appViewMgr) {
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
-		this._loadingView = new DwtControl(this._shell, "DwtListView", Dwt.ABSOLUTE_STYLE);
-		var el = this._loadingView.getHtmlElement();
-		var htmlArr = [];
-		var idx = 0;
-		htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1'><tr><td class='NoResults'><br>";
-		htmlArr[idx++] = ZmMsg.loading;
-		htmlArr[idx++] = "</td></tr></table>";
-		el.innerHTML = htmlArr.join("");
-		var elements = {};
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._loadingView;
-		this._appViewMgr.createView(ZmController.LOADING_VIEW, null, elements);
 	}
 
 	skin.show("skin", true);
@@ -368,8 +357,10 @@ function(params, result) {
 		window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
 	}	
 
-	// run any app-requested startup routines
-	this.runAppFunction("startup", result);
+	if (!this._components[ZmAppViewMgr.C_APP_CHOOSER]) {
+		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._appChooser = this._createAppChooser();
+	}
+
 
 	// determine default starting app
 	for (var app in ZmApp.DEFAULT_SORT) {
@@ -387,14 +378,52 @@ function(params, result) {
 		}
 	}
 
+	params.result = result;
+	var respCallback = new AjxCallback(this, this._handleResponseStartup1, params);
+	var startApp;
+	if (params && params.app) {
+		startApp = ZmApp.QS_ARG_R[params.app.toLowerCase()];
+	}
+	if (!startApp) {
+		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : this._defaultStartApp;
+	}
+
+	// check for jump to compose page or msg view
+	var checkQS = false;
+	if (startApp == ZmApp.CALENDAR) {
+		// let calendar check for jumps
+		checkQS = true;
+	} else {
+		var match;
+		if (location.search && (match = location.search.match(/\bview=(\w+)\b/))) {
+			var view = match[1];
+			startApp = this._defaultStartApp;
+			if (ZmApp.QS_VIEWS[view]) {
+				startApp = ZmApp.QS_VIEWS[view];
+				checkQS = true;
+			}
+		}
+	}
+	this.activateApp(startApp, false, respCallback, this._errorCallback, checkQS);
+
+
+
+
+};
+
+/*
+* Startup: part 3
+* Launches the starting application.
+*
+* @param app		[constant]		starting app
+*/
+ZmZimbraMail.prototype._handleResponseStartup1 =
+function(params) {
+
 	this._setUserInfo();
 
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchPanel();
-	}
-
-	if (!this._components[ZmAppViewMgr.C_APP_CHOOSER]) {
-		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._appChooser = this._createAppChooser();
 	}
 
 	var kbMgr = appCtxt.getKeyboardMgr();
@@ -429,44 +458,8 @@ function(params, result) {
 		kbMgr.enable(false);
 	}
 
-	this._handleResponseStartup1(params);
-};
-
-/*
-* Startup: part 3
-* Launches the starting application.
-*
-* @param app		[constant]		starting app
-*/
-ZmZimbraMail.prototype._handleResponseStartup1 =
-function(params) {
+	this._handleResponseStartup2(params);
 	
-	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
-	var startApp;
-	if (params && params.app) {
-		startApp = ZmApp.QS_ARG_R[params.app.toLowerCase()];
-	}
-	if (!startApp) {
-		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : this._defaultStartApp;
-	}
-
-	// check for jump to compose page or msg view
-	var checkQS = false;
-	if (startApp == ZmApp.CALENDAR) {
-		// let calendar check for jumps
-		checkQS = true;
-	} else {
-		var match;
-		if (location.search && (match = location.search.match(/\bview=(\w+)\b/))) {
-			var view = match[1];
-			startApp = this._defaultStartApp;
-			if (ZmApp.QS_VIEWS[view]) {
-				startApp = ZmApp.QS_VIEWS[view];
-				checkQS = true;
-			}
-		}
-	}
-	this.activateApp(startApp, false, respCallback, this._errorCallback, checkQS);
 };
 
 /*
@@ -474,9 +467,10 @@ function(params) {
 * Kills the splash screen, checks license
 */
 ZmZimbraMail.prototype._handleResponseStartup2 =
-function() {
+function(params) {
 	this.setSessionTimer(true);
 	this._killSplash();
+
 	// next line makes the UI appear
 	this._appViewMgr.addComponents(this._components, true);
 
@@ -486,6 +480,10 @@ function() {
 		dlg.setMessage(ZmMsg.licenseExpired, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
 	}
+
+	// run any app-requested startup routines
+	this.runAppFunction("startup", params.result);
+
 	AjxDispatcher.enableLoadFunctions(true);
 	appCtxt.inStartup = false;
 	ZmZimbraMail._evtMgr.notifyListeners(ZmZimbraMail.E_STARTUP, ZmZimbraMail._evt);

@@ -183,7 +183,7 @@
 	appDevMode     = <%=inDevMode%>;
 	
 </script>
-<jsp:include page="Messages.jsp"/>
+<jsp:include page="MessagesZCS.jsp"/>
 <script src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
 <jsp:include page="Boot.jsp"/>
 <%
@@ -200,7 +200,7 @@
 
     String[] pnames = allPackages.split(",");
     for (String pname : pnames) {
-        String pageurl = "/"+pprefix+"/"+pname+psuffix;
+        String pageurl = "/" + pprefix + "/" + pname + psuffix;
         if (inDevMode) { %>
             <jsp:include>
                 <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
