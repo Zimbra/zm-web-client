@@ -27,7 +27,7 @@
             <c:if test="${voice}">
                 <c:set var="query"></c:set>
             </c:if>
-            <table cellpadding=0 cellspacing=0 border=0>
+            <table width=100% cellpadding=0 cellspacing=0 border=0>
             <tr>
             <td nowrap>
             <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
