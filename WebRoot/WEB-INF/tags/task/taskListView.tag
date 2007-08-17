@@ -113,7 +113,7 @@
                 </td>
             </tr>
         </table>
-        <input type="hidden" name="doTaskListViewAction" value="1"/>
+        <input type="hidden" name="doTaskAction" value="1"/>
         <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : selectedRow}"/>        
 
     </form>

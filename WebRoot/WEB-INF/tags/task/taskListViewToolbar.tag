@@ -16,8 +16,6 @@
         <a id="NEW_TASK" href="${newTaskUrl}"><app:img altkey="newTask" src="tasks/NewTask.gif"/><span><fmt:message key="newTask"/></span></a>
         </td>
         <td><div class='vertSep'></div></td>
-        <app:button id="OPEDIT" name="actionEdit" src="common/Edit.gif" tooltip="edit" text="edit"/>
-        <td><div class='vertSep'></div></td>
          <c:choose>
              <c:when test="${context.isFolderSearch and context.folder.isTrash}">
                  <app:button id="OPDELETE" name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT" />

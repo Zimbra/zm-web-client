@@ -10,5 +10,5 @@
 <c:set var="tags" value="${zm:getTags(pageContext, ids)}"/>
 <c:set var="tagNames" value="${fn:escapeXml(zm:getTagNames(pageContext, ids))}"/>
 <c:if test="${fn:length(tags) eq 0}">&nbsp;</c:if>
-<c:if test="${fn:length(tags) eq 1}"><app:img src="${tags[0].miniImage}" alt="${fn:escapeXml(tagNames)}" title="${fn:escapeXml(tagNames)}"/></c:if>
-<c:if test="${fn:length(tags) gt 1}"><app:img src="tag/MiniTagStack.gif" alt="${fn:escapeXml(tagNames)}" title="${fn:escapeXml(tagNames)}"/></c:if>
+<c:if test="${fn:length(tags) eq 1}"><app:img src="${tags[0].miniImage}" alt="${fn:escapeXml(tagNames)}" rawtitle="true" title="${fn:escapeXml(tagNames)}"/></c:if>
+<c:if test="${fn:length(tags) gt 1}"><app:img src="tag/MiniTagStack.gif" alt="${fn:escapeXml(tagNames)}" rawtitle="true" title="${fn:escapeXml(tagNames)}"/></c:if>
