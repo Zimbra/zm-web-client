@@ -97,6 +97,7 @@
 		extraPackages = (String) request.getAttribute("packages");
 	}
 	String startApp = (String) request.getParameter("app");
+	String noSplashScreen = (String) request.getParameter("nss");
 	
 	String mode = (String) request.getAttribute("mode");
 	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
@@ -112,7 +113,18 @@
 	if (offlineMode == null) {
 		offlineMode = application.getInitParameter("offlineMode");
 	}
-
+	
+    String localeQs = "";
+    String localeId = (String) request.getAttribute("localeId");
+    if (localeId != null) {
+        int index = localeId.indexOf("_");
+        if (index == -1) {
+            localeQs = "&language=" + localeId;
+        } else {
+            localeQs = "&language=" + localeId.substring(0, index) +
+                       "&country=" + localeId.substring(localeId.length() - 2);
+        }
+    }
 %>
 <link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico">
 <link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
@@ -183,7 +195,7 @@
 	appDevMode     = <%=inDevMode%>;
 	
 </script>
-<jsp:include page="MessagesZCS.jsp"/>
+<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%= localeQs %>"></script>
 <script src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
 <jsp:include page="Boot.jsp"/>
 <%
@@ -258,11 +270,14 @@
 
 		AjxHistoryMgr.BLANK_FILE = "<%=contextPath%>/public/blankHistory.html";
 		var app = "<%= (startApp != null) ? startApp : "" %>";
+		var noSplashScreen = "<%= (noSplashScreen != null) ? noSplashScreen : "" %>";
 		var offlineMode = "<%= (offlineMode != null) ? offlineMode : "" %>";
 		var isDev = "<%= (isDev != null) ? isDev : "" %>";
 		var protocolMode = "<%=protocolMode%>";
 
-		ZmZimbraMail.run({app:app, offlineMode:offlineMode, devMode:isDev, settings:settings, protocolMode:protocolMode});
+		var params = {app:app, offlineMode:offlineMode, devMode:isDev, settings:settings,
+					  protocolMode:protocolMode, noSplashScreen:noSplashScreen};
+		ZmZimbraMail.run(params);
 	}
 
     //	START DOMContentLoaded

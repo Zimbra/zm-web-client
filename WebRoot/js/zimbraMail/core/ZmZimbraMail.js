@@ -65,10 +65,6 @@ ZmZimbraMail = function(params) {
 
 	this._shell = appCtxt.getShell();
 
-	if (location.search && (location.search.indexOf("nss=1") != -1)) {
-		this._killSplash();
-	}
-
 	this._apps = {};
 	this._upsellView = {};
 	this._activeApp = null;
@@ -132,16 +128,21 @@ function() {
  * Sets up ZimbraMail, and then starts it by calling its constructor. It is assumed that the
  * CSFE is on the same host.
  *
- * @param params		[hash]			hash of params:
- *        app			[constant]*		starting app
- *        offlineMode	[boolean]*		if true, this is the offline client
- *        devMode		[boolean]*		if true, we are in development environment
- *        settings		[hash]*			server prefs/attrs
- *        protocolMode	[constant]*		http, https, or mixed
+ * @param params			[hash]			hash of params:
+ *        app				[constant]*		starting app
+ *        offlineMode		[boolean]*		if true, this is the offline client
+ *        devMode			[boolean]*		if true, we are in development environment
+ *        settings			[hash]*			server prefs/attrs
+ *        protocolMode		[constant]*		http, https, or mixed
+ *        noSplashScreen	[boolean]*		if true, do not show splash screen during startup
  */
 ZmZimbraMail.run =
 function(params) {
 	
+	if (params.noSplashScreen) {
+		ZmZimbraMail.killSplash();
+	}
+
 	// Create the global app context
 	window.appCtxt = new ZmAppCtxt();
 	appCtxt.setRememberMe(false);
@@ -265,6 +266,19 @@ function(type, listener) {
 };
 
 /**
+ * Hides the splash screen.
+ */
+ZmZimbraMail.killSplash =
+function() {
+	// 	Splash screen is now a part of the skin, loaded in statically via the JSP 
+	//	as a well-known ID.  To hide the splash screen, just hide that div.
+	var splashDiv = Dwt.byId("skin_container_splash_screen");
+	if (splashDiv) {
+		Dwt.hide(splashDiv);
+	}
+};
+
+/**
  * Loads the app and presents the initial view. First, it gets the user's preferences.
  * Next, it launches the start app (which defaults to mail) and shows the results to
  * the user. Finally, we load contacts in the background.
@@ -326,7 +340,7 @@ function(params) {
 
 ZmZimbraMail.prototype._handleErrorStartup =
 function(params, ex) {
-	this._killSplash();
+	ZmZimbraMail.killSplash();
 	appCtxt.inStartup = false;
 	return false;
 };
@@ -469,7 +483,7 @@ function(params) {
 ZmZimbraMail.prototype._handleResponseStartup2 =
 function(params) {
 	this.setSessionTimer(true);
-	this._killSplash();
+	ZmZimbraMail.killSplash();
 
 	// next line makes the UI appear
 	this._appViewMgr.addComponents(this._components, true);
@@ -970,14 +984,6 @@ function(id) {
 };
 
 // Private methods
-
-ZmZimbraMail.prototype._killSplash =
-function() {
-	// 	Splash screen is now a part of the skin, loaded in statically via the JSP 
-	//	as a well-known ID.  To hide the splash screen, just hide that div.
-	var splashDiv = Dwt.byId("skin_container_splash_screen");
-	if (splashDiv) Dwt.hide(splashDiv);
-};
 
 // Creates an app object, which doesn't necessarily do anything just yet.
 ZmZimbraMail.prototype._createApp =
