@@ -30,7 +30,8 @@ ZmBriefcaseController = function(container, app) {
 	this._idMap = {};
 
     this._listeners[ZmOperation.OPEN_FILE] = new AjxListener(this, this._openFileListener);	
-   	this._listeners[ZmOperation.SEND_FILE] = new AjxListener(this, this._sendPageListener);
+   	this._listeners[ZmOperation.SEND_FILE] = new AjxListener(this, this._sendFileListener);
+  	this._listeners[ZmOperation.NEW_FILE] = new AjxListener(this, this._uploadFileListener);
    	this._listeners[ZmOperation.VIEW_FILE_AS_HTML] = new AjxListener(this, this._viewAsHtmlListener);   	
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -73,6 +74,8 @@ ZmBriefcaseController.prototype._getToolBarOps =
 function() {
 	return [ZmOperation.NEW_MENU,
 			ZmOperation.SEP,
+			ZmOperation.NEW_FILE,
+			ZmOperation.SEP,			
 			ZmOperation.DELETE, ZmOperation.MOVE,
 			ZmOperation.SEP,
 			ZmOperation.TAG_MENU,
@@ -650,7 +653,12 @@ function(restUrl) {
 	window.open(restUrl);
 };
 
-ZmBriefcaseController.prototype._sendPageListener =
+ZmBriefcaseController.prototype._uploadFileListener =
+function() {
+	this._app._handleNewItem();
+};
+
+ZmBriefcaseController.prototype._sendFileListener =
 function(event) {
 	var view = this._listView[this._currentView];
 	var items = view.getSelection();
@@ -682,16 +690,16 @@ function(event) {
 
 	if (!shares || !noprompt) {
 		var args = [names, urls, inNewWindow];
-		var callback = new AjxCallback(this, this._sendPageListener2, args);
+		var callback = new AjxCallback(this, this._sendFileListener2, args);
 
 		var dialog = appCtxt.getConfirmationDialog();
 		dialog.popup(ZmMsg.errorPermissionRequired, callback);
 	} else {
-		this._sendPageListener2(names, urls);
+		this._sendFileListener2(names, urls);
 	}
 };
 
-ZmBriefcaseController.prototype._sendPageListener2 =
+ZmBriefcaseController.prototype._sendFileListener2 =
 function(names, urls, inNewWindow) {
 	var action = ZmOperation.NEW_MESSAGE;
 	var msg = new ZmMailMsg();
