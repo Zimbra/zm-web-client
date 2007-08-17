@@ -2137,6 +2137,15 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZOptionsTableRow INPUT[disabled] {
 	height: auto;
 }
+.ZOptionsField input[type="checkbox"] {
+		@ActiveCursor@
+}
+
+#IFDEF MSIE
+.ZOptionsField input{
+	cursor: expression(this.type=="checkbox"?'pointer':''); 
+}
+#ENDIF
 
 .ZOptionsItemsListView .DwtListView-Rows {
 	overflow: visible;

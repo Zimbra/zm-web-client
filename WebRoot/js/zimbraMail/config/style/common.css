@@ -88,6 +88,14 @@ TEXTAREA[readonly] {
 	@TextArea-disabled@
 }
 
+input[type="checkbox"] {
+		@ActiveCursor@		
+}
+#IFDEF MSIE
+input{
+cursor: expression(this.type=="checkbox"?'pointer':''); 
+}
+#ENDIF
 
 /* TODO: figure out what we need to do for IE/etc to set the same input styles */
 #IFDEF GECKO
@@ -105,9 +113,7 @@ TEXTAREA[readonly] {
 		@TextArea-normal@
 	}
 	
-	input[type="checkbox"] {
-		@ActiveCursor@
-	}
+
 #ENDIF
 
 
