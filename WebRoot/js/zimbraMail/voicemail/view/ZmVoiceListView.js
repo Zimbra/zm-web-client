@@ -233,6 +233,12 @@ function() {
 	return 0;
 };
 
+ZmVoiceListView.prototype.setBounds =
+function(x, y, width, height) {
+	ZmListView.prototype.setBounds.call(this, x, y, width, height);
+	this._resetColWidth();
+};
+
 ZmVoiceListView.prototype._resetList =
 function() {
 	this._contactToItem = {};
