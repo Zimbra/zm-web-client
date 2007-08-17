@@ -93,16 +93,6 @@
                                 </c:otherwise>
                             </c:choose>
 
-
-                            <c:set var="editrecur" value="${(empty appt or not appt.exception) and not compose.useInstance}"/>
-                            <td><div class='vertSep'></div></td>
-                            <app:button name="actionRepeatEdit" src="calendar/ApptRecur.gif" tooltip="editRecurrence" text="repeat" disabled="${not editrecur}"/>
-                            <c:if test="${mailbox.features.groupcalendarEnabled}">
-                                <td><div class='vertSep'></div></td>
-                                <app:button name="actionContactAdd" src="contacts/ContactsPicker.gif" tooltip="addAttendeesFromContacts" text="addAttendeesFromContacts"/>
-                            </c:if>
-
-
                             <c:if test="${canDelete}">
                                 <td><div class='vertSep'></div></td>
                                 <c:choose>
