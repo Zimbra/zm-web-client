@@ -1585,8 +1585,8 @@ function(soapDoc) {
 * caller is responsible for exception handling. caller should also not modify appts in this list directly.
 */
 ZmCalViewController.prototype.getApptSummaries =
-function(start,end, fanoutAllDay, folderIds, callback) {
-	return this._apptCache.getApptSummaries(start, end, fanoutAllDay, folderIds, callback);
+function(start,end, fanoutAllDay, folderIds, callback, noBusyOverlay) {
+	return this._apptCache.getApptSummaries(start, end, fanoutAllDay, folderIds, callback, noBusyOverlay);
 };
 
 // TODO: appt is null for now. we are just clearing our caches...
@@ -1706,8 +1706,13 @@ function() {
 	if (work & ZmCalViewController.MAINT_MINICAL) {
 		var calRange = this._miniCalendar.getDateRange();
 		var cb = new AjxCallback(this, this._maintGetApptCallback, [ work, null]);
-		// TODO: turn on shell busy
-		this.getApptSummaries(calRange.start.getTime(), calRange.end.getTime(), true, this.getCheckedCalendarFolderIds(), cb);
+		if(appCtxt.getCurrentViewId() != ZmController.CAL_VIEW){	
+			this.fetchMiniCalendarAppts();
+		}else{
+			var view = this._viewMgr.getCurrentView();
+			var rt = view.getTimeRange();
+			this.getApptSummaries(rt.start, rt.end, true, this.getCheckedCalendarFolderIds(), cb);
+		}
 		// return. callback will check and see if MAINT_VIEW is nededed as well.
 		return;
 	} else if (work & ZmCalViewController.MAINT_VIEW) {
@@ -1802,4 +1807,12 @@ function() {
 		}
 	}
 	return this._msgController;
+};
+
+ZmCalViewController.prototype.fetchMiniCalendarAppts = 
+function() {	
+	var work = ZmCalViewController.MAINT_MINICAL;
+	var calRange = this._miniCalendar.getDateRange();
+	var cb = new AjxCallback(this, this._maintGetApptCallback, [ work, null]);
+	this.getApptSummaries(calRange.start.getTime(), calRange.end.getTime(), true, this.getCheckedCalendarFolderIds(), cb, true);
 };

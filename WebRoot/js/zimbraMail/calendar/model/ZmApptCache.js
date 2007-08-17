@@ -156,7 +156,7 @@ function(apptList) {
 * specified folders.
 */
 ZmApptCache.prototype.getApptSummaries =
-function(start, end, fanoutAllDay, folderIds, callback) {
+function(start, end, fanoutAllDay, folderIds, callback, noBusyOverlay) {
 	var list;
 	if (!(folderIds instanceof Array)) {
 		folderIds = [ folderIds ];
@@ -181,6 +181,7 @@ function(start, end, fanoutAllDay, folderIds, callback) {
 		callback: callback,
 		mergeKey: mergeKey,
 		needToFetch: [],
+		noBusyOverlay : noBusyOverlay,		
 		resultList: [] // array of vectors
 	};
 
@@ -247,7 +248,7 @@ function(context, cursorId, sortVal) {
 
 	if (context.callback) {
 		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [context]);
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:context.noBusyOverlay});
 	} else {
 		var response = appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
 		var csfeResult = new ZmCsfeResult(response, false);

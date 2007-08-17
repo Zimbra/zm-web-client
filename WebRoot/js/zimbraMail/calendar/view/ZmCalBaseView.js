@@ -556,6 +556,7 @@ function(list) {
 		}
 	}
 	this._postSet(list);
+	this._controller.fetchMiniCalendarAppts();
 }
 
 // override
