@@ -87,9 +87,9 @@
                                             </c:if>
                                         </c:if>
                                     </td>
-                                    <td nowrap><fmt:message key="TASK_${taskHit.status}"/></td>
-                                    <td>${empty taskHit.percentComplete ? '0' : taskHit.percentComplete}%</td>
-                                    <td nowrap>
+                                    <td width=15% nowrap><fmt:message key="TASK_${taskHit.status}"/></td>
+                                    <td width=10%>${empty taskHit.percentComplete ? '0' : taskHit.percentComplete}%</td>
+                                    <td width=10% nowrap>
                                         <c:choose>
                                             <c:when test="${taskHit.hasDueDate}">
                                                 <fmt:formatDate value="${taskHit.dueDate}" dateStyle="short" timeZone="${mailbox.prefs.timeZone}"/>
