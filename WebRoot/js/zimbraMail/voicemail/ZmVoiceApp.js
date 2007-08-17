@@ -273,8 +273,8 @@ function(callback, response) {
 
 ZmVoiceApp.prototype._createAccordionItems =
 function() {
-	var data = {lastFolder:null, appName:this._name};
 	for (var i = 0; i < this.phones.length; i++) {
+		var data = {lastFolder:null, appName:this._name};
 		var phone = this.phones[i];
 		data.phone = phone;
 		var item = this._overviewPanelContent.addAccordionItem({title:phone.getDisplay(), data:data});
