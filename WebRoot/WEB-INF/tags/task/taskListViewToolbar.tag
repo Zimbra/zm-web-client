@@ -11,7 +11,10 @@
      <zm:getMailbox var="mailbox"/>
     <c:set var="taskListToolbarCache" scope="request">
         <td><div class='vertSep'></div></td>
-        <app:button name="actionNew" id="NEW_TASK" src="tasks/NewTask.gif" tooltip="newTask" text="task"/>
+        <td>
+        <zm:currentResultUrl var="newTaskUrl" value="" context="${context}" action="edit"/>
+        <a id="NEW_TASK" href="${newTaskUrl}"><app:img altkey="newTask" src="tasks/NewTask.gif"/><span><fmt:message key="newTask"/></span></a>
+        </td>
         <td><div class='vertSep'></div></td>
         <app:button id="OPEDIT" name="actionEdit" src="common/Edit.gif" tooltip="edit" text="edit"/>
         <td><div class='vertSep'></div></td>

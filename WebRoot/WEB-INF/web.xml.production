@@ -259,6 +259,7 @@
           <url-pattern>/h/compose</url-pattern>
           <url-pattern>/h/eappt</url-pattern>
           <url-pattern>/h/econtact</url-pattern>
+          <url-pattern>/h/etask</url-pattern>          
           <url-pattern>/h/imessage</url-pattern>
           <url-pattern>/h/login</url-pattern>
           <url-pattern>/h/maddrbooks</url-pattern>
