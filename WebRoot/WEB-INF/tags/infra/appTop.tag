@@ -29,11 +29,11 @@
             </c:if>
             <table cellpadding=0 cellspacing=0 border=0>
             <tr>
-            <!-- td>
-            <label for="searchField"><fmt:message key="find"/> :</label>
-			</td -->
+            <td nowrap>
+            <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
+			</td>
             <td class='ImgField_L'></td>            
-            <td><input id="searchField" class="searchField" maxlength=2048 name=sq value="${query}"></td>
+            <td width=80%><input width=100% style='width:100%' id="searchField" class="searchField" maxlength=2048 name=sq value="${query}"></td>
             <td class='ImgField_R'></td>
             <td>&nbsp;<fmt:message key="in"/>&nbsp;</td>
             <td style='padding-left: 2px;'>
