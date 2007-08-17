@@ -304,8 +304,9 @@ function(ex) {
 		}
 	}
 	if (msg) {
-		this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-		this._msgDialog.popup();
+		var msgDialog = appCtxt.getMsgDialog();
+		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+		msgDialog.popup();
 		return true;
 	} else {
 		return false;

@@ -35,7 +35,6 @@ ZmAssistantDialog = function() {
 
 	this.setContent(this._contentHtml());
 	this._initContent();
-	this._msgDialog = appCtxt.getMsgDialog();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setButtonListener(ZmAssistantDialog.EXTRA_BUTTON, new AjxListener(this, this._extraButtonListener));	
 	this.setButtonListener(ZmAssistantDialog.HELP_BUTTON, new AjxListener(this, this._helpButtonListener));
@@ -295,7 +294,8 @@ function() {
 
 ZmAssistantDialog.prototype.messageDialog =
 function(message, style) {
-	this._msgDialog.reset();
-	this._msgDialog.setMessage(message, style);
-	this._msgDialog.popup();
+	var msgDialog = appCtxt.getMsgDialog();
+	msgDialog.reset();
+	msgDialog.setMessage(message, style);
+	msgDialog.popup();
 };

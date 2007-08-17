@@ -368,9 +368,10 @@ function(attId, isDraft) {
 	// Any addresses at all provided? If not, bail.
 	if (!isDraft && !addrs.gotAddress) {
 		this.enableInputs(false);
-    	this._msgDialog.setMessage(ZmMsg.noAddresses, DwtMessageDialog.CRITICAL_STYLE);
-	    this._msgDialog.popup(this._getDialogXY());
-	    this._msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._okCallback, this);
+		var msgDialog = appCtxt.getMsgDialog();
+		msgDialog.setMessage(ZmMsg.noAddresses, DwtMessageDialog.CRITICAL_STYLE);
+		msgDialog.popup(this._getDialogXY());
+		msgDialog.registerCallback(DwtDialog.OK_BUTTON, this._okCallback, this);
 		this.enableInputs(true);
 	    return;
 	}
@@ -1417,7 +1418,6 @@ function(composeMode) {
 	this._bodyField = document.getElementById(this._bodyFieldId);
 
 	// misc. inits
-	this._msgDialog = appCtxt.getMsgDialog();
 	this.setScrollStyle(DwtControl.SCROLL);
 	this._attachCount = 0;
 
@@ -1854,7 +1854,7 @@ function(args) {
 // needed to reset design mode when in html compose format for gecko
 ZmComposeView.prototype._okCallback =
 function() {
-	this._msgDialog.popdown();
+	appCtxt.getMsgDialog().popdown();
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
 };

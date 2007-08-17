@@ -55,7 +55,6 @@ ZmFilterRuleDialog = function() {
 	this._plusMinusLstnr	= new AjxListener(this, this._plusMinusListener);
 	this._browseLstnr		= new AjxListener(this, this._browseListener);
 	
-	this._msgDialog = appCtxt.getMsgDialog();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this._conditionErrorFormatter = new AjxMessageFormat(ZmMsg.filterErrorCondition);
 	this._actionErrorFormatter = new AjxMessageFormat(ZmMsg.filterErrorAction);
@@ -672,8 +671,9 @@ function(ev) {
 	if (rule1 && (rule1 != rule))
 		msg = ZmMsg.filterErrorNameExists;
 	if (msg) {
-    	this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-	    this._msgDialog.popup();
+		var msgDialog = appCtxt.getMsgDialog();
+    	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+	    msgDialog.popup();
 	    return;
 	}
 	var active = document.getElementById(this._activeCheckboxId).checked;
@@ -717,8 +717,9 @@ function(ev) {
 		rule.addAction(new ZmAction(ZmFilterRule.A_STOP));
 
 	if (msg) {
-    	this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-	    this._msgDialog.popup();
+		var msgDialog = appCtxt.getMsgDialog();
+    	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+	    msgDialog.popup();
 	    return;
 	}
 	

@@ -72,8 +72,6 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 	this._evt = new ZmEvent(ZmEvent.S_CONTACT);
 	this._evtMgr = new AjxEventMgr();
 	
-	this._msgDialog = appCtxt.getMsgDialog();
-
 	this._tabIds = [ZmApptComposeView.TAB_APPOINTMENT];
 	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		this._tabIds.push(ZmApptComposeView.TAB_SCHEDULE);
@@ -400,11 +398,12 @@ function(listener) {
 
 ZmApptComposeView.prototype.showErrorMessage = 
 function(msg, style, cb, cbObj, cbArgs) {
-	this._msgDialog.reset();
+	var msgDialog = appCtxt.getMsgDialog();
+	msgDialog.reset();
 	style = style ? style : DwtMessageDialog.CRITICAL_STYLE
-	this._msgDialog.setMessage(msg, style);
-	this._msgDialog.popup(this._getDialogXY());
-    this._msgDialog.registerCallback(DwtDialog.OK_BUTTON, cb, cbObj, cbArgs);
+	msgDialog.setMessage(msg, style);
+	msgDialog.popup(this._getDialogXY());
+    msgDialog.registerCallback(DwtDialog.OK_BUTTON, cb, cbObj, cbArgs);
 };
 
 // Private / Protected methods

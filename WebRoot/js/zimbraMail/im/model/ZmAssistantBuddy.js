@@ -30,7 +30,6 @@ ZmAssistantBuddy = function(list) {
 	};
 	ZmRosterItem.call(this, ZmAssistantBuddy.ADDR, list, ZmMsg.zimbraAssistant, assistant_rp);
 
-	this._msgDialog = appCtxt.getMsgDialog();
 	this.shell = appCtxt.getShell(); // FIXME: not sure this is needed, but it's accessed in some Assistant objects
 
 	AjxDispatcher.require("Assistant");

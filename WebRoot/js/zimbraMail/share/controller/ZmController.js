@@ -35,8 +35,6 @@ ZmController = function(container, app) {
 	this._currentView = null;
 	
 	this._authenticating = false;
-
-	this._msgDialog = appCtxt.getMsgDialog();
 };
 
 // view identifiers - need to be all caps
