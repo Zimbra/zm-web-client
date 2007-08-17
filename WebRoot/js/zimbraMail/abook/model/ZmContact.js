@@ -127,7 +127,9 @@ ZmContact.F_dlist			= "dlist";
 ZmContact.X_fileAs			= "fileAs";
 ZmContact.X_firstLast		= "firstLast";
 ZmContact.X_fullName		= "fullName";
-ZmContact.X_isMyCard		= "ismycard";
+
+// My card fields
+ZmContact.X_isMyCard		= "isMyCard";
 
 // GAL fields
 ZmContact.GAL_MODIFY_TIMESTAMP = "modifyTimeStamp";

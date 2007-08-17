@@ -603,7 +603,7 @@ function(contact, doAdd) {
 	}
 
 	// Update my card.
-	if (ZmContact.getAttr(contact, ZmContact.X_isMyCard) == "TRUE") {
+	if (ZmContact.getAttr(contact, ZmContact.X_isMyCard) == "true") {
 		if (!this._myCard) {
 			var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
 			var params = {
