@@ -37,3 +37,5 @@ AjxPackage.require("zimbraMail.im.view.ZmImInviteNotification");
 
 AjxPackage.require("zimbraMail.im.controller.ZmChatListController");
 AjxPackage.require("zimbraMail.im.controller.ZmRosterTreeController");
+
+AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmLiteHtmlEditor");

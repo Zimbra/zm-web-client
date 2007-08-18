@@ -557,6 +557,17 @@ font-weight:normal;
 line-height:normal;
 }
 
+/* Lite HTML Editor */
+.ZmLiteHtmlEditor {
+	width: 100%;
+}
+
+.ZmLiteHtmlEditor .TextArea {
+	overflow: auto;
+	padding: 1px;
+	width: 100%;
+}
+
 
 /* ??? USE? */
 .ZmHEDialog td.Label {

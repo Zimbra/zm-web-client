@@ -33,6 +33,10 @@ ZmChatWidget = function(parent, posStyle) {
 ZmChatWidget.prototype = new DwtComposite;
 ZmChatWidget.prototype.constructor = ZmChatWidget;
 
+ZmChatWidget.prototype.toString = function(){
+	return "ZmChatWidget";
+};
+
 ZmChatWidget.prototype._setChat = function(chat) {
 	this.chat = chat;
 	var item = chat.getRosterItem();
@@ -137,7 +141,7 @@ ZmChatWidget.prototype.handleMessage = function(msg) {
 
 ZmChatWidget.prototype.handleHtmlMessage = function(str) {
 	var div = document.createElement("div");
-	div.innerHTML = str;
+	div.innerHTML = AjxStringUtil.htmlDecode(str);
 	return this.scrollTo(div, true);
 };
 
@@ -182,8 +186,12 @@ ZmChatWidget.prototype.setStatusTitle = function(text) {
 	// this._statusLabel.setText(text);
 };
 
-ZmChatWidget.prototype.setInputContent = function(text) {
-	this._getElement("input").value = text;
+ZmChatWidget.prototype.setEditorContent = function(text) {
+	this._liteEditor.setContent(text);
+};
+
+ZmChatWidget.prototype.getEditorContent = function(){
+	return this._liteEditor.getContent();
 };
 
 ZmChatWidget.prototype.addRosterItem = function(item) {
@@ -204,10 +212,10 @@ ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
 	var ret = null;
 	if (this.chat.getRosterSize() == 1) {
 		var item = this.chat.getRosterItem(0);
-		var input = this._getElement("input");
+		var input = this._liteEditor.getEditor();
 		var args = { chat      : this.chat,
 			     widget    : this,
-			     str       : input.value,
+			     str       : this.getEditorContent(),
 			     sel_start : Dwt.getSelectionStart(input),
 			     sel_end   : Dwt.getSelectionEnd(input),
 			     last_key  : last_key,
@@ -215,7 +223,7 @@ ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
 		ret = item.handleInput(args);
 		if (ret) {
 			if (ret.str != null)
-				input.value = ret.str;
+				this.setEditorContent(ret.str);
 			if (ret.sel_start != null) {
 				Dwt.setSelectionRange(input,
 						      ret.sel_start,
@@ -237,25 +245,6 @@ ZmChatWidget.prototype.sendInput = function(text) {
 	if (text == "")
 		return;		// don't send empty strings
 
-
-// 	if (/^\x2f/.test(text)) {
-// 		var cmd = text.substr(1);
-// 		switch (cmd) {
-// 		    case "gg":
-// 			break;
-// 		}
-// 	}
-
-
-// 	if (text.substring(0,1) == "$") {
-// 		if (text.substring(1, 2) == "p") {
-// 			this.chat.getRosterItem().__setShow(AjxStringUtil.trim(text.substring(3)));
-// 		} else if (text.substring(1, 3) == "et") {
-// 			text = ">:) :) =)) =(( :(( <:-P :O)";
-// 		} else if (text.substring(1, 2) == "u") {
-// 			this.chat.getRosterItem().setUnread(parseInt(text.substring(2)));
-// 		}
-// 	}
 	this.chat.sendMessage(text);
 };
 
@@ -277,6 +266,44 @@ ZmChatWidget.IDS = [
 	"input"
 ];
 
+ZmChatWidget.prototype._initEditor = function(parent){
+	
+	var liteEditor = this._liteEditor = new ZmLiteHtmlEditor(parent);
+	liteEditor.setSize("100%","40px");
+	
+	var keyPressListener = new AjxListener(this,this._inputKeyPress);
+	liteEditor.addKeyPressListener(keyPressListener);
+	
+	var inputLayout = this._getElement("inputLayout");
+	inputLayout.appendChild(liteEditor.getHtmlElement());
+	
+	
+};
+
+ZmChatWidget.prototype.setEditorMode = function(mode,force){
+	this._liteEditor.setMode(mode,force);
+};
+
+ZmChatWidget.prototype._changeEditorModeListener = function(){
+	
+	//Fixme: Aweful coding standards.
+	/*if(!this._liteEditor.isHtmlMode()){
+		var size = this._content.getSize();
+		this._content.setSize( size.x , (size.y - 26) );
+		var convLayout = this._getElement("convLayout");
+		convLayout.style.height = ( size.y - 26 ) + "px";
+		convLayout.style.widht  = size.x+"px";
+	}else{
+		var size = this._content.getSize();
+		this._content.setSize( size.x , (size.y + 26) );
+		var convLayout = this._getElement("convLayout");
+		convLayout.style.height = ( size.y + 26 ) + "px";
+		convLayout.style.widht  = size.x+"px";
+	}*/
+	this._liteEditor.reverseMode();
+};
+
+
 ZmChatWidget.prototype._init = function() {
 	var base_id = Dwt.getNextId();
 	this._ids = {};
@@ -285,7 +312,9 @@ ZmChatWidget.prototype._init = function() {
 		this._ids[id] = base_id + "_" + id;
 	}
 	this.setContent(AjxTemplate.expand("zimbraMail.im.templates.Chat#ChatWidget", { id: base_id }));
-
+	
+	this._initEditor(this);
+	
 	this._toolbar = new DwtToolBar(this, null, Dwt.ABSOLUTE_STYLE);
 
 	this._close = new DwtToolBarButton(this._toolbar, null);
@@ -298,6 +327,13 @@ ZmChatWidget.prototype._init = function() {
 	this._label.setText("Chat title here");
 
 	this._toolbar.addFiller();
+	
+	var btn = this._changEditorModeBtn = new DwtToolBarButton(this._toolbar,DwtButton.TOGGLE_STYLE);
+	btn.setImage("HtmlDoc");
+	btn.setToolTipContent("Change Editor Mode");
+	btn.addSelectionListener(new AjxListener(this,this._changeEditorModeListener));
+	
+	new DwtControl(this._toolbar, "vertSep");
 
 	var btn = this._addToBuddyListBtn = new DwtToolBarButton(this._toolbar, null);
 	btn.setToolTipContent("-");
@@ -343,9 +379,6 @@ ZmChatWidget.prototype._init = function() {
 
 	this.addControlListener(new AjxListener(this, this.__onResize));
 
-	this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] =
-		ZmChatWidget._inputKeyPress;
-
 	var dropTgt = new DwtDropTarget([ "ZmRosterItem", "ZmChatWidget" ]);
 	this._label.setDropTarget(dropTgt);
 	this._toolbar.setDropTarget(dropTgt);
@@ -369,17 +402,15 @@ ZmChatWidget.prototype._addToBuddyListListener = function() {
 	);
 };
 
-// "this" is here the input field.
-ZmChatWidget._inputKeyPress = function(ev) {
-	if (AjxEnv.isIE)
-		ev = window.event;
-	// var keyEvent = DwtShell.keyEvent;
+ZmChatWidget.prototype._inputKeyPress = function(ev) {
+	
+	var self = this;
 	var keyEvent = new DwtKeyEvent();
 	keyEvent.setFromDhtmlEvent(ev);
-	var self = DwtUiEvent.getDwtObjFromEvent(keyEvent);
+	
 	if (self.__clearSelectionTimeout)
 		clearTimeout(self.__clearSelectionTimeout);
-	var input = this;
+	//var input = this;
 	function stopEvent() {
 		keyEvent._stopPropagation = true;
 		keyEvent._returnValue = false;
@@ -397,13 +428,13 @@ ZmChatWidget._inputKeyPress = function(ev) {
 			// history back
 			var line = self.chat.getHistory(-1);
 			if (line)
-				this.value = line;
+				self.setEditorContent(line);
 			stopEvent();
 		} else if (keyEvent.charCode == 40) { // DOWN
 			// history fwd
 			var line = self.chat.getHistory(1);
 			if (line)
-				this.value = line;
+				self.setEditorContent(line);
 			stopEvent();
 		}
 	} else if (keyEvent.altKey) {
@@ -423,16 +454,15 @@ ZmChatWidget._inputKeyPress = function(ev) {
 			if (self) {
 				var ret = self._keypressNotifyItems(keyEvent.charCode, isEnter);
 				if (isEnter && !(ret && ret.stop)) {
-    					self.sendInput(input.value);
-        				input.value = "";
+    					self.sendInput(self.getEditorContent());
+        				self.setEditorContent("");
 				}
 			}
-			input = null;
 			keyEvent = null;
 			self = null;
 		};
 		if (isEnter) {
-			processKey();
+			processKey(self);
 			return false;
 		} else {
 			if (self.__processKeyTimeout)
@@ -441,6 +471,7 @@ ZmChatWidget._inputKeyPress = function(ev) {
 		}
 	}
 };
+
 
 ZmChatWidget.prototype._getElement = function(id) {
 	return document.getElementById(this._ids[id]);
@@ -476,11 +507,12 @@ ZmChatWidget.prototype._doResize = function() {
 
 ZmChatWidget.prototype.__onResize = function(ev) {
 	this._doResize();
+	
 };
 
 ZmChatWidget.prototype.focus = function() {
 	this._removeUnreadStatus();
-	this._getElement("input").focus();
+	this._liteEditor.focus();
 };
 
 ZmChatWidget.prototype._removeUnreadStatus = function() {
@@ -567,7 +599,7 @@ ZmChatWidget.prototype.detach = function(pos) {
 
 ZmChatWidget.prototype.dispose = function() {
 	this._getElement("sash").onmousedown = null;
-	this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = null;
+	//this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = null;
 	DwtComposite.prototype.dispose.call(this);
 };
 
@@ -771,7 +803,7 @@ ZmChatWidget.prototype._sashMouseDown = function(ev) {
 	var dwtEv = DwtShell.mouseEvent;
 	dwtEv.setFromDhtmlEvent(ev);
 	this._sashCapture.origY = dwtEv.docY;
-	this._sashCapture.origHeight = this._getElement("input").offsetHeight;
+	this._sashCapture.origHeight = this._liteEditor.getHtmlElement().offsetHeight;
 	dwtEv._stopPropagation = true;
 	dwtEv._returnValue = false;
 	dwtEv.setToDhtmlEvent(ev);
@@ -781,10 +813,9 @@ ZmChatWidget.prototype._sashMouseMove = function(ev) {
 	var dwtEv = DwtShell.mouseEvent;
 	dwtEv.setFromDhtmlEvent(ev);
 	var diff = dwtEv.docY - this._sashCapture.origY;
-	var el = this._getElement("input");
 	var h = Math.min(Math.max(this._sashCapture.origHeight - diff, 30),
 			 Math.round(this.getSize().y * 0.5));
-	el.style.height = h + "px";
+	this._liteEditor.setSize(this.getSize().x, h+"px");		 
 	this._doResize();
 	dwtEv._stopPropagation = true;
 	dwtEv._returnValue = false;
