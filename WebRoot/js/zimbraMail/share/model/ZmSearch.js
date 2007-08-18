@@ -221,9 +221,9 @@ function(params) {
 				// special handling for showing participants ("To" instead of "From")
 				var folder = appCtxt.getById(this.folderId);
 				if (folder &&
-					folder.isUnder(ZmFolder.ID_SENT) ||
+					(folder.isUnder(ZmFolder.ID_SENT) ||
 					folder.isUnder(ZmFolder.ID_DRAFTS) ||
-					folder.isUnder(ZmFolder.ID_OUTBOX))
+					folder.isUnder(ZmFolder.ID_OUTBOX)))
 				{
 					method.setAttribute("recip", "1");
 				}
