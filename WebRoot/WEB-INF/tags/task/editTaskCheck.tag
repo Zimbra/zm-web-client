@@ -8,7 +8,7 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:composeUploader var="uploader"/>
-    <c:set var="needEditView" value="${param.action eq 'edit' or param.action eq 'new'}"/>
+    <c:set var="needEditView" value="${param.action eq 'edittask' or param.action eq 'newtask'}"/>
     <c:if test="${uploader.isUpload}">
         <c:choose>
             <c:when test="${not empty uploader.paramValues.actionGo}">
@@ -44,17 +44,17 @@
             <c:when test="${uploader.isCancel}">
                 <c:set var="needEditView" value="${false}"/>
             </c:when>
-            <c:when test="${uploader.isSave and not uploader.compose.isValidStartTime}">
+            <c:when test="${uploader.isSave and not empty uploader.compose.startDate and not uploader.compose.isValidStartTime}">
                 <app:status style="Critical">
                     <fmt:message key="errorInvalidApptStartDate"/>
                 </app:status>
             </c:when>
-            <c:when test="${uploader.isSave and not uploader.compose.isValidEndTime}">
+            <c:when test="${uploader.isSave and not empty uploader.compose.endDate and not uploader.compose.isValidEndTime}">
                 <app:status style="Critical">
                     <fmt:message key="errorInvalidApptEndDate"/>
                 </app:status>
             </c:when>
-            <c:when test="${uploader.isSave and uploader.compose.isValidEndTime and uploader.compose.isValidStartTime and (uploader.compose.apptEndTime lt uploader.compose.apptStartTime)}">
+            <c:when test="${uploader.isSave and not empty uploader.compose.startDate and not empty uploader.compose.endDate and uploader.compose.isValidEndTime and uploader.compose.isValidStartTime and (uploader.compose.apptEndTime lt uploader.compose.apptStartTime)}">
                 <app:status style="Critical">
                     <fmt:message key="errorInvalidApptEndBeforeStart"/>
                 </app:status>
@@ -76,7 +76,7 @@
                             <c:set var="message" value="${null}"/>
                         </c:otherwise>
                     </c:choose>
-                    <zm:cancelAppointment compose="${uploader.compose}" message="${message}"/>
+                    <zm:cancelTask compose="${uploader.compose}" message="${message}"/>
                     <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                     <app:status><fmt:message key="${uploader.isApptCancel ? 'actionApptCancelled' : 'actionApptDeleted'}"/></app:status>
                     <c:set var="needEditView" value="${false}"/>
@@ -84,7 +84,7 @@
             </c:when>
             <c:when test="${uploader.isSave}">
                 <c:set var="needEditView" value="${true}"/>
-                <app:handleError>
+                <%--<app:handleError>--%>
                     <c:set var="apptId" value="${uploader.compose.useInstance and not empty uploader.compose.exceptionInviteId ? uploader.compose.exceptionInviteId : uploader.compose.inviteId}"/>
                     <c:choose>
                         <c:when test="${not empty apptId}">
@@ -94,14 +94,15 @@
                             <c:set var="message" value="${null}"/>
                         </c:otherwise>
                     </c:choose>
-                    <zm:saveAppointment var="createResult" compose="${uploader.compose}" message="${message}"/>
+                    <zm:saveTask var="createResult" compose="${uploader.compose}" message="${message}"/>
                     <c:if test="${not empty message and uploader.compose.apptFolderId ne message.folderId}">
                         <zm:moveItem var="moveResult" id="${apptId}" folderid="${uploader.compose.apptFolderId}"/>
                     </c:if>
                     <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                     <app:status><fmt:message key="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/></app:status>
                     <c:set var="needEditView" value="${false}"/>
-                </app:handleError>
+                     <zm:clearSearchCache/>
+                <%-- </app:handleError>--%>
             </c:when>
         </c:choose>
     </c:if>

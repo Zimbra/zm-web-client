@@ -1089,3 +1089,8 @@ font-weight:normal;
 .ZOptionsHint {
 	@Text-disabled@;
 }
+
+.ZhDateHint {
+	@Text-disabled@;
+    padding-left: 5px;
+}

@@ -42,7 +42,7 @@
         <c:when test="${empty compose}">
             <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
                                date="${requestScope.dateContext}"
-                               inviteId="${empty param.invId? null : param.invId}"
+                               inviteId="${param.id}"
                                exceptionInviteId="${empty param.exInvId? null : param.exInvId}"
                                useInstance="${param.useInstance eq '1'}"
                                istask="${true}"
@@ -113,8 +113,6 @@
                                 <td  nowrap valign=middle>
                                     <select name="actionOp">
                                         <option value="" selected/><fmt:message key="moreActions"/>
-                                        <option value="flag"/><fmt:message key="actionAddFlag"/>
-                                        <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
                                         <app:tagOptions mailbox="${mailbox}"/>
                                     </select>
                                 </td>
@@ -287,6 +285,9 @@
                                                             <td>
                                                                 <input id="start" autocomplete="off" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
                                                             </td>
+                                                            <td class='ZhDateHint'>
+                                                                <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
+                                                            </td>
                                                         </tr>
                                                     </table>
                                                 </td>
@@ -298,6 +299,9 @@
                                                         <tr>
                                                             <td>
                                                                 <input id="end" autocomplete="off" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
+                                                            </td>
+                                                            <td class='ZhDateHint'>
+                                                                <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
                                                             </td>
                                                         </tr>
                                                     </table>

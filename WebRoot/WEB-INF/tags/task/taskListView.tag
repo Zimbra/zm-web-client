@@ -9,11 +9,9 @@
     <zm:getMailbox var="mailbox"/>
     <app:searchTitle var="title" context="${context}"/>
     <c:set var="id" value="${empty param.id ? context.searchResult.hits[0].taskHit.inviteId : param.id}"/>
-    <fmt:message var="unknownRecipient" key="unknownRecipient"/>
     <fmt:message var="unknownSubject" key="noSubject"/>
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:set var="selectedRow" value="${param.selectedRow}"/>
-    <%-- <app:editTaskCheck/>  --%>
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${title}" selected='tasks' tasks="${true}" tags="true" context="${context}" keys="true">
@@ -59,7 +57,7 @@
 
                             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                                 <c:set var="taskHit" value="${hit.taskHit}"/>
-                                <zm:currentResultUrl var="taskUrl" value="search" id="${taskHit.inviteId}" action='edit' index="${status.index}" context="${context}" usecache="true"/>
+                                <zm:currentResultUrl var="taskUrl" value="search" id="${taskHit.inviteId}" action='edittask' index="${status.index}" context="${context}" usecache="true"/>
 
                                 <c:if test="${empty selectedRow and taskHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
                                 <c:set var="aid" value="A${status.index}"/>
