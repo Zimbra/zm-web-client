@@ -385,7 +385,7 @@ function(msg, data, title) {
 
 ZmZimletBase.prototype.displayStatusMessage =
 function(msg) {
-	this.appCtxt.setStatusMsg(msg);
+	appCtxt.setStatusMsg(msg);
 };
 
 ZmZimletBase.prototype.getResource =
