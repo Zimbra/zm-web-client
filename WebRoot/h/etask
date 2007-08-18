@@ -242,25 +242,25 @@
                                             <table cellpadding="5" cellspacing="0">
                                             <tr>
                                                 <td align=right>
-                                                    <input type=checkbox name="completed" <c:if test="${compose.taskStatus eq 'COMP'}">checked</c:if> value="1">
+                                                    <input id="completed" type=checkbox onclick="completedCheckbox(this)" name="completed" <c:if test="${compose.taskStatus eq 'COMP'}">checked</c:if> value="1">
                                                 </td>
                                                 <td>
                                                     <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <tr>
                                                                 <td>
-                                                                    <select name="taskStatus" id="status">
-                                                                        <option <c:if test="${compose.taskStatus eq 'NEED'}">selected </c:if>value="NEED"><fmt:message key="TASK_NEED"/>
-                                                                        <option <c:if test="${compose.taskStatus eq 'COMP'}">selected </c:if>value="COMP"><fmt:message key="TASK_COMP"/>
-                                                                        <option <c:if test="${compose.taskStatus eq 'INPR'}">selected </c:if>value="INPR"><fmt:message key="TASK_INPR"/>
+                                                                    <select name="taskStatus" id="status" onchange="statusChanged(this.options[this.selectedIndex].value)">
+                                                                        <option id="NEED" <c:if test="${compose.taskStatus eq 'NEED'}">selected </c:if>value="NEED"><fmt:message key="TASK_NEED"/>
+                                                                        <option id="COMP" <c:if test="${compose.taskStatus eq 'COMP'}">selected </c:if>value="COMP"><fmt:message key="TASK_COMP"/>
+                                                                        <option id="INPR" <c:if test="${compose.taskStatus eq 'INPR'}">selected </c:if>value="INPR"><fmt:message key="TASK_INPR"/>
                                                                         <option <c:if test="${compose.taskStatus eq 'WAITING'}">selected </c:if>value="WAITING"><fmt:message key="TASK_WAITING"/>
                                                                         <option <c:if test="${compose.taskStatus eq 'DEFERRED'}">selected </c:if>value="DEFERRED"><fmt:message key="TASK_DEFERRED"/>
                                                                     </select>
                                                                 </td>
                                                                 <td>&nbsp;</td>
                                                                 <td>
-                                                                    <select name="taskPercentComplete">
-                                                                        <option <c:if test="${compose.taskPercentComplete eq '0'}">selected </c:if>value="0">0%
+                                                                    <select name="taskPercentComplete" id="percent" onchange="percentChanged(this.options[this.selectedIndex].value)">
+                                                                        <option id="percent0" <c:if test="${compose.taskPercentComplete eq '0'}">selected </c:if>value="0">0%
                                                                         <option <c:if test="${compose.taskPercentComplete eq '10'}">selected </c:if>value="10">10%
                                                                         <option <c:if test="${compose.taskPercentComplete eq '20'}">selected </c:if>value="20">20%
                                                                         <option <c:if test="${compose.taskPercentComplete eq '30'}">selected </c:if>value="30">30%
@@ -270,7 +270,7 @@
                                                                         <option <c:if test="${compose.taskPercentComplete eq '70'}">selected </c:if>value="70">70%
                                                                         <option <c:if test="${compose.taskPercentComplete eq '80'}">selected </c:if>value="80">80%
                                                                         <option <c:if test="${compose.taskPercentComplete eq '90'}">selected </c:if>value="90">90%
-                                                                        <option <c:if test="${compose.taskPercentComplete eq '100'}">selected </c:if>value="100">100%
+                                                                        <option id="percent100" <c:if test="${compose.taskPercentComplete eq '100'}">selected </c:if>value="100">100%
                                                                     </select>
                                                                 </td>
                                                         </tr>
@@ -393,6 +393,34 @@
     <SCRIPT TYPE="text/javascript">
     <!--
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
+    function completedCheckbox(box) {
+        if (box.checked) {
+            document.getElementById("COMP").selected = true;
+            document.getElementById("percent100").selected = true;
+        } else {
+            document.getElementById("NEED").selected = true;
+            document.getElementById("percent0").selected = true;
+        }
+    }
+    function statusChanged(value) {
+        if (value != 'COMP') {
+            document.getElementById("completed").checked = false;
+        } else {
+            document.getElementById("completed").checked = true;
+            document.getElementById("percent100").selected = true;
+        }
+    }
+    function percentChanged(value) {
+        if (value == "100") {
+            document.getElementById("completed").checked = true;
+            document.getElementById("COMP").selected = true;
+        } else {
+            var statusEl = document.getElementById("status");
+            if (statusEl.options[statusEl.selectedIndex].value == "COMP")
+                document.getElementById("INPR").selected = true;
+            document.getElementById("completed").checked = false;
+        }
+    }
     //-->
    </SCRIPT>
     <app:keyboard cache="cal.eappt" globals="false" passspecial="true" mailbox="${mailbox}">
