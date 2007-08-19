@@ -708,7 +708,7 @@ function(creates, force) {
 
 	// for CV, folderId will correspond to parent list view
 	// XXX: should handle simple tag search as well
-	var folderId = currList.search.folderId;
+	var folderId = currList.search ? currList.search.folderId : null;
 	if (!folderId) { return; }
 
 	var sortBy = currList.search.sortBy;
