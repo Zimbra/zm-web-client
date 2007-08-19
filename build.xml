@@ -924,7 +924,6 @@ if (ext == null) ext = "";
       />
       <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/delegatedAuth.html,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
         <lib dir="${server.build.dir}" includes="zimbrastore.jar"/>
-        <lib dir="${common.build.dir}" includes="zimbracommon.jar"/>
         <lib dir="${zimbratl.build.dir}" includes="zimbrataglib.jar"/>
         <lib dir="${common.jars.dir}" includes="${war.include}"/>
         <lib dir="${jars.dir}" includes="**.jar" excludes="${war.exclude}"/>
@@ -962,7 +961,6 @@ if (ext == null) ext = "";
 
         <!-- ======= HTML ========== -->
         <lib dir="${server.build.dir}" includes="zimbrastore.jar"/>
-        <lib dir="${common.build.dir}" includes="zimbracommon.jar"/>
         <lib dir="${zimbratl.build.dir}" includes="zimbrataglib.jar"/>
         <lib dir="${common.jars.dir}" includes="${war.include}"/>
         <lib dir="${jars.dir}" includes="**.jar" excludes="${war.exclude}"/>
@@ -1060,7 +1058,6 @@ if (ext == null) ext = "";
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />  	
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="${war.exclude}"/>
-      <lib dir="${common.build.dir}" includes="zimbracommon.jar"/>
       <lib dir="${common.jars.dir}" includes="${war.include}"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
@@ -1085,7 +1082,6 @@ if (ext == null) ext = "";
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />  	
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="${war.exclude}"/>
-      <lib dir="${common.build.dir}" includes="zimbracommon.jar"/>
       <lib dir="${common.jars.dir}" includes="${war.include}"/>
    	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
