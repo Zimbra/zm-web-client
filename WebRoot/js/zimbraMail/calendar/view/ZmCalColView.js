@@ -1531,6 +1531,7 @@ function() {
 	this._apptBodyDivOffset = Dwt.toWindow(document.getElementById(this._apptBodyDivId), 0, 0, null, true);
 
 	if (this._scheduleMode) {
+		this._layoutAppts();		
 		this._layoutUnionData();
 	}
 }
