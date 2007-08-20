@@ -156,12 +156,12 @@
                                 <td class='List'>
                                         <table width=100% cellpadding=0 cellspacing=0>
                                             <tr>
-                                                <th class='CB'nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+                                                <th class='CB'nowrap width='1%'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                                 <c:if test="${mailbox.features.flagging}">
-                                                <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
+                                                <th class='Img' nowrap width='1%'><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
                                                 </c:if>
                                                 <c:if test="${mailbox.features.tagging}">
-                                                <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG"/>
+                                                <th class='Img' nowrap width='1%'><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG"/>
                                                 </c:if>
                                                 <th class='MsgStatusImg' nowrap>&nbsp;
                                                 <th width=10% nowrap>
@@ -169,9 +169,9 @@
                                                 <a href="${fromSortUrl}"><fmt:message key="from"/></a>
                                                 <th class='Img' nowrap><app:img src="common/Attachment.gif" altkey="ALT_ATTACHMENT"/>
                                                 <th nowrap><fmt:message key="fragment"/>
-                                                <th width=1% nowrap><fmt:message key="folder"/>
-                                                <th width=1% nowrap><fmt:message key="size"/>
-                                                <th width=1% nowrap>
+                                                <th width=3% nowrap><fmt:message key="folder"/>
+                                                <th width=3% nowrap><fmt:message key="size"/>
+                                                <th width=2% nowrap>
                                                     <zm:currentResultUrl var="dateSortUrl" value="search" action="view" context="${context}" csi="${param.csi}" css="${param.css eq 'dateDesc' ? 'dateAsc' : 'dateDesc'}"/>
                                                 <a href="${dateSortUrl}"><fmt:message key="received"/></a>
                                             </tr>
