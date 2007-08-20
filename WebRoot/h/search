@@ -50,7 +50,11 @@
     <zm:computeSearchContext var="context" usecache="true"/>
 
 </app:handleError>
-
+<c:if test="${param.mesg eq 'welcome'}">
+    <app:status style="info">
+        <fmt:message key="htmlWelcomeMesg"/>
+    </app:status>
+</c:if>
  <%-- switch based on context search types --%>
 <c:choose>
     <c:when test="${context.isConversationSearch and action eq 'view'}">
