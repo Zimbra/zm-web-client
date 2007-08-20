@@ -294,17 +294,8 @@ function(ev, subject, to) {
 
 ZmVoicemailListController.prototype._handleResponseUpload = 
 function(inNewWindow, subject, to, response) {
+	// Load the message in the compose view.
 	var voicemail = this._getView().getSelection()[0];
-	var mailMsg = new ZmMailMsg();
-	mailMsg.getAttachments()[0] = {
-		name: "voicemail.wav", 
-		ct: "audio/x-wave",
-		cl: this._getAttachmentUrl(voicemail),
-		relativeCl: true
-	};
-	mailMsg.hasAttach = true;
-	var id = response._data.UploadVoiceMailResponse.upload[0].id;
-	mailMsg.addAttachmentId(id);
 	var duration = AjxDateUtil.computeDuration(voicemail.duration);
     var date = AjxDateUtil.computeDateStr(new Date(), voicemail.date);
     var callingParty = voicemail.getCallingParty(ZmVoiceItem.FROM);
@@ -315,12 +306,15 @@ function(inNewWindow, subject, to, response) {
 	var params = {
 		action: ZmOperation.NEW_MESSAGE, 
 		inNewWindow: inNewWindow, 
-		msg: mailMsg,
 		toOverride: to,
 		subjOverride: subject,
         extraBodyText: body
 	};
 	AjxDispatcher.run("Compose", params);
+
+	// Save the message as a draft to associate it with the upload id.
+	var id = response._data.UploadVoiceMailResponse.upload[0].id;
+	AjxDispatcher.run("GetComposeController").sendMsg(id, true);
 };
 
 ZmVoicemailListController.prototype._checkEmail = 
