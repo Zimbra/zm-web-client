@@ -35,6 +35,7 @@ ZmContactView = function(parent, controller, isMyCardView) {
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 	this._dateFormatter = new AjxDateFormat("yyyy-MM-dd");
 	this._currentTabIdx = 1;
+	this._dateCells = [];
 	this._isMyCardView = isMyCardView;
 
 	this.setScrollStyle(Dwt.SCROLL);
@@ -206,9 +207,8 @@ function() {
 
 ZmContactView.prototype.isValid =
 function() {
-	var dateCells = document.getElementsByName(this._htmlElId + "_dateButtonName");
-	for (var i = 0; i < dateCells.length; i++) {
-		var buttonId = dateCells[i].id;
+	for (var i = 0; i < this._dateCells.length; i++) {
+		var buttonId = this._dateCells[i].id;
 		var dateFieldId = buttonId.substring(0, buttonId.indexOf("_button"));
 		var dateField = document.getElementById(dateFieldId);
 		if (dateField) {
@@ -323,9 +323,23 @@ ZmContactView.prototype._addDateCalendars =
 function() {
 	var dateBtnListener = new AjxListener(this, this._dateButtonListener);
 	var dateSelListener = new AjxListener(this, this._dateSelectionListener);
-	var dateCells = document.getElementsByName(this._htmlElId + "_dateButtonName");
-	for (var i = 0; i < dateCells.length; i++) {
-		var buttonId = dateCells[i].id;
+
+	if (AjxEnv.isIE) {
+		// IE doesnt support getElementsByName for anything other than an INPUT
+		// element. So let's find them the hard way..
+		var cells = this.getHtmlElement().getElementsByTagName("TD");
+		for (var j = 0; j < cells.length; j++) {
+			var cell = cells[j];
+			if (cell && cell.name && (cell.name.indexOf("_dateButtonName") != -1)) {
+				this._dateCells.push(cell);
+			}
+		}
+	} else {
+		this._dateCells = document.getElementsByName(this._htmlElId + "_dateButtonName");
+	}
+
+	for (var i = 0; i < this._dateCells.length; i++) {
+		var buttonId = this._dateCells[i].id;
 		ZmCalendarApp.createMiniCalButton(this, buttonId, dateBtnListener, dateSelListener);
 	}
 };
@@ -539,8 +553,10 @@ function() {
 				this._attr[field] = (el.getAttribute("_aid") ? ["aid_",el.getAttribute("_aid")].join("") : (el.getAttribute("_part") ? ["part_",el.getAttribute("_part")].join("") : ""));
 			} else if (el.value != "" || field == ZmContact.F_image) {
 				if (isDate) {
-					var bdate = AjxDateUtil.simpleParseDateStr(el.value);
-					this._attr[field] = this._dateFormatter.format(bdate);
+					var pDate = AjxDateUtil.simpleParseDateStr(el.value);
+					if (pDate) {
+						this._attr[field] = this._dateFormatter.format(pDate);
+					}
 				} else {
 					this._attr[field] = el.value;
 				}
