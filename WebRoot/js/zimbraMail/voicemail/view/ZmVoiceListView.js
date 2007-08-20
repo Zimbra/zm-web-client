@@ -56,6 +56,7 @@ ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_workPhone2] = ZmMsg.phoneLabelWor
 
 ZmVoiceListView.F_DATE = ZmItem.F_DATE;
 ZmVoiceListView.F_CALLER = "cl";
+ZmVoiceListView.F_DURATION = "du";
 
 ZmVoiceListView.prototype.getTitle =
 function() {
@@ -280,3 +281,16 @@ function(ev) {
 		this.setUI();
 	}
 };
+
+ZmVoiceListView.prototype._sortColumn =
+function(columnItem, bSortAsc) {
+	var sortBy;
+	switch (columnItem._sortable) {
+		case ZmVoiceListView.F_DURATION: sortBy = bSortAsc ? ZmSearch.DURATION_ASC : ZmSearch.DURATION_DESC; break;
+		case ZmVoiceListView.F_DATE: sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC; break;
+		default: break;
+	}
+	appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
+	appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
+};
+

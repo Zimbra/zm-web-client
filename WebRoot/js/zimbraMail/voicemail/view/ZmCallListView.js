@@ -38,8 +38,6 @@ ZmCallListView.FROM_WIDTH = 190;
 ZmCallListView.DURATION_WIDTH = 120;
 ZmCallListView.DATE_WIDTH = null; // Auto
 
-ZmCallListView.F_DURATION = "du";
-
 ZmCallListView.prototype.createHeaderHtml = 
 function(defaultColumnSort) {
 	ZmVoiceListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
@@ -61,7 +59,7 @@ function() {
 
 	var headerList = [];
 	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_CALLER, ZmMsg.from, null, ZmCallListView.FROM_WIDTH, null, true));
-	headerList.push(new DwtListHeaderItem(ZmCallListView.F_DURATION, ZmMsg.duration, null, ZmCallListView.DURATION_WIDTH, ZmCallListView.F_DURATION, true));
+	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_DURATION, ZmMsg.duration, null, ZmCallListView.DURATION_WIDTH, ZmVoiceListView.F_DURATION, true));
 	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_DATE, ZmMsg.received, null, ZmCallListView.DATE_WIDTH, ZmVoiceListView.F_DATE, true));
 
 	return headerList;
@@ -91,7 +89,7 @@ function() {
 
 ZmCallListView.prototype._getCellContents =
 function(htmlArr, idx, voicemail, field, colIdx, params) {
-	if (field == ZmCallListView.F_DURATION) {
+	if (field == ZmVoiceListView.F_DURATION) {
 		htmlArr[idx++] = AjxDateUtil.computeDuration(voicemail.duration);
 	} else {
 		idx = ZmVoiceListView.prototype._getCellContents.apply(this, arguments);
@@ -100,23 +98,12 @@ function(htmlArr, idx, voicemail, field, colIdx, params) {
 	return idx;
 };
 
-ZmCallListView.prototype._sortColumn =
-function(columnItem, bSortAsc) {
-	var sortBy;
-	switch (columnItem._sortable) {
-		case ZmCallListView.F_DURATION: sortBy = bSortAsc ? ZmSearch.DURATION_ASC : ZmSearch.DURATION_DESC; break;
-		case ZmVoiceListView.F_DATE: sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC; break;
-		default: break;
-	}
-	appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
-};
-
 ZmCallListView.prototype._getHeaderTooltip =
 function(prefix) {
 	if (prefix == ZmVoiceListView.F_CALLER) {
 		var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
 		return isPlaced ? ZmMsg.to : ZmMsg.from;
-	} else if (prefix == ZmCallListView.F_DURATION) {
+	} else if (prefix == ZmVoiceListView.F_DURATION) {
 		return ZmMsg.sortByDuration;
 	} else if (prefix == ZmVoiceListView.F_DATE) {
 		return ZmMsg.sortByReceived;

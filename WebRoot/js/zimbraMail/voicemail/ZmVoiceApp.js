@@ -322,6 +322,10 @@ function(ev) {
 
 ZmVoiceApp.prototype.search =
 function(folder, callback, sortBy) {
+	if (!sortBy) {
+		var viewType = (folder.getSearchType() == ZmItem.VOICEMAIL) ? ZmController.VOICEMAIL_VIEW : ZmController.CALLLIST_VIEW;
+		sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
+	}
 	var searchParams = {
 		soapInfo: ZmVoiceApp.SOAP_INFO,
 		types: AjxVector.fromArray([folder.getSearchType()]),

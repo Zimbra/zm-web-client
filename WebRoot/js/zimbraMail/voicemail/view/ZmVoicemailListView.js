@@ -46,7 +46,6 @@ ZmVoicemailListView.PLAYING_WIDTH	= null; // Auto
 ZmVoicemailListView.PRIORITY_WIDTH	= ZmListView.COL_WIDTH_ICON;
 ZmVoicemailListView.DATE_WIDTH		= 180;
 
-ZmVoicemailListView.F_PLAYING		= "pl";
 ZmVoicemailListView.F_PRIORITY		= "py";
 
 ZmVoicemailListView.prototype.setPlaying =
@@ -121,7 +120,7 @@ function(parent) {
 	}
 	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_PRIORITY, null, "FlagRed", ZmVoicemailListView.PRIORITY_WIDTH, null, false));
 	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_CALLER, ZmMsg.from, null, ZmVoicemailListView.FROM_WIDTH, null, true));
-	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_PLAYING, ZmMsg.message, null, ZmVoicemailListView.PLAYING_WIDTH, ZmVoicemailListView.F_PLAYING, true));
+	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_DURATION, ZmMsg.message, null, ZmVoicemailListView.PLAYING_WIDTH, ZmVoiceListView.F_DURATION, true));
 	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_DATE, ZmMsg.received, null, ZmVoicemailListView.DATE_WIDTH, ZmVoiceListView.F_DATE, true));
 
 	return headerList;
@@ -129,7 +128,7 @@ function(parent) {
 
 ZmVoicemailListView.prototype._getCellId =
 function(item, field) {
-	if (field == ZmVoicemailListView.F_PLAYING) {
+	if (field == ZmVoiceListView.F_DURATION) {
 		return this._getFieldId(item, field);
 	} else {
 		return ZmVoiceListView.prototype._getCellId.apply(this, arguments);
@@ -140,7 +139,7 @@ ZmVoicemailListView.prototype._getCellContents =
 function(htmlArr, idx, voicemail, field, colIdx, params) {
 	if (field == ZmVoicemailListView.F_PRIORITY) {
 		htmlArr[idx++] = this._getPriorityHtml(voicemail);
-	} else if (field == ZmVoicemailListView.F_PLAYING) {
+	} else if (field == ZmVoiceListView.F_DURATION) {
 		// No-op. This is handled in _addRow()
 	} else {
 		idx = ZmVoiceListView.prototype._getCellContents.apply(this, arguments);
@@ -228,7 +227,7 @@ function(row, index) {
 		return;
 	}
 	var voicemail = this.getItemFromElement(row);
-	var cell = this._getElement(voicemail, ZmVoicemailListView.F_PLAYING);
+	var cell = this._getElement(voicemail, ZmVoiceListView.F_DURATION);
 	
 	var player;
 	if (this._reconnect && (this._reconnect.id == voicemail.id)) {
@@ -278,23 +277,12 @@ function(voicemail) {
 	return voicemail.isHighPriority ? "<div class='ImgFlagRed'></div>" : "";
 };
 
-ZmVoicemailListView.prototype._sortColumn =
-function(columnItem, bSortAsc) {
-	var sortBy;
-	switch (columnItem._sortable) {
-		case ZmVoicemailListView.F_PLAYING: sortBy = bSortAsc ? ZmSearch.DURATION_ASC : ZmSearch.DURATION_DESC; break;
-		case ZmVoiceListView.F_DATE: sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC; break;
-		default: break;
-	}
-	appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
-};
-
 ZmVoicemailListView.prototype._getHeaderTooltip =
 function(prefix) {
 	switch (prefix) {
 		case ZmVoicemailListView.F_PRIORITY: 	return ZmMsg.priority; break;
 		case ZmVoiceListView.F_CALLER:			return ZmMsg.from; break;
-		case ZmVoicemailListView.F_PLAYING:		return ZmMsg.sortByDuration; break;
+		case ZmVoiceListView.F_DURATION:		return ZmMsg.sortByDuration; break;
 		case ZmVoiceListView.F_DATE:			return ZmMsg.sortByReceived; break;
 	}
 	return null;
