@@ -316,6 +316,9 @@
         &nbsp; <%-- for IE's scrollbar, this should be CSS browser-specific --%>
     </td>
 </tr>
+<tr>
+ <td colspan=3>&nbsp;</td>        
+</tr>
 </table>
 
 </c:otherwise>
