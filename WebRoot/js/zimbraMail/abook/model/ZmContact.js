@@ -129,7 +129,11 @@ ZmContact.X_firstLast		= "firstLast";
 ZmContact.X_fullName		= "fullName";
 
 // My card fields
-ZmContact.X_isMyCard		= "isMyCard";
+ZmContact.MC_isMyCard			= "isMyCard";
+ZmContact.MC_workCardMessage	= "workCardMessage";
+ZmContact.MC_homeCardMessage	= "homeCardMessage";
+ZmContact.MC_homePhotoURL		= "homePhotoURL";
+ZmContact.MC_workPhotoURL		= "workPhotoURL";
 
 // GAL fields
 ZmContact.GAL_MODIFY_TIMESTAMP = "modifyTimeStamp";
