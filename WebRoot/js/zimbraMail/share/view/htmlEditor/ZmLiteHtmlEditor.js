@@ -25,21 +25,21 @@
 
 /**
  * Lite Html Editor
- * 
+ *
  * It uses an text area as an editor where text is plain or all with the same style.
- * 
+ *
  * @author Rajesh Segu
  */
 ZmLiteHtmlEditor = function(parent, posStyle, className, mode, content) {
 	if (arguments.length == 0) return;
-	
+
 	className = className || "ZmLiteHtmlEditor";
 	DwtComposite.call(this, parent, className, posStyle);
-	
+
 	this._mode = mode || ZmLiteHtmlEditor.TEXT;
 	this._initialize();
-	
-	
+
+
 };
 
 ZmLiteHtmlEditor.prototype = new DwtComposite();
@@ -84,7 +84,7 @@ function() {
 };
 
 //Can be useful as we proceed into different features of this editor.
-ZmLiteHtmlEditor.prototype.isSupported = 
+ZmLiteHtmlEditor.prototype.isSupported =
 function(){
 	return true;
 };
@@ -96,11 +96,9 @@ function(){
 
 ZmLiteHtmlEditor.prototype.getContent =
 function(){
-	
-	return  ( ( this._mode == ZmLiteHtmlEditor.HTML) 
-					? this.getHtmlContent()
-					: this.getTextContent() );
-	
+	return this._mode == ZmLiteHtmlEditor.HTML
+	        ? this.getHtmlContent()
+	        : this.getTextContent();
 };
 
 ZmLiteHtmlEditor.prototype.getTextContent =
@@ -113,7 +111,7 @@ function(){
 
 ZmLiteHtmlEditor.prototype.getHtmlContent =
 function(){
-	
+
 	var style = this._textArea.style;
 	var css = [];
 	if(style.fontFamily)
@@ -123,21 +121,21 @@ function(){
 	if(style.color)
 		css.push("color:",style.color,";");
 	if(style.fontWeight)
-		css.push("font-weight:",style.fontWeight,";");			
+		css.push("font-weight:",style.fontWeight,";");
 	if(style.fontStyle)
 		css.push("font-style:",style.fontStyle,";");
 	if(style.textDecoration)
 		css.push("text-decoration:",style.textDecoration,";");
 	if(style.backgroundColor)
 		css.push("background-color:",style.backgroundColor,";");
-	
+
 	css = css.join("");
-	
+
 	var html = "<p style='"+css+"'>";
 	html    += AjxStringUtil.htmlEncode(this.getTextContent());
 	html    += "</p>";
-	
-	return html;				
+
+	return html;
 };
 
 //Supports only text content
@@ -146,28 +144,28 @@ function(content){
 	this._textArea.value = (content || "");
 };
 
-ZmLiteHtmlEditor.prototype.clear = 
+ZmLiteHtmlEditor.prototype.clear =
 function() {
 	this.setContent("");
 	this._setDefaultStyles();
 }
 
-ZmLiteHtmlEditor.prototype.getMode = 
+ZmLiteHtmlEditor.prototype.getMode =
 function(){
 	return this._mode;
 };
 
 ZmLiteHtmlEditor.prototype.setMode =
 function(mode, force) {
-	
-	if ( (!force && mode == this._mode) || 
+
+	if ( (!force && mode == this._mode) ||
 		(mode != ZmLiteHtmlEditor.HTML && mode != ZmLiteHtmlEditor.TEXT) )
 	{
 		return;
 	}
-	
+
 	this._mode = mode;
-	
+
 	if(mode == ZmLiteHtmlEditor.HTML) {
 		this._enableToolbar(true);
 		this._setDefaultStyles();
@@ -175,7 +173,7 @@ function(mode, force) {
 		this._enableToolbar(false);
 		this._clearAllStyles();
 	}
-	
+
 	this.resetSize();
 };
 
@@ -191,21 +189,18 @@ function(){
 
 ZmLiteHtmlEditor.prototype.setSize =
 function( width, height ){
-	
 	DwtComposite.prototype.setSize.call(this, width, height);
 	this.resetSize();
-	
 };
 
 ZmLiteHtmlEditor.prototype.resetSize = function(){
-	var htmlEl = this.getHtmlElement();
-	//Fixme: Need to handle this
+        var height = this.getHtmlElement().offsetHeight;
 	var toolbarHeight = 0;
-	if(this._mode == ZmLiteHtmlEditor.HTML){
+	if (this._mode == ZmLiteHtmlEditor.HTML) {
 		toolbarHeight = this._miniToolBar.getSize().y;
 	}
-	this._textArea.style.width = htmlEl.style.width;
-	this._textArea.style.height = htmlEl.style.height;
+        this._textArea.style.width = "100%";
+	this._textArea.style.height = height - toolbarHeight - 2 + "px";
 };
 
 //KeyPress event listener
@@ -215,9 +210,9 @@ function(listener){
 };
 
 
-ZmLiteHtmlEditor.prototype.enable = 
+ZmLiteHtmlEditor.prototype.enable =
 function(enable){
-	if(this._textArea) 
+	if(this._textArea)
 		this._textArea.disabled = (!enable);
 };
 
@@ -225,25 +220,25 @@ function(enable){
 
 ZmLiteHtmlEditor.prototype._initialize = function(){
 
-	this._createToolbars();	
+	this._createToolbars();
 	this._initEditor();
 	this._textArea = document.getElementById(this._textAreaId);
-	
+
 	this._textArea[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = AjxCallback.simpleClosure(this._keyPressHandler,this);
-	
+
 	this.setMode(this._mode,true);
-	
+
 };
 
 ZmLiteHtmlEditor.prototype._initEditor = function(){
 	var htmlEl = this.getHtmlElement();
-	
+
 	var textArea = document.createElement("textarea");
 	textArea.id =  this._textAreaId = "textarea_" + Dwt.getNextId();
 	textArea.className = "DwtHtmlEditorTextArea";
 	textArea.style.width = "100%";
 	htmlEl.appendChild(textArea);
-	
+
 	return textArea;
 };
 
@@ -251,11 +246,11 @@ ZmLiteHtmlEditor.prototype._keyPressHandler =
 function(ev){
 	if (AjxEnv.isIE)
 		ev = window.event;
-	
+
 	if(this._keyPressListener){
 		this._keyPressListener.run(ev);
 	}
-	
+
 };
 
 //Styles
@@ -283,7 +278,7 @@ function(property,value){
 	this._textArea.style[property] = value;
 };
 
-ZmLiteHtmlEditor.prototype.getStyle = 
+ZmLiteHtmlEditor.prototype.getStyle =
 function(property){
 	return this._textArea.style[property];
 };
@@ -291,25 +286,25 @@ function(property){
 //Toolbar
 
 ZmLiteHtmlEditor.prototype._createToolbars = function(){
-	if (!this._miniToolBar) {		
+	if (!this._miniToolBar) {
 		var miniToolBar = this._miniToolBar = new DwtToolBar(this, "ZToolbar", DwtControl.RELATIVE_STYLE, 2, null, null, null, 0);
 		this._createMiniToolBar(miniToolBar);
 	}
 };
 
-ZmLiteHtmlEditor.prototype._enableToolbar = 
+ZmLiteHtmlEditor.prototype._enableToolbar =
 function(enable){
 	this._miniToolBar.setVisible(!!enable);
 };
 
 ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
-	
+
 	this._createFontFamilyMenu(tb);
-	
+
 	this._createFontSizeMenu(tb);
-	
+
 	new DwtControl(tb, "vertSep");
-	
+
 	var listener = new AjxListener(this, this._fontStyleListener);
 	this._boldButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
 	this._boldButton.setImage("Bold");
@@ -343,7 +338,7 @@ function(tb) {
 		var item = ZmLiteHtmlEditor.FONT_FAMILY[i];
 		var mi = menu.createMenuItem(item.name, {text:item.name});
 		mi.addSelectionListener(listener);
-		mi.setData(ZmLiteHtmlEditor._VALUE, i);		
+		mi.setData(ZmLiteHtmlEditor._VALUE, i);
 		if(i == 0){
 			this._fontFamilyButton.setText(item.name);
 		}

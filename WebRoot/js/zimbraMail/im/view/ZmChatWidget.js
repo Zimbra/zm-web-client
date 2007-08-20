@@ -267,40 +267,15 @@ ZmChatWidget.IDS = [
 ];
 
 ZmChatWidget.prototype._initEditor = function(parent){
-	
 	var liteEditor = this._liteEditor = new ZmLiteHtmlEditor(parent);
-	liteEditor.setSize("100%","40px");
-	
+        liteEditor.reparentHtmlElement(this._getElement("inputLayout"));
 	var keyPressListener = new AjxListener(this,this._inputKeyPress);
 	liteEditor.addKeyPressListener(keyPressListener);
-	
-	var inputLayout = this._getElement("inputLayout");
-	inputLayout.appendChild(liteEditor.getHtmlElement());
-	
-	
-};
-
-ZmChatWidget.prototype.setEditorMode = function(mode,force){
-	this._liteEditor.setMode(mode,force);
 };
 
 ZmChatWidget.prototype._changeEditorModeListener = function(){
-	
-	//Fixme: Aweful coding standards.
-	/*if(!this._liteEditor.isHtmlMode()){
-		var size = this._content.getSize();
-		this._content.setSize( size.x , (size.y - 26) );
-		var convLayout = this._getElement("convLayout");
-		convLayout.style.height = ( size.y - 26 ) + "px";
-		convLayout.style.widht  = size.x+"px";
-	}else{
-		var size = this._content.getSize();
-		this._content.setSize( size.x , (size.y + 26) );
-		var convLayout = this._getElement("convLayout");
-		convLayout.style.height = ( size.y + 26 ) + "px";
-		convLayout.style.widht  = size.x+"px";
-	}*/
 	this._liteEditor.reverseMode();
+        this._doResize();
 };
 
 
@@ -815,7 +790,7 @@ ZmChatWidget.prototype._sashMouseMove = function(ev) {
 	var diff = dwtEv.docY - this._sashCapture.origY;
 	var h = Math.min(Math.max(this._sashCapture.origHeight - diff, 30),
 			 Math.round(this.getSize().y * 0.5));
-	this._liteEditor.setSize(this.getSize().x, h+"px");		 
+	this._liteEditor.setSize(Dwt.DEFAULT, h);
 	this._doResize();
 	dwtEv._stopPropagation = true;
 	dwtEv._returnValue = false;
