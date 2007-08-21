@@ -743,6 +743,7 @@ function() {
         if (this._pollInstantNotifications) {
             var method = soapDoc.getMethod();
             method.setAttribute("wait", 1);
+            method.setAttribute("limitToOneBlocked", 1);
         }
         var responseCallback = new AjxCallback(this, this._handleResponseDoPoll);
         var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
