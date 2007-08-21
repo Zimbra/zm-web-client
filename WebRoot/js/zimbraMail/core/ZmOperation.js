@@ -117,7 +117,7 @@ function() {
 	ZmOperation.registerOp("EDIT", {textKey:"edit", tooltipKey:"editTooltip", image:"Edit"});
 	ZmOperation.registerOp("EDIT_PROPS", {textKey:"editProperties", tooltipKey:"editPropertiesTooltip", image:"Properties"});
 	ZmOperation.registerOp("EXPAND_ALL", {textKey:"expandAll", image:"Plus"});
-	ZmOperation.registerOp("EMPTY_FOLDER",{textKey:"emptyFolder",image:"Delete"});
+	ZmOperation.registerOp("EMPTY_FOLDER",{textKey:"emptyFolder",image:"EmptyFolder"});
 	ZmOperation.registerOp("FORMAT_HTML", {textKey:"formatAsHtml", image:"HtmlDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp("FORMAT_TEXT", {textKey:"formatAsText", image:"GenericDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp("GO_TO_URL", {image:"URL"});
