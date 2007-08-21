@@ -371,7 +371,7 @@ function(menu) {
 	for (var i = 0; i < menuItems.length; i++) {
 		var menuItem = menuItems[i];
 		if (this._listeners[menuItem]) {
-			menu.addSelectionListener(menuItem, this._listeners[menuItem]);
+			menu.addSelectionListener(menuItem, this._listeners[menuItem], 0);
 		}
 	}
 	menu.addPopdownListener(this._menuPopdownListener);

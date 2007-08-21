@@ -54,10 +54,10 @@ function() {
 };
 
 ZmPopupMenu.prototype.addSelectionListener =
-function(menuItemId, listener) {
+function(menuItemId, listener, index) {
 	var menuItem = this._menuItems[menuItemId];
 	if (menuItem) {
-		menuItem.addSelectionListener(listener);
+		menuItem.addSelectionListener(listener, index);
 	}
 };
 
