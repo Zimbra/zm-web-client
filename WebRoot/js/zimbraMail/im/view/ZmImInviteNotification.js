@@ -59,6 +59,6 @@ ZmImInviteNotification.prototype._okClicked = function() {
         // FIXME: we should use not.thread, but it's messed up.
         // not.addr should actually be the buddy that invited us, while not.thread should be the conversation thread id
         // however, currently not.addr is the full conversation thread id, while not.thread is only the suffix (upto '@').
-        AjxDispatcher.run("GetRoster").joinChatRequest(this._not.addr /* not.thread */);
+        AjxDispatcher.run("GetRoster").joinChatRequest(this._not.thread, this._not.addr);
 	this.popdown();
 };

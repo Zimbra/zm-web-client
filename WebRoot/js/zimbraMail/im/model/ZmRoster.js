@@ -349,21 +349,21 @@ ZmRoster.prototype.stopFlashingIcon = function() {
 	this._imApp.stopFlashingIcon();
 };
 
-ZmRoster.prototype.joinChatRequest = function(thread) {
-        // <FIXME>: the following doesn't work (server says "unknown method IMJoinChatRequest")
-//         var sd = AjxSoapDoc.create("IMJoinChatRequest", "urn:zimbraIM");
-//         var method = sd.getMethod();
-//         method.setAttribute("thread", thread);
-//         appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
+ZmRoster.prototype.joinChatRequest = function(thread, addr) {
+        var sd = AjxSoapDoc.create("IMJoinChatRequest", "urn:zimbraIM");
+        var method = sd.getMethod();
+        method.setAttribute("thread", thread);
+        method.setAttribute("addr", addr);
+        appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
 
-        // WORKAROUND: send "/join " + thread
-	var soapDoc = AjxSoapDoc.create("IMSendMessageRequest", "urn:zimbraIM");
-	var method = soapDoc.getMethod();
-	var message = soapDoc.set("message");
-	message.setAttribute("thread", thread);
-	message.setAttribute("addr", thread);
-	soapDoc.set("body", "/join " + thread, message);
-	appCtxt.getAppController().sendRequest({ soapDoc: soapDoc, asyncMode: true });
+//         // WORKAROUND: send "/join " + thread
+// 	var soapDoc = AjxSoapDoc.create("IMSendMessageRequest", "urn:zimbraIM");
+// 	var method = soapDoc.getMethod();
+// 	var message = soapDoc.set("message");
+// 	message.setAttribute("thread", thread);
+// 	message.setAttribute("addr", thread);
+// 	soapDoc.set("body", "/join " + thread, message);
+// 	appCtxt.getAppController().sendRequest({ soapDoc: soapDoc, asyncMode: true });
 };
 
 ZmRoster.prototype.modifyChatRequest = function(thread, op, addr, message) {
