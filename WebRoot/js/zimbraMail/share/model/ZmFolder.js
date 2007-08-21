@@ -97,6 +97,7 @@ ZmFolder.ICON[ZmFolder.ID_SPAM]		= "SpamFolder";
 ZmFolder.ICON[ZmFolder.ID_SENT]		= "SentFolder";
 ZmFolder.ICON[ZmFolder.ID_OUTBOX]	= "Outbox";
 ZmFolder.ICON[ZmFolder.ID_DRAFTS]	= "DraftFolder";
+ZmFolder.ICON[ZmFolder.ID_CHATS]	= "ChatFolder";
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = {};
