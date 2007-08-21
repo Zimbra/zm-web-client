@@ -3124,3 +3124,15 @@ color:#FFFFFF;
 .ZmThumbnailIcon{
 margin:26px 24px;
 }
+
+
+/*IE hack - To stop the button shake in the MSg Header*/
+
+#IFDEF MSIE
+.arrowbtn div .ZToolbarButtonBorder{
+ margin: 0px;
+
+}
+#ENDIF
+
+
