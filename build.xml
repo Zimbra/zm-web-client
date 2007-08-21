@@ -375,27 +375,21 @@ if (ext == null) ext = "";
     <delete file="${var}${rhinoExtension}${licenseExtension}"/>
   </target>
 
-  <target name="rhino-compress">
-    <echo>Strip whitespace, comments and debug calls: ${var}</echo>
-    <!-- Strip all debug calls prior to rhino -->
-    <replaceregexp byline="true">
-      <regexp pattern="DBG.print(.*);|DBG.time(.*);|DBG.dump(.*);|DBG.setTitle(.*);"/>
-      <substitution expression=" "/>
-      <fileset file="${var}"/>
-    </replaceregexp>
-    <java jar="${jars.dir}/custom_rhino.jar" fork="true" failonerror="true" output="${var}${rhinoExtension}">
-      <jvmarg  value="-Xmn100M"/>
-      <jvmarg  value="-Xms500M"/>
-      <jvmarg  value="-Xmx500M"/>
-      <arg value="-opt" />
-      <arg value="-1" />
-      <arg value="-c" />
-      <arg value="${var}" />
-    </java>
-    <copy file="${var}" tofile="${var}${rhinoExtension}"/>
-  </target>
+    <target name="rhino-compress">
+        <echo>Strip whitespace, comments and debug calls: ${var}</echo>
+        <replaceregexp byline="true">
+            <regexp pattern="DBG.print(.*);|DBG.time(.*);|DBG.dump(.*);|DBG.setTitle(.*);"/>
+            <substitution expression=" "/>
+            <fileset file="${var}"/>
+        </replaceregexp>
+        <java jar="${jars.dir}/yuicompressor-1.1.jar" fork="true" failonerror="true">
+            <arg value="-o"/>
+            <arg value="${var}${rhinoExtension}"/>
+            <arg value="${var}"/>
+        </java>
+    </target>
 
-  <target name="prepend-ZPL">
+    <target name="prepend-ZPL">
     <concat destfile="${var}${rhinoExtension}${licenseExtension}">
       <header filtering="no" file="${build.dir}/preamble-zpl.txt"/>
       <path>
