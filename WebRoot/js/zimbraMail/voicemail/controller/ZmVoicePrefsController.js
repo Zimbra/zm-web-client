@@ -82,8 +82,13 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_SELECTED) {
 		var listView = this._listView.getList();
 		var selection = listView.getSelection()[0];
-		this._listView.validate();
-		this._listView.setItem(selection);
+		if (!this._listView.validate()) {
+			var message = this._listView.getErrorMessage(true);
+			appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
+			listView.setSelectedItems([this._listView._item]);
+		} else {
+			this._listView.setItem(selection);
+		}
 	}
 };
 

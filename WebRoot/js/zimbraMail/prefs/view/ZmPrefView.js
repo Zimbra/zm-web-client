@@ -201,7 +201,7 @@ function(dirtyCheck, noValidation, batchCommand) {
 			}
 			if (!noValidation) {
 				if (!viewPage.validate()) {
-					throw new AjxException(viewPage.getErrorMessage(true));
+					throw new AjxException(viewPage.getErrorMessage());
 				}
 			}
 			if (!dirtyCheck && batchCommand) {

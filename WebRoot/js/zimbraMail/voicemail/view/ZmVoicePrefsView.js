@@ -73,7 +73,24 @@ function(item) {
 
 ZmVoicePrefsView.prototype.validate =
 function() {
-	return true;
+	if (!this._item) {
+		return true;
+	}
+	var errors = [];
+	for(var i = 0, count = this._ui.length; i < count; i++) {
+		this._ui[i].validate(errors);
+	}
+	this._errors = errors;
+	return this._errors.length == 0;
+};
+
+ZmVoicePrefsView.prototype.getErrorMessage =
+function() {
+	if (!this._errors.length) {
+		return null;
+	} else {
+		return this._errors.join("<br>");
+	}
 };
 
 ZmVoicePrefsView.prototype.getTitle =
@@ -254,6 +271,24 @@ function(ev) {
 	}
 };
 
+ZmVoicePrefsView._validatePhoneNumber =
+function(value) {
+	if (AjxStringUtil.trim(value) == "") {
+		throw AjxMsg.valueIsRequired;
+	}
+	return value;
+};
+
+ZmVoicePrefsView._validateEmailAddress =
+function(value) {
+	if (value == "") {
+		throw AjxMsg.valueIsRequired;
+	} else if (!AjxEmailAddress.isValid(value)) {
+		throw ZmMsg.errorInvalidEmail;
+	}
+	return value;
+};
+
 ZmCallFeatureUI = function(view) {
 	this._view = view;
 }
@@ -339,6 +374,13 @@ function(comboBox) {
 	}
 };
 
+ZmCallFeatureUI.prototype._validateComboBox =
+function(comboBox, errorList, message) {
+	if (comboBox.input.isValid() === null) {
+		errorList.push(message);
+	}
+};
+
 // "Abstract" methods:
 ZmCallFeatureUI.prototype.getName =
 function() {
@@ -351,6 +393,10 @@ function(id) {
 ZmCallFeatureUI.prototype.setEnabled =
 function(enabled) {
 	alert('ZmCallFeatureUI.prototype.setEnabled ' + enabled);
+};
+ZmCallFeatureUI.prototype.validate =
+function(errors) {
+	// No-op.
 };
 ZmCallFeatureUI.prototype.updateMyCard =
 function() {
@@ -408,6 +454,11 @@ function() {
     this._populatePhoneComboBox(this._comboBox);
 };
 
+ZmCallForwardingUI.prototype.validate =
+function(errors) {
+	this._validateComboBox(this._comboBox, errors, ZmMsg.callForwardingError);
+};
+
 ZmCallForwardingUI.prototype._getSelectedValue =
 function() {
 	var value = this._comboBox.getValue();
@@ -422,7 +473,11 @@ ZmCallForwardingUI.prototype._initialize =
 function(id) {
 	this._createCheckbox(ZmMsg.callForwardingDescription, id + "_callForwardingCheckbox");
 	
-	var inputParams = { size:25 }
+	var inputParams = {
+		size: 25,
+		validator: ZmVoicePrefsView._validatePhoneNumber,
+		validationStyle: DwtInputField.CONTINUAL_VALIDATION
+	};
 	this._comboBox = new DwtComboBox(this._view, inputParams);
 	this._comboBox.replaceElement(id + "_callForwardingComboBox");
 };
@@ -525,6 +580,11 @@ function() {
     this._populatePhoneComboBox(this._comboBox);
 };
 
+ZmSelectiveCallForwardingUI.prototype.validate =
+function(errors) {
+	this._validateComboBox(this._comboBox, errors, ZmMsg.selectiveCallForwardingError);
+};
+
 ZmSelectiveCallForwardingUI.prototype._getSelectedValue =
 function() {
 	var value = this._comboBox.getValue();
@@ -599,7 +659,11 @@ ZmSelectiveCallForwardingUI.prototype._initialize =
 function(id) {
 	this._createCheckbox(ZmMsg.selectiveCallForwardingDescription, id + "_selectiveCallForwardingCheckbox");
 	
-	var inputParams = { size:25 }
+	var inputParams = {
+		size: 25,
+		validator: ZmVoicePrefsView._validatePhoneNumber,
+		validationStyle: DwtInputField.CONTINUAL_VALIDATION
+	};
 	this._comboBox = new DwtComboBox(this._view, inputParams);
 	this._comboBox.replaceElement(id + "_selectiveCallForwardingComboBox");
 	
@@ -662,6 +726,11 @@ function() {
     this._populateEmailComboBox(this._comboBox);
 };
 
+ZmEmailNotificationUI.prototype.validate =
+function(errors) {
+	this._validateComboBox(this._comboBox, errors, ZmMsg.emailNotificationError);
+};
+
 ZmEmailNotificationUI.prototype._getSelectedValue =
 function() {
 	return AjxStringUtil.trim(this._comboBox.getText());
@@ -671,7 +740,11 @@ ZmEmailNotificationUI.prototype._initialize =
 function(id) {
 	this._createCheckbox(ZmMsg.emailNotificationDescription, id + "_emailNotificationCheckbox");
 
-	var inputParams = { size:25 }
+	var inputParams = {
+		size: 25,
+		validator: ZmVoicePrefsView._validateEmailAddress,
+		validationStyle: DwtInputField.CONTINUAL_VALIDATION
+	};
 	this._comboBox = new DwtComboBox(this._view, inputParams);
 	this._comboBox.replaceElement(id + "_emailNotificationComboBox");
 };
