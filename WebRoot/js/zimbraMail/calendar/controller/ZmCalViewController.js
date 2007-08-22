@@ -234,7 +234,11 @@ function(viewId, startDate) {
 	} else {
 		this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
 		var cv = this._viewMgr.getCurrentView();
-		this._navToolBar[ZmController.CAL_VIEW].setText(cv.getCalTitle());
+		var navText = cv.getCalTitle();
+		if(viewId == ZmController.CAL_MONTH_VIEW){
+			navText = cv.getShortCalTitle();
+		}
+		this._navToolBar[ZmController.CAL_VIEW].setText(navText);
 		this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
 		DBG.timePt("scheduling maintenance");
 	}
@@ -710,11 +714,14 @@ function(date, duration, roll) {
 			this._viewMgr.getCurrentView().close();
 		}
 		var title = this._viewMgr.getCurrentView().getCalTitle();
-		this._navToolBar[ZmController.CAL_VIEW].setText(title);
 		Dwt.setTitle([ZmMsg.zimbraTitle, ": ", title].join(""));
 		if (!roll && this._currentView == ZmController.CAL_WORK_WEEK_VIEW && (date.getDay() == 0 || date.getDay() ==  6)) {
 			this.show(ZmController.CAL_WEEK_VIEW);
 		}
+		if(ZmController.CAL_MONTH_VIEW == this._currentView){
+			title = this._viewMgr.getCurrentView().getShortCalTitle();
+		}
+		this._navToolBar[ZmController.CAL_VIEW].setText(title);
 	}
 };
 

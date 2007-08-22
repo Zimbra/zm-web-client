@@ -568,6 +568,11 @@ function() {
 	titleEl.innerHTML = this._title;
 };
 
+ZmCalMonthView.prototype.getShortCalTitle = function(){
+	var formatter = DwtCalendar.getShortMonthFormatter();
+	return formatter.format(this._date);
+};
+
 ZmCalMonthView.prototype._layoutAllDay = 
 function() {
 	var dayY = [];
