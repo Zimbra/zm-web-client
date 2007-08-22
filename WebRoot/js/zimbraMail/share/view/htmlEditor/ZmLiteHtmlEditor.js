@@ -36,7 +36,7 @@ ZmLiteHtmlEditor = function(parent, posStyle, className, mode, content) {
 	className = className || "ZmLiteHtmlEditor";
 	DwtComposite.call(this, parent, className, posStyle);
 
-	this._mode = mode || ZmLiteHtmlEditor.TEXT;
+	this._mode = mode || ZmLiteHtmlEditor.HTML;
 	this._initialize();
 
 
@@ -60,6 +60,8 @@ ZmLiteHtmlEditor.UNDERLINE_STYLE = "underline";
 ZmLiteHtmlEditor.FONT_SIZE_STYLE = "fontsize";
 ZmLiteHtmlEditor.FONT_FAMILY_STYLE = "fontfamily";
 
+ZmLiteHtmlEditor.FONT_COLOR = "fontcolor";
+
 ZmLiteHtmlEditor.FONT_SIZE_VALUES = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
 ZmLiteHtmlEditor.FONT_FAMILY = [
 	{name:"Arial", 				value:"Arial, Helvetica, sans-serif" },
@@ -68,13 +70,14 @@ ZmLiteHtmlEditor.FONT_FAMILY = [
 	{name:"Verdana",			value:"Verdana, Arial, Helvetica, sans-serif" }
 ];
 
-/*ZmLiteHtmlEditor.STYLE = {
-	ZmLiteHtmlEditor.BOLD_STYLE : "fontWeight",
-	ZmLiteHtmlEditor.ITALIC_STYLE : "fontStyle",
-	ZmLiteHtmlEditor.UNDERLINE_STYLE : "textDecoration",
-	ZmLiteHtmlEditor.FONT_SIZE_STYLE : "fontSize",
-	ZmLiteHtmlEditor.FONT_FAMILY_STYLE : "fontFamily"
-};*/
+ZmLiteHtmlEditor.STYLE = {};
+ZmLiteHtmlEditor.STYLE[ZmLiteHtmlEditor.BOLD_STYLE] = "fontWeight";
+ZmLiteHtmlEditor.STYLE[ZmLiteHtmlEditor.ITALIC_STYLE] = "fontStyle";
+ZmLiteHtmlEditor.STYLE[ZmLiteHtmlEditor.UNDERLINE_STYLE] = "textDecoration";
+ZmLiteHtmlEditor.STYLE[ZmLiteHtmlEditor.FONT_SIZE_STYLE] = "fontSize";
+ZmLiteHtmlEditor.STYLE[ZmLiteHtmlEditor.FONT_FAMILY_STYLE] = "fontFamily";
+ZmLiteHtmlEditor.STYLE[ZmLiteHtmlEditor.FONT_COLOR] = "color";
+
 
 // Public methods
 
@@ -110,32 +113,37 @@ function(){
 //width: 100%; height: 40px; font-family: Courier,Courier New,mono; font-size: 18pt; color: rgb(0, 0, 0); font-weight: bold; font-style: italic; text-decoration: underline;
 
 ZmLiteHtmlEditor.prototype.getHtmlContent =
-function(){
+function(tag){
+	
+	var html = ["<span style='",this.getCSS(),"'>",
+				AjxStringUtil.htmlEncode(this.getTextContent()),
+				"</span>"];
 
+	return html.join("");
+};
+
+ZmLiteHtmlEditor.prototype.getCSS =
+function() {
+	
 	var style = this._textArea.style;
 	var css = [];
 	if(style.fontFamily)
-		css.push("font-family:",style.fontFamily,";");
+		css.push("font-family: ",style.fontFamily,";");
 	if(style.fontSize)
-		css.push("font-size:",style.fontSize,";");
+		css.push("font-size: ",style.fontSize,";");
 	if(style.color)
-		css.push("color:",style.color,";");
+		css.push("color: ",style.color,";");
 	if(style.fontWeight)
-		css.push("font-weight:",style.fontWeight,";");
+		css.push("font-weight: ",style.fontWeight,";");
 	if(style.fontStyle)
-		css.push("font-style:",style.fontStyle,";");
+		css.push("font-style: ",style.fontStyle,";");
 	if(style.textDecoration)
-		css.push("text-decoration:",style.textDecoration,";");
-	if(style.backgroundColor)
-		css.push("background-color:",style.backgroundColor,";");
+		css.push("text-decoration: ",style.textDecoration,";");
+	if(style.color)
+		css.push("color ",style.color,";");	
 
-	css = css.join("");
-
-	var html = "<p style='"+css+"'>";
-	html    += AjxStringUtil.htmlEncode(this.getTextContent());
-	html    += "</p>";
-
-	return html;
+	return css.join("");
+	
 };
 
 //Supports only text content
@@ -199,7 +207,7 @@ ZmLiteHtmlEditor.prototype.resetSize = function(){
 	if (this._mode == ZmLiteHtmlEditor.HTML) {
 		toolbarHeight = this._miniToolBar.getSize().y;
 	}
-        this._textArea.style.width = "100%";
+    this._textArea.style.width = "100%";
 	this._textArea.style.height = height - toolbarHeight - 2 + "px";
 };
 
@@ -323,6 +331,17 @@ ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
 	this._underlineButton.setToolTipContent(ZmMsg.underlineText);
 	this._underlineButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.UNDERLINE_STYLE);
 	this._underlineButton.addSelectionListener(listener);
+	
+	new DwtControl(tb, "vertSep");
+	
+	this._fontColorButton = new ZmLiteHtmlEditorColorPicker(tb,null,"ZToolbarButton");
+	this._fontColorButton.dontStealFocus();
+	this._fontColorButton.setImage("FontColor");
+	this._fontColorButton.showColorDisplay(true);
+	this._fontColorButton.setToolTipContent(ZmMsg.fontColor);
+	this._fontColorButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.FONT_COLOR);
+	this._fontColorButton.setColor("#000000");
+	this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontStyleListener));
 
 };
 
@@ -387,15 +406,30 @@ function(ev) {
 
 ZmLiteHtmlEditor.prototype._fontStyleListener =
 function(ev) {
-	var style = ev.item.getData(ZmHtmlEditor._VALUE);
-	if(style == ZmLiteHtmlEditor.UNDERLINE_STYLE){
-		var value = this.getStyle("textDecoration");
-		this.setStyle("textDecoration", (( !value || value == "none" ) ? "underline" : "none"));
-	}else if (style == ZmLiteHtmlEditor.BOLD_STYLE){
-		var value = this.getStyle("fontWeight");
-		this.setStyle("fontWeight", (( !value || value == "normal" ) ? "bold" : "normal"));
-	}else if(style == ZmLiteHtmlEditor.ITALIC_STYLE){
-		var value = this.getStyle("fontStyle");
-		this.setStyle("fontStyle", (( !value || value == "normal" ) ? "italic" : "normal"));
+	
+	var styleType = ev.item.getData(ZmHtmlEditor._VALUE);
+	var style = ZmLiteHtmlEditor.STYLE[styleType];
+	if(!style) return;
+	
+	var value = this.getStyle(style);
+	if(styleType == ZmLiteHtmlEditor.UNDERLINE_STYLE){
+		this.setStyle( style , (( !value || value == "none" ) ? "underline" : "none"));
+	}else if (styleType == ZmLiteHtmlEditor.BOLD_STYLE){
+		this.setStyle( style , (( !value || value == "normal" ) ? "bold" : "normal"));
+	}else if(styleType == ZmLiteHtmlEditor.ITALIC_STYLE){
+		this.setStyle( style , (( !value || value == "normal" ) ? "italic" : "normal"));
+	}else if(styleType == ZmLiteHtmlEditor.FONT_COLOR){
+		this.setStyle( style, ( ev.item.getColor() || "#000000" ) );
 	}
 };
+
+ZmLiteHtmlEditorColorPicker = function(parent,style,className) {
+    DwtButtonColorPicker.call(this, parent,style,className);
+}
+
+ZmLiteHtmlEditorColorPicker.prototype = new DwtButtonColorPicker;
+ZmLiteHtmlEditorColorPicker.prototype.constructor = ZmLiteHtmlEditorColorPicker;
+
+ZmLiteHtmlEditorColorPicker.prototype.TEMPLATE = "ajax.dwt.templates.Widgets#ZToolbarButton";
+
+
