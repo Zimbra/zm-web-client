@@ -264,7 +264,8 @@ function(offset, limit, folderId) {
 
 		for (var i = 0; i < sublist.length; i++) {
 			sublist[i] = this._realizeContact(sublist[i], i);
-			if (sublist[i].folderId == folderId) {
+			var folder = appCtxt.getById(sublist[i].folderId);
+			if (folder && folder.nId == folderId) {
 				if (offsetCount >= offset) {
 					if (newlist.length == limit) {
 						this.setHasMore(true);
