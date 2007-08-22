@@ -107,3 +107,14 @@ function(arrowStyle, hasText) {
 
 	return buttons;
 };
+
+ZmNavToolBar.prototype.createOp =
+function(id, params) {
+	params.className = this._buttonStyle;
+	var b = (id == ZmOperation.TEXT)
+		? (new DwtText(this, "ZWidgetTitle ZNavToolBarTitle"))
+		: this.createButton(id, params);
+	b.setData(ZmOperation.KEY_ID, id);
+
+	return b;
+};
