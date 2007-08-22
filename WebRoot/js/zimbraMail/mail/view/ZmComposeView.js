@@ -891,7 +891,7 @@ function() {
 	var sig = signature.value;
 	var newLine = this._getSignatureNewLine();
 	if (this._composeMode == DwtHtmlEditor.HTML) {
-		sig = AjxStringUtil.htmlEncodeSpace(sig);
+		sig = AjxStringUtil.htmlEncodeSpace(sig).replace(/\n/g,"<br>");
 	}
 	return sig + newLine;
 };
