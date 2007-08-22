@@ -185,6 +185,7 @@ function() {
 		this._initializeToolBar();
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		this._prefsView = new ZmPrefView(this._container, Dwt.ABSOLUTE_STYLE, this);
 		var elements = {};
@@ -333,7 +334,20 @@ function(view, force) {
 	return force ? true : this.popShield();
 };
 
-ZmPrefController.prototype._postShowCallback = 
+ZmPrefController.prototype._preShowCallback =
+function() {
+	if (appCtxt.multiAccounts) {
+		var tabKey = this._prefsView.getCurrentTab();
+		var viewPage = this._prefsView.getTabView(tabKey);
+		if (viewPage) {
+			viewPage.showMe();
+		}
+	}
+	// *always* return true!
+	return true;
+};
+
+ZmPrefController.prototype._postShowCallback =
 function() {
 	ZmController.prototype._postShowCallback.call(this);
 	var tabKey = this._prefsView.getCurrentTab();

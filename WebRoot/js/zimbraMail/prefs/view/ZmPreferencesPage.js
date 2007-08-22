@@ -47,7 +47,6 @@ ZmPreferencesPage = function(parent, section, controller) {
 
 	this._dwtObjects = {};
 	this._rendered = false;
-	this._hasRendered = false;
 
     // Map of ids to locales.
     this._localeMap = null;
@@ -76,8 +75,9 @@ ZmPreferencesPage.IMPORT_TIMEOUT = 300;
 //
 
 ZmPreferencesPage.prototype.hasRendered =
-function () {
-	return this._hasRendered;
+function(account) {
+	var acct = account || appCtxt.getActiveAccount();
+	return (this._hasRendered == acct.name);
 };
 
 /**
@@ -90,9 +90,10 @@ function() {
 	Dwt.setTitle(this._title);
 	this._controller._resetOperations(this._controller._toolbar, this._section.id);
 	var dirty = this._controller.isDirty(this._section.id);
-	if (this._hasRendered && !dirty) return;
+	var activeAcct = appCtxt.getActiveAccount().name;
+	if (this._hasRendered == activeAcct && !dirty) { return; }
 
-	if (this._hasRendered) {
+	if (this._hasRendered == activeAcct) {
 		this._controller.setDirty(this._section.id, false);
 		return;
 	}
@@ -119,23 +120,16 @@ function() {
 
 		// ignore if there is no container element
 		var elem = document.getElementById([this._htmlElId, id].join("_"));
-		if (!elem) {
-//			console.warn("no such element: ", [this._htmlElId,id].join("_"));
-			continue;
-		}
+		if (!elem) { continue; }
 
 		// ignore if doesn't meet pre-condition
         var setup = ZmPref.SETUP[id];
-        if (!this._controller.checkPreCondition(setup)) {
-			continue;
-		}
+        if (!this._controller.checkPreCondition(setup)) { continue; }
 
         // perform load function
 		if (setup.loadFunction) {
 			setup.loadFunction(setup);
-            if (setup.options.length <= 1) {
-				continue;
-			}
+            if (setup.options.length <= 1) { continue; }
 		}
 
 		// save the current value (for checking later if it changed)
@@ -147,9 +141,7 @@ function() {
 		}
 		/***/
 		// we only show this one if it's false
-		if ((id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) && value) {
-			continue;
-		}
+		if ((id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) && value) { continue; }
 
 		this._prefPresent[id] = true;
 		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
@@ -246,14 +238,16 @@ function() {
 	}
 
 	this.setVisible(true);
-	this._hasRendered = true;
+	this._hasRendered = activeAcct;
 };
 
-ZmPreferencesPage.prototype.setFormObject = function(id, object) {
+ZmPreferencesPage.prototype.setFormObject =
+function(id, object) {
 	this._dwtObjects[id] = object;
 };
 
-ZmPreferencesPage.prototype.getFormObject = function(id) {
+ZmPreferencesPage.prototype.getFormObject =
+function(id) {
 	return this._dwtObjects[id]; 
 };
 
@@ -315,7 +309,8 @@ function(id, setup, control) {
  * @param setup		[object]		(Optional) The preference descriptor.
  * @param control	[DwtControl|*]	(Optional) The preference control.
  */
-ZmPreferencesPage.prototype.setFormValue = function(id, value, setup, control) {
+ZmPreferencesPage.prototype.setFormValue =
+function(id, value, setup, control) {
 	setup = setup || ZmPref.SETUP[id];
 	value = setup && setup.displayFunction ? setup.displayFunction(value) : value;
 	var type = setup ? setup.displayContainer : null;
@@ -393,7 +388,8 @@ function(useDefaults) {
 // Protected methods
 //
 
-ZmPreferencesPage.prototype._createPageHtml = function(templateId, data) {
+ZmPreferencesPage.prototype._createPageHtml =
+function(templateId, data) {
 	this.getContentHtmlElement().innerHTML = AjxTemplate.expand(templateId, data);
 };
 
@@ -406,7 +402,6 @@ ZmPreferencesPage.prototype._createPageHtml = function(templateId, data) {
 */
 ZmPreferencesPage.prototype._getPrefValue =
 function(id, useDefault, convert) {
-	var value = null;
 	var pref = appCtxt.getSettings().getSetting(id);
 	var value = useDefault ? pref.getDefaultValue() : pref.getValue();
 	if (convert) {
@@ -430,7 +425,8 @@ function(parentId, text, width, listener) {
 	return button;
 };
 
-ZmPreferencesPage.prototype._setupStatic = function(id, setup, value) {
+ZmPreferencesPage.prototype._setupStatic =
+function(id, setup, value) {
 	var text = new DwtText(this);
 	this.setFormObject(id, text);
 	text.setText(value);
@@ -584,7 +580,7 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupCustom =
 function(id, setup, value) {
-	alert("TODO: override ZmPreferences#_setupCustom");
+	DBG.println("TODO: override ZmPreferences#_setupCustom");
 };
 
 ZmPreferencesPage.prototype._setupLocales =
@@ -883,9 +879,8 @@ function(data, prefId) {
  * then it is formatted using AjxMessageFormat with the current value for this
  * label.
  */
-ZmPreferencesPage.__formatLabel = function(prefLabel, prefValue) {
+ZmPreferencesPage.__formatLabel =
+function(prefLabel, prefValue) {
 	prefLabel = prefLabel || "";
 	return prefLabel.match(/\{/) ? AjxMessageFormat.format(prefLabel, prefValue) : prefLabel;
 };
-
-

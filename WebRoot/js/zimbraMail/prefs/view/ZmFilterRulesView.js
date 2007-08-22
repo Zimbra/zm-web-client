@@ -1,42 +1,41 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
- 
+
 ZmFilterRulesView = function(parent, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage ZmFilterRulesView");
 
 	this._controller = controller;
 	this._prefsController = AjxDispatcher.run("GetPrefController");
-	
+
 	this._rules = AjxDispatcher.run("GetFilterRules");
 
     var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
     this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
 
 	this._rendered = false;
-	this._hasRendered = false;
 };
 
 ZmFilterRulesView.prototype = new DwtTabViewPage;
@@ -52,12 +51,12 @@ function() {
 	Dwt.setTitle(this._title);
     var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
     this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
-	if (this._hasRendered) return;
+	var activeAcct = appCtxt.getActiveAccount().name;
+	if (this._hasRendered == activeAcct) { return; }
 
 	// create the html
 	var data = { id: this._htmlElId };
-	var html = AjxTemplate.expand("zimbraMail.prefs.templates.Pages#MailFilters", data);
-	this.getHtmlElement().innerHTML = html;
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Pages#MailFilters", data);
 
 	// create toolbar
 	var toolbarEl = document.getElementById(data.id+"_toolbar");
@@ -77,12 +76,13 @@ function() {
 	// initialize controller
 	this._controller.initialize(this._toolbar, this._listView);
 
-	this._hasRendered = true;
+	this._hasRendered = activeAcct;
 };
 
 ZmFilterRulesView.prototype.hasRendered =
-function () {
-	return this._hasRendered;
+function(account) {
+	var acct = account || appCtxt.getActiveAccount();
+	return (this._hasRendered == acct.name);
 };
 
 ZmFilterRulesView.prototype.getTitle =
@@ -90,11 +90,13 @@ function() {
 	return this._title;
 };
 
-ZmFilterRulesView.prototype.getToolbar = function() {
+ZmFilterRulesView.prototype.getToolbar =
+function() {
 	return this._toolbar;
 };
 
-ZmFilterRulesView.prototype.getListView = function() {
+ZmFilterRulesView.prototype.getListView =
+function() {
 	return this._listView;
 };
 
@@ -106,10 +108,10 @@ ZmFilterRulesView.prototype.reset = function() {};
 */
 ZmFilterListView = function(parent, controller) {
 	var headerList = this._getHeaderList();
-	DwtListView.call(this, parent, "ZmFilterListView", null, headerList);	
+	DwtListView.call(this, parent, "ZmFilterListView", null, headerList);
 
 	this._rules = AjxDispatcher.run("GetFilterRules");
-	
+
 	this._controller = controller;
 	this._rules.addChangeListener(new AjxListener(this, this._changeListener));
 	this.setMultiSelect(false);	// single selection only
@@ -124,7 +126,7 @@ ZmFilterListView.COL_WIDTH_ACTIVE = 40;
 ZmFilterListView.prototype = new DwtListView;
 ZmFilterListView.prototype.constructor = ZmFilterListView;
 
-ZmFilterListView.prototype.toString = 
+ZmFilterListView.prototype.toString =
 function() {
 	return "ZmFilterListView";
 };
@@ -160,17 +162,15 @@ function() {
 ZmFilterListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmFilterListView.COL_ACTIVE) {
-		var checked = item.isActive() ? "checked" : "";
-		var inputId = "_ruleCheckbox" + item.id;
 		html[idx++] = "<input type='checkbox' ";
-		html[idx++] = checked;
-		html[idx++] = " id='";
-		html[idx++] = inputId;
+		html[idx++] = item.isActive() ? "checked" : "";
+		html[idx++] = " id='_ruleCheckbox";
+		html[idx++] = item.id;
 		html[idx++] = "'>";
 	} else if (field == ZmFilterListView.COL_NAME) {
 		html[idx++] = item.getName();
 	}
-	
+
 	return idx;
 };
 
@@ -236,11 +236,11 @@ function(clickedEl, ev, button) {
 	// We only care about mouse events
 	if (!(ev instanceof DwtMouseEvent))
 		return true;
-		
+
 	var target = DwtUiEvent.getTarget(ev);
 	var isInput = (target.id.indexOf("_ruleCheckbox") == 0);
 	if (AjxEnv.isIE && isInput)
 		ZmFilterListView._activeStateChange(ev);
-	
+
 	return !isInput;
 };

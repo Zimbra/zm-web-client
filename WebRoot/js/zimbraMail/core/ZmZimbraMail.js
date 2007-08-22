@@ -553,7 +553,7 @@ function(params) {
  * @param funcName		[string]	function name
  */
 ZmZimbraMail.prototype.runAppFunction =
-function(funcName) {
+function(funcName, force) {
 	var args = [];
 	for (var i = 1; i < arguments.length; i++) {
 		args.push(arguments[i]);
@@ -561,7 +561,7 @@ function(funcName) {
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var appName = ZmApp.APPS[i];
 		var setting = ZmApp.SETTING[appName];
-		if (!setting || appCtxt.get(setting)) {
+		if (!setting || appCtxt.get(setting) || force) {
 			var app = appCtxt.getApp(appName);
 			var func = app[funcName];
 			if (func && (typeof(func) == "function")) {

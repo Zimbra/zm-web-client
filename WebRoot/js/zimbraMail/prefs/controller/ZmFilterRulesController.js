@@ -41,7 +41,6 @@ ZmFilterRulesController = function(container, prefsApp, prefsView) {
 	ZmFilterRule._setPreconditions();
 
 	this._prefsView = prefsView;
-	this._rules = AjxDispatcher.run("GetFilterRules");
 	this._filterRulesView = new ZmFilterRulesView(this._prefsView._parent, this);
 	
 	this._buttonListeners = {};
@@ -63,7 +62,11 @@ function() {
 	return this._filterRulesView;
 };
 
-ZmFilterRulesController.prototype.initialize = function(toolbar, listView) {
+ZmFilterRulesController.prototype.initialize =
+function(toolbar, listView) {
+	// always reset the the rules to make sure we get the right one for the *active* account
+	this._rules = AjxDispatcher.run("GetFilterRules");
+
 	if (toolbar) {
 		var buttons = this.getToolbarButtons();
 		for (var i = 0; i < buttons.length; i++) {
@@ -81,20 +84,22 @@ ZmFilterRulesController.prototype.initialize = function(toolbar, listView) {
 	}
 };
 
-ZmFilterRulesController.prototype.getToolbarButtons = function() {
-	return [ZmOperation.ADD_FILTER_RULE,
-			ZmOperation.SEP,
-			ZmOperation.EDIT_FILTER_RULE,
-			ZmOperation.SEP,
-			ZmOperation.REMOVE_FILTER_RULE,
-			ZmOperation.FILLER,
-			ZmOperation.MOVE_UP_FILTER_RULE,
-			ZmOperation.SEP,
-			ZmOperation.MOVE_DOWN_FILTER_RULE
+ZmFilterRulesController.prototype.getToolbarButtons =
+function() {
+	return [
+		ZmOperation.ADD_FILTER_RULE,
+		ZmOperation.SEP,
+		ZmOperation.EDIT_FILTER_RULE,
+		ZmOperation.SEP,
+		ZmOperation.REMOVE_FILTER_RULE,
+		ZmOperation.FILLER, ZmOperation.MOVE_UP_FILTER_RULE,
+		ZmOperation.SEP,
+		ZmOperation.MOVE_DOWN_FILTER_RULE
 	];
 };
 
-ZmFilterRulesController.prototype.resetListView = function(callback) {
+ZmFilterRulesController.prototype.resetListView =
+function(callback) {
 	var listView = this._filterRulesView.getListView();
 	if (!listView) return;
 

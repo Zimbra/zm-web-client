@@ -154,6 +154,12 @@ ZmZimbraAccount.prototype._handleResponseLoad =
 function(callback, result) {
 	DBG.println(AjxDebug.DBG1, "Account settings successfully loaded for " + this.name);
 
+	// initialize identities/data-sources/signatures for this account
+	var obj = result.getResponse().GetInfoResponse
+	appCtxt.getIdentityCollection().initialize(obj.identities);
+	AjxDispatcher.run("GetDataSourceCollection").initialize(obj.dataSources);
+	appCtxt.getSignatureCollection().initialize(obj.signatures);
+
 	var soapDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("visible", "1");
@@ -194,10 +200,6 @@ function(node) {
 	this.name = node.name;
 	this.visible = node.visible;
 
-	try {
-		var data = node.attrs[0].attr[0];
-		this.displayName = data && data.name == "displayName" ? data._content : this.email;
-	} catch(ex) {
-		// do nothing
-	}
+	var data = (node.attrs && node.attrs[0]) ? node.attrs[0].attr[0] : null;
+	this.displayName = data && data.name == "displayName" ? data._content : this.email;
 };

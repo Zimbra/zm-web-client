@@ -590,13 +590,18 @@ function() {
 	return this._activeAccount;
 };
 
-ZmAppCtxt.prototype.getIdentityCollection = function() {
+ZmAppCtxt.prototype.getIdentityCollection =
+function() {
 	return AjxDispatcher.run("GetIdentityCollection");
 };
-ZmAppCtxt.prototype.getDataSourceCollection = function() {
+
+ZmAppCtxt.prototype.getDataSourceCollection =
+function() {
 	return AjxDispatcher.run("GetDataSourceCollection");
 };
-ZmAppCtxt.prototype.getSignatureCollection = function() {
+
+ZmAppCtxt.prototype.getSignatureCollection =
+function() {
 	return AjxDispatcher.run("GetSignatureCollection");
 };
 

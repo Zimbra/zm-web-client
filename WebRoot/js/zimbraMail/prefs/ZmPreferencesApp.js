@@ -30,6 +30,12 @@
  */
 ZmPreferencesApp = function(container) {
 	ZmApp.call(this, ZmApp.PREFERENCES, container);
+
+	// must be hash for case of multi-accounts
+	this._filterRules = {};
+	this._dataSourceCollection = {};
+	this._identityCollection = {};
+	this._signatureCollection = {};
 };
 
 // Organizer and item-related constants
@@ -93,32 +99,38 @@ function() {
 
 ZmPreferencesApp.prototype.getFilterRules =
 function() {
-	if (!this._filterRules) {
-		this._filterRules = new ZmFilterRules();
+	var activeAcct = appCtxt.getActiveAccount().name;
+	if (!this._filterRules[activeAcct]) {
+		this._filterRules[activeAcct] = new ZmFilterRules();
 	}
-	return this._filterRules;
+	return this._filterRules[activeAcct];
 };
 
-ZmPreferencesApp.prototype.getDataSourceCollection = function() {
-	if (!this._dataSourceCollection) {
-		this._dataSourceCollection = new ZmDataSourceCollection();
+ZmPreferencesApp.prototype.getDataSourceCollection =
+function() {
+	var activeAcct = appCtxt.getActiveAccount().name;
+	if (!this._dataSourceCollection[activeAcct]) {
+		this._dataSourceCollection[activeAcct] = new ZmDataSourceCollection();
 	}
-	return this._dataSourceCollection;
+	return this._dataSourceCollection[activeAcct];
 };
 
 ZmPreferencesApp.prototype.getIdentityCollection =
 function() {
-	if (!this._identityCollection) {
-		this._identityCollection = new ZmIdentityCollection();
+	var activeAcct = appCtxt.getActiveAccount().name;
+	if (!this._identityCollection[activeAcct]) {
+		this._identityCollection[activeAcct] = new ZmIdentityCollection();
 	}
-	return this._identityCollection;
+	return this._identityCollection[activeAcct];
 };
 
-ZmPreferencesApp.prototype.getSignatureCollection = function() {
-	if (!this._signatureCollection) {
-		this._signatureCollection = new ZmSignatureCollection();
+ZmPreferencesApp.prototype.getSignatureCollection =
+function() {
+	var activeAcct = appCtxt.getActiveAccount().name;
+	if (!this._signatureCollection[activeAcct]) {
+		this._signatureCollection[activeAcct] = new ZmSignatureCollection();
 	}
-	return this._signatureCollection;
+	return this._signatureCollection[activeAcct];
 };
 
 //
@@ -414,5 +426,5 @@ function(refresh) {
 
 ZmPreferencesApp.prototype._postLoad =
 function() {
-	appCtxt.getAppController().runAppFunction("_registerPrefs");
+	appCtxt.getAppController().runAppFunction("_registerPrefs", true);
 };
