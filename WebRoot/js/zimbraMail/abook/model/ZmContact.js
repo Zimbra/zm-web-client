@@ -226,7 +226,7 @@ function(contact) {
 		default: {
 			// if GAL contact, use full name instead (bug fix #4850,4009)
 			if (contact && contact.isGal)
-				return attr.fullName;
+				return (attr.fullName || attr.email);
 			if (attr.lastName) fa[idx++] = attr.lastName;
 			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
 			if (attr.firstName) fa[idx++] = attr.firstName;
