@@ -141,9 +141,6 @@ function(params) {
 	} else {
 		this._setView(params);
 	}
-	if (params.callback) {
-		params.callback.run();
-	}
 };
 
 ZmComposeController.prototype.toggleSpellCheckButton =
@@ -541,6 +538,10 @@ function(params) {
 	this._setComposeTabGroup();
 	this._app.pushView(ZmController.COMPOSE_VIEW);
 	this._composeView.reEnableDesignMode();
+
+	if (params.callback) {
+		params.callback.run(this);
+	}
 };
 
 ZmComposeController.prototype._initializeToolBar =

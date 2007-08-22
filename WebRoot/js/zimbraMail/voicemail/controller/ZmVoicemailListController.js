@@ -303,21 +303,25 @@ function(inNewWindow, subject, to, response) {
     var format = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
     var message = format == ZmSetting.COMPOSE_HTML ? ZmMsg.voicemailBodyHtml : ZmMsg.voicemailBodyText;
     var body = AjxMessageFormat.format(message, [phoneNumber, duration, date]);
+	var uploadId = response._data.UploadVoiceMailResponse.upload[0].id;
 	var params = {
 		action: ZmOperation.NEW_MESSAGE, 
 		inNewWindow: inNewWindow, 
 		toOverride: to,
 		subjOverride: subject,
-        extraBodyText: body
+        extraBodyText: body,
+		callback: new AjxCallback(this, this._handleComposeLoaded, [uploadId])
 	};
 	AjxDispatcher.run("Compose", params);
-
-	// Save the message as a draft to associate it with the upload id.
-	var id = response._data.UploadVoiceMailResponse.upload[0].id;
-	AjxDispatcher.run("GetComposeController").sendMsg(id, true);
 };
 
-ZmVoicemailListController.prototype._checkEmail = 
+ZmVoicemailListController.prototype._handleComposeLoaded = 
+function(uploadId, composeController) {
+	// Save the message as a draft to associate it with the upload id.
+	composeController.sendMsg(uploadId, true);
+};
+
+ZmVoicemailListController.prototype._checkEmail =
 function() {
 	var message;
 	var voicemail = this._getView().getSelection()[0];
