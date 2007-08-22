@@ -99,7 +99,9 @@ function() {
 
 ZmPreferencesApp.prototype.getFilterRules =
 function() {
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var activeAcct = appCtxt.getActiveAccount().name;
+
 	if (!this._filterRules[activeAcct]) {
 		this._filterRules[activeAcct] = new ZmFilterRules();
 	}
@@ -108,7 +110,9 @@ function() {
 
 ZmPreferencesApp.prototype.getDataSourceCollection =
 function() {
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var activeAcct = appCtxt.getActiveAccount().name;
+
 	if (!this._dataSourceCollection[activeAcct]) {
 		this._dataSourceCollection[activeAcct] = new ZmDataSourceCollection();
 	}
@@ -117,7 +121,9 @@ function() {
 
 ZmPreferencesApp.prototype.getIdentityCollection =
 function() {
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var activeAcct = appCtxt.getActiveAccount().name;
+
 	if (!this._identityCollection[activeAcct]) {
 		this._identityCollection[activeAcct] = new ZmIdentityCollection();
 	}
@@ -126,7 +132,9 @@ function() {
 
 ZmPreferencesApp.prototype.getSignatureCollection =
 function() {
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var activeAcct = appCtxt.getActiveAccount().name;
+
 	if (!this._signatureCollection[activeAcct]) {
 		this._signatureCollection[activeAcct] = new ZmSignatureCollection();
 	}
