@@ -1006,6 +1006,8 @@ function() {
 //	DBG.println("_computeApptLayout");
 //	DBG.timePt("_computeApptLayout: start", true);
 	var layouts = this._layouts = new Array();
+	var layoutsDayMap = [];
+	var layoutsAllDay = [];	
 	var list = this.getList();
 	if (!list) return;
 	
@@ -1026,20 +1028,42 @@ function() {
 
 		overlap = null;
 		overlappingCol = null;
+
+		var asd = ao.startDate;
+		var aed = ao.endDate;
+		
+		var asdDate = asd.getDate();
+		var aedDate = aed.getDate();
+	
+		var checkAllLayouts = (asdDate != aedDate);
+		var layoutCheck = [];
+		
+		//if a appt starts n end in same day, it should be compared only with
+		//other appts on same day and with those which span multiple days
+		if(checkAllLayouts){
+			layoutCheck.push(layouts);
+		}else{
+			layoutCheck.push(layoutsAllDay);
+			if(layoutsDayMap[asdDate]!=null) {
+				layoutCheck.push(layoutsDayMap[asdDate]);
+			}
+		}	
 		
 		// look for overlapping appts
-		for (var j=0; j < layouts.length; j++) {
-			var layout = layouts[j];
-			if (ao.isOverlapping(layout.appt, this._scheduleMode)) {
-				if (overlap == null) {
-					overlap = [];
-					overlappingCol = [];
-				}
-				overlap.push(layout);
-				overlappingCol[layout.col] = true;
-				// while we overlap, update our col
-				while (overlappingCol[newLayout.col]) {
-					newLayout.col++;
+		for(var k=0;k<layoutCheck.length;k++){		
+			for (var j=0; j < layoutCheck[k].length; j++) {
+				var layout = layoutCheck[k][j];
+				if (ao.isOverlapping(layout.appt, this._scheduleMode)) {
+					if (overlap == null) {
+						overlap = [];
+						overlappingCol = [];
+					}
+					overlap.push(layout);
+					overlappingCol[layout.col] = true;
+					// while we overlap, update our col
+					while (overlappingCol[newLayout.col]) {
+						newLayout.col++;
+					}
 				}
 			}
 		}
@@ -1058,6 +1082,14 @@ function() {
 			}
 		}
 		layouts.push(newLayout);
+		if(asdDate == aedDate){
+			if(!layoutsDayMap[asdDate]) {
+				layoutsDayMap[asdDate] = [];
+			}
+			layoutsDayMap[asdDate].push(newLayout);
+		}else{
+			layoutsAllDay.push(newLayout);
+		}		
 	}
 	
 	// compute maxcols
