@@ -64,8 +64,7 @@ function(listener) {
 
 ZmConvView.prototype.setItem =
 function(conv) {
-	if (!(conv instanceof ZmConv))
-		return;
+	if (!(conv instanceof ZmConv)) { return; }
 		
 	ZmDoublePaneView.prototype.setItem.call(this, conv);
 	
@@ -80,7 +79,7 @@ function(conv) {
 	this._setTags(conv);
 	
 	// display "hot" message (or newest if no search performed)
-	var hot = this._conv.getHotMsg(this._mailListView.getOffset(), this._mailListView.getLimit());
+	var hot = this._conv.getFirstHotMsg({offset:this._mailListView.getOffset(), limit:this._mailListView.getLimit()});
 	this._mailListView.setSelection(hot);
 };
 

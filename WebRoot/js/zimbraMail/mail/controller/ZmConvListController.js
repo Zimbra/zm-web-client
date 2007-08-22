@@ -220,7 +220,7 @@ function() {
 		if (item.type == ZmItem.CONV && !item._loaded) {
 			// load conv (SearchConvRequest), which will also give us hit info
 			var respCallback = new AjxCallback(this, this._handleResponseSetSelectedItem);
-			item.load({query:this.getSearchString(), callback:respCallback, getFirstMsg:this._readingPaneOn});
+			item.load({getFirstMsg:this._readingPaneOn}, respCallback);
 		} else {
 			this._handleResponseSetSelectedItem();
 		}
@@ -235,10 +235,11 @@ function() {
 };
 
 ZmConvListController.prototype._getSelectedMsg =
-function() {
+function(callback) {
 	var item = this._listView[this._currentView].getSelection()[0];
 	if (!item) { return null; }
-	return (item.type == ZmItem.CONV) ? item.getHotMsg(0, this._mailListView.getLimit()) : item;
+	
+	return (item.type == ZmItem.CONV) ? item.getFirstHotMsg(null, callback) : item;
 };
 
 ZmConvListController.prototype._toggle =
@@ -269,7 +270,7 @@ function(conv, msg, offset, getFirstMsg) {
 	} else if (!conv._loaded) {
 		// no msgs have been loaded yet
 		var getFirstMsg = (getFirstMsg === false) ? false : this._readingPaneOn;
-		conv.load({query:this.getSearchString(), callback:respCallback, getFirstMsg:getFirstMsg});
+		conv.load({getFirstMsg:getFirstMsg}, respCallback);
 	} else {
 		// re-expanding first page of msgs
 		this._handleResponseLoadItem(conv, msg, offset, new ZmCsfeResult(conv.msgs));
@@ -298,7 +299,7 @@ function(conv, offset, callback) {
 			offset = ((offset + limit) - max) + 1;
 		}
 		var respCallback = new AjxCallback(this, this._handleResponsePaginateConv, [conv, offset, callback]);
-		conv.load({query:this.getSearchString(), offset:offset, callback:respCallback});
+		conv.load(null, respCallback);
 		return false;
 	} else {
 		return true;

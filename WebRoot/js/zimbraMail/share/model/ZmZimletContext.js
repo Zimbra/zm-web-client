@@ -483,8 +483,8 @@ ZmZimletContext._zmObjectTransformers = {
 			ret.tags         = oi.tags;
 			ret.unread       = oi.isUnread;
 			
-			// Use first message... maybe should be getHotMsg()?
-			ret.body         = ZmZimletContext._getMsgBody(oi.getFirstMsg());
+			// Use first message
+			ret.body         = ZmZimletContext._getMsgBody(oi.getFirstHotMsg());
 			
 			all[i] = ret;
 		}

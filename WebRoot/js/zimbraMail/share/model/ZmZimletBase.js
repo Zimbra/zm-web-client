@@ -717,20 +717,24 @@ function(html, idx, obj, context) {
 };
 
 //Accepts only one conversation object 
-ZmZimletBase.prototype.getMsgsForConv = function(callback,convObj){
+ZmZimletBase.prototype.getMsgsForConv =
+function(callback, convObj){
 
-	if(convObj instanceof Array) convObj = convObj[0];
+	if (convObj instanceof Array) {
+		convObj = convObj[0];
+	}
 	var convListController = AjxDispatcher.run("GetConvListController");
 	var convList = convListController.getList();
 	var conv = convList.getById(convObj.id);
 	
-	var ajxCallback = new AjxCallback(this,this._handleTranslatedConv,callback);
-	conv.loadMsgs(ajxCallback);
+	var ajxCallback = new AjxCallback(this, this._handleTranslatedConv, [callback, conv]);
+	conv.loadMsgs({fetchAll:true}, ajxCallback);
 };
 
-ZmZimletBase.prototype._handleTranslatedConv = function(callback,msgs){
-	
-	if(callback)
-		callback.run(ZmZimletContext._translateZMObject(msgs));
+ZmZimletBase.prototype._handleTranslatedConv =
+function(callback, conv) {
+	if (callback) {
+		callback.run(ZmZimletContext._translateZMObject(conv.msgs.getArray()));
+	}
 };
 

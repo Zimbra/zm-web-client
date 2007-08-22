@@ -367,10 +367,10 @@ function(columnItem, bSortAsc) {
 			var conv = controller.getConv();
 			if (conv) {
 				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller]);
-				conv.load({query:searchString, sortBy:this._sortByString, callback:respCallback});
+				conv.load({query:searchString, sortBy:this._sortByString}, respCallback);
 			}
 		} else {
-			var params = {query: searchString, types: [ZmItem.MSG], sortBy: this._sortByString, limit: this.getLimit()};
+			var params = {query:searchString, types:[ZmItem.MSG], sortBy:this._sortByString, limit:this.getLimit()};
 			appCtxt.getSearchController().search(params);
 		}
 	}
@@ -382,7 +382,7 @@ function(conv, columnItem, controller, result) {
 	controller.setList(list); // set the new list returned
 	this.setOffset(0);
 	this.set(conv.msgs, columnItem);
-	this.setSelection(conv.getHotMsg(this.getOffset(), this.getLimit()));
+	this.setSelection(conv.getFirstHotMsg({offset:this.getOffset(), limit:this.getLimit()}));
 };
 
 ZmMailMsgListView.prototype._getDefaultSortbyForCol = 

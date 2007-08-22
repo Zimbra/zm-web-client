@@ -271,16 +271,15 @@ function(view, menu, checked, itemId) {
 ZmDoublePaneController.prototype._doAction =
 function(params) {
 	// first find out if the current message is in HTML
-	var msgView = this._doublePaneView.getMsgView();
-	var msg = this._getMsg();
-	var msgViewMsg = msgView.getMsg();
+	var msg = params.msg = this._getMsg();
+	var msgViewMsg = this._doublePaneView.getMsgView().getMsg();
 	var format = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 
 	// if msg shown in msgview matches current msg and
 	// we're not processing a draft msg and
 	// msgview has rendered an html msg and
 	// the user's compose pref is in text/plain
-	if (msgViewMsg && msgViewMsg.id == msg.id &&
+	if (msg && msgViewMsg && msgViewMsg.id == msg.id &&
 		params.action != ZmOperation.DRAFT &&
 		msgView.hasHtmlBody() &&
 		format == ZmSetting.COMPOSE_TEXT)
@@ -316,7 +315,7 @@ function(item, view, callback) {
 		DBG.timePt("***** CONV: load", true);
 		if (!item._loaded) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadItem, [view, callback]);
-			item.load({query:this.getSearchString(), callback:respCallback});
+			item.load(null, respCallback);
 		} else {
 			this._handleResponseLoadItem(view, callback, new ZmCsfeResult(item.msgs));
 		}
@@ -452,7 +451,7 @@ function(ev) {
 			// wait for each successively selected msg to load, by waiting briefly for more list
 			// selection shortcut actions. An event will have the 'ersatz' property set if it's
 			// the result of a shortcut.
-			if (ev.ersatz && ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY) {
+			if (ev.kbNavEvent && ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY) {
 				if (this._listSelectionShortcutDelayActionId) {
 					AjxTimedAction.cancelAction(this._listSelectionShortcutDelayActionId);
 				}
@@ -505,8 +504,9 @@ function(ev) {
 	if (!this._readingPaneOn) {
 		// reset current message
 		var msg = this._listView[this._currentView].getSelection()[0];
-		if (msg)
+		if (msg) {
 			this._doublePaneView.resetMsg(msg);
+		}
 	}
 };
 
@@ -522,19 +522,33 @@ function(ev) {
 
 ZmDoublePaneController.prototype._filterListener = 
 function(ev) {
-	var msg = this._getSelectedMsg();
+	var respCallback = new AjxCallback(this, this._handleResponseFilterListener);
+	var msg = this._getSelectedMsg(respCallback);
+
+};
+
+ZmDoublePaneController.prototype._showFilterDialog = 
+function(msg) {
 	if (!msg) { return; }
 	
 	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 	var rule = new ZmFilterRule();
 	var from = msg.getAddress(AjxEmailAddress.FROM);
-	if (from) rule.addCondition(new ZmCondition(ZmFilterRule.C_FROM, ZmFilterRule.OP_CONTAINS, from.address));
+	if (from) {
+		rule.addCondition(new ZmCondition(ZmFilterRule.C_FROM, ZmFilterRule.OP_CONTAINS, from.address));
+	}
 	var to = msg.getAddress(AjxEmailAddress.TO);
-	if (to)	rule.addCondition(new ZmCondition(ZmFilterRule.C_TO, ZmFilterRule.OP_CONTAINS, to.address));
+	if (to)	{
+		rule.addCondition(new ZmCondition(ZmFilterRule.C_TO, ZmFilterRule.OP_CONTAINS, to.address));
+	}
 	var cc = msg.getAddress(AjxEmailAddress.CC);
-	if (cc)	rule.addCondition(new ZmCondition(ZmFilterRule.C_CC, ZmFilterRule.OP_CONTAINS, cc.address));
+	if (cc)	{
+		rule.addCondition(new ZmCondition(ZmFilterRule.C_CC, ZmFilterRule.OP_CONTAINS, cc.address));
+	}
 	var subj = msg.subject;
-	if (subj) rule.addCondition(new ZmCondition(ZmFilterRule.C_SUBJECT, ZmFilterRule.OP_IS, subj));
+	if (subj) {
+		rule.addCondition(new ZmCondition(ZmFilterRule.C_SUBJECT, ZmFilterRule.OP_IS, subj));
+	}
 	rule.addAction(new ZmAction(ZmFilterRule.A_KEEP));
 	var dialog = appCtxt.getFilterRuleDialog();
 	dialog.popup(rule);

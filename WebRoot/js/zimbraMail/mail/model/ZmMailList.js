@@ -362,13 +362,44 @@ function() {
 	ZmList.prototype.clear.call(this);
 };
 
-/*
-* Returns the insertion point for the given item into this list. If we're not sorting by
-* date, returns 0 (the item will be inserted at the top of the list).
-*
-* @param item		[ZmMailItem]	a mail item
-* @param sortBy		[constant]		sort order
-*/
+/**
+ * Returns the first msg in the list which was marked by the server as matching
+ * the search used to create the list.
+ * 
+ * @param offset	[int]*		starting point within list
+ * @param limit		[int]*		ending point within list
+ */
+ZmMailList.prototype.getFirstHit =
+function(offset, limit) {
+	if (this.type != ZmItem.MSG) { return null; }
+
+	var msg = null;	
+	offset = offset || 0;
+	limit = limit || appCtxt.get(ZmSetting.PAGE_SIZE);
+	var numMsgs = this.size();
+
+	if (numMsgs > 0 && offset >= 0 && offset < numMsgs) {
+		var end = (offset + limit > numMsgs) ? numMsgs : offset + limit;
+		var list = this.getArray();
+		for (var i = offset; i < end; i++) {
+			if (list[i].isInHitList()) {
+				msg = list[i];
+				break;
+			}
+		}
+		msg = list[0];	// no hot messages, use first msg
+	}
+	
+	return msg;
+};
+
+/**
+ * Returns the insertion point for the given item into this list. If we're not sorting by
+ * date, returns 0 (the item will be inserted at the top of the list).
+ *
+ * @param item		[ZmMailItem]	a mail item
+ * @param sortBy		[constant]		sort order
+ */
 ZmMailList.prototype._getSortIndex =
 function(item, sortBy) {
 	if (!sortBy || (sortBy != ZmSearch.DATE_DESC && sortBy != ZmSearch.DATE_ASC)) {

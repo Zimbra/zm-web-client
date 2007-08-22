@@ -63,7 +63,7 @@ function(convs) {
 	var list = this._mailListView.getList();
 	var selectedItem = list ? list.get(0) : null
 	if (selectedItem) {
-		this._mailListView.setSelection(selectedItem, false, true);
+		this._mailListView.setSelection(selectedItem, false);
 	}
 };
 

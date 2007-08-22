@@ -31,22 +31,24 @@
  * the different search parameters that may be used. It can be used for a regular search,
  * or to search within a conv. The results are returned via a callback.
  *
- * @param query						[string]		query string
- * @param queryHint					[string]*		query string that gets appended to the query but not something the user needs to know about
- * @param types						[AjxVector]		item types to search for
- * @param sortBy					[constant]*		sort order
- * @param offset					[int]*			starting point within result set
- * @param limit						[int]*			number of results to return
- * @param contactSource				[constant]*		where to search for contacts (GAL or personal)
- * @param isGalAutocompleteSearch	[boolean]*		if true, autocomplete against GAL
- * @param lastId					[int]*			ID of last item displayed (for pagination)
- * @param lastSortVal				[string]*		value of sort field for above item
- * @param fetch						[boolean]*		if true, fetch first hit message
- * @param searchId					[int]*			ID of owning search folder (if any)
- * @param conds						[array]*		list of search conditions (SearchCalendarResourcesRequest)
- * @param attrs						[array]*		list of attributes to return (SearchCalendarResourcesRequest)
- * @param field						[string]*		field to search within (instead of default)
- * @param soapInfo					[object]*		object with method, namespace, and response fields for creating soap doc
+ * @param params					[hash]			hash of params:
+ *        query						[string]		query string
+ *        queryHint					[string]*		query string that gets appended to the query but not something the user needs to know about
+ *        types						[AjxVector]		item types to search for
+ *        sortBy					[constant]*		sort order
+ *        offset					[int]*			starting point within result set
+ *        limit						[int]*			number of results to return
+ *        getHtml					[boolean]*		if true, return HTML part for inlined msg
+ *        contactSource				[constant]*		where to search for contacts (GAL or personal)
+ *        isGalAutocompleteSearch	[boolean]*		if true, autocomplete against GAL
+ *        lastId					[int]*			ID of last item displayed (for pagination)
+ *        lastSortVal				[string]*		value of sort field for above item
+ *        fetch						[boolean]*		if true, fetch first hit message
+ *        searchId					[int]*			ID of owning search folder (if any)
+ *        conds						[array]*		list of search conditions (SearchCalendarResourcesRequest)
+ *        attrs						[array]*		list of attributes to return (SearchCalendarResourcesRequest)
+ *        field						[string]*		field to search within (instead of default)
+ *        soapInfo					[object]*		object with method, namespace, and response fields for creating soap doc
  */
 ZmSearch = function(params) {
 
@@ -156,14 +158,15 @@ function() {
 };
 
 /**
-* Creates a SOAP request that represents this search and sends it to the server.
-*
-* @param callback		[AjxCallback]*		callback to run when response is received
-* @param errorCallback	[AjxCallback]*		callback to run if there is an exception
-* @param batchCmd		[ZmBatchCommand]*	batch command that contains this request
-* @param timeout		[int]*				timeout value (in seconds)
-* @param noBusyOverlay	[boolean]*			if true, don't use the busy overlay
-*/
+ * Creates a SOAP request that represents this search and sends it to the server.
+ *
+ * @param params		[hash]				hash of params:
+ *        callback		[AjxCallback]*		callback to run when response is received
+ *        errorCallback	[AjxCallback]*		callback to run if there is an exception
+ *        batchCmd		[ZmBatchCommand]*	batch command that contains this request
+ *        timeout		[int]*				timeout value (in seconds)
+ *        noBusyOverlay	[boolean]*			if true, don't use the busy overlay
+ */
 ZmSearch.prototype.execute =
 function(params) {
 
@@ -288,7 +291,7 @@ function(cid, callback, getFirstMsg) {
 	if (getFirstMsg !== false) {
 		method.setAttribute("fetch", "1");	// fetch content of first msg
 		method.setAttribute("read", "1");	// mark that msg read
-		if (appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
+		if (this.getHtml) {
 			method.setAttribute("html", "1");
 		}
 	}

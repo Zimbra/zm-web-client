@@ -538,8 +538,9 @@ function(ev) {
 ZmCalViewController.prototype.newApptFromMailItem =
 function(mailItem, date) {
 	var subject = mailItem.subject || "";
-	if (mailItem instanceof ZmConv)
-		mailItem = mailItem.getFirstMsg();
+	if (mailItem instanceof ZmConv) {
+		mailItem = mailItem.getFirstHotMsg();
+	}
 	mailItem.load(false, false, new AjxCallback(this, this._msgLoadedCallback, [mailItem, date, subject]));
 };
 

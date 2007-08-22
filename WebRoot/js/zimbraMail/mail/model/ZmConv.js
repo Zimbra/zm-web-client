@@ -70,22 +70,34 @@ function(msg, args) {
 /**
  * Ensures that the requested range of msgs is loaded, getting them from the server if needed.
  * Because the list of msgs returned by the server contains info about which msgs matched the
- * search, we need to be careful about caching those msgs.
+ * search, we need to be careful about caching those msgs within the conv. This load function
+ * should be used when in a search context, for example when expanding a conv that is the result
+ * of a search.
  *
- * @param query				[string]		query used to retrieve this conv
- * @param sortBy			[constant]*		sort constraint
- * @param offset			[int]*			position of first msg to return
- * @param limit				[int]*			how many msgs to return
- * @param callback			[AjxCallback[*	callback to run with results
- * @param getFirstMsg		[boolean]*		if true, retrieve the content of the first msg
+ * @param params			[hash]			hash of params:
+ *        query				[string]*		query used to retrieve this conv
+ *        sortBy			[constant]*		sort constraint
+ *        offset			[int]*			position of first msg to return
+ *        limit				[int]*			how many msgs to return
+ *        getHtml			[boolean]*		if true, return HTML part for inlined msg
+ *        getFirstMsg		[boolean]*		if true, retrieve the content of the first matching msg
  *											in the conv as a side effect of the search
+ * @param callback			[AjxCallback]*	callback to run with results
  */
 ZmConv.prototype.load =
-function(params) {
+function(params, callback) {
 
-	var sortBy = params.sortBy ? params.sortBy : ZmSearch.DATE_DESC;
-	var offset = params.offset ? params.offset : 0;
-	var limit = params.limit ? params.limit : appCtxt.get(ZmSetting.PAGE_SIZE);
+	params = params || {};
+	var query = params.query;
+	if (!query) {
+		var ctlr = appCtxt.getCurrentController();
+		query = (ctlr && ctlr.getSearchString) ? ctlr.getSearchString() :
+				appCtxt.get(ZmSetting.INITIAL_SEARCH);
+	}
+	var sortBy = params.sortBy || ZmSearch.DATE_DESC;
+	var offset = params.offset || 0;
+	var limit = params.limit || appCtxt.get(ZmSetting.PAGE_SIZE);
+	var getHtml = params.getHtml || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	
 	if (this.msgs) {
 		if (this._sortBy != sortBy) {
@@ -101,23 +113,24 @@ function(params) {
 				// XXX: if we dont want to cache, remove this "else" (dont forget to call clear on msgs)
 				// i.e. new msgs that are in the hit list wont be marked hot this way!
 				// dont bother searching for more msgs if all have been loaded	
-				if (!this.msgs.hasMore() || offset + limit <= size)
-					if (params.callback) {
-						params.callback.run(new ZmCsfeResult(this.msgs));
+				if (!this.msgs.hasMore() || offset + limit <= size) {
+					if (callback) {
+						callback.run(new ZmCsfeResult(this.msgs));
 					}
+				}
 			}
 		}
 	}
 	
 	var types = AjxVector.fromArray([ZmItem.MSG]);
-	var searchParams = {query:params.query, types:types, sortBy:sortBy, offset:offset, limit:limit};
-	var search = new ZmSearch(searchParams);
-	var respCallback = new AjxCallback(this, this._handleResponseLoad, params);
+	var searchParams = {query:query, types:types, sortBy:sortBy, offset:offset, limit:limit, getHtml:getHtml};
+	var search = this.search = new ZmSearch(searchParams);
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, callback]);
 	search.getConv(this.id, respCallback, params.getFirstMsg);
 };
 
 ZmConv.prototype._handleResponseLoad =
-function(params, result) {
+function(params, callback, result) {
 	var results = result.getResponse();
 	if (!params.offset) {
 		this.msgs = results.getResults(ZmItem.MSG);
@@ -132,40 +145,57 @@ function(params, result) {
 			this.tempMsg = null;
 		}
 		
-		if (params.callback) {
+		if (callback) {
 			result.set(this.msgs);
 		}
 	}
-	if (params.callback) {
-		params.callback.run(result);
+	if (callback) {
+		callback.run(result);
 	}
 };
 
-ZmConv.prototype.loadMsgIds =
-function(callback, errorCallback, batchCmd) {
+/**
+ * @param params		[hash]				hash of params:
+ *        fetchAll		[boolean]*			if true, fetch content of all msgs
+ * @param callback		[AjxCallback]		callback
+ * @param batchCmd		[ZmBatchCommand]*	batch cmd that contains this request
+ */
+ZmConv.prototype.loadMsgs =
+function(params, callback, batchCmd) {
 	var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
-	var msgNode = soapDoc.set("c");
-	msgNode.setAttribute("id", this.id);
+	var convNode = soapDoc.set("c");
+	convNode.setAttribute("id", this.id);
+	params = params || {};
+	if (params.fetchAll) {
+		convNode.setAttribute("fetch", "all");
+	}
 
 	// Request additional headers
 	for (var hdr in ZmMailMsg.getAdditionalHeaders()) {
-		var headerNode = soapDoc.set('header', null, msgNode);
+		var headerNode = soapDoc.set('header', null, convNode);
 		headerNode.setAttribute('n', hdr);
 	}
 
-	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgIds, callback);
-
+	// never pass "undefined" as arg to a callback!
+	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgs, callback || null);
 	if (batchCmd) {
-		batchCmd.addRequestParams(soapDoc, respCallback, errorCallback);
+		batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	}
 };
 
-ZmConv.prototype._handleResponseLoadMsgIds =
+ZmConv.prototype._handleResponseLoadMsgs =
 function(callback, result) {
 	var resp = result.getResponse().GetConvResponse.c[0];
 	this.msgIds = [];
+	
+	// create new msg list
+	this.msgs = new ZmMailList(ZmItem.MSG, this.search);
+	this.msgs.convId = this.id;
+	this.msgs.addChangeListener(this._listChangeListener);
+	this.msgs.setHasMore(false);
+	this._loaded = true;
 
 	var len = resp.m.length;
 	for (var i = 0; i < len; i++) {
@@ -173,41 +203,43 @@ function(callback, result) {
 		this.msgIds.push(msgNode.id);
 		msgNode.su = resp.su;
 		// construct ZmMailMsg's so they get cached
-		ZmMailMsg.createFromDom(msgNode,this.list);
+		var msg = ZmMailMsg.createFromDom(msgNode, this.list);
+		this.msgs.add(msg);
 	}
 
 	if (callback) { callback.run(result); }
 };
 
-
+/*
 //Fixme: Needs some changes to fetch messages from the cache. 
-ZmConv.prototype.loadMsgs = function(callback){
+ZmConv.prototype.loadMsgs =
+function(callback){
 	
 	var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
 	var msgNode = soapDoc.set("c");
 	msgNode.setAttribute("id", this.id);
-	msgNode.setAttribute("fetch","all");
+	msgNode.setAttribute("fetch", "all");
 
 	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgs, callback);
-
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 
 };
 
-ZmConv.prototype._handleResponseLoadMsgs = function(callback, result){
+ZmConv.prototype._handleResponseLoadMsgs =
+function(callback, result){
 
 	var resp = result.getResponse().GetConvResponse.c[0];
 	var len  = resp.m.length;
 	var msgs = [];
-	for( var i=0 ; i < len ; i++ ) {
+	for (var i = 0; i < len; i++) {
 		var msgNode = resp.m[i];
-		var msg = ZmMailMsg.createFromDom(msgNode,this.msgs);
+		var msg = ZmMailMsg.createFromDom(msgNode, this.msgs);
 		msgs.push(msg);
 	}
 	
 	if (callback) { callback.run(msgs); }
 };
-
+*/
 ZmConv.prototype.clear =
 function() {
 	if (this.msgs) {
@@ -360,66 +392,49 @@ function(folderId) {
 	this.folders[folderId] = true;
 };
 
-/* First see if there are any hot messages which will always be the case in a 
- * search scenario; however if this is not a search (i.e. we are playing 
- * primary mailbox), then pick the newest message in the conversation
+/**
+ * Returns the first matching msg of this conv, loading the conv msg list if necessary. If the
+ * msg itself hasn't been loaded we also load the conv. The conv load is a SearchConvRequest
+ * which fetches the content of the first matching msg and returns it via a callback. If no
+ * callback is provided, the conv will not be loaded - if it already has a msg list, the msg
+ * will come from there; otherwise, a skeletal msg with an ID is returned. Note that a conv
+ * always has at least one msg.
+ * 
+ * @param params	[hash]	hash of params:
+ *        query				[string]*		query used to retrieve this conv
+ *        sortBy			[constant]*		sort constraint
+ *        offset			[int]*			position of first msg to return
+ *        limit				[int]*			how many msgs to return
+ * @param callback			[AjxCallback]*	callback to run with results
  */
-ZmConv.prototype.getHotMsg = 
-function(offset, limit) {
-	
-	var numMsgs = this.msgs.size();
-
-	// normalize offset/limit if necessary
-	if (offset >= numMsgs || offset < 0) { return; }
-	
-	var end = (offset + limit > numMsgs) ? numMsgs : offset + limit;
-	var list = this.msgs.getArray();
+ZmConv.prototype.getFirstHotMsg =
+function(params, callback) {
 	
 	var msg;
-	for (var i = offset; i < end; i++) {
-		if (list[i].isInHitList()) {
-			if (msg == null || msg.date < list[i].date) {
-				msg = list[i];
-			}
-		}
-	}
-
-	// no hot messages, find the most recent message
-	if (msg == null) {
-		for (var i = offset; i < end; i++) {
-			if (msg == null || msg.date < list[i].date) {
-				msg = list[i];
-			}
-		}
-	}
-	
-	return msg;
-};
-
-ZmConv.prototype.getFirstMsg = 
-function() {
-	// has this conv been loaded yet?
-	var msg;
+	params = params || {};
 	if (this.msgs && this.msgs.size()) {
-		// then always return the first msg in the list
-		msg = this.msgs.getVector().get(0);
-	} else if (this.tempMsg) {
-		msg = this.tempMsg;
+		msg = this.msgs.getFirstHit(params.offset, params.limit);
+	} else if (!callback) {
+		msg = new ZmMailMsg(this.msgIds[0]);
+	}
+	if (!callback) {
+		return msg;
+	} else if (msg && msg._loaded) {
+		callback.run(msg);
 	} else {
-		// otherwise, create a temp msg w/ the msg op Id
-		msg = new ZmMailMsg(this.msgOpId);
-		msg.cid = this.id;
-		this.tempMsg = msg;
+		var respCallback = new AjxCallback(this, this._handleResponseGetFirstHotMsg, [params, callback]);
+		params.getFirstMsg = true;
+		this.load(params, respCallback);
 	}
-	
-	if (!this.msgs) {
-		this.msgs = msg.list = new ZmMailList(ZmItem.MSG);
-		this.msgs.addChangeListener(this._listChangeListener);
-	}
-	
-	return msg;
 };
 
+ZmConv.prototype._handleResponseGetFirstHotMsg =
+function(params, callback) {
+	var msg = this.msgs.getFirstHit(params.offset, params.limit);
+	if (callback) {
+		callback.run(msg);
+	}
+};
 
 ZmConv.prototype._loadFromDom =
 function(convNode) {
@@ -436,10 +451,13 @@ function(convNode) {
 	this.subject = convNode.su;
 	this.fragment = convNode.fr;
 
-	// this is the ID of the msg that will be used if user tries to 
-	// reply/forward w/o having loaded the conv.
+	// should always be an <m> element; note that the list of msg IDs in a
+	// search result is partial - only msgs that matched are included
 	if (convNode.m) {
-		this.msgOpId = convNode.m[0].id;
+		this.msgIds = [];
+		for (var i = 0, count = convNode.m.length; i < count; i++) {
+			this.msgIds.push(convNode.m[i].id);
+		}
 	}
 	if (convNode._folders) {
 		var folders = convNode._folders.split(",");
@@ -460,7 +478,7 @@ function(msg) {
 	this.participants = msg.participants.clone();
 	this.subject = msg.subject;
 	this.fragment = msg.fragment;
-	this.msgOpId = msg.id;
+	this.msgIds = [msg.id];
 };
 
 ZmConv.prototype._msgListChangeListener =

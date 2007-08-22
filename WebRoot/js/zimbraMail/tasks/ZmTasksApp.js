@@ -269,8 +269,9 @@ function() {
 ZmTasksApp.prototype.newTaskFromMailItem =
 function(msg, date) {
 	var subject = msg.subject || "";
-	if (msg instanceof ZmConv)
-		msg = msg.getFirstMsg();
+	if (msg instanceof ZmConv) {
+		msg = msg.getFirstHotMsg();
+	}
 	msg.load(false, false, new AjxCallback(this, this._msgLoadedCallback, [msg, date, subject]));
 };
 

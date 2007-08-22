@@ -1130,7 +1130,7 @@ function(idx) {
 	if (list) {
 		var selIdx = idx >= 0 ? idx : 0;
 		var first = list.get(selIdx);
-		this._listView[this._currentView].setSelection(first, false, true);
+		this._listView[this._currentView].setSelection(first, false);
 	}
 };
 
