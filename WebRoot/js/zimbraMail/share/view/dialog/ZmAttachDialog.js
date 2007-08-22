@@ -294,6 +294,7 @@ ZmMyComputerTabView.prototype.showMe = function(){
 	this.resetAttachments();
 	DwtTabViewPage.prototype.showMe.call(this);
 	this.setSize(Dwt.DEFAULT, "260");
+	this._focusAttEl();
 };
 
 ZmMyComputerTabView.prototype.hideMe = function(){
@@ -436,7 +437,7 @@ ZmMyComputerTabView.prototype.addAttachmentField = function(noRemoveLink){
 	var attRemoveId = attId + "_r";
 	var attInputId = attId + "_i";
 	row.id = attId;
-
+	
 	// add new cell and build html for inserting file upload input element
 	var	cell = row.insertCell(-1);
 	var html = [];
@@ -458,6 +459,10 @@ ZmMyComputerTabView.prototype.addAttachmentField = function(noRemoveLink){
 	html[idx++] ="</td></tr></table>";
 	cell.innerHTML = html.join("");
 	
+	if(this._focusElId == -1) {
+		this._focusElId = attInputId;
+	}
+	
 	if(!noRemoveLink){
 		var attRemoveLink = document.getElementById(attRemoveId);
 		attRemoveLink["onclick"] = AjxCallback.simpleClosure(this._removeAttachmentField,this,attId);
@@ -467,6 +472,7 @@ ZmMyComputerTabView.prototype.addAttachmentField = function(noRemoveLink){
 		var attField = document.getElementById(attInputId);
 		attField["onkeydown"] = AjxCallback.simpleClosure(this._handleKeys,this);
 	}
+	
 };
 
 ZmMyComputerTabView.prototype._removeAttachmentField = function(attId){
@@ -512,6 +518,7 @@ ZmMyComputerTabView.prototype.resetAttachments = function(){
 	}
 	
 	//Re-initialize UI
+	this._focusElId = -1;
 	var row = attTable.insertRow(-1);
 	var cell = row.insertCell(-1);
 	cell.appendChild(document.createElement("br"));
@@ -524,7 +531,10 @@ ZmMyComputerTabView.prototype.resetAttachments = function(){
 	delete i;
 };
 
-
+ZmMyComputerTabView.prototype._focusAttEl = function() {
+	var el = document.getElementById(this._focusElId);
+	if(el) el.focus();
+};
 
 //Utilities
 ZmMyComputerTabView.prototype._cleanTable = function(table){
