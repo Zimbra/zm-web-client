@@ -160,9 +160,6 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 		for (var i = this._place + 1; i < this._history.length; i++) {
 			this._history[i] = null;
 		}
-		this._history.length = ++this._place;
-		var pageRef = { folderId: this._object.folderId, name: this._object.name };
-		this._history[this._place] = pageRef;
 	}
 	this._enableNaviButtons();
 
