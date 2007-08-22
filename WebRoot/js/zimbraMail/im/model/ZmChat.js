@@ -184,7 +184,7 @@ ZmChat.prototype.sendClose = function(text) {
         AjxDispatcher.run("GetRoster").modifyChatRequest(thread, "close");
 };
 
-ZmChat.prototype.sendMessage = function(text, typing ) {
+ZmChat.prototype.sendMessage = function(text, typing) {
 	var soapDoc = AjxSoapDoc.create("IMSendMessageRequest", "urn:zimbraIM");
 	var method = soapDoc.getMethod();
 	var message = soapDoc.set("message");
@@ -195,19 +195,7 @@ ZmChat.prototype.sendMessage = function(text, typing ) {
 		message.setAttribute("thread", thread);
 	message.setAttribute("addr", this.getRosterItem(0).getAddress());
 	if (text != null){
-		//TODO: Supports only lite html editor content. Need to support iframe
-		if(text.match(/<span (.*)>(.*)<\/span>/i)){
-			try{
-				var xmlDoc = AjxXmlDoc.createFromXml(text);
-				var p = xmlDoc.getElementsByTagName("span")[0];
-				var body = soapDoc.set("body",null,message);
-				body.appendChild(p);
-			}catch(ex){
-				soapDoc.set("body",AjxStringUtil.stripTags(text),message);
-			}
-		}else {
-			soapDoc.set("body", text, message);
-		}
+		soapDoc.set("body", text, message);
 	}
 	// TODO: error handling
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj});
