@@ -152,7 +152,7 @@ function(tagList, addRemove) {
 	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newTag));
 	miNew.setImage("NewTag");
 	miNew.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_CREATE);
-	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener));
+	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 
 	// add static "Remove Tag" menu item
 	var miRemove = new DwtMenuItem(this);
@@ -177,7 +177,7 @@ function(tagList, addRemove) {
 			miRemove.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_TAGS);
 			miRemove.setData(ZmTagMenu.KEY_TAG_ADDED, false);
 			miRemove.setData(Dwt.KEY_OBJECT, tag);
-			miRemove.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener));
+			miRemove.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 		}		
 
 		// if multiple removable tags, offer "Remove All"
@@ -188,7 +188,7 @@ function(tagList, addRemove) {
 			mi.setImage("MiniTagStack");
 			mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_REMOVE_ALL);
 			mi.setData(Dwt.KEY_OBJECT, removeList);
-			mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener));
+			mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 		}
 	}
 }
@@ -201,7 +201,7 @@ function(menu, newTag, add, index, tagHash) {
 	mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_TAGS);
 	mi.setData(ZmTagMenu.KEY_TAG_ADDED, add);
 	mi.setData(Dwt.KEY_OBJECT, newTag);
-	mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener));
+	mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 	tagHash[newTag.id] = mi;
 }
 
