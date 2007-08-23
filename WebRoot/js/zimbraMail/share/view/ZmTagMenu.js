@@ -47,6 +47,8 @@ ZmTagMenu = function(parent) {
 	this._removeHash = new Object();
 	this._evtMgr = new AjxEventMgr();
 	this._desiredState = true;
+	this._items = null;
+	this._dirty = true;
 }
 
 ZmTagMenu.prototype = new ZmPopupMenu;
@@ -84,15 +86,28 @@ ZmTagMenu.prototype.set =
 function(items, tagList) {
 	DBG.println(AjxDebug.DBG3, "set tag menu");
 	this._tagList = tagList;
-	var rootTag = tagList.root;
+	this._items = items;
+	this._dirty = true;
+
 	this.parent.setEnabled(true);
-
-	// reset the menu
-	this.removeChildren();
-
-	var addRemove = this._getAddRemove(items, rootTag);
-	this._render(rootTag, addRemove);
 }
+
+ZmTagMenu.prototype.popup =
+function(delay, x, y, kbGenerated) {
+	if (this._dirty) {
+		// reset the menu
+		this.removeChildren();
+
+		if (this._tagList) {
+			var rootTag = this._tagList.root;
+			var addRemove = this._getAddRemove(this._items, rootTag);
+			this._render(rootTag, addRemove);
+		}
+		this._dirty = false;
+	}
+	ZmPopupMenu.prototype.popup.call(this, delay, x, y, kbGenerated);
+}
+
 
 // Given a list of items, produce two lists: one of tags that could be added (any tag
 // that the entire list doesn't have), and one of tags that could be removed (any tag
