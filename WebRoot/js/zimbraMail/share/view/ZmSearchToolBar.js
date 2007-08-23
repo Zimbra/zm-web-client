@@ -68,6 +68,19 @@ function() {
 	return "ZmSearchToolBar";
 };
 
+ZmSearchToolBar.removeMenuItem =
+function(id) {
+	var idx = ZmSearchToolBar.MENU_ITEMS.indexOf(id);
+	if (idx != -1) {
+		ZmSearchToolBar.MENU_ITEMS.splice(idx,1);
+		ZmSearchToolBar.MSG_KEY[id]		= "";
+		ZmSearchToolBar.TT_MSG_KEY[id]	= "";
+		ZmSearchToolBar.ICON[id]		= "";
+		ZmSearchToolBar.SHARE_ICON[id]	= "";
+		ZmSearchToolBar.SETTING[id]		= "";
+	}
+}
+
 ZmSearchToolBar.addMenuItem =
 function(id, params) {
 	if (params.msgKey)		{ ZmSearchToolBar.MSG_KEY[id]		= params.msgKey; }
