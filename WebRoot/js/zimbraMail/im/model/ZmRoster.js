@@ -223,6 +223,24 @@ function(im) {
 				if (view) {
 					new ZmImSubscribeAuth(view.getActiveWM(), not.from).popup();
 				}
+                        } else if (not.ask && /^(un)?subscribed$/.test(not.type)) {
+                                if (not.ask == "subscribe" && not.to) {
+                                        var list = this.getRosterItemList();
+                                        var item = list.getByAddr(not.to);
+                                        if (!item) {
+                                                // create him in offline state
+                                                item = new ZmRosterItem(not.to, list, not.to, null, not.groups);
+                                                list.addItem(item);
+                                                if (notifications) {
+                                                        appCtxt.setStatusMsg("Waiting for " + not.to + " to accept your request");
+                                                }
+                                        }
+                                } else if (not.ask == "unsubscribe" && not.to) {
+                                        // should we do anything here?
+                                        // Do we need to ask buddy's
+                                        // permission for us to remove
+                                        // him from our list? :-)
+                                }
 			} else if (not.type == "subscribed") {
 				var sub = not;
 				if (sub.to) {
@@ -249,11 +267,13 @@ function(im) {
 				if (unsub.to) {
 					var list = this.getRosterItemList();
 					var item = list.getByAddr(unsub.to);
-					var displayName = item.getDisplayName();
-					if (item) list.removeItem(item);
-					if(notifications) {
-						appCtxt.setStatusMsg(this._removeRosterItemToastFormatter.format([displayName]));
-					}
+                                        if (item) {
+					        var displayName = item.getDisplayName();
+                                                list.removeItem(item);
+					        if (notifications) {
+						        appCtxt.setStatusMsg(this._removeRosterItemToastFormatter.format([displayName]));
+					        }
+                                        }
 				}
 			} else if (not.type == "presence") {
 				var p = not;
