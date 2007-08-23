@@ -30,7 +30,8 @@ ZmRoster = function(imApp) {
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
-        this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
+    this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
+    this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
 	this._imApp = imApp;
 
     this.refresh();
@@ -248,7 +249,11 @@ function(im) {
 				if (unsub.to) {
 					var list = this.getRosterItemList();
 					var item = list.getByAddr(unsub.to);
+					var displayName = item.getDisplayName();
 					if (item) list.removeItem(item);
+					if(notifications) {
+						appCtxt.setStatusMsg(this._removeRosterItemToastFormatter.format([displayName]));
+					}
 				}
 			} else if (not.type == "presence") {
 				var p = not;
