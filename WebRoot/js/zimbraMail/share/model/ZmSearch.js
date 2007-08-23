@@ -53,27 +53,11 @@
 ZmSearch = function(params) {
 
 	if (params) {
-		this.query						= params.query;
-		this.queryHint					= params.queryHint;
-		this.types						= params.types;
-		this.sortBy						= params.sortBy;
-		this.offset						= params.offset;
-		this.limit						= params.limit;
-		this.contactSource				= params.contactSource;
-		this.isGalAutocompleteSearch	= params.isGalAutocompleteSearch;
-		this.lastId						= params.lastId;
-		this.lastSortVal				= params.lastSortVal;
-		this.endSortVal					= params.endSortVal;
-		this.fetch 						= params.fetch;
-		this.markRead       			= params.markRead;
-		this.searchId					= params.searchId;
-		this.galType					= params.galType ? params.galType : ZmSearch.GAL_ACCOUNT;
-		this.conds						= params.conds;
-		this.join						= params.join ? params.join : ZmSearch.JOIN_AND;
-		this.attrs						= params.attrs;
-		this.userText					= params.userText;
-		this.field						= params.field;
-		this.soapInfo					= params.soapInfo;
+		for (var p in params) {
+			this[p] = params[p];
+		}
+		this.galType					= this.galType || ZmSearch.GAL_ACCOUNT;
+		this.join						= this.join || ZmSearch.JOIN_AND;
 		
 		if (this.query) {
 			this._parseQuery();
