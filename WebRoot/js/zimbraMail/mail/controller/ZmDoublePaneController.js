@@ -272,7 +272,8 @@ ZmDoublePaneController.prototype._doAction =
 function(params) {
 	// first find out if the current message is in HTML
 	var msg = params.msg = this._getMsg();
-	var msgViewMsg = this._doublePaneView.getMsgView().getMsg();
+	var msgView = this._doublePaneView.getMsgView();
+	var msgViewMsg = msgView.getMsg();
 	var format = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 
 	// if msg shown in msgview matches current msg and
