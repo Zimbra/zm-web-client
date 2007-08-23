@@ -76,7 +76,7 @@ ZmPageEditView.prototype._setResponse = function(page) {
 	// set name
 	var name = page.name || "";
 	this._pageNameInput.setValue(name);
-	this._isNewPage = !name;
+	this._isNewPage =  (page.version == 0);
 	this._showRenameWarning(false);
 
 	// set content
@@ -98,6 +98,7 @@ function() {
 ZmPageEditView.prototype.pageSaved =
 function(content) {
 	this._originalContent = content;
+	this._isNewPage = false;	
 	this._updateRenameWarning();
 };
 
