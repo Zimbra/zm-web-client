@@ -117,7 +117,7 @@ ZmPhone.prototype.getCallFeatures =
 function(callback, errorCallback) {
 	if (this._featuresDefined) {
 		if (callback) {
-			callback.run(this._features);
+			callback.run(this._features, this);
 		}
 	} else {
 	    var soapDoc = AjxSoapDoc.create("GetVoiceFeaturesRequest", "urn:zimbraVoice");
@@ -156,7 +156,7 @@ function(callback, response) {
 	}
 	this._featuresDefined = true;
 	if (callback) {
-		callback.run(this._features);
+		callback.run(this._features, this);
 	}
 };
 

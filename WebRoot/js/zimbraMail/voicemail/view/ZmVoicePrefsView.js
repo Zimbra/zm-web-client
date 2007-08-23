@@ -103,6 +103,9 @@ function() {
 	Dwt.setTitle(this._title);
 	if (this._hasRendered) return;
 
+	this._handleResponseGetFeaturesObj = new AjxCallback(this, this._handleResponseGetFeatures);
+	this._handleErrorGetFeaturesObj = new AjxCallback(this, this._handleErrorGetFeatures);
+
 	var params = {
 		method: "GetContacts",
 		callback: new AjxCallback(this, this._handleResponseContactsLoaded),
@@ -166,30 +169,15 @@ function() {
 
 ZmVoicePrefsView.prototype._addChange =
 function(ui) {
-	var list;
+	var features;
 	if (!this._changes) {
 		this._changes = {};
-	} else {
-		var change = this._changes[this._phone.name];
-		if (change) {
-			list = change.list;
-		}
 	}
-	
-	if (list) {
-		var found = false;
-		for (var i = 0, count = list.length; i < count; i++) {
-			if (list[i].name == ui.getName()) {
-				found = true;
-				break;
-			}
-		}
-		if (!found) {
-			list.push(ui.getFeature());
-		}
-	} else {
-		this._changes[this._phone.name] = {phone: this._phone, list: [ui.getFeature()]};
+	if (!this._changes[this._phone.name]) {
+		this._changes[this._phone.name] = { phone: this._phone, features: {} }; 
 	}
+	var feature = ui.getFeature();
+	this._changes[this._phone.name].features[feature.name] = feature;
 };
 
 ZmVoicePrefsView.prototype.reset =
@@ -202,15 +190,20 @@ ZmVoicePrefsView.prototype.showItem =
 function(phone) {
 //Retarded: saving a reference to the phone here, even though the parent class has it (as _item).
 	this._phone = phone;
-	var callback = new AjxCallback(this, this._handleResponseGetFeatures, phone);
-	var errorCallback = new AjxCallback(this, this._handleErrorGetFeatures); 
-	phone.getCallFeatures(callback, errorCallback);
+	phone.getCallFeatures(this._handleResponseGetFeaturesObj, this._handleErrorGetFeaturesObj);
 };
 
 ZmVoicePrefsView.prototype._handleResponseGetFeatures =
-function(phone, features) {
+function(features, phone) {
+	var changedFeatures = (this._changes && this._changes[phone.name]) ? this._changes[phone.name].features : null; 
 	for(var i = 0, count = this._ui.length; i < count; i++) {
-		var feature = features[this._ui[i].getName()];
+		var featureName = this._ui[i].getName();
+		var feature;
+		if (changedFeatures && changedFeatures[featureName]) {
+			feature = changedFeatures[featureName]; 
+		} else {
+			feature = features[featureName];
+		}
 		this._ui[i].setFeature(feature);
 	}
 };
@@ -230,7 +223,8 @@ ZmVoicePrefsView.prototype.addCommand =
 function(batchCommand) {
 	var first = true;
 	for (var i in this._changes) {
-		var phone = this._changes[i].phone;
+		var change = this._changes[i];
+		var phone = change.phone;
 		var callback = null;
 		if (first) {
 			if (!this._handleResponseObj) {
@@ -239,13 +233,18 @@ function(batchCommand) {
 			callback = this._handleResponseObj;
 			first = false;
 		}
-		phone.modifyCallFeatures(batchCommand, this._changes[i].list, callback);
+		var list = [];
+		var features = change.features;
+		for (var name in features) {
+			list.push(features[name]);
+		}
+		phone.modifyCallFeatures(batchCommand, list, callback);
 	 }
 };
 
 ZmVoicePrefsView.prototype._handleResponse =
 function(identity, request, result) {
-	this._changes  = null;
+	this._changes = null;
 };
 
 ZmVoicePrefsView.prototype._containsMyCard =
