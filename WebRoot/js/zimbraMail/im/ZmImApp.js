@@ -160,6 +160,14 @@ ZmImApp.prototype._registerSettings = function(settings) {
                                    dataType     : ZmSetting.D_BOOLEAN,
 				   defaultValue : true
 				 });
+				 
+		settings.registerSetting("IM_PREF_LOGCHATS_ENABLED",
+			{
+				name			: "zimbraPrefIMLogChatsEnabled",
+				type			: ZmSetting.T_PREF,
+				dataType		: ZmSetting.D_BOOLEAN,
+				defaultValue	: true	
+			});		 
 
 	settings.getSetting(ZmSetting.IM_PREF_INSTANT_NOTIFY).addChangeListener(new AjxListener(this, this._onSettingChange));
 };
@@ -176,7 +184,8 @@ ZmImApp.prototype._registerPrefs = function() {
 				ZmSetting.IM_PREF_AUTO_LOGIN,
 				ZmSetting.IM_PREF_FLASH_ICON,
 				ZmSetting.IM_PREF_NOTIFY_PRESENCE,
-				ZmSetting.IM_PREF_NOTIFY_STATUS
+				ZmSetting.IM_PREF_NOTIFY_STATUS,
+				ZmSetting.IM_PREF_LOGCHATS_ENABLED
 			]
 		}
 	};
@@ -205,6 +214,12 @@ ZmImApp.prototype._registerPrefs = function() {
 	ZmPref.registerPref("IM_PREF_NOTIFY_STATUS",
 			    { displayName      : ZmMsg.imPrefNotifyStatus,
 			      displayContainer : ZmPref.TYPE_CHECKBOX });
+	
+	ZmPref.registerPref("IM_PREF_LOGCHATS_ENABLED",{
+					displayName		: ZmMsg.imPrefLogChats,
+					displayContainer: ZmPref.TYPE_CHECKBOX
+				});
+			      
 };
 
 ZmImApp.prototype._onSettingChange = function(ev) {
