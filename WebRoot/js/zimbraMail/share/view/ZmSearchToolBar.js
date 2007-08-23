@@ -52,6 +52,7 @@ ZmSearchToolBar.BROWSE_BUTTON 			= 4;
 ZmSearchToolBar.MENUITEM_ID 			= "_menuItemId";						// menu item key
 ZmSearchToolBar.FOR_ANY_MI				= "FOR_ANY";							// search all item types menu item
 ZmSearchToolBar.FOR_SHARED_MI			= "FOR_SHARED";							// incl. shared items menu item
+ZmSearchToolBar.CUSTOM_MI				= "CUSTOM_SEARCH";						// custom search
 ZmSearchToolBar.SETTING 				= {};									// required setting for menu item to appear
 ZmSearchToolBar.MENU_ITEMS 				= [];									// list of menu items
 ZmSearchToolBar.MSG_KEY 				= {};									// text for menu item
@@ -180,6 +181,7 @@ function(icon, text, listener) {
 				this._customSearchBtn.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 				item = DwtMenuItem.create(menu, data[0], data[1], null, true, DwtMenuItem.RADIO_STYLE, 0);
 				item.setData("CustomSearchItem", data);
+				item.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.CUSTOM_MI);
 				item.setChecked(true, true);
 				item.addSelectionListener(this._customSearchListener);
 			}
@@ -193,6 +195,7 @@ function(icon, text, listener) {
 		var addSep = !(mi && mi.getData("CustomSearchItem"));
 		mi = DwtMenuItem.create(menu, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 0, 0);
 		mi.setData("CustomSearchItem", [icon, text, listener]);
+		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.CUSTOM_MI);
 		mi.addSelectionListener(this._customSearchListener);
 
 		// only add separator if this is the first custom search menu item
