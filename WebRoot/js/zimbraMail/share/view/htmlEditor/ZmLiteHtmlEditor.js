@@ -114,7 +114,7 @@ function(){
 
 ZmLiteHtmlEditor.prototype.getHtmlContent =
 function(tag){
-	
+
 	var html = ["<span style='",this.getCSS(),"'>",
 				AjxStringUtil.htmlEncode(this.getTextContent()),
 				"</span>"];
@@ -124,7 +124,7 @@ function(tag){
 
 ZmLiteHtmlEditor.prototype.getCSS =
 function() {
-	
+
 	var style = this._textArea.style;
 	var css = [];
 	if(style.fontFamily)
@@ -140,10 +140,10 @@ function() {
 	if(style.textDecoration)
 		css.push("text-decoration: ",style.textDecoration,";");
 	if(style.color)
-		css.push("color ",style.color,";");	
+		css.push("color ",style.color,";");
 
 	return css.join("");
-	
+
 };
 
 //Supports only text content
@@ -331,9 +331,9 @@ ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
 	this._underlineButton.setToolTipContent(ZmMsg.underlineText);
 	this._underlineButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.UNDERLINE_STYLE);
 	this._underlineButton.addSelectionListener(listener);
-	
+
 	new DwtControl(tb, "vertSep");
-	
+
 	this._fontColorButton = new ZmLiteHtmlEditorColorPicker(tb,null,"ZToolbarButton");
 	this._fontColorButton.dontStealFocus();
 	this._fontColorButton.setImage("FontColor");
@@ -406,11 +406,11 @@ function(ev) {
 
 ZmLiteHtmlEditor.prototype._fontStyleListener =
 function(ev) {
-	
+
 	var styleType = ev.item.getData(ZmHtmlEditor._VALUE);
 	var style = ZmLiteHtmlEditor.STYLE[styleType];
 	if(!style) return;
-	
+
 	var value = this.getStyle(style);
 	if(styleType == ZmLiteHtmlEditor.UNDERLINE_STYLE){
 		this.setStyle( style , (( !value || value == "none" ) ? "underline" : "none"));
@@ -421,6 +421,11 @@ function(ev) {
 	}else if(styleType == ZmLiteHtmlEditor.FONT_COLOR){
 		this.setStyle( style, ( ev.item.getColor() || "#000000" ) );
 	}
+};
+
+ZmLiteHtmlEditor.prototype.focus =
+function() {
+        this.getEditor().focus();
 };
 
 ZmLiteHtmlEditorColorPicker = function(parent,style,className) {
