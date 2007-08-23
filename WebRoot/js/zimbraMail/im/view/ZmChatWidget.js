@@ -275,9 +275,12 @@ ZmChatWidget.prototype._initEditor = function(parent){
 
 ZmChatWidget.prototype._changeEditorModeListener = function(){
 	this._liteEditor.reverseMode();
-        this._doResize();
+    this._doResize();
 };
 
+ZmChatWidget.prototype.getEditor = function(){
+	return this._liteEditor;
+};
 
 ZmChatWidget.prototype._init = function() {
 	var base_id = Dwt.getNextId();

@@ -148,9 +148,12 @@ ZmAssistantBuddy.prototype.handleInput = function(args) {
 ZmAssistantBuddy.prototype.chatStarted = function(chat, widget) {
 	this.__chat = chat;
 	this.__widget = widget;
-
+	
+	
 	Dwt.addClass(widget.getHtmlElement(), "ZmAssistantChat");
-
+	
+	widget.getEditor().setMode(ZmLiteHtmlEditor.TEXT);
+	
 	widget.handleMessage(new ZmChatMessage({ from: ZmMsg.zimbraAssistant,
 						 body: [ { _content: "Welcome to Zimbra Assistant!" } ] // grr
 					       }));
