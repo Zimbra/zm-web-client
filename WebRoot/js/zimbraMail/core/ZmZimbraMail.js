@@ -174,7 +174,6 @@ function(params) {
 
 	// Create generic operations
 	ZmOperation.initialize();
-	ZmApp.initialize();
 
 	// Handle offline mode
     if (params.offlineMode) {
@@ -375,6 +374,7 @@ function(params, result) {
 		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._appChooser = this._createAppChooser();
 	}
 
+	ZmApp.initialize();
 
 	// determine default starting app
 	for (var app in ZmApp.DEFAULT_SORT) {
@@ -496,7 +496,7 @@ function(params) {
 	}
 
 	// run any app-requested startup routines
-	this.runAppFunction("startup", params.result);
+	this.runAppFunction("startup", false, params.result);
 
 	AjxDispatcher.enableLoadFunctions(true);
 	appCtxt.inStartup = false;
@@ -551,11 +551,12 @@ function(params) {
  * Runs the given function for all enabled apps, passing args.
  * 
  * @param funcName		[string]	function name
+ * @param force			[boolean]*	if true, run func for disabled apps as well
  */
 ZmZimbraMail.prototype.runAppFunction =
 function(funcName, force) {
 	var args = [];
-	for (var i = 1; i < arguments.length; i++) {
+	for (var i = 2; i < arguments.length; i++) {
 		args.push(arguments[i]);
 	}
 	for (var i = 0; i < ZmApp.APPS.length; i++) {

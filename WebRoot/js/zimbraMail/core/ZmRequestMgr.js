@@ -321,7 +321,7 @@ function(refresh) {
 ZmRequestMgr.prototype._handleResponseRefreshHandler =
 function(refresh) {
 	// Run any app-requested refresh routines
-	this._controller.runAppFunction("refresh", refresh);
+	this._controller.runAppFunction("refresh", false, refresh);
 };
 
 ZmRequestMgr.prototype._loadTree =
@@ -347,7 +347,7 @@ function(type, unread, obj, objType, account) {
 ZmRequestMgr.prototype._notifyHandler =
 function(notify) {
 	DBG.println(AjxDebug.DBG2, "Handling NOTIFY");
-	this._controller.runAppFunction("preNotify", notify);
+	this._controller.runAppFunction("preNotify", false, notify);
 	try {
 		if (notify.deleted && notify.deleted.id) {
 			this._handleDeletes(notify.deleted);
@@ -358,7 +358,7 @@ function(notify) {
 		if (notify.modified) {
 			this._handleModifies(notify.modified);
 		}
-		this._controller.runAppFunction("postNotify", notify);
+		this._controller.runAppFunction("postNotify", false, notify);
 	} catch (ex) {
 		this._controller._handleException(ex, this._notifyHandler, notify, false);
 	}
@@ -375,7 +375,7 @@ function(notify) {
 ZmRequestMgr.prototype._handleDeletes =
 function(deletes) {
 	var ids = deletes.id.split(",");
-	this._controller.runAppFunction("deleteNotify", ids);
+	this._controller.runAppFunction("deleteNotify", false, ids);
 
 	for (var i = 0; i < ids.length; i++) {
 		var id = ids[i];
@@ -399,7 +399,7 @@ function(deletes) {
  */
 ZmRequestMgr.prototype._handleCreates =
 function(creates) {
-	this._controller.runAppFunction("createNotify", creates);
+	this._controller.runAppFunction("createNotify", false, creates);
 
 	for (var name in creates) {
 		var list = creates[name];
@@ -440,7 +440,7 @@ function(modifies) {
 	// clear it out before handling a set of notifications.
 	this._modifyHandled = {};
 	
-	this._controller.runAppFunction("modifyNotify", modifies);
+	this._controller.runAppFunction("modifyNotify", false, modifies);
 
 	for (var name in modifies) {
 		if (name == "mbx") {
