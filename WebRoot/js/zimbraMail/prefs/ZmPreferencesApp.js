@@ -121,7 +121,14 @@ function() {
 
 ZmPreferencesApp.prototype.getIdentityCollection =
 function() {
-	var appCtxt = window.parentAppCtxt || window.appCtxt;
+	// child window always gets its own identitiy collection
+	if (appCtxt.isChildWindow) {
+		if (!this._identityCollection) {
+			this._identityCollection = new ZmIdentityCollection();
+		}
+		return this._identityCollection;
+	}
+
 	var activeAcct = appCtxt.getActiveAccount().name;
 
 	if (!this._identityCollection[activeAcct]) {
