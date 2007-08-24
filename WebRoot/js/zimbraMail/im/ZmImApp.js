@@ -24,9 +24,9 @@
  */
 
 ZmImApp = function(container) {
-
+	
 	ZmApp.call(this, ZmApp.IM, container);
-
+	
 	// IM is enabled, so show Chats folder
 	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
@@ -91,6 +91,8 @@ function() {
 	ZmOperation.registerOp("IM_EDIT_CONTACT"       , { textKey: "editContact", image: "Edit" });
 	ZmOperation.registerOp("IM_GATEWAY_LOGIN"      , { textKey: "imGatewayLogin" });
 	ZmOperation.registerOp("IM_TOGGLE_OFFLINE"     , { textKey: "imToggleOffline" });
+	
+	ZmOperation.registerOp("IM_PRESENCE_CUSTOM_MSG"		, { textKey: "imCustomStatusMsg", image: "ImFree2Chat"});
 };
 
 ZmImApp.prototype._registerItems =
@@ -328,16 +330,26 @@ ZmImApp.prototype.stopFlashingIcon = function() {
 	}
 };
 
-ZmImApp.addImPresenceMenu =
-function(parent) {
+ZmImApp.getImPresenceMenuOps = function(){
+	
 	var list = [ ZmOperation.IM_PRESENCE_OFFLINE,
 		     ZmOperation.IM_PRESENCE_ONLINE,
 		     ZmOperation.IM_PRESENCE_CHAT,
-                     ZmOperation.IM_PRESENCE_DND,
+             ZmOperation.IM_PRESENCE_DND,
 		     ZmOperation.IM_PRESENCE_AWAY,
 		     ZmOperation.IM_PRESENCE_XA,
-                     ZmOperation.IM_PRESENCE_INVISIBLE
-		   ];
+             ZmOperation.IM_PRESENCE_INVISIBLE,
+             ZmOperation.SEP,
+             ZmOperation.IM_PRESENCE_CUSTOM_MSG
+		];
+	
+	return list;
+};
+
+ZmImApp.addImPresenceMenu =
+function(parent) {
+	
+	var list = ZmImApp.getImPresenceMenuOps();
 
 	var menu = new ZmPopupMenu(parent);
 

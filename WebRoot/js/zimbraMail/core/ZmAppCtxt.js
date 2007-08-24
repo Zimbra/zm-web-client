@@ -313,6 +313,14 @@ function() {
 	return this._newRosterItemDialog;
 };
 
+ZmAppCtxt.prototype.getDialog =
+function(){
+	if(!this._dialog){
+		this._dialog = new DwtDialog(this._shell);
+	}
+	return this._dialog;
+};
+
 ZmAppCtxt.prototype.getIMGatewayLoginDialog =
 function() {
 	if (!this._imGatewayLoginDialog) {

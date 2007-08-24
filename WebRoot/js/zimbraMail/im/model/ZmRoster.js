@@ -143,12 +143,12 @@ function(addr, name, groups) {
  * set presence on the server
  */
 ZmRoster.prototype.setPresence =
-function(show, priority, showStatus) {
+function(show, priority, customStatusMsg) {
 	var soapDoc = AjxSoapDoc.create("IMSetPresenceRequest", "urn:zimbraIM");
 	var presence = soapDoc.set("presence");
-	presence.setAttribute("show", show);
+	if(show) presence.setAttribute("show", show);
 	if (priority) presence.setAttribute("priority", priority);
-	if (showStatus) soapDoc.set("status", showStatus, presence);
+	if (customStatusMsg) presence.setAttribute("status",customStatusMsg); //soapDoc.set("status", customStatus, presence);
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 	this.__avoidNotifyTimeout = new Date().getTime();
 };

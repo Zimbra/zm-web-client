@@ -200,20 +200,14 @@ ZmChatListController.prototype.updatePresenceMenu = function(addListeners) {
 	var presenceButton = toolbar.getButton(ZmOperation.IM_PRESENCE_MENU);
 	var presenceMenu = presenceButton.getMenu();
 
-   	var list = [ ZmOperation.IM_PRESENCE_OFFLINE,
-		     ZmOperation.IM_PRESENCE_ONLINE,
-		     ZmOperation.IM_PRESENCE_CHAT,
-                     ZmOperation.IM_PRESENCE_DND,
-		     ZmOperation.IM_PRESENCE_AWAY,
-		     ZmOperation.IM_PRESENCE_XA,
-                     ZmOperation.IM_PRESENCE_INVISIBLE
-		   ];
+   	var list = ZmImApp.getImPresenceMenuOps();
 	var presence = this._imApp.getRoster().getPresence();
 	var currentShowOp = presence.getShowOperation();
 	for (var i=0; i < list.length; i++) {
 		var mi = presenceMenu.getItemById(ZmOperation.MENUITEM_ID, list[i]);
-		if (addListeners)
+		if (addListeners){
 			mi.addSelectionListener(new AjxListener(this, this._presenceItemListener));
+		}
 		if (list[i] == currentShowOp) {
 			mi.setChecked(true, true);
 			// mi.parent.parent.setText(mi.getText());
@@ -324,10 +318,33 @@ ZmChatListController.prototype._newListener = function(ev) {
 ZmChatListController.prototype._presenceItemListener = function(ev) {
 	if (ev.detail != DwtMenuItem.CHECKED) return;
 	var id = ev.item.getData(ZmOperation.KEY_ID);
-	ev.item.parent.parent.setText(ev.item.getText());
+	if( id == ZmOperation.IM_PRESENCE_CUSTOM_MSG){
+		this._presenceCustomItemListener(ev);
+		return;
+	}
+	ev.itemparent.parent.setText(ev.item.getText());
 	ev.item.parent.parent.setImage(ev.item.getImage());
 	var show = ZmRosterPresence.operationToShow(id);
 	this._imApp.getRoster().setPresence(show, 0, null);
+};
+
+ZmChatListController.prototype._presenceCustomItemListener = function(ev) {
+	var dlg = appCtxt.getDialog();
+	dlg.setTitle("New Status Message");
+	var id = Dwt.getNextId();
+	var html = [ "<div width='320px'>",
+		"<textarea type='text' id='",id,"' rows='3' cols='30'></textarea>",
+		"</div>"
+	].join("");
+	dlg.setContent(html);
+	dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function(){
+		var statusMsg = document.getElementById(id).value;
+		if(statusMsg != "") {
+			this._imApp.getRoster().setPresence(null, 0, statusMsg);
+		}
+		dlg.popdown();
+	}));
+	dlg.popup();
 };
 
 // Adds the same listener to all of a menu's items
