@@ -13,7 +13,7 @@
         <table cellpadding=2 cellspacing=0 width=100%>
             <tr>
                 <td align=center>
-                    <b>${fn:escapeXml(mailbox.name)}</b>
+                    <b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>
                 </td>
             </tr>
             <tr>
