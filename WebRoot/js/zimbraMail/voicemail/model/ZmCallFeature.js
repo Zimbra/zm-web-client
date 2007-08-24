@@ -35,7 +35,7 @@
 ZmCallFeature = function(name, isVoicemailPref) {
 	
 	this.name = name;
-	this.isSubscribed = false;
+	this.isSubscribed = isVoicemailPref;
 	this.isActive = false;
 	this.data = {};
 	this.isVoicemailPref = isVoicemailPref;

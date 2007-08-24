@@ -125,7 +125,7 @@ function(callback, errorCallback) {
 	    node.setAttribute("name", this.name);
 	    for (var i in this._features) {
 	    	var feature = this._features[i];
-	    	if (feature.isSubscribed) {
+	    	if (feature.isSubscribed && !feature.isVoicemailPref) {
 		    	soapDoc.set(feature.name, null, node);
 	    	}
 	    }
