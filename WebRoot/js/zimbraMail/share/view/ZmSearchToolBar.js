@@ -68,10 +68,12 @@ function() {
 	return "ZmSearchToolBar";
 };
 
-ZmSearchToolBar.removeMenuItem =
+ZmSearchToolBar.prototype.removeMenuItem =
 function(id) {
 	var idx = ZmSearchToolBar.MENU_ITEMS.indexOf(id);
 	if (idx != -1) {
+		var menu = this._searchMenuButton.getMenu();
+		menu.removeChild(menu.getItemById("_menuItemId",id));
 		ZmSearchToolBar.MENU_ITEMS.splice(idx,1);
 		ZmSearchToolBar.MSG_KEY[id]		= "";
 		ZmSearchToolBar.TT_MSG_KEY[id]	= "";
