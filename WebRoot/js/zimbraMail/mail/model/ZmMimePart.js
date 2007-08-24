@@ -116,6 +116,9 @@ function(partNode, attachments, bodyParts) {
 		if (this.node.body &&
 			(this.node.ct == ZmMimeTable.TEXT_HTML || this.node.ct == ZmMimeTable.TEXT_PLAIN))
 		{
+			// add subsequent body parts as attachments if already found
+			if (ZmMimePart._contentTypeFound(bodyParts, this.node))
+				attachments.push(this.node);
 			bodyParts.push(this.node);
 		}
 
@@ -125,4 +128,13 @@ function(partNode, attachments, bodyParts) {
 			this.children.add(ZmMimePart.createFromDom(this.node.mp, params));
 		}
 	}
+};
+
+ZmMimePart._contentTypeFound =
+function(bodyParts, node) {
+	for (var i = 0; i < bodyParts.length; i++) {
+		if (bodyParts[i].ct == node.ct)
+			return true;
+	}
+	return false;
 };
