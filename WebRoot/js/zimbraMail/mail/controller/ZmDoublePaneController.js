@@ -230,15 +230,12 @@ function(view) {
 
 ZmDoublePaneController.prototype._displayMsg =
 function(msg) {
-	if (!msg._loaded) {
-		appCtxt.getSearchController().setEnabled(false);
-		this._doGetMsg(msg);
-	} else {
-		this._doublePaneView.setMsg(msg);
-		if (msg.isUnread) {
-			// msg was cached, then marked unread
-			this._doMarkRead([msg], true);
-		}
+	if (!msg._loaded) { return; }
+
+	this._doublePaneView.setMsg(msg);
+	if (msg.isUnread) {
+		// msg was cached, then marked unread
+		this._doMarkRead([msg], true);
 	}
 };
 
@@ -271,7 +268,8 @@ function(view, menu, checked, itemId) {
 ZmDoublePaneController.prototype._doAction =
 function(params) {
 	// first find out if the current message is in HTML
-	var msg = params.msg = this._getMsg();
+	var msg = params.msg = this._getMsg(params);
+	if (!msg) { return; }
 	var msgView = this._doublePaneView.getMsgView();
 	var msgViewMsg = msgView.getMsg();
 	var format = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
@@ -280,7 +278,7 @@ function(params) {
 	// we're not processing a draft msg and
 	// msgview has rendered an html msg and
 	// the user's compose pref is in text/plain
-	if (msg && msgViewMsg && msgViewMsg.id == msg.id &&
+	if (msgViewMsg && msgViewMsg.id == msg.id &&
 		params.action != ZmOperation.DRAFT &&
 		msgView.hasHtmlBody() &&
 		format == ZmSetting.COMPOSE_TEXT)
@@ -492,10 +490,14 @@ ZmDoublePaneController.prototype._setSelectedItem =
 function() {
 	var selCnt = this._listView[this._currentView].getSelectionCount();
 	if (selCnt == 1) {
-		var msg = this._getSelectedMsg();
-		if (!msg) { return; }
-		this._displayMsg(msg);
+		var respCallback = new AjxCallback(this, this._handleResponseSetSelectedItem);
+		this._getLoadedMsg(null, respCallback);
 	}
+};
+
+ZmDoublePaneController.prototype._handleResponseSetSelectedItem =
+function(msg) {
+	this._displayMsg(msg);
 };
 
 ZmDoublePaneController.prototype._listActionListener =
@@ -513,7 +515,7 @@ function(ev) {
 
 ZmDoublePaneController.prototype._showOrigListener = 
 function(ev) {
-	var msg = this._getSelectedMsg();
+	var msg = this._getMsg();
 	if (!msg) { return; }
 
 	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id;
@@ -524,11 +526,10 @@ function(ev) {
 ZmDoublePaneController.prototype._filterListener = 
 function(ev) {
 	var respCallback = new AjxCallback(this, this._handleResponseFilterListener);
-	var msg = this._getSelectedMsg(respCallback);
-
+	var msg = this._getLoadedMsg(null, respCallback);
 };
 
-ZmDoublePaneController.prototype._showFilterDialog = 
+ZmDoublePaneController.prototype._handleResponseFilterListener = 
 function(msg) {
 	if (!msg) { return; }
 	

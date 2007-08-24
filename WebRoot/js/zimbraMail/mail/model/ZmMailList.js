@@ -387,7 +387,9 @@ function(offset, limit) {
 				break;
 			}
 		}
-		msg = list[0];	// no hot messages, use first msg
+		if (!msg) {
+			msg = list[0];	// no hot messages, use first msg
+		}
 	}
 	
 	return msg;

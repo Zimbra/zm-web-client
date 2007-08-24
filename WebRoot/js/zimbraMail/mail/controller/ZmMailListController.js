@@ -60,13 +60,15 @@ ZmMailListController = function(container, mailApp) {
 		this._listeners[ZmOperation.REPLY_ALL] = new AjxListener(this, this._replyListener);
 	}
 
-	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED))
+	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 		this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
+	}
     this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._checkMailListener);
 
-	if (appCtxt.get(ZmSetting.SPAM_ENABLED))
+	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		this._listeners[ZmOperation.SPAM] = new AjxListener(this, this._spamListener);
+	}
 
 	this._listeners[ZmOperation.DETACH] = new AjxListener(this, this._detachListener);
 	this._inviteReplyListener = new AjxListener(this, this._inviteReplyHandler);
@@ -459,14 +461,10 @@ function(ev) {
 	}
 
 	// bug fix #3602
-	var address = (ev.field == ZmItem.F_PARTICIPANT)
-		? ev.detail
-		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null); // yuck
+	var address = (ev.field == ZmItem.F_PARTICIPANT) ? ev.detail :
+		((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null);
 
-	if (address &&
-		items.length == 1 &&
-		(ev.field == ZmItem.F_PARTICIPANT || ev.field == ZmItem.F_FROM))
-	{
+	if (address && items.length == 1 &&	(ev.field == ZmItem.F_PARTICIPANT || ev.field == ZmItem.F_FROM)) {
 		// show participant menu
 		this._setTagMenu(this._participantActionMenu);
 		this._actionEv.address = address;
@@ -529,10 +527,10 @@ function(ev) {
 ZmMailListController.prototype._doAction =
 function(params) {
 
-	var item = (params && params.ev) ? params.ev.item : null;
-
 	// get msg w/ addrs to select identity from - don't load it yet (no callback)
-	var msg = params.msg || this._getMsg(item, params);
+	var msg = this._getMsg(params);
+	if (!msg) { return; }
+	
 	// use resolved msg to figure out identity/persona to use for compose
 	var collection = appCtxt.getIdentityCollection();
 	var identity = collection.selectIdentity(msg);
@@ -552,7 +550,7 @@ function(params) {
 	params.getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (prefersHtml || (!msg._loaded && sameFormat))));
 
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, params);
-	this._getMsg(item, params, respCallback);
+	this._getLoadedMsg(params, respCallback);
 };
 	
 ZmMailListController.prototype._handleResponseDoAction =
@@ -812,30 +810,44 @@ function(parent) {
 	}
 };
 
+/**
+ * Returns the selected msg.
+ */
 ZmMailListController.prototype._getMsg =
-function(item, params, callback) {
+function(params) {
+	var sel = this._listView[this._currentView].getSelection();
+	return (sel && sel.length == 1) ? sel[0] : null;
+};
 
-	item = (item && (item instanceof ZmMailItem)) ? item : this._listView[this._currentView].getSelection()[0];
-		
-	if (item && (item.type == ZmItem.CONV)) {
-		params = params || {};
-		params.query = this.getSearchString();
-		var respCallback = callback ? new AjxCallback(this, this._handleResponseGetMsg, callback) : null;
-		return item.getFirstHotMsg(params, respCallback);
+/**
+ * Returns the selected msg, ensuring that it's loaded.
+ */
+ZmMailListController.prototype._getLoadedMsg =
+function(params, callback) {
+	params = params || {};
+	var msg = this._getMsg(params);
+	if (!msg) {
+		callback.run();
+	}
+	if (msg._loaded) {
+		callback.run(msg);
 	} else {
-		if (callback) {
-			callback.run(item);
-		} else {
-			return item;
-		}
+		if (msg.id == this._pendingMsg) { return; }
+		appCtxt.getSearchController().setEnabled(false);
+		msg._loadPending = true;
+		this._pendingMsg = msg.id;
+		var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, [msg, callback]);
+		msg.load(appCtxt.get(params.getHtml || ZmSetting.VIEW_AS_HTML), false, respCallback, null, true);
 	}
 };
 
-ZmMailListController.prototype._handleResponseGetMsg =
-function(callback, msg) {
-	if (callback) {
-		callback.run(msg);
-	}
+ZmMailListController.prototype._handleResponseGetLoadedMsg =
+function(msg, callback) {
+	if (this._pendingMsg && (msg.id != this._pendingMsg)) { return; }
+	msg._loadPending = false;
+	this._pendingMsg = null;
+	appCtxt.getSearchController().setEnabled(true);
+	callback.run(msg);
 };
 
 ZmMailListController.prototype._getInviteReplyBody =
@@ -921,6 +933,7 @@ function(type, componentId, instanceDate, accountName) {
     var errorCallback = new AjxCallback(this, this._handleErrorInviteReply);
     msg.sendInviteReply(contactList, true, componentId, null, errorCallback, instanceDate, accountName);
 };
+
 ZmMailListController.prototype._handleErrorInviteReply =
 function(result) {
     if (result.code == ZmCsfeException.MAIL_NO_SUCH_ITEM) {
@@ -941,8 +954,7 @@ function(ev) {
 
 ZmMailListController.prototype._detachListener =
 function(ev, callback) {
-	var msg = this._getSelectedMsg();
-
+	var msg = this._getMsg();
 	if (msg) {
 		if (msg._loaded) {
 			ZmMailMsgView.detachMsgInNewWindow(msg);
@@ -1156,12 +1168,4 @@ ZmMailListController.prototype._handleEmptyList =
 function(listView) {
 	listView.removeAll(true);
 	listView._setNoResultsHtml();
-};
-
-/**
- * Returns the first selected msg.
- */
-ZmMailListController.prototype._getSelectedMsg =
-function() {
-	return this._listView[this._currentView].getSelection()[0];
 };

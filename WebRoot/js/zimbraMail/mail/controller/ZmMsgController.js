@@ -284,10 +284,14 @@ function(items, markAsSpam, folder) {
 
 // Miscellaneous
 
-// Returns the message currently being displayed.
 ZmMsgController.prototype._getMsg =
-function() {
+function(params) {
 	return this._msg;
+};
+
+ZmMsgController.prototype._getLoadedMsg =
+function(params, callback) {
+	callback.run(this._msg);
 };
 
 ZmMsgController.prototype._getSelectedMsg =

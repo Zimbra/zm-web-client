@@ -51,7 +51,7 @@ ZmZimbraMail = function(params) {
 	// settings structure and defaults
 	this._settings = appCtxt.getSettings();
 	var branch = appCtxt.get(ZmSetting.BRANCH);
-    if (!DBG.isDisabled()) {
+    if (window.DBG && !DBG.isDisabled()) {
 		DBG.setTitle("Debug (" + branch + ")");
     }
     var listener = new AjxListener(this, this._settingsChangeListener);

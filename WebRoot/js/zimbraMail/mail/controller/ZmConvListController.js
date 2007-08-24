@@ -208,30 +208,37 @@ function(item) {
 };
 
 /**
- * Checks to see if exactly one item (conv or msg) is selected, and if so,
- * that the appropriate msg is displayed in the reading pane. For a conv, that's
- * the first matching msg in the conv.
+ * Returns the first matching msg in the conv, if available. No request will
+ * be made to the server if the conv has not been loaded.
  */
-ZmConvListController.prototype._setSelectedItem =
-function() {
-	var selCnt = this._listView[this._currentView].getSelectionCount();
-	if (selCnt == 1) {
-		var item = this._listView[this._currentView].getSelection()[0];
-		if (item.type == ZmItem.CONV && !item._loaded) {
-			// load conv (SearchConvRequest), which will also give us hit info
-			var respCallback = new AjxCallback(this, this._handleResponseSetSelectedItem);
-			item.load({getFirstMsg:this._readingPaneOn}, respCallback);
-		} else {
-			this._handleResponseSetSelectedItem();
-		}
+ZmConvListController.prototype._getMsg =
+function(params) {
+	var sel = this._listView[this._currentView].getSelection();
+	var conv = (sel && sel.length == 1) ? sel[0] : null;
+	return conv ? conv.getFirstHotMsg(params) : null;
+};
+
+/**
+ * Returns the first matching msg in the conv. The conv will be loaded if
+ * necessary.
+ */
+ZmConvListController.prototype._getLoadedMsg =
+function(params, callback) {
+	var sel = this._listView[this._currentView].getSelection();
+	var conv = (sel && sel.length == 1) ? sel[0] : null;
+	if (conv) {
+		appCtxt.getSearchController().setEnabled(false);
+		var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, callback);
+		conv.getFirstHotMsg(params, respCallback);
+	} else {
+		callback.run();
 	}
 };
 
-ZmConvListController.prototype._handleResponseSetSelectedItem =
-function() {
-	var msg = this._getSelectedMsg();
-	if (!msg) { return; }
-	this._displayMsg(msg);
+ZmConvListController.prototype._handleResponseGetLoadedMsg =
+function(callback, msg) {
+	appCtxt.getSearchController().setEnabled(true);
+	callback.run(msg);
 };
 
 ZmConvListController.prototype._getSelectedMsg =

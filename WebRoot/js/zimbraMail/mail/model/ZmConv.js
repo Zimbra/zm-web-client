@@ -412,20 +412,22 @@ function(params, callback) {
 	
 	var msg;
 	params = params || {};
+
 	if (this.msgs && this.msgs.size()) {
 		msg = this.msgs.getFirstHit(params.offset, params.limit);
-	} else if (!callback) {
-		msg = new ZmMailMsg(this.msgIds[0]);
 	}
-	if (!callback) {
-		return msg;
-	} else if (msg && msg._loaded) {
-		callback.run(msg);
+
+	if (callback) {
+		if (msg && msg._loaded) {
+			callback.run(msg);
+		} else {
+			var respCallback = new AjxCallback(this, this._handleResponseGetFirstHotMsg, [params, callback]);
+			params.getFirstMsg = true;
+			this.load(params, respCallback);
+		}
 	} else {
-		var respCallback = new AjxCallback(this, this._handleResponseGetFirstHotMsg, [params, callback]);
-		params.getFirstMsg = true;
-		this.load(params, respCallback);
-	}
+		return msg ? msg : new ZmMailMsg(this.msgIds[0]);
+	}		
 };
 
 ZmConv.prototype._handleResponseGetFirstHotMsg =
