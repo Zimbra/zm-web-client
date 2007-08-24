@@ -81,6 +81,36 @@ function(id) {
 		ZmSearchToolBar.SHARE_ICON[id]	= "";
 		ZmSearchToolBar.SETTING[id]		= "";
 	}
+	this.dedupSeparators(menu);
+}
+
+// Attempt to dedup separators, and remove any that start or end the menu
+ZmSearchToolBar.prototype.dedupSeparators =
+function(menu) {
+	if (menu == null) {
+		menu = this._searchMenuButton.getMenu();
+	}
+
+	var children = menu.getItems();
+	var wasSep = null;
+	var toRemove = [];
+	for ( mi in children ) {
+		if (mi.style == DwtMenuItem.SEPARATOR_STYLE) {
+			if (wasSep == true || wasSep == null) {
+				toRemove.push(mi);
+			} else {
+				wasSep = true;
+			}
+		} else {
+			wasSep = false;
+		}
+	}
+	if (children[children.size()].style == DwtMenuItem.SEPARATOR_STYLE) {
+		toRemove.push(children[children.size()]);
+	}
+	for ( mi in toRemove ) {
+		menu.removeChild(mi);
+	}
 }
 
 ZmSearchToolBar.addMenuItem =
