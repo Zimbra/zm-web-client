@@ -836,13 +836,14 @@ function(params, callback) {
 		appCtxt.getSearchController().setEnabled(false);
 		msg._loadPending = true;
 		this._pendingMsg = msg.id;
-		var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, [msg, callback]);
+		// use prototype in callback because these functions are overridden by ZmConvListController
+		var respCallback = new AjxCallback(this, ZmMailListController.prototype._handleResponseGetLoadedMsg, [callback, msg]);
 		msg.load(appCtxt.get(params.getHtml || ZmSetting.VIEW_AS_HTML), false, respCallback, null, true);
 	}
 };
 
 ZmMailListController.prototype._handleResponseGetLoadedMsg =
-function(msg, callback) {
+function(callback, msg) {
 	if (this._pendingMsg && (msg.id != this._pendingMsg)) { return; }
 	msg._loadPending = false;
 	this._pendingMsg = null;

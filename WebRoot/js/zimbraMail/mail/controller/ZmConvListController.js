@@ -214,8 +214,15 @@ function(item) {
 ZmConvListController.prototype._getMsg =
 function(params) {
 	var sel = this._listView[this._currentView].getSelection();
-	var conv = (sel && sel.length == 1) ? sel[0] : null;
-	return conv ? conv.getFirstHotMsg(params) : null;
+	var item = (sel && sel.length == 1) ? sel[0] : null;
+	if (item) {
+		if (item.type == ZmItem.CONV) {
+			return item.getFirstHotMsg(params);
+		} else if (item.type == ZmItem.MSG) {
+			return ZmDoublePaneController.prototype._getMsg.apply(this, arguments);
+		}
+	}
+	return null;
 };
 
 /**
@@ -225,11 +232,15 @@ function(params) {
 ZmConvListController.prototype._getLoadedMsg =
 function(params, callback) {
 	var sel = this._listView[this._currentView].getSelection();
-	var conv = (sel && sel.length == 1) ? sel[0] : null;
-	if (conv) {
-		appCtxt.getSearchController().setEnabled(false);
-		var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, callback);
-		conv.getFirstHotMsg(params, respCallback);
+	var item = (sel && sel.length == 1) ? sel[0] : null;
+	if (item) {
+		if (item.type == ZmItem.CONV) {
+			appCtxt.getSearchController().setEnabled(false);
+			var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, callback);
+			item.getFirstHotMsg(params, respCallback);
+		} else if (item.type == ZmItem.MSG) {
+			ZmDoublePaneController.prototype._getLoadedMsg.apply(this, arguments);
+		}
 	} else {
 		callback.run();
 	}
