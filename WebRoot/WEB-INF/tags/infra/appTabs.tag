@@ -11,6 +11,16 @@
 
 <table cellpadding=0 border=0 cellspacing=0>
     <tr class='Tabs'>
+        <td class='TabSpacer'/>
+        <c:if test="${mailbox.features.portalEnabled}">
+            <td class='Tab ${selected=='home' ? 'TabSelected' :'TabNormal'}'>
+                <a id='TAB_HOME' href="<c:url value="/h/home"/>" <c:if test="${keys}">accesskey="v"</c:if>>
+                    <span id='tab_ikon_home'><app:img src="common/Zimlet.gif" altkey='ALT_APP_HOME'/></span>
+                    <span><fmt:message key="home"/></span>
+                </a>
+            </td>
+            <td class='TabSpacerR'/>
+        </c:if>
         <td class='TabSpacer'/>        
         <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
             <a id='TAB_MAIL' href="<c:url value="/h/search"/>">

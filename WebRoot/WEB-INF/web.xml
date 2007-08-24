@@ -284,6 +284,7 @@
           <url-pattern>/m/moaddrbooks</url-pattern>
           <url-pattern>/m/moquery</url-pattern>
           <url-pattern>/m/mocompose</url-pattern>
+          <url-pattern>/h/home</url-pattern>
       </jsp-property-group>
     </jsp-config>
 
