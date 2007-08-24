@@ -322,7 +322,7 @@ ZmChatListController.prototype._presenceItemListener = function(ev) {
 		this._presenceCustomItemListener(ev);
 		return;
 	}
-	ev.itemparent.parent.setText(ev.item.getText());
+	ev.item.parent.parent.setText(ev.item.getText());
 	ev.item.parent.parent.setImage(ev.item.getImage());
 	var show = ZmRosterPresence.operationToShow(id);
 	this._imApp.getRoster().setPresence(show, 0, null);
