@@ -98,7 +98,7 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 	this._shellSz = this._shell.getSize();
 	this._controlListener = new AjxListener(this, this._shellControlListener);
 	this._shell.addControlListener(this._controlListener);
-	this._sashSupported = (document.getElementById("skin_table_tree") != null);
+	this._sashSupported = (document.getElementById("skin_td_outer_tree") != null);
 
 	this._historyMgr = appCtxt.getHistoryMgr();
 	this._historyMgr.addListener(new AjxListener(this, this._historyChangeListener));
@@ -398,11 +398,6 @@ function(viewId, force) {
 		return false;
 	}
 	
-	var sashX = null;
-	if (this._components[ZmAppViewMgr.C_SASH]){
-		sashX = this._components[ZmAppViewMgr.C_SASH].getBounds().x;
-	}
-	
 	var viewController = null;
 	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
 		viewId = this._pendingView;
@@ -421,7 +416,6 @@ function(viewId, force) {
 		if (viewController) {
 			viewController._restoreFocus();
 		}
-		this.fixSash(sashX);		
 		return true;
 	}
 
@@ -435,7 +429,6 @@ function(viewId, force) {
 	if (!this._hideView(this._currentView, force)) {
 		this._pendingAction = this._pushCallback;
 		this._pendingView = viewId;
-		this.fixSash(sashX);		
 	 	return false;
 	}
 	this.addComponents(this._views[viewId]);
@@ -454,7 +447,6 @@ function(viewId, force) {
 		this._lastView = temp;
 		this._pendingAction = this._pushCallback;
 		this._pendingView = viewId;
-		this.fixSash(sashX);		
 		return false;
 	}
 	DBG.println(AjxDebug.DBG2, "hidden (after): " + this._hidden);
@@ -490,7 +482,6 @@ function(viewId, force) {
 		this._toRemove = [];
 	}
 	
-	this.fixSash(sashX);
 	return true;
 };
 
@@ -900,16 +891,8 @@ function(view) {
 ZmAppViewMgr.prototype._shellControlListener =
 function(ev) {
 	
-	var sashX = null;
-	if (this._components[ZmAppViewMgr.C_SASH]){	
-		sashX = this._components[ZmAppViewMgr.C_SASH].getBounds().x;
-	}	
-	
 	if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
 		
-		if (this._sashSupported && this._containers[ZmAppViewMgr.C_APP_CONTENT]){
-			this.fixMainApp(ev.newWidth);
-		}		
 		this._shellSz.x = ev.newWidth;
 		this._shellSz.y = ev.newHeight;
 		var deltaWidth = ev.newWidth - ev.oldWidth;
@@ -944,7 +927,6 @@ function(ev) {
 			}
 		}
 	}
-	this.fixSash(sashX);	
 };
 
 ZmAppViewMgr.prototype._debugShowMetrics =
@@ -1002,100 +984,51 @@ function(delta) {
 	DBG.println(AjxDebug.DBG3, "************ sash callback **************");
 	DBG.println(AjxDebug.DBG3, "delta = " + delta);
 
-	var skinBdrTree = document.getElementById("skin_container_tree");
-	var skinBdr = document.getElementById("skin_container_app_main");
-	var skinTree = document.getElementById("skin_td_tree");
-
-	var appSashBdr = document.getElementById("skin_container_tree_app_sash");
-	var sash_el = document.getElementById("skin_container_tree_app_sash");
-	var sashSize = sash_el.offsetWidth;
-	
-	if (skinBdrTree) {
-		if (!skinBdrTree.initSize){
-			skinBdrTree.initSize = skinTree.offsetWidth+sash_el.offsetWidth; //fine tune
-		}
-	}
-	
 	DBG.println(AjxDebug.DBG3,"shell width = " + this._shellSz.x);
 
-	// TODO: check overview min width
-	var w = this._components[ZmAppViewMgr.C_APP_CONTENT].getSize().x;
-	DBG.println(AjxDebug.DBG3,"main app width = " + w);
-
-
-	var table = document.getElementById("skin_table_tree");
-	var sknTreeFtr = document.getElementById("skin_container_tree_footer");
-	var sknBdrSts =	document.getElementById("skin_container_status");
-	var tableSz = table ? Dwt.getSize(table) : null;
-	if (!tableSz) { return 0; }
+	var treeTD = document.getElementById("skin_td_outer_tree");
+	
+	var treeSz = treeTD ? Dwt.getSize(treeTD) : null;	
+	if(!treeSz) return 0;
+	
 
 	if (!this.initTreeSize){
-		this.initTreeSize = tableSz.x;
-		this.treeSashLimit = tableSz.x + 200;
+		this.initTreeSize = treeSz.x;
+		this.treeSashLimit = treeSz.x + 200;
 	}
-	DBG.println(AjxDebug.DBG3, "left table width = " + tableSz.x);
-	if (this.treeSashLimit && (delta > 0) && this.treeSashLimit < (tableSz.x + delta)){
+	DBG.println(AjxDebug.DBG3, "left table width = " + treeSz.x);
+	if (this.treeSashLimit && (delta > 0) && this.treeSashLimit < (treeSz.x + delta)){
 		return 0;
 	}
 	
-	if (this.initTreeSize && (delta < 0) && this.initTreeSize > (tableSz.x + delta)){
+	if (this.initTreeSize && (delta < 0) && this.initTreeSize > (treeSz.x + delta)){
 		return 0;
 	}
-
-	var newSize = tableSz.x + delta;
-	var newSize1 = tableSz.x + delta - sashSize;
 	
-	Dwt.setSize(table, newSize , Dwt.DEFAULT);
-	if (sknBdrSts) {
-		Dwt.setSize(sknBdrSts,newSize1 , Dwt.DEFAULT);
-	}
-			
-	var list = [ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_STATUS,
-				ZmAppViewMgr.C_APP_CONTENT_FULL];
+	var newTreeWidth = treeSz.x + delta;	
+	Dwt.setSize(treeTD, newTreeWidth , Dwt.DEFAULT);
+	
+	var skinTreeCol = document.getElementById("skin_col_tree_inner");
+	Dwt.setSize(skinTreeCol,newTreeWidth,Dwt.DEFAULT);
+	Dwt.setSize(treeTD,newTreeWidth,Dwt.DEFAULT);
+	var list = [ZmAppViewMgr.C_APP_CONTENT_FULL,ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_STATUS,];
 	this._fitToContainer(list);
 
 	list = [ZmAppViewMgr.C_APP_CONTENT];
-
-	for (var i = 0; i < list.length; i++) {
-		var cid = list[i];
-		var newX = this._contBounds[cid].x + delta;
-		this._contBounds[cid].x = newX;
-		var newWidth = this._contBounds[cid].width - delta;
-		this._contBounds[cid].width = newWidth;
-		this._components[cid].setBounds(newX, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT);
+	var cid = ZmAppViewMgr.C_APP_CONTENT;
+	var newX = this._contBounds[cid].x + delta;
+	this._contBounds[cid].x = newX;
+	var newWidth = this._contBounds[cid].width - delta;
+	this._contBounds[cid].width = newWidth;
+	this._components[cid].setBounds(newX, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT);
 		
-		if (cid == ZmAppViewMgr.C_APP_CONTENT){			
-			var sz = this._components[ZmAppViewMgr.C_SASH].getSize().x + this._components[ZmAppViewMgr.C_SASH].getX() + delta;
-			if (skinBdr) {
-				skinBdr.style.left = (sz - skinBdrTree.initSize) + "px";
-			}
-			this.fixMainApp(this._shellSz.x);
-			this._fitToContainer([cid,ZmAppViewMgr.C_STATUS]);
-		}
-	}
+    this._fitToContainer([cid,ZmAppViewMgr.C_STATUS]);
+
+	var list = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
+							ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
+							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL, 
+                            ZmAppViewMgr.C_TOOLBAR_BOTTOM];
+	this._fitToContainer(list);	
 
 	return delta;
-};
-
-ZmAppViewMgr.prototype.fixMainApp = 
-function(shellWidth) {
-	var skinBdr = document.getElementById("skin_container_app_main");
-//	var skinTBar = document.getElementById("skin_container_app_top_toolbar");
-	
-	if (skinBdr) {
-		var appCBnds = Dwt.getBounds(skinBdr);
-		var diffWidth = shellWidth - appCBnds.x - 4; //fine tune
-		Dwt.setSize(skinBdr, diffWidth, Dwt.DEFAULT);
-	}
-};	
-
-ZmAppViewMgr.prototype.fixSash = 
-function(sashX) {
-
-	if (!sashX) { return; }
-	
-	if (this._sashSupported) {
-		// sash movement is retained
-		this._components[ZmAppViewMgr.C_SASH].setBounds(sashX, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT);
-	}
 };

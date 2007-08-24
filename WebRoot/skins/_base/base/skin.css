@@ -87,11 +87,25 @@ body	{	@ChromeBg@	}
 #skin_table_outer	{}
 
 /*	 all columns are sized with the following classes	*/
-#skin_col_tree			{	width:170px;	}
-#skin_col_tree_app_sash	{	width:8px;		}
-#skin_col_main			{	width:auto;		}
-#skin_col_quota			{	width:180px;	}
+#skin_col_tree, 
+#skin_col_tree_inner {	
+	width:170px;	
+}
 
+#skin_col_tree_app_sash,
+#skin_col_tree_app_sash_inner {	
+	width:8px;		
+}
+
+#skin_col_main,
+#skin_col_main_inner {	
+	width:auto;		
+}
+
+#skin_col_quota,
+#skin_col_quota_inner {	
+	width:180px;	
+}
 
 /* top row:  logo, search box, quota */
 #skin_tr_top	{}

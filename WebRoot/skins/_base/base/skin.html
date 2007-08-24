@@ -83,7 +83,19 @@
 
 <!-- app chooser, tree and mini-cal, main app wd -->
 		<tr id='skin_tr_main'>
-			<td height='100%'>
+			<td height='100%' colspan='4'>
+
+			<table border=0 id='skin_table_inner' class='skin_table' cellpadding=0 cellspacing=0>	
+			<colgroup>
+				<col id='skin_col_tree_inner'>
+				<col id='skin_col_tree_app_sash_inner'>
+				<col id='skin_col_main_inner'>
+				<col id='skin_col_quota_inner'>
+			</colgroup>
+					
+
+			<tr>
+			<td height='100%'  id='skin_td_outer_tree'>
 				<!-- NOTE: tree and mini-cal need to be their own table so the mini-cal can be hidden -->
 				<table id='skin_table_tree' class='skin_table' cellspacing=0 cellpadding=0>
 				<tr id='skin_tr_tree'>
@@ -112,8 +124,10 @@
 					<!-- main app area -->
 				</div>
 			</td>
+			</tr>
+			</table>
+			</td>
 		</tr>
-		
 
 
 <!-- "full screen" toolbar -->
