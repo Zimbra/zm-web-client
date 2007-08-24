@@ -66,7 +66,7 @@ function(node) {
 	ZmVoiceItem.prototype._loadFromDom.call(this, node);
 	if (node.f) {
 		this.isUnheard = node.f.indexOf("u") >= 0;
-		this.isHighPriority = node.f.indexOf("h") >= 0;
+		this.isHighPriority = node.f.indexOf("!") >= 0;
 		this.isPrivate = node.f.indexOf("p") >= 0;
 	}
 	if (node.content) this.soundUrl = node.content[0].url;
