@@ -24,7 +24,6 @@
  */
 
 ZmChatWidget = function(parent, posStyle) {
-
 	DwtComposite.call(this, parent, "ZmChatWidget", posStyle);
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
 	this._init();
@@ -49,6 +48,15 @@ ZmChatWidget.prototype._setChat = function(chat) {
 	}
 	var listItem = AjxDispatcher.run("GetRoster").getRosterItem(item.getAddress());
 	this._addToBuddyListBtn.setVisible(!listItem);
+        if (chat.isZimbraAssistant()) {
+                // disallow HTML mode for assistant chats.  FIXME:
+                // clean this up.  If we're chatting with Zimbra
+                // Assistant, we should never even create the HTML
+                // toolbar in the first place.  Add a parameter to
+                // ZmLiteHtmlEditor for this (but we should have
+                // this.chat before _init()).
+                this._changEditorModeBtn.setVisible(false);
+        }
 };
 
 ZmChatWidget.prototype.getIcon = function() {
@@ -305,7 +313,7 @@ ZmChatWidget.prototype._init = function() {
 	this._label.setText("Chat title here");
 
 	this._toolbar.addFiller();
-	
+
 	var btn = this._changEditorModeBtn = new DwtToolBarButton(this._toolbar,DwtButton.TOGGLE_STYLE);
 	btn.setImage("HtmlDoc");
 	btn.setToolTipContent("Change Editor Mode");
