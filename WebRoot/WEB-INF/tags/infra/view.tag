@@ -72,7 +72,16 @@
 				
 				<table width=100% cellspacing=0 cellpadding=0 border='0'>
 				<tr>
-					<td class='ImgSkin_Chrome_Logo' style='padding-left: 157px;'></td>
+                    <td style='padding-left: 15px;' align="left" >
+                        <c:choose>
+                            <c:when test="${mailbox.features.portalEnabled}">
+                                 <a href="/h/home" ><div class='ImgSkin_Chrome_Logo'></div></a>
+                            </c:when>
+                            <c:otherwise>
+                                 <a href="/h/search" ><div class='ImgSkin_Chrome_Logo'></div></a>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
 					<td id='skin_container_app_name' style='padding-top: 0px;'><nobr>communications center</nobr></td>
 					<td width='76%'><div id='skin_container_status' class='skin_container'>
 					<app:appStatus/>
