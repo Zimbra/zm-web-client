@@ -92,12 +92,12 @@ function(menu) {
 	}
 
 	var children = menu.getItems();
-	var wasSep = null;
+	var wasSep = false;
 	var toRemove = [];
 	for ( mi in children ) {
-		if (mi.style == DwtMenuItem.SEPARATOR_STYLE) {
+		if (!children[mi].__text) {
 			if (wasSep == true || wasSep == null) {
-				toRemove.push(mi);
+				toRemove.push(children[mi]);
 			} else {
 				wasSep = true;
 			}
@@ -105,11 +105,11 @@ function(menu) {
 			wasSep = false;
 		}
 	}
-	if (children[children.size()].style == DwtMenuItem.SEPARATOR_STYLE) {
-		toRemove.push(children[children.size()]);
-	}
 	for ( mi in toRemove ) {
-		menu.removeChild(mi);
+		menu.removeChild(toRemove[mi]);
+	}
+	if (!children[children.length-1].__text) {	 // No trailing separators
+		menu.removeChild(children[children.length-1]);
 	}
 }
 
