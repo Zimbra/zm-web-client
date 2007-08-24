@@ -94,6 +94,11 @@ a:active {
 	display: none;
 }
 
-pre {
+.MsgBody-html pre, .MsgBody-html pre * {
+	@WordWrapPRE@
+}
+
+.MsgBody-html tt, .MsgBody-html tt * {
+	@FontFamily-fixed@
 	@WordWrapPRE@
 }
