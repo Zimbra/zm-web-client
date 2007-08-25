@@ -70,8 +70,16 @@ function() {
 
 ZmSearchToolBar.prototype.removeMenuItem =
 function(id) {
-	var idx = ZmSearchToolBar.MENU_ITEMS.indexOf(id);
-	if (idx != -1) {
+	var idx = 0;
+	
+	while (idx < ZmSearchToolBar.MENU_ITEMS.length) {
+		if ( ZmSearchToolBar.MENU_ITEMS[idx] == id ) { 
+			break;
+		}
+		idx++;
+	}
+
+	if (idx < ZmSearchToolBar.MENU_ITEMS.length) {
 		var menu = this._searchMenuButton.getMenu();
 		menu.removeChild(menu.getItemById("_menuItemId",id));
 		ZmSearchToolBar.MENU_ITEMS.splice(idx,1);
