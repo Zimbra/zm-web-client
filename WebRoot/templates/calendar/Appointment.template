@@ -1,0 +1,535 @@
+<template id='calendar.Appointment#EditView'>
+	<div id='${id}_top'>
+		<table border=0 width=100% style='table-layout:fixed;' id='${id}_table'>
+			<colgroup>
+				<col width='<$= AjxEnv.is800x600orLower ? "235" : "50%" $>' />
+				<col width='<$= AjxEnv.is800x600orLower ? "*" : "50%" $>' />
+			</colgroup>
+			<tr style='height:<$= AjxEnv.isIE ? "150" : "110" $>px'>
+				<!-- appointmenet details section -->
+				<td valign=top>
+					<fieldset>
+						<legend><$= ZmMsg.details $></legend>
+						<div>
+							<table border=0 width=100%>
+								<colgroup>
+									<col width='1%' />
+									<col />
+								</colgroup>
+								<tr>
+									<td class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subject $>:</nobr></td>
+									<td id='${id}_subject'></td>
+								</tr>
+								<tr>
+									<td class='ZmApptTabViewPageField'><nobr><$= ZmMsg.location $>:</nobr></td>
+									<td id='${locationId}'></td>
+								</tr>
+								<$ if (data.isAppt) { $>
+								<tr>
+									<td colspan=2>
+										<table border=0 cellpadding=0 cellspacing=2>
+											<tr>
+												<td class='ZmFieldLabelRight'><nobr><$= ZmMsg.showAs $>&nbsp;</nobr></td>
+												<td id='${id}_showAsSelect'></td>
+												<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+												<td class='ZmFieldLabelRight'><nobr><$= ZmMsg.markAs $>&nbsp;</nobr></td>
+												<td id='${id}_privacySelect'></td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<$ } else { $>
+								<tr>
+									<td class='ZmFieldLabelRight'><nobr><$= ZmMsg.priority $>:</nobr></td>
+									<td id='${id}_priority'></td>
+								</tr>
+								<$ } $>
+								<tr>
+									<td class='ZmFieldLabelRight' id='${id}_folderLabel'><nobr><$= data.isAppt ? ZmMsg.calendar : ZmMsg.taskFolder $>:</nobr></td>
+									<td id='${id}_folderSelect'></td>
+								</tr>
+							</table>
+						</div>
+					</fieldset>
+				</td>
+				<!-- appointment date/time section -->
+				<td valign=top>
+					<fieldset>
+						<legend><$= (data.isAppt ? ZmMsg.time : ZmMsg.date) $></legend>
+						<div style='overflow:hidden; <$= AjxEnv.isIE ? " width:99%" : "" $>'>
+							<table border=0 width=100%>
+								<colgroup>
+									<col width='1%' />
+									<col />
+									<col />
+								</colgroup>
+								<$= (data.isAppt ? "" : AjxTemplate.expand("calendar.Appointment#TaskDueSection", data)) $>
+								<$= AjxTemplate.expand("calendar.Appointment#ApptTimeSection", data) $>
+								<tr>
+								  <td valign=top class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'><nobr><$= ZmMsg.repeat $>:</nobr></td>
+								  <td valign=top colspan=10>
+									<table border=0 cellpadding=0 cellspacing=0 width=100%>
+									  <tr>
+										<td width=100 id='${id}_repeatSelect'></td>
+										<td id='${id}_repeatDesc' style='text-decoration:underline'></td>
+									  </tr>
+									</table>
+								  </td>
+								</tr>
+							</table>
+						</div>
+					</fieldset>
+				</td>
+			</tr>
+			<$ if (data.personId || data.equipmentId) { $>
+			<tr>
+				<td colspan=2>
+					<!-- appointment attendees / resources -->
+					<table border=0 width=100%>
+						<tr>
+							<td width='1%' align='right' valign='top' class='ZmApptTabViewPageField'><$= ZmMsg.attendees $>:</td>
+							<td id='${personId}'></td>
+						</tr>
+
+					<$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
+						<tr>
+							<td width=1% align=right class='ZmApptTabViewPageField'><$= ZmMsg.resources $>:</td>
+							<td id='${equipmentId}'></td>
+						</tr>
+					<$ } $>
+					</table>
+				</td>
+			</tr>
+			<$ } $>
+		</table>
+	</div>
+	<!-- appointment notes -->
+	<div id='${id}_notes' style='padding:5px;'></div>
+</template>
+
+<template id='calendar.Appointment#ZmApptQuickAddDialog'>
+	<table border=0 width=330>
+		<tr>
+			<td class='ZmApptTabViewPageField'><div style='width:70px'><sup>*</sup><$= ZmMsg.subject $>:</div></td>
+			<td colspan=2 id='${id}_subject'></td>
+		</tr>
+		<tr>
+			<td class='ZmApptTabViewPageField'><$= ZmMsg.location $>:</td>
+			<td colspan=2 id='${id}_location'></td>
+		</tr>
+		<tr>
+			<td class='ZmApptTabViewPageField'><$= ZmMsg.showAs $></td>
+			<td colspan=10>
+				<table border=0 cellpadding=0 cellspacing=2>
+					<tr>
+						<td id='${id}_showAs'></td>
+						<td>&nbsp;&nbsp;&nbsp;</td>
+						<td class='ZmApptTabViewPageField'><$= ZmMsg.markAs $></td>
+						<td id='${id}_privacy'></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr id='${id}_calendarRow'>
+			<td class='ZmApptTabViewPageField' id='${id}_calendarLabel'><$= ZmMsg.calendar $>:</td>
+			<td colspan=2 id='${id}_calendar'></td>
+		</tr>
+		<tr><td></td></tr>
+		<tr>
+			<td class='ZmApptTabViewPageField'><$= ZmMsg.startTime $>:</td>
+			<td colspan=2>
+				<table border=0 cellpadding=0 cellspacing=0>
+					<tr>
+						<td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_startDate'></td>
+						<td id='${id}_startMiniCal'></td>
+						<td>&nbsp;</td>
+						<td>@</td>
+						<td>&nbsp;</td>
+						<td id='${id}_startTime'></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td class='ZmApptTabViewPageField'><$= ZmMsg.endTime $>:</td>
+			<td colspan=2>
+				<table border=0 cellpadding=0 cellspacing=0>
+					<tr>
+						<td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_endDate'></td>
+						<td id='${id}_endMiniCal'></td>
+						<td>&nbsp;</td>
+						<td>@</td>
+						<td>&nbsp;</td>
+						<td id='${id}_endTime'></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr><td></td></tr>
+		<tr>
+			<td class='ZmApptTabViewPageField'><$= ZmMsg.repeat $>:</td>
+			<td id='${id}_repeat'></td>
+			<td><span class='ZmApptTabViewPageField' style='width:100%' id='${id}_repeatDesc'></span></td>
+		</tr>
+	</table>
+</template>
+
+<!-- checkbox/status/%complete controls -->
+<template id='calendar.Appointment#TaskDueSection'>
+	<tr>
+		<td class='ZmFieldLabelRight'><input type='checkbox' id='${id}_status_cbox'></td>
+		<td width=150 id='${id}_status'></td>
+		<td id='${id}_complete'></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td colspan=2 id='${id}_due_message'></td>
+	</tr>
+</template>
+
+<template id='calendar.Appointment#ApptTimeSection'>
+		<$ if (data.isAppt) { $>
+		<tr>
+			<td></td>
+			<td width=1%>
+				<table border=0 cellpadding=0 cellspacing=0><tr>
+					<td><input type='checkbox' id='${id}_allDayCheckbox'></td>
+					<td class='ZmFieldLabelLeft'><nobr>&nbsp;<$= ZmMsg.allDayEvent $></nobr></td>
+				</tr></table>
+			</td>
+			<td></td>
+			<td colspan=2 id='${id}_tzoneSelect'></td>
+		</tr>
+		<$ } $>
+		<tr>
+			<td class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.start : ZmMsg.startDate ) $>:</nobr></td>
+			<td>
+				<table border=0 cellpadding=0 cellspacing=0><tr>
+					<td><input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='${id}_startDateField' value='${currDate}'></td>
+					<td id='${id}_startMiniCalBtn'></td>
+				</tr></table>
+			</td>
+			<$ if (data.isAppt) { $>
+  			<td id='${id}_startTimeAtLbl' class='ZmFieldLabelCenter'>@</td>
+        <td id='${id}_startTimeSelect'></td>
+			<$ } $>
+		</tr>
+		<tr>
+			<td class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.end : ZmMsg.dateDue ) $>:</nobr></td>
+			<td>
+				<table border=0 cellpadding=0 cellspacing=0><tr>
+					<td><input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='${id}_endDateField' value='${currDate}'></td>
+					<td id='${id}_endMiniCalBtn'></td>
+				</tr></table>
+			</td>
+			<$ if (data.isAppt) { $>
+        <td id='${id}_endTimeAtLbl' class='ZmFieldLabelCenter'>@</td>
+        <td id='${id}_endTimeSelect'></td>
+			<$ } $>
+		</tr>
+</template>
+
+
+<template id='calendar.Appointment#ScheduleView'>
+	<table border=0 width=100% cellpadding=3><tr>
+		<td width=100%>
+			<!-- date/time section -->
+			<table border=0>
+        <$= AjxTemplate.expand("calendar.Appointment#ApptTimeSection", data) $>
+      </table>
+		</td>
+		<td style='text-align:right'>
+			<!-- key/legend section -->
+			<table border=0 cellpadding=0 cellspacing=0 class='ZmGraphKey'>
+				<tr>
+					<td class='ZmGraphKeyHeader'><$= ZmMsg.key $></td>
+				</tr>
+				<tr>
+					<td class='ZmGraphKeyBody'>
+						<table border=0 cellspacing=2>
+							<tr>
+								<td><div class='ZmGraphKeyColorBox ZmScheduler-free'></div></td>
+								<td class='ZmGraphKeyColorText'><$= ZmMsg.free $></td>
+								<td>&nbsp;</td>
+								<td><div class='ZmGraphKeyColorBox ZmScheduler-busy'></div></td>
+								<td class='ZmGraphKeyColorText'><$= ZmMsg.busy $></td>
+								<td>&nbsp;</td>
+								<td><div class='ZmGraphKeyColorBox ZmScheduler-tentative'></div></td>
+								<td class='ZmGraphKeyColorText'><$= ZmMsg.tentative $></td>
+								<td>&nbsp;</td>
+							</tr>
+							<tr>
+								<td><div class='ZmGraphKeyColorBox ZmScheduler-unknown'></div></td>
+								<td class='ZmGraphKeyColorText'><$= ZmMsg.unknown $></td>
+								<td>&nbsp;</td>
+								<td><div class='ZmGraphKeyColorBox ZmScheduler-outOfOffice'></div></td>
+								<td class='ZmGraphKeyColorText'><$= ZmMsg.outOfOffice $></td>
+								<td>&nbsp;</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr></table>
+	<div style='margin-top:10'>
+		<!-- free/busy section -->
+		<table style='padding-left:3px;' border=0 cellpadding=0 cellspacing=0 width=100% id='${id}_attendeesTable'>
+			<colgroup>
+				<col style='width:165px' />
+				<col style='width:626px' />
+			</colgroup>
+			<tr>
+				<td align='center' id='${id}_navToolbar' <$= AjxEnv.isIE ? " width=100%" : "" $>></td>
+				<td>
+					<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedulerGridHeaderTable'>
+						<tr>
+						<$
+							for (var j = 0; j <= 24; j++) {
+								var hour = AjxDateUtil.isLocale24Hour() ? j : ((j % 12) || 12);
+						$>
+								<td><div class='ZmSchedulerGridHeaderCell'><$= hour $></div></td>
+						<$	} $>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</div>
+</template>
+
+<template id='calendar.Appointment#AttendeeName'>
+  <table border=0 cellpadding=0 cellspacing=0 width=100%>
+    <tr>
+      <$ if (data.isAllAttendees) { $>
+        <td style='padding: 5 0 5 0' class='ZmSchedulerAllTd'><$=ZmMsg.allAttendees$></td>
+      <$ } else if (data.organizer) { $>
+        <td width=40 align=left class='ZmSchedulerOrgIconTd' style='padding-left: 7px;'><$=AjxImg.getImageHtml("Person")$></td>
+      <$ } else { $>
+        <td width=50 id='${sched.dwtSelectId}'></td>
+      <$ } $>
+
+      <$ if (!data.isAllAttendees) { $>
+        <td class='ZmSchedulerNameTd' id='${sched.dwtNameId}'>
+        <$ if (data.organizer) { $>
+          <div class='ZmSchedulerInputDisabled'>${organizer}</div>
+        <$ } $>
+        </td>
+      <$ } $>
+    </tr>
+  </table>
+</template>
+
+<template id='calendar.Appointment#AttendeeFreeBusy'>
+  <table id='${sched.dwtTableId}'
+         class='ZmSchedulerGridTable<$= data.isAllAttendees ? "-allAttendees" : "" $>'
+         border=0 cellpadding=0 cellspacing=0>
+    <tr>
+      <$ for (var k = 0; k < data.cellCount; k++) { $>
+        <td class='ZmScheduler-free'>
+          <div class='ZmSchedulerGrid<$= data.isAllAttendees ? "TopCell" : "Div" $>'></div>
+        </td>
+      <$ } $>
+    </tr>
+  </table>
+</template>
+
+<template id='calendar.Appointment#Tooltip'>
+	<table cellpadding=0 cellspacing=0 border=0 width=<$= data.width $>>
+		<tr valign='center'>
+			<td colspan=2 align='left'>
+				<div style='border-bottom:1px solid black;'>
+					<table cellpadding=1 cellspacing=1 border=0 width=100%>
+						<tr valign='center'>
+							<td><b>
+								<!-- IMGHACK - added outer table for new image changes -->
+								<div style='white-space:nowrap'>
+									<table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>
+									<$ if (data.appt.hasOtherAttendees()) { $>
+										<td><$= AjxImg.getImageHtml("ApptMeeting") $></td>
+									<$ } $>
+									<$ if (data.appt.isException) { $>
+										<td><$= AjxImg.getImageHtml("ApptException") $></td>
+									<$ } else if (data.appt.isRecurring()) { $>
+										<td><$= AjxImg.getImageHtml("ApptRecur") $></td>
+									<$ } $>
+									</tr></table>
+									&nbsp;<$= AjxStringUtil.htmlEncode(data.appt.getName()) $>&nbsp;
+								</div>
+							</b></td>
+							<td align='right'>
+							<$ if (data.cal && data.cal.link) { $>
+								<$= AjxImg.getImageHtml("GroupSchedule") $>
+							<$ } else { $>
+								<$= AjxImg.getImageHtml("Appointment") $>
+							<$ } $>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+
+	<$ if (data.cal && data.cal.getName()) { $>
+		<tr valign='top'>
+			<td align='right' style='padding-right:5px;'>
+				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.calendar) $>:</div></b>
+			</td>
+			<td align='left'>
+				<div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(data.cal.getName()) $></div>
+			</td>
+		</tr>
+	<$ } $>
+
+  <$ if (data.organizer) { $>
+    <tr valign='top'>
+      <td align='right' style='padding-right:5px;'>
+        <b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.organizer) $>:</div></b>
+      </td>
+      <td align='left'>
+        <div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.organizer) $></div>
+      </td>
+    </tr>
+  <$ } $>
+
+  <$ if (data.sentBy) { $>
+    <tr valign='top'>
+      <td align='right' style='padding-right:5px;'>
+        <b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.sentBy) $>:</div></b>
+      </td>
+      <td align='left'>
+        <div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.sentBy) $></div>
+      </td>
+    </tr>
+  <$ } $>
+
+  <$ if (data.appt.hasOtherAttendees()) { $>
+		<tr valign='top'>
+			<td align='right' style='padding-right:5px;'>
+				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.status) $>:</div></b>
+			</td>
+			<td align='left'>
+				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.appt.getParticipantStatusStr()) $></div>
+			</td>
+		</tr>
+	<$ } $>
+
+	<$ if (data.when && data.when != "") { $>
+		<tr valign='top'>
+			<td align='right' style='padding-right:5px;'>
+				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.when) $>:</div></b>
+			</td>
+			<td align='left'>
+				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.when) $></div>
+			</td>
+		</tr>
+	<$ } $>
+
+	<$ if (data.location && data.location != "") { $>
+		<tr valign='top'>
+			<td align='right' style='padding-right:5px;'>
+				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.location) $>:</div></b>
+			</td>
+			<td align='left'>
+				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.location) $></div>
+			</td>
+		</tr>
+	<$ } $>
+
+	<$ if (data.appt.fragment && data.appt.fragment != "") { $>
+		<tr valign='top'>
+			<td align='right' style='padding-right:5px;'>
+				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.notes) $>:</div></b>
+			</td>
+			<td align='left'>
+				<$= AjxStringUtil.htmlEncode(data.appt.fragment) $>
+			</td>
+		</tr>
+	<$ } $>
+
+	</table>
+</template>
+
+<template id='calendar.Appointment#ReadOnlyView'>
+	<table border=0 class='MsgHeaderTable' id='${id}_hdrTable' cellspacing=0 cellpadding=0 width=100%>
+		<tr>
+			<td width=100 class='SubjectCol LabelColName'><$= AjxStringUtil.htmlEncode(ZmMsg.subject) $>:</td>
+			<td colspan=3>
+				<table border=0 cellpadding=0 cellspacing=0 width=100%>
+					<tr>
+						<td class='SubjectCol LabelColValue'><$= data.subject $></td>
+						<td width=1% id='${id}_closeBtnCell'></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+
+		<$ if (data.location) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.location, val:data.location}) $><$ } $>
+		<$ if (data.equipment) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.resources, val:data.equipment}) $><$ } $>
+		<$ if (data.dateStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.date, val:data.dateStr}) $><$ } $>
+		<$ if (data.startDate) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.startDate, val:data.startDate}) $><$ } $>
+		<$ if (data.dueDate) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.dueDate, val:data.dueDate}) $><$ } $>
+		<$ if (data.priority) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.priority, val:data.priority}) $><$ } $>
+		<$ if (data.status) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.status, val:data.status}) $><$ } $>
+		<$ if (data.pComplete) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.percentComplete, val:data.pComplete}) $><$ } $>
+
+		<!-- exception warning -->
+		<$ if (data.isException) { $>
+		<tr valign='center'>
+			<td></td>
+			<td>
+				<table border=0>
+					<tr>
+						<td><$= AjxImg.getImageHtml("ApptException") $></td>
+						<td><b><$= ZmMsg.apptExceptionNote$></b></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<$ } $>
+
+		<$ if (data.attendees && data.org) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.organizer, val:data.org}) $><$ } $>
+		<$ if (data.attendees && data.obo) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.onBehalfOf, val:data.obo}) $><$ } $>
+		<$ if (data.attendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attendees, val:data.attendees}) $><$ } $>
+		<$ if (data.recurStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.repeats, val:data.recurStr}) $><$ } $>
+		<$ if (data.attachStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
+	</table>
+</template>
+
+<template id='calendar.Appointment#ReadOnlyPrint'>
+	<div style='width: 100%; background-color: #EEEEEE'>
+		<table border=0 width=100%>
+			<tr>
+				<td><font size=+1><$= data.subject $></font></td>
+				<td align=right><font size=+1><$= data.dateStr $></font></td>
+			</tr>
+		</table>
+
+		<table border=0 width=100%>
+			<$ if (data.location) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.location, val:data.location}) $><$ } $>
+			<$ if (data.equipment) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.resources, val:data.equipment}) $><$ } $>
+			<$ if (data.organizer) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.organizer, val:data.organizer}) $><$ } $>
+			<$ if (data.attendees) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.attendees, val:data.attendees}) $><$ } $>
+			<$ if (data.recurStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.repeats, val:data.recurStr}) $><$ } $>
+			<$ if (data.attachStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddPrintEntry", {lbl:ZmMsg.attachments, val:data.attachStr, noEncode:true }) $><$ } $>
+		</table>
+	</div>
+
+	<$ if (data.bodyPart) { $>
+		<div style='padding:10px; font-size:12px'><$= data.bodyPart $></div>
+	<$ } $>
+</template>
+
+<template id="calendar.Appointment#AddEntry">
+	<tr>
+		<td width=100 class='LabelColName'><$= AjxStringUtil.htmlEncode(data.lbl) $>: </td>
+		<td class='LabelColValue'><$= data.val $></td>
+	</tr>
+</template>
+
+<template id="calendar.Appointment#AddPrintEntry">
+	<tr>
+		<td valign=top style='text-align:right; font-size:14px'><$= data.lbl $>: </td>
+		<td width=100% style='font-size:14px'><$= data.noEncode ? data.val : AjxStringUtil.htmlEncode(data.val) $></td>
+	</tr>
+</template>

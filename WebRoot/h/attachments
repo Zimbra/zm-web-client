@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <fmt:message var="title" key="attachFiles"/>
@@ -21,9 +21,9 @@
                 <td class='TbBt'>
                     <table cellspacing=0 cellpadding=0 class='Tb'>
                         <tr>
-                            <app:button name="actionAttachDone" src="common/Check.gif" tooltip="done" text="done"/>
+                            <app:button name="actionAttachDone" src="common/ImgCheck.gif" tooltip="done" text="done"/>
                             <td><div class='vertSep'></div></td>
-                            <app:button name="actionAttachCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                            <app:button name="actionAttachCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                         </tr>
                     </table>
                 </td>
@@ -42,7 +42,7 @@
                 <td class='ZhAppContent'>
                         <table cellpadding=0 cellspacing=10 height=80% width=100% class='Compose'>
                             <tr>
-                                <td align='right'><app:img altkey="ALT_ATTACHMENT" src="common/Attachment.gif"/></td>
+                                <td align='right'><app:img altkey="ALT_ATTACHMENT" src="common/ImgAttachment.gif"/></td>
                                 <td colspan=2><b><fmt:message key="selectFilesToAttach"/></b></td>
                             </tr>
                             <c:forEach begin="1" end="10" var="current">

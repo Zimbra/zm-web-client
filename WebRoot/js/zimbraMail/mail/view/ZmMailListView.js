@@ -192,7 +192,7 @@ function(address) {
 		if (!toolTip) {
 			var addrstr = address.toString();
 			if (addrstr) {
-				toolTip = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#TooltipNotInAddrBook", {addrstr:addrstr});
+				toolTip = AjxTemplate.expand("abook.Contacts#TooltipNotInAddrBook", {addrstr:addrstr});
 			}
 	    }
 	} catch (ex) {

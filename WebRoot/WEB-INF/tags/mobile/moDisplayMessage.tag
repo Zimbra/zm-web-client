@@ -69,7 +69,7 @@
     <tr><td colspan=2><hr></td></tr>
     <fmt:message var="noSubject" key="noSubject"/>
     <tr><td class='zo_mv_subject' colspan=2>${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
-                        <c:if test="${message.isFlagged}">&nbsp;<mo:img src="tag/FlagRed.gif"/></c:if>
+                        <c:if test="${message.isFlagged}">&nbsp;<mo:img src="tag/ImgFlagRed.gif"/></c:if>
     </td></tr>
     <tr>
         <td colspan=2 class='zo_mv_date'>
@@ -97,7 +97,7 @@
                         <tr>
                             <td style='padding: 0 2px 0 2px'>
                                 <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="${composeUrl}&op=accept">
-                                    <mo:img src="common/Check.gif" alt=""/>
+                                    <mo:img src="common/ImgCheck.gif" alt=""/>
                                     &nbsp;
                                     <span><fmt:message key="replyAccept"/></span>
                                 </a>
@@ -105,7 +105,7 @@
                             <td><div class='zo_vertsep'></div></td>
                             <td style='padding: 0 2px 0 2px'>
                                 <a <c:if test="${not isPart}">id="OPTENT"</c:if> href="${composeUrl}&op=tentative">
-                                    <mo:img src="common/QuestionMark.gif" alt=""/>
+                                    <mo:img src="common/ImgQuestionMark.gif" alt=""/>
                                     &nbsp;
                                     <span><fmt:message key="replyTentative"/></span>
                                 </a>
@@ -113,7 +113,7 @@
                             <td><div class='zo_vertsep'></div></td>
                             <td style='padding: 0 2px 0 2px'>
                                 <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="${composeUrl}&op=decline">
-                                    <mo:img src="common/Cancel.gif" alt=""/>
+                                    <mo:img src="common/ImgCancel.gif" alt=""/>
                                     &nbsp;
                                     <span><fmt:message key="replyDecline"/></span>
                                 </a>
@@ -130,7 +130,7 @@
                     <tr>
                         <td style='padding: 0 2px 0 2px'>
                             <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${composeUrl}&op=reply">
-                                <mo:img src="mail/Reply.gif" alt=""/>
+                                <mo:img src="mail/ImgReply.gif" alt=""/>
                                 &nbsp;
                                 <span><fmt:message key="reply"/></span>
                             </a>
@@ -138,7 +138,7 @@
                         <td><div class='zo_vertsep'></div></td>
                         <td style='padding: 0 2px 0 2px'>
                             <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${composeUrl}&op=replyAll">
-                                <mo:img src="mail/ReplyAll.gif" alt=""/>
+                                <mo:img src="mail/ImgReplyAll.gif" alt=""/>
                                 &nbsp;
                                 <span><fmt:message key="replyAll"/></span>
                             </a>
@@ -146,7 +146,7 @@
                         <td><div class='zo_vertsep'></div></td>
                         <td style='padding: 0 2px 0 2px'>
                             <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${composeUrl}&op=forward">
-                                <mo:img src="mail/Forward.gif" alt=""/>
+                                <mo:img src="mail/ImgForward.gif" alt=""/>
                                 &nbsp;
                                 <span><fmt:message key="forward"/></span>
                             </a>

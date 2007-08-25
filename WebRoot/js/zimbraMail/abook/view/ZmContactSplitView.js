@@ -169,7 +169,7 @@ function(enable) {
 
 ZmContactSplitView.prototype._initialize =
 function(controller, dropTgt) {
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitView", {id:this._htmlElId});
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitView", {id:this._htmlElId});
 
 	// alphabet bar based on *optional* existence in template and msg properties
 	var alphaDivId = this._htmlElId + "_alphabetbar";
@@ -203,7 +203,7 @@ function(controller, dropTgt) {
 	this._contactGroupView.reparentHtmlElement(this._htmlElId + "_tabs");
 
 	// add tabs to DwtTabGroup based on template
-	var params = AjxTemplate.getParams("zimbraMail.abook.templates.Contacts#SplitView_tabs");
+	var params = AjxTemplate.getParams("abook.Contacts#SplitView_tabs");
 	var tabStr = params ? params["tabs"] : null;
 	this._tabs = tabStr ? tabStr.split(",") : null;
 
@@ -306,7 +306,7 @@ function(contact, isGal, oldContact) {
 
 		this._contactTabView.setVisible(false);
 		this._contactGroupView.setVisible(true);
-		this._contactGroupView.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#SplitViewGroup", subs);
+		this._contactGroupView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitViewGroup", subs);
 	}
 	else
 	{
@@ -321,7 +321,7 @@ function(contact, isGal, oldContact) {
 		if (!this._tabViewHtml[tabIdx]) {
 			subs.tabIdx = tabIdx;
 			var tabName = this._tabs[tabIdx-1];
-			var template = "zimbraMail.abook.templates.Contacts#SplitView_" + tabName;
+			var template = "abook.Contacts#SplitView_" + tabName;
 			var view = this._contactTabView.getTabView(tabIdx);
 			view.getHtmlElement().innerHTML = AjxTemplate.expand(template, subs);
 

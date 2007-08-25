@@ -13,7 +13,7 @@
     <c:set var="mvToolbarCache" scope="request">
         <td nowrap>
         <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
-        <a href="${closeurl}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/Close.gif"/> <span>${fn:escapeXml(context.backTo)}&nbsp;</span></a>
+        <a href="${closeurl}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.gif"/> <span>${fn:escapeXml(context.backTo)}&nbsp;</span></a>
         </td>
         <td><div class='vertSep'></div></td>
          <app:button id="OPDELETE" name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
@@ -67,18 +67,18 @@
         <td align=right>
             <c:if test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" value="/h/search" action="view" cursor="${cursor}" context="${context}"/>
-                <a  <c:if test="${keys}">id="PREV_ITEM" </c:if> href="${prevItemUrl}"><app:img altkey="ALT_MSG_PREVIOUS_MESSAGE" src="arrows/LeftArrow.gif" border="0"/></a>
+                <a  <c:if test="${keys}">id="PREV_ITEM" </c:if> href="${prevItemUrl}"><app:img altkey="ALT_MSG_PREVIOUS_MESSAGE" src="arrows/ImgLeftArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
-                <app:img disabled='true' src="arrows/LeftArrow.gif" border="0"/>
+                <app:img disabled='true' src="arrows/ImgLeftArrow.gif" border="0"/>
             </c:if>
             <span class='Paging'>${context.searchResult.offset+context.currentItemIndex+1}</span>
             <c:if test="${context.hasNextItem}">
                 <zm:nextItemUrl var="nextItemUrl" value="/h/search" action="view" cursor="${cursor}" context="${context}"/>
-                <a  <c:if test="${keys}">id="NEXT_ITEM" </c:if> href="${nextItemUrl}"><app:img altkey="ALT_MSG_NEXT_MESSAGE" src="arrows/RightArrow.gif" border="0"/></a>
+                <a  <c:if test="${keys}">id="NEXT_ITEM" </c:if> href="${nextItemUrl}"><app:img altkey="ALT_MSG_NEXT_MESSAGE" src="arrows/ImgRightArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
-                <app:img disabled='true' src="arrows/RightArrow.gif" border="0"/>
+                <app:img disabled='true' src="arrows/ImgRightArrow.gif" border="0"/>
             </c:if>
         </td>
     </tr>

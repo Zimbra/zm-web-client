@@ -103,7 +103,7 @@ function() {
     var sections = {
         CALENDAR: {
             title: ZmMsg.calendar,
-            templateId: "zimbraMail.prefs.templates.Pages#Calendar",
+            templateId: "prefs.Pages#Calendar",
             priority: 80,
             precondition: ZmSetting.CALENDAR_ENABLED,
             prefs: [

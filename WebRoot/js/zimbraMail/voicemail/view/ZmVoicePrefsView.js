@@ -132,7 +132,7 @@ ZmVoicePrefsView.prototype._handleResponseGetVoiceInfo =
 function() {
 	var id = this._htmlElId;
 	var data = { id: id };
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoicePrefsView", data);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("voicemail.Voicemail#ZmVoicePrefsView", data);
 
 	// Create the list view and the contents of the detail pane.
 	this._list = new ZmPhoneList(this);
@@ -514,7 +514,7 @@ function(feature) {
 		phones[i] = ZmPhone.calculateDisplay(name);
 	}
 	var args = { phones: phones, id: this._view._htmlElId};
-	parent.innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoiceSelectiveCallForwardingTable", args);
+	parent.innerHTML = AjxTemplate.expand("voicemail.Voicemail#ZmVoiceSelectiveCallForwardingTable", args);
 	for (var i = 0; i < rowCount; i++) {
 		var link = document.getElementById(this._view._htmlElId + "_selectiveCallForwardingRemove_" + i);
 		link.onclick = this._removeCallbackObj;
@@ -618,7 +618,7 @@ function(ev) {
 	row.className = "Row " + ((row.rowIndex % 2) ? DwtListView.ROW_CLASS_ODD : DwtListView.ROW_CLASS_EVEN);
 	var cell = row.insertCell(-1);
 	var args = { text: value, linkId: Dwt.getNextId() };
-	cell.innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoiceSelectiveCallForwardingTableRow", args);
+	cell.innerHTML = AjxTemplate.expand("voicemail.Voicemail#ZmVoiceSelectiveCallForwardingTableRow", args);
 	var link = document.getElementById(args.linkId);
 	link.onclick = this._removeCallbackObj;
 	this._addInput.setValue("");

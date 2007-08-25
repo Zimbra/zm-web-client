@@ -6,7 +6,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setBundle basename="/msgs/ZhMsg" scope="request"/>
+<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
 <fmt:setTimeZone var="timezone" value="${zm:getTimeZone(not empty param.tz ? param.tz : requestScope.zimbra_target_account_prefTimeZoneId)}" scope="request"/>
 

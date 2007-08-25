@@ -6,20 +6,20 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<fmt:setBundle basename="/msgs/ZhMsg" scope="request"/>
+<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:set var="successfullLogin" value="false"/>
     <fmt:message var="errorMessage" key="enterNewPassword"/>
-    <c:set var="messageImage" value="/images/dwt/Information_32.gif"/>
+    <c:set var="messageImage" value="dwt/ImgInformation_32.gif"/>
     <c:choose>
         <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
             <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
-            <c:set var="messageImage" value="/images/dwt/Critical_32.gif"/>
+            <c:set var="messageImage" value="dwt/ImgCritical_32.gif"/>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && ((empty param.loginNewPassword) or (empty param.password) or (empty param.loginConfirmNewPassword))}">
             <fmt:message var="errorMessage" key="passwordFieldMissing"/>
-            <c:set var="messageImage" value="/images/dwt/Critical_32.gif"/>
+            <c:set var="messageImage" value="dwt/ImgCritical_32.gif"/>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && (not empty param.loginNewPassword) && (not empty param.password)}">
             <c:catch var="loginException">
@@ -32,7 +32,7 @@
                 <zm:getException var="error" exception="${loginException}"/>
                 <c:set var="errorCode" value="${error.code}"/>
                 <fmt:message var="errorMessage" key="${errorCode}"/>
-                <c:set var="messageImage" value="/images/dwt/Critical_32.gif"/>
+                <c:set var="messageImage" value="dwt/ImgCritical_32.gif"/>
             </c:if>
         </c:when>
 
@@ -48,8 +48,8 @@
     <style type="text/css">
          @import url( "<c:url value='/css/common,login,zhtml,${skin},skin.css?skin=${skin}'/>" );
     </style>
-    <link rel="ICON" type="image/gif" href="<c:url value='/img/loRes/logo/favicon.gif'/>">
-    <link rel="SHORTCUT ICON" href="<c:url value='/img/loRes/logo/favicon.ico'/>">
+    <link rel="ICON" type="image/gif" href="<c:url value='/img/logo/favicon.gif'/>">
+    <link rel="SHORTCUT ICON" href="<c:url value='/img/logo/favicon.ico'/>">
 </head>
 <body <c:if test="${successfullLogin ne 'true'}">
         onload="document.changePassForm.password.focus();"

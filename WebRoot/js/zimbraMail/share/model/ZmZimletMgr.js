@@ -239,7 +239,7 @@ ZmZimletMgr.prototype.__getIncludes = function(zimletArray, zimletNames, isJS) {
 		// include messages
 		if (appDevMode) {
 			if (isJS) {
-				includes.push([appContextPath, "/js/msgs/", zimlet.name, ".js"].join(""));
+				includes.push([appContextPath, "/messages/", zimlet.name, ".js"].join(""));
 			}
 		}
 		// include links

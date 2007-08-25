@@ -13,12 +13,12 @@
             <table cellspacing=0 cellpadding=0 class='Tb'>
                 <td nowrap>
                     <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                    <a href="${refreshUrl}"><c:if test="${keys}"></c:if><app:img src="arrows/Refresh.gif" altkey="getCalls"/><span><fmt:message key="getCalls"/></span></a>
+                    <a href="${refreshUrl}"><c:if test="${keys}"></c:if><app:img src="arrows/ImgRefresh.gif" altkey="getCalls"/><span><fmt:message key="getCalls"/></span></a>
                 </td>
                 <td><div class='vertSep'></div></td>
                 <td nowrap>
                     <zm:currentResultUrl var="refreshUrl" value="/h/printcalls" context="${context}" refresh="true" />
-                    <a id="OPPRINT" target="_blank" href="${refreshUrl}"><app:img src="common/Print.gif" altkey="actionPrint"/></a>
+                    <a id="OPPRINT" target="_blank" href="${refreshUrl}"><app:img src="common/ImgPrint.gif" altkey="actionPrint"/></a>
                 </td>
                 <td><div class='vertSep'></div></td>
                 <td nowrap>

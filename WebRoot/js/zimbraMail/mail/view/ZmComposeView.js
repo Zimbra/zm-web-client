@@ -96,7 +96,7 @@ ZmComposeView.WRAP_LENGTH = 72;
 // Data
 //
 
-ZmComposeView.prototype.TEMPLATE = "zimbraMail.mail.templates.Message#Compose";
+ZmComposeView.prototype.TEMPLATE = "mail.Message#Compose";
 
 //
 // Public methods
@@ -1664,7 +1664,7 @@ function(msg, action, replyPref) {
 		}
 
 		var data = { messages: messages };
-		html = AjxTemplate.expand("zimbraMail.mail.templates.Message#ForwardMessages", data);
+		html = AjxTemplate.expand("mail.Message#ForwardMessages", data);
 
 		if (messages.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 			this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
@@ -1675,7 +1675,7 @@ function(msg, action, replyPref) {
 	}
 	else if (replyPref == ZmSetting.INCLUDE_ATTACH ||action == ZmOperation.FORWARD_ATT) {
 		var data = { message: msg };
-		html = AjxTemplate.expand("zimbraMail.mail.templates.Message#ForwardOneMessage", data);
+		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", data);
 
 		this._attachCount = 1;
 	}
@@ -1689,7 +1689,7 @@ function(msg, action, replyPref) {
 				isForwardInline: action == ZmOperation.FORWARD_INLINE,
 				isDraft: action == ZmOperation.DRAFT
 			};
-			html = AjxTemplate.expand("zimbraMail.mail.templates.Message#ForwardAttachments", data);
+			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
 
 			if (attLinks.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 				this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;

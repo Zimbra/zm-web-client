@@ -26,11 +26,11 @@
                    <c:if test="${!empty types}"><c:param name="st" value="${types}"/></c:if>
                </c:url>
                 <a href="${toggleUrl}">
-                    <app:img src="${expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
+                    <app:img src="${expanded ? 'dwt/ImgNodeExpanded.gif' : 'dwt/ImgNodeCollapsed.gif'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
                 </a>
         </c:if>
 
-        <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="dwt/NodeExpanded.gif"/></c:if></span>--%>
+        <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="dwt/ImgNodeExpanded.gif"/></c:if></span>--%>
         <a href='${url}' id="FLDR${folder.id}">
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
             <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${zm:truncate(fn:escapeXml(label),20,true)}<c:if test="${folder.hasUnread}">

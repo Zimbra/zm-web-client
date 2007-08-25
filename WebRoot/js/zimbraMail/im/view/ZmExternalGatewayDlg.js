@@ -33,7 +33,7 @@ ZmExternalGatewayDlg = function(parent) {
 		       [ logoutBtn ]
 		      );
 	var id = this._baseId = Dwt.getNextId();
-	this.setContent(AjxTemplate.expand("zimbraMail.im.templates.Chat#GatewayLoginDlg", { id: id }));
+	this.setContent(AjxTemplate.expand("im.Chat#GatewayLoginDlg", { id: id }));
 	this.__initWidgets();
 };
 

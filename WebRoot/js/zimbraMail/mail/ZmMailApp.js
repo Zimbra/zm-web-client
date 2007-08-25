@@ -145,7 +145,7 @@ function() {
 	var sections = {
 		MAIL: {
 			title: ZmMsg.mail,
-			templateId: "zimbraMail.prefs.templates.Pages#Mail",
+			templateId: "prefs.Pages#Mail",
 			priority: 10,
 			prefs: [
 				ZmSetting.DEDUPE_MSG_TO_SELF,
@@ -173,7 +173,7 @@ function() {
 		},
 		ACCOUNTS: {
 			title: ZmMsg.accounts,
-			templateId: "zimbraMail.prefs.templates.Pages#Accounts",
+			templateId: "prefs.Pages#Accounts",
 			priority: 60,
 			prefs: [
 				ZmSetting.ACCOUNTS
@@ -185,7 +185,7 @@ function() {
 		},
 		SIGNATURES: {
 			title: ZmMsg.signatures,
-			templateId: "zimbraMail.prefs.templates.Pages#Signatures",
+			templateId: "prefs.Pages#Signatures",
 			priority: 30,
 			precondition: ZmSetting.SIGNATURES_ENABLED,
 			prefs: [
@@ -200,7 +200,7 @@ function() {
 		},
 		FILTERS: {
 			title: ZmMsg.filterRules,
-			templateId: "zimbraMail.prefs.templates.Pages#MailFilters",
+			templateId: "prefs.Pages#MailFilters",
 			priority: 70,
 			precondition: ZmSetting.FILTERS_ENABLED,
 			prefs: [

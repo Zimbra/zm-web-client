@@ -149,13 +149,13 @@
                                                             <table cellspacing=0 cellpadding=0 class='Tb'>
                                                             <tr>
                                                             <c:if test="${selected != 'contacts' and selected != 'calendar'}">
-                                                                <app:button name="actionNewFolder" src="common/NewFolder.gif" tooltip="folderNew" text="folderNew"/>
+                                                                <app:button name="actionNewFolder" src="common/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/>
                                                             </c:if>
                                                             <c:if test="${selected eq 'contacts'}">
-                                                                <app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
+                                                                <app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
                                                             </c:if>
                                                             <c:if test="${selected eq 'calendar'}">
-                                                                <app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
+                                                                <app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
                                                             </c:if>
                                                             </tr>
                                                            </table>
@@ -285,13 +285,13 @@
             <table cellpadding=2 cellspacing=0>
                 <tr>
                     <td align=right>
-                        <a target=_new href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="common/Help.gif"  border="0"/> <fmt:message key="help"/></a>
+                        <a target=_new href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="common/ImgHelp.gif"  border="0"/> <fmt:message key="help"/></a>
                     </td>
                     <td align=right>
                         &nbsp;
                     </td>
                     <td align=right>
-                        <a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="common/Logoff.gif" border="0"/> <fmt:message key="logOut"/></a>
+                        <a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="common/ImgLogoff.gif" border="0"/> <fmt:message key="logOut"/></a>
                     </td>
                 </tr>
             </table>

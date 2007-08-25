@@ -40,7 +40,7 @@ ZmOneContactPicker.prototype._init = function() {
 	this._contactField = field;
 	var id = field.getInputElement().id;
 	var div = document.createElement("div");
-	div.innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#OneContactPicker", { id: id });
+	div.innerHTML = AjxTemplate.expand("abook.Contacts#OneContactPicker", { id: id });
 	this._getContentDiv().appendChild(div);
 	field.reparentHtmlElement(id + "_entryCell");
 	this._initAutocomplete();

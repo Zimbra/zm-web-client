@@ -1,0 +1,748 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.2
+ * 
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.2 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ * 
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ * 
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ * All Rights Reserved.
+ * 
+ * Contributor(s):
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+
+/*
+* Conventions
+*
+* - Classes that start with "Dwt" or "Zm" have a corollary Javascript object.
+* - Use one line if there is only one selector and one declaration. Otherwise, indent each declaration on its own line.
+* - Group selectors to avoid repetition of styles, as appropriate (ie group within a section). That means you may have
+*   to look at more than one definition to figure out all the applicable styles, but it lets you give the styles a 
+*   hierarchy. That way, you're more likely to need to change a style in just one place.
+* - Use shorthand styles when possible (font, margin, padding, etc).
+* - When grouping selectors that correspond to our Javascript objects, show inheritance by using a different line for
+*   each level of inheritance. CSS doesn't care about our object hierarchy, but doing that enhances readability.
+* - Use hex RGB values for colors that don't have names (eg:  #EEEEEE)
+* - Try to stick to hex values of   00, 33, 66, 99, AA, FF so they map cleanly to the web palette, 
+*    eg: #666666 rather than #616161
+* - Modifiers are lower case, whether they're a class (eg .hover) or tacked on (eg -selected).
+*
+* Classes are laid out in the following general order:
+*	- HTML elements
+*	- General app stuff (shell, overlays, banner)
+*	- Widgets that tend toward abstract (minimal subclassing), such as tool tips and sashes
+*	- Heavier use widgets such as buttons and dialogs
+*		- General widget stuff, then specialized subclasses
+*	- List views, with common stuff first
+*	- Other views (lots of them)
+*	- Miscellaneous stuff that multiple apps might use (objects, autocomplete)
+*	- Modifiers
+*
+* Many of the Dwt widgets don't have corresponding classes here, since they are only subclassed. If you create and
+* display one of those widgets, you'll have to add a class for it.
+*/
+
+
+
+P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
+	font-size:11px;
+}
+
+
+/*
+* Top-level (shell) stuff
+*/
+
+.DwtShell, .MainShell {
+    @FullSize@
+}
+.MainShell {}
+
+
+/*
+* Splash Screen
+*/
+.ZaSplashScreen {
+	@ChromeBg@
+	width:100%;
+	height:100%;
+	top:0;
+	left:0;
+	position:absolute;
+}
+
+.ZaSplashScreen, .ZaSplashScreen table {
+	@ChromeBg@
+}
+
+
+.Text {
+	font-size:11px;
+}
+
+.ZaStatusView {background-color: #EEEEEE; }
+
+.ZaNewAccountDialog {
+	width: 500px;
+}
+
+.ZaNewDomainDialog {
+	width: 500px;
+}
+
+.ZaNewCosDialog {
+	width: 500px;
+}
+
+
+
+/* other UI pieces */
+
+.currentAppLabel {
+	margin-top: 3px ;	
+}
+
+.currentAppLabel td {
+	font-size: 13px;
+	line-height:18px;
+	font-weight: bold;
+}
+
+/* Account */
+.ZaAccountView {
+	background-color: rgb(245, 245, 245);
+}
+
+.AdminTitleBar {
+	background-color: rgb(215, 215, 215);
+	font-size: 12pt;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+.AdminSubtitleBar {
+	background-color: rgb(215, 215, 215);
+	font-size: 8pt;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+.ZaChngPwdDlg {
+	width: 500px;
+}
+
+.ZaDomainGeneralPropPage {
+	background-color: rgb(245, 245, 245);
+}
+.ZaDomainGeneralPropPage .TitleBar {
+	background-color: rgb(215, 215, 215);
+#IFDEF MSIE
+    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+#ENDIF
+}
+.ZaDomainGeneralPropPage .Title {
+	font: bold 12pt Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+.ZaDomainGALPropPage {
+	background-color: rgb(245, 245, 245);
+}
+.ZaDomainGALPropPage .TitleBar {
+	background-color: rgb(215, 215, 215);
+#IFDEF MSIE
+	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+#ENDIF
+}
+.ZaDomainGALPropPage .Title {
+	font: bold 12pt Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+.ZaDomainAuthPropPage {
+	background-color: rgb(245, 245, 245);
+}
+.ZaDomainAuthPropPage .TitleBar {
+	background-color: rgb(215, 215, 215);
+#IFDEF MSIE
+    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+#ENDIF
+}
+.ZaDomainAuthPropPage .Title {
+	font: bold 12pt Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+.ZaDomainView {
+	background-color: rgb(245, 245, 245);
+	width: 100%;
+	text-align: left;
+}
+.ZaDomainView .TitleBar {
+	background-color: rgb(215, 215, 215);
+#IFDEF MSIE
+    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+#ENDIF
+}
+.ZaDomainView .Title {
+	font: bold 12pt Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+/* COS */
+.ZaCosView {
+	background-color: rgb(245, 245, 245);
+}
+.ZaCosView .TitleBar {
+	background-color: rgb(215, 215, 215);
+#IFDEF MSIE
+    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+#ENDIF
+}
+.ZaCosView .Title {
+	font: bold 12pt Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+.ZaServerGeneralPropPage {
+	background-color: rgb(245, 245, 245);
+	width: 100%;
+	text-align: left;
+}
+
+.ZaServerGeneralPropPage .TitleBar {
+	background-color: rgb(215, 215, 215);
+#IFDEF MSIE
+    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
+#ENDIF
+}
+.ZaServerGeneralPropPage .Title {
+	font: bold 12pt Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+.StatsImageTitle {
+	font: bold 16pt Arial, Helvetica, sans-serif;
+	padding: 3px;
+}
+
+.serverPickList {
+	width: 180px;
+	height: 200px;
+	border: 1px solid black;
+	margin: 10px 10px 0 10px;
+	background-color: transparent;
+	overflow:auto;
+}
+
+.ZaToolBar {
+	width: 100%;
+	height: 100%;
+}
+
+.userquotaused {
+	height: 6px; 
+	font-size: 6px; /* WEIRD IE QUIRK */
+	background-color: #66cc33;
+}
+
+.userquotabar {
+	width: 100px;
+	border: 1px solid white;
+	background-color: white;
+}
+
+.adminfootnote {
+	font-size: 8pt;
+	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	color: black;
+}
+
+.ZaStatusServicesPage {
+	background-color: rgb(255, 255, 255);
+}
+
+.ZaStatusServicesPage .DwtButton { 
+  width: 60px;
+}
+
+
+.admin_xform_number_input {
+	width:5em;
+}
+
+.admin_xform_number_input_disabled {
+	width:5em;
+	background-color:transparent;
+	color:@AppC+60@;
+}
+
+.admin_xform_name_input {
+	width:200px;
+}
+
+.ZaGlobalAttachExt {
+	height: 200px;
+}
+
+.ZaCosServerPool {
+	height: 200px;
+}
+
+
+/* header bar */
+
+.HeaderPanel {
+	width:100%;
+	@ChromeBg@
+	border-style: solid;
+	border-width: 0px 0px 2px 0px;
+	border-bottom-color: #777777;	
+}
+
+/* Search bar */
+
+.SearchPanel {
+	width:100%;
+}
+
+.SearchToolBar {
+	width:100%;
+	top: 2px;
+}
+
+.SearchToolBar .ZToolbarTable {
+	width: 100%	
+}
+
+.SearchTBSearchField {
+	width:100%;
+}
+
+.LogoContainer {
+	left: 27px;
+	top: 6px;
+}
+
+.DwtTabViewPage .DwtButton { 
+  width: 60px;
+}
+
+
+/* Override so first level of the tree does not indent */
+.DwtTreeItemLevel1ChildDiv {
+	padding-left:0px;
+}
+
+/** distribution list stuff **/
+.ZaDLView {
+  background-color:#EEEEEE;
+  overflow:auto;
+}
+
+.DLSource, .DLTarget, .MBXList { 
+  border-top: 2px solid #848484;
+  border-left: 2px solid #848484;
+  border-bottom: 2px solid #FAFAFA;
+  border-right: 2px solid #FAFAFA;
+  width: auto;	
+  background-color:#FFFFFF;
+}
+
+.DLTarget { 
+  height:338px;
+}
+
+.DLSource { 
+  height:200px;
+}
+
+.MBXList{
+  height: 100%;	
+}
+
+.inputBorder { 
+  border-top: 2px solid #848484;
+  border-left: 2px solid #848484;
+  border-bottom: 2px solid #FAFAFA;
+  border-right: 2px solid #FAFAFA;
+}
+
+.DLOptionalAddBox { 
+  width:195px;
+  height:70px;
+  border: 1px solid #CCCCCC;
+}
+
+.DlSourceRow, .DLTargetRow {
+  padding-left: .25em;
+  padding-top:3px;
+  padding-bottom:3px;
+}
+/** END distribution list stuff **/
+
+.ZaServicesListView,
+.ZaClusterServicesListView { 
+  width:100%;
+  background-color:rgb(255,255,255)
+}
+
+.ZaServicesListView_table , .ZaServicesListView_server_table,
+.ZaClusterServicesListView_table , .ZaClusterServicesListView_server_table{
+  border-spacing:0px;
+  border:none;
+  width:100%;
+}
+
+.Row TABLE.ZaServicesListView_table, .Row TABLE.ZaServicesListView_server_table{
+	table-layout: fixed;
+	height:auto;
+}
+
+.ZaServicesListView_table TD, .ZaServicesListView_server_table TD,
+.ZaClusterServicesListView_table TD, .ZaClusterServicesListView_server_table TD {  
+  padding:2px;
+}
+
+.ZaClusterServicesListView_server_table { 
+  background-color:#dddddd;
+}
+
+.ZaClusterServicesListView .Row-selected { 
+  background-color:#c8e4e4;
+}
+
+.Row-selected .ZaClusterServicesListView_server_table { 
+  background-color:#91c8c8;
+}
+
+.ZaStatusFailoverDialog { 
+  width: 200px;
+  height:200px;
+}
+
+.ZaStatusFailoverDialog .DwtButton, 
+.ZaStatusFailoverDialog .DwtButton-hover,
+.ZaStatusFailoverDialog .DwtButton-active{ 
+  width:60px;
+}
+
+.ZaClusterServicesListView .DwtListView-Rows{ 
+  height:100%;
+  border-bottom: 1px solid #999999;  
+}
+.ZaClusterServicesListView .Row, .ZaClusterServicesListView .Row-selected {
+  border-bottom:none;
+  border-top: 1px solid #999999;
+}
+
+.helpSeparator { 
+  border-bottom:4px Ridge #CCCCCC;
+}
+
+/* Tab button grid */
+.ZaTabBar {
+	@InsetBg@
+	overflow-x:auto;
+	overflow-y:visible;
+}
+
+.AdminTitle {
+	font-size: 14pt;
+	font-weight: bold;
+	font-family: arial;
+}
+
+.progressbar {
+	width: 200px;
+	border: 1px solid white;
+	background-color: white;
+}
+
+.progressused {
+	height: 20px;
+	font-size: 20px; /* WEIRD IE QUIRK */
+	background-color:#66cc33;
+}
+
+.mtaprogressbar {
+	width: 200px;
+	border: 1px solid #CCCCCC;
+	background-color: #CCCCCC;
+}
+
+
+.mbxprogressused {
+	height: 8px; 
+	background-color: green;
+	margin: 1 0 1 0;
+}
+
+.mbxprogressusedWarning {
+	height: 8px; 
+	background-color: orange;
+	margin: 1 0 1 0;
+}
+
+.mbxprogressusedCritical {
+	height: 8px; 
+	background-color: red;
+	margin: 1 0 1 0;
+}
+
+.mbxprogressbar {
+	border: 1px solid grey; 
+	width: 100px; 
+	height: 10px;
+	background-color: white;	
+}
+
+.ImgAppBanner {
+	cursor:pointer;
+}
+
+.que_table {
+	width:90%;
+}
+
+.container_table {
+	margin:10px;
+}
+.FFcontainer {
+	margin-left:3px;
+	padding-right:5px;
+	margin-right:5px;
+}
+
+.IEcontainer {
+	padding-left:3px;
+	padding-right:5px;
+}
+
+.search_field_container {
+	padding-left:2px;
+	padding-right:2px;
+	width:100%;
+}
+
+.search_field_tableCssClass {
+	width:100%;
+	padding:2px;
+}
+
+.qsearch_field_bar {
+	padding-left:10px;
+	padding-right:10px;
+	margin-bottom:5px;
+}
+
+.autoCompleteList {
+	background-color: white;
+	border: outset 1px #91c8c8;
+}
+
+.XFormDwtListView {
+	@ListBg@	@ListBorder@
+	@BoxMargin@
+}
+
+.oselect_table .ImgSelectPullDownArrow {
+	width:16px;
+}
+
+
+.DwtListView-Rows TD {
+	vertical-align:top;
+}
+
+/* Search builder toolbar (buttons only) */
+.ZaSearchBuilderToolBar {
+	margin-top: 3px;
+	width: 100%;
+	height: 100%;
+}
+
+.ZaSearchOptionView {
+	@PickerContainer@
+}
+
+.ZaSearchOptionView .DwtTree {
+	@PageBg@;
+}
+
+/* Header for each Option */
+.ZaSearchOptionView .DwtToolBar {
+	@WidgetHeaderContainer@
+	@WidgetHeaderSize-medium@
+}
+
+.ZaSearchOptionOverview {
+	overflow: hidden;
+}
+
+.LeftGrouperBorder {
+	@FieldSet@
+	padding-left:10px;	/* ??? SIZE */
+	padding-right:10px;
+	padding-bottom:10px;
+	margin-left:20px;
+	margin-right:10px;
+}
+
+.RightGrouperBorder {
+	@FieldSet@
+	padding-left:10px;	/* ??? SIZE */
+	padding-right:10px;
+	padding-bottom:10px;
+	margin-left:10px;
+	margin-right:20px;
+}
+
+.CenterGrouperBorder {
+	@FieldSet@
+	padding-left:5px;	/* ??? SIZE */
+	padding-right:10px;
+	padding-bottom:10px;
+	margin-left:3px;
+	margin-right:3px;
+}
+
+.AllScreenGrouperBorder {
+	@FieldSet@
+	padding-left:0px;	/* ??? SIZE */
+	padding-right:0px;
+	padding-bottom:10px;
+	margin-left:7px;
+	margin-right:7px;
+}
+
+.ZaOverride {
+	background-color:#FFF6BF;
+}
+
+.ZaWizLabel {
+	width:200px;
+}
+
+.ZaHighlightedText {
+ @NoticeText@
+}
+
+.ZaStaleData {
+	font-style:italic;
+	@Text-disabled@
+}
+
+.ZaNowrapTitle {
+	@NoWrap@
+}
+
+
+
+/* normal buttons, like in a dialog */
+.ZaAppTabButton 							{				}
+
+.ZAppTabBorder { margin-top: 2px; }
+
+
+.ZAppTab 									{	@AppTab@	@AppTabSpacing@				}
+
+.ZAppTabBorder								{	@AppTabBorder@	@AppTabBorder-normal@	}
+.ZHover		.ZAppTabBorder					{					@AppTabBorder-hover@	}
+.ZDisabled	.ZAppTabBorder					{					@AppTabBorder-disabled@	}
+.ZFocused	.ZAppTabBorder					{					@AppTabBorder-focused@	}
+.ZActive	.ZAppTabBorder					{					@AppTabBorder-active@	}
+.ZSelected	.ZAppTabBorder					{					@AppTabBorder-selected@	}
+
+			.ZAppTabTable .ZWidgetTitle		{	@AppTabText@ 	@AppTabText-normal@		}
+.ZHover		.ZAppTabTable .ZWidgetTitle		{					@AppTabText-hover@		}
+.ZDisabled	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-disabled@	}
+.ZFocused	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-focused@	}
+.ZActive	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-active@		}
+.ZSelected	.ZAppTabTable .ZWidgetTitle		{					@AppTabText-selected@	}
+
+
+
+
+.DwtTabButton .ZButtonBorder { border: none; background-color: transparent; }
+
+.ZaShowSavedSearchArrowButton ,
+.ZaShowSavedSearchArrowButton .ZWidget ,
+.ZaShowSavedSearchArrowButton .ZButtonBorder{
+	border: none ;		
+}
+
+.ZaShowSavedSearchArrowButton .ZWidgetTitle {
+	padding: 0px ;	
+}
+
+.ZaShowSavedSearchArrowButton .ZWidgetTable .ZLeftIcon div {
+	margin-left: 3px ;	
+}
+
+.ZToolbarButtonBorder,  .ZMenuItemBorder {
+	border: 2px solid transparent; 	
+#IFDEF MSIE
+	border: 1px solid transparent; 
+	border-color:@AppC+20@;	
+#ENDIF
+}
+
+.ZaSearchOptionViewSubHeader {
+	background-color:#F9F6F0;
+	border:thin solid;
+	margin:0px 0px 2px 2px;
+	text-align:center;
+}
+
+.ZaDownloadText {
+	margin-bottom:10px;
+	margin-left:3px;
+	margin-right:3px;
+	margin-top:5px;
+	font-size:12px;
+}
+
+/* Set the height of the advanced search button arbitrary */
+div.ZaAdvancedSearchButton table {
+	height: 22px ;	
+#IFDEF MSIE
+	height: 20px ;
+#ENDIF
+}
+
+.ZaSearchResultCountLabel {
+	#IFDEF MSIE
+		margin-top: 5px ;
+	#ENDIF
+}
+
+
+/* Search builder outer container */
+.ZaXMbxSearchBuilder {
+	height: 225px;		/* ??? SIZE */
+	width: 100%;
+	overflow: hidden;
+}
+
+.ZaXMBxPickerGrid {
+	@ToolbarContainer@
+	@InsetBg@ @NormalOutsetBorder@
+}
+
+.ZaXMBxAccountsListGrouper {
+	width:280px;
+}

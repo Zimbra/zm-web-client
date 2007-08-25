@@ -77,8 +77,8 @@ ZmAppChooser.SPACER_HEIGHT = 10;
 // Data
 //
 
-ZmAppChooser.prototype.TEMPLATE = "zimbraMail.share.templates.Widgets#ZmAppChooser";
-ZmAppChooser.prototype.ITEM_TEMPLATE = "zimbraMail.share.templates.Widgets#ZmAppChooserItem";
+ZmAppChooser.prototype.TEMPLATE = "share.Widgets#ZmAppChooser";
+ZmAppChooser.prototype.ITEM_TEMPLATE = "share.Widgets#ZmAppChooserItem";
 
 //
 // Public methods

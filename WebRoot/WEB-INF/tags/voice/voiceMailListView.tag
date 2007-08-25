@@ -24,7 +24,7 @@
                         <table width=100% cellpadding=2 cellspacing=0>
                             <tr class='Header'>
                                 <th class='CB' nowrap><input id="CHALL" onClick="checkAll(document.zform.voiceId,this)" type=checkbox name="allids"/>
-                                <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
+                                <th class='Img' nowrap><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
                                 <th width=10% nowrap><fmt:message key="from"/>
                                 <th width=10% nowrap><fmt:message key="message"/></th>
                                 <th nowrap>
@@ -52,7 +52,7 @@
                                             <c:param name="phone" value="${phone}"/>
                                             <c:param name="id" value="${hit.voiceMailItemHit.id}"/>
                                         </c:url>
-                                        <td nowrap><a href="${url}"><app:img src="voicemail/PlayMessage.gif" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>
+                                        <td nowrap><a href="${url}"><app:img src="voicemail/ImgPlayMessage.gif" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>
                                     </c:when>
                                     <c:otherwise>
                                         <td nowrap>&nbsp;</td>

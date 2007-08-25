@@ -74,7 +74,7 @@ function() {
 		rowArgs.caller = this._getCallerHtml(item);
 		rowArgs.duration = AjxDateUtil.computeDuration(item.duration);
 		rowArgs.date = AjxDateUtil.simpleComputeDateStr(item.date);
-		AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmCallListPrintViewRow", rowArgs, buffer);
+		AjxTemplate.expand("voicemail.Voicemail#ZmCallListPrintViewRow", rowArgs, buffer);
 	}
 	
 	var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
@@ -84,7 +84,7 @@ function() {
 		dateHeader: isPlaced ? ZmMsg.placed : ZmMsg.received,
 		rows: buffer.join("")
 	}
-	return  AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmCallListPrintView", args);
+	return  AjxTemplate.expand("voicemail.Voicemail#ZmCallListPrintView", args);
 };
 
 ZmCallListView.prototype._getCellContents =
@@ -137,7 +137,7 @@ function(call) {
 		date: AjxDateUtil.computeDateTimeString(call.date),
 		location: location
 	};
-	var html = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#CallTooltip", data);
+	var html = AjxTemplate.expand("voicemail.Voicemail#CallTooltip", data);
 	return html;
 };
 

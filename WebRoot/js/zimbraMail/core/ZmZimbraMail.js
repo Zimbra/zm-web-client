@@ -1044,14 +1044,14 @@ function() {
 	}
 
 	data['id'] = this._usedQuotaField._htmlElId;
-	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('zimbraMail.share.templates.Quota#'+quotaTemplateId, data)
+	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data)
 
 	if (userTooltip || quotaTooltip) {
 		var subs = {
 			userTooltip: userTooltip,
 			quotaTooltip: quotaTooltip
 		};
-		var html = AjxTemplate.expand('zimbraMail.share.templates.Quota#Tooltip', subs);
+		var html = AjxTemplate.expand('share.Quota#Tooltip', subs);
 		this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
 		this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(html);
 	}
@@ -1068,7 +1068,7 @@ function(staticFunc, icon, lbl, id, hideIcon) {
 
 	var cell = document.getElementById(id);
 	if (cell) {
-		cell.innerHTML = AjxTemplate.expand('zimbraMail.share.templates.App#UserInfo', subs);
+		cell.innerHTML = AjxTemplate.expand('share.App#UserInfo', subs);
 	}
 };
 

@@ -16,7 +16,7 @@
             <c:url var="toggleUrl" value="/h/search">
                   <c:param name="${expanded ? 'collapse' : 'expand'}" value="searches"/>
               </c:url>
-            <th style='width:20px'><a href="${toggleUrl}"><app:img src="${ expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}" altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/></a></th>
+            <th style='width:20px'><a href="${toggleUrl}"><app:img src="${ expanded ? 'dwt/ImgNodeExpanded.gif' : 'dwt/ImgNodeCollapsed.gif'}" altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/></a></th>
             <th class='Header'><fmt:message key="searches"/></th>
             <th width='1%' align='right' class='ZhTreeEdit'>
                 <c:url value="/h/mfolders" var="mfoldersUrl">

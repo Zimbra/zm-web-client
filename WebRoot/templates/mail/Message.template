@@ -1,0 +1,232 @@
+<template id='mail.Message#MessageHeader'>
+	<div><!-- empty container DIV here so Dwt.parseHtmlFragment returns the infoBar div below -->
+		<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
+			<tr>
+				<td>
+					<table id='${id}_hdrTable' cellspacing=0 cellpadding=0 border=0 width=100%>
+						<tr>
+							<td width='110' class='SubjectCol LabelColName' valign=top>
+								<$= AjxStringUtil.htmlEncode(ZmMsg.subject); $>:
+							</td>
+							<td valign=top>
+								<table border=0 cellpadding=0 cellspacing=0 width=100%>
+									<tr>
+										<td class='SubjectCol LabelColValue'>
+											<$= data.subject $>
+										</td>
+										<$ if (data.hasHeaderCloseBtn) { $>
+											<td width=1% id='${id}_closeBtnCell'></td>
+											<td>&nbsp;</td>
+										<$ } $>
+									</tr>
+								</table>
+							</td>
+						</tr>
+
+						<tr id='${id}_expandRow'>
+							<td>
+								<table align=right border=0 cellpadding=0 cellspacing=0>
+									<tr>
+										<td valign=top id='${id}_expandHeader' class='arrowbtn'></td>
+										<td class='LabelColName' style='vertical-align:middle'><$= ZmMsg.sentBy $>: </td>
+									</tr>
+								</table>
+							</td>
+							<td class='LabelColValue' valign=top>
+								<table border=0 cellpadding=0 cellspacing=0>
+									<tr>
+										<$ if (data.sentByIcon) { $>
+											<td valign=top>
+												<a href="javascript:;" onclick="ZmMailMsgView.contactIconCallback('${sentByNormal}', '${sentByIcon}'); return false;">
+													<$= AjxImg.getImageHtml(data.sentByIcon, "cursor:pointer") $>
+												</a>
+											</td>
+											<td>&nbsp;</td>
+										<$ } $>
+										<td>${sentBy}&nbsp;&nbsp;</td>
+										<td class='LabelColName'><$= ZmMsg.on $>:</td>
+										<td class='LabelColValue'>${dateString}</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+
+						<$ if (data.obo) { $>
+							<tr>
+								<td width='110' valign='top' class='LabelColName'><$= ZmMsg.onBehalfOf $>:</td>
+								<td class='LabelColValue' colspan=3><$= data.obo $></td>
+							</tr>
+						<$ } $>
+
+						<$ for (var i = 0; i < data.participants.length; i++) { $>
+							<tr>
+								<td width=110 valign='top' class='LabelColName'><$= data.participants[i].prefix $>:</td>
+								<td class='LabelColValue'><$= data.participants[i].partStr $></td>
+							</tr>
+						<$ } $>
+					</table>
+				</td>
+				<td id='${id}_contactArea' class='ContactArea'>
+					<!-- Area reserved zimlets to add to message views. -->
+				</td>
+			</tr>
+		</table>
+		<div id='${infoBarId}'></div>
+	</div>
+</template>
+
+<template id='mail.Message#InformationBar'>
+	<div class='DisplayImages' id='${id}'>
+		<table width='100%' cellspacing=0 cellpadding=0>
+			<tr>
+				<td style='width:20px'><$= AjxImg.getImageHtml("Status") $></td>
+				<td>${text} <span id='${id}_link' style='font:inherit; color:blue; text-decoration:underline'>${link}</span></td>
+			</tr>
+		</table>
+	</div>
+</template>
+
+<template id='mail.Message#DownloadAll'>
+	<table border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'>
+		<tr>
+			<td style='width:18px'>
+				<$= AjxImg.getImageHtml(ZmMimeTable.getInfo(ZmMimeTable.APP_ZIP).image, "position:relative;") $>
+			</td>
+			<td style='white-space:nowrap'>
+				<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' href='${url}&disp=a&fmt=zip'><$= ZmMsg.downloadAll $></a>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<!-- NOTE: The header container MUST have an id of ${id}_header -->
+<template id='mail.Message#Compose'>
+	<$ var labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible;"; $>
+	<$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $> 
+	<!-- header -->
+	<table id='${id}_header' border=0 cellpadding=2 cellspacing=2 width=100%>
+		<colgroup>
+			<col width=1>
+			<col width=*>
+		</colgroup>
+
+		<tr id='${id}_to_row'>
+			<td align=right valign=top style='<$=labelStyle$>'>
+				<div id='${id}_to_picker'><$=ZmMsg.to$>:</div>
+			</td>
+			<td>
+				<textarea id='${id}_to_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+			</td>
+		</tr>
+
+		<tr id='${id}_cc_row' style='display:none;'>
+			<td align=right valign=top style='<$=labelStyle$>'>
+				<div id='${id}_cc_picker'><$=ZmMsg.cc$>:</div>
+			</td>
+			<td>
+				<textarea id='${id}_cc_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+			</td>
+		</tr>
+
+		<tr id='${id}_bcc_row' style='display:none;'>
+			<td align=right valign=top style='<$=labelStyle$>'>
+				<div id='${id}_bcc_picker'><$=ZmMsg.bcc$>:</div>
+			</td>
+			<td>
+				<textarea id='${id}_bcc_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+			</td>
+		</tr>
+
+		<tr id='${id}_identity_row' style='<$=labelStyle$>'>
+			<td align=right style='<$=labelStyle$>'><$=ZmMsg.from$>:</td>
+			<td><select id='${id}_identity_control'></select></td>
+		</tr>
+
+		<tr id='${id}_subject_row'>
+			<td align=right style='<$=labelStyle$>'><$=ZmMsg.subject$>:</td>
+			<td>
+				<table border=0 cellpadding=0 cellspacing=0 width='100%'>
+				<colgroup>
+					<col width='*'>
+					<col width='*'>
+				</colgroup>
+				<tr>
+					<td style='padding-right:4px;' width='50%'>
+						<input id='${id}_subject_control' class='subjectField' autocomplete=off>
+					</td>
+					<td id='${id}_signature_row' style='display:none;'>
+					<table border=0 cellspacing=0 cellpadding=0>
+						<colgroup>
+							<col width='*'>
+							<col width='100%'>
+						</colgroup>
+						<tr><td align='right' style='padding-right:4px;'><$=ZmMsg.signatureLabel$></td>
+							<td><div id='${id}_signature_control'></div></td>
+						</tr>
+					</table>
+					</td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+
+		<tr id='${id}_attachments_row'>
+			<td colspan=2><div id='${id}_attachments_div'></div></td>
+		</tr>
+	</table>
+	<!-- compose editor is automatically appended below the header -->
+</template>
+
+<template id='mail.Message#ForwardMessages'>
+	<table cellspacing=0 cellpadding=0 border=0 width=100%>
+	<$ for (var i = 0; i < data.messages.length; i++) { $>
+		<$ var message = data.messages[i]; $>
+		<tr><td width=65 align=right><div class='ImgMessage'></div></td>
+			<td width=1%>
+				<input id='<$=message.id$>' name='<$=ZmComposeView.FORWARD_MSG_NAME$>' type='checkbox' checked>
+			</td>
+			<td class='nobreak'></td>
+			<td><b><$= message.subject || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b>
+				<span class='ZmConvListFragment'><$= message.getFragment(35) $></span>
+			</td>
+		</tr>
+	<$ } $>
+	</table>
+</template>
+
+<template id='mail.Message#ForwardOneMessage'>
+	<$ var message = data.message; $>
+	<table cellspacing=4 cellpadding=0 border=0 width=100%>
+		<tr><td width=60 align=right><div class='ImgAttachment'></div></td>
+			<td><b><$= (message ? message.subject : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b></td>
+		</tr>
+	</table>
+</template>
+
+<template id='mail.Message#ForwardAttachments'>
+	<table cellspacing=0 cellpadding=0 border=0 width=100%>
+	<$ for (var i = 0; i < data.attachments.length; i++) { $>
+		<$ var attachment = data.attachments[i]; $>
+		<tr><td width=65 align=right>
+			<$ if (i == 0) { $>
+				<div class='ImgAttachment'></div>
+			<$ } $>
+			</td>
+			<td width=1%>
+				<$ if (!data.isNew) { $>
+					<$ var isChecked = data.isForward || data.isForwardInline || data.isDraft || attachment.ci $>
+					<input id='<$=attachment.part$>' name='<$=ZmComposeView.FORWARD_ATT_NAME$>'
+						   type='checkbox' <$= isChecked ? "checked" : "" $>>
+				<$ } $>
+			</td>
+			<td class='nobreak'>
+				<!-- The open A element is within the attachment.link string -->
+				<$= attachment.link $><$= AjxStringUtil.htmlEncode(attachment.label) $></a>
+				<$ if (attachment.size) { $>
+					(<$= attachment.size $>)
+				<$ } $>
+			</td>
+		</tr>
+	<$ } $>
+	</table>
+</template>

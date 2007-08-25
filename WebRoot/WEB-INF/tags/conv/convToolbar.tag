@@ -52,7 +52,7 @@
         </c:if>
         <td><div class='vertSep'></div></td>
         <input type="hidden" name="contextConvId" value="${convSearchResult.conversationSummary.id}">
-        <app:button id="OPMARKALL" name="actionMarkConvRead" src="mail/ReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
+        <app:button id="OPMARKALL" name="actionMarkConvRead" src="mail/ImgReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
     </c:set>
 </c:if>
 
@@ -63,7 +63,7 @@
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
-                        <a href="${closeurl}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/Close.gif"/> <span>${fn:escapeXml(context.backTo)}&nbsp;</span></a>
+                        <a href="${closeurl}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.gif"/> <span>${fn:escapeXml(context.backTo)}&nbsp;</span></a>
                     </td>
                     ${requestScope.cvToolbarCache}
                 </tr>
@@ -72,34 +72,34 @@
         <td nowrap align=right>
             <c:if test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" value="" action="view" cursor="${convCursor}" context="${context}" css="${param.css}"/>
-                <a <c:if test="${keys}"> id="PREV_PAGE"</c:if> href="${prevItemUrl}"><app:img altkey="ALT_CONV_PREVIOUS_CONVERSATION" src="arrows/LeftDoubleArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"> id="PREV_PAGE"</c:if> href="${prevItemUrl}"><app:img altkey="ALT_CONV_PREVIOUS_CONVERSATION" src="arrows/ImgLeftDoubleArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
-                <app:img altkey='ALT_CONV_NO_PREVIOUS_CONVERSATION' disabled='true' src="arrows/LeftDoubleArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_PREVIOUS_CONVERSATION' disabled='true' src="arrows/ImgLeftDoubleArrow.gif" border="0"/>
             </c:if>
             <c:if test="${convSearchResult.hasPrevPage}">
                 <zm:currentResultUrl var="prevPageUrl" value=""  action="view" context="${context}"
                                      cso="${convSearchResult.prevOffset}" css="${param.css}"/>
-                <a <c:if test="${keys}">id="PREV_CONV_PAGE"</c:if> href="${prevPageUrl}"><app:img altkey="ALT_CONV_PREVIOUS_PAGE_IN_CONVERSATION" src="arrows/LeftArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}">id="PREV_CONV_PAGE"</c:if> href="${prevPageUrl}"><app:img altkey="ALT_CONV_PREVIOUS_PAGE_IN_CONVERSATION" src="arrows/ImgLeftArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!convSearchResult.hasPrevPage}">
-                <app:img altkey='ALT_CONV_NO_PREVIOUS_PAGE_IN_CONVERSATION' disabled='true' src="arrows/LeftArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_PREVIOUS_PAGE_IN_CONVERSATION' disabled='true' src="arrows/ImgLeftArrow.gif" border="0"/>
             </c:if>
             <app:searchPageOffset searchResult="${convSearchResult}" max="${convSearchResult.conversationSummary.messageCount}"/>
             <c:if test="${convSearchResult.hasNextPage}">
                 <zm:currentResultUrl var="nextPageUrl" value=""  action="view" context="${context}"
                                      cso="${convSearchResult.nextOffset}" css="${param.css}"/>
-                <a <c:if test="${keys}"> id="NEXT_CONV_PAGE"</c:if> href="${nextPageUrl}"><app:img altkey="ALT_CONV_NEXT_PAGE_IN_CONVERSATION" src="arrows/RightArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"> id="NEXT_CONV_PAGE"</c:if> href="${nextPageUrl}"><app:img altkey="ALT_CONV_NEXT_PAGE_IN_CONVERSATION" src="arrows/ImgRightArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!convSearchResult.hasNextPage}">
-                <app:img altkey='ALT_CONV_NO_NEXT_PAGE_IN_CONVERSATION' disabled='true' src="arrows/RightArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_NEXT_PAGE_IN_CONVERSATION' disabled='true' src="arrows/ImgRightArrow.gif" border="0"/>
             </c:if>
             <c:if test="${context.hasNextItem}">
                 <zm:nextItemUrl var="nextItemUrl" value="" action="view" cursor="${convCursor}" context="${context}" css="${param.css}"/>
-                <a <c:if test="${keys}"> id="NEXT_PAGE"</c:if> href="${nextItemUrl}"><app:img  altkey="ALT_CONV_NEXT_CONVERSATION" src="arrows/RightDoubleArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"> id="NEXT_PAGE"</c:if> href="${nextItemUrl}"><app:img  altkey="ALT_CONV_NEXT_CONVERSATION" src="arrows/ImgRightDoubleArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
-                <app:img altkey='ALT_CONV_NO_NEXT_CONVERSATION' disabled='true' src="arrows/RightDoubleArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_NEXT_CONVERSATION' disabled='true' src="arrows/ImgRightDoubleArrow.gif" border="0"/>
             </c:if>
         </td>
     </tr>

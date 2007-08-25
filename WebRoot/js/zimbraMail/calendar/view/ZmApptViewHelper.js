@@ -346,7 +346,7 @@ function(appt, id, body_style, controller) {
 		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
 		icon: appt.isPrivate() ? "ReadOnly" : null
 	};
-    return AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#calendar_appt_allday", subs);
+    return AjxTemplate.expand("calendar.Calendar#calendar_appt_allday", subs);
 };
 
 

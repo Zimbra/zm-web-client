@@ -138,7 +138,7 @@ function(id, params) {
 // Data
 //
 
-ZmToolBar.prototype.SEPARATOR_TEMPLATE = "zimbraMail.share.templates.Widgets#ZmToolBarSeparator";
+ZmToolBar.prototype.SEPARATOR_TEMPLATE = "share.Widgets#ZmToolBarSeparator";
 
 //
 // Protected methods

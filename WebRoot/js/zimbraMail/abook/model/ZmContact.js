@@ -843,7 +843,7 @@ function(email, isGal, hint) {
 				 hint: hint,
 				 buddy: this.getBuddy() };
 
-	return (AjxTemplate.expand("zimbraMail.abook.templates.Contacts#Tooltip", subs));
+	return (AjxTemplate.expand("abook.Contacts#Tooltip", subs));
 };
 
 /**

@@ -34,7 +34,7 @@ ZmImInviteNotification.prototype.constructor = ZmImInviteNotification;
 
 ZmImInviteNotification.prototype._init = function() {
 	var base_id = this._baseId = Dwt.getNextId();
-	this.setContent(AjxTemplate.expand("zimbraMail.im.templates.Chat#InviteNotification", {
+	this.setContent(AjxTemplate.expand("im.Chat#InviteNotification", {
 						   id	 : base_id
 					   }));
 

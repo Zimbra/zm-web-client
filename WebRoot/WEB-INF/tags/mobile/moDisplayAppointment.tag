@@ -115,7 +115,7 @@
                 <td>
                     <table border="0" cellpadding="2" cellspacing="2">
                         <tr>
-                            <td width=24><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ApptRecur.gif' : 'calendar/Appointment.gif'}"/></td>
+                            <td width=24><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.gif' : 'calendar/ImgAppointment.gif'}"/></td>
                             <td class='apptHeader'>
                             ${fn:escapeXml(empty appt.name ? noSubject : appt.name)}
                         </tr>
@@ -179,7 +179,7 @@
                                 <td class='MgrHdrValue'>
                                     <table cellpadding="0" cellspacing="0">
                                         <tr>
-                                            <td width=24><app:img src="calendar/ApptException.gif"/></td>
+                                            <td width=24><app:img src="calendar/ImgApptException.gif"/></td>
                                             <td><b><fmt:message key="apptExceptionNote"/></b></td>
                                         </tr>
                                     </table>
@@ -251,7 +251,7 @@
                                             </c:forEach>
                                         </c:if> 
                                         <c:if test="${message.isFlagged}">
-                                            <app:img altkey='ALT_FLAGGED' src="tag/FlagRed.gif"/>
+                                            <app:img altkey='ALT_FLAGGED' src="tag/ImgFlagRed.gif"/>
                                         </c:if>
                                     </td>
                                 </tr>
@@ -260,7 +260,7 @@
                                 <tr>
                                     <td nowrap align="right" class='MsgHdrAttAnchor'>
                                         <a href="#attachments${message.partName}">
-                                            <app:img src="common/Attachment.gif" altkey="ALT_ATTACHMENT"/>
+                                            <app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                                             <fmt:message key="attachmentCount">
                                                 <fmt:param value="${message.numberOfAttachments}"/>
                                             </fmt:message>
@@ -292,7 +292,7 @@
                                         <c:set var="keyOffset" value="${3}"/>
                                         <td style='padding: 0 2px 0 2px'>
                                             <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=accept">
-                                                <img src="<c:url value="/images/common/Check.gif"/>" alt=""/>
+                                                <app:img src="common/ImgCheck.gif"/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyAccept"/></span>
                                             </a>
@@ -300,7 +300,7 @@
                                         <td><div class='vertSep'></div></td>
                                         <td style='padding: 0 2px 0 2px'>
                                             <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=tentative">
-                                                <img src="<c:url value="/images/common/QuestionMark.gif"/>" alt=""/>
+												<app:img src="common/ImgQuestionMark.gif"/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyTentative"/></span>
                                             </a>
@@ -308,7 +308,7 @@
                                         <td><div class='vertSep'></div></td>
                                         <td style='padding: 0 2px 0 2px'>
                                             <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=decline">
-                                                <img src="<c:url value="/images/common/Cancel.gif"/>" alt=""/>
+												<app:img src="common/ImgCancel.gif"/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyDecline"/></span>
                                             </a>
@@ -327,7 +327,7 @@
                                 <tr>
                                     <td style='padding: 0 2px 0 2px'>
                                         <a target="_blank" href="${newWindowUrl}">
-                                            <img src="<c:url value="/images/common/OpenInNewWindow.gif"/>" alt="<fmt:message key="newWindow"/>" title="<fmt:message key="newWindow"/>"/>
+                                            <app:img src="common/ImgOpenInNewWindow.gif" alt="<fmt:message key="newWindow"/>" title="<fmt:message key="newWindow"/>"/>
                                         </a>
                                     </td>
                                 </tr>

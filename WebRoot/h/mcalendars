@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:fileUploader var="uploader"/>
@@ -58,15 +58,15 @@
                                     <tr>
                                         <td>
                                             <a id="OPCLOSE" href="<c:url value="/h/calendar"/>">
-                                                <app:img src="common/Close.gif"/><span><fmt:message key="close"/></span>
+                                                <app:img src="common/ImgClose.gif"/><span><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
+                                        <app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWSUB" name="actionNewSubscribedCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNewSubscribed" text="calendarNewSubscribed"/>
+                                        <app:button id="OPNEWSUB" name="actionNewSubscribedCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNewSubscribed" text="calendarNewSubscribed"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWLINK" name="actionNewSharedCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNewShared" text="calendarNewShared"/>
+                                        <app:button id="OPNEWLINK" name="actionNewSharedCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNewShared" text="calendarNewShared"/>
                                     </tr>
                                 </table>
                             </td>

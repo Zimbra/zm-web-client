@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <fmt:message var="title" key="customRepeat"/>
@@ -18,12 +18,12 @@
 
     <c:choose>
         <c:when test="${empty compose.inviteId}">
-            <c:set var="apptImage" value="calendar/NewAppointment.gif"/>
+            <c:set var="apptImage" value="calendar/ImgNewAppointment.gif"/>
             <c:set var="apptImageAlt" value="ALT_NEW_APPOINTMENT"/>
             <fmt:message var="apptSubject" key="newAppointment"/>
         </c:when>
         <c:otherwise>
-            <c:set var="apptImage" value="calendar/Appointment.gif"/>
+            <c:set var="apptImage" value="calendar/ImgAppointment.gif"/>
             <c:set var="apptImageAlt" value="ALT_EDIT_APPOINTMENT"/>
             <c:set var="apptSubject" value="${compose.subject}"/>
         </c:otherwise>
@@ -39,11 +39,11 @@
             <td class='TbBt'>
                 <table cellspacing=0 cellpadding=0 class='Tb'>
                     <tr>
-                        <app:button name="actionRepeatDone" src="common/Close.gif" tooltip="done" text="done"/>
+                        <app:button name="actionRepeatDone" src="common/ImgClose.gif" tooltip="done" text="done"/>
                         <td>
                             <div class='vertSep'></div>
                         </td>
-                        <app:button name="actionRepeatCancel" src="common/Cancel.gif" tooltip="cancel"
+                        <app:button name="actionRepeatCancel" src="common/ImgCancel.gif" tooltip="cancel"
                                     text="cancel"/>
                     </tr>
                 </table>

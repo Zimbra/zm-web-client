@@ -13,7 +13,7 @@
         <td><div class='vertSep'></div></td>
         <td>
         <zm:currentResultUrl var="newTaskUrl" value="" context="${context}" action="edittask"/>
-        <a id="NEW_TASK" href="${newTaskUrl}"><app:img altkey="newTask" src="tasks/NewTask.gif"/><span><fmt:message key="newTask"/></span></a>
+        <a id="NEW_TASK" href="${newTaskUrl}"><app:img altkey="newTask" src="tasks/ImgNewTask.gif"/><span><fmt:message key="newTask"/></span></a>
         </td>
         <td><div class='vertSep'></div></td>
          <c:choose>
@@ -61,7 +61,7 @@
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                        <a href="${refreshUrl}" <c:if test="${keys}"></c:if>><app:img src="arrows/Refresh.gif" altkey="refresh"/><span><fmt:message key="refresh"/></span></a>
+                        <a href="${refreshUrl}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span><fmt:message key="refresh"/></span></a>
                     </td>
                     ${requestScope.taskListToolbarCache}
                 </tr>

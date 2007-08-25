@@ -258,7 +258,7 @@ function(groups) {
 };
 
 ZmRosterItem.prototype.getToolTip = function() {
-	return AjxTemplate.expand("zimbraMail.im.templates.Chat#RosterItemTooltip",
+	return AjxTemplate.expand("im.Chat#RosterItemTooltip",
 				  { buddy   : this,
 				    contact : this.getContact()
 				  });

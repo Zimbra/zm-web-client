@@ -233,7 +233,7 @@ function() {
 		numLetters: alphabet.length
 	};
 
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#ZmAlphabetBar", subs);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#ZmAlphabetBar", subs);
 };
 
 ZmContactAlphabetBar._alphabetClicked =

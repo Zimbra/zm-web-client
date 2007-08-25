@@ -78,14 +78,14 @@
                         <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                         <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
                         <td width=1% class='zo_cal_dpage'>
-                            <a href="${prevUrl}"><img src="/zimbra/images/arrows/PreviousPage.gif"></a>
+                            <a href="${prevUrl}"><app:img src="arrows/ImgPreviousPage.gif"/></a>
                         </td>
                         <td nowrap class='zo_cal_dayheader${(date.timeInMillis eq today.timeInMillis) ? '_today':''}'>
                             <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
                             <fmt:formatDate value="${date.time}" pattern="${titleFormat}"/>
                         </td>
                         <td width=1% class='zo_cal_dpage'>
-                            <a href="${nextUrl}"><img src="/zimbra/images/arrows/NextPage.gif"></a>
+                            <a href="${nextUrl}"><app:img src="arrows/ImgNextPage.gif"/></a>
                         </td>
                     </tr>
                 </table>

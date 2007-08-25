@@ -176,7 +176,7 @@ ZmPref.clearPrefSections = function() {
  * @param templateId    [string]    (Optional) The template associated to this
  *                                  section. If not specified, the id is used.
  *                                  Note: The default template base is:
- *                                  "zimbraMail.prefs.templates.Pages#".
+ *                                  "prefs.Pages#".
  * @param priority      [int]       The section priority used when determining
  *                                  the order of the sections.
  * @param precondition  [any]       (Optional) Specifies the precondition
@@ -206,7 +206,7 @@ ZmPref.registerPrefSection = function(id, params) {
     // set template for section
     var templateId = params.templateId || id;
     if (!templateId.match(/#/)) {
-        templateId = ["zimbraMail.prefs.templates.Pages",templateId].join("#");
+        templateId = ["prefs.Pages",templateId].join("#");
     }
     params.templateId = templateId;
     params.id = id;

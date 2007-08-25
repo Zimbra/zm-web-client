@@ -13,22 +13,22 @@
         <td><div class='vertSep'></div></td>
         <c:choose>
             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                <app:button id="OPDELETE" src="common/Trash.gif" name="actionHardDelete" tooltip="actionTrashTT"/>
+                <app:button id="OPDELETE" src="common/ImgTrash.gif" name="actionHardDelete" tooltip="actionTrashTT"/>
             </c:when>
             <c:otherwise>
-                <app:button id="OPDELETE" src="common/Trash.gif" name="actionDelete" tooltip="actionTrashTT"/>
+                <app:button id="OPDELETE" src="common/ImgTrash.gif" name="actionDelete" tooltip="actionTrashTT"/>
             </c:otherwise>
         </c:choose>
         <td nowrap>
             <zm:currentResultUrl var="printUrl" value="/h/printvoicemails" context="${context}" refresh="true" />
-            <a id="OPPRINT" target="_blank" href="${printUrl}"><app:img src="common/Print.gif" altkey="actionPrint"/></a>
+            <a id="OPPRINT" target="_blank" href="${printUrl}"><app:img src="common/ImgPrint.gif" altkey="actionPrint"/></a>
         </td>
         <td><div class='vertSep'></div></td>
-        <app:button id="OPREPLYBYEMAIL" name="actionReplyByEmail" text="actionReplyByEmail" src="mail/Reply.gif" tooltip="actionReplyByEmailTT"/>
-        <app:button id="OPFORWARDBYEMAIL" name="actionForwardByEmail" text="actionForwardByEmail" src="mail/Forward.gif" tooltip="actionForwardByEmailTT"/>
+        <app:button id="OPREPLYBYEMAIL" name="actionReplyByEmail" text="actionReplyByEmail" src="mail/ImgReply.gif" tooltip="actionReplyByEmailTT"/>
+        <app:button id="OPFORWARDBYEMAIL" name="actionForwardByEmail" text="actionForwardByEmail" src="mail/ImgForward.gif" tooltip="actionForwardByEmailTT"/>
         <td><div class='vertSep'></div></td>
-        <app:button id="OPHEARD" name="actionMarkHeard" text="actionMarkHeard" src="voicemail/MarkAsHeard.gif" tooltip="actionMarkHeardTT"/>
-        <app:button id="OPUNHEARD" name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/MarkAsUnheard.gif" tooltip="actionMarkUnheardTT"/>
+        <app:button id="OPHEARD" name="actionMarkHeard" text="actionMarkHeard" src="voicemail/ImgMarkAsHeard.gif" tooltip="actionMarkHeardTT"/>
+        <app:button id="OPUNHEARD" name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/ImgMarkAsUnheard.gif" tooltip="actionMarkUnheardTT"/>
         <td><div class='vertSep'></div></td>
         <td nowrap>
             <c:url var="optionsUrl" value="/h/options">
@@ -47,7 +47,7 @@
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                        <a href="${refreshUrl}" <c:if test="${keys}"></c:if>><app:img src="arrows/Refresh.gif" altkey="getVoiceMail"/><span><fmt:message key="getVoiceMail"/></span></a>
+                        <a href="${refreshUrl}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="getVoiceMail"/><span><fmt:message key="getVoiceMail"/></span></a>
                     </td>
                     ${requestScope.vmlvToolbarCache}
                 </tr>

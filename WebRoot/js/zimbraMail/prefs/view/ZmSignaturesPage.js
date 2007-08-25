@@ -44,7 +44,7 @@ ZmSignaturesPage.prototype.toString = function() {
 // Data
 //
 
-ZmSignaturesPage.prototype.SIGNATURE_TEMPLATE = "zimbraMail.prefs.templates.Pages#Signature";
+ZmSignaturesPage.prototype.SIGNATURE_TEMPLATE = "prefs.Pages#Signature";
 
 //
 // Public methods

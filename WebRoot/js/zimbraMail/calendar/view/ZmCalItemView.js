@@ -130,7 +130,7 @@ function() {
 		bodyPart: bodyPart
 	};
 
-	return AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ReadOnlyPrint", subs);
+	return AjxTemplate.expand("calendar.Appointment#ReadOnlyPrint", subs);
 };
 
 
@@ -145,7 +145,7 @@ function(calItem) {
 	this._hdrTableId = this._htmlElId + "_hdrTable";
 
 	var el = this.getHtmlElement();
-	el.innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ReadOnlyView", subs);
+	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
 
 	// add the close button
 	this._closeButton = new DwtButton(this, null, "DwtToolbarButton");
@@ -456,7 +456,7 @@ function(task, preferHtml, callback) {
 		content: task.getNotesPart(ct)
 	};
 
-	var html = AjxTemplate.expand("zimbraMail.tasks.templates.Tasks#PrintView", subs);
+	var html = AjxTemplate.expand("tasks.Tasks#PrintView", subs);
 
 	if (callback) {
 		callback.run(new ZmCsfeResult(html));

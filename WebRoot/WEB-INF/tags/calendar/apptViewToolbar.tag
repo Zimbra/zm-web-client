@@ -13,15 +13,15 @@
     <c:set var="apptToolbarCache" scope="request">
         <td nowrap>
             <app:calendarUrl var="closeurl" />
-            <a id="OPCLOSE" href="${closeurl}" <c:if test="${keys}"></c:if>> <app:img src="common/Close.gif"/> <span><fmt:message key="close"/></span></a>
+            <a id="OPCLOSE" href="${closeurl}" <c:if test="${keys}"></c:if>> <app:img src="common/ImgClose.gif"/> <span><fmt:message key="close"/></span></a>
             <c:if test="${not isReadOnly}">
                 <td><div class='vertSep'></div></td>
                 <c:choose>
                     <c:when test="${isInstance}">
-                        <app:button name="actionApptDelete" src="common/Delete.gif" tooltip="actionApptDeleteInstTT" text="deleteInst"/>
+                        <app:button name="actionApptDelete" src="common/ImgDelete.gif" tooltip="actionApptDeleteInstTT" text="deleteInst"/>
                     </c:when>
                     <c:otherwise>
-                        <app:button name="actionApptDelete" src="common/Delete.gif" tooltip="actionApptDeleteTT" text="delete"/>
+                        <app:button name="actionApptDelete" src="common/ImgDelete.gif" tooltip="actionApptDeleteTT" text="delete"/>
                     </c:otherwise>
                 </c:choose>
 

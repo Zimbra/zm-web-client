@@ -111,7 +111,7 @@ ZmChatMessage.prototype.getTextBody = function() {
 };
 
 ZmChatMessage.prototype.toText = function() {
-	return AjxStringUtil.trim(AjxTemplate.expand("zimbraMail.im.templates.Chat#ChatMessagePlainText", this));
+	return AjxStringUtil.trim(AjxTemplate.expand("im.Chat#ChatMessagePlainText", this));
 };
 
 ZmChatMessage.prototype.toHtml =
@@ -135,6 +135,6 @@ function(objectManager, chat, lastFrom) {
 	var html = [];
 	if (lastFrom && lastFrom != this.from)
 		html.push("<div class='ZmChatWindowChatEntry-sep'>&nbsp;</div>");
-	html.push(AjxTemplate.expand("zimbraMail.im.templates.Chat#ChatMessageLine", params));
+	html.push(AjxTemplate.expand("im.Chat#ChatMessageLine", params));
 	return html.join("");
 };

@@ -1,360 +1,574 @@
 <project name="ZimbraWebClient" default="war">
 
-    <property file='build-custom.properties' />
+	<!-- Properties -->
 
-  <property environment="env"/>
-  
-	<property name="zimbra.home.dir" location="/opt/zimbra" />
-	<property name="tomcat.home.dir" location="${zimbra.home.dir}/tomcat" />
-	<property name="jetty.home.dir" location="${zimbra.home.dir}/jetty" />
-	<condition property="use-tomcat"><isset property="env.ZIMBRA_USE_TOMCAT"/></condition>
-	<condition property="use-jetty"><not><isset property="use-tomcat"/></not></condition>
-	<condition property="webserver.name" value="jetty"><isset property="use-jetty"/></condition>
-	<condition property="webserver.name" value="tomcat"><isset property="use-tomcat"/></condition>
-	<property name="webserver.root.dir" location="${zimbra.home.dir}/${webserver.name}"/>
+	<property file='build-custom.properties' />
 
-  <property name="build.dir"          location="build"/>
-  
-  <property name="dist.dir"           location="build/dist"/>
-  <property name="dist.webserver.dir"    location="${dist.dir}/${webserver.name}"/>
-  <property name="dist.webapps.dir" location="${dist.webserver.dir}/webapps"/>
-  <property name="dist.tarfile"         value="dev-zimbra.tar"/>
+	<property environment="env" />
 
-  <property name='warfilename' value='zimbra.war' />
-  <property name="warfile"            location="${dist.webapps.dir}/${warfilename}"/>
-  <property name='adminwarfilename' value='zimbraAdmin.war' />
-  <property name="adminwarfile"      location="${dist.webapps.dir}/${adminwarfilename}"/>		
-  
-  <property name="jars.dir"           location="jars"/>
-  <property name="src.dir"            location="src"/>
-  <property name="gzipExtension" value=".zgz"/>	
-  <property name="rhinoExtension" value=".rhino"/>
-  <property name="licenseExtension" value=".license"/>	
-  <property name="mail.url" value="/zimbra"/>
-  <property name="admin.url" value="/zimbraAdmin"/>	
+	<property name='common.dir' value='../ZimbraCommon' />
+	<property name='common.lib.dir' value='${common.dir}/jars' />
+	<property name='common.build.dir' value='${common.dir}/build' />
+	<property name='common.build.classes.dir' value='${common.build.dir}/classes' />
 
-  <condition property="ajax.dir" value="${env.AJAX_DIR}" else='../Ajax'>
-    <isset property="env.AJAX_DIR" />
-  </condition>	
-  <property name="ajax.src.dir" value="${ajax.dir}/src"/>
-  <property name="ajax.jars.dir" value="${ajax.dir}/jars"/>
-  <property name="ajax.dwtimg.dir" value="${ajax.dir}/img"/>
-  <property name='ajax.imagemerge.dir' location='${ajax.src.dir}/com/zimbra/kabuki/tools/img'/>
-  <property name='ajax.i18n.dir' location='${ajax.src.dir}/com/zimbra/kabuki/tools/i18n'/>
-  <property name="ajaxdwt.images.dir" location="${ajax.dir}/img/loRes/dwt"/>
+	<property name='taglib.dir' value='../ZimbraTagLib' />
+	<property name='taglib.build.dir' value='${taglib.dir}/build' />
 
-  <condition property="common.dir" value="${env.COMMON_DIR}" else='../ZimbraCommon'>
-    <isset property="env.AJAX_DIR" />
-  </condition>
-  <property name="common.build.dir" value="${common.dir}/build" />
-  <property name="common.build.classes.dir" location="${common.build.dir}/classes"/>
-  <property name="common.jars.dir" location="${common.dir}/jars"/>
+	<property name='server.dir' value='../ZimbraServer' />
+	<property name='server.build.dir' value='${server.dir}/build' />
 
-  <condition property="server.dir" value="${env.SERVER_DIR}" else='../ZimbraServer'>
-      <isset property="env.SERVER_DIR" />
-  </condition>
-  <property name="server.build.dir" location="${server.dir}/build"/>
-  <property name="server.build.classes.dir" location="${server.build.dir}/classes"/>
+	<property name='license.dir' value='../ZimbraLicenses' />
 
-  <condition property="deploy.dir" value="${env.DEPLOY_DIR}" else='/opt/zimbra/${webserver.name}/webapps'>
-    <isset property="env.DEPLOY_DIR" />
-  </condition>	
-  <condition property="deploy.url" value="${env.DEPLOY_URL}" else='http://localhost:7070/manager/'>
-    <isset property="env.DEPLOY_URL" />
-  </condition>	
+	<property name='web.dir' value='WebRoot' />
+	<property name='js.dir' value='${web.dir}/js' />
+	<property name='jsp.dir' value='${web.dir}/public' />
+	<property name='template.dir' value='${web.dir}/templates' />
+	<property name='java.dir' value='src' />
+	<property name='lib.dir' value='jars' />
+	<property name='img.dir' value='${web.dir}/img' />
 
-  <condition property="remote.deploy.host" value="${env.ZIMBRA_REMOTE_DEPLOY_HOST}">
-    <isset property="env.ZIMBRA_REMOTE_DEPLOY_HOST"/>
-  </condition>
-  <condition property="remote.deploy.port" value="${env.ZIMBRA_REMOTE_DEPLOY_PORT}">
-    <isset property="env.ZIMBRA_REMOTE_DEPLOY_PORT"/>
-  </condition>
-  
-  <property name="deploy.war" value="${warfile}"/>
-  <property name="deploy.user" value="zimbra"/>
-  <property name="deploy.password" value="zimbra"/>
-  <property name="deploy.path" value="/zimbra"/>
-  <property name="deploy.admin.path" value="/zimbraAdmin"/>
-  <property name="deploy.admin.war" value="${adminwarfile}"/>
-  
-  <property name="images.animated.destDir" value="${build.dir}/WebRoot/img/animated"/>
-  <property name="images.loRes.destDir" value="${build.dir}/WebRoot/img/loRes"/>
-  <property name="images.cssFile" value="imgs.css"/>
+	<property name='webinf.dir' value='${web.dir}/WEB-INF' />
+	<property name='webinf.lib.dir' value='${webinf.dir}/lib' />
 
-  <property name='l10n.includes' value='msgs/*.properties,keys/*.properties' />
-  <property name='l10n.excludes' value='msgs/*_*.properties,keys/*_*.properties' />
+	<property name='deploy.server' value='jetty' />
 
-  <condition property='isProduction' value='true' else='false'>
-    <or>
-      <not><isset property='env.ZIMBRA_BUILD'/></not>
-      <not><equals arg1='${env.ZIMBRA_BUILD}' arg2='development'/></not>
-    </or>
-  </condition>
-  <condition property='isDevelopment' value='true' else='false'>
-    <equals arg1='${isProduction}' arg2='false'/>
-  </condition>
+	<property name='build.dir' value='build' />
+	<property name='build.classes.dir' value='${build.dir}/classes' />
+	<property name='build.web.dir' value='${build.dir}/WebRoot' />
+	<property name='build.css.dir' value='${build.web.dir}/css' />
+	<property name='build.js.dir' value='${build.web.dir}/js' />
+	<property name='build.template.dir' value='${build.web.dir}/templates' />
+	<property name='build.skin.dir' value='${build.web.dir}/skins' />
+	<property name='build.dist.dir' value='${build.dir}/dist' />
 
-  <taskdef resource="net/sf/antcontrib/antlib.xml">
-    <classpath>
-      <pathelement location="jars/ant-contrib-1.0b1.jar"/>
-    </classpath>
-  </taskdef>
+	<property name='build.img.dir' value='${build.web.dir}/img' />
+	<property name="build.css.filename" value="images.css"/>
 
-  <path id="class.path">
-    <fileset dir="${jars.dir}">
-      <include name="**/*.jar"/>
-    </fileset>
-    <fileset dir="${common.jars.dir}">
-      <include name="**/*.jar"/>
-    </fileset>
-    <pathelement path="${common.dir}/build/classes" />
-    <fileset dir="${ajax.jars.dir}">
-      <include name="**/*.jar"/>
-    </fileset>
-  </path>
+	<property name="depends.ext" value='.depends' />
+	<property name="license.ext" value='.license' />
+	<property name='nodebug.ext' value='.nodebug' />
+	<property name="jsmin.ext" value='.min' />
+	<property name="compress.ext" value='.zgz' />
 
-  <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" classpathref="class.path"/>
+	<!-- Tasks -->
 
-  <target name="build-init">
-    <mkdir dir="${dist.dir}"/>
-    <mkdir dir="${dist.webapps.dir}"/>
-    <mkdir dir="${build.dir}/WebRoot/js"/>
-  </target>
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<fileset dir='${lib.dir}' includes='**/ant-contrib-*.jar' />
+		</classpath>
+	</taskdef>
 
-  <target name="compile" depends="build-init" >
-    <!-- Compile the java code from ${src} into ${build} -->
-    <mkdir dir='${build.dir}/classes'/>
-    <javac srcdir="${src.dir}" destdir="${build.dir}/classes" debug="on">
-      <classpath refid="class.path"/>
-      <include name="**/*.java"/>
-    </javac>
-    <javac srcdir="${ajax.src.dir}" destdir="${build.dir}/classes" debug="on">
-      <classpath refid="class.path"/>
-      <include name="**/*.java"/>
-    </javac>
+	<!-- Paths -->
 
-    <!-- define imagemerge task -->
-    <pathconvert property='imagemerge.cp' pathsep='${path.separator}'>
-      <path>
-        <pathelement location='${build.dir}/classes'/>
-        <fileset dir='${jars.dir}' includes='**/*.jar'/>
-      </path>
-    </pathconvert>
-    <taskdef name='imagemerge'
-      classname='com.zimbra.kabuki.tools.img.ImageMergeTask'
-      classpath='${imagemerge.cp}'
-      />
+	<path id='class.path'>
+		<pathelement location="${build.classes.dir}" />
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+		<fileset dir="${common.lib.dir}" includes="**/*.jar" />
+		<pathelement location="${common.build.classes.dir}" />
+	</path>
 
-    <!-- define sortimages task -->
-    <pathconvert property='sortimages.cp' pathsep='${path.separator}'>
-      <path>
-        <pathelement location='${build.dir}/classes'/>
-        <fileset dir='${jars.dir}' includes='**/*.jar'/>
-      </path>
-    </pathconvert>
-    <taskdef name='imagesort'
-      classname='com.zimbra.kabuki.tools.img.ImageSortTask'
-      classpath='${sortimages.cp}'
-      />
-  </target>
+	<!-- Targets -->
 
-  <target name="clean" depends="build-init" description="Removes any built/temp files">
-    <delete dir="${build.dir}"/>
-    <delete>
-      <fileset dir="WebRoot" includes="js/**/*${rhinoExtension}, js/**/*${gzipExtension}, js/*_all.js*"/>
-    </delete>
-  </target>
-
-	<target name='i18n-check' depends='compile'>
-		<taskdef name='i18ncheck'
-				 classname='com.zimbra.kabuki.tools.i18n.ComparePropsTask'
-				 classpath='${build.dir}/classes'
-		/>
-
-		<echo />
-		<echo>Checking Ajax messages</echo>
-		<echo />
-		<property name='ajax.msgs.dir' value='${ajax.dir}/WebRoot/js/config/msgs' />
-		<i18ncheck>
-			<sourcefile file='${ajax.msgs.dir}/AjxMsg.properties' />
-			<targetfileset dir='${ajax.msgs.dir}' includes='AjxMsg_*.properties' />
-		</i18ncheck>
-
-		<echo />
-		<echo>Checking Zimbra messages</echo>
-		<echo />
-		<property name='zimbra.msgs.dir' value='WebRoot/js/zimbra/config/msgs' />
-		<i18ncheck>
-			<sourcefile file='${zimbra.msgs.dir}/ZMsg.properties' />
-			<targetfileset dir='${zimbra.msgs.dir}' includes='ZMsg_*.properties' />
-		</i18ncheck>
-
-		<echo />
-		<echo>Checking Zimbra Admin messages</echo>
-		<echo />
-		<property name='zimbraAdmin.msgs.dir' value='WebRoot/js/zimbraAdmin/config/msgs' />
-		<i18ncheck>
-			<sourcefile file='${zimbraAdmin.msgs.dir}/ZaMsg.properties' />
-			<targetfileset dir='${zimbraAdmin.msgs.dir}' includes='ZaMsg_*.properties' />
-		</i18ncheck>
-
-		<echo />
-		<echo>Checking Zimbra Mail messages</echo>
-		<echo />
-		<property name='zimbraMail.msgs.dir' value='WebRoot/js/zimbraMail/config/msgs' />
-		<i18ncheck>
-			<sourcefile file='${zimbraMail.msgs.dir}/ZmMsg.properties' />
-			<targetfileset dir='${zimbraMail.msgs.dir}' includes='ZmMsg_*.properties' />
-		</i18ncheck>
-
-        <echo />
-        <echo>Checking Zimbra Server messages</echo>
-        <echo />
-        <property name='zimbraServer.msgs.dir' value='${server.dir}/conf/msgs' />
-        <i18ncheck>
-            <sourcefile file='${zimbraServer.msgs.dir}/ZsMsg.properties' />
-            <targetfileset dir='${zimbraServer.msgs.dir}' includes='ZsMsg_*.properties' />
-        </i18ncheck>
+	<target name='common'>
+		<property name='common.web.includes' value='js/**,css/**' />
+		<property name='common.web.excludes' value='**/ZmSettings.js,js/*/package/**' />
+		<property name='common.jsp.includes' value='**' />
+		<property name='common.jsp.excludes' value='' />
+		<property name='common.img.includes' value='**' />
+		<property name='common.img.excludes' value='_*/**,**/_*,logo/favicon.ico' />
+		<property name='common.template.includes' value='**/*.template' />
+		<property name='common.template.excludes' value='' />
+		<property name='common.jam.includes' value='**/package/*.js' />
+		<property name='common.jam.excludes' value='' />
+		<property name='common.build.web.includes' value='**' />
+		<property name='common.build.web.excludes' value='js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}' />
+		<property name='common.webinf.includes' value='**' />
+		<property name='common.webinf.excludes' value='web.*,lib/**' />
 	</target>
 
-    <target name='tz' depends='compile'>
-        <java classname="com.zimbra.kabuki.tools.tz.GenerateData">
-            <classpath refid="class.path" />
-            <classpath path="${build.dir}/classes" />
-            <arg value="-i"/> <arg value="${server.dir}/conf/timezones.ics"/>
-            <arg value="-o"/> <arg value="${build.dir}/WebRoot/js/ajax/util/AjxTimezoneData.js"/>
-        </java>
-    </target>
-
-	<target name='i18n' depends='i18n-init,compile' unless='i18n-done'>
-		<taskdef name='i18n'
-				 classname='com.zimbra.kabuki.tools.i18n.GenerateDataTask'
-				 classpath='${build.dir}/classes'
-		/>
-		<mkdir dir='${build.dir}/i18n/msgs' />
-		<i18n destdir='${build.dir}/i18n/msgs' />
+	<target name='client' depends='common'>
+		<property name='deploy.app' value='zimbra' />
+		<property name='deploy.url.token' value='%%zimbraMailURL%%' />
+		<property name='skins.dir' value='${web.dir}/skins' />
+		<property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,test/**,yui/**' />
+		<property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**' />
+		<property name='jsp.includes' value='${common.jsp.includes}' />
+		<property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp' />
+		<property name='img.includes' value='${common.img.includes}' />
+		<property name='img.excludes' value='${common.img.excludes}' />
+		<property name='template.includes' value='${common.template.includes}' />
+		<property name='template.excludes' value='${common.template.excludes},admin/**' />
+		<property name='jam.includes' value='${common.jam.includes}' />
+		<property name='jam.excludes' value='${common.jam.excludes},**/zimbraAdmin/**' />
+		<property name='build.web.includes' value='${common.build.web.includes}' />
+		<property name='build.web.excludes' value='${common.build.web.excludes}' />
+		<property name='webinf.includes' value='${common.webinf.includes}' />
+		<property name='webinf.excludes' value='${common.webinf.excludes}' />
 	</target>
-	<target name='i18n-init'>
+
+	<target name='admin' depends='common'>
+		<property name='build.admin' value='true' />
+		<property name='deploy.app' value='zimbraAdmin' />
+		<property name='deploy.url.token' value='%%zimbraAdminURL%%' />
+		<property name='skins.dir' value='${web.dir}/admin_skins' />
+		<property name='web.includes' value='${common.web.includes},migrationwizard/**' />
+		<property name='web.excludes' value='${common.web.excludes},js/zimbraMail/**' />
+		<property name='jsp.includes' value='${common.jsp.includes}' />
+		<property name='jsp.excludes' value='${common.jsp.excludes},launchNewWindow.jsp,login.jsp,*Mail.jsp,*ZCS.jsp,Spreadsheet*' />
+		<property name='img.includes' value='${common.img.includes}' />
+		<property name='img.excludes' value='${common.img.excludes}' />
+		<property name='template.includes' value='admin/**,dwt/**,zimbra/**' />
+		<property name='template.excludes' value='${common.template.excludes}' />
+		<property name='jam.includes' value='${common.jam.includes}' />
+		<property name='jam.excludes' value='${common.jam.excludes},**/zimbraMail/**' />
+		<property name='build.web.includes' value='${common.build.web.includes}' />
+		<property name='build.web.excludes' value='${common.build.web.excludes}' />
+		<property name='webinf.includes' value='${common.webinf.includes}' />
+		<property name='webinf.excludes' value='${common.webinf.excludes},tags/**,tlds/**' />
+	</target>
+
+	<target name='dev'>
+		<property name='webxml.file' value='${webinf.dir}/web.xml' />
+	</target>
+
+	<target name='prod'>
+		<property name='build.prod' value='true' />
+		<property name='webxml.file' value='${webinf.dir}/web.xml.production' />
+	</target>
+
+	<target name='war' depends='templates,timezones,i18n,images,styles,settings,jam-files,compress,webxml-package-replace'>
+		<mkdir dir='${build.war.dir}' />
+		<war warfile="${build.war.file}" webxml='${build.dir}/web.xml'>
+			<webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes}' />
+			<classes dir='${build.classes.dir}' excludes='**/kabuki/tools/**,**/build/**' />
+			<classes dir='${web.dir}' includes='messages/**,keys/**' />
+			<lib dir='${lib.dir}' includes='gifencoder.jar' />
+			<lib dir='${webinf.lib.dir}' />
+			<lib dir='${common.build.dir}' includes='zimbracommon.jar' />
+			<lib dir='${taglib.build.dir}' includes='zimbrataglib.jar' />
+			<lib dir='${server.build.dir}' includes='zimbrastore.jar' />
+			<zipfileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes}' />
+			<zipfileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' prefix='public' />
+			<zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}' />
+			<zipfileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' prefix='img' />
+			<zipfileset dir='${skins.dir}' prefix='skins' />
+			<zipfileset refid='customer.web.fileset' />
+		</war>
+	</target>
+
+	<target name='sync' depends='templates,timezones,i18n,images,styles,settings,jam-files,webxml-package-replace'>
+		<copy todir='${webapp.dir}'>
+			<fileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes}' />
+			<fileset dir='${build.web.dir}' excludes='js/*${depends.ext}' />
+			<fileset refid='customer.web.fileset' />
+		</copy>
+		<copy todir='${webapp.dir}/public'>
+			<fileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' />
+		</copy>
+		<copy todir='${webapp.dir}/img'>
+			<fileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' />
+		</copy>
+		<copy todir='${webapp.dir}/skins'>
+			<fileset dir='${skins.dir}' />
+		</copy>
+		<copy todir='${webapp.dir}/WEB-INF'>
+			<fileset dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes}' />
+		</copy>
+		<copy todir='${webapp.dir}/WEB-INF/classes'>
+			<fileset dir='${build.classes.dir}' />
+		</copy>
+
+		<copy tofile="${webapp.dir}/WEB-INF/web.xml" file='${build.dir}/web.xml' />
+		<antcall target='webxml-deploy-replace' />
+	</target>
+
+	<target name='init' depends='client,dev,pseudo-init,customer-init'>
+		<!-- properties based on props set in client/admin/prod/dev targets -->
+		<property name='build.war.dir' value='${build.dist.dir}/${deploy.server}/webapps' />
+		<property name='build.war.file' value='${build.war.dir}/${deploy.app}.war' />
+		<property name='deploy.dir' value='/opt/zimbra/${deploy.server}/webapps' />
+		<property name='webapp.dir' value='${deploy.dir}/${deploy.app}' />
+		<property name='webapp.file' value='${deploy.dir}/${deploy.app}.war' />
+
+		<condition property='build.prod.value' value='true' else='false'>
+			<isset property="build.prod" />
+		</condition>
+
+		<!-- deployment properties -->
+		<tstamp />
+
+		<!-- TODO: Does the production build set this before calling Ant? -->
+		<condition property="zimbra.buildinfo.version" value="0.0">
+			<not><isset property="${zimbra.buildinfo.version}" /></not>
+		</condition>
+		<condition property="zimbra.buildinfo.release" value="${user.name}">
+			<not><isset property="${zimbra.buildinfo.release}" /></not>
+		</condition>
+		<condition property="zimbra.buildinfo.date" value="${DSTAMP}-${TSTAMP}">
+			<not><isset property="${zimbra.buildinfo.date}" /></not>
+		</condition>
+		<condition property="zimbra.buildinfo.host" value="${zimbra.server.hostname}">
+			<not><isset property="${zimbra.buildinfo.host}" /></not>
+		</condition>
+
+		<property name='properties.file' value='${build.dir}/build.properties' />
+
+		<mkdir dir='${build.dir}' />
+		<propertyfile file="${properties.file}" >
+			<entry  key="build.number" type="int" default="1" operation="+" pattern="00000"/>
+			<entry  key="build.date" type="date" value="now" pattern="yyyy-MM-dd HH:mm:ss" />
+			<entry  key="build.simpleDate" type="date" value="now" pattern="yyMMddHHmmss"/>
+			<entry  key="date.format" value="yyyyMMddHHmmss" />
+		</propertyfile>
+		<property file="${properties.file}" />
+	</target>
+
+	<target name='pseudo-init'>
+		<!-- pseudo-fileset so that targets that rely on it don't fail -->
+		<fileset id='customer.web.fileset' dir='${build.dir}' excludes='**' />
+	</target>
+
+	<target name='customer-init' if='env.CUSTOMER_SKIN' unless='build.admin'>
+		<property name='customer.dir' value='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}' />
+		<property name='customer.web.dir' value='${customer.dir}/ZimbraWebClient/WebRoot' />
+		<property name='customer.skin.dir' value='${customer.web.dir}/skins' />
+		<property name='customer.portal.dir' value='${customer.web.dir}/portals' />
+		<property name='customer.zimlet.dir' value='${customer.dir}/Zimlet' />
+		<fileset id='customer.web.fileset'
+				 dir='${customer.web.dir}' includes='skins/**,portals/**' excludes='**/*.template'
+		/>
+	</target>
+
+	<target name='compile' depends='init,external'>
+		<mkdir dir='${build.classes.dir}' />
+		<javac destdir="${build.classes.dir}" classpathref="class.path" debug="true">
+			<src location='${java.dir}' />
+		</javac>
+	</target>
+
+	<target name='external' if='build.clean'>
+		<ant dir='${common.dir}' target="jar" inheritall="false" />
+		<ant dir='${taglib.dir}' target="jar" inheritall="false" />
+		<ant dir='${server.dir}' target="jar" inheritall="false" />
+	</target>
+
+	<target name='templates' depends='compile'>
+		<property name='templates.done' value='${build.dir}/templates.done' />
+
 		<dependset>
-	      <srcfileset dir='${ajax.i18n.dir}' includes='**/*.java'/>
-	      <targetfilelist dir='${build.dir}/i18n' files='msgs/I18nMsg.properties'/>
+			<srcfileset dir='${template.dir}' includes='**/*.template' />
+			<srcfileset dir='${skins.dir}' includes='**/*.template' />
+			<targetfileset dir='${build.template.dir}' includes='**/*.template.js' />
+			<targetfilelist dir='.' files="${templates.done}" />
 		</dependset>
-		<available property='i18n-done' file='${build.dir}/i18n/msgs/I18nMsg.properties' />
+		<if><and>
+				<isset property="env.CUSTOMER_SKIN" />
+				<not><isset property='build.admin' /></not>
+			</and>
+			<then>
+				<dependset>
+					<srcfileset dir='${customer.skin.dir}' includes='**/*.template' />
+					<targetfileset dir='${build.web.dir}' includes='skins/**/*.template.js' />
+					<targetfilelist dir='.' files="${templates.done}" />
+				</dependset>
+			</then>
+		</if>
+
+		<if><not><available file='${templates.done}' /></not>
+			<then>
+				<taskdef name='template'
+						 classname='com.zimbra.kabuki.tools.templates.TemplateTask'
+						 classpathref='class.path'
+				/>
+				<template destdir='${build.template.dir}'>
+					<fileset dir='${template.dir}' includes='${template.includes}' excludes='${template.excludes}' />
+				</template>
+				<template destdir='${build.skin.dir}' authoritative='true'>
+					<fileset dir='${skins.dir}' includes='**/*.template' />
+				</template>
+
+				<antcall target="customer-templates" />
+
+				<touch file="${templates.done}" />
+			</then>
+		</if>
 	</target>
-	
-    <target name='templates' depends='compile,templates-init'>
-        <antcall target="compile-template">
-            <param name="odir" value="${build.dir}/WebRoot/js/ajax" />
-            <param name="prefix" value="ajax" />
-            <param name="idir" value="${ajax.dir}/WebRoot/js" />
-            <param name="includes" value="**/templates/**/*.html" />
-            <param name="authoritative" value="false" />
-        </antcall>
-        <antcall target="compile-template">
-            <param name="odir" value="${build.dir}/WebRoot/js" />
-            <param name="prefix" value="" />
-            <param name="idir" value="WebRoot/js" />
-            <param name="includes" value="**/templates/**/*.html" />
-            <param name="authoritative" value="false" />
-        </antcall>
-        <antcall target="skin-templates" />
-    </target>
 
-    <target name='templates-init'>
-        <taskdef name='template'
-                 classname='com.zimbra.kabuki.tools.templates.TemplateTask'
-                 classpath='${build.dir}/classes:${common.jars.dir}/commons-cli-2.0.jar'
-        />
-    </target>
+	<target name='customer-templates' depends='compile' if='env.CUSTOMER_SKIN' unless='build.admin'>
+		<dirset id='skins.dirset' dir='${customer.skin.dir}' includes='*' />
+		<pathconvert property="skins.list" refid="skins.dirset" pathsep=",">
+			<flattenmapper />
+		</pathconvert>
+		<for list='${skins.list}' param='name'>
+			<sequential>
+				<template destdir='${build.web.dir}/skins' authoritative='true'>
+					<fileset dir='${customer.skin.dir}' includes='@{name}/**/*.template' />
+				</template>
+			</sequential>
+		</for>
+	</target>
 
-    <target name='compile-template'>
-        <template destdir='${odir}' prefix='${prefix}' authoritative="${authoritative}">
-            <fileset dir='${idir}' includes='${includes}' />
-        </template>
-    </target>
+	<target name='timezones' depends='compile'>
+		<property name='tz.data' value='${server.dir}/conf/timezones.ics' />
+		<property name='tz.dir' value='${build.js.dir}/ajax/util' />
+		<property name='tz.file' value='${tz.dir}/AjxTimezoneData.js' />
 
-    <target name='skin-templates' depends='compile,templates-init'>
-        <copy todir="${build.dir}/WebRoot" failonerror="false">
-            <fileset dir="WebRoot" includes="skins/*/templates/**/*.html" />
-            <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="skins/*/templates/**/*.html" />
-        </copy>
-        <dirset id='skin.template.dirset' dir='${build.dir}/WebRoot' includes='skins/*/templates' />
-        <pathconvert property='skin.template.dirs' refid='skin.template.dirset' pathsep=',' />
-        <echo>dirs: ${skin.template.dirs}</echo>
-        <foreach target='skin-template' list='${skin.template.dirs}' param='dir' />
-    </target>
+		<dependset>
+			<srcfilelist dir="." files='${tz.data}' />
+			<targetfilelist dir='.' files='${tz.file}' />
+		</dependset>
 
-    <target name='skin-template'>
-        <antcall target="compile-template">
-            <param name="odir" value="${dir}" />
-            <param name="prefix" value="skin.templates" />
-            <param name="idir" value="${dir}" />
-            <param name="includes" value="**/*.html" />
-            <!-- skin templates always override -->
-            <param name="authoritative" value="true" />
-        </antcall>
-    </target>
+		<if><not><available file='${tz.file}' /></not>
+			<then>
+				<mkdir dir='${tz.dir}' />
+				<echo>Generating ${tz.file}</echo>
+				<java classname="com.zimbra.kabuki.tools.tz.GenerateData">
+					<classpath refid="class.path" />
+					<classpath path="${build.classes.dir}" />
+					<arg value="-i"/>
+					<arg value="${tz.data}"/>
+					<arg value="-o"/>
+					<arg value="${tz.file}"/>
+				</java>
+			</then>
+		</if>
+	</target>
 
-  <target name="jam-files" depends="compile,copy-files-to-build-area">
-      <taskdef name="jammer" classname="com.zimbra.webClient.build.PackageJammerTask" classpath="${build.dir}/classes"/>
-      <path id='jam-files.path'>
-          <fileset dir='${build.dir}/WebRoot/js' includes='*.js' excludes='*_all.js' />
-      </path>
-      <pathconvert property="jam-files.prop" refid="jam-files.path" pathsep=','>
-          <chainedmapper>
-              <flattenmapper />
-              <globmapper from="*.js" to="*" />
-          </chainedmapper>
-      </pathconvert>
-      <foreach target='jam-file' param='arg' list='${jam-files.prop}' />
-      <mkdir dir='${build.dir}/WebRoot/public/jsp' />
-      <foreach target='jsp-file' param='arg' list='${jam-files.prop}' />
+	<target name='i18n' depends='compile'>
+		<property name='i18n.msgs.dir' value='${build.classes.dir}/messages' />
+		<property name='i18n.msgs.file' value='${i18n.msgs.dir}/I18nMsg.properties' />
+
+		<dependset>
+			<srcfileset dir='${java.dir}' includes='**/i18n/GenerateData*.java' />
+			<targetfilelist dir='.' files='${i18n.msgs.file}' />
+		</dependset>
+
+		<if><not><available file='${i18n.msgs.file}' /></not>
+			<then>
+				<taskdef name='i18n'
+						 classname='com.zimbra.kabuki.tools.i18n.GenerateDataTask'
+						 classpath='${build.classes.dir}'
+				/>
+
+				<mkdir dir='${i18n.msgs.dir}' />
+				<i18n destdir='${i18n.msgs.dir}' />
+			</then>
+		</if>
+	</target>
+
+	<target name='images' depends='images-init'>
+		<!--<property name='img.css.dir' value='_compiled' />-->
+		<!--<property name='img.css.file' value='${build.css.filename}' />-->
+		<!--<property name='img.dir.ignore' value='animated,_*' />-->
+		<!--<property name='img.dir.nomerge' value='examples,logo,translate' />-->
+
+		<copy todir="${build.web.dir}" flatten="true">
+			<fileset dir='${img.dir}' includes='**/logo/favicon.ico'/>
+		</copy>
+
+		<dependset>
+			<srcfileset dir='${img.dir}' />
+			<srcfileset dir='${java.dir}' includes='**/img/*.java' />
+			<targetfilelist dir='${build.img.dir}' files='${build.css.filename}' />
+		</dependset>
+
+		<if><not><available file='${build.img.dir}/${build.css.filename}' /></not>
+			<then>
+				<mkdir dir="${build.img.dir}" />
+
+				<!-- core images -->
+				<imagemerge destdir='${build.img.dir}' disable='true'
+							cssfile='${build.css.filename}' csspath='/${deploy.app}/img/'>
+					<dirset dir='${web.dir}' includes='img/**' />
+				</imagemerge>
+
+				<replace token="@jsVersion@" value="${build.simpleDate}" file='${build.img.dir}/${build.css.filename}' />
+
+				<!-- skin images -->
+				<dirset id='skins.dirset' dir='${skins.dir}' includes='*' />
+				<pathconvert property='skins.dirs' refid='skins.dirset' pathsep=','>
+					<flattenmapper />
+				</pathconvert>
+
+				<foreach list='${skins.dirs}' target='build-skin-images' param='skindir'>
+					<param name="skinbasedir" value="WebRoot"/>
+				</foreach>
+
+				<!-- customer skin images -->
+				<antcall target='customer-skin-images' />
+			</then>
+		</if>
+	</target>
+
+	<target name='images-init' depends='compile'>
+		<taskdef name='imagemerge'
+				 classname='com.zimbra.kabuki.tools.img.ImageMergeTask'
+				 classpathref='class.path'
+		/>
+	</target>
+
+	<target name='customer-skin-images' if='env.CUSTOMER_SKIN' unless='build.admin'>
+		<dirset id='customer.skins.dirset' dir='${customer.web.dir}' includes='skins/*' />
+		<pathconvert property='customer.skins.dirs' refid='customer.skins.dirset' pathsep=','>
+			<flattenmapper />
+		</pathconvert>
+
+		<for list='${customer.skins.dirs}' param='skindir'>
+			<sequential>
+				<if><available file="${customer.skin.dir}/@{skindir}/img/icons" />
+					<then>
+						<mkdir dir="${build.web.dir}/skins/@{skindir}/img/icons" />
+						<copy todir="${build.web.dir}/skins/@{skindir}/img/icons">
+							<fileset dir="${img.dir}" includes='${img.includes}' excludes='${img.excludes}'/>
+						</copy>
+						<copy todir="${build.web.dir}/skins/@{skindir}/img/icons" overwrite="true">
+							<fileset dir="${customer.skin.dir}/@{skindir}/img/icons" />
+						</copy>
+					</then>
+				</if>
+				<antcall target='build-skin-images'>
+					<param name="skindir" value="@{skindir}" />
+					<param name="skinbasedir" value="${customer.web.dir}"/>
+				</antcall>
+			</sequential>
+		</for>
+	</target>
+
+	<target name='build-skin-images' depends='images-init,build-skin-images-init'
+			if='skin-images-present'>
+		<property name='build.this.skin.dir' value='${build.web.dir}/skins/${skindir}/img' />
+
+		<mkdir dir="${build.this.skin.dir}"/>
+		<delete file='${build.this.skin.dir}/${build.css.filename}'/>
+
+		<echo/>
+		<echo message='Merging images for skin ${skindir}'/>
+		<echo/>
+		<imagemerge destdir='${build.this.skin.dir}' disable="true"
+					cssfile='${build.css.filename}' csspath='/${deploy.app}/skins/${skindir}/img/'>
+			<dirset dir='${skinbasedir}/skins/${skindir}' includes='img/**'/>
+		</imagemerge>
+
+		<replace token="@jsVersion@" value="${build.simpleDate}" file='${build.this.skin.dir}/${build.css.filename}' />
   </target>
 
-  <target name='jam-file'>
-      <condition property='wrap' value='false' else='true'>
-          <equals arg1='${arg}' arg2='Boot' />
-      </condition>
-      <condition property='pkgdir' value='ajax'>
-      	<or>
-          <equals arg1='${arg}' arg2='Ajax' />
-          <equals arg1='${arg}' arg2='AjaxZWC' />
-        </or>
-      </condition>
-      <condition property='pkgdir' value='zimbra'>
-        <or>
-          <equals arg1='${arg}' arg2='Zimbra' />
-          <equals arg1='${arg}' arg2='ZimbraZWC' />
-        </or>
-      </condition>
-      <condition property='pkgdir' value='zimbraMail'>
-          <equals arg1='${arg}' arg2='ZimbraCore' />
-      </condition>
-      <condition property='pkgdir' value='zimbraAdmin'>
-          <equals arg1='${arg}' arg2='Admin' />
-      </condition>
-      <jammer jsDir='${build.dir}/WebRoot/js' destFile='${build.dir}/WebRoot/js/${arg}_all.js'>
-          <filelist dir='${build.dir}/WebRoot/js' files='${arg}.js' wrap='${wrap}' />
-          <fileset dir='${build.dir}/WebRoot/js' includes='${pkgdir}/**/templates/*.js' />
-      </jammer>
-  </target>
+	<target name='build-skin-images-init'>
+		<condition property="skin-images-present">
+			<or>
+				<isset property='images.force' />
+				<available file="${skinbasedir}/skins/${skindir}/img" type="dir" />
+			</or>
+		</condition>
+	</target>
 
-  <target name='jsp-file'>
-      <condition property='pkgdir' value='ajax'>
-        <or>
-          <equals arg1='${arg}' arg2='Ajax' />
-          <equals arg1='${arg}' arg2='AjaxZWC' />
-        </or>
-      </condition>
-      <condition property='pkgdir' value='zimbraMail'>
-          <equals arg1='${arg}' arg2='ZimbraCore' />
-      </condition>
-      <condition property='pkgdir' value='zimbraAdmin'>
-          <equals arg1='${arg}' arg2='Admin' />
-      </condition>
-      <jammer jsDir='${build.dir}/WebRoot/js' destFile='${build.dir}/WebRoot/public/jsp/${arg}.jsp'
-              output='html' basepath='&lt;%=contextPath%>/js/' extension='.js&lt;%=ext%>?v=&lt;%=vers%>'>
-          <prefix><![CDATA[<%
+	<target name='styles'>
+		<property name='styles.dir' value='${build.web.dir}/css' />
+
+		<mkdir dir='${styles.dir}' />
+		<copy todir='${styles.dir}' flatten='true'>
+			<fileset dir='${js.dir}' includes='**/style/*.css' />
+		</copy>
+	</target>
+
+	<target name='settings' depends='init' unless='build.admin'>
+		<property name='settings.dir' value='${build.js.dir}/zimbraMail/share/model' />
+		<property name='settings.file' value='${settings.dir}/ZmSettings.js' />
+
+		<mkdir dir='${settings.dir}' />
+		<copy todir='${settings.dir}' flatten='true'>
+			<fileset dir='${js.dir}' includes='**/ZmSettings.js' />
+		</copy>
+		<replace file="${settings.file}" token="@buildVersion@" value="${zimbra.buildinfo.version}" />
+		<replace file="${settings.file}" token="@buildRelease@" value="${zimbra.buildinfo.release}" />
+		<replace file="${settings.file}" token="@buildDateTime@" value="${DSTAMP}-${TSTAMP}" />
+	</target>
+
+	<target name='jam-files' depends='templates,timezones'>
+		<property name='jam.jsp.dir' value='${build.web.dir}/public/jsp' />
+
+		<mkdir dir='${build.js.dir}' />
+		<mkdir dir='${jam.jsp.dir}' />
+
+		<copy todir='${build.js.dir}' flatten='true'>
+			<fileset dir='${js.dir}' includes='${jam.includes}' excludes='${jam.excludes}' />
+		</copy>
+
+		<taskdef name="packagedependset"
+				 classname="com.zimbra.webClient.build.PackageDependSetTask"
+				 classpath="${build.classes.dir}"
+		/>
+		<taskdef name="jammer"
+				 classname="com.zimbra.webClient.build.PackageJammerTask"
+				 classpath="${build.classes.dir}"
+		/>
+
+		<fileset id='jam-files.fileset' dir='${build.js.dir}' includes='*.js' excludes='*_all.js' />
+		<pathconvert property="jam-files.list" refid="jam-files.fileset" pathsep=','>
+			<chainedmapper>
+				<flattenmapper />
+				<globmapper from="*.js" to="*" />
+			</chainedmapper>
+		</pathconvert>
+
+		<!-- NOTE: This has to be done in a separate target call so that
+				   the property values are isolated from each other. -->
+		<foreach target='jam-file' list='${jam-files.list}' param='arg' />
+		<!--<foreach target='jam-file' list='Zimbra' param='arg' />-->
+	</target>
+
+	<target name='jam-file'>
+		<fail message='This target cannot be called directly.' unless='arg' />
+
+		<property name='jam.file' value='${build.js.dir}/${arg}_all.js' />
+		<property name='jsp.file' value='${build.web.dir}/public/jsp/${arg}.jsp' />
+		<property name='depends.file' value='${build.js.dir}/${arg}${depends.ext}' />
+
+		<packagedependset>
+			<srcdependslist dir='.' files='${depends.file}' />
+			<srcfileset dir='${java.dir}' includes='**/PackageJammerTask.java' />
+			<targetfilelist dir='.' files='${jam.file}' />
+			<targetfilelist dir='.' files='${jsp.file}' />
+		</packagedependset>
+
+		<if><not><available file='${jam.file}' /></not>
+			<then>
+				<!-- TODO: need to fix this for new dir layout -->
+				<condition property='wrap' value='false' else='true'>
+					<equals arg1='${arg}' arg2='Boot' />
+				</condition>
+
+				<property name='jam.template.dir' value='${build.template.dir}' />
+				<patternset id='jam.template.fileset' excludes='**' />
+				<if><or><equals arg1='${arg}' arg2='Ajax' />
+						<equals arg1='${arg}' arg2='AjaxZWC' />
+					</or>
+					<then>
+						<patternset id='jam.template.fileset' includes='dwt/**' />
+					</then>
+				</if>
+				<if><or><equals arg1='${arg}' arg2='Zimbra' />
+						<equals arg1='${arg}' arg2='ZimbraZWC' />
+					</or>
+					<then>
+						<patternset id='jam.template.fileset' includes='zimbra/**' />
+					</then>
+				</if>
+				<if><equals arg1='${arg}' arg2='Admin' />
+					<then>
+						<patternset id='jam.template.fileset' includes='admin/**' />
+					</then>
+				</if>
+				<if><equals arg1='${arg}' arg2='ZimbraCore' />
+					<then>
+						<patternset id='jam.template.fileset' excludes='dwt/**,zimbra/**,admin/**' />
+					</then>
+				</if>
+
+				<jammer jsDestFile='${jam.file}' htmlDestFile='${jsp.file}'
+						dependsFile='${depends.file}' output='all'
+						basepath='&lt;%=contextPath%>/js/'
+						extension='.js?v=&lt;%=vers%>'>
+					<prefix output='html'><![CDATA[<%
 String contextPath = request.getContextPath();
 if(contextPath.equals("/")) contextPath = "";
 String vers = (String) request.getAttribute("version");
@@ -362,790 +576,202 @@ if (vers == null) vers = "";
 String ext = (String) request.getAttribute("fileExtension");
 if (ext == null) ext = "";
 %>]]></prefix>
-          <filelist dir='${build.dir}/WebRoot/js' files='${arg}.js' />
-          <fileset dir='${build.dir}/WebRoot/js' includes='${pkgdir}/**/templates/*.js' manifest='false'/>
-      </jammer>
-  </target>
-
-  <target name="gzip-copy-js">
-    <!-- gzip then copy source file to the .js extension for use when gzip=false -->
-    <gzip src="${var}${rhinoExtension}${licenseExtension}" zipfile="${var}${gzipExtension}"/>
-    <copyfile src="${var}${rhinoExtension}${licenseExtension}" dest="${var}" forceoverwrite="true"/>
-    <delete file="${var}${rhinoExtension}"/>
-    <delete file="${var}${rhinoExtension}${licenseExtension}"/>
-  </target>
-
-    <target name="rhino-compress">
-        <echo>Strip whitespace, comments and debug calls: ${var}</echo>
-        <replaceregexp byline="true">
-            <regexp pattern="DBG.print(.*);|DBG.time(.*);|DBG.dump(.*);|DBG.setTitle(.*);"/>
-            <substitution expression=" "/>
-            <fileset file="${var}"/>
-        </replaceregexp>
-        <java jar="${jars.dir}/yuicompressor-1.1.jar" fork="true" failonerror="true">
-            <arg value="-o"/>
-            <arg value="${var}${rhinoExtension}"/>
-            <arg value="${var}"/>
-        </java>
-    </target>
-
-    <target name="prepend-ZPL">
-    <concat destfile="${var}${rhinoExtension}${licenseExtension}">
-      <header filtering="no" file="${build.dir}/preamble-zpl.txt"/>
-      <path>
-	<fileset file="${var}${rhinoExtension}"/>
-      </path>
-    </concat>
-    <echo>Prepend ZPL: ${var}</echo>
-  </target>
-
-  <target name="prepend-ASL">
-    <concat destfile="${var}${rhinoExtension}${licenseExtension}">
-      <header filtering="no" file="${build.dir}/preamble-asl.txt"/>
-      <path>
-	<fileset file="${var}${rhinoExtension}"/>
-      </path>
-    </concat>
-    <echo>Prepend ASL: ${var}</echo>
-  </target>
-
-	<target name='generate-preambles' depends='check4zimbraajax'>
-		<mkdir dir='${build.dir}'/>
-		<concat destfile="${build.dir}/preamble-asl.txt">
-			<header>/*</header>
-			<footer>*/</footer>
-			<path>
-				<fileset file="${ajax.dir}/LICENSE.txt" />
-				<fileset file="${ajax.dir}/NOTICE.txt" />
-			</path>
-		</concat>
-		<concat destfile="${build.dir}/preamble-zpl.txt">
-			<header>/*</header>
-			<footer>*/</footer>
-			<path>
-				<fileset file="../ZimbraLicenses/zimbra/preamble-ZPL-WebClient.txt" />
-			</path>
-		</concat>
+					<!-- NOTE: order is important; need to find generated files first -->
+					<src dir='${build.js.dir}' />
+					<src dir='${build.template.dir}' />
+					<src dir='${js.dir}' />
+					<filelist dir='${build.js.dir}' files='${arg}.js' wrap='${wrap}' />
+					<!-- include templates, if found -->
+					<fileset dir='${jam.template.dir}' wrap='${wrap}'
+							 basepath='&lt;%=contextPath%>/templates/'
+							 extension='.template.js?v=&lt;%=vers%>'>
+						<patternset refid="jam.template.fileset"/>
+					</fileset>
+				</jammer>
+			</then>
+			<else>
+				<echo>Skipping ${jam.file}. File is up-to-date.</echo>
+			</else>
+		</if>
 	</target>
 
-    <target name="compress-js-files" depends="copy-files-to-build-area, tz, copy-help, copy-admin-help, jam-files,generate-preambles">
-		<fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/*_all.js" />
-		<!--<copy todir="${build.dir}/WebRoot">-->
-			<!--<fileset refid="js-includes" />-->
-		<!--</copy>-->
-		<foreach target="rhino-compress" param="var">
-			<path>
-				<fileset refid="js-includes" />
-			</path>
-		</foreach>
-		<foreach target="prepend-ZPL" param="var">
-			<path>
-				<fileset dir="${build.dir}/WebRoot/js" includes='*_all.js' excludes='Boot*,Ajax*' />
-			</path>
-		</foreach>
-		<foreach target="prepend-ASL" param="var">
-			<path>
-				<fileset dir="${build.dir}/WebRoot/js" includes='Boot_all.js,Ajax*_all.js' />
-			</path>
-		</foreach>
-		<foreach target="gzip-copy-js" param="var">
-			<path>
-				<fileset refid="js-includes" />
-			</path>
-		</foreach>
-	</target>
+	<target name='compress' depends='jam-files' if='build.prod'>
+		<property name='asl.files' value='LICENSE.txt,NOTICE.txt' />
+		<property name='zpl.files' value='zimbra/preamble-ZPL-WebClient.txt' />
 
-  <target name='images'>
-    <antcall target='build-images'>
-      <param name="csspathprefix" value="/zimbra/img/"/>
-    </antcall>
-  </target>
-  
-  <target name='admin-images'>
-    <antcall target='build-images'>
-      <param name="csspathprefix" value="${admin.url}/img/"/>
-    </antcall>
-  </target>
-  
+		<property name='preamble.asl.file' value='${build.dir}/preamble-asl.txt' />
+		<property name='preamble.zpl.file' value='${build.dir}/preamble-zpl.txt' />
 
-  <target name='build-images' depends='images-are-dirty,compile' unless='imagesdone'>
-    <!-- copy animated images 
-    Since the imagemerge program does not support animated GIFs we have to use the
-    copy ant task and manually create the CSS rules -->
-    <echo/>
-    <echo message='Copying animated images'/>
-    <echo/>
-    <copy todir="${images.animated.destDir}">
-      <fileset dir="${ajax.dwtimg.dir}/animated"  includes="*"/>
-    </copy>
-    <echo message='Copy ico image'/>
-    <copy todir="${build.dir}/WebRoot" flatten="true">
-    	<fileset dir='img/loRes' includes='**/logo/favicon.ico'/>
-    </copy>
-  	
-  	<property name='dir.imgcache' value='../../public'/>
+		<fileset id="js-includes" dir="${build.js.dir}" includes="*_all.js" />
 
-    <!-- merge loRes images -->
-    <mkdir dir="${images.loRes.destDir}"/>
-    <delete file='${images.loRes.destDir}/${images.cssFile}'/>
-    <delete file='${images.loRes.destDir}/${dir.imgcache}/CacheLoRes.html'/>
-    <echo/>
-
-    <echo message='Merging dwt images'/>
-    <echo/>
-    <imagemerge destdir='${images.loRes.destDir}' disable='true'
-      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'
-      cachefile='${dir.imgcache}/CacheLoRes.html'>
-      <dirset dir='${ajax.dwtimg.dir}/loRes' includes='*' excludes='**/examples,**/shadow_border'/>
-    </imagemerge>
-
-    <!-- Copy some DWT files; They need a direct image as merged images are not used currently-->
-    <imagemerge destdir='${images.loRes.destDir}' copy='true'
-      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'>
-      <dirset dir='${ajax.dwtimg.dir}/loRes' includes='dwt'/>
-    </imagemerge>
-
-    <echo message='Copying non-mergeable dwt images'/>
-    <echo/>
-    <imagemerge destdir='${images.loRes.destDir}' copy='true'
-      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'
-      cachefile='${dir.imgcache}/CacheLoRes.html'>
-      <dirset dir='${ajax.dwtimg.dir}/loRes' includes='**/shadow_border'/>
-    </imagemerge>
-
-
-    <echo message='Merging app images (-logo, -translate)'/>
-    <echo/>
-    <imagemerge destdir='${images.loRes.destDir}' disable='true'
-      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'
-      cachefile='${dir.imgcache}/CacheLoRes.html'>
-      <dirset dir='img/loRes' includes='*'  excludes="**/logo,**/translate"/>
-    </imagemerge>
-
-    <echo/>
-    <echo message='Copying non-mergeable app images (logo, translate)'/>
-    <echo/>
-    <imagemerge destdir='${images.loRes.destDir}' copy='true'
-      cssfile='${images.cssFile}' csspath='${csspathprefix}loRes/'
-      cachefile='${dir.imgcache}/CacheLoRes.html'>
-      <dirset dir='img/loRes' includes='**/logo,**/translate'/>
-    </imagemerge>
-    <echo/>
-    <replace token="@jsVersion@" value="${build.simpleDate}" file='${build.dir}/WebRoot/public/CacheLoRes.html' />
-    <replace token="@jsVersion@" value="${build.simpleDate}" file='${images.loRes.destDir}/${images.cssFile}' />
-    <copy file="${images.loRes.destDir}/${images.cssFile}" todir="${build.dir}/WebRoot/css" overwrite="true"/>
-    <antcall target="skin-images">
-        <param name='build.simpleDate' value='${build.simpleDate}'/>
-    </antcall>
-
-  </target>
-
-  <target name='skin-images' depends='default-skins,customer-skin' />
-
-  <target name='default-skins'>
-    <dirset id='skins.dirset' dir='WebRoot/skins' includes='*' />
-    <pathconvert property='skins.dirs' refid='skins.dirset' pathsep=','>
-        <flattenmapper />
-    </pathconvert>
-    <foreach list='${skins.dirs}' target='build-skin-images' param='skindir'>
-		<param name="csspathprefix" value="/zimbra/img/"/>
-		<param name="skinbasedir" value="WebRoot"/>
-    </foreach>
-  </target>
-
-  <target name='customer-skin' if='env.CUSTOMER_SKIN'>
-	<dirset id='customer.skins.dirset' dir='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot' includes='skins/*' />
-	<pathconvert property='customer.skins.dirs' refid='customer.skins.dirset' pathsep=','>
-		<flattenmapper />
-	</pathconvert>
-	<echo>dirs: ${customer.skins.dirs}</echo>
-	<for list='${customer.skins.dirs}' param='skindir'>
-		<sequential>
-			<if>
-				<available file="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot/skins/@{skindir}/img/icons" />
-				<then>
-					<mkdir dir="${build.dir}/WebRoot/skins/@{skindir}/img/icons" />
-					<copy todir="${build.dir}/WebRoot/skins/@{skindir}/img/icons">
-						<fileset dir="img/loRes" />
-					</copy>
-					<mkdir dir="${build.dir}/WebRoot/skins/@{skindir}/img/icons/dwt"/>
-					<copy todir="${build.dir}/WebRoot/skins/@{skindir}/img/icons/dwt">
-						<fileset dir="${ajaxdwt.images.dir}" />
-					</copy>
-					<copy todir="${build.dir}/WebRoot/skins/@{skindir}/img/icons" overwrite="true">
-						<fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot/skins/@{skindir}/img/icons" />
-					</copy>
-				</then>
-			</if>
-			<antcall target='build-skin-images'>
-				<param name="skindir" value="@{skindir}" />
-				<param name="csspathprefix" value="/zimbra/img/"/>
-				<param name="skinbasedir" value="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot"/>
-			</antcall>
-		</sequential>
-	</for>
-  </target>
-
-  <target name='package-skin'>
-      <mkdir dir='${build.dir}/skins' />
-      <zip destfile="${build.dir}/skins/${skinname}.zip">
-          <fileset dir='${build.dir}/WebRoot' includes='skins/${skinname}/**' />
-          <fileset dir='${build.dir}/WebRoot' includes='img/loRes/skins/${skinname}/**' />
-          <fileset dir='${build.dir}/WebRoot' includes='portals/${skinname}/**' />
-      </zip>
-  </target>
-
-  <target name='build-skin-images' depends='build-skin-images-init,compile' if='skin-images-present' unless='imagesdone'>
-	<property name='dir.skincache' value='../../../../skins/${skindir}' />
-    <!-- merge loRes skin images -->
-    <mkdir dir="${images.loRes.destDir}/skins/${skindir}"/>
-    <delete file='${images.loRes.destDir}/skins/${skindir}/${skindir}.css'/>
-    <delete file='${images.loRes.destDir}/skins/${skindir}/${dir.skincache}/CacheLoRes.html'/>
-    <echo/>
-    <echo message='Merging loRes images for skin ${skindir}'/>
-    <echo/>
-    <imagemerge destdir='${images.loRes.destDir}/skins/${skindir}'
-      cssfile='${skindir}.css' csspath='${csspathprefix}loRes/skins/${skindir}/'
-      cachefile='${dir.skincache}/CacheLoRes.html' disable="true">
-      <dirset dir='${skinbasedir}/skins/${skindir}' includes='**/img/**'/>
-    </imagemerge>
-    <replace token="@jsVersion@" value="${build.simpleDate}" file='${images.loRes.destDir}/skins/${skindir}/${dir.skincache}/CacheLoRes.html' />
-    <replace token="@jsVersion@" value="${build.simpleDate}" file='${images.loRes.destDir}/skins/${skindir}/${skindir}.css' />
-    <copy file="${images.loRes.destDir}/skins/${skindir}/${skindir}.css"
-          tofile="${build.dir}/WebRoot/skins/${skindir}/${skindir}_imgs.css" overwrite="true"/>      
-    <echo/>
-  </target>
-
-  <target name='build-skin-images-init'>
-      <available property="skin-images-present" file="${skinbasedir}/skins/${skindir}/img" type="dir" />
-  </target>
-
-  <target name='images-are-dirty' unless='images.force'>
-    <dependset>
-      <srcfileset dir='img' includes='**/*'/>
-      <srcfileset dir='${ajax.dwtimg.dir}' includes='**/*'/>
-      <srcfileset dir='${ajax.imagemerge.dir}' includes='**/*.java'/>
-      <targetfilelist dir='${images.loRes.destDir}' files='${images.cssFile}'/>
-    </dependset>
-    <available property='imagesdone' file='${images.loRes.destDir}/${images.cssFile}'/>
-  </target>
-
-
-  <target name='sortimages' depends='sortimagesinit'>
-    <!-- check properties -->
-    <fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>
-    <fail unless='sort.target' message='Must specify target directory. For example: ant -Dsort.target=dest ...'/>
-
-    <!-- process directories -->
-    <imagesort source='${sort.source}' target='${sort.target}' delete='true'/><!-- noop='true'/-->
-  </target>
-
-  <target name='sorticons' depends='sortimagesinit'>
-    <!-- usage:  make a "images" directory in your ZimbraWebClient directory and do:
-    ant sorticons
-    -->
-    <echo message='Sorting ZimbraWebClient/img/loRes'/><echo/>
-    <imagesort source='images' target='img/loRes' delete='true'/>
-    <echo message='Sorting Ajax/dwt/loRes'/><echo/>
-    <imagesort source='images' target='${ajax.dwtimg.dir}/loRes' delete='true'/>
-
-  </target>
-
-  <target name='sortskin' depends='sortimagesinit'>
-    <!-- usage:  make a "images" directory in your ZimbraWebClient directory and do:
-    ant sortskin
-    -->
-    <echo message='Sorting skins/steel'/>
-    <imagesort source='images' target='WebRoot/skins/steel/img' delete='true'/>
-  </target>
-
-
-  <target name='sortimagesinit' depends='compile'>
-  </target>
-
-  <target name="check4zimbraajax">
-    <available property="ajax.present" file="${ajax.dir}" type="dir"/>
-    <fail message="This project depends on Ajax being checked out at: ${ajax.dir}" unless="ajax.present"/>
-  </target>
-
-  <target name="copy-files-to-build-area" depends="check4zimbraajax">
-      <echo message='isProduction: ${isProduction}'/>
-    <copy file="WebRoot/WEB-INF/web.xml" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="${isProduction}"/>
-    <copy todir="${build.dir}/WebRoot/public/" overwrite="${isProduction}" >
-      <fileset dir="WebRoot/public" includes="**/*"/>
-    </copy>
-    <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
-      <fileset dir="WebRoot/" excludes="**/help/**,**/adminhelp/**,**/admin_skins/**,**/templates/**,js/*/package/**"/>
-    </copy>
-    <copy todir='${build.dir}/WebRoot/js' overwrite='${isProduction}' flatten='true'>
-        <fileset dir='WebRoot/js' includes='*/package/*.js' />
-    </copy>
-    <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" failonerror='false'>
-        <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="skins/**" />
-        <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="portals/**" />
-	</copy>
-	<copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
-      <fileset dir="${ajax.dir}/WebRoot/js"/>
-    </copy>
-	<copy todir='${build.dir}/WebRoot/css' overwrite='${isProduction}'>
-	  <fileset dir='${ajax.dir}/WebRoot/js/config/style' includes='*.css' />
-	  <fileset dir='WebRoot/js/zimbra/config/style' includes='*.css' />
-	  <fileset dir='WebRoot/js/zimbraAdmin/config/style' includes='*.css' />
-	  <fileset dir='WebRoot/js/zimbraMail/config/style' includes='*.css' />
-	</copy>
-  </target>
-
-  <target name="copy-admin-skins-to-build-area">
-    <copy todir="${build.dir}/WebRoot/skins" overwrite="true" >
-      <fileset dir="WebRoot/admin_skins" />
-    </copy>
-  </target>
-  <target name="copy-imgs-to-tmp-area" depends="check4zimbraajax">
-    <copy todir="${tmp.dir}" overwrite="true">
-      <fileset dir="img/loRes"/>
-    </copy>
-  </target>
-
-  <target name="helpinit" unless='help.force'>
-      <available property='helpdone' file='${build.dir}/WebRoot/help/WebHelp/'/>
-      <available property='helpdone' file='${build.dir}/WebRoot/help/BasicWebHelp/'/>
-  </target>
-
-    <target name="copy-help" depends="helpinit" unless='helpdone'>
-        <unzip src="WebRoot/help/WebHelp.zip" dest="${build.dir}/WebRoot/tmp/help" overwrite="yes">
-            <patternset>
-                <include name="WebHelp/**/*"/>
-            </patternset>
-        </unzip>
-        <copy todir="${build.dir}/WebRoot/help/" overwrite="true">
-            <fileset dir="${build.dir}/WebRoot/tmp/help/WebHelp/" includes="**/*"/>
-        </copy>
-        <delete dir="${build.dir}/WebRoot/tmp/help"/>
-        <unzip src="WebRoot/help/BasicWebHelp.zip" dest="${build.dir}/WebRoot/tmp/bhelp" overwrite="yes">
-            <patternset>
-                <include name="BasicWebHelp/**/*"/>
-            </patternset>
-        </unzip>
-        <copy todir="${build.dir}/WebRoot/bhelp/" overwrite="true">
-            <fileset dir="${build.dir}/WebRoot/tmp/bhelp/BasicWebHelp/" includes="**/*"/>
-        </copy>
-        <delete dir="${build.dir}/WebRoot/tmp/bhelp"/>
-    </target>
-
-  <target name="adminhelpinit" unless='adminhelp.force'>
-    <available property='adminhelpdone' file='${build.dir}/WebRoot/adminhelp/html/WebHelp/'/>
-  </target>
-
-  <target name="copy-admin-help" depends="adminhelpinit" unless='adminhelpdone'>
-    <mkdir dir="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp"/>
-    <unzip src="WebRoot/adminhelp/html/ZimbraAdminOLH.zip" dest="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp" overwrite="yes">
-      <patternset>
-	<include name="WebHelp/**/*"/>
-      </patternset>
-    </unzip>
-    <copy todir="${build.dir}/WebRoot/adminhelp/html/" overwrite="true" >
-      <fileset dir="${build.dir}/WebRoot/tmp/adminhelp/html/WebHelp/" includes="**/*"/>
-    </copy>
-    <copy todir="${build.dir}/WebRoot/adminhelp/pdf/" overwrite="true" >
-      <fileset dir="WebRoot/adminhelp/pdf/" includes="*"/>
-    </copy>
-    <delete dir="${build.dir}/WebRoot/tmp/adminhelp/html"/>
-  </target>
-
-  <target name="set-buildinfo-vars">
-	<tstamp />
-    <condition property="zimbra.buildinfo.version" value="0.0">
-      <not>
-        <isset property="${zimbra.buildinfo.version}" />
-      </not>
-    </condition>
-    <condition property="zimbra.buildinfo.release" value="${user.name}">
-      <not>
-        <isset property="${zimbra.buildinfo.release}" />
-      </not>
-    </condition>
-    <condition property="zimbra.buildinfo.date" value="${DSTAMP}-${TSTAMP}">
-      <not>
-        <isset property="${zimbra.buildinfo.date}" />
-      </not>
-    </condition>
-    <condition property="zimbra.buildinfo.host" value="${zimbra.server.hostname}">
-      <not>
-        <isset property="${zimbra.buildinfo.host}" />
-      </not>
-    </condition>
-  </target>
-
-  <target name="generate-build-info">
-    <propertyfile file="${build.dir}/build.properties" >
-      <entry  key="build.number" type="int" default="1" operation="+" pattern="00000"/>
-      <entry  key="build.date" type="date" value="now" pattern="yyyy-MM-dd HH:mm:ss" />
-      <entry  key="build.simpleDate" type="date" value="now" pattern="yyMMddHHmmss"/>
-      <entry  key="date.format" value="yyyyMMddHHmmss" />
-    </propertyfile>
-    <property file="${build.dir}/build.properties" />
-  </target>
-
-  <target name="inject-build-info" depends="set-buildinfo-vars,generate-build-info">
-	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSettings.js" token="@buildVersion@" value="${zimbra.buildinfo.version}" />
-	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSettings.js" token="@buildRelease@" value="${zimbra.buildinfo.release}" />
-	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSettings.js" token="@buildDateTime@" value="${DSTAMP}-${TSTAMP}" />
-  </target>
-
-  <!--
-  This target is meant only to be run after a full deploy has
-  been done once. It does not deal with the java code used by the
-  ZimbraWebClient webapp, so if there are any java changes, another
-  deploy will have to be run.
-  -->
-  <target name="dev-sync" depends='templates,dev-sync-copy' description="Web Client Quick Sync">
-  </target>
-  
-  <!-- copy files only (without munging templates) -->
-  <target name='dev-sync-copy'>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}" failonerror="false">
-        <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="skins/**" />
-        <fileset dir="build/WebRoot" includes="skins/**/*.js" />
-        <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="portals/**" />
-    </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-	  <fileset dir="WebRoot"
-               includes="js/**,test/**,public/**,skins/**,portals/**" 
-               excludes="**/style/*.css,js/*/package/**"
-      />
-      <fileset dir='${build.dir}/WebRoot' includes='img/**,js/*_all.js'/>
-    </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}/js" flatten='true'>
-      <fileset dir='WebRoot/js' includes='*/package/**' />
-    </copy>
-    <copy verbose='true' todir='${deploy.dir}${deploy.path}/css' flatten='true'>
-	  <fileset dir='${ajax.dir}/WebRoot/js' includes='**/config/style/*.css' />
-	  <fileset dir='WebRoot/js' includes='**/config/style/*.css' />
-	</copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/ajax">
-      <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js,**/*.css" excludes="**/img/"/>
-    </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-      <fileset dir="${build.dir}/WebRoot" includes="js/**/templates/*.js,public/jsp/**" />
-    </copy>
-    <copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes/msgs' flatten='true'>
-      <fileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
-      <fileset dir='${ajax.dir}/WebRoot/js' includes='**/config/msgs/*.properties'/>
-      <fileset dir='WebRoot/js' includes='**/config/msgs/*.properties'/>
-    </copy>
-    <copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes/keys' flatten='true'>
-      <fileset dir='${ajax.dir}/WebRoot/js' includes='**/config/keys/*.properties'/>
-      <fileset dir='WebRoot/js' includes='**/config/keys/*.properties'/>
-    </copy>
-    <copy todir="${deploy.dir}${deploy.path}/WEB-INF">
-      <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>
-    </copy>
-    <copy todir="${deploy.dir}${deploy.path}/WEB-INF" overwrite="true">
-      <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
-    </copy>
-    <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
-    <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
-    <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
-    <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />
-  	<copy verbose="true" todir="${deploy.dir}${deploy.path}/h">
-        <fileset dir="WebRoot/h" includes="**"/>
-    </copy>
-  	<copy verbose="true" todir="${deploy.dir}${deploy.path}/m">
-        <fileset dir="WebRoot/m" includes="**"/>
-    </copy>
-  	<copy verbose="true" todir="${deploy.dir}${deploy.path}/images/mobile">
-        <fileset dir="WebRoot/m/img" includes="**"/>
-    </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}/yui">
-        <fileset dir="WebRoot/yui" includes="**"/>
-    </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}/WEB-INF/tags">
-        <fileset dir="WebRoot/WEB-INF/tags" includes="**"/>
-    </copy>
-  </target>
-
-    <property name="zimbratl.dir" location="../ZimbraTagLib"/>
-    <property name="zimbratl.build.dir" location="${zimbratl.dir}/build"/>
-    <property name="zimbratl.build.classes.dir" location="${zimbratl.build.dir}/classes"/>
-    <property name="zimbratl.jars.dir" location="${zimbratl.dir}/jars"/>
-
-    <!-- activation.jar keeps mail.jar open.  As a result, on
-         Windows you cannot undeploy because Tomcat is unable to
-         complete delete the service directory. zimbra-native.jar
-         opens a shared library so it should not be in a war file
-         which can be redeployed.-->
-        <condition property="war.include" value="log4j*.jar">
-                <isset property="use-tomcat"/>
-        </condition>
-        <!-- jetty loads jetty-util*.jar, log4j*.jar and slf4j*.jar -->
-        <condition property="war.include" value="dummy.jar">
-                <isset property="use-jetty"/>
-        </condition>
-	
-	<property name="war.exclude"
-              value="servlet-api.jar,*ant*.jar,commons-cli*.jar,servlet-api.jar,custom_rhino.jar"/>
-
-    <target name="external-jar" depends="build-init">
-        <ant dir="${server.dir}" target="jar" inheritAll="false"/>
-        <ant dir="${common.dir}" target="jar" inheritAll="false"/>
-        <ant dir="${zimbratl.dir}" target="jar" inheritAll="false"/>
-    </target>
-
-    <target name='ajax-jar' depends='compile'>
-        <jar destfile='${dist.dir}/ajax-tools.jar' basedir="${build.dir}/classes">
-            <include name='com/zimbra/kabuki/tools/img/*.class' />
-            <include name='com/zimbra/kabuki/tools/template/*.class' />
-            <exclude name='**/*Task*.class' />
-        </jar>
-        <copy file='${jars.dir}/gifencoder.jar' todir='${dist.dir}' />
-    </target>
-
-  <target name="war" depends="external-jar,copy-files-to-build-area, tz, templates, jam-files, inject-build-info, images, i18n, ajax-jar">
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />  	
-    <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
-      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="com/zimbra/kabuki/tools/**,**/build/*"/>
-      <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
-      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-      <fileset dir="${build.dir}/WebRoot"
-               includes="*,img/**,js/**,css/**,test/**,skins/**,portals/**"
-               excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/config/keys/**"
-      />
-      <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/delegatedAuth.html,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
-        <lib dir="${server.build.dir}" includes="zimbrastore.jar"/>
-        <lib dir="${zimbratl.build.dir}" includes="zimbrataglib.jar"/>
-        <lib dir="${common.jars.dir}" includes="${war.include}"/>
-        <lib dir="${jars.dir}" includes="**.jar" excludes="${war.exclude}"/>
-        <webinf dir="WebRoot/WEB-INF" includes="tags/**" excludes="**/web.xml"/>
-        <zipfileset dir="WebRoot/h" includes="**" prefix="h"/>
-        <zipfileset dir="WebRoot/m" includes="**" prefix="m"/>
-        <zipfileset dir="WebRoot/yui" includes="**" prefix="yui"/>
-        <zipfileset dir="${ajaxdwt.images.dir}" prefix="images/dwt"/>
-        <zipfileset dir="WebRoot/m/img" prefix="images/mobile"/>
-        <zipfileset dir="img/loRes" prefix="images"/>
-        <zipfileset dir="WebRoot/skins/_base/logos" prefix="images/logos"/>
-    </war>
-  </target>
-
-    <target name="prod-war" depends="copy-files-to-build-area, templates, inject-build-info, compress-js-files, images, i18n, ajax-jar">
-    <copy file="WebRoot/WEB-INF/web.xml.production" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="true"/>
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />		
-    <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
-      <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
-      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class,**/servlets/*.class"/>
-      <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-      <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="bhelp/**"/>
-      <fileset dir="${build.dir}/WebRoot"
-               includes="*,img/**,js/**,css/**,skins/**,portals/**"
-               excludes="js/zimbraAdmin/**,js/Admin*,js/XForms*,**/config/msgs/**,**/config/keys/**,**/xforms/**,**/test/**"
-      />
-      <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/delegatedAuth.html,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
-
-        <!-- ======= HTML ========== -->
-        <lib dir="${server.build.dir}" includes="zimbrastore.jar"/>
-        <lib dir="${zimbratl.build.dir}" includes="zimbrataglib.jar"/>
-        <lib dir="${common.jars.dir}" includes="${war.include}"/>
-        <lib dir="${jars.dir}" includes="**.jar" excludes="${war.exclude}"/>
-        <webinf dir="WebRoot/WEB-INF" includes="tags/**" excludes="**/web.xml"/>
-        <zipfileset dir="WebRoot/h" includes="**" prefix="h"/>
-        <zipfileset dir="WebRoot/m" includes="**" prefix="m"/>
-        <zipfileset dir="WebRoot/yui" includes="**" prefix="yui"/>
-        <zipfileset dir="${ajaxdwt.images.dir}" prefix="images/dwt"/>
-        <zipfileset dir="WebRoot/m/img" prefix="images/mobile"/>
-        <zipfileset dir="img/loRes" prefix="images"/>
-        <zipfileset dir="WebRoot/skins/_base/logos" prefix="images/logos"/>
-        <!-- ======= HTML ========== -->
-
-    </war>
-  </target>
-
-    <target name="deploy" depends="war" description="Deploy Web Client">
-		<antcall target="deploy-war">
-			<param name="param.path" value="${deploy.path}"/>
-			<param name="param.warfile" value="${deploy.war}"/>
-            <param name='param.dirname' value='zimbra' />
-            <param name="param.warfilename" value="${warfilename}"/>
-		</antcall>
-    </target>
-
-    <target name="prod-deploy" depends="prod-war" description="Deploy Production Web Client">
-		<antcall target="deploy-war">
-			<param name="param.path" value="${deploy.path}"/>
-			<param name="param.warfile" value="${deploy.war}"/>
-            <param name='param.dirname' value='zimbra' />
-            <param name="param.warfilename" value="${warfilename}"/>
-		</antcall>
-    </target>
-
-  <target name="dev-dist" depends="war">
-    <delete>
-      <fileset dir="${dist.dir}" includes="${dist.tarfile}"/>
-    </delete>
-    <tar destfile="${dist.dir}/${dist.tarfile}">
-      <tarfileset dir="${dist.dir}"
-	includes="**"
-	mode="640" username="zimbra" group="zimbra"/>
-    </tar>
-  </target>
-
-  <!-- admin console targets -->
-  <target name="admin-dev-sync" depends='templates' description="Admin Quick Sync">
-    <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}">
-      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="public/launch*,js/*/package/**,js/zimbraMail/**,public/login.jsp,public/Login.jsp,public/launchZimbraMail.jsp,public/ZimbraMail.jsp,public/ZimbraMailNewCompose.jsp,public/Messages.jsp"/>
-      <fileset dir='${build.dir}/WebRoot' includes='public/jsp/**'/>
-      <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
-    </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}/js" flatten='true'>
-      <fileset dir='WebRoot' includes='js/*/package/**' />
-    </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/ajax">
-      <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js,**/*.css" excludes="**/img/"/>
-    </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js">
-      <fileset dir="${build.dir}/WebRoot/js" includes="**/templates/*.js" excludes="zimbraMail/**/templates/**" />
-    </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/zimbraAdmin/config/style">
-      <fileset dir="WebRoot/js/zimbraMail/config/style" includes="*.css" excludes="zm.css"/>
-    </copy>
-    <copy verbose='true' todir='${deploy.dir}${deploy.admin.path}/WEB-INF/classes'>
-      <fileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
-      <fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
-      <fileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
-        <fileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
-        <fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
-    </copy>
-
-    <dependset>
-      <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
-      <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
-      <srcfileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
-      <srcfileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
-      <srcfileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
-      <targetfilelist dir='${deploy.dir}${deploy.admin.path}/WEB-INF' files='web.xml'/>
-    </dependset>
-    <copy todir="${deploy.dir}${deploy.admin.path}/WEB-INF">  	
-      <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
-      <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>		
-    </copy>
-    <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
-    <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
-    <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
-  </target>
-
-  <!-- this is the production war file target for the admin webapp -->
-  <target name="admin-war" depends="templates, compress-js-files, generate-build-info, admin-images, copy-common-css-to-admin, copy-admin-skins-to-build-area, i18n">
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />  	
-    <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
-      <lib dir="${jars.dir}" includes="*.jar" excludes="${war.exclude}"/>
-      <lib dir="${common.jars.dir}" includes="${war.include}"/>
-  	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
-      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class,**/servlets/*.class"/>
-      <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/ajax/**,js/zimbra/**,js/zimbraAdmin/**,css/**,skins/**" excludes="js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
-      <fileset dir="${build.dir}/WebRoot" includes="js/Boot*.*,js/Ajax*.*,js/XForms*.*,js/Zimbra*.*,js/Admin*.*" excludes="js/AjaxZWC*,js/AjaxLogin*,js/ZimbraLogin*" />
-      <fileset dir="${build.dir}/WebRoot" includes="public/*" excludes="public/launch*,public/login.jsp,public/Login.jsp,public/SoundPlayer/**,public/Spreadsheet*"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/jsp/Admin.jsp,public/jsp/Ajax.jsp,public/jsp/Boot.jsp,public/jsp/XForms.jsp,public/jsp/Zimbra.jsp"/>
-      <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
-    </war>
-  </target>
-
-  <target name="admin-dev-war" depends="copy-files-to-build-area,copy-admin-skins-to-build-area, templates, jam-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
-    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />  	
-    <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
-      <lib dir="${jars.dir}" includes="*.jar" excludes="${war.exclude}"/>
-      <lib dir="${common.jars.dir}" includes="${war.include}"/>
-   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
-      <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="com/zimbra/kabuki/tools/**,**/build/*"/>
-      <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/ajax/**,js/zimbra/**,js/zimbraAdmin/**,css/**,skins/**" excludes="js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
-      <fileset dir="${build.dir}/WebRoot" includes="js/Boot*.*,js/Ajax*.*,js/XForms*.*,js/Zimbra*.*,js/Admin*.*" excludes="js/AjaxZWC*,js/AjaxLogin*,js/ZimbraLogin*" />
-      <fileset dir="${build.dir}/WebRoot" includes="public/*" excludes="public/launch*,public/login.jsp,public/Login.jsp"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/jsp/Admin.jsp,public/jsp/Ajax.jsp,public/jsp/Boot.jsp,public/jsp/XForms.jsp,public/jsp/Zimbra.jsp"/>
-      <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
-    </war>
-  </target>
-  
-  <target name="copy-common-css-to-admin">
-    <echo message="Copying common css files to ${build.dir}${deploy.admin.path}/WebRoot/js/zimbraAdmin/config/style"/>
-    <copy todir="${build.dir}/WebRoot/js/zimbraAdmin/config/style">  	
-      <fileset dir="${build.dir}/WebRoot/js/zimbraMail/config/style" includes="*.css" excludes="zm.css"/>
-    </copy>
-  </target>
-  
-	<target name="admin-deploy" depends="admin-dev-war" description="Deploy Admin">
-		<antcall target="deploy-war">
-			<param name="param.path" value="${deploy.admin.path}"/>
-			<param name="param.warfile" value="${deploy.admin.war}"/>
-            <param name='param.dirname' value='zimbraAdmin' />
-            <param name="param.warfilename" value="${adminwarfilename}"/>
-		</antcall>
-	</target>
-	
-    <target name="admin-prod-deploy" depends="admin-war" description="Deploy Production Admin">
-		<antcall target="deploy-war">
-			<param name="param.path" value="${deploy.admin.path}"/>
-			<param name="param.warfile" value="${deploy.admin.war}"/>
-            <param name='param.dirname' value='zimbraAdmin' />
-            <param name="param.warfilename" value="${adminwarfilename}"/>
-		</antcall>
-    </target>
-
-    <target name='restart-webserver'>
-        <ant dir="${server.dir}" target="restart-webserver" />
-    </target>
-
-	<target name="deploy-war">
-	<if><isset property="use-tomcat"/><then>
-		<echo>Deploy ${param.warfile} to ${deploy.url}${param.path}</echo>
-			<deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}" path="${param.path}" war="${param.warfile}" update="true"/>
-	</then><else>
-		<echo>Deploy ${param.warfile} to ${webserver.root.dir}/webapps</echo>
-			<property name='webapp.dir' value='${webserver.root.dir}/webapps/${param.dirname}' />
-			<property name='webapp.file' value='${webserver.root.dir}/webapps/${param.warfilename}' />
-			<ant dir="../ZimbraServer" target="stop-jetty" inheritAll="false"/>
-			<delete dir="${webapp.dir}"/>
-			<delete file="${webapp.file}"/>
-			<copy file="${param.warfile}" todir="${webserver.root.dir}/webapps"/>
-			<mkdir dir='${webapp.dir}' />
-			<unzip dest='${webapp.dir}' src="${webapp.file}" />
-			<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailPort%%" value="7070" />
-			<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailURL%%" value="${mail.url}" />
-			<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraAdminURL%%" value="${admin.url}" />
-			<ant dir="../ZimbraServer" target="start-jetty" inheritAll="false"/>
-		</else></if>
-		<if><available file='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/Zimlet' />
+		<!-- generate preambles -->
+		<dependset>
+			<srcfilelist dir='.' files='${asl.files}' />
+			<targetfilelist dir='.' files='${preamble.asl.file}' />
+		</dependset>
+		<if><not><available file='${preamble.asl.file}' /></not>
 			<then>
-				<ant dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/Zimlet" target="deploy-zimlets" inheritAll="false" />
+				<echo>Generating ASL preamble</echo>
+				<concat destfile="${preamble.asl.file}">
+					<header>/*</header>
+					<footer>*/</footer>
+					<filelist dir='.' files='${asl.files}' />
+				</concat>
 			</then>
 		</if>
-	  </target>
+
+		<dependset>
+			<srcfilelist dir='${license.dir}' files='${zpl.files}' />
+			<targetfilelist dir='.' files='${preamble.zpl.file}' />
+		</dependset>
+		<if><not><available file='${preamble.zpl.file}' /></not>
+			<then>
+				<echo>Generating ZPL preamble</echo>
+				<concat destfile="${preamble.zpl.file}">
+					<header>/*</header>
+					<footer>*/</footer>
+					<filelist dir='${license.dir}' files='${zpl.files}' />
+				</concat>
+			</then>
+		</if>
+
+		<!-- minimize js -->
+		<for param="var">
+			<path><fileset refid="js-includes" /></path>
+			<sequential>
+				<dependset>
+					<srcfilelist dir='.' files='@{var}' />
+					<targetfilelist dir='.' files='@{var}${jsmin.ext}' />
+				</dependset>
+				<if><not><available file='@{var}${jsmin.ext}' /></not>
+					<then>
+						<copy tofile="@{var}${nodebug.ext}" file='@{var}' />
+						<echo>Stripping debug to @{var}${nodebug.ext}</echo>
+						<replaceregexp byline="true">
+							<regexp pattern="DBG.print(.*);|DBG.time(.*);|DBG.dump(.*);|DBG.setTitle(.*);" />
+							<substitution expression=" " />
+							<fileset file="@{var}${nodebug.ext}"/>
+						</replaceregexp>
+						<echo>Minimizing to @{var}${jsmin.ext}</echo>
+						<java jar="${common.lib.dir}/custom_rhino.jar" fork="true" failonerror="true"
+							  output="@{var}${jsmin.ext}">
+							<jvmarg  value="-Xmn100M"/>
+							<jvmarg  value="-Xms500M"/>
+							<jvmarg  value="-Xmx500M"/>
+							<arg value="-opt" />
+							<arg value="-1" />
+							<arg value="-c" />
+							<arg value="@{var}${nodebug.ext}" />
+						</java>
+					</then>
+				</if>
+			</sequential>
+		</for>
+
+		<!-- prepend licenses -->
+		<for  param="var">
+			<path><fileset dir="${build.js.dir}" includes='Boot_all.js,Ajax*_all.js' /></path>
+			<sequential>
+				<dependset>
+					<srcfilelist dir='.' files='@{var}${jsmin.ext}' />
+					<targetfilelist dir='.' files='@{var}${license.ext}' />
+				</dependset>
+				<if><not><available file='@{var}${license.ext}' /></not>
+					<then>
+						<echo>Prepending ASL to @{var}${license.ext}</echo>
+						<concat destfile="@{var}${license.ext}">
+							<header file='${preamble.asl.file}' filtering='no' />
+							<fileset file='@{var}${jsmin.ext}' />
+						</concat>
+					</then>
+				</if>
+			</sequential>
+		</for>
+		<for param="var">
+			<path><fileset dir="${build.js.dir}" includes='*_all.js' excludes='Boot*,Ajax*' /></path>
+			<sequential>
+				<dependset>
+					<srcfilelist dir='.' files='@{var}${jsmin.ext}' />
+					<targetfilelist dir='.' files='@{var}${license.ext}' />
+				</dependset>
+				<if><not><available file='@{var}${license.ext}' /></not>
+					<then>
+						<echo>Prepending ZPL to @{var}${license.ext}</echo>
+						<concat destfile="@{var}${license.ext}">
+							<header file='${preamble.zpl.file}' filtering='no' />
+							<fileset file='@{var}${jsmin.ext}' />
+						</concat>
+					</then>
+				</if>
+			</sequential>
+		</for>
+
+		<!-- compress files -->
+		<for param="var">
+			<path><fileset refid="js-includes" /></path>
+			<sequential>
+				<gzip destfile="@{var}${compress.ext}" src="@{var}${license.ext}" />
+			</sequential>
+		</for>
+	</target>
+
+	<target name='deploy' depends='war'>
+		<ant dir="${server.dir}" target="stop-jetty" inheritAll="false"/>
+
+		<echo>Deploy ${build.war.file} to ${deploy.dir}</echo>
+		<delete dir="${webapp.dir}"/>
+		<delete file="${webapp.file}"/>
+
+		<mkdir dir='${webapp.dir}' />
+		<copy file="${build.war.file}" todir="${deploy.dir}"/>
+		<unzip dest='${webapp.dir}' src="${webapp.file}" />
+
+		<antcall target='webxml-deploy-replace' />
+
+		<ant dir="${server.dir}" target="start-jetty" inheritAll="false"/>
+
+		<if><and>
+				<not><isset property="build.admin" /></not>
+				<available file='${customer.zimlet.dir}' />
+			</and>
+			<then>
+				<ant dir="${customer.zimlet.dir}" target="deploy-zimlets" inheritAll="false" />
+			</then>
+		</if>
+	</target>
+
+	<target name='webxml-package-replace' depends='init'>
+		<copy tofile="${build.dir}/web.xml" file='${webxml.file}' />
+		<!-- replace @xyz@ tokens -->
+		<replace file="${build.dir}/web.xml" token="@prodMode@" value="${build.prod.value}" />
+		<replace file="${build.dir}/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+		<replace file="${build.dir}/web.xml" token="@mailUrl@" value="/zimbra" />
+		<replace file="${build.dir}/web.xml" token="@adminUrl@" value="/zimbraAdmin" />
+	</target>
+
+	<target name='webxml-deploy-replace' depends='init'>
+		<!-- replace %%xyz%% tokens -->
+		<replace file="${webapp.dir}/WEB-INF/web.xml" token="${deploy.url.token}" value="/${deploy.app}" />
+		<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailPort%%" value="7070" />
+	</target>
+
+	<target name='clean'>
+		<!--<property name='build.clean' value='true' />-->
+		<delete dir='${build.dir}' />
+	</target>
+
+	<!-- LEGACY TARGETS -->
+	<target name='dev-sync'				depends='sync' />
+	<target name='prod-war'				depends='prod,war' />
+	<target name='prod-deploy'			depends='prod,deploy' />
+	<target name='admin-dev-sync'		depends='admin,sync' />
+	<target name='admin-war'			depends='admin,prod,war' />
+	<target name='admin-dev-war'		depends='admin,war' />
+	<target name='admin-deploy'			depends='admin,deploy' />
+	<target name='admin-prod-deploy'	depends='admin,prod,deploy' />
+
+	<target name='restart-webserver'>
+		<ant dir="${server.dir}" target="restart-webserver" />
+	</target>
 
 </project>

@@ -110,6 +110,12 @@ ZmSkin.prototype._setSize = function(id, width, height) {
 };
 
 ZmSkin.prototype._reflowApp = function () {
+#IFDEF GECKO
+	// if in Gecko, tables don't always update properly
+	//	so force them to do so by resetting their HTML
+//	var outer = skin._getEl("skin_outer");
+//	outer.innerHTML = outer.innerHTML;
+#ENDIF
     if (window._zimbraMail) {
         window._zimbraMail.getAppViewMgr().fitAll();
     }

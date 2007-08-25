@@ -57,7 +57,7 @@ function() {
 // Data
 //
 
-ZmChicletButton.prototype.TEMPLATE = "zimbraMail.share.templates.Widgets#ZmAppChooserButton";
+ZmChicletButton.prototype.TEMPLATE = "share.Widgets#ZmAppChooserButton";
 
 //
 // Public methods

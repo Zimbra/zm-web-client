@@ -13,7 +13,7 @@
     <td class='ZhBottomSep'>
         <table width=100% cellspacing=0 cellpadding=0>
             <tr class='${zm:getFolder(pageContext, contact.folderId).styleColor}Bg'>
-        <td width=20><center><app:img src="${contact.isGroup ? 'contacts/Group.gif' : 'contacts/Contact.gif'}" altkey="${contact.imageAltKey}"/></center></td>
+        <td width=20><center><app:img src="${contact.isGroup ? 'contacts/ImgGroup.gif' : 'contacts/ImgContact.gif'}" altkey="${contact.imageAltKey}"/></center></td>
         <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : contact.displayFileAs)}
         </td>
         <td align='right' class='Tags'>
@@ -56,7 +56,7 @@
 <c:if test="${contact.isGroup}">
     <c:forEach var="member" items="${contact.groupMembers}">
         <tr>
-            <td width='20px'><app:img altkey='ALT_CONTACT_GROUP_EMAIL' src="mail/Message.gif"/></td>
+            <td width='20px'><app:img altkey='ALT_CONTACT_GROUP_EMAIL' src="mail/ImgMessage.gif"/></td>
             <td><nobr>${fn:escapeXml(member)}</nobr></td>            
         </tr>
     </c:forEach>

@@ -45,7 +45,7 @@
                                 <td>
                                     <table width=100% cellpadding=0 cellspacing=0>
                                         <tr>
-                                            <td class='ZhApptRecurrInfo' style='padding-left:5px' width=24><app:img src="dwt/Information.gif"/></td>
+                                            <td class='ZhApptRecurrInfo' style='padding-left:5px' width=24><app:img src="dwt/ImgInformation.gif"/></td>
                                             <td class='ZhApptRecurrInfo'>
                                                 <app:calendarUrl toggleInstance="true" var="apptUrl"/>
                                                 <fmt:message key="apptInstViewNote"/>

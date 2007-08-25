@@ -139,7 +139,7 @@ function(contact, params) {
 		view: this,
 		contact: contact
 	};
-	var html = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardBase", subs);
+	var html = AjxTemplate.expand("abook.Contacts#CardBase", subs);
 
 	return isDnd
 		? Dwt.parseHtmlFragment(html)
@@ -158,7 +158,7 @@ function() {
 			cardTableId: ZmContactCardsView.CARD_TABLE_ID,
 			list: list
 		};
-		html = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardsView", subs);
+		html = AjxTemplate.expand("abook.Contacts#CardsView", subs);
 		this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
 
 		for (var i = 0; i < list.length; i++) {
@@ -175,7 +175,7 @@ function() {
 		var subs = {
 			id: ZmContactCardsView.CARD_TABLE_ID
 		};
-		html = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#CardsView-NoResults", subs);
+		html = AjxTemplate.expand("abook.Contacts#CardsView-NoResults", subs);
 		this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
 	}
 };

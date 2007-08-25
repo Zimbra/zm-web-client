@@ -1,0 +1,15 @@
+<template id='admin.Widgets#ZaAppTab' class='ZAppTab'>
+  <table class='ZWidgetTable ZAppTabTable ZAppTabBorder' cellspacing=0 cellpadding=0 style='table-layout:auto;'>
+  <tr id='${id}_row'>
+		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
+		<td id='${id}_title'		class='ZWidgetTitle'></td>
+		<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
+	</tr></table>
+</template>
+<template id='admin.Widgets#ZaToolBarLabel' class='ZaToolBarLabel ZWidget'>
+  <table id='${id}_label' class='ZWidgetTable ZLabelBorder' cellspacing=0 cellpadding=0><tr>
+    <td id='${id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+    <td id='${id}_title'		 class='ZWidgetTitle ZaNowrapTitle'></td>
+    <td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+  </tr></table>
+</template>

@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setBundle basename="/msgs/ZhMsg" scope="request"/>
+<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <fmt:message var="title" key="addAttendeesFromContacts"/>
@@ -40,11 +40,11 @@
             <td class='TbBt'>
                 <table cellspacing=0 cellpadding=0 class='Tb'>
                     <tr>
-                        <app:button name="actionContactDone" src="common/Check.gif" tooltip="done" text="done"/>
+                        <app:button name="actionContactDone" src="common/ImgCheck.gif" tooltip="done" text="done"/>
                         <td><div class='vertSep'></div></td>
-                        <app:button name="actionContactAdd" src="contacts/ContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
+                        <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
                         <td><div class='vertSep'></div></td>
-                        <app:button name="actionContactCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                        <app:button name="actionContactCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                     </tr>
                 </table>
             </td>

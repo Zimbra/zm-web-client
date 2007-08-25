@@ -30,7 +30,7 @@
                            <tr>
                                <th class='CB'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                <c:if test="${mailbox.features.tagging}">
-                                <th class='Img' nowrap><app:img atkey='ALT_TAG_TAG' src="tag/MiniTagOrange.gif"alt="Tagged"/>
+                                <th class='Img' nowrap><app:img atkey='ALT_TAG_TAG' src="tag/ImgMiniTagOrange.gif"alt="Tagged"/>
                                 </c:if>
                                <th class='Img'>&nbsp;
                                <th nowrap>

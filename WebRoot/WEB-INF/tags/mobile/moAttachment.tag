@@ -17,7 +17,7 @@
 <tr class="CompOrigAtt" valign="middle">
     <td align='right'>
         <c:if test="${firstAttachment}">
-            <app:img altkey="ALT_ATTACHMENT" src="common/Attachment.gif"/>
+            <app:img altkey="ALT_ATTACHMENT" src="common/ImgAttachment.gif"/>
             <c:set var="firstAttachment" value="${false}"/>
         </c:if>
     </td>

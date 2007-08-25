@@ -42,7 +42,7 @@
                                     <tr>
                                         <td nowrap>
                                             <rest:calendarUrl var="closeurl" />
-                                            <a id="OPCLOSE" href="${closeurl}"> <app:img src="common/Close.gif"/> <span><fmt:message key="close"/></span></a>
+                                            <a id="OPCLOSE" href="${closeurl}"> <app:img src="common/ImgClose.gif"/> <span><fmt:message key="close"/></span></a>
                                         </td>
                                     </tr>
                                 </table>
@@ -59,7 +59,7 @@
                                 <td>
                                     <table width=100% cellpadding=0 cellspacing=0>
                                         <tr>
-                                            <td class='ZhApptRecurrInfo' style='padding-left:5px' width=24><app:img src="dwt/Information.gif"/></td>
+                                            <td class='ZhApptRecurrInfo' style='padding-left:5px' width=24><app:img src="dwt/ImgInformation.gif"/></td>
                                             <td class='ZhApptRecurrInfo'>
                                                 <rest:calendarUrl toggleInstance="true" var="apptUrl"/>
                                                 <fmt:message key="apptInstViewNote"/>

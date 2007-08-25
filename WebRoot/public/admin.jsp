@@ -108,7 +108,7 @@
  *
  * ***** END LICENSE BLOCK *****
 -->
-    <title><fmt:setBundle basename="/msgs/ZaMsg"/><fmt:message key="zimbraAdminTitle"/></title>
+    <title><fmt:setBundle basename="/messages/ZaMsg"/><fmt:message key="zimbraAdminTitle"/></title>
     <link rel="ICON" type="image/gif" href="/img/loRes/logo/favicon.gif"/>
     <link rel="SHORTCUT ICON" href="/img/loRes/logo/favicon.ico"/>
     
@@ -117,10 +117,10 @@
 	 	appCurrentSkin = "<%= skin %>";
 	</script>
 <jsp:include page="Messages.jsp"/>
-<script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys.js<%=ext %>?v=<%=vers %>"></script>
+<script type="text/javascript" src="<%=contextPath %>/keys/AjxKeys.js<%=ext %>?v=<%=vers %>"></script>
 <style type="text/css">
 <!--
-@import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>&skin=<%= skin %>);
+@import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,images,skin.css?v=<%= vers %>&skin=<%= skin %>);
 -->
 </style>
 <jsp:include page="Boot.jsp"/>

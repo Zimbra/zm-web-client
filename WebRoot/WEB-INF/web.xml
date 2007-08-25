@@ -182,12 +182,12 @@
 
 	<servlet-mapping>
 		<servlet-name>Properties2Javascript</servlet-name>
-		<url-pattern>/js/msgs/*</url-pattern>
+		<url-pattern>/messages/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>Properties2Javascript</servlet-name>
-		<url-pattern>/js/keys/*</url-pattern>
+		<url-pattern>/keys/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

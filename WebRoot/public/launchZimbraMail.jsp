@@ -117,7 +117,7 @@
 <link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<title><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
+<title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
 
 <script type="text/javascript" language="JavaScript">
 	var zJSloading = (new Date()).getTime();
@@ -128,11 +128,11 @@
 </script>
 
 <jsp:include page="Messages.jsp"/>
-<script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
+<script type="text/javascript" src="<%=contextPath %>/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
 <style type="text/css">
 <!--
 @import url(<%= contextPath %>/css/common,dwt,zm?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
-@import url(<%= contextPath %>/css/imgs,<%= skin %>_imgs,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+@import url(<%= contextPath %>/css/images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
 -->
 </style>
 
@@ -236,7 +236,7 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 </script>
 </head>
 <body>
-<noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
+<noscript><fmt:setBundle basename="/messages/ZmMsg"/>
     <fmt:message key="errorJavaScriptRequired"><fmt:param>
     <c:url context="/zimbra" value='/h/'></c:url>
     </fmt:param></fmt:message>

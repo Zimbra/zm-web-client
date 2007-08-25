@@ -688,7 +688,8 @@ ZmAutocompleteListView.prototype._getDiv =
 function(id) {
 	var div = document.createElement("div");
 	div[DwtListView._STYLE_CLASS] = "Row";
-	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + "-" + DwtCssStyle.SELECTED;
+	// MOW: make class name for selected:  "Row Row-selected" instead of just "Row-selected"
+	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + " " + div[DwtListView._STYLE_CLASS] + "-" + DwtCssStyle.SELECTED;
 	div.className = div[DwtListView._STYLE_CLASS];
 	div.id = id;
 

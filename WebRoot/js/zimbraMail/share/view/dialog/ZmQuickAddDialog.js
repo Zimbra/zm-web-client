@@ -60,7 +60,7 @@ function() {
 // Data
 //
 
-ZmQuickAddDialog.prototype.TEMPLATE = "ajax.dwt.templates.Widgets#DwtSemiModalDialog";
+ZmQuickAddDialog.prototype.TEMPLATE = "dwt.Widgets#DwtSemiModalDialog";
 
 //
 // Public methods

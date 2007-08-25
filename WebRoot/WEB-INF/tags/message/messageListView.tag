@@ -35,10 +35,10 @@
                         <tr>
                             <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                             <c:if test="${mailbox.features.flagging}">
-                            <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
+                            <th class='Img' nowrap><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
                             </c:if>
                             <c:if test="${mailbox.features.tagging}">
-                            <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG_TAG"/>
+                            <th class='Img' nowrap><app:img src="tag/ImgMiniTagOrange.gif" altkey="ALT_TAG_TAG"/>
                             </c:if>
                             <th class='MsgStatusImg' nowrap>&nbsp;
                             <th width=10%>
@@ -46,7 +46,7 @@
                             <a href="${fromSortUrl}">
                                 <fmt:message key="${useTo ? 'to' : 'from'}"/>
                             </a>
-                            <th width=1% nowrap><app:img src="common/Attachment.gif" altkey="ALT_ATTACHMENT"/>
+                            <th width=1% nowrap><app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                             <th nowrap>
                                 <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
                             <a href="${subjectSortUrl}">

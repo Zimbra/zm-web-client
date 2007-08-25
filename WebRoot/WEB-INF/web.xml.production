@@ -182,12 +182,12 @@
 
 	<servlet-mapping>
 		<servlet-name>Properties2Javascript</servlet-name>
-		<url-pattern>/js/msgs/*</url-pattern>
+		<url-pattern>/messages/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
 		<servlet-name>Properties2Javascript</servlet-name>
-		<url-pattern>/js/keys/*</url-pattern>
+		<url-pattern>/keys/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
@@ -206,6 +206,7 @@
 	<welcome-file-list>
         <welcome-file>login</welcome-file>
         <welcome-file>public/login.jsp</welcome-file>
+		<welcome-file>public/admin.jsp</welcome-file>
     </welcome-file-list>
 
 	<env-entry>

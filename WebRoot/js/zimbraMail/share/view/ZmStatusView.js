@@ -144,7 +144,7 @@ ZmToast.LEVEL_RE = /\b(ZToastCrit|ZToastWarn|ZToastInfo)\b/g;
 
 // Data
 
-ZmToast.prototype.TEMPLATE = "zimbraMail.share.templates.Widgets#ZToast";
+ZmToast.prototype.TEMPLATE = "share.Widgets#ZToast";
 
 
 // Public methods

@@ -14,7 +14,7 @@
 <c:choose>
     <c:when test="${calendar}">
         <fmt:message var="label" key="calendarNew"/>
-        <c:set var="icon" value="calendar/SharedCalendarFolder.gif"/>
+        <c:set var="icon" value="calendar/ImgSharedCalendarFolder.gif"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
         <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'appointment')}"/>
         <c:set var="newFolderExcludeFlag" value="${empty param.newFolderExcludeFlag ? '' : param.newFolderExcludeFlag}"/>
@@ -23,13 +23,13 @@
     </c:when>
     <c:when test="${addressbook}">
         <fmt:message var="label" key="addressBookNew"/>
-        <c:set var="icon" value="contacts/SharedContactsFolder.gif"/>
+        <c:set var="icon" value="contacts/ImgSharedContactsFolder.gif"/>
         <fmt:message var="folderType" key="addressBookShared"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
         <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'appointment')}"/>
     </c:when>
     <c:otherwise>
-        <c:set var="icon" value="mail/SharedMailFolder.gif"/>
+        <c:set var="icon" value="mail/ImgSharedMailFolder.gif"/>
         <fmt:message var="label" key="folderNew"/>
         <fmt:message var="folderType" key="folderUser"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>

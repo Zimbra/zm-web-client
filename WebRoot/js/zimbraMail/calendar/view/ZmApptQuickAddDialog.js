@@ -49,7 +49,7 @@ ZmApptQuickAddDialog = function(parent) {
 
 	this._attendees = {};
 
-	var html = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ZmApptQuickAddDialog", {id: this._htmlElId});
+	var html = AjxTemplate.expand("calendar.Appointment#ZmApptQuickAddDialog", {id: this._htmlElId});
 	this.setContent(html);
 	this.setTitle(ZmMsg.quickAddAppt);
 	DBG.timePt("create content");

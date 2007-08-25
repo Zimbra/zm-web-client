@@ -35,7 +35,7 @@ ZmCalItemTypeDialog = function(parent) {
 
 	DwtDialog.call(this, parent);
 
-	var content = AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#TypeDialog", {id:this._htmlElId});
+	var content = AjxTemplate.expand("calendar.Calendar#TypeDialog", {id:this._htmlElId});
 	this.setContent(content);
 
 	// cache fields

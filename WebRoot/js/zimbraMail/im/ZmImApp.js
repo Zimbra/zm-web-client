@@ -178,7 +178,7 @@ ZmImApp.prototype._registerPrefs = function() {
 	var sections = {
 		IM: {
 			title: ZmMsg.im,
-			templateId: "zimbraMail.prefs.templates.Pages#IM",
+			templateId: "prefs.Pages#IM",
 			priority: 90,
 			precondition: ZmSetting.IM_ENABLED,
 			prefs: [

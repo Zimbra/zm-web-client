@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <mo:composeCheck/>
@@ -48,7 +48,7 @@
     <tr>
         <td class='zo_main_item'>
             <a href="mosearch">
-                <img src="/zimbra/images/mail/MailApp.gif"/>
+                <img src="/zimbra/img/mail/MailApp.gif"/>
                 <fmt:message key="mail"/>
                 <c:if test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if>
             </a>
@@ -58,7 +58,7 @@
             <tr>
                 <td class='zo_main_item'>
                 <a href="moaddrbooks">
-                    <img src="/zimbra/images/contacts/Contact.gif"/>
+                    <img src="/zimbra/img/contacts/Contact.gif"/>
                     <fmt:message key="addressBooks"/>
                 </a>
                 </td>
@@ -68,7 +68,7 @@
             <tr>
                 <td class='zo_main_item'>
                 <a href="mocalendar">
-                    <img src="/zimbra/images/calendar/CalendarApp.gif"/>
+                    <img src="/zimbra/img/calendar/CalendarApp.gif"/>
                     <fmt:message key="calendar"/>
                 </a>
                 </td>
@@ -77,7 +77,7 @@
         <tr>
             <td class='zo_main_item'>
             <a href="mofolders">
-                <img src="/zimbra/images/mail/MailFolder.gif"/>
+                <img src="/zimbra/img/mail/MailFolder.gif"/>
                 <fmt:message key="MO_mailFoldersTags"/>
             </a>
             </td>
@@ -85,7 +85,7 @@
         <tr>
             <td class='zo_main_item'>
             <a href="moquery">
-                <img src="/zimbra/images/common/Search.gif"/>
+                <img src="/zimbra/img/common/Search.gif"/>
                 <fmt:message key="search"/>
             </a>
             </td>
@@ -94,7 +94,7 @@
         <tr>
             <td class='zo_main_item'>
             <a href="?p=4">
-                <img src="/zimbra/images/common/Preferences.gif"/>
+                <img src="/zimbra/img/common/Preferences.gif"/>
                 <fmt:message key="options"/>
             </a>
             </td>

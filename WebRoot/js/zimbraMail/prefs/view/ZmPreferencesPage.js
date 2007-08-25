@@ -550,7 +550,7 @@ function(buttonDiv, settingId, setup) {
 		name: ZmPreferencesPage.IMPORT_FIELD_NAME,
 		label: isAddrBookImport ? ZmMsg.importFromCSVLabel : ZmMsg.importFromICSLabel
 	};
-	buttonDiv.innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Pages#Import", data);
+	buttonDiv.innerHTML = AjxTemplate.expand("prefs.Pages#Import", data);
 
 	this._uploadFormId = importDivId+"_form";
 	this._attInputId = importDivId+"_input";

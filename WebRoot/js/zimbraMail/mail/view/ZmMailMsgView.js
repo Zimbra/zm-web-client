@@ -729,7 +729,7 @@ function(origText) {
 				text: ZmMsg.objectsNotDisplayed,
 				link: ZmMsg.hiliteObjects
 			};
-			var html = AjxTemplate.expand("zimbraMail.mail.templates.Message#InformationBar", subs);
+			var html = AjxTemplate.expand("mail.Message#InformationBar", subs);
 			infoBarDiv.appendChild(Dwt.parseHtmlFragment(html));
 
 			var div = document.getElementById(subs.id+"_link");
@@ -759,7 +759,7 @@ function(container, html, isTextMsg) {
 					text: ZmMsg.externalImages,
 					link: ZmMsg.displayExternalImages
 				};
-				var extImagesHtml = AjxTemplate.expand("zimbraMail.mail.templates.Message#InformationBar", subs);
+				var extImagesHtml = AjxTemplate.expand("mail.Message#InformationBar", subs);
 				displayImages = Dwt.parseHtmlFragment(extImagesHtml);
 				infoBarDiv.appendChild(displayImages);
 			}
@@ -946,7 +946,7 @@ function(msg, container, callback) {
 		infoBarId: this._infoBarId
 	};
 
-	var html = AjxTemplate.expand("zimbraMail.mail.templates.Message#MessageHeader", subs);
+	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
 
 	var el = container || this.getHtmlElement();
 	el.appendChild(Dwt.parseHtmlFragment(html));
@@ -1668,7 +1668,7 @@ function(csfeUrl, itemId, attachments) {
 		}
 	}
 
-	return AjxTemplate.expand("zimbraMail.mail.templates.Message#DownloadAll", {url:url});
+	return AjxTemplate.expand("mail.Message#DownloadAll", {url:url});
 };
 
 ZmMailMsgView.briefcaseCallback =

@@ -43,4 +43,7 @@ Contributor(s):
 AjxPackage.setBasePath("<%=contextPath%>/js");
 AjxPackage.setExtension("<%= inDevMode ? "" : "_all" %>.js<%=ext%>");
 AjxPackage.setQueryString("v=<%=vers%>");
+
+AjxTemplate.setBasePath("<%=contextPath%>/templates");
+AjxTemplate.setExtension(".template.js");
 </script>

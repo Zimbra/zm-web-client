@@ -16,8 +16,8 @@
     <style type="text/css">
        @import url( "<c:url value='/css/common,login,${skin}_imgs,skin.css?client=standard&skin=${skin}&v=${version}'/>" );
     </style>
-    <link rel="ICON" type="image/gif" href="<c:url value='/img/loRes/logo/favicon.gif'/>">
-    <link rel="SHORTCUT ICON" href="<c:url value='/img/loRes/logo/favicon.ico'/>">
+    <link rel="ICON" type="image/gif" href="<c:url value='/img/logo/favicon.gif'/>">
+    <link rel="SHORTCUT ICON" href="<c:url value='/img/logo/favicon.ico'/>">
     <c:if test="${rssfeed}">
     <link rel="alternate" type="application/rss+xml"  title="RSS Feed" href="${requestScope.zimbra_target_item_name}.rss">
     </c:if>

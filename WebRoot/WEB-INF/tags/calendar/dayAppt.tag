@@ -43,12 +43,12 @@
                             <tr>
                                 <c:if test="${appt.otherAttendees}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptMeeting.gif"/>
+                                        <app:img src="calendar/ImgApptMeeting.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptException.gif"/>
+                                        <app:img src="calendar/ImgApptException.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.tagIds}">
@@ -58,7 +58,7 @@
                                     <td><app:flagImage flagged="${appt.isFlagged}"/></td>
                                 </c:if>
                                 <c:if test="${appt.classPrivate or appt.classConfidential}">
-                                    <td><app:img src="contacts/ReadOnly.gif"/></td>
+                                    <td><app:img src="contacts/ImgReadOnly.gif"/></td>
                                 </c:if>
                             </tr>
                         </table>
@@ -86,12 +86,12 @@
                             <tr>
                                 <c:if test="${appt.otherAttendees}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptMeeting.gif"/>
+                                        <app:img src="calendar/ImgApptMeeting.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptException.gif"/>
+                                        <app:img src="calendar/ImgApptException.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.tagIds}">
@@ -101,7 +101,7 @@
                                     <td><app:flagImage flagged="${appt.isFlagged}"/></td>
                                 </c:if>
                                 <c:if test="${appt.classPrivate or appt.classConfidential}">
-                                    <td><app:img src="contacts/ReadOnly.gif"/></td>
+                                    <td><app:img src="contacts/ImgReadOnly.gif"/></td>
                                 </c:if>
                             </tr>
                         </table>
@@ -142,12 +142,12 @@
                             <tr>
                                 <c:if test="${appt.otherAttendees}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptMeeting.gif"/>
+                                        <app:img src="calendar/ImgApptMeeting.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptException.gif"/>
+                                        <app:img src="calendar/ImgApptException.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.tagIds}">
@@ -157,7 +157,7 @@
                                     <td><app:flagImage flagged="${appt.isFlagged}"/></td>
                                 </c:if>
                                 <c:if test="${appt.classPrivate or appt.classConfidential}">
-                                    <td><app:img src="contacts/ReadOnly.gif"/></td>
+                                    <td><app:img src="contacts/ImgReadOnly.gif"/></td>
                                 </c:if>
                             </tr>
                         </table>

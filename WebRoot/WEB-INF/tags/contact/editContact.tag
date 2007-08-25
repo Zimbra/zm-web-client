@@ -20,7 +20,7 @@
     <td class='ZhBottomSep'>
         <table width=100% cellspacing=0 cellpadding=0>
             <tr class='contactHeaderRow'>
-                <td width=20><center><app:img src="${contact.isGroup or isgroup ? 'contacts/Group.gif' : 'contacts/Contact.gif'}" altkey="${contact.isGroup or isgroup ? 'ALT_CONTACT_GROUP' : 'ALT_CONTACT_CONTACT'}"/></center></td>
+                <td width=20><center><app:img src="${contact.isGroup or isgroup ? 'contacts/ImgGroup.gif' : 'contacts/ImgContact.gif'}" altkey="${contact.isGroup or isgroup ? 'ALT_CONTACT_GROUP' : 'ALT_CONTACT_CONTACT'}"/></center></td>
                 <td class='contactHeader'>${fn:escapeXml(title)}
                 </td>
             </tr>

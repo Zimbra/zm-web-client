@@ -102,7 +102,7 @@ ZmNewRosterItemDialog.prototype._init = function() {
 
 ZmNewRosterItemDialog.prototype._contentHtml = function() {
 	var id = this._baseId = Dwt.getNextId();
-	return AjxTemplate.expand("zimbraMail.im.templates.Chat#NewRosterItemDlg",
+	return AjxTemplate.expand("im.Chat#NewRosterItemDlg",
 				  { id : id });
 };
 

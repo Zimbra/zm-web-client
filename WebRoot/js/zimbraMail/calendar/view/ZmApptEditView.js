@@ -370,7 +370,7 @@ function() {
 		isGroupCalEnabled: this.GROUP_CALENDAR_ENABLED
 	};
 
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#EditView", subs);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#EditView", subs);
 };
 
 ZmApptEditView.prototype._createWidgets =

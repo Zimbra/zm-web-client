@@ -51,13 +51,13 @@
                                     <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                                     <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
                                     <td width=1% class='zo_cal_mpage'>
-                                        <a href="${prevUrl}"><img src="/zimbra/images/arrows/PreviousPage.gif"></a>
+                                        <a href="${prevUrl}"><app:img src="arrows/ImgPreviousPage.gif"/></a>
                                     </td>
                                     <td nowrap class='zo_cal_mpage${(date.timeInMillis eq today.timeInMillis) ? '':''}'>
                                          ${fn:escapeXml(title)}
                                     </td>
                                     <td width=1% class='zo_cal_mpage'>
-                                        <a href="${nextUrl}"><img src="/zimbra/images/arrows/NextPage.gif"></a>
+                                        <a href="${nextUrl}"><app:img src="arrows/ImgNextPage.gif"/></a>
                                     </td>
                                 </tr>
                             </table>

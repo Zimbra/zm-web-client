@@ -144,7 +144,7 @@ function() {
 	this._stopCheckboxId = id+"_stop";
 
 	// content html
-	return AjxTemplate.expand("zimbraMail.prefs.templates.Pages#MailFilterRule", id);
+	return AjxTemplate.expand("prefs.Pages#MailFilterRule", id);
 };
 
 ZmFilterRuleDialog.prototype._setConditionSelect = function() {

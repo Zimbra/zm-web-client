@@ -56,17 +56,17 @@
 
     Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 %>
-<title><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
+<title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
 <script type="text/javascript" language="javascript">
 	appContextPath = "<%= contextPath %>";
 	appCurrentSkin = "<%=skin %>";
 </script>
 
 <jsp:include page="Messages.jsp"/>
-<script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %>"></script>
+<script type="text/javascript" src="<%=contextPath %>/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %>"></script>
 <style type="text/css">
 	<!--
-    @import url(<%= contextPath %>/css/imgs,common,dwt,msgview,login,zm,spellcheck,wiki,<%= skin %>_imgs,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+    @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
     -->
 </style>
 

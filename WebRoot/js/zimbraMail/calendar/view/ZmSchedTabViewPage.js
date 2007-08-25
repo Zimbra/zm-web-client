@@ -254,7 +254,7 @@ function() {
 	this._schedTable[0] = null;	// header row has no attendee data
 
 	var subs = { id:this._htmlElId, isAppt: true };
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ScheduleView", subs);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#ScheduleView", subs);
 };
 
 ZmSchedTabViewPage.prototype._initAutocomplete =
@@ -363,10 +363,10 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 
 	var tr = this._attendeesTable.insertRow(index);
 	var td = tr.insertCell(-1);
-    td.innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AttendeeName", data);
+    td.innerHTML = AjxTemplate.expand("calendar.Appointment#AttendeeName", data);
 
 	var td = tr.insertCell(-1);
-    td.innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AttendeeFreeBusy", data);
+    td.innerHTML = AjxTemplate.expand("calendar.Appointment#AttendeeFreeBusy", data);
 
 	// create DwtInputField and DwtSelect for the attendee slots, add handlers
 	if (!isAllAttendees && !organizer) {

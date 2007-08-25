@@ -297,7 +297,7 @@ ZmChatWidget.prototype._init = function() {
 		var id = ZmChatWidget.IDS[i];
 		this._ids[id] = base_id + "_" + id;
 	}
-	this.setContent(AjxTemplate.expand("zimbraMail.im.templates.Chat#ChatWidget", { id: base_id }));
+	this.setContent(AjxTemplate.expand("im.Chat#ChatWidget", { id: base_id }));
 	
 	this._initEditor(this);
 	

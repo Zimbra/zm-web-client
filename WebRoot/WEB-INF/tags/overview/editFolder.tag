@@ -267,7 +267,7 @@
                         </c:url>
                         <fmt:message key="reloadCalendar" var="reload"/>
                         <a href="${syncUrl}">
-                            <app:img src="arrows/Refresh.gif" title="${reload}"/>
+                            <app:img src="arrows/ImgRefresh.gif" title="${reload}"/>
                         </a>
                     </td>
                 </tr>

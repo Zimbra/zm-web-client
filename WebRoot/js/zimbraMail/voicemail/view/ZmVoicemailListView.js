@@ -99,7 +99,7 @@ function() {
 		rowArgs.caller = this._getCallerHtml(item);
 		rowArgs.duration = AjxDateUtil.computeDuration(item.duration);
 		rowArgs.date = AjxDateUtil.simpleComputeDateStr(item.date);
-		AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoicemailListPrintViewRow", rowArgs, buffer);
+		AjxTemplate.expand("voicemail.Voicemail#ZmVoicemailListPrintViewRow", rowArgs, buffer);
 	}
 
 	var args = {
@@ -107,7 +107,7 @@ function() {
         appContextPath: appContextPath,
         rows: buffer.join("")
 	}
-	return  AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoicemailListPrintView", args);
+	return  AjxTemplate.expand("voicemail.Voicemail#ZmVoicemailListPrintView", args);
 };
 
 ZmVoicemailListView.prototype._getHeaderList =
@@ -295,5 +295,5 @@ function(voicemail) {
 		duration: AjxDateUtil.computeDuration(voicemail.duration),
 		date: AjxDateUtil.computeDateTimeString(voicemail.date)
 	};
-	return (AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#VoicemailTooltip", data));
+	return (AjxTemplate.expand("voicemail.Voicemail#VoicemailTooltip", data));
 };

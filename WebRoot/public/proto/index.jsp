@@ -16,9 +16,9 @@
 %><html>
 <head>
 <link rel='stylesheet' type="text/css"
-	  href='<%=path%>/css/common,dwt,msgview,login,zm,spellcheck,wiki,imgs,<%=skin%>_imgs,skin.css?debug=true'
+	  href='<%=path%>/css/common,dwt,msgview,login,zm,spellcheck,wiki,images,skin.css?debug=true'
 >
-<script src='<%=path%>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg,ZmMsg.js?debug=true'></script>
+<script src='<%=path%>/messages/I18nMsg,AjxMsg,ZMsg,ZaMsg,ZmMsg.js?debug=true'></script>
 <script src='<%=path%>/js/ajax/boot/AjxEnv.js'></script>
 <script src='<%=path%>/js/ajax/boot/AjxLoader.js'></script>
 <script src='<%=path%>/js/ajax/boot/AjxPackage.js'></script>
@@ -41,7 +41,7 @@ function onLoad() {
 
 	var templateId = window.templateId = "<%=template!=null?template:""%>" || AjxCookie.getCookie(document,"template");
 	if (templateId == null) {
-		body.innerHTML = "No template -- specify as ?template=zimbraMail.app.templates.Name%23foo";
+		body.innerHTML = "No template -- specify as ?template=app.Name%23foo";
 		return;
 	}
 	AjxCookie.setCookie(document, "template", templateId);

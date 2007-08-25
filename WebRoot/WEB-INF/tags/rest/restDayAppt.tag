@@ -45,12 +45,12 @@
                             <tr>
                                 <c:if test="${appt.otherAttendees}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptMeeting.gif"/>
+                                        <app:img src="calendar/ImgApptMeeting.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptException.gif"/>
+                                        <app:img src="calendar/ImgApptException.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
@@ -82,12 +82,12 @@
                             <tr>
                                 <c:if test="${appt.otherAttendees}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptMeeting.gif"/>
+                                        <app:img src="calendar/ImgApptMeeting.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptException.gif"/>
+                                        <app:img src="calendar/ImgApptException.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
@@ -132,12 +132,12 @@
                             <tr>
                                 <c:if test="${appt.otherAttendees}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptMeeting.gif"/>
+                                        <app:img src="calendar/ImgApptMeeting.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${appt.exception}">
                                     <td valign='top'>
-                                        <app:img src="calendar/ApptException.gif"/>
+                                        <app:img src="calendar/ImgApptException.gif"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">

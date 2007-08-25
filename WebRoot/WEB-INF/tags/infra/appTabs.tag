@@ -24,7 +24,7 @@
         <td class='TabSpacer'/>        
         <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
             <a id='TAB_MAIL' href="<c:url value="/h/search"/>">
-              <span id='tab_ikon_mail'><app:img src="mail/MailApp.gif" altkey='ALT_APP_MAIL'/>
+              <span id='tab_ikon_mail'><app:img src="mail/ImgMailApp.gif" altkey='ALT_APP_MAIL'/>
               </span>
                 <span><fmt:message key="mail"/></span>
             </a>
@@ -33,7 +33,7 @@
         <c:if test="${mailbox.features.voice}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='voice' ? 'TabSelected' :'TabNormal'}'>
-                <a id='TAB_VOICE' href="<c:url value="/h/search?st=voicemail"/>" <c:if test="${keys}">accesskey="v"</c:if>><span id='tab_ikon_voice'><app:img src="voicemail/VoicemailApp.gif" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
+                <a id='TAB_VOICE' href="<c:url value="/h/search?st=voicemail"/>" <c:if test="${keys}">accesskey="v"</c:if>><span id='tab_ikon_voice'><app:img src="voicemail/ImgVoicemailApp.gif" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
                         key="voice"/></span></a>
             </td>
             <td class='TabSpacerR'/>
@@ -42,7 +42,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='contacts' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_ADDRESSBOOK' href="<c:url value="/h/search?st=contact"/>">
-                   <span id='tab_ikon_contacts'><app:img src="contacts/Contact.gif" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
+                   <span id='tab_ikon_contacts'><app:img src="contacts/ImgContact.gif" altkey='ALT_APP_CONTACTS'/></span><span><fmt:message
                         key="addressBook"/></span></a>
             </td>
             <td class='TabSpacerR'/>
@@ -51,7 +51,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='calendar' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_CALENDAR' href="<c:url value="/h/calendar"/>">
-                    <span id='tab_ikon_calendar'><app:img src="calendar/CalendarApp.gif" altkey='ALT_APP_CALENDAR'/></span><span><fmt:message
+                    <span id='tab_ikon_calendar'><app:img src="calendar/ImgCalendarApp.gif" altkey='ALT_APP_CALENDAR'/></span><span><fmt:message
                         key="calendar"/></span></a>
             </td>
             <td class='TabSpacerR'/>
@@ -60,7 +60,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='tasks' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_TASKS' href="<c:url value="/h/search?st=task"/>">
-                    <span id='tab_ikon_tasks'><app:img src="tasks/TaskList.gif" altkey='ALT_APP_TASK'/></span><span><fmt:message
+                    <span id='tab_ikon_tasks'><app:img src="tasks/ImgTaskList.gif" altkey='ALT_APP_TASK'/></span><span><fmt:message
                         key="tasks"/></span></a>
             </td>
             <td class='TabSpacerR'/>
@@ -68,7 +68,7 @@
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
             <a id='TAB_OPTIONS' href="<c:url value="/h/options"/>">
-                <span id='tab_ikon_options'><app:img src="common/Preferences.gif" altkey='ALT_APP_OPTIONS'/></span><span><fmt:message
+                <span id='tab_ikon_options'><app:img src="common/ImgPreferences.gif" altkey='ALT_APP_OPTIONS'/></span><span><fmt:message
                     key="options"/></span></a>
         </td>
         <td class='TabSpacerR'/>
@@ -82,7 +82,7 @@
                     <c:url var="composeUrl" value="/h/search?action=compose"/>
                 </c:otherwise>
             </c:choose>
-            <a id='TAB_COMPOSE' href="${composeUrl}"><span id='tab_ikon_compose'><app:img src="mail/NewMessage.gif" altkey='ALT_APP_COMPOSE'/></span><span><fmt:message
+            <a id='TAB_COMPOSE' href="${composeUrl}"><span id='tab_ikon_compose'><app:img src="mail/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span><span><fmt:message
                     key="compose"/></span></a>
         </td>
                 <td class='TabSpacerR'/>

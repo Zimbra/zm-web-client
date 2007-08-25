@@ -53,7 +53,7 @@
                         <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                         <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
                         <td width=1% class='zo_cal_lpage'>
-                            <a href="${prevUrl}"><img src="/zimbra/images/arrows/PreviousPage.gif"></a>
+                            <a href="${prevUrl}"><app:img src="arrows/ImgPreviousPage.gif"/></a>
                         </td>
                         <td nowrap class='zo_cal_listheader'>
                             <fmt:message var="titleFormat" key="MO_CAL_LIST_DATE_FORMAT"/>
@@ -67,7 +67,7 @@
                             </fmt:message>
                         </td>
                         <td width=1% class='zo_cal_lpage'>
-                            <a href="${nextUrl}"><img src="/zimbra/images/arrows/NextPage.gif"></a>
+                            <a href="${nextUrl}"><app:img src="arrows/ImgNextPage.gif"/></a>
                         </td>
                     </tr>
                 </table>

@@ -29,19 +29,19 @@
                             <tr class='Header'>
                                 <th class='CB' nowrap='nowrap'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/></th>
                                 <c:if test="${mailbox.features.flagging}">
-                                <th class='Img'  nowrap='nowrap' width='20'><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/></th>
+                                <th class='Img'  nowrap='nowrap' width='20'><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
                                 </c:if>
                                 <c:if test="${mailbox.features.tagging}">
-                                <th class='Img' nowrap width='20'><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
+                                <th class='Img' nowrap width='20'><app:img src="tag/ImgMiniTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
                                 </c:if>
                                 <th width=10% nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
-                                <th class='Img' nowrap width='1%'><app:img src="common/Attachment.gif" altkey="ALT_ATTACHMENT"/></th>
+                                <th class='Img' nowrap width='1%'><app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/></th>
                                 <th nowrap>
                                     <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
                                 <a href="${subjectSortUrl}">
                                     <fmt:message key="subject"/>
                                 </a></th>
-                                <th width=2% nowrap><app:img src="mail/Conversation.gif" altkey="ALT_CONVERSATION"/></th>
+                                <th width=2% nowrap><app:img src="mail/ImgConversation.gif" altkey="ALT_CONVERSATION"/></th>
                                 <th nowrap width=2%>
                                     <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss) ? 'dateAsc' : 'dateDesc'}"/>
                                 <a href="${dateSortUrl}">

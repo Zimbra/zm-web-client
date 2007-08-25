@@ -9,4 +9,4 @@
 <c:set var="tagNames" value="${fn:escapeXml(zm:getTagNames(pageContext, ids))}"/>
 <c:if test="${fn:length(tags) eq 0}">&nbsp;</c:if>
 <c:if test="${fn:length(tags) eq 1}"><mo:img src="${tags[0].miniImage}"/></c:if>
-<c:if test="${fn:length(tags) gt 1}"><mo:img src="tag/MiniTagStack.gif"/></c:if>
+<c:if test="${fn:length(tags) gt 1}"><mo:img src="tag/ImgMiniTagStack.gif"/></c:if>

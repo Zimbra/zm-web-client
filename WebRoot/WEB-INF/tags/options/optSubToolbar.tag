@@ -15,29 +15,29 @@
                        <c:when test="${selected eq 'filter'}">
                            <c:choose>
                                <c:when test="${(not zm:actionSet(param, 'actionFilterCancel') and requestScope.filterSave ne 'success') and (zm:actionSet(param, 'actionEditFilter') or zm:actionSet(param, 'actionNewFilter'))}">
-                                    <app:button  name="actionFilterSave" src="common/Save.gif" tooltip="save" text="save"/>
+                                    <app:button  name="actionFilterSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
                                      <td><div class='vertSep'></div></td>
-                                    <app:button  name="actionFilterCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                                    <app:button  name="actionFilterCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                        <input type="hidden"
                                               name="${zm:actionSet(param, 'actionEditFilter') ? 'actionEditFilter' : 'actionNewFilter'}" value="1"/>
                                    </td>
                                </c:when>
                                <c:otherwise>
-                                   <app:button name="actionNewFilter" src="common/Plus.gif" tooltip="newFilter" text="newFilter"/>
+                                   <app:button name="actionNewFilter" src="common/ImgPlus.gif" tooltip="newFilter" text="newFilter"/>
                                    <td><div class='vertSep'></div></td>
-                                   <app:button name="actionEditFilter" src="common/Edit.gif" tooltip="editFilter" text="editFilter"/>
+                                   <app:button name="actionEditFilter" src="common/ImgEdit.gif" tooltip="editFilter" text="editFilter"/>
                                    <td><div class='vertSep'></div></td>
-                                   <app:button name="actionDeleteFilter" src="common/Delete.gif" tooltip="deleteFilter" text="deleteFilter"/>
+                                   <app:button name="actionDeleteFilter" src="common/ImgDelete.gif" tooltip="deleteFilter" text="deleteFilter"/>
                                    <td><div class='vertSep'></div></td>
-                                   <app:button name="actionMoveFilterUp" src="arrows/UpArrow.gif" tooltip="filterMoveUp" text="filterMoveUp"/>
+                                   <app:button name="actionMoveFilterUp" src="arrows/ImgUpArrow.gif" tooltip="filterMoveUp" text="filterMoveUp"/>
                                    <td><div class='vertSep'></div></td>
-                                   <app:button name="actionMoveFilterDown" src="arrows/DownArrow.gif" tooltip="filterMoveDown" text="filterMoveDown"/>
+                                   <app:button name="actionMoveFilterDown" src="arrows/ImgDownArrow.gif" tooltip="filterMoveDown" text="filterMoveDown"/>
                                </c:otherwise>
                            </c:choose>
                        </c:when>
                        <c:otherwise>
                            <app:button
-                                   disabled="${selected eq 'shortcuts'}" name="actionSave" src="common/Save.gif" tooltip="save" text="save"/>
+                                   disabled="${selected eq 'shortcuts'}" name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
                        </c:otherwise>
                    </c:choose>
                </tr>

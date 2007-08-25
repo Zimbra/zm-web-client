@@ -190,7 +190,7 @@ function() {
 	var sections = {
 		GENERAL: {
 			title: ZmMsg.general,
-			templateId: "zimbraMail.prefs.templates.Pages#General",
+			templateId: "prefs.Pages#General",
 			priority: 0,
 			prefs: [
 				ZmSetting.LOCALE_NAME,
@@ -205,7 +205,7 @@ function() {
 		},
 		COMPOSING: {
 			title: ZmMsg.composing,
-			templateId: "zimbraMail.prefs.templates.Pages#Composing",
+			templateId: "prefs.Pages#Composing",
 			priority: 20,
 			precondition: [ ZmSetting.MAIL_ENABLED, ZmSetting.CALENDAR_ENABLED, ZmSetting.NOTEBOOK_ENABLED ],
 			prefs: [
@@ -222,7 +222,7 @@ function() {
 		},
 		SHORTCUTS: {
 			title: ZmMsg.shortcuts,
-			templateId: "zimbraMail.prefs.templates.Pages#Shortcuts",
+			templateId: "prefs.Pages#Shortcuts",
 			priority: 100,
 			precondition: ZmSetting.USE_KEYBOARD_SHORTCUTS,
 			prefs: [

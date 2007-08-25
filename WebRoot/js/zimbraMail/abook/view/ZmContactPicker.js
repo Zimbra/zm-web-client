@@ -175,7 +175,7 @@ function() {
 		showSelect: showSelect
 	};
 
-	return (AjxTemplate.expand("zimbraMail.abook.templates.Contacts#ZmContactPicker", subs));
+	return (AjxTemplate.expand("abook.Contacts#ZmContactPicker", subs));
 };
 
 // called only when ZmContactPicker is first created. Sets up initial layout.

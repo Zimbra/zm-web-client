@@ -56,7 +56,8 @@ function() {
 
 	// create the html
 	var data = { id: this._htmlElId };
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Pages#MailFilters", data);
+	var html = AjxTemplate.expand("prefs.Pages#MailFilters", data);
+	this.getHtmlElement().innerHTML = html;
 
 	// create toolbar
 	var toolbarEl = document.getElementById(data.id+"_toolbar");

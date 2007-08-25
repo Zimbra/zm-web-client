@@ -155,7 +155,7 @@ ZmVoiceApp.prototype._registerPrefs = function() {
     var sections = {
         VOICE: {
             title: ZmMsg.callManager,
-            templateId: "zimbraMail.prefs.templates.Pages#Voice",
+            templateId: "prefs.Pages#Voice",
             priority: 40,
             precondition: ZmSetting.VOICE_ENABLED,
             prefs: [

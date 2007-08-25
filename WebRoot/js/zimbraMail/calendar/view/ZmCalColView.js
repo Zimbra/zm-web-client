@@ -690,7 +690,7 @@ function(div, allDay, folderId) {
 	};
 
     var template = allDay ? "calendar_appt_allday" : "calendar_appt";
-    div.innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#"+template, subs);
+    div.innerHTML = AjxTemplate.expand("calendar.Calendar#"+template, subs);
 	return div;
 }
 
@@ -782,7 +782,7 @@ function(appt) {
 		template = "calendar_appt";
 	}
 
-	div.innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#"+template, subs);
+	div.innerHTML = AjxTemplate.expand("calendar.Calendar#"+template, subs);
 
 	// if (we can edit this appt) then create sash....
 	if (!appt.isReadOnly() && !appt.isAllDayEvent() && !isRemote) {
@@ -947,7 +947,7 @@ function(abook) {
 	// union grid
 	if (this._scheduleMode) {
 		html.append("<div id='", this._unionGridScrollDivId, "' class=calendar_union_scroll style='position:absolute'>");
-		html.append("<div id='", this._unionGridDivId, "' class='ImgCalendarDayGrid__BG' style='width:100%; height:1008px; position:absolute;'>");	
+		html.append("<div id='", this._unionGridDivId, "' class='ImgCalendarDayGrid' style='width:100%; height:1008px; position:absolute;'>");	
 		html.append("</div></div>");
 		// sep between union grid and appt grid
 		html.append("<div id='", this._unionGridSepDivId, "' class='calendar_day_separator' style='position:absolute'></div>");

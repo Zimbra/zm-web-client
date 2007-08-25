@@ -163,7 +163,7 @@
                                                             css="${param.css}"/>
                                             <a class='zo_button' href="${nextItemUrl}">
                                                 <fmt:message key="MO_NEXT"/>
-                                                    <%--<img src="<c:url value='/images/arrows/PreviousPage.gif'/>" border="0"/>--%>
+                                                    <%--<mo:img src="arrows/ImgPreviousPage.gif"/>--%>
                                             </a>
                                         </c:when>
                                         <c:otherwise>
@@ -326,7 +326,7 @@
                 <table cellpadding="0" cellspacing="0">
                     <tr>
                         <td>
-                            <mo:img src="mail/Conversation.gif"/>
+                            <mo:img src="mail/ImgConversation.gif"/>
                         </td>
                         <td style='padding-left:5px;'>
                                 ${fn:escapeXml(empty subject ? emptySubject : subject)}
@@ -351,8 +351,8 @@
                                     <tr>
                                         <td style='width:40px; ' valign="middle" align="center">
                                             <table>
-                                                <tr><td><mo:img src="${(mhit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : mhit.statusImage}"/></td></tr>
-                                                <c:if test="${mhit.isFlagged}"><tr><td><mo:img src="tag/FlagRed.gif"/></td></tr></c:if>
+                                                <tr><td><mo:img src="${(mhit.isUnread and hit.id == message.id) ? 'mail/ImgMsgStatusRead.gif' : mhit.statusImage}"/></td></tr>
+                                                <c:if test="${mhit.isFlagged}"><tr><td><mo:img src="tag/ImgFlagRed.gif"/></td></tr></c:if>
                                                 <c:if test="${mhit.hasTags}"><tr><td><mo:miniTagImage ids="${mhit.tagIds}"/></td></tr></c:if>
                                             </table>
                                         </td>

@@ -59,12 +59,12 @@
             <c:when test="${context.isTagSearch and mailbox.features.tagging}">
                 <td><div class='vertSep'></div></td>
                 <input type="hidden" name="contextTagId" value="${context.selectedId}">
-                <app:button name="actionMarkTagRead" src="mail/ReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
+                <app:button name="actionMarkTagRead" src="mail/ImgReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
             </c:when>
             <c:when test="${context.isFolderSearch}">
                 <td><div class='vertSep'></div></td>
                 <input type="hidden" name="contextFolderId" value="${context.selectedId}">
-                <app:button name="actionMarkFolderRead" src="mail/ReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
+                <app:button name="actionMarkFolderRead" src="mail/ImgReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
             </c:when>
         </c:choose>
               --%>
@@ -73,15 +73,15 @@
             <c:choose>
                 <c:when test="${context.folder.isTrash}">
                     <td><div class='vertSep'></div></td>
-                    <app:button name="actionEmpty" src="common/Delete.gif" tooltip="emptyTrash" text="emptyTrash"/>
+                    <app:button name="actionEmpty" src="common/ImgDelete.gif" tooltip="emptyTrash" text="emptyTrash"/>
                 </c:when>
                 <c:when test="${context.folder.isSpam}">
                     <td><div class='vertSep'></div></td>
-                    <app:button name="actionEmpty" src="common/Delete.gif" tooltip="emptyJunk" text="emptyJunk"/>
+                    <app:button name="actionEmpty" src="common/ImgDelete.gif" tooltip="emptyJunk" text="emptyJunk"/>
                 </c:when>
                 <c:when test="${context.folder.isFeed}">
                     <td><div class='vertSep'></div></td>
-                    <app:button name="actionLoadFeed" src="arrows/Refresh.gif" tooltip="checkFeed" text="checkFeed"/>
+                    <app:button name="actionLoadFeed" src="arrows/ImgRefresh.gif" tooltip="checkFeed" text="checkFeed"/>
                 </c:when>
             </c:choose>
         </c:if>
@@ -95,7 +95,7 @@
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                        <a href="${refreshUrl}" <c:if test="${keys}"></c:if>><app:img src="arrows/Refresh.gif" altkey="refresh"/><span><fmt:message key="refresh"/></span></a>
+                        <a href="${refreshUrl}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span><fmt:message key="refresh"/></span></a>
                     </td>
                     ${requestScope.clvToolbarCache}
                 </tr>

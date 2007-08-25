@@ -13,7 +13,7 @@
     <zm:prevResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
     <a class='zo_button' href="${url}">
         <fmt:message key="MO_PREV"/>
-        <%--<img src="<c:url value='/images/arrows/PreviousPage.gif'/>" border="0"/>--%>
+        <%-- <app:img src="arrows/ImgPreviousPage.gif" alt=""/>--%>
     </a>
 </c:when>
 <c:otherwise>

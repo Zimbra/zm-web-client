@@ -576,7 +576,7 @@ function(force) {
 	if (this.numTotal == null || this.isRemote()) { return ""; }
 	if (!this._tooltip || force) {
 		var subs = {itemText:this._getItemsText(), numTotal:this.numTotal, sizeTotal:this.sizeTotal};
-		this._tooltip = AjxTemplate.expand("zimbraMail.share.templates.App#FolderTooltip", subs);
+		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
 	}
 	return this._tooltip;
 };

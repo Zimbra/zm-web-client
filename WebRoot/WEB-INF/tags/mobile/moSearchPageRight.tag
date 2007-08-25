@@ -13,13 +13,13 @@
     <zm:nextResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
     <a class='zo_button' href="${url}">
         <fmt:message key="MO_NEXT"/>
-        <%--<img src="<c:url value='/images/arrows/NextPage.gif'/>" border="0"/> --%>
+        <%--<app:img src="arrows/ImgNextPage.gif" alt=""/>--%>
     </a>
 </c:when>
 <c:otherwise>
     <a class='zo_button' style='color:gray'>
         <fmt:message key="MO_NEXT"/>
-        <%--<img src="<c:url value='/images/arrows/NextPage.gif'/>" border="0"/> --%>
+        <%--<app:img src="arrows/ImgPreviousPage.gif" alt=""/>--%>
     </a>
 </c:otherwise>
 </c:choose>

@@ -250,7 +250,7 @@ function() {
 		id:this._htmlElId,
 		showSearchIn:showSearchIn
 	};
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#GroupView", params);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);
 	this._htmlInitialized = true;
 };
 
@@ -546,7 +546,7 @@ function(contact, abridged) {
 		size: size,
 		hasMore: hasMore
 	};
-	return (AjxTemplate.expand("zimbraMail.abook.templates.Contacts#PrintGroup", subs));
+	return (AjxTemplate.expand("abook.Contacts#PrintGroup", subs));
 };
 
 

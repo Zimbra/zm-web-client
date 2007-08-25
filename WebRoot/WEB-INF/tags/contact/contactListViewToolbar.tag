@@ -12,12 +12,12 @@
      <zm:getMailbox var="mailbox"/>
     <c:set var="contactsToolbarCache" scope="request">
         <td><div class='vertSep'></div></td>
-        <app:button name="actionNew" id="NEW_CONTACT" src="contacts/NewContact.gif" tooltip="newContact" text="contact"/>
+        <app:button name="actionNew" id="NEW_CONTACT" src="contacts/ImgNewContact.gif" tooltip="newContact" text="contact"/>
         <td><div class='vertSep'></div></td>
-        <app:button name="actionNewGroup" id="NEW_GROUP" src="mail/NewGroup.gif" tooltip="newGroup" text="group"/>
+        <app:button name="actionNewGroup" id="NEW_GROUP" src="mail/ImgNewGroup.gif" tooltip="newGroup" text="group"/>
         <c:if test="${not empty contact}">
             <td><div class='vertSep'></div></td>
-            <app:button id="OPEDIT" name="actionEdit" src="common/Edit.gif" tooltip="edit" text="edit"/>
+            <app:button id="OPEDIT" name="actionEdit" src="common/ImgEdit.gif" tooltip="edit" text="edit"/>
             <input type='hidden' name="actionEditId" value="${contact.id}"/>
          </c:if>
         <td><div class='vertSep'></div></td>
@@ -72,7 +72,7 @@
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                        <a href="${refreshUrl}" <c:if test="${keys}"></c:if>><app:img src="arrows/Refresh.gif" altkey="refresh"/><span><fmt:message key="refresh"/></span></a>
+                        <a href="${refreshUrl}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span><fmt:message key="refresh"/></span></a>
                     </td>
                     ${requestScope.contactsToolbarCache}
                 </tr>

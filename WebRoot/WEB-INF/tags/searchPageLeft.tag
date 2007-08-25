@@ -10,8 +10,8 @@
 
 <c:if test="${context.searchResult.hasPrevPage}">
     <zm:prevResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
-    <a <c:if test="${keys}">id="PREV_PAGE"</c:if> href="${url}"><app:img altkey="ALT_PAGE_PREVIOUS" src="arrows/LeftArrow.gif" border="0"/></a>
+    <a <c:if test="${keys}">id="PREV_PAGE"</c:if> href="${url}"><app:img altkey="ALT_PAGE_PREVIOUS" src="arrows/ImgLeftArrow.gif" border="0"/></a>
 </c:if>
 <c:if test="${!context.searchResult.hasPrevPage}">
-  <app:img altkey='ALT_PAGE_NO_PREVIOUS' disabled='true' src="arrows/LeftArrow.gif" border="0"/>
+  <app:img altkey='ALT_PAGE_NO_PREVIOUS' disabled='true' src="arrows/ImgLeftArrow.gif" border="0"/>
 </c:if>

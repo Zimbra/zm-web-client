@@ -16,7 +16,7 @@
     <c:when test="${calendar}">
         <fmt:message var="label" key="calendarNew"/>
         <fmt:message var="createLabel" key="createCalendar"/>
-        <c:set var="icon" value="${link ? 'calendar/SharedCalendarFolder.gif' : 'calendar/CalendarFolder.gif'}"/>
+        <c:set var="icon" value="${link ? 'calendar/ImgSharedCalendarFolder.gif' : 'calendar/ImgCalendarFolder.gif'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
         <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'appointment')}"/>
         <c:set var="newFolderExcludeFlag" value="${empty param.newFolderExcludeFlag ? '' : param.newFolderExcludeFlag}"/>
@@ -26,7 +26,7 @@
     <c:when test="${addressbook}">
         <fmt:message var="label" key="addressBookNew"/>
         <fmt:message var="createLabel" key="createAddressBook"/>
-        <c:set var="icon" value="${link ? 'contacts/SharedContactsFolder.gif' : 'contacts/ContactsFolder.gif'}"/>
+        <c:set var="icon" value="${link ? 'contacts/ImgSharedContactsFolder.gif' : 'contacts/ImgContactsFolder.gif'}"/>
         <fmt:message var="folderType" key="${link ? 'addressBookShared' : 'addressBookUser'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
         <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'appointment')}"/>
@@ -34,7 +34,7 @@
     <c:when test="${tasklist}">
         <fmt:message var="label" key="taskListNew"/>
         <fmt:message var="createLabel" key="createTaskList"/>
-        <c:set var="icon" value="${link ? 'tasks/SharedTaskList.gif' : 'tasks/TaskList.gif'}"/>
+        <c:set var="icon" value="${link ? 'tasks/ImgSharedTaskList.gif' : 'tasks/ImgTaskList.gif'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'gray' : param.newFolderColor}"/>
         <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'task')}"/>
         <fmt:message var="folderType" key="${link ? 'taskListShared' : 'taskListUser'}"/>
@@ -42,7 +42,7 @@
     <c:otherwise>
         <c:set var="newFolderStyleColor" value="Gray"/>
 
-        <c:set var="icon" value="${search ? 'common/SearchFolder.gif' : (url ? 'mail/RSS.gif' : 'common/Folder.gif')}"/>
+        <c:set var="icon" value="${search ? 'common/ImgSearchFolder.gif' : (url ? 'mail/ImgRSS.gif' : 'common/ImgFolder.gif')}"/>
         <c:choose>
             <c:when test="${url}">
                 <fmt:message var="label" key="folderNewRssAtomFeed"/>

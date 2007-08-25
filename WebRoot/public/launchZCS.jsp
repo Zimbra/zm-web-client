@@ -130,16 +130,16 @@
 <link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<title><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
+<title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
 <style type="text/css">
 <!--
 @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
-@import url(<%= contextPath %>/css/imgs,<%= skin %>_imgs,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+@import url(<%= contextPath %>/css/images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
 -->
 </style>
 </head>
 <body>
-<noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
+<noscript><fmt:setBundle basename="/messages/ZmMsg"/>
     <fmt:message key="errorJavaScriptRequired"><fmt:param>
     <c:url context="/zimbra" value='/h/'></c:url>
     </fmt:param></fmt:message>
@@ -195,8 +195,8 @@
 	appDevMode     = <%=inDevMode%>;
 	
 </script>
-<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%= localeQs %>"></script>
-<script src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/messages/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%= localeQs %>"></script>
+<script src="<%=contextPath %>/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
 <jsp:include page="Boot.jsp"/>
 <%
     String allPackages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";

@@ -283,7 +283,7 @@ function(ev) {
 ZmSearchToolBar.prototype._createHtml =
 function() {
 
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.share.templates.Widgets#ZmSearchToolBar", {id:this._htmlElId});
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("share.Widgets#ZmSearchToolBar", {id:this._htmlElId});
 
 	// add search input field
 	var inputFieldId = this._htmlElId + "_inputField";

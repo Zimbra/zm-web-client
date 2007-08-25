@@ -34,7 +34,7 @@ ZmImSubscribeAuth.prototype.constructor = ZmImSubscribeAuth;
 
 ZmImSubscribeAuth.prototype._init = function() {
 	var base_id = this._baseId = Dwt.getNextId();
-	this.setContent(AjxTemplate.expand("zimbraMail.im.templates.Chat#SubscribeAuthDlg", {
+	this.setContent(AjxTemplate.expand("im.Chat#SubscribeAuthDlg", {
 						   id	 : base_id,
 						   buddy : this._buddy
 					   }));

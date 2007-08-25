@@ -101,7 +101,7 @@ function() {
 	var sections = {
 		CONTACTS: {
 			title: ZmMsg.addressBook,
-			templateId: "zimbraMail.prefs.templates.Pages#Contacts",
+			templateId: "prefs.Pages#Contacts",
 			priority: 50,
 			precondition: ZmSetting.CONTACTS_ENABLED,
 			prefs: [

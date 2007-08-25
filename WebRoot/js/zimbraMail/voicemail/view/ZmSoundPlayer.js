@@ -293,8 +293,8 @@ function() {
 	var element = this.getHtmlElement();
     var id = this._htmlElId;
     var template = this._isScriptable ? 
-    	"zimbraMail.voicemail.templates.Voicemail#ZmSoundPlayer" : 
-    	"zimbraMail.voicemail.templates.Voicemail#ZmSoundPlayerNoScript";
+    	"voicemail.Voicemail#ZmSoundPlayer" : 
+    	"voicemail.Voicemail#ZmSoundPlayerNoScript";
 
     element.innerHTML = AjxTemplate.expand(template, id);
 	this._playButton = new DwtBorderlessButton(this);

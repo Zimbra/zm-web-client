@@ -175,7 +175,7 @@ function() {
 	};
 
 	// XXX: rename template name to CalItem#CalItemEdit
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#EditView", subs);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#EditView", subs);
 };
 
 ZmTaskEditView.prototype._createWidgets =

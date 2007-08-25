@@ -198,7 +198,7 @@ function(controller) {
             width: "250"
         };
 
-		this._toolTip = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#Tooltip", params);
+		this._toolTip = AjxTemplate.expand("calendar.Appointment#Tooltip", params);
 	}
 	return this._toolTip;
 };

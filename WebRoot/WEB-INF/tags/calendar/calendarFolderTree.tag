@@ -20,7 +20,7 @@
                 <%--TODO: add context (date, view, etc) --%>
                  <c:param name="${expanded ? 'collapse' : 'expand'}" value="calendars"/>
              </c:url>
-             <th style='width:20px'><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}"/></a></th>
+             <th style='width:20px'><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'dwt/ImgNodeExpanded.gif' : 'dwt/ImgNodeCollapsed.gif'}"/></a></th>
             <th class='Header'><fmt:message key="calendars"/></th>
             <th width='1%' align='right' class='ZhTreeEdit'>
                 <c:url value="/h/mcalendars" var="mabUrl"/>

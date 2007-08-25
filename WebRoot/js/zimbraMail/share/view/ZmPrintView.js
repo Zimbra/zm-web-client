@@ -68,7 +68,7 @@ function(item) {
 			content: this._html
 		};
 
-		var html = AjxTemplate.expand("zimbraMail.share.templates.App#PrintView", subs);
+		var html = AjxTemplate.expand("share.App#PrintView", subs);
 
 		this._printWindow.document.open();
 		this._printWindow.document.write(html);

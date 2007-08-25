@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:fileUploader var="uploader"/>
@@ -44,13 +44,13 @@
                                     <tr>
                                         <td>
                                             <a id="OPCLOSE" href="<c:url value="/h/search?st=contact"/>">
-                                                <app:img src="common/Close.gif"/><span><fmt:message key="close"/></span>
+                                                <app:img src="common/ImgClose.gif"/><span><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
+                                        <app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWLINK" name="actionNewSharedAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNewShared" text="addressBookNewShared"/>
+                                        <app:button id="OPNEWLINK" name="actionNewSharedAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNewShared" text="addressBookNewShared"/>
                                     </tr>
                                 </table>
                             </td>

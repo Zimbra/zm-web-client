@@ -7,4 +7,4 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<c:choose><c:when test="${attachment}"><app:img altkey="ALT_ATTACHMENT" src="common/Attachment.gif" /></c:when><c:otherwise>&nbsp;</c:otherwise></c:choose>
+<c:choose><c:when test="${attachment}"><app:img altkey="ALT_ATTACHMENT" src="common/ImgAttachment.gif" /></c:when><c:otherwise>&nbsp;</c:otherwise></c:choose>

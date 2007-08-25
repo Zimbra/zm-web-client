@@ -5,7 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <fmt:message var="title" key="newTask"/>
@@ -56,16 +56,16 @@
 
     <c:choose>
         <c:when test="${empty compose.inviteId}">
-            <c:set var="apptImage" value="tasks/NewTask.gif"/>
+            <c:set var="apptImage" value="tasks/ImgNewTask.gif"/>
             <c:set var="apptImageAlt" value="ALT_NEW_TASK"/>
             <fmt:message var="apptSubject" key="newTask"/>
             <c:set var="isNewAppt" value="${true}"/>
         </c:when>
         <c:otherwise>
-            <c:set var="apptImage" value="tasks/Task.gif"/>
+            <c:set var="apptImage" value="tasks/ImgTask.gif"/>
             <c:set var="apptImageAlt" value="ALT_EDIT_TASK"/>
             <c:set var="apptSubject" value="${compose.subject}"/>
-            <c:set var="closeImage" value="common/Close.gif"/>
+            <c:set var="closeImage" value="common/ImgClose.gif"/>
             <c:set var="isNewAppt" value="${false}"/>
         </c:otherwise>
     </c:choose>
@@ -82,14 +82,14 @@
                 <td align=left class=TbBt>
                     <table cellspacing=0 cellpadding=0 class='Tb'>
                         <tr>
-                            <app:button id="OPSAVE" name="actionSave" src="common/Save.gif" tooltip="save" text="save"/>
+                            <app:button id="OPSAVE" name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
                             <td><div class='vertSep'></div></td>
                             <c:choose>
                                 <c:when test="${isNewAppt}">
-                                    <app:button name="actionCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                                    <app:button name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <app:button name="actionCancel" src="common/Close.gif" tooltip="close" text="close"/>        
+                                    <app:button name="actionCancel" src="common/ImgClose.gif" tooltip="close" text="close"/>        
                                 </c:otherwise>
                             </c:choose>
 
@@ -123,10 +123,10 @@
                             
                             <%--
                             <td><div class='vertSep'></div></td>
-                            <app:button name="actionAttachAdd" src="common/Attachment.gif" tooltip="addAttachments" text="addAttachments"/>
+                            <app:button name="actionAttachAdd" src="common/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
                             <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
                                 <td><div class='vertSep'></div></td>
-                                <app:button name="actionContactAdd" src="contacts/ContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
+                                <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
                             </c:if>
                             --%>
                         </tr>
@@ -321,7 +321,7 @@
                                     <tr>
                                         <td align='right'>
                                             <c:if test="${firstAttachment}">
-                                                <app:img altkey="ALT_ATTACHMENT" src="common/Attachment.gif"/>
+                                                <app:img altkey="ALT_ATTACHMENT" src="common/ImgAttachment.gif"/>
                                                 <c:set var="firstAttachment" value="${false}"/>
                                             </c:if>
                                         </td>
@@ -341,7 +341,7 @@
                                     <tr class="CompOrigAtt" valign="middle">
                                         <td align='right'>
                                             <c:if test="${firstAttachment}">
-                                                <app:img altkey="ALT_ATTACHMENT" src="common/Attachment.gif"/>
+                                                <app:img altkey="ALT_ATTACHMENT" src="common/ImgAttachment.gif"/>
                                                 <c:set var="firstAttachment" value="${false}"/>
                                             </c:if>
                                         </td>
