@@ -305,7 +305,12 @@ function(reset) {
 	if (reset) {
 		this._overviewPanelContent = null;
 	}
-	appCtxt.getAppViewMgr().setComponent(ZmAppViewMgr.C_TREE, this.getOverviewPanelContent());
+
+	// only set overview panel content if not in full screen mode
+	var avm = appCtxt.getAppViewMgr();
+	if (!avm.isFullScreen()) {
+		avm.setComponent(ZmAppViewMgr.C_TREE, this.getOverviewPanelContent());
+	}
 };
 
 /**

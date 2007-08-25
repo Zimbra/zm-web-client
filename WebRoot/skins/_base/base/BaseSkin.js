@@ -31,19 +31,21 @@ BaseSkin.prototype.constructor = BaseSkin;
 // Public methods
 //
 
-BaseSkin.prototype.show = function(name, state) {
+BaseSkin.prototype.show =
+function(name, state) {
     ZmSkin.prototype.show.call(this, name, state);
     if (name == "fullScreen") {
         this._showFullScreen(state);
     }
 };
 
-BaseSkin.prototype.gotoApp = function(appId, callback) {
-	var appController = appCtxt.getAppController();
-	appController.activateApp(appId, null, callback);
+BaseSkin.prototype.gotoApp =
+function(appId, callback) {
+	appCtxt.getAppController().activateApp(appId, null, callback);
 };
 
-BaseSkin.prototype.gotoPrefs = function(prefPageId) {
+BaseSkin.prototype.gotoPrefs =
+function(prefPageId) {
 	if (appCtxt.getCurrentAppName() != ZmApp.PREFERENCES) {
 		var callback = new AjxCallback(this, this._gotoPrefPage, [prefPageId]);
 		this.gotoApp(ZmApp.PREFERENCES, callback);
@@ -57,14 +59,26 @@ BaseSkin.prototype.gotoPrefs = function(prefPageId) {
 // Protected methods
 //
 
-BaseSkin.prototype._showFullScreen = function(state) {
+BaseSkin.prototype._showFullScreen =
+function(state) {
     var componentId = "skin_container_app_top_toolbar";
-    var containerId = state == null || state ? "skin_border_app_top_toolbar_full" : "skin_border_app_top_toolbar";
+	var show = state == null || state;
+	var containerId = show ? "skin_border_app_top_toolbar_full" : "skin_td_app_top_toolbar";
     this._reparentEl(componentId, containerId);
+
+	// HACK: IE doesn't seem to hide the container DIV for full screen just even
+	// though its parent row is set to display:none
+	if (AjxEnv.isIE) {
+		var containerDiv = document.getElementById("skin_container_app_main_full");
+		if (containerDiv) {
+			Dwt.setVisible(containerDiv, show);
+		}
+	}
 };
 
-BaseSkin.prototype._gotoPrefPage = function(pageId) {
-	if (pageId == null) return;
+BaseSkin.prototype._gotoPrefPage =
+function(pageId) {
+	if (pageId == null) { return; }
 
 	var app = appCtxt.getApp(ZmApp.PREFERENCES);
 	var controller = app.getPrefController();
