@@ -478,39 +478,42 @@ function(ev) {
 	if (!isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
 		var	conv = appCtxt.getById(item.cid);
 		ev.handled = true;
-		if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
-			// msg marked as Junk, or deleted via Empty Trash
-			// TODO: handle expandable msg removal
-			conv.msgs.remove(item, true);
-			conv.numMsgs = conv.msgs.size();
-			if (this._expandable[conv.id] && conv.numMsgs == 1) {
-				this._setImage(conv, ZmItem.F_EXPAND, null);
-				this._removeMsgRows(conv.id);
-			}
-		} else {
-			// if this conv now has no msgs that match current search, remove it
-			var removeConv = true;
-			var folderId = appCtxt.getCurrentSearch().folderId;
-			if (folderId) {
-				var msgs = conv.msgs.getArray();
-				for (var i = 0; i < msgs.length; i++) {
-					if (msgs[i].folderId == folderId) {
-						removeConv = false;
-						break;
-					}
+		if (conv) {
+			if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
+				// msg marked as Junk, or deleted via Empty Trash
+				// TODO: handle expandable msg removal
+				conv.msgs.remove(item, true);
+				conv.numMsgs = conv.msgs.size();
+				if (this._expandable[conv.id] && conv.numMsgs == 1) {
+					this._setImage(conv, ZmItem.F_EXPAND, null);
+					this._removeMsgRows(conv.id);
 				}
+				this.removeItem(item, true);	// remove msg row
 			} else {
-				removeConv = false;
-			}
-			if (removeConv) {
-				this._list.remove(conv);				// view has sublist of controller list
-				this._controller._list.remove(conv);	// complete list
-				ev.item = item = conv;
-				isConv = true;
-				ev.handled = false;
-			} else {
-				// normal case: just change folder name for msg
-				this._changeFolderName(item);
+				// if this conv now has no msgs that match current search, remove it
+				var removeConv = true;
+				var folderId = appCtxt.getCurrentSearch().folderId;
+				if (folderId) {
+					var msgs = conv.msgs.getArray();
+					for (var i = 0; i < msgs.length; i++) {
+						if (msgs[i].folderId == folderId) {
+							removeConv = false;
+							break;
+						}
+					}
+				} else {
+					removeConv = false;
+				}
+				if (removeConv) {
+					this._list.remove(conv);				// view has sublist of controller list
+					this._controller._list.remove(conv);	// complete list
+					ev.item = item = conv;
+					isConv = true;
+					ev.handled = false;
+				} else {
+					// normal case: just change folder name for msg
+					this._changeFolderName(item);
+				}
 			}
 		}
 	}
@@ -624,15 +627,14 @@ function(convId) {
  */
 ZmConvListView.prototype.removeItem =
 function(item, skipNotify) {
-	var rowId = this._getItemId(item);
-	OUT:
-	for (var id in this._msgRowIdList) {
-		var list = this._msgRowIdList[id];
+	if (item.type == ZmItem.MSG) {
+		var msgRowId = this._getItemId(item);
+		var list = this._msgRowIdList[item.cid];
 		if (list && list.length) {
 			for (var i = 0; i < list.length; i++) {
-				if (list[i] == rowId) {
+				if (list[i] == msgRowId) {
 					list[i] = null;
-					break OUT;
+					break;
 				}
 			}
 		}
