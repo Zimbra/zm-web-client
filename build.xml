@@ -596,121 +596,46 @@ if (ext == null) ext = "";
 	</target>
 
 	<target name='compress' depends='jam-files' if='build.prod'>
-		<property name='asl.files' value='LICENSE.txt,NOTICE.txt' />
-		<property name='zpl.files' value='zimbra/preamble-ZPL-WebClient.txt' />
-
-		<property name='preamble.asl.file' value='${build.dir}/preamble-asl.txt' />
-		<property name='preamble.zpl.file' value='${build.dir}/preamble-zpl.txt' />
-
 		<fileset id="js-includes" dir="${build.js.dir}" includes="*_all.js" />
 
-		<!-- generate preambles -->
-		<dependset>
-			<srcfilelist dir='.' files='${asl.files}' />
-			<targetfilelist dir='.' files='${preamble.asl.file}' />
-		</dependset>
-		<if><not><available file='${preamble.asl.file}' /></not>
-			<then>
-				<echo>Generating ASL preamble</echo>
-				<concat destfile="${preamble.asl.file}">
-					<header>/*</header>
-					<footer>*/</footer>
-					<filelist dir='.' files='${asl.files}' />
-				</concat>
-			</then>
-		</if>
-
-		<dependset>
-			<srcfilelist dir='${license.dir}' files='${zpl.files}' />
-			<targetfilelist dir='.' files='${preamble.zpl.file}' />
-		</dependset>
-		<if><not><available file='${preamble.zpl.file}' /></not>
-			<then>
-				<echo>Generating ZPL preamble</echo>
-				<concat destfile="${preamble.zpl.file}">
-					<header>/*</header>
-					<footer>*/</footer>
-					<filelist dir='${license.dir}' files='${zpl.files}' />
-				</concat>
-			</then>
-		</if>
-
-		<!-- minimize js -->
+		<!-- minimize js, prepend copyright, compress -->
 		<for param="var">
-			<path><fileset refid="js-includes" /></path>
+			<path>
+				<fileset refid="js-includes"/>
+			</path>
 			<sequential>
 				<dependset>
-					<srcfilelist dir='.' files='@{var}' />
-					<targetfilelist dir='.' files='@{var}${jsmin.ext}' />
+					<srcfilelist dir='.' files='@{var}'/>
+					<targetfilelist dir='.' files='@{var}${compress.ext}'/>
 				</dependset>
-				<if><not><available file='@{var}${jsmin.ext}' /></not>
+				<if>
+					<not>
+						<available file='@{var}${jsmin.ext}'/>
+					</not>
 					<then>
-						<copy tofile="@{var}${nodebug.ext}" file='@{var}' />
+						<copy tofile="@{var}${nodebug.ext}" file='@{var}'/>
 						<echo>Stripping debug to @{var}${nodebug.ext}</echo>
 						<replaceregexp byline="true">
-							<regexp pattern="DBG.print(.*);|DBG.time(.*);|DBG.dump(.*);|DBG.setTitle(.*);" />
-							<substitution expression=" " />
+							<regexp pattern="DBG.print(.*);|DBG.time(.*);|DBG.dump(.*);|DBG.setTitle(.*);"/>
+							<substitution expression=" "/>
 							<fileset file="@{var}${nodebug.ext}"/>
 						</replaceregexp>
 						<echo>Minimizing to @{var}${jsmin.ext}</echo>
-						<java jar="${common.lib.dir}/custom_rhino.jar" fork="true" failonerror="true"
-							  output="@{var}${jsmin.ext}">
-							<jvmarg  value="-Xmn100M"/>
-							<jvmarg  value="-Xms500M"/>
-							<jvmarg  value="-Xmx500M"/>
-							<arg value="-opt" />
-							<arg value="-1" />
-							<arg value="-c" />
-							<arg value="@{var}${nodebug.ext}" />
+						<java jar="jars/yuicompressor-1.1.jar" fork="true" failonerror="true" output="${build.dir}/yui-compress.out">
+							<arg value="-o"/>
+							<arg value="@{var}${jsmin.ext}"/>
+							<arg value="@{var}${nodebug.ext}"/>
 						</java>
-					</then>
-				</if>
-			</sequential>
-		</for>
-
-		<!-- prepend licenses -->
-		<for  param="var">
-			<path><fileset dir="${build.js.dir}" includes='Boot_all.js,Ajax*_all.js' /></path>
-			<sequential>
-				<dependset>
-					<srcfilelist dir='.' files='@{var}${jsmin.ext}' />
-					<targetfilelist dir='.' files='@{var}${license.ext}' />
-				</dependset>
-				<if><not><available file='@{var}${license.ext}' /></not>
-					<then>
-						<echo>Prepending ASL to @{var}${license.ext}</echo>
+						<echo>Prepending Copyright to @{var}${license.ext}</echo>
 						<concat destfile="@{var}${license.ext}">
-							<header file='${preamble.asl.file}' filtering='no' />
-							<fileset file='@{var}${jsmin.ext}' />
+							<header filtering="no" trimleading="yes">
+								// Copyright (C) 2005, 2006, 2007 Zimbra Inc. http://www.zimbra.com
+							</header>
+							<fileset file='@{var}${jsmin.ext}'/>
 						</concat>
+						<gzip destfile="@{var}${compress.ext}" src="@{var}${license.ext}"/>
 					</then>
 				</if>
-			</sequential>
-		</for>
-		<for param="var">
-			<path><fileset dir="${build.js.dir}" includes='*_all.js' excludes='Boot*,Ajax*' /></path>
-			<sequential>
-				<dependset>
-					<srcfilelist dir='.' files='@{var}${jsmin.ext}' />
-					<targetfilelist dir='.' files='@{var}${license.ext}' />
-				</dependset>
-				<if><not><available file='@{var}${license.ext}' /></not>
-					<then>
-						<echo>Prepending ZPL to @{var}${license.ext}</echo>
-						<concat destfile="@{var}${license.ext}">
-							<header file='${preamble.zpl.file}' filtering='no' />
-							<fileset file='@{var}${jsmin.ext}' />
-						</concat>
-					</then>
-				</if>
-			</sequential>
-		</for>
-
-		<!-- compress files -->
-		<for param="var">
-			<path><fileset refid="js-includes" /></path>
-			<sequential>
-				<gzip destfile="@{var}${compress.ext}" src="@{var}${license.ext}" />
 			</sequential>
 		</for>
 	</target>
