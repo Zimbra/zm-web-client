@@ -194,6 +194,11 @@
 			<isset property="build.prod" />
 		</condition>
 
+
+		<condition property='external.done' value='true'>
+			<available file="${taglib.build.dir}/zimbrataglib.jar" />
+		</condition>
+
 		<!-- deployment properties -->
 		<tstamp />
 
@@ -246,10 +251,9 @@
 		</javac>
 	</target>
 
-	<target name='external' if='build.clean'>
-		<ant dir='${common.dir}' target="jar" inheritall="false" />
+	<target name='external' unless="external.done">
+		<!-- ant jar in ZimbraTagLib will build ZimbraCommon and ZimbraServer -->
 		<ant dir='${taglib.dir}' target="jar" inheritall="false" />
-		<ant dir='${server.dir}' target="jar" inheritall="false" />
 	</target>
 
 	<target name='templates' depends='compile'>
@@ -681,7 +685,7 @@ if (ext == null) ext = "";
 	</target>
 
 	<target name='clean'>
-		<!--<property name='build.clean' value='true' />-->
+		<ant dir="${taglib.dir}" target="clean" inheritAll="false" />
 		<delete dir='${build.dir}' />
 	</target>
 
