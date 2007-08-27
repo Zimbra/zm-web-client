@@ -18,9 +18,12 @@
      <c:if test="${not empty param.collapse}">
          <c:set target="${sessionScope.expanded}" property="${param.collapse}" value="collapse"/>
      </c:if>
-
+    <c:if test="${param.initial eq 'true'}">
+        <c:if test="${mailbox.features.portalEnabled}">
+            <c:redirect url="home?mesg=welcome"/>
+        </c:if>
+    </c:if>
      <%-- switch based on context search types --%>
-
      <c:choose>
          <c:when test="${not empty param.doConvListViewAction}">
              <app:convListViewAction/>
