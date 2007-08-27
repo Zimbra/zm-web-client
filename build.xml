@@ -86,6 +86,26 @@
 		<property name='common.webinf.excludes' value='web.*,lib/**' />
 	</target>
 
+	<target name='ajax' depends='common'>
+		<property name='build.ajax' value='true' />
+		<property name='deploy.app' value='ajax' />
+		<property name='skins.dir' value='${web.dir}/skins' />
+		<property name='web.includes' value='js/ajax/**,js/zimbraAdmin/**/*AutoComplete*.js' />
+		<property name='web.excludes' value='' />
+		<property name='jsp.includes' value='frameOpenerHelper.jsp' />
+		<property name='jsp.excludes' value='' />
+		<property name='img.includes' value='dwt/**' />
+		<property name='img.excludes' value='${common.img.excludes}' />
+		<property name='template.includes' value='dwt/**/*.template' />
+		<property name='template.excludes' value='' />
+		<property name='jam.includes' value='**/ajax/package/*.js' />
+		<property name='jam.excludes' value='' />
+		<property name='build.web.includes' value='favicon.ico,js/**,img/dwt.gif,img/images.css,skin/**,public/**,templates/**' />
+		<property name='build.web.excludes' value='${common.build.web.excludes}' />
+		<property name='webinf.includes' value='' />
+		<property name='webinf.excludes' value='**' />
+	</target>
+
 	<target name='client' depends='common'>
 		<property name='deploy.app' value='zimbra' />
 		<property name='deploy.url.token' value='%%zimbraMailURL%%' />
@@ -233,15 +253,22 @@
 		<fileset id='customer.web.fileset' dir='${build.dir}' excludes='**' />
 	</target>
 
-	<target name='customer-init' if='env.CUSTOMER_SKIN' unless='build.admin'>
-		<property name='customer.dir' value='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}' />
-		<property name='customer.web.dir' value='${customer.dir}/ZimbraWebClient/WebRoot' />
-		<property name='customer.skin.dir' value='${customer.web.dir}/skins' />
-		<property name='customer.portal.dir' value='${customer.web.dir}/portals' />
-		<property name='customer.zimlet.dir' value='${customer.dir}/Zimlet' />
-		<fileset id='customer.web.fileset'
-				 dir='${customer.web.dir}' includes='skins/**,portals/**' excludes='**/*.template'
-		/>
+	<target name='customer-init' if='env.CUSTOMER_SKIN'>
+		<if><and>
+				<not><isset property='build.ajax' /></not>
+				<not><isset property='build.admin' /></not>
+			</and>
+			<then>
+				<property name='customer.dir' value='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}' />
+				<property name='customer.web.dir' value='${customer.dir}/ZimbraWebClient/WebRoot' />
+				<property name='customer.skin.dir' value='${customer.web.dir}/skins' />
+				<property name='customer.portal.dir' value='${customer.web.dir}/portals' />
+				<property name='customer.zimlet.dir' value='${customer.dir}/Zimlet' />
+				<fileset id='customer.web.fileset'
+						 dir='${customer.web.dir}' includes='skins/**,portals/**' excludes='**/*.template'
+				/>
+			</then>
+		</if>
 	</target>
 
 	<target name='compile' depends='init,external'>
@@ -267,6 +294,7 @@
 		</dependset>
 		<if><and>
 				<isset property="env.CUSTOMER_SKIN" />
+				<not><isset property='build.ajax' /></not>
 				<not><isset property='build.admin' /></not>
 			</and>
 			<then>
@@ -298,18 +326,25 @@
 		</if>
 	</target>
 
-	<target name='customer-templates' depends='compile' if='env.CUSTOMER_SKIN' unless='build.admin'>
-		<dirset id='skins.dirset' dir='${customer.skin.dir}' includes='*' />
-		<pathconvert property="skins.list" refid="skins.dirset" pathsep=",">
-			<flattenmapper />
-		</pathconvert>
-		<for list='${skins.list}' param='name'>
-			<sequential>
-				<template destdir='${build.web.dir}/skins' authoritative='true'>
-					<fileset dir='${customer.skin.dir}' includes='@{name}/**/*.template' />
-				</template>
-			</sequential>
-		</for>
+	<target name='customer-templates' depends='compile' if='env.CUSTOMER_SKIN'>
+		<if><and>
+				<not><isset property='build.ajax' /></not>
+				<not><isset property='build.admin' /></not>
+			</and>
+			<then>
+				<dirset id='skins.dirset' dir='${customer.skin.dir}' includes='*' />
+				<pathconvert property="skins.list" refid="skins.dirset" pathsep=",">
+					<flattenmapper />
+				</pathconvert>
+				<for list='${skins.list}' param='name'>
+					<sequential>
+						<template destdir='${build.web.dir}/skins' authoritative='true'>
+							<fileset dir='${customer.skin.dir}' includes='@{name}/**/*.template' />
+						</template>
+					</sequential>
+				</for>
+			</then>
+		</if>
 	</target>
 
 	<target name='timezones' depends='compile'>
@@ -411,31 +446,38 @@
 		/>
 	</target>
 
-	<target name='customer-skin-images' if='env.CUSTOMER_SKIN' unless='build.admin'>
-		<dirset id='customer.skins.dirset' dir='${customer.web.dir}' includes='skins/*' />
-		<pathconvert property='customer.skins.dirs' refid='customer.skins.dirset' pathsep=','>
-			<flattenmapper />
-		</pathconvert>
+	<target name='customer-skin-images' if='env.CUSTOMER_SKIN'>
+		<if><and>
+				<not><isset property='build.ajax' /></not>
+				<not><isset property='build.admin' /></not>
+			</and>
+			<then>
+				<dirset id='customer.skins.dirset' dir='${customer.web.dir}' includes='skins/*' />
+				<pathconvert property='customer.skins.dirs' refid='customer.skins.dirset' pathsep=','>
+					<flattenmapper />
+				</pathconvert>
 
-		<for list='${customer.skins.dirs}' param='skindir'>
-			<sequential>
-				<if><available file="${customer.skin.dir}/@{skindir}/img/icons" />
-					<then>
-						<mkdir dir="${build.web.dir}/skins/@{skindir}/img/icons" />
-						<copy todir="${build.web.dir}/skins/@{skindir}/img/icons">
-							<fileset dir="${img.dir}" includes='${img.includes}' excludes='${img.excludes}'/>
-						</copy>
-						<copy todir="${build.web.dir}/skins/@{skindir}/img/icons" overwrite="true">
-							<fileset dir="${customer.skin.dir}/@{skindir}/img/icons" />
-						</copy>
-					</then>
-				</if>
-				<antcall target='build-skin-images'>
-					<param name="skindir" value="@{skindir}" />
-					<param name="skinbasedir" value="${customer.web.dir}"/>
-				</antcall>
-			</sequential>
-		</for>
+				<for list='${customer.skins.dirs}' param='skindir'>
+					<sequential>
+						<if><available file="${customer.skin.dir}/@{skindir}/img/icons" />
+							<then>
+								<mkdir dir="${build.web.dir}/skins/@{skindir}/img/icons" />
+								<copy todir="${build.web.dir}/skins/@{skindir}/img/icons">
+									<fileset dir="${img.dir}" includes='${img.includes}' excludes='${img.excludes}'/>
+								</copy>
+								<copy todir="${build.web.dir}/skins/@{skindir}/img/icons" overwrite="true">
+									<fileset dir="${customer.skin.dir}/@{skindir}/img/icons" />
+								</copy>
+							</then>
+						</if>
+						<antcall target='build-skin-images'>
+							<param name="skindir" value="@{skindir}" />
+							<param name="skinbasedir" value="${customer.web.dir}"/>
+						</antcall>
+					</sequential>
+				</for>
+			</then>
+		</if>
 	</target>
 
 	<target name='build-skin-images' depends='images-init,build-skin-images-init'
@@ -474,17 +516,24 @@
 		</copy>
 	</target>
 
-	<target name='settings' depends='init' unless='build.admin'>
-		<property name='settings.dir' value='${build.js.dir}/zimbraMail/share/model' />
-		<property name='settings.file' value='${settings.dir}/ZmSettings.js' />
+	<target name='settings' depends='init'>
+		<if><and>
+				<not><isset property='build.ajax' /></not>
+				<not><isset property='build.admin' /></not>
+			</and>
+			<then>
+				<property name='settings.dir' value='${build.js.dir}/zimbraMail/share/model' />
+				<property name='settings.file' value='${settings.dir}/ZmSettings.js' />
 
-		<mkdir dir='${settings.dir}' />
-		<copy todir='${settings.dir}' flatten='true'>
-			<fileset dir='${js.dir}' includes='**/ZmSettings.js' />
-		</copy>
-		<replace file="${settings.file}" token="@buildVersion@" value="${zimbra.buildinfo.version}" />
-		<replace file="${settings.file}" token="@buildRelease@" value="${zimbra.buildinfo.release}" />
-		<replace file="${settings.file}" token="@buildDateTime@" value="${DSTAMP}-${TSTAMP}" />
+				<mkdir dir='${settings.dir}' />
+				<copy todir='${settings.dir}' flatten='true'>
+					<fileset dir='${js.dir}' includes='**/ZmSettings.js' />
+				</copy>
+				<replace file="${settings.file}" token="@buildVersion@" value="${zimbra.buildinfo.version}" />
+				<replace file="${settings.file}" token="@buildRelease@" value="${zimbra.buildinfo.release}" />
+				<replace file="${settings.file}" token="@buildDateTime@" value="${DSTAMP}-${TSTAMP}" />
+			</then>
+		</if>
 	</target>
 
 	<target name='jam-files' depends='templates,timezones'>
@@ -660,7 +709,8 @@ if (ext == null) ext = "";
 		<ant dir="${server.dir}" target="start-jetty" inheritAll="false"/>
 
 		<if><and>
-				<not><isset property="build.admin" /></not>
+			<not><isset property="build.ajax" /></not>
+			<not><isset property="build.admin" /></not>
 				<available file='${customer.zimlet.dir}' />
 			</and>
 			<then>
@@ -698,6 +748,7 @@ if (ext == null) ext = "";
 	<target name='admin-dev-war'		depends='admin,war' />
 	<target name='admin-deploy'			depends='admin,deploy' />
 	<target name='admin-prod-deploy'	depends='admin,prod,deploy' />
+	<target name='ajax-prod-war'		depends='ajax,prod,war' />
 
 	<target name='restart-webserver'>
 		<ant dir="${server.dir}" target="restart-webserver" />
