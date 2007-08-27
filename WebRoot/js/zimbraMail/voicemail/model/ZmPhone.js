@@ -76,7 +76,13 @@ function(display) {
 	return display.replace(/[^\d]/g, '');
 };
 
-ZmPhone.prototype.getDisplay = 
+ZmPhone.isValid =
+function(str) {
+	var expression = /(.*\d){7}/; // Very simple check: at least 7 digits.
+	return str.match(expression) != null;
+};
+
+ZmPhone.prototype.getDisplay =
 function() {
 	if (!this._display) {
 		this._display = ZmPhone.calculateDisplay(this.name);

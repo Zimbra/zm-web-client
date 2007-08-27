@@ -275,6 +275,9 @@ function(value) {
 	if (AjxStringUtil.trim(value) == "") {
 		throw AjxMsg.valueIsRequired;
 	}
+	if (!ZmPhone.isValid(value)) {
+		throw ZmMsg.errorInvalidPhone;
+	}
 	return value;
 };
 
