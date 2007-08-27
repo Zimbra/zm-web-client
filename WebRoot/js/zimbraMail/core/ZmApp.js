@@ -110,8 +110,10 @@ ZmApp.DEFAULT_APPS			= [];	// ordered list
 
 ZmApp.initialize =
 function() {
-	ZmApp.ACTION_CODES[ZmKeyMap.NEW_FOLDER]	= ZmOperation.NEW_FOLDER;
-	ZmApp.ACTION_CODES[ZmKeyMap.NEW_TAG]	= ZmOperation.NEW_TAG;
+	if (appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
+		ZmApp.ACTION_CODES[ZmKeyMap.NEW_FOLDER]	= ZmOperation.NEW_FOLDER;
+		ZmApp.ACTION_CODES[ZmKeyMap.NEW_TAG]	= ZmOperation.NEW_TAG;
+	}
 };
 
 /**

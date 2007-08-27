@@ -24,8 +24,8 @@
  */
 
 ZmTagTree = function() {
-
 	ZmTree.call(this, ZmOrganizer.TAG);
+	this.root = new ZmTag({id: ZmTag.ID_ROOT, tree: this});
 };
 
 ZmTagTree.prototype = new ZmTree;
@@ -50,12 +50,6 @@ function(tagsObj) {
 	var children = this.root.children.getArray();
 	if (children.length)
 		children.sort(ZmTag.sortCompare);
-};
-
-ZmTagTree.prototype.createRoot =
-function() {
-	if (!this.root)
-		this.root = new ZmTag({id: ZmTag.ID_ROOT, tree: this});
 };
 
 ZmTagTree.prototype.getByIndex =

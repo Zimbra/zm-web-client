@@ -328,16 +328,14 @@ ZmRequestMgr.prototype._loadTree =
 function(type, unread, obj, objType, account) {
 	var isTag = (type == ZmOrganizer.TAG);
 	var tree = appCtxt.getTree(type, account);
-	if (!tree) {
+	if (tree) {
+		tree.reset();
+	} else {
 		tree = isTag ? new ZmTagTree() : new ZmFolderTree();
 	}
 	appCtxt.setTree(type, tree, account);
 	tree.addChangeListener(this._unreadListener);
 	tree.getUnreadHash(unread);
-	tree.reset();
-	if (isTag) {
-		tree.createRoot(); // tag tree root not in the DOM
-	}
 	tree.loadFromJs(obj, objType);
 };
 
