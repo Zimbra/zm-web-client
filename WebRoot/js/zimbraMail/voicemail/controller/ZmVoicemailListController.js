@@ -286,16 +286,15 @@ function(ev, subject, to) {
     var params = {
     	soapDoc: soapDoc, 
     	asyncMode: true,
-		callback: new AjxCallback(this, this._handleResponseUpload, [inNewWindow, subject, to])
+		callback: new AjxCallback(this, this._handleResponseUpload, [voicemail, inNewWindow, subject, to])
 	};
 	appCtxt.getAppController().sendRequest(params);
    
 };
 
 ZmVoicemailListController.prototype._handleResponseUpload = 
-function(inNewWindow, subject, to, response) {
+function(voicemail, inNewWindow, subject, to, response) {
 	// Load the message in the compose view.
-	var voicemail = this._getView().getSelection()[0];
 	var duration = AjxDateUtil.computeDuration(voicemail.duration);
     var date = AjxDateUtil.computeDateStr(new Date(), voicemail.date);
     var callingParty = voicemail.getCallingParty(ZmVoiceItem.FROM);
