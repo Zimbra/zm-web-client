@@ -139,12 +139,6 @@ function(params, callback, result) {
 		this.msgs.setHasMore(results.getAttribute("more"));
 		this._loaded = true;
 		
-		// nuke the cached msg if exist since its useless now
-		if (this.tempMsg) {
-			this.tempMsg.clear();
-			this.tempMsg = null;
-		}
-		
 		if (callback) {
 			result.set(this.msgs);
 		}

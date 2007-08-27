@@ -44,9 +44,9 @@ ZmTagTree.prototype.loadFromJs =
 function(tagsObj) {
 	if (!tagsObj || !tagsObj.tag || !tagsObj.tag.length) return;
 
-	this.createRoot();
-	for (var i = 0; i < tagsObj.tag.length; i++)
+	for (var i = 0; i < tagsObj.tag.length; i++) {
 		ZmTag.createFromJs(this.root, tagsObj.tag[i], this);
+	}
 	var children = this.root.children.getArray();
 	if (children.length)
 		children.sort(ZmTag.sortCompare);
