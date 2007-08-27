@@ -18,10 +18,10 @@
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <!-- skin is ${skin} -->
     <style type="text/css">
-       @import url( "<c:url value='/css/common,login,${skin}_imgs,skin.css?client=standard&skin=${skin}&v=${version}'/>" );
+       @import url( "<c:url value='/css/common,login,images,skin.css?client=standard&skin=${skin}&v=${version}'/>" );
     </style>
     <link rel="ICON" type="image/gif" href="<c:url value='/img/logo/favicon.gif'/>">
-    <link rel="SHORTCUT ICON" href="<c:url value='/img/logo/favicon.ico'/>">
+    <link rel="SHORTCUT ICON" href="<c:url value='/favicon.ico'/>">
     <jsp:doBody/>
     <script type="text/javascript">
         
