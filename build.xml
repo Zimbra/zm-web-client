@@ -176,7 +176,7 @@
 		</war>
 	</target>
 
-	<target name='sync' depends='templates,timezones,i18n,images,styles,settings,jam-files,webxml-package-replace'>
+	<target name='sync' depends='templates'>
 		<copy todir='${webapp.dir}'>
 			<fileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes}' />
 			<fileset dir='${build.web.dir}' excludes='js/*${depends.ext}' />
