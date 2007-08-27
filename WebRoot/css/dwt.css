@@ -101,22 +101,6 @@
 
 
 
-/* Graphics that make up the tabs */
-/* ??? 	THIS IS SKIN STUFF!!! GET THIS THE HECK OUT OF HERE! */
-.DwtTabButtonTL {}
-.DwtTabButtonTM {}
-.DwtTabButtonTR {}
-.DwtTabButtonML {	width: 9px;		}
-.DwtTabButtonMM {}
-.DwtTabButtonMR {	width: 9px;		}
-.DwtTabButtonBL {}
-.DwtTabButtonBM {}
-.DwtTabButtonBR {}
-
-
-
-
-
 
 /*
  * Tool tips

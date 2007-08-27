@@ -142,45 +142,6 @@
 </template>
 
 
-<template id='dwt.Widgets#DwtPanel'>
-	<div id='${id}_panel' style='width:100%;height:100%;position:relative;'>
-		<table style='width:100%;height:100%;position:absolute;' cellspacing=0 cellpadding=0>
-			<tr><td>
-				<table cellspacing=0 cellpadding=0><tr>
-					<td><div class='ImgPanel_NW'></div></td>
-					<td width=100%><div class='ImgPanel_N'></div></td>
-					<td><div class='ImgPanel_NE'></div></td>				
-				</tr></table>
-			</td></tr>
-
-			<tr><td height=100% valign=top>
-				<table cellspacing=0 cellpadding=0 style='width:100%;height:100%'><tr>
-					<td class='ImgPanel_W'>&nbsp;</td>
-					<td bgcolor='white' height='100%' valign='bottom'>
-			            <div class='ImgPanel_bg' style='width:100%'>&nbsp;</div>
-					</td>
-					<td class='ImgPanel_E'>&nbsp;</td>
-				</tr></table>
-			</td></tr>
-			
-			<tr><td>
-				<table cellspacing=0 cellpadding=0><tr>
-					<td><div class='ImgPanel_SW'></div></td>
-					<td width=100%><div class='ImgPanel_S'></div></td>
-					<td><div class='ImgPanel_SE'></div></td>				
-				</tr></table>
-			</td></tr>
-		</table>
-
-		<table id='${id}_titlebar' class='ZPanelTitlebar'><tr>
-			<td id='${id}_icon' 	class='ZPanelIcon'><div class='ImgFolder'></div></td>
-			<td id='${id}_title'	class='ZPanelTitle'>title</td>
-			<td id='${id}_toolbar'  class='ZPanelToolbar ZWidgetToolbar'></td>
-		</tr></table>
-		<div id='${id}_contents' class='ZPanelContents' style='position:absolute;'></div>
-	</div>
-</template>
-
 <template id='dwt.Widgets#DwtVerticalSlider' class='DwtSlider DwtVerticalSlider'>
 	<div id='${id}_button' class='DwtThumb DwtSliderThumb'>
 		<div class='DwtSliderThumbBorder'>
@@ -419,27 +380,6 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
     </tr>
   </table>
 </template>
-
-<template id='dwt.Widgets#DwtTabButton'>
-  <table id='${id}_table' width='100%' align='center' border='0' cellpadding='0' cellspacing='0'>
-    <tr id='${id}_top'>
-      <td id='${id}_top_left' class='DwtTabButtonTL'><div class='ImgTab_TL'></div></td>
-      <td id='${id}_top_center' class='DwtTabButtonTM'><div class='ImgTab_T'></div></td>
-      <td id='${id}_top_right' class='DwtTabButtonTR'><div class='ImgTab_TR'></div></td>
-    </tr>
-    <tr id='${id}_middle'>
-      <td id='${id}_middle_left'><div class='ImgTab_L'></div></td>
-      <td id='${id}_middle_center'><div class='ImgTab'></div></td>
-      <td id='${id}_middle_right'><div class='ImgTab_R'></div></td>
-    </tr>
-    <tr id='${id}_bottom'>
-      <td id='${id}_bottom_left' class='DwtTabButtonBL'><div class='ImgTab_BL'></div></td>
-      <td id='${id}_bottom_center' class='DwtTabButtonBM'><div class='ImgTab_B'></div></td>
-      <td id='${id}_bottom_right' class='DwtTabButtonBR'><div class='ImgTab_BR'></div></td>
-    </tr>
-  </table>
-</template>
-
 
 
 
