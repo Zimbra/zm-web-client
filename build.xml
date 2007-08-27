@@ -444,6 +444,10 @@
 				 classname='com.zimbra.kabuki.tools.img.ImageMergeTask'
 				 classpathref='class.path'
 		/>
+		<taskdef name='imagesort'
+				 classname='com.zimbra.kabuki.tools.img.ImageSortTask'
+				 classpathref='class.path'
+		/>
 	</target>
 
 	<target name='customer-skin-images' if='env.CUSTOMER_SKIN'>
@@ -751,6 +755,40 @@ if (ext == null) ext = "";
 		<ant dir="${taglib.dir}" target="clean" inheritAll="false" />
 		<delete dir='${build.dir}' />
 	</target>
+
+
+	<!-- image tasks -->
+	
+	<target name='sorticons' depends='images-init'>
+		<!-- usage:  make a "images" directory in your ZimbraWebClient directory and do:
+				ant sorticons
+		-->
+		<echo message='Sorting icons from:  ZimbraWebClient/image to ZimbraWebClient/WebRoot/img'/><echo/>
+		<imagesort source='images' target='WebRoot/img' delete='true'/>
+	</target>
+	
+	<target name='sortskin' depends='images-init'>
+		<!-- usage:  make a "images" directory in your ZimbraWebClient directory and do:
+				ant -Dskin.dir=<pathtoskin> sortskin
+			 e.g.
+			 	ant -Dskin.dir=WebRoot/skins/steel sortskin
+			 or
+			 	ant -Dskin.dir=../ZimbraCustomerServices/.../skins/someskin sortskin
+		-->
+		<echo message='Sorting icons from ZimbraWebClient/images to ${skin.dir}/img'/>
+		<imagesort source='images' target='${skin.dir}/img' delete='true'/>
+	</target>
+	
+	
+	<target name='sortimages' depends='images-init'>
+		<!-- check properties -->
+		<fail unless='sort.source' message='Must specify source directory. For example: ant -Dsort.source=src ...'/>
+		<fail unless='sort.target' message='Must specify target directory. For example: ant -Dsort.target=dest ...'/>
+		
+		<!-- process directories -->
+		<imagesort source='${sort.source}' target='${sort.target}' delete='true'/><!-- noop='true'/-->
+	</target>
+
 
 	<!-- LEGACY TARGETS -->
 	<target name='dev-sync'				depends='sync' />
