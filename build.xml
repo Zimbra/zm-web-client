@@ -365,9 +365,9 @@
 					<classpath refid="class.path" />
 					<classpath path="${build.classes.dir}" />
 					<arg value="-i"/>
-					<arg value="${basedir}/${tz.data}"/>
+					<arg value="${tz.data}"/>
 					<arg value="-o"/>
-					<arg value="${basedir}/${tz.file}"/>
+					<arg value="${tz.file}"/>
 				</java>
 			</then>
 		</if>
@@ -390,7 +390,7 @@
 				/>
 
 				<mkdir dir='${i18n.msgs.dir}' />
-				<i18n destdir='${basedir}/${i18n.msgs.dir}' />
+				<i18n destdir='${i18n.msgs.dir}' />
 			</then>
 		</if>
 	</target>
@@ -416,7 +416,7 @@
 				<mkdir dir="${build.img.dir}" />
 
 				<!-- core images -->
-				<imagemerge destdir='${basedir}/${build.img.dir}' disable='true'
+				<imagemerge destdir='${build.img.dir}' disable='true'
 							cssfile='${build.css.filename}' csspath='/${deploy.app}/img/'>
 					<dirset dir='${web.dir}' includes='img/**' />
 				</imagemerge>
@@ -490,7 +490,7 @@
 		<echo/>
 		<echo message='Merging images for skin ${skindir}'/>
 		<echo/>
-		<imagemerge destdir='${basedir}/${build.this.skin.dir}' disable="true"
+		<imagemerge destdir='${build.this.skin.dir}' disable="true"
 					cssfile='${build.css.filename}' csspath='/${deploy.app}/skins/${skindir}/img/'>
 			<dirset dir='${skinbasedir}/skins/${skindir}' includes='img/**'/>
 		</imagemerge>
