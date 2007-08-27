@@ -59,3 +59,8 @@ function(idx) {
 		return list[idx];
 	}
 };
+
+ZmTagTree.prototype.reset =
+function() {
+	this.root = new ZmTag({id: ZmTag.ID_ROOT, tree: this});
+};
