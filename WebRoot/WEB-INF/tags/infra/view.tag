@@ -247,7 +247,7 @@
 </table>
 </c:when>
 <c:otherwise>
-<c:set value="/images" var="iconPath" scope="request"/>
+<c:set value="/img" var="iconPath" scope="request"/>
 <table width=100% cellpadding="0" cellspacing="0">
     <tr>
         <td class='TopContent' colspan=3  align=right valign=top>&nbsp;</td>

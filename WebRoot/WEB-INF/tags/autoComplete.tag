@@ -41,7 +41,7 @@
             }
 
             if(sResult) {
-                return ["<table><tr><td><img src='/zimbra/images/contacts/",
+                return ["<table><tr><td><img src='/zimbra/img/contacts/Img",
                         t == "g" ? "GALContact.gif" : t == "dl" ? "Group.gif" : "Contact.gif",
                         "'></td><td>",
                         zhFmt(f, fls ? fq : query, fs),
