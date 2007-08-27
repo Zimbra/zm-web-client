@@ -507,6 +507,19 @@
 		</condition>
 	</target>
 
+	<target name='package-skin' depends='templates,images' if='env.CUSTOMER_SKIN'>
+		<fail unless="skinname">Must specify skinname property.</fail>
+
+		<property name='dist.skin.dir' value='${build.dir}/skins' />
+
+		<mkdir dir='${dist.skin.dir}' />
+		<zip destfile='${dist.skin.dir}/${skinname}.zip'>
+			<fileset dir='${customer.web.dir}' includes='skins/${skinname}' />
+			<fileset dir='${build.web.dir}' includes='skins/${skinname}/**' />
+			<fileset dir='${customer.web.dir}' includes='portals/${skinname}/**' />
+		</zip>
+	</target>
+
 	<target name='styles'>
 		<property name='styles.dir' value='${build.web.dir}/css' />
 
