@@ -805,27 +805,27 @@ function(view, force, isNewView) {
 ZmAppViewMgr.prototype._setViewVisible =
 function(view, show) {
 	var elements = this._views[view];
-    var wasFull = this._lastView ? this.isFullScreen(this._lastView) : null;
-    var isFull = this.isFullScreen(view);
-    if (show) {
-        if (wasFull !== isFull) {
-            if (this._hasSkin) {
-                skin.show("fullScreen", isFull);
-            }
+	var wasFull = this._lastView ? this.isFullScreen(this._lastView) : null;
+	var isFull = this.isFullScreen(view);
+	if (show) {
+		if (wasFull !== isFull) {
+			if (this._hasSkin) {
+				skin.show("fullScreen", isFull);
+			}
 
-            for (var i = 0; i < ZmAppViewMgr.APP_COMPONENTS.length; i++) {
-                var cid = ZmAppViewMgr.APP_COMPONENTS[i];
-                var comp = this._components[cid];
-                if (!comp) continue;
-                comp.zShow(!isFull);
-                if (isFull) {
-                    comp.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-                }
-            }
-            if (!isFull && this._hasSkin) {
-                this._fitToContainer(ZmAppViewMgr.APP_COMPONENTS);
-            }
-        }
+			for (var i = 0; i < ZmAppViewMgr.APP_COMPONENTS.length; i++) {
+				var cid = ZmAppViewMgr.APP_COMPONENTS[i];
+				var comp = this._components[cid];
+				if (!comp) continue;
+				comp.zShow(!isFull);
+				if (isFull) {
+					comp.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+				}
+			}
+			if (!isFull && this._hasSkin) {
+				this._fitToContainer(ZmAppViewMgr.APP_COMPONENTS);
+			}
+		}
 		var list = [];
 		for (var cid in elements) {
 			list.push(cid);

@@ -8,8 +8,7 @@
 			<col id='skin_col_quota'>
 		</colgroup>
 
-
-<!-- top row: logo, search box, quota -->			
+<!-- top row: logo, search box, quota -->
 		<tr id='skin_tr_top'>
 			<td id='skin_td_logo' colspan=2>
 				<div id='skin_container_logo' class='skin_container'>
@@ -36,7 +35,7 @@
 			<td colspan=4 id='skin_td_search_builder'  class='skin_container'>
 				<div id='skin_container_search_builder_outer'>
 					<div id='skin_container_search_builder_toolbar' class='skin_container'>
-					<!-- search builder toolbar -->
+						<!-- search builder toolbar -->
 					</div>
 					<div id='skin_container_search_builder' class='skin_container'>
 						<!-- search builder -->
@@ -44,8 +43,6 @@
 				</div>
 			</td>
 		</tr>
-
-
 
 		<tr id='skin_tr_app_chooser'>
 			<td id='skin_td_app_chooser' colspan=3>
@@ -63,7 +60,7 @@
 				</div>
 			</td>
 		</tr>
-		
+
 <!-- current app chooser, sash and top toolbar -->
 		<tr id='skin_tr_toolbar'>
 			<td id='skin_td_current_app'>
@@ -72,65 +69,62 @@
 				</div>
 			</td>
 			<td id='skin_td_app_toolbar_sep'>
-				<div id='skin_container_app_toolbar_sep' class='skin_border_app_top_toolbar' style='position:relative'><div class='vertSep'></div></div>
+				<div id='skin_container_app_toolbar_sep' class='skin_border_app_top_toolbar' style='position:relative'>
+					<div class='vertSep'></div>
+				</div>
 			</td>
 			<td id='skin_td_app_top_toolbar' colspan='2'>
-				<div id='skin_container_app_top_toolbar' class='skin_container skin_border_app_top_toolbar'>
-					<!-- app top toolbar -->
-				</div>
+				<div id='skin_container_app_top_toolbar' class='skin_container skin_border_app_top_toolbar'></div>
 			</td>
 		</tr>
 
 <!-- app chooser, tree and mini-cal, main app wd -->
 		<tr id='skin_tr_main'>
 			<td height='100%' colspan='4'>
-
-			<table border=0 id='skin_table_inner' class='skin_table' cellpadding=0 cellspacing=0>	
-			<colgroup>
-				<col id='skin_col_tree_inner'>
-				<col id='skin_col_tree_app_sash_inner'>
-				<col id='skin_col_main_inner'>
-				<col id='skin_col_quota_inner'>
-			</colgroup>
-					
-
-			<tr>
-			<td height='100%'  id='skin_td_outer_tree'>
-				<!-- NOTE: tree and mini-cal need to be their own table so the mini-cal can be hidden -->
-				<table id='skin_table_tree' class='skin_table' cellspacing=0 cellpadding=0>
-				<tr id='skin_tr_tree'>
-					<td id='skin_td_tree'>
-						<div id='skin_container_tree' class='skin_container'>
-							<!-- Tree -->
-						</div>
-					</td>
-				</tr>
-				<tr id='skin_tr_tree_footer'>
-					<td id='skin_td_tree_footer'>
-						<div id='skin_container_tree_footer' class='skin_container'>
-							<!-- mini-calendar -->
-						</div>
-					</td>
-				</tr>
+				<table border=0 id='skin_table_inner' class='skin_table' cellpadding=0 cellspacing=0>
+					<colgroup>
+						<col id='skin_col_tree_inner'>
+						<col id='skin_col_tree_app_sash_inner'>
+						<col id='skin_col_main_inner'>
+						<col id='skin_col_quota_inner'>
+					</colgroup>
+					<tr>
+						<td height='100%'  id='skin_td_outer_tree'>
+							<!-- NOTE: tree and mini-cal need to be their own table so the mini-cal can be hidden -->
+							<table id='skin_table_tree' class='skin_table' cellspacing=0 cellpadding=0>
+								<tr id='skin_tr_tree'>
+									<td id='skin_td_tree'>
+										<div id='skin_container_tree' class='skin_container'>
+											<!-- Tree -->
+										</div>
+									</td>
+								</tr>
+								<tr id='skin_tr_tree_footer'>
+									<td id='skin_td_tree_footer'>
+										<div id='skin_container_tree_footer' class='skin_container'>
+											<!-- mini-calendar -->
+										</div>
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td id='skin_td_tree_app_sash'>
+							<div id='skin_container_tree_app_sash' class='skin_container'>
+								<!-- tree/app sash -->
+							</div>
+						</td>
+						<td id='skin_td_app_main' class='full_height' colspan='2' height='100%'>
+							<div id='skin_container_app_main' class='skin_container'></div>
+						</td>
+					</tr>
 				</table>
-			</td>
-			<td id='skin_td_tree_app_sash'>
-				<div id='skin_container_tree_app_sash' class='skin_container'>
-					<!-- tree/app sash -->
-				</div>
-			</td>
-			<td id='skin_td_app_main' class='full_height' colspan='2' height='100%'>
-				<div id='skin_container_app_main' class='skin_container'>
-					<!-- main app area -->
-				</div>
-			</td>
-			</tr>
-			</table>
 			</td>
 		</tr>
 
-
-<!-- "full screen" toolbar -->
+<!-- IE7 pegs the CPU *for some unknown reason* if we split out the toolbar and -->
+<!-- main content into two different table rows. Naturally, FF does not like it -->
+<!-- if we put both into a single table row so we must IFDEF :/                 -->
+#IFNDEF MSIE
 		<tr id='skin_tr_toolbar_full'>
 			<td id='skin_td_app_top_toolbar_full' colspan='4'>
 				<div id='skin_border_app_top_toolbar_full' class='skin_border_app_top_toolbar skin_container'>
@@ -138,8 +132,6 @@
 				</div>
 			</td>
 		</tr>
-
-<!-- "full screen" app -->
         <tr id='skin_tr_main_full'>
             <td id='skin_td_app_main_full' class='full_height' colspan='4' height='100%'>
 				<div id='skin_container_app_main_full' class='skin_container'>
@@ -147,17 +139,35 @@
                 </div>
             </td>
         </tr>
-
+#ENDIF
+#IFDEF MSIE_6_OR_HIGHER
+		<tr id='skin_tr_main_full' style='display:none'>
+			<td id='skin_td_app_full_outer' class='full_height' colspan='4' height='100%'>
+				<table id='skin_app_full_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
+					<tr>
+						<td id='skin_border_app_top_toolbar_full' class='skin_td_app_toolbar'>
+						</td>
+					</tr>
+					<tr>
+						<td id='skin_td_app_full' class='full_height' height='100%'>
+							<div id='skin_container_app_main_full' class='skin_container'>
+								&nbsp;
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+#ENDIF
 	</table>
-
 
 	<!-- hidden stuff, deprecate and remove soon -->
 	<div style='display:none;left:-200;top:-200;width:100;height:100;overflow:hidden;'>
 		<div id='skin_container_status' class='skin_container'><!-- status area --></div>
 	</div>
-
 </div>
 <!-- END SKIN -->
+
 <!-- BEGIN SPLASH SCREEN -->
 <div id='skin_container_splash_screen'>
 	<script language='javascript'>
@@ -166,39 +176,55 @@
 		}
 	</script>
 	<table style='width:100%;height:100%'>
-		<tr><td align=center valign=middle>
-			 <div id='ZLoginPanel'>
-				<table class='zLoginTable' width='100%' cellpadding=0 cellspacing=0>
-					<tr><td id='ZLoginHeaderContainer'><center>
-							<table class='zLoginTable'>
-								<tr><td id='ZLoginBannerContainer'>
-										<div id='ZLoginBannerPanel'>
-											<table class='zLoginTable'><tr>
-												<td><div style='cursor:pointer' id='ZLoginBannerImage' class='ImgLoginBanner' 
-														 onclick='showCompanyUrl()'></div></td>
-												<td valign=top id='ZLoginShortVersion'></td>
-											</tr></table>
-											<div id='ZLoginAppName'><!-- ZmMsg.splashScreenAppName --></div>
-										</div>
-									</td>
-								</tr>
-							</table>
-						</center></td>
-					</tr>
-					<tr><td id='ZLoginBodyContainer'>
-							<div id='ZLoginLoadingPanel'>
-								<table><tr><td></td><td id='ZLoginLoadingMsg'><!-- ZmMsg.splashScreenLoading --></td></tr></table>
-							</div>
-							<table class='zLoginTable' width='100%' cellpadding=0 cellspacing=0>
-								<tr>
-									<td id='ZLoginLicenseContainer'><!-- ZmMsg.splashScreenCopyright --></td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-				</table>
-			 </div>
-		</td></tr>
+		<tr>
+			<td align=center valign=middle>
+				<div id='ZLoginPanel'>
+					<table class='zLoginTable' width='100%' cellpadding=0 cellspacing=0>
+						<tr>
+							<td id='ZLoginHeaderContainer'>
+								<center>
+									<table class='zLoginTable'>
+										<tr>
+											<td id='ZLoginBannerContainer'>
+												<div id='ZLoginBannerPanel'>
+													<table class='zLoginTable'>
+														<tr>
+															<td>
+																<div style='cursor:pointer' id='ZLoginBannerImage' class='ImgLoginBanner' onclick='showCompanyUrl()'></div>
+															</td>
+															<td valign=top id='ZLoginShortVersion'>
+															</td>
+														</tr>
+													</table>
+													<div id='ZLoginAppName'><!-- ZmMsg.splashScreenAppName --></div>
+												</div>
+											</td>
+										</tr>
+									</table>
+								</center>
+							</td>
+						</tr>
+						<tr>
+							<td id='ZLoginBodyContainer'>
+								<div id='ZLoginLoadingPanel'>
+									<table>
+										<tr>
+											<td></td>
+											<td id='ZLoginLoadingMsg'><!-- ZmMsg.splashScreenLoading --></td>
+										</tr>
+									</table>
+								</div>
+								<table class='zLoginTable' width='100%' cellpadding=0 cellspacing=0>
+									<tr>
+										<td id='ZLoginLicenseContainer'><!-- ZmMsg.splashScreenCopyright --></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
 	</table>
 </div>
 <!-- END SPLASH SCREEN -->
