@@ -214,7 +214,7 @@
 	<div class='ZSmallSpacer'></div>
 	<table class="ZmCallListPrintView" cellspacing=0>
 		<tr style='font-weight:bold'>
-            <td><img src='<$= data.appContextPath $>/images/tag/FlagRed.gif'/></td>
+            <td><img src='<$= data.appContextPath $>/img/tasks/ImgTaskHigh.gif'/></td>
 			<td> <$= ZmMsg.from $> </td>
 			<td> <$= ZmMsg.duration $> </td>
 			<td> <$= ZmMsg.received $> </td>
@@ -225,7 +225,7 @@
 
 <template id='voicemail.Voicemail#ZmVoicemailListPrintViewRow'>
 	<tr>
-		<td><img src='<$= data.appContextPath $>/images/<$= data.flagImage $>'/></td>
+		<td><img src='<$= data.appContextPath $>/img/<$= data.flagImage $>'/></td>
 		<td> ${caller} </td>
 		<td> ${duration} </td>
 		<td> ${date} </td>

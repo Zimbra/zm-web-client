@@ -95,7 +95,7 @@ function() {
 	var rowArgs = { appContextPath: appContextPath };
 	for(var i = 0, count = this._list.size(); i < count; i++) {
 		var item = this._list.get(i);
-		rowArgs.flagImage = item.isHighPriority ? "tag/FlagRed.gif" : "dwt/Blank_16.gif";
+		rowArgs.flagImage = item.isHighPriority ? "tasks/ImgTaskHigh.gif" : "dwt/ImgBlank_16.gif";
 		rowArgs.caller = this._getCallerHtml(item);
 		rowArgs.duration = AjxDateUtil.computeDuration(item.duration);
 		rowArgs.date = AjxDateUtil.simpleComputeDateStr(item.date);
@@ -118,7 +118,7 @@ function(parent) {
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		headerList.push(new DwtListHeaderItem(ZmItem.F_SELECTION, null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.selection));
 	}
-	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_PRIORITY, null, "FlagRed", ZmVoicemailListView.PRIORITY_WIDTH, null, false));
+	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_PRIORITY, null, "TaskHigh", ZmVoicemailListView.PRIORITY_WIDTH, null, false));
 	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_CALLER, ZmMsg.from, null, ZmVoicemailListView.FROM_WIDTH, null, true));
 	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_DURATION, ZmMsg.message, null, ZmVoicemailListView.PLAYING_WIDTH, ZmVoiceListView.F_DURATION, true));
 	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_DATE, ZmMsg.received, null, ZmVoicemailListView.DATE_WIDTH, ZmVoiceListView.F_DATE, true));
@@ -274,7 +274,7 @@ function(ev) {
 
 ZmVoicemailListView.prototype._getPriorityHtml =
 function(voicemail) {
-	return voicemail.isHighPriority ? "<div class='ImgFlagRed'></div>" : "";
+	return voicemail.isHighPriority ? "<div class='ImgTaskHigh'></div>" : "";
 };
 
 ZmVoicemailListView.prototype._getHeaderTooltip =
