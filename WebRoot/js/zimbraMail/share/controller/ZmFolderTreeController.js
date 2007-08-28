@@ -316,7 +316,7 @@ function(ev) {
 };
 
 /*
-* Empty's a folder. 
+* Empties a folder. 
 * It removes all the items in the folder except sub-folders.
 * If the folder is Thrash, it empties even the sub-folders.
 * A warning dialog will be shown before any folder is emptied.
