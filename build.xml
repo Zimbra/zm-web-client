@@ -39,6 +39,7 @@
 	<property name='build.js.dir' value='${build.web.dir}/js' />
 	<property name='build.template.dir' value='${build.web.dir}/templates' />
 	<property name='build.skin.dir' value='${build.web.dir}/skins' />
+	<property name='build.help.dir' value='${build.web.dir}/help' />
 	<property name='build.dist.dir' value='${build.dir}/dist' />
 
 	<property name='build.img.dir' value='${build.web.dir}/img' />
@@ -58,7 +59,7 @@
 		</classpath>
 	</taskdef>
 
-	<!-- Paths -->
+	<!-- Paths and Filesets -->
 
 	<path id='class.path'>
 		<pathelement location="${build.classes.dir}" />
@@ -66,6 +67,10 @@
 		<fileset dir="${common.lib.dir}" includes="**/*.jar" />
 		<pathelement location="${common.build.classes.dir}" />
 	</path>
+
+	<!-- pseudo-fileset so that targets that rely on it don't fail -->
+	<fileset id='help.fileset' dir='${build.dir}' excludes='**' />
+	<fileset id='customer.web.fileset' dir='${build.dir}' excludes='**' />
 
 	<!-- Targets -->
 
@@ -80,6 +85,8 @@
 		<property name='common.template.excludes' value='' />
 		<property name='common.jam.includes' value='**/package/*.js' />
 		<property name='common.jam.excludes' value='' />
+		<property name='common.help.includes' value='**' />
+		<property name='common.help.excludes' value='**/*.zip' />
 		<property name='common.build.web.includes' value='**' />
 		<property name='common.build.web.excludes' value='js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}' />
 		<property name='common.webinf.includes' value='**' />
@@ -100,6 +107,8 @@
 		<property name='template.excludes' value='' />
 		<property name='jam.includes' value='**/ajax/package/*.js' />
 		<property name='jam.excludes' value='' />
+		<property name='help.includes' value='${common.help.includes}' />
+		<property name='help.excludes' value='${common.help.excludes}' />
 		<property name='build.web.includes' value='favicon.ico,js/**,img/dwt.gif,img/images.css,skin/**,public/**,templates/**' />
 		<property name='build.web.excludes' value='${common.build.web.excludes}' />
 		<property name='webinf.includes' value='' />
@@ -110,6 +119,8 @@
 		<property name='deploy.app' value='zimbra' />
 		<property name='deploy.url.token' value='%%zimbraMailURL%%' />
 		<property name='skins.dir' value='${web.dir}/skins' />
+		<property name='help.dir' value='${web.dir}/help' />
+		<property name='build.help.dir' value='${build.web.dir}/help' />
 		<property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,test/**,yui/**' />
 		<property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**' />
 		<property name='jsp.includes' value='${common.jsp.includes}' />
@@ -120,10 +131,16 @@
 		<property name='template.excludes' value='${common.template.excludes},admin/**' />
 		<property name='jam.includes' value='${common.jam.includes}' />
 		<property name='jam.excludes' value='${common.jam.excludes},**/zimbraAdmin/**' />
+		<property name='help.includes' value='${common.help.includes}' />
+		<property name='help.excludes' value='${common.help.excludes}' />
 		<property name='build.web.includes' value='${common.build.web.includes}' />
 		<property name='build.web.excludes' value='${common.build.web.excludes}' />
 		<property name='webinf.includes' value='${common.webinf.includes}' />
 		<property name='webinf.excludes' value='${common.webinf.excludes}' />
+
+		<fileset id='help.fileset'
+				 dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes}'
+		/>
 	</target>
 
 	<target name='admin' depends='common'>
@@ -131,6 +148,8 @@
 		<property name='deploy.app' value='zimbraAdmin' />
 		<property name='deploy.url.token' value='%%zimbraAdminURL%%' />
 		<property name='skins.dir' value='${web.dir}/admin_skins' />
+		<property name='help.dir' value='${web.dir}/adminhelp' />
+		<property name='build.help.dir' value='${build.web.dir}/adminhelp' />
 		<property name='web.includes' value='${common.web.includes},migrationwizard/**' />
 		<property name='web.excludes' value='${common.web.excludes},js/zimbraMail/**' />
 		<property name='jsp.includes' value='${common.jsp.includes}' />
@@ -145,6 +164,10 @@
 		<property name='build.web.excludes' value='${common.build.web.excludes}' />
 		<property name='webinf.includes' value='${common.webinf.includes}' />
 		<property name='webinf.excludes' value='${common.webinf.excludes},tags/**,tlds/**' />
+
+		<fileset id='help.fileset'
+				 dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes}'
+		/>
 	</target>
 
 	<target name='dev'>
@@ -156,7 +179,7 @@
 		<property name='webxml.file' value='${webinf.dir}/web.xml.production' />
 	</target>
 
-	<target name='war' depends='templates,timezones,i18n,images,styles,settings,jam-files,compress,webxml-package-replace'>
+	<target name='war' depends='templates,timezones,i18n,images,styles,settings,jam-files,compress,help,webxml-package-replace'>
 		<mkdir dir='${build.war.dir}' />
 		<war warfile="${build.war.file}" webxml='${build.dir}/web.xml'>
 			<webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes}' />
@@ -172,6 +195,7 @@
 			<zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}' />
 			<zipfileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' prefix='img' />
 			<zipfileset dir='${skins.dir}' prefix='skins' />
+			<zipfileset refid='help.fileset' />
 			<zipfileset refid='customer.web.fileset' />
 		</war>
 	</target>
@@ -202,7 +226,7 @@
 		<antcall target='webxml-deploy-replace' />
 	</target>
 
-	<target name='init' depends='client,dev,pseudo-init,customer-init'>
+	<target name='init' depends='client,dev,customer-init'>
 		<!-- properties based on props set in client/admin/prod/dev targets -->
 		<property name='build.war.dir' value='${build.dist.dir}/${deploy.server}/webapps' />
 		<property name='build.war.file' value='${build.war.dir}/${deploy.app}.war' />
@@ -246,11 +270,6 @@
 			<entry  key="date.format" value="yyyyMMddHHmmss" />
 		</propertyfile>
 		<property file="${properties.file}" />
-	</target>
-
-	<target name='pseudo-init'>
-		<!-- pseudo-fileset so that targets that rely on it don't fail -->
-		<fileset id='customer.web.fileset' dir='${build.dir}' excludes='**' />
 	</target>
 
 	<target name='customer-init' if='env.CUSTOMER_SKIN'>
@@ -708,6 +727,44 @@ if (ext == null) ext = "";
 				</if>
 			</sequential>
 		</for>
+	</target>
+
+	<target name='help' depends='init' if='build.prod'>
+		<!-- TODO: This has to be fixed. -->
+		<mkdir dir='${build.help.dir}' />
+		<if><and>
+				<not><isset property='build.ajax' /></not>
+				<not><isset property='build.admin' /></not>
+			</and>
+			<then>
+				<property name='build.bhelp.dir' value='${build.help.dir}/../bhelp' />
+				<property name='build.help.temp.dir' value='${build.dir}/help' />
+				<property name='build.bhelp.temp.dir' value='${build.dir}/bhelp' />
+
+				<mkdir dir='${build.help.temp.dir}' />
+				<mkdir dir='${build.bhelp.temp.dir}' />
+
+				<unzip dest="${build.help.temp.dir}" src="${help.dir}/WebHelp.zip" />
+				<unzip dest="${build.bhelp.temp.dir}" src="${help.dir}/BasicWebHelp.zip" />
+
+				<copy todir='${build.help.dir}'>
+					<fileset dir='${build.help.temp.dir}/WebHelp' />
+				</copy>
+				<mkdir dir='${build.bhelp.dir}' />
+				<copy todir='${build.bhelp.dir}'>
+					<fileset dir='${build.bhelp.temp.dir}/BasicWebHelp' />
+				</copy>
+			</then>
+		</if>
+		<if><isset property='build.admin' />
+			<then>
+				<property name='build.help.temp.dir' value='${build.help.dir}/html' />
+
+				<mkdir dir='${build.help.temp.dir}' />
+
+				<unzip dest='${build.help.temp.dir}' src='${help.dir}/html/ZimbraAdminOLH.zip' />
+			</then>
+		</if>
 	</target>
 
 	<target name='deploy' depends='war'>
