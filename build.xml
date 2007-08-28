@@ -201,28 +201,28 @@
 	</target>
 
 	<target name='sync' depends='templates'>
-		<copy todir='${webapp.dir}'>
+		<copy todir='${webapp.dir}' verbose='true'>
 			<fileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes}' />
 			<fileset dir='${build.web.dir}' excludes='js/*${depends.ext}' />
 			<fileset refid='customer.web.fileset' />
 		</copy>
-		<copy todir='${webapp.dir}/public'>
+		<copy todir='${webapp.dir}/public' verbose='true'>
 			<fileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' />
 		</copy>
-		<copy todir='${webapp.dir}/img'>
+		<copy todir='${webapp.dir}/img' verbose='true'>
 			<fileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' />
 		</copy>
-		<copy todir='${webapp.dir}/skins'>
+		<copy todir='${webapp.dir}/skins' verbose='true'>
 			<fileset dir='${skins.dir}' />
 		</copy>
-		<copy todir='${webapp.dir}/WEB-INF'>
+		<copy todir='${webapp.dir}/WEB-INF' verbose='true'>
 			<fileset dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes}' />
 		</copy>
-		<copy todir='${webapp.dir}/WEB-INF/classes'>
+		<copy todir='${webapp.dir}/WEB-INF/classes' verbose='true'>
 			<fileset dir='${build.classes.dir}' />
 		</copy>
 
-		<copy tofile="${webapp.dir}/WEB-INF/web.xml" file='${build.dir}/web.xml' />
+		<copy tofile="${webapp.dir}/WEB-INF/web.xml" file='${build.dir}/web.xml' verbose='true' />
 		<antcall target='webxml-deploy-replace' />
 	</target>
 
