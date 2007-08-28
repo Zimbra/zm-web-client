@@ -378,16 +378,13 @@
 
 		<if><not><available file='${tz.file}' /></not>
 			<then>
+				<taskdef name='timezones'
+						 classname='com.zimbra.kabuki.tools.tz.GenerateDataTask'
+						 classpathref='class.path'
+				/>
+
 				<mkdir dir='${tz.dir}' />
-				<echo>Generating ${tz.file}</echo>
-				<java classname="com.zimbra.kabuki.tools.tz.GenerateData">
-					<classpath refid="class.path" />
-					<classpath path="${build.classes.dir}" />
-					<arg value="-i"/>
-					<arg value="${tz.data}"/>
-					<arg value="-o"/>
-					<arg value="${tz.file}"/>
-				</java>
+				<timezones src='${tz.data}' dest='${tz.file}' />
 			</then>
 		</if>
 	</target>
