@@ -97,7 +97,7 @@
 		<property name='build.ajax' value='true' />
 		<property name='deploy.app' value='ajax' />
 		<property name='skins.dir' value='${web.dir}/skins' />
-		<property name='web.includes' value='js/ajax/**,js/zimbraAdmin/**/*AutoComplete*.js' />
+		<property name='web.includes' value='js/ajax/**,css/**,js/zimbraAdmin/**/*AutoComplete*.js' />
 		<property name='web.excludes' value='' />
 		<property name='jsp.includes' value='frameOpenerHelper.jsp' />
 		<property name='jsp.excludes' value='' />
