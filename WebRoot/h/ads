@@ -8,6 +8,7 @@
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
+<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/msgs/ZhMsg" scope="request"/>
 <body>
 <script type="text/javascript"><!--
