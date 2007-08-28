@@ -172,16 +172,18 @@
 
 	<target name='dev'>
 		<property name='webxml.file' value='${webinf.dir}/web.xml' />
+		<property name='war.compress' value='false' />
 	</target>
 
 	<target name='prod'>
 		<property name='build.prod' value='true' />
 		<property name='webxml.file' value='${webinf.dir}/web.xml.production' />
+		<property name='war.compress' value='true' />
 	</target>
 
 	<target name='war' depends='templates,timezones,i18n,images,styles,settings,jam-files,compress,help,webxml-package-replace'>
 		<mkdir dir='${build.war.dir}' />
-		<war warfile="${build.war.file}" webxml='${build.dir}/web.xml'>
+		<war warfile="${build.war.file}" webxml='${build.dir}/web.xml' compress='${war.compress}'>
 			<webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes}' />
 			<classes dir='${build.classes.dir}' excludes='**/kabuki/tools/**,**/build/**' />
 			<classes dir='${web.dir}' includes='messages/**,keys/**' />
