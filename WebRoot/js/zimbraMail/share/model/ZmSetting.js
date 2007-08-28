@@ -225,6 +225,7 @@ ZmSetting.SEARCH_INCLUDES_TRASH			= i++;
 ZmSetting.SHOW_SEARCH_STRING			= i++;
 ZmSetting.SKIN_NAME						= i++;
 ZmSetting.SORTING_PREF 					= i++;
+// reusing DEFAULT_CALENDAR_TIMEZONE instead of a new DEFAULT_TIMEZONE
 
 // mail preferences
 ZmSetting.COMPOSE_AS_FORMAT				= i++;

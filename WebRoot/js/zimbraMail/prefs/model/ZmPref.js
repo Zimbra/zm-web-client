@@ -44,7 +44,8 @@ ZmPref.GROUP_MAIL_BY_VALUE = {};
 ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.CONV] = ZmSetting.GROUP_BY_CONV;
 ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.MSG] = ZmSetting.GROUP_BY_MESSAGE;
 
-ZmPref.GENERAL_PREFS = [ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH,
+ZmPref.GENERAL_PREFS = [ZmSetting.DEFAULT_CALENDAR_TIMEZONE,
+						ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH,
 						ZmSetting.SHOW_SEARCH_STRING, ZmSetting.COMPOSE_AS_FORMAT,
 						ZmSetting.COMPOSE_INIT_FONT_FAMILY, ZmSetting.COMPOSE_INIT_FONT_SIZE, ZmSetting.COMPOSE_INIT_FONT_COLOR,
 						ZmSetting.PASSWORD, ZmSetting.SKIN_NAME];
@@ -220,11 +221,12 @@ ZmPref.SETUP[ZmSetting.DEDUPE_MSG_TO_SELF] = {
 	displayOptions:		[ZmMsg.dedupeNone, ZmMsg.dedupeSecondCopy, ZmMsg.dedupeAll],
 	options:			[ZmSetting.DEDUPE_NONE, ZmSetting.DEDUPE_SECOND, ZmSetting.DEDUPE_ALL]};
 
-// ZmPref.SETUP[ZmSetting.DEFAULT_CALENDAR_TIMEZONE] = {
-// 	displayName:		ZmMsg.defaultCalendarTimezone,
-// 	displayContainer:	ZmPref.TYPE_SELECT,
-// 	choices:            ZmTimezones.getFullZoneChoices(), // ZmTimezones no longer exists!
-// 	displaySeparator:	true};
+ZmPref.SETUP[ZmSetting.DEFAULT_CALENDAR_TIMEZONE] = {
+	displayName:		ZmMsg.defaultCalendarTimezone,
+	displayContainer:	ZmPref.TYPE_SELECT,
+	displayOptions:     AjxTimezone.getZonePreferences(),
+	options:            AjxTimezone.getZonePreferencesOptions(),
+	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.EXPORT] = {
 	displayName:		ZmMsg.exportToCSV,
