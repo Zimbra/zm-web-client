@@ -585,6 +585,9 @@ function() {
 ZmSelectiveCallForwardingUI.prototype.validate =
 function(errors) {
 	this._validateComboBox(this._comboBox, errors, ZmMsg.selectiveCallForwardingError);
+	if (this._getTable().rows.length <= 1) {
+		errors.push(ZmMsg.selectiveCallForwardingFromError);
+	}
 };
 
 ZmSelectiveCallForwardingUI.prototype._getSelectedValue =
@@ -599,6 +602,11 @@ function() {
 
 ZmSelectiveCallForwardingUI.prototype._addListener =
 function(ev) {
+	if (this._addInput.isValid() === null) {
+		appCtxt.setStatusMsg(ZmMsg.errorInvalidPhone, ZmStatusView.LEVEL_WARNING);
+		return;
+	}
+	
 	var error = null;
 	var value = AjxStringUtil.trim(this._addInput.getValue());
 	if (!value.length) {
@@ -669,7 +677,12 @@ function(id) {
 	this._comboBox = new DwtComboBox(this._view, inputParams);
 	this._comboBox.replaceElement(id + "_selectiveCallForwardingComboBox");
 	
-	var addParams = { parent: this._view, size: 25 };
+	var addParams = {
+		parent: this._view,
+		size: 25,
+		validator: ZmVoicePrefsView._validatePhoneNumber,
+		validationStyle: DwtInputField.CONTINUAL_VALIDATION
+	};
 	this._addInput = new DwtInputField(addParams);
 	this._addInput.replaceElement(id + "_selectiveCallForwardingAddInput");
 	this._addInput.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._inputKeyListener));
