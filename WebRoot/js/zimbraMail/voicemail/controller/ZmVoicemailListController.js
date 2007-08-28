@@ -140,6 +140,10 @@ function(parent, num) {
 		parent.enable(ZmOperation.REPLY_BY_EMAIL, false);
 		parent.enable(ZmOperation.FORWARD_BY_EMAIL, false);
 	}
+
+	if (this._folder && (this._folder.callType == ZmVoiceFolder.TRASH)) {
+		parent.enable(ZmOperation.DELETE, false);
+	}
 };
 
 ZmVoicemailListController.prototype.getKeyMapName =

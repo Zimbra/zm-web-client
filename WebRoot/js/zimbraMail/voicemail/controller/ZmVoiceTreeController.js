@@ -95,10 +95,20 @@ function() {
 	return null;
 };
 
+ZmVoiceTreeController.prototype._getActionMenu =
+function(ev) {
+	var folder = ev.item.getData(Dwt.KEY_OBJECT);
+	if ((folder instanceof ZmVoiceFolder) && (folder.callType == ZmVoiceFolder.TRASH)) {
+		return ZmTreeController.prototype._getActionMenu.call(this, ev);
+	} else {
+		return null;
+	}
+};
+
 // Returns a list of desired action menu operations
 ZmVoiceTreeController.prototype._getActionMenuOps =
 function() {
-	return null;
+	return [ZmOperation.EMPTY_FOLDER];
 };
 
 ZmVoiceTreeController.prototype._getDropTarget =

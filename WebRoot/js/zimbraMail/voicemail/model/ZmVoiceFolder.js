@@ -190,3 +190,30 @@ function() {
 		return ZmMsg.calls;
 	}
 };
+
+ZmVoiceFolder.prototype._empty =
+function(){
+	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
+
+	var soapDoc = AjxSoapDoc.create("VoiceMsgActionRequest", "urn:zimbraVoice");
+	var node = soapDoc.set("action");
+	node.setAttribute("op", "empty");
+	node.setAttribute("id", this.id);
+	node.setAttribute("phone", this.phone.name);
+	this._handleResponseEmptyObj = this._handleResponseEmptyObj || new AjxCallback(this, this._handleResponseEmpty);
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: this._handleResponseEmptyObj
+	};
+	appCtxt.getAppController().sendRequest(params);
+};
+
+ZmVoiceFolder.prototype._handleResponseEmpty =
+function() {
+	// If this folder is visible, clear the contents of the view. 
+	var controller = AjxDispatcher.run("GetVoiceController");
+	if (controller.getFolder() == this) {
+		controller.getCurrentView().removeAll();
+	}
+};
