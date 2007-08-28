@@ -202,7 +202,7 @@ function(a, b) {
 	var aFileAs = (a instanceof ZmContact) ? a.getFileAs(true) : ZmContact.computeFileAs(a._attrs).toLowerCase();
 	var bFileAs = (b instanceof ZmContact) ? b.getFileAs(true) : ZmContact.computeFileAs(b._attrs).toLowerCase();
 
-	if (aFileAs > bFileAs) return 1;
+	if (!bFileAs || (aFileAs > bFileAs)) return 1;
 	if (aFileAs < bFileAs) return -1;
 	return 0;
 };
