@@ -115,6 +115,13 @@ function(ev) {
 				// current page of contacts
 				this.setSelection(newContact);
 			}
+		} else if (ev.event == ZmEvent.E_DELETE) {
+			// bug fix #19308 - do house-keeping on controller's list so
+			// replenishment works as it should
+			var list = this._controller.getList();
+			if (list) {
+				list.remove(ev.item);
+			}
 		}
 	}
 };
