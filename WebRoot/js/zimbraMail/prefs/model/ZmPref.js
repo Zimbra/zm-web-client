@@ -99,10 +99,26 @@ function(appCtxt, setup) {
 
 ZmPref.validateEmail = 
 function(emailStr) {
-	if (emailStr) {
-		var match = ZmEmailAddress.parse(emailStr);
-		return (match != null);
+	appCtxt = window._zimbraMail._appCtxt;
+	if (!emailStr) {
+		return true;
 	}
+	var match = ZmEmailAddress.parse(emailStr);
+
+	if (match == null) {
+		return false;
+	}
+
+	var emailLogin = emailStr.substring(0, emailStr.indexOf("@"));
+	var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
+	aliases.unshift(appCtxt.get(ZmSetting.USERNAME));
+	for (var i = 0; i < aliases.length; i++) {
+		var alias = aliases[i];
+		if (emailStr == alias || emailLogin == alias.substring(0, alias.indexOf("@"))) {
+			return false;
+		}
+	}
+
 	return true;
 };
 
