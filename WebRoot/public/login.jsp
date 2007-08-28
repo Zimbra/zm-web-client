@@ -191,7 +191,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                     <table width=100%>
                                         <tr>
                                             <td valign='top' width='40'>
-                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<c:url value='/images/dwt/Critical_32.gif'/>"/>
+                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<c:url value='/img/dwt/ImgCritical_32.gif'/>"/>
                                             </td>
                                             <td class='errorText'>
                                                 <c:out value="${errorMessage}"/>
