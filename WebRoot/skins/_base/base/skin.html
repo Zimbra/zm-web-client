@@ -122,25 +122,7 @@
 		</tr>
 
 <!-- IE7 pegs the CPU *for some unknown reason* if we split out the toolbar and -->
-<!-- main content into two different table rows. Naturally, FF does not like it -->
-<!-- if we put both into a single table row so we must IFDEF :/                 -->
-#IFNDEF MSIE
-		<tr id='skin_tr_toolbar_full'>
-			<td id='skin_td_app_top_toolbar_full' colspan='4'>
-				<div id='skin_border_app_top_toolbar_full' class='skin_border_app_top_toolbar skin_container'>
-					<!-- toolbar container will go here when in full-screen mode -->
-				</div>
-			</td>
-		</tr>
-        <tr id='skin_tr_main_full'>
-            <td id='skin_td_app_main_full' class='full_height' colspan='4' height='100%'>
-				<div id='skin_container_app_main_full' class='skin_container'>
-					<!-- main app area -->
-                </div>
-            </td>
-        </tr>
-#ENDIF
-#IFDEF MSIE_6_OR_HIGHER
+<!-- main content into two different table rows.                                -->
 		<tr id='skin_tr_main_full' style='display:none'>
 			<td id='skin_td_app_full_outer' class='full_height' colspan='4' height='100%'>
 				<table id='skin_app_full_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
@@ -158,7 +140,6 @@
 				</table>
 			</td>
 		</tr>
-#ENDIF
 	</table>
 
 	<!-- hidden stuff, deprecate and remove soon -->
