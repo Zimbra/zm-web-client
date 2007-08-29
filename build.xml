@@ -117,7 +117,6 @@
 
 	<target name='client' depends='common'>
 		<property name='deploy.app' value='zimbra' />
-		<property name='deploy.url.token' value='%%zimbraMailURL%%' />
 		<property name='skins.dir' value='${web.dir}/skins' />
 		<property name='help.dir' value='${web.dir}/help' />
 		<property name='build.help.dir' value='${build.web.dir}/help' />
@@ -146,7 +145,6 @@
 	<target name='admin' depends='common'>
 		<property name='build.admin' value='true' />
 		<property name='deploy.app' value='zimbraAdmin' />
-		<property name='deploy.url.token' value='%%zimbraAdminURL%%' />
 		<property name='skins.dir' value='${web.dir}/admin_skins' />
 		<property name='help.dir' value='${web.dir}/adminhelp' />
 		<property name='build.help.dir' value='${build.web.dir}/adminhelp' />
@@ -171,13 +169,11 @@
 	</target>
 
 	<target name='dev'>
-		<property name='webxml.file' value='${webinf.dir}/web.xml' />
 		<property name='war.compress' value='false' />
 	</target>
 
 	<target name='prod'>
 		<property name='build.prod' value='true' />
-		<property name='webxml.file' value='${webinf.dir}/web.xml.production' />
 		<property name='war.compress' value='true' />
 	</target>
 
@@ -799,18 +795,18 @@ if (ext == null) ext = "";
 	</target>
 
 	<target name='webxml-package-replace' depends='init'>
-		<copy tofile="${build.dir}/web.xml" file='${webxml.file}' />
+		<copy tofile="${build.dir}/web.xml" file='${webinf.dir}/web.xml' />
 		<!-- replace @xyz@ tokens -->
 		<replace file="${build.dir}/web.xml" token="@prodMode@" value="${build.prod.value}" />
 		<replace file="${build.dir}/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
-		<replace file="${build.dir}/web.xml" token="@mailUrl@" value="/zimbra" />
-		<replace file="${build.dir}/web.xml" token="@adminUrl@" value="/zimbraAdmin" />
 	</target>
 
 	<target name='webxml-deploy-replace' depends='init'>
 		<!-- replace %%xyz%% tokens -->
-		<replace file="${webapp.dir}/WEB-INF/web.xml" token="${deploy.url.token}" value="/${deploy.app}" />
+		<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraAdminURL%%" value="/zimbraAdmin" />
+		<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailURL%%" value="/zimbra" />
 		<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailPort%%" value="7070" />
+		<replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailSSLPort%%" value="7443" />
 	</target>
 
 	<target name='clean'>
