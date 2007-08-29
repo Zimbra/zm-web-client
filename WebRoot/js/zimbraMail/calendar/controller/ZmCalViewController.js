@@ -394,7 +394,7 @@ function(viewId) {
 	this._toolbar[ZmController.CAL_DAY_VIEW].enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
 
 	this._toolbar[ZmController.CAL_DAY_VIEW].addFiller();
-	var tb = new ZmNavToolBar(this._toolbar[ZmController.CAL_DAY_VIEW], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
+	var tb = new ZmNavToolBar(this._toolbar[ZmController.CAL_DAY_VIEW], DwtControl.STATIC_STYLE, "ZmNavToolbar ZmCalendarNavToolbar", ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb, ZmController.CAL_VIEW);
 
 	this._setNewButtonProps(viewId, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);

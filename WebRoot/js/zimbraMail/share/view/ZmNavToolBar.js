@@ -112,7 +112,7 @@ ZmNavToolBar.prototype.createOp =
 function(id, params) {
 	params.className = this._buttonStyle;
 	var b = (id == ZmOperation.TEXT)
-		? (new DwtText(this, "ZWidgetTitle ZNavToolBarTitle"))
+		? (new DwtText(this, "ZWidgetTitle ZmNavToolBarTitle"))
 		: this.createButton(id, params);
 	b.setData(ZmOperation.KEY_ID, id);
 
