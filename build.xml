@@ -536,7 +536,10 @@
 
 		<mkdir dir='${dist.skin.dir}' />
 		<zip destfile='${dist.skin.dir}/${skinname}.zip'>
-			<fileset dir='${customer.web.dir}' includes='skins/${skinname}' />
+			<fileset dir='${customer.web.dir}'
+					 includes='skins/${skinname}/**'
+					 excludes='skins/${skinname}/img/_sourceimages/**' 
+			/>
 			<fileset dir='${build.web.dir}' includes='skins/${skinname}/**' />
 			<fileset dir='${customer.web.dir}' includes='portals/${skinname}/**' />
 		</zip>
