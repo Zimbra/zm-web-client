@@ -2320,6 +2320,12 @@ HTML>BODY .appt-selected .appt_allday_body
  *	Share properties dialog
  */
 /* ??? USE? */
+.ZmSharePropsDialog {
+#IFDEF MSIE
+	width: 388px;
+#ENDIF
+}
+
 .ZmSharePropsDialog .GrouperLabel {
 	font-weight: normal;
 	font-size: 10pt;
