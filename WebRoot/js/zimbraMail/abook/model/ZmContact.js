@@ -411,6 +411,7 @@ function() {
 	if (this.isGal)				icon = "GALContact";
 	else if (this.isShared())	icon = "SharedContact";
 	else if (this.isGroup())	icon = "Group";
+	else if (this.isMyCard())	icon = "MyCard";
 	else 						icon = "Contact";
 
 	return icon;
