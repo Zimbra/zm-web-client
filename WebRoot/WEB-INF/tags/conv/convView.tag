@@ -161,7 +161,7 @@
                                                 <th class='Img' nowrap width='1%'><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
                                                 </c:if>
                                                 <c:if test="${mailbox.features.tagging}">
-                                                <th class='Img' nowrap width='1%'><app:img src="tag/ImgMiniTagOrange.gif" altkey="ALT_TAG"/>
+                                                <th class='Img' nowrap width='1%'><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG"/>
                                                 </c:if>
                                                 <th class='MsgStatusImg' nowrap>&nbsp;
                                                 <th width=10% nowrap>

@@ -38,7 +38,7 @@
                             <th class='Img' nowrap><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
                             </c:if>
                             <c:if test="${mailbox.features.tagging}">
-                            <th class='Img' nowrap><app:img src="tag/ImgMiniTagOrange.gif" altkey="ALT_TAG_TAG"/>
+                            <th class='Img' nowrap><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/>
                             </c:if>
                             <th class='MsgStatusImg' nowrap>&nbsp;
                             <th width=10%>

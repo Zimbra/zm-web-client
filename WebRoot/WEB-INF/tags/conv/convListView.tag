@@ -32,7 +32,7 @@
                                 <th class='Img'  nowrap='nowrap' width='20'><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
                                 </c:if>
                                 <c:if test="${mailbox.features.tagging}">
-                                <th class='Img' nowrap width='20'><app:img src="tag/ImgMiniTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
+                                <th class='Img' nowrap width='20'><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
                                 </c:if>
                                 <th width=10% nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
                                 <th class='Img' nowrap width='1%'><app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/></th>
