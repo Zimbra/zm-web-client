@@ -56,6 +56,7 @@
 
     Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 %>
+<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
 <script type="text/javascript" language="javascript">
 	appContextPath = "<%= contextPath %>";
