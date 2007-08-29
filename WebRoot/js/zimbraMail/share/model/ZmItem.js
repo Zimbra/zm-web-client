@@ -271,9 +271,9 @@ function() {
 	} else if (this.tags.length == 1) {
 		var tag = appCtxt.getById(this.tags[0]);
 		var color = tag ? tag.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
-		tagImageInfo = ZmTag.COLOR_MINI_ICON[color];
+		tagImageInfo = ZmTag.COLOR_ICON[color];
 	} else {
-		tagImageInfo = "MiniTagStack";
+		tagImageInfo = "TagStack";
 	}
 	return tagImageInfo;
 };

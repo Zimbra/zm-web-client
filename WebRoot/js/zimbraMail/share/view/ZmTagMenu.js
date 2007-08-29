@@ -200,7 +200,7 @@ function(tagList, addRemove) {
 			new DwtMenuItem(removeMenu, DwtMenuItem.SEPARATOR_STYLE);
 			var mi = new DwtMenuItem(removeMenu);
 			mi.setText(ZmMsg.allTags);
-			mi.setImage("MiniTagStack");
+			mi.setImage("TagStack");
 			mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_REMOVE_ALL);
 			mi.setData(Dwt.KEY_OBJECT, removeList);
 			mi.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);

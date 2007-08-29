@@ -351,7 +351,7 @@ function() {
 	for (var j = 0; j < ta.length; j++) {
 		var tag = ta[j];
 		if (!tag) { continue; }
-		var icon = ZmTag.COLOR_MINI_ICON[tag.color];
+		var icon = ZmTag.COLOR_ICON[tag.color];
 		var attr = ["id='", this._tagCellId, tag.id, "'"].join("");
 		// XXX: set proper class name for link once defined!
 		html[idx++] = "<a href='javascript:;' class='' onclick='ZmContactSplitView._tagClicked(";

@@ -537,7 +537,7 @@ function(item) {
 	for (var i = 0; i < numTags; i++) {
 		var tag = tagList.getById(tags[i]);
 		html[idx++] = "<table><tr><td>";
-		html[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[tag.color]);
+		html[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_ICON[tag.color]);
 		html[idx++] = "</td><td valign='middle'>";
 		html[idx++] = AjxStringUtil.htmlEncode(tag.name);
 		html[idx++] = "</td></tr></table>";

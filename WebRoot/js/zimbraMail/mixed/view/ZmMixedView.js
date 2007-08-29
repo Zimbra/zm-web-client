@@ -82,7 +82,7 @@ function(parent) {
 	}
 
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "MiniTag", ZmMixedView.COLWIDTH_ICON));
+		hList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmMixedView.COLWIDTH_ICON));
 	}
 
 	hList.push(new DwtListHeaderItem(ZmItem.F_TYPE, null, "Globe", ZmMixedView.COLWIDTH_ICON));

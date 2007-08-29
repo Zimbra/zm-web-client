@@ -213,7 +213,7 @@ ZmWiklet.register(
 			for (var i = 0; i < item.tags.length; i++) {
 				var tag = context.getTagById(item.tags[i]);
 				var color = tag ? tag.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
-				var tagImageInfo = ZmTag.COLOR_MINI_ICON[color];
+				var tagImageInfo = ZmTag.COLOR_ICON[color];
 				a.push("<td><div class='Img",tagImageInfo,"'></div></td>");
 				a.push("<td style='white-space:nowrap'>",tag.name,"</td>");
 			}

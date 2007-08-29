@@ -46,15 +46,6 @@ ZmTag.COLOR_ICON[ZmOrganizer.C_PURPLE]	= "TagPurple";
 ZmTag.COLOR_ICON[ZmOrganizer.C_RED]		= "TagRed";
 ZmTag.COLOR_ICON[ZmOrganizer.C_YELLOW]	= "TagYellow";
 
-// color mini icons
-ZmTag.COLOR_MINI_ICON = {};
-ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_ORANGE]	= "MiniTagOrange";
-ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_BLUE]	= "MiniTagBlue";
-ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_CYAN]	= "MiniTagCyan";
-ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_GREEN]	= "MiniTagGreen";
-ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_PURPLE]	= "MiniTagPurple";
-ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_RED]	= "MiniTagRed";
-ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_YELLOW]	= "MiniTagYellow";
 
 // system tags
 ZmTag.ID_ROOT = ZmOrganizer.ID_ROOT;
