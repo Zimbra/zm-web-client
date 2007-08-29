@@ -40,7 +40,7 @@
 		</colgroup>
 		<tr id='skin_R1'>
 			<td><div class='ImgSkin_Chrome_R1_L'></div></td>
-			<td class='ImgSkin_Chrome_R1__H' colspan=3>
+			<td class='ImgSkin_Chrome_R1' colspan=3>
 				<table width=100% cellspacing=0 cellpadding=0>
 				<tr>
 					<td class='R1Text' style='padding-left:5px;'>hi,</td>
@@ -68,7 +68,7 @@
 
 		<tr id='skin_R2'>
 			<td><div class='ImgSkin_Chrome_R2_L'></div></td>
-			<td class='ImgSkin_Chrome_R2__H' colspan=3>
+			<td class='ImgSkin_Chrome_R2' colspan=3>
 				
 				<table width=100% cellspacing=0 cellpadding=0 border='0'>
 				<tr>
@@ -100,13 +100,13 @@
 
 		<tr id='skin_R3'>
 			<td><div class='ImgSkin_Chrome_R3_L'></div></td>
-			<td class='ImgSkin_Chrome_R3__H'>
+			<td class='ImgSkin_Chrome_R3'>
 				<div style='position:relative;width:100%;height:100%;'>
 					<div id='skin_container_current_app' class='skin_container'></div>
 				</div>
 			</td>
-			<td class='ImgSkin_Chrome_R3__H'>&nbsp;</td>
-			<td class='ImgSkin_Chrome_R3__H' style='padding:0px;'>
+			<td class='ImgSkin_Chrome_R3'>&nbsp;</td>
+			<td class='ImgSkin_Chrome_R3' style='padding:0px;'>
 				<table width='100%' cellspacing=0 cellpadding=0>
 				<tr>
 					<td id='skin_td_app_chooser'>
@@ -145,7 +145,7 @@
                                          <form method="post" action="${actionURL}" <c:if test="${selected eq 'contacts' or selected eq 'calendar'}">enctype="multipart/form-data" accept-charset="utf-8"</c:if> >
                                                <table width=100% cellspacing=0 >
                                                     <tr>
-                                                        <td class='ImgSkin_Toolbar__H'>
+                                                        <td class='ImgSkin_Toolbar'>
                                                             <table cellspacing=0 cellpadding=0 class='Tb'>
                                                             <tr>
                                                             <c:if test="${selected != 'contacts' and selected != 'calendar'}">
@@ -230,7 +230,7 @@
         </tr>
 
 		<tr id='skin_R4'>
-			<td id='skin_td_R4' class='ImgSkin_Chrome_R4__H' colspan=5>
+			<td id='skin_td_R4' class='ImgSkin_Chrome_R4' colspan=5>
 				<table width=100% id='skin_table_R4' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 					<tr>
 						<td style='text-align:left;padding-left:20px;'>&copy; 2007 Comcast Cable Communications</td>
