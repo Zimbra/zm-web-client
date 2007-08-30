@@ -241,7 +241,8 @@ function(folder) {
 				searchFor = ZmItem.CONTACT;
 			}
 		}
-		searchController.search({query:folder.createQuery(), searchFor:searchFor});
+		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
+		searchController.search({query:folder.createQuery(), searchFor:searchFor, getHtml:getHtml});
 	}
 };
 

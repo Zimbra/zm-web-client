@@ -122,11 +122,11 @@ function(view, toggle) {
 		this._toggleReadingPane(view, toggle);
 	} else if (view) {
 		this._app._groupBy = ZmMailListController.GROUP_BY_SETTING[view];
-		var sc = appCtxt.getSearchController();
 		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
 		var limit = appCtxt.get(ZmSetting.PAGE_SIZE); // bug fix #3365
-		var params = {types:[ZmMailListController.GROUP_BY_ITEM[view]], offset:0, sortBy:sortBy, limit:limit};
-		sc.redoSearch(appCtxt.getCurrentSearch(), null, params);
+		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
+		var params = {types:[ZmMailListController.GROUP_BY_ITEM[view]], offset:0, limit:limit, sortBy:sortBy, getHtml:getHtml};
+		appCtxt.getSearchController().redoSearch(appCtxt.getCurrentSearch(), null, params);
 	}
 };
 

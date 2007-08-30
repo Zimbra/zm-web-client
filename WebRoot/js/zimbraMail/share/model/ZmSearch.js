@@ -217,6 +217,10 @@ function(params) {
 				// if we're prefetching the first hit message, also mark it as read
 				if (this.fetch) {
 					method.setAttribute("fetch", "1");
+					// and set the html flag if we want the html version
+					if (this.getHtml) {
+						method.setAttribute("html", "1");
+					}
 				}
 				if (this.markRead) {
 					method.setAttribute("read", "1");
