@@ -184,9 +184,12 @@ ZmAttachDialog.prototype.uploadFiles = function(){
 };
 
 ZmAttachDialog.prototype.cancelUploadFiles = function(){
-	//Fix this, as this needs feature request like AjxPost.getRequestId()
+
+    //Fix this, as this needs feature request like AjxPost.getRequestId()
 	//We need to cancel the actual request, but we are for now just closing the window
-	this._defaultCancelListener();
+    this._cancelUpload = true;
+    this._defaultCancelListener();
+
 };
 
 ZmAttachDialog.prototype.setUploadCallback = function(callback){
@@ -200,7 +203,8 @@ ZmAttachDialog.prototype.upload = function(callback, uploadForm){
 	this.setButtonEnabled(DwtDialog.OK_BUTTON,false);
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON,true);
 	this.setFooter("Attaching files...");
-	this._processUpload(callback,uploadForm);
+    this._cancelUpload = false;
+    this._processUpload(callback,uploadForm);
 	
 };
 
@@ -218,11 +222,15 @@ ZmAttachDialog.prototype._processUpload = function(callback,uploadForm){
 };
 
 ZmAttachDialog.prototype._uploadDoneCallback = function(callback,status, attId){
-	
-	this.setButtonEnabled(DwtDialog.OK_BUTTON,true);
+
+    this.setButtonEnabled(DwtDialog.OK_BUTTON,true);
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON,true);
-	
-	if(status == AjxPost.SC_OK){
+
+    if(this._cancelUpload){
+        return;
+    }
+
+    if(status == AjxPost.SC_OK){
 		this.setFooter("Finished attaching files.");
 		if(callback){
 			callback.run(status,attId);
@@ -399,7 +407,7 @@ ZmMyComputerTabView.prototype.hideInlineOption = function(){
 };
 
 ZmMyComputerTabView.prototype._handleInline = function(checkbox){	
-	this._inline = (checkbox && checkbox.checked)? true : false;
+	this._inline = (checkbox && checkbox.checked);
 	this._uploadForm.setAttribute("action",this._uri + ((this._inline)?"?fmt=extended":""));
 };
 
