@@ -170,7 +170,7 @@
 
 	<target name='dev'>
 		<property name='war.compress' value='false' />
-		<property name='sync.versbose' value='true' />
+		<property name='sync.verbose' value='true' />
 	</target>
 
 	<target name='prod'>
