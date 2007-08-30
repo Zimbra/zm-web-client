@@ -435,6 +435,4 @@ ZmLiteHtmlEditorColorPicker = function(parent,style,className) {
 ZmLiteHtmlEditorColorPicker.prototype = new DwtButtonColorPicker;
 ZmLiteHtmlEditorColorPicker.prototype.constructor = ZmLiteHtmlEditorColorPicker;
 
-ZmLiteHtmlEditorColorPicker.prototype.TEMPLATE = "ajax.dwt.templates.Widgets#ZToolbarButton";
-
-
+ZmLiteHtmlEditorColorPicker.prototype.TEMPLATE = "dwt.Widgets#ZToolbarButton";
