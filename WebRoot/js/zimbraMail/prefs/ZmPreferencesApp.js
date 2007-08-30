@@ -182,7 +182,7 @@ function() {
 							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
 							  gotoActionCode:		ZmKeyMap.GOTO_OPTIONS,
 							  chooserSort:			180
-							  });
+                  });
 };
 
 ZmPreferencesApp.prototype._registerPrefs =
@@ -202,12 +202,12 @@ function() {
 				ZmSetting.SKIN_NAME,
 				ZmSetting.CLIENT_TYPE
 			]
-		},
-		COMPOSING: {
+        },
+        COMPOSING: {
 			title: ZmMsg.composing,
 			templateId: "prefs.Pages#Composing",
 			priority: 20,
-			precondition: [ ZmSetting.MAIL_ENABLED, ZmSetting.CALENDAR_ENABLED, ZmSetting.NOTEBOOK_ENABLED ],
+			precondition: [ ZmSetting.MAIL_ENABLED ],
 			prefs: [
 				ZmSetting.COMPOSE_AS_FORMAT,
 				ZmSetting.COMPOSE_INIT_FONT_COLOR,
