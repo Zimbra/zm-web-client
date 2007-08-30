@@ -36,7 +36,9 @@
             <zm:messageCompose var="compose" message="${message}" action="${message.isDraft ? 'draft' : param.op}"/>
         </c:when>
         <c:when test="${uploader.isUpload and !empty message}">
-            <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems or !empty uploader.compose.uploadedAttachment}"/>
+            <c:if test="${!requestScope.uploadError}">
+                <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems or !empty uploader.compose.uploadedAttachment}"/>
+            </c:if>
         </c:when>
     </c:choose>
 
