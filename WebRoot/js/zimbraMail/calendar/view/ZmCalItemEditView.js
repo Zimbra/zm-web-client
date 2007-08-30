@@ -486,6 +486,8 @@ function(width) {
 	// notes ZmHtmlEditor
 	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode);
 	this._notesHtmlEditor.reparentHtmlElement(this._htmlElId + "_notes");
+	//bug:19079 to avoid access denied exception set some content which corrects the doc domain
+	this._notesHtmlEditor.setContent("");	
 };
 
 ZmCalItemEditView.prototype._addEventHandlers =
