@@ -176,7 +176,8 @@ function(folder) {
 
 		// force a search if user clicked Trash folder or share
 		if (folder.id == ZmFolder.ID_TRASH || folder.link) {
-			sc.search({query:folder.createQuery(), searchFor:ZmItem.CONTACT, fetch:true, sortBy:ZmSearch.NAME_ASC});
+			var callback = new AjxCallback(this, this._handleSearchResponse, [folder, capp]);
+			sc.search({query:folder.createQuery(), searchFor:ZmItem.CONTACT, fetch:true, sortBy:ZmSearch.NAME_ASC, callback:callback});
 		} else {
 			capp.showFolder(folder);
 		}
@@ -185,5 +186,14 @@ function(folder) {
 			var clc = AjxDispatcher.run("GetContactListController");
 			clc.getParentView().getAlphabetBar().reset();
 		}
+	}
+};
+
+ZmAddrBookTreeController.prototype._handleSearchResponse =
+function(folder, capp, result) {
+	// bug fix #19307 - Trash is special when in Contacts app since it
+	// is a FOLDER type in ADDRBOOK tree. So reset selection if clicked
+	if (folder.id == ZmFolder.ID_TRASH) {
+		this._treeView[capp.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
 	}
 };
