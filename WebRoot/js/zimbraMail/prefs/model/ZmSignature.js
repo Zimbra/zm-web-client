@@ -86,6 +86,35 @@ ZmSignature.prototype.setFromJson = function(object) {
 	}
 };
 
+/**
+ * @param outputType	[string]	(Optional) Formats the resulting
+ *									signature text to the specified
+ *									content-type. If not specified,
+ *									the signature text is returned in
+ *									the original format.
+ */
+/***
+ZmSignature.prototype.getValue = function(outputType) {
+	var isHtml = this.contentType == ZmMimeTable.TEXT_HTML;
+
+	var prefix = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET ? "-- " : "";
+	var newline = isHtml ? "<br>" : "\n";
+	var value = this.value;
+
+	var type = outputType || this.contentType;
+	if (type != this.contentType) {
+		if (isHtml) {
+			value = AjxStringUtil.convertHtml2Text(value);
+		}
+		else {
+			value = AjxStringUtil.convertToHtml(value);
+		}
+	}
+
+	return [prefix, newline, value].join(newline);
+};
+/***/
+
 //
 // Protected methods
 //

@@ -80,7 +80,6 @@ ZmComposeController = function(container, mailApp) {
 	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._attachmentListener);
 	this._listeners[ZmOperation.DETACH_COMPOSE] = new AjxListener(this, this._detachListener);
 	this._listeners[ZmOperation.SAVE_DRAFT] = new AjxListener(this, this._saveDraftListener);
-	this._listeners[ZmOperation.ADD_SIGNATURE] = new AjxListener(this, this._addSignatureListener);
 	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
 	this._listeners[ZmOperation.COMPOSE_OPTIONS] = new AjxListener(this, this._optionsListener);
 
@@ -101,7 +100,15 @@ function() {
 	return "ZmComposeController";
 };
 
+//
+// Constants
+//
+
+ZmComposeController.SIGNATURE_KEY = "sigKeyId";
+
+//
 // Public methods
+//
 
 /**
 * Called by ZmNewWindow.unload to remove ZmSettings listeners (which reside in
@@ -335,9 +342,7 @@ function(initHide, composeMode) {
 	}
 
 	var identitySelect = this._composeView.getIdentitySelect();
-	var signatureSelect = this._composeView.getSignatureSelect();
 	identitySelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [true]));
-	signatureSelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [false]));
 };
 
 ZmComposeController.prototype._identityChangeListener =
@@ -459,7 +464,22 @@ function(actionCode) {
 	return true;
 };
 
-// Private methods
+ZmComposeController.prototype.getSelectedSignature = function() {
+	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	var menu = button.getMenu();
+	var menuitem = menu.getSelectedItem(DwtMenuItem.RADIO_STYLE);
+	return menuitem ? menuitem.getData(ZmComposeController.SIGNATURE_KEY) : null;
+};
+
+ZmComposeController.prototype.setSelectedSignature = function(value) {
+	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	var menu = button.getMenu();
+	menu.checkItem(ZmComposeController.SIGNATURE_KEY, value, true);
+};
+
+//
+// Protected methods
+//
 
 ZmComposeController.prototype._deleteDraft =
 function(delMsg) {
@@ -558,7 +578,11 @@ function() {
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))    
 		buttons.push(ZmOperation.ATTACHMENT);
 		     
-	buttons.push(ZmOperation.SPELL_CHECK, ZmOperation.ADD_SIGNATURE, ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
+	buttons.push(ZmOperation.SPELL_CHECK);
+	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
+		buttons.push(ZmOperation.ADD_SIGNATURE);
+	}
+	buttons.push(ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
 
 	if (!appCtxt.isChildWindow) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
@@ -576,6 +600,13 @@ function() {
 
 	var identity = appCtxt.getIdentityCollection().defaultIdentity;
 	var canAddSig = this._setAddSignatureVisibility(identity);
+	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
+		var signatureCollection = appCtxt.getSignatureCollection();
+		signatureCollection.addChangeListener(new AjxListener(this, this._signatureChangeListener));
+
+		var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+		button.setMenu(new AjxCallback(this, this._createSignatureMenu));
+	}
 
 	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY,
 					ZmOperation.FORWARD_ATT,ZmOperation.DRAFT,
@@ -608,10 +639,13 @@ function() {
 ZmComposeController.prototype._setAddSignatureVisibility =
 function(identity) {
 	if (!identity) { return false; }
-	var canAddSig = Boolean(identity.signature);
-	var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-	if (signatureButton) {
-		signatureButton.setVisible(canAddSig);
+	var canAddSig = appCtxt.get(ZmSetting.SIGNATURES_ENABLED); 
+	if (canAddSig) {
+		canAddSig = Boolean(identity.signature);
+		var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+		if (signatureButton) {
+			signatureButton.setVisible(canAddSig);
+		}
 	}
 	return canAddSig;
 };
@@ -914,11 +948,6 @@ function(args) {
 	this._action = ZmOperation.DRAFT;
 };
 
-ZmComposeController.prototype._addSignatureListener =
-function(ev) {
-	this._composeView.addSignature(this._composeView.getHtmlEditor().getContent());
-};
-
 ZmComposeController.prototype._spellCheckListener =
 function(ev) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
@@ -1073,4 +1102,60 @@ function() {
 			? this._composeView._bodyField
 			: this._composeView._htmlEditor;
 	}
+};
+
+ZmComposeController.prototype._createSignatureMenu = function() {
+	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	var menu = new DwtMenu(button);
+	var options = appCtxt.getSignatureCollection().getSignatureOptions();
+	if (options.length > 0) {
+		/***/
+		var listener = new AjxListener(this, this._identityChangeListener, [false]);
+		/***
+		var listener = new AjxListener(this, this._handleSignatureSelect);
+		/***/
+		var radioId = this._composeView._htmlElId+"_sig";
+		for (var i = 0; i < options.length; i++) {
+			var option = options[i];
+			var menuitem = new DwtMenuItem(menu, DwtMenuItem.RADIO_STYLE, radioId);
+			menuitem.setText(option.displayValue);
+			menuitem.setData(ZmComposeController.SIGNATURE_KEY, option.value);
+			/***/
+			menuitem.addSelectionListener(listener);
+			/***
+			menuitem.addListener(DwtEvent.ONCHANGE, listener);
+			/***/
+			menu.checkItem(ZmComposeController.SIGNATURE_KEY, option.value, option.selected);
+		}
+	}
+	return menu;
+}
+
+/***
+ZmComposeController.prototype._handleSignatureSelect = function(ev) {
+//	console.info("ZmComposeController#_handleSignatureSelect: ",arguments);
+//	console.dir(ev._args);
+};
+/***/
+
+ZmComposeController.prototype._signatureChangeListener =
+function(ev) {
+	var selected = this.getSelectedSignature();
+
+	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	var menu = this._createSignatureMenu();
+	button.setMenu(menu);
+
+	this.setSelectedSignature(selected);
+};
+
+ZmComposeView.prototype._setSignatureVisible =
+function() {
+	if (!appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) return;
+
+	var div = document.getElementById(this._signatureDivId);
+	if (!div) return;
+
+	var visible = appCtxt.getSignatureCollection().getSize() > 0;
+	Dwt.setVisible(div, visible);
 };

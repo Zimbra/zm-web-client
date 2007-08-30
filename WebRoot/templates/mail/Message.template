@@ -137,11 +137,6 @@
 			</td>
 		</tr>
 
-		<tr id='${id}_identity_row' style='<$=labelStyle$>'>
-			<td align=right style='<$=labelStyle$>'><$=ZmMsg.from$>:</td>
-			<td><select id='${id}_identity_control'></select></td>
-		</tr>
-
 		<tr id='${id}_subject_row'>
 			<td align=right style='<$=labelStyle$>'><$=ZmMsg.subject$>:</td>
 			<td>
@@ -154,14 +149,14 @@
 					<td style='padding-right:4px;' width='50%'>
 						<input id='${id}_subject_control' class='subjectField' autocomplete=off>
 					</td>
-					<td id='${id}_signature_row' style='display:none;'>
+					<td id='${id}_identity_row' style='display:none;'>
 					<table border=0 cellspacing=0 cellpadding=0>
 						<colgroup>
 							<col width='*'>
 							<col width='100%'>
 						</colgroup>
-						<tr><td align='right' style='padding-right:4px;'><$=ZmMsg.signatureLabel$></td>
-							<td><div id='${id}_signature_control'></div></td>
+						<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.from$>:</td>
+							<td><select id='${id}_identity_control'></select></td>
 						</tr>
 					</table>
 					</td>
