@@ -148,7 +148,7 @@ function(field, item, ev, div, match) {
 		else if (item.isReplied)	{ tooltip = ZmMsg.replied; }
 		else if (item.isForwarded)	{ tooltip = ZmMsg.forwarded; }
 		else if (item.isSent)		{ tooltip = ZmMsg.sentAt; }
-		else if (item.isInvite)		{ tooltip = ZmMsg.appointment; }
+		else if (item.isInvite())		{ tooltip = ZmMsg.appointment; }
 		else						{ tooltip = ZmMsg.read; }
 	} else if (field == ZmItem.F_FROM) {
 		tooltip = this._getParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
@@ -326,7 +326,7 @@ function(ev) {
 			this.addItem(item, index);
 		} else if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
 			this.addItem(item, 0);
-		} else if ((this._controller.getList().hasMore() === false) && (this._sortByString == ZmSearch.DATE_ASC)) {
+		} else if ((!this._controller.getList().hasMore()) && (this._sortByString == ZmSearch.DATE_ASC)) {
 			if (this.size() < this.getLimit()) {
 				// add new item at the end of list view's internal list
 				this.addItem(item);
