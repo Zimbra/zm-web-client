@@ -9,10 +9,21 @@
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <app:handleError>
     <c:set var="selected" value="${empty param.selected ? 'general' : param.selected}"/>
+    <zm:getMailbox var="mailbox"/>
 
     <c:choose>
         <c:when test="${zm:actionSet(param, 'actionSave')}">
-            <app:optAction selected="${selected}"/>
+            <c:choose>
+                <%--<c:when test="${not empty param.zimbraPrefNewMailNotificationAddress and not empty mailbox.accountInfo.emailAddresses[param.zimbraPrefNewMailNotificationAddress]}">--%>
+                <c:when test="${zm:containsAddress(mailbox.accountInfo.emailAddresses, param.zimbraPrefNewMailNotificationAddress)}">
+                    <app:status>
+                        <fmt:message key="recursiveNotificationAddress" />
+                    </app:status>
+                </c:when>
+                <c:otherwise>
+                    <app:optAction selected="${selected}"/>
+                </c:otherwise>
+            </c:choose>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionFilterCancel')}">
             <app:status>
@@ -59,7 +70,6 @@
         </c:when>
     </c:choose>
 
-    <zm:getMailbox var="mailbox"/>
 </app:handleError>
 
 <c:choose>
