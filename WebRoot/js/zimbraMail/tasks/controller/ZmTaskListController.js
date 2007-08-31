@@ -205,7 +205,7 @@ function(parent, num) {
 		parent.enable([ZmOperation.MOVE], canEdit && num > 0);
 		// XXX: for now, only allow one task to be deleted at a time
 		parent.enable([ZmOperation.DELETE, ZmOperation.EDIT], canEdit && num == 1);
-		parent.enable(ZmOperation.TAG_MENU, !isShare);
+		parent.enable(ZmOperation.TAG_MENU, !isShare && num > 0);
 	}
 };
 
