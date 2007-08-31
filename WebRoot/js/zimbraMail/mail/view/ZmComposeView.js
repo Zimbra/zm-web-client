@@ -966,7 +966,11 @@ function(incAddrs, incSubject) {
 	var curFormValue = this._formValue(incAddrs, incSubject);
 
 	// empty subject and body => not dirty
-	if (curFormValue.match(ZmComposeView.EMPTY_FORM_RE)) {
+	if (curFormValue.match(ZmComposeView.EMPTY_FORM_RE) ||
+		(this._composeMode == DwtHtmlEditor.HTML &&
+		 (curFormValue == "<html><body></body></html>" ||
+		  curFormValue == "<html><body><br></body></html>")))
+	{
 		return false;
 	}
 
