@@ -311,12 +311,13 @@ function(params) {
 ZmDoublePaneController.prototype._loadItem =
 function(item, view, callback) {
 	if (item instanceof ZmMailItem) { // conv
+		var conv = item;
 		DBG.timePt("***** CONV: load", true);
-		if (!item._loaded) {
-			var respCallback = new AjxCallback(this, this._handleResponseLoadItem, [view, callback]);
-			item.load(null, respCallback);
+		if (!conv._loaded) {
+			var respCallback = new AjxCallback(this, this._handleResponseLoadConv, [view, callback]);
+			conv.load(null, respCallback);
 		} else {
-			this._handleResponseLoadItem(view, callback, new ZmCsfeResult(item.msgs));
+			this._handleResponseLoadConv(view, callback, conv._createResult());
 		}
 	} else { // msg list
 		this._displayResults(view);
@@ -326,12 +327,13 @@ function(item, view, callback) {
 	}
 };
 
-ZmDoublePaneController.prototype._handleResponseLoadItem =
+ZmDoublePaneController.prototype._handleResponseLoadConv =
 function(view, callback, result) {
-	var response = result.getResponse();
-	if (response instanceof ZmList) {
-		this._list = response;
-		this._activeSearch = response;
+	var searchResult = result.getResponse();
+	var list = searchResult.getResults(ZmItem.MSG);
+	if (list instanceof ZmList) {
+		this.setList(list); // set the new list returned
+		this._activeSearch = searchResult;
 	}
 	DBG.timePt("***** CONV: render");
 	this._displayResults(view);

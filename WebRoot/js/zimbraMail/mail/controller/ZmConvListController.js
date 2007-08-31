@@ -317,7 +317,7 @@ function(conv, offset, callback) {
 			offset = ((offset + limit) - max) + 1;
 		}
 		var respCallback = new AjxCallback(this, this._handleResponsePaginateConv, [conv, offset, callback]);
-		conv.load(null, respCallback);
+		conv.load({offset:offset, limit:limit}, respCallback);
 		return false;
 	} else {
 		return true;

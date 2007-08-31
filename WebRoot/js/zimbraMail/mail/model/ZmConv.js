@@ -98,35 +98,33 @@ function(params, callback) {
 	var offset = params.offset || 0;
 	var limit = params.limit || appCtxt.get(ZmSetting.PAGE_SIZE);
 	var getHtml = params.getHtml || appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	
-	if (this.msgs) {
-		if (this._sortBy != sortBy) {
-			// user is sorting; clear the list
+	this._getFirstMsg = params.getFirstMsg;
+
+	var doSearch = true;
+	if (this._loaded && this.msgs && this.msgs.size()) {
+		var size = this.msgs.size();
+		if (this._sortBy != sortBy || this._query != query || (size != this.numMsgs && !offset)) {
 			this.msgs.clear();
-			this._sortBy = sortBy;
-		} else {
-			var size = this.msgs.size();
-			if (size != this.numMsgs && !offset) {
-				// msgs list is out of sync
-				this.msgs.clear();
-			} else {
-				// XXX: if we dont want to cache, remove this "else" (dont forget to call clear on msgs)
-				// i.e. new msgs that are in the hit list wont be marked hot this way!
-				// dont bother searching for more msgs if all have been loaded	
-				if (!this.msgs.hasMore() || offset + limit <= size) {
-					if (callback) {
-						callback.run(new ZmCsfeResult(this.msgs));
-					}
-				}
-			}
+		} else if (!this.msgs.hasMore() || offset + limit <= size) {
+			doSearch = false;	// we can use cached msg list
 		}
 	}
-	
-	var types = AjxVector.fromArray([ZmItem.MSG]);
-	var searchParams = {query:query, types:types, sortBy:sortBy, offset:offset, limit:limit, getHtml:getHtml};
-	var search = this.search = new ZmSearch(searchParams);
-	var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, callback]);
-	search.getConv(this.id, respCallback, params.getFirstMsg);
+	if (!doSearch) {
+		if (callback) {
+			callback.run(this._createResult());
+		}
+	} else {
+		this._sortBy = sortBy;
+		this._query = query;
+		this._offset = offset;
+		this._limit = limit;
+		var fetchId = (params.getFirstMsg && this.msgIds) ? this.msgIds[0] : null;
+		var types = AjxVector.fromArray([ZmItem.MSG]);
+		var searchParams = {query:query, types:types, sortBy:sortBy, offset:offset, limit:limit, getHtml:getHtml};
+		var search = this.search = new ZmSearch(searchParams);
+		var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, callback]);
+		search.getConv(this.id, respCallback, fetchId);
+	}
 };
 
 ZmConv.prototype._handleResponseLoad =
@@ -138,10 +136,6 @@ function(params, callback, result) {
 		this.msgs.addChangeListener(this._listChangeListener);
 		this.msgs.setHasMore(results.getAttribute("more"));
 		this._loaded = true;
-		
-		if (callback) {
-			result.set(this.msgs);
-		}
 	}
 	if (callback) {
 		callback.run(result);
@@ -204,36 +198,6 @@ function(callback, result) {
 	if (callback) { callback.run(result); }
 };
 
-/*
-//Fixme: Needs some changes to fetch messages from the cache. 
-ZmConv.prototype.loadMsgs =
-function(callback){
-	
-	var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
-	var msgNode = soapDoc.set("c");
-	msgNode.setAttribute("id", this.id);
-	msgNode.setAttribute("fetch", "all");
-
-	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgs, callback);
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
-
-};
-
-ZmConv.prototype._handleResponseLoadMsgs =
-function(callback, result){
-
-	var resp = result.getResponse().GetConvResponse.c[0];
-	var len  = resp.m.length;
-	var msgs = [];
-	for (var i = 0; i < len; i++) {
-		var msgNode = resp.m[i];
-		var msg = ZmMailMsg.createFromDom(msgNode, this.msgs);
-		msgs.push(msg);
-	}
-	
-	if (callback) { callback.run(msgs); }
-};
-*/
 ZmConv.prototype.clear =
 function() {
 	if (this.msgs) {
@@ -427,7 +391,23 @@ function(params, callback) {
 ZmConv.prototype._handleResponseGetFirstHotMsg =
 function(params, callback) {
 	var msg = this.msgs.getFirstHit(params.offset, params.limit);
-	if (callback) {
+	// should have a loaded msg
+	if (msg && msg._loaded) {
+		if (callback) {
+			callback.run(msg);
+		}
+	} else {
+		// desperate measures - get msg content from server
+		msg = msg || new ZmMailMsg(this.msgIds[0]);
+		var respCallback = new AjxCallback(this, this._handleResponseLoadMsg, [msg, callback]);
+		var getHtml = params.getHtml || appCtxt.get(ZmSetting.VIEW_AS_HTML);
+		msg.load(getHtml, false, respCallback);
+	}
+};
+
+ZmConv.prototype._handleResponseLoadMsg =
+function(msg, callback) {
+	if (msg && callback) {
 		callback.run(msg);
 	}
 };
@@ -488,4 +468,16 @@ function(ev) {
 		// a msg was moved or deleted, see if this conv's row should remain
 		this.checkMoved(this.getFolderId());
 	}
+};
+
+/**
+ * Returns a result created from this conv's data that looks as if it were the result
+ * of an actual SOAP request.
+ */
+ZmConv.prototype._createResult =
+function() {
+	var searchResult = new ZmSearchResult(this.search);
+	searchResult.type = ZmItem.MSG;
+	searchResult._results[ZmItem.MSG] = this.msgs;
+	return new ZmCsfeResult(searchResult);
 };
