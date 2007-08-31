@@ -186,25 +186,17 @@ function(letter, endLetter) {
 	var query = folder ? folder.createQuery() : null;
 
 	if (query) {
-		var limit = this._listView[this._currentView].getLimit();
-		//Bugfix: 16541 //Dirty fix :-(
-		var callback = new AjxCallback(this, this._searchAlphabetCallback, [this._currentView]);
-		var params = {query:query, types:[ZmItem.CONTACT], offset:0, limit:limit, lastId:0,
-					  lastSortVal:letter, endSortVal:endLetter ,callback:callback};			  
-		var sc = appCtxt.getSearchController();
-		sc.search(params);
+		var params = {
+			query: query,
+			types: [ZmItem.CONTACT],
+			offset: 0,
+			limit: (this._listView[this._currentView].getLimit()),
+			lastId: 0,
+			lastSortVal: letter,
+			endSortVal: endLetter
+		};
+		appCtxt.getSearchController().search(params);
 	}
-};
-
-//Bugfix: 16541
-ZmContactListController.prototype._searchAlphabetCallback = function(view){
-	view = view || this._currentView;
-	
-	var se = this._getNavStartEnd(view);
-	if (!se) {return;}
-	var text = AjxMessageFormat.format(ZmMsg.navText1, [se.start, se.end]);
-	this._navToolBar[view].setText(text);
-	return; 
 };
 
 ZmContactListController.prototype.getKeyMapName =
@@ -269,7 +261,9 @@ function() {
 
 ZmContactListController.prototype._defaultView =
 function() {
-	return (appCtxt.get(ZmSetting.CONTACTS_VIEW) == "cards") ? ZmController.CONTACT_CARDS_VIEW : ZmController.CONTACT_SIMPLE_VIEW;
+	return (appCtxt.get(ZmSetting.CONTACTS_VIEW) == "cards")
+		? ZmController.CONTACT_CARDS_VIEW
+		: ZmController.CONTACT_SIMPLE_VIEW;
 };
 
 ZmContactListController.prototype._createNewView =
@@ -490,6 +484,14 @@ function(view) {
 
 	return (start && end) ? {start:start, end:end} : null;
 };
+
+ZmContactListController.prototype._getNumTotal =
+function() {
+	return (this._list && this._list.isCanonical)
+		? (ZmListController.prototype._getNumTotal.call(this)) 
+		: null;
+};
+
 
 // List listeners
 
