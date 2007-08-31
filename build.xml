@@ -674,7 +674,7 @@ if (ext == null) ext = "";
 					<src dir='${js.dir}' />
 					<filelist dir='${build.js.dir}' files='${arg}.js' wrap='${wrap}' />
 					<!-- include templates, if found -->
-					<fileset dir='${jam.template.dir}' wrap='${wrap}'
+					<fileset dir='${jam.template.dir}' wrap='${wrap}'  manifest='false'
 							 basepath='&lt;%=contextPath%>/templates/'
 							 extension='.template.js?v=&lt;%=vers%>'>
 						<patternset refid="jam.template.fileset"/>
