@@ -255,25 +255,35 @@ function(ev) {
 ZmContactPicker.prototype._handleResponseSearch =
 function(result) {
 	var resp = result.getResponse();
-
+	var isGal = this._contactSource == ZmSearchToolBar.FOR_GAL_MI;
 	var more = resp.getAttribute("more");
-	this._prevButton.setEnabled(this._offset > 0);
-	this._nextButton.setEnabled(more);
+
+	// GAL results cannot be paged
+	if (isGal) {
+		this._prevButton.setEnabled(false);
+		this._nextButton.setEnabled(false);
+	} else {
+		this._prevButton.setEnabled(this._offset > 0);
+		this._nextButton.setEnabled(more);
+	}
 
 	var info = resp.getAttribute("info");
-	if (info && info[0].wildcard[0].expanded == "0") {
+	var expanded = info && info[0].wildcard[0].expanded == "0";
+
+	if (expanded || (isGal && more)) {
 		var d = appCtxt.getMsgDialog();
 		d.setMessage(ZmMsg.errorSearchNotExpanded);
 		d.popup();
-	} else {
-		var list = ZmContactsHelper._processSearchResponse(resp);
-		// bug #2269 - enable/disable sort column per type of search
-		this._resetColHeaders();
-		this._chooser.setItems(AjxVector.fromArray(list));
+		if (expanded) { return; }
+	}
 
-		if (list.length == 0) {
-			this._chooser.sourceListView._setNoResultsHtml();
-		}
+	var list = ZmContactsHelper._processSearchResponse(resp);
+
+	this._resetColHeaders(); // bug #2269 - enable/disable sort column per type of search
+	this._chooser.setItems(AjxVector.fromArray(list));
+
+	if (list.length == 0) {
+		this._chooser.sourceListView._setNoResultsHtml();
 	}
 
 	this._searchButton.setEnabled(true);
