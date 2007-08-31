@@ -34,8 +34,8 @@ ZmVoicePrefsView = function(parent, controller) {
 	this._hasRendered = false;
 	this._item = null;
 	
-    var section = ZmPref.getPrefSectionWithPref(ZmSetting.VOICE_ACCOUNTS);
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
+    this._section = ZmPref.getPrefSectionWithPref(ZmSetting.VOICE_ACCOUNTS);
+	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, this._section && this._section.title].join(": ");
 	this._ui = [
 		new ZmVoicePageSizeUI(this),
 		new ZmEmailNotificationUI(this),
@@ -100,6 +100,8 @@ function() {
 
 ZmVoicePrefsView.prototype.showMe =
 function() {
+	var prefsController = AjxDispatcher.run("GetPrefController");
+	prefsController._resetOperations(prefsController._toolbar, this._section && this._section.id);
 	Dwt.setTitle(this._title);
 	if (this._hasRendered) return;
 
