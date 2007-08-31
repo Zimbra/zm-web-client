@@ -128,53 +128,55 @@
 
 			<td id='skin_td_tree_outer' colspan=2>
 				<table id='skin_tree_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
-					<tr><td id='skin_td_tree_header' valign=bottom>
-						<div id='skin_tree_header_container' class='skin_container'>
-							<table class='skin_table fullSize' cellspacing=0 cellpadding=0>
-								<tr>
-                                    <td class='TbTop'>
-                                        <c:if test="${selected != 'contacts'}">
-                                              <c:set var="actionURL" value="/h/mfolders"/>
-                                         </c:if>
-                                         <c:if test="${selected eq 'contacts'}">
-                                              <c:set var="actionURL" value="/h/maddrbooks"/>
-                                         </c:if>
-                                         <c:if test="${selected eq 'calendar'}">
-                                              <c:set var="actionURL" value="/h/mcalendars"/>
-                                         </c:if>
-                                         <form method="post" action="${actionURL}" <c:if test="${selected eq 'contacts' or selected eq 'calendar'}">enctype="multipart/form-data" accept-charset="utf-8"</c:if> >
-                                               <table width=100% cellspacing=0 >
-                                                    <tr>
-                                                        <td class='ImgSkin_Toolbar'>
-                                                            <table cellspacing=0 cellpadding=0 class='Tb'>
-                                                            <tr>
-                                                            <c:if test="${selected != 'contacts' and selected != 'calendar'}">
-                                                                <app:button name="actionNewFolder" src="common/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/>
-                                                            </c:if>
-                                                            <c:if test="${selected eq 'contacts'}">
-                                                                <app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
-                                                            </c:if>
-                                                            <c:if test="${selected eq 'calendar'}">
-                                                                <app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
-                                                            </c:if>
-                                                            </tr>
-                                                           </table>
-                                                        </td>
-                                                    </tr>
-                                                </table>
-                                                <input type="hidden" name="doAction" value="1"/>
-                                        </form>
-                                    </td>
-								</tr>
-							</table>
-						</div>
-					</td></tr>
+					<c:if test="${selected ne 'voice'}">
+						<tr><td id='skin_td_tree_header' valign=bottom>
+							<div id='skin_tree_header_container' class='skin_container'>
+								<table class='skin_table fullSize' cellspacing=0 cellpadding=0>
+									<tr>
+										<td class='TbTop'>
+											<c:if test="${selected != 'contacts'}">
+												  <c:set var="actionURL" value="/h/mfolders"/>
+											 </c:if>
+											 <c:if test="${selected eq 'contacts'}">
+												  <c:set var="actionURL" value="/h/maddrbooks"/>
+											 </c:if>
+											 <c:if test="${selected eq 'calendar'}">
+												  <c:set var="actionURL" value="/h/mcalendars"/>
+											 </c:if>
+											 <form method="post" action="${actionURL}" <c:if test="${selected eq 'contacts' or selected eq 'calendar'}">enctype="multipart/form-data" accept-charset="utf-8"</c:if> >
+												   <table width=100% cellspacing=0 >
+														<tr>
+															<td class='ImgSkin_Toolbar'>
+																<table cellspacing=0 cellpadding=0 class='Tb'>
+																<tr>
+																<c:if test="${selected != 'contacts' and selected != 'calendar'}">
+																	<app:button name="actionNewFolder" src="common/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/>
+																</c:if>
+																<c:if test="${selected eq 'contacts'}">
+																	<app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
+																</c:if>
+																<c:if test="${selected eq 'calendar'}">
+																	<app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
+																</c:if>
+																</tr>
+															   </table>
+															</td>
+														</tr>
+													</table>
+													<input type="hidden" name="doAction" value="1"/>
+											</form>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</td></tr>
+					</c:if>
 					<tr>
 						<td height='100%' id='skin_td_tree' colspan=3>
 							<div id='skin_container_tree' class='skin_container'>
 							
 							<c:if test="${empty editmode}">			            	
-        			        <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>		            		
+        			        <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" voice = "${voice}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>		            		
         					</c:if>
         
 							</div>
