@@ -255,7 +255,7 @@ function(id, prop) {
 	if (setup) {
 		value = setup[prop];
 		if (!value && (prop == "disImage") && setup.image) {
-			value = setup.image + ZmOperation.DIS;
+			value = setup.image;
 		}
 	}
 
@@ -323,7 +323,6 @@ function(parent, oldOp, newOp, text, image, disImage) {
 
 	op.setText(text ? text : ZmMsg[ZmOperation.getProp(newOp, "textKey")]);
 	op.setImage(image ? image : ZmOperation.getProp(newOp, "image"));
-	op.setDisabledImage(disImage ? disImage : ZmOperation.getProp(newOp, "disImage"));
 };
 
 /**

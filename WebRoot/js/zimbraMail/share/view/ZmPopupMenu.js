@@ -120,9 +120,6 @@ function(id, params) {
 	if (params.text) {
 		mi.setText(params.text);
 	}
-	if (params.disImage) {
-		mi.setDisabledImage(params.disImage);
-	}
 	mi.setEnabled(params.enabled !== false);
 
 	return mi;

@@ -67,7 +67,6 @@ function(actionMenu, type, id) {
 		menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASEITEM);
 		menuItem.setText(ZmMsg.newFolder);
 		menuItem.setImage("NewSection");
-		menuItem.setDisabledImage("NewSectionDis");
 		menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR));
 
 		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
@@ -75,14 +74,12 @@ function(actionMenu, type, id) {
 			menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_BRIEFCASE);
 			//menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
 			menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
-			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
 			menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR));
 
 			menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_BRIEFCASE);
 //			menuItem.setText(isBriefcase ? ZmMsg.shareNotebook : ZmMsg.shareSection);
 			menuItem.setText(ZmMsg.shareFolder);
 			menuItem.setImage(isBriefcase ? "Folder" : "Section");
-			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
 			menuItem.setEnabled(!isLinkOrRemote);
 		}
     }

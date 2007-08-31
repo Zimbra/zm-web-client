@@ -38,6 +38,14 @@
 	@Text-disabled@
 }
 
+/* apply this class to an div with a bg image to disable it, e.g.
+		<div class'ImgFoo ZDisabledImage'></div>
+	This is handled in DwtLabel automatically.
+*/
+.ZDisabledImage {
+	@Icon-disabled@
+}
+
 .nobreak {
 	@NoWrap@
 }

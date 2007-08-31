@@ -368,7 +368,6 @@ ZmChatListController.prototype._setNewButtonProps = function(view, toolTip, enab
 	if (newButton) {
 		newButton.setToolTipContent(toolTip);
 		newButton.setImage(enabledIconId);
-		newButton.setDisabledImage(disabledIconId);
 		this._defaultNewId = defaultId;
 	}
 };

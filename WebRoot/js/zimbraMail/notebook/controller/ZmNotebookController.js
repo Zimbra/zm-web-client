@@ -127,7 +127,6 @@ function(view) {
 	var button = toolbar.getButton(ZmOperation.REFRESH);
 	if (button) {
 		button.setImage("Refresh");
-		button.setDisabledImage("RefreshDis");
 	}
 
 	button = toolbar.getButton(ZmOperation.DELETE);

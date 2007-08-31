@@ -915,7 +915,6 @@ function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 	if (newButton) {
 		newButton.setToolTipContent(toolTip);
 		newButton.setImage(enabledIconId);
-		newButton.setDisabledImage(disabledIconId);
 		this._defaultNewId = defaultId;
 	}
 };

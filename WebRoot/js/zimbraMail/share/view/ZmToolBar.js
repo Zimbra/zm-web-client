@@ -125,9 +125,6 @@ function(id, params) {
 	if (params.tooltip) {
 		b.setToolTipContent(params.tooltip);
 	}
-	if (params.disImage) {
-		b.setDisabledImage(params.disImage);
-	}
 	b.setEnabled(params.enabled !== false);
 	b.setData("_buttonId", id);
 

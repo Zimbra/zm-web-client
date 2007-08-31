@@ -72,7 +72,6 @@ function(actionMenu, type, id) {
 		menuItem = actionMenu.getMenuItem(ZmOperation.NEW_NOTEBOOK);
 		menuItem.setText(ZmMsg.newSection);
 		menuItem.setImage("NewSection");
-		menuItem.setDisabledImage("NewSectionDis");
 		menuItem.setEnabled(!isLinkOrRemote || ZmNotebookTreeController.__isAllowed(notebook, ZmShare.PERM_CREATE_SUBDIR));
 
 		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
@@ -80,13 +79,11 @@ function(actionMenu, type, id) {
 			menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_NOTEBOOK);
 			//menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
 			menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
-			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
 			menuItem.setEnabled(!isLinkOrRemote || ZmNotebookTreeController.__isAllowed(notebook, ZmShare.PERM_CREATE_SUBDIR));
 
 			menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_NOTEBOOK);
 			menuItem.setText(isNotebook ? ZmMsg.shareNotebook : ZmMsg.shareSection);
 			menuItem.setImage(isNotebook ? "Notebook" : "Section");
-			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
 			menuItem.setEnabled(!isLinkOrRemote);
 		}
     }
