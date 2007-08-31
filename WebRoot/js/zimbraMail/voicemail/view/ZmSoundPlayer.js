@@ -92,6 +92,11 @@ function() {
 	} else {
 		this.setCompact(!this._isCompact);
 	}
+
+	// Select this row in the parent view.
+	if (this.parent instanceof DwtListView) {
+		this.parent.setSelection(this.voicemail);
+	}
 };
 
 /**
