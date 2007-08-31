@@ -559,10 +559,17 @@ P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
 	@BoxMargin@
 }
 
+/* MOW: this is not safe to do! 
+	It only worked before as an artifact of a particular ordering of
+	images in the imagemerge program.
 .oselect_table .ImgSelectPullDownArrow {
 	width:16px;
 }
-
+*/
+/* this is not that safe either, but it should accomplish the same effect */
+.ImgSelectPullDownArrow {
+	margin-right:4px;
+}
 
 .DwtListView-Rows TD {
 	vertical-align:top;
