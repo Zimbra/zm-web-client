@@ -39,6 +39,7 @@ AjxPackage.require("ajax.dwt.widgets.DwtSpinner");
 AjxPackage.require("ajax.dwt.widgets.DwtButtonColorPicker");
 AjxPackage.require("ajax.dwt.widgets.DwtMessageComposite");
 AjxPackage.require("ajax.dwt.widgets.DwtRadioButtonGroup");
+AjxPackage.require("ajax.dwt.widgets.DwtComboBox");
 
 AjxPackage.require("zimbra.common.ZLoginFactory");
 AjxPackage.require("zimbra.common.ZmBaseSplashScreen");
