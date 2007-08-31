@@ -25,6 +25,7 @@
 
 ZmClientCmdHandler = function() {
 	this._settings = {};
+	this._dbg = window.DBG;	// trick to fool minimizer regex
 };
 
 ZmClientCmdHandler.prototype.execute =
@@ -41,15 +42,15 @@ function(cmdStr, searchController) {
 	var arg0 = argv[0];
 
 	if (arg0 == "debug") {
-		if (!argv[1]) { return; }
+		if (!argv[1] || !this._dbg) { return; }
 		if (argv[1] == "t") {
-			var on = DBG._showTiming;
+			var on = this._dbg._showTiming;
 			var newState = on ? "off" : "on";
 			this._alert("Turning timing info " + newState);
-			DBG.showTiming(!on);
+			this._dbg.showTiming(!on);
 		} else {
 			var level = argv[1];
-			DBG.setDebugLevel(level);
+			this._dbg.setDebugLevel(level);
 			this._alert("Setting debug level to: " + level);
 		}
 	} else if (arg0 == "support") {

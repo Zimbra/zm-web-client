@@ -42,6 +42,19 @@ ZmZimbraMail = function(params) {
 	this._userShell = params.userShell;
 	this._requestMgr = new ZmRequestMgr(this);
 
+	// app event handling
+	this._evt = new ZmAppEvent();
+	this._evtMgr = new AjxEventMgr();
+	// copy over any statically registered listeners
+	for (var type in ZmZimbraMail._listeners) {
+		var list = ZmZimbraMail._listeners[type];
+		if (list && list.length) {
+			for (var i = 0; i < list.length; i++) {
+				this._evtMgr.addListener(type, list[i]);
+			}
+		}
+	}
+
 	// ALWAYS set back reference into our world (also used by unload handler)
 	window._zimbraMail = this;
 	
@@ -109,13 +122,8 @@ ZmZimbraMail._PREFS_ID	= 1;
 ZmZimbraMail._HELP_ID	= 2;
 ZmZimbraMail._LOGOFF_ID	= 3;
 
-// Event types
-ZmZimbraMail.E_STARTUP = "STARTUP";
-
-// Event handling - needs to be static so it can be used before ZmZimbraMail has
-// been constructed
-ZmZimbraMail._evt = new ZmEvent();
-ZmZimbraMail._evtMgr = new AjxEventMgr();
+// Static listener registration
+ZmZimbraMail._listeners = {};
 
 // Public methods
 
@@ -240,28 +248,6 @@ function(hash, a, b) {
 	if (appA > appB) { return 1; }
 	if (appA < appB) { return -1; }
 	return 0;
-};
-
-/**
- * Adds a listener for the given event type.
- *
- * @param type		[constant]		event type
- * @param listener	[AjxListener]	a listener
- */
-ZmZimbraMail.addListener =
-function(type, listener) {
-	return ZmZimbraMail._evtMgr.addListener(type, listener);
-};
-
-/**
- * Removes a listener for the given event type.
- *
- * @param type		[constant]		event type
- * @param listener	[AjxListener]	a listener
- */
-ZmZimbraMail.removeListener =
-function(type, listener) {
-	return ZmZimbraMail._evtMgr.removeListener(type, listener);    	
 };
 
 /**
@@ -419,10 +405,6 @@ function(params, result) {
 		}
 	}
 	this.activateApp(startApp, false, respCallback, this._errorCallback, checkQS);
-
-
-
-
 };
 
 /*
@@ -433,6 +415,8 @@ function(params, result) {
 */
 ZmZimbraMail.prototype._handleResponseStartup1 =
 function(params) {
+
+	AjxDispatcher.require("Startup2");
 
 	this._setUserInfo();
 
@@ -500,7 +484,7 @@ function(params) {
 
 	AjxDispatcher.enableLoadFunctions(true);
 	appCtxt.inStartup = false;
-	ZmZimbraMail._evtMgr.notifyListeners(ZmZimbraMail.E_STARTUP, ZmZimbraMail._evt);
+	this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
 };
 
 /**
@@ -603,6 +587,70 @@ function(apps) {
 };
 
 /**
+ * Static function to add a listener before this class has been instantiated.
+ * During construction, listeners are copied to the event manager. This function
+ * could be used by a skin, for example.
+ *
+ * @param type		[constant]		event type
+ * @param listener	[AjxListener]	a listener
+ */
+ZmZimbraMail.addListener =
+function(type, listener) {
+	if (!ZmZimbraMail._listeners[type]) {
+		ZmZimbraMail._listeners[type] = [];
+	}
+	ZmZimbraMail._listeners[type].push(listener);
+};
+
+/**
+ * Adds a listener for the given event type.
+ *
+ * @param type		[constant]		event type
+ * @param listener	[AjxListener]	a listener
+ */
+ZmZimbraMail.prototype.addListener =
+function(type, listener) {
+	return this._evtMgr.addListener(type, listener);
+};
+
+/**
+ * Removes a listener for the given event type.
+ *
+ * @param type		[constant]		event type
+ * @param listener	[AjxListener]	a listener
+ */
+ZmZimbraMail.prototype.removeListener =
+function(type, listener) {
+	return this._evtMgr.removeListener(type, listener);    	
+};
+
+/**
+ * Adds a listener for the given event type and app.
+ *
+ * @param app		[constant]		app name
+ * @param type		[constant]		event type
+ * @param listener	[AjxListener]	a listener
+ */
+ZmZimbraMail.prototype.addAppListener =
+function(app, type, listener) {
+	type = [app, type].join("_");
+	return this.addListener(type, listener);
+};
+
+/**
+ * Removes a listener for the given event type and app.
+ *
+ * @param app		[constant]		app name
+ * @param type		[constant]		event type
+ * @param listener	[AjxListener]	a listener
+ */
+ZmZimbraMail.prototype.removeAppListener =
+function(app, type, listener) {
+	type = [app, type].join("_");
+	return this.removeListener(type, listener);
+};
+
+/**
  * Send a NoOpRequest to the server.  Used for '$set:noop'
  */
 ZmZimbraMail.prototype.sendNoOp =
@@ -696,9 +744,9 @@ function(kickMe) {
  */
 ZmZimbraMail.prototype._kickPolling =
 function(resetBackoff) {
-    DBG.println(AjxDebug.DBG2, "ZmZimbraMail._kickPolling(1) "+
-                               this._pollInterval + ", "+ this._pollActionId+", "+
-                               (this._pollRequest ? "request_pending" : "no_request_pending"));
+	var msg = ["ZmZimbraMail._kickPolling(1) ", this._pollInterval, ", ", this._pollActionId, 
+			   ", ", this._pollRequest ? "request_pending" : "no_request_pending"].join("");
+    DBG.println(AjxDebug.DBG2, msg);
 
     // reset the polling timeout
     if (this._pollActionId) {
@@ -911,6 +959,8 @@ function(appName, force, callback, errorCallback, checkQS) {
 		} else {
 			DBG.println(AjxDebug.DBG1, "Launching app " + appName);
 			var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback]);
+			var eventType = [appName, ZmAppEvent.PRE_LAUNCH].join("_");
+			this._evtMgr.notifyListeners(eventType, this._evt);
 			this._apps[appName].launch(respCallback, checkQS);
 		}
     }

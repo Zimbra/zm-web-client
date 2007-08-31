@@ -634,16 +634,12 @@
 
 				<property name='jam.template.dir' value='${build.template.dir}' />
 				<patternset id='jam.template.fileset' excludes='**' />
-				<if><or><equals arg1='${arg}' arg2='Ajax' />
-						<equals arg1='${arg}' arg2='AjaxZWC' />
-					</or>
+				<if><equals arg1='${arg}' arg2='Ajax' />
 					<then>
 						<patternset id='jam.template.fileset' includes='dwt/**' />
 					</then>
 				</if>
-				<if><or><equals arg1='${arg}' arg2='Zimbra' />
-						<equals arg1='${arg}' arg2='ZimbraZWC' />
-					</or>
+				<if><equals arg1='${arg}' arg2='Zimbra' />
 					<then>
 						<patternset id='jam.template.fileset' includes='zimbra/**' />
 					</then>
@@ -653,11 +649,12 @@
 						<patternset id='jam.template.fileset' includes='admin/**' />
 					</then>
 				</if>
-				<if><equals arg1='${arg}' arg2='ZimbraCore' />
+				<if><equals arg1='${arg}' arg2='Startup1' />
 					<then>
 						<patternset id='jam.template.fileset' excludes='dwt/**,zimbra/**,admin/**' />
 					</then>
 				</if>
+
 
 				<jammer jsDestFile='${jam.file}' htmlDestFile='${jsp.file}'
 						dependsFile='${depends.file}' output='all'
@@ -711,7 +708,7 @@ if (ext == null) ext = "";
 						<copy tofile="@{var}${nodebug.ext}" file='@{var}'/>
 						<echo>Stripping debug to @{var}${nodebug.ext}</echo>
 						<replaceregexp byline="true">
-							<regexp pattern="DBG.print(.*);|DBG.time(.*);|DBG.dump(.*);|DBG.setTitle(.*);"/>
+							<regexp pattern="DBG\.\w+\(.*\);"/>
 							<substitution expression=" "/>
 							<fileset file="@{var}${nodebug.ext}"/>
 						</replaceregexp>

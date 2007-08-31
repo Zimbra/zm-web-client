@@ -732,7 +732,7 @@ function(components) {
 			}
 		}
 	}
-	if (DBG.getDebugLevel() >= AjxDebug.DBG2) {
+	if (window.DBG && DBG.getDebugLevel() >= AjxDebug.DBG2) {
 		this._debugShowMetrics(components);
 	}
 };

@@ -199,7 +199,9 @@
 <script src="<%=contextPath %>/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
 <jsp:include page="Boot.jsp"/>
 <%
-    String allPackages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";
+//    String allPackages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";
+	String allPackages = "Startup1,Startup2";
+
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
     		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal";
@@ -256,11 +258,12 @@
 			_timer = null;
 		}
 
-		AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp";
-		DBG = new AjxDebug(AjxDebug.NONE, null, false);
-		// figure out the debug level
 		var debugLevel = "<%= (debug != null) ? debug : "" %>";
 		if (debugLevel) {
+			AjxDispatcher.require("Debug");
+			DBG = new AjxDebug(AjxDebug.NONE, null, false);
+			AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp";
+			// figure out the debug level
 			if (debugLevel == 't') {
 				DBG.showTiming(true);
 			} else {

@@ -24,14 +24,15 @@
  */
 
 /**
-* Creates an empty event of the given type.
-* @constructor
-* @class
-* @parameter type - the type of the source of the event
-* This class represents an event that encapsulates some sort of change to a model (data).
-* The event has a data type (eg conversation), an event type (eg delete), a source (the
-* data object generating the event), and a hash of arbitrary information (details).
-*/
+ * Creates an empty event of the given type.
+ * @constructor
+ * @class
+ * @param type [constant]	the source of the event
+ * 
+ * This class represents an event that encapsulates some sort of change to a model (data).
+ * The event has a data type (eg conversation), an event type (eg delete), a source (the
+ * data object generating the event), and a hash of arbitrary information (details).
+ */
 ZmEvent = function(type) {
 
 	this.type = type;	// source type (conv, msg, contact, folder, etc)

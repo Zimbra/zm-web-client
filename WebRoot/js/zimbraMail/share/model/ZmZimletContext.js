@@ -176,9 +176,10 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 		return;
 	}
 	this.handlerObject = new CTOR();
-	if(!this.handlerObject._init) {
-		DBG.println(AjxDebug.DBG1, "ERROR - Zimlet handler (" + this.name + ") not defined. " +
-		    "Make sure the Zimlet name and handlerObject defined in " + this.name + ".xml are different.");
+	if (!this.handlerObject._init) {
+		var msg = "ERROR - Zimlet handler (" + this.name + ") not defined. " +
+		    "Make sure the Zimlet name and handlerObject defined in " + this.name + ".xml are different.";
+		DBG.println(AjxDebug.DBG1, msg);
 	}
 	this.handlerObject._init(this, DwtShell.getShell(window));
 	if (this.contentObject) {
