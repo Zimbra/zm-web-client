@@ -7,6 +7,8 @@
  *  - If a task folder arrives in a <refresh> block
  *  - If a search for tasks returns results
  */
+AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
+
 AjxPackage.require("zimbraMail.tasks.model.ZmTaskFolder");
 AjxPackage.require("zimbraMail.tasks.model.ZmTaskList");
 AjxPackage.require("zimbraMail.tasks.model.ZmTask");
