@@ -299,6 +299,11 @@ ZmPref.registerPrefSection = function(id, params) {
     ZmPref._prefSectionArray = null;
 };
 
+ZmPref.unregisterPrefSection = function(id) {
+	delete ZmPref._prefSectionMap[id];
+	ZmPref._prefSectionArray = null;
+};
+
 /** Returns the pref sections map. */
 ZmPref.getPrefSectionMap = function() {
     return ZmPref._prefSectionMap;

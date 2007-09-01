@@ -60,6 +60,15 @@ function() {
 	return "ZmPreferencesApp";
 };
 
+// NOTE: This is registered staticly to guarantee that all of the
+//       enabled app's preferences will be registered by the time
+//       that another app listener gets the launch event and may
+//       want to alter those prefs.
+ZmPreferencesApp._registerAllPrefs = function() {
+	appCtxt.getAppController().runAppFunction("_registerPrefs", true);
+};
+ZmZimbraMail.addAppListener(ZmApp.PREFERENCES, ZmAppEvent.PRE_LAUNCH, new AjxListener(ZmPreferencesApp._registerAllPrefs));
+
 //
 // Public methods
 //
@@ -162,11 +171,6 @@ function() {
 	AjxDispatcher.registerMethod("GetFilterRules", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterRules));
 	AjxDispatcher.registerMethod("GetPrefController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getPrefController));
 	AjxDispatcher.registerMethod("GetFilterController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterController));
-};
-
-ZmPreferencesApp.prototype._registerOperations =
-function() {
-	AjxDispatcher.setPackageLoadFunction("Preferences", new AjxCallback(this, this._postLoad));
 };
 
 ZmPreferencesApp.prototype._registerApp =
@@ -439,9 +443,4 @@ function(callback) {
 ZmPreferencesApp.prototype.refresh =
 function(refresh) {
 	this._handleRefresh();
-};
-
-ZmPreferencesApp.prototype._postLoad =
-function() {
-	appCtxt.getAppController().runAppFunction("_registerPrefs", true);
 };

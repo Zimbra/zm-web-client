@@ -603,6 +603,17 @@ function(type, listener) {
 };
 
 /**
+ * Static function to add an app listener before this class has been
+ * instantiated. This is separate from {@link ZmZimbraMail#addListener}
+ * so that the caller doesn't need to know the specifics of how we
+ * twiddle the type name for app events.
+ */
+ZmZimbraMail.addAppListener = function(appName, type, listener) {
+	type = [appName, type].join("_");
+	ZmZimbraMail.addListener(type, listener);
+};
+
+/**
  * Adds a listener for the given event type.
  *
  * @param type		[constant]		event type
@@ -960,6 +971,7 @@ function(appName, force, callback, errorCallback, checkQS) {
 			DBG.println(AjxDebug.DBG1, "Launching app " + appName);
 			var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback]);
 			var eventType = [appName, ZmAppEvent.PRE_LAUNCH].join("_");
+			this._evt.item = this._apps[appName];
 			this._evtMgr.notifyListeners(eventType, this._evt);
 			this._apps[appName].launch(respCallback, checkQS);
 		}
