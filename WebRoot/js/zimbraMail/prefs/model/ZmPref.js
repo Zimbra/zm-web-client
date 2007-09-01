@@ -101,6 +101,13 @@ function(interval) {
 	}
 };
 
+ZmPref.pollingIntervalDisplay = function(seconds) {
+	return seconds / 60;
+};
+ZmPref.pollingIntervalValue = function(minutes) {
+	return minutes * 60;
+}
+
 ZmPref.int2DurationDay = function(intValue) {
 	return intValue != null && intValue != 0 ? intValue + "d" : intValue;
 };
@@ -109,27 +116,103 @@ ZmPref.durationDay2Int = function(durValue) {
 	return parseInt(durValue, 10); // NOTE: parseInt ignores non-digits
 };
 
-ZmPref.approximateInterval =
-function(value) {
-	// get sorted copy of options
+ZmPref.approximateInterval = function(value) {
 	var values = [].concat(ZmPref.SETUP["POLLING_INTERVAL"].options);
 	values.sort(ZmPref.__BY_NUMBER);
+	return ZmPref.approximateValue(values, value);
+};
 
+ZmPref.approximateValue = function(sortedValues, value) {
 	// find closest value
-	for (var i = 0; i < values.length + 1; i++) {
-		var a = values[i];
-		var b = values[i+1];
+	for (var i = 0; i < sortedValues.length + 1; i++) {
+		var a = sortedValues[i];
+		var b = sortedValues[i+1];
 		if (value < b) {
 			var da = value - a;
 			var db = b - value;
 			return da < db ? a : b;
 		}
 	}
-
-	return value;
+	return sortedValues[sortedValues.length - 1];
 };
+
+ZmPref.approximateLifetimeInboxRead = function(value) {
+	return ZmPref.approximateLifetime("MAIL_LIFETIME_INBOX_READ", value);
+};
+ZmPref.approximateLifetimeInboxUnread = function(value) {
+	return ZmPref.approximateLifetime("MAIL_LIFETIME_INBOX_UNREAD", value);
+};
+ZmPref.approximateLifetimeJunk = function(value) {
+	return ZmPref.approximateLifetime("MAIL_LIFETIME_JUNK", value);
+};
+ZmPref.approximateLifetimeSent = function(value) {
+	return ZmPref.approximateLifetime("MAIL_LIFETIME_SENT", value);
+};
+ZmPref.approximateLifetimeTrash = function(value) {
+	return ZmPref.approximateLifetime("MAIL_LIFETIME_TRASH", value);
+};
+
+ZmPref.approximateLifetime = function(prefId, duration) {
+	// convert durations to seconds
+	var values = [].concat(ZmPref.SETUP[prefId].options);
+	for (var i = 0; i < values.length; i++) {
+		var value = values[i];
+		values[i] = ZmPref.__DUR2SECS(value != "0" ? value+"d" : value);
+	}
+	values.sort(ZmPref.__BY_NUMBER);
+
+	// if zero, the closest match is the greatest
+	var seconds;
+	if (duration == "0") {
+		seconds = values[values.length - 1];
+	}
+
+	// approximate to closest number of seconds
+	else {
+		seconds = ZmPref.approximateValue(values, ZmPref.__DUR2SECS(duration+"d"));
+	}
+
+	// convert back to duration
+	duration = ZmPref.__SECS2DUR(seconds);
+	return duration != "0"  ? parseInt(duration, 10) : 0;
+};
+
+// Comparators
+
 ZmPref.__BY_NUMBER = function(a, b) {
+	if (a == Math.POSITIVE_INFINITY || b == Math.NEGATIVE_INFINITY) return 1;
+	if (b == Math.POSITIVE_INFINITY || a == Math.NEGATIVE_INFINITY) return -1;
 	return Number(a) - Number(b);
+};
+
+// Converters
+
+ZmPref.__DURMULT = { "s": 1, "m": 60, "h": 3600, "d": 86400/*, "w": 604800*/ };
+ZmPref.__DURDIV = { /*604800: "w",*/ 86400: "d", 3600: "h", 60: "m", 1: "s" };
+
+ZmPref.__DUR2SECS = function(duration) {
+	if (duration == "0") return Number.POSITIVE_INFINITY;
+
+	var type = duration.substring(duration.length - 1).toLowerCase();
+	return parseInt(duration, 10) * ZmPref.__DURMULT[type];
+};
+
+ZmPref.__SECS2DUR = function(seconds, type) {
+	if (seconds == Number.POSITIVE_INFINITY) return "0";
+
+	var divisors = ZmPref.__DURDIV;
+	if (type) {
+		type = {};
+		type[ ZmPref.__DURMULT[type] ] = type;
+	}
+	for (var divisor in divisors) {
+		var result = Math.floor(seconds / divisor);
+		if (result > 0) {
+			return [ result, divisors[divisor] ].join("");
+		}
+	}
+
+	return "0"+type;
 };
 
 // maximum value lengths

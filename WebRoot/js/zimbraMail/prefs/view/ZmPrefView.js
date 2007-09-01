@@ -235,12 +235,23 @@ function(dirtyCheck, noValidation, batchCommand) {
 				}
 			}
 			var pref = settings.getSetting(id);
-			var unchanged = (value == pref.origValue);
+			var origValue = pref.origValue;
+			if (setup.approximateFunction) {
+				if (setup.displayFunction) {
+					origValue = setup.displayFunction(origValue);
+				}
+				origValue = setup.approximateFunction(origValue);
+				if (setup.valueFunction) {
+					origValue = setup.valueFunction(origValue);
+				}
+			}
+			
+			var unchanged = (value == origValue);
 			// null and "" are the same string for our purposes
 			if (pref.dataType == ZmSetting.D_STRING) {
 				unchanged = unchanged || ((value == null || value == "") &&
-										  (pref.origValue == null ||
-										   pref.origValue == ""));
+										  (origValue == null ||
+										   origValue == ""));
 			}
 			// don't try to update on server if it's client-side pref
 			var addToList = (!unchanged && (pref.name != null));

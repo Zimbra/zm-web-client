@@ -327,6 +327,8 @@ function() {
 		//       *some* number.
 		options:			[ 525600, 5, 10, 15, 30, 60],
 		approximateFunction: ZmPref.approximateInterval,
+		displayFunction:	ZmPref.pollingIntervalDisplay,
+		valueFunction:		ZmPref.pollingIntervalValue,
 		validationFunction: ZmPref.validatePollingInterval
 	});
 

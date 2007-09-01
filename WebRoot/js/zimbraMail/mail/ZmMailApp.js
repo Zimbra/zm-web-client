@@ -270,6 +270,7 @@ function() {
 							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationDays,
 							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationNever ],
 		options:			[ 30, 45, 60, 90, 120, 0 ],
+		approximateFunction: ZmPref.approximateLifetimeInboxRead,
 		displayFunction:	ZmPref.durationDay2Int,
 		valueFunction:		ZmPref.int2DurationDay
 	});
@@ -281,6 +282,7 @@ function() {
 							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationDays,
 							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationNever ],
 		options:			[ 30, 45, 60, 90, 120, 0 ],
+		approximateFunction: ZmPref.approximateLifetimeInboxUnread,
 		displayFunction:	ZmPref.durationDay2Int,
 		valueFunction:		ZmPref.int2DurationDay
 	});
@@ -290,6 +292,7 @@ function() {
 		orientation:		ZmPref.ORIENT_HORIZONTAL,
 		displayOptions:		ZmMsg.lifetimeDurationDays,
 		options:			[ 1, 3, 7, 30 ],
+		approximateFunction: ZmPref.approximateLifetimeJunk,
 		displayFunction:	ZmPref.durationDay2Int,
 		valueFunction:		ZmPref.int2DurationDay
 	});
@@ -301,6 +304,7 @@ function() {
 							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationDays,
 							  ZmMsg.lifetimeDurationDays, ZmMsg.lifetimeDurationNever ],
 		options:			[ 30, 45, 60, 90, 120, 0 ],
+		approximateFunction: ZmPref.approximateLifetimeSent,
 		displayFunction:	ZmPref.durationDay2Int,
 		valueFunction:		ZmPref.int2DurationDay
 	});
@@ -310,6 +314,7 @@ function() {
 		orientation:		ZmPref.ORIENT_HORIZONTAL,
 		displayOptions:		ZmMsg.lifetimeDurationDays,
 		options:			[ 1, 3, 7, 30 ],
+		approximateFunction: ZmPref.approximateLifetimeTrash,
 		displayFunction:	ZmPref.durationDay2Int,
 		valueFunction:		ZmPref.int2DurationDay
 	});

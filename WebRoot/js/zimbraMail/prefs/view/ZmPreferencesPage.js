@@ -134,12 +134,8 @@ function() {
 
 		// save the current value (for checking later if it changed)
 		pref.origValue = this._getPrefValue(id);
-		var value = this._getPrefValue(id, false, true);
-		/***
-		if (id == ZmSetting.SHOW_FRAGMENTS && !appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
-			setup.displayName = ZmMsg.showFragmentsMsg;
-		}
-		/***/
+		var value = this._getPrefValue(id, false);
+
 		// we only show this one if it's false
 		if ((id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) && value) { continue; }
 
@@ -287,10 +283,6 @@ function(id, setup, control) {
 				value = object.getValue();
 			}
 		}
-		// TODO: user valueFunction
-		if (id == ZmSetting.POLLING_INTERVAL) {
-			value = value * 60; // convert minutes to seconds
-		}
 	}
 	else {
 		var prefId = ZmPref.KEY_ID + id;
@@ -312,7 +304,12 @@ function(id, setup, control) {
 ZmPreferencesPage.prototype.setFormValue =
 function(id, value, setup, control) {
 	setup = setup || ZmPref.SETUP[id];
-	value = setup && setup.displayFunction ? setup.displayFunction(value) : value;
+	if (setup && setup.displayFunction) {
+		value = setup.displayFunction(value);
+	}
+	if (setup && setup.approximateFunction) {
+		value = setup.approximateFunction(value);
+	}
 	var type = setup ? setup.displayContainer : null;
 	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_CHECKBOX ||
 		type == ZmPref.TYPE_RADIO_GROUP ||
@@ -379,7 +376,13 @@ function(useDefaults) {
 		var type = setup.displayContainer;
 		if (type == ZmPref.TYPE_PASSWORD) { continue; } // ignore non-form elements
 		var pref = settings.getSetting(id);
-		var newValue = this._getPrefValue(id, useDefaults, true);
+		var newValue = this._getPrefValue(id, useDefaults);
+		if (setup.displayFunction) {
+			newValue = setup.displayFunction(newValue);
+		}
+		if (setup.approximateFunction) {
+			newValue = setup.approximateFunction(newValue);
+		}
 		this.setFormValue(id, newValue);
 	}
 };
@@ -398,20 +401,11 @@ function(templateId, data) {
 *
 * @param id			[constant]		pref ID
 * @param useDefault	[boolean]		if true, use pref's default value
-* @param convert	[boolean]		if true, convert value to user-visible form
 */
 ZmPreferencesPage.prototype._getPrefValue =
-function(id, useDefault, convert) {
+function(id, useDefault) {
 	var pref = appCtxt.getSettings().getSetting(id);
-	var value = useDefault ? pref.getDefaultValue() : pref.getValue();
-	if (convert) {
-		// TODO: user displayFunction
-		if (id == ZmSetting.POLLING_INTERVAL) {
-			value = parseInt(value / 60); // setting stored as seconds, displayed as minutes
-		}
-	}
-
-	return value;
+	return useDefault ? pref.getDefaultValue() : pref.getValue();
 };
 
 // Add a button to the preferences page
@@ -435,6 +429,9 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
+	if (setup.displayFunction) {
+		value = setup.displayFunction(value);
+	}
 	if (setup.approximateFunction) {
 		value = setup.approximateFunction(value);
 	}
@@ -461,6 +458,9 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupRadioGroup =
 function(id, setup, value) {
+	if (setup.displayFunction) {
+		value = setup.displayFunction(value);
+	}
 	if (setup.approximateFunction) {
 		value = setup.approximateFunction(value);
 	}

@@ -75,11 +75,11 @@ ZmSignatureCollection.prototype.getSignatureOptions = function() {
 
 	// create options
 	var options = [];
-	options.push(new DwtSelectOptionData("", "Do Not Attach Signature" )); // TODO: i18n
 	for (var i = 0; i < signatures.length; i++) {
 		var signature = signatures[i];
 		options.push(new DwtSelectOptionData(signature.id, signature.name));
 	}
+	options.push(new DwtSelectOptionData("", ZmMsg.signatureDoNotAttach));
 	return options;
 };
 
