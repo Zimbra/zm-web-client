@@ -82,7 +82,7 @@
                     <c:url var="composeUrl" value="/h/search?action=compose"/>
                 </c:otherwise>
             </c:choose>
-            <a id='TAB_COMPOSE' href="${composeUrl}"><span id='tab_ikon_compose'><app:img src="mail/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span><span><fmt:message
+            <a id='TAB_COMPOSE' href="${fn:escapeXml(composeUrl)}"><span id='tab_ikon_compose'><app:img src="mail/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span><span><fmt:message
                     key="compose"/></span></a>
         </td>
                 <td class='TabSpacerR'/>

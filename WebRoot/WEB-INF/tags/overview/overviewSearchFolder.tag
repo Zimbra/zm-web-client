@@ -9,7 +9,7 @@
 
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
-<tr><td nowrap colspan=3 class='Folder' style='padding-left: ${padFudge+folder.depth*8}px'>
+<tr><td nowrap colspan="3" class="Folder" style="padding-left: ${padFudge+folder.depth*8}px">
     <c:if test="${folder.hasChildren}">
         <c:set var="expanded" value="${sessionScope.expanded[folder.id] ne 'collapse'}"/>
         <c:url var="toggleUrl" value="/h/search">

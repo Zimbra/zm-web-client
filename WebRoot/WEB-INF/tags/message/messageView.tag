@@ -73,9 +73,9 @@
         <zm:bindKey message="mail.MoveToFolder" func="function() {zmove('OPFLDR{FOLDERID}')}" alias="folder"/>        
     </app:keyboard>
 
-    <form action="${currentUrl}" method="post">
+    <form action="${fn:escapeXml(currentUrl)}" method="post">
 
-        <table width=100% cellpadding="0" cellspacing="0">
+        <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
                     <app:messageViewToolbar context="${context}" cursor="${cursor}" keys="true"/>

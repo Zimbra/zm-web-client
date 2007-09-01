@@ -9,7 +9,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<tr><td nowrap colspan='3' class='Folder ${tag.hasUnread ? ' Unread':''}'>
+<tr><td nowrap colspan="3" class='Folder ${tag.hasUnread ? ' Unread':''}'>
     <c:choose>
         <c:when test="${calendars}">
             <app:calendarUrl var="url" sq='tag:"${tag.name}"'/>
@@ -22,9 +22,9 @@
         </c:otherwise>
     </c:choose>
     <%-- don't change format of ID without updating BindKeyTag.java --%>
-    <a id="TAG${tag.id}" href='${url}'>
+    <a id="TAG${tag.id}" href='${fn:escapeXml(url)}'>
         <app:img src="${tag.image}" alt='${fn:escapeXml(tag.name)}'/>
-        <span <c:if test="${tag.id eq requestScope.context.selectedId}">class='ZhTISelected'</c:if>>
+        <span <c:if test="${tag.id eq requestScope.context.selectedId}">class="ZhTISelected"</c:if>>
             <c:out value="${zm:truncate(tag.name,20,true)}"/>
             <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
         </span>

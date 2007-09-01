@@ -11,15 +11,15 @@
 <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
 <c:set var="expanded" value="${sessionScope.expanded.folders ne 'collapse'}"/>
 
-<div class=Tree>
-    <table width=100% cellpadding=0 cellspacing=0>
+<div class="Tree">
+    <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <c:url var="toggleUrl" value="/h/search">
                    <c:param name="${expanded ? 'collapse' : 'expand'}" value="folders"/>
                </c:url>
-               <th style='width:20px'><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'dwt/ImgNodeExpanded.gif' : 'dwt/ImgNodeCollapsed.gif'}"/></a></th>
-            <th class='Header'><fmt:message key="folders"/></th>
-            <th width='1%' align='right'  class='ZhTreeEdit'>
+               <th style="width:20px"><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'dwt/ImgNodeExpanded.gif' : 'dwt/ImgNodeCollapsed.gif'}"/></a></th>
+            <th class="Header"><fmt:message key="folders"/></th>
+            <th width="1%" align="right"  class="ZhTreeEdit">
                 <c:url value="/h/mfolders" var="mfoldersUrl">
                         <c:if test="${not empty param.sfi}">
                             <c:param name="sfi" value="${param.sfi}"/>
@@ -47,7 +47,7 @@
         </c:if>
     </table>
     <c:if test="${expanded}">
-        <table width=100% cellpadding=0 cellspacing=0 style='padding-top:5px'>
+        <table width="100%" cellpadding="0" cellspacing="0" style="padding-top:5px">
             <app:doFolderTree skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}"/>
         </table>
     </c:if>

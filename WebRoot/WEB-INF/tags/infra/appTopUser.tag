@@ -10,14 +10,14 @@
    <tr>
 	<td>
         <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
-        <table cellpadding=2 cellspacing=0 width=100%>
+        <table cellpadding="2" cellspacing="0" width="100%">
             <tr>
-                <td align=center>
+                <td align="center">
                     <b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>
                 </td>
             </tr>
             <tr>
-                <td align=center>
+                <td align="center">
                     <fmt:message var="unlimited" key="unlimited"/>
                     <fmt:message key="quotaUsage">
                         <fmt:param value="${zm:displaySizeFractions(mailbox.size,2)}"/>

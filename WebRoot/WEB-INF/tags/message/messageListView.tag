@@ -22,8 +22,8 @@
 
 <app:view mailbox="${mailbox}" title="${title}" context="${context}" selected='mail' folders="true" tags="true" searches="true" keys="true">
 
-<form action="${currentUrl}" method="post" name="zform">
-    <table width=100% cellpadding="0" cellspacing="0">
+<form action="${fn:escapeXml(currentUrl)}" method="post" name="zform">
+    <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <td class='TbTop'>
                 <app:messageListViewToolbar context="${context}" keys="true"/>
@@ -31,7 +31,7 @@
         </tr>
         <tr>
             <td class='List'>
-                    <table width=100% cellpadding=2 cellspacing=0>
+                    <table width="100%" cellpadding="2" cellspacing="0">
                         <tr>
                             <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                             <c:if test="${mailbox.features.flagging}">
@@ -41,25 +41,25 @@
                             <th class='Img' nowrap><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/>
                             </c:if>
                             <th class='MsgStatusImg' nowrap>&nbsp;
-                            <th width=10%>
+                            <th width="10%">
                                 <zm:newSortUrl var="fromSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
-                            <a href="${fromSortUrl}">
+                            <a href="${fn:escapeXml(fromSortUrl)}">
                                 <fmt:message key="${useTo ? 'to' : 'from'}"/>
                             </a>
-                            <th width=1% nowrap><app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+                            <th width="1%" nowrap><app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                             <th nowrap>
                                 <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
-                            <a href="${subjectSortUrl}">
+                            <a href="${fn:escapeXml(subjectSortUrl)}">
                                 <fmt:message key="subject"/>
                             </a>
 
-                                    <c:if test="${!context.isFolderSearch}">
-                            <th width=1% nowrap><fmt:message key="folder"/>
+                            <c:if test="${!context.isFolderSearch}">
+                            <th width="1%" nowrap><fmt:message key="folder"/>
                             </c:if>
-                            <th width=1% nowrap><fmt:message key="size"/>
-                            <th width=1% nowrap>
+                            <th width="1%" nowrap><fmt:message key="size"/>
+                            <th width="1%" nowrap>
                                 <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss)? 'dateAsc' : 'dateDesc'}"/>
-                            <a href="${dateSortUrl}">
+                            <a href="${fn:escapeXml(dateSortUrl)}">
                                 <fmt:message key="received"/>
                             </a>
                         </tr>
@@ -83,14 +83,14 @@
                                  <c:if test="${mailbox.features.tagging}">
                                      <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                 </c:if>
-                                <td class='MsgStatusImg' align=center><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
+                                <td class='MsgStatusImg' align="center"><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
                                 <td><%-- allow wrap --%>
                                     <c:set var="dispAddr" value="${hit.messageHit.displayAddresses}"/>${fn:escapeXml(empty dispAddr ? unknownRecipient :  dispAddr)}
                                 </td>
                                 <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td > <%-- allow this col to wrap --%>
 
-                                    <a href="${currentItemUrl}" id="A${status.index}">
+                                    <a href="${fn:escapeXml(currentItemUrl)}" id="A${status.index}">
                                         <c:set var="subj" value="${empty hit.messageHit.subject ? noSubject : hit.messageHit.subject}"/>
                                         <c:out value="${subj}"/>
                                         <c:if test="${mailbox.prefs.showFragments and not empty hit.messageHit.fragment and fn:length(subj) lt 90}">
@@ -101,11 +101,11 @@
                                         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
                                         <c:if test="${cursor.hasPrev}">
                                             <zm:prevItemUrl var="prevItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                            <a href="${prevItemUrl}"></a>
+                                            <a href="${fn:escapeXml(prevItemUrl)}"></a>
                                         </c:if>
                                         <c:if test="${cursor.hasNext}">
                                             <zm:nextItemUrl var="nextItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                            <a href="${nextItemUrl}"></a>
+                                            <a href="${fn:escapeXml(nextItemUrl)}"></a>
                                         </c:if>
                                     </c:if>
                                 </td>
@@ -144,7 +144,6 @@
     </table>
     <input type="hidden" name="doMessageAction" value="1"/>
     <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : selectedRow}"/>
-
   </form>
 
 

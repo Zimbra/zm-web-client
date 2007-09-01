@@ -3,6 +3,7 @@
 <%@ attribute name="body" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMimePartBean" %>
 <%@ attribute name="theBody" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
+<%@ attribute name="counter" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -41,7 +42,7 @@
                         iframe.style.width = iframe.contentWindow.document.body.scrollWidth + "px";
                     }
                 };
-                document.getElementById("iframeBody").appendChild(iframe);
+                document.getElementById("iframeBody${counter}").appendChild(iframe);
                 var doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
                 doc.open();
                 doc.write("${zm:jsEncode(theBody)}");

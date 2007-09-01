@@ -32,7 +32,7 @@
             <select name="actionOp">
                 <option value="" selected/><fmt:message key="moreActions"/>
         </c:if>
-        <app:tagOptions mailbox="${mailbox}"/>
+        <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">                
             </select>
             <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">

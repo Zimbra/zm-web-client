@@ -176,7 +176,7 @@
 							<div id='skin_container_tree' class='skin_container'>
 							
 							<c:if test="${empty editmode}">			            	
-        			        <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" voice = "${voice}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>		            		
+        			        <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" voice = "${voice}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
         					</c:if>
         
 							</div>
@@ -250,19 +250,19 @@
 </c:when>
 <c:otherwise>
 <c:set value="/img" var="iconPath" scope="request"/>
-<table width=100% cellpadding="0" cellspacing="0">
+<table width="100%" cellpadding="0" cellspacing="0">
     <tr>
-        <td class='TopContent' colspan=3  align=right valign=top>&nbsp;</td>
+        <td class='TopContent' colspan="3"  align="right" valign="top">&nbsp;</td>
     </tr>
 
     <tr>
-        <td valign=top align=center class='Overview'>
+        <td valign="top" align="center" class="Overview">
             <a href="http://www.zimbra.com/" target="_new">
-                <div style='cursor:pointer' class='ImgAppBanner'></div>
+                <span style='cursor:pointer' class='ImgAppBanner'></span>
 
             </a>
         </td>
-        <td colspan=1 valign=top class='TopContent'>
+        <td valign="top" class="TopContent">
             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}"/>
         </td>
         <td>
@@ -270,29 +270,29 @@
         </td>
     </tr>
     <tr>
-        <td class='Overview'>
+        <td class="Overview">
             &nbsp;
         </td>
-        <td align=center colspan=2>
+        <td align="center" colspan="2">
             <app:appStatus/>
         </td>
     </tr>
     <tr>
 
-        <td class='Overview'>&nbsp;</td>
-        <td colspan=1>
+        <td class="Overview">&nbsp;</td>
+        <td>
             <app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
         </td>
-        <td align=right class='ZhAppLinks'>
-            <table cellpadding=2 cellspacing=0>
+        <td align="right" class="ZhAppLinks">
+            <table cellpadding="2" cellspacing="0">
                 <tr>
-                    <td align=right>
-                        <a target=_new href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="common/ImgHelp.gif"  border="0"/> <fmt:message key="help"/></a>
+                    <td align="right">
+                        <a target="_new" href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="common/ImgHelp.gif"  border="0"/> <fmt:message key="help"/></a>
                     </td>
-                    <td align=right>
+                    <td align="right">
                         &nbsp;
                     </td>
-                    <td align=right>
+                    <td align="right">
                         <a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="common/ImgLogoff.gif" border="0"/> <fmt:message key="logOut"/></a>
                     </td>
                 </tr>
@@ -301,21 +301,21 @@
     </tr>
     <tr>
         <c:if test="${empty editmode}">
-            <td valign=top class='Overview'>
+            <td valign="top" class="Overview">
                 <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
             </td>
         </c:if>
         <c:set var="adsOn" value="${!empty ads}"/>
 <c:if test="${adsOn}" >
-        <td valign='top' colspan=2>
-            <table width=100% cellpadding="0" cellspacing="0">
+        <td valign="top" colspan="2">
+            <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
 </c:if>
-        <td valign='top' colspan='${empty editmode ? 2 : 3}' style='padding-left:${editmode ? 10 : 0}px'>
+        <td valign="top" colspan="${empty editmode ? 2 : 3}" style="padding-left:${editmode ? 10 : 0}px">
         <jsp:doBody/>
     </td>
     <c:if test="${adsOn}" >
-                        <td valign='top' style='border-top: 1px solid #98adbe; width: 180px;'>
+                        <td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
                            <app:ads content="${ads}"/>
                         </td>
 
@@ -323,12 +323,12 @@
                 </table>
             </td>
     </c:if>
-    <td style='width:10px;'>
+    <td style="width:10px;">
         &nbsp; <%-- for IE's scrollbar, this should be CSS browser-specific --%>
     </td>
 </tr>
 <tr>
- <td colspan=3>&nbsp;</td>        
+ <td colspan="3">&nbsp;</td>
 </tr>
 </table>
 

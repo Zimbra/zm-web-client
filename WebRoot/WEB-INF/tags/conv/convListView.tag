@@ -16,8 +16,8 @@
 </app:handleError>
 <app:view mailbox="${mailbox}" title="${title}" selected='mail' folders="true" tags="true" searches="true" context="${context}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
-    <form name="zform" action="${currentUrl}" method="post">
-        <table width=100% cellpadding="0" cellspacing="0">
+    <form name="zform" action="${fn:escapeXml(currentUrl)}" method="post">
+        <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
                     <app:convListViewToolbar context="${context}" keys="true"/>
@@ -25,26 +25,26 @@
             </tr>
             <tr>
                 <td class='List'>
-                        <table width=100% cellpadding=2 cellspacing=0>
+                        <table width="100%" cellpadding="2" cellspacing="0">
                             <tr class='Header'>
-                                <th class='CB' nowrap='nowrap'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/></th>
+                                <th class='CB' nowrap='nowrap'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type="checkbox" name="allids"/></th>
                                 <c:if test="${mailbox.features.flagging}">
                                 <th class='Img'  nowrap='nowrap' width='20'><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
                                 </c:if>
                                 <c:if test="${mailbox.features.tagging}">
                                 <th class='Img' nowrap width='20'><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
                                 </c:if>
-                                <th width=10% nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
+                                <th width="10%" nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
                                 <th class='Img' nowrap width='1%'><app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/></th>
                                 <th nowrap>
                                     <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
-                                <a href="${subjectSortUrl}">
+                                <a href="${fn:escapeXml(subjectSortUrl)}">
                                     <fmt:message key="subject"/>
                                 </a></th>
-                                <th width=2% nowrap><app:img src="mail/ImgConversation.gif" altkey="ALT_CONVERSATION"/></th>
-                                <th nowrap width=2%>
+                                <th width="2%" nowrap><app:img src="mail/ImgConversation.gif" altkey="ALT_CONVERSATION"/></th>
+                                <th nowrap width="2%">
                                     <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss) ? 'dateAsc' : 'dateDesc'}"/>
-                                <a href="${dateSortUrl}">
+                                <a href="${fn:escapeXml(dateSortUrl)}">
                                     <fmt:message key="received"/>
                                 </a></th>
                             </tr>
@@ -62,7 +62,7 @@
                                 <c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
                                 <c:set var="aid" value="A${status.index}"/>
                                 <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='ZhRow ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
-                                    <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="id" value="${convHit.id}"></td>
+                                    <td class='CB' nowrap><input  id="C${status.index}" type="checkbox" name="id" value="${convHit.id}"></td>
                                     <c:if test="${mailbox.features.flagging}">
                                     <td class='Img'><app:flagImage flagged="${convHit.isFlagged}"/></td>
                                     </c:if>
@@ -74,7 +74,7 @@
                                     </td>
                                     <td class='Img'><app:attachmentImage attachment="${convHit.hasAttachment}"/></td>
                                     <td><%-- allow this column to wrap --%>
-                                        <a href="${convUrl}" id="${aid}">
+                                        <a href="${fn:escapeXml(convUrl)}" id="${aid}">
                                             <c:set var='subj' value="${empty convHit.subject ? unknownSubject : zm:truncate(convHit.subject,100,true)}"/>
                                             <c:out value="${subj}"/>
                                             <c:if test="${mailbox.prefs.showFragments and not empty convHit.fragment and fn:length(subj) lt 90}">
@@ -85,11 +85,11 @@
                                             <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
                                             <c:if test="${cursor.hasPrev}">
                                                 <zm:prevItemUrl var="prevItemUrl" value="search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                                <a href="${prevItemUrl}" id="PREV_ITEM"></a>
+                                                <a href="${fn:escapeXml(prevItemUrl)}" id="PREV_ITEM"></a>
                                             </c:if>
                                             <c:if test="${cursor.hasNext}">
                                                 <zm:nextItemUrl var="nextItemUrl" value="search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                                <a href="${nextItemUrl}" id="NEXT_ITEM"></a>
+                                                <a href="${fn:escapeXml(nextItemUrl)}" id="NEXT_ITEM"></a>
                                             </c:if>
                                         </c:if>
                                     </td>

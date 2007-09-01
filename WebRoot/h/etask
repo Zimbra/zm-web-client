@@ -114,7 +114,7 @@
                                 <td  nowrap valign=middle>
                                     <select name="actionOp">
                                         <option value="" selected/><fmt:message key="moreActions"/>
-                                        <app:tagOptions mailbox="${mailbox}"/>
+                                        <app:tagOptions mailbox="${mailbox}" keys="${true}"/>
                                     </select>
                                 </td>
                                 <app:button name="actionGo" tooltip="actionConvGoTT" text="actionGo"/>

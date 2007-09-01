@@ -8,11 +8,11 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<c:forEach var="part" items="${message.attachments}">
+<c:forEach var="part" items="${message.attachments}" varStatus="partStatus">
 <c:if test="${part.isMssage}">
     <div class='ZhAppContent'>
     <zm:getMessage var="partMessage" id="${message.id}" part="${part.partName}"/>
-    <app:displayMessage mailbox="${mailbox}" message="${partMessage}" composeUrl="${composeUrl}&part=${part.partName}"/>
+    <app:displayMessage mailbox="${mailbox}" message="${partMessage}" composeUrl="${composeUrl}&part=${part.partName}" counter="${partStatus.index+1}"/>
     </div>
 </c:if>
 </c:forEach>
@@ -21,13 +21,13 @@
         <c:set var="pname" value="${part.displayName}"/>
         <c:if test="${empty pname}"><fmt:message key="unknownContentType" var="pname"><fmt:param value="${part.contentType}"/></fmt:message></c:if>
     
-        <c:set var="url" value="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
-        <table cellspacing=8>
+        <c:set var="url" value="/service/home/~/?id=${message.id}&amp;part=${part.partName}&amp;auth=co"/>
+        <table cellspacing="8">
             <tr>
                 <td>
                     <c:choose>
                         <c:when test="${part.isImage}">
-                            <a target="_blank" href="${url}&disp=i">
+                            <a target="_blank" href="${url}&amp;disp=i">
                                 <img class='AttachmentImage' src="${url}" alt="${fn:escapeXml(part.displayName)}"/>
                             </a>
                         </c:when>
@@ -38,12 +38,12 @@
                 </td>
                 <td><b>${fn:escapeXml(pname)}</b><br />
                         ${part.displaySize}&nbsp;
-                    <a target="_blank" href="${url}&disp=i"><fmt:message key="view"/></a>&nbsp;
+                    <a target="_blank" href="${url}&amp;disp=i"><fmt:message key="view"/></a>&nbsp;
                     <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
-                        <a target="_blank" href="${url}&view=html"><fmt:message key="viewAsHtml"/></a>
+                        <a target="_blank" href="${url}&amp;view=html"><fmt:message key="viewAsHtml"/></a>
                         &nbsp;
                     </c:if>
-                    <a href="${url}&disp=a"><fmt:message key="download"/></a>
+                    <a href="${url}&amp;disp=a"><fmt:message key="download"/></a>
                 </td>
             </tr>
         </table>
@@ -51,8 +51,8 @@
 </c:forEach>
 
 <c:if test="${message.numberOfAttachments gt 1}">
-    <c:set var="url" value="/service/home/~/?id=${message.id}&part=${message.attachmentIds}&auth=co&disp=a&fmt=zip"/>
-    <table cellspacing=8>
+    <c:set var="url" value="/service/home/~/?id=${message.id}&part=${message.attachmentIds}&amp;auth=co&amp;disp=a&amp;fmt=zip"/>
+    <table cellspacing="8">
         <tr>
             <td>
                 <app:img src="doctypes/ImgZipDoc.gif" alt="zip" title="zip"/>

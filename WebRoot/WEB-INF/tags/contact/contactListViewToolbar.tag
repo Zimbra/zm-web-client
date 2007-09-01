@@ -50,7 +50,7 @@
             <select name="actionOp">
             <option value="" selected/><fmt:message key="moreActions"/>
         </c:if>
-        <app:tagOptions mailbox="${mailbox}"/>
+        <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             </select>
             </td>
@@ -59,7 +59,7 @@
 
         <c:if test="${context.folder.isTrash}">
             <td><div class='vertSep'></div></td>
-            <input type="hidden" name="contextFolderId" value="${context.selectedId}"/>
+            <input type="hidden" name="contextFolderId" value="${context.selectedId}">
             <app:button name="actionEmpty" tooltip="emptyTrash" text="emptyTrash"/>
         </c:if>
     </c:set>

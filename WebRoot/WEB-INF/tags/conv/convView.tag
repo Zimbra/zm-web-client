@@ -118,8 +118,8 @@
 
     </app:keyboard>
     
-    <form action="${currentUrl}" method="post" name="zform">
-        <table width=100% cellpadding=0 cellspacing=0>
+    <form action="${fn:escapeXml(currentUrl)}" method="post" name="zform">
+        <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
                     <app:convToolbar context="${context}" convSearchResult="${convSearchResult}" convCursor="${convCursor}" keys="true"/>
@@ -127,13 +127,13 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                        <table width=100% cellpadding=0 cellspacing=0>
+                        <table width="100%" cellpadding="0" cellspacing="0">
                             <tr>
                                 <td class='ConvSummary'>
-                                    <table width=100% cellpadding=1 cellspacing=0>
+                                    <table width="100%" cellpadding="1" cellspacing="0">
                                         <tr>
                                             <td>
-                                                <app:img atkey='ALT_CONVERSATION' src="mail/ImgConversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}</span>
+                                                <app:img altkey='ALT_CONVERSATION' src="mail/ImgConversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}</span>
                                             </td>
                                             <td align="right">
                                                 <span class='Tags'>
@@ -154,26 +154,26 @@
                             </tr>
                             <tr>
                                 <td class='List'>
-                                        <table width=100% cellpadding=0 cellspacing=0>
+                                        <table width="100%" cellpadding="0" cellspacing="0">
                                             <tr>
-                                                <th class='CB'nowrap width='1%'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+                                                <th class='CB'nowrap width="1%"><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                                 <c:if test="${mailbox.features.flagging}">
-                                                <th class='Img' nowrap width='1%'><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
+                                                <th class='Img' nowrap width="1%"><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
                                                 </c:if>
                                                 <c:if test="${mailbox.features.tagging}">
-                                                <th class='Img' nowrap width='1%'><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG"/>
+                                                <th class='Img' nowrap width="1%"><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG"/>
                                                 </c:if>
                                                 <th class='MsgStatusImg' nowrap>&nbsp;
-                                                <th width=10% nowrap>
+                                                <th width="10%" nowrap>
                                                     <zm:currentResultUrl var="fromSortUrl" value="search" action="view" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
-                                                <a href="${fromSortUrl}"><fmt:message key="from"/></a>
+                                                <a href="${fn:escapeXml(fromSortUrl)}"><fmt:message key="from"/></a>
                                                 <th class='Img' nowrap><app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                                                 <th nowrap><fmt:message key="fragment"/>
-                                                <th width=3% nowrap><fmt:message key="folder"/>
-                                                <th width=3% nowrap><fmt:message key="size"/>
-                                                <th width=2% nowrap>
+                                                <th width="3%" nowrap><fmt:message key="folder"/>
+                                                <th width="3%" nowrap><fmt:message key="size"/>
+                                                <th width="2%" nowrap>
                                                     <zm:currentResultUrl var="dateSortUrl" value="search" action="view" context="${context}" csi="${param.csi}" css="${param.css eq 'dateDesc' ? 'dateAsc' : 'dateDesc'}"/>
-                                                <a href="${dateSortUrl}"><fmt:message key="received"/></a>
+                                                <a href="${fn:escapeXml(dateSortUrl)}"><fmt:message key="received"/></a>
                                             </tr>
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
                                                 <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='view' context="${context}"
@@ -183,29 +183,29 @@
 
                                                 <c:set var="aid" value="A${hit.id}"/>
                                                 <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='ZhRow${hit.messageHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
-                                                    <td class='CB' nowrap><input _ignore="1" id="C${status.index}" <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
+                                                    <td class='CB' nowrap><input id="C${status.index}" <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
                                                     <c:if test="${mailbox.features.flagging}">
                                                     <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
                                                     </c:if>
                                                     <c:if test="${mailbox.features.tagging}">
                                                         <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                                     </c:if>
-                                                    <td class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'mail/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}" altkey="${(hit.messageHit.isUnread and hit.id == message.id) ? 'ALT_MSG_STATUS_READ' : hit.messageHit.statusImageAltKey}"/></td>
+                                                    <td class='MsgStatusImg' align="center"><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'mail/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}" altkey="${(hit.messageHit.isUnread and hit.id == message.id) ? 'ALT_MSG_STATUS_READ' : hit.messageHit.statusImageAltKey}"/></td>
                                                     <td nowrap>
                                                         <c:set var="sender" value="${hit.messageHit.displaySender}"/>${fn:escapeXml(empty sender ? unknownSender : sender)}
                                                     </td>
                                                     <td class='Img' ><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                                     <td ><%-- allow this column to wrap --%>
-                                                        <a id="${aid}" href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
+                                                        <a id="${aid}" href="${fn:escapeXml(msgUrl)}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
                                                         <c:if test="${hit.id == message.id}">
                                                             <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                             <c:if test="${messCursor.hasPrev}">
                                                                 <zm:currentResultUrl var="prevMsgUrl" value="search" action='view' context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
-                                                                <a href="${prevMsgUrl}" id="PREV_ITEM"></a>
+                                                                <a href="${fn:escapeXml(prevMsgUrl)}" id="PREV_ITEM"></a>
                                                             </c:if>
                                                             <c:if test="${messCursor.hasNext}">
                                                                 <zm:currentResultUrl var="nextMsgUrl" value="search"  action="view" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
-                                                                <a href="${nextMsgUrl}" id="NEXT_ITEM"></a>
+                                                                <a href="${fn:escapeXml(nextMsgUrl)}" id="NEXT_ITEM"></a>
                                                             </c:if>
                                                         </c:if>
                                                     </td>
@@ -240,10 +240,10 @@
                     <app:convToolbar context="${context}" convSearchResult="${convSearchResult}" convCursor="${convCursor}" keys="false"/>
                 </td>
             </tr>
-            <input type="hidden" name="doMessageAction" value="1"/>
-            <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : selectedRow}"/>
-
         </table>
+        <input type="hidden" name="doMessageAction" value="1">
+        <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : selectedRow}">
+
     </form>
 
 </app:view>
