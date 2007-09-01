@@ -260,12 +260,12 @@
 		}
 
 		var prodMode = <%=prodMode%>;
-		if (!prodMode) {
+		var debugLevel = "<%= (debug != null) ? debug : "" %>";
+		if (!prodMode && debugLevel) {
 			AjxDispatcher.require("Debug");
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
 			AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp";
 			// figure out the debug level
-			var debugLevel = "<%= (debug != null) ? debug : "" %>";
 			if (debugLevel == 't') {
 				DBG.showTiming(true);
 			} else {
