@@ -148,8 +148,6 @@ function(list) {
 		}
 	}
 	DwtListView.prototype.set.call(this, list1);
-	// can't add handlers until item divs have been added to DOM
-	this._addCheckboxHandlers();
 };
 
 ZmFilterListView.prototype._getHeaderList =
@@ -164,32 +162,22 @@ ZmFilterListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmFilterListView.COL_ACTIVE) {
 		html[idx++] = "<input type='checkbox' ";
-		html[idx++] = item.isActive() ? "checked" : "";
-		html[idx++] = " id='_ruleCheckbox";
+		html[idx++] = item.isActive() ? "checked " : "";
+		html[idx++] = "id='_ruleCheckbox";
 		html[idx++] = item.id;
-		html[idx++] = "'>";
+		html[idx++] = "' ";
+		html[idx++] = "_flvId='";
+		html[idx++] = this._internalId;
+		html[idx++] = "' ";
+		if (!AjxEnv.isIE) {
+			html[idx++] = "onchange='ZmFilterListView._activeStateChange' ";
+		}
+		html[idx++] = ">";
 	} else if (field == ZmFilterListView.COL_NAME) {
 		html[idx++] = item.getName();
 	}
 
 	return idx;
-};
-
-/*
-* Sets up handlers for the 'active' checkboxes. IE handles checkbox events through the list
-* view's _itemClicked() method, since its ONCHANGE responsiveness appears to be flaky.
-*/
-ZmFilterListView.prototype._addCheckboxHandlers =
-function() {
-	for (var i = 0; i < this._checkboxIds.length; i++) {
-		var id = this._checkboxIds[i];
-		var inputEl = document.getElementById(id);
-		if (inputEl) {
-			inputEl._flvId = this._internalId;
-			if (!AjxEnv.isIE)
-				Dwt.setHandler(inputEl, DwtEvent.ONCHANGE, ZmFilterListView._activeStateChange);
-		}
-	}
 };
 
 /*
