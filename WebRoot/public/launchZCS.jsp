@@ -106,6 +106,9 @@
 	String vers = (String) request.getAttribute("version");
 	if (vers == null) vers = "";
 
+	String prodMode = String.valueOf(request.getAttribute("prodMode"));
+	if (prodMode == null) prodMode = "";
+
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null || inDevMode) ext = "";
 	
@@ -199,9 +202,7 @@
 <script src="<%=contextPath %>/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
 <jsp:include page="Boot.jsp"/>
 <%
-//    String allPackages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";
 	String allPackages = "Startup1,Startup2";
-
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
     		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal";
@@ -258,12 +259,13 @@
 			_timer = null;
 		}
 
-		var debugLevel = "<%= (debug != null) ? debug : "" %>";
-		if (debugLevel) {
+		var prodMode = <%=prodMode%>;
+		if (!prodMode) {
 			AjxDispatcher.require("Debug");
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
 			AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp";
 			// figure out the debug level
+			var debugLevel = "<%= (debug != null) ? debug : "" %>";
 			if (debugLevel == 't') {
 				DBG.showTiming(true);
 			} else {
