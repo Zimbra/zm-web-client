@@ -56,10 +56,6 @@
 
 
 
-P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
-	font-size:11px;
-}
-
 
 /*
 * Top-level (shell) stuff
@@ -115,9 +111,9 @@ P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
 }
 
 .currentAppLabel td {
-	font-size: 13px;
+	@FontSize-big@
+	font-weight:bold; 
 	line-height:18px;
-	font-weight: bold;
 }
 
 /* Account */
@@ -127,110 +123,18 @@ P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
 
 .AdminTitleBar {
 	background-color: rgb(215, 215, 215);
-	font-size: 12pt;
-	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	@FontSize-normal@
 	padding: 3px;
 }
 
 .AdminSubtitleBar {
 	background-color: rgb(215, 215, 215);
-	font-size: 8pt;
-	font-family: Tahoma, Arial, Helvetica, sans-serif;
+	@FontSize-smaller@
 	padding: 3px;
 }
 
 .ZaChngPwdDlg {
 	width: 500px;
-}
-
-.ZaDomainGeneralPropPage {
-	background-color: rgb(245, 245, 245);
-}
-.ZaDomainGeneralPropPage .TitleBar {
-	background-color: rgb(215, 215, 215);
-#IFDEF MSIE
-    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
-#ENDIF
-}
-.ZaDomainGeneralPropPage .Title {
-	font: bold 12pt Arial, Helvetica, sans-serif;
-	padding: 3px;
-}
-
-.ZaDomainGALPropPage {
-	background-color: rgb(245, 245, 245);
-}
-.ZaDomainGALPropPage .TitleBar {
-	background-color: rgb(215, 215, 215);
-#IFDEF MSIE
-	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
-#ENDIF
-}
-.ZaDomainGALPropPage .Title {
-	font: bold 12pt Arial, Helvetica, sans-serif;
-	padding: 3px;
-}
-
-.ZaDomainAuthPropPage {
-	background-color: rgb(245, 245, 245);
-}
-.ZaDomainAuthPropPage .TitleBar {
-	background-color: rgb(215, 215, 215);
-#IFDEF MSIE
-    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
-#ENDIF
-}
-.ZaDomainAuthPropPage .Title {
-	font: bold 12pt Arial, Helvetica, sans-serif;
-	padding: 3px;
-}
-
-.ZaDomainView {
-	background-color: rgb(245, 245, 245);
-	width: 100%;
-	text-align: left;
-}
-.ZaDomainView .TitleBar {
-	background-color: rgb(215, 215, 215);
-#IFDEF MSIE
-    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
-#ENDIF
-}
-.ZaDomainView .Title {
-	font: bold 12pt Arial, Helvetica, sans-serif;
-	padding: 3px;
-}
-
-/* COS */
-.ZaCosView {
-	background-color: rgb(245, 245, 245);
-}
-.ZaCosView .TitleBar {
-	background-color: rgb(215, 215, 215);
-#IFDEF MSIE
-    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
-#ENDIF
-}
-.ZaCosView .Title {
-	font: bold 12pt Arial, Helvetica, sans-serif;
-	padding: 3px;
-}
-
-.ZaServerGeneralPropPage {
-	background-color: rgb(245, 245, 245);
-	width: 100%;
-	text-align: left;
-}
-
-.ZaServerGeneralPropPage .TitleBar {
-	background-color: rgb(215, 215, 215);
-#IFDEF MSIE
-    filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFF0F0F0,endColorStr=#FF9997B5);
-#ENDIF
-}
-.ZaServerGeneralPropPage .Title {
-	font: bold 12pt Arial, Helvetica, sans-serif;
-	padding: 3px;
 }
 
 .StatsImageTitle {
@@ -461,9 +365,7 @@ P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
 }
 
 .AdminTitle {
-	font-size: 14pt;
-	font-weight: bold;
-	font-family: arial;
+	@FontSize-biggest@
 }
 
 .progressbar {
@@ -720,7 +622,7 @@ P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON {
 	margin-left:3px;
 	margin-right:3px;
 	margin-top:5px;
-	font-size:12px;
+	@FontSize-normal@
 }
 
 /* Set the height of the advanced search button arbitrary */
@@ -752,4 +654,12 @@ div.ZaAdvancedSearchButton table {
 
 .ZaXMBxAccountsListGrouper {
 	width:280px;
+}
+
+.ZaHeader2 {
+	@SelectedBg@
+}
+
+.ZaHeader2 .xform_output {
+	@FontSize-bigger@ 
 }

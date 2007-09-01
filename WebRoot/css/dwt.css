@@ -1193,7 +1193,8 @@
 	left:10; 					/* ??? SIZE */
 }
 .GrouperLabel {
-	@FontSize-bigger@
+	@FontSize-big@
+	font-weight:bold;
 }
 
 .GrouperInset {
