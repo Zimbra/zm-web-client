@@ -563,9 +563,9 @@ function() {
 ZmSelectiveCallForwardingUI.prototype._getFromNumbers =
 function() {
 	var result = [];
-	var rows = this._getTable().rows;
-	for(var i = 1, count = rows.length; i < count; i++) {
-		var cell = rows[i].cells[0].childNodes[0].rows[0].cells[0]; // Byick....surf through the big table structures to find the phone number text.
+	var cells = document.getElementsByName(this._view._htmlElId + "_forwardToNumber");
+	for(var i = 0, count = cells.length; i < count; i++) {
+		var cell = cells[i];
 		var display = AjxUtil.getInnerText(cell);
 		result.push(ZmPhone.calculateName(display));
 	}
@@ -604,13 +604,15 @@ function() {
 
 ZmSelectiveCallForwardingUI.prototype._addListener =
 function(ev) {
-	if (this._addInput.isValid() === null) {
+	var value = AjxStringUtil.trim(this._addInput.getValue());
+	try {
+		ZmVoicePrefsView._validatePhoneNumber(value);
+	} catch (e) {
 		appCtxt.setStatusMsg(ZmMsg.errorInvalidPhone, ZmStatusView.LEVEL_WARNING);
 		return;
 	}
 	
 	var error = null;
-	var value = AjxStringUtil.trim(this._addInput.getValue());
 	if (!value.length) {
 		error = ZmMsg.errorNoPhone;
 	} else {
@@ -630,7 +632,11 @@ function(ev) {
 	var row = this._getTable().insertRow(-1);
 	row.className = "Row " + ((row.rowIndex % 2) ? DwtListView.ROW_CLASS_ODD : DwtListView.ROW_CLASS_EVEN);
 	var cell = row.insertCell(-1);
-	var args = { text: value, linkId: Dwt.getNextId() };
+	var args = {
+		id: this._view._htmlElId,
+		text: value,
+		linkId: Dwt.getNextId()
+	};
 	cell.innerHTML = AjxTemplate.expand("voicemail.Voicemail#ZmVoiceSelectiveCallForwardingTableRow", args);
 	var link = document.getElementById(args.linkId);
 	link.onclick = this._removeCallbackObj;
@@ -681,9 +687,7 @@ function(id) {
 	
 	var addParams = {
 		parent: this._view,
-		size: 25,
-		validator: ZmVoicePrefsView._validatePhoneNumber,
-		validationStyle: DwtInputField.CONTINUAL_VALIDATION
+		size: 25
 	};
 	this._addInput = new DwtInputField(addParams);
 	this._addInput.replaceElement(id + "_selectiveCallForwardingAddInput");

@@ -174,7 +174,11 @@
 		<tr><td class='DwtListView-Column' style='padding-left:6'><b><$= ZmMsg.selectiveCallForwardingHeader $></b></td></tr>
 		<$ for (var i = 0, count = data.phones.length; i < count; i++) { $>
 			<tr class='Row <$= (i % 2) ? "RowEven" : "RowOdd" $>'><td>
-			<$ var args = { text: data.phones[i], linkId: data.id + '_selectiveCallForwardingRemove_' + i }; $>
+			<$ var args = {
+					id: data.id,
+					text: data.phones[i],
+					linkId: data.id + '_selectiveCallForwardingRemove_' + i
+				}; $>
 			<$= AjxTemplate.expand("voicemail.Voicemail#ZmVoiceSelectiveCallForwardingTableRow", args) $>
 			</td></tr>
 		<$ } $>
@@ -183,7 +187,7 @@
 
 <template id='voicemail.Voicemail#ZmVoiceSelectiveCallForwardingTableRow'>
 	<table cellspacing=0 cellpadding=0 width='100%'><tr>
-		<td style='padding-left:6'><$= data.text $></td>
+		<td name='${id}_forwardToNumber'style='padding-left:6'><$= data.text $></td>
 		<td width=80><a id=${linkId} class='Object'><$= ZmMsg.remove $></a></td>
 	</tr></table>
 </template>
