@@ -315,7 +315,7 @@ function(item, view, callback) {
 		DBG.timePt("***** CONV: load", true);
 		if (!conv._loaded) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadConv, [view, callback]);
-			conv.load(null, respCallback);
+			conv.load({getFirstMsg:this._readingPaneOn}, respCallback);
 		} else {
 			this._handleResponseLoadConv(view, callback, conv._createResult());
 		}
@@ -332,7 +332,7 @@ function(view, callback, result) {
 	var searchResult = result.getResponse();
 	var list = searchResult.getResults(ZmItem.MSG);
 	if (list instanceof ZmList) {
-		this.setList(list); // set the new list returned
+		this._list = list;
 		this._activeSearch = searchResult;
 	}
 	DBG.timePt("***** CONV: render");

@@ -367,7 +367,7 @@ function(columnItem, bSortAsc) {
 			var conv = controller.getConv();
 			if (conv) {
 				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller]);
-				conv.load({query:searchString, sortBy:this._sortByString}, respCallback);
+				conv.load({query:searchString, sortBy:this._sortByString, getFirstMsg:controller._readingPaneOn}, respCallback);
 			}
 		} else {
 			var params = {query:searchString, types:[ZmItem.MSG], sortBy:this._sortByString, limit:this.getLimit()};
