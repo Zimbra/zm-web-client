@@ -2030,6 +2030,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@MenuContainer@
 	background-color:@ItemBgColor@;
 	width: auto;
+	padding: 0px !important;
 }
 
 /* ??? USE? */
