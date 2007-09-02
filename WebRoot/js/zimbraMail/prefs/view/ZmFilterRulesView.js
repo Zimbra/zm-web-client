@@ -189,7 +189,7 @@ function(ev) {
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: change listener");
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var index = ev.getDetail("index");
-		this._controller.resetListView();
+		this._controller.resetListView(null, index);
 	}
 };
 

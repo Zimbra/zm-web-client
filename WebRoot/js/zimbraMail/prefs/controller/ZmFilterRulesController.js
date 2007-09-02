@@ -99,19 +99,19 @@ function() {
 };
 
 ZmFilterRulesController.prototype.resetListView =
-function(callback) {
+function(callback, selectedIndex) {
 	var listView = this._filterRulesView.getListView();
 	if (!listView) return;
 
-	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [listView, callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [listView, callback, selectedIndex]);
 	this._rules.loadRules(false, respCallback);
 };
 
 ZmFilterRulesController.prototype._handleResponseSetListView =
-function(listView, callback, result) {
+function(listView, callback, selectedIndex, result) {
 	listView.set(result.getResponse().clone());
 
-	var rule = this._rules.getRuleByIndex(0);
+	var rule = this._rules.getRuleByIndex(selectedIndex || 0);
 	if (rule) {
 		listView.setSelection(rule);
 	}
