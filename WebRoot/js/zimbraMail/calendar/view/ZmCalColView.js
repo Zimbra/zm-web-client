@@ -450,7 +450,11 @@ function() {
 			allDayX: 0, // computed in layout
 			allDayWidth: 0// computed in layout			
 		};
-		this._folderIdToColIndex[this._calendars[i].id] = col;
+		var cal = this._calendars[i];
+		this._folderIdToColIndex[cal.id] = col;
+		if(cal.isRemote() &&  cal.rid) {
+			this._folderIdToColIndex[cal.rid] = col;
+		}
 
 		var div = document.createElement("div");
 		div.style.position = 'absolute';
