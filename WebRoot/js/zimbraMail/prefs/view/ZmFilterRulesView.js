@@ -169,9 +169,7 @@ function(html, idx, item, field, colIdx, params) {
 		html[idx++] = "_flvId='";
 		html[idx++] = this._internalId;
 		html[idx++] = "' ";
-		if (!AjxEnv.isIE) {
-			html[idx++] = "onchange='ZmFilterListView._activeStateChange' ";
-		}
+		html[idx++] = "onchange='ZmFilterListView._activeStateChange' ";
 		html[idx++] = ">";
 	} else if (field == ZmFilterListView.COL_NAME) {
 		html[idx++] = item.getName();
@@ -204,7 +202,8 @@ ZmFilterListView._activeStateChange =
 function(ev) {
 	var target = DwtUiEvent.getTarget(ev);
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: active state change for filter with ID " + target.id);
-	var flv = AjxCore.objectWithId(target._flvId);
+	var flvId = target.getAttribute("_flvId"); 
+	var flv = AjxCore.objectWithId(flvId);
 	var ruleId = target.id.substring(13);
 	var rule = flv._rules.getRuleById(ruleId);
 	if (rule)
@@ -228,7 +227,7 @@ function(clickedEl, ev, button) {
 
 	var target = DwtUiEvent.getTarget(ev);
 	var isInput = (target.id.indexOf("_ruleCheckbox") == 0);
-	if (AjxEnv.isIE && isInput)
+	if (isInput)
 		ZmFilterListView._activeStateChange(ev);
 
 	return !isInput;
