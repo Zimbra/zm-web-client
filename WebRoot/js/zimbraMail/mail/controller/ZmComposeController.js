@@ -638,16 +638,15 @@ function() {
 
 ZmComposeController.prototype._setAddSignatureVisibility =
 function(identity) {
-	if (!identity) { return false; }
-	var canAddSig = appCtxt.get(ZmSetting.SIGNATURES_ENABLED); 
-	if (canAddSig) {
-		canAddSig = Boolean(identity.signature);
+	var visible = false;
+	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
+		visible = appCtxt.getSignatureCollection().getSize() > 0;
 		var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 		if (signatureButton) {
-			signatureButton.setVisible(canAddSig);
+			signatureButton.setVisible(visible);
 		}
 	}
-	return canAddSig;
+	return visible;
 };
 
 ZmComposeController.prototype._createOptionsMenu =
