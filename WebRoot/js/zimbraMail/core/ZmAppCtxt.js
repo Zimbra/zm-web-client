@@ -600,17 +600,20 @@ function() {
 
 ZmAppCtxt.prototype.getIdentityCollection =
 function() {
-	return AjxDispatcher.run("GetIdentityCollection");
+	var context = this.isChildWindow ? window.opener : window;
+	return context.AjxDispatcher.run("GetIdentityCollection");
 };
 
 ZmAppCtxt.prototype.getDataSourceCollection =
 function() {
-	return AjxDispatcher.run("GetDataSourceCollection");
+	var context = this.isChildWindow ? window.opener : window;
+	return context.AjxDispatcher.run("GetDataSourceCollection");
 };
 
 ZmAppCtxt.prototype.getSignatureCollection =
 function() {
-	return AjxDispatcher.run("GetSignatureCollection");
+	var context = this.isChildWindow ? window.opener : window;
+	return context.AjxDispatcher.run("GetSignatureCollection");
 };
 
 ZmAppCtxt.prototype.getTree =
