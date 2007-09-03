@@ -787,16 +787,6 @@ if (ext == null) ext = "";
 		<antcall target='webxml-deploy-replace' />
 
 		<ant dir="${server.dir}" target="start-jetty" inheritAll="false"/>
-
-		<if><and>
-			<not><isset property="build.ajax" /></not>
-			<not><isset property="build.admin" /></not>
-				<available file='${customer.zimlet.dir}' />
-			</and>
-			<then>
-				<ant dir="${customer.zimlet.dir}" target="deploy-zimlets" inheritAll="false" />
-			</then>
-		</if>
 	</target>
 
 	<target name='webxml-package-replace' depends='init'>

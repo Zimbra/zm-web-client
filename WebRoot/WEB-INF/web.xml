@@ -163,6 +163,13 @@
 		<servlet-class>
 			com.zimbra.kabuki.servlets.Props2JsServlet
 		</servlet-class>
+		<init-param>
+			<param-name>basename-patterns</param-name>
+			<param-value>
+				WEB-INF/classes/${dir}/${name},
+				../service/zimlet/${name}/${name}
+			</param-value>
+		</init-param>
 	</servlet>
 
 	<servlet>
