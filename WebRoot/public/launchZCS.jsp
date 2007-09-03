@@ -255,7 +255,7 @@
 
 		var prodMode = <%=prodMode%>;
 		var debugLevel = "<%= (debug != null) ? debug : "" %>";
-		if (!prodMode && debugLevel) {
+		if (!prodMode) {
 			AjxDispatcher.require("Debug");
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
 			AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp";
