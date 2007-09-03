@@ -273,6 +273,9 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
+
+			<$ var isHtmlCompose = data.isEnabled(ZmSetting.HTML_COMPOSE_ENABLED) || data.isEnabled(ZmSetting.NOTEBOOK_ENABLED); $>
+			<$ if (isHtmlCompose) { $>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.composeLabel$></td>
 					<td class='ZOptionsNestedTable'>
 					<table>
@@ -297,9 +300,13 @@ and the container element is replaced with that control.
 					</table>
 					</td>
 				</tr>
+			<$ } $>
 
-			<$ if (data.isEnabled(ZmSetting.NEW_WINDOW_COMPOSE)) { $>
-				<tr><td></td><td><hr></td></tr>
+			<$ var isNewWindow = data.isEnabled(ZmSetting.NEW_WINDOW_COMPOSE); $>
+			<$ if (isNewWindow) { $>
+				<$ if (isHtmlCompose) { $>
+					<tr><td></td><td><hr></td></tr>
+				<$ } $>
 
 				<tr><td>&nbsp;</td>
 					<td class='ZOptionsField'>
@@ -311,7 +318,9 @@ and the container element is replaced with that control.
 			<$ } $>
 
 			<$ if (data.isEnabled(ZmSetting.MAIL_ENABLED)) { $>
-				<tr><td colspan=2><hr></td></tr>
+				<$ if (isHtmlCompose || isNewWindow ) { $>
+					<tr><td colspan=2><hr></td></tr>
+				<$ } $>
 
 				<tr><td class='ZOptionsLabel'>Reply / Reply All:</td>
 					<td class='ZOptionsField'>When replying to an email:</td>

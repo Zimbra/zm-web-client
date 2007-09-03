@@ -93,14 +93,14 @@ function() {
 ZmPrefController.prototype.checkPreCondition =
 function(obj, precondition) {
 	// No object, nothing to check
-	if (!obj) {
+	if (!obj && !ZmSetting[precondition]) {
 		return true;
 	}
 	// Object lacks "precondition" property, nothing to check
-	if (!("precondition" in obj)) {
+	if (obj && !("precondition" in obj)) {
 		return true;
 	}
-	var p = precondition || obj.precondition;
+	var p = precondition || (obj && obj.precondition);
 	// Object has a precondition that didn't get defined, probably because its
 	// app is not enabled. That equates to failure for the precondition.
 	if (p == null) {

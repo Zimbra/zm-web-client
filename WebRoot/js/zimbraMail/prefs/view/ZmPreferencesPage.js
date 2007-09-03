@@ -101,11 +101,9 @@ function() {
 	// expand template
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._section.id);
 	var templateId = this._section.templateId;
-	var data = {
-		id: this._htmlElId, 
-		isEnabled: AjxCallback.simpleClosure(this._isEnabled, this, data),
-		expandField: AjxCallback.simpleClosure(this._expandField, this, data)
-	};
+	var data = { id: this._htmlElId };
+	data.isEnabled = AjxCallback.simpleClosure(this._isEnabled, this, data);
+	data.expandField = AjxCallback.simpleClosure(this._expandField, this, data);
 	this._createPageHtml(templateId, data);
 	this.setVisible(false); // hide until ready
 
@@ -857,7 +855,7 @@ function(data, prefId1 /* ..., prefIdN */) {
 	for (var i = 1; i < arguments.length; i++) {
 		var prefId = arguments[i];
 		if (!prefId) { return false; }	// setting not created (its app is disabled)
-		if (this._controller.checkPreCondition(ZmPref.SETUP[prefId])) {
+		if (this._controller.checkPreCondition(ZmPref.SETUP[prefId], prefId)) {
 			return true;
 		}
 	}
