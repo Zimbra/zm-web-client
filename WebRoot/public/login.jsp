@@ -125,7 +125,6 @@ if (application.getInitParameter("offlineMode") != null)  {
 
 
 <html>
-
 <head>
 <!--
  login.jsp
@@ -159,8 +158,7 @@ if (application.getInitParameter("offlineMode") != null)  {
     <style type="text/css">
          @import url( "<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" );
     </style>
-    <link rel="ICON" type="image/gif" href="<c:url value='/img/loRes/logo/favicon.gif'/>">
-    <link rel="SHORTCUT ICON" href="<c:url value='/img/loRes/logo/favicon.ico'/>">
+    <link rel="SHORTCUT ICON" href="<c:url value='/favicon.ico'/>">
 </head>
 <body onload="document.loginForm.username.focus();">
 <table width=100% height=100%>
