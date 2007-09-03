@@ -139,9 +139,7 @@
 </head>
 <body>
 <noscript><fmt:setBundle basename="/messages/ZmMsg"/>
-    <fmt:message key="errorJavaScriptRequired"><fmt:param>
-    <c:url context="/zimbra" value='/h/'></c:url>
-    </fmt:param></fmt:message>
+<fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="/zimbra" value='/h/'></c:url></fmt:param></fmt:message>
 </noscript>
 <%!
 	public class Wrapper extends HttpServletRequestWrapper {
@@ -222,7 +220,7 @@
     <% }
 %>
 
-<script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%>"></script>
+<script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
 
 <script>
 
