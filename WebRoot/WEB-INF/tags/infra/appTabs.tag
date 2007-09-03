@@ -51,7 +51,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='calendar' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_CALENDAR' href="<c:url value="/h/calendar"/>">
-                    <span id='tab_ikon_calendar'><app:img src="calendar/ImgCalendarApp.gif" altkey='ALT_APP_CALENDAR'/></span><span><fmt:message
+                    <span id='tab_ikon_calendar'><app:img src="startup/ImgCalendarApp.gif" altkey='ALT_APP_CALENDAR'/></span><span><fmt:message
                         key="calendar"/></span></a>
             </td>
             <td class='TabSpacerR'/>
@@ -60,7 +60,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='tasks' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_TASKS' href="<c:url value="/h/search?st=task"/>">
-                    <span id='tab_ikon_tasks'><app:img src="tasks/ImgTaskList.gif" altkey='ALT_APP_TASK'/></span><span><fmt:message
+                    <span id='tab_ikon_tasks'><app:img src="startup/ImgTaskList.gif" altkey='ALT_APP_TASK'/></span><span><fmt:message
                         key="tasks"/></span></a>
             </td>
             <td class='TabSpacerR'/>

@@ -191,7 +191,7 @@
                                             </c:forEach>
                                         </c:if> 
                                         <c:if test="${message.isFlagged}">
-                                            <app:img altkey='ALT_FLAGGED' src="tag/ImgFlagRed.gif"/>
+                                            <app:img altkey='ALT_FLAGGED' src="startup/ImgFlagRed.gif"/>
                                         </c:if>
                                     </td>
                                 </tr>

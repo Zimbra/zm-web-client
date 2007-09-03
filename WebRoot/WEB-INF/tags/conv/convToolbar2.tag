@@ -16,19 +16,19 @@
             <c:if test="${convSearchResult.hasPrevPage}">
                 <zm:currentResultUrl var="prevPageUrl" value=""  action="view2" context="${context}"
                                      cso="${convSearchResult.prevOffset}" css="${param.css}"/>
-                <a <c:if test="${keys}"></c:if> href="${prevPageUrl}"><app:img altkey="left" src="arrows/ImgLeftArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"></c:if> href="${prevPageUrl}"><app:img altkey="left" src="startup/ImgLeftArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!convSearchResult.hasPrevPage}">
-                <app:img disabled='true' src="arrows/ImgLeftArrow.gif" border="0"/>
+                <app:img disabled='true' src="startup/ImgLeftArrow.gif" border="0"/>
             </c:if>
             <app:searchPageOffset searchResult="${convSearchResult}" max="${convSearchResult.conversationSummary.messageCount}"/>
             <c:if test="${convSearchResult.hasNextPage}">
                 <zm:currentResultUrl var="nextPageUrl" value="" action="view2" context="${context}"
                                      cso="${convSearchResult.nextOffset}" css="${param.css}"/>
-                <a <c:if test="${keys}"></c:if> href="${nextPageUrl}"><app:img altkey="right" src="arrows/ImgRightArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"></c:if> href="${nextPageUrl}"><app:img altkey="right" src="startup/ImgRightArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!convSearchResult.hasNextPage}">
-                <app:img disabled='true' src="arrows/ImgRightArrow.gif" border="0"/>
+                <app:img disabled='true' src="startup/ImgRightArrow.gif" border="0"/>
             </c:if>
         </td>
     </tr>

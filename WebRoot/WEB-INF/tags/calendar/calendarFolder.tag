@@ -15,14 +15,14 @@
             <c:when test="${folder.isCheckedInUI}"><app:calendarUrl var="url" uncheck="${folder.id}"/></c:when>
             <c:otherwise><app:calendarUrl var="url" check="${folder.id}"/></c:otherwise>
         </c:choose>
-        <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="dwt/ImgNodeExpanded.gif"/></c:if></span>--%>
+        <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="startup/ImgNodeExpanded.gif"/></c:if></span>--%>
         <a href='${url}'>
             <c:choose>
             <c:when test="${folder.isCheckedInUI}">
                 <app:img altkey="checked" src="tasks/ImgTask.gif"/>
             </c:when>
                 <c:otherwise>
-                    <app:img altkey="unchecked" src="tasks/ImgTaskCheckbox.gif"/>
+                    <app:img altkey="unchecked" src="startup/ImgTaskCheckbox.gif"/>
                 </c:otherwise>
             </c:choose>
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>

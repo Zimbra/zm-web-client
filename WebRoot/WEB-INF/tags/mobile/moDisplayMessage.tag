@@ -69,7 +69,7 @@
     <tr><td colspan=2><hr></td></tr>
     <fmt:message var="noSubject" key="noSubject"/>
     <tr><td class='zo_mv_subject' colspan=2>${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
-                        <c:if test="${message.isFlagged}">&nbsp;<mo:img src="tag/ImgFlagRed.gif"/></c:if>
+                        <c:if test="${message.isFlagged}">&nbsp;<mo:img src="startup/ImgFlagRed.gif"/></c:if>
     </td></tr>
     <tr>
         <td colspan=2 class='zo_mv_date'>

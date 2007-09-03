@@ -23,7 +23,7 @@
                 <c:param name="${expanded ? 'collapse' : 'expand'}" value="tags"/>
                 <c:if test="${not empty param.st}"><c:param name="st" value="${param.st}"/></c:if>
             </c:url>
-            <th style="width:20px"><a href="${fn:escapeXml(toggleUrl)}"><app:img src="${ expanded ? 'dwt/ImgNodeExpanded.gif' : 'dwt/ImgNodeCollapsed.gif'}" altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/></a></th>
+            <th style="width:20px"><a href="${fn:escapeXml(toggleUrl)}"><app:img src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}" altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/></a></th>
             <th class="Header"> <fmt:message key="tags"/></th>
             
             <th width="1%" align="right" class="ZhTreeEdit">

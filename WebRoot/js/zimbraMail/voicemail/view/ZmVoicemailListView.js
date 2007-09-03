@@ -95,7 +95,7 @@ function() {
 	var rowArgs = { appContextPath: appContextPath };
 	for(var i = 0, count = this._list.size(); i < count; i++) {
 		var item = this._list.get(i);
-		rowArgs.flagImage = item.isHighPriority ? "tasks/ImgTaskHigh.gif" : "dwt/ImgBlank_16.gif";
+		rowArgs.flagImage = item.isHighPriority ? "tasks/ImgTaskHigh.gif" : "startup/ImgBlank_16.gif";
 		rowArgs.caller = this._getCallerHtml(item);
 		rowArgs.duration = AjxDateUtil.computeDuration(item.duration);
 		rowArgs.date = AjxDateUtil.simpleComputeDateStr(item.date);

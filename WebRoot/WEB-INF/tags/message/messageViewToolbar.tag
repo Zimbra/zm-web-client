@@ -62,18 +62,18 @@
         <td align="right">
             <c:if test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" value="/h/search" action="view" cursor="${cursor}" context="${context}"/>
-                <a  <c:if test="${keys}">id="PREV_ITEM" </c:if> href="${fn:escapeXml(prevItemUrl)}"><app:img altkey="ALT_MSG_PREVIOUS_MESSAGE" src="arrows/ImgLeftArrow.gif" border="0" alt="prev"/></a>
+                <a  <c:if test="${keys}">id="PREV_ITEM" </c:if> href="${fn:escapeXml(prevItemUrl)}"><app:img altkey="ALT_MSG_PREVIOUS_MESSAGE" src="startup/ImgLeftArrow.gif" border="0" alt="prev"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
-                <app:img disabled='true' src="arrows/ImgLeftArrow.gif" border="0" alt="no prev"/>
+                <app:img disabled='true' src="startup/ImgLeftArrow.gif" border="0" alt="no prev"/>
             </c:if>
             <span class='Paging'>${context.searchResult.offset+context.currentItemIndex+1}</span>
             <c:if test="${context.hasNextItem}">
                 <zm:nextItemUrl var="nextItemUrl" value="/h/search" action="view" cursor="${cursor}" context="${context}"/>
-                <a  <c:if test="${keys}">id="NEXT_ITEM" </c:if> href="${fn:escapeXml(nextItemUrl)}"><app:img altkey="ALT_MSG_NEXT_MESSAGE" src="arrows/ImgRightArrow.gif" border="0" alt="next"/></a>
+                <a  <c:if test="${keys}">id="NEXT_ITEM" </c:if> href="${fn:escapeXml(nextItemUrl)}"><app:img altkey="ALT_MSG_NEXT_MESSAGE" src="startup/ImgRightArrow.gif" border="0" alt="next"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
-                <app:img disabled='true' src="arrows/ImgRightArrow.gif" border="0" alt="no next"/>
+                <app:img disabled='true' src="startup/ImgRightArrow.gif" border="0" alt="no next"/>
             </c:if>
         </td>
     </tr>

@@ -16,7 +16,7 @@
             <c:param name="${expanded ? 'collapse' : 'expand'}" value="${folder.id}"/>
         </c:url>
         <a href="${toggleUrl}">
-            <app:img src="${expanded ? 'dwt/ImgNodeExpanded.gif' : 'dwt/ImgNodeCollapsed.gif'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
+            <app:img src="${expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
         </a>
     </c:if>
     <a id="SRCH${folder.id}" href='search?sfi=${folder.id}'>

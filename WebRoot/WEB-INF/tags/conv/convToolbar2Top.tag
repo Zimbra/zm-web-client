@@ -64,10 +64,10 @@
         <td nowrap align=right>
             <c:if test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" value="" cursor="${convCursor}" context="${context}" css="${param.css}" action="view2"/>
-                <a <c:if test="${keys}"></c:if> href="${prevItemUrl}"><app:img altkey="left" src="arrows/ImgLeftArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"></c:if> href="${prevItemUrl}"><app:img altkey="left" src="startup/ImgLeftArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
-                <app:img disabled='true' src="arrows/ImgLeftArrow.gif" border="0"/>
+                <app:img disabled='true' src="startup/ImgLeftArrow.gif" border="0"/>
             </c:if>
             <c:set var="first" value="${context.searchResult.size eq 0 ? 0 : context.searchResult.offset+1}"/>
             <c:set var="last" value="${context.searchResult.offset+context.searchResult.size}"/>
@@ -79,10 +79,10 @@
             </span>
             <c:if test="${context.hasNextItem}">
                 <zm:nextItemUrl var="nextItemUrl" value="" cursor="${convCursor}" context="${context}" css="${param.css}" action="view2"/>
-                <a <c:if test="${keys}"></c:if> href="${nextItemUrl}"><app:img altkey="right" src="arrows/ImgRightArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"></c:if> href="${nextItemUrl}"><app:img altkey="right" src="startup/ImgRightArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
-                <app:img disabled='true' src="arrows/ImgRightArrow.gif" border="0"/>
+                <app:img disabled='true' src="startup/ImgRightArrow.gif" border="0"/>
             </c:if>
         </td>
     </tr>

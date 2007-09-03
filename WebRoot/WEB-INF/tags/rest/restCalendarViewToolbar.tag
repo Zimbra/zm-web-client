@@ -59,13 +59,13 @@
             <table cellspacing=5 cellpadding=0>
                 <tr>
                     <td>
-            <a <c:if test="${keys}">id="PREV_PAGE"</c:if> href="${prevUrl}"><app:img altkey="ALT_PAGE_PREVIOUS" src="arrows/ImgLeftArrow.gif" border="0"/></a>
+            <a <c:if test="${keys}">id="PREV_PAGE"</c:if> href="${prevUrl}"><app:img altkey="ALT_PAGE_PREVIOUS" src="startup/ImgLeftArrow.gif" border="0"/></a>
                     </td>
                     <td class='ZhCalPager'>
             ${fn:escapeXml(title)}
                     </td>
                     <td>
-            <a <c:if test="${keys}">id="NEXT_PAGE"</c:if> href="${nextUrl}"><app:img alt="ALT_PAGE_NEXT" src="arrows/ImgRightArrow.gif" border="0"/></a>
+            <a <c:if test="${keys}">id="NEXT_PAGE"</c:if> href="${nextUrl}"><app:img alt="ALT_PAGE_NEXT" src="startup/ImgRightArrow.gif" border="0"/></a>
                     </td>
                 </tr>
             </table>

@@ -108,7 +108,7 @@
                                                                 <app:img src="${tag.miniImage}"/> <span>${fn:escapeXml(tag.name)}</span>
                                                             </c:forEach>
                                                             <c:if test="${mailbox.features.flagging and convSummary.flagged}">
-                                                                <app:img src="tag/ImgFlagRed.gif"/>
+                                                                <app:img src="startup/ImgFlagRed.gif"/>
                                                             </c:if>
                                                         </span>
                                                     </td>

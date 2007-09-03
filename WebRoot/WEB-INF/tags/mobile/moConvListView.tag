@@ -75,7 +75,7 @@
                                                     <td align=right class='zo_m_list_frag'>
                                                         <table xwidth=100%>
                                                             <tr>
-                                                                <c:if test="${chit.isFlagged}"><td><mo:img src="tag/ImgFlagRed.gif"/></td></c:if>
+                                                                <c:if test="${chit.isFlagged}"><td><mo:img src="startup/ImgFlagRed.gif"/></td></c:if>
                                                                 <c:if test="${chit.hasTags}"><td><mo:miniTagImage ids="${hit.conversationHit.tagIds}"/></td></c:if>
                                                                 <td>
                                                                     <c:choose>

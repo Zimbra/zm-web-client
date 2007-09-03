@@ -29,7 +29,7 @@
                             <tr class='Header'>
                                 <th class='CB' nowrap='nowrap'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type="checkbox" name="allids"/></th>
                                 <c:if test="${mailbox.features.flagging}">
-                                <th class='Img'  nowrap='nowrap' width='20'><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
+                                <th class='Img'  nowrap='nowrap' width='20'><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
                                 </c:if>
                                 <c:if test="${mailbox.features.tagging}">
                                 <th class='Img' nowrap width='20'><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/></th>

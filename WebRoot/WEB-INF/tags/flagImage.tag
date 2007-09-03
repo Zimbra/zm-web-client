@@ -7,4 +7,4 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<c:choose><c:when test="${flagged}"><app:img altkey="ALT_FLAGGED" src="tag/ImgFlagRed.gif" /></c:when><c:otherwise>&nbsp;</c:otherwise></c:choose>
+<c:choose><c:when test="${flagged}"><app:img altkey="ALT_FLAGGED" src="startup/ImgFlagRed.gif" /></c:when><c:otherwise>&nbsp;</c:otherwise></c:choose>

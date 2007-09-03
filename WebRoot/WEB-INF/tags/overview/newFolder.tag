@@ -34,7 +34,7 @@
     <c:when test="${tasklist}">
         <fmt:message var="label" key="taskListNew"/>
         <fmt:message var="createLabel" key="createTaskList"/>
-        <c:set var="icon" value="${link ? 'tasks/ImgSharedTaskList.gif' : 'tasks/ImgTaskList.gif'}"/>
+        <c:set var="icon" value="${link ? 'tasks/ImgSharedTaskList.gif' : 'startup/ImgTaskList.gif'}"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'gray' : param.newFolderColor}"/>
         <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'task')}"/>
         <fmt:message var="folderType" key="${link ? 'taskListShared' : 'taskListUser'}"/>

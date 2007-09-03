@@ -66,7 +66,7 @@
                                                     <td>
                                                         <mo:img src="${(mhit.isUnread and hit.id == msg.id) ? 'mail/ImgMsgStatusRead.gif' : mhit.statusImage}"/>
                                                     </td>
-                                                    <c:if test="${mhit.isFlagged}"><tr><td><mo:img src="tag/ImgFlagRed.gif"/></td></tr></c:if>
+                                                    <c:if test="${mhit.isFlagged}"><tr><td><mo:img src="startup/ImgFlagRed.gif"/></td></tr></c:if>
                                                     <c:if test="${mhit.hasTags}"><tr><td><mo:miniTagImage ids="${mhit.tagIds}"/></td></tr></c:if>                                                    
                                                 </tr>
                                             </table>

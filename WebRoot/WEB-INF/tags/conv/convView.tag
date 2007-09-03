@@ -144,7 +144,7 @@
                                                          </c:forEach>
                                                      </c:if>
                                                     <c:if test="${mailbox.features.flagging and convSummary.flagged}">
-                                                        <app:img altkey='ALT_FLAGGED' src="tag/ImgFlagRed.gif"/>
+                                                        <app:img altkey='ALT_FLAGGED' src="startup/ImgFlagRed.gif"/>
                                                     </c:if>
                                                 </span>
                                             </td>
@@ -158,7 +158,7 @@
                                             <tr>
                                                 <th class='CB'nowrap width="1%"><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                                 <c:if test="${mailbox.features.flagging}">
-                                                <th class='Img' nowrap width="1%"><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
+                                                <th class='Img' nowrap width="1%"><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
                                                 </c:if>
                                                 <c:if test="${mailbox.features.tagging}">
                                                 <th class='Img' nowrap width="1%"><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG"/>
