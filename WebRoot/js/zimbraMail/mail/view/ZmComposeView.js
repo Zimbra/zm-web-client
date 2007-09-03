@@ -53,6 +53,8 @@ ZmComposeView = function(parent, controller, composeMode) {
     //for ZimbraDnD
     if ("createEvent" in document)
     {
+        document.getElementById('zdnd_tooltip').style.display='none';
+        
         var ele = document.getElementById("zDnD");
         var ev = document.createEvent("Events");
         ev.initEvent("ZimbraDnD", true, false);
