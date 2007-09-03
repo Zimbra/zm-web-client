@@ -645,9 +645,10 @@ ZmAutocompleteListView.prototype._mouseOverListener =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	var div = DwtUiEvent.getTarget(ev);
-	if (!div || div._pos == null)
-		return;
-	this._setSelected(div._pos);
+	div = Dwt.findAncestor(div, "_pos");
+	if (div)
+		this._setSelected(div._pos);
+	return true;
 };
 
 // Seems like DwtComposite should define this method
@@ -672,7 +673,7 @@ function(list, sel) {
 	this._matches = list;
 	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
-		var div = this._getDiv();
+		var div = this._getDiv(i);
 		div._pos = i;
 		var match = this._matches[i];
 		if (match) {
@@ -691,8 +692,7 @@ function(id) {
 	// MOW: make class name for selected:  "Row Row-selected" instead of just "Row-selected"
 	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + " " + div[DwtListView._STYLE_CLASS] + "-" + DwtCssStyle.SELECTED;
 	div.className = div[DwtListView._STYLE_CLASS];
-	div.id = id;
-
+	div.id = "AutoCompleteListViewDiv_"+id;
 	return div;
 };
 
@@ -756,7 +756,7 @@ function(sel) {
 	for (var i = 0; i < len; i++) {
 		var div = children[i];
 		var curStyle = div.className;
-		if (i == sel && curStyle != div[DwtListView._SELECTED_STYLE_CLASS]) {
+		if (i == sel) {
 			div.className = div[DwtListView._SELECTED_STYLE_CLASS];
 		} else if (curStyle != div[DwtListView._STYLE_CLASS]) {
 			div.className = div[DwtListView._STYLE_CLASS];
