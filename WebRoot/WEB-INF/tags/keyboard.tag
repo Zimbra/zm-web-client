@@ -22,6 +22,7 @@
     <c:set target="${sessionScope.keyboardCache}" property="${cache}">
 
         <script type="text/javascript">
+           <!--
             var pendingKey = "";
             var timerId = null;
             var actions = {};
@@ -128,6 +129,7 @@
             </c:if>
             </c:if>
             <jsp:doBody/>
+        //-->
         </script>
     </c:set>
 </c:if>

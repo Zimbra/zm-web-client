@@ -28,14 +28,14 @@
         </fmt:message>
     </c:if>
     <td>
-        <table cellpadding=0 cellspacing=0 border="0">
+        <table cellpadding="0" cellspacing="0" border="0">
             <tr valign="middle">
                 <td>
                     <input <c:if test="${checked}">checked </c:if>type=checkbox name="${name}" value="${value}">
                 </td>
                 <td>&nbsp;</td>
                 <td>
-                    <a target="_blank" href="${url}&disp=i">${fn:escapeXml(displayName)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
+                    <a target="_blank" href="${fn:escapeXml(url)}&amp;disp=i">${fn:escapeXml(displayName)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
                 </td>
             </tr>
         </table>

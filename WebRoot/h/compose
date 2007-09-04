@@ -82,7 +82,7 @@
             <tr>
                 <td class='ZhAppContent'>
                     <div class='ZhAC'>
-                        <table cellpadding="2" cellspacing="5" height="80%" width="100%" class='Compose'>
+                        <table cellpadding="2" cellspacing="5" style="height:80%;" width="100%" class='Compose'>
                             <tr>
                                 <td valign='top' width="1%" align="right" nowrap> <label for="toField"><fmt:message key="to"/>: </label></td>
                                 <td colspan="2" nowrap>

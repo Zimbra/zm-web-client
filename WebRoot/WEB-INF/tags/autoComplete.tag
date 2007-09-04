@@ -10,12 +10,13 @@
 <script type="text/javascript" src="<c:url value='/yui/2.3.0/autocomplete/autocomplete-min.js'/>"></script>
 
 <script type="text/javascript">
+    <!--
     var zimbraAutoComplete = function() {
-        var zhEncode = function(s) {return s == null ? '' : s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");}
+        var zhEncode = function(s) {return s == null ? '' : s.replace(/&/g, "&amp;").replace(/[<]/g, "&lt;").replace(/>/g, "&gt;");}
         var zhStartsWith = function(str,query) { return str == null ? false : str.toLowerCase().indexOf(query.toLowerCase()) == 0; }
         var zhFmt = function(str,query,bold) {
             return bold ?
-                   ["<span class='ZhACB'>",zhEncode(str.substring(0, query.length)), "</span>", zhEncode(str.substring(query.length))].join("")
+                   ["<span class='ZhACB'>",zhEncode(str.substring(0, query.length)), "<"+"/span>", zhEncode(str.substring(query.length))].join("")
                     : zhEncode(str);
         }
         var myacformat = function(aResultItem, query) {
@@ -43,14 +44,14 @@
             if(sResult) {
                 return ["<table><tr><td><img src='/zimbra/img/contacts/Img",
                         t == "g" ? "GALContact.gif" : t == "dl" ? "Group.gif" : "Contact.gif",
-                        "'></td><td>",
+                        "'><"+"/td><td>",
                         zhFmt(f, fls ? fq : query, fs),
                         " ",
                         zhFmt(l, fls ? lq : query, ls),
                         t == "dl" ? "" :  " &lt;",
                         zhFmt(e,query,es),
                         t == "dl" ? "" : "&gt;",
-                        "</td></tr></table>"].join("");
+                        "<"+"/td><"+"/tr><"+"/table>"].join("");
             }
             else {
                 return "";
@@ -69,4 +70,5 @@
         };
     <jsp:doBody/>
     }();
+    // -->
 </script>
