@@ -23,9 +23,9 @@
                 <td class='List'>
                         <table width=100% cellpadding=2 cellspacing=0>
                             <tr class='Header'>
-                                <th class='CB' nowrap><input id="CHALL" onClick="checkAll(document.zform.voiceId,this)" type=checkbox name="allids"/>
-                                <th class='Img' nowrap><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
-                                <th width=10% nowrap><fmt:message key="from"/>
+                                <th class='CB' nowrap><input id="CHALL" onClick="checkAll(document.zform.voiceId,this)" type=checkbox name="allids"/></th>
+                                <th class='Img' nowrap><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/></th>
+                                <th width=10% nowrap><fmt:message key="from"/></th>
                                 <th width=10% nowrap><fmt:message key="message"/></th>
                                 <th nowrap>
                                     <zm:newSortUrl var="durSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'durDesc' or empty context.ss) ? 'durAsc' : 'durDesc'}"/>
@@ -44,8 +44,15 @@
                             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                             <tr>
                                 <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="voiceId" value="${hit.voiceMailItemHit.serialize}"></td>
-                                <td class='Img' nowrap><app:flagImage flagged="${hit.voiceMailItemHit.isFlagged}"/></td>
-                            	<td nowrap>${hit.voiceMailItemHit.displayCaller}</td>
+								<td class='Img' nowrap>
+									<c:choose>
+										<c:when test="${hit.voiceMailItemHit.isFlagged}">
+											<app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/>
+										</c:when>
+										<c:otherwise>&nbsp;</c:otherwise>
+									</c:choose>
+								</td>
+								<td nowrap>${hit.voiceMailItemHit.displayCaller}</td>
                                 <c:choose>
                                     <c:when test="${!empty hit.voiceMailItemHit.soundUrl}">
                                         <c:url var="url" value="/h/voicemail">
