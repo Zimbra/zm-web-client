@@ -89,11 +89,16 @@ Stupid: I had to do a second loop that only acts on the selected account......
                 <table border="0" cellpadding="0" cellspacing="0" >
                     <tr>
                         <td class="ZhOptVoiceCBCell">
-                            <input id="callForwardingAllActive" type=checkbox name="callForwardingAllActive" value="TRUE" <c:if test="${features.callForwardingAll.isActive}">checked</c:if>>
+                            <input id="callForwardingAllActive" type=checkbox name="callForwardingAllActive" value="TRUE"
+								<c:if test="${!features.callForwardingAll.isSubscribed}">disabled</c:if>
+								<c:if test="${features.callForwardingAll.isActive}">checked</c:if>
+							>
                         </td>
                         <td>
                             <label for="callForwardingAllActive"><fmt:message key="forwardAllCalls"/></label>&nbsp;&nbsp;
-                            <input name="callForwardingAllNumber" type="text" size="25" value="${features.callForwardingAll.forwardTo}">
+                            <input name="callForwardingAllNumber" type="text" size="25" value="${features.callForwardingAll.forwardTo}"
+								<c:if test="${!features.callForwardingAll.isSubscribed}">disabled</c:if>
+							>
                         </td>
                     </tr>
 
@@ -101,11 +106,16 @@ Stupid: I had to do a second loop that only acts on the selected account......
                 <tr><td>&nbsp;</td><td>&nbsp;</td></tr>                    
                 <tr>
                     <td class="ZhOptVoiceCBCell">
-                        <input id="selectiveCallForwardingActive" type=checkbox name="selectiveCallForwardingActive" value="TRUE" <c:if test="${features.selectiveCallForwarding.isActive}">checked</c:if>>
+                        <input id="selectiveCallForwardingActive" type=checkbox name="selectiveCallForwardingActive" value="TRUE"
+							<c:if test="${!features.selectiveCallForwarding.isSubscribed}">disabled</c:if>
+							<c:if test="${features.selectiveCallForwarding.isActive}">checked</c:if>
+						>
                     </td>
                     <td>
                         <label for="selectiveCallForwardingActive"><fmt:message key="forwardSomeCalls"/></label>&nbsp;&nbsp;
-                        <input name="selectiveCallForwardingNumber" type="text" size="25" value="${features.selectiveCallForwarding.forwardTo}">
+                        <input name="selectiveCallForwardingNumber" type="text" size="25" value="${features.selectiveCallForwarding.forwardTo}"
+							<c:if test="${!features.selectiveCallForwarding.isSubscribed}">disabled</c:if>
+						>
                     </td>
                 </tr>
                 <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
@@ -128,8 +138,18 @@ Stupid: I had to do a second loop that only acts on the selected account......
                             <tr>
                                 <c:set var="addButton"><fmt:message key="add"/></c:set>
                                 <td><b><fmt:message key="add"/></b></td>
-                                <td><input type="text" name="addNumber" style="width:100%;"></td>
-                                <td><input type="submit" title="${addButton}" value="${addButton}" name="actionAdd"></td>
+                                <td>
+									<input type="text" name="addNumber" style="width:100%;"
+										<c:if test="${!features.selectiveCallForwarding.isSubscribed}">disabled</c:if>
+									>
+
+								</td>
+                                <td>
+									<input type="submit" title="${addButton}" value="${addButton}" name="actionAdd"
+										<c:if test="${!features.selectiveCallForwarding.isSubscribed}">disabled</c:if>
+									>
+
+								</td>
                             </tr>
                             <tr>
                                 <td></td>
