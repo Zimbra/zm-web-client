@@ -18,6 +18,10 @@
 <%-- this checks and redirects to admin if need be --%>
 <zm:adminRedirect/>
 
+<%-- get useragent --%>
+<zm:getUserAgent var="ua" session="false"/>
+<c:set var="useMobile" value="${ua.isiPhone}"/>
+
 <c:catch var="loginException">
     <c:choose>
         <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
@@ -59,6 +63,7 @@
         </c:when>
         <c:otherwise>
             <c:set var="client" value="${param.client}"/>
+            <c:if test="${empty client and useMobile}"><c:set var="client" value="mobile"/></c:if> 
             <c:if test="${empty client or client eq 'preferred'}">
                 <c:set var="client" value="${requestScope.authResult.prefs.zimbraPrefClientType[0]}"/>
             </c:if>
@@ -251,11 +256,9 @@ if (application.getInitParameter("offlineMode") != null)  {
                                                 <div class='ZLoginSeparator' style='margin-top:0px'></div>
 												<fmt:message key="chooseClient"/>&nbsp;
 												<c:set var="client" value="${param.client}"/>
-                                                <zm:getUserAgent var="ua" session="false"/>
                                                 <c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up or ua.isCamino)}"/>
                                                 <c:if test="${empty client}">
 													<%-- set client select default based on user agent. --%>
-													<c:set var="useMobile" value="${ua.isiPhone}"/>
 													<c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
 												</c:if>
 												<select name="client" onchange='clientChange(this.options[this.selectedIndex].value)'>
@@ -267,7 +270,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 													</c:if>
 												</select>
 												
-												<script language='javascript'>
+												<script TYPE="text/javascript">
 													// show a message if the should be using the 'standard' client, but have chosen 'advanced' instead
 													function clientChange(selectValue) {
                                                         var useStandard = ${useStandard ? 'true' : 'false'};
