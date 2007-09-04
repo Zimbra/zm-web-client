@@ -33,7 +33,7 @@
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}" tags="true">
-    <table width=100%  cellpadding="0" cellspacing="0" border=0>
+    <table width="100%"  cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td class='TbTop'>
                 <app:calendarViewToolbar today="${today}" date="${date}" timezone="${timezone}" prevDate="${prevDate}" nextDate="${nextDate}" title="${title}" context="${context}" keys="true"/>
@@ -41,9 +41,9 @@
         </tr>
         <tr>
             <td class='ZhAppContent'>
-                <table width=100% class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
+                <table width="100%" class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
                     <tr>
-                        <td colspan=7 class='ZhCalMonthHeaderMonth'>
+                        <td colspan="7" class='ZhCalMonthHeaderMonth'>
                                 ${fn:escapeXml(title)}
                         </td>
                     </tr>
@@ -51,28 +51,28 @@
                         <c:forEach var="day"
                                    begin="${mailbox.prefs.calendarFirstDayOfWeek}"
                                    end="${mailbox.prefs.calendarFirstDayOfWeek+6}">
-                            <td width=14% class='ZhCalMonthHeaderCellsText'>
+                            <td width="14%" class='ZhCalMonthHeaderCellsText'>
                                     ${weekDays[(day mod 7)+1]}
                             </td>
                         </c:forEach>
                     </tr>
                 </table>
-                <table width=100% cellpadding="0" cellspacing="0" border=0 class='ZhCalMonthTable'>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" class='ZhCalMonthTable'>
                     <c:set var="lastMonth" value="-1"/>
                     <c:forEach var="week" begin="1" end="6">
                         <tr>
                             <c:forEach var="dow" begin="1" end="7" varStatus="dowStatus">
-                                <td width=14% class='ZhCalMonthDay${currentDay.timeInMillis eq date.timeInMillis ? 'Selected':''}'>
-                                    <table width=100% cellspacing=2>
+                                <td width="14%" class='ZhCalMonthDay${currentDay.timeInMillis eq date.timeInMillis ? 'Selected':''}'>
+                                    <table width="100%" cellspacing="2">
                                         <tr>
                                             <c:set var="T" value="${zm:isSameDate(currentDay, today) ? 'T' : ''}"/>
                                             <c:set var="O" value="${not zm:isSameMonth(currentDay, date) ? 'O' : ''}"/>
-                                            <td align=right class='ZhCalDOM${O}${T}'>
+                                            <td align="right" class='ZhCalDOM${O}${T}'>
                                                 <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${zm:getMonth(currentDay) ne lastMonth ? dayMonthChangeFormat : dayFormat}"/>
                                                 <c:set var="lastMonth" value="${zm:getMonth(currentDay)}"/>
                                                 
                                                 <app:calendarUrl var="dayUrl" view="day" timezone="${timezone}" rawdate="${currentDay}"/>
-                                                    <a href="${dayUrl}">${fn:escapeXml(dayTitle)}</a>
+                                                    <a href="${fn:escapeXml(dayUrl)}">${fn:escapeXml(dayTitle)}</a>
                                             </td>
                                         </tr>
                                         <c:set var="count" value="${0}"/>

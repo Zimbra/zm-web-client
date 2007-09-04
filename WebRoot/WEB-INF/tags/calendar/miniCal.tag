@@ -35,28 +35,28 @@
 </app:handleError>
 
 <div class='ZhCalMiniContainer'>
-<table width=100% height=100% border=0 cellspacing='0' cellpadding='0'>
+<table width="100%" style='height:100%;' border="0" cellspacing='0' cellpadding='0'>
     <tr class='ZhCalMiniTitlebar'>
         <td align=center>
             <app:calendarUrl var="prevYear" timezone="${timezone}" rawdate="${zm:addYear(date,-1)}"/>
-            <a href="${prevYear}"><app:img altkey="ALT_CAL_MINI_PREV_YEAR" src="dwt/ImgFastRevArrowSmall.gif" border="0"/></a>
+            <a href="${fn:escapeXml(prevYear)}"><app:img altkey="ALT_CAL_MINI_PREV_YEAR" src="dwt/ImgFastRevArrowSmall.gif" border="0"/></a>
         </td>
         <td align=center>
             <app:calendarUrl var="prevMonth" timezone="${timezone}" rawdate="${zm:addMonth(date,-1)}"/>
-            <a href="${prevMonth}"><app:img altkey="ALT_CAL_MINI_PREV_MONTH" src="dwt/ImgRevArrowSmall.gif" border="0"/></a>
+            <a href="${fn:escapeXml(prevMonth)}"><app:img altkey="ALT_CAL_MINI_PREV_MONTH" src="dwt/ImgRevArrowSmall.gif" border="0"/></a>
         </td>
         <app:calendarUrl var="todayUrl" nodate="true"/>
         <td align=center nowrap colspan=3 class='ZhCalMiniTitleCell'>
-            <a href="${todayUrl}">${fn:replace(fn:escapeXml(title),' ','&nbsp;')}</a>
+            <a href="${fn:escapeXml(todayUrl)}">${fn:replace(fn:escapeXml(title),' ','&nbsp;')}</a>
         </td>
         <td align=center>
             <app:calendarUrl var="nextMonth" timezone="${timezone}" rawdate="${zm:addMonth(date,1)}"/>
-             <a href="${nextMonth}"><app:img altkey="ALT_CAL_MINI_NEXT_MONTH" src="dwt/ImgFwdArrowSmall.gif" border="0"/></a>
+             <a href="${fn:escapeXml(nextMonth)}"><app:img altkey="ALT_CAL_MINI_NEXT_MONTH" src="dwt/ImgFwdArrowSmall.gif" border="0"/></a>
 
         </td>
         <td align=center>
             <app:calendarUrl var="nextYear" timezone="${timezone}" rawdate="${zm:addYear(date,1)}"/>
-             <a href="${nextYear}"><app:img altkey="ALT_CAL_MINI_NEXT_YEAR" src="dwt/ImgFastFwdArrowSmall.gif" border="0"/></a>
+             <a href="${fn:escapeXml(nextYear)}"><app:img altkey="ALT_CAL_MINI_NEXT_YEAR" src="dwt/ImgFastFwdArrowSmall.gif" border="0"/></a>
 
         </td>
     </tr>
@@ -64,7 +64,7 @@
         <c:forEach var="day"
                    begin="${mailbox.prefs.calendarFirstDayOfWeek}"
                    end="${mailbox.prefs.calendarFirstDayOfWeek+6}">
-            <td nowrap width=14% class='ZhCalMiniDow'>
+            <td nowrap width="14%" class='ZhCalMiniDow'>
                 <fmt:message key="CAL_MINICAL_WDAY${zm:getDayOfWeek(currentWeekDay)}"/>                
                     ${zm:getNextDay(currentWeekDay)}
             </td>
@@ -91,7 +91,7 @@
             <c:set var="hasappt" value="${zm:hasAnyAppointments(appts, currentDay.timeInMillis, zm:addDay(currentDay, 1).timeInMillis) ? ' ZhCalMDHA' : ''}"/>
             <td align=center class='${clazz}${hasappt}${(currentDay.timeInMillis ge rangeStart.timeInMillis and currentDay.timeInMillis lt rangeEnd.timeInMillis) ? ' ZhCalMDS':''}'>
                 <app:calendarUrl var="dayUrl" timezone="${timezone}" rawdate="${currentDay}"/>
-                <a href="${dayUrl}">
+                <a href="${fn:escapeXml(dayUrl)}">
                 <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}"/>
                 </a>
             </td>

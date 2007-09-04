@@ -13,57 +13,51 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<zm:getMailbox var="mailbox"/>
 
-<c:if test="${empty requestScope.calViewToolbarCache}">
-    <zm:getMailbox var="mailbox"/>
-    <c:set var="calViewToolbarCache" scope="request">
-        <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd"/>
-        <app:calendarUrl var="newApptUrl" date="${dateDf}" action="edit"/>
-        <app:calendarUrl var="dayViewUrl" date="${dateDf}" view="day"/>
-        <app:calendarUrl var="weekViewUrl" date="${dateDf}" view="week"/>
-        <app:calendarUrl var="workWeekViewUrl" date="${dateDf}" view="workWeek"/>
-        <app:calendarUrl var="monthViewUrl" date="${dateDf}" view="month"/>
-        <app:calendarUrl var="scheduleViewUrl" date="${dateDf}" view="schedule"/>
-        <td height=100%>
-            <a id="CAL_NEWAPPT" href="${newApptUrl}"><app:img altkey="ALT_CAL_NEW_APPT" src="calendar/ImgNewAppointment.gif"/><span><fmt:message key="new"/></span></a>
-        </td>
-        <td height=100%><div class='vertSep'/></td>
-         <td height=100%>
-            <a id="CAL_DAY" href="${dayViewUrl}"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/ImgDayView.gif"/><span><fmt:message key="day"/></span></a>
-        </td>
-        <td height=100%>
-            <a id="CAL_WORK" href="${workWeekViewUrl}"><app:img altkey="ALT_CAL_WORKWEEK_VIEW" src="calendar/ImgWorkWeekView.gif"/><span><fmt:message key="workWeek"/></span></a>
-        </td>
-        <td height=100%>
-            <a id="CAL_WEEK" href="${weekViewUrl}"><app:img altkey="ALT_CAL_WEEK_VIEW" src="calendar/ImgWeekView.gif"/><span><fmt:message key="week"/></span></a>
-        </td>
-        <td height=100%>
-            <a id="CAL_MONTH" href="${monthViewUrl}"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/ImgMonthView.gif"/><span><fmt:message key="month"/></span></a>
-        </td>
-        <td height=100%>
-            <a id="CAL_SCHED" href="${scheduleViewUrl}"><app:img altkey="ALT_CAL_SCHEDULE_VIEW" src="calendar/ImgGroupSchedule.gif"/><span><fmt:message key="schedule"/></span></a>
-        </td>
-        <td height=100%><div class='vertSep'/></td>
-        <app:calendarUrl var="todayUrl" nodate="true"/>
-        <td height=100%>
-            <a id="CAL_TODAY" href="${todayUrl}"><app:img altkey="ALT_CAL_TODAY" src="calendar/ImgDate.gif"/><span><fmt:message key="today"/></span></a>
-        </td>
-    </c:set>
-</c:if>
-
-<table width=100% cellspacing=0 class='Tb'>
+<table width="100%" cellspacing="0" class='Tb'>
     <tr>
-        <td align=left class=TbBt id="caltb">
+        <td align="left" class=TbBt id="caltb">
             <table cellpadding="0" cellspacing="0">
                 <tr valign="middle">
                     <app:calendarUrl var="refreshUrl" refresh="1"/>
-                    <td height=100%>
-                        <a href="${refreshUrl}" <c:if test="${keys}"> id="CAL_REFRESH"</c:if>><app:img altkey="ALT_CAL_REFRESH" src="arrows/ImgRefresh.gif"/><span><fmt:message key="refresh"/></span></a>
+                    <td height="100%">
+                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"> id="CAL_REFRESH"</c:if>><app:img altkey="ALT_CAL_REFRESH" src="arrows/ImgRefresh.gif"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
                     </td>
                     <td>
-                        <div class='vertSep'/>
+                        <div class='vertSep'></div>
                     </td>
-                    ${requestScope.calViewToolbarCache}
+                    <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd"/>
+                    <app:calendarUrl var="newApptUrl" date="${dateDf}" action="edit"/>
+                    <app:calendarUrl var="dayViewUrl" date="${dateDf}" view="day"/>
+                    <app:calendarUrl var="weekViewUrl" date="${dateDf}" view="week"/>
+                    <app:calendarUrl var="workWeekViewUrl" date="${dateDf}" view="workWeek"/>
+                    <app:calendarUrl var="monthViewUrl" date="${dateDf}" view="month"/>
+                    <app:calendarUrl var="scheduleViewUrl" date="${dateDf}" view="schedule"/>
+                    <td height="100%">
+                        <a id="CAL_NEWAPPT" href="${fn:escapeXml(newApptUrl)}"><app:img altkey="ALT_CAL_NEW_APPT" src="calendar/ImgNewAppointment.gif"/><span><fmt:message key="new"/></span></a>
+                    </td>
+                    <td height="100%"><div class='vertSep'></div></td>
+                    <td height="100%">
+                        <a id="CAL_DAY" href="${fn:escapeXml(dayViewUrl)}"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/ImgDayView.gif"/><span><fmt:message key="day"/></span></a>
+                    </td>
+                    <td height="100%">
+                        <a id="CAL_WORK" href="${fn:escapeXml(workWeekViewUrl)}"><app:img altkey="ALT_CAL_WORKWEEK_VIEW" src="calendar/ImgWorkWeekView.gif"/><span><fmt:message key="workWeek"/></span></a>
+                    </td>
+                    <td height="100%">
+                        <a id="CAL_WEEK" href="${fn:escapeXml(weekViewUrl)}"><app:img altkey="ALT_CAL_WEEK_VIEW" src="calendar/ImgWeekView.gif"/><span><fmt:message key="week"/></span></a>
+                    </td>
+                    <td height="100%">
+                        <a id="CAL_MONTH" href="${fn:escapeXml(monthViewUrl)}"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/ImgMonthView.gif"/><span><fmt:message key="month"/></span></a>
+                    </td>
+                    <td height="100%">
+                        <a id="CAL_SCHED" href="${fn:escapeXml(scheduleViewUrl)}"><app:img altkey="ALT_CAL_SCHEDULE_VIEW" src="calendar/ImgGroupSchedule.gif"/><span><fmt:message key="schedule"/></span></a>
+                    </td>
+                    <td height="100%"><div class='vertSep'></div></td>
+                    <app:calendarUrl var="todayUrl" nodate="true"/>
+                    <td height="100%">
+                        <a id="CAL_TODAY" href="${fn:escapeXml(todayUrl)}"><app:img altkey="ALT_CAL_TODAY" src="calendar/ImgDate.gif"/><span><fmt:message key="today"/></span></a>
+                    </td>
                 </tr>
             </table>
         </td>
@@ -73,13 +67,13 @@
             <table cellspacing=5 cellpadding=0>
                 <tr>
                     <td>
-            <a <c:if test="${keys}">id="PREV_PAGE"</c:if> href="${prevUrl}"><app:img altkey="ALT_PAGE_PREVIOUS" src="startup/ImgLeftArrow.gif" border="0"/></a>
+            <a <c:if test="${keys}">id="PREV_PAGE"</c:if> href="${fn:escapeXml(prevUrl)}"><app:img altkey="ALT_PAGE_PREVIOUS" src="startup/ImgLeftArrow.gif" border="0"/></a>
                     </td>
                     <td class='ZhCalPager'>
             ${fn:escapeXml(title)}
                     </td>
                     <td>
-            <a <c:if test="${keys}">id="NEXT_PAGE"</c:if> href="${nextUrl}"><app:img alt="ALT_PAGE_NEXT" src="startup/ImgRightArrow.gif" border="0"/></a>
+            <a <c:if test="${keys}">id="NEXT_PAGE"</c:if> href="${fn:escapeXml(nextUrl)}"><app:img alt="ALT_PAGE_NEXT" src="startup/ImgRightArrow.gif" border="0"/></a>
                     </td>
                 </tr>
             </table>

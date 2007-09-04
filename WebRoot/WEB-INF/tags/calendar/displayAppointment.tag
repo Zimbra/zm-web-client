@@ -30,22 +30,22 @@
 <fmt:message var="noSubject" key="noSubject"/>
 
 <c:set var="isPart" value="${!empty message.partName}"/>
-<table cellpadding=0 cellspacing=0 width=100% class='Compose'>
+<table cellpadding="0" cellspacing="0" width="100%" class='Compose'>
 <tr class='${zm:getFolder(pageContext, message.folderId).styleColor}Bg'>
     <td class='ZhBottomSep'>
-        <table width=100% cellspacing=0 cellpadding=0>
+        <table width="100%" cellspacing="0" cellpadding="0">
             <tr class='apptHeaderRow'>
                 <td>
                     <table border="0" cellpadding="2" cellspacing="2">
                         <tr>
-                            <td width=24><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.gif' : 'calendar/ImgAppointment.gif'}"/></td>
+                            <td width="24"><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.gif' : 'calendar/ImgAppointment.gif'}" alt="appointment"/></td>
                             <td class='apptHeader'>
-                            ${fn:escapeXml(empty appt.name ? noSubject : appt.name)}
+                                ${fn:escapeXml(empty appt.name ? noSubject : appt.name)}
+                            </td>
                         </tr>
                     </table>
                 </td>
-                </td>
-                <td align=right width=1%>
+                <td align="right" width="1%">
                     <table border="0" cellpadding="2" cellspacing="2">
                         <tr>
                             <td class="companyName" width="100%">
@@ -62,13 +62,13 @@
 </tr>
 <tr>
 <td>
-<table width=100% cellpadding=0 cellspacing=0 class=Msg>
+<table width="100%" cellpadding="0" cellspacing="0" class="Msg">
     <tr>
         <td class='MsgHdr'>
-            <table width=100% cellpadding=0 cellspacing=0 border=0>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
                <tr>
                     <td>
-                        <table width=100% cellpadding=1 cellspacing=0 border=0>
+                        <table width="100%" cellpadding="1" cellspacing="0" border="0">
                             <tr>
                                 <td class='MsgHdrName'>
                                     <fmt:message key="subject"/>
@@ -119,7 +119,7 @@
                                 <td class='MgrHdrValue'>
                                     <table cellpadding="0" cellspacing="0">
                                         <tr>
-                                            <td width=24><app:img src="calendar/ImgApptException.gif"/></td>
+                                            <td width="24"><app:img src="calendar/ImgApptException.gif"/></td>
                                             <td><b><fmt:message key="apptExceptionNote"/></b></td>
                                         </tr>
                                     </table>
@@ -178,7 +178,7 @@
                         </table>
                     </td>
                     <td valign='top'>
-                        <table width=100% cellpadding=2 cellspacing=0 border=0>
+                        <table width="100%" cellpadding="2" cellspacing="0" border="0">
 
                             <c:if test="${message.hasTags or message.isFlagged}">
                                 <tr>
@@ -222,33 +222,33 @@
     <c:if test="${not hideops}">
     <tr>
         <td class='MsgOps'>
-            <table width=100% >
+            <table width="100%" >
                 <tr valign="middle">
-                    <td nowrap align=left style='padding-left: 5px'>
-                        <table cellspacing=4 cellpadding=0 class='Tb'>
+                    <td nowrap align="left" style='padding-left: 5px'>
+                        <table cellspacing="4" cellpadding="0" class='Tb'>
                             <tr>
                                 <c:choose>
                                     <c:when test="${showInviteReply}">
                                         <c:set var="keyOffset" value="${3}"/>
                                         <td style='padding: 0 2px 0 2px'>
-                                            <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=accept">
-                                                <app:img src="common/ImgCheck.gif" alt=""/>
+                                            <a <c:if test="${not isPart}"></c:if> href="${fn:escapeXml(composeUrl)}&amp;op=accept">
+                                                <app:img src="common/ImgCheck.gif" alt="check"/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyAccept"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
                                         <td style='padding: 0 2px 0 2px'>
-                                            <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=tentative">
-                                                <app:img src="common/ImgQuestionMark.gif" alt=""/>
+                                            <a <c:if test="${not isPart}"></c:if> href="${fn:escapeXml(composeUrl)}&amp;op=tentative">
+                                                <app:img src="common/ImgQuestionMark.gif" alt="quesetionmark"/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyTentative"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
                                         <td style='padding: 0 2px 0 2px'>
-                                            <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=decline">
-                                                <app:img src="common/ImgCancel.gif" alt=""/>
+                                            <a <c:if test="${not isPart}"></c:if> href="${fn:escapeXml(composeUrl)}&amp;op=decline">
+                                                <app:img src="common/ImgCancel.gif" alt="cancel"/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyDecline"/></span>
                                             </a>
@@ -262,11 +262,11 @@
                         </table>
                     </td>
                     <c:if test="${not empty newWindowUrl}">
-                        <td nowrap align=right style='padding-right: 5px;'>
-                            <table cellspacing=4 cellpadding=0 class='Tb'>
+                        <td nowrap align="right" style='padding-right: 5px;'>
+                            <table cellspacing="4" cellpadding="0" class='Tb'>
                                 <tr>
                                     <td style='padding: 0 2px 0 2px'>
-                                        <a target="_blank" href="${newWindowUrl}">
+                                        <a target="_blank" href="${fn:escapeXml(newWindowUrl)}">
                                             <app:img src="common/ImgOpenInNewWindow.gif" altkey="newWindow" title="newWindow"/>
                                         </a>
                                     </td>
@@ -283,7 +283,7 @@
         <tr>
             <td class='DisplayImages'>
                 <fmt:message key="externalImages"/>
-                &nbsp;<a href="${externalImageUrl}">
+                &nbsp;<a href="${fn:escapeXml(externalImageUrl)}">
                 <fmt:message key="displayExternalImages"/>
             </a>
             </td>

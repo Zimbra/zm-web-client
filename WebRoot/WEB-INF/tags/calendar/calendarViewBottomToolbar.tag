@@ -8,10 +8,10 @@
 
 <%-- TODO: blank for now, could add timezone drop down or more date selection --%>
 
-<table width=100% cellspacing=0 class='Tb'>
+<table width="100%" cellspacing="0" class='Tb'>
     <tr>
-        <td align=left class=TbBt>
-            <input type=hidden class='tbButton' name="zzz">&nbsp;
+        <td align="left" class=TbBt>
+            <input type="hidden" class='tbButton' name="zzz">&nbsp;
         </td>
         <td align='right' class='ZhCalTimeZone'>
             <zm:getMailbox var="mailbox"/>

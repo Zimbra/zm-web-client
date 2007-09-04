@@ -65,7 +65,7 @@
 
 <app:view mailbox="${mailbox}" title="${pageTitle}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" tags="true"
           date="${date}">
-    <table width=100% height=100% cellpadding="0" cellspacing="0" border=0>
+    <table width="100%" style='height:100%;' cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td class='TbTop'>
                 <app:calendarViewToolbar timezone="${timezone}" today="${today}" date="${date}" prevDate="${prevDate}"
