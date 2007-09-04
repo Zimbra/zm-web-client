@@ -167,7 +167,8 @@
 			<param-name>basename-patterns</param-name>
 			<param-value>
 				WEB-INF/classes/${dir}/${name},
-				../service/zimlet/${name}/${name}
+				../service/zimlet/${name}/${name},
+				../service/zimlet/_dev/${name}/${name}
 			</param-value>
 		</init-param>
 	</servlet>
