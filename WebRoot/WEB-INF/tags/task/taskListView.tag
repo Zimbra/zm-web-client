@@ -16,8 +16,8 @@
 
 <app:view mailbox="${mailbox}" title="${title}" selected='tasks' tasks="${true}" tags="true" context="${context}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
-    <form name="zform" action="${currentUrl}" method="post">
-        <table width=100% cellpadding="0" cellspacing="0">
+    <form name="zform" action="${fn:escapeXml(currentUrl)}" method="post">
+        <table width="100%" cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
                     <app:taskListViewToolbar context="${context}" keys="true"/>
@@ -25,7 +25,7 @@
             </tr>
             <tr>
                 <td class='List'>
-                        <table width=100% cellpadding=2 cellspacing=0>
+                        <table width="100%" cellpadding="2" cellspacing="0">
                             <tr class='Header'>
                                 <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                 <c:if test="${mailbox.features.tagging}">
@@ -35,22 +35,22 @@
                                 <th class='Img' nowrap><app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                                 <th nowrap>
                                     <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
-                                <a href="${subjectSortUrl}">
+                                <a href="${fn:escapeXml(subjectSortUrl)}">
                                     <fmt:message key="subject"/>
                                 </a>
-                                <th width=15% nowrap>
+                                <th width="15%" nowrap>
                                     <zm:newSortUrl var="statusSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'taskStatusAsc') ? 'taskStatusDesc' : 'taskStatusAsc'}"/>
-                                <a href="${statusSortUrl}">
+                                <a href="${fn:escapeXml(statusSortUrl)}">
                                     <fmt:message key="status"/>
                                     </a>
-                                <th width=10% nowrap>
+                                <th width="10%" nowrap>
                                     <zm:newSortUrl var="perSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'taskPercCompletedAsc') ? 'taskPercCompletedDesc' : 'taskPercCompletedAsc'}"/>
-                                <a href="${perSortUrl}">
+                                <a href="${fn:escapeXml(perSortUrl)}">
                                     <fmt:message key="taskPerComplete"/>
                                     </a>
-                                <th width=10% nowrap>
+                                <th width="10%" nowrap>
                                     <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'taskDueDesc' or empty context.ss) ? 'taskDueAsc' : 'taskDueDesc'}"/>
-                                <a href="${dateSortUrl}">
+                                <a href="${fn:escapeXml(dateSortUrl)}">
                                     <fmt:message key="taskDueDate"/>
                                 </a>
                             </tr>
@@ -66,10 +66,10 @@
                                     <c:if test="${mailbox.features.tagging}">
                                         <td class='Img'><app:miniTagImage ids="${taskHit.tagIds}"/></td>
                                     </c:if>
-                                    <td class='Img'><app:img src="${taskHit.priorityImage}"/></td>
+                                    <td class='Img'><app:img src="${taskHit.priorityImage}" alt="priority"/></td>
                                     <td class='Img'><app:attachmentImage attachment="${taskHit.hasAttachment}"/></td>
                                     <td><%-- allow this column to wrap --%>
-                                        <a href="${taskUrl}" id="${aid}">
+                                        <a href="${fn:escapeXml(taskUrl)}" id="${aid}">
                                             <c:set var='subj' value="${empty taskHit.subject ? unknownSubject : zm:truncate(taskHit.subject,100,true)}"/>
                                             <c:out value="${subj}"/>
                                         </a>
@@ -77,17 +77,17 @@
                                             <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
                                             <c:if test="${cursor.hasPrev}">
                                                 <zm:prevItemUrl var="prevItemUrl" value="search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                                <a href="${prevItemUrl}" id="PREV_ITEM"></a>
+                                                <a href="${fn:escapeXml(prevItemUrl)}" id="PREV_ITEM"></a>
                                             </c:if>
                                             <c:if test="${cursor.hasNext}">
                                                 <zm:nextItemUrl var="nextItemUrl" value="search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                                <a href="${nextItemUrl}" id="NEXT_ITEM"></a>
+                                                <a href="${fn:escapeXml(nextItemUrl)}" id="NEXT_ITEM"></a>
                                             </c:if>
                                         </c:if>
                                     </td>
-                                    <td width=15% nowrap><fmt:message key="TASK_${taskHit.status}"/></td>
-                                    <td width=10%>${empty taskHit.percentComplete ? '0' : taskHit.percentComplete}%</td>
-                                    <td width=10% nowrap>
+                                    <td width="15%" nowrap><fmt:message key="TASK_${taskHit.status}"/></td>
+                                    <td width="10%">${empty taskHit.percentComplete ? '0' : taskHit.percentComplete}%</td>
+                                    <td width="10%" nowrap>
                                         <c:choose>
                                             <c:when test="${taskHit.hasDueDate}">
                                                 <fmt:formatDate value="${taskHit.dueDate}" dateStyle="short" timeZone="${mailbox.prefs.timeZone}"/>

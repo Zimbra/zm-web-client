@@ -7,63 +7,57 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<c:if test="${empty requestScope.taskListToolbarCache}">
-     <zm:getMailbox var="mailbox"/>
-    <c:set var="taskListToolbarCache" scope="request">
-        <td><div class='vertSep'></div></td>
-        <td>
-        <zm:currentResultUrl var="newTaskUrl" value="" context="${context}" action="edittask"/>
-        <a id="NEW_TASK" href="${newTaskUrl}"><app:img altkey="newTask" src="tasks/ImgNewTask.gif"/><span><fmt:message key="newTask"/></span></a>
-        </td>
-        <td><div class='vertSep'></div></td>
-         <c:choose>
-             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                 <app:button id="OPDELETE" name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT" />
-             </c:when>
-             <c:otherwise>
-                 <app:button id="OPDELETE" name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
-             </c:otherwise>
-         </c:choose>
-         <td><div class='vertSep'></div></td>
-        <td nowrap>
-            <select name="folderId">
-                <option value="" selected/><fmt:message key="moveAction"/>
-                <option disabled /><fmt:message key="actionOptSep"/>
-                <zm:forEachFolder var="folder">
-                    <c:if test="${folder.isTaskMoveTarget and !folder.isTrash}">
-                        <option value="m:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
-                    </c:if>
-                </zm:forEachFolder>
-            </select>
-        </td>
-        <app:button name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
+<zm:getMailbox var="mailbox"/>
 
-        <td><div class='vertSep'></div></td>
-
-        <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
-            <td nowrap>
-            <select name="actionOp">
-            <option value="" selected/><fmt:message key="moreActions"/>
-        </c:if>
-        <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
-        <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
-            </select>
-            </td>
-            <app:button name="action" tooltip="actionTaskListGoTT" text="actionGo" />
-        </c:if>
-    </c:set>
-</c:if>
-
-<table width=100% cellspacing=0 class='Tb'>
+<table width="100%" cellspacing="0" class='Tb'>
     <tr>
-        <td align=left class=TbBt>
-            <table cellspacing=0 cellpadding=0 class='Tb'>
+        <td align="left" class=TbBt>
+            <table cellspacing="0" cellpadding="0" class='Tb'>
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                        <a href="${refreshUrl}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span><fmt:message key="refresh"/></span></a>
+                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
                     </td>
-                    ${requestScope.taskListToolbarCache}
+                    <td><div class='vertSep'></div></td>
+                    <td>
+                        <zm:currentResultUrl var="newTaskUrl" value="" context="${context}" action="edittask"/>
+                        <a <c:if test="${keys}">id="NEW_TASK" </c:if>href="${fn:escapeXml(newTaskUrl)}"><app:img altkey="newTask" src="tasks/ImgNewTask.gif"/><span><fmt:message key="newTask"/></span></a>
+                    </td>
+                    <td><div class='vertSep'></div></td>
+                    <c:choose>
+                        <c:when test="${context.isFolderSearch and context.folder.isTrash}">
+                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT" />
+                        </c:when>
+                        <c:otherwise>
+                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
+                        </c:otherwise>
+                    </c:choose>
+                    <td><div class='vertSep'></div></td>
+                    <td nowrap>
+                        <select name="folderId">
+                            <option value="" selected/><fmt:message key="moveAction"/>
+                            <option disabled /><fmt:message key="actionOptSep"/>
+                            <zm:forEachFolder var="folder">
+                                <c:if test="${folder.isTaskMoveTarget and !folder.isTrash}">
+                                    <option value="m:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                                </c:if>
+                            </zm:forEachFolder>
+                        </select>
+                    </td>
+                    <app:button name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
+                    <td><div class='vertSep'></div></td>
+
+                    <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                    <td nowrap>
+                        <select name="actionOp">
+                            <option value="" selected/><fmt:message key="moreActions"/>
+                    </c:if>
+                           <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
+                    <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                        </select>
+                    </td>
+                    <app:button name="action" tooltip="actionTaskListGoTT" text="actionGo" />
+                    </c:if>
                 </tr>
             </table>
         </td>

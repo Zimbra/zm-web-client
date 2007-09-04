@@ -77,85 +77,71 @@
 
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='tasks' tasks="true" context="${null}" keys="false" date="${requestScope.dateContext}" tags="true"
      onload="var e=document.getElementById('subject'); if (e) e.focus();">
-    <c:set var="toolbar">
-        <table width=100% cellspacing=0 cellpadding=0 class='Tb'>
-            <tr valign='middle'>
-                <td align=left class=TbBt>
-                    <table cellspacing=0 cellpadding=0 class='Tb'>
-                        <tr>
-                            <app:button id="OPSAVE" name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
-                            <td><div class='vertSep'></div></td>
-                            <c:choose>
-                                <c:when test="${isNewAppt}">
-                                    <app:button name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <app:button name="actionCancel" src="common/ImgClose.gif" tooltip="close" text="close"/>        
-                                </c:otherwise>
-                            </c:choose>
 
-                            <c:if test="${canDelete}">
-                                <td><div class='vertSep'></div></td>
-                                <c:choose>
-                                    <c:when test="${hasAttendees}">
-                                        <app:button name="actionApptCancel" tooltip="actionApptCancelTT" text="cancel"/>
-                                    </c:when>
-                                    <c:when test="${isInstance}">
-                                        <app:button name="actionApptDelete" tooltip="actionApptDeleteInstTT" text="deleteInst"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <app:button name="actionApptDelete" tooltip="actionApptDeleteTT" text="delete"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </c:if>
+    <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+        <table width="100%" style='height:100%;' cellpadding="0" cellspacing="0">
+            <tr>
+                <td class='TbTop'>
+                    <table width="100%" cellspacing="0" cellpadding="0" class='Tb'>
+                        <tr valign='middle'>
+                            <td align="left" class="TbBt">
+                                <table cellspacing="0" cellpadding="0" class='Tb'>
+                                    <tr>
+                                        <app:button id="OPSAVE" name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
+                                        <td><div class='vertSep'></div></td>
+                                        <c:choose>
+                                            <c:when test="${isNewAppt}">
+                                                <app:button name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <app:button name="actionCancel" src="common/ImgClose.gif" tooltip="close" text="close"/>
+                                            </c:otherwise>
+                                        </c:choose>
 
-                            <c:if test="${canDelete and not isInstance}">
-                                <td><div class='vertSep'></div></td>
-                                <td  nowrap valign=middle>
-                                    <select name="actionOp">
-                                        <option value="" selected/><fmt:message key="moreActions"/>
-                                        <app:tagOptions mailbox="${mailbox}" keys="${true}"/>
-                                    </select>
-                                </td>
-                                <app:button name="actionGo" tooltip="actionConvGoTT" text="actionGo"/>
-                                <td><div class='vertSep'></div></td>
-                            </c:if>
-
-                            
-                            <%--
-                            <td><div class='vertSep'></div></td>
-                            <app:button name="actionAttachAdd" src="common/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
-                            <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
-                                <td><div class='vertSep'></div></td>
-                                <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
-                            </c:if>
-                            --%>
+                                        <c:if test="${canDelete}">
+                                            <td><div class='vertSep'></div></td>
+                                            <c:choose>
+                                                <c:when test="${hasAttendees}">
+                                                    <app:button name="actionApptCancel" tooltip="actionApptCancelTT" text="cancel"/>
+                                                </c:when>
+                                                <c:when test="${isInstance}">
+                                                    <app:button name="actionApptDelete" tooltip="actionApptDeleteInstTT" text="deleteInst"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <app:button name="actionApptDelete" tooltip="actionApptDeleteTT" text="delete"/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </c:if>
+                                        <c:if test="${canDelete and not isInstance}">
+                                            <td><div class='vertSep'></div></td>
+                                            <td  nowrap valign=middle>
+                                                <select name="actionOp">
+                                                    <option value="" selected/><fmt:message key="moreActions"/>
+                                                    <app:tagOptions mailbox="${mailbox}" keys="${true}"/>
+                                                </select>
+                                            </td>
+                                            <app:button name="actionGo" tooltip="actionConvGoTT" text="actionGo"/>
+                                            <td><div class='vertSep'></div></td>
+                                        </c:if>
+                                    </tr>
+                                </table>
+                            </td>
                         </tr>
                     </table>
                 </td>
             </tr>
-        </table>
-    </c:set>
-
-    <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-        <table width=100% height=100% cellpadding="0" cellspacing="0">
-            <tr>
-                <td class='TbTop'>
-                    ${toolbar}
-                </td>
-            </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <table cellpadding=2 cellspacing=0 width=100% class='Compose'>
+                    <table cellpadding="2" cellspacing="0" width="100%" class='Compose'>
                         <tr  class='${zm:getFolder(pageContext, empty compose ? 10 : compose.apptFolderId).styleColor}Bg'>
-                            <td colspan=2 class='ZhBottomSep'>
-                                <table width=100% cellpadding=0 cellspacing=0>
+                            <td colspan="2" class='ZhBottomSep'>
+                                <table width="100%" cellpadding="0" cellspacing="0">
                                     <tr class='apptHeaderRow'>
-                                        <td width=24><center><app:img src="${apptImage}" altkey="${apptImageAlt}"/></center></td>
+                                        <td width="24"><center><app:img src="${apptImage}" altkey="${apptImageAlt}"/></center></td>
                                         <td class='apptHeader'>
                                             ${fn:escapeXml(apptSubject)}
                                         </td>
-                                        <td width=1% nowrap align='right' class='Tags' style='padding-right:5px'>
+                                        <td width="1%" nowrap align='right' class='Tags' style='padding-right:5px'>
                                             <c:if test="${(message.hasTags and mailbox.features.tagging) or (message.isFlagged)}">
                                                 <c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
                                                 <c:forEach items="${tags}" var="tag">
@@ -174,10 +160,10 @@
                             </td>
                         </tr>
                         <tr>
-                        <td colspan=2>
-                            <table cellpadding=2 cellspacing=0 width=100%>
+                        <td colspan="2">
+                            <table cellpadding="2" cellspacing="0" width="100%">
                                 <tr>
-                                    <td valign='top' width=50%>
+                                    <td valign='top' width="50%">
                                         <fieldset>
                                             <legend><fmt:message key="details"/></legend>
                                             <table cellpadding="5" cellspacing="0">
@@ -230,50 +216,49 @@
                                                     </c:when>
                                                     <c:otherwise>
                                                         <tr>
-                                                            <td colspan=2>&nbsp;</td>
+                                                            <td colspan="2">&nbsp;</td>
                                                         </tr>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </table>
                                         </fieldset>
                                     </td>
-                                    <td valign='top' width=50%>
+                                    <td valign='top' width="50%">
                                         <fieldset>
                                             <legend><fmt:message key="date"/></legend>
                                             <table cellpadding="5" cellspacing="0">
                                             <tr>
-                                                <td align=right>
+                                                <td align="right">
                                                     <input id="completed" type=checkbox onclick="completedCheckbox(this)" name="completed" <c:if test="${compose.taskStatus eq 'COMP'}">checked</c:if> value="1">
                                                 </td>
                                                 <td>
                                                     <table cellpadding="0" cellspacing="0">
                                                         <tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <select name="taskStatus" id="status" onchange="statusChanged(this.options[this.selectedIndex].value)">
-                                                                        <option id="NEED" <c:if test="${compose.taskStatus eq 'NEED'}">selected </c:if>value="NEED"><fmt:message key="TASK_NEED"/>
-                                                                        <option id="COMP" <c:if test="${compose.taskStatus eq 'COMP'}">selected </c:if>value="COMP"><fmt:message key="TASK_COMP"/>
-                                                                        <option id="INPR" <c:if test="${compose.taskStatus eq 'INPR'}">selected </c:if>value="INPR"><fmt:message key="TASK_INPR"/>
-                                                                        <option <c:if test="${compose.taskStatus eq 'WAITING'}">selected </c:if>value="WAITING"><fmt:message key="TASK_WAITING"/>
-                                                                        <option <c:if test="${compose.taskStatus eq 'DEFERRED'}">selected </c:if>value="DEFERRED"><fmt:message key="TASK_DEFERRED"/>
-                                                                    </select>
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td>
-                                                                    <select name="taskPercentComplete" id="percent" onchange="percentChanged(this.options[this.selectedIndex].value)">
-                                                                        <option id="percent0" <c:if test="${compose.taskPercentComplete eq '0'}">selected </c:if>value="0">0%
-                                                                        <option <c:if test="${compose.taskPercentComplete eq '10'}">selected </c:if>value="10">10%
-                                                                        <option <c:if test="${compose.taskPercentComplete eq '20'}">selected </c:if>value="20">20%
-                                                                        <option <c:if test="${compose.taskPercentComplete eq '30'}">selected </c:if>value="30">30%
-                                                                        <option <c:if test="${compose.taskPercentComplete eq '40'}">selected </c:if>value="40">40%
-                                                                        <option <c:if test="${compose.taskPercentComplete eq '50'}">selected </c:if>value="50">50%
-                                                                        <option <c:if test="${compose.taskPercentComplete eq '60'}">selected </c:if>value="60">60%
-                                                                        <option <c:if test="${compose.taskPercentComplete eq '70'}">selected </c:if>value="70">70%
-                                                                        <option <c:if test="${compose.taskPercentComplete eq '80'}">selected </c:if>value="80">80%
-                                                                        <option <c:if test="${compose.taskPercentComplete eq '90'}">selected </c:if>value="90">90%
-                                                                        <option id="percent100" <c:if test="${compose.taskPercentComplete eq '100'}">selected </c:if>value="100">100%
-                                                                    </select>
-                                                                </td>
+                                                            <td>
+                                                                <select name="taskStatus" id="status" onchange="statusChanged(this.options[this.selectedIndex].value)">
+                                                                    <option id="NEED" <c:if test="${compose.taskStatus eq 'NEED'}">selected </c:if>value="NEED"><fmt:message key="TASK_NEED"/>
+                                                                    <option id="COMP" <c:if test="${compose.taskStatus eq 'COMP'}">selected </c:if>value="COMP"><fmt:message key="TASK_COMP"/>
+                                                                    <option id="INPR" <c:if test="${compose.taskStatus eq 'INPR'}">selected </c:if>value="INPR"><fmt:message key="TASK_INPR"/>
+                                                                    <option <c:if test="${compose.taskStatus eq 'WAITING'}">selected </c:if>value="WAITING"><fmt:message key="TASK_WAITING"/>
+                                                                    <option <c:if test="${compose.taskStatus eq 'DEFERRED'}">selected </c:if>value="DEFERRED"><fmt:message key="TASK_DEFERRED"/>
+                                                                </select>
+                                                            </td>
+                                                            <td>&nbsp;</td>
+                                                            <td>
+                                                                <select name="taskPercentComplete" id="percent" onchange="percentChanged(this.options[this.selectedIndex].value)">
+                                                                    <option id="percent0" <c:if test="${compose.taskPercentComplete eq '0'}">selected </c:if>value="0">0%
+                                                                    <option <c:if test="${compose.taskPercentComplete eq '10'}">selected </c:if>value="10">10%
+                                                                    <option <c:if test="${compose.taskPercentComplete eq '20'}">selected </c:if>value="20">20%
+                                                                    <option <c:if test="${compose.taskPercentComplete eq '30'}">selected </c:if>value="30">30%
+                                                                    <option <c:if test="${compose.taskPercentComplete eq '40'}">selected </c:if>value="40">40%
+                                                                    <option <c:if test="${compose.taskPercentComplete eq '50'}">selected </c:if>value="50">50%
+                                                                    <option <c:if test="${compose.taskPercentComplete eq '60'}">selected </c:if>value="60">60%
+                                                                    <option <c:if test="${compose.taskPercentComplete eq '70'}">selected </c:if>value="70">70%
+                                                                    <option <c:if test="${compose.taskPercentComplete eq '80'}">selected </c:if>value="80">80%
+                                                                    <option <c:if test="${compose.taskPercentComplete eq '90'}">selected </c:if>value="90">90%
+                                                                    <option id="percent100" <c:if test="${compose.taskPercentComplete eq '100'}">selected </c:if>value="100">100%
+                                                                </select>
+                                                            </td>
                                                         </tr>
                                                     </table>
                                                 </td>
@@ -284,7 +269,7 @@
                                                     <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
-                                                                <input id="start" autocomplete="off" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
+                                                                <input id="start" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
                                                             </td>
                                                             <td class='ZhDateHint'>
                                                                 <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
@@ -299,7 +284,7 @@
                                                     <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
-                                                                <input id="end" autocomplete="off" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
+                                                                <input id="end" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
                                                             </td>
                                                             <td class='ZhDateHint'>
                                                                 <fmt:message key="CAL_APPT_EDIT_DATE_FORMAT_HINT"/>
