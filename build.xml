@@ -842,6 +842,14 @@ if (ext == null) ext = "";
 		<imagesort source='${sort.source}' target='${sort.target}' delete='true'/><!-- noop='true'/-->
 	</target>
 
+	<!-- HTML CLIENT TARGETS -->
+	<target name='server-war'>
+		<ant dir='${server.dir}' target='war' />
+	</target>
+	<target name='taglib-jar'>
+		<ant dir='${taglib.dir}' target='jar' />
+	</target>
+	<target name='deploy-html' depends='server-war,taglib-jar,deploy'/>
 
 	<!-- LEGACY TARGETS -->
 	<target name='dev-sync'				depends='sync' />
