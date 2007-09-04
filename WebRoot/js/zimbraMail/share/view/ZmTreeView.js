@@ -246,7 +246,7 @@ function(params) {
 	var addSep = true;
 	for (var i = 0; i < children.length; i++) {
 		var child = children[i];
-		if (params.omit && params.omit[child.nId]) { continue; }
+		if (!child || (params.omit && params.omit[child.nId])) { continue; }
 		if (!(params.include && params.include[child.nId])) {
 			var allowed = ((org.nId == ZmOrganizer.ID_ROOT) && this.allowedTypes[child.type]) ||
 						  ((org.nId != ZmOrganizer.ID_ROOT) && this.allowedSubTypes[child.type]);
