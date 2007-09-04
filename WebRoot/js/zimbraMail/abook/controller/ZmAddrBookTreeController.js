@@ -56,7 +56,38 @@ ZmAddrBookTreeController.prototype.show =
 function(params) {
 	params.include = {};
 	params.include[ZmFolder.ID_TRASH] = true;
-	return ZmFolderTreeController.prototype.show.call(this, params);
+	var treeView = ZmFolderTreeController.prototype.show.call(this, params);
+
+	// contacts app has its own Trash folder so listen for change events
+	var trash = this.getDataTree().getById(ZmFolder.ID_TRASH);
+	if (trash) {
+		trash.addChangeListener(new AjxListener(this, this._trashChangeListener, treeView));
+	}
+
+	return treeView;
+};
+
+ZmAddrBookTreeController.prototype._trashChangeListener =
+function(treeView, ev) {
+	var organizers = ev.getDetail("organizers");
+	if (!organizers && ev.source) {
+		organizers = [ev.source];
+	}
+
+	// handle one organizer at a time
+	for (var i = 0; i < organizers.length; i++) {
+		var organizer = organizers[i];
+
+		if (organizer.id == ZmFolder.ID_TRASH &&
+			ev.event == ZmEvent.E_MODIFY)
+		{
+			var fields = ev.getDetail("fields");
+			if (fields && (fields[ZmOrganizer.F_TOTAL] || fields[ZmOrganizer.F_SIZE])) {
+				var ti = treeView.getTreeItemById(organizer.id);
+				if (ti) ti.setToolTipContent(organizer.getToolTip(true));
+			}
+		}
+	}
 };
 
 // Enables/disables operations based on the given organizer ID
