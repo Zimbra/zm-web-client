@@ -10,14 +10,14 @@
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
 <tr>
-    <td nowrap colspan=3 class='${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''} Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
+    <td nowrap colspan="3" class='${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''} Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
         style='padding-left: ${padFudge + folder.depth*8}px'>
         <c:url var="url" value="/h/search">
             <c:param name="sfi" value="${folder.id}"/>
             <c:param name="st" value="contact"/>
         </c:url>
 
-        <a href='${url}'>
+        <a href='${fn:escapeXml(url)}'>
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
             <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>
              ${zm:truncate(fn:escapeXml(label),20,true)}

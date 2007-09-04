@@ -8,12 +8,12 @@
 
 <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
 <zm:getMailbox var="mailbox"/>
-<table width=100% cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
 <tr>
     <td class='ZhBottomSep'>
-        <table width=100% cellspacing=0 cellpadding=0>
+        <table width="100%" cellspacing="0" cellpadding="0">
             <tr class='${zm:getFolder(pageContext, contact.folderId).styleColor}Bg'>
-        <td width=20><center><app:img src="${contact.isGroup ? 'contacts/ImgGroup.gif' : 'contacts/ImgContact.gif'}" altkey="${contact.imageAltKey}"/></center></td>
+        <td width="20"><center><app:img src="${contact.isGroup ? 'contacts/ImgGroup.gif' : 'contacts/ImgContact.gif'}" altkey="${contact.imageAltKey}"/></center></td>
         <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : contact.displayFileAs)}
         </td>
         <td align='right' class='Tags'>
@@ -92,7 +92,7 @@
                 </c:if>
         </td>
         <td valign="top" width="385">
-            <table width=100% border="0" cellspacing='3'>
+            <table width="100%" border="0" cellspacing='3'>
                 <tbody>
                     <app:contactPhone label="phone" phone="${contact.workPhone}"/>
                     <app:contactPhone label="phone2" phone="${contact.workPhone2}"/>
@@ -127,7 +127,7 @@
                 </c:if>
         </td>
         <td valign="top">
-            <table width=100% border="0" cellspacing='3'>
+            <table width="100%" border="0" cellspacing='3'>
                 <tbody>
                     <app:contactPhone label="phone" phone="${contact.homePhone}"/>
                     <app:contactPhone label="phone2" phone="${contact.homePhone2}"/>
@@ -162,7 +162,7 @@
                 </c:if>
         </td>
         <td valign="top" width="385">
-            <table width=100% border="0" cellspacing='3'>
+            <table width="100%" border="0" cellspacing='3'>
                 <tbody>
                     <app:contactPhone label="otherPhone" phone="${contact.otherPhone}"/>
                     <app:contactPhone label="otherFax" phone="${contact.otherFax}"/>

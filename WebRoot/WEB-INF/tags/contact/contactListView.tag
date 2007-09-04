@@ -14,8 +14,8 @@
 
 <app:view mailbox="${mailbox}" title="${title}" selected='contacts' contacts="true" tags="true"  context="${context}" keys="true">
    <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
-   <form action="${currentUrl}" method="post" name="zform">
-       <table width=100% cellspacing="0" cellpadding="0">
+   <form action="${fn:escapeXml(currentUrl)}" method="post" name="zform">
+       <table width="100%" cellspacing="0" cellpadding="0">
            <tr>
                <td class='TbTop'>
                    <app:contactListViewToolbar context="${context}" contact="${contact}" keys="true"/>
@@ -23,19 +23,19 @@
            </tr>
            <tr>
                <td>
-               <table width=100% cellspacing="0" cellpadding="0">
+               <table width="100%" cellspacing="0" cellpadding="0">
                <tr>
-                   <td width=200 class='List' valign='top'>
-                       <table width=100% cellpadding=2 cellspacing=0>
+                   <td width="200" class='List' valign='top'>
+                       <table width="100%" cellpadding="2" cellspacing="0">
                            <tr>
                                <th class='CB'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                <c:if test="${mailbox.features.tagging}">
-                                <th class='Img' nowrap><app:img atkey='ALT_TAG_TAG' src="tag/ImgTagOrange.gif"alt="Tagged"/>
+                                <th class='Img' nowrap><app:img altkey='ALT_TAG_TAG' src="tag/ImgTagOrange.gif" alt="Tagged"/>
                                 </c:if>
                                <th class='Img'>&nbsp;
                                <th nowrap>
                                    <zm:newSortUrl var="nameSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'nameDesc' ? 'nameAsc' : 'nameDesc'}"/>
-                               <a href="${nameSortUrl}">
+                               <a href="${fn:escapeXml(nameSortUrl)}">
                                    <fmt:message key="name"/>
                                </a>
                            </tr>
@@ -49,7 +49,7 @@
                                    <td class='Img'><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
                                    <td ><span style='padding:3px'>
                                        <zm:currentResultUrl var="contactUrl" value="/h/search" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
-                                       <a  href="${contactUrl}" id="A${status.index}">
+                                       <a  href="${fn:escapeXml(contactUrl)}" id="A${status.index}">
                                                ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '<None>' : hit.contactHit.fileAsStr)}
                                        </a></span>
                                        <c:if test="${hit.contactHit.id == context.currentItem.id}">
@@ -57,11 +57,11 @@
 
                                            <c:if test="${cursor.hasPrev}">
                                                <zm:prevItemUrl var="prevItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                               <a id="PREV_ITEM" href="${prevItemUrl}"></a>
+                                               <a id="PREV_ITEM" href="${fn:escapeXml(prevItemUrl)}"></a>
                                            </c:if>
                                            <c:if test="${cursor.hasNext}">
                                                <zm:nextItemUrl var="nextItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                               <a id="NEXT_ITEM" href="${nextItemUrl}"></a>
+                                               <a id="NEXT_ITEM" href="${fn:escapeXml(nextItemUrl)}"></a>
                                            </c:if>
                                        </c:if>
                                    </td>

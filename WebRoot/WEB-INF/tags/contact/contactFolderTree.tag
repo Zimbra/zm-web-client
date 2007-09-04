@@ -13,13 +13,13 @@
 <c:set var="expanded" value="${sessionScope.expanded.contacts ne 'collapse'}"/>
 
 <div class=Tree>
-    <table width=100% cellpadding=0 cellspacing=0>
+    <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <c:url var="toggleUrl" value="/h/search">
                 <c:param name="st" value="contact"/>
                  <c:param name="${expanded ? 'collapse' : 'expand'}" value="contacts"/>
              </c:url>
-             <th style='width:20px'><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}"/></a></th>
+             <th style='width:20px'><a href="${fn:escapeXml(toggleUrl)}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}"/></a></th>
             <th class='Header'><fmt:message key="addressBooks"/></th>
             <th width='1%' align='right' class='ZhTreeEdit'>
                 <c:url value="/h/maddrbooks" var="mabUrl">
@@ -27,7 +27,7 @@
                         <c:param name="sfi" value="${param.sfi}"/>
                     </c:if>
                 </c:url>
-                <a id="MADDRBOOKS" href="${mabUrl}" ><fmt:message key="TREE_EDIT"/></a>
+                <a id="MADDRBOOKS" href="${fn:escapeXml(mabUrl)}" ><fmt:message key="TREE_EDIT"/></a>
             </th>
         </tr>
 
