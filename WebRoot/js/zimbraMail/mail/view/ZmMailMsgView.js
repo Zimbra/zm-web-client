@@ -130,11 +130,12 @@ function(msg) {
 		? new Date(msg.sentDate)
 		: new Date(msg.date);
 
+	var invite = msg.getInvite();
+
 	if ((appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
-		msg.isInvite() && msg.getInvite().type != "task" &&
+		invite && invite.type != "task" &&
 		!appCtxt.isChildWindow)
 	{
-		var invite = msg.getInvite();
 		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
 			invite.getStatus() != ZmCalItem.STATUS_CANC &&
 			msg.folderId != ZmFolder.ID_TRASH &&
@@ -150,7 +151,8 @@ function(msg) {
 	}
 	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 			 appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) &&
-			 msg.share && msg.folderId != ZmFolder.ID_TRASH)
+			 msg.share && msg.folderId != ZmFolder.ID_TRASH &&
+			 appCtxt.getActiveAccount().id != msg.share.grantor.id)
 	{
 		AjxDispatcher.require("Share");
 		var action = msg.share.action;
