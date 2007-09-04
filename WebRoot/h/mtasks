@@ -39,17 +39,17 @@
      onload="var e=document.getElementById('newName'); if (e) e.focus();">
 
     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-        <table width=100% cellspacing="0" cellpadding="0">
+        <table width="100%" cellspacing="0" cellpadding="0">
             <tr>
                 <td class='TbTop'>
-                    <table width=100% cellspacing=0>
+                    <table width="100%" cellspacing="0">
                         <tr>
                             <td class='TbBt'>
-                                <table cellspacing=0 cellpadding=0 class='Tb'>
+                                <table cellspacing="0" cellpadding="0" class='Tb'>
                                     <tr>
                                         <td>
                                             <a id="OPCLOSE" href="<c:url value="/h/search?st=task"/>">
-                                                <app:img src="common/ImgClose.gif"/><span><fmt:message key="close"/></span>
+                                                <app:img src="common/ImgClose.gif" alt="close"/><span><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
@@ -66,10 +66,10 @@
 
             <tr>
                 <td class='ZhAppContent'>
-                    <table border="0" cellpadding="0" cellspacing="0" width=100%>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
-                            <td width=200 class='List' valign='top'>
-                                <table width=100% cellpadding=2 cellspacing=0>
+                            <td width="200" class='List' valign='top'>
+                                <table width="100%" cellpadding="2" cellspacing="0">
                                     <c:set var="index" value="${0}"/>
                                     <zm:forEachFolder var="folder">
                                         <c:if test="${folder.isTaskView}">
@@ -77,7 +77,7 @@
                                             <c:set var="selected" value="${selectedFolder.id eq folder.id and not newTaskList}"/>
                                             <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>
                                             <tr>
-                                                <td class='${rowColor}' width=1%>
+                                                <td class='${rowColor}' width="1%">
                                                     &nbsp;
                                                 </td>
                                                 <td class='${rowColor}'>
@@ -86,7 +86,7 @@
                                                         <c:param name="id" value="${folder.id}"/>
                                                     </c:url>
                                                     <a id="A${index}" href="${selectUrl}">
-                                                        <app:img src="${folder.image}"/>
+                                                        <app:img src="${folder.image}" alt="folder"/>
                                                         <span <c:if test="${selected}">class='ZhTISelected'</c:if> style='vertical-align:middle'>${fn:escapeXml(label)}</span>
                                                     </a>
                                                 </td>

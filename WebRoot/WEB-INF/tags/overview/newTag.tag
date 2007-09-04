@@ -8,28 +8,28 @@
 
 <fmt:message var="label" key="tagNew"/>
 
-<table width=100% cellspacing=0 cellpadding=0>
+<table width="100%" cellspacing="0" cellpadding="0">
     <tr class='GrayBg'>
         <c:set var="icon" value="tag/ImgTagBlue.gif"/>
         <td>&nbsp;</td>
-        <td width=20>
+        <td width="20">
             <app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
         </td>
-        <td class='ZhFolderHeader' colspan=2>
+        <td class='ZhFolderHeader' colspan="2">
             ${fn:escapeXml(label)}
         </td>
     </tr>
 </table>
 
-<table border="0" cellpadding="0" cellspacing="10" width=100%>
+<table border="0" cellpadding="0" cellspacing="10" width="100%">
 
     <tr>
-        <td width=20% nowrap align=right>
+        <td width="20%" nowrap align="right">
             <fmt:message key="name"/>
             :
         </td>
         <td>
-            <input id="name" name='newTagName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newTagName)}">
+            <input id="name" name='newTagName' type='text' size='35' value="${fn:escapeXml(param.newTagName)}">
         </td>
     </tr>
 

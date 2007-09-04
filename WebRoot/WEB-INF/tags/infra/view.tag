@@ -258,7 +258,7 @@
     <tr>
         <td valign="top" align="center" class="Overview">
             <a href="http://www.zimbra.com/" target="_new">
-                <span style='cursor:pointer' class='ImgAppBanner'></span>
+                <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span>
 
             </a>
         </td>

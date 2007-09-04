@@ -49,17 +49,17 @@
             onload="var e=document.getElementById('name'); if (e) e.focus();">
 
     <form action="" method="post">
-        <table width=100% cellspacing="0" cellpadding="0">
+        <table width="100%" cellspacing="0" cellpadding="0">
             <tr>
                 <td class='TbTop'>
-                    <table width=100% cellspacing=0>
+                    <table width="100%" cellspacing="0">
                         <tr>
                             <td class='TbBt'>
-                                <table cellspacing=0 cellpadding=0 class='Tb'>
+                                <table cellspacing="0" cellpadding="0" class='Tb'>
                                     <tr>
                                         <td>
                                             <a id="OPCLOSE" href="<c:url value="/h/search"/>">
-                                                <app:img src="common/ImgClose.gif"/><span><fmt:message key="close"/></span>
+                                                <app:img src="common/ImgClose.gif" alt="close"/><span><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
@@ -73,25 +73,25 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <table border="0" cellpadding="0" cellspacing="0" width=100%>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
-                            <td width=200 class='List' valign='top'>
-                                <table width=100% cellpadding=2 cellspacing=0>
+                            <td width="200" class='List' valign='top'>
+                                <table width="100%" cellpadding="2" cellspacing="0">
                                     <c:set var="index" value="${0}"/>
                                     <zm:forEachTag var="tag">
                                         <c:set var="hasTags" value="${true}"/>
                                         <c:if test="${selectedTag.id eq tag.id and not newTag}"><c:set var="selectedRow" value="${index}"/></c:if>
 
                                         <tr <c:if test="${index eq selectedRow}">class='RowSelected'</c:if>>
-                                            <td width=1%>
+                                            <td width="1%">
                                                 &nbsp;
                                             </td>
-                                            <td nowrap colspan='3' class='Folder ${tag.hasUnread ? ' Unread':''}'>
+                                            <td nowrap colspan="3" class='Folder ${tag.hasUnread ? ' Unread':''}'>
                                                 <c:url var="selectUrl" value="">
                                                     <c:param name="id" value="${tag.id}"/>
                                                 </c:url>
-                                                <a id="A${index}" href="${selectUrl}">
-                                                    <app:img src="${tag.image}"/>
+                                                <a id="A${index}" href="${fn:escapeXml(selectUrl)}">
+                                                    <app:img src="${tag.image}" alt="tag"/>
                                                         <span style='vertical-align:middle;'>${fn:escapeXml(tag.name)}
                                                             <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
                                                         </span>

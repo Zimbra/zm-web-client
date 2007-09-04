@@ -6,12 +6,12 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<table width=100% cellpadding="0" cellspacing="0">
+<table width="100%" cellpadding="0" cellspacing="0">
 <tr>
     <td class='ZhBottomSep'>
-        <table width=100% cellspacing=0 cellpadding=0>
+        <table width="100%" cellspacing="0" cellpadding="0">
     <tr class='contactHeaderRow'>
-        <td width=20><center><app:img src="mail/ImgMailRule.gif" altkey="filterRule"/></center></td>
+        <td width="20"><center><app:img src="mail/ImgMailRule.gif" altkey="filterRule"/></center></td>
         <td class='contactHeader'>${fn:escapeXml(rule.name)}</td>
     </tr>
 </table>

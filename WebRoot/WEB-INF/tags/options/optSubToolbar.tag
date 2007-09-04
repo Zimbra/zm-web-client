@@ -6,10 +6,10 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<table cellspacing=0 class='Tb' width=100%>
+<table cellspacing="0" class='Tb' width="100%">
     <tr>
         <td class='TbBt'>
-            <table cellspacing=0 cellpadding=0 class='Tb'>
+            <table cellspacing="0" cellpadding="0" class='Tb'>
                <tr>
                    <c:choose>
                        <c:when test="${selected eq 'filter'}">
@@ -43,7 +43,7 @@
                </tr>
             </table>
         </td>
-        <td align=right>
+        <td align="right">
             &nbsp;
         </td>
     </tr>

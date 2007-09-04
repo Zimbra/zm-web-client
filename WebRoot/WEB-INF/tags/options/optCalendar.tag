@@ -9,7 +9,7 @@
 <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols" />
 <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
 
-<table border="0" cellpadding="0" cellspacing="10" width=100%>
+<table border="0" cellpadding="0" cellspacing="10" width="100%">
      <tr>
         <td colspan="2" class='ZOptionsHeader' >
             <fmt:message key="optionsGeneral"/>
@@ -56,7 +56,6 @@
             <fmt:message key="optionsDayWeekView"/>
         </td>
      </tr>
-     <tr>
      <tr>
          <td class='ZOptionsTableLabel'>
                  <label for="dayStart"><fmt:message key="calendarDayStartsAt"/>

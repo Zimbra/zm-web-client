@@ -127,7 +127,7 @@
             <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign=center>
                     <td>
-                        <input id="url" name='newFolderUrl' type='text' autocomplete='off' size='70' value="${fn:escapeXml(param.newFolderUrl)}">
+                        <input id="url" name='newFolderUrl' type='text' size='70' value="${fn:escapeXml(param.newFolderUrl)}">
                         <input name='newFolderUrlVisible' type='hidden' value='TRUE'/>
                     </td>
                 </tr>
@@ -144,7 +144,7 @@
                 :</label>
             </td>
             <td>
-                <input id="ownersEmail" name='newFolderOwnersEmail' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersEmail)}">
+                <input id="ownersEmail" name='newFolderOwnersEmail' type='text' size='35' value="${fn:escapeXml(param.newFolderOwnersEmail)}">
                 <input name='newFolderOwnersEmailVisible' type='hidden' value='TRUE'/>
             </td>
         </tr>
@@ -155,7 +155,7 @@
                 :</label>
             </td>
             <td>
-                <input id="ownersAbName" name='newFolderOwnersAddressBook' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersAddressBook)}">
+                <input id="ownersAbName" name='newFolderOwnersAddressBook' type='text' size='35' value="${fn:escapeXml(param.newFolderOwnersAddressBook)}">
                 <input name='newFolderOwnersAddressBookVisible' type='hidden' value='TRUE'/>
             </td>
         </tr>
@@ -167,7 +167,7 @@
                 :</label>
             </td>
             <td>
-                <input id="ownersTlName" name='newFolderOwnersTaskList' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersTaskList)}">
+                <input id="ownersTlName" name='newFolderOwnersTaskList' type='text' size='35' value="${fn:escapeXml(param.newFolderOwnersTaskList)}">
                 <input name='newFolderOwnersTaskListVisible' type='hidden' value='TRUE'/>
             </td>
         </tr>
@@ -179,7 +179,7 @@
                     :</label>
                 </td>
                 <td>
-                    <input id="ownersCalName" name='newFolderOwnersCalendar' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersCalendar)}">
+                    <input id="ownersCalName" name='newFolderOwnersCalendar' type='text' size='35' value="${fn:escapeXml(param.newFolderOwnersCalendar)}">
                     <input name='newFolderOwnersCalendarVisible' type='hidden' value='TRUE'/>
                 </td>
             </tr>
@@ -254,7 +254,7 @@
             <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign=center>
                     <td>
-                        <input id="folderQuery" name='newFolderQuery' type='text' autocomplete='off' size='70' value="${fn:escapeXml(param.newFolderQuery)}">
+                        <input id="folderQuery" name='newFolderQuery' type='text' size='70' value="${fn:escapeXml(param.newFolderQuery)}">
                         <input name='newFolderQueryVisible' type='hidden' value='TRUE'/>
                     </td>
                 </tr>

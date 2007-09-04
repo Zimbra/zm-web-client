@@ -35,7 +35,7 @@
     </c:choose>
 </app:handleError>
 
-<table border="0" cellpadding="0" cellspacing="4" width=100%>
+<table border="0" cellpadding="0" cellspacing="4" width="100%">
     <tbody>
         <tr>
             <c:choose>
@@ -50,34 +50,36 @@
                     </td>
                 </c:when>
                 <c:otherwise>
-                    <td width=200 class='List' valign='top'>
-                        <table width=100% cellpadding=2 cellspacing=0>
+                    <td width="200" class='List' valign='top'>
+                        <table width="100%" cellpadding="2" cellspacing="0">
                             <tr>
-                                <th width=1% nowrap>&nbsp;
-                                <th width=1% nowrap><fmt:message key="active"/>
-                                <th width=1% nowrap>&nbsp;
+                                <th width="1%" nowrap>&nbsp;
+                                <th width="1%" nowrap><fmt:message key="active"/>
+                                <th width="1%" nowrap>&nbsp;
                                 <th nowrap><fmt:message key="filterName"/>
                             </tr>
                             <c:forEach items="${rules}" var="rule" varStatus="status">
                                 <tr
                                         <c:if test="${selectedRule.name eq rule.name}">class='RowSelected'</c:if>
                                         >
-                                    <c:if test="${selectedRule.name eq rule.name}">
+
+                                    <td width="1%" nowrap>&nbsp;
+                                        <c:if test="${selectedRule.name eq rule.name}">
                                         <input type="hidden" name="ruleName" value="${fn:escapeXml(rule.name)}"/>
-                                    </c:if>
-                                    <td width=1% nowrap>&nbsp;</td>
-                                    <td width=1% nowrap>
+                                        </c:if>
+                                    </td>
+                                    <td width="1%" nowrap>
                                     <c:if test="${rule.active}">
                                         <app:img altkey="active" src="common/ImgCheck.gif"/>
                                     </c:if>
 
                                     </td>
-                                    <td width=1% nowrap>&nbsp;</td>
+                                    <td width="1%" nowrap>&nbsp;</td>
                                     <td>
                                         <c:url var="selectRuleUrl" value="/h/options?selected=filter">
                                             <c:param name="ruleName" value="${rule.name}"/>
                                         </c:url>
-                                        <a href="${selectRuleUrl}">
+                                        <a href="${fn:escapeXml(selectRuleUrl)}">
                                                 ${fn:escapeXml(rule.name)}
                                         </a>
                                     </td>

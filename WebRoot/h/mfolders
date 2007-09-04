@@ -50,18 +50,18 @@
         onload="var e=document.getElementById('newName'); if (e) e.focus();">
 
     <form action="" method="post">
-        <table width=100% cellspacing="0" cellpadding="0">
+        <table width="100%" cellspacing="0" cellpadding="0">
 
             <tr>
                 <td class='TbTop'>
-                    <table width=100% cellspacing=0>
+                    <table width="100%" cellspacing="0">
                         <tr>
                             <td class='TbBt'>
-                                <table cellspacing=0 cellpadding=0 class='Tb'>
+                                <table cellspacing="0" cellpadding="0" class='Tb'>
                                     <tr>
                                         <td>
                                             <a id="OPCLOSE" href="<c:url value="/h/search"/>">
-                                                <app:img src="common/ImgClose.gif"/><span><fmt:message key="close"/></span>
+                                                <app:img src="common/ImgClose.gif" alt="close"/><span><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
@@ -80,16 +80,16 @@
 
             <tr>
                 <td class='ZhAppContent'>
-                    <table border="0" cellpadding="0" cellspacing="0" width=100%>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
-                            <td width=200 class='List' valign='top'>
-                                <table width=100% cellpadding=2 cellspacing=0>
+                            <td width="200" class='List' valign='top'>
+                                <table width="100%" cellpadding=2 cellspacing=0>
                                     <c:set var="index" value="${0}"/>
                                     <zm:forEachFolder var="folder">
                                         <c:if test="${folder.isMailView and not folder.isChats}">
                                             <c:if test="${selectedFolder.id eq folder.id and not newFolder}"><c:set var="selectedRow" value="${index}"/></c:if>
                                             <tr <c:if test="${index eq selectedRow}">class='RowSelected'</c:if>>
-                                                <td width=1%>
+                                                <td width="1%">
                                                     &nbsp;
                                                 </td>
                                                 <td nowrap class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>' style='padding-left: ${folder.depth*8}px'>
@@ -97,8 +97,8 @@
                                                     <c:url var="selectUrl" value="">
                                                         <c:param name="id" value="${folder.id}"/>
                                                     </c:url>
-                                                    <a id="A${index}" href="${selectUrl}">
-                                                        <app:img src="${folder.image}"/>
+                                                    <a id="A${index}" href="${fn:escapeXml(selectUrl)}">
+                                                        <app:img src="${folder.image}" alt="folder"/>
                                                             <span style='vertical-align:middle'>${fn:escapeXml(label)}
                                                             <c:if test="${folder.hasUnread}">(${folder.unreadCount}) </c:if>
                                                             </span>
@@ -110,7 +110,7 @@
                                     </zm:forEachFolder>
                                 </table>
                             </td>
-                            <td height=100% class='ZhEditFolderContent' valign='top'>
+                            <td height="100%" class='ZhEditFolderContent' valign='top'>
                                 <c:choose>
                                     <c:when test="${zm:actionSet(param, 'actionNewFolder')}">
                                         <app:newFolder/>
@@ -122,7 +122,7 @@
                                         <app:newFolder url="true"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <table width=100% height=100% cellspacing=0 cellpadding=0>
+                                        <table width="100%" cellspacing="0" cellpadding="0">
                                             <tr>
                                                 <td>
                                                     <app:editFolder folder="${selectedFolder}"/>

@@ -6,7 +6,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<table border="0" cellpadding="0" cellspacing="10" width=100%>
+<table border="0" cellpadding="0" cellspacing="10" width="100%">
 <tr>
     <td colspan="4" class='ZOptionsHeader'>
         <fmt:message key="optionsSignatures"/>
@@ -29,14 +29,14 @@
         <td>
             <input type="hidden" name="signatureId${numSigs}" value="${fn:escapeXml(signature.id)}"/>
             <input type="hidden" name="origSignatureName${numSigs}" value="${fn:escapeXml(signature.name)}"/>
-            <input id="signatureName${numSigs}" size="40" type="text" name='signatureName${numSigs}' autocomplete='off'
+            <input id="signatureName${numSigs}" size="40" type="text" name='signatureName${numSigs}'
                    value="${fn:escapeXml(signature.name)}">
         </td>
         <td align=right>
             <input class='tbButton' type="submit" name="actionDeleteSig:${fn:escapeXml(signature.id)}" 
                    value="<fmt:message key="delete"/>">
         </td>
-        <td width=20%>&nbsp;</td>
+        <td width="20%">&nbsp;</td>
     </tr>
     <tr>
         <td class='ZOptionsTableLabel' style='vertical-align:top;' valign='top'>
@@ -48,13 +48,14 @@
             <textarea style='width:100%' id="signatureValue${numSigs}" name='signatureValue${numSigs}' cols='80'
                       rows='5'>${fn:escapeXml(signature.value)}</textarea>
         </td>
-        <td width=20%>&nbsp;</td>
+        <td width="20%">&nbsp;</td>
     </tr>
     <c:set var="numSigs" value="${numSigs+1}"/>
 </zm:forEachSignature>
-<input type="hidden" name="numSignatures" value="${numSigs}"/>
+
 <tr>
     <td colspan="4">
+        <input type="hidden" name="numSignatures" value="${numSigs}"/>
         <hr>
     </td>
 </tr>
@@ -71,14 +72,14 @@
             </td>
             <td>
                 <input type="hidden" name="newSignature" value="TRUE"/>
-                <input id="newSignatureName" size="40" type="text" name='newSignatureName' autocomplete='off'
+                <input id="newSignatureName" size="40" type="text" name='newSignatureName'
                        value="${fn:escapeXml(param.newSignatureName)}">
             </td>
             <td align=right>
                 <input class='tbButton' type="submit" name="actionCancelNewSig"
                        value="<fmt:message key="cancel"/>">
             </td>
-            <td width=20%>&nbsp;</td>
+            <td width="20%">&nbsp;</td>
         </tr>
         <tr>
             <td class='ZOptionsTableLabel' style='vertical-align:top;' valign='top'>
@@ -87,7 +88,7 @@
             <td colspan=2>
                 <textarea style='width:100%' id="newSignatureValue" name='newSignatureValue' cols='80'rows='5'>${fn:escapeXml(param.newSignatureValue)}</textarea>
             </td>
-            <td width=20%>&nbsp;</td>
+            <td width="20%">&nbsp;</td>
         </tr>
     </c:when>
     <c:otherwise>
@@ -99,7 +100,7 @@
                 <input id="OPNEW" class='tbButton' type="submit" name="actionNewSig"
                        value="<fmt:message key="optionsAddSignature"/>">
             </td>
-            <td width=20%>&nbsp;</td>
+            <td width="20%">&nbsp;</td>
         </tr>
     </c:otherwise>
 </c:choose>
@@ -124,7 +125,7 @@
         <app:optCheckbox boxfirst="true" label="optionsSignatureAttachAuto" pref="zimbraPrefMailSignatureEnabled"
                          checked="${mailbox.prefs.mailSignatureEnabled}"/>
     </td>
-    <td width=20%>&nbsp;</td>
+    <td width="20%">&nbsp;</td>
 </tr>
 <tr>
     <td colspan="4">

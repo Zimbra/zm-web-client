@@ -6,7 +6,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
- <table border="0" cellpadding="0" cellspacing="10" width=100%>
+ <table border="0" cellpadding="0" cellspacing="10" width="100%">
 
      <tr>
         <td colspan="2" class='ZOptionsHeader' >
@@ -121,7 +121,6 @@
             <app:optCheckbox boxfirst="true" label="showSearchString" pref="zimbraPrefShowSearchString"
                              checked="${mailbox.prefs.showSearchString}"/>
         </td>
-     <tr>
      <tr>
         <td colspan="2">
             &nbsp;

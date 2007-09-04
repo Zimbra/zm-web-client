@@ -35,17 +35,17 @@
 <app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' contacts="true" editmode="true" keys="true"
             onload="var e=document.getElementById('newName'); if (e) e.focus();">
     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-        <table width=100% cellspacing="0" cellpadding="0">
+        <table width="100%" cellspacing="0" cellpadding="0">
             <tr>
                 <td class='TbTop'>
-                    <table width=100% cellspacing=0>
+                    <table width="100%" cellspacing="0">
                         <tr>
                             <td class='TbBt'>
-                                <table cellspacing=0 cellpadding=0 class='Tb'>
+                                <table cellspacing="0" cellpadding="0" class='Tb'>
                                     <tr>
                                         <td>
                                             <a id="OPCLOSE" href="<c:url value="/h/search?st=contact"/>">
-                                                <app:img src="common/ImgClose.gif"/><span><fmt:message key="close"/></span>
+                                                <app:img src="common/ImgClose.gif" alt="close"/><span><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
@@ -61,10 +61,10 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <table border="0" cellpadding="0" cellspacing="0" width=100%>
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
-                            <td width=200 class='List' valign='top'>
-                                <table width=100% cellpadding=2 cellspacing=0>
+                            <td width="200" class='List' valign='top'>
+                                <table width="100%" cellpadding="2" cellspacing="0">
                                     <c:set var="anyInTrash" value="${false}"/>
                                     <c:set var="index" value="${0}"/>
                                     <zm:forEachFolder var="folder">
@@ -76,14 +76,14 @@
                                             <c:set var="selected" value="${selectedFolder.id eq folder.id and not newAddressBook}"/>
                                             <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>
                                             <tr>
-                                                <td class='${rowColor}' width=1%>&nbsp;</td>
+                                                <td class='${rowColor}' width="1%">&nbsp;</td>
                                                 <td class='${rowColor}' style='padding-left: ${folder.depth*8}px'>
                                                     <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
                                                     <c:url var="selectUrl" value="">
                                                         <c:param name="id" value="${folder.id}"/>
                                                     </c:url>
                                                     <a id="A${index}" href="${selectUrl}">
-                                                        <app:img src="${folder.image}"/>
+                                                        <app:img src="${folder.image}" alt="folder"/>
                                                             <span <c:if test="${selected}">class='ZhTISelected'</c:if> style='vertical-align:middle'>${fn:escapeXml(label)}</span>
                                                     </a>
                                                 </td>
@@ -99,7 +99,7 @@
                                                 <c:set var="rowColor" value="${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}"/>
                                             <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>                                                                                            
                                                 <tr>
-                                                    <td <c:if test="${not folder.isTrash}">class='${rowColor}'</c:if> width=1%>
+                                                    <td <c:if test="${not folder.isTrash}">class='${rowColor}'</c:if> width="1%">
                                                         &nbsp;
                                                     </td>
                                                     <td <c:if test="${not folder.isTrash}">class='${rowColor}'</c:if> style='padding-left: ${folder.depth*8}px'>
@@ -108,7 +108,7 @@
                                                             <c:param name="id" value="${folder.id}"/>
                                                         </c:url>
                                                         <a id="A${index}" href="${selectUrl}">
-                                                            <app:img src="${folder.image}"/>
+                                                            <app:img src="${folder.image}" alt="folder"/>
                                                             <span <c:if test="${selected}">class='ZhTISelected'</c:if> style='vertical-align:middle'>${fn:escapeXml(label)}</span>
                                                         </a>
                                                     </td>

@@ -6,29 +6,29 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<table width=100% cellspacing=0 cellpadding=0>
+<table width="100%" cellspacing="0" cellpadding="0">
     <tr class='GrayBg'>
         <c:set var="icon" value="${tag.image}"/>
 
-        <td width=20>
+        <td width="20">
             &nbsp;<app:img src="${icon}" alt='${fn:escapeXml(tag.name)}'/>
         </td>
-        <td class='ZhFolderHeader' colspan=2>
+        <td class='ZhFolderHeader' colspan="2">
             ${fn:escapeXml(tag.name)}
         </td>
     </tr>
 </table>
 
-<table border="0" cellpadding="0" cellspacing="10" width=100%>
+<table border="0" cellpadding="0" cellspacing="10" width="100%">
 
 
     <tr>
-        <td width=20% nowrap align=right>
+        <td width="20%" nowrap align="right">
             <fmt:message key="name"/>
             :
         </td>
         <td>
-            <input  name='tagName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(tag.name)}">
+            <input  name='tagName' type='text' size='35' value="${fn:escapeXml(tag.name)}">
         </td>
     </tr>
 
@@ -60,12 +60,12 @@
     </tr>
 
     <tr>
-        <td colspan=2>&nbsp;</td>
+        <td colspan="2">&nbsp;</td>
     </tr>
 
     <c:if test="${tag.unreadCount gt 0}">
         <tr>
-            <td colspan=2>
+            <td colspan="2">
                 <hr>
             </td>
         </tr>
@@ -79,7 +79,7 @@
     </c:if>
     
     <tr>
-        <td colspan=2><hr></td>
+        <td colspan="2"><hr></td>
     </tr>
     <tr>
         <td>&nbsp;</td>

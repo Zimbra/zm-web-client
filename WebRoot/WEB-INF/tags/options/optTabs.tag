@@ -7,7 +7,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<table cellpadding=0 cellspacing=0>
+<table cellpadding="0" cellspacing="0">
     <tr class='Tabs'>
         <td class='TabSpacer'/>
         <td class='TabSpacer'/>

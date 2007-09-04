@@ -6,11 +6,11 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<table border="0" cellpadding="0" cellspacing="0" width=100%>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr>
         <td>
 
-            <table border="0" cellpadding="0" cellspacing="10" width=100%>
+            <table border="0" cellpadding="0" cellspacing="10" width="100%">
                 <tr>
                     <td colspan="3" class='ZOptionsHeader'>
                         <fmt:message key="optionsAccounts"/>
@@ -22,9 +22,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td width=10%>&nbsp;</td>
+                    <td width="10%">&nbsp;</td>
                     <td class='List' valign='top'>
-                        <table width=100% cellpadding=2 cellspacing=0>
+                        <table width="100%" cellpadding="2" cellspacing="0">
                             <tr>
                                 <th nowrap>&nbsp;
                                 <th nowrap><fmt:message key="optionsAccountName"/>
@@ -41,7 +41,7 @@
                             </tr>
                         </table>
                     </td>
-                    <td width=10%>&nbsp;</td>
+                    <td width="10%">&nbsp;</td>
                 </tr>
                 <tr>
                     <td colspan="3">
@@ -53,7 +53,7 @@
     </tr>
     <tr>
         <td>
-            <table border="0" cellpadding="0" cellspacing="10" width=100%>
+            <table border="0" cellpadding="0" cellspacing="10" width="100%">
                 <tr>
                     <td colspan="2" class='ZOptionsHeader' >
                         <fmt:message key="optionsAccountPrimarySettings"/>
@@ -72,7 +72,7 @@
                         <fmt:message key="optionsAccountName"/>
                     </td>
                     <td>
-                        <input id="zimbraPrefIdentityName" size="40" type="text" name='zimbraPrefIdentityName' autocomplete='off' value="${fn:escapeXml(mailbox.defaultIdentity.name)}">
+                        <input id="zimbraPrefIdentityName" size="40" type="text" name='zimbraPrefIdentityName' value="${fn:escapeXml(mailbox.defaultIdentity.name)}">
                     </td>
                 </tr>
                 <tr><td colspan="2"><hr></td></tr>
@@ -93,7 +93,7 @@
                         <table border="0" cellpadding="0" cellspacing="2">
                             <tr>
                                 <td>
-                                    <input id="mailFrom" size="30" type="text" name='zimbraPrefFromDisplay' autocomplete='off' value="${fn:escapeXml(mailbox.defaultIdentity.fromDisplay)}">
+                                    <input id="mailFrom" size="30" type="text" name='zimbraPrefFromDisplay' value="${fn:escapeXml(mailbox.defaultIdentity.fromDisplay)}">
                                 </td>
                                 <td style='padding-left:10px'>
                                     <select name="zimbraPrefFromAddress">
@@ -139,10 +139,10 @@
                         <table border="0" cellpadding="0" cellspacing="2">
                             <tr>
                                 <td>
-                                    <input id="replyToDisplay" size="30" type="text" name='zimbraPrefReplyToDisplay' autocomplete='off' value="${fn:escapeXml(mailbox.defaultIdentity.replyToDisplay)}">
+                                    <input id="replyToDisplay" size="30" type="text" name='zimbraPrefReplyToDisplay' value="${fn:escapeXml(mailbox.defaultIdentity.replyToDisplay)}">
                                 </td>
                                 <td style='padding-left:10px'>
-                                    <input id="replyToAddress" size="30" type="text" name='zimbraPrefReplyToAddress' autocomplete='off' value="${fn:escapeXml(mailbox.defaultIdentity.replyToAddress)}">
+                                    <input id="replyToAddress" size="30" type="text" name='zimbraPrefReplyToAddress' value="${fn:escapeXml(mailbox.defaultIdentity.replyToAddress)}">
                                 </td>
                             </tr>
                             <tr>

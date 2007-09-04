@@ -7,7 +7,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 
- <table border="0" cellpadding="0" cellspacing="10" width=100%>
+ <table border="0" cellpadding="0" cellspacing="10" width="100%">
      <tr>
         <td colspan="2" class='ZOptionsHeader' >
             <fmt:message key="optionsDisplayingMessages"/>
@@ -108,7 +108,7 @@
              <label for="zimbraPrefMailInitialSearch"><fmt:message key="optionsDefaultMailSearch"/> :</label>
          </td>
          <td>
-             <input id="zimbraPrefMailInitialSearch" size="40" type="text" name='zimbraPrefMailInitialSearch' autocomplete='off' value="${fn:escapeXml(mailbox.prefs.mailInitialSearch)}">
+             <input id="zimbraPrefMailInitialSearch" size="40" type="text" name='zimbraPrefMailInitialSearch' value="${fn:escapeXml(mailbox.prefs.mailInitialSearch)}">
          </td>
      </tr>
      </c:if>
@@ -144,7 +144,7 @@
              &nbsp;
          </td>
          <td style='padding-left:20px'>
-             <input id="zimbraPrefMailForwardingAddress" size="40" type="text" name='zimbraPrefMailForwardingAddress' autocomplete='off' value="${fn:escapeXml(mailbox.prefs.mailForwardingAddress)}">
+             <input id="zimbraPrefMailForwardingAddress" size="40" type="text" name='zimbraPrefMailForwardingAddress' value="${fn:escapeXml(mailbox.prefs.mailForwardingAddress)}">
              <span style='padding-left:5px' class='ZOptionsHint'><fmt:message key="optionsEmailAddressHint"/></span>
          </td>
      </tr>
@@ -182,7 +182,7 @@
              &nbsp;
          </td>
          <td style='padding-left:20px'>
-             <input id="zimbraPrefNewMailNotificationAddress" size="40" type="text" name='zimbraPrefNewMailNotificationAddress' autocomplete='off' value="${fn:escapeXml(mailbox.prefs.newMailNotificationAddress)}">
+             <input id="zimbraPrefNewMailNotificationAddress" size="40" type="text" name='zimbraPrefNewMailNotificationAddress' value="${fn:escapeXml(mailbox.prefs.newMailNotificationAddress)}">
              <span style='padding-left:5px' class='ZOptionsHint'><fmt:message key="optionsEmailAddressHint"/></span>
          </td>
      </tr>

@@ -10,7 +10,7 @@
 <c:set var="suffix" value="${ua.isOsWindows ? '.win' : ua.isOsMac ? '.mac' : ua.isOsLinux ? '.linux' :  ''}"/>
 <fmt:bundle basename="/keys/ZhKeys">
     <fmt:message var="sections" key="sections"/>
-    <table border="0" cellpadding="0" cellspacing="4" width=100%>
+    <table border="0" cellpadding="0" cellspacing="4" width="100%">
         <tbody>
             <app:optShortcutSection section="global" suffix="${suffix}"/>
             <app:optShortcutSection section="mail" suffix="${suffix}"/>

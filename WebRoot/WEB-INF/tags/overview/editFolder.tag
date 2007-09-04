@@ -17,10 +17,10 @@
 </c:choose>
 
 
-<table width=100% height=100% cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
 <tr>
     <td class='ZhBottomSep'>
-        <table width=100% cellspacing=0 cellpadding=1>
+        <table width="100%" cellspacing="0" cellpadding="1">
             <tr valign="middle" class='${colorStyle}'>
                 <td valign="middle" width=20 style='padding-left:5px'>
                     <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
@@ -35,7 +35,7 @@
                         </span>
                     </c:if>
                 </td>
-                <td width=1% nowrap class='ZhFolderType'>
+                <td width="1%" nowrap class='ZhFolderType'>
                     <c:choose>
                         <c:when test="${folder.isAppointmentView}">
                             <c:choose>
@@ -103,7 +103,7 @@
                 </td>
             </tr>
             <tr class='${colorStyle}'>
-                <td colspan=3>
+                <td colspan="3">
                     <c:choose>
                         <c:when test="${not (folder.isMountPoint or folder.isSearchFolder)}">
                             <span class='ZZZhFolderType' style='vertical-align:middle;'>
@@ -139,19 +139,19 @@
     </td>
 </tr>
 <tr>
-<td height=100% valign='top'>
-<table border="0" cellpadding="0" cellspacing="10" width=100%>
+<td height="100%" valign='top'>
+<table border="0" cellpadding="0" cellspacing="10" width="100%">
 
 <%---------- name (rename) ----------%>
 <tr>
-    <td width=20% nowrap align=right>
+    <td width="20%" nowrap align="right">
         <label for="name"><fmt:message key="name"/>
         :</label>
     </td>
     <td>
         <input type="hidden" name="folderId" value="${folder.id}"/>
         <input id="name"
-        <c:if test="${folder.isSystemFolder}"> disabled </c:if> name='folderName' type='text' autocomplete='off'
+        <c:if test="${folder.isSystemFolder}"> disabled </c:if> name='folderName' type='text' 
                                                size='35' value="${fn:escapeXml(folder.name)}">
         <c:if test="${not folder.isSystemFolder}">
         <input name='folderNameVisible' type='hidden' value="true"/>
@@ -229,13 +229,13 @@
 <%---------- search query ----------%>
 <c:if test="${folder.isSearchFolder}">
     <tr>
-        <td width=20% nowrap align=right>
+        <td width="20%" nowrap align="right">
             <label for="folderQuery"><fmt:message key="searchQuery"/>
             :
                 </label>
         </td>
         <td>
-            <input id="folderQuery" name='folderQuery' type='text' autocomplete='off' size='70' value="${fn:escapeXml(folder.query)}">
+            <input id="folderQuery" name='folderQuery' type='text' size='70' value="${fn:escapeXml(folder.query)}">
             <input name='folderQueryVisible' type='hidden' value="true"/>
         </td>
     </tr>
@@ -244,7 +244,7 @@
 <%---------- url ----------%>
 <c:if test="${not empty folder.remoteURL}">
     <tr>
-        <td width=20% nowrap align=right>
+        <td width="20%" nowrap align="right">
             <label for="folderUrl"><fmt:message key="url"/>
             :
                 </label>
@@ -253,7 +253,7 @@
             <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign=middle>
                     <td>
-                        <input id="folderUrl" name='folderUrl' type='text' autocomplete='off' size='70'
+                        <input id="folderUrl" name='folderUrl' type='text' size='70'
                                value="${fn:escapeXml(folder.remoteURL)}">
                         <input name='folderUrlVisible' type='hidden' value="true"/>
                     </td>
@@ -266,7 +266,7 @@
                             <c:param name="sync" value="${folder.id}"/>
                         </c:url>
                         <fmt:message key="reloadCalendar" var="reload"/>
-                        <a href="${syncUrl}">
+                        <a href="${fn:escapeXml(syncUrl)}">
                             <app:img src="arrows/ImgRefresh.gif" title="${reload}"/>
                         </a>
                     </td>
@@ -355,7 +355,7 @@
 
 <c:if test="${folder.isAppointmentView}">
     <tr>
-        <td colspan=2>
+        <td colspan="2">
             <hr>
         </td>
     </tr>
@@ -368,9 +368,9 @@
 
     <c:if test="${not (folder.isMountPoint or folder.isFeed)}">
         <tr>
-            <td align=right><label for="import"><fmt:message key="calendarImport"/>:</label></td>
+            <td align="right"><label for="import"><fmt:message key="calendarImport"/>:</label></td>
             <td>
-                <input id="import" type=file size="40" name="fileUpload">
+                <input id="import" type="file" size="40" name="fileUpload">
             </td>
         </tr>
         <tr>
@@ -387,12 +387,12 @@
 
 <c:if test="${folder.isContactView}">
     <tr>
-        <td colspan=2>
+        <td colspan="2">
             <hr>
         </td>
     </tr>
     <tr>
-        <td align=right><fmt:message key="contactExport"/>:</td>
+        <td align="right"><fmt:message key="contactExport"/>:</td>
         <td>
             <a href="${fn:escapeXml(folder.restURLAsFile)}.csv">${fn:escapeXml(folder.restURLAsFile)}.csv</a>
         </td>
@@ -400,7 +400,7 @@
 
     <c:if test="${not (folder.isMountPoint or folder.isFeed)}">
         <tr>
-            <td align=right><label for="export"><fmt:message key="contactImport"/>:</label></td>
+            <td align="right"><label for="export"><fmt:message key="contactImport"/>:</label></td>
             <td>
                 <input id="export" type=file size="40" name="fileUpload">
             </td>
@@ -417,7 +417,7 @@
 
 <c:if test="${folder.unreadCount gt 0 and not (folder.isDrafts or folder.isSearchFolder or folder.isMountPoint or folder.isContactView or folder.isAppointmentView or folder.isTaskView)}">
     <tr>
-        <td colspan=2>
+        <td colspan="2">
             <hr>
         </td>
     </tr>
@@ -435,7 +435,7 @@
 <c:choose>
     <c:when test="${folder.isTrash or folder.isSpam}">
         <tr>
-            <td colspan=2>
+            <td colspan="2">
                 <hr>
             </td>
         </tr>
@@ -468,7 +468,7 @@
             </c:otherwise>
         </c:choose>
         <tr>
-            <td colspan=2>
+            <td colspan="2">
                 <hr>
             </td>
         </tr>
@@ -525,7 +525,7 @@
         </c:otherwise>
     </c:choose>
     <tr>
-        <td colspan=2>
+        <td colspan="2">
             <hr>
         </td>
     </tr>
