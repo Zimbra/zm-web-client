@@ -626,7 +626,8 @@
 }
 
 /* Set the height of the advanced search button arbitrary */
-div.ZaAdvancedSearchButton table {
+div.ZaAdvancedSearchButton table, 
+div.ZaSearchBuilderOptionRemoveAll table  {
 	height: 22px ;	
 #IFDEF MSIE
 	height: 20px ;
