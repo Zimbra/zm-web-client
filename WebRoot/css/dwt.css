@@ -1144,7 +1144,7 @@
 }
 
 .XFormCase {
-	overflow-y:auto;
+	position:absolute;
 }
 
 /* Groupers -- the xforms way of doing fieldSets... */
