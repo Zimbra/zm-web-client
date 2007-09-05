@@ -78,8 +78,8 @@ function(display) {
 
 ZmPhone.isValid =
 function(str) {
-	var expression = /(.*\d){7}/; // Very simple check: at least 7 digits.
-	return str.match(expression) != null;
+	var nameLength = ZmPhone.calculateName(str).length;
+	return (7 <= nameLength) && (nameLength <= 20);
 };
 
 ZmPhone.prototype.getDisplay =
