@@ -221,6 +221,9 @@
 			<fileset dir='${build.classes.dir}' />
 		</copy>
 
+		<copy todir='${webapp.dir}/WEB-INF/classes' verbose='${sync.verbose}'>
+			<fileset dir='${web.dir}' includes='messages/**,keys/**' />
+		</copy>
 		<copy tofile="${webapp.dir}/WEB-INF/web.xml" file='${build.dir}/web.xml' verbose='${sync.verbose}' />
 		<antcall target='webxml-deploy-replace' />
 	</target>
