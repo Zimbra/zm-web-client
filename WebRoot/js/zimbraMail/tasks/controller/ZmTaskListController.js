@@ -265,6 +265,13 @@ function(task) {
 	}
 };
 
+// All items in the list view are gone - show "No Results"
+ZmTaskListController.prototype._handleEmptyList =
+function(listView) {
+	listView._resetListView();
+	listView._setNoResultsHtml();
+};
+
 ZmTaskListController.prototype._showTaskReadOnlyView =
 function(task) {
 	var viewId = ZmController.TASK_VIEW;

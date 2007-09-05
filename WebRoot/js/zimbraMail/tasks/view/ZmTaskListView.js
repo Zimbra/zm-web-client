@@ -321,9 +321,15 @@ function(ev) {
 			this._createItemHtml(task, {now:this._now, div:div, bContained:bContained});
 			this.associateItemWithElement(task, div, DwtListView.TYPE_LIST_ITEM);
 		}
+	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+		for (var i = 0; i < items.length; i++) {
+			this.removeItem(items[i], true);
+		}
+		this._controller._app._checkReplenishListView = this;
+		this._controller._resetToolbarOperations();
+	} else {
+		ZmListView.prototype._changeListener.call(this, ev);
 	}
-
-	ZmListView.prototype._changeListener.call(this, ev);
 
 	if (ev.event == ZmEvent.E_CREATE ||
 		ev.event == ZmEvent.E_DELETE ||

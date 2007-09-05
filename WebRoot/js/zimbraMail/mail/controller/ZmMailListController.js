@@ -1163,10 +1163,3 @@ function(view, saveSelection, loadIndex, offset, result) {
 		this._listView[this._currentView].emulateDblClick(newItem);
 	}
 };
-
-// All items in the list view are gone - show "No Results"
-ZmMailListController.prototype._handleEmptyList =
-function(listView) {
-	listView.removeAll(true);
-	listView._setNoResultsHtml();
-};

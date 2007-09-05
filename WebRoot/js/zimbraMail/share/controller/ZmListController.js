@@ -1100,6 +1100,13 @@ function(callback) {
 	}
 };
 
+// All items in the list view are gone - show "No Results"
+ZmListController.prototype._handleEmptyList =
+function(listView) {
+	listView.removeAll(true);
+	listView._setNoResultsHtml();
+};
+
 ZmListController.prototype._replenishList =
 function(view, replCount, callback) {
 	// determine if there are any more items to replenish with

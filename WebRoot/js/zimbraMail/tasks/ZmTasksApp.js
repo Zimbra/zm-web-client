@@ -155,6 +155,14 @@ function() {
 
 // App API
 
+ZmTasksApp.prototype.postNotify =
+function(notify) {
+	if (this._checkReplenishListView) {
+		this._checkReplenishListView._checkReplenish();
+		this._checkReplenishListView = null;
+	}
+};
+
 ZmTasksApp.prototype.refresh =
 function(refresh) {
 	this._handleRefresh();
