@@ -347,33 +347,16 @@ function(initHide, composeMode) {
 
 ZmComposeController.prototype._identityChangeListener =
 function(setSignature, event) {
+	
 	if (!this._composeView.isDirty()) {
-		this._applyIdentityToBody(setSignature);
+		this._applyIdentityToBody(setSignature,true);
 	} else {
-		var dialog = appCtxt.getYesNoMsgDialog();
-		dialog.reset();
-		dialog.registerCallback(DwtDialog.YES_BUTTON, this._identityChangeYesCallback, this, [dialog, setSignature]);
-		dialog.registerCallback(DwtDialog.NO_BUTTON, this._identityChangeNoCallback, this, [dialog]);
-		dialog.setMessage(ZmMsg.identityChangeWarning, DwtMessageDialog.WARNING_STYLE);
-		dialog.popup();
+		this._applyIdentityToBody(setSignature,false);
 	}
 };
 
-ZmComposeController.prototype._identityChangeYesCallback =
-function(dialog, setSignature) {
-	this._applyIdentityToBody(setSignature);
-	dialog.popdown();
-};
-
-ZmComposeController.prototype._identityChangeNoCallback =
-function(dialog) {
-	var identity = this._composeView.getIdentity();
-	this._setAddSignatureVisibility(identity);
-	dialog.popdown();
-};
-
 ZmComposeController.prototype._applyIdentityToBody =
-function(setSignature) {
+function(setSignature,resetBody) {
 	var identity = this._composeView.getIdentity();
 	if (setSignature) {
 		this._composeView.getSignatureSelect().setSelectedValue(identity.signature);
@@ -382,7 +365,12 @@ function(setSignature) {
 	if (newMode != this._composeView.getComposeMode()) {
 		this._composeView.setComposeMode(newMode);
 	}
-	this._composeView.resetBody(this._action, this._msg, this._extraBodyText, null);
+	//ResetBody - XXX
+	if(resetBody){
+		this._composeView.resetBody(this._action, this._msg, this._extraBodyText, null);
+	}else{
+		this._composeView.applySignature(this._composeView.getHtmlEditor().getContent());
+	}
 	this._setAddSignatureVisibility(identity);
 };
 
@@ -1148,13 +1136,4 @@ function(ev) {
 	this.setSelectedSignature(selected);
 };
 
-ZmComposeView.prototype._setSignatureVisible =
-function() {
-	if (!appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) return;
 
-	var div = document.getElementById(this._signatureDivId);
-	if (!div) return;
-
-	var visible = appCtxt.getSignatureCollection().getSize() > 0;
-	Dwt.setVisible(div, visible);
-};

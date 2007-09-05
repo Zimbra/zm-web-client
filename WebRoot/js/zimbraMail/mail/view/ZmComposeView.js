@@ -854,6 +854,21 @@ function(mimePart) {
 	this._extraParts.push(mimePart);
 };
 
+ZmComposeView.prototype.applySignature = function(content){
+	content = content || "";
+	var sig = this._getSignature();
+	var sep = this._getSignatureSeparator();
+	var newLine = this._getSignatureNewLine();
+	var identity = this.getIdentity();
+	if (identity.getSignatureStyle() == ZmSetting.SIG_OUTLOOK) {
+		var newLine = this._getSignatureNewLine();
+		content = [sep, sig, newLine, newLine, content].join("");
+	}else {
+		content = [content, sep, sig].join("");
+	}
+	this._htmlEditor.setContent(content);
+};
+
 /**
 * Adds the user's signature to the message body. An "internet" style signature
 * is prefixed by a special line and added to the bottom. An "outlook" style
@@ -890,6 +905,17 @@ function(content) {
 	}
 
 	this._htmlEditor.setContent(content);
+};
+
+ZmComposeView.prototype._setSignatureVisible =
+function() {
+	if (!appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) return;
+
+	var div = document.getElementById(this._signatureDivId);
+	if (!div) return;
+
+	var visible = appCtxt.getSignatureCollection().getSize() > 0;
+	Dwt.setVisible(div, visible);
 };
 
 /***
