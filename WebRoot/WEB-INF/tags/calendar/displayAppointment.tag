@@ -299,7 +299,7 @@
                         <c:param name="xim" value="${param.xim}"/>
                     </c:url>
                     <noscript>
-                        <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" border="0" frameBorder="0" src="${iframeUrl}"></iframe>
+                        <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="${fn:escapeXml(iframeUrl)}"></iframe>
                     </noscript>
                     <script type="text/javascript">
                         (function() {

@@ -165,7 +165,7 @@ SUBMIT,
 
 .ZhDisplayRuleContent {
 	@AppBg@  
-	@OutsetBorder@
+	@NormalOutsetBorder@
 }
 
 .ZhEditRuleContent {
@@ -233,7 +233,7 @@ A:visited { color: blue; }
 
 .ZhAppViewContent {
 	@AppBg@
-	@OutsetBorder@
+	@NormalOutsetBorder@
 	border-top-width:0px;
 }
 
@@ -611,7 +611,7 @@ height: auto;
 .ZhEditAddressBookContent, 
 .ZhEditCalendarContent, 
 .ZhEditTagContent {
-	@AppBg@  @OutsetBorder@
+	@AppBg@  @NormalOutsetBorder@
 }
 
 .ZhCalType, .ZhABType, .ZhFolderType {
@@ -718,8 +718,8 @@ height: auto;
 }
 
 .ZhCalMiniContainer {
-	@AppBg@ @OutsetBorder@
-	height: 135px;
+	@AppBg@ @NormalOutsetBorder@
+    height: 135px;
 	padding-bottom: 5px;
 }
 

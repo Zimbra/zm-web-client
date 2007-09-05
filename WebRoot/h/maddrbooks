@@ -45,7 +45,7 @@
                                     <tr>
                                         <td>
                                             <a id="OPCLOSE" href="<c:url value="/h/search?st=contact"/>">
-                                                <app:img src="common/ImgClose.gif" alt="close"/><span><fmt:message key="close"/></span>
+                                                <app:img src="common/ImgClose.gif" alt="close"/><span style='padding-left:5px'><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
