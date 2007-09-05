@@ -275,7 +275,8 @@ function() {
 		options:			[ 30, 45, 60, 90, 120, 0 ],
 		approximateFunction: ZmPref.approximateLifetimeInboxRead,
 		displayFunction:	ZmPref.durationDay2Int,
-		valueFunction:		ZmPref.int2DurationDay
+		valueFunction:		ZmPref.int2DurationDay,
+		validationFunction:	ZmPref.validateLifetime
 	});
 
 	ZmPref.registerPref("MAIL_LIFETIME_INBOX_UNREAD", {
@@ -287,7 +288,8 @@ function() {
 		options:			[ 30, 45, 60, 90, 120, 0 ],
 		approximateFunction: ZmPref.approximateLifetimeInboxUnread,
 		displayFunction:	ZmPref.durationDay2Int,
-		valueFunction:		ZmPref.int2DurationDay
+		valueFunction:		ZmPref.int2DurationDay,
+		validationFunction:	ZmPref.validateLifetime
 	});
 
 	ZmPref.registerPref("MAIL_LIFETIME_JUNK", {
@@ -297,7 +299,8 @@ function() {
 		options:			[ 1, 3, 7, 30 ],
 		approximateFunction: ZmPref.approximateLifetimeJunk,
 		displayFunction:	ZmPref.durationDay2Int,
-		valueFunction:		ZmPref.int2DurationDay
+		valueFunction:		ZmPref.int2DurationDay,
+		validationFunction:	ZmPref.validateLifetimeJunk
 	});
 
 	ZmPref.registerPref("MAIL_LIFETIME_SENT", {
@@ -309,7 +312,8 @@ function() {
 		options:			[ 30, 45, 60, 90, 120, 0 ],
 		approximateFunction: ZmPref.approximateLifetimeSent,
 		displayFunction:	ZmPref.durationDay2Int,
-		valueFunction:		ZmPref.int2DurationDay
+		valueFunction:		ZmPref.int2DurationDay,
+		validationFunction:	ZmPref.validateLifetime
 	});
 
 	ZmPref.registerPref("MAIL_LIFETIME_TRASH", {
@@ -319,7 +323,8 @@ function() {
 		options:			[ 1, 3, 7, 30 ],
 		approximateFunction: ZmPref.approximateLifetimeTrash,
 		displayFunction:	ZmPref.durationDay2Int,
-		valueFunction:		ZmPref.int2DurationDay
+		valueFunction:		ZmPref.int2DurationDay,
+		validationFunction:	ZmPref.validateLifetimeTrash
 	});
 
 	ZmPref.registerPref("MAIL_LOCAL_DELIVERY_DISABLED", {

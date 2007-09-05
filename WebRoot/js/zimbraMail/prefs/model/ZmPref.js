@@ -136,23 +136,39 @@ ZmPref.approximateValue = function(sortedValues, value) {
 	return sortedValues[sortedValues.length - 1];
 };
 
-ZmPref.approximateLifetimeInboxRead = function(value) {
-	return ZmPref.approximateLifetime("MAIL_LIFETIME_INBOX_READ", value);
+ZmPref.validateLifetime = function(value) {
+	var globalValue = appCtxt.get(ZmSetting.MAIL_LIFETIME_GLOBAL);
+	if (globalValue == "0") return true;
+	return ZmPref.__BY_DURATION(value, globalValue) <= 0;
 };
-ZmPref.approximateLifetimeInboxUnread = function(value) {
-	return ZmPref.approximateLifetime("MAIL_LIFETIME_INBOX_UNREAD", value);
+ZmPref.validateLifetimeJunk = function(value) {
+	var globalValue = appCtxt.get(ZmSetting.MAIL_LIFETIME_JUNK_GLOBAL);
+	if (globalValue == "0") return true;
+	return ZmPref.__BY_DURATION(value, globalValue) <= 0 && ZmPref.validateLifetime(value);
 };
-ZmPref.approximateLifetimeJunk = function(value) {
-	return ZmPref.approximateLifetime("MAIL_LIFETIME_JUNK", value);
-};
-ZmPref.approximateLifetimeSent = function(value) {
-	return ZmPref.approximateLifetime("MAIL_LIFETIME_SENT", value);
-};
-ZmPref.approximateLifetimeTrash = function(value) {
-	return ZmPref.approximateLifetime("MAIL_LIFETIME_TRASH", value);
+ZmPref.validateLifetimeTrash = function(value) {
+	var globalValue = appCtxt.get(ZmSetting.MAIL_LIFETIME_TRASH_GLOBAL);
+	if (globalValue == "0") return true;
+	return ZmPref.__BY_DURATION(value, globalValue) <= 0 && ZmPref.validateLifetime(value);
 };
 
-ZmPref.approximateLifetime = function(prefId, duration) {
+ZmPref.approximateLifetimeInboxRead = function(value) {
+	return ZmPref.approximateLifetime("MAIL_LIFETIME_INBOX_READ", value, ZmPref.validateLifetime);
+};
+ZmPref.approximateLifetimeInboxUnread = function(value) {
+	return ZmPref.approximateLifetime("MAIL_LIFETIME_INBOX_UNREAD", value, ZmPref.validateLifetime);
+};
+ZmPref.approximateLifetimeJunk = function(value) {
+	return ZmPref.approximateLifetime("MAIL_LIFETIME_JUNK", value, ZmPref.validateLifetimeJunk, ZmPref.validateLifetime);
+};
+ZmPref.approximateLifetimeSent = function(value) {
+	return ZmPref.approximateLifetime("MAIL_LIFETIME_SENT", value, ZmPref.validateLifetime);
+};
+ZmPref.approximateLifetimeTrash = function(value) {
+	return ZmPref.approximateLifetime("MAIL_LIFETIME_TRASH", value, ZmPref.validateLifetimeTrash, ZmPref.validateLifetime);
+};
+
+ZmPref.approximateLifetime = function(prefId, duration, validateFunc1/*, ..., validateFuncN*/) {
 	// convert durations to seconds
 	var values = [].concat(ZmPref.SETUP[prefId].options);
 	for (var i = 0; i < values.length; i++) {
@@ -160,6 +176,19 @@ ZmPref.approximateLifetime = function(prefId, duration) {
 		values[i] = ZmPref.__DUR2SECS(value != "0" ? value+"d" : value);
 	}
 	values.sort(ZmPref.__BY_NUMBER);
+
+	// remove invalid options
+	valuesLoop: for (var i = values.length - 1; i >= 0; i--) {
+		for (var j = 2; j < arguments.length; j++) {
+			var validateFunc = arguments[j];
+			var value = ZmPref.__SECS2DUR(values[i]);
+			if (!validateFunc(value)) {
+				values.pop();
+				continue valuesLoop;
+			}
+		}
+		break;
+	}
 
 	// if zero, the closest match is the greatest
 	var seconds;
@@ -180,9 +209,18 @@ ZmPref.approximateLifetime = function(prefId, duration) {
 // Comparators
 
 ZmPref.__BY_NUMBER = function(a, b) {
+	if (a == b) return 0;
 	if (a == Math.POSITIVE_INFINITY || b == Math.NEGATIVE_INFINITY) return 1;
 	if (b == Math.POSITIVE_INFINITY || a == Math.NEGATIVE_INFINITY) return -1;
 	return Number(a) - Number(b);
+};
+ZmPref.__BY_DURATION = function(a, b) {
+	if (a == b) return 0;
+	if (a == "0") return 1;
+	if (b == "0") return -1;
+	var asecs = ZmPref.__DUR2SECS(a);
+	var bsecs = ZmPref.__DUR2SECS(b); 
+	return asecs - bsecs;
 };
 
 // Converters

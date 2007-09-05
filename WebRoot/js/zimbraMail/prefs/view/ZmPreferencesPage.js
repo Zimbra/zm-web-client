@@ -506,6 +506,13 @@ function(id, setup, value) {
             selectedId = radioId;
 		}
 
+		if (setup.validationFunction) {
+			var valueToCheck = setup.valueFunction ? setup.valueFunction(optValue) : optValue;
+			if (!setup.validationFunction(valueToCheck)) {
+				radioBtn.setEnabled(false);
+			}
+		}
+
 		if (isHoriz) {
 			cell = row.insertCell(-1);
 			cell.className = "ZmRadioButtonGroupCell";
