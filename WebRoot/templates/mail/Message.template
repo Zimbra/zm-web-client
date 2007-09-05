@@ -169,7 +169,7 @@
 			<td colspan=2><div id='${id}_attachments_div'></div></td>
 		</tr>
 	</table>
-	<div align='right' id='zdnd_tooltip' style='display:none; padding-right:8px; color:#666666;'>Drag and drop your files from desktop to upload</div>
+	<div align='right' id='zdnd_tooltip' style='display:none; padding-right:10px; color:#666666;'><$=ZmMsg.dndTooltip$></div>
 	<span id='zDnD'></span>
     <span id='zdnd_files' style='display:none;'>
         <form name='zdnd_form' id='zdnd_form' enctype='multipart/form-data' accept-charset='utf-8' method='POST' >
