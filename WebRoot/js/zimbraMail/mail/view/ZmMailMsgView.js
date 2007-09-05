@@ -1214,7 +1214,7 @@ function() {
 		var j = 0;
 		linkArr[j++] = att.isHit ? "<span class='AttName-matched'>" : "";
 		linkArr[j++] = att.link;
-		linkArr[j++] = AjxStringUtil.htmlEncode(att.label);
+		linkArr[j++] = AjxStringUtil.htmlEncode( ZmMailMsgView.clipFile(att.label, 30) );
 		linkArr[j++] = att.isHit ? "</a></span>" : "</a>";
 		var link = linkArr.join("");
 
@@ -1290,6 +1290,23 @@ function() {
 	htmlArr[idx++] = "</tr></table></div>";
 
 	cell.innerHTML = htmlArr.join("");
+};
+
+ZmMailMsgView.clipFile = function(fileName,limit){
+	
+	var fN    = fileName.split('.');
+	fileName  = fN[0];
+	var len = fileName.length;
+	
+    return ( len <= limit 
+    ? fileName
+    : [
+     	fileName.substr(0,limit/2),
+     	'...',
+     	fileName.substring( len - ((limit/2) - 3 ), len),
+     	'.', ( fN[1] ? fN[1] : '' )  /*file extension*/
+      ].join("") 
+     );
 };
 
 //AttachmentLink Handlers
