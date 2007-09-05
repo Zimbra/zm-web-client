@@ -42,7 +42,7 @@
                             </tr>
 
                             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-                            <tr>
+                            <tr class='ZhRow ${hit.voiceMailItemHit.isUnheard ? ' Unread':''}'>
                                 <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="voiceId" value="${hit.voiceMailItemHit.serialize}"></td>
 								<td class='Img' nowrap>
 									<c:choose>
