@@ -66,36 +66,34 @@
 </rest:handleError>
 
 <rest:view title="${requestScope.zimbra_target_item_name}: ${pageTitle}" rssfeed="${true}">
-
-       <table width=100% cellpadding="0" cellspacing="0" border=0>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td style='padding:20px'>
-
-    <table width=100% height=100% cellpadding="0" cellspacing="0" border=0>
-        <c:if test="${param.notoolbar ne '1'}">
-        <tr>
-            <td class='TbTop'>
-                <rest:calendarViewToolbar timezone="${timezone}" today="${today}" date="${date}" prevDate="${prevDate}"
-                                         nextDate="${nextDate}" title="${tbTitle}" context="${context}" keys="true"/>
+                <table width="100%" style="height:100%;" cellpadding="0" cellspacing="0" border="0">
+                    <c:if test="${param.notoolbar ne '1'}">
+                        <tr>
+                            <td class='TbTop'>
+                                <rest:calendarViewToolbar timezone="${timezone}" today="${today}" date="${date}" prevDate="${prevDate}"
+                                                          nextDate="${nextDate}" title="${tbTitle}" context="${context}" keys="true"/>
+                            </td>
+                        </tr>
+                    </c:if>
+                    <tr>
+                        <td class='ZhAppContent'>
+                                ${multiDay}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class='TbBottom'>
+                            <rest:calendarViewBottomToolbar timezone="${timezone}"/>
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
-        </c:if>
-        <tr>
-            <td class='ZhAppContent'>
-                ${multiDay}
-            </td>
-        </tr>
-        <tr>
-            <td class='TbBottom'>
-                <rest:calendarViewBottomToolbar timezone="${timezone}"/>
-            </td>
-        </tr>
-    </table>
-    </td>
-    </tr>
     </table>
     <SCRIPT TYPE="text/javascript">
-    <!--
+        <!--
     function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
     //-->
    </SCRIPT>

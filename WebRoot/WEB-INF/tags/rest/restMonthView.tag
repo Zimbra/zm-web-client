@@ -41,11 +41,10 @@
 <rest:view title="${requestScope.zimbra_target_item_name}: ${title}" rssfeed="${true}">
 <!-- tz=timezone  date=YYYYMMDD   view=day|workWeek|week|month  notoolbar=1 folderIds=[...]
 skin=skin-name color=defaultColor(0)|blue(1)|cyan(2)|green(3)|purple(4)|red(5)|yellow(6)|pink(7)|gray(8)|orange(9) -->
-    <table width=100% cellpadding="0" cellspacing="0" border=0>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td style='padding:20px'>
-
-                <table width=100% cellpadding="0" cellspacing="0" border=0>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
                     <c:if test="${param.notoolbar ne '1'}">
                     <tr>
                         <td class='TbTop'>
@@ -57,9 +56,9 @@ skin=skin-name color=defaultColor(0)|blue(1)|cyan(2)|green(3)|purple(4)|red(5)|y
                     </c:if>
                     <tr>
                         <td class='ZhAppContent'>
-                            <table width=100% class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
+                            <table width="100%" class='ZhCalMonthHeaderTable' cellpadding="2" cellspacing="0" border="0">
                                 <tr>
-                                    <td colspan=7 class='ZhCalMonthHeaderMonth'>
+                                    <td colspan="7" class='ZhCalMonthHeaderMonth'>
                                             ${fn:escapeXml(title)}
                                     </td>
                                 </tr>
@@ -67,26 +66,26 @@ skin=skin-name color=defaultColor(0)|blue(1)|cyan(2)|green(3)|purple(4)|red(5)|y
                                     <c:forEach var="day"
                                                begin="${firstDOW}"
                                                end="${firstDOW+6}">
-                                        <td width=14% class='ZhCalMonthHeaderCellsText'>
+                                        <td width="14%" class='ZhCalMonthHeaderCellsText'>
                                                 ${weekDays[(day mod 7)+1]}
                                         </td>
                                     </c:forEach>
                                 </tr>
                             </table>
-                            <table width=100% cellpadding="0" cellspacing="0" border=0 class='ZhCalMonthTable'>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0" class='ZhCalMonthTable'>
                                 <c:set var="lastMonth" value="-1"/>
                                 <c:forEach var="week" begin="1" end="6">
                                     <tr>
                                         <c:forEach var="dow" begin="1" end="7" varStatus="dowStatus">
-                                            <td width=14%
+                                            <td width="14%"
                                                 class='ZhCalMonthDay${currentDay.timeInMillis eq date.timeInMillis ? 'Selected':''}'>
-                                                <table width=100% cellspacing=2>
+                                                <table width="100%" cellspacing="2">
                                                     <tr>
                                                         <c:set var="T"
                                                                value="${zm:isSameDate(currentDay, today) ? 'T' : ''}"/>
                                                         <c:set var="O"
                                                                value="${not zm:isSameMonth(currentDay, date) ? 'O' : ''}"/>
-                                                        <td align=right class='ZhCalDOM${O}${T}'>
+                                                        <td align="right" class='ZhCalDOM${O}${T}'>
                                                             <fmt:formatDate var="dayTitle" value="${currentDay.time}"
                                                                             pattern="${zm:getMonth(currentDay) ne lastMonth ? dayMonthChangeFormat : dayFormat}"/>
                                                             <c:set var="lastMonth" value="${zm:getMonth(currentDay)}"/>
@@ -95,7 +94,7 @@ skin=skin-name color=defaultColor(0)|blue(1)|cyan(2)|green(3)|purple(4)|red(5)|y
                                                                               timezone="${timezone}"
                                                                               rawdate="${currentDay}"/>
 
-                                                            <a href="${dayUrl}">${fn:escapeXml(dayTitle)}</a>
+                                                            <a href="${fn:escapeXml(dayUrl)}">${fn:escapeXml(dayTitle)}</a>
                                                         </td>
                                                     </tr>
                                                     <c:set var="count" value="${0}"/>

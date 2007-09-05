@@ -22,7 +22,7 @@
                 <tr valign="middle">
                     <app:calendarUrl var="refreshUrl" refresh="1"/>
                     <td height="100%">
-                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"> id="CAL_REFRESH"</c:if>><app:img altkey="ALT_CAL_REFRESH" src="arrows/ImgRefresh.gif"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
+                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"> id="CAL_REFRESH"</c:if>><app:img altkey="ALT_CAL_REFRESH" src="arrows/ImgRefresh.gif"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
                     </td>
                     <td>
                         <div class='vertSep'></div>
@@ -35,28 +35,28 @@
                     <app:calendarUrl var="monthViewUrl" date="${dateDf}" view="month"/>
                     <app:calendarUrl var="scheduleViewUrl" date="${dateDf}" view="schedule"/>
                     <td height="100%">
-                        <a id="CAL_NEWAPPT" href="${fn:escapeXml(newApptUrl)}"><app:img altkey="ALT_CAL_NEW_APPT" src="calendar/ImgNewAppointment.gif"/><span><fmt:message key="new"/></span></a>
+                        <a id="CAL_NEWAPPT" href="${fn:escapeXml(newApptUrl)}"><app:img altkey="ALT_CAL_NEW_APPT" src="calendar/ImgNewAppointment.gif"/><span style='padding-left:5px'><fmt:message key="new"/></span></a>
                     </td>
                     <td height="100%"><div class='vertSep'></div></td>
                     <td height="100%">
-                        <a id="CAL_DAY" href="${fn:escapeXml(dayViewUrl)}"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/ImgDayView.gif"/><span><fmt:message key="day"/></span></a>
+                        <a id="CAL_DAY" href="${fn:escapeXml(dayViewUrl)}"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/ImgDayView.gif"/><span style='padding-left:5px'><fmt:message key="day"/></span></a>
                     </td>
                     <td height="100%">
-                        <a id="CAL_WORK" href="${fn:escapeXml(workWeekViewUrl)}"><app:img altkey="ALT_CAL_WORKWEEK_VIEW" src="calendar/ImgWorkWeekView.gif"/><span><fmt:message key="workWeek"/></span></a>
+                        <a id="CAL_WORK" href="${fn:escapeXml(workWeekViewUrl)}"><app:img altkey="ALT_CAL_WORKWEEK_VIEW" src="calendar/ImgWorkWeekView.gif"/><span style='padding-left:5px'><fmt:message key="workWeek"/></span></a>
                     </td>
                     <td height="100%">
-                        <a id="CAL_WEEK" href="${fn:escapeXml(weekViewUrl)}"><app:img altkey="ALT_CAL_WEEK_VIEW" src="calendar/ImgWeekView.gif"/><span><fmt:message key="week"/></span></a>
+                        <a id="CAL_WEEK" href="${fn:escapeXml(weekViewUrl)}"><app:img altkey="ALT_CAL_WEEK_VIEW" src="calendar/ImgWeekView.gif"/><span style='padding-left:5px'><fmt:message key="week"/></span></a>
                     </td>
                     <td height="100%">
-                        <a id="CAL_MONTH" href="${fn:escapeXml(monthViewUrl)}"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/ImgMonthView.gif"/><span><fmt:message key="month"/></span></a>
+                        <a id="CAL_MONTH" href="${fn:escapeXml(monthViewUrl)}"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/ImgMonthView.gif"/><span style='padding-left:5px'><fmt:message key="month"/></span></a>
                     </td>
                     <td height="100%">
-                        <a id="CAL_SCHED" href="${fn:escapeXml(scheduleViewUrl)}"><app:img altkey="ALT_CAL_SCHEDULE_VIEW" src="calendar/ImgGroupSchedule.gif"/><span><fmt:message key="schedule"/></span></a>
+                        <a id="CAL_SCHED" href="${fn:escapeXml(scheduleViewUrl)}"><app:img altkey="ALT_CAL_SCHEDULE_VIEW" src="calendar/ImgGroupSchedule.gif"/><span style='padding-left:5px'><fmt:message key="schedule"/></span></a>
                     </td>
                     <td height="100%"><div class='vertSep'></div></td>
                     <app:calendarUrl var="todayUrl" nodate="true"/>
                     <td height="100%">
-                        <a id="CAL_TODAY" href="${fn:escapeXml(todayUrl)}"><app:img altkey="ALT_CAL_TODAY" src="calendar/ImgDate.gif"/><span><fmt:message key="today"/></span></a>
+                        <a id="CAL_TODAY" href="${fn:escapeXml(todayUrl)}"><app:img altkey="ALT_CAL_TODAY" src="calendar/ImgDate.gif"/><span style='padding-left:5px'><fmt:message key="today"/></span></a>
                     </td>
                 </tr>
             </table>
