@@ -156,27 +156,28 @@ if (application.getInitParameter("offlineMode") != null)  {
  *
  * ***** END LICENSE BLOCK *****
 -->
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraTitle"/></title>
     <c:set var="skin" value="${empty cookie.ZM_SKIN ? 'sand' : cookie.ZM_SKIN.value}"/>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
-    <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;"/>
+    <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
     <style type="text/css">
          @import url( "<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" );
     </style>
     <link rel="SHORTCUT ICON" href="<c:url value='/favicon.ico'/>">
 </head>
 <body onload="document.loginForm.username.focus();">
-<table width=100% height=100%>
+<table width="100%" style="height:100%;">
     <tr>
-        <td align=center valign=middle>
+        <td align="center" valign="middle">
             <div id="ZloginPanel">
-                <table width=100%>
+                <table width="100%">
                     <tr>
                         <td>
-                            <table width=100%>
+                            <table width="100%">
                                 <tr>
-                                    <td align=center valign=middle>
-                                        <a href="http://www.zimbra.com/" target="_new"><div style='cursor:pointer' class='ImgLoginBanner'></div></a>
+                                    <td align="center" valign="middle">
+                                        <a href="http://www.zimbra.com/" target="_new"><span style='cursor:pointer;display:block;' class='ImgLoginBanner'></span></a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -192,7 +193,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                             <c:if test="${errorCode != null}">
                                 <!-- ${fn:escapeXml(error.stackStrace)} -->
                                 <div id='ZloginErrorPanel'>
-                                    <table width=100%>
+                                    <table width="100%">
                                         <tr>
                                             <td valign='top' width='40'>
                                                 <img alt='<fmt:message key="ALT_ERROR"/>' src="<c:url value='/img/dwt/ImgCritical_32.gif'/>"/>
@@ -208,29 +209,29 @@ if (application.getInitParameter("offlineMode") != null)  {
                             <div id='ZloginFormPanel'>
                                 <form method='post' name="loginForm" action="${formActionUrl}">
                                     <input type="hidden" name="loginOp" value="login"/>
-                                    <table width=100% cellpadding=4>
+                                    <table width="100%" cellpadding="4">
                                         <tr>
                                             <td class='zLoginLabelContainer'><label for="username"><fmt:message key="username"/>:</label></td>
-                                            <td colspan=2 class='zLoginFieldContainer'>
+                                            <td colspan="2" class='zLoginFieldContainer'>
                                                 <input id="username" class='zLoginField' name='username' type='text' value='${fn:escapeXml(param.username)}' />
                                             </td>
                                         </tr>
                                         <tr>
                                             <td class='zLoginLabelContainer'><label for="password"><fmt:message key="password"/>:</label></td>
-                                            <td colspan=2 class='zLoginFieldContainer'>
+                                            <td colspan="2" class='zLoginFieldContainer'>
                                                 <input id="password" class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
                                             </td>
                                         </tr>
                                         <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
                                            <tr>
                                                <td class='zLoginLabelContainer'><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
-                                               <td colspan=2 class='zLoginFieldContainer'>
+                                               <td colspan="2" class='zLoginFieldContainer'>
                                                    <input id="loginNewPassword" class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
                                                </td>
                                            </tr>
                                             <tr>
                                                 <td class='zLoginLabelContainer'><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
-                                                <td colspan=2 class='zLoginFieldContainer'>
+                                                <td colspan="2" class='zLoginFieldContainer'>
                                                     <input id="confirmNew" class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
                                                 </td>
                                             </tr>
@@ -238,19 +239,19 @@ if (application.getInitParameter("offlineMode") != null)  {
                                         <tr>
                                             <td class='zLoginLabelContainer'></td>
                                             <td>
-                                                <table width=100%>
+                                                <table width="100%">
                                                     <tr>
-                                                        <td><input id="remember" value="1" type=checkbox name='zrememberme' /></td>
+                                                        <td><input id="remember" value="1" type="checkbox" name='zrememberme' /></td>
                                                         <td class='zLoginCheckboxLabelContainer'><label for="remember"><fmt:message
                                                                 key="rememberMe"/></label></td>
                                                     </tr>
                                                 </table>
                                             </td>
-                                            <td><input type=submit class='zLoginButton'
+                                            <td><input type="submit" class='zLoginButton'
                                                        value="<fmt:message key="login"/>"/></td>
                                         </tr>
                                     </table>
-                                    <table width=100%>
+                                    <table width="100%">
                                         <tr>
                                         	<td nowrap align='center'>
                                                 <div class='ZLoginSeparator' style='margin-top:0px'></div>
@@ -283,7 +284,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                                         var it = document.getElementById("ZLoginWhatsThis");
 														it.style.display = (it.style.display == "block" ? "none" : "block");
 													}
-													document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/></a>");
+													document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
 												</script>
 											</td>
 										</tr>
