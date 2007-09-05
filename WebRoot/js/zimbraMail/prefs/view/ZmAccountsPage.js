@@ -64,7 +64,7 @@ ZmAccountsPage.PREFS = {
 		displayContainer:	ZmPref.TYPE_INPUT
 	},
 	REPLY_TO: {
-		displayName:		"Set the \"Reply-to\" field of email messages to:", // TODO: i18n
+		displayName:		ZmMsg.accountReplyTo,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	},
 	REPLY_TO_NAME: {
@@ -95,8 +95,7 @@ ZmAccountsPage.PREFS = {
 		displayContainer:	ZmPref.TYPE_INPUT
 	},
 	CHANGE_PORT: {
-		// TODO: do message replacement when ACCOUNT_TYPE changes
-		displayName:		"Change {0} port",
+		displayName:		ZmMsg.accountChangePortLabel,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	},
 	PORT: {
@@ -105,24 +104,24 @@ ZmAccountsPage.PREFS = {
 	},
 	PORT_DEFAULT: {
 		displayContainer:	ZmPref.TYPE_STATIC,
-		displayName:		"({0,number} is the default)"
+		displayName:		ZmMsg.accountPortDefault
 	},
 	SSL: {
-		displayName:		"Use an encrypted connection (SSL) when accessing this server", // TODO: i18n
+		displayName:		ZmMsg.accountUseSSL,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		options:			[ZmDataSource.CONNECT_CLEAR, ZmDataSource.CONNECT_SSL]
 	},
 	TEST: {
-		displayName:		"Test Settings", // TODO: i18n
+		displayName:		ZmMsg.accountTest,
 		displayContainer:	ZmPref.TYPE_CUSTOM // NOTE: a button
 	},
 	DOWNLOAD_TO: {
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		displayOptions:		["Inbox", "Folder: {0}"], // TODO: i18n
+		displayOptions:		[ZmMsg.accountDownloadToInbox, ZmMsg.accountDownloadToFolder],
 		options:			[ZmAccountsPage.DOWNLOAD_TO_INBOX, ZmAccountsPage.DOWNLOAD_TO_FOLDER]
 	},
 	DELETE_AFTER_DOWNLOAD: {
-		displayName:		"Delete messages on the server after downloading them", // TODO: i18n
+		displayName:		ZmMsg.accountDeleteAfterDownload,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	},
 	// Persona
@@ -133,11 +132,11 @@ ZmAccountsPage.PREFS = {
 		displayContainer:	ZmPref.TYPE_SELECT
 	},
 	WHEN_SENT_TO: {
-		displayName:		"When replying or forwarding messages sent to {0}", // TODO: i18n, message format
+		displayName:		ZmMsg.personaWhenSentTo,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	},
 	WHEN_IN_FOLDER: {
-		displayName:		"Replying to or forwarding messages in folder(s):", // TODO: i18n
+		displayName:		ZmMsg.personaWhenInFolder,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	},
 	WHEN_IN_FOLDER_LIST: {
@@ -905,7 +904,7 @@ ZmAccountsPage.prototype._setupButtons = function() {
 	var addExternalButtonDiv = document.getElementById(this._htmlElId+"_ADD_EXTERNAL");
 	if (addExternalButtonDiv) {
 		var button = new DwtButton(this);
-		button.setText("Add External Account"); // TODO: i18n
+		button.setText(ZmMsg.addExternalAccount);
 		button.addSelectionListener(new AjxListener(this, this._handleAddExternalButton));
 		button.replaceElement(addExternalButtonDiv);
 		this._addExternalButton = button;
@@ -914,7 +913,7 @@ ZmAccountsPage.prototype._setupButtons = function() {
 	var addPersonaButtonDiv = document.getElementById(this._htmlElId+"_ADD_PERSONA");
 	if (addPersonaButtonDiv) {
 		var button = new DwtButton(this);
-		button.setText("Add Persona"); // TODO: i18n
+		button.setText(ZmMsg.addPersona);
 		button.addSelectionListener(new AjxListener(this, this._handleAddPersonaButton));
 		button.replaceElement(addPersonaButtonDiv);
 		this._addPersonaButton = button;
@@ -1403,8 +1402,9 @@ ZmNewDataSource = function() {
 	var id = "new-dsrc-"+number;
 	this.setType(ZmAccount.POP);
 	ZmDataSource.call(this, ZmAccount.POP, id);
-	this.name = AjxMessageFormat.format("New External Account {0,number}", number); // TODO: i18n
+	this.name = AjxMessageFormat.format(ZmMsg.newExternalAccount, number);
 	this._new = true;
+	this.folderId = -1;
 };
 ZmNewDataSource.prototype = new ZmDataSource;
 ZmNewDataSource.prototype.constructor = ZmNewDataSource;
@@ -1437,7 +1437,7 @@ ZmNewDataSource.prototype.setType = function(type) {
 ZmNewPersona = function() {
 	var number = ++ZmNewPersona.ID;
 	var id = "new-persona-"+number;
-	var name = AjxMessageFormat.format("New Persona {0,number}", number); // TODO: i18n
+	var name = AjxMessageFormat.format(ZmMsg.newPersona, number);
 	var identity = new ZmIdentity(name);
 	identity.id = id;
 	ZmPersona.call(this, identity);
