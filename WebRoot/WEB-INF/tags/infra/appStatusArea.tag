@@ -14,7 +14,7 @@
                     <div>&nbsp;</div>
                 </c:when>
                 <c:otherwise>
-                    <div class='${requestScope.statusClass}'>${fn:escapeXml(requestScope.statusMessage)}</div>
+                    <div class='${requestScope.statusClass}'>${requestScope.statusHtml ? requestScope.statusMessage : fn:escapeXml(requestScope.statusMessage)}</div>
                 </c:otherwise>
             </c:choose>
         </td>
