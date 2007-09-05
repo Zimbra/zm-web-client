@@ -214,6 +214,15 @@ height: 20px;
     color: black;
 }
 
+.zo_fldr A {
+  text-decoration: none;
+  vertical-align: middle;
+  color:inherit;
+}
+
+.zo_fldr SPAN {
+    vertical-align: middle;
+}
 
 .zo_fldr  {
     margin: 0;

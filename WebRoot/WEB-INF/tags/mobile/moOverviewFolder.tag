@@ -12,10 +12,12 @@
     <c:param name="sfi" value="${folder.id}"/>
     <c:if test="${!empty types}"><c:param name="st" value="${types}"/></c:if>
 </c:url>
-<tr>
-    <td class='zo_fldr${folder.hasUnread ? ' zo_unread':''}' style='padding-left: ${8+folder.depth*8}px' onclick='window.location="${zm:jsEncode(url)}"'>
-        <mo:img src="${folder.image}"/>
-        ${fn:escapeXml(label)}
-        <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount})</c:if>
+<tr onclick='zClickLink("FLDR${folder.id}")'>
+    <td class='zo_fldr${folder.hasUnread ? ' zo_unread':''}' style='padding-left: ${8+folder.depth*8}px'>
+        <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
+            <mo:img src="${folder.image}" alt="${fn:escapeXml(folder.name)}"/>
+            <span>${fn:escapeXml(label)}
+            <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount})</c:if></span>
+        </a>
     </td>
 </tr>

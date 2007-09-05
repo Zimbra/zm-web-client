@@ -40,7 +40,7 @@
 
 <mo:view mailbox="${mailbox}" title="${title}" context="${null}">
 
-<table width=100% cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <tr>
         <td>
             <mo:calendarViewToolbar date="${date}"/>
@@ -48,14 +48,14 @@
     </tr>
     <tr>
             <td>
-                <table width=100% height=100% border="0" cellpadding=0 cellspacing=0>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
                     <tr class='zo_cal_lpage_row'>
                         <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                         <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
-                        <td width=1% class='zo_cal_lpage'>
-                            <a href="${prevUrl}"><app:img src="arrows/ImgPreviousPage.gif"/></a>
+                        <td width="1%" class='zo_cal_lpage'>
+                            <a href="${fn:escapeXml(prevUrl)}"><mo:img src="arrows/ImgPreviousPage.gif" alt="previous"/></a>
                         </td>
-                        <td nowrap class='zo_cal_listheader'>
+                        <td nowrap="nowrap" class='zo_cal_listheader'>
                             <fmt:message var="titleFormat" key="MO_CAL_LIST_DATE_FORMAT"/>
                             <fmt:message key="MO_CAL_LIST_TITLE_FORMAT">
                                 <fmt:param>
@@ -66,8 +66,8 @@
                                 </fmt:param>
                             </fmt:message>
                         </td>
-                        <td width=1% class='zo_cal_lpage'>
-                            <a href="${nextUrl}"><app:img src="arrows/ImgNextPage.gif"/></a>
+                        <td width="1%" class='zo_cal_lpage'>
+                            <a href="${fn:escapeXml(nextUrl)}"><mo:img src="arrows/ImgNextPage.gif" alt="next"/></a>
                         </td>
                     </tr>
                 </table>
@@ -75,7 +75,7 @@
         </tr>
     <tr>
         <td>
-            <table width=100% cellpadding="0" cellspacing="0" class='zo_cal_list'>
+            <table width="100%" cellpadding="0" cellspacing="0" class='zo_cal_list'>
                 <c:set var="id" value="0"/>
                 <c:forEach var="day" begin="1" end="${numDays}">                    
                     <c:set var="count" value="0"/>
@@ -109,7 +109,7 @@
                             <mo:calendarUrl appt="${appt}" var="apptUrl"/>
                             <td class='zo_cal_listi_subject'>
                                 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
-                                    <a id="a${id}" href="${apptUrl}">${fn:escapeXml(subject)}</a>
+                                    <a id="a${id}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
                             </td>
                         </tr>
                         <c:set var="count" value="${count+1}"/>

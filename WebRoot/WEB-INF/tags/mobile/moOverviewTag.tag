@@ -9,7 +9,7 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:set var="types" value="${not empty types ? types : not empty param.st ? param.st : ''}"/>
-<tr>
+<tr onclick='zClickLink("TAG${tag.id}")'>
     <c:choose>
         <c:when test="${calendars}">
             <mo:calendarUrl var="url" sq='tag:"${tag.name}"'/>
@@ -21,10 +21,12 @@
             </c:url>
         </c:otherwise>
     </c:choose>
-    <td class='zo_fldr${tag.hasUnread ? ' zo_unread' : ''}' onclick='window.location="${zm:jsEncode(url)}"'>
-        <mo:img src="${tag.image}" alt='${fn:escapeXml(tag.name)}'/>
-        ${fn:escapeXml(tag.name)}
-        <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
+    <td class='zo_fldr${tag.hasUnread ? ' zo_unread' : ''}'>
+        <a id="TAG${tag.id}" href="${fn:escapeXml(url)}">
+            <mo:img src="${tag.image}" alt='${fn:escapeXml(tag.name)}'/>
+            ${fn:escapeXml(tag.name)}
+            <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
+        </a>
     </td>
 </tr>
  

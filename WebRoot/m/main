@@ -13,10 +13,10 @@
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
 </mo:handleError>
 <mo:view title="${mailbox.name}" context="${null}" mailbox="${mailbox}">
-    <table width=100% cellspacing="0" cellpadding="0">
+    <table width="100%" cellspacing="0" cellpadding="0">
         <tr>
             <td>
-                <table width=100% cellspacing="0" cellpadding="0">
+                <table width="100%" cellspacing="0" cellpadding="0">
                     <tr class='zo_toolbar'>
                         <td>
                             <table cellspacing="0" cellpadding="0">
@@ -30,12 +30,12 @@
                                 </tr>
                             </table>
                         </td>
-                        <td align=right>
+                        <td align="right">
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td>
                                         <c:url var="logoutUrl" value="/?loginOp=logout&client=mobile"/>
-                                        <a href="${logoutUrl}" class='zo_button'>
+                                        <a href="${fn:escapeXml(logoutUrl)}" class='zo_button'>
                                             <fmt:message key="logOut"/>
                                         </a>
                                     </td>
@@ -49,7 +49,7 @@
     <tr>
         <td class='zo_main_item'>
             <a href="mosearch">
-                <mo:img src="mail/ImgMailApp.gif" />
+                <mo:img src="mail/ImgMailApp.gif" alt="mail"/>
                 <fmt:message key="mail"/>
                 <c:if test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if>
             </a>
@@ -59,7 +59,7 @@
             <tr>
                 <td class='zo_main_item'>
                 <a href="moaddrbooks">
-                    <mo:img src="contacts/ImgContact.gif"/>
+                    <mo:img src="contacts/ImgContact.gif" alt="contacts"/>
                     <fmt:message key="addressBooks"/>
                 </a>
                 </td>
@@ -69,7 +69,7 @@
             <tr>
                 <td class='zo_main_item'>
                 <a href="mocalendar">
-                    <mo:img src="calendar/ImgCalendarApp.gif" />
+                    <mo:img src="startup/ImgCalendarApp.gif" alt="calendar"/>
                     <fmt:message key="calendar"/>
                 </a>
                 </td>
@@ -78,7 +78,7 @@
         <tr>
             <td class='zo_main_item'>
             <a href="mofolders">
-                <mo:img src="mail/ImgMailFolder.gif" />
+                <mo:img src="mail/ImgMailFolder.gif" alt="mail" />
                 <fmt:message key="MO_mailFoldersTags"/>
             </a>
             </td>
@@ -86,7 +86,7 @@
         <tr>
             <td class='zo_main_item'>
             <a href="moquery">
-                <mo:img src="common/ImgSearch.gif" />
+                <mo:img src="common/ImgSearch.gif" alt="search"/>
                 <fmt:message key="search"/>
             </a>
             </td>

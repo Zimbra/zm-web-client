@@ -299,7 +299,7 @@
                 <br/>
                 <c:forEach var="addbody" items="${bodies}" varStatus="bstatus">
                     <app:body message="${message}" body="${addbody}" mailbox="${mailbox}"
-                              theBody="${zm:getPartHtmlContent(addbody, message)}"/>
+                              theBody="${zm:getPartHtmlContent(addbody, message)}" counter="${counter}X${bstatus.count}"/>
                 </c:forEach>
             </c:if>
             <c:if test="${not empty message.attachments}">

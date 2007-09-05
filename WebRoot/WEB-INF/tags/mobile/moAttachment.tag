@@ -8,7 +8,7 @@
 <%@ attribute name="value" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="name" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -17,7 +17,7 @@
 <tr class="CompOrigAtt" valign="middle">
     <td align='right'>
         <c:if test="${firstAttachment}">
-            <app:img altkey="ALT_ATTACHMENT" src="common/ImgAttachment.gif"/>
+            <mo:img altkey="ALT_ATTACHMENT" src="common/ImgAttachment.gif"/>
             <c:set var="firstAttachment" value="${false}"/>
         </c:if>
     </td>
@@ -28,14 +28,14 @@
         </fmt:message>
     </c:if>
     <td>
-        <table cellpadding=0 cellspacing=0 border="0">
+        <table cellpadding="0" cellspacing="0" border="0">
             <tr valign="middle">
                 <td>
                     <input <c:if test="${checked}">checked </c:if>type=checkbox name="${name}" value="${value}">
                 </td>
                 <td>&nbsp;</td>
                 <td>
-                    <a target="_blank" href="${url}&disp=i">${fn:escapeXml(displayName)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
+                    <a target="_blank" href="${fn:escapeXml(url)}&amp;disp=i">${fn:escapeXml(displayName)}</a>&nbsp;<c:if test="${displaySize}">(${displaySize})</c:if>
                 </td>
             </tr>
         </table>

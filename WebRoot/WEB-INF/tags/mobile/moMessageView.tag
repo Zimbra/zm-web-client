@@ -27,16 +27,16 @@
 
 <mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" scale="true">
 
-    <table width=100% cellpadding="0" cellspacing="0" border=0>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td>
-                <table width=100% cellspacing="0" cellpadding="0">
+                <table width="100%" cellspacing="0" cellpadding="0">
                     <tr class='zo_toolbar'>
                         <td>
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td>
-                                        <a href="${closeUrl}#msg${msg.id}" class='zo_leftbutton'>
+                                        <a href="${fn:escapeXml(closeUrl)}#msg${msg.id}" class='zo_leftbutton'>
                                             ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
                                         </a>
                                     </td>
@@ -45,7 +45,7 @@
                                             <c:when test="${cursor.hasPrev}">
                                                 <zm:prevItemUrl var="prevMsgUrl" value="mosearch" action='view'
                                                                 cursor="${cursor}" context="${context}"/>
-                                                <a class='zo_button' href="${prevMsgUrl}">
+                                                <a class='zo_button' href="${fn:escapeXml(prevMsgUrl)}">
                                                     <fmt:message key="MO_PREV"/>
                                                 </a>
                                             </c:when>
@@ -61,7 +61,7 @@
                                             <c:when test="${cursor.hasNext}">
                                                 <zm:nextItemUrl var="nextMsgUrl" value="mosearch" action='view'
                                                                 cursor="${cursor}" context="${context}"/>
-                                                <a class='zo_button' href="${nextMsgUrl}">
+                                                <a class='zo_button' href="${fn:escapeXml(nextMsgUrl)}">
                                                     <fmt:message key="MO_NEXT"/>
                                                 </a>
                                             </c:when>

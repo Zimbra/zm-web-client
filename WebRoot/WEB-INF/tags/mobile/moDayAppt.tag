@@ -24,14 +24,14 @@
 
         <div class='${leftclass}${rightclass} ${color}${needsAction ? 'Dark' : 'Light'} zo_allday_appt' onclick='zClickLink("${id}")'>
             <div class='zo_appt_text'>
-                <a id="${id}" href="${apptUrl}">${fn:escapeXml(subject)}</a>
+                <a id="${id}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
             </div>
         </div>
     </c:when>
     <c:otherwise>
         <div class='${color}${appt.partStatusNeedsAction ? '' : 'Bg'} zo_day_appt' onclick='zClickLink("${id}")'>
             <div class='zo_appt_text'>
-                <a id="${id}" href="${apptUrl}">${fn:escapeXml(subject)}</a>
+                <a id="${id}" href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
             </div>
         </div>
     </c:otherwise>

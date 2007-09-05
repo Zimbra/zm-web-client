@@ -18,35 +18,36 @@
 <c:if test="${(not empty value) or isaddress}">
     <fmt:message key="${label}" var="label"/>
     <tr>
-        <td <c:if test="${isaddress}">valign=top</c:if> class='zo_cv_fname'>${fn:escapeXml(label)}</td>
+        <td <c:if test="${isaddress}">valign="top"</c:if> class='zo_cv_fname'>${fn:escapeXml(label)}</td>
         <td class='zo_cv_fval'>
             <c:choose>
                 <c:when test="${isurl}">
                     <c:set var="prefix" value="${fn:contains(value,'//') ? '' : 'http://'}"/>
-                    <a target=_new href="<c:url value="${prefix}${value}"/>">${fn:escapeXml(value)}</a>
+                    <c:url var="url" value="${prefix}${value}"/>
+                    <a target="_new" href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
                 <c:when test="${isaddress}">
                     <c:url var="gmaps" value="http://maps.google.com/maps">
                         <c:param name="q" value="${street} ${city} ${state} ${postalcode} ${country}"/>
                     </c:url>
-                    <a target=_new href="${gmaps}">
-                        <c:if test="${not empty street}">${fn:escapeXml(street)}<br></c:if>
+                    <a target="_new" href="${fn:escapeXml(gmaps)}">
+                        <c:if test="${not empty street}">${fn:escapeXml(street)}<br/></c:if>
                         <c:if test="${not empty city}">
                             ${fn:escapeXml(city)} <c:if test="${not empty state or not empty postalcode}">,</c:if>
                         </c:if>
                         <c:if test="${not empty state}">${fn:escapeXml(state)}</c:if>
                         <c:if test="${not empty postalcode}">${fn:escapeXml(postalcode)}</c:if>
-                        <c:if test="${not (empty state and empty street and empty postalcode)}"><br></c:if>
+                        <c:if test="${not (empty state and empty street and empty postalcode)}"><br/></c:if>
                         <c:if test="${not empty country}">${fn:escapeXml(country)}</c:if>
                     </a>
                 </c:when>
                 <c:when test="${isphone}">
                     <c:url var="url" value="tel:${value}"/>
-                    <a href="${url}">${fn:escapeXml(value)}</a>
+                    <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
                 <c:when test="${isemail}">
                     <c:url var="url" value="mailto:${value}"/>
-                    <a href="${url}">${fn:escapeXml(value)}</a>
+                    <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
                 <c:otherwise>
                     ${fn:escapeXml(value)}

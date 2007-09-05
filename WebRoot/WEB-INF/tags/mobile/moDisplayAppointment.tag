@@ -79,7 +79,7 @@
                     <c:if test="${not empty bodies}">
                         <c:forEach var="addbody" items="${bodies}" varStatus="bstatus">
                             <mo:body message="${message}" body="${addbody}" mailbox="${mailbox}"
-                                     theBody="${zm:getPartHtmlContent(addbody, message)}"/>
+                                     theBody="${zm:getPartHtmlContent(addbody, message)}" counter="${bstatus.count}"/>
                         </c:forEach>
                     </c:if>
                 </td>

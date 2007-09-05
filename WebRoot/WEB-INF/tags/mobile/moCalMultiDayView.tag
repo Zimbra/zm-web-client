@@ -65,7 +65,7 @@
 
 <mo:view mailbox="${mailbox}" title="${pageTitle}" context="${null}">
 
-    <table width=100% cellpadding="0" cellspacing="0" border=0>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td>
                 <mo:calendarViewToolbar date="${date}"/>
@@ -73,19 +73,19 @@
         </tr>
         <tr>
             <td>
-                <table width=100% height=100% border="0" cellpadding=0 cellspacing=0>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
                     <tr class='zo_cal_dpage_row'>
                         <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                         <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
-                        <td width=1% class='zo_cal_dpage'>
-                            <a href="${prevUrl}"><app:img src="arrows/ImgPreviousPage.gif"/></a>
+                        <td width="1%" class='zo_cal_dpage'>
+                            <a href="${fn:escapeXml(prevUrl)}"><mo:img src="arrows/ImgPreviousPage.gif" alt="previous"/></a>
                         </td>
-                        <td nowrap class='zo_cal_dayheader${(date.timeInMillis eq today.timeInMillis) ? '_today':''}'>
+                        <td nowrap="nowrap" class='zo_cal_dayheader${(date.timeInMillis eq today.timeInMillis) ? '_today':''}'>
                             <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
                             <fmt:formatDate value="${date.time}" pattern="${titleFormat}"/>
                         </td>
-                        <td width=1% class='zo_cal_dpage'>
-                            <a href="${nextUrl}"><app:img src="arrows/ImgNextPage.gif"/></a>
+                        <td width="1%" class='zo_cal_dpage'>
+                            <a href="${fn:escapeXml(nextUrl)}"><mo:img src="arrows/ImgNextPage.gif" alt="next"/></a>
                         </td>
                     </tr>
                 </table>

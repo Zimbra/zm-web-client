@@ -35,7 +35,7 @@
 
 <mo:view mailbox="${mailbox}" title="${title}" context="${null}" onload="initView()">
 
-<table width=100% cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
     <tr>
         <td>
             <mo:calendarViewToolbar date="${date}" openurl="true"/>
@@ -43,21 +43,21 @@
     </tr>
     <tr>
         <td>
-            <table width=100% cellpadding=0 cellspacing=0 border=0>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
                     <tr>
-                        <td colspan=7>
-                            <table width=100% height=100% border="0" cellpadding=0 cellspacing=0>
+                        <td colspan="7">
+                            <table width="100%" style='height:100%' border="0" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                                     <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
-                                    <td width=1% class='zo_cal_mpage'>
-                                        <a href="${prevUrl}"><app:img src="arrows/ImgPreviousPage.gif"/></a>
+                                    <td width="1%" class='zo_cal_mpage'>
+                                        <a href="${fn:escapeXml(prevUrl)}"><mo:img src="arrows/ImgPreviousPage.gif" alt="previous"/></a>
                                     </td>
-                                    <td nowrap class='zo_cal_mpage${(date.timeInMillis eq today.timeInMillis) ? '':''}'>
+                                    <td nowrap="nowrap" class='zo_cal_mpage${(date.timeInMillis eq today.timeInMillis) ? '':''}'>
                                          ${fn:escapeXml(title)}
                                     </td>
-                                    <td width=1% class='zo_cal_mpage'>
-                                        <a href="${nextUrl}"><app:img src="arrows/ImgNextPage.gif"/></a>
+                                    <td width="1%" class='zo_cal_mpage'>
+                                        <a href="${fn:escapeXml(nextUrl)}"><mo:img src="arrows/ImgNextPage.gif" alt="next"/></a>
                                     </td>
                                 </tr>
                             </table>
@@ -67,7 +67,7 @@
                         <c:forEach var="day"
                                    begin="${mailbox.prefs.calendarFirstDayOfWeek}"
                                    end="${mailbox.prefs.calendarFirstDayOfWeek+6}">
-                            <td width=14% class='zo_cal_mdow'>
+                            <td width="14%" class='zo_cal_mdow'>
                                     ${weekDays[(day mod 7)+1]}
                             </td>
                         </c:forEach>
@@ -77,7 +77,7 @@
     </tr>
     <tr>
         <td>
-            <table width=100% cellpadding="0" cellspacing="0" border=0>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <c:forEach var="week" begin="1" end="6">
                     <tr>
                         <c:forEach var="dow" begin="1" end="7" varStatus="dowStatus">
@@ -112,11 +112,11 @@
                     <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
                         <c:if test="${count eq 0}">
                             <fmt:formatDate var="datef" timeZone="${timezone}" value="${currentDay2.time}" pattern="yyyyMMdd"/>
-                            <div class='zo_cal_mlist' id="list${datef}" <c:if test="${datef eq curId}"> style='display:block'"</c:if>>
-                            <table width=100% cellpadding="0" cellspacing="0" class='zo_cal_list'>
+                            <div class='zo_cal_mlist' id="list${datef}" <c:if test="${datef eq curId}"> style='display:block'</c:if>>
+                            <table width="100%" cellpadding="0" cellspacing="0" class='zo_cal_list'>
                         </c:if>
                         <mo:calendarUrl appt="${appt}" var="apptUrl"/>
-                        <tr  onclick='openURL("${zm:jsEncode(apptUrl)}")'>
+                        <tr  onclick='openURL("${fn:escapeXml(zm:jsEncode(apptUrl))}")'>
                             <td class='zo_cal_listi_time'>
                                 <c:choose>
                                     <c:when test="${appt.allDay}">
@@ -142,16 +142,16 @@
                 </c:forEach>
             </c:forEach>
             <div class='zo_cal_mlist' id="listempty" <c:if test="${not currentHasAppt}">style='display:block'</c:if>>
-                <table width=100% cellpadding="0" cellspacing="0" class='zo_cal_list'>
-                    <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
-                    <tr><td colspan=2 class="zo_cal_listi_empty">No Appointments</td></tr>
+                <table width="100%" cellpadding="0" cellspacing="0" class='zo_cal_list'>
+                    <tr><td colspan="2" class="zo_cal_listi_subject">&nbsp;</td></tr>
+                    <tr><td colspan="2" class="zo_cal_listi_empty">No Appointments</td></tr>
                 </table>
             </div>
             <div class='zo_cal_mlist' style='display:block'>
-                <table width=100% cellpadding="0" cellspacing="0" class='zo_cal_list'>
-                    <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
-                    <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
-                    <tr><td colspan=2 class="zo_cal_listi_subject">&nbsp;</td></tr>
+                <table width="100%" cellpadding="0" cellspacing="0" class='zo_cal_list'>
+                    <tr><td colspan="2" class="zo_cal_listi_subject">&nbsp;</td></tr>
+                    <tr><td colspan="2" class="zo_cal_listi_subject">&nbsp;</td></tr>
+                    <tr><td colspan="2" class="zo_cal_listi_subject">&nbsp;</td></tr>
                 </table>
             </div>
         </td>

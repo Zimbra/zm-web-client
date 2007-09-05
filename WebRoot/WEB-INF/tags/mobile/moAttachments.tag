@@ -8,14 +8,14 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 
-<table cellspacing=5 cellpadding=5>
-<c:forEach var="part" items="${message.attachments}">
+<table cellspacing="5" cellpadding="5">
+<c:forEach var="part" items="${message.attachments}" varStatus="partStatus">
 <c:if test="${part.isMssage}">
 
     <tr>
-        <td colspan=2>
+        <td colspan="2">
             <zm:getMessage var="partMessage" id="${message.id}" part="${part.partName}"/>
-            <mo:displayMessage mailbox="${mailbox}" message="${partMessage}" composeUrl="${composeUrl}&part=${part.partName}"/>
+            <mo:displayMessage mailbox="${mailbox}" message="${partMessage}" composeUrl="${composeUrl}&part=${part.partName}" counter="${partStatus.count}"/>
         </td>
     </tr>
 </c:if>
@@ -26,18 +26,18 @@
         <c:if test="${empty pname}"><fmt:message key="unknownContentType" var="pname"><fmt:param value="${part.contentType}"/></fmt:message></c:if>
         <c:set var="url" value="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
         <tr>
-            <td colspan=2>
-                <table cellspacing=4>
+            <td colspan="2">
+                <table cellspacing="4">
                     <tr>
                         <td>
-                            <mo:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}" title="${fn:escapeXml(part.contentType)}"/>
+                            <mo:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}"/>
                         </td>
                         <td>
-                            <a href="${url}&disp=a"><b>${fn:escapeXml(pname)}</b></a> (${part.displaySize})
+                            <a href="${fn:escapeXml(url)}&amp;disp=a"><b>${fn:escapeXml(pname)}</b></a> (${part.displaySize})
                         </td>
                         <c:if test="${mailbox.features.viewInHtml and part.isViewAsHtmlTarget}">
                             <td>
-                                <a target="_blank" href="${url}&view=html"><fmt:message key="viewAsHtml"/></a>
+                                <a target="_blank" href="${fn:escapeXml(url)}&amp;view=html"><fmt:message key="viewAsHtml"/></a>
                             </td>
                         </c:if>
                     </tr>

@@ -39,11 +39,11 @@
 </mo:handleError>
 
 
-<table width=100% height=100% border="0" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
+<table width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse'>
 
 <c:forEach var="row" items="${layout.allDayRows}">
     <tr>
-        <td class='zo_cal_allday' align='center' valign="middle" nowrap width=1% style='border-left:none'>
+        <td class='zo_cal_allday' align='center' valign="middle" nowrap="nowrap" width="1%" style='border-left:none'>
             <fmt:message key="apptAllDay"/>
         </td>
         <c:choose>
@@ -56,11 +56,11 @@
                 </td>
             </c:when>
             <c:otherwise>
-                <td class='zo_cal_hs' height=100% width=1px>&nbsp;</td>
+                <td class='zo_cal_hs' height="100%" width="1px">&nbsp;</td>
             </c:otherwise>
         </c:choose>
         <c:forEach var="cell" items="${row.cells}">
-            <td style='padding: 1px' class='zo_cal_adds' valign=middle height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
+            <td style='padding: 1px' class='zo_cal_adds' valign="middle" height="100%" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
                 <c:choose>
                     <c:when test="${not empty cell.appt}">
                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
@@ -76,7 +76,7 @@
     </tr>
 </c:forEach>
 <tr>
-    <td class='zo_cal_adb' nowrap width=1% style='border-left:none'>
+    <td class='zo_cal_adb' nowrap="nowrap" width="1%" style='border-left:none'>
         &nbsp;
     </td>
     <c:choose>
@@ -84,25 +84,25 @@
             <c:set var="overlap" value="${layout.scheduleAlldayOverlapCount}"/>
             <c:set var ="oc" value="${overlap gt 0 ? ' ZhCalSchedUnion ' :''}"/>
             <c:set var="opacity" value="${20 + 60 * (overlap / layout.numDays)}"/>
-            <td valign='top' class='${oc}zo_cal_adhs zo_cal_dsep' height=100% <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
+            <td valign='top' class='${oc}zo_cal_adhs zo_cal_dsep' height="100%" <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
                 &nbsp;
             </td>
         </c:when>
         <c:otherwise>
-            <td class='zo_cal_adhs' height=100% width=1px>&nbsp;</td>
+            <td class='zo_cal_adhs' height="100%" width="1px">&nbsp;</td>
         </c:otherwise>
     </c:choose>
     <c:forEach var="day" items="${layout.days}">
-        <td class='zo_cal_dsep zo_cal_adb' colspan="${day.maxColumns}" width=${day.width}%>
+        <td class='zo_cal_dsep zo_cal_adb' colspan="${day.maxColumns}" width="${day.width}%">
             &nbsp;
         </td>
     </c:forEach>
     <td class='zo_cal_adb' style='width:10px'>&nbsp;</td>
 </tr>
 <c:forEach var="row" items="${layout.rows}">
-    <tr height="100%">
+    <tr style='height:100%'>
         <c:if test="${row.rowNum % 4 eq 0}">
-            <td valign=top class='zo_cal_dayhour' nowrap width=1% rowspan=4 style='border-left:none'>
+            <td valign="top" class='zo_cal_dayhour' nowrap="nowrap" width="1%" rowspan="4" style='border-left:none'>
                 <fmt:formatDate value="${row.date}" type="time" timeStyle="short"/>
             </td>
         </c:if>
@@ -112,12 +112,12 @@
                 <c:set var="overlap" value="${row.scheduleOverlapCount}"/>
                 <c:set var ="oc" value="${overlap gt 0 ? ' ZhCalSchedUnion ' :''}"/>
                 <c:set var="opacity" value="${20 + 60 * (overlap / layout.numDays)}"/>
-                <td valign='top' class='${hs}${oc}ZhCalDayUnionSEP' height=100% <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
+                <td valign='top' class='${hs}${oc}ZhCalDayUnionSEP' height="100%" <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
                     &nbsp;
                 </td>
             </c:when>
             <c:otherwise>
-                <td <c:if test="${row.rowNum % 4 ne 3}">class='zo_cal_hs' </c:if><c:if test="${row.rowNum % 4 eq 3}">class='zo_cal_hsb' </c:if> height=100% width=1px>&nbsp;</td>
+                <td <c:if test="${row.rowNum % 4 ne 3}">class='zo_cal_hs' </c:if><c:if test="${row.rowNum % 4 eq 3}">class='zo_cal_hsb' </c:if> height="100%" width="1px">&nbsp;</td>
             </c:otherwise>
         </c:choose>
         <c:set var="prevDay" value="${0}"/>
@@ -129,7 +129,7 @@
             <c:choose>
                 <c:when test="${not empty cell.appt and cell.isFirst}">
 
-                    <td <c:if test="${diffDay}">class='zo_cal_dsep' </c:if> valign=top height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
+                    <td <c:if test="${diffDay}">class='zo_cal_dsep' </c:if> valign="top" height="100%" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
                         <mo:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${cell.day.startTime}" end="${cell.day.endTime}" timezone="${timezone}"/>
                     </td>
@@ -137,7 +137,7 @@
                 <c:when test="${empty cell.appt}">
                     <c:set var="hb" value="${row.rowNum mod 4 eq 3 ? 'zo_cal_dhb ' : (row.rowNum mod 4 eq 1 ? 'zo_cal_dhhb ' : '')}"/>
                     <c:set var="dd" value="${diffDay ? 'zo_cal_dsep' : ''}"/>
-                    <td <c:if test="${not empty hb or not empty dd}">class='${hb}${dd}' </c:if> height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>&nbsp;</td>
+                    <td <c:if test="${not empty hb or not empty dd}">class='${hb}${dd}' </c:if> height="100%" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>&nbsp;</td>
                 </c:when>
             </c:choose>
         </c:forEach>

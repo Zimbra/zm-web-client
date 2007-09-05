@@ -6,10 +6,12 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
-<tr>
+<tr onclick='zClickLink("FLDR${folder.id}")'>
     <c:set var="url" value="mosearch?sfi=${folder.id}"/>
-    <td class='zo_fldr' style='padding-left: ${8+folder.depth*8}px'  onclick='window.location="${zm:jsEncode(url)}"'>
-        <mo:img alt='${fn:escapeXml(label)}' src="${folder.image}"/>
-        ${fn:escapeXml(label)}
+    <td class='zo_fldr' style='padding-left: ${8+folder.depth*8}px'>
+        <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
+            <mo:img alt='${fn:escapeXml(label)}' src="${folder.image}"/>
+            ${fn:escapeXml(label)}
+        </a>
     </td>
 </tr>

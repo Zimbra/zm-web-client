@@ -7,10 +7,10 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 
 
-<table width=100% cellpadding="0" cellspacing="0">
+<table width="100%" cellpadding="0" cellspacing="0">
     <tr>
         <td class='zo_cv_heading'>
-            <table width=100% cellpadding="5">
+            <table width="100%" cellpadding="5">
                 <tr>
                     <td class='zo_cv_fileas'>
                         ${fn:escapeXml(contact.displayFileAs)}

@@ -12,7 +12,7 @@
 <c:if test="${part.isMssage}">
     <div class='ZhAppContent'>
     <zm:getMessage var="partMessage" id="${message.id}" part="${part.partName}"/>
-    <app:displayMessage mailbox="${mailbox}" message="${partMessage}" composeUrl="${composeUrl}&part=${part.partName}" counter="${partStatus.index+1}"/>
+    <app:displayMessage mailbox="${mailbox}" message="${partMessage}" composeUrl="${composeUrl}&part=${part.partName}" counter="${partStatus.count}"/>
     </div>
 </c:if>
 </c:forEach>

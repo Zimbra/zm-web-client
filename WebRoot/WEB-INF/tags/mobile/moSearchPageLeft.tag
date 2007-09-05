@@ -11,7 +11,7 @@
 <c:choose>
 <c:when test="${context.searchResult.hasPrevPage}">
     <zm:prevResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
-    <a class='zo_button' href="${url}">
+    <a class='zo_button' href="${fn:escapeXml(url)}">
         <fmt:message key="MO_PREV"/>
         <%-- <app:img src="arrows/ImgPreviousPage.gif" alt=""/>--%>
     </a>

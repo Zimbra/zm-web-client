@@ -14,15 +14,15 @@
 
 <mo:view mailbox="${mailbox}" title="${contact.displayFileAs}" context="${null}" clazz="zo_obj_body" scale="true">
 
-    <table width=100% cellpadding="0" cellspacing="0" border=0>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td>
-                <table width=100% cellspacing="0" cellpadding="0">
+                <table width="100%" cellspacing="0" cellpadding="0">
                     <tr class='zo_toolbar'>
                         <td>
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
-                                    <td><a href="${closeUrl}#cn${contact.id}" class='zo_button'>
+                                    <td><a href="${fn:escapeXml(closeUrl)}#cn${contact.id}" class='zo_button'>
                                         <fmt:message key="close"/>
                                     </a></td>
                                 </tr>

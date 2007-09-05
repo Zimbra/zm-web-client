@@ -12,18 +12,18 @@
 <mo:calendarUrl var="monthViewUrl" date="${dateDf}" view="month"/>
 <c:choose>
     <c:when test="${openurl}">
-        <c:set var="list">onclick='openURL("${zm:jsEncode(listViewUrl)}")'</c:set>
-        <c:set var="day">onclick='openURL("${zm:jsEncode(dayViewUrl)}")'</c:set>
-        <c:set var="month">onclick='openURL("${zm:jsEncode(monthViewUrl)}")'</c:set>
+        <c:set var="list">onclick='openURL("${fn:escapeXml(zm:jsEncode(listViewUrl))}")'</c:set>
+        <c:set var="day">onclick='openURL("${fn:escapeXml(zm:jsEncode(dayViewUrl))}")'</c:set>
+        <c:set var="month">onclick='openURL("${fn:escapeXml(zm:jsEncode(monthViewUrl))}")'</c:set>
     </c:when>
     <c:otherwise>
-        <c:set var="list">href="${listViewUrl}"</c:set>
-        <c:set var="day">href="${dayViewUrl}"</c:set>
-        <c:set var="month">href="${monthViewUrl}"</c:set>
+        <c:set var="list">href="${fn:escapeXml(listViewUrl)}"</c:set>
+        <c:set var="day">href="${fn:escapeXml(dayViewUrl)}"</c:set>
+        <c:set var="month">href="${fn:escapeXml(monthViewUrl)}"</c:set>
     </c:otherwise>
 </c:choose>
-<table width=100% cellspacing="0" cellpadding="0">
-    <tr class='zo_toolbar' width=100%>
+<table width="100%" cellspacing="0" cellpadding="0">
+    <tr class='zo_toolbar'>
         <td>
             <table cellpadding="0" cellspacing="0">
                 <tr>
@@ -31,7 +31,7 @@
                     <td><a ${list} class='zo_button'><fmt:message key="calViewListShort"/></a></td>
                     <td><a ${day} class='zo_button'><fmt:message key="calViewDayShort"/></a></td>
                     <td><a ${month} class='zo_button'><fmt:message key="calViewMonthShort"/></a></td>
-                    <td><a zhref="?t=3" class='zo_button'>+</a></td>
+                    <%--<td><a zhref="?t=3" class='zo_button'>+</a></td> --%>
                 </tr>
             </table>
         </td>

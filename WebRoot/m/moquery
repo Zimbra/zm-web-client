@@ -14,10 +14,10 @@
 </mo:handleError>
 <mo:view title="${mailbox.name}" context="${context}" mailbox="${mailbox}">
 <form action="<c:url value="/m/mosearch"/>">
-<table width=100% cellspacing="0" cellpadding="0">
+<table width="100%" cellspacing="0" cellpadding="0">
 <tr>
     <td>
-        <table width=100% cellspacing="0" cellpadding="0">
+        <table width="100%" cellspacing="0" cellpadding="0">
             <tr class='zo_toolbar'>
                 <td>
                     <table cellspacing="0" cellpadding="0">
@@ -28,7 +28,7 @@
                                 </a>
                             </td>
                             <td style='padding-left:5px' class='zo_tb_submit'>
-                                <input name="actionSearch" type="submit" value="<fmt:message key="search"/>">
+                                <input name="actionSearch" type="submit" value="<fmt:message key="search"/>"/>
                             </td>
                         </tr>
                     </table>
@@ -39,14 +39,14 @@
 </tr>
 <tr>
 <td>
-<table width=100% cellspacing="0" cellpadding="0" class='zo_query'>
+<table width="100%" cellspacing="0" cellpadding="0" class='zo_query'>
 <tr>
     <td class='zo_query_fname'><label>
         <fmt:message key="find"/>:
     </label>
     </td>
     <td class='zo_query_fvalue'>
-        <input type=text name=sq style='width:100%'>
+        <input type="text" name="sq" style='width:100%'/>
     </td>
 </tr>
 <tr>
@@ -55,11 +55,13 @@
     </td>
     <td class='zo_query_fvalue'>
         <select name="st" style='width:100%'>
-            <option value="${mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message'}"/>
-            <fmt:message key="searchMail"/>
+            <option value="${mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message'}">
+                <fmt:message key="searchMail"/>
+            </option>
             <c:if test="${mailbox.features.contacts}">
-                <option value="contact"/>
-                <fmt:message key="searchPersonalContacts"/>
+                <option value="contact">
+                    <fmt:message key="searchPersonalContacts"/>
+                </option>
             </c:if>
         </select>
     </td>
@@ -71,11 +73,14 @@
     </td>
     <td class='zo_query_fvalue'>
         <select name="sq_folder" style='width:100%'>
-            <option value=""><fmt:message key="MO_selectFolder"/>
-                <zm:forEachFolder var="folder">
+            <option value="">
+                <fmt:message key="MO_selectFolder"/>
+            </option>
+            <zm:forEachFolder var="folder">
                 <c:if test="${(folder.isMailView or folder.isContactView) and not (folder.isSearchFolder or folder.isChats)}">
-            <option value=' in:"${folder.rootRelativePath}"'/>
-                ${fn:escapeXml(folder.rootRelativePath)}
+                    <option value=' in:"${folder.rootRelativePath}"'>
+                            ${fn:escapeXml(folder.rootRelativePath)}
+                    </option>
             </c:if>
             </zm:forEachFolder>
         </select>
@@ -89,10 +94,11 @@
         </td>
         <td class='zo_query_fvalue'>
             <select name="sq_tag" style='width:100%'>
-                <option value=""><fmt:message key="MO_selectTag"/>
-                    <zm:forEachTag var="tag">
-                <option value=' tag:"${tag.name}"'/>
-                    ${fn:escapeXml(tag.name)}
+                <option value=""><fmt:message key="MO_selectTag"/></option>
+                <zm:forEachTag var="tag">
+                    <option value=' tag:"${tag.name}"'>
+                            ${fn:escapeXml(tag.name)}
+                    </option>
                 </zm:forEachTag>
             </select>
         </td>
@@ -108,17 +114,17 @@
             <tr>
                 <td>
                     <select name="sq_size_comp">
-                        <option value="larger"><fmt:message key="MO_larger"/>
-                        <option value="smaller"><fmt:message key="MO_smaller"/>
+                        <option value="larger"><fmt:message key="MO_larger"/></option>
+                        <option value="smaller"><fmt:message key="MO_smaller"/></option>
                     </select>
                 </td>
                 <td>
-                    <input type=text name=sq_size size="5">
+                    <input type="text" name="sq_size" size="5"/>
                 </td>
                 <td>
                     <select name="sq_size_units">
-                        <option value="kb">KB
-                        <option value="mb">MB
+                        <option value="kb">KB</option>
+                        <option value="mb">MB</option>
                     </select>
                 </td>
             </tr>
@@ -138,7 +144,7 @@
                 <td>
                     <table>
                         <tr valign="middle">
-                            <td class='zo_query_fvalue'><input id="unread" type=checkbox name=sq_unread value=" is:unread"></td>
+                            <td class='zo_query_fvalue'><input id="unread" type="checkbox" name="sq_unread" value=" is:unread"/></td>
                             <td class='zo_query_fname'><label for="unread"><fmt:message key="MO_unread"/></label></td>
 
                         </tr>
@@ -147,7 +153,7 @@
                 <td>
                     <table>
                         <tr>
-                            <td class='zo_query_fvalue'><input id="flagged" type=checkbox name=sq_flagged value=" is:flagged"></td>
+                            <td class='zo_query_fvalue'><input id="flagged" type="checkbox" name="sq_flagged" value=" is:flagged"/></td>
                             <td class='zo_query_fname'><label for="flagged"><fmt:message key="MO_flagged"/></label></td>
                         </tr>
                     </table>
@@ -164,7 +170,7 @@
     </label>
     </td>
     <td class='zo_query_fvalue'>
-        <input type=text name=sq_from style='width:100%'>
+        <input type="text" name="sq_from" style='width:100%'/>
     </td>
 </tr>
 
@@ -175,7 +181,7 @@
     </label>
     </td>
     <td class='zo_query_fvalue'>
-        <input type=text name=sq_tocc style='width:100%'>
+        <input type="text" name="sq_tocc" style='width:100%'/>
     </td>
 </tr>
 
@@ -185,7 +191,7 @@
     </label>
     </td>
     <td class='zo_query_fvalue'>
-        <input type=text name=sq_subject style='width:100%'>
+        <input type="text" name="sq_subject" style='width:100%'/>
     </td>
 </tr>
 

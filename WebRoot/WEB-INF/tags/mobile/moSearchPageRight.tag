@@ -11,7 +11,7 @@
 <c:choose>
 <c:when test="${context.searchResult.hasNextPage}">
     <zm:nextResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
-    <a class='zo_button' href="${url}">
+    <a class='zo_button' href="${fn:escapeXml(url)}">
         <fmt:message key="MO_NEXT"/>
         <%--<app:img src="arrows/ImgNextPage.gif" alt=""/>--%>
     </a>
