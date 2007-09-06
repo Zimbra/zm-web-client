@@ -568,8 +568,13 @@ function(callback) {
 		// looks like the body of this message is the attachment itself
 		return "";
 	} else {
-		var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, [callback]);
-		ZmMailMsg.fetchMsg({sender:appCtxt.getAppController(), msgId:this.id, getHtml:false, callback:respCallback});
+		// bug fix #19275 - if loaded and not viewing as HTML then assume no text part exists
+		if (this._loaded && !appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
+			if (callback) callback.run();
+		} else {
+			var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, [callback]);
+			ZmMailMsg.fetchMsg({sender:appCtxt.getAppController(), msgId:this.id, getHtml:false, callback:respCallback});
+		}
 	}
 };
 

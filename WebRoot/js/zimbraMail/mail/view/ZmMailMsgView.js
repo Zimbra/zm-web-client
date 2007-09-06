@@ -1020,7 +1020,7 @@ function(msg, container, callback) {
 
 ZmMailMsgView.prototype._handleResponseRenderMessage =
 function(el, bodyPart, callback, result) {
-	var content = result.getResponse();
+	var content = result ? result.getResponse() : null;
 
 	// if no text part, check if theres a calendar part and generate some canned
 	// text, otherwise, get the html part if one exists

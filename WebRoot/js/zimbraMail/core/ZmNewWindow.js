@@ -203,7 +203,6 @@ function() {
 		startupFocusItem = cc._composeView.getAddrFields()[0];
 	} else if (window.command == "msgViewDetach") {
 		var msgController = AjxDispatcher.run("GetMsgController");
-		msgController.isChildWindow = true;
 		msgController.show(window.params.msg);
 		rootTg.addMember(msgController.getTabGroup());
 		startupFocusItem = msgController.getCurrentView();
