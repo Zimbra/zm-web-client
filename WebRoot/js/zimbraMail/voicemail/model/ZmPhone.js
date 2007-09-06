@@ -127,7 +127,8 @@ function(callback, errorCallback) {
 		}
 	} else {
 	    var soapDoc = AjxSoapDoc.create("GetVoiceFeaturesRequest", "urn:zimbraVoice");
-	    var node = soapDoc.set("phone");
+		appCtxt.getApp(ZmApp.VOICE).setStorePrincipal(soapDoc);
+		var node = soapDoc.set("phone");
 	    node.setAttribute("name", this.name);
 	    for (var i in this._features) {
 	    	var feature = this._features[i];
@@ -193,6 +194,7 @@ function() {
 ZmPhone.prototype.modifyCallFeatures = 
 function(batchCommand, newFeatures, callback) {
     var soapDoc = AjxSoapDoc.create("ModifyVoiceFeaturesRequest", "urn:zimbraVoice");
+	appCtxt.getApp(ZmApp.VOICE).setStorePrincipal(soapDoc);
     var node = soapDoc.set("phone");
     node.setAttribute("name", this.name);
 	var voicemailPrefsNode = null;

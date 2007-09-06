@@ -282,7 +282,8 @@ function(ev, subject, to) {
 	var inNewWindow = this._app._inNewWindow(ev);
 	var voicemail = this._getView().getSelection()[0];
     var soapDoc = AjxSoapDoc.create("UploadVoiceMailRequest", "urn:zimbraVoice");
-    var node = soapDoc.set("vm");
+	appCtxt.getApp(ZmApp.VOICE).setStorePrincipal(soapDoc);
+	var node = soapDoc.set("vm");
     node.setAttribute("id", voicemail.id);
     node.setAttribute("phone", this._folder.phone.name);
     var params = {

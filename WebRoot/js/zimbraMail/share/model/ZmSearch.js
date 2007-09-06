@@ -48,7 +48,7 @@
  *        conds						[array]*		list of search conditions (SearchCalendarResourcesRequest)
  *        attrs						[array]*		list of attributes to return (SearchCalendarResourcesRequest)
  *        field						[string]*		field to search within (instead of default)
- *        soapInfo					[object]*		object with method, namespace, and response fields for creating soap doc
+ *        soapInfo					[object]*		object with method, namespace, response, and additional attribute fields for creating soap doc
  */
 ZmSearch = function(params) {
 
@@ -193,6 +193,14 @@ function(params) {
 	} else {
 		if (this.soapInfo) {
 			soapDoc = AjxSoapDoc.create(this.soapInfo.method, this.soapInfo.namespace);
+			// Pass along any extra soap data. (Voice searches use this to pass user identification.)
+			for (var nodeName in this.soapInfo.additional) {
+				var node = soapDoc.set(nodeName);
+				var attrs = this.soapInfo.additional[nodeName];
+				for (var attr in attrs) {
+					node.setAttribute(attr, attrs[attr]);
+				}
+			}
 		} else {
 			soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 		}

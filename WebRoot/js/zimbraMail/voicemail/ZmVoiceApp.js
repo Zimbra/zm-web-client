@@ -26,6 +26,15 @@
 ZmVoiceApp = function(container, parentController) {
 	this.phones = [];
 	this.accordionItem = null; // Currently selected accordion item.
+	this.soapInfo = {
+		method: "SearchVoiceRequest",
+		namespace: "urn:zimbraVoice",
+		response: "SearchVoiceResponse",
+		additional: null
+	};
+
+
+	this._storePrinciple = null;
 	ZmApp.call(this, ZmApp.VOICE, container, parentController);
 }
 
@@ -43,12 +52,6 @@ ZmApp.SETTING[ZmApp.VOICE]			= ZmSetting.VOICE_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.VOICE]	= ZmSetting.VOICE_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.VOICE]		= 80;
 ZmApp.QS_ARG[ZmApp.VOICE]			= "voice";
-
-ZmVoiceApp.SOAP_INFO = {
-	method: "SearchVoiceRequest", 
-	namespace: "urn:zimbraVoice",
-	response: "SearchVoiceResponse"
-};
 
 ZmVoiceApp.prototype = new ZmApp;
 ZmVoiceApp.prototype.constructor = ZmVoiceApp;
@@ -254,7 +257,11 @@ function(callback, response) {
 
 ZmVoiceApp.prototype._handleResponseVoiceInfo2 =
 function(callback, response) {
-	var phones = response._data.GetVoiceInfoResponse.phone;
+	var voiceInfo = response._data.GetVoiceInfoResponse;
+	var storePrinciple = voiceInfo.storeprincipal[0];
+	this._storePrinciple = { name: storePrinciple.name, id: storePrinciple.id };
+	this.soapInfo.additional = { storeprinciple: this._storePrinciple };
+	var phones = voiceInfo.phone;
 	for (var i = 0, count = phones.length; i < count; i++) {
 		var obj = phones[i];
 		var phone = new ZmPhone();
@@ -327,7 +334,7 @@ function(folder, callback, sortBy) {
 		sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
 	}
 	var searchParams = {
-		soapInfo: ZmVoiceApp.SOAP_INFO,
+		soapInfo: this.soapInfo,
 		types: AjxVector.fromArray([folder.getSearchType()]),
 		sortBy: sortBy,
 		query: folder.getSearchQuery(),
@@ -374,7 +381,8 @@ function(items, op, attributes, callback) {
     	ids[i] = items[i].id;
     }
     var soapDoc = AjxSoapDoc.create("VoiceMsgActionRequest", "urn:zimbraVoice");
-    var node = soapDoc.set("action");
+	this.setStorePrincipal(soapDoc);
+	var node = soapDoc.set("action");
     node.setAttribute("op", op);
     node.setAttribute("id", ids.join(","));
     node.setAttribute("phone", items[0].getPhone().name);
@@ -449,6 +457,13 @@ function() {
         this._voicePrefsController = new ZmVoicePrefsController(this._container, prefsApp, prefsView);
 	}
 	return this._voicePrefsController;
+};
+
+ZmVoiceApp.prototype.setStorePrincipal =
+function(soapDoc) {
+	var node = soapDoc.set("storeprincipal");
+	node.setAttribute("id", this._storePrinciple.id);
+	node.setAttribute("name", this._storePrinciple.name);
 };
 
 ZmVoiceApp.prototype._handleDeletes =

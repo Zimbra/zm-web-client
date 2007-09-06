@@ -103,7 +103,7 @@ function() {
 
 ZmVoiceListController.prototype._getMoreSearchParams =
 function(params) {
-	params.soapInfo = ZmVoiceApp.SOAP_INFO;
+	params.soapInfo = appCtxt.getApp(ZmApp.VOICE).soapInfo;
 };
 
 ZmVoiceListController.prototype._createNewContact =
