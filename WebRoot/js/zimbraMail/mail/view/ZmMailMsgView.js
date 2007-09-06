@@ -1482,7 +1482,7 @@ function(msg, preferHtml, callback, result) {
 
 ZmMailMsgView._printMessage =
 function(msg, preferHtml, callback) {
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 
 	html[idx++] = "<div style='width: 100%; background-color: #EEEEEE'>";
@@ -1548,7 +1548,7 @@ function(msg, preferHtml, callback) {
 	html[idx++] = "</div>";
 
 	// finally, print content
-	var content = null;
+	var content = "";
 	var bodyPart = msg.getBodyPart();
 	if (bodyPart) {
 		html[idx++] = "<div style='padding: 10px; font-size: 12px'>";
@@ -1556,9 +1556,16 @@ function(msg, preferHtml, callback) {
 			// TODO - html should really sit in its own iframe but not so easy to do...
 			html[idx++] = bodyPart.content;
 		} else {
-			content = bodyPart.ct != ZmMimeTable.TEXT_PLAIN
-				? msg.getTextPart()
-				: bodyPart.content;
+			if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
+				content = msg.getTextPart();
+				if (!content && bodyPart.content && bodyPart.ct == ZmMimeTable.TEXT_HTML) {
+					var div = document.createElement("div");
+					div.innerHTML = bodyPart.content;
+					content = AjxStringUtil.convertHtml2Text(div);
+				}
+			} else {
+				content = bodyPart.content;
+			}
 			html[idx++] = "<span style='font-family: courier'>";
 			html[idx++] = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(content, true));
 			html[idx++] = "</span>";
