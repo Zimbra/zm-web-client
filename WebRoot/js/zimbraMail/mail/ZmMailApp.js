@@ -1022,7 +1022,10 @@ function(results, callback) {
 	} else {
 		this.getConvListController().show(results);
 	}
-	appCtxt.getAppController().appRendered(this._name);
+	if (!this._hasRendered) {
+		appCtxt.getAppController().appRendered(this._name);
+		this._hasRendered = true;
+	}
 	if (callback) {
 		callback.run();
 	}
