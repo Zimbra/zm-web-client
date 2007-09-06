@@ -231,3 +231,12 @@ ZmDoublePaneView.prototype._isMsgViewVisible =
 function() {
 	return this._msgView.getVisible();
 };
+
+ZmDoublePaneView.prototype._selectFirstItem = 
+function() {
+	var list = this._mailListView.getList();
+	var selectedItem = list ? list.get(0) : null
+	if (selectedItem) {
+		this._mailListView.setSelection(selectedItem, false);
+	}
+};

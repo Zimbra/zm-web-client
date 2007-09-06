@@ -42,12 +42,5 @@ function(msgs) {
 	ZmDoublePaneView.prototype.setItem.call(this, msgs);
 
 	this._mailListView.set(msgs, ZmItem.F_DATE);
-
-	// XXX: for now always show the first msg 
-	//      (whether user clicked inbox or paginated)
-	var list = this._mailListView.getList();
-	var selectedItem = list ? list.get(0) : null
-	if (selectedItem) {
-		this._mailListView.setSelection(selectedItem, false);
-	}
+	// this._selectFirstItem();
 };

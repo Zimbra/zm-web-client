@@ -58,13 +58,7 @@ function(convs) {
 	ZmDoublePaneView.prototype.setItem.call(this, convs);
 
 	this._mailListView.set(convs, ZmItem.F_DATE);
-
-	// show the first conv, which will show its first msg
-	var list = this._mailListView.getList();
-	var selectedItem = list ? list.get(0) : null;
-	if (selectedItem) {
-		this._mailListView.setSelection(selectedItem, false);
-	}
+	// this._selectFirstItem();
 };
 
 ZmConvDoublePaneView.prototype._createMailListView =
