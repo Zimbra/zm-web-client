@@ -24,7 +24,7 @@
                     <app:button id="${keys ? 'OPDELETE' :''}" name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
                     <td><div class='vertSep'></div></td>
                     <td  nowrap valign="middle">
-                        <select name="folderId">
+                        <select name="folderId" onchange="zclick('SOPMOVE')">
                             <option value="" selected/><fmt:message key="moveAction"/>
                             <option disabled /><fmt:message key="actionOptSep"/>
                             <zm:forEachFolder var="folder">
@@ -37,7 +37,7 @@
                     <app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
                     <td><div class='vertSep'></div></td>
                     <td  nowrap valign="middle">
-                        <select name="actionOp">
+                        <select name="actionOp" onchange="zclick('SOPGO')">
                             <option value="" selected/><fmt:message key="moreActions"/>
                             <option <c:if test="${keys}">id="OPREAD" </c:if> value="read"/><fmt:message key="actionMarkRead"/>
                             <option <c:if test="${keys}">id="OPUNREAD" </c:if> value="unread"/><fmt:message key="actionMarkUnread"/>

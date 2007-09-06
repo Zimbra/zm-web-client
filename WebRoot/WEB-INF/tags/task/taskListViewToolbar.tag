@@ -34,7 +34,7 @@
                     </c:choose>
                     <td><div class='vertSep'></div></td>
                     <td nowrap>
-                        <select name="folderId">
+                        <select name="folderId" onchange="zclick('SOPMOVE')">
                             <option value="" selected/><fmt:message key="moveAction"/>
                             <option disabled /><fmt:message key="actionOptSep"/>
                             <zm:forEachFolder var="folder">
@@ -44,19 +44,19 @@
                             </zm:forEachFolder>
                         </select>
                     </td>
-                    <app:button name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
+                    <app:button  id="${keys ? 'OPMOVE' :''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
                     <td><div class='vertSep'></div></td>
 
                     <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
                     <td nowrap>
-                        <select name="actionOp">
+                        <select name="actionOp" onchange="zclick('SOPGO')">
                             <option value="" selected/><fmt:message key="moreActions"/>
                     </c:if>
                            <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
                     <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
                         </select>
                     </td>
-                    <app:button name="action" tooltip="actionTaskListGoTT" text="actionGo" />
+                    <app:button  id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionTaskListGoTT" text="actionGo" />
                     </c:if>
                 </tr>
             </table>
