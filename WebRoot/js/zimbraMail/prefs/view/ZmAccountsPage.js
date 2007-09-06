@@ -1223,7 +1223,7 @@ ZmAccountsPage.prototype._handlePreSave = function(continueCallback) {
 	// continue
 	if (batchCmd) {
 		// HACK: Don't know a better way to set an error condition
-		delete this.__hack_preSaveError;
+		this.__hack_preSaveSuccess = true;
 		var callback = new AjxCallback(this, this._handlePreSaveFinish, [continueCallback]);
 		batchCmd.run(callback);
 	}
@@ -1240,13 +1240,13 @@ function(dataSource, result) {
 	}
 	else {
 		// HACK: Don't know a better way to set an error condition
-		this.__hack_preSaveError = true;
+		this.__hack_preSaveSuccess = false;
 	}
 };
 
-ZmAccountsPage.prototype._handlePreSaveFinish = function(continueCallback) {
+ZmAccountsPage.prototype._handlePreSaveFinish = function(continueCallback, result, exceptions) {
 	// HACK: Don't know a better way to set an error condition
-	continueCallback.run(this.__hack_preSaveError);
+	continueCallback.run(this.__hack_preSaveSuccess && (!exceptions || exceptions.length == 0));
 };
 
 // post-save callbacks
