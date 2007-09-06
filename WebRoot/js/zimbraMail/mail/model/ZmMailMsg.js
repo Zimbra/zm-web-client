@@ -505,8 +505,12 @@ function(callback) {
 		// looks like the body of this message is the attachment itself
 		return "";
 	} else {
-		var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, [callback]);
-		ZmMailMsg.fetchMsg({sender: this._appCtxt.getAppController(), msgId: this.getId(), getHtml: false, callback: respCallback});
+		if (this._loaded && this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
+			if (callback) callback.run();
+		} else {
+			var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, [callback]);
+			ZmMailMsg.fetchMsg({sender: this._appCtxt.getAppController(), msgId: this.getId(), getHtml: false, callback: respCallback});
+		}
 	}
 };
 
