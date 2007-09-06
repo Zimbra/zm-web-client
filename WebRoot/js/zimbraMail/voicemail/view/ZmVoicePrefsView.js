@@ -78,7 +78,10 @@ function() {
 	}
 	var errors = [];
 	for(var i = 0, count = this._ui.length; i < count; i++) {
-		this._ui[i].validate(errors);
+		var ui = this._ui[i]; 
+		if (!ui._checkbox || ui._checkbox.isSelected()) {
+			ui.validate(errors);
+		}
 	}
 	this._errors = errors;
 	return this._errors.length == 0;
@@ -245,7 +248,7 @@ function(batchCommand) {
 };
 
 ZmVoicePrefsView.prototype._handleResponse =
-function(identity, request, result) {
+function() {
 	this._changes = null;
 };
 
