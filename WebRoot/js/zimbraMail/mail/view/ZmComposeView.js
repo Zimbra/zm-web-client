@@ -1669,20 +1669,29 @@ function(msg, action, replyPref) {
 		}
 
 		var data = { messages: messages };
-		html = AjxTemplate.expand("mail.Message#ForwardMessages", data);
-
+		this._attcDiv.innerHTML = AjxTemplate.expand("mail.Message#ForwardMessages", data);
+			var attRemoveSpan;
+			for( var i=0; i<messages.length; i++) {
+				attRemoveSpan = document.getElementById(messages[i].id+'_remove');
+				Dwt.setHandler(attRemoveSpan, DwtEvent.ONCLICK, ZmComposeView._removeAttachment);
+				if(AjxEnv.isIE) Dwt.setHandler(attRemoveSpan, DwtEvent.ONKEYDOWN, ZmComposeView._removeAttachment);
+			}
+		
 		if (messages.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 			this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
 			this._attcDiv.style.overflow = "auto";
 		}
 
 		this._attachCount = messages.length;
+		
 	}
 	else if (replyPref == ZmSetting.INCLUDE_ATTACH ||action == ZmOperation.FORWARD_ATT) {
 		var data = { message: msg };
 		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", data);
 
 		this._attachCount = 1;
+		
+		this._attcDiv.innerHTML = html;
 	}
 	else if (msg && msg.hasAttach) {
 		var attLinks = msg.getAttachmentLinks();
@@ -1694,8 +1703,15 @@ function(msg, action, replyPref) {
 				isForwardInline: action == ZmOperation.FORWARD_INLINE,
 				isDraft: action == ZmOperation.DRAFT
 			};
-			html = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
-
+			this._attcDiv.innerHTML = AjxTemplate.expand("mail.Message#ForwardAttachments", data);
+			
+			var attRemoveSpan;
+			for( var i=0; i<attLinks.length; i++) {
+				attRemoveSpan = document.getElementById(attLinks[i].part+'_remove');
+				Dwt.setHandler(attRemoveSpan, DwtEvent.ONCLICK, ZmComposeView._removeAttachment);
+				if(AjxEnv.isIE) Dwt.setHandler(attRemoveSpan, DwtEvent.ONKEYDOWN, ZmComposeView._removeAttachment);
+			}
+			
 			if (attLinks.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 				this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
 				this._attcDiv.style.overflow = "auto";
@@ -1704,8 +1720,12 @@ function(msg, action, replyPref) {
 			this._attachCount = attLinks.length;
 		}
 	}
+};
 
-	this._attcDiv.innerHTML = html;
+ZmComposeView._removeAttachment = function(ev) {
+	ev = ev || window.event;
+	var el = DwtUiEvent.getTarget(ev);
+	Dwt.findAncestor(el,"_attach_table").deleteRow(Dwt.findAncestor(el,"_attach_tr").rowIndex);
 };
 
 // Miscellaneous methods
