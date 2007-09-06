@@ -15,7 +15,7 @@
         <c:if test="${mailbox.features.portalEnabled}">
             <td class='Tab ${selected=='home' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_HOME' href="<c:url value="/h/home"/>" <c:if test="${keys}">accesskey="v"</c:if>>
-                    <span id='tab_ikon_home'><app:img src="common/Zimlet.gif" altkey='ALT_APP_HOME'/></span>
+                    <span id='tab_ikon_home'><app:img src="common/ImgZimlet.gif" altkey='ALT_APP_HOME'/></span>
                     <span><fmt:message key="home"/></span>
                 </a>
             </td>
