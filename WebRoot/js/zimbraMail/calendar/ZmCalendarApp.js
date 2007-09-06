@@ -64,6 +64,23 @@ ZmCalendarApp.COLORS[ZmOrganizer.C_YELLOW]	= "Yellow";
 ZmCalendarApp.COLORS[ZmOrganizer.C_PINK]	= "Pink";
 ZmCalendarApp.COLORS[ZmOrganizer.C_GRAY]	= "Gray";
 
+ZmCalendarApp.CUTYPE_INDIVIDUAL			= "IND";
+ZmCalendarApp.CUTYPE_GROUP				= "GRO";
+ZmCalendarApp.CUTYPE_RESOURCE			= "RES";
+ZmCalendarApp.CUTYPE_ROOM				= "ROO";
+ZmCalendarApp.CUTYPE_UNKNOWN			= "UNK";
+
+ZmCalendarApp.STATUS_CANC				= "CANC";		// vevent, vtodo
+ZmCalendarApp.STATUS_COMP				= "COMP";		// vtodo
+ZmCalendarApp.STATUS_CONF				= "CONF";		// vevent
+ZmCalendarApp.STATUS_DEFR				= "DEFERRED";	// vtodo					[outlook]
+ZmCalendarApp.STATUS_INPR				= "INPR";		// vtodo
+ZmCalendarApp.STATUS_NEED				= "NEED";		// vtodo
+ZmCalendarApp.STATUS_TENT				= "TENT";		// vevent
+ZmCalendarApp.STATUS_WAIT				= "WAITING";	// vtodo					[outlook]
+
+ZmCalendarApp.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
+
 ZmCalendarApp.prototype = new ZmApp;
 ZmCalendarApp.prototype.constructor = ZmCalendarApp;
 

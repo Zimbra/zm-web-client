@@ -38,7 +38,7 @@ ZmTask = function(list, id, folderId) {
 
 	this.priority = ZmCalItem.PRIORITY_NORMAL;
 	this.pComplete = 0;
-	this.status = ZmCalItem.STATUS_NEED;
+	this.status = ZmCalendarApp.STATUS_NEED;
 };
 
 ZmTask.prototype = new ZmCalItem;
@@ -132,7 +132,7 @@ function() {
 
 ZmTask.prototype.isComplete =
 function() {
-	return (this.pComplete == 100) || (this.status == ZmCalItem.STATUS_COMP);
+	return (this.pComplete == 100) || (this.status == ZmCalendarApp.STATUS_COMP);
 };
 
 

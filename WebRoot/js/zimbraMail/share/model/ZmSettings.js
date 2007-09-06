@@ -264,8 +264,12 @@ function(callback, accountName, result) {
 	// NOTE: only load zimlets if main account
 	if (!accountName && obj.zimlets && obj.zimlets.zimlet) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
-		var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
-		AjxDispatcher.require("Zimlet", true, zimletsCallback);
+		var prCallback = new AjxCallback(this,
+			function() {
+				var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
+				AjxDispatcher.require("Zimlet", false, zimletsCallback);
+			});
+		appCtxt.getAppController().postRenderCallbacks.push(prCallback);
 	}
 
     this.userSettingsLoaded = true;

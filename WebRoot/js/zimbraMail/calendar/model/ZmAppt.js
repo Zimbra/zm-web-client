@@ -336,7 +336,7 @@ function(isHtml) {
 		buf[i++] = "</table>\n";
 	}
 	buf[i++] = isHtml ? "<div>" : "\n\n";
-	buf[i++] = ZmCalItem.NOTES_SEPARATOR;
+	buf[i++] = ZmCalendarApp.NOTES_SEPARATOR;
 	// bug fix #7835 - add <br> after DIV otherwise Outlook lops off 1st char
 	buf[i++] = isHtml ? "</div><br>" : "\n\n";
 
@@ -581,7 +581,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		// for now make attendees optional, until UI has a way of setting this
 		at.setAttribute("role", (type == ZmCalItem.PERSON) ? ZmCalItem.ROLE_REQUIRED : ZmCalItem.ROLE_NON_PARTICIPANT);
 		at.setAttribute("ptst", ZmCalItem.PSTATUS_NEEDS_ACTION);
-		var cutype = (type == ZmCalItem.PERSON) ? null : ZmCalItem.CUTYPE_RESOURCE;
+		var cutype = (type == ZmCalItem.PERSON) ? null : ZmCalendarApp.CUTYPE_RESOURCE;
 		if (cutype) {
 			at.setAttribute("cutype", cutype);
 		}

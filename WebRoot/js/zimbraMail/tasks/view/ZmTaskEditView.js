@@ -39,11 +39,11 @@ ZmTaskEditView.PRIORITY_VALUES = [
 	ZmCalItem.PRIORITY_HIGH ];
 
 ZmTaskEditView.STATUS_VALUES = [
-	ZmCalItem.STATUS_NEED,
-	ZmCalItem.STATUS_COMP,
-	ZmCalItem.STATUS_INPR,
-	ZmCalItem.STATUS_WAIT,
-	ZmCalItem.STATUS_DEFR ];
+	ZmCalendarApp.STATUS_NEED,
+	ZmCalendarApp.STATUS_COMP,
+	ZmCalendarApp.STATUS_INPR,
+	ZmCalendarApp.STATUS_WAIT,
+	ZmCalendarApp.STATUS_DEFR ];
 
 // Message dialog placement
 ZmTaskEditView.DIALOG_X = 50;
@@ -105,7 +105,7 @@ function(calItem, mode) {
 	this._prioritySelect.setSelectedValue(calItem.priority);
 	this._statusSelect.setSelectedValue(calItem.status);
 	this._pCompleteSelect.setSelectedValue(calItem.pComplete);
-	this._statusCheckbox.checked = calItem.status == ZmCalItem.STATUS_COMP && calItem.pComplete == 100;
+	this._statusCheckbox.checked = calItem.status == ZmCalendarApp.STATUS_COMP && calItem.pComplete == 100;
 };
 
 ZmTaskEditView.prototype._populateForSave =
@@ -306,24 +306,24 @@ function(ev) {
 	this._statusCheckbox.checked = false;
 
 	if (selObj == this._statusSelect) {
-		if (newVal == ZmCalItem.STATUS_COMP) {
+		if (newVal == ZmCalendarApp.STATUS_COMP) {
 			this._pCompleteSelect.setSelectedValue("100");
 			this._statusCheckbox.checked = true;
-		} else if (newVal == ZmCalItem.STATUS_NEED) {
+		} else if (newVal == ZmCalendarApp.STATUS_NEED) {
 			this._pCompleteSelect.setSelectedValue("0");
 		}
 	} else {
 		if (newVal == 100) {
-			this._statusSelect.setSelectedValue(ZmCalItem.STATUS_COMP);
+			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_COMP);
 			this._statusCheckbox.checked = true;
 		} else if (newVal == 0) {
-			this._statusSelect.setSelectedValue(ZmCalItem.STATUS_NEED);
+			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_NEED);
 		} else if ((oldVal == 0 || oldVal == 100) &&
 			 		(newVal > 0 || newVal < 100) &&
-					(this._statusSelect.getValue() == ZmCalItem.STATUS_COMP ||
-					 this._statusSelect.getValue() == ZmCalItem.STATUS_NEED))
+					(this._statusSelect.getValue() == ZmCalendarApp.STATUS_COMP ||
+					 this._statusSelect.getValue() == ZmCalendarApp.STATUS_NEED))
 		{
-			this._statusSelect.setSelectedValue(ZmCalItem.STATUS_INPR);
+			this._statusSelect.setSelectedValue(ZmCalendarApp.STATUS_INPR);
 		}
 	}
 };

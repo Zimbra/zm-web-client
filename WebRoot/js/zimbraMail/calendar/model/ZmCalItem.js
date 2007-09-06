@@ -47,7 +47,7 @@ ZmCalItem = function(type, list, id, folderId) {
 	this.recurring = false;
 	this.priority = null;
 	this.ptst = null; // participant status
-	this.status = ZmCalItem.STATUS_CONF;
+	this.status = ZmCalendarApp.STATUS_CONF;
 	this.viewMode = ZmCalItem.MODE_NEW;
 
 	this._recurrence = new ZmRecurrence(this);
@@ -57,12 +57,6 @@ ZmCalItem.prototype = new ZmItem;
 ZmCalItem.prototype.constructor = ZmCalItem;
 
 // Consts
-
-ZmCalItem.CUTYPE_INDIVIDUAL			= "IND";
-ZmCalItem.CUTYPE_GROUP				= "GRO";
-ZmCalItem.CUTYPE_RESOURCE			= "RES";
-ZmCalItem.CUTYPE_ROOM				= "ROO";
-ZmCalItem.CUTYPE_UNKNOWN			= "UNK";
 
 ZmCalItem.MODE_NEW					= 1;
 ZmCalItem.MODE_EDIT					= 2;
@@ -93,21 +87,11 @@ ZmCalItem.ROLE_REQUIRED				= "REQ";
 ZmCalItem.ROLE_OPTIONAL				= "OPT";
 ZmCalItem.ROLE_NON_PARTICIPANT		= "NON";
 
-ZmCalItem.STATUS_CANC				= "CANC";		// vevent, vtodo
-ZmCalItem.STATUS_COMP				= "COMP";		// vtodo
-ZmCalItem.STATUS_CONF				= "CONF";		// vevent
-ZmCalItem.STATUS_DEFR				= "DEFERRED";	// vtodo					[outlook]
-ZmCalItem.STATUS_INPR				= "INPR";		// vtodo
-ZmCalItem.STATUS_NEED				= "NEED";		// vtodo
-ZmCalItem.STATUS_TENT				= "TENT";		// vevent
-ZmCalItem.STATUS_WAIT				= "WAITING";	// vtodo					[outlook]
-
 ZmCalItem.PERSON					= 1;
 ZmCalItem.LOCATION					= 2;
 ZmCalItem.EQUIPMENT					= 3;
 
 ZmCalItem.SERVER_WEEK_DAYS			= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
-ZmCalItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
 
 ZmCalItem.ATTACHMENT_CHECKBOX_NAME	= Dwt.getNextId();
 
@@ -921,9 +905,9 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 ZmCalItem.prototype._trimNotesSummary =
 function(notes, isHtml) {
 	if (notes) {
-		var idx = notes.indexOf(ZmCalItem.NOTES_SEPARATOR);
+		var idx = notes.indexOf(ZmCalendarApp.NOTES_SEPARATOR);
 		if (idx != -1) {
-			notes = notes.substr(idx + ZmCalItem.NOTES_SEPARATOR.length);
+			notes = notes.substr(idx + ZmCalendarApp.NOTES_SEPARATOR.length);
 			var junk = isHtml ? "</div>" : "\n\n";
 			if (notes.indexOf(junk) == 0) {
 				notes = notes.replace(junk, "");
@@ -1320,12 +1304,12 @@ function(task, id) {
 ZmCalItem.getLabelForStatus =
 function(status) {
 	switch (status) {
-		case ZmCalItem.STATUS_CANC: return ZmMsg.cancelled;
-		case ZmCalItem.STATUS_COMP: return ZmMsg.completed;
-		case ZmCalItem.STATUS_DEFR: return ZmMsg.deferred;
-		case ZmCalItem.STATUS_INPR: return ZmMsg.inProgress;
-		case ZmCalItem.STATUS_NEED: return ZmMsg.notStarted;
-		case ZmCalItem.STATUS_WAIT: return ZmMsg.waitingOn;
+		case ZmCalendarApp.STATUS_CANC: return ZmMsg.cancelled;
+		case ZmCalendarApp.STATUS_COMP: return ZmMsg.completed;
+		case ZmCalendarApp.STATUS_DEFR: return ZmMsg.deferred;
+		case ZmCalendarApp.STATUS_INPR: return ZmMsg.inProgress;
+		case ZmCalendarApp.STATUS_NEED: return ZmMsg.notStarted;
+		case ZmCalendarApp.STATUS_WAIT: return ZmMsg.waitingOn;
 	}
 	return "";
 };

@@ -61,7 +61,7 @@ function(convs) {
 
 	// show the first conv, which will show its first msg
 	var list = this._mailListView.getList();
-	var selectedItem = list ? list.get(0) : null
+	var selectedItem = list ? list.get(0) : null;
 	if (selectedItem) {
 		this._mailListView.setSelection(selectedItem, false);
 	}

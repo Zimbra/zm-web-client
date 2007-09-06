@@ -307,7 +307,7 @@ ZmTaskListController.prototype._doCheckCompletedResponse =
 function(task) {
 	var clone = ZmTask.quickClone(task);
 	clone.pComplete = task.isComplete() ? 0 : 100;
-	clone.status = task.isComplete() ? ZmCalItem.STATUS_NEED : ZmCalItem.STATUS_COMP;
+	clone.status = task.isComplete() ? ZmCalendarApp.STATUS_NEED : ZmCalendarApp.STATUS_COMP;
 	clone.setViewMode(ZmCalItem.MODE_EDIT);
 	clone.save();
 };

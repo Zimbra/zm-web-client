@@ -137,7 +137,7 @@ function(msg) {
 		!appCtxt.isChildWindow)
 	{
 		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
-			invite.getStatus() != ZmCalItem.STATUS_CANC &&
+			invite.getStatus() != ZmCalendarApp.STATUS_CANC &&
 			msg.folderId != ZmFolder.ID_TRASH &&
 			!msg.isShared())
 		{

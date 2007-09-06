@@ -185,7 +185,6 @@
 		"ZLoginLicenseContainer",	"<fmt:message key="splashScreenCopyright"/>"
 	); 
 	
-	var zJSloading = (new Date()).getTime();
 	appContextPath = "<%=contextPath %>";
 	appCurrentSkin = "<%=skin %>";
 	appExtension   = "<%=ext%>";
@@ -196,10 +195,10 @@
 <script src="<%=contextPath %>/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
 <jsp:include page="Boot.jsp"/>
 <%
-	String allPackages = "Startup1,Startup2";
+	String allPackages = "Startup1_1,Startup1_2";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
-    		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal";
+    		extraPackages = "Startup2,CalendarCore,Calendar,ContactsCore,Contacts,IM,MailCore,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal";
     	}
     	allPackages += "," + extraPackages;
     }
@@ -225,7 +224,6 @@
 <script>
 
 	AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
-	zJSloading = (new Date()).getTime() - zJSloading;
 
 	<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/> 
 		var settings = {
@@ -255,7 +253,7 @@
 
 		var prodMode = <%=prodMode%>;
 		var debugLevel = "<%= (debug != null) ? debug : "" %>";
-		if (!prodMode) {
+		if (!prodMode || debugLevel) {
 			AjxDispatcher.require("Debug");
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
 			AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp";

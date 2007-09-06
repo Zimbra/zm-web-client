@@ -1084,11 +1084,11 @@ function(type, shortForm) {
 	var text = "";
 	var name = this.getFullName();
 	var email = this.getEmail();
-	if (type == ZmCalItem.PERSON && !shortForm) {
+	if (shortForm || (type && type != ZmCalItem.PERSON)) {
+		text = name || email || "";
+	} else {
 		var e = new AjxEmailAddress(email, null, name);
 		text = e.toString();
-	} else {
-		text = name || email || "";
 	}
 
 	return text;

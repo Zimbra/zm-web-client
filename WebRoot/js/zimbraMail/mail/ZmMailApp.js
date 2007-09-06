@@ -1022,6 +1022,7 @@ function(results, callback) {
 	} else {
 		this.getConvListController().show(results);
 	}
+	appCtxt.getAppController().appRendered(this._name);
 	if (callback) {
 		callback.run();
 	}

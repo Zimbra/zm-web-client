@@ -106,6 +106,13 @@ ZmZimbraMail = function(params) {
 		ZmApp.QS_ARG_R[ZmApp.QS_ARG[i]] = i;
 	}
 
+	// callbacks to run after start app has rendered
+	var callback = new AjxCallback(this,
+		function() {
+			AjxDispatcher.require("Startup2");
+		});
+	this.postRenderCallbacks = [callback];
+
 	this.startup(params);
 };
 
@@ -404,6 +411,12 @@ function(params, result) {
 			}
 		}
 	}
+	
+	// startup and packages have been optimized for quick mail display
+	if (startApp == ZmApp.MAIL) {
+		this.addAppListener(startApp, ZmAppEvent.POST_RENDER, new AjxListener(this, this._postRenderStartup));
+		this._doingPostRenderStartup = true;
+	}
 	this.activateApp(startApp, false, respCallback, this._errorCallback, checkQS);
 };
 
@@ -415,8 +428,6 @@ function(params, result) {
 */
 ZmZimbraMail.prototype._handleResponseStartup1 =
 function(params) {
-
-	AjxDispatcher.require("Startup2");
 
 	this._setUserInfo();
 
@@ -479,12 +490,33 @@ function(params) {
 		dlg.popup();
 	}
 
-	// run any app-requested startup routines
-	this.runAppFunction("startup", false, params.result);
+	var callback = new AjxCallback(this,
+		function() {
+			// run any app-requested startup routines
+			this.runAppFunction("startup", false, params.result);
+			AjxDispatcher.enableLoadFunctions(true);
+			appCtxt.inStartup = false;
+			this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
+		});
+	this.postRenderCallbacks.push(callback);
+	if (!this._doingPostRenderStartup) {
+		this._postRenderStartup();
+	}
+};
 
-	AjxDispatcher.enableLoadFunctions(true);
-	appCtxt.inStartup = false;
-	this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
+/**
+ * The work to render the start app has been done. Now perform all the startup
+ * work that remains, using a timed action so that the start app gets rendered
+ * in the UI first.
+ */
+ZmZimbraMail.prototype._postRenderStartup =
+function(ev) {
+	AjxTimedAction.scheduleAction(new AjxTimedAction(this, 
+		function() {
+			for (var i = 0; i < this.postRenderCallbacks.length; i++) {
+				this.postRenderCallbacks[i].run();
+			}
+		}), 0);
 };
 
 /**
@@ -1045,6 +1077,16 @@ function(appName, view) {
 ZmZimbraMail.prototype.getAppChooserButton =
 function(id) {
 	return this._components[ZmAppViewMgr.C_APP_CHOOSER].getButton(id);
+};
+
+/**
+ * An app calls this once it has fully rendered, so that we may notify
+ * any listeners.
+ */
+ZmZimbraMail.prototype.appRendered =
+function(appName) {
+	var eventType = [appName, ZmAppEvent.POST_RENDER].join("_");
+	this._evtMgr.notifyListeners(eventType, this._evt);
 };
 
 // Private methods
