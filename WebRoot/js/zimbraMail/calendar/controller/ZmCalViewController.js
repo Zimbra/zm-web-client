@@ -1000,7 +1000,8 @@ function(appt) {
 			var isSynced = Boolean(calendar.url);
 			if (appt.isReadOnly() || isSynced) {
 				var mode = appt.isException() ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
-				appt.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [appt]));
+		        var clone = ZmAppt.quickClone(appt);
+				clone.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [clone]));
 			} else {
 				if (appt.isRecurring()) {
 					// prompt user to edit instance vs. series if recurring but not exception
