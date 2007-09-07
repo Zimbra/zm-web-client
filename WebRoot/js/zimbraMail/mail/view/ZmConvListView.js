@@ -58,7 +58,9 @@ function(convs) {
 	ZmDoublePaneView.prototype.setItem.call(this, convs);
 
 	this._mailListView.set(convs, ZmItem.F_DATE);
-	// this._selectFirstItem();
+	if (!this._controller._readingPaneOn) {
+		this._selectFirstItem();
+	}
 };
 
 ZmConvDoublePaneView.prototype._createMailListView =

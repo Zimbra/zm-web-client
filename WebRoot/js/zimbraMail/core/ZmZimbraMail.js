@@ -492,7 +492,7 @@ function(params) {
 
 	var callback = new AjxCallback(this,
 		function() {
-			// run any app-requested startup routines
+			this.focusContentPane();
 			this.runAppFunction("startup", false, params.result);
 			AjxDispatcher.enableLoadFunctions(true);
 			appCtxt.inStartup = false;
