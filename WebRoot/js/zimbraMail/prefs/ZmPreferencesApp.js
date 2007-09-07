@@ -64,7 +64,9 @@ function() {
 //       enabled app's preferences will be registered by the time
 //       that another app listener gets the launch event and may
 //       want to alter those prefs.
-ZmPreferencesApp._registerAllPrefs = function() {
+ZmPreferencesApp._registerAllPrefs =
+function() {
+	AjxDispatcher.require("PreferencesCore");
 	appCtxt.getAppController().runAppFunction("_registerPrefs", true);
 };
 ZmZimbraMail.addAppListener(ZmApp.PREFERENCES, ZmAppEvent.PRE_LAUNCH, new AjxListener(ZmPreferencesApp._registerAllPrefs));

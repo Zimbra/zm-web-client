@@ -271,9 +271,12 @@ function() {
 };
 
 /**
- * Loads the app and presents the initial view. First, it gets the user's preferences.
- * Next, it launches the start app (which defaults to mail) and shows the results to
- * the user. Finally, we load contacts in the background.
+ * Startup part 1:
+ * 	- check for skin, show it
+ * 	- create app view mgr
+ * 	- create components (sash, banner, user info, toolbar above overview, status view)
+ * 	- create apps
+ * 	- load user settings (GetInfoRequest)
  *
  * @param params		[hash]			hash of params:
  *        app			[constant]*		starting app
@@ -339,7 +342,8 @@ function(params, ex) {
 
 /**
  * Startup: part 2
- * Creates components which have dependencies on the settings, including the overview.
+ * 	- create app toolbar component
+ * 	- determine and launch starting app
  *
  * @param params			[hash]			hash of params:
  *        app				[constant]		starting app
@@ -369,31 +373,31 @@ function(params, result) {
 
 	ZmApp.initialize();
 
-	// determine default starting app
-	for (var app in ZmApp.DEFAULT_SORT) {
-		ZmApp.DEFAULT_APPS.push(app);
-	}
-	ZmApp.DEFAULT_APPS.sort(function(a, b) {
-		return ZmZimbraMail.hashSortCompare(ZmApp.DEFAULT_SORT, a, b);
-	});
-	for (var i = 0; i < ZmApp.DEFAULT_APPS.length; i++) {
-		var app = ZmApp.DEFAULT_APPS[i];
-		var setting = ZmApp.SETTING[app];
-		if (!setting || appCtxt.get(setting)) {
-			this._defaultStartApp = app;
-			break;
-		}
-	}
-
-	params.result = result;
-	var respCallback = new AjxCallback(this, this._handleResponseStartup1, params);
+	// determine starting app
 	var startApp;
 	if (params && params.app) {
 		startApp = ZmApp.QS_ARG_R[params.app.toLowerCase()];
 	}
 	if (!startApp) {
+		for (var app in ZmApp.DEFAULT_SORT) {
+			ZmApp.DEFAULT_APPS.push(app);
+		}
+		ZmApp.DEFAULT_APPS.sort(function(a, b) {
+			return ZmZimbraMail.hashSortCompare(ZmApp.DEFAULT_SORT, a, b);
+		});
+		for (var i = 0; i < ZmApp.DEFAULT_APPS.length; i++) {
+			var app = ZmApp.DEFAULT_APPS[i];
+			var setting = ZmApp.SETTING[app];
+			if (!setting || appCtxt.get(setting)) {
+				this._defaultStartApp = app;
+				break;
+			}
+		}
 		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : this._defaultStartApp;
 	}
+
+	params.result = result;
+	var respCallback = new AjxCallback(this, this._handleResponseStartup1, params);
 
 	// check for jump to compose page or msg view
 	var checkQS = false;
@@ -416,16 +420,22 @@ function(params, result) {
 	if (startApp == ZmApp.MAIL) {
 		this.addAppListener(startApp, ZmAppEvent.POST_RENDER, new AjxListener(this, this._postRenderStartup));
 		this._doingPostRenderStartup = true;
+	} else {
+		AjxDispatcher.require("Startup2");
 	}
 	this.activateApp(startApp, false, respCallback, this._errorCallback, checkQS);
 };
 
-/*
-* Startup: part 3
-* Launches the starting application.
-*
-* @param app		[constant]		starting app
-*/
+/**
+ * Startup: part 3
+ * 	- populate user info
+ * 	- create search bar
+ * 	- set up keyboard handling (shortcuts and tab groups)
+ * 	- kill splash, show UI
+ * 	- check license
+ *
+ * @param app		[constant]		starting app
+ */
 ZmZimbraMail.prototype._handleResponseStartup1 =
 function(params) {
 
@@ -467,16 +477,6 @@ function(params) {
 		kbMgr.enable(false);
 	}
 
-	this._handleResponseStartup2(params);
-	
-};
-
-/*
-* Startup: part 4
-* Kills the splash screen, checks license
-*/
-ZmZimbraMail.prototype._handleResponseStartup2 =
-function(params) {
 	this.setSessionTimer(true);
 	ZmZimbraMail.killSplash();
 
@@ -505,6 +505,8 @@ function(params) {
 };
 
 /**
+ * Startup: part 4
+ * 
  * The work to render the start app has been done. Now perform all the startup
  * work that remains, using a timed action so that the start app gets rendered
  * in the UI first.
