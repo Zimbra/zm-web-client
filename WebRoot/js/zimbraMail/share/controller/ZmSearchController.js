@@ -160,7 +160,7 @@ function(enabled) {
  */
 ZmSearchController.prototype.setDefaultSearchType =
 function(type) {
-	if (this._searchToolBar) {
+	if (this._searchToolBar && this._searchToolBar._searchMenuCreated) {
 		var menu = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
 		menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
 		this._searchMenuListener(null, type);
@@ -181,19 +181,7 @@ function() {
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
 
-    // Menu and button listeners
-    var searchMenuListener = new AjxListener(this, this._searchMenuListener);
-    var m = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
-    var items = m.getItems();
-    for (var i = 0; i < items.length; i++) {
-    	var item = items[i];
-		item.addSelectionListener(searchMenuListener);
-		var mi = item.getData(ZmSearchToolBar.MENUITEM_ID);
-		// set mail as default search
-     	if (mi == ZmSearchToolBar.FOR_MAIL_MI)
-    		item.setChecked(true, true);
-    }
-
+    // Button listeners
 	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_BUTTON, new AjxListener(this, this._searchButtonListener));
 	if (appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
 		this._searchToolBar.addSelectionListener(ZmSearchToolBar.BROWSE_BUTTON, new AjxListener(this, this._browseButtonListener));
@@ -201,6 +189,22 @@ function() {
 	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		this._searchToolBar.addSelectionListener(ZmSearchToolBar.SAVE_BUTTON, new AjxListener(this, this._saveButtonListener));
 	}
+};
+
+ZmSearchController.prototype._addMenuListeners =
+function(menu) {
+    // Menu listeners
+    var searchMenuListener = new AjxListener(this, this._searchMenuListener);
+    var items = menu.getItems();
+    for (var i = 0; i < items.length; i++) {
+    	var item = items[i];
+		item.addSelectionListener(searchMenuListener);
+		var mi = item.getData(ZmSearchToolBar.MENUITEM_ID);
+		// set mail as default search
+     	if (mi == ZmSearchToolBar.FOR_MAIL_MI) {
+    		item.setChecked(true, true);
+     	}
+    }
 };
 
 /**

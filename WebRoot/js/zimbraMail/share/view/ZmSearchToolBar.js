@@ -243,18 +243,30 @@ function(icon, text, listener) {
 			item.addSelectionListener(this._customSearchListener);
 		}
 	} else {
-		var menu = this._searchMenuButton.getMenu();
-		var mi = menu.getItem(0);
-		var addSep = !(mi && mi.getData("CustomSearchItem"));
-		mi = DwtMenuItem.create(menu, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 0, 0);
-		mi.setData("CustomSearchItem", [icon, text, listener]);
-		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.CUSTOM_MI);
-		mi.addSelectionListener(this._customSearchListener);
-
-		// only add separator if this is the first custom search menu item
-		if (addSep) {
-			mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE, null, 1);
+		if (this._searchMenuCreated) {
+			var menu = this._searchMenuButton.getMenu();
+			this._createCustomSearchMenuItem(menu, icon, text, listener);
+		} else {
+			if (!this._customSearchMenuItems) {
+				this._customSearchMenuItems = [];
+			}
+			this._customSearchMenuItems.push({icon:icon, text:text, listener:listener});
 		}
+	}
+};
+
+ZmSearchToolBar.prototype._createCustomSearchMenuItem =
+function(menu, icon, text, listener) {
+	var mi = menu.getItem(0);
+	var addSep = !(mi && mi.getData("CustomSearchItem"));
+	mi = DwtMenuItem.create(menu, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 0, 0);
+	mi.setData("CustomSearchItem", [icon, text, listener]);
+	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.CUSTOM_MI);
+	mi.addSelectionListener(this._customSearchListener);
+
+	// only add separator if this is the first custom search menu item
+	if (addSep) {
+		mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE, null, 1);
 	}
 };
 
@@ -309,34 +321,7 @@ function() {
 	var searchMenuBtn = document.getElementById(searchMenuBtnId);
 	if (searchMenuBtn) {
 		this._searchMenuButton = this._addButton({ buttonId:"_searchMenuButton", lbl:ZmMsg.searchMail, icon:"MailFolder"} );
-
-		var menu = new DwtMenu(this._searchMenuButton, null, "ActionMenu");
-
-		var mi;
-		for (var i = 0; i < ZmSearchToolBar.MENU_ITEMS.length; i++) {
-			var id = ZmSearchToolBar.MENU_ITEMS[i];
-
-			// add separator *before* "shared" menu item
-			if (id == ZmSearchToolBar.FOR_SHARED_MI) {
-				if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
-				mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
-			}
-
-			var setting = ZmSearchToolBar.SETTING[id];
-			if (setting && !appCtxt.get(setting)) { continue; }
-
-			var style = id == ZmSearchToolBar.FOR_SHARED_MI
-				? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
-			mi = DwtMenuItem.create(menu, ZmSearchToolBar.ICON[id], ZmMsg[ZmSearchToolBar.MSG_KEY[id]], null, true, style, 0);
-			mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
-
-			// add separator *after* "all" menu item
-			if (id == ZmSearchToolBar.FOR_ANY_MI) {
-				if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
-				mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
-			}
-		}
-
+		var menu = new AjxCallback(this, this._createSearchMenu);
 		this._searchMenuButton.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 		this._searchMenuButton.reparentHtmlElement(searchMenuBtnId);
 	}
@@ -360,6 +345,45 @@ function() {
 											lbl:ZmMsg.searchBuilder,
 											icon:"SearchBuilder",
 											type:"toolbar"} );
+};
+
+ZmSearchToolBar.prototype._createSearchMenu =
+function() {
+	var menu = new DwtMenu(this._searchMenuButton, null, "ActionMenu");
+	var mi;
+	if (this._customSearchMenuItems) {
+		for (var i = 0; i < this._customSearchMenuItems.length; i++) {
+			var csmi = this._customSearchMenuItems[i];
+			this._createCustomSearchMenuItem(menu, csmi.icon, csmi.text, csmi.listener);
+		}
+	}
+	for (var i = 0; i < ZmSearchToolBar.MENU_ITEMS.length; i++) {
+		var id = ZmSearchToolBar.MENU_ITEMS[i];
+
+		// add separator *before* "shared" menu item
+		if (id == ZmSearchToolBar.FOR_SHARED_MI) {
+			if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
+			mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+		}
+
+		var setting = ZmSearchToolBar.SETTING[id];
+		if (setting && !appCtxt.get(setting)) { continue; }
+
+		var style = (id == ZmSearchToolBar.FOR_SHARED_MI) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
+		mi = DwtMenuItem.create(menu, ZmSearchToolBar.ICON[id], ZmMsg[ZmSearchToolBar.MSG_KEY[id]], null, true, style, 0);
+		mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
+
+		// add separator *after* "all" menu item
+		if (id == ZmSearchToolBar.FOR_ANY_MI) {
+			if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
+			mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+		}
+	}
+	
+	appCtxt.getSearchController()._addMenuListeners(menu);
+	this._searchMenuCreated = true;
+	
+	return menu;
 };
 
 ZmSearchToolBar.prototype._addButton =
