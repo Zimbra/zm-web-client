@@ -30,7 +30,9 @@ ZmVoiceListView = function(parent, className, posStyle, view, type, controller, 
 	this._contactToItem = {}; // Map of contact ids to the items we draw them in.
 
 	var contactList = AjxDispatcher.run("GetContacts");
-	contactList.addChangeListener(new AjxListener(this, this._contactsChangeListener));
+	if (contactList) {
+		contactList.addChangeListener(new AjxListener(this, this._contactsChangeListener));
+	}
 };
 
 
