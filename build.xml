@@ -652,7 +652,7 @@
 						<patternset id='jam.template.fileset' includes='admin/**' />
 					</then>
 				</if>
-				<if><equals arg1='${arg}' arg2='Startup1' />
+				<if><equals arg1='${arg}' arg2='Startup1_1' />
 					<then>
 						<patternset id='jam.template.fileset' excludes='dwt/**,zimbra/**,admin/**' />
 					</then>
