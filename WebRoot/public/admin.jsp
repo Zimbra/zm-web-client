@@ -116,8 +116,31 @@
 	<script>
 		appContextPath = "<%= contextPath %>";
 	 	appCurrentSkin = "<%= skin %>";
+	 	appVers = "<%= vers %>";
 	</script>
-<jsp:include page="Messages.jsp"/>
+<%
+    String isDev = (String) request.getParameter("dev");
+    if (isDev != null) {
+        request.setAttribute("mode", "mjsf");
+    }
+
+   boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
+
+
+    String localeQs = "";
+    String localeId = (String) request.getAttribute("localeId");
+    if (localeId != null) {
+        int index = localeId.indexOf("_");
+        if (index == -1) {
+            localeQs = "&language=" + localeId;
+        } else {
+            localeQs = "&language=" + localeId.substring(0, index) +
+                       "&country=" + localeId.substring(localeId.length() - 2);
+        }
+    }
+
+%>	
+<script type="text/javascript" src="<%= contextPath %>/messages/I18nMsg,AjxMsg,ZMsg,ZaMsg.js<%= ext %>?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%= localeQs %>"></script>
 <script type="text/javascript" src="<%=contextPath %>/keys/AjxKeys.js<%=ext %>?v=<%=vers %>"></script>
 <style type="text/css">
 <!--
@@ -155,17 +178,17 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		ACCESS_RIGHTS = new Object();
 		// figure out the debug level
-		if (location.search && (location.search.indexOf("debug=") != -1)) {
-			var m = location.search.match(/debug=(\w+)/);
-			if (m && m.length) {
-				var level = m[1];
-				if (level == 't') {
-					DBG.showTiming(true);
-				} else {
-					DBG.setDebugLevel(level);
+			if (location.search && (location.search.indexOf("debug=") != -1)) {
+				var m = location.search.match(/debug=(\w+)/);
+				if (m && m.length) {
+					var level = m[1];
+					if (level == 't') {
+						DBG.showTiming(true);
+					} else {
+						DBG.setDebugLevel(level);
+					}
 				}
 			}
-		}
 			ZaZimbraAdmin.run(document.domain);
 		}
 
