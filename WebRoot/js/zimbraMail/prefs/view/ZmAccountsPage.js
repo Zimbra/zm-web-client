@@ -366,15 +366,11 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 	// make sure that the current object proxy is up-to-date
 	this._setAccountFields(this._currentAccount, this._currentSection);
 
-	// error handling
-	var errorCallback = new AjxCallback(this, this._handleSaveError);
-	this._hack_saveErrors = [];
-
 	// delete accounts
 	var addedCommands = false;
 	for (var i = 0; i < this._deletedAccounts.length; i++) {
 		var callback = null;
-		this._deletedAccounts[i].doDelete(callback, errorCallback, batchCmd);
+		this._deletedAccounts[i].doDelete(callback, null, batchCmd);
 		addedCommands = true;
 	}
 
@@ -390,7 +386,7 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 
 		if (account._dirty) {
 			var callback = null;
-			account.save(callback, errorCallback, batchCmd);
+			account.save(callback, null, batchCmd);
 			addedCommands = true;
 		}
 	}
@@ -398,21 +394,8 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 	// add new accounts
 	for (var i = 0; i < newAccounts.length; i++) {
 		var callback = null;
-		newAccounts[i].create(callback, errorCallback, batchCmd);
+		newAccounts[i].create(callback, null, batchCmd);
 		addedCommands = true;
-	}
-
-	// add a no-op so that we can do some cleanup
-	if (addedCommands) {
-		// TODO: This can be removed once we implement getPostSaveCallback.
-		//       The getPostSaveCallback method will be needed for saving
-		//       identities that use signatures that have not been created,
-		//       yet.
-		var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-		soapDoc.getMethod().setAttribute("wait", "0"); // do not wait
-
-		var callback = new AjxCallback(this, this._handleCleanUp);
-		batchCmd.addNewRequestParams(soapDoc, callback, null);
 	}
 };
 
@@ -1197,12 +1180,22 @@ ZmAccountsPage.prototype._handlePreSave = function(continueCallback) {
 
 	// TODO: handle pre-save testing of data sources
 
+	var root = appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmOrganizer.ID_ROOT);
 	var accounts = this._accounts.getArray();
 	var batchCmd;
 	for (var i = 0; i < accounts.length; i++) {
 		var account = accounts[i];
 		if (account.type == ZmAccount.POP || account.type == ZmAccount.IMAP) {
 			if (account.folderId != ZmOrganizer.ID_INBOX) {
+				var name = account.getName();
+
+				// avoid folder create if it already exists
+				if (root.hasChild(name)) {
+					account.folderId = root.getByName(name).id;
+					continue;
+				}
+
+				// batch up create folder request
 				if (!batchCmd) {
 					batchCmd = new ZmBatchCommand(false)
 				}
@@ -1210,7 +1203,7 @@ ZmAccountsPage.prototype._handlePreSave = function(continueCallback) {
 				var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 				var folderEl = soapDoc.set("folder");
 				folderEl.setAttribute("l", ZmOrganizer.ID_ROOT);
-				folderEl.setAttribute("name", account.getName());
+				folderEl.setAttribute("name", name);
 				folderEl.setAttribute("fie", "1"); // fetch-if-exists
 
 				var callback = new AjxCallback(this, this._handleCreateFolderResponse, [account]);
@@ -1247,21 +1240,6 @@ function(dataSource, result) {
 ZmAccountsPage.prototype._handlePreSaveFinish = function(continueCallback, result, exceptions) {
 	// HACK: Don't know a better way to set an error condition
 	continueCallback.run(this.__hack_preSaveSuccess && (!exceptions || exceptions.length == 0));
-};
-
-// post-save callbacks
-
-ZmAccountsPage.prototype._handleSaveError = function(ex) {
-	this._hack_saveErrors.push(ex.msg);
-};
-
-ZmAccountsPage.prototype._handleCleanUp = function() {
-	if (this._hack_saveErrors.length > 0) {
-		var errors = this._hack_saveErrors.join("<br>");
-		appCtxt.setStatusMsg(errors, ZmStatusView.LEVEL_CRITICAL);
-		throw errors;
-	}
-	this.reset();
 };
 
 //

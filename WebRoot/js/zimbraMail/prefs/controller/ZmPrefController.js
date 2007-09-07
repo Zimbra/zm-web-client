@@ -276,7 +276,7 @@ function(continueCallback, preSaveCallbacks, callback, noPop, success) {
 };
 
 ZmPrefController.prototype._doSave = function(callback, noPop) {
-	var batchCommand = new ZmBatchCommand();
+	var batchCommand = new ZmBatchCommand(false);
 
 	//  get changed prefs
 	var list;
@@ -299,14 +299,25 @@ ZmPrefController.prototype._doSave = function(callback, noPop) {
 	// save any extra commands that may have been added
 	if (batchCommand.size()) {
 		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [list, callback, noPop]);
-		batchCommand.run(respCallback);
+		var errorCallback = new AjxCallback(this, this._handleResponseSaveError);
+		batchCommand.run(respCallback, errorCallback);
 	}
 	else {
 		this._handleResponseSaveListener(list, callback, noPop);
 	}
 };
 
-ZmPrefController.prototype._handleResponseSaveListener = 
+ZmPrefController.prototype._handleResponseSaveError =
+function(exception1/*, ..., exceptionN*/) {
+	for (var i = 0; i < arguments.length; i++) {
+		var exception = arguments[i];
+		var message = exception instanceof AjxException ?
+					  (exception.msg || exception.code) : String(exception);
+		appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
+	}
+};
+
+ZmPrefController.prototype._handleResponseSaveListener =
 function(list, callback, noPop, result) {
 	if (list.length) {
 		appCtxt.setStatusMsg(ZmMsg.optionsSaved);
