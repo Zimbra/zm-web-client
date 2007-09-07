@@ -207,7 +207,7 @@ function() {
 			title: ZmMsg.filterRules,
 			templateId: "prefs.Pages#MailFilters",
 			priority: 70,
-			precondition: ZmSetting.FILTERS_ENABLED,
+			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
 			prefs: [
 				ZmSetting.FILTERS
 			],
