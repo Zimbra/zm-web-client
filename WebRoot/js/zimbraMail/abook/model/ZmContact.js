@@ -900,14 +900,14 @@ function() {
 
 	} else if (fa == ZmContact.FA_COMPANY) {
 		// return the first/last name
-		if (attrs.firstName) {
-			val[idx++] = attrs.firstName;
-			if (attrs.lastName)
+		if (attrs.lastName) {
+			val[idx++] = attrs.lastName;
+			if (attrs.firstName)
 				val[idx++] = ", ";
 		}
 
-		if (attrs.lastName)
-			val[idx++] = attrs.lastName;
+		if (attrs.firstName)
+			val[idx++] = attrs.firstName;
 
 		if (attrs.jobTitle)
 			val[idx++] = " (" + attrs.jobTitle + ")";
