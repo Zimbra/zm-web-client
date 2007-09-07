@@ -25,7 +25,7 @@
                     <app:button name="actionNewGroup" id="${keys ? 'NEW_GROUP' : ''}" src="mail/ImgNewGroup.gif" tooltip="newGroup" text="group"/>
                     <c:if test="${not empty contact}">
                         <td><div class='vertSep'></div><input type='hidden' name="actionEditId" value="${contact.id}"></td>
-                        <app:button id="${keys ? 'OPEDIT' : ''}" name="actionEdit" src="common/ImgEdit.gif" tooltip="edit" text="edit"/>
+                        <app:button id="${keys ? 'OPEDIT' : ''}" name="actionEdit" src="startup/ImgEdit.gif" tooltip="edit" text="edit"/>
                     </c:if>
                     <td><div class='vertSep'></div></td>
                     <c:choose>

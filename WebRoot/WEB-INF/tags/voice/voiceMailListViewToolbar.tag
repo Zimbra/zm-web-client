@@ -13,15 +13,15 @@
         <td><div class='vertSep'></div></td>
         <c:choose>
             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                <app:button id="OPDELETE" src="common/ImgTrash.gif" name="actionHardDelete" tooltip="actionTrashTT"/>
+                <app:button id="OPDELETE" src="startup/ImgTrash.gif" name="actionHardDelete" tooltip="actionTrashTT"/>
             </c:when>
             <c:otherwise>
-                <app:button id="OPDELETE" src="common/ImgTrash.gif" name="actionDelete" tooltip="actionTrashTT"/>
+                <app:button id="OPDELETE" src="startup/ImgTrash.gif" name="actionDelete" tooltip="actionTrashTT"/>
             </c:otherwise>
         </c:choose>
         <td nowrap>
             <zm:currentResultUrl var="printUrl" value="/h/printvoicemails" context="${context}" refresh="true" />
-            <a id="OPPRINT" target="_blank" href="${printUrl}"><app:img src="common/ImgPrint.gif" altkey="actionPrint"/></a>
+            <a id="OPPRINT" target="_blank" href="${printUrl}"><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/></a>
         </td>
         <td><div class='vertSep'></div></td>
 		<c:set var="disableMailButtons" value="${mailbox.features.mail ne true}"/>

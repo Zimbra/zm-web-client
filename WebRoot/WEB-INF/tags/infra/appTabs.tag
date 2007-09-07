@@ -68,7 +68,7 @@
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
             <a id='TAB_OPTIONS' href="<c:url value="/h/options"/>">
-                <span id='tab_ikon_options'><app:img src="common/ImgPreferences.gif" altkey='ALT_APP_OPTIONS'/></span><span><fmt:message
+                <span id='tab_ikon_options'><app:img src="startup/ImgPreferences.gif" altkey='ALT_APP_OPTIONS'/></span><span><fmt:message
                     key="options"/></span></a>
         </td>
         <td class='TabSpacerR'/>

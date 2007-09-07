@@ -67,11 +67,11 @@
                         <c:choose>
                             <c:when test="${context.folder.isTrash}">
                                 <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
-                                <app:button name="actionEmpty" src="common/ImgDelete.gif" tooltip="emptyTrash" text="emptyTrash"/>
+                                <app:button name="actionEmpty" src="startup/ImgDelete.gif" tooltip="emptyTrash" text="emptyTrash"/>
                             </c:when>
                             <c:when test="${context.folder.isSpam}">
                                 <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
-                                <app:button name="actionEmpty" src="common/ImgDelete.gif" tooltip="emptyJunk" text="emptyJunk"/>
+                                <app:button name="actionEmpty" src="startup/ImgDelete.gif" tooltip="emptyJunk" text="emptyJunk"/>
                             </c:when>
                             <c:when test="${context.folder.isFeed}">
                                 <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>

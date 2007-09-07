@@ -150,7 +150,7 @@
 																<table cellspacing=0 cellpadding=0 class='Tb'>
 																<tr>
 																<c:if test="${selected != 'contacts' and selected != 'calendar'}">
-																	<app:button name="actionNewFolder" src="common/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/>
+																	<app:button name="actionNewFolder" src="startup/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/>
 																</c:if>
 																<c:if test="${selected eq 'contacts'}">
 																	<app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
@@ -287,13 +287,13 @@
             <table cellpadding="2" cellspacing="0">
                 <tr>
                     <td align="right">
-                        <a target="_new" href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="common/ImgHelp.gif"  border="0"/> <fmt:message key="help"/></a>
+                        <a target="_new" href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.gif"  border="0"/> <fmt:message key="help"/></a>
                     </td>
                     <td align="right">
                         &nbsp;
                     </td>
                     <td align="right">
-                        <a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="common/ImgLogoff.gif" border="0"/> <fmt:message key="logOut"/></a>
+                        <a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="startup/ImgLogoff.gif" border="0"/> <fmt:message key="logOut"/></a>
                     </td>
                 </tr>
             </table>

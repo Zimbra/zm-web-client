@@ -23,11 +23,11 @@
                                    </td>
                                </c:when>
                                <c:otherwise>
-                                   <app:button name="actionNewFilter" src="common/ImgPlus.gif" tooltip="newFilter" text="newFilter"/>
+                                   <app:button name="actionNewFilter" src="startup/ImgPlus.gif" tooltip="newFilter" text="newFilter"/>
                                    <td><div class='vertSep'></div></td>
-                                   <app:button name="actionEditFilter" src="common/ImgEdit.gif" tooltip="editFilter" text="editFilter"/>
+                                   <app:button name="actionEditFilter" src="startup/ImgEdit.gif" tooltip="editFilter" text="editFilter"/>
                                    <td><div class='vertSep'></div></td>
-                                   <app:button name="actionDeleteFilter" src="common/ImgDelete.gif" tooltip="deleteFilter" text="deleteFilter"/>
+                                   <app:button name="actionDeleteFilter" src="startup/ImgDelete.gif" tooltip="deleteFilter" text="deleteFilter"/>
                                    <td><div class='vertSep'></div></td>
                                    <app:button name="actionMoveFilterUp" src="arrows/ImgUpArrow.gif" tooltip="filterMoveUp" text="filterMoveUp"/>
                                    <td><div class='vertSep'></div></td>

@@ -725,8 +725,8 @@ if (ext == null) ext = "";
 							<arg value="@{var}${nodebug.ext}"/>
 						</java>
 						<echo>Prepending Copyright to @{var}${license.ext}</echo>
-						<concat destfile="@{var}${license.ext}">
-							<header filtering="no" trimleading="yes">
+						<concat destfile="@{var}${license.ext}" fixlastline="true">
+							<header filtering="no" trimleading="yes" >
 								// Copyright (C) 2005, 2006, 2007 Zimbra Inc. http://www.zimbra.com
 							</header>
 							<fileset file='@{var}${jsmin.ext}'/>

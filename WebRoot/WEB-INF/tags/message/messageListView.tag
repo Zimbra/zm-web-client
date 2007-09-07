@@ -38,7 +38,7 @@
                             <th class='Img' nowrap><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
                             </c:if>
                             <c:if test="${mailbox.features.tagging}">
-                            <th class='Img' nowrap><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/>
+                            <th class='Img' nowrap><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/>
                             </c:if>
                             <th class='MsgStatusImg' nowrap>&nbsp;
                             <th width="10%">
@@ -46,7 +46,7 @@
                             <a href="${fn:escapeXml(fromSortUrl)}">
                                 <fmt:message key="${useTo ? 'to' : 'from'}"/>
                             </a>
-                            <th width="1%" nowrap><app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+                            <th width="1%" nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                             <th nowrap>
                                 <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
                             <a href="${fn:escapeXml(subjectSortUrl)}">

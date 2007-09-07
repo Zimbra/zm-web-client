@@ -22,10 +22,10 @@
                     <td><div class='vertSep'></div></td>
                     <c:choose>
                     <c:when test="${isInstance}">
-                        <app:button name="actionApptDelete" src="common/ImgDelete.gif" tooltip="actionApptDeleteInstTT" text="deleteInst"/>
+                        <app:button name="actionApptDelete" src="startup/ImgDelete.gif" tooltip="actionApptDeleteInstTT" text="deleteInst"/>
                     </c:when>
                     <c:otherwise>
-                        <app:button name="actionApptDelete" src="common/ImgDelete.gif" tooltip="actionApptDeleteTT" text="delete"/>
+                        <app:button name="actionApptDelete" src="startup/ImgDelete.gif" tooltip="actionApptDeleteTT" text="delete"/>
                     </c:otherwise>
                     </c:choose>
 

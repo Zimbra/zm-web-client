@@ -18,7 +18,7 @@
                 <td><div class='vertSep'></div></td>
                 <td nowrap>
                     <zm:currentResultUrl var="refreshUrl" value="/h/printcalls" context="${context}" refresh="true" />
-                    <a id="OPPRINT" target="_blank" href="${refreshUrl}"><app:img src="common/ImgPrint.gif" altkey="actionPrint"/></a>
+                    <a id="OPPRINT" target="_blank" href="${refreshUrl}"><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/></a>
                 </td>
                 <td><div class='vertSep'></div></td>
                 <td nowrap>

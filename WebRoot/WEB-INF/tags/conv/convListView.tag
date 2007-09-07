@@ -32,10 +32,10 @@
                                 <th class='Img'  nowrap='nowrap' width='20'><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
                                 </c:if>
                                 <c:if test="${mailbox.features.tagging}">
-                                <th class='Img' nowrap width='20'><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
+                                <th class='Img' nowrap width='20'><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
                                 </c:if>
                                 <th width="10%" nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
-                                <th class='Img' nowrap width='1%'><app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/></th>
+                                <th class='Img' nowrap width='1%'><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/></th>
                                 <th nowrap>
                                     <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
                                 <a href="${fn:escapeXml(subjectSortUrl)}">

@@ -161,13 +161,13 @@
                                                 <th class='Img' nowrap width="1%"><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
                                                 </c:if>
                                                 <c:if test="${mailbox.features.tagging}">
-                                                <th class='Img' nowrap width="1%"><app:img src="tag/ImgTagOrange.gif" altkey="ALT_TAG"/>
+                                                <th class='Img' nowrap width="1%"><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG"/>
                                                 </c:if>
                                                 <th class='MsgStatusImg' nowrap>&nbsp;
                                                 <th width="10%" nowrap>
                                                     <zm:currentResultUrl var="fromSortUrl" value="search" action="view" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                                                 <a href="${fn:escapeXml(fromSortUrl)}"><fmt:message key="from"/></a>
-                                                <th class='Img' nowrap><app:img src="common/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
+                                                <th class='Img' nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                                                 <th nowrap><fmt:message key="fragment"/>
                                                 <th width="3%" nowrap><fmt:message key="folder"/>
                                                 <th width="3%" nowrap><fmt:message key="size"/>
