@@ -1091,7 +1091,9 @@ function() {
 	}
 };
 
-ZmComposeController.prototype._createSignatureMenu = function() {
+ZmComposeController.prototype._createSignatureMenu =
+function() {
+	if (!this._composeView) { return null; }
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 	var menu = new DwtMenu(button);
 	var options = appCtxt.getSignatureCollection().getSignatureOptions();
@@ -1101,7 +1103,7 @@ ZmComposeController.prototype._createSignatureMenu = function() {
 		/***
 		var listener = new AjxListener(this, this._handleSignatureSelect);
 		/***/
-		var radioId = this._composeView._htmlElId+"_sig";
+		var radioId = this._composeView._htmlElId + "_sig";
 		for (var i = 0; i < options.length; i++) {
 			var option = options[i];
 			var menuitem = new DwtMenuItem(menu, DwtMenuItem.RADIO_STYLE, radioId);
