@@ -540,7 +540,7 @@ ZmNotebookPageView.prototype.onDelete = function(){
 
 	var controller = this._controller;
 	var object = controller._object;
-	this.loadURL(object.getRestUrl());
+	this.refresh(object.getRestUrl());
 
 };
 
@@ -676,6 +676,14 @@ ZmNotebookPageView.prototype.fetchInfo = function(path)
 ZmNotebookPageView.prototype.refresh = function(restUrl){
 	this._controller.historyLoading = true;	
 	if(restUrl){
+		var iFrameUrl = this._iframe1.src;
+		iFrameUrl = iFrameUrl ? iFrameUrl.replace(/\/$/,"") : "";
+		
+		//bug:19996
+		if(AjxEnv.isIE && (restUrl == iFrameUrl)){
+			this._iframe1.contentWindow.location.reload();
+			return;
+		}		
 		this.loadURL(restUrl);
 	}else if(this._iframe1.contentWindow.location.href){
 		this._iframe1.contentWindow.location.reload();
