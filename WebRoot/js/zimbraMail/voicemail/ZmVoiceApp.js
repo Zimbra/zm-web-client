@@ -25,6 +25,7 @@
 
 ZmVoiceApp = function(container, parentController) {
 	this.phones = [];
+	this._nameToPhone = {};
 	this.accordionItem = null; // Currently selected accordion item.
 	this.soapInfo = {
 		method: "SearchVoiceRequest",
@@ -32,7 +33,6 @@ ZmVoiceApp = function(container, parentController) {
 		response: "SearchVoiceResponse",
 		additional: null
 	};
-
 
 	this._storePrinciple = null;
 	ZmApp.call(this, ZmApp.VOICE, container, parentController);
@@ -237,7 +237,7 @@ ZmVoiceApp.prototype.getVoiceInfo =
 function(callback) {
 	if (!this.phones.length) {
 	    var soapDoc = AjxSoapDoc.create("GetVoiceInfoRequest", "urn:zimbraVoice");
-	    var respCallback = new AjxCallback(this, this._handleResponseVoiceInfo, callback);
+	    var respCallback = new AjxCallback(this, this._handleResponseVoiceInfo, [callback]);
 	    var params = {
 	    	soapDoc: soapDoc, 
 	    	asyncMode: true,
@@ -267,6 +267,7 @@ function(callback, response) {
 		var phone = new ZmPhone();
 		phone._loadFromDom(obj);
 		this.phones.push(phone);
+		this._nameToPhone[phone.name] = phone;
 
 		if (obj.folder && obj.folder.length) {
 			phone.folderTree = new ZmVoiceFolderTree();
@@ -275,6 +276,50 @@ function(callback, response) {
 	}
 	if (callback) {
 		callback.run();
+	}
+};
+
+ZmVoiceApp.prototype.refreshFolders =
+function(callback) {
+	if (this.phones.length) {
+	    var soapDoc = AjxSoapDoc.create("GetVoiceFolderRequest", "urn:zimbraVoice");
+		this.setStorePrincipal(soapDoc);
+		var respCallback = new AjxCallback(this, this._handleResponseUpdateFolders, [callback]);
+	    var params = {
+	    	soapDoc: soapDoc,
+	    	asyncMode: true,
+			callback: respCallback
+		};
+		appCtxt.getAppController().sendRequest(params);
+	} else if (callback) {
+		callback.run();
+	}
+};
+
+ZmVoiceApp.prototype._handleResponseUpdateFolders =
+function(callback, response) {
+	var phones = response._data.GetVoiceFolderResponse.phone;
+	for (var i = 0, count = phones.length; i < count; i++) {
+		var obj = phones[i]; 
+		var phone = this._nameToPhone[obj.name];
+		if (phone) {
+			this._updateFolders(phone, obj.folder[0].folder);
+		}
+	}
+	if (callback) {
+		callback.run();
+	}
+};
+
+ZmVoiceApp.prototype._updateFolders =
+function(phone, foldersObj) {
+	var folderTree = phone.folderTree;
+	for (var i = 0, count = foldersObj.length; i < count; i++) {
+		var folderObj = foldersObj[i];
+		var folder = folderTree.getByName(folderObj.name);
+		if (folder) {
+			folder.notifyModify(folderObj);
+		}
 	}
 };
 
