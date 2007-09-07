@@ -127,15 +127,11 @@
         }
     }
 %>
-<link rel="SHORTCUT ICON" href="<%=contextPath %>/favicon.ico">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
-<style type="text/css">
-<!--
-@import url(<%= contextPath %>/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
--->
-</style>
+<link href="<%=contextPath %>/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>" rel="stylesheet" type="text/css" />
+<link href="<%=contextPath %>/favicon.ico" rel="SHORTCUT ICON" />
 </head>
 <body>
 <noscript><fmt:setBundle basename="/messages/ZmMsg"/>
