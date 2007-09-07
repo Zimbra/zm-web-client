@@ -111,7 +111,10 @@ ZmVoiceListView.prototype._getCallerNameHtml =
 function(voicemail) {
 	var contactList = AjxDispatcher.run("GetContacts");
 	var callingParty = this.getCallingParty(voicemail);
-	var data = contactList.getContactByPhone(callingParty.name);
+	var data = null;
+	if (contactList) {
+		data = contactList.getContactByPhone(callingParty.name);
+	}
 	if (data) {
 		this._addToContactMap(data.contact, voicemail);
 // TODO: Seems like this should go on ZmVoicemail?!?!?		
