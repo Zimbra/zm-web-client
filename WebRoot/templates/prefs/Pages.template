@@ -638,8 +638,16 @@ and the container element is replaced with that control.
 					<tr>
 						<td align=left><button id='${id}_DELETE'><$=ZmMsg.del$></button></td>
 						<td>&nbsp;</td>
-						<td align=right><button id='${id}_ADD_EXTERNAL'>Add External Account</button></td>
-						<td align=right><button id='${id}_ADD_PERSONA'>Add Persona</button></td>
+						<td align=right>
+						<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED)) { $>
+							<button id='${id}_ADD_EXTERNAL'>Add External Account</button>
+						<$ } $>
+						</td>
+						<td align=right>
+						<$ if (data.isEnabled(ZmSetting.IDENTITIES_ENABLED)) { $>
+							<button id='${id}_ADD_PERSONA'>Add Persona</button>
+						<$ } $>
+						</td>
 					</tr></table>
 					</td>
 				</tr>
@@ -652,13 +660,17 @@ and the container element is replaced with that control.
 		<$= AjxTemplate.expand("#PrimaryAccount", data) $>
 	</div>
 
+	<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED)) { $>
 	<div id="${id}_EXTERNAL" class='ZAccountSettings' style='display:none;'>
 		<$= AjxTemplate.expand("#ExternalAccount", data) $>
 	</div>
+	<$ } $>
 
+	<$ if (data.isEnabled(ZmSetting.IDENTITIES_ENABLED)) { $>
 	<div id="${id}_PERSONA" class='ZAccountSettings' style='display:none;'>
 		<$= AjxTemplate.expand("#Persona", data) $>
 	</div>
+	<$ } $>
 </template>
 
 <template id='prefs.Pages#PrimaryAccount'>
