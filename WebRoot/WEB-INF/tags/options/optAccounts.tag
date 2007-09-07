@@ -6,60 +6,78 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<table border="0" cellpadding="10" cellspacing="10" width="100%">
     <tr>
         <td>
-
-            <table border="0" cellpadding="0" cellspacing="10" width="100%">
-                <tr>
-                    <td colspan="3" class='ZOptionsHeader'>
+            <table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr class="ZOptionsHeaderRow">
+                    <td class="ImgPrefsHeader_L">
+                        &nbsp;
+                    </td>
+                    <td class='ZOptionsHeader ImgPrefsHeader' >
                         <fmt:message key="optionsAccounts"/>
                     </td>
-                </tr>
-                <tr>
-                    <td colspan="3">
+                    <td class="ImgPrefsHeader_R">
                         &nbsp;
                     </td>
                 </tr>
-                <tr>
-                    <td width="10%">&nbsp;</td>
-                    <td class='List' valign='top'>
-                        <table width="100%" cellpadding="2" cellspacing="0">
+                <tr valign="middle">
+                    <td class="ZOptionsSectionMain" colspan="3">
+                        <table cellpadding="3" cellspacing="0" width="100%">
                             <tr>
-                                <th nowrap>&nbsp;
-                                <th nowrap><fmt:message key="optionsAccountName"/>
-                                <th nowrap><fmt:message key="optionsAccountEmail"/>
-                                <th nowrap><fmt:message key="optionsAccountType"/>
+                                <td colspan="3">
+                                    &nbsp;
+                                </td>
                             </tr>
                             <tr>
-                                <td nowrap>&nbsp;</td>
-                                <td>${fn:escapeXml(not empty mailbox.defaultIdentity.name ? mailbox.defaultIdentity.name : mailbox.name)}</td>
-                                <td>${fn:escapeXml(mailbox.name)}</td>
-                                <td>
-                                    <fmt:message key="optionsAccountTypePrimary"/>
+                                <td width="10%">&nbsp;</td>
+                                <td class='List' valign='top'>
+                                    <table width="100%" cellpadding="2" cellspacing="0">
+                                        <tr>
+                                            <th nowrap>&nbsp;
+                                            <th nowrap><fmt:message key="optionsAccountName"/>
+                                            <th nowrap><fmt:message key="optionsAccountEmail"/>
+                                            <th nowrap><fmt:message key="optionsAccountType"/>
+                                        </tr>
+                                        <tr>
+                                            <td nowrap>&nbsp;</td>
+                                            <td>${fn:escapeXml(not empty mailbox.defaultIdentity.name ? mailbox.defaultIdentity.name : mailbox.name)}</td>
+                                            <td>${fn:escapeXml(mailbox.name)}</td>
+                                            <td>
+                                                <fmt:message key="optionsAccountTypePrimary"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                                <td width="10%">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td colspan="3">
+                                    &nbsp;
                                 </td>
                             </tr>
                         </table>
                     </td>
-                    <td width="10%">&nbsp;</td>
                 </tr>
-                <tr>
-                    <td colspan="3">
+            </table>
+
+           <table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+                <tr class="ZOptionsHeaderRow">
+                    <td class="ImgPrefsHeader_L">
+                        &nbsp;
+                    </td>
+                    <td class='ZOptionsHeader ImgPrefsHeader' >
+                        <fmt:message key="optionsAccountPrimarySettings"/>
+                    </td>
+                    <td class="ImgPrefsHeader_R">
                         &nbsp;
                     </td>
                 </tr>
-            </table>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <table border="0" cellpadding="0" cellspacing="10" width="100%">
-                <tr>
-                    <td colspan="2" class='ZOptionsHeader' >
-                        <fmt:message key="optionsAccountPrimarySettings"/>
-                    </td>
-                </tr>
-                <tr>
+               <tr valign="middle">
+                    <td class="ZOptionsSectionMain" colspan="3">
+                        <table cellpadding="3" cellspacing="0" width="100%">
+                            <tr>
+
                     <td class='ZOptionsTableLabel'>
                         <fmt:message key="optionsAccountEmail"/>
                     </td>
@@ -194,4 +212,7 @@
             </table>
         </td>
     </tr>
+</table>
+</td>
+</tr>
 </table>

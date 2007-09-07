@@ -34,10 +34,25 @@
         </c:when>
     </c:choose>
 </app:handleError>
-
-<table border="0" cellpadding="0" cellspacing="4" width="100%">
-    <tbody>
+<table width="100%" cellpadding="10" cellspacing="10">
+<tr>
+<td>
+<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr class="ZOptionsHeaderRow">
+        <td class="ImgPrefsHeader_L">
+            &nbsp;
+        </td>
+        <td class='ZOptionsHeader ImgPrefsHeader' >
+            <fmt:message key="mailFilters"/>
+        </td>
+        <td class="ImgPrefsHeader_R">
+            &nbsp;
+        </td>
+    </tr>
         <tr>
+            <td class="ZOptionsSectionMain" colspan="3">
+            <table cellpadding="3" cellspacing="0" width="100%">
+                <tr>
             <c:choose>
                 <c:when test="${zm:actionSet(param, 'actionNewFilter') and (not zm:actionSet(param, 'actionFilterCancel') and requestScope.filterSave ne 'success')}">
                     <td valign='top'>
@@ -104,5 +119,11 @@
                 </c:otherwise>
             </c:choose>
         </tr>
-    </tbody>
 </table>
+                </td>
+            </tr>
+    </table>
+    </td>
+    </tr>
+    </table>
+

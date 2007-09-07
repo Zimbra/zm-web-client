@@ -1071,23 +1071,52 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 .ZhACCc {z-index:9040;}
 .ZhACBcc {z-index:9030;}
 
-.ZOptionsHeader {
-	padding:5px;
-	background-color:@HeaderColor@;
-	@FontSize-bigger@
-font-weight:normal;
+.ZOptionsSectionTable {
+	margin-bottom:1.5em;
 }
 
-.ZOptionsTableLabel {
-	width: 15%;
-	font-weight: bold;
-	white-space: nowrap;
-	text-align: right;
-	vertical-align: middle;
+.ZOptionsHeaderL,
+.ZOptionsHeaderR { }
+.ZOptionsHeader {
+ 	@FontSize-bigger@
+ 	color:white;
 }
 
 .ZOptionsHint {
 	@Text-disabled@;
+}
+
+.ZOptionsSectionMain {
+	@ChromeBg@
+	padding:1em;
+}
+.ZOptionsLabel,
+.ZOptionsLabelTop,
+.ZOptionsLabelNarrow,
+.ZOptionsTableLabel {
+	width: 150px;
+	font-weight: bold;
+	white-space: nowrap;
+	text-align: right;
+	vertical-align: middle;
+	line-height:20px;
+}
+
+.ZOptionsSectionTable LABEL {
+	white-space:nowrap;
+}
+
+.ZOptionsLabelTop {
+	vertical-align:top;
+	line-height:20px;
+}
+
+.ZOptionsLabelNarrow {
+	width:auto;
+}
+
+.ZOptionsInfo {
+	@Text-disabled@		/* TODO: Text-hint ? */
 }
 
 .ZhDateHint {
