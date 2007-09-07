@@ -63,8 +63,8 @@
 	appCurrentSkin = "<%=skin %>";
 </script>
 
-<jsp:include page="Messages.jsp"/>
-<script type="text/javascript" src="<%=contextPath %>/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %>"></script>
+<% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys"); %>
+<jsp:include page="Resources.jsp"/>
 <style type="text/css">
 	<!--
     @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);

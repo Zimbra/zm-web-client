@@ -118,30 +118,8 @@
 	 	appCurrentSkin = "<%= skin %>";
 	 	appVers = "<%= vers %>";
 	</script>
-<%
-    String isDev = (String) request.getParameter("dev");
-    if (isDev != null) {
-        request.setAttribute("mode", "mjsf");
-    }
-
-   boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
-
-
-    String localeQs = "";
-    String localeId = (String) request.getAttribute("localeId");
-    if (localeId != null) {
-        int index = localeId.indexOf("_");
-        if (index == -1) {
-            localeQs = "&language=" + localeId;
-        } else {
-            localeQs = "&language=" + localeId.substring(0, index) +
-                       "&country=" + localeId.substring(localeId.length() - 2);
-        }
-    }
-
-%>	
-<script type="text/javascript" src="<%= contextPath %>/messages/I18nMsg,AjxMsg,ZMsg,ZaMsg.js<%= ext %>?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%= localeQs %>"></script>
-<script type="text/javascript" src="<%=contextPath %>/keys/AjxKeys.js<%=ext %>?v=<%=vers %>"></script>
+<% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZaMsg,AjxKeys"); %>
+<jsp:include page="Resources.jsp"/>
 <style type="text/css">
 <!--
 @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,images,skin.css?v=<%= vers %>&skin=<%= skin %>);

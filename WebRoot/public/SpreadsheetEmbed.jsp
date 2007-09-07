@@ -63,7 +63,8 @@ Contributor(s):
         @import url( style.css );
         -->
       </style>
-      <jsp:include page="Messages.jsp"/>
+	  <% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys"); %>
+	  <jsp:include page="Resources.jsp"/>
       <jsp:include page="Boot.jsp"/>
       <%
         String packages = "Ajax,SpreadsheetEmbed";

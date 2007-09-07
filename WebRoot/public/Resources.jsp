@@ -59,5 +59,8 @@ Contributor(s):
         }
     }
 
-%><script type="text/javascript" src="<%= contextPath %>/messages/I18nMsg,AjxMsg,ZMsg,ZaMsg,ZmMsg.js<%= ext %>?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%= localeQs %>"></script>
+	String resources = (String)request.getAttribute("res");
+	String query = "v="+vers+(inSkinDebugMode||inDevMode?"&debug=1":"")+localeQs;
+
+%><script type="text/javascript" src="<%=contextPath%>/res/<%=resources%>.js<%=ext%>?<%=query%>"></script>
  

@@ -166,6 +166,9 @@
 		<init-param>
 			<param-name>basename-patterns</param-name>
 			<param-value>
+				<!--WEB-INF/classes/${dir}/${name}-->
+				WEB-INF/classes/messages/${name},
+				WEB-INF/classes/keys/${name},
 				WEB-INF/classes/${dir}/${name},
 				../service/zimlet/${name}/${name},
 				../service/zimlet/_dev/${name}/${name}
@@ -190,12 +193,7 @@
 
 	<servlet-mapping>
 		<servlet-name>Properties2Javascript</servlet-name>
-		<url-pattern>/messages/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>Properties2Javascript</servlet-name>
-		<url-pattern>/keys/*</url-pattern>
+		<url-pattern>/res/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

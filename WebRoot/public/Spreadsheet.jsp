@@ -63,7 +63,8 @@ Contributor(s):
     @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
 	-->
 	</style>
-    <jsp:include page="Messages.jsp"/>
+	<% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys"); %>
+	<jsp:include page="Resources.jsp"/>
     <jsp:include page="Boot.jsp"/>
     <%
       String packages = "Ajax,Spreadsheet";

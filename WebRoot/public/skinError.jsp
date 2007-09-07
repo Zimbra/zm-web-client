@@ -27,13 +27,12 @@
  * ***** END LICENSE BLOCK *****
  */
  -->
-<jsp:include page="Messages.jsp"/>
-<jsp:include page="Boot.jsp"/>
-<script type="text/javascript">
-// NOTE: Force load of single source file regardless of prod mode
-AjxPackage.setExtension(".js");
-AjxPackage.require("ajax.util.AjxText");
-</script>
+<%
+    String contextPath = request.getContextPath();
+    if (contextPath.equals("/")) contextPath = "";
+%>
+<script src='<%=contextPath%>/messages/ZmMsg.js'></script>
+<script src='<%=contextPath%>/js/ajax/util/AjxText.js'></script>
 	<SCRIPT type="text/javascript">
 		function onLoad() {
 			var skin;

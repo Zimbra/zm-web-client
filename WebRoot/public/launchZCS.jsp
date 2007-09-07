@@ -187,8 +187,8 @@
 	appDevMode     = <%=inDevMode%>;
 	
 </script>
-<script type="text/javascript" src="<%= contextPath %>/messages/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%= localeQs %>"></script>
-<script src="<%=contextPath %>/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
+<% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys"); %>
+<jsp:include page="Resources.jsp" />
 <jsp:include page="Boot.jsp"/>
 <%
 	String allPackages = "Startup1_1,Startup1_2";
