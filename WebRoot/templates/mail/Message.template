@@ -232,7 +232,7 @@
 			</td>
 			<td class='nobreak'>
 				<!-- The open A element is within the attachment.link string -->
-				<$= attachment.link $><$= AjxStringUtil.htmlEncode(attachment.label) $></a>
+				<$= attachment.link $><$= AjxStringUtil.htmlEncode(AjxStringUtil.clipFile(attachment.label,100)) $></a>
 				<$ if (attachment.size) { $>
 					(<$= attachment.size $>)
 				<$ } $>
