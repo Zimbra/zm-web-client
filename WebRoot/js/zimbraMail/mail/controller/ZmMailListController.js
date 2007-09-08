@@ -1082,6 +1082,11 @@ function(parent, num) {
 			parent.enable([ZmOperation.SPAM], (!isDrafts && num > 0));
 		}
 	}
+
+	// LASTLY - tags for child accounts is never allowed
+	if (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain) {
+		parent.enable(ZmOperation.TAG_MENU, false);
+	}
 };
 
 // Enable mark read/unread as appropriate.
