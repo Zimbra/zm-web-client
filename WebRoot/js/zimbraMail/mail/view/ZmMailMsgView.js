@@ -1619,7 +1619,7 @@ function(myId, tagId) {
 ZmMailMsgView._detachCallback =
 function(result) {
 	var resp = result.getResponse().GetMsgResponse;
-	var msg = new ZmMailMsg(resp.m[0].id);
+	var msg = new ZmMailMsg(resp.m[0].id, null, true);	// do not cache this temp msg
 	msg._loadFromDom(resp.m[0]);
 	// bug fix #8868 - force load for rfc822 msgs since they may not return any content
 	msg._loaded = true;

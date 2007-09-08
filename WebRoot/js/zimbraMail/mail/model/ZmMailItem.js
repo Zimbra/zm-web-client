@@ -33,11 +33,12 @@
  * @param type		[constant]		type of object (conv or msg)
  * @param id		[int]			unique ID
  * @param list		[ZmMailList]	list that contains this mail item
+ * @param noCache	[boolean]*		if true, do not cache this item
  */
-ZmMailItem = function(type, id, list) {
+ZmMailItem = function(type, id, list, noCache) {
 
 	if (arguments.length == 0) { return; }
-	ZmItem.call(this, type, id, list);
+	ZmItem.call(this, type, id, list, noCache);
 
 	this._loaded = false;
 	this._initializeParticipants();

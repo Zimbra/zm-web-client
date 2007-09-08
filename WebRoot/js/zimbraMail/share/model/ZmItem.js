@@ -38,10 +38,11 @@
  * @author Conrad Damon
  * 
  * @param type		[constant]		type of object (conv, msg, etc)
- * @param id			[int]			unique ID
+ * @param id		[int]			unique ID
  * @param list		[ZmList]		list that contains this item
+ * @param noCache	[boolean]*		if true, do not cache this item
  */
-ZmItem = function(type, id, list) {
+ZmItem = function(type, id, list, noCache) {
 
 	if (arguments.length == 0) { return; }
 	ZmModel.call(this, type);
@@ -54,7 +55,7 @@ ZmItem = function(type, id, list) {
 	this.tagHash = {};
 	this.folderId = 0;
 	
-	if (id) {
+	if (id && !noCache) {
 		appCtxt.cacheSet(id, this);
 	}
 };

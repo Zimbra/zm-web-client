@@ -31,10 +31,11 @@
  *
  * @param id		[int]			unique ID
  * @param list		[ZmMailList]	list that contains this message
+ * @param noCache	[boolean]*		if true, do not cache this msg
  */
-ZmMailMsg = function(id, list) {
+ZmMailMsg = function(id, list, noCache) {
 
-	ZmMailItem.call(this, ZmItem.MSG, id, list);
+	ZmMailItem.call(this, ZmItem.MSG, id, list, noCache);
 
 	this._inHitList = false;
 	this._attHitList = [];
