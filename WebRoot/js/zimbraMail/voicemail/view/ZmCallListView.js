@@ -141,3 +141,9 @@ function(call) {
 	return html;
 };
 
+ZmCallListView.prototype._getNoResultsMessage =
+function() {
+	return ZmMsg.noCallResults;
+};
+
+
