@@ -2,7 +2,6 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>    
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -48,9 +47,9 @@
 </tr>
 <tr>
 <td class='ZhAppContent' style="padding:7px;width:100%;height:100%;valign:top;">
-<table width="100%" >
+<table width="100%" border="0">
 <tr>
-    <td>
+    <td width="50%">
         <font style="font-size:14pt; color:#000000;">Hi! ${empty fullname ? mailbox.name : fullname}     </font>
     </td>
     <td>
@@ -63,7 +62,7 @@
 </tr>
 <tr>
     <td>
-        <table>
+        <table cellpadding="0"  cellspacing="0">
             <tr>
                 <td>
                     Mail
@@ -95,76 +94,16 @@
 
         </table>
     </td>
-    <td>
-        <table>
-            <%--
-            <mo:handleError>
-                <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
-                <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
-                <c:set var="currentDay" value="${zm:getCalendar(date.timeInMillis,mailbox.prefs.timeZone)}"/>
-                <c:set var="view" value="${'list'}"/>
-                <c:set var="needViewAppt" value="${true}"/>
-                <c:set var="id" value="0"/>
-                <c:set var="count" value="0"/>
-                <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
-                <c:set var="dayEnd" value="${zm:addDay(currentDay, 1).timeInMillis}"/>
-                <c:set var="numDays" value="30"/>
-                <c:set var="prevDate" value="${zm:addDay(date, -numDays)}"/>
-                <c:set var="nextDate" value="${zm:addDay(date,  numDays)}"/>
-                <c:set var="dateEnd" value="${zm:addDay(date,numDays-1)}"/>
-                <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
-                <c:set var="today" value="${zm:getToday(timezone)}"/>
-
-                <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
-                <c:forEach var="day" begin="1" end="${numDays}">
-
-                    <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
-                        <c:if test="${count eq 0}">
-                            <tr class='zo_cal_listh'>
-                                <td class='zo_cal_listh_dow'>
-                                    <fmt:formatDate value="${appt.startDate}" pattern="${dayFormat}"/>
-                                </td>
-                                <td class='zo_cal_listh_date'>
-                                    <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="medium"/>
-                                </td>
-                            </tr>
-                        </c:if>
-                        <tr class='zo_cal_listi'  onclick='zClickLink("a${id}")'>
-                            <td class='zo_cal_listi_time'>
-                                <c:choose>
-                                    <c:when test="${appt.allDay}">
-                                        <fmt:message key="apptAllDay"/>
-                                    </c:when>
-                                    <c:when test="${appt.startTime lt dayStart}">
-                                        <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="short"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <mo:calendarUrl appt="${appt}" var="apptUrl"/>
-                            <td class='zo_cal_listi_subject'>
-                                <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
-                                <a id="a${id}" href="${apptUrl}">${fn:escapeXml(subject)}</a>
-                            </td>
-                        </tr>
-                        <c:set var="count" value="${count+1}"/>
-                        <c:set var="id" value="${id+1}"/>
-                    </zm:forEachAppoinment>
-                    ${zm:getNextDay(currentDay)}
-                </c:forEach>
-            </mo:handleError>
-            --%>
-        </table>
+    <td width="100%" height="100%">
+        <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
+        <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
+        <app:apptGadget timezone="${tz}" date="${dateContext}" />
     </td>
 </tr>
 </table>
 </td>
 </tr>
 </table>
-
-
 
 </app:view>
         
