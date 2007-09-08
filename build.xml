@@ -630,34 +630,48 @@
 
 		<if><not><available file='${jam.file}' /></not>
 			<then>
-				<!-- TODO: need to fix this for new dir layout -->
 				<condition property='wrap' value='false' else='true'>
 					<equals arg1='${arg}' arg2='Boot' />
 				</condition>
 
 				<property name='jam.template.dir' value='${build.template.dir}' />
+				<!-- assume no templates included -->
 				<patternset id='jam.template.fileset' excludes='**' />
+				<!-- packages used by admin -->
+				<if><equals arg1='${arg}' arg2='Admin' />
+					<then><patternset id='jam.template.fileset' includes='admin/**' /></then>
+				</if>
 				<if><equals arg1='${arg}' arg2='Ajax' />
-					<then>
-						<patternset id='jam.template.fileset' includes='dwt/**' />
-					</then>
+					<then><patternset id='jam.template.fileset' includes='dwt/**' /></then>
 				</if>
 				<if><equals arg1='${arg}' arg2='Zimbra' />
-					<then>
-						<patternset id='jam.template.fileset' includes='zimbra/**' />
-					</then>
+					<then><patternset id='jam.template.fileset' includes='zimbra/**' /></then>
 				</if>
-				<if><equals arg1='${arg}' arg2='Admin' />
-					<then>
-						<patternset id='jam.template.fileset' includes='admin/**' />
-					</then>
+				<!-- templates used by mail client -->
+				<if><equals arg1='${arg}' arg2='ContactsCore' />
+					<then><patternset id='jam.template.fileset' excludes='abook/**' /></then>
 				</if>
-				<if><equals arg1='${arg}' arg2='Startup1_1' />
-					<then>
-						<patternset id='jam.template.fileset' excludes='dwt/**,zimbra/**,admin/**' />
-					</then>
+				<if><equals arg1='${arg}' arg2='CalendarCore' />
+					<then><patternset id='jam.template.fileset' excludes='calendar/**' /></then>
 				</if>
-
+				<if><equals arg1='${arg}' arg2='IM' />
+					<then><patternset id='jam.template.fileset' excludes='im/**' /></then>
+				</if>
+				<if><equals arg1='${arg}' arg2='MailCore' />
+					<then><patternset id='jam.template.fileset' excludes='mail/**' /></then>
+				</if>
+				<if><equals arg1='${arg}' arg2='PreferencesCore' />
+					<then><patternset id='jam.template.fileset' excludes='prefs/**' /></then>
+				</if>
+				<if><equals arg1='${arg}' arg2='Startup1_2' />
+					<then><patternset id='jam.template.fileset' excludes='dwt/**,zimbra/**,share/**' /></then>
+				</if>
+				<if><equals arg1='${arg}' arg2='TasksCore' />
+					<then><patternset id='jam.template.fileset' excludes='tasks/**' /></then>
+				</if>
+				<if><equals arg1='${arg}' arg2='Voicemail' />
+					<then><patternset id='jam.template.fileset' excludes='voicemail/**' /></then>
+				</if>
 
 				<jammer jsDestFile='${jam.file}' htmlDestFile='${jsp.file}'
 						dependsFile='${depends.file}' output='all'

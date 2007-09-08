@@ -478,46 +478,6 @@ and the container element is replaced with that control.
 	</table>
 </template>
 
-<template id='prefs.Pages#Voice'>
-	<div align=right>
-		<table class='ZOptionsDefaultsTable'>
-			<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFAULTS_RESTORE'></div></td></tr>
-		</table>
-	</div>
-
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'>Phone numbers</td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-		<tr>
-			<td class='ZOptionsSectionTable' colspan=3>
-				${ expandField('ACCOUNT_LIST') }
-			</td>
-		</tr>
-	</table>
-
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'>Call Manager</td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-		<tr>
-			<td class='ZOptionsSectionTable' colspan=3>
-			<table width=100%>
-				${ expandField('-VOICE_EMAIL_NOTIFICATION') }
-
-		<tr><td colspan=2><hr></td></tr>
-
-				${ expandField('-VOICE_FORWARD_CALLS') }
-			</table>
-			</td>
-		</tr>
-	</table>
-</template>
-
 <template id='prefs.Pages#Contacts'>
 	<!-- DEFAULTS_RESTORE (button) -->
   <div align=right>
