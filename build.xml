@@ -51,7 +51,13 @@
 	<property name="jsmin.ext" value='.min' />
 	<property name="compress.ext" value='.zgz' />
 
-	<!-- Tasks -->
+	<!-- ZIMBRA FIREFOX EXTENSION -->
+  <property name="ffext.jarfile" value="zimbradnd.jar" />
+  <property name="ffext.xpifile" value="ZimbraDnD.xpi" />
+  <property name="ffext.build.dir" location="ffext/build" />
+  <property name="ffext.src.dir" value="ffext/src" />
+
+  <!-- Tasks -->
 
 	<taskdef resource="net/sf/antcontrib/antlib.xml">
 		<classpath>
@@ -884,4 +890,14 @@ if (ext == null) ext = "";
 		<ant dir="${server.dir}" target="restart-webserver" />
 	</target>
 
+	<!-- ZIMBRA FIREFOX EXTENSION -->	
+  <target name="ffext-reset-the-world">
+      <delete dir="${ffext.build.dir}"/>
+      <mkdir dir="${ffext.build.dir}/chrome"/>
+      <copy file="${ffext.src.dir}/chrome.manifest" todir="${ffext.build.dir}"/>
+		  <copy file="${ffext.src.dir}/install.rdf" todir="${ffext.build.dir}"/>
+		  <zip destfile="${ffext.build.dir}/chrome/${ffext.jarfile}" basedir="${ffext.src.dir}/chrome/zimbradnd"/>
+		  <zip destfile="${ffext.build.dir}/${ffext.xpifile}" basedir="${ffext.build.dir}"/>
+   </target>
+    
 </project>
