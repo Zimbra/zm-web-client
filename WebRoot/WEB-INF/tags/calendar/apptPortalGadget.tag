@@ -39,13 +39,11 @@
 </mo:handleError>
 
 
-<table width=100% cellspacing="0" cellpadding="0" border="0">
+<table width=100% cellspacing="0" cellpadding="5" border="0">
     <tr>
         <td  align="left">
-            <fmt:message key="calendar" />
-        </td>
-        <td align="right">
-            <fmt:message var="titleFormat" key="MO_CAL_LIST_DATE_FORMAT"/>
+            <h2 style="margin: 0px; padding-bottom: 2px;border-bottom: 2px solid #CCCCCC; font-size: 16px;"><fmt:message key="calendar" />&nbsp;
+            <span style="font: 11px arial,verdana,sans-serif; color: #666666;"><fmt:message var="titleFormat" key="MO_CAL_LIST_DATE_FORMAT"/>
             <fmt:message key="MO_CAL_LIST_TITLE_FORMAT">
                 <fmt:param>
                     <fmt:formatDate value="${date.time}" pattern="${titleFormat}"/>
@@ -53,28 +51,22 @@
                 <fmt:param>
                     <fmt:formatDate value="${dateEnd.time}" pattern="${titleFormat}"/>
                 </fmt:param>
-            </fmt:message>
-         </td>
+            </fmt:message></span></h2>
+        </td>
     </tr>
-    <tr>
-        <td colspan="2">
-            <table width=100% cellpadding="0" cellspacing="0" >
                 <c:set var="id" value="0"/>
                 <c:forEach var="day" begin="1" end="${numDays}">
                     <c:set var="count" value="0"/>
                     <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
                     <c:set var="dayEnd" value="${zm:addDay(currentDay, 1).timeInMillis}"/>
                     <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
-                        <tr  onclick='zClickLink("a${id}")'>
+                        <tr onclick='zClickLink("a${id}")'>
                         <c:if test="${count eq 0}">
-                                 <td >
-                                    <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="medium"/>
-                                </td>
-                                <td >
-                                    <fmt:formatDate value="${appt.startDate}" pattern="${dayFormat}"/>
-                                </td>
-                        </c:if>
-                            <td>
+                                 <td style="border-bottom:1px solid #ccc;padding:5px;" >
+                                   <p><b><fmt:formatDate value="${appt.startDate}" type="date" dateStyle="medium"/> &nbsp;<fmt:formatDate value="${appt.startDate}" pattern="${dayFormat}"/>&nbsp;
+
+                               </c:if>
+
                                 <c:choose>
                                     <c:when test="${appt.allDay}">
                                         <fmt:message key="apptAllDay"/>
@@ -85,10 +77,10 @@
                                     <c:otherwise>
                                         <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
                                     </c:otherwise>
-                                </c:choose>
-                            </td>
+                                </c:choose></b><br>
+
                             <mo:calendarUrl appt="${appt}" var="apptUrl"/>
-                            <td >
+
                                 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
                                     <a id="a${id}" href="${apptUrl}">${fn:escapeXml(subject)}</a>
                             </td>
@@ -97,7 +89,7 @@
                         <c:set var="id" value="${id+1}"/>
                     </zm:forEachAppoinment>
                     ${zm:getNextDay(currentDay)}
-                </c:forEach>
+                </c:forEach></p>
             </table>
         </td>
     </tr>

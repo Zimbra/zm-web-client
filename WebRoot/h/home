@@ -47,35 +47,33 @@
 </tr>
 <tr>
 <td class='ZhAppContent' style="padding:7px;width:100%;height:100%;valign:top;">
-<table width="100%" border="0">
-<tr>
-    <td width="50%">
-        <font style="font-size:14pt; color:#000000;">Hi! ${empty fullname ? mailbox.name : fullname}     </font>
-    </td>
-    <td>
-        <font style="font-size:14pt; color:#000000;">
-            <a style="color:#000000;" href='${url}'>${fn:escapeXml(empty label ? folder.name : label)}
+        <h1 style="border-bottom: 3px solid #666666; padding-bottom: 2px; font-size: 20px">Hi! ${empty fullname ? mailbox.name : fullname} &nbsp; 
+
+        <span>
+            <a style="font-size:13px;color:#666666; font-style: normal;" href='${url}'>${fn:escapeXml(empty label ? folder.name : label)}
                 <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount}) </c:if>
             </a>
-        </font>
-    </td>
-</tr>
+        </span>
+       </h1>
+
+<table width="100%" border="0" cellpadding="8" cellspacing="0">
 <tr>
-    <td>
-        <table cellpadding="0"  cellspacing="0">
+    <td width="50%">
+        <table cellpadding="5" cellspacing="0" border='0' width='100%'>
             <tr>
                 <td>
-                    Mail
+                    <h2 style="margin: 0px; padding-bottom: 2px;border-bottom: 2px solid #CCCCCC; font-size: 16px;">Mail</h2>
                 </td>
             </tr>
             <c:if test="${context.isMessageSearch}">
                 <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status" begin="0" end="4">
                     <tr>
                         <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
-                        <td style="border-bottom:1px solid #ccc;padding:5px;width:25%;"  ><a style="text-decoration:none;"  href="${convUrl}">${fn:escapeXml(empty hit.messageHit.displaySender ? unknownRecipient :  hit.messageHit.displaySender)}</a></td>
-                        <td style="border-bottom:1px solid #ccc;padding:5px;text-decoration:none;"  ><a style="color:#000;text-decoration:none;" href="${convUrl}">
+                        <td style="border-bottom:1px solid #ccc;padding:5px;"  ><p><a style="text-decoration:none;"  href="${convUrl}"><b>${fn:escapeXml(empty hit.messageHit.displaySender ? unknownRecipient :  hit.messageHit.displaySender)}</b></a><br>
+                        <a style="color:#000;text-decoration:none;" href="${convUrl}">
                             <c:set var='subj' value="${empty hit.messageHit.subject ? noSubject : zm:truncate(hit.messageHit.subject,80,true)}"/>
-                            <c:out value="${subj}"/></a></td>
+                            <c:out value="${subj}"/></a>
+                        </p></td>
                     </tr>
                 </c:forEach>
             </c:if>
@@ -83,18 +81,18 @@
                 <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status" begin="0" end="4">
                     <tr>
                         <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
-                        <td style="border-bottom:1px solid #ccc;padding:5px;width:25%;"  ><a style="text-decoration:none;"  href="${convUrl}">${fn:escapeXml(empty hit.conversationHit.displayRecipients ? unknownRecipient :  hit.conversationHit.displayRecipients)}</a></td>
-                        <td style="border-bottom:1px solid #ccc;padding:5px;text-decoration:none;"  ><a style="color:#000;text-decoration:none;" href="${convUrl}" >
+                        <td style="border-bottom:1px solid #ccc;padding:5px;width:25%;"><p><a style="text-decoration:none;"  href="${convUrl}">${fn:escapeXml(empty hit.conversationHit.displayRecipients ? unknownRecipient :  hit.conversationHit.displayRecipients)}</a><br>
+                        <a style="color:#000;text-decoration:none;" href="${convUrl}">
                             <c:set var='subj' value="${empty hit.conversationHit.subject ? noSubject : zm:truncate(hit.conversationHit.subject,80,true)}"/>
                             <c:out value="${subj}"/></a>
-                        </td>
+                        </p></td>
                     </tr>
                 </c:forEach>
             </c:if>
 
         </table>
     </td>
-    <td width="100%" height="100%">
+    <td valign="top">
         <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
         <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
         <app:apptGadget timezone="${tz}" date="${dateContext}" />
