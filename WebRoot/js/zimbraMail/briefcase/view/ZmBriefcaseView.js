@@ -139,8 +139,8 @@ function(clickedEl, ev) {
             this._selectedClass,
             this._kbFocusClass,
             this._dndClass,
-            this._rightClickClass,
-            this._normalClass
+            this._rightClickClass//,
+//          this._normalClass
         ].join("|") +
         ")\\b", "g"
     );
