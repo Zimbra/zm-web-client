@@ -1720,7 +1720,7 @@ function() {
 		}else{
 			var view = this._viewMgr.getCurrentView();
 			var rt = view.getTimeRange();
-			this.getApptSummaries(rt.start, rt.end, true, this.getCheckedCalendarFolderIds(), cb);
+			this.getApptSummaries(rt.start, rt.end, view._fanoutAllDay(), this.getCheckedCalendarFolderIds(), cb);
 		}
 		// return. callback will check and see if MAINT_VIEW is nededed as well.
 		return;
