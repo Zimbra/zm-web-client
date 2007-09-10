@@ -32,9 +32,9 @@
             <td nowrap>
             <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
 			</td>
-            <td class="ImgField_L searchwidth" style="padding-left: 3px;"></td>
-            <td><input id="searchField" class="searchField" maxlength="2048" name="sq" value="${query}"></td>
-            <td class='ImgField_R searchwidth' style="padding-left: 3px;">&nbsp;</td>
+            <td class="ImgField_L"></td>
+            <td width="80%"><input style="width:100%" id="searchField" class="searchField" maxlength="2048" name="sq" value="${query}"></td>
+            <td class='ImgField_R'></td>
             <td>&nbsp;<fmt:message key="in"/>&nbsp;</td>
             <td style="padding-left: 2px;">
             <c:choose>

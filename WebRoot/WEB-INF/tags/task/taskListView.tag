@@ -61,7 +61,7 @@
 
                                 <c:if test="${empty selectedRow and taskHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
                                 <c:set var="aid" value="A${status.index}"/>
-                                <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='ZhRow${selectedRow eq status.index ? ' RowSelected' : ''}'>
+                                <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'}${selectedRow eq status.index ? ' RowSelected' : ''}'>
                                     <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="id" value="${taskHit.inviteId}"></td>
                                     <c:if test="${mailbox.features.tagging}">
                                         <td class='Img'><app:miniTagImage ids="${taskHit.tagIds}"/></td>

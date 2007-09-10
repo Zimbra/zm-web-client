@@ -115,11 +115,16 @@ SUBMIT,
 	border-top-width:0px;
 }
 
-.List TD {
+.ZhRow TD {
 	@ListItemContainer@
 	@ListItemContainer-normal@
-	padding-right: 6px;
-    background-color: inherit;
+    padding-right: 6px;
+}
+
+.ZhRowOdd TD {
+   	@ListItemContainer@
+	@ListItemContainer-alt@
+    padding-right: 6px;
 }
 
 .List TH {
@@ -293,8 +298,8 @@ A:visited { color: blue; }
 
 .Unread {	font-weight:bold; }
 
-.RowSelected { @SelectedBg@ }
-.RowMatched { background-color: @HilightColor@ }
+.RowSelected TD { @SelectedBg@ }
+.RowMatched TD { background-color: @HilightColor@ }
 
 
 .Folder { padding-bottom: 2px;  }

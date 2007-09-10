@@ -61,7 +61,7 @@
                                 </c:choose>
                                 <c:if test="${empty selectedRow and convHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
                                 <c:set var="aid" value="A${status.index}"/>
-                                <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='ZhRow ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
+                                <tr onclick='zSelectRow(event,"${aid}")' id="R${status.index}" class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'} ${convHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
                                     <td class='CB' nowrap><input  id="C${status.index}" type="checkbox" name="id" value="${convHit.id}"></td>
                                     <c:if test="${mailbox.features.flagging}">
                                     <td class='Img'><app:flagImage flagged="${convHit.isFlagged}"/></td>

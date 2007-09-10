@@ -41,7 +41,8 @@
                            </tr>
                            <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                                <c:set var="isCurr" value="${hit.contactHit.id == context.currentItem.id}"/>
-                               <tr onclick='zSelectRow(event,"A${status.index}")' <c:if test="${hit.contactHit.id == context.currentItem.id}">class='RowSelected'</c:if>>
+                               <tr onclick='zSelectRow(event,"A${status.index}")'
+                                       class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'}${hit.contactHit.id == context.currentItem.id ? ' RowSelected': ''}'>
                                    <td class='CB' nowrap><input <c:if test="${isCurr}">id="CURRCHECK"</c:if> type=checkbox  name="id" value="${hit.contactHit.id}"></td>
                                    <c:if test="${mailbox.features.tagging}">
                                        <td class='Img'><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
