@@ -65,11 +65,11 @@
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWFOLD" name="actionNewFolder" src="common/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/>
+                                        <app:button id="OPNEWFOLD" name="actionNewFolder" src="startup/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWRSS" name="actionNewFeedFolder" src="common/ImgNewFolder.gif" tooltip="folderNewRssAtomFeed" text="folderNewRssAtomFeed"/>
+                                        <app:button id="OPNEWRSS" name="actionNewFeedFolder" src="startup/ImgNewFolder.gif" tooltip="folderNewRssAtomFeed" text="folderNewRssAtomFeed"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWSEARCH" name="actionNewSearchFolder" src="common/ImgNewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>
+                                        <app:button id="OPNEWSEARCH" name="actionNewSearchFolder" src="startup/ImgNewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>
                                     </tr>
                                 </table>
                             </td>

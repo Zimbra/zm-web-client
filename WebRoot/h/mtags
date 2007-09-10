@@ -63,7 +63,7 @@
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWTAG" name="actionNewTag" src="tag/ImgNewTag.gif" tooltip="tagNew" text="tagNew"/>
+                                        <app:button id="OPNEWTAG" name="actionNewTag" src="startup/ImgNewTag.gif" tooltip="tagNew" text="tagNew"/>
                                     </tr>
                                 </table>
                             </td>
