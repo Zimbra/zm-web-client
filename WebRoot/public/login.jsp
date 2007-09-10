@@ -157,13 +157,12 @@ if (application.getInitParameter("offlineMode") != null)  {
  * ***** END LICENSE BLOCK *****
 -->
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title><fmt:message key="zimbraTitle"/></title>
+    <title><fmt:message key="zimbraLoginTitle"/></title>
     <c:set var="skin" value="${empty cookie.ZM_SKIN ? 'sand' : cookie.ZM_SKIN.value}"/>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
-    <style type="text/css">
-         @import url( "<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" );
-    </style>
+    <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
+    <link href="<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" rel="stylesheet" type="text/css" />
     <link rel="SHORTCUT ICON" href="<c:url value='/favicon.ico'/>">
 </head>
 <body onload="document.loginForm.username.focus();">
