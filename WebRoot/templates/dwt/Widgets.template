@@ -397,24 +397,24 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#ZMenuItemSeparator' class='ZWidget'>
-	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder' cellspacing=0 cellpadding=0><tr>
-	    <td id='${id}_check'	 	class='ZCheckIcon'></td>
-    	<td id='${id}_left_icon'	class='ZLeftIcon ZWidgetIcon'><div class='ImgBlank_16'></div></td>
-		<td id='${id}_title'		class='ZWidgetTitle'><div style='border-bottom:1px solid #cccccc;width:80%;left:10%;'></div></td>
+	<table class='ZWidgetTable ZMenuItemTable ZMenuItemBorder ZMenuItemSeparatorBorder' cellspacing=0 cellpadding=0><tr>
+	    <td id='${id}_check'	 	class='ZCheckIcon'><div class='ZMenuItem-Separator'></div></td>
+    	<td id='${id}_left_icon'	class='ZLeftIcon ZWidgetIcon'><div class='ZMenuItem-Separator'></div></td>
+		<td id='${id}_title'		class='ZWidgetTitle'><div class='ZMenuItem-Separator'></div></td>
 		<td id='${id}_dropdown'		class='ZDropDown'></td>
 	</tr></table>
 </template>
 
 <template id='dwt.Widgets#ZMenuItemBlankCheck'>
-  <div style='width:9px;height:9px;'></div>
+  <div class='ZMenuItem-BlankCheck'></div>
 </template>
 
 <template id='dwt.Widgets#ZMenuItemBlankIcon'>
-  <div style='width:16px;height:16px;'></div>
+  <div class='ZMenuItem-BlankIcon'></div>
 </template>
 
 <template id='dwt.Widgets#ZMenuItemBlankCascade'>
-  <div style='width:16px;height:16px;'></div>
+  <div class='ZMenuItem-BlankCascade'></div>
 </template>
 
 

@@ -2010,8 +2010,25 @@
 .ZActive	.ZMenuItemTable .ZWidgetTitle	{						@MenuItemText-active@		}
 .ZSelected	.ZMenuItemTable .ZWidgetTitle	{						@MenuItemText-selected@		}
 
+.ZMenuItem-BlankCheck 						{	width:9px; 	height:9px;		}
+.ZMenuItem-BlankIcon 						{	width:16px; height:16px;	}
+.ZMenuItem-BlankCascade						{	width:16px; height:16px;	}
+
+.ZMenuItem-Separator	 					{	@MenuItemSeparator@	}
+
+.ZMenuItemSeparatorBorder TD	{
+	height:12px !important;
+}
+
+.ZMenuItemSeparatorBorder DIV {
+	@MenuItemSeparator@
+}
 
 
+.ZMenuItemSeparatorBorder .ZLeftIcon DIV {
+	margin-right:0px;
+	margin-left:0px;
+}
 
 /************
  *
