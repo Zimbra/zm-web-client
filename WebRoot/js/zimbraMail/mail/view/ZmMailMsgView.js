@@ -788,6 +788,9 @@ function(container, html, isTextMsg) {
 			// the text message in order to be displayed correctly (bug 8714).
 			html = AjxStringUtil.convertToHtml(html);
 		}
+		if (AjxEnv.isSafari) {
+			html = "<html><head></head><body>" + html + "</body></html>";
+		}
 	} else {
 		html = html.replace(/<!--(.|\n)*?-->/g, ""); 							// remove comments
 		if (this._objectManager) {
