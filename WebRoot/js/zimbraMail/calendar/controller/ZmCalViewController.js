@@ -1715,12 +1715,14 @@ function() {
 	if (work & ZmCalViewController.MAINT_MINICAL) {
 		var calRange = this._miniCalendar.getDateRange();
 		var cb = new AjxCallback(this, this._maintGetApptCallback, [ work, null]);
-		if(appCtxt.getCurrentViewId() != ZmController.CAL_VIEW){	
+		if (appCtxt.getCurrentViewId() != ZmController.CAL_VIEW) {	
 			this.fetchMiniCalendarAppts();
-		}else{
+		} else {
 			var view = this._viewMgr.getCurrentView();
-			var rt = view.getTimeRange();
-			this.getApptSummaries(rt.start, rt.end, view._fanoutAllDay(), this.getCheckedCalendarFolderIds(), cb);
+			if (view.getTimeRange) {
+				var rt = view.getTimeRange();
+				this.getApptSummaries(rt.start, rt.end, view._fanoutAllDay(), this.getCheckedCalendarFolderIds(), cb);
+			}
 		}
 		// return. callback will check and see if MAINT_VIEW is nededed as well.
 		return;
