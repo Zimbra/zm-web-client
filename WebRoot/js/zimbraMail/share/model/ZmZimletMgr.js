@@ -244,7 +244,7 @@ ZmZimletMgr.prototype.__getIncludes = function(zimletArray, zimletNames, isJS) {
 
 		// include messages
 		if (appDevMode && isJS) {
-			includes.push([appContextPath, "/messages/", zimlet.name, ".js", query].join(""));
+			includes.push([appContextPath, "/res/", zimlet.name, ".js", query].join(""));
 		}
 
 		// include links
