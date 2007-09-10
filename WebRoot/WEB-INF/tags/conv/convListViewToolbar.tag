@@ -30,11 +30,11 @@
                     <td><div class='vertSep'></div></td>
                     <td nowrap valign="middle">
                         <select name="folderId" onchange="zclick('SOPMOVE')">
-                            <option value="" selected/><fmt:message key="moveAction"/>
-                            <option disabled /><fmt:message key="actionOptSep"/>
+                            <option value="" selected><fmt:message key="moveAction"/>
+                            <option disabled><fmt:message key="actionOptSep"/>
                             <zm:forEachFolder var="folder">
                                 <c:if test="${folder.isConversationMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${fn:escapeXml(folder.rootRelativePath)}
                                 </c:if>
                             </zm:forEachFolder>
                         </select>
@@ -43,12 +43,12 @@
                     <td><div class='vertSep'></div></td>
                     <td  nowrap valign="middle">
                         <select name="actionOp" onchange="zclick('SOPGO')">
-                            <option value="" selected/><fmt:message key="moreActions"/>
+                            <option value="" selected><fmt:message key="moreActions"/>
                             <option <c:if test="${keys}">id="OPREAD" </c:if> value="read"/><fmt:message key="actionMarkRead"/>
                             <option <c:if test="${keys}">id="OPUNREAD" </c:if> value="unread"/><fmt:message key="actionMarkUnread"/>
                             <c:if test="${mailbox.features.flagging}">
-                                <option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"/><fmt:message key="actionAddFlag"/>
-                                <option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"/><fmt:message key="actionRemoveFlag"/>
+                                <option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"><fmt:message key="actionAddFlag"/>
+                                <option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"><fmt:message key="actionRemoveFlag"/>
                             </c:if>
                             <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
                         </select>

@@ -47,8 +47,6 @@
         </c:if>
     </table>
     <c:if test="${expanded}">
-        <table width="100%" cellpadding="0" cellspacing="0" style="padding-top:5px">
-            <app:doFolderTree skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}"/>
-        </table>
+        <app:doFolderTree skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}" table="true"/>
     </c:if>
 </div>
