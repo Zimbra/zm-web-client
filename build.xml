@@ -738,7 +738,7 @@ if (ext == null) ext = "";
 						<echo>Minimizing to @{var}${jsmin.ext}</echo>
 						<java jar="jars/yuicompressor-2.1.2.jar" fork="true" failonerror="true" output="${build.dir}/yui-compress.out">
 							<arg value="--line-break"/>
-							<arg value="1000"/>
+							<arg value="0"/>
 							<arg value="--type"/>
 							<arg value="js"/>
 							<arg value="-o"/>
