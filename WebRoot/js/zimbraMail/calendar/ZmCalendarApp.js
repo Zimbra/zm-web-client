@@ -434,7 +434,7 @@ function(callback, checkQS) {
 
 ZmCalendarApp.prototype._handleLoadLaunch =
 function(callback, checkQS) {
-	var cc = this.getCalController();
+	var cc = AjxDispatcher.run("GetCalController");
 	var view = cc._defaultView();
 	var sd = null;
 
@@ -486,7 +486,7 @@ function(active, view, date) {
 
 ZmCalendarApp.prototype.showMiniCalendar =
 function(show, delay) {
-	var mc = this.getCalController().getMiniCalendar(delay);
+	var mc = AjxDispatcher.run("GetCalController").getMiniCalendar(delay);
 	mc.setSkipNotifyOnPage(show && !this._active);
 	if (!this._active) {
 		mc.setSelectionMode(DwtCalendar.DAY);
@@ -504,8 +504,9 @@ function() {
 
 ZmCalendarApp.prototype.getReminderController =
 function() {
-	if (!this._reminderController)
-		this._reminderController = new ZmReminderController(this.getCalController());
+	if (!this._reminderController) {
+		this._reminderController = new ZmReminderController(AjxDispatcher.run("GetCalController"));
+	}
 	return this._reminderController;
 };
 
@@ -570,7 +571,7 @@ function(ev) {
 			AjxDispatcher.run("ShowMiniCalendar", false);
 		}
 	} else if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK) {
-		var controller = this.getCalController();
+		var controller = AjxDispatcher.run("GetCalController");
 		var minical = controller.getMiniCalendar();
 
 		var firstDayOfWeek = setting.getValue();
