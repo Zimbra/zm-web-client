@@ -817,7 +817,7 @@ function(parent) {
 ZmMailListController.prototype._getMsg =
 function(params) {
 	var sel = this._listView[this._currentView].getSelection();
-	return (sel && sel.length == 1) ? sel[0] : null;
+	return (sel && sel.length) ? sel[0] : null;
 };
 
 /**

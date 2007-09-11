@@ -214,7 +214,7 @@ function(item) {
 ZmConvListController.prototype._getMsg =
 function(params) {
 	var sel = this._listView[this._currentView].getSelection();
-	var item = (sel && sel.length == 1) ? sel[0] : null;
+	var item = (sel && sel.length) ? sel[0] : null;
 	if (item) {
 		if (item.type == ZmItem.CONV) {
 			return item.getFirstHotMsg(params);
@@ -232,7 +232,7 @@ function(params) {
 ZmConvListController.prototype._getLoadedMsg =
 function(params, callback) {
 	var sel = this._listView[this._currentView].getSelection();
-	var item = (sel && sel.length == 1) ? sel[0] : null;
+	var item = (sel && sel.length) ? sel[0] : null;
 	if (item) {
 		if (item.type == ZmItem.CONV) {
 			appCtxt.getSearchController().setEnabled(false);
