@@ -865,6 +865,7 @@ function(soapDoc, contactList, isDraft, accountName) {
 					var msgPartNode = soapDoc.set("mp", null, attachNode);
 					// XXX: this looks hacky but we cant send a null ID to the server!
 					var id = (isDraft || this.isDraft) ? (this.id || this.origId) : (this.origId || this.id);
+					if(!id && this._origMsg) id = this._origMsg.id;
 					msgPartNode.setAttribute("mid", id);
 					msgPartNode.setAttribute("part", attIds[i]);
 				//}

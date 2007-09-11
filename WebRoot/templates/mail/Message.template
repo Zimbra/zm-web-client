@@ -207,7 +207,11 @@
 <template id='mail.Message#ForwardOneMessage'>
 	<$ var message = data.message; $>
 	<table cellspacing=4 cellpadding=0 border=0 width=100%>
-		<tr><td width=60 align=right><div class='ImgAttachment'></div></td>
+		<tr>
+			<td width=60 align=right><div class='ImgMessage'></div></td>
+			<td width=1%>
+				<input id='<$=message.id$>' name='<$=ZmComposeView.FORWARD_MSG_NAME$>' type='checkbox' checked disabled='true'>
+			</td>
 			<td><b><$= (message ? message.subject : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b></td>
 		</tr>
 	</table>

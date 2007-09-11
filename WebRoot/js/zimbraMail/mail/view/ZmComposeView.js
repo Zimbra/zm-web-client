@@ -584,8 +584,20 @@ function(attId, isDraft) {
 	}
 
 	if (this._msgAttId) {
-		forwardMsgIds.push(this._msgAttId);
+		if(forwardMsgIds.length > 0) { 
+			//Check if the MsgId is already present in the fwdMsgIds list.
+			var i = 0;
+			while(forwardMsgIds[i] && forwardMsgIds[i] != this._msgAttId){
+				i++;
+			}
+			if( i == forwardMsgIds.length) forwardMsgIds.push(this._msgAttId);
+			delete i;
+			//endCheck
+		}else{
+			forwardMsgIds.push(this._msgAttId);
+		}
 	}
+	
 	msg.setMessageAttachmentId(forwardMsgIds);
 
 	return msg;
@@ -1655,45 +1667,12 @@ function() {
 
 ZmComposeView.prototype._showForwardField =
 function(msg, action, replyPref) {
-	var html = "";
-
-	if (this._msgIds && this._msgIds.length) {
-		// use main window's appCtxt
-		var appCtxt = window.parentAppCtxt || window.appCtxt;
-		var messages = [];
-		for (var i = 0; i < this._msgIds.length; i++) {
-			var message = appCtxt.cacheGet(this._msgIds[i]);
-			if (!message) continue;
-
-			messages.push(message);
-		}
-
-		var data = { messages: messages };
-		this._attcDiv.innerHTML = AjxTemplate.expand("mail.Message#ForwardMessages", data);
-			var attRemoveSpan;
-			for( var i=0; i<messages.length; i++) {
-				attRemoveSpan = document.getElementById(messages[i].id+'_remove');
-				Dwt.setHandler(attRemoveSpan, DwtEvent.ONCLICK, ZmComposeView._removeAttachment);
-				if(AjxEnv.isIE) Dwt.setHandler(attRemoveSpan, DwtEvent.ONKEYDOWN, ZmComposeView._removeAttachment);
-			}
-		
-		if (messages.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
-			this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
-			this._attcDiv.style.overflow = "auto";
-		}
-
-		this._attachCount = messages.length;
-		
-	}
-	else if (replyPref == ZmSetting.INCLUDE_ATTACH ||action == ZmOperation.FORWARD_ATT) {
+	
+	if (replyPref == ZmSetting.INCLUDE_ATTACH ||action == ZmOperation.FORWARD_ATT) {
 		var data = { message: msg };
-		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", data);
-
+		this._attcDiv.innerHTML = AjxTemplate.expand("mail.Message#ForwardOneMessage", data);
 		this._attachCount = 1;
-		
-		this._attcDiv.innerHTML = html;
-	}
-	else if (msg && msg.hasAttach) {
+	}else if (msg && msg.hasAttach) {
 		var attLinks = msg.getAttachmentLinks();
 		if (attLinks.length > 0) {
 			var data = {
@@ -1719,6 +1698,32 @@ function(msg, action, replyPref) {
 
 			this._attachCount = attLinks.length;
 		}
+	}else if (this._msgIds && this._msgIds.length) {
+		// use main window's appCtxt
+		var appCtxt = window.parentAppCtxt || window.appCtxt;
+		var messages = [];
+		for (var i = 0; i < this._msgIds.length; i++) {
+			var message = appCtxt.cacheGet(this._msgIds[i]);
+			if (!message) continue;
+
+			messages.push(message);
+		}
+
+		var data = { messages: messages };
+		this._attcDiv.innerHTML = AjxTemplate.expand("mail.Message#ForwardMessages", data);
+			var attRemoveSpan;
+			for( var i=0; i<messages.length; i++) {
+				attRemoveSpan = document.getElementById(messages[i].id+'_remove');
+				Dwt.setHandler(attRemoveSpan, DwtEvent.ONCLICK, ZmComposeView._removeAttachment);
+				if(AjxEnv.isIE) Dwt.setHandler(attRemoveSpan, DwtEvent.ONKEYDOWN, ZmComposeView._removeAttachment);
+			}
+		
+		if (messages.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
+			this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
+			this._attcDiv.style.overflow = "auto";
+		}
+
+		this._attachCount = messages.length;
 	}
 };
 
