@@ -330,7 +330,7 @@ function(params) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
 	this._errorCallback = new AjxCallback(this, this._handleErrorStartup, params);
-	this._settings.loadUserSettings(respCallback, this._errorCallback);
+	this._settings.loadUserSettings(respCallback, this._errorCallback, null, params.getInfoResponse);
 };
 
 ZmZimbraMail.prototype._handleErrorStartup =
@@ -420,6 +420,7 @@ function(params, result) {
 	if (startApp == ZmApp.MAIL) {
 		this.addAppListener(startApp, ZmAppEvent.POST_RENDER, new AjxListener(this, this._postRenderStartup));
 		this._doingPostRenderStartup = true;
+		this._searchResponse = params.searchResponse;
 	} else {
 		AjxDispatcher.require("Startup2");
 	}
@@ -1021,7 +1022,8 @@ function(appName, force, callback, errorCallback, checkQS) {
 			var eventType = [appName, ZmAppEvent.PRE_LAUNCH].join("_");
 			this._evt.item = this._apps[appName];
 			this._evtMgr.notifyListeners(eventType, this._evt);
-			this._apps[appName].launch(respCallback, checkQS);
+			this._apps[appName].launch(respCallback, checkQS, this._searchResponse);
+			delete this.searchResponse;
 		}
     }
 };

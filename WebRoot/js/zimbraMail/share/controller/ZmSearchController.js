@@ -210,19 +210,21 @@ function(menu) {
 /**
  * Performs a search and displays the results.
  *
- * @param query			[string]			search string
- * @param searchFor		[constant]*			semantic type to search for
- * @param types			[Array]*			item types to search for
- * @param sortBy		[constant]*			sort constraint
- * @param offset		[int]*				starting point in list of matching items
- * @param limit			[int]*				maximum number of items to return
- * @param searchId		[int]*				ID of owning search folder (if any)
- * @param prevId		[int]*				ID of last items displayed (for pagination)
- * @param prevSortBy	[constant]*			previous sort order (for pagination)
- * @param noRender		[boolean]*			if true, results will not be passed to controller
- * @param userText		[boolean]*			true if text was typed by user into search box
- * @param callback		[AjxCallback]*		async callback
- * @param errorCallback	[AjxCallback]*		async callback to run if there is an exception
+ * @param params		[hash]				hash of params:
+ *        query			[string]			search string
+ *        searchFor		[constant]*			semantic type to search for
+ *        types			[Array]*			item types to search for
+ *        sortBy		[constant]*			sort constraint
+ *        offset		[int]*				starting point in list of matching items
+ *        limit			[int]*				maximum number of items to return
+ *        searchId		[int]*				ID of owning search folder (if any)
+ *        prevId		[int]*				ID of last items displayed (for pagination)
+ *        prevSortBy	[constant]*			previous sort order (for pagination)
+ *        noRender		[boolean]*			if true, results will not be passed to controller
+ *        userText		[boolean]*			true if text was typed by user into search box
+ *        callback		[AjxCallback]*		async callback
+ *        errorCallback	[AjxCallback]*		async callback to run if there is an exception
+ *        response		[object]*			canned JSON response (no request will be made)
  */
 ZmSearchController.prototype.search =
 function(params) {
@@ -358,7 +360,7 @@ function(types) {
 /**
  * Performs the search.
  *
- * @param params		[hash]			a hash of arguments for the search (see search() method)
+ * @param params		[hash]			a hash of params for the search (see search() method)
  * @param noRender		[boolean]*		if true, the search results will not be rendered
  * @param callback		[AjxCallback]*	callback
  * @param errorCallback	[AjxCallback]*	error callback
@@ -407,7 +409,7 @@ function(params, noRender, callback, errorCallback) {
 	if (!errorCallback) {
 		errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
 	}
-	search.execute({callback: respCallback, errorCallback: errorCallback});
+	search.execute({callback:respCallback, errorCallback:errorCallback});
 };
 
 /*

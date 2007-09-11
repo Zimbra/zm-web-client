@@ -77,24 +77,32 @@ function() {
 };
 
 /**
-* Sends a request to the CSFE and processes the response. Notifications and
-* refresh blocks that come in the response header are handled. Also handles
-* exceptions by default, though the caller can pass in a special callback to
-* run for exceptions. The error callback should return true if it has
-* handled the exception, and false if standard exception handling should still
-* be performed.
-*
-* @param soapDoc			[AjxSoapDoc]	SOAP document that represents the request
-* @param asyncMode			[boolean]*		if true, request will be made asynchronously
-* @param callback			[AjxCallback]*	next callback in chain for async request
-* @param errorCallback		[AjxCallback]*	callback to run if there is an exception
-* @param execFrame			[AjxCallback]*	the calling method, object, and args
-* @param timeout			[int]*			timeout value (in seconds)
-* @param noBusyOverlay		[boolean]*		if true, don't use the busy overlay
-* @param accountName		[string]*		name of account to execute on behalf of
-*/
+ * Sends a request to the CSFE and processes the response. Notifications and
+ * refresh blocks that come in the response header are handled. Also handles
+ * exceptions by default, though the caller can pass in a special callback to
+ * run for exceptions. The error callback should return true if it has
+ * handled the exception, and false if standard exception handling should still
+ * be performed.
+ *
+ * @param params			[hash]			hash of params:
+ *        soapDoc			[AjxSoapDoc]	SOAP document that represents the request
+ *        asyncMode			[boolean]*		if true, request will be made asynchronously
+ *        callback			[AjxCallback]*	next callback in chain for async request
+ *        errorCallback		[AjxCallback]*	callback to run if there is an exception
+ *        execFrame			[AjxCallback]*	the calling method, object, and args
+ *        timeout			[int]*			timeout value (in seconds)
+ *        noBusyOverlay		[boolean]*		if true, don't use the busy overlay
+ *        accountName		[string]*		name of account to execute on behalf of
+ *        response			[object]*		pre-determined response (no request will be made)
+ */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
+	
+	if (params.response) {
+		params.asyncMode = true;	// canned response set up async style
+		return this._handleResponseSendRequest(params, new ZmCsfeResult(params.response));
+	}
+	
 	var reqId = params.reqId = ZmRequestMgr.getNextReqId();
 	var timeout = (params.timeout != null) ? params.timeout : this._stdTimeout;
 	if (timeout) {
@@ -114,7 +122,8 @@ function(params) {
 					 changeToken:changeToken, asyncMode:params.asyncMode, callback:asyncCallback,
 					 logRequest:this._logRequest, highestNotifySeen:this._highestNotifySeen};
 
-	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + params.soapDoc._methodEl.nodeName);
+	var methodName = params.soapDoc ? params.soapDoc._methodEl.tagName : "[unknown]";
+	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + methodName);
 	var cancelParams = timeout ? [reqId, params.errorCallback, params.noBusyOverlay] : null;
 	if (!params.noBusyOverlay) {
 		var cancelCallback = null;
@@ -150,22 +159,25 @@ function(params) {
 
 ZmRequestMgr.prototype._handleResponseSendRequest =
 function(params, result) {
-	if (!this._pendingRequests[params.reqId]) {
-		DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest no pendingRequest entry for " + params.reqId);
-		return;
-	}
-	if (this._pendingRequests[params.reqId].state == ZmRequestMgr._CANCEL) {
-		DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest state=CANCEL for " + params.reqId);
-		return;
-	}
-
-	this._pendingRequests[params.reqId].state = ZmRequestMgr._RESPONSE;
-
-	if (!params.noBusyOverlay) {
-		this._shell.setBusy(false, params.reqId); // remove busy overlay
-	} else if (params.timeout) {
-		AjxTimedAction.cancelAction(this._cancelActionId[params.reqId]);
-		this._cancelActionId[params.reqId] = -1;
+	var isCannedResponse = (params.response != null);
+	if (!isCannedResponse) {
+		if (!this._pendingRequests[params.reqId]) {
+			DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest no pendingRequest entry for " + params.reqId);
+			return;
+		}
+		if (this._pendingRequests[params.reqId].state == ZmRequestMgr._CANCEL) {
+			DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest state=CANCEL for " + params.reqId);
+			return;
+		}
+	
+		this._pendingRequests[params.reqId].state = ZmRequestMgr._RESPONSE;
+	
+		if (!params.noBusyOverlay) {
+			this._shell.setBusy(false, params.reqId); // remove busy overlay
+		} else if (params.timeout) {
+			AjxTimedAction.cancelAction(this._cancelActionId[params.reqId]);
+			this._cancelActionId[params.reqId] = -1;
+		}
 	}
 
 	var response;
@@ -174,10 +186,11 @@ function(params, result) {
 			response = result.getResponse(); // may throw exception
 		} else {
 			// for sync responses, manually throw exception if necessary
-			if (result._isException)
+			if (result._isException) {
 				throw result._data;
-			else
+			} else {
 				response = result;
+			}
 		}
 		this._handleHeader(response.Header);
 	} catch (ex) {
@@ -202,11 +215,12 @@ function(params, result) {
 
     // if we didn't get an exception, then we should make sure that the
     // poll timer is running (just in case it got an exception and stopped)
-    this._controller._kickPolling(true);
+    if (!isCannedResponse) {
+	    this._controller._kickPolling(true);
+		this._clearPendingRequest(params.reqId);
+    }
 
-	this._clearPendingRequest(params.reqId);
-
-	var methodName = params.soapDoc._methodEl.tagName;
+	var methodName = params.soapDoc ? params.soapDoc._methodEl.tagName : "[unknown]";
 	if (params.asyncMode && params.callback) {
 		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback for " + methodName);
 		params.callback.run(result);

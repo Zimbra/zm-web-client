@@ -49,6 +49,7 @@
  *        attrs						[array]*		list of attributes to return (SearchCalendarResourcesRequest)
  *        field						[string]*		field to search within (instead of default)
  *        soapInfo					[object]*		object with method, namespace, response, and additional attribute fields for creating soap doc
+ *        response					[object]*		canned JSON response (no request will be made)
  */
 ZmSearch = function(params) {
 
@@ -159,94 +160,97 @@ function(params) {
 	if (!this.query && !this.isCalResSearch) return;
 
 	var soapDoc;
-	if (this.isGalSearch) {
-		soapDoc = AjxSoapDoc.create("SearchGalRequest", "urn:zimbraAccount");
-		var method = soapDoc.getMethod();
-		if (this.galType) {
-			method.setAttribute("type", this.galType);
-		}
-		soapDoc.set("name", this.query);
-	} else if (this.isGalAutocompleteSearch) {
-		soapDoc = AjxSoapDoc.create("AutoCompleteGalRequest", "urn:zimbraAccount");
-		var method = soapDoc.getMethod();
-		method.setAttribute("limit", ZmContactList.AC_MAX);
-		soapDoc.set("name", this.query);
-	} else if (this.isCalResSearch) {
-		soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
-		var method = soapDoc.getMethod();
-		if (this.attrs)
-			method.setAttribute("attrs", this.attrs.join(","));
-		var searchFilterEl = soapDoc.set("searchFilter");
-		if (this.conds && this.conds.length) {
-			var condsEl = soapDoc.set("conds", null, searchFilterEl);
-			if (this.join == ZmSearch.JOIN_OR) {
-				condsEl.setAttribute("or", 1);
+	if (!this.response) {
+		if (this.isGalSearch) {
+			soapDoc = AjxSoapDoc.create("SearchGalRequest", "urn:zimbraAccount");
+			var method = soapDoc.getMethod();
+			if (this.galType) {
+				method.setAttribute("type", this.galType);
 			}
-			for (var i = 0; i < this.conds.length; i++) {
-				var cond = this.conds[i];
-				var condEl = soapDoc.set("cond", null, condsEl);
-				condEl.setAttribute("attr", cond.attr);
-				condEl.setAttribute("op", cond.op);
-				condEl.setAttribute("value", cond.value);
-			}
-		}
-	} else {
-		if (this.soapInfo) {
-			soapDoc = AjxSoapDoc.create(this.soapInfo.method, this.soapInfo.namespace);
-			// Pass along any extra soap data. (Voice searches use this to pass user identification.)
-			for (var nodeName in this.soapInfo.additional) {
-				var node = soapDoc.set(nodeName);
-				var attrs = this.soapInfo.additional[nodeName];
-				for (var attr in attrs) {
-					node.setAttribute(attr, attrs[attr]);
+			soapDoc.set("name", this.query);
+		} else if (this.isGalAutocompleteSearch) {
+			soapDoc = AjxSoapDoc.create("AutoCompleteGalRequest", "urn:zimbraAccount");
+			var method = soapDoc.getMethod();
+			method.setAttribute("limit", ZmContactList.AC_MAX);
+			soapDoc.set("name", this.query);
+		} else if (this.isCalResSearch) {
+			soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
+			var method = soapDoc.getMethod();
+			if (this.attrs)
+				method.setAttribute("attrs", this.attrs.join(","));
+			var searchFilterEl = soapDoc.set("searchFilter");
+			if (this.conds && this.conds.length) {
+				var condsEl = soapDoc.set("conds", null, searchFilterEl);
+				if (this.join == ZmSearch.JOIN_OR) {
+					condsEl.setAttribute("or", 1);
+				}
+				for (var i = 0; i < this.conds.length; i++) {
+					var cond = this.conds[i];
+					var condEl = soapDoc.set("cond", null, condsEl);
+					condEl.setAttribute("attr", cond.attr);
+					condEl.setAttribute("op", cond.op);
+					condEl.setAttribute("value", cond.value);
 				}
 			}
 		} else {
-			soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
-		}
-		var method = this._getStandardMethod(soapDoc);
-		if (this.types) {
-			var a = this.types.getArray();
-			if (a.length) {
-				var typeStr = [];
-				for (var i = 0; i < a.length; i++) {
-					typeStr.push(ZmSearch.TYPE[a[i]]);
-				}
-				method.setAttribute("types", typeStr.join(","));
-				// special handling for showing participants ("To" instead of "From")
-				var folder = appCtxt.getById(this.folderId);
-				if (folder &&
-					(folder.isUnder(ZmFolder.ID_SENT) ||
-					folder.isUnder(ZmFolder.ID_DRAFTS) ||
-					folder.isUnder(ZmFolder.ID_OUTBOX)))
-				{
-					method.setAttribute("recip", "1");
-				}
-				// if we're prefetching the first hit message, also mark it as read
-				if (this.fetch) {
-					method.setAttribute("fetch", "1");
-					// and set the html flag if we want the html version
-					if (this.getHtml) {
-						method.setAttribute("html", "1");
+			if (this.soapInfo) {
+				soapDoc = AjxSoapDoc.create(this.soapInfo.method, this.soapInfo.namespace);
+				// Pass along any extra soap data. (Voice searches use this to pass user identification.)
+				for (var nodeName in this.soapInfo.additional) {
+					var node = soapDoc.set(nodeName);
+					var attrs = this.soapInfo.additional[nodeName];
+					for (var attr in attrs) {
+						node.setAttribute(attr, attrs[attr]);
 					}
 				}
-				if (this.markRead) {
-					method.setAttribute("read", "1");
+			} else {
+				soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
+			}
+			var method = this._getStandardMethod(soapDoc);
+			if (this.types) {
+				var a = this.types.getArray();
+				if (a.length) {
+					var typeStr = [];
+					for (var i = 0; i < a.length; i++) {
+						typeStr.push(ZmSearch.TYPE[a[i]]);
+					}
+					method.setAttribute("types", typeStr.join(","));
+					// special handling for showing participants ("To" instead of "From")
+					var folder = appCtxt.getById(this.folderId);
+					if (folder &&
+						(folder.isUnder(ZmFolder.ID_SENT) ||
+						folder.isUnder(ZmFolder.ID_DRAFTS) ||
+						folder.isUnder(ZmFolder.ID_OUTBOX)))
+					{
+						method.setAttribute("recip", "1");
+					}
+					// if we're prefetching the first hit message, also mark it as read
+					if (this.fetch) {
+						method.setAttribute("fetch", "1");
+						// and set the html flag if we want the html version
+						if (this.getHtml) {
+							method.setAttribute("html", "1");
+						}
+					}
+					if (this.markRead) {
+						method.setAttribute("read", "1");
+					}
 				}
 			}
 		}
 	}
-	
+		
 	var respCallback = new AjxCallback(this, this._handleResponseExecute,
 						[this.isGalSearch, this.isGalAutocompleteSearch, this.isCalResSearch, params.callback]);
 	
-	var execFrame = new AjxCallback(this, this.execute, params);
+	var execFrame = this.response ? null : new AjxCallback(this, this.execute, params);
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, execFrame);
 	} else {
-		appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
-													  errorCallback: params.errorCallback, execFrame: execFrame,
-													  timeout: params.timeout, noBusyOverlay: params.noBusyOverlay});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
+												errorCallback:params.errorCallback, execFrame:execFrame,
+												timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
+												response:this.response});
 	}
 };
 

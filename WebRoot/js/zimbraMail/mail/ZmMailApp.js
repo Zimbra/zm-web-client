@@ -864,7 +864,7 @@ function(inNewWindow) {
 // Public methods
 
 ZmMailApp.prototype.launch =
-function(callback, checkQS) {
+function(callback, checkQS, response) {
 	var query;
 	if (checkQS) {
 		if (location && (location.search.match(/\bview=compose\b/))) {
@@ -889,7 +889,7 @@ function(callback, checkQS) {
 	}
 
 	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
-	this._mailSearch(query, callback);
+	this._mailSearch(query, callback, response);
 };
 
 ZmMailApp.prototype._handleErrorLaunch =
@@ -989,12 +989,12 @@ function(accordionItem) {
 };
 
 ZmMailApp.prototype._mailSearch =
-function(query, callback) {
+function(query, callback, response) {
 	query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH);
 	var types = new AjxVector();
 	var type = this.getGroupMailBy();
 	types.add(type);
-	var params = {query:query, callback:callback, types:types, fetch:Boolean(type == ZmItem.MSG)};
+	var params = {query:query, callback:callback, types:types, fetch:Boolean(type == ZmItem.MSG), response:response};
 	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
 	appCtxt.getSearchController().search(params);
 };
