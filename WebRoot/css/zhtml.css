@@ -484,7 +484,8 @@ A:visited { color: blue; }
 
 .searchField {
 	@InputField@
-height: auto;
+    height: auto;
+    width:100%;
 }
 
 .NoResults { 

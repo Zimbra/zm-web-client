@@ -11,7 +11,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<table width="100%" cellspacing="0" align="right">
+<table width="100%" cellspacing="0" border="0" align="right">
 <tr style="height:35px">
     <td height="25" nowrap class="SearchBar">
         <c:choose>
@@ -32,9 +32,9 @@
             <td nowrap>
             <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
 			</td>
-            <td class="ImgField_L"></td>
-            <td width="80%"><input style="width:100%" id="searchField" class="searchField" maxlength="2048" name="sq" value="${query}"></td>
-            <td class='ImgField_R'></td>
+           <td class="ImgField_L" style="padding-left:3px"></td>
+            <td width="80%"><input  id="searchField" class="searchField" maxlength="2048" name="sq" value="${query}"></td>
+            <td class='ImgField_R' style="padding-left:6px"></td>
             <td>&nbsp;<fmt:message key="in"/>&nbsp;</td>
             <td style="padding-left: 2px;">
             <c:choose>
