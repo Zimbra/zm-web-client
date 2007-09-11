@@ -109,8 +109,11 @@
                     &nbsp;
                 </td>
                 <td colspan=2>
+                    <c:set var="totalSigs" value="${mailbox.accountInfo.attrs.zimbraSignatureMaxNumEntries[0]}"/>
+                    <c:if test="${numSigs lt totalSigs}">
                     <input id="OPNEW" class='tbButton' type="submit" name="actionNewSig"
                            value="<fmt:message key="optionsAddSignature"/>">
+                    </c:if>
                 </td>
                 <td width="20%">&nbsp;</td>
             </tr>
