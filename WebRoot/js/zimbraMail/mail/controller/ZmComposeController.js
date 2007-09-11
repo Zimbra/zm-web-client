@@ -452,17 +452,23 @@ function(actionCode) {
 	return true;
 };
 
-ZmComposeController.prototype.getSelectedSignature = function() {
+ZmComposeController.prototype.getSelectedSignature =
+function() {
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-	var menu = button.getMenu();
-	var menuitem = menu.getSelectedItem(DwtMenuItem.RADIO_STYLE);
-	return menuitem ? menuitem.getData(ZmComposeController.SIGNATURE_KEY) : null;
+	var menu = button ? button.getMenu() : null;
+	if (menu) {
+		var menuitem = menu.getSelectedItem(DwtMenuItem.RADIO_STYLE);
+		return menuitem ? menuitem.getData(ZmComposeController.SIGNATURE_KEY) : null;
+	}
 };
 
-ZmComposeController.prototype.setSelectedSignature = function(value) {
+ZmComposeController.prototype.setSelectedSignature = 
+function(value) {
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-	var menu = button.getMenu();
-	menu.checkItem(ZmComposeController.SIGNATURE_KEY, value, true);
+	var menu = button ? button.getMenu() : null;
+	if (menu) {
+		menu.checkItem(ZmComposeController.SIGNATURE_KEY, value, true);
+	}
 };
 
 //
@@ -593,7 +599,9 @@ function() {
 		signatureCollection.addChangeListener(new AjxListener(this, this._signatureChangeListener));
 
 		var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-		button.setMenu(new AjxCallback(this, this._createSignatureMenu));
+		if (button) {
+			button.setMenu(new AjxCallback(this, this._createSignatureMenu));
+		}
 	}
 
 	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY,
@@ -1094,25 +1102,18 @@ ZmComposeController.prototype._createSignatureMenu =
 function() {
 	if (!this._composeView) { return null; }
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	if (!button) { return null; }
 	var menu = new DwtMenu(button);
 	var options = appCtxt.getSignatureCollection().getSignatureOptions();
 	if (options.length > 0) {
-		/***/
 		var listener = new AjxListener(this, this._identityChangeListener, [false]);
-		/***
-		var listener = new AjxListener(this, this._handleSignatureSelect);
-		/***/
 		var radioId = this._composeView._htmlElId + "_sig";
 		for (var i = 0; i < options.length; i++) {
 			var option = options[i];
 			var menuitem = new DwtMenuItem(menu, DwtMenuItem.RADIO_STYLE, radioId);
 			menuitem.setText(option.displayValue);
 			menuitem.setData(ZmComposeController.SIGNATURE_KEY, option.value);
-			/***/
 			menuitem.addSelectionListener(listener);
-			/***
-			menuitem.addListener(DwtEvent.ONCHANGE, listener);
-			/***/
 			menu.checkItem(ZmComposeController.SIGNATURE_KEY, option.value, option.selected);
 		}
 	}
@@ -1131,10 +1132,11 @@ function(ev) {
 	var selected = this.getSelectedSignature();
 
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-	var menu = this._createSignatureMenu();
-	button.setMenu(menu);
-
-	this.setSelectedSignature(selected);
+	var menu = button ? this._createSignatureMenu() : null;
+	if (menu) {
+		button.setMenu(menu);
+		this.setSelectedSignature(selected);
+	}
 };
 
 
