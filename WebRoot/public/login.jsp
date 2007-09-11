@@ -289,7 +289,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 										</tr>
 										<tr>
 											<td align='center'>
-                                                <div id='ZLoginWhatsThis' class='ZLoginInfoMessage' style='display:none'><fmt:message key="clientWhatsThisMessage"/></div>
+                                                <div id='ZLoginWhatsThis' class='ZLoginInfoMessage' style='display:none;text-align:left;width:90%;'><fmt:message key="clientWhatsThisMessage"/></div>
                                                 <div id='ZLoginUnsupported' class='ZLoginInfoMessage' style='display:none'><fmt:message key="clientUnsupported"/></div>
 
                                                 <div class='ZLoginSeparator'></div>
