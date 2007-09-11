@@ -1098,8 +1098,8 @@ function(str, aclv, callback) {
 	// cancel any outstanding GAL requests for substrings of current string
 	for (var substr in this._galRequests) {
 		if (str.indexOf(substr) === 0) {
-			DBG.println(AjxDebug.DBG1, "bypassing GAL request for '" + str +
-						"' due to outstanding request for '" + substr + "'");
+			var msg = "bypassing GAL request for '" + str + "' due to outstanding request for '" + substr + "'";
+			DBG.println(AjxDebug.DBG1, msg);
 			return;
 		}
 	}
