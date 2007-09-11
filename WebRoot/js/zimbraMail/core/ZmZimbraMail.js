@@ -330,7 +330,7 @@ function(params) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
 	this._errorCallback = new AjxCallback(this, this._handleErrorStartup, params);
-	this._settings.loadUserSettings(respCallback, this._errorCallback); // load user prefs and COS data
+	this._settings.loadUserSettings(respCallback, this._errorCallback);
 };
 
 ZmZimbraMail.prototype._handleErrorStartup =
@@ -445,38 +445,8 @@ function(params) {
 		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchPanel();
 	}
 
-	var kbMgr = appCtxt.getKeyboardMgr();
-	if (appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
-		// Register our keymap and global key action handler with the shell's keyboard manager
-		kbMgr.enable(true);
-		kbMgr.registerKeyMap(new ZmKeyMap());
-		kbMgr.pushDefaultHandler(this);
-
-		DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
-		var rootTg = appCtxt.getRootTabGroup();
-		if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-			rootTg.addMember(appCtxt.getSearchController().getTabGroup());
-		}
-		var appChooserTg = new DwtTabGroup("ZmAppChooser");
-		appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
-		if (this._TAB_SKIN_ENABLED) {
-			rootTg.addMember(appChooserTg);
-		}
-		// Add dummy app view tab group. This will get replaced right away when the
-		// app view comes into play
-		var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
-		ZmController._setCurrentAppViewTabGroup(dummyTg);
-		rootTg.addMember(dummyTg);
-		if (!this._TAB_SKIN_ENABLED) {
-			rootTg.addMember(appChooserTg);
-		}
-		kbMgr.setTabGroup(rootTg);
-		
-		this._settings._loadShortcuts();
-	} else {
-		kbMgr.enable(false);
-	}
-
+	this._initKeyboardHandling();
+	
 	this.setSessionTimer(true);
 	ZmZimbraMail.killSplash();
 
@@ -883,6 +853,50 @@ function(result) {
         // restart poll timer if we didn't get an exception
    	    this._kickPolling(true);
     }
+};
+
+ZmZimbraMail.prototype.getKeyMapMgr =
+function() {
+	var kbMgr = appCtxt.getKeyboardMgr();
+	if (!kbMgr.__keyMapMgr) {
+		this._initKeyboardHandling();
+	}
+	return kbMgr.__keyMapMgr;
+};
+
+ZmZimbraMail.prototype._initKeyboardHandling =
+function() {
+	var kbMgr = appCtxt.getKeyboardMgr();
+	if (appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
+		// Register our keymap and global key action handler with the shell's keyboard manager
+		kbMgr.enable(true);
+		kbMgr.registerKeyMap(new ZmKeyMap());
+		kbMgr.pushDefaultHandler(this);
+
+		DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
+		var rootTg = appCtxt.getRootTabGroup();
+		if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+			rootTg.addMember(appCtxt.getSearchController().getTabGroup());
+		}
+		var appChooserTg = new DwtTabGroup("ZmAppChooser");
+		appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
+		if (this._TAB_SKIN_ENABLED) {
+			rootTg.addMember(appChooserTg);
+		}
+		// Add dummy app view tab group. This will get replaced right away when the
+		// app view comes into play
+		var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
+		ZmController._setCurrentAppViewTabGroup(dummyTg);
+		rootTg.addMember(dummyTg);
+		if (!this._TAB_SKIN_ENABLED) {
+			rootTg.addMember(appChooserTg);
+		}
+		kbMgr.setTabGroup(rootTg);
+		
+		this._settings._loadShortcuts();
+	} else {
+		kbMgr.enable(false);
+	}
 };
 
 ZmZimbraMail.prototype._registerOrganizers =

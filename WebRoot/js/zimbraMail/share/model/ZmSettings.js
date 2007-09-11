@@ -430,8 +430,7 @@ function() {
  */
 ZmSettings.prototype._loadShortcuts =
 function() {
-	var kbm = appCtxt.getKeyboardMgr();
-	var kmm = kbm.__keyMapMgr;
+	var kmm = appCtxt.getAppController().getKeyMapMgr();
 	var scString = this.get(ZmSetting.SHORTCUTS);
 	if (!scString || !kmm) { return; }
 	var shortcuts = ZmShortcut.parse(scString, kmm);

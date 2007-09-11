@@ -204,9 +204,8 @@ ZmShortcutsPageTabView = function(parent, controller, organizers, prefId) {
 	this._hasRendered = false;
 
 	this._setting = appCtxt.get(prefId);
-	var kbm = appCtxt.getKeyboardMgr();
-	var kmm = kbm.__keyMapMgr;
-	this._shortcuts = ZmShortcut.parse(this._setting, kmm);
+	var kmm = appCtxt.getAppController().getKeyMapMgr();
+	this._shortcuts = kmm ? ZmShortcut.parse(this._setting, kmm) : null;
 };
 
 ZmShortcutsPageTabView.SHORTCUTS_LIST = 0;
