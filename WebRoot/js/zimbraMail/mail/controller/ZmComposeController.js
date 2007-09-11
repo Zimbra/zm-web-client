@@ -757,17 +757,16 @@ ZmComposeController.prototype._setFormat =
 function(mode) {
 	if (mode == this._composeView.getComposeMode())	{ return; }
 
-	if (mode == DwtHtmlEditor.TEXT &&
-		(this._composeView.isDirty() || this._action == ZmOperation.DRAFT))
+	if ((this._composeView.isDirty() || this._action == ZmOperation.DRAFT))
 	{
-		// if formatting from html to text, confirm w/ user!
-		if (!this._htmlToTextDialog) {
-			this._htmlToTextDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-			this._htmlToTextDialog.setMessage(ZmMsg.switchToText, DwtMessageDialog.WARNING_STYLE);
-			this._htmlToTextDialog.registerCallback(DwtDialog.OK_BUTTON, this._htmlToTextOkCallback, this);
-			this._htmlToTextDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._htmlToTextCancelCallback, this);
+		if (!this._formatWarningDialog) {
+			this._formatWarningDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
 		}
-		this._htmlToTextDialog.popup(this._composeView._getDialogXY());
+		this._formatWarningDialog.registerCallback(DwtDialog.OK_BUTTON, this._formatOkCallback, this, [mode]);
+		this._formatWarningDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._formatCancelCallback, this);		
+		var msg  = (mode == DwtHtmlEditor.TEXT) ? ZmMsg.switchToText : ZmMsg.switchToHtml;
+		this._formatWarningDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);		
+		this._formatWarningDialog.popup(this._composeView._getDialogXY());
 	} else {
 		this._composeView.setComposeMode(mode);
 	}
@@ -972,15 +971,15 @@ function() {
 	this.detach();
 };
 
-ZmComposeController.prototype._htmlToTextOkCallback =
-function() {
-	this._htmlToTextDialog.popdown();
-	this._composeView.setComposeMode(DwtHtmlEditor.TEXT);
+ZmComposeController.prototype._formatOkCallback =
+function(mode) {
+	this._formatWarningDialog.popdown();
+	this._composeView.setComposeMode(mode);
 };
 
-ZmComposeController.prototype._htmlToTextCancelCallback =
+ZmComposeController.prototype._formatCancelCallback =
 function() {
-	this._htmlToTextDialog.popdown();
+	this._formatWarningDialog.popdown();
 
 	// reset the radio button for the format button menu
 	var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
