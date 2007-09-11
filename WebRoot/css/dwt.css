@@ -30,9 +30,11 @@
 	width:16px;
 }
 
+/* MOW: UNUSED ?
 .dropDownCell {
 	width: 12px;
 }
+*/
 
 .DisabledText {
 	@Text-disabled@
@@ -1533,11 +1535,11 @@
 
 .ZWidgetTable .ZLeftIcon DIV	{	margin:1px 4px;	}
 .ZWidgetTable .ZRightIcon DIV	{	margin:1px 4px;	}
-.ZWidgetTable .dropDownCell DIV	{	margin:1px 4px;	}
+.ZWidgetTable .ZDropDown DIV	{	margin:1px 4px;	}
 
 .ZHasText .ZLeftIcon DIV		{	margin-right:0px !important;	}
 .ZHasText .ZRightIcon DIV 		{	margin-left:0px !important;		}
-.ZHasText .dropDownCell DIV		{	margin-left:0px !important;		}
+.ZHasText .ZDropDown DIV		{	margin-left:0px !important;		}
 
 .DwtDragProxy .ZWidgetTitle		{ width: auto; }
 .DwtDragProxy .ZWidgetTable 	{ width: auto; }
