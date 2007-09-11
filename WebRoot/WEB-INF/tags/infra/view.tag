@@ -172,7 +172,7 @@
 						</td></tr>
 					</c:if>
 					<tr>
-						<td height='100%' id='skin_td_tree' colspan=3>
+						<td height='100%' id='skin_td_tree' colspan=3 valign='top'>
 							<div id='skin_container_tree' class='skin_container'>
 							
 							<c:if test="${empty editmode}">			            	
