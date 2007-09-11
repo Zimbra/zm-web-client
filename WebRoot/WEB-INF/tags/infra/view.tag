@@ -30,7 +30,7 @@
 <c:choose>
 <c:when test="${skin eq 'velodrome2'}">
 <c:set var="iconPath" value="/skins/velodrome2/img/icons" scope="request"/>
-<table id='skin_table_outer' width='100%' border=0 class='skin_table fixed_table' cellspacing=0 cellpadding=0 border=0>
+<table id='skin_table_outer' width='100%' border=0 class='skin_table' cellspacing=0 cellpadding=0 border=0>
 		<colgroup>
 			<col id='skin_col_L'>
 			<col id='skin_col_tree'>
@@ -43,7 +43,7 @@
 			<td class='ImgSkin_Chrome_R1' colspan=3>
 				<table width=100% cellspacing=0 cellpadding=0>
 				<tr>
-					<td class='R1Text' style='padding-left:5px;'>hi,</td>
+					<td class='R1Text'>hi,</td>
 					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b></nobr></div></td>
 					<td id='#skin_container_logoff_lite' class='R1Link'> <a href="<c:url value="/?loginOp=logout"/>"><nobr>Log Off</nobr></a></td>
 					<td class='R1Sep'>|</td>
