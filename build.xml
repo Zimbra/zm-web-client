@@ -190,7 +190,7 @@
 			<webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes}' />
 			<classes dir='${build.classes.dir}' excludes='**/kabuki/tools/**,**/build/**' />
 			<classes dir='${web.dir}' includes='messages/**,keys/**' />
-			<lib dir='${lib.dir}' includes='gifencoder.jar,yuicompressor*.jar' />
+			<lib dir='${lib.dir}' includes='gifencoder.jar,yuicompressor*.jar,custom_rhino.jar' />
 			<lib dir='${webinf.lib.dir}' />
 			<lib dir='${common.build.dir}' includes='zimbracommon.jar' />
 			<lib dir='${taglib.build.dir}' includes='zimbrataglib.jar' />

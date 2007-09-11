@@ -1,7 +1,8 @@
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+<fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<HTML>
-<HEAD>
-	<!--
+<!--
  /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
@@ -27,28 +28,17 @@
  * ***** END LICENSE BLOCK *****
  */
  -->
-<%
-    String contextPath = request.getContextPath();
-    if (contextPath.equals("/")) contextPath = "";
-%>
-<script src='<%=contextPath%>/messages/ZmMsg.js'></script>
-<script src='<%=contextPath%>/js/ajax/util/AjxText.js'></script>
-	<SCRIPT type="text/javascript">
-		function onLoad() {
-			var skin;
-			if (location.search && (location.search.indexOf("skin=") != -1)) {
-				var m = location.search.match(/skin=(\w+)/);
-				if (m && m.length)
-					skin = m[1];
-			}
-			document.title = ZmMsg.skinDeletedErrorTitle;
-			var htmlArr = [];
-			var idx = 0;
-			htmlArr[idx++] = "<br/><br/><center>"
-			htmlArr[idx++] = AjxMessageFormat.format(ZmMsg.skinDeletedError, [skin]);
-			htmlArr[idx++] = "</center>"
-			document.body.innerHTML = htmlArr.join("");
-		}
-	</SCRIPT>
-<BODY ONLOAD='onLoad()'></BODY>
+<HTML>
+<HEAD>
+	<title><fmt:message key="skinDeletedErrorTitle" /></title>
+</HEAD>
+<BODY>
+	<br>
+	<br>
+	<center>
+		<fmt:message key='skinDeletedError'>
+			<fmt:param value="${param.skin}" />
+		</fmt:message>
+	</center>
+</BODY>
 </HTML>

@@ -215,7 +215,7 @@
     <% }
 %>
 
-<script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>"></script>
+<script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%=localeQs%>"></script>
 
 <script>
 
