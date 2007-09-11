@@ -2012,25 +2012,30 @@
 .ZActive	.ZMenuItemTable .ZWidgetTitle	{						@MenuItemText-active@		}
 .ZSelected	.ZMenuItemTable .ZWidgetTitle	{						@MenuItemText-selected@		}
 
+/*
 .ZMenuItem-BlankCheck 						{	width:9px; 	height:9px;		}
 .ZMenuItem-BlankIcon 						{	width:16px; height:16px;	}
 .ZMenuItem-BlankCascade						{	width:16px; height:16px;	}
-
-.ZMenuItem-Separator	 					{	@MenuItemSeparator@	}
-
-.ZMenuItemSeparatorBorder TD	{
-	height:12px !important;
-}
-
-.ZMenuItemSeparatorBorder DIV {
-	@MenuItemSeparator@
-}
+*/
 
 
-.ZMenuItemSeparatorBorder .ZLeftIcon DIV {
-	margin-right:0px;
-	margin-left:0px;
-}
+/* if any item in the menu has a check, icon or submenu,
+	make the shim div in all items have the proper width
+	so things line up properly
+*/
+.ZHasIcon .ZMenuItemBorder .ZLeftIcon DIV 		{	width:16px; height:16px; }
+.ZHasCheck .ZMenuItemBorder .ZCheckIcon DIV 	{	width:9px;	height:9px; }
+.ZHasSubmenu .ZMenuItemBorder .ZDropDown DIV 	{	width:16px;	height:16px; }
+
+
+.ZMenuItem-Separator	 						{	@MenuItemSeparator@	}
+.ZMenuItemSeparatorBorder TD					{	height:12px !important;}
+
+.ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon DIV, 
+.ZHasCheck .ZMenuItemSeparatorBorder .ZCheckIcon DIV,
+.ZHasSubmenu .ZMenuItemSeparatorBorder .ZDropDown DIV 		{	height:1px !important; }
+
+
 
 /************
  *
