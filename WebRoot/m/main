@@ -86,7 +86,7 @@
         <tr>
             <td class='zo_main_item'>
             <a href="moquery">
-                <mo:img src="common/ImgSearch.gif" alt="search"/>
+                <mo:img src="startup/ImgSearch.gif" alt="search"/>
                 <fmt:message key="search"/>
             </a>
             </td>
