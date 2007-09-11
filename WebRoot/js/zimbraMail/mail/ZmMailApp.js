@@ -994,7 +994,7 @@ function(query, callback, response) {
 	var types = new AjxVector();
 	var type = this.getGroupMailBy();
 	types.add(type);
-	var params = {query:query, callback:callback, types:types, fetch:Boolean(type == ZmItem.MSG), response:response};
+	var params = {query:query, callback:callback, types:types, response:response};
 	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
 	appCtxt.getSearchController().search(params);
 };
@@ -1003,7 +1003,7 @@ ZmMailApp.prototype.getSearchParams =
 function(params) {
 	params = params || {};
 	var mc = this.getMailListController();
-	if (mc._readingPaneOn && (this.getGroupMailBy() == ZmItem.MSG)) {
+	if (mc._readingPaneOn && !appCtxt.inStartup) {
 		params.fetch = true;
 	}
 	return params;
