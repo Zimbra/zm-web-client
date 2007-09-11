@@ -402,6 +402,13 @@ function(folder, callback, response) {
 		voiceController = AjxDispatcher.run("GetCallListController");
 	}
 	voiceController.show(searchResult, folder);
+
+	// Update numUnread & numUnheard in folder.
+	var folderInfo = searchResult.getAttribute("vfi");
+	if (folderInfo) {
+		folder.notifyModify(folderInfo[0]);
+	}
+
 	if (callback) {
 		callback.run(searchResult);
 	}
