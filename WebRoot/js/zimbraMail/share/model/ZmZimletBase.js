@@ -539,9 +539,14 @@ function(propertyName) {
 
 ZmZimletBase.prototype.getMessage =
 function(msg) {
-	//Missing properties should be catastrophic.
+	//Missing properties should not be catastrophic.
 	var p = window[this.xmlObj().name];
 	return p ? p[msg] : '???'+msg+'???';
+};
+
+ZmZimletBase.prototype.getMessages =
+function() {
+	return window[this.xmlObj().name] || {};
 };
 
 ZmZimletBase.prototype.getConfig =
