@@ -1668,7 +1668,7 @@ function() {
 ZmComposeView.prototype._showForwardField =
 function(msg, action, replyPref) {
 	
-	if (replyPref == ZmSetting.INCLUDE_ATTACH ||action == ZmOperation.FORWARD_ATT) {
+	if (!(this._msgIds && this._msgIds.length) && (replyPref == ZmSetting.INCLUDE_ATTACH ||action == ZmOperation.FORWARD_ATT)) {
 		var data = { message: msg };
 		this._attcDiv.innerHTML = AjxTemplate.expand("mail.Message#ForwardOneMessage", data);
 		this._attachCount = 1;
