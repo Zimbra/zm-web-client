@@ -717,7 +717,7 @@ function(ev) {
 					  hideNewButton:true,
 					  description:ZmMsg.chooseAddrBookToExport});
 	} else {
-		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 		dialog.popup({treeIds:[ZmOrganizer.CALENDAR],
 					  overviewId:overviewId,
 					  omit:omit,

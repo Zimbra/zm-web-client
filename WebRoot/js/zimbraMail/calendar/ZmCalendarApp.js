@@ -94,10 +94,11 @@ function() {
 ZmCalendarApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.setPackageLoadFunction("Calendar", new AjxCallback(this, this._postLoad, ZmOrganizer.CALENDAR));
+	AjxDispatcher.setPackageLoadFunction("CalendarAppt", new AjxCallback(this, this._postLoadAppt, ZmOrganizer.CALENDAR));		
 	AjxDispatcher.registerMethod("GetCalController", "CalendarCore", new AjxCallback(this, this.getCalController));
 	AjxDispatcher.registerMethod("GetReminderController", "CalendarCore", new AjxCallback(this, this.getReminderController));
 	AjxDispatcher.registerMethod("ShowMiniCalendar", "CalendarCore", new AjxCallback(this, this.showMiniCalendar));
-	AjxDispatcher.registerMethod("GetApptComposeController", ["CalendarCore", "Calendar"], new AjxCallback(this, this.getApptComposeController));
+	AjxDispatcher.registerMethod("GetApptComposeController", ["CalendarCore", "Calendar", "CalendarAppt"], new AjxCallback(this, this.getApptComposeController));
 };
 
 ZmCalendarApp.prototype._registerSettings =
@@ -309,8 +310,8 @@ function() {
 							  organizer:			ZmOrganizer.CALENDAR,
 							  overviewTrees:		[ZmOrganizer.CALENDAR],
 							  showZimlets:			true,
-							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar"],
-							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar"]},
+							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar", "CalendarAppt"],
+							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar", "CalendarAppt"]},
 							  newItemOps:			newItemOps,
 							  newOrgOps:			newOrgOps,
 							  actionCodes:			actionCodes,
@@ -511,6 +512,7 @@ function() {
 ZmCalendarApp.prototype.getApptComposeController = 
 function() {
 	if (!this._apptController) {
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);		
 		this._apptController = new ZmApptComposeController(this._container, this);
 	}
 	return this._apptController;
@@ -549,6 +551,10 @@ function() {
 ZmCalendarApp.prototype._postLoad =
 function(type) {
 	ZmApp.prototype._postLoad.call(this, type);
+};
+
+ZmCalendarApp.prototype._postLoadAppt =
+function(type) {
 	this.getApptComposeController().initComposeView(true);
 };
 

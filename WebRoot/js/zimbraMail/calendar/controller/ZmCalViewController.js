@@ -911,6 +911,7 @@ function() {
 ZmCalViewController.prototype._showTypeDialog =
 function(appt, mode) {
 	if (this._typeDialog == null) {
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);		
 		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
 		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener));
 		this._typeDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._typeCancelListener));
@@ -938,7 +939,7 @@ function(appt, shiftKey) {
 	var useQuickAdd = appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD);
 	if ((useQuickAdd && !shiftKey) || (!useQuickAdd && shiftKey)) {
 		if (this._quickAddDialog == null) {
-			AjxDispatcher.require(["CalendarCore", "Calendar"]);
+			AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 			this._quickAddDialog = new ZmApptQuickAddDialog(this._shell);
 			this._quickAddDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
 			this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
