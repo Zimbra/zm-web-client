@@ -100,8 +100,10 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 	this._shell.addControlListener(this._controlListener);
 	this._sashSupported = (document.getElementById("skin_td_outer_tree") != null);
 
-	this._historyMgr = appCtxt.getHistoryMgr();
-	this._historyMgr.addListener(new AjxListener(this, this._historyChangeListener));
+	if (!AjxEnv.isSafari) {
+		this._historyMgr = appCtxt.getHistoryMgr();
+		this._historyMgr.addListener(new AjxListener(this, this._historyChangeListener));
+	}
 	this._hashView = {};				// matches numeric hash to its view
 	this._nextHashIndex = 0;			// index for adding to browser history stack
 	this._curHashIndex = 0;				// index of current location in browser history stack
@@ -462,7 +464,9 @@ function(viewId, force) {
 			this._curHashIndex = this._nextHashIndex;
 			this._hashView[this._curHashIndex] = viewId;
 			DBG.println(AjxDebug.DBG2, "adding to browser history: " + this._curHashIndex + "(" + viewId + ")");
-			this._historyMgr.add(this._curHashIndex);
+			if (this._historyMgr) {
+				this._historyMgr.add(this._curHashIndex);
+			}
 		}
 	}
 
