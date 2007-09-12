@@ -26,7 +26,7 @@
                         <c:param name="selected" value="voice"/>
                         <c:param name="phone" value="${zm:getPhoneFromVoiceQuery(context.query)}"/>
                     </c:url>
-                    <a id="OPCALLMANAGER" href="${optionsUrl}"><span><fmt:message key="actionCallManager"/></span></a>
+                    <a id="OPCALLMANAGER" href="${optionsUrl}"><app:img src="voicemail/ImgCallManager.gif" altkey="callManager"/><span><fmt:message key="actionCallManager"/></span></a>
                 </td>
             </table>
         </td>
