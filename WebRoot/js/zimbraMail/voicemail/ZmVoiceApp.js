@@ -234,14 +234,15 @@ function() {
 };
 
 ZmVoiceApp.prototype.getVoiceInfo =
-function(callback) {
+function(callback, errorCallback) {
 	if (!this.phones.length) {
 	    var soapDoc = AjxSoapDoc.create("GetVoiceInfoRequest", "urn:zimbraVoice");
 	    var respCallback = new AjxCallback(this, this._handleResponseVoiceInfo, [callback]);
 	    var params = {
 	    	soapDoc: soapDoc, 
 	    	asyncMode: true,
-			callback: respCallback
+			callback: respCallback,
+			errorCallback: errorCallback
 		};
 		appCtxt.getAppController().sendRequest(params);
 	} else if (callback) {
@@ -280,7 +281,7 @@ function(callback, response) {
 };
 
 ZmVoiceApp.prototype.refreshFolders =
-function(callback) {
+function(callback, errorCallback) {
 	if (this.phones.length) {
 	    var soapDoc = AjxSoapDoc.create("GetVoiceFolderRequest", "urn:zimbraVoice");
 		this.setStorePrincipal(soapDoc);
@@ -288,7 +289,8 @@ function(callback) {
 	    var params = {
 	    	soapDoc: soapDoc,
 	    	asyncMode: true,
-			callback: respCallback
+			callback: respCallback,
+			errorCallback: errorCallback
 		};
 		appCtxt.getAppController().sendRequest(params);
 	} else if (callback) {
