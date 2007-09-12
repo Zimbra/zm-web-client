@@ -21,7 +21,7 @@
 </app:handleError>
 
 <c:if test="${param.mesg eq 'welcome'}">
-<app:status style="info">
+<app:status style="info" html="true">
     <fmt:message key="htmlWelcomeMesg"/>
 </app:status>
 </c:if>
