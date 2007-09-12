@@ -10,6 +10,7 @@
 	// Set standard HTTP/1.0 no-cache header.
 	response.setHeader("Pragma", "no-cache");
 %><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <html>
 <head>
 <!--
@@ -113,12 +114,12 @@
 		offlineMode = application.getInitParameter("offlineMode");
 	}
 %>
-<link rel="SHORTCUT ICON" href="<%=contextPath %>/img/logo/favicon.ico">
-<link rel="ICON" type="image/gif" href="<%=contextPath %>/img/logo/favicon.gif">
+<fmt:message key="favIconUrl" var="favIconUrl"/>
+<link rel="SHORTCUT ICON" href="<%=contextPath %><%=favIconUrl %>">
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-<title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
+<title><fmt:message key="zimbraTitle"/></title>
 
 <script type="text/javascript" language="JavaScript">
 	var zJSloading = (new Date()).getTime();

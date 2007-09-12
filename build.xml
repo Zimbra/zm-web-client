@@ -86,7 +86,7 @@
         <property name='common.jsp.includes' value='**'/>
         <property name='common.jsp.excludes' value=''/>
         <property name='common.img.includes' value='**'/>
-        <property name='common.img.excludes' value='_*/**,**/_*,logo/favicon.ico'/>
+        <property name='common.img.excludes' value='_*/**,**/_*'/>
         <property name='common.template.includes' value='**/*.template'/>
         <property name='common.template.excludes' value=''/>
         <property name='common.jam.includes' value='**/package/*.js'/>
@@ -117,7 +117,7 @@
         <property name='help.includes' value='${common.help.includes}'/>
         <property name='help.excludes' value='${common.help.excludes}'/>
         <property name='build.web.includes'
-                  value='favicon.ico,js/**,img/dwt.gif,img/images.css,skin/**,public/**,templates/**'/>
+                  value='js/**,img/dwt.gif,img/images.css,skin/**,public/**,templates/**'/>
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
         <property name='webinf.includes' value=''/>
         <property name='webinf.excludes' value='**'/>
@@ -470,10 +470,6 @@
         <!--<property name='img.css.file' value='${build.css.filename}' />-->
         <!--<property name='img.dir.ignore' value='animated,_*' />-->
         <!--<property name='img.dir.nomerge' value='examples,logo,translate' />-->
-
-        <copy todir="${build.web.dir}" flatten="true">
-            <fileset dir='${img.dir}' includes='**/logo/favicon.ico'/>
-        </copy>
 
         <dependset>
             <srcfileset dir='${img.dir}'/>

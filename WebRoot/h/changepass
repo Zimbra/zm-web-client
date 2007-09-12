@@ -49,8 +49,8 @@
     <style type="text/css">
          @import url( "<c:url value='/css/common,login,zhtml,${skin},skin.css?skin=${skin}'/>" );
     </style>
-    <link rel="ICON" type="image/gif" href="<c:url value='/img/logo/favicon.gif'/>">
-    <link rel="SHORTCUT ICON" href="<c:url value='/img/logo/favicon.ico'/>">
+    <fmt:message key="favIconUrl" var="favIconUrl"/>
+    <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
 <body <c:if test="${successfullLogin ne 'true'}">
         onload="document.changePassForm.password.focus();"

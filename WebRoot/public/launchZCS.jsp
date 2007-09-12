@@ -14,6 +14,7 @@
 	// Set standard HTTP/1.0 no-cache header.
 	response.setHeader("Pragma", "no-cache");
 %><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <html>
 <head>
 <!--
@@ -129,12 +130,13 @@
 %>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-<title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
+<title><fmt:message key="zimbraTitle"/></title>
 <link href="<%=contextPath %>/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>" rel="stylesheet" type="text/css" />
-<link href="<%=contextPath %>/favicon.ico" rel="SHORTCUT ICON" />
+<fmt:message key="favIconUrl" var="favIconUrl"/>
+<link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
 <body>
-<noscript><fmt:setBundle basename="/messages/ZmMsg"/>
+<noscript>
 <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="/zimbra" value='/h/'></c:url></fmt:param></fmt:message>
 </noscript>
 <%!

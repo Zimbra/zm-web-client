@@ -108,10 +108,11 @@
  *
  * ***** END LICENSE BLOCK *****
 -->
+	<fmt:setBundle basename="/messages/ZaMsg" scope="request"/>
 	<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-    <title><fmt:setBundle basename="/messages/ZaMsg"/><fmt:message key="zimbraAdminTitle"/></title>
-    <link rel="ICON" type="image/gif" href="/img/logo/favicon.gif"/>
-    <link rel="SHORTCUT ICON" href="/img/logo/favicon.ico"/>
+    <title><fmt:message key="zimbraAdminTitle"/></title>
+    <fmt:message key="favIconUrl" var="favIconUrl"/>
+    <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
     
 	<script>
 		appContextPath = "<%= contextPath %>";

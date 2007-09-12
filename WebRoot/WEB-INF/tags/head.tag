@@ -21,7 +21,8 @@
     <style type="text/css">
        @import url( "<c:url value='/css/common,login,images,skin.css?client=standard&skin=${skin}&v=${version}'/>" );
     </style>
-    <link rel="SHORTCUT ICON" href="<c:url value='/favicon.ico'/>">
+    <fmt:message key="favIconUrl" var="favIconUrl"/>
+    <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
     <jsp:doBody/>
     <script type="text/javascript">
         

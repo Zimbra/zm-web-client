@@ -163,7 +163,8 @@ if (application.getInitParameter("offlineMode") != null)  {
     <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
     <link href="<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" rel="stylesheet" type="text/css" />
-    <link rel="SHORTCUT ICON" href="<c:url value='/favicon.ico'/>">
+    <fmt:message key="favIconUrl" var="favIconUrl"/>
+    <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
 <body onload="document.loginForm.username.focus();">
 <table width="100%" style="height:100%;">
