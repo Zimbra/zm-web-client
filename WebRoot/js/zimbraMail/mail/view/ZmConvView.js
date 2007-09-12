@@ -157,43 +157,22 @@ ZmConvView.prototype._initHeader =
 function() {
 	this._summary = new DwtComposite(this, "Summary", Dwt.RELATIVE_STYLE);
 
-	var subjDivId = Dwt.getNextId();
-	var closeBtnCellId = Dwt.getNextId();
-	var tagDivId = Dwt.getNextId();
+	var tagDivId = appCtxt.get(ZmSetting.TAGGING_ENABLED) ? (this._htmlElId + "_tagDiv") : null;
+	var subs = { id: this._htmlElId, tagDivId: tagDivId };
 
-	// generate HTML for CV header
-	var html = new Array();
-	var idx = 0;
-
-	html[idx++] = "<table border=0 class='SubjectBar' width=100%><tr><td width=15>";
-	html[idx++] = AjxImg.getImageHtml("ConversationView");
-	html[idx++] = "</td><td width=99%><div class='Subject' id='";
-	html[idx++] = subjDivId;
-	html[idx++] = "'></div></td><td id='";
-	html[idx++] = closeBtnCellId;
-	html[idx++] = "'></td><td></td></tr>";
-	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		html[idx++] = "<tr><td colspan=4>";
-		html[idx++] = "<div class='Tags' id='";
-		html[idx++] = tagDivId;
-		html[idx++] = "'></div>";
-		html[idx++] = "</td></tr>";
-	}
-	html[idx++] = "</table>";
-
-	this._summary.getHtmlElement().innerHTML = html.join("");
+	this._summary.getHtmlElement().innerHTML = AjxTemplate.expand("mail.Message#MessageListHeader", subs);
 
 	// add the close button
 	this._closeButton = new DwtButton(this, null, "DwtToolbarButton");
 	this._closeButton.setImage("Close");
 	this._closeButton.setText(ZmMsg.close);
-	this._closeButton.reparentHtmlElement(closeBtnCellId);
+	this._closeButton.reparentHtmlElement(this._htmlElId + "_closeBtnCell");
 	this._closeButton.addSelectionListener(new AjxListener(this, this._closeButtonListener));
 	
 	// save the necessary DOM objects we just created
-	this._subjectDiv = document.getElementById(subjDivId);
+	this._subjectDiv = document.getElementById(this._htmlElId + "_subjDiv");
 
-	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (tagDivId) {
 		this._tagDiv = document.getElementById(tagDivId);
 		Dwt.setSize(this._tagDiv, Dwt.DEFAULT, ZmConvView._TAGLIST_HEIGHT);
 		Dwt.setVisible(this._tagDiv, false);

@@ -5,21 +5,15 @@
 				<td>
 					<table id='${id}_hdrTable' cellspacing=0 cellpadding=0 border=0 width=100%>
 						<tr>
-							<td width='110' class='SubjectCol LabelColName' valign=top>
+							<$ if (data.hasHeaderCloseBtn) { $>
+								<td id='${id}_closeBtnCell'></td>
+								<td>&nbsp;</td>
+							<$ } $>
+							<td class='SubjectCol LabelColName' valign=top>
 								<$= AjxStringUtil.htmlEncode(ZmMsg.subject); $>:
 							</td>
-							<td valign=top>
-								<table border=0 cellpadding=0 cellspacing=0 width=100%>
-									<tr>
-										<td class='SubjectCol LabelColValue'>
-											<$= data.subject $>
-										</td>
-										<$ if (data.hasHeaderCloseBtn) { $>
-											<td width=1% id='${id}_closeBtnCell'></td>
-											<td>&nbsp;</td>
-										<$ } $>
-									</tr>
-								</table>
+							<td class='SubjectCol LabelColValue' valign=top width=100%>
+								<$= data.subject $>
 							</td>
 						</tr>
 
@@ -32,7 +26,7 @@
 									</tr>
 								</table>
 							</td>
-							<td class='LabelColValue' valign=top>
+							<td class='LabelColValue' valign=top colspan=10>
 								<table border=0 cellpadding=0 cellspacing=0>
 									<tr>
 										<$ if (data.sentByIcon) { $>
@@ -54,14 +48,14 @@
 						<$ if (data.obo) { $>
 							<tr>
 								<td width='110' valign='top' class='LabelColName'><$= ZmMsg.onBehalfOf $>:</td>
-								<td class='LabelColValue' colspan=3><$= data.obo $></td>
+								<td class='LabelColValue' colspan=10><$= data.obo $></td>
 							</tr>
 						<$ } $>
 
 						<$ for (var i = 0; i < data.participants.length; i++) { $>
 							<tr>
 								<td width=110 valign='top' class='LabelColName'><$= data.participants[i].prefix $>:</td>
-								<td class='LabelColValue'><$= data.participants[i].partStr $></td>
+								<td class='LabelColValue' colspan=10><$= data.participants[i].partStr $></td>
 							</tr>
 						<$ } $>
 					</table>
@@ -73,6 +67,22 @@
 		</table>
 		<div id='${infoBarId}'></div>
 	</div>
+</template>
+
+<template id='mail.Message#MessageListHeader'>
+	<table border=0 class='SubjectBar' width=100%>
+		<tr>
+			<td id='${id}_closeBtnCell'></td>
+			<td></td>
+			<td width=15><$= AjxImg.getImageHtml("ConversationView") $></td>
+			<td width=99%><div class='Subject' id='${id}_subjDiv'></div></td>
+		</tr>
+		<$ if (data.tagDivId) { $>
+			<tr>
+				<td colspan=4><div class='Tags' id='${id}_tagDiv'></div></td>
+			</tr>
+		<$ } $>
+	</table>
 </template>
 
 <template id='mail.Message#InformationBar'>
