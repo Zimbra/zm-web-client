@@ -1573,7 +1573,7 @@
 
 
 /* normal buttons with text should be at least a certain width */
-.ZHasText .ZButtonTable	.ZWidgetTitle {	@TextButtonWidth@ }
+.ZHasText .ZButtonTable {	@TextButtonWidth@ }
 
 .ZButtonBorder .ZDropDown DIV		{	margin-left:3px;	}
 
