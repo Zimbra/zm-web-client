@@ -322,8 +322,9 @@ function(ev, div) {
 				}
 			} else if (m.field == ZmItem.F_FLAG) {
 				var item = this.getItemFromElement(div);
-				if (!item.isFlagged)
-					ev.target.className = "ImgBlank_16";
+				if (!item.isFlagged) {
+					AjxImg.setImage(ev.target, "Blank_16", true);
+				}
 			}
 		}
 	}
@@ -536,7 +537,7 @@ function(field, item, ev, div, match) {
 			ev.target.className = "ImgTaskCheckboxCompleted";
 	} else if (field == ZmItem.F_FLAG) {
 		if (!item.isFlagged) {
-			ev.target.className = "ImgFlagRedDis";
+			AjxImg.setDisabledImage(ev.target, "FlagRed", true);
 		}
 	} else if (field == ZmItem.F_TAG) {
 		tooltip = this._getTagToolTip(item);
