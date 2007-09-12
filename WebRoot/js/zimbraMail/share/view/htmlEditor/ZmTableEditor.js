@@ -136,7 +136,7 @@ ZmTablePropsDialog = function(parent) {
 		this["_id" + id] = base_id + "_" + id;
 	}
 
-	var html = AjxTemplate.expand("share.view.htmlEditor.Dialogs#TableProperties", { id: base_id });
+	var html = AjxTemplate.expand("share.Dialogs#TableProperties", { id: base_id });
 	this.setContent(html);
 
 	ZmTableEditor.__makeCommonWidgets.call(this);
@@ -386,7 +386,7 @@ ZmCellPropsDialog = function(parent) {
 		this["_id" + id] = base_id + "_" + id;
 	}
 
-	var html = AjxTemplate.expand("share.view.htmlEditor.Dialogs#CellProperties", { id: base_id });
+	var html = AjxTemplate.expand("share.Dialogs#CellProperties", { id: base_id });
 	this.setContent(html);
 
 	ZmTableEditor.__makeCommonWidgets.call(this);

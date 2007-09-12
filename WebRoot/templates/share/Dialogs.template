@@ -1,4 +1,4 @@
-<template id="TableProperties">
+<template id="share.Dialogs#TableProperties">
   <table class="ZmHEDialog"><tr><td>
 
     <fieldset class="ZmFieldset">
@@ -133,7 +133,7 @@
   </td></tr></table>
 </template>
 
-<template id="CellProperties">
+<template id="share.Dialogs#CellProperties">
   <table class="ZmHEDialog">
     <tr>
       <td>
