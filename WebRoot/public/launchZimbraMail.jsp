@@ -115,7 +115,7 @@
 	}
 %>
 <fmt:message key="favIconUrl" var="favIconUrl"/>
-<link rel="SHORTCUT ICON" href="<%=contextPath %><%=favIconUrl %>">
+<link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
