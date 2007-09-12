@@ -436,7 +436,6 @@ function(ev) {
 		if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 			if (!ev.ctrlKey) {
 				lv.setSelectionHdrCbox(false);
-				lv.setSelectionCbox(ev.item, false);
 			}
 		}
 

@@ -436,7 +436,6 @@ function(ev) {
 
 		if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 			this._mailListView.setSelectionHdrCbox(false);
-			this._mailListView.setSelectionCbox(ev.item, false);
 		}
 
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
