@@ -308,7 +308,7 @@
                                         <td><div class='vertSep'></div></td>
                                         <td style='padding: 0 2px 0 2px'>
                                             <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=decline">
-												<app:img src="common/ImgCancel.gif"/>
+												<app:img src="startup/ImgCancel.gif"/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyDecline"/></span>
                                             </a>

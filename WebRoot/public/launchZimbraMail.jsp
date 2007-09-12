@@ -113,8 +113,8 @@
 		offlineMode = application.getInitParameter("offlineMode");
 	}
 %>
-<link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico">
-<link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
+<link rel="SHORTCUT ICON" href="<%=contextPath %>/img/logo/favicon.ico">
+<link rel="ICON" type="image/gif" href="<%=contextPath %>/img/logo/favicon.gif">
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />

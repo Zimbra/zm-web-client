@@ -17,7 +17,7 @@
                     <td><div class='vertSep'></div></td>
                     <c:choose>
                         <c:when test="${create}">
-                            <app:button id="OPCANCEL" name="actionCancelCreate" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                            <app:button id="OPCANCEL" name="actionCancelCreate" src="startup/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                         </c:when>
                         <c:otherwise>
                             <app:button id="OPCANCEL" name="actionCancelModify" src="common/ImgClose.gif" tooltip="close" text="close"/>                            

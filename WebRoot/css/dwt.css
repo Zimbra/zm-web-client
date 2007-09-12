@@ -1372,19 +1372,19 @@
 
 .DwtShellBusyDialog .WaitIcon,
 .DwtWait64Icon {
-	background-image:url(@SkinAnimatedImgDir@/wait_64.gif);
+	background-image:url(@SkinAnimatedImgDir@/Imgwait_64.gif);
 	width:64px;
 	height:64px;
 }
 
 .DwtWait16Icon {
-	background-image:url(@SkinAnimatedImgDir@/wait_16.gif);
+	background-image:url(@SkinAnimatedImgDir@/Imgwait_16.gif);
 	width:16px;
 	height:16px;
 }
 
 .DwtWait32Icon {
-	background-image:url(@SkinAnimatedImgDir@/wait_32.gif);
+	background-image:url(@SkinAnimatedImgDir@/Imgwait_32.gif);
 	width:32px;
 	height:32px;
 }

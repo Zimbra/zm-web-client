@@ -63,11 +63,11 @@
                                     <tr>
                                         <app:button id="OPSEND" name="actionSend" src="mail/ImgSend.gif" tooltip="send" text="send"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPCANCEL" name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                                        <app:button id="OPCANCEL" name="actionCancel" src="startup/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                         <td><div class='vertSep'></div></td>
                                         <app:button id="OPDRAFT" name="actionDraft" src="mail/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPATTACH" name="actionAttachAdd" src="common/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
+                                        <app:button id="OPATTACH" name="actionAttachAdd" src="startup/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
                                         <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
                                             <td><div class='vertSep'></div></td>
                                             <app:button id="OPADDRECIP" name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
@@ -122,7 +122,7 @@
                                     <tr>
                                         <td align='right'>
                                             <c:if test="${firstAttachment}">
-                                                <app:img altkey="ALT_ATTACHMENT" src="common/ImgAttachment.gif"/>
+                                                <app:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
                                                 <c:set var="firstAttachment" value="${false}"/>
                                             </c:if>
                                         </td>
@@ -171,11 +171,11 @@
                                     <tr>
                                         <app:button name="actionSend" src="mail/ImgSend.gif" tooltip="send" text="send"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                                        <app:button name="actionCancel" src="startup/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                         <td><div class='vertSep'></div></td>
                                         <app:button name="actionDraft" src="mail/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionAttachAdd" src="common/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
+                                        <app:button name="actionAttachAdd" src="startup/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
                                         <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
                                             <td><div class='vertSep'></div></td>
                                             <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>

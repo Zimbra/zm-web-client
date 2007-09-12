@@ -110,8 +110,8 @@
 -->
 	<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
     <title><fmt:setBundle basename="/messages/ZaMsg"/><fmt:message key="zimbraAdminTitle"/></title>
-    <link rel="ICON" type="image/gif" href="/img/loRes/logo/favicon.gif"/>
-    <link rel="SHORTCUT ICON" href="/img/loRes/logo/favicon.ico"/>
+    <link rel="ICON" type="image/gif" href="/img/logo/favicon.gif"/>
+    <link rel="SHORTCUT ICON" href="/img/logo/favicon.ico"/>
     
 	<script>
 		appContextPath = "<%= contextPath %>";
