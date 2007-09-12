@@ -21,6 +21,14 @@
             </fmt:message>
         </app:status>
     </c:when>
+    <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
+        <zm:emptyVoiceMailTrash var="result" phone="${phone}" folderId="${folderId}"/>
+        <app:status>
+			<fmt:message key="folderEmptied">
+				<fmt:param><fmt:message key="trash"/></fmt:param>
+			</fmt:message>
+        </app:status>
+    </c:when>
     <c:when test="${zm:actionSet(param, 'actionReplyByEmail') or zm:actionSet(param, 'actionForwardByEmail')}">
         <c:set var="hits" value="${zm:deserializeVoiceMailItemHits(paramValues.voiceId, paramValues.phone)}"/>
         <c:choose>

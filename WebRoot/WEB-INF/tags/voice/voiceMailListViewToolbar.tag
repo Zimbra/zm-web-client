@@ -11,15 +11,9 @@
     <zm:getMailbox var="mailbox"/>
     <c:set var="vmlvToolbarCache" scope="request">
         <td><div class='vertSep'></div></td>
-        <c:choose>
-            <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                <app:button id="OPDELETE" src="startup/ImgTrash.gif" name="actionHardDelete" tooltip="actionTrashTT"/>
-            </c:when>
-            <c:otherwise>
-                <app:button id="OPDELETE" src="startup/ImgTrash.gif" name="actionDelete" tooltip="actionTrashTT"/>
-            </c:otherwise>
-        </c:choose>
-        <td nowrap>
+        <app:button id="OPDELETE" text="actionDelete" name="actionDelete" tooltip="actionTrashTT" disabled="${context.isFolderSearch and context.folder.isVoiceMailTrash}"/>
+		<td><div class='vertSep'></div></td>
+		<td nowrap>
             <zm:currentResultUrl var="printUrl" value="/h/printvoicemails" context="${context}" refresh="true" />
             <a id="OPPRINT" target="_blank" href="${printUrl}"><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/></a>
         </td>
@@ -38,6 +32,10 @@
             </c:url>
             <a id="OPCALLMANAGER" href="${optionsUrl}"><app:img src="voicemail/ImgCallManager.gif" altkey="callManager"/><span><fmt:message key="actionCallManager"/></span></a>
         </td>
+		<c:if test="${context.isFolderSearch and context.folder.isVoiceMailTrash}">
+			<td><div class='vertSep'></div><input type="hidden" name="folderId" value="${context.folder.id}"></td>
+			<app:button name="actionHardDelete" src="startup/ImgDelete.gif" tooltip="emptyTrash" text="emptyTrash"/>
+		</c:if>
     </c:set>
 </c:if>
 
