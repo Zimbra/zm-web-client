@@ -184,7 +184,8 @@
 <!---------------------------- ZmContactSplitView ----------------------------->
 <!----------------------------------------------------------------------------->
 <template id="abook.Contacts#SplitView">
-	<table border=0 cellpadding=0 cellspacing=5 width=100% height=100%>
+	<table border=0 cellpadding=0 cellspacing=5 width=100% height=100% style='table-layout:fixed'>
+		<col width=200></col>
 		<tr>
 			<td id='${id}_alphabetbar' colspan=2></td>
 		</tr>
