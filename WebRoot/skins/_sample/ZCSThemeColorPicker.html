@@ -1,7 +1,8 @@
 <html>
 <title>Theme Color Picker</title>
 <style type='text/css'>
-* {	font-family:Verdana; font-size:10px;	}
+* 	{	font-family:Verdana; }
+TD	{	font-size:12px;	}
 
 body {
 	background-color:#e8dcc1;
@@ -13,7 +14,7 @@ body {
 }
 
 .instructions {
-	font-style:italic;
+	/*font-style:italic;*/
 }
 
 .colorChip	{
@@ -128,54 +129,6 @@ function rgb2Hex(r,g,b) {
 	return Dec2Hex(r)+Dec2Hex(g)+Dec2Hex(b);
 }
 
-// rgb2hsv and hsv2rgb are based on Color Match Remix [http://color.twysted.net/]
-// which is based on or copied from ColorMatch 5K [http://colormatch.dk/]
-function hsv2rgb(hsv) {
-	var rgb=new Object();
-	if (hsv.saturation==0) {
-		rgb.r=rgb.g=rgb.b=Math.round(hsv.value*2.55);
-	} else {
-		hsv.hue/=60;
-		hsv.saturation/=100;
-		hsv.value/=100;
-		i=Math.floor(hsv.hue);
-		f=hsv.hue-i;
-		p=hsv.value*(1-hsv.saturation);
-		q=hsv.value*(1-hsv.saturation*f);
-		t=hsv.value*(1-hsv.saturation*(1-f));
-		switch(i) {
-		case 0: rgb.r=hsv.value; rgb.g=t; rgb.b=p; break;
-		case 1: rgb.r=q; rgb.g=hsv.value; rgb.b=p; break;
-		case 2: rgb.r=p; rgb.g=hsv.value; rgb.b=t; break;
-		case 3: rgb.r=p; rgb.g=q; rgb.b=hsv.value; break;
-		case 4: rgb.r=t; rgb.g=p; rgb.b=hsv.value; break;
-		default: rgb.r=hsv.value; rgb.g=p; rgb.b=q;
-		}
-		rgb.r=Math.round(rgb.r*255);
-		rgb.g=Math.round(rgb.g*255);
-		rgb.b=Math.round(rgb.b*255);
-	}
-	return rgb;
-}
-
-function min3(a,b,c) { return (a<b)?((a<c)?a:c):((b<c)?b:c); }
-function max3(a,b,c) { return (a>b)?((a>c)?a:c):((b>c)?b:c); }
-
-function rgb2hsv(rgb) {
-	hsv = new Object();
-	max=max3(rgb.r,rgb.g,rgb.b);
-	dif=max-min3(rgb.r,rgb.g,rgb.b);
-	hsv.saturation=(max==0.0)?0:(100*dif/max);
-	if (hsv.saturation==0) hsv.hue=0;
- 	else if (rgb.r==max) hsv.hue=60.0*(rgb.g-rgb.b)/dif;
-	else if (rgb.g==max) hsv.hue=120.0+60.0*(rgb.b-rgb.r)/dif;
-	else if (rgb.b==max) hsv.hue=240.0+60.0*(rgb.r-rgb.g)/dif;
-	if (hsv.hue<0.0) hsv.hue+=360.0;
-	hsv.value=Math.round(max*100/255);
-	hsv.hue=Math.round(hsv.hue);
-	hsv.saturation=Math.round(hsv.saturation);
-	return hsv;
-}
 
 function HueShift(h,s) {
 	h+=s;
@@ -203,6 +156,141 @@ function hex2hsv(hex) {
 function hsv2hex(hsv) {
 	return rgb2hex(hsv2rgb(hsv));
 }
+
+
+function hsv2rgb(hsv){
+	// hsv2rgb function adapted from Dojo Toolkit v. 0.43
+	// Released under the Academic Free License, 
+	//		see : 	http://dojotoolkit.org/about/license
+	//			:	http://dojotoolkit.org/downloads
+	//			:	http://opensource.org/licenses/afl-3.0.php
+	//
+	// Based on C Code in "Computer Graphics -- Principles and Practice,"
+	// Foley et al, 1996, p. 592. 
+	//
+	// hsv =	{
+	// 				h : [0..360] 	(corresponding to 0..360 degrees around hexcone)
+	// 				s : [0..100] 	(0 = gray, 100 = pure color)
+	//	 			v : [0..100]	(0 = black, 100 = white)
+	//			}
+	//
+	// returns  {
+	//				r : [0..255],
+	//				g : [0..255],
+	//				b : [0..255]
+	//			}
+	//
+
+ 	var h = hsv.h,
+ 		s = hsv.s / 100,
+ 		v = hsv.v / 100
+ 	;
+
+	if (h == 360){ h = 0;}
+
+	var r = null;
+	var g = null;
+	var b = null;
+
+	if (s == 0){
+		// color is on black-and-white center line, i.e. a shade of gray (achromatic)
+		r = v;
+		g = v;
+		b = v;
+	} else {
+		var hTemp = h / 60;			// h is now IN [0,6]
+		var i = Math.floor(hTemp);	// largest integer <= h
+		var f = hTemp - i;			// fractional part of h
+
+		var p = v * (1 - s);
+		var q = v * (1 - (s * f));
+		var t = v * (1 - (s * (1 - f)));
+
+		switch(i){
+			case 0: r = v; g = t; b = p; break;
+			case 1: r = q; g = v; b = p; break;
+			case 2: r = p; g = v; b = t; break;
+			case 3: r = p; g = q; b = v; break;
+			case 4: r = t; g = p; b = v; break;
+			case 5: r = v; g = p; b = q; break;
+		}
+	}
+
+	return {
+		r : Math.ceil(r * 255),
+		g : Math.ceil(g * 255),
+		b : Math.ceil(b * 255)
+	};
+}
+
+
+function rgb2hsv(rgb){
+	// rgb2hsv function adapted from Dojo Toolkit v. 0.43
+	// Released under the Academic Free License, 
+	//		see : 	http://dojotoolkit.org/about/license
+	//			:	http://dojotoolkit.org/downloads
+	//			:	http://opensource.org/licenses/afl-3.0.php
+	//
+	// Based on C Code in "Computer Graphics -- Principles and Practice,"
+	// Foley et al, 1996, p. 592. 
+	//
+	// rgb =	{
+	//				r : [0..255],
+	//				g : [0..255],
+	//				b : [0..255]
+	//			}
+	//
+	// returns  {
+	// 				h : [0..360] 	(corresponding to 0..360 degrees around hexcone)
+	// 				s : [0..100] 	(0 = gray, 100 = pure color)
+	//	 			v : [0..100]	(0 = black, 100 = white)
+	//			}
+	//
+
+	var r = rgb.r,
+		g = rgb.g,
+		b = rgb.b
+	;
+
+	var h = null;
+	var s = null;
+	var v = null;
+
+	var min = Math.min(r, g, b);
+	v = Math.max(r, g, b);
+
+	var delta = v - min;
+
+	// calculate saturation (0 if r, g and b are all 0)
+
+	s = (v == 0) ? 0 : delta/v;
+
+	if (s == 0){
+		// achromatic: when saturation is 0, hue is undefined
+		h = 0;
+	}else{
+		// chromatic
+		if (r == v) {						// between yellow and magenta
+			h = 60 * (g - b) / delta;
+		} else if (g == v) {				// between cyan and yellow
+			h = 120 + 60 * (b - r) / delta;
+		} else if (b == v) {				// between magenta and cyan
+			h = 240 + 60 * (r - g) / delta;
+		}
+		if (h < 0){
+			h += 360;
+		}
+	}
+	
+	if (h == 360) h = 0;
+
+	return {
+		h : Math.round(h),
+ 		s : Math.round(s * 100),
+ 		v : Math.round((v / 255)* 100)
+	}
+}
+
 
 function $(id) {
 	return document.getElementById(id);
@@ -232,7 +320,7 @@ function pickHue(hue) {
 	drawShades(hue);
 
 	var hsv = hex2hsv(getFocusColor());
-	hsv.hue = hue;
+	hsv.h = hue;
 	setFocusColor(hsv2hex(hsv));
 }
 
@@ -242,7 +330,7 @@ function focusInColorField(num) {
 	setCurrentFocus(id);
 	var hex = $(id).value;
 	var hsv = hex2hsv(hex);
-	pickHue(hsv.hue);
+	pickHue(hsv.h);
 }
 
 function setCurrentFocus(id) {
@@ -273,7 +361,7 @@ function getColorName(baseName, modifier) {
 	return "_" + baseName + modifier + "_";
 }
 
-function getJSRep(name, value) {
+function getPropertiesString(name, value) {
 	return "\t"+name + "\t\t=\t#" + value;
 }
 
@@ -284,15 +372,14 @@ function drawCurrentColors() {
 					  "#                               Skin Colors                              #\n"+
 					  "#------------------------------------------------------------------------#\n#\n";
 	drawCurrentColor(1, "BaseColor", "#### Base color and variants ####");
-	drawCurrentColor(2, "SelColor", "#### Selection color and variants ####");	
+	drawCurrentColor(2, "SelColor", "#### Selected color and variants ####");	
 	clipboard.value += "#\n#========================================================================#\n"
 	hilightFocusedField();
 }
 
 function drawCurrentColor(num, name, jsHeader) {
 	var baseColor = safeColor($('colorRGB'+num).value);
-
-	var darkJS = [jsHeader,getJSRep(getColorName(name)+"\t", baseColor)];
+	var darkJS = [jsHeader,getPropertiesString(getColorName(name), baseColor)];
 	var lightJS = [];
 
 	var html = 
@@ -308,7 +395,7 @@ function drawCurrentColor(num, name, jsHeader) {
 				"<td><div class='colorChip' style='background-color:", darkColor, "'><\/div><\/td>",
 			].join(""));
 
-		darkJS.push(getJSRep(darkName, darkColor));
+		darkJS.push(getPropertiesString(darkName, darkColor));
 	}
 
 	html.push([
@@ -317,13 +404,13 @@ function drawCurrentColor(num, name, jsHeader) {
 
 	for (var i = 5; i <= 95; i+=5) {
 		var lightColor = lighten(baseColor, i);
-		var lightName = getColorName(name, "L"+ i);
+		var lightName = getColorName(name, "L" + i);
 
 		html.push([
 				"<td><div class='colorChip' style='background-color:", lightColor, "'><\/div><\/td>",
 			].join(""));
 
-		lightJS.push(getJSRep(lightName, lightColor));
+		lightJS.push(getPropertiesString(lightName, lightColor));
 	}
 	html.push("<\/tr><\/table>");
 	
@@ -342,9 +429,9 @@ function drawShades(hue) {
 	for (var v = 100; v >= 0; v -=5) {
 		html.push("<tr>");
 		for (var s = 0; s <= 100; s+= 5) {
-			hsv.hue = hue;
-			hsv.saturation = s;
-			hsv.value = v;
+			hsv.h = hue;
+			hsv.s = s;
+			hsv.v = v;
 			var color = rgb2hex(hsv2rgb(hsv));
 			html.push("<td><div class=pickerCell onclick='pickColor(\"", color, "\")' style='background-color:", color, "'><\/div><\/td>");
 		}
@@ -363,9 +450,9 @@ function drawHues() {
 	var hsv = {};
 	
 	for (var hue = 0; hue <= 360; hue += 3) {
-		hsv.hue = hue;
-		hsv.saturation = 100;
-		hsv.value = 100;
+		hsv.h = hue;
+		hsv.s = 100;
+		hsv.v = 100;
 		var color = rgb2hex(hsv2rgb(hsv));
 		html.push("<\/tr><td><div class=hueCell onclick='pickHue(\"", hue, "\")' style='background-color:", color, "'><\/div><\/td><\/tr>");
 	}
