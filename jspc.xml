@@ -1,0 +1,233 @@
+<project name="Jsp Precompilation" default="all" basedir=".">
+
+	<target name="jspc">
+		<java classname="org.apache.jasper.JspC" fork="true">
+			<arg value="-s" />
+			<arg value="-l" />
+			<arg value="-d" />
+			<arg value="build/dist/jetty/work/zimbra/jsp" />
+			<arg value="-uriroot" />
+			<arg value="WebRoot" />
+			<arg value="${param.jspfile}" />
+			<classpath id="jspc.classpath">
+				<pathelement path="." />
+				<fileset dir="/opt/zimbra/jetty/lib">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="/Users/jjzhuang/subv/jetty/jetty-6.1.5/lib/jsp-2.1">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="/opt/zimbra/jetty/common/lib">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="/opt/zimbra/jetty/webapps/zimbra/WEB-INF/lib">
+					<include name="zimbrataglib.jar" />
+					<include name="zimbrastore.jar" />
+					<include name="standard.jar" />
+				</fileset>
+			</classpath>
+		</java>
+	</target>
+
+
+	<target name="precompile">
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/ac" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/addattendees" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/addcontacts" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/ads" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/attachments" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/calendar" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/changepass" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/compose" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/eappt" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/econtact" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/etask" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/home" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/imessage" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/login" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/maddrbooks" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/mcalendars" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/message" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/mfolders" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/mtags" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/mtasks" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/options" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/printcalls" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/printvoicemails" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/repeat" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/rest" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/search" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/test" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="h/voicemail" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="m/img" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="m/login" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="m/main" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="m/moaddrbooks" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="m/mocalendar" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="m/mocompose" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="m/mofolders" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="m/moquery" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="m/mosearch" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/admin.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/Boot.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/frameOpenerHelper.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/launchNewWindow.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/launchZCS.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/launchZimbraMail.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/login.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/pre-cache.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/proto/index.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/Resources.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/setauth.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/skinError.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/Spreadsheet.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/SpreadsheetEmbed.jsp" />
+		</antcall>
+		<antcall target="jspc">
+			<param name="param.jspfile" value="public/startZimbraMail.jsp" />
+		</antcall>
+	</target>
+
+
+	<target name="compile">
+
+		<mkdir dir="${webapp.path}/WEB-INF/classes" />
+		<mkdir dir="${webapp.path}/WEB-INF/lib" />
+
+		<javac destdir="${webapp.path}/WEB-INF/classes" optimize="off" debug="on" failonerror="false" srcdir="${webapp.path}/WEB-INF/src" excludes="**/*.smap">
+			<classpath>
+				<pathelement location="${webapp.path}/WEB-INF/classes" />
+				<fileset dir="${webapp.path}/WEB-INF/lib">
+					<include name="*.jar" />
+				</fileset>
+				<pathelement location="${tomcat.home}/common/classes" />
+				<fileset dir="${tomcat.home}/common/lib">
+					<include name="*.jar" />
+				</fileset>
+				<pathelement location="${tomcat.home}/shared/classes" />
+				<fileset dir="${tomcat.home}/shared/lib">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="${tomcat.home}/bin">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+			<include name="**" />
+			<exclude name="tags/**" />
+		</javac>
+
+	</target>
+
+	<target name="all" depends="precompile,compile">
+	</target>
+
+	<target name="cleanup">
+		<delete>
+			<fileset dir="${webapp.path}/WEB-INF/src" />
+			<fileset dir="${webapp.path}/WEB-INF/classes/org/apache/jsp" />
+		</delete>
+	</target>
+
+</project>
+
