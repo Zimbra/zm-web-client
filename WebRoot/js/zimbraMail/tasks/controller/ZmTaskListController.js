@@ -142,6 +142,13 @@ function() {
 	return this._currentView;
 };
 
+ZmTaskListController.prototype._getMoveParams =
+function() {
+	var params = ZmListController.prototype._getMoveParams.call(this);
+	params.overviewId = "ZmTaskListController";
+	return params;
+};
+
 ZmTaskListController.prototype._createNewView =
 function(view) {
 	if (view == ZmController.TASK_VIEW) {

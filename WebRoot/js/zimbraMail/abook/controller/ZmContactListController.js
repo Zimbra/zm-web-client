@@ -299,6 +299,7 @@ function() {
 		}
 	}
 	params.omit = omit;
+	params.overviewId = "ZmContactListController";
 	return params;
 };
 
