@@ -414,7 +414,7 @@ ZmNotebookPageView.prototype.addIconStyles = function(doc)
 	var el = doc.createElement("link");	
 	el.rel = "stylesheet";
 	el.type = "text/css";
-	el.href = "/zimbra/css/imgs.css";
+	el.href = "/zimbra/css/images.css";
 	headTags[0].appendChild(el);	
 	
 };
