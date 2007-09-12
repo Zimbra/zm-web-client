@@ -174,14 +174,15 @@
 			index += 2;
 		}
 	}
-	
+<fmt:message key="splashScreenAppName" var="splashScreenAppName"/>
+<fmt:message key="splashScreenLoading" var="splashScreenLoading"/>
+<fmt:message key="splashScreenCopyright" var="splashScreenCopyright"/>
 	populateText(
-		"ZLoginAppName",			"<fmt:message key="splashScreenAppName"/>",
-		"ZLoginLoadingMsg",			"<fmt:message key="splashScreenLoading"/>",
-		"ZLoginLicenseContainer",	"<fmt:message key="splashScreenCopyright"/>"
+		"ZLoginAppName",			"${zm:jsEncode(splashScreenAppName)}",
+        "ZLoginLoadingMsg",			"${zm:jsEncode(splashScreenLoading)}",
+        "ZLoginLicenseContainer",	"${zm:jsEncode(splashScreenCopyright)}"
 	); 
-	
-	appContextPath = "<%=contextPath %>";
+    appContextPath = "<%=contextPath %>";
 	appCurrentSkin = "<%=skin %>";
 	appExtension   = "<%=ext%>";
 	appDevMode     = <%=inDevMode%>;
