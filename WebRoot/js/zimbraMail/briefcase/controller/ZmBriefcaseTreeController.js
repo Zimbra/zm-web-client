@@ -34,6 +34,7 @@ ZmBriefcaseTreeController = function(type, dropTgt) {
 	this._listeners[ZmOperation.NEW_BRIEFCASEITEM] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_BRIEFCASE] = new AjxListener(this, this._shareBriefcaseListener);
 	this._listeners[ZmOperation.MOUNT_BRIEFCASE] = new AjxListener(this, this._mountBriefcaseListener);
+   	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);	
 	this._eventMgrs = {};
 	
 };
@@ -248,16 +249,8 @@ function(ev) {
 ZmBriefcaseTreeController.prototype._refreshListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
-	var notebook = this._pendingActionData;
-	/*
-	var cache = AjxDispatcher.run("GetNotebookCache");
-	cache.fillCache(notebook.id);
-
-	var controller = AjxDispatcher.run("GetNotebookController");
-	var page = controller.getPage();
-	if (page && page.folderId == notebook.id) {
-		controller.gotoPage(page);
-	}*/
+	var controller = AjxDispatcher.run("GetBriefcaseController");
+	controller.reloadFolder();
 };
 
 ZmBriefcaseTreeController.prototype._deleteListener = function(ev) {
