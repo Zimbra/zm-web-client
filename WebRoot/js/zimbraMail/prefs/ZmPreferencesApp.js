@@ -182,7 +182,7 @@ function() {
 							  nameKey:				"preferences",
 							  icon:					"Preferences",
 							  chooserTooltipKey:	"goToOptions",
-							  button:				ZmAppChooser.B_OPTIONS,
+							  button:				appCtxt.isChildWindow ? null : ZmAppChooser.B_OPTIONS,
 							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],

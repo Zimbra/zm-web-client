@@ -56,11 +56,15 @@ ZmApp = function(name, container, parentController) {
 	this._registerOperations();
 	this._registerItems();
 	this._registerOrganizers();
-	this._setupSearchToolbar();
-	this._setupCurrentAppToolbar();
+	if (!parentController) {
+		this._setupSearchToolbar();
+		this._setupCurrentAppToolbar();
+	}
 	this._registerApp();
 
-	this._opc = appCtxt.getOverviewController();
+	if (!appCtxt.isChildWindow) {
+		this._opc = appCtxt.getOverviewController();
+	}
 }
 
 // app information ("_R" means "reverse map")

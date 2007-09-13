@@ -595,7 +595,7 @@ function(account, callback) {
 
 ZmAppCtxt.prototype.getActiveAccount =
 function() {
-	return this._activeAccount;
+	return this.isChildWindow ? parentAppCtxt._activeAccount : this._activeAccount;
 };
 
 ZmAppCtxt.prototype.getIdentityCollection =

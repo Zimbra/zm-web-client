@@ -14,8 +14,6 @@ AjxPackage.require("zimbraMail.share.model.ZmMountpoint");
 
 AjxPackage.require("zimbraMail.share.view.ZmShareReply");
 
-AjxPackage.require("zimbraMail.share.view.dialog.ZmAttachDialog");
-
 AjxPackage.require("zimbraMail.share.view.dialog.ZmAcceptShareDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmDeclineShareDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmLinkPropsDialog");

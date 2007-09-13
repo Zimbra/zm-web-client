@@ -1,3 +1,11 @@
+/*
+ * Package: Startup1_2
+ * 
+ * Together with Startup1_1, contains everything needed to support displaying
+ * the results of the initial mail search. Startup1 was split into two smaller
+ * packages becausing JS parsing cost increases exponentially, so it is best to
+ * keep the files under 100K or so.
+ */
 AjxPackage.require("zimbraMail.share.model.ZmObjectHandler");
 AjxPackage.require("zimbraMail.share.model.ZmObjectManager");
 AjxPackage.require("zimbraMail.share.model.ZmSettings");

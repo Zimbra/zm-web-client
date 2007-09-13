@@ -681,7 +681,9 @@ function(tb) {
 	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
 	this._underlineButton.addSelectionListener(listener);
 
-	appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", this, tb);
+	if (!appCtxt.isChildWindow) {
+		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", this, tb);
+	}
 };
 
 ZmHtmlEditor.prototype._createToolBar2 =
@@ -737,7 +739,9 @@ function(tb) {
 		b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
 	}
 
-	appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", this, tb);
+	if (!appCtxt.isChildWindow) {
+		appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", this, tb);
+	}
 };
 
 ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {

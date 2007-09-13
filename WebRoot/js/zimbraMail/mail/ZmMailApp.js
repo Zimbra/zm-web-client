@@ -76,7 +76,7 @@ function() {
 ZmMailApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.registerMethod("Compose", ["MailCore", "Mail"], new AjxCallback(this, this.compose));
-	AjxDispatcher.registerMethod("GetComposeController", ["MailCore", "Mail", "Zimlet"], new AjxCallback(this, this.getComposeController));
+	AjxDispatcher.registerMethod("GetComposeController", ["MailCore", "Mail"], new AjxCallback(this, this.getComposeController));
 	AjxDispatcher.registerMethod("GetConvController", ["MailCore", "Mail"], new AjxCallback(this, this.getConvController));
 	AjxDispatcher.registerMethod("GetConvListController", "MailCore", new AjxCallback(this, this.getConvListController));
 	AjxDispatcher.registerMethod("GetMsgController", ["MailCore", "Mail"], new AjxCallback(this, this.getMsgController));
@@ -536,7 +536,7 @@ function() {
 							  icon:					"MailApp",
 							  chooserTooltipKey:	"goToMail",
 							  viewTooltipKey:		"displayMailToolTip",
-							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
+							  defaultSearch:		appCtxt.isChildWindow ? null : ZmSearchToolBar.FOR_MAIL_MI,
 							  organizer:			ZmOrganizer.FOLDER,
 							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,

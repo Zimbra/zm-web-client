@@ -72,11 +72,17 @@ function() {
 ZmNewWindow.run =
 function() {
 
+	// We're using a custom pkg that includes the mail classes we'll need, so pretend that
+	// we've already loaded mail packages so the real ones don't get loaded as well.
+	AjxDispatcher.setLoaded("MailCore", true);
+	AjxDispatcher.setLoaded("Mail", true);
+
+	var winOpener = window.opener || window;
 	// inherit parent window's debug level but only enable debug window if not already open
-	DBG.setDebugLevel(window.opener.DBG._level, true);
+	DBG.setDebugLevel(winOpener.DBG._level, true);
 
 	if (!window.parentController) {
-		window.parentController = window.opener._zimbraMail;
+		window.parentController = winOpener._zimbraMail;
 	}
 
 	// Create the global app context
@@ -85,9 +91,9 @@ function() {
 
 	// XXX: DO NOT MOVE THIS LINE
 	// redefine ZmSetting from parent window since it loses this info.
-	window.parentAppCtxt = window.opener.appCtxt;
+	window.parentAppCtxt = winOpener.appCtxt;
 	appCtxt.setSettings(parentAppCtxt.getSettings());
-	window.ZmSetting = window.opener.ZmSetting;
+	window.ZmSetting = winOpener.ZmSetting;
 
 	ZmOperation.initialize();
 	ZmApp.initialize();
@@ -117,7 +123,7 @@ function(ev) {
 		}
 	} else if (window.command == "msgViewDetach") {
 		// msg controller (as a ZmListController) adds listener to tag list
-		var mc = appCtxt.getApp(ZmApp.MAIL).getMsgController();
+		var mc = AjxDispatcher.run("GetMsgController");
 		if (mc) {
 			mc.dispose();
 		}
@@ -404,4 +410,3 @@ function(ev) {
 		}
 	}
 };
-

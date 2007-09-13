@@ -52,6 +52,7 @@ AjxPackage.require("zimbraMail.share.view.assistant.ZmAssistant");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
 
 AjxPackage.require("zimbraMail.share.view.dialog.ZmDialog");
+AjxPackage.require("zimbraMail.share.view.dialog.ZmAttachDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmLoginDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewOrganizerDialog");
 AjxPackage.require("zimbraMail.share.view.dialog.ZmNewFolderDialog");

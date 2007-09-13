@@ -278,15 +278,18 @@ function(org, params) {
 	if (params.firstUserId)		{ ZmOrganizer.FIRST_USER_ID[org]		= params.firstUserId; }
 	if (params.orgClass)		{ ZmOrganizer.ORG_CLASS[org]			= params.orgClass; }
 	if (params.orgPackage)		{ ZmOrganizer.ORG_PACKAGE[org]			= params.orgPackage; }
-	if (params.treeController)	{ ZmOverviewController.CONTROLLER[org]	= params.treeController; }
 	if (params.labelKey)		{ ZmOrganizer.LABEL[org]				= params.labelKey; }
 	if (params.itemsKey)		{ ZmOrganizer.ITEMS_KEY[org]			= params.itemsKey; }
 	if (params.hasColor)		{ ZmOrganizer.HAS_COLOR[org]			= params.hasColor; }
 	if (params.views)			{ ZmOrganizer.VIEWS[org]				= params.views; }
 	if (params.folderKey)		{ ZmOrganizer.FOLDER_KEY[org]			= params.folderKey; }
 	if (params.mountKey)		{ ZmOrganizer.MOUNT_KEY[org]			= params.mountKey; }
-	if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }
 	if (params.deferrable)		{ ZmOrganizer.DEFERRABLE[org]			= params.deferrable; }
+
+	if (!appCtxt.isChildWindow) {
+		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }
+		if (params.treeController)	{ ZmOverviewController.CONTROLLER[org]	= params.treeController; }
+	}
 
 	ZmOrganizer.TREE_TYPE[org] = params.treeType || org;	// default to own type
 
