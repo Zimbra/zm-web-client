@@ -719,49 +719,49 @@
                 <if>
                     <equals arg1='${arg}' arg2='ContactsCore'/>
                     <then>
-                        <patternset id='jam.template.fileset' excludes='abook/**'/>
+                        <patternset id='jam.template.fileset' includes='abook/**'/>
                     </then>
                 </if>
                 <if>
                     <equals arg1='${arg}' arg2='CalendarCore'/>
                     <then>
-                        <patternset id='jam.template.fileset' excludes='calendar/**'/>
+                        <patternset id='jam.template.fileset' includes='calendar/**'/>
                     </then>
                 </if>
                 <if>
                     <equals arg1='${arg}' arg2='IM'/>
                     <then>
-                        <patternset id='jam.template.fileset' excludes='im/**'/>
+                        <patternset id='jam.template.fileset' includes='im/**'/>
                     </then>
                 </if>
                 <if>
                     <equals arg1='${arg}' arg2='MailCore'/>
                     <then>
-                        <patternset id='jam.template.fileset' excludes='mail/**'/>
+                        <patternset id='jam.template.fileset' includes='mail/**'/>
                     </then>
                 </if>
                 <if>
                     <equals arg1='${arg}' arg2='PreferencesCore'/>
                     <then>
-                        <patternset id='jam.template.fileset' excludes='prefs/**'/>
+                        <patternset id='jam.template.fileset' includes='prefs/**'/>
                     </then>
                 </if>
                 <if>
                     <equals arg1='${arg}' arg2='Startup1_2'/>
                     <then>
-                        <patternset id='jam.template.fileset' excludes='dwt/**,zimbra/**,share/**'/>
+                        <patternset id='jam.template.fileset' includes='dwt/**,zimbra/**,share/**'/>
                     </then>
                 </if>
                 <if>
                     <equals arg1='${arg}' arg2='TasksCore'/>
                     <then>
-                        <patternset id='jam.template.fileset' excludes='tasks/**'/>
+                        <patternset id='jam.template.fileset' includes='tasks/**'/>
                     </then>
                 </if>
                 <if>
                     <equals arg1='${arg}' arg2='Voicemail'/>
                     <then>
-                        <patternset id='jam.template.fileset' excludes='voicemail/**'/>
+                        <patternset id='jam.template.fileset' includes='voicemail/**'/>
                     </then>
                 </if>
 
