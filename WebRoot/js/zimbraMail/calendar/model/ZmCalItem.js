@@ -242,6 +242,15 @@ function(contentType) {
 // (null if folder is not remote/shared)
 ZmCalItem.prototype.getRemoteFolderOwner =
 function() {
+	// bug fix #18855 - dont return the folder owner if this is a folder move
+	// from local to remote (server will do the right thing)
+	if (this._orig &&
+		(this._orig.folderId != this.folderId) &&
+		(!this._orig.getFolder().link && this.getFolder().link))
+	{
+		return null;
+	}
+
 	var folder = this.getFolder();
 	return folder && folder.link ? folder.owner : null;
 };
