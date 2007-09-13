@@ -1,7 +1,7 @@
 <%@ page session="false" %>
 <%@ page session="false" language="java" import="javax.naming.*"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
    	Cookie[] cookies = request.getCookies();
    	String portsCSV = application.getInitParameter("admin.allowed.ports");
