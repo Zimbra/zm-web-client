@@ -271,8 +271,10 @@
 		var isDev = "<%= (isDev != null) ? isDev : "" %>";
 		var protocolMode = "<%=protocolMode%>";
 
+        <%---
         <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${true}" itemsperpage="${requestScope.authResult.prefs.zimbraPrefMailItemsPerPage[0]}" types="${requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
-        var batchifoResponse = ${getInfoJSON};
+        var batchInfoResponse = ${getInfoJSON};
+        --%>
 
         var getInfoResponse = null;
 		var searchResponse = null;
