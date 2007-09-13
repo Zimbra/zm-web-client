@@ -1,19 +1,8 @@
 <template id='zimbra.Widgets#ZmErrorDialogControls' width='20' height='32'>
-  <div class='horizSep'></div>
   <div id='${id}_buttons' class='DwtDialogButtonBar'>
     <$ if (AjxEnv.isNav) { $>
       <input type='button' id='${id}_focus' style='height:0px;width:0px;display:none;'>
     <$ } $>
-  </div>
-  <div id='${id}_details_container' style='display:none;'>
-    <div class='vSpace'></div>
-    <table cellspacing=0 cellpadding=0 width='100%'>
-      <tr>
-        <td>
-          <textarea id='${id}_details' readonly rows='10'></textarea>
-        </td>
-      </tr>
-    </table>
   </div>
 </template>
 
