@@ -16,6 +16,7 @@
 
     <property name='server.dir' value='../ZimbraServer'/>
     <property name='server.build.dir' value='${server.dir}/build'/>
+    <property name='server.dist.dir' value='${server.build.dir}/dist'/>
 
     <property name='license.dir' value='../ZimbraLicenses'/>
 
@@ -69,7 +70,7 @@
 
     <path id='class.path'>
         <pathelement location="${build.classes.dir}"/>
-        <fileset dir="${lib.dir}" includes="**/*.jar"/>
+        <fileset dir="${lib.dir}" includes="*.jar"/>
         <fileset dir="${common.lib.dir}" includes="**/*.jar"/>
         <pathelement location="${common.build.classes.dir}"/>
     </path>
@@ -901,7 +902,7 @@ if (ext == null) ext = "";
         <unzip dest='${webapp.dir}' src="${webapp.file}"/>
 
         <antcall target='webxml-deploy-replace'/>
-
+    	
         <ant dir="${server.dir}" target="start-jetty" inheritAll="false"/>
     </target>
 
@@ -993,5 +994,213 @@ if (ext == null) ext = "";
         <zip destfile="${ffext.build.dir}/chrome/${ffext.jarfile}" basedir="${ffext.src.dir}/chrome/zimbradnd"/>
         <zip destfile="${ffext.build.dir}/${ffext.xpifile}" basedir="${ffext.build.dir}"/>
     </target>
+	
+	
+    <!-- JSP PRECOMPILE STUFF -->
+     <property name="jspc.build.dir" value="${build.dist.dir}/jetty/work/zimbra/jsp" />
 
+     <path id='jspc.class.path'>
+         <pathelement path="${server.dist.dir}/jetty/resources" />
+         <fileset dir="${lib.dir}/jsp-2.1" includes="*.jar"/>
+     	 <fileset dir="${taglib.build.dir}" includes="zimbrataglib.jar"/>
+         <fileset dir="${server.dist.dir}/jetty/common/lib" includes="zimbracommon.jar"/>
+         <fileset dir="${server.build.dir}" includes="zimbrastore.jar"/>
+         <fileset dir="${lib.dir}" includes="standard.jar,servlet-api.jar"/>
+         <fileset dir="${common.lib.dir}" includes="jetty-util*.jar,commons-collections*.jar"/>
+     </path>
+
+     <target name="jspc">
+         <java classname="org.apache.jasper.JspC" fork="true" classpathref="jspc.class.path">
+             <arg value="-s" />
+             <arg value="-l" />
+             <arg value="-d" />
+             <arg value="${jspc.build.dir}" />
+             <arg value="-uriroot" />
+             <arg value="${web.dir}" />
+             <arg value="${param.jspfile}" />
+         </java>
+     </target>
+
+     <target name="jspc.precompile">
+     	<mkdir dir="${jspc.build.dir}"/>
+     	
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/ac" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/addattendees" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/addcontacts" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/ads" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/attachments" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/calendar" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/changepass" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/compose" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/eappt" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/econtact" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/etask" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/home" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/imessage" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/login" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/maddrbooks" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/mcalendars" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/message" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/mfolders" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/mtags" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/mtasks" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/options" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/printcalls" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/printvoicemails" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/repeat" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/rest" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/search" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/test" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="h/voicemail" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="m/img" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="m/login" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="m/main" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="m/moaddrbooks" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="m/mocalendar" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="m/mocompose" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="m/mofolders" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="m/moquery" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="m/mosearch" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/admin.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/Boot.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/frameOpenerHelper.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/launchNewWindow.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/launchZCS.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/launchZimbraMail.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/login.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/pre-cache.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/proto/index.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/Resources.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/setauth.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/skinError.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/Spreadsheet.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/SpreadsheetEmbed.jsp" />
+         </antcall>
+         <antcall target="jspc">
+             <param name="param.jspfile" value="public/startZimbraMail.jsp" />
+         </antcall>
+     </target>
+
+     <target name="jspc.compile">
+         <javac destdir="${jspc.build.dir}" optimize="off" debug="on" srcdir="${jspc.build.dir}" classpathref="jspc.class.path">
+             <include name="**" />
+         </javac>
+     </target>
+
+     <target name="jspc.build" depends="jspc.precompile,jspc.compile"/>
+
+     <target name="jspc.deploy" depends="jspc.build">    
+     	<mkdir dir="/opt/zimbra/jetty/work/zimbra/jsp"/>
+        <copy todir="/opt/zimbra/jetty/work/zimbra/jsp" overwrite="true">
+            <fileset dir="${jspc.build.dir}"/>
+        </copy>
+     </target>
+	
+     <target name="jspc.clean">
+         <delete>
+             <fileset dir="${jspc.build.dir}" />
+         </delete>
+     </target>
+	
 </project>
