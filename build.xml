@@ -973,6 +973,7 @@ if (ext == null) ext = "";
     <!-- LEGACY TARGETS -->
     <target name='dev-sync' depends='sync'/>
     <target name='prod-war' depends='prod,war'/>
+    <target name="prod-build" depends='prod,war,jspc.build'/>
     <target name='prod-deploy' depends='prod,deploy'/>
     <target name='admin-dev-sync' depends='admin,sync'/>
     <target name='admin-war' depends='admin,prod,war'/>
