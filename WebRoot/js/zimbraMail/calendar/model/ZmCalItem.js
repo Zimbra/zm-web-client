@@ -1008,14 +1008,10 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 
 	var m = this._messageNode = soapDoc.set('m');
 
-	if (this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE && !this.isException) {
-		// do nothing for instance requests
+	if (onBehalfOf) {
+		m.setAttribute("l", this.getFolder().rid);
 	} else {
-		if (onBehalfOf) {
-			m.setAttribute("l", this.getFolder().rid);
-		} else if (this.viewMode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
-			m.setAttribute("l", this.folderId);
-		}
+		m.setAttribute("l", this.folderId);
 	}
 
 	var inv = soapDoc.set("inv", null, m);
