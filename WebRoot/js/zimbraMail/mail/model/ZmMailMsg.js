@@ -213,14 +213,35 @@ function(mode) {
 
 	if (invAddr) {
 		return AjxVector.fromArray([invAddr]);
-	} else {
-		if (!(addrVec && addrVec.size())) {
-			addrVec = (mode == ZmOperation.REPLY_CANCEL || this.isSent && mode == ZmOperation.REPLY_ALL)
-				? this._addrs[AjxEmailAddress.TO]
-				: this._addrs[AjxEmailAddress.FROM];
-		}
-		return addrVec;
-	}
+    }
+    if (!(addrVec && addrVec.size())) {
+        if (mode == ZmOperation.REPLY_CANCEL
+                || this.isSent && mode == ZmOperation.REPLY_ALL) {
+            if (this.isInvite()) {
+                addrVec = this._getAttendees();
+            }
+            else {
+                this._addrs[AjxEmailAddress.TO];
+            }
+        }
+        else {
+            this._addrs[AjxEmailAddress.FROM];
+        }
+    }
+    return addrVec;
+};
+
+
+ZmMailMsg.prototype._getAttendees =
+function() {
+    var attendees = this.invite.components[0].at;
+    var emails = new AjxVector();
+    for (var i = 0; i < attendees.length; i++) {
+        var at = attendees[i];
+        emails.add(new AjxEmailAddress(at.a, null, null, at.d));
+    }
+
+    return emails;
 };
 
 /**
