@@ -203,7 +203,7 @@ function(requestType, respFunction, callback, errorCallback, batchCmd) {
 					if (field.type == ZmIdentity.BOOLEAN) {
 						value = value ? "TRUE" : "FALSE";
 					}
-					if (value || i == ZmIdentity.SIGNATURE) {
+					if (value != null || i == ZmIdentity.SIGNATURE) {
 						var propertyNode = soapDoc.set("a", value, identityNode);
 						propertyNode.setAttribute("name", field.soap);
 					}
@@ -266,7 +266,7 @@ ZmIdentity.prototype._handleCreateResponse = function(callback, result, response
 	collection.add(this);
 
 	if (callback) {
-		callback.run(this, request, result);
+		callback.run(this, result);
 	}
 };
 
@@ -282,7 +282,7 @@ ZmIdentity.prototype._handleSaveResponse = function(callback, result, response) 
 	collection.notifyModify(this, rename);
 
 	if (callback) {
-		callback.run(this, request, result);
+		callback.run(this, result);
 	}
 };
 
@@ -291,6 +291,6 @@ ZmIdentity.prototype._handleDeleteResponse = function(callback, result, response
 	collection.remove(this);
 
 	if (callback) {
-		callback.run(this, request, result);
+		callback.run(this, result);
 	}
 };

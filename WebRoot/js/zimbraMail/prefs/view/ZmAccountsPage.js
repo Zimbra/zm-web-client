@@ -71,7 +71,7 @@ ZmAccountsPage.PREFS = {
 		displayContainer:	ZmPref.TYPE_INPUT
 	},
 	REPLY_TO_EMAIL: {
-		displayContainer:	ZmPref.TYPE_SELECT
+		displayContainer:	ZmPref.TYPE_COMBOBOX
 	},
 	SIGNATURE: {
 		displayContainer:	ZmPref.TYPE_SELECT
@@ -385,7 +385,7 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 		}
 
 		if (account._dirty) {
-			var callback = null;
+			var callback = new AjxCallback(this, this._handleSaveAccount, [account]);
 			account.save(callback, null, batchCmd);
 			addedCommands = true;
 		}
@@ -393,7 +393,7 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 
 	// add new accounts
 	for (var i = 0; i < newAccounts.length; i++) {
-		var callback = null;
+		var callback = new AjxCallback(this, this._handleCreateAccount, [newAccounts[i]]);
 		newAccounts[i].create(callback, null, batchCmd);
 		addedCommands = true;
 	}
@@ -569,7 +569,8 @@ ZmAccountsPage.prototype._setControlValue = function(id, section, value) {
 			control.setSelected(value);
 			break;
 		}
-		case ZmPref.TYPE_INPUT: {
+		case ZmPref.TYPE_INPUT:
+		case ZmPref.TYPE_COMBOBOX: {
 			control.setValue(value);
 			break;
 		}
@@ -623,6 +624,9 @@ ZmAccountsPage.prototype._getControlValue = function(id, section) {
 		case ZmPref.TYPE_INPUT:
 		case ZmPref.TYPE_SELECT: {
 			return control.getValue();
+		}
+		case ZmPref.TYPE_COMBOBOX: {
+			return control.getValue() || control.getText();
 		}
 	}
 
@@ -757,7 +761,7 @@ ZmAccountsPage.prototype._setupRadioGroup = function(id, setup, value) {
 };
 
 ZmAccountsPage.prototype._setupSelect = function(id, setup, value) {
-	var isEmailSelect = id == "FROM_EMAIL" || id == "REPLY_TO_EMAIL";
+	var isEmailSelect = id == "FROM_EMAIL";
 	if (isEmailSelect && appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS)) {
 		var params = {
 			parent: this,
@@ -785,21 +789,11 @@ ZmAccountsPage.prototype._setupSelect = function(id, setup, value) {
 		return input;
 	}
 
+	if (isEmailSelect) {
+		setup.displayOptions = this._getAllAddresses();
+	}
 	var select = ZmPreferencesPage.prototype._setupSelect.apply(this, arguments);
 	if (isEmailSelect) {
-		var accountAddress = appCtxt.get(ZmSetting.USERNAME);
-		select.addOption(accountAddress, false, accountAddress);
-
-		var addresses = appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES);
-		for (var i = 0; i < addresses.length; i++) {
-			select.addOption(addresses[i], false, addresses[i]);
-		}
-
-		var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
-		for (var i = 0; i < aliases.length; i++) {
-			select.addOption(aliases[i], false, aliases[i]);
-		}
-
 		select.addChangeListener(new AjxListener(this, this._handleFromEmail));
 	}
 	else if (id == "SIGNATURE") {
@@ -808,6 +802,13 @@ ZmAccountsPage.prototype._setupSelect = function(id, setup, value) {
 		this._resetSignatureSelect(select);
 	}
 	return select;
+};
+
+ZmAccountsPage.prototype._setupComboBox = function(id, setup, value) {
+	if (id == "REPLY_TO_EMAIL") {
+		setup.displayOptions = this._getAllAddresses();
+	}
+	return ZmPreferencesPage.prototype._setupComboBox.apply(this, arguments);
 };
 
 ZmAccountsPage.prototype._setupCustom = function(id, setup, value) {
@@ -844,6 +845,13 @@ ZmAccountsPage.prototype._setupCustom = function(id, setup, value) {
 	}
 
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
+};
+
+ZmAccountsPage.prototype._getAllAddresses = function() {
+	var username = appCtxt.get(ZmSetting.USERNAME); 
+	var addresses = appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES);
+	var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
+	return [].concat(username, addresses, aliases);
 };
 
 ZmAccountsPage.prototype._resetAccountListView = function(accountOrIndex) {
@@ -961,6 +969,10 @@ ZmAccountsPage.prototype._createSection = function(name) {
 			}
 			case ZmPref.TYPE_SELECT: {
 				control = this._setupSelect(id, setup, value);
+				break;
+			}
+			case ZmPref.TYPE_COMBOBOX: {
+				control = this._setupComboBox(id, setup, value);
 				break;
 			}
 			case ZmPref.TYPE_CHECKBOX: {
@@ -1240,6 +1252,16 @@ function(dataSource, result) {
 ZmAccountsPage.prototype._handlePreSaveFinish = function(continueCallback, result, exceptions) {
 	// HACK: Don't know a better way to set an error condition
 	continueCallback.run(this.__hack_preSaveSuccess && (!exceptions || exceptions.length == 0));
+};
+
+// save callbacks
+
+ZmAccountsPage.prototype._handleSaveAccount = function(account, resp) {
+	delete account._dirty;
+};
+
+ZmAccountsPage.prototype._handleCreateAccount = function(account, resp) {
+	delete account._new;
 };
 
 //

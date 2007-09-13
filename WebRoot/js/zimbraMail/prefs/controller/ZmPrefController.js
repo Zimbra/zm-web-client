@@ -298,12 +298,12 @@ ZmPrefController.prototype._doSave = function(callback, noPop) {
 
 	// save any extra commands that may have been added
 	if (batchCommand.size()) {
-		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [list, callback, noPop]);
+		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [true, callback, noPop]);
 		var errorCallback = new AjxCallback(this, this._handleResponseSaveError);
 		batchCommand.run(respCallback, errorCallback);
 	}
 	else {
-		this._handleResponseSaveListener(list, callback, noPop);
+		this._handleResponseSaveListener(list.length > 0, callback, noPop);
 	}
 };
 
@@ -318,8 +318,8 @@ function(exception1/*, ..., exceptionN*/) {
 };
 
 ZmPrefController.prototype._handleResponseSaveListener =
-function(list, callback, noPop, result) {
-	if (list.length) {
+function(optionsSaved, callback, noPop, result) {
+	if (optionsSaved) {
 		appCtxt.setStatusMsg(ZmMsg.optionsSaved);
 	}
 

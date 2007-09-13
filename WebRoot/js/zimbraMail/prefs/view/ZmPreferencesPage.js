@@ -153,6 +153,12 @@ function() {
 			continue;
 		}
 
+		if (type == ZmPref.TYPE_COMBOBOX) {
+			var combobox = this._setupComboBox(id, setup, value);
+			combobox.replaceElement(elem);
+			continue;
+		}
+
 		if (type == ZmPref.TYPE_RADIO_GROUP) {
 			var radio = this._setupRadioGroup(id, setup, value);
 			radio.replaceElement(elem);
@@ -257,7 +263,8 @@ function(id, setup, control) {
 	setup = setup || ZmPref.SETUP[id];
 	var value = null;
 	var type = setup ? setup.displayContainer : null;
-	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_CHECKBOX ||
+	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_COMBOBOX ||
+		type == ZmPref.TYPE_CHECKBOX ||
 		type == ZmPref.TYPE_RADIO_GROUP || type == ZmPref.TYPE_COLOR ||
 		type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_LOCALES) {
 		var object = control || this.getFormObject(id);
@@ -276,6 +283,9 @@ function(id, setup, control) {
 			}
 			else if (type == ZmPref.TYPE_LOCALES) {
 				value = object._localeId;
+			}
+			else if (type == ZmPref.TYPE_COMBOBOX) {
+				value = object.getValue() || object.getText();
 			}
 			else {
 				value = object.getValue();
@@ -309,7 +319,8 @@ function(id, value, setup, control) {
 		value = setup.approximateFunction(value);
 	}
 	var type = setup ? setup.displayContainer : null;
-	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_CHECKBOX ||
+	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_COMBOBOX ||
+		type == ZmPref.TYPE_CHECKBOX ||
 		type == ZmPref.TYPE_RADIO_GROUP ||
 		type == ZmPref.TYPE_COLOR) {
 		var object = control || this.getFormObject(id);
@@ -323,6 +334,9 @@ function(id, value, setup, control) {
 		}
 		else if (type == ZmPref.TYPE_RADIO_GROUP) {
 			object.setSelectedValue(value);
+		}
+		else if (type == ZmPref.TYPE_COMBOBOX) {
+			object.setValue(value);
 		}
 		else {
 			var curValue = object.getValue();
@@ -417,6 +431,16 @@ function(parentId, text, width, listener) {
 	return button;
 };
 
+ZmPreferencesPage.prototype._prepareValue = function(id, setup, value) {
+	if (setup.displayFunction) {
+		value = setup.displayFunction(value);
+	}
+	if (setup.approximateFunction) {
+		value = setup.approximateFunction(value);
+	}
+	return value;
+};
+
 ZmPreferencesPage.prototype._setupStatic =
 function(id, setup, value) {
 	var text = new DwtText(this);
@@ -427,12 +451,7 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
-	if (setup.displayFunction) {
-		value = setup.displayFunction(value);
-	}
-	if (setup.approximateFunction) {
-		value = setup.approximateFunction(value);
-	}
+	value = this._prepareValue(id, setup, value);
 
 	var selObj = new DwtSelect(this);
 	this.setFormObject(id, selObj);
@@ -454,14 +473,29 @@ function(id, setup, value) {
 	return selObj;
 };
 
+ZmPreferencesPage.prototype._setupComboBox = function(id, setup, value) {
+	value = this._prepareValue(id, setup, value);
+
+	var cboxObj = new DwtComboBox(this);
+	this.setFormObject(id, cboxObj);
+
+	var options = setup.options || setup.displayOptions || setup.choices || [];
+	var isChoices = Boolean(setup.choices);
+	for (var j = 0; j < options.length; j++) {
+		var optValue = isChoices ? options[j].value : options[j];
+		var optLabel = isChoices ? options[j].label : setup.displayOptions[j];
+		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
+		cboxObj.add(optLabel, optValue, optValue == value);
+	}
+
+	cboxObj.setValue(value);
+
+	return cboxObj;
+};
+
 ZmPreferencesPage.prototype._setupRadioGroup =
 function(id, setup, value) {
-	if (setup.displayFunction) {
-		value = setup.displayFunction(value);
-	}
-	if (setup.approximateFunction) {
-		value = setup.approximateFunction(value);
-	}
+	value = this._prepareValue(id, setup, value);
 
 	// TODO: Make DwtRadioButtonGroup an instance of DwtComposite
 	var container = new DwtComposite(this);
