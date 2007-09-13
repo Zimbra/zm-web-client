@@ -85,7 +85,12 @@ ZmBriefcaseView.prototype._createItemHtml =
 function(item, params) {
 	
 	var name = item.name;
-	var icon =  this.getContentTypeIcon(name);
+	var contentType = item.contentType;
+	if(contentType.match(/;/)) {
+			contentType = contentType.split(";")[0];
+	}
+	var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
+	icon = "Img" + ( mimeInfo ? mimeInfo.imageLarge : "UnknownDoc_48");
 	
 	if(name.length>14){
 		name = name.substring(0,14)+"...";
