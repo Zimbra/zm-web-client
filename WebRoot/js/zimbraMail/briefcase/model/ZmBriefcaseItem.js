@@ -50,6 +50,7 @@ ZmBriefcaseItem.prototype.modifier;
 ZmBriefcaseItem.prototype.modifyDate;
 ZmBriefcaseItem.prototype.size;
 ZmBriefcaseItem.prototype.version = 0;
+ZmBriefcaseItem.prototype.contentType;
 
 // Static functions
 
@@ -95,6 +96,7 @@ ZmBriefcaseItem.prototype.set = function(data) {
 	this.modifyDate = data.md != null ? new Date(Number(data.md)) : this.modifyDate;
 	this.size = data.s != null ? Number(data.s) : this.size;
 	this.version = data.ver != null ? Number(data.ver) : this.version;
+	this.contentType = data.ct != null ? data.ct : this.contentType;	
 };
 
 ZmBriefcaseItem.prototype.isReadOnly =

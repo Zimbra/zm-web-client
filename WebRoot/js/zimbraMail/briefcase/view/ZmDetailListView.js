@@ -124,10 +124,12 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_TYPE) {
 		var icon = null;
 		if (!icon) {
-			icon = this.getContentTypeIcon(item.name);
-			/*var contentType = item.contentType;
+			var contentType = item.contentType;
+			if(contentType && contentType.match(/;/)) {
+				contentType = contentType.split(";")[0];
+			}
 			var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
-			icon = mimeInfo ? mimeInfo.image : "UnknownDoc";*/
+			icon = mimeInfo ? mimeInfo.image : "UnknownDoc" ;
 		}
 		htmlArr[idx++] = "<div class='Img" + icon + "'></div>";
 	} else if (field == ZmItem.F_PARTICIPANT) {
