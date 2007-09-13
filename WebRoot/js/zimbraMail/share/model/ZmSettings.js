@@ -153,22 +153,20 @@ function(name) {
 };
 
 /**
-* Retrieves the preferences, COS settings, and metadata for the current user.
-* All the data gets stored into the settings collection.
-*
-* @param callback 		[AjxCallback]*		callback to run after response is received
-* @param errorCallback 	[AjxCallback]*		callback to run error is received
-* @param accountName	[String]*			name of account to load settings for
-*/
+ * Retrieves the preferences, COS settings, and metadata for the current user.
+ * All the data gets stored into the settings collection.
+ *
+ * @param callback 			[AjxCallback]*		callback to run after response is received
+ * @param errorCallback 	[AjxCallback]*		callback to run error is received
+ * @param accountName		[String]*			name of account to load settings for
+ * @param response			[object]*			pre-determined JSON response object
+ */
 ZmSettings.prototype.loadUserSettings =
-function(callback, errorCallback, accountName) {
-	var params = {
-		soapDoc: AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount"),
-		accountName: accountName,
-		asyncMode: true,
-		callback: new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName]),
-		errorCallback: errorCallback
-	};
+function(callback, errorCallback, accountName, response) {
+	var soapDoc = response ? null : AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
+	var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName]);
+	var params = {soapDoc:soapDoc, accountName:accountName, asyncMode:true,
+				  callback:respCallback, errorCallback:errorCallback, response:response};
 	appCtxt.getAppController().sendRequest(params);
 };
 
