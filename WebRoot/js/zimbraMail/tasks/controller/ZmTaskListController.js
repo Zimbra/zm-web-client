@@ -109,7 +109,18 @@ ZmTaskListController.prototype.quickSave =
 function(name, callback) {
 	var folderId = (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
 
+	var folder = appCtxt.getById(folderId);
+	if (folder && folder.link) {
+		folderId = folder.getRemoteId();
+	}
+
 	var task = new ZmTask(this._list, null, folderId);
+
+	if (folder && folder.link) {
+		task.setOrganizer(folder.owner);
+		task._orig = new ZmTask(this._list);
+	}
+
 	task.setName(name);
 	task.setViewMode(ZmCalItem.MODE_NEW);
 	task.location = "";
