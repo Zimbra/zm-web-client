@@ -564,10 +564,12 @@ function() {
 
 	var buttons = [ZmOperation.SEND];
 
+	buttons.push(ZmOperation.CANCEL);
+	
 	if (appCtxt.get(ZmSetting.IM_ENABLED))
 		buttons.push(ZmOperation.IM);
-
-	buttons.push(ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
+	
+	buttons.push(ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
 	
 	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))    
 		buttons.push(ZmOperation.ATTACHMENT);
