@@ -278,6 +278,9 @@
   height: 100%;	
 }
 
+.DLSource .DwtListView-Rows {
+	height:90%;
+}
 .inputBorder { 
   border-top: 2px solid #848484;
   border-left: 2px solid #848484;
