@@ -14,7 +14,7 @@ and the container element is replaced with that control.
 <template id='prefs.Pages#General'>
 	<div align=right>
 		<table class='ZOptionsDefaultsTable'>
-			<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFAULTS_RESTORE'></div></td></tr>
+			<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE'></div></td></tr>
 		</table>
 	</div>
 
@@ -102,7 +102,7 @@ and the container element is replaced with that control.
 <template id='prefs.Pages#Mail'>
 	<div align=right>
 		<table class='ZOptionsDefaultsTable'>
-			<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFAULTS_RESTORE'></div></td></tr>
+			<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE'></div></td></tr>
 		</table>
 	</div>
 
@@ -263,7 +263,7 @@ and the container element is replaced with that control.
 <template id='prefs.Pages#Composing'>
 	<div align=right>
 		<table class='ZOptionsDefaultsTable'>
-			<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFAULTS_RESTORE'></div></td></tr>
+			<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE'></div></td></tr>
 		</table>
 	</div>
 
@@ -400,7 +400,7 @@ and the container element is replaced with that control.
 <template id='prefs.Pages#Signatures'>
 	<div align=right>
 		<table class='ZOptionsDefaultsTable'>
-			<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFAULTS_RESTORE'></div></td></tr>
+			<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE'></div></td></tr>
 		</table>
 	</div>
 
@@ -483,10 +483,10 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Contacts'>
-	<!-- DEFAULTS_RESTORE (button) -->
+	<!-- REVERT_PAGE (button) -->
   <div align=right>
 	<table class='ZOptionsDefaultsTable'>
-		<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFAULTS_RESTORE'></div></td></tr>
+		<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE'></div></td></tr>
 	</table>
   </div>
 
@@ -575,7 +575,7 @@ and the container element is replaced with that control.
 <template id='prefs.Pages#Accounts'>
 	<div align=right>
 		<table class='ZOptionsDefaultsTable'>
-			<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFAULTS_RESTORE'></div></td></tr>
+			<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE'></div></td></tr>
 		</table>
 	</div>
 
@@ -897,7 +897,7 @@ and the container element is replaced with that control.
 		<tr><td class='ZOptionsDefaultsField'>
 			<!-- filters manage themselves for now -->
 			<div style='visibility:hidden'>
-				<div id='${id}_DEFAULTS_RESTORE'></div>
+				<div id='${id}_REVERT_PAGE'></div>
 			</div>
 		</td></tr>
 	</table>
@@ -968,7 +968,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 <template id='prefs.Pages#Calendar'>
 	<div align=right>
 	<table class='ZOptionsDefaultsTable'>
-		<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFAULTS_RESTORE'></div></td></tr>
+		<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE'></div></td></tr>
 	</table>
 	</div>
 
@@ -1069,7 +1069,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 <template id='prefs.Pages#IM'>
 	<div align=right>
 		<table class='ZOptionsDefaultsTable'>
-			<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFAULTS_RESTORE'></div></td></tr>
+			<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE'></div></td></tr>
 		</table>
 	</div>
 

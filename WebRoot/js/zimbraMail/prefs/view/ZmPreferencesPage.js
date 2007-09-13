@@ -233,8 +233,12 @@ function() {
 
 	var elem = document.getElementById([this._htmlElId,"DEFAULTS_RESTORE"].join("_"));
 	if (elem) {
-		var button = this._addButton(this._resetId, ZmMsg.restoreDefaults, 110, new AjxListener(this, this._resetListener));
-		button.replaceElement(elem);
+		this._addButton(elem.id, ZmMsg.restoreDefaults, 110, new AjxListener(this, this._resetListener));
+	}
+
+	var elem = document.getElementById([this._htmlElId,"REVERT_PAGE"].join("_"));
+	if (elem) {
+		this._addButton(elem.id, ZmMsg.restorePage, 110, new AjxListener(this, this._resetPageListener));
 	}
 
 	this.setVisible(true);
@@ -389,12 +393,6 @@ function(useDefaults) {
 		if (type == ZmPref.TYPE_PASSWORD) { continue; } // ignore non-form elements
 		var pref = settings.getSetting(id);
 		var newValue = this._getPrefValue(id, useDefaults);
-		if (setup.displayFunction) {
-			newValue = setup.displayFunction(newValue);
-		}
-		if (setup.approximateFunction) {
-			newValue = setup.approximateFunction(newValue);
-		}
 		this.setFormValue(id, newValue);
 	}
 };
@@ -885,6 +883,13 @@ ZmPreferencesPage.prototype._resetListener =
 function(ev) {
 	this.reset(true);
 	appCtxt.setStatusMsg(ZmMsg.defaultsRestored);
+};
+
+/** Reset the form values to the last save. */
+ZmPreferencesPage.prototype._resetPageListener = function(ev) {
+	this.reset(false);
+	this._controller.setDirty(this._section.id, false);
+	appCtxt.setStatusMsg(ZmMsg.defaultsPageRestore);
 };
 
 /**

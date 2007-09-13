@@ -27,9 +27,6 @@ ZmSignaturesPage = function(parent, section, controller) {
 
 	ZmPreferencesPage.call(this, parent, section, controller);
 
-	this._signatureComps = {};
-	this._deletedSignatures = {};
-
 	this._minEntries = appCtxt.get(ZmSetting.SIGNATURES_MIN);
 	this._maxEntries = appCtxt.get(ZmSetting.SIGNATURES_MAX);
 };
@@ -103,10 +100,11 @@ ZmSignaturesPage.prototype.getModifiedSignatures = function(includeNonModified) 
 
 ZmSignaturesPage.prototype.reset = function(useDefaults) {
 	ZmPreferencesPage.prototype.reset.apply(this, arguments);
-	var signatures = appCtxt.get(ZmSetting.SIGNATURES);
-	for (var id in signatures) {
-		this._resetSignature(signatures[id]);//, true);
+	for (var elemId in this._signatureComps) {
+		var compEl = document.getElementById(elemId);
+		compEl.parentNode.removeChild(compEl);
 	}
+	this._populateSignatures();
 };
 
 // saving
@@ -185,19 +183,11 @@ ZmSignaturesPage.prototype._setupCustom = function(id, setup, value) {
 		this._defaultRadioGroup = new DwtRadioButtonGroup();
 
 		// populate signatures
-		var signatures = appCtxt.getSignatureCollection().getSignatures();
-		var sigNames = AjxUtil.keys(signatures).sort();
-		var lessThanEqual = sigNames.length <= this._maxEntries;
-		var count = lessThanEqual ? sigNames.length : this._maxEntries;
-		for (var i = 0; i < count; i++) {
-			this._addSignature(signatures[sigNames[i]]);
-		}
-		for (var i = count; i < this._minEntries; i++) {
-			this._addNewSignature();
-		}
-		this._resetDeleteButtons();
+		this._populateSignatures();
 
 		// add button
+		var sigCount = appCtxt.getSignatureCollection().getSize();
+		var lessThanEqual = sigCount <= this._maxEntries;
 		var buttonEl = document.getElementById(this._htmlElId+"_ADD_SIGNATURE");
 		if (buttonEl) {
 			var button = new DwtButton(this);
@@ -213,6 +203,24 @@ ZmSignaturesPage.prototype._setupCustom = function(id, setup, value) {
 	}
 
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
+};
+
+ZmSignaturesPage.prototype._populateSignatures = function() {
+	this._signatureComps = {};
+	this._deletedSignatures = {};
+
+	var signatures = appCtxt.getSignatureCollection().getSignatures();
+	var sigNames = AjxUtil.keys(signatures).sort();
+	var lessThanEqual = sigNames.length <= this._maxEntries;
+	var count = lessThanEqual ? sigNames.length : this._maxEntries;
+	for (var i = 0; i < count; i++) {
+		this._addSignature(signatures[sigNames[i]]);
+	}
+	for (var i = count; i < this._minEntries; i++) {
+		this._addNewSignature();
+	}
+
+	this._resetDeleteButtons();
 };
 
 ZmSignaturesPage.prototype._addNewSignature = function(skipControls) {
