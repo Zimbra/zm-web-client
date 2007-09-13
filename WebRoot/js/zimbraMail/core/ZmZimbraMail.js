@@ -1082,7 +1082,7 @@ function(appName, view) {
 			// set search string value to match current app's last search, if applicable		
 			var app = this._apps[this._activeApp];
 			var stb = appCtxt.getSearchController().getSearchToolbar();
-			if (stb) {
+			if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && stb) {
 				stb.setSearchFieldValue(app.currentQuery ? app.currentQuery : "");
 			}
 	
