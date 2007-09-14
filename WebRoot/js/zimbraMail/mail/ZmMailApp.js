@@ -868,6 +868,7 @@ function(callback, checkQS, response) {
 	var query;
 	if (checkQS) {
 		if (location && (location.search.match(/\bview=compose\b/))) {
+			AjxDispatcher.require("Startup2");
 			var cc = AjxDispatcher.run("GetComposeController");
 			var match = location.search.match(/\bsubject=([^&]+)/);
 			var subject = match ? decodeURIComponent(match[1]) : null;
