@@ -40,8 +40,8 @@
         <td class='MsgHdr' colspan="2">
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                    <td>
-                        <table width="100%" cellpadding="2" cellspacing="0" border="0">
+                    <td align="left">
+                        <table width="100%" align="left" cellpadding="2" cellspacing="0" border="0">
                             <tr>
                                 <td class='MsgHdrName'>
                                     <fmt:message key="from"/>
