@@ -585,8 +585,8 @@ function() {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
 
-	var className = appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className});
+	var className = appCtxt.isChildWindow ? "ZmAppToolBar" : "ZmAppToolBar";
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className+" ImgSkin_Toolbar"});
 
 	for (var i = 0; i < this._toolbar.opList.length; i++) {
 		var button = this._toolbar.opList[i];

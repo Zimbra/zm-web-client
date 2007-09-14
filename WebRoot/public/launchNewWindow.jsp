@@ -55,6 +55,18 @@
 	if (ext == null) ext = "";
 
     Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
+
+    String localeQs = "";
+    String localeId = (String) request.getAttribute("localeId");
+    if (localeId != null) {
+        int index = localeId.indexOf("_");
+        if (index == -1) {
+            localeQs = "&language=" + localeId;
+        } else {
+            localeQs = "&language=" + localeId.substring(0, index) +
+                       "&country=" + localeId.substring(localeId.length() - 2);
+        }
+    }
 %>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
@@ -66,7 +78,7 @@
 <% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys"); %>
 <jsp:include page="Resources.jsp"/>
 <style type="text/css">
-	<!--
+    <!--
     @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
     -->
 </style>
@@ -93,9 +105,14 @@
         <% } %>
     <% }
 %>
-<script type="text/javascript">
-AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
-</script>
+    <!-- TODO: We only need the templates and messages from the skin. -->
+    <script src="/zimbra/js/skin.js?v=<%= vers %>&skin=<%= skin %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%= localeQs %>"
+            type="text/javascript">
+
+    </script>
+    <script type="text/javascript">
+        AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
+    </script>
 
     <script type="text/javascript" language="JavaScript">
 		var cacheKillerVersion = "<%= vers %>";
