@@ -1,11 +1,12 @@
 <%@ tag body-content="empty" dynamic-attributes="dynattrs" %>
 <%@ attribute name="section" rtexprvalue="true" required="true" %>
 <%@ attribute name="suffix" rtexprvalue="true" required="true" %>
+<%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<zm:getMailbox var="mailbox"/>
+
 <fmt:bundle basename="/keys/ZhKeys">
 <tr>
     <td>

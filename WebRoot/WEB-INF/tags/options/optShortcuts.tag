@@ -12,34 +12,32 @@
     <fmt:message var="sections" key="sections"/>
     <table border="0" cellpadding="0" cellspacing="4" width="100%">
         <tbody>
-            <app:optShortcutSection section="global" suffix="${suffix}"/>
-            <c:if test="${mailbox.features.mail}">
-            <app:optShortcutSection section="mail" suffix="${suffix}"/>
-            <app:optShortcutSection section="compose" suffix="${suffix}"/>
-            <c:if test="${mailbox.features.conversations}">
-                <app:optShortcutSection section="conversation" suffix="${suffix}"/>
+            <app:optShortcutSection section="global" suffix="${suffix}" mailbox="${mailbox}"/>
+            <app:optShortcutSection section="mail" suffix="${suffix}" mailbox="${mailbox}"/>
+            <app:optShortcutSection section="compose" suffix="${suffix}" mailbox="${mailbox}"/>
+            <c:if test="${mailbox.features.mail and mailbox.features.conversations}">
+                <app:optShortcutSection section="conversation" suffix="${suffix}" mailbox="${mailbox}"/>
             </c:if>
-            </c:if>d
             <c:if test="${mailbox.features.voice}">
-                <app:optShortcutSection section="voicemail" suffix="${suffix}"/>
-                <app:optShortcutSection section="call" suffix="${suffix}"/>
+                <app:optShortcutSection section="voicemail" suffix="${suffix}" mailbox="${mailbox}"/>
+                <app:optShortcutSection section="call" suffix="${suffix}" mailbox="${mailbox}"/>
             </c:if>
             <c:if test="${mailbox.features.contacts}">
-                <app:optShortcutSection section="contacts" suffix="${suffix}"/>
+                <app:optShortcutSection section="contacts" suffix="${suffix}" mailbox="${mailbox}"/>
             </c:if>
             <c:if test="${mailbox.features.calendar}">
-                <app:optShortcutSection section="calendar" suffix="${suffix}"/>
+                <app:optShortcutSection section="calendar" suffix="${suffix}" mailbox="${mailbox}"/>
             </c:if>
-            <app:optShortcutSection section="list" suffix="${suffix}"/>
-            <app:optShortcutSection section="mfolders" suffix="${suffix}"/>
+            <app:optShortcutSection section="list" suffix="${suffix}" mailbox="${mailbox}"/>
+            <app:optShortcutSection section="mfolders" suffix="${suffix}" mailbox="${mailbox}"/>
             <c:if test="${mailbox.features.tagging}">
-                <app:optShortcutSection section="mtags" suffix="${suffix}"/>
+                <app:optShortcutSection section="mtags" suffix="${suffix}" mailbox="${mailbox}"/>
             </c:if>
             <c:if test="${mailbox.features.contacts}">
-                <app:optShortcutSection section="maddrbooks" suffix="${suffix}"/>
+                <app:optShortcutSection section="maddrbooks" suffix="${suffix}" mailbox="${mailbox}"/>
             </c:if>
             <c:if test="${mailbox.features.calendar}">
-                <app:optShortcutSection section="mcalendars" suffix="${suffix}"/>
+                <app:optShortcutSection section="mcalendars" suffix="${suffix}" mailbox="${mailbox}"/>
             </c:if>
         </tbody>
     </table>
