@@ -505,7 +505,7 @@ function(callback) {
 		// looks like the body of this message is the attachment itself
 		return "";
 	} else {
-		if (this._loaded && this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
+		if (this._loaded && !this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 			if (callback) callback.run();
 		} else {
 			var respCallback = new AjxCallback(this, this._handleResponseGetTextPart, [callback]);
