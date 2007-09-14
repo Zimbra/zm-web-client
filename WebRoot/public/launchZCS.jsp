@@ -271,17 +271,11 @@
 		var isDev = "<%= (isDev != null) ? isDev : "" %>";
 		var protocolMode = "<%=protocolMode%>";
 
-        <%---
         <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${true}" itemsperpage="${requestScope.authResult.prefs.zimbraPrefMailItemsPerPage[0]}" types="${requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
         var batchInfoResponse = ${getInfoJSON};
-        --%>
-
-        var getInfoResponse = null;
-		var searchResponse = null;
 
 		var params = {app:app, offlineMode:offlineMode, devMode:isDev, settings:settings,
-					  protocolMode:protocolMode, noSplashScreen:noSplashScreen,
-					  getInfoResponse:getInfoResponse, searchResponse:searchResponse};
+					  protocolMode:protocolMode, noSplashScreen:noSplashScreen, batchInfoResponse:batchInfoResponse};
 		ZmZimbraMail.run(params);
 	}
 

@@ -330,6 +330,20 @@ function(params) {
 		}
 	}
 
+	// We've received canned SOAP responses for GetInfoRequest and SearchRequest from the
+	// launch JSP, wrapped in a BatchRequest. Jiggle them so that they look like real
+	// responses, and pass them along.
+	if (params.batchInfoResponse) {
+		var br = params.batchInfoResponse.Body.BatchResponse;
+		var girJSON = params.getInfoResponse = {};
+		girJSON.Body = {};
+		girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
+		girJSON.Header = params.batchInfoResponse.Header;
+		var srJSON = params.searchResponse = {};
+		srJSON.Body = {};
+		srJSON.Body.SearchResponse = br.SearchResponse[0];
+	}
+
 	var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
 	this._errorCallback = new AjxCallback(this, this._handleErrorStartup, params);
 	this._settings.loadUserSettings(respCallback, this._errorCallback, null, params.getInfoResponse);
