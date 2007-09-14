@@ -701,9 +701,9 @@ function(components) {
     for (var i = 0; i < components.length; i++) {
 		var cid = components[i];
         if (AjxEnv.isIE && cid == ZmAppViewMgr.C_USER_INFO && components.length > 1) {
-			// Bug 13720: This USER INFO element doesn't go to the right place in IE.
+			// This USER_INFO, SEARCH, QUOTA BAR on positioned on the right most ends doesn't go to the right place in IE.
 			if (!this._userInfoAction) {
-				this._fitUserInfoAction = new AjxTimedAction(this, this._fitToContainer, [[ZmAppViewMgr.C_USER_INFO]]);
+				this._fitUserInfoAction = new AjxTimedAction(this, this._fitToContainer, [[ZmAppViewMgr.C_USER_INFO,ZmAppViewMgr.C_SEARCH,ZmAppViewMgr.C_QUOTA_INFO]]);
 			}
 			AjxTimedAction.scheduleAction(this._fitUserInfoAction, 1);
 		}
