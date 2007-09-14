@@ -474,6 +474,10 @@
         <!--<property name='img.dir.ignore' value='animated,_*' />-->
         <!--<property name='img.dir.nomerge' value='examples,logo,translate' />-->
 
+		<copy todir="${build.web.dir}" flatten="true">
+			<fileset dir='${img.dir}' includes='**/favicon.ico'/>
+		</copy>
+
         <dependset>
             <srcfileset dir='${img.dir}'/>
             <srcfileset dir='${java.dir}' includes='**/img/*.java'/>
