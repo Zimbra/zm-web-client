@@ -115,16 +115,11 @@
 	<$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $> 
 	<!-- header -->
 	<table id='${id}_header' border=0 cellpadding=2 cellspacing=2 width=100%>
-		<colgroup>
-			<col width=1>
-			<col width=*>
-		</colgroup>
-
 		<tr id='${id}_to_row'>
 			<td align=right valign=top style='<$=labelStyle$>'>
 				<div id='${id}_to_picker'><$=ZmMsg.to$>:</div>
 			</td>
-			<td>
+			<td width="96%">
 				<textarea id='${id}_to_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
 			</td>
 		</tr>
@@ -151,22 +146,14 @@
 			<td align=right style='<$=labelStyle$>'><$=ZmMsg.subject$>:</td>
 			<td>
 				<table border=0 cellpadding=0 cellspacing=0 width='100%'>
-				<colgroup>
-					<col width='*'>
-					<col width='*'>
-				</colgroup>
 				<tr>
 					<td style='padding-right:4px;' width='50%'>
 						<input id='${id}_subject_control' class='subjectField' autocomplete=off>
 					</td>
 					<td id='${id}_identity_row' style='display:none;'>
 					<table border=0 cellspacing=0 cellpadding=0>
-						<colgroup>
-							<col width='*'>
-							<col width='100%'>
-						</colgroup>
 						<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.from$>:</td>
-							<td><select id='${id}_identity_control'></select></td>
+							<td width="100%"><select id='${id}_identity_control'></select></td>
 						</tr>
 					</table>
 					</td>
