@@ -47,22 +47,29 @@
 </tr>
 <tr>
 <td class='ZhAppContent' style="padding:7px;width:100%;height:100%;valign:top;">
-        <h1 style="border-bottom: 3px solid #666666; padding-bottom: 2px; font-size: 20px">Hi! ${empty fullname ? mailbox.name : fullname} &nbsp; 
+       
+        <span class="HelloGreeting">Hi! ${empty fullname ? mailbox.name : fullname} &nbsp; 
 
         <span>
-            <a style="font-size:13px;color:#666666; font-style: normal;" href='${url}'>${fn:escapeXml(empty label ? folder.name : label)}
+            <a style="font-size:13px;color:#666666; font-style: normal; text-decoration: none;" href='${url}'>${fn:escapeXml(empty label ? folder.name : label)}
                 <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount}) </c:if>
             </a>
         </span>
-       </h1>
-
+       </span>
+<br><br>
 <table width="100%" border="0" cellpadding="8" cellspacing="0">
 <tr>
     <td width="50%">
         <table cellpadding="5" cellspacing="0" border='0' width='100%'>
             <tr>
                 <td>
-                    <h2 style="margin: 0px; padding-bottom: 2px;border-bottom: 2px solid #CCCCCC; font-size: 16px;">Mail</h2>
+                     <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        				<tr>
+       						 <td class="ImgAccountsHeader_L"></td>
+       						 <td class="ImgAccountsHeader__H AccountsHeader">Mail </td>
+       						 <td class="ImgAccountsHeader_R"></td>
+				        </tr>
+				       </table>
                 </td>
             </tr>
             <c:if test="${context.isMessageSearch}">
