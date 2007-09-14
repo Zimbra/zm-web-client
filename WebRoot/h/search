@@ -51,6 +51,13 @@
             <c:param name="sq" value="${param.sq}"/>
         </c:redirect>
     </c:if>
+
+    <c:if test="${not mailbox.features.mail}">
+        <c:if test="${param.st eq 'message' or param.st eq 'conversation' or empty param.st}">
+            <c:redirect url="/h/calendar"/>
+        </c:if>
+    </c:if>
+
     <zm:computeSearchContext var="context" usecache="true"/>
 
 </app:handleError>
@@ -93,7 +100,7 @@
     </c:when>
     <c:otherwise>
         <fmt:message key="error" var="title"/>
-        <app:view mailbox="${mailbox}" title="${title}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="" keys="true">
+        <app:view mailbox="${mailbox}" title="${title}" selected="${not mailbox.features.mail ? 'calendar' : 'mail'}" context="${context}" folders="true" tags="true" searches="true" ads="" keys="true">
             <fmt:message key="ztaglib.TAG_EXCEPTION"/>
         </app:view>
     </c:otherwise>

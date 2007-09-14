@@ -13,11 +13,13 @@
     <table border="0" cellpadding="0" cellspacing="4" width="100%">
         <tbody>
             <app:optShortcutSection section="global" suffix="${suffix}"/>
+            <c:if test="${mailbox.features.mail}">
             <app:optShortcutSection section="mail" suffix="${suffix}"/>
             <app:optShortcutSection section="compose" suffix="${suffix}"/>
             <c:if test="${mailbox.features.conversations}">
                 <app:optShortcutSection section="conversation" suffix="${suffix}"/>
             </c:if>
+            </c:if>d
             <c:if test="${mailbox.features.voice}">
                 <app:optShortcutSection section="voicemail" suffix="${suffix}"/>
                 <app:optShortcutSection section="call" suffix="${suffix}"/>

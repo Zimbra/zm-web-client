@@ -16,21 +16,23 @@
                 <span><fmt:message key="general"/></span>
             </a>
         </td>
-        <td class='TabSpacer'/>
-        <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=mail"/>">
-                <span><fmt:message key="mail"/></span></a>
-        </td>
-        <td class='TabSpacer'/>
-        <td class='Tab ${selected=='composing' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=composing"/>">
-                <span><fmt:message key="optionsComposing"/></span></a>
-        </td>
-        <td class='TabSpacer'/>
-        <td class='Tab ${selected=='signatures' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=signatures"/>">
-                <span><fmt:message key="optionsSignatures"/></span></a>
-        </td>
+        <c:if test="${mailbox.features.mail}">
+            <td class='TabSpacer'/>
+            <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
+                <a href="<c:url value="/h/options?selected=mail"/>">
+                    <span><fmt:message key="mail"/></span></a>
+            </td>
+            <td class='TabSpacer'/>
+            <td class='Tab ${selected=='composing' ? 'TabSelected' :'TabNormal'}'>
+                <a href="<c:url value="/h/options?selected=composing"/>">
+                    <span><fmt:message key="optionsComposing"/></span></a>
+            </td>
+            <td class='TabSpacer'/>
+            <td class='Tab ${selected=='signatures' ? 'TabSelected' :'TabNormal'}'>
+                <a href="<c:url value="/h/options?selected=signatures"/>">
+                    <span><fmt:message key="optionsSignatures"/></span></a>
+            </td>
+        </c:if>
         <c:if test="${mailbox.features.voice}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='voice' ? 'TabSelected' :'TabNormal'}'>
@@ -52,12 +54,14 @@
                     <span><fmt:message key="calendar"/></span></a>
             </td>
         </c:if>
+        <c:if test="${mailbox.features.mail}">
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='accounts' ? 'TabSelected' :'TabNormal'}'>
             <a href="<c:url value="/h/options?selected=accounts"/>">
                 <span><fmt:message key="optionsAccounts"/></span></a>
         </td>
-        <c:if test="${mailbox.features.filters}">
+        </c:if>
+        <c:if test="${mailbox.features.filters and mailbox.features.mail}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='filter' ? 'TabSelected' :'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=filter"/>">
