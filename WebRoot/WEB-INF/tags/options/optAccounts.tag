@@ -174,6 +174,8 @@
                         </table>
                     </td>
                 </tr>
+              <c:set var="maxSigs" value="${mailbox.accountInfo.attrs.zimbraSignatureMaxNumEntries[0]}"/>
+                <c:if test="${maxSigs ne 0}">
                 <tr><td colspan="2"><hr></td></tr>
                 <tr>
                     <td class='ZOptionsTableLabel'>
@@ -208,6 +210,7 @@
                         </fmt:message>
                     </td>
                 </tr>
+                </c:if>
                 <tr><td colspan="2">&nbsp;</td></tr>
             </table>
         </td>

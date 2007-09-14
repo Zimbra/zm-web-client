@@ -27,11 +27,14 @@
                 <a href="<c:url value="/h/options?selected=composing"/>">
                     <span><fmt:message key="optionsComposing"/></span></a>
             </td>
+        <c:set var="maxSigs" value="${mailbox.accountInfo.attrs.zimbraSignatureMaxNumEntries[0]}"/>
+        <c:if test="${maxSigs ne 0}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='signatures' ? 'TabSelected' :'TabNormal'}'>
                 <a href="<c:url value="/h/options?selected=signatures"/>">
                     <span><fmt:message key="optionsSignatures"/></span></a>
             </td>
+        </c:if>
         </c:if>
         <c:if test="${mailbox.features.voice}">
             <td class='TabSpacer'/>
