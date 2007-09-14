@@ -27,7 +27,7 @@
         <h1>${zm:getVoiceFolderName(pageContext, context.folder)}</h1>
         <table class='ZhCallListPrintTable' cellpadding=2 cellspacing=0 >
             <tr class='Header'>
-                <th><app:img src="tag/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
+                <th><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/></th>
                 <th><fmt:message key="${useTo ? 'to' : 'from'}"/>
                 <th><fmt:message key="duration"/></th>
                 <th><fmt:message key="received"/></th>
@@ -35,7 +35,16 @@
 
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
             <tr>
-                <td nowrap><app:flagImage flagged="${hit.voiceMailItemHit.isFlagged}"/></td>
+                <td nowrap>
+					<c:choose>
+						<c:when test="${hit.voiceMailItemHit.isFlagged}">
+							<app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/>
+						</c:when>
+						<c:otherwise>
+							&nbsp;
+						</c:otherwise>
+					</c:choose>
+				</td>
                 <td nowrap>${hit.voiceMailItemHit.displayCaller}</td>
                 <td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.voiceMailItemHit.duration))}</td>
                 <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.voiceMailItemHit.date))}</td>
