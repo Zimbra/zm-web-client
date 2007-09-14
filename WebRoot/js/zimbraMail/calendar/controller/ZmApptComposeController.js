@@ -67,19 +67,30 @@ ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
 	var appt = this._composeView.getAppt(attId);
 	if (appt) {
-		// bug fix #4160
-		var origAttendees = appt.getOrigAttendees();
-		if (!this._composeView.getApptTab().isDirty(true) &&	// make sure other fields (besides attendees field) have not changed
-			attId == null && 								// make sure we're not u/l'ing a file
-			origAttendees && origAttendees.length > 0) 		// make sure we are editing an existing appt w/ attendees
+		var origAttendees = appt.getOrigAttendees();				// bug fix #4160
+		if (origAttendees && origAttendees.length > 0 && 			// make sure we're not u/l'ing a file
+			attId == null) 											// make sure we are editing an existing appt w/ attendees
 		{
-			var attendees = appt.getAttendees();
-			if (attendees.length > 0) {
-				// check whether organizer has added/removed any attendees
-				if (this._attendeesUpdated(appt, attId, attendees, origAttendees))
-					return false;
+			if (!this._composeView.getApptTab().isDirty(true)) {	// make sure other fields (besides attendees field) have not changed
+				var attendees = appt.getAttendees();
+				if (attendees.length > 0) {
+					// check whether organizer has added/removed any attendees
+					if (this._attendeesUpdated(appt, attId, attendees, origAttendees))
+						return false;
+				}
+			}
+
+			// check whether moving appt from local to remote folder with attendees
+			if (this._isMovingToRemote(appt)) {
+				var dlg = appCtxt.getYesNoMsgDialog();
+				dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [appt, attId, dlg]);
+				var msg = AjxMessageFormat.format(ZmMsg.orgChange, appt.getFolder().owner);
+				dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+				dlg.popup();
+				return false;
 			}
 		}
+
 		// otherwise, just save the appointment
 		this._saveCalItemFoRealz(appt, attId);
 	}
@@ -185,6 +196,23 @@ function(appt, attId, attendees, origAttendees) {
 	return false;
 };
 
+// returns true if moving given appt from local to remote folder
+ZmApptComposeController.prototype._isMovingToRemote =
+function(appt) {
+	var isMovingToRemote = false;
+	if (appt._orig) {
+		var origFolder =  appt._orig.getFolder();
+		var newFolder = appt.getFolder();
+		if (origFolder.id != newFolder.id &&
+			!origFolder.link && newFolder.link)
+		{
+			isMovingToRemote = true;
+		}
+	}
+
+	return isMovingToRemote;
+};
+
 
 // Listeners
 
@@ -209,6 +237,13 @@ function(ev) {
 ZmApptComposeController.prototype._notifyDlgCancelListener =
 function(ev) {
 	this._addedAttendees.length = this._removedAttendees.length = 0;
+};
+
+ZmApptComposeController.prototype._changeOrgCallback =
+function(appt, attId, dlg) {
+	dlg.popdown();
+	this._saveCalItemFoRealz(appt, attId);
+	this._app.popView(true);
 };
 
 ZmApptComposeController.prototype._handleResponseSave =
