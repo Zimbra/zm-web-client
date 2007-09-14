@@ -93,9 +93,11 @@
         </table>
     </td>
     <td valign="top">
+        <c:if test="${mailbox.features.calendar}">
         <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
         <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
         <app:apptGadget timezone="${tz}" date="${dateContext}" />
+        </c:if>
     </td>
 </tr>
 </table>
