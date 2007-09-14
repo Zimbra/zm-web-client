@@ -218,13 +218,14 @@ ZmComposeController.prototype._postShowCallback =
 function() {
 	ZmController.prototype._postShowCallback.call(this);
 	var composeMode = this._composeView.getComposeMode();
-	if (composeMode == DwtHtmlEditor.HTML) {
-		this._composeView._retryHtmlEditorFocus();
-	}
 	if (this._action != ZmOperation.NEW_MESSAGE &&
 		this._action != ZmOperation.FORWARD_INLINE &&
 		this._action != ZmOperation.FORWARD_ATT)
 	{
+		if (composeMode == DwtHtmlEditor.HTML) {
+			var ta = new AjxTimedAction(this._composeView, this._composeView._focusHtmlEditor);
+			AjxTimedAction.scheduleAction(ta, 10);
+		}		
 		this._composeView._setBodyFieldCursor();
 	}
 };
