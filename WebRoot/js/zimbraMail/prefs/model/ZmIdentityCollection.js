@@ -136,7 +136,7 @@ function(mailMsg) {
 
 ZmIdentityCollection.prototype.initialize =
 function(data) {
-	if (this.getSize()) {
+	if (this.getSize() || !data) {
 		// This can be called unnecessarily after auth token expires.
 		return;
 	}
