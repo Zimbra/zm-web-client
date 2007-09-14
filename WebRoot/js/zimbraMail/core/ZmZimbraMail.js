@@ -156,6 +156,10 @@ function() {
 ZmZimbraMail.run =
 function(params) {
 	
+	if (!window.DBG) {
+		this._createDummyDBG();
+	}
+	
 	if (params.noSplashScreen) {
 		ZmZimbraMail.killSplash();
 	}
@@ -1666,6 +1670,24 @@ function(appName) {
 	var viewName = [appName, "upsell"].join("_");
 	this._appViewMgr.createView(viewName, appName, elements, null, true);
 	this._appViewMgr.pushView(viewName);
+};
+
+ZmZimbraMail.prototype._createDummyDBG =
+function() {
+	var dbg = window.DBG = function() {};
+	
+	dbg.prototype.toString		= function() { return "dummy DBG"; };
+	dbg.prototype.display		= function() {};
+	dbg.prototype.dumpObj		= function() {};
+	dbg.prototype.getDebugLevel	= function() {};
+	dbg.prototype.isDisabled	= function() {};
+	dbg.prototype.println		= function() {};
+	dbg.prototype.printRaw		= function() {};
+	dbg.prototype.printXML		= function() {};
+	dbg.prototype.setDebugLevel	= function() {};
+	dbg.prototype.setTitle		= function() {};
+	dbg.prototype.showTiming	= function() {};
+	dbg.prototype.timePt		= function() {};
 };
 
 /**
