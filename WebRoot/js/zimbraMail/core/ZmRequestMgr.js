@@ -277,7 +277,15 @@ function(hdr) {
 
 	if (hdr && hdr.context && hdr.context.refresh) {
 		this._highestNotifySeen = 0;
-		this._refreshHandler(hdr.context.refresh);
+		if (appCtxt.inStartup && this._controller._doingPostRenderStartup) {
+			var callback = new AjxCallback(this,
+				function() {
+					this._refreshHandler(hdr.context.refresh);
+				});
+			this._controller.postRenderCallbacks.push(callback);
+		} else {
+			this._refreshHandler(hdr.context.refresh);
+		}
 	}
 };
 

@@ -344,6 +344,11 @@ function(params) {
 		srJSON.Body.SearchResponse = br.SearchResponse[0];
 	}
 
+	this._getStartApp(params);
+	if (params.startApp == ZmApp.MAIL) {
+		this._doingPostRenderStartup = true;
+	}
+
 	var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
 	this._errorCallback = new AjxCallback(this, this._handleErrorStartup, params);
 	this._settings.loadUserSettings(respCallback, this._errorCallback, null, params.getInfoResponse);
@@ -389,58 +394,17 @@ function(params, result) {
 
 	ZmApp.initialize();
 
-	// determine starting app
-	var startApp;
-	if (params && params.app) {
-		startApp = ZmApp.QS_ARG_R[params.app.toLowerCase()];
-	}
-	if (!startApp) {
-		for (var app in ZmApp.DEFAULT_SORT) {
-			ZmApp.DEFAULT_APPS.push(app);
-		}
-		ZmApp.DEFAULT_APPS.sort(function(a, b) {
-			return ZmZimbraMail.hashSortCompare(ZmApp.DEFAULT_SORT, a, b);
-		});
-		for (var i = 0; i < ZmApp.DEFAULT_APPS.length; i++) {
-			var app = ZmApp.DEFAULT_APPS[i];
-			var setting = ZmApp.SETTING[app];
-			if (!setting || appCtxt.get(setting)) {
-				this._defaultStartApp = app;
-				break;
-			}
-		}
-		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : this._defaultStartApp;
-	}
-
 	params.result = result;
 	var respCallback = new AjxCallback(this, this._handleResponseStartup1, params);
 
-	// check for jump to compose page or msg view
-	var checkQS = false;
-	if (startApp == ZmApp.CALENDAR) {
-		// let calendar check for jumps
-		checkQS = true;
-	} else {
-		var match;
-		if (location.search && (match = location.search.match(/\bview=(\w+)\b/))) {
-			var view = match[1];
-			startApp = this._defaultStartApp;
-			if (ZmApp.QS_VIEWS[view]) {
-				startApp = ZmApp.QS_VIEWS[view];
-				checkQS = true;
-			}
-		}
-	}
-	
 	// startup and packages have been optimized for quick mail display
-	if (startApp == ZmApp.MAIL) {
-		this.addAppListener(startApp, ZmAppEvent.POST_RENDER, new AjxListener(this, this._postRenderStartup));
-		this._doingPostRenderStartup = true;
+	if (this._doingPostRenderStartup) {
+		this.addAppListener(params.startApp, ZmAppEvent.POST_RENDER, new AjxListener(this, this._postRenderStartup));
 		this._searchResponse = params.searchResponse;
 	} else {
 		AjxDispatcher.require("Startup2");
 	}
-	this.activateApp(startApp, false, respCallback, this._errorCallback, checkQS);
+	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params.checkQS);
 };
 
 /**
@@ -506,6 +470,52 @@ function(ev) {
 				this.postRenderCallbacks[i].run();
 			}
 		}), 0);
+};
+
+ZmZimbraMail.prototype._getStartApp =
+function(params) {
+	// determine starting app
+	var startApp;
+	if (params && params.app) {
+		startApp = ZmApp.QS_ARG_R[params.app.toLowerCase()];
+	}
+	if (!startApp) {
+		for (var app in ZmApp.DEFAULT_SORT) {
+			ZmApp.DEFAULT_APPS.push(app);
+		}
+		ZmApp.DEFAULT_APPS.sort(function(a, b) {
+			return ZmZimbraMail.hashSortCompare(ZmApp.DEFAULT_SORT, a, b);
+		});
+		for (var i = 0; i < ZmApp.DEFAULT_APPS.length; i++) {
+			var app = ZmApp.DEFAULT_APPS[i];
+			var setting = ZmApp.SETTING[app];
+			if (!setting || appCtxt.get(setting)) {
+				this._defaultStartApp = app;
+				break;
+			}
+		}
+		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : this._defaultStartApp;
+	}
+
+	// check for jump to compose page or msg view
+	var checkQS = false;
+	if (startApp == ZmApp.CALENDAR) {
+		// let calendar check for jumps
+		checkQS = true;
+	} else {
+		var match;
+		if (location.search && (match = location.search.match(/\bview=(\w+)\b/))) {
+			var view = match[1];
+			startApp = this._defaultStartApp;
+			if (ZmApp.QS_VIEWS[view]) {
+				startApp = ZmApp.QS_VIEWS[view];
+				checkQS = true;
+			}
+		}
+	}
+
+	params.startApp = startApp;
+	params.checkQS = checkQS;	
 };
 
 /**
