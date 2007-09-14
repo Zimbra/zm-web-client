@@ -5,7 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-
+<zm:getMailbox var="mailbox"/>
 <fmt:bundle basename="/keys/ZhKeys">
 <tr>
     <td>
@@ -20,7 +20,17 @@
             </tr>
             <fmt:message var="keys" key="${section}.keys"/>
             <c:forEach var="msgkey" items="${fn:split(keys,',')}">
-                <app:optShortcutKey msgkey="${msgkey}" suffix="${suffix}"/>
+                    <c:choose>
+                        <c:when test="${(fn:trim(msgkey) eq 'overview.tags') and (!mailbox.features.tagging)}">
+                        </c:when>
+                        <c:when test="${(fn:trim(msgkey) eq 'mail.Flag') and (!mailbox.features.flagging)}">
+                        </c:when>
+                        <c:when test="${(fn:trim(msgkey) eq 'mail.UnFlag') and (!mailbox.features.flagging)}">
+                        </c:when>
+                        <c:otherwise>
+                            <app:optShortcutKey msgkey="${msgkey}" suffix="${suffix}"/>
+                        </c:otherwise>
+                    </c:choose>
             </c:forEach>
         </table>
     </td>
