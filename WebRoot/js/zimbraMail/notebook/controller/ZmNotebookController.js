@@ -124,10 +124,6 @@ function(view) {
 	this._setNewButtonProps(view, ZmMsg.createNewPage, "NewPage", "NewPageDis", ZmOperation.NEW_PAGE);
 
 	var toolbar = this._toolbar[this._currentView];
-	var button = toolbar.getButton(ZmOperation.REFRESH);
-	if (button) {
-		button.setImage("Refresh");
-	}
 
 	button = toolbar.getButton(ZmOperation.DELETE);
 	button.setToolTipContent(ZmMsg.deletePermanentTooltip);
