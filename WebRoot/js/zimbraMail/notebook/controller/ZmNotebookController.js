@@ -125,7 +125,7 @@ function(view) {
 
 	var toolbar = this._toolbar[this._currentView];
 
-	button = toolbar.getButton(ZmOperation.DELETE);
+	var button = toolbar.getButton(ZmOperation.DELETE);
 	button.setToolTipContent(ZmMsg.deletePermanentTooltip);
 
 	/***
