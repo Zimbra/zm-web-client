@@ -83,7 +83,7 @@
                         </c:choose>
                     </td>
 					<td id='skin_container_app_name' style='padding-top: 0px;'><nobr>communications center</nobr></td>
-					<td width='76%'><div id='skin_container_status' class='skin_container'>
+					<td width='76%'><div class='float'> 
 					<app:appStatus/>
 					</div></td>
 					<td id='skin_td_search' align='right' width='450'>
