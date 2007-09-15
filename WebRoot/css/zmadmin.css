@@ -679,5 +679,5 @@ div.ZaSearchBuilderOptionRemoveAll table  {
 }
 
 .XFormTableContainer {
- @ListItemBgColor-normal@
+ background-color:@ListItemBgColor-normal@
 }
