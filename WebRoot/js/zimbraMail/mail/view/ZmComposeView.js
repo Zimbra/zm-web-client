@@ -1346,20 +1346,38 @@ function(action, msg, extraBodyText, incOption) {
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
 		var crlf2 = composingHtml ? "<br><br>" : ZmMsg.CRLF2;
 		var leadingText = extraBodyText ? extraBodyText + crlf : crlf;
-		var body = null;
-		if (composingHtml) {
-			body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
-			if (body) {
-				body = AjxUtil.isString(body) ? body : body.content;
-			} else {
-				// if no html part exists, just grab the text
-				var bodyPart = msg.getBodyPart();
-				body = bodyPart ? this._getTextPart(bodyPart, true) : null;
+		var body;
+
+		// bug fix #7271 - if we have multiple body parts, append them all first
+		var parts = msg.getBodyParts();
+		if (parts && parts.length > 1) {
+			var bodyArr = [];
+			for (var k = 0; k < parts.length; k++) {
+				var part = parts[k];
+				if (part.ct == ZmMimeTable.TEXT_PLAIN || composingHtml) {
+					bodyArr.push(part.content);
+				} else if (part.ct == ZmMimeTable.TEXT_HTML) {
+					var div = document.createElement("div");
+					div.innerHTML = part.content;
+					bodyArr.push(AjxStringUtil.convertHtml2Text(div));
+				}
 			}
+			body = bodyArr.join(crlf);
 		} else {
-			// grab text part out of the body part
-			var bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML);
-			body = bodyPart ? this._getTextPart(bodyPart) : null;
+			if (composingHtml) {
+				body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
+				if (body) {
+					body = AjxUtil.isString(body) ? body : body.content;
+				} else {
+					// if no html part exists, just grab the text
+					var bodyPart = msg.getBodyPart();
+					body = bodyPart ? this._getTextPart(bodyPart, true) : null;
+				}
+			} else {
+				// grab text part out of the body part
+				var bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML);
+				body = bodyPart ? this._getTextPart(bodyPart) : null;
+			}
 		}
 
 		body = body || ""; // prevent from printing "null" if no body found
