@@ -80,9 +80,11 @@ ZmNotebook.prototype.getIcon =
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT) { return null; }
 	if (this.parent.nId == ZmOrganizer.ID_ROOT) {
-		return this.link ? "SharedNotebook" : "Notebook";
+		if (this.link) { return "SharedNotebook"; }
+		return this.getIcon() || "Notebook";
 	}
-	return this.link ? "SharedSection" : "Section";
+	if (this.link) { return "SharedSection"; }
+	return this.getIcon() || "Section";
 };
 
 ZmNotebook.prototype.getSearchPath = function() {

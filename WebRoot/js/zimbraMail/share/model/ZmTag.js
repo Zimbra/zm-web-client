@@ -137,7 +137,8 @@ function(showUnread, maxLength, noMarkup) {
 
 ZmTag.prototype.getIcon = 
 function() {
-	return (this.id == ZmOrganizer.ID_ROOT) ? null : ZmTag.COLOR_ICON[this.color];
+	if (this.id == ZmOrganizer.ID_ROOT)	{ return null; }
+	return this._icon || ZmTag.COLOR_ICON[this.color];
 };
 
 ZmTag.prototype.getToolTip = function() {};

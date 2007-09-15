@@ -178,8 +178,8 @@ function(callback, result) {
 	var resp = result.getResponse().GetFolderResponse;
 	var folders = resp ? resp.folder[0] : null;
 	if (folders) {
-		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.FOLDER, null, resp.folder[0], "folder", this);
-		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp.tags, null, this);
+//		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.FOLDER, null, resp.folder[0], "folder", this);
+//		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp.tags, null, this);
 	}
 
 	this.loaded = true;

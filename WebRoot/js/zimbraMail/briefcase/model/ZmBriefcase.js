@@ -78,11 +78,9 @@ function(showUnread, maxLength, noMarkup) {
 
 ZmBriefcase.prototype.getIcon = 
 function() {
-	if (this.nId == ZmOrganizer.ID_ROOT) { return null; }
-	if (this.parent.nId == ZmOrganizer.ID_ROOT) {
-		return this.link ? "SharedMailFolder" : "Folder";
-	}
-	return this.link ? "SharedMailFolder" : "Folder";
+	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
+	if (this.link)							{ return "SharedMailFolder"; }
+	return this._icon || "Folder";
 };
 
 ZmBriefcase.prototype.getSearchPath = function() {

@@ -65,9 +65,9 @@ function(showUnread, maxLength, noMarkup) {
 
 ZmTaskFolder.prototype.getIcon =
 function() {
-	return this.id == ZmFolder.ID_ROOT
-		? null
-		: (this.link ? "SharedTaskList" : "TaskList");
+	if (this.id == ZmFolder.ID_ROOT)	{ return null; }
+	if (this.link)						{ return "SharedTaskList"; }
+	return this._icon || "TaskList";
 };
 
 ZmTaskFolder.prototype.supportsPublicAccess =

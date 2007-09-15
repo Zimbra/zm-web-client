@@ -686,7 +686,39 @@ function(permission) {
 	}
 };
 
-ZmOrganizer.prototype.getIcon = function() {};
+ZmOrganizer.prototype.setIcon = function(icon) {
+	this._icon = icon;
+
+	// TODO: put this in some generic function
+	var type = this.type;
+	var apps = [];
+	for (var id in ZmApp.OVERVIEW_TREES) {
+		var trees = ZmApp.OVERVIEW_TREES[id] || [];
+		for (var i = 0; i < trees.length; i++) {
+			if (trees[i] == type) {
+				apps.push(id);
+				break;
+			}
+		}
+	}
+
+	if (apps.length > 0) {
+		var id = this.id;
+		var icon = this.getIcon();
+		var overviewController = appCtxt.getOverviewController();
+		for (var i = 0; i < apps.length; i++) {
+			var controller = overviewController.getTreeController(type);
+			var view = controller.getTreeView(apps[i]);
+			var item = view && view.getTreeItemById(id);
+			if (item) {
+				item.setImage(icon);
+			}
+		}
+	}
+}
+ZmOrganizer.prototype.getIcon = function() {
+	return this._icon;
+};
 
 // Actions
 

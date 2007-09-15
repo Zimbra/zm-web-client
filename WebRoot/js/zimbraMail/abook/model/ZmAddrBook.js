@@ -92,16 +92,12 @@ function(showUnread, maxLength, noMarkup) {
 
 ZmAddrBook.prototype.getIcon = 
 function() {
-	var icon;
-
-	if (this.nId == ZmFolder.ID_ROOT)				{ icon = null; }
-	else if (this.nId == ZmFolder.ID_TRASH)			{ icon = "Trash"; }
-	else if (this.link)								{ icon = "SharedContactsFolder"; }
-	else if (this.nId == ZmFolder.ID_AUTO_ADDED)	{ icon = "EmailedContacts"; }
-	else if (this.nId == ZmOrganizer.ID_MY_CARD)	{ icon = "MyCard"; }
-	else											{ icon = "ContactsFolder"; }
-
-	return icon;
+	if (this.nId == ZmFolder.ID_ROOT)			{ return null; }
+	if (this.nId == ZmFolder.ID_TRASH)			{ return "Trash"; }
+	if (this.link)								{ return "SharedContactsFolder"; }
+	if (this.nId == ZmFolder.ID_AUTO_ADDED)		{ return "EmailedContacts"; }
+	if (this.nId == ZmOrganizer.ID_MY_CARD)		{ return "MyCard"; }
+	return this._icon || "ContactsFolder";
 };
 
 ZmAddrBook.prototype.supportsPublicAccess =

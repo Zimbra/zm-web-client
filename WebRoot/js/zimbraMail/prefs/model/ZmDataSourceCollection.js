@@ -121,6 +121,11 @@ ZmDataSourceCollection.prototype.getById = function(id) {
 };
 
 ZmDataSourceCollection.prototype.add = function(item) {
+	var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
+	var organizer = tree && tree.getById(item.folderId);
+	if (organizer) {
+		organizer.setIcon(item.type == ZmAccount.POP ? "POPAccount" : "IMAPAccount");
+	}
 	this._itemMap[item.id] = item;
 	if (item.type == ZmAccount.POP) {
 		this._pop3Map[item.id] = item;
@@ -138,6 +143,11 @@ ZmDataSourceCollection.prototype.modify = function(item) {
 };
 
 ZmDataSourceCollection.prototype.remove = function(item) {
+	var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
+	var organizer = tree && tree.getById(item.folderId);
+	if (organizer) {
+		organizer.setIcon(null);
+	}
     delete this._itemMap[item.id];
 	delete this._pop3Map[item.id];
 	delete this._imapMap[item.id];

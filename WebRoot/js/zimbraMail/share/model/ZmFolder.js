@@ -340,17 +340,11 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 
 ZmFolder.prototype.getIcon = 
 function() {
-	if (this.nId == ZmOrganizer.ID_ROOT) {
-		return null;
-	} else if (ZmFolder.ICON[this.nId]) {
-		return ZmFolder.ICON[this.nId];
-	} else if (this.isFeed()) {
-		return "RSS";
-	} else if (this.isRemote()) {
-		return "SharedMailFolder";
-	} else {
-		return "Folder";
-	}
+	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
+	if (ZmFolder.ICON[this.nId])			{ return ZmFolder.ICON[this.nId]; }
+	if (this.isFeed())						{ "RSS"; }
+	if (this.isRemote())					{ return "SharedMailFolder"; }
+	return this._icon ||"Folder";
 };
 
 /**

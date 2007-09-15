@@ -96,7 +96,9 @@ function(showUnread, maxLength, noMarkup) {
 
 ZmCalendar.prototype.getIcon = 
 function() {
-	return (this.nId == ZmOrganizer.ID_ROOT) ? null	: (this.link ? "GroupSchedule" : "CalendarFolder");
+	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
+	if (this.link)							{ return "GroupSchedule"; }
+	return this._icon || "CalendarFolder";
 };
 
 ZmCalendar.prototype.setFreeBusy = 

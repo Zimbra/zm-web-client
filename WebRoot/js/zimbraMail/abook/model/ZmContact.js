@@ -407,14 +407,11 @@ function() {
 
 ZmContact.prototype.getIcon =
 function() {
-	var icon;
-	if (this.isGal)				icon = "GALContact";
-	else if (this.isShared())	icon = "SharedContact";
-	else if (this.isGroup())	icon = "Group";
-	else if (this.isMyCard())	icon = "MyCard";
-	else 						icon = "Contact";
-
-	return icon;
+	if (this.isGal)				{ return "GALContact"; }
+	else if (this.isShared())	{ return "SharedContact"; }
+	else if (this.isGroup())	{ return "Group"; }
+	else if (this.isMyCard())	{ return "MyCard"; }
+	return this._icon || "Contact";
 };
 
 ZmContact.prototype.getFolderId =

@@ -126,10 +126,8 @@ function (control) {
 
 ZmZimlet.prototype.getIcon =
 function() {
-	if (this.id == ZmZimlet.ID_ZIMLET) {
-		return null;
-	}
-	return this._zimletContext.icon;
+	if (this.id == ZmZimlet.ID_ZIMLET)	{ return null; }
+	return this._icon || this._zimletContext.icon;
 };
 
 ZmZimlet.prototype.getZimletContext =

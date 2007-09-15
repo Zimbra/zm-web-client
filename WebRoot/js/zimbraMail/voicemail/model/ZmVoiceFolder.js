@@ -97,14 +97,14 @@ function(showUnread, maxLength, noMarkup) {
 ZmVoiceFolder.prototype.getIcon =
 function() {
 	switch (this.callType) {
-		case ZmVoiceFolder.ACCOUNT: return null;
-		case ZmVoiceFolder.PLACED_CALL: return "PlacedCalls";
-		case ZmVoiceFolder.ANSWERED_CALL: return "AnsweredCalls";
-		case ZmVoiceFolder.MISSED_CALL: return "MissedCalls";
-		case ZmVoiceFolder.VOICEMAIL: return "Voicemail";
-		case ZmVoiceFolder.TRASH: return "Trash";
+		case ZmVoiceFolder.ACCOUNT:			{ return null; }
+		case ZmVoiceFolder.PLACED_CALL:		{ return "PlacedCalls"; }
+		case ZmVoiceFolder.ANSWERED_CALL:	{ return "AnsweredCalls"; }
+		case ZmVoiceFolder.MISSED_CALL:		{ return "MissedCalls"; }
+		case ZmVoiceFolder.VOICEMAIL:		{ return "Voicemail"; }
+		case ZmVoiceFolder.TRASH:			{ return "Trash"; }
 	}
-	return null;
+	return this._icon;
 };
 
 ZmVoiceFolder.prototype.getSearchType =

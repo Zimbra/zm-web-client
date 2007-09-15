@@ -197,7 +197,8 @@ function(callback, errorCallback, batchCommand) {
 		dsrc.setAttribute(aname, String(avalue));
 	}
 
-	var respCallback = new AjxCallback(this, this._handleSaveResponse, [callback]);
+	var args = [this._object_ ? this._object_.folderId : this.folderId, callback]
+	var respCallback = new AjxCallback(this, this._handleSaveResponse, args);
 	if (batchCommand) {
 		var execFrame = null; // REVISIT: What should this be?
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback, execFrame);
@@ -268,6 +269,11 @@ ZmDataSource.prototype.getPort = function() {
 
 ZmDataSource.prototype.setFromJson = function(obj) {
 	// data source fields
+	var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
+	var organizer = tree && tree.getById(this.folderId);
+	if (organizer) {
+		organizer.setIcon(null);
+	}
 	for (var aname in ZmDataSource.DATASOURCE_ATTRS) {
 		var avalue = obj[aname];
 		if (avalue == null) continue;
@@ -277,6 +283,10 @@ ZmDataSource.prototype.setFromJson = function(obj) {
 
 		var pname = ZmDataSource.DATASOURCE_ATTRS[aname];
 		this[pname] = avalue;
+	}
+	var organizer = tree && tree.getById(this.folderId);
+	if (organizer) {
+		organizer.setIcon(this.type == ZmAccount.POP ? "POPAccount" : "IMAPAccount");
 	}
 
 	// pseudo-identity fields
@@ -324,7 +334,7 @@ ZmDataSource.prototype._handleCreateResponse = function(callback, result) {
 	}
 };
 
-ZmDataSource.prototype._handleSaveResponse = function(callback, result) {
+ZmDataSource.prototype._handleSaveResponse = function(folderId, callback, result) {
 	delete this._dirty;
 
 	var collection = appCtxt.getDataSourceCollection();
@@ -332,6 +342,17 @@ ZmDataSource.prototype._handleSaveResponse = function(callback, result) {
 	//       base datasource object in the collection.
 	collection.remove(this);
 	collection.add(this);
+
+	// update icon
+	var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
+	var organizer = tree && tree.getById(folderId);
+	if (organizer) {
+		organizer.setIcon(null);
+	}
+	var organizer = tree && tree.getById(this.folderId);
+	if (organizer) {
+		organizer.setIcon(this.type == ZmAccount.POP ? "POPAccount" : "IMAPAccount");
+	}
 
 	if (callback) {
 		callback.run();
