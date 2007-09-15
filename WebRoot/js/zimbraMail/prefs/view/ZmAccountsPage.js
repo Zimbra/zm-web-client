@@ -299,7 +299,6 @@ ZmAccountsPage.prototype.reset = function(useDefaults) {
 	ZmPreferencesPage.prototype.reset.apply(this, arguments);
 
 	// clear current list of accounts
-	var currentAccount = this._currentAccount;
 	this._accounts.removeAll();
 	this._deletedAccounts = [];
 
@@ -327,7 +326,9 @@ ZmAccountsPage.prototype.reset = function(useDefaults) {
 
 	// initialize list view
 	this._accounts.sort(ZmAccountsPage.__ACCOUNT_COMPARATOR);
-	this._resetAccountListView(currentAccount);
+	var account = this._accounts.get(0);
+	this._resetAccountListView(account);
+	this.setAccount(account);
 };
 
 // saving
