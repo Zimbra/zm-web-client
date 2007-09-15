@@ -157,7 +157,7 @@ ZmZimbraMail.run =
 function(params) {
 	
 	if (!window.DBG) {
-		this._createDummyDBG();
+		ZmZimbraMail._createDummyDBG();
 	}
 	
 	if (params.noSplashScreen) {
@@ -1672,22 +1672,22 @@ function(appName) {
 	this._appViewMgr.pushView(viewName);
 };
 
-ZmZimbraMail.prototype._createDummyDBG =
+ZmZimbraMail._createDummyDBG =
 function() {
-	var dbg = window.DBG = function() {};
-	
-	dbg.prototype.toString		= function() { return "dummy DBG"; };
-	dbg.prototype.display		= function() {};
-	dbg.prototype.dumpObj		= function() {};
-	dbg.prototype.getDebugLevel	= function() {};
-	dbg.prototype.isDisabled	= function() {};
-	dbg.prototype.println		= function() {};
-	dbg.prototype.printRaw		= function() {};
-	dbg.prototype.printXML		= function() {};
-	dbg.prototype.setDebugLevel	= function() {};
-	dbg.prototype.setTitle		= function() {};
-	dbg.prototype.showTiming	= function() {};
-	dbg.prototype.timePt		= function() {};
+	window.AjxDebug = function() {};
+	window.AjxDebug.prototype.toString		= function() { return "dummy DBG class"};
+	window.AjxDebug.prototype.display		= function() {};
+	window.AjxDebug.prototype.dumpObj		= function() {};
+	window.AjxDebug.prototype.getDebugLevel	= function() {};
+	window.AjxDebug.prototype.isDisabled	= function() {};
+	window.AjxDebug.prototype.println		= function() {};
+	window.AjxDebug.prototype.printRaw		= function() {};
+	window.AjxDebug.prototype.printXML		= function() {};
+	window.AjxDebug.prototype.setDebugLevel	= function() {};
+	window.AjxDebug.prototype.setTitle		= function() {};
+	window.AjxDebug.prototype.showTiming	= function() {};
+	window.AjxDebug.prototype.timePt		= function() {};
+	window.DBG = new window.AjxDebug();
 };
 
 /**
