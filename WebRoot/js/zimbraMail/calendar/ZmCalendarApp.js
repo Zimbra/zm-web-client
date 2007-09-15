@@ -477,7 +477,7 @@ function(callback, checkQS) {
 };
 
 ZmCalendarApp.prototype.activate =
-function(active, view, date) {
+function(active) {
 	ZmApp.prototype.activate.apply(this, arguments);
 
 	var show = active || appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);

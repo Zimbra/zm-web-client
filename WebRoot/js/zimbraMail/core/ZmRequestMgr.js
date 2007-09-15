@@ -281,6 +281,7 @@ function(hdr) {
 			var callback = new AjxCallback(this,
 				function() {
 					this._refreshHandler(hdr.context.refresh);
+					appCtxt.getCurrentApp().activate();	// so that overview is rendered
 				});
 			this._controller.postRenderCallbacks.push(callback);
 		} else {

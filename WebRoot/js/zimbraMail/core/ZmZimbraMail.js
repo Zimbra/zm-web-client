@@ -1116,7 +1116,7 @@ function(appName, view) {
 	
 			// activate current app
 			if (app) {
-				app.activate(true, view);
+				app.activate(true);
 			}
 		}
 	}
