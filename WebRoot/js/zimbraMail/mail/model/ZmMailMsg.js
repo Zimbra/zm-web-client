@@ -221,11 +221,11 @@ function(mode) {
                 addrVec = this._getAttendees();
             }
             else {
-                this._addrs[AjxEmailAddress.TO];
+                addrVec = this._addrs[AjxEmailAddress.TO];
             }
         }
         else {
-            this._addrs[AjxEmailAddress.FROM];
+            addrVec = this._addrs[AjxEmailAddress.FROM];
         }
     }
     return addrVec;
