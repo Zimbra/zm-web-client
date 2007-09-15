@@ -343,9 +343,16 @@ function(params) {
 		girJSON.Body = {};
 		girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
 		girJSON.Header = params.batchInfoResponse.Header;
+		if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.sessionId) {
+			ZmCsfeCommand.setSessionId(girJSON.Header.context.sessionId);
+		}
+		DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "GetInfoResponse");
+		DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
 		var srJSON = params.searchResponse = {};
 		srJSON.Body = {};
 		srJSON.Body.SearchResponse = br.SearchResponse[0];
+		DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "SearchResponse");
+		DBG.dumpObj(AjxDebug.DBG1, srJSON, -1);
 	}
 
 	this._getStartApp(params);
