@@ -1114,9 +1114,17 @@ function(appName, view) {
 				stb.setSearchFieldValue(app.currentQuery ? app.currentQuery : "");
 			}
 	
-			// activate current app
+			// activate current app - results in rendering of overview
 			if (app) {
-				app.activate(true);
+				if (appCtxt.inStartup && this._doingPostRenderStartup) {
+					var callback = new AjxCallback(this,
+						function() {
+							app.activate(true);
+						});
+					this.postRenderCallbacks.push(callback);
+				} else {
+					app.activate(true);
+				}
 			}
 		}
 	}
