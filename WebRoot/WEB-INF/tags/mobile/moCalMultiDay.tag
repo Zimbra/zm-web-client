@@ -39,7 +39,7 @@
 </mo:handleError>
 
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse'>
+<table width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%'>
 
 <c:forEach var="row" items="${layout.allDayRows}">
     <tr>
