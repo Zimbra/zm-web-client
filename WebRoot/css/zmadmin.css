@@ -678,3 +678,6 @@ div.ZaSearchBuilderOptionRemoveAll table  {
 	@FontSize-bigger@ 
 }
 
+.XFormTableContainer {
+ @ListItemBgColor-normal@
+}
