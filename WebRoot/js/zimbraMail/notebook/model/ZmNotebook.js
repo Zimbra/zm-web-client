@@ -81,10 +81,10 @@ function() {
 	if (this.nId == ZmOrganizer.ID_ROOT) { return null; }
 	if (this.parent.nId == ZmOrganizer.ID_ROOT) {
 		if (this.link) { return "SharedNotebook"; }
-		return this.getIcon() || "Notebook";
+		return ZmOrganizer.prototype.getIcon.call(this) || "Notebook";
 	}
 	if (this.link) { return "SharedSection"; }
-	return this.getIcon() || "Section";
+	return ZmOrganizer.prototype.getIcon.call(this) || "Section";
 };
 
 ZmNotebook.prototype.getSearchPath = function() {
