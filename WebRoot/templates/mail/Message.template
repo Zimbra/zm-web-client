@@ -183,19 +183,17 @@
 </template>
 
 <template id='mail.Message#ForwardMessages'>
-	<table cellspacing=0 cellpadding=0 border=0 width=100% _attach_table='true'>
+	<table cellspacing=0 cellpadding=0 border=0 width=100%>
 	<$ for (var i = 0; i < data.messages.length; i++) { $>
 		<$ var message = data.messages[i]; $>
-		<tr _attach_tr='true'>
-		<td width=65 align=right><div class='ImgMessage'></div></td>
-			<td width=1%>
-				<input id='<$=message.id$>' name='<$=ZmComposeView.FORWARD_MSG_NAME$>' type='checkbox' checked disabled='true'>
-			</td>
+		<tr><td width=65 align=right><div class='ImgMessage'></div></td>
+		<td width=1%>
+			<input id='<$=message.id$>' name='<$=ZmComposeView.FORWARD_MSG_NAME$>' type='checkbox' checked>
+		</td>
 			<td class='nobreak'></td>
 			<td><b><$= message.subject || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b>
 				<span class='ZmConvListFragment'><$= message.getFragment(35) $></span>
-				&nbsp;<span style='cursor:pointer;color:blue;text-decoration:underline;' id='<$=message.id$>_remove'><$=ZmMsg.remove$></span>
-			</td>
+		</td>
 		</tr>
 	<$ } $>
 	</table>
@@ -204,23 +202,18 @@
 <template id='mail.Message#ForwardOneMessage'>
 	<$ var message = data.message; $>
 	<table cellspacing=4 cellpadding=0 border=0 width=100%>
-		<tr>
-			<td width=60 align=right><div class='ImgMessage'></div></td>
-			<td width=1%>
-				<input id='<$=message.id$>' name='<$=ZmComposeView.FORWARD_MSG_NAME$>' type='checkbox' checked disabled='true'>
-			</td>
+		<tr><td width=60 align=right><div class='ImgAttachment'></div></td>
 			<td><b><$= (message ? message.subject : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b></td>
 		</tr>
 	</table>
 </template>
 
 <template id='mail.Message#ForwardAttachments'>
-	<table cellspacing=0 cellpadding=0 border=0 width=100% _attach_table='true'>
+	<table cellspacing=0 cellpadding=0 border=0 width=100%>
 	<$ for (var i = 0; i < data.attachments.length; i++) { $>
 		<$ var attachment = data.attachments[i]; $>
-		<tr _attach_tr='true'>
-		<td width=65 align=right>
-			<$ if (i == 0) { $>
+		<tr><td width=65 align=right>
+		<$ if (i == 0) { $>
 				<div class='ImgAttachment'></div>
 			<$ } $>
 			</td>
@@ -228,8 +221,8 @@
 				<$ if (!data.isNew) { $>
 					<$ var isChecked = data.isForward || data.isForwardInline || data.isDraft || attachment.ci $>
 					<input id='<$=attachment.part$>' name='<$=ZmComposeView.FORWARD_ATT_NAME$>'
-						   type='checkbox' checked disabled='true'>
-				<$ } $>
+					   type='checkbox' <$= isChecked ? "checked" : "" $>>
+			<$ } $>
 			</td>
 			<td class='nobreak'>
 				<!-- The open A element is within the attachment.link string -->
@@ -237,8 +230,7 @@
 				<$ if (attachment.size) { $>
 					(<$= attachment.size $>)
 				<$ } $>
-				&nbsp;<span style='cursor:pointer;color:blue;text-decoration:underline;' id='<$=attachment.part$>_remove'><$=ZmMsg.remove$></span>
-			</td>
+		</td>
 		</tr>
 	<$ } $>
 	</table>
