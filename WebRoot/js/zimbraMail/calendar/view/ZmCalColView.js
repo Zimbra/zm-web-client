@@ -1446,7 +1446,7 @@ function(width, numCols) {
 }
 
 ZmCalColView.prototype._layout =
-function() {
+function(refreshApptLayout) {
 	DBG.println(AjxDebug.DBG2, "ZmCalColView in layout!");
 	this._updateDays();
 
@@ -1580,9 +1580,11 @@ function() {
 
 	this._apptBodyDivOffset = Dwt.toWindow(document.getElementById(this._apptBodyDivId), 0, 0, null, true);
 
-	if (this._scheduleMode) {
+	if (this._scheduleMode || refreshApptLayout) {		
 		this._layoutAppts();		
-		this._layoutUnionData();
+		if(this._scheduleMode) {
+			this._layoutUnionData();
+		}
 	}
 }
 
@@ -1700,7 +1702,7 @@ function(ev) {
 	if (ev.newWidth == Dwt.DEFAULT && ev.newHeight == Dwt.DEFAULT) return;
 	try {	
 		if ((ev.oldWidth != ev.newWidth) || (ev.oldHeight != ev.newHeight)) {
-			this._layout();
+			this._layout(true);
 		}
 	} catch(ex) {
 		DBG.dumpObj(ex);
