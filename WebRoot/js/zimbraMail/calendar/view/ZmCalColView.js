@@ -716,9 +716,11 @@ function(appt) {
 	var apptX = 0;
 	var apptY = 0;
 	var layout = this._layoutMap[this._getItemId(appt)];
+	var apptWidthPercent  = 1;
 	if(layout){
 		layout.bounds = this._getBoundsForAppt(layout.appt);
-		var w = Math.floor(layout.bounds.width*ZmCalColView._getApptWidthPercent(layout.maxcol+1));
+		apptWidthPercent = ZmCalColView._getApptWidthPercent(layout.maxcol+1);
+		var w = Math.floor(layout.bounds.width*apptWidthPercent);
 		var xinc = layout.maxcol ? ((layout.bounds.width - w) / layout.maxcol) : 0; // n-1
 		var x = xinc * layout.col + (layout.bounds.x);
 		if (appt) appt._layout = {x: x, y: layout.bounds.y, w: w, h: layout.bounds.height};
@@ -756,19 +758,31 @@ function(appt) {
 	var isRemote = Boolean(calendar.url);
 
 	var is30 = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
+	var is60 = (appt._orig.getDuration() <= 2*AjxDateUtil.MSEC_PER_HALF_HOUR);
+	var apptName = AjxStringUtil.htmlEncode(appt.getName());	
+	
+	if(is60 && (this.view != ZmController.CAL_DAY_VIEW) && (this.view != ZmController.CAL_SCHEDULE_VIEW) ){
+		var widthLimit = Math.floor(25 * apptWidthPercent)
+		if( apptName.length > widthLimit){
+			 apptName = apptName.substring(0,widthLimit) +"..." ;
+		}
+		apptName = appt.getDurationText(true, true)+ " - " + apptName;
+	}	
 
+	
 	var subs = {
 		id: id,
 		body_style: "",
 		newState: isNew ? "_new" : "",
 		headerColor: color + (isNew ? "Dark" : "Light"),
 		bodyColor: color + (isNew ? "" : "Bg"),
-		name: AjxStringUtil.htmlEncode(appt.getName()) + (is30 ? this._padding : ""),
+		name: apptName + (is30 ? this._padding : ""),
 		starttime: appt.getDurationText(true, true),
 		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate))+this._padding,
 		location: location,
 		status: (appt.isOrganizer() ? "" : appt.getParticipantStatusStr()),
-		icon: ((appt.isPrivate()) ? "ReadOnly" : null)
+		icon: ((appt.isPrivate()) ? "ReadOnly" : null),
+		hideTime: is60
 	};	
 	
 	var template;
