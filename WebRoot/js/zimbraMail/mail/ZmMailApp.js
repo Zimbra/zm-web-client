@@ -939,10 +939,17 @@ function() {
 
 ZmMailApp.prototype.getOverviewId =
 function(account) {
-	account = !appCtxt.multiAccounts ? null : account || this.accordionItem.data.account;
-	return appCtxt.multiAccounts ?
-		[this.getOverviewPanelContentId(), account.name].join(":") :
-		ZmApp.prototype.getOverviewPanelContentId.apply(this, arguments);
+	if (appCtxt.multiAccounts) {
+		if (!account) {
+			// bug #20310 - default to main account if all else fails
+			account = this.accordionItem
+				? this.accordionItem.data.account
+				: appCtxt.getMainAccount();
+		}
+		return ([this.getOverviewPanelContentId(), account.name].join(":"));
+	}
+
+	return ZmApp.prototype.getOverviewPanelContentId.apply(this, arguments);
 };
 
 ZmMailApp.prototype._accordionSelectionListener =
