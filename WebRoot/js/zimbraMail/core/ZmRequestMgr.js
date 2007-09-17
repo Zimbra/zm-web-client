@@ -325,7 +325,15 @@ function(refresh) {
 		var respCallback = new AjxCallback(this, this._handleResponseRefreshHandler, [refresh]);
 		var folderTree = appCtxt.getFolderTree();
 		if (folderTree) {
-			folderTree.getPermissions(null, respCallback, true);
+			if (appCtxt.inStartup && this._controller._doingPostRenderStartup) {
+				var callback = new AjxCallback(this,
+					function() {
+						folderTree.getPermissions(null, respCallback, true);
+					});
+				this._controller.postRenderCallbacks.push(callback);
+			} else {
+				folderTree.getPermissions(null, respCallback, true);
+			}
 		}
 	} else {
 		this._handleResponseRefreshHandler(refresh);
