@@ -565,6 +565,11 @@ function(id, setup, value) {
 	var cboxLabel = ZmPreferencesPage.__formatLabel(setup.displayName, value);
 	checkbox.setText(cboxLabel);
 	checkbox.setSelected(value);
+	// TODO: Factor this out
+	if (id == ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED) {
+		this._handleDontKeepCopyChange();
+		checkbox.addSelectionListener(new AjxListener(this, this._handleDontKeepCopyChange));
+	}
 	return checkbox;
 };
 
@@ -572,6 +577,10 @@ ZmPreferencesPage.prototype._setupInput =
 function(id, setup, value) {
 	var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: value, size: 40});
 	this.setFormObject(id, input);
+	// TODO: Factor this out
+	if (id == ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED) {
+		this._handleDontKeepCopyChange();
+	}
 	return input;
 };
 
@@ -716,6 +725,14 @@ function(ev) {
     var item = ev.dwtObj;
     var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
     this._showLocale(item._localeId, button);
+};
+
+ZmPreferencesPage.prototype._handleDontKeepCopyChange = function(ev) {
+	var input = this.getFormObject(ZmSetting.MAIL_FORWARDING_ADDRESS);
+	var checkbox = this.getFormObject(ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED);
+	if (input && checkbox) {
+		input.setRequired(checkbox.isSelected());
+	}
 };
 
 // Popup the change password dialog.

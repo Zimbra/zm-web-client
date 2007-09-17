@@ -333,7 +333,9 @@ function() {
 		displayName:		ZmMsg.mailDeliveryDisabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		displaySeparator:	true,
-		precondition:		ZmSetting.MAIL_FORWARDING_ENABLED
+		precondition:		ZmSetting.MAIL_FORWARDING_ENABLED,
+		validationFunction:	ZmPref.validateDontKeepLocalCopy,
+		errorMessage:		ZmMsg.errorMissingFwdAddr
 	});
 
 	ZmPref.registerPref("NOTIF_ADDRESS", {
