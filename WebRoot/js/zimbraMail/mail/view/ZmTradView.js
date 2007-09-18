@@ -44,5 +44,7 @@ function(msgs) {
 	this._mailListView.set(msgs, ZmItem.F_DATE);
 	if (!this._controller._readingPaneOn) {
 		this._selectFirstItem();
+	} else {
+		this._mailListView.scrollToTop();
 	}
 };

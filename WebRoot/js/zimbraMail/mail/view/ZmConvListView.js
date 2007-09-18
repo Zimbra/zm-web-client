@@ -60,6 +60,8 @@ function(convs) {
 	this._mailListView.set(convs, ZmItem.F_DATE);
 	if (!this._controller._readingPaneOn) {
 		this._selectFirstItem();
+	} else {
+		this._mailListView.scrollToTop();
 	}
 };
 
