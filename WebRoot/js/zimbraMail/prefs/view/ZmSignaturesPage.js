@@ -117,11 +117,16 @@ ZmSignaturesPage.prototype.isDirty = function() {
 
 ZmSignaturesPage.prototype.validate = function() {
 	var signatures = this.getAllSignatures();
+	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
 	for (var i = 0; i < signatures.length; i++) {
 		var id = signatures[i]._htmlElId;
 		var comps = this._signatureComps[id];
 		if (comps.name.getValue().replace(/\s*/g,"") == "") {
 			this._errorMsg = ZmMsg.errorMissingRequired;
+			return false;
+		}
+		if (comps.value.getValue().length > maxLength) {
+			this._errorMsg = AjxMessageFormat.format(ZmMsg.errorSignatureTooLong, maxLength);
 			return false;
 		}
 	}
