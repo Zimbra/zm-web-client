@@ -1254,7 +1254,7 @@ function(soapDoc, parent, accountName) {
 		from.setAttribute("t", "f");
 		from.setAttribute("a", accountName);
 
-		var ac = parentAppCtxt || appCtxt;
+		var ac = window.parentAppCtxt || window.appCtxt;
 		var sender = soapDoc.set("e", null, parent);
 		sender.setAttribute("t", "s");
 		sender.setAttribute("a", ac.getMainAccount().getEmail());
