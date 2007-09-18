@@ -225,9 +225,10 @@ function() {
 			}
 		}
 		else if (type == ZmPref.TYPE_EXPORT) {
-			var label = setup.displayName || ZmMsg._export;
-			var btn = this._addButton(buttonId, label, 110, new AjxListener(this, this._exportButtonListener));
-			btn.setData(Dwt.KEY_ID, id);
+			this._exportDiv = document.getElementById(buttonId);
+			if (this._exportDiv) {
+				this._addExportWidgets(this._exportDiv, id, setup);
+			}
 		}
 	}
 
@@ -420,12 +421,12 @@ function(id, useDefault) {
 
 // Add a button to the preferences page
 ZmPreferencesPage.prototype._addButton =
-function(parentId, text, width, listener) {
+function(parentIdOrElem, text, width, listener) {
 	var button = new DwtButton(this);
 	button.setSize(width, Dwt.DEFAULT);
 	button.setText(text);
 	button.addSelectionListener(listener);
-	button.appendElement(parentId);
+	button.appendElement(parentIdOrElem);
 	return button;
 };
 
@@ -609,6 +610,18 @@ function(buttonDiv, settingId, setup) {
 	if (settingId) {
 		this._importBtn.setData(Dwt.KEY_ID, settingId);
 	}
+};
+
+ZmPreferencesPage.prototype._addExportWidgets =
+function(buttonDiv, settingId, setup) {
+	var exportDivId = this._htmlElId+"_export";
+	buttonDiv.innerHTML = AjxTemplate.expand("prefs.Pages#Export", exportDivId);
+
+	buttonDiv = document.getElementById(exportDivId+"_button");
+
+	var btnLabel = setup.displayName || ZmMsg._export;
+	var btn = this._addButton(buttonDiv, btnLabel, 110, new AjxListener(this, this._exportButtonListener));
+	btn.setData(Dwt.KEY_ID, settingId);
 };
 
 ZmPreferencesPage.prototype._setupColor =

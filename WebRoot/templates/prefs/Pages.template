@@ -574,7 +574,7 @@ and the container element is replaced with that control.
 	<table border=0 cellpadding=3 cellspacing=3>
 		<tr>
 			<td class='ZOptionsLabel'>${label}</td>
-			<td>
+			<td class='ZOptionsInfo'>
 				<form id='${id}_form'
 					  action='${action}' method='POST' enctype='multipart/form-data'
 					  style='margin: 0px; padding: 0px;'>
@@ -585,7 +585,17 @@ and the container element is replaced with that control.
 			</td>
 		</tr>
 		<tr>
-			<td colspan=2><div id='${id}_button'></div></td>
+			<td class='ZOptionsLabel'>&nbsp;</td>
+			<td class='ZOptionsInfo'><div id='${id}_button'></div></td>
+		</tr>
+	</table>
+</template>
+
+<template id='prefs.Pages#Export'>
+	<table border=0 cellpadding=3 cellspacing=3>
+		<tr>
+			<td class='ZOptionsLabel'>&nbsp;</td>
+			<td class='ZOptionsInfo'><div id='${id}_button'></div></td>
 		</tr>
 	</table>
 </template>

@@ -2154,6 +2154,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	@Text-disabled@		/* TODO: Text-hint ? */
 }
 
+.ZOptionsInfo .ZOptionsLabel {
+	width: 100px;
+}
+
 /* REVISIT: Why do disabled inputs have a fixed height of 20px? */
 .ZOptionsField INPUT[disabled],
 .ZOptionsTableRow INPUT[disabled] {
