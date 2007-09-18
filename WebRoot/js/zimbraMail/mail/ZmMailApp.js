@@ -33,8 +33,11 @@
  * @author Conrad Damon
  */
 ZmMailApp = function(container, parentController) {
-
 	ZmApp.call(this, ZmApp.MAIL, container, parentController);
+
+	this._dataSourceCollection = {};
+	this._identityCollection = {};
+	this._signatureCollection = {};
 };
 
 // Organizer and item-related constants
@@ -42,9 +45,13 @@ ZmEvent.S_CONV				= "CONV";
 ZmEvent.S_MSG				= "MSG";
 ZmEvent.S_ATT				= "ATT";
 ZmEvent.S_FOLDER			= "FOLDER";
+ZmEvent.S_DATA_SOURCE       = "DATA SOURCE";
+ZmEvent.S_IDENTITY       	= "IDENTITY";
+ZmEvent.S_SIGNATURE			= "SIGNATURE";
 ZmItem.CONV					= ZmEvent.S_CONV;
 ZmItem.MSG					= ZmEvent.S_MSG;
 ZmItem.ATT					= ZmEvent.S_ATT;
+ZmItem.DATA_SOURCE			= ZmEvent.S_DATA_SOURCE;
 ZmOrganizer.FOLDER			= ZmEvent.S_FOLDER;
 
 // App-related constants
@@ -82,6 +89,9 @@ function() {
 	AjxDispatcher.registerMethod("GetMsgController", ["MailCore", "Mail"], new AjxCallback(this, this.getMsgController));
 	AjxDispatcher.registerMethod("GetTradController", "MailCore", new AjxCallback(this, this.getTradController));
 	AjxDispatcher.registerMethod("GetMailListController", "MailCore", new AjxCallback(this, this.getMailListController));
+	AjxDispatcher.registerMethod("GetIdentityCollection", "MailCore", new AjxCallback(this, this.getIdentityCollection));
+	AjxDispatcher.registerMethod("GetSignatureCollection", "MailCore", new AjxCallback(this, this.getSignatureCollection));
+	AjxDispatcher.registerMethod("GetDataSourceCollection", "MailCore", new AjxCallback(this, this.getDataSourceCollection));
 };
 
 ZmMailApp.prototype._registerSettings =
@@ -557,6 +567,13 @@ function() {
 };
 
 // App API
+
+ZmMailApp.prototype.startup = function(result) {
+	var obj = result.getResponse().GetInfoResponse;
+	appCtxt.getIdentityCollection().initialize(obj.identities);
+	appCtxt.getDataSourceCollection().initialize(obj.dataSources);
+	appCtxt.getSignatureCollection().initialize(obj.signatures);
+};
 
 /**
  * Normalize the notifications that occur when a virtual conv gets promoted to a real conv.
@@ -1149,4 +1166,44 @@ function(parent) {
 	var menu = new ZmActionMenu({parent:parent, menuItems:list});
 	parent.setMenu(menu);
 	return menu;
+};
+
+ZmMailApp.prototype.getDataSourceCollection =
+function() {
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
+	var activeAcct = appCtxt.getActiveAccount().name;
+
+	if (!this._dataSourceCollection[activeAcct]) {
+		this._dataSourceCollection[activeAcct] = new ZmDataSourceCollection();
+	}
+	return this._dataSourceCollection[activeAcct];
+};
+
+ZmMailApp.prototype.getIdentityCollection =
+function() {
+	// child window always gets its own identitiy collection
+	if (appCtxt.isChildWindow) {
+		if (!this._identityCollection) {
+			this._identityCollection = new ZmIdentityCollection();
+		}
+		return this._identityCollection;
+	}
+
+	var activeAcct = appCtxt.getActiveAccount().name;
+
+	if (!this._identityCollection[activeAcct]) {
+		this._identityCollection[activeAcct] = new ZmIdentityCollection();
+	}
+	return this._identityCollection[activeAcct];
+};
+
+ZmMailApp.prototype.getSignatureCollection =
+function() {
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
+	var activeAcct = appCtxt.getActiveAccount().name;
+
+	if (!this._signatureCollection[activeAcct]) {
+		this._signatureCollection[activeAcct] = new ZmSignatureCollection();
+	}
+	return this._signatureCollection[activeAcct];
 };

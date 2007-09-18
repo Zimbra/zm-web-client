@@ -33,17 +33,10 @@ ZmPreferencesApp = function(container) {
 
 	// must be hash for case of multi-accounts
 	this._filterRules = {};
-	this._dataSourceCollection = {};
-	this._identityCollection = {};
-	this._signatureCollection = {};
 };
 
 // Organizer and item-related constants
 ZmEvent.S_FILTER			= "FILTER";
-ZmEvent.S_DATA_SOURCE       = "DATA SOURCE";
-ZmEvent.S_IDENTITY       	= "IDENTITY";
-ZmEvent.S_SIGNATURE			= "SIGNATURE";
-ZmItem.DATA_SOURCE			= ZmEvent.S_DATA_SOURCE;
 
 // App-related constants
 ZmApp.PREFERENCES					= "Options";
@@ -76,14 +69,6 @@ ZmZimbraMail.addAppListener(ZmApp.PREFERENCES, ZmAppEvent.PRE_LAUNCH, new AjxLis
 //
 
 // App API
-
-ZmPreferencesApp.prototype.startup =
-function(result) {
-	var obj = result.getResponse().GetInfoResponse;
-	appCtxt.getIdentityCollection().initialize(obj.identities);
-	AjxDispatcher.run("GetDataSourceCollection").initialize(obj.dataSources);
-	appCtxt.getSignatureCollection().initialize(obj.signatures);
-};
 
 ZmPreferencesApp.prototype.launch =
 function(callback) {
@@ -119,46 +104,6 @@ function() {
 	return this._filterRules[activeAcct];
 };
 
-ZmPreferencesApp.prototype.getDataSourceCollection =
-function() {
-	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var activeAcct = appCtxt.getActiveAccount().name;
-
-	if (!this._dataSourceCollection[activeAcct]) {
-		this._dataSourceCollection[activeAcct] = new ZmDataSourceCollection();
-	}
-	return this._dataSourceCollection[activeAcct];
-};
-
-ZmPreferencesApp.prototype.getIdentityCollection =
-function() {
-	// child window always gets its own identitiy collection
-	if (appCtxt.isChildWindow) {
-		if (!this._identityCollection) {
-			this._identityCollection = new ZmIdentityCollection();
-		}
-		return this._identityCollection;
-	}
-
-	var activeAcct = appCtxt.getActiveAccount().name;
-
-	if (!this._identityCollection[activeAcct]) {
-		this._identityCollection[activeAcct] = new ZmIdentityCollection();
-	}
-	return this._identityCollection[activeAcct];
-};
-
-ZmPreferencesApp.prototype.getSignatureCollection =
-function() {
-	var appCtxt = window.parentAppCtxt || window.appCtxt;
-	var activeAcct = appCtxt.getActiveAccount().name;
-
-	if (!this._signatureCollection[activeAcct]) {
-		this._signatureCollection[activeAcct] = new ZmSignatureCollection();
-	}
-	return this._signatureCollection[activeAcct];
-};
-
 //
 // Protected methods
 //
@@ -167,9 +112,6 @@ function() {
 
 ZmPreferencesApp.prototype._defineAPI =
 function() {
-	AjxDispatcher.registerMethod("GetIdentityCollection", "PreferencesCore", new AjxCallback(this, this.getIdentityCollection));
-	AjxDispatcher.registerMethod("GetSignatureCollection", "PreferencesCore", new AjxCallback(this, this.getSignatureCollection));
-	AjxDispatcher.registerMethod("GetDataSourceCollection", "PreferencesCore", new AjxCallback(this, this.getDataSourceCollection));
 	AjxDispatcher.registerMethod("GetFilterRules", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterRules));
 	AjxDispatcher.registerMethod("GetPrefController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getPrefController));
 	AjxDispatcher.registerMethod("GetFilterController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterController));

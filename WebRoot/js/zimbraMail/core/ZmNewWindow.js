@@ -167,8 +167,8 @@ function() {
     this._createEnabledApps(apps);
 
 	// inherit parent's identity collection
-	var parentPrefsApp = parentAppCtxt.getApp(ZmApp.PREFERENCES);
-	appCtxt.getApp(ZmApp.PREFERENCES)._identityCollection = parentPrefsApp.getIdentityCollection();
+	var parentPrefsApp = parentAppCtxt.getApp(ZmApp.MAIL);
+	appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
 
 	// depending on the command, do the right thing
 	if (window.command == "compose" || window.command == "composeDetach") {
