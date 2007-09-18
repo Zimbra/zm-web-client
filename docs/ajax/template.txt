@@ -1,0 +1,237 @@
+ABOUT
+
+In the past, the UI designer would create the look of controls and
+screens in the application and the developer would take that design
+and implement it in source code. Often, this was done by copy and
+pasting the HTML (if available) and hard-coding that HTML into the
+source code. This invariably led to inconsistencies between design
+and implementation. In addition, when changes were needed or bugs
+in presentation found, the developer had to make those changes in
+source code which is both time consuming and error prone.
+
+To solve this problem, a mechanism was needed to allow the designer
+and the developer to use the same source design. By defining templates,
+the designer can synchronize their presentation design with developers.
+This results in an application that matches the designer's vision and
+allows changes in presentation with little or no interaction with the
+developer. This also allows a greater ability to customize the look
+and feel of the application.
+
+
+OVERVIEW
+
+Templates are written in HTML and are compiled to native JavaScript
+at build-time. The code then expands the template to HTML that can be
+set as the innerHTML of some container element within the application.
+Once set, native HTML controls within the expanded template can be
+swapped with DWT controls.
+
+This document details how to create and use templates.
+
+
+CREATING TEMPLATES
+
+Templates are simply HTML files to define some kind of presentation.
+A template file can either contain a single template which encompasses
+the entire contents of the file; or can contain multiple templates by
+surrounding each template within a <template> element. If multiple
+templates are defined, each template element must specify a unique
+identifier using the "id" attribute. Template identifiers only need
+to be unique within the template source file and will not conflict
+with templates with the same identifier that are defined in another
+template file.
+
+Here's a one-template example file:
+
+  Hello <i>World</i>
+
+This shows that a template can contain whatever HTML content the
+user wants and does not require a top-level container element. But
+often many templates are defined in the same file, like so:
+
+  <template id='one'>
+   Hello <i>World</i>
+  </template>
+
+  <template id='two'>
+   <ul>
+    <li>One
+    <li>Two
+   </ul>
+  </template>
+
+In a multi-template file, all text found outside of template
+elements is ignored. This provides an easy way to document the
+templates within the file.
+
+
+COMPILING A TEMPLATE
+
+In order to use a template, it needs to be compiled to JavaScript.
+This allows the template to be used repeatedly with the greatest
+possible performance. The compilation is done by an Ant task as
+implemented by the com.zimbra.kabuki.tools.templates.TemplateTask
+class. This task supports the following attributes and child
+elements:
+
+  destdir  The destination directory for the compiled output.
+  prefix   (Optional) Specifies a prefix for the output template.
+  fileset  Specifies the template files that should be compiled.
+           Multiple fileset child elements can be specified.
+
+When a source file is compiled, its file extension is changed to
+".js" and contains native JavaScript code. This code defines a
+function that is registered by name with the AjxTemplate class. For
+example, if the source template file is located at the following
+location:
+
+  {basedir}/foo/bar/Baz.html
+
+then the output file will be:
+
+  {destdir}/foo/bar/Baz.js
+
+
+USING TEMPLATES
+
+In order to understand how to use templates in your application
+code, you have to understand how the the compiled template is
+registered with AjxTemplate. The template name is generated from
+the template source file name, stripping the file extension and
+converting all directory separators with a period. For example,
+if the Baz.html file (from above) is a single template file, then
+the template will be registered with the following name:
+
+  "foo.bar.Baz"
+
+If the source template file contains multiple templates, then
+the previous base name is suffixed with the id of each template.
+For example, if the Baz.html source file contains two templates
+with the names "one" and "two", respectively, then they will each
+be registered with AjxTemplate with the following names,
+respectively:
+
+  "foo.bar.Baz#one"
+  "foo.bar.Baz#two"
+
+Now that you know how the templates are named, you can use them
+in your application code. Simply call the AjxTemplate.expand
+function with the name of the template you want to exapnd, like so:
+
+  var html = AjxTemplate.expand("foo.bar.Baz#one");
+
+
+TEMPLATE CUSTOMIZATION
+
+Templates aren't very useful unless their expansion can be controlled:
+for example, inserting values or conditionalizing the template output.
+The template system provides several mechanisms for this purpose.
+
+First, the AjxTemplate.expand function allows you to pass a JavaScript
+object to the compiled template function. This allows the template to
+access the data object's properties and insert their values into the
+generated output. To access a property within the data object from the
+template, simply use "${name}" where "name" is the name of the data
+object's property. For example, we can define a template that allows
+the application to set element ids when expanded, like so:
+
+  <div id='${id}'> ... </div>
+
+Then, when we want to expand this template within our code, pass
+the AjxTemplate.expand function a data object that has an "id"
+property:
+
+  var data = { id: "foo" };
+  var html = AjxTemplate.expand("foo.bar.Baz#one", data);
+
+The data object can contain any number of properties and can even
+be deeply nested, such as the following:
+
+  var data = { foo: { bar: "Baz" } };
+  var html = AjxTemplate.expand("foo.bar.Baz#one", data);
+  
+To insert the "Baz" text into the generated output, the template
+references the full path to the object in question:
+
+  <div> ${foo.bar} </div>
+
+Since many templates will simply require an identifier to be
+passed inside the data object, as a convenience, you can just
+pass the identifier string to the AjxTemplate.expand function.
+For example, the following:
+
+  var html = AjxTemplate.expand("foo.bar.Baz#one", "foo");
+
+is equivalent to:
+
+  var html = AjxTemplate.expand("foo.bar.Baz#one", { id: "foo" });
+
+Second, native JavaScript can be executed and the resulting value
+can be inserted directly into the generated output. This is done
+by surrounding the JavaScript code between "<$=" and "$>". Some
+examples:
+
+  <li> 1 + 2 = <$= 1 + 2 $>
+  <li> now = <$= new Date().toString() $>
+  <li> data.foo.bar = <$= data.foo.bar $>
+  <li> message = <$= AjxMsg.notAString $>
+  <li> template = <$= AjxTemplate.expand("MyTemplate", data) $>
+
+This is similar to the mechanism found in PHP, JSP, ASP, etc.
+
+Third, there are times when you want to insert arbitrary code
+into the template. For this purpose, you can enclose it between
+"<$" and "$>". For example:
+
+  <ul>
+    <$ for (var i = 0; i < data.items.length; i++) { $>
+      <li> <$= data.items[i] $>
+    <$ } $>
+  </ul>
+
+
+TEMPLATE PARAMETERS
+
+Most of the time, templates are parameterized by the data object
+passed to the AjxTemplate.expand function. However, this can be
+repetitive if there are certain parameters that are constant and
+do not change. For example, a template may define some presenation
+elements whose size is queried by the application. If this occurs
+often, it is not efficient for the code to repeatedly calculate
+this information. In this case, the template designer can define
+constant parameters as part of the template. This is done by
+simply adding attributes to the <template> element. For example:
+
+  <template id='foo' width='200' height='100'>
+    ...
+  </template>
+
+And these parameters are available to source code by calling the
+AjxTemplate.getParams function. In fact, all of the attributes on
+the template element are contained in the hash map returned by
+this function. The following is an example of its usage:
+
+  var params = AjxTemplate.getParams("foo.bar.Baz#one");
+  var area = params.width * params.height;
+
+Just like the data object that can be referenced within templates,
+the params object can also be referenced. For example:
+
+  <li> area = <$= params.width * params.height $>
+
+
+TEMPLATE VARIABLES
+
+As mentioned in previous sections, there are a few variables that
+are available within the template function scope. These are the
+following:
+
+  name
+  params
+  data
+  buffer
+
+Be careful not to make any assignment to these variables or you
+will have unexpected results. Also, do not define any local vars
+in your template that start with an underscore -- their use is
+reserved.
