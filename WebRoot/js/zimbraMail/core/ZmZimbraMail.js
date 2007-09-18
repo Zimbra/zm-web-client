@@ -622,11 +622,7 @@ function(apps) {
 		var app = ZmApp.APPS[i];
 		var setting = ZmApp.SETTING[app];
 		var upsellSetting = ZmApp.UPSELL_SETTING[app];
-		// ALWAYS load prefs app (see bug #20311)
-		if (app == ZmApp.PREFERENCES ||
-			(setting && appCtxt.get(setting)) ||
-			(upsellSetting && appCtxt.get(upsellSetting)))
-		{
+		if ((setting && appCtxt.get(setting)) || (upsellSetting && appCtxt.get(upsellSetting))) {
 			this._createApp(app);
 		}
 	}
