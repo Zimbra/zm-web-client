@@ -622,7 +622,11 @@ function(apps) {
 		var app = ZmApp.APPS[i];
 		var setting = ZmApp.SETTING[app];
 		var upsellSetting = ZmApp.UPSELL_SETTING[app];
-		if ((setting && appCtxt.get(setting)) || (upsellSetting && appCtxt.get(upsellSetting))) {
+		// ALWAYS load prefs app (see bug #20311)
+		if (app == ZmApp.PREFERENCES ||
+			(setting && appCtxt.get(setting)) ||
+			(upsellSetting && appCtxt.get(upsellSetting)))
+		{
 			this._createApp(app);
 		}
 	}
@@ -1032,24 +1036,24 @@ function() {
 */
 ZmZimbraMail.prototype.activateApp =
 function(appName, force, callback, errorCallback, checkQS) {
-    DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
+	DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
 
-    var view = this._appViewMgr.getAppView(appName);
-    if (view && !force) {
-    	// if the app has been launched, make its view the current one
-	    DBG.println(AjxDebug.DBG3, "activateApp, current " + appName + " view: " + view);
+	var view = this._appViewMgr.getAppView(appName);
+	if (view && !force) {
+		// if the app has been launched, make its view the current one
+		DBG.println(AjxDebug.DBG3, "activateApp, current " + appName + " view: " + view);
 		if (this._appViewMgr.pushView(view)) {
-		    this._appViewMgr.setAppView(appName, view);
+			this._appViewMgr.setAppView(appName, view);
 		}
 		if (callback) {
 			callback.run();
 		}
 	} else {
-    	// launch the app
-    	if (!this._apps[appName]) {
+		// launch the app
+		if (!this._apps[appName]) {
 			this._createApp(appName);
-    	}
-    	var appEnabled = appCtxt.get(ZmApp.SETTING[appName]);
+		}
+		var appEnabled = appCtxt.get(ZmApp.SETTING[appName]);
 		var upsellEnabled = appCtxt.get(ZmApp.UPSELL_SETTING[appName]);
 		if (!appEnabled && upsellEnabled) {
 			this._createUpsellView(appName);
@@ -1062,7 +1066,7 @@ function(appName, force, callback, errorCallback, checkQS) {
 			this._apps[appName].launch(respCallback, checkQS, this._searchResponse);
 			delete this.searchResponse;
 		}
-    }
+	}
 };
 
 ZmZimbraMail.prototype._handleResponseActivateApp =
