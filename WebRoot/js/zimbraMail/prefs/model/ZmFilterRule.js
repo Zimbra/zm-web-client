@@ -334,7 +334,9 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
 		param:			ZmFilterRule.TYPE_TAG_PICKER
 };
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD] = {
-		param:			ZmFilterRule.TYPE_INPUT
+		param:				ZmFilterRule.TYPE_INPUT,
+		validationFunction:	ZmPref.validateEmail,
+		errorMessage:		ZmMsg.errorInvalidEmail
 };
 
 ZmFilterRule.ACTIONS_LIST = [ZmFilterRule.A_KEEP, ZmFilterRule.A_DISCARD, ZmFilterRule.A_FOLDER,

@@ -864,4 +864,7 @@ function(action) {
 	if (conf.param && !action.arg) {
 		return this._actionErrorFormatter.format([ZmFilterRule.A_LABEL[action.name]]);
 	}
+	if (conf.validationFunction && !conf.validationFunction(action.arg)) {
+		return conf.errorMessage;
+	}
 };
