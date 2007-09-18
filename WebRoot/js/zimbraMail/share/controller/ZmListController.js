@@ -495,7 +495,10 @@ function(ev, op, params) {
 // we just show the dynamic tag menu.
 ZmListController.prototype._tagButtonListener =
 function(ev) {
-	this._setTagMenu(this._toolbar[this._currentView]);
+	var toolbar = this._toolbar[this._currentView];
+	if (ev.dwtObj.parent == toolbar) {
+		this._setTagMenu(toolbar);
+	}
 };
 
 // Tag/untag items.
