@@ -745,9 +745,12 @@ function(creates, force) {
 	var folderId = currList.search ? currList.search.folderId : null;
 	if (!folderId) { return; }
 
+	var currListView = appCtxt.getCurrentView()._mailListView;
+
 	var sortBy = currList.search.sortBy;
 	var a = currList.getArray();
-	var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+	var limit = currListView.getLimit();
+	
 	var last = (a && a.length >= limit) ? a[a.length - 1] : null;
 	var cutoff = last ? last.date : null;
 	DBG.println(AjxDebug.DBG2, "cutoff = " + cutoff + ", list size = " + a.length);

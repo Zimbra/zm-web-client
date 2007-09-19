@@ -318,21 +318,13 @@ function(ev) {
 		if (!this._handleEventType[item.type]) { return; }
 
 		// Check to see if ZmMailList::notifyCreate gave us an index for the item.
-		// If not, we assume that the new conv/msg is the most recent one. If we're on the
-		// first page with date desc order, we insert it at the top. If we're on the last
-		// page with date asc order, we insert it at the bottom.
-		var index = sortIndex[item.id];
-		if (index != null) {
+		// If not, we assume that the new conv/msg is the most recent one. The only case
+		// we handle is where the user is on the first page.
+		//
+		// TODO: handle other sort orders, arbitrary insertion points
+		var index = sortIndex[item.id] || 0;
+		if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
 			this.addItem(item, index);
-		} else if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
-			this.addItem(item, 0);
-		} else if ((!this._controller.getList().hasMore()) && (this._sortByString == ZmSearch.DATE_ASC)) {
-			if (this.size() < this.getLimit()) {
-				// add new item at the end of list view's internal list
-				this.addItem(item);
-			} else {
-				// XXX: reset pagination buttons?
-			}
 		}
 		ev.handled = true;
 	}
