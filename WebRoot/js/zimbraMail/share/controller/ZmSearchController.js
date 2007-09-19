@@ -160,7 +160,7 @@ function(enabled) {
  */
 ZmSearchController.prototype.setDefaultSearchType =
 function(type) {
-	if (this._searchToolBar && this._searchToolBar._searchMenuCreated) {
+	if (this._searchToolBar && !appCtxt.inStartup) {
 		var menu = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
 		menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
 		this._searchMenuListener(null, type);
