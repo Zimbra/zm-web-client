@@ -100,6 +100,7 @@
                     <app:contactPhone label="assistant" phone="${contact.assistantPhone}"/>
                     <app:contactPhone label="company" phone="${contact.companyPhone}"/>
                     <app:contactPhone label="AB_FIELD_callbackPhone" phone="${contact.callbackPhone}"/>
+                    <tr><td></td></tr>
                 </tbody>
             </table>
         </td>
@@ -135,6 +136,7 @@
                     <app:contactPhone label="mobile" phone="${contact.mobilePhone}"/>
                     <app:contactPhone label="pager" phone="${contact.pager}"/>
                     <app:contactPhone label="AB_FIELD_carPhone" phone="${contact.carPhone}"/>
+                    <tr><td></td></tr>
                 </tbody>
             </table>
         </td>
@@ -166,6 +168,7 @@
                 <tbody>
                     <app:contactPhone label="otherPhone" phone="${contact.otherPhone}"/>
                     <app:contactPhone label="otherFax" phone="${contact.otherFax}"/>
+                    <tr><td></td></tr>
                 </tbody>
             </table>
         </td>
