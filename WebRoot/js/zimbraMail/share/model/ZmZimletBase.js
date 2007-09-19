@@ -713,7 +713,7 @@ function(html, idx, obj, context) {
 ZmZimletBase.prototype.getMsgsForConv = function(callback,convObj){
 
 	if(convObj instanceof Array) convObj = convObj[0];
-	var convListController = AjxDispatcher.run("GetConvListController");
+	var convListController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvListController(); 
 	var convList = convListController.getList();
 	var conv = convList.getById(convObj.id);
 	
