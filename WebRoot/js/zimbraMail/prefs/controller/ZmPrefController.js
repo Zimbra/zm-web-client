@@ -100,7 +100,7 @@ function(obj, precondition) {
 	if (obj && !("precondition" in obj)) {
 		return true;
 	}
-	var p = precondition || (obj && obj.precondition);
+	var p = (obj && obj.precondition) || precondition;
 	// Object has a precondition that didn't get defined, probably because its
 	// app is not enabled. That equates to failure for the precondition.
 	if (p == null) {
@@ -117,7 +117,7 @@ function(obj, precondition) {
 	// A list of preconditions is ORed together via a recursive call
 	if (AjxUtil.isArray(p)) {
 		for (var i = 0, count = p.length; i < count; i++) {
-			if (this.checkPreCondition(obj, p[i])) {
+			if (this.checkPreCondition(null, p[i])) {
 				return true;
 			}
 		}
