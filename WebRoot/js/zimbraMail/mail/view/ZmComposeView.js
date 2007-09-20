@@ -1289,11 +1289,13 @@ function(action, msg, extraBodyText, incOption) {
 			body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
 			// if no html part exists, just grab the text
 			// (but make sure to preserve whitespace and newlines!)
-			if (body) {
-				body = body.content;
-			} else {
-				var bodyPart = msg.getBodyPart();
-				body = bodyPart ? (AjxStringUtil.convertToHtml(bodyPart.content)) : null;
+			if (!AjxUtil.isString(body)) {
+				if (body) {
+					body = body.content;
+				} else {
+					var bodyPart = msg.getBodyPart();
+					body = bodyPart ? (AjxStringUtil.convertToHtml(bodyPart.content)) : null;
+				}
 			}
 		} else {
 			var bodyPart = msg.getBodyPart();
