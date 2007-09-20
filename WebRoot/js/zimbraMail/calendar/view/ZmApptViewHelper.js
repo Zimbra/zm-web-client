@@ -592,17 +592,17 @@ function() {
 			}
 		} else if (segmentStr.charAt(0) == "h" || segmentStr.charAt(0) == "H") {
 			hourSegmentIdx = j;
-			html[i++] = "<td id='"
+			html[i++] = "<td width=42 id='"
 			html[i++] = this._hourSelectId;
 			html[i++] = "'></td>";
 		} else if (segmentStr.charAt(0) == "m") {
 			minuteSegmentIdx = j;
-			html[i++] = "<td id='"
+			html[i++] = "<td width=42 id='"
 			html[i++] = this._minuteSelectId;
 			html[i++] = "'></td>";
 		} else if (segmentStr == "a") {	
 			this._isLocale24Hour = false;
-			html[i++] = "<td id='"
+			html[i++] = "<td width=42 id='"
 			html[i++] = this._amPmSelectId;
 			html[i++] = "'></td>";
 		}
