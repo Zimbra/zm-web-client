@@ -123,6 +123,13 @@ ZmAttachDialog.prototype._initializeTabView = function(view){
 
 ZmAttachDialog.prototype.tabChangeListener = function(ev){
 	this.setFooter("");
+	// Add a warning if there are selected files.
+	var tabKey = this._tabView.getCurrentTab();
+	var tabView = this._tabView.getTabView(tabKey);
+	if(tabView && tabView.gotAttachments()){
+		this.setFooter("Please clear or upload attachments before changing tabs");
+		return false;
+	}
 };
 
 ZmAttachDialog.prototype._setFooterSection = function(view){
