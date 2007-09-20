@@ -77,6 +77,7 @@ ZmCalBaseView.TYPE_DAY_HEADER = 6; // over date header for a day
 ZmCalBaseView.TYPE_MONTH_DAY = 7; // over a day in month view
 ZmCalBaseView.TYPE_ALL_DAY = 8; // all day div area in day view
 ZmCalBaseView.TYPE_SCHED_FREEBUSY = 9; // free/busy union
+ZmCalBaseView.TYPE_DAY_SEP = 10;//allday separator
 
 ZmCalBaseView.prototype.getController =
 function() {

@@ -998,6 +998,7 @@ function(abook) {
 	document.getElementById(this._apptBodyDivId)._type = ZmCalBaseView.TYPE_APPTS_DAYGRID;
 	document.getElementById(this._bodyHourDivId)._type = ZmCalBaseView.TYPE_HOURS_COL;
 	document.getElementById(this._allDayDivId)._type = ZmCalBaseView.TYPE_ALL_DAY;
+	document.getElementById(this._allDaySepDivId)._type = ZmCalBaseView.TYPE_DAY_SEP;
 	this._scrollTo8AM();
 }
 
@@ -1519,9 +1520,9 @@ function(refreshApptLayout) {
 	this._setBounds(this._leftAllDaySepDivId, hoursWidth, 0, this._daySepWidth, allDayScrollHeight);		
 	
 	// horiz separator between all day appts and grid
-	this._setBounds(this._allDaySepDivId, 0, allDayScrollHeight, width, ZmCalColView._ALL_DAY_SEP_HEIGHT);	
+	this._setBounds(this._allDaySepDivId, 0, (this._hideAllDayAppt ? ZmCalColView._DAY_HEADING_HEIGHT : allDayScrollHeight), width, ZmCalColView._ALL_DAY_SEP_HEIGHT);	
 
-	var bodyY = allDayScrollHeight + ZmCalColView._ALL_DAY_SEP_HEIGHT +  (AjxEnv.isIE ? 0 : 2);
+	var bodyY =  (this._hideAllDayAppt ? ZmCalColView._DAY_HEADING_HEIGHT : allDayScrollHeight) + ZmCalColView._ALL_DAY_SEP_HEIGHT +  (AjxEnv.isIE ? 0 : 2);
 
 	this._bodyDivHeight = height - bodyY;
 
@@ -1758,6 +1759,8 @@ function(ev, div) {
 			else
 				cc.show(ZmController.CAL_WEEK_VIEW);			
 		}
+	}else if(div._type == ZmCalBaseView.TYPE_DAY_SEP) {
+		this.toggleAllDayAppt(!this._hideAllDayAppt);
 	}	
 }
 
@@ -2602,4 +2605,18 @@ ZmCalColView._handleError =
 function(data) {
 	data.view.getController()._refreshAction(true);
 	return false;
+}
+
+ZmCalColView.prototype.toggleAllDayAppt =
+function(hide) {
+	var apptScroll = document.getElementById(this._allDayApptScrollDivId);		
+	Dwt.setVisible(apptScroll, !hide);
+
+	if(this._scheduleMode) {
+		var unionAllDayDiv = document.getElementById(this._unionAllDayDivId);
+		Dwt.setVisible(unionAllDayDiv, !hide);
+	}
+	
+	this._hideAllDayAppt = ! this._hideAllDayAppt;
+	this._layout();
 }

@@ -1043,7 +1043,9 @@ line-height:normal;
 
 /* Separator between all-day and hourly sections */
 .calendar_header_allday_separator {
-	@HSashContainer@
+	@HSashSize@
+	@SashBg@
+	@ActiveCursor@
 }
 
 /* Separator between individual days of the calendar */
