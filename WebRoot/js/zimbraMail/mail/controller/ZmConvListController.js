@@ -125,6 +125,8 @@ function() {
 				ZmOperation.SEP,
 				ZmOperation.TAG_MENU,
 				ZmOperation.SEP,
+				ZmOperation.DETACH,
+				ZmOperation.SEP,
 				ZmOperation.VIEW_MENU);
 	return list;
 };
