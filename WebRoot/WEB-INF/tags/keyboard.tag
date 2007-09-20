@@ -111,8 +111,8 @@
             <zm:bindKey message="global.GoToTag" alias="gototag"/>
             </c:if>
             <c:if test="${mailbox.features.calendar}">
-            <zm:bindKey message="global.GoToCalendar" id="TAB_CALENDAR"/>
-            <zm:bindKey message="global.NewAppointment" url="calendar?action=new"/>
+            <zm:bindKey message="calendar.GoToCalendar" id="TAB_CALENDAR"/>
+            <zm:bindKey message="calendar.NewAppointment" url="calendar?action=new"/>
             <c:if test="${calendars}">
             <zm:bindKey message="overview.calendars" url="mcalendars"/>
             </c:if>
@@ -121,8 +121,8 @@
             <zm:bindKey message="global.GoToVoice" id="TAB_VOICE"/>
             </c:if>
             <c:if test="${mailbox.features.contacts}">
-            <zm:bindKey message="global.NewContact" url="search?st=contact&action=newcontact"/>
-            <zm:bindKey message="global.GoToContacts" id="TAB_ADDRESSBOOK"/>
+            <zm:bindKey message="contacts.NewContact" url="search?st=contact&action=newcontact"/>
+            <zm:bindKey message="contacts.GoToContacts" id="TAB_ADDRESSBOOK"/>
             <c:if test="${contacts}">
             <zm:bindKey message="overview.addressbooks" id="MADDRBOOKS"/>
             </c:if>
