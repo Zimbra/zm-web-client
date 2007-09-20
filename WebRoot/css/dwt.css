@@ -517,6 +517,7 @@
 	@WindowTitleText-normal@
 	@NoWrap@
 	vertical-align:top;
+	@MoveCursor@
 }
 
 .LightWindowOuterContainer .DwtDialogTitle {
@@ -2107,4 +2108,5 @@
 .ZRadioLabel			{	@ActiveCursor@	}
 .ZRadioLabelDisabled	{	@Text-disabled@ }
 
+ 
 

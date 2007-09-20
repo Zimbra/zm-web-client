@@ -28,7 +28,7 @@
 
 <template id='dwt.Widgets#DwtBaseDialog' width='20' height='32'>
     <div class='DwtDialog WindowOuterContainer'>
-        <table cellspacing=0 cellpadding=0 style='cursor:move;'>
+        <table cellspacing=0 cellpadding=0>
             <tr id='${dragId}'>
                 <td class='minWidth'>${icon}</td>
                 <td id='${id}_title' class='DwtDialogTitle'>${title}</td>
