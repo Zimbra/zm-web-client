@@ -165,7 +165,7 @@ ZmImApp.prototype._registerSettings = function(settings) {
 				 
 		settings.registerSetting("IM_PREF_LOGCHATS_ENABLED",
 			{
-				name			: "zimbraPrefIMLogChatsEnabled",
+				name			: "zimbraPrefIMLogChats",
 				type			: ZmSetting.T_PREF,
 				dataType		: ZmSetting.D_BOOLEAN,
 				defaultValue	: true	
