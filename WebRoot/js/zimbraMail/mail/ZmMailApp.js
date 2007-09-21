@@ -745,11 +745,10 @@ function(creates, force) {
 	var folderId = currList.search ? currList.search.folderId : null;
 	if (!folderId) { return; }
 
-	var currListView = appCtxt.getCurrentView()._mailListView;
-
 	var sortBy = currList.search.sortBy;
 	var a = currList.getArray();
-	var limit = currListView.getLimit();
+	var currListView = appCtxt.getCurrentView()._mailListView;
+	var limit = currListView ? currListView.getLimit() : appCtxt.get(ZmSetting.PAGE_SIZE);
 	
 	var last = (a && a.length >= limit) ? a[a.length - 1] : null;
 	var cutoff = last ? last.date : null;
