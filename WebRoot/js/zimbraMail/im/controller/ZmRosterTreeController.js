@@ -41,7 +41,10 @@ ZmRosterTreeController = function() {
 	this._listeners[ZmOperation.IM_EDIT_CONTACT] = new AjxListener(this, this._imEditContactListener);
 	this._listeners[ZmOperation.IM_GATEWAY_LOGIN] = new AjxListener(this, this._imGatewayLoginListener);
 	this._listeners[ZmOperation.IM_TOGGLE_OFFLINE] = new AjxListener(this, this._imToggleOffline);
+        this._listeners[ZmOperation.IM_TOGGLE_BLOCKED] = new AjxListener(this, this._imToggleBlocked);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
+        this._listeners[ZmOperation.IM_BLOCK_BUDDY] = new AjxListener(this, this._blockBuddyListener);
+        this._listeners[ZmOperation.IM_UNBLOCK_BUDDY] = new AjxListener(this, this._unblockBuddyListener);
 };
 
 ZmRosterTreeController.prototype.toString = function() {
@@ -79,6 +82,19 @@ ZmRosterTreeController.prototype._imToggleOffline = function(ev) {
 	} else {
 		ev.dwtObj.setImage(null);
 		view.removeFilter(ZmImOverview.FILTER_OFFLINE_BUDDIES);
+	}
+};
+
+// FIXME: move this in ZmImOverview
+ZmRosterTreeController.prototype._imToggleBlocked = function(ev) {
+	var view = this._imApp.getOverviewPanelContent();
+	view.__filterBlocked = !view.__filterBlocked;
+	if (view.__filterBlocked) {
+		ev.dwtObj.setImage("Check");
+		view.addFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES);
+	} else {
+		ev.dwtObj.setImage(null);
+		view.removeFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES);
 	}
 };
 
@@ -221,4 +237,24 @@ ZmRosterTreeController.prototype._imAddToContactListener = function(ev) {
 ZmRosterTreeController.prototype._imEditContactListener = function(ev) {
 	var item = ev.buddy;
 	AjxDispatcher.run("GetContactController").show(item.getContact(), false);
+};
+
+ZmRosterTreeController.prototype._blockBuddyListener = function(ev) {
+        var item = ev.buddy;
+        var roster = AjxDispatcher.run("GetRoster");
+        var pl = roster.getPrivacyList();
+        pl.block(item.getAddress());
+        var doc = AjxSoapDoc.create("IMSetPrivacyListRequest", "urn:zimbraIM");
+        pl.toSoap(doc);
+        appCtxt.getAppController().sendRequest({ soapDoc: doc, asyncMode: true });
+};
+
+ZmRosterTreeController.prototype._unblockBuddyListener = function(ev) {
+        var item = ev.buddy;
+        var roster = AjxDispatcher.run("GetRoster");
+        var pl = roster.getPrivacyList();
+        pl.unblock(item.getAddress());
+        var doc = AjxSoapDoc.create("IMSetPrivacyListRequest", "urn:zimbraIM");
+        pl.toSoap(doc);
+        appCtxt.getAppController().sendRequest({ soapDoc: doc, asyncMode: true });
 };

@@ -1850,6 +1850,9 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWindowChatEntryMe .from { color: #00c; }
 .ZmChatWindowChatEntryThem .from { color: #c00; }
 
+.ZmImPresence-OFFLINE .DwtTreeItem-Text { color: #888; }
+.ZmImPresence-UNKNOWN .DwtTreeItem-Text { color: #888; }
+
 .ZmRosterItem-typing .DwtTreeItem .DwtTreeItem-Text { color: #1a1; }
 .ZmRosterItem-typing .ZWidgetTitle { color: #070; }
 

@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2007 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -37,9 +37,19 @@ ZmImOverview = function(parent) {
 			 ZmOperation.SEP, //-----------
 			 ZmOperation.IM_GATEWAY_LOGIN,
 			 ZmOperation.SEP, //-----------
-			 ZmOperation.IM_TOGGLE_OFFLINE ],
+			 ZmOperation.IM_TOGGLE_OFFLINE,
+                         ZmOperation.IM_TOGGLE_BLOCKED
+                       ],
 
 		buddy : [ ZmOperation.IM_NEW_CHAT,
+
+                          // privacy
+                          ZmOperation.IM_BLOCK_BUDDY,
+                          ZmOperation.IM_UNBLOCK_BUDDY,
+
+                          //ZmOperation.IM_BLOCK_DOMAIN,
+                          //ZmOperation.IM_UNBLOCK_DOMAIN,
+
 			  ZmOperation.SEP, //-----------
 			  ZmOperation.EDIT_PROPS, ZmOperation.DELETE,
 			  ZmOperation.SEP, //-----------
@@ -207,6 +217,12 @@ ZmImOverview.prototype._init = function() {
 	}));
 };
 
+ZmImOverview.prototype._getBuddyIcon = function(buddy) {
+        var roster = AjxDispatcher.run("GetRoster");
+        var pl = roster.getPrivacyList();
+        return pl.isDenied(buddy.getAddress()) ? "BlockUser" : buddy.getPresence().getIcon();
+};
+
 ZmImOverview.prototype._createBuddy = function(type, buddy) {
 	var groups = buddy.getGroups();
 	if (groups.length == 0) {
@@ -215,7 +231,7 @@ ZmImOverview.prototype._createBuddy = function(type, buddy) {
 			: [ null ]; // add to root item for type == i.e. "assistant"
 	}
 	var label = buddy.getDisplayName();
-	var icon = buddy.getPresence().getIcon();
+	var icon = this._getBuddyIcon(buddy);
         var items = [];
 	for (var i = 0; i < groups.length; ++i) {
 		var parent = this.getGroupItem(groups[i]);
@@ -223,6 +239,7 @@ ZmImOverview.prototype._createBuddy = function(type, buddy) {
 					   this.getSortIndex(label, parent),
 					   label,
 					   icon);
+                item.addClassName("ZmImPresence-" + buddy.getPresence().getShow());
 		item.setToolTipContent("-"); // force it to have a tooltip
 		item.getToolTipContent = AjxCallback.simpleClosure(buddy.getToolTip, buddy);
 		item.setData("ZmImOverview.data", { type: type, buddy: buddy });
@@ -247,7 +264,9 @@ ZmImOverview.prototype._modifyBuddy = function(fields, buddy) {
 			var doName    = ZmRosterItem.F_NAME	 in fields;
 			var doTyping  = ZmRosterItem.F_TYPING    in fields;
 			if (doShow) {
-				item.setImage(buddy.getPresence().getIcon());
+				item.setImage(this._getBuddyIcon(buddy));
+                                item.setClassName(item.getClassName());
+                                item.addClassName("ZmImPresence-" + buddy.getPresence().getShow());
 			}
 			if (doUnread || doName) {
 				var txt = buddy.getDisplayName();
@@ -349,7 +368,7 @@ ZmImOverview.prototype.applyFilters = function(items) {
 	if (!filters)
 		return;
 	this._firstFilterItem = null;
-	doItems = function(items) {
+	var doItems = function(items) {
 		var oneVisible = false;
 		for (var j = items.length; --j >= 0;) {
 			var item = items[j];
@@ -388,6 +407,11 @@ ZmImOverview.FILTER_OFFLINE_BUDDIES = function(item) {
 	var rti = item.getData("ZmImOverview.data").buddy;
 	var presence = rti.getPresence();
 	return presence.getShow() == ZmRosterPresence.SHOW_OFFLINE;
+};
+
+ZmImOverview.FILTER_BLOCKED_BUDDIES = function(item) {
+        var rti = item.getData("ZmImOverview.data").buddy;
+        return AjxDispatcher.run("GetRoster").getPrivacyList().isDenied(rti.getAddress());
 };
 
 // comment this out if we want to disable the search input field

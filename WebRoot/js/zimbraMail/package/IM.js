@@ -19,6 +19,7 @@ AjxPackage.require("zimbraMail.im.model.ZmChat");
 AjxPackage.require("zimbraMail.im.model.ZmChatList");
 AjxPackage.require("zimbraMail.im.model.ZmChatMessage");
 AjxPackage.require("zimbraMail.im.model.ZmAssistantBuddy");
+AjxPackage.require("zimbraMail.im.model.ZmImPrivacyList");
 
 AjxPackage.require("zimbraMail.im.view.ZmImOverview");
 AjxPackage.require("zimbraMail.im.view.ZmChatWindowManager");

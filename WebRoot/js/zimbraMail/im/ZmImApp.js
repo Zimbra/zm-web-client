@@ -24,9 +24,9 @@
  */
 
 ZmImApp = function(container) {
-	
+
 	ZmApp.call(this, ZmApp.IM, container);
-	
+
 	// IM is enabled, so show Chats folder
 	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
@@ -82,7 +82,7 @@ function() {
 	ZmOperation.registerOp("IM_PRESENCE_DND"       , { textKey: "imStatusDND", image: "ImDnd" });
 	ZmOperation.registerOp("IM_PRESENCE_INVISIBLE" , { textKey: "imStatusInvisible", image: "ImInvisible" });
 	ZmOperation.registerOp("IM_PRESENCE_MENU"      , { textKey: "imPresence" }, null, ZmImApp.addImPresenceMenu );
-	ZmOperation.registerOp("IM_PRESENCE_OFFLINE"   , { textKey: "imStatusOffline", image: "RoundMinusDis" });
+	ZmOperation.registerOp("IM_PRESENCE_OFFLINE"   , { textKey: "imStatusOffline", image: "Offline" });
 	ZmOperation.registerOp("IM_PRESENCE_ONLINE"    , { textKey: "imStatusOnline", image: "ImAvailable" });
 	ZmOperation.registerOp("IM_PRESENCE_XA"	       , { textKey: "imStatusExtAway", image: "ImExtendedAway" });
 	ZmOperation.registerOp("NEW_ROSTER_ITEM"       , { textKey: "newRosterItem", image: "ImBuddy" });
@@ -91,8 +91,12 @@ function() {
 	ZmOperation.registerOp("IM_EDIT_CONTACT"       , { textKey: "editContact", image: "Edit" });
 	ZmOperation.registerOp("IM_GATEWAY_LOGIN"      , { textKey: "imGatewayLogin" });
 	ZmOperation.registerOp("IM_TOGGLE_OFFLINE"     , { textKey: "imToggleOffline" });
-	
+        ZmOperation.registerOp("IM_TOGGLE_BLOCKED"     , { textKey: "imToggleBlocked" });
+
 	ZmOperation.registerOp("IM_PRESENCE_CUSTOM_MSG"		, { textKey: "imCustomStatusMsg", image: "ImFree2Chat"});
+
+        ZmOperation.registerOp("IM_BLOCK_BUDDY" , { textKey: "imBlock", image: "BlockUser" });
+        ZmOperation.registerOp("IM_UNBLOCK_BUDDY" , { textKey: "imUnblock", image: "AllowUser" });
 };
 
 ZmImApp.prototype._registerItems =
@@ -162,14 +166,14 @@ ZmImApp.prototype._registerSettings = function(settings) {
                                    dataType     : ZmSetting.D_BOOLEAN,
 				   defaultValue : true
 				 });
-				 
+
 		settings.registerSetting("IM_PREF_LOGCHATS_ENABLED",
 			{
 				name			: "zimbraPrefIMLogChats",
 				type			: ZmSetting.T_PREF,
 				dataType		: ZmSetting.D_BOOLEAN,
-				defaultValue	: true	
-			});		 
+				defaultValue	: true
+			});
 
 	settings.getSetting(ZmSetting.IM_PREF_INSTANT_NOTIFY).addChangeListener(new AjxListener(this, this._onSettingChange));
 };
@@ -216,12 +220,12 @@ ZmImApp.prototype._registerPrefs = function() {
 	ZmPref.registerPref("IM_PREF_NOTIFY_STATUS",
 			    { displayName      : ZmMsg.imPrefNotifyStatus,
 			      displayContainer : ZmPref.TYPE_CHECKBOX });
-	
+
 	ZmPref.registerPref("IM_PREF_LOGCHATS_ENABLED",{
 					displayName		: ZmMsg.imPrefLogChats,
 					displayContainer: ZmPref.TYPE_CHECKBOX
 				});
-			      
+
 };
 
 ZmImApp.prototype._onSettingChange = function(ev) {
@@ -331,7 +335,7 @@ ZmImApp.prototype.stopFlashingIcon = function() {
 };
 
 ZmImApp.getImPresenceMenuOps = function(){
-	
+
 	var list = [ ZmOperation.IM_PRESENCE_OFFLINE,
 		     ZmOperation.IM_PRESENCE_ONLINE,
 		     ZmOperation.IM_PRESENCE_CHAT,
@@ -342,13 +346,13 @@ ZmImApp.getImPresenceMenuOps = function(){
              ZmOperation.SEP,
              ZmOperation.IM_PRESENCE_CUSTOM_MSG
 		];
-	
+
 	return list;
 };
 
 ZmImApp.addImPresenceMenu =
 function(parent) {
-	
+
 	var list = ZmImApp.getImPresenceMenuOps();
 
 	var menu = new ZmPopupMenu(parent);

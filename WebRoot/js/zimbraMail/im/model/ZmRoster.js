@@ -26,15 +26,16 @@
 ZmRoster = function(imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
 
-    this._notificationBuffer = [];
+        this._notificationBuffer = [];
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
-    this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
-    this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
+        this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
+        this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
 	this._imApp = imApp;
+        this._privacyList = new ZmImPrivacyList(this);
 
-    this.refresh();
+        this.refresh();
 };
 
 ZmRoster.prototype = new ZmModel;
@@ -47,6 +48,10 @@ ZmRoster.NOTIFICATION_FOO_TIMEOUT = 10000; // 10 sec.
 ZmRoster.prototype.toString =
 function() {
 	return "ZmRoster";
+};
+
+ZmRoster.prototype.getPrivacyList = function() {
+        return this._privacyList;
 };
 
 ZmRoster.prototype.getChatList =
@@ -130,8 +135,8 @@ function(args) {
  */
 ZmRoster.prototype.createRosterItem =
 function(addr, name, groups) {
-    var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
-    var method = soapDoc.getMethod();
+        var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
+        var method = soapDoc.getMethod();
 	method.setAttribute("addr", addr);
 	if (name) method.setAttribute("name", name);
 	if (groups) method.setAttribute("groups", groups);
@@ -360,7 +365,10 @@ function(im) {
 				if (view) {
                                         new ZmImInviteNotification(view.getActiveWM(), not).popup();
 				}
-			}
+			} else if (not.type == "privacy") {
+                                // console.log("Received privacy list: %o", not);
+                                this._privacyList.reset(not.list[0].item);
+                        }
 		}
 	}
 
