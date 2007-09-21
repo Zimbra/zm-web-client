@@ -47,11 +47,16 @@ function (a,b) {
 };
 
 ZmApptCache.prototype._getCachedMergedKey =
-function(startTime, endTime, fanoutAllDay, folderIds) {
-	var sortedFolderIds = new Array();
-	sortedFolderIds = sortedFolderIds.concat(folderIds);
+function(params) {
+	var sortedFolderIds = [];
+	sortedFolderIds = sortedFolderIds.concat(params.folderIds);
 	sortedFolderIds.sort(ZmApptCache._sortFolderId);
-	return cacheKey = startTime + ":" + endTime + ":" + fanoutAllDay + ":" + sortedFolderIds.join(":");
+
+	// add query to cache key since user searches should not be cached
+	var query = params.query && params.query.length > 0
+		? (params.query + ":") : "";
+
+	return (params.start + ":" + params.end + ":" + params.fanoutAllDay + ":" + query + sortedFolderIds.join(":"));
 };
 
 ZmApptCache.prototype._getCachedMergedVector =
@@ -65,58 +70,61 @@ function(vector, cacheKey) {
 };
 
 ZmApptCache.prototype._getCachedVector =
-function(startTime, endTime, fanoutAllDay, folderId) {
+function(start, end, fanoutAllDay, folderId, query) {
 	var folderCache = this._cachedApptVectors[folderId];
 	if (folderCache == null)
 		folderCache = this._cachedApptVectors[folderId] = {};
 
-	var cacheKey = startTime + ":" + endTime + ":" + fanoutAllDay;
+	var q = query ? (":" + query) : "";
+	var cacheKey = start + ":" + end + ":" + fanoutAllDay + q;
 
 	var vec = folderCache[cacheKey];
 	if (vec == null) {
 		// try to find it in the appt summaries results
-		var apptList = this._getCachedApptSummaries(startTime, endTime, folderId);
+		var apptList = this._getCachedApptSummaries(start, end, folderId, query);
 		if (apptList != null) {
-			vec = folderCache[cacheKey] = ZmApptList.toVector(apptList, startTime, endTime, fanoutAllDay);
+			vec = folderCache[cacheKey] = ZmApptList.toVector(apptList, start, end, fanoutAllDay);
 		}
 	}
 	return vec;
 };
 
 ZmApptCache.prototype._cacheVector =
-function(vector, startTime, endTime, fanoutAllDay, folderId) {
+function(vector, start, end, fanoutAllDay, folderId, query) {
 	var folderCache = this._cachedApptVectors[folderId];
 	if (folderCache == null)
 		folderCache = this._cachedApptVectors[folderId] = {};
 
-	var cacheKey = startTime + ":" + endTime + ":" + fanoutAllDay;
+	var q = query ? (":" + query) : "";
+	var cacheKey = start + ":" + end + ":" + fanoutAllDay + q;
 	folderCache[cacheKey] = vector;
 };
 
 ZmApptCache.prototype._cacheApptSummaries =
-function(apptList, startTime, endTime, folderId) {
+function(apptList, start, end, folderId, query) {
 	var folderCache = this._cachedApptSummaries[folderId];
 	if (folderCache == null)
 		folderCache = this._cachedApptSummaries[folderId] = {};
 
-	var cacheKey = startTime+":"+	endTime;
-	folderCache[cacheKey] = {start: startTime, end:endTime, list: apptList};
+	var q = query ? (":" + query) : "";
+	var cacheKey = start + ":" + end + q;
+	folderCache[cacheKey] = {start:start, end:end, list:apptList};
 };
 
 ZmApptCache.prototype._getCachedApptSummaries =
-function(start,end, folderId) {
+function(start, end, folderId, query) {
 	var found = false;
 
 	var folderCache = this._cachedApptSummaries[folderId];
 	if (folderCache == null)
 		folderCache = this._cachedApptSummaries[folderId] = {};
 
-	var cacheKey = start + ":" + end;
+	var q = query ? (":" + query) : "";
+	var cacheKey = start + ":" + end + q;
 
 	// see if this particular range is cached
 	var entry = this._cachedApptSummaries[cacheKey];
-	if (entry != null)
-		return entry.list;
+	if (entry != null) { return entry.list; }
 
 	// look through all cache results. typically if we are asking for a week/day,
 	// the month range will already be in the cache
@@ -127,8 +135,7 @@ function(start,end, folderId) {
 			break;
 		}
 	}
-	if (!found)
-		return null;
+	if (!found) { return null; }
 
 	// hum. should this ever happen?
 	if (entry.start == start && entry.end == end) {
@@ -136,8 +143,8 @@ function(start,end, folderId) {
 	}
 
 	// get subset, and cache it for future use (mainly if someone pages back and forth)
-	var apptList = entry.list.getSubset(start,end);
-	folderCache[cacheKey] = {start: start, end:end, list: apptList};
+	var apptList = entry.list.getSubset(start, end);
+	folderCache[cacheKey] = {start:start, end:end, list:apptList};
 	return apptList;
 };
 
@@ -154,59 +161,63 @@ function(apptList) {
 /**
 * Returns a vector of appt summaries for the specified time range across the
 * specified folders.
+* @param start 				[long]				start time in MS
+* @param end				[long]				end time in MS
+* @param fanoutAllDay		[Boolean]*
+* @param folderIds			[Array]*			list of calendar folder Id's (null means use checked calendars in overview)
+* @param callback			[AjxCallback]*		callback to call once search results are returned
+* @param noBusyOverlay		[Boolean]*			don't show veil during search
 */
 ZmApptCache.prototype.getApptSummaries =
-function(start, end, fanoutAllDay, folderIds, callback, noBusyOverlay) {
+function(params) {
 	var list;
-	if (!(folderIds instanceof Array)) {
-		folderIds = [ folderIds ];
-	} else if (folderIds.length == 0) {
+	if (!(params.folderIds instanceof Array)) {
+		params.folderIds = [params.folderIds];
+	} else if (params.folderIds.length == 0) {
 		var newVec = new AjxVector();
-		if (callback) callback.run(newVec);
+		if (params.callback) {
+			params.callback.run(newVec);
+		}
 		return newVec;
 	}
 
-	var mergeKey = this._getCachedMergedKey(start, end, fanoutAllDay, folderIds);
-	list = this._getCachedMergedVector(mergeKey);
+	params.mergeKey = this._getCachedMergedKey(params);
+	list = this._getCachedMergedVector(params.mergeKey);
 	if (list != null) {
-		if (callback) callback.run(list.clone());
+		if (params.callback) {
+			params.callback.run(list.clone());
+		}
 		return list.clone();
 	}
 
-	var context = {
-		start: start,
-		end: end,
-		fanoutAllDay: fanoutAllDay,
-		folderIds: folderIds,
-		callback: callback,
-		mergeKey: mergeKey,
-		needToFetch: [],
-		noBusyOverlay : noBusyOverlay,		
-		resultList: [] // array of vectors
-	};
+	params.needToFetch = [];
+	params.resultList = [];
 
-	for (var i=0; i < folderIds.length; i++) {
+	for (var i=0; i < params.folderIds.length; i++) {
+		var fid = params.folderIds[i];
 		// check vector cache first
-		list = this._getCachedVector(start, end, fanoutAllDay, folderIds[i]);
+		list = this._getCachedVector(params.start, params.end, params.fanoutAllDay, fid);
 		if (list != null) {
-			context.resultList.push(list);
+			params.resultList.push(list);
 		} else {
-			context.needToFetch.push(folderIds[i]); // need to make soap call
+			params.needToFetch.push(fid); // need to make soap call
 		}
 	}
 
 	// if already cached, return from cache
-	if (context.needToFetch.length == 0) {
-		var newList = ZmApptList.mergeVectors(context.resultList);
-		this._cacheMergedVector(newList, mergeKey);
-		if (callback) callback.run(newList);
+	if (params.needToFetch.length == 0) {
+		var newList = ZmApptList.mergeVectors(params.resultList);
+		this._cacheMergedVector(newList, params.mergeKey);
+		if (params.callback) {
+			params.callback.run(newList);
+		}
 		return newList;
 	}
 
 	var folderIdMapper = {};
 	var query = "";
-	for (var i=0; i < context.needToFetch.length; i++) {
-		var fid = context.needToFetch[i];
+	for (var i=0; i < params.needToFetch.length; i++) {
+		var fid = params.needToFetch[i];
 
 		// map remote folder ids into local ones while processing search since
 		// server wont do it for us (see bug 7083)
@@ -219,24 +230,24 @@ function(start, end, fanoutAllDay, folderIds, callback, noBusyOverlay) {
 		query += "inid:" + fid;
 		
 	}
-	context.query = query;
-	context.folderIdMapper = folderIdMapper;
+	params.queryHint = query;
+	params.folderIdMapper = folderIdMapper;
 
 	// this array will hold a list of appts as we collect them from the server
 	this._rawAppts = [];
 
-	this._search(context);
+	this._search(params);
 };
 
 ZmApptCache.prototype._search =
-function(context, cursorId, sortVal) {
+function(params, cursorId, sortVal) {
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 
 	var method = soapDoc.getMethod();
 	method.setAttribute("sortBy", ZmSearch.SORT_BY[ZmSearch.DATE_ASC]);
 	method.setAttribute("limit", "500");
-	method.setAttribute("calExpandInstStart", context.start);
-	method.setAttribute("calExpandInstEnd", context.end);
+	method.setAttribute("calExpandInstStart", params.start);
+	method.setAttribute("calExpandInstEnd", params.end);
 	method.setAttribute("types", ZmSearch.TYPE[ZmItem.APPT]);
 
 	if (cursorId && sortVal) {
@@ -244,25 +255,31 @@ function(context, cursorId, sortVal) {
 		cursor.setAttribute("id", cursorId);
 		cursor.setAttribute("sortVal", sortVal);
 	}
-	soapDoc.set("query", context.query);
 
-	if (context.callback) {
-		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [context]);
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:context.noBusyOverlay});
+	var query = params.query;
+	if (params.queryHint) {
+		query = query != null
+			? (query + " (" + params.queryHint + ")")
+			: params.queryHint;
+	}
+	soapDoc.set("query", query);
+
+	if (params.callback) {
+		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [params]);
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
 		var response = appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
-		var csfeResult = new ZmCsfeResult(response, false);
-		return this._getApptSummariesResponse(context, csfeResult);
+		var result = new ZmCsfeResult(response, false);
+		return this._getApptSummariesResponse(params, result);
 	}
 };
 
 ZmApptCache.prototype._getApptSummariesResponse =
-function(context, result) {
+function(params, result) {
 	// TODO: mark both as needing refresh?
-	if (!result)
-		return;
+	if (!result) { return; }
 
-	var callback = context.callback;
+	var callback = params.callback;
 	var resp;
 	try {
 		resp = result.getResponse();
@@ -282,22 +299,23 @@ function(context, result) {
 		if (searchResp.more) {
 			var lastAppt = searchResp.appt[searchResp.appt.length-1];
 			if (lastAppt) {
-				this._search(context, lastAppt.id, lastAppt.sf);
+				this._search(params, lastAppt.id, lastAppt.sf);
 				return;
 			}
 		}
 	}
 
 	if (this._rawAppts && this._rawAppts.length) {
-		var fanoutAllDay = context.fanoutAllDay;
-		var folderIds = context.needToFetch;
-		var start = context.start;
-		var end = context.end;
+		var fanoutAllDay = params.fanoutAllDay;
+		var folderIds = params.needToFetch;
+		var start = params.start;
+		var end = params.end;
+		var query = params.query;
 
 		// create a list of appts for each folder returned
 		var folder2List = {};
 		for (var j = 0; j < this._rawAppts.length; j++) {
-			var fid = context.folderIdMapper[this._rawAppts[j].l];
+			var fid = params.folderIdMapper[this._rawAppts[j].l];
 			if (!folder2List[fid])
 				folder2List[fid] = [];
 			folder2List[fid].push(this._rawAppts[j]);
@@ -311,29 +329,29 @@ function(context, result) {
 
 			// TODO: no need to cache remote ids for now?
 			var cal = this._calViewController.getCalendar(folderId);
-			var isLink = cal ? (cal.link ? true : false) : false;
-			if (!isLink)
+			if (!(cal && cal.link)) {
 				this._updateCachedIds(apptList);
+			}
 
 			// cache it
-			this._cacheApptSummaries(apptList, start, end, folderId);
+			this._cacheApptSummaries(apptList, start, end, folderId, query);
 
 			// convert to sorted vector
 			var list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);
-			this._cacheVector(list, start, end, fanoutAllDay, folderId); // id in response tied back to folder id
+			this._cacheVector(list, start, end, fanoutAllDay, folderId, query); // id in response tied back to folder id
 
-			context.resultList.push(list);
+			params.resultList.push(list);
 		}
 	}
 
 	// merge all the data and return
-	var newList = ZmApptList.mergeVectors(context.resultList);
-	this._cacheMergedVector(newList, context.mergeKey);
+	var newList = ZmApptList.mergeVectors(params.resultList);
+	this._cacheMergedVector(newList, params.mergeKey);
 
 	this._rawAppts = null;
 
 	if (callback) {
-		callback.run(newList);
+		callback.run(newList, params.query);
 	} else {
 		return newList;
 	}
@@ -343,7 +361,7 @@ function(context, result) {
 // id can be an array or a single id.
 ZmApptCache.prototype.containsAnyId =
 function(ids) {
-	if (!ids) return false;
+	if (!ids) { return false; }
 	if (ids instanceof Array) {
 		for (var i=0; i < ids.length; i++) {
 			if (this._cachedIds[ids[i]])
@@ -360,7 +378,7 @@ function(ids) {
 // (or array of objects) that have the id property
 ZmApptCache.prototype.containsAnyItem =
 function(items) {
-	if (!items) return false;
+	if (!items) { return false; }
 	if (items instanceof Array) {
 		for (var i=0; i < items.length; i++) {
 			if (items[i].id && this._cachedIds[items[i].id])

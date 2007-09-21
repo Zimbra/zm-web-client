@@ -243,8 +243,14 @@ function() {
 						 nameKey:		"appointment",
 						 icon:			"Appointment",
 						 itemClass:		"ZmAppt",
+						 node:			"appt",
 						 organizer:		ZmOrganizer.CALENDAR,
-						 searchType:	"appointment"
+						 searchType:	"appointment",
+						 resultsList:
+	   AjxCallback.simpleClosure(function(search) {
+		   AjxDispatcher.require("CalendarCore");
+		   return new ZmApptList(ZmItem.APPT, search);
+	   }, this)
 						});
 
 	ZmItem.registerItem(ZmItem.RESOURCE,
@@ -283,6 +289,17 @@ function() {
 							});
 };
 
+ZmCalendarApp.prototype._setupSearchToolbar =
+function() {
+	ZmSearchToolBar.addMenuItem(ZmItem.APPT,
+								{msgKey:		"appointments",
+								 tooltipKey:	"searchAppts",
+								 icon:			"Appointment",
+								 shareIcon:		"SharedCalendarFolder",
+								 setting:		ZmSetting.CALENDAR_ENABLED
+								});
+};
+
 ZmCalendarApp.prototype._setupCurrentAppToolbar =
 function() {
 	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_CALENDAR, ZmOrganizer.CALENDAR);
@@ -306,15 +323,16 @@ function() {
 							  icon:					"CalendarApp",
 							  chooserTooltipKey:	"goToCalendar",
 							  viewTooltipKey:		"displayCalendar",
-							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
+							  defaultSearch:		ZmItem.APPT,
 							  organizer:			ZmOrganizer.CALENDAR,
-							  overviewTrees:		[ZmOrganizer.CALENDAR],
+							  overviewTrees:		[ZmOrganizer.CALENDAR/*, ZmOrganizer.SEARCH, ZmOrganizer.TAG*/],
 							  showZimlets:			true,
 							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar", "CalendarAppt"],
 							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar", "CalendarAppt"]},
 							  newItemOps:			newItemOps,
 							  newOrgOps:			newOrgOps,
 							  actionCodes:			actionCodes,
+							  searchTypes:			[ZmItem.APPT],
 							  gotoActionCode:		ZmKeyMap.GOTO_CALENDAR,
 							  newActionCode:		ZmKeyMap.NEW_APPT,
 							  chooserSort:			30,
@@ -471,6 +489,14 @@ function(callback, checkQS) {
 	}
 
 	cc.show(view, sd);
+	if (callback) {
+		callback.run();
+	}
+};
+
+ZmCalendarApp.prototype.showSearchResults =
+function(results, callback, isGal, folderId) {
+	// calls ZmSearchController's _handleLoadShowResults
 	if (callback) {
 		callback.run();
 	}

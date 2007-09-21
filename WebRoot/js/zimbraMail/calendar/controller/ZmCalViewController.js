@@ -151,7 +151,7 @@ function() {
 };
 
 ZmCalViewController.prototype.show =
-function(viewId, startDate) {
+function(viewId, startDate, skipMaintenance) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	if (!viewId || viewId == ZmController.CAL_VIEW)
 		viewId = this._currentView ? this._currentView : this._defaultView();
@@ -219,7 +219,7 @@ function(viewId, startDate) {
 			this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
 			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWeek);
 			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);
-			break;;
+			break;
 		case ZmController.CAL_MONTH_VIEW:
 			// use day until month does something
 			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
@@ -234,12 +234,13 @@ function(viewId, startDate) {
 	} else {
 		this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
 		var cv = this._viewMgr.getCurrentView();
-		var navText = cv.getCalTitle();
-		if(viewId == ZmController.CAL_MONTH_VIEW){
-			navText = cv.getShortCalTitle();
-		}
+		var navText = viewId == ZmController.CAL_MONTH_VIEW
+			? cv.getShortCalTitle()
+			: cv.getCalTitle();
 		this._navToolBar[ZmController.CAL_VIEW].setText(navText);
-		this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
+		if (!skipMaintenance) {
+			this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
+		}
 		DBG.timePt("scheduling maintenance");
 	}
 };
@@ -247,7 +248,7 @@ function(viewId, startDate) {
 ZmCalViewController.prototype.getCheckedCalendars =
 function() {
 	if (this._checkedCalendars == null) {
-		if (this._calTreeController == null) return [];
+		if (this._calTreeController == null) { return []; }
 		this._updateCheckedCalendars();
 	}
 	return this._checkedCalendars;
@@ -257,9 +258,12 @@ ZmCalViewController.prototype.getCheckedCalendarFolderIds =
 function(localOnly) {
 	if (this._checkedCalendarFolderIds == null) {
 		this.getCheckedCalendars();
-		if (this._checkedCalendarFolderIds == null) return [ZmOrganizer.ID_CALENDAR];
+		if (this._checkedCalendarFolderIds == null) 
+			return [ZmOrganizer.ID_CALENDAR];
 	}
-	return localOnly ? this._checkedLocalCalendarFolderIds : this._checkedCalendarFolderIds;
+	return localOnly
+		? this._checkedLocalCalendarFolderIds
+		: this._checkedCalendarFolderIds;
 };
 
 ZmCalViewController.prototype.getCheckedCalendar =
@@ -342,23 +346,24 @@ function(folderId) {
 
 ZmCalViewController.prototype._refreshButtonListener =
 function(ev) {
+	// reset possibly set user query
+	this._userQuery = null;
+	var sc = appCtxt.getSearchController();
+	sc.setSearchField("");
+	sc.getSearchToolbar().blur();
+
 	this._refreshAction(false);
 };
 
 ZmCalViewController.prototype._getToolBarOps =
 function() {
-	return [
-		ZmOperation.NEW_MENU,
-		ZmOperation.CAL_REFRESH,
-		ZmOperation.SEP,
-		ZmOperation.DELETE, ZmOperation.PRINT,
-		ZmOperation.SEP,
-		ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW,
-		ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW,
-		ZmOperation.SCHEDULE_VIEW,
-		ZmOperation.SEP,
-		ZmOperation.TODAY
-	];
+	return [ZmOperation.NEW_MENU, ZmOperation.CAL_REFRESH,
+			ZmOperation.SEP,
+			ZmOperation.DELETE, ZmOperation.PRINT,
+			ZmOperation.SEP,
+			ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW,
+			ZmOperation.SEP,
+			ZmOperation.TODAY];
 };
 
 /* This method is called from ZmListController._setup. We control when this method is called in our
@@ -673,7 +678,7 @@ ZmCalViewController.prototype._postShowCallback =
 function() {
 	ZmController.prototype._postShowCallback.call(this);
 	this._viewVisible = true;
-	if (this._viewMgr.getNeedsRefresh()) {
+	if (this._viewMgr.needsRefresh()) {
 		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);
 	}
 };
@@ -716,10 +721,13 @@ function(date, duration, roll) {
 		}
 		var title = this._viewMgr.getCurrentView().getCalTitle();
 		Dwt.setTitle([ZmMsg.zimbraTitle, ": ", title].join(""));
-		if (!roll && this._currentView == ZmController.CAL_WORK_WEEK_VIEW && (date.getDay() == 0 || date.getDay() ==  6)) {
+		if (!roll &&
+			this._currentView == ZmController.CAL_WORK_WEEK_VIEW &&
+			(date.getDay() == 0 || date.getDay() ==  6))
+		{
 			this.show(ZmController.CAL_WEEK_VIEW);
 		}
-		if(ZmController.CAL_MONTH_VIEW == this._currentView){
+		if (ZmController.CAL_MONTH_VIEW == this._currentView) {
 			title = this._viewMgr.getCurrentView().getShortCalTitle();
 		}
 		this._navToolBar[ZmController.CAL_VIEW].setText(title);
@@ -1236,7 +1244,9 @@ function(date, noheader) {
 	try {
 		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
-		var result = this.getApptSummaries(start.getTime(), start.getTime() + AjxDateUtil.MSEC_PER_DAY, true, this.getCheckedCalendarFolderIds());
+		var startTime = start.getTime();
+		var end = start.getTime() + AjxDateUtil.MSEC_PER_DAY;
+		var result = this.getApptSummaries({start:startTime, end:end, fanoutAllDay:true});
 		return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader);
 	} catch (ex) {
 		DBG.println(ex);
@@ -1446,11 +1456,13 @@ function(menu) {
 };
 
 /**
- * Overrides ZmListController.prototype._getActionMenuOptions
+ * Overrides ZmListController.prototype._getViewActionMenuOps
  */
 ZmCalViewController.prototype._getViewActionMenuOps =
 function () {
-	return [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT, ZmOperation.SEP, ZmOperation.TODAY, ZmOperation.CAL_VIEW_MENU];
+	return [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT,
+			ZmOperation.SEP,
+			ZmOperation.TODAY, ZmOperation.CAL_VIEW_MENU];
 };
 
 /**
@@ -1592,11 +1604,65 @@ function(soapDoc) {
 };
 
 /**
-* caller is responsible for exception handling. caller should also not modify appts in this list directly.
+* Caller is responsible for exception handling. caller should also not modify
+* appts in this list directly.
+*
+* @param	start 			[long]			start time in MS
+* @param	end				[long]			end time in MS
+* @param	fanoutAllDay	[Boolean]*
+* @param	folderIds		[Array]*		list of calendar folder Id's (null means use checked calendars in overview)
+* @param	callback		[AjxCallback]*	callback triggered once search results are returned
+* @param	noBusyOverlay	[Boolean]*		dont show veil during search
 */
 ZmCalViewController.prototype.getApptSummaries =
-function(start,end, fanoutAllDay, folderIds, callback, noBusyOverlay) {
-	return this._apptCache.getApptSummaries(start, end, fanoutAllDay, folderIds, callback, noBusyOverlay);
+function(params) {
+	if (!params.folderIds) {
+		params.folderIds = this.getCheckedCalendarFolderIds();
+	}
+	params.query = this._userQuery;
+
+	return this._apptCache.getApptSummaries(params);
+};
+
+ZmCalViewController.prototype.handleUserSearch =
+function(params) {
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
+	this.show(null, null, true);
+
+	this._apptCache.clearCache();
+	this._viewMgr.setNeedsRefresh();
+	appCtxt.getSearchController().setEnabled(false);
+	this._userQuery = params.query;
+
+	// set start/end date boundaries
+	var work = ZmCalViewController.MAINT_VIEW;
+	var view = this.getCurrentView();
+	if (view) {
+		var rt = view.getTimeRange();
+		params.start = rt.start;
+		params.end = rt.end;
+	} else if (this._miniCalendar) {
+		var calRange = this._miniCalendar.getDateRange();
+		params.start = calRange.start.getTime();
+		params.end = calRange.end.getTime();
+	} else {
+		// TODO - generate start/end based on current month?
+	}
+
+	params.fanoutAllDay = view ? view._fanoutAllDay() : false;
+	params.callback = new AjxCallback(this, this._searchResponseCallback);
+
+	this.getApptSummaries(params);
+};
+
+ZmCalViewController.prototype._searchResponseCallback =
+function(list, userQuery) {
+	appCtxt.getSearchController().setEnabled(true);
+
+	this.show(null, null, true);	// always make sure a calendar view is being shown
+	this._userQuery = userQuery;	// cache the user-entered search query
+
+	this._maintGetApptCallback(ZmCalViewController.MAINT_VIEW, this.getCurrentView(), list, true);
 };
 
 // TODO: appt is null for now. we are just clearing our caches...
@@ -1651,7 +1717,9 @@ function() {
 ZmCalViewController.prototype._refreshAction =
 function(dontClearCache) {
 	// reset cache
-	if (!dontClearCache) this._apptCache.clearCache();
+	if (!dontClearCache) {
+		this._apptCache.clearCache();
+	}
 
 	if (this._viewMgr != null) {
 		// mark all views as dirty
@@ -1669,7 +1737,7 @@ function(params) {
 };
 
 ZmCalViewController.prototype._maintGetApptCallback =
-function(work, view, list) {
+function(work, view, list, skipMiniCalUpdate) {
 	// TODO: turn off shell busy
 
 	if (list instanceof ZmCsfeException) {
@@ -1691,7 +1759,7 @@ function(work, view, list) {
 		}
 	} else if (work & ZmCalViewController.MAINT_VIEW) {
 		this._list = list;
-		view.set(list);
+		view.set(list, skipMiniCalUpdate);
 	}
 	if (work & ZmCalViewController.MAINT_REMINDER) {
 		this._app.getReminderController().refresh();
@@ -1711,33 +1779,34 @@ ZmCalViewController.prototype._maintenanceAction =
 function() {
 	var work = this._pendingWork;
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
+
 	// do minical first, since it might load in a whole month worth of appts
 	// the main view can use
-	if (work & ZmCalViewController.MAINT_MINICAL) {
-		var calRange = this._miniCalendar.getDateRange();
-		var cb = new AjxCallback(this, this._maintGetApptCallback, [ work, null]);
-		if (appCtxt.getCurrentViewId() != ZmController.CAL_VIEW) {	
+	if (work & ZmCalViewController.MAINT_MINICAL)
+	{
+		if (appCtxt.getCurrentViewId() != ZmController.CAL_VIEW) {
 			this.fetchMiniCalendarAppts();
 		} else {
 			var view = this._viewMgr.getCurrentView();
 			if (view.getTimeRange) {
 				var rt = view.getTimeRange();
-				this.getApptSummaries(rt.start, rt.end, view._fanoutAllDay(), this.getCheckedCalendarFolderIds(), cb);
+				var cb = new AjxCallback(this, this._maintGetApptCallback, [work, null]);
+				this.getApptSummaries({start:rt.start, end:rt.end, fanoutAllDay:view._fanoutAllDay(), callback:cb});
 			}
 		}
-		// return. callback will check and see if MAINT_VIEW is nededed as well.
-		return;
-	} else if (work & ZmCalViewController.MAINT_VIEW) {
-		if (this._viewMgr == null) return;
+	}
+	else if (work & ZmCalViewController.MAINT_VIEW)
+	{
 		var view = this.getCurrentView();
 		if (view && view.needsRefresh()) {
 			var rt = view.getTimeRange();
 			var cb = new AjxCallback(this, this._maintGetApptCallback, [work, view]);
-			// TODO: turn on shell busy
-			this.getApptSummaries(rt.start, rt.end, view._fanoutAllDay(), this.getCheckedCalendarFolderIds(), cb);
+			this.getApptSummaries({start:rt.start, end:rt.end, fanoutAllDay:view._fanoutAllDay(), callback:cb});
 			view.setNeedsRefresh(false);
 		}
-	} else if (work & ZmCalViewController.MAINT_REMINDER) {
+	}
+	else if (work & ZmCalViewController.MAINT_REMINDER)
+	{
 		this._app.getReminderController().refresh();
 	}
 };
@@ -1823,8 +1892,13 @@ function() {
 
 ZmCalViewController.prototype.fetchMiniCalendarAppts = 
 function() {	
-	var work = ZmCalViewController.MAINT_MINICAL;
-	var calRange = this._miniCalendar.getDateRange();
-	var cb = new AjxCallback(this, this._maintGetApptCallback, [ work, null]);
-	this.getApptSummaries(calRange.start.getTime(), calRange.end.getTime(), true, this.getCheckedCalendarFolderIds(), cb, true);
+	var dr = this._miniCalendar.getDateRange();
+	var params = {
+		start: dr.start.getTime(),
+		end: dr.end.getTime(),
+		fanoutAllDay: true,
+		callback: new AjxCallback(this, this._maintGetApptCallback, [ZmCalViewController.MAINT_MINICAL, null]),
+		noBusyOverlay:true
+	};
+	this.getApptSummaries(params);
 };

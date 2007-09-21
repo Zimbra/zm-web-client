@@ -181,7 +181,7 @@ function(briefcase) {
 	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
 		var searchController = appCtxt.getSearchController();
 		var search = ["in:\"", notebook.getSearchPath(), '"' ].join("");
-		searchController.setDefaultSearchType(ZmItem.PAGE, true);
+		searchController.setDefaultSearchType(ZmItem.PAGE);
 		searchController.setSearchField(search);
 	}
 	*/

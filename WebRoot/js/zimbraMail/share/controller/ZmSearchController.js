@@ -228,6 +228,16 @@ function(menu) {
  */
 ZmSearchController.prototype.search =
 function(params) {
+	// calendar searching is special so hand it off if necessary
+	if (this._searchFor == ZmItem.APPT) {
+		var calApp = appCtxt.getApp(ZmApp.CALENDAR);
+		var controller = AjxDispatcher.run("GetCalController");
+		if (controller) {
+			controller.handleUserSearch(params);
+		}
+		return;
+	}
+
 	if (!(params.query && params.query.length)) { return; }
 
 	// if the search string starts with "$set:" then it is a command to the client

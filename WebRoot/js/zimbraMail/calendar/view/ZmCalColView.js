@@ -2400,7 +2400,7 @@ function(data) {
 }
 
 ZmCalColView.prototype.set = 
-function(list) {
+function(list, skipMiniCalUpdate) {
 	this._preSet();
 	this._selectedItems.removeAll();
 	this._resetList();
@@ -2418,7 +2418,10 @@ function(list) {
 		}
 	}
 	this._layout();
-	this._controller.fetchMiniCalendarAppts();
+
+	if (!skipMiniCalUpdate) {
+		this._controller.fetchMiniCalendarAppts();
+	}
 }
 
 

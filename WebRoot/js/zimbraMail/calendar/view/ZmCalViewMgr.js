@@ -67,11 +67,11 @@ function() {
 	}
 };
 
-ZmCalViewMgr.prototype.getNeedsRefresh =
+ZmCalViewMgr.prototype.needsRefresh =
 function(viewId) {
 	viewId = viewId || this._currentViewName;
 	var view = this._views[viewId];
-	return view.getNeedsRefresh ? view.getNeedsRefresh() : false;
+	return view.needsRefresh ? view.needsRefresh() : false;
 };
 
 ZmCalViewMgr.prototype.getCurrentView =

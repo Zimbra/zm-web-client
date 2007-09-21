@@ -201,7 +201,7 @@ function(folder) {
 		stc._itemClicked(folder);
 	} else {
 		var sc = appCtxt.getSearchController();
-		sc.setDefaultSearchType(ZmItem.CONTACT, true);
+		sc.setDefaultSearchType(ZmItem.CONTACT);
 
 		var capp = appCtxt.getApp(ZmApp.CONTACTS);
 

@@ -43,7 +43,7 @@ function() {
 
 ZmApptList.prototype.loadFromSummaryJs =
 function(appts) {
-	if (!appts) return;
+	if (!appts) { return; }
 
 	for (var i = 0; i < appts.length; i++) {
 		var apptNode = appts[i];
@@ -51,8 +51,7 @@ function(appts) {
 		if (instances) {
 			var args = {list:this};
 			for (var j = 0; j < instances.length; j++) {
-				var instNode = instances[j];
-				var appt = ZmAppt.createFromDom(apptNode, instNode, args);
+				var appt = ZmAppt.createFromDom(apptNode, instances[j], args);
 				if (appt) this.add(appt);
 			}
 		}

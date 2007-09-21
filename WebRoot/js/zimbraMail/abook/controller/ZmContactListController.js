@@ -151,7 +151,7 @@ function(view, force, initialized) {
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
 		if (this.isGalSearch())
-			appCtxt.getSearchController().setDefaultSearchType(ZmSearchToolBar.FOR_GAL_MI, true);
+			appCtxt.getSearchController().setDefaultSearchType(ZmSearchToolBar.FOR_GAL_MI);
 
 		this._setTabGroup(this._tabGroups[view]);
 		this._restoreFocus();

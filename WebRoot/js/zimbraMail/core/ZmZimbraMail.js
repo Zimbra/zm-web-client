@@ -1055,7 +1055,7 @@ function(appName, force, callback, errorCallback, checkQS) {
 			this._createUpsellView(appName);
 		} else {
 			DBG.println(AjxDebug.DBG1, "Launching app " + appName);
-			var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback]);
+			var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback, appName]);
 			var eventType = [appName, ZmAppEvent.PRE_LAUNCH].join("_");
 			this._evt.item = this._apps[appName];
 			this._evtMgr.notifyListeners(eventType, this._evt);
@@ -1066,9 +1066,13 @@ function(appName, force, callback, errorCallback, checkQS) {
 };
 
 ZmZimbraMail.prototype._handleResponseActivateApp =
-function(callback) {
+function(callback, appName) {
 	if (callback) {
 		callback.run();
+	}
+
+	if (ZmApp.DEFAULT_SEARCH[appName]) {
+		appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName]);
 	}
 };
 
@@ -1111,7 +1115,7 @@ function(appName, view) {
 		this._activeApp = appName;
 		if (appEnabled) {
 			if (ZmApp.DEFAULT_SEARCH[appName]) {
-				appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName], true);
+				appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName]);
 			}
 			
 			// set search string value to match current app's last search, if applicable		
