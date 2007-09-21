@@ -1034,7 +1034,7 @@ function(id) {
 			return this;
 	}
 
-	if (this.id == id) {
+	if (this.nId == id) {
 		return this;
 	}
 

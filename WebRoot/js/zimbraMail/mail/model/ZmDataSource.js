@@ -144,7 +144,9 @@ function(callback, errorCallback, batchCommand) {
 	var dsrc = soapDoc.set(this.ELEMENT_NAME);
 	for (var aname in ZmDataSource.DATASOURCE_ATTRS) {
 		var pname = ZmDataSource.DATASOURCE_ATTRS[aname];
-		var pvalue = this[pname];
+		var pvalue = pname == "folderId"
+			? ZmOrganizer.normalizeId(this[pname])
+			: this[pname];
 		if (pname == "id" || !pvalue) continue;
 
 		dsrc.setAttribute(aname, String(pvalue));
@@ -185,7 +187,9 @@ function(callback, errorCallback, batchCommand) {
 		var pname = ZmDataSource.DATASOURCE_ATTRS[aname];
 		if (!this.hasOwnProperty(pname)) continue;
 
-		var avalue = this[pname];
+		var avalue = pname == "folderId"
+			? ZmOrganizer.normalizeId(this[pname])
+			: this[pname];
 		dsrc.setAttribute(aname, String(avalue));
 	}
 	var identity = this.getIdentity();
