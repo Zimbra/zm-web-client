@@ -75,6 +75,8 @@ AjxPackage.require("ajax.dwt.widgets.DwtButton");
 AjxPackage.require("ajax.dwt.widgets.DwtMenuItem");
 AjxPackage.require("ajax.dwt.widgets.DwtMenu");
 AjxPackage.require("ajax.dwt.widgets.DwtInputField");
+AjxPackage.require("ajax.dwt.widgets.DwtBaseDialog");
+AjxPackage.require("ajax.dwt.widgets.DwtDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtSash");
 AjxPackage.require("ajax.dwt.widgets.DwtToolBar");
 AjxPackage.require("ajax.dwt.widgets.DwtToolTip");

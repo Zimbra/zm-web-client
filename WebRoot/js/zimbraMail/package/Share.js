@@ -9,9 +9,6 @@
  * 	- When share or mountpoint data arrives in a <refresh> block
  * 	- When user creates a share
  */
-AjxPackage.require("ajax.dwt.widgets.DwtBaseDialog");
-AjxPackage.require("ajax.dwt.widgets.DwtDialog");
-
 AjxPackage.require("zimbraMail.share.model.ZmShare");
 AjxPackage.require("zimbraMail.share.model.ZmMountpoint");
 
