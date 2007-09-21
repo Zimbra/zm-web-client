@@ -6,7 +6,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <c:catch var="error">
-<zm:contactAutoComplete query="${param.query}" json="true" limit="20"/>
+<zm:contactAutoComplete query="${fn:trim(param.query)}" json="true" limit="20"/>
  </c:catch>
  <c:if test="${not empty error}">
  {"Result":[], "error" : true}
