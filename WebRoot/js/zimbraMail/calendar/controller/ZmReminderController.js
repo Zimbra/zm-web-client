@@ -96,7 +96,7 @@ function() {
 	var startTime = start.getTime() - AjxDateUtil.MSEC_PER_HOUR;
 	var endTime = startTime + (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_RANGE);
 	var params = {
-		start: startTime.getTime(),
+		start: startTime,
 		end: endTime,
 		fanoutAllDay: false,
 		folderIds: this._calController.getCheckedCalendarFolderIds(true),
