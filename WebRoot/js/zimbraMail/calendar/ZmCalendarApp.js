@@ -523,6 +523,7 @@ function(show, delay) {
 ZmCalendarApp.prototype.getCalController =
 function() {
 	if (!this._calController) {
+		AjxDispatcher.require("CalendarCore");
 		this._calController = new ZmCalViewController(this._container, this);
 	}
 	return this._calController;
@@ -531,6 +532,7 @@ function() {
 ZmCalendarApp.prototype.getReminderController =
 function() {
 	if (!this._reminderController) {
+		AjxDispatcher.require("CalendarCore");
 		this._reminderController = new ZmReminderController(AjxDispatcher.run("GetCalController"));
 	}
 	return this._reminderController;
