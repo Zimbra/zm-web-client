@@ -529,6 +529,7 @@
 	Class "Dwt[Dark|Light]InnerBorder" is also applied to this elements */
 .DwtDialogBody 	{
   cursor: default;
+  
 }
 
 
@@ -626,7 +627,9 @@
 /* Outer container for the message dialog */
 .DwtMsgDialog {
 	width: 400px;
+	overflow: auto;
 }
+
 
 /* Text area for the message dialog, including icon */
 .DwtMsgArea {
