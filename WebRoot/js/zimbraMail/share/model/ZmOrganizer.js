@@ -708,7 +708,9 @@ ZmOrganizer.prototype.setIcon = function(icon) {
 		var overviewController = appCtxt.getOverviewController();
 		for (var i = 0; i < apps.length; i++) {
 			var controller = overviewController.getTreeController(type);
-			var view = controller.getTreeView(apps[i]);
+			var app = appCtxt.getApp(apps[i]);
+			var overviewId = app ? app.getOverviewId() : null;
+			var view = overviewId ? controller.getTreeView(overviewId) : null;
 			var item = view && view.getTreeItemById(id);
 			if (item) {
 				item.setImage(icon);
