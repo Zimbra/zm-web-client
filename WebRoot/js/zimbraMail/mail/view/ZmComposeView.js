@@ -875,12 +875,16 @@ ZmComposeView.prototype.applySignature = function(content, replaceSignatureId){
 		var replaceSignature = this.getSignatureContent(replaceSignatureId);
 		var replaceRe = AjxStringUtil.regExEscape(replaceSignature);
 		if (!isAbove) {
-			replaceRe = replaceRe + "\\s*$";
+			replaceRe += "\\s*";
+			if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
+				replaceRe += "</body></html>";
+			}
+			replaceRe += "$";
 		}
 		else {
 			signature = signature || newLine; 
 		}
-		content = content.replace(new RegExp(replaceRe), signature);
+		content = content.replace(new RegExp(replaceRe, "i"), signature);
 	}
 	else {
 		content = isAbove ? signature + content : content + signature;
@@ -895,7 +899,8 @@ ZmComposeView.prototype.getSignatureContent = function(signatureId) {
 	var sep = this._getSignatureSeparator();
 	var newLine = this._getSignatureNewLine();
 	var isAbove = this.getSignatureStyle() == ZmSetting.SIG_OUTLOOK;
-	return isAbove ? [sep, sig, newLine].join("") : sep + sig;
+	var isText = this.getHtmlEditor().getMode() == DwtHtmlEditor.TEXT;
+	return isAbove ? [sep, sig, isText ? newLine : ""].join("") : sep + sig;
 };
 
 ZmComposeView.prototype.getSignatureStyle = function(identity) {
