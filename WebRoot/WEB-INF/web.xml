@@ -265,6 +265,7 @@
           <url-pattern>/h/compose</url-pattern>
           <url-pattern>/h/eappt</url-pattern>
           <url-pattern>/h/econtact</url-pattern>
+          <url-pattern>/h/egroup</url-pattern>
           <url-pattern>/h/etask</url-pattern>
           <url-pattern>/h/imessage</url-pattern>
           <url-pattern>/h/login</url-pattern>
@@ -291,6 +292,7 @@
           <url-pattern>/m/moquery</url-pattern>
           <url-pattern>/m/mocompose</url-pattern>
           <url-pattern>/h/home</url-pattern>
+          <url-pattern>/h/addgroupcontact</url-pattern>
       </jsp-property-group>
     </jsp-config>
 
