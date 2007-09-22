@@ -348,31 +348,41 @@ function(initHide, composeMode) {
 
 ZmComposeController.prototype._identityChangeListener =
 function(setSignature, event) {
-	
-	if (!this._composeView.isDirty()) {
-		this._applyIdentityToBody(setSignature,true);
-	} else {
-		this._applyIdentityToBody(setSignature,false);
+	var signatureId = this._composeView.getIdentity().signature;
+	var resetBody = this._composeView.isDirty();
+
+	// don't do anything if signature is same
+	if (signatureId == this._currentSignatureId) {
+		return;
 	}
+
+	// apply settings
+	this._applyIdentityToBody(setSignature, resetBody);
+	this._currentSignatureId = signatureId;
 };
 
 ZmComposeController.prototype._applyIdentityToBody =
 function(setSignature,resetBody) {
 	var identity = this._composeView.getIdentity();
 	if (setSignature) {
-		this._composeView.getSignatureSelect().setSelectedValue(identity.signature);
+		this.setSelectedSignature(identity.signature);
 	}
 	var newMode = this._getComposeMode(this._msg, identity);
 	if (newMode != this._composeView.getComposeMode()) {
 		this._composeView.setComposeMode(newMode);
 	}
-	//ResetBody - XXX
-	if(resetBody){
-		this._composeView.resetBody(this._action, this._msg, this._extraBodyText, null);
-	}else{
-		this._composeView.applySignature(this._composeView.getHtmlEditor().getContent());
-	}
+	var content = this._composeView.getHtmlEditor().getContent();
+	this._composeView.applySignature(content, this._currentSignatureId);
 	this._setAddSignatureVisibility(identity);
+};
+
+ZmComposeController.prototype._handleSelectSignature = function(evt) {
+	var signatureId = evt.item.getData(ZmComposeController.SIGNATURE_KEY);
+	this.setSelectedSignature(signatureId);
+
+	var content = this._composeView.getHtmlEditor().getContent();
+	this._composeView.applySignature(content, this._currentSignatureId);
+	this._currentSignatureId = signatureId;
 };
 
 /**
@@ -528,6 +538,7 @@ function(params) {
 	var identityCollection = appCtxt.getIdentityCollection();
 	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
 	params.identity = identity;
+	this._currentSignatureId = identity.signature; 
 
 	this._initializeToolBar();
 	this._toolbar.enableAll(true);
@@ -1109,7 +1120,7 @@ function() {
 	var menu = new DwtMenu(button);
 	var options = appCtxt.getSignatureCollection().getSignatureOptions();
 	if (options.length > 0) {
-		var listener = new AjxListener(this, this._identityChangeListener, [false]);
+		var listener = new AjxListener(this, this._handleSelectSignature);
 		var radioId = this._composeView._htmlElId + "_sig";
 		for (var i = 0; i < options.length; i++) {
 			var option = options[i];
@@ -1122,13 +1133,6 @@ function() {
 	}
 	return menu;
 }
-
-/***
-ZmComposeController.prototype._handleSignatureSelect = function(ev) {
-//	console.info("ZmComposeController#_handleSignatureSelect: ",arguments);
-//	console.dir(ev._args);
-};
-/***/
 
 ZmComposeController.prototype._signatureChangeListener =
 function(ev) {

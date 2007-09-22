@@ -866,19 +866,41 @@ function(mimePart) {
 	this._extraParts.push(mimePart);
 };
 
-ZmComposeView.prototype.applySignature = function(content){
+ZmComposeView.prototype.applySignature = function(content, replaceSignatureId){
 	content = content || "";
-	var sig = this._getSignature();
-	var sep = this._getSignatureSeparator();
+	var signature = this.getSignatureContent();
 	var newLine = this._getSignatureNewLine();
-	var identity = this.getIdentity();
-	if (identity.getSignatureStyle() == ZmSetting.SIG_OUTLOOK) {
-		var newLine = this._getSignatureNewLine();
-		content = [sep, sig, newLine, newLine, content].join("");
-	}else {
-		content = [content, sep, sig].join("");
+	var isAbove = this.getSignatureStyle() == ZmSetting.SIG_OUTLOOK;
+	if (replaceSignatureId) {
+		var replaceSignature = this.getSignatureContent(replaceSignatureId);
+		var replaceRe = AjxStringUtil.regExEscape(replaceSignature);
+		if (!isAbove) {
+			replaceRe = replaceRe + "\\s*$";
+		}
+		else {
+			signature = signature || newLine; 
+		}
+		content = content.replace(new RegExp(replaceRe), signature);
+	}
+	else {
+		content = isAbove ? signature + content : content + signature;
 	}
 	this._htmlEditor.setContent(content);
+};
+
+ZmComposeView.prototype.getSignatureContent = function(signatureId) {
+	var sig = this._getSignature(signatureId);
+	if (!sig) { return ""; }
+
+	var sep = this._getSignatureSeparator();
+	var newLine = this._getSignatureNewLine();
+	var isAbove = this.getSignatureStyle() == ZmSetting.SIG_OUTLOOK;
+	return isAbove ? [sep, sig, newLine].join("") : sep + sig;
+};
+
+ZmComposeView.prototype.getSignatureStyle = function(identity) {
+	identity = identity || this.getIdentity();
+	return identity.getSignatureStyle();
 };
 
 /**
@@ -919,34 +941,6 @@ function(content) {
 	this._htmlEditor.setContent(content);
 };
 
-ZmComposeView.prototype._setSignatureVisible =
-function() {
-	if (!appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) return;
-
-	var div = document.getElementById(this._signatureDivId);
-	if (!div) return;
-
-	var visible = appCtxt.getSignatureCollection().getSize() > 0;
-	Dwt.setVisible(div, visible);
-};
-
-/***
-ZmComposeView.prototype.removeSignature =
-function(content) {
-	var isHtml = this._composeMode == DwtHtmlEditor.HTML;
-	var quotedRe = isHtml ? ZmComposeView.HTML_QUOTED_CONTENT_RE : ZmComposeView.QUOTED_CONTENT_RE;
-	var re = new RegExp(
-		[ AjxStringUtil.escapeRegex(sig),
-		  "\\s*",
-		  "(",quotedRe.source,")?"
-		].join(""),
-		"m"
-	);
-	var sig = this._getSignature();
-	return sig.replace(re, "$1");
-};
-/***/
-
 ZmComposeView.prototype._dispose =
 function() {
 	if (this._identityChangeListenerObj) {
@@ -956,21 +950,17 @@ function() {
 };
 
 ZmComposeView.prototype._getSignature =
-function() {
-	var signatureId = this._controller.getSelectedSignature();
+function(signatureId) {
+	signatureId = signatureId || this._controller.getSelectedSignature();
 	if (!signatureId) { return; }
 
 	var signature = appCtxt.getSignatureCollection().getById(signatureId);
-	/***/
 	var sig = signature.value;
 	var newLine = this._getSignatureNewLine();
 	if (this._composeMode == DwtHtmlEditor.HTML) {
 		sig = AjxStringUtil.htmlEncodeSpace(sig).replace(/\n/g,"<br>");
 	}
 	return sig + newLine;
-	/***
-	return signature.getValue(this._composeMode);
-	/***/
 };
 
 ZmComposeView.prototype._getSignatureSeparator =
