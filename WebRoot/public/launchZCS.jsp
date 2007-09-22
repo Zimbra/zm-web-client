@@ -271,7 +271,8 @@
 		var isDev = "<%= (isDev != null) ? isDev : "" %>";
 		var protocolMode = "<%=protocolMode%>";
 
-        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${true}" itemsperpage="${requestScope.authResult.prefs.zimbraPrefMailItemsPerPage[0]}" types="${requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
+        <c:set var="types" value="${requestScope.authResult.attrs.zimbraFeatureConversationsEnabled[0] eq 'FALSE' ? 'message' : requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
+        <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${true}" itemsperpage="${requestScope.authResult.prefs.zimbraPrefMailItemsPerPage[0]}" types="${types}"/>
         var batchInfoResponse = ${getInfoJSON};
 
 		var params = {app:app, offlineMode:offlineMode, devMode:isDev, settings:settings,
