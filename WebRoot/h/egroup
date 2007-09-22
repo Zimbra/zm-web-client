@@ -1,0 +1,163 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+<fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
+<app:handleError>
+<zm:getMailbox var="mailbox"/>
+<c:choose>
+    <c:when test="${zm:actionSet(param, 'actionNewGroup')or (param.action eq 'newcontactgroup')}">
+        <c:set var="contactId" value=""/>
+        <c:set var="newGroup" value="true"/>
+        <fmt:message var="title" key="newGroup"/>
+        <!--- yeah -->
+    </c:when>
+    <c:otherwise>
+        <c:set var="contactId" value="${param.id}"/>
+    </c:otherwise>
+</c:choose>
+
+<zm:computeSearchContext var="context" types="contact" usecache="true"/>
+<c:set var="isCreate" value="${empty contactId}"/>
+
+<c:choose>
+    <c:when test="${isCreate}">
+        <c:set var="contact" value="${null}"/>
+    </c:when>
+    <c:otherwise>
+        <zm:getContact id="${contactId}" var="contact"/>
+        <c:set var="messageKey" value="${contact.isGroup ? 'editGroup': 'editContact'}"/>
+        <fmt:message var="title" key="${messageKey}">
+            <fmt:param>${contact.displayFileAs}</fmt:param>
+        </fmt:message>
+    </c:otherwise>
+</c:choose>
+
+<c:choose>
+    <c:when test="${not empty param.contactSearchQuery}">
+        <c:choose>
+            <c:when test="${param.contactLocation eq 'gal'}">
+                <zm:searchGal var="searchGal" query="${param.contactSearchQuery}" type="account"/>
+            </c:when>
+            <c:otherwise>
+                <zm:search var="search" query="${param.contactSearchQuery}" sort="nameAsc" types="contact" field="contact:"/>
+            </c:otherwise>
+        </c:choose>
+        <c:set var="query" value="${param.contactSearchQuery}"/>
+    </c:when>
+    <c:otherwise>
+        <zm:search var="search" limit="1000"  query="*" types="contact" field="contact:"/>
+        <c:set var="query" value=""/>
+    </c:otherwise>
+</c:choose>
+
+<c:set var="groupSearchContacts" value="${fn:join(paramValues.addToGroup, ', ')}" scope="request"/>
+                                                                                         
+</app:handleError>
+
+<c:set var="isGroup" value="${contact.isGroup or newGroup}"/>
+
+<c:set var="focusField" value="${isGroup ? 'nickname' : 'lastName'}"/>
+<c:set var="toolbar">
+    <table width=100% cellspacing=0>
+        <tr valign='middle'>
+            <td class='TbBt'>
+                <table cellspacing=0 cellpadding=0 class='Tb'>
+                    <tr>
+                        <app:button name="actionContactAdd" src="img/contacts/ImgContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</c:set>
+        
+
+<app:view mailbox="${mailbox}" title="${title}" context="${context}" selected="contacts" contacts="true" tags="true" keys="false"
+          onload="var e=document.getElementById('${focusField}'); if (e) e.focus();">
+
+<zm:currentResultUrl var="currentUrl" disp="${isCreate ? 0 : 1}" value="" action="${param.action}" context="${context}"/>
+<form action="${currentUrl}" method="post">
+    <table width=100% cellpadding="0" cellspacing="0" border="1">
+    <tr>
+        <td class='TbTop' colspan="2">
+            <app:editContactToolbar create="${isCreate}"context="${context}" keys="true"/>
+        </td>
+    </tr>
+    <tr>
+    <td class='ZhAppContent' valign="top">
+    <table cellpadding="0" cellspacing="0" width="100%" >
+        <tr>
+        <td valign="top" width="50%">
+            <app:editContact title="${title}" contact="${contact}" context="${context}" isgroup="true"/>
+        </td>
+        <td valign="top" width="50%">
+        <form action="" method="post" accept-charset="utf-8">
+        <table width=100% cellpadding="0" cellspacing="5">
+        <tr>
+            <td class='TbTop'>
+                ${toolbar}
+            </td>
+        </tr>
+        <tr>
+            <td class='SearchBar'>
+                &nbsp;
+                <label for="findField"><fmt:message key="find"/>
+                    :</label>
+                <input id="findField" class="searchField" style='width:30%' maxlength=2048 name='contactSearchQuery'
+                value="${fn:escapeXml(query)}" onkeypress="return checkEnter(this,event)">
+                &nbsp;
+                <fmt:message key="in"/>
+                &nbsp;
+                <select name="contactLocation">
+                    <c:if test="${mailbox.features.contacts}">
+                        <option
+                        <c:if test="${empty param.contactLocation eq 'personal'}">
+                            selected
+                        </c:if> value="contact"/>
+                        <fmt:message key="searchPersonalContacts"/>
+                    </c:if>
+                    <c:if test="${mailbox.features.gal}">
+                        <option
+                        <c:if test="${param.contactLocation eq 'gal'}">selected</c:if> value="gal"/>
+                        <fmt:message key="GAL"/>
+                    </c:if>
+                </select>
+                <input id="doSearch" class="SearchButton" type=submit name='actionContactSearch' value="<fmt:message key="searchContacts"/>">
+            </td>
+        </tr>
+        <tr>
+            <td class='List' colspan="2">
+                <app:contactAddListView groupMode="${true}" searchResult="${search}" searchGalResult="${searchGal}"/>
+            </td>
+        </tr>
+    </table>
+</form>
+</td>
+        </tr>
+        </table>
+        </td>
+        </tr>
+<tr>
+<td class='TbBottom'>
+    <app:editContactToolbar create="${isCreate}" context="${context}" keys="false"/>
+</td>
+</tr>
+        </table>
+<input type="hidden" name="doContactListViewAction" value="1"/>
+<input type="hidden" name="id" value="${contact.id}"/>
+        </form>
+
+<SCRIPT TYPE="text/javascript">
+<!--
+var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
+//-->
+</SCRIPT>
+<app:keyboard cache="ab.econtact" globals="false" passspecial="true" mailbox="${mailbox}">
+<zm:bindKey message="editContact.Save" func="function() { zclick('SOPSAVE')}"/>
+</app:keyboard>
+        </app:view>

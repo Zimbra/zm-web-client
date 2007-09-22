@@ -2,6 +2,7 @@
 <%@ attribute name="searchResult" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZSearchResultBean"%>
 <%@ attribute name="searchGalResult" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZSearchGalResultBean"%>
 <%@ attribute name="attendeeMode" rtexprvalue="true" required="false"%>
+<%@ attribute name="groupMode" rtexprvalue="true" required="false"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -15,6 +16,9 @@
             <c:choose>
                 <c:when test="${attendeeMode}">
                     <th width=2%><fmt:message key="attendee"/>:
+                </c:when>
+                <c:when test="${groupMode}">
+                    <th width=2%><fmt:message key="contact"/>:
                 </c:when>
                 <c:otherwise>
                     <th width=2%><fmt:message key="to"/>:
@@ -43,6 +47,9 @@
                 <c:when test="${attendeeMode}">
                     <td width=2% nowrap><input type=checkbox  name="addAttendees" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
                 </c:when>
+                <c:when test="${groupMode}">
+                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
+                </c:when>
                 <c:otherwise>
                     <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
                     <td width=2% nowrap><input type=checkbox name="addCc" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
@@ -65,6 +72,9 @@
                        <c:when test="${attendeeMode}">
                            <td width=2% nowrap><input type=checkbox  name="addAttendees" value="${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
                        </c:when>
+                       <c:when test="${groupMode}">
+                           <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
+                       </c:when>
                        <c:otherwise>
                            <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
                            <td width=2% nowrap><input type=checkbox name="addCc" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.email2)}&gt;"></td>
@@ -86,6 +96,9 @@
                    <c:choose>
                        <c:when test="${attendeeMode}">
                            <td width=2% nowrap><input type=checkbox  name="addAttendees" value="${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
+                       </c:when>
+                       <c:when test="${groupMode}">
+                           <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
                        </c:when>
                        <c:otherwise>
                            <td width=2% nowrap><input type=checkbox  name="addTo" value="&#034;${fn:escapeXml(hit.contactHit.fileAsStr)}&#034; &lt;${fn:escapeXml(hit.contactHit.email3)}&gt;"></td>
@@ -110,6 +123,9 @@
             <c:choose>
                 <c:when test="${attendeeMode}">
                     <td width=2% nowrap><input type=checkbox  name="addAttendees" value="${fn:escapeXml(contact.galFullAddress)}"></td>
+                </c:when>
+                <c:when test="${groupMode}">
+                    <td width=2% nowrap><input type=checkbox  name="addToGroup" value="${fn:escapeXml(contact.galFullAddress)}"></td>
                 </c:when>
                 <c:otherwise>
                     <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(contact.galFullAddress)}"></td>

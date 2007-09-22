@@ -46,6 +46,9 @@
 </app:handleError>
 
 <c:set var="isGroup" value="${contact.isGroup or newGroup}"/>
+<c:if test="${contact.isGroup}" >
+<jsp:forward page="/h/egroup?id=${contactId}"/> 
+</c:if>
 
 <c:set var="focusField" value="${isGroup ? 'nickname' : 'lastName'}"/>
 

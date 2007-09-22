@@ -55,7 +55,7 @@
         <jsp:forward page="/h/econtact"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionNewGroup') or param.action eq 'newcontactgroup'}">
-        <jsp:forward page="/h/econtact"/>
+        <jsp:forward page="/h/egroup"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionEdit')}">
         <jsp:forward page="/h/econtact"/>
