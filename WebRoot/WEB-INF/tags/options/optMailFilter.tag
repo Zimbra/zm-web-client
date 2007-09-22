@@ -49,81 +49,77 @@
             &nbsp;
         </td>
     </tr>
-        <tr>
-            <td class="ZOptionsSectionMain" colspan="3">
-            <table cellpadding="3" cellspacing="0" width="100%">
-                <tr>
-            <c:choose>
-                <c:when test="${zm:actionSet(param, 'actionNewFilter') and (not zm:actionSet(param, 'actionFilterCancel') and requestScope.filterSave ne 'success')}">
-                    <td valign='top'>
-                        <app:editRule rule="${newRule}" mailbox="${mailbox}"/>
-                    </td>
-                </c:when>
-                <c:when test="${zm:actionSet(param, 'actionEditFilter') and not empty editRule and (not zm:actionSet(param, 'actionFilterCancel') and requestScope.filterSave ne 'success')}">
-                    <td valign='top'>
-                        <app:editRule rule="${editRule}" mailbox="${mailbox}"/>
-                    </td>
-                </c:when>
-                <c:otherwise>
-                    <td width="200" class='List' valign='top'>
-                        <table width="100%" cellpadding="2" cellspacing="0">
-                            <tr>
-                                <th width="1%" nowrap>&nbsp;
-                                <th width="1%" nowrap><fmt:message key="active"/>
-                                <th width="1%" nowrap>&nbsp;
-                                <th nowrap><fmt:message key="filterName"/>
-                            </tr>
-                            <c:forEach items="${rules}" var="rule" varStatus="status">
-                                <tr
-                                        <c:if test="${selectedRule.name eq rule.name}">class='RowSelected'</c:if>
-                                        >
+</table>
+<table cellpadding="3" cellspacing="0" width="100%" class="ZOptionsSectionMain">
+    <tr>
+        <c:choose>
+            <c:when test="${zm:actionSet(param, 'actionNewFilter') and (not zm:actionSet(param, 'actionFilterCancel') and requestScope.filterSave ne 'success')}">
+                <td valign='top'>
+                    <app:editRule rule="${newRule}" mailbox="${mailbox}"/>
+                </td>
+            </c:when>
+            <c:when test="${zm:actionSet(param, 'actionEditFilter') and not empty editRule and (not zm:actionSet(param, 'actionFilterCancel') and requestScope.filterSave ne 'success')}">
+                <td valign='top'>
+                    <app:editRule rule="${editRule}" mailbox="${mailbox}"/>
+                </td>
+            </c:when>
+            <c:otherwise>
+                <td width="200" class='List' valign='top'>
+                    <table width="100%" cellpadding="2" cellspacing="0">
+                        <tr>
+                            <th width="1%" nowrap>&nbsp;
+                            <th width="1%" nowrap><fmt:message key="active"/>
+                            <th width="1%" nowrap>&nbsp;
+                            <th nowrap><fmt:message key="filterName"/>
+                        </tr>
+                        <c:forEach items="${rules}" var="rule" varStatus="status">
+                            <tr
+                                    <c:if test="${selectedRule.name eq rule.name}">class='RowSelected'</c:if>
+                                    >
 
-                                    <td width="1%" nowrap>&nbsp;
-                                        <c:if test="${selectedRule.name eq rule.name}">
+                                <td width="1%" nowrap>&nbsp;
+                                    <c:if test="${selectedRule.name eq rule.name}">
                                         <input type="hidden" name="ruleName" value="${fn:escapeXml(rule.name)}"/>
-                                        </c:if>
-                                    </td>
-                                    <td width="1%" nowrap>
+                                    </c:if>
+                                </td>
+                                <td width="1%" nowrap>
                                     <c:if test="${rule.active}">
                                         <app:img altkey="active" src="common/ImgCheck.gif"/>
                                     </c:if>
 
-                                    </td>
-                                    <td width="1%" nowrap>&nbsp;</td>
-                                    <td>
-                                        <c:url var="selectRuleUrl" value="/h/options?selected=filter">
-                                            <c:param name="ruleName" value="${rule.name}"/>
-                                        </c:url>
-                                        <a href="${fn:escapeXml(selectRuleUrl)}">
-                                                ${fn:escapeXml(rule.name)}
-                                        </a>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                            <c:if test="${empty rules}">
-                                <tr>
-                                    <td colspan="4">
-                                        <div class='NoResults'>
-                                            <fmt:message key="noFilterRules"/>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </c:if>
-                        </table>
-                    </td>
-                    <td class='ZhDisplayRuleContent' valign='top'>
-                        <c:if test="${not empty selectedRule}">
-                            <app:displayRule rule="${selectedRule}"/>
+                                </td>
+                                <td width="1%" nowrap>&nbsp;</td>
+                                <td>
+                                    <c:url var="selectRuleUrl" value="/h/options?selected=filter">
+                                        <c:param name="ruleName" value="${rule.name}"/>
+                                    </c:url>
+                                    <a href="${fn:escapeXml(selectRuleUrl)}">
+                                            ${fn:escapeXml(rule.name)}
+                                    </a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty rules}">
+                            <tr>
+                                <td colspan="4">
+                                    <div class='NoResults'>
+                                        <fmt:message key="noFilterRules"/>
+                                    </div>
+                                </td>
+                            </tr>
                         </c:if>
-                    </td>
-                </c:otherwise>
-            </c:choose>
-        </tr>
-</table>
+                    </table>
                 </td>
-            </tr>
-    </table>
-    </td>
+                <td class='ZhDisplayRuleContent' valign='top'>
+                    <c:if test="${not empty selectedRule}">
+                        <app:displayRule rule="${selectedRule}"/>
+                    </c:if>
+                </td>
+            </c:otherwise>
+        </c:choose>
     </tr>
-    </table>
+</table>
+</td>
+</tr>
+</table>
 

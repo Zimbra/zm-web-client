@@ -21,9 +21,8 @@
         &nbsp;
     </td>
 </tr>
-<tr>
-<td class="ZOptionsSectionMain" colspan="3">
-<table cellpadding="3" width="100%">
+</table>
+<table cellpadding="3" width="100%"  class="ZOptionsSectionMain">
     <c:set var="numSigs" value="${0}"/>
     <zm:forEachSignature var="signature">
         <c:if test="${numSigs gt 0}">
@@ -126,9 +125,6 @@
         </td>
     </tr>
 </table>
-</td>
-</tr>
-</table>
 <br/>
 <table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr class="ZOptionsHeaderRow">
@@ -142,82 +138,78 @@
             &nbsp;
         </td>
     </tr>
+</table>
+<table cellpadding="3" width="100%" class="ZOptionsSectionMain">
     <tr>
-        <td class="ZOptionsSectionMain" colspan="3">
-            <table cellpadding="3" width="100%">
+        <td class='ZOptionsTableLabel'>
+            <fmt:message key="optionsSignatureAttach"/>
+            :
+        </td>
+        <td colspan=2>
+            <app:optCheckbox boxfirst="true" label="optionsSignatureAttachAuto" pref="zimbraPrefMailSignatureEnabled"
+                             checked="${mailbox.prefs.mailSignatureEnabled}"/>
+        </td>
+        <td width="20%">&nbsp;</td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <hr>
+        </td>
+    </tr>
+    <tr>
+        <td class='ZOptionsTableLabel'>
+            <fmt:message key="optionsSignaturePlacement"/>
+            :
+        </td>
+        <td>
+            <fmt:message key="optionsSignaturePlaceTheSignature"/>
+            :
+        </td>
+    </tr>
+    <tr>
+        <td class='ZOptionsTableLabel'>
+            &nbsp;
+        </td>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="3">
                 <tr>
-                    <td class='ZOptionsTableLabel'>
-                        <fmt:message key="optionsSignatureAttach"/>
-                        :
-                    </td>
-                    <td colspan=2>
-                        <app:optCheckbox boxfirst="true" label="optionsSignatureAttachAuto" pref="zimbraPrefMailSignatureEnabled"
-                                         checked="${mailbox.prefs.mailSignatureEnabled}"/>
-                    </td>
-                    <td width="20%">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td colspan="4">
-                        <hr>
-                    </td>
-                </tr>
-                <tr>
-                    <td class='ZOptionsTableLabel'>
-                        <fmt:message key="optionsSignaturePlacement"/>
-                        :
+                    <td>
+                        <input id="placeAbove" type="radio" name="zimbraPrefMailSignatureStyle" value="outlook"
+                                <c:if test="${mailbox.prefs.signatureStyleTop}">checked</c:if>
+                                />
                     </td>
                     <td>
-                        <fmt:message key="optionsSignaturePlaceTheSignature"/>
-                        :
-                    </td>
-                </tr>
-                <tr>
-                    <td class='ZOptionsTableLabel'>
-                        &nbsp;
+                        <label for="placeAbove">
+                            <fmt:message key="aboveQuotedText"/>
+                        </label>
                     </td>
                     <td>
-                        <table border="0" cellpadding="0" cellspacing="3">
-                            <tr>
-                                <td>
-                                    <input id="placeAbove" type="radio" name="zimbraPrefMailSignatureStyle" value="outlook"
-                                           <c:if test="${mailbox.prefs.signatureStyleTop}">checked</c:if>
-                                            />
-                                </td>
-                                <td>
-                                    <label for="placeAbove">
-                                        <fmt:message key="aboveQuotedText"/>
-                                    </label>
-                                </td>
-                                <td>
-                                    <input id="placeBelow" type="radio" name="zimbraPrefMailSignatureStyle" value="internet"
-                                           <c:if test="${mailbox.prefs.signatureStyleBottom}">checked</c:if>
-                                            />
-                                </td>
-                                <td>
-                                    <label for="placeBelow">
-                                        <fmt:message key="atBottomOfMessage"/>
-                                    </label>
-                                </td>
-                            </tr>
-                        </table>
+                        <input id="placeBelow" type="radio" name="zimbraPrefMailSignatureStyle" value="internet"
+                                <c:if test="${mailbox.prefs.signatureStyleBottom}">checked</c:if>
+                                />
                     </td>
-                </tr>
-                <app:optSeparator/>
-                <tr>
-                    <td class='ZOptionsTableLabel' colspan=2 style='text-align:left'>
-                        <fmt:message key="optionsManageAccounts">
-                            <fmt:param><fmt:message key="optionsSigManageAccountsPre"/></fmt:param>
-                            <fmt:param><a href="options?selected=accounts"><fmt:message key="optionsManageAccountsLink"/></a></fmt:param>
-                            <fmt:param><fmt:message key="optionsManageAccountsPost"/></fmt:param>
-                        </fmt:message>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="4">
-                        &nbsp;
+                    <td>
+                        <label for="placeBelow">
+                            <fmt:message key="atBottomOfMessage"/>
+                        </label>
                     </td>
                 </tr>
             </table>
+        </td>
+    </tr>
+    <app:optSeparator/>
+    <tr>
+        <td class='ZOptionsTableLabel' colspan=2 style='text-align:left'>
+            <fmt:message key="optionsManageAccounts">
+                <fmt:param><fmt:message key="optionsSigManageAccountsPre"/></fmt:param>
+                <fmt:param><a href="options?selected=accounts"><fmt:message key="optionsManageAccountsLink"/></a></fmt:param>
+                <fmt:param><fmt:message key="optionsManageAccountsPost"/></fmt:param>
+            </fmt:message>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            &nbsp;
         </td>
     </tr>
 </table>

@@ -22,9 +22,8 @@
         &nbsp;
     </td>
 </tr>
-<tr>
-<td colspan="3" class="ZOptionsSectionMain">
-<table width="100%" cellpadding="3">
+</table>
+<table width="100%" cellpadding="3" class="ZOptionsSectionMain">
 <tr>
     <td class='ZOptionsTableLabel'>
         <fmt:message key="optionsDisplay"/> :
@@ -130,9 +129,6 @@
     </td>
 </tr>
 </table>
-</td>
-</tr>
-</table>
 <br/>
 <table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
 <tr class="ZOptionsHeaderRow">
@@ -146,11 +142,8 @@
         &nbsp;
     </td>
 </tr>
-<tr>
-<td colspan="3"  class="ZOptionsSectionMain">
-<table cellpadding="3"  width="100%">
-
-
+</table>
+<table cellpadding="3"  width="100%" class="ZOptionsSectionMain">
 <c:set var="messageArrives"><fmt:message key="optionsWhenAMessageArrives"/> : </c:set>
 <c:if test="${mailbox.features.mailForwarding}">
     <tr>
@@ -287,9 +280,6 @@
     <td colspan="2">
         &nbsp;
     </td>
-</tr>
-</table>
-</td>
 </tr>
 </table>
 </td>
