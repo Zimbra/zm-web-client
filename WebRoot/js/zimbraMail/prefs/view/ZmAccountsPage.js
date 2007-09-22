@@ -24,6 +24,10 @@
  */
 
 ZmAccountsPage = function(parent, section, controller) {
+	// bug: 20458 - We don't have ZmDataSource and other classes unless
+	//              we load MailCore (which we never do if mail is disabled).
+	ZmAccountsPage._definePrefs();
+	ZmAccountsPage._defineClasses();
 
 	ZmPreferencesPage.call(this, parent, section, controller);
 
@@ -55,6 +59,7 @@ ZmAccountsPage.__externalCount = 0;
 
 // section prefs
 
+ZmAccountsPage._definePrefs = function() {
 ZmAccountsPage.PREFS = {
 	// Primary / Common
 	NAME: {
@@ -146,6 +151,7 @@ ZmAccountsPage.PREFS = {
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	}
 };
+}; // function ZmAccountsPage._definePrefs
 
 /**
  * Defines the various account sections. Each section has a list of "prefs"
@@ -1398,6 +1404,7 @@ ZmAccountsListView.prototype._getHeaderList = function() {
 // New data source class
 //
 
+ZmAccountsPage._defineClasses = function() {
 ZmNewDataSource = function() {
 	var number = ++ZmNewDataSource.ID;
 	var id = "new-dsrc-"+number;
@@ -1455,3 +1462,4 @@ ZmNewPersona.prototype.toString = function() {
 // Constants
 
 ZmNewPersona.ID = 0;
+}; // function ZmAccountsPage._defineClasses
