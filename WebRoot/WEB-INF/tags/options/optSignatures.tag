@@ -73,7 +73,7 @@
     <c:choose>
         <c:when test="${not empty param.actionNewSig or requestScope.newSignatureWarning}">
             <tr>
-                <td colspan="4" class='ZOptionsHeader'>
+                <td colspan="4" class='ZHeader'>
                     <fmt:message key="optionsNewSignature"/>
                 </td>
             </tr>
@@ -90,7 +90,7 @@
                     <input class='tbButton' type="submit" name="actionCancelNewSig"
                            value="<fmt:message key="cancel"/>">
                 </td>
-                <td width="20%">&nbsp;</td>
+                <td>&nbsp;</td>
             </tr>
             <tr>
                 <td class='ZOptionsTableLabel' style='vertical-align:top;' valign='top'>
@@ -149,7 +149,7 @@
             <app:optCheckbox boxfirst="true" label="optionsSignatureAttachAuto" pref="zimbraPrefMailSignatureEnabled"
                              checked="${mailbox.prefs.mailSignatureEnabled}"/>
         </td>
-        <td width="20%">&nbsp;</td>
+        <td>&nbsp;</td>
     </tr>
     <tr>
         <td colspan="4">
@@ -197,7 +197,11 @@
             </table>
         </td>
     </tr>
-    <app:optSeparator/>
+     <tr>
+        <td colspan="4">
+            <hr>
+        </td>
+    </tr>
     <tr>
         <td class='ZOptionsTableLabel' colspan=2 style='text-align:left'>
             <fmt:message key="optionsManageAccounts">

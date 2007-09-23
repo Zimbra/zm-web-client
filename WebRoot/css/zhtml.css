@@ -1087,6 +1087,11 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
  	color:white;
 }
 
+.ZHeader{
+	font-size: 13px;
+	font-weight: bold;
+}
+
 .ZOptionsHint {
 	@Text-disabled@;
 }
