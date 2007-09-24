@@ -151,10 +151,8 @@ ZmConv.prototype.loadMsgs = function(callback){
 	var msgNode = soapDoc.set("c");
 	msgNode.setAttribute("id", this.id);
 	msgNode.setAttribute("fetch","all");
-
 	var respCallback = new AjxCallback(this, this._handleResponseLoadMsgs, callback);
-
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 
 };
 
