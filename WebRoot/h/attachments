@@ -24,7 +24,7 @@
                         <tr>
                             <app:button name="actionAttachDone" src="common/ImgCheck.gif" tooltip="done" text="done"/>
                             <td><div class='vertSep'></div></td>
-                            <app:button name="actionAttachCancel" src="startup/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                            <app:button name="actionAttachCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                         </tr>
                     </table>
                 </td>

@@ -198,7 +198,7 @@
                                     <td><div class='vertSep'></div></td>
                                     <td style='padding: 0 2px 0 2px'>
                                         <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=decline">
-                                            <app:img src="startup/ImgCancel.gif" alt="decline"/>
+                                            <app:img src="common/ImgCancel.gif" alt="decline"/>
                                             &nbsp;
                                             <span><fmt:message key="replyDecline"/></span>
                                         </a>

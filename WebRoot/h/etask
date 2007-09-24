@@ -91,7 +91,7 @@
                                         <td><div class='vertSep'></div></td>
                                         <c:choose>
                                             <c:when test="${isNewAppt}">
-                                                <app:button name="actionCancel" src="startup/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                                                <app:button name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                             </c:when>
                                             <c:otherwise>
                                                 <app:button name="actionCancel" src="common/ImgClose.gif" tooltip="close" text="close"/>

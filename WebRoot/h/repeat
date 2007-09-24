@@ -44,7 +44,7 @@
                         <td>
                             <div class='vertSep'></div>
                         </td>
-                        <app:button name="actionRepeatCancel" src="startup/ImgCancel.gif" tooltip="cancel"
+                        <app:button name="actionRepeatCancel" src="common/ImgCancel.gif" tooltip="cancel"
                                     text="cancel"/>
                     </tr>
                 </table>

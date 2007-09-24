@@ -17,7 +17,7 @@
                                <c:when test="${(not zm:actionSet(param, 'actionFilterCancel') and requestScope.filterSave ne 'success') and (zm:actionSet(param, 'actionEditFilter') or zm:actionSet(param, 'actionNewFilter'))}">
                                     <app:button  name="actionFilterSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
                                      <td><div class='vertSep'></div></td>
-                                    <app:button  name="actionFilterCancel" src="startup/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                                    <app:button  name="actionFilterCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                        <input type="hidden"
                                               name="${zm:actionSet(param, 'actionEditFilter') ? 'actionEditFilter' : 'actionNewFilter'}" value="1"/>
                                    </td>

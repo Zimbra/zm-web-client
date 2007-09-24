@@ -45,7 +45,7 @@
                         <td><div class='vertSep'></div></td>
                         <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
                         <td><div class='vertSep'></div></td>
-                        <app:button name="actionContactCancel" src="startup/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                        <app:button name="actionContactCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                     </tr>
                 </table>
             </td>

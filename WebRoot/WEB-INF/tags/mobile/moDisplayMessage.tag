@@ -114,7 +114,7 @@
                             <td><div class='zo_vertsep'></div></td>
                             <td style='padding: 0 2px 0 2px'>
                                 <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=decline">
-                                    <mo:img src="startup/ImgCancel.gif" alt="cancel"/>
+                                    <mo:img src="common/ImgCancel.gif" alt="cancel"/>
                                     &nbsp;
                                     <span><fmt:message key="replyDecline"/></span>
                                 </a>

@@ -171,7 +171,7 @@
                                     <tr>
                                         <app:button name="actionSend" src="mail/ImgSend.gif" tooltip="send" text="send"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionCancel" src="startup/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                                        <app:button name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                         <td><div class='vertSep'></div></td>
                                         <app:button name="actionDraft" src="mail/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
                                         <td><div class='vertSep'></div></td>
