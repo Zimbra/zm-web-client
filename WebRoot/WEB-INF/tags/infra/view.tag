@@ -287,13 +287,13 @@
             <table cellpadding="2" cellspacing="0">
                 <tr>
                     <td align="right">
-                        <a target="_new" href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.gif"  border="0"/> <fmt:message key="help"/></a>
+                        <a target="_new" href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.gif"  border="0"/>&nbsp;<fmt:message key="help"/></a>
                     </td>
                     <td align="right">
                         &nbsp;
                     </td>
                     <td align="right">
-                        <a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="startup/ImgLogoff.gif" border="0"/> <fmt:message key="logOut"/></a>
+                        <a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="startup/ImgLogoff.gif" border="0"/>&nbsp;<fmt:message key="logOut"/></a>
                     </td>
                 </tr>
             </table>
