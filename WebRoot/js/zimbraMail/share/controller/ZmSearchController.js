@@ -108,7 +108,7 @@ ZmSearchController.prototype.showBrowseView =
 function(forceShow, callback) {
 	if (!this._browseViewController) {
 		var loadCallback = new AjxCallback(this, this._handleLoadShowBrowseView, [callback]);
-		AjxDispatcher.require("Browse", false, loadCallback, null, true);
+		AjxDispatcher.require("Browse", false, loadCallback, null, false);
 	} else {
 		var bvc = this._browseViewController;
 		bvc.setBrowseViewVisible(forceShow || !bvc.getBrowseViewVisible());
@@ -120,7 +120,6 @@ function(forceShow, callback) {
 
 ZmSearchController.prototype._handleLoadShowBrowseView =
 function(callback) {
-	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);
 	var bvc = this._browseViewController = new ZmBrowseController(this._searchPanel);
 	bvc.setBrowseViewVisible(true);
 	if (callback) {
