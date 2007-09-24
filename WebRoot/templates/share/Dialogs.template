@@ -297,3 +297,27 @@
     </tr>
   </table>
 </template>
+
+<template id="share.Dialogs#NewSearch">
+	<table cellpadding='0' cellspacing='0' border='0'>
+		<tr>
+			<td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'><$= ZmMsg.searchName $>: </td>
+		</tr>
+		<tr>
+			<td>
+				<$= Dwt.CARET_HACK_BEGIN $>
+				<input autocomplete=OFF type='text' class='Field' id='${id}_nameField' />
+				<$= Dwt.CARET_HACK_END $>
+			</td>
+		</tr>
+		<tr><td>&nbsp;</td></tr>
+		<tr>
+			<td>
+				<div id='${id}_overviewDiv'>
+					<div class="Label"><$= ZmMsg.newSearchParent $>:</div>
+					<div id='${id}_folderTreeCell'></div>
+				</div>
+			</td>
+		</tr>
+	</table>
+</template>

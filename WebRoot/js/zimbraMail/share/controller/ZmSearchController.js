@@ -227,17 +227,11 @@ function(menu) {
  */
 ZmSearchController.prototype.search =
 function(params) {
-	// calendar searching is special so hand it off if necessary
-	if (this._searchFor == ZmItem.APPT) {
-		var calApp = appCtxt.getApp(ZmApp.CALENDAR);
-		var controller = AjxDispatcher.run("GetCalController");
-		if (controller) {
-			controller.handleUserSearch(params);
-		}
+	if (this._searchFor != ZmItem.APPT &&
+		(!(params.query && params.query.length)))
+	{
 		return;
 	}
-
-	if (!(params.query && params.query.length)) { return; }
 
 	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
@@ -301,7 +295,7 @@ function(search, noRender, changes, callback, errorCallback) {
 ZmSearchController.prototype.getTypes =
 function(params) {
 	var types = new AjxVector();
-	var searchFor = params.searchFor;
+	var searchFor = params.searchFor || this._searchFor;
 
 	var groupBy;
 	if ((searchFor == ZmSearchToolBar.FOR_MAIL_MI || searchFor == ZmSearchToolBar.FOR_ANY_MI) &&
@@ -354,6 +348,7 @@ function(types) {
 			case ZmItem.CONV:		viewType = ZmController.CONVLIST_VIEW; break;
 			case ZmItem.MSG:		viewType = ZmController.TRAD_VIEW; break;
 			case ZmItem.CONTACT:	viewType = ZmController.CONTACT_SIMPLE_VIEW; break;
+			case ZmItem.APPT:		viewType = ZmController.CAL_VIEW; break;
 			case ZmItem.TASK:		viewType = ZmController.TASKLIST_VIEW; break;
 			// more types go here as they are suported...
 		}
@@ -418,7 +413,16 @@ function(params, noRender, callback, errorCallback) {
 	if (!errorCallback) {
 		errorCallback = new AjxCallback(this, this._handleErrorDoSearch, [search, isMixed]);
 	}
-	search.execute({callback:respCallback, errorCallback:errorCallback});
+
+	// calendar searching is special so hand it off if necessary
+	if (this._searchFor == ZmItem.APPT) {
+		var controller = AjxDispatcher.run("GetCalController");
+		if (controller) {
+			controller.handleUserSearch(params, respCallback);
+		}
+	} else {
+		search.execute({callback:respCallback, errorCallback:errorCallback});
+	}
 };
 
 /*
@@ -431,6 +435,11 @@ function(params, noRender, callback, errorCallback) {
 */
 ZmSearchController.prototype._handleResponseDoSearch =
 function(search, noRender, isMixed, callback, result) {
+	if (this._searchFor == ZmItem.APPT) {
+		this._results = new ZmSearchResult(search);
+		return;
+	}
+
 	var results = result.getResponse();
 
 	appCtxt.setCurrentSearch(search);
@@ -556,7 +565,14 @@ function(ev) {
 		if (!stc._newCb) {
 			stc._newCb = new AjxCallback(stc, stc._newCallback);
 		}
-		ZmController.showDialog(stc._getNewDialog(), stc._newCb, this._results.search);
+
+		// reset the types in case search for has changed (i.e. user switched apps)
+		this._results.search.types = this.getTypes({});
+		var params = {
+			search: this._results.search,
+			showOverview: (this._searchFor == ZmSearchToolBar.FOR_MAIL_MI)
+		};
+		ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
 	}
 }
 
@@ -586,8 +602,15 @@ function(ev, id) {
 			sharedMI.setEnabled(false);
 		}
 	} else {
+		if (sharedMI) {
+			if (id == ZmItem.APPT || id == ZmSearchToolBar.CUSTOM_MI) {
+				sharedMI.setChecked(false, true);
+				sharedMI.setEnabled(false);
+			} else {
+				sharedMI.setEnabled(true);
+			}
+		}
 		this._contactSource = ZmItem.CONTACT;
-		if (sharedMI) { sharedMI.setEnabled(true); }
 	}
 
 	this._inclSharedItems = sharedMI ? sharedMI.getChecked() : false;

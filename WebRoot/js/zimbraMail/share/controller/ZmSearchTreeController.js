@@ -115,12 +115,10 @@ function() {
 */
 ZmSearchTreeController.prototype._getActionMenuOps =
 function() {
-	var list = new Array();
-	list.push(ZmOperation.DELETE,
-			  ZmOperation.RENAME_SEARCH,
-			  ZmOperation.MOVE,
-			  ZmOperation.EXPAND_ALL);
-	return list;
+	return [ZmOperation.DELETE,
+			ZmOperation.RENAME_SEARCH,
+			ZmOperation.MOVE,
+			ZmOperation.EXPAND_ALL];
 };
 
 // override the ZmFolderTreeController override

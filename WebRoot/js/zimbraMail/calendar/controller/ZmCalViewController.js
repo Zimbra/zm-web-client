@@ -1625,7 +1625,7 @@ function(params) {
 };
 
 ZmCalViewController.prototype.handleUserSearch =
-function(params) {
+function(params, callback) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	this.show(null, null, true);
 
@@ -1635,7 +1635,6 @@ function(params) {
 	this._userQuery = params.query;
 
 	// set start/end date boundaries
-	var work = ZmCalViewController.MAINT_VIEW;
 	var view = this.getCurrentView();
 	if (view) {
 		var rt = view.getTimeRange();
@@ -1650,19 +1649,23 @@ function(params) {
 	}
 
 	params.fanoutAllDay = view ? view._fanoutAllDay() : false;
-	params.callback = new AjxCallback(this, this._searchResponseCallback);
+	params.callback = new AjxCallback(this, this._searchResponseCallback, callback);
 
 	this.getApptSummaries(params);
 };
 
 ZmCalViewController.prototype._searchResponseCallback =
-function(list, userQuery) {
+function(callback, list, userQuery) {
 	appCtxt.getSearchController().setEnabled(true);
 
 	this.show(null, null, true);	// always make sure a calendar view is being shown
 	this._userQuery = userQuery;	// cache the user-entered search query
 
 	this._maintGetApptCallback(ZmCalViewController.MAINT_VIEW, this.getCurrentView(), list, true);
+
+	if (callback) {
+		callback.run();
+	}
 };
 
 // TODO: appt is null for now. we are just clearing our caches...

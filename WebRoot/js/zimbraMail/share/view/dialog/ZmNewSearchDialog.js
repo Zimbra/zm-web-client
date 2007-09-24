@@ -32,7 +32,7 @@ ZmNewSearchDialog = function(parent, className) {
 	this._omit[ZmFolder.ID_DRAFTS] = true;
 	this._setNameField(this._nameFieldId);
 	this._folderTree = appCtxt.getFolderTree();
-}
+};
 
 ZmNewSearchDialog.prototype = new ZmDialog;
 ZmNewSearchDialog.prototype.constructor = ZmNewSearchDialog;
@@ -40,45 +40,39 @@ ZmNewSearchDialog.prototype.constructor = ZmNewSearchDialog;
 ZmNewSearchDialog.prototype.toString = 
 function() {
 	return "ZmNewSearchDialog";
-}
+};
 
 ZmNewSearchDialog.prototype.popup =
-function(search) {
+function(params) {
 	this._setOverview({treeIds:[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH], fieldId:this._folderTreeCellId, omit:this._omit});
 	this._folderTreeView = this._getOverview().getTreeView(ZmOrganizer.FOLDER);
 	this._searchTreeView = this._getOverview().getTreeView(ZmOrganizer.SEARCH);
-	this._search = search;
+	this._search = params.search;
 	this._searchTreeView.setSelected(this._folderTree.root, true);
+
+	var overviewDiv = document.getElementById(this._overviewDivId);
+	if (overviewDiv) {
+		Dwt.setVisible(overviewDiv, params.showOverview)
+	}
+
 	ZmDialog.prototype.popup.call(this);
-}
+};
 
 ZmNewSearchDialog.prototype._contentHtml = 
 function() {
-	this._nameFieldId = Dwt.getNextId();
-	this._folderTreeCellId = Dwt.getNextId();
-	var html = new Array();
-	var idx = 0;
-	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>" + ZmMsg.searchName + ": </td></tr>";
-	html[idx++] = "<tr><td>";
-    html[idx++] = Dwt.CARET_HACK_BEGIN;
-    html[idx++] = "<input autocomplete=OFF type='text' class='Field' id='" + this._nameFieldId + "' />";
-    html[idx++] = Dwt.CARET_HACK_END;
-	html[idx++] = "</td></tr>";
-	html[idx++] = "<tr><td>&nbsp;</td></tr>";
-	html[idx++] = "<tr><td class='Label' colspan=2>" + ZmMsg.newSearchParent + ":</td></tr>";
-	html[idx++] = "<tr><td colspan=2 id='" + this._folderTreeCellId + "'/></tr>";
-	html[idx++] = "</table>";
-	
-	return html.join("");
-}
+	this._nameFieldId = this._htmlElId + "_nameField";
+	this._folderTreeCellId = this._htmlElId + "_folderTreeCell";
+	this._overviewDivId = this._htmlElId + "_overviewDiv";
+
+	return (AjxTemplate.expand("share.Dialogs#NewSearch", {id: this._htmlElId}));
+};
 
 ZmNewSearchDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getSearchData();
 	if (results)
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
-}
+};
 
 ZmNewSearchDialog.prototype._getSearchData =
 function() {

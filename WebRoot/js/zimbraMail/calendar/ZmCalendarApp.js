@@ -325,7 +325,7 @@ function() {
 							  viewTooltipKey:		"displayCalendar",
 							  defaultSearch:		ZmItem.APPT,
 							  organizer:			ZmOrganizer.CALENDAR,
-							  overviewTrees:		[ZmOrganizer.CALENDAR/*, ZmOrganizer.SEARCH, ZmOrganizer.TAG*/],
+							  overviewTrees:		[ZmOrganizer.CALENDAR, ZmOrganizer.SEARCH/*, ZmOrganizer.TAG*/],
 							  showZimlets:			true,
 							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar", "CalendarAppt"],
 							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar", "CalendarAppt"]},
