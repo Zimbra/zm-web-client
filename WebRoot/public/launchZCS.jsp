@@ -61,24 +61,13 @@
 	}
 
     ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
-    String skin = "";
-	String requestSkin = request.getParameter("skin");
-	if (requestSkin != null) {
-		skin = requestSkin;
-	} else if (authResult != null) {
-	    java.util.List<String> prefSkin = authResult.getPrefs().get("zimbraPrefSkin");
-	    if (prefSkin != null && prefSkin.size() > 0) {
-	        skin = prefSkin.get(0);
-        } else {
-            skin = "sand"; // TODO: find better default?
-        }
+    String skin = authResult.getSkin();
+
+	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
+	if (localePref != null && localePref.size() > 0) {
+		request.setAttribute("localeId", localePref.get(0));
 	}
-    if (authResult != null) {
-        java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
-        if (localePref != null && localePref.size() > 0) {
-            request.setAttribute("localeId", localePref.get(0));
-        }
-    }
+
 	String isDev = (String) request.getParameter("dev");
 	if (isDev != null) {
 		request.setAttribute("mode", "mjsf");
@@ -128,6 +117,7 @@
         }
     }
 %>
+<junk junk='<%= skin %>'/>  
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <title><fmt:message key="zimbraTitle"/></title>

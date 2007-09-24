@@ -39,7 +39,8 @@
         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
             <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
                       newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-                      prefs="${prefsToFetch}" attrs="${attrsToFetch}"/>
+                      prefs="${prefsToFetch}" attrs="${attrsToFetch}"
+					  requestedSkin="${param.skin}"/>
             <%-- continue on at not empty authResult test --%>
 	    </c:when>
 	    <c:otherwise>
@@ -49,7 +50,8 @@
 	            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
 	                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
 	                      rememberme="${param.zrememberme == '1'}"
-                          prefs="${prefsToFetch}" attrs="${attrsToFetch}"/>
+                          prefs="${prefsToFetch}" attrs="${attrsToFetch}"
+						  requestedSkin="${param.skin}"/>
 	            <%-- continue on at not empty authResult test --%>
 	        </c:if>
 	    </c:otherwise>
