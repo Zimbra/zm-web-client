@@ -66,6 +66,15 @@ function(organizerType, folderId, user, path) {
 	this._nameInput.setValue("");
 	this._nameInputDirty = false;
 
+	// dont allow "None" option in color picker
+	if (organizerType == ZmOrganizer.FOLDER) {
+		this._colorSelect.getMenu().getItem(0).setEnabled(true);
+		this._colorSelect.setSelectedValue(0);
+	} else {
+		this._colorSelect.getMenu().getItem(0).setEnabled(false);
+		this._colorSelect.setSelectedValue(1);
+	}
+
 	// show
 	DwtDialog.prototype.popup.call(this);
 	ZmMountFolderDialog._enableFieldsOnEdit(this);

@@ -158,7 +158,7 @@ ZmOrganizer.MAX_NAME_LENGTH			= 128;	// max allowed by server
 ZmOrganizer.MAX_DISPLAY_NAME_LENGTH	= 30;	// max we will show
 
 // color constants (server stores a number)
-ZmOrganizer.C_NONE		= -1;
+ZmOrganizer.C_NONE		= 0;
 ZmOrganizer.C_BLUE		= 1;
 ZmOrganizer.C_CYAN		= 2;
 ZmOrganizer.C_GREEN		= 3;
@@ -173,6 +173,7 @@ ZmOrganizer.ORG_DEFAULT_COLOR = ZmOrganizer.C_ORANGE;
 
 // color names
 ZmOrganizer.COLOR_TEXT = {};
+ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_NONE]		= ZmMsg.none;
 ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_ORANGE]	= ZmMsg.orange;
 ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_BLUE]		= ZmMsg.blue;
 ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_CYAN]		= ZmMsg.cyan;
@@ -187,7 +188,7 @@ ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_GRAY]		= ZmMsg.gray;
 ZmOrganizer.COLORS = [];
 ZmOrganizer.COLOR_CHOICES = [];
 (function() {
-	for (var i = 1; i <= ZmOrganizer.MAX_COLOR; i++) {
+	for (var i = 0; i <= ZmOrganizer.MAX_COLOR; i++) {
 		var color = ZmOrganizer.COLOR_TEXT[i];
 		ZmOrganizer.COLORS.push(color);
 		ZmOrganizer.COLOR_CHOICES.push( { value:i, label:color } );

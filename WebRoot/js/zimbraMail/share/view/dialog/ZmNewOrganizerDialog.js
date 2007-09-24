@@ -65,7 +65,12 @@ function(folder) {
 		}
 		DBG.timePt("selected folder", true);
 	}
-	
+
+	// dont allow "None" option in color picker
+	if (this._colorSelect) {
+		this._colorSelect.getMenu().getItem(0).setEnabled(false);
+	}
+
 	ZmDialog.prototype.popup.call(this);
 };
 

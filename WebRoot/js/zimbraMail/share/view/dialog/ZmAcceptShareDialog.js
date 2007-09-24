@@ -54,25 +54,30 @@ function(share) {
 
 	this._share = share;
 	var params = [ share.grantor.name, share.link.name ];
-	var header = this._headerFormatter.format(params);
-	this._headerEl.innerHTML = header;
+	this._headerEl.innerHTML = this._headerFormatter.format(params);;
 
 	params = [
 		ZmShare.getRoleName(share.link.perm),
 		ZmAcceptShareDialog._ACTIONS[share.link.perm]   // TODO: Be able to generate custom perms list
 	];
-	var details = this._detailsFormatter.format(params);
-	this._detailsEl.innerHTML = details;
-	
+	this._detailsEl.innerHTML = this._detailsFormatter.format(params);;
 	this._questionEl.innerHTML = "<b>" + ZmMsg.acceptShareQuestion + "</b>";
 
 	params = [ share.grantor.name, share.link.name ];
-	var shareName = this._defaultNameFormatter.format(params);
-	this._nameEl.value = shareName;
+	this._nameEl.value = this._defaultNameFormatter.format(params);;
 
 	this._reply.setReplyType(ZmShareReply.NONE);
 	this._reply.setReplyNote("");
-	
+
+	var orgType = ZmOrganizer.TYPE[share.link.view];
+	if (orgType == ZmOrganizer.FOLDER) {
+		this._color.getMenu().getItem(0).setEnabled(true);
+		this._color.setSelectedValue(0);
+	} else {
+		this._color.getMenu().getItem(0).setEnabled(false);
+		this._color.setSelectedValue(1);
+	}
+
 	DwtDialog.prototype.popup.call(this);
 };
 

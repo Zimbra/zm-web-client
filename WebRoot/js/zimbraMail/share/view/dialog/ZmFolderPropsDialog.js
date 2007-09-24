@@ -76,6 +76,10 @@ function(organizer) {
 	{
 		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, !organizer.link);
 	}
+
+	// only mail folders are allowed to unset their folder color
+	this._color.getMenu().getItem(0).setEnabled(organizer.type == ZmOrganizer.FOLDER);
+
 	DwtDialog.prototype.popup.call(this);
 
 	if (organizer.id != ZmOrganizer.ID_CALENDAR &&
