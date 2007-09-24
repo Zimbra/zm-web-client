@@ -243,6 +243,7 @@
 		var workField	= AjxStringUtil.nl2br(contact.getWorkAddrField());
 		var workPhone	= contact.getAttr(ZmContact.F_workPhone);
 		var workPhone2	= contact.getAttr(ZmContact.F_workPhone2);
+		var mobile 		= contact.getAttr(ZmContact.F_mobilePhone);
 		var workFax		= contact.getAttr(ZmContact.F_workFax);
 		var workAsst	= contact.getAttr(ZmContact.F_assistantPhone);
 		var workCompany = contact.getAttr(ZmContact.F_companyPhone);
@@ -261,6 +262,7 @@
 					<$= AjxTemplate.expand("abook.Contacts#SplitView_email", data) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_workPhone, value:workPhone, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_workPhone2, value:workPhone2, type:ZmObjectManager.PHONE}) $>
+					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_mobilePhone, value:mobile, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.fax, value:workFax, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_assistantPhone, value:workAsst, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.company, value:workCompany, type:ZmObjectManager.PHONE}) $>
