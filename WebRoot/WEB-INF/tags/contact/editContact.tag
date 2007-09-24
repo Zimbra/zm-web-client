@@ -79,9 +79,15 @@
             <td>
                 <c:set var="contactValue" value="${fn:escapeXml(not empty param.dlist ? param.dlist : contact.groupMembersPerLine)}" />
                 <c:if test="${not empty requestScope.groupSearchContacts}" >
-                <c:set var="contactValue" value="${contactValue}, ${requestScope.groupSearchContacts}" />
+                    <c:choose>
+                        <c:when test="${not empty contactValue}">
+                            <c:set var="contactValue" value="${contactValue}, ${requestScope.groupSearchContacts}" />
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="contactValue" value="${requestScope.groupSearchContacts}" />
+                        </c:otherwise>
+                    </c:choose>
                 </c:if>
-
                 <textarea id="dlist" rows="40" cols="60" style="width:100%" name="dlist">${contactValue}</textarea>
             </td>
         </tr>

@@ -50,13 +50,13 @@
         <c:set var="query" value="${param.contactSearchQuery}"/>
     </c:when>
     <c:otherwise>
-        <zm:search var="search" limit="1000"  query="*" types="contact" field="contact:"/>
+        <zm:search var="search" limit="100"  query="*" types="contact" field="contact:"/>
         <c:set var="query" value=""/>
     </c:otherwise>
 </c:choose>
 
 <c:set var="groupSearchContacts" value="${fn:join(paramValues.addToGroup, ', ')}" scope="request"/>
-                                                                                         
+
 </app:handleError>
 
 <c:set var="isGroup" value="${contact.isGroup or newGroup}"/>
@@ -75,14 +75,14 @@
         </tr>
     </table>
 </c:set>
-        
+
 
 <app:view mailbox="${mailbox}" title="${title}" context="${context}" selected="contacts" contacts="true" tags="true" keys="false"
           onload="var e=document.getElementById('${focusField}'); if (e) e.focus();">
 
 <zm:currentResultUrl var="currentUrl" disp="${isCreate ? 0 : 1}" value="" action="${param.action}" context="${context}"/>
 <form action="${currentUrl}" method="post">
-    <table width=100% cellpadding="0" cellspacing="0" border="1">
+    <table width=100% cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td class='TbTop' colspan="2">
             <app:editContactToolbar create="${isCreate}"context="${context}" keys="true"/>
@@ -96,7 +96,6 @@
             <app:editContact title="${title}" contact="${contact}" context="${context}" isgroup="true"/>
         </td>
         <td valign="top" width="50%">
-        <form action="" method="post" accept-charset="utf-8">
         <table width=100% cellpadding="0" cellspacing="5">
         <tr>
             <td class='TbTop'>
@@ -136,7 +135,6 @@
             </td>
         </tr>
     </table>
-</form>
 </td>
         </tr>
         </table>
