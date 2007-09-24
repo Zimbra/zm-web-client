@@ -150,7 +150,7 @@ function(parent, type, id) {
 			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED);
 			if (isEnabled) {
 				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-				var dataSources = dsCollection.getItemsFor(folder.id);
+				var dataSources = dsCollection.getItemsFor(ZmOrganizer.normalizeId(folder.id));
 				if (dataSources.length > 0) {
 					button.setText(ZmMsg.checkExternalMail);
 				} else {
@@ -179,18 +179,16 @@ function() {
 */
 ZmFolderTreeController.prototype._getActionMenuOps =
 function() {
-	var list = new Array();
-	list.push(ZmOperation.NEW_FOLDER,
-			  ZmOperation.MARK_ALL_READ,
-			  ZmOperation.DELETE,
-			  ZmOperation.RENAME_FOLDER,
-			  ZmOperation.MOVE,
-			  ZmOperation.SHARE_FOLDER,
-			  ZmOperation.EDIT_PROPS,
-			  ZmOperation.EXPAND_ALL,
-			  ZmOperation.SYNC,
-			  ZmOperation.EMPTY_FOLDER);
-	return list;
+	return [ZmOperation.NEW_FOLDER,
+			ZmOperation.MARK_ALL_READ,
+			ZmOperation.DELETE,
+			ZmOperation.RENAME_FOLDER,
+			ZmOperation.MOVE,
+			ZmOperation.SHARE_FOLDER,
+			ZmOperation.EDIT_PROPS,
+			ZmOperation.EXPAND_ALL,
+			ZmOperation.SYNC,
+			ZmOperation.EMPTY_FOLDER];
 };
 
 ZmFolderTreeController.prototype._getAllowedSubTypes =
@@ -232,7 +230,6 @@ function(folder) {
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
 	} else {
-		var searchController = appCtxt.getSearchController();
 		var searchFor = ZmSearchToolBar.FOR_MAIL_MI;
 		if (folder.isInTrash()) {
 			var app = appCtxt.getCurrentAppName();
@@ -242,7 +239,7 @@ function(folder) {
 			}
 		}
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-		searchController.search({query:folder.createQuery(), searchFor:searchFor, getHtml:getHtml});
+		appCtxt.getSearchController().search({query:folder.createQuery(), searchFor:searchFor, getHtml:getHtml});
 	}
 };
 
@@ -263,10 +260,11 @@ function() {
 ZmFolderTreeController.prototype._doSync =
 function(folder) {
     var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-    var dataSources = dsCollection.getItemsFor(folder.id);
+	var nFid = ZmOrganizer.normalizeId(folder.id);
+	var dataSources = dsCollection.getItemsFor(nFid);
 
     if (dataSources.length > 0) {
-        dsCollection.importMailFor(folder.id);
+        dsCollection.importMailFor(nFid);
     }
     else {
         ZmTreeController.prototype._doSync.call(this, folder);
