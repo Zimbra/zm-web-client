@@ -130,10 +130,14 @@ function(htmlArr, idx, item, field, colIdx, params) {
 			}
 			var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
 			icon = mimeInfo ? mimeInfo.image : "UnknownDoc" ;
+			if(item.isFolder){
+				icon = "Folder";
+			}
+
 		}
 		htmlArr[idx++] = "<div class='Img" + icon + "'></div>";
 	} else if (field == ZmItem.F_PARTICIPANT) {
-		var creator = item.creator.split("@");
+		var creator = item.creator? item.creator.split("@") : [""];
 		var cname = creator[0];
 		var uname = appCtxt.get(ZmSetting.USERNAME);
 		if (uname) {
@@ -192,27 +196,4 @@ function(folderId) {
 		list.add(items[i]);
 	}
 	DwtListView.prototype.set.call(this,list);		
-};
-
-ZmDetailListView.FILE_EXT = {
-	ppt: "MSPowerpointDoc",
-	doc: "MSWordDoc",
-	xls: "MSExcelDoc",
-	zip: "ZipDoc",
-	pdf: "PDFDoc",
-	exe: "ExeDoc"
-};
-
-ZmDetailListView.prototype.getContentTypeIcon = 
-function(name){
-	var icon =  "UnknownDoc";	
-	var idx = name.indexOf(".");
-	if(idx>0){
-		var ext = name.substring(idx+1);	
-		var tmpIcon = ZmDetailListView.FILE_EXT[ext];
-			if(tmpIcon){
-			icon = tmpIcon;
-			}
-	}
-	return icon;
 };

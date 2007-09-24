@@ -80,6 +80,7 @@ ZmController.TRAD_VIEW 					= "TV";
 ZmController.VOICEMAIL_VIEW				= "VM";
 ZmController.BRIEFCASE_VIEW			    = "BC";
 ZmController.BRIEFCASE_DETAIL_VIEW		= "BCD";
+ZmController.BRIEFCASE_COLUMN_VIEW		= "BCC";
 
 /* ROSSD - It feels like we may need a ZmAppViewController class to help with
  * the tab group work. Delaying this until I have more experience pushing the 

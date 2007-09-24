@@ -1,0 +1,25 @@
+<template id='briefcase.Briefcase#file_properties' width='10' height='7'>
+	<table style='width:100%;' align='center' cellspacing=0 cellpadding=10>
+		<$ if(data.imgSrc) { $>
+			<tr valign="middle">
+				<td colspan=3 align='center' valign='middle'>
+				<img src="${imgSrc}" width="180px" height="135px"/>
+				</td>
+			</tr>		
+		<$} else if(data.icon){ $>
+			<tr valign="middle">
+				<td colspan=3 align='center' valign='middle'>
+				<div class="${icon}"></div>
+				</td>
+			</tr>				
+		<$ } $>
+		<$ for(var propIdx=0; propIdx< data.fileProperties.length; propIdx++){ $>
+		<tr valign=top>
+			<td align='right' class='ZmFilePropertiesLabel'> <$= data.fileProperties[propIdx].name $> </td>
+			<td width=5> :  </td>
+			<td> <$= data.fileProperties[propIdx].value $> </td>
+		</tr>
+		<$ } $>
+	</table>
+	
+</template>

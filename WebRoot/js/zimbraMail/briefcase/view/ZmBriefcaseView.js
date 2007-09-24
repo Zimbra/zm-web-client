@@ -58,39 +58,21 @@ function() {
 	return this._controller;
 };
 
-ZmBriefcaseView.FILE_EXT = {
-	ppt: "ImgMSPowerpointDoc_48",
-	doc: "ImgMSWordDoc_48",
-	xls: "ImgMSExcelDoc_48",
-	zip: "ImgZipDoc_48",
-	pdf: "ImgPDFDoc_48",
-	exe: "ImgExeDoc_48"
-};
-
-ZmBriefcaseView.prototype.getContentTypeIcon = 
-function(name){
-	var icon =  "ImgUnknownDoc_48";	
-	var idx = name.indexOf(".");
-	if(idx>0){
-		var ext = name.substring(idx+1);	
-		var tmpIcon = ZmBriefcaseView.FILE_EXT[ext];
-			if(tmpIcon){
-			icon = tmpIcon;
-			}
-	}
-	return icon;
-};
-
 ZmBriefcaseView.prototype._createItemHtml =
 function(item, params) {
 	
 	var name = item.name;
 	var contentType = item.contentType;
-	if(contentType.match(/;/)) {
+	
+	if(contentType && contentType.match(/;/)) {
 			contentType = contentType.split(";")[0];
 	}
 	var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
 	icon = "Img" + ( mimeInfo ? mimeInfo.imageLarge : "UnknownDoc_48");
+
+	if(item.isFolder) {
+		icon = "ImgDndMultiYes_48";
+	}
 	
 	if(name.length>14){
 		name = name.substring(0,14)+"...";

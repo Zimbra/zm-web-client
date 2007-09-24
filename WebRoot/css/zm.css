@@ -3166,3 +3166,23 @@ margin:26px 24px;
 #ENDIF
 
 
+.ZmColListDiv {
+width: 250px;
+background: transparent;
+overflow-x: hidden;
+overflow-y: scroll;
+}
+
+.ZmColListCell {
+vertical-align: top;
+}
+
+.ZmMultiColView {
+background-color: white;
+overflow-x: auto;
+overflow-y: hidden;
+}
+
+.ZmFilePropertiesLabel {
+@TreeHeaderText@
+}
