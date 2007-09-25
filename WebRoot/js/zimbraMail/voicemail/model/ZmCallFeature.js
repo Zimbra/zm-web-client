@@ -79,12 +79,17 @@ function(soapDoc, parentNode) {
 ZmCallFeature.prototype.addChangeNode = 
 function(soapDoc, phoneNode) {
 	var child = soapDoc.set(this.name, null, phoneNode);
-	child.setAttribute("s", this.isSubscribed);
-	child.setAttribute("a", this.isActive);
+	this._setBooleanAttrubute(child, "s", this.isSubscribed);
+	this._setBooleanAttrubute(child, "a", this.isActive);
 	this._addNode(soapDoc, child, this.data);
 };
 
-ZmCallFeature.prototype._addNode = 
+ZmCallFeature.prototype._setBooleanAttrubute =
+function(node, name, value) {
+	node.setAttribute(name, value ? "true" : "false");
+};
+
+ZmCallFeature.prototype._addNode =
 function(soapDoc, parentNode, data) {
 	for (var i in data) {
 		if (i != "_object_") { // Ignore proxy field.
@@ -95,7 +100,11 @@ function(soapDoc, parentNode, data) {
 				var child = soapDoc.set(i, null, parentNode);
 				this._addNode(soapDoc, child, obj);
 			} else {
-				parentNode.setAttribute(i, obj);
+				if ((typeof obj) == 'boolean') {
+					this._setBooleanAttrubute(parentNode, i, obj)
+				} else {
+					parentNode.setAttribute(i, obj);
+				}
 			}
 		}
 	}
