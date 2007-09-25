@@ -1300,8 +1300,8 @@ function(parent, num) {
 		this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
 		var currView = this._viewMgr.getCurrentView();
 		var appt = currView ? currView.getSelection()[0] : null;
-		var isReadOnly = appt ? appt.isReadOnly() : false;
 		var calendar = appt && appt.getFolder();
+		var isReadOnly = calendar ? calendar.isReadOnly() : false;
 		var isSynced = Boolean(calendar && calendar.url);
 		var disabled = isSynced || isReadOnly;
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote();
