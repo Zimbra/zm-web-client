@@ -50,6 +50,7 @@ ZmCurrentAppToolBar.NEW_FOLDER_LABEL	= {};
 ZmCurrentAppToolBar.NEW_FOLDER_TOOLTIP 	= {};
 ZmCurrentAppToolBar.NEW_FOLDER_OPERATION= {};
 ZmCurrentAppToolBar.NEW_FOLDER_ORGANIZER= {};
+ZmCurrentAppToolBar.NEW_FOLDER_CALLBACK = {};
 
 
 // Public methods
@@ -60,13 +61,14 @@ function() {
 };
 
 ZmCurrentAppToolBar.registerApp =
-function(appName, op, org) {
+function(appName, op, org, callback) {
 	ZmCurrentAppToolBar.NEW_FOLDER_BUTTON[appName]		= true;
 	ZmCurrentAppToolBar.NEW_FOLDER_ICON[appName]		= ZmOperation.getProp(op, "image");
 	ZmCurrentAppToolBar.NEW_FOLDER_LABEL[appName]		= ZmOperation.getProp(op, "textKey");
 	ZmCurrentAppToolBar.NEW_FOLDER_TOOLTIP[appName]		= ZmOperation.getProp(op, "tooltipKey");
 	ZmCurrentAppToolBar.NEW_FOLDER_OPERATION[appName]	= op;
 	ZmCurrentAppToolBar.NEW_FOLDER_ORGANIZER[appName]	= org;
+	ZmCurrentAppToolBar.NEW_FOLDER_CALLBACK[appName]	= callback;
 };
 
 ZmCurrentAppToolBar.prototype.setupView =
@@ -89,11 +91,17 @@ function(appName) {
 
 ZmCurrentAppToolBar.prototype._newFolderListener =
 function(ev) {
+	
 	var org = ZmCurrentAppToolBar.NEW_FOLDER_ORGANIZER[this._currentApp];
+	var callback = false;
+	
 	if (org) {
 		var op = ZmCurrentAppToolBar.NEW_FOLDER_OPERATION[this._currentApp];
 		var tc = appCtxt.getOverviewController().getTreeController(org);
-		var callback = new AjxListener(tc, tc._newListener, op);
-		if (callback) { callback.run(); }
+		callback = new AjxListener(tc, tc._newListener, op);
+	}else{
+		callback = ZmCurrentAppToolBar.NEW_FOLDER_CALLBACK[this._currentApp];
 	}
+	
+	if (callback) { callback.run(ev); }
 };

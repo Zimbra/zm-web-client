@@ -228,6 +228,14 @@ ZmImApp.prototype._registerPrefs = function() {
 
 };
 
+ZmImApp.prototype._setupCurrentAppToolbar =
+function() {
+	var callback = new AjxCallback(this,function(ev){
+		this.getRosterTreeController()._newRosterItemListener(ev);
+	});
+	ZmCurrentAppToolBar.registerApp(this.getName(), ZmOperation.NEW_ROSTER_ITEM,null,callback);
+};
+
 ZmImApp.prototype._onSettingChange = function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 
