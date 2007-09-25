@@ -566,10 +566,9 @@ function() {
 ZmSelectiveCallForwardingUI.prototype._getFromNumbers =
 function() {
 	var result = [];
-	var cells = document.getElementsByName(this._view._htmlElId + "_forwardToNumber");
-	for(var i = 0, count = cells.length; i < count; i++) {
-		var cell = cells[i];
-		var display = AjxUtil.getInnerText(cell);
+	var inputs = document.getElementsByName(this._view._htmlElId + "_forwardToNumber");
+	for (var i = 0, count = inputs.length; i < count; i++) {
+		var display = inputs[i].value;
 		result.push(ZmPhone.calculateName(display));
 	}
 	return result;

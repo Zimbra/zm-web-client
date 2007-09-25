@@ -187,8 +187,8 @@
 
 <template id='voicemail.Voicemail#ZmVoiceSelectiveCallForwardingTableRow'>
 	<table cellspacing=0 cellpadding=0 width='100%'><tr>
-		<td name='${id}_forwardToNumber'style='padding-left:6'><$= data.text $></td>
-		<td width=80><a id=${linkId} class='Object'><$= ZmMsg.remove $></a></td>
+		<td style='padding-left:6'><$= data.text $><input type='hidden' name='${id}_forwardToNumber' value='<$= data.text $>'/></td>
+		<td width=80><a id='${linkId}' class='Object'><$= ZmMsg.remove $></a></td>
 	</tr></table>
 </template>
 
