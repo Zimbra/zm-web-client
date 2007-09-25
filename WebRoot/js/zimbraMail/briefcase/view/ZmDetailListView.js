@@ -113,7 +113,9 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_SUBJECT) {
 		htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
 	} else if (field == ZmItem.F_SIZE) {
-		htmlArr[idx++] = AjxUtil.formatSize(item.size);
+		if(!item.isFolder){
+			htmlArr[idx++] = AjxUtil.formatSize(item.size);
+		}
 	} else if (field == ZmItem.F_FILE_TYPE) {
 		var desc = null;
 		if (!desc) {
