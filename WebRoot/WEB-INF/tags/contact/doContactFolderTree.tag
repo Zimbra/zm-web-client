@@ -15,12 +15,3 @@
             <app:contactFolder folder="${folder}"/>
     </c:if>
 </zm:forEachFolder>
-
-<c:if test="${empty parentid}">
-	<zm:getMailbox var="mailbox"/>
-	<c:set var="myCard" value="${mailbox.myCard}"/>
-	<c:if test="${not empty myCard}">
-		<app:myCardFolder myCard="${myCard}"/>
-	</c:if>
-</c:if>
-

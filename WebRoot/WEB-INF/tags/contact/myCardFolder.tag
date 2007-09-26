@@ -12,7 +12,8 @@
 <tr>
     <td nowrap colspan="3" class='Gray Folder'
         style='padding-left: ${padFudge}px'>
-        <c:url var="url" value="/h/search">
+		<!-- My card always goes straight into edit mode... -->
+		<c:url var="url" value="/h/search">
             <c:param name="sfi" value="${myCard.folderId}"/>
             <c:param name="st" value="contact"/>
             <c:param name="id" value="${myCard.id}"/>
@@ -22,7 +23,7 @@
 
         <a href='${fn:escapeXml(url)}'>
             <app:img src="contacts/ImgPerson.gif" alt='${fn:escapeXml(label)}'/>
-            <span <c:if test="${myCard.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>
+            <span <c:if test="${requestScope.myCardSelected}"> class='ZhTISelected'</c:if>>
              ${zm:truncate(fn:escapeXml(label),20,true)}
             </span>
         </a>

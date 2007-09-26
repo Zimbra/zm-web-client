@@ -19,7 +19,7 @@
 
         <a href='${fn:escapeXml(url)}'>
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
-            <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>
+            <span <c:if test="${not requestScope.myCardSelected and (folder.id eq requestScope.context.selectedId)}"> class='ZhTISelected'</c:if>>
              ${zm:truncate(fn:escapeXml(label),20,true)}
             </span>
         </a>
