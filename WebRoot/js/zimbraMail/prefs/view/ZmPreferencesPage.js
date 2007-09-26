@@ -46,6 +46,7 @@ ZmPreferencesPage = function(parent, section, controller) {
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section.title].join(": ");
 
 	this._dwtObjects = {};
+	this._tabGroup = new DwtTabGroup(section.id);
 	this._rendered = false;
 
     // Map of ids to locales.
@@ -80,6 +81,31 @@ function(account) {
 	return (this._hasRendered == acct.name);
 };
 
+ZmPreferencesPage.prototype.__replaceElement = function(elemOrId, control) {
+	this.__addTabIndex(elemOrId, control);
+	control.replaceElement(elemOrId);
+};
+
+ZmPreferencesPage.prototype.__addTabIndex = function(elemOrId, control) {
+
+	// remember control's tab index
+	var elem = Dwt.byId(elemOrId);
+	var tabIndex = elem.getAttribute("tabindex");
+	tabIndex = tabIndex != null ? tabIndex : Number.MAX_VALUE;
+
+	var controls = this._tabControls;
+	if (!controls[tabIndex]) {
+		controls[tabIndex] = control;
+		return;
+	}
+	var entry = controls[tabIndex];
+	if (!(entry instanceof Array)) {
+		controls[tabIndex] = [entry, control];
+		return;
+	}
+	entry.push(control);
+};
+
 /**
 * Fills the page with preferences that belong to this page, if that hasn't been done
 * already. Note that this is an override of DwtTabViewPage.showMe(), so that it's
@@ -109,6 +135,7 @@ function() {
 
     // create controls for prefs, if present in template
 	this._prefPresent = {};
+	this._tabControls = {};
 	var prefs = this._section.prefs || [];
 	var settings = appCtxt.getSettings();
 	for (var i = 0; i < prefs.length; i++) {
@@ -140,108 +167,83 @@ function() {
 		this._prefPresent[id] = true;
 		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
+		// create form controls
+		var control = null;
 		var type = setup ? setup.displayContainer : null;
 		if (type == ZmPref.TYPE_CUSTOM) {
-			var control = this._setupCustom(id, setup, value);
-			control.replaceElement(elem);
+			control = this._setupCustom(id, setup, value);
+		}
+		else if (type == ZmPref.TYPE_SELECT) {
+			control = this._setupSelect(id, setup, value);
+		}
+		else if (type == ZmPref.TYPE_COMBOBOX) {
+			control = this._setupComboBox(id, setup, value);
+		}
+		else if (type == ZmPref.TYPE_RADIO_GROUP) {
+			control = this._setupRadioGroup(id, setup, value);
+		}
+		else if (type == ZmPref.TYPE_CHECKBOX) {
+			control = this._setupCheckbox(id, setup, value);
+		}
+		else if (type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_TEXTAREA) {
+			if (type == ZmPref.TYPE_TEXTAREA) {
+				if (!elem.getAttribute("rows")) elem.setAttribute("rows", 4);
+				if (!elem.getAttribute("cols")) elem.setAttribute("cols", 60);
+				if (!elem.getAttribute("wrap")) elem.setAttribute("wrap", "on");
+			}
+			control = this._setupInput(id, setup, value);
+		}
+		else if (type == ZmPref.TYPE_COLOR) {
+			control = this._setupColor(id, setup, value);
+		}
+		else if (type == ZmPref.TYPE_LOCALES) {
+			control = this._setupLocales(id, setup, value);
+		}
+		else if (type == ZmPref.TYPE_PASSWORD) {
+			this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener));
 			continue;
-		}
-
-		if (type == ZmPref.TYPE_SELECT) {
-			var select = this._setupSelect(id, setup, value);
-			select.replaceElement(elem);
-			continue;
-		}
-
-		if (type == ZmPref.TYPE_COMBOBOX) {
-			var combobox = this._setupComboBox(id, setup, value);
-			combobox.replaceElement(elem);
-			continue;
-		}
-
-		if (type == ZmPref.TYPE_RADIO_GROUP) {
-			var radio = this._setupRadioGroup(id, setup, value);
-			radio.replaceElement(elem);
-			continue;
-		}
-
-		if (type == ZmPref.TYPE_CHECKBOX) {
-			var checkbox = this._setupCheckbox(id, setup, value);
-			checkbox.replaceElement(elem);
-			continue;
-		}
-
-		if (type == ZmPref.TYPE_INPUT) {
-			var input = this._setupInput(id, setup, value);
-			input.replaceElement(elem);
-			continue;
-		}
-
-		if (type == ZmPref.TYPE_COLOR) {
-			var control = this._setupColor(id, setup, value);
-			control.replaceElement(elem);
-			continue;
-		}
-
-        if (type == ZmPref.TYPE_LOCALES) {
-            var control = this._setupLocales(id, setup, value);
-            control.replaceElement(elem);
-            continue;
-        }
-
-		var html = [];
-		var j = 0;
-		var buttonId;
-		var prefId = ZmPref.KEY_ID + id;
-		if (type == ZmPref.TYPE_TEXTAREA) {
-			html[j++] = "<textarea id='";
-			html[j++] = prefId;
-			html[j++] = "' ";
-			html[j++] = "wrap='on' style='width:402' rows='4' cols='60'>";
-			html[j++] = value;
-			html[j++] = "</textarea>";
-        }
-        else if (type == ZmPref.TYPE_PASSWORD ||
-				 type == ZmPref.TYPE_IMPORT ||
-				 type == ZmPref.TYPE_EXPORT) {
-			buttonId = Dwt.getNextId();
-			html[j++] = "<div id='";
-			html[j++] = buttonId;
-			html[j++] = "'></div>";
-		}
-		else {
-			continue;
-		}
-
-		elem.innerHTML = html.join("");
-
-		if (type == ZmPref.TYPE_PASSWORD) {
-			this._addButton(buttonId, setup.displayName, 50, new AjxListener(this, this._changePasswordListener));
 		}
 		else if (type == ZmPref.TYPE_IMPORT) {
-			this._importDiv = document.getElementById(buttonId);
-			if (this._importDiv) {
-				this._addImportWidgets(this._importDiv, id, setup);
-			}
+			this._addImportWidgets(elem, id, setup);
+			continue;
 		}
 		else if (type == ZmPref.TYPE_EXPORT) {
-			this._exportDiv = document.getElementById(buttonId);
-			if (this._exportDiv) {
-				this._addExportWidgets(this._exportDiv, id, setup);
-			}
+			this._addExportWidgets(elem, id, setup);
+			continue;
+		}
+
+		// add control to form
+		if (control) {
+			this.__addTabIndex(elem, control);
+			control.replaceElement(elem);
 		}
 	}
 
-	var elem = document.getElementById([this._htmlElId,"DEFAULTS_RESTORE"].join("_"));
-	if (elem) {
-		this._addButton(elem.id, ZmMsg.restoreDefaults, 110, new AjxListener(this, this._resetListener));
+	// create special page buttons
+	var defaultsRestore = document.getElementById([this._htmlElId,"DEFAULTS_RESTORE"].join("_"));
+	if (defaultsRestore) {
+		this._addButton(defaultsRestore, ZmMsg.restoreDefaults, 110, new AjxListener(this, this._resetListener));
 	}
 
-	var elem = document.getElementById([this._htmlElId,"REVERT_PAGE"].join("_"));
-	if (elem) {
-		this._addButton(elem.id, ZmMsg.restorePage, 110, new AjxListener(this, this._resetPageListener));
+	var revertPage = document.getElementById([this._htmlElId,"REVERT_PAGE"].join("_"));
+	if (revertPage) {
+		this._addButton(revertPage, ZmMsg.restorePage, 110, new AjxListener(this, this._resetPageListener));
 	}
 
+	// create tab-group for all controls on the page
+	var keys = AjxUtil.keys(this._tabControls).sort(AjxUtil.byNumber);
+	for (var i = 0; i < keys.length; i++) {
+		var entry = this._tabControls[keys[i]];
+		var controls = entry instanceof Array ? entry : [entry];
+		for (var j = 0; j < controls.length; j++) {
+			var control = controls[j];
+			var member = (control.getTabGroupMember && control.getTabGroupMember()) || control;
+			this._tabGroup.addMember(member);
+		}
+	}
+	delete this._tabControls;
+
+	// finish setup
 	this.setVisible(true);
 	this._hasRendered = activeAcct;
 };
@@ -376,6 +378,10 @@ function() {
 	return this._title;
 };
 
+ZmPreferencesPage.prototype.getTabGroupMember = function() {
+	return this._tabGroup;
+};
+
 /**
 * Resets the form fields to the prefs' current values.
 *
@@ -426,7 +432,7 @@ function(parentIdOrElem, text, width, listener) {
 	button.setSize(width, Dwt.DEFAULT);
 	button.setText(text);
 	button.addSelectionListener(listener);
-	button.appendElement(parentIdOrElem);
+	this.__replaceElement(parentIdOrElem, button);
 	return button;
 };
 
@@ -556,7 +562,19 @@ function(id, setup, value) {
 	// store radio button group
 	this.setFormObject(id, new DwtRadioButtonGroup(radioIds, selectedId));
 
+	var func = ZmPreferencesPage.__radioGroup_getTabGroupMember; 
+	container.getTabGroupMember = AjxCallback.simpleClosure(func, container, radioIds);
 	return container;
+};
+
+ZmPreferencesPage.__radioGroup_getTabGroupMember = function(radioIds) {
+	var tg = new DwtTabGroup(this.toString());
+	if (radioIds) {
+		for (var id in radioIds) {
+			tg.addMember(document.getElementById(id));
+		}
+	}
+	return tg;
 };
 
 ZmPreferencesPage.prototype._setupCheckbox =
@@ -586,7 +604,7 @@ function(id, setup, value) {
 };
 
 ZmPreferencesPage.prototype._addImportWidgets =
-function(buttonDiv, settingId, setup) {
+function(containerDiv, settingId, setup) {
 	var uri = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 
 	var importDivId = this._htmlElId+"_import";
@@ -597,30 +615,34 @@ function(buttonDiv, settingId, setup) {
 		name: ZmPreferencesPage.IMPORT_FIELD_NAME,
 		label: isAddrBookImport ? ZmMsg.importFromCSVLabel : ZmMsg.importFromICSLabel
 	};
-	buttonDiv.innerHTML = AjxTemplate.expand("prefs.Pages#Import", data);
+	containerDiv.innerHTML = AjxTemplate.expand("prefs.Pages#Import", data);
 
 	this._uploadFormId = importDivId+"_form";
 	this._attInputId = importDivId+"_input";
 
-	buttonDiv = document.getElementById(importDivId+"_button"); 
+	var buttonDiv = document.getElementById(importDivId+"_button");
+	buttonDiv.setAttribute("tabindex", containerDiv.getAttribute("tabindex"));
 
 	// set up import button
 	var btnLabel = setup ? setup.displayName : ZmMsg._import;
-	this._importBtn = this._addButton(buttonDiv.id, btnLabel, 100, new AjxListener(this, this._importButtonListener));
+	this._importBtn = this._addButton(buttonDiv, btnLabel, 100, new AjxListener(this, this._importButtonListener));
+//	this.__addTabIndex(buttonDiv, this._importBtn);
 	if (settingId) {
 		this._importBtn.setData(Dwt.KEY_ID, settingId);
 	}
 };
 
 ZmPreferencesPage.prototype._addExportWidgets =
-function(buttonDiv, settingId, setup) {
+function(containerDiv, settingId, setup) {
 	var exportDivId = this._htmlElId+"_export";
-	buttonDiv.innerHTML = AjxTemplate.expand("prefs.Pages#Export", exportDivId);
+	containerDiv.innerHTML = AjxTemplate.expand("prefs.Pages#Export", exportDivId);
 
-	buttonDiv = document.getElementById(exportDivId+"_button");
+	var buttonDiv = document.getElementById(exportDivId+"_button");
+	buttonDiv.setAttribute("tabindex", containerDiv.getAttribute("tabindex"));
 
 	var btnLabel = setup.displayName || ZmMsg._export;
 	var btn = this._addButton(buttonDiv, btnLabel, 110, new AjxListener(this, this._exportButtonListener));
+//	this.__addTabIndex(buttonDiv, btn);
 	btn.setData(Dwt.KEY_ID, settingId);
 };
 

@@ -220,7 +220,8 @@ function () {
 	var tg = this._createTabGroup();
 	var rootTg = appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
-	tg.addMember(this._toolbar);
+	tg.addMember(this._toolbar.getTabGroupMember());
+	tg.addMember(this._prefsView.getTabGroupMember());
 };
 
 /*
