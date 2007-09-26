@@ -324,6 +324,11 @@
     </tag-file>
 
     <tag-file>
+        <name>myCardFolder</name>
+        <path>/WEB-INF/tags/contact/myCardFolder.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>overviewTree</name>
         <path>/WEB-INF/tags/overview/overviewTree.tag</path>
     </tag-file>

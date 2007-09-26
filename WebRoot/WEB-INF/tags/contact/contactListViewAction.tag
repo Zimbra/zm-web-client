@@ -67,22 +67,40 @@
         <c:choose>
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
                 <zm:requirePost/>
-                <zm:trashContact  var="result" id="${ids}"/>
-                <app:status>
-                    <fmt:message key="actionContactMovedTrash">
-                        <fmt:param value="${result.idCount}"/>
-                    </fmt:message>
-                </app:status>
+				<c:choose>
+					<c:when test="${zm:getIsMyCard(pageContext, ids)}">
+						<app:status style="Critical">
+							<fmt:message key="errorMyCardDelete"/>
+						</app:status>
+					</c:when>
+					<c:otherwise>
+						<zm:trashContact  var="result" id="${ids}"/>
+						<app:status>
+							<fmt:message key="actionContactMovedTrash">
+								<fmt:param value="${result.idCount}"/>
+							</fmt:message>
+						</app:status>
+					</c:otherwise>
+				</c:choose>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
                 <zm:requirePost/>
-                <zm:deleteContact  var="result" id="${ids}"/>
-                <app:status>
-                    <fmt:message key="actionContactHardDeleted">
-                        <fmt:param value="${result.idCount}"/>
-                    </fmt:message>
-                </app:status>
-            </c:when>
+				<c:choose>
+					<c:when test="${zm:getIsMyCard(pageContext, ids)}">
+						<app:status style="Critical">
+							<fmt:message key="errorMyCardDelete"/>
+						</app:status>
+					</c:when>
+					<c:otherwise>
+						<zm:deleteContact  var="result" id="${ids}"/>
+						<app:status>
+							<fmt:message key="actionContactHardDeleted">
+								<fmt:param value="${result.idCount}"/>
+							</fmt:message>
+						</app:status>
+					</c:otherwise>
+				</c:choose>
+			</c:when>
             <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
                 <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
                 <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
@@ -95,14 +113,23 @@
                 </app:status>
             </c:when>
             <c:when test="${fn:startsWith(folderId, 'm:')}">
-                <c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
-                <zm:moveContact folderid="${folderid}"var="result" id="${ids}"/>
-                <app:status>
-                    <fmt:message key="actionContactMoved">
-                        <fmt:param value="${result.idCount}"/>
-                        <fmt:param value="${zm:getFolderName(pageContext, folderid)}"/>
-                    </fmt:message>
-                </app:status>
+				<c:choose>
+					<c:when test="${zm:getIsMyCard(pageContext, ids)}">
+						<app:status style="Critical">
+							<fmt:message key="errorMyCardMove"/>
+						</app:status>
+					</c:when>
+					<c:otherwise>
+						<c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
+						<zm:moveContact folderid="${folderid}"var="result" id="${ids}"/>
+						<app:status>
+							<fmt:message key="actionContactMoved">
+								<fmt:param value="${result.idCount}"/>
+								<fmt:param value="${zm:getFolderName(pageContext, folderid)}"/>
+							</fmt:message>
+						</app:status>
+					</c:otherwise>
+				</c:choose>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionMove')}">
                 <app:status style="Warning"><fmt:message key="actionNoFolderSelected"/></app:status>
