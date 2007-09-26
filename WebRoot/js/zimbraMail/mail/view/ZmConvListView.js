@@ -393,6 +393,10 @@ function(item) {
  */
 ZmConvListView.prototype._isExpandable =
 function(item) {
+	if (this._expandable[item.id] != null) {
+		return this._expandable[item.id];
+	}
+	
 	var expandable = false;
 	if (item.type == ZmItem.CONV) {
 		expandable = (item.numMsgs > 1);
@@ -430,12 +434,26 @@ function() {
 
 ZmConvListView.prototype._expandItem =
 function(item) {
-	if (item && this._expandable[item.id]) {
+	if (item && this._isExpandable(item)) {
 		this._controller._toggle(item);
 	} else if (item.type == ZmItem.MSG && this._expanded[item.cid]) {
 		var conv = appCtxt.getById(item.cid);
 		this._controller._toggle(conv);
 		this.setSelection(conv, true);
+	}
+};
+
+ZmConvListView.prototype._expandAll =
+function(expand) {
+	var a = this._list.getArray();
+	for (var i = 0, count = a.length; i < count; i++) {
+		var conv = a[i];
+		if (!this._isExpandable(conv)) { continue; }
+		if (expand)	{
+			this._expandItem(conv);
+		} else {
+			this._collapse(conv);
+		}
 	}
 };
 
@@ -482,7 +500,7 @@ function(ev) {
 				// TODO: handle expandable msg removal
 				conv.msgs.remove(item, true);
 				conv.numMsgs = conv.msgs.size();
-				if (this._expandable[conv.id] && conv.numMsgs == 1) {
+				if (this._isExpandable(conv) && conv.numMsgs == 1) {
 					this._setImage(conv, ZmItem.F_EXPAND, null);
 					this._removeMsgRows(conv.id);
 				}

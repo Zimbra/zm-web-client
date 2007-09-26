@@ -98,6 +98,14 @@ function(actionCode) {
 			}
 			break;
 
+		case ZmKeyMap.EXPAND_ALL:
+			mlv._expandAll(true);
+			break;
+
+		case ZmKeyMap.COLLAPSE_ALL:
+			mlv._expandAll(false);
+			break;
+
 		// need to invoke DwtListView method directly since our list view no-ops DBLCLICK
 		case DwtKeyMap.DBLCLICK:
 			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
@@ -184,7 +192,7 @@ ZmConvListController.prototype._listSelectionListener =
 function(ev) {
 	var item = ev.item;
 	if (!item) { return; }
-	if (ev.field == ZmItem.F_EXPAND && (this._mailListView._expandable[item.id])) {
+	if (ev.field == ZmItem.F_EXPAND && (this._mailListView._isExpandable(item))) {
 		this._toggle(item, false);
 	} else {
 		var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
