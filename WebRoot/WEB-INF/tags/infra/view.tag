@@ -58,7 +58,7 @@
 					<td><div class=ImgPadlock></div></td>
 					<td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/security/" target=_new>Security</a></nobr></td>
 					<td>&nbsp;&nbsp;</td>
-					<td><div class=ImgInformation></div></td>
+					<td><div class=ImgSkin_Info></div></td>
 					<td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/providers/askcomcast/popup.html" target=_new >Ask comcast</a></nobr></td>
 				</tr>
 				</table>
