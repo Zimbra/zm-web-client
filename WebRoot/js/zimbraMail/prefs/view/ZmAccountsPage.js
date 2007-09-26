@@ -65,6 +65,10 @@ ZmAccountsPage.PREFS = {
 	NAME: {
 		displayContainer:	ZmPref.TYPE_INPUT
 	},
+	HEADER: {
+		displayContainer:	ZmPref.TYPE_STATIC,
+		displayName:		ZmMsg.accountSubHeader
+	},
 	EMAIL: {
 		displayContainer:	ZmPref.TYPE_INPUT
 	},
@@ -163,6 +167,7 @@ ZmAccountsPage.SECTIONS = {
 	PRIMARY: {
 		prefs: [
 			"NAME",				// A
+			"HEADER",
 			"EMAIL",			// A
 			"FROM_NAME",		// I
 			"REPLY_TO",			// I
@@ -174,6 +179,7 @@ ZmAccountsPage.SECTIONS = {
 	EXTERNAL: {
 		prefs: [
 			"NAME",						// A
+			"HEADER",
 			"EMAIL",					// I - maps to from name in identity
 			"ACCOUNT_TYPE",				// A
 			"USERNAME",					// A
@@ -196,6 +202,7 @@ ZmAccountsPage.SECTIONS = {
 	PERSONA: {
 		prefs: [
 			"NAME",						// I
+			"HEADER",
 			"FROM_NAME",				// I
 			"FROM_EMAIL",				// I
 			"REPLY_TO",					// I
@@ -243,6 +250,7 @@ ZmAccountsPage.prototype.setAccount = function(account) {
 	// keep track of changes made to current account
 	if (this._currentAccount) {
 		this._setAccountFields(this._currentAccount, this._currentSection);
+		this._tabGroup.removeMember(this._currentSection.tabGroup);
 		this._currentAccount = null;
 		this._currentSection = null;
 	}
@@ -283,6 +291,7 @@ ZmAccountsPage.prototype.setAccount = function(account) {
 				break;
 			}
 		}
+		this._tabGroup.addMember(this._currentSection.tabGroup);
 	}
 
 	var name = this._currentSection && this._currentSection.controls["NAME"];
@@ -430,6 +439,7 @@ ZmAccountsPage.prototype._setPersona = function(account, section) {
 
 ZmAccountsPage.prototype._setGenericFields = function(account, section) {
 	this._setControlValue("NAME", section, account.getName());
+	this._setControlValue("HEADER", section, account.getName());
 	this._setControlValue("EMAIL", section, account.getEmail());
 };
 
@@ -569,7 +579,8 @@ ZmAccountsPage.prototype._setControlValue = function(id, section, value) {
 
 	switch (setup.displayContainer) {
 		case ZmPref.TYPE_STATIC: {
-			control.setText(value);
+			var message = setup.displayName ? AjxMessageFormat.format(setup.displayName, value) : value;
+			control.setText(message);
 			break;
 		}
 		case ZmPref.TYPE_CHECKBOX: {
@@ -950,6 +961,8 @@ ZmAccountsPage.prototype._createSection = function(name) {
 	var prefIds = section && section.prefs;
 	if (!prefIds) return;
 
+	var tabControls = this._tabControls;
+	this._tabControls = {};
 	section.controls = {};
 
 	var prefs = ZmAccountsPage.PREFS;
@@ -1001,13 +1014,17 @@ ZmAccountsPage.prototype._createSection = function(name) {
 			if (name == "PRIMARY" && id == "EMAIL") {
 				control.setEnabled(false);
 			}
-			control.replaceElement(containerEl);
+			this._replaceControlElement(containerEl, control);
 			if (type == ZmPref.TYPE_RADIO_GROUP) {
 				control = this.getFormObject(id);
 			}
 			section.controls[id] = control;
 		}
 	}
+
+	section.tabGroup = new DwtTabGroup(name);
+	this._addControlsToTabGroup(section.tabGroup);
+	this._tabControls = tabControls;
 };
 
 // listeners
@@ -1048,6 +1065,7 @@ ZmAccountsPage.prototype._handleAddPersonaButton = function(evt) {
 ZmAccountsPage.prototype._handleNameChange = function(evt) {
 	var inputEl = DwtUiEvent.getTarget(evt);
 	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_NAME, inputEl.value);
+	this._setControlValue("HEADER", this._currentSection, inputEl.value);
 
 	var type = this._currentAccount.type;
 	if (type == ZmAccount.POP || type == ZmAccount.IMAP) {

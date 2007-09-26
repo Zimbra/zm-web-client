@@ -81,12 +81,12 @@ function(account) {
 	return (this._hasRendered == acct.name);
 };
 
-ZmPreferencesPage.prototype.__replaceElement = function(elemOrId, control) {
-	this.__addTabIndex(elemOrId, control);
+ZmPreferencesPage.prototype._replaceControlElement = function(elemOrId, control) {
+	this._addControlTabIndex(elemOrId, control);
 	control.replaceElement(elemOrId);
 };
 
-ZmPreferencesPage.prototype.__addTabIndex = function(elemOrId, control) {
+ZmPreferencesPage.prototype._addControlTabIndex = function(elemOrId, control) {
 
 	// remember control's tab index
 	var elem = Dwt.byId(elemOrId);
@@ -214,8 +214,7 @@ function() {
 
 		// add control to form
 		if (control) {
-			this.__addTabIndex(elem, control);
-			control.replaceElement(elem);
+			this._replaceControlElement(elem, control);
 		}
 	}
 
@@ -231,6 +230,15 @@ function() {
 	}
 
 	// create tab-group for all controls on the page
+	this._addControlsToTabGroup(this._tabGroup);
+	delete this._tabControls;
+
+	// finish setup
+	this.setVisible(true);
+	this._hasRendered = activeAcct;
+};
+
+ZmPreferencesPage.prototype._addControlsToTabGroup = function(tabGroup) {
 	var keys = AjxUtil.keys(this._tabControls).sort(AjxUtil.byNumber);
 	for (var i = 0; i < keys.length; i++) {
 		var entry = this._tabControls[keys[i]];
@@ -238,14 +246,9 @@ function() {
 		for (var j = 0; j < controls.length; j++) {
 			var control = controls[j];
 			var member = (control.getTabGroupMember && control.getTabGroupMember()) || control;
-			this._tabGroup.addMember(member);
+			tabGroup.addMember(member);
 		}
 	}
-	delete this._tabControls;
-
-	// finish setup
-	this.setVisible(true);
-	this._hasRendered = activeAcct;
 };
 
 ZmPreferencesPage.prototype.setFormObject =
@@ -432,7 +435,7 @@ function(parentIdOrElem, text, width, listener) {
 	button.setSize(width, Dwt.DEFAULT);
 	button.setText(text);
 	button.addSelectionListener(listener);
-	this.__replaceElement(parentIdOrElem, button);
+	this._replaceControlElement(parentIdOrElem, button);
 	return button;
 };
 
@@ -626,7 +629,6 @@ function(containerDiv, settingId, setup) {
 	// set up import button
 	var btnLabel = setup ? setup.displayName : ZmMsg._import;
 	this._importBtn = this._addButton(buttonDiv, btnLabel, 100, new AjxListener(this, this._importButtonListener));
-//	this.__addTabIndex(buttonDiv, this._importBtn);
 	if (settingId) {
 		this._importBtn.setData(Dwt.KEY_ID, settingId);
 	}
@@ -642,7 +644,6 @@ function(containerDiv, settingId, setup) {
 
 	var btnLabel = setup.displayName || ZmMsg._export;
 	var btn = this._addButton(buttonDiv, btnLabel, 110, new AjxListener(this, this._exportButtonListener));
-//	this.__addTabIndex(buttonDiv, btn);
 	btn.setData(Dwt.KEY_ID, settingId);
 };
 
