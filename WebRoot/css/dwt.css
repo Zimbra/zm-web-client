@@ -1254,7 +1254,7 @@
  */
 
 /* outer container */
-.oselect, .oselect_check {
+.oselect, .oselect_check {	
 	@SelectBorder@
 	@SelectBorder-normal@
 	@ActiveCursor@
@@ -1264,10 +1264,10 @@
 .oselect_table,
 .oselect_check_table {
 	@CompactTable@
-	@Select@
-	@SelectBorder@
-	@SelectBorder-normal@
+	
 }
+
+.oselect TD,
 .oselect_table TD,
 .oselect_check_table TD {
 	padding:0;
@@ -1275,8 +1275,7 @@
 
 .oselect_table_disabled {
 	@CompactTable@
-	@Select-disabled@
-	@SelectBorder@
+	@SelectText-disabled@
 	@SelectBorder-disabled@
 }
 
@@ -1329,10 +1328,13 @@
 .oselect_choice {
 	@MenuItem@
 	@MenuItemText@
+	@MenuItemText-normal@	
+	@MenuItemBorder-normal@
 }
 .oselect_choice_selected {
-	@MenuItem-active@
-	@MenuItemText-active@
+	@MenuItem@
+	@MenuItemBorder-hover@	
+	@MenuItemText-hover@
 }
 
 .oselect_check_choice {
