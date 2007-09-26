@@ -130,8 +130,8 @@ function(ev) {
 
 ZmVoiceListController.prototype._callManagerListener =
 function() {
-    var app = appCtxt.getAppController().getApp(ZmApp.PREFERENCES);
-    app.launch(new AjxListener(this, this._handleResponseLaunchPrefs));
+	this._onPrefsActivedObj = this._onPrefsActivedObj || new AjxListener(this, this._handleResponseLaunchPrefs);
+	appCtxt.getAppController().activateApp(ZmApp.PREFERENCES, false, this._onPrefsActivedObj);
 };
 
 ZmVoiceListController.prototype._handleResponseLaunchPrefs =
