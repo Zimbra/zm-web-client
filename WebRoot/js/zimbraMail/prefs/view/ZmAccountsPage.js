@@ -906,7 +906,7 @@ ZmAccountsPage.prototype._setupButtons = function() {
 		button.setText(ZmMsg.del);
 		button.setEnabled(false);
 		button.addSelectionListener(new AjxListener(this, this._handleDeleteButton));
-		button.replaceElement(deleteButtonDiv);
+		this._replaceControlElement(deleteButtonDiv, button);
 		this._deleteButton = button;
 	}
 
@@ -915,7 +915,7 @@ ZmAccountsPage.prototype._setupButtons = function() {
 		var button = new DwtButton(this);
 		button.setText(ZmMsg.addExternalAccount);
 		button.addSelectionListener(new AjxListener(this, this._handleAddExternalButton));
-		button.replaceElement(addExternalButtonDiv);
+		this._replaceControlElement(addExternalButtonDiv, button);
 		this._addExternalButton = button;
 	}
 
@@ -924,7 +924,7 @@ ZmAccountsPage.prototype._setupButtons = function() {
 		var button = new DwtButton(this);
 		button.setText(ZmMsg.addPersona);
 		button.addSelectionListener(new AjxListener(this, this._handleAddPersonaButton));
-		button.replaceElement(addPersonaButtonDiv);
+		this._replaceControlElement(addPersonaButtonDiv, button);
 		this._addPersonaButton = button;
 	}
 };
