@@ -83,7 +83,25 @@ function(newHeight) {
 
 // Private / protected methods
 
-ZmMailListView.prototype._isSentOrDraftsFolder = 
+ZmMailListView.prototype._resetFromColumnLabel =
+function() {
+	var isFolder = this._isSentOrDraftsFolder();
+
+	// set the from column name based on query string
+	var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
+	var fromColIdx = this.getColIndexForId(ZmItem.F_FROM);
+	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
+	if (fromColSpan) {
+		fromColSpan.innerHTML = "&nbsp;" + colLabel;
+	}
+	if (this._colHeaderActionMenu) {
+		this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
+	}
+
+	return isFolder;
+};
+
+ZmMailListView.prototype._isSentOrDraftsFolder =
 function() {
 	var folder = appCtxt.getById(this._folderId);
 	var isSentFolder = folder && folder.isUnder(ZmFolder.ID_SENT);

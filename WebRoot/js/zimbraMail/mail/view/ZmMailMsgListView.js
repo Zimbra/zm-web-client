@@ -51,18 +51,7 @@ function(defaultColumnSort) {
 	
 	// Show "From" or "To" depending on which folder we're looking at
 	if (this._mode == ZmController.TRAD_VIEW) {
-		var isFolder = this._isSentOrDraftsFolder();
-
-		// set the from column name based on query string
-		var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
-		var fromColIdx = this.getColIndexForId(ZmItem.F_FROM);
-		var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
-		if (fromColSpan) {
-			fromColSpan.innerHTML = "&nbsp;" + colLabel;
-		}
-		if (this._colHeaderActionMenu) {
-			this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
-		}
+		var isFolder = this._resetFromColumnLabel();
 
 		// set the received column name based on query string
 		colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;

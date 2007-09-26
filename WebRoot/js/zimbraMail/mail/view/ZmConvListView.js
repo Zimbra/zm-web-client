@@ -109,6 +109,15 @@ function() {
 	return "ZmConvListView";
 };
 
+ZmConvListView.prototype.createHeaderHtml =
+function(defaultColumnSort) {
+
+	ZmMailListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
+
+	// Show "From" or "To" depending on which folder we're looking at
+	this._resetFromColumnLabel();
+};
+
 // Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
 // it here so that it gets handled as an app shortcut (app shortcuts happen
 // after widget shortcuts).
