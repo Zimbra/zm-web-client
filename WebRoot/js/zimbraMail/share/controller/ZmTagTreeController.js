@@ -48,6 +48,9 @@ ZmTagTreeController = function() {
 		list.push("ZmPage");
 		list.push("ZmDocument");
 	}
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		list.push("ZmAppt");
+	}
 	ZmTreeController.call(this, ZmOrganizer.TAG, new DwtDropTarget(list));
 
 	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
@@ -103,11 +106,6 @@ function(parent, type, id) {
 
 // Private/protected methods
 
-ZmTagTreeController.prototype._getDataTree =
-function() {
-	return appCtxt.getTagTree();
-};
-
 /*
 * Returns ops available for "Tags" container.
 */
@@ -121,13 +119,11 @@ function() {
 */
 ZmTagTreeController.prototype._getActionMenuOps =
 function() {
-	var list = new Array();
-	list.push(ZmOperation.NEW_TAG,
-			  ZmOperation.MARK_ALL_READ,
-			  ZmOperation.RENAME_TAG,
-			  ZmOperation.DELETE,
-			  ZmOperation.TAG_COLOR_MENU);
-	return list;
+	return [ZmOperation.NEW_TAG,
+			ZmOperation.MARK_ALL_READ,
+			ZmOperation.RENAME_TAG,
+			ZmOperation.DELETE,
+			ZmOperation.TAG_COLOR_MENU];
 };
 
 /*
@@ -162,6 +158,7 @@ function(tag) {
 	switch (app) {
 		case ZmApp.CONTACTS:	searchFor = ZmItem.CONTACT; break;
 		case ZmApp.NOTEBOOK:	searchFor = ZmItem.PAGE; break;
+		case ZmApp.CALENDAR:	searchFor = ZmItem.APPT; break;
 		case ZmApp.TASKS:		searchFor = ZmItem.TASK; break;
 		default: 				searchFor = ZmSearchToolBar.FOR_MAIL_MI; break;
 	}

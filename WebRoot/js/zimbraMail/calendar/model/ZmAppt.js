@@ -128,9 +128,9 @@ function(appt) {
 };
 
 ZmAppt.createFromDom =
-function(apptNode, instNode, args) {
+function(apptNode, args, instNode) {
 	var appt = new ZmAppt(args.list);
-	appt._loadFromDom(apptNode, instNode);
+	appt._loadFromDom(apptNode, (instNode || {}));
 
 	return appt;
 };

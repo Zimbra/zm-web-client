@@ -51,7 +51,7 @@ function(appts) {
 		if (instances) {
 			var args = {list:this};
 			for (var j = 0; j < instances.length; j++) {
-				var appt = ZmAppt.createFromDom(apptNode, instances[j], args);
+				var appt = ZmAppt.createFromDom(apptNode, args, instances[j]);
 				if (appt) this.add(appt);
 			}
 		}

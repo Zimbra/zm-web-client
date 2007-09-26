@@ -63,17 +63,11 @@ ZmItem = function(type, id, list, noCache) {
 ZmItem.prototype = new ZmModel;
 ZmItem.prototype.constructor = ZmItem;
 
-// App responsible for item
-ZmItem.APP = {};
 
-// Type names
-ZmItem.MSG_KEY = {};
-
-// Representative icons
-ZmItem.ICON = {};
-
-// Function for creating search results list
-ZmItem.RESULTS_LIST = {};
+ZmItem.APP 				= {};	// App responsible for item
+ZmItem.MSG_KEY 			= {};	// Type names
+ZmItem.ICON 			= {};	// Representative icons
+ZmItem.RESULTS_LIST 	= {};	// Function for creating search results list
 
 // fields that can be part of a displayed item (need to be short because
 // they are used in many DOM IDs)
@@ -110,7 +104,6 @@ ZmItem.F_WORK_PHONE		= "wp"; // Contacts
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};
-ZmItem.SOAP_CMD[ZmItem.TASK]	= "ItemAction";
 
 // Item fields (for modify events)
 ZmItem.TAGS_FIELD = 1;

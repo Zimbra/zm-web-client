@@ -709,9 +709,9 @@ function(ev) {
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		ev.doIt = (item && this._dropTgt.isValidTarget(ev.srcData));
 		DBG.println(AjxDebug.DBG3, "DRAG_ENTER: doIt = " + ev.doIt);
-	    view.dragSelect(div);
+		view.dragSelect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-	    view.dragDeselect(div);
+		view.dragDeselect(div);
 		var items = [item];
 		var sel = view.getSelection();
 		if (sel.length) {
@@ -724,6 +724,7 @@ function(ev) {
 	} else if (ev.action == DwtDropEvent.DRAG_LEAVE) {
 		view.dragDeselect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_OP_CHANGED) {
+		// nothing
 	}
 };
 

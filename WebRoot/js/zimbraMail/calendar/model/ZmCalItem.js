@@ -1219,6 +1219,10 @@ function(calItemNode, instNode) {
 		var endTime = startTime + (parseInt(ed));
 		this.endDate = new Date(endTime);
 	}
+
+	if (calItemNode.t) {
+		this._parseTags(calItemNode.t);
+	}
 };
 
 ZmCalItem.prototype._getAttr =

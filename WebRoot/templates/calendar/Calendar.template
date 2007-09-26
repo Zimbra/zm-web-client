@@ -3,19 +3,25 @@
 		<$ if (!AjxEnv.isIE && data.icon) { $>
 			<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
 		<$ } $>
+		<$ if (!AjxEnv.isIE && data.tagIcon) { $>
+			<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
+		<$ } $>
 		<table style='width:100%; height:100%' cellspacing=0 cellpadding=0>
-			<$ if(!data.hideTime) {$>
-			<tr class='${headerColor}'>
-				<td class=appt${newState}_time id='${id}_st'>
-					<$ if (AjxEnv.isIE && data.icon) { $>
-						<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
-					<$ } $>
-					${starttime}
-				</td>
-			</tr>
+			<$ if (!data.hideTime) { $>
+				<tr class='${headerColor}'>
+					<td class='appt${newState}_time' id='${id}_st'>
+						${starttime}
+					</td>
+				</tr>
 			<$ } $>
 			<tr valign=top>
 				<td colspan=2 class=appt${newState}_name style='height:100%'>
+					<$ if (AjxEnv.isIE && data.icon) { $>
+						<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
+					<$ } $>
+					<$ if (AjxEnv.isIE && data.tagIcon) { $>
+						<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
+					<$ } $>
 					${name}<BR>
 					${location}
 				</td>
@@ -50,6 +56,9 @@
 		<$ if (data.icon) { $>
 			<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
 		<$ } $>
+		<$ if (data.tagIcon) { $>
+			<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
+		<$ } $>
 		<table width=100% cellspacing=0 cellpadding=0>
 			<tr>
 				<td class=appt_30${newState}_name>${name}</td>
@@ -60,6 +69,9 @@
 
 <template id='calendar.Calendar#calendar_appt_allday' width='4' height='4'>
 	<div id='${id}_body' ${body_style} class='appt_allday_body ${headerColor}'>
+		<$ if (data.tagIcon) { $>
+			<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
+		<$ } $>
 		<$ if (data.icon) { $>
 			<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
 		<$ } $>

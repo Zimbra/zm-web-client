@@ -120,6 +120,9 @@ function(item, params) {
 		funcs = funcs.concat(["_getFragmentSpan", "_getFragmentHtml"]);
 		listViewClass = ZmMailMsgListView;
 		this._emulateListView(listViewClass, funcs);
+	} else if (item.type == ZmItem.APPT) {
+		// TODO - need listview for appts (see bug 19338)
+		return null;
 	} else if (item.type == ZmItem.TASK) {
 		AjxDispatcher.require(["TasksCore", "Tasks"]);
 		listViewClass = ZmTaskListView;

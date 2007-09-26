@@ -176,7 +176,7 @@ function(viewId, startDate, skipMaintenance) {
 			//DBG.timePt("_createMiniCalendar");
 		}
 
-		this._viewMgr = new ZmCalViewMgr(this._container, this);
+		this._viewMgr = new ZmCalViewMgr(this._container, this, this._dropTgt);
 		//DBG.timePt("created view manager");
 		this._viewMgr.setDate(newDate);
 		//DBG.timePt("_viewMgr.setDate");
@@ -361,6 +361,8 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.DELETE, ZmOperation.PRINT,
 			ZmOperation.SEP,
+			ZmOperation.TAG_MENU,
+			ZmOperation.SEP,
 			ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW,
 			ZmOperation.SEP,
 			ZmOperation.TODAY];
@@ -409,6 +411,11 @@ ZmCalViewController.prototype._setViewContents =
 function(viewId) {
 	// Ignore since this will always be ZmController.CAL_VIEW as we are fooling
 	// ZmListController (see our show method)
+};
+
+ZmCalViewController.prototype._getTagMenuMsg =
+function(num) {
+	return (num == 1) ? ZmMsg.tagAppt : ZmMsg.tagAppts;
 };
 
 ZmCalViewController.prototype._createNewView =
@@ -1287,7 +1294,6 @@ function(view) {
 
 ZmCalViewController.prototype._resetOperations =
 function(parent, num) {
-	ZmListController.prototype._resetOperations.call(this, parent, num);
 	parent.enableAll(true);
 	var currViewName = this._viewMgr.getCurrentViewName();
 	if (currViewName == ZmController.CAL_APPT_VIEW)
@@ -1303,9 +1309,9 @@ function(parent, num) {
 		var calendar = appt && appt.getFolder();
 		var isReadOnly = calendar ? calendar.isReadOnly() : false;
 		var isSynced = Boolean(calendar && calendar.url);
-		var disabled = isSynced || isReadOnly;
+		var disabled = isSynced || isReadOnly || (num == 0);
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote();
-		parent.enable(ZmOperation.DELETE, !disabled);
+		parent.enable([ZmOperation.DELETE, ZmOperation.TAG_MENU], !disabled);
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
 	}
 	// disable button for current view
@@ -1506,6 +1512,10 @@ function() {
 			}
 			this._recurringActionMenu.addPopdownListener(this._popdownListener);
 		}
+
+		if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+			this._setupTagMenu(actionMenu);
+		}
 	}
 };
 
@@ -1528,7 +1538,7 @@ function() {
 		ZmOperation.SEP,
 		ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, ZmOperation.INVITE_REPLY_MENU,
 		ZmOperation.SEP,
-		ZmOperation.DELETE
+		ZmOperation.DELETE, ZmOperation.TAG_MENU
 	];
 };
 
@@ -1591,6 +1601,29 @@ ZmCalViewController.prototype._viewActionListener =
 function(ev) {
 	this._viewActionMenu.__view = ev.item;
 	this._viewActionMenu.popup(0, ev.docX, ev.docY);
+};
+
+ZmCalViewController.prototype._dropListener =
+function(ev) {
+	var view = this._listView[this._currentView];
+	var div = Dwt.getAttr(ev.uiEvent.target, "_itemIndex", true);
+	var item = div ? view.getItemFromElement(div) : null
+
+	// only tags can be dropped on us *if* we are not readonly
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		if (item && item.type == ZmItem.APPT) {
+			var calendar = item.getFolder();
+			var isReadOnly = calendar ? calendar.isReadOnly() : false;
+			var isSynced = Boolean(calendar && calendar.url);
+			if (isSynced || isReadOnly) {
+				ev.doIt = false; // can't tag a GAL or shared contact
+				view.dragSelect(div);
+				return;
+			}
+		}
+	}
+
+	ZmListController.prototype._dropListener.call(this, ev);
 };
 
 ZmCalViewController.prototype.sendRequest =
