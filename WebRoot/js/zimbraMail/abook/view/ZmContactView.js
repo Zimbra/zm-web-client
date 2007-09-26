@@ -470,9 +470,10 @@ function() {
 
 ZmContactView.prototype._setImage =
 function(el,value) {
-	//fix this: After getting image/UI change this
+
 	if (!value) {
-		this._image.setAttribute("src", "http://www.ithou.org/files/pictures/default-photo.jpg");
+		Dwt.setVisible(this._imageDiv,false);
+		AjxImg.setImage(this._imageDiv.parentNode,"Person_48",true,false);
 		return;
 	}
 	el.setAttribute("_part",value.part);
@@ -647,8 +648,10 @@ function(tabIdx) {
 
 ZmContactView.prototype._handleImage =
 function() {
+	
 	this._image = document.getElementById(this._imageCellId + "_img");
-
+	this._imageDiv = document.getElementById(this._imageCellId + "_imgdiv");
+	
 	var imageInput = this._imageInput = document.getElementById(this._imageCellId + "_input");
 	if (imageInput) {
 		imageInput.onchange = AjxCallback.simpleClosure(this._uploadImage, this);
@@ -668,6 +671,10 @@ function() {
 
 ZmContactView.prototype._updateImage =
 function(status,attId) {
+	
+	AjxImg.setImage(this._imageDiv.parentNode,"Person_48",true,true);
+	Dwt.setVisible(this._imageDiv,true);
+	
 	this._image.setAttribute("src", ["/service/content/proxy?aid=",attId].join(""));
 	this._imageInput.setAttribute("_aid",attId);
 };
