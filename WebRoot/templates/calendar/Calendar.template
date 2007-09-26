@@ -1,29 +1,23 @@
 <template id='calendar.Calendar#calendar_appt' width='10' height='7'>
 	<div id='${id}_body' class='appt_body ${bodyColor}'>
-		<$ if (!AjxEnv.isIE && data.icon) { $>
-			<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
-		<$ } $>
-		<$ if (!AjxEnv.isIE && data.tagIcon) { $>
-			<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
-		<$ } $>
 		<table style='width:100%; height:100%' cellspacing=0 cellpadding=0>
-			<$ if (!data.hideTime) { $>
-				<tr class='${headerColor}'>
-					<td class='appt${newState}_time' id='${id}_st'>
-						${starttime}
-					</td>
-				</tr>
-			<$ } $>
-			<tr valign=top>
-				<td colspan=2 class=appt${newState}_name style='height:100%'>
-					<$ if (AjxEnv.isIE && data.icon) { $>
+			<tr class='${headerColor}'>
+				<td class='appt${newState}_time' id='${id}_st'>
+					<$ if (data.icon) { $>
 						<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
 					<$ } $>
-					<$ if (AjxEnv.isIE && data.tagIcon) { $>
+					<$ if (data.tagIcon) { $>
 						<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
 					<$ } $>
-					${name}<BR>
-					${location}
+					${starttime}
+				</td>
+			</tr>
+			<tr valign=top>
+				<td colspan=2 class=appt${newState}_name style='height:100%'>
+					${name}
+					<$ if (data.location) { $>
+						<BR>${location}
+					<$ } $>
 				</td>
 			</tr>
 			<$ if(!data.hideTime) {$>			
@@ -40,8 +34,10 @@
 		<table style='width:100%;height:100%' cellspacing=0 cellpadding=2>
 			<tr valign=top>
 				<td colspan=2 class=appt${newState}_name style='height:100%'>
-					${name}<BR>
-					${location}
+					${name}
+					<$ if (data.location) { $>
+						<BR>${location}
+					<$ } $>
 				</td>
 			</tr>
 			<tr>
@@ -53,15 +49,21 @@
 
 <template id='calendar.Calendar#calendar_appt_30' width='4' height='4'>
 	<div id='${id}_body' class='appt_30_body ${headerColor}'>
-		<$ if (data.icon) { $>
+		<$ if (!AjxEnv.isIE && data.icon) { $>
 			<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
 		<$ } $>
-		<$ if (data.tagIcon) { $>
+		<$ if (!AjxEnv.isIE && data.tagIcon) { $>
 			<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
 		<$ } $>
 		<table width=100% cellspacing=0 cellpadding=0>
 			<tr>
 				<td class=appt_30${newState}_name>${name}</td>
+				<$ if (AjxEnv.isIE && data.tagIcon) { $>
+					<td valign=top width=16><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></td>
+				<$ } $>
+				<$ if (AjxEnv.isIE && data.icon) { $>
+					<td valign=top width=16><$= AjxImg.getImageHtml(data.icon, "width:16") $></td>
+				<$ } $>
 			</tr>
 		</table>
 	</div>
@@ -69,15 +71,17 @@
 
 <template id='calendar.Calendar#calendar_appt_allday' width='4' height='4'>
 	<div id='${id}_body' ${body_style} class='appt_allday_body ${headerColor}'>
-		<$ if (data.tagIcon) { $>
-			<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
-		<$ } $>
-		<$ if (data.icon) { $>
-			<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
-		<$ } $>
 		<table width=100% cellspacing=0 cellpadding=0>
 			<tr>
-				<td class=appt_allday${newState}_name>${name}</td>
+				<td class=appt_allday${newState}_name>
+					<$ if (data.icon) { $>
+						<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
+					<$ } $>
+					<$ if (data.tagIcon) { $>
+						<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
+					<$ } $>
+					${name}
+				</td>
 			</tr>
 		</table>
 	</div>

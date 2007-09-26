@@ -763,20 +763,24 @@ function(appt) {
 	var isAccepted = appt.ptst == ZmCalItem.PSTATUS_ACCEPT;
 	var id = this._getItemId(appt);
 	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
-	var location = appt.getLocation() ? ("<i>"+AjxStringUtil.htmlEncode(appt.getLocation())+"</i>") : "";
 	var tree = appCtxt.getFolderTree();
 	var calendar = tree.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
 	var is30 = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
 	var is60 = (appt._orig.getDuration() <= 2*AjxDateUtil.MSEC_PER_HALF_HOUR);
 	var apptName = AjxStringUtil.htmlEncode(appt.getName());
-	var tagIcon = (!appt.getFolder().link && appt.tags.length > 0) ? appt.getTagImageInfo() : null;
-	
-	if (is60 &&
+	var tagIcon = (!appt.getFolder().link && appt.tags.length > 0) 
+		? appt.getTagImageInfo() : null;
+	// normalize location
+	var location = appt.getLocation();
+	location = (location && location.length && !is60)
+		? ("<i>" + AjxStringUtil.htmlEncode(appt.getLocation()) + "</i>") : null;
+
+	if (is30 &&
 		(this.view != ZmController.CAL_DAY_VIEW) &&
 		(this.view != ZmController.CAL_SCHEDULE_VIEW))
 	{
-		var widthLimit = Math.floor(25 * apptWidthPercent)
+		var widthLimit = Math.floor(8 * apptWidthPercent)
 		if (apptName.length > widthLimit) {
 			apptName = apptName.substring(0, widthLimit) + "...";
 		}

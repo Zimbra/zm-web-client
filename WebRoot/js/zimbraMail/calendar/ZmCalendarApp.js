@@ -489,6 +489,8 @@ function(callback, checkQS) {
 		}
 	}
 
+	this.initResources();
+
 	cc.show(view, sd);
 	if (callback) {
 		callback.run();
@@ -548,17 +550,34 @@ function() {
 	return this._apptController;
 };
 
-ZmCalendarApp.prototype.loadResources = 
+ZmCalendarApp.prototype.initResources =
 function() {
-	this._locations = new ZmResourceList(ZmCalItem.LOCATION);
-	this._locations.isCanonical = true;
-	this._equipment = new ZmResourceList(ZmCalItem.EQUIPMENT);
-	this._equipment.isCanonical = true;
+	if (!this._locations) {
+		this._locations = new ZmResourceList(ZmCalItem.LOCATION);
+		this._locations.isCanonical = true;
+	}
+
+	if (!this._equipment) {
+		this._equipment = new ZmResourceList(ZmCalItem.EQUIPMENT);
+		this._equipment.isCanonical = true;
+	}
+}
+
+ZmCalendarApp.prototype.loadResources =
+function() {
+	this.initResources();
+
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var batchCmd = new ZmBatchCommand();
-		batchCmd.add(new AjxCallback(this._locations, this._locations.load));
-		batchCmd.add(new AjxCallback(this._equipment, this._equipment.load));
-		batchCmd.run();
+		if (!this._locations.isLoaded) {
+			batchCmd.add(new AjxCallback(this._locations, this._locations.load));
+		}
+		if (!this._equipment.isLoaded) {
+			batchCmd.add(new AjxCallback(this._equipment, this._equipment.load));
+		}
+		if (batchCmd._cmds.length) {
+			batchCmd.run();
+		}
 	}
 };
 
