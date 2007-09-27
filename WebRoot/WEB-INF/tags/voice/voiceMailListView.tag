@@ -23,17 +23,17 @@
                 <td class='List'>
                         <table width=100% cellpadding=2 cellspacing=0>
                             <tr class='Header'>
-                                <th class='CB' nowrap><input id="CHALL" onClick="checkAll(document.zform.voiceId,this)" type=checkbox name="allids"/></th>
-                                <th class='Img' nowrap><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/></th>
-                                <th width=10% nowrap><fmt:message key="from"/></th>
-                                <th width=10% nowrap><fmt:message key="message"/></th>
+                                <th nowrap><input id="CHALL" onClick="checkAll(document.zform.voiceId,this)" type=checkbox name="allids"/></th>
+                                <th nowrap><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/></th>
+                                <th width='250px' nowrap><fmt:message key="from"/></th>
+                                <th nowrap><fmt:message key="message"/></th>
                                 <th nowrap>
                                     <zm:newSortUrl var="durSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'durDesc' or empty context.ss) ? 'durAsc' : 'durDesc'}"/>
 	                                <a href="${durSortUrl}">
                                         <fmt:message key="duration"/>
                                     </a>
                                 </th>
-                                <th width=1% nowrap>
+                                <th nowrap>
                                     <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss) ? 'dateAsc' : 'dateDesc'}"/>
 	                                <a href="${dateSortUrl}">
 	                                    <fmt:message key="received"/>
