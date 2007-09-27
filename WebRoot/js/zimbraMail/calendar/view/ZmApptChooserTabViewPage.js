@@ -48,6 +48,7 @@ ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
 	this.setScrollStyle(DwtControl.CLIP);
 	this._offset = 0;
 	this._rendered = false;
+	this._isClean = true;
 	this._searchFields = {};
 	this._searchFieldIds = {};
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
@@ -187,6 +188,12 @@ function() {
 	this.parent.tabSwitched(this._tabKey);
 	this._setAttendees();
 	this._controller._setComposeTabGroup(true);
+
+	if (this._isClean && this.type == ZmCalItem.PERSON) {
+		this._isClean = false;
+		this._defaultQuery = ".";
+		this.searchContacts();
+	}
 };
 
 ZmApptChooserTabViewPage.prototype.tabBlur =
@@ -232,6 +239,16 @@ function() {
 	if (this._prevButton && this._nextButton) {
 		this._prevButton.setEnabled(false);
 		this._nextButton.setEnabled(false);
+	}
+	this._isClean = true;
+	this._offset = 0;
+
+	for (var i in this._searchFieldIds) {
+		var id = this._searchFieldIds[i];
+		var el = document.getElementById(id);
+		if (el && el.value) {
+			el.value = "";
+		}
 	}
 };
 
@@ -350,8 +367,14 @@ function() {
 ZmApptChooserTabViewPage.prototype._getSearchFieldHtml =
 function(id, html, i, addButton, addMultLocsCheckbox) {
 	if (id == ZmApptChooserTabViewPage.SF_SOURCE) {
-		// no need for source select if contacts and GAL aren't both supported
-		if (!(appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.get(ZmSetting.GAL_ENABLED))) {
+		// no need for source select if not more than one choice to choose from
+		var showSelect = false;
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
+				showSelect = true;
+		}
+
+		if (!showSelect) {
 			html[i++] = "<td>&nbsp;</td>";
 		} else {
 			this._listSelectId = this._searchFieldIds[id];
@@ -415,7 +438,8 @@ function() {
 		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
 		if (appCtxt.get(ZmSetting.SHARING_ENABLED))
 			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+		if (appCtxt.get(ZmSetting.GAL_ENABLED))
+			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 	}
 
@@ -479,6 +503,7 @@ ZmApptChooserTabViewPage.prototype._searchButtonListener =
 function(ev) {
 	if (this.type == ZmCalItem.PERSON) {
 		this._offset = 0;
+		this._defaultQuery = "";
 		this.searchContacts();
 	} else {
 		this.searchCalendarResources();
@@ -519,25 +544,31 @@ function() {
 ZmApptChooserTabViewPage.prototype.searchContacts = 
 function(sortBy) {
 	var id = this._searchFieldIds[ZmApptChooserTabViewPage.SF_ATT_NAME];
-	this._query = AjxStringUtil.trim(document.getElementById(id).value);
-	if (!this._query.length) { return; }
+	var query = AjxStringUtil.trim(document.getElementById(id).value);
+	if (!query.length) {
+		query = this._defaultQuery;
+	}
+	if (!query.length) { return; }
 
 	var queryHint;
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var searchFor = this._selectDiv.getSelectedOption().getValue();
+	if (this._selectDiv) {
+		var searchFor = this._selectDiv.getValue();
 		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
-			? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+			? ZmItem.CONTACT
+			: ZmSearchToolBar.FOR_GAL_MI;
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint= ZmSearchController.QUERY_ISREMOTE;
+			queryHint = ZmSearchController.QUERY_ISREMOTE;
 		}
 	} else {
-		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
+			? ZmItem.CONTACT
+			: ZmSearchToolBar.FOR_GAL_MI;
 	}
 	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
 	this._chooser.sourceListView.enableSorting(this._contactSource == ZmItem.CONTACT);
 
 	var params = {
-		query: this._query,
+		query: query,
 		queryHint: queryHint,
 		types: (AjxVector.fromArray([ZmItem.CONTACT])),
 		sortBy: (sortBy || ZmApptChooserTabViewPage.SORT_BY[this.type]),

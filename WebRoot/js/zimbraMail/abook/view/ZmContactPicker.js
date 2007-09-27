@@ -80,6 +80,7 @@ function(buttonId, addrs, str) {
 	}
 
 	this._offset = 0;
+	this._defaultQuery = ".";
 
 	// reset column sorting preference
 	this._chooser.sourceListView.setSortByAsc(ZmItem.F_NAME, true);
@@ -114,6 +115,8 @@ function(buttonId, addrs, str) {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
 
+	this.search();
+
 	DwtDialog.prototype.popup.call(this);
 };
 
@@ -132,20 +135,21 @@ function() {
 ZmContactPicker.prototype.search =
 function() {
 	var query = this._searchCleared ? AjxStringUtil.trim(this._searchField.value) : "";
+	if (!query.length) {
+		query = this._defaultQuery;
+	}
+
 	if (query.length) {
 		var queryHint;
-		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-			appCtxt.get(ZmSetting.GAL_ENABLED))
-		{
-			var searchFor = this._selectDiv.getSelectedOption().getValue();
+		if (this._selectDiv) {
+			var searchFor = this._selectDiv.getValue();
 			this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 				? ZmItem.CONTACT
 				: ZmSearchToolBar.FOR_GAL_MI;
 			if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
 				queryHint = ZmSearchController.QUERY_ISREMOTE;
 			}
-		}
-		else {
+		} else {
 			this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
 				? ZmItem.CONTACT
 				: ZmSearchToolBar.FOR_GAL_MI;
@@ -168,8 +172,11 @@ function() {
 
 ZmContactPicker.prototype._contentHtml =
 function() {
-	var showSelect = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
-					  appCtxt.get(ZmSetting.GAL_ENABLED));
+	var showSelect = false;
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
+			showSelect = true;
+	}
 	var subs = {
 		id: this._htmlElId,
 		showSelect: showSelect
@@ -249,6 +256,7 @@ function() {
 ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
 	this._offset = 0;
+	this._defaultQuery = "";
 	this.search();
 };
 

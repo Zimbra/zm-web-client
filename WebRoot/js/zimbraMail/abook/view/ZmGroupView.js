@@ -59,8 +59,10 @@ function(contact, isDirty) {
 	this._contact = contact;
 
 	this._setFields();
-
+	this._offset = 0;
 	this._isDirty = isDirty;
+
+	this.search();
 };
 
 ZmGroupView.prototype.getModifiedAttrs =
@@ -185,19 +187,24 @@ function() {
 ZmGroupView.prototype.search =
 function() {
 	var query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
+	if (!query.length) {
+		query = this._defaultQuery;
+	}
+
 	if (query.length) {
 		var queryHint;
-		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			var searchFor = this._searchInSelect
-				? this._searchInSelect.getSelectedOption().getValue()
-				: ZmContactsApp.SEARCHFOR_CONTACTS;
+		if (this._searchInSelect) {
+			var searchFor = this._searchInSelect.getValue();
 			this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
-				? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+				? ZmItem.CONTACT
+				: ZmSearchToolBar.FOR_GAL_MI;
 			if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
 				queryHint = ZmSearchController.QUERY_ISREMOTE;
 			}
 		} else {
-			this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+			this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
+				? ZmItem.CONTACT
+				: ZmSearchToolBar.FOR_GAL_MI;
 		}
 		var params = {
 			obj: this,
@@ -222,6 +229,8 @@ function() {
 	this._setHeaderInfo();
 	this._setTitle();
 	this._setTags();
+
+	this._defaultQuery = ".";
 };
 
 ZmGroupView.prototype._setTitle =
@@ -244,8 +253,11 @@ function() {
 	this._groupNameId = 		this._htmlElId + "_groupName";
 	this._searchFieldId = 		this._htmlElId + "_searchField";
 
-	var showSearchIn = appCtxt.get(ZmSetting.SHARING_ENABLED) ||
-					   appCtxt.get(ZmSetting.GAL_ENABLED);
+	var showSearchIn = false;
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
+			showSearchIn = true;
+	}
 	var params = {
 		id:this._htmlElId,
 		showSearchIn:showSearchIn
@@ -400,6 +412,7 @@ function() {
 ZmGroupView.prototype._searchButtonListener =
 function(ev) {
 	this._offset = 0;
+	this._defaultQuery = "";
 	this.search();
 };
 

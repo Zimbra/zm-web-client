@@ -861,17 +861,6 @@ function(ev) {
 	this._handleDateChange(parentButton == this._startDateButton, true);
 };
 
-ZmSchedTabViewPage.prototype._contactPickerListener =
-function(ev) {
-	if (!this._contactPicker) {
-		AjxDispatcher.require("ContactsCore");
-		this._contactPicker = new ZmContactPicker();
-		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
-	}
-	this._cpButton = ev.item;
-	this._contactPicker.popup();
-};
-
 ZmSchedTabViewPage.prototype._navBarListener =
 function(ev) {
 	var op = ev.item.getData(ZmOperation.KEY_ID);
@@ -1138,51 +1127,6 @@ function(value) {
 	}
 
 	return value;
-};
-
-ZmSchedTabViewPage.prototype._contactPickerOk =
-function(vec) {
-	var addrs = vec.getArray();
-	if (addrs.length) {
-		var dwtInputField = AjxCore.objectWithId(this._cpButton._inputFieldId);
-		var schedTableIdx = dwtInputField.schedTableIdx;
-		var emails = new Array();
-
-		for (var i = 0; i < addrs.length; i++) {
-			var addr = addrs[i].address;
-			emails.push(addr);
-
-			if (dwtInputField) {
-				var inputEl = dwtInputField.getInputElement();
-				dwtInputField.setValue(addr);
-				Dwt.setVisible(inputEl, true);
-				this._attendees[addr] = inputEl._schedTableIdx;
-			} else {
-				break;		// something is screwed up, just quit
-			}
-
-			// get the next EMPTY dwtInputField to populate
-			var found = false;
-			while (!found && this._schedTable[++schedTableIdx]) {
-				var inputDiv = document.getElementById(this._schedTable[schedTableIdx].dwtId);
-				dwtInputField = inputDiv ? Dwt.getObjectFromElement(inputDiv.firstChild) : null;
-				if (dwtInputField) {
-					found = dwtInputField.getValue() == "";
-				} else {
-					break;	// something is screwed up, just quit
-				}
-			}
-
-			// check if we have any more available slots
-			if (this._schedTable[schedTableIdx] == null)
-				break;
-		}
-
-		this._updateAttendeesField = true;
-		this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), emails.join(","), this._fbCallback);
-	}
-
-	this._contactPicker.popdown();
 };
 
 ZmSchedTabViewPage.prototype._getDefaultFocusItem =

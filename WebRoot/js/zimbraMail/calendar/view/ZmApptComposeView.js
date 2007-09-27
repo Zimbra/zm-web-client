@@ -156,7 +156,7 @@ function(appt, mode, isDirty) {
 			tabPage.initialize(appt, mode, isDirty);
 		}
 	}
-	
+
 	// always switch to appointment tab
 	this.switchToTab(this._apptTabKey);
 };
@@ -165,7 +165,7 @@ ZmApptComposeView.prototype.cleanup =
 function() {
 	// clear attendees lists
 	this._attendees[ZmCalItem.PERSON]		= new AjxVector();
-	this._attendees[ZmCalItem.LOCATION]	= new AjxVector();
+	this._attendees[ZmCalItem.LOCATION]		= new AjxVector();
 	this._attendees[ZmCalItem.EQUIPMENT]	= new AjxVector();
 
 	this._attendeeKeys[ZmCalItem.PERSON]	= {};
