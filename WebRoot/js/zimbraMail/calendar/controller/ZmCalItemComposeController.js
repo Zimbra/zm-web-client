@@ -433,6 +433,11 @@ function() {
 ZmCalItemComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
+	this._closeView();
+};
+
+ZmCalItemComposeController.prototype._closeView =
+function() {
 	this._app.popView(true);
 	appCtxt.getAppViewMgr().showPendingView(true);
 	this._composeView.cleanup();

@@ -1713,6 +1713,22 @@ ZmCalViewController.prototype.notifyDelete =
 function(ids) {
 	if (this._clearCache) return;
 	this._clearCache = this._apptCache.containsAnyId(ids);
+	this.handleEditConflict(ids);	
+};
+
+ZmCalViewController.prototype.handleEditConflict =
+function(ids) {
+	//handling a case where appt is edited and related calendar is deleted
+	if(appCtxt.getAppViewMgr().getCurrentViewId() == ZmController.APPOINTMENT_VIEW) {
+		var view = appCtxt.getAppViewMgr().getCurrentView();
+		var appt = view.getAppt();
+		var calendar = appt && appt.getFolder();
+		var idStr = ids+",";
+		if(idStr.indexOf(calendar.id+",")>=0){
+			var apptCtrller = this._app.getApptComposeController();
+			apptCtrller._closeView();
+		}	
+	}	
 };
 
 ZmCalViewController.prototype.notifyModify =
