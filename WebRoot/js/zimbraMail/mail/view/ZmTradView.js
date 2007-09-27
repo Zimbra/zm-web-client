@@ -36,15 +36,3 @@ ZmTradView.prototype.toString =
 function() {
 	return "ZmTradView";
 };
-
-ZmTradView.prototype.setItem =
-function(msgs) {
-	ZmDoublePaneView.prototype.setItem.call(this, msgs);
-
-	this._mailListView.set(msgs, ZmItem.F_DATE);
-	if (!this._controller._readingPaneOn) {
-		this._selectFirstItem();
-	} else {
-		this._mailListView.scrollToTop();
-	}
-};

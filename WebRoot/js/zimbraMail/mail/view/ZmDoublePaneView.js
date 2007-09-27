@@ -135,9 +135,17 @@ function(x, y, width, height) {
 	this._resetSize(width, height);
 };
 
-ZmDoublePaneView.prototype.setItem = 
-function(item) {
-	// overload me
+ZmDoublePaneView.prototype.setItem =
+function(items) {
+	this._mailListView.set(items, ZmItem.F_DATE);
+	if (!this._controller._readingPaneOn) {
+		this._selectFirstItem();
+	} else {
+		this._mailListView.scrollToTop();
+		if (this._controller._list && this._controller._list.size() > 0) {
+			this._msgView.set();
+		}
+	}
 };
 
 // Private / Protected methods

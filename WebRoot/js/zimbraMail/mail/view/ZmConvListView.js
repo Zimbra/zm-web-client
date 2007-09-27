@@ -53,18 +53,6 @@ function() {
 	return "ZmConvDoublePaneView";
 }
 
-ZmConvDoublePaneView.prototype.setItem =
-function(convs) {
-	ZmDoublePaneView.prototype.setItem.call(this, convs);
-
-	this._mailListView.set(convs, ZmItem.F_DATE);
-	if (!this._controller._readingPaneOn) {
-		this._selectFirstItem();
-	} else {
-		this._mailListView.scrollToTop();
-	}
-};
-
 ZmConvDoublePaneView.prototype._createMailListView =
 function(mode, controller, dropTgt) {
 	return new ZmConvListView(this, null, Dwt.ABSOLUTE_STYLE, controller, dropTgt);
@@ -746,8 +734,9 @@ function(conv, preferHtml, callback, result) {
 		var msgNode = resp[i].m[0];
 		var msg = ZmMailMsg.createFromDom(msgNode, {list:null});
 		html[idx++] = ZmMailMsgView.getPrintHtml(msg, preferHtml);
-		if (i < resp.length - 1)
+		if (i < resp.length - 1) {
 			html[idx++] = "<hr>";
+		}
 	}
 
 	result.set(html.join(""));

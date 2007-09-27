@@ -109,8 +109,9 @@ function() {
 	this._msg = null;
 	this._htmlBody = null;
 	this.getHtmlElement().innerHTML = "";
-	if (this._objectManager && this._objectManager.reset)
+	if (this._objectManager && this._objectManager.reset) {
 		this._objectManager.reset();
+	}
 };
 
 ZmMailMsgView.prototype.preventSelection =
@@ -120,12 +121,23 @@ function() {
 
 ZmMailMsgView.prototype.set =
 function(msg) {
-	if (this._msg && (this._msg.id == msg.id)) return;
+	if (this._msg && (this._msg.id == msg.id)) { return; }
 
 	var oldMsg = this._msg;
 	this.reset();
 	var contentDiv = this.getHtmlElement();
 	this._msg = msg;
+	
+	if (!msg) {
+		var htmlArr = [];
+		var idx = 0;
+		htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1'><tr><td class='NoResults'><br>";
+		htmlArr[idx++] = ZmMsg.viewMessage;
+		htmlArr[idx++] = "</td></tr></table>";
+		contentDiv.innerHTML = htmlArr.join("");
+		return;
+	}
+	
 	this._dateObjectHandlerDate = msg.sentDate
 		? new Date(msg.sentDate)
 		: new Date(msg.date);
