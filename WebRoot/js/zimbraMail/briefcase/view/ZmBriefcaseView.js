@@ -71,7 +71,7 @@ function(item, params) {
 	icon = "Img" + ( mimeInfo ? mimeInfo.imageLarge : "UnknownDoc_48");
 
 	if(item.isFolder) {
-		icon = "ImgDndMultiYes_48";
+		icon = "ImgBriefcase_48";
 	}
 	
 	if(name.length>14){
