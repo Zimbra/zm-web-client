@@ -339,20 +339,24 @@ function(params) {
 	// responses, and pass them along.
 	if (params.batchInfoResponse) {
 		var br = params.batchInfoResponse.Body.BatchResponse;
-		var girJSON = params.getInfoResponse = {};
-		girJSON.Body = {};
-		girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
-		girJSON.Header = params.batchInfoResponse.Header;
-		if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.sessionId) {
-			ZmCsfeCommand.setSessionId(girJSON.Header.context.sessionId);
+		if (br.GetInfoResponse) {
+			var girJSON = params.getInfoResponse = {};
+			girJSON.Body = {};
+			girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
+			girJSON.Header = params.batchInfoResponse.Header;
+			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.sessionId) {
+				ZmCsfeCommand.setSessionId(girJSON.Header.context.sessionId);
+			}
+			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "GetInfoResponse");
+			DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
 		}
-		DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "GetInfoResponse");
-		DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
-		var srJSON = params.searchResponse = {};
-		srJSON.Body = {};
-		srJSON.Body.SearchResponse = br.SearchResponse[0];
-		DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "SearchResponse");
-		DBG.dumpObj(AjxDebug.DBG1, srJSON, -1);
+		if (br.SearchResponse) {
+			var srJSON = params.searchResponse = {};
+			srJSON.Body = {};
+			srJSON.Body.SearchResponse = br.SearchResponse[0];
+			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "SearchResponse");
+			DBG.dumpObj(AjxDebug.DBG1, srJSON, -1);
+		}
 	}
 
 	this._getStartApp(params);
