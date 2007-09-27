@@ -73,12 +73,10 @@ function(actionMenu, type, id) {
 		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 			isBriefcase = (!isRoot && briefcase.parent.id == rootId);
 			menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_BRIEFCASE);
-			//menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
 			menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
 			menuItem.setEnabled(!isLinkOrRemote || ZmBriefcaseTreeController.__isAllowed(briefcase, ZmShare.PERM_CREATE_SUBDIR));
 
 			menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_BRIEFCASE);
-//			menuItem.setText(isBriefcase ? ZmMsg.shareNotebook : ZmMsg.shareSection);
 			menuItem.setText(ZmMsg.shareFolder);
 			menuItem.setImage(isBriefcase ? "Folder" : "Section");
 			menuItem.setEnabled(!isLinkOrRemote);
@@ -169,22 +167,6 @@ function(briefcase) {
 	
 	var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
 	briefcaseController.show(briefcase.id);
-	
-	/*
-	if (appCtxt.getCurrentViewId() != ZmController.NOTEBOOK_PAGE_VIEW) {
-		appCtxt.getAppViewMgr().setView(ZmController.NOTEBOOK_PAGE_VIEW);
-	};
-
-	var notebookController = AjxDispatcher.run("GetNotebookController");
-	notebookController.show(notebook.id, true);
-
-	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
-		var searchController = appCtxt.getSearchController();
-		var search = ["in:\"", notebook.getSearchPath(), '"' ].join("");
-		searchController.setDefaultSearchType(ZmItem.PAGE);
-		searchController.setSearchField(search);
-	}
-	*/
 };
 
 // Handles a drop event
@@ -201,29 +183,14 @@ function(ev, treeView, overviewId) {
 
 	if (ev.type != this.type) return;
 
-	var fields = ev.getDetail("fields");
-	if (!fields || !(fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_REST_URL])) {
-		return;
-	}
-
-	/*
-	var notebookController = AjxDispatcher.run("GetNotebookController");
-	var shownPage = notebookController.getPage();
-	if (!shownPage) {
-		return;
-	}
-	
 	var organizers = ev.getDetail("organizers");
 	if (!organizers && ev.source)
 		organizers = [ev.source];
 
-	for (var i = 0; i < organizers.length; i++) {
-		var organizer = organizers[i];
-		var id = organizer.id;
-		if (id == shownPage.id || id == shownPage.folderId) {
-			notebookController.gotoPage(shownPage);
-		}
-	}*/
+	if(overviewId == this._actionedOverviewId){
+		var bController = AjxDispatcher.run("GetBriefcaseController");
+		bController.handleUpdate(organizers);
+	}
 };
 
 ZmBriefcaseTreeController.prototype._shareBriefcaseListener =
@@ -279,23 +246,6 @@ function(overviewId, type, items, detail, srcEv, destEv) {
 
 ZmBriefcaseTreeController.prototype._doCreate =
 function(params) {
-	var message;
-	/*
-	// bug: 9406 (short term fix, waiting for backend support)
-	var notebookId = ZmOrganizer.getSystemId(ZmOrganizer.ID_NOTEBOOK);
-	var folderId = (params.parent && params.parent.id) || notebookId;
-	var cache = AjxDispatcher.run("GetNotebookCache");
-	if (cache.getPageByName(folderId, params.name)) {
-		message = AjxMessageFormat.format(ZmMsg.errorInvalidPageOrSectionName, params.name);
-	}
-
-	if (message) {
-		var dialog = appCtxt.getMsgDialog();
-		dialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
-		dialog.popup();
-		return;
-	}*/
-
 	ZmTreeController.prototype._doCreate.apply(this, [params]);
 };
 

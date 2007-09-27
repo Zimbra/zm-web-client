@@ -60,7 +60,7 @@ ZmBriefcaseController.GROUP_BY_VIEWS = [];
 
 ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmController.BRIEFCASE_VIEW]			= "explorerView";
 ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmController.BRIEFCASE_DETAIL_VIEW]	= "detailView";
-ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmController.BRIEFCASE_COLUMN_VIEW]	= "folder";
+ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmController.BRIEFCASE_COLUMN_VIEW]	= "columnBrowserView";
 
 ZmBriefcaseController.GROUP_BY_ICON[ZmController.BRIEFCASE_VIEW]			= "Folder";
 ZmBriefcaseController.GROUP_BY_ICON[ZmController.BRIEFCASE_DETAIL_VIEW]		= "ListView";
