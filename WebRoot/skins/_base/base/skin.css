@@ -268,22 +268,17 @@ body	{	@ChromeBg@	}
 #skin_container_app_main_full	{	
 	@FullSize@
 	@SkinBorderPage@
+	height:100%;
 }
-
-
-/* ??? */
-.AppSash-vert 	{
-	height:11px;
-}
-
 
 
 
 .ImgAppBanner	{background-image:url("@AppBannerImg@");  width:@AppBannerWidth@;  height:@AppBannerHeight@;  }
 .ImgLoginBanner	{background-image:url("@LoginBannerImg@");width:@LoginBannerWidth@;height:@LoginBannerHeight@;}	
+
 #IFDEF MSIE
-	.ImgAppBanner	{background:none;filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='@AppBannerImg@',sizingMethod='scale');}
-	.ImgLoginBanner	{background:none;filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='@LoginBannerImg@',sizingMethod='scale');}
+.ImgAppBanner	{background:none;filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='@AppBannerImg@',sizingMethod='scale');}
+.ImgLoginBanner	{background:none;filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='@LoginBannerImg@',sizingMethod='scale');}
 #ENDIF
 
 

@@ -147,14 +147,14 @@
 
 
 /* Vertical sash -- splits a pane vertically (into two tall panes) */
-.AppSash-vert 						{	@VSashSize@			}/* UNUSED? */
+.AppSash-vert 						{	@VSashSize@			}		/* outer class for sash */
 .DwtVerticalSash					{	@VSashContainer@;	}
-.DwtVerticalSash DIV				{	@VSashThumb@;	}
+.DwtVerticalSash DIV				{	@VSashThumb@;		}
 
 /* Horizontal sash -- splits a pane horizontally (into two wide panes) */
-.AppSash-horiz 						{	@HSashSize@		}	/* UNUSED? */
+.AppSash-horiz 						{	@HSashSize@			}		/* outer class for sash */
 .DwtHorizontalSash					{	@HSashContainer@;	}
-.DwtHorizontalSash DIV				{	@HSashThumb@;	}
+.DwtHorizontalSash DIV				{	@HSashThumb@;		}
 
 
 
