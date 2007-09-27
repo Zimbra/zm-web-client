@@ -43,18 +43,26 @@
     </c:choose>
 
 </app:handleError>
+<c:if test="${mailbox.features.htmlCompose}" >
+    <link rel="stylesheet" type="text/css" href="../yui/2.3.1/assets/skins/sam/skin.css" />
+    <script type="text/javascript" src="../yui/2.3.1/yahoo-dom-event/yahoo-dom-event.js"></script>
+    <script type="text/javascript" src="../yui/2.3.1/element/element-beta-min.js"></script>
+    <!-- Needed for Menus, Buttons and Overlays used in the Toolbar -->
+    <script src="../yui/2.3.1/container/container_core-min.js"></script>
 
+    <script src="../yui/2.3.1/menu/menu-min.js"></script>
+
+    <script src="../yui/2.3.1/button/button-beta-min.js"></script>
+    <!-- Source file for Rich Text Editor-->
+    <script src="../yui/2.3.1/editor/editor-beta-min.js"></script>
+</c:if>
 <c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/>
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
         onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}">
 
-
-
-
-
-     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-     <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
+<form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8" <c:if test="${mailbox.features.htmlCompose}">onsubmit="myEditor.saveHTML();"</c:if> >
+<table width="100%" cellpadding="0" cellspacing="0">
+<tr>
                 <td class='TbTop'>
                     <table width="100%" cellspacing="0" cellpadding="0">
                         <tr valign='middle'>
@@ -82,7 +90,7 @@
             <tr>
                 <td class='ZhAppContent'>
                     <div class='ZhAC'>
-                        <table cellpadding="2" cellspacing="5" style="height:80%;" width="100%" class='Compose'>
+                        <table cellpadding="2" cellspacing="5" style="height:80%;" width="100%" class='Compose' border="0">
                             <tr>
                                 <td valign='top' width="1%" align="right" nowrap> <label for="toField"><fmt:message key="to"/>: </label></td>
                                 <td colspan="2" nowrap>
@@ -153,9 +161,10 @@
                                         value="${param.attachId}" name="uploadedAttachment"/>
                             </c:if>
                             <tr>
-                                <td colspan="3" >
-                                    <textarea class='MsgCompose' rows="30" cols="80" style='width:100%'
-                                              id="bodyField" name="body">${fn:escapeXml(compose.content)}</textarea>
+                                <td colspan="3" class="yui-skin-sam" width="100%" >
+                                    <textarea class='MsgCompose' name="body" id="body" rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea>
+                                    <!-- textarea class='MsgCompose' rows="30" cols="150" style='width:100%'
+                                              id="bodyField" name="body">${fn:escapeXml(compose.content)}</textarea -->
                                 </td>
                             </tr>
                         </table>
@@ -211,12 +220,26 @@
         initAuto("bccField","bccContainer");
     </app:autoComplete>
 
+<c:if test="${mailbox.features.htmlCompose}" >
     <SCRIPT TYPE="text/javascript">
+    <!--
+        var myEditor = new YAHOO.widget.Editor('body', {
+	    height: '300px',
+	    width: '100%',
+	    dompath: true, //Turns on the bar at the bottom
+	    animate: true //Animates the opening, closing and moving of Editor windows
+	});
+    myEditor.render();
+
+    //-->
+   </SCRIPT>
+</c:if>
+<SCRIPT TYPE="text/javascript">
     <!--
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
     //-->
-   </SCRIPT>
-
+</SCRIPT>
+        
     <app:keyboard cache="mail.compose" globals="false" passspecial="true" mailbox="${mailbox}">
         <zm:bindKey message="compose.Send" func="function() { zclick('SOPSEND')}"/>
         <zm:bindKey message="compose.Save" func="function() { zclick('SOPDRAFT')}"/>
@@ -225,3 +248,4 @@
    </app:keyboard>
 
 </app:view>
+
