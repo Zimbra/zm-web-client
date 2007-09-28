@@ -11,7 +11,7 @@
     <zm:getMailbox var="mailbox"/>
     <c:set var="vmlvToolbarCache" scope="request">
         <td><div class='vertSep'></div></td>
-        <app:button id="OPDELETE" text="actionDelete" name="actionDelete" tooltip="actionTrashTT" disabled="${context.isFolderSearch and context.folder.isVoiceMailTrash}"/>
+        <app:button id="OPDELETE" text="actionDelete" name="actionDelete" tooltip="actionTrashTT" disabled="${context.isFolderSearch and context.folder.isVoiceMailTrash}" src="startup/ImgDelete.gif"/>
 		<td><div class='vertSep'></div></td>
 		<td nowrap>
             <zm:currentResultUrl var="printUrl" value="/h/printvoicemails" context="${context}" refresh="true" />
