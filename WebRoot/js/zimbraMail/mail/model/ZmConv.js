@@ -45,6 +45,9 @@ function() {
 
 // Public methods
 
+/**
+ * Creates a conv from its JSON representation.
+ */
 ZmConv.createFromDom =
 function(node, args) {
 	var conv = new ZmConv(node.id, args.list);
@@ -52,6 +55,9 @@ function(node, args) {
 	return conv;
 };
 
+/**
+ * Creates a conv from msg data.
+ */
 ZmConv.createFromMsg =
 function(msg, args) {
 	var conv = new ZmConv(msg.cid, args.list);
@@ -135,6 +141,10 @@ function(params, callback, result) {
 };
 
 /**
+ * This method supports ZmZimletBase::getMsgsForConv. It loads all of this conv's
+ * messages, including their content. Note that it is not search-based, and uses
+ * GetConvRequest rather than SearchConvRequest.
+ * 
  * @param params		[hash]				hash of params:
  *        fetchAll		[boolean]*			if true, fetch content of all msgs
  * @param callback		[AjxCallback]		callback
@@ -190,6 +200,21 @@ function(callback, result) {
 	if (callback) { callback.run(result); }
 };
 
+ZmConv.prototype.removeMsg =
+function(msg) {
+	if (this.msgs) {
+		this.msgs.remove(msg, true);
+		this.numMsgs = this.msgs.size();
+	}
+	var tmpMsgIds = [];
+	for (var i = 0, count = this.msgIds.length; i < count; i++) {
+		if (this.msgIds[i].id != msg.id) {
+			tmpMsgIds.push(this.msgIds[i].id);
+		}
+	}
+	this.msgIds = tmpMsgIds;
+};
+
 ZmConv.prototype.clear =
 function() {
 	if (this.msgs) {
@@ -197,6 +222,7 @@ function() {
 		this.msgs.removeChangeListener(this._listChangeListener);
 		this.msgs = null;
 	}
+	this.msgIds = [];
 	
 	ZmMailItem.prototype.clear.call(this);
 };

@@ -311,7 +311,7 @@ function(conv, offset, callback) {
 	var list = conv.msgs;
 	// see if we're out of msgs and the server has more
 	var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
-	if (offset && ((offset + limit > list.size()) && list.hasMore())) {
+	if (offset && list && ((offset + limit > list.size()) && list.hasMore())) {
 		// figure out how many items we need to fetch
 		var delta = (offset + limit) - list.size();
 		var max = delta < limit && delta > 0 ? delta : limit;
@@ -328,6 +328,7 @@ function(conv, offset, callback) {
 
 ZmConvListController.prototype._handleResponsePaginateConv =
 function(conv, offset, callback, result) {
+	if (!conv.msgs) { return; }
 	var searchResult = result.getResponse();
 	conv.msgs.setHasMore(searchResult.getAttribute("more"));
 	var newList = searchResult.getResults(ZmItem.MSG).getVector();

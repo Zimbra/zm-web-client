@@ -262,7 +262,7 @@ function() {
 
 	// bug fix #4356 - if currViewId is compose (among other restrictions) then still pop
 	var popAnyway = false;
-	if (currViewId == ZmController.COMPOSE_VIEW && this._conv.numMsgs == 1) {
+	if (currViewId == ZmController.COMPOSE_VIEW && this._conv.numMsgs == 1 && this._conv.msgs) {
 		var msg = this._conv.msgs.getArray()[0];
 		popAnyway = msg.isInvite() && msg.folderId == ZmFolder.ID_TRASH;
 	}

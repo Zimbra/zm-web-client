@@ -283,6 +283,7 @@ function(conv, msg, offset) {
 	} else {
 		this._msgRowIdList[item.id] = [];
 		var msgList = conv.msgs;
+		if (!msgList) { return; }
 		if (isConv) {
 			// should be here only when the conv is first expanded
 			msgList.addChangeListener(this._listChangeListener);
@@ -291,7 +292,6 @@ function(conv, msg, offset) {
 
 		// work with entire list of conv's msgs, using offset
 		var a = msgList.getArray();
-		if (!(a && a.length)) { return; }
 		var limit = appCtxt.get(ZmSetting.PAGE_SIZE);
 		offset = this._msgOffset[item.id] || 0;
 		var num = Math.min(limit, msgList.size() - offset);
@@ -487,8 +487,7 @@ function(ev) {
 			if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
 				// msg marked as Junk, or deleted via Empty Trash
 				// TODO: handle expandable msg removal
-				conv.msgs.remove(item, true);
-				conv.numMsgs = conv.msgs.size();
+				conv.removeMsg(item);
 				if (this._isExpandable(conv) && conv.numMsgs == 1) {
 					this._setImage(conv, ZmItem.F_EXPAND, null);
 					this._removeMsgRows(conv.id);
@@ -498,7 +497,7 @@ function(ev) {
 				// if this conv now has no msgs that match current search, remove it
 				var removeConv = true;
 				var folderId = appCtxt.getCurrentSearch().folderId;
-				if (folderId) {
+				if (folderId && conv.msgs) {
 					var msgs = conv.msgs.getArray();
 					for (var i = 0; i < msgs.length; i++) {
 						if (msgs[i].folderId == folderId) {
