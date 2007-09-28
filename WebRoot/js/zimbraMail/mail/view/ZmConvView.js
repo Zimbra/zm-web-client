@@ -66,11 +66,10 @@ ZmConvView.prototype.setItem =
 function(conv) {
 	if (!(conv instanceof ZmConv)) { return; }
 		
-	ZmDoublePaneView.prototype.setItem.call(this, conv);
-	
 	// Remove and re-add listeners for current conversation if it exists
-	if (this._conv)
+	if (this._conv) {
 		this._conv.removeChangeListener(this._changeListener);
+	}
 	this._conv = conv;
 	conv.addChangeListener(this._changeListener);
 	
