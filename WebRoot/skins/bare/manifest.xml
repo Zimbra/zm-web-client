@@ -1,12 +1,12 @@
 <skin>
 	<common>
 		<substitutions>
-			<file>../_base/base_side/skin.properties</file>
-			<file>../_base/white/skin.properties</file>
+			<file>../_base/base/skin.properties</file>
 			<file>skin.properties</file>
 		</substitutions>
 		<css>
-			<file>../_base/base_side/skin.css</file>
+			<file>../_base/base/skin.css</file>
+			<file>skin.css</file>
 		</css>
     </common>
     <advanced>    
@@ -16,7 +16,7 @@
     	    <file>../_base/base/skin.js</file>
 	    </script>
 		<html>
-			<file>../_base/base_side/skin.html</file>
+			<file>../_base/base/skin.html</file>
 		</html>
 	</advanced>
 	<standard>

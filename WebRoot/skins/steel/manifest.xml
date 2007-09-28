@@ -1,30 +1,26 @@
 <skin>
 	<common>
-		<substitutions>
+	  	<substitutions>
 			<file>../_base/base/skin.properties</file>
-			<file>../_base/light/skin.properties</file>
 			<file>skin.properties</file>
 		</substitutions>
 		<css>
-			<file>skin.css</file>
+			<file>../_base/base/skin.css</file>
 		</css>
-	</common>
-	<advanced>	
+  </common>  
+  <advanced>
 	    <script>
 	        <file>../_base/base/ZmSkin.js</file>
 	        <file>../_base/base/BaseSkin.js</file>
-	        <file>skin.js</file>
+	        <file>../_base/base/skin.js</file>
 	    </script>
-	    <html>
-			<file>skin.html</file>
+		<html>
+			<file>../_base/base/skin.html</file>
 		</html>
-		<templates>
-	        <file>templates/share/Widgets.template</file>		
-		</templates>
   </advanced>
   <standard>
 		<css>
 			<file>../../css/zhtml.css</file>
 		</css>
   </standard>
-</skin>
+ </skin>

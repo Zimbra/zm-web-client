@@ -2,7 +2,6 @@
 	<common>
 	  	<substitutions>
 			<file>../_base/base/skin.properties</file>
-			<file>../_base/light/skin.properties</file>
 			<file>skin.properties</file>
 		</substitutions>
 		<css>

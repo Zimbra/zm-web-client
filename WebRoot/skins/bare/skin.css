@@ -1,0 +1,24 @@
+
+#skin_td_tree	{	
+	padding:5px;
+}
+
+#skin_td_app_main	{	
+	padding:5px;
+}
+
+#skin_td_tree_footer	{	
+	padding:5px;
+}
+
+#skin_container_current_app,
+#skin_container_app_top_toolbar,
+#skin_container_app_toolbar_sep	{	
+	height:28px;
+	padding:2px;
+}
+
+
+#skin_container_app_toolbar_sep .vertSep {
+	display:none;
+}
