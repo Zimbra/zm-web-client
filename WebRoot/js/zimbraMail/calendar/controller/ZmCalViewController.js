@@ -1309,9 +1309,11 @@ function(parent, num) {
 		var calendar = appt && appt.getFolder();
 		var isReadOnly = calendar ? calendar.isReadOnly() : false;
 		var isSynced = Boolean(calendar && calendar.url);
+		var isShared = calendar ? calendar.isRemote() : false;
 		var disabled = isSynced || isReadOnly || (num == 0);
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote();
-		parent.enable([ZmOperation.DELETE, ZmOperation.TAG_MENU], !disabled);
+		parent.enable(ZmOperation.DELETE, !disabled);
+		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
 	}
 	// disable button for current view
