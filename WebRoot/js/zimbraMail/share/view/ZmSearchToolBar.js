@@ -326,14 +326,15 @@ function() {
 	}
 
 	// add search button
-	this._searchButton = this._addButton({ buttonId:"_searchButton", lbl:ZmMsg.search, icon:"Search"} );
+	this._searchButton = this._addButton({ buttonId:"_searchButton", lbl:ZmMsg.search, icon:"Search", tooltip:ZmMsg.searchTooltip} );
 
 	// add save search button if saved-searches enabled
 	this._saveButton = this._addButton({ setting:ZmSetting.SAVED_SEARCHES_ENABLED,
 										 buttonId:"_saveButton",
 										 lbl:ZmMsg.save,
 										 icon:"Save",
-  										 type:"toolbar"} );
+  										 type:"toolbar",
+										 tooltip:ZmMsg.saveSearchTooltip} );
 			
 
 
@@ -343,7 +344,8 @@ function() {
 											style: (DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE),
 											lbl:ZmMsg.searchBuilder,
 											icon:"SearchBuilder",
-											type:"toolbar"} );
+											type:"toolbar",
+											tooltip:ZmMsg.openSearchBuilder } );
 };
 
 ZmSearchToolBar.prototype._createSearchMenu =
@@ -398,6 +400,9 @@ function(params) {
 			: (new DwtButton(this, params.style));
 		var hint = Dwt.getAttr(buttonEl, "hint");
 		this._setButtonStyle(button, hint, params.lbl, params.icon);
+		if (params.tooltip) {
+			button.setToolTipContent(params.tooltip);
+		}
 		button.reparentHtmlElement(buttonId);
 	}
 

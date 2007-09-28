@@ -139,7 +139,7 @@ function() {
 	ZmOperation.registerOp("SHARE_DECLINE", {textKey:"declineShare", image:"Cancel"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("SHARE_FOLDER", {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("SHOW_ALL_ITEM_TYPES", {textKey:"showAllItemTypes", image:"Globe"});
-	ZmOperation.registerOp("SPELL_CHECK", {textKey:"spellCheck", image:"SpellCheck"});
+	ZmOperation.registerOp("SPELL_CHECK", {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip"});
 	ZmOperation.registerOp("SYNC", {textKey:"reload", image:"Refresh"});
 	ZmOperation.registerOp("SYNC_OFFLINE", {textKey:"checkMail", tooltipKey:"syncTooltip", image:"Refresh"});
 	ZmOperation.registerOp("TAG", null, ZmSetting.TAGGING_ENABLED);
