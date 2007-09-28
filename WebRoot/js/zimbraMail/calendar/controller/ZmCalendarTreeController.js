@@ -25,7 +25,7 @@
 
 ZmCalendarTreeController = function() {
 
-	ZmTreeController.call(this, ZmOrganizer.CALENDAR);
+	ZmTreeController.call(this, ZmOrganizer.CALENDAR, new DwtDropTarget(["ZmAppt"]));
 
 	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);
@@ -37,7 +37,7 @@ ZmCalendarTreeController = function() {
 	}
 
 	this._eventMgrs = {};
-}
+};
 
 ZmCalendarTreeController.prototype = new ZmTreeController;
 ZmCalendarTreeController.prototype.constructor = ZmCalendarTreeController;
@@ -151,8 +151,22 @@ function() {
 
 // Handles a drop event
 ZmCalendarTreeController.prototype._dropListener =
-function() {
-	// TODO
+function(ev) {
+	var appt = ev.srcData.data;
+	var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
+
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		if (appt.isReadOnly() || dropFolder.isReadOnly()) {
+			ev.doIt = false;
+		} else if (appt.getFolder().id == dropFolder.id) {
+			ev.doIt = false;
+		} else {
+			ev.doIt = this._dropTgt.isValidTarget(appt);
+		}
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+		var ctlr = ev.srcData.controller;
+		ctlr._doMove(appt, dropFolder);
+	}
 };
 
 /*
