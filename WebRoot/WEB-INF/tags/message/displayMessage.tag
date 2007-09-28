@@ -7,12 +7,12 @@
 <%@ attribute name="externalImageUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="composeUrl" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="newWindowUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
+<%@ attribute name="print" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-
 <%--compute body up front, so attachments refereneced in multipart/related don't show up --%>
 <c:set var="body" value="${message.body}"/>
 
@@ -23,7 +23,6 @@
         </c:catch>
     </c:if>
 </c:set>
-
 <c:if test="${not empty message.invite and mailbox.features.calendar}">
     <c:set var="appt" value="${message.invite.component}"/>
     <c:set var="showInviteReply" value="${not zm:getFolder(pageContext, message.folderId).isInTrash and not empty message.invite.component}"/>
@@ -36,9 +35,22 @@
 
 <c:set var="isPart" value="${!empty message.partName}"/>
 <table width="100%" cellpadding="0" cellspacing="0" class="Msg">
+<c:if test="${print}">
+<table  border=0 width=100% cellpadding="7">
+    <tr>
+        <td style="font-size:20px;font-weight:bold;" ><fmt:message key="zimbraTitle"/></td>
+        <td style="font-size:14px;font-weight:bold;" align=right> <c:out  value="${message.displayTo}"/></td>
+    </tr>
+</table>
+<hr>
+<div style='padding:10px;font-size:20px;font-weight:bold;"' >
+<c:out value="${message.subject}" />
+</div>
+<hr>
+</c:if>
     <tr>
         <td class='MsgHdr' colspan="2">
-            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" <c:if test="${print}">style="background-color: #EEEEEE;"</c:if> >
                 <tr>
                     <td align="left">
                         <table width="100%" align="left" cellpadding="2" cellspacing="0" border="0">
@@ -226,6 +238,14 @@
                                         <app:img src="mail/ImgForward.gif" alt="forward"/>
                                         &nbsp;
                                         <span><fmt:message key="forward"/></span>
+                                    </a>
+                                </td>
+                                <td><div class='vertSep'></div></td>
+                                <td style='padding: 0 2px 0 2px'>
+                                    <a accesskey='10' target="_blank" href="${fn:escapeXml(newWindowUrl)}&print=true">
+                                        <app:img src="startup/ImgPrint.gif" altkey="print" title="print"/>
+                                        &nbsp;
+                                        <span><fmt:message key="print"/></span>
                                     </a>
                                 </td>
                             </tr>
