@@ -92,7 +92,7 @@
                     <div class='ZhAC'>
                         <table cellpadding="2" cellspacing="5" style="height:80%;" width="100%" class='Compose' border="0">
                             <tr>
-                                <td valign='top' width="1%" align="right" nowrap> <label for="toField"><fmt:message key="to"/>: </label></td>
+                                <app:button  name="actionContactAdd" width="1%" tooltip="addFromContacts" text="to"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhACTo">
                                     <textarea  id="toField" rows="2" style='width:99%' cols="80"
@@ -102,7 +102,7 @@
                             </tr>
 
                             <tr>
-                                <td valign='top' align="right" nowrap> <label for="ccField"><fmt:message key="cc"/>: </label></td>
+                                <app:button  name="actionContactAdd" width="1%" tooltip="addFromContacts" text="cc"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhACCc">
                                         <input style='width:99%' id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" size=100 name="cc">
@@ -111,7 +111,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td valign='top' align=right nowrap> <label for="bccField"><fmt:message key="bcc"/>: </label></td>
+                                <app:button  name="actionContactAdd" width="1%" tooltip="addFromContacts" text="bcc"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhAcBcc">
                                         <input style='width:99%' id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" size="100" name="bcc">
