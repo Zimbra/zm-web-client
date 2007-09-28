@@ -20,6 +20,18 @@
                         <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
+                    <td nowrap>
+                    <c:choose>
+                        <c:when test="${not empty context}">
+                            <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:url var="composeUrl" value="/h/search?action=compose"/>
+                        </c:otherwise>
+                    </c:choose>
+                    <a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="mail/ImgNewMessage.gif" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
+                    </td>
+                    <td><div class='vertSep'></div></td>
                     <c:choose>
                         <c:when test="${context.isFolderSearch and context.folder.isTrash}">
                             <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT"/>
