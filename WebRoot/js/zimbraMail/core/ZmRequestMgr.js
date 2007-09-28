@@ -279,6 +279,37 @@ function(hdr) {
 		this._highestNotifySeen = 0;
 		this._refreshHandler(hdr.context.refresh);
 	}
+    //for zdesktop to display online | offline and to prompt changepassword
+    if(hdr && hdr.context.zdsync) {
+        this._offlineHandler(hdr.context.zdsync);
+    }
+};
+
+/**
+ * A <zdsync> block is returned in a all SOAP response for offlin client
+ * to inform the status of offline sync process
+ *
+ * @param zdsync	[object]	zdsync block (JSON)
+ */
+ZmRequestMgr.prototype._offlineHandler = function(zdsync) {
+    var offlineStat = document.getElementById("skin_container_offline_status");
+    if(zdsync.state[0]._content == "RUNNING") {
+        offlineStat.innerHTML = "online";
+        offlineStat.style.color = "green";
+    } else if(zdsync.state[0]._content == "OFFLINE") {
+        offlineStat.innerHTML = "offline";
+        offlineStat.style.color = "red";
+    } else if(zdsync.state[0]._content == "ONLINE") {
+        offlineStat.innerHTML = "online";
+        offlineStat.style.color = "green";
+    } else if(zdsync.state[0]._content == "ERROR") {
+        offlineStat.innerHTML = "offline";
+        offlineStat.style.color = "red";
+        if(zdsync.error[0].code[0]._content == "REMOTEAUTH") {
+            alert("Your account password has been changed. Update the account password in offine client to sync.");
+            window.location.href = "http://localhost:7633/zimbra/?chng=1";
+        }
+    }
 };
 
 /**
