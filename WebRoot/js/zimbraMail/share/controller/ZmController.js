@@ -82,9 +82,6 @@ ZmController.BRIEFCASE_VIEW			    = "BC";
 ZmController.BRIEFCASE_DETAIL_VIEW		= "BCD";
 ZmController.BRIEFCASE_COLUMN_VIEW		= "BCC";
 
-/* ROSSD - It feels like we may need a ZmAppViewController class to help with
- * the tab group work. Delaying this until I have more experience pushing the 
- * tab group stuff around the app to see what abstraction makes sense*/
 ZmController._currAppViewTabGroup = null;
 
 ZmController._setCurrentAppViewTabGroup =
@@ -381,6 +378,13 @@ function(ex, method, params, restartOnError, obj) {
 		}
 		loginDialog.setReloginMode(bReloginMode);
 		this._handleLogin(bReloginMode);
+	} else if (ex.code == ZmCsfeException.AUTH_TOKEN_CHANGED) {
+		var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
+		var method = soapDoc.getMethod();
+		method.setAttribute("sections", "mbox");
+		var respCallback = new AjxCallback(this, this._handleResponseGetInfo);
+		var params = {soapDoc:soapDoc, asyncMode:true, callback:respCallback, skipAuthCheck:true};
+		appCtxt.getAppController().sendRequest(params);
 	} else {
 		// remember the last search attempted for all other exceptions
 		this._execFrame = (method instanceof AjxCallback) ? method : {obj: obj, func: method, args: params, restartOnError: restartOnError};
@@ -392,6 +396,30 @@ function(ex, method, params, restartOnError, obj) {
         }
 		var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
 		this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
+	}
+};
+
+/**
+ * Check GetInfoResponse to see if the user for the new auth token is the same as the
+ * user for this session. If the user has changed, show the login dialog but don't
+ * remove the auth cookie (that way, if the current user doesn't relogin, the other
+ * user can continue with the new auth token). If the user hasn't changed, do nothing -
+ * we can just continue to use the new auth token.
+ */
+ZmController.prototype._handleResponseGetInfo =
+function(result) {
+	var response = result.getResponse();
+	var obj = response.GetInfoResponse;
+	if (obj.name != appCtxt.getUsername()) {
+		DBG.println(AjxDebug.DBG1, "AUTH TOKEN CHANGED, NEW USER");
+		var loginDialog = appCtxt.getLoginDialog();
+		loginDialog.registerCallback(this._loginCallback, this);
+		loginDialog.setError(ZmMsg.authChanged);
+		var bReloginMode = false;
+		loginDialog.setReloginMode(bReloginMode);
+		this._handleLogin(bReloginMode);
+	} else {
+		DBG.println(AjxDebug.DBG1, "AUTH TOKEN CHANGED, SAME USER");
 	}
 };
 

@@ -94,6 +94,7 @@ function() {
  *        noBusyOverlay		[boolean]*		if true, don't use the busy overlay
  *        accountName		[string]*		name of account to execute on behalf of
  *        response			[object]*		pre-determined response (no request will be made)
+ *        skipAuthCheck		[boolean]*		don't check if auth token has changed
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -120,7 +121,8 @@ function(params) {
 	var changeToken = accountName ? null : this._changeToken;
 	var cmdParams = {soapDoc:params.soapDoc, accountName:accountName, useXml:this._useXml,
 					 changeToken:changeToken, asyncMode:params.asyncMode, callback:asyncCallback,
-					 logRequest:this._logRequest, highestNotifySeen:this._highestNotifySeen};
+					 logRequest:this._logRequest, highestNotifySeen:this._highestNotifySeen,
+					 skipAuthCheck:params.skipAuthCheck};
 
 	var methodName = params.soapDoc ? params.soapDoc._methodEl.tagName : "[unknown]";
 	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + methodName);
