@@ -278,8 +278,19 @@
         </td>
     </tr>
     <tr>
-
-        <td class="Overview">&nbsp;</td>
+        <td class="Overview">
+            <c:choose>
+                <c:when test="${not empty context}">
+                    <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
+                </c:when>
+                <c:otherwise>
+                    <c:url var="composeUrl" value="/h/search?action=compose"/>
+                </c:otherwise>
+            </c:choose>
+            <div class="SearchButton" style="padding:2px;" >
+                <a  href="${fn:escapeXml(composeUrl)}" style="text-decoration:none;color:black;"><span id='tab_ikon_compose'><app:img src="mail/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span> &nbsp; <span id='tab_ikon_compose'></span><span><fmt:message key="compose"/></span></a>
+            </div>
+        </td>
         <td>
             <app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
         </td>
