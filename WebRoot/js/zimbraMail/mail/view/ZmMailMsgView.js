@@ -1340,10 +1340,14 @@ function(ev) {
 
 ZmMailMsgView.prototype._msgChangeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_MSG)
-		return;
-	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL)
+	if (ev.type != ZmEvent.S_MSG) { return; }
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+		if (ev.source == this._msg) {
+			this._controller._app.popView();
+		}
+	} else if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		this._setTags(this._msg);
+	}
 };
 
 ZmMailMsgView.prototype._selectStartListener =
@@ -1355,8 +1359,7 @@ function(ev) {
 
 ZmMailMsgView.prototype._tagChangeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_TAG)
-		return;
+	if (ev.type != ZmEvent.S_TAG) {	return; }
 
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_COLOR])) {
@@ -1366,8 +1369,9 @@ function(ev) {
 			AjxImg.setImage(img, ZmTag.COLOR_ICON[tag.color]);
 	}
 
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY)
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.MODIFY) {
 		this._setTags(this._msg);
+	}
 };
 
 ZmMailMsgView.prototype._expandButtonListener =
