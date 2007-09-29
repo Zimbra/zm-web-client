@@ -1197,7 +1197,7 @@ function(action, toOverride) {
 		}
 		
 		if (!this._msg.isSent) {
-			var addr = this._getAddrString(this._msg.getReplyAddresses(action), {});
+			var addr = this._getAddrString(this._msg.getReplyAddresses(action, used), {});
 			this.setAddress(AjxEmailAddress.TO, addr);
 		} else if (action == ZmOperation.REPLY) {
 			var toAddrs = this._msg.getAddresses(AjxEmailAddress.TO);

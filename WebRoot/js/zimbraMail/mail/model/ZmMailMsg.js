@@ -194,31 +194,40 @@ function() {
 * theoretically From and Reply To can have multiple addresses.
 */
 ZmMailMsg.prototype.getReplyAddresses =
-function(mode) {
+function(mode, aliases) {
+	var invAddr;
+	// reply-to has precedence over everything else
 	var addrVec = this._addrs[AjxEmailAddress.REPLY_TO];
-	var invAddr = null;
 	if (!addrVec && this.isInvite() && this.needsRsvp()) {
 		var invEmail = this.invite.getOrganizerEmail(0);
 		if (invEmail)
 			invAddr = new AjxEmailAddress(invEmail);
 	}
-
 	if (invAddr) {
 		return AjxVector.fromArray([invAddr]);
     }
-    if (!(addrVec && addrVec.size())) {
-        if (mode == ZmOperation.REPLY_CANCEL
-                || this.isSent && mode == ZmOperation.REPLY_ALL) {
-            if (this.isInvite()) {
-                addrVec = this._getAttendees();
-            }
-            else {
-                addrVec = this._addrs[AjxEmailAddress.TO];
-            }
+
+	if (!(addrVec && addrVec.size())) {
+        if (mode == ZmOperation.REPLY_CANCEL ||
+			this.isSent && mode == ZmOperation.REPLY_ALL)
+		{
+			addrVec = this.isInvite()
+				? this._getAttendees()
+				: this._addrs[AjxEmailAddress.TO];
         }
-        else {
+        else
+		{
             addrVec = this._addrs[AjxEmailAddress.FROM];
-        }
+
+			if (aliases) {
+				var from = addrVec.get(0);
+				// make sure we're not replying to ourself
+				if (from && aliases[from.address]) {
+					var sender = this._addrs[AjxEmailAddress.SENDER];
+					addrVec = (sender.size() > 0) ? sender : this._addrs[AjxEmailAddress.TO];
+				}
+			}
+		}
     }
     return addrVec;
 };
