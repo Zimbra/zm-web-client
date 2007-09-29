@@ -219,7 +219,7 @@ function(im) {
 				// it should always be instantiated by this time, but whatever.
 				if (view) {
                                         var item = this.getRosterItem(not.from);
-					new ZmImSubscribeAuth(view.getActiveWM(), not.from, item).popup();
+					ZmImSubscribeAuth.show(view.getActiveWM(), not.from, item);
 				}
                         } else if (not.ask && /^(un)?subscribed$/.test(not.type)) {
                                 if (not.ask == "subscribe" && not.to) {

@@ -15,8 +15,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmImSubscribeAuth = function(parent, addr, buddy) {
-	ZmImNotification.call(this, parent);
+ZmImSubscribeAuth = function(parent, addr, buddy, id) {
+	ZmImNotification.call(this, parent, id);
         this._addr = addr;
         this._buddy = buddy;
         this._init();
@@ -24,6 +24,12 @@ ZmImSubscribeAuth = function(parent, addr, buddy) {
 
 ZmImSubscribeAuth.prototype = new ZmImNotification;
 ZmImSubscribeAuth.prototype.constructor = ZmImSubscribeAuth;
+
+ZmImSubscribeAuth.show = function(parent, addr, buddy) {
+        var id = "ZmImSubscribeAuth-" + addr;
+        if (!ZmImNotification.exists(id))
+                new ZmImSubscribeAuth(parent, addr, buddy, id).popup();
+};
 
 ZmImSubscribeAuth.prototype._init = function() {
 	var base_id = this._baseId = Dwt.getNextId();
