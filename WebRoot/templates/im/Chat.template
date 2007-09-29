@@ -140,40 +140,20 @@
 <template id="im.Chat#SubscribeAuthDlg">
   <table width="100%">
     <tr>
-      <td colspan="2" style="text-align: center; padding-bottom: 10px">
+      <td style="text-align: center; padding-bottom: 10px">
         <$= AjxMessageFormat.format(ZmMsg.imSubscribeAuthRequest, [ data.buddy ]) $>
       </td>
     </tr>
     <tr>
-      <td width="50%">
-        <table width="100%">
+      <td>
+        <table width="90%" align="center">
           <tr>
-            <td class="ZmChatDialogField"><input type="radio" id="${id}_acceptAndAdd" checked="checked" name="${id}_radio" /></td>
-            <td><label for="${id}_acceptAndAdd"><$= ZmMsg.imSubscribeAuthRequest_acceptAndAdd $></label></td>
+            <$ if (!data.inList) { $>
+            <td style="width: 30%" id="${id}_acceptAndAdd"></td>
+            <$ } $>
+            <td style="width: 30%" id="${id}_accept"></td>
+            <td style="width: 30%" id="${id}_deny"></td>
           </tr>
-          <tr>
-            <td class="ZmChatDialogField"><input type="radio" id="${id}_deny" name="${id}_radio" /></td>
-            <td><label for="${id}_deny"><$= ZmMsg.imSubscribeAuthRequest_deny $></label></td>
-          </tr>
-        </table>
-      </td>
-      <td width="50%">
-        <table width="100%">
-          <tr>
-            <td class="ZmChatDialogField"><input type="radio" id="${id}_accept" name="${id}_radio" /></td>
-            <td><label for="${id}_accept"><$= ZmMsg.imSubscribeAuthRequest_accept $></label></td>
-          </tr>
-          <tr>
-            <td class="ZmChatDialogField"><input type="radio" id="${id}_doNothing" name="${id}_radio" /></td>
-            <td><label for="${id}_doNothing"><$= ZmMsg.imSubscribeAuthRequest_doNothing $></label></td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" style="text-align: center; padding-top: 10px">
-        <table align="center" cellspacing="0" cellpadding="0" style="width: 5em">
-          <tr><td id="${id}_buttons"></td></tr>
         </table>
       </td>
     </tr>

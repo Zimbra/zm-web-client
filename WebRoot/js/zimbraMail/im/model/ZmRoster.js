@@ -218,7 +218,8 @@ function(im) {
 				var view = ZmChatMultiWindowView.getInstance();
 				// it should always be instantiated by this time, but whatever.
 				if (view) {
-					new ZmImSubscribeAuth(view.getActiveWM(), not.from).popup();
+                                        var item = this.getRosterItem(not.from);
+					new ZmImSubscribeAuth(view.getActiveWM(), not.from, item).popup();
 				}
                         } else if (not.ask && /^(un)?subscribed$/.test(not.type)) {
                                 if (not.ask == "subscribe" && not.to) {
