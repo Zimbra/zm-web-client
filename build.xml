@@ -293,41 +293,23 @@
     </java>
   </target>
 
-  <target name="prepend-ZPL">
+  <target name="prepend-YPL">
     <concat destfile="${var}${rhinoExtension}${licenseExtension}">
-      <header filtering="no" file="${build.dir}/preamble-zpl.txt"/>
+      <header filtering="no" file="${build.dir}/preamble-ypl.txt"/>
       <path>
 	<fileset file="${var}${rhinoExtension}"/>
       </path>
     </concat>
-    <echo>Prepend ZPL: ${var}</echo>
-  </target>
-
-  <target name="prepend-ASL">
-    <concat destfile="${var}${rhinoExtension}${licenseExtension}">
-      <header filtering="no" file="${build.dir}/preamble-asl.txt"/>
-      <path>
-	<fileset file="${var}${rhinoExtension}"/>
-      </path>
-    </concat>
-    <echo>Prepend ASL: ${var}</echo>
+    <echo>Prepend YPL: ${var}</echo>
   </target>
 
 	<target name='generate-preambles' depends='check4zimbraajax'>
 		<mkdir dir='${build.dir}'/>
-		<concat destfile="${build.dir}/preamble-asl.txt">
+		<concat destfile="${build.dir}/preamble-ypl.txt">
 			<header>/*</header>
 			<footer>*/</footer>
 			<path>
-				<fileset file="${ajax.dir}/LICENSE.txt" />
-				<fileset file="${ajax.dir}/NOTICE.txt" />
-			</path>
-		</concat>
-		<concat destfile="${build.dir}/preamble-zpl.txt">
-			<header>/*</header>
-			<footer>*/</footer>
-			<path>
-				<fileset file="../ZimbraLicenses/zimbra/preamble-ZPL-WebClient.txt" />
+				<fileset file="../ZimbraLicenses/zimbra/preamble-YPL-WebClient.txt" />
 			</path>
 		</concat>
 	</target>
@@ -363,18 +345,12 @@
 				<fileset refid="js-includes" />
 			</path>
 		</foreach>
-		<foreach target="prepend-ZPL" param="var">
+		<foreach target="prepend-YPL" param="var">
 			<path>
 				<fileset dir="${build.dir}/WebRoot/js">
 					<include name="ZimbraAdmin_all.js" />
 					<include name="ZimbraMail_all.js" />
 					<include name="ZimbraNewWindow_all.js" />
-				</fileset>
-			</path>
-		</foreach>
-		<foreach target="prepend-ASL" param="var">
-			<path>
-				<fileset dir="${build.dir}/WebRoot/js">
 					<include name="Ajax_all.js" />
 					<include name="AjaxNewWindow_all.js" />
 				</fileset>
