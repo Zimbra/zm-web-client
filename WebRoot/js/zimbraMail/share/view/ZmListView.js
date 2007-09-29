@@ -74,6 +74,8 @@ function() {
 
 ZmListView.prototype.set =
 function(list, sortField) {
+	this.setSelectionHdrCbox(false);
+
 	var subList;
 	if (list instanceof ZmList) {
 		list.addChangeListener(this._listChangeListener);
@@ -493,6 +495,12 @@ function(check) {
 	}
 
 	this.setSelectionHdrCbox(sel.length == this.getList().size());
+};
+
+ZmListView.prototype._setNoResultsHtml =
+function() {
+	DwtListView.prototype._setNoResultsHtml.call(this);
+	this.setSelectionHdrCbox(false);
 };
 
 ZmListView.prototype._getHeaderToolTip =

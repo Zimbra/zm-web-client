@@ -113,7 +113,7 @@ function() {
 
 ZmMailMsgView.prototype.set =
 function(msg) {
-	if (this._msg && (this._msg.id == msg.id)) { return; }
+	if (this._msg && msg && (this._msg.id == msg.id)) { return; }
 
 	var oldMsg = this._msg;
 	this.reset();
