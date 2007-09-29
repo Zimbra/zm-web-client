@@ -165,7 +165,7 @@ function(parent, view) {
     var section = ZmPref.getPrefSectionMap()[view];
     var manageChanges = section && section.manageChanges; 
     parent.enable(ZmOperation.SAVE, !manageChanges);
-	parent.enable(ZmOperation.CANCEL, true);
+	parent.enable(ZmOperation.CANCEL, appCtxt.getAppViewMgr()._hidden.length > 0);
 };
 
 /*
