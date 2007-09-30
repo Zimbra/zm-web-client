@@ -720,19 +720,7 @@ function(appt) {
 	var apptY = 0;
 	var layout = this._layoutMap[this._getItemId(appt)];
 	var apptWidthPercent = 1;
-	if (layout){
-		layout.bounds = this._getBoundsForAppt(layout.appt);
-		apptWidthPercent = ZmCalColView._getApptWidthPercent(layout.maxcol+1);
-		var w = Math.floor(layout.bounds.width*apptWidthPercent);
-		var xinc = layout.maxcol ? ((layout.bounds.width - w) / layout.maxcol) : 0; // n-1
-		var x = xinc * layout.col + (layout.bounds.x);
-		if (appt) appt._layout = {x: x, y: layout.bounds.y, w: w, h: layout.bounds.height};
-		apptWidth = w;
-		apptHeight = layout.bounds.height;
-		apptX = x;
-		apptY = layout.bounds.y;
-	}
-	
+
 	// set up DIV
 	var div = document.createElement("div");	
 
@@ -2652,4 +2640,24 @@ function(hide) {
 	
 	this._hideAllDayAppt = ! this._hideAllDayAppt;
 	this._layout();
+}
+
+ZmCalColView.prototype._postApptCreate =
+function(appt,div) {
+	var layout = this._layoutMap[this._getItemId(appt)];
+	if (layout){
+		layout.bounds = this._getBoundsForAppt(layout.appt);
+		apptWidthPercent = ZmCalColView._getApptWidthPercent(layout.maxcol+1);
+		var w = Math.floor(layout.bounds.width*apptWidthPercent);
+		var xinc = layout.maxcol ? ((layout.bounds.width - w) / layout.maxcol) : 0; // n-1
+		var x = xinc * layout.col + (layout.bounds.x);
+		if (appt) appt._layout = {x: x, y: layout.bounds.y, w: w, h: layout.bounds.height};
+		var apptWidth = w;
+		var apptHeight = layout.bounds.height;
+		var apptX = x;
+		var apptY = layout.bounds.y;
+		var apptDiv = document.getElementById(this._getItemId(layout.appt));
+		this._layoutAppt(layout.appt, apptDiv, apptX, apptY, apptWidth, apptHeight);
+	}
+	
 }
