@@ -287,9 +287,6 @@ function(params) {
 	appCtxt.inStartup = true;
 	if (typeof(skin) == "undefined") {
 		DBG.println(AjxDebug.DBG1, "No skin!");
-		var url = AjxUtil.formatUrl({path:"/public/skinError.jsp", qsArgs:{skin:appCurrentSkin}, qsReset:true});
-		ZmZimbraMail.sendRedirect(url);
-        return;
     }
 
 	if (!this._appViewMgr) {
