@@ -371,7 +371,7 @@ function() {
 // Public methods
 
 ZmContactsApp.prototype.launch =
-function(callback) {
+function(params, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["ContactsCore", "Contacts"], true, loadCallback, null, true);
 };

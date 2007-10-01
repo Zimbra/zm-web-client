@@ -438,37 +438,31 @@ function() {
 // Public methods
 
 ZmCalendarApp.prototype.launch =
-function(callback, checkQS) {
-	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback, checkQS]);
+function(params, callback) {
+	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [params, callback]);
 	AjxDispatcher.require(["CalendarCore", "Calendar"], true, loadCallback, null, true);
 };
 
 ZmCalendarApp.prototype._handleLoadLaunch =
-function(callback, checkQS) {
+function(params, callback) {
 	var cc = AjxDispatcher.run("GetCalController");
 	var view = cc._defaultView();
 	var sd = null;
 
-	if (checkQS && location) {
+	params = params || {};
+	if (params.checkQS && location) {
 		var search = location.search;
 		var found = false;
-		if (search.match(/\bview=day\b/))
-		{
+		if (search.match(/\bview=day\b/)) {
 			found = true;
 			view = ZmController.CAL_DAY_VIEW;
-		}
-		else if (search.match(/\bview=workWeek\b/))
-		{
+		} else if (search.match(/\bview=workWeek\b/)) {
 			found = true;
 			view = ZmController.CAL_WORK_WEEK_VIEW;
-		}
-		else if (search.match(/\bview=week\b/))
-		{
+		} else if (search.match(/\bview=week\b/)) {
 			found = true;
 			view = ZmController.CAL_WEEK_VIEW;
-		}
-		else if (search.match(/\bview=month\b/))
-		{
+		} else if (search.match(/\bview=month\b/)) {
 			found = true;
 			view = ZmController.CAL_MONTH_VIEW;
 		}

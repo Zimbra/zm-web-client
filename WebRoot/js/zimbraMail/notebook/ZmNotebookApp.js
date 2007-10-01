@@ -399,7 +399,7 @@ function() {
 // Public methods
 
 ZmNotebookApp.prototype.launch =
-function(callback) {
+function(params, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["NotebookCore", "Notebook"], true, loadCallback, null, true);
 };

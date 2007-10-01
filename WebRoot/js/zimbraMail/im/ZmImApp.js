@@ -265,7 +265,7 @@ function(notify) {
 };
 
 ZmImApp.prototype.launch =
-function(callback) {
+function(params, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require("IM", true, loadCallback, null, true);
 };
@@ -274,8 +274,9 @@ ZmImApp.prototype._handleLoadLaunch =
 function(callback) {
 	var clc = this.getChatListController();
 	clc.show();
-	if (callback)
+	if (callback) {
 		callback.run();
+	}
 };
 
 ZmImApp.prototype.activate =

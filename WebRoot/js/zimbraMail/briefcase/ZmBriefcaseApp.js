@@ -332,7 +332,7 @@ function() {
 // Public methods
 
 ZmBriefcaseApp.prototype.launch =
-function(callback) {
+function(params, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["BriefcaseCore","Briefcase"], true, loadCallback, null, true);
 };

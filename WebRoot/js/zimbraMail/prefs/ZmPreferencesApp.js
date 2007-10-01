@@ -63,7 +63,7 @@ ZmZimbraMail.addAppListener(ZmApp.PREFERENCES, ZmAppEvent.PRE_LAUNCH, new AjxLis
 // App API
 
 ZmPreferencesApp.prototype.launch =
-function(callback) {
+function(params, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require(["PreferencesCore", "Preferences"], true, loadCallback, null, true);
 };

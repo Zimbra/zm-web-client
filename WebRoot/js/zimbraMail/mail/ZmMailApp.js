@@ -560,7 +560,8 @@ function() {
 
 // App API
 
-ZmMailApp.prototype.startup = function(result) {
+ZmMailApp.prototype.startup =
+function(result) {
 	var obj = result.getResponse().GetInfoResponse;
 	appCtxt.getIdentityCollection().initialize(obj.identities);
 	appCtxt.getDataSourceCollection().initialize(obj.dataSources);
@@ -877,21 +878,16 @@ function(inNewWindow) {
 // Public methods
 
 ZmMailApp.prototype.launch =
-function(callback, checkQS, response) {
+function(params, callback) {
 	var query;
-	if (checkQS) {
+	params = params || {};
+	if (params.checkQS) {
+		var ic = appCtxt.getIdentityCollection();
+		if (!ic || (ic.getSize() == 0)) {
+			this.startup(params.result);
+		}
 		if (location && (location.search.match(/\bview=compose\b/))) {
-			AjxDispatcher.require("Startup2");
-			var cc = AjxDispatcher.run("GetComposeController");
-			var match = location.search.match(/\bsubject=([^&]+)/);
-			var subject = match ? decodeURIComponent(match[1]) : null;
-			match = location.search.match(/\bto=([^&]+)/);
-			var to = match ? decodeURIComponent(match[1]) : null;
-			match = location.search.match(/\bbody=([^&]+)/);
-			var body = match ? decodeURIComponent(match[1]) : null;
-			var params = {action:ZmOperation.NEW_MESSAGE, toOverride:to, subjOverride:subject,
-						  extraBodyText:body, callback:callback};
-			cc.doAction(params);
+			this._showComposeView(callback);
 			return;
 		} else if (location.search && (location.search.match(/\bview=msg\b/))) {
 			var match = location.search.match(/\bid=(\d+)/);
@@ -903,7 +899,7 @@ function(callback, checkQS, response) {
 	}
 
 	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
-	this._mailSearch(query, callback, response);
+	this._mailSearch(query, callback, params.searchResponse);
 };
 
 ZmMailApp.prototype._handleErrorLaunch =
@@ -1049,6 +1045,26 @@ function(results, callback) {
 	}
 	if (callback) {
 		callback.run();
+	}
+};
+
+ZmMailApp.prototype._showComposeView =
+function(callback) {
+	AjxDispatcher.require("Startup2");
+	var cc = AjxDispatcher.run("GetComposeController");
+	var match = location.search.match(/\bsubject=([^&]+)/);
+	var subject = match ? decodeURIComponent(match[1]) : null;
+	match = location.search.match(/\bto=([^&]+)/);
+	var to = match ? decodeURIComponent(match[1]) : null;
+	match = location.search.match(/\bbody=([^&]+)/);
+	var body = match ? decodeURIComponent(match[1]) : null;
+	var params = {action:ZmOperation.NEW_MESSAGE, toOverride:to, subjOverride:subject,
+				  extraBodyText:body, callback:callback};
+	cc.doAction(params);
+
+	if (!this._hasRendered) {
+		appCtxt.getAppController().appRendered(this._name);
+		this._hasRendered = true;
 	}
 };
 

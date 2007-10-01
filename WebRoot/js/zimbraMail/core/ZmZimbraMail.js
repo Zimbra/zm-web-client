@@ -196,7 +196,7 @@ function(params) {
     }
     
     // Handle dev mode
-    if (params.devMode) {
+    if (params.devMode == "1") {
     	DBG.println(AjxDebug.DBG1, "DEV MODE");
     	appCtxt.set(ZmSetting.DEV, true);
     	appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
@@ -408,7 +408,7 @@ function(params, result) {
 	} else {
 		AjxDispatcher.require("Startup2");
 	}
-	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params.checkQS);
+	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
 };
 
 /**
@@ -1015,16 +1015,18 @@ function() {
 };
 
 /**
-* Activates the given app.
-*
-* @param appName		[constant]		application
-* @param force			[boolean]*		if true, launch the app
-* @param callback		[AjxCallback]*	callback
-* @param errorCallback	[AjxCallback]*	error callback
-* @param checkQS		[boolean]*		if true, check query string for launch args
-*/
+ * Activates the given app.
+ *
+ * @param appName		[constant]		application
+ * @param force			[boolean]*		if true, launch the app
+ * @param callback		[AjxCallback]*	callback
+ * @param errorCallback	[AjxCallback]*	error callback
+ * @param params		[hash]*			hash of params:		(see startup functions for full list)
+ *        checkQS		[boolean]*		if true, check query string for launch args
+ *        result		[ZmCsfeResult]	result object from load of user settings
+ */
 ZmZimbraMail.prototype.activateApp =
-function(appName, force, callback, errorCallback, checkQS) {
+function(appName, force, callback, errorCallback, params) {
 	DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
 
 	var view = this._appViewMgr.getAppView(appName);
@@ -1052,7 +1054,9 @@ function(appName, force, callback, errorCallback, checkQS) {
 			var eventType = [appName, ZmAppEvent.PRE_LAUNCH].join("_");
 			this._evt.item = this._apps[appName];
 			this._evtMgr.notifyListeners(eventType, this._evt);
-			this._apps[appName].launch(respCallback, checkQS, this._searchResponse);
+			params = params || {};
+			params.searchResponse = this._searchResponse;
+			this._apps[appName].launch(params, respCallback);
 			delete this.searchResponse;
 		}
 	}
