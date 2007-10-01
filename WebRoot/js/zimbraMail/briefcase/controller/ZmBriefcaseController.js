@@ -215,7 +215,7 @@ function() {
 
 ZmBriefcaseController.prototype._defaultView =
 function() {
-	return ZmController.BRIEFCASE_DETAIL_VIEW;
+	return ZmController.BRIEFCASE_COLUMN_VIEW;
 };
 
 ZmBriefcaseController.prototype._createNewView =
