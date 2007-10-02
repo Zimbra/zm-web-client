@@ -108,6 +108,39 @@ function(actionCode) {
 	return true;
 };
 
+/**
+ * Override to handle paging among msgs within an expanded conv.
+ * 
+ * TODO: handle msg paging (current item is expandable msg)
+ */
+ZmConvListController.prototype.pageItemSilently =
+function(currentItem, forward) {
+	if (!currentItem) { return; }
+	if (currentItem.type == ZmItem.CONV) {
+		ZmMailListController.prototype.pageItemSilently.apply(this, arguments);
+		return;
+	}
+	
+	var conv = appCtxt.getById(currentItem.cid);
+	if (!(conv && conv.msgs)) { return; }
+	var found = false;
+	var list = conv.msgs.getArray();
+	for (var i = 0, count = list.length; i < count; i++) {
+		if (list[i] == currentItem) {
+			found = true;
+			break;
+		}
+	}
+	if (!found) { return; }
+	
+	var msgIdx = forward ? i + 1 : i - 1;
+	if (msgIdx > 0 && msgIdx < a.length) {
+		var msg = a[msgIdx];
+		var clv = this._listView[this._currentView];
+		clv.emulateDblClick(msg);
+	}
+};
+
 // Private methods
 
 ZmConvListController.prototype._createDoublePaneView = 
