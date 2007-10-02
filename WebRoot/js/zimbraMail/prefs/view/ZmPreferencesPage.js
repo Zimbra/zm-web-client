@@ -179,9 +179,9 @@ function() {
 		}
 		else if (type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_TEXTAREA) {
 			if (type == ZmPref.TYPE_TEXTAREA) {
-				if (!elem.getAttribute("rows")) elem.setAttribute("rows", 4);
-				if (!elem.getAttribute("cols")) elem.setAttribute("cols", 60);
-				if (!elem.getAttribute("wrap")) elem.setAttribute("wrap", "on");
+				setup.rows = elem.getAttribute("rows") || setup.rows || 4;
+				setup.cols = elem.getAttribute("cols") || setup.cols || 60;
+				setup.wrap = elem.getAttribute("wrap") || setup.wrap || "on";
 			}
 			control = this._setupInput(id, setup, value);
 		}
@@ -598,7 +598,11 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupInput =
 function(id, setup, value) {
-	var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: value, size: 40});
+	var params = {
+		parent: this, type: DwtInputField.STRING, initialValue: value, size: setup.cols || 40,
+		rows: setup.rows, wrap: setup.wrap
+	};
+	var input = new DwtInputField(params);
 	this.setFormObject(id, input);
 	// TODO: Factor this out
 	if (id == ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED) {
