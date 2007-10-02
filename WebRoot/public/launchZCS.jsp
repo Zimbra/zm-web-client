@@ -131,17 +131,6 @@
 </noscript>
 <% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys"); %>
 <jsp:include page="Resources.jsp" />
-<script>
-	function populateText(){
-		if(arguments.length == 0 ) return;
-		var node, index = 0, length = arguments.length;
-		while(index < length){
-			node = document.getElementById(arguments[index]);
-			if(node) node.appendChild(document.createTextNode(arguments[index+1]));
-			index += 2;
-		}
-	}
-</script>
 <%-- NOTE: servlet path is needed because the servlet sees it as /public/launchZCS.jsp --%>
 <jsp:include page="/html/skin.html">
 	<jsp:param name="servlet-path" value="/html/skin.html" />
@@ -150,16 +139,6 @@
 	<jsp:param name="locale" value="${locale}" />
 	<jsp:param name='debug' value='${isDebug}' />
 </jsp:include>
-<script>
-	<fmt:message key="splashScreenAppName" var="splashScreenAppName"/>
-	<fmt:message key="splashScreenLoading" var="splashScreenLoading"/>
-	<fmt:message key="splashScreenCopyright" var="splashScreenCopyright"/>
-	populateText(
-		"ZLoginAppName",			"${zm:jsEncode(splashScreenAppName)}",
-        "ZLoginLoadingMsg",			"${zm:jsEncode(splashScreenLoading)}",
-        "ZLoginLicenseContainer",	"${zm:jsEncode(splashScreenCopyright)}"
-	);
-</script>
 <jsp:include page="Boot.jsp"/>
 <script>
 	AjxEnv.DEFAULT_LOCALE = "${locale}";
