@@ -133,6 +133,7 @@
     <tr>
       <td class="ZmChatDialogField"><$= ZmMsg.imGroupsLabel $></td>
       <td id="${id}_groups"></td>
+      <td id="${id}_groupsDropDown"></td>
     </tr>
   </table>
 </template>

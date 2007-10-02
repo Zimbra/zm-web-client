@@ -43,6 +43,13 @@ ZmNewRosterItemDialog.prototype._init = function() {
 	this._groupsEntry = new DwtInputField({ parent: this, size: 30 });
 	this._groupsEntry.reparentHtmlElement(id + "_groups");
 
+        this._groupsDropDown = new DwtButton(this);
+        // this._groupsDropDown.setImage("SelectPullDownArrow");
+        // this._groupsDropDown.addSelectionListener(new AjxListener(this, this._groupsDropDownListener));
+        this._groupsDropDown.reparentHtmlElement(id + "_groupsDropDown");
+        this._getGroupsMenu = new AjxCallback(this, this._getGroupsMenu);
+        this._groupsDropDown.setMenu(this._getGroupsMenu);
+
 	var options = [];
 	var roster = AjxDispatcher.run("GetRoster");
 	var gws = roster.getGateways();
@@ -63,35 +70,118 @@ ZmNewRosterItemDialog.prototype._init = function() {
 	this._tabGroup.addMember(this._nameEntry);
 	this._tabGroup.addMember(this._groupsEntry);
 
-	this.addPopupListener(new AjxListener(this, function() {
-                this._addrEntry.focus();
-                this._tabGroup.setFocusMember(this._addrEntry);
+	this.addPopupListener(new AjxListener(this, this._popupListener));
+};
+
+// ZmNewRosterItemDialog.prototype._groupsDropDownListener = function(ev) {};
+
+ZmNewRosterItemDialog.prototype._getSelGroupsArray = function() {
+        var groups = this._groupsEntry.getValue();
+        groups = groups.replace(/^\s*[,;]*\s*/, "");
+        groups = groups.replace(/\s*[,;]*\s*$/, "");
+        if (/\S/.test(groups))
+                groups = groups.split(/\s*[;,]\s*/);
+        else
+                groups = [];
+        return groups;
+};
+
+ZmNewRosterItemDialog.prototype._groupsMenuItemListener = function(ev) {
+        var g = ev.item.getData("ZmImGroup");
+        var groups = this._getSelGroupsArray();
+        // remove it first
+        for (var i = groups.length; --i >= 0;)
+                if (groups[i].toLowerCase() == g.toLowerCase())
+                        groups.splice(i, 1);
+
+        if (ev.item.getChecked())
+                groups.push(g);
+
+        this._groupsEntry.setValue(groups.join(", "));
+};
+
+ZmNewRosterItemDialog.prototype._getGroupsMenu = function() {
+        var menu = new ZmPopupMenu(this._groupsDropDown, null, this);
+
+        // find groups currently defined in the buddy list
+	var groups = AjxDispatcher.run("GetRoster").getGroups();
+        groups.sort();
+
+        // see what groups are currently selected
+        var tmp = this._getSelGroupsArray();
+
+        var selected_groups = {};
+        for (var i = 0; i < tmp.length; ++i)
+                selected_groups[tmp[i]] = 0;
+
+        var itemListener = new AjxListener(this, this._groupsMenuItemListener);
+
+        groups.foreach(function(label) {
+                var item = new DwtMenuItem(menu, DwtMenuItem.CHECK_STYLE);
+                item.addSelectionListener(itemListener);
+                item.setText(label);
+                item.setData("ZmImGroup", label);
+                if (label in selected_groups) {
+                        selected_groups[label]++;
+                        item.setChecked(true, true);
+                }
+        });
+
+        // any additional groups?
+        var added = false;
+        for (var i in selected_groups) {
+                if (selected_groups[i] == 0) {
+                        // not encountered
+                        if (!added) {
+                                new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+                                added = true;
+                        }
+                        var item = new DwtMenuItem(menu, DwtMenuItem.CHECK_STYLE);
+                        item.addSelectionListener(itemListener);
+                        item.setText(i);
+                        item.setData("ZmImGroup", i);
+                        // checked, because it's in selected_groups
+                        item.setChecked(true, true);
+                }
+        }
+
+        // make sure it's gone when it pops down; the groups can
+        // change very dinamically so we don't wanna cache this menu.
+        menu.addPopdownListener(new AjxListener(this, function() {
+                // force rebuild the next time.
+                this._groupsDropDown.setMenu(this._getGroupsMenu);
+                menu.dispose();
         }));
 
-	// FIXME: the following works around a wicked FF bug that manifests
+        return menu;
+};
+
+ZmNewRosterItemDialog.prototype._popupListener = function() {
+        this._addrEntry.focus();
+        this._tabGroup.setFocusMember(this._addrEntry);
+
+        // FIXME: the following works around a wicked FF bug that manifests
 	// only in Windows or Mac (because it's there where we display the
 	// semiopaque veil).  The bug prevents this dialog from being visible,
 	// because immediately after the veil is displayed, this.getSize()
 	// (used in DwtBaseDialog::_positionDialog) returns a huge width,
 	// ~7000px, which positions the left side of the dialog much below 0px.
-	this.addPopupListener(new AjxListener(this, function() {
-		var pos = this.getLocation();
-		if (pos.x < 0) {
-			// Amazing! the following doesn't work:
-			// pos.x = 400;
-			// this.setLocation(pos);
-			// console.log(pos);
-			// console.log(this.getLocation());
+        var pos = this.getLocation();
+	if (pos.x < 0) {
+		// Amazing! the following doesn't work:
+		// pos.x = 400;
+		// this.setLocation(pos);
+		// console.log(pos);
+		// console.log(this.getLocation());
 
-			// this works
-// 			var el = this.getHtmlElement();
-// 			el.style.left = "400px";
+		// this works
+                // 			var el = this.getHtmlElement();
+                // 			el.style.left = "400px";
 
-			setTimeout(AjxCallback.simpleClosure(function() {
-				this._positionDialog();
-			}, this), 1);
-		}
-	}));
+		setTimeout(AjxCallback.simpleClosure(function() {
+			this._positionDialog();
+		}, this), 1);
+	}
 };
 
 ZmNewRosterItemDialog.prototype._contentHtml = function() {
