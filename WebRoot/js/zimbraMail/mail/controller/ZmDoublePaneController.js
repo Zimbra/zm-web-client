@@ -229,8 +229,12 @@ function(msg) {
 
 	this._doublePaneView.setMsg(msg);
 	if (msg.isUnread) {
-		// msg was cached, then marked unread
-		this._doMarkRead([msg], true);
+		var folder = appCtxt.getById(msg.folderId);
+		var readOnly = folder ? folder.isReadOnly() : false;
+		if (!readOnly) {
+			// msg was cached, then marked unread
+			this._doMarkRead([msg], true);
+		}
 	}
 };
 

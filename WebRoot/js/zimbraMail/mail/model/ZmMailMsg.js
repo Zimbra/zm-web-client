@@ -531,7 +531,11 @@ function(callback, result) {
 	this._attachments.length = 0;
 
 	this._loadFromDom(response.m[0]);
-	this._markReadLocal(true);
+	var folder = appCtxt.getById(this.folderId);
+	var isReadOnly = folder ? folder.isReadOnly() : false;
+	if (!isReadOnly) {
+		this._markReadLocal(true);
+	}
 
 	// return result so callers can check for exceptions if they want
 	if (this._loadCallback) {
