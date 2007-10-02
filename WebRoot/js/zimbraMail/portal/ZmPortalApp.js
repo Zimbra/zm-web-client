@@ -68,14 +68,14 @@ ZmPortalApp.prototype.refreshPortlets = function() {
 
 ZmPortalApp.prototype.launch =
 function(params, callback) {
-    var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+    var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [params, callback]);
 	AjxDispatcher.require("Portal", true, loadCallback, null, true);
 };
 
-ZmPortalApp.prototype._handleLoadLaunch = function(callback) {
+ZmPortalApp.prototype._handleLoadLaunch = function(params, callback) {
 	var controller = this.getPortalController();
 	controller.show();
-    ZmApp.prototype.launch.call(this, callback);
+    ZmApp.prototype.launch.call(this, params, callback);
 };
 
 ZmPortalApp.prototype.activate = function(active) {
