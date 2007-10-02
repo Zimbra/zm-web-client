@@ -78,7 +78,7 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 ZmConvListView.COL_WIDTH_FROM	= 145;
 ZmConvListView.INDENT			= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
-ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Icon";
+ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Expand";
 
 // Copy some functions from ZmMailMsgListView, for handling message rows
 ZmConvListView.prototype._changeFolderName = ZmMailMsgListView.prototype._changeFolderName;
