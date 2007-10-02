@@ -39,6 +39,11 @@
 		<param-value>@jsVersion@</param-value>
     </context-param>
 
+    <context-param>
+        <param-name>zimbraDefaultSkin</param-name>
+		<param-value>sand</param-value>
+    </context-param>
+
     <filter>
         <filter-name>GzipFilter</filter-name>
         <filter-class>

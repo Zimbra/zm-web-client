@@ -150,7 +150,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 -->
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginTitle"/></title>
-    <c:set var="skin" value="${empty cookie.ZM_SKIN ? 'sand' : cookie.ZM_SKIN.value}"/>
+    <c:set var="skin" value="${empty initParam.zimbraDefaultSkin ? 'sand' : initParam.zimbraDefaultSkin}"/>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
