@@ -327,6 +327,11 @@ td.DDSepInvisible div {
 	border:0px;
 }
 
+.Expand {
+#IFDEF MSIE
+	width: 23px;
+#ENDIF
+}
 
 
 /* ??? SHOTGUN */
