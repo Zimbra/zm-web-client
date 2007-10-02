@@ -701,7 +701,7 @@ function(notify) {
  * we figure out which folder(s) a conv spans before we hand it off.
  * <p>
  * Since the offline client may receive hundreds of create notifications at a time, we
- * make sure a create notification is relevant before creating a mail object.</p>
+ * make sure a create notification is relevant before creating a mail item.</p>
  *
  * @param creates	[hash]		hash of create notifications
  */
@@ -714,10 +714,7 @@ function(creates, force) {
 		var list = creates["link"];
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
-
-			if (appCtxt.cacheGet(create.id))
-				continue;
-
+			if (appCtxt.cacheGet(create.id)) { continue; }
 			this._handleCreateLink(create, ZmOrganizer.FOLDER);
 		}
 	}
@@ -775,10 +772,10 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		create._handled = true;
-
-		if (!this._checkCreate(create, type, currList, sortBy, cutoff)) {
-			continue;
-		}
+		
+		// perform strict checking if we're in offline mode
+		if (appCtxt.get(ZmSetting.OFFLINE) &&
+			!this._checkCreate(create, type, currList, sortBy, cutoff)) { continue; }
 
 		DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + nodeName);
 		var itemClass = eval(ZmList.ITEM_CLASS[type]);
