@@ -243,39 +243,6 @@ and the container element is replaced with that control.
 			</td>
 		</tr>
 	</table>
-
-	<table class='ZOptionsSectionTable' cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.emailDeleteSchedule$></td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-		<tr>
-			<td class='ZOptionsSectionMain ZOptionsSectionMainTable' colspan=3>
-			<table width=95% cellspacing=1 cellpadding=2>
-				<colgroup>
-					<col width=1>
-					<col width=*>
-				</colgroup>
-				<tr><td class='ZOptionsTableLabel'><$=ZmMsg.emailDeleteScheduleInboxUnread$></td>
-					<td class='ZOptionsTableRow Line1'><div id='${id}_MAIL_LIFETIME_INBOX_UNREAD' tabindex='170'></div></td>
-				</tr>
-				<tr><td class='ZOptionsTableLabel'><$=ZmMsg.emailDeleteScheduleInboxRead$></td>
-					<td class='ZOptionsTableRow Line2'><div id='${id}_MAIL_LIFETIME_INBOX_READ' tabindex='180'></div></td>
-				</tr>
-				<tr><td class='ZOptionsTableLabel'><$=ZmMsg.emailDeleteScheduleSent$></td>
-					<td class='ZOptionsTableRow Line1'><div id='${id}_MAIL_LIFETIME_SENT' tabindex='190'></div></td>
-				</tr>
-				<tr><td class='ZOptionsTableLabel'><$=ZmMsg.emailDeleteScheduleJunk$></td>
-					<td class='ZOptionsTableRow Line2'><div id='${id}_MAIL_LIFETIME_JUNK' tabindex='200'></div></td>
-				</tr>
-				<tr><td class='ZOptionsTableLabel'><$=ZmMsg.emailDeleteScheduleTrash$></td>
-					<td class='ZOptionsTableRow Line1'><div id='${id}_MAIL_LIFETIME_TRASH' tabindex='210'></div></td>
-				</tr>
-			</table>
-			</td>
-		</tr>
-	</table>
 </template>
 
 <template id='prefs.Pages#Composing'>
