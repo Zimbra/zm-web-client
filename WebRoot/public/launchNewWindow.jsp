@@ -33,8 +33,11 @@
 
     String skin = request.getParameter("skin");
     if (skin == null) {
-        skin = "sand";
-    }
+        skin = application.getInitParameter("zimbraDefaultSkin");
+		if (skin == null) {
+			skin = "sand";
+		}
+	}
 
 	String mode = (String) request.getAttribute("mode");
 	boolean isDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));

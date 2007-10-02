@@ -729,7 +729,7 @@ function(fullVersion) {
 	url[i++] = (!location.port || location.port == "80") ? "" : (":" + location.port);
 	url[i++] = appContextPath;
 	url[i++] = "/public/launchNewWindow.jsp?skin=";
-	url[i++] = this.get(ZmSetting.SKIN_NAME);
+	url[i++] = appCurrentSkin;
 	if (fullVersion)
 		url[i++] = "&full=1";
 
