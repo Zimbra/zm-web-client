@@ -2436,7 +2436,7 @@ function(list, skipMiniCalUpdate) {
 		}
 	}
 	this._layout();
-
+	this._scrollTo8AM();
 	if (!skipMiniCalUpdate) {
 		this._controller.fetchMiniCalendarAppts();
 	}
