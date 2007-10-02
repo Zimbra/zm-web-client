@@ -139,7 +139,11 @@ function() {
 	ZmPref.registerPref("GAL_AUTOCOMPLETE", {
 		displayName:		ZmMsg.galAutocomplete,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.GAL_AUTOCOMPLETE_ENABLED
+		precondition:
+			function() {
+				return appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED) &&
+					   appCtxt.get(ZmSetting.GAL_ENABLED);
+			}
 	});
 	
 	ZmPref.registerPref("GAL_AUTOCOMPLETE_SESSION", {
