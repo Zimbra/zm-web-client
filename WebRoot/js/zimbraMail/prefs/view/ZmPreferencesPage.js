@@ -221,6 +221,15 @@ function() {
 		this._addButton(revertPage, ZmMsg.restorePage, 110, new AjxListener(this, this._resetPageListener));
 	}
 
+	// add links to tab control list
+	var links = this.getHtmlElement().getElementsByTagName("A");
+	for (var i = 0; i < links.length; i++) {
+		var link = links[i];
+		if (!link.href) continue;
+
+		this._addControlTabIndex(link, link);
+	}
+
 	// create tab-group for all controls on the page
 	this._addControlsToTabGroup(this._tabGroup);
 	delete this._tabControls;
