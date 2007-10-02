@@ -1077,7 +1077,8 @@ ZmContactList.prototype._setGalAutocompleteEnabled =
 function() {
 	this._galAutocompleteEnabled = (appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE) &&
 									appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_SESSION) &&
-									appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED));
+									appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED) &&
+									appCtxt.get(ZmSetting.GAL_ENABLED));
 };
 
 /*
