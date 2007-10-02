@@ -927,7 +927,7 @@ ZmAccountsPage.prototype._setupPrimaryDiv = function() {
 	var div = document.getElementById(this._htmlElId+"_PRIMARY");
 	if (div) {
 		this._sectionDivs[ZmAccount.ZIMBRA] = div;
-		this._createSection("PRIMARY");
+		this._createSection("PRIMARY", div);
 	}
 };
 
@@ -936,7 +936,7 @@ ZmAccountsPage.prototype._setupExternalDiv = function() {
 	if (div) {
 		this._sectionDivs[ZmAccount.POP] = div;
 		this._sectionDivs[ZmAccount.IMAP] = div;
-		this._createSection("EXTERNAL");
+		this._createSection("EXTERNAL", div);
 	}
 };
 
@@ -944,11 +944,11 @@ ZmAccountsPage.prototype._setupPersonaDiv = function() {
 	var div = document.getElementById(this._htmlElId+"_PERSONA");
 	if (div) {
 		this._sectionDivs[ZmAccount.PERSONA] = div;
-		this._createSection("PERSONA");
+		this._createSection("PERSONA", div);
 	}
 };
 
-ZmAccountsPage.prototype._createSection = function(name) {
+ZmAccountsPage.prototype._createSection = function(name, sectionDiv) {
 	var section = ZmAccountsPage.SECTIONS[name];
 	var prefIds = section && section.prefs;
 	if (!prefIds) return;
@@ -1012,6 +1012,13 @@ ZmAccountsPage.prototype._createSection = function(name) {
 			}
 			section.controls[id] = control;
 		}
+	}
+
+	var links = sectionDiv.getElementsByTagName("A");
+	for (var i = 0; i < links.length; i++) {
+		var link = links[i];
+		if (!link.href) continue;
+		this._addControlTabIndex(link, link);
 	}
 
 	section.tabGroup = new DwtTabGroup(name);
