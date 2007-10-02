@@ -45,7 +45,7 @@ ZmTagMenu = function(parent) {
 	// Use a delay to make sure our slow popup operation isn't called when someone
 	// is just rolling over a menu item to get somewhere else.
 	if (parent instanceof DwtMenuItem) {
-		parent.setHoverDelay(200);
+		parent.setHoverDelay(ZmTagMenu._HOVER_TIME);
 	}
 }
 
@@ -55,7 +55,9 @@ ZmTagMenu.prototype.constructor = ZmTagMenu;
 ZmTagMenu.KEY_TAG_EVENT = "_tagEvent_";
 ZmTagMenu.KEY_TAG_ADDED = "_tagAdded_";
 
-ZmTagMenu.prototype.toString = 
+ZmTagMenu._HOVER_TIME = 200;
+
+ZmTagMenu.prototype.toString =
 function() {
 	return "ZmTagMenu";
 }
@@ -88,6 +90,11 @@ function(items, tagList) {
 	this._dirty = true;
 
 	this.parent.setEnabled(true);
+
+	// Turn on the hover delay.
+	if (this.parent instanceof DwtMenuItem) {
+		this.parent.setHoverDelay(ZmTagMenu._HOVER_TIME);
+	}
 }
 
 ZmTagMenu.prototype._doPopup =
@@ -102,6 +109,11 @@ function(x, y, kbGenerated) {
 			this._render(rootTag, addRemove);
 		}
 		this._dirty = false;
+
+		// Remove the hover delay to prevent flicker when mousing around.
+		if (this.parent instanceof DwtMenuItem) {
+			this.parent.setHoverDelay(0);
+		}
 	}
 	ZmPopupMenu.prototype._doPopup.call(this, x, y, kbGenerated);
 }
