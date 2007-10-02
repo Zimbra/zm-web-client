@@ -27,7 +27,9 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     if (ext == null) ext = "";
 %>
 <!-- bootstrap classes -->
-<script type="text/javascript" src='<%=contextPath%>/js/Boot_all.js<%=ext%>?v=<%=vers%>'></script>
+<script type="text/javascript">
+<jsp:include page='/js/Boot_all.js' />
+</script>
 
 <script type="text/javascript">
 AjxPackage.setBasePath("<%=contextPath%>/js");

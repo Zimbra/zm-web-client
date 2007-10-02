@@ -1,5 +1,5 @@
 <%@ page buffer="8kb" session="false" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page import="javax.naming.*,com.zimbra.cs.zclient.ZAuthResult" %>
+<%@ page import="java.util.*,javax.naming.*,com.zimbra.cs.zclient.ZAuthResult" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -43,6 +43,16 @@
 			protocolMode = "http";
 		}
 	}
+
+	static String getParameter(HttpServletRequest request, String pname, String defValue) {
+		String value = request.getParameter(pname);
+		return value != null ? value : defValue;
+	}
+	static String getAttribute(HttpServletRequest request, String aname, String defValue) {
+		Object object = request.getAttribute(aname);
+		String value = object != null ? String.valueOf(object) : null;
+		return value != null ? value : defValue;
+	}
 %>
 <%
 	String contextPath = request.getContextPath();
@@ -58,60 +68,60 @@
 		request.setAttribute("localeId", localePref.get(0));
 	}
 
-	String isDev = (String) request.getParameter("dev");
-	if (isDev != null && isDev.equals("1")) {
+	boolean isDev = !getParameter(request, "dev", "0").equals("0");
+	if (isDev) {
 		request.setAttribute("mode", "mjsf");
 		request.setAttribute("gzip", "false");
 		request.setAttribute("fileExtension", "");
 		request.setAttribute("debug", "1");
 		request.setAttribute("packages", "dev");
 	}
-	String debug = (String) request.getParameter("debug");
-	if (debug == null) {
-		debug = (String) request.getAttribute("debug");
-	}
-	String extraPackages = (String) request.getParameter("packages");
-	if (extraPackages == null) {
-		extraPackages = (String) request.getAttribute("packages");
-	}
-	String startApp = (String) request.getParameter("app");
-	String noSplashScreen = (String) request.getParameter("nss");
+	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
+	String extraPackages = getParameter(request, "packages", getAttribute(request, "packages", null));
+	String startApp = getParameter(request, "app", "");
+	String noSplashScreen = getParameter(request, "nss", null);
 	
-	String mode = (String) request.getAttribute("mode");
-	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
-	Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
+	String mode = getAttribute(request, "mode", null);
+	boolean isDevMode = mode != null && mode.equalsIgnoreCase("mjsf");
+	boolean isSkinDebugMode = mode != null && mode.equalsIgnoreCase("skindebug");
 
-	String vers = (String) request.getAttribute("version");
-	if (vers == null) vers = "";
+	String vers = getAttribute(request, "version", "");
 
-	String prodMode = String.valueOf(request.getAttribute("prodMode"));
-	if (prodMode == null) prodMode = "";
+	String prodMode = getAttribute(request, "prodMode", "");
 
-	String ext = (String) request.getAttribute("fileExtension");
-	if (ext == null || inDevMode) ext = "";
+	String ext = getAttribute(request, "fileExtension", null);
+	if (ext == null || isDevMode) ext = "";
 	
-	String offlineMode = (String) request.getParameter("offline");
-	if (offlineMode == null) {
-		offlineMode = application.getInitParameter("offlineMode");
-	}
-	
-    String localeQs = "";
-    String localeId = (String) request.getAttribute("localeId");
+	String offlineMode = getParameter(request, "offline", application.getInitParameter("offlineMode"));
+
+	Locale locale = request.getLocale();
+    String localeId = getAttribute(request, "localeId", null);
     if (localeId != null) {
         int index = localeId.indexOf("_");
         if (index == -1) {
-            localeQs = "&language=" + localeId;
-        } else {
-            localeQs = "&language=" + localeId.substring(0, index) +
-                       "&country=" + localeId.substring(localeId.length() - 2);
-        }
+			locale = new Locale(localeId);
+		} else {
+			String language = localeId.substring(0, index);
+			String country = localeId.substring(localeId.length() - 2);
+			locale = new Locale(language, country);
+		}
     }
+
+	// make variables available in page context (e.g. ${foo})
+	pageContext.setAttribute("contextPath", contextPath);
+	pageContext.setAttribute("skin", skin);
+	pageContext.setAttribute("vers", vers);
+	pageContext.setAttribute("app", startApp);
+	pageContext.setAttribute("locale", locale);
+	pageContext.setAttribute("isDevMode", isDev);
+	pageContext.setAttribute("isOfflineMode", offlineMode != null && offlineMode.equals("true"));
+	pageContext.setAttribute("isProdMode", !prodMode.equals(""));
+	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 %>
-<junk junk='<%= skin %>'/>  
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+<fmt:setLocale value='${locale}' scope='request' />
 <title><fmt:message key="zimbraTitle"/></title>
-<link href="<%=contextPath %>/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>" rel="stylesheet" type="text/css" />
+<link href="${contextPath}/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin?v=${vers}${isDebug?"&debug=1":""}&skin=${skin}" rel="stylesheet" type="text/css" />
 <fmt:message key="favIconUrl" var="favIconUrl"/>
 <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
@@ -119,33 +129,8 @@
 <noscript>
 <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="/zimbra" value='/h/'></c:url></fmt:param></fmt:message>
 </noscript>
-<%!
-	public class Wrapper extends HttpServletRequestWrapper {
-		public Wrapper(HttpServletRequest req, String skin) {
-			super(req);
-			this.skin = skin;
-		}
-		String skin;
-    	public String getServletPath() { return "/html"; }
-	    public String getPathInfo() { return "/skin.html"; }
-	    public String getRequestURI() { return getServletPath() + getPathInfo(); }
-	    public String getParameter(String name) {
-	    	if (name.equals("skin")) return this.skin;
-			if (name.equals("client")) return "advanced";
-			return super.getParameter(name);
-	    }
-	}
-%>
-<%
-	// NOTE: This inserts raw HTML files from the user's skin
-	//       into the JSP output. It's done *this* way so that
-	//       the SkinResources servlet sees the request URI as
-	//       "/html/skin.html" and not as "/public/launch...".
-	out.flush();
-	RequestDispatcher dispatcher = request.getRequestDispatcher("/html/");
-	HttpServletRequest wrappedReq = new Wrapper(request, skin);
-	dispatcher.include(wrappedReq, response);
-%>
+<% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys"); %>
+<jsp:include page="Resources.jsp" />
 <script>
 	function populateText(){
 		if(arguments.length == 0 ) return;
@@ -156,23 +141,34 @@
 			index += 2;
 		}
 	}
-<fmt:message key="splashScreenAppName" var="splashScreenAppName"/>
-<fmt:message key="splashScreenLoading" var="splashScreenLoading"/>
-<fmt:message key="splashScreenCopyright" var="splashScreenCopyright"/>
+</script>
+<%-- NOTE: servlet path is needed because the servlet sees it as /public/launchZCS.jsp --%>
+<jsp:include page="/html/skin.html">
+	<jsp:param name="servlet-path" value="/html/skin.html" />
+	<jsp:param name='client' value='advanced' />
+	<jsp:param name='skin' value='${skin}' />
+	<jsp:param name="locale" value="${locale}" />
+	<jsp:param name='debug' value='${isDebug}' />
+</jsp:include>
+<script>
+	<fmt:message key="splashScreenAppName" var="splashScreenAppName"/>
+	<fmt:message key="splashScreenLoading" var="splashScreenLoading"/>
+	<fmt:message key="splashScreenCopyright" var="splashScreenCopyright"/>
 	populateText(
 		"ZLoginAppName",			"${zm:jsEncode(splashScreenAppName)}",
         "ZLoginLoadingMsg",			"${zm:jsEncode(splashScreenLoading)}",
         "ZLoginLicenseContainer",	"${zm:jsEncode(splashScreenCopyright)}"
-	); 
-    appContextPath = "<%=contextPath %>";
-	appCurrentSkin = "<%=skin %>";
-	appExtension   = "<%=ext%>";
-	appDevMode     = <%=inDevMode%>;
-	
+	);
 </script>
-<% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys"); %>
-<jsp:include page="Resources.jsp" />
 <jsp:include page="Boot.jsp"/>
+<script>
+	AjxEnv.DEFAULT_LOCALE = "${locale}";
+
+	appContextPath = "${zm:jsEncode(contextPath)}";
+	appCurrentSkin = "${zm:jsEncode(skin)}";
+	appExtension   = "${zm:jsEncode(ext)}";
+	appDevMode     = ${isDevMode};
+</script>
 <%
 	String allPackages = "Startup1_1,Startup1_2";
     if (extraPackages != null) {
@@ -182,29 +178,34 @@
     	allPackages += "," + extraPackages;
     }
 
-    String pprefix = inDevMode ? "public/jsp" : "js";
-    String psuffix = inDevMode ? ".jsp" : "_all.js";
+    String pprefix = isDevMode ? "public/jsp" : "js";
+    String psuffix = isDevMode ? ".jsp" : "_all.js";
 
     String[] pnames = allPackages.split(",");
     for (String pname : pnames) {
         String pageurl = "/" + pprefix + "/" + pname + psuffix;
-        if (inDevMode) { %>
-            <jsp:include>
-                <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
-            </jsp:include>
+		pageContext.setAttribute("pageurl", pageurl);
+		if (isDevMode) { %>
+            <jsp:include page='${pageurl}' />
         <% } else { %>
-            <script src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script> 
+            <script src="${contextPath}${pageurl}${ext}?v=${vers}"></script>
         <% } %>
     <% }
 %>
 
-<script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%=localeQs%>"></script>
+<script type="text/javascript">
+<%-- NOTE: servlet path is needed because the servlet sees it as /public/launchZCS.jsp --%>
+<jsp:include page='/js/skin.js'>
+	<jsp:param name='servlet-path' value='/js/skin.js' />
+	<jsp:param name='client' value='advanced' />
+	<jsp:param name='skin' value='${skin}' />
+	<jsp:param name="locale" value="${locale}" />
+	<jsp:param name='debug' value='${isDebug}' />
+</jsp:include>
+</script>
 
 <script>
-
-	AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
-
-	<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/> 
+	<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 		var settings = {
 			"dummy":1<c:forEach var="pref" items="${requestScope.authResult.prefs}">,
 			"${pref.key}":"${zm:jsEncode(pref.value[0])}"</c:forEach>
@@ -216,7 +217,7 @@
 			</c:if>
 		};
 
-	var cacheKillerVersion = "<%=vers%>";
+	var cacheKillerVersion = "${zm:jsEncode(vers)}";
 	function launch() {
 		// quit if this function has already been called
 		if (arguments.callee.done) {return;}
@@ -230,12 +231,12 @@
 			_timer = null;
 		}
 
-		var prodMode = <%=prodMode%>;
+		var prodMode = ${isProdMode};
 		var debugLevel = "<%= (debug != null) ? debug : "" %>";
 		if (!prodMode || debugLevel) {
 			AjxDispatcher.require("Debug");
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
-			AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp";
+			AjxWindowOpener.HELPER_URL = "${contextPath}/public/frameOpenerHelper.jsp";
 			// figure out the debug level
 			if (debugLevel == 't') {
 				DBG.showTiming(true);
@@ -244,18 +245,15 @@
 			}
 		}
 
-		AjxHistoryMgr.BLANK_FILE = "<%=contextPath%>/public/blankHistory.html";
-		var app = "<%= (startApp != null) ? startApp : "" %>";
+		AjxHistoryMgr.BLANK_FILE = "${contextPath}/public/blankHistory.html";
 		var noSplashScreen = "<%= (noSplashScreen != null) ? noSplashScreen : "" %>";
-		var offlineMode = "<%= (offlineMode != null) ? offlineMode : "" %>";
-		var isDev = "<%= (isDev != null) ? isDev : "" %>";
 		var protocolMode = "<%=protocolMode%>";
 
         <c:set var="types" value="${requestScope.authResult.attrs.zimbraFeatureConversationsEnabled[0] eq 'FALSE' ? 'message' : requestScope.authResult.prefs.zimbraPrefGroupMailBy[0]}"/>
         <zm:getInfoJSON var="getInfoJSON" authtoken="${requestScope.authResult.authToken}" dosearch="${true}" itemsperpage="${requestScope.authResult.prefs.zimbraPrefMailItemsPerPage[0]}" types="${types}"/>
         var batchInfoResponse = ${getInfoJSON};
 
-		var params = {app:app, offlineMode:offlineMode, devMode:isDev, settings:settings,
+		var params = {app:"${app}", offlineMode:${isOfflineMode}, devMode:${isDevMode}, settings:settings,
 					  protocolMode:protocolMode, noSplashScreen:noSplashScreen, batchInfoResponse:batchInfoResponse};
 		ZmZimbraMail.run(params);
 	}

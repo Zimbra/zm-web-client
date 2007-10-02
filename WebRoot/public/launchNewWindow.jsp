@@ -1,4 +1,5 @@
 <%@ page session="false" %>
+<%@ page import='java.util.Locale' %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
@@ -36,7 +37,8 @@
     }
 
 	String mode = (String) request.getAttribute("mode");
-	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+	boolean isDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+	boolean isSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 
 	String vers = (String) request.getAttribute("version");
 	if (vers == null) vers = "";
@@ -44,70 +46,75 @@
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
 
-    Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
-
-    String localeQs = "";
-    String localeId = (String) request.getAttribute("localeId");
+	Locale locale = request.getLocale();
+    String localeId = (String)request.getAttribute("localeId");
     if (localeId != null) {
         int index = localeId.indexOf("_");
         if (index == -1) {
-            localeQs = "&language=" + localeId;
-        } else {
-            localeQs = "&language=" + localeId.substring(0, index) +
-                       "&country=" + localeId.substring(localeId.length() - 2);
-        }
+			locale = new Locale(localeId);
+		} else {
+			String language = localeId.substring(0, index);
+			String country = localeId.substring(localeId.length() - 2);
+			locale = new Locale(language, country);
+		}
     }
+
+	// make variables available in page context (e.g. ${foo})
+	pageContext.setAttribute("contextPath", contextPath);
+	pageContext.setAttribute("skin", skin);
+	pageContext.setAttribute("vers", vers);
+	pageContext.setAttribute("locale", locale);
+	pageContext.setAttribute("isDevMode", isDevMode);
+	pageContext.setAttribute("isDebug", isSkinDebugMode || isDevMode);
 %>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
-<script type="text/javascript" language="javascript">
-	appContextPath = "<%= contextPath %>";
-	appCurrentSkin = "<%=skin %>";
-</script>
-
 <% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys"); %>
 <jsp:include page="Resources.jsp"/>
-<style type="text/css">
-    <!--
-    @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
-    -->
-</style>
-
+<link href='${contextPath}/css/common,dwt,msgview,login,zm,spellcheck,wiki,images,skin.css?v=${vers}${isDebug?"&debug=1":""}&skin=${skin}' rel='stylesheet' type="text/css">
 <jsp:include page="Boot.jsp"/>
+<script type="text/javascript">
+	AjxEnv.DEFAULT_LOCALE = "${locale}";
+
+	appContextPath = "${contextPath}";
+	appCurrentSkin = "${skin}";
+</script>
 <%
 	String packages = "NewWindow_1,NewWindow_2";
 
     String extraPackages = request.getParameter("packages");
     if (extraPackages != null) packages += ","+extraPackages;
 
-    String pprefix = inDevMode ? "public/jsp" : "js";
-    String psuffix = inDevMode ? ".jsp" : "_all.js";
+    String pprefix = isDevMode ? "public/jsp" : "js";
+    String psuffix = isDevMode ? ".jsp" : "_all.js";
 
     String[] pnames = packages.split(",");
     for (String pname : pnames) {
         String pageurl = "/"+pprefix+"/"+pname+psuffix;
-        if (inDevMode) { %>
-            <jsp:include>
-                <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
-            </jsp:include>
+		pageContext.setAttribute("pageurl", pageurl);
+		if (isDevMode) { %>
+            <jsp:include page='${pageurl}' />
         <% } else { %>
-            <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script>
+            <script type="text/javascript" src="${contextPath}${pageurl}${ext}?v=${vers}"></script>
         <% } %>
     <% }
 %>
-    <!-- TODO: We only need the templates and messages from the skin. -->
-    <script src="/zimbra/js/skin.js?v=<%= vers %>&skin=<%= skin %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %><%= localeQs %>"
-            type="text/javascript">
-
-    </script>
-    <script type="text/javascript">
-        AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
-    </script>
+<%-- TODO: We only need the templates and messages from the skin. --%>
+<script type="text/javascript">
+<%-- NOTE: servlet path is needed because the servlet sees it as /public/launchZCS.jsp --%>
+<jsp:include page='/js/skin.js'>
+	<jsp:param name='servlet-path' value='/js/skin.js' />
+	<jsp:param name='client' value='advanced' />
+	<jsp:param name='skin' value='${skin}' />
+	<jsp:param name="locale" value="${locale}" />
+	<jsp:param name='debug' value='${isDebug}' />
+</jsp:include>
+</script>
 
     <script type="text/javascript" language="JavaScript">
-		var cacheKillerVersion = "<%= vers %>";
+		var cacheKillerVersion = "${vers}";
 		function launch() {
-			AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp"
+			AjxWindowOpener.HELPER_URL = "${contextPath}/public/frameOpenerHelper.jsp"
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
 			ZmNewWindow.run();
 		}
