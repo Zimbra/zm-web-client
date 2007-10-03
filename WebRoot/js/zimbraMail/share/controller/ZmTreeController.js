@@ -450,6 +450,15 @@ function(organizer) {
 ZmTreeController.prototype._doEmpty = 
 function(organizer) {
 	organizer._empty();
+	var ctlr = appCtxt.getCurrentController();
+	if (ctlr && ctlr._getSearchFolderId) {
+		var folderId = ctlr._getSearchFolderId();
+		if (folderId && (folderId == organizer.id)) {
+			var view = ctlr.getCurrentView();
+			view._resetList();
+			view._setNoResultsHtml();
+		}
+	}
 };
 
 /**
