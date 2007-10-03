@@ -368,8 +368,7 @@
 
 .DwtMenuItem-Separator 					{	@MenuItemSeparator@	}
 
-/* ??? USE? */
-.DwtMenuCascadeCell 					{	background-color:@AppC-25@; @LeftSeparator@		}
+.DwtMenuCascadeCell 					{	@LeftSeparator@		}
 
 
 
