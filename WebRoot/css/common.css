@@ -440,6 +440,10 @@ DIV.vSpace {
 .Row-matched, 
 .Row-matched-dragProxy 		{ 	@ListItemContainer-matched@			}
 
+.Row-matched table, .Row-matched-drag table {
+	table-layout: fixed;
+}
+
 .Row-focused 				{	@ListItemContainer-focused@			}
 
 .Row-selected-actioned 		{	@ListItemContainer-actioned@	}
