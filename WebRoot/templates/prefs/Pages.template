@@ -642,6 +642,11 @@ and the container element is replaced with that control.
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.emailAddrLabel$></td>
 					<td class='ZOptionsField'><span id='${id}_PRIMARY_EMAIL' tabindex='1020'></span></td>
 				</tr>
+				<$ if (data.isMultiAccount) { $>
+					<tr><td class='ZOptionsLabel'>Is Visible:</td>
+						<td class='ZOptionsField'><span id='${id}_PRIMARY_VISIBLE' tabindex='1021'></span></td>
+					</tr>
+				<$ } $>
 
 				<tr><td colspan=2><hr></td></tr>
 

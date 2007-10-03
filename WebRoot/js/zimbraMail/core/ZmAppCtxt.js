@@ -32,7 +32,10 @@ ZmAppCtxt = function() {
 
 	// public flags
 	this.inStartup = false;
+
+	// account-specific
 	this.multiAccounts = false;
+	this.numAccounts = 1;	// init to 1 b/c there is always a main account
 };
 
 ZmAppCtxt.prototype.toString =
@@ -548,6 +551,7 @@ function(account) {
 	if (account.isMain) {
 		this._mainAccountId = account.id;
 	}
+	this.numAccounts++;
 };
 
 ZmAppCtxt.prototype.getZimbraAccounts =

@@ -70,8 +70,14 @@ function(name) {
 ZmZimbraAccount.prototype.getName =
 function() {
 	var identity = this.getIdentity();
-	if (!identity) return this.settings.get(ZmSetting.DISPLAY_NAME);
-	return identity.name;
+	var name = (!identity)
+		? this.settings.get(ZmSetting.DISPLAY_NAME)
+		: identity.name;
+
+	if (!name) {
+		name = this.getDisplayName();
+	}
+	return name;
 }
 
 ZmZimbraAccount.prototype.setEmail =
@@ -92,7 +98,14 @@ function() {
 
 ZmZimbraAccount.prototype.getIdentity =
 function() {
-	return this.isMain ? appCtxt.getIdentityCollection().defaultIdentity : null;
+	if (this.isMain) {
+		return appCtxt.getIdentityCollection().defaultIdentity;
+	}
+
+	if (!this.dummyIdentity) {
+		this.dummyIdentity = new ZmIdentity(this.name);
+	}
+	return this.dummyIdentity;
 };
 
 ZmZimbraAccount.createFromDom =
@@ -134,8 +147,7 @@ function(callback, batchCmd) {
 
 ZmZimbraAccount.prototype.save =
 function(callback, errorCallback, batchCmd) {
-	var identity = this.getIdentity();
-	return identity.save(callback, errorCallback, batchCmd);
+	return (this.getIdentity().save(callback, errorCallback, batchCmd));
 };
 
 //

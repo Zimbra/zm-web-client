@@ -119,7 +119,10 @@ function() {
 	// expand template
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._section.id);
 	var templateId = this._section.templateId;
-	var data = { id: this._htmlElId };
+	var data = {
+		id: this._htmlElId,
+		isMultiAccount: (appCtxt.numAccounts > 1)
+	};
 	data.isEnabled = AjxCallback.simpleClosure(this._isEnabled, this, data);
 	data.expandField = AjxCallback.simpleClosure(this._expandField, this, data);
 	this._createPageHtml(templateId, data);

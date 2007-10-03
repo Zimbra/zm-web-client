@@ -24,7 +24,6 @@ ZmAccountsPage = function(parent, section, controller) {
 	ZmPreferencesPage.call(this, parent, section, controller);
 
 	this._sectionDivs = {};
-
 	this._accounts = new AjxVector();
 	this._deletedAccounts = [];
 };
@@ -52,101 +51,104 @@ ZmAccountsPage.__externalCount = 0;
 // section prefs
 
 ZmAccountsPage._definePrefs = function() {
-ZmAccountsPage.PREFS = {
-	// Primary / Common
-	NAME: {
-		displayContainer:	ZmPref.TYPE_INPUT
-	},
-	HEADER: {
-		displayContainer:	ZmPref.TYPE_STATIC,
-		displayName:		ZmMsg.accountSubHeader
-	},
-	EMAIL: {
-		displayContainer:	ZmPref.TYPE_INPUT
-	},
-	REPLY_TO: {
-		displayName:		ZmMsg.accountReplyTo,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	},
-	REPLY_TO_NAME: {
-		displayContainer:	ZmPref.TYPE_INPUT
-	},
-	REPLY_TO_EMAIL: {
-		displayContainer:	ZmPref.TYPE_COMBOBOX
-	},
-	SIGNATURE: {
-		displayContainer:	ZmPref.TYPE_SELECT
-	},
-	// External
-	ACCOUNT_TYPE: {
-		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		orientation:		ZmPref.ORIENT_HORIZONTAL,
-		displayOptions:		["POP3", "IMAP"], // TODO: i18n
-		options:			[ZmAccount.POP, ZmAccount.IMAP]
-	},
-	USERNAME: {
-		displayContainer:	ZmPref.TYPE_INPUT
-	},
-	HOST: {
-		displayContainer:	ZmPref.TYPE_INPUT
-	},
-	PASSWORD: {
-		// TODO: rename ZmPref.TYPE_PASSWORD to TYPE_CHANGE_PASSWORD
-		// TODO: add ZmPref.TYPE_PASSWORD
-		displayContainer:	ZmPref.TYPE_INPUT
-	},
-	CHANGE_PORT: {
-		displayName:		ZmMsg.accountChangePortLabel,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	},
-	PORT: {
-		displayContainer:	ZmPref.TYPE_INPUT,
-		validator:			DwtInputField.validateNumber
-	},
-	PORT_DEFAULT: {
-		displayContainer:	ZmPref.TYPE_STATIC,
-		displayName:		ZmMsg.accountPortDefault
-	},
-	SSL: {
-		displayName:		ZmMsg.accountUseSSL,
-		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		options:			[ZmDataSource.CONNECT_CLEAR, ZmDataSource.CONNECT_SSL]
-	},
-	TEST: {
-		displayName:		ZmMsg.accountTest,
-		displayContainer:	ZmPref.TYPE_CUSTOM // NOTE: a button
-	},
-	DOWNLOAD_TO: {
-		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-		displayOptions:		[ZmMsg.accountDownloadToInbox, ZmMsg.accountDownloadToFolder],
-		options:			[ZmAccountsPage.DOWNLOAD_TO_INBOX, ZmAccountsPage.DOWNLOAD_TO_FOLDER]
-	},
-	DELETE_AFTER_DOWNLOAD: {
-		displayName:		ZmMsg.accountDeleteAfterDownload,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	},
-	// Persona
-	FROM_NAME: {
-		displayContainer:	ZmPref.TYPE_INPUT
-	},
-	FROM_EMAIL: {
-		displayContainer:	ZmPref.TYPE_SELECT
-	},
-	WHEN_SENT_TO: {
-		displayName:		ZmMsg.personaWhenSentTo,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	},
-	WHEN_IN_FOLDER: {
-		displayName:		ZmMsg.personaWhenInFolder,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	},
-	WHEN_IN_FOLDER_LIST: {
-		displayContainer:	ZmPref.TYPE_INPUT
-	},
-	WHEN_IN_FOLDER_BUTTON: {
-		displayContainer:	ZmPref.TYPE_CUSTOM
-	}
-};
+	ZmAccountsPage.PREFS = {
+		// Primary / Common
+		NAME: {
+			displayContainer:	ZmPref.TYPE_INPUT
+		},
+		HEADER: {
+			displayContainer:	ZmPref.TYPE_STATIC,
+			displayName:		ZmMsg.accountSubHeader
+		},
+		EMAIL: {
+			displayContainer:	ZmPref.TYPE_INPUT
+		},
+		VISIBLE: {
+			displayContainer:	ZmPref.TYPE_CHECKBOX
+		},
+		REPLY_TO: {
+			displayName:		ZmMsg.accountReplyTo,
+			displayContainer:	ZmPref.TYPE_CHECKBOX
+		},
+		REPLY_TO_NAME: {
+			displayContainer:	ZmPref.TYPE_INPUT
+		},
+		REPLY_TO_EMAIL: {
+			displayContainer:	ZmPref.TYPE_COMBOBOX
+		},
+		SIGNATURE: {
+			displayContainer:	ZmPref.TYPE_SELECT
+		},
+		// External
+		ACCOUNT_TYPE: {
+			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+			orientation:		ZmPref.ORIENT_HORIZONTAL,
+			displayOptions:		["POP3", "IMAP"], // TODO: i18n
+			options:			[ZmAccount.POP, ZmAccount.IMAP]
+		},
+		USERNAME: {
+			displayContainer:	ZmPref.TYPE_INPUT
+		},
+		HOST: {
+			displayContainer:	ZmPref.TYPE_INPUT
+		},
+		PASSWORD: {
+			// TODO: rename ZmPref.TYPE_PASSWORD to TYPE_CHANGE_PASSWORD
+			// TODO: add ZmPref.TYPE_PASSWORD
+			displayContainer:	ZmPref.TYPE_INPUT
+		},
+		CHANGE_PORT: {
+			displayName:		ZmMsg.accountChangePortLabel,
+			displayContainer:	ZmPref.TYPE_CHECKBOX
+		},
+		PORT: {
+			displayContainer:	ZmPref.TYPE_INPUT,
+			validator:			DwtInputField.validateNumber
+		},
+		PORT_DEFAULT: {
+			displayContainer:	ZmPref.TYPE_STATIC,
+			displayName:		ZmMsg.accountPortDefault
+		},
+		SSL: {
+			displayName:		ZmMsg.accountUseSSL,
+			displayContainer:	ZmPref.TYPE_CHECKBOX,
+			options:			[ZmDataSource.CONNECT_CLEAR, ZmDataSource.CONNECT_SSL]
+		},
+		TEST: {
+			displayName:		ZmMsg.accountTest,
+			displayContainer:	ZmPref.TYPE_CUSTOM // NOTE: a button
+		},
+		DOWNLOAD_TO: {
+			displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+			displayOptions:		[ZmMsg.accountDownloadToInbox, ZmMsg.accountDownloadToFolder],
+			options:			[ZmAccountsPage.DOWNLOAD_TO_INBOX, ZmAccountsPage.DOWNLOAD_TO_FOLDER]
+		},
+		DELETE_AFTER_DOWNLOAD: {
+			displayName:		ZmMsg.accountDeleteAfterDownload,
+			displayContainer:	ZmPref.TYPE_CHECKBOX
+		},
+		// Persona
+		FROM_NAME: {
+			displayContainer:	ZmPref.TYPE_INPUT
+		},
+		FROM_EMAIL: {
+			displayContainer:	ZmPref.TYPE_SELECT
+		},
+		WHEN_SENT_TO: {
+			displayName:		ZmMsg.personaWhenSentTo,
+			displayContainer:	ZmPref.TYPE_CHECKBOX
+		},
+		WHEN_IN_FOLDER: {
+			displayName:		ZmMsg.personaWhenInFolder,
+			displayContainer:	ZmPref.TYPE_CHECKBOX
+		},
+		WHEN_IN_FOLDER_LIST: {
+			displayContainer:	ZmPref.TYPE_INPUT
+		},
+		WHEN_IN_FOLDER_BUTTON: {
+			displayContainer:	ZmPref.TYPE_CUSTOM
+		}
+	};
 }; // function ZmAccountsPage._definePrefs
 
 /**
@@ -161,6 +163,7 @@ ZmAccountsPage.SECTIONS = {
 			"NAME",				// A
 			"HEADER",
 			"EMAIL",			// A
+			"VISIBLE",			// 
 			"FROM_NAME",		// I
 			"REPLY_TO",			// I
 			"REPLY_TO_NAME",	// I
@@ -212,6 +215,7 @@ ZmAccountsPage.SECTIONS = {
 ZmAccountsPage.ACCOUNT_PROPS = {
 	"NAME":						{ setter: "setName",	getter: "getName" },
 	"EMAIL":					{ setter: "setEmail",	getter: "getEmail" },
+	"VISIBLE":					"visible",
 	"ACCOUNT_TYPE":				"type",
 	"USERNAME":					"userName",
 	"HOST":						"mailServer",
@@ -309,12 +313,16 @@ ZmAccountsPage.prototype.reset = function(useDefaults) {
 	this._accounts.removeAll();
 	this._deletedAccounts = [];
 
-	// add various account types
-	var mainAccount = appCtxt.getMainAccount();
-	// NOTE: We create proxies of all of the account objects so that we can
-	//       store temporary values while editing.
-	this._accounts.add(ZmAccountsPage.__createProxy(mainAccount));
+	// add zimbra accounts (i.e. family mboxes)
+	var mboxes = appCtxt.getZimbraAccounts();
+	for (var j in mboxes) {
+		var acct = mboxes[j];
+		// NOTE: We create proxies of all of the account objects so that we can
+		//       store temporary values while editing.
+		this._accounts.add(ZmAccountsPage.__createProxy(acct));
+	}
 
+	// add various other account types
 	var dataSourceCollection = appCtxt.getDataSourceCollection();
 	var dataSources = dataSourceCollection.getItems(); // TODO: rename getItems or rename getIdentities/getSignatures
 	for (var i = 0; i < dataSources.length; i++) {
@@ -349,7 +357,7 @@ ZmAccountsPage.prototype.isDirty = function() {
 		var accounts = this._accounts.getArray();
 		for (var i = 0; i < accounts.length; i++) {
 			var account = accounts[i];
-			if (account._new || account._dirty) {
+			if (account._new || account._dirty || account._visibleDirty) {
 				dirty = true;
 				break;
 			}
@@ -375,11 +383,13 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 	this._setAccountFields(this._currentAccount, this._currentSection);
 
 	// delete accounts
-	var addedCommands = false;
 	for (var i = 0; i < this._deletedAccounts.length; i++) {
-		var callback = null;
-		this._deletedAccounts[i].doDelete(callback, null, batchCmd);
-		addedCommands = true;
+		this._deletedAccounts[i].doDelete(null, null, batchCmd);
+	}
+
+	// for multi-account mbox, check if user changed visible flag on subaccounts
+	if (appCtxt.numAccounts > 1) {
+		this._saveVisibleAccounts(batchCmd);
 	}
 
 	// modify existing accounts
@@ -395,15 +405,14 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 		if (account._dirty) {
 			var callback = new AjxCallback(this, this._handleSaveAccount, [account]);
 			account.save(callback, null, batchCmd);
-			addedCommands = true;
 		}
 	}
 
 	// add new accounts
 	for (var i = 0; i < newAccounts.length; i++) {
-		var callback = new AjxCallback(this, this._handleCreateAccount, [newAccounts[i]]);
-		newAccounts[i].create(callback, null, batchCmd);
-		addedCommands = true;
+		var account = newAccounts[i];
+		var callback = new AjxCallback(this, this._handleCreateAccount, [account]);
+		account.create(callback, null, batchCmd);
 	}
 };
 
@@ -415,7 +424,12 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 
 ZmAccountsPage.prototype._setZimbraAccount = function(account, section) {
 	this._setGenericFields(account, section);
-	this._setIdentityFields(account, section);
+	if (account.isMain) {
+		this._enableZimbraAccountFields(account, section, true);
+		this._setIdentityFields(account, section);
+	} else {
+		this._enableZimbraAccountFields(account, section, false);
+	}
 };
 
 ZmAccountsPage.prototype._setExternalAccount = function(account, section) {
@@ -433,6 +447,7 @@ ZmAccountsPage.prototype._setGenericFields = function(account, section) {
 	this._setControlValue("NAME", section, account.getName());
 	this._setControlValue("HEADER", section, account.getName());
 	this._setControlValue("EMAIL", section, account.getEmail());
+	this._setControlValue("VISIBLE", section, account.visible);
 };
 
 ZmAccountsPage.prototype._setDataSourceFields = function(account, section) {
@@ -504,6 +519,59 @@ ZmAccountsPage.prototype._setIdentityFields = function(account, section) {
 	this._setReplyToControls();
 	this._setWhenSentToControls();
 	this._setWhenInFolderControls();
+};
+
+ZmAccountsPage.prototype._saveVisibleAccounts =
+function(batchCmd) {
+	var accounts = this._accounts.getArray();
+	var visibilityChanged = false;
+
+	// check if visibility changed for any sub accounts
+	for (var i = 0; i < accounts.length; i++) {
+		if (accounts[i]._visibleDirty) {
+			visibilityChanged = true;
+			break;
+		}
+	}
+
+	// collect *all* visible accounts for ModifyPrefsRequest and add to batchCmd
+	if (visibilityChanged) {
+		var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+		var setting = appCtxt.getSettings().getSetting(ZmSetting.CHILD_ACCTS_VISIBLE);
+		var foundVisible = false;
+		for (var j = 0; j < accounts.length; j++) {
+			var account = accounts[j];
+			if (!account.isMain && account.visible) {
+				var node = soapDoc.set("pref", account.id);
+				node.setAttribute("name", setting.name);
+				foundVisible = true;
+			}
+		}
+		// user unset visible for all accounts - send empty value
+		if (!foundVisible) {
+			var node = soapDoc.set("pref", "");
+			node.setAttribute("name", setting.name);
+		}
+		var callback = new AjxCallback(this, this._handleSaveVisibleAccount);
+		batchCmd.addNewRequestParams(soapDoc, callback);
+	}
+};
+
+ZmAccountsPage.prototype._enableZimbraAccountFields =
+function(account, section, enable) {
+	this._setControlEnabled("NAME", section, enable);
+	this._setControlEnabled("VISIBLE", section, !enable);
+
+	for (var i in ZmAccountsPage.IDENTITY_PROPS) {
+		var control = section.controls[i];
+		var setup = ZmAccountsPage.PREFS[i];
+		if (!control || !setup) continue;
+
+		if (!enable) {
+			this._setControlValue(i, section, "");
+		}
+		control.setEnabled(enable);
+	}
 };
 
 ZmAccountsPage.prototype._setReplyToControls = function() {
@@ -665,7 +733,13 @@ ZmAccountsPage.prototype._setAccountFields = function(account, section) {
 		var nvalue = this._getControlValue(id, section);
 		if (this._valuesEqual(ovalue, nvalue)) continue;
 
-		account._dirty = true;
+		// handling visible is special
+		if (id == "VISIBLE") {
+			account._visibleDirty = true;
+		} else {
+			account._dirty = true;
+		}
+
 		if (AjxUtil.isString(prop)) {
 			account[prop] = nvalue;
 		}
@@ -1284,6 +1358,17 @@ ZmAccountsPage.prototype._handleSaveAccount = function(account, resp) {
 	delete account._dirty;
 };
 
+ZmAccountsPage.prototype._handleSaveVisibleAccount = function() {
+	var accounts = this._accounts.getArray();
+	for (var i = 0; i < accounts.length; i++) {
+		var account = accounts[i];
+		account._object_.visible = account.visible;
+		delete account._visibleDirty;
+	}
+	var setting = appCtxt.getSettings().getSetting(ZmSetting.CHILD_ACCTS_VISIBLE);
+	setting._notify(ZmEvent.E_MODIFY);
+};
+
 ZmAccountsPage.prototype._handleCreateAccount = function(account, resp) {
 	delete account._new;
 };
@@ -1335,9 +1420,8 @@ ZmAccountsListView.TYPES[ZmAccount.POP]						= ZmMsg.accountTypePop;
 ZmAccountsListView.TYPES[ZmAccount.IMAP]					= ZmMsg.accountTypeImap;
 ZmAccountsListView.TYPES[ZmAccount.PERSONA]					= ZmMsg.accountTypePersona;
 
-ZmAccountsListView.WIDTH_NAME	= 150;
+ZmAccountsListView.WIDTH_NAME	= 170;
 //ZmAccountsListView.WIDTH_STATUS	= 20;
-ZmAccountsListView.WIDTH_EMAIL	= 150;
 ZmAccountsListView.WIDTH_TYPE	= 80;
 
 // Public methods
@@ -1397,7 +1481,9 @@ function(buffer, i, item, field, col, params) {
 		return i;
 	}
 	if (field == ZmItem.F_TYPE) {
-		buffer[i++] = ZmAccountsListView.TYPES[item.type];
+		buffer[i++] = (item.type == ZmAccount.ZIMBRA && !item.isMain)
+			? ZmMsg.accountTypeSecondary
+			: ZmAccountsListView.TYPES[item.type];
 		return i;
 	}
 	return DwtListView.prototype._getCellContents.apply(this, arguments);
@@ -1410,10 +1496,10 @@ ZmAccountsListView.prototype._getCellId = function(item, field, params) {
 ZmAccountsListView.prototype._getHeaderList = function() {
 	return [
 //		new DwtListHeaderItem(field, label, icon, width, sortable, resizeable, visible, name);
-		new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg.accountName, null, ZmAccountsListView.WIDTH_NAME, null, true),
-//		new DwtListHeaderItem(ZmItem.F_FLAG, null, null, ZmAccountsListView.WIDTH_STATUS, null, false),
-		new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.emailAddr, null, ZmAccountsListView.WIDTH_EMAIL, null, true),
-		new DwtListHeaderItem(ZmItem.F_TYPE, ZmMsg.type, null, ZmAccountsListView.WIDTH_TYPE, null, true)
+		new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg.accountName, null, ZmAccountsListView.WIDTH_NAME),
+//		new DwtListHeaderItem(ZmItem.F_FLAG, null, null, ZmAccountsListView.WIDTH_STATUS),
+		new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.emailAddr),
+		new DwtListHeaderItem(ZmItem.F_TYPE, ZmMsg.type, null, ZmAccountsListView.WIDTH_TYPE)
 	];
 };
 

@@ -67,6 +67,7 @@ ZmZimbraMail = function(params) {
 	this._settings.getSetting(ZmSetting.SKIN_NAME).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.LOCALE_NAME).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.SHORTCUTS).addChangeListener(listener);
+	this._settings.getSetting(ZmSetting.CHILD_ACCTS_VISIBLE).addChangeListener(listener);
 
 	appCtxt.setAppController(this);
 
@@ -1433,40 +1434,45 @@ function(ev) {
 	} else if (id == ZmSetting.POLLING_INTERVAL) {
 		this.setPollInterval();
 	} else if (id == ZmSetting.SKIN_NAME) {
-		var cd = this._confirmDialog = appCtxt.getYesNoMsgDialog();
+		var cd = appCtxt.getYesNoMsgDialog();
 		cd.reset();
 		var skin = ev.source.getValue();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this, [skin]);
+		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this, [skin, cd]);
 		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
 	} else if (id == ZmSetting.LOCALE_NAME) {
-		var cd = this._confirmDialog = appCtxt.getYesNoMsgDialog();
+		var cd = appCtxt.getYesNoMsgDialog();
 		cd.reset();
 		var skin = ev.source.getValue();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._newLocaleYesCallback, this);
+		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
 		cd.setMessage(ZmMsg.localeChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
 	} else if (id == ZmSetting.SHORTCUTS) {
 		appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap());
 		this._settings._loadShortcuts();
+	} else if (id == ZmSetting.CHILD_ACCTS_VISIBLE) {
+		var cd = appCtxt.getYesNoMsgDialog();
+		cd.reset();
+		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
+		cd.setMessage(ZmMsg.accountChangeRestart, DwtMessageDialog.WARNING_STYLE);
+		cd.popup();
 	}
 };
 
 ZmZimbraMail.prototype._newSkinYesCallback =
-function(skin) {
-	this._confirmDialog.popdown();
+function(skin, dialog) {
+	dialog.popdown();
     window.onbeforeunload = null;
     var url = AjxUtil.formatUrl({qsArgs:{skin:skin}});
 	DBG.println(AjxDebug.DBG1, "skin change, redirect to: " + url);
     ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
-ZmZimbraMail.prototype._newLocaleYesCallback =
-function(skin) {
-	this._confirmDialog.popdown();
+ZmZimbraMail.prototype._refreshBrowserCallback =
+function(dialog) {
+	dialog.popdown();
     window.onbeforeunload = null;
-    var url = AjxUtil.formatUrl();
-	DBG.println(AjxDebug.DBG1, "skin change, redirect to: " + url);
+    var url = AjxUtil.formatUrl({});
     ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
