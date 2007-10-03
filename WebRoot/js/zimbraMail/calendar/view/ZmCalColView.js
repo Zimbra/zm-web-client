@@ -710,17 +710,6 @@ function(appt) {
 	var apptX = 0;
 	var apptY = 0;
 	var layout = this._layoutMap[this._getItemId(appt)];
-	if(layout){
-		layout.bounds = this._getBoundsForAppt(layout.appt);
-		var w = Math.floor(layout.bounds.width*ZmCalColView._getApptWidthPercent(layout.maxcol+1));
-		var xinc = layout.maxcol ? ((layout.bounds.width - w) / layout.maxcol) : 0; // n-1
-		var x = xinc * layout.col + (layout.bounds.x);
-		if (appt) appt._layout = {x: x, y: layout.bounds.y, w: w, h: layout.bounds.height};
-		apptWidth = w;
-		apptHeight = layout.bounds.height;
-		apptX = x;
-		apptY = layout.bounds.y;
-	}
 	
 	// set up DIV
 	var div = document.createElement("div");	
@@ -1430,7 +1419,7 @@ function(width, numCols) {
 }
 
 ZmCalColView.prototype._layout =
-function() {
+function(refreshApptLayout) {
 	DBG.println("ZmCalColView in layout!");
 	this._updateDays();
 
@@ -1564,9 +1553,11 @@ function() {
 
 	this._apptBodyDivOffset = Dwt.toWindow(document.getElementById(this._apptBodyDivId), 0, 0, null, true);
 
-	if (this._scheduleMode) {
+	if (this._scheduleMode || refreshApptLayout) {		
 		this._layoutAppts();		
-		this._layoutUnionData();
+		if (this._scheduleMode) {
+			this._layoutUnionData();
+		}
 	}
 }
 
@@ -1684,7 +1675,7 @@ function(ev) {
 	if (ev.newWidth == Dwt.DEFAULT && ev.newHeight == Dwt.DEFAULT) return;
 	try {	
 		if ((ev.oldWidth != ev.newWidth) || (ev.oldHeight != ev.newHeight)) {
-			this._layout();
+			this._layout(true);
 		}
 	} catch(ex) {
 		DBG.dumpObj(ex);
@@ -2403,6 +2394,7 @@ function(list) {
 		}
 	}
 	this._layout();
+
 	this._controller.fetchMiniCalendarAppts();
 }
 
@@ -2590,4 +2582,23 @@ ZmCalColView._handleError =
 function(data) {
 	data.view.getController()._refreshAction(true);
 	return false;
+}
+
+ZmCalColView.prototype._postApptCreate =
+function(appt,div) {
+	var layout = this._layoutMap[this._getItemId(appt)];
+	if (layout){
+		layout.bounds = this._getBoundsForAppt(layout.appt);
+		apptWidthPercent = ZmCalColView._getApptWidthPercent(layout.maxcol+1);
+		var w = Math.floor(layout.bounds.width*apptWidthPercent);
+		var xinc = layout.maxcol ? ((layout.bounds.width - w) / layout.maxcol) : 0; // n-1
+		var x = xinc * layout.col + (layout.bounds.x);
+		if (appt) appt._layout = {x: x, y: layout.bounds.y, w: w, h: layout.bounds.height};
+		var apptWidth = w;
+		var apptHeight = layout.bounds.height;
+		var apptX = x;
+		var apptY = layout.bounds.y;
+		var apptDiv = document.getElementById(this._getItemId(layout.appt));
+		this._layoutAppt(layout.appt, apptDiv, apptX, apptY, apptWidth, apptHeight);
+	}	
 }

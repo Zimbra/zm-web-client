@@ -543,6 +543,12 @@ function(ao) {
 	var item = this._createItemHtml(ao);
 	var div = this._getDivForAppt(ao);
 	if (div) div.appendChild(item);
+	this._postApptCreate(ao,div);	
+}
+
+// override
+ZmCalBaseView.prototype._postApptCreate =
+function(appt,div) {
 }
 
 ZmCalBaseView.prototype.set = 
