@@ -541,7 +541,7 @@ ZmAppt.prototype.getUniqueEndDate =
 function() {
 	if (this._uniqueEndDate == null) {
 		var st = this.getUniqueStartTime();
-		var dur = this.getDuration() - (this.isAllDayEvent()) ? 60 * 1000 : 0;  // Subtract 1 minute.
+		var dur = this.getDuration() - ((this.isAllDayEvent()) ? 60 * 1000 : 0);  // Subtract 1 minute.
 		this._uniqueEndDate = new Date(st + dur);
 	}
 	return this._uniqueEndDate;
