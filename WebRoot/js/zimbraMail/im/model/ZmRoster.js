@@ -26,7 +26,7 @@ ZmRoster = function(imApp) {
         this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
 	this._imApp = imApp;
         this._privacyList = new ZmImPrivacyList(this);
-        this._idleTimer = new DwtIdleTimer(1000 * 10, new AjxCallback(this, this.setIdle));
+        this._idleTimer = new DwtIdleTimer(1000 * 60 * 10, new AjxCallback(this, this.setIdle));
 
         this.refresh();
 };
