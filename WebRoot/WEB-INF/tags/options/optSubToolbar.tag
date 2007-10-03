@@ -36,8 +36,9 @@
                            </c:choose>
                        </c:when>
                        <c:otherwise>
-                           <app:button
-                                   disabled="${selected eq 'shortcuts'}" name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
+                           <c:if test="${selected ne 'shortcuts'}">
+                                <app:button name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
+                           </c:if>
                        </c:otherwise>
                    </c:choose>
                </tr>
