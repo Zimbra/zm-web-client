@@ -26,6 +26,7 @@ ZmRoster = function(imApp) {
         this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
 	this._imApp = imApp;
         this._privacyList = new ZmImPrivacyList(this);
+        this._idleTimer = new DwtIdleTimer(1000 * 10, new AjxCallback(this, this.setIdle));
 
         this.refresh();
 };
@@ -537,6 +538,21 @@ ZmRoster.prototype.getGroups = function() {
 	return AjxVector.fromArray(this.getRosterItemList().getGroupsArray());
 };
 
+ZmRoster.prototype.setIdle = function(idle) {
+        if (idle) {
+                if (!this._presenceBeforeIdle) {
+                        this._presenceBeforeIdle = this.getPresence().getShow();
+                }
+                if (this._presenceBeforeIdle != ZmRosterPresence.SHOW_AWAY) {
+                        this.setPresence(ZmRosterPresence.SHOW_AWAY);
+                }
+        } else {
+                // back
+                if (this._presenceBeforeIdle != this.getPresence().getShow()) {
+                        this.setPresence(this._presenceBeforeIdle);
+                }
+        }
+};
 
 
 
