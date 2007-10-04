@@ -1094,6 +1094,34 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 					<td class='ZOptionsField'><div id='${id}_IM_PREF_LOGCHATS_ENABLED' tabindex='70'></div></td>
 				</tr>
 
+                                <tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'>
+                                          <table cellspacing="0" cellpadding="0">
+                                            <tr>
+                                              <td colspan="2">
+                                                <div id='${id}_IM_PREF_REPORT_IDLE' tabindex='70'></div>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td style="padding-left: 10px; text-align: right;">
+                                                <$=ZmMsg.imPrefIdleTimeout $>:
+                                              </td>
+                                              <td style="padding: 3px">
+                                                <div id='${id}_IM_PREF_IDLE_TIMEOUT' tabindex='80'></div>
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td style="padding-left: 10px; text-align: right;">
+                                                <$=ZmMsg.imPrefIdleStatus $>:
+                                              </td>
+                                              <td style="padding: 3px">
+                                                <div id='${id}_IM_PREF_IDLE_STATUS' tabindex='90'></div>
+                                              </td>
+                                            </tr>
+                                          </table>
+                                        </td>
+				</tr>
+
 			</table>
 			</td>
 		</tr>

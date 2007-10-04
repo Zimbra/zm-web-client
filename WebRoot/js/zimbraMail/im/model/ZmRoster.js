@@ -26,7 +26,11 @@ ZmRoster = function(imApp) {
         this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
 	this._imApp = imApp;
         this._privacyList = new ZmImPrivacyList(this);
-        this._idleTimer = new DwtIdleTimer(1000 * 60 * 10, new AjxCallback(this, this.setIdle));
+
+        this._idleTimer = new DwtIdleTimer(appCtxt.get(ZmSetting.IM_PREF_IDLE_TIMEOUT) * 60 * 1000 /* minutes */,
+                                           new AjxCallback(this, this.setIdle));
+        if (!appCtxt.get(ZmSetting.IM_PREF_REPORT_IDLE))
+                this._idleTimer.kill();
 
         this.refresh();
 };
@@ -543,8 +547,11 @@ ZmRoster.prototype.setIdle = function(idle) {
                 if (!this._presenceBeforeIdle) {
                         this._presenceBeforeIdle = this.getPresence().getShow();
                 }
-                if (this._presenceBeforeIdle != ZmRosterPresence.SHOW_AWAY) {
-                        this.setPresence(ZmRosterPresence.SHOW_AWAY);
+                // WARNING: assuming the same text as in ZmRosterPresence.SHOW_* constants,
+                //          only lowercase.
+                var idlePresence = appCtxt.get(ZmSetting.IM_PREF_IDLE_STATUS).toUpperCase();
+                if (this._presenceBeforeIdle != idlePresence) {
+                        this.setPresence(idlePresence);
                 }
         } else {
                 // back

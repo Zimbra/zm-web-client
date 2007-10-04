@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -159,15 +159,38 @@ ZmImApp.prototype._registerSettings = function(settings) {
 				   defaultValue : true
 				 });
 
-		settings.registerSetting("IM_PREF_LOGCHATS_ENABLED",
-			{
-				name			: "zimbraPrefIMLogChats",
-				type			: ZmSetting.T_PREF,
-				dataType		: ZmSetting.D_BOOLEAN,
-				defaultValue	: true
-			});
+	settings.registerSetting("IM_PREF_LOGCHATS_ENABLED",
+			         { name		: "zimbraPrefIMLogChats",
+				   type		: ZmSetting.T_PREF,
+				   dataType	: ZmSetting.D_BOOLEAN,
+				   defaultValue	: true
+			         });
 
-	settings.getSetting(ZmSetting.IM_PREF_INSTANT_NOTIFY).addChangeListener(new AjxListener(this, this._onSettingChange));
+        settings.registerSetting("IM_PREF_REPORT_IDLE",
+                                 { name         : "zimbraPrefIMReportIdle",
+                                   type         : ZmSetting.T_PREF,
+                                   dataType     : ZmSetting.D_BOOLEAN,
+                                   defaultValue : true
+                                 });
+
+        settings.registerSetting("IM_PREF_IDLE_TIMEOUT",
+                                 { name         : "zimbraPrefIMIdleTimeout",
+                                   type         : ZmSetting.T_PREF,
+                                   dataType     : ZmSetting.D_INT,
+                                   defaultValue : 10
+                                 });
+
+        settings.registerSetting("IM_PREF_IDLE_STATUS",
+                                 { name         : "zimbraPrefIMIdleStatus",
+                                   type         : ZmSetting.T_PREF,
+                                   dataType     : ZmSetting.D_STRING,
+                                   defaultValue : "xa"
+                                 });
+
+        var listener = new AjxListener(this, this._onSettingChange);
+	settings.getSetting(ZmSetting.IM_PREF_INSTANT_NOTIFY).addChangeListener(listener);
+        settings.getSetting(ZmSetting.IM_PREF_REPORT_IDLE).addChangeListener(listener);
+        settings.getSetting(ZmSetting.IM_PREF_IDLE_TIMEOUT).addChangeListener(listener);
 };
 
 ZmImApp.prototype._registerPrefs = function() {
@@ -183,7 +206,11 @@ ZmImApp.prototype._registerPrefs = function() {
 				ZmSetting.IM_PREF_FLASH_ICON,
 				ZmSetting.IM_PREF_NOTIFY_PRESENCE,
 				ZmSetting.IM_PREF_NOTIFY_STATUS,
-				ZmSetting.IM_PREF_LOGCHATS_ENABLED
+				ZmSetting.IM_PREF_LOGCHATS_ENABLED,
+
+                                ZmSetting.IM_PREF_REPORT_IDLE,
+                                ZmSetting.IM_PREF_IDLE_TIMEOUT,
+                                ZmSetting.IM_PREF_IDLE_STATUS
 			]
 		}
 	};
@@ -194,8 +221,7 @@ ZmImApp.prototype._registerPrefs = function() {
 	ZmPref.registerPref("IM_PREF_INSTANT_NOTIFY",
 			    { displayName      : ZmMsg.imPrefInstantNotify,
 			      displayContainer : ZmPref.TYPE_CHECKBOX,
-			      precondition     : ZmSetting.INSTANT_NOTIFY
-			    });
+			      precondition     : ZmSetting.INSTANT_NOTIFY });
 
 	ZmPref.registerPref("IM_PREF_AUTO_LOGIN",
 			    { displayName      : ZmMsg.imPrefAutoLogin,
@@ -213,10 +239,40 @@ ZmImApp.prototype._registerPrefs = function() {
 			    { displayName      : ZmMsg.imPrefNotifyStatus,
 			      displayContainer : ZmPref.TYPE_CHECKBOX });
 
-	ZmPref.registerPref("IM_PREF_LOGCHATS_ENABLED",{
-					displayName		: ZmMsg.imPrefLogChats,
-					displayContainer: ZmPref.TYPE_CHECKBOX
-				});
+	ZmPref.registerPref("IM_PREF_LOGCHATS_ENABLED",
+                            { displayName      : ZmMsg.imPrefLogChats,
+			      displayContainer : ZmPref.TYPE_CHECKBOX });
+
+        ZmPref.registerPref("IM_PREF_REPORT_IDLE",
+                            { displayName      : ZmMsg.imPrefReportIdle,
+                              displayContainer : ZmPref.TYPE_CHECKBOX });
+
+        ZmPref.registerPref("IM_PREF_IDLE_TIMEOUT",
+                            { displayName      : ZmMsg.imPrefIdleTimeout,
+                              displayContainer : ZmPref.TYPE_SELECT,
+                              displayOptions   : [ ZmMsg.imPrefIdleTimeoutMinutes,
+                                                   ZmMsg.imPrefIdleTimeoutMinutes,
+                                                   ZmMsg.imPrefIdleTimeoutMinutes,
+                                                   ZmMsg.imPrefIdleTimeoutMinutes,
+                                                   ZmMsg.imPrefIdleTimeoutMinutes,
+                                                   ZmMsg.imPrefIdleTimeoutMinutes
+                                                 ],
+                              options          : [ 1, 5, 10, 20, 30, 60 ],
+                              precondition     : ZmSetting.IM_PREF_REPORT_IDLE });
+
+        ZmPref.registerPref("IM_PREF_IDLE_STATUS",
+                            { displayName      : ZmMsg.imPrefIdleStatus,
+                              displayContainer : ZmPref.TYPE_SELECT,
+                              displayOptions   : [ ZmMsg.imStatusAway,
+                                                   ZmMsg.imStatusExtAway,
+                                                   // ZmMsg.imStatusInvisible, // no support in server for now
+                                                   ZmMsg.imStatusOffline ],
+                              options          : [ "away",
+                                                   "xa",
+                                                   // "invisible",
+                                                   "offline" ],
+                              precondition     : ZmSetting.IM_PREF_REPORT_IDLE
+                            });
 
 };
 
@@ -232,9 +288,23 @@ ZmImApp.prototype._onSettingChange = function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 
 	var id = ev.source.id;
+        var val = appCtxt.get(id);
+
         if (id == ZmSetting.IM_PREF_INSTANT_NOTIFY && appCtxt.get(ZmSetting.INSTANT_NOTIFY)) {
-		var val = appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY);
+
 		appCtxt.getAppController().setInstantNotify(val);
+
+        } else if (this._roster && id == ZmSetting.IM_PREF_REPORT_IDLE) {
+
+                if (!val)
+                        this._roster._idleTimer.kill();
+                else
+                        this._roster._idleTimer.resurrect(appCtxt.get(ZmSetting.IM_PREF_IDLE_TIMEOUT));
+
+        } else if (this._roster && id == ZmSetting.IM_PREF_IDLE_TIMEOUT) {
+
+                this._roster._idleTimer.timeout = parseInt(val) * 60 * 1000;
+
         }
 };
 
