@@ -382,10 +382,6 @@ function(item) {
  */
 ZmConvListView.prototype._isExpandable =
 function(item) {
-	if (this._expandable[item.id] != null) {
-		return this._expandable[item.id];
-	}
-	
 	var expandable = false;
 	if (item.type == ZmItem.CONV) {
 		expandable = (item.numMsgs > 1);
@@ -408,14 +404,13 @@ function(item) {
 			}
 		}
 	}
-	this._expandable[item.id] = expandable;
+
 	return expandable;
 };
 
 ZmConvListView.prototype._resetExpansion =
 function() {
 	this._expanded = {};		// current expansion state, by ID
-	this._expandable = {};		// whether a row for a msg/conv ID has a +/- icon
 	this._msgRowIdList = {};	// list of row IDs for a conv ID
 	this._msgOffset = {};		// the offset for a msg ID
 	this._expandedItems = {};	// list of expanded items for a conv ID (inc conv)
@@ -556,7 +551,6 @@ function(ev) {
 			DBG.println(AjxDebug.DBG1, "conv updated from ID " + item._oldId + " to ID " + item.id);
 		}
 		this._expanded[item.id] = this._expanded[item._oldId];
-		this._expandable[item.id] = this._expandable[item._oldId];
 		this._msgRowIdList[item.id] = this._msgRowIdList[item._oldId];
 	}
 	
@@ -650,7 +644,7 @@ ZmConvListView.prototype._allowFieldSelection =
 function(id, field) {
 	// allow left selection if clicking on blank icon
 	if (field == ZmItem.F_EXPAND) {
-		return !this._expandable[id];
+		return !this._isExpandable(id);
 	} else {
 		return ZmListView.prototype._allowFieldSelection.apply(this, arguments);
 	}
