@@ -82,6 +82,8 @@ ZmComposeController = function(container, mailApp) {
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
 		settings.getSetting(ZmComposeController.SETTINGS[i]).addChangeListener(scl);
 	}
+
+	this._autoSaveTimer = null; 
 };
 
 ZmComposeController.prototype = new ZmController();
@@ -517,6 +519,9 @@ function(delMsg) {
  */
 ZmComposeController.prototype._setView =
 function(params) {
+	if (this._autoSaveTimer) {
+		this._autoSaveTimer.kill();
+	}
 
 	// save args in case we need to re-display (eg go from Reply to Reply All)
 	var action = this._action = params.action;
@@ -557,6 +562,15 @@ function(params) {
 	this._app.pushView(ZmController.COMPOSE_VIEW);
 	this._composeView.reEnableDesignMode();
 
+	var autoSaveInterval = appCtxt.get(ZmSetting.AUTO_SAVE_DRAFT_INTERVAL);
+	if (autoSaveInterval) {
+		if (!this._autoSaveTimer) {
+			this._autoSaveTimer = new DwtIdleTimer(autoSaveInterval * 1000, new AjxCallback(this, this._autoSaveCallback));
+		} else {
+			this._autoSaveTimer.resurrect(autoSaveInterval * 1000);
+		}
+	}
+	
 	if (params.callback) {
 		params.callback.run(this);
 	}
@@ -937,6 +951,13 @@ function(ev) {
 	this._saveDraft();
 };
 
+ZmComposeController.prototype._autoSaveCallback =
+function(idle) {
+	if (idle && !DwtBaseDialog.getActiveDialog() && this._composeView.isDirty()) {
+		this._saveDraft(true);
+	}
+};
+
 ZmComposeController.prototype._saveDraft =
 function() {
 	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener);
@@ -1138,4 +1159,11 @@ function(ev) {
 	}
 };
 
+ZmComposeController.prototype._preHideCallback =
+function(view, force) {
+	if (this._autoSaveTimer) {
+		this._autoSaveTimer.kill();
+	}
+	return ZmController.prototype._preHideCallback.call(this, view, force);
+};
 
