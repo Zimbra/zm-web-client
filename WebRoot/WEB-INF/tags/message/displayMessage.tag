@@ -39,7 +39,7 @@
 <table  border=0 width=100% cellpadding="7">
     <tr>
         <td style="font-size:20px;font-weight:bold;" ><fmt:message key="zimbraTitle"/></td>
-        <td style="font-size:14px;font-weight:bold;" align=right> <c:out  value="${message.displayTo}"/></td>
+        <td style="font-size:14px;font-weight:bold;" align=right> <c:out  value="${mailbox.defaultIdentity.fromAddress}"/></td>
     </tr>
 </table>
 <hr>
