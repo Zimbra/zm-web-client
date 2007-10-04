@@ -161,6 +161,7 @@ function() {
 				ZmSetting.COMPOSE_INIT_FONT_SIZE,
 				ZmSetting.FORWARD_INCLUDE_ORIG,
 				ZmSetting.NEW_WINDOW_COMPOSE,
+				ZmSetting.AUTO_SAVE_DRAFT_INTERVAL,
 				ZmSetting.REPLY_INCLUDE_ORIG,
 				ZmSetting.REPLY_PREFIX,
 				ZmSetting.SAVE_TO_SENT

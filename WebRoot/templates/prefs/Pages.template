@@ -289,14 +289,11 @@ and the container element is replaced with that control.
 					</table>
 					</td>
 				</tr>
+				<tr><td></td><td><hr></td></tr>
 			<$ } $>
 
 			<$ var isNewWindow = data.isEnabled(ZmSetting.NEW_WINDOW_COMPOSE); $>
 			<$ if (isNewWindow) { $>
-				<$ if (isHtmlCompose) { $>
-					<tr><td></td><td><hr></td></tr>
-				<$ } $>
-
 				<tr><td>&nbsp;</td>
 					<td class='ZOptionsField'>
 						<div id='${id}_NEW_WINDOW_COMPOSE' tabindex='60'>
@@ -304,7 +301,15 @@ and the container element is replaced with that control.
 						</div>
 					</td>
 				</tr>
+
 			<$ } $>
+			<tr><td>&nbsp;</td>
+				<td class='ZOptionsField'>
+					<div id='${id}_AUTO_SAVE_DRAFT_INTERVAL' tabindex='60'>
+						<input type=checkbox> <$=ZmMsg.autoSaveDrafts$>
+					</div>
+				</td>
+			</tr>
 
 			<$ if (data.isEnabled(ZmSetting.MAIL_ENABLED)) { $>
 				<$ if (isHtmlCompose || isNewWindow ) { $>

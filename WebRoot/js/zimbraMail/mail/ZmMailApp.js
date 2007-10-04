@@ -54,6 +54,8 @@ ZmApp.UPSELL_SETTING[ZmApp.MAIL]	= ZmSetting.MAIL_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.MAIL]			= 20;
 ZmApp.QS_ARG[ZmApp.MAIL]			= "mail";
 
+ZmMailApp.DEFAULT_AUTO_SAVE_DRAFT_INTERVAL = 30;
+
 ZmMailApp.prototype = new ZmApp;
 ZmMailApp.prototype.constructor = ZmMailApp;
 
@@ -91,6 +93,7 @@ function(settings) {
 	var settings = settings || appCtxt.getSettings();
 	settings.registerSetting("ALLOW_ANY_FROM_ADDRESS",			{name:"zimbraAllowAnyFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("ALLOW_FROM_ADDRESSES",			{name:"zimbraAllowFromAddress", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
+	settings.registerSetting("AUTO_SAVE_DRAFT_INTERVAL",		{name:"zimbraPrefAutoSaveDraftInterval", type:ZmSetting.T_PREF, dataType:ZmSetting.D_LDAP_TIME, defaultValue:ZmMailApp.DEFAULT_AUTO_SAVE_DRAFT_INTERVAL});
 	settings.registerSetting("COMPOSE_SAME_FORMAT",				{name:"zimbraPrefForwardReplyInOriginalFormat", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("CONVERSATIONS_ENABLED",			{name:"zimbraFeatureConversationsEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("DEDUPE_MSG_TO_SELF",				{name:"zimbraPrefDedupeMessagesSentToSelf", type:ZmSetting.T_PREF, defaultValue:ZmSetting.DEDUPE_NONE});
@@ -231,6 +234,12 @@ function() {
             ZmPref.registerPrefSection(id, sections[id]);                
         }
     }
+
+	ZmPref.registerPref("AUTO_SAVE_DRAFT_INTERVAL", {
+		displayName:		ZmMsg.autoSaveDrafts,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		options:			[0, ZmMailApp.DEFAULT_AUTO_SAVE_DRAFT_INTERVAL]
+	});
 
 	ZmPref.registerPref("DEDUPE_MSG_TO_SELF", {
 		displayName:		ZmMsg.removeDupesToSelf,
