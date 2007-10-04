@@ -205,6 +205,9 @@ function() {
 // the current focus member, and we want to start over each time
 ZmComposeController.prototype._preHideCallback =
 function(view, force) {
+	if (force && this._autoSaveTimer) {
+		this._autoSaveTimer.kill();
+	}
 	return force ? true : this.popShield();
 };
 
@@ -1157,13 +1160,5 @@ function(ev) {
 		button.setMenu(menu);
 		this.setSelectedSignature(selected);
 	}
-};
-
-ZmComposeController.prototype._preHideCallback =
-function(view, force) {
-	if (this._autoSaveTimer) {
-		this._autoSaveTimer.kill();
-	}
-	return ZmController.prototype._preHideCallback.call(this, view, force);
 };
 
