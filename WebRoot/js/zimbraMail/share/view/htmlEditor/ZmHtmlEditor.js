@@ -486,11 +486,6 @@ function(x, y) {
 		div.style.display = "none";
 	}
 
-	var main = document.getElementById(this.getBodyFieldId());
-	// bug fix #6789 - Safari nukes the IFRAME's document if you hide the containing DIV
-	if (!AjxEnv.isSafari)
-		main.style.display = "none";
-
 	// FUDGE: we must substract borders and paddings - yuck.
 	var delta = this._mode == DwtHtmlEditor.HTML ? 10 : 12;
 
@@ -514,6 +509,11 @@ function(x, y) {
 	// bug fix #6786 - normalize width/height if less than zero
 	if (x < 0) x = 0;
 	if (y < 0) y = 0;
+
+	var main = document.getElementById(this.getBodyFieldId());
+	// bug fix #6789 - Safari nukes the IFRAME's document if you hide the containing DIV
+	if (!AjxEnv.isSafari)
+		main.style.display = "none";
 
 	main.style.width = x + "px";
 	main.style.height = y + "px";
