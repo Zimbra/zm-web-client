@@ -118,7 +118,7 @@ ZmNotebookCache.prototype.putItem = function(item1) {
 	
 	var folderId = item1.folderId || ZmNotebookItem.DEFAULT_FOLDER;
 	var items = this.getItemsInFolder(folderId);
-	item = this.getPage(item1);
+	var item = this.getPage(item1);
 	
 	if (item.id) {
 		this._idMap[item.id] = item;
