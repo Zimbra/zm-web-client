@@ -694,8 +694,8 @@
 					{ lbl: ZmMsg.AB_FIELD_URL,				field: ZmContact.F_otherURL}
 				],
 				[
-					{ lbl: ZmMsg.AB_FIELD_otherPhone,		field: ZmContact.F_homePhone },
-					{ lbl: ZmMsg.AB_FIELD_otherFax,			field: ZmContact.F_homeFax },
+					{ lbl: ZmMsg.AB_FIELD_otherPhone,		field: ZmContact.F_otherPhone },
+					{ lbl: ZmMsg.AB_FIELD_otherFax,			field: ZmContact.F_otherFax },
 					{ lbl: ZmMsg.AB_FIELD_birthday,			field: ZmContact.F_birthday,		isDate: true }
 				]
 			]
