@@ -251,7 +251,9 @@ function(attId, isDraft, callback) {
 	} else {
 		// if shared folder, make sure we send the email on-behalf-of
 		var folder = msg.folderId ? appCtxt.getById(msg.folderId) : null;
-		var acctName = (folder && folder.isRemote()) ? folder.getOwner() : this._accountName;
+		var acctName = isDraft
+			? (appCtxt.getMainAccount().name) 
+			: ((folder && folder.isRemote()) ? folder.getOwner() : this._accountName);
 		var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
 		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
 		var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);

@@ -736,6 +736,17 @@ function(contactList, isDraft, callback, errorCallback, accountName) {
 			soapDoc.setMethodAttribute("suid", this.sendUID);
 		this._createMessageNode(soapDoc, contactList, isDraft, aName);
 
+		// if we're sending a draft msg, check if its obo for special handling
+		if (this._origMsg && this._origMsg.isDraft) {
+			var ac = window.parentAppCtxt || window.appCtxt;
+			var mainAcct = ac.getMainAccount().getEmail();
+			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
+			// this means we're sending a draft msg obo so reset account name
+			if (from && from.address != mainAcct) {
+				aName = from.address;
+			}
+		}
+
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
 		var execFrame = new AjxCallback(this, this.send, [contactList, isDraft, callback, errorCallback]);
 		var params = {
@@ -805,7 +816,7 @@ function(soapDoc, contactList, isDraft, accountName) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		this._addAddressNodes(soapDoc, msgNode, type, contactList, isDraft);
 	}
-	this._addFrom(soapDoc, msgNode, accountName);
+	this._addFrom(soapDoc, msgNode, isDraft, accountName);
 	this._addReplyTo(soapDoc, msgNode);
 
 	soapDoc.set("su", this.subject, msgNode);
@@ -1252,14 +1263,23 @@ function(soapDoc, parent, type, contactList, isDraft) {
 };
 
 ZmMailMsg.prototype._addFrom =
-function(soapDoc, parent, accountName) {
+function(soapDoc, parent, isDraft, accountName) {
+	var ac = window.parentAppCtxt || window.appCtxt;
+
 	if (accountName)
 	{
+		// when saving a draft, even if obo, we do it on the main account so reset the from
+		if (isDraft) {
+			var folder = appCtxt.getById(this.folderId);
+			if (folder && folder.isRemote()) {
+				accountName = folder.getOwner();
+			}
+		}
 		var from = soapDoc.set("e", null, parent);
 		from.setAttribute("t", "f");
 		from.setAttribute("a", accountName);
 
-		var ac = window.parentAppCtxt || window.appCtxt;
+		// the main account is *always* the sender
 		var sender = soapDoc.set("e", null, parent);
 		sender.setAttribute("t", "s");
 		sender.setAttribute("a", ac.getMainAccount().getEmail());
@@ -1268,6 +1288,22 @@ function(soapDoc, parent, accountName) {
 	{
 		var e = soapDoc.set("e", null, parent);
 		e.setAttribute("t", "f");
+
+		// bug fix #20630 - handling sending drafts obo
+		if (this._origMsg && this._origMsg.isDraft) {
+			var mainAcct = ac.getMainAccount().getEmail();
+			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
+			// this means we're sending a draft msg obo
+			if (from && from.address != mainAcct) {
+				e.setAttribute("a", from.address);
+				// if sending obo, always set sender as main account
+				var sender = soapDoc.set("e", null, parent);
+				sender.setAttribute("t", "s");
+				sender.setAttribute("a", mainAcct);
+				return;
+			}
+		}
+
 		e.setAttribute("a", this.identity.sendFromAddress);
 		var name = this.identity.sendFromDisplay;
 		if (name) {
