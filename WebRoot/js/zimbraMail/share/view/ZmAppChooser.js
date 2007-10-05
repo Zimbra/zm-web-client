@@ -71,6 +71,7 @@ ZmAppChooser.SPACER_HEIGHT = 10;
 
 ZmAppChooser.prototype.TEMPLATE = "share.Widgets#ZmAppChooser";
 ZmAppChooser.prototype.ITEM_TEMPLATE = "share.Widgets#ZmAppChooserItem";
+ZmAppChooser.prototype.SPACER_TEMPLATE = "dwt.Widgets#ZmAppChooserSpacer";
 
 //
 // Public methods

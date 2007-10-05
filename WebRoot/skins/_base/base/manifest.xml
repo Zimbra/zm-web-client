@@ -7,8 +7,6 @@
 	</css>
     <script>
         <file>ZmSkin.js</file>
-        <file>BaseSkin.js</file>
-        <file>skin.js</file>
     </script>
     <html>
 		<file>skin.html</file>

@@ -241,6 +241,10 @@ FORM {
 	font-weight:bold;
 }
 
+/* message/link allowing them to switch from Ajax to HTML client */
+#ZLoginSwitchMsg {
+	padding-top:10px;
+}
 
 /* Panel to show the "About" message */
 #ZLoginAboutPanel {

@@ -244,7 +244,7 @@ function(components, doFit, noSetZ) {
 
 		if (cid == ZmAppViewMgr.C_SASH) {
 			if (this._sashSupported){
-				comp.registerCallback(this._sashCallback, this);
+				comp.registerCallback(this._appTreeSashCallback, this);
 			}
 			comp.setCursor("default");
 		}
@@ -723,6 +723,7 @@ function(components) {
 			}
 		}
 	}
+
 	if (window.DBG && DBG.getDebugLevel() >= AjxDebug.DBG2) {
 		this._debugShowMetrics(components);
 	}
@@ -968,58 +969,44 @@ function(ev) {
 	DBG.println(AjxDebug.DBG2, "History change to " + hashIndex + ", new view: " + viewId);
 };
 
-// Handles sash movement. An attempt to move the sash beyond the extent of the overview 
-// panel or the view results in no movement at all.
-ZmAppViewMgr.prototype._sashCallback =
+// Handles app/tree movement. 
+//	If you move the sash beyond the max or min width, pins to the respective width.
+ZmAppViewMgr.prototype._appTreeSashCallback =
 function(delta) {
+	if (!window.skin) return;
+	
 	DBG.println(AjxDebug.DBG3, "************ sash callback **************");
 	DBG.println(AjxDebug.DBG3, "delta = " + delta);
 
 	DBG.println(AjxDebug.DBG3,"shell width = " + this._shellSz.x);
 
-	var treeTD = document.getElementById("skin_td_outer_tree");
-	
-	var treeSz = treeTD ? Dwt.getSize(treeTD) : null;	
-	if(!treeSz) return 0;
-	
+	// ask the skin for the width of the tree, rather than hard-coding the name of the tree div here
+	var currentWidth = skin.getTreeWidth();
+	if(!currentWidth) return 0;
 
-	if (!this.initTreeSize){
-		this.initTreeSize = treeSz.x;
-		this.treeSashLimit = treeSz.x + 200;
-	}
-	DBG.println(AjxDebug.DBG3, "left table width = " + treeSz.x);
-	if (this.treeSashLimit && (delta > 0) && this.treeSashLimit < (treeSz.x + delta)){
-		return 0;
+	DBG.println(AjxDebug.DBG3, "current width = " + currentWidth);	
+
+	// MOW: get the min/max sizes from the skin.hints
+	if (!this.treeMinSize){	
+		this.treeMinSize = window.skin.hints.tree.minWidth || 150;
+		this.treeMaxSize = window.skin.hints.tree.maxWidth || 300;
 	}
 	
-	if (this.initTreeSize && (delta < 0) && this.initTreeSize > (treeSz.x + delta)){
-		return 0;
+	// pin the resize to the minimum and maximum allowable
+	if (currentWidth + delta > this.treeMaxSize) {
+		delta = Math.max(0, this.treeMaxSize - currentWidth);
+	}
+	if (currentWidth + delta < this.treeMinSize) {
+		delta = Math.min(0, this.treeMinSize - currentWidth);
 	}
 	
-	var newTreeWidth = treeSz.x + delta;	
-	Dwt.setSize(treeTD, newTreeWidth , Dwt.DEFAULT);
-	
-	var skinTreeCol = document.getElementById("skin_col_tree_inner");
-	Dwt.setSize(skinTreeCol,newTreeWidth,Dwt.DEFAULT);
-	Dwt.setSize(treeTD,newTreeWidth,Dwt.DEFAULT);
-	var list = [ZmAppViewMgr.C_APP_CONTENT_FULL,ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_STATUS,];
-	this._fitToContainer(list);
+	// tell the skin to resize the tree to keep the separation of tree/skin clean
+	var newTreeWidth = currentWidth + delta;	
 
-	list = [ZmAppViewMgr.C_APP_CONTENT];
-	var cid = ZmAppViewMgr.C_APP_CONTENT;
-	var newX = this._contBounds[cid].x + delta;
-	this._contBounds[cid].x = newX;
-	var newWidth = this._contBounds[cid].width - delta;
-	this._contBounds[cid].width = newWidth;
-	this._components[cid].setBounds(newX, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT);
-		
-    this._fitToContainer([cid,ZmAppViewMgr.C_STATUS]);
+	skin.setTreeWidth(newTreeWidth);
 
-	var list = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
-							ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
-							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL, 
-                            ZmAppViewMgr.C_TOOLBAR_BOTTOM];
-	this._fitToContainer(list);	
-
+	// call fitAll() on a timeout, so we don't get into a problem with the sash movement code
+	var me = this;
+	setTimeout(function(){me.fitAll()},0);
 	return delta;
 };

@@ -11,8 +11,6 @@
   <advanced>
 	    <script>
 	        <file>../_base/base/ZmSkin.js</file>
-	        <file>../_base/base/BaseSkin.js</file>
-	        <file>../_base/base/skin.js</file>
 	    </script>
 		<html>
 			<file>../_base/base/skin.html</file>

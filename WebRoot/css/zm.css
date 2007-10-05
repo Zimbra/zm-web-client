@@ -120,15 +120,15 @@
 
 /* Quota label */
 .BannerTextQuota {
-	@ChromeText@
-	@NoWrap@
+	@SkinTextQuota@
+	white-space:nowrap;
 	text-align: center;
 }
 
 /* User label */
 .BannerTextUser {
-	@ChromeText@
-	@NoWrap@
+	@SkinTextUsername@
+	white-space:nowrap;
 	text-align: center;
 	font-weight: bold;
 	padding-top: 5px;
