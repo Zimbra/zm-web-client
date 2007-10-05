@@ -42,7 +42,7 @@
     <c:otherwise>
         <c:set var="newFolderStyleColor" value="Gray"/>
 
-        <c:set var="icon" value="${search ? 'startup/ImgSearchFolder.gif' : (url ? 'mail/ImgRSS.gif' : 'startup/ImgFolder.gif')}"/>
+        <c:set var="icon" value="${search ? 'startup/ImgSearchFolder.gif' : (url ? 'startup/ImgRSS.gif' : 'startup/ImgFolder.gif')}"/>
         <c:choose>
             <c:when test="${url}">
                 <fmt:message var="label" key="folderNewRssAtomFeed"/>

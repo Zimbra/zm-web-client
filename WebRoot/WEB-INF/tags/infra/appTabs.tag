@@ -25,7 +25,7 @@
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
             <a id='TAB_MAIL' href="<c:url value="/h/search"/>">
-              <span id='tab_ikon_mail'><app:img src="mail/ImgMailApp.gif" altkey='ALT_APP_MAIL'/>
+              <span id='tab_ikon_mail'><app:img src="startup/ImgMailApp.gif" altkey='ALT_APP_MAIL'/>
               </span>
                 <span><fmt:message key="mail"/></span>
             </a>
@@ -85,7 +85,7 @@
                     <c:url var="composeUrl" value="/h/search?action=compose"/>
                 </c:otherwise>
             </c:choose>
-            <a id='TAB_COMPOSE' href="${fn:escapeXml(composeUrl)}"><span id='tab_ikon_compose'><app:img src="mail/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span><span><fmt:message
+            <a id='TAB_COMPOSE' href="${fn:escapeXml(composeUrl)}"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span><span><fmt:message
                     key="compose"/></span></a>
         </td>
         <td class='TabSpacerR'/>

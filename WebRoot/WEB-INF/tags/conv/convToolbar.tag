@@ -59,7 +59,7 @@
                         <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam"/>
                     </c:if>
                     <td><div class='vertSep'></div>                    <input type="hidden" name="contextConvId" value="${convSearchResult.conversationSummary.id}"></td>
-                    <app:button id="${keys ? 'OPMARKALL' :''}" name="actionMarkConvRead" src="mail/ImgReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
+                    <app:button id="${keys ? 'OPMARKALL' :''}" name="actionMarkConvRead" src="startup/ImgReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
                 </tr>
             </table>
         </td>

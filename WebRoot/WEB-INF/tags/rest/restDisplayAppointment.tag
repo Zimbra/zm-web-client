@@ -37,7 +37,7 @@
                 <td>
                     <table border="0" cellpadding="2" cellspacing="2">
                         <tr>
-                            <td width=24><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.gif' : 'calendar/ImgAppointment.gif'}"/></td>
+                            <td width=24><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.gif' : 'startup/ImgAppointment.gif'}"/></td>
                             <td class='apptHeader'>
                             ${fn:escapeXml(empty appt.name ? noSubject : appt.name)}
                         </tr>

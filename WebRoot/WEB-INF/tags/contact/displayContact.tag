@@ -56,7 +56,7 @@
 <c:if test="${contact.isGroup}">
     <c:forEach var="member" items="${contact.groupMembers}">
         <tr>
-            <td width='20px'><app:img altkey='ALT_CONTACT_GROUP_EMAIL' src="mail/ImgMessage.gif"/></td>
+            <td width='20px'><app:img altkey='ALT_CONTACT_GROUP_EMAIL' src="startup/ImgMessage.gif"/></td>
             <td><nobr>${fn:escapeXml(member)}</nobr></td>            
         </tr>
     </c:forEach>

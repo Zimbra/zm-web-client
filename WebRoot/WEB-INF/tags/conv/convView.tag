@@ -190,7 +190,7 @@
                                                     <c:if test="${mailbox.features.tagging}">
                                                         <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                                     </c:if>
-                                                    <td class='MsgStatusImg' align="center"><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'mail/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}" altkey="${(hit.messageHit.isUnread and hit.id == message.id) ? 'ALT_MSG_STATUS_READ' : hit.messageHit.statusImageAltKey}"/></td>
+                                                    <td class='MsgStatusImg' align="center"><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'startup/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}" altkey="${(hit.messageHit.isUnread and hit.id == message.id) ? 'ALT_MSG_STATUS_READ' : hit.messageHit.statusImageAltKey}"/></td>
                                                     <td nowrap>
                                                         <c:set var="sender" value="${hit.messageHit.displaySender}"/>${fn:escapeXml(empty sender ? unknownSender : sender)}
                                                     </td>

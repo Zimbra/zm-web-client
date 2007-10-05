@@ -131,7 +131,7 @@
                     <tr>
                         <td style='padding: 0 2px 0 2px'>
                             <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=reply">
-                                <mo:img src="mail/ImgReply.gif" alt="reply"/>
+                                <mo:img src="startup/ImgReply.gif" alt="reply"/>
                                 &nbsp;
                                 <span><fmt:message key="reply"/></span>
                             </a>
@@ -139,7 +139,7 @@
                         <td><div class='zo_vertsep'></div></td>
                         <td style='padding: 0 2px 0 2px'>
                             <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=replyAll">
-                                <mo:img src="mail/ImgReplyAll.gif" alt="replyall"/>
+                                <mo:img src="startup/ImgReplyAll.gif" alt="replyall"/>
                                 &nbsp;
                                 <span><fmt:message key="replyAll"/></span>
                             </a>
@@ -147,7 +147,7 @@
                         <td><div class='zo_vertsep'></div></td>
                         <td style='padding: 0 2px 0 2px'>
                             <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=forward">
-                                <mo:img src="mail/ImgForward.gif" alt="forward"/>
+                                <mo:img src="startup/ImgForward.gif" alt="forward"/>
                                 &nbsp;
                                 <span><fmt:message key="forward"/></span>
                             </a>

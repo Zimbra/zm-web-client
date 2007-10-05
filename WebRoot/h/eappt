@@ -62,7 +62,7 @@
             <c:set var="isNewAppt" value="${true}"/>
         </c:when>
         <c:otherwise>
-            <c:set var="apptImage" value="calendar/ImgAppointment.gif"/>
+            <c:set var="apptImage" value="startup/ImgAppointment.gif"/>
             <c:set var="apptImageAlt" value="ALT_EDIT_APPOINTMENT"/>
             <c:set var="apptSubject" value="${compose.subject}"/>
             <c:set var="closeImage" value="common/ImgClose.gif"/>

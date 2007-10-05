@@ -59,7 +59,7 @@
                                                                          cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
                                                     <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                         <td style='border:none' class='CB' nowrap><input <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
-                                                        <td style='border:none' class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'mail/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}"/></td>
+                                                        <td style='border:none' class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'startup/ImgMsgStatusRead.gif' : hit.messageHit.statusImage}"/></td>
                                                         <td style='border:none' nowrap><a href="${msgUrl}">${fn:escapeXml(hit.messageHit.displaySender)}</a></td>
                                                         <td style='border:none' class='Img' ><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                                         <td style='border:none' width=1% nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>

@@ -219,7 +219,7 @@
                                 </c:if>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=reply">
-                                        <app:img src="mail/ImgReply.gif" alt="reply"/>
+                                        <app:img src="startup/ImgReply.gif" alt="reply"/>
                                         &nbsp;
                                         <span><fmt:message key="reply"/></span>
                                     </a>
@@ -227,7 +227,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=replyAll">
-                                        <app:img src="mail/ImgReplyAll.gif" alt="replyall"/>
+                                        <app:img src="startup/ImgReplyAll.gif" alt="replyall"/>
                                         &nbsp;
                                         <span><fmt:message key="replyAll"/></span>
                                     </a>
@@ -235,7 +235,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=forward">
-                                        <app:img src="mail/ImgForward.gif" alt="forward"/>
+                                        <app:img src="startup/ImgForward.gif" alt="forward"/>
                                         &nbsp;
                                         <span><fmt:message key="forward"/></span>
                                     </a>
@@ -270,7 +270,7 @@
                                 <c:if test="${not empty newWindowUrl}">
                                 <td style='padding: 0 2px 0 2px'>
                                     <a id="OPNEWWIN" target="_blank" href="${fn:escapeXml(newWindowUrl)}">
-                                        <app:img src="common/ImgOpenInNewWindow.gif" altkey="newWindow" title="newWindow"/>
+                                        <app:img src="startup/ImgOpenInNewWindow.gif" altkey="newWindow" title="newWindow"/>
                                     </a>
                                 </td>
                                 </c:if>
@@ -278,7 +278,7 @@
                                 <c:if test="${not isPart}">
                                 <td style='padding: 0 2px 0 2px'>
                                     <a id="OPSHOWORIG" target="_blank" href="/service/home/~/?id=${message.id}&amp;auth=co">
-                                        <app:img src="mail/ImgMessage.gif" altkey="showOrig" title="showOrig"/>
+                                        <app:img src="startup/ImgMessage.gif" altkey="showOrig" title="showOrig"/>
                                     </a>
                                 </td>
                                 </c:if>

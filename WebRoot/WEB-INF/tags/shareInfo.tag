@@ -29,7 +29,7 @@
         <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'appointment')}"/>
     </c:when>
     <c:otherwise>
-        <c:set var="icon" value="mail/ImgSharedMailFolder.gif"/>
+        <c:set var="icon" value="startup/ImgSharedMailFolder.gif"/>
         <fmt:message var="label" key="folderNew"/>
         <fmt:message var="folderType" key="folderUser"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>

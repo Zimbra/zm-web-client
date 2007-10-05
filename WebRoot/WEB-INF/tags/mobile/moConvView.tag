@@ -344,7 +344,7 @@
                                     <tr>
                                         <td style='width:40px; ' valign="middle" align="center">
                                             <table>
-                                                <tr><td><mo:img src="${(mhit.isUnread and hit.id == message.id) ? 'mail/ImgMsgStatusRead.gif' : mhit.statusImage}" alt="status"/></td></tr>
+                                                <tr><td><mo:img src="${(mhit.isUnread and hit.id == message.id) ? 'startup/ImgMsgStatusRead.gif' : mhit.statusImage}" alt="status"/></td></tr>
                                                 <c:if test="${mhit.isFlagged}"><tr><td><mo:img src="startup/ImgFlagRed.gif" alt="falg"/></td></tr></c:if>
                                                 <c:if test="${mhit.hasTags}"><tr><td><mo:miniTagImage ids="${mhit.tagIds}"/></td></tr></c:if>
                                             </table>

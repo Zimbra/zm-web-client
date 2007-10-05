@@ -38,7 +38,7 @@
                 <td>
                     <table border="0" cellpadding="2" cellspacing="2">
                         <tr>
-                            <td width="24"><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.gif' : 'calendar/ImgAppointment.gif'}" alt="appointment"/></td>
+                            <td width="24"><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ImgApptRecur.gif' : 'startup/ImgAppointment.gif'}" alt="appointment"/></td>
                             <td class='apptHeader'>
                                 ${fn:escapeXml(empty appt.name ? noSubject : appt.name)}
                             </td>
@@ -267,7 +267,7 @@
                                 <tr>
                                     <td style='padding: 0 2px 0 2px'>
                                         <a target="_blank" href="${fn:escapeXml(newWindowUrl)}">
-                                            <app:img src="common/ImgOpenInNewWindow.gif" altkey="newWindow" title="newWindow"/>
+                                            <app:img src="startup/ImgOpenInNewWindow.gif" altkey="newWindow" title="newWindow"/>
                                         </a>
                                     </td>
                                 </tr>

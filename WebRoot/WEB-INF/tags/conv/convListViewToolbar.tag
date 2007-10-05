@@ -28,7 +28,7 @@
                             <c:url var="composeUrl" value="/h/search?action=compose"/>
                         </c:otherwise>
                     </c:choose>
-                    <a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="mail/ImgNewMessage.gif" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
+                    <a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgNewMessage.gif" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
                     <c:choose>

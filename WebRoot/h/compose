@@ -73,7 +73,7 @@
                                         <td><div class='vertSep'></div></td>
                                         <app:button id="OPCANCEL" name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button id="OPDRAFT" name="actionDraft" src="mail/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
+                                        <app:button id="OPDRAFT" name="actionDraft" src="startup/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
                                         <td><div class='vertSep'></div></td>
                                         <app:button id="OPATTACH" name="actionAttachAdd" src="startup/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
                                         <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
@@ -182,7 +182,7 @@
                                         <td><div class='vertSep'></div></td>
                                         <app:button name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionDraft" src="mail/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
+                                        <app:button name="actionDraft" src="startup/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
                                         <td><div class='vertSep'></div></td>
                                         <app:button name="actionAttachAdd" src="startup/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
                                         <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
