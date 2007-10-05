@@ -115,7 +115,9 @@
  */
 
 /* Outer container of the entire tool tip.  Class "LightOuterBorder" is also applied to this. */
-.DwtToolTip { }
+.DwtToolTip { 
+	@TooltipContainer@
+}
 
 
 /* Body container (div) for the tooltip. */
@@ -130,10 +132,9 @@
 
 /* One row of the tooltip pointer -- used to do arrows without images */
 .DwtToolTipPointerRow {
-	font-size:1px; position:relative;
-	height:2px; overflow:hidden;
-	background-color:@HeaderColor@;
-	border-right:1px solid @SeparatorColor@;
+	position:relative; overflow:hidden;
+	font-size:1px; height:2px;
+	@TooltipArrowContainer@
 }
 
 
