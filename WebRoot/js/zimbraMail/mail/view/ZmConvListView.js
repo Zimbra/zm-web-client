@@ -644,7 +644,8 @@ ZmConvListView.prototype._allowFieldSelection =
 function(id, field) {
 	// allow left selection if clicking on blank icon
 	if (field == ZmItem.F_EXPAND) {
-		return !this._isExpandable(id);
+		var item = appCtxt.getById(id);
+		return (item && !this._isExpandable(item));
 	} else {
 		return ZmListView.prototype._allowFieldSelection.apply(this, arguments);
 	}
