@@ -41,10 +41,10 @@ function() {
 };
 
 ZmStatusView.prototype.setStatusMsg =
-function(msg, level, detail) {
+function(msg, level, detail, transitions) {
 	if (!level) { level = ZmStatusView.LEVEL_INFO; }
 
-	var work = { msg:msg, level:level, detail:detail, date:new Date() };
+	var work = { msg:msg, level:level, detail:detail, date:new Date(), transitions: transitions };
 
 	// always push so we know one is active
 	this._statusQueue.push(work);
@@ -95,7 +95,7 @@ function() {
     var level = ZmStatusView.getClass(work);
     var icon = ZmStatusView.getImageHtml32(work);
 
-    this._toast.popup(level, work.msg, icon);
+    this._toast.popup(level, work.msg, icon, null, work.transitions);
 };
 
 
@@ -113,6 +113,7 @@ ZmToast = function(parent) {
     this._funcs["show"] = AjxCallback.simpleClosure(this.__show, this);
     this._funcs["hide"] = AjxCallback.simpleClosure(this.__hide, this);
     this._funcs["pause"] = AjxCallback.simpleClosure(this.__pause, this);
+    this._funcs["idle"] = AjxCallback.simpleClosure(this.__idle, this);
     this._funcs["fade"] = AjxCallback.simpleClosure(this.__fade, this);
     this._funcs["fade-in"] = this._funcs["fade"];
     this._funcs["fade-out"] = this._funcs["fade"];
@@ -123,7 +124,13 @@ ZmToast.prototype.constructor = ZmToast;
 
 // Constants
 
-ZmToast.DEFAULT_TRANSITIONS = [ { type: "fade-in" }, { type: "pause" }, { type: "fade-out" } ];
+ZmToast.FADE = { type: "fade" };
+ZmToast.FADE_IN = { type: "fade-in" };
+ZmToast.FADE_OUT = { type: "fade-out" };
+ZmToast.PAUSE = { type: "pause" };
+ZmToast.IDLE = {type: "idle" };
+
+ZmToast.DEFAULT_TRANSITIONS = [ ZmToast.FADE_IN, ZmToast.PAUSE, ZmToast.FADE_OUT ];
 
 ZmToast.DEFAULT_STATE = {};
 ZmToast.DEFAULT_STATE["position"] = { location: "C" }; // center
@@ -142,7 +149,7 @@ ZmToast.prototype.TEMPLATE = "share.Widgets#ZToast";
 // Public methods
 
 ZmToast.prototype.popup =
-function(level, text, icon, loc) {
+function(level, text, icon, loc, customTransitions) {
     this.__clear();
     this._poppedUp = true;
 
@@ -160,8 +167,9 @@ function(level, text, icon, loc) {
 
     // get transitions
     var location = appCtxt.get(ZmSetting.SKIN_HINTS, "toast.location") || loc;
-    var transitions = appCtxt.get(ZmSetting.SKIN_HINTS, "toast.transitions") || ZmToast.DEFAULT_TRANSITIONS;
-    transitions = [].concat( {type:"position", location:location}, transitions, {type:"hide"} );
+    var transitions = customTransitions || appCtxt.get(ZmSetting.SKIN_HINTS, "toast.transitions") || ZmToast.DEFAULT_TRANSITIONS;
+
+	transitions = [].concat( {type:"position", location:location}, transitions, {type:"hide"} );
 
     // start animation
     this._transitions = transitions;
@@ -295,6 +303,23 @@ function() {
 ZmToast.prototype.__pause =
 function() {
     setTimeout(this._funcs["next"], this._state.duration);
+};
+
+ZmToast.prototype.__idle =
+function() {
+	if (!this._idleTimer) {
+		this._idleTimer = new DwtIdleTimer(0, new AjxCallback(this, this.__idleCallback));
+	} else {
+		this._idleTimer.resurrect(0);
+	}
+};
+
+ZmToast.prototype.__idleCallback =
+function(idle) {
+	if (!idle) {
+		this._transition();
+		this._idleTimer.kill();
+	}
 };
 
 ZmToast.prototype.__move =

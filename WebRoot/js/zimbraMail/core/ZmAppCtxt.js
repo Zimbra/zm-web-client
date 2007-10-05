@@ -74,8 +74,8 @@ function() {
 };
 
 ZmAppCtxt.prototype.setStatusMsg =
-function(msg, level, detail) {
-	this._appController.setStatusMsg(msg, level, detail);
+function(msg, level, detail, transitions) {
+	this._appController.setStatusMsg(msg, level, detail, transitions);
 };
 
 ZmAppCtxt.prototype.getSettings =

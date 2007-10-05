@@ -1561,8 +1561,8 @@ function() {
 };
 
 ZmZimbraMail.prototype.setStatusMsg =
-function(msg, level, detail) {
-	this._statusView.setStatusMsg(msg, level, detail);
+function(msg, level, detail, transitions) {
+	this._statusView.setStatusMsg(msg, level, detail, transitions);
 };
 
 ZmZimbraMail.prototype.getKeyMapName =
