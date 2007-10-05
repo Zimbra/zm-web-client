@@ -687,7 +687,10 @@ ZmNotebookPageView.prototype.handleItemResponse = function(item){
 			if(!item){
 				return;
 			}	
-			this._controller.setPage(item);
+			
+			var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();	
+			var page = cache.getPage(item);	
+			this._controller.setPage(page);
 			
 			if(!this._controller.historyLoading){
 			this._controller.updateHistory();

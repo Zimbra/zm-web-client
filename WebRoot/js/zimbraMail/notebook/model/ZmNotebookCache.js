@@ -62,6 +62,7 @@ ZmNotebookCache.prototype._idMap;
 ZmNotebookCache.prototype._foldersMap;
 ZmNotebookCache.prototype._pathMap;
 ZmNotebookCache.prototype._idPathMap;
+ZmNotebookCache.prototype._idxPageMap;
 
 ZmNotebookCache.prototype._changeListener;
 
@@ -113,7 +114,12 @@ function(folderId, callback, errorCallback) {
 	}
 };
 
-ZmNotebookCache.prototype.putItem = function(item) {
+ZmNotebookCache.prototype.putItem = function(item1) {
+	
+	var folderId = item1.folderId || ZmNotebookItem.DEFAULT_FOLDER;
+	var items = this.getItemsInFolder(folderId);
+	item = this.getPage(item1);
+	
 	if (item.id) {
 		this._idMap[item.id] = item;
 	}
@@ -121,8 +127,6 @@ ZmNotebookCache.prototype.putItem = function(item) {
 		this._pathMap[item.path] = item;
 		this._idPathMap[item.id] = item.path;
 	}
-	var folderId = item.folderId || ZmNotebookItem.DEFAULT_FOLDER;
-	var items = this.getItemsInFolder(folderId);
 	items.all[item.name] = item;
 	if (item instanceof ZmPage) {
 		items.pages[item.name] = item;
@@ -167,7 +171,13 @@ ZmNotebookCache.prototype.removeItem = function(item) {
 	if (item.id) {
 		delete this._idPathMap[item.id];
 		delete this._idMap[item.id];
+		delete this._idxPageMap[item.id];
 	}
+	
+	if(item.folderId) {
+		delete this._idxPageMap[item.folderId];
+	}
+	
 	var items = this.getItemsInFolder(item.folderId);
 	delete items.all[item.name];
 	if (item instanceof ZmPage) {
@@ -204,6 +214,7 @@ ZmNotebookCache.prototype.clearCache = function() {
 	this._foldersMap = {};
 	this._pathMap = {};
 	this._idPathMap = {};
+	this._idxPageMap = {};
 };
 
 // query methods
@@ -508,6 +519,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 				item.set(word);
 				item.folderId = folderId;
 				item.remoteFolderId = remoteFolderId; // REVISIT
+				this.markCustomIndexPage(item);				
 				this.putPage(item);
 			}
 			else {
@@ -748,6 +760,7 @@ ZmNotebookCache.prototype.handleGetItemResponse = function(params,response)
 				item = new ZmPage();
 				item.set(wikiResp);
 				item.folderId = wikiResp.l || ZmNotebookItem.DEFAULT_FOLDER;
+				this.markCustomIndexPage(item);				
 			}
 			if(linkResp){
 				item = new ZmPage();
@@ -821,4 +834,28 @@ ZmNotebookCache.prototype.parseURL = function(sourceUri) {
     }
     
     return uri;
-}
+};
+
+ZmNotebookCache.prototype.markCustomIndexPage =
+function(item) {
+	if(item.name == "_Index"){
+		item._customIndexPage = true;
+		this._idxPageMap[item.id] = item;
+		this._idxPageMap[item.folderId] = item;		
+		if(this._idMap[item.folderId] !=null){
+			this._idMap[item.folderId]._customIndexPage = true;	
+		}
+	}
+};
+
+ZmNotebookCache.prototype.getPage =
+function(item) {
+	if(item.name == "_Index"){
+		if(this._idxPageMap[item.id]){
+			return this._idxPageMap[item.id];
+		}else if(this._idxPageMap[item.folderId]){
+			return this._idxPageMap[item.folderId];
+		}
+	}
+	return item;	
+};

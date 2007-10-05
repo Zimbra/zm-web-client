@@ -129,7 +129,7 @@ function() {
 
 ZmPage.prototype.isIndex =
 function() {
-	return this.name == ZmNotebook.PAGE_INDEX;
+	return ((this.name == ZmNotebook.PAGE_INDEX) && (!this._customIndexPage));
 };
 
 
