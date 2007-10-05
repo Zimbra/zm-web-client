@@ -131,6 +131,30 @@
 </noscript>
 <% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys"); %>
 <jsp:include page="Resources.jsp" />
+
+
+<!--
+  --
+  --
+  --
+  	BEGIN SKIN
+  --
+  --
+  --
+  -->
+
+<%-- Load skin.js first because splash screen has 'switch to basic client' link now --%>
+<script type="text/javascript">
+<%-- NOTE: servlet path is needed because the servlet sees it as /public/launchZCS.jsp --%>
+<jsp:include page='/js/skin.js'>
+	<jsp:param name='servlet-path' value='/js/skin.js' />
+	<jsp:param name='client' value='advanced' />
+	<jsp:param name='skin' value='${skin}' />
+	<jsp:param name="locale" value="${locale}" />
+	<jsp:param name='debug' value='${isDebug}' />
+</jsp:include>
+</script>
+
 <%-- NOTE: servlet path is needed because the servlet sees it as /public/launchZCS.jsp --%>
 <jsp:include page="/html/skin.html">
 	<jsp:param name="servlet-path" value="/html/skin.html" />
@@ -139,6 +163,21 @@
 	<jsp:param name="locale" value="${locale}" />
 	<jsp:param name='debug' value='${isDebug}' />
 </jsp:include>
+
+<!--
+  --
+  --
+  --
+  	END SKIN
+  --
+  --
+  --
+  -->
+
+
+
+
+
 <jsp:include page="Boot.jsp"/>
 <script>
 	AjxEnv.DEFAULT_LOCALE = "${locale}";
@@ -171,17 +210,6 @@
         <% } %>
     <% }
 %>
-
-<script type="text/javascript">
-<%-- NOTE: servlet path is needed because the servlet sees it as /public/launchZCS.jsp --%>
-<jsp:include page='/js/skin.js'>
-	<jsp:param name='servlet-path' value='/js/skin.js' />
-	<jsp:param name='client' value='advanced' />
-	<jsp:param name='skin' value='${skin}' />
-	<jsp:param name="locale" value="${locale}" />
-	<jsp:param name='debug' value='${isDebug}' />
-</jsp:include>
-</script>
 
 <script>
 	<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
