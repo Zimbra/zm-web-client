@@ -242,6 +242,10 @@ FORM {
 }
 
 
+#ZLoginSwitchMsg {
+	padding-top:10px;
+}
+
 /* Container for the "loading..." message */
 #ZLoginLoadingMsg {
 	@FontSize-bigger@
