@@ -12,6 +12,7 @@
     <fmt:message var="unknownRecipient" key="unknownRecipient"/>
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
+    <c:set var="context" value="${context}" />
     <c:if test="${false and mailbox.prefs.readingPaneEnabled}">
         <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true" neuterimages="${empty param.xim}"/>
         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>

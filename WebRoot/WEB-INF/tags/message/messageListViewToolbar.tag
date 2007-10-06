@@ -41,6 +41,10 @@
                         </c:otherwise>
                     </c:choose>
                     <td><div class='vertSep'></div></td>
+                    <td nowrap>
+                        <app:button id="${keys ? 'OPPRINT' : ''}" name="actionPrint" text="actionPrint" tooltip="actionPrint" src="startup/ImgPrint.gif"/>
+                    </td>
+                    <td><div class='vertSep'></div></td>
                     <td  nowrap valign=middle>
                         <select name="folderId" onchange="zclick('SOPMOVE')">
                             <option value="" selected/><fmt:message key="moveAction"/>

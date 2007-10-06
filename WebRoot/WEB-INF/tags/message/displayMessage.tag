@@ -34,22 +34,23 @@
 <fmt:message var="unknownSender" key="unknownSender"/>
 
 <c:set var="isPart" value="${!empty message.partName}"/>
+
 <table width="100%" cellpadding="0" cellspacing="0" class="Msg">
-<c:if test="${print}">
-<table  border=0 width=100% cellpadding="7">
-    <tr>
-        <td style="font-size:20px;font-weight:bold;" ><fmt:message key="zimbraTitle"/></td>
-        <td style="font-size:14px;font-weight:bold;" align=right> <c:out  value="${mailbox.defaultIdentity.fromAddress}"/></td>
-    </tr>
-</table>
-<hr>
-<div style='padding:10px;font-size:20px;font-weight:bold;"' >
-<c:out value="${message.subject}" />
-</div>
-<hr>
-</c:if>
     <tr>
         <td class='MsgHdr' colspan="2">
+        <c:if test="${print}">
+            <table  border=0 width=100% cellpadding="7">
+                <tr>
+                    <td style="font-size:20px;font-weight:bold;" ><fmt:message key="zimbraTitle"/></td>
+                    <td style="font-size:14px;font-weight:bold;" align=right> <c:out  value="${mailbox.defaultIdentity.fromAddress}"/></td>
+                </tr>
+            </table>
+            <hr>
+            <div style='padding:10px;font-size:20px;font-weight:bold;"' >
+                <c:out value="${message.subject}" />
+            </div>
+            <hr>
+        </c:if>
             <table width="100%" cellpadding="0" cellspacing="0" border="0" <c:if test="${print}">style="background-color: #EEEEEE;"</c:if> >
                 <tr>
                     <td align="left">

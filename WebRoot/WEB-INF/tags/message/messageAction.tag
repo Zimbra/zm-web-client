@@ -4,6 +4,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ attribute name="context" rtexprvalue="true" required="false" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 
 <app:handleError>
 <zm:requirePost/>
@@ -92,6 +93,10 @@
                         <fmt:param value="${result.idCount}"/>
                     </fmt:message>
                 </app:status>
+            </c:when>
+            <c:when test="${zm:actionSet(param, 'actionPrint')}">
+                <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${result.idCount}"/>
+               <jsp:forward page="${fn:escapeXml(newWindowUrl)}&print=true" />
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionNotSpam')}">
                 <zm:markMessageSpam  var="result" id="${ids}" spam="false"/>
