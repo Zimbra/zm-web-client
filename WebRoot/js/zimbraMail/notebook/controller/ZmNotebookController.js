@@ -180,11 +180,13 @@ ZmNotebookController.prototype._doDelete = function(items,delcallback) {
 		var overviewController = appCtxt.getOverviewController();
 		var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
 		var organizer = appCtxt.getById(page.id);
-		var callback = new AjxCallback(treeController, treeController._deleteListener2, [ organizer ]);
-		var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, organizer.name);
-		var dialog = appCtxt.getConfirmationDialog();
-		dialog.popup(message, callback);		
-		return;
+		if(organizer) {
+			var callback = new AjxCallback(treeController, treeController._deleteListener2, [ organizer ]);
+			var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, organizer.name);
+			var dialog = appCtxt.getConfirmationDialog();
+			dialog.popup(message, callback);		
+			return;
+		}
 	}
 	
 	var dialog = appCtxt.getConfirmationDialog();
