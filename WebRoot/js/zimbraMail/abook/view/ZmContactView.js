@@ -833,9 +833,15 @@ function(ev) {
 	var e = DwtUiEvent.getTarget(ev);
 	if (e) {
 		var view = Dwt.getObjectFromElement(e);
-		view._isDirty = true;
-
 		var field = Dwt.getAttr(e, "_field");
+		if (!view._isDirty) {
+			var attr = ZmContact.getAttr(view._contact, field);
+			var value = e.value;
+			if ((attr || value) && (value != attr)) {
+				view._isDirty = true;
+			}
+		}
+
 		if (field == ZmContact.F_firstName ||
 			field == ZmContact.F_lastName ||
 			field == ZmContact.F_company)
