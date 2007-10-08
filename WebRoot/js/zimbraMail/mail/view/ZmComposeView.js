@@ -1947,7 +1947,7 @@ function(isDraft, status, attId) {
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
 	DBG.dumpObj(AjxDebug.DBG1,attId);
 	if (status == AjxPost.SC_OK) {
-		this._controller.sendMsg(attId, isDraft);
+		this._controller.sendMsg(attId, ZmComposeController.DRAFT_TYPE_MANUAL);
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {
 		// auth failed during att upload - let user relogin, continue with compose action
 		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);

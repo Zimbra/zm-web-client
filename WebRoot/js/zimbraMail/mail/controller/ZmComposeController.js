@@ -100,6 +100,11 @@ function() {
 
 ZmComposeController.SIGNATURE_KEY = "sigKeyId";
 
+// Constants for defining the reason for saving a draft message.
+ZmComposeController.DRAFT_TYPE_NONE = "none";
+ZmComposeController.DRAFT_TYPE_MANUAL = "manual";
+ZmComposeController.DRAFT_TYPE_AUTO = "auto";
+
 //
 // Public methods
 //
@@ -231,7 +236,10 @@ function() {
 * Sends the message represented by the content of the compose view.
 */
 ZmComposeController.prototype.sendMsg =
-function(attId, isDraft, callback) {
+function(attId, draftType, callback) {
+	draftType = draftType || ZmComposeController.DRAFT_TYPE_NONE;
+	var isDraft = draftType != ZmComposeController.DRAFT_TYPE_NONE;
+
 	var msg = this._composeView.getMsg(attId, isDraft);
 	if (!msg) return;
 
@@ -255,22 +263,22 @@ function(attId, isDraft, callback) {
 			? (appCtxt.getMainAccount().name) 
 			: ((folder && folder.isRemote()) ? folder.getOwner() : this._accountName);
 		var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
-		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
+		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
 		var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
 		var resp = msg.send(contactList, isDraft, respCallback, errorCallback, acctName);
 
 		// XXX: temp bug fix #4325 - if resp returned, we're processing sync
 		//      request REVERT this bug fix once mozilla fixes bug #295422!
 		if (resp) {
-			this._processSendMsg(isDraft, msg, resp);
+			this._processSendMsg(draftType, msg, resp);
 		}
 	}
 };
 
 ZmComposeController.prototype._handleResponseSendMsg =
-function(isDraft, msg, callback, result) {
+function(draftType, msg, callback, result) {
 	var resp = result.getResponse();
-	this._processSendMsg(isDraft, msg, resp);
+	this._processSendMsg(draftType, msg, resp);
 
 	if (callback) callback.run(result);
 };
@@ -806,7 +814,8 @@ function(mode) {
 };
 
 ZmComposeController.prototype._processSendMsg =
-function(isDraft, msg, resp) {
+function(draftType, msg, resp) {
+	var isDraft = draftType != ZmComposeController.DRAFT_TYPE_NONE;
 	if (!isDraft) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
@@ -830,7 +839,17 @@ function(isDraft, msg, resp) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.parentController.setStatusMsg(ZmMsg.draftSaved);
 		} else {
-			appCtxt.setStatusMsg(ZmMsg.draftSaved);
+			var message;
+			var transitions;
+			if (draftType == ZmComposeController.DRAFT_TYPE_AUTO) {
+				var time = AjxDateUtil.computeTimeString(new Date());
+				this._autoSaveFormat = this._autoSaveFormat || new AjxMessageFormat(ZmMsg.draftSavedAuto);
+				message = this._autoSaveFormat.format(time);
+				transitions = [ ZmToast.FADE_IN, ZmToast.IDLE, ZmToast.PAUSE, ZmToast.FADE_OUT ];
+			} else {
+				message = ZmMsg.draftSaved;
+			}
+			appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_INFO, null, transitions);
 		}
 		this._composeView.processMsgDraft(msg);
 	}
@@ -959,14 +978,15 @@ function(ev) {
 ZmComposeController.prototype._autoSaveCallback =
 function(idle) {
 	if (idle && !DwtBaseDialog.getActiveDialog() && this._composeView.isDirty()) {
-		this._saveDraft(true);
+		this._saveDraft(ZmComposeController.DRAFT_TYPE_AUTO);
 	}
 };
 
 ZmComposeController.prototype._saveDraft =
-function() {
+function(draftType) {
+	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
 	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener);
-	this.sendMsg(null, true, respCallback);
+	this.sendMsg(null, draftType, respCallback);
 };
 
 ZmComposeController.prototype._handleResponseSaveDraftListener =
@@ -1037,7 +1057,7 @@ function() {
 	this._composeView.enableInputs(true);
 	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		// save as draft
-		this.sendMsg(null, true);
+		this.sendMsg(null, ZmComposeController.DRAFT_TYPE_MANUAL);
 	} else {
 		// cancel
 		if (appCtxt.isChildWindow && window.parentController) {
