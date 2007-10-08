@@ -263,41 +263,6 @@ function(view, menu, checked, itemId) {
 	return menu;
 };
 
-// we overload _doAction for bug fix #3623
-ZmDoublePaneController.prototype._doAction =
-function(params) {
-	// first find out if the current message is in HTML
-	var msg = params.msg = this._getMsg(params);
-	if (!msg) { return; }
-	var msgView = this._doublePaneView.getMsgView();
-	var msgViewMsg = msgView.getMsg();
-	var format = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
-
-	// if msg shown in msgview matches current msg and
-	// we're not processing a draft msg and
-	// msgview has rendered an html msg and
-	// the user's compose pref is in text/plain
-	if (msgViewMsg && msgViewMsg.id == msg.id &&
-		params.action != ZmOperation.DRAFT &&
-		msgView.hasHtmlBody() &&
-		format == ZmSetting.COMPOSE_TEXT)
-	{
-		// find out if a text part exists for msg
-		var textPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-		if (!textPart) {
-			// if not, get DOM tree from msgview's IFRAME created for the HTML msg
-			var bodyEl = msgView.getHtmlBodyElement();
-			// run it thru the HTML stripper
-			textPart = bodyEl ? AjxStringUtil.convertHtml2Text(bodyEl) : null;
-			// and set the text part back into the message
-			if (textPart) {
-				msg.setTextPart(textPart);
-			}
-		}
-	}
-	ZmMailListController.prototype._doAction.apply(this, arguments);
-};
-
 /*
 * Displays a list of messages. If passed a conv, loads its message
 * list. If passed a list, simply displays it. The first message will be 

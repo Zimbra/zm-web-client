@@ -614,21 +614,6 @@ function(callback, result) {
 	if (callback) callback.run(result);
 };
 
-// we may want to set the text part w/o requesting it from the server
-// (i.e. if we already have the HTML part)
-ZmMailMsg.prototype.setTextPart =
-function(textPartStr) {
-	this._onChange("textPart", textPartStr);
-	var textPart = new Object();
-	textPart.ct = ZmMimeTable.TEXT_PLAIN;
-	textPart.s = textPartStr.length;
-	textPart.content = textPartStr;
-	// XXX: not sure whether these params should be faked
-	//textPart.body =
-	//textPart.part =
-	this._bodyParts.push(textPart);
-};
-
 ZmMailMsg.prototype.setHtmlContent =
 function(content) {
 	this._onChange("htmlContent", content);
