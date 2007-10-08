@@ -153,7 +153,8 @@ ZmConv.prototype._handleResponseLoadMsgs = function(callback, result){
 	var msgs = [];
 	for( var i=0 ; i < len ; i++ ) {
 		var msgNode = resp.m[i];
-		var msg = ZmMailMsg.createFromDom(msgNode,this.msgs);
+		var msg = new ZmMailMsg(this._appCtxt, msgNode.id);
+		msg._loadFromDom(msgNode);
 		msgs.push(msg);
 	}
 	
