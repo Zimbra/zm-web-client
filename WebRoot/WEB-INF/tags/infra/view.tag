@@ -208,10 +208,8 @@
 								 <jsp:doBody/>
 						</div></td>
 					</tr>
-
 				</table>
 			</td>
-			
 		</tr>
 
         <tr id='skin_tr_main_full' style='display:none'>
@@ -279,6 +277,7 @@
     </tr>
     <tr>
         <td class="Overview">
+           
             <c:choose>
                 <c:when test="${not empty context}">
                     <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
@@ -287,9 +286,9 @@
                     <c:url var="composeUrl" value="/h/search?action=compose"/>
                 </c:otherwise>
             </c:choose>
-            <div class="SearchButton" style="padding:2px;" >
+            <!-- div class="SearchButton" style="padding:2px;" >
                 <a  href="${fn:escapeXml(composeUrl)}" style="text-decoration:none;color:black;"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span> &nbsp; <span id='tab_ikon_compose'></span><span><fmt:message key="compose"/></span></a>
-            </div>
+            </div -->
         </td>
         <td>
             <app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
@@ -345,6 +344,5 @@
 
 </c:otherwise>
 </c:choose>
-	
 </body>
 </html>
