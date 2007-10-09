@@ -22,22 +22,15 @@
         </c:catch>
     </c:if>
 </c:set>
-<c:if test="${not empty message.invite and mailbox.features.calendar}">
-    <c:set var="appt" value="${message.invite.component}"/>
-    <c:set var="showInviteReply" value="${not zm:getFolder(pageContext, message.folderId).isInTrash and not empty message.invite.component}"/>
-</c:if>
-<c:set var="shareAccepted" value="${not empty message.share and zm:hasShareMountPoint(mailbox, message)}"/>
-<c:set var="showShareInfo" value="${not empty message.share and not shareAccepted}"/>
-<c:set var="needExtraCol" value="${showInviteReply or showShareInfo}"/>
 
 <fmt:message var="unknownSender" key="unknownSender"/>
 
 <c:set var="isPart" value="${!empty message.partName}"/>
 
-<table width="100%" cellpadding="0" cellspacing="0" class="Msg" >
+<table width="100%" cellpadding="0" cellspacing="0" class="Msg" style="padding:10px;">
     <tr>
         <td class='MsgHdr' colspan="2">
-            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#EEEEEE;" >
                 <tr>
                     <td align="left">
                         <table width="100%" align="left" cellpadding="2" cellspacing="0" border="0">
@@ -145,7 +138,7 @@
                                                 <app:img src="${tag.miniImage}" alt='${fn:escapeXml(tag.name)}'/>
                                                 <span>${fn:escapeXml(tag.name)}</span>
                                             </c:forEach>
-                                        </c:if> 
+                                        </c:if>
                                         <c:if test="${mailbox.features.flagging and message.isFlagged}">
                                             <app:img altkey='ALT_FLAGGED' src="startup/ImgFlagRed.gif"/>
                                         </c:if>
@@ -155,12 +148,10 @@
                             <c:if test="${not empty message.attachments}">
                                 <tr>
                                     <td nowrap align="right" class='MsgHdrAttAnchor'>
-                                        <a href="#attachments${message.partName}">
                                             <app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                                             <fmt:message key="attachmentCount">
                                                 <fmt:param value="${message.numberOfAttachments}"/>
                                             </fmt:message>
-                                        </a>
                                     </td>
                                 </tr>
                             </c:if>
@@ -170,114 +161,6 @@
             </table>
         </td>
     </tr>
-    <c:if test="${not hideops}">
-    <tr>
-        <td class='MsgOps' colspan=2>
-            <table width="100%">
-                <tr valign="middle">
-                    <td nowrap align="left" style='padding-left: 5px'>
-                        <table cellspacing="0" cellpadding="0" class='Tb'>
-                            <tr>
-                                <c:if test="${showInviteReply}">
-                                    <td style='padding: 0 2px 0 2px'>
-                                        <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=accept">
-                                            <app:img src="common/ImgCheck.gif" alt="check"/>
-                                            &nbsp;
-                                            <span><fmt:message key="replyAccept"/></span>
-                                        </a>
-                                    </td>
-                                    <td><div class='vertSep'></div></td>
-                                    <td style='padding: 0 2px 0 2px'>
-                                        <a <c:if test="${not isPart}">id="OPTENT"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=tentative">
-                                            <app:img src="common/ImgQuestionMark.gif" alt="tentative"/>
-                                            &nbsp;
-                                            <span><fmt:message key="replyTentative"/></span>
-                                        </a>
-                                    </td>
-                                    <td><div class='vertSep'></div></td>
-                                    <td style='padding: 0 2px 0 2px'>
-                                        <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=decline">
-                                            <app:img src="common/ImgCancel.gif" alt="decline"/>
-                                            &nbsp;
-                                            <span><fmt:message key="replyDecline"/></span>
-                                        </a>
-                                    </td>
-                                    <td><div class='vertSep'></div></td>
-                                </c:if>
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=reply">
-                                        <app:img src="startup/ImgReply.gif" alt="reply"/>
-                                        &nbsp;
-                                        <span><fmt:message key="reply"/></span>
-                                    </a>
-                                </td>
-                                <td><div class='vertSep'></div></td>
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=replyAll">
-                                        <app:img src="startup/ImgReplyAll.gif" alt="replyall"/>
-                                        &nbsp;
-                                        <span><fmt:message key="replyAll"/></span>
-                                    </a>
-                                </td>
-                                <td><div class='vertSep'></div></td>
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=forward">
-                                        <app:img src="startup/ImgForward.gif" alt="forward"/>
-                                        &nbsp;
-                                        <span><fmt:message key="forward"/></span>
-                                    </a>
-                                </td>
-                                <td><div class='vertSep'></div></td>
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a accesskey='10' target="_blank" href="${fn:escapeXml(newWindowUrl)}&print=true">
-                                        <app:img src="startup/ImgPrint.gif" altkey="print" title="print"/>
-                                        &nbsp;
-                                        <span><fmt:message key="print"/></span>
-                                    </a>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td nowrap align=right style='padding-right: 5px;'>
-                        <table cellspacing="0" cellpadding="0" class='Tb'>
-                            <tr>
-                                <c:if test="${showconvlink and not fn:startsWith(message.conversationId, '-')}">
-                                    <td style='padding: 0 2px 0 2px'>
-                                        <c:url var="convUrl" value="/h/search">
-                                            <c:param name="action" value="view"/>
-                                            <c:param name="st" value="conversation"/>
-                                            <c:param name="sq" value='conv:"${message.conversationId}"'/>
-                                        </c:url>
-                                        <a id="OPSHOWCONV" href="${fn:escapeXml(convUrl)}">
-                                            <app:img src="mail/ImgConversation.gif" altkey="showConversation" title="showConversation"/>
-                                        </a>
-                                    </td>
-                                </c:if>
-                                <td><div class='vertSep'></div></td>
-                                <c:if test="${not empty newWindowUrl}">
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a id="OPNEWWIN" target="_blank" href="${fn:escapeXml(newWindowUrl)}">
-                                        <app:img src="startup/ImgOpenInNewWindow.gif" altkey="newWindow" title="newWindow"/>
-                                    </a>
-                                </td>
-                                </c:if>
-                                <td><div class='vertSep'></div></td>
-                                <c:if test="${not isPart}">
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a id="OPSHOWORIG" target="_blank" href="/service/home/~/?id=${message.id}&amp;auth=co">
-                                        <app:img src="startup/ImgMessage.gif" altkey="showOrig" title="showOrig"/>
-                                    </a>
-                                </td>
-                                </c:if>
-
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    </c:if>
     <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
         <tr>
             <td class='DisplayImages' colspan="2">
@@ -285,16 +168,6 @@
                 &nbsp;<a id="DISPEXTIMG" href="${fn:escapeXml(externalImageUrl)}">
                 <fmt:message key="displayExternalImages"/>
             </a>
-            </td>
-        </tr>
-    </c:if>
-    <c:if test="${shareAccepted}">
-        <tr>
-            <td width="1%" class='DisplayImages'>
-                <app:img src="dwt/ImgInformation.gif" alt="info"/>
-            </td>
-            <td class='DisplayImages' colspan="1">
-                <fmt:message key="shareAlreadyAccepted"/>
             </td>
         </tr>
     </c:if>
@@ -309,30 +182,7 @@
                               theBody="${zm:getPartHtmlContent(addbody, message)}" counter="${counter}X${bstatus.count}"/>
                 </c:forEach>
             </c:if>
-            <c:if test="${not empty message.attachments}">
-                <hr/>
-                <a name="attachments${message.partName}"></a>
-                <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
-            </c:if>
-                <c:if test="${not empty param.debug}">
-                    <pre>${fn:escapeXml(message)}</pre>
-                </c:if>
+            <hr>
         </td>
-        <c:if test="${needExtraCol}">
-            <c:choose>
-                <c:when test="${showInviteReply}">
-                    <td width="25%" valign="top"  class='ZhAppContent2'>
-                        <c:catch>
-                            <app:multiDay selectedId="${message.id}" date="${appt.start.calendar}" numdays="1" view="day" timezone="${mailbox.prefs.timeZone}"/>
-                        </c:catch>
-                    </td>
-                </c:when>
-                <c:when test="${showShareInfo}">
-                    <td width="45%" valign="top"  class='ZhAppContent2'>
-                        <app:shareInfo message="${message}"/>
-                    </td>
-                </c:when>
-            </c:choose>
-        </c:if>
     </tr>
 </table>

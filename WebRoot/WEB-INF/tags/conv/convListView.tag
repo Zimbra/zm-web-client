@@ -13,6 +13,7 @@
     <fmt:message var="unknownSubject" key="noSubject"/>
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:set var="selectedRow" value="${param.selectedRow}"/>
+    <c:set var="context" value="${context}" />
 </app:handleError>
 <app:view mailbox="${mailbox}" title="${title}" selected='mail' folders="true" tags="true" searches="true" context="${context}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>

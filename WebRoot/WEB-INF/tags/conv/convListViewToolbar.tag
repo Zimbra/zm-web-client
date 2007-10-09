@@ -31,6 +31,13 @@
                     <a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgNewMessage.gif" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
+                     <td nowrap>
+                         <zm:currentResultUrl var="convPrintUrl" value="/h/search" context="${context}"  print="true"/>
+                         <a href="${fn:escapeXml(convPrintUrl)}" ><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/><span>&nbsp;<fmt:message key="actionPrint"/></span></a>
+                        
+                         <%-- <app:button id="${keys ? 'OPPRINT' : ''}" text="actionPrint" name="actionPrint" tooltip="actionTrashTT"  src="startup/ImgPrint.gif"/ --%>
+                    </td>
+                    <td><div class='vertSep'></div></td>
                     <c:choose>
                         <c:when test="${context.isFolderSearch and context.folder.isTrash}">
                             <app:button  id="${keys ? 'OPDELETE' : ''}" text="actionDelete" name="actionHardDelete" tooltip="actionTrashTT" src="startup/ImgDelete.gif"/>
