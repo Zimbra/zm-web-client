@@ -306,7 +306,12 @@
                 </propertyfile>
                 <property file="${properties.file}"/>
             </then>
-        </if>
+			<else>
+				<tstamp>
+					<format property="build.simpleDate" pattern="yyMMddHHmmss" />
+				</tstamp>
+			</else>
+		</if>
     </target>
 
     <target name='customer-init' if='env.CUSTOMER_SKIN'>
