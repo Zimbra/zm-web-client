@@ -165,17 +165,7 @@ function(event) {
 	// rename folder
 	var callback = new AjxCallback(this, this._handleColor);
 	var organizer = this._organizer;
-	if (organizer.id != ZmOrganizer.ID_CALENDAR &&
-		organizer.id != ZmOrganizer.ID_NOTEBOOK &&
-		organizer.id != ZmOrganizer.ID_ADDRBOOK &&
-		organizer.id != ZmOrganizer.ID_TASKS &&
-		organizer.id != ZmOrganizer.ID_AUTO_ADDED &&
-		organizer.id != ZmOrganizer.ID_INBOX &&
-		organizer.id != ZmOrganizer.ID_OUTBOX &&
-		organizer.id != ZmOrganizer.ID_CHATS &&
-		organizer.id != ZmOrganizer.ID_TASKS && 
-		organizer.id != ZmOrganizer.ID_BRIEFCASE )
-	{
+	if (!organizer.isSystem()) {
 		var name = this._nameInputEl.value;
 		if (organizer.name != name) {
 			organizer.rename(name, callback, this._handleRenameErrorCallback);
