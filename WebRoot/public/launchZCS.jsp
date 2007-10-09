@@ -145,6 +145,11 @@
   --
   -->
 
+<script>
+	function switchToStandardClient() {
+		document.location = appContextPath + "/h/";
+	}
+</script>
 <%-- NOTE: servlet path is needed because the servlet sees it as /public/launchZCS.jsp --%>
 <jsp:include page="/html/skin.html">
 	<jsp:param name="servlet-path" value="/html/skin.html" />

@@ -120,10 +120,6 @@ ZmSkin.prototype = {
 	},
 	
 	
-	switchToStandardClient : function() {
-		alert("Someone please edit skins/_base/base/ZmSkin.js when you figure out how to make this happen!");
-	},
-	
 	//
 	// Protected methods
 	//
