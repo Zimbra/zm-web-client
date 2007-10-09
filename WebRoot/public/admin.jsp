@@ -81,6 +81,8 @@
     if(contextPath == null || contextPath.equals("/")) {
 		response.sendRedirect(adminUrl+"?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
     }
+
+	pageContext.setAttribute("skin", skin);
 %><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
@@ -109,8 +111,10 @@
 	 	appCurrentSkin = "<%= skin %>";
 	 	appVers = "<%= vers %>";
 	</script>
-<% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZaMsg,AjxKeys"); %>
-<jsp:include page="Resources.jsp"/>
+<jsp:include page="Resources.jsp">
+	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys" />
+	<jsp:param name="skin" value="${skin}" />
+</jsp:include>
 <style type="text/css">
 <!--
 @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,images,skin.css?v=<%= vers %>&skin=<%= skin %>);

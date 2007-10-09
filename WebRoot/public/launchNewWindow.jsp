@@ -72,8 +72,10 @@
 %>
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <title><fmt:setBundle basename="/messages/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
-<% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys"); %>
-<jsp:include page="Resources.jsp"/>
+<jsp:include page="Resources.jsp">
+	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
+	<jsp:param name="skin" value="${skin}" />
+</jsp:include>
 <link href='${contextPath}/css/common,dwt,msgview,login,zm,spellcheck,wiki,images,skin.css?v=${vers}${isDebug?"&debug=1":""}&skin=${skin}' rel='stylesheet' type="text/css">
 <jsp:include page="Boot.jsp"/>
 <script type="text/javascript">

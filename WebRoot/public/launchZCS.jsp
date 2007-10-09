@@ -129,8 +129,10 @@
 <noscript>
 <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="/zimbra" value='/h/'></c:url></fmt:param></fmt:message>
 </noscript>
-<% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys"); %>
-<jsp:include page="Resources.jsp" />
+<jsp:include page="Resources.jsp">
+	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
+	<jsp:param name="skin" value="${skin}" />
+</jsp:include>
 
 
 <!--

@@ -103,6 +103,8 @@
 	if (offlineMode == null) {
 		offlineMode = application.getInitParameter("offlineMode");
 	}
+
+	pageContext.setAttribute("skin", skin);
 %>
 <fmt:message key="favIconUrl" var="favIconUrl"/>
 <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
@@ -118,8 +120,10 @@
 	appExtension   = "<%=ext%>";
 	appDevMode     = <%=inDevMode%>;
 </script>
-<% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys"); %>
-<jsp:include page="Resources.jsp"/>
+<jsp:include page="Resources.jsp">
+	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
+	<jsp:param name="skin" value="${skin}" />
+</jsp:include>
 <style type="text/css">
 <!--
 @import url(<%= contextPath %>/css/common,dwt,zm?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);

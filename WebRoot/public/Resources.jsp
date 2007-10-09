@@ -49,8 +49,19 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
         }
     }
 
+	String skin = request.getParameter("skin");
+	if (skin == null) {
+		skin = application.getInitParameter("zimbraDefaultSkin");
+		if (skin == null) {
+			skin = "sand";
+		}
+	}
+
 	String resources = (String)request.getAttribute("res");
-	String query = "v="+vers+(inSkinDebugMode||inDevMode?"&debug=1":"")+localeQs;
+	if (resources == null) {
+		resources = request.getParameter("res");
+	}
+	String query = "v="+vers+(inSkinDebugMode||inDevMode?"&debug=1":"")+localeQs+"&skin="+skin;
 
 %><script type="text/javascript" src="<%=contextPath%>/res/<%=resources%>.js<%=ext%>?<%=query%>"></script>
  

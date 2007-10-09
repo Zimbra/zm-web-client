@@ -13,9 +13,11 @@
 
     <property name='taglib.dir' value='../ZimbraTagLib'/>
     <property name='taglib.build.dir' value='${taglib.dir}/build'/>
+	<property name='taglib.build.classes.dir' value='${taglib.build.dir}/classes'/>
 
     <property name='server.dir' value='../ZimbraServer'/>
     <property name='server.build.dir' value='${server.dir}/build'/>
+	<property name='server.build.classes.dir' value='${server.build.dir}/classes'/>
     <property name='server.dist.dir' value='${server.build.dir}/dist'/>
 
     <property name='license.dir' value='../ZimbraLicenses'/>
@@ -70,9 +72,11 @@
 
     <path id='class.path'>
         <pathelement location="${build.classes.dir}"/>
-        <fileset dir="${lib.dir}" includes="*.jar"/>
+        <fileset dir="${lib.dir}" includes="**/*.jar"/>
         <fileset dir="${common.lib.dir}" includes="**/*.jar"/>
         <pathelement location="${common.build.classes.dir}"/>
+		<pathelement location="${server.build.classes.dir}"/>
+		<pathelement location="${taglib.build.classes.dir}"/>
     </path>
 
     <!-- pseudo-fileset so that targets that rely on it don't fail -->

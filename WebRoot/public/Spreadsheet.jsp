@@ -43,6 +43,8 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     }
     Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
     Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
+
+	pageContext.setAttribute("skin", skin);
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -53,9 +55,11 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     @import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,spreadsheet,images,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
 	-->
 	</style>
-	<% request.setAttribute("res", "I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys"); %>
-	<jsp:include page="Resources.jsp"/>
-    <jsp:include page="Boot.jsp"/>
+	<jsp:include page="Resources.jsp">
+		<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys" />
+		<jsp:param name="skin" value="${skin}" />
+	</jsp:include>
+	<jsp:include page="Boot.jsp"/>
     <%
       String packages = "Ajax,Spreadsheet";
 
