@@ -270,7 +270,7 @@ function(result) {
 	var info = resp.getAttribute("info");
 	var expanded = info && info[0].wildcard[0].expanded == "0";
 
-	if (expanded || (isGal && more)) {
+	if (this._defaultQuery == "" && (expanded || (isGal && more))) {
 		var d = appCtxt.getMsgDialog();
 		d.setMessage(ZmMsg.errorSearchNotExpanded);
 		d.popup();
