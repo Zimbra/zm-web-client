@@ -112,7 +112,7 @@
 	 	appVers = "<%= vers %>";
 	</script>
 <jsp:include page="Resources.jsp">
-	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys" />
+	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZaMsg,AjxKeys" />
 	<jsp:param name="skin" value="${skin}" />
 </jsp:include>
 <style type="text/css">
