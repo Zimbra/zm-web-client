@@ -351,7 +351,7 @@ function(refresh) {
 					function() {
 						folderTree.getPermissions(null, respCallback, true);
 					});
-				this._controller.postRenderCallbacks.push(callback);
+				this._controller.addPostRenderCallback(callback, 6, 500, true);
 			} else {
 				folderTree.getPermissions(null, respCallback, true);
 			}

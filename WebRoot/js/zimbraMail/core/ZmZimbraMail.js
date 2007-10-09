@@ -82,10 +82,6 @@ ZmZimbraMail = function(params) {
 	this._pollRequest = null;	// HTTP request of poll we've sent to server
 	this._pollInstantNotifications = false; // if TRUE, we're in "instant notification" mode
 
-//	if (appCtxt.get(ZmSetting.OFFLINE)) {
-//		this._pollInstantNotifications = true;
-//	}
-
 	this.setPollInterval();
 
 	AjxDispatcher.setPackageLoadFunction("Zimlet", new AjxCallback(this, this._postLoadZimlet));
@@ -100,13 +96,6 @@ ZmZimbraMail = function(params) {
 	for (var i in ZmApp.QS_ARG) {
 		ZmApp.QS_ARG_R[ZmApp.QS_ARG[i]] = i;
 	}
-
-	// callbacks to run after start app has rendered
-	var callback = new AjxCallback(this,
-		function() {
-			AjxDispatcher.require("Startup2");
-		});
-	this.postRenderCallbacks = [callback];
 
 	this.startup(params);
 };
@@ -350,8 +339,16 @@ function(params) {
 	}
 
 	this._getStartApp(params);
+
+	this._postRenderCallbacks = [];
+	this._postRenderLast = 0;
 	if (params.startApp == ZmApp.MAIL) {
 		this._doingPostRenderStartup = true;
+		var callback = new AjxCallback(this,
+			function() {
+				AjxDispatcher.require("Startup2");
+			});
+		this.addPostRenderCallback(callback, 0, 0, true);
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
@@ -409,6 +406,32 @@ function(params, result) {
 	} else {
 		AjxDispatcher.require("Startup2");
 	}
+	
+	// Set up post-render callbacks
+	
+	// focus the content pane - we want this to happen soon, give it priority 1
+	var callback = new AjxCallback(this,
+		function() {
+			this.focusContentPane();
+		});
+	this.addPostRenderCallback(callback, 1, 100);
+
+	// run app-related startup functions
+	callback = new AjxCallback(this,
+		function() {
+			this.runAppFunction("startup", false, params.result);
+		});
+	this.addPostRenderCallback(callback, 3, 100, true);
+
+	// miscellaneous post-startup housekeeping
+	callback = new AjxCallback(this,
+		function() {
+			AjxDispatcher.enableLoadFunctions(true);
+			appCtxt.inStartup = false;
+			this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
+		});
+	this.addPostRenderCallback(callback, 4, 100);
+	
 	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
 };
 
@@ -446,35 +469,61 @@ function(params) {
 		dlg.popup();
 	}
 
-	var callback = new AjxCallback(this,
-		function() {
-			this.focusContentPane();
-			this.runAppFunction("startup", false, params.result);
-			AjxDispatcher.enableLoadFunctions(true);
-			appCtxt.inStartup = false;
-			this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
-		});
-	this.postRenderCallbacks.push(callback);
 	if (!this._doingPostRenderStartup) {
 		this._postRenderStartup();
 	}
 };
 
 /**
- * Startup: part 4
- * 
  * The work to render the start app has been done. Now perform all the startup
- * work that remains, using a timed action so that the start app gets rendered
- * in the UI first.
+ * work that remains - each piece of work is contained in a callback with an
+ * associated order and delay.
  */
 ZmZimbraMail.prototype._postRenderStartup =
 function(ev) {
-	AjxTimedAction.scheduleAction(new AjxTimedAction(this, 
-		function() {
-			for (var i = 0; i < this.postRenderCallbacks.length; i++) {
-				this.postRenderCallbacks[i].run();
-			}
-		}), 0);
+	this._postRenderCallbacks.sort(function(a, b) {
+		return a.order - b.order;
+	});
+	this._runNextPostRenderCallback();
+};
+
+ZmZimbraMail.prototype._runNextPostRenderCallback =
+function() {
+	DBG.println(AjxDebug.DBG2, "POST-RENDER CALLBACKS: " + this._postRenderCallbacks.length);
+	if (this._postRenderCallbacks && this._postRenderCallbacks.length) {
+		var prcb = this._postRenderCallbacks.shift();
+		if (!prcb) { return; }
+		DBG.println(AjxDebug.DBG2, "POST-RENDER CALLBACK: #" + prcb.order + ", delay " + prcb.delay + " in " + prcb.callback.obj.toString());
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, 
+			function() {
+				prcb.callback.run();
+				this._runNextPostRenderCallback();
+			}), prcb.delay);
+	}
+	
+};
+
+/**
+ * Sets up a callback to be run after the starting app has rendered, if we're doing
+ * post-render callbacks. The callback is registered with an order that determines
+ * when it will run relative to other callbacks. A delay can also be given, so that
+ * the UI has a chance to do some work between callbacks (they are called via
+ * setTimeout).
+ * 
+ * @param callback		[AjxCallback]		callback
+ * @param order			[int]				run order for the callback
+ * @param delay			[int]				how long to pause before running the callback
+ * @param runNow		[boolean]*			if true and we're not doing post-render callbacks,
+ * 											run the callback now and don't add it to the list
+ */
+ZmZimbraMail.prototype.addPostRenderCallback =
+function(callback, order, delay, runNow) {
+	if (!this._doingPostRenderStartup && runNow) {
+		callback.run();
+	} else {
+		order = order || this._postRenderLast++;
+		this._postRenderCallbacks.push({callback:callback, order:order, delay:delay || 0});
+	}
 };
 
 ZmZimbraMail.prototype._getStartApp =
@@ -1130,7 +1179,7 @@ function(appName, view) {
 						function() {
 							app.activate(true);
 						});
-					this.postRenderCallbacks.push(callback);
+					this.addPostRenderCallback(callback, 2, 100, true);
 				} else {
 					app.activate(true);
 				}
