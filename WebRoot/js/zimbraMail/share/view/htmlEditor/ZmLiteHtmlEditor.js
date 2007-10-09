@@ -334,7 +334,32 @@ ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
 	this._fontColorButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.FONT_COLOR);
 	this._fontColorButton.setColor("#000000");
 	this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontStyleListener));
+	
+	if(window["YMEmoticonsPickerButton"]){
+		this._smileyButton = new YMEmoticonsPickerButton(tb,null,"ZToolbarButton");
+		this._smileyButton.dontStealFocus();
+		this._smileyButton.setToolTipContent("Emoticons");
+		this._smileyButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.SMILEY);
+		this._smileyButton.setEmoticon(":)");
+		this._smileyButton.addSelectionListener(new AjxListener(this, this._smileyListener));
+	}
+};
 
+ZmLiteHtmlEditor.prototype._smileyListener = function(ev){
+	var obj = ev.item;
+	var id = ev.detail;
+	var smiley = obj.getSelectedSmiley();
+	
+	if (this._textArea.createTextRange && this._textArea.selection) {
+		var textRange = this._textArea.selection;
+		var text = textRange.text;
+		textRange.text = (textRange.text.charAt(textRange.text.length-1) == '') ? id + ' ' : id;
+		textRange.selection = null;
+	}else{
+		this._textArea.value += id;
+	}
+	
+	this.focus();
 };
 
 ZmLiteHtmlEditor.prototype._createFontFamilyMenu =
