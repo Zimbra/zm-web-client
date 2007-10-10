@@ -461,6 +461,7 @@ ZmAccountsPage.prototype._setDataSourceFields = function(account, section) {
 	this._setControlValue("HOST", section, account.mailServer);
 	this._setControlValue("PASSWORD", section, account.password);
 	this._setControlValue("SSL", section, isSsl);
+	this._setControlEnabled("TEST", section, true);
 	this._setControlValue("DOWNLOAD_TO", section, isInbox ? ZmAccountsPage.DOWNLOAD_TO_INBOX : ZmAccountsPage.DOWNLOAD_TO_FOLDER);
 	this._setDownloadToFolder();
 	this._setControlValue("DELETE_AFTER_DOWNLOAD", section, account.leaveOnServer);
@@ -1212,6 +1213,13 @@ ZmAccountsPage.prototype._handleTestButton = function(evt) {
 	// make sure that the current object proxy is up-to-date
 	var dataSource = this._currentAccount;
 	this._setAccountFields(dataSource, this._currentSection);
+
+	// check values
+	if (!dataSource.userName || !dataSource.mailServer || !dataSource.port) {
+		appCtxt.setStatusMsg(ZmMsg.accountTestErrorMissingInfo, ZmStatusView.LEVEL_CRITICAL);
+		button.setEnabled(true);
+		return;
+	}
 
 	// testconnection
 	var callback = new AjxCallback(this, this._handleTestResponse, [button, dataSource]);
