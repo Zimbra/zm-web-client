@@ -286,6 +286,7 @@ function(attId, draftType, callback) {
 		//      request REVERT this bug fix once mozilla fixes bug #295422!
 		if (resp) {
 			this._processSendMsg(draftType, msg, resp);
+			if (callback) callback.run(resp);
 		}
 	}
 };
@@ -1018,7 +1019,7 @@ function(draftType) {
 	if (draftType == ZmComposeController.DRAFT_TYPE_AUTO &&
 		this._draftType == ZmComposeController.DRAFT_TYPE_NONE) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_AUTO;
-	} else {
+	} else if (draftType == ZmComposeController.DRAFT_TYPE_MANUAL) {
 		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
 	}
 	this._action = ZmOperation.DRAFT;
