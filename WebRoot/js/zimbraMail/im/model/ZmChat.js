@@ -91,20 +91,21 @@ ZmChat.prototype.setTyping = function(item, typing) {
 
 // get the display name for a roster item on the list
 ZmChat.prototype.getDisplayName = function(addr, isMe) {
-	if (!addr)
-		return ZmMsg.imSystem;
-	try {
-		var buddies = AjxDispatcher.run("GetRoster");
-		return buddies.getRosterItem(addr).getDisplayName();
-	} catch (ex) {
+	
+	if (!addr) return ZmMsg.imSystem;
+	var rosterItem = AjxDispatcher.run("GetRoster").getRosterItem(addr);
+	var displayName;
+	if(rosterItem){
+	 	displayName = rosterItem.getDisplayName();
+	}else{
 		var ri = isMe ? null : this._rosterItemList.getByAddr(addr);
-		var dname = ri ? ri.getDisplayName() : addr;
+		var displayName = ri ? ri.getDisplayName() : addr;
 		if (isMe || this._rosterItemList.size() == 1) {
-			var i = dname.indexOf("@");
-			if (i != -1) dname = dname.substring(0, i);
+			var i = displayName.indexOf("@");
+			if (i != -1) displayName = displayName.substring(0, i);
 		}
-		return dname;
 	}
+	return displayName;	
 };
 
 ZmChat.prototype.isGroupChat = function() {
