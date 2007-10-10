@@ -114,7 +114,29 @@
 						<app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
 						</div>
 					</td>
-					<td id='skin_td_quota'><div id='skin_container_quota' class='skin_container'> <!-- quota --> </div></td>
+                    <td id='skin_td_quota' style="vertical-align:middle;">
+                        <table class="BannerBar" cellspacing="0" cellpadding="0" border="0">
+                            <tbody>
+                                <tr>
+                                    <td class="BannerTextQuota">Email:</td>
+                                    <td class="BannerTextQuota">
+                                        <div class="quotabar">
+                                            <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>                                            
+                                            <c:set var="usage" value="${zm:displaySizePercentage(mailbox.size,max)}" />
+                                            <div class="quotaUsed" style="width:${usage}"/>
+                                        </div>
+                                    </td>
+                                    <td class="BannerTextQuota" style="white-space: nowrap;">
+                                        <fmt:message var="unlimited" key="unlimited"/>
+                                        <fmt:message key="quotaUsage">
+                                            <fmt:param value="${usage}"/>
+                                            <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
+                                        </fmt:message>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
 				</tr>
 				</table>
 			</td>
@@ -277,7 +299,7 @@
     </tr>
     <tr>
         <td class="Overview">
-           
+        <%--  compose button
             <c:choose>
                 <c:when test="${not empty context}">
                     <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
@@ -286,9 +308,10 @@
                     <c:url var="composeUrl" value="/h/search?action=compose"/>
                 </c:otherwise>
             </c:choose>
-            <!-- div class="SearchButton" style="padding:2px;" >
+            <div class="SearchButton" style="padding:2px;" >
                 <a  href="${fn:escapeXml(composeUrl)}" style="text-decoration:none;color:black;"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span> &nbsp; <span id='tab_ikon_compose'></span><span><fmt:message key="compose"/></span></a>
-            </div -->
+            </div
+            --%>
         </td>
         <td>
             <app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
