@@ -84,6 +84,7 @@ ZmComposeController = function(container, mailApp) {
 	}
 
 	this._autoSaveTimer = null; 
+	this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 };
 
 ZmComposeController.prototype = new ZmController();
@@ -184,12 +185,26 @@ function() {
 
 ZmComposeController.prototype.popShield =
 function() {
-	if (!this._composeView.isDirty()) {
+	var dirty = this._composeView.isDirty();
+	if (!dirty && (this._draftType != ZmComposeController.DRAFT_TYPE_AUTO)) {
 		return true;
 	}
 
 	var ps = this._popShield = appCtxt.getYesNoCancelMsgDialog();
-	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+	if (this._draftType == ZmComposeController.DRAFT_TYPE_AUTO) {
+		// Messsage has been saved, but never explicitly by the user.
+		// Ask if he wants to keep the autosaved draft.
+		ps.reset();
+		ps.setMessage(ZmMsg.askSaveAutosavedDraft, DwtMessageDialog.WARNING_STYLE);
+		if (dirty) {
+			ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
+		} else {
+			ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldNoCallback, this);
+		}
+		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldDiscardCallback, this);
+		ps.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
+	}
+	else if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		ps.reset();
 		ps.setMessage(ZmMsg.askSaveDraft, DwtMessageDialog.WARNING_STYLE);
 		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
@@ -586,6 +601,12 @@ function(params) {
 		}
 	}
 
+	if (msg && (action == ZmOperation.DRAFT)) {
+		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
+	} else {
+		this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
+	}
+
 	if (params.callback) {
 		params.callback.run(this);
 	}
@@ -893,13 +914,14 @@ function(ev) {
 ZmComposeController.prototype._cancelCompose =
 function() {
 	var dirty = this._composeView.isDirty();
-	if (!dirty) {
+	var needPrompt = dirty || (this._draftType == ZmComposeController.DRAFT_TYPE_AUTO);
+	if (!needPrompt) {
 		this._composeView.reset(true);
 	} else {
 		this._composeView.enableInputs(false);
 	}
 	this._composeView.reEnableDesignMode();
-	this._app.popView(!dirty);
+	this._app.popView(!needPrompt);
 };
 
 // Attachment button was pressed
@@ -987,12 +1009,18 @@ function(idle) {
 ZmComposeController.prototype._saveDraft =
 function(draftType) {
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
-	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener);
+	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener, [draftType]);
 	this.sendMsg(null, draftType, respCallback);
 };
 
 ZmComposeController.prototype._handleResponseSaveDraftListener =
-function(args) {
+function(draftType) {
+	if (draftType == ZmComposeController.DRAFT_TYPE_AUTO &&
+		this._draftType == ZmComposeController.DRAFT_TYPE_NONE) {
+		this._draftType = ZmComposeController.DRAFT_TYPE_AUTO;
+	} else {
+		this._draftType = ZmComposeController.DRAFT_TYPE_MANUAL;
+	}
 	this._action = ZmOperation.DRAFT;
 };
 
@@ -1093,6 +1121,12 @@ function() {
 		appCtxt.getAppViewMgr().showPendingView(false);
 		this._composeView.reEnableDesignMode();
 	}
+};
+
+ZmComposeController.prototype._popShieldDiscardCallback =
+function() {
+	this._deleteDraft(this._composeView.getOrigMsg());
+	this._popShieldNoCallback();
 };
 
 // Called as: Don't save as draft or cancel
