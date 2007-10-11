@@ -38,7 +38,3 @@
         
 </script>
 </head>
-<c:import url="/h/${skin}"/>
-<c:if test="${empty iconPath}">
-  <c:set value="/img/" var="iconPath" scope="request"/>
-</c:if>
