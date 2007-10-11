@@ -349,7 +349,7 @@ ZmChatWidget.prototype._init = function() {
 	// add YM Emoticons if zimlet installed
 	var YM_smileys = appCtxt.getZimletMgr().zimletExists("com_zimbra_ymemoticons");
 	if (YM_smileys) {
-		// this._objectManager.addHandler(YM_smileys.handlerObject);
+		this._objectManager.addHandler(YM_smileys.handlerObject);
 		this._objectManager.sortHandlers();
 	}
 
