@@ -156,6 +156,22 @@ ZmApptList._fanout =
 function(orig, result, startTime, endTime) {
 	var appt = ZmAppt.quickClone(orig);
 	var fanoutNum = 0;
+	
+	// HACK: Avoid "strange" appt durations that occur at transition
+    //       days for timezones w/ DST. For example, going from DST to
+    //       STD, the duration for a single day is 25 hours; while the
+    //       transition from STD to DST, the duration is 23 hours. So
+    //       we advance 12 hours (just to be safe) and then subtract
+    //       off the extra hours.
+    var origEndTime = orig.getEndTime();
+    if (appt.isAllDayEvent()) {
+        var origEndDate = new Date(origEndTime);
+        origEndDate.setHours(0, 0, 0, 0);
+
+        appt.setEndDate(origEndDate);
+        origEndTime = origEndDate.getTime();
+    }
+	
 	while (appt.isInRange(startTime,endTime)) {
 		if (appt.isMultiDay()) {
             var apptStartTime = appt.getStartTime();
@@ -177,7 +193,7 @@ function(orig, result, startTime, endTime) {
                 slice._fanoutFirst = (fanoutNum == 0);
 				slice._orig = orig;
 				slice.setEndDate(nextDay);			
-				slice._fanoutLast = (slice.getEndTime() == orig.getEndTime());	
+				slice._fanoutLast = (slice.getEndTime() == origEndTime);	
 				slice._fanoutNum = fanoutNum;
 				slice._uniqStartTime = slice.getStartTime(); // neede to construct uniq id later							
 				result.add(slice);
@@ -189,7 +205,7 @@ function(orig, result, startTime, endTime) {
 		} else {
 			if (appt.isInRange(startTime,endTime)) {
 				appt._fanoutFirst = (fanoutNum == 0);	
-				appt._fanoutLast = (appt.getEndTime() == orig.getEndTime());				
+				appt._fanoutLast = (appt.getEndTime() == origEndTime);				
 				if (!appt._fanoutFirst)
 					appt._orig = orig;
 				appt._fanoutNum = fanoutNum;
