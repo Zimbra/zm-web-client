@@ -80,18 +80,21 @@ body	{	@ChromeBg@	}
 
 /*	 all columns are sized with the following classes	*/
 #skin_col_tree, 
-#skin_col_tree_inner {	
+#skin_col_tree_inner,
+#skin_td_outer_tree {	
 	width:170px;	
 }
 
 #skin_col_tree_app_sash,
-#skin_col_tree_app_sash_inner {	
+#skin_col_tree_app_sash_inner,
+#skin_td_tree_app_sash {	
 	width:8px;		
 }
 
 #skin_col_main,
-#skin_col_main_inner {	
-	width:auto;		
+#skin_col_main_inner,
+#skin_td_app_main {	
+	width:100%;		
 }
 
 #skin_col_quota,
@@ -274,10 +277,21 @@ body	{	@ChromeBg@	}
 #ENDIF
 
 
-/* Specify the width of sidebar ads when using a skin with ads */
-.skin_sidebar_ad	{
-	width:@SidebarAdWidth@;
+/* Top ad stuff -- specify the height as TopAdHeight in your skin.properties file */
+#skin_tr_top_ad {
+	display:none;
 }
+#skin_container_top_ad	{	
+	height:@TopAdHeight@;
+}
+
+/* Sidebar ad stuff -- specify the width as SidebarAdWidth in your skin.properties file */
+#skin_td_sidebar_ad		{	
+	display:none;
+	width:@SidebarAdWidth@;	
+	padding-top:5px;	
+}
+
 
 .ZmAppChooser 	{
 	margin:0px;

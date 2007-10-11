@@ -23,6 +23,9 @@ function ZmSkin(hints) {
         topToolbar:     { containers: [ "skin_tr_top_toolbar", "!skin_tr_top_toolbar_shim" ] },
         bottomToolbar:  { containers: [ "skin_tr_bottom_toolbar", "!skin_tr_bottom_toolbar_shim" ] },
         treeFooter:     { containers: [ "skin_tr_tree_footer_sep", "skin_tr_tree_footer"] },
+		topAd:			{ containers: [ "skin_tr_top_ad"] },
+		sidebarAd:		{ containers: [ "skin_td_sidebar_ad"] },
+		
         fullScreen:     {
             containers: [
                 "skin_tr_toolbar_full", "skin_tr_main_full",
@@ -120,12 +123,42 @@ ZmSkin.prototype = {
 	},
 	
 	
+	
+	showTopAd : function(state) {
+		skin._showEl("skin_tr_top_ad", state);
+		skin._reflowApp();
+	},
+	hideTopAd : function() {	
+		skin.showTopAd(false);	
+	},
+	getTopAdContainer : function() {
+		return skin._getEl("skin_container_top_ad");
+	},
+	
+	showSidebarAd : function(width) {
+		var id = "skin_td_sidebar_ad";
+		skin._setSize(id, width);
+		skin._showEl(id);
+		skin._reflowApp();
+	},
+	hideSidebarAd : function() {
+		var id = "skin_td_sidebar_ad";
+		skin._hideEl(id);
+		skin._setSize(id, 0);
+		skin._reflowApp();
+	},
+	getSidebarAdContainer : function() {
+		return this._getEl("skin_container_sidebar_ad");
+	},
+	
+	
+	
 	//
 	// Protected methods
 	//
 	
 	_getEl : function(id) {
-		return document.getElementById(id);
+		return (typeof id == "string" ? document.getElementById(id) : id);
 	},
 	
 	_showEl : function(id, state) {
