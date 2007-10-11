@@ -251,21 +251,24 @@ function(convs, msgs) {
 					conv.isUnread = true;
 					flaggedItems.push(conv);
 				}
-				// if the new msg matches current search, update conv date and fragment
+				// if the new msg matches current search, update conv date, fragment, and sort order
 				// TODO: handle simple tag searches
-				if (msgMatches && (conv.fragment != msg.fragment)) {
-					conv.fragment = msg.fragment;
-					fields[ZmItem.F_FRAGMENT] = true;
-				}
-				if (msgMatches && (conv.date != msg.date)) {
-					conv.date = msg.date;
-					// recalculate conv's sort position since we changed its date
-					sortIndex[conv.id] = this._getSortIndex(conv, sortBy);
-					fields[ZmItem.F_DATE] = true;
-				}
-				// conv gained a msg, may need to be moved to top/bottom
-				if (msgMatches && !newConvId[conv.id] && this._vector.contains(conv)) {
-					fields[ZmItem.F_INDEX] = true;
+				if (msgMatches) {
+					msg._inHitList = true;
+					if (conv.fragment != msg.fragment) {
+						conv.fragment = msg.fragment;
+						fields[ZmItem.F_FRAGMENT] = true;
+					}
+					if (conv.date != msg.date) {
+						conv.date = msg.date;
+						// recalculate conv's sort position since we changed its date
+						sortIndex[conv.id] = this._getSortIndex(conv, sortBy);
+						fields[ZmItem.F_DATE] = true;
+					}
+					// conv gained a msg, may need to be moved to top/bottom
+					if (!newConvId[conv.id] && this._vector.contains(conv)) {
+						fields[ZmItem.F_INDEX] = true;
+					}
 				}
 				modifiedItems.push(conv);
 			}
