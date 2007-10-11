@@ -482,6 +482,7 @@ function() {
 	this.registerSetting("LOGO_URI",						{type:ZmSetting.T_CONFIG, defaultValue:"http://www.zimbra.com"});
 	this.registerSetting("OFFLINE",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("PROTOCOL_MODE",					{type:ZmSetting.T_CONFIG, defaultValue:ZmSetting.PROTO_HTTP});
+	this.registerSetting("SERVER_VERSION",					{type:ZmSetting.T_CONFIG});
 	this.registerSetting("TIMEOUT",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:30}); // seconds
 	this.registerSetting("USE_XML",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	

@@ -336,6 +336,22 @@ ZmRequestMgr.prototype._refreshHandler =
 function(refresh) {
 	DBG.println(AjxDebug.DBG1, "Handling REFRESH");
 	this._controller.runAppFunction("_clearDeferredFolders");
+	
+	if (refresh.version) {
+		var curVersion = appCtxt.get(ZmSetting.SERVER_VERSION);
+		if (curVersion != refresh.version) {
+			appCtxt.set(ZmSetting.SERVER_VERSION, refresh.version);
+			if (curVersion) {
+				var dlg = appCtxt.getMsgDialog();
+				dlg.reset();
+				dlg.registerCallback(DwtDialog.OK_BUTTON, this._reloadOkCallback, this, [dlg, curVersion, refresh.version]);
+				var msg = AjxMessageFormat.format(ZmMsg.versionChangeRestart, [curVersion, refresh.version]);
+				dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+				dlg.popup();
+			    return;
+			}
+		}
+	}
 
 	var unread = {};
 	this._loadTree(ZmOrganizer.TAG, unread, refresh.tags);
@@ -365,6 +381,18 @@ ZmRequestMgr.prototype._handleResponseRefreshHandler =
 function(refresh) {
 	// Run any app-requested refresh routines
 	this._controller.runAppFunction("refresh", false, refresh);
+};
+
+/**
+ * User has accepted reload due to change in server version.
+ */
+ZmRequestMgr.prototype._reloadOkCallback =
+function(dialog) {
+	dialog.popdown();
+    window.onbeforeunload = null;
+    var url = AjxUtil.formatUrl();
+	DBG.println(AjxDebug.DBG1, "SERVER_VERSION changed!");
+    ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
 ZmRequestMgr.prototype._loadTree =
