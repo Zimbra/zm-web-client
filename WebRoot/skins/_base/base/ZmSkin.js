@@ -137,14 +137,13 @@ ZmSkin.prototype = {
 	
 	showSidebarAd : function(width) {
 		var id = "skin_td_sidebar_ad";
-		skin._setSize(id, width);
+		if (width != null) skin._setSize(id, width);
 		skin._showEl(id);
 		skin._reflowApp();
 	},
 	hideSidebarAd : function() {
 		var id = "skin_td_sidebar_ad";
 		skin._hideEl(id);
-		skin._setSize(id, 0);
 		skin._reflowApp();
 	},
 	getSidebarAdContainer : function() {
