@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -119,7 +119,7 @@ function(msg) {
 	this.reset();
 	var contentDiv = this.getHtmlElement();
 	this._msg = msg;
-	
+
 	if (!msg) {
 		var htmlArr = [];
 		var idx = 0;
@@ -129,7 +129,7 @@ function(msg) {
 		contentDiv.innerHTML = htmlArr.join("");
 		return;
 	}
-	
+
 	this._dateObjectHandlerDate = msg.sentDate
 		? new Date(msg.sentDate)
 		: new Date(msg.date);
@@ -1256,7 +1256,7 @@ function() {
 
 				htmlArr[idx++] = att.briefcaseLink;
 				htmlArr[idx++] = ZmMsg.addToBriefcase;
-				htmlArr[idx++] = "</a>";			
+				htmlArr[idx++] = "</a>";
 			}
 			if (att.download) {
 				if (att.size || att.htmlLink || att.vcardLink || att.briefcaseLink)
@@ -1611,13 +1611,36 @@ function(self, iframe) {
 			// for IE
 			return;
 		}
+
 		var doc = iframe.contentWindow.document;
-		h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
-		iframe.style.height = h + "px";
-                iframe.style.width = "100%";
+
+                // first off, make it wide enough to fill ZmMailMsgView.
+                iframe.style.width = "100%"; // *** changes height!
+
+                // remember this width
+                var view_width = iframe.offsetWidth;
+
+                // if there's a long unbreakable string, the
+                // scrollWidth of the body element will be bigger--we
+                // must make the iframe that wide, or there won't be
+                // any scrollbars.
+
                 var w = doc.body.scrollWidth;
-                if (w > self.getW())
-		        iframe.style.width = w + "px";
+                if (w > view_width) {
+		        iframe.style.width = w + "px"; // *** changes height!
+
+                        // Now (bug 20743), by forcing the body a determined
+                        // width (that of the view) we are making the browser
+                        // wrap those paragraphs that can be wrapped, even if
+                        // there's a long unbreakable string in the message.
+
+                        doc.body.style.overflow = "visible";
+                        doc.body.style.width = view_width - 20 + "px"; // *** changes height!
+                }
+
+                // we are finally in the right position to determine height.
+                h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+		iframe.style.height = h + "px";
 	}
 };
 
