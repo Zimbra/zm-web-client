@@ -110,6 +110,7 @@
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);
 	pageContext.setAttribute("skin", skin);
+	pageContext.setAttribute("ext", ext);
 	pageContext.setAttribute("vers", vers);
 	pageContext.setAttribute("app", startApp);
 	pageContext.setAttribute("locale", locale);
@@ -124,6 +125,16 @@
 <link href="${contextPath}/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin?v=${vers}${isDebug?"&debug=1":""}&skin=${skin}" rel="stylesheet" type="text/css" />
 <fmt:message key="favIconUrl" var="favIconUrl"/>
 <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
+<script>
+	appContextPath = "${zm:jsEncode(contextPath)}";
+	appCurrentSkin = "${zm:jsEncode(skin)}";
+	appExtension   = "${zm:jsEncode(ext)}";
+	appDevMode     = ${isDevMode};
+
+	function switchToStandardClient() {
+		document.location = appContextPath + "/h/";
+	}
+</script>
 </head>
 <body>
 <noscript>
@@ -145,11 +156,6 @@
   --
   -->
 
-<script>
-	function switchToStandardClient() {
-		document.location = appContextPath + "/h/";
-	}
-</script>
 <%-- NOTE: servlet path is needed because the servlet sees it as /public/launchZCS.jsp --%>
 <jsp:include page="/html/skin.html">
 	<jsp:param name="servlet-path" value="/html/skin.html" />
@@ -176,11 +182,6 @@
 <jsp:include page="Boot.jsp"/>
 <script>
 	AjxEnv.DEFAULT_LOCALE = "${locale}";
-
-	appContextPath = "${zm:jsEncode(contextPath)}";
-	appCurrentSkin = "${zm:jsEncode(skin)}";
-	appExtension   = "${zm:jsEncode(ext)}";
-	appDevMode     = ${isDevMode};
 </script>
 <%
 	String allPackages = "Startup1_1,Startup1_2";
