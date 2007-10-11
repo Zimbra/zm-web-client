@@ -1675,6 +1675,10 @@ function() {
 	if (work & ZmCalViewController.MAINT_MINICAL) {
 		var calRange = this._miniCalendar.getDateRange();
 		var cb = new AjxCallback(this, this._maintGetApptCallback, [ work, null]);
+		// TODO: turn on shell busy
+		this.getApptSummaries(calRange.start.getTime(), calRange.end.getTime(), true, this.getCheckedCalendarFolderIds(), cb);
+		//bug: 20865
+		/*
 		if(this._appCtxt.getCurrentViewId() != ZmController.CAL_VIEW){	
 			this.fetchMiniCalendarAppts();
 		}else{
@@ -1682,6 +1686,7 @@ function() {
 			var rt = view.getTimeRange();
 			this.getApptSummaries(rt.start, rt.end, true, this.getCheckedCalendarFolderIds(), cb);
 		}
+		*/
 		// return. callback will check and see if MAINT_VIEW is nededed as well.
 		return;
 	} else if (work & ZmCalViewController.MAINT_VIEW) {

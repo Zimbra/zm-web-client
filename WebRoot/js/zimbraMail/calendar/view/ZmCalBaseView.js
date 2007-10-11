@@ -569,7 +569,8 @@ function(list) {
 		}
 	}
 	this._postSet(list);
-	this._controller.fetchMiniCalendarAppts();	
+	//bug: 20865
+	//this._controller.fetchMiniCalendarAppts();	
 }
 
 // override

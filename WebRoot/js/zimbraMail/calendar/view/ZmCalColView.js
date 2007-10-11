@@ -2395,7 +2395,8 @@ function(list) {
 	}
 	this._layout();
 	this._scrollTo8AM();
-	this._controller.fetchMiniCalendarAppts();
+	//bug: 20865
+	//this._controller.fetchMiniCalendarAppts();
 }
 
 
