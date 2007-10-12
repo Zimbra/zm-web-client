@@ -68,7 +68,7 @@
 		request.setAttribute("localeId", localePref.get(0));
 	}
 
-	boolean isDev = !getParameter(request, "dev", "0").equals("0");
+	boolean isDev = getParameter(request, "dev", "0").equals("1");
 	if (isDev) {
 		request.setAttribute("mode", "mjsf");
 		request.setAttribute("gzip", "false");
