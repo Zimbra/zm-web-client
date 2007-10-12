@@ -211,8 +211,6 @@ function(convs, msgs) {
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
 				// a new msg for this conv matches current search
-				sortIndex[id] = this._getSortIndex(conv, sortBy);
-				this.add(conv, sortIndex[id]);
 				conv.list = this;
 				newConvs.push(conv);
 			}
@@ -234,8 +232,6 @@ function(convs, msgs) {
 				}
 				newConvId[cid] = true;
 				conv.folders[msg.folderId] = true;
-				sortIndex[cid] = this._getSortIndex(conv, sortBy);
-				this.add(conv, sortIndex[cid]);
 				conv.list = this;
 				newConvs.push(conv);
 			}
@@ -262,7 +258,6 @@ function(convs, msgs) {
 					if (conv.date != msg.date) {
 						conv.date = msg.date;
 						// recalculate conv's sort position since we changed its date
-						sortIndex[conv.id] = this._getSortIndex(conv, sortBy);
 						fields[ZmItem.F_DATE] = true;
 					}
 					// conv gained a msg, may need to be moved to top/bottom
@@ -278,16 +273,13 @@ function(convs, msgs) {
 		for (var id in msgs) {
 			if (this.getById(id)) continue;
 			var msg = msgs[id];
-			sortIndex[id] = this._getSortIndex(msg, sortBy);
 			if (this.convId) { // MLV within conv
 				if (msg.cid == this.convId && !this.getById(msg.id)) {
-					this.add(msg, sortIndex[id]);
 					msg.list = this;
 					newMsgs.push(msg);
 				}
 			} else { // MLV (traditional)
 				if (msg.folderId == searchFolder) {
-					this.add(msg, sortIndex[id]);
 					msg.list = this;
 					newMsgs.push(msg);
 				}
@@ -295,17 +287,17 @@ function(convs, msgs) {
 		}
 	}
 
-	// sort item list in reverse so they show up in correct order when processed
+	// sort item list in reverse so they show up in correct order when processed (oldest appears first)
 	if (newConvs.length > 1) {
 		ZmMailItem.sortBy = sortBy;
 		newConvs.sort(ZmMailItem.sortCompare);
 		newConvs.reverse();
 	}
 
-	ZmModel.notifyEach(newConvs, ZmEvent.E_CREATE, {sortIndex:sortIndex});
-	ZmModel.notifyEach(newMsgs, ZmEvent.E_CREATE, {sortIndex:sortIndex});
+	this._sortAndNotify(newConvs, sortBy, ZmEvent.E_CREATE);
+	this._sortAndNotify(newMsgs, sortBy, ZmEvent.E_CREATE);
 	ZmModel.notifyEach(flaggedItems, ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});
-	ZmModel.notifyEach(modifiedItems, ZmEvent.E_MODIFY, {fields:fields, sortIndex:sortIndex});
+	this._sortAndNotify(newMsgs, sortBy, ZmEvent.E_MODIFY, {fields:fields});
 };
 
 /**
@@ -413,6 +405,21 @@ function(item, sortBy) {
 		}
 	}
 	return i;
+};
+
+ZmMailList.prototype._sortAndNotify =
+function(items, sortBy, event, details) {
+	details = details || {};
+	var doSort = ((event == ZmEvent.E_CREATE) || (details && details.fields[ZmItem.F_DATE]));
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		if (doSort) {
+			var sortIndex = this._getSortIndex(item, sortBy);
+			this.add(item, sortIndex);
+			details.sortIndex = sortIndex;
+		}
+		item._notify(event, details);
+	}
 };
 
 ZmMailList.prototype._getTcon =

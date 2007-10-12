@@ -332,7 +332,7 @@ function(ev) {
 		// we handle is where the user is on the first page.
 		//
 		// TODO: handle other sort orders, arbitrary insertion points
-		var index = sortIndex[item.id] || 0;
+		var index = sortIndex || 0;
 		if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
 			this.addItem(item, index);
 		}

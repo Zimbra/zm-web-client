@@ -534,7 +534,7 @@ function(ev) {
 			var conv = appCtxt.getById(item.cid);
 			var convIndex = this._getRowIndex(conv);
 			var sortIndex = ev.getDetail("sortIndex");
-			var msgIndex = sortIndex ? sortIndex[item.id] || 0 : 0;
+			var msgIndex = sortIndex || 0;
 			this._addRow(div, convIndex + msgIndex + 1);
 			this._msgRowIdList[item.cid].push(div.id);
 		}
@@ -558,9 +558,9 @@ function(ev) {
 		// a conv has gotten a new msg and may need to be moved within its list
 		// if an expanded conv gets a new msg, don't move it to top
 		var sortIndex = ev.getDetail("sortIndex");
-		if ((sortIndex[item.id] != null) && (this._list.indexOf(item) != sortIndex[item.id]) && !this._expanded[item.id]) {
+		if ((sortIndex != null) && (this._list.indexOf(item) != sortIndex) && !this._expanded[item.id]) {
 			this.removeItem(item);
-			this.addItem(item, sortIndex[item.id]);
+			this.addItem(item, sortIndex);
 		}
 	}
 
