@@ -1096,7 +1096,7 @@ function(name) {
 	// walk collection of input elements
 	for (var i = 0; i < forAttList.length; i++) {
 		if (forAttList[i].checked)
-			forAttIds.push(forAttList[i].id);
+			forAttIds.push(forAttList[i].value);
 	}
 
 	return forAttIds;

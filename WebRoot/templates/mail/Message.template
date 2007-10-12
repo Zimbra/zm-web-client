@@ -188,7 +188,7 @@
 		<$ var message = data.messages[i]; $>
 		<tr><td width=65 align=right><div class='ImgMessage'></div></td>
 		<td width=1%>
-			<input id='<$=message.id$>' name='<$=ZmComposeView.FORWARD_MSG_NAME$>' type='checkbox' checked>
+			<input value='<$=message.id$>' name='<$=ZmComposeView.FORWARD_MSG_NAME$>' type='checkbox' checked>
 		</td>
 			<td class='nobreak'></td>
 			<td><b><$= message.subject || AjxStringUtil.htmlEncode(ZmMsg.noSubject) $></b>
@@ -220,7 +220,7 @@
 			<td width=1%>
 				<$ if (!data.isNew) { $>
 					<$ var isChecked = data.isForward || data.isForwardInline || data.isDraft || attachment.ci $>
-					<input id='<$=attachment.part$>' name='<$=ZmComposeView.FORWARD_ATT_NAME$>'
+					<input value='<$=attachment.part$>' name='<$=ZmComposeView.FORWARD_ATT_NAME$>'
 					   type='checkbox' <$= isChecked ? "checked" : "" $>>
 			<$ } $>
 			</td>
