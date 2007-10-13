@@ -5,25 +5,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%	// If no session exists, yet, redirect to self so that we
-	// can avoid the web container adding ;jessionid={id} when
-	// rewriting URLs in the response.
-	if (request.getSession(false) == null) {
-		// force creation of session
-		request.getSession(true);
-
-		// tell browser to reload
-		StringBuilder url = new StringBuilder(request.getContextPath()+"/");
-		String query = request.getQueryString();
-		if (query != null) {
-			url.append('?');
-			url.append(query);
-		}
-		response.setStatus(HttpServletResponse.SC_FOUND);
-		response.setHeader("Location", url.toString());
-		return;
-	}
-%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
