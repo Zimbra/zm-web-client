@@ -838,7 +838,7 @@ if (ext == null) ext = "";
                             <fileset file="@{var}${nodebug.ext}"/>
                         </replaceregexp>
                         <echo>Minimizing to @{var}${jsmin.ext}</echo>
-                        <java jar="jars/yuicompressor-2.1.2.jar" fork="true" failonerror="true"
+                        <java jar="jars/yuicompressor-2.2.5.jar" fork="true" failonerror="true"
                               output="${build.dir}/yui-compress.out">
                             <arg value="--line-break"/>
                             <arg value="0"/>
