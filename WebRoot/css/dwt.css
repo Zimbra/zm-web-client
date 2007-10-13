@@ -491,6 +491,8 @@
 	@Text@
 	padding-left:@TextPaddingSize@;
 	padding-right:2px;
+	overflow: hidden;
+
 }
 
 

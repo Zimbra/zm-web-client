@@ -2175,12 +2175,12 @@ HTML>BODY .appt-selected .appt_allday_body
 #ENDIF
 
 .ZOptionsItemsListView .DwtListView-Rows {
-	overflow: visible;
+	/*overflow: visible;*/
 	height: auto;
 }
 
 .ZmFilterRulesView .DwtListView-Rows {
-	overflow: visible;
+	/*overflow: visible;*/
 	height: auto;
 }
 
