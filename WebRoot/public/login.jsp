@@ -111,7 +111,7 @@
 
 <%
 if (application.getInitParameter("offlineMode") != null)  {
-    request.getRequestDispatcher("/public/offline.jsp").forward(request, response);
+    request.getRequestDispatcher("/public/zdsetup.jsp").forward(request, response);
 }
 %>
 
