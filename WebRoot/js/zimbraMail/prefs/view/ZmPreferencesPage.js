@@ -927,7 +927,8 @@ function(dialog, settingId, folder) {
 			? ""
 			: (":" + location.port);
 		var format = (settingId == ZmSetting.IMPORT || settingId == ZmSetting.EXPORT) ? "csv" : "ics";
-		var uri = [location.protocol, "//", document.domain, portPrefix, "/service/home/~/", folder.name, "?auth=co&fmt=", format].join("");
+		var folderName = folder._systemName || folder.name;
+		var uri = [location.protocol, "//", document.domain, portPrefix, "/service/home/~/", folderName, "?auth=co&fmt=", format].join("");
 		window.open(uri, "_blank");
 
 		dialog.popdown();
