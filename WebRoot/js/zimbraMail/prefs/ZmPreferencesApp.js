@@ -265,19 +265,17 @@ function() {
 		displaySeparator:	true
 	});
 
-	ZmPref.registerPref("POLLING_INTERVAL", {
-		displayName:		ZmMsg.pollingInterval,
-		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ ZmMsg.pollNever, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes ],
-		// NOTE: 525600 is the number of minutes in a year. I think that's a
-		//       reasonable value for "never" since the server must have
-		//       *some* number.
-		options:			[ 525600, 5, 10, 15, 30, 60],
-		approximateFunction: ZmPref.approximateInterval,
-		displayFunction:	ZmPref.pollingIntervalDisplay,
-		valueFunction:		ZmPref.pollingIntervalValue,
-		validationFunction: ZmPref.validatePollingInterval
-	});
+    ZmPref.registerPref("POLLING_INTERVAL",{
+        displayName:        ZmMsg.pollingInterval,
+        displayContainer:   ZmPref.TYPE_INPUT,
+        type:               DwtInputField.NUMBER,
+        cols:               2,
+        maxLen:             2,
+        displaySeparator:   false,
+        displayFunction:    ZmPref.pollingIntervalDisplay,
+        valueFunction:      ZmPref.pollingIntervalValue,
+        validationFunction: ZmPref.validatePollingInterval
+    });
 
 	ZmPref.registerPref("READING_PANE_ENABLED", {
 		displayName:		ZmMsg.alwaysShowReadingPane,

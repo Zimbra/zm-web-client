@@ -601,9 +601,10 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupInput =
 function(id, setup, value) {
-	var params = {
-		parent: this, type: DwtInputField.STRING, initialValue: value, size: setup.cols || 40,
-		rows: setup.rows, wrap: setup.wrap
+    value = this._prepareValue(id, setup, value);
+    var params = {
+		parent: this, type: setup.type ? setup.type : DwtInputField.STRING, initialValue: value, size: setup.cols || 40,
+		rows: setup.rows, wrap: setup.wrap, maxLen:setup.maxLen
 	};
 	var input = new DwtInputField(params);
 	this.setFormObject(id, input);
