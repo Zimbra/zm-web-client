@@ -123,16 +123,7 @@
                                         <div class="quotabar">
                                             <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>                                            
                                             <c:set var="usage" value="${zm:displaySizePercentage(mailbox.size,max)}" />
-                                            <div    <c:when test="${usage>85}" >
-                                                        class="quotaCritical"
-                                                    </c:when>
-                                                    <c:when test="${(usage>65) and (usage<85)}" >
-                                                        class="quotaWarning"
-                                                    </c:when>
-                                                    <c:otherwise >
-                                                       class="quotaUsed" 
-                                                    </c:otherwise>
-                                                    style="width:${usage}"/>
+                                            <div class="quotaUsed" style="width:${usage}"/>
                                         </div>
                                     </td>
                                     <td class="BannerTextQuota" style="white-space: nowrap;">
