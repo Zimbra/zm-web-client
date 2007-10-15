@@ -219,16 +219,13 @@ function(menu) {
  */
 ZmSearchController.prototype.search =
 function(params) {
-	if (this._searchFor != ZmItem.APPT &&
-		(!(params.query && params.query.length)))
-	{
-		return;
-	}
+	if (this._searchFor != ZmItem.APPT && (!(params.query && params.query.length))) { return; }
 
 	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
 		appCtxt.getClientCmdHandler().execute((params.query.substr(5)), this);
-		return;
+
+		{ return; }
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSearch, [params.callback]);
@@ -552,20 +549,20 @@ function(ev) {
 
 ZmSearchController.prototype._saveButtonListener =
 function(ev) {
-	if (this._results && this._results.search) {
-		var stc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
-		if (!stc._newCb) {
-			stc._newCb = new AjxCallback(stc, stc._newCallback);
-		}
-
-		// reset the types in case search for has changed (i.e. user switched apps)
-		this._results.search.types = this.getTypes({});
-		var params = {
-			search: this._results.search,
-			showOverview: (this._searchFor == ZmSearchToolBar.FOR_MAIL_MI)
-		};
-		ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
+	var stc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
+	if (!stc._newCb) {
+		stc._newCb = new AjxCallback(stc, stc._newCallback);
 	}
+
+	var search = {};
+	search.query = this._searchToolBar.getSearchFieldValue();
+	search.types = this.getTypes({});
+	search.sortBy = (this._results && this._results.search) ? this._results.search.sortBy : null;
+	var params = {
+		search: search,
+		showOverview: (this._searchFor == ZmSearchToolBar.FOR_MAIL_MI)
+	};
+	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
 }
 
 ZmSearchController.prototype._searchMenuListener =
