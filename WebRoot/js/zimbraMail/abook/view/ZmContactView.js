@@ -691,6 +691,7 @@ function() {
 ZmContactView.prototype._uploadImageDone =
 function(callback, status, attId) {
 	if (status == AjxPost.SC_OK) {
+		this._isDirty = true;
 		if (callback) {
 			callback.run(status,attId);
 		}
