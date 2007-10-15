@@ -769,9 +769,8 @@ line-height:normal;
 }
 
 .ZmContactInfoView .contactLabel {
-	@Label@
+	@Label-light@
 	@FontSize-big@
-	@Text-light@
 	width: 125px;
 	text-align: right;
 	vertical-align: top;
