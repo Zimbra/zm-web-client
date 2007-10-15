@@ -122,6 +122,7 @@ function() {
  *        omit			[hash]		IDs of organizers to exclude
  *        fieldId		[string]	DOM ID of element that contains overview
  *        overviewId	[string]*	ID for the overview
+ *        noRootSelect	[boolean]*	if true, don't make root tree item(s) selectable
  */
 ZmDialog.prototype._setOverview =
 function(params) {
@@ -131,7 +132,7 @@ function(params) {
 		var ovParams = {overviewId:overviewId, overviewClass:"dialogOverview",
 						headerClass:"DwtTreeItem", noTooltips:true};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
-		this._renderOverview(overview, params.treeIds, params.omit);
+		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);
 		document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
 	}
 	// make the current overview the only visible one
@@ -150,17 +151,20 @@ function(params) {
  * 
  * @param overview		[ZmOverview]	the overview
  * @param treeIds		[array]			list of tree views to show
- * @param omit			[hash]			IDs of organizers to exclude
+ * @param omit			[hash]*			IDs of organizers to exclude
+ * @param noRootSelect	[boolean]*		if true, don't make root tree item(s) selectable
  */
 ZmDialog.prototype._renderOverview =
-function(overview, treeIds, omit) {
+function(overview, treeIds, omit, noRootSelect) {
 	overview.set(treeIds, omit);
-	for (var i = 0; i < treeIds.length; i++) {
-		var treeView = overview.getTreeView(treeIds[i]);
-		if (treeView) {
-			var hi = treeView.getHeaderItem();
-			if (hi) {
-				hi.enableSelection(true);
+	if (!noRootSelect) {
+		for (var i = 0; i < treeIds.length; i++) {
+			var treeView = overview.getTreeView(treeIds[i]);
+			if (treeView) {
+				var hi = treeView.getHeaderItem();
+				if (hi) {
+					hi.enableSelection(true);
+				}
 			}
 		}
 	}

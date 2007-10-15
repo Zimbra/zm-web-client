@@ -912,7 +912,7 @@ function(ev) {
 		treeIds = [this._organizer];
 		var title = (this._organizer == ZmOrganizer.SEARCH) ? ZmMsg.chooseSearch : ZmMsg.chooseFolder;
 		var overviewId = [this.toString(), this._organizer].join("-");
-		params = {treeIds:treeIds, title:title, overviewId:overviewId};
+		params = {treeIds:treeIds, title:title, overviewId:overviewId, noRootSelect:true};
 	}
 	dialog.reset();
 	dialog.setTitle(ZmShortcutsPageTabViewCustom.DIALOG_TEXT[this._organizer]);

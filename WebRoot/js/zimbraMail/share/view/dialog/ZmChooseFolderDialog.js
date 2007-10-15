@@ -52,11 +52,13 @@ function() {
  *        treeIds		[array]		list of trees to show
  *        overviewId	[string]*	ID to use as base for overview ID
  *        omit			[hash]*		IDs to not show
+ *        noSelect		[hash]*		IDs to disable selection for
  *        title			[string]*	dialog title
  *        description	[string]*	description of what the user is selecting
  *        skipReadOnly	[boolean]* 	if true, read-only folders will not be displayed
  *        hideNewButton [boolean]*	if true, New button will not be shown
  *        orgType		[constant]*	primary tree type
+ *        noRootSelect	[boolean]*	if true, don't make root tree item(s) selectable
  */
 ZmChooseFolderDialog.prototype.popup =
 function(params) {
@@ -95,7 +97,8 @@ function(params) {
 	// use an overview ID that comprises calling class, this class, and current account
 	var base = [this.toString(), params.overviewId].join("-");
 	var overviewId = appCtxt.multiAccounts ? [base, appCtxt.getActiveAccount().name].join(":") : base;
-	this._setOverview({treeIds:treeIds, omit:omit, fieldId:this._folderTreeCellId, overviewId:overviewId});
+	this._setOverview({treeIds:treeIds, omit:omit, fieldId:this._folderTreeCellId,
+					   overviewId:overviewId, noRootSelect:params.noRootSelect});
 
 	this._orgType = params.orgType || treeIds[0];
 	this._folderTreeView = this._getOverview().getTreeView(this._orgType);

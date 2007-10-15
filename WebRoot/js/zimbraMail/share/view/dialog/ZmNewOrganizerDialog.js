@@ -276,7 +276,7 @@ function() {
 // other
 
 ZmNewOrganizerDialog.prototype._renderOverview =
-function(overview, treeIds, omit) {
+function(overview, treeIds, omit, noRootSelect) {
 	this._setupFolderControl();	// reset in case we changed accounts (family mailbox)
 	ZmDialog.prototype._renderOverview.apply(this, arguments);
 	this._folderTreeView = overview.getTreeView(this._organizerType);
