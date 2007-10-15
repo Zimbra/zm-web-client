@@ -614,7 +614,7 @@ function(type, addr) {
 
 	// Use a timed action so that first time through, addr textarea
 	// has been sized by browser based on content before we try to
-	// adjust it (bug 20885)
+	// adjust it (bug 20926)
 	AjxTimedAction.scheduleAction(new AjxTimedAction(this, 
 		function() {
 			this._adjustAddrHeight(this._field[type]);
