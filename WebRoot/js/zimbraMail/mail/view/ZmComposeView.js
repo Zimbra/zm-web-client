@@ -611,7 +611,14 @@ function(type, addr) {
 		this._showAddressField(type, true);
 	}
 	this._field[type].value = addr;
-	this._adjustAddrHeight(this._field[type]);
+
+	// Use a timed action so that first time through, addr textarea
+	// has been sized by browser based on content before we try to
+	// adjust it (bug 20885)
+	AjxTimedAction.scheduleAction(new AjxTimedAction(this, 
+		function() {
+			this._adjustAddrHeight(this._field[type]);
+		}), 0);
 };
 
 // Sets the mode ZmHtmlEditor should be in.
@@ -1733,7 +1740,9 @@ function() {
 		return;
 
 	var height = size.y - Dwt.getSize(this._headerEl).y;
-	this._htmlEditor.setSize(size.x, height);
+	if (height != size.y) {
+		this._htmlEditor.setSize(size.x, height);
+	}
 };
 
 // Show address field
