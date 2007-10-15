@@ -46,7 +46,7 @@ ZmCallFeature.ANONYNOUS_REJECTION = "anoncallrejection";
 ZmCallFeature.CALL_FORWARDING = "callforward";
 ZmCallFeature.SELECTIVE_CALL_FORWARDING = "selectivecallforward";
 ZmCallFeature.VOICEMAIL_PREFS = "voicemailprefs"
-ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYNOUS_REJECTION, ZmCallFeature.CALL_FORWARDING, ZmCallFeature.SELECTIVE_CALL_FORWARDING, ZmCallFeature.VOICEMAIL_PREFS];
+ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYNOUS_REJECTION, ZmCallFeature.CALL_FORWARDING, ZmCallFeature.VOICEMAIL_PREFS];
 
 // Voicemail preferences.
 ZmCallFeature.EMAIL_NOTIFICATION = "vmPrefEmailNotifAddress";
