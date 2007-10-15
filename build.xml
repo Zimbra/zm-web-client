@@ -110,7 +110,7 @@
         <property name='deploy.app' value='ajax'/>
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='web.includes' value='js/ajax/**,css/**,js/zimbraAdmin/**/*AutoComplete*.js'/>
-        <property name='web.excludes' value=''/>
+        <property name='web.excludes' value='WEB-INF/classes/**'/> <!-- default Eclipse output dir -->
         <property name='jsp.includes' value='frameOpenerHelper.jsp'/>
         <property name='jsp.excludes' value=''/>
         <property name='img.includes' value='dwt/**'/>
