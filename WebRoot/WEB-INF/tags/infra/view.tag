@@ -30,7 +30,7 @@
 <c:choose>
 <c:when test="${skin eq 'velodrome2'}">
 <c:set var="iconPath" value="/skins/velodrome2/img/icons" scope="request"/>
-<table id='skin_table_outer' width='100%' border=0 class='skin_table' cellspacing=0 cellpadding=0 border=0>
+<table id='skin_table_outer' width='100%' border=0 class='skin_table' cellspacing=0 cellpadding=0 >
 		<colgroup>
 			<col id='skin_col_L'>
 			<col id='skin_col_tree'>
@@ -123,7 +123,16 @@
                                         <div class="quotabar">
                                             <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>                                            
                                             <c:set var="usage" value="${zm:displaySizePercentage(mailbox.size,max)}" />
-                                            <div class="quotaUsed" style="width:${usage}"/>
+                                            <div    <c:when test="${usage>85}" >
+                                                        class="quotaCritical"
+                                                    </c:when>
+                                                    <c:when test="${(usage>65) and (usage<85)}" >
+                                                        class="quotaWarning"
+                                                    </c:when>
+                                                    <c:otherwise >
+                                                       class="quotaUsed" 
+                                                    </c:otherwise>
+                                                    style="width:${usage}"/>
                                         </div>
                                     </td>
                                     <td class="BannerTextQuota" style="white-space: nowrap;">
@@ -196,27 +205,17 @@
 					<tr>
 						<td height='100%' id='skin_td_tree' colspan=3 valign='top'>
 							<div id='skin_container_tree' class='skin_container'>
-							
-							<c:if test="${empty editmode}">			            	
+							<c:if test="${empty editmode}">
         			        <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tasks="${tasks}" voice = "${voice}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
         					</c:if>
-        
 							</div>
 						</td>
 					</tr>
 					<tr>
-						<td id='skin_td_tree_bottom_ad' height=60>
-							$150,000 Mortgage for Only
-							$495/Month<br>
-							<a href=#>Click Now For Info</a>
-						</td>
-					</tr>
-					<tr>
-						<td id='skin_td_tree_bottom_ad' height=60>
-							$220,000 Mortgage for Only
-							$595/Month<br>
-							<a href=#>Click Now For Info</a>
-						</td>
+						<td id='skin_td_tree_bottom_ad' style="padding-left:0px;" height=120>
+							<iframe src="/h/overviewAds" align="left" frameborder="0" marginheight="0" style="overflow:hidden;" scrolling="false" marginwidth="0" height="120" width="100%" >
+                            </iframe>
+                        </td>
 					</tr>
 				</table>
 			</td>

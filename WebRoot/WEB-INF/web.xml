@@ -334,6 +334,7 @@
           <url-pattern>/m/mocompose</url-pattern>
           <url-pattern>/h/home</url-pattern>
           <url-pattern>/h/addgroupcontact</url-pattern>
+          <url-pattern>/h/overviewAds</url-pattern>
       </jsp-property-group>
     </jsp-config>
 
