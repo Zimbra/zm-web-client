@@ -208,7 +208,12 @@ function() {
 			return true;
 		}
 	}
-	return false;
+	//drag and drop changed appts will be dirty even if nothing is changed
+	var apptEditView = this._apptEditView;
+	if( apptEditView && apptEditView._calItem && apptEditView._calItem.dndUpdate){
+			return true;
+	}    
+    return false;
 };
 
 ZmApptComposeView.prototype.isValid = 

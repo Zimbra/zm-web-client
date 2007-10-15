@@ -1134,7 +1134,7 @@ function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 	var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDate, endDate, callback]);
 	appt.getDetails(viewMode, respCallback, errorCallback);
 	*/
-
+    appt.dndUpdate = true;
 	if (!appt.isRecurring()) {
 		var viewMode = ZmCalItem.MODE_EDIT;
 		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback]);
