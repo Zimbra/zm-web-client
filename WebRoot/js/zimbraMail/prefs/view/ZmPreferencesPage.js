@@ -307,7 +307,7 @@ function(id, setup, control) {
 		}
 	}
 	else {
-		var prefId = ZmPref.KEY_ID + id;
+		var prefId = [this._htmlElId, id].join("_");
 		var element = document.getElementById(prefId);
 		if (!element) return null;
 		value = element.value;
@@ -338,43 +338,39 @@ function(id, value, setup, control) {
 		type == ZmPref.TYPE_RADIO_GROUP ||
 		type == ZmPref.TYPE_COLOR) {
 		var object = control || this.getFormObject(id);
-		if (!object) return;
+		if (!object) { return; }
 
 		if (type == ZmPref.TYPE_COLOR) {
 			object.setColor(value);
-		}
-		else if (type == ZmPref.TYPE_CHECKBOX) {
+		} else if (type == ZmPref.TYPE_CHECKBOX) {
 			object.setSelected(value);
-		}
-		else if (type == ZmPref.TYPE_RADIO_GROUP) {
+		} else if (type == ZmPref.TYPE_RADIO_GROUP) {
 			object.setSelectedValue(value);
-		}
-		else if (type == ZmPref.TYPE_COMBOBOX) {
+		} else if (type == ZmPref.TYPE_COMBOBOX) {
 			object.setValue(value);
-		}
-		else {
+		} else {
 			var curValue = object.getValue();
-			if (value != null && (curValue != value))
+			if (value != null && (curValue != value)) {
 				object.setSelectedValue(value);
+			}
 		}
-	}
-	else if (type == ZmPref.TYPE_INPUT) {
+	} else if (type == ZmPref.TYPE_INPUT) {
 		var object = control || this.getFormObject(id);
-		if (!object) return;
+		if (!object) { return; }
 
 		var curValue = object.getValue();
-		if (value != null && (curValue != value))
+		if (value != null && (curValue != value)) {
 			object.setValue(value);
-	}
-	else if (type == ZmPref.TYPE_LOCALES) {
+		}
+	} else if (type == ZmPref.TYPE_LOCALES) {
 		if (this._localeMap) {
 			var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
 			this._showLocale(value, button);
 		}
-	}
-	else {
-		var element = control || document.getElementById((ZmPref.KEY_ID + id));
-		if (!element || element.value == value) return;
+	} else {
+		var prefId = [this._htmlElId, id].join("_");
+		var element = control || document.getElementById(prefId);
+		if (!element || element.value == value) { return; }
 
 		element.value = value || "";
 	}
