@@ -190,6 +190,7 @@ ZmFilterRulesController.prototype._deleteShieldYesCallback =
 function(rule) {
 	this._rules.removeRule(rule);
 	this._clearDialog(this._deleteShield);
+	this._resetOperations(toolbar, 0);
 };
 
 /*
