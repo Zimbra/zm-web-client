@@ -85,14 +85,14 @@ function(visible) {
 	if (this._browseViewVisible == visible) {return;}
 
 	var tbl, H;
-	if (AjxEnv.isGeckoBased && skin.getTopAdContainer) {
-		tbl = skin.$("skin_table_outer");
+	if (AjxEnv.isGeckoBased && skin.getTopAdContainer()) {
+		tbl = skin._getEl("skin_table_outer");
 		H = tbl.offsetHeight;
 	}
 
 	appCtxt.getAppViewMgr().showSearchBuilder(visible);
 
-	if (AjxEnv.isGeckoBased && skin.getTopAdContainer) {
+	if (AjxEnv.isGeckoBased && skin.getTopAdContainer()) {
 		tbl.style.height = H + "px";
 		setTimeout(function() {
 			tbl.style.height = "100%";
