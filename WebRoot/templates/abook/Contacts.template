@@ -223,6 +223,7 @@
 			<table border=0 cellpadding=2 cellspacing=2 width=100%>
 				<tr>
 					<td width=100% class='companyName'><$= companyStr $></td>
+					<td class='contactLabel'><$= ZmMsg.location $>:</td>
 					<$ if (contact.addrbook) { $>
 						<td width=20><$= AjxImg.getImageHtml(contact.addrbook.getIcon()) $></td>
 						<td class='companyFolder'><$= contact.addrbook.getName() $></td>
