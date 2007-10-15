@@ -14,8 +14,7 @@
         <zm:modifyCallFeatures var="result" phone="${param.phone}"
             emailnotificationactive="${param.emailNotificationActive}" emailnotificationaddress="${param.emailNotificationAddress}"
             callforwardingactive="${param.callForwardingAllActive}" callforwardingforwardto="${param.callForwardingAllNumber}"
-            selectivecallforwardingactive="${param.selectiveCallForwardingActive}" selectivecallforwardingforwardto="${param.selectiveCallForwardingNumber}"
-            selectivecallforwardingforwardfrom="${paramValues.forwardNumbers}" numberPerPage="${param.numberPerPage}"
+            numberPerPage="${param.numberPerPage}"
         />
         <c:choose>
             <c:when test="${result}">

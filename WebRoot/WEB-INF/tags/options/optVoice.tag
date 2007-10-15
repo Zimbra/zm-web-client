@@ -81,7 +81,6 @@ Stupid: I had to do a second loop that only acts on the selected account......
                 </table>
             </td>
         </tr>
-        <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
         <%------------------- Call forwarding ------------------%>
         <tr>
             <td class="ZOptionsTableLabel" style="vertical-align:top;"><fmt:message key="callForwarding"/></td>
@@ -101,66 +100,8 @@ Stupid: I had to do a second loop that only acts on the selected account......
 							>
                         </td>
                     </tr>
-
-                <%------------------- Selective Call forwarding ------------------%>
-                <tr><td>&nbsp;</td><td>&nbsp;</td></tr>                    
-                <tr>
-                    <td class="ZhOptVoiceCBCell">
-                        <input id="selectiveCallForwardingActive" type=checkbox name="selectiveCallForwardingActive" value="TRUE"
-							<c:if test="${!features.selectiveCallForwarding.isSubscribed}">disabled</c:if>
-							<c:if test="${features.selectiveCallForwarding.isActive}">checked</c:if>
-						>
-                    </td>
-                    <td>
-                        <label for="selectiveCallForwardingActive"><fmt:message key="forwardSomeCalls"/></label>&nbsp;&nbsp;
-                        <input name="selectiveCallForwardingNumber" type="text" size="25" value="${features.selectiveCallForwarding.forwardTo}"
-							<c:if test="${!features.selectiveCallForwarding.isSubscribed}">disabled</c:if>
-						>
-                    </td>
-                </tr>
-                <tr><td>&nbsp;</td><td>&nbsp;</td></tr>
-                <tr>
-                    <td class="ZhOptVoiceCBCell">&nbsp;</td>
-                    <td>
-                        <table class="List" border="0" cellpadding="0" cellspacing="0" width="350px">
-                            <tr><th colspan="2"><fmt:message key="forwardCallFrom"/></th></tr>
-                            <c:forEach items="${features.selectiveCallForwarding.forwardFrom}" var="a">
-                                <app:forwardFromRow phone="${a}"/>
-                            </c:forEach>
-                            <c:if test="${zm:actionSet(param, 'actionAdd') and !empty param.addNumber}">
-                                <app:forwardFromRow phone="${zm:getPhoneDisplay(param.addNumber)}"/>
-                            </c:if>
-                        </table>
-                        <input type="hidden" name="haveForwardFromList" value="true">
-
-                        <br>
-                        <table width="340px">
-                            <tr>
-                                <c:set var="addButton"><fmt:message key="add"/></c:set>
-                                <td><b><fmt:message key="add"/></b></td>
-                                <td>
-									<input type="text" name="addNumber" style="width:100%;"
-										<c:if test="${!features.selectiveCallForwarding.isSubscribed}">disabled</c:if>
-									>
-
-								</td>
-                                <td>
-									<input type="submit" title="${addButton}" value="${addButton}" name="actionAdd"
-										<c:if test="${!features.selectiveCallForwarding.isSubscribed}">disabled</c:if>
-									>
-
-								</td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td><fmt:message key="selectCallForwardingRule"/></td>
-                                <td></td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </td>
+				</table>
+			</td>
         </tr>
         <input type="hidden" name="phone" value="${account.phone.name}">
     </c:if>
