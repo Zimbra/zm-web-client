@@ -116,6 +116,11 @@ function() {
 		return;
 	}
 
+	this._createPageTemplate();
+	this._createControls();
+}
+
+ZmPreferencesPage.prototype._createPageTemplate = function() {
 	// expand template
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._section.id);
 	var templateId = this._section.templateId;
@@ -127,8 +132,10 @@ function() {
 	data.expandField = AjxCallback.simpleClosure(this._expandField, this, data);
 	this._createPageHtml(templateId, data);
 	this.setVisible(false); // hide until ready
+};
 
-    // create controls for prefs, if present in template
+ZmPreferencesPage.prototype._createControls = function() {
+	// create controls for prefs, if present in template
 	this._prefPresent = {};
 	this._tabControls = {};
 	var prefs = this._section.prefs || [];
@@ -239,7 +246,7 @@ function() {
 
 	// finish setup
 	this.setVisible(true);
-	this._hasRendered = activeAcct;
+	this._hasRendered = Boolean(appCtxt.getActiveAccount().name);
 };
 
 ZmPreferencesPage.prototype._addControlsToTabGroup = function(tabGroup) {

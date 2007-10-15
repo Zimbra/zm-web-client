@@ -178,7 +178,10 @@ function() {
 				ZmSetting.VACATION_MSG_ENABLED,
 				ZmSetting.VACATION_MSG,
 				ZmSetting.VIEW_AS_HTML
-			]
+			],
+			createView: function(parent, section, controller) {
+				return new ZmMailPrefsPage(parent, section, controller);
+			}
 		},
 		ACCOUNTS: {
 			title: ZmMsg.accounts,
