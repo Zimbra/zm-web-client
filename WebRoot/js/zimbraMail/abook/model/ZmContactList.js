@@ -596,7 +596,7 @@ function(contact, doAdd) {
 	}
 
 	// Update my card.
-	if (ZmContact.getAttr(contact, ZmContact.MC_isMyCard) == "true") {
+	if (ZmContact.getAttr(contact, ZmContact.MC_cardOwner) == "isMyCard") {
 		if (!this._myCard) {
 			var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
 			var params = {

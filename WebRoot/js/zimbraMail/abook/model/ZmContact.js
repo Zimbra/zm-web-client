@@ -121,7 +121,7 @@ ZmContact.X_firstLast		= "firstLast";
 ZmContact.X_fullName		= "fullName";
 
 // My card fields
-ZmContact.MC_isMyCard			= "isMyCard";
+ZmContact.MC_cardOwner			= "cardOwner";
 ZmContact.MC_workCardMessage	= "workCardMessage";
 ZmContact.MC_homeCardMessage	= "homeCardMessage";
 ZmContact.MC_homePhotoURL		= "homePhotoURL";
