@@ -560,8 +560,9 @@ function(callback, title) {
 		dialog.setMessage(ZmMsg.errorPermission, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();					
 	} else {
-		var dialog = appCtxt.getUploadDialog();
-		dialog.popup({id:this._currentFolder},callback, title);
+        var cFolder = appCtxt.getById(this._currentFolder);
+        var dialog = appCtxt.getUploadDialog();
+		dialog.popup(cFolder,callback, title);
 	}
 };
 
