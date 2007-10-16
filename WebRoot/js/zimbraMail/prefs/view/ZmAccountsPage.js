@@ -300,6 +300,12 @@ ZmAccountsPage.prototype.setAccount = function(account) {
 
 ZmAccountsPage.prototype.showMe = function() {
 	var hasRendered = this.hasRendered();
+
+	if (appCtxt.get(ZmSetting.OFFLINE) && !hasRendered) {
+		this.getContentHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#AccountsOffline");
+		return;
+	}
+
 	ZmPreferencesPage.prototype.showMe.apply(this, arguments);
 	if (!hasRendered) {
 		this.reset();
