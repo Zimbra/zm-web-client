@@ -71,7 +71,7 @@ function(params, ex) {
 		ZmOrganizer._showErrorMsg(msg);
 		return true;
 	} else {
-		return ZmOrganizer._handleErrorCreate(param, ex);
+		return ZmOrganizer._handleErrorCreate(params, ex);
 	}
 };
 
