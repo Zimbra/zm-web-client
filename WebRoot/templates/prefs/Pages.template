@@ -41,6 +41,9 @@ and the container element is replaced with that control.
 					<td class='ZOptionsField'><div id='${id}_LOCALE_NAME' tabindex='40'></div></td>
 				</tr>
 			<$ } $>
+				<tr><td class='ZOptionsLabel'><$=ZmMsg.defualtTimezone$></td>
+					<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE'></div></td>
+				</tr>
 
 				<tr><td colspan=2><hr></td></tr>
 

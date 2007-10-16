@@ -113,6 +113,7 @@ ZmPreferencesApp.prototype._registerSettings =
 function(settings) {
 	settings = settings || appCtxt.getSettings();
 	settings.registerSetting("SIGNATURE_MAX_LENGTH",	{name:"zimbraMailSignatureMaxLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1024});
+	settings.registerSetting("DEFAULT_TIMEZONE",		{name:"zimbraPrefTimeZoneId", type:ZmSetting.T_COS, dataType:ZmSetting.D_STRING, defaultValue:AjxTimezone.getServerId(AjxTimezone.DEFAULT)});
 };
 
 ZmPreferencesApp.prototype._registerApp =
@@ -146,10 +147,11 @@ function() {
 				ZmSetting.SHOW_SEARCH_STRING,
 				ZmSetting.SHOW_SELECTION_CHECKBOX,
 				ZmSetting.SKIN_NAME,
-				ZmSetting.CLIENT_TYPE
+				ZmSetting.CLIENT_TYPE,
+				ZmSetting.DEFAULT_TIMEZONE
 			]
-        },
-        COMPOSING: {
+		},
+		COMPOSING: {
 			title: ZmMsg.composing,
 			templateId: "prefs.Pages#Composing",
 			priority: 20,
@@ -232,6 +234,13 @@ function() {
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		[ZmMsg.includeInBody, ZmMsg.includePrefix, ZmMsg.includeOriginalAsAttach],
 		options:			[ZmSetting.INCLUDE, ZmSetting.INCLUDE_PREFIX, ZmSetting.INCLUDE_ATTACH]
+	});
+
+	ZmPref.registerPref("DEFAULT_TIMEZONE", {
+		displayName:		ZmMsg.selectTimezone,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		AjxTimezone.getZonePreferences(),
+		options:			AjxTimezone.getZonePreferencesOptions()
 	});
 
 	ZmPref.registerPref("LOCALE_NAME", {
