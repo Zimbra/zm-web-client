@@ -253,6 +253,9 @@
 		var hasWorkPhone= workPhone || workPhone2 || workFax || workAsst || workCompany || workCallback;
 		var imageUrl 	= contact.getImageUrl();
 		var hasImage 	= (imageUrl ? true: false);
+                var imAddress1  = contact.getAttr(ZmContact.F_imAddress1);
+                var imAddress2  = contact.getAttr(ZmContact.F_imAddress2);
+                var imAddress3  = contact.getAttr(ZmContact.F_imAddress3);
 	$>
 	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
 		<$= AjxTemplate.expand("abook.Contacts#SplitView_title", data) $>
@@ -261,6 +264,9 @@
 				<table border=0 cellpadding=2 cellspacing=2>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_ADDR_WORK, value:workField, addSep:true}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitView_email", data) $>
+                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress1, value:imAddress1}) $>
+                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress2, value:imAddress2}) $>
+                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress3, value:imAddress3}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_workPhone, value:workPhone, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_workPhone2, value:workPhone2, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_mobilePhone, value:mobile, type:ZmObjectManager.PHONE}) $>
@@ -294,6 +300,9 @@
 		var pager 		= contact.getAttr(ZmContact.F_pager);
 		var homeURL 	= contact.getAttr(ZmContact.F_homeURL);
 		var hasHomePhone= homePhone || homePhone2 || homeFax || mobile || pager;
+                var imAddress1  = contact.getAttr(ZmContact.F_imAddress1);
+                var imAddress2  = contact.getAttr(ZmContact.F_imAddress2);
+                var imAddress3  = contact.getAttr(ZmContact.F_imAddress3);
 	$>
 	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
 		<$= AjxTemplate.expand("abook.Contacts#SplitView_title", data) $>
@@ -302,6 +311,9 @@
 				<table border=0 cellpadding=2 cellspacing=2>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_ADDR_HOME, value:homeField, addSep:true}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitView_email", data) $>
+                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress1, value:imAddress1}) $>
+                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress2, value:imAddress2}) $>
+                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress3, value:imAddress3}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_homePhone, value:homePhone, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_homePhone2, value:homePhone2, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.fax, value:homeFax, type:ZmObjectManager.PHONE}) $>
@@ -328,6 +340,9 @@
 		var birthday 	= contact.getAttr(ZmContact.F_birthday);
 		var parsedBday 	= birthday ? (new AjxDateFormat("yyyy-MM-dd")).parse(birthday) : null;
 		var birthdayStr = parsedBday ? AjxDateUtil.simpleComputeDateStr(parsedBday) : null;
+                var imAddress1  = contact.getAttr(ZmContact.F_imAddress1);
+                var imAddress2  = contact.getAttr(ZmContact.F_imAddress2);
+                var imAddress3  = contact.getAttr(ZmContact.F_imAddress3);
 	$>
 
 	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
@@ -337,6 +352,9 @@
 				<table border=0 cellpadding=2 cellspacing=2>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_ADDR_OTHER, value:otherField, addSep:true}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitView_email", data) $>
+                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress1, value:imAddress1}) $>
+                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress2, value:imAddress2}) $>
+                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress3, value:imAddress3}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_otherPhone, value:otherPhone, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.fax, value:otherFax, type:ZmObjectManager.PHONE}) $>
 					<$ if (otherPhone || otherFax) { $>
