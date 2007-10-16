@@ -217,12 +217,13 @@ function(tagList, addRemove) {
 		}
 	}
 }
-
+ZmTagMenu.tagNameLength = 20;
 ZmTagMenu.prototype._addNewTag =
 function(menu, newTag, add, index, tagHash) {
 	var mi = new DwtMenuItem(menu, null, null, index);
-	mi.setText(newTag.getName(false));
-	mi.setImage(ZmTag.COLOR_ICON[newTag.color]);
+    var tagName = AjxStringUtil.clipByLength(newTag.getName(false),ZmTagMenu.tagNameLength);
+    mi.setText(tagName);
+    mi.setImage(ZmTag.COLOR_ICON[newTag.color]);
 	mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_TAGS);
 	mi.setData(ZmTagMenu.KEY_TAG_ADDED, add);
 	mi.setData(Dwt.KEY_OBJECT, newTag);
