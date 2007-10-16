@@ -173,7 +173,7 @@ ZmSignaturesPage.prototype.addCommand = function(batchCommand) {
 ZmSignaturesPage.prototype._setupCustom = function(id, setup, value) {
 	if (id == ZmSetting.SIGNATURES) {
 		// create container control
-		var container = new DwtComposite(this);
+		var container = new ZmSignatureList(this);
 		this.setFormObject(id, container);
 
 		// create radio group for defaults
@@ -191,7 +191,7 @@ ZmSignaturesPage.prototype._setupCustom = function(id, setup, value) {
 			button.setText(ZmMsg.addSignature);
 			button.setEnabled(lessThanEqual);
 			button.addSelectionListener(new AjxListener(this, this._handleAddButton));
-			button.replaceElement(buttonEl);
+			this._replaceControlElement(buttonEl, button);
 
 			this._addSignatureButton = button;
 		}
@@ -245,8 +245,13 @@ ZmSignaturesPage.prototype._addSignature = function(signature) {
 
 	// instantiate controls
 	var comps = this._signatureComps[signature._htmlElId] = {
-		signature: signature
+		signature: signature,
+		tabGroup: new DwtTabGroup(signature.id)
 	};
+
+	var tabControls = this._tabControls;
+	this._tabControls = {};
+
 	var nameEl = document.getElementById(signature._htmlElId+"_SIGNATURE_NAME");
 	if (nameEl) {
 		var params = {
@@ -255,7 +260,7 @@ ZmSignaturesPage.prototype._addSignature = function(signature) {
 			validator: AjxCallback.simpleClosure(this._validateName, this, signature._htmlElId)
 		};
 		var input = new DwtInputField(params);
-		input.replaceElement(nameEl);
+		this._replaceControlElement(nameEl, input);
 
 		comps.name = input;
 	}
@@ -266,7 +271,7 @@ ZmSignaturesPage.prototype._addSignature = function(signature) {
 		var isDefault = false; // TODO
 		var radio = new DwtRadioButton(listComp, null, name, isDefault);
 		radio.setText(ZmMsg.def);
-		radio.replaceElement(defaultEl);
+		this._replaceControlElement(defaultEl, radio);
 
 		var id = radio._htmlElId;
 		var value = signature._htmlElId;
@@ -279,7 +284,7 @@ ZmSignaturesPage.prototype._addSignature = function(signature) {
 	if (deleteEl) {
 		var button = new DwtButton(listComp);
 		button.addSelectionListener(new AjxListener(this, this._handleDeleteButton, [signature._htmlElId]));
-		button.replaceElement(deleteEl);
+		this._replaceControlElement(deleteEl, button);
 
 		comps.doDelete = button;
 	}
@@ -287,10 +292,14 @@ ZmSignaturesPage.prototype._addSignature = function(signature) {
 	var valueEl = document.getElementById(signature._htmlElId+"_SIGNATURE");
 	if (valueEl) {
 		var textarea = new DwtInputField({parent:listComp,rows:valueEl.rows||3,size:valueEl.cols});
-		textarea.replaceElement(valueEl);
+		this._replaceControlElement(valueEl, textarea);
 
 		comps.value = textarea;
 	}
+
+	this._addControlsToTabGroup(comps.tabGroup);
+	this._tabControls = tabControls;
+	listComp.getTabGroup().addMember(comps.tabGroup);
 
 	// initialize state
 	this._resetSignature(signature);
@@ -367,19 +376,21 @@ ZmSignaturesPage.prototype._handleAddButton = function(evt) {
 };
 
 ZmSignaturesPage.prototype._handleDeleteButton = function(id, evt) {
-	var signature = this._signatureComps[id].signature;
+	var sigList = this.getFormObject(ZmSetting.SIGNATURES);
+	var comps = this._signatureComps[id];
+	var signature = comps.signature;
 
 	// update controls
 	if (this._deleteState) {
 		var el = document.getElementById(id);
 		el.parentNode.removeChild(el);
+		sigList.getTabGroup().removeMember(comps.tabGroup);
 
 		delete this._signatureComps[id];
 	}
 	else {
 		var newSignature = this._addNewSignature(true);
 		newSignature._htmlElId = id;
-		var comps = this._signatureComps[id];
 		comps.signature = newSignature;
 		if (comps.name) comps.name.setValue("");
 		if (comps.isDefault) comps.isDefault.setSelected(false);
@@ -422,3 +433,23 @@ ZmSignaturesPage.prototype._validateName = function(id, value) {
 	}
 	return value;
 };
+
+//
+// Classes
+//
+
+ZmSignatureList = function(parent) {
+	DwtComposite.call(this, parent);
+	this._tabGroup = new DwtTabGroup(this._htmlElId);
+};
+ZmSignatureList.prototype = new DwtComposite;
+ZmSignatureList.prototype.constructor = ZmSignatureList;
+
+ZmSignatureList.prototype.toString = function() {
+	return "ZmSignatureList";
+};
+
+ZmSignatureList.prototype.getTabGroupMember = function() {
+	return this._tabGroup;
+};
+ZmSignatureList.prototype.getTabGroup = ZmSignatureList.prototype.getTabGroupMember;
