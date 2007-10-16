@@ -5,12 +5,11 @@
 			<col id='skin_col_tree'>
 			<col id='skin_col_tree_app_sash'>
 			<col id='skin_col_main'>
-			<col id='skin_col_quota'>
 		</colgroup>
 	
 	<!-- top ad row -->
 		<tr id='skin_tr_top_ad'>
-			<td id='skin_td_top_ad' colspan=4><div id='skin_container_top_ad'><!-- top ad here --></div></td>
+			<td id='skin_td_top_ad' colspan=3><div id='skin_container_top_ad'><!-- top ad here --></div></td>
 		</tr>
 
 	<!-- top row: logo, search box, quota -->
@@ -20,27 +19,36 @@
 					<!-- app logo -->
 				</div>
 			</td>
-			<td id='skin_td_search'>
-				<div id='skin_container_search' class='skin_container'>
-					<!-- search toolbar -->
-				</div>
-			</td>
-			<td id='skin_td_quota'>
-				<div id='skin_container_username' class='skin_container'>
-					<!-- user name -->
-				</div>
-				<div id='skin_container_offline_status' class='skin_container' align='center'>
-					<!-- offline status -->
-				</div>
-				<div id='skin_container_quota' class='skin_container'>
-					<!-- quota area -->
-				</div>
+			<td>
+				<table cellspacing=0 cellpadding=0 width='100%' border=0>
+				<tr>
+					<td id='skin_td_search' rowspan=2><div id='skin_container_search' class='skin_container'></div></td>
+					<td id='skin_td_username' height=100%><span id='skin_container_username'></span></td>
+					<td id='skin_td_switch' align='center'><span class='skin_container_switch'><nobr
+						><a href='javascript:switchToStandardClient()'><script>document.write(ZmMsg.switchToStandardClient)</script></a></nobr
+					></span></td>
+				</tr>
+				<tr>
+					<td id='skin_td_quota'>
+						<div id='skin_container_quota' class='skin_container'></div>
+						<div id='skin_container_offline_status' class='skin_container'></div>
+					</td>
+					<td><table cellspacing=0 cellpadding=0 width=100%>
+						<tr>
+							<td id='skin_td_help'><span id='skin_container_help'></span></td>
+							<td style='width:100%'>&nbsp;</td>
+							<td id='skin_td_logoff'><span id='skin_container_logoff'></span></td>
+						</tr>
+						</table>
+					</td>
+				</tr>
+				</table>
 			</td>
 		</tr>
 
 	<!-- search builder -->
 		<tr id='skin_tr_search_builder'>
-			<td colspan=4 id='skin_td_search_builder'  class='skin_container'>
+			<td colspan=3 id='skin_td_search_builder'  class='skin_container'>
 				<div id='skin_container_search_builder_outer'>
 					<div id='skin_container_search_builder_toolbar' class='skin_container' style='height:18px'>
 						<!-- search builder toolbar -->
@@ -59,15 +67,6 @@
 					<!-- app chooser -->
 				</div>
 			</td>
-			<td id='skin_td_help_logoff'>
-				<div class='skin_container'>
-					<table style='width:100%;'><tr>
-						<td style='width:100%'>&nbsp;</td>
-						<td id='skin_container_help' style='padding-right:10px'>&nbsp;</td>
-						<td id='skin_container_logoff' style='padding-right:18px'>&nbsp;</td>
-					</tr></table>
-				</div>
-			</td>
 		</tr>
 	
 	<!-- tree toolbar and main toolbar -->
@@ -82,14 +81,14 @@
 					<div class='vertSep'></div>
 				</div>
 			</td>
-			<td id='skin_td_app_top_toolbar' colspan='2'>
+			<td id='skin_td_app_top_toolbar'>
 				<div id='skin_container_app_top_toolbar' class='skin_container skin_border_app_top_toolbar'></div>
 			</td>
 		</tr>
 	
 	<!-- app chooser, tree and mini-cal, main app wd -->
 		<tr id='skin_tr_main'>
-			<td height='100%' colspan='4'>
+			<td height='100%' colspan='3'>
 				<table border=0 id='skin_table_inner' class='skin_table' cellpadding=0 cellspacing=0>
 <!--
 					<colgroup>
@@ -124,7 +123,7 @@
 								<!-- tree/app sash -->
 							</div>
 						</td>
-						<td id='skin_td_app_main' class='full_height' colspan='2' height='100%'>
+						<td id='skin_td_app_main' class='full_height' height='100%'>
 							<div id='skin_container_app_main' class='skin_container'></div>
 						</td>
 						<td id='skin_td_sidebar_ad' style='vertical-align:top;'
@@ -140,7 +139,7 @@
 	<!-- IE7 pegs the CPU *for some unknown reason* if we split out the toolbar and -->
 	<!-- main content into two different table rows.                                -->
 			<tr id='skin_tr_main_full' style='display:none'>
-				<td id='skin_td_app_full_outer' class='full_height' colspan='4' height='100%'>
+				<td id='skin_td_app_full_outer' class='full_height' colspan='3' height='100%'>
 					<table id='skin_app_full_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 						<tr>
 							<td id='skin_border_app_top_toolbar_full' class='skin_td_app_toolbar'>

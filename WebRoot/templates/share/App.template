@@ -44,14 +44,14 @@
 </template>
 
 <template id="share.App#UserInfo">
-	<table border=0 cellpadding=1 cellspacing=1 align=right width=1%>
+	<table border=0 cellpadding=0 cellspacing=0>
 		<tr>
 			<$ if (!data.hideIcon) { $>
-				<td align=right>
+				<td style='padding-right:3px;'>
 					<a href='javascript:;' onclick='${staticFunc}'><$= AjxImg.getImageHtml(data.icon, null, "border=0") $></a>
 				</td>
 			<$ } $>
-			<td width=1% align=right style='white-space:nowrap; font-weight:bold'>
+			<td style='white-space:nowrap; font-weight:bold'>
 				<a href='javascript:;' onclick='${staticFunc}'>${lbl}</a>
 			</td>
 		</tr>

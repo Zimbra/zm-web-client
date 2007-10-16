@@ -97,11 +97,6 @@ body	{	@ChromeBg@	}
 	width:100%;		
 }
 
-#skin_col_quota,
-#skin_col_quota_inner {	
-	width:180px;	
-}
-
 /* top row:  logo, search box, quota */
 #skin_tr_top	{}
 #skin_td_logo	{	
@@ -119,7 +114,9 @@ body	{	@ChromeBg@	}
 
 
 #skin_td_search	{	
-	padding:8 0 5 0;
+	vertical-align:top;
+	width:100%;
+	padding:8 15 0 0;
 }
 #skin_container_search	{	
 	@SkinBorderSearch@
@@ -128,18 +125,52 @@ body	{	@ChromeBg@	}
 }
 
 
-#skin_td_quota	{	
-	vertical-align:top;	
+
+#skin_td_username {
+	font-size:10px;
+	padding-top:8px;
+	padding-bottom:1px;
+	text-align:center;
+	padding-right:15px;
 }
 #skin_container_username {	
 	@SkinBorderQuota@
-	height:20px;
+	width:120px;
 }
 
+
+#skin_td_quota	{
+	text-align:center;
+	padding-right:15px;
+}
 #skin_container_quota	{	
 	@SkinBorderQuota@
-	height:20px;
+	width:150px;
 }
+
+
+
+#skin_td_help {
+	text-align:left;
+}
+#skin_container_help {
+}
+
+#skin_td_logoff {
+	text-align:right;
+	padding-right:15px
+}
+#skin_container_logoff {
+	text-align:right;
+}
+
+#skin_td_switch {
+	padding-top:8px;
+	padding-bottom:1px;
+	text-align:right;
+	padding-right:15px
+}
+#skin_container_switch{}
 
 
 /* search builder */
@@ -225,7 +256,7 @@ body	{	@ChromeBg@	}
 	vertical-align:bottom; 
 	text-align:center;	
 	height:25px;	
-	padding:0 0 0 8; 
+	padding:5 0 0 8; 
 }
 #skin_container_app_chooser	{	
 	@SkinBorderAppChooser@

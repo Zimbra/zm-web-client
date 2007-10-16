@@ -4,6 +4,11 @@ function ZmSkin(hints) {
         name:       "@SkinName@",
         version:    "@SkinVersion@",
         logo:       { url: "@LogoURL@" },
+
+        banner:		{ position:"static"},
+        userInfo:	{ position:"static"},
+        search:		{ position:"static"},
+        quota:      { position:"static" },
         
         // specific components
         app_chooser:    { style: "tabs", direction: "LR" },
@@ -18,7 +23,6 @@ function ZmSkin(hints) {
         // skin regions
         skin:           { containers: "skin_outer" },
         tree:			{ minWidth:150, maxWidth:300, containers: ["skin_td_outer_tree", "skin_outer_tree", "skin_col_tree_inner", "skin_col_tree"] },
-        quota:          { containers: [ "skin_td_quota_spacer", "skin_td_quota" ] },
         searchBuilder:  { containers: [ "skin_container_search_builder_outer", "skin_td_search_builder" ] },
         topToolbar:     { containers: [ "skin_tr_top_toolbar", "!skin_tr_top_toolbar_shim" ] },
         bottomToolbar:  { containers: [ "skin_tr_bottom_toolbar", "!skin_tr_bottom_toolbar_shim" ] },
