@@ -472,7 +472,7 @@ function() {
 	ZmOperation.registerOp("SHOW_BCC", {textKey:"showBcc"});
 	ZmOperation.registerOp("SHOW_ONLY_MAIL", {textKey:"showOnlyMail", image:"Conversation"}, ZmSetting.MIXED_VIEW_ENABLED);
 	ZmOperation.registerOp("SHOW_ORIG", {textKey:"showOrig", image:"Message"});
-	ZmOperation.registerOp("SPAM", {textKey:"junk", tooltipKey:"junkTooltip", image:"SpamFolder"}, ZmSetting.SPAM_ENABLED);
+	ZmOperation.registerOp("SPAM", {textKey:"junk", tooltipKey:"junkTooltip", image:"JunkMail"}, ZmSetting.SPAM_ENABLED);
 };
 
 ZmMailApp.prototype._registerItems =

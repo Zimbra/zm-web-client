@@ -735,7 +735,7 @@ function(parent) {
 	if (item) {
 		var inSpamFolder = (this._getSearchFolderId() == ZmFolder.ID_SPAM);
 		item.setText(inSpamFolder ? ZmMsg.notJunk : ZmMsg.junk);
-		item.setImage(inSpamFolder ? 'Inbox' : 'SpamFolder');
+		item.setImage(inSpamFolder ? 'Inbox' : 'JunkMail');
 		if (item.setToolTipContent) {
 			item.setToolTipContent(inSpamFolder ? ZmMsg.notJunkTooltip : ZmMsg.junkTooltip);
 		}

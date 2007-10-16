@@ -278,12 +278,32 @@
         <td>
             <app:appTopUser mailbox="${mailbox}" keys="${keys}" />
         </td>
+        <td align="right">
+            <table cellpadding="2" cellspacing="0">
+            	<tr>
+	            	<td colspan=3 align='center' class='ZhAppSwitchLink'>
+    	        		<a href='<c:url value="/"/>'><fmt:message key="switchToAdvancedClient" /></a>
+    	        	</td>
+            	</tr>
+                <tr>
+                    <td align="left" class="ZhAppLinks">
+                        <a target="_new" href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.gif"  border="0"/>&nbsp;<fmt:message key="help"/></a>
+                    </td>
+                    <td>
+                        &nbsp;
+                    </td>
+                    <td align="right" class="ZhAppLinks">
+                        <a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="startup/ImgLogoff.gif" border="0"/>&nbsp;<fmt:message key="logOut"/></a>
+                    </td>
+                </tr>
+            </table>
+        </td>
     </tr>
     <tr>
         <td class="Overview">
             &nbsp;
         </td>
-        <td align="center" colspan="2">
+        <td align="center" colspan="3">
             <app:appStatus/>
         </td>
     </tr>
@@ -306,21 +326,6 @@
         <td>
             <app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
         </td>
-        <td align="right" class="ZhAppLinks">
-            <table cellpadding="2" cellspacing="0">
-                <tr>
-                    <td align="right">
-                        <a target="_new" href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.gif"  border="0"/>&nbsp;<fmt:message key="help"/></a>
-                    </td>
-                    <td align="right">
-                        &nbsp;
-                    </td>
-                    <td align="right">
-                        <a href="<c:url value="/?loginOp=logout"/>"><app:img altkey="ALT_APP_LINK_LOGOFF" src="startup/ImgLogoff.gif" border="0"/>&nbsp;<fmt:message key="logOut"/></a>
-                    </td>
-                </tr>
-            </table>
-        </td>
     </tr>
     <tr>
         <c:if test="${empty editmode}">
@@ -330,11 +335,11 @@
         </c:if>
         <c:set var="adsOn" value="${!empty ads}"/>
 <c:if test="${adsOn}" >
-        <td valign="top" colspan="2">
+        <td valign="top" colspan="3">
             <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
 </c:if>
-        <td valign="top" colspan="${empty editmode ? 2 : 3}" style="padding-left:${editmode ? 10 : 0}px">
+        <td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 10 : 0}px">
         <jsp:doBody/>
     </td>
     <c:if test="${adsOn}" >
@@ -351,7 +356,7 @@
     </td>
 </tr>
 <tr>
- <td colspan="3">&nbsp;</td>
+ <td colspan="4">&nbsp;</td>
 </tr>
 </table>
 

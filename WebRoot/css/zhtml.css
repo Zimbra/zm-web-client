@@ -47,6 +47,14 @@ SUBMIT,
 	color: darkblue;
 }
 
+.ZhAppSwitchLink a,
+.ZhAppSwitchLink a:link,
+.ZhAppSwitchLink a:visited {
+	font-size:10px;
+	font-weight:normal;
+}
+
+
 /* ------- tabs --------------- */
 
 .Tabs { margin-right: 10px; }
@@ -225,7 +233,7 @@ A:visited { color: blue; }
 
 
 .TopContent {
-	padding:0 5px 0 0;
+	padding:0 15px 0 0;
  /*   border-bottom: 1px solid #98adbe;*/ 
 }
 
