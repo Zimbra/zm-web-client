@@ -1147,7 +1147,7 @@ function () {
 ZmOrganizer.prototype.isDataSource =
 function(type) {
 	var dsc = appCtxt.getDataSourceCollection();
-	var dataSource = dsc.getByFolderId(this.id);
+	var dataSource = dsc.getByFolderId(this.nId);
 	if (!dataSource) return false;
 	if (type) return (dataSource.type == type);
 	return true;

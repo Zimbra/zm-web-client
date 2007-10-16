@@ -259,19 +259,6 @@ function(treeItem, organizer) {
 	if (this.isCheckedStyle) {
 		treeItem.setChecked(organizer.isChecked);
 	}
-	// bug fix #20512 - child accounts are lazily created so they never get the icon fix
-	if (!appCtxt.getActiveAccount().isMain) {
-		var items = appCtxt.getDataSourceCollection().getItemsFor(organizer.nId);
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if (item.folderId == organizer.nId) {
-				var icon = item.type == ZmAccount.POP ? "POPAccount" : "IMAPAccount";
-				organizer.setIcon(icon);
-				treeItem.setImage(icon);
-				break;
-			}
-		}
-	}
 };
 
 /**

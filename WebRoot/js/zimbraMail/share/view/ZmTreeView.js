@@ -272,7 +272,7 @@ function(parentNode, organizer, index, noTooltips) {
 	var ti;
 	// check if we're adding a datasource folder
 	var ds = (organizer.type == ZmOrganizer.FOLDER)
-		? appCtxt.getDataSourceCollection().getByFolderId(organizer.id)
+		? appCtxt.getDataSourceCollection().getByFolderId(organizer.nId)
 		: null;
 	if (ds && ds.type == ZmAccount.IMAP) {
 		ti = new DwtTreeItem(this, null, organizer.getName(), null, null, this._headerClass);
