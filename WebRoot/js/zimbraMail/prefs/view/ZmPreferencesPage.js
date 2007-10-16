@@ -246,7 +246,7 @@ ZmPreferencesPage.prototype._createControls = function() {
 
 	// finish setup
 	this.setVisible(true);
-	this._hasRendered = Boolean(appCtxt.getActiveAccount().name);
+	this._hasRendered = appCtxt.getActiveAccount().name;
 };
 
 ZmPreferencesPage.prototype._addControlsToTabGroup = function(tabGroup) {
