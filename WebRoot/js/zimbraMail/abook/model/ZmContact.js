@@ -399,11 +399,11 @@ function() {
 
 ZmContact.prototype.getIcon =
 function() {
-	if (this.isGal)				{ return "GALContact"; }
-	else if (this.isShared())	{ return "SharedContact"; }
-	else if (this.isGroup())	{ return "Group"; }
-	else if (this.isMyCard())	{ return "MyCard"; }
-	return this._icon || "Contact";
+	if (this.isGal)			{ return "GALContact"; }
+	if (this.isShared())	{ return "SharedContact"; }
+	if (this.isGroup())		{ return "Group"; }
+	if (this.isMyCard())	{ return "MyCard"; }
+	return "Contact";
 };
 
 ZmContact.prototype.getFolderId =

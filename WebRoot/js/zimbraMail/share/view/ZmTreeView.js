@@ -269,7 +269,18 @@ function(params) {
  */
 ZmTreeView.prototype._addNew =
 function(parentNode, organizer, index, noTooltips) {
-	var ti = new DwtTreeItem(parentNode, index, organizer.getName(this._showUnread), organizer.getIcon());
+	var ti;
+	// check if we're adding a datasource folder
+	var ds = (organizer.type == ZmOrganizer.FOLDER)
+		? appCtxt.getDataSourceCollection().getByFolderId(organizer.id)
+		: null;
+	if (ds && ds.type == ZmAccount.IMAP) {
+		ti = new DwtTreeItem(this, null, organizer.getName(), null, null, this._headerClass);
+		ti.enableSelection(false);
+	} else {
+		ti = new DwtTreeItem(parentNode, index, organizer.getName(this._showUnread), organizer.getIcon());
+	}
+
 	ti.setDndText(organizer.getName());
 	ti.setData(Dwt.KEY_ID, organizer.id);
 	ti.setData(Dwt.KEY_OBJECT, organizer);
@@ -281,21 +292,21 @@ function(parentNode, organizer, index, noTooltips) {
 			ti.setToolTipContent(tooltip);
 		}
 	}
-	if (this._dragSrc) {
-		ti.setDragSource(this._dragSrc);
-	}
-	if (this._dropTgt) {
-		ti.setDropTarget(this._dropTgt);
-	}
+	if (this._dragSrc) ti.setDragSource(this._dragSrc);
+	if (this._dropTgt) ti.setDropTarget(this._dropTgt);
 	this._treeItemHash[organizer.id] = ti;
 
 	if (ZmTreeView.ADD_SEP[organizer.nId]) {
 		parentNode.addSeparator();
 	}
+
 	// recursively add children
 	if (organizer.children && organizer.children.size()) {
 		this._render({treeNode:ti, organizer:organizer});
 	}
+
+	if (ds && ds.type == ZmAccount.IMAP)
+		ti.setExpanded(true);
 
 	return ti;
 };

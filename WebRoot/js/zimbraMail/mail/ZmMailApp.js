@@ -575,8 +575,6 @@ function() {
 ZmMailApp.prototype.startup =
 function(result) {
 	var obj = result.getResponse().GetInfoResponse;
-	appCtxt.getIdentityCollection().initialize(obj.identities);
-	appCtxt.getDataSourceCollection().initialize(obj.dataSources);
 	appCtxt.getSignatureCollection().initialize(obj.signatures);
 };
 
@@ -907,8 +905,22 @@ function(params, callback) {
 		}
 	}
 
+	// temporarily save GetInfoResponse so we can use it to properly render overview
+	this.__getInfoResponse = params.result ? params.result.getResponse().GetInfoResponse : null;
+
 	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
 	this._mailSearch(query, callback, params.searchResponse);
+};
+
+ZmMailApp.prototype.activate =
+function(active) {
+	if (this.__getInfoResponse) {
+		// data sources need to be parsed *before* activate so overview can render properly
+		appCtxt.getIdentityCollection().initialize(this.__getInfoResponse.identities);
+		appCtxt.getDataSourceCollection().initialize(this.__getInfoResponse.dataSources);
+	}
+
+	ZmApp.prototype.activate.call(this, active);
 };
 
 ZmMailApp.prototype._handleErrorLaunch =

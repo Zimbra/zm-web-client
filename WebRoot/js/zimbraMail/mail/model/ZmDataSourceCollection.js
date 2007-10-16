@@ -112,12 +112,16 @@ ZmDataSourceCollection.prototype.getById = function(id) {
 	return this._itemMap[id];
 };
 
-ZmDataSourceCollection.prototype.add = function(item) {
-	var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
-	var organizer = tree && tree.getById(item.folderId);
-	if (organizer) {
-		organizer.setIcon(item.type == ZmAccount.POP ? "POPAccount" : "IMAPAccount");
+ZmDataSourceCollection.prototype.getByFolderId = function(folderId) {
+	for (var id in this._itemMap) {
+		var item = this._itemMap[id];
+		if (item.folderId == folderId)
+			return item;
 	}
+	return null;
+};
+
+ZmDataSourceCollection.prototype.add = function(item) {
 	this._itemMap[item.id] = item;
 	if (item.type == ZmAccount.POP) {
 		this._pop3Map[item.id] = item;
@@ -135,11 +139,6 @@ ZmDataSourceCollection.prototype.modify = function(item) {
 };
 
 ZmDataSourceCollection.prototype.remove = function(item) {
-	var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
-	var organizer = tree && tree.getById(item.folderId);
-	if (organizer) {
-		organizer.setIcon(null);
-	}
     delete this._itemMap[item.id];
 	delete this._pop3Map[item.id];
 	delete this._imapMap[item.id];

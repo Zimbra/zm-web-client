@@ -21,36 +21,26 @@ ZmPopAccount = function(id, list) {
 ZmPopAccount.prototype = new ZmDataSource;
 ZmPopAccount.prototype.constructor = ZmPopAccount;
 
+// Constants
+ZmAccount.POP 				= "POP";
+ZmPopAccount.PORT_CLEAR 	= 110;
+ZmPopAccount.PORT_SSL 		= 995;
+ZmPopAccount.PORT_DEFAULT	= ZmPopAccount.PORT_CLEAR;
+
+// advanced settings
+ZmPopAccount.prototype.ELEMENT_NAME = "pop3";
+ZmPopAccount.prototype.port = ZmPopAccount.PORT_DEFAULT;
+
+
+// Public methods
+
 ZmPopAccount.prototype.toString =
 function() {
 	return "ZmPopAccount";
 };
 
-//
-// Constants
-//
-
-ZmAccount.POP = "POP";
-
-ZmPopAccount.PORT_CLEAR = 110;
-ZmPopAccount.PORT_SSL = 995;
-ZmPopAccount.PORT_DEFAULT = ZmPopAccount.PORT_CLEAR;
-
-//
-// Data
-//
-
-ZmPopAccount.prototype.ELEMENT_NAME = "pop3";
-
-// advanced settings
-
-ZmPopAccount.prototype.port = ZmPopAccount.PORT_DEFAULT;
-
-//
-// Public methods
-//
-
-ZmPopAccount.prototype.getDefaultPort = function() {
-	var isSsl = this.connectionType == ZmDataSource.CONNECT_SSL;
-	return isSsl ? ZmPopAccount.PORT_SSL : ZmPopAccount.PORT_DEFAULT;
+ZmPopAccount.prototype.getDefaultPort =
+function() {
+	return (this.connectionType == ZmDataSource.CONNECT_SSL)
+		? ZmPopAccount.PORT_SSL : ZmPopAccount.PORT_DEFAULT;
 };

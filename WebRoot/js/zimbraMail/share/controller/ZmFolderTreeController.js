@@ -93,6 +93,7 @@ function(parent, type, id) {
 		parent.enable(ZmOperation.SYNC, folder.isFeed());
 		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
 		parent.enable(ZmOperation.EMPTY_FOLDER, (hasContent || folder.link));	// numTotal is not set for shared folders
+		parent.enable(ZmOperation.RENAME_FOLDER, !folder.isDataSource());		// dont allow datasource'd folder to be renamed via overview
 
 		if (folder.isRemote() && folder.isReadOnly()) {
 			if (folder.parent && folder.parent.isRemote()) {
@@ -163,7 +164,10 @@ function(parent, type, id) {
 */
 ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_FOLDER, ZmOperation.MOUNT_FOLDER, ZmOperation.EXPAND_ALL];
+	return [ZmOperation.NEW_FOLDER,
+			ZmOperation.MOUNT_FOLDER,
+			ZmOperation.EXPAND_ALL,
+			ZmOperation.SYNC];
 };
 
 /*

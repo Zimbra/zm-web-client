@@ -72,7 +72,7 @@ ZmBriefcase.prototype.getIcon =
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
 	if (this.link)							{ return "SharedMailFolder"; }
-	return this._icon || "Folder";
+	return "Folder";
 };
 
 ZmBriefcase.prototype.getSearchPath = function() {

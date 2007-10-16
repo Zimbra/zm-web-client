@@ -334,9 +334,10 @@ ZmFolder.prototype.getIcon =
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
 	if (ZmFolder.ICON[this.nId])			{ return ZmFolder.ICON[this.nId]; }
-	if (this.isFeed())						{ "RSS"; }
+	if (this.isFeed())						{ return "RSS"; }
 	if (this.isRemote())					{ return "SharedMailFolder"; }
-	return this._icon ||"Folder";
+	if (this.isDataSource(ZmAccount.POP))	{ return "POPAccount"; }
+	return "Folder";
 };
 
 /**

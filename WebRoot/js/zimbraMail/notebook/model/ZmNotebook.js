@@ -72,11 +72,9 @@ ZmNotebook.prototype.getIcon =
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT) { return null; }
 	if (this.parent.nId == ZmOrganizer.ID_ROOT) {
-		if (this.link) { return "SharedNotebook"; }
-		return ZmOrganizer.prototype.getIcon.call(this) || "Notebook";
+		return this.link ? "SharedNotebook" : "Notebook";
 	}
-	if (this.link) { return "SharedSection"; }
-	return ZmOrganizer.prototype.getIcon.call(this) || "Section";
+	return this.link ? "SharedSection" : "Section";
 };
 
 ZmNotebook.prototype.getSearchPath = function() {

@@ -90,7 +90,7 @@ ZmCalendar.prototype.getIcon =
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
 	if (this.link)							{ return "GroupSchedule"; }
-	return this._icon || "CalendarFolder";
+	return "CalendarFolder";
 };
 
 ZmCalendar.prototype.setFreeBusy = 

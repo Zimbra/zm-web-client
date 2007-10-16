@@ -113,24 +113,21 @@ function(params, ex) {
 		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
 		return true;
-	} else {
-		return false;
 	}
+	return false;
 };
 
 ZmTag.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
-	if (this.id == ZmOrganizer.ID_ROOT) {
+	if (this.id == ZmOrganizer.ID_ROOT)
 		return ZmMsg.tags;
-	} else {
-		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
-	}
+
+	return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
 };
 
 ZmTag.prototype.getIcon = 
 function() {
-	if (this.id == ZmOrganizer.ID_ROOT)	{ return null; }
-	return this._icon || ZmTag.COLOR_ICON[this.color];
+	return (this.id == ZmOrganizer.ID_ROOT) ? null : ZmTag.COLOR_ICON[this.color];
 };
 
 ZmTag.prototype.getToolTip = function() {};

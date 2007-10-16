@@ -89,7 +89,7 @@ function() {
 	if (this.link)								{ return "SharedContactsFolder"; }
 	if (this.nId == ZmFolder.ID_AUTO_ADDED)		{ return "EmailedContacts"; }
 	if (this.nId == ZmOrganizer.ID_MY_CARD)		{ return "MyCard"; }
-	return this._icon || "ContactsFolder";
+	return "ContactsFolder";
 };
 
 ZmAddrBook.prototype.supportsPublicAccess =

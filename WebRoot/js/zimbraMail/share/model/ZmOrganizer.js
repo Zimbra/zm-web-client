@@ -81,12 +81,6 @@ ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 
-// keys for org names
-ZmOrganizer.MSG_KEY = {};
-
-// primary organizer for item types
-ZmOrganizer.ITEM_ORGANIZER = {};
-
 // folder IDs defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT				= 1;
 ZmOrganizer.ID_INBOX			= 2;
@@ -100,33 +94,28 @@ ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_BRIEFCASE		= 16;
 ZmOrganizer.ID_OUTBOX    		= 254;
-ZmOrganizer.ID_ZIMLET			= -1000;  // zimlets need a range.  start from -1000 incrementing up.
+ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incrementing up.
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 ZmOrganizer.ID_MY_CARD			= -15;
 
-// default folder for org type
-ZmOrganizer.DEFAULT_FOLDER = {};
-
-// SOAP command for modifying an org
-ZmOrganizer.SOAP_CMD = {};
-
-// lowest valid user ID for an org type
-ZmOrganizer.FIRST_USER_ID = {};
-
-// setting that this org type depends on
-ZmOrganizer.PRECONDITION = {};
+ZmOrganizer.MSG_KEY 			= {};		// keys for org names
+ZmOrganizer.ITEM_ORGANIZER 		= {};		// primary organizer for item types
+ZmOrganizer.DEFAULT_FOLDER 		= {};		// default folder for org type
+ZmOrganizer.SOAP_CMD 			= {};		// SOAP command for modifying an org
+ZmOrganizer.FIRST_USER_ID 		= {};		// lowest valid user ID for an org type
+ZmOrganizer.PRECONDITION 		= {};		// setting that this org type depends on
 
 // fields that can be part of a displayed organizer
-ZmOrganizer.F_NAME		= "name";
-ZmOrganizer.F_UNREAD	= "unread";
-ZmOrganizer.F_TOTAL		= "total";
-ZmOrganizer.F_SIZE		= "size";
-ZmOrganizer.F_COLOR		= "color";
-ZmOrganizer.F_QUERY		= "query";
-ZmOrganizer.F_SHARES	= "shares";
-ZmOrganizer.F_FLAGS		= "flags";
-ZmOrganizer.F_REST_URL	= "rest";
+ZmOrganizer.F_NAME				= "name";
+ZmOrganizer.F_UNREAD			= "unread";
+ZmOrganizer.F_TOTAL				= "total";
+ZmOrganizer.F_SIZE				= "size";
+ZmOrganizer.F_COLOR				= "color";
+ZmOrganizer.F_QUERY				= "query";
+ZmOrganizer.F_SHARES			= "shares";
+ZmOrganizer.F_FLAGS				= "flags";
+ZmOrganizer.F_REST_URL			= "rest";
 
 // server representation of org flags
 ZmOrganizer.FLAG_CHECKED			= "#";
@@ -150,18 +139,18 @@ ZmOrganizer.MAX_NAME_LENGTH			= 128;	// max allowed by server
 ZmOrganizer.MAX_DISPLAY_NAME_LENGTH	= 30;	// max we will show
 
 // color constants (server stores a number)
-ZmOrganizer.C_NONE		= 0;
-ZmOrganizer.C_BLUE		= 1;
-ZmOrganizer.C_CYAN		= 2;
-ZmOrganizer.C_GREEN		= 3;
-ZmOrganizer.C_PURPLE	= 4;
-ZmOrganizer.C_RED		= 5;
-ZmOrganizer.C_YELLOW	= 6;
-ZmOrganizer.C_PINK		= 7;
-ZmOrganizer.C_GRAY		= 8;
-ZmOrganizer.C_ORANGE	= 9;
-ZmOrganizer.MAX_COLOR	= ZmOrganizer.C_ORANGE;
-ZmOrganizer.ORG_DEFAULT_COLOR = ZmOrganizer.C_ORANGE;
+ZmOrganizer.C_NONE				= 0;
+ZmOrganizer.C_BLUE				= 1;
+ZmOrganizer.C_CYAN				= 2;
+ZmOrganizer.C_GREEN				= 3;
+ZmOrganizer.C_PURPLE			= 4;
+ZmOrganizer.C_RED				= 5;
+ZmOrganizer.C_YELLOW			= 6;
+ZmOrganizer.C_PINK				= 7;
+ZmOrganizer.C_GRAY				= 8;
+ZmOrganizer.C_ORANGE			= 9;
+ZmOrganizer.MAX_COLOR			= ZmOrganizer.C_ORANGE;
+ZmOrganizer.ORG_DEFAULT_COLOR 	= ZmOrganizer.C_ORANGE;
 
 // color names
 ZmOrganizer.COLOR_TEXT = {};
@@ -187,49 +176,22 @@ ZmOrganizer.COLOR_CHOICES = [];
 	}
 })();
 
-// whether an org uses colors
-ZmOrganizer.HAS_COLOR = {};
 
-// default color for each org type
-ZmOrganizer.DEFAULT_COLOR = {};
-
-// color overrides by ID
-ZmOrganizer.ORG_COLOR = {};
-
-// App responsible for organizer
-ZmOrganizer.APP = {};
-
-// constructor for organizer
-ZmOrganizer.ORG_CLASS = {};
-
-// package required to construct organizer
-ZmOrganizer.ORG_PACKAGE = {};
-
-// function that creates this organizer
-ZmOrganizer.CREATE_FUNC = {};
-
-// msg key for text for tree view header item
-ZmOrganizer.LABEL = {};
-
-// msg key for text describing contents
-ZmOrganizer.ITEMS_KEY = {};
-
-// type of server data tree that contains this type of organizer
-ZmOrganizer.TREE_TYPE = {};
-
-// views by type
-ZmOrganizer.VIEWS = {};
-// types by view (reverse map of above)
-ZmOrganizer.TYPE = {};
-
-// keys for label "[org] folder"
-ZmOrganizer.FOLDER_KEY = {};
-
-// keys for label "mount [org]"
-ZmOrganizer.MOUNT_KEY = {}
-
-// creation can be deferred to app launch
-ZmOrganizer.DEFERRABLE = {};
+ZmOrganizer.HAS_COLOR 		= {};		// whether an org uses colors
+ZmOrganizer.DEFAULT_COLOR 	= {};		// default color for each org type
+ZmOrganizer.ORG_COLOR 		= {};		// color overrides by ID
+ZmOrganizer.APP 			= {};		// App responsible for organizer
+ZmOrganizer.ORG_CLASS 		= {};		// constructor for organizer
+ZmOrganizer.ORG_PACKAGE 	= {};		// package required to construct organizer
+ZmOrganizer.CREATE_FUNC 	= {};		// function that creates this organizer
+ZmOrganizer.LABEL 			= {};		// msg key for text for tree view header item
+ZmOrganizer.ITEMS_KEY 		= {};		// msg key for text describing contents
+ZmOrganizer.TREE_TYPE 		= {};		// type of server data tree that contains this type of organizer
+ZmOrganizer.VIEWS 			= {};		// views by type
+ZmOrganizer.TYPE 			= {};		// types by view (reverse map of above)
+ZmOrganizer.FOLDER_KEY 		= {};		// keys for label "[org] folder"
+ZmOrganizer.MOUNT_KEY 		= {}		// keys for label "mount [org]"
+ZmOrganizer.DEFERRABLE 		= {};		// creation can be deferred to app launch
 
 // Abstract methods
 
@@ -679,41 +641,7 @@ function(permission) {
 	}
 };
 
-ZmOrganizer.prototype.setIcon = function(icon) {
-	this._icon = icon;
-
-	// TODO: put this in some generic function
-	var type = this.type;
-	var apps = [];
-	for (var id in ZmApp.OVERVIEW_TREES) {
-		var trees = ZmApp.OVERVIEW_TREES[id] || [];
-		for (var i = 0; i < trees.length; i++) {
-			if (trees[i] == type) {
-				apps.push(id);
-				break;
-			}
-		}
-	}
-
-	if (apps.length > 0) {
-		var id = this.id;
-		var icon = this.getIcon();
-		var overviewController = appCtxt.getOverviewController();
-		for (var i = 0; i < apps.length; i++) {
-			var controller = overviewController.getTreeController(type);
-			var app = appCtxt.getApp(apps[i]);
-			var overviewId = app ? app.getOverviewId() : null;
-			var view = overviewId ? controller.getTreeView(overviewId) : null;
-			var item = view && view.getTreeItemById(id);
-			if (item) {
-				item.setImage(icon);
-			}
-		}
-	}
-}
-ZmOrganizer.prototype.getIcon = function() {
-	return this._icon;
-};
+ZmOrganizer.prototype.getIcon = function() {};
 
 // Actions
 
@@ -721,9 +649,16 @@ ZmOrganizer.prototype.getIcon = function() {
 * Assigns the organizer a new name.
 */
 ZmOrganizer.prototype.rename =
-function(name, callback, errorCallback) {
+function(name, callback, errorCallback, batchCmd) {
 	if (name == this.name) { return };
-	this._organizerAction({action: "rename", attrs: {name: name}, callback: callback, errorCallback: errorCallback});
+	var params = {
+		action: "rename",
+		attrs: {name: name},
+		callback: callback,
+		errorCallback: errorCallback,
+		batchCmd: batchCmd
+	};
+	this._organizerAction(params);
 };
 
 ZmOrganizer.prototype.setColor =
@@ -754,7 +689,8 @@ function(newParent) {
 	var newId = (newParent.nId > 0) ? newParent.id : ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	if ((newId == this.id || newId == this.parent.id) ||
 		(this.type == ZmOrganizer.FOLDER && (ZmOrganizer.normalizeId(newId, this.type) == ZmFolder.ID_SPAM)) ||
-		(newParent.isChildOf(this))) {
+		(newParent.isChildOf(this)))
+	{
 		return;
 	}
 
@@ -1199,6 +1135,22 @@ function () {
 ZmOrganizer.prototype.isFeed =
 function () {
 	return (this.url != null);
+};
+
+
+/**
+* Returns true if this folder maps to a datasource. If type is given, returns
+* true if folder maps to a datasource *and* is of the given type
+*
+* @type		[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
+*/
+ZmOrganizer.prototype.isDataSource =
+function(type) {
+	var dsc = appCtxt.getDataSourceCollection();
+	var dataSource = dsc.getByFolderId(this.id);
+	if (!dataSource) return false;
+	if (type) return (dataSource.type == type);
+	return true;
 };
 
 ZmOrganizer.prototype.getOwner =

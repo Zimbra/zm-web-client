@@ -103,8 +103,12 @@ function(treeId, omit) {
 	if (this._treeHash[treeId]) {
 		treeController.clearTreeView(this.id);
 	}
-	var params = {overviewId:this.id, omit:omit, hideEmpty:this.hideEmpty,
-				  showUnread:this.showUnread};
+	var params = {
+		overviewId: this.id,
+		omit: omit,
+		hideEmpty: this.hideEmpty,
+		showUnread: this.showUnread
+	};
 	this._treeHash[treeId] = treeController.show(params);	// render tree view
 };
 

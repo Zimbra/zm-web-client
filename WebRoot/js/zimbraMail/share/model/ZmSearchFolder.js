@@ -71,8 +71,7 @@ function(showUnread, maxLength, noMarkup) {
 
 ZmSearchFolder.prototype.getIcon = 
 function() {
-	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
-	return this._icon || "SearchFolder";
+	return (this.nId == ZmOrganizer.ID_ROOT) ? null : "SearchFolder";
 };
 
 ZmSearchFolder.prototype.getToolTip = function() {};

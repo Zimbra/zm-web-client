@@ -85,10 +85,7 @@ function(name) {
 // Public methods
 ZmZimlet.prototype.getName =
 function() {
-	if (this.id == ZmZimlet.ID_ZIMLET) {
-		return ZmMsg.zimlets;
-	}
-	return this.name;
+	return (this.id == ZmZimlet.ID_ZIMLET) ? ZmMsg.zimlets : this.name;
 };
 
 ZmZimlet.prototype.resetNames =
@@ -112,14 +109,13 @@ function() {
 };
 
 ZmZimlet.prototype.setToolTipText =
-function (control) {
+function(control) {
 	control.setToolTipContent(this._toolTip);
 };
 
 ZmZimlet.prototype.getIcon =
 function() {
-	if (this.id == ZmZimlet.ID_ZIMLET)	{ return null; }
-	return this._icon || this._zimletContext.icon;
+	return (this.id == ZmZimlet.ID_ZIMLET) ? null : this._zimletContext.icon;
 };
 
 ZmZimlet.prototype.getZimletContext =

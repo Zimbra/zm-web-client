@@ -1292,41 +1292,52 @@ ZmAccountsPage.prototype._handleFolderAdd = function(folder) {
 
 // pre-save callbacks
 
-ZmAccountsPage.prototype._handlePreSave = function(continueCallback) {
+ZmAccountsPage.prototype._handlePreSave =
+function(continueCallback) {
 	// make sure that the current object proxy is up-to-date
 	this._setAccountFields(this._currentAccount, this._currentSection);
 
 	// TODO: handle pre-save testing of data sources
-
-	var root = appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmOrganizer.ID_ROOT);
-	var accounts = this._accounts.getArray();
 	var batchCmd;
+	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
+	var accounts = this._accounts.getArray();
 	for (var i = 0; i < accounts.length; i++) {
 		var account = accounts[i];
 		if (account.type == ZmAccount.POP || account.type == ZmAccount.IMAP) {
 			if (account.folderId != ZmOrganizer.ID_INBOX) {
 				var name = account.getName();
+				if (!batchCmd) { batchCmd = new ZmBatchCommand(false); }
 
 				// avoid folder create if it already exists
-				if (root.hasChild(name)) {
-					account.folderId = root.getByName(name).id;
+				var folder = root.getByName(name);
+				if (folder) {
+					account.folderId = folder.id;
 					continue;
 				}
 
-				// batch up create folder request
-				if (!batchCmd) {
-					batchCmd = new ZmBatchCommand(false)
+				// this means user modified name of the folder, so let's rename it
+				folder = appCtxt.getById(account.folderId);
+				if (folder) {
+					if (folder.name != name) {
+						var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+						var actionNode = soapDoc.set("action");
+						actionNode.setAttribute("op", "rename");
+						actionNode.setAttribute("id", folder.id);
+						actionNode.setAttribute("name", name);
+
+						var callback = new AjxCallback(this, this._handleRenameFolderResponse, [account]);
+						batchCmd.addNewRequestParams(soapDoc, callback, callback);
+					}
+				} else {
+					var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
+					var folderEl = soapDoc.set("folder");
+					folderEl.setAttribute("l", ZmOrganizer.ID_ROOT);
+					folderEl.setAttribute("name", name);
+					folderEl.setAttribute("fie", "1"); // fetch-if-exists
+
+					var callback = new AjxCallback(this, this._handleCreateFolderResponse, [account]);
+					batchCmd.addNewRequestParams(soapDoc, callback, callback);
 				}
-
-				var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
-				var folderEl = soapDoc.set("folder");
-				folderEl.setAttribute("l", ZmOrganizer.ID_ROOT);
-				folderEl.setAttribute("name", name);
-				folderEl.setAttribute("fie", "1"); // fetch-if-exists
-
-				var callback = new AjxCallback(this, this._handleCreateFolderResponse, [account]);
-				var errorCallback = callback;
-				batchCmd.addNewRequestParams(soapDoc, callback, errorCallback);
 			}
 		}
 	}
@@ -1355,14 +1366,25 @@ function(dataSource, result) {
 	}
 };
 
-ZmAccountsPage.prototype._handlePreSaveFinish = function(continueCallback, result, exceptions) {
+ZmAccountsPage.prototype._handleRenameFolderResponse =
+function(dataSource, result) {
+	var resp = result && result._data && result._data.FolderActionResponse;
+	if (!resp) {
+		// HACK: Don't know a better way to set an error condition
+		this.__hack_preSaveSuccess = false;
+	}
+};
+
+ZmAccountsPage.prototype._handlePreSaveFinish =
+function(continueCallback, result, exceptions) {
 	// HACK: Don't know a better way to set an error condition
 	continueCallback.run(this.__hack_preSaveSuccess && (!exceptions || exceptions.length == 0));
 };
 
 // save callbacks
 
-ZmAccountsPage.prototype._handleSaveAccount = function(account, resp) {
+ZmAccountsPage.prototype._handleSaveAccount =
+function(account, resp) {
 	delete account._dirty;
 };
 

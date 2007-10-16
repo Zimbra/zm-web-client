@@ -110,11 +110,17 @@ function(params) {
 		var acct = appCtxt.getActiveAccount();
 		accountName = (acct && acct.id != ZmZimbraAccount.DEFAULT_ID) ? acct.name : null;
 	}
-	var changeToken = accountName ? null : this._changeToken;
-	var cmdParams = {soapDoc:params.soapDoc, accountName:accountName, useXml:this._useXml,
-					 changeToken:changeToken, asyncMode:params.asyncMode, callback:asyncCallback,
-					 logRequest:this._logRequest, highestNotifySeen:this._highestNotifySeen,
-					 skipAuthCheck:params.skipAuthCheck};
+	var cmdParams = {
+		soapDoc: params.soapDoc,
+		accountName: accountName,
+		useXml: this._useXml,
+		changeToken: (accountName ? null : this._changeToken),
+		asyncMode: params.asyncMode,
+		callback: asyncCallback,
+		logRequest: this._logRequest,
+		highestNotifySeen: this._highestNotifySeen,
+		skipAuthCheck: params.skipAuthCheck
+	};
 
 	var methodName = params.soapDoc ? params.soapDoc._methodEl.tagName : "[unknown]";
 	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + methodName);
@@ -144,11 +150,9 @@ function(params) {
 		this._handleResponseSendRequest(params, new ZmCsfeResult(ex, true));
 		return;
 	}
-	if (params.asyncMode) {
-		return reqId;
-	} else {
-		return this._handleResponseSendRequest(params, response);
-	}
+
+	return (params.asyncMode)
+		? reqId : (this._handleResponseSendRequest(params, response));
 };
 
 ZmRequestMgr.prototype._handleResponseSendRequest =
@@ -230,8 +234,8 @@ function(params, result) {
 
 ZmRequestMgr.prototype.cancelRequest =
 function(reqId, errorCallback, noBusyOverlay) {
-	if (!this._pendingRequests[reqId]) return;
-	if (this._pendingRequests[reqId].state == ZmRequestMgr._RESPONSE) return;
+	if (!this._pendingRequests[reqId]) { return; }
+	if (this._pendingRequests[reqId].state == ZmRequestMgr._RESPONSE) { return; }
 
 	this._pendingRequests[reqId].state = ZmRequestMgr._CANCEL;
 	if (!noBusyOverlay) {
@@ -273,10 +277,11 @@ function(hdr) {
 		this._highestNotifySeen = 0;
 		this._refreshHandler(hdr.context.refresh);
 	}
-    //for zdesktop to display online | offline and to prompt changepassword
-    if(hdr && hdr.context.zdsync) {
-        this._offlineHandler(hdr.context.zdsync);
-    }
+
+	// for zdesktop to display online | offline and to prompt changepassword
+	if (hdr && hdr.context.zdsync) {
+		this._offlineHandler(hdr.context.zdsync);
+	}
 };
 
 /**
@@ -285,21 +290,24 @@ function(hdr) {
  *
  * @param zdsync	[object]	zdsync block (JSON)
  */
-ZmRequestMgr.prototype._offlineHandler = function(zdsync) {
-    var offlineStat = document.getElementById("skin_container_offline_status");
-    if(zdsync.account[0].state == "RUNNING") {
-        offlineStat.innerHTML = "<span class='ImgImAvailable' style='padding-left: 18px;padding-bottom:3px;'>online</span>";
-    } else if(zdsync.account[0].state == "OFFLINE") {
-        offlineStat.innerHTML = "<span class='ImgOffline' style='padding-left: 18px; padding-bottom:3px;'>offline</span>";
-    } else if(zdsync.account[0].state == "ONLINE") {
-        offlineStat.innerHTML = "<span class='ImgImAvailable' style='padding-left: 18px; padding-bottom:3px;'>online</span>";
-    } else if(zdsync.account[0].state == "ERROR") {
-        offlineStat.innerHTML = "<span class='ImgOffline' style='padding-left: 18px; padding-bottom:3px;'>offline</span>";
-        if(zdsync.account[0].error[0].code == "REMOTEAUTH") {
-            alert("Your account password has been changed. Update the account password in offine client to sync.");
-            window.location.href = "http://localhost:7633/zimbra/?chng=1";
-        }
-    }
+ZmRequestMgr.prototype._offlineHandler =
+function(zdsync) {
+	var offlineStat = document.getElementById("skin_container_offline_status");
+	if (offlineStat) {
+		if (zdsync.account[0].state == "RUNNING") {
+			offlineStat.innerHTML = "<span class='ImgImAvailable' style='padding-left: 18px;padding-bottom:3px;'>online</span>";
+		} else if (zdsync.account[0].state == "OFFLINE") {
+			offlineStat.innerHTML = "<span class='ImgOffline' style='padding-left: 18px; padding-bottom:3px;'>offline</span>";
+		} else if (zdsync.account[0].state == "ONLINE") {
+			offlineStat.innerHTML = "<span class='ImgImAvailable' style='padding-left: 18px; padding-bottom:3px;'>online</span>";
+		} else if (zdsync.account[0].state == "ERROR") {
+			offlineStat.innerHTML = "<span class='ImgOffline' style='padding-left: 18px; padding-bottom:3px;'>offline</span>";
+			if (zdsync.account[0].error[0].code == "REMOTEAUTH") {
+				alert("Your account password has been changed. Update the account password in offine client to sync.");
+				window.location.href = "http://localhost:7633/zimbra/?chng=1";
+			}
+		}
+	}
 };
 
 /**

@@ -25,6 +25,7 @@ ZmDataSource = function(type, id, list) {
 	this.identity.save = null;
 	this.identity.doDelete = null;
 };
+
 ZmDataSource.prototype = new ZmAccount;
 ZmDataSource.prototype.constructor = ZmDataSource;
 
@@ -96,33 +97,34 @@ ZmDataSource.prototype.pollingInterval = ZmDataSource.POLL_NEVER;
 //
 
 /** NOTE: Email is same as the identity's from address. */
-ZmDataSource.prototype.setEmail = function(email) {
-	var identity = this.getIdentity();
-	identity.setField(ZmIdentity.SEND_FROM_ADDRESS, email);
+ZmDataSource.prototype.setEmail =
+function(email) {
+	this.identity.setField(ZmIdentity.SEND_FROM_ADDRESS, email);
 };
 
-ZmDataSource.prototype.getEmail = function() {
-	var identity = this.getIdentity();
-	return identity.getField(ZmIdentity.SEND_FROM_ADDRESS);
+ZmDataSource.prototype.getEmail =
+function() {
+	return this.identity.getField(ZmIdentity.SEND_FROM_ADDRESS);
 };
 
-ZmDataSource.prototype.setFolderId = function(folderId) {
+ZmDataSource.prototype.setFolderId =
+function(folderId) {
 	// TODO: Is there a better way to do this?
 	//       I basically need to have the folder selector on the options
 	//       page have a value of -1 but allow other code to see that and
 	//       fill in the correct folder id. But I don't want it to
 	//       overwrite that value once set.
-	if (folderId == -1 && this.folderId != ZmOrganizer.ID_INBOX) {
-		return;
-	}
+	if (folderId == -1 && this.folderId != ZmOrganizer.ID_INBOX) { return; }
 	this.folderId = folderId;
 };
 
-ZmDataSource.prototype.getFolderId = function() {
+ZmDataSource.prototype.getFolderId =
+function() {
 	return this.folderId;
 };
 
-ZmDataSource.prototype.getIdentity = function() {
+ZmDataSource.prototype.getIdentity =
+function() {
 	return this.identity;
 };
 
@@ -141,10 +143,9 @@ function(callback, errorCallback, batchCommand) {
 
 		dsrc.setAttribute(aname, String(pvalue));
 	}
-	var identity = this.getIdentity();
 	for (var aname in ZmDataSource.IDENTITY_ATTRS) {
 		var pname = ZmDataSource.IDENTITY_ATTRS[aname];
-		var pvalue = identity[pname];
+		var pvalue = this.identity[pname];
 		if (!pvalue) continue;
 
 		dsrc.setAttribute(aname, String(pvalue));
@@ -182,17 +183,15 @@ function(callback, errorCallback, batchCommand) {
 			: this[pname];
 		dsrc.setAttribute(aname, String(avalue));
 	}
-	var identity = this.getIdentity();
 	for (var aname in ZmDataSource.IDENTITY_ATTRS) {
 		var pname = ZmDataSource.IDENTITY_ATTRS[aname];
-		if (!identity.hasOwnProperty(pname)) continue;
+		if (!this.identity.hasOwnProperty(pname)) continue;
 
-		var avalue = identity[pname];
+		var avalue = this.identity[pname];
 		dsrc.setAttribute(aname, String(avalue));
 	}
 
-	var args = [this._object_ ? this._object_.folderId : this.folderId, callback]
-	var respCallback = new AjxCallback(this, this._handleSaveResponse, args);
+	var respCallback = new AjxCallback(this, this._handleSaveResponse, [callback]);
 	if (batchCommand) {
 		var execFrame = null; // REVISIT: What should this be?
 		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback, execFrame);
@@ -257,17 +256,14 @@ function(callback, errorCallback, batchCommand) {
 	return appCtxt.getAppController().sendRequest(params);
 };
 
-ZmDataSource.prototype.getPort = function() {
+ZmDataSource.prototype.getPort =
+function() {
 	return this.port || this.getDefaultPort();
 };
 
-ZmDataSource.prototype.setFromJson = function(obj) {
+ZmDataSource.prototype.setFromJson =
+function(obj) {
 	// data source fields
-	var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
-	var organizer = tree && tree.getById(this.folderId);
-	if (organizer) {
-		organizer.setIcon(null);
-	}
 	for (var aname in ZmDataSource.DATASOURCE_ATTRS) {
 		var avalue = obj[aname];
 		if (avalue == null) continue;
@@ -278,13 +274,8 @@ ZmDataSource.prototype.setFromJson = function(obj) {
 		var pname = ZmDataSource.DATASOURCE_ATTRS[aname];
 		this[pname] = avalue;
 	}
-	var organizer = tree && tree.getById(this.folderId);
-	if (organizer) {
-		organizer.setIcon(this.type == ZmAccount.POP ? "POPAccount" : "IMAPAccount");
-	}
 
 	// pseudo-identity fields
-	var identity = this.getIdentity();
 	for (var aname in ZmDataSource.IDENTITY_ATTRS) {
 		var avalue = obj[aname];
 		if (avalue == null) continue;
@@ -293,7 +284,7 @@ ZmDataSource.prototype.setFromJson = function(obj) {
 		}
 
 		var pname = ZmDataSource.IDENTITY_ATTRS[aname];
-		identity[pname] = avalue;
+		this.identity[pname] = avalue;
 	}
 	this._setupIdentity();
 };
@@ -303,17 +294,20 @@ ZmDataSource.prototype.setFromJson = function(obj) {
 //
 
 
-ZmDataSource.prototype._setupIdentity = function() {
+ZmDataSource.prototype._setupIdentity =
+function() {
 	this.identity.useWhenSentTo = true;
 	this.identity.whenSentToAddresses = [ this.getEmail() ];
 	this.identity.name = this.name;
 };
 
-ZmDataSource.prototype._loadFromDom = function(data) {
+ZmDataSource.prototype._loadFromDom =
+function(data) {
 	this.setFromJson(data);
 };
 
-ZmDataSource.prototype._handleCreateResponse = function(callback, result) {
+ZmDataSource.prototype._handleCreateResponse =
+function(callback, result) {
 	var resp = result._data.CreateDataSourceResponse;
 	this.id = resp[this.ELEMENT_NAME][0].id;
 	this.identity.id = this.id;
@@ -323,12 +317,24 @@ ZmDataSource.prototype._handleCreateResponse = function(callback, result) {
 
 	appCtxt.getDataSourceCollection().add(this);
 
+	// reset the icon in the tree view if POP account since the first time it
+	// was created, we didnt know it was a data source
+	if (this.type == ZmAccount.POP && this.folderId != ZmFolder.ID_INBOX) {
+		var overviewId = appCtxt.getApp(ZmApp.MAIL).getOverviewId();
+		var treeView = appCtxt.getOverviewController().getTreeView(overviewId, ZmOrganizer.FOLDER);
+		var treeItem = treeView ? treeView.getTreeItemById(this.folderId) : null;
+		if (treeItem) {
+			treeItem.setImage("POPAccount");
+		}
+	}
+
 	if (callback) {
 		callback.run();
 	}
 };
 
-ZmDataSource.prototype._handleSaveResponse = function(folderId, callback, result) {
+ZmDataSource.prototype._handleSaveResponse =
+function(callback, result) {
 	delete this._dirty;
 
 	var collection = appCtxt.getDataSourceCollection();
@@ -337,23 +343,13 @@ ZmDataSource.prototype._handleSaveResponse = function(folderId, callback, result
 	collection.remove(this);
 	collection.add(this);
 
-	// update icon
-	var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
-	var organizer = tree && tree.getById(folderId);
-	if (organizer) {
-		organizer.setIcon(null);
-	}
-	var organizer = tree && tree.getById(this.folderId);
-	if (organizer) {
-		organizer.setIcon(this.type == ZmAccount.POP ? "POPAccount" : "IMAPAccount");
-	}
-
 	if (callback) {
 		callback.run();
 	}
 };
 
-ZmDataSource.prototype._handleDeleteResponse = function(callback, result) {
+ZmDataSource.prototype._handleDeleteResponse =
+function(callback, result) {
 	appCtxt.getDataSourceCollection().remove(this);
 
 	if (callback) {

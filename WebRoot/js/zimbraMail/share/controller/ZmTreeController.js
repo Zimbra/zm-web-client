@@ -303,12 +303,17 @@ function(treeItem, organizer) {
 ZmTreeController.prototype._initializeTreeView =
 function(overviewId) {
 	var overview = this._opc.getOverview(overviewId);
-	var dragSrc = overview.dndSupported ? this._dragSrc : null;
-	var dropTgt = overview.dndSupported ? this._dropTgt : null;
-	var params = {parent:overview, overviewId:overviewId, type:this.type,
-				  headerClass:overview.headerClass, dragSrc:dragSrc, dropTgt:dropTgt,
-				  treeStyle:this.getTreeStyle() || overview.treeStyle,
-				  allowedTypes:this._getAllowedTypes(), allowedSubTypes:this._getAllowedSubTypes()};
+	var params = {
+		parent: overview,
+		overviewId: overviewId,
+		type: this.type,
+		headerClass: overview.headerClass,
+		dragSrc: (overview.dndSupported ? this._dragSrc : null),
+		dropTgt: (overview.dndSupported ? this._dropTgt : null),
+		treeStyle: (this.getTreeStyle() || overview.treeStyle),
+		allowedTypes: this._getAllowedTypes(),
+		allowedSubTypes: this._getAllowedSubTypes()
+	};
 	var treeView = this._createTreeView(params);
 	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
 	
@@ -515,13 +520,18 @@ function(organizer) {
  */
 ZmTreeController.prototype._treeViewListener =
 function(ev) {
-	if (ev.detail != DwtTree.ITEM_ACTIONED && ev.detail != DwtTree.ITEM_SELECTED && ev.detail != DwtTree.ITEM_DBL_CLICKED) return;
-	
+	if (ev.detail != DwtTree.ITEM_ACTIONED &&
+		ev.detail != DwtTree.ITEM_SELECTED &&
+		ev.detail != DwtTree.ITEM_DBL_CLICKED)
+	{
+		return;
+	}
+
 	this._actionedTreeItem = ev.item;
-	
+
 	var type = ev.item.getData(ZmTreeView.KEY_TYPE);
-	if (!type) return;
-	
+	if (!type) { return; }
+
 	var item = ev.item.getData(Dwt.KEY_OBJECT);
 	if (item) {
 		this._actionedOrganizer = item;
@@ -533,18 +543,18 @@ function(ev) {
 			return;
 		}
 	}
+
 	var id = ev.item.getData(Dwt.KEY_ID);
 	var overviewId = this._actionedOverviewId = ev.item.getData(ZmTreeView.KEY_ID);
-	if (!overviewId) {
-		DBG.println(AjxDebug.DBG1, "No overview ID for " + item.toString() + " with ID: " + id);
-	}
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) { return; }
 
 	if (ev.detail == DwtTree.ITEM_ACTIONED) {
 		// right click
 		if (overview.actionSupported) {
-			var actionMenu = (item.nId == ZmOrganizer.ID_ROOT) ? this._getHeaderActionMenu(ev) : this._getActionMenu(ev);
+			var actionMenu = (item.nId == ZmOrganizer.ID_ROOT || item.isDataSource(ZmAccount.IMAP)) 
+				? this._getHeaderActionMenu(ev)
+				: this._getActionMenu(ev);
 			if (actionMenu) {
 				this.resetOperations(actionMenu, type, id);
 				actionMenu.popup(0, ev.docX, ev.docY);

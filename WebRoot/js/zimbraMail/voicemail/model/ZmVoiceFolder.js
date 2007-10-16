@@ -95,14 +95,14 @@ function() {
 		case ZmVoiceFolder.MISSED_CALL:		{ return "MissedCalls"; }
 		case ZmVoiceFolder.VOICEMAIL:		{ return "Voicemail"; }
 		case ZmVoiceFolder.TRASH:			{ return "Trash"; }
+		default:							{ return null; }
 	}
-	return this._icon;
 };
 
 ZmVoiceFolder.prototype.getSearchType =
 function() {
 	return (this.callType == ZmVoiceFolder.VOICEMAIL) ||
-		   (this.callType == ZmVoiceFolder.TRASH)? ZmItem.VOICEMAIL : ZmItem.CALL;
+		   (this.callType == ZmVoiceFolder.TRASH) ? ZmItem.VOICEMAIL : ZmItem.CALL;
 };
 
 ZmVoiceFolder.prototype.getSearchQuery =
