@@ -775,7 +775,7 @@ function() {
 	var buddy;
 	if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
 		var roster = AjxDispatcher.run("GetRoster");
-		buddy = roster.getRosterItem(this.getIMAddress());
+		buddy = roster.getRosterItem(this.getIMAddress(), true);
 	}
 	return buddy;
 };

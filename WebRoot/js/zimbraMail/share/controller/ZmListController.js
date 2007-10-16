@@ -634,7 +634,7 @@ function(ev) {
 	imAddresses.foreach(function(addr) {
 		if (addr && !seen[addr]) {
 			seen[addr] = true;
-			var item = roster.getRosterItem(addr);
+			var item = roster.getRosterItem(addr, true);
 			if (item)
 				ZmChatMultiWindowView.getInstance().chatWithRosterItem(item);
 		}

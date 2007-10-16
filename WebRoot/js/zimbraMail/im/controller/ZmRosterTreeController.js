@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -147,7 +147,10 @@ function(ev) {
 			{ onAutocomplete: AjxCallback.simpleClosure(function(contact, dlg){
 				dlg.popdown();
 				var addr = contact.getIMAddress();
-				var roster = AjxDispatcher.run("GetRoster");
+                                addr = ZmImAddress.parse(addr);
+                                var roster = AjxDispatcher.run("GetRoster");
+                                if (addr)
+                                        addr = roster.makeServerAddress(addr.screenName, addr.service);
 // XXX: we can't look for a suitable address since the server doesn't return the default domain.  ugh.
 // 				if (!addr) {
 // 					var fields = [ ZmContact.F_email,
@@ -193,7 +196,8 @@ function(addr, rname, groups) {
 ZmRosterTreeController.prototype._imCreateContactListener = function(ev) {
 	var item = ev.buddy;
 	var contact = new ZmContact(null);
-	contact.setAttr(ZmContact.F_imAddress1, item.getAddress());
+        var roster = AjxDispatcher.run("GetRoster");
+	contact.setAttr(ZmContact.F_imAddress1, roster.makeGenericAddress(item.getAddress()));
 	AjxDispatcher.run("GetContactController").show(contact, true);
 };
 
@@ -204,11 +208,12 @@ ZmRosterTreeController.prototype._imAddToContactListener = function(ev) {
 			onAutocomplete: AjxCallback.simpleClosure(function(contact, dlg) {
 				dlg.popdown();
 				var fields = [ ZmContact.F_imAddress1, ZmContact.F_imAddress2, ZmContact.F_imAddress3 ];
+                                var roster = AjxDispatcher.run("GetRoster");
 				for (var i = 0; i < fields.length; ++i) {
 					var f = fields[i];
 					var orig = contact.getAttr(f);
 					if (!orig || !/\S/.test(orig)) {
-						contact.setAttr(f, item.getAddress());
+						contact.setAttr(f, roster.makeGenericAddress(item.getAddress()));
 						AjxDispatcher.run("GetContactController").show(contact, true);
 						// reset the attribute now so that
 						// ZmContactView thinks it's been

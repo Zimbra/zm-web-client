@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -512,6 +512,10 @@ function() {
 			this._fileAsSelect.setSelectedValue(1);
 		}
 	}
+
+        this._imAddress1Entry.setValue(this._attr[ZmContact.F_imAddress1]);
+        this._imAddress2Entry.setValue(this._attr[ZmContact.F_imAddress2]);
+        this._imAddress3Entry.setValue(this._attr[ZmContact.F_imAddress3]);
 };
 
 ZmContactView.prototype._setFields =
@@ -558,6 +562,21 @@ function() {
 			}
 		}
 	}
+
+        this._attr[ZmContact.F_imAddress1] = this._imAddress1Entry.getValue();
+        this._attr[ZmContact.F_imAddress2] = this._imAddress2Entry.getValue();
+        this._attr[ZmContact.F_imAddress3] = this._imAddress3Entry.getValue();
+};
+
+ZmContactView.prototype._addImAddressEntries = function() {
+        this._imAddress1Entry = new ZmImAddressEntry(this);
+        this._imAddress1Entry.reparentHtmlElement(this._imAddress1Id);
+
+        this._imAddress2Entry = new ZmImAddressEntry(this);
+        this._imAddress2Entry.reparentHtmlElement(this._imAddress2Id);
+
+        this._imAddress3Entry = new ZmImAddressEntry(this);
+        this._imAddress3Entry.reparentHtmlElement(this._imAddress3Id);
 };
 
 ZmContactView.prototype._createHtml =
@@ -587,11 +606,18 @@ function(contact) {
 	this._tagCellId			= this._htmlElId + "_tags";
 	this._titleCellId		= this._htmlElId + "_title";
 	this._imageCellId		= this._htmlElId + "_image";
-	
+
+        this._imAddress1Id = this._htmlElId + "_imAddress1";
+        this._imAddress2Id = this._htmlElId + "_imAddress2";
+        this._imAddress3Id = this._htmlElId + "_imAddress3";
+
 	var subs = {
 		id: this._htmlElId,
 		fileAsSelectId: this._fileAsSelectCellId,
-		folderSelectId: this._folderCellId
+		folderSelectId: this._folderCellId,
+                imAddress1Id: this._imAddress1Id,
+                imAddress2Id: this._imAddress2Id,
+                imAddress3Id: this._imAddress3Id
 	};
 
 	this._fields = [];
@@ -610,13 +636,14 @@ function(contact) {
 
 		this._fields.push(document.getElementsByName(this._htmlElId + "_name_" + idx));
 	}
-	
+
 	this._contactTabView.switchToTab(defaultTab);
-	
+
 	// add widgets
 	this._addSelectOptions();
 	this._addDateCalendars();
-	
+        this._addImAddressEntries();
+
 	this._handleImage();
 
 	// add onKeyUp handlers
@@ -640,10 +667,10 @@ function(tabIdx) {
 
 ZmContactView.prototype._handleImage =
 function() {
-	
+
 	this._image = document.getElementById(this._imageCellId + "_img");
 	this._imageDiv = document.getElementById(this._imageCellId + "_imgdiv");
-	
+
 	var imageInput = this._imageInput = document.getElementById(this._imageCellId + "_input");
 	if (imageInput) {
 		imageInput.onchange = AjxCallback.simpleClosure(this._uploadImage, this);
@@ -663,10 +690,10 @@ function() {
 
 ZmContactView.prototype._updateImage =
 function(status,attId) {
-	
+
 	AjxImg.setImage(this._imageDiv.parentNode,"Person_48",true,true);
 	Dwt.setVisible(this._imageDiv,true);
-	
+
 	this._image.setAttribute("src", ["/service/content/proxy?aid=",attId].join(""));
 	this._imageInput.setAttribute("_aid",attId);
 };

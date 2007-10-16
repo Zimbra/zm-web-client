@@ -66,8 +66,14 @@ function() {
 };
 
 ZmRoster.prototype.getRosterItem =
-function(addr) {
-	return this.getRosterItemList().getByAddr(addr);
+function(addr, isGenericAddr) {
+        if (isGenericAddr) {
+                addr = ZmImAddress.parse(addr);
+                if (addr)
+                        addr = this.makeServerAddress(addr.screenName, addr.service);
+        }
+        if (addr)
+	        return this.getRosterItemList().getByAddr(addr);
 };
 
 ZmRoster.prototype.getRosterItemList =
@@ -517,9 +523,16 @@ ZmRoster.prototype.getGateways = function() {
 };
 
 ZmRoster.prototype.makeServerAddress = function(addr, type) {
-	if (type == null || /^xmpp$/i.test(type))
+	if (type == null || /^(xmpp|local)$/i.test(type))
 		return addr;
 	return addr + "@" + this.getGatewayByType(type).domain;
+};
+
+ZmRoster.prototype.makeGenericAddress = function(addr) {
+        addr = this.breakDownAddress(addr);
+        if (addr.type.toLowerCase() == "xmpp") // XXX
+                addr.type = "local";
+        return ZmImAddress.make(addr.type, addr.addr);
 };
 
 ZmRoster.prototype.breakDownAddress = function(addr) {
