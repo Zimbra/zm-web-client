@@ -233,7 +233,11 @@ ZmTreeView.prototype._render =
 function(params) {
 	var org = params.organizer;
 	var children = org.children.getArray();
-	children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
+	if (org.isDataSource(ZmAccount.IMAP)) {
+		children.sort(ZmImapAccount.sortCompare);
+	} else {
+		children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
+	}
 	DBG.println(AjxDebug.DBG3, "Render: " + org.name + ": " + children.length);
 	var addSep = true;
 	for (var i = 0; i < children.length; i++) {

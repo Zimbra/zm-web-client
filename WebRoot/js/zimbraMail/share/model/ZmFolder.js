@@ -46,50 +46,50 @@ ZmFolder = function(params) {
 ZmFolder.prototype = new ZmOrganizer;
 ZmFolder.prototype.constructor = ZmFolder;
 
-// path separator
-ZmFolder.SEP = "/";
 
-// system folders (see Mailbox.java in ZimbraServer for positive integer constants)
-ZmFolder.ID_OTHER			= -2;	// used for tcon value (see below)
-ZmFolder.ID_SEP				= -1;	// separator
-ZmFolder.ID_ROOT			= ZmOrganizer.ID_ROOT;
-ZmFolder.ID_INBOX			= ZmOrganizer.ID_INBOX;
-ZmFolder.ID_TRASH			= ZmOrganizer.ID_TRASH;
-ZmFolder.ID_SPAM			= ZmOrganizer.ID_SPAM;
-ZmFolder.ID_SENT			= 5;
-ZmFolder.ID_DRAFTS			= 6;
-ZmFolder.ID_CONTACTS		= ZmOrganizer.ID_ADDRBOOK;
-ZmFolder.ID_AUTO_ADDED		= ZmOrganizer.ID_AUTO_ADDED;
-ZmFolder.ID_TAGS	 		= 8;
-ZmFolder.ID_TASKS			= ZmOrganizer.ID_TASKS;
-ZmFolder.ID_OUTBOX	 		= ZmOrganizer.ID_OUTBOX;
-ZmFolder.ID_CHATS	 		= ZmOrganizer.ID_CHATS;
+ZmFolder.SEP 									= "/";							// path separator
+
+// system folders (see Mailbox.java in ZimbraServer for positive int consts)
+ZmFolder.ID_OTHER								= -2;							// used for tcon value (see below)
+ZmFolder.ID_SEP									= -1;							// separator
+ZmFolder.ID_ROOT								= ZmOrganizer.ID_ROOT;
+ZmFolder.ID_INBOX								= ZmOrganizer.ID_INBOX;
+ZmFolder.ID_TRASH								= ZmOrganizer.ID_TRASH;
+ZmFolder.ID_SPAM								= ZmOrganizer.ID_SPAM;
+ZmFolder.ID_SENT								= 5;
+ZmFolder.ID_DRAFTS								= 6;
+ZmFolder.ID_CONTACTS							= ZmOrganizer.ID_ADDRBOOK;
+ZmFolder.ID_AUTO_ADDED							= ZmOrganizer.ID_AUTO_ADDED;
+ZmFolder.ID_TAGS	 							= 8;
+ZmFolder.ID_TASKS								= ZmOrganizer.ID_TASKS;
+ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
+ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
 
 // system folder names
 ZmFolder.MSG_KEY = {};
-ZmFolder.MSG_KEY[ZmFolder.ID_INBOX]			= "inbox";
-ZmFolder.MSG_KEY[ZmFolder.ID_TRASH]			= "trash";
-ZmFolder.MSG_KEY[ZmFolder.ID_SPAM]			= "junk";
-ZmFolder.MSG_KEY[ZmFolder.ID_SENT]			= "sent";
-ZmFolder.MSG_KEY[ZmFolder.ID_DRAFTS]		= "drafts";
-ZmFolder.MSG_KEY[ZmFolder.ID_CONTACTS]		= "contacts";
-ZmFolder.MSG_KEY[ZmFolder.ID_AUTO_ADDED]	= "emailedContacts";
-ZmFolder.MSG_KEY[ZmFolder.ID_TASKS]			= "tasks";
-ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]			= "tags";
-ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]	= "calendar";
-ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
-ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
-ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]		= "chats";
+ZmFolder.MSG_KEY[ZmFolder.ID_INBOX]				= "inbox";
+ZmFolder.MSG_KEY[ZmFolder.ID_TRASH]				= "trash";
+ZmFolder.MSG_KEY[ZmFolder.ID_SPAM]				= "junk";
+ZmFolder.MSG_KEY[ZmFolder.ID_SENT]				= "sent";
+ZmFolder.MSG_KEY[ZmFolder.ID_DRAFTS]			= "drafts";
+ZmFolder.MSG_KEY[ZmFolder.ID_CONTACTS]			= "contacts";
+ZmFolder.MSG_KEY[ZmFolder.ID_AUTO_ADDED]		= "emailedContacts";
+ZmFolder.MSG_KEY[ZmFolder.ID_TASKS]				= "tasks";
+ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]				= "tags";
+ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]		= "calendar";
+ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]		= "notebook";
+ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]		= "briefcase";
+ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]			= "chats";
 
 // system folder icons
 ZmFolder.ICON = {};
-ZmFolder.ICON[ZmFolder.ID_INBOX]	= "Inbox";
-ZmFolder.ICON[ZmFolder.ID_TRASH]	= "Trash";
-ZmFolder.ICON[ZmFolder.ID_SPAM]		= "SpamFolder";
-ZmFolder.ICON[ZmFolder.ID_SENT]		= "SentFolder";
-ZmFolder.ICON[ZmFolder.ID_OUTBOX]	= "Outbox";
-ZmFolder.ICON[ZmFolder.ID_DRAFTS]	= "DraftFolder";
-ZmFolder.ICON[ZmFolder.ID_CHATS]	= "ChatFolder";
+ZmFolder.ICON[ZmFolder.ID_INBOX]				= "Inbox";
+ZmFolder.ICON[ZmFolder.ID_TRASH]				= "Trash";
+ZmFolder.ICON[ZmFolder.ID_SPAM]					= "SpamFolder";
+ZmFolder.ICON[ZmFolder.ID_SENT]					= "SentFolder";
+ZmFolder.ICON[ZmFolder.ID_OUTBOX]				= "Outbox";
+ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
+ZmFolder.ICON[ZmFolder.ID_CHATS]				= "ChatFolder";
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = {};
@@ -108,26 +108,26 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = {};
-ZmFolder.SORT_ORDER[ZmFolder.ID_INBOX]		= 1;
-ZmFolder.SORT_ORDER[ZmFolder.ID_CHATS]		= 2;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]		= 3;
-ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]		= 4;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]		= 5;
-ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]		= 6;
-ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]		= 7;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]		= 8;
+ZmFolder.SORT_ORDER[ZmFolder.ID_INBOX]			= 1;
+ZmFolder.SORT_ORDER[ZmFolder.ID_CHATS]			= 2;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]			= 3;
+ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]			= 4;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]			= 5;
+ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 6;
+ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 7;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 8;
 
-// character codes for "tcon" attribute in conv action request, which
-// controls which folders are affected
+// character codes for "tcon" attribute in conv action request, which controls
+// which folders are affected
 ZmFolder.TCON_CODE = {};
-ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]	= "t";
-ZmFolder.TCON_CODE[ZmFolder.ID_SPAM]	= "j";
-ZmFolder.TCON_CODE[ZmFolder.ID_SENT]	= "s";
-ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]	= "o";
+ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]			= "t";
+ZmFolder.TCON_CODE[ZmFolder.ID_SPAM]			= "j";
+ZmFolder.TCON_CODE[ZmFolder.ID_SENT]			= "s";
+ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]			= "o";
 
 // folders that look like mail folders that we don't want to show
 ZmFolder.HIDE_ID = {};
-ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS]	= true;
+ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS]			= true;
 
 // Hide folders migrated from Outlook mailbox
 ZmFolder.HIDE_NAME = {};
@@ -137,7 +137,7 @@ ZmFolder.HIDE_NAME = {};
 //ZmFolder.HIDE_NAME["Tasks"]		= true;
 
 // The extra-special, visible but untouchable outlook folder
-ZmFolder.SYNC_ISSUES = "Sync Issues";
+ZmFolder.SYNC_ISSUES 							= "Sync Issues";
 
 // map name to ID
 ZmFolder.QUERY_ID = {};
@@ -148,7 +148,8 @@ ZmFolder.QUERY_ID = {};
 })();
 
 /**
-* Comparison function for folders. Intended for use on a list of user folders through a call to Array.sort().
+* Comparison function for folders. Intended for use on a list of user folders
+* through a call to Array.sort().
 *
 * @param	folderA		a folder
 * @param	folderB		a folder
@@ -157,6 +158,21 @@ ZmFolder.sortCompare =
 function(folderA, folderB) {
 	var check = ZmOrganizer.checkSortArgs(folderA, folderB);
 	if (check != null) { return check; }
+
+	// offline client wants POP folders above all else *unless* we are POP'ing into Inbox
+	if (appCtxt.get(ZmSetting.OFFLINE)) {
+		if (folderA.isDataSource(ZmAccount.POP)) {
+			if (folderA.id == ZmFolder.ID_INBOX) return -1;
+			if (folderB.isDataSource(ZmAccount.POP)) {
+				if (folderA.name.toLowerCase() > folderB.name.toLowerCase()) { return 1; }
+				if (folderA.name.toLowerCase() < folderB.name.toLowerCase()) { return -1; }
+				return 0;
+			}
+			return -1;
+		} else if (folderB.isDataSource(ZmAccount.POP)) {
+			return 1;
+		}
+	}
 
 	if (ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) {
 		return (ZmFolder.SORT_ORDER[folderA.nId] - ZmFolder.SORT_ORDER[folderB.nId]);
@@ -190,6 +206,20 @@ function(name) {
 		return ZmMsg.folderNameReserved;
 	}
 
+	return null;
+};
+
+/**
+* Helper method which returns the "well-known" ID for a given folder name
+*/
+ZmFolder.getIdForName =
+function(folderName) {
+	var name = folderName.toLowerCase();
+	for (var i in ZmFolder.MSG_KEY) {
+		if (ZmFolder.MSG_KEY[i] == name) {
+			return i;
+		}
+	}
 	return null;
 };
 
@@ -337,6 +367,14 @@ function() {
 	if (this.isFeed())						{ return "RSS"; }
 	if (this.isRemote())					{ return "SharedMailFolder"; }
 	if (this.isDataSource(ZmAccount.POP))	{ return "POPAccount"; }
+
+	// make a "best-effort" to map imap folders to a well-known icon
+	// (parent will be the root imap folder)
+	if (this.parent && this.parent.isDataSource(ZmAccount.IMAP)) {
+		var mappedId = ZmFolder.getIdForName(this.name);
+		if (mappedId) { return ZmFolder.ICON[mappedId] || "Folder"; }
+	}
+
 	return "Folder";
 };
 
