@@ -206,13 +206,15 @@ function(msg) {
 		this.msgs.remove(msg, true);
 		this.numMsgs = this.msgs.size();
 	}
-	var tmpMsgIds = [];
-	for (var i = 0, count = this.msgIds.length; i < count; i++) {
-		if (this.msgIds[i].id != msg.id) {
-			tmpMsgIds.push(this.msgIds[i].id);
+	if (this.msgIds && this.msgIds.length) {
+		var tmpMsgIds = [];
+		for (var i = 0, count = this.msgIds.length; i < count; i++) {
+			if (this.msgIds[i] != msg.id) {
+				tmpMsgIds.push(this.msgIds[i]);
+			}
 		}
+		this.msgIds = tmpMsgIds;
 	}
-	this.msgIds = tmpMsgIds;
 };
 
 ZmConv.prototype.clear =
