@@ -1197,7 +1197,17 @@ function(msgNode) {
 		try {
 			this.invite = ZmInvite.createFromDom(msgNode.inv);
 			this.invite.setMessageId(this.id);
-		} catch (ex) {
+            //bug:18613
+            var desc = this.invite.getComponentDescription();
+            if((this._bodyParts.length == 0) && desc){
+                var textPart = new Object();
+                textPart.ct = ZmMimeTable.TEXT_PLAIN;
+                textPart.s = desc.length;
+                textPart.content = desc;
+                this._bodyParts.push(textPart);
+            }
+            this._loaded = this._bodyParts.length > 0  || this._attachments.length > 0;
+        } catch (ex) {
 			// do nothing - this means we're trying to load an ZmInvite in new
 			// window, which we dont currently load (re: support).
 		}
