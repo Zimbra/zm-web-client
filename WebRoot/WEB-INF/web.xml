@@ -299,6 +299,7 @@
           <url-pattern>/h/ac</url-pattern>
           <url-pattern>/h/addattendees</url-pattern>
           <url-pattern>/h/addcontacts</url-pattern>
+		  <url-pattern>/h/addgroupcontact</url-pattern>
           <url-pattern>/h/ads</url-pattern>
           <url-pattern>/h/attachments</url-pattern>
           <url-pattern>/h/calendar</url-pattern>
@@ -308,6 +309,8 @@
           <url-pattern>/h/econtact</url-pattern>
           <url-pattern>/h/egroup</url-pattern>
           <url-pattern>/h/etask</url-pattern>
+		  <url-pattern>/h/home</url-pattern>
+		  <url-pattern>/h/homevoice</url-pattern>
           <url-pattern>/h/imessage</url-pattern>
           <url-pattern>/h/login</url-pattern>
           <url-pattern>/h/maddrbooks</url-pattern>
@@ -332,8 +335,6 @@
           <url-pattern>/m/moaddrbooks</url-pattern>
           <url-pattern>/m/moquery</url-pattern>
           <url-pattern>/m/mocompose</url-pattern>
-          <url-pattern>/h/home</url-pattern>
-          <url-pattern>/h/addgroupcontact</url-pattern>
           <url-pattern>/h/overviewAds</url-pattern>
       </jsp-property-group>
     </jsp-config>
