@@ -42,8 +42,9 @@
         </c:when>
     </c:choose>
 
+    <c:set var="composeformat" value="${mailbox.prefs.composeFormat}" />    
 </app:handleError>
-<c:if test="${mailbox.features.htmlCompose}" >
+<c:if test="${composeformat eq 'html'}">
     <link rel="stylesheet" type="text/css" href="../yui/2.3.1/assets/skins/sam/skin.css" />
     <script type="text/javascript" src="../yui/2.3.1/yahoo-dom-event/yahoo-dom-event.js"></script>
     <script type="text/javascript" src="../yui/2.3.1/element/element-beta-min.js"></script>
@@ -60,7 +61,7 @@
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
         onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}">
 
-<form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8" <c:if test="${mailbox.features.htmlCompose}">onsubmit="myEditor.saveHTML();"</c:if> >
+<form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8" <c:if test="${composeformat eq 'html'}">onsubmit="submitCompose();"</c:if> >
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
                 <td class='TbTop'>
@@ -163,6 +164,7 @@
                             <tr>
                                 <td colspan="3" class="yui-skin-sam" width="100%" >
                                     <textarea class='MsgCompose' name="body" id="body" rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea>
+                                    <input type="hidden" id="bodytext" class='MsgCompose' name="bodytext" style='width:100%' />
                                     <!-- textarea class='MsgCompose' rows="30" cols="150" style='width:100%'
                                               id="bodyField" name="body">${fn:escapeXml(compose.content)}</textarea -->
                                 </td>
@@ -220,16 +222,25 @@
         initAuto("bccField","bccContainer");
     </app:autoComplete>
 
-<c:if test="${mailbox.features.htmlCompose}" >
+<c:if test="${composeformat eq 'html'}" >
     <SCRIPT TYPE="text/javascript">
     <!--
+        submitCompose= function(){
+        myEditor.saveHTML();
+        var stripHTML = /<\S[^><]*>/g;
+        document.getElementById("bodytext").value = document.getElementById("body").value.replace(/<br>/gi, '\n').replace(stripHTML, '');
+        }
+
         var myEditor = new YAHOO.widget.Editor('body', {
 	    height: '300px',
 	    width: '100%',
 	    dompath: true, //Turns on the bar at the bottom
 	    animate: true //Animates the opening, closing and moving of Editor windows
-	});
-    myEditor.render();
+	    });
+
+        var _cont= document.getElementById('body').value
+        myEditor.render();
+        setTimeout(function(){ myEditor.setEditorHTML(_cont.replace(/\n/g, '<br>'))}, 1000);
 
     //-->
    </SCRIPT>
