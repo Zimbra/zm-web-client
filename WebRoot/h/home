@@ -69,7 +69,7 @@
 <br><br>
 <table width="100%" border="0" cellpadding="8" cellspacing="0">
 <tr>
-    <td width="50%">
+    <td width="50%" valign="top">
         <table cellpadding="5" cellspacing="0" border='0' width='100%'>
             <tr>
                 <td>
@@ -84,10 +84,10 @@
             </tr>
             <c:if test="${context.isMessageSearch}">
                 <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status" begin="0" end="4">
-                    <tr>
+                    <tr class="ZhHomeRow">
                         <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
-                        <td style="border-bottom:1px solid #ccc;padding:5px;"  ><p><a style="text-decoration:none;"  href="${convUrl}"><b>${fn:escapeXml(empty hit.messageHit.displaySender ? unknownRecipient :  hit.messageHit.displaySender)}</b></a><br>
-                        <a style="color:#000;text-decoration:none;" href="${convUrl}">
+                        <td  class="ZhHomeCell"><p><a style="text-decoration:none;"  href="${convUrl}"><b>${fn:escapeXml(empty hit.messageHit.displaySender ? unknownRecipient :  hit.messageHit.displaySender)}</b></a><br>
+                        <a class="ZhHomeTextLink" href="${convUrl}">
                             <c:set var='subj' value="${empty hit.messageHit.subject ? noSubject : zm:truncate(hit.messageHit.subject,80,true)}"/>
                             <c:out value="${subj}"/></a>
                         </p></td>
@@ -96,10 +96,10 @@
             </c:if>
             <c:if test="${context.isConversationSearch}">
                 <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status" begin="0" end="4">
-                    <tr>
+                    <tr class="ZhHomeRow">
                         <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
-                        <td style="border-bottom:1px solid #ccc;padding:5px;width:25%;"><p><a style="text-decoration:none;"  href="${convUrl}">${fn:escapeXml(empty hit.conversationHit.displayRecipients ? unknownRecipient :  hit.conversationHit.displayRecipients)}</a><br>
-                        <a style="color:#000;text-decoration:none;" href="${convUrl}">
+                        <td class="ZhHomeCell" style="width:25%;"><p><a style="text-decoration:none;"  href="${convUrl}">${fn:escapeXml(empty hit.conversationHit.displayRecipients ? unknownRecipient :  hit.conversationHit.displayRecipients)}</a><br>
+                        <a class="ZhHomeTextLink" href="${convUrl}">
                             <c:set var='subj' value="${empty hit.conversationHit.subject ? noSubject : zm:truncate(hit.conversationHit.subject,80,true)}"/>
                             <c:out value="${subj}"/></a>
                         </p></td>
@@ -110,11 +110,37 @@
         </table>
     </td>
     <td valign="top">
-        <c:if test="${mailbox.features.calendar}">
-        <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
-        <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
-        <app:apptGadget timezone="${tz}" date="${dateContext}" />
-        </c:if>
+		<c:choose>
+			<c:when test="${mailbox.features.calendar}">
+				<c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
+				<c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
+				<app:apptGadget timezone="${tz}" date="${dateContext}" />
+			</c:when>
+			<c:otherwise>
+				<c:if test="${mailbox.features.voice}">
+					<table cellpadding="5" cellspacing="0" border='0' width='100%'>
+						<tr><td>
+							<table border="0" cellpadding="0" cellspacing="0" width="100%">
+								<tr>
+									<td class="ImgVoiceAccountsHeader_L"></td>
+									<td class="ImgVoiceAccountsHeader__H AccountsHeader">
+										Voice Mail
+									</td>
+									<td class="ImgVoiceAccountsHeader_R"></td>
+								</tr>
+							</table>
+						</td></tr>
+						<tr><td>
+							<%--
+							Going with the theory that voice access is really really slow, we put
+							the voice account summary in an iframe to speed up home page loading
+							--%> 
+							<iframe class="ZhHomeVoiceBox" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="/h/homevoice"></iframe>
+						</td></tr>
+					</table>
+				</c:if>
+			</c:otherwise>
+		</c:choose>
     </td>
 </tr>
 </table>
