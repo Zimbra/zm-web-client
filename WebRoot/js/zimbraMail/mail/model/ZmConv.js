@@ -469,7 +469,17 @@ function(msg) {
 	for (var i = 0; i < msg.tags.length; i++) {
 		this.tags.push(msg.tags[i]);
 	}
-	this.participants = msg.participants.clone();
+	var a = msg.participants ? msg.participants.getArray() : null;
+	this.participants = new AjxVector();
+	if (a && a.length) {
+		for (var i = 0; i < a.length; i++) {
+			var p = a[i];
+			if ((msg.isDraft && p.type == AjxEmailAddress.TO) ||
+				(!msg.isDraft && p.type == AjxEmailAddress.FROM)) {
+				this.participants.add(p);
+			}
+		}
+	}
 	this.subject = msg.subject;
 	this.fragment = msg.fragment;
 	this.msgIds = [msg.id];

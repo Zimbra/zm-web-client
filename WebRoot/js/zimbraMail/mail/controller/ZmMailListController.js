@@ -540,6 +540,9 @@ function(params) {
 	var prefersHtml = (identity.getComposeAsFormat() == ZmSetting.COMPOSE_HTML);
 	var sameFormat = identity.getComposeSameFormat();
 	params.getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (prefersHtml || (!msg._loaded && sameFormat))));
+	if (action == ZmOperation.DRAFT) {
+		params.listController = this;
+	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, params);
 	this._getLoadedMsg(params, respCallback);

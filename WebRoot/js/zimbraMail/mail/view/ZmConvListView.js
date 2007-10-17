@@ -387,6 +387,7 @@ function(item) {
 		expandable = (item.numMsgs > 1);
 	} else {
 		var conv = appCtxt.getById(item.cid);
+		if (!conv) { return false; }
 		
 		var a = conv.msgs ? conv.msgs.getArray() : null;
 		if (a && a.length) {

@@ -417,6 +417,18 @@ function(items) {
 	return lists;
 };
 
+ZmConvListController.prototype._redrawDraftItemRows =
+function(msg) {
+	var conv = appCtxt.getById(msg.cid);
+	if (conv) {
+		conv._loadFromMsg(msg);	// update conv
+		this._listView[this._currentView].redrawItem(conv);
+		this._listView[this._currentView].setSelection(conv, true);
+	}
+	// don't think a draft conv is ever expandable, but try anyway
+	this._listView[this._currentView].redrawItem(msg);
+};
+
 /**
  * Splits the given items into two lists, one of convs and one of msgs, and
  * applies the given method and args to each.

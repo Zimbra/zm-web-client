@@ -147,6 +147,7 @@ function(params) {
 		newWinObj.params = params;
 	} else {
 		this._setView(params);
+		this._listController = params.listController;
 	}
 };
 
@@ -839,7 +840,7 @@ function(mode) {
 
 ZmComposeController.prototype._processSendMsg =
 function(draftType, msg, resp) {
-	var isDraft = draftType != ZmComposeController.DRAFT_TYPE_NONE;
+	var isDraft = (draftType != ZmComposeController.DRAFT_TYPE_NONE);
 	if (!isDraft) {
 		if (appCtxt.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
@@ -876,6 +877,9 @@ function(draftType, msg, resp) {
 			appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_INFO, null, transitions);
 		}
 		this._composeView.processMsgDraft(msg);
+		if (this._listController && this._listController._draftSaved) {
+			this._listController._draftSaved(msg);
+		}
 	}
 	if (appCtxt.get(ZmSetting.OFFLINE)) {
 		appCtxt.getAppController().sendSync();

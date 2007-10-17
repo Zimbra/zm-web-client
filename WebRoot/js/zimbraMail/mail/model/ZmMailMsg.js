@@ -336,6 +336,17 @@ function(type, addr) {
 };
 
 /**
+ * Clears out all the address vectors.
+ */
+ZmMailMsg.prototype.clearAddresses =
+function() {
+	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
+		var type = ZmMailMsg.ADDRS[i];
+		this._addrs[type].removeAll();
+	}
+};
+
+/**
 * Adds the given vector of addresses to the vector of addresses of the given type
 *
 * @param type	the address type
@@ -344,8 +355,9 @@ function(type, addr) {
 ZmMailMsg.prototype.addAddresses =
 function(type, addrs) {
 	var size = addrs.size();
-	for (var i = 0; i < size; i++)
+	for (var i = 0; i < size; i++) {
 		this._addrs[type].add(addrs.get(i));
+	}
 };
 
 /**
@@ -473,13 +485,13 @@ ZmMailMsg.prototype._setFilteredForwardAttIds = function(filteredFwdAttIds){
 // Actions
 
 /**
-* Fills in the message from the given message node. Whatever attributes and child nodes
-* are available will be used. The message node is not always fully populated, since it
-* may have been created as part of getting a conversation.
-*
-* @param node		a message node
-* @param args		hash of input args
-*/
+ * Fills in the message from the given message node. Whatever attributes and child nodes
+ * are available will be used. The message node is not always fully populated, since it
+ * may have been created as part of getting a conversation.
+ *
+ * @param node		a message node
+ * @param args		hash of input args
+ */
 ZmMailMsg.createFromDom =
 function(node, args) {
 	var msg = new ZmMailMsg(node.id, args.list);
@@ -516,12 +528,8 @@ ZmMailMsg.prototype._handleResponseLoad =
 function(callback, result) {
 	var response = result.getResponse().GetMsgResponse;
 
-	// clear address vectors
-	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
-		var type = ZmMailMsg.ADDRS[i];
-		this._addrs[type].removeAll();
-	}
-
+	this.clearAddresses();
+	
 	// clear all participants (since it'll get re-parsed w/ diff. ID's)
 	if (this.participants) {
 		this.participants.removeAll();
@@ -758,13 +766,6 @@ function(isDraft, callback, result) {
 		}
 	} else {
 		this._loadFromDom(resp);
-		// bug 7016 - clear cached draft content
-		if (this.cid) {
-			var conv = appCtxt.getById(this.cid);
-			if (conv && conv.tempMsg) {
-				conv.tempMsg = this;
-			}
-		}
 	}
 
 	if (callback) {
@@ -958,8 +959,9 @@ function() {
 
 	if (flag) {
 		this._origMsg[ZmItem.FLAG_PROP[flag]] = true;
-		if (this._origMsg.list)
+		if (this._origMsg.list) {
         	this._origMsg.list._notify(ZmEvent.E_FLAGS, {items: [this._origMsg], flags: [flag]});
+		}
 	}
 };
 
@@ -1185,12 +1187,14 @@ function(msgNode) {
 	}
 
 	if (msgNode.e && this.participants && this.participants.size() == 0) {
-		for (var i = 0; i < msgNode.e.length; i++)
+		for (var i = 0; i < msgNode.e.length; i++) {
 			this._parseParticipantNode(msgNode.e[i]);
-
+		}
+		this.clearAddresses();
 		var parts = this.participants.getArray();
-		for (var j = 0; j < parts.length; j++ )
+		for (var j = 0; j < parts.length; j++ ) {
 			this.addAddress(parts[j]);
+		}
 	}
 
 	if (msgNode.inv) {

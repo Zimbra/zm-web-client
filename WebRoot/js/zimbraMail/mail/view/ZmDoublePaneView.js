@@ -101,6 +101,11 @@ function() {
 	this._msgView.reset();
 };
 
+ZmDoublePaneView.prototype.getMsg =
+function() {
+	return this._msgView.getMsg();
+};
+
 ZmDoublePaneView.prototype.setMsg =
 function(msg) {
 	this._msgView.set(msg);

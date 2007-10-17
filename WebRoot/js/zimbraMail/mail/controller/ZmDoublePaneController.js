@@ -524,6 +524,24 @@ function(msg) {
 ZmDoublePaneController.prototype._dragListener =
 function(ev) {
 	ZmListController.prototype._dragListener.call(this, ev);
-	if (ev.action == DwtDragEvent.DRAG_END)
+	if (ev.action == DwtDragEvent.DRAG_END) {
 		this._resetOperations(this._toolbar[this._currentView], this._doublePaneView.getSelection().length);
+	}
+};
+
+ZmDoublePaneController.prototype._draftSaved =
+function(msg) {
+	appCtxt.cacheSet(msg.id, msg);
+	this._redrawDraftItemRows(msg);
+	var displayedMsg = this._doublePaneView.getMsg();
+	if (displayedMsg && displayedMsg.id == msg.id) {
+		this._doublePaneView.reset();
+		this._doublePaneView.setMsg(msg);
+	}
+};
+
+ZmDoublePaneController.prototype._redrawDraftItemRows =
+function(msg) {
+	this._listView[this._currentView].redrawItem(msg);
+	this._listView[this._currentView].setSelection(msg, true);
 };
