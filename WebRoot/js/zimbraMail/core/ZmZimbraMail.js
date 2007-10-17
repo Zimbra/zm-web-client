@@ -430,7 +430,7 @@ function(params, result) {
 			appCtxt.inStartup = false;
 			this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
 		});
-	this.addPostRenderCallback(callback, 4, 100);
+	this.addPostRenderCallback(callback, 6, 100);
 	
 	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
 };

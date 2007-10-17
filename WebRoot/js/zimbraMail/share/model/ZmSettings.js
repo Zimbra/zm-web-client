@@ -259,7 +259,7 @@ function(callback, accountName, result) {
 				var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
 				AjxDispatcher.require("Zimlet", false, zimletsCallback);
 			});
-		appCtxt.getAppController().addPostRenderCallback(prCallback, 5, 500, true);
+		appCtxt.getAppController().addPostRenderCallback(prCallback, 4, 500, true);
 	}
 
     this.userSettingsLoaded = true;
