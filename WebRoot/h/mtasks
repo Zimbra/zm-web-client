@@ -5,10 +5,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-<fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
+
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
+    <c:choose>
+    <c:when test="${mailbox.prefs.locale}">
+        <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
+    </c:when>
+    <c:otherwise>
+        <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+    </c:otherwise>
+    </c:choose>
+    <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
+    
     <zm:fileUploader var="uploader"/>
 
     <c:if test="${uploader.isUpload}">

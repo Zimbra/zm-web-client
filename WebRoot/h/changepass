@@ -6,10 +6,19 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
+
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
+    <c:choose>
+    <c:when test="${mailbox.prefs.locale}">
+        <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
+    </c:when>
+    <c:otherwise>
+        <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+    </c:otherwise>
+    </c:choose>
+    <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
+    
     <c:set var="successfullLogin" value="false"/>
     <fmt:message var="errorMessage" key="enterNewPassword"/>
     <c:set var="messageImage" value="/img/dwt/ImgInformation_32.gif"/>

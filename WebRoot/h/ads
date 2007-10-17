@@ -1,27 +1,61 @@
 <%@ page buffer="8kb" autoFlush="true" %>
+
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
 <html>
-<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
+<app:handleError>
+<zm:getMailbox var="mailbox"/>
+<c:choose>
+<c:when test="${mailbox.prefs.locale}">
+    <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
+</c:when>
+<c:otherwise>
+    <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+</c:otherwise>
+</c:choose>
+<fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
+</app:handleError>
 <body>
+
 <script type="text/javascript"><!--
+
 //google_ad_client = "pub-9074709561259045";
+
 google_ad_client = "yyyy-TEST";
+
 google_alternate_color = "FFFFFF";
+
 google_ad_width = 160;
+
 google_ad_height = 600;
+
 google_ad_format = "160x600_as";
+
 google_ad_type = "text_image";
+
 google_ad_channel ="";
+
 google_page_url = "${param.f}"
+
 //--></script>
+
 <script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+
 </body>
+
 </html>
+
