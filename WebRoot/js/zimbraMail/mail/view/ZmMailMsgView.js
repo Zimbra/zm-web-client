@@ -36,7 +36,9 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	// do we add a close button in the header section?
 	this._hasHeaderCloseBtn = (this._mode == ZmController.MSG_VIEW && !appCtxt.isChildWindow);
 
-	this.setScrollStyle(ZmMailMsgView.SCROLL_WITH_IFRAME ? DwtControl.CLIP : DwtControl.SCROLL);
+        this.SCROLL_WITH_IFRAME = ZmMailMsgView.SCROLL_WITH_IFRAME;
+
+	this.setScrollStyle(this.SCROLL_WITH_IFRAME ? DwtControl.CLIP : DwtControl.SCROLL);
 
 	if (!appCtxt.isChildWindow) {
 		// Add change listener to taglist to track changes in tag color
@@ -104,6 +106,7 @@ function() {
 	if (this._objectManager && this._objectManager.reset) {
 		this._objectManager.reset();
 	}
+        this.setScrollWithIframe(false);
 };
 
 ZmMailMsgView.prototype.preventSelection =
@@ -809,7 +812,7 @@ function(container, html, isTextMsg) {
 	// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
 	var inner_styles = AjxEnv.isIE ? ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }" : "";
 	var params = {parent: this, className: "MsgBody", hidden: true, html: html,
-				  styles: inner_styles, noscroll: !ZmMailMsgView.SCROLL_WITH_IFRAME,
+				  styles: inner_styles, noscroll: !this.SCROLL_WITH_IFRAME,
 				  posStyle: DwtControl.STATIC_STYLE, processHtmlCallback: callback,
 				  useKbMgmt: true};
 	var ifw = new DwtIframe(params);
@@ -1401,7 +1404,7 @@ function(expand) {
 		}
 		this._addressRows = null;
 	}
-	if (ZmMailMsgView.SCROLL_WITH_IFRAME) {
+	if (this.SCROLL_WITH_IFRAME) {
 		var iframe = document.getElementById(this._iframeId);
 		if (iframe)
 			ZmMailMsgView._resetIframeHeight(this, iframe);
@@ -1587,7 +1590,7 @@ function (image, i, len, msg, idoc, iframe, view) {
 ZmMailMsgView._resetIframeHeight =
 function(self, iframe) {
 	var h;
-	if (ZmMailMsgView.SCROLL_WITH_IFRAME) {
+	if (self.SCROLL_WITH_IFRAME) {
 		h = self.getH() - 7;
 		function substract(el) {
 			if (el) {
@@ -1617,7 +1620,14 @@ function(self, iframe) {
                 // first off, make it wide enough to fill ZmMailMsgView.
                 iframe.style.width = "100%"; // *** changes height!
 
-                // remember this width
+                // wait, are we too high? (bug 21037)
+                if (AjxEnv.isGeckoBased &&
+                    Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight) > 30000) {
+                        self.setScrollWithIframe(true);
+                        return;
+                }
+
+                // remember the current width
                 var view_width = iframe.offsetWidth;
 
                 // if there's a long unbreakable string, the
@@ -1640,8 +1650,22 @@ function(self, iframe) {
 
                 // we are finally in the right position to determine height.
                 h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+
 		iframe.style.height = h + "px";
 	}
+};
+
+// note that IE doesn't seem to be able to reset the "scrolling" attribute.
+// this function isn't safe to call for IE!
+ZmMailMsgView.prototype.setScrollWithIframe = function(val) {
+        this.SCROLL_WITH_IFRAME = val;
+        this.setScrollStyle(val ? DwtControl.CLIP : DwtControl.SCROLL);
+        var iframe = document.getElementById(this._iframeId);
+        if (iframe) {
+                iframe.style.width = "100%";
+                iframe.scrolling = val;
+                ZmMailMsgView._resetIframeHeight(this, iframe);
+        }
 };
 
 ZmMailMsgView._tagClick =
