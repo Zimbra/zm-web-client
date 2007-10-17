@@ -511,10 +511,6 @@ function(x, y) {
 	if (y < 0) y = 0;
 
 	var main = document.getElementById(this.getBodyFieldId());
-	// bug fix #6789 - Safari nukes the IFRAME's document if you hide the containing DIV
-	if (!AjxEnv.isSafari)
-		main.style.display = "none";
-
 	main.style.width = x + "px";
 	main.style.height = y + "px";
 	if (div) {
@@ -527,10 +523,6 @@ function(x, y) {
 
 		div.style.width = x + "px";
 		div.style.height = y + "px";
-		div.style.display = "";
-	} else {
-		// when DIV is present, "main" is textarea which should actually remain hidden
-		main.style.display = "";
 	}
 };
 
