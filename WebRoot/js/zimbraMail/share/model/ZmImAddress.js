@@ -25,7 +25,7 @@ ZmImAddress = {
                 { label: "Zimbra" , value: "local" },
                 { label: "Yahoo"  , value: "yahoo" },
                 { label: "MSN"    , value: "msn" },
-                { label: "AOL"    , value: "aol" },
+                { label: "AOL"    , value: "aol" }
         ],
 
         REGEXP : [], // it's built at load-time below
