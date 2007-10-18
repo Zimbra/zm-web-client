@@ -1265,7 +1265,7 @@ function(view) {
 ZmListController.prototype._getNumTotal =
 function() {
 	var folderId = this._getSearchFolderId();
-	if (folderId) {
+	if (folderId && (folderId != ZmFolder.ID_TRASH)) {
 		var folder = appCtxt.getById(folderId);
 		if (folder) {
 			return folder.numTotal;
