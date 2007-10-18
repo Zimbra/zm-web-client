@@ -1,5 +1,4 @@
 AjxPackage.require("ajax.util.AjxWindowOpener");
-AjxPackage.require("ajax.xml.AjxSerializer");
 AjxPackage.require("ajax.net.AjxInclude");
 AjxPackage.require("ajax.util.AjxDateUtil");
 AjxPackage.require("ajax.util.AjxSelectionManager");
