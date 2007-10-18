@@ -142,22 +142,6 @@
 <table cellpadding="3" width="100%" class="ZOptionsSectionMain">
     <tr>
         <td class='ZOptionsTableLabel'>
-            <fmt:message key="optionsSignatureAttach"/>
-            :
-        </td>
-        <td colspan=2>
-            <app:optCheckbox boxfirst="true" label="optionsSignatureAttachAuto" pref="zimbraPrefMailSignatureEnabled"
-                             checked="${mailbox.prefs.mailSignatureEnabled}"/>
-        </td>
-        <td>&nbsp;</td>
-    </tr>
-    <tr>
-        <td colspan="4">
-            <hr>
-        </td>
-    </tr>
-    <tr>
-        <td class='ZOptionsTableLabel'>
             <fmt:message key="optionsSignaturePlacement"/>
             :
         </td>
