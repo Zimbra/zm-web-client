@@ -64,6 +64,14 @@ function() {
 	return this._prefsView;
 };
 
+/** Returns the account test dialog. */
+ZmPrefController.prototype.getTestDialog = function() {
+	if (!this._testDialog) {
+		this._testDialog = new ZmAccountTestDialog(this._container);
+	}
+	return this._testDialog;
+};
+
 /**
 * Returns the filter rules controller.
 */

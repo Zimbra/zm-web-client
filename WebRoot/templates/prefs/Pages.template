@@ -1173,3 +1173,33 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 			</tr>
 		</table>
 </template>
+
+<template id='prefs.Pages#AccountTestContent'>
+	<table id='${id}_accts' class='ZmDataSourceTestTable' border=0 cellspacing=0 cellpadding=3>
+		<tr><th><$=ZmMsg.account$></th><th><$=ZmMsg.status$></th></tr>
+		<$ for (var i = 0; i < data.accounts.length; i++) { $>
+			<$= AjxTemplate.expand("#AccountTestItem", { id: data.id, account: data.accounts[i] }) $>
+		<$ } $>
+	</table>
+</template>
+
+<template id='prefs.Pages#AccountTestItem'>
+	<tr>
+		<td class='ZmTestItem'>${account.name}</td>
+		<td id='${account.id}_test_status' class='ZmTestStatus'></td>
+	</tr>
+	<tr id='${account.id}_test_details' style='display:none'>
+		<td>
+		<table border='0'>
+			<tr valign='top'>
+				<td class='ZmTestError'><$=ZmMsg.errorLabel$></td>
+				<td id='${account.id}_test_error' class='ZmTestError'></td>
+			</tr>
+			<tr valign='top'>
+				<td class='ZmTestNote'><$=ZmMsg.noteLabel$></td>
+				<td class='ZmTestNote'><$=ZmMsg.popAccountTestNote$></td>
+			</tr>
+		</table>
+		</td>
+	</tr>
+</template>

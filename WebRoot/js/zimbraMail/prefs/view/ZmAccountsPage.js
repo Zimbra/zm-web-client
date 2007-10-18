@@ -381,7 +381,7 @@ ZmAccountsPage.prototype.getErrorMessage = function() {
 };
 
 ZmAccountsPage.prototype.getPreSaveCallback = function() {
-    return new AjxCallback(this, this._handlePreSave);
+    return new AjxCallback(this, this._preSave);
 };
 
 ZmAccountsPage.prototype.addCommand = function(batchCmd) {
@@ -420,11 +420,21 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 		var callback = new AjxCallback(this, this._handleCreateAccount, [account]);
 		account.create(callback, null, batchCmd);
 	}
+
+	// refresh display after all is done
+	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
+	var callback = new AjxCallback(this, this.reset);
+	batchCmd.addNewRequestParams(soapDoc, callback);
 };
 
 //
 // Protected methods
 //
+
+ZmAccountsPage.prototype._testAccounts = function(accounts, okCallback, cancelCallback) {
+	var dialog = this._controller.getTestDialog();
+	dialog.popup(accounts, okCallback, cancelCallback);
+};
 
 // set controls based on account
 
@@ -1228,30 +1238,13 @@ ZmAccountsPage.prototype._handleTestButton = function(evt) {
 	}
 
 	// testconnection
-	var callback = new AjxCallback(this, this._handleTestResponse, [button, dataSource]);
-	dataSource.testConnection(callback, callback);
+	var accounts = [ dataSource ];
+	var callback = new AjxCallback(this, this._testFinish, [button]);
+	this._testAccounts(accounts, callback, callback);
 };
 
-ZmAccountsPage.prototype._handleTestResponse =
-function(button, dataSource, result) {
+ZmAccountsPage.prototype._testFinish = function(button) {
 	button.setEnabled(true);
-	var resp = result && result._data && result._data.TestDataSourceResponse;
-	if (resp) {
-		var message, level, detail;
-		var dsrc = resp[ZmDataSource.prototype.ELEMENT_NAME] ||
-				   resp[ZmPopAccount.prototype.ELEMENT_NAME] ||
-				   resp[ZmImapAccount.prototype.ELEMENT_NAME];
-		dsrc = dsrc && dsrc[0];
-		if (dsrc.success) {
-			message = ZmMsg.dataSourceTestSuccess;
-			level = ZmStatusView.LEVEL_INFO;
-		}
-		else {
-			message = dsrc.error;
-			level = ZmStatusView.LEVEL_CRITICAL;
-		}
-		appCtxt.setStatusMsg(message, level, detail);
-	}
 };
 
 // identity listeners
@@ -1298,12 +1291,57 @@ ZmAccountsPage.prototype._handleFolderAdd = function(folder) {
 
 // pre-save callbacks
 
-ZmAccountsPage.prototype._handlePreSave =
-function(continueCallback) {
+ZmAccountsPage.prototype._preSave = function(continueCallback) {
 	// make sure that the current object proxy is up-to-date
 	this._setAccountFields(this._currentAccount, this._currentSection);
 
-	// TODO: handle pre-save testing of data sources
+	// perform account tests
+	this._preSaveTest(continueCallback);
+};
+
+ZmAccountsPage.prototype._preSaveTest = function(continueCallback) {
+	// get dirty external accounts
+	var dirtyAccounts = []
+	var accounts = this._accounts.getArray();
+	for (var i = 0; i < accounts.length; i++) {
+		var account = accounts[i];
+		if (account.type == ZmAccount.POP || account.type == ZmAccount.IMAP) {
+			if (account._new || account._dirty) {
+				dirtyAccounts.push(account);
+			}
+		}
+	}
+
+	// test external accounts
+	if (dirtyAccounts.length > 0) {
+		var okCallback = new AjxCallback(this, this._preSaveTestOk, [continueCallback, dirtyAccounts]);
+		var cancelCallback = new AjxCallback(this, this._preSaveTestCancel, [continueCallback]);
+		this._testAccounts(dirtyAccounts, okCallback, cancelCallback);
+	}
+
+	// perform next step
+	else {
+		this._preSaveCreateFolders(continueCallback);
+	}
+};
+
+ZmAccountsPage.prototype._preSaveTestOk = function(continueCallback, accounts, successes) {
+	// en/disable accounts based on test results 
+	for (var i = 0; i < accounts.length; i++) {
+		accounts[i].enabled = successes[i];
+	}
+
+	// continue
+	this._preSaveCreateFolders(continueCallback);
+};
+
+ZmAccountsPage.prototype._preSaveTestCancel = function(continueCallback) {
+	if (continueCallback) {
+		continueCallback.run(false);
+	}
+};
+
+ZmAccountsPage.prototype._preSaveCreateFolders = function(continueCallback) {
 	var batchCmd;
 	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
 	var accounts = this._accounts.getArray();
@@ -1352,11 +1390,11 @@ function(continueCallback) {
 	if (batchCmd) {
 		// HACK: Don't know a better way to set an error condition
 		this.__hack_preSaveSuccess = true;
-		var callback = new AjxCallback(this, this._handlePreSaveFinish, [continueCallback]);
+		var callback = new AjxCallback(this, this._preSaveFinish, [continueCallback]);
 		batchCmd.run(callback);
 	}
 	else {
-		this._handlePreSaveFinish(continueCallback);
+		this._preSaveFinish(continueCallback);
 	}
 };
 
@@ -1381,7 +1419,7 @@ function(dataSource, result) {
 	}
 };
 
-ZmAccountsPage.prototype._handlePreSaveFinish =
+ZmAccountsPage.prototype._preSaveFinish =
 function(continueCallback, result, exceptions) {
 	// HACK: Don't know a better way to set an error condition
 	continueCallback.run(this.__hack_preSaveSuccess && (!exceptions || exceptions.length == 0));
@@ -1457,7 +1495,6 @@ ZmAccountsListView.TYPES[ZmAccount.IMAP]					= ZmMsg.accountTypeImap;
 ZmAccountsListView.TYPES[ZmAccount.PERSONA]					= ZmMsg.accountTypePersona;
 
 ZmAccountsListView.WIDTH_NAME	= 170;
-//ZmAccountsListView.WIDTH_STATUS	= 20;
 ZmAccountsListView.WIDTH_TYPE	= 80;
 
 // Public methods
@@ -1470,9 +1507,8 @@ ZmAccountsListView.prototype.setCellContents = function(account, field, html) {
 	var el = this.getCellElement(account, field);
 	if (!el) return;
 
-	// HACK: name contents is first child of name cell
 	if (field == ZmItem.F_NAME) {
-		el = el.firstChild;
+		el = document.getElementById(this._getCellId(account, field)+"_name");
 	}
 	el.innerHTML = html;
 };
@@ -1481,8 +1517,8 @@ ZmAccountsListView.prototype.setStatusImage = function(account, imageName) {
 	var el = this.getCellElement(account, ZmItem.F_NAME);
 	if (!el) return;
 
-	// HACK: status image is last child of name cell
-	el.lastChild.className = AjxImg.getClassForImage(imageName);
+	var el = document.getElementById(this._getCellId(account, ZmItem.F_NAME)+"_status");
+	el.className = AjxImg.getClassForImage(imageName);
 };
 
 // Protected methods
@@ -1490,28 +1526,22 @@ ZmAccountsListView.prototype.setStatusImage = function(account, imageName) {
 ZmAccountsListView.prototype._getCellContents =
 function(buffer, i, item, field, col, params) {
 	if (field == ZmItem.F_NAME) {
-		// !!! Code depends on the content and order of this cell !!!
-		buffer[i++] = "<span>";
+		var cellId = this._getCellId(item, field);
+		var enabled = !(item instanceof ZmDataSource) || item.enabled;
+		buffer[i++] = "<table border=0 cellpadding=0 cellspacing=0>";
+		buffer[i++] = "<tr><td id='";
+		buffer[i++] = cellId+"_name";
+		buffer[i++] = "'>";
 		buffer[i++] = item.getName();
-		buffer[i++] = "</span>";
-		buffer[i++] = "<span class='ImgBlank_16'></span>";
+		buffer[i++] = "</td>";
+		buffer[i++] = "<td><div id='";
+		buffer[i++] = cellId+"_status";
+		buffer[i++] = "' class='";
+		buffer[i++] = enabled ? "ImgBlank_16" : "ImgWarning";
+		buffer[i++] = "'></div></td></tr>";
+		buffer[i++] = "</table>";
 		return i;
 	}
-	/***
-	if (field == ZmItem.F_FLAG) {
-		var image = "Blank_16";
-		if (item.status == ZmStatusView.LEVEL_WARNING) {
-			image = "Warning";
-		}
-		else if (item.status == ZmStatusView.LEVEL_CRITICAL) {
-			image = "Critical";
-		}
-		buffer[i++] = "<div class='";
-		buffer[i++] = AjxImg.getClassForImage(image);
-		buffer[i++] = "'></div>";
-		return i;
-	}
-	/***/
 	if (field == ZmItem.F_EMAIL) {
 		buffer[i++] = item.getEmail();
 		return i;
@@ -1529,11 +1559,19 @@ ZmAccountsListView.prototype._getCellId = function(item, field, params) {
 	return [this.getViewPrefix(), item.id, field].join("-");
 };
 
+/***
+// TODO: handle tooltip hover
+ZmAccountsListView.prototype._getToolTip = function(field, item, ev, div, match) {
+	if (field == ZmItem.F_NAME && item instanceof ZmDataSource && !item.enabled) {
+		return ZmMsg.accountDisabled;
+	}
+	return DwtListView.prototype._getToolTip.apply(this, arguments);
+};
+/***/
+
 ZmAccountsListView.prototype._getHeaderList = function() {
 	return [
-//		new DwtListHeaderItem(field, label, icon, width, sortable, resizeable, visible, name);
 		new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg.accountName, null, ZmAccountsListView.WIDTH_NAME),
-//		new DwtListHeaderItem(ZmItem.F_FLAG, null, null, ZmAccountsListView.WIDTH_STATUS),
 		new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.emailAddr),
 		new DwtListHeaderItem(ZmItem.F_TYPE, ZmMsg.type, null, ZmAccountsListView.WIDTH_TYPE)
 	];
