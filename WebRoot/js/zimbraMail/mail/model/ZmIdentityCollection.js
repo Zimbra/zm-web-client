@@ -18,6 +18,7 @@
 ZmIdentityCollection = function() {
 	ZmModel.call(this, ZmEvent.S_IDENTITY);
 	this.defaultIdentity = null;
+	this._initialized = false;
 	this._idToIdentity = {};
 	this._addressToIdentity = {};
 	this._folderToIdentity = {};
@@ -128,16 +129,16 @@ function(mailMsg) {
 
 ZmIdentityCollection.prototype.initialize =
 function(data) {
-	if (this.getSize() || !data) {
-		// This can be called unnecessarily after auth token expires.
-		return;
-	}
+	// This can be called unnecessarily after auth token expires.
+	if (this._initialized || this.getSize() || !data) { return; }
+
 	var identities = data.identity;
 	for (var i = 0, count = identities ? identities.length : 0; i < count; i++) {
 		var identity = new ZmIdentity('');
 		identity._loadFromDom(identities[i]);
 		this.add(identity);
 	}
+	this._initialized = true;
 };
 
 ZmIdentityCollection.prototype.notifyModify =

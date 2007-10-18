@@ -575,6 +575,8 @@ function() {
 ZmMailApp.prototype.startup =
 function(result) {
 	var obj = result.getResponse().GetInfoResponse;
+	appCtxt.getIdentityCollection().initialize(obj.identities);
+	appCtxt.getDataSourceCollection().initialize(obj.dataSources);
 	appCtxt.getSignatureCollection().initialize(obj.signatures);
 };
 

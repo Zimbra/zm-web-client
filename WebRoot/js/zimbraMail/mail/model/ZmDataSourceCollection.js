@@ -17,7 +17,8 @@
 
 ZmDataSourceCollection = function() {
     ZmModel.call(this, ZmEvent.S_DATA_SOURCE);
-    this._itemMap = {};
+	this._initialized = false;
+	this._itemMap = {};
     this._pop3Map = {};
 	this._imapMap = {};
 };
@@ -147,7 +148,7 @@ ZmDataSourceCollection.prototype.remove = function(item) {
 };
 
 ZmDataSourceCollection.prototype.initialize = function(dataSources) {
-    if (!dataSources) return;
+	if (!dataSources || this._initialized) { return; }
 
     var popAccounts = dataSources.pop3 || [];
     for (var i = 0; i < popAccounts.length; i++) {
@@ -162,6 +163,8 @@ ZmDataSourceCollection.prototype.initialize = function(dataSources) {
 		imap.setFromJson(imapAccounts[i]);
 		this.add(imap);
 	}
+
+	this._initialized = true;
 };
 
 //
