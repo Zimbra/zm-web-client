@@ -294,7 +294,8 @@ function() {
 			this._isShared = false;
 		} else {
 			var acct = appCtxt.getActiveAccount();
-			this._isShared = ((this.id.indexOf(":") != -1) && (this.id.indexOf(acct.id) != 0));
+			var id = String(this.id);
+			this._isShared = ((id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0));
 		}
 	}
 	return this._isShared;
