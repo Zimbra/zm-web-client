@@ -182,6 +182,11 @@
     </tag-file>
 
     <tag-file>
+        <name>messageIframe</name>
+        <path>/WEB-INF/tags/message/messageIframe.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>messageListView</name>
         <path>/WEB-INF/tags/message/messageListView.tag</path>
     </tag-file>
