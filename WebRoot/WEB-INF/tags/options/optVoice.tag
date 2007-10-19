@@ -103,6 +103,14 @@ Stupid: I had to do a second loop that only acts on the selected account......
 				</table>
 			</td>
         </tr>
+        <%------------------- More voice controls ------------------%>
+		<tr><td colspan=2><hr></td></tr>
+		<tr valign='top'>
+			<td colspan=2 class='ZOptionsTableLabel'><fmt:message key="moreVoiceControlsLabel"/></td>
+		</tr>
+		<tr valign='top'>
+			<td colspan=2 class='ZhOptVoiceCBCell'><fmt:message key="moreVoiceControlsText"/></td>
+		</tr>
         <input type="hidden" name="phone" value="${account.phone.name}">
     </c:if>
 </zm:forEachPhoneAccount>    
