@@ -9,13 +9,22 @@
 <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
 
 
-<app:handleError>
-<zm:getMailbox var="mailbox"/>
-
-<app:head mailbox="${mailbox}" title=""/>
-	<link href="<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" rel="stylesheet" type="text/css" />
+<c:catch var="ex">
+	<zm:getMailbox var="mailbox"/>
 	<c:set var="account" value="${zm:getFirstPhoneAccount(pageContext)}"/>
 	<c:set var="phone" value="${account.phone.name}"/>
+</c:catch>
+
+<c:choose>
+<c:when test="${!empty ex}">
+	<body style="background-color:white">
+		<zm:getException var="error" exception="${ex}"/>
+		<p><fmt:message key="${error.code}"/></p>
+	</body>
+</c:when>
+<c:otherwise>
+<app:head mailbox="${mailbox}" title=""/>
+	<link href="<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" rel="stylesheet" type="text/css" />
 	<table class="ZhHomeVoiceBox" cellpadding=0 cellspacing=0 border=0>
 		<zm:computeSearchContext var="context" usecache="true" query="phone:${phone}" types="voicemail"/>
 			<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status" begin="0" end="4">
@@ -42,4 +51,5 @@
 			</c:forEach>
     </table>
 
-</app:handleError>
+</c:otherwise>
+</c:choose>
