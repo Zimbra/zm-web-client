@@ -1044,77 +1044,75 @@ ZmAccountsPage.prototype._createSection = function(name, sectionDiv) {
 	var prefIds = section && section.prefs;
 	if (!prefIds) return;
 
-	var tabControls = this._tabControls;
-	this._tabControls = {};
-	section.controls = {};
+	this._enterTabScope();
+	try {
+		this._addTabLinks(sectionDiv);
 
-	var prefs = ZmAccountsPage.PREFS;
-	for (var i = 0; i < prefIds.length; i++) {
-		var id = prefIds[i];
-		var setup = prefs[id];
-		if (!setup) continue;
+		section.controls = {};
 
-		var containerId = [this._htmlElId, name, id].join("_");
-		var containerEl = document.getElementById(containerId);
-		if (!containerEl) continue;
+		var prefs = ZmAccountsPage.PREFS;
+		for (var i = 0; i < prefIds.length; i++) {
+			var id = prefIds[i];
+			var setup = prefs[id];
+			if (!setup) continue;
 
-		var type = setup.displayContainer;
-		var value = null;
-		var control;
-		switch (type) {
-			case ZmPref.TYPE_STATIC: {
-				control = this._setupStatic(id, setup, value);
-				break;
+			var containerId = [this._htmlElId, name, id].join("_");
+			var containerEl = document.getElementById(containerId);
+			if (!containerEl) continue;
+
+			var type = setup.displayContainer;
+			var value = null;
+			var control;
+			switch (type) {
+				case ZmPref.TYPE_STATIC: {
+					control = this._setupStatic(id, setup, value);
+					break;
+				}
+				case ZmPref.TYPE_INPUT: {
+					control = this._setupInput(id, setup, value);
+					break;
+				}
+				case ZmPref.TYPE_SELECT: {
+					control = this._setupSelect(id, setup, value);
+					break;
+				}
+				case ZmPref.TYPE_COMBOBOX: {
+					control = this._setupComboBox(id, setup, value);
+					break;
+				}
+				case ZmPref.TYPE_CHECKBOX: {
+					control = this._setupCheckbox(id, setup, value);
+					break;
+				}
+				case ZmPref.TYPE_RADIO_GROUP: {
+					control = this._setupRadioGroup(id, setup, value);
+					break;
+				}
+				case ZmPref.TYPE_CUSTOM: {
+					control = this._setupCustom(id, setup, value);
+					break;
+				}
+				default: continue;
 			}
-			case ZmPref.TYPE_INPUT: {
-				control = this._setupInput(id, setup, value);
-				break;
+
+			if (control) {
+				if (name == "PRIMARY" && id == "EMAIL") {
+					control.setEnabled(false);
+				}
+				this._replaceControlElement(containerEl, control);
+				if (type == ZmPref.TYPE_RADIO_GROUP) {
+					control = this.getFormObject(id);
+				}
+				section.controls[id] = control;
 			}
-			case ZmPref.TYPE_SELECT: {
-				control = this._setupSelect(id, setup, value);
-				break;
-			}
-			case ZmPref.TYPE_COMBOBOX: {
-				control = this._setupComboBox(id, setup, value);
-				break;
-			}
-			case ZmPref.TYPE_CHECKBOX: {
-				control = this._setupCheckbox(id, setup, value);
-				break;
-			}
-			case ZmPref.TYPE_RADIO_GROUP: {
-				control = this._setupRadioGroup(id, setup, value);
-				break;
-			}
-			case ZmPref.TYPE_CUSTOM: {
-				control = this._setupCustom(id, setup, value);
-				break;
-			}
-			default: continue;
 		}
 
-		if (control) {
-			if (name == "PRIMARY" && id == "EMAIL") {
-				control.setEnabled(false);
-			}
-			this._replaceControlElement(containerEl, control);
-			if (type == ZmPref.TYPE_RADIO_GROUP) {
-				control = this.getFormObject(id);
-			}
-			section.controls[id] = control;
-		}
+		section.tabGroup = new DwtTabGroup(name);
+		this._addControlsToTabGroup(section.tabGroup);
 	}
-
-	var links = sectionDiv.getElementsByTagName("A");
-	for (var i = 0; i < links.length; i++) {
-		var link = links[i];
-		if (!link.href) continue;
-		this._addControlTabIndex(link, link);
+	finally {
+		this._exitTabScope();
 	}
-
-	section.tabGroup = new DwtTabGroup(name);
-	this._addControlsToTabGroup(section.tabGroup);
-	this._tabControls = tabControls;
 };
 
 // listeners

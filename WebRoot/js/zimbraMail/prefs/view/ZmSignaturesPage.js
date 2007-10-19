@@ -249,57 +249,60 @@ ZmSignaturesPage.prototype._addSignature = function(signature) {
 		tabGroup: new DwtTabGroup(signature.id)
 	};
 
-	var tabControls = this._tabControls;
-	this._tabControls = {};
+	this._enterTabScope();
+	try {
+		var nameEl = document.getElementById(signature._htmlElId+"_SIGNATURE_NAME");
+		if (nameEl) {
+			var params = {
+				parent: listComp,
+				validationStyle: DwtInputField.CONTINUAL_VALIDATION,
+				validator: AjxCallback.simpleClosure(this._validateName, this, signature._htmlElId)
+			};
+			var input = new DwtInputField(params);
+			this._replaceControlElement(nameEl, input);
 
-	var nameEl = document.getElementById(signature._htmlElId+"_SIGNATURE_NAME");
-	if (nameEl) {
-		var params = {
-			parent: listComp,
-			validationStyle: DwtInputField.CONTINUAL_VALIDATION,
-			validator: AjxCallback.simpleClosure(this._validateName, this, signature._htmlElId)
-		};
-		var input = new DwtInputField(params);
-		this._replaceControlElement(nameEl, input);
+			comps.name = input;
+		}
 
-		comps.name = input;
+		var defaultEl = document.getElementById(signature._htmlElId+"_SIGNATURE_DEFAULT");
+		if (defaultEl) {
+			var name = this._htmlElId;
+			var isDefault = false; // TODO
+			var radio = new DwtRadioButton(listComp, null, name, isDefault);
+			radio.setText(ZmMsg.def);
+			this._replaceControlElement(defaultEl, radio);
+
+			var id = radio._htmlElId;
+			var value = signature._htmlElId;
+			this._defaultRadioGroup.addRadio(id, value, isDefault);
+
+			comps.isDefault = radio;
+		}
+
+		var deleteEl = document.getElementById(signature._htmlElId+"_SIGNATURE_DELETE");
+		if (deleteEl) {
+			var button = new DwtButton(listComp);
+			button.addSelectionListener(new AjxListener(this, this._handleDeleteButton, [signature._htmlElId]));
+			this._replaceControlElement(deleteEl, button);
+
+			comps.doDelete = button;
+		}
+
+		var valueEl = document.getElementById(signature._htmlElId+"_SIGNATURE");
+		if (valueEl) {
+			var textarea = new DwtInputField({parent:listComp,rows:valueEl.rows||3,size:valueEl.cols});
+			this._replaceControlElement(valueEl, textarea);
+
+			comps.value = textarea;
+		}
+
+		this._addControlsToTabGroup(comps.tabGroup);
+
+		listComp.getTabGroup().addMember(comps.tabGroup);
 	}
-
-	var defaultEl = document.getElementById(signature._htmlElId+"_SIGNATURE_DEFAULT");
-	if (defaultEl) {
-		var name = this._htmlElId;
-		var isDefault = false; // TODO
-		var radio = new DwtRadioButton(listComp, null, name, isDefault);
-		radio.setText(ZmMsg.def);
-		this._replaceControlElement(defaultEl, radio);
-
-		var id = radio._htmlElId;
-		var value = signature._htmlElId;
-		this._defaultRadioGroup.addRadio(id, value, isDefault);
-
-		comps.isDefault = radio;
+	finally {
+		this._exitTabScope();
 	}
-
-	var deleteEl = document.getElementById(signature._htmlElId+"_SIGNATURE_DELETE");
-	if (deleteEl) {
-		var button = new DwtButton(listComp);
-		button.addSelectionListener(new AjxListener(this, this._handleDeleteButton, [signature._htmlElId]));
-		this._replaceControlElement(deleteEl, button);
-
-		comps.doDelete = button;
-	}
-
-	var valueEl = document.getElementById(signature._htmlElId+"_SIGNATURE");
-	if (valueEl) {
-		var textarea = new DwtInputField({parent:listComp,rows:valueEl.rows||3,size:valueEl.cols});
-		this._replaceControlElement(valueEl, textarea);
-
-		comps.value = textarea;
-	}
-
-	this._addControlsToTabGroup(comps.tabGroup);
-	this._tabControls = tabControls;
-	listComp.getTabGroup().addMember(comps.tabGroup);
 
 	// initialize state
 	this._resetSignature(signature);

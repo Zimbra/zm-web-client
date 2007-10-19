@@ -78,14 +78,32 @@ ZmPreferencesPage.prototype._replaceControlElement = function(elemOrId, control)
 	control.replaceElement(elemOrId);
 };
 
-ZmPreferencesPage.prototype._addControlTabIndex = function(elemOrId, control) {
+ZmPreferencesPage.prototype._enterTabScope = function() {
+	if (!this._tabScopeStack) {
+		this._tabScopeStack = [];
+	}
+	var scope = {};
+	this._tabScopeStack.push(scope);
+	return scope;
+};
 
+ZmPreferencesPage.prototype._getCurrentTabScope = function() {
+	var stack = this._tabScopeStack;
+	return stack && stack[stack.length - 1];
+};
+
+ZmPreferencesPage.prototype._exitTabScope = function() {
+	var stack = this._tabScopeStack;
+	return stack && stack.pop();
+};
+
+ZmPreferencesPage.prototype._addControlTabIndex = function(elemOrId, control) {
 	// remember control's tab index
 	var elem = Dwt.byId(elemOrId);
 	var tabIndex = elem.getAttribute("tabindex");
 	tabIndex = tabIndex != null ? tabIndex : Number.MAX_VALUE;
 
-	var controls = this._tabControls;
+	var controls = this._getCurrentTabScope();
 	if (!controls[tabIndex]) {
 		controls[tabIndex] = control;
 		return;
@@ -96,6 +114,18 @@ ZmPreferencesPage.prototype._addControlTabIndex = function(elemOrId, control) {
 		return;
 	}
 	entry.push(control);
+};
+
+ZmPreferencesPage.prototype._addTabLinks = function(elemOrId) {
+	var elem = Dwt.byId(elemOrId);
+	if (!elem) return;
+
+	var links = elem.getElementsByTagName("A");
+	for (var i = 0; i < links.length; i++) {
+		var link = links[i];
+		if (!link.href) continue;
+		this._addControlTabIndex(link, link);
+	}
 };
 
 /**
@@ -137,112 +167,111 @@ ZmPreferencesPage.prototype._createPageTemplate = function() {
 ZmPreferencesPage.prototype._createControls = function() {
 	// create controls for prefs, if present in template
 	this._prefPresent = {};
-	this._tabControls = {};
-	var prefs = this._section.prefs || [];
-	var settings = appCtxt.getSettings();
-	for (var i = 0; i < prefs.length; i++) {
-		var id = prefs[i];
-		if (!id) { continue; }
-		var pref = settings.getSetting(id);
+	this._enterTabScope();
+	try {
+		// add links to tab control list
+		this._addTabLinks(this.getHtmlElement());
 
-		// ignore if there is no container element
-		var elem = document.getElementById([this._htmlElId, id].join("_"));
-		if (!elem) { continue; }
+		// add preference controls
+		var prefs = this._section.prefs || [];
+		var settings = appCtxt.getSettings();
+		for (var i = 0; i < prefs.length; i++) {
+			var id = prefs[i];
+			if (!id) { continue; }
+			var pref = settings.getSetting(id);
 
-		// ignore if doesn't meet pre-condition
-        var setup = ZmPref.SETUP[id];
-        if (!this._controller.checkPreCondition(setup)) { continue; }
+			// ignore if there is no container element
+			var elem = document.getElementById([this._htmlElId, id].join("_"));
+			if (!elem) { continue; }
 
-        // perform load function
-		if (setup.loadFunction) {
-			setup.loadFunction(setup);
-            if (setup.options.length <= 1) { continue; }
-		}
+			// ignore if doesn't meet pre-condition
+			var setup = ZmPref.SETUP[id];
+			if (!this._controller.checkPreCondition(setup)) { continue; }
 
-		// save the current value (for checking later if it changed)
-		pref.origValue = this._getPrefValue(id);
-		var value = this._getPrefValue(id, false);
-
-		// we only show this one if it's false
-		if ((id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) && value) { continue; }
-
-		this._prefPresent[id] = true;
-		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
-
-		// create form controls
-		var control = null;
-		var type = setup ? setup.displayContainer : null;
-		if (type == ZmPref.TYPE_CUSTOM) {
-			control = this._setupCustom(id, setup, value);
-		}
-		else if (type == ZmPref.TYPE_SELECT) {
-			control = this._setupSelect(id, setup, value);
-		}
-		else if (type == ZmPref.TYPE_COMBOBOX) {
-			control = this._setupComboBox(id, setup, value);
-		}
-		else if (type == ZmPref.TYPE_RADIO_GROUP) {
-			control = this._setupRadioGroup(id, setup, value);
-		}
-		else if (type == ZmPref.TYPE_CHECKBOX) {
-			control = this._setupCheckbox(id, setup, value);
-		}
-		else if (type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_TEXTAREA) {
-			if (type == ZmPref.TYPE_TEXTAREA) {
-				setup.rows = elem.getAttribute("rows") || setup.rows || 4;
-				setup.cols = elem.getAttribute("cols") || setup.cols || 60;
-				setup.wrap = elem.getAttribute("wrap") || setup.wrap || "on";
+			// perform load function
+			if (setup.loadFunction) {
+				setup.loadFunction(setup);
+				if (setup.options.length <= 1) { continue; }
 			}
-			control = this._setupInput(id, setup, value);
-		}
-		else if (type == ZmPref.TYPE_COLOR) {
-			control = this._setupColor(id, setup, value);
-		}
-		else if (type == ZmPref.TYPE_LOCALES) {
-			control = this._setupLocales(id, setup, value);
-		}
-		else if (type == ZmPref.TYPE_PASSWORD) {
-			this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener));
-			continue;
-		}
-		else if (type == ZmPref.TYPE_IMPORT) {
-			this._addImportWidgets(elem, id, setup);
-			continue;
-		}
-		else if (type == ZmPref.TYPE_EXPORT) {
-			this._addExportWidgets(elem, id, setup);
-			continue;
+
+			// save the current value (for checking later if it changed)
+			pref.origValue = this._getPrefValue(id);
+			var value = this._getPrefValue(id, false);
+
+			// we only show this one if it's false
+			if ((id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) && value) { continue; }
+
+			this._prefPresent[id] = true;
+			DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
+
+			// create form controls
+			var control = null;
+			var type = setup ? setup.displayContainer : null;
+			if (type == ZmPref.TYPE_CUSTOM) {
+				control = this._setupCustom(id, setup, value);
+			}
+			else if (type == ZmPref.TYPE_SELECT) {
+				control = this._setupSelect(id, setup, value);
+			}
+			else if (type == ZmPref.TYPE_COMBOBOX) {
+				control = this._setupComboBox(id, setup, value);
+			}
+			else if (type == ZmPref.TYPE_RADIO_GROUP) {
+				control = this._setupRadioGroup(id, setup, value);
+			}
+			else if (type == ZmPref.TYPE_CHECKBOX) {
+				control = this._setupCheckbox(id, setup, value);
+			}
+			else if (type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_TEXTAREA) {
+				if (type == ZmPref.TYPE_TEXTAREA) {
+					setup.rows = elem.getAttribute("rows") || setup.rows || 4;
+					setup.cols = elem.getAttribute("cols") || setup.cols || 60;
+					setup.wrap = elem.getAttribute("wrap") || setup.wrap || "on";
+				}
+				control = this._setupInput(id, setup, value);
+			}
+			else if (type == ZmPref.TYPE_COLOR) {
+				control = this._setupColor(id, setup, value);
+			}
+			else if (type == ZmPref.TYPE_LOCALES) {
+				control = this._setupLocales(id, setup, value);
+			}
+			else if (type == ZmPref.TYPE_PASSWORD) {
+				this._addButton(elem, setup.displayName, 50, new AjxListener(this, this._changePasswordListener));
+				continue;
+			}
+			else if (type == ZmPref.TYPE_IMPORT) {
+				this._addImportWidgets(elem, id, setup);
+				continue;
+			}
+			else if (type == ZmPref.TYPE_EXPORT) {
+				this._addExportWidgets(elem, id, setup);
+				continue;
+			}
+
+			// add control to form
+			if (control) {
+				this._replaceControlElement(elem, control);
+			}
 		}
 
-		// add control to form
-		if (control) {
-			this._replaceControlElement(elem, control);
+		// create special page buttons
+		var defaultsRestore = document.getElementById([this._htmlElId,"DEFAULTS_RESTORE"].join("_"));
+		if (defaultsRestore) {
+			this._addButton(defaultsRestore, ZmMsg.restoreDefaults, 110, new AjxListener(this, this._resetListener));
 		}
+
+		var revertPage = document.getElementById([this._htmlElId,"REVERT_PAGE"].join("_"));
+		if (revertPage) {
+			this._addButton(revertPage, ZmMsg.restorePage, 110, new AjxListener(this, this._resetPageListener));
+		}
+
+		// create tab-group for all controls on the page
+		this._addControlsToTabGroup(this._tabGroup);
 	}
-
-	// create special page buttons
-	var defaultsRestore = document.getElementById([this._htmlElId,"DEFAULTS_RESTORE"].join("_"));
-	if (defaultsRestore) {
-		this._addButton(defaultsRestore, ZmMsg.restoreDefaults, 110, new AjxListener(this, this._resetListener));
+	finally {
+		this._exitTabScope();
 	}
-
-	var revertPage = document.getElementById([this._htmlElId,"REVERT_PAGE"].join("_"));
-	if (revertPage) {
-		this._addButton(revertPage, ZmMsg.restorePage, 110, new AjxListener(this, this._resetPageListener));
-	}
-
-	// add links to tab control list
-	var links = this.getHtmlElement().getElementsByTagName("A");
-	for (var i = 0; i < links.length; i++) {
-		var link = links[i];
-		if (!link.href) continue;
-
-		this._addControlTabIndex(link, link);
-	}
-
-	// create tab-group for all controls on the page
-	this._addControlsToTabGroup(this._tabGroup);
-	delete this._tabControls;
 
 	// finish setup
 	this.setVisible(true);
@@ -250,9 +279,10 @@ ZmPreferencesPage.prototype._createControls = function() {
 };
 
 ZmPreferencesPage.prototype._addControlsToTabGroup = function(tabGroup) {
-	var keys = AjxUtil.keys(this._tabControls).sort(AjxUtil.byNumber);
+	var scope = this._getCurrentTabScope();
+	var keys = AjxUtil.keys(scope).sort(AjxUtil.byNumber);
 	for (var i = 0; i < keys.length; i++) {
-		var entry = this._tabControls[keys[i]];
+		var entry = scope[keys[i]];
 		var controls = entry instanceof Array ? entry : [entry];
 		for (var j = 0; j < controls.length; j++) {
 			var control = controls[j];
@@ -635,15 +665,36 @@ function(containerDiv, settingId, setup) {
 	this._uploadFormId = importDivId+"_form";
 	this._attInputId = importDivId+"_input";
 
-	var buttonDiv = document.getElementById(importDivId+"_button");
-	buttonDiv.setAttribute("tabindex", containerDiv.getAttribute("tabindex"));
+	// setup pseudo tab group
+	this._enterTabScope();
+	var tabGroup = new DwtTabGroup(importDivId+"_x-tabgroup");
+	try {
+		// set up import button
+		var buttonDiv = document.getElementById(importDivId+"_button");
+		var btnLabel = setup ? setup.displayName : ZmMsg._import;
+		this._importBtn = this._addButton(buttonDiv, btnLabel, 100, new AjxListener(this, this._importButtonListener));
+		if (settingId) {
+			this._importBtn.setData(Dwt.KEY_ID, settingId);
+		}
 
-	// set up import button
-	var btnLabel = setup ? setup.displayName : ZmMsg._import;
-	this._importBtn = this._addButton(buttonDiv, btnLabel, 100, new AjxListener(this, this._importButtonListener));
-	if (settingId) {
-		this._importBtn.setData(Dwt.KEY_ID, settingId);
+		// add other controls
+		var inputEl = document.getElementById(this._attInputId);
+		if (inputEl) {
+			this._addControlTabIndex(inputEl, inputEl);
+		}
+		this._addTabLinks(containerDiv);
+
+		// add pseudo tab group
+		this._addControlsToTabGroup(tabGroup);
 	}
+	finally {
+		this._exitTabScope();
+		this._addControlTabIndex(containerDiv, new ZmPreferencesPage.__hack_TabGroupControl(tabGroup));
+	}
+};
+
+ZmPreferencesPage.__hack_TabGroupControl = function(tabGroup) {
+	this.getTabGroupMember = function() { return tabGroup; }
 };
 
 ZmPreferencesPage.prototype._addExportWidgets =

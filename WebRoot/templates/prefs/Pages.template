@@ -42,7 +42,7 @@ and the container element is replaced with that control.
 				</tr>
 			<$ } $>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.defualtTimezone$></td>
-					<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE'></div></td>
+					<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE' tabindex='45'></div></td>
 				</tr>
 
 				<tr><td colspan=2><hr></td></tr>
@@ -551,7 +551,7 @@ and the container element is replaced with that control.
 				<form id='${id}_form'
 					  action='${action}' method='POST' enctype='multipart/form-data'
 					  style='margin: 0px; padding: 0px;'>
-					<input id='${id}_input'
+					<input id='${id}_input' tabindex='10'
 						   type='file' name='${name}'
 						   style='font-family:Tahoma; font-size:10px'>
 				</form>
@@ -559,7 +559,7 @@ and the container element is replaced with that control.
 		</tr>
 		<tr>
 			<td class='ZOptionsLabel'>&nbsp;</td>
-			<td class='ZOptionsInfo'><div id='${id}_button'></div></td>
+			<td class='ZOptionsInfo'><div id='${id}_button' tabindex='20'></div></td>
 		</tr>
 	</table>
 </template>
@@ -854,7 +854,7 @@ and the container element is replaced with that control.
 						<td style='padding-right:.5em;'>
 							<input id='${id}_PERSONA_FROM_NAME' tabindex='3020' size=30 title='<$=ZmMsg.exampleEmailName$>'>
 						</td>
-						<td><select id='${id}_PERSONA_FROM_EMAIL' tabindex='3030' title='<$=ZmMsg.emailAddr$>'></select></td>
+						<td><select id='${id}_PERSONA_FROM_EMAIL' tabindex='3030' size=40 title='<$=ZmMsg.emailAddr$>'></select></td>
 					</tr></table>
 				</td>
 			</tr>
@@ -868,7 +868,7 @@ and the container element is replaced with that control.
 						<td style='padding-right:.5em;'>
 							<input id='${id}_PERSONA_REPLY_TO_NAME' tabindex='3050' size=30 title='<$=ZmMsg.exampleEmailName$>'>
 						</td>
-						<td><select id='${id}_PERSONA_REPLY_TO_EMAIL' tabindex='3060' title='<$=ZmMsg.emailAddr$>'></select></td>
+						<td><select id='${id}_PERSONA_REPLY_TO_EMAIL' tabindex='3060' size=40 title='<$=ZmMsg.emailAddr$>'></select></td>
 					</tr></table>
 				</td>
 			</tr>
