@@ -71,7 +71,7 @@
 	position:absolute;
 }
 
-.ZaSplashScreen, .ZaSplashScreen table {
+.ZaSplashScreen {
 	@ChromeBg@
 }
 
