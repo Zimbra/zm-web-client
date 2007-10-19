@@ -23,9 +23,9 @@ function () {
 };
 
 ZmPrintView.prototype.render = 
-function(item) {
+function(item, noPrintDialog) {
 	var preferHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	var respCallback = new AjxCallback(this, this._handleResponseRender, item);
+	var respCallback = new AjxCallback(this, this._handleResponseRender, [item, noPrintDialog]);
 	var html = item.getPrintHtml(preferHtml, respCallback);
 	if (html) {
 		this.renderHtml(html);
@@ -33,19 +33,19 @@ function(item) {
 };
 
 ZmPrintView.prototype.renderHtml =
-function(html, args) {
+function(html, item, noPrintDialog) {
 	this._html = html;
-	this._printWindow = this._getNewWindow(args);
+	this._printWindow = this._getNewWindow(item, noPrintDialog);
 };
 
 ZmPrintView.prototype._handleResponseRender =
-function(mailItem, result) {
-	var args = mailItem.showImages ? mailItem : null;
-	this.renderHtml(result.getResponse(), args);
+function(mailItem, noPrintDialog, result) {
+	var item = mailItem.showImages ? mailItem : null;
+	this.renderHtml(result.getResponse(), item, noPrintDialog);
 };
 
 ZmPrintView.prototype._render = 
-function(item) {
+function(item, noPrintDialog) {
 	if (this._printWindow)
 	{
 		var onloadStr = item && item.showImages
@@ -66,8 +66,9 @@ function(item) {
 		this._printWindow.document.write(html);
 		this._printWindow.document.close();
 
-		if (window.print)
+		if (window.print && !noPrintDialog) {
 			this._printWindow.print();
+		}
 	}
 	else
 	{
@@ -79,8 +80,8 @@ function(item) {
 };
 
 ZmPrintView.prototype._getNewWindow =
-function(args) {
-	var callback = new AjxCallback(this, this._render, args);
+function(item, noPrintDialog) {
+	var callback = new AjxCallback(this, this._render, [item, noPrintDialog]);
 	var winArgs = "menubar=yes,resizable=yes,scrollbars=yes";
 	return AjxWindowOpener.openBlank("ZmPrintWindow", winArgs, callback, true);
 }

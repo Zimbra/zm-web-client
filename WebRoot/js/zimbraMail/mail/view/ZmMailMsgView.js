@@ -24,6 +24,7 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	this._controller = controller;
 
 	this._displayImagesId = Dwt.getNextId();
+	this._msgTruncatedId = Dwt.getNextId();
 	this._infoBarId = Dwt.getNextId();
 	this._tagRowId = Dwt.getNextId();
 	this._tagCellId = Dwt.getNextId();
@@ -748,7 +749,7 @@ function(origText) {
 };
 
 ZmMailMsgView.prototype._makeIframeProxy =
-function(container, html, isTextMsg) {
+function(container, html, isTextMsg, isTruncated) {
 	// bug fix #4943
 	if (html == null) html = "";
 
@@ -809,28 +810,50 @@ function(container, html, isTextMsg) {
 		}
 	}
 
+	var msgTruncated;
+	if (isTruncated) {
+		var msgTruncatedDiv = document.getElementById(this._msgTruncatedId);
+		if (!msgTruncatedDiv) {
+			var infoBarDiv = document.getElementById(this._infoBarId);
+			if (infoBarDiv) {
+				var subs = {
+					id: this._msgTruncatedId,
+					text: ZmMsg.messageTooLarge,
+					link: ZmMsg.viewEntireMessage
+				};
+				var msgTruncatedHtml = AjxTemplate.expand("mail.Message#InformationBar", subs);
+				msgTruncated = Dwt.parseHtmlFragment(msgTruncatedHtml);
+				infoBarDiv.appendChild(msgTruncated);
+			}
+		}
+	}
+
 	// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
 	var inner_styles = AjxEnv.isIE ? ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }" : "";
-	var params = {parent: this, className: "MsgBody", hidden: true, html: html,
-				  styles: inner_styles, noscroll: !this.SCROLL_WITH_IFRAME,
-				  posStyle: DwtControl.STATIC_STYLE, processHtmlCallback: callback,
-				  useKbMgmt: true};
+	var params = {
+		parent: this,
+		className: "MsgBody",
+		hidden: true,
+		html: html,
+		styles: inner_styles,
+		noscroll: !this.SCROLL_WITH_IFRAME,
+		posStyle: DwtControl.STATIC_STYLE,
+		processHtmlCallback: callback,
+		useKbMgmt: true
+	};
 	var ifw = new DwtIframe(params);
 	this._iframeId = ifw.getIframe().id;
 
 	var idoc = ifw.getDocument();
 
 	if (AjxEnv.isGeckoBased) {
-		// patch local links
-		var geckoScrollCallback = AjxCallback.simpleClosure(
-			// pass null as the object, so that it gets called in the context of the link
-			ZmMailMsgView.__localLinkClicked, null, this);
+		// patch local links (pass null as object so it gets called in context of link)
+		var geckoScrollCallback = AjxCallback.simpleClosure(ZmMailMsgView.__localLinkClicked, null, this);
 		var links = idoc.getElementsByTagName("a");
 		for (var i = links.length; --i >= 0;) {
 			var link = links[i];
 			if (!link.target) {
-				// has chances to be a local link
-				link.onclick = geckoScrollCallback;
+				link.onclick = geckoScrollCallback; // has chances to be a local link
 			}
 		}
 	}
@@ -872,6 +895,10 @@ function(container, html, isTextMsg) {
 			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
 			func.call();
 		}
+	}
+
+	if (msgTruncated) {
+		Dwt.setHandler(msgTruncated, DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._handleMsgTruncated, this));
 	}
 
 	if (isTextMsg || appCtxt.isChildWindow) {
@@ -1000,13 +1027,13 @@ function(msg, container, callback) {
 	if (len > 1) {
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
-			this._makeIframeProxy(el, bp.content, bp.ct == ZmMimeTable.TEXT_PLAIN)
+			this._makeIframeProxy(el, bp.content, bp.ct == ZmMimeTable.TEXT_PLAIN, bp.truncated)
 		}
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
 			if (bodyPart.ct == ZmMimeTable.TEXT_HTML && appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-				this._makeIframeProxy(el, bodyPart.content, false);
+				this._makeIframeProxy(el, bodyPart.content, false, bodyPart.truncated);
 			} else {
 				// otherwise, get the text part if necessary
 				if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
@@ -1017,7 +1044,7 @@ function(msg, container, callback) {
 						this._makeIframeProxy(el, content, true);
 					return;
 				} else {
-					this._makeIframeProxy(el, bodyPart.content, true);
+					this._makeIframeProxy(el, bodyPart.content, true, bodyPart.truncated);
 				}
 			}
 		} else {
@@ -1029,7 +1056,7 @@ function(msg, container, callback) {
 };
 
 ZmMailMsgView.prototype._handleResponseRenderMessage =
-function(el, bodyPart, callback, result) {
+function(el, bodyPart, callback, result, isTruncated) {
 	var content = result ? result.getResponse() : null;
 
 	// if no text part, check if theres a calendar part and generate some canned
@@ -1083,7 +1110,7 @@ function(el, bodyPart, callback, result) {
 		}
 	}
 
-	this._makeIframeProxy(el, (content || ""), true);
+	this._makeIframeProxy(el, (content || ""), true, isTruncated);
 }
 
 ZmMailMsgView.prototype._setTags =
@@ -1427,6 +1454,30 @@ function(tagId) {
 	searchController.search({query: query});
 };
 
+ZmMailMsgView.prototype._handleMsgTruncated =
+function() {
+	var params = {
+		sender: appCtxt.getAppController(),
+		msgId: this._msg.id,
+		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+		callback: (new AjxCallback(this, this._handleResponseMsgTruncated)),
+		noBusyOverlay: true,
+		dontTruncate: true
+	};
+	ZmMailMsg.fetchMsg(params);
+};
+
+ZmMailMsgView.prototype._handleResponseMsgTruncated =
+function(result) {
+	// parse temp message (we dont want to cache a huge msg)
+	var node = result.getResponse().GetMsgResponse.m[0];
+	var msg = new ZmMailMsg(node.id, null, true);
+	msg._loadFromDom(node);
+	msg.showImages = this._msg.showImages;
+
+	appCtxt.getPrintView().render(msg, true);
+};
+
 // Focus management - just pass through to native element's focus()
 // and blur() methods, which will indicate focus with a dotted border,
 // and make the element actively scrollable. Doesn't work in IE, which
@@ -1608,48 +1659,42 @@ function(self, iframe) {
 		iframe.style.height = h + "px";
 	} else {
 		try {
-			if (!iframe.contentWindow)
-				return;
+			if (!iframe.contentWindow) { return; }
 		} catch(ex) {
-			// for IE
-			return;
+			return; // for IE
 		}
 
 		var doc = iframe.contentWindow.document;
 
-                // first off, make it wide enough to fill ZmMailMsgView.
-                iframe.style.width = "100%"; // *** changes height!
+		// first off, make it wide enough to fill ZmMailMsgView.
+		iframe.style.width = "100%"; // *** changes height!
 
-                // wait, are we too high? (bug 21037)
-                if (AjxEnv.isGeckoBased &&
-                    Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight) > 30000) {
-                        self.setScrollWithIframe(true);
-                        return;
-                }
+		// wait, are we too high? (bug 21037)
+		if (AjxEnv.isGeckoBased &&
+			Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight) > 30000) {
+			self.setScrollWithIframe(true);
+			return;
+		}
 
-                // remember the current width
-                var view_width = iframe.offsetWidth;
+		// remember the current width
+		var view_width = iframe.offsetWidth;
 
-                // if there's a long unbreakable string, the
-                // scrollWidth of the body element will be bigger--we
-                // must make the iframe that wide, or there won't be
-                // any scrollbars.
+		// if there's a long unbreakable string, the scrollWidth of the body
+		// element will be bigger--we must make the iframe that wide, or there
+		// won't be any scrollbars.
+		var w = doc.body.scrollWidth;
+		if (w > view_width) {
+			iframe.style.width = w + "px"; // *** changes height!
 
-                var w = doc.body.scrollWidth;
-                if (w > view_width) {
-		        iframe.style.width = w + "px"; // *** changes height!
+			// Now (bug 20743), by forcing the body a determined width (that of
+			// the view) we are making the browser wrap those paragraphs that
+			// can be wrapped, even if there's a long unbreakable string in the message.
+			doc.body.style.overflow = "visible";
+			doc.body.style.width = view_width - 20 + "px"; // *** changes height!
+		}
 
-                        // Now (bug 20743), by forcing the body a determined
-                        // width (that of the view) we are making the browser
-                        // wrap those paragraphs that can be wrapped, even if
-                        // there's a long unbreakable string in the message.
-
-                        doc.body.style.overflow = "visible";
-                        doc.body.style.width = view_width - 20 + "px"; // *** changes height!
-                }
-
-                // we are finally in the right position to determine height.
-                h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+		// we are finally in the right position to determine height.
+		h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
 
 		iframe.style.height = h + "px";
 	}
@@ -1657,15 +1702,16 @@ function(self, iframe) {
 
 // note that IE doesn't seem to be able to reset the "scrolling" attribute.
 // this function isn't safe to call for IE!
-ZmMailMsgView.prototype.setScrollWithIframe = function(val) {
-        this.SCROLL_WITH_IFRAME = val;
-        this.setScrollStyle(val ? DwtControl.CLIP : DwtControl.SCROLL);
-        var iframe = document.getElementById(this._iframeId);
-        if (iframe) {
-                iframe.style.width = "100%";
-                iframe.scrolling = val;
-                ZmMailMsgView._resetIframeHeight(this, iframe);
-        }
+ZmMailMsgView.prototype.setScrollWithIframe =
+function(val) {
+	this.SCROLL_WITH_IFRAME = val;
+	this.setScrollStyle(val ? DwtControl.CLIP : DwtControl.SCROLL);
+	var iframe = document.getElementById(this._iframeId);
+	if (iframe) {
+		iframe.style.width = "100%";
+		iframe.scrolling = val;
+		ZmMailMsgView._resetIframeHeight(this, iframe);
+	}
 };
 
 ZmMailMsgView._tagClick =

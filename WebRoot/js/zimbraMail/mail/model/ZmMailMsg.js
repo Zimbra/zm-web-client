@@ -89,6 +89,7 @@ ZmMailMsg._requestHeaders = {};
  *        callback		[AjxCallback]*	async callback
  *        errorCallback	[AjxCallback]*	async error callback
  *        noBusyOverlay	[boolean]*		don't put up busy overlay during request
+ *        dontTruncate	[boolean]*		don't truncate message body
  */
 ZmMailMsg.fetchMsg =
 function(params) {
@@ -109,10 +110,15 @@ function(params) {
 		headerNode.setAttribute('n', hdr);
 	}
 
+	if (!params.dontTruncate) {
+		msgNode.setAttribute("max", appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE));
+	}
+
 	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback]);
 	var execFrame = new AjxCallback(null, ZmMailMsg.fetchMsg, [params]);
 	params.sender.sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
-							   errorCallback:params.errorCallback, execFrame:execFrame, noBusyOverlay:params.noBusyOverlay});
+							errorCallback:params.errorCallback, execFrame:execFrame,
+							noBusyOverlay:params.noBusyOverlay});
 };
 
 /**
@@ -514,8 +520,15 @@ function(getHtml, forceLoad, callback, errorCallback, noBusyOverlay) {
 	// If we are already loaded, then don't bother loading
 	if (!this._loaded || forceLoad) {
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
-		ZmMailMsg.fetchMsg({sender:appCtxt.getAppController(), msgId:this.id, getHtml:getHtml,
-						  	callback:respCallback, errorCallback:errorCallback, noBusyOverlay:noBusyOverlay});
+		var params = {
+			sender: appCtxt.getAppController(),
+			msgId: this.id,
+			getHtml: getHtml,
+			callback: respCallback,
+			errorCallback: errorCallback,
+			noBusyOverlay: noBusyOverlay
+		};
+		ZmMailMsg.fetchMsg(params);
 	} else {
 		this._markReadLocal(true);
 		if (callback) {
@@ -619,7 +632,7 @@ function(callback, result) {
 	this._loadFromDom(response.m[0]);
 	var bodyPart = this.getBodyPart(ZmMimeTable.TEXT_PLAIN);
 	result.set(bodyPart ? bodyPart.content : null);
-	if (callback) callback.run(result);
+	if (callback) callback.run(result, bodyPart.truncated);
 };
 
 ZmMailMsg.prototype.setHtmlContent =

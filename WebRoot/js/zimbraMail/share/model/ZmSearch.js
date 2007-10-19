@@ -287,6 +287,9 @@ function(cid, callback, fetchId) {
 			method.setAttribute("html", "1");	// get it as HTML
 		}
 	}
+
+	method.setAttribute("max", appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE));
+
 	var respCallback = new AjxCallback(this, this._handleResponseGetConv, callback);
 	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 };
