@@ -785,7 +785,10 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 		var create = list[i];
 		create._handled = true;
 		
-		// perform strict checking if we're in offline mode
+		// ignore stuff we already have
+		if (appCtxt.cacheGet(create.id) || create._wasVirtConv) { continue; }
+
+		// perform stricter checking if we're in offline mode
 		if (appCtxt.get(ZmSetting.OFFLINE) &&
 			!this._checkCreate(create, type, currList, sortBy, cutoff)) { continue; }
 
@@ -828,11 +831,6 @@ function(create, type, currList, sortBy, cutoff) {
 	}
 	if (sortBy == ZmSearch.DATE_ASC && (create.d > cutoff)) {
 		DBG.println(AjxDebug.DBG2, "new " + type + " is too new: " + create.d);
-		return false;
-	}
-
-	// ignore stuff we already have
-	if (appCtxt.cacheGet(create.id) || create._wasVirtConv) {
 		return false;
 	}
 

@@ -76,42 +76,42 @@ function() {
 ZmList.prototype.getPrintHtml = function(preferHtml, callback) {};
 
 /**
-* Adds an item to the list.
-*
-* @param item	the item to add
-* @param index	the index at which to add the item (defaults to end of list)
-*/
+ * Adds an item to the list.
+ *
+ * @param item	the item to add
+ * @param index	the index at which to add the item (defaults to end of list)
+ */
 ZmList.prototype.add = 
 function(item, index) {
 	this._vector.add(item, index);
 	if (item.id)
 		this._idHash[item.id] = item;
-}
+};
 
 /**
-* Removes an item from the list.
-*
-* @param item	the item to remove
-*/
+ * Removes an item from the list.
+ *
+ * @param item	the item to remove
+ */
 ZmList.prototype.remove = 
 function(item) {
 	this._vector.remove(item);
 	if (item.id) {
 		delete this._idHash[item.id];
 	}
-}
+};
 
 /**
-* Creates an item from the given arguments. A subclass may override
-* sortIndex() to add it to a particular point in the list. By default, it
-* will be added at the end.
-*
-* The item will invoke a SOAP call, which generates a create notification from the
-* server. That will be handled by notifyCreate(), which will call _notify()
-* so that views can be updated.
-*
-* @param args	arbitrary hash of args to pass along
-*/
+ * Creates an item from the given arguments. A subclass may override
+ * sortIndex() to add it to a particular point in the list. By default, it
+ * will be added at the end.
+ *
+ * The item will invoke a SOAP call, which generates a create notification from the
+ * server. That will be handled by notifyCreate(), which will call _notify()
+ * so that views can be updated.
+ *
+ * @param args	arbitrary hash of args to pass along
+ */
 ZmList.prototype.create =
 function(args) {
 	var item;
@@ -122,63 +122,71 @@ function(args) {
 	}
 
 	return item;
-}
+};
 
 /**
-* Returns the number of items in the list.
-*/
+ * Returns the number of items in the list.
+ */
 ZmList.prototype.size = 
 function() {
 	return this._vector.size();
-}
+};
 
 /**
-* Returns true if there are more items for this search.
-*/
+ * Returns the index of the given item in the list.
+ */
+ZmList.prototype.indexOf = 
+function(item) {
+	return this._vector.indexOf(item);
+};
+
+/**
+ * Returns true if there are more items for this search.
+ */
 ZmList.prototype.hasMore = 
 function() {
 	return this._hasMore;
-}
+};
 
 /**
-* Sets the "more" flag for this list.
-*
-* @param bHasMore	whether there are more items
-*/
+ * Sets the "more" flag for this list.
+ *
+ * @param bHasMore	whether there are more items
+ */
 ZmList.prototype.setHasMore = 
 function(bHasMore) {
 	this._hasMore = bHasMore;
-}
+};
 
 /**
-* Returns the list as an array.
-*/
+ * Returns the list as an array.
+ */
 ZmList.prototype.getArray =
 function() {
 	return this._vector.getArray();
-}
+};
 
 /**
-* Returns the list as a AjxVector.
-*/
+ * Returns the list as a AjxVector.
+ */
 ZmList.prototype.getVector =
 function() {
 	return this._vector;
-}
+};
 
 /**
-* Returns the item with the given ID.
-*
-* @param id		an item ID
-*/
+ * Returns the item with the given ID.
+ *
+ * @param id		an item ID
+ */
 ZmList.prototype.getById =
 function(id) {
 	return this._idHash[id];
-}
+};
 
 /**
-* Clears the list, including its ID hash.
-*/
+ * Clears the list, including its ID hash.
+ */
 ZmList.prototype.clear =
 function() {
 	// First, let each item run its clear() method
@@ -191,15 +199,15 @@ function() {
 	for (var id in this._idHash)
 		this._idHash[id] = null;
 	this._idHash = new Object();
-}
+};
 
 /**
-* Populates the list with elements created from the response to a SOAP command. Each
-* node in the response should represent an item of the list's type. Items are added
-* in the order they are received; no sorting is done.
-*
-* @param respNode	an XML node whose children are item nodes
-*/
+ * Populates the list with elements created from the response to a SOAP command. Each
+ * node in the response should represent an item of the list's type. Items are added
+ * in the order they are received; no sorting is done.
+ *
+ * @param respNode	an XML node whose children are item nodes
+ */
 ZmList.prototype.set = 
 function(respNode) {
 	this.clear();
@@ -217,14 +225,14 @@ function(respNode) {
 			}
 		}
 	}
-}
+};
 
 /**
-* Adds an item to the list from the given XML node.
-*
-* @param node	an XML node
-* @param args	an optional list of arguments to pass to the item's creation function
-*/
+ * Adds an item to the list from the given XML node.
+ *
+ * @param node	an XML node
+ * @param args	an optional list of arguments to pass to the item's creation function
+ */
 ZmList.prototype.addFromDom = 
 function(node, args) {
 	if (!args) {
@@ -235,14 +243,14 @@ function(node, args) {
 	if (obj) {
 		this.add(obj.createFromDom(node, args));
 	}
-}
+};
 
-/* 
-* Returns a vector containing a subset of items of this list.
-*
-* @param offset		[int]		starting index
-* @param limit		[int]		size of sublist
-*/
+/**
+ * Returns a vector containing a subset of items of this list.
+ *
+ * @param offset		[int]		starting index
+ * @param limit		[int]		size of sublist
+ */
 ZmList.prototype.getSubList = 
 function(offset, limit) {
 	var subVector = null;
@@ -251,7 +259,7 @@ function(offset, limit) {
 	if (offset < end)
 		subVector = AjxVector.fromArray(subList.slice(offset, end));
 	return subVector;
-}
+};
 
 ZmList.prototype.cache = 
 function(offset, newList) {
@@ -264,17 +272,17 @@ function(offset, newList) {
 		if (item.id)
 			this._idHash[item.id] = item;
 	}
-}
+};
 
 // Actions
 
 /**
-* Sets/unsets a flag for each of a list of items.
-*
-* @param items		a list of items to set/unset a flag for
-* @param flagOp		the name of the flag operation ("flag" or "read")
-* @param on			whether to set the flag
-*/
+ * Sets/unsets a flag for each of a list of items.
+ *
+ * @param items		a list of items to set/unset a flag for
+ * @param flagOp		the name of the flag operation ("flag" or "read")
+ * @param on			whether to set the flag
+ */
 ZmList.prototype.flagItems =
 function(items, flagOp, on) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
@@ -284,16 +292,16 @@ function(items, flagOp, on) {
 
 	var action = on ? flagOp : "!" + flagOp;
 	this._itemAction({items: items, action: action});
-}
+};
 
 /**
-* Tags or untags a list of items. A sanity check is done first, so that items
-* aren't tagged redundantly, and so we don't try to remove a nonexistent tag.
-*
-* @param items		a list of items to tag/untag
-* @param tagId		the tag to add/remove from each item
-* @param doTag		true if adding the tag, false if removing it
-*/
+ * Tags or untags a list of items. A sanity check is done first, so that items
+ * aren't tagged redundantly, and so we don't try to remove a nonexistent tag.
+ *
+ * @param items		a list of items to tag/untag
+ * @param tagId		the tag to add/remove from each item
+ * @param doTag		true if adding the tag, false if removing it
+ */
 ZmList.prototype.tagItems =
 function(items, tagId, doTag) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
@@ -313,7 +321,7 @@ function(items, tagId, doTag) {
 		var action = doTag ? "tag" : "!tag";
 		this._itemAction({items: items1, action: action, attrs: {tag: tagId}});
 	}
-}
+};
 
 ZmList.prototype.removeAllTags = 
 function(items) {
@@ -323,21 +331,21 @@ function(items) {
 	}
 
 	this._itemAction({items: items, action: "update", attrs: {t: ""}});
-}
+};
 
 /**
-* Moves a list of items to the given folder.
-* <p>
-* Search results are treated as though they're in a temporary folder, so that they behave as
-* they would if they were in any other folder such as Inbox. When items that are part of search
-* results are moved, they will disappear from the view, even though they may still satisfy the
-* search.
-* </p>
-*
-* @param items		[Array]			a list of items to move
-* @param folder		[ZmFolder]		destination folder
-* @param attrs		[Object]		additional attrs for SOAP command
-*/
+ * Moves a list of items to the given folder.
+ * <p>
+ * Search results are treated as though they're in a temporary folder, so that they behave as
+ * they would if they were in any other folder such as Inbox. When items that are part of search
+ * results are moved, they will disappear from the view, even though they may still satisfy the
+ * search.
+ * </p>
+ *
+ * @param items		[Array]			a list of items to move
+ * @param folder		[ZmFolder]		destination folder
+ * @param attrs		[Object]		additional attrs for SOAP command
+ */
 ZmList.prototype.moveItems =
 function(items, folder, attrs) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
@@ -367,12 +375,12 @@ function(folder, result) {
 };
 
 /**
-* Copies a list of items to the given folder.
-*
-* @param items		[Array]			a list of items to move
-* @param folder		[ZmFolder]		destination folder
-* @param attrs		[Object]		additional attrs for SOAP command
-*/
+ * Copies a list of items to the given folder.
+ *
+ * @param items		[Array]			a list of items to move
+ * @param folder		[ZmFolder]		destination folder
+ * @param attrs		[Object]		additional attrs for SOAP command
+ */
 ZmList.prototype.copyItems =
 function(items, folder, attrs) {
 	if (!(items instanceof Array)) items = [items];
@@ -394,14 +402,14 @@ function(result) {
 };
 
 /**
-* Deletes one or more items from the list. Normally, deleting an item just
-* moves it to the Trash (soft delete). However, if it's already in the Trash,
-* it will be removed from the data store (hard delete).
-*
-* @param items			[Array]			list of items to delete
-* @param hardDelete		[boolean]		whether to force physical removal of items
-* @param attrs			[Object]		additional attrs for SOAP command
-*/
+ * Deletes one or more items from the list. Normally, deleting an item just
+ * moves it to the Trash (soft delete). However, if it's already in the Trash,
+ * it will be removed from the data store (hard delete).
+ *
+ * @param items			[Array]			list of items to delete
+ * @param hardDelete		[boolean]		whether to force physical removal of items
+ * @param attrs			[Object]		additional attrs for SOAP command
+ */
 ZmList.prototype.deleteItems =
 function(items, hardDelete, attrs) {
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
@@ -429,14 +437,14 @@ function(items, hardDelete, attrs) {
 	// hard delete - items actually deleted from data store
 	if (toDelete.length)
 		this._itemAction({items: toDelete, action: "delete", attrs: attrs});
-}
+};
 
 /**
-* Applies the given list of modifications to the item.
-*
-* @param item			item to modify
-* @param mods			hash of new properties
-*/
+ * Applies the given list of modifications to the item.
+ *
+ * @param item			item to modify
+ * @param mods			hash of new properties
+ */
 ZmList.prototype.modifyItem =
 function(item, mods, callback) {
 	item.modify(mods, callback);
@@ -482,14 +490,14 @@ function(items, folderId) {
 	}
 };
 
-/*
-* Performs an action on items via a SOAP request.
-*
-* @param items		[Array]			list of items to act upon
-* @param action		[string]		SOAP operation
-* @param attrs		[Object]		hash of additional attrs for SOAP request
-* @param callback	[AjxCallback]	async callback
-*/
+/**
+ * Performs an action on items via a SOAP request.
+ *
+ * @param items		[Array]			list of items to act upon
+ * @param action		[string]		SOAP operation
+ * @param attrs		[Object]		hash of additional attrs for SOAP request
+ * @param callback	[AjxCallback]	async callback
+ */
 ZmList.prototype._itemAction =
 function(params, batchCmd) {
 	var actionedItems = new Array();
@@ -542,15 +550,17 @@ function(type, idHash, callback, result) {
 	}
 };
 
-// Hack to support actions on a list of items of more than one type. Since some
-// specialized lists (ZmMailList or ZmContactList, for example) override action
-// methods (such as deleteItems), we need to be able to call the proper method
-// for each item type.
-//
-// XXX: We could optimize this a bit by either using a batch request, or by
-// using ItemActionRequest. But we still want to call the appropriate method for
-// each item type, so that any overridden methods get called. So for now, it's
-// easier to do the requests separately.
+/**
+ * Hack to support actions on a list of items of more than one type. Since some
+ * specialized lists (ZmMailList or ZmContactList, for example) override action
+ * methods (such as deleteItems), we need to be able to call the proper method
+ * for each item type.
+ *
+ * XXX: We could optimize this a bit by either using a batch request, or by
+ * using ItemActionRequest. But we still want to call the appropriate method for
+ * each item type, so that any overridden methods get called. So for now, it's
+ * easier to do the requests separately.
+ */
 ZmList.prototype._mixedAction =
 function(method, args) {
 	var typedItems = this._getTypedItems(args[0]);

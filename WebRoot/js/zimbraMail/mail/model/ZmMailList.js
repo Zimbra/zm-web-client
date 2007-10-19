@@ -225,8 +225,14 @@ function(convs, msgs) {
 				// msg will have _convCreateNode if it is 2nd msg and caused promotion of virtual conv;
 				// the conv node will have proper count and subject
 				var args = {list:this};
-				conv = msg._convCreateNode ? ZmConv.createFromDom(msg._convCreateNode, args) :
-											 appCtxt.getById(cid);
+				if (msg._convCreateNode) {
+					if (msg._convCreateNode._newId) {
+						msg._convCreateNode.id = msg._convCreateNode._newId;
+					}
+					conv = ZmConv.createFromDom(msg._convCreateNode, args)
+				} else {
+					conv = appCtxt.getById(cid);
+				}
 				if (!conv) {
 					conv = ZmConv.createFromMsg(msg, args);
 				}
@@ -297,6 +303,7 @@ function(convs, msgs) {
 	this._sortAndNotify(newConvs, sortBy, ZmEvent.E_CREATE);
 	this._sortAndNotify(newMsgs, sortBy, ZmEvent.E_CREATE);
 	ZmModel.notifyEach(flaggedItems, ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});
+	this._sortAndNotify(modifiedItems, sortBy, ZmEvent.E_MODIFY, {fields:fields});
 	this._sortAndNotify(newMsgs, sortBy, ZmEvent.E_MODIFY, {fields:fields});
 };
 
@@ -409,13 +416,26 @@ function(item, sortBy) {
 
 ZmMailList.prototype._sortAndNotify =
 function(items, sortBy, event, details) {
+	if (!(items && items.length && (items[0].type == this.type))) { return; }
 	details = details || {};
 	var doSort = ((event == ZmEvent.E_CREATE) || (details && details.fields[ZmItem.F_DATE]));
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if (doSort) {
 			var sortIndex = this._getSortIndex(item, sortBy);
-			this.add(item, sortIndex);
+			var doAdd = true;
+			if (event != ZmEvent.E_CREATE) {
+				// if date changed, re-insert item into correct slot
+				var curIndex = this.indexOf(item);
+				if (sortIndex == curIndex) {
+					doAdd = false;
+				} else {
+					this.remove(item);
+				}
+			}
+			if (doAdd) {
+				this.add(item, sortIndex);
+			}
 			details.sortIndex = sortIndex;
 		}
 		item._notify(event, details);
