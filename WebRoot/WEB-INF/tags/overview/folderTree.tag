@@ -13,7 +13,7 @@
 
 <div class="Tree">
     <table width="100%" cellpadding="0" cellspacing="0">
-        <tr>
+        <tr class="TreeHeaderRow">
             <c:url var="toggleUrl" value="/h/search">
                    <c:param name="${expanded ? 'collapse' : 'expand'}" value="folders"/>
                </c:url>
