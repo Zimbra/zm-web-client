@@ -8,7 +8,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <zm:getMailbox var="mailbox" restauthtoken="${requestScope.zimbra_authToken}" resttargetaccountid="${requestScope.zimbra_target_account_id}"/>
 <c:choose>
-<c:when test="${mailbox.prefs.locale}">
+<c:when test="${not empty mailbox.prefs.locale}">
     <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
 </c:when>
 <c:otherwise>
