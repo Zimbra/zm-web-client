@@ -53,6 +53,9 @@ ZmAccountsPage.__externalCount = 0;
 ZmAccountsPage._definePrefs = function() {
 	ZmAccountsPage.PREFS = {
 		// Primary / Common
+		ALERT: {
+			displayContainer:	ZmPref.TYPE_CUSTOM
+		},
 		NAME: {
 			displayContainer:	ZmPref.TYPE_INPUT
 		},
@@ -173,6 +176,7 @@ ZmAccountsPage.SECTIONS = {
 	},
 	EXTERNAL: {
 		prefs: [
+			"ALERT",
 			"NAME",						// A
 			"HEADER",
 			"EMAIL",					// I - maps to from name in identity
@@ -452,6 +456,12 @@ ZmAccountsPage.prototype._setExternalAccount = function(account, section) {
 	this._setGenericFields(account, section);
 	this._setDataSourceFields(account, section);
 	this._setIdentityFields(account, section);
+	if (this._setControlVisible("ALERT", section, !account.enabled)) {
+		var alert = section.controls["ALERT"];
+		alert.setStyle(DwtAlert.CRITICAL);
+		alert.setTitle(ZmMsg.accountInactiveTitle);
+		alert.setContent(ZmMsg.accountInactiveContent);
+	}
 };
 
 ZmAccountsPage.prototype._setPersona = function(account, section) {
@@ -728,6 +738,15 @@ ZmAccountsPage.prototype._getControlValue = function(id, section) {
 	return null;
 };
 
+ZmAccountsPage.prototype._setControlVisible = function(id, section, visible) {
+	var control = section.controls[id];
+	var setup = ZmAccountsPage.PREFS[id];
+	if (!control || !setup) return false;
+
+	control.setVisible(visible);
+	return visible;
+};
+
 ZmAccountsPage.prototype._setControlEnabled = function(id, section, enabled) {
 	var control = section.controls[id];
 	var setup = ZmAccountsPage.PREFS[id];
@@ -943,6 +962,9 @@ ZmAccountsPage.prototype._setupCustom = function(id, setup, value) {
 		button.setImage("SearchFolder");
 		button.addSelectionListener(new AjxListener(this, this._handleFolderButton));
 		return button;
+	}
+	if (id == "ALERT") {
+		return new DwtAlert(this);
 	}
 
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
@@ -1493,6 +1515,7 @@ ZmAccountsListView.TYPES[ZmAccount.IMAP]					= ZmMsg.accountTypeImap;
 ZmAccountsListView.TYPES[ZmAccount.PERSONA]					= ZmMsg.accountTypePersona;
 
 ZmAccountsListView.WIDTH_NAME	= 170;
+ZmAccountsListView.WIDTH_STATUS	= 80;
 ZmAccountsListView.WIDTH_TYPE	= 80;
 
 // Public methods
@@ -1511,33 +1534,29 @@ ZmAccountsListView.prototype.setCellContents = function(account, field, html) {
 	el.innerHTML = html;
 };
 
-ZmAccountsListView.prototype.setStatusImage = function(account, imageName) {
-	var el = this.getCellElement(account, ZmItem.F_NAME);
-	if (!el) return;
-
-	var el = document.getElementById(this._getCellId(account, ZmItem.F_NAME)+"_status");
-	el.className = AjxImg.getClassForImage(imageName);
-};
-
 // Protected methods
 
 ZmAccountsListView.prototype._getCellContents =
 function(buffer, i, item, field, col, params) {
 	if (field == ZmItem.F_NAME) {
 		var cellId = this._getCellId(item, field);
-		var enabled = !(item instanceof ZmDataSource) || item.enabled;
-		buffer[i++] = "<table border=0 cellpadding=0 cellspacing=0>";
-		buffer[i++] = "<tr><td id='";
+		buffer[i++] = "<div id='";
 		buffer[i++] = cellId+"_name";
 		buffer[i++] = "'>";
 		buffer[i++] = item.getName();
-		buffer[i++] = "</td>";
-		buffer[i++] = "<td><div id='";
-		buffer[i++] = cellId+"_status";
-		buffer[i++] = "' class='";
-		buffer[i++] = enabled ? "ImgBlank_16" : "ImgWarning";
-		buffer[i++] = "'></div></td></tr>";
-		buffer[i++] = "</table>";
+		buffer[i++] = "</div>";
+		return i;
+	}
+	if (field == ZmItem.F_STATUS) {
+		if (item instanceof ZmDataSource && !item.enabled) {
+			buffer[i++] = "<table border=0 cellpadding=0 cellpadding=0><tr>";
+			buffer[i++] = "<td><div class='ImgCritical_12'></div></td><td>";
+			buffer[i++] = ZmMsg.ALT_ERROR;
+			buffer[i++] = "</td></tr></table>";
+		}
+		else {
+			buffer[i++] = AjxMsg.ok;
+		}
 		return i;
 	}
 	if (field == ZmItem.F_EMAIL) {
@@ -1569,7 +1588,9 @@ ZmAccountsListView.prototype._getToolTip = function(field, item, ev, div, match)
 
 ZmAccountsListView.prototype._getHeaderList = function() {
 	return [
+		//new DwtListHeaderItem(id, label, iconInfo, width, sortable, resizeable, visible, name, align)
 		new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg.accountName, null, ZmAccountsListView.WIDTH_NAME),
+		new DwtListHeaderItem(ZmItem.F_STATUS, ZmMsg.status, null, ZmAccountsListView.WIDTH_STATUS, null, null, null, null, "center"),
 		new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.emailAddr),
 		new DwtListHeaderItem(ZmItem.F_TYPE, ZmMsg.type, null, ZmAccountsListView.WIDTH_TYPE)
 	];

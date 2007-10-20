@@ -726,6 +726,7 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain' colspan=3>
 			<table width=100%>
+				<tr><td colspan=2><div id='${id}_EXTERNAL_ALERT'></div></td></tr>
 
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.accountNameLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_EXTERNAL_NAME' tabindex='2010' size=30></div></td>
