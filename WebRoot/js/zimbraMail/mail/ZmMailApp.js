@@ -30,6 +30,10 @@ ZmMailApp = function(container, parentController) {
 	this._dataSourceCollection = {};
 	this._identityCollection = {};
 	this._signatureCollection = {};
+
+	var settings = appCtxt.getSettings();
+	settings.getSetting(ZmSetting.VIEW_AS_HTML).addChangeListener(new AjxListener(this, this._settingChangeListener));
+	settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
 };
 
 // Organizer and item-related constants
@@ -1238,4 +1242,73 @@ function() {
 		this._signatureCollection[activeAcct] = new ZmSignatureCollection();
 	}
 	return this._signatureCollection[activeAcct];
+};
+
+/**
+ * Individual setting listener.
+ */
+ZmMailApp.prototype._settingChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) { return; }
+
+	var setting = ev.source;
+	var mlc = this.getMailListController();
+	if (!mlc) { return; }
+
+	if (setting.id == ZmSetting.VIEW_AS_HTML) {
+		var dpv = mlc._doublePaneView;
+		if (dpv) {
+			var msg = dpv.getMsg();
+			if (msg) {
+				dpv.reset();
+				dpv.setMsg(msg);
+			}
+		}
+	}
+};
+
+/**
+ * Settings listener. Process changed settings as a group, so that we
+ * don't redo the search more than once if more than one relevant mail
+ * setting has changed.
+ */
+ZmMailApp.prototype._settingsChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTINGS) { return; }
+
+	var list = ev.getDetail("settings");
+	var mlc = this.getMailListController();
+	if (!mlc) { return; }
+	var curView = mlc._currentView;
+	var newView = null, groupByView = null, toggle = false;
+
+	for (var i = 0; i < list.length; i++) {
+		var setting = list[i];
+		if (setting.id == ZmSetting.PAGE_SIZE) {
+			if (curView != ZmController.MSG_VIEW) {
+				newView = groupByView || curView;
+			}
+		} else if (setting.id == ZmSetting.INITIAL_GROUP_MAIL_BY) {
+			if (curView == ZmController.CONVLIST_VIEW || curView == ZmController.TRAD_VIEW) {
+				var value = appCtxt.get(setting.id);
+				var view = (value == ZmSetting.GROUP_BY_CONV) ? ZmController.CONVLIST_VIEW : ZmController.TRAD_VIEW;
+				if (view != curView) {
+					groupByView = view;
+				}
+			}
+		} else if (setting.id == ZmSetting.READING_PANE_ENABLED) {
+			if (curView != ZmController.MSG_VIEW) {
+				toggle = true;
+			}
+		} else if (setting.id == ZmSetting.SHOW_FRAGMENTS) {
+			if (curView != ZmController.MSG_VIEW) {
+				newView = groupByView || curView;
+			}
+		}
+	}
+	newView = groupByView || newView;
+	
+	if (newView || toggle) {
+		mlc.switchView(newView, toggle);
+	}
 };

@@ -105,14 +105,11 @@ function() {
 /**
  * Handles switching views based on action from view menu.
  *
- * @param view		the id of the menu item
- * @param toggle	flip state of reading pane
+ * @param view		[constant]		the id of the new view
  */
 ZmMailListController.prototype.switchView =
-function(view, toggle) {
-	if (view == ZmController.READING_PANE_VIEW) {
-		this._toggleReadingPane(view, toggle);
-	} else if (view) {
+function(view) {
+	if (view) {
 		this._app._groupBy = ZmMailListController.GROUP_BY_SETTING[view];
 		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
 		var limit = appCtxt.get(ZmSetting.PAGE_SIZE); // bug fix #3365

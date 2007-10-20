@@ -43,6 +43,7 @@ ZmEvent.S_TAG			= "TAG";
 ZmEvent.S_PICKER		= "PICKER";
 ZmEvent.S_SEARCH		= "SEARCH";
 ZmEvent.S_SETTING		= "SETTING";
+ZmEvent.S_SETTINGS		= "SETTINGS";
 ZmEvent.S_MOUNTPOINT	= "MOUNTPOINT";
 
 // Event types

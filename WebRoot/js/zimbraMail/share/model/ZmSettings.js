@@ -30,7 +30,7 @@
  */
 ZmSettings = function(noInit) {
 
-	ZmModel.call(this, ZmEvent.S_SETTING);
+	ZmModel.call(this, ZmEvent.S_SETTINGS);
 
 	this._settings = {};	// settings by ID
 	this._nameToId = {};	// map to get from server setting name to setting ID
@@ -380,9 +380,13 @@ function(list, callback, result) {
 			setting.origValue = setting.value;
 			setting._notify(ZmEvent.E_MODIFY);
 		}
+		// notify any listeners on the settings as a whole
+		this._notify(ZmEvent.E_MODIFY, {settings:list});
 	}
 	
-	if (callback) callback.run(result);
+	if (callback) {
+		callback.run(result);
+	}
 };
 
 // Set defaults which are determined dynamically (which can't be set in static code).

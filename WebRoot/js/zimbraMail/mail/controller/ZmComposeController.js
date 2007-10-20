@@ -78,7 +78,7 @@ ZmComposeController = function(container, mailApp) {
 	this._dialogPopdownListener = new AjxListener(this, this._dialogPopdownActionListener);
 
 	var settings = appCtxt.getSettings();
-	var scl = this._settingsChangeListener = new AjxListener(this, this._settingsChangeListener);
+	var scl = this._settingChangeListener = new AjxListener(this, this._settingChangeListener);
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
 		settings.getSetting(ZmComposeController.SETTINGS[i]).addChangeListener(scl);
 	}
@@ -120,7 +120,7 @@ ZmComposeController.prototype.dispose =
 function() {
 	var settings = appCtxt.getSettings();
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
-		settings.getSetting(ZmComposeController.SETTINGS[i]).removeChangeListener(this._settingsChangeListener);
+		settings.getSetting(ZmComposeController.SETTINGS[i]).removeChangeListener(this._settingChangeListener);
 	}
 	this._composeView._dispose();
 };
@@ -1043,7 +1043,7 @@ function(ev) {
 	}
 };
 
-ZmComposeController.prototype._settingsChangeListener =
+ZmComposeController.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 

@@ -32,7 +32,7 @@ ZmReminderController = function(calController) {
 	this._housekeepingTimedAction = new AjxTimedAction(this, this._housekeepingAction);
 	this._refreshTimedAction = new AjxTimedAction(this, this.refresh);
 	var settings = appCtxt.getSettings();
-	var listener = new AjxListener(this, this._settingsChangeListener);
+	var listener = new AjxListener(this, this._settingChangeListener);
 	settings.getSetting(ZmSetting.CAL_REMINDER_WARNING_TIME).addChangeListener(listener);
 	this._warningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 };
@@ -50,7 +50,7 @@ function() {
 	return "ZmReminderController";
 };
 
-ZmReminderController.prototype._settingsChangeListener =
+ZmReminderController.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 	var setting = ev.source;

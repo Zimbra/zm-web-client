@@ -83,6 +83,21 @@ function(item, callback, results) {
 };
 
 /**
+ * Handles switching mail views.
+ *
+ * @param view		[constant]*		the id of the new view
+ * @param toggle	[boolean]*		if true, flip state of reading pane
+ */
+ZmDoublePaneController.prototype.switchView =
+function(view, toggle) {
+	ZmMailListController.prototype.switchView.apply(this, arguments);
+	if ((view == ZmController.READING_PANE_VIEW) || toggle) {
+		this._toggleReadingPane(ZmController.READING_PANE_VIEW, toggle);
+	}
+};
+
+
+/**
 * Clears the conversation view, which actually just clears the message view.
 */
 ZmDoublePaneController.prototype.reset =
@@ -95,8 +110,8 @@ function() {
 /**
  * Shows or hides the reading pane.
  *
- * @param view		the id of the menu item
- * @param toggle		flip state of reading pane
+ * @param view		[constant]*		the id of the new view
+ * @param toggle	[boolean]*		if true, flip state of reading pane
  */
 ZmDoublePaneController.prototype._toggleReadingPane = 
 function(view, toggle) {
@@ -108,7 +123,7 @@ function(view, toggle) {
 		// toggle display of reading pane
 		mi.setChecked(!mi.getChecked(), true);
 	} else {
-		if (this._readingPaneOn == mi.getChecked()) return;
+		if (this._readingPaneOn == mi.getChecked()) { return; }
 	}
 
 	this._readingPaneOn = mi.getChecked();

@@ -20,7 +20,7 @@ ZmCalendarApp = function(container) {
 	ZmApp.call(this, ZmApp.CALENDAR, container);
 
 	var settings = appCtxt.getSettings();
-	var listener = new AjxListener(this, this._settingsChangeListener);
+	var listener = new AjxListener(this, this._settingChangeListener);
 	settings.getSetting(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL).addChangeListener(listener);
 	settings.getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK).addChangeListener(listener);
 };
@@ -593,7 +593,7 @@ function(type) {
 	this.getApptComposeController().initComposeView(true);
 };
 
-ZmCalendarApp.prototype._settingsChangeListener =
+ZmCalendarApp.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 	
@@ -652,7 +652,7 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	// safety check since this is static code (may not have loaded calendar)
 	var fdowSetting = appCtxt.getSettings().getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK);
 	if (fdowSetting) {
-		var listener = new AjxListener(null, ZmCalendarApp._settingsChangeListener, cal);
+		var listener = new AjxListener(null, ZmCalendarApp._settingChangeListener, cal);
 		fdowSetting.addChangeListener(listener);
 	}
 	
@@ -663,7 +663,7 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	return dateButton;
 };
 
-ZmCalendarApp._settingsChangeListener =
+ZmCalendarApp._settingChangeListener =
 function(cal, ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 

@@ -20,7 +20,7 @@ ZmBasicPicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.BASIC);
 	
 	var settings = appCtxt.getSettings();
-	var listener = new AjxListener(this, this._settingsChangeListener);
+	var listener = new AjxListener(this, this._settingChangeListener);
 	settings.getSetting(ZmSetting.SEARCH_INCLUDES_SPAM).addChangeListener(listener);
 	settings.getSetting(ZmSetting.SEARCH_INCLUDES_TRASH).addChangeListener(listener);
 };
@@ -215,7 +215,7 @@ function() {
 	this._cbQuery = cbQuery;
 };
 
-ZmBasicPicker.prototype._settingsChangeListener =
+ZmBasicPicker.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 	

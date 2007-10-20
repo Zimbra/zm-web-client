@@ -61,7 +61,7 @@ ZmZimbraMail = function(params) {
     if (window.DBG && !DBG.isDisabled()) {
 		DBG.setTitle("Debug (" + branch + ")");
     }
-    var listener = new AjxListener(this, this._settingsChangeListener);
+    var listener = new AjxListener(this, this._settingChangeListener);
 	this._settings.getSetting(ZmSetting.QUOTA_USED).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.POLLING_INTERVAL).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.SKIN_NAME).addChangeListener(listener);
@@ -1473,7 +1473,7 @@ function(ev) {
 	DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER RESET (" + (new Date()).toLocaleString() + ")");
 };
 
-ZmZimbraMail.prototype._settingsChangeListener =
+ZmZimbraMail.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 	

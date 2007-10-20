@@ -129,7 +129,7 @@ function(callback, result) {
 		this.isLoaded = true; // user has no contacts
 	}
 	this._setGalAutocompleteEnabled();
-    var listener = new AjxListener(this, this._settingsChangeListener);
+    var listener = new AjxListener(this, this._settingChangeListener);
 	var settings = appCtxt.getSettings();
 	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE).addChangeListener(listener);
 	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION).addChangeListener(listener);
@@ -1197,7 +1197,7 @@ function(aclv, callback, ex) {
 	callback.run();
 };
 
-ZmContactList.prototype._settingsChangeListener =
+ZmContactList.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) {return};
 	var setting = ev.source;

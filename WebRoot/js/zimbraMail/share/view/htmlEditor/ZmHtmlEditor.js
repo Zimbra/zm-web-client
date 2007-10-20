@@ -36,7 +36,7 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
 
 	var settings = appCtxt.getSettings();
-	var listener = new AjxListener(this, this._settingsChangeListener);
+	var listener = new AjxListener(this, this._settingChangeListener);
 	settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
 	settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
 	settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
@@ -1180,7 +1180,7 @@ function(ev) {
 	this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, ev.justification, true);
 };
 
-ZmHtmlEditor.prototype._settingsChangeListener =
+ZmHtmlEditor.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 
