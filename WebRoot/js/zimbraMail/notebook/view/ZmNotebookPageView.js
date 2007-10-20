@@ -68,17 +68,7 @@ function(page) {
 		}
 
 		var content = ZmNotebookPageView._generateContent(page);
-
-		//DBG.showTiming(true);
-		//DBG.timePt("-- ZmNotebookPageView#set --");
-		/*** remove all styles ***
-		var re = /<style(.|\n)*?>(.|\n)*?<\/style(.|\n)*?>/gi;
-		content = content.replace(re);
-		/***/
 		element.innerHTML = content;
-		//DBG.timePt("set innerHTML");
-		//DBG.showTiming(false);
-
 		ZmNotebookPageView._fixLinks(element);
 		ZmNotebookPageView._findObjects(this._getObjectMgr(), element);
 	}
@@ -241,17 +231,6 @@ ZmNotebookPageView._iframeOnLoad = function(iframe) {
 	}else if(path!=window.parent.location.pathname && path!=""){
 		view.fetchInfo(path);
 	}	
-	
-	/*
-	if(view.currentSrc){
-		url = view.currentSrc;
-		view.currentSrc = null;
-		view.fetchPageInfo(url);
-	}else if(url!=window.parent.location.href && url!="about:blank"){
-		window.parent.DBG.println("JSON URL FETCH:"+url);
-		view.fetchPageInfo(url);
-	}	
-	*/
 	
 	view.addIconStyles(iframe.contentWindow.document);
 	}

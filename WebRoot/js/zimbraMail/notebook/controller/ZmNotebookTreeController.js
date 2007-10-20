@@ -23,15 +23,6 @@ ZmNotebookTreeController = function() {
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);
 	this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
-	/***
-	this._listeners[ZmOperation.EDIT_NOTEBOOK_INDEX] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
-	this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME] = new AjxListener(this, this._editNotebookListener);
-	this._listeners[ZmOperation.EDIT_NOTEBOOK_STYLES] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
-	this._listeners[ZmOperation.EDIT_NOTEBOOK_SIDE_BAR] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
-	this._listeners[ZmOperation.EDIT_NOTEBOOK_HEADER] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
-	this._listeners[ZmOperation.EDIT_NOTEBOOK_FOOTER] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
-	/***/
-
 	this._eventMgrs = {};
 };
 
@@ -69,7 +60,6 @@ function(actionMenu, type, id) {
 		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 			isNotebook = (!isRoot && notebook.parent.id == rootId);
 			menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_NOTEBOOK);
-			//menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
 			menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
 			menuItem.setEnabled(!isLinkOrRemote || ZmNotebookTreeController.__isAllowed(notebook, ZmShare.PERM_CREATE_SUBDIR));
 
@@ -110,15 +100,6 @@ function() {
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SEP,
 		ZmOperation.REFRESH
-		/***
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_INDEX
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_HEADER, ZmOperation.EDIT_NOTEBOOK_FOOTER,
-		ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
-		***/
 	);
 	return ops;
 };
@@ -136,15 +117,6 @@ function() {
 	}
 	ops.push(
 		ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.REFRESH
-		/***
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_INDEX
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_HEADER, ZmOperation.EDIT_NOTEBOOK_FOOTER,
-		ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
-		ZmOperation.SEP,
-		ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
-		/***/
 	);
 	return ops;
 };
@@ -220,21 +192,6 @@ function(ev, treeView, overviewId) {
         }
     }
 };
-
-/***
-ZmNotebookTreeController.prototype._newNotebookListener =
-function(ev) {
-	this._pendingActionData = this._getActionedOrganizer(ev);
-
-	var overviewController = appCtxt.getOverviewController();
-	var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
-	var folder = appCtxt.getById(this._pendingActionData.id);
-
-	var newNotebookDialog = appCtxt.getNewNotebookDialog();
-	newNotebookDialog.setParentFolder(folder);
-	newNotebookDialog.popup();
-};
-/***/
 
 ZmNotebookTreeController.prototype._shareNotebookListener =
 function(ev) {
