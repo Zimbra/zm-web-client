@@ -440,7 +440,8 @@ function(rowId, isCondition) {
 	for (var i = 0; i < buttons.length; i++) {
 		var b = buttons[i];
 		var button = new DwtButton(this);
-		button.setSize(ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH, Dwt.DEFAULT);
+// MOW: this was messing up velodrome skin
+//		button.setSize(ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH, Dwt.DEFAULT);
 		button.setImage(b);
 		button.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		button.setData(ZmFilterRuleDialog.IS_CONDITION, isCondition);

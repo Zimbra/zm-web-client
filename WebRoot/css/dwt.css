@@ -836,7 +836,8 @@
  * TODO: make sure this has DwtInputField + DwtInputField-error at same time
  *
  */
-.DwtInputField input,
+.DwtInputField input[type="text"], 
+.DwtInputField input[type="password"],
 .DwtSimpleInput {
 	@InputField@
 }
@@ -844,7 +845,8 @@
 	@TextArea@
 }
 
-.DwtInputField-error input,
+.DwtInputField-error input[type="text"],
+.DwtInputField-error input[type="password"],
 .DwtSimpleInput-error {
 	@InputField-error@
 }
@@ -852,7 +854,8 @@
 	@TextArea-error@
 }
 
-.DwtInputField-focused input,
+.DwtInputField-focused input[type="text"],
+.DwtInputField-focused input[type="password"],
 .DwtSimpleInput-focused {
 	@InputField-focused@
 }
@@ -860,7 +863,8 @@
 	@TextArea-focused@
 }
 
-.DwtInputField-disabled input,
+.DwtInputField-disabled input[type="text"],
+.DwtInputField-disabled input[type="password"],
 .DwtSimpleInput-disabled {
 	@InputField-disabled@
 }
@@ -868,6 +872,8 @@
 	@TextArea-disabled@
 }
 
+.DwtInputField-hint input[type="text"],
+.DwtInputField-hint input[type="password"],
 .DwtInputField-hint input,
 .DwtSimpleInput-hint {
 	@InputField-hint@
@@ -876,7 +882,8 @@
 	@Text-light@
 }
 
-.DwtInputField-errorhint input,
+.DwtInputField-errorhint input[type="text"],
+.DwtInputField-errorhint input[type="password"],
 .DwtSimpleInput-errorhint {
 	@InputField-error@
 	@Text-light@
@@ -986,11 +993,13 @@
 	display: none;
 }
 
-.DwtPropertyEditor input.DwtPropertyEditor-input {
+.DwtPropertyEditor input[type="text"].DwtPropertyEditor-input,
+.DwtPropertyEditor input[type="password"].DwtPropertyEditor-input {
 	position: absolute;
 	@InputField@
 }
-.DwtPropertyEditor input.DwtPropertyEditor-input-error {
+.DwtPropertyEditor input[type="text"].DwtPropertyEditor-input-error,
+.DwtPropertyEditor input[type="password"].DwtPropertyEditor-input-error {
 	@InputField-error@
 }
 
@@ -1435,7 +1444,10 @@
 	background-color: #fff;
 }
 .DwtSpinner td { padding: 0; margin: 0; }
-.DwtSpinner-inputCell input { margin: 0; border: none; padding: 1px 2px; text-align: right; }
+.DwtSpinner-inputCell input[type='text'],
+.DwtSpinner-inputCell input[type='text'] { 
+	margin: 0; border: none; padding: 1px 2px; text-align: right; 
+}
 
 .DwtSpinner-UpBtn, .DwtSpinner-DownBtn {
 	width: 11px;
@@ -1715,7 +1727,8 @@
 	padding-right:2px;
 }
 
-.DwtComboBox .DwtInputField input {
+.DwtComboBox .DwtInputField input[type='text'],
+.DwtComboBox .DwtInputField input[type='password'] {
 	border:none;
 }
 

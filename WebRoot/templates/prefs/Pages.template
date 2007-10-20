@@ -946,7 +946,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 				<input id='${id}_name' type='text' width=100>
 				<$=Dwt.CARET_HACK_END$>
 			</td>
-			<td width='1%' style='align:right;'>
+			<td width='1%' style='text-align:right;white-space:nowrap;'>
 				<input id='${id}_active' type='checkbox' name='cbActive' checked>
 				<$=ZmMsg.active$>
 			</td>
