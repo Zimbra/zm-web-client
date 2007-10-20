@@ -213,7 +213,7 @@ function(item, type, strictText, strictEmail) {
 			attendee = AjxUtil.createProxy(attendee);
 			attendee._inviteAddress = addr;
 			attendee.getEmail = function() {
-				return this._inviteAddress;
+				return this._inviteAddress || this.constructor.prototype.getEmail.apply(this);
 			}
 		}
 
