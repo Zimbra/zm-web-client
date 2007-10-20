@@ -190,38 +190,35 @@ function(ev, treeView, overviewId) {
 
 	if (ev.type != this.type) return;
 
-	//bug:10268
-	/*	
-	var fields = ev.getDetail("fields");
-	if (!fields || !(fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_REST_URL])) {
-		return;
-	}
-	*/
-	
-	var notebookController = AjxDispatcher.run("GetNotebookController");
-	var shownPage = notebookController.getPage();
-	if (!shownPage) {
-		return;
-	}
-	
-	var organizers = ev.getDetail("organizers");
-	if (!organizers && ev.source)
-		organizers = [ev.source];
+    if(overviewId != this._actionedOverviewId) return;
 
-	for (var i = 0; i < organizers.length; i++) {
-		var organizer = organizers[i];
-		var id = organizer.id;
-		var parentId  = organizer.parent ? organizer.parent.id : null;
-		if (id == shownPage.id || id == shownPage.folderId || shownPage.id == parentId) {
-			if(id == shownPage.folderId && shownPage.name == ZmNotebook.PAGE_INDEX){
-				shownPage.restUrl = organizer.restUrl;
-			}
-			var appViewMgr = appCtxt.getAppViewMgr();
-			if( appViewMgr.getCurrentViewId() != ZmController.NOTEBOOK_FILE_VIEW ) {
-				notebookController.gotoPage(shownPage);
-			}
-		}
-	}
+    var notebookController = AjxDispatcher.run("GetNotebookController");
+    var cache = AjxDispatcher.run("GetNotebookCache");
+
+    var shownPage = notebookController.getPage();
+    if (!shownPage) {
+        return;
+    }
+	
+    var organizers = ev.getDetail("organizers");
+    if (!organizers && ev.source)
+        organizers = [ev.source];
+
+    for (var i = 0; i < organizers.length; i++) {
+        var organizer = organizers[i];
+        var id = organizer.id;
+        var parentId  = organizer.parent ? organizer.parent.id : null;
+        if (shownPage.isChildOf(id) || id == shownPage.id || id == shownPage.folderId || shownPage.id == parentId) {
+            if(id == shownPage.folderId && shownPage.name == ZmNotebook.PAGE_INDEX){
+                shownPage.restUrl = organizer.restUrl;
+            }
+            var item = cache.getItemInfo({id:shownPage.id},true);
+            var appViewMgr = appCtxt.getAppViewMgr();
+            if( appViewMgr.getCurrentViewId() != ZmController.NOTEBOOK_FILE_VIEW ) {
+                notebookController.gotoPage(item);
+            }
+        }
+    }
 };
 
 /***

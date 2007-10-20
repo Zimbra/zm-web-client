@@ -127,6 +127,21 @@ function() {
 	return isReadOnly;
 };
 
+ZmPage.prototype.isChildOf =
+function(folderId) {
+	var folder = appCtxt.getById(this.folderId);
+
+	if(this.folderId == folderId) return true;
+
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
+	while (folder && folder.id && (folder.id != rootId) ) {
+		if(folder.id == folderId) return true;
+		folder = folder.parent;
+	}
+
+	return false;
+};
+
 ZmPage.prototype.isIndex =
 function() {
 	return ((this.name == ZmNotebook.PAGE_INDEX) && (!this._customIndexPage));

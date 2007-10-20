@@ -569,10 +569,15 @@ ZmNotebookPageView._iframeOnLoad1 = function(iframe) {
 	if(!isErrorPage){	
 		view.currentSrc = iSrc;
 		view.currentPath = iframe.contentWindow.location.pathname;
-		ndoc.open();
-		ndoc.write(cwin.document.documentElement.innerHTML);
-		ndoc.close();
-	}else{		
+        if(!view._replaceHTML || AjxEnv.isIE){
+	        ndoc.open();
+    	    ndoc.write(cwin.document.documentElement.innerHTML);
+        	ndoc.close();        	
+        	view._replaceHTML = true;
+        }else{
+	  		view.copyIframeContents(ndoc,cwin.document);
+        };
+  	}else{
 		DBG.println(AjxDebug.DBG3,"Missing Page:"+iSrc);
 		view.createNewPage(cwin.location.pathname);	
 	}
@@ -722,4 +727,38 @@ ZmNotebookPageView.prototype.fixCrossDomainReference = function(url){
 	}
 	return url;	
 
+};
+
+ZmNotebookPageView.prototype.copyIframeContents =
+function(ndoc, cdoc) {
+
+	var h1 = ndoc.getElementsByTagName("head") ?  ndoc.getElementsByTagName("head")[0] : null;
+    var b1 = ndoc.getElementsByTagName("body") ?  ndoc.getElementsByTagName("body")[0] : null;
+
+    var h2 = cdoc.getElementsByTagName("head") ?  cdoc.getElementsByTagName("head")[0] : null;
+    var b2 = cdoc.getElementsByTagName("body") ?  cdoc.getElementsByTagName("body")[0] : null;
+
+    if(h1){
+        if(b1) {
+            b1.innerHTML = "";
+        }
+        var node = h1.firstChild;
+        while(node){
+           var next = node.nextSibling;
+           node.parentNode.removeChild(node);
+           node = next;
+        }
+        h1.innerHTML = h2.innerHTML;
+    }
+
+    if(b1){
+    	var node = b1.firstChild;
+        while(node){
+        	var next = node.nextSibling;
+            node.parentNode.removeChild(node);
+            node = next;
+        }
+        b1.innerHTML = b2.innerHTML;
+    }
+	ZmNotebookPageView._iframeOnLoad(this._iframe);	
 };
