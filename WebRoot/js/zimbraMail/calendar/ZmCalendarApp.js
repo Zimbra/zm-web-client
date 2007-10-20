@@ -41,8 +41,8 @@ ZmApp.LOAD_SORT[ZmApp.CALENDAR]			= 40;
 ZmApp.QS_ARG[ZmApp.CALENDAR]			= "calendar";
 
 // ms to wait before fetching reminders
-ZmCalendarApp.REMINDER_START_DELAY = 30000;
-ZmCalendarApp.MINICAL_DELAY = 20000;
+ZmCalendarApp.REMINDER_START_DELAY = 10000;
+ZmCalendarApp.MINICAL_DELAY = 5000;
 
 ZmCalendarApp.COLORS = [];
 // these need to match CSS rules
