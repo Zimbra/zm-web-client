@@ -298,7 +298,7 @@ function(view) {
 	if (!buttons) return;
 	this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons});
 	// remove text for Print, Delete, and Move buttons
-	var list = [ZmOperation.PRINT, ZmOperation.DELETE, ZmOperation.MOVE];
+	var list = [ZmOperation.PRINT, ZmOperation.MOVE];
 	for (var i = 0; i < list.length; i++) {
 		var button = this._toolbar[view].getButton(list[i]);
 		if (button) {
