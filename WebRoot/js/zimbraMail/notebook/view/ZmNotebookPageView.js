@@ -741,3 +741,8 @@ function(ndoc, cdoc) {
     }
 	ZmNotebookPageView._iframeOnLoad(this._iframe);	
 };
+
+ZmNotebookPageView.prototype.isHistoryLoading =
+function() {
+	return (this._controller.historyLoading == true);
+};

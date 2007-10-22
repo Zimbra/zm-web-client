@@ -167,30 +167,11 @@ function(ev, treeView, overviewId) {
     var notebookController = AjxDispatcher.run("GetNotebookController");
     var cache = AjxDispatcher.run("GetNotebookCache");
 
-    var shownPage = notebookController.getPage();
-    if (!shownPage) {
-        return;
-    }
-	
-    var organizers = ev.getDetail("organizers");
+   	var organizers = ev.getDetail("organizers");
     if (!organizers && ev.source)
         organizers = [ev.source];
 
-    for (var i = 0; i < organizers.length; i++) {
-        var organizer = organizers[i];
-        var id = organizer.id;
-        var parentId  = organizer.parent ? organizer.parent.id : null;
-        if (shownPage.isChildOf(id) || id == shownPage.id || id == shownPage.folderId || shownPage.id == parentId) {
-            if(id == shownPage.folderId && shownPage.name == ZmNotebook.PAGE_INDEX){
-                shownPage.restUrl = organizer.restUrl;
-            }
-            var item = cache.getItemInfo({id:shownPage.id},true);
-            var appViewMgr = appCtxt.getAppViewMgr();
-            if( appViewMgr.getCurrentViewId() != ZmController.NOTEBOOK_FILE_VIEW ) {
-                notebookController.gotoPage(item);
-            }
-        }
-    }
+	notebookController.handleUpdate(ev,organizers);    
 };
 
 ZmNotebookTreeController.prototype._shareNotebookListener =

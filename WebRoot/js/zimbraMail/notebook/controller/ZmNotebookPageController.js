@@ -324,3 +324,36 @@ ZmNotebookPageController.prototype._refreshListener = function(event) {
 		ZmNotebookController.prototype._refreshListener.call(this, event);		
 	}
 };
+
+ZmNotebookController.prototype.handleUpdate =
+function(ev, organizers) {
+
+	if(!organizers) return;
+		
+	var shownPage = this.getPage();
+    if (!shownPage) return;
+	
+	var cache = this._app.getNotebookCache();	
+	for (var i = 0; i < organizers.length; i++) {
+        var organizer = organizers[i];
+        var id = organizer.id;
+        var parentId  = organizer.parent ? organizer.parent.id : null;
+        if (shownPage.isChildOf(id) || id == shownPage.id || id == shownPage.folderId || shownPage.id == parentId) {
+            if(id == shownPage.folderId && shownPage.name == ZmNotebook.PAGE_INDEX){
+                shownPage.restUrl = organizer.restUrl;
+            }
+            var item = cache.getItemInfo({id:shownPage.id},true);
+            cache.putItem(item);
+            var oldName = ev.getDetail("oldName");
+            if(oldName && organizer.restUrl) {
+            	var oldUrl = organizer.restUrl.replace(new RegExp(("/"+organizer.name+"(/)?$")),"/" + oldName);
+            	cache.updateItems(id, oldUrl, organizer.restUrl);
+            }
+            var appViewMgr = appCtxt.getAppViewMgr();
+            if( appViewMgr.getCurrentViewId() != ZmController.NOTEBOOK_FILE_VIEW ) {
+                this.gotoPage(item);
+            }
+        }
+    }
+
+};

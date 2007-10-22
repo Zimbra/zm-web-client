@@ -414,6 +414,12 @@ function() {
 	return this._toolbar[this._currentView];
 };
 
+//override
+ZmNotebookController.prototype.gotoPage =
+function(pageRef) {
+	
+};
+
 //
 // Private functions
 //

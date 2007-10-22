@@ -859,3 +859,47 @@ function(item) {
 	}
 	return item;	
 };
+
+ZmNotebookCache.prototype.updateItems =
+function(folderId, oldRestUrl, newRestUrl) {
+	
+	this._updateOrganizers(folderId, oldRestUrl, newRestUrl);	
+	this._updateCacheItems(folderId, oldRestUrl, newRestUrl);
+
+};
+
+ZmNotebookCache.prototype._updateOrganizers =
+function(folderId, oldRestUrl, newRestUrl) {
+	
+	var folder = appCtxt.getById(folderId);	
+	if(!folder) return;
+	
+	var notebooks = folder ? folder.children.getArray() : [];
+	for (var i = 0; i < notebooks.length; i++) {
+		var notebook = notebooks[i];
+		if(notebook && notebook.restUrl) {
+			notebook.restUrl = notebook.restUrl.replace(oldRestUrl,newRestUrl);				
+		}
+		if(notebook) {
+			this._updateOrganizers(notebook.id, oldRestUrl, newRestUrl);
+			this._updateCacheItems(notebook.id, oldRestUrl, newRestUrl);
+		}
+	}	
+
+};
+
+ZmNotebookCache.prototype._updateCacheItems =
+function(folderId, oldRestUrl, newRestUrl) {
+	
+	var fItems = this._foldersMap[folderId];	
+	if(!fItems) return;
+	
+	var pages = fItems.pages;
+	for(var i in pages){
+		var page = pages[i];
+		if(page && page.restUrl){
+			page.restUrl = page.restUrl.replace(oldRestUrl,newRestUrl);	
+		}
+	}
+
+};
