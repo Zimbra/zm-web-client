@@ -12,13 +12,13 @@
 <c:set var="expanded" value="${sessionScope.expanded.folders ne 'collapse'}"/>
 
 <div class="Tree">
-    <table width="100%" cellpadding="0" cellspacing="0">
+    <table width="150" cellpadding="0" cellspacing="0">
         <tr class="TreeHeaderRow">
             <c:url var="toggleUrl" value="/h/search">
                    <c:param name="${expanded ? 'collapse' : 'expand'}" value="folders"/>
                </c:url>
                <th style="width:20px"><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}"/></a></th>
-            <th class="Header"><fmt:message key="folders"/></th>
+            <th class="Header" nowrap="nowrap"><fmt:message key="folders"/></th>
             <th width="1%" align="right"  class="ZhTreeEdit">
                 <c:url value="/h/mfolders" var="mfoldersUrl">
                         <c:if test="${not empty param.sfi}">
