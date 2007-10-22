@@ -25,31 +25,30 @@
 <c:otherwise>
 <app:head mailbox="${mailbox}" title=""/>
 	<link href="<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" rel="stylesheet" type="text/css" />
-	<table class="ZhHomeVoiceBox" cellpadding=0 cellspacing=0 border=0>
-		<zm:computeSearchContext var="context" usecache="true" query="phone:${phone}" types="voicemail"/>
-			<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status" begin="0" end="4">
-				<c:url var="url" value="/h/voicemail">
-					<c:param name="phone" value="${phone}"/>
-					<c:param name="id" value="${hit.voiceMailItemHit.id}"/>
-				</c:url>
-				<tr class="ZhHomeRow">
-					<td class="ZhHomeCell"  >
-						<table  width="100%" cellpadding=0 cellspacing=0 border=0 style="padding-bottom:4px;"><tr>
-							<td>
-								<b>${hit.voiceMailItemHit.displayCaller}</b>
-							</td>
-							<td width="15%">
-								${fn:escapeXml(zm:displayMsgDate(pageContext, hit.voiceMailItemHit.date))}
-							</td>
-						</tr></table>
-						<a target="_top" class="ZhHomeTextLink" href="${url}">
-							<app:img src="voicemail/ImgPlayMessage.gif" altkey="ALT_FLAGGED"/>
-							<u><fmt:message key="listen"/></u>
-						</a>
-					</td>
-				</tr>
-			</c:forEach>
-    </table>
-
+    <div class="ZhHomeVoiceBody">
+        <table class="ZhHomeVoiceTable" cellpadding=0 cellspacing=0 border=0>
+            <zm:computeSearchContext var="context" usecache="true" query="phone:${phone}" types="voicemail"/>
+            <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status" begin="0" end="4">
+                <c:url var="url" value="/h/voicemail">
+                    <c:param name="phone" value="${phone}"/>
+                    <c:param name="id" value="${hit.voiceMailItemHit.id}"/>
+                </c:url>
+                <tr class="ZhHomeRow">
+                    <td nowrap width=120px class="ZhHomeCell">
+                        <b>${hit.voiceMailItemHit.displayCaller}</b>
+                    </td>
+                    <td nowrap width=90px class="ZhHomeCell">
+                        ${fn:escapeXml(zm:displayMsgDate(pageContext, hit.voiceMailItemHit.date))}
+                    </td>
+                    <td nowrap class="ZhHomeCell">
+                        <a target="_top" class="ZhHomeTextLink" href="${url}">
+                            <app:img src="voicemail/ImgPlayMessage.gif" altkey="ALT_FLAGGED"/>
+                            <u><fmt:message key="listen"/></u>
+                        </a>
+                    </td>
+                </tr>
+            </c:forEach>
+        </table>
+    </div>
 </c:otherwise>
 </c:choose>
