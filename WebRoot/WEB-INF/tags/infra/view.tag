@@ -72,7 +72,7 @@
 				
 				<table width=100% cellspacing=0 cellpadding=0 border='0'>
 				<tr>
-                    <td style='padding-left: 15px;' align="left" >
+                    <td align="left">
                         <c:choose>
                             <c:when test="${mailbox.features.portalEnabled}">
                                  <a href="/h/home" ><div class='ImgSkin_Chrome_Logo'></div></a>
@@ -82,7 +82,7 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
-					<td id='skin_container_app_name' style='padding-top: 0px;'><nobr>communications center</nobr></td>
+					<td id='skin_container_app_name'></td>
 					<td width='76%'><div class='float'> 
 					<app:appStatus/>
 					</div></td>
