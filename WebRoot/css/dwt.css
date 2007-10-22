@@ -1077,11 +1077,17 @@
   width:200px;
 }
 
+.xform_repeat_label,
 .xform_label,
 .xform_label_left {
 	@Label@
 	@TextPadding@
 	text-align:right;
+}
+
+.xform_repeat_label {
+	vertical-align:top;
+	padding-top:3px;
 }
 
 .xform_label_right {
