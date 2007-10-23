@@ -33,9 +33,9 @@
                     <c:param name="phone" value="${phone}"/>
                     <c:param name="id" value="${hit.voiceMailItemHit.id}"/>
                 </c:url>
-                <tr class="ZhHomeRow">
+                <tr class='ZhHomeRow ${hit.voiceMailItemHit.isUnheard ? ' Unread':''}'>
                     <td nowrap width=120px class="ZhHomeCell">
-                        <b>${hit.voiceMailItemHit.displayCaller}</b>
+                        ${hit.voiceMailItemHit.displayCaller}
                     </td>
                     <td nowrap width=90px class="ZhHomeCell">
                         ${fn:escapeXml(zm:displayMsgDate(pageContext, hit.voiceMailItemHit.date))}
