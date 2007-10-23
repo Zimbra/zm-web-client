@@ -111,8 +111,8 @@ function(msg, ex, noExecReset, hideReportButton)  {
 		detailStr = ex;
 	} else if (ex instanceof Object) {
 		for (var prop in ex) {
-			if (typeof ex[prop] == "function") continue; // skip functions
-			detailStr = detailStr + prop + " - " + ex[prop] + "\n";				
+			if (typeof ex[prop] == "function") { continue; }
+			detailStr = [detailStr, prop, ": ", ex[prop], "<br/>\n"].join("");
 		}
 	}
 	var errorDialog = appCtxt.getErrorDialog();
@@ -353,6 +353,13 @@ function(ex, method, params) {
 
 ZmController.prototype._handleException =
 function(ex, method, params, restartOnError, obj) {
+	
+	if (ex.code == AjxSoapException.INVALID_PDU) {
+		ex.code = ZmCsfeException.SVC_FAILURE;
+		ex.detail = ["contact your administrator (", ex.msg, ")"].join("");
+		ex.msg = "Service failure";
+	}
+	
 	if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED || 
 		ex.code == ZmCsfeException.SVC_AUTH_REQUIRED || 
 		ex.code == ZmCsfeException.NO_AUTH_TOKEN) {
