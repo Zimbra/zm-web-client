@@ -26,10 +26,10 @@
                     <td><div class='vertSep'></div></td>
                     <c:choose>
                         <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT" />
+                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT" />
                         </c:when>
                         <c:otherwise>
-                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
+                            <app:button id="${keys ? 'OPDELETE' : ''}" name="actionDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT"/>
                         </c:otherwise>
                     </c:choose>
                     <td><div class='vertSep'></div></td>
