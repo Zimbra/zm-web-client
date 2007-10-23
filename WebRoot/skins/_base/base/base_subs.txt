@@ -170,7 +170,7 @@ ItemBgColor			= @_BaseColorL75_@
 # Logical zones in the skin
 #######
 
-ChromeBg					= background-color:@_BaseColor_@;
+ChromeBg					= @_BaseColor_@
 ChromeText					= @Text@
 
 InsetBg						= background-color:@_BaseColorL75_@;
