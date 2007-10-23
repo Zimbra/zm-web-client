@@ -1146,6 +1146,8 @@ function () {
 */
 ZmOrganizer.prototype.isDataSource =
 function(type) {
+	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) { return false };
+
 	var dsc = appCtxt.getDataSourceCollection();
 	var dataSource = dsc.getByFolderId(this.nId);
 	if (!dataSource) return false;
