@@ -342,7 +342,8 @@ function(ev, organizers) {
             if(id == shownPage.folderId && shownPage.name == ZmNotebook.PAGE_INDEX){
                 shownPage.restUrl = organizer.restUrl;
             }
-            var item = cache.getItemInfo({id:shownPage.id},true);
+            var needsRefresh = this._checkForUpdate(organizer);
+            var item = cache.getItemInfo({id:shownPage.id},needsRefresh);
             cache.putItem(item);
             var oldName = ev.getDetail("oldName");
             if(oldName && organizer.restUrl) {
@@ -356,4 +357,13 @@ function(ev, organizers) {
         }
     }
 
+};
+
+ZmNotebookPageController.prototype._checkForUpdate =
+function(organizer) {
+    if(organizer._updated){
+      	organizer._updated = null;
+		return false;
+    }
+	return true;
 };

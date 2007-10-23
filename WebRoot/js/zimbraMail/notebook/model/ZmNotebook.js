@@ -163,3 +163,30 @@ function(){
 	app.deleteNotify([this.id]);
 	}
 };
+
+ZmNotebook.prototype.rename =
+function(name, callback, errorCallback, batchCmd) {
+	var newCallback  = new AjxCallback(this,this.renameCallback,[callback, name]);
+	ZmOrganizer.prototype.rename.call(this, name, newCallback, errorCallback, batchCmd);
+};
+
+ZmNotebook.prototype.renameCallback =
+function(callback, name, response) {
+	var responseObj = (response && response.getResponse())?  response.getResponse() : null;
+	var action = (responseObj && responseObj.FolderActionResponse) ? responseObj.FolderActionResponse.action : null;
+	var id  = action ? action.id : "";
+	var op  = action ? action.op : "";
+	var isRemote = 	/:/.test(id);
+	if(op == "rename" && isRemote){
+		var cache = AjxDispatcher.run("GetNotebookCache");
+		var item = cache.getItemInfo({id:id},true);
+        cache.putItem(item);
+		var obj = new Object();
+		obj.name = name;
+		obj.id = item.id;
+		obj.rest = item.getRestUrl();
+		this._updated = true;
+		this.notifyModify(obj);
+	}
+	callback.run(response);
+};
