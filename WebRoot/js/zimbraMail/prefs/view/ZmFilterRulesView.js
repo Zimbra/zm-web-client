@@ -28,6 +28,8 @@ ZmFilterRulesView = function(parent, controller) {
     this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
 
 	this._rendered = false;
+
+	this._tabGroup = new DwtTabGroup(this._htmlElId);
 };
 
 ZmFilterRulesView.prototype = new DwtTabViewPage;
@@ -57,6 +59,7 @@ function() {
 		var buttons = this._controller.getToolbarButtons();
 		this._toolbar = new ZmButtonToolBar({parent:this, buttons:buttons, posStyle:Dwt.STATIC_STYLE});
 		this._toolbar.replaceElement(toolbarEl);
+		this._tabGroup.addMember(this._toolbar);
 	}
 
 	// create list view
@@ -64,6 +67,7 @@ function() {
 	if (listViewEl) {
 		this._listView = new ZmFilterListView(this, this._controller);
 		this._listView.replaceElement(listViewEl);
+		this._tabGroup.addMember(this._listView);
 	}
 
 	// initialize controller
@@ -91,6 +95,10 @@ function() {
 ZmFilterRulesView.prototype.getListView =
 function() {
 	return this._listView;
+};
+
+ZmFilterRulesView.prototype.getTabGroupMember = function() {
+	return this._tabGroup;
 };
 
 // View is always in sync with rules

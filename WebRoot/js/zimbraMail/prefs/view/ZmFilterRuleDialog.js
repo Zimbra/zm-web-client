@@ -39,6 +39,7 @@ ZmFilterRuleDialog = function() {
 	// set content
 	this.setContent(this._contentHtml());
 	this._setConditionSelect();
+	this._createTabGroup();
 
 	// create these listeners just once
 	this._rowChangeLstnr	= new AjxListener(this, this._rowChangeListener);
@@ -102,12 +103,17 @@ function(rule, editMode, referenceRule) {
 	var checkAll = (rule && (rule.getGroupOp() == ZmFilterRule.GROUP_ALL));
 	this._conditionSelect.setSelectedValue(checkAll ? ZmFilterRule.GROUP_ALL : ZmFilterRule.GROUP_ANY);
 
+	this._conditionsTabGroup.removeAllMembers();
+	this._actionsTabGroup.removeAllMembers();
+
 	this._rule = rule ? rule : ZmFilterRule.DUMMY_RULE;
 	this._renderTable(this._rule, true);	// conditions
 	this._renderTable(this._rule, false);	// actions
 	this._addDwtObjects();
 
 	DwtDialog.prototype.popup.call(this);
+
+	nameField.focus();
 };
 
 /**
@@ -118,6 +124,10 @@ ZmFilterRuleDialog.prototype.popdown =
 function() {
 	this._clearTables();
 	DwtDialog.prototype.popdown.call(this);
+};
+
+ZmFilterRuleDialog.prototype.getTabGroupMember = function() {
+	return this._tabGroup;
 };
 
 /*
@@ -164,6 +174,49 @@ ZmFilterRuleDialog.prototype._createConditionControl = function(parent, segment,
 	}
 };
 
+ZmFilterRuleDialog.prototype._createTabGroup = function() {
+	// create tabgroups
+	var id = this._htmlElId;
+	this._tabGroup = new DwtTabGroup(id);
+	this._conditionsTabGroup = new DwtTabGroup(id+"_conditions");
+	this._actionsTabGroup = new DwtTabGroup(id+"_actions");
+
+	// get basic controls
+	var MAX_VALUE = 100000;
+	var tabIndexes = {};
+	var ids = [ this._nameInputId, this._activeCheckboxId, this._stopCheckboxId ];
+	for (var i = 0; i < ids.length; i++) {
+		var el = document.getElementById(ids[i]);
+		var tabIndex = el.getAttribute("tabindex") || MAX_VALUE - 5 - i;
+		tabIndexes[tabIndex] = el;
+	}
+
+	// add other controls
+	var el = document.getElementById(this._conditionId);
+	var tabIndex = el.getAttribute("tabindex") || MAX_VALUE - 4;
+	tabIndexes[tabIndex] = this._conditionSelect;
+
+	// add tabgroups that will hold the conditions and actions
+	var el = document.getElementById(this._conditionsTableId);
+	var tabIndex = el.getAttribute("tabindex") || MAX_VALUE - 3;
+	tabIndexes[tabIndex] = this._conditionsTabGroup;
+
+	var el = document.getElementById(this._actionsTableId);
+	var tabIndex = el.getAttribute("tabindex") || MAX_VALUE - 2;
+	tabIndexes[tabIndex] = this._actionsTabGroup;
+
+	// add dialog buttons
+	tabIndexes[MAX_VALUE - 1] = this.getButton(DwtDialog.OK_BUTTON);
+	tabIndexes[MAX_VALUE - 0] = this.getButton(DwtDialog.CANCEL_BUTTON);
+
+	// populate tabgroup
+	var keys = AjxUtil.keys(tabIndexes);
+	keys.sort(AjxUtil.byNumber);
+	for (var i = 0; i < keys.length; i++) {
+		this._tabGroup.addMember(tabIndexes[keys[i]]);
+	}
+};
+
 /*
 * Draws a table of conditions or actions. Returns the ID of the last row added.
 *
@@ -172,6 +225,7 @@ ZmFilterRuleDialog.prototype._createConditionControl = function(parent, segment,
 */
 ZmFilterRuleDialog.prototype._renderTable =
 function(rule, isCondition) {
+	var tabGroup = isCondition ? this._conditionsTabGroup : this._actionsTabGroup;
 	var table = document.getElementById(isCondition ? this._conditionsTableId : this._actionsTableId);
 	var rowData = isCondition ? rule.getConditions() : rule.getActions();
 	var row, len = rowData.length;
@@ -190,10 +244,18 @@ function(rule, isCondition) {
 				continue;
 			}
 		}
-		var html = this._getRowHtml(o, isCondition);
-		if (html) {
-			row = Dwt.parseHtmlFragment(html, true);
-			table.tBodies[0].appendChild(row);
+		var rowId = Dwt.getNextId();
+		this._enterTabScope(rowId);
+		try {
+			var html = this._getRowHtml(o, isCondition, rowId);
+			if (html) {
+				row = Dwt.parseHtmlFragment(html, true);
+				table.tBodies[0].appendChild(row);
+				tabGroup.addMember(this._getCurrentTabScope());
+			}
+		}
+		finally {
+			this._exitTabScope();
 		}
 	}
 	this._resetOperations(isCondition);
@@ -207,13 +269,12 @@ function(rule, isCondition) {
 * @param isCondition	[boolean]	true if we're rendering a condition row
 */
 ZmFilterRuleDialog.prototype._getRowHtml =
-function(data, isCondition) {
+function(data, isCondition, rowId) {
 	var conf = isCondition ? ZmFilterRule.CONDITIONS[data.subject] : ZmFilterRule.ACTIONS[data.name];
 
 	var html = [];
 	var i = 0;
 
-	var rowId = Dwt.getNextId();
 	this._inputs[rowId] = {};
 
 	html[i++] = "<tr id='" + rowId + "'>";
@@ -240,6 +301,25 @@ function(data, isCondition) {
 	html[i++] = "</tr>";
 
 	return html.join("");
+};
+
+ZmFilterRuleDialog.prototype._enterTabScope = function(id) {
+	if (!this._tabScope) {
+		this._tabScope = [];
+	}
+	var tabGroup = new DwtTabGroup(id || Dwt.getNextId());
+	this._tabScope.push(tabGroup);
+	return tabGroup;
+};
+
+ZmFilterRuleDialog.prototype._getCurrentTabScope = function() {
+	if (this._tabScope) {
+		return this._tabScope[this._tabScope.length - 1];
+	}
+};
+
+ZmFilterRuleDialog.prototype._exitTabScope = function() {
+	return this._tabScope ? this._tabScope.pop() : null;
 };
 
 /*
@@ -305,7 +385,7 @@ function(rowId, isCondition) {
 */
 ZmFilterRuleDialog.prototype._createRowComponent =
 function(conf, field, options, dataValue, rowId, data) {
-
+	var tabGroup = this._getCurrentTabScope();
 	var isMainSelect = (typeof conf == "boolean");
 	var isCondition, type;
 	if (isMainSelect) {
@@ -325,6 +405,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		if (field == "value" && data.subject == ZmFilterRule.C_HEADER) {
 			input.setVisibility(!(data.comparator == ZmFilterRule.OP_EXISTS || data.comparator == ZmFilterRule.OP_NOT_EXISTS));
 		}
+		tabGroup.addMember(input);
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 
 	} else if (type == ZmFilterRule.TYPE_SELECT) {
@@ -369,6 +450,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		if (!select.getValue()) {
 			select.setSelected(0);
 		}
+		tabGroup.addMember(select);
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 
 	} else if (type == ZmFilterRule.TYPE_CALENDAR) {
@@ -397,6 +479,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		cal.setDate(date);
 		cal._dateButton = dateButton;
 		this._inputs[rowId][field] = {id: id, dwtObj: dateButton};
+		tabGroup.addMember(dateButton);
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 
 	} else if (type == ZmFilterRule.TYPE_FOLDER_PICKER || type == ZmFilterRule.TYPE_TAG_PICKER) {
@@ -421,6 +504,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		button.setData(ZmFilterRuleDialog.DATA, dataValue);
 		this._inputs[rowId][field] = {id: id, dwtObj: button};
 		button.addSelectionListener(this._browseLstnr);
+		tabGroup.addMember(button);
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 	}
 };
@@ -433,6 +517,7 @@ function(conf, field, options, dataValue, rowId, data) {
 */
 ZmFilterRuleDialog.prototype._getPlusMinusHtml =
 function(rowId, isCondition) {
+	var tabGroup = this._getCurrentTabScope();
 	var html = [];
 	html.push("<td style='align:right;'><table border=0 cellpadding=0 cellspacing=0><tr>");
 	html.push("<td width='100%' style=''></td>"); // right-justify the plus/minus buttons
@@ -450,6 +535,7 @@ function(rowId, isCondition) {
 		var id = Dwt.getNextId();
 		this._inputs[rowId][b] = {id: id, dwtObj: button};
 		html.push("<td id='" + id + "' valign='center' class='paddedTableCell'></td>");
+		tabGroup.addMember(button);
 	}
 	html.push("</tr></table></td>");
 	return html.join("");
@@ -489,6 +575,7 @@ function(ev) {
 	var oldValue = ev._args.oldValue;
 	var rowId = ev._args.selectObj.getData(ZmFilterRuleDialog.ROW_ID);
 	var isCondition = ev._args.selectObj.getData(ZmFilterRuleDialog.IS_CONDITION);
+	var tabGroup = isCondition ? this._conditionsTabGroup : this._actionsTabGroup;
 
 	// preserve op and value between header fields
 	var comparator = null, dataValue = null;
@@ -504,18 +591,25 @@ function(ev) {
 	var newIndex = (index >= table.rows.length) ? null : index; // null means add to end
 	
 	var data = isCondition ? new ZmCondition(newValue, comparator, dataValue) : new ZmAction(newValue);
-	var html = this._getRowHtml(data, isCondition);
-	if (html) {
-		row = Dwt.parseHtmlFragment(html, true);
-		if (!row) {
-			DBG.println(AjxDebug.DBG1, "Filter rule dialog: no row created!");
-			return;
+	this._enterTabScope(rowId);
+	try {
+		var html = this._getRowHtml(data, isCondition, rowId);
+		if (html) {
+			row = Dwt.parseHtmlFragment(html, true);
+			if (!row) {
+				DBG.println(AjxDebug.DBG1, "Filter rule dialog: no row created!");
+				return;
+			}
+			table.tBodies[0].insertBefore(row, (newIndex != null) ? table.rows[newIndex] : null);
+			this._addDwtObjects(row.id);
+			this._resetOperations(isCondition);
+			tabGroup.removeMember(tabGroup.getTabGroupMemberByName(rowId));
+			tabGroup.addMember(this._getCurrentTabScope());
 		}
-		table.tBodies[0].insertBefore(row, (newIndex != null) ? table.rows[newIndex] : null);
-		this._addDwtObjects(row.id);
-		this._resetOperations(isCondition);
 	}
-
+	finally {
+		this._exitTabScope();
+	}
 };
 
 /*
