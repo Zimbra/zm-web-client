@@ -1046,14 +1046,18 @@ function(time, isEnd, adjust) {
         var offset2 = AjxTimezone.getOffset(AjxTimezone.getClientId(this._dateInfo.timezone), d);
         hourmin += offset2 - offset1;
     }
-    var idx = hourmin / 60 * 2;
+	var idx = Math.floor(hourmin / 60) * 2;
 	var minutes = hourmin % 60;
-	if (minutes > 30) {
+	if (minutes >= 30) {
 		idx++;
 	}
 	// end times don't mark blocks on half-hour boundary
 	if (isEnd && (minutes == 0 || minutes == 30)) {
+		//block even if it exceeds 1 second
+		var s = d.getSeconds();
+		if(s == 0){
 		idx--;
+		}
 	}
 
 	return idx;
