@@ -359,7 +359,8 @@ function() {
 		currDate: (AjxDateUtil.simpleComputeDateStr(new Date())),
 		isGalEnabled: appCtxt.get(ZmSetting.GAL_ENABLED),
 		isAppt: true,
-		isGroupCalEnabled: this.GROUP_CALENDAR_ENABLED
+		isGroupCalEnabled: this.GROUP_CALENDAR_ENABLED,
+		showTZSelector: appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE)
 	};
 
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#EditView", subs);
@@ -413,12 +414,15 @@ function(width) {
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 
 	// timezone DwtSelect
-    var timezoneListener = new AjxListener(this, this._timezoneListener);
+	var timezoneListener = new AjxListener(this, this._timezoneListener);
 
 	this._tzoneSelect = new DwtSelect(this);
-	this._tzoneSelect.reparentHtmlElement(this._htmlElId + "_tzoneSelect");
-    this._tzoneSelect.addChangeListener(timezoneListener);
-    // NOTE: tzone select is initialized later
+	if (appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE)) {
+		this._tzoneSelect.reparentHtmlElement(this._htmlElId + "_tzoneSelect");
+	}
+	this._tzoneSelect.addChangeListener(timezoneListener);
+	// NOTE: tzone select is initialized later
+
 
 	// init auto-complete widget if contacts app enabled
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {

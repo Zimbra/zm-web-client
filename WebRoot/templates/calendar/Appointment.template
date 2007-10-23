@@ -198,7 +198,11 @@
 				</tr></table>
 			</td>
 			<td></td>
-			<td colspan=2 id='${id}_tzoneSelect'></td>
+			<$ if (data.showTZSelector) { $>
+				<td colspan="2" id='${id}_tzoneSelect'></td>
+			<$ } else { $>
+				<td></td>
+			<$ } $>
 		</tr>
 		<$ } $>
 		<tr>
