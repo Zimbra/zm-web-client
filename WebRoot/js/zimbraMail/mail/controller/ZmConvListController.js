@@ -417,6 +417,25 @@ function(items) {
 	return lists;
 };
 
+/**
+ * Need to make sure conv's msg list has current copy of draft.
+ * 
+ * @param msg	[ZmMailMsg]		saved draft
+ */
+ZmConvListController.prototype._draftSaved =
+function(msg) {
+	var conv = appCtxt.getById(msg.cid);
+	if (conv && conv.msgs && conv.msgs.size()) {
+		var a = conv.msgs.getArray();
+		for (var i = 0; i < a.length; i++) {
+			if (a[i].id == msg.id) {
+				a[i] = msg;
+			}
+		}
+	}
+	ZmDoublePaneController.prototype._draftSaved.apply(this, arguments);
+};
+
 ZmConvListController.prototype._redrawDraftItemRows =
 function(msg) {
 	var conv = appCtxt.getById(msg.cid);
