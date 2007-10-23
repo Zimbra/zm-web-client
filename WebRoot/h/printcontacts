@@ -1,0 +1,84 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<app:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <c:choose>
+    <c:when test="${not empty mailbox.prefs.locale}">
+        <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
+    </c:when>
+    <c:otherwise>
+        <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+    </c:otherwise>
+    </c:choose>
+    <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
+</app:handleError>
+
+<html>
+<app:head mailbox="${mailbox}"/>
+<body style='background-color:white;' onload="window.print();">
+    <div class='ZhCallListPrintView'>
+        <table><tr>
+            <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
+            <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
+        </tr></table>
+        <hr/>
+
+    <table cellpadding="0" cellspacing="5" >
+    <c:forEach items="${paramValues.id}" var="contactId" varStatus="status">
+        <zm:getContact id="${contactId}" var="contact"/>
+        <tr>
+        <td>
+            <div  style="border: 1px solid rgb(204, 204, 204); padding-bottom:4px;overflow-x:hidden;  width: 2.2in;">
+        <table  cellpadding=2 cellspacing=0 width="100%" >
+            <tr>
+                <td nowrap colspan="2" style="font-family: Arial; white-space: nowrap; font-weight: bold; background-color: rgb(221, 221, 221);">${fn:escapeXml(contact.displayFileAs)}</td>
+            </tr>
+            <c:if test="${not empty contact.displayEmail}">
+            <tr>
+                <td nowrap><fmt:message key="email"/> </td>
+                <td nowrap>: ${fn:escapeXml(contact.email)}</td>
+            </tr>
+            </c:if>
+        <c:if test="${not empty contact.fullAddress}">
+        <tr>
+                <td nowrap><fmt:message key="name"/> </td>
+                <td nowrap>: ${fn:escapeXml(contact.fullAddress)}</td>
+        </tr>
+        </c:if>
+        <c:if test="${not empty contact.jobTitle}">
+        <tr>
+                <td nowrap><fmt:message key="AB_FIELD_jobTitle"/> </td> 
+                <td nowrap>: ${fn:escapeXml(contact.jobTitle)}</td>
+            </tr>
+        </c:if>
+        <c:if test="${not empty contact.company}">
+        <tr>
+                <td nowrap><fmt:message key="company"/> </td>
+                <td nowrap>: ${fn:escapeXml(contact.company)}</td>
+        </tr>
+        </c:if>
+        <c:if test="${not empty contact.workPhone}">
+        <tr>
+                <td nowrap><fmt:message key="phone"/> </td>
+                <td nowrap>: ${fn:escapeXml(contact.workPhone)}</td>
+        </tr>
+        </c:if>
+        </table>
+        </div>
+        </td>
+        </tr>
+    </c:forEach>
+    </table>
+
+    <c:if test="${empty paramValues.id}">
+        <div class='NoResults'><fmt:message key="noResultsFound"/></div>
+    </c:if>
+    </div>
+
+</body>
+</html>

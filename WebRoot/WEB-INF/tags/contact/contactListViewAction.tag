@@ -60,6 +60,9 @@
     <c:when test="${zm:actionSet(param, 'actionEdit')}">
         <jsp:forward page="/h/econtact"/>
     </c:when>
+    <c:when test="${zm:actionSet(param, 'actionPrint')}">
+        <jsp:forward page="/h/printcontacts"/>
+    </c:when>
     <c:when test="${empty ids}">
         <app:status style="Warning"><fmt:message key="actionNoContactSelected"/></app:status>
     </c:when>

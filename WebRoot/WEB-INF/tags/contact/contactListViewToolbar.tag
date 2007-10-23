@@ -23,6 +23,10 @@
                     <app:button name="actionNew" id="${keys ? 'NEW_CONTACT' : ''}" src="contacts/ImgNewContact.gif" tooltip="newContact" text="contact"/>
                     <td><div class='vertSep'></div></td>
                     <app:button name="actionNewGroup" id="${keys ? 'NEW_GROUP' : ''}" src="mail/ImgNewGroup.gif" tooltip="newGroup" text="group"/>
+                    <td><div class='vertSep'></div></td>
+                    <td nowrap>
+                    <app:button name="actionPrint" id="${keys ? 'OPPRINT' : ''}" src="startup/ImgPrint.gif" tooltip="actionPrint" text="actionPrint"/>
+                    </td>
                     <c:if test="${not empty contact}">
                         <td><div class='vertSep'></div><input type='hidden' name="actionEditId" value="${contact.id}"></td>
                         <app:button id="${keys ? 'OPEDIT' : ''}" name="actionEdit" src="startup/ImgEdit.gif" tooltip="edit" text="edit"/>
