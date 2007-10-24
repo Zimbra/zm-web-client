@@ -107,6 +107,27 @@ ZmSetting.PROTO_MIXED		= "mixed";
 ZmSetting.SIG_INTERNET		= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK		= "outlook";
 
+// we need these IDs available when the app classes are parsed
+ZmSetting.LOCALE_NAME			= "LOCALE_NAME";
+ZmSetting.SKIN_NAME				= "SKIN_NAME";
+
+ZmSetting.BRIEFCASE_ENABLED		= "BRIEFCASE_ENABLED";
+ZmSetting.CALENDAR_ENABLED		= "CALENDAR_ENABLED";
+ZmSetting.CONTACTS_ENABLED		= "CONTACTS_ENABLED";
+ZmSetting.IM_ENABLED			= "IM_ENABLED";
+ZmSetting.MAIL_ENABLED			= "MAIL_ENABLED";
+ZmSetting.MIXED_VIEW_ENABLED	= "MIXED_VIEW_ENABLED";
+ZmSetting.NOTEBOOK_ENABLED		= "NOTEBOOK_ENABLED";
+ZmSetting.OPTIONS_ENABLED		= "OPTIONS_ENABLED";
+ZmSetting.PORTAL_ENABLED		= "PORTAL_ENABLED";
+ZmSetting.TASKS_ENABLED			= "TASKS_ENABLED";
+ZmSetting.VOICE_ENABLED			= "VOICE_ENABLED";
+
+ZmSetting.CALENDAR_UPSELL_ENABLED	= "CALENDAR_UPSELL_ENABLED";
+ZmSetting.CONTACTS_UPSELL_ENABLED	= "CONTACTS_UPSELL_ENABLED";
+ZmSetting.MAIL_UPSELL_ENABLED		= "MAIL_UPSELL_ENABLED";
+ZmSetting.VOICE_UPSELL_ENABLED		= "VOICE_UPSELL_ENABLED";
+
 // remove this block when offline.jsp upgrades
 ZmSetting.APPS_COOKIE			= "ZM_APPS";
 ZmSetting.APP_LETTER = {};
@@ -114,7 +135,7 @@ ZmSetting.APP_LETTER[ZmSetting.PORTAL_ENABLED]		= "p";
 ZmSetting.APP_LETTER[ZmSetting.MAIL_ENABLED]		= "m";
 ZmSetting.APP_LETTER[ZmSetting.CALENDAR_ENABLED]	= "c";
 ZmSetting.APP_LETTER[ZmSetting.CONTACTS_ENABLED]	= "a";
-ZmSetting.APP_LETTER[ZmSetting.OPTIONS_ENABLED]		= "o";
+ZmSetting.APP_LETTER[ZmSetting.OPTIONS_ENABLED]	    = "o";
 ZmSetting.APP_LETTER[ZmSetting.IM_ENABLED]			= "i";
 ZmSetting.APP_LETTER[ZmSetting.NOTEBOOK_ENABLED]	= "n";
 ZmSetting.APP_LETTER[ZmSetting.BRIEFCASE_ENABLED]	= "b";
