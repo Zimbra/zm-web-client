@@ -65,7 +65,7 @@
             <td >&nbsp;${fn:escapeXml(hit.contactHit.displayEmail)}</td>
         </tr>
         </c:if>
-        <c:if test="${not empty hit.contactHit.email2 or hit.contactHit.isGroup}">
+        <c:if test="${not empty hit.contactHit.email2}">
                <tr>
                    <td width=1%>&nbsp;</td>
                    <c:choose>
@@ -90,7 +90,7 @@
                    <td >&nbsp;${fn:escapeXml(hit.contactHit.email2)}</td>
                </tr>
                </c:if>
-       <c:if test="${not empty hit.contactHit.email3 or hit.contactHit.isGroup}">
+       <c:if test="${not empty hit.contactHit.email3}">
                <tr>
                    <td width=1%>&nbsp;</td>
                    <c:choose>
