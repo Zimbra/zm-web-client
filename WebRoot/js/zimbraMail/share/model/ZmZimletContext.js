@@ -181,10 +181,12 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	this.handlerObject._zimletContext = this;
 	// If it has an _id then we need to make sure the treeItem
 	// is up-to-date now that the i18n files have loaded.
-	if(this._id) {
+	if (this._id) {
 		var tree = appCtxt.getZimletTree();
-		var zimletItem = tree.getById(this._id);
-		zimletItem.resetNames();
+		if (tree) {
+			var zimletItem = tree.getById(this._id);
+			zimletItem.resetNames();
+		}
 	}
 
     // initialize portlets
