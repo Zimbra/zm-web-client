@@ -108,8 +108,11 @@ ZmItem.FLAG_ISDRAFT 	= "d";
 ZmItem.FLAG_ISSENT		= "s";
 ZmItem.FLAG_REPLIED		= "r";
 ZmItem.FLAG_UNREAD		= "u";
+ZmItem.FLAG_LOW_PRIORITY = "?";
+ZmItem.FLAG_HIGH_PRIORITY = "!";
 ZmItem.ALL_FLAGS = [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH, ZmItem.FLAG_UNREAD,
-					ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_ISSENT, ZmItem.FLAG_ISDRAFT];
+					ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_ISSENT, ZmItem.FLAG_ISDRAFT,
+                    ZmItem.FLAG_HIGH_PRIORITY, ZmItem.FLAG_LOW_PRIORITY];
 
 // Map flag to item property
 ZmItem.FLAG_PROP = {};
@@ -120,6 +123,8 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_ISDRAFT] 	= "isDraft";
 ZmItem.FLAG_PROP[ZmItem.FLAG_ISSENT]	= "isSent";
 ZmItem.FLAG_PROP[ZmItem.FLAG_REPLIED]	= "isReplied";
 ZmItem.FLAG_PROP[ZmItem.FLAG_UNREAD]	= "isUnread";
+ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]	= "isLowPriority";
+ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]	= "isHighPriority";
 
 // DnD actions this item is allowed
 ZmItem.DND_ACTION_MOVE = 1 << 0;

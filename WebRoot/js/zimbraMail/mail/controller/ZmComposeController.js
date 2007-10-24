@@ -259,7 +259,12 @@ function(attId, draftType, callback) {
 	var msg = this._composeView.getMsg(attId, isDraft);
 	if (!msg) return;
 
-	var inviteMode = msg.inviteMode;
+    var priority = this._getPriority();
+    if (priority) {
+        msg.flagLocal(priority, true);
+    }
+
+    var inviteMode = msg.inviteMode;
 	var isCancel = (inviteMode == ZmOperation.REPLY_CANCEL);
 	var isModify = (inviteMode == ZmOperation.REPLY_MODIFY);
 
@@ -569,7 +574,19 @@ function(params) {
 
 	this._initializeToolBar();
 	this._toolbar.enableAll(true);
-	var isCancel = (action == ZmOperation.REPLY_CANCEL);
+    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+        var priority = "";
+        if (msg && (action == ZmOperation.DRAFT)) {
+            if (msg.isHighPriority) {
+                priority = ZmItem.FLAG_HIGH_PRIORITY;
+            } else if (msg.isLowPriority) {
+                priority = ZmItem.FLAG_LOW_PRIORITY;
+            }
+        }
+        this._setPriority(priority);
+    }
+
+    var isCancel = (action == ZmOperation.REPLY_CANCEL);
 	var isModify = (action == ZmOperation.REPLY_MODIFY);
 	if (isCancel || isModify) {
 		var ops = [ ZmOperation.SAVE_DRAFT ];
@@ -634,7 +651,10 @@ function() {
 	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
 		buttons.push(ZmOperation.ADD_SIGNATURE);
 	}
-	buttons.push(ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
+    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+    	buttons.push(ZmOperation.MAIL_PRIORITY);
+    }
+    buttons.push(ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
 
 	if (!appCtxt.isChildWindow) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
@@ -674,7 +694,12 @@ function() {
 	this._optionsMenu[ZmOperation.FORWARD_INLINE] = this._optionsMenu[ZmOperation.FORWARD_ATT];
 	this._optionsMenu[ZmOperation.SHARE] = this._optionsMenu[ZmOperation.NEW_MESSAGE];
 
-	// change default button style to select for spell check button
+    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+        var priorityButton = this._toolbar.getButton(ZmOperation.MAIL_PRIORITY);
+        priorityButton.addSelectionListener(new AjxListener(this, this._priorityButtonListener));
+    }
+
+    // change default button style to select for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 
@@ -688,6 +713,61 @@ function() {
 				attachmentButton.setText("");
 		}
 	}
+};
+
+ZmComposeController.prototype._createPrioityMenuItem =
+function(text, flag) {
+    var item = DwtMenuItem.create(this._priorityMenu, this._getPriorityImage(flag), text);
+    item._priorityFlag = flag;
+    item.addSelectionListener(this._priorityMenuListnerObj);
+};
+
+ZmComposeController.prototype._priorityButtonListener =
+function(ev) {
+    var priorityButton = ev.dwtObj;
+    var menu = this._priorityMenu;
+    if (!menu) {
+        menu = this._priorityMenu = new DwtMenu(priorityButton);
+        this._priorityMenuListnerObj = new AjxListener(this, this._priorityMenuListner);
+        this._createPrioityMenuItem(ZmMsg.low, ZmItem.FLAG_LOW_PRIORITY);
+        this._createPrioityMenuItem(ZmMsg.normal, "");
+        this._createPrioityMenuItem(ZmMsg.high, ZmItem.FLAG_HIGH_PRIORITY);
+    }
+    priorityButton.popup(menu);
+};
+
+ZmComposeController.prototype._getPriorityImage =
+function(flag) {
+    if (flag == ZmItem.FLAG_HIGH_PRIORITY) {
+        return "TaskHigh";
+    } else if (flag == ZmItem.FLAG_LOW_PRIORITY) {
+        return "TaskLow";
+    }
+    return "Send";
+};
+
+ZmComposeController.prototype._priorityMenuListner =
+function(ev) {
+    this._setPriority(ev.dwtObj._priorityFlag);
+};
+
+ZmComposeController.prototype._getPriority =
+function() {
+    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+        var priorityButton = this._toolbar.getButton(ZmOperation.MAIL_PRIORITY);
+        return priorityButton._priorityFlag || "";
+    }
+    return "";
+};
+
+ZmComposeController.prototype._setPriority =
+function(flag) {
+    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+        flag = flag || "";
+        var priorityButton = this._toolbar.getButton(ZmOperation.MAIL_PRIORITY);
+        priorityButton.setImage(this._getPriorityImage(flag));
+        priorityButton._priorityFlag = flag;
+    }
 };
 
 ZmComposeController.prototype._setAddSignatureVisibility =

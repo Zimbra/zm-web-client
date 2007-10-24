@@ -227,6 +227,14 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		idx = this._getImageHtml(htmlArr, idx, item.hasAttach ? "Attachment" : null, this._getFieldId(item, field));
 	} else if (field == ZmItem.F_DATE) {
 		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now || new Date(), item.date);
+	} else if (field == ZmItem.F_PRIORITY) {
+        var priorityImage = null;
+        if (item.isHighPriority) {
+            priorityImage = "TaskHigh";
+        } else if (item.isLowPriority) {
+            priorityImage = "TaskLow";
+        }
+        idx = this._getImageHtml(htmlArr, idx, priorityImage, this._getFieldId(item, field));
 	} else {
 		idx = DwtListView.prototype._getCellContents.apply(this, arguments);
 	}

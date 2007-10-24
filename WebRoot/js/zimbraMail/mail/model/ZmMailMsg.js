@@ -811,7 +811,13 @@ function(soapDoc, contactList, isDraft, accountName) {
 		msgNode.setAttribute("idnt", this.identity.id);
 	}
 
-	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+    if (this.isHighPriority) {
+        msgNode.setAttribute("f", ZmItem.FLAG_HIGH_PRIORITY);
+    } else if (this.isLowPriority) {
+        msgNode.setAttribute("f", ZmItem.FLAG_LOW_PRIORITY);
+    }
+
+    for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		this._addAddressNodes(soapDoc, msgNode, type, contactList, isDraft);
 	}
