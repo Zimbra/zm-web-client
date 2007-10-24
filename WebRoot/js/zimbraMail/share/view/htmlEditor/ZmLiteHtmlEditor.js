@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -56,10 +56,11 @@ ZmLiteHtmlEditor.FONT_COLOR = "fontcolor";
 
 ZmLiteHtmlEditor.FONT_SIZE_VALUES = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
 ZmLiteHtmlEditor.FONT_FAMILY = [
-	{name:"Arial", 				value:"Arial, Helvetica, sans-serif" },
-	{name:"Times New Roman",	value:"Times New Roman, Times, serif" },
-	{name:"Courier", 			value:"Courier, Courier New, mono" },
-	{name:"Verdana",			value:"Verdana, Arial, Helvetica, sans-serif" }
+        {name:"Tahoma",           value:"Tahoma, Verdana, Arial, Helvetica, sans-serif" },
+        {name:"Arial",            value:"Arial, Helvetica, sans-serif" },
+        {name:"Times New Roman",  value:"Times New Roman, Times, serif" },
+        {name:"Courier",          value:"Courier, Courier New, mono" },
+        {name:"Verdana",          value:"Verdana, Tahoma, Arial, Helvetica, sans-serif" }
 ];
 
 ZmLiteHtmlEditor.STYLE = {};
@@ -116,32 +117,35 @@ function(tag){
 
 ZmLiteHtmlEditor.prototype.getCSS =
 function() {
-
 	var style = this._textArea.style;
 	var css = [];
-	if(style.fontFamily)
-		css.push("font-family: ",style.fontFamily,";");
-	if(style.fontSize)
-		css.push("font-size: ",style.fontSize,";");
-	if(style.color)
-		css.push("color: ",style.color,";");
-	if(style.fontWeight)
-		css.push("font-weight: ",style.fontWeight,";");
-	if(style.fontStyle)
-		css.push("font-style: ",style.fontStyle,";");
-	if(style.textDecoration)
-		css.push("text-decoration: ",style.textDecoration,";");
-	if(style.color)
-		css.push("color ",style.color,";");
 
-	return css.join("");
+	if (style.fontFamily)
+	        css.push("font-family: " + style.fontFamily);
+	if (style.fontSize)
+	        css.push("font-size: " + style.fontSize);
+	if (style.color)
+	        css.push("color: " + style.color);
+	if (style.fontWeight)
+	        css.push("font-weight: " + style.fontWeight);
+	if (style.fontStyle)
+	        css.push("font-style: " + style.fontStyle);
+	if (style.textDecoration)
+	        css.push("text-decoration: " + style.textDecoration);
+	if (style.color)
+		css.push("color: " + style.color);
 
+	return css.join(";");
 };
 
 //Supports only text content
 ZmLiteHtmlEditor.prototype.setContent =
 function(content){
 	this._textArea.value = (content || "");
+};
+
+ZmLiteHtmlEditor.prototype.setSelectionText = function(text) {
+        Dwt.setSelectionText(this._textArea, text);
 };
 
 ZmLiteHtmlEditor.prototype.clear =
@@ -199,7 +203,7 @@ ZmLiteHtmlEditor.prototype.resetSize = function(){
 	if (this._mode == ZmLiteHtmlEditor.HTML) {
 		toolbarHeight = this._miniToolBar.getSize().y;
 	}
-    this._textArea.style.width = "100%";
+        this._textArea.style.width = "100%";
 	this._textArea.style.height = height - toolbarHeight - 2 + "px";
 };
 
@@ -226,7 +230,7 @@ ZmLiteHtmlEditor.prototype._initialize = function(){
 
 	this._textArea[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = AjxCallback.simpleClosure(this._keyPressHandler,this);
 
-	this.setMode(this._mode,true);
+	this.setMode(this._mode, true);
 
 };
 
@@ -264,13 +268,13 @@ function(){
 
 ZmLiteHtmlEditor.prototype._setDefaultStyles =
 function(){
-	var style = this._textArea.style;
-	style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-	style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-	style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-	style.fontWeight = "normal";
-	style.fontStyle = "normal";
-	style.textDecoration = "none";
+// 	var style = this._textArea.style;
+// 	style.fontFamily = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+// 	style.fontSize = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+// 	style.color = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+// 	style.fontWeight = "normal";
+// 	style.fontStyle = "normal";
+// 	style.textDecoration = "none";
 };
 
 ZmLiteHtmlEditor.prototype.setStyle =
@@ -334,7 +338,7 @@ ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
 	this._fontColorButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.FONT_COLOR);
 	this._fontColorButton.setColor("#000000");
 	this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontStyleListener));
-	
+
 	if(window["YMEmoticonsPickerButton"]){
 		this._smileyButton = new YMEmoticonsPickerButton(tb,null,"ZToolbarButton");
 		this._smileyButton.dontStealFocus();
@@ -349,7 +353,7 @@ ZmLiteHtmlEditor.prototype._smileyListener = function(ev){
 	var obj = ev.item;
 	var id = ev.detail;
 	var smiley = obj.getSelectedSmiley();
-	
+
 	if (this._textArea.createTextRange && this._textArea.selection) {
 		var textRange = this._textArea.selection;
 		var text = textRange.text;
@@ -358,7 +362,7 @@ ZmLiteHtmlEditor.prototype._smileyListener = function(ev){
 	}else{
 		this._textArea.value += id;
 	}
-	
+
 	this.focus();
 };
 

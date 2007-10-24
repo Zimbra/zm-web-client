@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -185,25 +185,28 @@ ZmChatListController.prototype._initializeToolBar = function(view) {
 	this._setNewButtonProps(view, ZmMsg.imNewChat, "ImFree2Chat", "ImFree2ChatDis", ZmOperation.IM_NEW_CHAT);
 };
 
-ZmChatListController.prototype.updatePresenceMenu = function(addListeners) {
-	var view = view || this._currentView || this._defaultView();
-	var toolbar = this._toolbar[view];
-	if (!toolbar) { return; }
-	var presenceButton = toolbar.getButton(ZmOperation.IM_PRESENCE_MENU);
+ZmChatListController.prototype.updatePresenceMenu = function(addListeners, presenceButton) {
+        if (!presenceButton) {
+	        var view = view || this._currentView || this._defaultView();
+	        var toolbar = this._toolbar[view];
+	        if (!toolbar) { return; }
+	        presenceButton = toolbar.getButton(ZmOperation.IM_PRESENCE_MENU);
+        }
 	var presenceMenu = presenceButton.getMenu();
 
    	var list = ZmImApp.getImPresenceMenuOps();
 	var presence = this._imApp.getRoster().getPresence();
 	var currentShowOp = presence.getShowOperation();
-	for (var i=0; i < list.length; i++) {
-		var mi = presenceMenu.getItemById(ZmOperation.MENUITEM_ID, list[i]);
-		if (addListeners){
-			mi.addSelectionListener(new AjxListener(this, this._presenceItemListener));
-		}
-		if (list[i] == currentShowOp) {
-			mi.setChecked(true, true);
-			// mi.parent.parent.setText(mi.getText());
-		}
+	for (var i = 0; i < list.length; i++) {
+                if (list[i] != ZmOperation.SEP) {
+		        var mi = presenceMenu.getItemById(ZmOperation.MENUITEM_ID, list[i]);
+		        if (addListeners) {
+			        mi.addSelectionListener(new AjxListener(this, this._presenceItemListener));
+		        }
+		        if (list[i] == currentShowOp) {
+			        mi.setChecked(true, true);
+		        }
+                }
 	}
 	presenceButton.setImage(presence.getIcon());
 	presenceButton.setText(presence.getShowText());
@@ -389,7 +392,7 @@ ZmChatListController.prototype.chatWithContacts = function(contacts, mailMsg, te
 };
 
 ZmChatListController.prototype.chatWithRosterItem = function(item, text) {
-	var chat = this._list.getChatByRosterAddr(item.getAddress(), true);
+	var chat = this._list.getChatByRosterItem(item, true);
 	// currentview or all? probably all...
 	this._getView().selectChat(chat, text);
 };
@@ -414,7 +417,7 @@ ZmChatListController.prototype._getView = function() {
 	return ZmChatMultiWindowView.getInstance();
 };
 
-ZmChatListController.prototype._rosterListChangeListener = function(ev, treeView) {
+ZmChatListController.prototype._rosterListChangeListener = function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var items = ev.getItems();
 		for (var i=0; i < items.length; i++) {

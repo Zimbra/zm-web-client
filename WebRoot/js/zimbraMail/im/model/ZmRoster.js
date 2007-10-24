@@ -218,7 +218,7 @@ function(im) {
 				if (not.n) {
 					for (var rosterNum=0; rosterNum < not.n.length; rosterNum++) {
 						var rosterItem = not.n[rosterNum];
-						if (rosterItem.type == "subscribed") {
+						if (rosterItem.type == "subscribed" && rosterItem.to.indexOf("@") >= 0) {
 							var item = new ZmRosterItem(rosterItem.to, list, rosterItem.name, null, rosterItem.groups);
 							list.addItem(item);
 						}
@@ -259,7 +259,7 @@ function(im) {
 						if (sub.groups) item._notifySetGroups(sub.groups); // should optimize
 						if (sub.name && sub.name != item.getName()) item._notifySetName(sub.name);
 						// mod
-					} else {
+					} else if (sub.to.indexOf("@") >= 0) {
 						// create
 						var item = new ZmRosterItem(sub.to, list, sub.name, null, sub.groups);
 						list.addItem(item);

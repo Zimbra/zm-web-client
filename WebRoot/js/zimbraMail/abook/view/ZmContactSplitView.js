@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -52,12 +52,12 @@ ZmContactSplitView.prototype.constructor = ZmContactSplitView;
 // Consts
 ZmContactSplitView.ALPHABET_HEIGHT = 35;
 
-ZmContactSplitView.prototype.toString = 
+ZmContactSplitView.prototype.toString =
 function() {
 	return "ZmContactSplitView";
 };
 
-ZmContactSplitView.prototype.getListView = 
+ZmContactSplitView.prototype.getListView =
 function() {
 	return this._listPart;
 };
@@ -78,7 +78,7 @@ function(width, height) {
 	this._sizeChildren(width, height);
 };
 
-ZmContactSplitView.prototype.setBounds = 
+ZmContactSplitView.prototype.setBounds =
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 	this._sizeChildren(width, height);
@@ -429,7 +429,7 @@ ZmContactSimpleView = function(parent, controller, dropTgt) {
 ZmContactSimpleView.prototype = new ZmContactsBaseView;
 ZmContactSimpleView.prototype.constructor = ZmContactSimpleView;
 
-ZmContactSimpleView.prototype.toString = 
+ZmContactSimpleView.prototype.toString =
 function() {
 	return "ZmContactSimpleView";
 };
@@ -473,6 +473,22 @@ ZmContactSimpleView.prototype._modifyContact =
 function(ev) {
 	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
 
+        if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
+                // display presence information for contacts linked to buddy list
+                var a = ev.getDetails().items, i = 0, c;
+                while (c = a[i++]) {
+                        if (c instanceof ZmContact) {
+                                var presence = c.getImPresence();
+                                if (presence) {
+                                        var el = this._getFieldId(c, ZmItem.F_PRESENCE);
+                                        el = document.getElementById(el);
+                                        if (el)
+                                                AjxImg.setImage(el, presence.getIcon(), true);
+                                }
+                        }
+                }
+        }
+
 	if (ev.getDetail("fileAsChanged")) {
 		var selected = this.getSelection()[0];
 		this._layout();
@@ -501,7 +517,7 @@ function() {
  * A contact is normally displayed in a list view with no headers, and shows
  * just an icon and name. The mixed list view has headers, and the row can
  * be built in the standard way.
- * 
+ *
  * @param contact	[ZmContact]		contact to display
  * @param params	[hash]*			optional params
  */
@@ -513,7 +529,7 @@ function(contact, params) {
 	}
 
 	var div = this._getDiv(contact, params);
-	
+
 	if (params.isDragProxy) {
 		div.style.width = "175px";
 		div.style.padding = "4px";
@@ -560,6 +576,15 @@ function(contact, params) {
 			htmlArr[idx++] = "</td>";
 		}
 	}
+
+        if (appCtxt.get(ZmSetting.IM_ENABLED)) {
+                htmlArr[idx++] = "<td style='vertical-align:middle' width=16 class='Presence'>";
+                var presence = contact.getImPresence();
+                var img = presence ? presence.getIcon() : "Blank_16";
+                idx = this._getImageHtml(htmlArr, idx, img, this._getFieldId(contact, ZmItem.F_PRESENCE));
+                htmlArr[idx++] = "</td>";
+        }
+
 	htmlArr[idx++] = "</tr></table>";
 
 	div.innerHTML = htmlArr.join("");
@@ -581,7 +606,7 @@ function(htmlArr, idx, contact, field, colIdx, params) {
 	} else {
 		idx = ZmContactsBaseView.prototype._getCellContents.apply(this, arguments);
 	}
-	
+
 	return idx;
 };
 
@@ -591,7 +616,7 @@ function(field, item, ev) {
 												ZmContactsBaseView.prototype._getToolTip.apply(this, arguments);
 };
 
-ZmContactSimpleView.prototype._getDateToolTip = 
+ZmContactSimpleView.prototype._getDateToolTip =
 function(item, div) {
 	div._dateStr = div._dateStr || this._getDateToolTipText(item.modified, ["<b>", ZmMsg.lastModified, ":</b><br>"].join(""));
 	return div._dateStr;

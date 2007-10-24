@@ -76,7 +76,7 @@ ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
 		wm = sticky ? this.getShellWindowManager() : this.getWindowManager();
 		if (sticky)
 			// reuse windows on global WM, so we don't clutter the display too much
-			win = wm.getActiveWindow();
+			win = wm.getWindowByType(ZmChatWindow);
 	}
 	if (!win) {
 		win = new ZmChatWindow(wm, chat, sticky);

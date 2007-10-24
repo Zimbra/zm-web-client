@@ -1752,39 +1752,11 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWidget .ZToolbarTable .ZButton .ZLeftIcon div { margin-left: 2px; margin-right: 2px; }
 .ZmChatWidget .ZToolbarTable .ZButton .ZWidgetTitle { padding: 0; }
 
-.ZmChatWindowContainer {
-	@FullSize@
-	overflow: auto;
-}
-
-.ZmChatWindow {
-	@WindowContainer@
-	width: 400px;			/* ??? SIZE */
-	height: 300px;
-}
-
-.ZmChatWindow-selected {
-	@WindowContainer-focused@
-	width: 400px;
-	height: 300px;
-}
-
 .ZmChatDialogField {
 	@Label@
 	@NoWrap@
 	text-align: right;
 	width: 1%;
-}
-
-/* ??? */
-.ZmChatWindow .DwtToolBar {
-	@ListItemContainer@
-}
-
-
-.ZmChatWindow-selected .DwtToolBar {
-	@ListItemContainer-selected@
-	height:24px;
 }
 
 .ZmImNotification {
@@ -1795,17 +1767,6 @@ HTML>BODY .appt-selected .appt_allday_body
   left: -10000px;
   top: -10000px;
 }
-
-/* ??? REMOVE
-.ZmChatWindow .DwtToolBar .DwtToolbarButton {
-	border: 1px solid #CCCCCC;
-}
-.ZmChatWindow-selected .DwtToolBar .DwtToolbarButton {
-	border: 1px solid #CCCCCC;
-}
-
-*/
-
 
 /* label for the chat window itself -- eg: who chat is with or "group chat" */
 .ZmChatWindowLabel TD {

@@ -1,38 +1,38 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
 /** small dialog for picking one contact with an autocompletion entry */
 
-ZmOneContactPicker = function() {
+ZmImNewChatDlg = function() {
 	DwtDialog.call(this, DwtShell.getShell(window), null, ZmMsg.selectContact);
 	this._init();
 };
 
-ZmOneContactPicker.prototype = new DwtDialog;
-ZmOneContactPicker.prototype.constructor = ZmOneContactPicker;
+ZmImNewChatDlg.prototype = new DwtDialog;
+ZmImNewChatDlg.prototype.constructor = ZmImNewChatDlg;
 
-ZmOneContactPicker.prototype._init = function() {
+ZmImNewChatDlg.prototype._init = function() {
 	var field = new DwtInputField({ parent : this,
 					size   : 25,
 					hint   : ZmMsg.search });
 	this._contactField = field;
 	var id = field.getInputElement().id;
 	var div = document.createElement("div");
-	div.innerHTML = AjxTemplate.expand("abook.Contacts#OneContactPicker", { id: id });
+	div.innerHTML = AjxTemplate.expand("im.Chat#NewChatDlg", { id: id });
 	this._getContentDiv().appendChild(div);
 	field.reparentHtmlElement(id + "_entryCell");
 	this._initAutocomplete();
@@ -40,29 +40,29 @@ ZmOneContactPicker.prototype._init = function() {
         this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
 };
 
-ZmOneContactPicker._INSTANCE = null;
-ZmOneContactPicker.getInstance = function() {
-	if (!ZmOneContactPicker._INSTANCE) {
-		ZmOneContactPicker._INSTANCE = new ZmOneContactPicker();
+ZmImNewChatDlg._INSTANCE = null;
+ZmImNewChatDlg.getInstance = function() {
+	if (!ZmImNewChatDlg._INSTANCE) {
+		ZmImNewChatDlg._INSTANCE = new ZmImNewChatDlg();
 	}
-	return ZmOneContactPicker._INSTANCE;
+	return ZmImNewChatDlg._INSTANCE;
 };
 
-ZmOneContactPicker.showPicker = function(callbacks) {
-	var dlg = ZmOneContactPicker.getInstance();
+ZmImNewChatDlg.show = function(callbacks) {
+	var dlg = ZmImNewChatDlg.getInstance();
 	dlg._callbacks = callbacks || {};
 	dlg.reset();
 	dlg.popup();
 	dlg._contactField.focus();
 };
 
-ZmOneContactPicker.prototype.reset = function() {
+ZmImNewChatDlg.prototype.reset = function() {
 	this._acContactsList.reset();
 	this._acContactsList.show(false);
 	this._contactField.setValue("", true);
 };
 
-ZmOneContactPicker.prototype._initAutocomplete = function() {
+ZmImNewChatDlg.prototype._initAutocomplete = function() {
         var acCallback = new AjxCallback(this, this._autocompleteCallback);
         if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
                 var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
@@ -78,19 +78,19 @@ ZmOneContactPicker.prototype._initAutocomplete = function() {
         }
 };
 
-ZmOneContactPicker.prototype._autocompleteCallback = function(text, el, match) {
+ZmImNewChatDlg.prototype._autocompleteCallback = function(text, el, match) {
 	this._selectedItem = match.item;
 	if (this._callbacks.onAutocomplete)
 		this._callbacks.onAutocomplete(match.item, this, text, el, match);
 };
 
-ZmOneContactPicker.prototype._okButtonListener = function() {
+ZmImNewChatDlg.prototype._okButtonListener = function() {
 	if (this._callbacks.onOK)
 		this._callbacks.onOK(this._selectedItem);
 	this.popdown();
 };
 
-ZmOneContactPicker.prototype._cancelButtonListener = function() {
+ZmImNewChatDlg.prototype._cancelButtonListener = function() {
 	if (this._callbacks.onCancel)
 		this._callbacks.onCancel();
 	this.popdown();

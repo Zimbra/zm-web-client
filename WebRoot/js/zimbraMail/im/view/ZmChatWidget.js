@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -290,9 +290,9 @@ ZmChatWidget.prototype._init = function() {
 		this._ids[id] = base_id + "_" + id;
 	}
 	this.setContent(AjxTemplate.expand("im.Chat#ChatWidget", { id: base_id }));
-	
+
 	this._initEditor(this);
-	
+
 	this._toolbar = new DwtToolBar(this, null, Dwt.ABSOLUTE_STYLE);
 
 	this._close = new DwtToolBarButton(this._toolbar, null);
@@ -306,11 +306,18 @@ ZmChatWidget.prototype._init = function() {
 
 	this._toolbar.addFiller();
 
+        var btn = new DwtToolBarButton(this._toolbar);
+        btn.setImage("ImGroup");
+        btn.setToolTipContent(ZmMsg.imFloatingBuddyList);
+        btn.addSelectionListener(
+                appCtxt.getApp("IM").getRosterTreeController()._listeners[ZmOperation.IM_FLOATING_LIST]
+        );
+
 	var btn = this._changEditorModeBtn = new DwtToolBarButton(this._toolbar,DwtButton.TOGGLE_STYLE);
 	btn.setImage("HtmlDoc");
 	btn.setToolTipContent("Change Editor Mode");
 	btn.addSelectionListener(new AjxListener(this,this._changeEditorModeListener));
-	
+
 	new DwtControl(this._toolbar, "vertSep");
 
 	var btn = this._addToBuddyListBtn = new DwtToolBarButton(this._toolbar, null);
@@ -340,10 +347,15 @@ ZmChatWidget.prototype._init = function() {
 
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content.setScrollStyle(Dwt.SCROLL);
+        this._content._setMouseEventHdlrs();
 
 	var dropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
 	this._content.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropOnContentListener));
+
+        var dropTgt = new DwtDropTarget([ "ZmRosterItem", "ZmContact" ]);
+        this._liteEditor.setDropTarget(dropTgt);
+        dropTgt.addDropListener(new AjxListener(this, this._dropOnEditorListener));
 
 	this._objectManager = new ZmObjectManager(this._content);
 	// add YM Emoticons if zimlet installed
@@ -381,11 +393,11 @@ ZmChatWidget.prototype._addToBuddyListListener = function() {
 };
 
 ZmChatWidget.prototype._inputKeyPress = function(ev) {
-	
+
 	var self = this;
 	var keyEvent = new DwtKeyEvent();
 	keyEvent.setFromDhtmlEvent(ev);
-	
+
 	if (self.__clearSelectionTimeout)
 		clearTimeout(self.__clearSelectionTimeout);
 	//var input = this;
@@ -485,7 +497,7 @@ ZmChatWidget.prototype._doResize = function() {
 
 ZmChatWidget.prototype.__onResize = function(ev) {
 	this._doResize();
-	
+
 };
 
 ZmChatWidget.prototype.focus = function() {
@@ -659,7 +671,6 @@ ZmChatWidget.prototype._stickyListener = function(ev) {
 };
 
 ZmChatWidget.prototype._dropOnContentListener = function(ev) {
-	var srcData = ev.srcData;
 	if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var item = ev.srcData;
 		var roster = AjxDispatcher.run("GetRoster");
@@ -668,6 +679,23 @@ ZmChatWidget.prototype._dropOnContentListener = function(ev) {
 					 "Join my conference..." // XXX: customize this
 					);
 	}
+};
+
+ZmChatWidget.prototype._dropOnEditorListener = function(ev) {
+        if (ev.action == DwtDropEvent.DRAG_DROP) {
+                var item = ev.srcData;
+                var roster = AjxDispatcher.run("GetRoster");
+                if (item instanceof ZmRosterItem) {
+                        var addr = roster.makeGenericAddress(item.getAddress());
+                        if (addr)
+                                addr = ZmImAddress.display(addr);
+                        if (addr)
+                                this._liteEditor.setSelectionText(addr);
+                } else if (item.data && item.data instanceof ZmContact) {
+                        this._liteEditor.setSelectionText(item.data.getAttendeeText());
+                }
+                this._liteEditor.focus();
+        }
 };
 
 ZmChatWidget.prototype._dropOnTitleListener = function(ev) {

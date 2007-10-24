@@ -52,8 +52,11 @@ AjxPackage.require("zimbraMail.im.view.ZmExternalGatewayDlg");
 AjxPackage.require("zimbraMail.im.view.ZmImNotification");
 AjxPackage.require("zimbraMail.im.view.ZmImSubscribeAuth");
 AjxPackage.require("zimbraMail.im.view.ZmImInviteNotification");
+AjxPackage.require("zimbraMail.im.view.ZmImNewChatDlg");
 
 AjxPackage.require("zimbraMail.im.controller.ZmChatListController");
 AjxPackage.require("zimbraMail.im.controller.ZmRosterTreeController");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmLiteHtmlEditor");
+
+// AjxPackage.require("zimbraMail.im.integration.ZmImAbookIntegration");

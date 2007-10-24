@@ -780,6 +780,13 @@ function() {
 	return buddy;
 };
 
+ZmContact.prototype.getImPresence =
+function() {
+        var buddy = this.getBuddy();
+        if (buddy)
+                return buddy.getPresence();
+};
+
 // returns a list (array) of all valid emails for this contact
 ZmContact.prototype.getEmails =
 function() {

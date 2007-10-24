@@ -29,4 +29,3 @@ AjxPackage.require("zimbraMail.abook.model.ZmContact");
 AjxPackage.require("zimbraMail.abook.model.ZmContactList");
 AjxPackage.require("zimbraMail.abook.view.ZmContactsHelper");
 AjxPackage.require("zimbraMail.abook.view.ZmContactPicker");
-AjxPackage.require("zimbraMail.abook.view.ZmOneContactPicker");

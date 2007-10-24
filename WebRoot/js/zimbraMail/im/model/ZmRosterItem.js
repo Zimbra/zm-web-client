@@ -66,13 +66,6 @@ function() {
 	return this.presence;
 };
 
-// debugging hack, to be removed
-ZmRosterItem.prototype.__setShow  =
-function(show, status) {
-	this.presence.setShow(show).setStatus(status);
-	this._notifyPresence();
-};
-
 ZmRosterItem.prototype._notifyTyping = function(typing) {
 	var fields = {};
 	fields[ZmRosterItem.F_TYPING] = !!typing;
@@ -86,6 +79,9 @@ function() {
 	fields[ZmRosterItem.F_PRESENCE] = this.getPresence();
 	this.list._notify(ZmEvent.E_MODIFY, { fields: fields, items: [this] });
 	delete this._toolTip;
+        var c = this.getContact();
+        if (c)
+                c.notifyModify({});
 };
 
 ZmRosterItem.prototype.setUnread  =

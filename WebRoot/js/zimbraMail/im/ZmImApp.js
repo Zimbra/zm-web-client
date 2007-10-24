@@ -36,6 +36,9 @@ ZmItem.ROSTER_ITEM				= ZmEvent.S_ROSTER_ITEM;
 ZmOrganizer.ROSTER_TREE_ITEM	= ZmEvent.S_ROSTER_TREE_ITEM;
 ZmOrganizer.ROSTER_TREE_GROUP	= ZmEvent.S_ROSTER_TREE_GROUP;
 
+ZmItem.F_PRESENCE = "PRESENCE";
+ZmItem.F_PRESENCE_CELL = "PRESENCE_cell";
+
 // App-related constants
 ZmApp.IM					= "IM";
 ZmApp.CLASS[ZmApp.IM]		= "ZmImApp";
@@ -84,6 +87,7 @@ function() {
 	ZmOperation.registerOp("IM_GATEWAY_LOGIN"      , { textKey: "imGatewayLogin" });
 	ZmOperation.registerOp("IM_TOGGLE_OFFLINE"     , { textKey: "imToggleOffline" });
         ZmOperation.registerOp("IM_TOGGLE_BLOCKED"     , { textKey: "imToggleBlocked" });
+        ZmOperation.registerOp("IM_FLOATING_LIST"      , { textKey: "imFloatingBuddyList", image: "ImGroup" });
 
 	ZmOperation.registerOp("IM_PRESENCE_CUSTOM_MSG"		, { textKey: "imCustomStatusMsg", image: "ImFree2Chat"});
 
@@ -109,6 +113,7 @@ ZmImApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.IM_NEW_CHAT] = "chat";
+        newItemOps[ZmOperation.IM_FLOATING_LIST] = "im_floating_list";
 	ZmApp.registerApp(ZmApp.IM,
 			  { mainPkg	      : "IM",
 			    nameKey	      : "imAppTitle",
@@ -324,6 +329,11 @@ ZmImApp.prototype.handleOp = function(op) {
 		this.prepareVisuals(); // ... and create views, if not yet done
 		this.getRosterTreeController()._imNewChatListener();
 		break;
+            case ZmOperation.IM_FLOATING_LIST:
+                AjxDispatcher.run("GetRoster");
+                this.prepareVisuals();
+                this.getRosterTreeController()._imFloatingListListener();
+                break;
 	}
 };
 
@@ -405,18 +415,18 @@ ZmImApp.prototype.stopFlashingIcon = function() {
 	}
 };
 
-ZmImApp.getImPresenceMenuOps = function(){
+ZmImApp.getImPresenceMenuOps = function() {
 
 	var list = [ ZmOperation.IM_PRESENCE_OFFLINE,
 		     ZmOperation.IM_PRESENCE_ONLINE,
 		     ZmOperation.IM_PRESENCE_CHAT,
-             ZmOperation.IM_PRESENCE_DND,
+                     ZmOperation.IM_PRESENCE_DND,
 		     ZmOperation.IM_PRESENCE_AWAY,
 		     ZmOperation.IM_PRESENCE_XA,
-             ZmOperation.IM_PRESENCE_INVISIBLE,
-             ZmOperation.SEP,
-             ZmOperation.IM_PRESENCE_CUSTOM_MSG
-		];
+                     ZmOperation.IM_PRESENCE_INVISIBLE,
+                     ZmOperation.SEP,
+                     ZmOperation.IM_PRESENCE_CUSTOM_MSG
+		   ];
 
 	return list;
 };
@@ -430,14 +440,18 @@ function(parent) {
 
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
-		var mi = menu.createMenuItem(op, { image : ZmOperation.getProp(op, "image"),
-						   text	 : ZmMsg[ZmOperation.getProp(op, "textKey")],
-						   style : DwtMenuItem.RADIO_STYLE
-						 });
-		mi.setData(ZmOperation.MENUITEM_ID, op);
-		mi.setData(ZmOperation.KEY_ID, op);
-		if (op == ZmOperation.IM_PRESENCE_OFFLINE)
-			mi.setChecked(true, true);
+                if (op == ZmOperation.SEP)
+                        new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+                else {
+		        var mi = menu.createMenuItem(op, { image : ZmOperation.getProp(op, "image"),
+						           text	 : ZmMsg[ZmOperation.getProp(op, "textKey")],
+						           style : DwtMenuItem.RADIO_STYLE
+						         });
+		        mi.setData(ZmOperation.MENUITEM_ID, op);
+		        mi.setData(ZmOperation.KEY_ID, op);
+		        if (op == ZmOperation.IM_PRESENCE_OFFLINE)
+			        mi.setChecked(true, true);
+                }
 	}
 
 	parent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);

@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 ZmChatList = function(roster) {
@@ -22,7 +22,7 @@ ZmChatList = function(roster) {
 ZmChatList.prototype = new ZmList;
 ZmChatList.prototype.constructor = ZmChatList;
 
-ZmChatList.prototype.toString = 
+ZmChatList.prototype.toString =
 function() {
 	return "ZmChatList";
 };
@@ -42,10 +42,30 @@ function(chat) {
 	this._notify(ZmEvent.E_DELETE, {items: [chat]});
 };
 
+ZmChatList.prototype.getChatByRosterItem = function(item, autoCreate) {
+        var addr = item.getAddress();
+        if (!item.isDefaultBuddy())
+                return this.getChatByRosterAddr(addr, autoCreate);
+        var list = this.getArray();
+        var chat;
+	for (var i = 0; i < list.length; i++) {
+		chat = list[i];
+		if (chat.getRosterSize() == 1 && chat.hasRosterAddr(addr))
+                        return chat;
+	}
+        if (!autoCreate)
+                return null;
+        chat = new ZmChat(Dwt.getNextId(), item.getDisplayName(), this);
+        chat.addRosterItem(item);
+        this.addChat(chat);
+        return chat;
+};
+
 ZmChatList.prototype.getChatByRosterAddr = function(addr, autoCreate) {
 	var list = this.getArray();
+        var chat;
 	for (var i=0; i < list.length; i++) {
-		var chat = list[i];
+		chat = list[i];
 		if (chat.getRosterSize() == 1 && chat.hasRosterAddr(addr)) return chat;
 	}
 	if (!autoCreate)

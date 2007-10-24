@@ -59,6 +59,12 @@ ZmImAddressEntry.prototype._init = function() {
         this._inputScreenName = new DwtInputField({ parent: this });
         this._inputScreenName.reparentHtmlElement(this._idInput);
         this._inputScreenName.setEnabled(false);
+
+        var dropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
+	this.setDropTarget(dropTgt);
+        this._selectService.setDropTarget(dropTgt);
+        this._inputScreenName.setDropTarget(dropTgt);
+	dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 };
 
 ZmImAddressEntry.prototype.setValue = function(addr) {
@@ -74,5 +80,20 @@ ZmImAddressEntry.prototype.getValue = function() {
 };
 
 ZmImAddressEntry.prototype._on_selectService_change = function() {
-        this._inputScreenName.setEnabled(this._selectService.getValue() != "_NONE");
+        var enabled = this._selectService.getValue() != "_NONE";
+        this._inputScreenName.setEnabled(enabled);
+        if (enabled)
+                this._inputScreenName.focus();
+};
+
+ZmImAddressEntry.prototype._dropListener = function(ev) {
+        if (ev.action == DwtDropEvent.DRAG_DROP) {
+		var item = ev.srcData;
+                if (item instanceof ZmRosterItem) {
+		        var roster = AjxDispatcher.run("GetRoster");
+                        var addr = roster.makeGenericAddress(item.getAddress());
+                        if (addr)
+                                this.setValue(addr);
+                }
+	}
 };
