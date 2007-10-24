@@ -249,13 +249,13 @@
   overflow:auto;
 }
 
-.DLSource, .DLTarget, .MBXList, .ZaFullPageXFormListView { 
+.DLSource, .DLTarget, .MBXList { 
   border-top: 2px solid #848484;
   border-left: 2px solid #848484;
   border-bottom: 2px solid #FAFAFA;
   border-right: 2px solid #FAFAFA;
   width: auto;	
-  background-color:#FFFFFF;
+  @ListBg@
 }
 
 .DLTarget { 
@@ -271,7 +271,11 @@
 }
 
 .ZaFullPageXFormListView {
+  border-left: none;
+  border-right: none;
   height: 100%;	
+  width: auto;	
+  @ListBg@
 }
 
 .DLSource .DwtListView-Rows {
