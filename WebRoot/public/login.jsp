@@ -35,9 +35,11 @@
         </c:when>
         <c:when test="${param.loginOp eq 'logout'}">
             <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
-            <c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />            
+            <c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />
             <zm:logout/>
+            <c:if test="${not empty logoutRedirectUrl}" >
             <c:redirect url="${logoutRedirectUrl}"/>
+            </c:if>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
             <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
