@@ -118,14 +118,21 @@
                         <table class="BannerBar" cellspacing="0" cellpadding="0" border="0">
                             <tbody>
                                 <tr>
-                                    <td class="BannerTextQuota">Email:</td>
-                                    <td class="BannerTextQuota">
-                                        <div class="quotabar">
-                                            <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>                                            
+                                    <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
+                                    <c:choose>
+                                        <c:when test="${max gt 0}">
                                             <c:set var="usage" value="${zm:displaySizePercentage(mailbox.size,max)}" />
-                                            <div class="quotaUsed" style="width:${usage}"/>
-                                        </div>
-                                    </td>
+                                            <td class="BannerTextQuota">Email:</td>
+                                            <td class="BannerTextQuota">
+                                                <div class="quotabar">
+                                                    <div class="quotaUsed" style="width:${usage}"/>
+                                                </div>
+                                            </td>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="usage" value="${zm:displaySizeFractions(mailbox.size,2)}" />
+                                        </c:otherwise>
+                                    </c:choose>
                                     <td class="BannerTextQuota" style="white-space: nowrap;">
                                         <fmt:message var="unlimited" key="unlimited"/>
                                         <fmt:message key="quotaUsage">
