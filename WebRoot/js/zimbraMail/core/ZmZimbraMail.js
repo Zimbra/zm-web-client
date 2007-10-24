@@ -153,29 +153,31 @@ function(params) {
 	// Create and initialize settings
 	var settings = new ZmSettings();
 	appCtxt.setSettings(settings);
-	
-	if (params.settings) {
+
+    // Note: removing cookie support will affect zdesktop when connecting 4.x remote server
+    if(params.offlineMode) {
+        var apps = AjxCookie.getCookie(document, ZmSetting.APPS_COOKIE);
+        DBG.println(AjxDebug.DBG1, "apps: " + apps);
+        if (apps) {
+            for (var appsetting in ZmSetting.APP_LETTER) {
+                var letter = ZmSetting.APP_LETTER[appsetting];
+				if (apps.indexOf(letter) != -1) {
+					settings.getSetting(appsetting).setValue(true);
+				}
+            }
+        }
+    }
+
+    if (params.settings) {
 		for (var name in params.settings) {
-			var id = settings.getSettingByName(name);
+            var id = settings.getSettingByName(name);
 			if (id) {
 				settings.getSetting(id).setValue(params.settings[name]);
 			}
 		}
-	} else {
-		// Note: removing cookie support may affect offline.jsp
-		var apps = AjxCookie.getCookie(document, ZmSetting.APPS_COOKIE);
-		DBG.println(AjxDebug.DBG1, "apps: " + apps);
-		if (apps) {
-			for (var setting in ZmSetting.APP_LETTER) {
-				var letter = ZmSetting.APP_LETTER[setting];
-				if (apps.indexOf(letter) != -1) {
-					appCtxt.set(setting, true);
-				}
-			}
-		}
 	}
-
-	// Create generic operations
+    
+    // Create generic operations
 	ZmOperation.initialize();
 
 	// Handle offline mode
