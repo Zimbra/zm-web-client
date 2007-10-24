@@ -34,7 +34,10 @@
             <fmt:message bundle="${zmsg}" var="errorMessage" key="${errorCode}"/>
         </c:when>
         <c:when test="${param.loginOp eq 'logout'}">
+            <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
+            <c:set var="logoutRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLogoutURL}" />            
             <zm:logout/>
+            <c:redirect url="${logoutRedirectUrl}"/>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
             <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
