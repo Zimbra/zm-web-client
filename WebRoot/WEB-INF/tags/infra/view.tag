@@ -204,7 +204,7 @@
 					</tr>
 					<tr>
 						<td id='skin_td_tree_bottom_ad' style="padding-left:0px;" height=120>
-							<iframe src="/h/overviewAds" align="left" frameborder="0" marginheight="0" style="overflow:hidden;" scrolling="false" marginwidth="0" height="120" width="100%" >
+							<iframe src="<c:url value='/h/overviewAds'/>" align="left" frameborder="0" marginheight="0" style="overflow:hidden;" scrolling="false" marginwidth="0" height="120" width="100%" >
                             </iframe>
                         </td>
 					</tr>
