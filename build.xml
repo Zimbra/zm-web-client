@@ -43,6 +43,7 @@
     <property name='build.template.dir' value='${build.web.dir}/templates'/>
     <property name='build.skin.dir' value='${build.web.dir}/skins'/>
     <property name='build.help.dir' value='${build.web.dir}/help'/>
+    <property name='build.adminhelp.dir' value='${build.web.dir}/adminhelp'/>	
     <property name='build.dist.dir' value='${build.dir}/dist'/>
 
     <property name='build.img.dir' value='${build.web.dir}/img'/>
@@ -159,8 +160,8 @@
         <property name='build.admin' value='true'/>
         <property name='deploy.app' value='zimbraAdmin'/>
         <property name='skins.dir' value='${web.dir}/admin_skins'/>
-        <property name='help.dir' value='${web.dir}/adminhelp'/>
-        <property name='build.help.dir' value='${build.web.dir}/adminhelp'/>
+        <property name='adminhelp.dir' value='${web.dir}/adminhelp'/>
+        <property name='build.adminhelp.dir' value='${build.web.dir}/adminhelp'/>
         <property name='web.includes' value='${common.web.includes},migrationwizard/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraMail/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
@@ -177,8 +178,8 @@
         <property name='webinf.includes' value='${common.webinf.includes}'/>
         <property name='webinf.excludes' value='${common.webinf.excludes},tags/**,tlds/**'/>
 
-        <fileset id='help.fileset'
-                 dir='${help.dir}' includes='${help.includes}' excludes='${help.excludes}'
+        <fileset id='adminhelp.fileset'
+                 dir='${adminhelp.dir}' includes='${help.includes}' excludes='${help.excludes}'
                 />
     </target>
 
@@ -864,7 +865,14 @@ if (ext == null) ext = "";
 
     <target name='help' depends='init' if='build.prod'>
         <!-- TODO: This has to be fixed. -->
-        <mkdir dir='${build.help.dir}'/>
+	    <if>
+            <not>
+                <isset property='build.admin'/>
+            </not>
+	    	<then>
+	    		<mkdir dir='${build.help.dir}'/>
+	    	</then>
+	    </if>
         <if>
             <and>
                 <not>
@@ -897,15 +905,16 @@ if (ext == null) ext = "";
         <if>
             <isset property='build.admin'/>
             <then>
-                <property name='build.help.temp.dir' value='${build.help.dir}/html'/>
+                <property name='build.adminhelp.temp.dir' value='${build.adminhelp.dir}/html'/>
 
-                <mkdir dir='${build.help.temp.dir}'/>
+                <mkdir dir='${build.adminhelp.temp.dir}'/>
 
-                <unzip dest='${build.help.temp.dir}' src='${help.dir}/html/ZimbraAdminOLH.zip'/>
+                <unzip dest='${build.adminhelp.temp.dir}' src='${adminhelp.dir}/html/ZimbraAdminOLH.zip'/>
             </then>
         </if>
     </target>
 
+	
     <target name='deploy' depends='war'>
         <ant dir="${server.dir}" target="stop-jetty" inheritAll="false"/>
 
