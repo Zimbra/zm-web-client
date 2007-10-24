@@ -242,11 +242,13 @@ function(parent, numSel, sel) {
 		if (index == (numRules - 1))
 			parent.enable(ZmOperation.MOVE_DOWN_FILTER_RULE, false);
 	} else {
-		parent.enableAll(false);
 		parent.enable(ZmOperation.ADD_FILTER_RULE, true);
 	}
 	if (numRules == 1) {
 		parent.enable(ZmOperation.MOVE_UP_FILTER_RULE, false);
 		parent.enable(ZmOperation.MOVE_DOWN_FILTER_RULE, false);
+	} else if (numRules == 0) {
+		parent.enable(ZmOperation.EDIT_FILTER_RULE, false);
+		parent.enable(ZmOperation.REMOVE_FILTER_RULE, false);
 	}
 };
