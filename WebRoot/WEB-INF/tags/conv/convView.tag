@@ -160,6 +160,9 @@
                                                 <c:if test="${mailbox.features.flagging}">
                                                 <th class='Img' nowrap width="1%"><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
                                                 </c:if>
+                                                <c:if test="${mailbox.features.mailPriority}">
+                                                <th class='Img' nowrap width="1%"><app:img src="tasks/TaskHigh.gif" altkey="ALT_PRIORITY"/>
+                                                </c:if>
                                                 <c:if test="${mailbox.features.tagging}">
                                                 <th class='Img' nowrap width="1%"><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG"/>
                                                 </c:if>
@@ -186,6 +189,9 @@
                                                     <td class='CB' nowrap><input id="C${status.index}" <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
                                                     <c:if test="${mailbox.features.flagging}">
                                                     <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
+                                                    </c:if>
+                                                    <c:if test="${mailbox.features.mailPriority}">
+                                                    <td class='Img'><app:priorityImage high="${hit.messageHit.isHighPriority}" low="${hit.messageHit.isLowPriority}"/></td>
                                                     </c:if>
                                                     <c:if test="${mailbox.features.tagging}">
                                                         <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
