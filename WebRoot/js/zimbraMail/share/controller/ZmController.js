@@ -431,10 +431,12 @@ function(result) {
 
 ZmController.prototype._hideSendReportBtn =
 function(ex) {
-	return ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS ||
-		   ex.code == ZmCsfeException.MAIL_MAINTENANCE_MODE ||
-		   ex.code == ZmCsfeException.NETWORK_ERROR ||
-		   ex.code == ZmCsfeException.TOO_MANY_TAGS;
+	return (ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS ||
+		  	ex.code == ZmCsfeException.MAIL_MAINTENANCE_MODE ||
+		   	ex.code == ZmCsfeException.NETWORK_ERROR ||
+		   	ex.code == ZmCsfeException.EMPTY_RESPONSE ||
+		   	ex.code == ZmCsfeException.BAD_JSON_RESPONSE ||
+		   	ex.code == ZmCsfeException.TOO_MANY_TAGS);
 };
 
 /*
