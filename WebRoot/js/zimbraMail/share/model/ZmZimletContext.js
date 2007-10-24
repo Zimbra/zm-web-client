@@ -315,6 +315,12 @@ ZmZimletContext.prototype._handleMenuItemSelected = function(ev) {
 	}
 };
 
+ZmZimletContext.APP = {
+	contextPath: appContextPath,
+	currentSkin: appCurrentSkin
+};
+
+ZmZimletContext.RE_SCAN_APP = /(^|[^\\])\$\{app\.([\$a-zA-Z0-9_]+)\}/g;
 ZmZimletContext.RE_SCAN_OBJ = /(^|[^\\])\$\{(?:obj|src)\.([\$a-zA-Z0-9_]+)\}/g;
 ZmZimletContext.RE_SCAN_PROP = /(^|[^\\])\$\{prop\.([\$a-zA-Z0-9_]+)\}/g;
 ZmZimletContext.RE_SCAN_MSG = /(^|[^\\])\$\{msg\.([\$a-zA-Z0-9_]+)\}/g;
@@ -365,6 +371,7 @@ ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
 ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
 	//All URL's to have REST substitutions
 	var url = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, actionUrl.target, props || this._propsById);
+	url = this.replaceObj(ZmZimletContext.RE_SCAN_APP, url, ZmZimletContext.APP);
 	//var url = actionUrl.target;
 	var param = [];
 	if (actionUrl.param) {
@@ -377,6 +384,7 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
 				val = this.processString(val, obj);
 			}
 			val = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, val, props || this._propsById);
+			val = this.replaceObj(ZmZimletContext.RE_SCAN_APP, val, ZmZimletContext.APP);
 			param.push([ AjxStringUtil.urlEncode(a[i].name),
 				     "=",
 				     AjxStringUtil.urlEncode(val) ].join(""));

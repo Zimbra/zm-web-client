@@ -48,6 +48,14 @@ ZmPortlet = function(list, id, def) {
         }
     }
 
+	// string replacement
+	if (this.zimletCtxt) {
+		for (var pname in this.properties) {
+			this.properties[pname] = this.zimletCtxt.replaceObj(ZmZimletContext.RE_SCAN_APP, this.properties[pname], ZmZimletContext.APP);
+			// TODO: replace msg,obj,etc...
+		}
+	}
+
     // setup refresh interval
     if (this.actionUrl) {
         this.setRefreshInterval(this.actionUrl.refresh);
