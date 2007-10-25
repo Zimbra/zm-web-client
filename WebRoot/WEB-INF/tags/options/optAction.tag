@@ -50,6 +50,12 @@
 
             <zm:pref name="zimbraPrefMessageViewHtmlPreferred" value="${param.zimbraPrefMessageViewHtmlPreferred eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <zm:pref name="zimbraPrefDedupeMessagesSentToSelf" value="${param.zimbraPrefDedupeMessagesSentToSelf}"/>
+            <%-- for velodrome --%>
+            <zm:pref name="zimbraPrefInboxUnreadLifetime" value="${param.zimbraPrefInboxUnreadLifetime}"/>
+            <zm:pref name="zimbraPrefInboxReadLifetime" value="${param.zimbraPrefInboxReadLifetime}"/>
+            <zm:pref name="zimbraPrefSentLifetime" value="${param.zimbraPrefSentLifetime}"/>
+            <zm:pref name="zimbraPrefJunkLifetime" value="${param.zimbraPrefSpamLifetime}"/>
+            <zm:pref name="zimbraPrefTrashLifetime" value="${param.zimbraPrefTrashLifetime}"/>
         </c:when>
         <%-- COMPOSING --%>
         <c:when test="${selected eq 'composing'}">
