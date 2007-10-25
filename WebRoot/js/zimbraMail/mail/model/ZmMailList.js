@@ -416,7 +416,8 @@ function(item, sortBy) {
 
 ZmMailList.prototype._sortAndNotify =
 function(items, sortBy, event, details) {
-	if (!(items && items.length && (items[0].type == this.type))) { return; }
+	if (!(items && items.length)) { return; }
+	if ((this.type == ZmItem.MSG) && (items[0].type == ZmItem.CONV)) { return; }
 	details = details || {};
 	var doSort = ((event == ZmEvent.E_CREATE) || (details && details.fields[ZmItem.F_DATE]));
 	for (var i = 0; i < items.length; i++) {
