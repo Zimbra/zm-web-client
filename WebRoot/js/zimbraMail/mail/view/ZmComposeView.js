@@ -310,9 +310,8 @@ function() {
 ZmComposeView.prototype._isInline =
 function() {
 	if (this._attachDialog) {
-		 var tvp = this._attachDialog.getTabViewPage("MY_COMPUTER");
-		 return tvp.isInline();
-	}
+        return this._attachDialog.isInline();
+    }
 
 	if (this._msg && this._msgAttId && this._msg.id == this._msgAttId) {
 		return false;
@@ -783,17 +782,8 @@ function() {
 	var attachDialog = appCtxt.getAttachDialog();
 	var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
 	attachDialog.setUploadCallback(callback);
-
-	var tvp = attachDialog.getTabViewPage("MY_COMPUTER");
-
-	if (tvp && this._composeMode == DwtHtmlEditor.HTML) {
-		tvp.showInlineOption();
-	} else {
-		tvp.hideInlineOption();
-	}
-
-	attachDialog.popup();
-
+    attachDialog.popup();
+    attachDialog.enableInlineOption(this._composeMode == DwtHtmlEditor.HTML);
 	this._attachDialog = attachDialog;
 };
 
