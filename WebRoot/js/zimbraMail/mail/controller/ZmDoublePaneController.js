@@ -80,6 +80,15 @@ function(item, callback, results) {
 	if (callback) {
 		callback.run();
 	}
+	
+	// If there's only one item in the list, go ahead and set focus to it since
+	// there's no use in the one-item list having focus (arrow keys do nothing)
+	if (this._readingPaneOn && (this._list.size() == 1)) {
+		var msgView = this._doublePaneView._msgView;
+		if (msgView) {
+			appCtxt.getKeyboardMgr().grabFocus(msgView);
+		}
+	}
 };
 
 /**
@@ -228,6 +237,19 @@ function(num) {
 ZmDoublePaneController.prototype._getMoveDialogTitle = 
 function(num) {
 	return (num == 1) ? ZmMsg.moveMessage : ZmMsg.moveMessages;
+};
+
+/**
+ * Add reading pane to focus ring.
+ */
+ZmDoublePaneController.prototype._initializeTabGroup =
+function(view) {
+	if (this._tabGroups[view]) return;
+
+	ZmListController.prototype._initializeTabGroup.apply(this, arguments);
+	if (!AjxEnv.isIE) {
+		this._tabGroups[view].addMember(this.getReferenceView().getMsgView());
+	}
 };
 
 ZmDoublePaneController.prototype._setViewContents =

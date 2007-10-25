@@ -174,16 +174,6 @@ function() {
 	return ZmItem.CONV;
 };
 
-ZmConvListController.prototype._initializeTabGroup =
-function(view) {
-	if (this._tabGroups[view]) return;
-
-	ZmListController.prototype._initializeTabGroup.apply(this, arguments);
-	if (!AjxEnv.isIE) {
-		this._tabGroups[view].addMember(this.getReferenceView().getMsgView());
-	}
-};
-
 ZmConvListController.prototype._setViewContents =
 function(view) {
 	this._mailListView._resetExpansion();
