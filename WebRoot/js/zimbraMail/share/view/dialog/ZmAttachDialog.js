@@ -108,8 +108,15 @@ ZmAttachDialog.prototype._createBaseHtml = function() {
 ZmAttachDialog.prototype._initializeTabView = function(view) {
     this._tabView = new ZmAttachTabView(view, null, Dwt.STATIC_STYLE);
     this._tabView.addTabChangeListener(new AjxListener(this, this.tabChangeListener));
+    this._tabView.addStateChangeListener(new AjxListener(this, this.stateChangeListener));
+    this._setInlineOptionSection(view);
     this._setFooterSection(view);
 
+};
+
+ZmAttachDialog.prototype.stateChangeListener = function(ev){
+     //Reset Inline Options Here
+    this._resetInlineOption();
 };
 
 ZmAttachDialog.prototype.tabChangeListener = function(ev) {
@@ -133,7 +140,6 @@ ZmAttachDialog.prototype._setFooterSection = function(view) {
     view.getHtmlElement().appendChild(div);
 
     this._footer = document.getElementById(div.id);
-
 };
 
 ZmAttachDialog.prototype.setFooter = function(html) {
@@ -167,8 +173,10 @@ ZmAttachDialog.prototype.getTabViewPage = function(id) {
 
 ZmAttachDialog.prototype.popup = function() {
     var tabKey = this.getTabKey("MY_COMPUTER");
-    this._tabView.switchToTab(tabKey);
+    this._tabView.switchToTab(tabKey,true);
+    this.setFooter("");
     DwtDialog.prototype.popup.call(this);
+    this.setFooter("");
 };
 
 //Upload Utitlity Methods
@@ -270,6 +278,58 @@ ZmAttachDialog.prototype._addMyComputerTab = function() {
     this.addCancelListener(tabKey, cancelCallback);
 };
 
+//Inline Option for attachment Dialog.
+ZmAttachDialog.INLINE_OPTION_MSG = "Show images in message body";
+ZmAttachDialog.prototype._setInlineOptionSection = function(view){
+    var div = document.createElement("div");
+    div.style.height = "10px";
+    div.style.textAlign = "left";
+    div.id = Dwt.getNextId();
+    view.getHtmlElement().appendChild(div);
+
+    this._inlineOption = document.getElementById(div.id);
+};
+
+ZmAttachDialog.prototype.enableInlineOption = function(enable) {
+    
+    this._inlineOption.innerHTML = "";
+    this._inline = false;
+    if(!!enable){
+        var html = [];
+        var idx = 0;
+	    //Adding inline option
+        html[idx++] = "<input type='checkbox' name='inlineimages' id='inline'>&nbsp;" + ZmAttachDialog.INLINE_OPTION_MSG;
+        html = html.join("");
+
+        this._inlineOption.setAttribute("option", "inline");
+        this._inlineOption.innerHTML = html;
+
+        var inlineOption = document.getElementById("inline");
+        inlineOption.onclick = AjxCallback.simpleClosure(this._handleInline, this, inlineOption);
+    }
+};
+
+ZmAttachDialog.prototype._resetInlineOption = function(){
+   var inlineOption = document.getElementById("inline");
+   if(inlineOption){
+       inlineOption.checked = false;
+   }
+    this._inline = false;
+};
+
+ZmAttachDialog.prototype._handleInline = function(checkbox) {
+    this._inline = (checkbox && checkbox.checked);
+    var currentTabPageView = this._tabView.getTabView(this._tabView.getCurrentTab());
+    if(currentTabPageView._handleInline){
+        currentTabPageView._handleInline(this._inline);
+    }
+    //this._uploadForm.setAttribute("action", this._uri + ((this._inline) ? "?fmt=extended" : ""));
+};
+
+ZmAttachDialog.prototype.isInline = function(){
+    return (!!this._inline);
+};
+
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx//
 //ZmAttachTabView: Extended DwtTabView class to get handle over switchToTab() method,
 // so that I could run a pre-switchToTab listener.
@@ -286,9 +346,9 @@ ZmAttachTabView.prototype.addTabChangeListener = function(listener) {
     this._addTabChangeListener = listener;
 };
 
-ZmAttachTabView.prototype.switchToTab =function(tabKey){
-
-      if(this._addTabChangeListener && !this._addTabChangeListener.run()){
+ZmAttachTabView.prototype.switchToTab =function(tabKey,skipTabChangeListener){
+ 
+    if(!skipTabChangeListener && this._addTabChangeListener && !this._addTabChangeListener.run()){
           var button = this._tabBar.getButton(this.getCurrentTab());
           button.setOpen();
           button = this._tabBar.getButton(tabKey);
@@ -327,12 +387,12 @@ ZmMyComputerTabViewPage.prototype.toString = function() {
 ZmMyComputerTabViewPage.prototype.showMe = function() {
     this.resetAttachments();
     DwtTabViewPage.prototype.showMe.call(this);
-    this.setSize(Dwt.DEFAULT, "260");
+    this.setSize(Dwt.DEFAULT, "240");
     this._focusAttEl();
 };
 
 ZmMyComputerTabViewPage.prototype.hideMe = function() {
-    this._resetInlineOption();
+    //this._resetInlineOption();
     DwtTabViewPage.prototype.hideMe.call(this);
 };
 
@@ -403,6 +463,7 @@ ZmMyComputerTabViewPage.prototype.getUploadForm = function() {
 };
 
 //Inline Options
+/*
 ZmMyComputerTabViewPage.INLINE_OPTION_MSG = "Show images in message body";
 ZmMyComputerTabViewPage.prototype.showInlineOption = function() {
 
@@ -431,12 +492,11 @@ ZmMyComputerTabViewPage.prototype.hideInlineOption = function() {
     this._cleanTable(optTable);
     this._inline = false;
 };
-
-ZmMyComputerTabViewPage.prototype._handleInline = function(checkbox) {
-    this._inline = (checkbox && checkbox.checked);
-    this._uploadForm.setAttribute("action", this._uri + ((this._inline) ? "?fmt=extended" : ""));
+*/
+ZmMyComputerTabViewPage.prototype._handleInline = function(inline) {
+    this._uploadForm.setAttribute("action", this._uri + (inline? "?fmt=extended" : ""));
 };
-
+/*
 ZmMyComputerTabViewPage.prototype._resetInlineOption = function() {
 
     var inlineOption = document.getElementById("inline");
@@ -450,7 +510,7 @@ ZmMyComputerTabViewPage.prototype._resetInlineOption = function() {
 ZmMyComputerTabViewPage.prototype.isInline = function() {
     return ((this._inline) ? this._inline : false);
 };
-
+*/
 
 
 //Attachments
