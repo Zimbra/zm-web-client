@@ -461,17 +461,16 @@ function() {
 };
 
 ZmContactView.prototype._setImage =
-function(el,value) {
-
+function(el, value) {
 	if (!value) {
-		Dwt.setVisible(this._imageDiv,false);
-		AjxImg.setImage(this._imageDiv.parentNode,"Person_48",true,false);
+		Dwt.setVisible(this._imageDiv, false);
+		AjxImg.setImage(this._imageDiv.parentNode, "Person_48", true, false);
 		return;
 	}
-	el.setAttribute("_part",value.part);
-	el.setAttribute("_size",value.size);
-	el.setAttribute("_ct",value.ct);
-	this._image.setAttribute("src",this._contact.getImageUrl());
+	el.setAttribute("_part", value.part);
+	el.setAttribute("_size", value.size);
+	el.setAttribute("_ct", value.ct);
+	this._image.setAttribute("src", this._contact.getImageUrl());
 };
 
 ZmContactView.prototype._setValues =
@@ -642,7 +641,7 @@ function(contact) {
 	// add widgets
 	this._addSelectOptions();
 	this._addDateCalendars();
-        this._addImAddressEntries();
+	this._addImAddressEntries();
 
 	this._handleImage();
 
@@ -679,7 +678,7 @@ function() {
 
 	var imageRemove = document.getElementById(this._imageCellId + "_remove");
 	if (imageRemove) {
-		imageRemove.onclick = AjxCallback.simpleClosure(this._removeImage, this,imageRemove);
+		imageRemove.onclick = AjxCallback.simpleClosure(this._removeImage, this, imageRemove);
 	}
 
 	this._uploadForm = document.getElementById(this._imageCellId + "_form");
@@ -691,11 +690,11 @@ function() {
 ZmContactView.prototype._updateImage =
 function(status,attId) {
 
-	AjxImg.setImage(this._imageDiv.parentNode,"Person_48",true,true);
-	Dwt.setVisible(this._imageDiv,true);
+	AjxImg.setImage(this._imageDiv.parentNode, "Person_48", true, true);
+	Dwt.setVisible(this._imageDiv, true);
 
 	this._image.setAttribute("src", ["/service/content/proxy?aid=",attId].join(""));
-	this._imageInput.setAttribute("_aid",attId);
+	this._imageInput.setAttribute("_aid", attId);
 };
 
 ZmContactView.prototype._uploadImage =
@@ -745,7 +744,10 @@ ZmContactView.prototype._removeImage =
 function(el) {
 	this._imageInput.removeAttribute("_aid");
 	this._imageInput.removeAttribute("_part");
-	this._setImage(el,null);
+	this._setImage(el, null);
+	if (this._contact.id) {
+		this._isDirty = true;
+	}
 };
 
 ZmContactView.prototype._getTabGroupMembers =
@@ -783,8 +785,7 @@ function(ev) {
 
 ZmContactView.prototype._tagChangeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_TAG)
-		return;
+	if (ev.type != ZmEvent.S_TAG) { return; }
 
 	var fields = ev.getDetail("fields");
 	var changed = fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]);
