@@ -514,9 +514,10 @@ function(node, args) {
  * @param callback		[AjxCallback]*	async callback
  * @param errorCallback	[AjxCallback]*	async error callback
  * @param noBusyOverlay	[boolean]*		don't put up busy overlay during request
+ * @param dontTruncate	[boolean]*		don't set max limit on size of msg body
  */
 ZmMailMsg.prototype.load =
-function(getHtml, forceLoad, callback, errorCallback, noBusyOverlay) {
+function(getHtml, forceLoad, callback, errorCallback, noBusyOverlay, dontTruncate) {
 	// If we are already loaded, then don't bother loading
 	if (!this._loaded || forceLoad) {
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
@@ -526,7 +527,8 @@ function(getHtml, forceLoad, callback, errorCallback, noBusyOverlay) {
 			getHtml: getHtml,
 			callback: respCallback,
 			errorCallback: errorCallback,
-			noBusyOverlay: noBusyOverlay
+			noBusyOverlay: noBusyOverlay,
+			dontTruncate: dontTruncate
 		};
 		ZmMailMsg.fetchMsg(params);
 	} else {

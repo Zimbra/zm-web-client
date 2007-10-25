@@ -1343,6 +1343,7 @@ function(action, msg, extraBodyText, incOption) {
 		var crlf2 = composingHtml ? "<br><br>" : ZmMsg.CRLF2;
 		var leadingText = extraBodyText ? extraBodyText + crlf : crlf;
 		var body;
+		var bodyPart;
 
 		// bug fix #7271 - if we have multiple body parts, append them all first
 		var parts = msg.getBodyParts();
@@ -1366,17 +1367,27 @@ function(action, msg, extraBodyText, incOption) {
 					body = AjxUtil.isString(body) ? body : body.content;
 				} else {
 					// if no html part exists, just grab the text
-					var bodyPart = msg.getBodyPart();
+					bodyPart = msg.getBodyPart();
 					body = bodyPart ? this._getTextPart(bodyPart, true) : null;
 				}
 			} else {
 				// grab text part out of the body part
-				var bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML);
+				bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML);
 				body = bodyPart ? this._getTextPart(bodyPart) : null;
 			}
 		}
 
 		body = body || ""; // prevent from printing "null" if no body found
+
+		if ((action == ZmOperation.FORWARD_INLINE ||
+			 action == ZmOperation.REPLY ||
+			 action == ZmOperation.REPLY_ALL) &&
+			bodyPart && AjxUtil.isObject(bodyPart) && bodyPart.truncated)
+		{
+			body += composingHtml
+				? ("<br><br>" + ZmMsg.messageTruncated + "<br><br>")
+				: ("\n\n" + ZmMsg.messageTruncated + "\n\n");
+		}
 
 		// Bug 7160: Strip off the ~*~*~*~ from invite replies.
 		if (isInviteReply) {
@@ -1426,8 +1437,8 @@ function(action, msg, extraBodyText, incOption) {
 						action == ZmOperation.REPLY_DECLINE ||
 						action == ZmOperation.REPLY_TENTATIVE)
 			{
-				var bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-				var bodyStr = bodyPart ? (bodyPart.content.replace(/\r\n/g, "\n")) : "";
+				var bp = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
+				var bodyStr = bp ? (bp.content.replace(/\r\n/g, "\n")) : "";
 
 				// bug 5122: always show original meeting details
 				value = preface + AjxStringUtil.wordWrap(bodyStr, ZmComposeView.WRAP_LENGTH, prefix + " ");
