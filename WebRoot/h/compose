@@ -172,7 +172,7 @@
                             <tr>
                                 <td colspan="3" class="yui-skin-sam" width="100%" >
                                     <textarea class='MsgCompose' name="body" id="body" rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea>
-                                    <input type="hidden" id="bodytext" class='MsgCompose' name="bodytext" style='width:100%' />
+                                    <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
                                     <!-- textarea class='MsgCompose' rows="30" cols="150" style='width:100%'
                                               id="bodyField" name="body">${fn:escapeXml(compose.content)}</textarea -->
                                 </td>
@@ -236,7 +236,7 @@
         submitCompose= function(){
         myEditor.saveHTML();
         var stripHTML = /<\S[^><]*>/g;
-        document.getElementById("bodytext").value = document.getElementById("body").value.replace(/<br>/gi, '\n').replace(stripHTML, '');
+        document.getElementById("bodyText").value = document.getElementById("body").value.replace(/<br>/gi, '\n').replace(stripHTML, '');
         }
 
         var myEditor = new YAHOO.widget.Editor('body', {
