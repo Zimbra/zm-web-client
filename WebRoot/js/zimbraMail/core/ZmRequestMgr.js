@@ -51,6 +51,8 @@ ZmRequestMgr = function(controller) {
 	this._unreadListener = new AjxListener(this, this._unreadChangeListener);
 };
 
+ZmRequestMgr.offlineError = null;
+
 // request states
 ZmRequestMgr._SENT		= 1;
 ZmRequestMgr._RESPONSE	= 2;
@@ -280,8 +282,25 @@ function(hdr) {
 
 	// for zdesktop to display online | offline and to prompt changepassword
 	if (hdr && hdr.context.zdsync) {
-		this._offlineHandler(hdr.context.zdsync);
-	}
+        if(hdr.context.zdsync.account) {
+            for(var i=0; i < hdr.context.zdsync.account.length; i++) {
+                var userId = appCtxt.get(ZmSetting.USERNAME);
+                if(hdr.context.zdsync.account[i].name == userId) {
+                    this._offlineHandler(hdr.context.zdsync.account[i]);
+                    break;
+                }
+            }
+        }
+        if(hdr.context.zdsync.datasource) {
+            for(var j=0; j < hdr.context.zdsync.datasource.length; j++) {
+                var userId1 = appCtxt.get(ZmSetting.USERNAME);
+                if(hdr.context.zdsync.datasource[j].name == userId1) {
+                    this._offlineHandler(hdr.context.zdsync.datasource[j]);
+                    break;
+                }
+            }
+        }
+    }
 };
 
 /**
@@ -291,25 +310,36 @@ function(hdr) {
  * @param zdsync	[object]	zdsync block (JSON)
  */
 ZmRequestMgr.prototype._offlineHandler =
-function(zdsync) {
+function(account) {
 	var offlineStat = document.getElementById("skin_container_offline_status");
+    ZmRequestMgr.offlineError = null;
 	if (offlineStat) {
-		if (zdsync.account[0].state == "RUNNING") {
+		if (account.state == "RUNNING") {
 			offlineStat.innerHTML = "<span class='ImgImAvailable' style='padding-left: 18px;padding-bottom:3px;'>online</span>";
-		} else if (zdsync.account[0].state == "OFFLINE") {
+		} else if (account.state == "OFFLINE") {
 			offlineStat.innerHTML = "<span class='ImgOffline' style='padding-left: 18px; padding-bottom:3px;'>offline</span>";
-		} else if (zdsync.account[0].state == "ONLINE") {
+		} else if (account.state == "ONLINE") {
 			offlineStat.innerHTML = "<span class='ImgImAvailable' style='padding-left: 18px; padding-bottom:3px;'>online</span>";
-		} else if (zdsync.account[0].state == "ERROR") {
-			offlineStat.innerHTML = "<span class='ImgOffline' style='padding-left: 18px; padding-bottom:3px;'>offline</span>";
-			if (zdsync.account[0].error[0].code == "REMOTEAUTH") {
-				alert("Your account password has been changed. Update the account password in offine client to sync.");
-				window.location.href = "http://localhost:7633/zimbra/?chng=1";
+		} else if (account.state == "ERROR") {
+            offlineStat.innerHTML = "<a href='#' class='ImgClose' style='padding-left: 18px; padding-bottom:3px;' onclick='ZmRequestMgr.showOfflineError();'>"+ZmMsg.ALT_ERROR+" (click to see error)</a>";
+			if (account.error[0].code == "REMOTEAUTH") {
+				alert("Your account password for " + account.name + " has been changed. Update the account password in offine client to sync.");
+				window.location.href = "http://localhost:7633/zimbra/";
 			}
-		}
-	}
+            ZmRequestMgr.offlineError = account.error[0];
+        }
+    }
 };
 
+ZmRequestMgr.showOfflineError = function(){
+    if(ZmRequestMgr.offlineError) {
+        if(ZmRequestMgr.offlineError.exception) {
+            appCtxt.getAppController().popupErrorDialog(ZmRequestMgr.offlineError.message, ZmRequestMgr.offlineError.exception, null, true);
+        } else {
+            appCtxt.getAppController().popupErrorDialog(ZmRequestMgr.offlineError.message, null, null, true);            
+        }
+    }
+}
 /**
  * Handles the <notify> block of a response's SOAP header.
  *
