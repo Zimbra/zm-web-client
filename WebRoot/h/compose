@@ -50,6 +50,20 @@
         </c:when>
     </c:choose>
 
+    <c:set var="priority" value=""/>
+    <c:if test="${not empty message and message.isDraft}">
+        <c:choose>
+            <c:when test="${message.isHighPriority}">
+                <c:set var="priority" value="!"/>
+            </c:when>
+            <c:otherwise>
+                <c:if test="${message.isLowPriority}">
+                    <c:set var="priority" value="?"/>
+                </c:if>
+            </c:otherwise>
+        </c:choose>
+    </c:if>
+
     <c:set var="composeformat" value="${mailbox.prefs.composeFormat}" />    
 </app:handleError>
 <c:if test="${composeformat eq 'html'}">
@@ -130,8 +144,26 @@
                             </tr>
                             <tr>
                                 <td valign='top' align="right" nowrap> <label for="subjectField"><fmt:message key="subject"/>: </label></td>
-                                <td colspan="2" nowrap><input style='width:99%' type="text" size="100" name="subject" id="subjectField"
-                                                            value="${fn:escapeXml(compose.subject)}"></td>
+                                <c:choose>
+                                    <c:when test="${mailbox.features.mailPriority}">
+                                        <td nowrap><input style='width:100%' type="text" size="100" name="subject" id="subjectField"
+                                                                    value="${fn:escapeXml(compose.subject)}"></td>
+                                        <td nowrap>
+                                            <c:if test="${mailbox.features.mailPriority}">
+                                                <fmt:message key="priority"/>:
+                                                <select name="priority">
+                                                    <option value="!"<c:if test="${priority eq '!'}"> selected</c:if>> <fmt:message key="high"/>
+                                                    <option value="" <c:if test="${priority eq ''}"> selected</c:if>><fmt:message key="normal"/>
+                                                    <option value="?"<c:if test="${priority eq '?'}"> selected</c:if>><fmt:message key="low"/>
+                                                </select>
+                                            </c:if>
+                                        </td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td colspan="2" nowrap><input style='width:99%' type="text" size="100" name="subject" id="subjectField"
+                                                                    value="${fn:escapeXml(compose.subject)}"></td>
+                                    </c:otherwise>
+                                </c:choose>
                             </tr>
                             <c:set var="firstAttachment" value="${true}"/>
                             <c:if test="${!empty compose.messageAttachments}">
