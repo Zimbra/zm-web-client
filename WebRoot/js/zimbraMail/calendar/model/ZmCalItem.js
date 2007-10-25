@@ -253,7 +253,8 @@ function() {
 	var folder = this.getFolder();
 	// if we're dealing w/ a shared cal, find out if we have any write access
 	if (folder.link) {
-		var share = folder.getShares()[0];
+		var shares = folder.getShares();
+		var share = shares ? shares[0] : null;
 		isLinkAndReadOnly = share && !share.isWrite();
 	}
 

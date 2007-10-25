@@ -181,18 +181,18 @@ function(params) {
 	ZmOperation.initialize();
 
 	// Handle offline mode
-    if (params.offlineMode) {
-    	DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
-    	appCtxt.set(ZmSetting.OFFLINE, true);
-    	appCtxt.set(ZmSetting.POLLING_INTERVAL, 60);
-    }
-    
-    // Handle dev mode
-    if (params.devMode == "1") {
-    	DBG.println(AjxDebug.DBG1, "DEV MODE");
-    	appCtxt.set(ZmSetting.DEV, true);
-    	appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
-    }
+	if (params.offlineMode) {
+		DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
+		appCtxt.set(ZmSetting.OFFLINE, true);
+		appCtxt.set(ZmSetting.POLLING_INTERVAL, 60);
+	}
+
+	// Handle dev mode
+	if (params.devMode == "1") {
+		DBG.println(AjxDebug.DBG1, "DEV MODE");
+		appCtxt.set(ZmSetting.DEV, true);
+		appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
+	}
 
 	if (params.protocolMode) {
 		appCtxt.set(ZmSetting.PROTOCOL_MODE, params.protocolMode);
@@ -275,7 +275,10 @@ function() {
  */
 ZmZimbraMail.prototype.startup =
 function(params) {
-	
+	if (appCtxt.get(ZmSetting.OFFLINE)) {
+		this.setInstantNotify(true);
+	}
+
 	appCtxt.inStartup = true;
 	if (typeof(skin) == "undefined") {
 		DBG.println(AjxDebug.DBG1, "No skin!");
@@ -1140,7 +1143,7 @@ function(appName, view) {
 	this._components[ZmAppViewMgr.C_APP_CHOOSER].setSelected(appName);
 
 	// app not actually enabled if this is result of upsell view push
-   	var appEnabled = appCtxt.get(ZmApp.SETTING[appName]);
+	var appEnabled = appCtxt.get(ZmApp.SETTING[appName]);
 
 	// update current app toolbar
 	var toolbar = appEnabled ? appCtxt.getCurrentAppToolbar() : null;

@@ -91,9 +91,10 @@ ZmApp.OPS_R					= {};	// map of operation ID to app
 ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 ZmApp.UPSELL_URL			= {};	// URL for content of upsell
+ZmApp.SUPPORTS_MULTI_MBOX	= {};	// whether this app is supports multiple mailboxes
 
-// assistants for each app; each valu is a hash where the key is the name of the
-// assistant class and the value is the required package
+// assistants for each app; each value is a hash where key is the name of the
+// assistant class and value is the required package
 ZmApp.ASSISTANTS			= {};
 
 // indexes to control order of appearance/action
@@ -160,6 +161,7 @@ function(app, params) {
 	if (params.defaultSort)			{ ZmApp.DEFAULT_SORT[app]		= params.defaultSort; }
 	if (params.trashViewOp)			{ ZmApp.TRASH_VIEW_OP[app]		= params.trashViewOp; }
 	if (params.upsellUrl)			{ ZmApp.UPSELL_URL[app]			= params.upsellUrl; }
+	if (params.supportsMultiMbox)	{ ZmApp.SUPPORTS_MULTI_MBOX[app]= params.supportsMultiMbox; }
 
 	if (params.searchTypes) {
 		ZmApp.SEARCH_TYPES_R[app] = {};
@@ -285,11 +287,36 @@ function(type, obj, tree, path) {
  */
 ZmApp.prototype.getOverviewPanelContent =
 function() {
-	if (!this._overviewPanelContent) {
+	if (this._overviewPanelContent) {
+		return this._overviewPanelContent;
+	}
+
+	if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
+		// create accordion
+		var accordionId = this.getOverviewPanelContentId();
+		var accordion = this._overviewPanelContent = this._opc.createAccordion({accordionId:accordionId});
+		accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
+
+		// add an accordion item for each account, and create overview for main account
+		var accts = appCtxt.getZimbraAccounts();
+		this._overview = {};
+		for (var i in accts) {
+			var data = {};
+			var acct = data.account = accts[i];
+			if (acct.visible) {
+				var item = accordion.addAccordionItem({title:acct.getDisplayName(), data:data});
+				acct.itemId = item.id;
+				if (appCtxt.getActiveAccount() == acct) {
+					this._activateAccordionItem(item);
+				}
+			}
+		}
+	} else {
 		var params = this._getOverviewParams();
 		var overview = this._overviewPanelContent = this._opc.createOverview(params);
 		overview.set(this._getOverviewTrees());
 	}
+
 	return this._overviewPanelContent;
 };
 
@@ -307,7 +334,19 @@ function(reset) {
 	// only set overview panel content if not in full screen mode
 	var avm = appCtxt.getAppViewMgr();
 	if (!avm.isFullScreen()) {
-		avm.setComponent(ZmAppViewMgr.C_TREE, this.getOverviewPanelContent());
+		var opc = this.getOverviewPanelContent();
+		// if we're in mult-mbox mode, check if accordion is in-sync when changing apps
+		if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
+			var activeItemId = appCtxt.getActiveAccount().itemId;
+			if (this.accordionItem.id != activeItemId) {
+				this.getOverviewPanelContent().getItem(appCtxt.getActiveAccount().itemId)
+				var accordionItem = opc.getItem(activeItemId);
+				if (accordionItem) {
+					this._handleSetActiveAccount(accordionItem);
+				}
+			}
+		}
+		avm.setComponent(ZmAppViewMgr.C_TREE, opc);
 	}
 };
 
@@ -345,7 +384,17 @@ function(overviewId) {
  * Returns the ID of the current ZmOverview, if any.
  */
 ZmApp.prototype.getOverviewId =
-function() {
+function(account) {
+	if (appCtxt.multiAccounts && ZmApp.SUPPORTS_MULTI_MBOX[this._name]) {
+		if (!account) {
+			// bug #20310 - default to main account if all else fails
+			account = this.accordionItem
+				? this.accordionItem.data.account
+				: appCtxt.getMainAccount();
+		}
+		return ([this.getOverviewPanelContentId(), account.name].join(":"));
+	}
+
 	return this.getOverviewPanelContentId();
 };
 
@@ -406,13 +455,46 @@ function() {
 ZmApp.prototype._accordionSelectionListener =
 function(ev) {
 	var accordionItem = ev.detail;
-	if (accordionItem == this.accordionItem) { return false; }
-	if (accordionItem.data.appName != this._name) { return false; }
+	if (accordionItem == this.accordionItem) { return; }
 
 	this.accordionItem = accordionItem;
-
 	DBG.println(AjxDebug.DBG1, "Accordion switching to item: " + accordionItem.title);
+
+	// hide and clear advanced search since it may have overviews for previous account
+	if (appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
+		var searchCtlr = appCtxt.getSearchController();
+		var bvc = searchCtlr._browseViewController;
+		if (bvc) {
+			bvc.removeAllPickers();
+			bvc.setBrowseViewVisible(false);
+		}
+	}
+
+	var activeAcct = this.accordionItem.data.account;
+
+	// enable/disable app tabs based on whether app supports multi-mbox
+	var appChooser = appCtxt.getAppController().getAppChooser();
+	for (var i = 0; i < ZmApp.APPS.length; i++) {
+		var app = ZmApp.APPS[i];
+		var b = appChooser.getButton(app);
+		if (!b) { continue; }
+
+		if (activeAcct.isMain) {
+			b.setEnabled(true);
+		} else {
+			b.setEnabled(ZmApp.SUPPORTS_MULTI_MBOX[app]);
+		}
+	}
+
+	var callback = new AjxCallback(this, this._handleSetActiveAccount, this.accordionItem);
+	appCtxt.setActiveAccount(activeAcct, callback);
 	return true;
+};
+
+ZmApp.prototype._handleSetActiveAccount =
+function(accordionItem) {
+	appCtxt.getAppController()._setUserInfo();
+	this._activateAccordionItem(accordionItem);
 };
 
 /**
@@ -430,7 +512,7 @@ function(item) {
 		var params = this._getOverviewParams();
 		params.overviewId = overviewId;
 		var overview = this._opc.createOverview(params);
-		overview.set(this._getOverviewTrees());
+		overview.set(this._getOverviewTrees(), null, item.data.account);
 		accordion.setItemContent(item.id, overview);
 	}
 };
@@ -442,8 +524,7 @@ function(item) {
  */
 ZmApp.prototype.getSearchParams =
 function(params) {
-	params = params || {};
-	return params;
+	return (params || {});
 };
 
 /**
@@ -475,7 +556,7 @@ ZmApp.prototype._createDeferredFolders =
 function(type) {
 	for (var i = 0; i < this._deferredFolders.length; i++) {
 		var params = this._deferredFolders[i];
-		var parent = appCtxt.getById(params.obj.l);
+		var parent = params.tree.getById(params.obj.l);
 		var folder = ZmFolderTree.createFolder(params.type, parent, params.obj, params.tree, params.path);
 		parent.children.add(folder); // necessary?
 		folder.parent = parent;

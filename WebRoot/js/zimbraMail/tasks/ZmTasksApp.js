@@ -142,7 +142,9 @@ function() {
 							  gotoActionCode:		ZmKeyMap.GOTO_TASKS,
 							  newActionCode:		ZmKeyMap.NEW_TASK,
 							  chooserSort:			35,
-							  defaultSort:			25});
+							  defaultSort:			25,
+							  supportsMultiMbox:	true
+							  });
 };
 
 // App API
@@ -235,7 +237,8 @@ function(params, callback) {
 
 ZmTasksApp.prototype._handleLoadLaunch =
 function(callback) {
-	this.search(null, null, null, callback);
+	if (callback) { callback.run(); }
+	this.search();
 };
 
 ZmTasksApp.prototype.showSearchResults =
@@ -248,6 +251,13 @@ ZmTasksApp.prototype._handleLoadShowSearchResults =
 function(results, callback, folderId) {
 	this.getTaskListController().show(results, folderId);
 	if (callback) callback.run();
+};
+
+ZmTasksApp.prototype._activateAccordionItem =
+function(accordionItem) {
+	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
+
+	this.search();
 };
 
 ZmTasksApp.prototype.getTaskListController =

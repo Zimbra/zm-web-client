@@ -199,8 +199,14 @@ function(folder) {
 
 		// force a search if user clicked Trash folder or share
 		if (folder.id == ZmFolder.ID_TRASH || folder.link) {
-			var callback = new AjxCallback(this, this._handleSearchResponse, [folder, capp]);
-			sc.search({query:folder.createQuery(), searchFor:ZmItem.CONTACT, fetch:true, sortBy:ZmSearch.NAME_ASC, callback:callback});
+			var params = {
+				query: folder.createQuery(),
+				searchFor: ZmItem.CONTACT,
+				fetch: true,
+				sortBy: ZmSearch.NAME_ASC,
+				callback: new AjxCallback(this, this._handleSearchResponse, [folder, capp])
+			};
+			sc.search(params);
 		} else {
 			capp.showFolder(folder);
 		}

@@ -109,7 +109,7 @@ function(parent, obj, tree, elementType, path) {
 ZmFolderTree._traverse =
 function(folder, obj, tree, path) {
 
-	var isRoot = (obj.id == ZmOrganizer.ID_ROOT);
+	var isRoot = (folder.nId == ZmOrganizer.ID_ROOT);
 	if (obj.folder && obj.folder.length) {
 		if (!isRoot) {
 			path.push(obj.name);

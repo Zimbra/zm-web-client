@@ -162,7 +162,6 @@ function(apptList) {
 */
 ZmApptCache.prototype.getApptSummaries =
 function(params) {
-	var list;
 	if (!(params.folderIds instanceof Array)) {
 		params.folderIds = [params.folderIds];
 	} else if (params.folderIds.length == 0) {
@@ -174,7 +173,7 @@ function(params) {
 	}
 
 	params.mergeKey = this._getCachedMergedKey(params);
-	list = this._getCachedMergedVector(params.mergeKey);
+	var list = this._getCachedMergedVector(params.mergeKey);
 	if (list != null) {
 		if (params.callback) {
 			params.callback.run(list.clone());
@@ -210,12 +209,14 @@ function(params) {
 	var query = "";
 	for (var i=0; i < params.needToFetch.length; i++) {
 		var fid = params.needToFetch[i];
+		var systemFolderId = appCtxt.getActiveAccount().isMain
+			? fid : ZmOrganizer.getSystemId(fid);
 
 		// map remote folder ids into local ones while processing search since
 		// server wont do it for us (see bug 7083)
-		var folder = appCtxt.getById(fid);
-		var rid = folder ? folder.getRemoteId() : fid;
-		folderIdMapper[rid] = fid;
+		var folder = appCtxt.getById(systemFolderId);
+		var rid = folder ? folder.getRemoteId() : systemFolderId;
+		folderIdMapper[rid] = systemFolderId;
 
 		if (query.length)
 			query += " OR ";
@@ -315,22 +316,24 @@ function(params, result) {
 
 		for (var i = 0; i < folderIds.length; i++) {
 			var folderId = folderIds[i];
+			var systemFolderId = appCtxt.getActiveAccount().isMain
+				? folderId : ZmOrganizer.getSystemId(folderId);
 
 			var apptList = new ZmApptList();
-			apptList.loadFromSummaryJs(folder2List[folderId]);
+			apptList.loadFromSummaryJs(folder2List[systemFolderId]);
 
 			// TODO: no need to cache remote ids for now?
-			var cal = this._calViewController.getCalendar(folderId);
+			var cal = this._calViewController.getCalendar(systemFolderId);
 			if (!(cal && cal.link)) {
 				this._updateCachedIds(apptList);
 			}
 
 			// cache it
-			this._cacheApptSummaries(apptList, start, end, folderId, query);
+			this._cacheApptSummaries(apptList, start, end, systemFolderId, query);
 
 			// convert to sorted vector
 			var list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);
-			this._cacheVector(list, start, end, fanoutAllDay, folderId, query); // id in response tied back to folder id
+			this._cacheVector(list, start, end, fanoutAllDay, systemFolderId, query); // id in response tied back to folder id
 
 			params.resultList.push(list);
 		}

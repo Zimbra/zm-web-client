@@ -330,7 +330,8 @@ function() {
 							  newActionCode:		ZmKeyMap.NEW_APPT,
 							  chooserSort:			30,
 							  defaultSort:			20,
-							  upsellUrl:			ZmSetting.CALENDAR_UPSELL_URL
+							  upsellUrl:			ZmSetting.CALENDAR_UPSELL_URL,
+							  supportsMultiMbox:	true
 							  });
 };
 
@@ -591,6 +592,13 @@ function(type) {
 ZmCalendarApp.prototype._postLoadAppt =
 function(type) {
 	this.getApptComposeController().initComposeView(true);
+};
+
+ZmCalendarApp.prototype._activateAccordionItem =
+function(accordionItem) {
+	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
+
+	this.getCalController().handleMailboxChange();
 };
 
 ZmCalendarApp.prototype._settingChangeListener =

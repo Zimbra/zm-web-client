@@ -73,15 +73,16 @@ function() {
 /**
  * Displays the given list of tree views in this overview.
  *
- * @param treeIds	[array]		list of organizer types
- * @param omit		[hash]*		hash of organizer IDs to ignore
+ * @param treeIds	[array]				list of organizer types
+ * @param omit		[hash]*				hash of organizer IDs to ignore
+ * @param account	[ZmZimbraAccount]*	account to set overview for
  */
 ZmOverview.prototype.set =
-function(treeIds, omit) {
+function(treeIds, omit, account) {
 	if (!(treeIds && treeIds.length)) { return; }
 	this._treeIds = treeIds;	
 	for (var i = 0; i < treeIds.length; i++) {
-		this.setTreeView(treeIds[i], omit);
+		this.setTreeView(treeIds[i], omit, account);
 	}
 };
 
@@ -91,11 +92,12 @@ function(treeIds, omit) {
  * necessary. The tree view is cleared before it is set. The tree view inherits options
  * from this overview.
  * 
- * @param treeId	[constant]		organizer ID
- * @param omit		[hash]*			hash of organizer IDs to ignore
+ * @param treeId	[constant]			organizer ID
+ * @param omit		[hash]*				hash of organizer IDs to ignore
+ * @param account	[ZmZimbraAccount]*	account to set overview for
  */
 ZmOverview.prototype.setTreeView =
-function(treeId, omit) {
+function(treeId, omit, account) {
 	// check for false since setting precondition is optional (can be null)
 	if (appCtxt.get(ZmOrganizer.PRECONDITION[treeId]) === false) { return; }
 
@@ -107,7 +109,8 @@ function(treeId, omit) {
 		overviewId: this.id,
 		omit: omit,
 		hideEmpty: this.hideEmpty,
-		showUnread: this.showUnread
+		showUnread: this.showUnread,
+		account: account
 	};
 	this._treeHash[treeId] = treeController.show(params);	// render tree view
 };

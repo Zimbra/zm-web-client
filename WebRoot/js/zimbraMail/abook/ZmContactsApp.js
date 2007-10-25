@@ -28,8 +28,9 @@ ZmContactsApp = function(container, parentController) {
 
 	ZmApp.call(this, ZmApp.CONTACTS, container, parentController);
 
+	this.contactsLoaded = {};
+	this._contactList = {};
 	this._initialized = false;
-	this._contactsLoaded = false;
 };
 
 // Organizer and item-related constants
@@ -281,7 +282,8 @@ function() {
 							  trashViewOp:			ZmOperation.SHOW_ONLY_CONTACTS,
 							  chooserSort:			20,
 							  defaultSort:			40,
-							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL
+							  upsellUrl:			ZmSetting.CONTACTS_UPSELL_URL,
+							  supportsMultiMbox:	true
 							  });
 };
 
@@ -382,7 +384,13 @@ function(params, callback) {
 
 ZmContactsApp.prototype._handleLoadLaunch =
 function(callback) {
-	AjxDispatcher.run("GetContacts");	// contacts should already be loaded
+	// contacts should already be loaded
+	var respCallback = new AjxCallback(this, this._handleLoadLaunchResponse, callback);
+	this.getContactList(respCallback);
+};
+
+ZmContactsApp.prototype._handleLoadLaunchResponse =
+function(callback) {
 	var clc = AjxDispatcher.run("GetContactListController");
 	if (!this._initialized) {
 		// set search toolbar field manually
@@ -393,7 +401,8 @@ function(callback) {
 			}
 		}
 		// create contact view for the first time
-		clc.show(this._contactList, null, ZmOrganizer.ID_ADDRBOOK);
+		var acctId = appCtxt.getActiveAccount().id;
+		clc.show(this._contactList[acctId], null, ZmOrganizer.ID_ADDRBOOK);
 	} else {
 		// just push the view so it looks the same as last you saw it
 		clc.switchView(clc._getViewType(), true, this._initialized);
@@ -420,7 +429,32 @@ function(results, callback, isInGal, folderId) {
 	}
 };
 
-ZmContactsApp.prototype.showFolder = 
+ZmContactsApp.prototype._activateAccordionItem =
+function(accordionItem) {
+	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
+
+	// ensure contact list is loaded for the currently active account
+	var callback = new AjxCallback(this, this._handleResponseActivateAccordion);
+	this.getContactList(callback);
+};
+
+ZmContactsApp.prototype._handleResponseActivateAccordion =
+function(contactList) {
+	var fid = ZmOrganizer.getSystemId(ZmFolder.ID_CONTACTS);
+	var folder = appCtxt.getById(fid);
+	if (folder) {
+		this.showFolder(folder);
+
+		var clc = AjxDispatcher.run("GetContactListController");
+		clc.getParentView().getAlphabetBar().reset();
+
+		var oc = appCtxt.getOverviewController();
+		var tv = oc.getTreeController(ZmOrganizer.ADDRBOOK).getTreeView(this.getOverviewId());
+		tv.setSelected(folder, true);
+	}
+};
+
+ZmContactsApp.prototype.showFolder =
 function(folder) {
 	// we manually set search bar's field since contacts dont always make search requests
 	if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
@@ -430,8 +464,9 @@ function(folder) {
 			stb.setSearchFieldValue(query);
 		}
 	}
+	var acctId = appCtxt.getActiveAccount().id;
 	var clc = AjxDispatcher.run("GetContactListController");
-	clc.show(this._contactList, null, folder.id);
+	clc.show(this._contactList[acctId], null, folder.id);
 };
 
 ZmContactsApp.prototype.setActive =
@@ -444,35 +479,38 @@ function(active) {
 
 ZmContactsApp.prototype.getContactList =
 function(callback, errorCallback) {
-	if (!this._contactList) {
+	var acctId = appCtxt.getActiveAccount().id;
+	if (!this._contactList[acctId]) {
 		try {
 			// check if a parent controller exists and ask it for the contact list
 			if (this._parentController) {
-				this._contactList = this._parentController.getApp(ZmApp.CONTACTS).getContactList();
+				this._contactList[acctId] = this._parentController.getApp(ZmApp.CONTACTS).getContactList();
 			} else {
-				this._contactList = new ZmContactList(null);
-				var respCallback = new AjxCallback(this, this._handleResponseGetContactList, callback);
-				this._contactList.load(respCallback, errorCallback);
+				this._contactList[acctId] = new ZmContactList(null);
+				var respCallback = new AjxCallback(this, this._handleResponseGetContactList, [callback]);
+				this._contactList[acctId].load(respCallback, errorCallback);
 			}
-			return this._contactList;
+			return this._contactList[acctId];
 		} catch (ex) {
-			this._contactList = null;
+			this._contactList[acctId] = null;
 			throw ex;
 		}
 	} else {
 		if (callback && callback.run) {
-			callback.run(this._contactList);
+			callback.run(this._contactList[acctId]);
 		} else {
-			return this._contactList;
+			return this._contactList[acctId];
 		}
 	}
 };
 
 ZmContactsApp.prototype._handleResponseGetContactList =
 function(callback) {
-	this.contactsLoaded = true;
+	var acctId = appCtxt.getActiveAccount().id;
+	this.contactsLoaded[acctId] = true;
+
 	if (callback && callback.run) {
-		callback.run(this._contactList);
+		callback.run(this._contactList[acctId]);
 	}
 };
 

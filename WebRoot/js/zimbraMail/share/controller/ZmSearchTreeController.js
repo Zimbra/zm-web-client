@@ -48,11 +48,12 @@ function() {
 /**
 * Displays the tree of this type.
 *
-* @param overviewId		[constant]	overview ID
-* @param showUnread		[boolean]*	if true, unread counts will be shown
-* @param omit			[Object]*	hash of organizer IDs to ignore
-* @param forceCreate	[boolean]*	if true, tree view will be created
-* @param hideEmpty		[boolean]*	if true, don't show header if there is no data
+* @param overviewId		[constant]			overview ID
+* @param showUnread		[boolean]*			if true, unread counts will be shown
+* @param omit			[Object]*			hash of organizer IDs to ignore
+* @param forceCreate	[boolean]*			if true, tree view will be created
+* @param hideEmpty		[boolean]*			if true, don't show header if there is no data
+* @param account		[ZmZimbraAccount]*	account we're showing tree for (if not currently active account)
 */
 ZmSearchTreeController.prototype.show =
 function(params) {
@@ -68,7 +69,7 @@ function(params) {
 	var searchTypes = this._searchTypes[id] =
 		(activeApp == ZmApp.MIXED && prevApp == ZmApp.CONTACTS) ?
 			ZmApp.SEARCH_TYPES_R[ZmApp.CONTACTS] : ZmApp.SEARCH_TYPES_R[activeApp];
-    var dataTree = this.getDataTree();
+    var dataTree = this.getDataTree(params.account);
     if (dataTree) {
 		params.dataTree = dataTree;
 		params.searchTypes = searchTypes;

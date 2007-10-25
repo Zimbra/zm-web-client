@@ -67,6 +67,7 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.SEARCH_MAIL] = new AjxListener(this, this._searchMailAction);
 	this._listeners[ZmOperation.CAL_REFRESH] = new AjxListener(this, this._refreshButtonListener);
 
+	this._treeSelectionListener = new AjxListener(this, this._calTreeSelectionListener);
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
 	this._apptCache = new ZmApptCache(this);
@@ -151,7 +152,7 @@ function(viewId, startDate, skipMaintenance) {
 	if (!this._calTreeController) {
 		this._calTreeController = appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
 		if (this._calTreeController) {
-			this._calTreeController.addSelectionListener(this._app.getOverviewId(), new AjxListener(this, this._calTreeSelectionListener));
+			this._calTreeController.addSelectionListener(this._app.getOverviewId(), this._treeSelectionListener);
 			var calTree = appCtxt.getFolderTree();
 			if (calTree)
 				calTree.addChangeListener(new AjxListener(this, this._calTreeChangeListener));
@@ -270,19 +271,26 @@ function(id) {
 	return null;
 };
 
+ZmCalViewController.prototype.handleMailboxChange =
+function() {
+	this._calTreeController.addSelectionListener(this._app.getOverviewId(), this._treeSelectionListener);
+	this._updateCheckedCalendars();
+	this._refreshAction(false);
+};
+
 ZmCalViewController.prototype._updateCheckedCalendars =
 function() {
-	if (!this._calTreeController)
-		return [];
+	if (!this._calTreeController) { return []; }
+
 	var cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
 	this._checkedCalendars = cc;
 	this._checkedCalendarFolderIds = [];
 	this._checkedLocalCalendarFolderIds = [];
 	for (var i=0; i < cc.length; i++) {
 		var cal = cc[i];
-		this._checkedCalendarFolderIds.push(cal.id);
+		this._checkedCalendarFolderIds.push(cal.nId);
 		if (cal.isRemote && !cal.isRemote()) {
-			this._checkedLocalCalendarFolderIds.push(cal.id);
+			this._checkedLocalCalendarFolderIds.push(cal.nId);
 		}
 	}
 	return cc;
@@ -290,7 +298,8 @@ function() {
 
 ZmCalViewController.prototype._calTreeSelectionListener =
 function(ev) {
-	if (ev.detail != DwtTree.ITEM_CHECKED) return;
+	if (ev.detail != DwtTree.ITEM_CHECKED) { return; }
+
 	this._updateCheckedCalendars();
 	this._refreshAction(true);
 
@@ -1304,8 +1313,9 @@ function(parent, num) {
 		var isShared = calendar ? calendar.isRemote() : false;
 		var disabled = isSynced || isReadOnly || (num == 0);
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote();
+		var isParent = appCtxt.getActiveAccount().isMain;
 		parent.enable(ZmOperation.DELETE, !disabled);
-		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
+		parent.enable(ZmOperation.TAG_MENU, (isParent && !isShared && !isSynced && num > 0));
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
 	}
 	// disable button for current view

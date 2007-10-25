@@ -743,8 +743,7 @@ function(appt) {
 	var isAccepted = appt.ptst == ZmCalItem.PSTATUS_ACCEPT;
 	var id = this._getItemId(appt);
 	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
-	var tree = appCtxt.getFolderTree();
-	var calendar = tree.getById(appt.folderId);
+	var calendar = appCtxt.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
 	var is30 = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
 	var is60 = (appt._orig.getDuration() <= 2*AjxDateUtil.MSEC_PER_HALF_HOUR);
@@ -1862,8 +1861,7 @@ function(ev, apptEl) {
 		return false;
 
 	var appt = AjxCore.objectWithId(apptEl._itemIndex);
-	var tree = appCtxt.getFolderTree();
-	var calendar = tree.getById(appt.folderId);
+	var calendar = appCtxt.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
 	if (appt.isReadOnly() || appt.isAllDayEvent() || (appt._fanoutNum > 0) || isRemote) return false;
 
@@ -1880,12 +1878,12 @@ function(ev, apptEl) {
 	};
 
 	var capture = new DwtMouseEventCapture(data, null,
-			ZmCalColView._emptyHdlr, // mouse over
-			ZmCalColView._emptyHdlr, // mouse down (already handled by action)
-			ZmCalColView._apptMouseMoveHdlr,
-			ZmCalColView._apptMouseUpHdlr,
-			ZmCalColView._emptyHdlr, // mouse out
-			true);
+		ZmCalColView._emptyHdlr, // mouse over
+		ZmCalColView._emptyHdlr, // mouse down (already handled by action)
+		ZmCalColView._apptMouseMoveHdlr,
+		ZmCalColView._apptMouseUpHdlr,
+		ZmCalColView._emptyHdlr, // mouse out
+		true);
 
 	capture.capture();
 	return false;

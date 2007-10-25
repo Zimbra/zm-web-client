@@ -128,7 +128,8 @@ function() {
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
 							  gotoActionCode:		ZmKeyMap.GOTO_OPTIONS,
-							  chooserSort:			180
+							  chooserSort:			180,
+							  supportsMultiMbox:	true
                   });
 };
 

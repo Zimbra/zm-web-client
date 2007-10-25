@@ -573,7 +573,8 @@ function() {
 							  trashViewOp:			ZmOperation.SHOW_ONLY_MAIL,
 							  chooserSort:			10,
 							  defaultSort:			10,
-							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL
+							  upsellUrl:			ZmSetting.MAIL_UPSELL_URL,
+							  supportsMultiMbox:	true
 							  });
 };
 
@@ -942,94 +943,10 @@ function(params, ex) {
 	}
 };
 
-ZmMailApp.prototype.getOverviewPanelContent =
-function() {
-	if (this._overviewPanelContent) {
-		return this._overviewPanelContent;
-	}
-
-	if (appCtxt.multiAccounts) {
-		// create accordion
-		var accordionId = this.getOverviewPanelContentId();
-		var accordion = this._overviewPanelContent = this._opc.createAccordion({accordionId:accordionId});
-		accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
-		accordion.addContextListener(new AjxListener(this, this._accordionActionListener));
-		// add an accordion item for each account, and create overview for main account
-		var accts = appCtxt.getZimbraAccounts();
-		this._overview = {};
-		for (var i in accts) {
-			var data = {appName:ZmApp.MAIL};
-			var acct = data.account = accts[i];
-			if (acct.visible) {
-				var item = accordion.addAccordionItem({title:acct.getDisplayName(), data:data});
-				acct.itemId = item.id;
-				if (acct.isMain) {
-					this._activateAccordionItem(item);
-				}
-			}
-		}
-	} else {
-		this._overviewPanelContent = ZmApp.prototype.getOverviewPanelContent.apply(this, arguments);
-	}
-	return this._overviewPanelContent;
-};
-
-ZmMailApp.prototype.getOverviewId =
-function(account) {
-	if (appCtxt.multiAccounts) {
-		if (!account) {
-			// bug #20310 - default to main account if all else fails
-			account = this.accordionItem
-				? this.accordionItem.data.account
-				: appCtxt.getMainAccount();
-		}
-		return ([this.getOverviewPanelContentId(), account.name].join(":"));
-	}
-
-	return ZmApp.prototype.getOverviewPanelContentId.apply(this, arguments);
-};
-
-ZmMailApp.prototype._accordionSelectionListener =
-function(ev) {
-	if (!ZmApp.prototype._accordionSelectionListener.apply(this, arguments)) { return; }
-
-	// hide and clear advanced search since it may have overviews for previous account
-	if (appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
-		var searchCtlr = appCtxt.getSearchController();
-		var bvc = searchCtlr._browseViewController;
-		if (bvc) {
-			bvc.removeAllPickers();
-			bvc.setBrowseViewVisible(false);
-		}
-	}
-	var callback = new AjxCallback(this, this._handleSetActiveAccount, this.accordionItem);
-	appCtxt.setActiveAccount(this.accordionItem.data.account, callback);
-};
-
-ZmMailApp.prototype._accordionActionListener =
-function(ev) {
-	var accordionItem = ev.detail;
-	if (accordionItem != this.accordionItem)
-		return false;
-
-	var mouseEv = DwtShell.mouseEvent;
-
-	if (!this._accordionActionMenu) {
-		var menuItems = [ZmOperation.NEW_FOLDER];
-		this._accordionActionMenu = new ZmActionMenu({parent:ev.item, menuItems:menuItems});
-
-		var ftc = appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
-		var newListener = new AjxListener(ftc, ftc._newListener);
-		this._accordionActionMenu.addSelectionListener(ZmOperation.NEW_FOLDER, newListener);
-	}
-
-	this._accordionActionMenu.popup(0, mouseEv.docX, mouseEv.docY);
-};
-
-ZmMailApp.prototype._handleSetActiveAccount =
+ZmMailApp.prototype._activateAccordionItem =
 function(accordionItem) {
-	appCtxt.getAppController()._setUserInfo();
-	this._activateAccordionItem(accordionItem);
+	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
+
 	this._mailSearch();
 };
 

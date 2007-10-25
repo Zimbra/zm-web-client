@@ -423,13 +423,14 @@ function(parent, num) {
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
 		parent.enable(printOp, num > 0);
 
+		var isParent = appCtxt.getActiveAccount().isMain;
 		// a valid folderId means user clicked on an addrbook
 		if (this._folderId) {
 			var folder = appCtxt.getById(this._folderId);
 			var isShare = folder && folder.link;
 			var canEdit = (folder == null || !folder.isReadOnly());
 
-			parent.enable([ZmOperation.TAG_MENU], !isShare && num > 0);
+			parent.enable([ZmOperation.TAG_MENU], (isParent && !isShare && num > 0));
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1);
 
@@ -440,7 +441,8 @@ function(parent, num) {
 		} else {
 			// otherwise, must be a search
 			var contact = this._listView[this._currentView].getSelection()[0];
-			parent.enable([ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE], num > 0);
+			parent.enable(ZmOperation.TAG_MENU, (isParent && num > 0));
+			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], num == 1 && !contact.isReadOnly());
 		}
 	} else {
