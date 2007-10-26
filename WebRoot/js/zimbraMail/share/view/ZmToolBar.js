@@ -142,3 +142,22 @@ ZmToolBar.prototype._buttonId =
 function(button) {
 	return button.getData("_buttonId");
 };
+
+ZmToolBar.prototype.autoAdjustWidth =
+function(refElement) {
+    var el = this.getHtmlElement();
+	if(!el) return;
+    for(var i in this._buttons) {
+		var offset1 = refElement.offsetWidth;
+		var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+		if(this._buttons[i].getImage()!=null ) {	
+			if(offset2 > offset1){
+				this._buttons[i]._toggleText = (this._buttons[i]._toggleText!=null && this._buttons[i]._toggleText!="") ? this._buttons[i]._toggleText : this._buttons[i].getText();
+				this._buttons[i].setText("");
+			}else if(this._buttons[i]._toggleText) {
+				this._buttons[i].setText(this._buttons[i]._toggleText);
+				this._buttons[i]._toggleText = null;
+			}
+		 }
+	}
+};
