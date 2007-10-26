@@ -379,6 +379,11 @@ function(calItem, mode) {
 	}
 
 	// attachments
+	this._attachDiv = document.getElementById(this._attachDivId);
+	if (this._attachDiv) {
+		// Bug 19993: clear out the attachments to prevent duplicates in the display.
+		this._attachDiv.innerHTML = "";
+	}
 	var attachList = calItem.getAttachments();
 	if (attachList) {
 		for (var i = 0; i < attachList.length; i++)
