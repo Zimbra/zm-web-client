@@ -128,7 +128,7 @@
                                 <app:button  name="actionContactAdd" width="1%" tooltip="addFromContacts" text="cc"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhACCc">
-                                        <input style='width:99%' id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" size=100 name="cc">
+                                        <input style='width:99%' id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);" size=100  name="cc">
                                         <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
                                     </div>
                                 </td>
@@ -137,7 +137,7 @@
                                 <app:button  name="actionContactAdd" width="1%" tooltip="addFromContacts" text="bcc"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhAcBcc">
-                                        <input style='width:99%' id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" size="100" name="bcc">
+                                        <input style='width:99%' id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);" size="100" name="bcc">
                                         <br><div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
                                     </div>
                                 </td>
@@ -146,8 +146,7 @@
                                 <td valign='top' align="right" nowrap> <label for="subjectField"><fmt:message key="subject"/>: </label></td>
                                 <c:choose>
                                     <c:when test="${mailbox.features.mailPriority}">
-                                        <td nowrap><input style='width:100%' type="text" size="100" name="subject" id="subjectField"
-                                                                    value="${fn:escapeXml(compose.subject)}"></td>
+                                        <td nowrap><input style='width:100%' type="text" size="100" name="subject" id="subjectField" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);" value="${fn:escapeXml(compose.subject)}"></td>
                                         <td nowrap>
                                             <c:if test="${mailbox.features.mailPriority}">
                                                 <fmt:message key="priority"/>:
@@ -287,6 +286,12 @@
 </c:if>
 <SCRIPT TYPE="text/javascript">
     <!--
+function handleEnter (ev) {
+		var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
+		if (keyCode == 13) 	return false;
+		else return true;
+	}
+
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
     //-->
 </SCRIPT>
