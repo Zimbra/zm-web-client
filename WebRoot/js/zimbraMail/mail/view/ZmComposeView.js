@@ -157,8 +157,20 @@ function(params) {
 	this._setAddresses(action, params.toOverride);
 	this._setSubject(action, msg, params.subjOverride);
 	this._setBody(action, msg, params.extraBodyText);
-	
-	this.getHtmlEditor().moveCaretToTop();
+
+    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+        var priority = "";
+        if (msg && (action == ZmOperation.DRAFT)) {
+            if (msg.isHighPriority) {
+                priority = ZmItem.FLAG_HIGH_PRIORITY;
+            } else if (msg.isLowPriority) {
+                priority = ZmItem.FLAG_LOW_PRIORITY;
+            }
+        }
+        this._setPriority(priority);
+    }
+
+    this.getHtmlEditor().moveCaretToTop();
 
 	if (action != ZmOperation.FORWARD_ATT) {
 		// save extra mime parts
@@ -591,7 +603,12 @@ function(attId, isDraft) {
 	
 	msg.setMessageAttachmentId(forwardMsgIds);
 
-	return msg;
+    var priority = this._getPriority();
+    if (priority) {
+        msg.flagLocal(priority, true);
+    }
+    
+    return msg;
 };
 
 /**
@@ -1609,7 +1626,63 @@ function(templateId, data) {
 
 	this._identitySelect.replaceElement(data.id+"_identity_control");
 	this._setIdentityVisible();
+
+    if  (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+        this._priorityButton = new DwtButton(this);
+        this._priorityButton.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
+        this._priorityButton.reparentHtmlElement(data.id + "_priority");
+    }
 };
+
+ZmComposeView.prototype._createPrioityMenuItem =
+function(menu, text, flag) {
+    var item = DwtMenuItem.create(menu, this._getPriorityImage(flag), text);
+    item._priorityFlag = flag;
+    item.addSelectionListener(this._priorityMenuListnerObj);
+};
+
+ZmComposeView.prototype._priorityButtonMenuCallback =
+function() {
+    var menu = new DwtMenu(this._priorityButton);
+    this._priorityMenuListnerObj = new AjxListener(this, this._priorityMenuListner);
+    this._createPrioityMenuItem(menu, ZmMsg.high, ZmItem.FLAG_HIGH_PRIORITY);
+    this._createPrioityMenuItem(menu, ZmMsg.normal, "");
+    this._createPrioityMenuItem(menu, ZmMsg.low, ZmItem.FLAG_LOW_PRIORITY);
+    return menu;
+};
+
+ZmComposeView.prototype._getPriorityImage =
+function(flag) {
+    if (flag == ZmItem.FLAG_HIGH_PRIORITY) {
+        return "TaskHigh";
+    } else if (flag == ZmItem.FLAG_LOW_PRIORITY) {
+        return "TaskLow";
+    }
+    return "Send";
+};
+
+ZmComposeView.prototype._priorityMenuListner =
+function(ev) {
+    this._setPriority(ev.dwtObj._priorityFlag);
+};
+
+ZmComposeView.prototype._getPriority =
+function() {
+    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+        return this._priorityButton._priorityFlag || "";
+    }
+    return "";
+};
+
+ZmComposeView.prototype._setPriority =
+function(flag) {
+    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+        flag = flag || "";
+        this._priorityButton.setImage(this._getPriorityImage(flag));
+        this._priorityButton._priorityFlag = flag;
+    }
+};
+
 
 ZmComposeView.prototype._getIdentityOptions =
 function() {

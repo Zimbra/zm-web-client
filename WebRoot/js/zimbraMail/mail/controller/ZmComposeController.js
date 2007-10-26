@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -83,7 +83,7 @@ ZmComposeController = function(container, mailApp) {
 		settings.getSetting(ZmComposeController.SETTINGS[i]).addChangeListener(scl);
 	}
 
-	this._autoSaveTimer = null; 
+	this._autoSaveTimer = null;
 	this._draftType = ZmComposeController.DRAFT_TYPE_NONE;
 };
 
@@ -243,7 +243,7 @@ function() {
 		if (composeMode == DwtHtmlEditor.HTML) {
 			var ta = new AjxTimedAction(this._composeView, this._composeView._focusHtmlEditor);
 			AjxTimedAction.scheduleAction(ta, 10);
-		}		
+		}
 		this._composeView._setBodyFieldCursor();
 	}
 };
@@ -259,12 +259,7 @@ function(attId, draftType, callback) {
 	var msg = this._composeView.getMsg(attId, isDraft);
 	if (!msg) return;
 
-    var priority = this._getPriority();
-    if (priority) {
-        msg.flagLocal(priority, true);
-    }
-
-    var inviteMode = msg.inviteMode;
+	var inviteMode = msg.inviteMode;
 	var isCancel = (inviteMode == ZmOperation.REPLY_CANCEL);
 	var isModify = (inviteMode == ZmOperation.REPLY_MODIFY);
 
@@ -281,7 +276,7 @@ function(attId, draftType, callback) {
 		// if shared folder, make sure we send the email on-behalf-of
 		var folder = msg.folderId ? appCtxt.getById(msg.folderId) : null;
 		var acctName = isDraft
-			? (appCtxt.getMainAccount().name) 
+			? (appCtxt.getMainAccount().name)
 			: ((folder && folder.isRemote()) ? folder.getOwner() : this._accountName);
 		var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
 		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
@@ -333,7 +328,7 @@ function(ex) {
 		return true;
 	} else if (ex.code == ZmCsfeException.MAIL_QUOTA_EXCEEDED){
 		if(this._composeView._attachDialog){
-			msg = ZmMsg.errorQuotaExceeded;			
+			msg = ZmMsg.errorQuotaExceeded;
 			this._composeView._attachDialog.setFooter('You have exceeded your mail quota. Please remove some attachments and try again.' );
 		}
 	}
@@ -502,7 +497,7 @@ function() {
 	}
 };
 
-ZmComposeController.prototype.setSelectedSignature = 
+ZmComposeController.prototype.setSelectedSignature =
 function(value) {
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 	var menu = button ? button.getMenu() : null;
@@ -570,23 +565,11 @@ function(params) {
 	var identityCollection = appCtxt.getIdentityCollection();
 	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
 	params.identity = identity;
-	this._currentSignatureId = identity.signature; 
+	this._currentSignatureId = identity.signature;
 
 	this._initializeToolBar();
 	this._toolbar.enableAll(true);
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        var priority = "";
-        if (msg && (action == ZmOperation.DRAFT)) {
-            if (msg.isHighPriority) {
-                priority = ZmItem.FLAG_HIGH_PRIORITY;
-            } else if (msg.isLowPriority) {
-                priority = ZmItem.FLAG_LOW_PRIORITY;
-            }
-        }
-        this._setPriority(priority);
-    }
-
-    var isCancel = (action == ZmOperation.REPLY_CANCEL);
+	var isCancel = (action == ZmOperation.REPLY_CANCEL);
 	var isModify = (action == ZmOperation.REPLY_MODIFY);
 	if (isCancel || isModify) {
 		var ops = [ ZmOperation.SAVE_DRAFT ];
@@ -638,23 +621,20 @@ function() {
 	var buttons = [ZmOperation.SEND];
 
 	buttons.push(ZmOperation.CANCEL);
-	
+
 	if (appCtxt.get(ZmSetting.IM_ENABLED))
 		buttons.push(ZmOperation.IM);
-	
+
 	buttons.push(ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
-	
-	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))    
+
+	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))
 		buttons.push(ZmOperation.ATTACHMENT);
-		     
+
 	buttons.push(ZmOperation.SPELL_CHECK);
 	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
 		buttons.push(ZmOperation.ADD_SIGNATURE);
 	}
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-    	buttons.push(ZmOperation.MAIL_PRIORITY);
-    }
-    buttons.push(ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
+	buttons.push(ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
 
 	if (!appCtxt.isChildWindow) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
@@ -694,12 +674,7 @@ function() {
 	this._optionsMenu[ZmOperation.FORWARD_INLINE] = this._optionsMenu[ZmOperation.FORWARD_ATT];
 	this._optionsMenu[ZmOperation.SHARE] = this._optionsMenu[ZmOperation.NEW_MESSAGE];
 
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        var priorityButton = this._toolbar.getButton(ZmOperation.MAIL_PRIORITY);
-        priorityButton.addSelectionListener(new AjxListener(this, this._priorityButtonListener));
-    }
-
-    // change default button style to select for spell check button
+	// change default button style to select for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 
@@ -713,61 +688,6 @@ function() {
 				attachmentButton.setText("");
 		}
 	}
-};
-
-ZmComposeController.prototype._createPrioityMenuItem =
-function(text, flag) {
-    var item = DwtMenuItem.create(this._priorityMenu, this._getPriorityImage(flag), text);
-    item._priorityFlag = flag;
-    item.addSelectionListener(this._priorityMenuListnerObj);
-};
-
-ZmComposeController.prototype._priorityButtonListener =
-function(ev) {
-    var priorityButton = ev.dwtObj;
-    var menu = this._priorityMenu;
-    if (!menu) {
-        menu = this._priorityMenu = new DwtMenu(priorityButton);
-        this._priorityMenuListnerObj = new AjxListener(this, this._priorityMenuListner);
-        this._createPrioityMenuItem(ZmMsg.low, ZmItem.FLAG_LOW_PRIORITY);
-        this._createPrioityMenuItem(ZmMsg.normal, "");
-        this._createPrioityMenuItem(ZmMsg.high, ZmItem.FLAG_HIGH_PRIORITY);
-    }
-    priorityButton.popup(menu);
-};
-
-ZmComposeController.prototype._getPriorityImage =
-function(flag) {
-    if (flag == ZmItem.FLAG_HIGH_PRIORITY) {
-        return "TaskHigh";
-    } else if (flag == ZmItem.FLAG_LOW_PRIORITY) {
-        return "TaskLow";
-    }
-    return "Send";
-};
-
-ZmComposeController.prototype._priorityMenuListner =
-function(ev) {
-    this._setPriority(ev.dwtObj._priorityFlag);
-};
-
-ZmComposeController.prototype._getPriority =
-function() {
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        var priorityButton = this._toolbar.getButton(ZmOperation.MAIL_PRIORITY);
-        return priorityButton._priorityFlag || "";
-    }
-    return "";
-};
-
-ZmComposeController.prototype._setPriority =
-function(flag) {
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        flag = flag || "";
-        var priorityButton = this._toolbar.getButton(ZmOperation.MAIL_PRIORITY);
-        priorityButton.setImage(this._getPriorityImage(flag));
-        priorityButton._priorityFlag = flag;
-    }
 };
 
 ZmComposeController.prototype._setAddSignatureVisibility =
@@ -909,9 +829,9 @@ function(mode) {
 			this._formatWarningDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
 		}
 		this._formatWarningDialog.registerCallback(DwtDialog.OK_BUTTON, this._formatOkCallback, this, [mode]);
-		this._formatWarningDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._formatCancelCallback, this);		
+		this._formatWarningDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._formatCancelCallback, this);
 		var msg  = (mode == DwtHtmlEditor.TEXT) ? ZmMsg.switchToText : ZmMsg.switchToHtml;
-		this._formatWarningDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);		
+		this._formatWarningDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		this._formatWarningDialog.popup(this._composeView._getDialogXY());
 	} else {
 		this._composeView.setComposeMode(mode);

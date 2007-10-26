@@ -147,17 +147,27 @@
 			<td>
 				<table border=0 cellpadding=0 cellspacing=0 width='100%'>
 				<tr>
-					<td style='padding-right:4px;' width='50%'>
+					<td style='padding-right:4px;'>
 						<input id='${id}_subject_control' class='subjectField' autocomplete=off>
 					</td>
-					<td id='${id}_identity_row' style='display:none;'>
+					<td id='${id}_identity_row' nowrap width='45%' style='display:none;'>
 					<table border=0 cellspacing=0 cellpadding=0>
-						<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.from$>:</td>
+						<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.from$>:&nbsp;</td>
 							<td width="100%"><select id='${id}_identity_control'></select></td>
 						</tr>
 					</table>
 					</td>
-				</tr>
+                    <$ if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) { $>
+                    <td nowrap width='1%'>
+                        <table border=0 cellspacing=0 cellpadding=0>
+                            <tr>
+                                <td><$=ZmMsg.priority$>:&nbsp;</td>
+                                <td id="${id}_priority"></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <$ } $>
+                </tr>
 				</table>
 			</td>
 		</tr>
