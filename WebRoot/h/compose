@@ -151,9 +151,9 @@
                                             <c:if test="${mailbox.features.mailPriority}">
                                                 <fmt:message key="priority"/>:
                                                 <select name="priority">
-                                                    <option value="!"<c:if test="${priority eq '!'}"> selected</c:if>> <fmt:message key="high"/>
-                                                    <option value="" <c:if test="${priority eq ''}"> selected</c:if>><fmt:message key="normal"/>
-                                                    <option value="?"<c:if test="${priority eq '?'}"> selected</c:if>><fmt:message key="low"/>
+                                                    <option id="OPPRIORITYHIGH" value="!"<c:if test="${priority eq '!'}"> selected</c:if>> <fmt:message key="high"/>
+                                                    <option id="OPPRIORITYNORMAL" value="" <c:if test="${priority eq ''}"> selected</c:if>><fmt:message key="normal"/>
+                                                    <option id="OPPRIORITYLOW" value="?"<c:if test="${priority eq '?'}"> selected</c:if>><fmt:message key="low"/>
                                                 </select>
                                             </c:if>
                                         </td>
@@ -293,6 +293,7 @@ function handleEnter (ev) {
 	}
 
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
+	var zselect = function(id) { var e = document.getElementById(id); if (e) { e.selected = true; }}
     //-->
 </SCRIPT>
         
@@ -301,6 +302,9 @@ function handleEnter (ev) {
         <zm:bindKey message="compose.Save" func="function() { zclick('SOPDRAFT')}"/>
         <zm:bindKey message="compose.Attachment" func="function() { zclick('SOPATTACH')}"/>
         <zm:bindKey message="compose.AddressPicker" func="function() { zclick('SOPADDRECIP')}"/>
+        <zm:bindKey message="compose.HighPriority" func="function() { zselect('OPPRIORITYHIGH')}"/>
+        <zm:bindKey message="compose.NormalPriority" func="function() { zselect('OPPRIORITYNORMAL')}"/>
+        <zm:bindKey message="compose.LowPriority" func="function() { zselect('OPPRIORITYLOW')}"/>
    </app:keyboard>
 
 </app:view>
