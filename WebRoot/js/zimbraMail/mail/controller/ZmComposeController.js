@@ -480,6 +480,18 @@ function(actionCode) {
 			}
 			break;
 
+        case ZmKeyMap.HIGH_PRIORITY:
+			this._composeView._setPriority(ZmItem.FLAG_HIGH_PRIORITY);
+			break;
+
+        case ZmKeyMap.NORMAL_PRIORITY:
+            this._composeView._setPriority("");
+            break;
+
+        case ZmKeyMap.LOW_PRIORITY:
+            this._composeView._setPriority(ZmItem.FLAG_LOW_PRIORITY);
+            break;
+
 		default:
 			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
 			break;
