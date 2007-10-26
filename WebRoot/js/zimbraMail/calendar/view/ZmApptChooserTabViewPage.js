@@ -613,20 +613,24 @@ function(sortBy) {
 	var conds = [];
 	var value = (this.type == ZmCalItem.LOCATION) ? "Location" : "Equipment";
 	conds.push({attr: "zimbraCalResType", op: "eq", value: value});
+	var gotValue = false;
 	for (var i = 0; i < fields.length; i++) {
 		var sf = fields[i];
 		var searchField = document.getElementById(this._searchFieldIds[sf]);
-		value = searchField.value;
-		if (value) {
+		value = AjxStringUtil.trim(searchField.value);
+		if (value.length) {
+			gotValue = true;
 			var attr = ZmApptChooserTabViewPage.SF_ATTR[sf];
 			var op = ZmApptChooserTabViewPage.SF_OP[sf] ? ZmApptChooserTabViewPage.SF_OP[sf] : "has";
 			conds.push({attr: attr, op: op, value: value});
 		}
 	}
-	var params = {sortBy: sortBy, offset: 0, limit: ZmContactsApp.SEARCHFOR_MAX, conds: conds,
-				  attrs: ZmApptChooserTabViewPage.ATTRS[this.type]};
-	var search = new ZmSearch(params);
-	search.execute({callback: new AjxCallback(this, this._handleResponseSearchCalendarResources)});
+	if (gotValue) {
+		var params = {sortBy: sortBy, offset: 0, limit: ZmContactsApp.SEARCHFOR_MAX, conds: conds,
+					  attrs: ZmApptChooserTabViewPage.ATTRS[this.type]};
+		var search = new ZmSearch(params);
+		search.execute({callback: new AjxCallback(this, this._handleResponseSearchCalendarResources)});
+	}
 };
 
 ZmApptChooserTabViewPage.prototype._handleResponseSearchCalendarResources = 
