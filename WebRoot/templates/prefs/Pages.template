@@ -131,7 +131,7 @@ and the container element is replaced with that control.
 					<td class='ZOptionsField'>
                         <table><tr>
                             <td><input id='${id}_POLLING_INTERVAL' tabindex='40' size='3'></td>
-                            <td><$=ZmMsg.minutes$></td>
+                            <td><$=ZmMsg.seconds$></td>
                         </tr></table>
                     </td>
 				</tr>
