@@ -282,8 +282,8 @@ function() {
         cols:               2,
         maxLen:             2,
         displaySeparator:   false,
-        //displayFunction:    ZmPref.pollingIntervalDisplay,
-        //valueFunction:      ZmPref.pollingIntervalValue,
+        displayFunction:    ZmPref.pollingIntervalDisplay,
+        valueFunction:      ZmPref.pollingIntervalValue,
         validationFunction: ZmPref.validatePollingInterval
     });
 
