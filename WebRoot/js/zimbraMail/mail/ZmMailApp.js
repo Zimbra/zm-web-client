@@ -454,7 +454,6 @@ function() {
 	ZmOperation.registerOp("INC_NO_PREFIX", {textKey:"includeMenuNoPrefix"});
 	ZmOperation.registerOp("INC_PREFIX", {textKey:"includeMenuPrefix"});
 	ZmOperation.registerOp("INC_SMART", {textKey:"includeMenuSmart"});
-	ZmOperation.registerOp("MAIL_PRIORITY", {image:"TaskHigh", tooltipKey:"mailPriorityTooltip"}, ZmSetting.MAIL_PRIORITY_ENABLED);
 	ZmOperation.registerOp("MARK_READ", {textKey:"markAsRead", image:"ReadMessage"});
 	ZmOperation.registerOp("MARK_UNREAD", {textKey:"markAsUnread", image:"UnreadMessage"});
 	ZmOperation.registerOp("MOVE_DOWN_FILTER_RULE", {textKey:"filterMoveDown", image:"DownArrow"}, ZmSetting.FILTERS_ENABLED);
