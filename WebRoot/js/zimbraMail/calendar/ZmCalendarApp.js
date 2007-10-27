@@ -584,11 +584,6 @@ function() {
 	return this._equipment;
 };
 
-ZmCalendarApp.prototype._postLoad =
-function(type) {
-	ZmApp.prototype._postLoad.call(this, type);
-};
-
 ZmCalendarApp.prototype._postLoadAppt =
 function(type) {
 	this.getApptComposeController().initComposeView(true);

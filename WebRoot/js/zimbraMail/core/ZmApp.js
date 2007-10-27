@@ -532,7 +532,9 @@ function(params) {
  */
 ZmApp.prototype._postLoad =
 function(type) {
-	this._createDeferredFolders(type);
+	if (type) {
+		this._createDeferredFolders(type);
+	}
 	this._handleDeferredNotifications();
 };
 

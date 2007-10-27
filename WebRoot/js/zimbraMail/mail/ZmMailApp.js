@@ -80,6 +80,7 @@ function() {
 
 ZmMailApp.prototype._defineAPI =
 function() {
+	AjxDispatcher.setPackageLoadFunction("Mail", new AjxCallback(this, this._postLoad));
 	AjxDispatcher.registerMethod("Compose", ["MailCore", "Mail"], new AjxCallback(this, this.compose));
 	AjxDispatcher.registerMethod("GetComposeController", ["MailCore", "Mail"], new AjxCallback(this, this.getComposeController));
 	AjxDispatcher.registerMethod("GetConvController", ["MailCore", "Mail"], new AjxCallback(this, this.getConvController));
