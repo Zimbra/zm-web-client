@@ -1217,7 +1217,10 @@ function(ev) {
 			}
 		} else if (setting.id == ZmSetting.READING_PANE_ENABLED) {
 			if (curView != ZmController.MSG_VIEW) {
-				toggle = true;
+				var value = appCtxt.get(setting.id);
+				if (value != mlc._readingPaneOn) {
+					toggle = true;
+				}
 			}
 		} else if (setting.id == ZmSetting.SHOW_FRAGMENTS) {
 			if (curView != ZmController.MSG_VIEW) {
@@ -1227,7 +1230,10 @@ function(ev) {
 	}
 	newView = groupByView || newView;
 	
-	if (newView || toggle) {
-		mlc.switchView(newView, toggle);
+	if (toggle) {
+		mlc.switchView(ZmMailListController.READING_PANE_MENU_ITEM_ID);
+	}
+	if (newView) {
+		mlc.switchView(newView);
 	}
 };

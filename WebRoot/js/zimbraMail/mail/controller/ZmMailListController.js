@@ -95,6 +95,8 @@ ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[ZmKeyMap.MOVE_TO_INBOX]	= ZmFold
 ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[ZmKeyMap.MOVE_TO_TRASH]	= ZmFolder.ID_TRASH;
 ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[ZmKeyMap.MOVE_TO_JUNK]	= ZmFolder.ID_SPAM;
 
+ZmMailListController.READING_PANE_MENU_ITEM_ID = "RP";
+
 // Public methods
 
 ZmMailListController.prototype.toString =
@@ -110,11 +112,17 @@ function() {
 ZmMailListController.prototype.switchView =
 function(view) {
 	if (view) {
-		this._app._groupBy = ZmMailListController.GROUP_BY_SETTING[view];
+		var groupBySetting = ZmMailListController.GROUP_BY_SETTING[view];
+		if (groupBySetting && (groupBySetting != this._app._groupBy)) {
+			this._app._groupBy = groupBySetting;
+		} else {
+			return;
+		}
 		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
 		var limit = appCtxt.get(ZmSetting.PAGE_SIZE); // bug fix #3365
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-		var params = {types:[ZmMailListController.GROUP_BY_ITEM[view]], offset:0, limit:limit, sortBy:sortBy, getHtml:getHtml};
+		var groupByItem = this._app.getGroupMailBy();
+		var params = {types:[groupByItem], offset:0, limit:limit, sortBy:sortBy, getHtml:getHtml};
 		appCtxt.getSearchController().redoSearch(appCtxt.getCurrentSearch(), null, params);
 	}
 };
@@ -208,7 +216,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.READING_PANE:
-			this.switchView(ZmController.READING_PANE_VIEW, true);
+			this.switchView(ZmMailListController.READING_PANE_MENU_ITEM_ID);
 			break;
 
 		case ZmKeyMap.SHOW_FRAGMENT:

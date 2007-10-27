@@ -64,7 +64,6 @@ ZmController.NOTEBOOK_PAGE_VIEW			= "NBP";
 ZmController.NOTEBOOK_SITE_VIEW			= "NBS";
 ZmController.PORTAL_VIEW                = "PORTAL";
 ZmController.PREF_VIEW					= "PREF";
-ZmController.READING_PANE_VIEW 			= "RP";
 ZmController.TASK_VIEW					= "TKV";
 ZmController.TASKEDIT_VIEW				= "TKE";
 ZmController.TASKLIST_VIEW				= "TKL";

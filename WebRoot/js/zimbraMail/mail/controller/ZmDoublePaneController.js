@@ -95,13 +95,13 @@ function(item, callback, results) {
  * Handles switching mail views.
  *
  * @param view		[constant]*		the id of the new view
- * @param toggle	[boolean]*		if true, flip state of reading pane
  */
 ZmDoublePaneController.prototype.switchView =
-function(view, toggle) {
-	ZmMailListController.prototype.switchView.apply(this, arguments);
-	if ((view == ZmController.READING_PANE_VIEW) || toggle) {
-		this._toggleReadingPane(ZmController.READING_PANE_VIEW, toggle);
+function(view) {
+	if (view == ZmMailListController.READING_PANE_MENU_ITEM_ID) {
+		this._toggleReadingPane(true);
+	} else {
+		ZmMailListController.prototype.switchView.apply(this, arguments);
 	}
 };
 
@@ -119,17 +119,14 @@ function() {
 /**
  * Shows or hides the reading pane.
  *
- * @param view		[constant]*		the id of the new view
  * @param toggle	[boolean]*		if true, flip state of reading pane
  */
 ZmDoublePaneController.prototype._toggleReadingPane = 
-function(view, toggle) {
+function(force) {
 	var viewBtn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
 	var menu = viewBtn.getMenu();
-
-	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);
-	if (toggle) {
-		// toggle display of reading pane
+	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, ZmMailListController.READING_PANE_MENU_ITEM_ID);
+	if (force) {
 		mi.setChecked(!mi.getChecked(), true);
 	} else {
 		if (this._readingPaneOn == mi.getChecked()) { return; }
@@ -277,7 +274,7 @@ function(msg) {
 
 // Adds a "Reading Pane" checked menu item to a view menu
 ZmDoublePaneController.prototype._setupReadingPaneMenuItem =
-function(view, menu, checked, itemId) {
+function(view, menu, checked) {
 	var viewBtn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 	if (!menu) {
 		menu = viewBtn.getMenu();
@@ -290,7 +287,7 @@ function(view, menu, checked, itemId) {
 		new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
 	}
 
-	var id = itemId || ZmController.READING_PANE_VIEW;
+	var id = ZmMailListController.READING_PANE_MENU_ITEM_ID;
 	if (!menu._menuItems[id]) {
 		var mi = menu.createMenuItem(id, {image:"SplitPane", text:ZmMsg.readingPane, style:DwtMenuItem.CHECK_STYLE});
 		mi.setData(ZmOperation.MENUITEM_ID, id);
