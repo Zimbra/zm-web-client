@@ -191,7 +191,7 @@
 		</tr>
 		<tr height=100%>
 			<td width=200 valign=top id='${id}_listview'></td>
-			<td valign=top id='${id}_contentCell'>
+			<td valign=top id='${id}_contentCell' height=100%>
 				<div class='ZmContactInfoView' id='${id}_content' style='overflow:auto'>
 					<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 				</div>
