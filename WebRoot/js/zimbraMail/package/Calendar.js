@@ -27,6 +27,7 @@
  * 
  * Any user of this package will need to load CalendarCore first.
  */
+AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 
 // for creating and handling invites
 AjxPackage.require("zimbraMail.mail.model.ZmMimePart");

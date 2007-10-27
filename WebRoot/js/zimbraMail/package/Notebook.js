@@ -23,6 +23,7 @@
  * 	- When the user goes to the Notebook application
  * 	- When the user creates a new notebook or page
  */
+AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 AjxPackage.require("zimbraMail.notebook.view.conv.ZmWikiConverter");
 
 AjxPackage.require("zimbraMail.notebook.view.ZmNotebookPageView");
