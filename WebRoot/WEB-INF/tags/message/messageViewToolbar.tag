@@ -50,11 +50,11 @@
                     <app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionMessageGoTT" text="actionGo" />
                     <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
                         <td><div class='vertSep'></div></td>
-                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam"/>
+                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="mail/ImgJunkMail.gif"/>
                     </c:if>
                     <c:if test="${context.isFolderSearch and context.folder.isSpam}">
                         <td><div class='vertSep'></div></td>
-                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam"/>
+                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.gif"/>
                     </c:if>
                 </tr>
             </table>

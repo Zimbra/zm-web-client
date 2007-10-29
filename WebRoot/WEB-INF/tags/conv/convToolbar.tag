@@ -52,11 +52,11 @@
 
                     <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
                         <td><div class='vertSep'></div></td>
-                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam"/>
+                        <app:button id="${keys ? 'OPSPAM' : ''}" name="actionSpam" tooltip="actionSpamTT" text="actionSpam" src="mail/ImgJunkMail.gif"/>
                     </c:if>
                     <c:if test="${context.isFolderSearch and context.folder.isSpam}">
                         <td><div class='vertSep'></div></td>
-                        <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam"/>
+                        <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam" src="startup/ImgInbox.gif"/>
                     </c:if>
                     <td><div class='vertSep'></div>                    <input type="hidden" name="contextConvId" value="${convSearchResult.conversationSummary.id}"></td>
                     <app:button id="${keys ? 'OPMARKALL' :''}" name="actionMarkConvRead" src="startup/ImgReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
