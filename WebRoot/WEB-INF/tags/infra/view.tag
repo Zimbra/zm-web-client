@@ -30,6 +30,34 @@
 <c:choose>
 <c:when test="${skin eq 'velodrome2'}">
 <c:set var="iconPath" value="/skins/velodrome2/img/icons" scope="request"/>
+<table width="100%" cellspacing="0" cellpadding="0" border="0" height="100%">
+<tr>
+    <td class='ImgSkin_Chrome_R1' colspan="2">
+        <table width=99% cellspacing=0 cellpadding=0 align="center">
+            <tr>
+                <td class='R1Text'>hi,</td>
+                <td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b></nobr></div></td>
+                <td id='#skin_container_logoff_lite' class='R1Link'><nobr><a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut" /></a></nobr></td>
+                <td class='R1Sep'>|</td>
+                <td class='R1Link'><nobr><a href="/h/options?selected=accounts">My Account</a></nobr></td>
+                <td width=100%>&nbsp;</td>
+                <td class='R1Link'><nobr><a href="http://www.comcast.net" target=_new >comcast.net</a></nobr></td>
+                <td class='R1Sep'>|</td>
+                <td><div class=ImgHelp></div></td>
+                <td>&nbsp;</td>
+                <td class='R1Link' id='skin_container_help_lite'> <a target=_new href="<c:url value="http://www.comcast.net/help/"/>"><fmt:message key="help"/></a></td>
+                <td>&nbsp;&nbsp;</td>
+                <td><div class=ImgPadlock></div></td>
+                <td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/security/" target=_new>Security</a></nobr></td>
+                <td>&nbsp;&nbsp;</td>
+                <td><div class=ImgSkin_Info></div></td>
+                <td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/providers/askcomcast/popup.html" target=_new >Ask comcast</a></nobr></td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+<td width="99%">
 <table id='skin_table_outer' width='100%' border=0 class='skin_table' cellspacing=0 cellpadding=0 >
 		<colgroup>
 			<col id='skin_col_L'>
@@ -38,35 +66,8 @@
 			<col id='skin_col_main'>
 			<col id='skin_col_R'>
 		</colgroup>
-		<tr id='skin_R1'>
-			<td><div class='ImgSkin_Chrome_R1_L'></div></td>
-			<td class='ImgSkin_Chrome_R1' colspan=3>
-				<table width=100% cellspacing=0 cellpadding=0>
-				<tr>
-					<td class='R1Text'>hi,</td>
-					<td><div id='skin_container_username' class='R1Text'><nobr><b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b></nobr></div></td>
-					<td id='#skin_container_logoff_lite' class='R1Link'><nobr><a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut" /></a></nobr></td>
-					<td class='R1Sep'>|</td>
-					<td class='R1Link'><nobr><a href="/h/options?selected=accounts">My Account</a></nobr></td>
-					<td width=100%>&nbsp;</td>
-					<td class='R1Link'><nobr><a href="http://www.comcast.net" target=_new >comcast.net</a></nobr></td>
-					<td class='R1Sep'>|</td>
-					<td><div class=ImgHelp></div></td>
-					<td>&nbsp;</td>
-					<td class='R1Link' id='skin_container_help_lite'> <a target=_new href="<c:url value="http://www.comcast.net/help/"/>"><fmt:message key="help"/></a></td>
-					<td>&nbsp;&nbsp;</td>
-					<td><div class=ImgPadlock></div></td>
-					<td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/security/" target=_new>Security</a></nobr></td>
-					<td>&nbsp;&nbsp;</td>
-					<td><div class=ImgSkin_Info></div></td>
-					<td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/providers/askcomcast/popup.html" target=_new >Ask comcast</a></nobr></td>
-				</tr>
-				</table>
-			</td>
-			<td><div class='ImgSkin_Chrome_R1_R'></div></td>
-		</tr>
-
-		<tr id='skin_R2'>
+        
+        <tr id='skin_R2'>
 			<td><div class='ImgSkin_Chrome_R2_L'></div></td>
 			<td class='ImgSkin_Chrome_R2' colspan=3>
 				
@@ -86,14 +87,12 @@
 					<td width='76%'><div class='float'> 
 					<app:appStatus/>
 					</div></td>
-					<td id='skin_td_search' align='right' width='450'>
-						
+					<td id='skin_td_search' align='right' width='450'>						
 							<!-- search box -->				
 							<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}"/>					
 					</td>
 				</tr>
 				</table>
-				
 			</td>
 			<td><div class='ImgSkin_Chrome_R2_R'></div></td>
 		</tr>
@@ -247,9 +246,15 @@
 				</table>
             </td>
         </tr>
+        </table>
+        </td>
+        <jsp:include page="/h/sidebarads">
+            <jsp:param name="selected" value="${selected}"></jsp:param>
+        </jsp:include>
+        </tr>
 
-		<tr id='skin_R4'>
-			<td id='skin_td_R4' class='ImgSkin_Chrome_R4' colspan=5>
+        <tr id='skin_R4'>
+			<td id='skin_td_R4' class='ImgSkin_Chrome_R4' colspan="2">
 				<table width=100% id='skin_table_R4' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 					<tr>
 						<td style='text-align:left;padding-left:20px;'>&copy; 2007 Comcast Cable Communications</td>

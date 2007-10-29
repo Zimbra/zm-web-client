@@ -336,6 +336,7 @@
           <url-pattern>/m/moquery</url-pattern>
           <url-pattern>/m/mocompose</url-pattern>
           <url-pattern>/h/overviewAds</url-pattern>
+          <url-pattern>/h/sidebarads</url-pattern>
           <url-pattern>/h/printcontacts</url-pattern>
       </jsp-property-group>
     </jsp-config>

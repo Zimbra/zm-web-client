@@ -332,7 +332,7 @@
                 <property name='customer.portal.dir' value='${customer.web.dir}/portals'/>
                 <property name='customer.zimlet.dir' value='${customer.dir}/Zimlet'/>
                 <fileset id='customer.web.fileset'
-                         dir='${customer.web.dir}' includes='skins/**,portals/**' excludes='**/*.template'
+                         dir='${customer.web.dir}' includes='h/**,skins/**,portals/**' excludes='**/*.template'
                         />
             </then>
         </if>
