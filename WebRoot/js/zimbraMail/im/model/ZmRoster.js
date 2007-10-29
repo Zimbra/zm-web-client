@@ -18,6 +18,7 @@
 ZmRoster = function(imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
 
+    this._notificationBuffer = [];
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
@@ -183,6 +184,13 @@ function(subscribed) {
 			}
 		}
 	}
+};
+
+ZmRoster.prototype.pushNotification = function(im) {
+        if (!this._gateways) {
+                this._notificationBuffer.push(im);
+        } else
+                this.handleNotification(im);
 };
 
 ZmRoster.prototype.refresh = function() {
@@ -497,8 +505,9 @@ ZmRoster.prototype._handleRequestGateways = function(resp) {
 			   byDomain  : byDomain,
 			   array     : a
 			 };
-	
-	this._imApp.processDeferredNotifications(this);
+        for (var i = 0; i < this._notificationBuffer.length; ++i)
+                this.handleNotification(this._notificationBuffer[i]);
+        this._notificationBuffer = [];
 };
 
 ZmRoster.prototype.getGatewayByType = function(type) {

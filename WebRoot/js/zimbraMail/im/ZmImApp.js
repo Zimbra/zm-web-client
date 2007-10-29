@@ -22,7 +22,6 @@ ZmImApp = function(container) {
 	// IM is enabled, so show Chats folder
 	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
-	this._notificationBuffer = [];
 	ZmImApp.INSTANCE = this;
 };
 
@@ -340,8 +339,9 @@ ZmImApp.prototype.handleOp = function(op) {
 
 ZmImApp.prototype.postNotify =
 function(notify) {
-	if (!notify.im) { return; }
-	this.pushNotification(notify.im);
+	if (notify.im) {
+                AjxDispatcher.run("GetRoster").pushNotification(notify.im);
+	}
 };
 
 ZmImApp.prototype.launch =
@@ -469,21 +469,4 @@ ZmImApp.prototype.getOverviewPanelContent = function() {
 	if (!this._imOvw)
 		this._imOvw = new ZmImOverview(this._container);
 	return this._imOvw;
-};
-
-ZmImApp.prototype.pushNotification =
-function(im) {
-	if (!this._gateways) {
-		this._notificationBuffer.push(im);
-	} else {
-		this.getRoster().handleNotification(im);
-	}
-};
-
-ZmImApp.prototype.processDeferredNotifications =
-function(roster) {
-	for (var i = 0; i < this._notificationBuffer.length; ++i) {
-		roster.handleNotification(this._notificationBuffer[i]);
-	}
-	this._notificationBuffer = [];
 };

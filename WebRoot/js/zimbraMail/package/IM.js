@@ -25,6 +25,7 @@
 // AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 AjxPackage.require("ajax.util.AjxAnimation");
 AjxPackage.require("ajax.dwt.widgets.DwtResizableWindow");
+AjxPackage.require("ajax.dwt.widgets.DwtButtonColorPicker");
 AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 
 AjxPackage.require("zimbraMail.im.model.ZmImGateway");
