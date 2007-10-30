@@ -405,7 +405,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		if (field == "value" && data.subject == ZmFilterRule.C_HEADER) {
 			input.setVisibility(!(data.comparator == ZmFilterRule.OP_EXISTS || data.comparator == ZmFilterRule.OP_NOT_EXISTS));
 		}
-		tabGroup.addMember(input);
+		tabGroup.addMember(input.getTabGroupMember());
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 
 	} else if (type == ZmFilterRule.TYPE_SELECT) {
@@ -450,7 +450,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		if (!select.getValue()) {
 			select.setSelected(0);
 		}
-		tabGroup.addMember(select);
+		tabGroup.addMember(select.getTabGroupMember());
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 
 	} else if (type == ZmFilterRule.TYPE_CALENDAR) {
@@ -479,7 +479,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		cal.setDate(date);
 		cal._dateButton = dateButton;
 		this._inputs[rowId][field] = {id: id, dwtObj: dateButton};
-		tabGroup.addMember(dateButton);
+		tabGroup.addMember(dateButton.getTabGroupMember());
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 
 	} else if (type == ZmFilterRule.TYPE_FOLDER_PICKER || type == ZmFilterRule.TYPE_TAG_PICKER) {
@@ -504,7 +504,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		button.setData(ZmFilterRuleDialog.DATA, dataValue);
 		this._inputs[rowId][field] = {id: id, dwtObj: button};
 		button.addSelectionListener(this._browseLstnr);
-		tabGroup.addMember(button);
+		tabGroup.addMember(button.getTabGroupMember());
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 	}
 };
