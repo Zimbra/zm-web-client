@@ -147,7 +147,7 @@
                                 <c:choose>
                                     <c:when test="${mailbox.features.mailPriority}">
                                         <td nowrap><input style='width:100%' type="text" size="100" name="subject" id="subjectField" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);" value="${fn:escapeXml(compose.subject)}"></td>
-                                        <td nowrap>
+                                        <td nowrap align='right' style='padding-right:10px'>
                                             <c:if test="${mailbox.features.mailPriority}">
                                                 <fmt:message key="priority"/>:
                                                 <select name="priority">

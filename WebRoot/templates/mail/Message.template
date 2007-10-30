@@ -151,11 +151,11 @@
 						<input id='${id}_subject_control' class='subjectField' autocomplete=off>
 					</td>
 					<td id='${id}_identity_row' nowrap width='45%' style='display:none;'>
-					<table border=0 cellspacing=0 cellpadding=0>
-						<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.from$>:&nbsp;</td>
-							<td width="100%"><select id='${id}_identity_control'></select></td>
-						</tr>
-					</table>
+						<table border=0 cellspacing=0 cellpadding=0>
+							<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.from$>:&nbsp;</td>
+								<td width="*"><select id='${id}_identity_control'></select></td>
+							</tr>
+						</table>
 					</td>
                     <$ if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) { $>
                     <td nowrap width='1%'>

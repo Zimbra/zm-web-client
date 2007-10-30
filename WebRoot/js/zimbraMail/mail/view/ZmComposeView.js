@@ -1616,7 +1616,6 @@ function(templateId, data) {
 	var identityOptions = this._getIdentityOptions();
 	this._identitySelect = new DwtSelect(this, identityOptions);
 	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
-	this._identitySelect.getHtmlElement().style.width='100%';
 
 	var identityCollection = appCtxt.getIdentityCollection();
 	if (!this._identityChangeListenerObj) {
