@@ -383,17 +383,9 @@ function(callback,folderId,results) {
 ZmBriefcaseController.prototype.searchFolder =
 function(folderId,callback) {
 	var search = 'inid:"'+folderId+'"';
-	//var sc = appCtxt.getSearchController();
-	//var scallback = new AjxCallback(this,this.searchCallback,[callback,folderId]);
-	//sc.search({query:search, types:[ZmItem.BRIEFCASE],callback:scallback});
-	//return;	
 		
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
-	var types = [
-		ZmSearch.TYPE[ZmItem.PAGE],
-		ZmSearch.TYPE[ZmItem.DOCUMENT]
-	];
-	soapDoc.setMethodAttribute("types", types.join());
+	soapDoc.setMethodAttribute("types", ZmSearch.TYPE[ZmItem.BRIEFCASE]);
 	soapDoc.setMethodAttribute("limit", "250");
 	var queryNode = soapDoc.set("query", search);
 		
