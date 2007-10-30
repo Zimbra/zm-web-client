@@ -249,3 +249,36 @@
 }
 
 table.DwtHtmlEditor-Table td { border: 1px solid #000; }
+
+.Object {
+	@Anchor@
+}
+
+.Object-hover {
+	@Anchor-hover@
+}
+
+.Object-active {
+	@Anchor-active@
+}
+
+
+.FakeAnchor, a:link, a:visited {
+	@Anchor@
+}
+
+a:hover {
+	@Anchor-hover@
+}
+
+a:active {
+	@Anchor-active@
+}
+
+.POObject {color: blue;}
+.POObjectApproved {color: green;}
+.POObjectRejected {color: red;}
+
+.zimbraHide {
+	display: none;
+}

@@ -239,12 +239,13 @@ ZmNotebookPageView._iframeOnLoad = function(iframe) {
 	}
 	view.currentSrc = null;		
 	view.currentPath = null;		
-	
-	return; //cdel				
-	// highlight objects
-	//var doc = Dwt.getIframeDoc(iframe);
-	//var element = doc.body;
-	//ZmNotebookPageView._findObjects(view._getObjectMgr(), element);
+
+	var doc = iframe.contentWindow.document;
+	var element = doc.body;
+	if(element){
+		ZmNotebookPageView._findObjects(view._getObjectMgr(), element);		
+	}
+	return;
 };
 
 ZmNotebookPageView.prototype.processPageInfo = function(iSrc,t){
