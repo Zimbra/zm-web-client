@@ -82,7 +82,8 @@
 
     <!-- pseudo-fileset so that targets that rely on it don't fail -->
     <fileset id='help.fileset' dir='${build.dir}' excludes='**'/>
-    <fileset id='customer.web.fileset' dir='${build.dir}' excludes='**'/>
+	<fileset id='customer.web.fileset' dir='${build.dir}' excludes='**'/>
+	<fileset id='customer.webinf.fileset' dir='${build.dir}' excludes='**'/>
 
     <!-- Targets -->
 
@@ -197,7 +198,8 @@
             depends='templates,timezones,i18n,images,styles,settings,jam-files,compress,help,webxml-package-replace'>
         <mkdir dir='${build.war.dir}'/>
         <war warfile="${build.war.file}" webxml='${build.dir}/web.xml' compress='${war.compress}'>
-            <webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes}'/>
+            <webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.excludes}' />
+			<webinf refid='customer.webinf.fileset' />
             <classes dir='${build.classes.dir}' excludes='**/kabuki/tools/**,**/build/**'/>
             <classes dir='${web.dir}' includes='messages/**,keys/**'/>
             <lib dir='${lib.dir}' includes='gifencoder.jar'/>
@@ -205,19 +207,19 @@
             <lib dir='${common.build.dir}' includes='zimbracommon.jar'/>
             <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
-            <zipfileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes}'/>
+            <zipfileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.excludes}'/>
+			<zipfileset refid='customer.web.fileset'/>
             <zipfileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' prefix='public'/>
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
             <zipfileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' prefix='img'/>
             <zipfileset dir='${skins.dir}' prefix='skins'/>
             <zipfileset refid='help.fileset'/>
-            <zipfileset refid='customer.web.fileset'/>
         </war>
     </target>
 
     <target name='sync' depends='templates'>
         <copy todir='${webapp.dir}' verbose='${sync.verbose}'>
-            <fileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes}'/>
+            <fileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.excludes}' />
             <fileset dir='${build.web.dir}' excludes='js/*${depends.ext}'/>
             <fileset refid='customer.web.fileset'/>
         </copy>
@@ -231,7 +233,8 @@
             <fileset dir='${skins.dir}'/>
         </copy>
         <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
-            <fileset dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes}'/>
+			<fileset dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.excludes}'/>
+			<fileset refid='customer.webinf.fileset' />
         </copy>
         <copy todir='${webapp.dir}/WEB-INF/classes' verbose='${sync.verbose}'>
             <fileset dir='${build.classes.dir}'/>
@@ -331,11 +334,24 @@
                 <property name='customer.skin.dir' value='${customer.web.dir}/skins'/>
                 <property name='customer.portal.dir' value='${customer.web.dir}/portals'/>
                 <property name='customer.zimlet.dir' value='${customer.dir}/Zimlet'/>
-                <fileset id='customer.web.fileset'
-                         dir='${customer.web.dir}' includes='h/**,skins/**,portals/**' excludes='**/*.template'
-                        />
-            </then>
-        </if>
+				<property name='customer.webinf.dir' value='${customer.web.dir}/WEB-INF' />
+				<fileset id='customer.web.fileset'
+						 dir='${customer.web.dir}'
+						 includes='h/**,m/**,skins/**,portals/**' 
+						 excludes='**/*.template'
+				/>
+				<pathconvert property='customer.web.excludes' refid='customer.web.fileset' pathsep=','>
+					<regexpmapper from="^.*/WebRoot/(.*)$$" to="\1"/>
+				</pathconvert>
+				<fileset id='customer.webinf.fileset'
+						 dir='${customer.webinf.dir}'
+						 includes='tags/**'
+				/>
+				<pathconvert property='customer.webinf.excludes' refid='customer.webinf.fileset' pathsep=','>
+					<regexpmapper from="^.*/WebRoot/WEB-INF/(.*)$$" to="\1"/>
+				</pathconvert>
+			</then>
+		</if>
     </target>
 
     <target name='compile' depends='init,external'>
@@ -616,7 +632,7 @@
                     />
             <fileset dir='${build.web.dir}' includes='skins/${skinname}/**'/>
             <fileset dir='${customer.web.dir}' includes='portals/${skinname}/**'/>
-            <fileset dir='${customer.web.dir}' includes='h/**'/>
+            <fileset dir='${customer.web.dir}' includes='h/**,m/**'/>
             <fileset dir='${customer.web.dir}' includes='WEB-INF/**'/>
         </zip>
     </target>
