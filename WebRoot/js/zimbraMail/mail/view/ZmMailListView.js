@@ -165,7 +165,7 @@ function(field, item, ev, div, match) {
 	} else if (field == ZmItem.F_SUBJECT) {
 		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
 			tooltip = item.getInvite().getToolTip();
-		} else {
+		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
 		}
 	} else if (field == ZmItem.F_FOLDER) {
