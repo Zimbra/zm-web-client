@@ -302,7 +302,7 @@ ZmAppViewMgr.prototype.showTreeFooter =
 function(visible) {
 	DBG.println(AjxDebug.DBG1, "show tree footer: " + visible);
 	skin.show("treeFooter", visible);
-	this._components[ZmAppViewMgr.C_TREE_FOOTER].zShow(visible);
+	this._components[ZmAppViewMgr.C_TREE_FOOTER].zShow(visible && !this.isFullScreen());
 	this._fitToContainer([ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER]);
 };
 
