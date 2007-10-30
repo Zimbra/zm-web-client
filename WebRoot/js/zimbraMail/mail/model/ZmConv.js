@@ -345,13 +345,14 @@ function() {
 
 ZmConv.prototype.checkMoved = 
 function(folderId) {
-	if (!folderId) { return; }
 	var msgs = this.msgs.getArray();
 	var doNotify = true;
-	for (var i = 0; i < msgs.length; i++) {
-		if (msgs[i].folderId == folderId) {
-			doNotify = false;
-			break;
+	if (msgs.length > 1) {
+		for (var i = 0; i < msgs.length; i++) {
+			if (msgs[i].folderId == folderId) {
+				doNotify = false;
+				break;
+			}
 		}
 	}
 	if (doNotify) {

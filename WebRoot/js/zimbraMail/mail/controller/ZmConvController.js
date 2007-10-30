@@ -180,7 +180,7 @@ function() {
 	var clc = AjxDispatcher.run("GetConvListController");
 	var list = clc.getList();
 	var folderId = list.search.folderId;
-	if (folderId) {
+	if (folderId || (this._conv.numMsgs == 1)) {
 		if (this._conv.checkMoved(folderId)) { // view notif happens here
 			list.remove(this._conv);
 			var clv = clc.getCurrentView();
