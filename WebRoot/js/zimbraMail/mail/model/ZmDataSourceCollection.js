@@ -159,7 +159,7 @@ ZmDataSourceCollection.prototype.initialize = function(dataSources) {
 
 	var imapAccounts = dataSources.imap || [];
 	for (var i = 0; i < imapAccounts.length; i++) {
-		var imap = new ZmImapAccount();
+		var imap = new ZmImapAccount(imapAccounts[i].id);
 		imap.setFromJson(imapAccounts[i]);
 		this.add(imap);
 	}
