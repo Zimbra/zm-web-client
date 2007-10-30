@@ -10,14 +10,16 @@
 
 <c:choose>
     <c:when test="${high}">
-        <app:img altkey="ALT_HIGH_PRIORITY" src="tasks/ImgTaskHigh.gif" />
+        <app:img altkey="ALT_HIGH_PRIORITY" src="startup/ImgPriorityHigh_list.gif" />
     </c:when>
     <c:otherwise>
         <c:choose>
             <c:when test="${low}">
-                <app:img altkey="ALT_LOW_PRIORITY" src="tasks/ImgTaskLow.gif" />
+                <app:img altkey="ALT_LOW_PRIORITY" src="startup/ImgPriorityLow_list.gif" />
             </c:when>
-            <c:otherwise>&nbsp;</c:otherwise>
+            <c:otherwise>
+				<app:img altkey="ALT_NORMAL_PRIORITY" src="startup/ImgPriorityNormal_list.gif" />
+			</c:otherwise>
         </c:choose>
     </c:otherwise>
 </c:choose>

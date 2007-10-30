@@ -161,7 +161,7 @@
                                                 <th class='Img' nowrap width="1%"><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/>
                                                 </c:if>
                                                 <c:if test="${mailbox.features.mailPriority}">
-                                                <th class='Img' nowrap width="1%"><app:img src="tasks/TaskHigh.gif" altkey="ALT_PRIORITY"/>
+                                                <th class='ImgNarrow' nowrap width="1%"><app:img src="startup/ImgPriorityHigh_list.gif" altkey="ALT_PRIORITY"/>
                                                 </c:if>
                                                 <c:if test="${mailbox.features.tagging}">
                                                 <th class='Img' nowrap width="1%"><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG"/>
@@ -191,7 +191,7 @@
                                                     <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
                                                     </c:if>
                                                     <c:if test="${mailbox.features.mailPriority}">
-                                                    <td class='Img'><app:priorityImage high="${hit.messageHit.isHighPriority}" low="${hit.messageHit.isLowPriority}"/></td>
+                                                    <td class='ImgNarrow'><app:priorityImage high="${hit.messageHit.isHighPriority}" low="${hit.messageHit.isLowPriority}"/></td>
                                                     </c:if>
                                                     <c:if test="${mailbox.features.tagging}">
                                                         <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>

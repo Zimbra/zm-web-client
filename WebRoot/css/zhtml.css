@@ -172,6 +172,11 @@ SUBMIT,
 	padding-right: 0px;
 }
 
+.List .ImgNarrow {
+	width: 12px;
+	padding-right: 0px;
+}
+
 .List .CB {
 	width: 20px;
 	padding-right: 0px;
