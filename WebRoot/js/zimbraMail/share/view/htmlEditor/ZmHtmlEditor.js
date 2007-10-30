@@ -113,7 +113,7 @@ function() {
 // Re-sets design mode for buggy gecko-based browser
 ZmHtmlEditor.prototype.reEnableDesignMode =
 function() {
-	if (AjxEnv.isGeckoBased) {
+	if (AjxEnv.isGeckoBased || AjxEnv.isSafari) {
 		this._enableDesignMode(this._getIframeDoc());
 	}
 };
@@ -253,7 +253,7 @@ function(path) {
 		style.rel = "stylesheet";
 		style.type = "text/css";
 		var style_url = appContextPath + path + "?v=" + cacheKillerVersion;
-		if (AjxEnv.isGeckoBased) {
+		if (AjxEnv.isGeckoBased || AjxEnv.isSafari) {
 			style_url = document.baseURI.replace(
 					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;
 		}
@@ -728,7 +728,8 @@ function(tb) {
 	}
 };
 
-ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
+ZmHtmlEditor.prototype.__createTableOperationItems =
+function(menu) {
 	var tblListener = new AjxListener(this, this._tableOperationsListener);
 	var tblCommands = [ "tableProperties...", "cellProperties...", null,
 			    "insertRowAbove", "insertRowUnder", "deleteRow", null,
