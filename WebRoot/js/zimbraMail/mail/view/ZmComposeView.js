@@ -1668,11 +1668,11 @@ function() {
 ZmComposeView.prototype._getPriorityImage =
 function(flag) {
     if (flag == ZmItem.FLAG_HIGH_PRIORITY) {
-        return "TaskHigh";
+        return "PriorityHigh";
     } else if (flag == ZmItem.FLAG_LOW_PRIORITY) {
-        return "TaskLow";
+        return "PriorityLow";
     }
-    return "Send";
+    return "PriorityNormal";
 };
 
 ZmComposeView.prototype._priorityMenuListner =

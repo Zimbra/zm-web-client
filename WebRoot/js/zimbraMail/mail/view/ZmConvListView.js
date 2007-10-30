@@ -133,7 +133,7 @@ function(parent) {
 		hList.push(new DwtListHeaderItem(ZmItem.F_FLAG, null, "FlagRed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.flag));
 	}
     if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        hList.push(new DwtListHeaderItem(ZmItem.F_PRIORITY, null, "TaskHigh", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.priority));
+        hList.push(new DwtListHeaderItem(ZmItem.F_PRIORITY, null, "PriorityHigh_list", ZmListView.COL_WIDTH_NARROW_ICON, null, null, null, ZmMsg.priority));
     }
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		hList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));

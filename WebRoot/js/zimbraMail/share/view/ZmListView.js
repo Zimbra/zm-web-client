@@ -53,6 +53,7 @@ function() {
 
 // column widths
 ZmListView.COL_WIDTH_ICON 					= 19;
+ZmListView.COL_WIDTH_NARROW_ICON			= 11;
 ZmListView.COL_WIDTH_DATE 					= 75;
 
 // TD class for fields
@@ -230,10 +231,12 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	} else if (field == ZmItem.F_PRIORITY) {
         var priorityImage = null;
         if (item.isHighPriority) {
-            priorityImage = "TaskHigh";
+            priorityImage = "PriorityHigh_list";
         } else if (item.isLowPriority) {
-            priorityImage = "TaskLow";
-        }
+			priorityImage = "PriorityLow_list";
+		} else {
+			priorityImage = "PriorityNormal_list";
+		}
         idx = this._getImageHtml(htmlArr, idx, priorityImage, this._getFieldId(item, field));
 	} else {
 		idx = DwtListView.prototype._getCellContents.apply(this, arguments);
