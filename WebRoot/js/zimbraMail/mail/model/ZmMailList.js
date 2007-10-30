@@ -204,10 +204,11 @@ function(convs, msgs) {
 	var sortBy = this.search ? this.search.sortBy : null;
 	var sortIndex = {};
 	if (this.type == ZmItem.CONV && searchFolder) {
-		// handle new convs first so we can set their fragments from new msgs
+
+		// handle new convs first so we can set their fragments later from new msgs
 		for (var id in convs) {
 			if (this.getById(id)) { continue; }	// already have this conv
-			newConvId[id] = true;
+			newConvId[id] = convs[id];
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
 				// a new msg for this conv matches current search
@@ -216,11 +217,12 @@ function(convs, msgs) {
 			}
 		}
 
+		// a new msg can hand us a new conv, and update a conv's info
 		for (var id in msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
 			var msgMatches = (msg.folderId == searchFolder);
-			var conv = this.getById(cid);
+			var conv = newConvId[cid] || this.getById(cid) || appCtxt.getById(cid);
 			if (!conv && msgMatches) {
 				// msg will have _convCreateNode if it is 2nd msg and caused promotion of virtual conv;
 				// the conv node will have proper count and subject
@@ -231,16 +233,14 @@ function(convs, msgs) {
 					}
 					conv = ZmConv.createFromDom(msg._convCreateNode, args)
 				} else {
-					conv = appCtxt.getById(cid);
-				}
-				if (!conv) {
 					conv = ZmConv.createFromMsg(msg, args);
 				}
-				newConvId[cid] = true;
+				newConvId[cid] = conv;
 				conv.folders[msg.folderId] = true;
 				conv.list = this;
 				newConvs.push(conv);
 			}
+			// make sure conv's msg list is up to date
 			if (conv && !(conv.msgs && conv.msgs.getById(id))) {
 				if (!conv.msgs) {
 					conv.msgs = new ZmMailList(ZmItem.MSG);
@@ -276,10 +276,11 @@ function(convs, msgs) {
 			newMsgs.push(msg);
 		}
 	} else if (this.type == ZmItem.MSG) {
+		// add new msg to list
 		for (var id in msgs) {
-			if (this.getById(id)) continue;
+			if (this.getById(id)) { continue; }
 			var msg = msgs[id];
-			if (this.convId) { // MLV within conv
+			if (this.convId) { // MLV within CV
 				if (msg.cid == this.convId && !this.getById(msg.id)) {
 					msg.list = this;
 					newMsgs.push(msg);

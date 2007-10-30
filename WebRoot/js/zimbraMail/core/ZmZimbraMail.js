@@ -82,8 +82,6 @@ ZmZimbraMail = function(params) {
 	this._pollRequest = null;	// HTTP request of poll we've sent to server
 	this._pollInstantNotifications = false; // if TRUE, we're in "instant notification" mode
 
-	this.setPollInterval();
-
 	AjxDispatcher.setPackageLoadFunction("Zimlet", new AjxCallback(this, this._postLoadZimlet));
 
 	AjxDispatcher.setPreLoadFunction(new AjxCallback(this, function() {
@@ -391,6 +389,8 @@ function(params, result) {
 		}
 	}
 	
+	this.setPollInterval(true);
+
 	if (!appCtxt.get(ZmSetting.DEV) && appCtxt.get(ZmSetting.WARN_ON_EXIT)) {
 		window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
 	}	
