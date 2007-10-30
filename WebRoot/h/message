@@ -52,7 +52,7 @@
                                      action="compose" paction="view" id="${msg.id}"/>
                 <c:choose>
                     <c:when test="${print}">
-                        <app:messagePrintView mailbox="${mailbox}" hideops="true" message="${msg}" externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}"/>
+                        <app:messagePrintView mailbox="${mailbox}" message="${msg}" />
                     </c:when>
                     <c:otherwise>
                         <app:displayMessage mailbox="${mailbox}" hideops="true" message="${msg}" externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}"/>

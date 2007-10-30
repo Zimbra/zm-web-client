@@ -348,6 +348,7 @@
           <url-pattern>/h/overviewAds</url-pattern>
           <url-pattern>/h/sidebarads</url-pattern>
           <url-pattern>/h/printcontacts</url-pattern>
+          <url-pattern>/h/printconversations</url-pattern>
       </jsp-property-group>
     </jsp-config>
 

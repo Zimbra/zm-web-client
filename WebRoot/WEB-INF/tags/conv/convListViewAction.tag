@@ -89,6 +89,9 @@
                     </fmt:message>
                 </app:status>
             </c:when>
+            <c:when test="${zm:actionSet(param, 'actionPrint')}">
+                <jsp:forward page="/h/printconversations"/>
+            </c:when>
             <c:when test="${zm:actionSet(param, 'action')}">
                 <c:choose>
                     <c:when test="${actionOp eq 'unread' or actionOp eq 'read'}">

@@ -32,10 +32,7 @@
                     </td>
                     <td><div class='vertSep'></div></td>
                      <td nowrap>
-                         <zm:currentResultUrl var="convPrintUrl" value="/h/search" context="${context}"  print="true"/>
-                         <a href="${fn:escapeXml(convPrintUrl)}" ><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/><span>&nbsp;<fmt:message key="actionPrint"/></span></a>
-                        
-                         <%-- <app:button id="${keys ? 'OPPRINT' : ''}" text="actionPrint" name="actionPrint" tooltip="actionTrashTT"  src="startup/ImgPrint.gif"/ --%>
+                         <app:button name="actionPrint" id="${keys ? 'OPPRINT' : ''}" src="startup/ImgPrint.gif" tooltip="actionPrint" text="actionPrint"/>
                     </td>
                     <td><div class='vertSep'></div></td>
                     <c:choose>
