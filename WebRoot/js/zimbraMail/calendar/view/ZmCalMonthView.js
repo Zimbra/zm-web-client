@@ -412,7 +412,7 @@ function(appt) {
 
 	var html = [];
 	var i = 0;
-	html[i++] = "<div class='";
+	html[i++] = "<div style='overflow:hidden;' class='"; // Inline style overflow:hidden added to fix bug #6310
 	html[i++] = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
 	html[i++] = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION ? "DarkC" : "C";
 	html[i++] = "'>";
