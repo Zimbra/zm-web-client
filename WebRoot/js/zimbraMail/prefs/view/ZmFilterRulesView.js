@@ -28,6 +28,7 @@ ZmFilterRulesView = function(parent, controller) {
     this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
 
 	this._rendered = false;
+	this._viewPrefix = "F_";
 
 	this._tabGroup = new DwtTabGroup(this._htmlElId);
 };
