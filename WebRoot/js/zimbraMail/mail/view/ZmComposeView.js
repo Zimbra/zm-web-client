@@ -848,6 +848,16 @@ function(bEnableInputs) {
 
 	// reset state of the spell check button
 	this._controller.toggleSpellCheckButton(false);
+
+	if (this._accountChanged) {
+		this._identitySelect.clearOptions();
+		var identityOptions = this._getIdentityOptions();
+		for (var i = 0; i < identityOptions.length; i++) {
+			this._identitySelect.addOption(identityOptions[i]);
+		}
+
+		this._accountChanged = false;
+	}
 };
 
 ZmComposeView.prototype.enableInputs =
@@ -1539,6 +1549,11 @@ function(composeMode) {
 
 	// init listeners
 	this.addControlListener(new AjxListener(this, this._controlListener));
+
+	if (appCtxt.multiAccounts) {
+		var opc = this._controller._app.getOverviewPanelContent();
+		opc.addSelectionListener(new AjxListener(this, this._accountChangeListener));
+	}
 };
 
 ZmComposeView.prototype._createHtml =
@@ -1911,6 +1926,11 @@ function(ev, addrType) {
 ZmComposeView.prototype._controlListener =
 function() {
 	this._resetBodySize();
+};
+
+ZmComposeView.prototype._accountChangeListener =
+function(ev) {
+	this._accountChanged = true;
 };
 
 
