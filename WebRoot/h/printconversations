@@ -1,0 +1,60 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<app:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <c:choose>
+    <c:when test="${not empty mailbox.prefs.locale}">
+        <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
+    </c:when>
+    <c:otherwise>
+        <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+    </c:otherwise>
+    </c:choose>
+    <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
+    <c:set var="cid" value="${paramValues.id[0]}"/>
+    <zm:computeSearchContext var="context" usecache="true"/>
+
+</app:handleError>
+<html>
+<app:head mailbox="${mailbox}"/>
+<body style='background-color:white;'>
+    <div class='ZhCallListPrintView'>
+        <table><tr>
+            <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
+            <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
+        </tr></table>
+        <hr/>
+<zm:searchConv var="convSearchResult" id="${cid}" context="${context}"  markread="false" />
+<table cellpadding="0" cellspacing="5" >
+    <tr>
+        <td>
+            <div style="padding: 10px; font-size: 20px; font-weight: bold;">${convSearchResult.hits[0].subject}</div><hr/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
+                         <zm:getMessage var="message" id="${hit.id}" markread="false" neuterimages="${empty param.xim}"/>
+                          <app:messagePrintView mailbox="${mailbox}" message="${message}" />
+            </c:forEach>
+        </td>
+    </tr>
+</table>
+
+
+<c:if test="${empty cid}">
+<div class='NoResults'><fmt:message key="noResultsFound"/></div>
+</c:if>
+<script type="text/javascript">
+    <!--
+    window.print();
+    // -->
+</script>
+
+</body>
+</html>
