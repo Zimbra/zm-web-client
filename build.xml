@@ -335,21 +335,28 @@
                 <property name='customer.portal.dir' value='${customer.web.dir}/portals'/>
                 <property name='customer.zimlet.dir' value='${customer.dir}/Zimlet'/>
 				<property name='customer.webinf.dir' value='${customer.web.dir}/WEB-INF' />
-				<fileset id='customer.web.fileset'
-						 dir='${customer.web.dir}'
-						 includes='h/**,m/**,skins/**,portals/**' 
-						 excludes='**/*.template'
-				/>
-				<pathconvert property='customer.web.excludes' refid='customer.web.fileset' pathsep=','>
-					<regexpmapper from="^.*/WebRoot/(.*)$$" to="\1"/>
-				</pathconvert>
-				<fileset id='customer.webinf.fileset'
-						 dir='${customer.webinf.dir}'
-						 includes='tags/**'
-				/>
-				<pathconvert property='customer.webinf.excludes' refid='customer.webinf.fileset' pathsep=','>
-					<regexpmapper from="^.*/WebRoot/WEB-INF/(.*)$$" to="\1"/>
-				</pathconvert>
+				<if><available file='${customer.web.dir}' />
+					<then>
+						<fileset id='customer.web.fileset'
+								 dir='${customer.web.dir}'
+								 includes='h/**,m/**,skins/**,portals/**'
+								 excludes='**/*.template'
+						/>
+						<pathconvert property='customer.web.excludes' refid='customer.web.fileset' pathsep=','>
+							<regexpmapper from="^.*/WebRoot/(.*)$$" to="\1"/>
+						</pathconvert>
+					</then>
+				</if>
+				<if><available file='${customer.webinf.dir}' />
+					<then>
+						<fileset id='customer.webinf.fileset'
+								 dir='${customer.webinf.dir}' includes='tags/**'
+						/>
+						<pathconvert property='customer.webinf.excludes' refid='customer.webinf.fileset' pathsep=','>
+							<regexpmapper from="^.*/WebRoot/WEB-INF/(.*)$$" to="\1"/>
+						</pathconvert>
+					</then>
+				</if>
 			</then>
 		</if>
     </target>
@@ -378,7 +385,8 @@
         <if>
             <and>
                 <isset property="env.CUSTOMER_SKIN"/>
-                <not>
+				<available file='${customer.skin.dir}' />
+				<not>
                     <isset property='build.ajax'/>
                 </not>
                 <not>
@@ -420,7 +428,8 @@
     <target name='customer-templates' depends='compile' if='env.CUSTOMER_SKIN'>
         <if>
             <and>
-                <not>
+				<available file='${customer.skin.dir}' />
+				<not>
                     <isset property='build.ajax'/>
                 </not>
                 <not>
@@ -555,7 +564,8 @@
     <target name='customer-skin-images' if='env.CUSTOMER_SKIN'>
         <if>
             <and>
-                <not>
+				<available file='${customer.web.dir}' />
+				<not>
                     <isset property='build.ajax'/>
                 </not>
                 <not>
