@@ -82,9 +82,6 @@
     <c:when test="${context.isConversationSearch and action eq 'view2'}">
         <app:convView2 context="${context}"/>
     </c:when>
-    <c:when test="${context.isConversationSearch and param.print}">
-        <app:convPrintView context="${context}"/>
-    </c:when>
     <c:when test="${context.isConversationSearch}">
         <app:convListView context="${context}"/>
     </c:when>

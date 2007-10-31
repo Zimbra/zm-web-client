@@ -70,11 +70,6 @@
         <path>/WEB-INF/tags/conv/convView.tag</path>
     </tag-file>
 
-    <tag-file>
-       <name>convPrintView</name>
-        <path>/WEB-INF/tags/conv/convPrintView.tag</path>
-    </tag-file>
-
    <tag-file>
         <name>convListViewToolbar</name>
         <path>/WEB-INF/tags/conv/convListViewToolbar.tag</path>
