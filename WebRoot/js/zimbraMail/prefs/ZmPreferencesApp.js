@@ -275,19 +275,51 @@ function() {
 		displaySeparator:	true
 	});
 
-    ZmPref.registerPref("POLLING_INTERVAL",{
-        displayName:        ZmMsg.pollingInterval,
-        displayContainer:   ZmPref.TYPE_INPUT,
-        type:               DwtInputField.NUMBER,
-        cols:               2,
-        maxLen:             2,
-        displaySeparator:   false,
-        displayFunction:    ZmPref.pollingIntervalDisplay,
-        valueFunction:      ZmPref.pollingIntervalValue,
-        validationFunction: ZmPref.validatePollingInterval
-    });
+    //Polling Interval Options - Dynamically consturcted accord. to MIN_POLLING_INTERVAL,POLLING_INTERVAL
+    var options = [ 525600 ]; 
+    var startValue   = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL));
+    var pollInterval = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.POLLING_INTERVAL));
+    while(startValue <= 10){
+        options.push(startValue);
+        startValue++;
+    }
+    startValue = startValue - 1;
+    var count = options.length;
+    while(count < 10){
+        startValue = startValue + 5;
+        options.push(startValue);
+        count++;
+    }
+    if(pollInterval > startValue){
+        var p = pollInterval%5;
+        if( p == 0 ) p = pollInterval;
+        else p = (pollInterval/5 + 1)*5;
+        options.push(p);
+    }else{
+        startValue = startValue + 5;
+        options.push(startValue);
+    }
+    var displayOptions = [ZmMsg.pollNever];
+    while(displayOptions.length <= 10){
+        displayOptions.push(ZmMsg.pollEveryNMinutes);
+    }
+    
+    ZmPref.registerPref("POLLING_INTERVAL", {
+		displayName:		ZmMsg.pollingInterval,
+		displayContainer:	ZmPref.TYPE_SELECT,
+        displayOptions:     displayOptions,
+        //displayOptions:		[ ZmMsg.pollNever, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes ],
+		// NOTE: 525600 is the number of minutes in a year. I think that's a
+		//       reasonable value for "never" since the server must have
+		//       *some* number.
+		options:			 options,
+		approximateFunction: ZmPref.approximateInterval,
+		displayFunction:	 ZmPref.pollingIntervalDisplay,
+		valueFunction:	 	 ZmPref.pollingIntervalValue,
+		validationFunction:  ZmPref.validatePollingInterval
+	});
 
-	ZmPref.registerPref("READING_PANE_ENABLED", {
+    ZmPref.registerPref("READING_PANE_ENABLED", {
 		displayName:		ZmMsg.alwaysShowReadingPane,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		displaySeparator:	true
