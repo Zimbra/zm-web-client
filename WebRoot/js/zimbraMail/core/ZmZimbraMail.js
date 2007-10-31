@@ -537,6 +537,11 @@ function(params) {
 	var startApp;
 	if (params && params.app) {
 		startApp = ZmApp.QS_ARG_R[params.app.toLowerCase()];
+		// make sure app given in QS is actually enabled
+		var setting = ZmApp.SETTING[startApp];
+		if (setting && !appCtxt.get(setting)) {
+			startApp = null;
+		}
 	}
 	if (!startApp) {
 		for (var app in ZmApp.DEFAULT_SORT) {
