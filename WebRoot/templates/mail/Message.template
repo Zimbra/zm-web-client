@@ -177,18 +177,6 @@
 		</tr>
 	</table>
 	<div align='right' id='zdnd_tooltip' style='display:none; padding-right:10px; color:#666666;'><$=ZmMsg.dndTooltip$></div>
-	<span id='zDnD'></span>
-    <span id='zdnd_files' style='display:none;'>
-        <form name='zdnd_form' id='zdnd_form' enctype='multipart/form-data' accept-charset='utf-8' method='POST' >
-            <input type="hidden" name="_charset_"/>
-            <ul id='zdnd_ul'>
-                <li>
-                    <input type='file' size='50' name='_attFile_'>
-                </li>
-            </ul>
-         </form>
-         <input type='button' name='zdnd_button' id='zdnd_button'/>
-    </span>
 	<!-- compose editor is automatically appended below the header -->
 </template>
 

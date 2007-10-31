@@ -42,26 +42,6 @@ ZmComposeView = function(parent, controller, composeMode) {
 	// make sure no unnecessary scrollbars show up
 	this.getHtmlElement().style.overflow = "hidden";
 
-    //for ZimbraDnD
-    if ("createEvent" in document)
-    {
-        document.getElementById('zdnd_tooltip').style.display='none';
-        
-        var ele = document.getElementById("zDnD");
-        var ev = document.createEvent("Events");
-        ev.initEvent("ZimbraDnD", true, false);
-        ele.dispatchEvent(ev);
-
-        var uploadUri = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
-        var zDnDUploadFrm = document.getElementById("zdnd_form");
-        zDnDUploadFrm.setAttribute("action",uploadUri);
-
-        var zDnDuploadbtn = document.getElementById("zdnd_button");
-        zDnDuploadbtn.onclick = function (e) {
-          ZmComposeView.prototype.uploadFiles();
-        };
-    }
-    //end here
 };
 
 ZmComposeView.prototype = new DwtComposite;
