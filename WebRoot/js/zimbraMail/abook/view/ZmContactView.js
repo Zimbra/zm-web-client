@@ -512,11 +512,9 @@ function() {
 		}
 	}
 
-	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		this._imAddress1Entry.setValue(this._attr[ZmContact.F_imAddress1]);
-		this._imAddress2Entry.setValue(this._attr[ZmContact.F_imAddress2]);
-		this._imAddress3Entry.setValue(this._attr[ZmContact.F_imAddress3]);
-	}
+	if (this._imAddress1Entry) this._imAddress1Entry.setValue(this._attr[ZmContact.F_imAddress1]);
+	if (this._imAddress2Entry) this._imAddress2Entry.setValue(this._attr[ZmContact.F_imAddress2]);
+	if (this._imAddress3Entry) this._imAddress3Entry.setValue(this._attr[ZmContact.F_imAddress3]);
 };
 
 ZmContactView.prototype._setFields =
@@ -564,25 +562,30 @@ function() {
 		}
 	}
 
-	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-		this._attr[ZmContact.F_imAddress1] = this._imAddress1Entry.getValue();
-		this._attr[ZmContact.F_imAddress2] = this._imAddress2Entry.getValue();
-		this._attr[ZmContact.F_imAddress3] = this._imAddress3Entry.getValue();
-	}
+	if (this._imAddress1Entry) this._attr[ZmContact.F_imAddress1] = this._imAddress1Entry.getValue();
+	if (this._imAddress2Entry) this._attr[ZmContact.F_imAddress2] = this._imAddress2Entry.getValue();
+	if (this._imAddress3Entry) this._attr[ZmContact.F_imAddress3] = this._imAddress3Entry.getValue();
 };
 
 ZmContactView.prototype._addImAddressEntries =
 function() {
-	if (!appCtxt.get(ZmSetting.IM_ENABLED)) { return; }
+	var imDiv1 = document.getElementById(this._imAddress1Id);
+	if (imDiv1) {
+		this._imAddress1Entry = new ZmImAddressEntry(this);
+		this._imAddress1Entry.reparentHtmlElement(this._imAddress1Id);
+	}
 
-	this._imAddress1Entry = new ZmImAddressEntry(this);
-	this._imAddress1Entry.reparentHtmlElement(this._imAddress1Id);
+	var imDiv2 = document.getElementById(this._imAddress2Id);
+	if (imDiv2) {
+		this._imAddress2Entry = new ZmImAddressEntry(this);
+		this._imAddress2Entry.reparentHtmlElement(this._imAddress2Id);
+	}
 
-	this._imAddress2Entry = new ZmImAddressEntry(this);
-	this._imAddress2Entry.reparentHtmlElement(this._imAddress2Id);
-
-	this._imAddress3Entry = new ZmImAddressEntry(this);
-	this._imAddress3Entry.reparentHtmlElement(this._imAddress3Id);
+	var imDiv3 = document.getElementById(this._imAddress3Id);
+	if (imDiv3) {
+		this._imAddress3Entry = new ZmImAddressEntry(this);
+		this._imAddress3Entry.reparentHtmlElement(this._imAddress3Id);
+	}
 };
 
 ZmContactView.prototype._createHtml =
@@ -707,6 +710,8 @@ ZmContactView.prototype._uploadImage =
 function() {
 	if (this._imageInput.value == "") { return; }
 
+	this._controller.enableToolbar(false);
+
 	var callback = new AjxCallback(this, this._updateImage);
 	var ajxCallback = new AjxCallback(this, this._uploadImageDone, [callback]);
 	var um = appCtxt.getUploadManager();
@@ -722,6 +727,8 @@ function() {
 
 ZmContactView.prototype._uploadImageDone =
 function(callback, status, attId) {
+	this._controller.enableToolbar(true);
+
 	if (status == AjxPost.SC_OK) {
 		this._isDirty = true;
 		if (callback) {

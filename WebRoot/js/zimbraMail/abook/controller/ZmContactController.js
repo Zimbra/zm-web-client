@@ -85,6 +85,14 @@ function(tabIdx, prevTabIdx) {
 	rootTg.replaceMember(prevTg, tg);
 };
 
+ZmContactController.prototype.enableToolbar =
+function(enable) {
+	if (enable) {
+		this._resetOperations(this._toolbar[this._currentView], 1);
+	} else {
+		this._toolbar[this._currentView].enableAll(enable);
+	}
+};
 
 // Private methods (mostly overrides of ZmListController protected methods)
 
