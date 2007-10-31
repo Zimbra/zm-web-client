@@ -563,6 +563,7 @@ function(ev) {
 		// if an expanded conv gets a new msg, don't move it to top
 		var sortIndex = ev.getDetail("sortIndex");
 		if ((sortIndex != null) && (this._list.indexOf(item) != sortIndex) && !this._expanded[item.id]) {
+			this._removeMsgRows(item.id);
 			this.removeItem(item);
 			this.addItem(item, sortIndex);
 		}
