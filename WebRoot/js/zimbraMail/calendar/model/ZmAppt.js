@@ -391,7 +391,8 @@ function(message) {
 			var email = new AjxEmailAddress(addr, null, name);
 			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalItem.PERSON);
 			if (attendee) {
-				this._attendees[ZmCalItem.PERSON].push(attendee);
+				attendee.setAttr("participationStatus",attendees[i].ptst);               
+                this._attendees[ZmCalItem.PERSON].push(attendee);
 				this._origAttendees.push(attendee);
 			}
 		}

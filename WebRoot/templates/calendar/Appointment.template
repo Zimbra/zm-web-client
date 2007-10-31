@@ -319,6 +319,7 @@
           <div class='ZmSchedulerInputDisabled'>${organizer}</div>
         <$ } $>
         </td>
+        <td width=16 id='${sched.dwtNameId}_ptst' class='ZmSchedulerNameTd'>&nbsp;</td>
       <$ } $>
     </tr>
   </table>

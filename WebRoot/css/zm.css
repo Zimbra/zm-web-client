@@ -1535,6 +1535,12 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmScheduler-outOfOffice {	background-color: #FFCC00;	}
 .ZmScheduler-unknown 	{	background-color: #FFF5CC;	}
 
+.ZmSchedulerPTST-needsaction {	color: #0066CC !important;}
+.ZmSchedulerPTST-declined 	 {	color: #FF0000 !important;}
+.ZmSchedulerPTST-tentative 	 {	color: #FF6600 !important;}
+.ZmSchedulerPTST-deferred    {	color: #009900 !important;}
+.ZmSchedulerPTST-delegated 	 {	color: #996633 !important;}
+.ZmSchedulerPTST-waiting     {  color: #666666 !important;}
 
 .ZmSchedulerNormalRow {
 	@AppBg@

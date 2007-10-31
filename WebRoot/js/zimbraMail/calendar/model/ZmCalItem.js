@@ -1316,6 +1316,34 @@ function(status) {
 	return "";
 };
 
+ZmCalItem.getLabelForParticipationStatus =
+function(status) {
+	switch (status) {
+		case ZmCalItem.PSTATUS_ACCEPT: return ZmMsg.ptstAccept;
+		case ZmCalItem.PSTATUS_DECLINED: return ZmMsg.ptstDeclined;
+		case ZmCalItem.PSTATUS_DEFERRED: return ZmMsg.ptstDeferred;
+		case ZmCalItem.PSTATUS_DELEGATED: return ZmMsg.ptstDelegated;
+		case ZmCalItem.PSTATUS_NEEDS_ACTION: return ZmMsg.ptstNeedsAction;
+		case ZmCalItem.PSTATUS_TENTATIVE: return ZmMsg.ptstTentative;
+		case ZmCalItem.PSTATUS_WAITING: return ZmMsg.ptstWaiting;
+	}
+	return "";
+};
+
+ZmCalItem.getParticipationStatusIcon =
+function(status) {
+	switch (status) {
+		case ZmCalItem.PSTATUS_ACCEPT: return "Check";
+		case ZmCalItem.PSTATUS_DECLINED: return "Cancel";
+		case ZmCalItem.PSTATUS_DEFERRED: return "QuestionMark";
+		case ZmCalItem.PSTATUS_DELEGATED: return "Cancel";
+		case ZmCalItem.PSTATUS_NEEDS_ACTION: return "Minus";
+		case ZmCalItem.PSTATUS_TENTATIVE: return "QuestionMark";
+		case ZmCalItem.PSTATUS_WAITING: return "Minus";
+	}
+	return "";
+};
+
 ZmCalItem._getTTHour =
 function(d) {
 	var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);

@@ -78,6 +78,14 @@ ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_TENTATIVE]= "ZmSched
 ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_OUT] = 		"ZmScheduler-outOfOffice";
 ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_UNKNOWN] = 	"ZmScheduler-unknown";
 
+ZmSchedTabViewPage.PSTATUS_CLASSES = [];
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_DECLINED]      = "ZmSchedulerPTST-declined";
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_DEFERRED]      = "ZmSchedulerPTST-deferred";
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_DELEGATED]     = "ZmSchedulerPTST-delegated";
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_NEEDS_ACTION]  = "ZmSchedulerPTST-needsaction";
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_TENTATIVE]     = "ZmSchedulerPTST-tentative";
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_WAITING]       = "ZmSchedulerPTST-waiting";
+
 // Hold on to this one separately because we use it often
 ZmSchedTabViewPage.FREE_CLASS = ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_FREE];
 
@@ -392,6 +400,9 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 			}
 			dwtInputField.reparentHtmlElement(sched.dwtNameId);
 		}
+		
+		sched.ptstObj = document.getElementById(sched.dwtNameId+"_ptst");
+		
 		// set handlers
 		var attendeeInput = document.getElementById(sched.dwtInputId);
 		if (attendeeInput) {
@@ -588,7 +599,8 @@ function(sched, attendee, type) {
 	var name = attendee.getFullName();
 	var email = attendee.getEmail();
 	if (name && email) {
-		sched.inputObj.setToolTipContent(email);
+        var ptst = ZmMsg.attendeeStatusLabel + ZmCalItem.getLabelForParticipationStatus(attendee.getAttr("participationStatus") || "NA");
+        sched.inputObj.setToolTipContent(email +"<br>"+ ptst);
 	}
 };
 
@@ -695,6 +707,25 @@ function(index, attendee, type, isOrganizer) {
 	if (select) {
 		select.setSelectedValue(type);
 	}
+	
+    var ptst = attendee.getAttr("participationStatus") || "NA";
+	var ptstCont = sched.ptstObj;
+	if(ptstCont) {
+		var ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
+		if(ptstIcon != "") {
+			var ptstLabel = ZmMsg.attendeeStatusLabel + " " + ZmCalItem.getLabelForParticipationStatus(ptst);
+			ptstCont.innerHTML = AjxImg.getImageHtml(ptstIcon);
+			var imgDiv = ptstCont.firstChild;
+			if(imgDiv && !imgDiv._schedViewPageId ){
+				Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOVER, ZmSchedTabViewPage._onPTSTMouseOver);	
+				Dwt.setHandler(imgDiv, DwtEvent.ONMOUSEOUT, ZmSchedTabViewPage._onPTSTMouseOut);
+				imgDiv._ptstLabel = ptstLabel;
+				imgDiv._schedViewPageId = this._svpId;
+				imgDiv._schedTableIdx = index;
+			}
+		}
+	}	
+	
 	var email = attendee.getEmail();
 	this._emailToIdx[email] = index;
 
@@ -1088,6 +1119,10 @@ function(status) {
 	return ZmSchedTabViewPage.STATUS_CLASSES[status];
 };
 
+ZmSchedTabViewPage.prototype._getClassForParticipationStatus =
+function(status) {
+	return ZmSchedTabViewPage.PSTATUS_CLASSES[status];
+};
 
 // Callbacks
 
@@ -1179,5 +1214,35 @@ function(ev) {
 		svp._activeDateField = null;
 	} else {
 		svp._handleAttendeeField(el);
+	}
+};
+
+ZmSchedTabViewPage._onPTSTMouseOver = 
+function(ev) {
+	ev = DwtUiEvent.getEvent(ev);
+	var el = DwtUiEvent.getTarget(ev);
+	var svp = AjxCore.objectWithId(el._schedViewPageId);
+	if (!svp) return;
+	var sched = svp._schedTable[el._schedTableIdx];
+	if (sched) {
+		var shell = DwtShell.getShell(window);
+		var tooltip = shell.getToolTip();
+		tooltip.setContent(el._ptstLabel, true);
+		tooltip.popup((ev.pageX || ev.clientX), (ev.pageY || ev.clientY), true);
+	}
+};
+
+
+ZmSchedTabViewPage._onPTSTMouseOut = 
+function(ev) {
+	ev = DwtUiEvent.getEvent(ev);
+	var el = DwtUiEvent.getTarget(ev);
+	var svp = AjxCore.objectWithId(el._schedViewPageId);
+	if (!svp) return;
+	var sched = svp._schedTable[el._schedTableIdx];
+	if (sched) {		
+		var shell = DwtShell.getShell(window);
+		var tooltip = shell.getToolTip();
+		tooltip.popdown();
 	}
 };
