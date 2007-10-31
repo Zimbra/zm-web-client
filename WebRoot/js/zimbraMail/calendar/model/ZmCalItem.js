@@ -1324,6 +1324,7 @@ function(status) {
 		case ZmCalItem.PSTATUS_DEFERRED: return ZmMsg.ptstDeferred;
 		case ZmCalItem.PSTATUS_DELEGATED: return ZmMsg.ptstDelegated;
 		case ZmCalItem.PSTATUS_NEEDS_ACTION: return ZmMsg.ptstNeedsAction;
+		case ZmCalItem.PSTATUS_COMPLETED:  return ZmMsg.completed;
 		case ZmCalItem.PSTATUS_TENTATIVE: return ZmMsg.ptstTentative;
 		case ZmCalItem.PSTATUS_WAITING: return ZmMsg.ptstWaiting;
 	}
@@ -1336,8 +1337,9 @@ function(status) {
 		case ZmCalItem.PSTATUS_ACCEPT: return "Check";
 		case ZmCalItem.PSTATUS_DECLINED: return "Cancel";
 		case ZmCalItem.PSTATUS_DEFERRED: return "QuestionMark";
-		case ZmCalItem.PSTATUS_DELEGATED: return "Cancel";
-		case ZmCalItem.PSTATUS_NEEDS_ACTION: return "Minus";
+		case ZmCalItem.PSTATUS_DELEGATED: return "Plus";
+		case ZmCalItem.PSTATUS_NEEDS_ACTION: return "QuestionMark";
+		case ZmCalItem.PSTATUS_COMPLETED: return "Completed";		
 		case ZmCalItem.PSTATUS_TENTATIVE: return "QuestionMark";
 		case ZmCalItem.PSTATUS_WAITING: return "Minus";
 	}
