@@ -366,7 +366,7 @@ function() {
 	return div;
 };
 
-//for ZimbraDnD
+//for ZimbraDnD to do make even more generic
 ZmMultiColView.prototype.processUploadFiles = function() {
     var ulEle = document.getElementById('zdnd_ul');
     var files = [];
@@ -395,3 +395,4 @@ ZmMultiColView.prototype.uploadFiles = function(){
     var files = this.processUploadFiles();
     attachDialog.uploadFiles(files,document.getElementById("zdnd_form"),{id:this._controller._currentFolder});
 };
+//end zimbradnd
