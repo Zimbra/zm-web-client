@@ -423,7 +423,11 @@ function(tagId) {
 // - a simple contact list view (contains only full name)
 //////////////////////////////////////////////////////////////////////////////
 ZmContactSimpleView = function(parent, controller, dropTgt) {
+
 	ZmContactsBaseView.call(this, parent, "ZmContactSimpleView", null, ZmController.CONTACT_SIMPLE_VIEW, controller, null, dropTgt);
+
+	// handle a GAL ID such as:		V_CNS_uid=user5,ou=people,dc=pshahmacbook,dc=local
+	this._parseIdRegex = /^V_([A-Z]+)_([a-z]*)_(.+)$/
 };
 
 ZmContactSimpleView.prototype = new ZmContactsBaseView;

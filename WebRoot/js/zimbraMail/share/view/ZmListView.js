@@ -36,6 +36,10 @@ ZmListView = function(parent, className, posStyle, view, type, controller, heade
 	if (folderTree) {
 		folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
 	}
+	
+	//Item IDs are integers, with the following exception:
+	//		- a shared item:	f9d58245-fb61-4e9a-9202-6ebc7ad4b0c4:-368
+	this._parseIdRegex = /^V_([A-Z]+)_([a-z]*)_([a-zA-Z0-9:\-]+)_?(\d*)$/;
 
 	this._handleEventType = {};
 	this._handleEventType[this.type] = true;
@@ -279,7 +283,7 @@ function(item, field, imageInfo) {
  */
 ZmListView.prototype._parseId =
 function(id) {
-	var m = id.match(/^V_([A-Z]+)_([a-z]*)_([a-zA-Z0-9:\-]+)_?(\d*)$/);
+	var m = id.match(this._parseIdRegex);
 	if (m) {
 		return {view:m[1], field:m[2], item:m[3], participant:m[4]};
 	} else {
