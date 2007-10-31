@@ -913,7 +913,8 @@ function(container, html, isTextMsg, isTruncated) {
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
 
-	var cl = appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded ? AjxDispatcher.run("GetContacts") : null;
+	var acctId = appCtxt.getActiveAccount().id;
+	var cl = appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded[acctId] ? AjxDispatcher.run("GetContacts") : null;
 	var subject = msg.subject || ZmMsg.noSubject;
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : "";
