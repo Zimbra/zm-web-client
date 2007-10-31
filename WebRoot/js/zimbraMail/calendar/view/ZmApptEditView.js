@@ -476,8 +476,10 @@ function(text, el, match) {
 		return;
 	}
 	var attendee = match.item;
-	var type = el._attType;
-	this.parent.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
+	if (attendee) {
+		var type = el._attType;
+		this.parent.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
+	}
 };
 
 ZmApptEditView.prototype._addEventHandlers =
