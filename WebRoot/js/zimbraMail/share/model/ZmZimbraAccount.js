@@ -158,6 +158,10 @@ ZmZimbraAccount.prototype._handleResponseLoad =
 function(callback, result) {
 	DBG.println(AjxDebug.DBG1, "Account settings successfully loaded for " + this.name);
 
+	// reset offline setting based on parent's setting
+	var isOffline = appCtxt.get(ZmSetting.OFFLINE, null, appCtxt.getMainAccount());
+	appCtxt.set(ZmSetting.OFFLINE, isOffline);
+
 	// initialize identities/data-sources/signatures for this account
 	var obj = result.getResponse().GetInfoResponse
 	appCtxt.getIdentityCollection().initialize(obj.identities);
