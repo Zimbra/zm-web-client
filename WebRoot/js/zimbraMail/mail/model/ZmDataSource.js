@@ -172,7 +172,7 @@ function(callback, errorCallback, batchCommand) {
 	var soapDoc = AjxSoapDoc.create("ModifyDataSourceRequest", "urn:zimbraMail");
 	var dsrc = soapDoc.set(this.ELEMENT_NAME);
 	// NOTE: If this object is a proxy, we guarantee that the
-	//       the id attribute is ÷*always* set.
+	//       the id attribute is *always* set.
 	dsrc.setAttribute("id", this.id);
 	for (var aname in ZmDataSource.DATASOURCE_ATTRS) {
 		var pname = ZmDataSource.DATASOURCE_ATTRS[aname];
@@ -317,14 +317,22 @@ function(callback, result) {
 
 	appCtxt.getDataSourceCollection().add(this);
 
-	// reset the icon in the tree view if POP account since the first time it
-	// was created, we didnt know it was a data source
-	if (this.type == ZmAccount.POP && this.folderId != ZmFolder.ID_INBOX) {
-		var overviewId = appCtxt.getApp(ZmApp.MAIL).getOverviewId();
-		var treeView = appCtxt.getOverviewController().getTreeView(overviewId, ZmOrganizer.FOLDER);
-		var treeItem = treeView ? treeView.getTreeItemById(this.folderId) : null;
-		if (treeItem) {
+	var overviewId = appCtxt.getApp(ZmApp.MAIL).getOverviewId();
+	var treeView = appCtxt.getOverviewController().getTreeView(overviewId, ZmOrganizer.FOLDER);
+	var treeItem = treeView ? treeView.getTreeItemById(this.folderId) : null;
+	if (treeItem) {
+		// reset the icon in the tree view if POP account since the first time it
+		// was created, we didnt know it was a data source
+		if (this.type == ZmAccount.POP && this.folderId != ZmFolder.ID_INBOX) {
 			treeItem.setImage("POPAccount");
+		}
+		else if (this.type == ZmAccount.IMAP) {
+			// change imap folder to a tree header since folder is first created
+			// without knowing its a datasource
+			treeItem.dispose();
+			var parentNode = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
+			var organizer = appCtxt.getById(this.folderId);
+			treeView._addNew(parentNode, organizer);
 		}
 	}
 
@@ -351,6 +359,23 @@ function(callback, result) {
 ZmDataSource.prototype._handleDeleteResponse =
 function(callback, result) {
 	appCtxt.getDataSourceCollection().remove(this);
+
+	var overviewId = appCtxt.getApp(ZmApp.MAIL).getOverviewId();
+	var treeView = appCtxt.getOverviewController().getTreeView(overviewId, ZmOrganizer.FOLDER);
+	var treeItem = treeView ? treeView.getTreeItemById(this.folderId) : null;
+	if (treeItem) {
+		if (this.type == ZmAccount.POP && this.folderId != ZmFolder.ID_INBOX) {
+			// reset icon since POP folder is no longer hooked up to a datasource
+			treeItem.setImage("Folder");
+		} else if (this.type == ZmAccount.IMAP) {
+			// reset the icon in the tree view if POP account since the first time it
+			// was created, we didnt know it was a data source
+			treeItem.dispose();
+			var parentNode = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
+			var organizer = appCtxt.getById(this.folderId);
+			treeView._addNew(parentNode, organizer);
+		}
+	}
 
 	if (callback) {
 		callback.run();

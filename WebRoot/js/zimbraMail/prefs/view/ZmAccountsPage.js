@@ -519,6 +519,12 @@ ZmAccountsPage.prototype._setPortControls = function(accountType, connectionType
 	this._setControlValue("PORT", section, accountPort);
 	this._setControlEnabled("DELETE_AFTER_DOWNLOAD", section, isPop);
 
+	this._setControlEnabled("DOWNLOAD_TO", section, isPop);
+	// imap is never allowed in inbox
+	if (!isPop) {
+		this._setControlValue("DOWNLOAD_TO", section, ZmAccountsPage.DOWNLOAD_TO_FOLDER);
+	}
+
 	var portTypeLabel = AjxMessageFormat.format(ZmAccountsPage.PREFS["CHANGE_PORT"].displayName, accountType);
 	this._setControlLabel("CHANGE_PORT", section, portTypeLabel)
 
