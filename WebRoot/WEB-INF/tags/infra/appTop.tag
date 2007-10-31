@@ -56,7 +56,7 @@
                 </c:if>
             </select>
             </td>
-            <td style="padding-left: 2px;">
+            <td style="padding-left: 5px;">
             <input class="SearchButton" type="submit" name="search" value="<fmt:message key="search"/>">
             <c:if test="${calendars}">
                 <c:if test="${not empty param.tz}"><input type="hidden" name="tz" value='${param.tz}'/></c:if>
