@@ -256,8 +256,9 @@ body	{	@ChromeBg@	}
 	vertical-align:bottom; 
 	text-align:center;	
 	height:25px;	
-	padding:5 0 0 8; 
+	padding:2px 0 0 8px; 
 }
+
 #skin_container_app_chooser	{	
 	@SkinBorderAppChooser@
 	height:100%;
