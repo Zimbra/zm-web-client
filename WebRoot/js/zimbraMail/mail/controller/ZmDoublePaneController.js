@@ -95,9 +95,10 @@ function(item, callback, results) {
  * Handles switching mail views.
  *
  * @param view		[constant]*		the id of the new view
+ * @param force		[boolean]		if true, always redraw view
  */
 ZmDoublePaneController.prototype.switchView =
-function(view) {
+function(view, force) {
 	if (view == ZmMailListController.READING_PANE_MENU_ITEM_ID) {
 		this._toggleReadingPane(true);
 	} else {

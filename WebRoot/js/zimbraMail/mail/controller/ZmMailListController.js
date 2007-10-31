@@ -108,14 +108,15 @@ function() {
  * Handles switching views based on action from view menu.
  *
  * @param view		[constant]		the id of the new view
+ * @param force		[boolean]		if true, always redraw view
  */
 ZmMailListController.prototype.switchView =
-function(view) {
+function(view, force) {
 	if (view) {
 		var groupBySetting = ZmMailListController.GROUP_BY_SETTING[view];
 		if (groupBySetting && (groupBySetting != this._app._groupBy)) {
 			this._app._groupBy = groupBySetting;
-		} else {
+		} else if (!force) {
 			return;
 		}
 		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);

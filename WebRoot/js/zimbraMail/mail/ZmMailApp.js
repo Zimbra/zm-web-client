@@ -1247,6 +1247,6 @@ function(ev) {
 		mlc.switchView(ZmMailListController.READING_PANE_MENU_ITEM_ID);
 	}
 	if (newView) {
-		mlc.switchView(newView);
+		mlc.switchView(newView, true);
 	}
 };
