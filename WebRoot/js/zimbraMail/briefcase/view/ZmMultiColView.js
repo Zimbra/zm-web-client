@@ -365,3 +365,33 @@ function() {
 	this._noOfCol++;	
 	return div;
 };
+
+//for ZimbraDnD
+ZmMultiColView.prototype.processUploadFiles = function() {
+    var ulEle = document.getElementById('zdnd_ul');
+    var files = [];
+    if (ulEle);
+    {
+        for (var i = 0; i < ulEle.childNodes.length; i++)
+        {
+            var liEle = ulEle.childNodes[i];
+            var inputEle = liEle.childNodes[0];
+            if (inputEle.name != "_attFile_") continue;
+            if (!inputEle.value) continue;
+            var file = {
+                fullname: inputEle.value,
+                name: inputEle.value.replace(/^.*[\\\/:]/, "")
+            };
+            files.push(file);
+         }
+   }
+   return files;
+}
+
+ZmMultiColView.prototype.uploadFiles = function(){
+    var attachDialog = appCtxt.getUploadDialog();
+    this._controller = AjxDispatcher.run("GetBriefcaseController");
+    ZmUploadDialog._uploadCallback = this._controller._handleUploadNewItem;
+    var files = this.processUploadFiles();
+    attachDialog.uploadFiles(files,document.getElementById("zdnd_form"),{id:this._controller._currentFolder});
+};

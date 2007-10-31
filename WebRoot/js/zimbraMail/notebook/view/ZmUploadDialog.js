@@ -79,8 +79,30 @@ ZmUploadDialog.prototype.popdown = function() {
 	ZmDialog.prototype.popdown.call(this);
 };
 
-// Protected methods
+//to give explicitly the uploadForm, files to upload and folderId used for breifcase
+ZmUploadDialog.prototype.uploadFiles = function(files,uploadForm,folder) {
 
+    if (files.length == 0) {
+		return;
+	}
+    this._uploadFolder = folder;
+    var callback = new AjxCallback(this, this._uploadSaveDocs, [files]);
+
+    var uploadMgr = appCtxt.getUploadManager();
+	  window._uploadManager = uploadMgr;
+
+    try {
+		uploadMgr.execute(callback, uploadForm);
+	} catch (ex) {
+		if (ex.msg) {
+			this._popupErrorDialog(ex.msg);
+		} else {
+			this._popupErrorDialog(ZmMsg.unknownError);
+		}
+	}
+};
+
+// Protected methods
 ZmUploadDialog.prototype._upload = function(){ 
 	var form = document.getElementById(this._formId);
 	var files = [];
