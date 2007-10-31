@@ -635,9 +635,11 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
 		if (item && item.restUrl) {
-			window.open(item.restUrl);
+			window.open(item.restUrl);		
 		}else if(item && item.isFolder){
+			if(!this.isMultiColView()){
 			this.show(item.id);
+			}
 		}
 	}
 };
