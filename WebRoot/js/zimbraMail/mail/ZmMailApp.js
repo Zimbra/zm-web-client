@@ -739,36 +739,49 @@ function(creates, force) {
 		}
 	}
 
+	this._checkList(creates, appCtxt.getCurrentList());
+	var ctlr = appCtxt.getCurrentController();
+	if (ctlr && ctlr.getUnderlyingList) {
+		this._checkList(creates, ctlr.getUnderlyingList());
+	}
+};
+
+/**
+ * We can only handle new mail notifications if:
+ *  	- we are currently in a mail view
+ *		- the view is the result of a simple folder search
+ * 
+ * @param creates	[hash]			JSON create objects
+ * @param list		[ZmMailList]	mail list to notify
+ */
+ZmMailApp.prototype._checkList =
+function(creates, list) {
+
+	if (!(list && list instanceof ZmMailList)) { return; }
+
 	var convs = {};
 	var msgs = {};
 	var folders = {};
 
-	// we can only handle new mail notifications if:
-	// 	- we are currently in a mail view
-	//	- the view is the result of a simple folder search
-	// TODO: support simple tag search
-	var currList = appCtxt.getCurrentList();
-	if (!(currList && currList instanceof ZmMailList)) { return; }
-
 	// for CV, folderId will correspond to parent list view
 	// XXX: should handle simple tag search as well
-	var folderId = currList.search ? currList.search.folderId : null;
+	var folderId = list.search ? list.search.folderId : null;
 	if (!folderId) { return; }
 
-	var sortBy = currList.search.sortBy;
-	var a = currList.getArray();
-	var currListView = appCtxt.getCurrentView()._mailListView;
-	var limit = currListView ? currListView.getLimit() : appCtxt.get(ZmSetting.PAGE_SIZE);
+	var sortBy = list.search.sortBy;
+	var a = list.getArray();
+	var listView = appCtxt.getCurrentView()._mailListView;
+	var limit = listView ? listView.getLimit() : appCtxt.get(ZmSetting.PAGE_SIZE);
 	
 	var last = (a && a.length >= limit) ? a[a.length - 1] : null;
 	var cutoff = last ? last.date : null;
 	DBG.println(AjxDebug.DBG2, "cutoff = " + cutoff + ", list size = " + a.length);
 
-	var gotConvs = this._checkType(creates, ZmItem.CONV, convs, currList, sortBy, cutoff);
-	var gotMsgs = this._checkType(creates, ZmItem.MSG, msgs, currList, sortBy, cutoff, convs);
+	var gotConvs = this._checkType(creates, ZmItem.CONV, convs, list, sortBy, cutoff);
+	var gotMsgs = this._checkType(creates, ZmItem.MSG, msgs, list, sortBy, cutoff, convs);
 
 	if (gotConvs || gotMsgs) {
-		currList.notifyCreate(convs, msgs);
+		list.notifyCreate(convs, msgs);
 	}
 };
 
@@ -794,7 +807,7 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 		create._handled = true;
 		
 		// ignore stuff we already have
-		if (appCtxt.cacheGet(create.id) || create._wasVirtConv) { continue; }
+		if (currList.getById(create.id) || create._wasVirtConv) { continue; }
 
 		// perform stricter checking if we're in offline mode
 		if (appCtxt.get(ZmSetting.OFFLINE) &&

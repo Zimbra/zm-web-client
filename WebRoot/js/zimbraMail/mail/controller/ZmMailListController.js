@@ -130,6 +130,8 @@ function(view) {
 // override if reading pane is supported
 ZmMailListController.prototype._setupReadingPaneMenuItem = function() {};
 
+ZmMailListController.prototype.getUnderlyingList = function() {};
+
 ZmMailListController.prototype.getKeyMapName =
 function() {
 	return "ZmMailListController";
