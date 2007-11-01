@@ -42,7 +42,6 @@ ZmSizePicker.prototype._setupPicker =
 function(parent) {
 	var picker = new DwtComposite(parent);
 
-    var size = 16;
 	var opId = Dwt.getNextId();
 	var unitsId = Dwt.getNextId();    
 	var fieldId = Dwt.getNextId();
@@ -58,11 +57,9 @@ function(parent) {
 	html[i++] = "<tr valign='middle'><td align='right' nowrap>";
 	html[i++] = ZmMsg.value;
 	html[i++] = ":</td>";
-	html[i++] = "<td align='left' nowrap><input type='text' autocomplete='off' nowrap size='";
-	html[i++] = size;
-	html[i++] = "' id='";
+	html[i++] = "<td align='left' nowrap><div id='";
 	html[i++] = fieldId;
-	html[i++] = "'/></td></tr>";
+	html[i++] = "'></td></tr>";
 	html[i++] = "<tr valign='middle'><td align='right' nowrap>";
 	html[i++] = ZmMsg.units;
 	html[i++] = ":</td><td align='left' nowrap id='";
@@ -90,15 +87,26 @@ function(parent) {
 	this._units.reparentHtmlElement(unitsId);
 
 	// set up input field
-	this._size = document.getElementById(fieldId);
-	Dwt.setHandler(this._size, DwtEvent.ONKEYUP, ZmSizePicker._onKeyUp);
-	Dwt.associateElementWithObject(this._size, this);
+	var args = {
+		parent: this,
+		size: 16,
+		type: DwtInputField.INTEGER,
+		validator: ZmSizePicker._validateSize,
+		validationStyle: DwtInputField.CONTINUAL_VALIDATION
+	};
+	this._size = new DwtInputField(args);
+	this._size.setValidNumberRange(0, null);
+	this._size.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._onKeyUp));
+	this._size.replaceElement(fieldId);
+	document.getElementById(fieldId);
+
 };
 
 ZmSizePicker.prototype._updateQuery = 
 function() {
-	if (this._size.value && this._size.value.match(/^[1-9][0-9]*$/)) {
-		this.setQuery(this._op.getValue() + ":" + this._size.value + this._units.getValue());
+	var value = this._size.isValid();
+	if (value) {
+		this.setQuery(this._op.getValue() + ":" + value + this._units.getValue());
 	} else {
 		this.setQuery("");
 	}
@@ -110,17 +118,21 @@ function(ev) {
 	this.execute();
 };
 
-ZmSizePicker._onKeyUp =
+ZmSizePicker.prototype._onKeyUp =
 function(ev) {
-	var element = DwtUiEvent.getTarget(ev);
-	var picker = Dwt.getObjectFromElement(element);
 	var charCode = DwtKeyEvent.getCharCode(ev);
 	if (charCode == 13 || charCode == 3) {
-		picker.execute();
-	    return false;
+		this.execute();
 	} else {
-		picker._updateQuery();
-		return true;
+		this._updateQuery();
 	}
 
 };
+
+ZmSizePicker._validateSize =
+function(value) {
+	if (value && !value.match(/^[1-9][0-9]*$/)) {
+		throw ZmMsg.errorInvalidSize;
+	}
+	return value;
+}
