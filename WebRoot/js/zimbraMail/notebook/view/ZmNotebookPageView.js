@@ -516,66 +516,71 @@ ZmNotebookPageView.prototype.onDelete = function(){
 
 };
 
-
+//Hidden iFrame onLoad Function.
 ZmNotebookPageView._iframeOnLoad1 = function(iframe) {
 
-	var view = Dwt.getObjectFromElement(iframe);
-	if(!view) { return; }
+    var view = Dwt.getObjectFromElement(iframe);
+    if(!view) return;
 	// TODO: hook in navigation control
-	var iSrc = iframe.contentWindow.location.href;
+    var iSrc = iframe.contentWindow.location.href;
 
-	try{
-	var cwin = iframe.contentWindow;
-	var doc = cwin.document;
-	var iframeM = view._iframe;
-	var ndoc = iframeM.contentWindow.document;
+    try{
 
-	var title = doc.title;
-	
-	var isErrorPage = false;
+        var doc = iframe.contentWindow.document;
+        var title = doc.title;
 
-	if(title.match(/- Error report$/) || title.match(/^Error 404/)){
-		var info = doc.body.firstChild;
-		if((info.tagName.toLowerCase() == "h1") && (info.innerHTML == "HTTP Status 404 - no such item"))
-		{
-			isErrorPage = true;
-		}
-		if((info.tagName.toLowerCase() == "h2") && (info.innerHTML == "HTTP ERROR: 404"))
-		{
-			isErrorPage = true;
-		}
-	}
-		
-	if(!isErrorPage){	
-		view.currentSrc = iSrc;
-		view.currentPath = iframe.contentWindow.location.pathname;
-        if(!view._replaceHTML || AjxEnv.isIE){
-	        ndoc.open();
-    	    ndoc.write(cwin.document.documentElement.innerHTML);
-        	ndoc.close();        	
-        	view._replaceHTML = true;
+        var isErrorPage = false;
+        var isPermissionDenied = false;
+        if(title.match(/- Error report$/i) || title.match(/^Error 404/i) || title.match(/^Error 403/i) ){
+            var info = doc.body.firstChild;
+            var tag = info.tagName.toLowerCase();
+            if((tag == "h1") && (info.innerHTML == "HTTP Status 404 - no such item")){
+                isErrorPage = true;
+            }else if((tag == "h2") && (info.innerHTML == "HTTP ERROR: 404")){
+                isErrorPage = true;
+            }else if(tag == "h2" && info.innerHTML == "HTTP ERROR: 403"){
+                isPermissionDenied = true;
+            }
+        }
+
+        if(isErrorPage){
+            DBG.println(AjxDebug.DBG3,"Missing Page:"+iSrc);
+            view.createNewPage(cwin.location.pathname);
+            view._currentURL = iSrc;
+        }else if(isPermissionDenied){
+            DBG.println(AjxDebug.DBG3,"Permission Denied: "+iSrc);
+            var msg = [ "<b>",ZmMsg.errorPermission,"</b>","<br>",ZmMsg.errorPermissionMsg ].join("");
+            var msgDialog = appCtxt.getMsgDialog();
+            msgDialog.reset();
+            msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
+            msgDialog.popup();
         }else{
-	  		view.copyIframeContents(ndoc,cwin.document);
-        };
-  	}else{
-		DBG.println(AjxDebug.DBG3,"Missing Page:"+iSrc);
-		view.createNewPage(cwin.location.pathname);	
-	}
+            view.currentSrc = iSrc;
+            view.currentPath = iframe.contentWindow.location.pathname;
+            var ndoc = view._iframe.contentWindow.document;
+            if(!view._replaceHTML || AjxEnv.isIE){
+                ndoc.open();
+                ndoc.write(doc.documentElement.innerHTML);
+                ndoc.close();
+                view._replaceHTML = true;
+            }else{
+                view.copyIframeContents(ndoc,doc);
+            };
+            view._currentURL = iSrc;
+        }
 
-	if(view._diframe) {
-		view._diframe._resetEventHandlers();
-	}
+        if(view._diframe) {
+            view._diframe._resetEventHandlers();
+        }
 
-	}catch(ex){
+    }catch(ex){
 
-		DBG.println("exception in accessing iframe:"+ex);
-		var toolbar = view._controller._toolbar[view._controller._currentView];
-		toolbar.enable([ZmOperation.REFRESH,ZmOperation.EDIT,ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT,ZmOperation.SEND_PAGE,ZmOperation.DETACH], false);
-		
-	}
-	
-	view._currentURL = iSrc;	
-	
+        DBG.println("exception in accessing iframe:"+ex);
+        var toolbar = view._controller._toolbar[view._controller._currentView];
+        toolbar.enable([ZmOperation.REFRESH,ZmOperation.EDIT,ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT,ZmOperation.SEND_PAGE,ZmOperation.DETACH], false);
+
+    }
+
 };
 
 ZmNotebookPageView.prototype.createNewPage = function(iSrc){
