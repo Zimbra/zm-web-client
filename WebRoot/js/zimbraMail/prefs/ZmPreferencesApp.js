@@ -278,6 +278,7 @@ function() {
     //Polling Interval Options - Dynamically consturcted accord. to MIN_POLLING_INTERVAL,POLLING_INTERVAL
     var options = [ 525600 ]; 
     var startValue   = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL));
+    if(startValue == 0) startValue = 1;
     var pollInterval = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.POLLING_INTERVAL));
     while(startValue <= 10){
         options.push(startValue);
