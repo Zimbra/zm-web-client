@@ -495,6 +495,16 @@ ZmApp.prototype._handleSetActiveAccount =
 function(accordionItem) {
 	appCtxt.getAppController()._setUserInfo();
 	this._activateAccordionItem(accordionItem);
+	this._setMiniCalForActiveAccount();
+};
+
+// NOTE: calendar overloads this method since it handles minical independently
+ZmApp.prototype._setMiniCalForActiveAccount =
+function() {
+	// show/hide mini cal based on active account's pref
+	// XXX: forces calendar core to load even if no accounts have minical enabled!
+	var showMiniCal = appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
+	AjxDispatcher.run("ShowMiniCalendar", showMiniCal);
 };
 
 /**
