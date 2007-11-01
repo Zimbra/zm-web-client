@@ -32,7 +32,7 @@
             <td nowrap>
             <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
 			</td>
-           <td class="ImgField_L"></td>
+           <td class="ImgField_L searchwidth"></td>
             <td width="80%"><input  id="searchField" class="searchField" maxlength="2048" name="sq" value="${query}"></td>
             <td class="ImgField_R" style="padding-left:8px"></td>
             <td>&nbsp;<fmt:message key="in"/>&nbsp;</td>
