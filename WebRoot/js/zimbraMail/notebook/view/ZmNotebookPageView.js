@@ -438,7 +438,12 @@ ZmNotebookPageView.prototype.addColumn = function(doc)
 			var cell = row.cells[j];			
 			
 			if(cell.className == "zmwiki-pageLink"){
-				var wikiName = cell.firstChild.innerHTML;
+				var innerNode = cell.firstChild;
+				var wikiName = innerNode.innerHTML;
+				if(innerNode.firstChild && innerNode.firstChild.innerHTML){
+					innerNode = innerNode.firstChild;
+					wikiName = innerNode.innerHTML;
+				}
 				var isPage = (row.cells[j-1].firstChild.className=="ImgPage")?true:false;
 				var newCell = row.insertCell(j+1);			
 				
