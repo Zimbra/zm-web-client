@@ -315,6 +315,11 @@ function(calItem) {
 	var timezone = calItem.getOrigTimezone();
 	var localTimezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
+	if(calItem.isAllDayEvent() && calItem.isMultiDay() ){		
+		var endDate = new Date(ed.getTime());
+		ed.setDate(endDate.getDate()-1);
+	}
+
 	if (this._isOneDayAppt(sd, ed)) {
 		str[i++] = dateFormatter.format(sd);
 		if (!calItem.isAllDayEvent()) {
