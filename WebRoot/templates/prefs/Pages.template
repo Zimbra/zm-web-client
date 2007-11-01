@@ -937,6 +937,8 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
+	<$=ZmMsg.filterRuleChangesSavedImmediately$>
+	
 	<!-- TODO: inline filter editing -->
 </template>
 
