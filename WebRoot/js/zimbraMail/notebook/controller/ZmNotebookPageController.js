@@ -351,7 +351,7 @@ function(ev, organizers) {
             	cache.updateItems(id, oldUrl, organizer.restUrl);
             }
             var appViewMgr = appCtxt.getAppViewMgr();
-            if( appViewMgr.getCurrentViewId() != ZmController.NOTEBOOK_FILE_VIEW ) {
+            if( appViewMgr.getCurrentViewId() != ZmController.NOTEBOOK_FILE_VIEW  && !this._importInProgress) {
                 this.gotoPage(item);
             }
         }

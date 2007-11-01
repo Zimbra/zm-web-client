@@ -24,6 +24,7 @@ ZmNotebookController = function(container, app) {
 	//this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._uploadListener);
 	this._listeners[ZmOperation.SEND_PAGE] = new AjxListener(this, this._sendPageListener);
 	this._listeners[ZmOperation.DETACH] = new AjxListener(this, this._detachListener);
+	this._listeners[ZmOperation.IMPORT_FILE] = new AjxListener(this, this._importListener);
 }
 ZmNotebookController.prototype = new ZmListController;
 ZmNotebookController.prototype.constructor = ZmNotebookController;
@@ -94,7 +95,14 @@ function() {
 
 ZmNotebookController.prototype._getBasicToolBarOps =
 function() {
-	return [ZmOperation.NEW_MENU, ZmOperation.REFRESH, ZmOperation.EDIT];
+	var list = [ZmOperation.NEW_MENU];
+	if(appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+		list.push(ZmOperation.SEP);
+		list.push(ZmOperation.IMPORT_FILE);
+		list.push(ZmOperation.SEP);
+	}
+	list.push(ZmOperation.REFRESH, ZmOperation.EDIT);
+	return list;
 };
 
 ZmNotebookController.prototype._getItemToolBarOps =
@@ -139,6 +147,9 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 	toolbarOrActionMenu.enable(buttonIds, true);
 	var writable = this._object && !this._object.isReadOnly();
 	toolbarOrActionMenu.enable([ZmOperation.EDIT], writable);
+	if(appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+		toolbarOrActionMenu.enable([ZmOperation.IMPORT_FILE], writable);
+	}
 	toolbarOrActionMenu.enable([ZmOperation.DELETE], this.isDeletable());
 
 	var taggable = this._object && !this._object.isShared() && !this._object.isIndex();
@@ -314,15 +325,84 @@ ZmNotebookController.prototype._editListener = function(event) {
 	pageEditController.show(page);
 };
 
-/***
-ZmNotebookController.prototype._uploadListener = function(event) {
-	var notebook = appCtxt.getById(this._folderId || ZmNotebookItem.DEFAULT_FOLDER);
-	var callback = null;
+ZmNotebookController.prototype._importListener = function(event) {
+	
+	var folderId = this._object ? this._object.getFolderId() : ZmNotebookItem.DEFAULT_FOLDER;
+	var notebook = appCtxt.getById(folderId);
+	var callback = new AjxCallback(this, this._importCallback);
 
-	var dialog = appCtxt.getUploadDialog();
+	var dialog = appCtxt.getImportDialog();
 	dialog.popup(notebook, callback);
 };
-/***/
+
+ZmNotebookController.prototype._importCallback = 
+function(uploadFolder, filenames, result, files) {
+	
+	var page = new ZmPage();
+	page.folderId = uploadFolder ? uploadFolder.id : ZmNotebookItem.DEFAULT_FOLDER;
+	page.name=this._app.generateUniqueName(page.folderId);
+	if(result.success) {
+		this.setImportedPageContent(page, result);	
+		var saveCallback = new AjxCallback(this, this._saveResponseHandler, [page, files]);
+		var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [page, files]);
+		this._importInProgress = true;
+		page.save(saveCallback, saveErrorCallback);
+	}else{
+		var msg = ZmMsg.importFailed + ": " + ZmMsg.unableToGetPage;
+		var msgDialog = appCtxt.getMsgDialog();
+	    msgDialog.reset();
+    	msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
+	    msgDialog.popup();
+	}
+};
+
+ZmNotebookController.prototype.setImportedPageContent = 
+function(page, result) {
+		var pageContent = result.text;
+		pageContent = pageContent.replace(/.*<body>/,"");
+		pageContent = pageContent.replace(/<\/body>.*/,"");
+		page.setContent(pageContent);	
+};
+
+ZmNotebookController.prototype._saveResponseHandler = 
+function(page, files, response) {
+
+	var saveResp = response._data && response._data.SaveWikiResponse;
+	if (saveResp) {
+		var data = saveResp.w[0];
+		if (!page.id) {
+			page.set(data);
+		}
+		else {
+			page.version = data.ver;
+		}
+		this.gotoPage(page);
+	}
+	this._importInProgress = false;
+	this.deleteImportedDocs(files);	
+};
+
+ZmNotebookController.prototype.deleteImportedDocs =
+function(files) {
+	this._doDelete2(files, new AjxCallback(this, this.deleteImportCallback));
+};
+
+ZmNotebookController.prototype.deleteImportCallback =
+function() {
+
+};
+
+ZmNotebookController.prototype._saveErrorResponseHandler = 
+function(page, files, response) {
+
+	var msg = ZmMsg.importFailed + ": " + ZmMsg.unableToSavePage;
+	var msgDialog = appCtxt.getMsgDialog();
+    msgDialog.reset();
+    msgDialog.setMessage(msg, DwtMessageDialog.INFO_STYLE);
+    msgDialog.popup();
+   	this._importInProgress = false;
+   	this.deleteImportedDocs(files);
+};
 
 ZmNotebookController.prototype._sendPageListener = function(event) {
 	var view = this._listView[this._currentView];

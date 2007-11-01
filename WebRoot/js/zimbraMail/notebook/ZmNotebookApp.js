@@ -74,6 +74,7 @@ function() {
 	ZmOperation.registerOp("MOUNT_NOTEBOOK", {textKey:"mountNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("NEW_NOTEBOOK", {textKey:"newNotebook", image:"NewNotebook"});
 	ZmOperation.registerOp("NEW_PAGE", {textKey:"newPage", tooltipKey:"createNewPage", image:"NewPage"});
+	ZmOperation.registerOp("IMPORT_FILE", {textKey:"_import", tooltipKey:"importDocs"});
 	ZmOperation.registerOp("SEND_PAGE", {textKey:"send", tooltipKey:"sendPageTT", image:"Send"}, ZmSetting.MAIL_ENABLED);
 	ZmOperation.registerOp("SHARE_NOTEBOOK", {textKey:"shareNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 };

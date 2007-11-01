@@ -37,6 +37,7 @@ AjxPackage.require("zimbraMail.notebook.view.wiklet.ZmWikletProcessor");
 
 AjxPackage.require("zimbraMail.notebook.view.ZmNewNotebookDialog");
 AjxPackage.require("zimbraMail.notebook.view.ZmUploadDialog");
+AjxPackage.require("zimbraMail.notebook.view.ZmImportDialog");
 AjxPackage.require("zimbraMail.notebook.view.ZmUploadConflictDialog");
 AjxPackage.require("zimbraMail.notebook.view.ZmPageConflictDialog");
 AjxPackage.require("zimbraMail.notebook.view.ZmNotebookObjectHandler");

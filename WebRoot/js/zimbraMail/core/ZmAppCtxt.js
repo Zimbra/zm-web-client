@@ -451,6 +451,16 @@ function() {
 	return this._uploadDialog;
 };
 
+ZmAppCtxt.prototype.getImportDialog =
+function() {
+	if (!this._uploadDialog) {
+		AjxDispatcher.require(["NotebookCore", "Notebook"]);
+		this._uploadDialog = new ZmImportDialog(this._shell);
+	}
+	return this._uploadDialog;
+};
+
+
 ZmAppCtxt.prototype.getAttachDialog = function() {
 	if(!this._attachDialog){
 		AjxDispatcher.require("Share");
