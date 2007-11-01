@@ -881,18 +881,26 @@ and the container element is replaced with that control.
 				<td class='ZOptionsField'><input id='${id}_PERSONA_WHEN_SENT_TO' tabindex='3080' type=checkbox></td>
 			</tr>
 			<tr><td class='ZOptionsLabel'>&nbsp;</td>
+				<td class='ZOptionsInfo' style='padding-left:2em;'>
+					<input id='${id}_PERSONA_WHEN_SENT_TO_LIST' tabindex='3085' size=80>
+				</td>
+			</tr>
+			<tr><td class='ZOptionsLabel'>&nbsp;</td>
+				<td class='ZOptionsInfo' style='padding-left:2em;'><$=ZmMsg.whenSentToHint$></td>
+			</tr>
+			<tr><td class='ZOptionsLabel'>&nbsp;</td>
 				<td class='ZOptionsField'><input id='${id}_PERSONA_WHEN_IN_FOLDER' tabindex='3090' type=checkbox></td>
 			</tr>
 			<tr><td class='ZOptionsLabel'>&nbsp;</td>
 				<td class='ZOptionsField' style='padding-left:2em;'>
 					<table><tr>
-					<td><input id='${id}_PERSONA_WHEN_IN_FOLDER_LIST' tabindex='3100' title="<$=ZmMsg.exampleFolderNames$>"></td>
+					<td><input id='${id}_PERSONA_WHEN_IN_FOLDER_LIST' tabindex='3100' size=60 title="<$=ZmMsg.exampleFolderNames$>"></td>
 					<td><div id='${id}_PERSONA_WHEN_IN_FOLDER_BUTTON' tabindex='3110'></div></td>
 					</tr></table>
 				</td>
 			</tr>
 			<tr><td class='ZOptionsLabel'>&nbsp;</td>
-				<td class='ZOptionsInfo' style='padding-left:2em;'><$=ZmMsg.exampleFolderNamesHint$></td>
+				<td class='ZOptionsInfo' style='padding-left:2em;'><$=ZmMsg.whenInFolderHint$></td>
 			</tr>
 
 			</table>

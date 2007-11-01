@@ -141,6 +141,9 @@ ZmAccountsPage._definePrefs = function() {
 			displayName:		ZmMsg.personaWhenSentTo,
 			displayContainer:	ZmPref.TYPE_CHECKBOX
 		},
+		WHEN_SENT_TO_LIST: {
+			displayContainer:	ZmPref.TYPE_INPUT
+		},
 		WHEN_IN_FOLDER: {
 			displayName:		ZmMsg.personaWhenInFolder,
 			displayContainer:	ZmPref.TYPE_CHECKBOX
@@ -209,6 +212,7 @@ ZmAccountsPage.SECTIONS = {
 			"REPLY_TO_EMAIL",			// I
 			"SIGNATURE",				// I
 			"WHEN_SENT_TO",				// I
+			"WHEN_SENT_TO_LIST",		// I
 			"WHEN_IN_FOLDER",			// I
 			"WHEN_IN_FOLDER_LIST",		// I
 			"WHEN_IN_FOLDER_BUTTON"
@@ -238,6 +242,7 @@ ZmAccountsPage.IDENTITY_PROPS = {
 	"REPLY_TO_EMAIL":		"setReplyToAddress",
 	"SIGNATURE":			"signature",
 	"WHEN_SENT_TO":			"useWhenSentTo",
+	"WHEN_SENT_TO_LIST":	"whenSentToAddresses",
 	"WHEN_IN_FOLDER":		"useWhenInFolder",
 	"WHEN_IN_FOLDER_LIST":	"whenInFolderIds"
 };
@@ -546,6 +551,7 @@ ZmAccountsPage.prototype._setIdentityFields = function(account, section) {
 	this._setControlValue("REPLY_TO_EMAIL", section, identity.setReplyToAddress);
 	this._setControlValue("SIGNATURE", section, identity.signature);
 	this._setControlValue("WHEN_SENT_TO", section, identity.useWhenSentTo);
+	this._setControlValue("WHEN_SENT_TO_LIST", section, identity.whenSentToAddresses);
 	this._setControlValue("WHEN_IN_FOLDER", section, identity.useWhenInFolder);
 	this._setControlValue("WHEN_IN_FOLDER_LIST", section, identity.whenInFolderIds);
 
@@ -617,14 +623,9 @@ ZmAccountsPage.prototype._setReplyToControls = function() {
 
 ZmAccountsPage.prototype._setWhenSentToControls = function() {
 	var section = this._currentSection;
-	var control = section.controls["WHEN_SENT_TO"];
-	if (!control) return;
+	var whenSentTo = this._getControlValue("WHEN_SENT_TO", section);
 
-	var fromEmail = this._getControlValue("FROM_EMAIL", section);
-
-	var pattern = ZmAccountsPage.PREFS["WHEN_SENT_TO"].displayName;
-	var message = AjxMessageFormat.format(pattern, fromEmail);
-	control.setText(message);
+	this._setControlEnabled("WHEN_SENT_TO_LIST", section, whenSentTo);
 };
 
 ZmAccountsPage.prototype._setWhenInFolderControls = function() {
@@ -656,6 +657,9 @@ ZmAccountsPage.prototype._setControlValue = function(id, section, value) {
 
 	if (id == "DELETE_AFTER_DOWNLOAD") {
 		value = !value;
+	}
+	else if (id == "WHEN_SENT_TO_LIST") {
+		value = value ? value.join(", ") : "";
 	}
 	else if (id == "WHEN_IN_FOLDER_LIST") {
 		var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
@@ -698,7 +702,14 @@ ZmAccountsPage.prototype._getControlValue = function(id, section) {
 	var setup = ZmAccountsPage.PREFS[id];
 	if (!control || !setup) return null;
 
-	if (id == "WHEN_IN_FOLDER_LIST") {
+	if (id == "WHEN_SENT_TO_LIST") {
+		var array = AjxEmailAddress.parseEmailString(control.getValue()).all.getArray();
+		for (var i = 0; i < array.length; i++) {
+			array[i] = array[i].address;
+		}
+		return array;
+	}
+	else if (id == "WHEN_IN_FOLDER_LIST") {
 		var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
 		var root = tree.getById(ZmOrganizer.ID_ROOT);
 
@@ -856,6 +867,10 @@ ZmAccountsPage.prototype._setupInput = function(id, setup, value) {
 			input.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleUserNameChange));
 			break;
 		}
+		case "WHEN_SENT_TO_LIST": {
+			input.setHint(appCtxt.get(ZmSetting.USERNAME));
+			break;
+		}
 	}
 	return input;
 };
@@ -870,6 +885,9 @@ ZmAccountsPage.prototype._setupCheckbox = function(id, setup, value) {
 	}
 	else if (id == "REPLY_TO") {
 		checkbox.addSelectionListener(new AjxListener(this, this._handleReplyTo));
+	}
+	else if (id == "WHEN_SENT_TO") {
+		checkbox.addSelectionListener(new AjxListener(this, this._handleWhenSentTo));
 	}
 	else if (id == "WHEN_IN_FOLDER") {
 		checkbox.addSelectionListener(new AjxListener(this, this._handleWhenInFolder));
@@ -1291,6 +1309,10 @@ function(select, evt) {
 		(evt.event == ZmEvent.E_MODIFY && evt.getDetail("rename"))) {
 		this._resetSignatureSelect(select);
 	}
+};
+
+ZmAccountsPage.prototype._handleWhenSentTo = function(evt) {
+	this._setWhenSentToControls();
 };
 
 ZmAccountsPage.prototype._handleWhenInFolder = function(evt) {
