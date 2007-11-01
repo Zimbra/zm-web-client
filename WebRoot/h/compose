@@ -82,7 +82,7 @@
 <c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/>
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
         onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}">
-
+<body class="yui-skin-sam">
 <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8" <c:if test="${composeformat eq 'html'}">onsubmit="submitCompose();"</c:if> >
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
@@ -118,9 +118,9 @@
                                 <app:button  name="actionContactAdd" width="1%" tooltip="addFromContacts" text="to"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhACTo">
-                                    <textarea  id="toField" rows="2" style='width:99%' cols="80"
+                                    <textarea  id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" 
                                                                name="to">${fn:escapeXml(compose.to)}</textarea>
-                                        <br><div class='ZhACCont' id="toContainer" style='width:99%;'></div></div>
+                                        <br><div class='ZhACCont' id="toContainer" style='width:99%;top:3em;'></div></div>
                                 </td>
                             </tr>
 
@@ -201,11 +201,11 @@
                                         value="${param.attachId}" name="uploadedAttachment"/>
                             </c:if>
                             <tr>
-                                <td colspan="3" class="yui-skin-sam" width="100%" >
+                                <td colspan="3"  width="100%" >
                                     <textarea class='MsgCompose' name="body" id="body" rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea>
-                                    <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
-                                    <!-- textarea class='MsgCompose' rows="30" cols="150" style='width:100%'
-                                              id="bodyField" name="body">${fn:escapeXml(compose.content)}</textarea -->
+                                    <!-- <textarea class='MsgCompose' name="body" id="bodyText" rows="30" cols="80" style='width:100%'></textarea> -->
+                                   <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' /> 
+                                    
                                 </td>
                             </tr>
                         </table>
@@ -267,7 +267,8 @@
         submitCompose= function(){
         myEditor.saveHTML();
         var stripHTML = /<\S[^><]*>/g;
-        document.getElementById("bodyText").value = document.getElementById("body").value.replace(/<br>/gi, '\n').replace(stripHTML, '');
+        var stripNBSP  = /&nbsp;/g
+        document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '');
         }
 
         var myEditor = new YAHOO.widget.Editor('body', {
@@ -306,6 +307,6 @@ function handleEnter (ev) {
         <zm:bindKey message="compose.NormalPriority" func="function() { zselect('OPPRIORITYNORMAL')}"/>
         <zm:bindKey message="compose.LowPriority" func="function() { zselect('OPPRIORITYLOW')}"/>
    </app:keyboard>
-
+</body>
 </app:view>
 
