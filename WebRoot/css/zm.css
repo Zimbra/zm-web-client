@@ -84,6 +84,7 @@
 .BannerBar .quotabar {
 	@ProgressBarContainer@
 	@ProgressBarContainer-unused@
+	text-align: left;
 }
 
 .BannerBar .quotaUsed {
