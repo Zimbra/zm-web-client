@@ -253,7 +253,7 @@ function() {
 
 	this._schedTable[0] = null;	// header row has no attendee data
 
-	var subs = { id:this._htmlElId, isAppt: true };
+	var subs = { id:this._htmlElId, isAppt: true, showTZSelector: appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) };
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#ScheduleView", subs);
 };
 
