@@ -387,7 +387,7 @@ function(viewId, appName, elements, callbacks, isAppView, isTransient) {
 ZmAppViewMgr.prototype.pushView =
 function(viewId, force) {
 
-	if (!this._views[viewId]) {
+	if ((viewId != ZmAppViewMgr.PENDING_VIEW) && !this._views[viewId]) {
 		// view has not been created, bail
 		return false;
 	}
