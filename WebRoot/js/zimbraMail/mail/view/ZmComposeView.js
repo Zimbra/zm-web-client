@@ -41,7 +41,6 @@ ZmComposeView = function(parent, controller, composeMode) {
 
 	// make sure no unnecessary scrollbars show up
 	this.getHtmlElement().style.overflow = "hidden";
-
 };
 
 ZmComposeView.prototype = new DwtComposite;
@@ -1685,8 +1684,13 @@ function() {
 	var identities = identityCollection.getIdentities();
 	for (var i = 0, count = identities.length; i < count; i++) {
 		var identity = identities[i];
+
+		// bug fix #21497 - skip the *fake* local account if offline and is main
+		var acct = appCtxt.get(ZmSetting.OFFLINE) ? appCtxt.getAccount(identity.id) : null;
+		if (acct && acct.isMain) { continue; }
+
 		var text = this._getIdentityText(identity);
-		options[i] = new DwtSelectOptionData(identity.id, text);
+		options.push(new DwtSelectOptionData(identity.id, text));
 	}
 	return options;
 };
