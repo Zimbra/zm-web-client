@@ -12,7 +12,7 @@
 <c:set var="expanded" value="${sessionScope.expanded.folders ne 'collapse'}"/>
 
 <div class="Tree">
-    <table width="150" cellpadding="0" cellspacing="0">
+    <table width="100%" cellpadding="0" cellspacing="0">
         <tr class="TreeHeaderRow">
             <c:url var="toggleUrl" value="/h/search">
                    <c:param name="${expanded ? 'collapse' : 'expand'}" value="folders"/>
