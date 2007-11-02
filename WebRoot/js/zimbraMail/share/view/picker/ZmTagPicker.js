@@ -19,7 +19,7 @@ ZmTagPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.TAG);
 
-    this._checkedItems = new Object();
+    this._checkedItems = {};
 }
 
 ZmTagPicker._OVERVIEW_ID = "ZmTagPicker";
@@ -42,15 +42,18 @@ function(parent) {
 
 ZmTagPicker.prototype._updateQuery = 
 function() {
-	var tags = new Array();
-	for (var tag in this._checkedItems)
-		tags.push('"' + tag + '"');
+	var tags = [];
+	for (var tagId in this._checkedItems) {
+		var tag = this._checkedItems[tagId];
+		tags.push('"' + tag.name + '"');
+	}
 		
 	var num = tags.length;
 	if (num) {
 		var query = tags.join(" OR ");
-		if (num > 1)
+		if (num > 1) {
 			query = "(" + query + ")";
+		}
 		this.setQuery("tag:" + query);
 	} else {
 		this.setQuery("");
@@ -63,11 +66,12 @@ function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
  		var ti = ev.item;
  		var checked = ti.getChecked();
- 		var tag = ti.getData(Dwt.KEY_OBJECT).getName(false);
+ 		var tagId = ti.getData(Dwt.KEY_ID);
+ 		var tag = ti.getData(Dwt.KEY_OBJECT);
  		if (ti.getChecked()) {
-			this._checkedItems[tag] = true;
+			this._checkedItems[tagId] = tag;
  		} else {
-			delete this._checkedItems[tag];
+			delete this._checkedItems[tagId];
  		}
 		this._updateQuery();
  	}
