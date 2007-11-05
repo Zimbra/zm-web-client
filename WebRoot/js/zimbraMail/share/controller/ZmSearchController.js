@@ -80,6 +80,7 @@ function(name) {
 
 ZmSearchController.prototype._handleLoadFromBrowse =
 function(name, bv) {
+	this.setDefaultSearchType(ZmSearchToolBar.FOR_MAIL_MI);
 	bv.removeAllPickers();
 	this._browseViewController.removeAllPickers();
 	var picker = this._browseViewController.addPicker(ZmPicker.BASIC);
