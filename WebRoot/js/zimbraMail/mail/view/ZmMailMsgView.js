@@ -755,7 +755,7 @@ function(container, html, isTextMsg, isTruncated) {
 
 	var displayImages;
 	if (!isTextMsg &&
-		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || this._msg.folderId == ZmOrganizer.ID_SPAM) &&
+		(!appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) || (this._msg && this._msg.folderId == ZmOrganizer.ID_SPAM)) &&
 		(this._msg == null || (this._msg && !this._msg.showImages)) &&
 		/<img/i.test(html))
 	{
