@@ -1486,7 +1486,7 @@ function(extraBodyText) {
 			tr.collapse(true);
 		}
 		tr.select();
-	} else if (!AjxEnv.isSafari) {
+	} else {
 		var index = extraBodyText ? (extraBodyText.length + 1) : 0;
 		this._bodyField.setSelectionRange(index, index);
 	}
@@ -1546,18 +1546,20 @@ function(templateId, data) {
 	DwtComposite.prototype._createHtmlFromTemplate.call(this, templateId, data);
 
 	// global identifiers
-	this._identityDivId = data.id+"_identity_row";
+	this._identityDivId = data.id + "_identity_row";
 
 	// init autocomplete list
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
-		var contactsLoader = contactsClass.getContactList;
-		var locCallback = new AjxCallback(this, this._getAcListLoc, [this]);
-		var compCallback = (!AjxEnv.isSafari || AjxEnv.isSafariNightly) ? (new AjxCallback(this, this._acCompHandler)) : null;
-		var keyupCallback = (!AjxEnv.isSafari || AjxEnv.isSafariNightly) ? (new AjxCallback(this, this._acKeyupHandler)) : null;
-		var params = {parent: this, dataClass: contactsClass, dataLoader: contactsLoader,
-					  matchValue: ZmContactsApp.AC_VALUE_FULL, locCallback: locCallback,
-					  compCallback:compCallback, keyUpCallback: keyupCallback};
+		var params = {
+			parent: this,
+			dataClass: contactsClass,
+			dataLoader: contactsClass.getContactList,
+			matchValue: ZmContactsApp.AC_VALUE_FULL,
+			locCallback: (new AjxCallback(this, this._getAcListLoc, [this])),
+			compCallback: (new AjxCallback(this, this._acCompHandler)),
+			keyUpCallback: (new AjxCallback(this, this._acKeyupHandler))
+		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 
@@ -1592,7 +1594,7 @@ function(templateId, data) {
 				// autocomplete-related handlers
 				if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 					this._acAddrSelectList.handle(this._field[type]);
-				} else if (!AjxEnv.isSafari || AjxEnv.isSafariNightly) {
+				} else {
 					this._setEventHandler(this._fieldId[type], "onKeyUp");
 				}
 

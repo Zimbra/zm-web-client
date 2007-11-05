@@ -585,15 +585,11 @@ function(text, str, hasDelim) {
 // Resets the value of an element to the given text.
 ZmAutocompleteListView.prototype._updateField =
 function(text, match) {
-	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _updateField");
 	var el = this._element;
-	DBG.println(AjxDebug.DBG3, "update with new text: " + text);
 	el.value = text;
 	el.focus();
-	// bug fix #8776
-	if (AjxEnv.isSafari) {
-		el.setSelectionRange(text.length, text.length);
-	}
+	el.setSelectionRange(text.length, text.length);
+
 	this.reset();
 	if (this._compCallback) {
 		this._compCallback.run(text, el, match);
