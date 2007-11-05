@@ -1624,7 +1624,8 @@ function(templateId, data) {
         this._priorityButton = new DwtButton(this);
         this._priorityButton.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
         this._priorityButton.reparentHtmlElement(data.id + "_priority");
-    }
+		this._priorityButton.setToolTipContent(ZmMsg.setPriority);
+	}
 };
 
 ZmComposeView.prototype._createPrioityMenuItem =

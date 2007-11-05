@@ -523,6 +523,8 @@ function(field, itemIdx) {
 	var tooltip = null;
 	if (field == ZmItem.F_FLAG) {
 		tooltip = ZmMsg.flag;
+	} else if (field == ZmItem.F_PRIORITY){
+		tooltip = ZmMsg.priority;
 	} else if (field == ZmItem.F_TAG) {
 		tooltip = ZmMsg.tag;
 	} else if (field == ZmItem.F_ATTACHMENT) {
@@ -536,7 +538,7 @@ function(field, itemIdx) {
 	} else if (field == ZmItem.F_FROM) {
 		tooltip = (this._headerList[itemIdx]._sortable)
 			? ZmMsg.sortByFrom : ZmMsg.from;
-	} else if ( field == ZmItem.F_SIZE){
+	} else if (field == ZmItem.F_SIZE){
 		tooltip = (this._headerList[itemIdx]._sortable)
 			? ZmMsg.sortBySize : ZmMsg.sizeToolTip;
 	}
@@ -553,6 +555,12 @@ function(field, item, ev, div, match) {
 	} else if (field == ZmItem.F_FLAG) {
 		if (!item.isFlagged) {
 			AjxImg.setDisabledImage(ev.target, "FlagRed", true);
+		}
+	} else if (field == ZmItem.F_PRIORITY) {
+		if (item.isHighPriority) {
+			tooltip = ZmMsg.highPriorityTooltip;
+		} else if (item.isLowPriority) {
+			tooltip = ZmMsg.lowPriorityTooltip;
 		}
 	} else if (field == ZmItem.F_TAG) {
 		tooltip = this._getTagToolTip(item);
