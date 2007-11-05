@@ -25,6 +25,57 @@
         <table cellpadding="3" width="100%" class="ZOptionsSectionMain">
         <tr>
             <td class='ZOptionsTableLabel'>
+                <fmt:message key="optionsCompose"/> :
+            </td>
+            <td>
+                <table border="0" cellpadding="0" cellspacing="3">
+                    <tr>
+                        <td>
+                            <input id="composeAsHTML" type="radio" name="zimbraPrefComposeFormat" value="html" <c:if test="${mailbox.prefs.composeFormat eq 'html'}">checked</c:if>/>
+                        </td>
+                        <td>
+                            <label for="composeAsHTML"><fmt:message key="optionsComposeAsHTML"/></label>
+                        </td>
+                        <td class='ZOptionsTableLabel' style='width:50px;'>
+                            <label for="composeFont"><fmt:message key="optionsComposeFont"/>:</label>
+                        </td>
+                        <td>
+                            <select name="zimbraPrefHtmlEditorDefaultFontFamily" id="composeFont">
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Arial'}"> selected</c:if> value="Arial">Arial</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Times New Roman'}"> selected</c:if> value="Times New Roman">Times New Roman</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Courier'}"> selected</c:if> value="Courier">Courier</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontFamily eq 'Verdana'}"> selected</c:if> value="Verdana">Verdana</option>
+                            </select>
+                        </td>
+                        <td class='ZOptionsTableLabel' style='width:50px;'>
+                            <label for="composeSize"><fmt:message key="optionsComposeSize"/>:</label>
+                        </td>
+                        <td>
+                            <select name="zimbraPrefHtmlEditorDefaultFontSize" id="composeSize">
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontSize eq '8pt'}"> selected</c:if> value="8pt">8pt</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontSize eq '10pt'}"> selected</c:if> value="10pt">10pt</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontSize eq '12pt'}"> selected</c:if> value="12pt">12pt</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontSize eq '14pt'}"> selected</c:if> value="14pt">14pt</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontSize eq '18pt'}"> selected</c:if> value="18pt">18pt</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontSize eq '24pt'}"> selected</c:if> value="24pt">24pt</option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontSize eq '36pt'}"> selected</c:if> value="36pt">36pt</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input id="composeAsText" type="radio" name="zimbraPrefComposeFormat" value="text" <c:if test="${mailbox.prefs.composeFormat eq 'text'}">checked</c:if>/>
+                        </td>
+                        <td>
+                            <label for="composeAsText"><fmt:message key="optionsComposeAsText"/></label>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <app:optSeparator/>
+        <tr>
+            <td class='ZOptionsTableLabel'>
                 <fmt:message key="optionsReplyReplyAll"/> :
             </td>
             <td>
