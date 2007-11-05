@@ -23,7 +23,7 @@ ZmLoginDialog = function(parent, className) {
     this._xparentClassName = className + "-Transparent";
     this.setBounds(0, 0, "100%", "100%");
     var htmlElement = this.getHtmlElement();
-    htmlElement.style.zIndex = Dwt.Z_DIALOG;
+    htmlElement.style.zIndex = Dwt.Z_DIALOG + 1; // + 1 to keep appointment reminders underneath login dialog.
     htmlElement.className = className;
     this.setVisible(false);
 
