@@ -230,7 +230,7 @@ function(callback, errorCallback, batchCommand) {
 };
 
 ZmDataSource.prototype.testConnection =
-function(callback, errorCallback, batchCommand) {
+function(callback, errorCallback, batchCommand, noBusyOverlay) {
 	var soapDoc = AjxSoapDoc.create("TestDataSourceRequest", "urn:zimbraMail");
 	var dsrc = soapDoc.set(this.ELEMENT_NAME);
 
@@ -250,6 +250,7 @@ function(callback, errorCallback, batchCommand) {
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: Boolean(callback),
+		noBusyOverlay: noBusyOverlay,
 		callback: callback,
 		errorCallback: errorCallback
 	};

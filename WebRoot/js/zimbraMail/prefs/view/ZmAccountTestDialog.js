@@ -32,6 +32,7 @@ ZmAccountTestDialog.prototype.toString = function() {
 //
 
 ZmAccountTestDialog.prototype.popup = function(accounts, okCallback, cancelCallback) {
+	delete this._reqId;
 	// perform tests
 	if (accounts && accounts.length > 0) {
 		this._okCallback = okCallback;
@@ -122,11 +123,14 @@ function(testCallback, index, result) {
 	var account = this._accounts[ testCallback.args[1]++ ];
 	var statusEl = document.getElementById(account.id+"_test_status");
 	statusEl.innerHTML = ZmMsg.popAccountTestInProgress;
-	account.testConnection(testCallback, testCallback);
+	this._reqId = account.testConnection(testCallback, testCallback, null, true);
 };
 
 ZmAccountTestDialog.prototype._handleOkButton = function(evt) {
 	this.popdown();
+	if (this._reqId) {
+		appCtxt.getAppController().cancelRequest(this._reqId);
+	}
 	if (this._okCallback) {
 		this._okCallback.run(this._successes);
 	}

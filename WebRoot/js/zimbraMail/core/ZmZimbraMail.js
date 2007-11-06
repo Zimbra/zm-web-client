@@ -619,6 +619,10 @@ function() {
 	this._appViewMgr.reset();
 };
 
+ZmZimbraMail.prototype.cancelRequest = function(reqId, errorCallback, noBusyOverlay) {
+	this._requestMgr.cancelRequest(reqId, errorCallback, noBusyOverlay)
+};
+
 ZmZimbraMail.prototype.sendRequest =
 function(params) {
 	return this._requestMgr.sendRequest(params);
