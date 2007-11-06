@@ -577,7 +577,7 @@ function(ev) {
 		}
 	}
 
-	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_PARTICIPANT])) {
+	if (ev.event == ZmEvent.E_MODIFY && (fields && (fields[ZmItem.F_PARTICIPANT] || fields[ZmItem.F_FROM]))) {
 		var fieldId = this._getFieldId(item, ZmItem.F_FROM);
 		var fromField = document.getElementById(fieldId);
 		if (fromField) {

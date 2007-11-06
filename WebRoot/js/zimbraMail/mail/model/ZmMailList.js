@@ -223,22 +223,24 @@ function(convs, msgs) {
 			var cid = msg.cid;
 			var msgMatches = (msg.folderId == searchFolder);
 			var conv = newConvId[cid] || this.getById(cid) || appCtxt.getById(cid);
-			if (!conv && msgMatches) {
-				// msg will have _convCreateNode if it is 2nd msg and caused promotion of virtual conv;
-				// the conv node will have proper count and subject
-				var args = {list:this};
-				if (msg._convCreateNode) {
-					if (msg._convCreateNode._newId) {
-						msg._convCreateNode.id = msg._convCreateNode._newId;
+			if (msgMatches) {
+				if (!conv) {
+					// msg will have _convCreateNode if it is 2nd msg and caused promotion of virtual conv;
+					// the conv node will have proper count and subject
+					var args = {list:this};
+					if (msg._convCreateNode) {
+						if (msg._convCreateNode._newId) {
+							msg._convCreateNode.id = msg._convCreateNode._newId;
+						}
+						conv = ZmConv.createFromDom(msg._convCreateNode, args)
+					} else {
+						conv = ZmConv.createFromMsg(msg, args);
 					}
-					conv = ZmConv.createFromDom(msg._convCreateNode, args)
-				} else {
-					conv = ZmConv.createFromMsg(msg, args);
+					newConvId[cid] = conv;
+					conv.folders[msg.folderId] = true;
+					newConvs.push(conv);
 				}
-				newConvId[cid] = conv;
-				conv.folders[msg.folderId] = true;
 				conv.list = this;
-				newConvs.push(conv);
 			}
 			// make sure conv's msg list is up to date
 			if (conv && !(conv.msgs && conv.msgs.getById(id))) {

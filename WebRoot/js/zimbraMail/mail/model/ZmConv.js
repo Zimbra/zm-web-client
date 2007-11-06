@@ -499,6 +499,7 @@ function(ev) {
 		// a msg was moved or deleted, see if this conv's row should remain
 		this.checkMoved(this.getFolderId());
 	}
+	this._notify(ev.event, ev._details);
 };
 
 /**
