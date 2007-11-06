@@ -232,6 +232,11 @@ function(view, force) {
 	return force ? true : this.popShield();
 };
 
+ZmComposeController.prototype._preUnloadCallback =
+function(view) {
+	return !this._composeView.isDirty();
+};
+
 ZmComposeController.prototype._postShowCallback =
 function() {
 	ZmController.prototype._postShowCallback.call(this);
@@ -355,6 +360,7 @@ function(initHide, composeMode) {
 	this._composeView = new ZmComposeView(this._container, this, composeMode);
 	var callbacks = {};
 	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+	callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
 	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 	var elements = {};
 	this._initializeToolBar();

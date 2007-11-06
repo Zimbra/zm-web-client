@@ -185,6 +185,7 @@ function() {
 		this._initializeToolBar();
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		this._prefsView = new ZmPrefView(this._container, Dwt.ABSOLUTE_STYLE, this);
@@ -344,6 +345,11 @@ ZmPrefController.prototype._preHideCallback =
 function(view, force) {
 	ZmController.prototype._preHideCallback.call(this);
 	return force ? true : this.popShield();
+};
+
+ZmPrefController.prototype._preUnloadCallback =
+function(view) {
+	return !this._prefsView.isDirty();
 };
 
 ZmPrefController.prototype._preShowCallback =

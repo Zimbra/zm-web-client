@@ -465,6 +465,11 @@ function(view, force) {
 	return false;
 };
 
+ZmPageEditController.prototype._preUnloadCallback =
+function(view) {
+	return !this._pageEditView.isDirty();
+};
+
 ZmPageEditController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();

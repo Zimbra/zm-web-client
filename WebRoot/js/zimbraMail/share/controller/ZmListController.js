@@ -397,6 +397,7 @@ function(view, elements, isAppView, clear, pushOnly, isTransient) {
 		// view management callbacks
 		var callbacks = {};
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = this._preHideCallback ? new AjxCallback(this, this._preHideCallback) : null;
+		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = this._preUnloadCallback ? new AjxCallback(this, this._preUnloadCallback) : null;
 		callbacks[ZmAppViewMgr.CB_POST_HIDE]= this._postHideCallback ? new AjxCallback(this, this._postHideCallback) : null;
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW]	= this._preShowCallback ? new AjxCallback(this, this._preShowCallback) : null;
 		callbacks[ZmAppViewMgr.CB_POST_SHOW]= this._postShowCallback ? new AjxCallback(this, this._postShowCallback) : null;

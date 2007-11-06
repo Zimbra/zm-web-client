@@ -391,9 +391,7 @@ function(params, result) {
 	
 	this.setPollInterval(true);
 
-	if (!appCtxt.get(ZmSetting.DEV) && appCtxt.get(ZmSetting.WARN_ON_EXIT)) {
-		window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
-	}	
+	window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
 
 	if (!this._components[ZmAppViewMgr.C_APP_CHOOSER]) {
 		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._appChooser = this._createAppChooser();
@@ -1311,7 +1309,7 @@ function() {
 	}
 
 	ZmCsfeCommand.clearAuthToken();
-	
+
 	window.onbeforeunload = null;
 	
 	var url = appCtxt.get(ZmSetting.LOGOUT_URL);
@@ -1460,7 +1458,13 @@ function(ex, method, params, restartOnError, obj) {
 // This method is called by the window.onbeforeunload method.
 ZmZimbraMail._confirmExitMethod =
 function() {
-	return ZmMsg.appExitWarning;
+	if (window._zimbraMail && !window._zimbraMail._appViewMgr.isOkToUnload()) {
+		return ZmMsg.appExitWarningUnsaved;
+	}
+	if (appCtxt.get(ZmSetting.WARN_ON_EXIT)) {
+		return ZmMsg.appExitWarning;
+	}
+	return;
 };
 
 ZmZimbraMail.unloadHackCallback =

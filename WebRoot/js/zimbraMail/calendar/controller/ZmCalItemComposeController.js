@@ -63,6 +63,11 @@ function(view, force) {
 	return force ? true : this.popShield();
 };
 
+ZmCalItemComposeController.prototype._preUnloadCallback =
+function(view) {
+	return !this._composeView.isDirty();
+};
+
 ZmCalItemComposeController.prototype._postShowCallback =
 function(view, force) {
 	var ta = new AjxTimedAction(this, this._setFocus);
@@ -108,6 +113,7 @@ function(initHide) {
 		this._composeView = this._createComposeView();
 		var callbacks = {};
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		var elements = {};
 		if (!this._toolbar)

@@ -318,6 +318,11 @@ function(view, force) {
 	return false;
 };
 
+ZmContactController.prototype._preUnloadCallback =
+function(view) {
+	return !this._listView[this._currentView].isDirty();
+};
+
 ZmContactController.prototype._popShieldYesCallback =
 function() {
 	this._saveListener(null, true);

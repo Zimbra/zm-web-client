@@ -169,6 +169,7 @@ ZmAppViewMgr.CB_PRE_HIDE	= 1;
 ZmAppViewMgr.CB_POST_HIDE	= 2;
 ZmAppViewMgr.CB_PRE_SHOW	= 3;
 ZmAppViewMgr.CB_POST_SHOW	= 4;
+ZmAppViewMgr.CB_PRE_UNLOAD	= 5;
 
 // used to continue when returning from callbacks
 ZmAppViewMgr.PENDING_VIEW = "ZmAppViewMgr.PENDING_VIEW";
@@ -666,6 +667,20 @@ function(pendingAction) {
 		this._pendingAction = pendingAction;
 		this._pendingView = null;
 		okToContinue = callback.run(this._currentView, false);
+	}
+	return okToContinue;
+};
+
+/**
+* Checks if it is ok to unload the app (user navigtates away, closes browser, etc.)
+*/
+ZmAppViewMgr.prototype.isOkToUnload =
+function() {
+	var okToContinue = true;
+	var callback = this._callbacks[this._currentView] ? this._callbacks[this._currentView][ZmAppViewMgr.CB_PRE_UNLOAD] : null;
+	if (callback) {
+		DBG.println(AjxDebug.DBG2, "checking if ok to unload " + this._currentView);
+		okToContinue = callback.run(this._currentView);
 	}
 	return okToContinue;
 };
