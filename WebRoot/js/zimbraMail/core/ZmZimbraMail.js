@@ -1470,9 +1470,6 @@ function(ex, method, params, restartOnError, obj) {
 ZmZimbraMail._confirmExitMethod =
 function() {
 	if (window._zimbraMail && !window._zimbraMail._appViewMgr.isOkToUnload()) {
-		return ZmMsg.appExitWarningUnsaved;
-	}
-	if (appCtxt.get(ZmSetting.WARN_ON_EXIT)) {
 		return ZmMsg.appExitWarning;
 	}
 	return;
