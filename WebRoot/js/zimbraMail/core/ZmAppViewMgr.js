@@ -591,11 +591,7 @@ function(viewId) {
 ZmAppViewMgr.prototype.showPendingView =
 function(show) {
 	if (show && this._pendingAction) {
-		if (this._pendingView && this._viewApp[this._pendingView] &&
-			this._pendingAction.run(ZmAppViewMgr.PENDING_VIEW)) {
-
-//			this._controller.setActiveApp(this._viewApp[this._pendingView], this._pendingView);
-		}
+		this._pendingAction.run(ZmAppViewMgr.PENDING_VIEW);
 	}
 	
 	// If a pop shield has been dismissed and we're not going to show the pending view, and we
