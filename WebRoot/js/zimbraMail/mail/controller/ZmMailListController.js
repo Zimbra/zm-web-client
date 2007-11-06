@@ -219,7 +219,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.READING_PANE:
-			this.switchView(ZmMailListController.READING_PANE_MENU_ITEM_ID);
+			this.switchView(ZmMailListController.READING_PANE_MENU_ITEM_ID, true);
 			break;
 
 		case ZmKeyMap.SHOW_FRAGMENT:

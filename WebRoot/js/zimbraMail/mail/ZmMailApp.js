@@ -1244,7 +1244,7 @@ function(ev) {
 	newView = groupByView || newView;
 	
 	if (toggle) {
-		mlc.switchView(ZmMailListController.READING_PANE_MENU_ITEM_ID);
+		mlc.switchView(ZmMailListController.READING_PANE_MENU_ITEM_ID, true);
 	}
 	if (newView) {
 		mlc.switchView(newView, true);

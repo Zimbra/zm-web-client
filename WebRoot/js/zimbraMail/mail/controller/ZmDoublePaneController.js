@@ -100,7 +100,7 @@ function(item, callback, results) {
 ZmDoublePaneController.prototype.switchView =
 function(view, force) {
 	if (view == ZmMailListController.READING_PANE_MENU_ITEM_ID) {
-		this._toggleReadingPane(true);
+		this._toggleReadingPane(force);
 	} else {
 		ZmMailListController.prototype.switchView.apply(this, arguments);
 	}
@@ -127,13 +127,14 @@ function(force) {
 	var viewBtn = this._toolbar[this._currentView].getButton(ZmOperation.VIEW_MENU);
 	var menu = viewBtn.getMenu();
 	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, ZmMailListController.READING_PANE_MENU_ITEM_ID);
+	var checked = mi.getChecked();
 	if (force) {
-		mi.setChecked(!mi.getChecked(), true);
+		mi.setChecked(!checked, true);
 	} else {
-		if (this._readingPaneOn == mi.getChecked()) { return; }
+		if (this._readingPaneOn == checked) { return; }
 	}
 
-	this._readingPaneOn = mi.getChecked();
+	this._readingPaneOn = checked;
 	this._doublePaneView.toggleView();
 
 	// set msg in msg view if reading pane is being shown
