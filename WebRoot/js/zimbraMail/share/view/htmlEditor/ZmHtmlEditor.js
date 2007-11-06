@@ -554,11 +554,6 @@ function(ev) {
 	this.setFont(null, null, ev.item.getData(ZmHtmlEditor._VALUE));
 };
 
-ZmHtmlEditor.prototype._directionListener =
-function(ev) {
-	this.setTextDirection(ev.item.getData(ZmHtmlEditor._VALUE));
-};
-
 ZmHtmlEditor.prototype._indentListener =
 function(ev) {
 	this.setIndent(ev.item.getData(ZmHtmlEditor._VALUE));

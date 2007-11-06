@@ -75,6 +75,7 @@ INPUT[readonly] {
 }
 TEXTAREA {
 	@TextArea@ @TextArea-normal@
+	resize: none;
 }
 TEXTAREA[readonly] {
 	@TextArea-disabled@
