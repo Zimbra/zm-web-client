@@ -1229,7 +1229,7 @@ function() {
 		this._setUserInfoLink("ZmZimbraMail.helpLinkCallback();", "Help", ZmMsg.help, "skin_container_help", hideIcon);
 		hideIcon = appCtxt.get(ZmSetting.SKIN_HINTS, "logout_button.hideIcon");
 		var text = appCtxt.get(ZmSetting.OFFLINE) ? ZmMsg.setup : ZmMsg.logOff;
-		this._setUserInfoLink("ZmZimbraMail.conditionalLogOff();", "Logoff", text, "skin_container_logoff", hideIcon);
+		this._setUserInfoLink("ZmZimbraMail._onClickLogOff();", "Logoff", text, "skin_container_logoff", hideIcon);
 	}
 
 	var login = appCtxt.get(ZmSetting.USERNAME);
@@ -1327,6 +1327,17 @@ function() {
 		return;
 	}
 	ZmZimbraMail.logOff();
+};
+
+ZmZimbraMail._onClickLogOff =
+function() {
+    if (AjxEnv.isIE) {
+		// Don't the the default <a> handler process the event. It can bring up an unwanted
+		// "Are you sure you want to exit?" dialog.
+		var ev = DwtUiEvent.getEvent();
+        ev.returnValue = false;
+    }
+    ZmZimbraMail.conditionalLogOff();
 };
 
 ZmZimbraMail.helpLinkCallback =
