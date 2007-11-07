@@ -483,13 +483,12 @@ function(x, y) {
 	var div = null;
 	if (this._spellCheckDivId) {
 		div = document.getElementById(this._spellCheckDivId);
-		div.style.display = "none";
 	}
 
 	// FUDGE: we must substract borders and paddings - yuck.
-	var delta = this._mode == DwtHtmlEditor.HTML ? 10 : 12;
+	var delta = this._mode == DwtHtmlEditor.HTML ? 10 : 8;
 
-	x -= delta;
+	x -= delta + 4;
 
 	// subtract spellchecker DIV if applicable
 	if (this._spellCheckModeDivId) {
@@ -511,7 +510,7 @@ function(x, y) {
 	if (y < 0) y = 0;
 
 	var main = document.getElementById(this.getBodyFieldId());
-	main.style.width = x + "px";
+	main.style.width = x + 5 + "px";
 	main.style.height = y + "px";
 	if (div) {
 		if (!AjxEnv.isIE) {
