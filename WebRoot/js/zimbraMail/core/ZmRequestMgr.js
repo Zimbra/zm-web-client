@@ -42,7 +42,6 @@ ZmRequestMgr = function(controller) {
 
 	this._cancelActionId = {};
 	this._pendingRequests = {};
-	this._modifyHandled = {};
 
 	this._useXml = appCtxt.get(ZmSetting.USE_XML);
 	this._logRequest = appCtxt.get(ZmSetting.LOG_REQUEST);
@@ -542,11 +541,6 @@ function(creates) {
 ZmRequestMgr.prototype._handleModifies =
 function(modifies) {
 
-	// for tracking what has been handled across multiple change listeners;
-	// clients can set this directly with the ID of the item as the key;
-	// clear it out before handling a set of notifications.
-	this._modifyHandled = {};
-	
 	this._controller.runAppFunction("modifyNotify", false, modifies);
 
 	for (var name in modifies) {
@@ -559,7 +553,7 @@ function(modifies) {
 		var list = modifies[name];
 		for (var i = 0; i < list.length; i++) {
 			var mod = list[i];
-			if (mod._handled || this._modifyHandled[mod.id]) { continue; }
+			if (mod._handled) { continue; }
 			DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling modified notif for ID " + mod.id + ", node type = " + name);
 			var item = appCtxt.cacheGet(mod.id);
 			if (item) {

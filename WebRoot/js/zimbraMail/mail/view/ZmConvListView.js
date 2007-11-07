@@ -472,12 +472,6 @@ function(ev) {
 	var fields = ev.getDetail("fields");
 	var isConv = (item.type == ZmItem.CONV);
 	
-	// prevent redundant handling for same item due to multiple change listeners
-	// (msg will notify containing conv, and then notif for same conv gets processed)
-	if (ev.event != ZmEvent.E_DELETE && ev.event != ZmEvent.E_CREATE) {
-		appCtxt.getRequestMgr()._modifyHandled[item.id] = true;
-	}
-	
 	// msg moved or deleted	
 	if (!isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
 		var	conv = appCtxt.getById(item.cid);
