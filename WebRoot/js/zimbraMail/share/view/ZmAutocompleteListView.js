@@ -84,7 +84,7 @@ ZmAutocompleteListView = function(params) {
 	this._acActionId = -1;
 
 	// for managing focus on Tab in Firefox
-	if (AjxEnv.isFirefox) {
+	if (AjxEnv.isGeckoBased) {
 		this._focusAction = new AjxTimedAction(null, this._autocompleteFocus);
 	}
 
@@ -234,7 +234,7 @@ function(ev) {
 		aclv.handleAction(key, isDelim);
 		// In Firefox, focus shifts on Tab even if we return false (and stop propagation and prevent default),
 		// so make sure the focus stays in this element.
-		if (AjxEnv.isFirefox && key == 9) {
+		if (AjxEnv.isGeckoBased && key == 9) {
 			aclv._focusAction.args = [ element ];
 			AjxTimedAction.scheduleAction(aclv._focusAction, 0);
 		}
