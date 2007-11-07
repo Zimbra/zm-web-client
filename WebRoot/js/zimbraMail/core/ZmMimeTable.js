@@ -122,10 +122,26 @@ function(type) {
 			type == ZmMimeTable.APP_MS_TNEF2);
 };
 
-ZmMimeTable.hasHtmlVersion = 
+ZmMimeTable.isRenderable =
+function(type) {
+	return (type == ZmMimeTable.TEXT_HTML ||
+			type == ZmMimeTable.TEXT_PLAIN ||
+			type == ZmMimeTable.IMG_JPEG ||
+			type == ZmMimeTable.IMG_GIF ||
+			type == ZmMimeTable.IMG_PNG);
+};
+
+ZmMimeTable.isRenderableImage =
+function(type) {
+	return (type == ZmMimeTable.IMG_JPEG ||
+			type == ZmMimeTable.IMG_GIF ||
+			type == ZmMimeTable.IMG_PNG);
+};
+
+ZmMimeTable.hasHtmlVersion =
 function(type) {
 	return (!(ZmMimeTable.isIgnored(type) ||
-				type.match(/^image/) ||
-				type.match(/^audio/) ||
-				type.match(/^video/)));
+			type.match(/^image/) ||
+			type.match(/^audio/) ||
+			type.match(/^video/)));
 };

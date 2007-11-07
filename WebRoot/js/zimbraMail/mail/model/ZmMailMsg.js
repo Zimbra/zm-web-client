@@ -1039,8 +1039,11 @@ function(findHits) {
 		for (var i = 0; i < this._attachments.length; i++) {
     		var attach = this._attachments[i];
 
-			if (!this.isRealAttachment(attach))
-    			continue;
+			if (!this.isRealAttachment(attach) ||
+				(attach.body && ZmMimeTable.isRenderableImage(attach.ct)))
+			{
+				continue;
+			}
 
 			var props = {};
 

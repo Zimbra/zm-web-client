@@ -433,6 +433,11 @@ td.DDSepInvisible div {
 	@PanelPadding@
 }
 
+/* for images that are rendered inline of a message body */
+.InlineImage {
+	padding-left: 10px;
+}
+
 
 
 /* ??? USE? */

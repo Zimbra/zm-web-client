@@ -128,9 +128,7 @@ function(partNode, attachments, bodyParts, parentNode) {
 			}
 		}
 
-		if (this.node.body &&
-			(this.node.ct == ZmMimeTable.TEXT_HTML || this.node.ct == ZmMimeTable.TEXT_PLAIN))
-		{
+		if (this.node.body && ZmMimeTable.isRenderable(this.node.ct)) {
 			bodyParts.push(this.node);
 		}
 

@@ -1028,7 +1028,14 @@ function(msg, container, callback) {
 	if (len > 1) {
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
-			this._makeIframeProxy(el, bp.content, bp.ct == ZmMimeTable.TEXT_PLAIN, bp.truncated)
+			if (ZmMimeTable.isRenderableImage(bp.ct)) {
+				var img = document.createElement("IMG");
+				img.className = "InlineImage";
+				img.src = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id + "&part=" + bp.part;
+				el.appendChild(img);
+			} else {
+				this._makeIframeProxy(el, bp.content, bp.ct == ZmMimeTable.TEXT_PLAIN, bp.truncated)
+			}
 		}
 	} else {
 		var bodyPart = msg.getBodyPart();
