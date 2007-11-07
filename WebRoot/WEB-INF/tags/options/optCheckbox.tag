@@ -18,7 +18,7 @@
     </c:when>
     <c:otherwise>
         <tr>
-            <td width=30% nowrap align=right><label for="${pref}"><fmt:message key="${label}"/> :</label></td>
+            <td class="ZOptionsTableLabel" style="width:30%;" nowrap align=right><label for="${pref}"><fmt:message key="${label}"/> :</label></td>
             <td><input type="checkbox" id="${pref}" name='${pref}' value="TRUE" <c:if test="${checked}">checked</c:if>></td>
         </tr>
     </c:otherwise>
