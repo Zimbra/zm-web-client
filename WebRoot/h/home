@@ -69,7 +69,7 @@
 <br><br>
 <table width="100%" border="0" cellpadding="8" cellspacing="0">
 <tr>
-    <td width="50%" valign="top">
+    <td valign="top" width="50%">
         <table cellpadding="5" cellspacing="0" border='0' width='100%'>
             <tr>
                 <td>
@@ -109,7 +109,7 @@
 
         </table>
     </td>
-    <td valign="top">
+    <td valign="top" width="50%">
 		<c:choose>
 			<c:when test="${mailbox.features.calendar}">
 				<c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
@@ -136,12 +136,32 @@
 							the voice account summary in an iframe to speed up home page loading
 							--%> 
 							<iframe class="ZhHomeVoiceIframe" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="/h/homevoice"></iframe>
-						</td></tr>
+						</td>
+						</tr>
 					</table>
 				</c:if>
 			</c:otherwise>
 		</c:choose>
     </td>
+	<c:set var="comcast_msgcenterad" value="false"/>
+		<c:forEach var="zimlets" items="${mailbox.attrs.zimbraZimletAvailableZimlets}">
+		    <c:if test="${zimlets eq 'comcast_msgcenterad'}">
+	        <c:set var="comcast_msgcenterad" value="true"/>    
+		</c:if>
+		</c:forEach>
+		<c:if test="${comcast_msgcenterad}">
+		<td rowspan="2">
+			<iframe src="http://pn2.adserver.yahoo.com/a?f=2022363872&pn=comcast&p=com-mail&l=LREC&c=sh&bg=ffffff&no_expandable=1"
+	              marginwidth="0"
+	              marginheight="0"
+	              width="300"
+	              height="264"
+	              border="0"
+	              frameborder="0"
+	              style="border:none;"
+	              scrolling="no" align="center"></iframe>
+			</td>
+		</c:if>
 </tr>
 </table>
 </td>
