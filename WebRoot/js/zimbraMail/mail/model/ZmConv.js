@@ -405,7 +405,10 @@ function(params, callback) {
 			this.load(params, respCallback);
 		}
 	} else {
-		return msg ? msg : new ZmMailMsg(this.msgIds[0]);
+		// do our best to return a "realized" message by checking cache
+		if (!msg) msg = appCtxt.getById(this.msgIds[0]);
+		if (!msg) msg = new ZmMailMsg(this.msgIds[0]);
+		return msg;
 	}		
 };
 
