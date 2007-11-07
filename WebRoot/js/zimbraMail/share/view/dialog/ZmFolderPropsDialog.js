@@ -133,7 +133,7 @@ function(event) {
 	// create share info
 	var tmpShare = new ZmShare({object:share.object});
 	tmpShare.grantee.id = share.grantee.id;
-	tmpShare.grantee.email = share.grantee.name;
+	tmpShare.grantee.email = (share.grantee.type == "guest")? share.grantee.id : share.grantee.name;
 	tmpShare.grantee.name = share.grantee.name;
 	tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID);
 	tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME);
