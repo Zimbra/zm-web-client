@@ -129,7 +129,8 @@ function(force) {
 	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, ZmMailListController.READING_PANE_MENU_ITEM_ID);
 	var checked = mi.getChecked();
 	if (force) {
-		mi.setChecked(!checked, true);
+		checked = !checked;
+		mi.setChecked(checked, true);
 	} else {
 		if (this._readingPaneOn == checked) { return; }
 	}
