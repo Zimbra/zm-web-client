@@ -313,7 +313,7 @@ function() {
 
 ZmComposeController.prototype._handleErrorSendMsg =
 function(ex) {
-	this._toolbar.enableAll(true);
+	this.resetToolbarOperations();
 
 	var msg = null;
 	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
@@ -448,7 +448,8 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SAVE: // Save to draft
-			if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+			if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) &&
+				!this._composeView._isInviteReply(this._action)) {
 				this._saveDraft();
 			}
 			break;
@@ -585,22 +586,10 @@ function(params) {
 	params.identity = identity;
 	this._currentSignatureId = identity.signature;
 
-	this._initializeToolBar();
-	this._toolbar.enableAll(true);
-	var isCancel = (action == ZmOperation.REPLY_CANCEL);
-	if (isCancel || 
-		(action == ZmOperation.REPLY_ACCEPT) ||
-		(action == ZmOperation.REPLY_DECLINE) ||
-		(action == ZmOperation.REPLY_TENTATIVE))
-	{
-		var ops = [ ZmOperation.SAVE_DRAFT ];
-		if (isCancel) {
-			ops.push(ZmOperation.ATTACHMENT);
-		}
-		this._toolbar.enable(ops, false);
-	}
-
 	this.initComposeView(null, params.composeMode);
+
+	this._initializeToolBar();
+	this.resetToolbarOperations(this._toolbar);
 
 	this._composeMode = params.composeMode ? params.composeMode : this._getComposeMode(msg, identity);
 	this._composeView.setComposeMode(this._composeMode);
@@ -1250,3 +1239,14 @@ function(ev) {
 	}
 };
 
+ZmComposeController.prototype.resetToolbarOperations =
+function() {
+	this._toolbar.enableAll(true);
+	if (this._composeView._isInviteReply(this._action)) {
+		var ops = [ ZmOperation.SAVE_DRAFT ];
+		if (this._action == ZmOperation.REPLY_CANCEL) {
+			ops.push(ZmOperation.ATTACHMENT);
+		}
+		this._toolbar.enable(ops, false);
+	}
+};

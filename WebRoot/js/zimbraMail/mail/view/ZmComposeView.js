@@ -1967,7 +1967,7 @@ function(args) {
 ZmComposeView.prototype._okCallback =
 function() {
 	appCtxt.getMsgDialog().popdown();
-	this._controller._toolbar.enableAll(true);
+	this._controller.resetToolbarOperations();
 	this.reEnableDesignMode();
 };
 
@@ -2005,7 +2005,7 @@ function() {
 	this.enableInputs(true);
 	this._confirmDialog.popdown();
 	appCtxt.getKeyboardMgr().grabFocus(this._subjectField);
-	this._controller._toolbar.enableAll(true);
+	this._controller.resetToolbarOperations();
 	this.reEnableDesignMode();
 };
 
@@ -2027,7 +2027,7 @@ function(type) {
 	if (this._using[type]) {
 		appCtxt.getKeyboardMgr().grabFocus(this._field[type]);
 	}
-	this._controller._toolbar.enableAll(true);
+	this._controller.resetToolbarOperations();
 	this.reEnableDesignMode();
 };
 
@@ -2054,7 +2054,7 @@ function(isDraft, status, attId) {
 		}
 
 		this._controller.popupErrorDialog(msg + ZmMsg.errorTryAgain, null, null, true);
-		this._controller._toolbar.enableAll(true);
+		this._controller.resetToolbarOperations()
 	}
 };
 
