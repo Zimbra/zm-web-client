@@ -1211,6 +1211,7 @@ function(ev) {
 	if (ev.type != ZmEvent.S_SETTINGS) { return; }
 
 	var list = ev.getDetail("settings");
+	if (!(list && list.length)) { return; }
 	var mlc = this.getMailListController();
 	if (!mlc) { return; }
 	var curView = mlc._currentView;

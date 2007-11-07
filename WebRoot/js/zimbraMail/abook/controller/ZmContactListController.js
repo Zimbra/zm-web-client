@@ -121,9 +121,19 @@ function(searchResult, bIsGalSearch, folderId) {
 	this.switchView(view, true);
 };
 
+/**
+ * Change how contacts are displayed. There are two views: the "simple" view
+ * shows a list of contacts on the left and the selected contact on the right;
+ * the "cards" view shows contacts as business cards.
+ * 
+ * @param view			[constant]		view to show
+ * @param force			[boolean]*		if true, render view even if it's the current view
+ * @param initialized	[boolean]*		if true, app has been initialized
+ * @param stageView		[boolean]*		if true, stage the view but don't push it
+ */
 ZmContactListController.prototype.switchView =
-function(view, force, initialized) {
-	if (view != this._currentView || force) {
+function(view, force, initialized, stageView) {
+	if (view && ((view != this._currentView) || force)) {
 		this._currentView = view;
 		DBG.timePt("setting up view", true);
 		this._setup(view);
@@ -134,24 +144,26 @@ function(view, force, initialized) {
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
 
 		// call initialize before _setView since we havent set the new view yet
-		if (!initialized)
+		if (!initialized) {
 			this._initializeAlphabetBar(view);
+		}
 
-		this._setView(view, elements, true);
-
+		this._setView(view, elements, true, false, false, false, stageView);
 		this._resetNavToolBarButtons(view);
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
-		if (this.isGalSearch())
+		if (this.isGalSearch()) {
 			appCtxt.getSearchController().setDefaultSearchType(ZmSearchToolBar.FOR_GAL_MI);
+		}
 
 		this._setTabGroup(this._tabGroups[view]);
 		this._restoreFocus();
 
 		if (!initialized) {
 			var list = this._listView[view].getList();
-			if (list)
+			if (list) {
 				this._listView[view].setSelection(list.get(0));
+			}
 		}
 	}
 };

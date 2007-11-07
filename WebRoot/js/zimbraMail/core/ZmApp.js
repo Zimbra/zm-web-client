@@ -269,6 +269,11 @@ function(name, force) {
 	return this._appViewMgr.setView(name, force);
 }
 
+ZmApp.prototype.stageView =
+function(name) {
+	return this._appViewMgr.setView(name);
+}
+
 ZmApp.prototype.addDeferredFolder =
 function(type, obj, tree, path) {
 	if (obj.id && !this._deferredFolderHash[obj.id]) {

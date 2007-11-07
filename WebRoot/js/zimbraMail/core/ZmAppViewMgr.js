@@ -556,12 +556,12 @@ function(force, viewId) {
 };
 
 /**
-* Makes the given view visible, and clears the hidden stack.
-*
-* @param viewId		the ID of the view
-* @param force		ignore pre-emption callbacks
-* @returns			true if the view was set
-*/
+ * Makes the given view visible, and clears the hidden stack.
+ *
+ * @param viewId		the ID of the view
+ * @param force		ignore pre-emption callbacks
+ * @returns			true if the view was set
+ */
 ZmAppViewMgr.prototype.setView =
 function(viewId, force) {
 	DBG.println(AjxDebug.DBG1, "setView: " + viewId);
@@ -574,6 +574,19 @@ function(viewId, force) {
 		this._hidden = [];
 	}
 	return result;
+};
+
+/**
+ * Moves the given view to the top of the hidden stack, so that it will
+ * appear when the current view is popped.
+ * 
+ * @param viewId		the ID of the view
+ */
+ZmAppViewMgr.prototype.stageView =
+function(viewId) {
+	DBG.println(AjxDebug.DBG1, "stageView: " + viewId);
+	this._removeFromHidden(viewId);
+	this._hidden.push(viewId);
 };
 
 ZmAppViewMgr.prototype.isAppView = 

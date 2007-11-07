@@ -28,6 +28,9 @@ ZmContactsApp = function(container, parentController) {
 
 	ZmApp.call(this, ZmApp.CONTACTS, container, parentController);
 
+	var settings = appCtxt.getSettings();
+	settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
+
 	this.contactsLoaded = {};
 	this._contactList = {};
 	this._initialized = false;
@@ -560,4 +563,31 @@ function(parent, name, color) {
 
 	var oc = appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.ADDRBOOK)._doCreate(parent, name, color);
+};
+
+/**
+ * Settings listener.
+ */
+ZmContactsApp.prototype._settingsChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTINGS) { return; }
+	if (!this._initialized) { return; }
+	var clc = this.getContactListController();
+	if (!clc) { return; }
+
+	var list = ev.getDetail("settings");
+	if (!(list && list.length)) { return; }
+
+	var force = ((list.length == 1) && (list[0].id == ZmSetting.CONTACTS_PER_PAGE));
+	var view = clc._getViewType();
+	if (!force) {
+		for (var i = 0; i < list.length; i++) {
+			var setting = list[i];
+			if (setting.id == ZmSetting.CONTACTS_VIEW) {
+				view = clc._defaultView();
+			}
+		}
+	}
+
+	clc.switchView(view, force, this._initialized, true);
 };

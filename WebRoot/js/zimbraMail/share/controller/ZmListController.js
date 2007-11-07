@@ -380,17 +380,18 @@ function(view) {
 };
 
 /**
-* Creates the desired application view.
-*
-* @param view			view ID
-* @param elements		array of view components
-* @param isAppView		this view is a top-level app view
-* @param clear			if true, clear the hidden stack of views
-* @param pushOnly		don't reset the view's data, just swap the view in
-* @param isTransient	this view doesn't go on the hidden stack
-*/
+ * Creates the desired application view.
+ *
+ * @param view			view ID
+ * @param elements		array of view components
+ * @param isAppView		this view is a top-level app view
+ * @param clear			if true, clear the hidden stack of views
+ * @param pushOnly		don't reset the view's data, just swap the view in
+ * @param isTransient	this view doesn't go on the hidden stack
+ * @param stageView		stage the view rather than push it
+ */
 ZmListController.prototype._setView =
-function(view, elements, isAppView, clear, pushOnly, isTransient) {
+function(view, elements, isAppView, clear, pushOnly, isTransient, stageView) {
 
 	// create the view (if we haven't yet)
 	if (!this._appViews[view]) {
@@ -410,9 +411,13 @@ function(view, elements, isAppView, clear, pushOnly, isTransient) {
 	if (!pushOnly) {
 		this._setViewContents(view);
 	}
-
+	
 	// push the view
-	return (clear ? this._app.setView(view) : this._app.pushView(view));
+	if (stageView) {
+		this._app.stageView(view);
+	} else {
+		return (clear ? this._app.setView(view) : this._app.pushView(view));
+	}
 };
 
 // List listeners
