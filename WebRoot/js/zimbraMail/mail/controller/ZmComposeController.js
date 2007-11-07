@@ -588,8 +588,11 @@ function(params) {
 	this._initializeToolBar();
 	this._toolbar.enableAll(true);
 	var isCancel = (action == ZmOperation.REPLY_CANCEL);
-	var isModify = (action == ZmOperation.REPLY_MODIFY);
-	if (isCancel || isModify) {
+	if (isCancel || 
+		(action == ZmOperation.REPLY_ACCEPT) ||
+		(action == ZmOperation.REPLY_DECLINE) ||
+		(action == ZmOperation.REPLY_TENTATIVE))
+	{
 		var ops = [ ZmOperation.SAVE_DRAFT ];
 		if (isCancel) {
 			ops.push(ZmOperation.ATTACHMENT);

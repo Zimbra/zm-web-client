@@ -734,7 +734,6 @@ function(contactList, isDraft, callback, errorCallback, accountName) {
 	}
 
 	// if we have an invite reply, we have to send a different soap message
-	// TODO: disable Save Draft for invite replies!
 	if (this.isInviteReply && !isDraft) {
 		return this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate, aName);
 	} else {
