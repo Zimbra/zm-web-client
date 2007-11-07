@@ -142,8 +142,23 @@ function(event) {
 	tmpShare.link.name = share.object.name;
 	tmpShare.link.view = ZmOrganizer.getViewName(share.object.type);
 	tmpShare.link.perm = share.link.perm;
-	tmpShare.sendMessage(ZmShare.NEW);
-	
+
+	if(share.grantee.type == "guest") {	
+		if (!this._guestFormatter) {
+			this._guestFormatter = new AjxMessageFormat(ZmMsg.shareWithGuestNotes);
+		}
+		var url = share.object.getRestUrl();
+		var username = tmpShare.grantee.email;
+		var password = share.link.pw;
+		
+		if(password && username) {
+			var args = [ url, username, password ];
+			var notes = this._guestFormatter.format(args);
+			tmpShare.notes = notes;
+		}
+	}
+
+	tmpShare.sendMessage(ZmShare.NEW);	
 	appCtxt.setStatusMsg(ZmMsg.resentShareMessage);
 	
 	return false;

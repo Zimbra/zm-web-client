@@ -69,6 +69,7 @@ ZmShare = function(params) {
 	this.grantee.name = params.granteeName ? params.granteeName : "";
 	this.link.perm = params.perm;
 	this.link.inh = params.inherit;
+	this.link.pw = params.granteePwd;
 };
 
 // Constants
@@ -286,7 +287,7 @@ function(view) {
 ZmShare.createFromJs =
 function(parent, grant) {
 	return new ZmShare({object:parent, granteeType:grant.gt, granteeId:grant.zid,
-						granteeName:grant.d, perm:grant.perm, inherit:grant.inh});
+						granteeName:grant.d, perm:grant.perm, inherit:grant.inh, granteePwd:grant.pw});
 };
 
 // Public methods
