@@ -39,11 +39,8 @@ ZmZimletContext = function(id, zimlet) {
 		this.keyword = zimlet.serverExtension[0].hasKeyword;
 	}
 
-    // Zimlets are won't load due to 6640 so disable for now.
-    // http://bugs.webkit.org/show_bug.cgi?id=6640
-
     this._contentActionMenu = null;
-	if (zimlet.contentObject && (!AjxEnv.isSafari || AjxEnv.isSafariNightly)) {
+	if (zimlet.contentObject) {
 		this.contentObject = zimlet.contentObject[0];
 		if(this.contentObject.type) {
 			this.type = this.contentObject.type;
@@ -55,7 +52,7 @@ ZmZimletContext = function(id, zimlet) {
 	}
 
 	this._panelActionMenu = null;
-	if (zimlet.zimletPanelItem && (!AjxEnv.isSafari || AjxEnv.isSafariNightly)) {
+	if (zimlet.zimletPanelItem) {
 		this.zimletPanelItem = zimlet.zimletPanelItem[0];
 		if (this.zimletPanelItem.toolTipText) {
 			this.zimletPanelItem.toolTipText = this.zimletPanelItem.toolTipText[0]._content;
