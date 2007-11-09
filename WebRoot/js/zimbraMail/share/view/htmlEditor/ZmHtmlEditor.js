@@ -1547,11 +1547,25 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 	};
 
 	this._designModeHack_blur = AjxCallback.simpleClosure(
-		function() {
+		function(ev) {
 			if (state < 0)
 				return;
 			// console.log("BLUR!");
+			var enableFocus = false;
+			var dwtev = DwtShell.mouseEvent;
+			dwtev.setFromDhtmlEvent(ev);			
+			if(dwtev && dwtev.dwtObj) {	
+				for (var i = 0; i < this._toolbars.length; i++){
+					if(dwtev.dwtObj.parent == this._toolbars[i]){
+						enableFocus = true;
+					}
+				}
+			}
+						
+			if(!enableFocus){
 			enableToolbars.call(this, false);
+			}
+
 			var doc = this._getIframeDoc();
 			doc.designMode = "off";
 			state = -1;
