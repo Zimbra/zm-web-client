@@ -192,15 +192,20 @@
 		<tr height=100%>
 			<td width=200 valign=top id='${id}_listview'></td>
 			<td valign=top id='${id}_contentCell' height=100%>
-				<div class='ZmContactInfoView' id='${id}_content' style='overflow:auto'>
-					<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
-				</div>
+				<div class='ZmContactInfoView' id='${id}_content' style='overflow:auto'></div>
 			</td>
 		</tr>
 	</table>
 </template>
 
+<!-- OWEN: for bug 20610, set tabs attr to "" if no tabs -->
 <template id="abook.Contacts#SplitView_tabs" tabs="work,home,other,notes"></template>
+
+<!-- bug 20610 starts here -----------------------------------------------------
+<template id="abook.Contacts#SplitView_content">
+	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+</template>
+-->
 
 <template id="abook.Contacts#SplitView_header">
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
@@ -210,7 +215,6 @@
 			<td id='${id}_tags' align='right'></td>
 		</tr>
 	</table>
-	<div id='${id}_tabs'></div>
 </template>
 
 <template id="abook.Contacts#SplitView_title">
@@ -442,6 +446,8 @@
 </template>
 
 <template id="abook.Contacts#SplitViewGroup">
+	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+
 	<div id='${id}_body'>
 		<table border=0 cellpadding=2 cellspacing=2 width=100%>
 			<tr>

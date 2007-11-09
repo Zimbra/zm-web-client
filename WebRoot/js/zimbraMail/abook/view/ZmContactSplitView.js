@@ -105,12 +105,14 @@ function(contact, isGal) {
 
 	var oldContact = this._contact;
 	this._contact = contact;
-	this._tabViewHtml = {};
-	this._contactTabView.enable(true);
-	// prevent listview from scrolling back up :/
-	Dwt.CARET_HACK_ENABLED = false;
-	this._contactTabView.switchToTab(1);
-	Dwt.CARET_HACK_ENABLED = AjxEnv.isFirefox;
+	if (this._contactTabView) {
+		this._tabViewHtml = {};
+		this._contactTabView.enable(true);
+		// prevent listview from scrolling back up :/
+		Dwt.CARET_HACK_ENABLED = false;
+		this._contactTabView.switchToTab(1);
+		Dwt.CARET_HACK_ENABLED = AjxEnv.isFirefox;
+	}
 
 	if (this._contact.isLoaded) {
 		this._setContact(contact, isGal, oldContact);
@@ -137,7 +139,7 @@ function(ex) {
 ZmContactSplitView.prototype.clear =
 function() {
 	// clear the right pane
-	if (this._contactTabView.getVisible()) {
+	if (this._contactTabView) {
 		this._tabViewHtml = {};
 		var tabIdx = this._contactTabView.getCurrentTab();
 		var view = this._contactTabView.getTabView(tabIdx);
@@ -145,12 +147,13 @@ function() {
 			view.getHtmlElement().innerHTML = "";
 		}
 		this._contactTabView.enable(false);
-	} else {
-		var groupDiv = document.getElementById(this._contactBodyId);
-		if (groupDiv) {
-			groupDiv.innerHTML = "";
-		}
 	}
+
+	var groupDiv = document.getElementById(this._contactBodyId);
+	if (groupDiv) {
+		groupDiv.innerHTML = "";
+	}
+
 	this._setHeaderInfo(true);
 };
 
@@ -184,40 +187,50 @@ function(controller, dropTgt) {
 	this._headerRowId	= this._htmlElId + "_headerRow";
 	this._contactBodyId = this._htmlElId + "_body";
 
-	// create DwtTabGroup for contacts
-	this._contactTabView = new DwtTabView(this, null, Dwt.STATIC_STYLE);
-	this._contactTabView.addStateChangeListener(new AjxListener(this, this._tabStateChangeListener));
-	this._contactTabView.reparentHtmlElement(this._htmlElId + "_tabs");
-
 	// contact groups is not child of DwtTabGroup
 	this._contactGroupView = new DwtComposite(this);
 	this._contactGroupView.setVisible(false);
-	this._contactGroupView.reparentHtmlElement(this._htmlElId + "_tabs");
+	this._contactGroupView.reparentHtmlElement(this._htmlElId + "_content");
 
 	// add tabs to DwtTabGroup based on template
 	var params = AjxTemplate.getParams("abook.Contacts#SplitView_tabs");
 	var tabStr = params ? params["tabs"] : null;
 	this._tabs = tabStr ? tabStr.split(",") : null;
 
-	for (var i = 0; i < this._tabs.length; i++) {
-		var tab = this._tabs[i] = AjxStringUtil.trim(this._tabs[i]);
-		var idx = this._contactTabView.addTab(ZmMsg[tab]);
-		var view = new DwtTabViewPage(this._contactTabView, "ZmContactTabViewPage");
-		view._setAllowSelection();
-		view.setScrollStyle(Dwt.SCROLL);
+	// create DwtTabGroup for contacts if in template
+	if (this._tabs && this._tabs.length) {
+		this._contactTabHeader = new DwtComposite(this);
+		this._contactTabHeader.reparentHtmlElement(this._htmlElId + "_content");
+		this._contactTabHeader.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitView_header", {id:this._htmlElId});
 
-		// reset event handlers for each view so object manager can process
-		view._setMouseEventHdlrs();
-		view.addListener(DwtEvent.ONMOUSEOVER, 	new AjxListener(this._objectManager, this._objectManager._mouseOverListener));
-		view.addListener(DwtEvent.ONMOUSEOUT, 	new AjxListener(this._objectManager, this._objectManager._mouseOutListener));
-		view.addListener(DwtEvent.ONMOUSEDOWN, 	new AjxListener(this._objectManager, this._objectManager._mouseDownListener));
-		view.addListener(DwtEvent.ONMOUSEUP, 	new AjxListener(this._objectManager, this._objectManager._mouseUpListener));
-		view.addListener(DwtEvent.ONMOUSEMOVE, 	new AjxListener(this._objectManager, this._objectManager._mouseMoveListener));
+		this._contactTabView = new DwtTabView(this._contactTabHeader, null, Dwt.STATIC_STYLE);
+		this._contactTabView.addStateChangeListener(new AjxListener(this, this._tabStateChangeListener));
 
-		this._contactTabView.setTabView(idx, view);
+		for (var i = 0; i < this._tabs.length; i++) {
+			var tab = this._tabs[i] = AjxStringUtil.trim(this._tabs[i]);
+			var idx = this._contactTabView.addTab(ZmMsg[tab]);
+			var view = new DwtTabViewPage(this._contactTabView, "ZmContactTabViewPage");
+			view._setAllowSelection();
+			view.setScrollStyle(Dwt.SCROLL);
+
+			// reset event handlers for each view so object manager can process
+			view._setMouseEventHdlrs();
+			view.addListener(DwtEvent.ONMOUSEOVER, 	new AjxListener(this._objectManager, this._objectManager._mouseOverListener));
+			view.addListener(DwtEvent.ONMOUSEOUT, 	new AjxListener(this._objectManager, this._objectManager._mouseOutListener));
+			view.addListener(DwtEvent.ONMOUSEDOWN, 	new AjxListener(this._objectManager, this._objectManager._mouseDownListener));
+			view.addListener(DwtEvent.ONMOUSEUP, 	new AjxListener(this._objectManager, this._objectManager._mouseUpListener));
+			view.addListener(DwtEvent.ONMOUSEMOVE, 	new AjxListener(this._objectManager, this._objectManager._mouseMoveListener));
+
+			this._contactTabView.setTabView(idx, view);
+		}
+
+		this._tabViewHtml = {};
 	}
-
-	this._tabViewHtml = {};
+	else {
+		// otherwise, create an empty slate
+		this._contactView = new DwtComposite(this);
+		this._contactView.reparentHtmlElement(this._htmlElId + "_content");
+	}
 };
 
 ZmContactSplitView.prototype._tabStateChangeListener =
@@ -228,11 +241,7 @@ function(ev) {
 ZmContactSplitView.prototype._sizeChildren =
 function(width, height) {
 	var listviewCell = document.getElementById(this._htmlElId + "_listview");
-/*
-	var bounds = Dwt.getBounds(listviewCell);
-	var insets = Dwt.getInsets(listviewCell);
-	Dwt.insetBounds(bounds, insets);
-*/
+
 	var size = Dwt.getSize(listviewCell);
 	this._listPart.setSize(size.x, size.y);
 };
@@ -246,8 +255,10 @@ function(ev) {
 		return;
 	}
 
-	var tabIdx = this._contactTabView.getCurrentTab();
-	this._tabViewHtml[tabIdx] = false;
+	if (this._contactTabView) {
+		var tabIdx = this._contactTabView.getCurrentTab();
+		this._tabViewHtml[tabIdx] = false;
+	}
 	this._setContact(ev.source);
 };
 
@@ -281,9 +292,7 @@ function(data, type) {
 
 ZmContactSplitView.prototype._setContact =
 function(contact, isGal, oldContact) {
-	if (!this._tabViewHtml) { return; }
-
-	this._setHeaderInfo();
+	if (this._contactTabView && !this._tabViewHtml) { return; }
 
 	var subs = {
 		id: this._htmlElId,
@@ -296,8 +305,8 @@ function(contact, isGal, oldContact) {
 		subs.folderName = contact.addrbook.getName();
 		subs.groupMembers = contact.getGroupMembers().good.getArray();
 
-		this._contactTabView.setVisible(false);
-		this._contactGroupView.setVisible(true);
+		this._resetVisibility(true);
+
 		this._contactGroupView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitViewGroup", subs);
 	}
 	else
@@ -305,26 +314,43 @@ function(contact, isGal, oldContact) {
 		subs.view = this;
 		subs.isGal = isGal;
 
-		this._contactTabView.setVisible(true);
-		this._contactGroupView.setVisible(false);
+		this._resetVisibility(false);
 
-		// only render HTML for tab if we haven't already
-		var tabIdx = this._contactTabView.getCurrentTab();
-		if (!this._tabViewHtml[tabIdx]) {
-			subs.tabIdx = tabIdx;
-			var tabName = this._tabs[tabIdx-1];
-			var template = "abook.Contacts#SplitView_" + tabName;
-			var view = this._contactTabView.getTabView(tabIdx);
-			view.getHtmlElement().innerHTML = AjxTemplate.expand(template, subs);
+		// render the appropriate view
+		if (this._contactTabView) {
+			// only render HTML for tab if we haven't already
+			var tabIdx = this._contactTabView.getCurrentTab();
+			if (!this._tabViewHtml[tabIdx]) {
+				subs.tabIdx = tabIdx;
+				var tabName = this._tabs[tabIdx-1];
+				var template = "abook.Contacts#SplitView_" + tabName;
+				var view = this._contactTabView.getTabView(tabIdx);
+				view.getHtmlElement().innerHTML = AjxTemplate.expand(template, subs);
 
-			this._tabViewHtml[tabIdx] = true;
-
-			// notify zimlets that a new contact is being shown.
-			if (appCtxt.zimletsPresent()) {
-				appCtxt.getZimletMgr().notifyZimlets("onContactView", contact, this._htmlElId, tabIdx);
+				this._tabViewHtml[tabIdx] = true;
 			}
+		} else {
+			this._contactView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitView_content", subs);
+		}
+
+		// notify zimlets that a new contact is being shown.
+		if (appCtxt.zimletsPresent()) {
+			appCtxt.getZimletMgr().notifyZimlets("onContactView", contact, this._htmlElId, tabIdx);
 		}
 	}
+
+	this._setHeaderInfo();
+};
+
+ZmContactSplitView.prototype._resetVisibility =
+function(isGroup) {
+	if (this._contactTabView) {
+		this._contactTabView.setVisible(!isGroup);
+		this._contactTabHeader.setVisible(!isGroup);
+	} else {
+		this._contactView.setVisible(!isGroup);
+	}
+	this._contactGroupView.setVisible(isGroup);
 };
 
 ZmContactSplitView.prototype._getTagHtml =
