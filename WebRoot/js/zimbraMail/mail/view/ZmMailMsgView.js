@@ -867,6 +867,10 @@ function(container, html, isTextMsg, isTruncated) {
 
 	// import the object styles
 	var head = idoc.getElementsByTagName("head")[0];
+	if (!head) {
+		head = idoc.createElement("head");
+		idoc.body.parentNode.insertBefore(head, idoc.body);
+	}
 	var link = idoc.createElement("link");
 	link.rel = "stylesheet";
 	link.href = appContextPath+"/css/msgview.css?v="+cacheKillerVersion;
