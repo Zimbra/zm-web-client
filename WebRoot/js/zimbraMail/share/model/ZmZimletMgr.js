@@ -200,6 +200,18 @@ ZmZimletMgr.prototype._finished_loadIncludes = function(zimletNames) {
         var name = zimletNames[i];
         zimlets[name]._finished_loadIncludes();
     }
+	if (appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
+		var params = {
+			name:		"Portal",
+			callback:	new AjxCallback(this, this._finished_loadIncludes2)
+		};
+		AjxPackage.require(params);
+	}
+};
+
+ZmZimletMgr.prototype._finished_loadIncludes2 = function() {
+	var portletMgr = appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+	portletMgr.allZimletsLoaded();
 };
 
 ZmZimletMgr.prototype._loadStyles = function(zimletArray, zimletNames) {

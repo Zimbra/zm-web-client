@@ -96,6 +96,25 @@ ZmPortletMgr.prototype.zimletLoaded = function(zimletCtxt) {
     delete this._delayedPortlets[zimletCtxt.name];
 };
 
+/**
+ * This method is called after all of the zimlets have been loaded. It is
+ * a way for the portlet manager to know that there are no more zimlets
+ * expected.
+ */
+ZmPortletMgr.prototype.allZimletsLoaded = function() {
+	for (var name in this._portlets) {
+		var portlet = this._portlets[name];
+		if (!this._loadedZimlets[portlet.zimletName]) {
+			// NOTE: We don't call setContent because there is no view object
+			//       if no zimlet code was loaded.
+			var el = document.getElementById(portlet.id);
+			if (el) {
+				el.innerHTML = "";
+			}
+		}
+	}
+};
+
 //
 // Protected methods
 //
