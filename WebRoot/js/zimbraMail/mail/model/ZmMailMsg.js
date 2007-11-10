@@ -1053,7 +1053,7 @@ function(findHits) {
 			// use content location instead of built href flag
     		var useCL = false;
 			// set size info in any
-    		if (attach.s && attach.s > 0) {
+    		if (attach.s != null && attach.s >= 0) {
     		    if (attach.s < 1024)		props.size = attach.s + " B";
                 else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " KB";
                 else 						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " MB";
