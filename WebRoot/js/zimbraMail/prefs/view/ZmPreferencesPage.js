@@ -907,7 +907,18 @@ function(dialog, folder) {
 		var callback = new AjxCallback(this, this._importDoneCallback, folder.id);
 		var um = appCtxt.getUploadManager();
 		window._uploadManager = um;
-		um.execute(callback, document.getElementById(this._uploadFormId));
+		try {
+			um.execute(callback, document.getElementById(this._uploadFormId));
+		} catch (ex) {
+			if (ex.msg) {
+				var d = appCtxt.getMsgDialog();
+				d.setMessage(ex.msg, DwtMessageDialog.CRITICAL_STYLE);
+				d.popup();
+			}
+
+			this._importBtn.setEnabled(true);
+			return true;
+		}
 	}
 };
 
