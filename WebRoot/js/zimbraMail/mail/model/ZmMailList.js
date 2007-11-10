@@ -427,7 +427,7 @@ function(items, sortBy, event, details) {
 		var item = items[i];
 		if (doSort) {
 			var sortIndex = this._getSortIndex(item, sortBy);
-			var doAdd = true;
+			var doAdd = (item.type == this.type);
 			if (event != ZmEvent.E_CREATE) {
 				// if date changed, re-insert item into correct slot
 				var curIndex = this.indexOf(item);
