@@ -268,7 +268,7 @@ ZmZimletMgr.prototype.__getIncludes = function(zimletArray, zimletNames, isJS) {
 
 	// add link to aggregated files
 	if (!appDevMode) {
-		includes.push( [
+		includes.unshift( [
 			"/service/zimlet/res/Zimlets-nodev_all", isJS ? ".js"+appExtension : ".css"
 		].join("") );
 	}
