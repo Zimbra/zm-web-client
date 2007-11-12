@@ -424,6 +424,7 @@ function() {
 	this._columns = [];
 	this._numCalendars = this._calendars.length;
 
+	this._layoutMap = [];
 	this._unionBusyData = new Array(); //  0-47, one slot per half hour, 48 all day
 	this._unionBusyDataToolTip = new Array(); // tool tips
 
@@ -1090,6 +1091,10 @@ function() {
 		this._layoutMap[this._getItemId(layouts[i].appt)]  = layouts[i];
 //		DBG.timePt("_computeApptLayout: computeMaxCol "+i, false);				
 	}
+	
+	delete layoutsAllDay;
+	delete layoutsDayMap;
+	delete layoutCheck;	
 	//DBG.timePt("_computeApptLayout: end", false);	
 }
 
