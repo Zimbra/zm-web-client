@@ -32,7 +32,7 @@ function() {
 ZmMimePart.createFromDom =
 function(node, args) {
 	var mimePart = new ZmMimePart();
-	mimePart._loadFromDom(node, args.attachments, args.bodyParts);
+	mimePart._loadFromDom(node, args.attachments, args.bodyParts, args.parentNode);
 	return mimePart;
 };
 
@@ -87,8 +87,16 @@ function() {
 	return this.node.filename;
 };
 
+ZmMimePart.prototype.isIgnoredPart =
+function(parentNode) {
+	// bug fix #5889 - if parent node was multipart/appledouble,
+	// ignore all application/applefile attachments - YUCK
+	return parentNode && parentNode.ct == ZmMimeTable.MULTI_APPLE_DBL &&
+		   this.node.ct == ZmMimeTable.APP_APPLE_DOUBLE;
+};
+
 ZmMimePart.prototype._loadFromDom =
-function(partNode, attachments, bodyParts) {
+function(partNode, attachments, bodyParts, parentNode) {
 	for (var i = 0; i < partNode.length; i++) {
 		this.node = partNode[i];
 
@@ -98,9 +106,12 @@ function(partNode, attachments, bodyParts) {
 		if (this.node.cd == "attachment" || 
 			this.node.ct == ZmMimeTable.MSG_RFC822 ||
 			this.node.filename != null || 
-			this.node.ci != null || this.node.cl != null)
+			this.node.ci != null ||
+			this.node.cl != null)
 		{
-			attachments.push(this.node);
+			if (!this.isIgnoredPart(parentNode)) {
+				attachments.push(this.node);
+			}
 		}
 
 		if (this.node.body &&
@@ -114,7 +125,7 @@ function(partNode, attachments, bodyParts) {
 
 		// bug fix #4616 - dont add attachments part of a rfc822 msg part
 		if (this.node.mp && this.node.ct != ZmMimeTable.MSG_RFC822) {
-			var params = {attachments: attachments, bodyParts: bodyParts};
+			var params = {attachments: attachments, bodyParts: bodyParts, parentNode: this.node};
 			this.children.add(ZmMimePart.createFromDom(this.node.mp, params));
 		}
 	}
