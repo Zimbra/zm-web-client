@@ -55,7 +55,10 @@ ZmNewRosterItemDialog.prototype._init = function() {
 	var gws = roster.getGateways();
 	for (var i = 0; i < gws.length; i++) {
 		var gw = gws[i];
-		options.push(new DwtSelectOption(gw.type, i == 0, gw.type));
+                if (gw.type == "xmpp" || gw.isOnline()) {
+                        var label = ZmMsg["imGateway_" + gw.type] || gw.type;
+		        options.push(new DwtSelectOption(gw.type, i == 0, label));
+                }
 	}
 	this._serviceTypeSelect = new DwtSelect(this, options);
 	this._serviceTypeSelect.reparentHtmlElement(id + "_serviceType");
