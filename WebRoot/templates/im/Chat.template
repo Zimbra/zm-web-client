@@ -99,6 +99,10 @@
   <$= data.isSystem ? ZmMsg.imSystem : data.from $>: <$= data.getTextBody() $>
 </template>
 
+<template id="im.Chat#ChatMessageHTML">
+  <$= data.isSystem ? ZmMsg.imSystem : data.from $>: <$= data.getHtmlBody() $>
+</template>
+
 <template id="im.Chat#GatewayLoginDlg">
   <table>
     <tr>

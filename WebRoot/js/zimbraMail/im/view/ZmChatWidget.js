@@ -123,7 +123,7 @@ ZmChatWidget.prototype.setTyping = function(item, typing) {
 };
 
 ZmChatWidget.prototype.handleMessage = function(msg) {
-	var str = msg.toHtml(this._objectManager, this.chat, this.__lastFrom);
+	var str = msg.displayHtml(this._objectManager, this.chat, this.__lastFrom);
 	this.__lastFrom = (msg.isSystem && !msg.from) ? "@@system" : msg.from;
 	if (!msg.isSystem) {
 		if (this.isImportant()) {
@@ -785,7 +785,9 @@ ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 };
 
 ZmChatWidget.prototype._sendByEmailListener = function() {
-	this.chat.sendByEmail();
+        var mode = this._liteEditor.getMode() == ZmLiteHtmlEditor.HTML
+                ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+	this.chat.sendByEmail(mode);
 };
 
 ZmChatWidget.prototype._disposeListener = function() {

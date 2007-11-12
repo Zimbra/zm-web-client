@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -53,7 +53,7 @@ function() {
 	return formatter.format(new Date(this.ts));
 };
 
-ZmChatMessage.ALLOWED_HTML = /<(\x2f?)(font|a|b|strong|i|em|ding)(\s[^>]*)?>/ig;
+ZmChatMessage.ALLOWED_HTML = /<(\x2f?)(span|font|a|b|strong|i|em|ding)(\s[^>]*)?>/ig;
 
 ZmChatMessage.prototype.getHtmlBody = function(objectManager) {
 	var body = this._htmlBody;
@@ -106,7 +106,11 @@ ZmChatMessage.prototype.toText = function() {
 	return AjxStringUtil.trim(AjxTemplate.expand("im.Chat#ChatMessagePlainText", this));
 };
 
-ZmChatMessage.prototype.toHtml =
+ZmChatMessage.prototype.toHtml = function() {
+        return AjxStringUtil.trim(AjxTemplate.expand("im.Chat#ChatMessageHTML", this));
+};
+
+ZmChatMessage.prototype.displayHtml =
 function(objectManager, chat, lastFrom) {
 	var body;
 	body = this.body.replace(/\r?\n/g, "<br/>");

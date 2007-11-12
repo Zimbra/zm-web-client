@@ -194,15 +194,22 @@ ZmChat.prototype.sendMessage = function(text, typing) {
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj});
 };
 
-ZmChat.prototype.sendByEmail = function() {
+ZmChat.prototype.sendByEmail = function(mode) {
 	var emails = this._rosterItemList.getVector()
 		.map("getContact")
 		.map("getEmail")
 		.join(AjxEmailAddress.SEPARATOR);
+        var text, messages = AjxVector.fromArray(this._messages);
+        if (mode == DwtHtmlEditor.HTML) {
+                text = messages.map("toHtml").join("<br/>");
+        } else {
+                text = messages.map("toText").join("\n");
+        }
 	AjxDispatcher.run("Compose", { action	     : ZmOperation.NEW_MESSAGE,
 				       toOverride    : emails,
 				       subjOverride  : this.getTitle(),
-				       extraBodyText : AjxVector.fromArray(this._messages).map("toText").join("\n")
+                                       composeMode   : mode,
+				       extraBodyText : text
 				     });
 };
 
