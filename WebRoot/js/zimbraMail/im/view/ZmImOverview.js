@@ -26,7 +26,6 @@ ZmImOverview = function(parent, args) {
         this._options = args;
         this._sortBy = "name";
 
-	// this._allItems = new AjxVector();
 	this._actionMenuOps = {
 
 		root : [ ZmOperation.NEW_ROSTER_ITEM,
@@ -82,8 +81,10 @@ ZmImOverview.prototype._dragListener = function(ev) {
 	var data = ev.srcControl.getData("ZmImOverview.data");
 	switch (ev.action) {
 	    case DwtDragEvent.SET_DATA:
-		if (data.buddy)
+		if (data.buddy) {
 			ev.srcData = data.buddy;
+                        ev.srcData._drag_from_group = ev.srcControl.parent.getData("ZmImOverview.data").group;
+                }
 		break;
 	}
 };
@@ -242,6 +243,9 @@ ZmImOverview.prototype._treeSelectionListener = function(ev) {
 
 ZmImOverview.prototype._init = function() {
 
+        var dropTgt = this._groupDropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
+        dropTgt.addDropListener(new AjxListener(this, this._groupDropListener));
+
 	if (ZmImOverview.FILTER_SEARCH) {
 		// enable the search filter
 		var div = this.getHtmlElement();
@@ -308,6 +312,26 @@ ZmImOverview.prototype._controlListener = function(ev) {
         }
 };
 
+ZmImOverview.prototype._groupDropListener = function(ev) {
+        if (!ev.srcData)
+                return false;
+        if (ev.action == DwtDropEvent.DRAG_ENTER) {
+                ev.doIt = this._groupDropTgt.isValidTarget(ev.srcData);
+        } else if (ev.action == DwtDropEvent.DRAG_DROP) {
+                var buddy = ev.srcData;
+                var from_group = buddy._drag_from_group;
+                var to_group = ev.targetControl.getData("ZmImOverview.data").group;
+                var groups = AjxVector.fromArray(buddy.getGroups());
+                if (from_group != to_group && groups.indexOf(to_group) == -1) {
+                        groups.remove(from_group);
+                        groups.add(to_group);
+                        var name = buddy.getDisplayName();
+                        var addr = buddy.getAddress();
+                        AjxDispatcher.run("GetRoster").createRosterItem(addr, name, groups.join(","));
+                }
+        }
+};
+
 ZmImOverview.prototype._getBuddyIcon = function(buddy) {
         var roster = AjxDispatcher.run("GetRoster");
         var pl = roster.getPrivacyList();
@@ -341,44 +365,45 @@ ZmImOverview.prototype._createBuddy = function(type, buddy) {
 		if (!a)
 			a = this._itemsById[buddy.getAddress()] = new AjxVector();
 		a.add(item);
-		// this._allItems.add(item);
 	}
         this.applyFilters(items);
 };
 
 ZmImOverview.prototype._modifyBuddy = function(fields, buddy) {
-	var items = this._itemsById[buddy.getAddress()];
-	if (items) {
-		items.foreach(function(item) {
-			var doShow    = ZmRosterItem.F_PRESENCE	 in fields;
-			var doUnread  = ZmRosterItem.F_UNREAD	 in fields;
-			var doName    = ZmRosterItem.F_NAME	 in fields;
-			var doTyping  = ZmRosterItem.F_TYPING    in fields;
-			if (doShow) {
-				item.setImage(this._getBuddyIcon(buddy));
-                                item.setClassName(item.getClassName());
-                                item.addClassName("ZmImPresence-" + buddy.getPresence().getShow());
-			}
-			if (doUnread || doName) {
-				var txt = buddy.getDisplayName();
-				if (buddy.getUnread()) {
-					txt += " (" + buddy.getUnread() + ")";
-					txt = txt.bold();
-				}
-				item.setText(txt);
-			}
-			if (doTyping) {
-				item.condClassName(fields[ZmRosterItem.F_TYPING], "ZmRosterItem-typing");
-			}
-		}, this);
-                this.applyFilters(items.getArray());
-	}
+        this._removeBuddy(buddy);
+        this._createBuddy("buddy", buddy);
+// 	var items = this._itemsById[buddy.getAddress()];
+// 	if (items) {
+// 		items.foreach(function(item) {
+// 			var doShow    = ZmRosterItem.F_PRESENCE	 in fields;
+// 			var doUnread  = ZmRosterItem.F_UNREAD	 in fields;
+// 			var doName    = ZmRosterItem.F_NAME	 in fields;
+// 			var doTyping  = ZmRosterItem.F_TYPING    in fields;
+// 			if (doShow) {
+// 				item.setImage(this._getBuddyIcon(buddy));
+//                                 item.setClassName(item.getClassName());
+//                                 item.addClassName("ZmImPresence-" + buddy.getPresence().getShow());
+// 			}
+// 			if (doUnread || doName) {
+// 				var txt = buddy.getDisplayName();
+// 				if (buddy.getUnread()) {
+// 					txt += " (" + buddy.getUnread() + ")";
+// 					txt = txt.bold();
+// 				}
+// 				item.setText(txt);
+// 			}
+// 			if (doTyping) {
+// 				item.condClassName(fields[ZmRosterItem.F_TYPING], "ZmRosterItem-typing");
+// 			}
+// 		}, this);
+//                 this.applyFilters(items.getArray());
+// 	}
 };
 
 ZmImOverview.prototype._removeBuddy = function(buddy) {
 	var items = this._itemsById[buddy.getAddress()];
 	items.foreach("dispose");
-	// this._allItems.remove(item);
+        this._itemsById[buddy.getAddress()] = null;
 };
 
 ZmImOverview.prototype.getGroupItem = function(group) {
@@ -397,6 +422,7 @@ ZmImOverview.prototype.getGroupItem = function(group) {
 			return AjxMessageFormat.format(ZmMsg.imGroupItemTooltip, [ data.group, this.getItemCount() ]);
 		};
 		g.setData("ZmImOverview.data", { type: "group", group: group });
+                g.setDropTarget(this._groupDropTgt);
 	}
 	return g;
 };
