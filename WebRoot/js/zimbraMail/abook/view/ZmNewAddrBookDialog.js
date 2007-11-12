@@ -47,9 +47,3 @@ ZmNewAddrBookDialog.prototype._createRemoteContentHtml =
 function(html, idx) {
 	return idx;
 };
-
-// overload so we dont show this
-ZmNewAddrBookDialog.prototype._createFolderContentHtml =
-function(html, idx) {
-	return idx;
-};

@@ -134,12 +134,7 @@ function(what) {
 		return false;
 	}
 
-	if (what instanceof ZmAddrBook) {
-		// allow non-system folders in Trash to be dragged ONLY to root OR
-		// allow non-system folders not in Trash to be dragged into ONLY Trash
-		return (what.isInTrash() && this.nId == ZmFolder.ID_ROOT) ||
-			   (!what.isInTrash() && this.nId == ZmFolder.ID_TRASH);
-	} else {
+	if (!(what instanceof ZmAddrBook)) {
 		var invalid = false;
 
 		if (this.nId == ZmOrganizer.ID_ROOT) {
@@ -176,6 +171,8 @@ function(what) {
 
 		return !invalid;
 	}
+
+	return true;
 };
 
 

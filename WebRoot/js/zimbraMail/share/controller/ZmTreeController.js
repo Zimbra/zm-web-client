@@ -624,7 +624,7 @@ function(ev, treeView, overviewId) {
 				node = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
 			} else if (ev.event == ZmEvent.E_MOVE) {
 				node.dispose();
-				this._addNew(treeView, parentNode, organizer, idx); // add to new parent
+				node = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
 			}
 			parentNode.setExpanded(true); // so that new node is visible
 			this._checkTreeView(overviewId);
@@ -757,9 +757,14 @@ ZmTreeController.prototype._getMoveParams =
 function() {
 	var omit = {};
 	omit[ZmFolder.ID_SPAM] = true;
-	var params = {data:this._pendingActionData, treeIds:[this.type], overviewId:"ZmTreeController", omit:omit,
-				  title:this._getMoveDialogTitle(), description:ZmMsg.targetFolder};
-	return params;
+	return {
+		data: this._pendingActionData,
+		treeIds: [this.type], 
+		overviewId: "ZmTreeController",
+		omit:omit,
+		title: this._getMoveDialogTitle(),
+		description: ZmMsg.targetFolder
+	};
 };
 
 /**

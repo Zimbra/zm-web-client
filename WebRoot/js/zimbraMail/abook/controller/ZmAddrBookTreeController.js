@@ -86,6 +86,7 @@ function(treeView, ev) {
 ZmAddrBookTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
+	var addrBook = appCtxt.getById(id);
 
 	if (id == ZmFolder.ID_TRASH) {
 		parent.enableAll(false);
@@ -95,7 +96,6 @@ function(parent, type, id) {
 		parent.enableAll(false);
 	} else {
 		parent.enableAll(true);
-		var addrBook = appCtxt.getById(id);
 		if (addrBook) {
 			if (addrBook.isSystem()) {
 				parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
@@ -103,6 +103,10 @@ function(parent, type, id) {
 				parent.enable([ZmOperation.SHARE_ADDRBOOK], false);
 			}
 		}
+	}
+
+	if (addrBook) {
+		parent.enable(ZmOperation.EXPAND_ALL, (addrBook.size() > 0));
 	}
 
 	var op = parent.getOp(ZmOperation.DELETE);
@@ -116,7 +120,7 @@ function(parent, type, id) {
 
 ZmAddrBookTreeController.prototype._getDropTarget =
 function() {
-	return (new DwtDropTarget(["ZmContact"]));
+	return (new DwtDropTarget(["ZmAddrBook, ZmContact"]));
 };
 
 ZmAddrBookTreeController.prototype._getAllowedSubTypes =
@@ -130,14 +134,18 @@ function() {
 // Returns a list of desired header action menu operations
 ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_ADDRBOOK, ZmOperation.MOUNT_ADDRBOOK];
+	return [ZmOperation.NEW_ADDRBOOK, ZmOperation.MOUNT_ADDRBOOK, ZmOperation.EXPAND_ALL];
 };
 
 // Returns a list of desired action menu operations
 ZmAddrBookTreeController.prototype._getActionMenuOps =
 function() {
-	return [ZmOperation.SHARE_ADDRBOOK, ZmOperation.DELETE,
-			ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS];
+	return [ZmOperation.NEW_ADDRBOOK,
+			ZmOperation.SHARE_ADDRBOOK,
+			ZmOperation.DELETE,
+			ZmOperation.RENAME_FOLDER,
+			ZmOperation.EDIT_PROPS,
+			ZmOperation.EXPAND_ALL];
 };
 
 /*
@@ -152,11 +160,6 @@ function() {
 ZmAddrBookTreeController.prototype._getNewDialog =
 function() {
 	return appCtxt.getNewAddrBookDialog();
-};
-
-ZmAddrBookTreeController.prototype._getDropTarget =
-function() {
-	return (new DwtDropTarget(["ZmContact"]));
 };
 
 
