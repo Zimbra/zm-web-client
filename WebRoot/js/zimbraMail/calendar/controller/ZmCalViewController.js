@@ -1341,7 +1341,7 @@ function(appt, type, op) {
 	msgController.setMsg(appt.getMessage());
 	// poke the msgController
 	var instanceDate = op == ZmOperation.VIEW_APPT_INSTANCE ? new Date(appt._uniqStartTime) : null;
-	msgController._sendInviteReply(type, 0, instanceDate, appt.getRemoteCalendarOwner());
+	msgController._sendInviteReply(type, appt.compNum, instanceDate, appt.getRemoteCalendarOwner());
 };
 
 ZmCalViewController.prototype._handleApptEditRespondAction = 
