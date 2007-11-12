@@ -153,6 +153,8 @@ function() {
 				: ZmSearchToolBar.FOR_GAL_MI;
 		}
 
+		this._searchIcon.className = "DwtWait16Icon";
+
 		// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
 		this._chooser.sourceListView.enableSorting(this._contactSource == ZmItem.CONTACT);
 		var params = {
@@ -189,6 +191,8 @@ function() {
 
 	// create static content and append to dialog parent
 	this.setContent(this._contentHtml());
+
+	this._searchIcon = document.getElementById(this._htmlElId + "_searchIcon");
 
 	// add search button
 	var searchCellId = this._htmlElId + "_searchButton";
@@ -292,6 +296,7 @@ function(result) {
 		this._chooser.sourceListView._setNoResultsHtml();
 	}
 
+	this._searchIcon.className = "ImgSearch";
 	this._searchButton.setEnabled(true);
 };
 
