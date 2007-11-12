@@ -89,6 +89,9 @@ function() {
         ZmOperation.registerOp("IM_TOGGLE_BLOCKED"     , { textKey: "imToggleBlocked" });
         ZmOperation.registerOp("IM_FLOATING_LIST"      , { textKey: "imFloatingBuddyList", image: "ImGroup" });
 
+        ZmOperation.registerOp("IM_SORT_BY_PRESENCE"   , { textKey: "imSortListByPresence" });
+        ZmOperation.registerOp("IM_SORT_BY_NAME"       , { textKey: "imSortListByName" });
+
 	ZmOperation.registerOp("IM_PRESENCE_CUSTOM_MSG"		, { textKey: "imCustomStatusMsg", image: "ImFree2Chat"});
 
         ZmOperation.registerOp("IM_BLOCK_BUDDY" , { textKey: "imBlock", image: "BlockUser" });

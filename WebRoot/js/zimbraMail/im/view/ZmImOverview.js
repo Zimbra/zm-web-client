@@ -24,6 +24,8 @@ ZmImOverview = function(parent, args) {
 	this._groupItems = {};
 	this._itemsById = {};
         this._options = args;
+        this._sortBy = "name";
+
 	// this._allItems = new AjxVector();
 	this._actionMenuOps = {
 
@@ -32,7 +34,10 @@ ZmImOverview = function(parent, args) {
 			 ZmOperation.IM_GATEWAY_LOGIN,
 			 ZmOperation.SEP, //-----------
 			 ZmOperation.IM_TOGGLE_OFFLINE,
-                         ZmOperation.IM_TOGGLE_BLOCKED
+                         ZmOperation.IM_TOGGLE_BLOCKED,
+                         ZmOperation.SEP, //-----------
+                         ZmOperation.IM_SORT_BY_PRESENCE,
+                         ZmOperation.IM_SORT_BY_NAME
                        ],
 
 		buddy : [ ZmOperation.IM_NEW_CHAT,
@@ -87,6 +92,14 @@ ZmImOverview.prototype._actionMenuListener = function(ev) {
 	var operation = ev.item.getData(ZmOperation.KEY_ID);
         switch (operation) {
 
+            case ZmOperation.IM_SORT_BY_PRESENCE:
+                this.sort("presence");
+                break;
+
+            case ZmOperation.IM_SORT_BY_NAME:
+                this.sort("name");
+                break;
+
             case ZmOperation.IM_TOGGLE_OFFLINE:
                 this.__filterOffline = !this.__filterOffline;
 	        if (this.__filterOffline) {
@@ -121,6 +134,47 @@ ZmImOverview.prototype._actionMenuListener = function(ev) {
 				             });
 	        }
 
+        }
+};
+
+ZmImOverview.PRESENCE_SORT_INDEX = {
+        CHAT     : 1,
+        ONLINE   : 2,
+        AWAY     : 3,
+        XA       : 4,
+        DND      : 5,
+        OFFLINE  : 6,
+        UNKNOWN  : 7
+};
+
+ZmImOverview.CMP_SORT_BY_NAME = function(a, b) {
+        a = a.getData("ZmImOverview.data").buddy.getDisplayName();
+        b = b.getData("ZmImOverview.data").buddy.getDisplayName();
+        return a < b ? -1 : (a > b ? 1 : 0);
+};
+
+ZmImOverview.CMP_SORT_BY_PRESENCE = function(a, b) {
+        var ai = ZmImOverview.PRESENCE_SORT_INDEX[a.getData("ZmImOverview.data").buddy.getPresence().getShow()] || 100;
+        var bi = ZmImOverview.PRESENCE_SORT_INDEX[b.getData("ZmImOverview.data").buddy.getPresence().getShow()] || 100;
+        if (ai == bi) {
+                // same staus goes to sort by name
+                return ZmImOverview.CMP_SORT_BY_NAME(a, b);
+        }
+        return ai - bi;
+};
+
+ZmImOverview.prototype.sort = function(by) {
+        if (by)
+                this._sortBy = by;
+        var root = this._rootItem;
+        // groups are always sorted by name
+        var items = root.getItems();
+        var cmp = this._sortBy == "presence"
+                ? ZmImOverview.CMP_SORT_BY_PRESENCE
+                : ZmImOverview.CMP_SORT_BY_NAME;
+        for (var i = 0; i < items.length; ++i) {
+                var item = items[i];
+                item.sort(cmp);
         }
 };
 
@@ -273,7 +327,7 @@ ZmImOverview.prototype._createBuddy = function(type, buddy) {
 	for (var i = 0; i < groups.length; ++i) {
 		var parent = this.getGroupItem(groups[i]);
 		var item = new DwtTreeItem(parent,
-					   this.getSortIndex(label, parent),
+					   this.getSortIndex(buddy, parent),
 					   label,
 					   icon);
                 item.addClassName("ZmImPresence-" + buddy.getPresence().getShow());
@@ -352,18 +406,30 @@ ZmImOverview.prototype.getSortIndex = function(label, root) {
 	if (root == null) {
 		type = "group";
 		root = this._rootItem;
+                label = label.toLowerCase();
 	}
-	label = label.toLowerCase();
 	var items = root.getItems();
 	for (var i = 0; i < items.length; ++i) {
 		var item = items[i];
 		var data = item.getData("ZmImOverview.data");
-		var txt = type == "buddy"
-			? data.buddy.getDisplayName()
-			: data.group;
-		// txt can be null if type is "assistant"
-		if (txt && txt.toLowerCase() > label)
-			break;
+                if (type == "buddy") {
+                        // label is a buddy here (ZmRosterItem)
+                        if (this._sortBy == "name") {
+		                var txt = data.buddy.getDisplayName()
+		                // txt can be null if type is "assistant"
+		                if (txt && txt.toLowerCase() > label.getDisplayName())
+			                break;
+                        } else if (this._sortBy == "presence") {
+                                var a = ZmImOverview.PRESENCE_SORT_INDEX[data.buddy.getPresence().getShow()] || 100;
+                                var b = ZmImOverview.PRESENCE_SORT_INDEX[label.getPresence().getShow()] || 100;
+                                if (a > b)
+                                        break;
+                        }
+                } else {
+                        var txt = data.group;
+                        if (txt && txt.toLowerCase() > label)
+			        break;
+                }
 	}
 	return i;
 };
