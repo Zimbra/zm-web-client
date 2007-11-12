@@ -6,17 +6,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<zm:getMailbox var="mailbox" restauthtoken="${requestScope.zimbra_authToken}" resttargetaccountid="${requestScope.zimbra_target_account_id}"/>
-<c:choose>
-<c:when test="${not empty mailbox.prefs.locale}">
-    <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
-</c:when>
-<c:otherwise>
-    <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-</c:otherwise>
-</c:choose>
-<fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
-
+<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
 <fmt:setTimeZone var="timezone" value="${zm:getTimeZone(not empty param.tz ? param.tz : requestScope.zimbra_target_account_prefTimeZoneId)}" scope="request"/>
 
@@ -24,6 +15,7 @@
 <c:set var="view" value="${requestScope.zimbra_target_item_view}"/>
 <c:set var="itemColor" value="${not empty param.color ? param.color : requestScope.zimbra_target_item_color}" scope="request"/>
 
+<zm:getMailbox var="mailbox" restauthtoken="${requestScope.zimbra_authToken}" resttargetaccountid="${requestScope.zimbra_target_account_id}"/>
 
 <c:choose>
     <c:when test="${(type eq 'folder' or type eq 'mountpoint') and (view eq 'appointment')}">
