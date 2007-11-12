@@ -16,3 +16,4 @@
  */
 table.DwtHtmlEditor-Table td { border: 1px solid #000; } /* visible borders for newly inserted cells */
 div.ZmMovie { border: 1px dashed #000; padding: 1px; }
+p { margin: 0; }
