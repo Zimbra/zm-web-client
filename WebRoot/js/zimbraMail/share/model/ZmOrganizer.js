@@ -1140,19 +1140,27 @@ function () {
 
 /**
 * Returns true if this folder maps to a datasource. If type is given, returns
-* true if folder maps to a datasource *and* is of the given type
+* true if folder maps to a datasource *and* is of the given type.
 *
-* @type		[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
+* @type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
+* @checkParent	[Boolean]*	walk up the parent chain
 */
 ZmOrganizer.prototype.isDataSource =
-function(type) {
+function(type, checkParent) {
 	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) { return false };
 
 	var dsc = appCtxt.getDataSourceCollection();
 	var dataSource = dsc.getByFolderId(this.nId);
-	if (!dataSource) return false;
-	if (type) return (dataSource.type == type);
-	return true;
+
+	if (!dataSource) {
+		return (checkParent && this.parent)
+			? this.parent.isDataSource(type, checkParent)
+			: false;
+	}
+
+	return (type)
+		? (dataSource.type == type)
+		: true;
 };
 
 ZmOrganizer.prototype.getOwner =

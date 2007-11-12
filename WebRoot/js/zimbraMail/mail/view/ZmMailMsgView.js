@@ -37,8 +37,7 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	// do we add a close button in the header section?
 	this._hasHeaderCloseBtn = (this._mode == ZmController.MSG_VIEW && !appCtxt.isChildWindow);
 
-        this.SCROLL_WITH_IFRAME = ZmMailMsgView.SCROLL_WITH_IFRAME;
-
+	this.SCROLL_WITH_IFRAME = ZmMailMsgView.SCROLL_WITH_IFRAME;
 	this.setScrollStyle(this.SCROLL_WITH_IFRAME ? DwtControl.CLIP : DwtControl.SCROLL);
 
 	if (!appCtxt.isChildWindow) {
@@ -69,22 +68,21 @@ ZmMailMsgView.prototype.constructor = ZmMailMsgView;
 
 // Consts
 
-ZmMailMsgView.SCROLL_WITH_IFRAME = false;
-ZmMailMsgView.LIMIT_ATTACHMENTS = ZmMailMsgView.SCROLL_WITH_IFRAME ? 3 : 0;
-ZmMailMsgView.ATTC_COLUMNS = 2;
-ZmMailMsgView.ATTC_MAX_SIZE = ZmMailMsgView.LIMIT_ATTACHMENTS * 16 + 8;
-
-ZmMailMsgView.QUOTE_DEPTH_MOD 	= 3;
-ZmMailMsgView.MAX_SIG_LINES 	= 8;
-ZmMailMsgView.SIG_LINE 			= /^(- ?-+)|(__+)\r?$/;
-ZmMailMsgView._inited 			= false;
-ZmMailMsgView._TAG_CLICK 		= "ZmMailMsgView._TAG_CLICK";
-ZmMailMsgView._TAG_ANCHOR 		= "TA";
-ZmMailMsgView._TAG_IMG 			= "TI";
-ZmMailMsgView.OBJ_SIZE_TEXT 	= 50; // max. size of text emails that will automatically highlight objects
-ZmMailMsgView.OBJ_SIZE_HTML 	= 50; // similar for HTML emails.
-ZmMailMsgView.REPLY_INVITE_EVENT= "inviteReply";
-ZmMailMsgView.SHARE_EVENT 		= "share";
+ZmMailMsgView.SCROLL_WITH_IFRAME	= false;
+ZmMailMsgView.LIMIT_ATTACHMENTS 	= ZmMailMsgView.SCROLL_WITH_IFRAME ? 3 : 0;
+ZmMailMsgView.ATTC_COLUMNS			= 2;
+ZmMailMsgView.ATTC_MAX_SIZE			= ZmMailMsgView.LIMIT_ATTACHMENTS * 16 + 8;
+ZmMailMsgView.QUOTE_DEPTH_MOD 		= 3;
+ZmMailMsgView.MAX_SIG_LINES 		= 8;
+ZmMailMsgView.SIG_LINE 				= /^(- ?-+)|(__+)\r?$/;
+ZmMailMsgView._inited 				= false;
+ZmMailMsgView._TAG_CLICK 			= "ZmMailMsgView._TAG_CLICK";
+ZmMailMsgView._TAG_ANCHOR 			= "TA";
+ZmMailMsgView._TAG_IMG 				= "TI";
+ZmMailMsgView.OBJ_SIZE_TEXT 		= 50; // max. size of text emails that will automatically highlight objects
+ZmMailMsgView.OBJ_SIZE_HTML 		= 50; // similar for HTML emails.
+ZmMailMsgView.REPLY_INVITE_EVENT	= "inviteReply";
+ZmMailMsgView.SHARE_EVENT 			= "share";
 
 
 // Public methods
@@ -166,7 +164,12 @@ function(msg) {
 		var action = msg.share.action;
         var isNew = action == ZmShare.NEW;
         var isEdit = action == ZmShare.EDIT;
-        if ((isNew || (isEdit && !this.__hasMountpoint(msg.share))) && msg.share.link.perm) {
+		var isDataSource = appCtxt.getById(msg.folderId).isDataSource(null, true);
+
+		if (!isDataSource && 
+			(isNew || (isEdit && !this.__hasMountpoint(msg.share))) &&
+			msg.share.link.perm)
+		{
 			var topToolbar = this._getShareToolbar();
 			var tEl = topToolbar.getHtmlElement();
 			if (tEl && tEl.parentNode) {
@@ -302,8 +305,13 @@ function() {
 
 	var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
 	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
-	var params = {parent:this, buttons:operationButtonIds, posStyle:DwtControl.STATIC_STYLE,
-				  className:"ZmInviteToolBar", buttonClassName:"DwtToolbarButton"};
+	var params = {
+		parent: this,
+		buttons: operationButtonIds,
+		posStyle: DwtControl.STATIC_STYLE,
+		className: "ZmInviteToolBar",
+		buttonClassName: "DwtToolbarButton"
+	};
 	this._inviteToolbar = new ZmButtonToolBar(params);
 
 	var inviteToolBarListener = new AjxListener(this, this._inviteToolBarListener);
@@ -337,12 +345,18 @@ function() {
 ZmMailMsgView.prototype._getShareToolbar =
 function() {
 	// TODO: reuse the toolbar
-	if (this._shareToolbar)
+	if (this._shareToolbar) {
 		this._shareToolbar.dispose();
+	}
 
 	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
-	var params = {parent:this, buttons:buttonIds, posStyle:DwtControl.STATIC_STYLE,
-				  className:"ZmShareToolBar", buttonClassName:"DwtToolbarButton"};
+	var params = {
+		parent: this,
+		buttons: buttonIds,
+		posStyle: DwtControl.STATIC_STYLE,
+		className: "ZmShareToolBar",
+		buttonClassName: "DwtToolbarButton"
+	};
 	this._shareToolbar = new ZmButtonToolBar(params);
 
 	var shareToolBarListener = new AjxListener(this, this._shareToolBarListener);
