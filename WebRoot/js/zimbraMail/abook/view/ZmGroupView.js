@@ -444,10 +444,8 @@ ZmGroupView.prototype._addItems =
 function(list) {
 	if (list.length == 0) return;
 
-	this._appendNewline();
-
 	// we have to walk the results in case we hit a group which needs to be split
-	var items = new Array();
+	var items = [];
 	for (var i = 0; i < list.length; i++) {
 		if (list[i].isGroup) {
 			var emails = list[i].address.split(AjxEmailAddress.SEPARATOR);
@@ -457,8 +455,13 @@ function(list) {
 			items.push(list[i]);
 		}
 	}
-	this._groupMembers.value += (items.join("\n") + "\n");
-	this._isDirty = true;
+
+	this._dedupe(items);
+	if (items.length > 0) {
+		this._appendNewline();
+		this._groupMembers.value += (items.join("\n") + "\n");
+		this._isDirty = true;
+	}
 };
 
 // appends newline at the end of textarea if one does not already exist
@@ -468,6 +471,26 @@ function() {
 	if (members.length) {
 		if (members.charAt(members.length-1) != "\n")
 			this._groupMembers.value += "\n";
+	}
+};
+
+ZmGroupView.prototype._dedupe =
+function(items) {
+	var addrs = this._getGroupMembers(true);
+	if (addrs) {
+		var i = 0;
+		while (true) {
+			var found = false;
+			for (var j = 0; j < addrs.length; j++) {
+				if (items[i] == addrs[j]) {
+					items.splice(i,1);
+					found = true;
+					break;
+				}
+			}
+			if (!found) i++;
+			if (i == items.length) break;
+		}
 	}
 };
 
