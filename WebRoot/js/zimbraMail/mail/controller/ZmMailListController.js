@@ -234,12 +234,14 @@ function(actionCode) {
 						frag = item.getInvite().getToolTip();
 					} else {
 						frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
-						lv.setToolTipContent(AjxStringUtil.htmlEncode(frag));
+						if (frag != "") { lv.setToolTipContent(AjxStringUtil.htmlEncode(frag)); }
 					}
 					var tooltip = this._shell.getToolTip()
 					tooltip.popdown();
-					tooltip.setContent(AjxStringUtil.htmlEncode(frag));
-					tooltip.popup(loc.x, loc.y);
+					if (frag != "") {
+						tooltip.setContent(AjxStringUtil.htmlEncode(frag));
+						tooltip.popup(loc.x, loc.y);
+					}
 				}
 			}
 			break;

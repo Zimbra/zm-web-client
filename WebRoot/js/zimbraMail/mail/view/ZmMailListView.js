@@ -167,6 +167,9 @@ function(field, item, ev, div, match) {
 			tooltip = item.getInvite().getToolTip();
 		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
+			if (tooltip == "") {
+				tooltip = null;
+			}
 		}
 	} else if (field == ZmItem.F_FOLDER) {
 		var folder = appCtxt.getById(item.folderId);
