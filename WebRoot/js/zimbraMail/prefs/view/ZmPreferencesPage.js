@@ -174,6 +174,11 @@ function() {
 			} else if (type == ZmPref.TYPE_FONT) {
 				this._addFontPrefs(buttonId, setup);
 			}
+			else if (id == ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED) {
+				var checkbox = document.getElementById(prefId);
+				var handler = AjxCallback.simpleClosure(this._handleDontKeepLocalCopy, this, checkbox);
+				Dwt.setHandler(checkbox, DwtEvent.ONCLICK, handler);
+			}
 		}
 	}
 	if (!this._hasRendered) {
@@ -182,6 +187,10 @@ function() {
 	} else {
 		this._controller.setDirty(this._view, false);
 	}
+};
+
+ZmPreferencesPage.prototype.getFormObject = function(id) {
+	return this._dwtObjects[id];
 };
 
 ZmPreferencesPage.prototype.getFormValue =
@@ -262,6 +271,10 @@ function(useDefaults) {
 			}
 		}
 	}
+
+	var prefId = ZmPref.KEY_ID + ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED;
+	var checkbox = document.getElementById(prefId);
+	this._handleDontKeepLocalCopy(checkbox);
 };
 
 /*
@@ -569,6 +582,11 @@ function(ex) {
 		return true;
 	}
 	return false;
+};
+
+ZmPreferencesPage.prototype._handleDontKeepLocalCopy = function(checkbox, evt) {
+	var input = this.getFormObject(ZmSetting.MAIL_FORWARDING_ADDRESS);
+	input.setRequired(checkbox.checked);
 };
 
 ZmPreferencesPage.prototype._exportOkCallback =

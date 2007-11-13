@@ -124,6 +124,29 @@ function(interval) {
 	}
 };
 
+ZmPref.validateForwardingEmail = function(email) {
+	var setup = ZmPref.SETUP[ZmSetting.MAIL_FORWARDING_ADDRESS];
+	if (!ZmPref.validateEmail(email)) {
+		setup.errorMessage = ZmMsg.invalidEmail;
+		return false;
+	}
+	var prefId = ZmPref.KEY_ID + ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED;
+	var checkbox = document.getElementById(prefId);
+	if (!ZmPref.validateDontKeepLocalCopy(checkbox.checked)) {
+		setup.errorMessage = ZmMsg.errorMissingFwdAddr;
+		return false;
+	}
+	return true;
+};
+
+ZmPref.validateDontKeepLocalCopy = function(checked) {
+	if (!checked) return true;
+	var appCtxt = ZmAppCtxt.getFromShell(DwtShell.getShell(window));
+	var view = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController().getPrefsView();
+	var input = view.getView(ZmPrefView.MAIL).getFormObject(ZmSetting.MAIL_FORWARDING_ADDRESS);
+	return input != null && input.isValid();
+};
+
 // maximum value lengths
 ZmPref.MAX_LENGTH = {};
 ZmPref.MAX_LENGTH[ZmSetting.INITIAL_SEARCH]	= 512;
@@ -279,7 +302,7 @@ ZmPref.SETUP[ZmSetting.INITIAL_SEARCH] = {
 ZmPref.SETUP[ZmSetting.MAIL_FORWARDING_ADDRESS] = {
 	displayName:		ZmMsg.mailForwardingAddress,
 	displayContainer:	ZmPref.TYPE_INPUT,
-	validationFunction: ZmPref.validateEmail,
+	validationFunction: ZmPref.validateForwardingEmail,
 	errorMessage:       ZmMsg.invalidEmail,
 	precondition:		ZmSetting.MAIL_FORWARDING_ENABLED};
 	
@@ -287,6 +310,8 @@ ZmPref.SETUP[ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED] = {
 	displayName:		ZmMsg.mailDeliveryDisabled,
 	displayContainer:	ZmPref.TYPE_CHECKBOX,
 	displaySeparator:	true,
+	validationFunction:	ZmPref.validateDontKeepLocalCopy,
+	errorMessage:		ZmMsg.errorMissingFwdAddr,
 	precondition:		ZmSetting.MAIL_FORWARDING_ENABLED};
 
 ZmPref.SETUP[ZmSetting.NEW_WINDOW_COMPOSE] = {
