@@ -294,11 +294,12 @@ function(ev) {
 		for (var i = 0; i < items.length; i++) {
 			this._list.remove(items[i]);
 		}
+		this._controller._app._checkReplenishListView = this;
 		this._layout();
 	} else {
 		ZmContactsBaseView.prototype._changeListener.call(this, ev);
+		this._setNextSelection();
 	}
-	this.setSelection(this.getList().get(0));
 };
 
 ZmContactCardsView.prototype._controlListener =

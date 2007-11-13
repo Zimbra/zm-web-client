@@ -484,6 +484,9 @@ function() {
 
 ZmContactSimpleView.prototype._changeListener =
 function(ev) {
+	if (appCtxt.getCurrentViewId() != ZmController.CONTACT_SIMPLE_VIEW)
+		return;
+
 	ZmContactsBaseView.prototype._changeListener.call(this, ev);
 
 	// bug fix #14874 - if moved to trash, show strike-thru
@@ -503,21 +506,21 @@ ZmContactSimpleView.prototype._modifyContact =
 function(ev) {
 	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
 
-        if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
-                // display presence information for contacts linked to buddy list
-                var a = ev.getDetails().items, i = 0, c;
-                while (c = a[i++]) {
-                        if (c instanceof ZmContact) {
-                                var presence = c.getImPresence();
-                                if (presence) {
-                                        var el = this._getFieldId(c, ZmItem.F_PRESENCE);
-                                        el = document.getElementById(el);
-                                        if (el)
-                                                AjxImg.setImage(el, presence.getIcon(), true);
-                                }
-                        }
-                }
-        }
+	if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
+		// display presence information for contacts linked to buddy list
+		var a = ev.getDetails().items, i = 0, c;
+		while (c = a[i++]) {
+			if (c instanceof ZmContact) {
+				var presence = c.getImPresence();
+				if (presence) {
+					var el = this._getFieldId(c, ZmItem.F_PRESENCE);
+					el = document.getElementById(el);
+					if (el)
+						AjxImg.setImage(el, presence.getIcon(), true);
+				}
+			}
+		}
+	}
 
 	if (ev.getDetail("fileAsChanged")) {
 		var selected = this.getSelection()[0];

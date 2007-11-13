@@ -686,10 +686,8 @@ function(ev) {
 ZmContactListController.prototype._checkReplenish =
 function() {
 	// reset the listview
-	var listview = this._listView[this._currentView];
-	listview.set(this._list);
-	// reset the selection to the first item
-	var list = listview.getList();
-	if (list) { listview.setSelection(list.get(0)); }
+	var lv = this._listView[this._currentView];
+	lv.set(this._list);
+	lv._setNextSelection();
 };
 

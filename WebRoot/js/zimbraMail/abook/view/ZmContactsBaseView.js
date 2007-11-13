@@ -138,10 +138,15 @@ function() {
 		// get the first non-trash contact to select
 		item = null;
 		var list = this._list.getArray();
-		for (var i=0; i < list.length; i++) {
-			if (list[i].folderId != ZmFolder.ID_TRASH) {
-				item = list[i];
-				break;
+
+		if (this._firstSelIndex > 0 && this._firstSelIndex == list.length) {
+			item = list[list.length-1];
+		} else {
+			for (var i=0; i < list.length; i++) {
+				if (list[i].folderId != ZmFolder.ID_TRASH) {
+					item = list[i];
+					break;
+				}
 			}
 		}
 
@@ -152,8 +157,9 @@ function() {
 		}
 	}
 
-	if (item)
+	if (item) {
 		this.setSelection(item);
+	}
 };
 
 	
