@@ -677,3 +677,7 @@ div.ZaSearchBuilderOptionRemoveAll table  {
 .XFormTableContainer {
  background-color:@ListItemBgColor-normal@
 }
+
+.XFormCase .ZaFullPageXFormListView .DwtListView-Rows {
+	overflow:visible;
+}
