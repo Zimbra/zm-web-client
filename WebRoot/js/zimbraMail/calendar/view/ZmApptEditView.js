@@ -232,24 +232,6 @@ function(calItem) {
 		var day = ZmCalItem.SERVER_WEEK_DAYS[calItem.startDate.getDay()];
 		calItem._recurrence.repeatWeeklyDays = [day];
 	}
-
-	// bug fix #19926 - reset start date if user selects "every weekday"
-	if (calItem.getRecurType() == "DAI" &&
-		calItem._recurrence.repeatCustom == "1" &&
-		calItem._recurrence.repeatWeekday)
-	{
-		var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-		var day = ZmCalItem.SERVER_WEEK_DAYS[startDate.getDay()];
-		if (day == "SU" || day == "SA") {
-			var multiplier = day == "SU"
-				? AjxDateUtil.MSEC_PER_DAY
-				: (AjxDateUtil.MSEC_PER_DAY * 2);
-			var newStartDate = new Date(calItem.startDate.getTime() + multiplier);
-			var newEndDate = new Date(calItem.endDate.getTime() + multiplier);
-			this._startDateField.value = AjxDateUtil.simpleComputeDateStr(newStartDate);
-			this._endDateField.value = AjxDateUtil.simpleComputeDateStr(newEndDate);
-		}
-	}
 };
 
 ZmApptEditView.prototype._populateForSave =

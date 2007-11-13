@@ -55,34 +55,38 @@ ZmComposeView.prototype.toString = function() {
 //
 
 // Consts related to compose fields
-ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR_CC,
-							 ZmMailMsg.HDR_DATE, ZmMailMsg.HDR_SUBJECT];
-ZmComposeView.BAD = "_bad_addrs_";
+ZmComposeView.QUOTED_HDRS = [
+		ZmMailMsg.HDR_FROM,
+		ZmMailMsg.HDR_TO,
+		ZmMailMsg.HDR_CC,
+		ZmMailMsg.HDR_DATE,
+		ZmMailMsg.HDR_SUBJECT
+];
+
+ZmComposeView.BAD					= "_bad_addrs_";
 
 // Message dialog placement
-ZmComposeView.DIALOG_X = 50;
-ZmComposeView.DIALOG_Y = 100;
+ZmComposeView.DIALOG_X 				= 50;
+ZmComposeView.DIALOG_Y 				= 100;
 
 // Attachment related
-ZmComposeView.UPLOAD_FIELD_NAME	= "attUpload";
-ZmComposeView.FORWARD_ATT_NAME	= "ZmComposeView_forAttName";
-ZmComposeView.FORWARD_MSG_NAME	= "ZmComposeView_forMsgName";
+ZmComposeView.UPLOAD_FIELD_NAME		= "attUpload";
+ZmComposeView.FORWARD_ATT_NAME		= "ZmComposeView_forAttName";
+ZmComposeView.FORWARD_MSG_NAME		= "ZmComposeView_forMsgName";
 
 // max # of attachments to show
-ZmComposeView.SHOW_MAX_ATTACHMENTS = AjxEnv.is800x600orLower ? 2 : 3;
+ZmComposeView.SHOW_MAX_ATTACHMENTS	= AjxEnv.is800x600orLower ? 2 : 3;
 ZmComposeView.MAX_ATTACHMENT_HEIGHT = (ZmComposeView.SHOW_MAX_ATTACHMENTS * 23) + "px";
 
 // Reply/forward stuff
-ZmComposeView.EMPTY_FORM_RE = /^[\s\|]*$/;
-ZmComposeView.SUBJ_PREFIX_RE = new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
-ZmComposeView.QUOTED_CONTENT_RE = new RegExp("^----- ", "m");
-ZmComposeView.HTML_QUOTED_CONTENT_RE = new RegExp("<br>----- ", "i");
-ZmComposeView.REFANG_RE = new RegExp("(<img[^>]*)dfsrc\s*=([^>]*>)", "ig");
-ZmComposeView.REFANG_RE_REPLACE = "$1src=$2";
-
-ZmComposeView.ADDR_SETTING = {}; // XXX: may not be necessary anymore?
-
-ZmComposeView.WRAP_LENGTH = 72;
+ZmComposeView.EMPTY_FORM_RE			= /^[\s\|]*$/;
+ZmComposeView.SUBJ_PREFIX_RE		= new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
+ZmComposeView.QUOTED_CONTENT_RE		= new RegExp("^----- ", "m");
+ZmComposeView.HTML_QUOTED_CONTENT_RE= new RegExp("<br>----- ", "i");
+ZmComposeView.REFANG_RE				= new RegExp("(<img[^>]*)dfsrc\s*=([^>]*>)", "ig");
+ZmComposeView.REFANG_RE_REPLACE		= "$1src=$2";
+ZmComposeView.ADDR_SETTING			= {}; // XXX: may not be necessary anymore?
+ZmComposeView.WRAP_LENGTH			= 72;
 
 //
 // Data
@@ -1407,10 +1411,11 @@ function(action, msg, extraBodyText, incOption) {
 			}
 			body = text + crlf + body;
 			value += leadingText + body;
-		} else {
+		} else if (body.length > 0) {
 			var from = msg.getAddress(AjxEmailAddress.FROM);
-			if (!from && msg.isSent)
+			if (!from && msg.isSent) {
 				from = appCtxt.get(ZmSetting.USERNAME);
+			}
 			var preface = "";
 			if (from) {
 				if (!ZmComposeView._replyPrefixFormatter) {
@@ -1419,7 +1424,8 @@ function(action, msg, extraBodyText, incOption) {
 				preface = ZmComposeView._replyPrefixFormatter.format(from.toString());
 			}
 			var prefix = identity.getPrefix();
-			if (incOption == ZmSetting.INCLUDE_PREFIX) {
+			if (incOption == ZmSetting.INCLUDE_PREFIX)
+			{
 				value += leadingText + preface + AjxStringUtil.wordWrap(body, ZmComposeView.WRAP_LENGTH, prefix + " ");
 			}
 			else if (incOption == ZmSetting.INCLUDE_SMART)
@@ -1429,9 +1435,10 @@ function(action, msg, extraBodyText, incOption) {
 					chunks[i] = AjxStringUtil.wordWrap(chunks[i], ZmComposeView.WRAP_LENGTH, prefix + " ");
 				var text = chunks.length ? chunks.join('\n\n') : body;
 				value += leadingText + preface + text;
-			} else if (action == ZmOperation.REPLY_ACCEPT ||
-						action == ZmOperation.REPLY_DECLINE ||
-						action == ZmOperation.REPLY_TENTATIVE)
+			}
+			else if (action == ZmOperation.REPLY_ACCEPT ||
+					 action == ZmOperation.REPLY_DECLINE ||
+					 action == ZmOperation.REPLY_TENTATIVE)
 			{
 				var bp = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
 				var bodyStr = bp ? (bp.content.replace(/\r\n/g, "\n")) : "";
