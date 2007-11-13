@@ -133,27 +133,31 @@ function() {
 		this._firstSelIndex = 0;
 
 	// get first valid item to select
-	var item = this._list.get(this._firstSelIndex);
-	if (item == null || (item && item.folderId == ZmFolder.ID_TRASH)) {
-		// get the first non-trash contact to select
-		item = null;
-		var list = this._list.getArray();
+	var item;
+	if (this._list) {
+		item = this._list.get(this._firstSelIndex);
 
-		if (this._firstSelIndex > 0 && this._firstSelIndex == list.length) {
-			item = list[list.length-1];
-		} else {
-			for (var i=0; i < list.length; i++) {
-				if (list[i].folderId != ZmFolder.ID_TRASH) {
-					item = list[i];
-					break;
+		if (item == null || (item && item.folderId == ZmFolder.ID_TRASH)) {
+			// get the first non-trash contact to select
+			item = null;
+			var list = this._list.getArray();
+
+			if (this._firstSelIndex > 0 && this._firstSelIndex == list.length) {
+				item = list[list.length-1];
+			} else {
+				for (var i=0; i < list.length; i++) {
+					if (list[i].folderId != ZmFolder.ID_TRASH) {
+						item = list[i];
+						break;
+					}
 				}
 			}
-		}
 
-		// reset first sel index
-		if (item) {
-			var div = document.getElementById(this._getItemId(item));
-			this._firstSelIndex = div ? this._list.indexOf(AjxCore.objectWithId(Dwt.getAttr(div, "_itemIndex"))) : -1;
+			// reset first sel index
+			if (item) {
+				var div = document.getElementById(this._getItemId(item));
+				this._firstSelIndex = div ? this._list.indexOf(AjxCore.objectWithId(Dwt.getAttr(div, "_itemIndex"))) : -1;
+			}
 		}
 	}
 
