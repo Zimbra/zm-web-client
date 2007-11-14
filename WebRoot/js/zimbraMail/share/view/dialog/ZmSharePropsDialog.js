@@ -88,6 +88,8 @@ function(mode, object, share) {
 	this._shareWithOptsProps.setPropertyVisible(this._passwordId, true);
 	this._props.setPropertyVisible(this._shareWithBreakId, true);
 
+	this._granteeInput.setValidatorFunction(null, isGuestShare ? DwtInputField.validateEmail : DwtInputField.validateAny);
+
 	this._passwordButton.setVisible(!isNewShare);
 	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
 	this._passwordInput.setValue((share && share.grantee.id) || "", true);
@@ -155,6 +157,22 @@ function(event) {
 	var isUserShare = this._userRadioEl.checked;
 	var isGuestShare = this._guestRadioEl.checked;
 	var isPublicShare = this._publicRadioEl.checked;
+
+	// validate input
+	var error;
+	if (this._granteeInput.isValid() == null) {
+		error = this._granteeInput.getValue() ? AjxMsg.invalidEmailAddr : AjxMsg.valueIsRequired;
+	}
+	if (!error && isGuestShare && this._passwordInput.isValid() == null) {
+		error = AjxMsg.valueIsRequired;
+	}
+	if (error) {
+		var dialog = appCtxt.getErrorDialog();
+		dialog.setMessage(error);
+		dialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
+		dialog.popup();
+		return;
+	}
 
 	var shares = [];
 	if (this._shareMode == ZmSharePropsDialog.NEW) {
@@ -318,6 +336,8 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 	var isGuestShare = type == ZmShare.TYPE_GUEST;
 	var isPublicShare = type == ZmShare.TYPE_PUBLIC;
 
+	this._granteeInput.setValidatorFunction(null, isGuestShare ? DwtInputField.validateEmail : DwtInputField.validateAny);
+
 	this._rolesGroup.setVisible(isUserShare);
 	this._messageGroup.setVisible(!isPublicShare);
 
@@ -400,11 +420,13 @@ function() {
 	this._granteeInput = new DwtInputField({parent: this});
 	Dwt.setSize(this._granteeInput.getInputElement(), "100%");
 	this._granteeInput.setData(Dwt.KEY_OBJECT, this);
+	this._granteeInput.setRequired(true);
 
 	var password = new DwtComposite(this);
 	this._passwordInput = new DwtInputField({parent: password});
 	Dwt.setSize(this._passwordInput.getInputElement(), "100%");
 	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
+	this._passwordInput.setRequired(true);
 	this._passwordButton = new DwtButton(password);
 	this._passwordButton.setText(ZmMsg.changePassword);
 	this._passwordButton.addSelectionListener(new AjxListener(this, this._handleChangeButton));
