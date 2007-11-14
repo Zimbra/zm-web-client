@@ -37,6 +37,7 @@ function() {
 
 ZmGroupView.prototype.set =
 function(contact, isDirty) {
+	this._attr = {};
 
 	if (!this._htmlInitialized) {
 		this._createHtml();
@@ -217,6 +218,7 @@ function() {
 ZmGroupView.prototype._setFields =
 function() {
 	this._setGroupName();
+	this._setFolder();
 	this._setGroupMembers();
 	this._setHeaderInfo();
 	this._setTitle();
@@ -251,8 +253,8 @@ function() {
 			showSearchIn = true;
 	}
 	var params = {
-		id:this._htmlElId,
-		showSearchIn:showSearchIn
+		id: this._htmlElId,
+		showSearchIn: showSearchIn
 	};
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#GroupView", params);
 	this._htmlInitialized = true;
@@ -261,6 +263,16 @@ function() {
 ZmGroupView.prototype._addWidgets =
 function() {
 	this._groupMembers = document.getElementById(this._htmlElId + "_groupMembers");
+
+	// add folder DwtSelect
+	var folderCellId = this._htmlElId + "_folderSelect";
+	var folderCell = document.getElementById(folderCellId);
+	if (folderCell) {
+		// add select widget for user to choose folder
+		this._folderSelect = new DwtSelect(this);
+		this._folderSelect.reparentHtmlElement(folderCellId);
+		this._folderSelect.addChangeListener(new AjxListener(this, this._selectChangeListener));
+	}
 
 	// add select menu
 	var selectId = this._htmlElId + "_listSelect";
@@ -374,15 +386,9 @@ function(asArray) {
 
 ZmGroupView.prototype._getFolderId =
 function() {
-	var id = ZmFolder.ID_CONTACTS;
-	if (this._contact.id == null) {
-		var clc = appCtxt.getApp(ZmApp.CONTACTS).getContactListController();
-		id = clc._folderId;
-	} else {
-		if (this._contact.addrbook)
-			id = this._contact.addrbook.id;
-	}
-	return id;
+	return (this._folderSelect != null)
+		? this._folderSelect.getValue()
+		: ZmFolder.ID_CONTACTS;
 };
 
 ZmGroupView.prototype._setGroupMembers =
@@ -417,6 +423,12 @@ function(ev) {
 	} else {
 		this._addButton.setEnabled(selection.length > 0);
 	}
+};
+
+ZmGroupView.prototype._selectChangeListener =
+function(ev) {
+	this._attr[ZmContact.F_folderId] = ev._args.newValue;
+	this._isDirty = true;
 };
 
 ZmGroupView.prototype._pageListener =
