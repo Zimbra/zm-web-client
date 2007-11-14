@@ -437,6 +437,7 @@ function() {
 	ZmOperation.registerOp("CHECK_MAIL", {textKey:"checkMail", tooltipKey:"checkMailTooltip"});
 	ZmOperation.registerOp("COMPOSE_OPTIONS", {textKey:"options", image:"Preferences"});
 	ZmOperation.registerOp("DELETE_CONV", {textKey:"delConv", image:"DeleteConversation"}, ZmSetting.CONVERSATIONS_ENABLED);
+	ZmOperation.registerOp("DELETE_MSG", {textKey:"delMsg", image:"DeleteMessage"});
 	ZmOperation.registerOp("DELETE_MENU", {tooltipKey:"deleteTooltip", image:"Delete"});
 	ZmOperation.registerOp("DETACH_COMPOSE", {tooltipKey:"detachTooltip", image:"OpenInNewWindow"});
 	ZmOperation.registerOp("DRAFT", null, ZmSetting.SAVE_DRAFT_ENABLED);

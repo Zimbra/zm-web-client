@@ -286,19 +286,19 @@ ZmMailMsgListView.prototype._changeTrashStatus =
 function(msg) {
 	var row = this._getElement(msg, ZmItem.F_ITEM_ROW);
 	if (row) {
-		var folder = appCtxt.getById(msg.folderId);
-		var className;
 		if (msg.isUnread) {
-			className = "Unread";
+			Dwt.addClass(row, "Unread");
 		}
+
+		var folder = appCtxt.getById(msg.folderId);
 		if (folder && folder.isInTrash()) {
-			className = (className ? (className + " ") : "") + "Trash";
+			Dwt.addClass(row, "Trash");
+		} else {
+			Dwt.delClass(row, "Trash");
 		}
+
 		if (msg.isSent) {
-			className = (className ? (className + " ") : "") + "Sent";
-		}
-		if (className) {
-			row.className = className;
+			Dwt.addClass(row, "Sent");
 		}
 	}
 };
