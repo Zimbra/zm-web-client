@@ -199,13 +199,13 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.MARK_READ:
-			if (!folder || (folder && !folder.isReadOnly())) {
+			if (num && (!folder || (folder && !folder.isReadOnly()))) {
 				this._markReadListener();
 			}
 			break;
 
 		case ZmKeyMap.MARK_UNREAD:
-			if (!folder || (folder && !folder.isReadOnly())) {
+			if (num && (!folder || (folder && !folder.isReadOnly()))) {
 				this._markUnreadListener();
 			}
 			break;
