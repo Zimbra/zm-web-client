@@ -116,7 +116,7 @@ function(params, callback) {
 		this._query = query;
 		this._offset = offset;
 		this._limit = limit;
-		var fetchId = (params.getFirstMsg && this.msgIds) ? this.msgIds[0] : null;
+		var fetchId = (params.getFirstMsg && this.msgIds && this.msgIds.length) ? this.msgIds[0] : null;
 		var types = AjxVector.fromArray([ZmItem.MSG]);
 		var searchParams = {query:query, types:types, sortBy:sortBy, offset:offset, limit:limit, getHtml:getHtml};
 		var search = this.search = new ZmSearch(searchParams);
@@ -404,10 +404,13 @@ function(params, callback) {
 			params.getFirstMsg = true;
 			this.load(params, respCallback);
 		}
+		return;
 	} else {
 		// do our best to return a "realized" message by checking cache
-		if (!msg) msg = appCtxt.getById(this.msgIds[0]);
-		if (!msg) msg = new ZmMailMsg(this.msgIds[0]);
+		if (!msg && this.msgIds && this.msgIds.length) {
+			var id = this.msgIds[0];
+			msg = appCtxt.getById(id) || new ZmMailMsg(id);
+		}
 		return msg;
 	}		
 };
@@ -422,7 +425,9 @@ function(params, callback) {
 		}
 	} else {
 		// desperate measures - get msg content from server
-		msg = msg || new ZmMailMsg(this.msgIds[0]);
+		if (!msg && this.msgIds && this.msgIds.length) {
+			msg = new ZmMailMsg(this.msgIds[0]);
+		}
 		var respCallback = new AjxCallback(this, this._handleResponseLoadMsg, [msg, callback]);
 		var getHtml = params.getHtml || appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		msg.load(getHtml, false, respCallback);
