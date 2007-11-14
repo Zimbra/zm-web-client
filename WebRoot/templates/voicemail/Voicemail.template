@@ -148,7 +148,7 @@
 
 				<tr valign='top'>
 					<td>&nbsp;</td>
-					<td class='ZOptionsLabel'><$= ZmMsg.moreVoiceControlsLabel $></td>
+					<td class='ZOptionsLabel' style='text-align:left;'><$= ZmMsg.moreVoiceControlsLabel $></td>
 				</tr>
 				<tr valign='top'>
 					<td>&nbsp;</td>
