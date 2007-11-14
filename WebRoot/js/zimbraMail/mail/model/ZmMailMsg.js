@@ -648,7 +648,7 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 	this._origMsg = this._origMsg || this;
 
 	if (!this._origMsg.invite.hasMultipleComponents()) {
-		return this._sendInviteReply(contactList, edited, componentId, callback, errorCallback, instanceDate, accountName);
+		return this._sendInviteReply(contactList, edited, componentId || 0, callback, errorCallback, instanceDate, accountName);
 	} else {
 		// TODO ... don't understand multiple invites too well yet.
 	}
