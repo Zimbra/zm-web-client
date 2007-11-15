@@ -573,7 +573,7 @@ function(inputEl, attendee, useException) {
 			this._emailToIdx[email] = idx;
 			// go get this attendee's free/busy info if we haven't already
 			if (sched.uid != email) {
-				this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), email, this._fbCallback);
+				this._getFreeBusyInfo(this._getStartTime(), email, this._fbCallback);
 			}
 			sched.attendee = attendee;
 			this._setAttendeeToolTip(sched, attendee);
@@ -655,7 +655,7 @@ function() {
 
 	if (uids.length) {
 		var emails = uids.join(",");
-		this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), emails, this._fbCallback);
+		this._getFreeBusyInfo(this._getStartTime(), emails, this._fbCallback);
 	}
 };
 
@@ -686,7 +686,7 @@ function(organizer, attendees) {
 	this._addAttendeeRow(false, null, false, null, true, true);
 
 	if (emails.length) {
-		this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), emails.join(","), this._fbCallback);
+		this._getFreeBusyInfo(this._getStartTime(), emails.join(","), this._fbCallback);
 	}
 };
 
@@ -1173,6 +1173,11 @@ function() {
 	return null;
 };
 
+ZmSchedTabViewPage.prototype._getFreeBusyInfo =
+function(startTime, emailList, callback) {
+	var endTime = startTime + AjxDateUtil.MSEC_PER_DAY;
+	this._controller.getFreeBusyInfo(startTime, endTime, emailList, callback);
+};
 
 // Static methods
 
