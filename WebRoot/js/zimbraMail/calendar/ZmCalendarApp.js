@@ -573,7 +573,8 @@ function() {
 */
 ZmCalendarApp.prototype.getLocations = 
 function() {
-	return this._locations;
+    this.initResources();
+    return this._locations;
 };
 
 /**
@@ -581,7 +582,8 @@ function() {
 */
 ZmCalendarApp.prototype.getEquipment = 
 function() {
-	return this._equipment;
+     this.initResources();
+    return this._equipment;
 };
 
 ZmCalendarApp.prototype._postLoadAppt =
