@@ -179,6 +179,13 @@ ZmImOverview.prototype.sort = function(by) {
         }
 };
 
+ZmImOverview.prototype.chatWithBuddy = function(buddy) {
+        var ctrl = appCtxt.getApp("IM").getChatListController();
+	ctrl.chatWithRosterItem(buddy);
+        if (ZmImNewChatDlg._INSTANCE)
+                ZmImNewChatDlg._INSTANCE.popdown();
+};
+
 ZmImOverview.prototype._actionMenuPopdownListener = function() {
 	if (this._actionedItem)
 		this._actionedItem._setActioned(false);
@@ -189,7 +196,11 @@ ZmImOverview.prototype._getActionMenu = function(nodeType, buddy, group) {
 	if (ops) {
 		var menu = ops._dwtControl;
 		if (!menu) {
+                        var dialog = this;
+                        while (dialog && !(dialog instanceof DwtDialog))
+                                dialog = dialog.parent;
 			menu = ops._dwtControl = new ZmActionMenu({ parent    : this,
+                                                                    dialog    : dialog,
 								    menuItems : ops });
 			for (var i = 0; i < menu.opList.length; ++i) {
 				var item = menu.opList[i];
@@ -233,8 +244,7 @@ ZmImOverview.prototype._treeSelectionListener = function(ev) {
 		ctrl.selectChatForRosterItem(buddy);
 	} else if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
 		if (buddy) {
-			var ctrl = appCtxt.getApp("IM").getChatListController();
-			ctrl.chatWithRosterItem(buddy);
+			this.chatWithBuddy(buddy);
 		} else if (group) {
 			ev.item.setExpanded(!ev.item.getExpanded());
 		}
@@ -275,9 +285,11 @@ ZmImOverview.prototype._init = function() {
 	this._rootItem.setData("ZmImOverview.data", { type: "root" });
 	this._rootItem.setText(ZmMsg.buddyList);
 
-	// Zimbra Assistant buddy
-	var assistant = new ZmAssistantBuddy(buddyList);
-	this._createBuddy("assistant", assistant);
+        if (!this._options.noAssistant) {
+	        // Zimbra Assistant buddy
+	        var assistant = new ZmAssistantBuddy(buddyList);
+	        this._createBuddy("assistant", assistant);
+        }
 
 	var createBuddy = AjxCallback.simpleClosure(this._createBuddy, this, "buddy");
 
@@ -558,7 +570,7 @@ ZmImOverview.FILTER_SEARCH = {
 
 	_doKeyPress : function() {
 		var search = this.__searchInputEl.value;
-		if (!/\S/.test(search) || search == ZmMsg.search)
+		if (!/\S/.test(search) || search == ZmMsg.filter)
 			this.removeFilter(ZmImOverview.FILTER_SEARCH.func);
 		else
 			this.addFilter(ZmImOverview.FILTER_SEARCH.func);
@@ -566,7 +578,7 @@ ZmImOverview.FILTER_SEARCH = {
 
 	inputFocus : function() {
 		Dwt.delClass(this.__searchInputEl, "DwtSimpleInput-hint", "DwtSimpleInput-focused");
-		if (this.__searchInputEl.value == ZmMsg.search)
+		if (this.__searchInputEl.value == ZmMsg.filter)
 			this.__searchInputEl.value = "";
 		else try {
 			this.__searchInputEl.select();
@@ -576,7 +588,7 @@ ZmImOverview.FILTER_SEARCH = {
 	inputBlur : function() {
 		Dwt.delClass(this.__searchInputEl, "DwtSimpleInput-focused", "DwtSimpleInput-hint");
 		if (!/\S/.test(this.__searchInputEl.value))
-			this.__searchInputEl.value = ZmMsg.search;
+			this.__searchInputEl.value = ZmMsg.filter;
 	},
 
 	inputKeyPress : function(ev) {
@@ -602,9 +614,7 @@ ZmImOverview.FILTER_SEARCH = {
 
 			// initiate chat with the first item, if found
 			if (this._firstFilterItem) {
-				var rti = this._firstFilterItem.getData("ZmImOverview.data").buddy;
-				var clc = appCtxt.getApp("IM").getChatListController();
-				clc.chatWithRosterItem(rti);
+				this.chatWithBuddy(rti);
 
 				// and clear value to reset filters
 				this.__searchInputEl.value = "";

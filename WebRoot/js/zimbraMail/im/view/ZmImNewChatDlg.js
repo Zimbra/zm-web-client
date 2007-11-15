@@ -18,7 +18,7 @@
 /** small dialog for picking one contact with an autocompletion entry */
 
 ZmImNewChatDlg = function() {
-	DwtDialog.call(this, DwtShell.getShell(window), null, ZmMsg.selectContact);
+	DwtDialog.call(this, DwtShell.getShell(window), null, ZmMsg.selectBuddyOrContact);
 	this._init();
 };
 
@@ -38,6 +38,13 @@ ZmImNewChatDlg.prototype._init = function() {
 	this._initAutocomplete();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
         this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
+
+        var list = new ZmImOverview(this, { posStyle    : Dwt.STATIC_STYLE,
+                                            isFloating  : true,
+                                            noAssistant : true
+                                          });
+        list.reparentHtmlElement(id + "_buddyListCont");
+        list.setSize(Dwt.DEFAULT, 200);
 };
 
 ZmImNewChatDlg._INSTANCE = null;
@@ -63,8 +70,8 @@ ZmImNewChatDlg.prototype.reset = function() {
 };
 
 ZmImNewChatDlg.prototype._initAutocomplete = function() {
-        var acCallback = new AjxCallback(this, this._autocompleteCallback);
         if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+                var acCallback = new AjxCallback(this, this._autocompleteCallback);
                 var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
                 var contactsLoader = contactsClass.getContactList;
                 var params = { parent	    : DwtShell.getShell(window),

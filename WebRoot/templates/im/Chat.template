@@ -151,13 +151,13 @@
     </tr>
     <tr>
       <td>
-        <table width="90%" align="center">
+        <table align="center">
           <tr>
             <$ if (!data.inList) { $>
-            <td style="width: 30%" id="${id}_acceptAndAdd"></td>
+            <td id="${id}_acceptAndAdd"></td>
             <$ } $>
-            <td style="width: 30%" id="${id}_accept"></td>
-            <td style="width: 30%" id="${id}_deny"></td>
+            <td id="${id}_accept"></td>
+            <td id="${id}_deny"></td>
           </tr>
         </table>
       </td>
@@ -187,10 +187,17 @@
 </template>
 
 <template id="im.Chat#NewChatDlg">
-  <table>
-    <tr>
-      <td><label for="${id}_entry"><$= ZmMsg.search $>:</label></td>
-      <td id="${id}_entryCell"></td>
-    </tr>
-  </table>
+  <fieldset>
+    <legend><$= ZmMsg.buddies $></legend>
+    <div id="${id}_buddyListCont"></div>
+  </fieldset>
+  <fieldset>
+    <legend><$= ZmMsg.contacts $></legend>
+    <table>
+      <tr>
+        <td><label for="${id}_entry"><$= ZmMsg.search $>:</label></td>
+        <td id="${id}_entryCell"></td>
+      </tr>
+    </table>
+  </fieldset>
 </template>
