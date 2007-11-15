@@ -43,6 +43,8 @@ ZmChatListController = function(container, imApp) {
 	// listen for roster list changes
 	this._rosterListListener = new AjxListener(this, this._rosterListChangeListener);
 
+        imApp.getRoster().addChangeListener(new AjxListener(this, this._rosterChangeListener));
+
 	var rosterList = imApp.getRoster().getRosterItemList();
 	rosterList.addChangeListener(this._rosterListListener);
 	this._imApp = imApp;
@@ -419,13 +421,22 @@ ZmChatListController.prototype._getView = function() {
 	return ZmChatMultiWindowView.getInstance();
 };
 
+ZmChatListController.prototype._rosterChangeListener = function(ev) {
+        if (ev.event == ZmEvent.E_MODIFY) {
+                var fields = ev.getDetail("fields");
+                if (ZmRoster.F_PRESENCE in fields) {
+                        this.updatePresenceMenu();
+                }
+        }
+};
+
 ZmChatListController.prototype._rosterListChangeListener = function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
+                var fields = ev.getDetail("fields");
 		var items = ev.getItems();
 		for (var i=0; i < items.length; i++) {
 			var item = items[i];
 			if (item instanceof ZmRosterItem) {
-				var fields = ev.getDetail("fields");
 				var chats = this._list.getChatsByRosterAddr(item.getAddress());
 				// currentview or all? probably all...
 				for (var c in chats) {

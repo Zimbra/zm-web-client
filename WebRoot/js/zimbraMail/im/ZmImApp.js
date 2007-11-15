@@ -64,8 +64,13 @@ function() {
 
 ZmImApp.prototype._defineAPI =
 function() {
-	AjxDispatcher.registerMethod("GetRoster", "IM", new AjxCallback(this, this.getRoster));
-	AjxDispatcher.registerMethod("GetChatListController", "IM", new AjxCallback(this, this.getChatListController));
+	AjxDispatcher.registerMethod("GetRoster",
+                                     "IMCore",
+                                     new AjxCallback(this, this.getRoster));
+
+	AjxDispatcher.registerMethod("GetChatListController",
+                                     [ "IMCore", "IM" ],
+                                     new AjxCallback(this, this.getChatListController));
 };
 
 ZmImApp.prototype._registerOperations =
@@ -328,12 +333,10 @@ function() {
 ZmImApp.prototype.handleOp = function(op) {
 	switch (op) {
 	    case ZmOperation.IM_NEW_CHAT:
-		AjxDispatcher.run("GetRoster"); // forces loading IM...
 		this.prepareVisuals(); // ... and create views, if not yet done
 		this.getRosterTreeController()._imNewChatListener();
 		break;
             case ZmOperation.IM_FLOATING_LIST:
-                AjxDispatcher.run("GetRoster");
                 this.prepareVisuals();
                 this.getRosterTreeController()._imFloatingListListener();
                 break;
@@ -347,14 +350,12 @@ function(notify) {
 	}
 };
 
-ZmImApp.prototype.launch =
-function(params, callback) {
+ZmImApp.prototype.launch = function(params, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
-	AjxDispatcher.require("IM", true, loadCallback, null, true);
+	AjxDispatcher.require([ "IMCore", "IM" ], true, loadCallback, null, true);
 };
 
-ZmImApp.prototype._handleLoadLaunch =
-function(callback) {
+ZmImApp.prototype._handleLoadLaunch = function(callback) {
 	var clc = this.getChatListController();
 	clc.show();
 	if (callback) {
@@ -463,8 +464,10 @@ function(parent) {
 
 ZmImApp.prototype.prepareVisuals = function() {
 	if (!this._haveVisuals) {
-		this._haveVisuals = true;
-		this.getChatListController().prepareVisuals();
+                AjxDispatcher.require([ "IMCore", "IM" ], false, new AjxCallback(this, function(){
+		        this.getChatListController().prepareVisuals();
+                        this._haveVisuals = true;
+                }, null, true));
 	}
 };
 

@@ -96,8 +96,7 @@ ZmRoster.prototype._notifyPresence =
 function() {
 	var fields = {};
 	fields[ZmRoster.F_PRESENCE] = this.getPresence();
-	this._notify(ZmEvent.E_MODIFY, {fields: fields});
-	this._imApp.getChatListController().updatePresenceMenu();
+	this._notify(ZmEvent.E_MODIFY, { fields: fields });
 };
 
 ZmRoster.prototype.reload =

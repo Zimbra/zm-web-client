@@ -180,7 +180,7 @@ ZmImOverview.prototype.sort = function(by) {
 };
 
 ZmImOverview.prototype.chatWithBuddy = function(buddy) {
-        var ctrl = appCtxt.getApp("IM").getChatListController();
+        var ctrl = AjxDispatcher.run("GetChatListController");
         ctrl.chatWithRosterItem(buddy);
         if (ZmImNewChatDlg._INSTANCE)
                 ZmImNewChatDlg._INSTANCE.popdown();
@@ -240,7 +240,7 @@ ZmImOverview.prototype._treeSelectionListener = function(ev) {
                 this._actionedItem = ev.item;
                 menu.popup(0, ev.docX, ev.docY);
         } else if (ev.detail == DwtTree.ITEM_SELECTED && buddy) {
-                var ctrl = appCtxt.getApp("IM").getChatListController();
+                var ctrl = AjxDispatcher.run("GetChatListController");
                 ctrl.selectChatForRosterItem(buddy);
         } else if (ev.detail == DwtTree.ITEM_DBL_CLICKED) {
                 if (buddy) {

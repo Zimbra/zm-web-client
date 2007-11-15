@@ -205,7 +205,7 @@ ZmChatMultiWindowView.prototype.selectChat = function(chat, text) {
 	if (cw)
 		cw.select();
 	if (text)
-		cw.setInputContent(AjxStringUtil.trim(text));
+		cw.setEditorContent(AjxStringUtil.trim(text));
 };
 
 ZmChatMultiWindowView.prototype._rosterItemChangeListener = function(chat, item, fields) {

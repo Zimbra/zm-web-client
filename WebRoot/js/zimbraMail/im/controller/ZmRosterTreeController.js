@@ -111,7 +111,7 @@ function(ev) {
 
 ZmRosterTreeController.prototype._imNewChatListener =
 function(ev) {
-	var clc = this._imApp.getChatListController();
+	var clc = AjxDispatcher.run("GetChatListController");
 	if (ev && ev.buddy) {
 		clc.chatWithRosterItem(ev.buddy);
 	} else {
@@ -155,7 +155,7 @@ ZmRosterTreeController.prototype._imNewGroupChatListener =
 function(ev) {
 	// NOT IMPLEMENTED
 // 	var org = this._getActionedOrganizer(ev);
-// 	var clc = this._imApp.getChatListController();
+// 	var clc = AjxDispatcher.run("GetChatListController");
 // 	clc.chatWithRosterItems(org.getRosterItems(), org.getName()+" "+ZmMsg.imGroupChat);
 };
 
@@ -271,12 +271,12 @@ ZmRosterTreeController.prototype._imFloatingListListener = function(ev) {
                 presence.setToolTipContent(ZmMsg.imPresence);
                 presence.setImage("ImAvailable");
                 var menu = ZmImApp.addImPresenceMenu(presence);
-                this._imApp.getChatListController().updatePresenceMenu(true, presence);
+                AjxDispatcher.run("GetChatListController").updatePresenceMenu(true, presence);
                 this._imApp.getRoster().addChangeListener(new AjxListener(this, function(ev) {
                         var fields = ev.getDetail("fields");
                         if (ev.event == ZmEvent.E_MODIFY) {
                                 if (ZmRoster.F_PRESENCE in fields) {
-                                        this._imApp.getChatListController().updatePresenceMenu(false, presence);
+                                        AjxDispatcher.run("GetChatListController").updatePresenceMenu(false, presence);
                                 }
                         }
                 }));
