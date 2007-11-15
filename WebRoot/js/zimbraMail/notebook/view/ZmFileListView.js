@@ -58,7 +58,7 @@ ZmFileListView.COLWIDTH_TYPE			= 80;
 ZmFileListView.COLWIDTH_SIZE 			= 45;
 ZmFileListView.COLWIDTH_DATE 			= 80;
 ZmFileListView.COLWIDTH_OWNER			= 80;
-ZmFileListView.COLWIDTH_FOLDER			= 100;
+ZmFileListView.COLWIDTH_FOLDER			= null;
 
 // Protected methods
 
