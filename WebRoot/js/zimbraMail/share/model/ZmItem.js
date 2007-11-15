@@ -131,6 +131,9 @@ ZmItem.DND_ACTION_MOVE = 1 << 0;
 ZmItem.DND_ACTION_COPY = 1 << 1;
 ZmItem.DND_ACTION_BOTH = ZmItem.DND_ACTION_MOVE | ZmItem.DND_ACTION_COPY;
 
+// Used by items (such as calendar or share invites) that have notes
+ZmItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
+
 /**
  * Stores information about the given item type.
  * 

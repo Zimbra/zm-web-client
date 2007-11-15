@@ -917,9 +917,9 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 ZmCalItem.prototype._trimNotesSummary =
 function(notes, isHtml) {
 	if (notes) {
-		var idx = notes.indexOf(ZmCalendarApp.NOTES_SEPARATOR);
+		var idx = notes.indexOf(ZmItem.NOTES_SEPARATOR);
 		if (idx != -1) {
-			notes = notes.substr(idx + ZmCalendarApp.NOTES_SEPARATOR.length);
+			notes = notes.substr(idx + ZmItem.NOTES_SEPARATOR.length);
 			var junk = isHtml ? "</div>" : "\n\n";
 			if (notes.indexOf(junk) == 0) {
 				notes = notes.replace(junk, "");

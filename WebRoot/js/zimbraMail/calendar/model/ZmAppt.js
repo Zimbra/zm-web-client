@@ -328,7 +328,7 @@ function(isHtml) {
 		buf[i++] = "</table>\n";
 	}
 	buf[i++] = isHtml ? "<div>" : "\n\n";
-	buf[i++] = ZmCalendarApp.NOTES_SEPARATOR;
+	buf[i++] = ZmItem.NOTES_SEPARATOR;
 	// bug fix #7835 - add <br> after DIV otherwise Outlook lops off 1st char
 	buf[i++] = isHtml ? "</div><br>" : "\n\n";
 

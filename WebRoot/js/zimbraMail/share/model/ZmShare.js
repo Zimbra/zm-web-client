@@ -587,7 +587,7 @@ function(mode, isCompose) {
 	var content = this._createContent(formatter);
 	if (this.notes || isCompose) {
 		var notes = this.notes;
-		content = [content, ZmCalendarApp.NOTES_SEPARATOR, notes].join("\n");
+		content = [content, ZmItem.NOTES_SEPARATOR, notes].join("\n");
 	}
 
 	var mimePart = new ZmMimePart();
