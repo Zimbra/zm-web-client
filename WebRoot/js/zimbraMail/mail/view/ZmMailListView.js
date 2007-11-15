@@ -291,6 +291,9 @@ function() {
 				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
 				mi.setData(ZmMailListView.KEY_ID, hCol._id);
 				mi.setChecked(true, true);
+				if (hCol._noRemove) {
+					mi.setEnabled(false);
+				}
 				this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
 			}
 		}

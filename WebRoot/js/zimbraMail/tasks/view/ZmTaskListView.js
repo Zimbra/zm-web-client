@@ -188,13 +188,12 @@ function() {
 		var actionListener = new AjxListener(this, this._colHeaderActionListener);
 		for (var i = 0; i < this._headerList.length; i++) {
 			var hCol = this._headerList[i];
-
-			if (hCol._id.indexOf(ZmItem.F_SUBJECT) == 0)
-				continue;
-
 			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
 			mi.setData(ZmTaskListView.KEY_ID, hCol._id);
 			mi.setChecked(true, true);
+			if (hCol._noRemove) {
+				mi.setEnabled(false);
+			}
 			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
 		}
 	}
@@ -277,7 +276,7 @@ function(parent) {
 	}
 	hList.push(new DwtListHeaderItem(ZmItem.F_PRIORITY, null, "TaskHigh", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.priority));
 	hList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
-	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
+	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT, null, null, null, null, true));
 	hList.push(new DwtListHeaderItem(ZmItem.F_STATUS, ZmMsg.status, null, ZmTaskListView.COL_WIDTH_STATUS, ZmItem.F_STATUS));
 	hList.push(new DwtListHeaderItem(ZmItem.F_PCOMPLETE, ZmMsg.pComplete, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_PCOMPLETE));
 	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.dateDue, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE));
