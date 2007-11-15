@@ -483,9 +483,13 @@ function(ev) {
 			var foundValid = false;
 			for (var i = 0; i < data.length; i++) {
 				if (!shiftKey && (data[i] instanceof ZmContact)) {
-					var email = data[i].getEmail();
-					if (email && email != "")
+					if (data[i].isGroup() && data[i].getGroupMembers().good.size() > 0) {
 						foundValid = true;
+					} else {
+						var email = data[i].getEmail();
+						if (email && email != "")
+							foundValid = true;
+					}
 				} else {
 					// theres other stuff besides contacts in here.. bail
 					ev.doIt = false;
@@ -506,9 +510,12 @@ function(ev) {
 
 			// If dealing with a contact, make sure it has a valid email address
 			if (!shiftKey && (data instanceof ZmContact)) {
-				var email = data.getEmail();
-				if (!email || email == "")
-					ev.doIt = false;
+				if (data.isGroup()) {
+					ev.doIt = (data.getGroupMembers().good.size() > 0);
+				} else {
+					var email = data.getEmail();
+					ev.doIt = (email != null && email != "");
+				}
 			}
 		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
@@ -575,10 +582,19 @@ function(contact, date) {
 	var emails = [];
 	var list = (contact instanceof ZmContact) ? [contact] : contact;
 	for (var i = 0; i < list.length; i++) {
-		// grab the first valid email address for this contact
-		var e = list[i].getEmail();
-		if (e && e != "")
-			emails.push(e);
+		if (list[i].isGroup()) {
+			var members = list[i].getGroupMembers().good.getArray();
+			for (var j = 0; j < members.length; j++) {
+				var e = members[j].address;
+				if (e && e != "")
+					emails.push(e);
+			}
+		} else {
+			// grab the first valid email address for this contact
+			var e = list[i].getEmail();
+			if (e && e != "")
+				emails.push(e);
+		}
 	}
 
 	if (emails.length > 0) {
