@@ -327,7 +327,7 @@ function(parent) {
 	var isConvView = (this._mode == ZmController.CONV_VIEW);
 	var sortBy = isConvView ? null : ZmItem.F_SUBJECT;
 	var colName = isConvView ? ZmMsg.fragment : ZmMsg.subject;
-	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, colName, null, null, sortBy));
+	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, colName, null, null, sortBy, null, null, null, null, true));
 
 	hList.push(new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmMailListView.COL_WIDTH_FOLDER, null, true));
 	hList.push(new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmMailListView.COL_WIDTH_SIZE, null, true));
