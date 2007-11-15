@@ -1716,7 +1716,9 @@ function(self, iframe) {
 			// the view) we are making the browser wrap those paragraphs that
 			// can be wrapped, even if there's a long unbreakable string in the message.
 			doc.body.style.overflow = "visible";
-			doc.body.style.width = view_width - 20 + "px"; // *** changes height!
+			if (view_width > 20) {
+				doc.body.style.width = view_width - 20 + "px"; // *** changes height!
+			}
 		}
 
 		// we are finally in the right position to determine height.
