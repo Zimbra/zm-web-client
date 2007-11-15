@@ -161,30 +161,33 @@ function(show, priority, customStatusMsg) {
 	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
-/**
- * Pass in an array of SUBSCRIBED items
- */
-ZmRoster.prototype.handleSubscribedRosterItems =
-function(subscribed) {
-	for (var i=0; i < subscribed.length; i++) {
-		var sub = subscribed[i];
-		if (sub.to) {
-			var list = this.getRosterItemList();
-			var item = list.getByAddr(sub.to);
-			if (item) {
-				if (sub.groups) item._notifySetGroups(sub.groups); // should optimize
-				if (sub.name && sub.name != item.getName()) item._notifySetName(sub.name);
-				// mod
-			} else {
-				// create
-				var item = new ZmRosterItem(sub.to, list, sub.name, null, sub.groups);
-				list.addItem(item);
-				var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
-				appCtxt.setStatusMsg(toast);
-			}
-		}
-	}
-};
+// /**
+//  * Pass in an array of SUBSCRIBED items
+//  */
+//
+// FIXME: Remove this?
+//
+// ZmRoster.prototype.handleSubscribedRosterItems =
+// function(subscribed) {
+// 	for (var i=0; i < subscribed.length; i++) {
+// 		var sub = subscribed[i];
+// 		if (sub.to) {
+// 			var list = this.getRosterItemList();
+// 			var item = list.getByAddr(sub.to);
+// 			if (item) {
+// 				if (sub.groups) item._notifySetGroups(sub.groups); // should optimize
+// 				if (sub.name && sub.name != item.getName()) item._notifySetName(sub.name);
+// 				// mod
+// 			} else {
+// 				// create
+// 				var item = new ZmRosterItem(sub.to, list, sub.name, null, sub.groups);
+// 				list.addItem(item);
+// 				var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
+// 				appCtxt.setStatusMsg(toast);
+// 			}
+// 		}
+// 	}
+// };
 
 ZmRoster.prototype.pushNotification = function(im) {
         if (!this._gateways) {
