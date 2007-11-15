@@ -392,12 +392,14 @@ ZmChatListController.prototype.chatWithContacts = function(contacts, mailMsg, te
 };
 
 ZmChatListController.prototype.chatWithRosterItem = function(item, text) {
+        appCtxt.getApp(ZmApp.IM).prepareVisuals();
 	var chat = this._list.getChatByRosterItem(item, true);
 	// currentview or all? probably all...
 	this._getView().selectChat(chat, text);
 };
 
 ZmChatListController.prototype.chatWithRosterItems = function(items, chatName) {
+        appCtxt.getApp(ZmApp.IM).prepareVisuals();
 	chat = new ZmChat(Dwt.getNextId(), chatName, this);
 	for (var i=0; i < items.length; i++) {
 		chat.addRosterItem(items[i]);

@@ -158,11 +158,15 @@ ZmRosterItem.prototype.getGroupNames = function() { return this.groupNames; };
 ZmRosterItem.prototype.getName = function() {	return this.name; }
 
 ZmRosterItem.prototype.getContact = function() {
-        var roster = AjxDispatcher.run("GetRoster");
-        var addr = roster.makeGenericAddress(this.id);
-        if (addr)
-	        return AjxDispatcher.run("GetContacts").getContactByIMAddress(addr);
-        // undef if not found
+        var contactList = AjxDispatcher.run("GetContacts");
+        var contact = contactList.getContactByEmail(this.getAddress());
+        if (!contact) {
+                var roster = AjxDispatcher.run("GetRoster");
+                var addr = roster.makeGenericAddress(this.id);
+                if (addr)
+	                contact = contactList.getContactByIMAddress(addr);
+        }
+        return contact;
 };
 
 ZmRosterItem.prototype.getDisplayName = function() {

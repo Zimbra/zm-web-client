@@ -22,7 +22,6 @@
  * Loaded: When the user goes to the IM application
  */
 
-// AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 AjxPackage.require("ajax.util.AjxAnimation");
 AjxPackage.require("ajax.dwt.widgets.DwtResizableWindow");
 AjxPackage.require("ajax.dwt.widgets.DwtButtonColorPicker");
@@ -59,5 +58,3 @@ AjxPackage.require("zimbraMail.im.controller.ZmChatListController");
 AjxPackage.require("zimbraMail.im.controller.ZmRosterTreeController");
 
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmLiteHtmlEditor");
-
-// AjxPackage.require("zimbraMail.im.integration.ZmImAbookIntegration");

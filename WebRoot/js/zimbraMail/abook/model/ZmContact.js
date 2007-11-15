@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -501,9 +501,9 @@ function(attr, batchCmd) {
   			if(attr[name].indexOf("aid_") != -1)
   				a.setAttribute("aid",attr[name].substring(4));
   			else
-  				a.setAttribute("part",attr[name].substring(5));	
+  				a.setAttribute("part",attr[name].substring(5));
   		}else{
-  		    a = soapDoc.set("a", attr[name], cn);	
+  		    a = soapDoc.set("a", attr[name], cn);
   		}
 		a.setAttribute("n", name);
 	}
@@ -597,7 +597,7 @@ function(attr, callback) {
 	for (var name in attr) {
 		if (name == ZmContact.F_folderId)
 			continue;
-		
+
 		//XYZ: Modify Image Handled
 		var a;
   		if(name == ZmContact.F_image){
@@ -605,7 +605,7 @@ function(attr, callback) {
   			if(attr[name].indexOf("aid_") != -1)
   				a.setAttribute("aid",attr[name].substring(4));
   			else if(attr[name].indexOf("part_") != -1)
-  				a.setAttribute("part",attr[name].substring(5));	
+  				a.setAttribute("part",attr[name].substring(5));
   		} else {
   			a = soapDoc.set("a", attr[name], cn);
   		}
@@ -775,7 +775,10 @@ function() {
 	var buddy;
 	if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
 		var roster = AjxDispatcher.run("GetRoster");
-		buddy = roster.getRosterItem(this.getIMAddress(), true);
+                buddy = roster.getRosterItem(this.getAttr(ZmContact.F_email), false)
+                        || roster.getRosterItem(this.getAttr(ZmContact.F_email2), false)
+                        || roster.getRosterItem(this.getAttr(ZmContact.F_email3), false)
+		        || roster.getRosterItem(this.getIMAddress(), true);
 	}
 	return buddy;
 };
@@ -1055,7 +1058,7 @@ function(node) {
 	this.type = this.attr[ZmContact.F_dlist] != null
 		? ZmItem.GROUP : ZmItem.CONTACT;
 
-	// check if the folderId is found in our address book (otherwise, we assume 
+	// check if the folderId is found in our address book (otherwise, we assume
 	// this contact to be a shared contact)
 	this.addrbook = appCtxt.getById(this.folderId);
 
@@ -1116,11 +1119,11 @@ ZmContact._AB_FIELD = {
 	imAddress1: ZmMsg.AB_FIELD_imAddress1,
 	imAddress2: ZmMsg.AB_FIELD_imAddress2,
 	imAddress3: ZmMsg.AB_FIELD_imAddress3,
-	
+
 	//contact Image
 	image: ZmMsg.AB_FIELD_image,
 	attachment: ZmMsg.AB_FIELD_attachment,
-	
+
 	// work address
 	workStreet: ZmMsg.AB_FIELD_street,
 	workCity: ZmMsg.AB_FIELD_city,

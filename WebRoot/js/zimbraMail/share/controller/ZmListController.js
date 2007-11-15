@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -26,12 +26,12 @@
  * and then the controller just handles events.
  *
  * <p>Support is also present for handling multiple views (eg contacts).</p>
- * 
+ *
  *   <p>Controllers for single items may extend this class, since the functionality needed is
  *  virtually the same. An item can be thought of as the degenerate form of a list.</p>
  *
  *  @author Conrad Damon
- *  
+ *
  * @param container	containing shell
  * @param app		containing app
  */
@@ -411,7 +411,7 @@ function(view, elements, isAppView, clear, pushOnly, isTransient, stageView) {
 	if (!pushOnly) {
 		this._setViewContents(view);
 	}
-	
+
 	// push the view
 	if (stageView) {
 		this._app.stageView(view);
@@ -634,17 +634,14 @@ function(ev) {
 	} else if (msg instanceof ZmContact) {
 		contacts = AjxVector.fromArray([ msg ]);
 	}
-	var imAddresses = contacts.map("getIMAddress");
-	var roster = AjxDispatcher.run("GetRoster");
+	var buddies = contacts.map("getBuddy");
 	var seen = [];
-	imAddresses.foreach(function(addr) {
-		if (addr && !seen[addr]) {
-			seen[addr] = true;
-			var item = roster.getRosterItem(addr, true);
-			if (item)
-				ZmChatMultiWindowView.getInstance().chatWithRosterItem(item);
+	buddies.foreach(function(b) {
+		if (b && !seen[b.getAddress()]) {
+			seen[b.getAddress()] = true;
+			AjxDispatcher.run("GetChatListController").chatWithRosterItem(b);
 		}
-	}, this);
+	});
 };
 
 // If there's a contact for the participant, edit it, otherwise add it.
@@ -952,7 +949,7 @@ function() {
 };
 
 // this method gets overloaded if folder id is retrieved another way
-ZmListController.prototype._getSearchFolderId = 
+ZmListController.prototype._getSearchFolderId =
 function() {
 	return (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
 };
@@ -1247,7 +1244,7 @@ ZmListController.prototype._getNavText =
 function(view) {
 	var se = this._getNavStartEnd(view);
 	if (!se) { return ""; }
-	
+
 	var total = this._getNumTotal();
 	var msgText = total ? ZmMsg.navText2 : ZmMsg.navText1;
 	return AjxMessageFormat.format(msgText, [se.start, se.end, total]);
@@ -1264,7 +1261,7 @@ function(view) {
 		start = offset + 1;
 		end = Math.min(offset + limit, size);
 	}
-	
+
 	return (start && end) ? {start:start, end:end} : null;
 };
 
