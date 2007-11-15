@@ -98,7 +98,7 @@ ZmChatWidget.prototype._chatChangeListener = function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var fields = ev.getDetail("fields");
 		var msg = fields[ZmChat.F_MESSAGE];
-		if (msg)
+		if (msg && !msg.fromMe)
 			this.handleMessage(msg);
 		if (ZmChat.F_TYPING in fields) {
 			this.setTyping(ev.getDetail("item"), fields[ZmChat.F_TYPING]);
@@ -245,7 +245,9 @@ ZmChatWidget.prototype.sendInput = function(text) {
 	if (text == "")
 		return;		// don't send empty strings
 
-	this.chat.sendMessage(text);
+	var msg = this.chat.sendMessage(text);
+        if (msg)
+                this.handleMessage(msg);
 };
 
 ZmChatWidget.prototype._updateGroupChatTitle = function(force) {

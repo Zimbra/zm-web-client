@@ -187,11 +187,22 @@ ZmChat.prototype.sendMessage = function(text, typing) {
 	if (thread)
 		message.setAttribute("thread", thread);
 	message.setAttribute("addr", this.getRosterItem(0).getAddress());
-	if (text != null){
+	if (text != null) {
 		soapDoc.set("body", text, message);
 	}
 	// TODO: error handling
 	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj});
+        if (text != null) {
+                var msg = new ZmChatMessage({ thread : thread,
+                                              from   : AjxDispatcher.run("GetRoster").getMyAddress(),
+                                              to     : this.getRosterItem(0).getAddress(),
+                                              ts     : new Date().getTime() },
+                                            true, // from me
+                                            false // is system
+                                           );
+                msg.body = text;
+        }
+        return msg;
 };
 
 ZmChat.prototype.sendByEmail = function(mode) {
