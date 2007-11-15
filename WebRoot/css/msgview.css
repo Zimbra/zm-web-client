@@ -32,13 +32,13 @@
 }
 
 /* text message font (eg: not HTML) */
-.MsgBody-text, .MsgBody-text * {
+.MsgBody-text {
 	@MailMsgBodyText@
 	@MailMsgBodyText-fixed@
 }
 
 /* html message font */
-.MsgBody-html, .MsgBody-html * {
+.MsgBody-html {
 	@MailMsgBodyText@
 	@MailMsgBodyText-html@
 }
