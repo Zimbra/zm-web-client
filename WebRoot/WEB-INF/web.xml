@@ -44,6 +44,12 @@
 		<param-value>sand</param-value>
     </context-param>
 
+    <context-param>
+        <!-- Enter a comma-separated list of servers that host images. -->
+        <param-name>zimbraImageServers</param-name>
+		<param-value></param-value>
+    </context-param>
+
     <filter>
         <filter-name>GzipFilter</filter-name>
         <filter-class>
