@@ -174,28 +174,28 @@ if (application.getInitParameter("offlineMode") != null)  {
                             <table width="100%">
                                 <tr>
                                     <td align="center" valign="middle">
-                                        <a href="http://www.zimbra.com/" target="_new"><span style='cursor:pointer;display:block;' class='ImgLoginBanner'></span></a>
+                                        <a href="http://www.zimbra.com/" target="_new"><span style="cursor:pointer;display:block;" class="ImgLoginBanner"></span></a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <div id='ZLoginAppName'><fmt:message key="splashScreenAppName"/></div>
+                                        <div id="ZLoginAppName"><fmt:message key="splashScreenAppName"/></div>
                                     </td>
                                 </tr>
                             </table>
                         </td>
                     </tr>
                     <tr>
-                        <td id='ZloginBodyContainer'>
+                        <td id="ZloginBodyContainer">
                             <c:if test="${errorCode != null}">
                                 <!-- ${fn:escapeXml(error.stackStrace)} -->
-                                <div id='ZloginErrorPanel'>
+                                <div id="ZloginErrorPanel">
                                     <table width="100%">
                                         <tr>
-                                            <td valign='top' width='40'>
+                                            <td valign="top" width="40">
                                                 <img alt='<fmt:message key="ALT_ERROR"/>' src="<c:url value='/img/dwt/ImgCritical_32.gif'/>"/>
                                             </td>
-                                            <td class='errorText'>
+                                            <td class="errorText">
                                                 <c:out value="${errorMessage}"/>
                                             </td>
                                         </tr>
@@ -203,55 +203,55 @@ if (application.getInitParameter("offlineMode") != null)  {
                                 </div>
                             </c:if>
 
-                            <div id='ZloginFormPanel'>
-                                <form method='post' name="loginForm" action="${formActionUrl}">
+                            <div id="ZloginFormPanel">
+                                <form method="post" name="loginForm" action="${formActionUrl}">
                                     <input type="hidden" name="loginOp" value="login"/>
                                     <table width="100%" cellpadding="4">
                                         <tr>
-                                            <td class='zLoginLabelContainer'><label for="username"><fmt:message key="username"/>:</label></td>
-                                            <td colspan="2" class='zLoginFieldContainer'>
-                                                <input id="username" class='zLoginField' name='username' type='text' value='${fn:escapeXml(param.username)}' />
+                                            <td class="zLoginLabelContainer"><label for="username"><fmt:message key="username"/>:</label></td>
+                                            <td colspan="2" class="zLoginFieldContainer">
+                                                <input id="username" class="zLoginField" name="username" type="text" value="${fn:escapeXml(param.username)}" />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class='zLoginLabelContainer'><label for="password"><fmt:message key="password"/>:</label></td>
-                                            <td colspan="2" class='zLoginFieldContainer'>
-                                                <input id="password" class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
+                                            <td class="zLoginLabelContainer"><label for="password"><fmt:message key="password"/>:</label></td>
+                                            <td colspan="2" class="zLoginFieldContainer">
+                                                <input id="password" class="zLoginField" name="password" type="password" value="${fn:escapeXml(param.password)}"/>
                                             </td>
                                         </tr>
                                         <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
                                            <tr>
-                                               <td class='zLoginLabelContainer'><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
-                                               <td colspan="2" class='zLoginFieldContainer'>
-                                                   <input id="loginNewPassword" class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
+                                               <td class="zLoginLabelContainer"><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
+                                               <td colspan="2" class="zLoginFieldContainer">
+                                                   <input id="loginNewPassword" class="zLoginField" name="loginNewPassword" type="password" value="${fn:escapeXml(param.loginNewPassword)}"/>
                                                </td>
                                            </tr>
                                             <tr>
-                                                <td class='zLoginLabelContainer'><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
-                                                <td colspan="2" class='zLoginFieldContainer'>
-                                                    <input id="confirmNew" class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
+                                                <td class="zLoginLabelContainer"><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
+                                                <td colspan="2" class="zLoginFieldContainer">
+                                                    <input id="confirmNew" class="zLoginField" name="loginConfirmNewPassword" type="password" value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
                                                 </td>
                                             </tr>
                                         </c:if>
                                         <tr>
-                                            <td class='zLoginLabelContainer'></td>
+                                            <td class="zLoginLabelContainer"></td>
                                             <td>
                                                 <table width="100%">
                                                     <tr>
-                                                        <td><input id="remember" value="1" type="checkbox" name='zrememberme' /></td>
-                                                        <td class='zLoginCheckboxLabelContainer'><label for="remember"><fmt:message
+                                                        <td><input id="remember" value="1" type="checkbox" name="zrememberme" /></td>
+                                                        <td class="zLoginCheckboxLabelContainer"><label for="remember"><fmt:message
                                                                 key="rememberMe"/></label></td>
                                                     </tr>
                                                 </table>
                                             </td>
-                                            <td><input type="submit" class='zLoginButton'
+                                            <td><input type="submit" class="zLoginButton"
                                                        value="<fmt:message key="login"/>"/></td>
                                         </tr>
                                     </table>
                                     <table width="100%">
                                         <tr>
-                                        	<td nowrap align='center'>
-                                                <div class='ZLoginSeparator' style='margin-top:0px'></div>
+                                        	<td nowrap align="center">
+                                                <div class="ZLoginSeparator" style="margin-top:0px"></div>
 												<fmt:message key="chooseClient"/>&nbsp;
 												<c:set var="client" value="${param.client}"/>
                                                 <c:set var="useStandard" value="${not (ua.isFirefox1_5up or ua.isIE6up or ua.isCamino or ua.isSafari3Up)}"/>
@@ -259,7 +259,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 													<%-- set client select default based on user agent. --%>
 													<c:set var="client" value="${useMobile ? 'mobile' : useStandard ? 'standard' : 'preferred' }"/>
 												</c:if>
-												<select name="client" onchange='clientChange(this.options[this.selectedIndex].value)'>
+												<select name="client" onchange="clientChange(this.options[this.selectedIndex].value)">
 													<option value="preferred" <c:if test="${client eq 'preferred'}">selected</c:if> > <fmt:message key="clientPreferred"/></option>
 													<option value="advanced"  <c:if test="${client eq 'advanced'}">selected</c:if>> <fmt:message key="clientAdvanced"/></option>
 													<option value="standard"  <c:if test="${client eq 'standard'}">selected</c:if>> <fmt:message key="clientStandard"/></option>
@@ -284,20 +284,20 @@ if (application.getInitParameter("offlineMode") != null)  {
 											</td>
 										</tr>
 										<tr>
-											<td align='center'>
-                                                <div id='ZLoginWhatsThis' class='ZLoginInfoMessage' style='display:none;text-align:left;width:90%;'><fmt:message key="clientWhatsThisMessage"/></div>
-                                                <div id='ZLoginUnsupported' class='ZLoginInfoMessage' style='display:none'><fmt:message key="clientUnsupported"/></div>
+											<td align="center">
+                                                <div id="ZLoginWhatsThis" class="ZLoginInfoMessage" style="display:none;text-align:left;width:90%;"><fmt:message key="clientWhatsThisMessage"/></div>
+                                                <div id="ZLoginUnsupported" class="ZLoginInfoMessage" style="display:none"><fmt:message key="clientUnsupported"/></div>
 
-                                                <div class='ZLoginSeparator'></div>
+                                                <div class="ZLoginSeparator"></div>
 			                                </td>
                                         </tr>
 										<tr>
-                                            <td nowrap id='ZloginClientLevelContainer'>
+                                            <td nowrap id="ZloginClientLevelContainer">
                                                 <fmt:message key="clientLoginNotice"/>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td nowrap id='ZloginLicenseContainer'>
+                                            <td nowrap id="ZloginLicenseContainer">
                                                 <fmt:message key="splashScreenCopyright"/>
                                             </td>
                                         </tr>
