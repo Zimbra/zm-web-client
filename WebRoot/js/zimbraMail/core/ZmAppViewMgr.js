@@ -971,8 +971,13 @@ function(ev) {
 		this._ignoreHistoryChange = false;
 		return;
 	}
-	
-	var hashIndex = ev.data;
+
+	var dlg = DwtBaseDialog.getActiveDialog();
+	if (dlg && dlg.isPoppedUp()) {
+		dlg.popdown();
+	}
+
+	var hashIndex = parseInt(ev.data);
 	this._noHistory = true;
 	var viewId = this._hashView[hashIndex];
 	if (hashIndex == (this._curHashIndex - 1)) {
