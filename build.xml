@@ -43,7 +43,7 @@
     <property name='build.template.dir' value='${build.web.dir}/templates'/>
     <property name='build.skin.dir' value='${build.web.dir}/skins'/>
     <property name='build.help.dir' value='${build.web.dir}/help'/>
-    <property name='build.adminhelp.dir' value='${build.web.dir}/adminhelp'/>	
+    <property name='build.adminhelp.dir' value='${build.web.dir}/adminhelp'/>
     <property name='build.dist.dir' value='${build.dir}/dist'/>
 
     <property name='build.img.dir' value='${build.web.dir}/img'/>
@@ -135,7 +135,7 @@
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='help.dir' value='${web.dir}/help'/>
         <property name='build.help.dir' value='${build.web.dir}/help'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,test/**,yui/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,test/**,yui/**,y/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
@@ -339,7 +339,7 @@
 					<then>
 						<fileset id='customer.web.fileset'
 								 dir='${customer.web.dir}'
-								 includes='h/**,m/**,skins/**,portals/**'
+								 includes='h/**,m/**,skins/**,portals/**,y/**'
 								 excludes='**/*.template'
 						/>
 						<pathconvert property='customer.web.excludes' refid='customer.web.fileset' pathsep=','>
@@ -350,7 +350,7 @@
 				<if><available file='${customer.webinf.dir}' />
 					<then>
 						<fileset id='customer.webinf.fileset'
-								 dir='${customer.webinf.dir}' includes='tags/**'
+								 dir='${customer.webinf.dir}' includes='tags/**,tlds/**'
 						/>
 						<pathconvert property='customer.webinf.excludes' refid='customer.webinf.fileset' pathsep=','>
 							<regexpmapper from="^.*/WebRoot/WEB-INF/(.*)$$" to="\1"/>
@@ -642,7 +642,7 @@
                     />
             <fileset dir='${build.web.dir}' includes='skins/${skinname}/**'/>
             <fileset dir='${customer.web.dir}' includes='portals/${skinname}/**'/>
-            <fileset dir='${customer.web.dir}' includes='h/**,m/**'/>
+            <fileset dir='${customer.web.dir}' includes='h/**,m/**,y/**'/>
             <fileset dir='${customer.web.dir}' includes='WEB-INF/**'/>
         </zip>
     </target>
@@ -941,7 +941,7 @@ if (ext == null) ext = "";
         </if>
     </target>
 
-	
+
     <target name='deploy' depends='war'>
         <ant dir="${server.dir}" target="stop-jetty" inheritAll="false"/>
 
@@ -954,7 +954,7 @@ if (ext == null) ext = "";
         <unzip dest='${webapp.dir}' src="${webapp.file}"/>
 
         <antcall target='webxml-deploy-replace'/>
-    	
+
         <ant dir="${server.dir}" target="start-jetty" inheritAll="false"/>
     </target>
 
@@ -1047,8 +1047,8 @@ if (ext == null) ext = "";
         <zip destfile="${ffext.build.dir}/chrome/${ffext.jarfile}" basedir="${ffext.src.dir}/chrome/zimbradnd"/>
         <zip destfile="${ffext.build.dir}/${ffext.xpifile}" basedir="${ffext.build.dir}"/>
     </target>
-	
-	
+
+
     <!-- JSP PRECOMPILE STUFF -->
      <property name="jspc.build.dir" value="${build.dist.dir}/jetty/work/zimbra/jsp" />
 
@@ -1078,7 +1078,7 @@ if (ext == null) ext = "";
 	<target name="jspc.precompile">
 		<mkdir dir="${jspc.build.dir}"/>
 
-		<fileset id='jspc.fileset' dir='${web.dir}' includes='h/*,m/*,public/*.jsp' />
+		<fileset id='jspc.fileset' dir='${web.dir}' includes='h/*,m/*,y/**,public/*.jsp' />
 		<pathconvert property='jspc.filelist' refid='jspc.fileset' pathsep=',' />
 		<foreach target='jspc' list='m/img,${jspc.filelist}' param='param.jspfile' />
 	</target>
@@ -1091,17 +1091,17 @@ if (ext == null) ext = "";
 
      <target name="jspc.build" depends="jspc.precompile,jspc.compile"/>
 
-     <target name="jspc.deploy" depends="jspc.build">    
+     <target name="jspc.deploy" depends="jspc.build">
      	<mkdir dir="/opt/zimbra/jetty/work/zimbra/jsp"/>
         <copy todir="/opt/zimbra/jetty/work/zimbra/jsp" overwrite="true">
             <fileset dir="${jspc.build.dir}"/>
         </copy>
      </target>
-	
+
      <target name="jspc.clean">
          <delete>
              <fileset dir="${jspc.build.dir}" />
          </delete>
      </target>
-	
+
 </project>

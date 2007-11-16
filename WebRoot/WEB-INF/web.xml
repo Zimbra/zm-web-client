@@ -265,7 +265,7 @@
 		<servlet-name>AdminResources</servlet-name>
 		<url-pattern>/adminres</url-pattern>
 	</servlet-mapping>
-	   
+
 	<welcome-file-list>
         <welcome-file>login</welcome-file>
         <welcome-file>public/login.jsp</welcome-file>
@@ -278,7 +278,7 @@
 			or https.
 		</description>
 		<env-entry-name>protocolMode</env-entry-name>
-		<env-entry-type>java.lang.String</env-entry-type>        
+		<env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>http</env-entry-value><!-- PROTOCOL MODE -->
 	</env-entry>
 	<env-entry>
@@ -309,7 +309,7 @@
         <env-entry-type>java.lang.String</env-entry-type>
         <env-entry-value>%%zimbraAdminURL%%</env-entry-value>
 	</env-entry>
-	
+
     <jsp-config>
       <jsp-property-group>
           <url-pattern>/h/ac</url-pattern>
@@ -340,10 +340,10 @@
           <url-pattern>/h/printvoicemails</url-pattern>
           <url-pattern>/h/repeat</url-pattern>
           <url-pattern>/h/rest</url-pattern>
-          <url-pattern>/h/search</url-pattern>          
+          <url-pattern>/h/search</url-pattern>
           <url-pattern>/h/test</url-pattern>
           <url-pattern>/h/voicemail</url-pattern>
-          <url-pattern>/m/login</url-pattern>          
+          <url-pattern>/m/login</url-pattern>
           <url-pattern>/m/main</url-pattern>
           <url-pattern>/m/mosearch</url-pattern>
           <url-pattern>/m/mocalendar</url-pattern>
@@ -355,6 +355,7 @@
           <url-pattern>/h/sidebarads</url-pattern>
           <url-pattern>/h/printcontacts</url-pattern>
           <url-pattern>/h/printconversations</url-pattern>
+          <url-pattern>/y/calendar</url-pattern>
       </jsp-property-group>
     </jsp-config>
 
