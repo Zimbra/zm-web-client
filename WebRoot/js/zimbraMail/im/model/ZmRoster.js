@@ -527,7 +527,9 @@ ZmRoster.prototype.getGateways = function() {
 ZmRoster.prototype.makeServerAddress = function(addr, type) {
 	if (type == null || /^(xmpp|local)$/i.test(type))
 		return addr;
-	return addr + "@" + this.getGatewayByType(type).domain;
+        var gw = this.getGatewayByType(type);
+        if (gw)
+	        return addr + "@" + gw.domain;
 };
 
 ZmRoster.prototype.makeGenericAddress = function(addr) {
