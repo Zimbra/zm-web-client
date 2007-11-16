@@ -133,7 +133,7 @@ ZmAppViewMgr.C_SEARCH					= "search";
 ZmAppViewMgr.C_SEARCH_BUILDER			= "searchBuilder";
 ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR	= "searchBuilderToolbar";
 ZmAppViewMgr.C_CURRENT_APP				= "appView";
-ZmAppViewMgr.C_APP_CHOOSER				= "app_chooser"; // TODO: rename
+ZmAppViewMgr.C_APP_CHOOSER				= "app_chooser";	// TODO: rename
 ZmAppViewMgr.C_TREE						= "tree";
 ZmAppViewMgr.C_TREE_FOOTER				= "treeFooter";
 ZmAppViewMgr.C_TOOLBAR_TOP				= "topToolbar";
@@ -234,6 +234,13 @@ function(components, doFit, noSetZ) {
 				this._containers[cid] = contEl;
 				if (doFit) {
 					contEl.innerHTML = "";
+
+					// if the container has bounds, fit the component to them now
+					//	this prevents resize flash when laying out containers
+					var bounds = this._getContainerBounds(cid);
+					if (bounds) {
+						comp.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+					}
 				}
 			}
 			list.push(cid);
@@ -721,28 +728,28 @@ function(components) {
 		if (cont) {
 			var comp = this._components[cid];
 			if (comp && (comp.getZIndex() != Dwt.Z_HIDDEN)) {
-                var contBds = Dwt.getBounds(cont);
-				// take insets (border + padding) into account
-				var insets = Dwt.getInsets(cont);
-				Dwt.insetBounds(contBds, insets);
+				var position = this._getComponentPosition(cid);
+				var isStatic = (position == Dwt.STATIC_STYLE);
 				
-                // save bounds
-                this._contBounds[cid] = contBds;
-
 				// reset position if skin overrides default of absolute
-				var position = appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
 				var compEl = comp.getHtmlElement();
 				if (position) {
 					compEl.style.position = position;
 				}
-                switch (position) {
-                    case Dwt.STATIC_STYLE: {
-                        cont.appendChild(compEl);
-                        break;
-                    }
-                    default: {
-                        comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
-                    }
+
+				if (isStatic) {
+					if (compEl.parentNode != cont) {
+						cont.appendChild(compEl);
+					}
+				} else {
+					var contBds = Dwt.getBounds(cont);
+					// take insets (border + padding) into account
+					var insets = Dwt.getInsets(cont);
+					Dwt.insetBounds(contBds, insets);
+					
+					// save bounds
+					this._contBounds[cid] = contBds;
+					comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
                 }
 			}
 		}
@@ -752,6 +759,26 @@ function(components) {
 		this._debugShowMetrics(components);
 	}
 };
+
+ZmAppViewMgr.prototype._getComponentPosition = function(cid) {
+	return appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
+}
+
+ZmAppViewMgr.prototype._getContainerBounds = function(cid) {
+	// ignore bounds for statically laid-out components
+	var position = this._getComponentPosition(cid);
+	if (position == Dwt.STATIC_STYLE) return null;
+
+	var container = this._containers[cid];
+	if (container) {
+		var bounds = Dwt.getBounds(container);
+		// take insets (border + padding) into account
+		var insets = Dwt.getInsets(container);
+		Dwt.insetBounds(bounds, insets);
+		return bounds;
+	}
+	return null;
+}
 
 // Performs manual layout of the components, absent a containing skin. Currently assumes
 // that there will be a top toolbar and app content.
