@@ -1173,6 +1173,16 @@ line-height:normal;
 	vertical-align:top;
 	height:16%;
 }
+.calendar_month_day_item_continues {
+	@AppBg@
+	text-align: right;
+	position: absolute;
+	right: 0px;
+	width: 10px;
+}
+.calendar_month_cells_td-Selected .calendar_month_day_item_continues {
+	@SelectedBg@
+}
 
 /* table inside a particular day */
 .calendar_month_day_table {

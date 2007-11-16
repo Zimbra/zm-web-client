@@ -408,23 +408,18 @@ function(appt) {
 	result.className = result[DwtListView._STYLE_CLASS];
 	this.associateItemWithElement(appt, result, ZmCalBaseView.TYPE_APPT);
 
-	var dur = appt.getShortStartHour();
-
-	var html = [];
-	var i = 0;
-	html[i++] = "<div style='overflow:hidden;' class='"; // Inline style overflow:hidden added to fix bug #6310
-	html[i++] = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
-	html[i++] = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION ? "DarkC" : "C";
-	html[i++] = "'>";
-	html[i++] = "&bull;&nbsp;"
-	html[i++] = dur;
-	if (dur != "")
-		html[i++] = "&nbsp;";
-	html[i++] = AjxStringUtil.htmlEncode(appt.getName());
-	html[i++] = "</div>";
+	var data = {
+		appt: appt,
+		duration: appt.getShortStartHour(),
+		color: ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)] +
+				(appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION ? "DarkC" : "C"),
+		multiday: appt._fanoutFirst != null,
+		first: appt._fanoutFirst,
+		last: appt._fanoutLast
+	};
 
 	var cell = result.insertCell(-1);
-	cell.innerHTML = html.join("");
+	cell.innerHTML = AjxTemplate.expand("calendar.Calendar#month_appt", data);
 	cell.className = "calendar_month_day_item";
 
 	return result;

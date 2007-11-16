@@ -87,6 +87,24 @@
 	</div>
 </template>
 
+<template id='calendar.Calendar#month_appt'>
+	<$ var continues = data.multiday && !data.last; $>
+	<$ var continued = data.multiday && !data.first; $>
+	<$ var style = continues ? "padding-right:15px;" : ""; $>
+
+	<div class='${color}' style='overflow:hidden; position:relative; <$=style$>'>
+		<$ if (continues) { $>
+			<div class='calendar_month_day_item_continues'>&raquo;</div>
+		<$ } $>
+		<$ if (continued) { $>
+			&laquo;&nbsp;
+		<$ } else { $>
+			&bull;&nbsp;${duration}
+		<$ } $>
+		<$= AjxStringUtil.htmlEncode(data.appt.getName()) $>
+	</div>
+</template>
+
 <template id='calendar.Calendar#TypeDialog'>
 	<div style='width:275px' id='${id}_question'></div><p>
 	<table align=center border=0 width=1%>
