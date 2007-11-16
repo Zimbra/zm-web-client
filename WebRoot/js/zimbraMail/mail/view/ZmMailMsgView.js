@@ -1398,7 +1398,7 @@ ZmMailMsgView.prototype._msgChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_MSG) { return; }
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
-		if (ev.source == this._msg) {
+		if (ev.source == this._msg && (appCtxt.getCurrentViewId() == ZmController.MSG_VIEW)) {
 			this._controller._app.popView();
 		}
 	} else if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {

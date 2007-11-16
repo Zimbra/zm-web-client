@@ -248,32 +248,6 @@ function(ev) {
 	// dont do anything since msg view has no action menus
 };
 
-// Actions
-
-// Override so we can pop view
-ZmMsgController.prototype._doDelete = 
-function(items, hardDelete, attrs) {
-	ZmMailListController.prototype._doDelete.call(this, items, hardDelete, attrs);
-	// XXX: async
-	this._app.popView();
-};
-
-// Override so we can pop view
-ZmMsgController.prototype._doMove = 
-function(items, folder, attrs) {
-	ZmMailListController.prototype._doMove.call(this, items, folder, attrs);
-	// XXX: async
-	this._app.popView();
-};
-
-// Override so we can pop view
-ZmMsgController.prototype._doSpam = 
-function(items, markAsSpam, folder) {
-	ZmMailListController.prototype._doSpam.call(this, items, markAsSpam, folder);
-	// XXX: async
-	this._app.popView();
-};
-
 // Miscellaneous
 
 ZmMsgController.prototype._getMsg =
