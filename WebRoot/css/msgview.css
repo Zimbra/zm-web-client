@@ -20,10 +20,10 @@
  *				in the 'Message Preview Pane'.  It should be minimal in size.
  ****/
 
-/* USE???  MsgHeader is not shown in the iframe... ? */
-.MsgHeader .Object,
-.MsgHeader .Object-hover {
+.MsgHeaderTable .Object,
+.MsgHeaderTable .Object-hover {
 	white-space: nowrap;
+	@ActiveCursor@
 }
 
 /* entire message body */

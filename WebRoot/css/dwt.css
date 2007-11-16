@@ -253,21 +253,21 @@
 
 
 /* toolbar buttons, no border in normal/disabled state, border in active, etc */
-.DwtToolbarButton 						{	@ToolbarButtonBorder@			}
-.DwtToolbarButton-disabled				{	@ToolbarButtonBorder-disabled@	}
-.DwtToolbarButton-hover					{	@ToolbarButtonBorder-hover@		}
-.DwtToolbarButton-active				{	@ToolbarButtonBorder-active@	}
-.DwtToolbarButton-selected				{	@ToolbarButtonBorder-selected@	}
-.DwtToolbarButton-active				{	@ToolbarButtonBorder-default@	}
-.DwtToolbarButton-focused				{	@ToolbarButtonBorder-focused@	}
+.DwtToolbarButton 						{	@ToolbarButtonBorder@			@ActiveCursor@	}
+.DwtToolbarButton-disabled				{	@ToolbarButtonBorder-disabled@	@ActiveCursor@	}
+.DwtToolbarButton-hover					{	@ToolbarButtonBorder-hover@		@ActiveCursor@	}
+.DwtToolbarButton-active				{	@ToolbarButtonBorder-active@	@ActiveCursor@	}
+.DwtToolbarButton-selected				{	@ToolbarButtonBorder-selected@	@ActiveCursor@	}
+.DwtToolbarButton-active				{	@ToolbarButtonBorder-default@	@ActiveCursor@	}
+.DwtToolbarButton-focused				{	@ToolbarButtonBorder-focused@	@ActiveCursor@	}
 
-.DwtToolbarButton .Text					{	@ToolbarButtonText@				}
-.DwtToolbarButton-hover .Text			{	@ToolbarButtonText-hover@		}
-.DwtToolbarButton-active .Text			{	@ToolbarButtonText-active@		}
-.DwtToolbarButton-selected .Text		{	@ToolbarButtonText-selected@	}
-.DwtToolbarButton-disabled .Text		{	@ToolbarButtonText-disabled@	}
-.DwtToolbarButton-active .Text			{	@ToolbarButtonText-default@		}
-.DwtToolbarButton-focused .Text			{	@ToolbarButtonText-focused@		}
+.DwtToolbarButton .Text					{	@ToolbarButtonText@				@ActiveCursor@	}
+.DwtToolbarButton-hover .Text			{	@ToolbarButtonText-hover@		@ActiveCursor@	}
+.DwtToolbarButton-active .Text			{	@ToolbarButtonText-active@		@ActiveCursor@	}
+.DwtToolbarButton-selected .Text		{	@ToolbarButtonText-selected@	@ActiveCursor@	}
+.DwtToolbarButton-disabled .Text		{	@ToolbarButtonText-disabled@	@ActiveCursor@	}
+.DwtToolbarButton-active .Text			{	@ToolbarButtonText-default@		@ActiveCursor@	}
+.DwtToolbarButton-focused .Text			{	@ToolbarButtonText-focused@		@ActiveCursor@	}
 
 
 
