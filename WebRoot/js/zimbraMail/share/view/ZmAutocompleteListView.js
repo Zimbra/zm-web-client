@@ -588,7 +588,7 @@ function(text, match) {
 	var el = this._element;
 	el.value = text;
 	el.focus();
-	el.setSelectionRange(text.length, text.length);
+	Dwt.setSelectionRange(el, text.length, text.length);
 
 	this.reset();
 	if (this._compCallback) {

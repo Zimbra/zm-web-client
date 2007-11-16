@@ -1495,7 +1495,7 @@ function(extraBodyText) {
 		tr.select();
 	} else {
 		var index = extraBodyText ? (extraBodyText.length + 1) : 0;
-		this._bodyField.setSelectionRange(index, index);
+		Dwt.setSelectionRange(this._bodyField, index, index);
 	}
 };
 
