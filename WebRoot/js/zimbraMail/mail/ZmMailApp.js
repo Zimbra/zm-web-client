@@ -162,7 +162,6 @@ function() {
 			title: ZmMsg.mail,
 			templateId: "prefs.Pages#Mail",
 			priority: 10,
-			precondition: ZmSetting.MAIL_ENABLED,
 			prefs: [
 				ZmSetting.DEDUPE_MSG_TO_SELF,
 				ZmSetting.DISPLAY_EXTERNAL_IMAGES,
@@ -192,7 +191,6 @@ function() {
 		},
 		ACCOUNTS: {
 			title: ZmMsg.accounts,
-			precondition: ZmSetting.MAIL_ENABLED,
 			templateId: "prefs.Pages#Accounts",
 			priority: 60,
 			prefs: [
@@ -207,7 +205,7 @@ function() {
 			title: ZmMsg.signatures,
 			templateId: "prefs.Pages#Signatures",
 			priority: 30,
-			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)),
+			precondition: appCtxt.get(ZmSetting.SIGNATURES_ENABLED),
 			prefs: [
 				ZmSetting.SIGNATURES,
 				ZmSetting.SIGNATURE_STYLE,
@@ -222,7 +220,7 @@ function() {
 			title: ZmMsg.filterRules,
 			templateId: "prefs.Pages#MailFilters",
 			priority: 70,
-			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
+			precondition: appCtxt.get(ZmSetting.FILTERS_ENABLED),
 			prefs: [
 				ZmSetting.FILTERS
 			],
@@ -236,14 +234,18 @@ function() {
 
     for (var id in sections) {
         //bug:19183 Disable editing filter rules in desktop client
-        if(appCtxt.get(ZmSetting.OFFLINE)) {
-            if(id != "FILTERS") {
+        if (appCtxt.get(ZmSetting.OFFLINE)) {
+            if (id != "FILTERS") {
                 ZmPref.registerPrefSection(id, sections[id]);
             }
         } else {
             ZmPref.registerPrefSection(id, sections[id]);                
         }
     }
+
+	ZmPref.registerPref("ACCOUNTS", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
 
 	ZmPref.registerPref("AUTO_SAVE_DRAFT_INTERVAL", {
 		displayName:		ZmMsg.autoSaveDrafts,
@@ -355,7 +357,7 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		displaySeparator:	true,
 		precondition:		ZmSetting.MAIL_FORWARDING_ENABLED,
-		validationFunction:	ZmPref.validateDontKeepLocalCopy,
+		validationFunction:	ZmMailApp.validateMailLocalDeliveryDisabled,
 		errorMessage:		ZmMsg.errorMissingFwdAddr
 	});
 
@@ -407,27 +409,66 @@ function() {
 		options:			[ZmSetting.SIG_OUTLOOK, ZmSetting.SIG_INTERNET]
 	});
 
+	ZmPref.registerPref("SIGNATURES", {
+		displayContainer:	ZmPref.TYPE_CUSTOM
+	});
+	
 	ZmPref.registerPref("VACATION_MSG", {
 		displayName:		ZmMsg.awayMessage,
 		displayContainer:	ZmPref.TYPE_TEXTAREA,
 		maxLength:			ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE],
 		errorMessage:       AjxMessageFormat.format(ZmMsg.invalidAwayMessage, ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE]),
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
-		displaySeparator:	true
+		displaySeparator:	true,
+		validationFunction:	ZmMailApp.validateVacationMsg,
+		errorMessage:		ZmMsg.missingAwayMessage
 	});
 
 	ZmPref.registerPref("VACATION_MSG_ENABLED", {
 		displayName:		ZmMsg.awayMessageEnabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
+		validationFunction:	ZmMailApp.validateVacationMsgEnabled,
+		errorMessage:		ZmMsg.missingAwayMessage
 	});
+};
 
-	ZmPref.registerPref("SIGNATURES", {
-		displayContainer:	ZmPref.TYPE_CUSTOM
-	});
-	ZmPref.registerPref("ACCOUNTS", {
-		displayContainer:	ZmPref.TYPE_CUSTOM
-	});
+ZmMailApp.validateMailLocalDeliveryDisabled =
+function(checked) {
+	if (!checked) { return true; }
+	var section = ZmPref.getPrefSectionWithPref(ZmSetting.MAIL_FORWARDING_ADDRESS);
+	if (!section) { return false; }
+	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
+	var input = view.getView(section.id).getFormObject(ZmSetting.MAIL_FORWARDING_ADDRESS);
+	return (input != null && input.isValid());
+};
+
+/**
+ * Make sure the server won't be sending out a blank away msg for the user. Check for a
+ * combination of an empty away msg and a checked box for "send away message". Since a
+ * pref is validated only if it changes, we have to have validation functions for both
+ * prefs.
+ */
+ZmMailApp.validateVacationMsg =
+function(awayMsg) {
+	if (awayMsg && (awayMsg.length > 0)) { return true; }
+	var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_MSG_ENABLED);
+	if (!section) { return false; }
+	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
+	var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_MSG_ENABLED);
+	return (input && !input.isSelected());
+};
+
+ZmMailApp.validateVacationMsgEnabled =
+function(checked) {
+	if (!checked) { return true; }
+	var section = ZmPref.getPrefSectionWithPref(ZmSetting.VACATION_MSG);
+	if (!section) { return false; }
+	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
+	var input = view.getView(section.id).getFormObject(ZmSetting.VACATION_MSG);
+	if (!input) { return false; }
+	var awayMsg = input.getValue();
+	return (awayMsg && (awayMsg.length > 0));
 };
 
 ZmMailApp.prototype._registerOperations =

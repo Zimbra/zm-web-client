@@ -73,15 +73,6 @@ function(setup) {
 	}
 };
 
-ZmPref.validateDontKeepLocalCopy = function(checked) {
-	if (!checked) return true;
-	var section = ZmPref.getPrefSectionWithPref(ZmSetting.MAIL_FORWARDING_ADDRESS);
-	if (!section) return false;
-	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
-	var input = view.getView(section.id).getFormObject(ZmSetting.MAIL_FORWARDING_ADDRESS);
-	return input != null && input.isValid();
-};
-
 ZmPref.validateEmail =
 function(emailStr) {
 	if (emailStr) {

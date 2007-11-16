@@ -225,15 +225,17 @@ function () {
 	tg.addMember(this._prefsView.getTabGroupMember());
 };
 
-/*
-* Saves any options that have been changed. This method first sees if any of the
-* preference pages need to perform any logic prior to the actual save. See the
-* <code>ZmPrefView#getPreSaveCallbacks</code> documentation for further details.
-*
-* @param ev			[DwtEvent]		click event
-* @param callback	[AjxCallback]	async callback
-* @param noPop		[boolean]		if true, don't pop view after save
-*/
+/**
+ * Saves any options that have been changed. This method first sees if any of the
+ * preference pages need to perform any logic prior to the actual save. See the
+ * <code>ZmPrefView#getPreSaveCallbacks</code> documentation for further details.
+ *
+ * @param ev		[DwtEvent]		click event
+ * @param callback	[AjxCallback]	async callback
+ * @param noPop		[boolean]		if true, don't pop view after save
+ * 
+ * TODO: shouldn't have to call getChangedPrefs() twice
+ */
 ZmPrefController.prototype._saveListener = 
 function(ev, callback, noPop) {
 	// is there anything to do?
