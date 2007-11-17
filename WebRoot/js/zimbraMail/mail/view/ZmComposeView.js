@@ -1327,18 +1327,14 @@ function(action, msg, extraBodyText, incOption) {
 		}
 	}
 
-	if (incOption == ZmSetting.INCLUDE_NONE ||
-		action == ZmOperation.NEW_MESSAGE)
-	{
-		if (extraBodyText)
+	this._msgAttId = null;
+	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
+		if (extraBodyText) {
 			value = extraBodyText + value;
-	}
-	else if (incOption == ZmSetting.INCLUDE_ATTACH && this._msg)
-	{
+		}
+	} else if (incOption == ZmSetting.INCLUDE_ATTACH && this._msg) {
 		this._msgAttId = this._msg.id;
-	}
-	else if (!this._msgIds)
-	{
+	} else if (!this._msgIds) {
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
 		var crlf2 = composingHtml ? "<br><br>" : ZmMsg.CRLF2;
 		var leadingText = extraBodyText ? extraBodyText + crlf : crlf;
