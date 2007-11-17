@@ -29,7 +29,7 @@ ZmRecurrence = function(calItem) {
 	this.repeatEndDate			= null; 										// maps to "until"
 	this.repeatEndType			= "N";
 	this.repeatMonthlyDayList	= null; 										// list of numbers representing days (usually, just one day)
-	this.repeatType				= "NON";										// maps to "freq"
+	this.repeatType				= ZmRecurrence.NONE;							// maps to "freq"
 	this.repeatWeekday			= false; 										// set to true if freq = "DAI" and custom repeats every weekday
 	this.repeatWeeklyDays		= null; 										// SU|MO|TU|WE|TH|FR|SA
 	this.repeatYearlyMonthsList	= 1; 											// list of numbers representing months (usually, just one month)
@@ -40,9 +40,15 @@ function() {
 	return "ZmRecurrence";
 };
 
+ZmRecurrence.NONE		= "NON";
+ZmRecurrence.DAILY		= "DAI";
+ZmRecurrence.WEEKLY		= "WEE";
+ZmRecurrence.MONTHLY	= "MON";
+ZmRecurrence.YEARLY		= "YEA";
+
 ZmRecurrence.prototype.setSoap =
 function(soapDoc, inv) {
-	if (this.repeatType == "NON") return;
+	if (this.repeatType == ZmRecurrence.NONE) return;
 
 	var recur = soapDoc.set("recur", null, inv);
 	var add = soapDoc.set("add", null, recur);
@@ -63,7 +69,7 @@ function(soapDoc, inv) {
 	if (this.repeatCustom != "1")
 		return;
 
-	if (this.repeatType == "DAI") {
+	if (this.repeatType == ZmRecurrence.DAILY) {
 		if (this.repeatWeekday) {
 			// TODO: for now, handle "every weekday" as M-F
 			//       eventually, needs to be localized work week days
@@ -76,14 +82,14 @@ function(soapDoc, inv) {
 				wkDay.setAttribute("day", day);
 			}
 		}
-	} else if (this.repeatType == "WEE") {
+	} else if (this.repeatType == ZmRecurrence.WEEKLY) {
 		var bwd = soapDoc.set("byday", null, rule);
 		for (var i = 0; i < this.repeatWeeklyDays.length; ++i) {
 			var wkDay = soapDoc.set("wkday", null, bwd);
 			wkDay.setAttribute("day", this.repeatWeeklyDays[i]);
 		}
 	}
-	else if (this.repeatType == "MON")
+	else if (this.repeatType == ZmRecurrence.MONTHLY)
 	{
 		if (this.repeatCustomType == "S") {
 			var bmd = soapDoc.set("bymonthday", null, rule);
@@ -95,7 +101,7 @@ function(soapDoc, inv) {
 			wkDay.setAttribute("day", this.repeatCustomDayOfWeek);
 		}
 	}
-	else if (this.repeatType == "YEA")
+	else if (this.repeatType == ZmRecurrence.YEARLY)
 	{
 		var bm = soapDoc.set("bymonth", null, rule);
 		bm.setAttribute("molist", this.repeatYearlyMonthsList);
@@ -113,12 +119,12 @@ function(soapDoc, inv) {
 
 ZmRecurrence.prototype.getBlurb =
 function() {
-	if (this.repeatType == "NON")
+	if (this.repeatType == ZmRecurrence.NONE)
 		return "";
 
 	var every = [];
 	switch (this.repeatType) {
-		case "DAI": {
+		case ZmRecurrence.DAILY: {
 			if (this.repeatCustom == "1") {
 				every.push(ZmMsg.recurDailyEveryWeekday);
 			} else if (this.repeatCustomCount == 1) {
@@ -129,7 +135,7 @@ function() {
 			}
 			break;
 		}
-		case "WEE": {
+		case ZmRecurrence.WEEKLY: {
 			if (this.repeatCustomCount == 1 && this.repeatWeeklyDays.length == 1) {
 				var dayofweek = AjxUtil.indexOf(ZmCalItem.SERVER_WEEK_DAYS, this.repeatWeeklyDays[0]);
 				var date = new Date();
@@ -151,7 +157,7 @@ function() {
 			}
 			break;
 		}
-		case "MON": {
+		case ZmRecurrence.MONTHLY: {
 			if (this.repeatCustomType == "S") {
 				var count = Number(this.repeatCustomCount);
 				var date = Number(this.repeatMonthlyDayList[0]);
@@ -170,7 +176,7 @@ function() {
 			}
 			break;
 		}
-		case "YEA": {
+		case ZmRecurrence.YEARLY: {
 			if (this.repeatCustomType == "S") {
 				var month = new Date();
 				month.setMonth(Number(this.repeatYearlyMonthsList) - 1);
@@ -249,10 +255,10 @@ function(recurRules) {
 					this.repeatCustom = "1";
 				}
 				if (rule.bymonthday) {
-					if (this.repeatType == "YEA") {
+					if (this.repeatType == ZmRecurrence.YEARLY) {
 						this.repeatCustomMonthDay = rule.bymonthday[0].modaylist;
 						this.repeatCustomType = "S";
-					} else if (this.repeatType == "MON"){
+					} else if (this.repeatType == ZmRecurrence.MONTHLY){
 						this.repeatMonthlyDayList = rule.bymonthday[0].modaylist.split(",");
 					}
 					this.repeatCustom = "1";
@@ -260,8 +266,8 @@ function(recurRules) {
 				if (rule.byday && rule.byday[0] && rule.byday[0].wkday) {
 					this.repeatCustom = "1";
 					var wkday = rule.byday[0].wkday;
-					if (this.repeatType == "WEE" || (this.repeatType == "DAI" && wkday.length == 5)) {
-						this.repeatWeekday = this.repeatType == "DAI";
+					if (this.repeatType == ZmRecurrence.WEEKLY || (this.repeatType == ZmRecurrence.DAILY && wkday.length == 5)) {
+						this.repeatWeekday = this.repeatType == ZmRecurrence.DAILY;
 						for (var x = 0; x < wkday.length; ++x) {
 							if (this.repeatWeeklyDays == null)
 								this.repeatWeeklyDays = [];
