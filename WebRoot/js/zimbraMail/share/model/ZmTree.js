@@ -73,8 +73,7 @@ function(unread) {
 
 ZmTree.prototype._addToList =
 function(organizer, list) {
-    // bug:19180 disable shared folders in desktop client
-	if (!(appCtxt.get(ZmSetting.OFFLINE) && organizer.isRemote())) {
+	if (!organizer.isRemote()) {
 		list.push(organizer);
 	}
 	var children = organizer.children.getArray();

@@ -143,7 +143,7 @@ function(folder, obj, tree, path) {
 	}
 
 	// offline client cannot handle mountpoints
-	if (obj.link && obj.link.length && !appCtxt.get(ZmSetting.OFFLINE)) {
+	if (obj.link && obj.link.length) {
 		for (var i = 0; i < obj.link.length; i++) {
 			var link = obj.link[i];
 			var childFolder = ZmFolderTree.createFromJs(folder, link, tree, "link", path);
