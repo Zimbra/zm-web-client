@@ -402,11 +402,11 @@ function(refresh) {
 			if (appCtxt.inStartup && this._controller._doingPostRenderStartup) {
 				var callback = new AjxCallback(this,
 					function() {
-						folderTree.getPermissions(null, respCallback, true);
+						folderTree.getPermissions(null, respCallback);
 					});
 				this._controller.addPostRenderCallback(callback, 5, 500, true);
 			} else {
-				folderTree.getPermissions(null, respCallback, true);
+				folderTree.getPermissions(null, respCallback);
 			}
 		}
 	} else {
