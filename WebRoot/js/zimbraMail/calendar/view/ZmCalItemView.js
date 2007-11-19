@@ -268,9 +268,11 @@ function(calItem) {
 	if (attendees) {
 		var organizer = calItem.getOrganizer();
 		var sender = calItem.message.getAddress(AjxEmailAddress.SENDER);
-		org = sender ? sender.toString() : organizer;
+		var from = calItem.message.getAddress(AjxEmailAddress.FROM);
+		var address = sender || from;
+		org = address ? address.toString() : organizer;
 		if (sender && organizer)
-			obo = organizer;
+			obo = from ? from.toString() : organizer;
 	}
 
 	if (this._objectManager) {
