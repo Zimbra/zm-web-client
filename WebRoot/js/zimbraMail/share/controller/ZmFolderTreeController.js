@@ -102,14 +102,22 @@ function(parent, type, id) {
 				parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ, ZmOperation.EMPTY_FOLDER], false);
 			}
 		}
-	} else {	// system folder
+	}
+	// system folder
+	else {
 		parent.enableAll(false);
 		// can't create folders under Drafts or Junk
-		if (nId == ZmFolder.ID_INBOX || nId == ZmFolder.ID_SENT || nId == ZmFolder.ID_TRASH) {
+		if (nId == ZmFolder.ID_INBOX ||
+			nId == ZmFolder.ID_SENT  ||
+			nId == ZmFolder.ID_TRASH ||
+			nId == ZmFolder.ID_ARCHIVE)
+		{
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		}
 		// "Empty" for Junk and Trash
-		if (nId == ZmFolder.ID_SPAM || nId == ZmFolder.ID_TRASH) {
+		if (nId == ZmFolder.ID_SPAM ||
+			nId == ZmFolder.ID_TRASH)
+		{
 			emptyText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
 			parent.enable(ZmOperation.EMPTY_FOLDER, hasContent);
 		}
