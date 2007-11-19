@@ -93,6 +93,7 @@ ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_CHATS			= 14;
 ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_BRIEFCASE		= 16;
+ZmOrganizer.ID_ARCHIVE    		= 253;
 ZmOrganizer.ID_OUTBOX    		= 254;
 ZmOrganizer.ID_ZIMLET			= -1000;	// zimlets need a range.  start from -1000 incrementing up.
 ZmOrganizer.ID_ROSTER_LIST		= -11;

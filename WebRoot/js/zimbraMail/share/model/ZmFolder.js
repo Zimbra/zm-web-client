@@ -62,6 +62,7 @@ ZmFolder.ID_CONTACTS							= ZmOrganizer.ID_ADDRBOOK;
 ZmFolder.ID_AUTO_ADDED							= ZmOrganizer.ID_AUTO_ADDED;
 ZmFolder.ID_TAGS	 							= 8;
 ZmFolder.ID_TASKS								= ZmOrganizer.ID_TASKS;
+ZmFolder.ID_ARCHIVE	 							= ZmOrganizer.ID_ARCHIVE;
 ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
 
@@ -87,6 +88,7 @@ ZmFolder.ICON[ZmFolder.ID_INBOX]				= "Inbox";
 ZmFolder.ICON[ZmFolder.ID_TRASH]				= "Trash";
 ZmFolder.ICON[ZmFolder.ID_SPAM]					= "SpamFolder";
 ZmFolder.ICON[ZmFolder.ID_SENT]					= "SentFolder";
+ZmFolder.ICON[ZmFolder.ID_ARCHIVE]				= "SharedMailFolder";
 ZmFolder.ICON[ZmFolder.ID_OUTBOX]				= "Outbox";
 ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
 ZmFolder.ICON[ZmFolder.ID_CHATS]				= "ChatFolder";
@@ -97,6 +99,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_INBOX]			= "inbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TRASH]			= "trash";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]			= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]			= "sent";
+ZmFolder.QUERY_NAME[ZmFolder.ID_ARCHIVE]		= "archive";
 ZmFolder.QUERY_NAME[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]			= "drafts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]		= "contacts";
@@ -114,8 +117,9 @@ ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]			= 3;
 ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]			= 4;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]			= 5;
 ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 6;
-ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 7;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 8;
+ZmFolder.SORT_ORDER[ZmFolder.ID_ARCHIVE]		= 7;
+ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 8;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 9;
 
 // character codes for "tcon" attribute in conv action request, which controls
 // which folders are affected
