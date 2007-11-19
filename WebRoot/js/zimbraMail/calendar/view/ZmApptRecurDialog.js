@@ -994,6 +994,13 @@ function() {
 	this._setFocusHandler(this._monthlyMonthField, ardId);
 	this._setFocusHandler(this._monthlyMonthFieldEx, ardId);
 	this._setFocusHandler(this._yearlyDayField, ardId);
+
+	var cboxCount = this._weeklyCheckboxes.length;
+	for (var i = 0; i < cboxCount; i++) {
+		var checkbox = this._weeklyCheckboxes[i]; 
+		Dwt.setHandler(checkbox, DwtEvent.ONFOCUS, ZmApptRecurDialog._onCheckboxFocus);
+		checkbox._recurDialogId = ardId;
+	}
 };
 
 ZmApptRecurDialog.prototype._createTabGroup = function() {
@@ -1378,6 +1385,12 @@ function(value) {
 
 // Static methods
 
+ZmApptRecurDialog._onCheckboxFocus = function(ev) {
+	var el = DwtUiEvent.getTarget(ev);
+	var ard = AjxCore.objectWithId(el._recurDialogId);
+	ard._weeklyFieldRadio.checked = true;
+};
+
 ZmApptRecurDialog._onFocus =
 function(ev) {
 	ev || (ev = window.event);
@@ -1397,5 +1410,5 @@ function(ev) {
 		case ard._yearlyDayField: 		ard._yearlyDefaultRadio.checked = true; break;
 	}
 
-	
+	DwtShell.getShell(window).getKeyboardMgr().grabFocus(dwtObj);
 };
