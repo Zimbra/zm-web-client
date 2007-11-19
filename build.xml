@@ -339,7 +339,7 @@
 					<then>
 						<fileset id='customer.web.fileset'
 								 dir='${customer.web.dir}'
-								 includes='h/**,m/**,skins/**,portals/**,y/**'
+								 includes='h/**,m/**,skins/**,portals/**,y/**,js/**'
 								 excludes='**/*.template'
 						/>
 						<pathconvert property='customer.web.excludes' refid='customer.web.fileset' pathsep=','>
