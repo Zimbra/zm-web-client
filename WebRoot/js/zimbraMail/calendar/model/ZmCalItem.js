@@ -510,15 +510,16 @@ function(message, viewMode) {
 	if (message == this._currentlyLoaded)
 		return;
 
-	this.isOrg = message.invite.isOrganizer();
-	this.organizer = message.invite.getOrganizerEmail();
-    this.sentBy = message.invite.getSentBy();
-	this.name = message.invite.getName();
-	this.isException = message.invite.isException();
-
-	this._setTimeFromMessage(message, viewMode);
-	this._setExtrasFromMessage(message);
-	this._setRecurrence(message);
+	if(message.invite){
+		this.isOrg = message.invite.isOrganizer();
+		this.organizer = message.invite.getOrganizerEmail();
+    	this.sentBy = message.invite.getSentBy();
+		this.name = message.invite.getName();
+		this.isException = message.invite.isException();
+		this._setTimeFromMessage(message, viewMode);
+		this._setExtrasFromMessage(message);
+		this._setRecurrence(message);
+	}
 	this._setNotes(message);
 	this.getAttachments();
 
@@ -708,8 +709,42 @@ function(mode, msg, callback, errorCallback) {
 	} else {
 		// To get the attendees for this appointment, we have to get the message.
 		var respCallback = new AjxCallback(this, this._doCancel, [mode, callback, null]);
-		this.getDetails(null, respCallback, errorCallback);
+		var cancelErrorCallback = new AjxCallback(this, this._handleCancelError, [mode, callback, errorCallback]);
+		if(this._blobInfoMissing && mode != ZmCalItem.MODE_DELETE_SERIES) {
+			this.showBlobMissingDlg();		
+		}else {
+			this.getDetails(null, respCallback, cancelErrorCallback);
+		}		
 	}
+};
+
+ZmCalItem.prototype.showBlobMissingDlg =
+function() {
+	var msgDialog = appCtxt.getMsgDialog();
+	msgDialog.setMessage(ZmMsg.apptBlobMissing, DwtMessageDialog.INFO_STYLE);
+	msgDialog.popup();
+};
+
+ZmCalItem.prototype._handleCancelError = 
+function(mode, callback, errorCallback, ex) {
+
+	if (ex.code == "mail.NO_SUCH_BLOB") {
+ 		//bug: 19033, cannot delete instance of appt with missing blob info
+ 		if(this.isRecurring() && mode != ZmCalItem.MODE_DELETE_SERIES) {
+			this._blobInfoMissing = true;
+			this.showBlobMissingDlg();
+			return true;
+ 		}else {
+	 		this._doCancel(mode, callback, this.message);
+ 		}
+ 		return true;
+ 	}
+	
+	if(errorCallback){
+		return errorCallback.run(ex);
+	}
+	
+	return false;	
 };
 
 ZmCalItem.prototype._doCancel =
