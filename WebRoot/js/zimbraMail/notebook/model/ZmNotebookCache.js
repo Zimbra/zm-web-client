@@ -114,7 +114,8 @@ function(folderId, callback, errorCallback) {
 	}
 };
 
-ZmNotebookCache.prototype.putItem = function(item1) {
+ZmNotebookCache.prototype.putItem = 
+function(item1) {
 	
 	var folderId = item1.folderId || ZmNotebookItem.DEFAULT_FOLDER;
 	var items = this.getItemsInFolder(folderId);
@@ -145,26 +146,32 @@ ZmNotebookCache.prototype.putItem = function(item1) {
 
 	item.addChangeListener(this._changeListener);
 };
-ZmNotebookCache.prototype.putPage = function(page) {
+ZmNotebookCache.prototype.putPage = 
+function(page) {
 	this.putItem(page);
 };
-ZmNotebookCache.prototype.putDocument = function(doc) {
+ZmNotebookCache.prototype.putDocument = 
+function(doc) {
 	this.putItem(doc);
 };
 
-ZmNotebookCache.prototype.renameItem = function(item, newName) {
+ZmNotebookCache.prototype.renameItem = 
+function(item, newName) {
 	this.removeItem(item);
 	item.name = newName;
 	this.putItem(item);
 };
-ZmNotebookCache.prototype.renamePage = function(page, newName) {
+ZmNotebookCache.prototype.renamePage = 
+function(page, newName) {
 	this.renameItem(page, newName);
 };
-ZmNotebookCache.prototype.renameDocument = function(doc, newName) {
+ZmNotebookCache.prototype.renameDocument = 
+function(doc, newName) {
 	this.renameItem(doc, newName);
 };
 
-ZmNotebookCache.prototype.removeItem = function(item) {
+ZmNotebookCache.prototype.removeItem = 
+function(item) {
 	if(item.path){
 		delete this._pathMap[item.path];
 	}
@@ -202,14 +209,17 @@ ZmNotebookCache.prototype.removeItem = function(item) {
 
 	item.removeChangeListener(this._changeListener);
 };
-ZmNotebookCache.prototype.removePage = function(page) {
+ZmNotebookCache.prototype.removePage = 
+function(page) {
 	this.removeItem(page);
 };
-ZmNotebookCache.prototype.removeDocument = function(doc) {
+ZmNotebookCache.prototype.removeDocument = 
+function(doc) {
 	this.removeItem(doc);
 };
 
-ZmNotebookCache.prototype.clearCache = function() {
+ZmNotebookCache.prototype.clearCache = 
+function() {
 	this._idMap = {};
 	this._foldersMap = {};
 	this._pathMap = {};
@@ -218,36 +228,45 @@ ZmNotebookCache.prototype.clearCache = function() {
 };
 
 // query methods
-ZmNotebookCache.prototype.getPaths = function() {
+ZmNotebookCache.prototype.getPaths = 
+function() {
 	return this._pathMap;
 };
-ZmNotebookCache.prototype.getIds = function() {
+ZmNotebookCache.prototype.getIds = 
+function() {
 	return this._idMap;
 };
-ZmNotebookCache.prototype.getFolders = function() {
+ZmNotebookCache.prototype.getFolders = 
+function() {
 	return this._foldersMap;
 };
-ZmNotebookCache.prototype.getItemByPath = function(path) {
+ZmNotebookCache.prototype.getItemByPath = 
+function(path) {
 	return this._pathMap[path];
 };
-ZmNotebookCache.prototype.getItemById = function(id) {
+ZmNotebookCache.prototype.getItemById = 
+function(id) {
 	return this._idMap[id];
 };
-ZmNotebookCache.prototype.getPageById = function(id) {
+ZmNotebookCache.prototype.getPageById = 
+function(id) {
 	var item = this._idMap[id];
 	return item instanceof ZmPage ? item : null;
 };
-ZmNotebookCache.prototype.getDocumentById = function(id) {
+ZmNotebookCache.prototype.getDocumentById = 
+function(id) {
 	var item = this._idMap[id];
 	return item instanceof ZmDocument ? item : null;
 };
 
-ZmNotebookCache.prototype.getItemByName = function(folderId, name, traverseUp) {
+ZmNotebookCache.prototype.getItemByName = 
+function(folderId, name, traverseUp) {
 	var items = this.getItemsInFolder(folderId);
 	var item = items.pages[name] || items.docs[name];
 	return item;
 };
-ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
+ZmNotebookCache.prototype.getPageByName = 
+function(folderId, name, traverseUp) {
 	var item = this.getItemByName(folderId, name, traverseUp);
 	if (item) {
 		return item instanceof ZmPage ? item : null;
@@ -318,7 +337,8 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 	// page not found
 	return null;
 };
-ZmNotebookCache.prototype.getDocumentByName = function(folderId, name, traverseUp) {
+ZmNotebookCache.prototype.getDocumentByName = 
+function(folderId, name, traverseUp) {
 	var item = this.getItemByName(folderId, name, traverseUp);
 	return item instanceof ZmDocument ? item : null;
 };
@@ -340,7 +360,8 @@ ZmNotebookCache.prototype.getDocumentByName = function(folderId, name, traverseU
  *   <dd> Link to section/item in top-level notebook of specific user
  * </dl>
  */
-ZmNotebookCache.prototype.getItemByLink = function(link) {
+ZmNotebookCache.prototype.getItemByLink = 
+function(link) {
 	// link: //User/Foo/Bar
 	var m;
 	if (m = link.match(/^\/\/([^\/]+)(?:\/(.*))?/)) {
@@ -430,16 +451,19 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 	var item = notebook ? this.getItemByName(notebook.id, link, traverseUp) : null;
 	return item;
 };
-ZmNotebookCache.prototype.getPageByLink = function(link) {
+ZmNotebookCache.prototype.getPageByLink = 
+function(link) {
 	var item = this.getItemByLink(link);
 	return item instanceof ZmPage ? item : null;
 };
-ZmNotebookCache.prototype.getDocumentByLink = function(link) {
+ZmNotebookCache.prototype.getDocumentByLink = 
+function(link) {
 	var item = this.getItemByLink(link);
 	return item instanceof ZmDocument ? item : null;
 };
 
-ZmNotebookCache.prototype._getPageByLinkResponse = function(response) {
+ZmNotebookCache.prototype._getPageByLinkResponse = 
+function(response) {
 	var batchResp = response && response._data && response._data.BatchResponse;
 	var wikiResp = batchResp && batchResp.GetWikiResponse;
 	var word = wikiResp && wikiResp.w && wikiResp.w[0];
@@ -458,7 +482,8 @@ ZmNotebookCache.prototype._getPageByLinkResponse = function(response) {
 	return null;
 };
 
-ZmNotebookCache.__getNotebookByName = function(parent, name) {
+ZmNotebookCache.__getNotebookByName = 
+function(parent, name) {
 	if (name == ".") return parent;
 	if (name == "..") return parent.parent;
 	var notebooks = parent ? parent.children.getArray() : [];
@@ -471,7 +496,8 @@ ZmNotebookCache.__getNotebookByName = function(parent, name) {
 	return null;
 };
 
-ZmNotebookCache.prototype.getItemsInFolder = function(folderId) {
+ZmNotebookCache.prototype.getItemsInFolder = 
+function(folderId) {
 	folderId = folderId || ZmNotebookItem.DEFAULT_FOLDER;
 	if (!this._foldersMap[folderId]) {
 		this._foldersMap[folderId] = { all: {}, pages: {}, docs: {} };
@@ -479,15 +505,18 @@ ZmNotebookCache.prototype.getItemsInFolder = function(folderId) {
 	}
 	return this._foldersMap[folderId];
 };
-ZmNotebookCache.prototype.getPagesInFolder = function(folderId) {
+ZmNotebookCache.prototype.getPagesInFolder = 
+function(folderId) {
 	return this.getItemsInFolder(folderId).pages;
 };
-ZmNotebookCache.prototype.getDocumentsInFolder = function(folderId) {
+ZmNotebookCache.prototype.getDocumentsInFolder = 
+function(folderId) {
 	return this.getItemsInFolder(folderId).docs;
 };
 
 // make a proxy of a page in a different folder
-ZmNotebookCache.prototype.makeProxyPage = function(page, folderId) {
+ZmNotebookCache.prototype.makeProxyPage = 
+function(page, folderId) {
 	// force the page to get it's content
 	// this way we can set the proxy's id to null, but still have the correct content in the proxy
 	page.getContent();
@@ -618,10 +647,12 @@ function(folderId, callback, errorCallback, response) {
 	}
 };
 
-ZmNotebookCache.prototype._handleChange = function(event) {
+ZmNotebookCache.prototype._handleChange = 
+function(event) {
 };
 
-ZmNotebookCache.prototype._processResponse = function(searchResponse)
+ZmNotebookCache.prototype._processResponse = 
+function(searchResponse)
 {
 	try{
 		var result = [];
@@ -672,7 +703,8 @@ ZmNotebookCache.prototype._processResponse = function(searchResponse)
 };
 
 
-ZmNotebookCache.prototype.checkCache = function(params){
+ZmNotebookCache.prototype.checkCache = 
+function(params){
 	var item = null;
 	if(params.folderId && params.name){
 		item = this.getItemByName(params.folderId,params.name);
@@ -684,7 +716,8 @@ ZmNotebookCache.prototype.checkCache = function(params){
 	return item;
 };
 
-ZmNotebookCache.prototype.getItemInfo = function(params,overrideCache)
+ZmNotebookCache.prototype.getItemInfo = 
+function(params,overrideCache)
 {
 		var item = this.checkCache(params);
 		
@@ -734,7 +767,8 @@ ZmNotebookCache.prototype.getItemInfo = function(params,overrideCache)
 		return null;
 };
 
-ZmNotebookCache.prototype.handleGetItemResponse = function(params,response)
+ZmNotebookCache.prototype.handleGetItemResponse = 
+function(params,response)
 {
 		try{
 			var path = params.path;
@@ -788,7 +822,8 @@ ZmNotebookCache.prototype.handleGetItemResponse = function(params,response)
 		}
 };
 
-ZmNotebookCache.prototype.getPath = function(url){
+ZmNotebookCache.prototype.getPath = 
+function(url){
 
 	var parts = this.parseURL(url);
 
@@ -819,7 +854,8 @@ ZmNotebookCache.prototype.getPath = function(url){
 	return path;
 };
 
-ZmNotebookCache.prototype.parseURL = function(sourceUri) {
+ZmNotebookCache.prototype.parseURL = 
+function(sourceUri) {
 
     var names = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"];
     var parts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)?((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri);
@@ -834,6 +870,19 @@ ZmNotebookCache.prototype.parseURL = function(sourceUri) {
     }
     
     return uri;
+};
+
+ZmNotebookCache.prototype.fixCrossDomainReference = 
+function(url) {
+
+	var refURL = window.location.protocol+"//"+window.location.host;
+	var urlParts = this.parseURL(url);
+	if(urlParts.authority!=window.location.host){
+		var oldRef = urlParts.protocol +"://"+ urlParts.authority;
+		url = url.replace(oldRef,refURL);
+	}
+	return url;	
+
 };
 
 ZmNotebookCache.prototype.markCustomIndexPage =

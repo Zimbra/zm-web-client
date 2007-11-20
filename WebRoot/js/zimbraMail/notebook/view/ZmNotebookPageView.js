@@ -313,8 +313,12 @@ ZmNotebookPageView.prototype.mutateLinks = function(doc){
 		var linkPrefix = lwin.location.protocol+"//"+lwin.location.host;
 		if(links){
 			for(var i=0;i<links.length;i++){
-			var link = links[i];
-			this.mutateLink(link,doc,linkPrefix);
+				var link = links[i];
+				var new_href = this.fixCrossDomainReference(link.href);
+				if(new_href != link.href){
+					link.href = new_href;
+				}
+				this.mutateLink(link,doc,linkPrefix);
 			}
 		}
 		
@@ -708,14 +712,8 @@ ZmNotebookPageView.prototype.handleItemResponse = function(item){
 
 ZmNotebookPageView.prototype.fixCrossDomainReference = function(url){
 
-	var refURL = window.location.protocol+"//"+window.location.host;
 	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();	
-	var urlParts = cache.parseURL(url);
-	if(urlParts.authority!=window.location.host){
-		var oldRef = urlParts.protocol +"://"+ urlParts.authority;
-		url = url.replace(oldRef,refURL);
-	}
-	return url;	
+	return cache.fixCrossDomainReference(url);
 
 };
 

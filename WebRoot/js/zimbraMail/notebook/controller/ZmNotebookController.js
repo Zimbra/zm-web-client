@@ -477,6 +477,8 @@ ZmNotebookController.prototype._detachListener = function(event) {
 		var item = items[i];
 
 		var winurl = item.getRestUrl();
+		var cache = this._app.getNotebookCache();		
+		winurl = cache.fixCrossDomainReference(winurl);		
 		var winname = "_new";
 		var winfeatures = [
 			"width=",(window.outerWidth || 640),",",
