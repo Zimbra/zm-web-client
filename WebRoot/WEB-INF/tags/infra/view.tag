@@ -222,7 +222,7 @@
 			<td id='skin_td_app_outer'  colspan='${empty editmode ? 2 : 5}' style='padding-left:${editmode ? 5 : 0}px;width:100%;'>
 				<table id='skin_app_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 					<tr>
-						<td id='skin_td_app'><div id='skin_container_app_main' class='skin_container' style='border-color:#C6C6C6;border-style:solid;border-width:0px 0px 0px 1px;'>
+						<td id='skin_td_app' valign="top"><div id='skin_container_app_main' class='skin_container' style='border-color:#C6C6C6;border-style:solid;border-width:0px 0px 0px 1px;'>
 								 <jsp:doBody/>
 						</div></td>
 					</tr>
