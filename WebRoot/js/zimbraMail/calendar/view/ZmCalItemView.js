@@ -306,59 +306,35 @@ function(calItem) {
 
 ZmApptView.prototype._getTimeString =
 function(calItem) {
-	var str = [];
-	var i = 0;
-
 	var sd = calItem._orig.startDate;
 	var ed = calItem._orig.endDate;
 
-	var dateFormatter = AjxDateFormat.getDateInstance();
-	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-	var timezone = calItem.getOrigTimezone();
-	var localTimezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-
-	if(calItem.isAllDayEvent() && calItem.isMultiDay() ){		
+	var isAllDay = calItem.isAllDayEvent();
+	var isMultiDay = calItem.isMultiDay();
+	if(isAllDay && isMultiDay){
 		var endDate = new Date(ed.getTime());
 		ed.setDate(endDate.getDate()-1);
 	}
 
-	if (this._isOneDayAppt(sd, ed)) {
-		str[i++] = dateFormatter.format(sd);
-		if (!calItem.isAllDayEvent()) {
-			str[i++] = " ";
-			str[i++] = ZmMsg.from.toLowerCase();
-			str[i++] = " ";
-			str[i++] = timeFormatter.format(sd);
-			str[i++] = " - ";
-			str[i++] = timeFormatter.format(ed);
-			// bug fix #4762
-			if (timezone && timezone != localTimezone) {
-				str[i++] = " ";
-				str[i++] = timezone;
-			}
-		}
-	} else {
-		str[i++] = ZmMsg.from;
-		str[i++] = " ";
-		str[i++] = dateFormatter.format(sd);
-		if (!calItem.isAllDayEvent()) {
-			str[i++] = ", ";
-			str[i++] = timeFormatter.format(sd);
-		}
-		str[i++] = " - ";
-		str[i++] = dateFormatter.format(ed);
-		if (!calItem.isAllDayEvent()) {
-			str[i++] = ", ";
-			str[i++] = timeFormatter.format(ed);
-			// bug fix #4762
-			if (timezone && timezone != localTimezone) {
-				str[i++] = " ";
-				str[i++] = timezone;
-			}
+	// all-day
+	var pattern;
+	var params = [sd, ed, ""];
+	if (isAllDay) {
+		pattern = isMultiDay ? ZmMsg.apptTimeAllDayMulti : ZmMsg.apptTimeAllDay;
+	}
+
+	// single instance
+	else {
+		pattern = isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance;
+
+		var timezone = calItem.getOrigTimezone();
+		var localTimezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+		if (timezone != localTimezone) {
+			params[2] = timezone;
 		}
 	}
 
-	return str.join("");
+	return AjxMessageFormat.format(pattern, params);
 };
 
 
