@@ -61,6 +61,7 @@
         <c:when test="${selected eq 'composing'}">
             <zm:pref name="zimbraPrefHtmlEditorDefaultFontFamily" value="${param.zimbraPrefHtmlEditorDefaultFontFamily}"/>
             <zm:pref name="zimbraPrefHtmlEditorDefaultFontSize" value="${param.zimbraPrefHtmlEditorDefaultFontSize}"/>
+            <zm:pref name="zimbraPrefHtmlEditorDefaultFontColor" value="${param.zimbraPrefHtmlEditorDefaultFontColor}"/>
             <zm:pref name="zimbraPrefComposeFormat" value="${param.zimbraPrefComposeFormat}"/>
             <zm:pref name="zimbraPrefReplyIncludeOriginalText" value="${param.zimbraPrefReplyIncludeOriginalText}"/>
             <zm:pref name="zimbraPrefForwardIncludeOriginalText" value="${param.zimbraPrefForwardIncludeOriginalText}"/>

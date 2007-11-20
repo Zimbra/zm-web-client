@@ -61,6 +61,21 @@
                                 <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontSize eq '36pt'}"> selected</c:if> value="36pt">36pt</option>
                             </select>
                         </td>
+                         <td class='ZOptionsTableLabel' style='width:50px;'>
+                            <label for="composeColor"><fmt:message key="optionsComposeColor"/>:</label>
+                        </td>
+                        <td>
+                            <select name="zimbraPrefHtmlEditorDefaultFontColor" id="composeColor">
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontColor eq '#000000'}"> selected</c:if> value="#000000"><fmt:message key="black"/></option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontColor eq '#0033FF'}"> selected</c:if> value="#0033FF"><fmt:message key="blue"/></option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontColor eq '#00E3E3'}"> selected</c:if> value="#00E3E3"><fmt:message key="cyan"/></option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontColor eq '#00CC00'}"> selected</c:if> value="#00CC00"><fmt:message key="green"/></option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontColor eq '#7300CC'}"> selected</c:if> value="#7300CC"><fmt:message key="purple"/></option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontColor eq '#FF0000'}"> selected</c:if> value="#FF0000"><fmt:message key="red"/></option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontColor eq '#FFFF00'}"> selected</c:if> value="#FFFF00"><fmt:message key="yellow"/></option>
+                                <option <c:if test="${mailbox.prefs.htmlEditorDefaultFontColor eq '#FF6600'}"> selected</c:if> value="#FF6600"><fmt:message key="orange"/></option>
+                            </select>
+                        </td>
                     </tr>
                     <tr>
                         <td>
