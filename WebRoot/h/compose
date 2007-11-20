@@ -284,8 +284,8 @@
         var _cont= document.getElementById('body').value
         myEditor.render();
 
-        setTimeout(function(){ myEditor.setEditorHTML(_cont.replace(/\n/g, '<br>'))}, 1000);
-
+        _cont =  _cont.replace(/\n/g, '<br>');
+        setTimeout(function(){ myEditor.setEditorHTML(_cont)}, 2000);
     //-->
    </SCRIPT>
 </c:if>
