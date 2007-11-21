@@ -32,9 +32,11 @@ and the container element is replaced with that control.
 				</tr>
             <$ } $>
             
+			<$ if (data.isEnabled(ZmSetting.SKIN_CHANGE_ENABLED)) { $>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.themeLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_SKIN_NAME' tabindex='30'></div></td>
 				</tr>
+			<$ } $>
 
 			<$ if (data.isEnabled(ZmSetting.LOCALE_NAME)) { $>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.languageLabel$></td>
