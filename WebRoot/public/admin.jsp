@@ -62,9 +62,11 @@
     String ext = (String)request.getAttribute("fileExtension");
     if (ext == null) ext = "";
 
-	final String SKIN_COOKIE_NAME = "ZA_SKIN";
-	String skin = "sand";
+    String skin = "sand";
 
+    //Since we only suppor the sand skin in admin, we will remove the skin related codes.
+	/* final String SKIN_COOKIE_NAME = "ZA_SKIN";
+	
 	String requestSkin = request.getParameter("skin");
 	if (requestSkin != null) {
 		skin = requestSkin;
@@ -76,7 +78,8 @@
         }
     }
 	String skinPreCacheFile = "../skins/" + skin + "/CacheLoRes.html";
-
+	*/
+	
     String contextPath = request.getContextPath();
     if(contextPath == null || contextPath.equals("/")) {
 		response.sendRedirect(adminUrl+"?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
