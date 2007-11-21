@@ -995,9 +995,16 @@ function(contact, str) {
 	if (match.matchedField == ZmContact.F_email || match.matchedField == ZmContact.F_email2 || match.matchedField == ZmContact.F_email3) {
 		results.push(this._createMatch(name, match.savedMatch, fullName, ZmContact.getAttr(contact, match.matchedField), contact));
 	} else {
-		var val = contact.isGroup() ? contact.getGroupMembers().good : contact.getEmail();
-		if (val) {
+		if (contact.isGroup()) {
+			var val = contact.getGroupMembers().good;
 			results.push(this._createMatch(name, val, fullName, val, contact));
+		} else {
+			for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
+ 				var val = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
+	 			if (val) {
+ 					results.push(this._createMatch(name, val, fullName, val, contact));
+ 				}
+  			}
 		}
 	}
 
