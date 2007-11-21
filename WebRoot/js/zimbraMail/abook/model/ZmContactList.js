@@ -879,8 +879,7 @@ function(contact, str, doMarkup) {
 
 		if (field == ZmContact.F_fileAs) {
 			var fileAs = ZmContact.getAttr(contact, field);
-			if (fileAs == null || fileAs.charAt(0) != ZmContact.FA_CUSTOM)
-				continue;
+			if (fileAs == null || fileAs.charAt(0) != ZmContact.FA_CUSTOM) { continue; }
 			value = fileAs.substring(2);
 		} else {
 			value = ZmContact.getAttr(contact, field);
@@ -1183,23 +1182,21 @@ function(str, list, substr) {
 
 /**
  * Handle timeout. A timeout cancels the current GAL autocomplete request. After a
- * certain number of consecutive timeouts, we turn off GAL autocomplete off for the
+ * certain number of consecutive timeouts, we turn GAL autocomplete off for the
  * current session. The user can re-enable it in Options.
  */
 ZmContactList.prototype._handleErrorGetGalMatches =
 function(aclv, callback, ex) {
 	aclv.setWaiting(false);
-	if (ex.code == AjxException.CANCELED) {
-		this._galFailures++;
-		appCtxt.setStatusMsg(ZmMsg.galAutocompleteTimedOut);
-		if (this._galFailures >= ZmContactList.AC_GAL_FAILURES) {
-			appCtxt.setStatusMsg(ZmMsg.galAutocompleteFailure);
-			var settings = appCtxt.getSettings();
-			var setting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION);
-			setting.setValue(false);
-            AjxDispatcher.run("GetPrefController").setDirty("CONTACTS", true);
-			this._galFailures = 0;
-		}
+	this._galFailures++;
+	appCtxt.setStatusMsg(ZmMsg.galAutocompleteTimedOut);
+	if (this._galFailures >= ZmContactList.AC_GAL_FAILURES) {
+		appCtxt.setStatusMsg(ZmMsg.galAutocompleteFailure);
+		var settings = appCtxt.getSettings();
+		var setting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION);
+		setting.setValue(false);
+        AjxDispatcher.run("GetPrefController").setDirty("CONTACTS", true);
+		this._galFailures = 0;
 	}
 	callback.run();
 };
