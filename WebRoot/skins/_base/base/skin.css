@@ -220,9 +220,20 @@ body	{	@ChromeBg@	}
 	height:30px;
 	padding:1px 2px 2px 2px;
 }
+#IFDEF MSIE
+#skin_container_app_toolbar_sep	{	
+ 	@SkinBorderAppToolbar@
+	height:30px;
+	padding:4px 2px 2px 2px;
+}
+#ENDIF
 
 #skin_container_app_toolbar_sep {
-	vertical-align:middle;
+	vertical-align:middle;	
+}
+
+#skin_container_app_toolbar_sep .vertSep{
+	margin-top: 2px;	
 }
 
 #skin_container_current_app 	{
