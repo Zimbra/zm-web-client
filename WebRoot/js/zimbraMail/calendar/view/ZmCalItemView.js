@@ -316,23 +316,10 @@ function(calItem) {
 		ed.setDate(endDate.getDate()-1);
 	}
 
-	// all-day
-	var pattern;
-	var params = [sd, ed, ""];
-	if (isAllDay) {
-		pattern = isMultiDay ? ZmMsg.apptTimeAllDayMulti : ZmMsg.apptTimeAllDay;
-	}
-
-	// single instance
-	else {
-		pattern = isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance;
-
-		var timezone = calItem.getOrigTimezone();
-		var localTimezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-		if (timezone != localTimezone) {
-			params[2] = timezone;
-		}
-	}
+	var pattern = isAllDay ?
+				  (isMultiDay ? ZmMsg.apptTimeAllDayMulti   : ZmMsg.apptTimeAllDay) :
+				  (isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance);
+	var params = [sd, ed, AjxTimezone.getServerId(AjxTimezone.DEFAULT)];
 
 	return AjxMessageFormat.format(pattern, params);
 };
