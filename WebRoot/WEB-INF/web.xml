@@ -357,6 +357,7 @@
           <url-pattern>/h/printconversations</url-pattern>
           <url-pattern>/y/calendar</url-pattern>
           <url-pattern>/y/eappt</url-pattern>
+          <url-pattern>/y/repeat</url-pattern>
       </jsp-property-group>
     </jsp-config>
 
