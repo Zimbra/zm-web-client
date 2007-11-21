@@ -18,13 +18,15 @@ and the container element is replaced with that control.
 		</table>
 	</div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.loginOptions$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
-		<tr><td class='ZOptionsSectionMain' colspan=3>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr><td class='ZOptionsSectionMain'>
 			<table width=100%>
 			<$ if (!data.isEnabled(ZmSetting.OFFLINE)) { $>
 				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.loginLabel$></td>
@@ -56,13 +58,15 @@ and the container element is replaced with that control.
 		</td></tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.searches$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
-		<tr><td class='ZOptionsSectionMain' colspan=3>
+		</table>
+			<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr><td class='ZOptionsSectionMain'>
 			<table width=100%>
 
 		<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
@@ -88,13 +92,15 @@ and the container element is replaced with that control.
 		</td></tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.other$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
-		<tr><td class='ZOptionsSectionMain' colspan=3>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr><td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_SHOW_SELECTION_CHECKBOX' tabindex='90'></div></td>
@@ -111,14 +117,16 @@ and the container element is replaced with that control.
 		</table>
 	</div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.displayMessages$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.displayMessagesLabel$></td>
 					<td class='ZOptionsField'><input id='${id}_PAGE_SIZE' tabindex='20'></td>
@@ -173,14 +181,16 @@ and the container element is replaced with that control.
 	</table>
 
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.messagesReceiving$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>		
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<$ if (data.isEnabled(ZmSetting.MAIL_FORWARDING_ENABLED)) { $>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.messageArrivalLabel$></td>
@@ -260,15 +270,17 @@ and the container element is replaced with that control.
 		</table>
 	</div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<!-- TODO: What about intersection with notebook page compose? -->
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.composingMessages$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 
 			<$ var isHtmlCompose = data.isEnabled(ZmSetting.HTML_COMPOSE_ENABLED) || data.isEnabled(ZmSetting.NOTEBOOK_ENABLED); $>
@@ -398,14 +410,16 @@ and the container element is replaced with that control.
 		</table>
 	</div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.signatures$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td><div id='${id}_SIGNATURES' tabindex='20'></div></td></tr>
 
@@ -418,14 +432,16 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.signaturesUsing$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>		
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 <!--
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.signatureAttachLabel$></td>
@@ -480,14 +496,16 @@ and the container element is replaced with that control.
 	</table>
   </div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.options$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.displayContactsLabel$></td>
 					<td class='ZOptionsField'><select id='${id}_CONTACTS_PER_PAGE' tabindex='20'></select></td>
@@ -513,14 +531,16 @@ and the container element is replaced with that control.
 	</table>
 
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.importExport$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.importLabel$></td>
 					<td class='ZOptionsInfo'><$=ZmMsg.importFromCSVHint$></td>
@@ -580,14 +600,16 @@ and the container element is replaced with that control.
 		</table>
 	</div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accounts$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td style='padding:0;margin:0;border:solid 1px silver'> <!-- TODO: correct border color -->
 					<div id='${id}_ACCOUNTS' tabindex='20'></div>
@@ -641,14 +663,16 @@ and the container element is replaced with that control.
 
 <template id='prefs.Pages#AccountsOffline'>
 	<div><br><br><br></div>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accounts$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 				<table width=100%>
 					<tr><td><$= ZmMsg.setupOfflineAccts $></td></tr>
 				</table>
@@ -658,14 +682,16 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#PrimaryAccount'>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accountHeaderPrimary$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.accountNameLabel$></td>
 					<td class='ZOptionsField'><input id='${id}_PRIMARY_NAME' tabindex='1010'></td>
@@ -717,14 +743,16 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#ExternalAccount'>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accountHeaderExternal$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td colspan=2><div id='${id}_EXTERNAL_ALERT'></div></td></tr>
 
@@ -828,14 +856,16 @@ and the container element is replaced with that control.
 </template>
 
 <template id='prefs.Pages#Persona'>
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'>Persona Settings</td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 			<tr><td class='ZOptionsLabel'>&nbsp;</td>
 				<td class='ZOptionsField'><$=ZmMsg.accountPersonaInstructions$></td>
@@ -925,14 +955,16 @@ and the container element is replaced with that control.
 	</table>
 	</div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.filterRules$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td><div id='${id}_toolbar' tabindex='20'></div></td></tr>
 				<tr><td><div id='${id}_list' tabindex='30'></div></td></tr>
@@ -996,14 +1028,16 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	</table>
 	</div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.general$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.defaultViewLabel$></td>
 					<td class='ZOptionsField'><select id='${id}_CALENDAR_INITIAL_VIEW' tabindex='20'></select></td>
@@ -1036,14 +1070,16 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.apptCreating$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'><input id='${id}_CAL_USE_QUICK_ADD' tabindex='70' type=checkbox></td>
@@ -1059,14 +1095,16 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</tr>
 	</table>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.importExport$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.importLabel$></td>
 					<td class='ZOptionsInfo'><$=ZmMsg.importFromICSHint$></td>
@@ -1097,14 +1135,16 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 		</table>
 	</div>
 
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.options$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
+		</table>
+		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
+			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.imLoginLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_IM_PREF_AUTO_LOGIN' tabindex='20'></div></td>
@@ -1171,14 +1211,16 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 </template>
 
 <template id='prefs.Pages#Shortcuts'>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<table border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr class='ZOptionsHeaderRow'>
 				<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 				<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.general$></td>
 				<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 			</tr>
+			</table>
+			<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 			<tr>
-				<td class='ZOptionsSectionMain' colspan=3>
+				<td class='ZOptionsSectionMain'>
 					<!-- TODO: shortcuts list -->
 				</td>
 			</tr>
