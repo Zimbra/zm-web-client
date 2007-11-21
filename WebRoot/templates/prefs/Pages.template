@@ -124,9 +124,11 @@ and the container element is replaced with that control.
 					<td class='ZOptionsField'><input id='${id}_PAGE_SIZE' tabindex='20'></td>
 				</tr>
 
+				<$ if (data.isEnabled(ZmSetting.CONVERSATIONS_ENABLED)) { $>
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.groupMessagesLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_INITIAL_GROUP_MAIL_BY' tabindex='30'></div></td>
 				</tr>
+				<$ } $>
 
 				<$ if (data.isEnabled(ZmSetting.POLLING_INTERVAL_ENABLED)) { $>
 				<tr>
