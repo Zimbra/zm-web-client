@@ -95,7 +95,17 @@ function(defaultColumnSort) {
 	ZmMailListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
 
 	// Show "From" or "To" depending on which folder we're looking at
-	this._resetFromColumnLabel();
+	isFolder = this._resetFromColumnLabel();
+      // set the received column name based on query string
+		colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
+		var recdColIdx = this.getColIndexForId(ZmItem.F_DATE);
+		var recdColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
+		if (recdColSpan) {
+			recdColSpan.innerHTML = "&nbsp;" + colLabel;
+		}
+		if (this._colHeaderActionMenu) {
+			this._colHeaderActionMenu.getItem(recdColIdx).setText(colLabel);
+            }
 };
 
 // Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
@@ -141,7 +151,7 @@ function(parent) {
 	hList.push(new DwtListHeaderItem(ZmItem.F_STATUS, null, "MsgStatus", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.status));
 	hList.push(new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.from, null, ZmConvListView.COL_WIDTH_FROM, null, true));
 	hList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
-	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT, null, null, null, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
 	hList.push(new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmMailListView.COL_WIDTH_FOLDER, null, true));
 	hList.push(new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmMailListView.COL_WIDTH_SIZE, null, true));
 	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.received, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE));
@@ -256,9 +266,10 @@ function(conv, fieldId) {
 
 ZmConvListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
-	return (field == ZmItem.F_EXPAND)
+    var isFolder = this._isSentOrDraftsFolder();
+    return (field == ZmItem.F_EXPAND)
 		? ZmMsg.expandCollapse
-		: ZmMailListView.prototype._getHeaderToolTip.apply(this, arguments);
+		: ZmMailListView.prototype._getHeaderToolTip.call(this, field, itemIdx, isFolder);
 };
 
 ZmConvListView.prototype._getToolTip =
@@ -472,6 +483,12 @@ function(ev) {
 	var fields = ev.getDetail("fields");
 	var isConv = (item.type == ZmItem.CONV);
 	
+	// prevent redundant handling for same item due to multiple change listeners
+	// (msg will notify containing conv, and then notif for same conv gets processed)
+	if (ev.event != ZmEvent.E_DELETE && ev.event != ZmEvent.E_CREATE) {
+		appCtxt.getRequestMgr()._modifyHandled[item.id] = true;
+	}
+	
 	// msg moved or deleted	
 	if (!isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
 		var	conv = appCtxt.getById(item.cid);
@@ -557,7 +574,6 @@ function(ev) {
 		// if an expanded conv gets a new msg, don't move it to top
 		var sortIndex = ev.getDetail("sortIndex");
 		if ((sortIndex != null) && (this._list.indexOf(item) != sortIndex) && !this._expanded[item.id]) {
-			this._removeMsgRows(item.id);
 			this.removeItem(item);
 			this.addItem(item, sortIndex);
 		}
@@ -571,7 +587,7 @@ function(ev) {
 		}
 	}
 
-	if (ev.event == ZmEvent.E_MODIFY && (fields && (fields[ZmItem.F_PARTICIPANT] || fields[ZmItem.F_FROM]))) {
+	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_PARTICIPANT])) {
 		var fieldId = this._getFieldId(item, ZmItem.F_FROM);
 		var fromField = document.getElementById(fieldId);
 		if (fromField) {

@@ -137,8 +137,9 @@ function(listViewClass, funcs) {
 
 ZmMixedView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
-	return (field == ZmItem.F_TYPE) ? ZmMsg.itemType :
-									  ZmListView.prototype._getHeaderToolTip.apply(this, arguments);
+    var isFolder = this._isSentOrDraftsFolder();
+    return (field == ZmItem.F_TYPE) ? ZmMsg.itemType :
+									  ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx, isFolder);
 };
 
 ZmMixedView.prototype._getToolTip =

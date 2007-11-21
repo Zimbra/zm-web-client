@@ -36,10 +36,6 @@ ZmListView = function(parent, className, posStyle, view, type, controller, heade
 	if (folderTree) {
 		folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
 	}
-	
-	//Item IDs are integers, with the following exception:
-	//		- a shared item:	f9d58245-fb61-4e9a-9202-6ebc7ad4b0c4:-368
-	this._parseIdRegex = /^V_([A-Z]+)_([a-z]*)_([a-zA-Z0-9:\-]+)_?(\d*)$/;
 
 	this._handleEventType = {};
 	this._handleEventType[this.type] = true;
@@ -283,7 +279,7 @@ function(item, field, imageInfo) {
  */
 ZmListView.prototype._parseId =
 function(id) {
-	var m = id.match(this._parseIdRegex);
+	var m = id.match(/^V_([A-Z]+)_([a-z]*)_([a-zA-Z0-9:\-]+)_?(\d*)$/);
 	if (m) {
 		return {view:m[1], field:m[2], item:m[3], participant:m[4]};
 	} else {
@@ -519,12 +515,10 @@ function() {
 };
 
 ZmListView.prototype._getHeaderToolTip =
-function(field, itemIdx) {
+function(field, itemIdx, isFolder) {
 	var tooltip = null;
-	if (field == ZmItem.F_FLAG) {
+    if (field == ZmItem.F_FLAG) {
 		tooltip = ZmMsg.flag;
-	} else if (field == ZmItem.F_PRIORITY){
-		tooltip = ZmMsg.priority;
 	} else if (field == ZmItem.F_TAG) {
 		tooltip = ZmMsg.tag;
 	} else if (field == ZmItem.F_ATTACHMENT) {
@@ -534,11 +528,11 @@ function(field, itemIdx) {
 			? ZmMsg.sortBySubject : ZmMsg.subject;
 	} else if (field == ZmItem.F_DATE) {
 		tooltip = (this._headerList[itemIdx]._sortable)
-			? ZmMsg.sortByReceived : ZmMsg.date;
+			? (isFolder.sent) ? ZmMsg.sortBySent : (isFolder.drafts) ? ZmMsg.sortByLastSaved : ZmMsg.sortByReceived : ZmMsg.date;
 	} else if (field == ZmItem.F_FROM) {
-		tooltip = (this._headerList[itemIdx]._sortable)
-			? ZmMsg.sortByFrom : ZmMsg.from;
-	} else if (field == ZmItem.F_SIZE){
+        tooltip = (this._headerList[itemIdx]._sortable)
+			? (isFolder.sent || isFolder.drafts) ? ZmMsg.sortByTo : ZmMsg.sortByFrom : (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from ;
+	} else if ( field == ZmItem.F_SIZE){
 		tooltip = (this._headerList[itemIdx]._sortable)
 			? ZmMsg.sortBySize : ZmMsg.sizeToolTip;
 	}
@@ -555,12 +549,6 @@ function(field, item, ev, div, match) {
 	} else if (field == ZmItem.F_FLAG) {
 		if (!item.isFlagged) {
 			AjxImg.setDisabledImage(ev.target, "FlagRed", true);
-		}
-	} else if (field == ZmItem.F_PRIORITY) {
-		if (item.isHighPriority) {
-			tooltip = ZmMsg.highPriorityTooltip;
-		} else if (item.isLowPriority) {
-			tooltip = ZmMsg.lowPriorityTooltip;
 		}
 	} else if (field == ZmItem.F_TAG) {
 		tooltip = this._getTagToolTip(item);
@@ -584,7 +572,6 @@ function(item) {
 	var idx = 0;
 	for (var i = 0; i < numTags; i++) {
 		var tag = tagList.getById(tags[i]);
-		if (!tag) { continue; }
 		html[idx++] = "<table><tr><td>";
 		html[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_ICON[tag.color]);
 		html[idx++] = "</td><td valign='middle'>";
