@@ -111,15 +111,30 @@
                         </app:status>
                     </c:when>
                     <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
-                        <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
-                        <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
-                        <zm:tagConversation tagid="${tagid}"var="result" id="${ids}" tag="${tag}"/>
-                        <app:status>
-                            <fmt:message key="${tag ? 'actionConvTag' : 'actionConvUntag'}">
-                                <fmt:param value="${result.idCount}"/>
-                                <fmt:param value="${zm:getTagName(pageContext, tagid)}"/>
-                            </fmt:message>
-                        </app:status>
+                        <c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
+                        <c:choose>
+                            <c:when test="${untagall}" >
+                                <zm:forEachTag var="eachtag">
+                                    <zm:tagConversation tagid="${eachtag.id}" var="result" id="${ids}" tag="false"/>
+                                </zm:forEachTag>
+                                <app:status>
+                                    <fmt:message key="${'actionConvUntagAll'}">
+                                        <fmt:param value="${result.idCount}"/>
+                                    </fmt:message>
+                                </app:status>
+                            </c:when>
+                            <c:otherwise>
+                                <c:set var="istag" value="${fn:startsWith(actionOp, 't')}"/>
+                                <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
+                                <zm:tagConversation tagid="${tagid}" var="result" id="${ids}" tag="${istag}"/>
+                                <app:status>
+                                    <fmt:message key="${istag ? 'actionConvTag' : 'actionConvUntag'}">
+                                        <fmt:param value="${result.idCount}"/>
+                                        <fmt:param value="${zm:getTagName(pageContext, tagid)}"/>
+                                    </fmt:message>
+                                </app:status>
+                            </c:otherwise>
+                        </c:choose>
                     </c:when>
                     <c:otherwise>
                         <app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
