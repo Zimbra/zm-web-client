@@ -16,6 +16,7 @@
  */
 
 ZmNotebookPageView = function(parent, controller, dropTgt) {
+	if (arguments.length == 0) return;	
 	DwtComposite.call(this, parent, "ZmNotebookPageView", DwtControl.ABSOLUTE_STYLE);
 	
 	this._controller = controller;
@@ -54,8 +55,11 @@ function(page) {
 		var toolbar = this._controller._toolbar[this._controller._currentView];
 		toolbar.enable([ZmOperation.REFRESH,ZmOperation.EDIT,ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT,ZmOperation.SEND_PAGE,ZmOperation.DETACH], false);
 		
+		var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
 		if(page!=null){
-			var url = page.getRestUrl();						
+			var url = page.getRestUrl();
+			var urlParts = cache.parseURL(url);
+			this._orginalRestAuthority = urlParts.protocol +"://"+ urlParts.authority;						
 			this.loadURL(url);
 		}
 
@@ -314,10 +318,19 @@ ZmNotebookPageView.prototype.mutateLinks = function(doc){
 		if(links){
 			for(var i=0;i<links.length;i++){
 				var link = links[i];
-				var new_href = this.fixCrossDomainReference(link.href);
-				if(new_href != link.href){
-					link.href = new_href;
+
+				//document content may have both external link reference 
+				//and internal page link reference with actual server name rest url
+				if(this._orginalRestAuthority){
+					var restURLPrefix = null;
+					var new_href = this.fixCrossDomainReference(link.href, this._orginalRestAuthority);
+					if(new_href != link.href){
+						link.href = new_href;
+					}
 				}
+
+				//all the external links should open in new window
+				//and protocol for internal link should be same as window location protocol
 				this.mutateLink(link,doc,linkPrefix);
 			}
 		}
@@ -487,7 +500,6 @@ ZmNotebookPageView.prototype.createDeleteLink = function(doc,wikiName){
 	
 };
 
-
 ZmNotebookPageView.prototype.editPage = function(pageName){
 
 var controller = this._controller;
@@ -538,6 +550,8 @@ ZmNotebookPageView._iframeOnLoad1 = function(iframe) {
         var doc = iframe.contentWindow.document;
         var title = doc.title;
 
+		view._fixBaseReference(doc);
+		
         var isErrorPage = false;
         var isPermissionDenied = false;
         if(title.match(/- Error report$/i) || title.match(/^Error 404/i) || title.match(/^Error 403/i) ){
@@ -710,10 +724,10 @@ ZmNotebookPageView.prototype.handleItemResponse = function(item){
 			this.addColumn(this._iframe.contentWindow.document);
 };
 
-ZmNotebookPageView.prototype.fixCrossDomainReference = function(url){
+ZmNotebookPageView.prototype.fixCrossDomainReference = function(url, linkPrefix){
 
 	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();	
-	return cache.fixCrossDomainReference(url);
+	return cache.fixCrossDomainReference(url, linkPrefix);
 
 };
 
@@ -754,4 +768,16 @@ function(ndoc, cdoc) {
 ZmNotebookPageView.prototype.isHistoryLoading =
 function() {
 	return (this._controller.historyLoading == true);
+};
+
+ZmNotebookPageView.prototype._fixBaseReference =
+function(doc) {
+	var bases = doc.getElementsByTagName("base");
+	if(bases && bases.length>0){
+		var href = bases[0] ? bases[0].href : null;
+		href = href ? this.fixCrossDomainReference(href) : null;
+		if(href){
+			bases[0].href = href;
+		}
+	}
 };
