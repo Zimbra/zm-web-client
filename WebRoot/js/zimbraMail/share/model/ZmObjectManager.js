@@ -74,6 +74,7 @@ ZmObjectManager.EMAIL = "email";
 ZmObjectManager.URL = "url";
 ZmObjectManager.PHONE = "phone";
 ZmObjectManager.DATE = "date";
+ZmObjectManager.ADDRESS = "address";
 
 // Allows callers to pass in a current date
 ZmObjectManager.ATTR_CURRENT_DATE = "currentDate";
@@ -661,7 +662,7 @@ function(ev) {
 		}
 	}
 
-	ev._returnValue = false;
+	ev._returnValue = true;
 	ev._dontCallPreventDefault = true;
 	return false;
 };

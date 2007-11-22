@@ -109,9 +109,9 @@
 					<td valign=top>
 						<table border=0>
 							<$ if (value = contact.getWorkAddrField()) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"W", value:value}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"W", value:value, type:ZmObjectManager.ADDRESS}) $>
 							<$ } else if (value = contact.getHomeAddrField()) { $>
-								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"H", value:value}) $>
+								<$= AjxTemplate.expand("abook.Contacts#CardContactField", {data:data, fname:"H", value:value, type:ZmObjectManager.ADDRESS}) $>
 							<$ } $>
 
 							<$ if (value = contact.getAttr("email")) { $>
@@ -245,7 +245,7 @@
 	<$
 		var contact		= data.contact;
 
-		var workField	= AjxStringUtil.nl2br(contact.getWorkAddrField());
+		var workField	= contact.getWorkAddrField();
 		var workPhone	= contact.getAttr(ZmContact.F_workPhone);
 		var workPhone2	= contact.getAttr(ZmContact.F_workPhone2);
 		var mobile 		= contact.getAttr(ZmContact.F_mobilePhone);
@@ -266,7 +266,7 @@
 		<tr height=100%>
 			<td valign=top>
 				<table border=0 cellpadding=2 cellspacing=2>
-					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_ADDR_WORK, value:workField, addSep:true}) $>
+					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, type:ZmObjectManager.ADDRESS, label:ZmMsg.AB_ADDR_WORK, value:workField, addSep:true}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitView_email", data) $>
                                         <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress1, value:imAddress1}) $>
                                         <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress2, value:imAddress2}) $>
@@ -296,7 +296,7 @@
 	<$
 		var contact		= data.contact;
 
-		var homeField 	= AjxStringUtil.nl2br(contact.getHomeAddrField());
+		var homeField 	= contact.getHomeAddrField();
 		var homePhone 	= contact.getAttr(ZmContact.F_homePhone);
 		var homePhone2 	= contact.getAttr(ZmContact.F_homePhone2);
 		var homeFax 	= contact.getAttr(ZmContact.F_homeFax);
@@ -313,7 +313,7 @@
 		<tr height=100%>
 			<td colspan=3 valign=top>
 				<table border=0 cellpadding=2 cellspacing=2>
-					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_ADDR_HOME, value:homeField, addSep:true}) $>
+					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, type:ZmObjectManager.ADDRESS,label:ZmMsg.AB_ADDR_HOME, value:homeField, addSep:true}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitView_email", data) $>
                                         <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress1, value:imAddress1}) $>
                                         <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress2, value:imAddress2}) $>
@@ -337,7 +337,7 @@
 	<$
 		var contact		= data.contact;
 
-		var otherField 	= AjxStringUtil.nl2br(contact.getOtherAddrField());
+		var otherField 	= contact.getOtherAddrField();
 		var otherPhone 	= contact.getAttr(ZmContact.F_otherPhone);
 		var otherFax 	= contact.getAttr(ZmContact.F_otherFax);
 		var otherURL 	= contact.getAttr(ZmContact.F_otherURL);
@@ -354,7 +354,7 @@
 		<tr height=100%>
 			<td colspan=3 valign=top>
 				<table border=0 cellpadding=2 cellspacing=2>
-					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_ADDR_OTHER, value:otherField, addSep:true}) $>
+					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, type:ZmObjectManager.ADDRESS, label:ZmMsg.AB_ADDR_OTHER, value:otherField, addSep:true}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitView_email", data) $>
                                         <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress1, value:imAddress1}) $>
                                         <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress2, value:imAddress2}) $>
