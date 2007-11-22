@@ -55,7 +55,7 @@ ZmMultiColView.prototype.toString = function() {
 ZmMultiColView.prototype.getTitle =
 function() {
 	//TODO: title is the name of the current folder
-	return [ZmMsg.zimbraTitle].join(": ");
+	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
 ZmMultiColView.prototype.getController =

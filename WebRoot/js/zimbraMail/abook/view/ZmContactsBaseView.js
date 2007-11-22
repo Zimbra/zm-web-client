@@ -73,7 +73,7 @@ function() {
 
 ZmContactsBaseView.prototype.getTitle =
 function() {
-	return [ZmMsg.zimbraTitle, ZmMsg.contacts].join(": ");
+	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
 ZmContactsBaseView.prototype._changeListener =

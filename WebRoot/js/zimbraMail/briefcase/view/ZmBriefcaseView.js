@@ -157,7 +157,7 @@ function(folderId) {
 ZmBriefcaseView.prototype.getTitle =
 function() {
 	//TODO: title is the name of the current folder
-	return [ZmMsg.zimbraTitle].join(": ");
+	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
 ZmBriefcaseView.prototype.getContent =

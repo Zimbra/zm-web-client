@@ -27,7 +27,7 @@ ZmVoicePrefsView = function(parent, controller) {
 	this._item = null;
 	
     this._section = ZmPref.getPrefSectionWithPref(ZmSetting.VOICE_ACCOUNTS);
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, this._section && this._section.title].join(": ");
+	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), this._section && this._section.title].join(": ");
 	this._ui = [
 		new ZmVoicePageSizeUI(this),
 		new ZmEmailNotificationUI(this),

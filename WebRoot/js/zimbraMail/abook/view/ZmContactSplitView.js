@@ -86,7 +86,7 @@ function(x, y, width, height) {
 
 ZmContactSplitView.prototype.getTitle =
 function() {
-	return [ZmMsg.zimbraTitle, ZmMsg.contacts].join(": ");
+	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
 ZmContactSplitView.prototype.setContact =

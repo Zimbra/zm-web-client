@@ -96,7 +96,7 @@ function() {
 
 ZmConvView.prototype.getTitle =
 function() {
-	return [ZmMsg.zimbraTitle, ": ", this._conv.subject].join("");
+	return [ZmMsg.zimbraTitle, this._conv.subject].join(": ");
 };
 
 // Private / protected methods

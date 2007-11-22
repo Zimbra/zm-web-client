@@ -98,6 +98,10 @@ function() {
 	return "ZmController";
 };
 
+ZmController.prototype.getApp = function() {
+	return this._app;
+};
+
 ZmController.prototype.popupErrorDialog = 
 function(msg, ex, noExecReset, hideReportButton)  {
 	if (!noExecReset) {

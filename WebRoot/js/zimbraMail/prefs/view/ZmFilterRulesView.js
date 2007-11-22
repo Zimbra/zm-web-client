@@ -25,7 +25,7 @@ ZmFilterRulesView = function(parent, controller) {
 	this._rules = AjxDispatcher.run("GetFilterRules");
 
     var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
-    this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
+    this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section && section.title].join(": ");
 
 	this._rendered = false;
 	this._viewPrefix = "F_";

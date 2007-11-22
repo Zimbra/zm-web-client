@@ -237,7 +237,7 @@ function() {
 	var name = this._calItem.getName();
 	var attendees = this._calItem.getAttendeesText();
 	var title = attendees ? ZmMsg.meeting : ZmMsg.appointment;
-	return title + ": " + name;
+	return [ZmMsg.zimbraTitle, title, name].join(": ");
 };
 
 ZmApptView.prototype.close =
@@ -360,7 +360,7 @@ function() {
 
 ZmTaskView.prototype.getTitle =
 function() {
-	return this._calItem.getName();
+	return [ZmMsg.zimbraTitle, this._calItem.getName()].join(": ");
 };
 
 ZmTaskView.prototype.close =

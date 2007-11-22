@@ -81,7 +81,7 @@ function() {
 
 ZmTaskListView.prototype.getTitle =
 function() {
-	return [ZmMsg.zimbraTitle, ZmMsg.tasks].join(": ");
+	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
 
 // Private Methods

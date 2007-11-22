@@ -32,7 +32,7 @@ ZmPrefSection = function(parent, section, controller) {
 
 	this._section = section; // which preferences page we are
 	this._controller = controller;
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section.title].join(": ");
+	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section.title].join(": ");
 
 	this._rendered = false;
 	this._hasRendered = false;

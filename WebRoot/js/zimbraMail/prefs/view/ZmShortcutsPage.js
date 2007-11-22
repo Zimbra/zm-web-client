@@ -43,7 +43,7 @@ ZmShortcutsPage = function(parent, view, controller) {
 	this._view = view; // which preferences page we are
 	this._controller = controller;
     var section = ZmPref.getPrefSectionMap()[view];
-    this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section.title].join(": ");
+    this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section.title].join(": ");
 	this._prefId = section.prefs[0]; // our sole pref
 
 	this._organizers = [];

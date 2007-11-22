@@ -242,6 +242,10 @@ function() {
 	return this._name;
 }
 
+ZmApp.prototype.getDisplayName = function() {
+	return ZmMsg[ZmApp.NAME[this._name]];
+};
+
 // Convenience functions that call through to app view manager. See ZmAppViewMgr for details.
 
 ZmApp.prototype.setAppView =

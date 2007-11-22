@@ -35,7 +35,7 @@ ZmPreferencesPage = function(parent, section, controller) {
 	
 	this._section = section;
 	this._controller = controller;
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section.title].join(": ");
+	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section.title].join(": ");
 
 	this._dwtObjects = {};
 	this._tabGroup = new DwtTabGroup(section.id);

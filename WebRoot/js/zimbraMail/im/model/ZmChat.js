@@ -133,7 +133,7 @@ ZmChat.prototype.getIcon = function() {
 
 ZmChat.prototype.getTitle = function() {
 	// return this.getRosterItem(0).getDisplayName(); // XXX
-	return AjxMessageFormat.format(ZmMsg.chatWith, [ this.getRosterItem(0).getDisplayName() ]);
+	return [ZmMsg.zimbraTitle, AjxMessageFormat.format(ZmMsg.chatWith, [ this.getRosterItem(0).getDisplayName() ])].join(": ");
 };
 
 ZmChat.prototype.getStatusTitle = function() {

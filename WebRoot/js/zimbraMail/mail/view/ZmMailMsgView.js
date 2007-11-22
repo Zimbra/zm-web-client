@@ -261,7 +261,7 @@ function() {
 
 ZmMailMsgView.prototype.getTitle =
 function() {
-	return [ZmMsg.zimbraTitle, ": ", this._msg.subject].join("");
+	return [ZmMsg.zimbraTitle, this._msg.subject].join(": ");
 };
 
 // returns true if the current message was rendered in HTML
