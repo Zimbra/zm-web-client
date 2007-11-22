@@ -662,7 +662,7 @@ function(ev) {
 	
 ZmList.prototype._tagTreeChangeListener = 
 function(ev) {
-	if (ev.type != ZmEvent.S_TAG) return;
+	if (ev.type != ZmEvent.S_TAG) { return; }
 
 	var tag = ev.getDetail("organizers")[0];
 	var fields = ev.getDetail("fields");
@@ -681,18 +681,17 @@ function(ev) {
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		// Remove tag from any items that have it
 		var a = this.getArray();
-		var taggedItems = [];
+		var hasTagListener = this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY);
 		for (var i = 0; i < a.length; i++) {
 			var item = this.getById(a[i].id);	// make sure item is realized (contact may not be)
 			if (item && item.hasTag(tag.id)) {
 				item.tagLocal(tag.id, false);
-				taggedItems.push(item);
+				if (hasTagListener) {
+					this._notify(ZmEvent.E_TAGS, {items:[item]});
+				}
 			}
 		}
-		// Send listeners a tag event so they'll notice it's gone
-		if (taggedItems.length && this._evtMgr.isListenerRegistered(ZmEvent.L_MODIFY)) {
-			this._notify(ZmEvent.E_TAGS, {items: taggedItems});
-		}
+
 		// If search results are based on this tag, keep them around so that user can still
 		// view msgs or open convs, but disable pagination and sorting since they're based
 		// on the current query.
