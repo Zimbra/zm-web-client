@@ -59,8 +59,11 @@ ZmApptEditView.SHOWAS_OPTIONS = [
 
 ZmApptEditView.PRIVACY_OPTIONS = [
 	{ label: ZmMsg._public,				value: "PUB",	selected: true	},
-	{ label: ZmMsg._private,			value: "PRI"					},
+	{ label: ZmMsg._private,			value: "PRI"					}/*
+	Commented for bug 21205
+	,
 	{ label: ZmMsg.confidential,		value: "CON"					}
+	*/
 ];
 
 
