@@ -568,7 +568,7 @@ ZmNotebookPageView._iframeOnLoad1 = function(iframe) {
 
         if(isErrorPage){
             DBG.println(AjxDebug.DBG3,"Missing Page:"+iSrc);
-            view.createNewPage(cwin.location.pathname);
+            view.createNewPage(iframe.contentWindow.location.pathname);
             view._currentURL = iSrc;
         }else if(isPermissionDenied){
             DBG.println(AjxDebug.DBG3,"Permission Denied: "+iSrc);
