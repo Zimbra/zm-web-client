@@ -1,3 +1,17 @@
+<template id="share.App#Loading">
+	<table border=0 cellpadding=0 cellspacing=0 style='width:100%;height=100%'>
+		<tr><td align='center' valign='middle'>
+			<br><br><br>
+			<$= ZmMsg.loading $>
+			<br><br>
+			<div class='Imgwait_64'></div>
+			<br><br><br>			
+		</td></tr>
+		<tr><td style='height:100%'>&nbsp;</td></tr>
+	</table>
+</template>
+
+
 <template id="share.App#Banner">
 	<table border=0 cellpadding=0 cellspacing=0 style='width:100%;height:100%'>
 		<tr><td align='center' valign='middle'><a href='${url}' target='_blank'><div class='ImgAppBanner'></div></a></td></tr>
