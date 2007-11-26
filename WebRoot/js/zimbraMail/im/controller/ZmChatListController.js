@@ -326,22 +326,32 @@ ZmChatListController.prototype._presenceItemListener = function(ev) {
 };
 
 ZmChatListController.prototype._presenceCustomItemListener = function(ev) {
-	var dlg = appCtxt.getDialog();
+    var roster = this._imApp.getRoster();
+    var presence = roster.getPresence();
+    var existingCustomMsg = presence.getShow() == ZmRosterPresence.SHOW_ONLINE  && presence.getStatus();
+    if(existingCustomMsg){
+        existingCustomMsg = presence.getStatus();
+    }
+    var dlg = appCtxt.getDialog();
 	dlg.setTitle("New Status Message");
-	var id = Dwt.getNextId();
+    var id = Dwt.getNextId();
 	var html = [ "<div width='320px'>",
-		"<textarea type='text' id='",id,"' rows='3' cols='30'></textarea>",
+		"<textarea type='text' id='",id,"' rows='3' cols='30'>",
+        existingCustomMsg || "",    
+        "</textarea>",
 		"</div>"
 	].join("");
 	dlg.setContent(html);
-	dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function(){
+
+    dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function(){
 		var statusMsg = document.getElementById(id).value;
 		if(statusMsg != "") {
-			this._imApp.getRoster().setPresence(null, 0, statusMsg);
+			roster.setPresence(null, 0, statusMsg);
 		}
 		dlg.popdown();
 	}));
-	dlg.popup();
+    
+    dlg.popup();
 };
 
 // Adds the same listener to all of a menu's items
