@@ -45,14 +45,14 @@
 							</td>
 						</tr>
 
-						<$ if (data.obo) { $>
+                        <$ if (data.obo && data.obo != data.sentBy) { $>
 							<tr>
 								<td width='110' valign='top' class='LabelColName'><$= ZmMsg.onBehalfOf $>:</td>
 								<td class='LabelColValue' colspan=10><$= data.obo $></td>
 							</tr>
 						<$ } $>
-
-						<$ for (var i = 0; i < data.participants.length; i++) { $>
+                        
+                        <$ for (var i = 0; i < data.participants.length; i++) { $>
 							<tr>
 								<td width=110 valign='top' class='LabelColName'><$= data.participants[i].prefix $>:</td>
 								<td class='LabelColValue' colspan=10><$= data.participants[i].partStr $></td>
