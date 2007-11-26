@@ -271,7 +271,7 @@ if (application.getInitParameter("offlineMode") != null)  {
 													function clientChange(selectValue) {
                                                         var useStandard = ${useStandard ? 'true' : 'false'};
                                                         var it = document.getElementById("ZLoginUnsupported");
-														it.style.display = (("${client}" == 'standard' && selectValue == 'advanced' && useStandard) ? 'block' : 'none');
+														it.style.display = (("${zm:cook(client)}" == 'standard' && selectValue == 'advanced' && useStandard) ? 'block' : 'none');
 													}
 												
 													// if they have JS, write out a "what's this?" link that shows the message below
