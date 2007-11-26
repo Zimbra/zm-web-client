@@ -476,3 +476,7 @@ ZmImApp.prototype.getOverviewPanelContent = function() {
 		this._imOvw = new ZmImOverview(this._container);
 	return this._imOvw;
 };
+
+ZmImApp.prototype.playAlert = function(){
+    appCtxt.getSound().play(appContextPath+"/public/ding.wav");
+};

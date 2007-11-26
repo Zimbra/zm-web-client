@@ -66,3 +66,5 @@ AjxPackage.require("zimbraMail.im.view.ZmImNewChatDlg");
 
 AjxPackage.require("zimbraMail.im.controller.ZmChatListController");
 AjxPackage.require("zimbraMail.im.controller.ZmRosterTreeController");
+
+AjxPackage.require("zimbraMail.share.model.ZmSound");

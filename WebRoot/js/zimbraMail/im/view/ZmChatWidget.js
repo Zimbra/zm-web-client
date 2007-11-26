@@ -123,7 +123,8 @@ ZmChatWidget.prototype.setTyping = function(item, typing) {
 };
 
 ZmChatWidget.prototype.handleMessage = function(msg) {
-	var str = msg.displayHtml(this._objectManager, this.chat, this.__lastFrom);
+    appCtxt.getApp("IM").playAlert();
+    var str = msg.displayHtml(this._objectManager, this.chat, this.__lastFrom);
 	this.__lastFrom = (msg.isSystem && !msg.from) ? "@@system" : msg.from;
 	if (!msg.isSystem) {
 		if (this.isImportant()) {
@@ -241,13 +242,17 @@ ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
 };
 
 ZmChatWidget.prototype.sendInput = function(text) {
-	text = AjxStringUtil.trim(text);
+
+    appCtxt.getApp("IM").playAlert();
+    //appCtxt.getSound().play(appContextPath+"/public/ding.wav");
+    
+    text = AjxStringUtil.trim(text);
 	if (text == "")
 		return;		// don't send empty strings
 
 	var msg = this.chat.sendMessage(text);
-        if (msg)
-                this.handleMessage(msg);
+    if (msg)
+        this.handleMessage(msg);
 };
 
 ZmChatWidget.prototype._updateGroupChatTitle = function(force) {
