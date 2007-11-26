@@ -1,0 +1,29 @@
+<skin>
+	<common>
+		<substitutions>
+			<file>base.properties</file>
+			<file>skin.properties</file>
+		</substitutions>
+		<css>
+			<file>beach.css</file>
+		</css>
+	</common>		
+	<advanced>
+		<script>
+			<file>beach.js</file>
+		</script>
+		<html>
+			<file>beach.html</file>
+			<file>splash.html</file>
+		</html>
+		<templates>
+			<file>templates/Quota.template</file>
+			<file>templates/dwt.Widgets.template</file>
+		</templates>
+	</advanced>
+	<standard>
+		<css>
+			<file>../../css/zhtml.css</file>
+		</css>
+	</standard>
+</skin>

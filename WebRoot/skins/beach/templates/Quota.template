@@ -1,0 +1,42 @@
+<!-- Show the quota bar and values -->
+<template id='share.Quota#UsedLimited' class='BannerBar'>
+	<$
+		// set background color based on percent used
+		var progressClassName = "quotaUsed";
+		if (data.percent < 85 && data.percent > 65) {
+			progressClassName = "quotaWarning";
+		} else if (data.percent >= 85) {
+			progressClassName = "quotaCritical";
+		}
+	$>
+	<table class='BannerBar' cellspacing=0 cellpadding=0>
+		<tr>
+			<td width='50%'><div></div></td>
+			<td><div class='quotabar'>
+					<div style='width:${percent}' class='<$= progressClassName $>'></div>
+				</div>
+			</td>
+			<td width='50%'><div></div></td>
+		</tr>
+	</table>
+</template>
+
+
+<!-- Show amount used with no quota -->
+<template id='share.Quota#UsedUnlimited'>
+	<table class='BannerBar'><tr><td valign=middle align=center>
+		<div class='BannerTextQuota'>${desc}</div>
+	</td></tr></table>
+</template>
+
+<template id='share.Quota#Tooltip'>
+	<table>
+		<$ if (data.userTooltip) { $>
+			<tr><td>${userTooltip}</td></tr>
+		<$ } $>
+
+		<$ if (data.quotaTooltip) { $>
+			<tr><td><center>${quotaTooltip}</center></td></tr>
+		<$ } $>
+	</table>
+</template>

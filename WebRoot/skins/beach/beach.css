@@ -1,0 +1,300 @@
+BODY						{	margin:0px; 				}
+
+
+#skin_outer *				{	@FixBoxModel@	}
+
+/** generics **/
+.skin_table					{	width:100%; height:100%; 						}
+.skin_container				{	width:100%; height:100%; position:relative;		}
+.skin_container_ad			{	width:100%; height:100%; position:relative; 	}
+
+/* hide the main screen initially */
+#skin_outer					{	display:none;				}
+
+/* hide search builder initially */
+#skin_tr_search_builder		{	display:none;				}
+
+/* hide all ads initially */
+.skin_outer_ad				{	display:none;				}
+
+
+
+/** Outer container of the entire skin **/
+#skin_outer 							{	@ChromeBg@			}
+#skin_table_outer						{	padding:5px;		}
+
+
+/** set the height for the top row -- must be set to a fixed number! **/
+#skin_spacing_top_row					{	height:40px;	}
+
+
+/** Logo displayed in the app **/
+#skin_spacing_logo						{}
+#skin_container_logo					{	width:@TreeStartWidth@;			}
+	
+/** Search box **/	
+#skin_spacing_search					{	width:66%; padding:0px 10px 4px @cssValue(HSashContainer,width)@;			}
+#skin_container_search					{	@SkinBorderSearch@	}
+
+/** Web Search box **/	
+#skin_spacing_web_search				{	width:33%; padding:0px 10px 4px 10px;		}
+#skin_container_web_search				{	@SkinBorderWebSearch@	}
+	
+	
+/** Help link **/	
+#skin_spacing_help						{}
+#skin_container_help					{	padding:0px 10px;}
+	
+/** Logoff link **/	
+#skin_spacing_logoff					{}
+#skin_container_logoff					{	padding:0px 10px;		}
+
+/** Search Builder & its toolbar **/
+#skin_spacing_search_builder			{	padding-bottom:5px;	}
+#skin_container_search_builder			{	@SkinBorderSB@	}
+#skin_spacing_search_builder_toolbar	{}
+#skin_container_search_builder_toolbar	{	@SkinBorderSBToolbar@		}
+
+
+/** combined username/quota **/
+#skin_spacing_tree_top					{	text-align:center;	}
+#skin_container_tree_top				{	@SkinBorderAppChooser@	}
+
+/** User Name section **/
+#skin_container_username				{	height:auto; padding-top:2px;	}
+#skin_container_username *				{	color:@SkinTextUsername@;	}
+
+/** Quota section **/	
+#skin_container_quota					{	@SkinBorderQuota@	}
+
+
+/** Tree Toolbar a.k.a.  "current app" **/
+#skin_spacing_current_app				{}
+#skin_container_current_app				{	@SkinBorderCurrentApp@		}
+
+#skin_spacing_switch					{}
+#skin_container_switch					{	white-space:nowrap; padding:0px 10px;	}
+
+/** Tree Toolbar **/
+#skin_spacing_tree						{	height:100%; padding-bottom:5px;			}
+#skin_container_tree					{	@SkinBorderTree@ 			}
+
+
+/** Tree Footer (mini-calendar) **/
+#skin_spacing_tree_footer				{}
+#skin_container_tree_footer				{	@SkinBorderMiniCal@ 	}
+
+
+/** Tree/App Sash **/
+#skin_spacing_tree_app_sash				{}
+#skin_container_tree_app_sash			{	@SkinBorderTreeSash@		}
+
+/** App Chooser **/
+#skin_spacing_app_chooser				{}
+#skin_container_app_chooser				{	@SkinBorderAppChooser@ 		}
+
+
+/** App Toolbar **/
+#skin_spacing_app_top_toolbar			{	}
+#skin_container_app_top_Toolbar			{	@SkinBorderAppToolbar@		}
+
+/** App  **/
+#skin_spacing_app_main					{	height:100%;			}
+#skin_container_app_main				{	@SkinBorderApp@		}
+
+
+
+/** Top ad **/
+#skin_spacing_top_ad					{}
+#skin_container_top_ad					{	@AdStyle@ height:@TopAdHeight@;		}
+
+/** Sidebar ad **/
+#skin_spacing_sidebar_ad				{	padding:10px 0px 0px 5px;		}
+#skin_container_sidebar_ad				{	@AdStyle@ width:@SidebarAdWidth@;		}
+
+
+
+/** Tree Top Ad **/
+#skin_spacing_tree_top_ad				{}
+#skin_container_tree_top_ad				{	@AdStyle@ height:@TreeTopAdHeight@;		}
+
+
+/** Tree Bottom Ad **/
+#skin_spacing_tree_bottom_ad			{}
+#skin_container_tree_bottom_ad			{	@AdStyle@ height:@TreeBottomAdHeight@;	}
+
+/** Bottom ad **/
+#skin_spacing_bottom_ad					{}
+#skin_container_bottom_ad				{	@AdStyle@ height:@BottomAdHeight@;		}
+
+
+
+/*** HACKS: this makes the tables work properly -- rationalize this!  **/
+#skin_td_tree,
+#skin_td_tree_app_sash 		{	width:1px;	}
+
+
+
+/** LoginPanel and Splash screen **/
+#skin_container_splash_screen			{	@ChromeBg@	@FullWindow@ z-index:90000000;		}
+
+#ZLoginPanel 			{	@LoginPanelOuterBorer@	}	
+#ZLoginBodyContainer	{	@LoginPanelInnerBorder@	}
+
+#ZSplashPanel			{	@SplashOuterBorder@		}
+#ZSplashBodyContainer	{	@SplashInnerBorder@		}
+
+/** Logo Images **/
+.ImgAppBanner			{	@AppBanner@		}
+.ImgLoginBanner			{	@LoginBanner@	}	
+
+
+
+
+
+/* TO INTEGRATE */
+.DwtVerticalSash div {
+	position:relative;
+	top:1px;
+	margin-top:0px;
+}
+
+
+.UserInfoLink {
+	width:100%;
+	text-align:left;
+	white-space:nowrap;
+}
+
+.ZmPicker .ZToolbar {
+	@WidgetHeaderContainer@
+	@WidgetHeaderContainer-normal@
+}
+
+
+.BannerTextUser {
+	font-weight:bold;
+}
+
+
+
+/* App Chooser and App Tab Overrides -- TODO: Merge into main */
+
+.ZmAppChooser					{	margin:0px !important; 		}
+
+.ZAppTabBorder .ZLeftIcon 		{	padding-left:5px;			}
+.ZAppTabBorder .ZWidgetTitle 	{	padding-right:10px;			}
+
+.ZSelectedPrev .ZAppTabBorder 	{	@AppTabBorder-selectedPrev@	}
+.ZSelectedNext .ZAppTabBorder	{	@AppTabBorder-selectedNext@	}
+.ZFirstItem .ZAppTabBorder 		{	@AppTabBorder-first@		}
+.ZLastItem .ZAppTabBorder 		{	@AppTabBorder-last@			}
+.ZAppTabSpacer 					{	@AppTabSpacer@				}
+
+
+
+/* Normal Tab Overrides  -- TODO: Merge into main */
+
+.ZSelectedPrev .ZTabBorder 		{	@TabBorder-selectedPrev@	}
+.ZSelectedNext .ZTabBorder		{	@TabBorder-selectedNext@	}
+.ZFirstItem .ZTabBorder 		{	@TabBorder-first@			}
+.ZLastItem .ZTabBorder 			{	@TabBorder-last@			}
+.ZTabBarPrefix 					{	@TabBarPrefix@				}
+.ZTabBarSuffix 					{	@TabBarSuffix@				}
+
+
+
+/* Quota */
+.quotaBar 						{	height:8px;			}
+
+/* USED? */
+.quotaLabel {		
+	@FontSize-smaller@
+	text-align:right;
+}
+
+
+
+.ZmInviteToolBar .ZToolbarTable, .ZmShareToolBar .ZToolbarTable {
+	height:100%;
+}
+
+
+/* Web search button -- where to place this? */
+.ImgWebSearch	{		@WebSearchBanner@	}
+
+
+
+
+
+
+
+/* Input stuff -- adding classes properly -- TODO: put this back into dwt.css  */
+.DwtInputField input[type="text"], 
+.DwtInputField input[type="password"],
+.DwtSimpleInput {
+	@InputField@
+	@InputField-normal@
+}
+.DwtInputField textarea {
+	@TextArea@
+	@TextArea-normal@
+}
+
+.DwtInputField-error input[type="text"],
+.DwtInputField-error input[type="password"],
+.DwtSimpleInput-error {
+	@InputField@
+	@InputField-error@
+}
+.DwtInputField-error textarea {
+	@TextArea@
+	@TextArea-error@
+}
+
+.DwtInputField-focused input[type="text"],
+.DwtInputField-focused input[type="password"],
+.DwtSimpleInput-focused {
+	@InputField@
+	@InputField-focused@
+}
+.DwtInputField-focused textarea {
+	@TextArea@
+	@TextArea-focused@
+}
+
+.DwtInputField-disabled input[type="text"],
+.DwtInputField-disabled input[type="password"],
+.DwtSimpleInput-disabled {
+	@InputField@
+	@InputField-disabled@
+}
+.DwtInputField-disabled textarea {
+	@TextArea@
+	@TextArea-disabled@
+}
+
+.DwtInputField-hint input[type="text"],
+.DwtInputField-hint input[type="password"],
+.DwtInputField-hint input,
+.DwtSimpleInput-hint {
+	@InputField@
+	@InputField-normal@
+	@InputField-hint@
+}
+.DwtInputField-hint textarea {
+	@TextArea@
+	@InputField-hint@
+}
+
+.DwtInputField-errorhint input[type="text"],
+.DwtInputField-errorhint input[type="password"],
+.DwtSimpleInput-errorhint {
+	@InputField@
+	@InputField-error@
+	@InputField-hint@
+}
+.DwtInputField-errorhint textarea {
+	@TextArea-error@
+	@Text-light@
+}
