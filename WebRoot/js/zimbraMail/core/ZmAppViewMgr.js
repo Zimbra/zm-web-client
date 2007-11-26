@@ -90,7 +90,7 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 	this._shellSz = this._shell.getSize();
 	this._controlListener = new AjxListener(this, this._shellControlListener);
 	this._shell.addControlListener(this._controlListener);
-	this._sashSupported = (document.getElementById("skin_td_outer_tree") != null);
+	this._sashSupported = (window.skin && typeof window.skin.setTreeWidth == "function");
 
 	if (!AjxEnv.isSafari && !isNewWindow) {
 		this._historyMgr = appCtxt.getHistoryMgr();

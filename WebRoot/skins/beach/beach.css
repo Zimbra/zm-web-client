@@ -130,8 +130,9 @@ BODY						{	margin:0px; 				}
 
 
 /*** HACKS: this makes the tables work properly -- rationalize this!  **/
-#skin_td_tree,
-#skin_td_tree_app_sash 		{	width:1px;	}
+#skin_td_tree				{	width:@TreeStartWidth@;	}
+#skin_td_tree_app_sash 		{	width:@SashSize@;	}
+#skin_td_main				{	width:auto;	}
 
 
 

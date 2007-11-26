@@ -21,7 +21,8 @@ ZmSkin.hints = {
 	searchBuilder:  { containers: ["skin_tr_search_builder"] },
 	
 	tree:			{ minWidth:parseInt("@TreeMinWidth@"), maxWidth:parseInt("@TreeMaxWidth@"), 
-					  containers: ["skin_td_tree", "skin_td_tree_app_sash"] 
+					  containers: ["skin_td_tree","skin_td_tree_app_sash"],
+					  resizeContainers : ["skin_td_tree"]
 					},
 	
 	topToolbar:	 	{ containers: "skin_tr_top_toolbar" },
@@ -86,9 +87,6 @@ ZmSkin.prototype = {
 				this._showEl(ncontainer, inverse ? !state : state);
 			}
 			skin._reflowApp();
-		}
-		if (name == "fullScreen") {
-			this._showFullScreen(state);
 		}
 	},
 
@@ -240,13 +238,12 @@ ZmSkin.prototype = {
 	_setSize : function(id, width, height) {
 		var el = this._getEl(id);
 		if (!el) return;
-	
 		if (width != null) el.style.width = width;
 		if (height != null) el.style.height = height;
 	},
 	
 	_setContainerSizes : function(containerName, width, height) {
-		var containers = this.hints[containerName].containers;
+		var containers = this.hints[containerName].resizeContainers || this.hints[containerName].containers;
 		for (var i = 0; i < containers.length; i++) {
 			this._setSize(containers[i], width, null);
 		}
@@ -256,24 +253,6 @@ ZmSkin.prototype = {
 		if (window._zimbraMail) {
 			window._zimbraMail.getAppViewMgr().fitAll();
 		}
-	},
-	
-	_showFullScreen : function(state) {
-/*
-		var componentId = "skin_container_app_top_toolbar";
-		var show = state == null || state;
-		var containerId = show ? "skin_border_app_top_toolbar_full" : "skin_td_app_top_toolbar";
-		this._reparentEl(componentId, containerId);
-	
-		// HACK: IE doesn't seem to hide the container DIV for full screen just even
-		// though its parent row is set to display:none
-		if (AjxEnv.isIE) {
-			var containerDiv = document.getElementById("skin_container_app_main_full");
-			if (containerDiv) {
-				Dwt.setVisible(containerDiv, show);
-			}
-		}
-*/
 	},
 	
 	_gotoPrefPage : function(pageId) {
