@@ -58,7 +58,7 @@ BODY						{	margin:0px; 				}
 
 /** combined username/quota **/
 #skin_spacing_tree_top					{	text-align:center;	}
-#skin_container_tree_top				{	@SkinBorderAppChooser@	}
+#skin_container_tree_top				{	@SkinBorderUsername@	}
 
 /** User Name section **/
 #skin_container_username				{	height:auto; padding-top:2px;	}
@@ -96,7 +96,7 @@ BODY						{	margin:0px; 				}
 
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar			{	}
-#skin_container_app_top_Toolbar			{	@SkinBorderAppToolbar@		}
+#skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@		}
 
 /** App  **/
 #skin_spacing_app_main					{	height:100%;			}
