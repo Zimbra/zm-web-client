@@ -105,7 +105,7 @@ body	{	@ChromeBg@	}
 }
 #skin_container_logo	{	
 	@SkinBorderLogo@
-	height:30px;
+	height:35px;
 #IFDEF MSIE
 	/* UGH, IE DOESN'T CENTER PROPERLY WITHOUT THIS */
     height:100%;
@@ -116,7 +116,7 @@ body	{	@ChromeBg@	}
 #skin_td_search	{	
 	vertical-align:top;
 	width:100%;
-	padding:8 15 0 0;
+	padding:8 15 5px 0;
 }
 #skin_container_search	{	
 	@SkinBorderSearch@
