@@ -48,7 +48,7 @@
             <td class='TbBt'>
                 <table cellspacing=0 cellpadding=0 class='Tb'>
                     <tr>
-                        <app:button name="actionRepeatDone" src="common/ImgClose.gif" tooltip="done" text="done"/>
+                        <app:button name="actionRepeatDone" src="common/ImgCheck.gif" tooltip="done" text="done"/>
                         <td>
                             <div class='vertSep'></div>
                         </td>
