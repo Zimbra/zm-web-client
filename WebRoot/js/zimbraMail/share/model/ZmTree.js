@@ -47,6 +47,11 @@ function(name) {
 	return this.root ? this.root.getByName(name) : null;
 };
 
+ZmTree.prototype.getByType =
+function(name) {
+	return this.root ? this.root.getByType(name) : null;
+};
+
 ZmTree.prototype.size =
 function() {
 	return this.root ? this.root.size() : 0;

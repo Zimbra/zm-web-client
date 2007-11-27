@@ -240,8 +240,7 @@ function(viewId, startDate, skipMaintenance) {
 
 ZmCalViewController.prototype.getCheckedCalendars =
 function() {
-	if (this._checkedCalendars == null) {
-		if (this._calTreeController == null) { return []; }
+	if (!this._checkedCalendars) {
 		this._updateCheckedCalendars();
 	}
 	return this._checkedCalendars;
@@ -249,10 +248,11 @@ function() {
 
 ZmCalViewController.prototype.getCheckedCalendarFolderIds =
 function(localOnly) {
-	if (this._checkedCalendarFolderIds == null) {
+	if (!this._checkedCalendarFolderIds) {
 		this.getCheckedCalendars();
-		if (this._checkedCalendarFolderIds == null) 
+		if (!this._checkedCalendarFolderIds) {
 			return [ZmOrganizer.ID_CALENDAR];
+		}
 	}
 	return localOnly
 		? this._checkedLocalCalendarFolderIds
@@ -273,20 +273,32 @@ function(id) {
 
 ZmCalViewController.prototype.handleMailboxChange =
 function() {
-	this._calTreeController.addSelectionListener(this._app.getOverviewId(), this._treeSelectionListener);
+	if (this._calTreeController) {
+		this._calTreeController.addSelectionListener(this._app.getOverviewId(), this._treeSelectionListener);
+	}
 	this._updateCheckedCalendars();
 	this._refreshAction(false);
 };
 
 ZmCalViewController.prototype._updateCheckedCalendars =
 function() {
-	if (!this._calTreeController) { return []; }
-
-	var cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
+	var cc = [];	
+	if (this._calTreeController) {
+		cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
+	} else {
+		this._app._createDeferredFolders(ZmOrganizer.ID_CALENDAR);
+		var calendars = appCtxt.getFolderTree().getByType(ZmOrganizer.CALENDAR);
+		for (var i = 0; i < calendars.length; i++) {
+			if (calendars[i].isChecked) {
+				cc.push(calendars[i]);
+			}
+		}
+	}
+	
 	this._checkedCalendars = cc;
 	this._checkedCalendarFolderIds = [];
 	this._checkedLocalCalendarFolderIds = [];
-	for (var i=0; i < cc.length; i++) {
+	for (var i = 0; i < cc.length; i++) {
 		var cal = cc[i];
 		this._checkedCalendarFolderIds.push(cal.nId);
 		if (cal.isRemote && !cal.isRemote()) {
