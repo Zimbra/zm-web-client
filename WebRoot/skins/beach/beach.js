@@ -14,7 +14,7 @@ ZmSkin.hints = {
 	banner:			{ position:"static", url: "@LogoURL@"},		// == "logo"
 	userInfo:		{ position:"static"},
 	search:		  	{ position:"static" },
-	web_search:	  	{ position:"static", containers: "skin_spacing_web_search" },
+	webSearch:	  	{ position:"static", containers: "skin_spacing_web_search" },
 	quota:		  	{ position:"static" },
 	appView:		{ position:"static" },
 
@@ -47,12 +47,7 @@ ZmSkin.hints = {
 							{ type: "fade-out", step: -10, duration: 500 }
 						] 
 					},
-	fullScreen:     {
-		containers: function(state){	
-			state = (state != false);
-			skin.show("tree", !state);
-		}
-	}
+	fullScreen:     { containers : ["!skin_td_tree", "!skin_td_tree_app_sash"] }
 
 };
 

@@ -75,7 +75,9 @@ INPUT[readonly] {
 }
 TEXTAREA {
 	@TextArea@ @TextArea-normal@
-	resize: none;
+	#IFDEF SAFARI
+		resize: none;
+	#ENDIF
 }
 TEXTAREA[readonly] {
 	@TextArea-disabled@

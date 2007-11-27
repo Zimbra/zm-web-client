@@ -2673,7 +2673,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmOptionsFormListButtonCell {
 	@PanelPadding@
-	background-color:@SelC-30@;
+	background-color:@lighten(SelC,30)@;
 	@TopSeparator@
 }
 

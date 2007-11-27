@@ -62,7 +62,7 @@ BODY						{	margin:0px; 				}
 
 /** User Name section **/
 #skin_container_username				{	height:auto; padding-top:2px;	}
-#skin_container_username *				{	color:@SkinTextUsername@;	}
+#skin_container_username *				{	@SkinTextUsername@	}
 
 /** Quota section **/	
 #skin_container_quota					{	@SkinBorderQuota@	}
@@ -190,7 +190,7 @@ BODY						{	margin:0px; 				}
 .ZSelectedNext .ZAppTabBorder	{	@AppTabBorder-selectedNext@	}
 .ZFirstItem .ZAppTabBorder 		{	@AppTabBorder-first@		}
 .ZLastItem .ZAppTabBorder 		{	@AppTabBorder-last@			}
-.ZAppTabSpacer 					{	@AppTabSpacer@				}
+.ZAppTabSpacer 					{	@AppTab@ @AppTabSpacer@		}
 
 
 
@@ -299,3 +299,7 @@ BODY						{	margin:0px; 				}
 	@TextArea-error@
 	@Text-light@
 }
+
+
+
+
