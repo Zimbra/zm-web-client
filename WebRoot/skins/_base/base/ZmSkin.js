@@ -11,9 +11,9 @@ function ZmSkin(hints) {
         quota:      { position:"static" },
         
         // specific components
-        app_chooser:    { style: "tabs", direction: "LR" },
-        help_button:    { style: "link", container: "quota" },
-        logout_button:  { style: "link", container: "quota" },
+        appChooser:    { style: "tabs", direction: "LR" },
+        helpButton:    { style: "link", container: "quota" },
+        logoutButton:  { style: "link", container: "quota" },
         toast:          { location: "N", transitions: [
             { type: "fade-in", step: 10, duration: 200 },
             { type: "pause", duration: 1000 },

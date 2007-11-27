@@ -133,6 +133,7 @@ BODY						{	margin:0px; 				}
 #skin_td_tree				{	width:@TreeStartWidth@;	}
 #skin_td_tree_app_sash 		{	width:@SashSize@;	}
 #skin_td_main				{	width:auto;	}
+#skin_td_sidebar_ad			{	width:@SidebarAdWidth@;	}
 
 
 

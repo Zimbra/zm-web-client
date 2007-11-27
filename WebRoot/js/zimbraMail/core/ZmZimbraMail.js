@@ -287,7 +287,7 @@ function(params) {
 	}
 
 	skin.show("skin", true);
-	var hint = appCtxt.get(ZmSetting.SKIN_HINTS, "app_chooser.style");
+	var hint = appCtxt.get(ZmSetting.SKIN_HINTS, "appChooser.style");
 	this._TAB_SKIN_ENABLED = (hint == "tabs");
 	if (!this._components) {
 		this._components = {};
@@ -1229,9 +1229,9 @@ function(appName) {
 ZmZimbraMail.prototype._setUserInfo = 
 function() {
 	if (this._TAB_SKIN_ENABLED) {
-		var hideIcon = appCtxt.get(ZmSetting.SKIN_HINTS, "help_button.hideIcon");
+		var hideIcon = appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon");
 		this._setUserInfoLink("ZmZimbraMail.helpLinkCallback();", "Help", ZmMsg.help, "skin_container_help", hideIcon);
-		hideIcon = appCtxt.get(ZmSetting.SKIN_HINTS, "logout_button.hideIcon");
+		hideIcon = appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon");
 		var text = appCtxt.get(ZmSetting.OFFLINE) ? ZmMsg.setup : ZmMsg.logOff;
 		this._setUserInfoLink("ZmZimbraMail._onClickLogOff();", "Logoff", text, "skin_container_logoff", hideIcon);
 	}
@@ -1350,7 +1350,7 @@ function() {
 
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var url;
-	try { url = skin.hints.help_button.url; } catch (e) { /* ignore */ }
+	try { url = skin.hints.helpButton.url; } catch (e) { /* ignore */ }
 	window.open(url || appCtxt.get(ZmSetting.HELP_URI));
 };
 

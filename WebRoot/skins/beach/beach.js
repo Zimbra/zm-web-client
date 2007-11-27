@@ -37,9 +37,9 @@ ZmSkin.hints = {
 	
 
 	// specific components
-	help_button:	{ style: "link", container: "quota" },		/*** TODO: this 'container' should be removed ??? ***/
-	logout_button: 	{ style: "link", container: "quota" },		/*** TODO: this 'container' should be removed ??? ***/
-	app_chooser:	{ style: "tabs", direction: "LR" },
+	helpButton:	{ style: "link", container: "quota" },		/*** TODO: this 'container' should be removed ??? ***/
+	logoutButton: 	{ style: "link", container: "quota" },		/*** TODO: this 'container' should be removed ??? ***/
+	appChooser:	{ style: "tabs", direction: "LR" },
 	toast:		 	{ location: "N", 
 					  transitions: [
 							{ type: "fade-in", step: 10, duration: 200 },
@@ -47,7 +47,9 @@ ZmSkin.hints = {
 							{ type: "fade-out", step: -10, duration: 500 }
 						] 
 					},
-	fullScreen:     { containers : ["!skin_td_tree", "!skin_td_tree_app_sash"] }
+	fullScreen:     { containers : ["!skin_td_tree", "!skin_td_tree_app_sash"] },
+	
+	allAds :		{ containers: ["skin_tr_top_ad", "skin_td_sidebar_ad", "skin_tr_bottom_ad", "skin_tr_tree_top_ad", "skin_tr_tree_bottom_ad"] }
 
 };
 

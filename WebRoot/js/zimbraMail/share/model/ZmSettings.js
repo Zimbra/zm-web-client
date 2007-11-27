@@ -606,11 +606,11 @@ function() {
  * folded into a hash-type setting. The key is the part that comes after
  * "skin.hints.". For example, to get the value of
  * 
- *     skin.hints.app_chooser.style
+ *     skin.hints.appChooser.style
  * 
  * just ask for
  * 
- *     appCtxt.get(ZmSetting.SKIN_HINTS, "app_chooser.style")
+ *     appCtxt.get(ZmSetting.SKIN_HINTS, "appChooser.style")
  * 
  * The main reason for doing this is to centralize the knowledge of the various
  * skin hints.
@@ -622,13 +622,13 @@ function() {
 	
 	var shSetting = this.registerSetting("SKIN_HINTS", {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_HASH});
 	
-	var hints = ["app_chooser.style",
-				 "app_chooser.fullWidth",
-				 "help_button.hideIcon",
-				 "help_button.style",
+	var hints = ["appChooser.style",
+				 "appChooser.fullWidth",
+				 "helpButton.hideIcon",
+				 "helpButton.style",
 				 "logo.url",
-				 "logout_button.hideIcon",
-				 "logout_button.style",
+				 "logoutButton.hideIcon",
+				 "logoutButton.style",
 				 "noOverviewHeaders",
 				 "toast.location",
 				 "toast.transitions"];
