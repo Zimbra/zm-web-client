@@ -839,7 +839,11 @@ function(isStartDate, skipCheck) {
 		return;
 	}
 
-	isStartDate ? this._curValStartDate = start : this._curValEndDate = end;
+	if (isStartDate) {
+		this._curValStartDate = start;
+	} else {
+		this._curValEndDate = end;
+	}
 	var needsUpdate = ZmApptViewHelper.handleDateChange(this._startDateField, this._endDateField, isStartDate, skipCheck);
 	if (needsUpdate) {
 		this._updateFreeBusy();
@@ -1109,7 +1113,9 @@ function(dateInfo) {
 													 AjxDateUtil.simpleParseDateStr(dateInfo.endDate));
 		// subtract 1 from index since we're marking right borders
 		index.start = this._getIndexFromTime(startDate, null, false) - 1;
-		index.end = this._getIndexFromTime(endDate, true, false);
+		if (dateInfo.endDate == dateInfo.startDate) {
+			index.end = this._getIndexFromTime(endDate, true, false);
+		}
 	}
 	return index;
 };
