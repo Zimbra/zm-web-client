@@ -612,7 +612,7 @@
         <echo/>
         <echo message='Merging images for skin ${skindir}'/>
         <echo/>
-        <imagemerge destdir='${build.this.skin.dir}' disable="true"
+        <imagemerge destdir='${build.this.skin.dir}'
                     cssfile='${build.css.filename}' csspath='/${deploy.app}/skins/${skindir}/img/'>
             <dirset dir='${skinbasedir}/skins/${skindir}' includes='img/**'/>
         </imagemerge>
