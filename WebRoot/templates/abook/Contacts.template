@@ -192,100 +192,147 @@
 		<tr height=100%>
 			<td width=200 valign=top id='${id}_listview'></td>
 			<td valign=top id='${id}_contentCell' height=100%>
-				<div class='ZmContactInfoView' id='${id}_content' style='overflow:auto'></div>
+				<div class='ZmContactInfoView' id='${id}_content'></div>
 			</td>
 		</tr>
 	</table>
 </template>
 
-<!-- OWEN: for bug 20610, set tabs attr to "" if no tabs -->
-<template id="abook.Contacts#SplitView_tabs" tabs="work,home,other,notes"></template>
-
-<!-- bug 20610 starts here -----------------------------------------------------
 <template id="abook.Contacts#SplitView_content">
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
+	<$= AjxTemplate.expand("abook.Contacts#SplitView_emails", data) $>
+	<$= AjxTemplate.expand("abook.Contacts#SplitView_work",   data) $>
+	<$= AjxTemplate.expand("abook.Contacts#SplitView_home",   data) $>
+	<$= AjxTemplate.expand("abook.Contacts#SplitView_other",  data) $>
+	<$= AjxTemplate.expand("abook.Contacts#SplitView_notes",  data) $>
+	<br><br>
 </template>
--->
 
 <template id="abook.Contacts#SplitView_header">
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='contactHeaderRow' id='${id}_headerRow'>
-			<td id='${id}_icon' width=20><$= AjxImg.getImageHtml("Contact") $></td>
-			<td id='${id}_title' class='contactHeader'></td>
+	<$
+		var contact		= data.contact;
+		var imageUrl	= contact.getImageUrl();
+		var companyStr	= contact.getCompanyField();
+		var fileAs		= contact.getFileAs();
+	$>
+	<table border=0 cellspacing=2 cellpadding=2 width=100% class='contactHeaderTable <$= data.contactHdrClass $>'>
+		<tr>
+			<$ if (imageUrl) { $>
+				<td valign=bottom width=48 rowspan=3><img src="<$= imageUrl $>" width=48 height=48 border=0></td>
+			<$ } else { $>
+				<td valign=bottom width=48 rowspan=3><$= AjxImg.getImageHtml("Person_48") $></td>
+			<$ } $>
+			<td valign=top align='right'>
+				<table border=0 cellpadding=0 cellspacing=0 width=1%>
+					<tr>
+						<td class='contactLocation'><$= ZmMsg.location $>:&nbsp;</td>
+						<$ if (contact.addrbook) { $>
+							<td width=20><$= AjxImg.getImageHtml(contact.addrbook.getIcon()) $></td>
+							<td>&nbsp;</td>
+							<td class='companyFolder'><$= contact.addrbook.getName() $></td>
+						<$ } else if (data.isGal) { $>
+							<td width=20><$= AjxImg.getImageHtml("GAL") $></td>
+							<td>&nbsp;</td>
+							<td class='companyFolder'><$= ZmMsg.GAL $></td>
+						<$ } $>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
 			<td id='${id}_tags' align='right'></td>
+		</tr>
+		<tr>
+			<td valign=bottom>
+				<div class='contactHeader <$= data.isInTrash ? "Trash" : "" $>'><$= fileAs $></div>
+				<$ if (companyStr != "") { $>
+					<div class='companyName'><$= companyStr $></div>
+				<$ } $>
+			</td>
 		</tr>
 	</table>
 </template>
 
-<template id="abook.Contacts#SplitView_title">
+<template id="abook.Contacts#SplitView_emails">
 	<$
 		var contact		= data.contact;
-		var companyStr	= contact.getCompanyField() || "&nbsp;";
+
+		var email  		= data.contact.getAttr(ZmContact.F_email);
+		var email2 		= data.contact.getAttr(ZmContact.F_email2);
+		var email3 		= data.contact.getAttr(ZmContact.F_email3);
+		var hasEmail 	= email || email2 || email3;
+
+		var imAddress1  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress1));
+		var imAddress2  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress2));
+		var imAddress3  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress3));
+		var hasIM		= (imAddress1 != "") || (imAddress2 != "") || (imAddress3 != "");
 	$>
-	<tr>
-		<td>
-			<table border=0 cellpadding=2 cellspacing=2 width=100%>
-				<tr>
-					<td width=100% class='companyName'><$= companyStr $></td>
-					<td class='contactLabel'><$= ZmMsg.location $>:</td>
-					<$ if (contact.addrbook) { $>
-						<td width=20><$= AjxImg.getImageHtml(contact.addrbook.getIcon()) $></td>
-						<td class='companyFolder'><$= contact.addrbook.getName() $></td>
-					<$ } else if (data.isGal) { $>
-						<td width=20><$= AjxImg.getImageHtml("GAL") $></td>
-						<td class='companyFolder'><$= ZmMsg.GAL $></td>
-					<$ } $>
-				</tr>
-			</table>
-		</td>
-	</tr>
+	<$ if (hasEmail || hasIM) { $>
+		<table border=0 cellpadding=2 cellspacing=2 width=100%>
+			<tr>
+				<td class="contactFirstCell">
+					<$= hasEmail ? AjxImg.getImageHtml("Envelope") : "" $>
+				</td>
+				<td width=50% class='contactOutput'>
+					<$= email  ? (data.view._generateObject(email, ZmObjectManager.EMAIL) + "<br>") : "" $>
+					<$= email2 ? (data.view._generateObject(email2, ZmObjectManager.EMAIL) + "<br>") : "" $>
+					<$= email3 ? (data.view._generateObject(email3, ZmObjectManager.EMAIL) + "<br>") : "" $>
+				</td>
+				<td class="contactFirstCell">
+					<$= hasIM ? AjxImg.getImageHtml("ImFree2Chat") : "" $>
+				</td>
+				<td width=50% class='contactOutput'>
+					<!-- can IM addresses be objectified? -->
+					<$= imAddress1 ? (imAddress1 + "<br>") : "" $>
+					<$= imAddress2 ? (imAddress2 + "<br>") : "" $>
+					<$= imAddress3 ? (imAddress3 + "<br>") : "" $>
+				</td>
+			</tr>
+		</table>
+	<$ } $>
 </template>
 
 <template id="abook.Contacts#SplitView_work">
 	<$
 		var contact		= data.contact;
 
+		var workName	= contact.getAttr(ZmContact.F_company);
 		var workField	= contact.getWorkAddrField();
 		var workPhone	= contact.getAttr(ZmContact.F_workPhone);
 		var workPhone2	= contact.getAttr(ZmContact.F_workPhone2);
-		var mobile 		= contact.getAttr(ZmContact.F_mobilePhone);
 		var workFax		= contact.getAttr(ZmContact.F_workFax);
 		var workAsst	= contact.getAttr(ZmContact.F_assistantPhone);
 		var workCompany = contact.getAttr(ZmContact.F_companyPhone);
 		var workCallback= contact.getAttr(ZmContact.F_callbackPhone);
 		var workURL 	= contact.getAttr(ZmContact.F_workURL);
 		var hasWorkPhone= workPhone || workPhone2 || workFax || workAsst || workCompany || workCallback;
-		var imageUrl 	= contact.getImageUrl();
-		var hasImage 	= (imageUrl ? true: false);
-                var imAddress1  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress1));
-                var imAddress2  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress2));
-                var imAddress3  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress3));
 	$>
-	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
-		<$= AjxTemplate.expand("abook.Contacts#SplitView_title", data) $>
-		<tr height=100%>
-			<td valign=top>
-				<table border=0 cellpadding=2 cellspacing=2>
-					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, type:ZmObjectManager.ADDRESS, label:ZmMsg.AB_ADDR_WORK, value:workField, addSep:true}) $>
-					<$= AjxTemplate.expand("abook.Contacts#SplitView_email", data) $>
-                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress1, value:imAddress1}) $>
-                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress2, value:imAddress2}) $>
-                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress3, value:imAddress3}) $>
+
+	<$ if (workField || hasWorkPhone || workURL) { $>
+		<div class="contactHeaderSection"><$= ZmMsg.work $></div>
+	<$ } $>
+
+	<table border=0 cellpadding=2 cellspacing=2 width=100%>
+		<tr>
+			<td class="contactFirstCell">
+				<$ if (workField) { $>
+					<$ if (workName) { $>
+						<div class="workName"><$= workName $></div>
+					<$ } $>
+					<div class="contactOutput"><$= AjxStringUtil.nl2br(data.view._generateObject(workField, ZmObjectManager.ADDRESS)) $></div>
+				<$ } $>
+				<$ if (workURL) { $>
+					<div class="contactOutput"><$= data.view._generateObject(workURL, ZmObjectManager.URL) $></div>
+				<$ } $>
+			</td>
+			<td width=50% valign=top>
+				<table border=0 cellpadding=1 cellspacing=1 width=100%>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_workPhone, value:workPhone, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_workPhone2, value:workPhone2, type:ZmObjectManager.PHONE}) $>
-					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_mobilePhone, value:mobile, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.fax, value:workFax, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_assistantPhone, value:workAsst, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.company, value:workCompany, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_callbackPhone, value:workCallback, type:ZmObjectManager.PHONE}) $>
-					<$ if (hasWorkPhone) { $>
-						<tr><td><br></td></tr>
-					<$ } $>
-					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_workURL, value:workURL, type:ZmObjectManager.URL}) $>
-					<$ if (hasImage) { $>
-						<tr><td><br></td></tr>
-						<$= AjxTemplate.expand("abook.Contacts#SplitViewImage", {data:data, label:ZmMsg.AB_FIELD_image, value:imageUrl, type:ZmObjectManager.URL}) $>
-					<$ } $>
 				</table>
 			</td>
 		</tr>
@@ -304,29 +351,29 @@
 		var pager 		= contact.getAttr(ZmContact.F_pager);
 		var homeURL 	= contact.getAttr(ZmContact.F_homeURL);
 		var hasHomePhone= homePhone || homePhone2 || homeFax || mobile || pager;
-                var imAddress1  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress1));
-                var imAddress2  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress2));
-                var imAddress3  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress3));
 	$>
-	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
-		<$= AjxTemplate.expand("abook.Contacts#SplitView_title", data) $>
-		<tr height=100%>
-			<td colspan=3 valign=top>
-				<table border=0 cellpadding=2 cellspacing=2>
-					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, type:ZmObjectManager.ADDRESS,label:ZmMsg.AB_ADDR_HOME, value:homeField, addSep:true}) $>
-					<$= AjxTemplate.expand("abook.Contacts#SplitView_email", data) $>
-                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress1, value:imAddress1}) $>
-                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress2, value:imAddress2}) $>
-                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress3, value:imAddress3}) $>
+
+	<$ if (homeField || hasHomePhone || homeURL) { $>
+		<div class="contactHeaderSection"><$= ZmMsg.home $></div>
+	<$ } $>
+
+	<table border=0 cellpadding=2 cellspacing=2 width=100%>
+		<tr>
+			<td class="contactFirstCell">
+				<$ if (homeField) { $>
+					<div class="contactOutput"><$= AjxStringUtil.nl2br(data.view._generateObject(homeField, ZmObjectManager.ADDRESS)) $></div>
+				<$ } $>
+				<$ if (homeURL) { $>
+					<div class="contactOutput"><$= data.view._generateObject(homeURL, ZmObjectManager.URL) $></div>
+				<$ } $>
+			</td>
+			<td width=50% valign=top>
+				<table border=0 cellpadding=1 cellspacing=1 width=100%>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_homePhone, value:homePhone, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_homePhone2, value:homePhone2, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.fax, value:homeFax, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_mobilePhone, value:mobile, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_pager, value:pager, type:ZmObjectManager.PHONE}) $>
-					<$ if (hasHomePhone) { $>
-						<tr><td><br></td></tr>
-					<$ } $>
-					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_homeURL, value:homeURL, type:ZmObjectManager.URL}) $>
 				</table>
 			</td>
 		</tr>
@@ -344,27 +391,26 @@
 		var birthday 	= contact.getAttr(ZmContact.F_birthday);
 		var parsedBday 	= birthday ? (new AjxDateFormat("yyyy-MM-dd")).parse(birthday) : null;
 		var birthdayStr = parsedBday ? AjxDateUtil.simpleComputeDateStr(parsedBday) : null;
-                var imAddress1  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress1));
-                var imAddress2  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress2));
-                var imAddress3  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress3));
 	$>
 
-	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
-		<$= AjxTemplate.expand("abook.Contacts#SplitView_title", data) $>
-		<tr height=100%>
-			<td colspan=3 valign=top>
-				<table border=0 cellpadding=2 cellspacing=2>
-					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, type:ZmObjectManager.ADDRESS, label:ZmMsg.AB_ADDR_OTHER, value:otherField, addSep:true}) $>
-					<$= AjxTemplate.expand("abook.Contacts#SplitView_email", data) $>
-                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress1, value:imAddress1}) $>
-                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress2, value:imAddress2}) $>
-                                        <$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_imAddress3, value:imAddress3}) $>
+	<$ if (otherField || otherPhone || otherFax || otherURL) { $>
+		<div class="contactHeaderSection"><$= ZmMsg.other $></div>
+	<$ } $>
+
+	<table border=0 cellpadding=2 cellspacing=2 width=100%>
+		<tr>
+			<td class="contactFirstCell">
+				<$ if (otherField) { $>
+					<div class="contactOutput"><$= AjxStringUtil.nl2br(data.view._generateObject(otherField, ZmObjectManager.ADDRESS)) $></div>
+				<$ } $>
+				<$ if (otherURL) { $>
+					<div class="contactOutput"><$= data.view._generateObject(otherURL, ZmObjectManager.URL) $></div>
+				<$ } $>
+			</td>
+			<td width=50% valign=top>
+				<table border=0 cellpadding=1 cellspacing=1 width=100%>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_otherPhone, value:otherPhone, type:ZmObjectManager.PHONE}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.fax, value:otherFax, type:ZmObjectManager.PHONE}) $>
-					<$ if (otherPhone || otherFax) { $>
-						<tr><td><br></td></tr>
-					<$ } $>
-					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_otherURL, value:otherURL, type:ZmObjectManager.URL, addSep:true}) $>
 					<$= AjxTemplate.expand("abook.Contacts#SplitViewObject", {data:data, label:ZmMsg.AB_FIELD_birthday, value:birthdayStr, type:ZmObjectManager.DATE}) $>
 				</table>
 			</td>
@@ -376,43 +422,18 @@
 	<$
 		var notes = data.view._generateObject(data.contact.getAttr(ZmContact.F_notes));
 	$>
-	<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>
-		<$= AjxTemplate.expand("abook.Contacts#SplitView_title", data) $>
-		<tr height=100%>
-			<td colspan=3 valign=top>
-				<table border=0 cellpadding=2 cellspacing=2>
-					<tr>
-						<td class='contactOutput'>
-							<$ if (notes) { $>
-								<$= AjxStringUtil.nl2br(notes) $>
-							<$ } $>
-						</td>
-					</tr>
-				</table>
+
+	<$ if (notes) { $>
+		<div class="contactHeaderSection"><$= ZmMsg.notes $></div>
+	<$ } $>
+
+	<table border=0 cellpadding=2 cellspacing=2 width=100%>
+		<tr>
+			<td class='contactOutput contactFirstCell'>
+				<$= AjxStringUtil.nl2br(notes) $>
 			</td>
 		</tr>
 	</table>
-</template>
-
-<template id="abook.Contacts#SplitView_email">
-	<$
-		var email  		= data.contact.getAttr(ZmContact.F_email);
-		var email2 		= data.contact.getAttr(ZmContact.F_email2);
-		var email3 		= data.contact.getAttr(ZmContact.F_email3);
-		var hasEmail 	= email || email2 || email3;
-	$>
-
-	<$ if (hasEmail) { $>
-		<tr>
-			<td class='contactLabel'><$= ZmMsg.email $>:</td>
-			<td class='contactOutput'>
-				<$= email  ? (data.view._generateObject(email, ZmObjectManager.EMAIL) + "<br>") : "" $>
-				<$= email2 ? (data.view._generateObject(email2, ZmObjectManager.EMAIL) + "<br>") : "" $>
-				<$= email3 ? (data.view._generateObject(email3, ZmObjectManager.EMAIL) + "<br>") : "" $>
-			</td>
-		</tr>
-		<tr><td><br></td></tr>
-	<$ } $>
 </template>
 
 <template id="abook.Contacts#SplitViewObject">
@@ -431,43 +452,17 @@
 	<$ } $>
 </template>
 
-<template id="abook.Contacts#SplitViewImage">
-	<tr>
-		<td class='contactLabel'>
-			${label}:
-		</td>
-		<td class='contactImage'>
-			<img border='0' width='100px' height='100px' src=${value}>
-		</td>
-	</tr>
-	<$ if (data.addSep) { $>
-		<tr><td><br></td></tr>
-	<$ } $>
-</template>
-
 <template id="abook.Contacts#SplitViewGroup">
 	<$= AjxTemplate.expand("abook.Contacts#SplitView_header", data) $>
 
-	<div id='${id}_body'>
-		<table border=0 cellpadding=2 cellspacing=2 width=100%>
-			<tr>
-				<td width=100%>
-					<table border=0>
-						<$ for (var i = 0; i < data.groupMembers.length; i++) { $>
-							<tr>
-								<td width=20><$= AjxImg.getImageHtml("Message") $></td>
-								<td><nobr><$= AjxStringUtil.htmlEncode(data.groupMembers[i].toString()) $></nobr></td>
-							</tr>
-						<$ } $>
-					</table>
-				</td>
-				<td width=20 valign=top>
-					<$= AjxImg.getImageHtml(data.folderIcon) $>
-				</td>
-				<td class='companyFolder' valign=top>
-					<$= data.folderName $>
-				</td>
-			</tr>
+	<div id='${id}_body' class='groupBody'>
+		<table border=0 cellpadding=1 cellspacing=1 width=100%>
+			<$ for (var i = 0; i < data.groupMembers.length; i++) { $>
+				<tr>
+					<td width=1%><$= AjxImg.getImageHtml("Message") $></td>
+					<td><nobr><$= AjxStringUtil.htmlEncode(data.groupMembers[i].toString()) $></nobr></td>
+				</tr>
+			<$ } $>
 		</table>
 	</div>
 </template>

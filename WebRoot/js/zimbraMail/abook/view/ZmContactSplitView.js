@@ -154,6 +154,10 @@ function() {
 		groupDiv.innerHTML = "";
 	}
 
+	if (this._contactView) {
+		this._contactView.getHtmlElement().innerHTML = "";
+	}
+
 	this._setHeaderInfo(true);
 };
 
@@ -240,10 +244,27 @@ function(ev) {
 
 ZmContactSplitView.prototype._sizeChildren =
 function(width, height) {
-	var listviewCell = document.getElementById(this._htmlElId + "_listview");
 
+	var listviewCell = document.getElementById(this._htmlElId + "_listview");
 	var size = Dwt.getSize(listviewCell);
-	this._listPart.setSize(size.x, size.y);
+
+	if (this._contactTabView) {
+		this._listPart.setSize(size.x, height-20);
+		if (this._contact && this._contact.isGroup()) {
+			var fudge = AjxEnv.isIE ? 27 : 20;
+			this._contactGroupView.setSize(Dwt.DEFAULT, height-fudge);
+		}
+	} else {
+		this._listPart.setSize(size.x, height-38);
+
+		var fudge = AjxEnv.isIE ? 45 : 38;
+		var view = (this._contact && this._contact.isGroup())
+			? this._contactGroupView : this._contactView;
+
+		if (view) {
+			view.setSize(Dwt.DEFAULT, height-fudge);
+		}
+	}
 };
 
 ZmContactSplitView.prototype._contactChangeListener =
@@ -294,9 +315,15 @@ ZmContactSplitView.prototype._setContact =
 function(contact, isGal, oldContact) {
 	if (this._contactTabView && !this._tabViewHtml) { return; }
 
+	var folderId = contact.folderId;
+	var folder = folderId ? appCtxt.getById(folderId) : null;
+	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
+
 	var subs = {
 		id: this._htmlElId,
-		contact: contact
+		contact: contact,
+		contactHdrClass: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
+		isInTrash: (folder && folder.isInTrash())
 	};
 
 	if (contact.isGroup())
@@ -308,6 +335,8 @@ function(contact, isGal, oldContact) {
 		this._resetVisibility(true);
 
 		this._contactGroupView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitViewGroup", subs);
+		var size = this.getSize();
+		this._sizeChildren(size.x, size.y);
 	}
 	else
 	{
@@ -385,36 +414,10 @@ function() {
 
 ZmContactSplitView.prototype._setHeaderInfo =
 function(clear) {
-	// set icon
-	var iconCell = document.getElementById(this._iconCellId);
-	if (iconCell) {
-		iconCell.innerHTML = clear ? "" : AjxImg.getImageHtml(this._contact.getIcon());
-	}
-
-	// set title
-	var titleCell = document.getElementById(this._titleCellId);
-	if (titleCell) {
-		titleCell.innerHTML = clear ? "" : this._contact.getFileAs();
-	}
-
 	// set tags
 	var tagCell = document.getElementById(this._tagCellId);
 	if (tagCell) {
 		tagCell.innerHTML = clear ? "" : this._getTagHtml();
-	}
-
-	if (!clear) {
-		// set background color of header
-		var contactHdrRow = document.getElementById(this._headerRowId);
-		if (contactHdrRow) {
-			var folderId = this._contact.folderId;
-			var folder = folderId ? appCtxt.getById(folderId) : null;
-			var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
-			var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
-			contactHdrRow.className = folder && folder.isInTrash()
-				? ("contactHeaderRow Trash " + bkgdColor)
-				: ("contactHeaderRow " + bkgdColor);
-		}
 	}
 };
 

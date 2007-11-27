@@ -719,8 +719,11 @@ line-height:normal;
 .ZmContactInfoView {
 	@AppBg@
 	@AppBorder@
-	@FullSize@
-	overflow: hidden;
+	width: 100%;
+#IFDEF MSIE
+	height: 100%;
+#ENDIF
+	overflow: auto;
 }
 
 .ZmContactInfoView .contactHeaderRow,
@@ -740,12 +743,28 @@ line-height:normal;
 	border-bottom: 2px solid #AAAAAA;
 }
 
+.ZmContactInfoView .contactHeaderTable {
+	border-bottom: 1px solid #777777;
+}
+
+.ZmContactInfoView .contactHeaderSection {
+	padding: 4px;
+	background-color: #d3cbb4; 				/* get this from skin.properties */
+	@FontSize-big@
+	font-weight: bold;
+	margin-top: 10px;
+	border-bottom: 1px solid #8c8778;		/* get this from skin.properties */
+}
+
+.ZmContactInfoView .workName {
+	font-weight: bold;
+}
+
 .ZmContactInfoView .contactHeader,
 .ZmContactView .contactHeader,
 .ZmTaskEditView .contactHeader {
 	@FontSize-biggest@
 	@Text@
-	padding-left:@BoxPaddingSize@;
 	@NoWrap@
 	@OverflowEllipsis@
 }
@@ -764,7 +783,6 @@ line-height:normal;
 .ZmContactInfoView .contactOutput {
 	@Text@
 	vertical-align: top;
-	@FontSize-big@
 }
 
 .ZmContactEditTabViewPage .contactLabel {
@@ -773,12 +791,27 @@ line-height:normal;
 	text-align: right;
 }
 
+.ZmContactInfoView .contactFirstCell {
+	padding-left: 50px;
+	vertical-align: top;
+}
+
 .ZmContactInfoView .contactLabel {
 	@Label-light@
-	@FontSize-big@
 	width: 125px;
 	text-align: right;
 	vertical-align: top;
+}
+
+.ZmContactInfoView .contactLocation {
+	@Label-light@
+	text-align: right;
+	vertical-align: top;
+	@FontSize-big@
+}
+
+.ZmContactInfoView .groupBody {
+	padding: 3px;
 }
 
 
