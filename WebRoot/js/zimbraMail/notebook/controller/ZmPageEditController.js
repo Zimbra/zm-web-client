@@ -232,6 +232,8 @@ function(popViewWhenSaved) {
 		return;
 	}
 
+	this._filterScripts();
+	
 	// set fields on page object
 	var content = this._pageEditView.getContent(true);
 	this._page.name = name;
@@ -242,6 +244,34 @@ function(popViewWhenSaved) {
 	var saveCallback = new AjxCallback(this, this._saveResponseHandler, [content]);
 	var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [content]);
 	this._page.save(saveCallback, saveErrorCallback);
+};
+
+ZmPageEditController.prototype._filterScripts =
+function() {
+	var view = this._pageEditView;
+	var editor = view._pageEditor;	
+	if (editor && (editor._mode == DwtHtmlEditor.HTML)) {
+		var doc = editor._getIframeDoc();	
+		this.removeComponent(doc, "script");
+		this.removeComponent(doc, "object");
+		this.removeComponent(doc, "embed");
+		this.removeComponent(doc, "applet");		
+	}	
+};
+
+ZmPageEditController.prototype.removeComponent =
+function(doc, tagName) {
+	if(!tagName){ return; }
+	
+	var elements = doc.getElementsByTagName(tagName);	
+	if(!elements){ return; }
+	
+	for(var i in elements){
+		if(elements[i].parentNode){
+			DBG.dumpObj(elements[i].innerHTML);
+			elements[i].parentNode.removeChild(elements[i]);
+		}
+	}
 };
 
 ZmPageEditController.prototype._focusPageInput = function() {
