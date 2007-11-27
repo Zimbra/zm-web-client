@@ -358,6 +358,7 @@
           <url-pattern>/y/calendar</url-pattern>
           <url-pattern>/y/eappt</url-pattern>
           <url-pattern>/y/repeat</url-pattern>
+          <url-pattern>/y/mcalendars</url-pattern>
       </jsp-property-group>
     </jsp-config>
 
