@@ -228,6 +228,13 @@ function(components, doFit, noSetZ) {
 			if (!this._containers[cid]) {
 				var contId = appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[cid]);
 				var contEl = document.getElementById(contId);
+				// HACK: This allows full screen apps to place their content in
+				//       the main app content area if the skin does not have a
+				//       a container for the full screen app content.
+				if (!contEl && cid == ZmAppViewMgr.C_APP_CONTENT_FULL) {
+					contId = appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT]);
+					contEl = document.getElementById(contId);
+				}
 				if (!contEl) {
 					throw new AjxException("Skin container '" + contId + "' not found.");
 				}
@@ -707,12 +714,7 @@ ZmAppViewMgr.prototype._createLoadingView =
 function() {
 	var loadingView = new DwtControl(this._shell, "DwtListView", Dwt.ABSOLUTE_STYLE);
 	var el = loadingView.getHtmlElement();
-	var htmlArr = [];
-	var idx = 0;
-	htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1'><tr><td class='NoResults'><br>";
-	htmlArr[idx++] = ZmMsg.loading;
-	htmlArr[idx++] = "</td></tr></table>";
-	el.innerHTML = htmlArr.join("");
+	el.innerHTML = AjxTemplate.expand("share.App#Loading", this._htmlElId);
 	var elements = {};
 	elements[ZmAppViewMgr.C_APP_CONTENT] = loadingView;
 	this.createView(ZmController.LOADING_VIEW, null, elements);
@@ -862,7 +864,12 @@ function(view, show) {
 				if (!comp) continue;
 				comp.zShow(!isFull);
 				if (isFull) {
-					comp.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+					try {
+						comp.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+					}
+					catch (e) {
+						// ignore 
+					}
 				}
 			}
 			if (!isFull && this._hasSkin) {
