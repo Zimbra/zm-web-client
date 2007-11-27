@@ -862,7 +862,7 @@
 			<$	} $>
 				<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:"notes", truncate:500}) $>
 			<$	} else { $>
-				<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:"email", val:data.email}) $>
+				<$= AjxTemplate.expand("abook.Contacts#AddTooltipEntry", {data:data, field:"email", val:data.contact._lookupEmail || data.email}) $>
 			<$	} $>
 		<$	} $>
 

@@ -307,7 +307,13 @@ function(address) {
 	if (!address || !this.isCanonical) return null;
 
 	var contact = this._emailToContact[address.toLowerCase()];
-	return contact ? this._realizeContact(contact) : null;
+	if (contact) {
+		contact = this._realizeContact(contact);
+		contact._lookupEmail = address;	// so caller knows which address matched
+		return contact;
+	} else {
+		return null;
+	}
 };
 
 ZmContactList.prototype.getContactByIMAddress = function(addr) {
