@@ -39,6 +39,7 @@ SUBMIT,
 
 .ZhAppLinks {
 	vertical-align: middle;
+	white-space:nowrap;
 }
 
 .ZhAppLinks a:link, .ZhAppLinks a:visited {
@@ -47,6 +48,9 @@ SUBMIT,
 	color: darkblue;
 }
 
+.ZhAppSwitchLink {
+	white-space:nowrap;
+}
 .ZhAppSwitchLink a,
 .ZhAppSwitchLink a:link,
 .ZhAppSwitchLink a:visited {
@@ -69,8 +73,7 @@ SUBMIT,
 }
 
 .TabFiller {
-	padding:5px;
-	border: none;
+	@AppTabSpacer@
 }
 
 .TabSpacer {

@@ -6,18 +6,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<table>
+<table id='skin_container_tree_top' cellspacing=0 cellpadding=0 style='width:100%'>
    <tr>
 	<td>
         <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
-        <table cellpadding="2" cellspacing="0" width="100%">
+        <table cellpadding="0" cellspacing="0" width="100%">
             <tr>
-                <td align="center">
+                <td align="center" style='font-size:9px'>
                     <b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>
                 </td>
             </tr>
             <tr>
-                <td align="center">
+                <td align="center" style='font-size:9px'>
                     <fmt:message var="unlimited" key="unlimited"/>
                     <fmt:message key="quotaUsage">
                         <fmt:param value="${zm:displaySizeFractions(mailbox.size,2)}"/>

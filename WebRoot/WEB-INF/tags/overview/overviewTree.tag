@@ -17,15 +17,15 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<c:if test="${folders}"><app:folderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
-<c:if test="${calendars}"><app:calendarFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
-<c:if test="${tasks}"><app:taskFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
-<c:if test="${contacts}"><app:contactFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
-<c:if test="${voice}"><app:voiceFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
+<c:if test="${folders}"><app:folderTree keys="${keys}" editmode="${editmode}"/></c:if>
+<c:if test="${calendars}"><app:calendarFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
+<c:if test="${tasks}"><app:taskFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
+<c:if test="${contacts}"><app:contactFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
+<c:if test="${voice}"><app:voiceFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
 <c:if test="${mailbox.features.savedSearches}">
-<c:if test="${searches}"><app:searchFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
+<c:if test="${searches}"><app:searchFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
 </c:if>
 <c:if test="${mailbox.features.tagging}">
-<c:if test="${tags}"><app:tagTree calendars="${calendars}" keys="${keys}" editmode="${editmode}"/><br></c:if>
+<c:if test="${tags}"><app:tagTree calendars="${calendars}" keys="${keys}" editmode="${editmode}"/></c:if>
 </c:if>
-<c:if test="${minical}"><app:miniCal date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/></c:if>
+<c:if test="${minical}"><br><app:miniCal date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/></c:if>

@@ -21,7 +21,7 @@
             <c:otherwise>
                 <c:url var="searchUrl" value="/h/search"/>
             </c:otherwise>
-            </c:choose>
+        </c:choose>
         <form method="get" action="${fn:escapeXml(searchUrl)}">
             <c:set var="query">${fn:escapeXml((!empty query and mailbox.prefs.showSearchString) ? query : param.sq)}</c:set>
             <c:if test="${voice}">
@@ -56,7 +56,7 @@
                 </c:if>
             </select>
             </td>
-            <td style="padding-left: 5px;">
+            <td style="padding-left: 10px;">
             <input class="SearchButton" type="submit" name="search" value="<fmt:message key="search"/>">
             <c:if test="${calendars}">
                 <c:if test="${not empty param.tz}"><input type="hidden" name="tz" value='${param.tz}'/></c:if>
@@ -65,6 +65,22 @@
             </c:if>
             </td>
             </tr></table>
+        </form>
+    </td>
+	<td><div style='width:20px'></div></td>
+    <td height="25" nowrap class="SearchBar" style='width:200px'>
+        <form method="get" action="http://search.yahoo.com/search?fr=zim-mails" target='_blank'>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+				<td nowrap>
+					<label for="searchWebField">Search web:&nbsp;</label>
+				</td>
+				<td width="100%"><input  id="searchWebField" name='p' class="searchField" maxlength="2048" name="sq" value=""></td>
+				<td style="padding-left: 5px;">
+					<button class="SearchButton" type="submit" name="search"><div class='ImgWebSearch'></div></button>
+				</td>
+            </tr>
+           </table>
         </form>
     </td>
 </tr>
