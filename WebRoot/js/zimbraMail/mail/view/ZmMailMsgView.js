@@ -37,8 +37,11 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	// do we add a close button in the header section?
 	this._hasHeaderCloseBtn = (this._mode == ZmController.MSG_VIEW && !appCtxt.isChildWindow);
 
-	this.SCROLL_WITH_IFRAME = ZmMailMsgView.SCROLL_WITH_IFRAME;
-	this.setScrollStyle(this.SCROLL_WITH_IFRAME ? DwtControl.CLIP : DwtControl.SCROLL);
+	//this.SCROLL_WITH_IFRAME = ZmMailMsgView.SCROLL_WITH_IFRAME;
+    this._scrollWithIframe = ZmMailMsgView.SCROLL_WITH_IFRAME; // Making it local var
+    this._limitAttachments = this._scrollWithIframe ? 3 : 0; //making it local
+    this._attcMaxSize = this._limitAttachments * 16 + 8;
+    this.setScrollStyle(this._scrollWithIframe ? DwtControl.CLIP : DwtControl.SCROLL);
 
 	if (!appCtxt.isChildWindow) {
 		// Add change listener to taglist to track changes in tag color
@@ -105,7 +108,7 @@ function() {
 	if (this._objectManager && this._objectManager.reset) {
 		this._objectManager.reset();
 	}
-        this.setScrollWithIframe(false);
+        this.setScrollWithIframe(this._scrollWithIframe);
 };
 
 ZmMailMsgView.prototype.preventSelection =
@@ -850,7 +853,7 @@ function(container, html, isTextMsg, isTruncated) {
 		hidden: true,
 		html: html,
 		styles: inner_styles,
-		noscroll: !this.SCROLL_WITH_IFRAME,
+		noscroll: !this._scrollWithIframe,
 		posStyle: DwtControl.STATIC_STYLE,
 		processHtmlCallback: callback,
 		useKbMgmt: true
@@ -1345,9 +1348,10 @@ function() {
 	}
 	// limit display size.  seems like an attc. row has exactly 16px; we set it
 	// to 56px so that it becomes obvious that there are more attachments.
-	if (ZmMailMsgView.LIMIT_ATTACHMENTS != 0 && rows > ZmMailMsgView.LIMIT_ATTACHMENTS) {
+    if (this._limitAttachments != 0 && rows > ZmMailMsgView._limitAttachments) {
+	//Commented for bug 12995 if (ZmMailMsgView.LIMIT_ATTACHMENTS != 0 && rows > ZmMailMsgView.LIMIT_ATTACHMENTS) {
 		htmlArr[dividx] = "<div style='height:";
-		htmlArr[dividx] = ZmMailMsgView.ATTC_MAX_SIZE;
+		htmlArr[dividx] = this._attcMaxSize;//ZmMailMsgView.ATTC_MAX_SIZE;
 		htmlArr[dividx] = "px; overflow:auto;' />";
 	}
 	htmlArr[idx++] = "</tr></table></div>";
@@ -1457,7 +1461,7 @@ function(expand) {
 		}
 		this._addressRows = null;
 	}
-	if (this.SCROLL_WITH_IFRAME) {
+	if (this._scrollWithIframe) {
 		var iframe = document.getElementById(this._iframeId);
 		if (iframe)
 			ZmMailMsgView._resetIframeHeight(this, iframe);
@@ -1667,7 +1671,7 @@ function (image, i, len, msg, idoc, iframe, view) {
 ZmMailMsgView._resetIframeHeight =
 function(self, iframe) {
 	var h;
-	if (self.SCROLL_WITH_IFRAME) {
+	if (self._scrollWithIframe) {
 		h = self.getH() - 7;
 		function substract(el) {
 			if (el) {
@@ -1732,8 +1736,11 @@ function(self, iframe) {
 // this function isn't safe to call for IE!
 ZmMailMsgView.prototype.setScrollWithIframe =
 function(val) {
-	this.SCROLL_WITH_IFRAME = val;
-	this.setScrollStyle(val ? DwtControl.CLIP : DwtControl.SCROLL);
+	this._scrollWithIframe = val;
+    this._limitAttachments = this._scrollWithIframe ? 3 : 0; //making it local
+    this._attcMaxSize = this._limitAttachments * 16 + 8;
+
+    this.setScrollStyle(val ? DwtControl.CLIP : DwtControl.SCROLL);
 	var iframe = document.getElementById(this._iframeId);
 	if (iframe) {
 		iframe.style.width = "100%";
