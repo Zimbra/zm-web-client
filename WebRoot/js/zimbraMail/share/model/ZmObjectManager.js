@@ -30,12 +30,11 @@
  */
 ZmObjectManager = function(view, selectCallback, skipHandlers) {
 
-	//DBG.println(AjxDebug.DBG2, "ZmObjectManager created by: " + view);
-	this._view = view;
 	this._selectCallback = selectCallback;
 	this._uuid = Dwt.getNextId();
 	this._objectIdPrefix = "OBJ_PREFIX_";
 	this._objectHandlers = {};
+
 	// don't include when looking for objects. only used to provide tool tips for images
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED) && window["ZmImageAttachmentObjectHandler"]) {
 		this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler();
@@ -45,26 +44,13 @@ ZmObjectManager = function(view, selectCallback, skipHandlers) {
 	if (!skipHandlers) {
         this.initialized = false;
         this._addAutoHandlers();
-	}
-    else {
+	} else {
         this.initialized = true;
     }
 
     this.sortHandlers();
 	this.reset();
-
-	//DBG.println(AjxDebug.DBG3, "ZmObjectManager " + zimlets.length + " Zimlets loaded");
-
-	// install handlers
-	if (view != null) {
-	    view.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
-	    view.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._mouseOutListener));
-	    view.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
-	    view.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));
-	    view.addListener(DwtEvent.ONMOUSEMOVE, new AjxListener(this, this._mouseMoveListener));
-	    this._hoverOverListener = new AjxListener(this, this._handleHoverOver);
-	    this._hoverOutListener = new AjxListener(this, this._handleHoverOut);
-	}
+	this.setView(view);
 }
 
 ZmObjectManager._TOOLTIP_DELAY = 275;
@@ -115,23 +101,29 @@ function(obj) {
 	}
 };
 
-ZmObjectManager.prototype.getHandlers = function() {
-    if (!this.initialized && appCtxt.zimletsPresent()) {
-        var zimletMgr = appCtxt.getZimletMgr();
-        if (zimletMgr.isLoaded()) {
-            this.initialized = true;
-            var zimlets = zimletMgr.getContentZimlets();
-            for (var i = 0; i < zimlets.length; i++) {
-                this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
-            }
-        }
-    }
-    return this._objectHandlers;
+ZmObjectManager.prototype.toString =
+function() {
+	return "ZmObjectManager";
+};
+
+ZmObjectManager.prototype.getHandlers =
+function() {
+	if (!this.initialized && appCtxt.zimletsPresent()) {
+		var zimletMgr = appCtxt.getZimletMgr();
+		if (zimletMgr.isLoaded()) {
+			this.initialized = true;
+			var zimlets = zimletMgr.getContentZimlets();
+			for (var i = 0; i < zimlets.length; i++) {
+				this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
+			}
+		}
+	}
+	return this._objectHandlers;
 };
 
 ZmObjectManager.prototype.addHandler =
 function(h, type, priority) {
-	type = type ? type : (h.getTypeName() ? h.getTypeName() : "none");
+	type = type || (h.getTypeName() ? h.getTypeName() : "none");
 	priority = priority ? priority : -1;
 	h._prio = priority;
 	//DBG.println(AjxDebug.DBG3, "addHandler " + h + " type: " + type + " prio: " + priority);
@@ -149,7 +141,7 @@ function() {
 		objectHandlers[i].sort(ZmObjectManager.__byPriority);
 
 		// Copy each array to a single array of all Object Handlers
-		for (var k=0;k< objectHandlers[i].length;k++) {
+		for (var k = 0; k < objectHandlers[i].length; k++) {
 			this._allObjectHandlers.push(objectHandlers[i][k]);
 		}
 	}
@@ -178,14 +170,23 @@ function() {
 	}
 };
 
-ZmObjectManager.prototype.toString =
-function() {
-	return "ZmObjectManager";
-};
-
 ZmObjectManager.prototype.reset =
 function() {
 	this._objects = {};
+};
+
+ZmObjectManager.prototype.setView =
+function(view) {
+	if (view != null) {
+	    view.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
+	    view.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._mouseOutListener));
+	    view.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
+	    view.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));
+	    view.addListener(DwtEvent.ONMOUSEMOVE, new AjxListener(this, this._mouseMoveListener));
+	    this._hoverOverListener = new AjxListener(this, this._handleHoverOver);
+	    this._hoverOutListener = new AjxListener(this, this._handleHoverOut);
+	}
+	this._view = view;
 };
 
 ZmObjectManager.prototype.objectsCount =
@@ -651,7 +652,7 @@ function(ev) {
 
 	span.className = object.handler.getHoveredClassName(object.object, object.context);
 	if (object.handler.hasToolTipText()) {
- 		var shell = DwtShell.getShell(window);
+		var shell = DwtShell.getShell(window);
 		var manager = shell.getHoverMgr();
 		if (!manager.isHovering()) {
 			manager.reset();
@@ -747,8 +748,9 @@ function(ev) {
 	return false;
 };
 
-ZmObjectManager.prototype._handleHoverOver = function(event) {
-	if (!(event && event.object)) {return;}
+ZmObjectManager.prototype._handleHoverOver =
+function(event) {
+	if (!(event && event.object)) { return; }
 
 	var span = this._findObjectSpan(event.target);
 	var handler = event.object.handler;
@@ -760,8 +762,9 @@ ZmObjectManager.prototype._handleHoverOver = function(event) {
 	handler.hoverOver(object, context, x, y, span);
 };
 
-ZmObjectManager.prototype._handleHoverOut = function(event) {
-	if (!(event && event.object)) {return;}
+ZmObjectManager.prototype._handleHoverOut =
+function(event) {
+	if (!(event && event.object)) { return; }
 
 	var span = this._findObjectSpan(event.target);
 	var handler = event.object.handler;
@@ -773,6 +776,7 @@ ZmObjectManager.prototype._handleHoverOut = function(event) {
 
 // Private static functions
 
-ZmObjectManager.__byPriority = function(a, b) {
+ZmObjectManager.__byPriority =
+function(a, b) {
 	return (b._prio < a._prio) - (a._prio < b._prio);
 };

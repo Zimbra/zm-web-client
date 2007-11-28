@@ -219,11 +219,7 @@ function(controller, dropTgt) {
 
 			// reset event handlers for each view so object manager can process
 			view._setMouseEventHdlrs();
-			view.addListener(DwtEvent.ONMOUSEOVER, 	new AjxListener(this._objectManager, this._objectManager._mouseOverListener));
-			view.addListener(DwtEvent.ONMOUSEOUT, 	new AjxListener(this._objectManager, this._objectManager._mouseOutListener));
-			view.addListener(DwtEvent.ONMOUSEDOWN, 	new AjxListener(this._objectManager, this._objectManager._mouseDownListener));
-			view.addListener(DwtEvent.ONMOUSEUP, 	new AjxListener(this._objectManager, this._objectManager._mouseUpListener));
-			view.addListener(DwtEvent.ONMOUSEMOVE, 	new AjxListener(this._objectManager, this._objectManager._mouseMoveListener));
+			this._objectManager.setView(view);
 
 			this._contactTabView.setTabView(idx, view);
 		}
@@ -234,6 +230,10 @@ function(controller, dropTgt) {
 		// otherwise, create an empty slate
 		this._contactView = new DwtComposite(this);
 		this._contactView.reparentHtmlElement(this._htmlElId + "_content");
+
+		// reset event handlers so object manager can process
+		this._contactView._setMouseEventHdlrs();
+		this._objectManager.setView(this._contactView);
 	}
 };
 
