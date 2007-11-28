@@ -28,6 +28,127 @@
 <!-- skin is ${skin} -->
 <body <c:if test="${not empty onload}">onload="${onload}"</c:if>>
 <c:choose>
+<c:when test="${skin eq 'yahoo'}">
+<c:set value="/skins/yahoo/img/icons" var="iconPath" scope="request"/>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <tr>
+        <td valign="top" align="center" width="1%" style="padding-right: 8px;">
+            <a href="http://www.yahoo.com/" target="_new">
+                <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span>
+
+            </a>
+        </td>
+        <td>
+            <app:appTopUser mailbox="${mailbox}" keys="${keys}" />
+            <a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>&nbsp;<a href='<c:url value="/"/>'><fmt:message key="switchToAdvancedClient" /></a>
+        </td>
+        
+        <td valign="top" class="TopContent">
+            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}"/>
+        </td>
+        <td align="right">
+        </td>
+    </tr>
+
+    <!-- tr>
+        <td class="Overview">
+            &nbsp;
+        </td>
+        <td align="center" colspan="3">
+            <app:appStatus/>
+        </td>
+    </tr -->
+
+    <tr>
+        <!-- td class="Overview">
+        <%--  compose button
+            <c:choose>
+                <c:when test="${not empty context}">
+                    <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
+                </c:when>
+                <c:otherwise>
+                    <c:url var="composeUrl" value="/h/search?action=compose"/>
+                </c:otherwise>
+            </c:choose>
+            <div class="SearchButton" style="padding:2px;" >
+                <a  href="${fn:escapeXml(composeUrl)}" style="text-decoration:none;color:black;"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span> &nbsp; <span id='tab_ikon_compose'></span><span><fmt:message key="compose"/></span></a>
+            </div
+            --%>
+        </td -->
+        <td colspan="4">
+	        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+	        <tr>
+	        <td valign="bottom" nowrap="nowrap"><app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/></td>
+	        <td><app:appStatus/></td>
+	        <td align="right" nowrap="nowrap"><a target="_new" href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><fmt:message key="help"/></a>&nbsp;</td>
+		    </tr>
+		    </table>
+    	</td>
+    </tr>
+    <tr>
+    
+        <c:if test="${empty editmode}">
+            <td valign="top" class="Overview">
+				<table cellspacing="0" cellpadding="0" border="0" width="100%">
+			    <tr>
+			    <td class="TbTop">
+			    <%--  compose button
+            <c:choose>
+                <c:when test="${not empty context}">
+                    <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
+                </c:when>
+                <c:otherwise>
+                    <c:url var="composeUrl" value="/h/search?action=compose"/>
+                </c:otherwise>
+            </c:choose>
+            <div class="SearchButton" style="padding:2px;" >
+                <a  href="${fn:escapeXml(composeUrl)}" style="text-decoration:none;color:black;"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span> &nbsp; <span id='tab_ikon_compose'></span><span><fmt:message key="compose"/></span></a>
+            </div>
+            --%>
+			    </td>
+			    </tr>
+			    <tr>
+			    <td valign="top">
+			    <table cellspacing="0" cellpadding="0" border="0" align="center" style="margin: 0px 4px;" width="100%">
+			    <tr>
+			    <td style="background-color: white;" valign="top">
+                <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+            	</td>
+            	</tr>
+            	</table>
+            	</td>
+                </tr>
+                </table>
+            </td>
+        </c:if>
+        <c:set var="adsOn" value="${!empty ads}"/>
+<c:if test="${adsOn}" >
+        <td valign="top" colspan="3">
+            <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+</c:if>
+        <td valign="top" colspan="${empty editmode ? 3 : 4}" style="padding-left:${editmode ? 10 : 0}px">
+        <jsp:doBody/>
+    </td>
+    <c:if test="${adsOn}" >
+                        <td valign="top" style="border-top: 1px solid #98adbe; width: 180px;">
+                           <app:ads content="${ads}"/>
+                        </td>
+
+                    </tr>
+                </table>
+            </td>
+    </c:if>
+    <!-- td style="width:10px;">
+        &nbsp; <%-- for IE's scrollbar, this should be CSS browser-specific --%>
+    </td -->
+</tr>
+<tr>
+ <td colspan="4">&nbsp;</td>
+</tr>
+</table>
+</c:when>
+
 <c:when test="${skin eq 'velodrome2'}">
 	<c:set var="iconPath" value="/skins/velodrome2/img/icons" scope="request"/>
 	<table width="100%" cellspacing="0" cellpadding="0" border="0" height="100%">

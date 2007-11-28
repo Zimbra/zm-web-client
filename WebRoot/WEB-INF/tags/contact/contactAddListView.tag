@@ -10,7 +10,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 
-<table width=100% cellpadding=2 cellspacing=0>
+<table width=100% cellpadding=2 cellspacing=0 class="topborder">
     <tr valign='top'>
         <th width=1%>&nbsp;
             <c:choose>

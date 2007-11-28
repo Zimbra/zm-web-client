@@ -13,6 +13,7 @@
     <tr class='Tabs'>
         <td class='TabSpacer'/>
         <c:if test="${mailbox.features.portalEnabled}">
+            <td></td>
             <td class='Tab ${selected=='home' ? 'TabSelected' :'TabNormal'}'>
                 <a id='TAB_HOME' href="<c:url value="/h/home"/>" <c:if test="${keys}">accesskey="v"</c:if>>
                     <span id='tab_ikon_home'><app:img src="common/ImgZimlet.gif" altkey='ALT_APP_HOME'/></span>
@@ -22,7 +23,6 @@
             <td class='TabSpacerR'/>
         </c:if>
         <c:if test="${mailbox.features.mail}">
-        <td class='TabSpacer'/>
         <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
             <a id='TAB_MAIL' href="<c:url value="/h/search"/>">
               <span id='tab_ikon_mail'><app:img src="startup/ImgMailApp.gif" altkey='ALT_APP_MAIL'/>
