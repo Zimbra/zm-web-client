@@ -171,7 +171,7 @@ function() {
 
 		// only set the folder Id if changed
 		var folder = appCtxt.getById(this._contact.folderId);
-		var folderId = folder ? folder.nId : null;
+		var folderId = folder ? (appCtxt.getActiveAccount().isMain ? folder.nId : folder.id) : null;
 		if (folderId != this._folderId) {
 			mods[ZmContact.F_folderId] = this._folderId;
 			foundOne = true;
@@ -341,6 +341,27 @@ function() {
 	}
 };
 
+ZmContactView.prototype._addImAddressEntries =
+function() {
+	var imDiv1 = document.getElementById(this._imAddress1Id);
+	if (imDiv1) {
+		this._imAddress1Entry = new ZmImAddressEntry(this);
+		this._imAddress1Entry.reparentHtmlElement(this._imAddress1Id);
+	}
+
+	var imDiv2 = document.getElementById(this._imAddress2Id);
+	if (imDiv2) {
+		this._imAddress2Entry = new ZmImAddressEntry(this);
+		this._imAddress2Entry.reparentHtmlElement(this._imAddress2Id);
+	}
+
+	var imDiv3 = document.getElementById(this._imAddress3Id);
+	if (imDiv3) {
+		this._imAddress3Entry = new ZmImAddressEntry(this);
+		this._imAddress3Entry.reparentHtmlElement(this._imAddress3Id);
+	}
+};
+
 ZmContactView.prototype._installOnKeyUpHandler =
 function() {
 	for (var i = 0; i < this._fields.length; i++) {
@@ -465,26 +486,6 @@ function() {
 	}
 };
 
-ZmContactView.prototype._setImage =
-function(value) {
-	var imageRemove = document.getElementById(this._imageCellId + "_remove");
-
-	if (!value) {
-		Dwt.setVisible(this._image, false);
-		Dwt.setVisible(this._removeLink, false);
-		Dwt.setVisible(this._imgDefault, true);
-	} else {
-		Dwt.setVisible(this._imgDefault, false);
-		Dwt.setVisible(this._image, true);
-		Dwt.setVisible(this._removeLink, true);
-
-		this._imageInput.setAttribute("_part", value.part);
-		this._imageInput.setAttribute("_size", value.size);
-		this._imageInput.setAttribute("_ct", value.ct);
-		this._image.setAttribute("src", this._contact.getImageUrl());
-	}
-};
-
 ZmContactView.prototype._setValues =
 function() {
 	// set field values for each tab
@@ -591,27 +592,6 @@ function() {
 	}
 };
 
-ZmContactView.prototype._addImAddressEntries =
-function() {
-	var imDiv1 = document.getElementById(this._imAddress1Id);
-	if (imDiv1) {
-		this._imAddress1Entry = new ZmImAddressEntry(this);
-		this._imAddress1Entry.reparentHtmlElement(this._imAddress1Id);
-	}
-
-	var imDiv2 = document.getElementById(this._imAddress2Id);
-	if (imDiv2) {
-		this._imAddress2Entry = new ZmImAddressEntry(this);
-		this._imAddress2Entry.reparentHtmlElement(this._imAddress2Id);
-	}
-
-	var imDiv3 = document.getElementById(this._imAddress3Id);
-	if (imDiv3) {
-		this._imAddress3Entry = new ZmImAddressEntry(this);
-		this._imAddress3Entry.reparentHtmlElement(this._imAddress3Id);
-	}
-};
-
 ZmContactView.prototype._createHtml =
 function(contact) {
 	if (this._htmlInitialized) {
@@ -675,8 +655,7 @@ function(contact) {
 	this._addSelectOptions();
 	this._addDateCalendars();
 	this._addImAddressEntries();
-
-	this._handleImage();
+	this._addContactPhoto();
 
 	// add onKeyUp handlers
 	this._installOnKeyUpHandler();
@@ -697,22 +676,32 @@ function(tabIdx) {
 	fields[0].focus();
 };
 
-ZmContactView.prototype._handleImage =
+ZmContactView.prototype._addContactPhoto =
 function() {
 	this._imgDefault = document.getElementById(this._imageCellId + "_default");
 	this._image = document.getElementById(this._imageCellId + "_img");
-	this._removeLink = document.getElementById(this._imageCellId + "_remove");
 
 	var imageInput = this._imageInput = document.getElementById(this._imageCellId + "_input");
 	if (imageInput) {
 		imageInput.onchange = AjxCallback.simpleClosure(this._uploadImage, this);
 		imageInput.setAttribute("accept", "image/gif,image/jpeg,image/png");
 	}
-	this._removeLink.onclick = AjxCallback.simpleClosure(this._removeImage, this);
+
+	this._removeLink = document.getElementById(this._imageCellId + "_remove");
+	if (this._removeLink) {
+		this._removeLink.onclick = AjxCallback.simpleClosure(this._removeImage, this);
+	}
+};
+
+ZmContactView.prototype._supportsPhoto =
+function() {
+	return (this._imgDefault && this._image && this._imageInput && this._removeLink);
 };
 
 ZmContactView.prototype._updateImage =
 function(status, attId) {
+	if (!this._supportsPhoto()) { return; }
+
 	Dwt.setVisible(this._imgDefault, false);
 	Dwt.setVisible(this._image, true);
 	Dwt.setVisible(this._removeLink, true);
@@ -771,8 +760,30 @@ function(callback, status, attId) {
 	}
 };
 
+ZmContactView.prototype._setImage =
+function(value) {
+	if (!this._supportsPhoto()) { return; }
+
+	if (!value) {
+		Dwt.setVisible(this._image, false);
+		Dwt.setVisible(this._removeLink, false);
+		Dwt.setVisible(this._imgDefault, true);
+	} else {
+		Dwt.setVisible(this._imgDefault, false);
+		Dwt.setVisible(this._image, true);
+		Dwt.setVisible(this._removeLink, true);
+
+		this._imageInput.setAttribute("_part", value.part);
+		this._imageInput.setAttribute("_size", value.size);
+		this._imageInput.setAttribute("_ct", value.ct);
+		this._image.setAttribute("src", this._contact.getImageUrl());
+	}
+};
+
 ZmContactView.prototype._removeImage =
 function(el) {
+	if (!this._supportsPhoto()) { return; }
+
 	this._imageInput.removeAttribute("_aid");
 	this._imageInput.removeAttribute("_part");
 	this._imageInput.value = "";

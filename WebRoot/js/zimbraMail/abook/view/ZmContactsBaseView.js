@@ -93,10 +93,11 @@ function(ev) {
 		{
 			var newContact = ev._details.items[0];
 			var newFolder = appCtxt.getById(newContact.folderId);
+			var newFolderId = appCtxt.getActiveAccount().isMain ? newFolder.nId : newFolder.id;
 
 			// only add this new contact to the listview if this is a simple
 			// folder search and it belongs!
-			if (folderId && newFolder && folderId == newFolder.nId) {
+			if (folderId && newFolder && folderId == newFolderId) {
 				var currFolder = appCtxt.getById(folderId);
 				var list = (currFolder && currFolder.isRemote()) ? this._controller.getList() : ev.source;
 				var subVector = list.getSubList(this.getOffset(), this.getLimit(), folderId);
