@@ -323,7 +323,17 @@ function(creates, force) {
 				this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 			} else if (name == "cn") {
 				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
-				AjxDispatcher.run("GetContacts").notifyCreate(create);
+				// find out if we're dealing with shared contact
+				var folder = appCtxt.getById(create.l);
+				if (folder && folder.isRemote()) {
+					var clc = AjxDispatcher.run("GetContactListController");
+
+					if (folder.nId == clc._folderId) {
+						clc.getList().notifyCreate(create);
+					}
+				} else {
+					AjxDispatcher.run("GetContacts").notifyCreate(create);
+				}
 				create._handled = true;
 			}
 		}

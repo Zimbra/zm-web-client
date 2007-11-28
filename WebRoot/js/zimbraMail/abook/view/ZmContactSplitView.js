@@ -487,8 +487,12 @@ function() {
 
 ZmContactSimpleView.prototype._changeListener =
 function(ev) {
-	if (appCtxt.getCurrentViewId() != ZmController.CONTACT_SIMPLE_VIEW)
+	// not sure if checking for the view is the right thing to do :/
+	if (ev.event != ZmEvent.E_CREATE &&
+		appCtxt.getCurrentViewId() != ZmController.CONTACT_SIMPLE_VIEW)
+	{
 		return;
+	}
 
 	ZmContactsBaseView.prototype._changeListener.call(this, ev);
 

@@ -92,11 +92,14 @@ function(ev) {
 		else if (ev.event == ZmEvent.E_CREATE)
 		{
 			var newContact = ev._details.items[0];
+			var newFolder = appCtxt.getById(newContact.folderId);
 
 			// only add this new contact to the listview if this is a simple
 			// folder search and it belongs!
-			if (folderId && folderId == newContact.folderId) {
-				var subVector = ev.source.getSubList(this.getOffset(), this.getLimit(), folderId);
+			if (folderId && newFolder && folderId == newFolder.nId) {
+				var currFolder = appCtxt.getById(folderId);
+				var list = (currFolder && currFolder.isRemote()) ? this._controller.getList() : ev.source;
+				var subVector = list.getSubList(this.getOffset(), this.getLimit(), folderId);
 				ZmListView.prototype.set.call(this, subVector);
 
 				// only relayout if this is cards view
