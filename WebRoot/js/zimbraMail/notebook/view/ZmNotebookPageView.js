@@ -22,6 +22,8 @@ ZmNotebookPageView = function(parent, controller, dropTgt) {
 	this._controller = controller;
 
 	this._USE_IFRAME = true;
+	this._iframeLoader = "ZmNotebookPageView._iframeOnLoad";
+	this._hiddenIframeLoader = "ZmNotebookPageView._iframeOnLoad1";	
 
 	this._createHtml();	
 	this._setMouseEventHdlrs(); // needed by object manager
@@ -177,10 +179,10 @@ ZmNotebookPageView.prototype._createHtml = function() {
 
 	if(!AjxEnv.isSafari) {		
 		var params = {parent: this, className: "ZmNotebookIframe", hidden: false, html: '<body></body>',
-		      	  	  posStyle: DwtControl.STATIC_STYLE,useKbMgmt: true, onload: "ZmNotebookPageView._iframeOnLoad(this)"};
+		      	  	  posStyle: DwtControl.STATIC_STYLE,useKbMgmt: true, onload: this._iframeLoader + "(this)"};
 		this._diframe = new DwtIframe(params);
 		this._iframe = this._diframe.getIframe();
-		var params1 = {parent: this, hidden: true, html: '<body></body>', onload: "ZmNotebookPageView._iframeOnLoad1(this)"};
+		var params1 = {parent: this, hidden: true, html: '<body></body>', onload: this._hiddenIframeLoader+ "(this)"};
 		this._diframe1 = new DwtIframe(params1);
 		this._diframe1.setVisible(false);
 		this._iframe1 = this._diframe1.getIframe();	
@@ -192,10 +194,10 @@ ZmNotebookPageView.prototype._createHtml = function() {
 		var iframeId1 = this._htmlElId+"_iframe_hidden";
 		element.innerHTML = [
 			"<iframe id='",iframeId,"' frameborder='0' ",
-				"onload='ZmNotebookPageView._iframeOnLoad(this)'>",
+				"onload='", this._iframeLoader, "(this)'>",
 			"</iframe>",
 			"<iframe id='",iframeId1,"' name='",iframeId1,"' frameborder='0' style='position: absolute; top: 0; left: 0; visibility: hidden'",
-				"onload='ZmNotebookPageView._iframeOnLoad1(this)'>",
+				"onload='", this._hiddenIframeLoader, "(this)'>",
 			"</iframe>"			
 		].join("");
 
@@ -442,15 +444,21 @@ ZmNotebookPageView.prototype.addColumn = function(doc)
 	
 	var tblBodyObj = table.tBodies[0];
 	for (var i=0; i<tblBodyObj.rows.length; i++) {
-		var row = tblBodyObj.rows[i];
-	
+		var row = tblBodyObj.rows[i];	
+		this.addActionLinks(row, doc, isReadOnly);
+	}
+};
+
+ZmNotebookPageView.prototype.addActionLinks =
+function(row, doc, isReadOnly) {
+
 		if(row.className=="zmwiki-headerUnderLine"){
-				var newCell = row.insertCell(2);
-				newCell.className = "zmwiki-header";
-				newCell.innerHTML = "Actions";
-				continue;
-			}
-			
+			var newCell = row.insertCell(2);
+			newCell.className = "zmwiki-header";
+			newCell.innerHTML = "Actions";
+			return;
+		}	
+	
 		for(var j=0;j<row.cells.length;j++){
 			var cell = row.cells[j];			
 			
@@ -467,17 +475,19 @@ ZmNotebookPageView.prototype.addColumn = function(doc)
 				if(isPage && !isReadOnly){
 					var editLink = this.createEditLink(doc,wikiName);
 					var delLink = this.createDeleteLink(doc,wikiName);
+					var historyLink = this.createHistoryLink(doc,wikiName);					
 					newCell.appendChild(editLink);
 					newCell.appendChild(doc.createTextNode(" "));
 					newCell.appendChild(delLink);
+					newCell.appendChild(doc.createTextNode(" "));
+					newCell.appendChild(historyLink);					
 				}else{				
 					newCell.innerHTML = " - ";
 				}
 				break;
 							
 			}
-		}
-	}
+		}	
 };
 
 ZmNotebookPageView.prototype.createEditLink = function(doc,wikiName){
@@ -500,33 +510,55 @@ ZmNotebookPageView.prototype.createDeleteLink = function(doc,wikiName){
 	
 };
 
+ZmNotebookPageView.prototype.createHistoryLink = function(doc,wikiName){
+
+	var delLink = doc.createElement("a");
+	delLink.innerHTML = "History";
+	delLink.href='javascript:window.parent.Dwt.getObjectFromElement(window.parent.wikiFrame).showHistory("'+wikiName+'");'
+	delLink.className = "zmwiki-author";
+	return delLink;
+	
+};
+
 ZmNotebookPageView.prototype.editPage = function(pageName){
 
-var controller = this._controller;
-var object = controller._object;
-var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
-var iPage = cache.getPageByName(object.folderId,pageName);
+	var controller = this._controller;
+	var object = controller._object;
+	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
+	var iPage = cache.getPageByName(object.folderId,pageName);
 
-if(!iPage)
-return;
+	if(!iPage){	return; }
 
-var pageEditController = controller._app.getPageEditController();
-pageEditController.show(iPage);
+	var pageEditController = controller._app.getPageEditController();
+	pageEditController.show(iPage);
 
 };
 
 ZmNotebookPageView.prototype.deletePage = function(pageName){
 
-var controller = this._controller;
-var object = controller._object;
-var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
-var iPage = cache.getPageByName(object.folderId,pageName);
+	var controller = this._controller;
+	var object = controller._object;
+	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
+	var iPage = cache.getPageByName(object.folderId,pageName);
 
-if(!iPage)
-return;
+	if(!iPage) { return;}
 
-var callback = new AjxListener(this,this.onDelete);
-controller._doDelete(iPage,callback);
+	var callback = new AjxListener(this,this.onDelete);
+	controller._doDelete(iPage,callback);
+};
+
+ZmNotebookPageView.prototype.showHistory = function(pageName){
+
+	var controller = this._controller;
+	var object = controller._object;
+	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
+	var iPage = cache.getPageByName(object.folderId,pageName);
+
+	if(!iPage){ return; }
+
+	var pageVersionController = controller._app.getPageVersionController();
+	pageVersionController.loadVersion(iPage);
+
 };
 
 ZmNotebookPageView.prototype.onDelete = function(){

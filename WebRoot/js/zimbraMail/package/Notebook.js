@@ -27,6 +27,7 @@ AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 AjxPackage.require("zimbraMail.notebook.view.conv.ZmWikiConverter");
 
 AjxPackage.require("zimbraMail.notebook.view.ZmNotebookPageView");
+AjxPackage.require("zimbraMail.notebook.view.ZmPageVersionView");
 AjxPackage.require("zimbraMail.notebook.view.ZmNotebookFileView");
 AjxPackage.require("zimbraMail.notebook.view.ZmPageEditView");
 AjxPackage.require("zimbraMail.notebook.view.ZmFileListView");
@@ -44,6 +45,7 @@ AjxPackage.require("zimbraMail.notebook.view.ZmNotebookObjectHandler");
 
 AjxPackage.require("zimbraMail.notebook.controller.ZmNotebookController");
 AjxPackage.require("zimbraMail.notebook.controller.ZmNotebookPageController");
+AjxPackage.require("zimbraMail.notebook.controller.ZmPageVersionController");
 AjxPackage.require("zimbraMail.notebook.controller.ZmNotebookFileController");
 AjxPackage.require("zimbraMail.notebook.controller.ZmPageEditController");
 AjxPackage.require("zimbraMail.notebook.controller.ZmNotebookTreeController");

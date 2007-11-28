@@ -61,6 +61,7 @@ ZmController.MY_CARD_VIEW				= "MYC";
 ZmController.NOTEBOOK_FILE_VIEW			= "NBF";
 ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= "NBPE";
 ZmController.NOTEBOOK_PAGE_VIEW			= "NBP";
+ZmController.NOTEBOOK_PAGE_VERSION_VIEW = "NBPV";
 ZmController.NOTEBOOK_SITE_VIEW			= "NBS";
 ZmController.PORTAL_VIEW                = "PORTAL";
 ZmController.PREF_VIEW					= "PREF";

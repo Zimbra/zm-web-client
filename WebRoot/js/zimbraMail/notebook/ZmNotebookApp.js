@@ -57,6 +57,7 @@ function() {
 	AjxDispatcher.registerMethod("GetNotebookController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookController));
 	AjxDispatcher.registerMethod("GetPageEditController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageEditController));
 	AjxDispatcher.registerMethod("GetNotebookCache", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookCache));
+	AjxDispatcher.registerMethod("GetPageVersionController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageVersionController));		
 };
 
 ZmNotebookApp.prototype._registerOperations =
@@ -77,6 +78,7 @@ function() {
 	ZmOperation.registerOp("IMPORT_FILE", {textKey:"_import", tooltipKey:"importDocs"});
 	ZmOperation.registerOp("SEND_PAGE", {textKey:"send", tooltipKey:"sendPageTT", image:"Send"}, ZmSetting.MAIL_ENABLED);
 	ZmOperation.registerOp("SHARE_NOTEBOOK", {textKey:"shareNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp("REVERT_PAGE", {textKey:"revert", tooltipKey:"restorePage", image:"Edit"});	
 };
 
 ZmNotebookApp.prototype._registerItems =
@@ -493,4 +495,12 @@ function(folderId) {
 	}
 	
 	return 'Untitled';
+};
+
+ZmNotebookApp.prototype.getPageVersionController = 
+function() {
+	if (!this._versionController) {
+		this._versionController = new ZmPageVersionController(this._container, this);
+	}
+	return this._versionController;	
 };

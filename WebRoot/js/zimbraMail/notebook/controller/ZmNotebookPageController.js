@@ -16,6 +16,7 @@
  */
 
 ZmNotebookPageController = function(container, app) {
+	if (arguments.length == 0) return;
 	ZmNotebookController.call(this, container, app);
 
 	this._listeners[ZmOperation.PAGE_BACK] = new AjxListener(this, this._pageBackListener);
@@ -211,12 +212,16 @@ ZmNotebookPageController.prototype._enableNaviButtons = function() {
 
 	var toolbar = this._toolbar[this._currentView];
 	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
-	button.setEnabled(enabled && this._place > 0);
-	ZmNotebookPageController.__setButtonToolTip(button, this._history[this._place - 1], ZmMsg.goBack);
-
+	if(button){
+		button.setEnabled(enabled && this._place > 0);
+		ZmNotebookPageController.__setButtonToolTip(button, this._history[this._place - 1], ZmMsg.goBack);
+	}
+	
 	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
-	button.setEnabled(enabled && this._place + 1 < this._history.length);
-	ZmNotebookPageController.__setButtonToolTip(button, this._history[this._place + 1], ZmMsg.goForward);
+	if(button){
+		button.setEnabled(enabled && this._place + 1 < this._history.length);
+		ZmNotebookPageController.__setButtonToolTip(button, this._history[this._place + 1], ZmMsg.goForward);
+	}
 };
 
 // listeners
