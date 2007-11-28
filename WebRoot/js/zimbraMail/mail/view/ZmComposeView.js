@@ -1850,8 +1850,9 @@ function() {
 		if (!this._using[type]) continue;
 		var val = AjxStringUtil.trim(this._field[type].value);
 		if (val.length == 0) continue;
-		addrs.gotAddress = true;
 		var result = AjxEmailAddress.parseEmailString(val, type, false);
+		if (result.all.size() == 0) continue;
+		addrs.gotAddress = true;
 		addrs[type] = result;
 		if (result.bad.size()) {
 			addrs[ZmComposeView.BAD].addList(result.bad);
