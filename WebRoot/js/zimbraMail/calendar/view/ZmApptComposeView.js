@@ -141,6 +141,7 @@ function(appt, mode, isDirty) {
 		button.setImage("Appointment");
 	}
 
+	this._dateInfo.timezone = appt.getTimezone();
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
 		var tabPage = this._tabPages[id];

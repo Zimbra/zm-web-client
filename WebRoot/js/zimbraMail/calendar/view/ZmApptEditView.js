@@ -300,6 +300,7 @@ function(calItem, mode) {
 			ed.setHours(-12);
 		}
 	} else {
+		this._showTimeFields(true);
 		this._startTimeSelect.set(calItem.startDate);
 		this._endTimeSelect.set(calItem.endDate);
 	}
@@ -362,8 +363,7 @@ function() {
 		currDate: (AjxDateUtil.simpleComputeDateStr(new Date())),
 		isGalEnabled: appCtxt.get(ZmSetting.GAL_ENABLED),
 		isAppt: true,
-		isGroupCalEnabled: this.GROUP_CALENDAR_ENABLED,
-		showTZSelector: appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE)
+		isGroupCalEnabled: this.GROUP_CALENDAR_ENABLED
 	};
 
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("calendar.Appointment#EditView", subs);
@@ -420,9 +420,7 @@ function(width) {
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
 
 	this._tzoneSelect = new DwtSelect(this);
-	if (appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE)) {
-		this._tzoneSelect.reparentHtmlElement(this._htmlElId + "_tzoneSelect");
-	}
+	this._tzoneSelect.reparentHtmlElement(this._htmlElId + "_tzoneSelect");
 	this._tzoneSelect.addChangeListener(timezoneListener);
 	// NOTE: tzone select is initialized later
 

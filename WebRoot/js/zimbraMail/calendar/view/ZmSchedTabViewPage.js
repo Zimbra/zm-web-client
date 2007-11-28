@@ -447,9 +447,7 @@ function() {
     var timezoneListener = new AjxListener(this, this._timezoneListener);
 
     this._tzoneSelect = new DwtSelect(this);
-    if (appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE)) {
-    	this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
-    }
+	this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
     this._tzoneSelect.addChangeListener(timezoneListener);
     // NOTE: tzone select is initialized later
     delete this._tzoneSelectId;
