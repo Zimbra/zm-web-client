@@ -170,7 +170,9 @@ function() {
 		}
 
 		// only set the folder Id if changed
-		if (this._contact.getFolderId() != this._folderId) {
+		var folder = appCtxt.getById(this._contact.folderId);
+		var folderId = folder ? folder.nId : null;
+		if (folderId != this._folderId) {
 			mods[ZmContact.F_folderId] = this._folderId;
 			foundOne = true;
 		}
@@ -261,7 +263,12 @@ function() {
 
 ZmContactView.prototype.cleanup  =
 function() {
-	// leave empty since set() does this for us
+	if (this._imageInput) {
+		this._imageInput.removeAttribute("_aid");
+		this._imageInput.removeAttribute("_part");
+		this._imageInput.removeAttribute("_size");
+		this._imageInput.removeAttribute("_ct");
+	}
 };
 
 
@@ -297,7 +304,6 @@ function() {
 		}
 		this._fileAsSelect.reparentHtmlElement(this._fileAsSelectCellId);
 		this._fileAsSelect.addChangeListener(scl);
-		this._fileAsSelect._cv = this;
 	}
 
 	// always test for DOM Id in case it non-existent in template
@@ -307,7 +313,6 @@ function() {
 		this._folderSelect = new DwtSelect(this);
 		this._folderSelect.reparentHtmlElement(this._folderCellId);
 		this._folderSelect.addChangeListener(scl);
-		this._folderSelect._cv = this;
 	}
 };
 
@@ -461,16 +466,23 @@ function() {
 };
 
 ZmContactView.prototype._setImage =
-function(el, value) {
+function(value) {
+	var imageRemove = document.getElementById(this._imageCellId + "_remove");
+
 	if (!value) {
-		Dwt.setVisible(this._imageDiv, false);
-		AjxImg.setImage(this._imageDiv.parentNode, "Person_48", true, false);
-		return;
+		Dwt.setVisible(this._image, false);
+		Dwt.setVisible(this._removeLink, false);
+		Dwt.setVisible(this._imgDefault, true);
+	} else {
+		Dwt.setVisible(this._imgDefault, false);
+		Dwt.setVisible(this._image, true);
+		Dwt.setVisible(this._removeLink, true);
+
+		this._imageInput.setAttribute("_part", value.part);
+		this._imageInput.setAttribute("_size", value.size);
+		this._imageInput.setAttribute("_ct", value.ct);
+		this._image.setAttribute("src", this._contact.getImageUrl());
 	}
-	el.setAttribute("_part", value.part);
-	el.setAttribute("_size", value.size);
-	el.setAttribute("_ct", value.ct);
-	this._image.setAttribute("src", this._contact.getImageUrl());
 };
 
 ZmContactView.prototype._setValues =
@@ -482,15 +494,15 @@ function() {
 			var el = fields[j];
 			var field = Dwt.getAttr(el, "_field");
 			var value = (this._attr[field]) || "";
-			var isImage = (!!(Dwt.getAttr(el,"_isImage")));
-			var isAttachment = (!!(Dwt.getAttr(el,"_isAttachment")));
+			var isImage = (!!(Dwt.getAttr(el, "_isImage")));
+			var isAttachment = (!!(Dwt.getAttr(el, "_isAttachment")));
 			var isDate = (!!(Dwt.getAttr(el, "_isDate")));
 			if (isDate) {
 				var val = this._dateFormatter.parse(value);
 				el.value = val ? AjxDateUtil.simpleComputeDateStr(val) : "";
-			} else if(isImage) {
+			} else if (isImage) {
 				 el.value = "";
-				 this._setImage(el,value);
+				 this._setImage(value);
 			} else {
 				el.value = value;
 			}
@@ -543,10 +555,12 @@ function() {
 			var el = fields[j];
 			var field = Dwt.getAttr(el, "_field");
 			var isDate = (!!(Dwt.getAttr(el, "_isDate")));
-			var isImage = (!!(Dwt.getAttr(el,"_isImage")));
-			var isAttachment = (!!(Dwt.getAttr(el,"_isAttachment")));
+			var isImage = (!!(Dwt.getAttr(el, "_isImage")));
+			var isAttachment = (!!(Dwt.getAttr(el, "_isAttachment")));
 			if (isImage || isAttachment) {
-				this._attr[field] = (el.getAttribute("_aid") ? ["aid_",el.getAttribute("_aid")].join("") : (el.getAttribute("_part") ? ["part_",el.getAttribute("_part")].join("") : ""));
+				this._attr[field] = (el.getAttribute("_aid")
+					? (["aid_",el.getAttribute("_aid")].join(""))
+					: (el.getAttribute("_part") ? ["part_", el.getAttribute("_part")].join("") : ""));
 			} else if (el.value != "" || field == ZmContact.F_image) {
 				if (isDate) {
 					var pDate = AjxDateUtil.simpleParseDateStr(el.value);
@@ -562,9 +576,19 @@ function() {
 		}
 	}
 
-	if (this._imAddress1Entry) this._attr[ZmContact.F_imAddress1] = this._imAddress1Entry.getValue();
-	if (this._imAddress2Entry) this._attr[ZmContact.F_imAddress2] = this._imAddress2Entry.getValue();
-	if (this._imAddress3Entry) this._attr[ZmContact.F_imAddress3] = this._imAddress3Entry.getValue();
+	var imValue;
+	if (this._imAddress1Entry) {
+		imValue = this._imAddress1Entry.getValue();
+		if (imValue != "") this._attr[ZmContact.F_imAddress1] = imValue;
+	}
+	if (this._imAddress2Entry) {
+		imValue = this._imAddress2Entry.getValue();
+		if (imValue != "") this._attr[ZmContact.F_imAddress2] = imValue;
+	}
+	if (this._imAddress3Entry) {
+		imValue = this._imAddress3Entry.getValue();
+		if (imValue != "") this._attr[ZmContact.F_imAddress3] = imValue;
+	}
 };
 
 ZmContactView.prototype._addImAddressEntries =
@@ -675,32 +699,23 @@ function(tabIdx) {
 
 ZmContactView.prototype._handleImage =
 function() {
-
+	this._imgDefault = document.getElementById(this._imageCellId + "_default");
 	this._image = document.getElementById(this._imageCellId + "_img");
-	this._imageDiv = document.getElementById(this._imageCellId + "_imgdiv");
+	this._removeLink = document.getElementById(this._imageCellId + "_remove");
 
 	var imageInput = this._imageInput = document.getElementById(this._imageCellId + "_input");
 	if (imageInput) {
 		imageInput.onchange = AjxCallback.simpleClosure(this._uploadImage, this);
 		imageInput.setAttribute("accept", "image/gif,image/jpeg,image/png");
 	}
-
-	var imageRemove = document.getElementById(this._imageCellId + "_remove");
-	if (imageRemove) {
-		imageRemove.onclick = AjxCallback.simpleClosure(this._removeImage, this, imageRemove);
-	}
-
-	this._uploadForm = document.getElementById(this._imageCellId + "_form");
-	if (this._uploadForm) {
-		this._uploadForm.setAttribute("action", appCtxt.get(ZmSetting.CSFE_UPLOAD_URI));
-	}
+	this._removeLink.onclick = AjxCallback.simpleClosure(this._removeImage, this);
 };
 
 ZmContactView.prototype._updateImage =
-function(status,attId) {
-
-	AjxImg.setImage(this._imageDiv.parentNode, "Person_48", true, true);
-	Dwt.setVisible(this._imageDiv, true);
+function(status, attId) {
+	Dwt.setVisible(this._imgDefault, false);
+	Dwt.setVisible(this._image, true);
+	Dwt.setVisible(this._removeLink, true);
 
 	this._image.setAttribute("src", ["/service/content/proxy?aid=",attId].join(""));
 	this._imageInput.setAttribute("_aid", attId);
@@ -710,6 +725,9 @@ ZmContactView.prototype._uploadImage =
 function() {
 	if (this._imageInput.value == "") { return; }
 
+	var formEl = document.getElementById(this._imageCellId + "_form");
+	if (!formEl) { return; }
+
 	this._controller.enableToolbar(false);
 
 	var callback = new AjxCallback(this, this._updateImage);
@@ -718,7 +736,7 @@ function() {
 	window._uploadManager = um;
 
 	try {
-		um.execute(ajxCallback, this._uploadForm);
+		um.execute(ajxCallback, formEl);
 	} catch (ex) {
 		ajxCallback.run();
 		this._um = null;
@@ -732,7 +750,7 @@ function(callback, status, attId) {
 	if (status == AjxPost.SC_OK) {
 		this._isDirty = true;
 		if (callback) {
-			callback.run(status,attId);
+			callback.run(status, attId);
 		}
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {
 		// auth failed during att upload - let user relogin, continue with compose action
@@ -757,7 +775,8 @@ ZmContactView.prototype._removeImage =
 function(el) {
 	this._imageInput.removeAttribute("_aid");
 	this._imageInput.removeAttribute("_part");
-	this._setImage(el, null);
+	this._imageInput.value = "";
+	this._setImage();
 	if (this._contact.id) {
 		this._isDirty = true;
 	}
@@ -814,17 +833,14 @@ ZmContactView.prototype._selectChangeListener =
 function(ev) {
 	var selectObj = ev._args.selectObj;
 	var newValue = ev._args.newValue;
-	var cv = selectObj ? selectObj._cv : null;
 
-	if (cv) {
-		if (selectObj == cv._fileAsSelect) {
-			cv._attr[ZmContact.F_fileAs] = newValue;
-			cv._setTitle(ZmContact.computeFileAs(cv._attr));
-			cv._isDirty = true;
-		} else if (selectObj == cv._folderSelect) {
-			cv._attr[ZmContact.F_folderId] = newValue;
-			cv._isDirty = true;
-		}
+	if (selectObj == this._fileAsSelect) {
+		this._attr[ZmContact.F_fileAs] = newValue;
+		this._setTitle(ZmContact.computeFileAs(this._attr));
+		this._isDirty = true;
+	} else if (selectObj == this._folderSelect) {
+		this._attr[ZmContact.F_folderId] = newValue;
+		this._isDirty = true;
 	}
 };
 

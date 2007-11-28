@@ -53,83 +53,71 @@ ZmContact.prototype = new ZmItem;
 ZmContact.prototype.constructor = ZmContact;
 
 // fields
-ZmContact.F_assistantPhone	= "assistantPhone";
-ZmContact.F_birthday		= "birthday";
-ZmContact.F_callbackPhone	= "callbackPhone";
-ZmContact.F_carPhone		= "carPhone";
-ZmContact.F_company			= "company";
-ZmContact.F_companyPhone	= "companyPhone";
-ZmContact.F_description		= "description";
-ZmContact.F_email			= "email";
-ZmContact.F_email2			= "email2";
-ZmContact.F_email3			= "email3";
-ZmContact.F_fileAs			= "fileAs";
-ZmContact.F_firstName		= "firstName";
-ZmContact.F_folderId		= "folderId";
-ZmContact.F_homeCity		= "homeCity";
-ZmContact.F_homeCountry		= "homeCountry";
-ZmContact.F_homeFax			= "homeFax";
-ZmContact.F_homePhone		= "homePhone";
-ZmContact.F_homePhone2		= "homePhone2";
-ZmContact.F_homePostalCode	= "homePostalCode";
-ZmContact.F_homeState		= "homeState";
-ZmContact.F_homeStreet		= "homeStreet";
-ZmContact.F_homeURL			= "homeURL";
-ZmContact.F_jobTitle		= "jobTitle";
-ZmContact.F_lastName		= "lastName";
-ZmContact.F_middleName		= "middleName";
-ZmContact.F_mobilePhone		= "mobilePhone";
-ZmContact.F_namePrefix		= "namePrefix";
-ZmContact.F_nameSuffix		= "nameSuffix";
-ZmContact.F_nickname		= "nickname";
-ZmContact.F_notes			= "notes";
-ZmContact.F_otherCity		= "otherCity";
-ZmContact.F_otherCountry	= "otherCountry";
-ZmContact.F_otherFax		= "otherFax";
-ZmContact.F_otherPhone		= "otherPhone";
-ZmContact.F_otherPostalCode	= "otherPostalCode";
-ZmContact.F_otherState		= "otherState";
-ZmContact.F_otherStreet		= "otherStreet";
-ZmContact.F_otherURL		= "otherURL";
-ZmContact.F_pager			= "pager";
-ZmContact.F_type			= "type";
-ZmContact.F_workCity		= "workCity";
-ZmContact.F_workCountry		= "workCountry";
-ZmContact.F_workFax			= "workFax";
-ZmContact.F_workPhone		= "workPhone";
-ZmContact.F_workPhone2		= "workPhone2";
-ZmContact.F_workPostalCode	= "workPostalCode";
-ZmContact.F_workState		= "workState";
-ZmContact.F_workStreet		= "workStreet";
-ZmContact.F_workURL			= "workURL";
-
-//XYZ: Contact image
-ZmContact.F_image			= "image";
-ZmContact.F_attachment		= "attachment";
-
-// IM addresses
-ZmContact.F_imAddress1 = "imAddress1";
-ZmContact.F_imAddress2 = "imAddress2";
-ZmContact.F_imAddress3 = "imAddress3";
-
-// Group fields
-ZmContact.F_dlist			= "dlist";
-
-// extra fields
-ZmContact.X_fileAs			= "fileAs";
-ZmContact.X_firstLast		= "firstLast";
-ZmContact.X_fullName		= "fullName";
-
-// My card fields
-ZmContact.MC_cardOwner			= "cardOwner";
-ZmContact.MC_workCardMessage	= "workCardMessage";
-ZmContact.MC_homeCardMessage	= "homeCardMessage";
-ZmContact.MC_homePhotoURL		= "homePhotoURL";
-ZmContact.MC_workPhotoURL		= "workPhotoURL";
-
-// GAL fields
-ZmContact.GAL_MODIFY_TIMESTAMP = "modifyTimeStamp";
-ZmContact.GAL_CREATE_TIMESTAMP = "createTimeStamp";
+ZmContact.F_assistantPhone			= "assistantPhone";
+ZmContact.F_birthday				= "birthday";
+ZmContact.F_callbackPhone			= "callbackPhone";
+ZmContact.F_carPhone				= "carPhone";
+ZmContact.F_company					= "company";
+ZmContact.F_companyPhone			= "companyPhone";
+ZmContact.F_description				= "description";
+ZmContact.F_email					= "email";
+ZmContact.F_email2					= "email2";
+ZmContact.F_email3					= "email3";
+ZmContact.F_fileAs					= "fileAs";
+ZmContact.F_firstName				= "firstName";
+ZmContact.F_folderId				= "folderId";
+ZmContact.F_homeCity				= "homeCity";
+ZmContact.F_homeCountry				= "homeCountry";
+ZmContact.F_homeFax					= "homeFax";
+ZmContact.F_homePhone				= "homePhone";
+ZmContact.F_homePhone2				= "homePhone2";
+ZmContact.F_homePostalCode			= "homePostalCode";
+ZmContact.F_homeState				= "homeState";
+ZmContact.F_homeStreet				= "homeStreet";
+ZmContact.F_homeURL					= "homeURL";
+ZmContact.F_jobTitle				= "jobTitle";
+ZmContact.F_lastName				= "lastName";
+ZmContact.F_middleName				= "middleName";
+ZmContact.F_mobilePhone				= "mobilePhone";
+ZmContact.F_namePrefix				= "namePrefix";
+ZmContact.F_nameSuffix				= "nameSuffix";
+ZmContact.F_nickname				= "nickname";
+ZmContact.F_notes					= "notes";
+ZmContact.F_otherCity				= "otherCity";
+ZmContact.F_otherCountry			= "otherCountry";
+ZmContact.F_otherFax				= "otherFax";
+ZmContact.F_otherPhone				= "otherPhone";
+ZmContact.F_otherPostalCode			= "otherPostalCode";
+ZmContact.F_otherState				= "otherState";
+ZmContact.F_otherStreet				= "otherStreet";
+ZmContact.F_otherURL				= "otherURL";
+ZmContact.F_pager					= "pager";
+ZmContact.F_type					= "type";
+ZmContact.F_workCity				= "workCity";
+ZmContact.F_workCountry				= "workCountry";
+ZmContact.F_workFax					= "workFax";
+ZmContact.F_workPhone				= "workPhone";
+ZmContact.F_workPhone2				= "workPhone2";
+ZmContact.F_workPostalCode			= "workPostalCode";
+ZmContact.F_workState				= "workState";
+ZmContact.F_workStreet				= "workStreet";
+ZmContact.F_workURL					= "workURL";
+ZmContact.F_image					= "image";				// contact photo
+ZmContact.F_attachment				= "attachment";
+ZmContact.F_imAddress1 				= "imAddress1";			// IM addresses
+ZmContact.F_imAddress2 				= "imAddress2";
+ZmContact.F_imAddress3				= "imAddress3";
+ZmContact.F_dlist					= "dlist";				// Group fields
+ZmContact.X_fileAs					= "fileAs";				// extra fields
+ZmContact.X_firstLast				= "firstLast";
+ZmContact.X_fullName				= "fullName";
+ZmContact.MC_cardOwner				= "cardOwner";			// My card fields
+ZmContact.MC_workCardMessage		= "workCardMessage";
+ZmContact.MC_homeCardMessage		= "homeCardMessage";
+ZmContact.MC_homePhotoURL			= "homePhotoURL";
+ZmContact.MC_workPhotoURL			= "workPhotoURL";
+ZmContact.GAL_MODIFY_TIMESTAMP		= "modifyTimeStamp";	// GAL fields
+ZmContact.GAL_CREATE_TIMESTAMP		= "createTimeStamp";
 
 // file as
 var i = 1;
@@ -144,14 +132,20 @@ ZmContact.FA_CUSTOM					= i++;
 
 ZmContact.F_EMAIL_FIELDS = [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
 ZmContact.F_PHONE_FIELDS = [
-	ZmContact.F_assistantPhone, ZmContact.F_callbackPhone, ZmContact.F_carPhone, ZmContact.F_companyPhone,
-	ZmContact.F_homeFax, ZmContact.F_homePhone, ZmContact.F_homePhone2, ZmContact.F_mobilePhone,
-	ZmContact.F_otherPhone, ZmContact.F_workPhone, ZmContact.F_workPhone2
+	ZmContact.F_assistantPhone,
+	ZmContact.F_callbackPhone,
+	ZmContact.F_carPhone,
+	ZmContact.F_companyPhone,
+	ZmContact.F_homeFax,
+	ZmContact.F_homePhone,
+	ZmContact.F_homePhone2,
+	ZmContact.F_mobilePhone,
+	ZmContact.F_otherPhone,
+	ZmContact.F_workPhone,
+	ZmContact.F_workPhone2
 ];
 ZmContact.F_IM_FIELDS = [ ZmContact.F_imAddress1, ZmContact.F_imAddress2, ZmContact.F_imAddress3 ];
-
-//XYZ: Attachment Fields
-ZmContact.F_ATT_FIELDS = [ZmContact.F_image];
+ZmContact.F_ATT_FIELDS = [ZmContact.F_image];	// Attachment Fields
 
 ZmContact.prototype.toString =
 function() {
@@ -342,9 +336,9 @@ function(callback, errorCallback, batchCmd) {
 		batchCmd.addRequestParams(soapDoc, respCallback, errorCallback);
 	} else {
 		appCtxt.getAppController().sendRequest({soapDoc: soapDoc,
-													  asyncMode: true,
-													  callback: respCallback,
-													  errorCallback: errorCallback});
+												asyncMode: true,
+												callback: respCallback,
+												errorCallback: errorCallback});
 	}
 };
 
@@ -377,7 +371,7 @@ function() {
 
 ZmContact.prototype.isReadOnly =
 function() {
-	if (this.isGal) return true;
+	if (this.isGal) { return true; }
 
 	return this.isShared()
 		? this.addrbook && this.addrbook.isReadOnly()
@@ -415,7 +409,7 @@ function() {
 
 ZmContact.prototype.getAttr =
 function(name) {
-	if (!this.list) return null;
+	if (!this.list) { return null; }
 
 	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		return this.attr[name];
@@ -427,7 +421,7 @@ function(name) {
 
 ZmContact.prototype.setAttr =
 function(name, value) {
-	if (!this.list) return;
+	if (!this.list) { return; }
 
 	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		this.attr[name] = value;
@@ -441,7 +435,7 @@ function(name, value) {
 
 ZmContact.prototype.removeAttr =
 function(name) {
-	if (!this.list) return;
+	if (!this.list) { return; }
 
 	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		delete this.attr[name];
@@ -467,7 +461,7 @@ ZmContact.prototype.clear =
 function() {
 	// if this contact is in the canonical list, dont clear it!
 	var contact = this.canonicalList.getById(this.id);
-	if (contact) return;
+	if (contact) { return; }
 
 	ZmItem.prototype.clear.call(this);
 };
@@ -483,28 +477,31 @@ function() {
 */
 ZmContact.prototype.create =
 function(attr, batchCmd) {
-	DBG.println(AjxDebug.DBG1, "ZmContact.create");
-
 	var soapDoc = AjxSoapDoc.create("CreateContactRequest", "urn:zimbraMail");
 	var cn = soapDoc.set("cn");
 
 	var folderId = attr[ZmContact.F_folderId] || ZmFolder.ID_CONTACTS;
+	var folder = appCtxt.getById(folderId);
+	if (folder && folder.isRemote())
+		folderId = folder.getRemoteId();
 	cn.setAttribute("l", folderId);
 
 	for (var name in attr) {
-		if (name == ZmContact.F_folderId)
-			continue;
-		//XYZ: Handle Image Fields
+		if (name == ZmContact.F_folderId) { continue; }
+
+		// handle contact photo
 		var a;
-  		if(name == ZmContact.F_image){
-  			a = soapDoc.set("a",null,cn);
-  			if(attr[name].indexOf("aid_") != -1)
-  				a.setAttribute("aid",attr[name].substring(4));
-  			else
-  				a.setAttribute("part",attr[name].substring(5));
-  		}else{
-  		    a = soapDoc.set("a", attr[name], cn);
-  		}
+		if (name == ZmContact.F_image) {
+			a = soapDoc.set("a", null, cn);
+			if (AjxUtil.isString(attr[name])) {
+				if (attr[name].indexOf("aid_") != -1)
+					a.setAttribute("aid", attr[name].substring(4));
+				else
+					a.setAttribute("part", attr[name].substring(5));
+			}
+		} else {
+			a = soapDoc.set("a", attr[name], cn);
+		}
 		a.setAttribute("n", name);
 	}
 
@@ -522,7 +519,7 @@ ZmContact.prototype._handleResponseCreate =
 function(attr, isBatchMode, result) {
 	// dont bother processing creates when in batch mode (just let create
 	// notifications handle them)
-	if (isBatchMode) return;
+	if (isBatchMode) { return; }
 
 	var resp = result.getResponse().CreateContactResponse;
 	cn = resp ? resp.cn[0] : null;
@@ -555,14 +552,15 @@ function(msgId, vcardPartId) {
 	vcard.setAttribute("mid", msgId);
 	vcard.setAttribute("part", vcardPartId);
 
-	var respCallback = new AjxCallback(this, this._handleResponseCreateVCard);
-	var errorCallback = new AjxCallback(this, this._handleErrorCreateVCard);
-	var execFrame = new AjxCallback(this, this.create, [msgId, vcardPartId]);
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._handleResponseCreateVCard)),
+		errorCallback: (new AjxCallback(this, this._handleErrorCreateVCard)),
+		execFrame: (new AjxCallback(this, this.create, [msgId, vcardPartId]))
+	};
 
-	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
-												callback:respCallback,
-												errorCallback:errorCallback,
-												execFrame:execFrame});
+	appCtxt.getAppController().sendRequest(params);
 };
 
 ZmContact.prototype._handleResponseCreateVCard =
@@ -595,24 +593,22 @@ function(attr, callback) {
 	var continueRequest = false;
 
 	for (var name in attr) {
-		if (name == ZmContact.F_folderId)
-			continue;
+		if (name == ZmContact.F_folderId) { continue; }
 
-		//XYZ: Modify Image Handled
+		// handle modify photo
 		var a;
-  		if(name == ZmContact.F_image){
-  			a = soapDoc.set("a", null, cn);
-  			if(attr[name].indexOf("aid_") != -1)
-  				a.setAttribute("aid",attr[name].substring(4));
-  			else if(attr[name].indexOf("part_") != -1)
-  				a.setAttribute("part",attr[name].substring(5));
-  		} else {
-  			a = soapDoc.set("a", attr[name], cn);
-  		}
+		if (name == ZmContact.F_image) {
+			a = soapDoc.set("a", null, cn);
+			if (attr[name].indexOf("aid_") != -1) {
+				a.setAttribute("aid", attr[name].substring(4));
+			} else if (attr[name].indexOf("part_") != -1) {
+				a.setAttribute("part", attr[name].substring(5));
+			}
+		} else {
+			a = soapDoc.set("a", attr[name], cn);
+		}
 
-		//var a = soapDoc.set("a", attr[name], cn);
 		a.setAttribute("n", name);
-
 		continueRequest = true;
 	}
 
@@ -635,47 +631,28 @@ function(attr, callback, result) {
 
 	if (id && id == this.id) {
 		appCtxt.setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
-		// the revision for this contact has changed -- we should refetch it
-		// ONLY DO THIS FOR SHARED CONTACT since normal contacts are handled by notifications
-		if (cn.rev && cn.rev != this.rev && this.isShared()) {
-			var respCallback = new AjxCallback(this, this._handleResponseLoad, [true]);
-			this.load(respCallback);
-		} else {
-			if (attr[ZmContact.F_folderId])
-				this._setFolder(attr[ZmContact.F_folderId]);
+		// was this contact moved to another folder?
+		if (attr[ZmContact.F_folderId]) {
+			this._setFolder(attr[ZmContact.F_folderId]);
 		}
 	} else {
-		var msg = ZmMsg.errorModifyContact;
         var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
-        appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL, detail);
+        appCtxt.getAppController().setStatusMsg(ZmMsg.errorModifyContact, ZmStatusView.LEVEL_CRITICAL, detail);
 	}
 	// NOTE: we no longer process callbacks here since notification handling
 	//       takes care of everything
 };
 
-ZmContact.prototype._handleResponseLoad =
-function(updatingShare, resp) {
-	if (updatingShare) {
-		this._resetCachedFields();
-
-		this._fileAs = ZmContact.computeFileAs(this);
-		if (this._fileAs)
-			this._fileAsLC = this._fileAs.toLowerCase();
-
-		// update this contact's list per old/new attrs
-		var details = {attr:resp._attrs, oldAttr:null,
-					   fullNameChanged:true,
-					   fileAsChanged:true,
-					   contact:this};
-		this.list.modifyLocal(resp, details);
-	}
-
+ZmContact.prototype._handleResponseMove =
+function(resp) {
 	this._notify(ZmEvent.E_MODIFY, resp);
 };
 
 ZmContact.prototype._setFolder =
 function(newFolderId) {
-	if (this.folderId == newFolderId) return;
+	var folder = appCtxt.getById(this.folderId);
+	var fId = folder ? folder.nId : null;
+	if (fId == newFolderId) { return; }
 
 	// moving out of a share or into one is handled differently (create then hard delete)
 	var newFolder = appCtxt.getById(newFolderId)
@@ -690,7 +667,7 @@ function(newFolderId) {
 		cn.setAttribute("op", "move");
 		cn.setAttribute("l", newFolderId);
 
-		var respCallback = new AjxCallback(this, this._handleResponseLoad, [false]);
+		var respCallback = new AjxCallback(this, this._handleResponseMove);
 		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	}
 };
@@ -715,14 +692,18 @@ function(obj) {
 		}
 
 		// set attrs returned by server
-		for (var a in obj._attrs)
+		for (var a in obj._attrs) {
 			this.setAttr(a, obj._attrs[a]);
+		}
 	}
 
-	var details = {attr:obj._attrs, oldAttr:oldAttrCache,
-				   fullNameChanged:this.getFullName() != oldFullName,
-				   fileAsChanged:this.getFileAs() != oldFileAs,
-				   contact:this};
+	var details = {
+		attr: obj._attrs,
+		oldAttr: oldAttrCache,
+		fullNameChanged: (this.getFullName() != oldFullName),
+		fileAsChanged: (this.getFileAs() != oldFileAs),
+		contact: this
+	};
 
 	// update this contact's list per old/new attrs
 	this.list.modifyLocal(obj, details);
@@ -730,8 +711,7 @@ function(obj) {
 
 	var buddy = this.getBuddy();
 	if (buddy) {
-		// trigger a refresh
-		buddy._notifySetName(buddy.name);
+		buddy._notifySetName(buddy.name);	// trigger a refresh
 	}
 };
 
@@ -766,8 +746,8 @@ function() {
 ZmContact.prototype.getIMAddress =
 function() {
 	return this.getAttr(ZmContact.F_imAddress1) ||
-		this.getAttr(ZmContact.F_imAddress2) ||
-		this.getAttr(ZmContact.F_imAddress3);
+		   this.getAttr(ZmContact.F_imAddress2) ||
+		   this.getAttr(ZmContact.F_imAddress3);
 };
 
 ZmContact.prototype.getBuddy =
@@ -775,19 +755,18 @@ function() {
 	var buddy;
 	if (appCtxt.get(ZmSetting.IM_ENABLED) && ZmImApp.loggedIn()) {
 		var roster = AjxDispatcher.run("GetRoster");
-                buddy = roster.getRosterItem(this.getAttr(ZmContact.F_email), false)
-                        || roster.getRosterItem(this.getAttr(ZmContact.F_email2), false)
-                        || roster.getRosterItem(this.getAttr(ZmContact.F_email3), false)
-		        || roster.getRosterItem(this.getIMAddress(), true);
+		buddy = roster.getRosterItem(this.getAttr(ZmContact.F_email), false)  ||
+				roster.getRosterItem(this.getAttr(ZmContact.F_email2), false) ||
+				roster.getRosterItem(this.getAttr(ZmContact.F_email3), false) ||
+				roster.getRosterItem(this.getIMAddress(), true);
 	}
 	return buddy;
 };
 
 ZmContact.prototype.getImPresence =
 function() {
-        var buddy = this.getBuddy();
-        if (buddy)
-                return buddy.getPresence();
+	var buddy = this.getBuddy();
+	return (buddy) ? buddy.getPresence() : null;
 };
 
 // returns a list (array) of all valid emails for this contact
@@ -838,10 +817,12 @@ function() {
 */
 ZmContact.prototype.getToolTip =
 function(email, isGal, hint) {
-	var subs = { contact: this,
-				 entryTitle: this.getFileAs(),
-				 hint: hint,
-				 buddy: this.getBuddy() };
+	var subs = {
+		contact: this,
+		entryTitle: this.getFileAs(),
+		hint: hint,
+		buddy: this.getBuddy()
+	};
 
 	return (AjxTemplate.expand("abook.Contacts#Tooltip", subs));
 };
@@ -1102,77 +1083,62 @@ function(preferHtml, callback) {
 
 // these need to be kept in sync with ZmContact.F_*
 ZmContact._AB_FIELD = {
-	// file as info
-	firstName: ZmMsg.AB_FIELD_firstName,
-	lastName: ZmMsg.AB_FIELD_lastName,
-	middleName: ZmMsg.AB_FIELD_middleName,
-	fullName: ZmMsg.AB_FIELD_fullName,
-	jobTitle: ZmMsg.AB_FIELD_jobTitle,
-	company: ZmMsg.AB_FIELD_company,
-
-	// email addresses
-	email: ZmMsg.AB_FIELD_email,
-	email2: ZmMsg.AB_FIELD_email2,
-	email3: ZmMsg.AB_FIELD_email3,
-
-	// IM addresses
-	imAddress1: ZmMsg.AB_FIELD_imAddress1,
-	imAddress2: ZmMsg.AB_FIELD_imAddress2,
-	imAddress3: ZmMsg.AB_FIELD_imAddress3,
-
-	//contact Image
-	image: ZmMsg.AB_FIELD_image,
-	attachment: ZmMsg.AB_FIELD_attachment,
-
-	// work address
-	workStreet: ZmMsg.AB_FIELD_street,
-	workCity: ZmMsg.AB_FIELD_city,
-	workState: ZmMsg.AB_FIELD_state,
-	workPostalCode: ZmMsg.AB_FIELD_postalCode,
-	workCountry: ZmMsg.AB_FIELD_country,
-	workURL: ZmMsg.AB_FIELD_URL,
-	workPhone: ZmMsg.AB_FIELD_workPhone,
-	workPhone2: ZmMsg.AB_FIELD_workPhone2,
-	workFax: ZmMsg.AB_FIELD_workFax,
-	assistantPhone: ZmMsg.AB_FIELD_assistantPhone,
-	companyPhone: ZmMsg.AB_FIELD_companyPhone,
-	callbackPhone: ZmMsg.AB_FIELD_callbackPhone,
-
-	// home
-	homeStreet: ZmMsg.AB_FIELD_street,
-	homeCity: ZmMsg.AB_FIELD_city,
-	homeState: ZmMsg.AB_FIELD_state,
-	homePostalCode: ZmMsg.AB_FIELD_postalCode,
-	homeCountry: ZmMsg.AB_FIELD_country,
-	homeURL: ZmMsg.AB_FIELD_URL,
-	homePhone: ZmMsg.AB_FIELD_homePhone,
-	homePhone2: ZmMsg.AB_FIELD_homePhone2,
-	homeFax: ZmMsg.AB_FIELD_homeFax,
-	mobilePhone: ZmMsg.AB_FIELD_mobilePhone,
-	pager: ZmMsg.AB_FIELD_pager,
-	carPhone: ZmMsg.AB_FIELD_carPhone,
-
-	// other
-	otherStreet: ZmMsg.AB_FIELD_street,
-	otherCity: ZmMsg.AB_FIELD_city,
-	otherState: ZmMsg.AB_FIELD_state,
-	otherPostalCode: ZmMsg.AB_FIELD_postalCode,
-	otherCountry: ZmMsg.AB_FIELD_country,
-	otherURL: ZmMsg.AB_FIELD_URL,
-	otherPhone: ZmMsg.AB_FIELD_otherPhone,
-	otherFax: ZmMsg.AB_FIELD_otherFax,
-
-	// misc fields
-	notes: ZmMsg.notes,
-	birthday: ZmMsg.AB_FIELD_birthday
+	firstName:				ZmMsg.AB_FIELD_firstName,		// file as info
+	lastName:				ZmMsg.AB_FIELD_lastName,
+	middleName:				ZmMsg.AB_FIELD_middleName,
+	fullName:				ZmMsg.AB_FIELD_fullName,
+	jobTitle:				ZmMsg.AB_FIELD_jobTitle,
+	company:				ZmMsg.AB_FIELD_company,
+	email:					ZmMsg.AB_FIELD_email,			// email addresses
+	email2:					ZmMsg.AB_FIELD_email2,
+	email3:					ZmMsg.AB_FIELD_email3,
+	imAddress1:				ZmMsg.AB_FIELD_imAddress1,		// IM addresses
+	imAddress2:				ZmMsg.AB_FIELD_imAddress2,
+	imAddress3:				ZmMsg.AB_FIELD_imAddress3,
+	image: 					ZmMsg.AB_FIELD_image,			// contact photo
+	attachment:				ZmMsg.AB_FIELD_attachment,
+	workStreet:				ZmMsg.AB_FIELD_street,			// work address info
+	workCity:				ZmMsg.AB_FIELD_city,
+	workState:				ZmMsg.AB_FIELD_state,
+	workPostalCode:			ZmMsg.AB_FIELD_postalCode,
+	workCountry:			ZmMsg.AB_FIELD_country,
+	workURL:				ZmMsg.AB_FIELD_URL,
+	workPhone:				ZmMsg.AB_FIELD_workPhone,
+	workPhone2:				ZmMsg.AB_FIELD_workPhone2,
+	workFax:				ZmMsg.AB_FIELD_workFax,
+	assistantPhone:			ZmMsg.AB_FIELD_assistantPhone,
+	companyPhone:			ZmMsg.AB_FIELD_companyPhone,
+	callbackPhone:			ZmMsg.AB_FIELD_callbackPhone,
+	homeStreet:				ZmMsg.AB_FIELD_street,			// home address info
+	homeCity:				ZmMsg.AB_FIELD_city,
+	homeState:				ZmMsg.AB_FIELD_state,
+	homePostalCode:			ZmMsg.AB_FIELD_postalCode,
+	homeCountry:			ZmMsg.AB_FIELD_country,
+	homeURL:				ZmMsg.AB_FIELD_URL,
+	homePhone:				ZmMsg.AB_FIELD_homePhone,
+	homePhone2:				ZmMsg.AB_FIELD_homePhone2,
+	homeFax:				ZmMsg.AB_FIELD_homeFax,
+	mobilePhone:			ZmMsg.AB_FIELD_mobilePhone,
+	pager:					ZmMsg.AB_FIELD_pager,
+	carPhone:				ZmMsg.AB_FIELD_carPhone,
+	otherStreet:			ZmMsg.AB_FIELD_street,			// other info
+	otherCity:				ZmMsg.AB_FIELD_city,
+	otherState:				ZmMsg.AB_FIELD_state,
+	otherPostalCode:		ZmMsg.AB_FIELD_postalCode,
+	otherCountry:			ZmMsg.AB_FIELD_country,
+	otherURL:				ZmMsg.AB_FIELD_URL,
+	otherPhone:				ZmMsg.AB_FIELD_otherPhone,
+	otherFax:				ZmMsg.AB_FIELD_otherFax,
+	notes:					ZmMsg.notes,					// misc fields
+	birthday:				ZmMsg.AB_FIELD_birthday
 };
 
 ZmContact._AB_FILE_AS = {
-	1: ZmMsg.AB_FILE_AS_lastFirst,
-	2: ZmMsg.AB_FILE_AS_firstLast,
-	3: ZmMsg.AB_FILE_AS_company,
-	4: ZmMsg.AB_FILE_AS_lastFirstCompany,
-	5: ZmMsg.AB_FILE_AS_firstLastCompany,
-	6: ZmMsg.AB_FILE_AS_companyLastFirst,
-	7: ZmMsg.AB_FILE_AS_companyFirstLast
+	1:						ZmMsg.AB_FILE_AS_lastFirst,
+	2:						ZmMsg.AB_FILE_AS_firstLast,
+	3:						ZmMsg.AB_FILE_AS_company,
+	4:						ZmMsg.AB_FILE_AS_lastFirstCompany,
+	5:						ZmMsg.AB_FILE_AS_firstLastCompany,
+	6:						ZmMsg.AB_FILE_AS_companyLastFirst,
+	7:						ZmMsg.AB_FILE_AS_companyFirstLast
 };

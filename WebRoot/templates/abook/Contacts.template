@@ -768,22 +768,19 @@
 				</table>
 			</td>
 		<$ } else if (entry.isImage) { $>
-			<td colspan='2'>
-				<table border=0 cellpadding=0 cellspacing=0>
+			<td colspan='10'>
+				<table border=0 cellpadding=2 cellspacing=2>
 					<tr>
-						<td><div id='<$= id$>_${entry.field}_imgdiv'><img id='<$= id$>_${entry.field}_img' style='display:block' width='100' height='100'></div></td>
-						<td style='padding-left:10px'>
-							<div>
-								<span><$= ZmMsg.addNewPhoto $></span><br\>
-								<span>
-									<form id='<$=id $>_${entry.field}_form' accept-charset='utf-8' method='POST' enctype='multipart/form-data'>
-										<input type='file' id='<$= id$>_${entry.field}_input' name='<$=id $>_name_<$= tabIdx$>' _isImage = 'true' _field='${entry.field}'>
-									</form>
-								</span>
-							</div>
-							<div>
-								<a id='<$=id $>_${entry.field}_remove' href='javascript:;'><$= ZmMsg.removePhoto $></a>
-							</div>
+						<td>
+							<div id='<$= id$>_${entry.field}_default'><$= AjxImg.getImageHtml("Person_48"); $></div>
+							<img id='<$= id$>_${entry.field}_img' width=100 height=100>
+							<center><a id='<$=id $>_${entry.field}_remove' href='javascript:;'><$= ZmMsg.removePhoto $></a></center>
+						</td>
+						<td>
+							<$= ZmMsg.addNewPhoto $><br\>
+							<form id='<$=id $>_${entry.field}_form' accept-charset='utf-8' method='POST' enctype='multipart/form-data' action='<$= appCtxt.get(ZmSetting.CSFE_UPLOAD_URI) $>'>
+								<input type='file' size=25 id='<$= id$>_${entry.field}_input' name='<$=id $>_name_<$= tabIdx$>' _isImage='true' _field='${entry.field}'>
+							</form>
 						</td>
 					</tr>
 				</table>
@@ -794,6 +791,7 @@
 	</tr>
 </template>
 
+<!-- WTF is this? THIS SHOULD NOT BE HERE -->
 <form accept-charset='utf-8' method='POST' action='";
 	html[idx++] = this._uri;
 	html[idx++] = "' id='";
