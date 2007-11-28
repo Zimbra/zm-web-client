@@ -1015,12 +1015,6 @@ ZmCalViewController.prototype.newAppointment =
 function(newAppt, mode, isDirty, startDate) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
-	/*
-	// Undoing part of 15686.  Should default to "now" for "New" action.
-	var sd = this._viewVisible
-	         ? this._viewMgr.getDate()
-	         : (startDate || new Date());
-	*/
 	var appt = newAppt || this._newApptObject(sd, AjxDateUtil.MSEC_PER_HALF_HOUR);
 	this._app.getApptComposeController().show(appt, mode, isDirty);
 };
