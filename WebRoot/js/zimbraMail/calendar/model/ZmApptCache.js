@@ -317,18 +317,14 @@ function(params, result) {
 		for (var i = 0; i < folderIds.length; i++) {
 			var folderId = folderIds[i];
 			var systemFolderId = appCtxt.getActiveAccount().isMain
-				? folderId : ZmOrganizer.getSystemId(folderId);
+				? folderId
+				: ZmOrganizer.getSystemId(folderId);
 
 			var apptList = new ZmApptList();
 			apptList.loadFromSummaryJs(folder2List[systemFolderId]);
 
-			// TODO: no need to cache remote ids for now?
-			var cal = this._calViewController.getCalendar(systemFolderId);
-			if (!(cal && cal.link)) {
-				this._updateCachedIds(apptList);
-			}
-
 			// cache it
+			this._updateCachedIds(apptList);
 			this._cacheApptSummaries(apptList, start, end, systemFolderId, query);
 
 			// convert to sorted vector

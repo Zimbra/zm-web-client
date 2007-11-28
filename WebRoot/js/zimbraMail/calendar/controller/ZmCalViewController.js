@@ -1030,14 +1030,6 @@ function(appt, mode) {
 	}
 };
 
-// XXX: this method is temporary until bug 6082 is fixed!
-ZmCalViewController.prototype.checkForRefresh =
-function(appt) {
-	if (appt && appt.isShared()) {
-		this._refreshAction(false);
-	}
-};
-
 ZmCalViewController.prototype._showAppointmentDetails =
 function(appt) {
 	try {
@@ -1111,8 +1103,7 @@ function(ev) {
 			this._quickAddDialog.popdown();
 			var appt = this._quickAddDialog.getAppt();
 			if (appt) {
-				var callback = new AjxCallback(this, this._refreshActionCallback, [appt]);
-				appt.save(null, callback);
+				appt.save();
 			}
 		}
 	} catch(ex) {
@@ -1123,14 +1114,6 @@ function(ev) {
 			errorDialog.popup();
 		}
 	}
-};
-
-// XXX: remove once bug 6082 is fixed!
-ZmCalViewController.prototype._refreshActionCallback =
-function(appt) {
-    appCtxt.getShell().setBusy(false);
-	if (appt.isShared())
-		this._refreshAction(false);
 };
 
 ZmCalViewController.prototype._quickAddMoreListener =
@@ -1239,9 +1222,7 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 			appt.resetRepeatWeeklyDays();
 		}
 		if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));
-		var respCallback = callback != null
-            ? new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [callback])
-            : new AjxCallback(this, this._refreshActionCallback, [appt]);
+		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [callback]);
         var respErrCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [errorCallback]);
         appCtxt.getShell().setBusy(true);
         appt.save(null, respCallback, respErrCallback);
@@ -1260,7 +1241,7 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 ZmCalViewController.prototype._handleResponseUpdateApptDateSave2 =
 function(callback) {
     appCtxt.getShell().setBusy(false);
-    callback.run();
+    if (callback) callback.run();
 };
 
 ZmCalViewController.prototype._handleResponseUpdateApptDateIgnore =

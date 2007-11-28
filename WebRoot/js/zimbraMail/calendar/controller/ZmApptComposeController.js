@@ -237,11 +237,3 @@ function(appt, attId, dlg) {
 	this._saveCalItemFoRealz(appt, attId);
 	this._app.popView(true);
 };
-
-ZmApptComposeController.prototype._handleResponseSave =
-function(calItem) {
-	ZmCalItemComposeController.prototype._handleResponseSave.call(this, calItem);
-
-	// XXX: remove once bug 6082 is fixed!
-	this._app.getCalController().checkForRefresh(calItem);
-};
