@@ -375,17 +375,20 @@ function(refresh) {
 	this._controller.runAppFunction("_clearDeferredFolders");
 	
 	if (refresh.version) {
-		var curVersion = appCtxt.get(ZmSetting.SERVER_VERSION);
-		if (curVersion != refresh.version) {
-			appCtxt.set(ZmSetting.SERVER_VERSION, refresh.version);
-			if (curVersion) {
-				var dlg = appCtxt.getMsgDialog();
-				dlg.reset();
-				dlg.registerCallback(DwtDialog.OK_BUTTON, this._reloadOkCallback, this, [dlg, curVersion, refresh.version]);
-				var msg = AjxMessageFormat.format(ZmMsg.versionChangeRestart, [curVersion, refresh.version]);
-				dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-				dlg.popup();
-			    return;
+		if (!this._canceledReload) {
+			var curVersion = appCtxt.get(ZmSetting.SERVER_VERSION);
+			if (curVersion != refresh.version) {
+				appCtxt.set(ZmSetting.SERVER_VERSION, refresh.version);
+				if (curVersion) {
+					var dlg = appCtxt.getYesNoMsgDialog();
+					dlg.reset();
+					dlg.registerCallback(DwtDialog.YES_BUTTON, this._reloadYesCallback, this, [dlg, curVersion, refresh.version]);
+					dlg.registerCallback(DwtDialog.NO_BUTTON, this._reloadNoCallback, this, [dlg, refresh]);
+					var msg = AjxMessageFormat.format(ZmMsg.versionChangeRestart, [curVersion, refresh.version]);
+					dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+					dlg.popup();
+					return;
+				}
 			}
 		}
 	}
@@ -423,13 +426,23 @@ function(refresh) {
 /**
  * User has accepted reload due to change in server version.
  */
-ZmRequestMgr.prototype._reloadOkCallback =
+ZmRequestMgr.prototype._reloadYesCallback =
 function(dialog) {
 	dialog.popdown();
     window.onbeforeunload = null;
     var url = AjxUtil.formatUrl();
 	DBG.println(AjxDebug.DBG1, "SERVER_VERSION changed!");
     ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
+};
+
+/**
+ * User has canceled reload due to change in server version.
+ */
+ZmRequestMgr.prototype._reloadNoCallback =
+function(dialog, refresh) {
+	dialog.popdown();
+	this._canceledReload = true;
+	this._refreshHandler(refresh);
 };
 
 ZmRequestMgr.prototype._loadTree =
