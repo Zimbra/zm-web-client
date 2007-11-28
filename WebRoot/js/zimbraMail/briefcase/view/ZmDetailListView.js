@@ -81,7 +81,7 @@ ZmDetailListView.prototype._getHeaderList = function(parent) {
 		new DwtListHeaderItem(ZmItem.F_FILE_TYPE, ZmMsg.type, null, ZmDetailListView.COLWIDTH_TYPE, null, null, true, null),
 		new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmDetailListView.COLWIDTH_SIZE, null, null, true, null),
 		new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.date, null, ZmDetailListView.COLWIDTH_DATE, null, null, true, null),
-		new DwtListHeaderItem(ZmItem.F_PARTICIPANT, ZmMsg.owner, null, ZmDetailListView.COLWIDTH_OWNER, null, null, true, null),
+		new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.owner, null, ZmDetailListView.COLWIDTH_OWNER, null, null, true, null),
 		new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmDetailListView.COLWIDTH_FOLDER, null, null, true, null)
 	);
 	return headers;
@@ -130,7 +130,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 
 		}
 		htmlArr[idx++] = "<div class='Img" + icon + "'></div>";
-	} else if (field == ZmItem.F_PARTICIPANT) {
+	} else if (field == ZmItem.F_FROM) {
 		var creator = item.creator? item.creator.split("@") : [""];
 		var cname = creator[0];
 		var uname = appCtxt.get(ZmSetting.USERNAME);

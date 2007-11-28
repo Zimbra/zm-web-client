@@ -106,8 +106,8 @@ function() {
 ZmListView.prototype._changeListener =
 function(ev) {
 
-	var item = ev.item || ev.getDetail("items")[0];
-	if (ev.handled || !this._handleEventType[item.type] && (this.type != ZmItem.MIXED)) { return; }
+	var item = this._getItemFromEvent(ev);
+	if (!item || ev.handled || !this._handleEventType[item.type] && (this.type != ZmItem.MIXED)) { return; }
 
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: TAG");
@@ -134,6 +134,16 @@ function(ev) {
         this._controller._app._checkReplenishListView = this;
 		this._controller._resetToolbarOperations();
 	}
+};
+
+ZmListView.prototype._getItemFromEvent =
+function(ev) {
+	var item = ev.item;
+	if (!item) {
+		var items = ev.getDetail("items");
+		item = (items && items.length) ? items[0] : null;
+	}
+	return item;
 };
 
 ZmListView.prototype._checkReplenish =

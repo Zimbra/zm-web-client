@@ -222,7 +222,7 @@ function(convs, msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
 			var msgMatches = (msg.folderId == searchFolder);
-			var conv = newConvId[cid] || this.getById(cid) || appCtxt.getById(cid);
+			var conv = newConvId[cid] || this.getById(cid);
 			if (msgMatches) {
 				if (!conv) {
 					// msg will have _convCreateNode if it is 2nd msg and caused promotion of virtual conv;
@@ -234,7 +234,7 @@ function(convs, msgs) {
 						}
 						conv = ZmConv.createFromDom(msg._convCreateNode, args)
 					} else {
-						conv = ZmConv.createFromMsg(msg, args);
+						conv = appCtxt.getById(cid) || ZmConv.createFromMsg(msg, args);
 					}
 					newConvId[cid] = conv;
 					conv.folders[msg.folderId] = true;

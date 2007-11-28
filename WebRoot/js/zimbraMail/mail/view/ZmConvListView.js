@@ -472,13 +472,8 @@ function(columnItem, bSortAsc) {
 ZmConvListView.prototype._changeListener =
 function(ev) {
 
-	var item = ev.item;
-	if (!item) {
-		var items = ev.getDetail("items");
-		item = (items && items.length) ? items[0] : null;
-	}
-	if (!item) { return; }
-	if (ev.handled || !this._handleEventType[item.type]) { return; }
+	var item = this._getItemFromEvent(ev);
+	if (!item || ev.handled || !this._handleEventType[item.type]) { return; }
 
 	var fields = ev.getDetail("fields");
 	var isConv = (item.type == ZmItem.CONV);
@@ -500,7 +495,8 @@ function(ev) {
 			} else {
 				// if this conv now has no msgs that match current search, remove it
 				var removeConv = true;
-				var folderId = appCtxt.getCurrentSearch().folderId;
+				var curSearch = appCtxt.getCurrentSearch();
+				var folderId = curSearch ? curSearch.folderId : null;
 				if (folderId && conv.msgs) {
 					var msgs = conv.msgs.getArray();
 					for (var i = 0; i < msgs.length; i++) {
@@ -581,7 +577,7 @@ function(ev) {
 		}
 	}
 
-	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_PARTICIPANT])) {
+	if (ev.event == ZmEvent.E_MODIFY && (fields && (fields[ZmItem.F_PARTICIPANT] || fields[ZmItem.F_FROM]))) {
 		var fieldId = this._getFieldId(item, ZmItem.F_FROM);
 		var fromField = document.getElementById(fieldId);
 		if (fromField) {

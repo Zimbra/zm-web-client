@@ -161,7 +161,7 @@ function(field, item, ev, div, match) {
 		else if (item.isSent)		{ tooltip = ZmMsg.sentAt; }
 		else if (item.isInvite())		{ tooltip = ZmMsg.appointment; }
 		else						{ tooltip = ZmMsg.read; }
-	} else if (field == ZmItem.F_FROM) {
+	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
 		tooltip = this._getParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
 	} else if (field == ZmItem.F_SUBJECT) {
 		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
@@ -307,13 +307,8 @@ function() {
 ZmMailListView.prototype._changeListener =
 function(ev) {
 
-	var item = ev.item;
-	if (!item) {
-		var items = ev.getDetail("items");
-		item = (items && items.length) ? items[0] : null;
-	}
-	if (!item) { return; }
-	if (ev.handled || !this._handleEventType[item.type]) { return; }
+	var item = this._getItemFromEvent(ev);
+	if (!item || ev.handled || !this._handleEventType[item.type]) { return; }
 
 	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" flag
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: FLAGS");
