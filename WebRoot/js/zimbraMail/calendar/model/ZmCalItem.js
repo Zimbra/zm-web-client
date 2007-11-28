@@ -1280,10 +1280,6 @@ function(respName, callback, result) {
 	if (response.uid != null)
 		this.uid = response.uid;
 
-	// set ID now if appt is shared since we wont get CREATE notification (see bug 6082)
-	if (response.calItemId && response.calItemId.indexOf(":") != -1)
-		this.id = response.calItemId;
-
 	if (response.m != null) {
 		var oldInvId = this.invId;
 		this.invId = response.m.id;
