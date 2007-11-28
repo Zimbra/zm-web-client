@@ -269,7 +269,7 @@ function() {
 		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader, separator: "",
-					  matchValue: ZmContactsApp.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback};
+					  matchValue: ZmContactsApp.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback, smartPos: true};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalItem.PERSON] = this._acContactsList;
 	}
@@ -277,7 +277,7 @@ function() {
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var resourcesClass = appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations, separator: "",
-					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback};
+					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback, smartPos: true};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalItem.LOCATION] = this._acLocationsList;
 		params.dataLoader = resourcesClass.getEquipment;

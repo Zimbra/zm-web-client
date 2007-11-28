@@ -55,6 +55,7 @@
  * @param compCallback		[AjxCallback]*		callback into client to notify it that completion happened
  * @param keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
  * @param keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
+ * @param smartPos		    [boolean]*		Whether to support smart positioning (top/bottom placement), false by default 
  */
 ZmAutocompleteListView = function(params) {
 
@@ -70,8 +71,9 @@ ZmAutocompleteListView = function(params) {
 	this._compCallback = params.compCallback;
 	this._keyDownCallback = params.keyDownCallback;
 	this._keyUpCallback = params.keyUpCallback;
+    this._smartPositionMe = (params.smartPos && params.smartPos==true)?true:false;
 
-	// mouse event handling
+    // mouse event handling
 	this._setMouseEventHdlrs();
 	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
@@ -304,6 +306,21 @@ function(element) {
 	Dwt.setHandler(element, DwtEvent.ONKEYUP, ZmAutocompleteListView.onKeyUp);
 };
 
+/**
+ * Enable/Disable smart positioning (top/bottom positioning) support.
+ */
+ZmAutocompleteListView.prototype.setSmartPositioning =
+function(boolVal) {
+	this._smartPositionMe = boolVal?true:false;
+};
+
+/**
+ * Getter to check smart positioning (top/bottom positioning) support.
+ */
+ZmAutocompleteListView.prototype.isSmartPositioned =
+function() {
+	return this._smartPositionMe;
+};
 /**
 * Autocompletion of addresses. Should be called by a handler for a keyboard event.
 *
@@ -709,12 +726,69 @@ function(div, text, icon) {
 		div.innerHTML = text;
 	}
 };
+/*
+  To support the Smart Positioning
+ */
+ZmAutocompleteListView.prototype._getSmartPosition =
+function(loc){
+    this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+    this.setVisible(true);
+    var x =  loc.x;
+    var y = loc.y;
+    if(this.parent!=this.shell){
+         x +=  this.parent.getX();
+         y += this.parent.getY();
+    }
+    var windowSize = this.shell.getSize();
+    var mySize = DwtComposite.prototype.getSize.call(this, loc);
+    // bug 9583 - can't query border size so just subtract generic padding
+	windowSize.y -= 10 + AjxEnv.isIE ? 20 : 0;
+	windowSize.x -= 20;
+    if(mySize.y >= windowSize.y ){
+        var space = windowSize.y;
+		var newY = null;
+		space = windowSize.y - y;
+		var above = this.parent.getBounds().y;
+		var below = space;
+		if (space < 50 || (mySize.y > below && mySize.y < above && above / below > 2)) {
+			space = above;
+			newY = above;
+		}
 
+		var rows =  this._matches;
+		var numRows = rows.length;
+		var height = mySize.y;
+		var requiredSpace = space - 25; // Account for space on top & bottom of menu.
+		for (var i = numRows - 1; i >= 0; i--) {
+			height -= Dwt.getSize(rows[i]).y;
+			if (height < requiredSpace) {
+				break;
+			}
+		}
+		if (newY) {
+			y = newY - mySize.y;
+		}
+    }
+    var newX = ((x + mySize.x) >= windowSize.x) ? (windowSize.x - mySize.x) : x;
+    var newY = ((y + mySize.y) >= windowSize.y) ? (windowSize.y - mySize.y) : y;
+    if(this.parent!=this.shell){
+        newX -= this.parent.getX();
+        newY -= this.parent.getY();
+    }
+    return new DwtPoint(newX,newY);
+}
 // Displays the list
 ZmAutocompleteListView.prototype._popup = 
 function(loc) {
-	this.setLocation(loc.x, loc.y);
-	this.setVisible(true);
+    var x = loc.x;
+    var y = loc.y;
+    if(this.isSmartPositioned()){
+        var p  = this._getSmartPosition(loc);
+        x = p.x;
+        y = p.y;
+    }
+    this.setLocation(x, y);
+    this.setVisible(true);
 	this.setZIndex(Dwt.Z_DIALOG_MENU);
 	ZmAutocompleteListView._activeAcList = this;
 	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, ZmAutocompleteListView._outsideMouseDownListener);
