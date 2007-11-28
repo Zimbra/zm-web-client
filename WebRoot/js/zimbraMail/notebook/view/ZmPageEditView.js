@@ -159,9 +159,6 @@ function() {
 			return true;
 		}
 		if (this._contentHasBeenSet && (this._originalContent != content)) {
-DBG.println("~~~~~~~~~~~ Check for dirty");
-DBG.printRaw(this._originalContent);
-DBG.printRaw(content);
 			return true;
 		}
 	}
