@@ -138,7 +138,13 @@ function() {
 ZmImApp.prototype._registerSettings = function(settings) {
 	settings = settings || appCtxt.getSettings();
 
-	settings.registerSetting("IM_PREF_INSTANT_NOTIFY",
+    settings.registerSetting("IM_PREF_NOTIFY_SOUNDS",{
+            type        :   ZmSetting.T_PREF,
+            dataType    :   ZmSetting.D_BOOLEAN,
+            defaultValue:   true
+    });
+
+    settings.registerSetting("IM_PREF_INSTANT_NOTIFY",
 				 { name         : "zimbraPrefIMInstantNotify",
 				   type         : ZmSetting.T_PREF,
 				   dataType     : ZmSetting.D_BOOLEAN,
@@ -221,17 +227,23 @@ ZmImApp.prototype._registerPrefs = function() {
 				ZmSetting.IM_PREF_NOTIFY_STATUS,
 				ZmSetting.IM_PREF_LOGCHATS_ENABLED,
 
-                                ZmSetting.IM_PREF_REPORT_IDLE,
-                                ZmSetting.IM_PREF_IDLE_TIMEOUT,
-                                ZmSetting.IM_PREF_IDLE_STATUS
-			]
+                ZmSetting.IM_PREF_REPORT_IDLE,
+                ZmSetting.IM_PREF_IDLE_TIMEOUT,
+                ZmSetting.IM_PREF_IDLE_STATUS,
+                ZmSetting.IM_PREF_NOTIFY_SOUNDS    
+            ]
 		}
 	};
 	for (var id in sections) {
 		ZmPref.registerPrefSection(id, sections[id]);
 	}
 
-	ZmPref.registerPref("IM_PREF_INSTANT_NOTIFY",
+    ZmPref.registerPref("IM_PREF_NOTIFY_SOUNDS",{
+            displayName     :   ZmMsg.imPrefNotifySounds,
+            displayContainer:   ZmPref.TYPE_CHECKBOX
+    });
+
+    ZmPref.registerPref("IM_PREF_INSTANT_NOTIFY",
 			    { displayName      : ZmMsg.imPrefInstantNotify,
 			      displayContainer : ZmPref.TYPE_CHECKBOX,
 			      precondition     : ZmSetting.INSTANT_NOTIFY });
@@ -477,6 +489,19 @@ ZmImApp.prototype.getOverviewPanelContent = function() {
 	return this._imOvw;
 };
 
-ZmImApp.prototype.playAlert = function(){
-    appCtxt.getSound().play(appContextPath+"/public/ding.wav");
+ZmImApp.OUTGOING_MSG_NOTIFICATION = "outgoing";
+ZmImApp.INCOMING_MSG_NOTIFICATION = "incoming";
+ZmImApp.prototype.playAlert = function(type){
+    type = type || "";
+    switch(type){
+        case ZmImApp.OUTGOING_MSG_NOTIFICATION:
+            appCtxt.getSound().play(appContextPath+"/public/notify.wav");
+            break;
+        case ZmImApp.INCOMING_MSG_NOTIFICATION:
+            appCtxt.getSound().play(appContextPath+"/public/info.wav");
+            break;
+        default:
+            appCtxt.getSound().play(appContextPath+"/public/default.wav");
+            break;
+    }
 };

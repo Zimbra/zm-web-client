@@ -123,7 +123,9 @@ ZmChatWidget.prototype.setTyping = function(item, typing) {
 };
 
 ZmChatWidget.prototype.handleMessage = function(msg) {
-    appCtxt.getApp("IM").playAlert();
+    if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS)){
+        appCtxt.getApp("IM").playAlert(ZmImApp.INCOMING_MSG_NOTIFICATION);
+    }
     var str = msg.displayHtml(this._objectManager, this.chat, this.__lastFrom);
 	this.__lastFrom = (msg.isSystem && !msg.from) ? "@@system" : msg.from;
 	if (!msg.isSystem) {
@@ -242,8 +244,11 @@ ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
 };
 
 ZmChatWidget.prototype.sendInput = function(text) {
+    if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS)){
+        appCtxt.getApp("IM").playAlert(ZmImApp.OUTGOING_MSG_NOTIFICATION);
+    }
 
-    appCtxt.getApp("IM").playAlert();
+    //appCtxt.getApp("IM").playAlert();
     //appCtxt.getSound().play(appContextPath+"/public/ding.wav");
     
     text = AjxStringUtil.trim(text);
