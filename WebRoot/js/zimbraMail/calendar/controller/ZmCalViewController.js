@@ -1493,8 +1493,8 @@ function() {
 			if (menuItem == ZmOperation.INVITE_REPLY_MENU) {
 				var menu = actionMenu.getOp(ZmOperation.INVITE_REPLY_MENU).getMenu();
 				menu.addSelectionListener(ZmOperation.EDIT_REPLY_ACCEPT, this._listeners[ZmOperation.EDIT_REPLY_ACCEPT]);
-				menu.addSelectionListener(ZmOperation.EDIT_REPLY_DECLINE, this._listeners[ZmOperation.EDIT_REPLY_DECLINE]);
 				menu.addSelectionListener(ZmOperation.EDIT_REPLY_TENTATIVE, this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE]);
+				menu.addSelectionListener(ZmOperation.EDIT_REPLY_DECLINE, this._listeners[ZmOperation.EDIT_REPLY_DECLINE]);
 			} else if (menuItem == ZmOperation.CAL_VIEW_MENU) {
 				var menu = actionMenu.getOp(ZmOperation.CAL_VIEW_MENU).getMenu();
 				this._initCalViewMenu(menu);
@@ -1543,7 +1543,7 @@ function() {
 	return [
 		ZmOperation.VIEW_APPOINTMENT,
 		ZmOperation.SEP,
-		ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE, ZmOperation.INVITE_REPLY_MENU,
+		ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE, ZmOperation.INVITE_REPLY_MENU,
 		ZmOperation.SEP,
 		ZmOperation.DELETE, ZmOperation.TAG_MENU
 	];
