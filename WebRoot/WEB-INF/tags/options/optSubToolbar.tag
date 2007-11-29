@@ -6,6 +6,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
+
 <table cellspacing="0" class='Tb' width="100%">
     <tr>
         <td class='TbBt'>
@@ -13,6 +14,10 @@
                <tr>
                    <c:choose>
                        <c:when test="${selected eq 'filter'}">
+                           <c:set var="rules" value="${empty param.ruleName ? mailbox.filterRulesReload : mailbox.filterRules}"/>
+                           <c:if test="${empty rules}">
+                               <c:set var="disabled" value="true"/>
+                           </c:if>
                            <c:choose>
                                <c:when test="${(not zm:actionSet(param, 'actionFilterCancel') and requestScope.filterSave ne 'success') and (zm:actionSet(param, 'actionEditFilter') or zm:actionSet(param, 'actionNewFilter'))}">
                                     <app:button  name="actionFilterSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
@@ -25,9 +30,9 @@
                                <c:otherwise>
                                    <app:button name="actionNewFilter" src="startup/ImgPlus.gif" tooltip="newFilter" text="newFilter"/>
                                    <td><div class='vertSep'></div></td>
-                                   <app:button name="actionEditFilter" src="startup/ImgEdit.gif" tooltip="editFilter" text="editFilter"/>
+                                   <app:button name="actionEditFilter" src="startup/ImgEdit.gif" tooltip="editFilter" text="editFilter" disabled="${disabled}"/>
                                    <td><div class='vertSep'></div></td>
-                                   <app:button name="actionDeleteFilter" src="startup/ImgDelete.gif" tooltip="deleteFilter" text="deleteFilter"/>
+                                   <app:button name="actionDeleteFilter" src="startup/ImgDelete.gif" tooltip="deleteFilter" text="deleteFilter" disabled="${disabled}"/>
                                    <td><div class='vertSep'></div></td>
                                    <app:button name="actionMoveFilterUp" src="arrows/ImgUpArrow.gif" tooltip="filterMoveUp" text="filterMoveUp"/>
                                    <td><div class='vertSep'></div></td>
