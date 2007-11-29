@@ -237,6 +237,8 @@ function() {
 		validationStyle: DwtInputField.CONTINUAL_VALIDATION
 	}
 
+	var tabs = [];
+	
 	// create common DWT controls
 	this._urlInput = new DwtInputField(inputParams);
 	this._urlInput.setRequired(true);
@@ -380,7 +382,10 @@ function() {
 		this._acPageList.handle(pageInputEl);
 		//Dwt.setHandler(pageInputEl, DwtEvent.ONKEYUP, ZmLinkPropsDialog._handleKeyUp);
 
+		tabs.push(Dwt.byId(typePageId), this._notebookSelect, this._pageSelect, this._pageInput, Dwt.byId(typeUrlId), this._urlInput);
 	} // if NOTEBOOK_ENABLED
+
+	tabs.push(this._titleInput);
 
 	// create properties
 	var props = new DwtPropertySheet(view);
@@ -388,6 +393,10 @@ function() {
 		props.addProperty(linkUrlLabel, this._urlInput);
 	}
 	props.addProperty(ZmMsg.linkTitleLabel, this._titleInput);
+
+	for (var i = 0; i < tabs.length; i++) {
+		this._tabGroup.addMember(tabs[i], i);
+	}
 
 	return view;
 };
