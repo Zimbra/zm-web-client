@@ -1585,7 +1585,7 @@ function(appt, actionMenu) {
 	var del = actionMenu.getMenuItem(ZmOperation.DELETE);
 	del.setText((isOrganizer && appt.hasOtherAttendees()) ? ZmMsg.cancel : ZmMsg.del);
 	var isSynced = Boolean(calendar.url);
-	del.setEnabled(!calendar.isReadOnly() && !isSynced);
+	del.setEnabled(!calendar.isReadOnly() && !isSynced && !isPrivate);
 
 	// recurring action menu options
 	this._recurringActionMenu.enable(ZmOperation.VIEW_APPT_SERIES, !appt.exception);
