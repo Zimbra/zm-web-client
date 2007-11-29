@@ -155,6 +155,11 @@
     </filter-mapping>
     -->
 
+	<error-page>
+		<error-code>404</error-code>
+		<location>/public/404.html</location>
+	</error-page>
+
     <servlet>
 		<servlet-name>Forwarder</servlet-name>
 		<servlet-class>
