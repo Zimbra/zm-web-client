@@ -324,6 +324,10 @@ ZmNotebookPageController.prototype.isIframeEnabled = function(){
 
 ZmNotebookPageController.prototype._refreshListener = function(event) {
 	if(this.isIframeEnabled()){
+		var page = this._object;
+		var cache = this._app.getNotebookCache();
+		//workaround for remote folder notification problem
+		cache.removeItem(page);
 		this.refreshCurrentPage();
 	}else{	
 		ZmNotebookController.prototype._refreshListener.call(this, event);		
