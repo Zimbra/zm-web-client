@@ -493,6 +493,10 @@ ZmImApp.prototype.getOverviewPanelContent = function() {
 ZmImApp.OUTGOING_MSG_NOTIFICATION = "outgoing";
 ZmImApp.INCOMING_MSG_NOTIFICATION = "incoming";
 ZmImApp.prototype.playAlert = function(type){
+    //Need to comment this untill we get hold of sound files in ZCS.
+    appCtxt.getSound().play(appContextPath+"/public/notify.wav");
+    return;
+
     type = type || "";
     switch(type){
         case ZmImApp.OUTGOING_MSG_NOTIFICATION:
@@ -505,8 +509,4 @@ ZmImApp.prototype.playAlert = function(type){
             appCtxt.getSound().play(appContextPath+"/public/default.wav");
             break;
     }
-};
-
-ZmImApp.prototype.flashTitle = function(msg){
-      
 };
