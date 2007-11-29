@@ -1103,7 +1103,7 @@ function(findHits) {
 
 				if (!useCL) {
 					// check for vcard *first* since we dont care to view it in HTML
-					if (attach.ct == ZmMimeTable.TEXT_VCARD)
+					if (attach.ct == ZmMimeTable.TEXT_VCARD || attach.ct == ZmMimeTable.TEXT_DIRECTORY)
 					{
 						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.id + ",\"" + attach.part + "\");";
 						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";

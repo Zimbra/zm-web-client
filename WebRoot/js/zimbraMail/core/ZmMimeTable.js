@@ -54,6 +54,7 @@ ZmMimeTable.TEXT_HTML			= "text/html";
 ZmMimeTable.TEXT_CAL			= "text/calendar"; 				// IGNORE
 ZmMimeTable.TEXT_JAVA			= "text/x-java";
 ZmMimeTable.TEXT_VCARD			= "text/x-vcard";
+ZmMimeTable.TEXT_DIRECTORY      = "text/directory";
 ZmMimeTable.TEXT_PLAIN			= "text/plain";
 ZmMimeTable.TEXT_XML			= "text/xml";
 ZmMimeTable.VIDEO				= "video";
