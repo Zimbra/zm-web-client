@@ -103,3 +103,19 @@ function() {
 	}
 	return data;
 };
+
+/**
+ * @Override Added for tabindexing checkboxes.  
+ */
+//For bug 21985
+ZmNewCalendarDialog.prototype._getTabGroupMembers =
+function() {
+	var list = ZmNewOrganizerDialog.prototype._getTabGroupMembers.call(this);
+    if (this._excludeFbCheckbox) {
+		list.push(this._excludeFbCheckbox);
+	}
+    if (this._remoteCheckboxField) {
+		list.push(this._remoteCheckboxField);
+	}
+    return list;
+};
