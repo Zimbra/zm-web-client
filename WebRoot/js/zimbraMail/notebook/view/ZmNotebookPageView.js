@@ -362,7 +362,7 @@ ZmNotebookPageView.prototype.mutateLink = function(linkNode,doc,linkPrefix){
 			if(thref == (window.location.href +"#")){
 			linkNode.href= "javascript:;";		
 			}
-			if(thref.match(/\.txt$/i) || thref.match(/\.html$/i)) {
+			if(thref.match(/\.txt$/i) || thref.match(/\.html?$/i)) {
 				target = "_new";
 			}			
 		}else{						
