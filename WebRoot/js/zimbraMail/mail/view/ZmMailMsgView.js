@@ -1632,8 +1632,8 @@ function(msg, preferHtml, callback) {
 		html[idx++] = "<div style='padding: 10px; font-size: 12px'>";
 		if (bodyPart.ct == ZmMimeTable.TEXT_HTML && preferHtml) {
 			// TODO - html should really sit in its own iframe but not so easy to do...
-			html[idx++] = bodyPart.content;
-		} else {
+            html[idx++] = ZmMailMsgView._fixMultipartRelatedImagesInContent(msg,bodyPart.content);
+        } else {
 			if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
 				content = msg.getTextPart();
 				if (!content && bodyPart.content && bodyPart.ct == ZmMimeTable.TEXT_HTML) {
@@ -1643,7 +1643,7 @@ function(msg, preferHtml, callback) {
 				}
 			} else {
 				content = bodyPart.content;
-			}
+            }
 			html[idx++] = "<span style='font-family: courier'>";
 			html[idx++] = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(content, true));
 			html[idx++] = "</span>";
@@ -1657,6 +1657,22 @@ function(msg, preferHtml, callback) {
 	} else {
 		return html.join("");
 	}
+};
+
+ZmMailMsgView._fixMultipartRelatedImagesInContent = function(msg,content){
+    var inlineImgs = content.match(/dfsrc=\"cid:\w*\"/ig);
+    if(inlineImgs){
+        for(var i=0; i<inlineImgs.length; i++){
+            var dfsrc = inlineImgs[i];
+            var tmp =   dfsrc.split(':');
+            var cid = tmp[1].substring(0,tmp[1].length-1);
+            var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, ("<" + cid + ">"));
+            if(src){
+                content = content.replace(dfsrc,"src='"+ src +"'");
+            }
+        }
+    }
+    return content;
 };
 
 ZmMailMsgView._swapIdAndSrc =
