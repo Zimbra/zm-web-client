@@ -409,15 +409,18 @@ function(msgId, partId, name) {
 	}
 	var copyToDialog = this._copyToDialog = appCtxt.getChooseFolderDialog();
 	var _chooseCb = new AjxCallback(this, this._chooserCallback,[msgId,partId,name]);
-	ZmController.showDialog(copyToDialog, _chooseCb, this._getCopyParams());
+	ZmController.showDialog(copyToDialog, _chooseCb, this._getCopyParams(msgId, partId));
 };
 
 
 ZmBriefcaseApp.prototype._getCopyParams =
-function() {
+function(msgId, partId) {
 	var org = ZmOrganizer.BRIEFCASE;
+	var copyData = new Object();
+	copyData.msgId = msgId;
+	copyData.partId = partId;
 	var title = ZmMsg.addToBriefcaseTitle;
-	return {treeIds:[org], overviewId:"ZmListController",
+	return {data: copyData, treeIds:[org], overviewId:"ZmListController",
 			title:title, description:ZmMsg.targetFolder};
 };
 

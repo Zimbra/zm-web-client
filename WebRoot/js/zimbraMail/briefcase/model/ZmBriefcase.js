@@ -180,6 +180,10 @@ function(what) {
 				}
 			}
 		}
+		//attachments from mail can be moved inside briefcase
+		if(item && item.msgId && item.partId){
+			invalid = false;
+		}
 	}
 
 	return !invalid;
