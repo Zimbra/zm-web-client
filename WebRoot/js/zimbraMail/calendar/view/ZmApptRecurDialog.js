@@ -124,6 +124,10 @@ function(appt) {
 	var recur = appt._recurrence;
 	var value = this._getRadioOptionValue(this._dailyRadioName);
 
+	// Bug 16383, need to clear values back to a default state.
+	recur.repeatCustom = "0";
+	recur.repeatWeekday = false;
+
 	if (value == "2") {
 		recur.repeatCustom = "1";
 		recur.repeatWeekday = true;
