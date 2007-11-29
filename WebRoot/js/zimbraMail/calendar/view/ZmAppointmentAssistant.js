@@ -34,7 +34,8 @@ function(dialog) {
 		dialog.messageDialog(ZmMsg.errorMissingSubject, DwtMessageDialog.CRITICAL_STYLE);
 	} else {
 		var appt = this.getAppt();
-		appt.save();// TODO: callback, etc.	
+		appt.save();// TODO: callback, etc.
+		appCtxt.setStatusMsg(ZmMsg.apptCreated);
 		return true;
 	}
 };
