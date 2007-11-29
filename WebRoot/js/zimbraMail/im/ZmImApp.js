@@ -139,6 +139,7 @@ ZmImApp.prototype._registerSettings = function(settings) {
 	settings = settings || appCtxt.getSettings();
 
     settings.registerSetting("IM_PREF_NOTIFY_SOUNDS",{
+            name        :   "zimbraPrefIMSoundsEnabled", 
             type        :   ZmSetting.T_PREF,
             dataType    :   ZmSetting.D_BOOLEAN,
             defaultValue:   true
@@ -504,4 +505,8 @@ ZmImApp.prototype.playAlert = function(type){
             appCtxt.getSound().play(appContextPath+"/public/default.wav");
             break;
     }
+};
+
+ZmImApp.prototype.flashTitle = function(msg){
+      
 };
