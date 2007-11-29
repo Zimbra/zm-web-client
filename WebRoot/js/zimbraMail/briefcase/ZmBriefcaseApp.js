@@ -420,7 +420,7 @@ function(msgId, partId) {
 	copyData.msgId = msgId;
 	copyData.partId = partId;
 	var title = ZmMsg.addToBriefcaseTitle;
-	return {data: copyData, treeIds:[org], overviewId:"ZmListController",
+	return {data: copyData, treeIds:[org], overviewId:"ZmBriefcaseApp",
 			title:title, description:ZmMsg.targetFolder};
 };
 
