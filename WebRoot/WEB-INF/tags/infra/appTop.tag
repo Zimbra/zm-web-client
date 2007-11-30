@@ -67,22 +67,6 @@
             </tr></table>
         </form>
     </td>
-	<td><div style='width:20px'></div></td>
-    <td height="25" nowrap class="SearchBar" style='width:200px'>
-        <form method="get" action="http://search.yahoo.com/search?fr=zim-mails" target='_blank'>
-            <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tr>
-				<td nowrap>
-					<label for="searchWebField">Search web:&nbsp;</label>
-				</td>
-				<td width="100%"><input  id="searchWebField" name='p' class="searchField" maxlength="2048" name="sq" value=""></td>
-				<td style="padding-left: 5px;">
-					<button class="SearchButton" type="submit" name="search"><div class='ImgWebSearch'></div></button>
-				</td>
-            </tr>
-           </table>
-        </form>
-    </td>
 </tr>
 </table>
 

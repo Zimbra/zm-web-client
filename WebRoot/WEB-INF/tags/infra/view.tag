@@ -406,7 +406,16 @@
 				</a>
 			</td>
 			<td valign="top" class="TopContent" style='width:100%'>
-				<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}"/>
+                <table cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                        <td width="66%">
+                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}"/>
+                        </td>
+                        <td width="33%">
+                            <app:appTopYSearch keys="${keys}" />               
+                        </td>
+                    </tr>
+                </table>
 			</td>
 			<td align="right" style='padding-right:5px;'>
 				<table cellpadding="2" cellspacing="0">
