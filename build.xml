@@ -1050,6 +1050,7 @@ if (ext == null) ext = "";
 
 
     <!-- JSP PRECOMPILE STUFF -->
+     <property name="jspc.src.dir" value="${build.dir}/WebRoot" />
      <property name="jspc.build.dir" value="${build.dist.dir}/jetty/work/zimbra/jsp" />
 
      <path id='jspc.class.path'>
@@ -1060,6 +1061,7 @@ if (ext == null) ext = "";
          <fileset dir="${server.build.dir}" includes="zimbrastore.jar"/>
          <fileset dir="${lib.dir}" includes="standard.jar,servlet-api.jar"/>
          <fileset dir="${common.lib.dir}" includes="jetty-util*.jar,commons-collections*.jar"/>
+         <fileset dir="${jspc.src.dir}/WEB-INF/lib" includes="*.jar"/>
      </path>
 
      <target name="jspc">
@@ -1070,16 +1072,24 @@ if (ext == null) ext = "";
              <arg value="-d" />
              <arg value="${jspc.build.dir}" />
              <arg value="-uriroot" />
-             <arg value="${web.dir}" />
+             <arg value="${jspc.src.dir}" />
              <arg value="${param.jspfile}" />
          </java>
      </target>
 
 	<target name="jspc.precompile">
-		<mkdir dir="${jspc.build.dir}"/>
-
-		<fileset id='jspc.fileset' dir='${web.dir}' includes='h/*,m/*,y/**,public/*.jsp' />
+		<mkdir dir="${jspc.src.dir}"/>
+		<copy todir="${jspc.src.dir}/h"><fileset dir="${web.dir}/h"/></copy>
+		<copy todir="${jspc.src.dir}/m"><fileset dir="${web.dir}/m"/></copy>
+	        <if><available file="${web.dir}/y" type="dir"/><then>
+			<copy todir="${jspc.src.dir}/y"><fileset dir="${web.dir}/y"/></copy>
+        	</then></if>
+		<copy todir="${jspc.src.dir}/public"><fileset dir="${web.dir}/public"/></copy>
+		<copy todir="${jspc.src.dir}/WEB-INF"><fileset dir="${web.dir}/WEB-INF"/></copy>
+		<fileset id='jspc.fileset' dir='${jspc.src.dir}' includes='h/*,m/*,y/**,public/*.jsp' />
 		<pathconvert property='jspc.filelist' refid='jspc.fileset' pathsep=',' />
+
+		<mkdir dir="${jspc.build.dir}"/>
 		<foreach target='jspc' list='m/img,${jspc.filelist}' param='param.jspfile' />
 	</target>
 
@@ -1100,6 +1110,7 @@ if (ext == null) ext = "";
 
      <target name="jspc.clean">
          <delete>
+             <fileset dir="${jspc.src.dir}" />
              <fileset dir="${jspc.build.dir}" />
          </delete>
      </target>
