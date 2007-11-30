@@ -1368,7 +1368,7 @@ function(action, msg, extraBodyText, incOption) {
 				}
 			} else {
 				// grab text part out of the body part
-				bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML);
+				bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN) || msg.getBodyPart(ZmMimeTable.TEXT_HTML, true);
 				body = bodyPart ? this._getTextPart(bodyPart) : null;
 			}
 		}

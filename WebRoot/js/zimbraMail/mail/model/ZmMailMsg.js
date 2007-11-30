@@ -575,10 +575,15 @@ function() {
 	return this._bodyParts;
 };
 
+/**
+* @param contentType	[String]	either "text/plain" or "text/html"
+* @param useOriginal	[Boolean]*	dont grab the copy w/ the images defanged
+*									(only applies when contentType is "text/html")
+*/
 ZmMailMsg.prototype.getBodyPart =
-function(contentType) {
+function(contentType, useOriginal) {
 
-	if (contentType == ZmMimeTable.TEXT_HTML &&
+	if (contentType == ZmMimeTable.TEXT_HTML && !useOriginal &&
 		this._htmlBody && this._htmlBody.length > 0)
 	{
 		return this._htmlBody;
