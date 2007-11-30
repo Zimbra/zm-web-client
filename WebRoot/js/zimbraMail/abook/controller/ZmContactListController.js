@@ -444,7 +444,7 @@ function(parent, num) {
 
 			parent.enable([ZmOperation.TAG_MENU], (isParent && !isShare && num > 0));
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
-			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1);
+			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1 && !folder.isInTrash());
 
 			if (printMenuItem) {
 				var text = isShare ? ZmMsg.printResults : ZmMsg.printAddrBook;
@@ -453,9 +453,10 @@ function(parent, num) {
 		} else {
 			// otherwise, must be a search
 			var contact = this._listView[this._currentView].getSelection()[0];
+			var canEdit = (num == 1 && !contact.isReadOnly() && !ZmContact.isInTrash(contact));
 			parent.enable(ZmOperation.TAG_MENU, (isParent && num > 0));
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], num > 0);
-			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], num == 1 && !contact.isReadOnly());
+			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit);
 		}
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
@@ -513,7 +514,9 @@ function(ev) {
 			this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var folder = appCtxt.getById(ev.item.folderId);
-		if (!this.isGalSearch() && (folder == null || !folder.isReadOnly())) {
+		if (!this.isGalSearch() &&
+			(!folder || (!folder.isReadOnly() && !folder.isInTrash())))
+		{
 			AjxDispatcher.run("GetContactController").show(ev.item);
 		}
 	}

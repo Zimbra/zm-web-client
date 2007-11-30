@@ -321,7 +321,8 @@ function(contact, attr, value) {
 ZmContact.isInTrash =
 function(contact) {
 	var folderId = (contact instanceof ZmContact) ? contact.folderId : contact.l;
-	return (folderId == ZmFolder.ID_TRASH);
+	var folder = appCtxt.getById(folderId);
+	return (folder && folder.isInTrash());
 };
 
 ZmContact.prototype.load =
