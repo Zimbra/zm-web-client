@@ -1026,10 +1026,10 @@ function(idle) {
 };
 
 ZmComposeController.prototype._saveDraft =
-function(draftType) {
+function(draftType, attId) {
 	draftType = draftType || ZmComposeController.DRAFT_TYPE_MANUAL;
 	var respCallback = new AjxCallback(this, this._handleResponseSaveDraftListener, [draftType]);
-	this.sendMsg(null, draftType, respCallback);
+	this.sendMsg(attId, draftType, respCallback);
 };
 
 ZmComposeController.prototype._handleResponseSaveDraftListener =
