@@ -228,13 +228,14 @@ function(calItem) {
 	ZmCalItemEditView.prototype._getRecurrence.call(this, calItem);
 
 	// bug fix #17048 - reset weekly day to reflect start date in case user changed it
-	if (calItem.getRecurType() == "WEE" &&
+    // We shud not be needed this anymore as we are auto adjusting the start date like outlook. See bug 12945
+    /*if (calItem.getRecurType() == "WEE" &&
 		calItem._recurrence.repeatCustomCount == 1 &&
 		calItem._recurrence.repeatWeeklyDays.length == 1)
 	{
 		var day = ZmCalItem.SERVER_WEEK_DAYS[calItem.startDate.getDay()];
 		calItem._recurrence.repeatWeeklyDays = [day];
-	}
+	}*/
 };
 
 ZmApptEditView.prototype._populateForSave =
