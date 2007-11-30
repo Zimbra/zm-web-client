@@ -235,12 +235,11 @@ function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseExecute,
 						[this.isGalSearch, this.isGalAutocompleteSearch, this.isCalResSearch, params.callback]);
 	
-	var execFrame = this.response ? null : new AjxCallback(this, this.execute, params);
 	if (params.batchCmd) {
-		params.batchCmd.addRequestParams(soapDoc, respCallback, execFrame);
+		params.batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
 		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
-												errorCallback:params.errorCallback, execFrame:execFrame,
+												errorCallback:params.errorCallback,
 												timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
 												response:this.response});
 	}

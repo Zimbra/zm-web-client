@@ -511,8 +511,7 @@ function(attr, batchCmd) {
 	if (batchCmd) {
 		batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
-		var execFrame = new AjxCallback(this, this.create, [attr]);
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	}
 };
 
@@ -557,8 +556,7 @@ function(msgId, vcardPartId) {
 		soapDoc: soapDoc,
 		asyncMode: true,
 		callback: (new AjxCallback(this, this._handleResponseCreateVCard)),
-		errorCallback: (new AjxCallback(this, this._handleErrorCreateVCard)),
-		execFrame: (new AjxCallback(this, this.create, [msgId, vcardPartId]))
+		errorCallback: (new AjxCallback(this, this._handleErrorCreateVCard))
 	};
 
 	appCtxt.getAppController().sendRequest(params);
@@ -615,8 +613,7 @@ function(attr, callback) {
 
 	if (continueRequest) {
 		var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
-		var execFrame = new AjxCallback(this, this.modify, [attr]);
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	} else {
 		if (attr[ZmContact.F_folderId]) {
 			this._setFolder(attr[ZmContact.F_folderId]);

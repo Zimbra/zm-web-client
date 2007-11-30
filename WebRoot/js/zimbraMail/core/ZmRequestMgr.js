@@ -77,17 +77,18 @@ function() {
  * handled the exception, and false if standard exception handling should still
  * be performed.
  *
- * @param params			[hash]			hash of params:
- *        soapDoc			[AjxSoapDoc]	SOAP document that represents the request
- *        asyncMode			[boolean]*		if true, request will be made asynchronously
- *        callback			[AjxCallback]*	next callback in chain for async request
- *        errorCallback		[AjxCallback]*	callback to run if there is an exception
- *        execFrame			[AjxCallback]*	the calling method, object, and args
- *        timeout			[int]*			timeout value (in seconds)
- *        noBusyOverlay		[boolean]*		if true, don't use the busy overlay
- *        accountName		[string]*		name of account to execute on behalf of
- *        response			[object]*		pre-determined response (no request will be made)
- *        skipAuthCheck		[boolean]*		don't check if auth token has changed
+ * @param params				[hash]			hash of params:
+ *        soapDoc				[AjxSoapDoc]	SOAP document that represents the request
+ *        asyncMode				[boolean]*		if true, request will be made asynchronously
+ *        callback				[AjxCallback]*	next callback in chain for async request
+ *        errorCallback			[AjxCallback]*	callback to run if there is an exception
+ *        continueCallback		[AjxCallback]*	callback to run after user re-auths
+ *        timeout				[int]*			timeout value (in seconds)
+ *        noBusyOverlay			[boolean]*		if true, don't use the busy overlay
+ *        accountName			[string]*		name of account to execute on behalf of
+ *        response				[object]*		pre-determined response (no request will be made)
+ *        skipAuthCheck			[boolean]*		don't check if auth token has changed
+ *        resend				[boolean]*		if true, we are reusing soapDoc
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -112,15 +113,16 @@ function(params) {
 		accountName = (acct && acct.id != ZmZimbraAccount.DEFAULT_ID) ? acct.name : null;
 	}
 	var cmdParams = {
-		soapDoc: params.soapDoc,
-		accountName: accountName,
-		useXml: this._useXml,
-		changeToken: (accountName ? null : this._changeToken),
-		asyncMode: params.asyncMode,
-		callback: asyncCallback,
-		logRequest: this._logRequest,
-		highestNotifySeen: this._highestNotifySeen,
-		skipAuthCheck: params.skipAuthCheck
+		soapDoc:params.soapDoc,
+		accountName:accountName,
+		useXml:this._useXml,
+		changeToken:(accountName ? null : this._changeToken),
+		asyncMode:params.asyncMode,
+		callback:asyncCallback,
+		logRequest:this._logRequest,
+		highestNotifySeen:this._highestNotifySeen,
+		skipAuthCheck:params.skipAuthCheck,
+		resend:params.resend
 	};
 
 	var methodName = params.soapDoc ? params.soapDoc._methodEl.tagName : "[unknown]";
@@ -197,10 +199,10 @@ function(params, result) {
 		if (params.errorCallback) {
 			var handled = params.errorCallback.run(ex);
 			if (!handled) {
-				this._controller._handleException(ex, params.execFrame);
+				this._controller._handleException(ex, params);
 			}
 		} else {
-			this._controller._handleException(ex, params.execFrame);
+			this._controller._handleException(ex, params);
 		}
 		var hdr = result.getHeader();
 		this._handleHeader(hdr);
@@ -467,20 +469,16 @@ ZmRequestMgr.prototype._notifyHandler =
 function(notify) {
 	DBG.println(AjxDebug.DBG2, "Handling NOTIFY");
 	this._controller.runAppFunction("preNotify", false, notify);
-	try {
-		if (notify.deleted && notify.deleted.id) {
-			this._handleDeletes(notify.deleted);
-		}
-		if (notify.created) {
-			this._handleCreates(notify.created);
-		}
-		if (notify.modified) {
-			this._handleModifies(notify.modified);
-		}
-		this._controller.runAppFunction("postNotify", false, notify);
-	} catch (ex) {
-		this._controller._handleException(ex, this._notifyHandler, notify, false);
+	if (notify.deleted && notify.deleted.id) {
+		this._handleDeletes(notify.deleted);
 	}
+	if (notify.created) {
+		this._handleCreates(notify.created);
+	}
+	if (notify.modified) {
+		this._handleModifies(notify.modified);
+	}
+	this._controller.runAppFunction("postNotify", false, notify);
 };
 
 /**
@@ -615,9 +613,9 @@ function(ev) {
 		var id = organizer ? organizer.id : null;
 		if (fields && fields[ZmOrganizer.F_UNREAD]) {
 			var search = appCtxt.getCurrentSearch();
-			if (search && id && (id == search.folderId || id == search.tagId))
+			if (search && id && (id == search.folderId || id == search.tagId)) {
 				Dwt.setTitle(search.getTitle());
-
+			}
 			var mailApp = appCtxt.getApp(ZmApp.MAIL);
 			if (mailApp) {
 				mailApp.setNewMailNotice(organizer);

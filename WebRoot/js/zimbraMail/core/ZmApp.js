@@ -36,6 +36,7 @@ ZmApp = function(name, container, parentController) {
 	this._container = container;
 	this._parentController = parentController;
 	this._active = false;
+	this.currentSearch = null;
 
 	this._deferredFolders = [];
 	this._deferredFolderHash = {};

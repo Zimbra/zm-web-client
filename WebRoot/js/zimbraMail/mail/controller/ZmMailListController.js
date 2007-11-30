@@ -123,7 +123,7 @@ function(view) {
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		var groupByItem = this._app.getGroupMailBy();
 		var params = {types:[groupByItem], offset:0, limit:limit, sortBy:sortBy, getHtml:getHtml};
-		appCtxt.getSearchController().redoSearch(appCtxt.getCurrentSearch(), null, params);
+		appCtxt.getSearchController().redoSearch(this._app.currentSearch, null, params);
 	}
 };
 

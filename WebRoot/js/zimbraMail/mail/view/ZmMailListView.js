@@ -103,14 +103,18 @@ function() {
 	// if not in Sent/Drafts, deep dive into query to be certain
 	if (!isSentFolder && !isDraftsFolder) {
 		// check for is:sent or is:draft w/in search query
-		var query = appCtxt.getCurrentSearch().query;
-		var idx = query.indexOf(":");
+		var idx = null, query = null;
+		var curSearch = this._controller._app.currentSearch;
+		if (curSearch) {
+			query = curSearch.query;
+			idx = query.indexOf(":");
+		}
 		if (idx) {
 			var prefix = AjxStringUtil.trim(query.substring(0, idx));
 			if (prefix == "is") {
-				var folderStr = AjxStringUtil.trim(query.substring(idx+1));
-				isSentFolder = folderStr == ZmFolder.QUERY_NAME[ZmFolder.ID_SENT];
-				isDraftsFolder = folderStr == ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS];
+				var folderStr = AjxStringUtil.trim(query.substring(idx + 1));
+				isSentFolder = (folderStr == ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]);
+				isDraftsFolder = (folderStr == ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]);
 			}
 		}
 	}
@@ -188,27 +192,24 @@ function(field, item, ev, div, match) {
 ZmMailListView.prototype._getParticipantToolTip =
 function(address) {
 	if (!address) { return; }
-	try {
-		var toolTip;
-		var addr = address.getAddress();
-		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
-			var contactApp = appCtxt.getApp(ZmApp.CONTACTS);
-			var contacts = AjxDispatcher.run("GetContacts");
-			var contact = contacts ? contacts.getContactByEmail(addr) : null;
-			if (contact) {
-				toolTip = contact.getToolTip(addr);
-			}
+	var toolTip;
+	var addr = address.getAddress();
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
+		var contactApp = appCtxt.getApp(ZmApp.CONTACTS);
+		var contacts = AjxDispatcher.run("GetContacts");
+		var contact = contacts ? contacts.getContactByEmail(addr) : null;
+		if (contact) {
+			toolTip = contact.getToolTip(addr);
 		}
-		
-		if (!toolTip) {
-			var addrstr = address.toString();
-			if (addrstr) {
-				toolTip = AjxTemplate.expand("abook.Contacts#TooltipNotInAddrBook", {addrstr:addrstr});
-			}
-	    }
-	} catch (ex) {
-		appCtxt.getAppController()._handleException(ex, contactApp.getContactList, null, false, contactApp);
 	}
+		
+	if (!toolTip) {
+		var addrstr = address.toString();
+		if (addrstr) {
+			toolTip = AjxTemplate.expand("abook.Contacts#TooltipNotInAddrBook", {addrstr:addrstr});
+		}
+    }
+
 	return toolTip;
 };
 

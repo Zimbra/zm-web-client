@@ -126,7 +126,7 @@ function() {
 ZmReminderController.prototype._refreshCallback =
 function(list) {	
 	if (list instanceof ZmCsfeException) {	
-		this._calController._handleError(list, this._maintErrorHandler, null);
+		this._calController._handleError(list, new AjxCallback(this, this._maintErrorHandler));
 		return;
 	}
 	this._cachedAppts = list.clone();

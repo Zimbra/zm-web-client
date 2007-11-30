@@ -936,13 +936,7 @@ function(appt, action, mode) {
 
 ZmCalViewController.prototype._continueDelete =
 function(appt, mode) {
-	try {
-		var respCallback = new AjxCallback(this, this._handleResponseContinueDelete);
-		appt.cancel(mode, null, respCallback, this._errorCallback);
-	} catch (ex) {
-		var params = [appt, mode];
-		this._handleException(ex, this._continueDelete, params, false);
-	}
+	appt.cancel(mode, null, respCallback, this._errorCallback);
 };
 
 ZmCalViewController.prototype._handleResponseContinueDelete =
@@ -1032,33 +1026,29 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._showAppointmentDetails =
 function(appt) {
-	try {
-		// if we have an appointment, go get all the details.
-		if (!appt.__creating) {
-			var calendar = appt.getFolder();
-			var isSynced = Boolean(calendar.url);
-			if (appt.isReadOnly() || isSynced) {
-				var mode = appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
-		        var clone = ZmAppt.quickClone(appt);
-				clone.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [clone]));
-			} else {
-				if (appt.isRecurring()) {
-					// prompt user to edit instance vs. series if recurring but not exception
-					if (appt.isException) {
-						this.editAppointment(appt, ZmCalItem.MODE_EDIT_SINGLE_INSTANCE);
-					} else {
-						this._showTypeDialog(appt, ZmCalItem.MODE_EDIT);
-					}
-				} else {
-					// if simple appointment, no prompting necessary
-					this.editAppointment(appt, ZmCalItem.MODE_EDIT);
-				}
-			}
+	// if we have an appointment, go get all the details.
+	if (!appt.__creating) {
+		var calendar = appt.getFolder();
+		var isSynced = Boolean(calendar.url);
+		if (appt.isReadOnly() || isSynced) {
+			var mode = appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
+	        var clone = ZmAppt.quickClone(appt);
+			clone.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [clone]));
 		} else {
-			this.newAppointment(appt);
+			if (appt.isRecurring()) {
+				// prompt user to edit instance vs. series if recurring but not exception
+				if (appt.isException) {
+					this.editAppointment(appt, ZmCalItem.MODE_EDIT_SINGLE_INSTANCE);
+				} else {
+					this._showTypeDialog(appt, ZmCalItem.MODE_EDIT);
+				}
+			} else {
+				// if simple appointment, no prompting necessary
+				this.editAppointment(appt, ZmCalItem.MODE_EDIT);
+			}
 		}
-	} catch (ex) {
-		this._handleException(ex, this._showAppointmentDetails, [appt], false);
+	} else {
+		this.newAppointment(appt);
 	}
 };
 
@@ -1800,7 +1790,7 @@ function(work, view, list, skipMiniCalUpdate) {
 	// TODO: turn off shell busy
 
 	if (list instanceof ZmCsfeException) {
-		this._handleError(list, this._maintErrorHandler, null);
+		this._handleError(list, new AjxCallback(this, this._maintErrorHandler));
 		return;
 	}
 

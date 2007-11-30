@@ -236,12 +236,8 @@ function(id) {
 
 ZmBrowseController.prototype._addPickerListener =
 function(ev) {
-	try {
-		var id = ev.item.getData(ZmPicker.KEY_ID);
-		this.addPicker(id);
-	} catch (ex) {
-		this._handleException(ex, this._addPickerListener, ev, false);
-	}
+	var id = ev.item.getData(ZmPicker.KEY_ID);
+	this.addPicker(id);
 };
 
 ZmBrowseController.prototype._pickerCloseListener =

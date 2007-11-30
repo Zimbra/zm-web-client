@@ -495,7 +495,7 @@ function(ev) {
 			} else {
 				// if this conv now has no msgs that match current search, remove it
 				var removeConv = true;
-				var curSearch = appCtxt.getCurrentSearch();
+				var curSearch = this._controller._app.currentSearch;
 				var folderId = curSearch ? curSearch.folderId : null;
 				if (folderId && conv.msgs) {
 					var msgs = conv.msgs.getArray();

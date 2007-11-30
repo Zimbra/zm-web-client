@@ -520,12 +520,11 @@ function(params, batchCmd) {
 	for (var attr in params.attrs)
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
-	var execFrame = new AjxCallback(this, this._itemAction, params);
 
 	if (batchCmd) {
 		batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	}
 };
 

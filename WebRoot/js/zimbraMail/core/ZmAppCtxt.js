@@ -704,12 +704,7 @@ function(toolbar) {
 
 ZmAppCtxt.prototype.getCurrentSearch =
 function() { 
-	return this._currentSearch;
-};
-
-ZmAppCtxt.prototype.setCurrentSearch =
-function(search) {
-	this._currentSearch = search;
+	return this.getCurrentApp().currentSearch;
 };
 
 ZmAppCtxt.prototype.getCurrentViewId =

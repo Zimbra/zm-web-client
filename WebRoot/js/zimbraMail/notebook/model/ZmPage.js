@@ -167,11 +167,10 @@ function(callback, errorCallback) {
 
 	// execute call
 	var params = {
-		soapDoc: soapDoc,
-		asyncMode: true,
-		callback: callback,
-		errorCallback: errorCallback,
-		execFrame: null
+		soapDoc:soapDoc,
+		asyncMode:true,
+		callback:callback,
+		errorCallback:errorCallback
 	};
 	var appController = appCtxt.getAppController();
 	appController.sendRequest(params);

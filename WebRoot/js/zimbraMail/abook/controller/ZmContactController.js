@@ -224,61 +224,60 @@ function(parent, num) {
 
 ZmContactController.prototype._saveListener =
 function(ev, bIsPopCallback) {
+
+	var view = this._listView[this._currentView];
+
+	// isValid() may throw a String containing error message
 	try {
-		var view = this._listView[this._currentView];
-
-		// isValid should throw an String containing error message, otherwise returns true
-		if (!view.isValid())
-			return;
-
-		var mods = view.getModifiedAttrs();
-		view.enableInputs(false);
-
-		if (mods) {
-			var contact = view.getContact();
-
-			if (contact.id && !contact.isGal) {
-				if (view.isEmpty()) {
-					this._doDelete([contact], null, null, true);
-				} else {
-					this._doModify(contact, mods);
-				}
-				if (appCtxt.zimletsPresent()) {
-					appCtxt.getZimletMgr().notifyZimlets("onContactModified",
-						ZmZimletContext._translateZMObject(contact), mods);
-				}
-			} else {
-				this._doCreate(AjxDispatcher.run("GetContacts"), mods);
-			}
-		} else {
-			// bug fix #5829 - differentiate betw. an empty contact and saving
-			//                 an existing contact w/o editing
-			if (this._contact.isEmpty()) {
-				var msg = this._currentView == ZmController.GROUP_VIEW
-					? ZmMsg.emptyGroup
-					: ZmMsg.emptyContact;
-				appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
-			} else {
-				var msg = this._currentView == ZmController.GROUP_VIEW
-					? ZmMsg.groupSaved
-					: ZmMsg.contactSaved;
-				appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);
-			}
-		}
-
-		if (!bIsPopCallback) {
-			this._app.popView(true);
-			view.cleanup();
-		}
+		view.isValid();
 	} catch (ex) {
 		if (AjxUtil.isString(ex)) {
 			var ed = appCtxt.getMsgDialog();
 			var msg = ZmMsg.errorSaving + (ex ? (":<p>" + ex) : ".");
 			ed.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 			ed.popup();
-		} else {
-			this._handleException(ex, this._saveListener, ev, false);
 		}
+		return;
+	}
+
+	var mods = view.getModifiedAttrs();
+	view.enableInputs(false);
+
+	if (mods) {
+		var contact = view.getContact();
+
+		if (contact.id && !contact.isGal) {
+			if (view.isEmpty()) {
+				this._doDelete([contact], null, null, true);
+			} else {
+				this._doModify(contact, mods);
+			}
+			if (appCtxt.zimletsPresent()) {
+				appCtxt.getZimletMgr().notifyZimlets("onContactModified",
+					ZmZimletContext._translateZMObject(contact), mods);
+			}
+		} else {
+			this._doCreate(AjxDispatcher.run("GetContacts"), mods);
+		}
+	} else {
+		// bug fix #5829 - differentiate betw. an empty contact and saving
+		//                 an existing contact w/o editing
+		if (this._contact.isEmpty()) {
+			var msg = this._currentView == ZmController.GROUP_VIEW
+				? ZmMsg.emptyGroup
+				: ZmMsg.emptyContact;
+			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+		} else {
+			var msg = this._currentView == ZmController.GROUP_VIEW
+				? ZmMsg.groupSaved
+				: ZmMsg.contactSaved;
+			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);
+		}
+	}
+
+	if (!bIsPopCallback) {
+		this._app.popView(true);
+		view.cleanup();
 	}
 };
 

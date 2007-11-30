@@ -58,8 +58,8 @@ function() {
 };
 
 ZmLoginDialog.prototype.registerCallback =
-function(func, obj) {
-	this._callback = new AjxCallback(obj, func);
+function(func, obj, args) {
+	this._callback = new AjxCallback(obj, func, args);
 };
 
 ZmLoginDialog.prototype.clearAll =

@@ -247,7 +247,7 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback, status, attId)
 
         // auth failed during att upload - let user relogin, continue with compose action
         var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
-        appCtxt.getAppController()._handleException(ex, callback);
+        appCtxt.getAppController()._handleException(ex, {continueCallback:callback});
 
     } else {
 

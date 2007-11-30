@@ -115,10 +115,8 @@ function(params) {
 	}
 
 	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback]);
-	var execFrame = new AjxCallback(null, ZmMailMsg.fetchMsg, [params]);
 	params.sender.sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
-							errorCallback:params.errorCallback, execFrame:execFrame,
-							noBusyOverlay:params.noBusyOverlay});
+							errorCallback:params.errorCallback, noBusyOverlay:params.noBusyOverlay});
 };
 
 /**
@@ -700,13 +698,11 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
-	var execFrame = new AjxCallback(this, this._sendInviteReply, [contactList, edited, componentId, callback, errorCallback, instanceDate]);
 	return this._sendMessage({ soapDoc:soapDoc,
 								isInvite:true,
 								isDraft:false,
 								callback:respCallback,
 								errorCallback:errorCallback,
-								execFrame:execFrame,
 								accountName:accountName });
 };
 
@@ -760,15 +756,13 @@ function(contactList, isDraft, callback, errorCallback, accountName) {
 		}
 
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
-		var execFrame = new AjxCallback(this, this.send, [contactList, isDraft, callback, errorCallback]);
 		var params = {
 			soapDoc: soapDoc,
 			isInvite: false,
 			isDraft: isDraft,
 			accountName: aName,
 			callback: respCallback,
-			errorCallback: errorCallback,
-			execFrame: execFrame
+			errorCallback: errorCallback
 		};
 		return this._sendMessage(params);
 	}
@@ -922,22 +916,23 @@ function(soapDoc, contactList, isDraft, accountName) {
     }
 };
 
-/*
-* Sends this message to its recipients.
-*
-* @param soapDoc		[AjxSoapDoc]	SOAP document
-* @param isInvite		[boolean]		true if this message is an invite
-* @param isDraft		[boolean]		true if this message is a draft
-* @param callback		[AjxCallback]	async callback
-* @param errorCallback	[AjxCallback]	async error callback
-*/
+/**
+ * Sends this message to its recipients.
+ *
+ * @param params				[hash]			hash of params:
+ *        soapDoc				[AjxSoapDoc]	SOAP document
+ *        isInvite				[boolean]		true if this message is an invite
+ *        isDraft				[boolean]		true if this message is a draft
+ *        callback				[AjxCallback]	async callback
+ *        errorCallback			[AjxCallback]	async error callback
+ */
 ZmMailMsg.prototype._sendMessage =
 function(params) {
-	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params.isInvite, params.isDraft, params.callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params]);
 
 	// bug fix #4325 - its safer to make sync request when dealing w/ new window
 	if (window.parentController) {
-		var resp = appCtxt.getAppController().sendRequest({soapDoc:params.soapDoc, errorCallback:params.errorCallback, execFrame:params.execFrame});
+		var resp = appCtxt.getAppController().sendRequest({soapDoc:params.soapDoc, errorCallback:params.errorCallback});
 		if (!resp) return; // bug fix #9154
 
 		if (resp.SendInviteReplyResponse) {
@@ -950,26 +945,27 @@ function(params) {
 			return resp.SendMsgResponse;
 		}
 	} else {
-		appCtxt.getAppController().sendRequest({ soapDoc:params.soapDoc,
-														asyncMode:true,
-														callback:respCallback,
-														errorCallback:params.errorCallback,
-														execFrame:params.execFrame,
-														accountName:params.accountName });
+		appCtxt.getAppController().sendRequest({soapDoc:params.soapDoc,
+												asyncMode:true,
+												callback:respCallback,
+												errorCallback:params.errorCallback,
+												accountName:params.accountName });
 	}
 };
 
 ZmMailMsg.prototype._handleResponseSendMessage =
-function(bIsInvite, bIsDraft, callback, result) {
+function(params, result) {
 	var response = result.getResponse();
-	if (bIsInvite)
+	if (params.isInvite) {
 		result.set(response.SendInviteReplyResponse);
-	else if (bIsDraft)
+	} else if (params.isDraft) {
 		result.set(response.SaveDraftResponse);
-	else
+	} else {
 		result.set(response.SendMsgResponse);
-
-	if (callback) callback.run(result);
+	}
+	if (params.callback) {
+		params.callback.run(result);
+	}
 };
 
 

@@ -1157,6 +1157,8 @@ function(appName, view) {
 	if (toolbar) {
 		toolbar.setupView(appName);
 	}
+	
+	var searchEnabled = appCtxt.get(ZmSetting.SEARCH_ENABLED);
 
 	if (this._activeApp != appName) {
 
@@ -1173,15 +1175,18 @@ function(appName, view) {
 	    // switch app
 		this._activeApp = appName;
 		if (appEnabled) {
-			if (ZmApp.DEFAULT_SEARCH[appName]) {
-				appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName]);
-			}
-			
-			// set search string value to match current app's last search, if applicable		
 			var app = this._apps[this._activeApp];
-			var stb = appCtxt.getSearchController().getSearchToolbar();
-			if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && stb) {
-				stb.setSearchFieldValue(app.currentQuery ? app.currentQuery : "");
+
+			if (searchEnabled) {
+				if (ZmApp.DEFAULT_SEARCH[appName]) {
+					appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName]);
+				}
+				
+				// set search string value to match current app's last search, if applicable		
+				var stb = appCtxt.getSearchController().getSearchToolbar();
+				if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && stb) {
+					stb.setSearchFieldValue(app.currentQuery || "");
+				}
 			}
 	
 			// activate current app - results in rendering of overview
@@ -1197,6 +1202,10 @@ function(appName, view) {
 				}
 			}
 		}
+	}
+	
+	if (searchEnabled) {
+		this._apps[this._activeApp].currentSearch = appCtxt.getSearchController().currentSearch;
 	}
 };
 
@@ -1443,16 +1452,18 @@ function(childWin) {
 	}
 };
 
-/*
-* Common exception handling entry point.
-*
-* @param ex	[Object]		the exception
-* 
-*/
+/**
+ * Checks for a certain type of exception, then hands off to standard
+ * exception handler.
+ *
+ * @param ex				[AjxException]		the exception
+ * @param continuation		[object]*			original request params
+ */
 ZmZimbraMail.prototype._handleException =
-function(ex, method, params, restartOnError, obj) {
+function(ex, continuation) {
 	var handled = false;
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
+		// check for fault when getting folder perms
 		var organizerTypes = [ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
 		if (ex.data.itemId && ex.data.itemId.length) {
 			var itemId = ex.data.itemId[0];
@@ -1466,7 +1477,7 @@ function(ex, method, params, restartOnError, obj) {
 		}
 	}
 	if (!handled) {
-		ZmController.prototype._handleException.call(this, ex, method, params, restartOnError, obj);
+		ZmController.prototype._handleException.apply(this, arguments);
 	}
 };
 
@@ -1618,7 +1629,7 @@ function(ev) {
 			this.activateApp(id);
 		}
 	} catch (ex) {
-		this._handleException(ex, this._appButtonListener, ev, false);
+		this._handleException(ex);
 	}
 };
 

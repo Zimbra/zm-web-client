@@ -209,8 +209,9 @@ function() {
 			var dateStr = AjxStringUtil.trim(dateField.value);
 			if (dateStr.length) {
 				var aDate = AjxDateUtil.simpleParseDateStr(dateStr);
-				if (isNaN(aDate) || aDate == null)
+				if (isNaN(aDate) || aDate == null) {
 					throw ZmMsg.errorDate;
+				}
 			}
 		}
 	}
@@ -744,7 +745,7 @@ function(callback, status, attId) {
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {
 		// auth failed during att upload - let user relogin, continue with compose action
 		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
-		appCtxt.getAppController()._handleException(ex, callback);
+		appCtxt.getAppController()._handleException(ex);
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
 		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));

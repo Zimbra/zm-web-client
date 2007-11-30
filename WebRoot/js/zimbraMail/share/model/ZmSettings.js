@@ -342,7 +342,7 @@ function(list, callback, batchCommand) {
 	if (gotOne) {
 		var respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
 		if (batchCommand) {
-			batchCommand.addNewRequestParams(soapDoc, respCallback, null, "ModifyPrefsRequest");
+			batchCommand.addNewRequestParams(soapDoc, respCallback);
 		} else {
 			appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 		}

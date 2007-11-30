@@ -250,11 +250,7 @@ function(task, mode) {
 
 ZmTaskListController.prototype._handleDelete =
 function(task) {
-	try {
-		task.cancel(ZmCalItem.MODE_DELETE);
-	} catch (ex) {
-		this._handleException(ex, this._doDelete, [task], false);
-	}
+	task.cancel(ZmCalItem.MODE_DELETE);
 };
 
 ZmTaskListController.prototype._editTask =

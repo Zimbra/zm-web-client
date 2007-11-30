@@ -125,8 +125,7 @@ function(method, idOnly, respCallback, errorCallback, batchCmd) {
 	}
 
 	if (batchCmd) {
-		var execFrame = null; // ???
-		batchCmd.addNewRequestParams(soapDoc, respCallback, errorCallback, execFrame);
+		batchCmd.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		return;
 	}
 

@@ -192,11 +192,9 @@ function(files, status, guids) {
 	var args = [ files, status, guids ];
 	var callback = new AjxCallback(this, this._uploadSaveDocsResponse, args);
 	var params = {
-		soapDoc: soapDoc,
-		asyncMode: true,
-		callback: callback,
-		errorCallback: null,
-		execFrame: null
+		soapDoc:soapDoc,
+		asyncMode:true,
+		callback:callback
 	};	
 	var appController = appCtxt.getAppController();
 	appController.sendRequest(params);

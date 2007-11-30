@@ -153,8 +153,7 @@ function(callback, errorCallback, batchCommand) {
 
 	var respCallback = new AjxCallback(this, this._handleCreateResponse, [callback]);
 	if (batchCommand) {
-		var execFrame = null; // REVISIT: What should this be?
-		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback, execFrame);
+		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		return;
 	}
 
@@ -193,8 +192,7 @@ function(callback, errorCallback, batchCommand) {
 
 	var respCallback = new AjxCallback(this, this._handleSaveResponse, [callback]);
 	if (batchCommand) {
-		var execFrame = null; // REVISIT: What should this be?
-		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback, execFrame);
+		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		return;
 	}
 
@@ -215,8 +213,7 @@ function(callback, errorCallback, batchCommand) {
 
 	var respCallback = new AjxCallback(this, this._handleDeleteResponse, [callback]);
 	if (batchCommand) {
-		var execFrame = null; // REVISIT: What should this be?
-		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback, execFrame);
+		batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback);
 		return;
 	}
 
@@ -242,8 +239,7 @@ function(callback, errorCallback, batchCommand, noBusyOverlay) {
 	}
 
 	if (batchCommand) {
-		var execFrame = null;
-		batchCommand.addNewRequestParams(soapDoc, callback, errorCallback, execFrame);
+		batchCommand.addNewRequestParams(soapDoc, callback, errorCallback);
 		return;
 	}
 
