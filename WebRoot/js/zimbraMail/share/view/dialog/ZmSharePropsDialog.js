@@ -159,21 +159,22 @@ function(event) {
 	var isPublicShare = this._publicRadioEl.checked;
 
 	// validate input
-	var error;
-	if (this._granteeInput.isValid() == null) {
-		error = this._granteeInput.getValue() ? AjxMsg.invalidEmailAddr : AjxMsg.valueIsRequired;
-	}
-	if (!error && isGuestShare && this._passwordInput.isValid() == null) {
-		error = AjxMsg.valueIsRequired;
-	}
-	if (error) {
-		var dialog = appCtxt.getErrorDialog();
-		dialog.setMessage(error);
-		dialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
-		dialog.popup();
-		return;
-	}
-
+    if(!isPublicShare)    {
+        var error;
+        if (this._granteeInput.isValid() == null) {
+            error = this._granteeInput.getValue() ? AjxMsg.invalidEmailAddr : AjxMsg.valueIsRequired;
+        }
+        if (!error && isGuestShare && this._passwordInput.isValid() == null) {
+            error = AjxMsg.valueIsRequired;
+        }
+        if (error) {
+            var dialog = appCtxt.getErrorDialog();
+            dialog.setMessage(error);
+            dialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
+            dialog.popup();
+            return;
+        }
+    }
 	var shares = [];
 	if (this._shareMode == ZmSharePropsDialog.NEW) {
 		var type = this._getType(isUserShare, isGuestShare, isPublicShare);
