@@ -421,7 +421,7 @@
 				<table cellpadding="2" cellspacing="0">
 					<tr>
 						<td colspan=3 align='center' class='ZhAppSwitchLink'>
-							<a href='<c:url value="/"/>'><fmt:message key="switchToAdvancedClient" /></a>
+							<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>
 						</td>
 					</tr>
 					<tr>
