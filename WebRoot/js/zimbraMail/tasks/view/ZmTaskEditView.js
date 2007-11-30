@@ -303,6 +303,10 @@ function(ev) {
 			this._statusCheckbox.checked = true;
 		} else if (newVal == ZmCalendarApp.STATUS_NEED) {
 			this._pCompleteSelect.setSelectedValue("0");
+		} else if (newVal == ZmCalendarApp.STATUS_INPR) {
+			if (this._pCompleteSelect.getValue() == "100") {
+				this._pCompleteSelect.setSelectedValue("0");
+			}
 		}
 	} else {
 		if (newVal == 100) {
