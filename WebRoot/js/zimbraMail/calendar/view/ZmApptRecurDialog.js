@@ -131,51 +131,100 @@ function(appt) {
 	if (value == "2") {
 		recur.repeatCustom = "1";
 		recur.repeatWeekday = true;
-	} else {
+        //Let's check if it is sat/sunday today
+        var d = new Date();
+        if(d.getDay()==AjxDateUtil.SUNDAY || d.getDay()==AjxDateUtil.SATURDAY){
+            recur._startDate = AjxDateUtil.getDateForNextDay(d,AjxDateUtil.MONDAY); // get subsequent monday, weekday
+        }
+    } else {
 		recur.repeatCustomCount = value == "3" ? (Number(this._dailyField.getValue())) : 1;
 	}
 };
 
-ZmApptRecurDialog.prototype.setCustomWeeklyValues = 
+ZmApptRecurDialog.prototype.setCustomWeeklyValues =
 function(appt) {
 	var recur = appt._recurrence;
 	recur.repeatWeeklyDays = []
 	recur.repeatCustom = "1";
 
 	var value = this._getRadioOptionValue(this._weeklyRadioName);
-	
+
 	if (value == "1") {
 		recur.repeatCustomCount = 1;
 		recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[this._weeklySelect.getValue()]);
-	} else {
+        recur._startDate = AjxDateUtil.getDateForNextDay(new Date(),this._weeklySelect.getValue());
+        //recur._endDate = recur._startDate;
+    } else {
 		recur.repeatCustomCount = Number(this._weeklyField.getValue());
-		for (var i = 0; i < this._weeklyCheckboxes.length; i++) {
-			if (this._weeklyCheckboxes[i].checked)
+        var isSet = false;
+        for (var i = 0; i < this._weeklyCheckboxes.length; i++) {
+			if (this._weeklyCheckboxes[i].checked){
 				recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[i]);
-		}
-	}
+                if(!isSet){
+                    recur._startDate = AjxDateUtil.getDateForNextDay(new Date(),i);
+                    isSet = true;
+                }
+            }
+        }
+
+    }
 };
 
-ZmApptRecurDialog.prototype.setCustomMonthlyValues = 
+ZmApptRecurDialog.prototype.setCustomMonthlyValues =
 function(appt) {
 	var recur = appt._recurrence;
 	recur.repeatCustom = "1";
 
 	var value = this._getRadioOptionValue(this._monthlyRadioName);
-	
+
 	if (value == "1") {
 		recur.repeatCustomType = "S";
 		recur.repeatCustomCount = this._monthlyMonthField.getValue();
 		recur.repeatMonthlyDayList = [this._monthlyDayField.getValue()];
-	} else {
+        recur.repeatCustomMonthDay = this._monthlyDayField.getValue();
+        recur._startDate.setDate(recur.repeatCustomMonthDay);
+        var today = new Date(); //Today's date...
+        var diff = (today - recur._startDate);
+        if(diff > AjxDateUtil.MSEC_PER_DAY){ // was in the past, so let's use the next date
+            d.setMonth(d.getMonth()+1);//
+            recur._startDate = d;
+        }
+
+    } else {
 		recur.repeatCustomType = "O";
 		recur.repeatCustomCount = this._monthlyMonthFieldEx.getValue();
 		recur.repeatCustomOrdinal = this._monthlyDaySelect.getValue();
 		recur.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[this._monthlyWeekdaySelect.getValue()];
-	}
+        if(recur.repeatCustomOrdinal==-1){ // Last day
+            var lastDate = new Date();
+            lastDate.setDate(AjxDateUtil.daysInMonth(lastDate.getFullYear(),lastDate.getMonth())); //Date is now last date of this month
+            var lastDayDate = AjxDateUtil.getDateForPrevDay(lastDate,this._monthlyWeekdaySelect.getValue());
+            //Check if it is already paased
+            var today = new Date();
+            var diff = (today - lastDayDate);
+            if(diff  > AjxDateUtil.MSEC_PER_DAY){ //In the past
+                // Go for next month
+                lastDate.setMonth(lastDate.getMonth()+1);
+                recur._startDate = AjxDateUtil.getDateForThisDay(lastDate,this._monthlyWeekdaySelect.getValue(),recur.repeatCustomOrdinal); //Last day of next month/year
+            }else{
+                 recur._startDate = lastDayDate;
+            }
+        }else{
+            var first = new Date();
+            var today = new Date();
+            if(recur.repeatCustomOrdinal == 1){
+               first.setDate(1);
+               var diff = (today - first);
+               if( diff > AjxDateUtil.MSEC_PER_DAY){ //In the past
+                    first.setMonth(first.getMonth()+1);
+                }
+            }
+            recur._startDate = AjxDateUtil.getDateForNextDay(first,this._monthlyWeekdaySelect.getValue(),recur.repeatCustomOrdinal);
+        }
+    }
 };
 
-ZmApptRecurDialog.prototype.setCustomYearlyValues = 
+ZmApptRecurDialog.prototype.setCustomYearlyValues =
 function(appt) {
 	appt._recurrence.repeatCustom = "1";
 
@@ -185,12 +234,47 @@ function(appt) {
 		appt._recurrence.repeatCustomType = "S";
 		appt._recurrence.repeatCustomMonthDay = this._yearlyDayField.getValue();
 		appt._recurrence.repeatYearlyMonthsList = this._yearlyMonthSelect.getValue() + 1;
-	} else {
+        //Create date out of it
+        var d  = new Date();
+        d.setDate(appt._recurrence.repeatCustomMonthDay);
+        d.setMonth(this._yearlyMonthSelect.getValue());
+        //Try to judge, if this date is in future
+        var today = new Date();
+        var diff = (today - d);
+        if( diff > AjxDateUtil.MSEC_PER_DAY){ //In the past
+            d.setFullYear(d.getFullYear()+1);
+        }
+        appt._recurrence._startDate = d;
+        appt._recurrence._endDate = d;
+    } else {
 		appt._recurrence.repeatCustomType = "O";
 		appt._recurrence.repeatCustomOrdinal = this._yearlyDaySelect.getValue();
 		appt._recurrence.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[this._yearlyWeekdaySelect.getValue()];
 		appt._recurrence.repeatYearlyMonthsList = this._yearlyMonthSelectEx.getValue() + 1;
-	}
+        //Create a date out of this pointing to 1 of that month
+        var d = new Date();
+        d.setMonth(this._yearlyMonthSelectEx.getValue());
+        //Check if date is in past
+        if(appt._recurrence.repeatCustomOrdinal < 0){ // we want last day
+            d.setDate(AjxDateUtil.daysInMonth(d.getFullYear(),d.getMonth()));
+        }else{
+            var today = new Date();
+            d.setDate(1);
+            var diff = (today - d);
+            if( diff > AjxDateUtil.MSEC_PER_DAY){ //In the past
+                d.setFullYear(d.getFullYear()+1); //Go next year
+            }
+        }
+        var dt  = AjxDateUtil.getDateForThisDay(d,this._yearlyWeekdaySelect.getValue(),appt._recurrence.repeatCustomOrdinal);
+        var today = new Date();
+        var diff = (today -dt);
+        if(diff > AjxDateUtil.MSEC_PER_DAY){ // In the past
+            d.setFullYear(d.getFullYear()+1);
+            d.setDate(AjxDateUtil.daysInMonth(d.getFullYear(),d.getMonth()));
+        }
+        appt._recurrence._startDate = AjxDateUtil.getDateForThisDay(d,this._yearlyWeekdaySelect.getValue(),appt._recurrence.repeatCustomOrdinal);
+        appt._recurrence._endDate = appt._recurrence._startDate;
+    }
 };
 
 ZmApptRecurDialog.prototype.addSelectionListener = 
