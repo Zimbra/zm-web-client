@@ -763,7 +763,19 @@ function(ev) {
 			// update the recur language
 			var temp = this._getClone(this._calItem);
 			this._getRecurrence(temp);
-			this._repeatDescField.innerHTML = temp.getRecurBlurb();
+            var sd = (AjxDateUtil.simpleParseDateStr(this._startDateField.value));
+            if(temp._recurrence._startDate.getDate()!= sd.getDate() ||
+                temp._recurrence._startDate.getMonth()!= sd.getMonth() ||
+                temp._recurrence._startDate.getFullYear()!= sd.getFullYear() ){            // If date changed...chnage the values
+                this._startDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
+                this._endDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
+                this.startDate = temp._recurrence._startDate;
+                this.endDate = temp._recurrence._startDate;
+                this._calItem._startDate = this.startDate ;
+                this._calItem._endDate = this.startDate ;
+
+            }
+            this._repeatDescField.innerHTML = temp.getRecurBlurb();
 		} else {
 			// give feedback to user about errors in recur dialog
 			popdown = false;
