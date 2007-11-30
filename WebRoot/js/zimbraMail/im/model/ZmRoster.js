@@ -126,6 +126,13 @@ function(args) {
 		}
 	}
 	if (roster.presence) {
+                // <temporary> hack for bug 21442
+                // remove when a proper fix is available!
+                if (/XA|AWAY/.test(roster.presence.show)) {
+                        roster.presence.show = "ONLINE";
+                        this.setPresence("ONLINE");
+                }
+                // </temporary>
 		this.getPresence().setFromJS(roster.presence);
 		this._notifyPresence();
 	}
