@@ -167,6 +167,9 @@ function(startDate, keepCache) {
 	this.startDate = new Date(startDate instanceof Date ? startDate.getTime() : startDate);
 	if (!keepCache)
 		this._resetCached();
+    if(this.recurring && this._recurrence){                    //Recurrence shuld reflect start date.
+        this._recurrence._startDate = this.startDate;        
+    }
 };
 
 ZmCalItem.prototype.setTimezone = function(timezone, keepCache) {
