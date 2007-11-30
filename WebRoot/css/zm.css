@@ -747,13 +747,14 @@ line-height:normal;
 	border-bottom: 1px solid #777777;
 }
 
+
 .ZmContactInfoView .contactHeaderSection {
-	padding: 4px;
-	background-color: #d3cbb4; 				/* get this from skin.properties */
+	@WidgetHeaderContainer@
+	@WidgetHeaderContainer-normal@
 	@FontSize-big@
+	padding: 4px 10px;
 	font-weight: bold;
 	margin-top: 10px;
-	border-bottom: 1px solid #8c8778;		/* get this from skin.properties */
 }
 
 .ZmContactInfoView .workName {
