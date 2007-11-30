@@ -412,7 +412,7 @@ function(appt) {
 		appt: appt,
 		duration: appt.getShortStartHour(),
 		color: ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)] +
-				(appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION ? "DarkC" : "C"),
+				(appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION ? "Dark" : "Bg"),
 		multiday: appt._fanoutFirst != null,
 		first: appt._fanoutFirst,
 		last: appt._fanoutLast

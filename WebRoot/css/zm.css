@@ -1276,7 +1276,7 @@ line-height:normal;
 .calendar_month_day_item {
 	@NoWrap@
 	padding-left:@BoxPaddingSize@;
-	color:#2869FF;		/* ??? USE?  text color comes from OrangeC, RedC, etc? */
+	/*color:#2869FF;*/		/* ??? USE?  text color comes from OrangeC, RedC, etc? */
 }
 
 .calendar_month_day_item-dnd {
