@@ -145,6 +145,9 @@
                                 <td colspan="3" >
                                     <textarea class='zo_msgcompose' rows="30" style='width:100%' cols="40"
                                               id="bodyField" name="body">${fn:escapeXml(compose.content)}</textarea>
+                                    <!-- Shd be removed later-->
+                                    <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
+
                                 </td>
                             </tr>
                         </table>
