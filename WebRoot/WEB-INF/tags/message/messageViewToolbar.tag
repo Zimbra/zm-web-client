@@ -20,7 +20,7 @@
                         <a href="${fn:escapeXml(closeurl)}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.gif" alt="close"/> <span>&nbsp;${fn:escapeXml(context.backTo)}&nbsp;</span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
-                    <app:button id="${keys ? 'OPDELETE' :''}" name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
+                    <app:button id="${keys ? 'OPDELETE' :''}" name="actionDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT"/>
                     <td><div class='vertSep'></div></td>
                     <td  nowrap valign="middle">
                         <select name="folderId"  onchange="zclick('SOPMOVE')">
