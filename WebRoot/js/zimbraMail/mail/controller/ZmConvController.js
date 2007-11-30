@@ -126,22 +126,17 @@ function(view) {
 	if (this._conv.numMsgs > 1) {
 		var menu = new ZmPopupMenu(delButton);
 		delButton.setMenu(menu);
-		delButton.noMenuBar = true;
-
-		var id = ZmOperation.DELETE_MSG;
+		
+		var id = ZmOperation.DELETE_CONV;
 		var mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
-		mi.setData(ZmOperation.MENUITEM_ID, ZmOperation.DELETE_MSG);
-		mi.addSelectionListener(this._listeners[ZmOperation.DELETE]);
-
-		id = ZmOperation.DELETE_CONV;
-		mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
 		mi.setData(ZmOperation.MENUITEM_ID, ZmOperation.DELETE_CONV);
 		mi.addSelectionListener(this._listeners[ZmOperation.DELETE]);
+
+	} else {
+		if (delButton.getMenu())
+			delButton.setMenu(null);
 	}
-	else if (delButton.getMenu()) {
-		delButton.setMenu(null);
-	}
-};
+}
 
 /*
 * Override to replace DELETE with DELETE_MENU
@@ -152,7 +147,7 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.CHECK_MAIL,
 			ZmOperation.SEP,
-			ZmOperation.DELETE_MENU, ZmOperation.MOVE, ZmOperation.PRINT];
+			ZmOperation.DELETE_MENU, ZmOperation.MOVE, ZmOperation.PRINT_ONE];
 }
 
 ZmConvController.prototype._getViewType =
@@ -175,30 +170,16 @@ function(view) {
 // Delete one or more items.
 ZmConvController.prototype._deleteListener = 
 function(ev) {
+	
 	if (ev.item.getData(ZmOperation.MENUITEM_ID) == ZmOperation.DELETE_CONV) {
 		// use conv list controller to delete conv
 		var clc = AjxDispatcher.run("GetConvListController");
 		clc._doDelete([this._conv]);
 		this._app.popView();
-	}
-	else if (ev.item.getMenu() == null) {
-		var items = this._listView[this._currentView].getSelection();
-		var delItems = [];
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			var folder = item.folderId ? appCtxt.getById(item.folderId) : null;
-			var canDelete = (!folder || (folder && !folder.isInTrash()));
-			if (canDelete) {
-				delItems.push(item);
-			}
-		}
-		if (delItems.length) {
-			this._doDelete(delItems);
-		}
 	} else {
-		ev.item.popup();
+		ZmDoublePaneController.prototype._deleteListener.call(this, ev);
 	}
-};
+}
 
 // If one or more messages have been moved/deleted, and the CLV from which we came represents
 // folder contents, see if this conv still belongs in that folder. It does if it has at least
@@ -302,11 +283,17 @@ function() {
 		this._checkConvLocation();
 		this._app.popView();
 	} else {
-		var delButton = this._toolbar[this._currentView].getButton(ZmOperation.DELETE_MENU);
-		var delMenu = delButton ? delButton.getMenu() : null;
-		if (delMenu) {
-			delMenu.enable(ZmOperation.DELETE_MSG, false);
+		// otherwise disable delete toolbar button if selected msg has been deleted
+		var bAllDeleted = true;
+		var selection = this._listView[this._currentView].getSelection();
+		for (var i = 0; i < selection.length; i++) {
+			if (selection[i].folderId != ZmFolder.ID_TRASH) {
+				bAllDeleted = false;
+				break;
+			}
 		}
+
+		this._toolbar[this._currentView].getButton(ZmOperation.DELETE_MENU).setEnabled(!bAllDeleted);
 	}
 
 	return popView;
@@ -351,34 +338,34 @@ function(parent, num) {
 	ZmDoublePaneController.prototype._resetOperations.call(this, parent, num);
 
 	var canDelete = false;
-	var items = this._doublePaneView.getSelection();
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var folder = item.folderId ? appCtxt.getById(item.folderId) : null;
-		canDelete = (!folder || (folder && !folder.isInTrash()));
-		if (canDelete) {
-			break;
+	var folderId = this._getSearchFolderId();
+	var folder = folderId ? appCtxt.getById(folderId) : null;
+
+	if (!folder || (folder && !folder.isReadOnly())) {
+		canDelete = true;
+		if (folderId != ZmFolder.ID_TRASH) {
+			// if all selected items are deleted, then disable delete button
+			// XXX: hmmm, that also disables "Delete Conv" in the menu
+			canDelete = false;
+			var selItems = this._listView[this._currentView].getSelection();
+			for (var i = 0; i < selItems.length; i++) {
+				if (selItems[i] && selItems[i].folderId != ZmFolder.ID_TRASH) {
+					canDelete = true;
+					break;
+				}
+			}
 		}
 	}
-
-	parent.enable(ZmOperation.DELETE, canDelete);
-
-	if (parent instanceof ZmButtonToolBar) {
-		parent.enable(ZmOperation.DELETE_MENU, true);
-		var delButton = parent.getButton(ZmOperation.DELETE_MENU);
-		var delMenu = delButton ? delButton.getMenu() : null;
-		if (delMenu) {
-			delMenu.enable(ZmOperation.DELETE_MSG, canDelete);
-		}
-	}
-};
+	
+	parent.enable(ZmOperation.DELETE_MENU, canDelete);
+}
 
 ZmConvController.prototype._resetNavToolBarButtons = 
 function(view) {
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
 
 	var list = this._conv.list.getVector();
-
+	
 	// enable/disable up/down buttons per conversation index
 	var first = list.get(0);
 	this._navToolBar[view].enable(ZmOperation.PAGE_DBL_BACK, (first && first != this._conv));
@@ -389,7 +376,7 @@ function(view) {
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_BACK, ZmMsg.previous + " " + ZmMsg.conversation);
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_FORW, ZmMsg.next + " " + ZmMsg.conversation);
-};
+}
 
 ZmConvController.prototype._getNumTotal =
 function() {
