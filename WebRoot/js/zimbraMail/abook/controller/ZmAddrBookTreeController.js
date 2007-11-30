@@ -48,7 +48,8 @@ ZmAddrBookTreeController.prototype.show =
 function(params) {
 	params.include = {};
 	params.include[ZmFolder.ID_TRASH] = true;
-	var treeView = ZmFolderTreeController.prototype.show.call(this, params);
+    params.showUnread = false;
+    var treeView = ZmFolderTreeController.prototype.show.call(this, params);
 
 	// contacts app has its own Trash folder so listen for change events
 	var trash = this.getDataTree().getById(ZmFolder.ID_TRASH);
