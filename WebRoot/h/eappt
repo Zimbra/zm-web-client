@@ -115,13 +115,13 @@
                                 <td><div class='vertSep'></div></td>
                                 <c:choose>
                                     <c:when test="${hasAttendees}">
-                                        <app:button name="actionApptCancel" tooltip="actionApptCancelTT" text="cancel"/>
+                                        <app:button name="actionApptCancel" src="common/ImgCancel.gif" tooltip="actionApptCancelTT" text="cancel"/>
                                     </c:when>
                                     <c:when test="${isInstance}">
-                                        <app:button name="actionApptDelete" tooltip="actionApptDeleteInstTT" text="deleteInst"/>
+                                        <app:button name="actionApptDelete" src="startup/ImgDelete.gif" tooltip="actionApptDeleteInstTT" text="deleteInst"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <app:button name="actionApptDelete" tooltip="actionApptDeleteTT" text="delete"/>
+                                        <app:button name="actionApptDelete" src="startup/ImgDelete.gif" tooltip="actionApptDeleteTT" text="delete"/>
                                     </c:otherwise>
                                 </c:choose>
                             </c:if>
