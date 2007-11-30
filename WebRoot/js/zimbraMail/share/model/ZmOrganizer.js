@@ -666,9 +666,9 @@ ZmOrganizer.prototype.setColor =
 function(color, callback, errorCallback) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) { return; }
-	if (color == ZmOrganizer.DEFAULT_COLOR[this.type]) {
+    /*if (color == ZmOrganizer.DEFAULT_COLOR[this.type]) {
 		color = 0;
-	}
+	}*/
 	this._organizerAction({action: "color", attrs: {color: color}, callback: callback, errorCallback: errorCallback});
 };
 
