@@ -217,11 +217,15 @@ function() {
 		options: 			["Arial", "Times New Roman", "Courier", "Verdana"],
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
-
-	ZmPref.registerPref("COMPOSE_INIT_FONT_SIZE", {
+    //Yuck: Should add funcationality in Pref. to add prefix/postfix to all options. Meanwhile... 
+    var fontSizeOptions = ["8", "10", "12", "14", "18", "24", "36"];
+    for(var i=0; i<fontSizeOptions.length; i++){
+        fontSizeOptions[i] = fontSizeOptions[i] + ZmMsg.pt;
+    }
+    ZmPref.registerPref("COMPOSE_INIT_FONT_SIZE", {
 		displayName:		null,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions: 	["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"],
+		displayOptions: 	fontSizeOptions,
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
 
