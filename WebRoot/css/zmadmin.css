@@ -681,3 +681,11 @@ div.ZaSearchBuilderOptionRemoveAll table  {
 .XFormCase .ZaFullPageXFormListView .DwtListView-Rows {
 	overflow:visible;
 }
+
+.licenseExpired, .licenseNotYetValid {
+	background-color: #FF241B ;
+}
+
+.licenseWillExpire {
+	background-color: #FFBB20 ;
+}
