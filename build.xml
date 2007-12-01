@@ -1098,13 +1098,13 @@ if (ext == null) ext = "";
 	<target name="jspc.precompile">
 		<mkdir dir="${jspc.src.dir}"/>
 		<copy todir="${jspc.src.dir}">
-			<fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/**,WEB-INF/**"/>
+			<fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp,WEB-INF/**"/>
 		</copy>
-		<fileset id='jspc.fileset' dir='${jspc.src.dir}' />
+		<fileset id='jspc.fileset' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp"/>
 		<pathconvert property='jspc.filelist' refid='jspc.fileset' pathsep=',' />
 
 		<mkdir dir="${jspc.build.dir}"/>
-		<foreach target='jspc' list='m/img,${jspc.filelist}' param='param.jspfile' />
+		<foreach target='jspc' list='${jspc.filelist}' param='param.jspfile' />
 	</target>
 
      <target name="jspc.compile">
