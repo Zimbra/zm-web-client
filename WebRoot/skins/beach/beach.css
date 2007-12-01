@@ -91,12 +91,27 @@ BODY						{	margin:0px; 				}
 
 /** App Chooser **/
 #skin_spacing_app_chooser				{}
-#skin_container_app_chooser				{	@SkinBorderAppChooser@ 		}
+#skin_border_app_chooser				{	@SkinBorderAppChooser@ 		}
+
+#skin_container_app_chooser				{
+	position:absolute;
+	width:auto;
+	z-index:1;
+	height:30px;
+}
+#skin_container_offline_status			{	
+	position:absolute; 
+	white-space:nowrap; 
+	height:auto;
+	right:12px;
+	top:5px;
+	z-index:2;
+}
 
 
 /** App Toolbar **/
 #skin_spacing_app_top_toolbar			{	}
-#skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@		}
+#skin_container_app_top_toolbar			{	@SkinBorderAppToolbar@	width:auto;	}
 
 /** App  **/
 #skin_spacing_app_main					{	height:100%;			}
@@ -232,71 +247,71 @@ BODY						{	margin:0px; 				}
 
 
 /* Input stuff -- adding classes properly -- TODO: put this back into dwt.css  */
-.DwtInputField input[type="text"], 
-.DwtInputField input[type="password"],
+.DwtInputField INPUT[type="text"], 
+.DwtInputField INPUT[type="password"],
 .DwtSimpleInput {
 	@InputField@
 	@InputField-normal@
 }
-.DwtInputField textarea {
+.DwtInputField TEXTAREA {
 	@TextArea@
 	@TextArea-normal@
 }
 
-.DwtInputField-error input[type="text"],
-.DwtInputField-error input[type="password"],
+.DwtInputField-error INPUT[type="text"],
+.DwtInputField-error INPUT[type="password"],
 .DwtSimpleInput-error {
 	@InputField@
 	@InputField-error@
 }
-.DwtInputField-error textarea {
+.DwtInputField-error TEXTAREA {
 	@TextArea@
 	@TextArea-error@
 }
 
-.DwtInputField-focused input[type="text"],
-.DwtInputField-focused input[type="password"],
+.DwtInputField-focused INPUT[type="text"],
+.DwtInputField-focused INPUT[type="password"],
 .DwtSimpleInput-focused {
 	@InputField@
 	@InputField-focused@
 }
-.DwtInputField-focused textarea {
+.DwtInputField-focused TEXTAREA {
 	@TextArea@
 	@TextArea-focused@
 }
 
-.DwtInputField-disabled input[type="text"],
-.DwtInputField-disabled input[type="password"],
+.DwtInputField-disabled INPUT[type="text"],
+.DwtInputField-disabled INPUT[type="password"],
 .DwtSimpleInput-disabled {
 	@InputField@
 	@InputField-disabled@
 }
-.DwtInputField-disabled textarea {
+.DwtInputField-disabled TEXTAREA {
 	@TextArea@
 	@TextArea-disabled@
 }
 
-.DwtInputField-hint input[type="text"],
-.DwtInputField-hint input[type="password"],
-.DwtInputField-hint input,
+.DwtInputField-hint INPUT[type="text"],
+.DwtInputField-hint INPUT[type="password"],
+.DwtInputField-hint INPUT,
 .DwtSimpleInput-hint {
 	@InputField@
 	@InputField-normal@
 	@InputField-hint@
 }
-.DwtInputField-hint textarea {
+.DwtInputField-hint TEXTAREA {
 	@TextArea@
 	@InputField-hint@
 }
 
-.DwtInputField-errorhint input[type="text"],
-.DwtInputField-errorhint input[type="password"],
+.DwtInputField-errorhint INPUT[type="text"],
+.DwtInputField-errorhint INPUT[type="password"],
 .DwtSimpleInput-errorhint {
 	@InputField@
 	@InputField-error@
 	@InputField-hint@
 }
-.DwtInputField-errorhint textarea {
+.DwtInputField-errorhint TEXTAREA {
 	@TextArea-error@
 	@Text-light@
 }
@@ -305,17 +320,18 @@ BODY						{	margin:0px; 				}
 
 
 /* styles for the HTML client */
-INPUT		{	@NormalInsetBorder@	}
-SELECT		{	@NormalInsetBorder@	}
-.TabSpacer 	{	display:none;		}
-.Tab		{	white-space:nowrap;	height:30px; padding-right:5px !important;	}
-.TbTop		{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
-.TbBottom	{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
-.TabFiller	{	@AppTabSpacer@ width:100%;	}
-.List .Header TH	{	@RightSeparator@	}
-.ZhSubTabs	{	@TabBar@	}
-.ZhSubTabs	{	padding:5px !important;	}
-.ZhSubTabs .TabSelected	{	@TabBorder-selected@	}
+INPUT[type="text"],
+INPUT[type="password"]		{	@FieldBorder@	}
+SELECT						{	@FieldBorder@	}
+.TabSpacer 					{	display:none;		}
+.Tab						{	white-space:nowrap;	height:30px; padding-right:5px !important;	}
+.TbTop						{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
+.TbBottom					{	border-width:0 1 1 0 !important; padding-right:5px !important;	}
+.TabFiller					{	@AppTabSpacer@ width:100%;	}
+.List .Header TH			{	@RightSeparator@	}
+.ZhSubTabs					{	@TabBar@	}
+.ZhSubTabs					{	padding:5px !important;	}
+.ZhSubTabs .TabSelected		{	@TabBorder-selected@	}
 
 .ZhRow TD,
-.ZhRowOdd TD		{	border-width:0 0 1 0 !important; padding-left:3px !important;	}
+.ZhRowOdd TD				{	border-width:0 0 1 0 !important; padding-left:3px !important;	}

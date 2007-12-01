@@ -1733,27 +1733,27 @@
  ***************/
 
 .DwtComboBox {
-	@ZFieldBg-normal@
-	@NormalInsetBorder@
-	@SmallRoundCorners@
-	height:24px;				/* TODO: Size assumption */
-	padding-right:2px;
+/*	@ZFieldBg-normal@
+	@FieldBorder@
+	height:24px;	
+	padding-right:2px;	*/d
 }
 
 .DwtComboBox .DwtInputField input[type='text'],
 .DwtComboBox .DwtInputField input[type='password'] {
-	border:none;
+	Xborder:none;
 }
 
 .DwtComboBox .ZButton {
-	height:16px;
-	width:16px;
+	@WidgetHeight@
+	width:20px;
 }
 
 .DwtComboBox .ZButtonBorder {
-	@RemoveRightRoundCorners@;
-	padding-right:2px;
-	margin-top:-2px;
+	@ComboBoxRoundCorners@;
+}
+.DwtComboBox .ImgSelectPullDownArrow {
+	margin-right:5px;
 }
 
 
