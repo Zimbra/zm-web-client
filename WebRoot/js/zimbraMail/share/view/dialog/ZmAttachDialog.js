@@ -42,7 +42,7 @@ ZmAttachDialog = function(shell, className) {
     this._tabKeys = {};
 
     var okButton = this.getButton(DwtDialog.OK_BUTTON);
-    okButton.setText("Attach");
+    okButton.setText(ZmMsg.attach);
 	
 	//Add Default MyComputer tab
     this._addMyComputerTab();
@@ -209,7 +209,7 @@ ZmAttachDialog.prototype.upload = function(callback, uploadForm) {
     if (!callback) callback = false;
     this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
     this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
-    this.setFooter("Attaching files...");
+    this.setFooter(ZmMsg.attachingFiles);
     this._cancelUpload = false;
     this._processUpload(callback, uploadForm);
 
@@ -238,7 +238,7 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback, status, attId)
     }
 
     if (status == AjxPost.SC_OK) {
-        this.setFooter("Finished attaching files.");
+        this.setFooter(ZmMsg.attachingFilesDone);
         if (callback) {
             callback.run(status, attId);
         }
@@ -263,7 +263,7 @@ ZmAttachDialog.prototype._uploadDoneCallback = function(callback, status, attId)
         dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
         dialog.popup();
 
-        this.setFooter("Error while attaching files.")
+        this.setFooter(ZmMsg.attachingFilesError);
     }
 };
 
@@ -279,7 +279,6 @@ ZmAttachDialog.prototype._addMyComputerTab = function() {
 };
 
 //Inline Option for attachment Dialog.
-ZmAttachDialog.INLINE_OPTION_MSG = "Show images in message body";
 ZmAttachDialog.prototype._setInlineOptionSection = function(view){
     var div = document.createElement("div");
     div.style.height = "10px";
@@ -298,7 +297,7 @@ ZmAttachDialog.prototype.enableInlineOption = function(enable) {
         var html = [];
         var idx = 0;
 	    //Adding inline option
-        html[idx++] = "<input type='checkbox' name='inlineimages' id='inline'>&nbsp;" + ZmAttachDialog.INLINE_OPTION_MSG;
+        html[idx++] = "<input type='checkbox' name='inlineimages' id='inline'>&nbsp;" + ZmMsg.inlineAttachmentOption;
         html = html.join("");
 
         this._inlineOption.setAttribute("option", "inline");
@@ -377,7 +376,6 @@ ZmMyComputerTabViewPage.prototype.constructor = ZmMyComputerTabViewPage;
 ZmMyComputerTabViewPage.SHOW_NO_ATTACHMENTS = 5;
 ZmMyComputerTabViewPage.MAX_NO_ATTACHMENTS = 10;
 ZmMyComputerTabViewPage.UPLOAD_FIELD_NAME = "_attFile_";
-ZmMyComputerTabViewPage.ADD_ATTACHMENT_FIELD = "Add More Attachments";
 
 ZmMyComputerTabViewPage.prototype.toString = function() {
     return "ZmMyComputerTabViewPage";
@@ -537,7 +535,7 @@ ZmMyComputerTabViewPage.prototype.addAttachmentField = function(noRemoveLink) {
     var html = [];
     var idx = 0;
     html[idx++] = "<table cellspacing=2 cellpadding=0 border=0><tr><td><div class='attachText'>";
-    html[idx++] = ["Attach File ",this._attachCount,":"].join("");
+    html[idx++] = AjxMessageFormat.format(ZmMsg.attachFileNo, this._attachCount);
     html[idx++] = "</div></td><td class='nobreak'><input id='";
     html[idx++] = attInputId;
     html[idx++] = "' type='file' name='";
@@ -586,7 +584,7 @@ ZmMyComputerTabViewPage.prototype._addAttachmentFieldButton = function() {
     var cell = row.insertCell(-1);
 
     var addAttachmentFieldButton = new DwtButton(this);
-    addAttachmentFieldButton.setText(ZmMyComputerTabViewPage.ADD_ATTACHMENT_FIELD);
+    addAttachmentFieldButton.setText(ZmMsg.addMoreAttachments);
     cell.appendChild(addAttachmentFieldButton.getHtmlElement());
     addAttachmentFieldButton.addSelectionListener(new AjxListener(this, this.addAttachmentField));
 
