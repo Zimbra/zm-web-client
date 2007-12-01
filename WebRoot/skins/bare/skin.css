@@ -22,3 +22,17 @@
 #skin_container_app_toolbar_sep .vertSep {
 	display:none;
 }
+
+.ZmComposeView {
+	background-color: #CBE0F1 !important;
+	@FullWidth@
+}
+
+.ZmContactInfoView .contactHeaderSection {
+	padding: 4px;
+	background-color: #CBE0F1 !important; 				/* get this from skin.properties */
+	@FontSize-big@
+	font-weight: bold;
+	margin-top: 10px;
+	border-bottom: 1px solid #c0d9ee;		/* get this from skin.properties */
+}
