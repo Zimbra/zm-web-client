@@ -17,7 +17,7 @@
 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
 <app:calendarUrl appt="${appt}" var="apptUrl"/>
 <c:if test="${selected}">
-    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <table width="100%" border="0" style="height:100%;" cellspacing="0" cellpadding="0">
         <tr>
         <td class='ZhApptSel'>
 </c:if>
