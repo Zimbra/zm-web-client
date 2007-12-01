@@ -936,6 +936,7 @@ function(appt, action, mode) {
 
 ZmCalViewController.prototype._continueDelete =
 function(appt, mode) {
+	var respCallback = new AjxCallback(this, this._handleResponseContinueDelete);
 	appt.cancel(mode, null, respCallback, this._errorCallback);
 };
 
