@@ -21,50 +21,50 @@
 
 ZmImAddress = {
 
-        IM_SERVICES : [
-                { label: "Zimbra" , value: "local" },
-                { label: "Yahoo"  , value: "yahoo" },
-                { label: "MSN"    , value: "msn" },
-                { label: "AOL"    , value: "aol" }
-        ],
+    IM_SERVICES : [
+    { label: ZmMsg.zimbraTitle , value: "local" },
+    { label: ZmMsg.yahoo  , value: "yahoo" },
+    { label: ZmMsg.msn    , value: "msn" },
+    { label: ZmMsg.aol    , value: "aol" }
+            ],
 
-        REGEXP : [], // it's built at load-time below
+    REGEXP : [], // it's built at load-time below
 
-        parse : function(addr) {
-                var m = ZmImAddress.REGEXP.exec(addr);
-                if (m) {
-                        return { service    : m[1],
-                                 screenName : m[2] };
-                }
-                // undef if unknown
-        },
-
-        make : function(service, screenName) {
-                var addr = service + "://" + screenName;
-                // check if it's acceptable
-                if (ZmImAddress.parse(addr)) {
-                        return addr;
-                }
-                return "";
-        },
-
-        display : function(addr) {
-                addr = ZmImAddress.parse(addr);
-                if (addr) {
-                        var a = ZmImAddress.IM_SERVICES, i = 0, s;
-                        while (s = a[i++]) {
-                                if (s.value == addr.service)
-                                        break;
-                        }
-                        if (s)
-                                return addr.screenName + " (" + s.label + ")";
-                }
-                return "";
+    parse : function(addr) {
+        var m = ZmImAddress.REGEXP.exec(addr);
+        if (m) {
+            return { service    : m[1],
+                screenName : m[2] };
         }
+                // undef if unknown
+    },
+
+    make : function(service, screenName) {
+        var addr = service + "://" + screenName;
+                // check if it's acceptable
+        if (ZmImAddress.parse(addr)) {
+            return addr;
+        }
+        return "";
+    },
+
+    display : function(addr) {
+        addr = ZmImAddress.parse(addr);
+        if (addr) {
+            var a = ZmImAddress.IM_SERVICES, i = 0, s;
+            while (s = a[i++]) {
+                if (s.value == addr.service)
+                    break;
+            }
+            if (s)
+                return addr.screenName + " (" + s.label + ")";
+        }
+        return "";
+    }
 
 };
 
 for (var i = 0; i < ZmImAddress.IM_SERVICES.length; ++i)
-        ZmImAddress.REGEXP.push(ZmImAddress.IM_SERVICES[i].value);
+    ZmImAddress.REGEXP.push(ZmImAddress.IM_SERVICES[i].value);
 
 ZmImAddress.REGEXP = new RegExp("^(" + ZmImAddress.REGEXP.join("|") + ")://([^\\s]+)$", "i");
