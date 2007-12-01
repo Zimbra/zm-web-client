@@ -6,7 +6,15 @@
 
     <property environment="env"/>
 
-    <property name='common.dir' value='../ZimbraCommon'/>
+	<property file="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/build-custom.properties" />
+
+	<target name='test' depends='client'>
+		<echo>custom.web.includes: ${custom.web.includes}</echo>
+		<echo>common.web.includes: ${common.web.includes}</echo>
+		<echo>web.includes:        ${web.includes}</echo>
+	</target>
+
+	<property name='common.dir' value='../ZimbraCommon'/>
     <property name='common.lib.dir' value='${common.dir}/jars'/>
     <property name='common.build.dir' value='${common.dir}/build'/>
     <property name='common.build.classes.dir' value='${common.build.dir}/classes'/>
@@ -88,23 +96,23 @@
     <!-- Targets -->
 
     <target name='common'>
-        <property name='common.web.includes' value='js/**,css/**'/>
-        <property name='common.web.excludes' value='**/ZmSettings.js,js/*/package/**'/>
-        <property name='common.jsp.includes' value='**'/>
-        <property name='common.jsp.excludes' value=''/>
-        <property name='common.img.includes' value='**'/>
-        <property name='common.img.excludes' value='_*/**,**/_*'/>
-        <property name='common.template.includes' value='**/*.template'/>
-        <property name='common.template.excludes' value=''/>
-        <property name='common.jam.includes' value='**/package/*.js'/>
-        <property name='common.jam.excludes' value=''/>
-        <property name='common.help.includes' value='**'/>
-        <property name='common.help.excludes' value='**/*.zip'/>
-        <property name='common.build.web.includes' value='**'/>
+        <property name='common.web.includes' value='${custom.web.includes},js/**,css/**'/>
+        <property name='common.web.excludes' value='${custom.web.excludes},**/ZmSettings.js,js/*/package/**'/>
+        <property name='common.jsp.includes' value='${custom.jsp.includes},**'/>
+        <property name='common.jsp.excludes' value='${custom.jsp.excludes}'/>
+        <property name='common.img.includes' value='${custom.img.includes},**'/>
+        <property name='common.img.excludes' value='${custom.img.excludes},_*/**,**/_*'/>
+        <property name='common.template.includes' value='${custom.template.includes},**/*.template'/>
+        <property name='common.template.excludes' value='${custom.template.excludes}'/>
+        <property name='common.jam.includes' value='${custom.jam.includes},**/package/*.js'/>
+        <property name='common.jam.excludes' value='${custom.jam.excludes},'/>
+        <property name='common.help.includes' value='${custom.help.includes},**'/>
+        <property name='common.help.excludes' value='${custom.help.excludes},**/*.zip'/>
+        <property name='common.build.web.includes' value='${custom.build.web.includes},**'/>
         <property name='common.build.web.excludes'
-                  value='js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
-        <property name='common.webinf.includes' value='**'/>
-        <property name='common.webinf.excludes' value='web.*,lib/**'/>
+                  value='${custom.web.build.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
+        <property name='common.webinf.includes' value='${custom.webinf.includes},**'/>
+        <property name='common.webinf.excludes' value='${custom.webinf.excludes},web.*,lib/**'/>
     </target>
 
     <target name='ajax' depends='common'>
@@ -135,7 +143,7 @@
         <property name='skins.dir' value='${web.dir}/skins'/>
         <property name='help.dir' value='${web.dir}/help'/>
         <property name='build.help.dir' value='${build.web.dir}/help'/>
-        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**,y/**'/>
+        <property name='web.includes' value='${common.web.includes},h/**,m/**,portals/**,sounds/**,test/**,yui/**'/>
         <property name='web.excludes' value='${common.web.excludes},js/zimbraAdmin/**'/>
         <property name='jsp.includes' value='${common.jsp.includes}'/>
         <property name='jsp.excludes' value='${common.jsp.excludes},admin.jsp'/>
@@ -339,8 +347,8 @@
 					<then>
 						<fileset id='customer.web.fileset'
 								 dir='${customer.web.dir}'
-								 includes='h/**,m/**,skins/**,portals/**,y/**,js/**'
-								 excludes='**/*.template'
+								 includes='${custom.web.includes},h/**,m/**,skins/**,portals/**,js/**'
+								 excludes='${custom.web.excludes},**/*.template'
 						/>
 						<pathconvert property='customer.web.excludes' refid='customer.web.fileset' pathsep=','>
 							<regexpmapper from="^.*/WebRoot/(.*)$$" to="\1"/>
@@ -642,7 +650,7 @@
                     />
             <fileset dir='${build.web.dir}' includes='skins/${skinname}/**'/>
             <fileset dir='${customer.web.dir}' includes='portals/${skinname}/**'/>
-            <fileset dir='${customer.web.dir}' includes='h/**,m/**,y/**'/>
+            <fileset dir='${customer.web.dir}' includes='${custom.web.jsp.includes},h/**,m/**'/>
             <fileset dir='${customer.web.dir}' includes='WEB-INF/**'/>
         </zip>
     </target>
@@ -1079,14 +1087,10 @@ if (ext == null) ext = "";
 
 	<target name="jspc.precompile">
 		<mkdir dir="${jspc.src.dir}"/>
-		<copy todir="${jspc.src.dir}/h"><fileset dir="${web.dir}/h"/></copy>
-		<copy todir="${jspc.src.dir}/m"><fileset dir="${web.dir}/m"/></copy>
-	        <if><available file="${web.dir}/y" type="dir"/><then>
-			<copy todir="${jspc.src.dir}/y"><fileset dir="${web.dir}/y"/></copy>
-        	</then></if>
-		<copy todir="${jspc.src.dir}/public"><fileset dir="${web.dir}/public"/></copy>
-		<copy todir="${jspc.src.dir}/WEB-INF"><fileset dir="${web.dir}/WEB-INF"/></copy>
-		<fileset id='jspc.fileset' dir='${jspc.src.dir}' includes='h/*,m/*,y/**,public/*.jsp' />
+		<copy todir="${jspc.src.dir}">
+			<fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/**,WEB-INF/**"/>
+		</copy>
+		<fileset id='jspc.fileset' dir='${jspc.src.dir}' />
 		<pathconvert property='jspc.filelist' refid='jspc.fileset' pathsep=',' />
 
 		<mkdir dir="${jspc.build.dir}"/>
