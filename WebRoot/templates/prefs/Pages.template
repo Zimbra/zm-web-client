@@ -199,7 +199,7 @@ and the container element is replaced with that control.
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField' style='padding-left:2em;'>
-						<input id='${id}_MAIL_FORWARDING_ADDRESS' tabindex='110' title='enter email address'>
+						<input id='${id}_MAIL_FORWARDING_ADDRESS' tabindex='110' title='<$= ZmMsg.enterEmailAddress $>'>
 					</td>
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
@@ -224,7 +224,7 @@ and the container element is replaced with that control.
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField' style='padding-left:2em;'>
-						<input id='${id}_NOTIF_ADDRESS' tabindex='140' title='enter email address'>
+						<input id='${id}_NOTIF_ADDRESS' tabindex='140' title='<$= ZmMsg.enterEmailAddress $>'>
 					</td>
 				</tr>
 				<$ } $>
