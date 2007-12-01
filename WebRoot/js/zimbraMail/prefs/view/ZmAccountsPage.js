@@ -262,7 +262,7 @@ ZmAccountsPage.prototype.setAccount = function(account) {
 
 	// toggle delete button
 	if (this._deleteButton) {
-		this._deleteButton.setEnabled(account.type != ZmAccount.ZIMBRA);
+		this._deleteButton.setEnabled(account && account.type != ZmAccount.ZIMBRA);
 	}
 
 	// intialize sections
@@ -330,11 +330,14 @@ ZmAccountsPage.prototype.reset = function(useDefaults) {
 
 	// add zimbra accounts (i.e. family mboxes)
 	var mboxes = appCtxt.getZimbraAccounts();
+	var active = appCtxt.getActiveAccount();
 	for (var j in mboxes) {
 		var acct = mboxes[j];
 		// NOTE: We create proxies of all of the account objects so that we can
 		//       store temporary values while editing.
-		this._accounts.add(ZmAccountsPage.__createProxy(acct));
+		if (active.isMain || acct == active) {
+			this._accounts.add(ZmAccountsPage.__createProxy(acct));
+		}
 	}
 
 	// add various other account types
@@ -1450,7 +1453,7 @@ ZmAccountsPage.prototype._handleCreateFolderResponse =
 function(dataSource, result) {
 	var resp = result && result._data && result._data.CreateFolderResponse;
 	if (resp) {
-		dataSource.folderId = resp.folder[0].id;
+		dataSource.folderId = ZmOrganizer.normalizeId(resp.folder[0].id);
 	}
 	else {
 		// HACK: Don't know a better way to set an error condition

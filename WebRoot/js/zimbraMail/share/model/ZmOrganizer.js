@@ -717,12 +717,13 @@ function() {
 };
 
 ZmOrganizer.prototype._empty = 
-function(){
+function() {
 	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
-					  (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
+					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH));
 	// make sure we're not emptying a system object (unless it's SPAM or TRASH)
 	if (this.isSystem() && !isEmptyOp) return;
+
 	var params = {action:"empty"};
 	if (this.id == ZmFolder.ID_TRASH) {
 		params.attrs = {recursive:"true"};
@@ -732,7 +733,6 @@ function(){
 	}
 	this._organizerAction(params);
 };
-
 
 ZmOrganizer.prototype.markAllRead =
 function() {

@@ -327,7 +327,8 @@ function(callback, result) {
 			// change imap folder to a tree header since folder is first created
 			// without knowing its a datasource
 			treeItem.dispose();
-			var parentNode = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
+			var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
+			var parentNode = treeView.getTreeItemById(rootId);
 			var organizer = appCtxt.getById(this.folderId);
 			treeView._addNew(parentNode, organizer);
 		}
