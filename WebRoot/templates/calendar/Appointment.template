@@ -143,7 +143,7 @@
 						<td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_startDate'></td>
 						<td id='${id}_startMiniCal'></td>
 						<td>&nbsp;</td>
-						<td>@</td>
+						<td><$= ZmMsg.at $></td>
 						<td>&nbsp;</td>
 						<td id='${id}_startTime'></td>
 					</tr>
@@ -158,7 +158,7 @@
 						<td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_endDate'></td>
 						<td id='${id}_endMiniCal'></td>
 						<td>&nbsp;</td>
-						<td>@</td>
+						<td><$= ZmMsg.at $></td>
 						<td>&nbsp;</td>
 						<td id='${id}_endTime'></td>
 					</tr>
@@ -210,7 +210,7 @@
 				</tr></table>
 			</td>
 			<$ if (data.isAppt) { $>
-  			<td id='${id}_startTimeAtLbl' class='ZmFieldLabelCenter'>@</td>
+  			<td id='${id}_startTimeAtLbl' class='ZmFieldLabelCenter'><$= ZmMsg.at $></td>
         <td id='${id}_startTimeSelect'></td>
 			<$ } $>
 		</tr>
@@ -223,7 +223,7 @@
 				</tr></table>
 			</td>
 			<$ if (data.isAppt) { $>
-        <td id='${id}_endTimeAtLbl' class='ZmFieldLabelCenter'>@</td>
+        <td id='${id}_endTimeAtLbl' class='ZmFieldLabelCenter'><$= ZmMsg.at $></td>
         <td id='${id}_endTimeSelect'></td>
 			<$ } $>
 		</tr>
