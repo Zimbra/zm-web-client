@@ -14,7 +14,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtCheckbox'>
-  <table>
+  <table cellpadding='0' cellspacing='0' border='0'>
     <tr>
       <td>
         <label id='${id}_text_left' for='${id}_input' class='Test' style='text-align:right'></label>
@@ -28,7 +28,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtRadioButton'>
-  <table>
+  <table cellpadding='0' cellspacing='0' border='0'>
     <tr>
       <td>
         <label id='${id}_text_left' for='${id}_input' class='Test' style='text-align:right'></label>
@@ -439,7 +439,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 </template>
 
 <template id='dwt.Widgets#DwtPasswordField'>
-	<table>
+	<table cellpadding='0' cellspacing='0' border='0'>
 		<tr>
 			<td><div id='${id}_input'></div></td>
 			<td><div id='${id}_show_password'></div></td>

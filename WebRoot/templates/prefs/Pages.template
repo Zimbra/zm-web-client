@@ -711,7 +711,7 @@ and the container element is replaced with that control.
 					<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField' style='padding-left:2em;'>
+					<td class='ZOptionsField'>
 						<input id='${id}_PRIMARY_FROM_NAME' tabindex='1030' size=30 title='<$=ZmMsg.exampleEmailName$>'>
 					</td>
 				</tr>
@@ -720,8 +720,8 @@ and the container element is replaced with that control.
 					<td class='ZOptionsField'><input id='${id}_PRIMARY_REPLY_TO' tabindex='1040' type=checkbox></td>
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField' style='padding-left:2em;'>
-						<table><tr>
+					<td class='ZOptionsField'>
+						<table cellpadding='0' cellspacing='0' border='0'><tr>
 							<td style='padding-right:.5em;'>
 								<input id='${id}_PRIMARY_REPLY_TO_NAME' tabindex='1050' size=30 title='<$=ZmMsg.exampleEmailName$>'>
 							</td>
@@ -791,7 +791,7 @@ and the container element is replaced with that control.
 
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.advancedSettingsLabel$></td>
 					<td class='ZOptionsField'>
-						<table><tr>
+						<table cellpadding='0' cellspacing='0' border='0'><tr>
 						<td><input id='${id}_EXTERNAL_CHANGE_PORT' tabindex='2070' type=checkbox></td>
 						<td><input id='${id}_EXTERNAL_PORT' tabindex='2080' size=4></td>
 						<td class='ZOptionsInfo'><span id='${id}_EXTERNAL_PORT_DEFAULT'></span></td>
@@ -826,7 +826,7 @@ and the container element is replaced with that control.
 					<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField' style='padding-left:2em;'>
+					<td class='ZOptionsField'>
 						<input id='${id}_EXTERNAL_FROM_NAME' tabindex='2130' size=30 title='e.g. Bob Smith'>
 					</td>
 				</tr>
@@ -835,8 +835,8 @@ and the container element is replaced with that control.
 					<td class='ZOptionsField'><input id='${id}_EXTERNAL_REPLY_TO' tabindex='2140' type=checkbox></td>
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField' style='padding-left:2em;'>
-						<table><tr>
+					<td class='ZOptionsField'>
+						<table cellpadding='0' cellspacing='0' border='0'><tr>
 							<td style='padding-right:.5em;'>
 								<input id='${id}_EXTERNAL_REPLY_TO_NAME' tabindex='2150' size=30 title='e.g. Bob Smith'>
 							</td>
