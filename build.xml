@@ -1010,6 +1010,16 @@ if (ext == null) ext = "";
         <imagesort source='images' target='${skin.dir}/img' delete='true'/>
     </target>
 
+    <target name='sortcustomerimg' depends='images-init'>
+        <!-- usage:  make a "images" directory in your ZimbraWebClient directory and do:
+                  ant -Denv.CUSTOMER_SKIN=<customername> sortcustomerimg
+               e.g.
+                   ant -Denv.CUSTOMER_SKIN=velodrome sortcustomerimg
+          -->
+        <echo message='Sorting icons from ZimbraWebClient/images to ${skin.dir}/img'/>
+        <imagesort source='images' target='${customer.web.dir}/img' delete='true'/>
+    </target>
+
 
     <target name='sortimages' depends='images-init'>
         <!-- check properties -->
