@@ -342,9 +342,17 @@ function(instance, current, refPath) {
  */
 ZmCalItem.prototype.isMultiDay =
 function() {
-	return (this.startDate.getDate() != this.endDate.getDate()) ||
-		   (this.startDate.getMonth() != this.endDate.getMonth()) ||
-		   (this.startDate.getFullYear() != this.endDate.getFullYear());
+	var start = this.startDate;
+	var end = this.endDate;
+	if (end.getHours() == 0 && end.getMinutes() == 0 && end.getSeconds() == 0) {
+		// if end is the beginning of day, then disregard that it
+		// technically crossed a day boundary for the purpose of
+		// determining if it is a multi-day appt
+		end = new Date(end.getTime() - 2 * AjxDateUtil.MSEC_PER_HOUR);
+	}
+	return (start.getDate() != end.getDate()) ||
+		   (start.getMonth() != end.getMonth()) ||
+		   (start.getFullYear() != end.getFullYear());
 };
 
 /**
@@ -391,47 +399,24 @@ function(part) {
 
 ZmCalItem.prototype.getDurationText =
 function(emptyAllDay,startOnly) {
-	if (this.isAllDayEvent()) {
-		if (emptyAllDay) {
-			return "";
-		} else if (this.isMultiDay()) {
-			var endDate = new Date(this.endDate.getTime());
-			endDate.setDate(endDate.getDate()-1);
+	var isAllDay = this.isAllDayEvent();
+	var isMultiDay = this.isMultiDay();
+	if (isAllDay) {
+		if (emptyAllDay) return "";
 
-			var startDay = this._getTTDay(this.startDate);
-			var endDay = this._getTTDay(endDate);
+		var start = this.startDate;
+		var end = new Date(this.endDate.getTime() - (isMultiDay ? 2 * AjxDateUtil.MSEC_PER_HOUR : 0));
 
-			if (!ZmCalItem._daysFormatter) {
-				ZmCalItem._daysFormatter = new AjxMessageFormat(ZmMsg.durationDays);
-			}
-			return ZmCalItem._daysFormatter.format( [ startDay, endDay ] );
-		} else {
-			return this._getTTDay(this.startDate);
-		}
-
-	} else {
-		if (startOnly) {
-			return ZmCalItem._getTTHour(this.startDate);
-		} else if (this.isMultiDay()) {
-			var startHour = ZmCalItem._getTTHour(this.startDate);
-			var startDay = this._getTTDay(this.startDate);
-			var endHour = ZmCalItem._getTTHour(this.endDate);
-			var endDay = this._getTTDay(this.endDate);
-
-			if (!ZmCalItem._multiDaysFormatter) {
-				ZmCalItem._multiDaysFormatter = new AjxMessageFormat(ZmMsg.durationMultiDays);
-			}
-			return ZmCalItem._multiDaysFormatter.format( [ startDay, startHour, endDay , endHour] );
-		} else {
-			var startHour = ZmCalItem._getTTHour(this.startDate);
-			var endHour = ZmCalItem._getTTHour(this.endDate);
-
-			if (!ZmCalItem._hoursFormatter) {
-				ZmCalItem._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
-			}
-			return ZmCalItem._hoursFormatter.format( [startHour, endHour] );
-		}
+		var pattern = isMultiDay ? ZmMsg.apptTimeAllDayMulti : ZmMsg.apptTimeAllDay;
+		return AjxMessageFormat.format(pattern, [start, end]);
 	}
+
+	if (startOnly) {
+		return ZmCalItem._getTTHour(this.startDate);
+	}
+
+	var pattern = isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance;
+	return AjxMessageFormat.format(pattern, [this.startDate, this.endDate, ""]);
 };
 
 ZmCalItem.prototype.getShortStartHour =
