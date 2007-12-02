@@ -229,7 +229,7 @@ function(popViewWhenSaved) {
 		dialog.popup();
 	    dialog.registerCallback(DwtDialog.OK_BUTTON, this._focusPageInput, this);
 		this._pageEditView.focus();
-		return;
+		return false;
 	}
 
 	this._filterScripts();
@@ -244,6 +244,7 @@ function(popViewWhenSaved) {
 	var saveCallback = new AjxCallback(this, this._saveResponseHandler, [content]);
 	var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [content]);
 	this._page.save(saveCallback, saveErrorCallback);
+    return true;
 };
 
 ZmPageEditController.prototype._filterScripts =
@@ -470,12 +471,8 @@ ZmPageEditController.prototype._formatListener = function(ev) {
 ZmPageEditController.prototype._preHideCallback =
 function(view, force) {
 	ZmController.prototype._preHideCallback.call(this);
-	if (force) {
-		this._showCurrentPage();
-		return true;
-	}
 
-	if (!this._pageEditView.isDirty()) {
+	if (!this._pageEditView.isDirty() || force) {
 		var notebookController = this._app.getNotebookController();
 		if (notebookController.isIframeEnabled()) {
 			notebookController.refreshCurrentPage();
@@ -503,15 +500,15 @@ function(view) {
 ZmPageEditController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
-	this._doSave(true);
+	if(this._doSave()){
+        this._app.popView(true);
+    }
 };
 
 ZmPageEditController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	this._app.popView(true);
-	this._showCurrentPage();
-	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._popShieldDismissCallback =
