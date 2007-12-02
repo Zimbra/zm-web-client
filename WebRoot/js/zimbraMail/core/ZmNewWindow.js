@@ -54,7 +54,6 @@ ZmNewWindow.prototype.toString =
 function() {
 	return "ZmNewWindow";
 };
-
 // Public methods
 
 /**
@@ -252,6 +251,10 @@ function() {
 
 // App view mgr calls this, we don't need it to do anything.
 ZmNewWindow.prototype.setActiveApp = function() {};
+
+ZmNewWindow.prototype.getKeyMapMgr = function(){
+    return this._kbMgr;
+};
 
 ZmNewWindow.prototype.getKeyMapName =
 function() {
