@@ -597,7 +597,7 @@ function(sched, attendee, type) {
 	var name = attendee.getFullName();
 	var email = attendee.getEmail();
 	if (name && email) {
-        var ptst = ZmMsg.attendeeStatusLabel + ZmCalItem.getLabelForParticipationStatus(attendee.getAttr("participationStatus") || "NA");
+        var ptst = ZmMsg.attendeeStatusLabel + ZmCalItem.getLabelForParticipationStatus(attendee.getAttr("participationStatus") || "NE");
         sched.inputObj.setToolTipContent(email +"<br>"+ ptst);
 	}
 };
@@ -706,7 +706,7 @@ function(index, attendee, type, isOrganizer) {
 		select.setSelectedValue(type);
 	}
 	
-    var ptst = attendee.getAttr("participationStatus") || "NA";
+    var ptst = attendee.getAttr("participationStatus") || "NE";
 	var ptstCont = sched.ptstObj;
 	if(ptstCont) {
 		var ptstIcon = ZmCalItem.getParticipationStatusIcon(ptst);
