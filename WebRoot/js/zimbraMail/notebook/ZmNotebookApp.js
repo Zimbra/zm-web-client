@@ -488,13 +488,13 @@ function(folderId) {
 	}
 	//first possible pagename page1,page2...
 	for(var i=1;i<100;i++){
-		if(pagenames.indexOf('page'+i+',')<0)
+		if(pagenames.indexOf(ZmMsg.page+i+',')<0)
 		{
-			return 'page'+i;
+			return ZmMsg.page+i;
 		}
 	}
 	
-	return 'Untitled';
+	return ZmMsg.untitled;
 };
 
 ZmNotebookApp.prototype.getPageVersionController = 
