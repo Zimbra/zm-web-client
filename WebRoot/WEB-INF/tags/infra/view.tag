@@ -35,15 +35,21 @@
         <td valign="top" align="center" width="1%" style="padding-right: 8px;">
             <a href="http://www.yahoo.com/" target="_new">
                 <span style='cursor:pointer; display: block;' class='ImgAppBanner'></span>
-
             </a>
         </td>
         <td>
-            <app:appTopUser mailbox="${mailbox}" keys="${keys}" />
+        <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
+        <table cellpadding="2" cellspacing="0" width="100%">
+            <tr>
+                <td>
+                    <b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>
+                </td>
+            </tr>
+        </table>
             <a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>&nbsp;<a href='<c:url value="/"/>'><fmt:message key="switchToAdvancedClient" /></a>
         </td>
         
-        <td valign="top" class="TopContent">
+        <td valign="top" class="TopContent" align="right" width="25%">
             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}"/>
         </td>
         <td align="right">
@@ -405,7 +411,7 @@
 	
 				</a>
 			</td>
-			<td valign="top" class="TopContent" style='width:100%'>
+			<td valign="top" class="TopContent" style='width:70%'>
                 <table cellpadding="0" cellspacing="0" width="100%">
                     <tr>
                         <td width="66%">
@@ -417,7 +423,7 @@
                     </tr>
                 </table>
 			</td>
-			<td align="right" style='padding-right:5px;'>
+			<td align="right" style="padding-right:5px;width:15%;">
 				<table cellpadding="2" cellspacing="0">
 					<tr>
 						<td colspan=3 align='center' class='ZhAppSwitchLink'>
