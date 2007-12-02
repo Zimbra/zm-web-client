@@ -364,7 +364,7 @@ function(ev) {
 	var sc = appCtxt.getSearchController();
 	sc.setSearchField("");
 	sc.getSearchToolbar().blur();
-
+	this._refreshMaintenance = true;
 	this._refreshAction(false);
 };
 
@@ -1834,7 +1834,8 @@ function() {
 	// the main view can use
 	if (work & ZmCalViewController.MAINT_MINICAL)
 	{
-		if (appCtxt.getCurrentViewId() != ZmController.CAL_VIEW) {
+		if ( this._refreshMaintenance || (appCtxt.getCurrentViewId() != ZmController.CAL_VIEW)) {
+			this._refreshMaintenance = false;
 			this.fetchMiniCalendarAppts();
 		} else {
 			var view = this._viewMgr.getCurrentView();
