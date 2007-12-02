@@ -448,6 +448,39 @@
 		</tr>
 	<$ } $>
 
+  <$ if (data.appt.hasOtherAttendees()) { $>
+		<tr valign='center'>
+			<td colspan=2 align='left'>
+				<div style='border-bottom:1px solid black;'>
+					<table cellpadding=1 cellspacing=1 border=0 width=100%>
+						<tr valign='center'>
+							<td><b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.attendees) $></div></b>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>							
+
+		<$ if(!data.showAttendeeStatus) {$>
+		<tr valign='top'>
+			<td colspan=2 align='left' style='padding-right:5px;'>
+			<$= AjxStringUtil.htmlEncode(ZmMsg.loading) $>
+			</td>
+		</tr>
+		<$ }else{ 
+			var ptstStatus = data.ptstStatus;
+			for(var i in ptstStatus)
+			{
+				if(!ptstStatus[i]) { continue; }
+			$>
+				<tr valign='top'>
+					<td align='right' style='padding-right:5px;' nowrap><b><$= AjxStringUtil.htmlEncode(i) $>:</b></td>
+					<td nowrap> &nbsp; <$= ptstStatus[i] $></td>
+				</tr>
+			<$ } 
+			} 
+		} $>
 	</table>
 </template>
 

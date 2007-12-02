@@ -136,11 +136,11 @@ function() {
 * Returns HTML for a tool tip for this appt.
 */
 ZmAppt.prototype.getToolTip =
-function(controller) {
+function(controller, force) {
 	if (this._orig)
-		return this._orig.getToolTip(controller);
+		return this._orig.getToolTip(controller, force);
 
-	if (!this._toolTip) {
+	if (!this._toolTip || force) {
         var organizer = this.getOrganizer();
         var sentBy = this.getSentBy();
         var userName = appCtxt.get(ZmSetting.USERNAME);
@@ -187,12 +187,48 @@ function(controller) {
             sentBy: sentBy,
             when: this.getDurationText(false, false),
 			location: this.getLocation(true),
-            width: "250"
+            width: "250",
+            showAttendeeStatus: (this._ptstHashMap != null)
         };
 
+		if(this._ptstHashMap != null){
+			var ptstStatus = {};
+			ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalItem.PSTATUS_ACCEPT]);
+			ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalItem.PSTATUS_DECLINED]);
+			ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalItem.PSTATUS_TENTATIVE]);
+			ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalItem.PSTATUS_NEEDS_ACTION]);
+			params.ptstStatus = ptstStatus;
+		}
+
 		this._toolTip = AjxTemplate.expand("calendar.Appointment#Tooltip", params);
+		
 	}
+
 	return this._toolTip;
+};
+
+ZmAppt.prototype.getAttendeeToolTipString =
+function(val) {
+	var str = null;
+	var maxLimit = 10;
+	if(val && val.length>maxLimit){
+		var len = val.length;
+		var newParts = val.splice(0,maxLimit);
+		str = newParts.join(",") + " ("+ (len-maxLimit) +" more)" ;
+	}else if(val){
+		str = val.join(",");	
+	}
+	return str;	
+}
+
+ZmAppt.prototype.setAttendeeToolTipData =
+function (ptstHashMap) {
+	this._ptstHashMap = ptstHashMap;
+};
+
+ZmAppt.prototype.getAttendeeToolTipData =
+function () {
+	return this._ptstHashMap;
 };
 
 ZmAppt.prototype.getSummary =
@@ -610,3 +646,28 @@ ZmAppt.prototype._getInviteFromError =
 function(result) {
 	return (result._data.GetAppointmentResponse.appt[0].inv[0]);
 };
+
+ZmAppt.prototype._updateParticipantStatus =
+function() {
+	
+	if(this._orig)
+		return this._orig._updateParticipantStatus();
+	
+	var ptstHashMap = {};	
+	var attendees = this._attendees;
+	var personAttendees = (this._attendees && this._attendees[ZmCalItem.PERSON]) ? this._attendees[ZmCalItem.PERSON] : null;
+	if(personAttendees){
+		var attendee = null;
+		var ptst = null;
+		for(var i=0; i<personAttendees.length; i++){
+			attendee = personAttendees[i];
+			ptst = attendee.getAttr("participationStatus") || "NE";				
+			if(!ptstHashMap[ptst]){
+				ptstHashMap[ptst] = new Array();
+			}
+			ptstHashMap[ptst].push(attendee.getAttendeeText(null, true));				
+		}
+	}
+	this.setAttendeeToolTipData(ptstHashMap);
+};
+		

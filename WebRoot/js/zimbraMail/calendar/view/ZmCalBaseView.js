@@ -155,13 +155,37 @@ function(ev, div) {
 	if (div._type != ZmCalBaseView.TYPE_APPT) return true;
 
 	var item = this.getItemFromElement(div);
-	if (item instanceof ZmAppt) {
+	
+	var obj = DwtUiEvent.getDwtObjFromEvent(ev);
+	var mouseEv = DwtShell.mouseEvent;
+	mouseEv.setFromDhtmlEvent(ev);
+	
+	if (item instanceof ZmAppt) {			
 		this.setToolTipContent(item.getToolTip(this._controller));
+		if(item.hasOtherAttendees() && (item._ptstHashMap == null)){
+
+			//getDetails of original appt will reset the start date and time
+			//and will break the ui layout
+			var clone = ZmAppt.quickClone(item);
+			var callback = new AjxCallback(this, this._loadParticipantStatus, [clone,item, obj, mouseEv.docX, mouseEv.docY]);
+			var errorCallback = new AjxCallback(this, this._handleParticipantStatusError, [clone, item]);
+			this._toolTipBusy = true;
+			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.getApptDetails, [clone, callback, errorCallback]),2000);			
+
+		}
+	
 	} else {
 		this.setToolTipContent(null);
 	}
 	return true;
 }
+
+ZmCalBaseView.prototype.getApptDetails =
+function(appt, callback, errorCallback) {
+	if(this._toolTipBusy){
+		appt.getDetails(null, callback, errorCallback);
+	}
+};
 
 ZmCalBaseView.prototype._mouseOutListener = 
 function(ev) {
@@ -176,6 +200,7 @@ function(ev) {
 	//		 being displayed when we re-enter the listview even though
 	//		 we're not over a list item.
 	if (div._type == ZmCalBaseView.TYPE_APPT) {
+		this._toolTipBusy = false;
 		this.setToolTipContent(null);
 	}
 	this._mouseOutAction(ev, div);
@@ -743,3 +768,40 @@ function(date, duration, isDblClick, allDay, folderId, shiftKey) {
 	this.notifyListeners(ZmCalBaseView.TIME_SELECTION, this._selectionEvent);
 	sev._isDblClick = false;
 }
+
+//once the message is loaded, attendee participation status will be available
+//need to show this on tooptip
+ZmCalBaseView.prototype._loadParticipantStatus =
+function(item, origItem, obj, x, y) {	
+	item._updateParticipantStatus();				
+	origItem.setAttendeeToolTipData(item.getAttendeeToolTipData());
+	this.setToolTipContent(item.getToolTip(this._controller, true));
+	this._showToolTipOnDemand(obj, x, y);
+	this._toolTipBusy = false;
+};
+
+//after the attendee status is updated the tooltip has to be shown
+//explicitly
+ZmCalBaseView.prototype._showToolTipOnDemand =
+function(obj, x, y) {
+	if(!obj) return;
+	if (obj.__toolTipContent != null) {
+		var shell = DwtShell.getShell(window);
+		var manager = shell.getHoverMgr();
+		if ((manager.getHoverObject() != this || !manager.isHovering()) && !DwtMenu.menuShowing()) {
+			manager.reset();
+			manager.setHoverObject(this);
+			manager.setHoverOverData(obj);
+			manager.setHoverOverDelay(DwtToolTip.TOOLTIP_DELAY);
+			manager.setHoverOverListener(obj._hoverOverListener);
+			manager.hoverOver(x, y);
+		}
+	}
+};
+
+ZmCalBaseView.prototype._handleParticipantStatusError =
+function(item, origItem) {
+	this._toolTipBusy = false;	
+	return;
+};
+
