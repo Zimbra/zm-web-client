@@ -455,7 +455,7 @@ function(row, doc, isReadOnly) {
 		if(row.className=="zmwiki-headerUnderLine"){
 			var newCell = row.insertCell(2);
 			newCell.className = "zmwiki-header";
-			newCell.innerHTML = "Actions";
+			newCell.innerHTML = ZmMsg.actions;
 			return;
 		}	
 	
@@ -493,7 +493,7 @@ function(row, doc, isReadOnly) {
 ZmNotebookPageView.prototype.createEditLink = function(doc,wikiName){
 
 	var editLink = doc.createElement("a");
-	editLink.innerHTML = "Edit";
+	editLink.innerHTML = ZmMsg.edit;
 	editLink.href='javascript:window.parent.Dwt.getObjectFromElement(window.parent.wikiFrame).editPage("'+wikiName+'");'	
 	editLink.className = "zmwiki-author";
 	return editLink;
@@ -503,7 +503,7 @@ ZmNotebookPageView.prototype.createEditLink = function(doc,wikiName){
 ZmNotebookPageView.prototype.createDeleteLink = function(doc,wikiName){
 
 	var delLink = doc.createElement("a");
-	delLink.innerHTML = "Delete";
+	delLink.innerHTML = ZmMsg.del;
 	delLink.href='javascript:window.parent.Dwt.getObjectFromElement(window.parent.wikiFrame).deletePage("'+wikiName+'");'
 	delLink.className = "zmwiki-author";
 	return delLink;
@@ -513,7 +513,7 @@ ZmNotebookPageView.prototype.createDeleteLink = function(doc,wikiName){
 ZmNotebookPageView.prototype.createHistoryLink = function(doc,wikiName){
 
 	var delLink = doc.createElement("a");
-	delLink.innerHTML = "History";
+	delLink.innerHTML = ZmMsg.historyLabel;
 	delLink.href='javascript:window.parent.Dwt.getObjectFromElement(window.parent.wikiFrame).showHistory("'+wikiName+'");'
 	delLink.className = "zmwiki-author";
 	return delLink;
