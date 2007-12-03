@@ -321,3 +321,31 @@
 		</tr>
 	</table>
 </template>
+
+<template id="share.Dialogs#ZmMountFolderDialog">
+	<table border=0 width=375>
+		<tr>
+			<td colspan=2><$= ZmMsg.mountInstructions1 $></td>
+		</tr>
+		<tr>
+			<td width=50 align=right><$= ZmMsg.emailLabel $></td>
+			<td id='${id}_email'></td>
+		</tr>
+		<tr>
+			<td width=50 align=right><$= ZmMsg.pathLabel $></td>
+			<td id='${id}_path'></td>
+		</tr>
+		<tr><td><br></td></tr>
+		<tr>
+			<td colspan=2><$= ZmMsg.mountInstructions2 $></td>
+		</tr>
+		<tr>
+			<td width=50 align=right><$= ZmMsg.nameLabel $></td>
+			<td id='${id}_name'></td>
+		</tr>
+		<tr>
+			<td width=50 align=right><$= ZmMsg.colorLabel $></td>
+			<td id='${id}_color'></td>
+		</tr>
+	</table>
+</template>
