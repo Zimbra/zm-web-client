@@ -127,7 +127,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		htmlArr[idx++] = "</center>";
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
 		// setup participants list for Sent/Drafts/Outbox folders
-		var folder = appCtxt.getById(msg.folderId);
+		var folder = appCtxt.getById(this._folderId);
 		if (this._mode == ZmController.TRAD_VIEW && folder &&
 			(folder.isUnder(ZmFolder.ID_SENT) ||
 			 folder.isUnder(ZmFolder.ID_DRAFTS) ||
