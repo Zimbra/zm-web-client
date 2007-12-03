@@ -141,7 +141,7 @@
              </tr>
              <app:optSeparator/>
              <tr>
-                 <td class='ZOptionsTableLabel' colspan=2 style='text-align:left'>
+                 <td colspan=2 style='text-align:left;font-weight:bold;'>
                      <fmt:message key="optionsManageCalendars">
                          <fmt:param><fmt:message key="optionsManageCalendarsPre"/></fmt:param>
                          <fmt:param><a href="mcalendars"><fmt:message key="optionsManageCalendarsLink"/></a></fmt:param>

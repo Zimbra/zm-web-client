@@ -187,7 +187,7 @@
         </td>
     </tr>
     <tr>
-        <td class='ZOptionsTableLabel' colspan=2 style='text-align:left'>
+        <td colspan=2 style='text-align:left;font-weight:bold;'>
             <fmt:message key="optionsManageAccounts">
                 <fmt:param><fmt:message key="optionsSigManageAccountsPre"/></fmt:param>
                 <fmt:param><a href="options?selected=accounts"><fmt:message key="optionsManageAccountsLink"/></a></fmt:param>

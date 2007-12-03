@@ -70,7 +70,7 @@
                 </tr>
                 <app:optSeparator/>
                 <tr>
-                    <td class='ZOptionsTableLabel' colspan=2 style='text-align:left'>
+                    <td colspan=2 style='text-align:left;font-weight:bold;'>
                         <fmt:message key="optionsManageAddressBooks">
                             <fmt:param><fmt:message key="optionsManageAddressBooksPre"/></fmt:param>
                             <fmt:param><a href="maddrbooks"><fmt:message key="optionsManageAddressBooksLink"/></a></fmt:param>
