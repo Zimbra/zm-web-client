@@ -235,6 +235,7 @@ function(im) {
 				}
 				// ignore unsubscribed entries for now (TODO FIXME)
 			} else if (not.type == "subscribe") {
+                                appCtxt.getApp(ZmApp.IM).prepareVisuals();
 				var view = ZmChatMultiWindowView.getInstance();
 				// it should always be instantiated by this time, but whatever.
 				if (view) {
@@ -373,6 +374,7 @@ function(im) {
 					appCtxt.setStatusMsg(ZmMsg.errorNotAuthenticated, ZmStatusView.LEVEL_WARNING);
 				}
 			} else if (not.type == "invited") {
+                                appCtxt.getApp(ZmApp.IM).prepareVisuals();
                                 var view = ZmChatMultiWindowView.getInstance();
 				// it should always be instantiated by this time, but whatever.
 				if (view) {
