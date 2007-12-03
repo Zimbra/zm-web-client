@@ -12,6 +12,7 @@
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:set var="contactError" value="${false}"/>
+
 <c:choose>
    <c:when test="${ (zm:actionSet(param, 'actionCreate') or zm:actionSet(param, 'actionModify')) and (param.isgroup and empty fn:trim(param.nickname))}">
        <c:set var="contactError" value="true"/>
@@ -25,6 +26,9 @@
             <fmt:message key="noContactGroupMembers"/>
         </app:status>
     </c:when>
+    <c:when test="${zm:actionSet(param, 'actionSearch')}">
+        <c:redirect url="/h/search?sq=${param.contactsq}&st=contact&search=Search"/>
+    </c:when>    
 </c:choose>
 
 <c:choose>
