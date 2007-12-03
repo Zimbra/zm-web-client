@@ -257,12 +257,36 @@
         </c:if>
     </form>
 
-    <app:autoComplete>
-        initAuto("toField","toContainer");
-        initAuto("ccField","ccContainer");
-        initAuto("bccField","bccContainer");
-    </app:autoComplete>
-
+<app:autoComplete>
+    initAuto("toField","toContainer");
+    initAuto("ccField","ccContainer");
+    initAuto("bccField","bccContainer");
+</app:autoComplete>
+<script type="text/javascript">
+    var ele = document.getElementById("SOPSEND");
+    ele.onclick = function () {
+        return checkSubject();
+    }
+    var eleI = document.getElementById("IOPSEND");
+    eleI.onclick = function () {
+        return checkSubject();
+    }
+    function checkSubject() {
+       var elesub = document.getElementById("subjectField");
+        if(trim(elesub.value) == '') {
+            if(confirm("<fmt:message key="compSubjectMissing"/>")) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+    function trim(strVal){
+        return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
+    }
+</script>
 <c:if test="${composeformat eq 'html'}" >
     <SCRIPT TYPE="text/javascript">
     <!--
