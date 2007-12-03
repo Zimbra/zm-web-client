@@ -418,7 +418,7 @@ function(name) {
 	}
 
 	if (!ZmOrganizer.VALID_NAME_RE.test(name)) {
-		return AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
+		return AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(name));
 	}
 
 	return null;

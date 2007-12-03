@@ -221,7 +221,7 @@ function(name) {
 	if (name == "") {
 		throw AjxMsg.valueIsRequired;
 	} else if (!ZmOrganizer.VALID_NAME_RE.test(name)) {
-		throw AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
+		throw AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(name));
 	}
 };
 

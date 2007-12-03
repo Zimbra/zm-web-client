@@ -81,7 +81,7 @@ function(name) {
 	if (msg) return msg;
 
 	if (name.indexOf('\\') == 0)
-		return AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
+		return AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(name));
 
 	return null;
 };
@@ -108,7 +108,7 @@ function(params) {
 ZmTag._handleErrorCreate =
 function(params, ex) {
 	if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
-		var msg = AjxMessageFormat.format(ZmMsg.errorInvalidName, params.name);
+		var msg = AjxMessageFormat.format(ZmMsg.errorInvalidName, AjxStringUtil.htmlEncode(params.name));
 		var msgDialog = appCtxt.getMsgDialog();
 		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
