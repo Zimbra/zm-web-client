@@ -300,9 +300,14 @@ ZmAccountsPage.prototype.setAccount = function(account) {
 	}
 
 	var name = this._currentSection && this._currentSection.controls["NAME"];
-	if (name) {
+    //When a hidden field is applied focus(), IE throw's an exception. Thus checking for isActive()
+    if (name && this.isActive()) {
 		name.focus();
 	}
+};
+
+ZmAccountsPage.prototype.isActive = function(){
+    return  (this._controller.getTabView().getActiveView().toString() == this.toString()) 
 };
 
 // ZmPreferencesPage methods
