@@ -423,7 +423,6 @@ ZmCalItemComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
 	if (this._doSave()) {
-		this._app.popView(true);
 		appCtxt.getAppViewMgr().showPendingView(true);
 	}
 };
@@ -431,7 +430,8 @@ function() {
 ZmCalItemComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
-	this._closeView();
+	appCtxt.getAppViewMgr().showPendingView(true);
+	this._composeView.cleanup();
 };
 
 ZmCalItemComposeController.prototype._closeView =

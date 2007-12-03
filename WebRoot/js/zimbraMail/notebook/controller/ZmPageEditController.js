@@ -500,15 +500,15 @@ function(view) {
 ZmPageEditController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
-	if(this._doSave()){
-        this._app.popView(true);
+	if (this._doSave()) {
+		appCtxt.getAppViewMgr().showPendingView(true);
     }
 };
 
 ZmPageEditController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
-	this._app.popView(true);
+	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._popShieldDismissCallback =

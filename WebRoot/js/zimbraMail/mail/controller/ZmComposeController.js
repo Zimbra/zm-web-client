@@ -1115,8 +1115,6 @@ function() {
 			this._composeView.reset(false);
 		}
 	}
-
-	this._app.popView(true);
 	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
@@ -1133,8 +1131,6 @@ function() {
 		} else {
 			this._composeView.reset(false);
 		}
-
-		this._app.popView(true);
 		appCtxt.getAppViewMgr().showPendingView(true);
 	} else {
 		appCtxt.getAppViewMgr().showPendingView(false);

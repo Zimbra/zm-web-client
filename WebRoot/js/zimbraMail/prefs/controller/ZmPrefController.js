@@ -401,7 +401,6 @@ function() {
 
 ZmPrefController.prototype._handleResponsePopShieldYesCallback =
 function() {
-	this._app.popView(true);
 	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
@@ -409,7 +408,6 @@ ZmPrefController.prototype._popShieldNoCallback =
 function() {
 	this._prefsView.reset();
 	this._popShield.popdown();
-	this._app.popView(true);
 	appCtxt.getAppViewMgr().showPendingView(true);
 };
 
