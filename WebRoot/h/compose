@@ -281,11 +281,15 @@
         css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font:<c:out value="${mailbox.prefs.htmlEditorDefaultFontSize}"/>/1.22 <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;*font-size:small;*font:x-small;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}'
         });
 
-        var _cont= document.getElementById('body').value
-        myEditor.render();
+        myEditor.on('editorContentLoaded', function() {
+        setTimeout(function() {
+            var b = document.getElementById('body');
+            var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ');
+	        myEditor.setEditorHTML(html);
+            }, 1000);
+	    }, myEditor, true);
+	    myEditor.render();
 
-        _cont =  _cont.replace(/\n/g, '<br>');
-        setTimeout(function(){ myEditor.setEditorHTML(_cont)}, 2000);
     //-->
    </SCRIPT>
 </c:if>
