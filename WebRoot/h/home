@@ -57,12 +57,7 @@
 </tr>
 <tr>
 <td class='ZhAppContent' style="padding:7px;width:100%;height:100%;valign:top;">       
-       <span class="HelloGreeting">Hi! ${empty fullname ? mailbox.name : fullname} &nbsp;
-         <span>
-             <a style="font-size:13px;color:#666666; font-style: normal; text-decoration: none;" href='${url}'>${fn:escapeXml(empty label ? folder.name : label)}
-                 <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount}) </c:if>
-             </a>
-         </span>
+       <span class="HelloGreeting">Hi! ${empty fullname ? mailbox.name : fullname} &nbsp;</span>
 <br><br>
 <table width="100%" border="0" cellpadding="8" cellspacing="0">
 <tr>
@@ -77,6 +72,14 @@
        						 <td class="ImgAccountsHeader_R"></td>
 				        </tr>
 				       </table>
+                </td>
+            </tr>
+            <tr class="ZhHomeRow">
+                <td class="ZhHomeCell">
+                    <span style="font-weight:bold; font-size:12px;"><c:out value="${mailbox.name}"></c:out><br></span>
+                    <a style="text-decoration:none;" href='${url}'>
+                        <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount}) </c:if> unread
+                    </a>
                 </td>
             </tr>
             <c:if test="${context.isMessageSearch}">
