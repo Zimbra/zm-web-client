@@ -37,6 +37,10 @@ ZmListView = function(parent, className, posStyle, view, type, controller, heade
 		folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
 	}
 
+    //Item IDs are integers, with the following exception:
+    //		- a shared item:	f9d58245-fb61-4e9a-9202-6ebc7ad4b0c4:-368
+    this._parseIdRegex = /^V_([A-Z]+)_([a-z]*)_([a-zA-Z0-9:\-]+)_?(\d*)$/;
+
 	this._handleEventType = {};
 	this._handleEventType[this.type] = true;
 	this._disallowSelection = {};
@@ -289,7 +293,7 @@ function(item, field, imageInfo) {
  */
 ZmListView.prototype._parseId =
 function(id) {
-	var m = id.match(/^V_([A-Z]+)_([a-z]*)_([a-zA-Z0-9:\-]+)_?(\d*)$/);
+	var m = id.match(this._parseIdRegex);
 	if (m) {
 		return {view:m[1], field:m[2], item:m[3], participant:m[4]};
 	} else {
@@ -526,49 +530,57 @@ function() {
 
 ZmListView.prototype._getHeaderToolTip =
 function(field, itemIdx, isFolder) {
-	var tooltip = null;
+    var tooltip = null;
     if (field == ZmItem.F_FLAG) {
-		tooltip = ZmMsg.flag;
-	} else if (field == ZmItem.F_TAG) {
-		tooltip = ZmMsg.tag;
-	} else if (field == ZmItem.F_ATTACHMENT) {
-		tooltip = ZmMsg.attachment;
-	} else if (field == ZmItem.F_SUBJECT) {
-		tooltip = (this._headerList[itemIdx]._sortable)
-			? ZmMsg.sortBySubject : ZmMsg.subject;
-	} else if (field == ZmItem.F_DATE) {
-		tooltip = (this._headerList[itemIdx]._sortable)
-			? (isFolder.sent) ? ZmMsg.sortBySent : (isFolder.drafts) ? ZmMsg.sortByLastSaved : ZmMsg.sortByReceived : ZmMsg.date;
-	} else if (field == ZmItem.F_FROM) {
+        tooltip = ZmMsg.flag;
+    } else if (field == ZmItem.F_PRIORITY){
+        tooltip = ZmMsg.priority;
+    } else if (field == ZmItem.F_TAG) {
+        tooltip = ZmMsg.tag;
+    } else if (field == ZmItem.F_ATTACHMENT) {
+        tooltip = ZmMsg.attachment;
+    } else if (field == ZmItem.F_SUBJECT) {
         tooltip = (this._headerList[itemIdx]._sortable)
-			? (isFolder.sent || isFolder.drafts) ? ZmMsg.sortByTo : ZmMsg.sortByFrom : (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from ;
-	} else if ( field == ZmItem.F_SIZE){
-		tooltip = (this._headerList[itemIdx]._sortable)
-			? ZmMsg.sortBySize : ZmMsg.sizeToolTip;
-	}
-	return tooltip;
+                ? ZmMsg.sortBySubject : ZmMsg.subject;
+    } else if (field == ZmItem.F_DATE) {
+        tooltip = (this._headerList[itemIdx]._sortable)
+                ? (isFolder.sent) ? ZmMsg.sortBySent : (isFolder.drafts) ? ZmMsg.sortByLastSaved : ZmMsg.sortByReceived : ZmMsg.date;
+    } else if (field == ZmItem.F_FROM) {
+        tooltip = (this._headerList[itemIdx]._sortable)
+                ? (isFolder.sent || isFolder.drafts) ? ZmMsg.sortByTo : ZmMsg.sortByFrom : (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from ;
+    } else if ( field == ZmItem.F_SIZE){
+        tooltip = (this._headerList[itemIdx]._sortable)
+                ? ZmMsg.sortBySize : ZmMsg.sizeToolTip;
+    }
+    return tooltip;
 };
 
 ZmListView.prototype._getToolTip =
 function(field, item, ev, div, match) {
-	var tooltip;
-	if (field == ZmItem.F_SELECTION) {
-		ev.target._origClassName = ev.target.className;
-		if (ev.target.className != "ImgTaskCheckboxCompleted")
-			ev.target.className = "ImgTaskCheckboxCompleted";
-	} else if (field == ZmItem.F_FLAG) {
-		if (!item.isFlagged) {
-			AjxImg.setDisabledImage(ev.target, "FlagRed", true);
-		}
-	} else if (field == ZmItem.F_TAG) {
-		tooltip = this._getTagToolTip(item);
-	} else if (field == ZmItem.F_ATTACHMENT) {
-		// disable att tooltip for now, we only get att info once msg is loaded
-		// tooltip = this._getAttachmentToolTip(item);
-	} else if (field == ZmItem.F_DATE) {
-		tooltip = this._getDateToolTip(item, div);
-	}
-	return tooltip;
+    var tooltip;
+    if (field == ZmItem.F_SELECTION) {
+        ev.target._origClassName = ev.target.className;
+        if (ev.target.className != "ImgTaskCheckboxCompleted")
+            ev.target.className = "ImgTaskCheckboxCompleted";
+    } else if (field == ZmItem.F_FLAG) {
+        if (!item.isFlagged) {
+            AjxImg.setDisabledImage(ev.target, "FlagRed", true);
+        }
+    } else if (field == ZmItem.F_PRIORITY) {
+        if (item.isHighPriority) {
+            tooltip = ZmMsg.highPriorityTooltip;
+        } else if (item.isLowPriority) {
+            tooltip = ZmMsg.lowPriorityTooltip;
+        }
+    } else if (field == ZmItem.F_TAG) {
+        tooltip = this._getTagToolTip(item);
+    } else if (field == ZmItem.F_ATTACHMENT) {
+        // disable att tooltip for now, we only get att info once msg is loaded
+        // tooltip = this._getAttachmentToolTip(item);
+    } else if (field == ZmItem.F_DATE) {
+        tooltip = this._getDateToolTip(item, div);
+    }
+    return tooltip;
 };
 
 ZmListView.prototype._getTagToolTip =
@@ -580,9 +592,10 @@ function(item) {
 	var tags = item.tags;
 	var html = [];
 	var idx = 0;
-	for (var i = 0; i < numTags; i++) {
+    for (var i = 0; i < numTags; i++) {
 		var tag = tagList.getById(tags[i]);
-		html[idx++] = "<table><tr><td>";
+        if (!tag) { continue; }        
+        html[idx++] = "<table><tr><td>";
 		html[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_ICON[tag.color]);
 		html[idx++] = "</td><td valign='middle'>";
 		html[idx++] = AjxStringUtil.htmlEncode(tag.name);
