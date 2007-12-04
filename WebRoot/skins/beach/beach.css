@@ -315,8 +315,25 @@ BODY						{	margin:0px; 				}
 	@TextArea-error@
 	@Text-light@
 }
+TEXTAREA
+.BannerBar * {
+	@FontSize-smaller@
+}
 
-
+.BannerBar {
+	padding-top:1px;
+}
+.BannerBar TD {
+	padding-right:0px;
+}
+.BannerTextQuota {
+	text-align:center;
+	vertical-align:top;
+}
+.BannerTextUser,
+.BannerTextQuota {
+	cursor:default;
+}
 
 
 /* styles for the HTML client */
@@ -335,3 +352,5 @@ SELECT						{	@FieldBorder@	}
 
 .ZhRow TD,
 .ZhRowOdd TD				{	border-width:0 0 1 0 !important; padding-left:3px !important;	}
+
+

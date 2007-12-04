@@ -24,9 +24,11 @@
 
 <!-- Show amount used with no quota -->
 <template id='share.Quota#UsedUnlimited'>
-	<table class='BannerBar'><tr><td valign=middle align=center>
-		<div class='BannerTextQuota'>${desc}</div>
-	</td></tr></table>
+	<table cellspacing=0 cellpadding=0 width='100%'>
+		<tr>
+			<td class='BannerTextQuota'>${desc}</td>
+		</tr>
+	</table>
 </template>
 
 <template id='share.Quota#Tooltip'>
