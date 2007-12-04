@@ -25,6 +25,19 @@
                         ${zm:clearMessageCache(mailbox)}
                     </c:when>
                     <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
+                        <c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
+                        <c:choose>
+                        <c:when test="${untagall}" >
+                            <zm:forEachTag var="eachtag">
+                                <zm:tagItem tagid="${eachtag.id}" var="result" id="${id}" tag="false"/>
+                            </zm:forEachTag>
+                            <app:status>
+                                <fmt:message key="${'actionApptUntagAll'}" >
+                                  <fmt:param value="${result.idCount}"/>
+                            </fmt:message>
+                            </app:status>
+                        </c:when>
+                        <c:otherwise>
                         <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
                         <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
                         <zm:tagItem tagid="${tagid}"var="result" id="${id}" tag="${tag}"/>
@@ -35,6 +48,8 @@
                             </fmt:message>
                         </app:status>
                         ${zm:clearMessageCache(mailbox)}
+                       </c:otherwise>
+                    </c:choose>
                     </c:when>
                     <c:otherwise>
                         <app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
