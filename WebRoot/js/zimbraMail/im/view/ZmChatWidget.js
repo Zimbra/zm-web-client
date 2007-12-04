@@ -250,7 +250,7 @@ ZmChatWidget.prototype.sendInput = function(text) {
 
     //appCtxt.getApp("IM").playAlert();
     //appCtxt.getSound().play(appContextPath+"/public/ding.wav");
-    
+
     text = AjxStringUtil.trim(text);
 	if (text == "")
 		return;		// don't send empty strings
@@ -480,14 +480,21 @@ ZmChatWidget.prototype._getElement = function(id) {
 };
 
 ZmChatWidget.prototype._doResize = function() {
-	var self_pos = this.getLocation();
+	// var self_pos = this.getLocation();
 	var self = this;
 
 	function placeElement(widget, cont, fuzz) {
+                var tmp = cont;
 		cont = self._getElement(cont);
-		var p1 = Dwt.getLocation(cont);
-		var x = p1.x - self_pos.x;
-		var y = p1.y - self_pos.y;
+
+                // var p1 = Dwt.getLocation(cont);
+		// var x = p1.x - self_pos.x;
+		// var y = p1.y - self_pos.y;
+
+                var x = cont.offsetLeft;
+                var y = AjxEnv.isSafari
+                        ? cont.parentNode.offsetTop
+                        : cont.offsetTop; // Bug 22102: in Safari, offsetTop is totally wrong for these <td>-s
 
 		var left = x + "px";
 		var top = y + "px";
@@ -497,9 +504,9 @@ ZmChatWidget.prototype._doResize = function() {
 			w -= fuzz; // FIXME!! manually substracting padding/border!  Track CSS changes.
 			h -= fuzz;
 		}
-		// not working in IE.  crap.
 		var width = w + "px";
 		var height = h + "px";
+
 		widget.setBounds(left, top, width, height);
 	};
 
