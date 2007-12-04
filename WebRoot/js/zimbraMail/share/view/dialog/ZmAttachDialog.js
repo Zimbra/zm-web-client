@@ -281,7 +281,7 @@ ZmAttachDialog.prototype._addMyComputerTab = function() {
 //Inline Option for attachment Dialog.
 ZmAttachDialog.prototype._setInlineOptionSection = function(view){
     var div = document.createElement("div");
-    div.style.height = "10px";
+    div.style.height = "20px";
     div.style.textAlign = "left";
     div.id = Dwt.getNextId();
     view.getHtmlElement().appendChild(div);
