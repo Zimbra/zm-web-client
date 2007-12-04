@@ -81,6 +81,10 @@ function(item, callback, results) {
 		callback.run();
 	}
 	
+	if (appCtxt.get(ZmSetting.READING_PANE_ENABLED) != this._readingPaneOn) {
+		this._toggleReadingPane(true);
+	}
+	
 	// If there's only one item in the list, go ahead and set focus to it since
 	// there's no use in the one-item list having focus (arrow keys do nothing)
 	if (this._readingPaneOn && (this._list.size() == 1)) {
@@ -137,6 +141,7 @@ function(force) {
 
 	this._readingPaneOn = checked;
 	this._doublePaneView.toggleView();
+	appCtxt.set(ZmSetting.READING_PANE_ENABLED, this._readingPaneOn);
 
 	// set msg in msg view if reading pane is being shown
 	if (this._readingPaneOn) {
