@@ -172,7 +172,10 @@ function(field, item, ev, div, match) {
 			tooltip = item.getInvite().getToolTip();
 		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
-		}
+            if (tooltip == "") {
+				tooltip = null;
+			}
+        }
 	} else if (field == ZmItem.F_FOLDER) {
 		var folder = appCtxt.getById(item.folderId);
 		if (folder && folder.parent) {
@@ -295,7 +298,10 @@ function() {
 				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
 				mi.setData(ZmMailListView.KEY_ID, hCol._id);
 				mi.setChecked(true, true);
-				this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
+                if (hCol._noRemove) {
+					mi.setEnabled(false);
+				}
+                this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
 			}
 		}
 	}
