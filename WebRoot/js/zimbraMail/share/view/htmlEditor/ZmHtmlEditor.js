@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -204,7 +204,7 @@ function(keepModeDiv) {
 
 		doc.body.style.display = "";
 		this._unregisterEditorEventHandler(doc, "contextmenu");
-		
+
 	} else if (this._spellCheckDivId != null) {
 		var div = document.getElementById(this._spellCheckDivId);
 		var scrollTop = div.scrollTop;
@@ -483,13 +483,12 @@ function(x, y) {
 	var div = null;
 	if (this._spellCheckDivId) {
 		div = document.getElementById(this._spellCheckDivId);
-		div.style.display = "none";
 	}
 
 	// FUDGE: we must substract borders and paddings - yuck.
-	var delta = this._mode == DwtHtmlEditor.HTML ? 10 : 12;
+	var delta = this._mode == DwtHtmlEditor.HTML ? 10 : 8;
 
-	x -= delta;
+	x -= delta + 4;
 
 	// subtract spellchecker DIV if applicable
 	if (this._spellCheckModeDivId) {
@@ -511,7 +510,7 @@ function(x, y) {
 	if (y < 0) y = 0;
 
 	var main = document.getElementById(this.getBodyFieldId());
-	main.style.width = x + "px";
+	main.style.width = x + 5 + "px";
 	main.style.height = y + "px";
 	if (div) {
 		if (!AjxEnv.isIE) {
@@ -552,11 +551,6 @@ function(ev) {
 ZmHtmlEditor.prototype._fontSizeListener =
 function(ev) {
 	this.setFont(null, null, ev.item.getData(ZmHtmlEditor._VALUE));
-};
-
-ZmHtmlEditor.prototype._directionListener =
-function(ev) {
-	this.setTextDirection(ev.item.getData(ZmHtmlEditor._VALUE));
 };
 
 ZmHtmlEditor.prototype._indentListener =
@@ -947,14 +941,16 @@ function(html, insertFontStyle) {
 			return DwtHtmlEditor.prototype._embedHtmlContent.call(this, html);
 	}
 
+        var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
 	var fontStyle = insertFontStyle ? this._getFontStyle() : "";
 	var headContent = this._headContent ? this._headContent.join("") : "";
 
 	return ["<html><head>",
-			fontStyle, headContent,
-			"</head><body>",
-			html,
-			"</body></html>"].join("");
+                p_style,
+		fontStyle, headContent,
+		"</head><body>",
+		html,
+		"</body></html>"].join("");
 };
 
 ZmHtmlEditor.prototype._getFontStyle =
@@ -1470,7 +1466,7 @@ function(ev) {
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
 				item.addSelectionListener(self._spellCheckSuggestionListenerObj);
-			}
+            }
 			return menu;
 		};
 		sc.menu = makeMenu(0, this);
@@ -1568,11 +1564,25 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 	};
 
 	this._designModeHack_blur = AjxCallback.simpleClosure(
-		function() {
+		function(ev) {
 			if (state < 0)
 				return;
 			// console.log("BLUR!");
+			var enableFocus = false;
+			var dwtev = DwtShell.mouseEvent;
+			dwtev.setFromDhtmlEvent(ev);
+			if(dwtev && dwtev.dwtObj) {
+				for (var i = 0; i < this._toolbars.length; i++){
+					if(dwtev.dwtObj.parent == this._toolbars[i]){
+						enableFocus = true;
+					}
+				}
+			}
+
+			if(!enableFocus){
 			enableToolbars.call(this, false);
+			}
+
 			var doc = this._getIframeDoc();
 			doc.designMode = "off";
 			state = -1;
