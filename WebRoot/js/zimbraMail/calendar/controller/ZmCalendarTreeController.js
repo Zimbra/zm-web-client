@@ -262,10 +262,25 @@ function(overviewId) {
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		var root = treeView.getTreeItemById(rootId);
 		if (root) {
-			return root.getItems();
+			var totalItems = [];
+			this._getSubItems(root);			
+			return totalItems;
 		}
 	}
 	return [];
+};
+
+ZmCalendarTreeController.prototype._getSubItems =
+function(root, totalItems) {
+	if(!root) return;
+	var items = root.getItems();
+	for(var i in items){				
+		var item = items[i];
+		if(item){
+			totalItems.push(item);
+			this._getSubItems(item, totalItems);
+		}
+	}	
 };
 
 ZmCalendarTreeController.prototype._setAllChecked =
