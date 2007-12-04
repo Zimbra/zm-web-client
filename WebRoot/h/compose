@@ -66,21 +66,7 @@
 
     <c:set var="composeformat" value="${mailbox.prefs.composeFormat}" />    
 </app:handleError>
-<c:if test="${composeformat eq 'html'}">
-	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-	<!--bug: 21462 yui editor freezes in IE7 without without this header -->
-    <link rel="stylesheet" type="text/css" href="../yui/2.3.1/assets/skins/sam/skin.css" />
-    <script type="text/javascript" src="../yui/2.3.1/yahoo-dom-event/yahoo-dom-event.js"></script>
-    <script type="text/javascript" src="../yui/2.3.1/element/element-beta-min.js"></script>
-    <!-- Needed for Menus, Buttons and Overlays used in the Toolbar -->
-    <script src="../yui/2.3.1/container/container_core-min.js"></script>
 
-    <script src="../yui/2.3.1/menu/menu-min.js"></script>
-
-    <script src="../yui/2.3.1/button/button-beta-min.js"></script>
-    <!-- Source file for Rich Text Editor-->
-    <script src="../yui/2.3.1/editor/editor-beta-min.js"></script>
-</c:if>
 <c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/>
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
         onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}">
@@ -263,32 +249,10 @@
     initAuto("bccField","bccContainer");
 </app:autoComplete>
 <script type="text/javascript">
-    var ele = document.getElementById("SOPSEND");
-    ele.onclick = function () {
-        return checkSubject();
-    }
-    var eleI = document.getElementById("IOPSEND");
-    eleI.onclick = function () {
-        return checkSubject();
-    }
-    function checkSubject() {
-       var elesub = document.getElementById("subjectField");
-        if(trim(elesub.value) == '') {
-            if(confirm("<fmt:message key="compSubjectMissing"/>")) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
-    }
-    function trim(strVal){
-        return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
-    }
+
 </script>
 <c:if test="${composeformat eq 'html'}" >
-    <SCRIPT TYPE="text/javascript">
+<SCRIPT TYPE="text/javascript">
     <!--
         submitCompose= function(){
         myEditor.saveHTML();
@@ -315,11 +279,37 @@
 	    myEditor.render();
 
     //-->
-   </SCRIPT>
+</SCRIPT>
 </c:if>
 <SCRIPT TYPE="text/javascript">
     <!--
-function handleEnter (ev) {
+
+    var ele = document.getElementById("SOPSEND");
+    ele.onclick = function () {
+        return checkSubject();
+    }
+    var eleI = document.getElementById("IOPSEND");
+    eleI.onclick = function () {
+        return checkSubject();
+    }
+    function checkSubject() {
+       var elesub = document.getElementById("subjectField");
+        if(trim(elesub.value) == '') {
+            if(confirm("<fmt:message key="compSubjectMissing"/>")) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+    function trim(strVal){
+        return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
+    }
+
+
+    function handleEnter (ev) {
 		var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
 		if (keyCode == 13) 	return false;
 		else return true;
