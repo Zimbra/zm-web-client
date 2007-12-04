@@ -115,10 +115,10 @@ function(folderId, callback, errorCallback) {
 };
 
 ZmNotebookCache.prototype.putItem = 
-function(item1) {
+function(item1, ignoreFolderContents) {
 	
 	var folderId = item1.folderId || ZmNotebookItem.DEFAULT_FOLDER;
-	var items = this.getItemsInFolder(folderId);
+	var items = ignoreFolderContents ? null : this.getItemsInFolder(folderId);
 	var item = this.getPage(item1);
 	
 	if (item.id) {
@@ -128,13 +128,17 @@ function(item1) {
 		this._pathMap[item.path] = item;
 		this._idPathMap[item.id] = item.path;
 	}
-	items.all[item.name] = item;
-	if (item instanceof ZmPage) {
-		items.pages[item.name] = item;
+	
+	if(items != null){
+		items.all[item.name] = item;
+		if (item instanceof ZmPage) {
+			items.pages[item.name] = item;
+		}
+		else if (item instanceof ZmDocument) {
+			items.docs[item.name] = item;
+		}
 	}
-	else if (item instanceof ZmDocument) {
-		items.docs[item.name] = item;
-	}
+	
 	/*** REVISIT ***/
 	var remoteFolderId = item.remoteFolderId;
 	if (remoteFolderId) {
@@ -147,12 +151,12 @@ function(item1) {
 	item.addChangeListener(this._changeListener);
 };
 ZmNotebookCache.prototype.putPage = 
-function(page) {
+function(page, ignoreFolderContents) {
 	this.putItem(page);
 };
 ZmNotebookCache.prototype.putDocument = 
-function(doc) {
-	this.putItem(doc);
+function(doc, ignoreFolderContents) {
+	this.putItem(doc, ignoreFolderContents);
 };
 
 ZmNotebookCache.prototype.renameItem = 
@@ -549,11 +553,16 @@ function(requestParams, folderId, callback, errorCallback, response) {
 				item.folderId = folderId;
 				item.remoteFolderId = remoteFolderId; // REVISIT
 				this.markCustomIndexPage(item);				
-				this.putPage(item);
+				this.putPage(item, true);
 			}
 			else {
 				item.set(word);
 			}
+			
+			if((item.name == "_Index") && (remoteFolderId !=null)){
+				this._updateIndexItem(folderId, word);										
+			}
+			
 		}
 		var docs = searchResponse.doc || [];
 		for (var i = 0; i < docs.length; i++) {
@@ -564,7 +573,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 				item.set(doc);
 				item.folderId = folderId;
 				item.remoteFolderId = remoteFolderId; // REVISIT
-				this.putDocument(item);
+				this.putDocument(item, true);
 			}
 			else {
 				item.set(doc);
@@ -616,6 +625,23 @@ function(requestParams, folderId, callback, errorCallback, response) {
 	}
 };
 
+ZmNotebookCache.prototype._updateIndexItem =
+function(folderId, word) {
+	var indexItem = this.getPageById(folderId);
+	if (!indexItem) {					
+		indexItem = new ZmPage();
+		indexItem.set(word);
+		indexItem.id = folderId;
+		indexItem.folderId = folderId;
+		indexItem.remoteFolderId = remoteFolderId; // REVISIT
+		this.markCustomIndexPage(indexItem);				
+		this.putPage(indexItem, true);
+	}else {
+		indexItem.set(word);
+		indexItem.id = folderId;				
+	}	
+};
+
 ZmNotebookCache.prototype._fillCacheResponse2 =
 function(folderId, callback, errorCallback, response) {
 
@@ -624,24 +650,27 @@ function(folderId, callback, errorCallback, response) {
 	var folder = resp.folder && resp.folder[0];
 	var folders = folder && folder.folder;
 	var parent = appCtxt.getById(folderId);
+	
 	if (folders && parent) {
 		for (var i = 0; i < folders.length; i++) {
 			var obj = folders[i];
-
+			
 			// remove sub-tree if it already exists
 			var notebook = appCtxt.getById(obj.id);
 			if (notebook) {
 				parent.children.remove(notebook);
+				notebook._updated = true;
 				notebook._notify(ZmEvent.E_DELETE);
 			}
 
 			// create sub-tree and add to tree
 			var notebook = ZmFolderTree.createFromJs(parent, obj, tree);
+			notebook._updated = true;
 			parent.children.add(notebook);
 			notebook._notify(ZmEvent.E_CREATE);
 		}
 	}
-
+	
 	if (callback) {
 		callback.run(folderId, response);
 	}
