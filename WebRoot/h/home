@@ -60,17 +60,13 @@
        
         <span class="HelloGreeting">Hi! ${empty fullname ? mailbox.name : fullname} &nbsp; 
 
-        <span>
-            <a style="font-size:13px;color:#666666; font-style: normal; text-decoration: none;" href='${url}'>${fn:escapeXml(empty label ? folder.name : label)}
-                <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount}) </c:if>
-            </a>
-        </span>
+
        </span>
 <br><br>
 <table width="100%" border="0" cellpadding="8" cellspacing="0">
 <tr>
     <td valign="top" width="50%">
-        <table cellpadding="5" cellspacing="0" border='0' width='100%'>
+        <table cellpadding="0" cellspacing="0" border='0' width='100%'>
             <tr>
                 <td>
                      <table border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -80,6 +76,14 @@
        						 <td class="ImgAccountsHeader_R"></td>
 				        </tr>
 				       </table>
+                </td>
+            </tr>
+            <tr class="ZhHomeRow">
+                <td class="ZhHomeCell">
+                        <span style="font-weight:bold; font-size:12px;"><c:out value="${mailbox.name}"></c:out><br></span> 
+                        <a style="text-decoration:none;" href='${url}'>
+                            <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount}) </c:if> unread
+                        </a>
                 </td>
             </tr>
             <c:if test="${context.isMessageSearch}">
@@ -118,7 +122,7 @@
 			</c:when>
 			<c:otherwise>
 				<c:if test="${mailbox.features.voice}">
-					<table cellpadding="5" cellspacing="0" border='0' width='100%'>
+					<table cellpadding="0" cellspacing="0" border='0' width='100%'>
 						<tr><td>
 							<table border="0" cellpadding="0" cellspacing="0" width="100%">
 								<tr>
