@@ -127,7 +127,8 @@ function() {
 	ZmOperation.registerOp("PAGE_DBL_FORW", {image:"RightDoubleArrow"});
 	ZmOperation.registerOp("PAGE_FORWARD", {image:"RightArrow"});
 	ZmOperation.registerOp("PRINT", {textKey:"print", tooltipKey:"printTooltip", image:"Print"}, ZmSetting.PRINT_ENABLED);
-	ZmOperation.registerOp("REFRESH", {textKey:"refresh", tooltipKey:"refreshTooltip"});
+    ZmOperation.registerOp("PRINT_ONE", {textKey:"print", tooltipKey:"printOneTooltip", image:"Print"}, ZmSetting.PRINT_ENABLED);
+    ZmOperation.registerOp("REFRESH", {textKey:"refresh", tooltipKey:"refreshTooltip"});
 	ZmOperation.registerOp("RENAME_FOLDER", {textKey:"renameFolder", image:"Rename"});
 	ZmOperation.registerOp("RENAME_SEARCH", {textKey:"renameSearch", image:"Rename"});
 	ZmOperation.registerOp("RENAME_TAG", {textKey:"renameTag", image:"Rename"}, ZmSetting.TAGGING_ENABLED);
