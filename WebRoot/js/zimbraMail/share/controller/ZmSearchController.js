@@ -244,7 +244,7 @@ function(callback, result) {
  * Performs the given search. It takes a ZmSearch, rather than constructing one out of the currently selected menu
  * choices. Aside from re-executing a search, it can be used to perform a canned search.
  *
- * @param search			[ZmSearch]			search object
+ * @param search		[ZmSearch]			search object
  * @param noRender		[boolean]*			if true, results will not be passed to controller
  * @param changes		[Object]*			hash of changes to make to search
  * @param callback		[AjxCallback]*		async callback
@@ -471,6 +471,7 @@ function(results, search, isMixed) {
 	var resultsType = isMixed ? ZmItem.MIXED : results.type;
 	var loadCallback = new AjxCallback(this, this._handleLoadShowResults, [results, search]);
 	var app = appCtxt.getApp(ZmItem.APP[resultsType]);
+	app.currentSearch = search;
 	app.currentQuery = search.query;
 	app.showSearchResults(results, loadCallback, isInGal, search.folderId);
 	appCtxt.getAppController().focusContentPane();

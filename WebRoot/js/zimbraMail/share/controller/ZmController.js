@@ -458,7 +458,7 @@ function(continuation, rememberMe, result) {
 		} else {
 			// if no continuation context, start over
 			ZmCsfeCommand.setSessionId(null);						// so we get a refresh block
-			appCtxt.getAppController().startup({isRelogin: true});	// restart application
+			appCtxt.getAppController().startup({isRelogin:true});	// restart application
 		}
 		this._hideLoginDialog();
 	} catch (ex) {

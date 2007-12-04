@@ -705,7 +705,8 @@ function(type, listener) {
  * so that the caller doesn't need to know the specifics of how we
  * twiddle the type name for app events.
  */
-ZmZimbraMail.addAppListener = function(appName, type, listener) {
+ZmZimbraMail.addAppListener =
+function(appName, type, listener) {
 	type = [appName, type].join("_");
 	ZmZimbraMail.addListener(type, listener);
 };
@@ -1158,8 +1159,6 @@ function(appName, view) {
 		toolbar.setupView(appName);
 	}
 	
-	var searchEnabled = appCtxt.get(ZmSetting.SEARCH_ENABLED);
-
 	if (this._activeApp != appName) {
 
 		// deactivate previous app
@@ -1177,7 +1176,7 @@ function(appName, view) {
 		if (appEnabled) {
 			var app = this._apps[this._activeApp];
 
-			if (searchEnabled) {
+			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 				if (ZmApp.DEFAULT_SEARCH[appName]) {
 					appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName]);
 				}
@@ -1185,7 +1184,8 @@ function(appName, view) {
 				// set search string value to match current app's last search, if applicable		
 				var stb = appCtxt.getSearchController().getSearchToolbar();
 				if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && stb) {
-					stb.setSearchFieldValue(app.currentQuery || "");
+					var value = app.currentSearch ? app.currentSearch.query : app.currentQuery;
+					stb.setSearchFieldValue(value || "");
 				}
 			}
 	
@@ -1202,10 +1202,6 @@ function(appName, view) {
 				}
 			}
 		}
-	}
-	
-	if (searchEnabled) {
-		this._apps[this._activeApp].currentSearch = appCtxt.getSearchController().currentSearch;
 	}
 };
 

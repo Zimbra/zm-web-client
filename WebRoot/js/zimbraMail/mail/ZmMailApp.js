@@ -910,14 +910,21 @@ function(notify) {
 
 ZmMailApp.prototype.refresh =
 function(refresh) {
-	if (!appCtxt.inStartup) {
-		var account = appCtxt.multiAccounts ? appCtxt.getMainAccount() : null;
-		this.resetOverview(this.getOverviewId(account));
-	}
 
 	var inbox = appCtxt.getById(ZmFolder.ID_INBOX);
 	if (inbox) {
 		this.setNewMailNotice(inbox);
+	}
+
+	if (!appCtxt.inStartup) {
+		var account = appCtxt.multiAccounts ? appCtxt.getMainAccount() : null;
+		this.resetOverview(this.getOverviewId(account));
+		if (appCtxt.getCurrentAppName() == this._name) {
+			var curView = appCtxt.getCurrentViewId();
+			if (curView == ZmController.CONVLIST_VIEW || curView == ZmController.TRAD_VIEW) {
+				appCtxt.getSearchController().redoSearch(this.currentSearch);
+			}
+		}
 	}
 };
 
