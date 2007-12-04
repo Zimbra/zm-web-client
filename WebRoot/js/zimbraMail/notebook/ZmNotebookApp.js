@@ -480,19 +480,20 @@ function(parent, name, color) {
 
 ZmNotebookApp.prototype.generateUniqueName =
 function(folderId) {
-	var cache = this.getNotebookCache();
-	var pages = cache.getPagesInFolder(folderId);
-	var pagenames = "";
+	
+	var pages = this.getNotebookCache().getPagesInFolder(folderId);
+	var pagenames = [];
 	for (var p in pages) {
-		pagenames+=pages[p].name+",";
+        pagenames.push(pages[p].name.toLowerCase());
 	}
-	//first possible pagename page1,page2...
-	for(var i=1;i<100;i++){
-		if(pagenames.indexOf(ZmMsg.page+i+',')<0)
-		{
-			return ZmMsg.page+i;
-		}
-	}
+    pagenames = "/" + pagenames.join("/") + "/";
+
+    var pageName = ZmMsg.defaultPageName.toLowerCase();
+    for(var i=1; i<100; i++){
+        if(pagenames.indexOf(["/",pageName,i,"/"].join("")) == -1){
+            return (ZmMsg.defaultPageName+i);
+        }
+    }
 	
 	return ZmMsg.untitled;
 };
