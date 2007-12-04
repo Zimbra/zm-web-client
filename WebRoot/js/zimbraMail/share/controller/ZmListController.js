@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -26,12 +26,12 @@
  * and then the controller just handles events.
  *
  * <p>Support is also present for handling multiple views (eg contacts).</p>
- * 
+ *
  *   <p>Controllers for single items may extend this class, since the functionality needed is
  *  virtually the same. An item can be thought of as the degenerate form of a list.</p>
  *
  *  @author Conrad Damon
- *  
+ *
  * @param container	containing shell
  * @param app		containing app
  */
@@ -61,7 +61,6 @@ ZmListController = function(container, app) {
 	this._listeners[ZmOperation.TAG_MENU] = new AjxListener(this, this._tagButtonListener);
 	this._listeners[ZmOperation.TAG] = new AjxListener(this, this._tagListener);
 	this._listeners[ZmOperation.PRINT] = new AjxListener(this, this._printListener);
-	this._listeners[ZmOperation.PRINT_ONE] = new AjxListener(this, this._printListener);
 	this._listeners[ZmOperation.DELETE]  = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._backListener);
 	this._listeners[ZmOperation.MOVE]  = new AjxListener(this, this._moveListener);
@@ -381,23 +380,25 @@ function(view) {
 };
 
 /**
-* Creates the desired application view.
-*
-* @param view			view ID
-* @param elements		array of view components
-* @param isAppView		this view is a top-level app view
-* @param clear			if true, clear the hidden stack of views
-* @param pushOnly		don't reset the view's data, just swap the view in
-* @param isTransient	this view doesn't go on the hidden stack
-*/
+ * Creates the desired application view.
+ *
+ * @param view			view ID
+ * @param elements		array of view components
+ * @param isAppView		this view is a top-level app view
+ * @param clear			if true, clear the hidden stack of views
+ * @param pushOnly		don't reset the view's data, just swap the view in
+ * @param isTransient	this view doesn't go on the hidden stack
+ * @param stageView		stage the view rather than push it
+ */
 ZmListController.prototype._setView =
-function(view, elements, isAppView, clear, pushOnly, isTransient) {
+function(view, elements, isAppView, clear, pushOnly, isTransient, stageView) {
 
 	// create the view (if we haven't yet)
 	if (!this._appViews[view]) {
 		// view management callbacks
 		var callbacks = {};
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = this._preHideCallback ? new AjxCallback(this, this._preHideCallback) : null;
+		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = this._preUnloadCallback ? new AjxCallback(this, this._preUnloadCallback) : null;
 		callbacks[ZmAppViewMgr.CB_POST_HIDE]= this._postHideCallback ? new AjxCallback(this, this._postHideCallback) : null;
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW]	= this._preShowCallback ? new AjxCallback(this, this._preShowCallback) : null;
 		callbacks[ZmAppViewMgr.CB_POST_SHOW]= this._postShowCallback ? new AjxCallback(this, this._postShowCallback) : null;
@@ -412,7 +413,11 @@ function(view, elements, isAppView, clear, pushOnly, isTransient) {
 	}
 
 	// push the view
-	return (clear ? this._app.setView(view) : this._app.pushView(view));
+	if (stageView) {
+		this._app.stageView(view);
+	} else {
+		return (clear ? this._app.setView(view) : this._app.pushView(view));
+	}
 };
 
 // List listeners
@@ -629,17 +634,14 @@ function(ev) {
 	} else if (msg instanceof ZmContact) {
 		contacts = AjxVector.fromArray([ msg ]);
 	}
-	var imAddresses = contacts.map("getIMAddress");
-	var roster = AjxDispatcher.run("GetRoster");
+	var buddies = contacts.map("getBuddy");
 	var seen = [];
-	imAddresses.foreach(function(addr) {
-		if (addr && !seen[addr]) {
-			seen[addr] = true;
-			var item = roster.getRosterItem(addr, true);
-			if (item)
-				ZmChatMultiWindowView.getInstance().chatWithRosterItem(item);
+	buddies.foreach(function(b) {
+		if (b && !seen[b.getAddress()]) {
+			seen[b.getAddress()] = true;
+			AjxDispatcher.run("GetChatListController").chatWithRosterItem(b);
 		}
-	}, this);
+	});
 };
 
 // If there's a contact for the participant, edit it, otherwise add it.
@@ -947,7 +949,7 @@ function() {
 };
 
 // this method gets overloaded if folder id is retrieved another way
-ZmListController.prototype._getSearchFolderId = 
+ZmListController.prototype._getSearchFolderId =
 function() {
 	return (this._activeSearch && this._activeSearch.search) ? this._activeSearch.search.folderId : null;
 };
@@ -1242,7 +1244,7 @@ ZmListController.prototype._getNavText =
 function(view) {
 	var se = this._getNavStartEnd(view);
 	if (!se) { return ""; }
-	
+
 	var total = this._getNumTotal();
 	var msgText = total ? ZmMsg.navText2 : ZmMsg.navText1;
 	return AjxMessageFormat.format(msgText, [se.start, se.end, total]);
@@ -1259,7 +1261,7 @@ function(view) {
 		start = offset + 1;
 		end = Math.min(offset + limit, size);
 	}
-	
+
 	return (start && end) ? {start:start, end:end} : null;
 };
 

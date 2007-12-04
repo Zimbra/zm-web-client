@@ -108,14 +108,15 @@ function() {
  * Handles switching views based on action from view menu.
  *
  * @param view		[constant]		the id of the new view
+ * @param force		[boolean]		if true, always redraw view
  */
 ZmMailListController.prototype.switchView =
-function(view) {
+function(view, force) {
 	if (view) {
 		var groupBySetting = ZmMailListController.GROUP_BY_SETTING[view];
 		if (groupBySetting && (groupBySetting != this._app._groupBy)) {
 			this._app._groupBy = groupBySetting;
-		} else {
+		} else if (!force) {
 			return;
 		}
 		var sortBy = appCtxt.get(ZmSetting.SORTING_PREF, view);
@@ -198,13 +199,13 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.MARK_READ:
-			if (!folder || (folder && !folder.isReadOnly())) {
+			if (num && (!folder || (folder && !folder.isReadOnly()))) {
 				this._markReadListener();
 			}
 			break;
 
 		case ZmKeyMap.MARK_UNREAD:
-			if (!folder || (folder && !folder.isReadOnly())) {
+			if (num && (!folder || (folder && !folder.isReadOnly()))) {
 				this._markUnreadListener();
 			}
 			break;
@@ -218,7 +219,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.READING_PANE:
-			this.switchView(ZmMailListController.READING_PANE_MENU_ITEM_ID);
+			this.switchView(ZmMailListController.READING_PANE_MENU_ITEM_ID, true);
 			break;
 
 		case ZmKeyMap.SHOW_FRAGMENT:
@@ -233,12 +234,14 @@ function(actionCode) {
 						frag = item.getInvite().getToolTip();
 					} else {
 						frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
-						lv.setToolTipContent(AjxStringUtil.htmlEncode(frag));
+						if (frag != "") { lv.setToolTipContent(AjxStringUtil.htmlEncode(frag)); }
 					}
 					var tooltip = this._shell.getToolTip()
 					tooltip.popdown();
-					tooltip.setContent(AjxStringUtil.htmlEncode(frag));
-					tooltip.popup(loc.x, loc.y);
+					if (frag != "") {
+						tooltip.setContent(AjxStringUtil.htmlEncode(frag));
+						tooltip.popup(loc.x, loc.y);
+					}
 				}
 			}
 			break;
@@ -396,7 +399,7 @@ function() {
 	list.push(appCtxt.get(ZmSetting.OFFLINE) ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL);
 	list = list.concat([ZmOperation.SEP,
 						ZmOperation.DELETE, ZmOperation.MOVE,
-						ZmOperation.PRINT_ONE, ZmOperation.SEP]);
+						ZmOperation.PRINT, ZmOperation.SEP]);
 	return list;
 };
 

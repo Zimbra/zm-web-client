@@ -130,7 +130,7 @@ function(actionCode) {
 ZmMsgController.prototype._getToolBarOps = 
 function() {
 	if (appCtxt.isChildWindow) {
-		return [ZmOperation.PRINT_ONE, ZmOperation.CLOSE];
+		return [ZmOperation.PRINT, ZmOperation.CLOSE];
 	} else {
 		var list = this._standardToolBarOps();
 		list.push(ZmOperation.SEP);
@@ -145,7 +145,7 @@ function() {
 	}
 };
 
-ZmMsgController.prototype._initializeToolBar = 
+ZmMsgController.prototype._initializeToolBar =
 function(view, arrowStyle) {
 	if (!appCtxt.isChildWindow) {
 		ZmMailListController.prototype._initializeToolBar.call(this, view, arrowStyle);
@@ -172,12 +172,12 @@ function() {
 	return null;
 };
 
-ZmMsgController.prototype._getViewType = 
+ZmMsgController.prototype._getViewType =
 function() {
 	return ZmController.MSG_VIEW;
 };
 
-ZmMsgController.prototype._initializeListView = 
+ZmMsgController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {
 		this._listView[view] = new ZmMailMsgView(this._container, null, Dwt.ABSOLUTE_STYLE, ZmController.MSG_VIEW, this);
@@ -186,23 +186,23 @@ function(view) {
 	}
 };
 
-ZmMsgController.prototype.getReferenceView = 
+ZmMsgController.prototype.getReferenceView =
 function () {
 	return this._listView[this._currentView];
 };
 
-ZmMsgController.prototype._getSearchFolderId = 
+ZmMsgController.prototype._getSearchFolderId =
 function() {
 	return this._msg.folderId ? this._msg.folderId : (this._msg.list && this._msg.list.search) ?
 		this._msg.list.search.folderId : null;
 };
 
-ZmMsgController.prototype._getTagMenuMsg = 
+ZmMsgController.prototype._getTagMenuMsg =
 function() {
 	return ZmMsg.tagMessage;
 };
 
-ZmMsgController.prototype._getMoveDialogTitle = 
+ZmMsgController.prototype._getMoveDialogTitle =
 function() {
 	return ZmMsg.moveMessage;
 };
@@ -212,23 +212,23 @@ function(view) {
 	this._listView[view].set(this._msg);
 };
 
-ZmMsgController.prototype._resetNavToolBarButtons = 
+ZmMsgController.prototype._resetNavToolBarButtons =
 function(view) {
 	// NOTE: we purposely do not call base class here!
 	if (!appCtxt.isChildWindow) {
 		var list = this._msg.list.getVector();
-		
+
 		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, list.get(0) != this._msg);
-		
+
 		var bEnableForw = this._msg.list.hasMore() || (list.getLast() != this._msg);
 		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, bEnableForw);
-		
+
 		this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.message);
 		this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.message);
 	}
 };
 
-ZmMsgController.prototype._paginate = 
+ZmMsgController.prototype._paginate =
 function(view, bPageForward) {
 	// NOTE: do not call base class
 	var controller = AjxDispatcher.run(ZmMsgController.MODE_TO_CONTROLLER[this._mode]);
@@ -238,40 +238,14 @@ function(view, bPageForward) {
 	}
 };
 
-ZmMsgController.prototype._processPrePopView = 
+ZmMsgController.prototype._processPrePopView =
 function(view) {
 	this._resetNavToolBarButtons(view);
 }
 
-ZmMsgController.prototype._menuPopdownActionListener = 
+ZmMsgController.prototype._menuPopdownActionListener =
 function(ev) {
 	// dont do anything since msg view has no action menus
-};
-
-// Actions
-
-// Override so we can pop view
-ZmMsgController.prototype._doDelete = 
-function(items, hardDelete, attrs) {
-	ZmMailListController.prototype._doDelete.call(this, items, hardDelete, attrs);
-	// XXX: async
-	this._app.popView();
-};
-
-// Override so we can pop view
-ZmMsgController.prototype._doMove = 
-function(items, folder, attrs) {
-	ZmMailListController.prototype._doMove.call(this, items, folder, attrs);
-	// XXX: async
-	this._app.popView();
-};
-
-// Override so we can pop view
-ZmMsgController.prototype._doSpam = 
-function(items, markAsSpam, folder) {
-	ZmMailListController.prototype._doSpam.call(this, items, markAsSpam, folder);
-	// XXX: async
-	this._app.popView();
 };
 
 // Miscellaneous
