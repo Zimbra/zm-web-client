@@ -956,11 +956,11 @@ ZmMailApp.prototype.launch =
 function(params, callback) {
 	var query;
 	params = params || {};
+
+	// temporarily save GetInfoResponse so we can use it to properly render overview
+	this.__getInfoResponse = params.result ? params.result.getResponse().GetInfoResponse : null;
+
 	if (params.checkQS) {
-		var ic = appCtxt.getIdentityCollection();
-		if (!ic || (ic.getSize() == 0)) {
-			this.startup(params.result);
-		}
 		if (location && (location.search.match(/\bview=compose\b/))) {
 			this._showComposeView(callback);
 			return;
@@ -972,9 +972,6 @@ function(params, callback) {
 			}
 		}
 	}
-
-	// temporarily save GetInfoResponse so we can use it to properly render overview
-	this.__getInfoResponse = params.result ? params.result.getResponse().GetInfoResponse : null;
 
 	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
 	this._mailSearch(query, callback, params.searchResponse);
