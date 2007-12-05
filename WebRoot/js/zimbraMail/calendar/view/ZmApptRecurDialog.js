@@ -174,7 +174,7 @@ ZmApptRecurDialog.prototype.setCustomMonthlyValues =
 function(appt) {
 	var recur = appt._recurrence;
 	recur.repeatCustom = "1";
-
+    recur._startDate = appt.startDate;//Start from here
 	var value = this._getRadioOptionValue(this._monthlyRadioName);
 
 	if (value == "1") {
@@ -185,7 +185,7 @@ function(appt) {
         recur._startDate.setDate(recur.repeatCustomMonthDay);
         var today = new Date(); //Today's date...
         var diff = (today - recur._startDate);
-        if(diff > AjxDateUtil.MSEC_PER_DAY){ // was in the past, so let's use the next date
+        if(diff >= AjxDateUtil.MSEC_PER_DAY){ // was in the past, so let's use the next date
             recur._startDate.setMonth(recur._startDate.getMonth()+1);
         }
 
@@ -201,7 +201,7 @@ function(appt) {
             //Check if it is already paased
             var today = new Date();
             var diff = (today - lastDayDate);
-            if(diff  > AjxDateUtil.MSEC_PER_DAY){ //In the past
+            if(diff >= AjxDateUtil.MSEC_PER_DAY){ //In the past
                 // Go for next month
                 lastDate.setMonth(lastDate.getMonth()+1);
                 recur._startDate = AjxDateUtil.getDateForThisDay(lastDate,this._monthlyWeekdaySelect.getValue(),recur.repeatCustomOrdinal); //Last day of next month/year
@@ -210,15 +210,16 @@ function(appt) {
             }
         }else{
             var first = new Date();
-            var today = new Date();
-            if(recur.repeatCustomOrdinal == 1){
-               first.setDate(1);
-               var diff = (today - first);
-               if( diff > AjxDateUtil.MSEC_PER_DAY){ //In the past
-                    first.setMonth(first.getMonth()+1);
-                }
-            }
+            first.setDate(1);  
             recur._startDate = AjxDateUtil.getDateForNextDay(first,this._monthlyWeekdaySelect.getValue(),recur.repeatCustomOrdinal);
+             //Check if it is already paased
+            var today = new Date();
+            var diff = (today - recur._startDate);
+            if(diff >= AjxDateUtil.MSEC_PER_DAY){ //In the past
+                // Go for next month, find the date as per rule
+                first.setMonth(first.getMonth() + 1);//Next month
+                recur._startDate = AjxDateUtil.getDateForThisDay(first,this._monthlyWeekdaySelect.getValue(),recur.repeatCustomOrdinal);
+            }
         }
     }
 };
@@ -240,7 +241,7 @@ function(appt) {
         //Try to judge, if this date is in future
         var today = new Date();
         var diff = (today - d);
-        if( diff > AjxDateUtil.MSEC_PER_DAY){ //In the past
+        if( diff >= AjxDateUtil.MSEC_PER_DAY){ //In the past
             d.setFullYear(d.getFullYear()+1);
         }
         appt._recurrence._startDate = d;
@@ -250,26 +251,24 @@ function(appt) {
 		appt._recurrence.repeatCustomOrdinal = this._yearlyDaySelect.getValue();
 		appt._recurrence.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[this._yearlyWeekdaySelect.getValue()];
 		appt._recurrence.repeatYearlyMonthsList = this._yearlyMonthSelectEx.getValue() + 1;
-        //Create a date out of this pointing to 1 of that month
         var d = new Date();
         d.setMonth(this._yearlyMonthSelectEx.getValue());
         //Check if date is in past
         if(appt._recurrence.repeatCustomOrdinal < 0){ // we want last day
             d.setDate(AjxDateUtil.daysInMonth(d.getFullYear(),d.getMonth()));
         }else{
-            var today = new Date();
             d.setDate(1);
-            var diff = (today - d);
-            if( diff > AjxDateUtil.MSEC_PER_DAY){ //In the past
-                d.setFullYear(d.getFullYear()+1); //Go next year
-            }
         }
         var dt  = AjxDateUtil.getDateForThisDay(d,this._yearlyWeekdaySelect.getValue(),appt._recurrence.repeatCustomOrdinal);
         var today = new Date();
         var diff = (today -dt);
-        if(diff > AjxDateUtil.MSEC_PER_DAY){ // In the past
+        if(diff >= AjxDateUtil.MSEC_PER_DAY){ // In the past
             d.setFullYear(d.getFullYear()+1);
-            d.setDate(AjxDateUtil.daysInMonth(d.getFullYear(),d.getMonth()));
+            if(appt._recurrence.repeatCustomOrdinal < 0){ // we want last day
+                d.setDate(AjxDateUtil.daysInMonth(d.getFullYear(),d.getMonth()));
+            }else{
+                d.setDate(1);
+            }
         }
         appt._recurrence._startDate = AjxDateUtil.getDateForThisDay(d,this._yearlyWeekdaySelect.getValue(),appt._recurrence.repeatCustomOrdinal);
         appt._recurrence._endDate = appt._recurrence._startDate;
