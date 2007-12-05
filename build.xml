@@ -343,6 +343,7 @@
                 <property name='customer.portal.dir' value='${customer.web.dir}/portals'/>
                 <property name='customer.zimlet.dir' value='${customer.dir}/Zimlet'/>
 				<property name='customer.webinf.dir' value='${customer.web.dir}/WEB-INF' />
+                <property name="customer.build.dir" value="${customer.web.dir}/../build" />
 				<if><available file='${customer.web.dir}' />
 					<then>
 						<fileset id='customer.web.fileset'
@@ -543,6 +544,7 @@
                 <replace token="@jsVersion@" value="${build.simpleDate}" file='${build.img.dir}/${build.css.filename}'/>
 
                 <!-- skin images -->
+                <!--
                 <dirset id='skins.dirset' dir='${skins.dir}' includes='*'/>
                 <pathconvert property='skins.dirs' refid='skins.dirset' pathsep=','>
                     <flattenmapper/>
@@ -551,6 +553,7 @@
                 <foreach list='${skins.dirs}' target='build-skin-images' param='skindir'>
                     <param name="skinbasedir" value="WebRoot"/>
                 </foreach>
+                -->
 
                 <!-- customer skin images -->
                 <antcall target='customer-skin-images'/>
@@ -572,8 +575,8 @@
     <target name='customer-skin-images' if='env.CUSTOMER_SKIN'>
         <if>
             <and>
-				<available file='${customer.web.dir}' />
-				<not>
+                <available file='${customer.web.dir}' />
+                <not>
                     <isset property='build.ajax'/>
                 </not>
                 <not>
@@ -581,6 +584,30 @@
                 </not>
             </and>
             <then>
+                <!-- Overlay main customer skin onto Zimbra base skins -->
+                <property name="customer.build.img.dir" value="${customer.build.dir}/img" />
+                <mkdir dir="${customer.build.dir}" />
+
+                <fileset id='customer.base.img.fileset' dir='${customer.web.dir}/img' includes='**' />
+                <pathconvert property='customer.base.imgs' refid='customer.base.img.fileset' pathsep=','>
+                    <regexpmapper from="^.*\/img\/(.*)" to="\1" />
+                </pathconvert>
+                <copy todir="${customer.build.img.dir}" verbose="${sync.verbose}">
+                    <fileset dir="${img.dir}" includes="**" excludes="${customer.base.imgs}" />
+                    <fileset dir="${customer.web.dir}/img" includes="${customer.base.imgs}" />
+                </copy>
+
+                <!--
+                TODO: Imagemerge the overlaid files in ${customer.build.img.dir}.  This should provide
+                      the subset of only the images that Comcast needs.  Then, need to figure out how
+                      to get the newly merged images deployed, in both Ajax and HTML client.
+                -->
+                <imagemerge destdir='${customer.build.img.dir}'
+                            cssfile='${build.css.filename}' csspath='/${deploy.app}/img/'>
+                    <dirset dir="${customer.build.dir}" includes="img/**" />
+                </imagemerge>
+
+                <!-- Handle customer skins -->
                 <dirset id='customer.skins.dirset' dir='${customer.web.dir}' includes='skins/*'/>
                 <pathconvert property='customer.skins.dirs' refid='customer.skins.dirset' pathsep=','>
                     <flattenmapper/>
@@ -648,6 +675,7 @@
                      includes='skins/${skinname}/**'
                      excludes='skins/${skinname}/img/_sourceimages/**'
                     />
+            <fileset dir='${customer.build.dir}' includes='img/**' />
             <fileset dir='${build.web.dir}' includes='skins/${skinname}/**'/>
             <fileset dir='${customer.web.dir}' includes='portals/${skinname}/**'/>
             <fileset dir='${customer.web.dir}' includes='${custom.web.jsp.includes},h/**,m/**'/>
@@ -981,9 +1009,10 @@ if (ext == null) ext = "";
         <replace file="${webapp.dir}/WEB-INF/web.xml" token="%%zimbraMailSSLPort%%" value="7443"/>
     </target>
 
-    <target name='clean'>
+    <target name='clean' depends='customer-init'>
         <ant dir="${taglib.dir}" target="clean" inheritAll="false"/>
         <delete dir='${build.dir}'/>
+        <delete dir='${customer.build.dir}' />
     </target>
 
 
