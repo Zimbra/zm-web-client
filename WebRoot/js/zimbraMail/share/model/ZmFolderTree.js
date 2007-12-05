@@ -98,8 +98,8 @@ function(parent, obj, tree, elementType, path) {
 			if (pkg) {
 				AjxDispatcher.require(pkg);
 			}
-			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path);
-			ZmFolderTree._traverse(folder, obj, tree, path || []);
+			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path, elementType);
+			ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType);
 		}
 	}
 
@@ -107,7 +107,7 @@ function(parent, obj, tree, elementType, path) {
 };
 
 ZmFolderTree._traverse =
-function(folder, obj, tree, path) {
+function(folder, obj, tree, path, elementType) {
 
 	var isRoot = (folder.nId == ZmOrganizer.ID_ROOT);
 	if (obj.folder && obj.folder.length) {
@@ -116,7 +116,7 @@ function(folder, obj, tree, path) {
 		}
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folderObj = obj.folder[i];
-			var childFolder = ZmFolderTree.createFromJs(folder, folderObj, tree, "folder", path);
+			var childFolder = ZmFolderTree.createFromJs(folder, folderObj, tree, (elementType || "folder"), path);
 			if (folder && childFolder) {
 				folder.children.add(childFolder);
 			}
@@ -154,18 +154,33 @@ function(folder, obj, tree, path) {
 };
 
 ZmFolderTree.createFolder =
-function(type, parent, obj, tree, path) {
+function(type, parent, obj, tree, path, elementType) {
 	var orgClass = eval(ZmOrganizer.ORG_CLASS[type]);
 	if (!orgClass) { return null; }
+
 	DBG.println(AjxDebug.DBG2, "Creating " + type + " with id " + obj.id + " and name " + obj.name);
-	var params = {id:obj.id, name:obj.name, parent:parent, tree:tree, color:obj.color,
-				  owner:obj.owner, zid:obj.zid, rid:obj.rid, restUrl:obj.rest,
-				  url:obj.url, numUnread:obj.u, numTotal:obj.n, sizeTotal:obj.s, perm:obj.perm};
+
+	var params = {
+		id: 		obj.id,
+		name: 		obj.name,
+		parent: 	parent,
+		tree: 		tree,
+		color: 		obj.color,
+		owner: 		obj.owner,
+		zid: 		obj.zid,
+		rid: 		obj.rid,
+		restUrl: 	obj.rest,
+		url: 		obj.url,
+		numUnread: 	obj.u,
+		numTotal: 	obj.n,
+		sizeTotal: 	obj.s,
+		perm: 		obj.perm,
+		link: 		elementType == "link"
+	};
+
 	var folder = new orgClass(params);
 	ZmFolderTree._fillInFolder(folder, obj, path);
-
 	ZmFolderTree.IS_PARSED[type] = true;
-
 	return folder;
 };
 
@@ -174,6 +189,7 @@ function(folder, obj, path) {
 	if (path && path.length) {
 		folder.path = path.join("/");
 	}
+
 	if (obj.f && folder._parseFlags) {
 		folder._parseFlags(obj.f);
 	}
