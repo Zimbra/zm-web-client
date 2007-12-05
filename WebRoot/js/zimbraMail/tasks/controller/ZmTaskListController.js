@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -176,7 +176,7 @@ function() {
 
 ZmTaskListController.prototype._initializeToolBar =
 function(view) {
-	if (this._toolbar[view]) return;
+	if (this._toolbar[view]) { return; }
 
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
@@ -189,9 +189,7 @@ function(view) {
 
 ZmTaskListController.prototype._getActionMenuOps =
 function() {
-	var list = [];
-	list.push(ZmOperation.EDIT);
-	list.push(ZmOperation.SEP);
+	var list = [ZmOperation.EDIT, ZmOperation.SEP];
 	list = list.concat(this._standardActionMenuOps());
 	return list;
 };
@@ -213,44 +211,37 @@ function(parent, num) {
 		var isShare = folder && folder.link;
 		var canEdit = (folder == null || !folder.isReadOnly());
 
-		parent.enable([ZmOperation.MOVE], canEdit && num > 0);
-		// XXX: for now, only allow one task to be deleted at a time
-		parent.enable([ZmOperation.DELETE, ZmOperation.EDIT], canEdit && num == 1);
+		parent.enable([ZmOperation.MOVE, ZmOperation.DELETE], canEdit && num > 0);
+		parent.enable(ZmOperation.EDIT, canEdit && num == 1);
 		parent.enable(ZmOperation.TAG_MENU, (isParent && !isShare && num > 0));
 	} else {
 		parent.enable(ZmOperation.TAG_MENU, isParent);
 	}
 };
 
-// Delete one or more items.
-ZmTaskListController.prototype._deleteListener =
-function(ev) {
-	// XXX: how to handle multiple tasks where some may be recurring and others not?
-	//      For now, we're only allow one task to be deleted at a time.
-
-	//	var tasks = this._listView[this._currentView].getSelection();
-	var task = this._listView[this._currentView].getSelection()[0];
-	this._doDelete(task);
-};
-
 ZmTaskListController.prototype._doDelete =
-function(task, mode) {
-	// if passed in array, just process first item for now
-	if (task instanceof Array)
-		task = task[0];
-
+function(tasks, mode) {
+	/*
+	 * XXX: Recurrence is not yet supported by tasks
+	 *
 	if (task.isRecurring() && !task.isException) {
 		// prompt user to edit instance vs. series if recurring but not exception
 		this._showTypeDialog(task, ZmCalItem.MODE_DELETE);
-	} else {
-		var callback = new AjxCallback(this, this._handleDelete, [task]);
-		appCtxt.getConfirmationDialog().popup(ZmMsg.confirmCancelTask, callback);
 	}
+	*/
+	var callback = new AjxCallback(this, this._handleDelete, [tasks]);
+	appCtxt.getConfirmationDialog().popup(ZmMsg.confirmCancelTask, callback);
 };
 
 ZmTaskListController.prototype._handleDelete =
-function(task) {
-	task.cancel(ZmCalItem.MODE_DELETE);
+function(tasks) {
+	var batchCmd = new ZmBatchCommand();
+	for (var i = 0; i < tasks.length; i++) {
+		var t = tasks[i];
+		var cmd = new AjxCallback(t, t.cancel, [ZmCalItem.MODE_DELETE]);
+		batchCmd.add(cmd);
+	}
+	batchCmd.run();
 };
 
 ZmTaskListController.prototype._editTask =
