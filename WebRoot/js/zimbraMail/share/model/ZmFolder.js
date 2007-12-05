@@ -331,8 +331,10 @@ function(obj) {
 
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
-	if (this.isSystem()) {
-		return pathOnly	? ZmFolder.QUERY_NAME[this.nId] : ("in:" + ZmFolder.QUERY_NAME[this.nId]);
+	if (!this.isRemote() && this.isSystem()) {
+		return pathOnly
+			? ZmFolder.QUERY_NAME[this.nId]
+			: ("in:" + ZmFolder.QUERY_NAME[this.nId]);
 	}
 	var path = this.name;
 	var f = this.parent;
