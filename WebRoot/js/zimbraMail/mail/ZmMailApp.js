@@ -624,6 +624,7 @@ function() {
 
 ZmMailApp.prototype.startup =
 function(result) {
+	this.__getInfoResponse = result.getResponse().GetInfoResponse;
 };
 
 /**
@@ -976,11 +977,6 @@ function(params, callback) {
 
 	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
 	this._mailSearch(query, callback, params.searchResponse);
-};
-
-ZmMailApp.prototype.activate =
-function(active) {
-	ZmApp.prototype.activate.call(this, active);
 };
 
 ZmMailApp.prototype._handleErrorLaunch =
