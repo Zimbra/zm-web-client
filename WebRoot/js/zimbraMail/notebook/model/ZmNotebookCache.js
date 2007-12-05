@@ -560,7 +560,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 			}
 			
 			if((item.name == "_Index") && (remoteFolderId !=null)){
-				this._updateIndexItem(folderId, word);										
+				this._updateIndexItem(folderId, remoteFolderId, word);										
 			}
 			
 		}
@@ -626,7 +626,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 };
 
 ZmNotebookCache.prototype._updateIndexItem =
-function(folderId, word) {
+function(folderId, remoteFolderId, word) {
 	var indexItem = this.getPageById(folderId);
 	if (!indexItem) {					
 		indexItem = new ZmPage();
