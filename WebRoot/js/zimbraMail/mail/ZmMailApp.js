@@ -624,10 +624,6 @@ function() {
 
 ZmMailApp.prototype.startup =
 function(result) {
-	var obj = result.getResponse().GetInfoResponse;
-	appCtxt.getIdentityCollection().initialize(obj.identities);
-	appCtxt.getDataSourceCollection().initialize(obj.dataSources);
-	appCtxt.getSignatureCollection().initialize(obj.signatures);
 };
 
 /**
@@ -984,12 +980,6 @@ function(params, callback) {
 
 ZmMailApp.prototype.activate =
 function(active) {
-	if (this.__getInfoResponse) {
-		// data sources need to be parsed *before* activate so overview can render properly
-		appCtxt.getIdentityCollection().initialize(this.__getInfoResponse.identities);
-		appCtxt.getDataSourceCollection().initialize(this.__getInfoResponse.dataSources);
-	}
-
 	ZmApp.prototype.activate.call(this, active);
 };
 
@@ -1194,6 +1184,9 @@ function() {
 
 	if (!this._dataSourceCollection[activeAcct]) {
 		this._dataSourceCollection[activeAcct] = new ZmDataSourceCollection();
+		if (appCtxt.getActiveAccount().isMain && this.__getInfoResponse) {
+			this._dataSourceCollection[activeAcct].initialize(this.__getInfoResponse.dataSources);
+		}
 	}
 	return this._dataSourceCollection[activeAcct];
 };
@@ -1212,6 +1205,9 @@ function() {
 
 	if (!this._identityCollection[activeAcct]) {
 		this._identityCollection[activeAcct] = new ZmIdentityCollection();
+		if (appCtxt.getActiveAccount().isMain && this.__getInfoResponse) {
+			this._identityCollection[activeAcct].initialize(this.__getInfoResponse.identities);
+		}
 	}
 	return this._identityCollection[activeAcct];
 };
@@ -1223,6 +1219,9 @@ function() {
 
 	if (!this._signatureCollection[activeAcct]) {
 		this._signatureCollection[activeAcct] = new ZmSignatureCollection();
+		if (appCtxt.getActiveAccount().isMain && this.__getInfoResponse) {
+			this._signatureCollection[activeAcct].initialize(this.__getInfoResponse.signatures);
+		}
 	}
 	return this._signatureCollection[activeAcct];
 };
