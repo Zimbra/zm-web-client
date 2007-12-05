@@ -548,15 +548,16 @@ function(params) {
 		ZmApp.DEFAULT_APPS.sort(function(a, b) {
 			return ZmZimbraMail.hashSortCompare(ZmApp.DEFAULT_SORT, a, b);
 		});
+		var defaultStartApp = null;
 		for (var i = 0; i < ZmApp.DEFAULT_APPS.length; i++) {
 			var app = ZmApp.DEFAULT_APPS[i];
 			var setting = ZmApp.SETTING[app];
 			if (!setting || appCtxt.get(setting)) {
-				this._defaultStartApp = app;
+				defaultStartApp = app;
 				break;
 			}
 		}
-		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : this._defaultStartApp;
+		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : defaultStartApp;
 	}
 
 	// check for jump to compose page or msg view
@@ -568,7 +569,6 @@ function(params) {
 		var match;
 		if (location.search && (match = location.search.match(/\bview=(\w+)\b/))) {
 			var view = match[1];
-			startApp = this._defaultStartApp;
 			if (ZmApp.QS_VIEWS[view]) {
 				startApp = ZmApp.QS_VIEWS[view];
 				checkQS = true;
