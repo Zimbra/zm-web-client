@@ -11,6 +11,7 @@
 				<td id='skin_spacing_web_search'><div id='skin_container_web_search' class='skin_container'>
 					<table width=100% cellspacing=0 cellpadding=0><tr>
 						<td width='100%'  class='DwtInputField-hint'><input id='skin_search_web_input' value='Search the Web...' style='width:100%;' onfocus='skin.searchWebFocus(event,this)' onblur='skin.searchWebBlur(event,this)' onkeypress='return skin.searchWebKey(event, this)'></td>
+<script>document.getElementById('skin_search_web_input').value = ZmMsg.searchWebPrompt</script>
 						<td style='padding-left:3px;'><button class='DwtButton' style='height:24px' onclick='skin.searchWeb(skin._getEl("skin_search_web_input").value)'><div class='ImgWebSearch'></div></button></td>
 					</tr></table>
 				</div></td>
@@ -18,7 +19,7 @@
 					<tr>
 						<td id='skin_spacing_switch' colspan=2
 							><table cellspacing=0 cellpadding=0 align='center'>
-								<tr><td id='skin_container_switch'><a href='javascript:switchToStandardClient()'>Switch to Standard Client</a></td></tr>
+								<tr><td id='skin_container_switch'><a href='javascript:switchToStandardClient()'><script>document.write(ZmMsg.switchToStandardClient)</script></a></td></tr>
 							</table
 						></td>
 					</tr>
@@ -64,7 +65,7 @@
 							<td id='skin_spacing_app_chooser'>
 								<div id='skin_border_app_chooser' class='skin_container'>
 									<div id='skin_container_app_chooser' class='skin_container'></div>
-									<div id='skin_container_offline_status'><table><tr><td><div class='ImgOffline'></td><td>Offline</td><td><div class='ImgSelectPullDownArrow'></div></td></tr></table></div>
+									<div id='skin_container_offline_status'></div>
 								</div>
 							</td>
 						</tr>
