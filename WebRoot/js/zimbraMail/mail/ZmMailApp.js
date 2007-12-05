@@ -916,7 +916,8 @@ function(refresh) {
 	if (!appCtxt.inStartup) {
 		var account = appCtxt.multiAccounts ? appCtxt.getMainAccount() : null;
 		this.resetOverview(this.getOverviewId(account));
-		if (appCtxt.getCurrentAppName() == this._name) {
+		var req = appCtxt.currentRequestParams;
+		if (appCtxt.getCurrentAppName() == this._name && req.resend && req.methodName == "NoOpRequest") {
 			var curView = appCtxt.getCurrentViewId();
 			if (curView == ZmController.CONVLIST_VIEW || curView == ZmController.TRAD_VIEW) {
 				appCtxt.getSearchController().redoSearch(this.currentSearch);

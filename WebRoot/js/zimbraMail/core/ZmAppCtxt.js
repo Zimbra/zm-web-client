@@ -30,8 +30,9 @@ ZmAppCtxt = function() {
 	// create dummy account for startup
 	this._accounts[ZmZimbraAccount.DEFAULT_ID] = new ZmZimbraAccount(ZmZimbraAccount.DEFAULT_ID, null, false);
 
-	// public flags
-	this.inStartup = false;
+	// public properties
+	this.inStartup = false;				// true if we are starting app (set in ZmZimbraMail)
+	this.currentRequestParams = null;	// params of current SOAP request (set in ZmRequestMgr)
 
 	// account-specific
 	this.multiAccounts = false;

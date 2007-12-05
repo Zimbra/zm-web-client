@@ -125,7 +125,8 @@ function(params) {
 		resend:params.resend
 	};
 
-	var methodName = params.soapDoc ? params.soapDoc._methodEl.tagName : "[unknown]";
+	var methodName = params.methodName = params.soapDoc ? params.soapDoc._methodEl.tagName : "[unknown]";
+	appCtxt.currentRequestParams = params;
 	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + methodName);
 	var cancelParams = timeout ? [reqId, params.errorCallback, params.noBusyOverlay] : null;
 	if (!params.noBusyOverlay) {
