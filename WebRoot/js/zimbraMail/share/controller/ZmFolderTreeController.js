@@ -96,11 +96,7 @@ function(parent, type, id) {
 		parent.enable(ZmOperation.RENAME_FOLDER, !folder.isDataSource());		// dont allow datasource'd folder to be renamed via overview
 
 		if (folder.isRemote() && folder.isReadOnly()) {
-			if (folder.parent && folder.parent.isRemote()) {
-				parent.enableAll(false);
-			} else {
-				parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ, ZmOperation.EMPTY_FOLDER], false);
-			}
+			parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ, ZmOperation.EMPTY_FOLDER], false);
 		}
 	}
 	// system folder

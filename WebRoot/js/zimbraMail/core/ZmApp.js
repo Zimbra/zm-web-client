@@ -586,6 +586,7 @@ function(type) {
 	}
 	this._clearDeferredFolders();
 
+	// XXX: this may no longer be necessary per fixes to bug 6082 and 4434
 	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
 		folderTree.getPermissions(type);

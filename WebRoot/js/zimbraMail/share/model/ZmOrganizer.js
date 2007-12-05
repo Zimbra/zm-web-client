@@ -32,6 +32,7 @@
 * @param parent		[ZmOrganizer]	parent organizer
 * @param tree		[ZmTree]		tree model that contains this organizer
 * @param color		[constant]		color for this organizer
+* @param link		[boolean]*		whether this organizer is shared
 * @param numUnread	[int]*			number of unread items for this organizer
 * @param numTotal	[int]*			number of items for this organizer
 * @param sizeTotal	[int]*			total size of organizer's items
@@ -58,7 +59,7 @@ ZmOrganizer = function(params) {
 	this.sizeTotal = params.sizeTotal || 0;
 	this.url = params.url;
 	this.owner = params.owner;
-	this.link = Boolean(params.zid);
+	this.link = params.link || (Boolean(params.zid));
 	this.zid = params.zid;
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
@@ -560,10 +561,12 @@ function() {
 ZmOrganizer.prototype.getRemoteId =
 function() {
 	if (!this._remoteId) {
-		this._remoteId = this.isRemote() ? this.zid + ":" + this.rid : this.id;
+		this._remoteId = (this.isRemote() && this.zid && this.rid)
+			? (this.zid + ":" + this.rid)
+			: this.id;
 	}
 	return this._remoteId;
-}
+};
 
 ZmOrganizer.prototype.getRestUrl =
 function() {
@@ -590,7 +593,7 @@ function() {
 		AjxStringUtil.urlEncode(this.getSearchPath())
 	].join("");
 
-	DBG.println("NO REST URL FROM SERVER. GENERATED URL: "+url);
+	DBG.println("NO REST URL FROM SERVER. GENERATED URL: " + url);
 
 	return url;
 };

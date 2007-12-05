@@ -399,28 +399,6 @@ function(refresh) {
 	this._loadTree(ZmOrganizer.TAG, unread, refresh.tags);
 	this._loadTree(ZmOrganizer.FOLDER, unread, refresh.folder[0], "folder");
 
-	// XXX: temp, get additional share info (see bug #4434)
-	if (refresh.folder) {
-		var respCallback = new AjxCallback(this, this._handleResponseRefreshHandler, [refresh]);
-		var folderTree = appCtxt.getFolderTree();
-		if (folderTree) {
-			if (appCtxt.inStartup && this._controller._doingPostRenderStartup) {
-				var callback = new AjxCallback(this,
-					function() {
-						folderTree.getPermissions(null, respCallback);
-					});
-				this._controller.addPostRenderCallback(callback, 5, 500, true);
-			} else {
-				folderTree.getPermissions(null, respCallback);
-			}
-		}
-	} else {
-		this._handleResponseRefreshHandler(refresh);
-	}
-};
-
-ZmRequestMgr.prototype._handleResponseRefreshHandler =
-function(refresh) {
 	// Run any app-requested refresh routines
 	this._controller.runAppFunction("refresh", false, refresh);
 };
