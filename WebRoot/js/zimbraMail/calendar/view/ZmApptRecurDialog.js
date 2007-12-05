@@ -186,8 +186,7 @@ function(appt) {
         var today = new Date(); //Today's date...
         var diff = (today - recur._startDate);
         if(diff > AjxDateUtil.MSEC_PER_DAY){ // was in the past, so let's use the next date
-            d.setMonth(d.getMonth()+1);//
-            recur._startDate = d;
+            recur._startDate.setMonth(recur._startDate.getMonth()+1);
         }
 
     } else {
