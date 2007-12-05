@@ -263,7 +263,7 @@ function(overviewId) {
 		var root = treeView.getTreeItemById(rootId);
 		if (root) {
 			var totalItems = [];
-			this._getSubItems(root);			
+			this._getSubItems(root, totalItems);			
 			return totalItems;
 		}
 	}
