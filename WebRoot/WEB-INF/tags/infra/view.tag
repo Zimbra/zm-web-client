@@ -156,7 +156,7 @@
 </c:when>
 
 <c:when test="${skin eq 'velodrome2'}">
-	<c:set var="iconPath" value="/skins/velodrome2/img/icons" scope="request"/>
+	<c:set var="iconPath" value="/img" scope="request"/>
 	<table width="100%" cellspacing="0" cellpadding="0" border="0" height="100%">
 	<tr>
 		<td class='ImgSkin_Chrome_R1' colspan="2">
