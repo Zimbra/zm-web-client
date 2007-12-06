@@ -1091,10 +1091,13 @@ ZmCalViewController.prototype._quickAddOkListener =
 function(ev) {
 	try {
 		if (this._quickAddDialog.isValid()) {
-			this._quickAddDialog.popdown();
 			var appt = this._quickAddDialog.getAppt();
 			if (appt) {
-				appt.save();
+                if(appt.getFolder() && appt.getFolder().noSuchFolder){
+                    throw AjxMessageFormat.format(ZmMsg.errorInvalidFolder, appt.getFolder().name);
+                }
+                this._quickAddDialog.popdown();
+                appt.save();
 			}
 		}
 	} catch(ex) {

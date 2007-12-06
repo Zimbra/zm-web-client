@@ -82,8 +82,13 @@ function(attId) {
 				return false;
 			}
 		}
-
-		// otherwise, just save the appointment
+        //Check if the Folder exists
+        if(appt.getFolder() && appt.getFolder().noSuchFolder){
+            var msg = AjxMessageFormat.format(ZmMsg.errorInvalidFolder, appt.getFolder().name);
+            this._showErrorMessage(msg);
+			return false;
+        }
+        // otherwise, just save the appointment
 		this._saveCalItemFoRealz(appt, attId);
 	}
 	return true;
