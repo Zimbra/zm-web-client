@@ -87,7 +87,7 @@
                             </c:when>
                             <c:when test="${context.folder.isSpam}">
                                 <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
-                                <app:button name="actionEmpty" src="startup/ImgDelete.gif" tooltip="emptyJunk" text="emptyJunk"/>
+                                <app:button name="actionEmpty" src="mail/ImgEmptyFolder.gif" tooltip="emptyJunk" text="emptyJunk"/>
                             </c:when>
                             <c:when test="${context.folder.isFeed}">
                                 <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
