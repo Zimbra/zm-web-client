@@ -951,7 +951,7 @@ function(notes, isHtml) {
 		var idx = notes.indexOf(ZmItem.NOTES_SEPARATOR);
 		if (idx != -1) {
 			notes = notes.substr(idx + ZmItem.NOTES_SEPARATOR.length);
-			var junk = isHtml ? "</div>" : "\n\n";
+			var junk = isHtml ? "</div><br>" : "\n\n";
 			if (notes.indexOf(junk) == 0) {
 				notes = notes.replace(junk, "");
 			}
