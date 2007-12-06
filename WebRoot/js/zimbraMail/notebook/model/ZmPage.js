@@ -108,6 +108,19 @@ function() {
 	return notebook && notebook.link;
 };
 
+ZmPage.prototype.isFolderReadOnly = function() {
+    var isFolderReadOnly = false;
+	var folder = appCtxt.getById(this.folderId);
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
+    while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
+		folder = folder.parent;
+	}
+	if(folder && folder.isReadOnly()){
+		isFolderReadOnly = true;
+	}
+	return isFolderReadOnly;
+};
+
 ZmPage.prototype.isReadOnly =
 function() {
 	if (this.isIndex())

@@ -149,9 +149,13 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 	toolbarOrActionMenu.enable(buttonIds, true);
 	var writable = this._object && !this._object.isReadOnly();
 	toolbarOrActionMenu.enable([ZmOperation.EDIT], writable);
-	if(appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
-		toolbarOrActionMenu.enable([ZmOperation.IMPORT_FILE], writable);
-	}
+	if(appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) ) {
+        if(this._object.isIndex() && !this._object.isFolderReadOnly()) {
+            toolbarOrActionMenu.enable([ZmOperation.IMPORT_FILE], true);
+        } else {
+            toolbarOrActionMenu.enable([ZmOperation.IMPORT_FILE], false);
+        }
+    }
 	toolbarOrActionMenu.enable([ZmOperation.DELETE], this.isDeletable());
 
 	var taggable = this._object && !this._object.isShared() && !this._object.isIndex();
