@@ -13,7 +13,9 @@
         <table cellpadding="0" cellspacing="0" width="100%">
             <tr>
                 <td align="center" style='font-size:9px'>
+                    <div style="width:160px;overflow:hidden;">
                     <b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>
+                    </div>
                 </td>
             </tr>
             <tr>
