@@ -62,10 +62,12 @@ function() {
 
 ZmDoublePaneView.prototype.toggleView = 
 function() {
-	var bIsVisible = this._isMsgViewVisible();
+	var visible = !this._isMsgViewVisible();
 	
-	this._msgView.setVisible(!bIsVisible);
-	this._msgSash.setVisible(!bIsVisible);
+	this._msgView.setVisible(visible);
+	this._msgSash.setVisible(visible);
+
+	this._controller._app._readingPaneOn = visible;
 	
 	var sz = this.getSize();
 	this._resetSize(sz.x, sz.y);

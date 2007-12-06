@@ -709,7 +709,7 @@ function(view, firstTime) {
 		if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 			menu = this._setupGroupByMenuItems(view);
 		}
-		this._setupReadingPaneMenuItem(view, menu, appCtxt.get(ZmSetting.READING_PANE_ENABLED));
+		this._setupReadingPaneMenuItem(view, menu, this._readingPaneOn);
 
 		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 		if (btn) {

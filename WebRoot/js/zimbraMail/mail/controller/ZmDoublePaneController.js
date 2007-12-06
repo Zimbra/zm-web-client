@@ -31,7 +31,8 @@ ZmDoublePaneController = function(container, mailApp) {
 
 	if (arguments.length == 0) { return; }
 	ZmMailListController.call(this, container, mailApp);
-	this._readingPaneOn = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
+	this._readingPaneOn = mailApp._readingPaneOn;
+	this._appReadingPane = false;	// whether to follow app-level reading pane state
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));	
@@ -81,7 +82,7 @@ function(item, callback, results) {
 		callback.run();
 	}
 	
-	if (appCtxt.get(ZmSetting.READING_PANE_ENABLED) != this._readingPaneOn) {
+	if (this._appReadingPane && (this._readingPaneOn != this._app._readingPaneOn)) {
 		this._toggleReadingPane(true);
 	}
 	
@@ -122,9 +123,9 @@ function() {
 };
 
 /**
- * Shows or hides the reading pane.
+ * Shows or hides the reading pane based on the value of the corresponding menu item.
  *
- * @param toggle	[boolean]*		if true, flip state of reading pane
+ * @param force		[boolean]*		if true, flip state of reading pane
  */
 ZmDoublePaneController.prototype._toggleReadingPane = 
 function(force) {
@@ -141,7 +142,6 @@ function(force) {
 
 	this._readingPaneOn = checked;
 	this._doublePaneView.toggleView();
-	appCtxt.set(ZmSetting.READING_PANE_ENABLED, this._readingPaneOn);
 
 	// set msg in msg view if reading pane is being shown
 	if (this._readingPaneOn) {
