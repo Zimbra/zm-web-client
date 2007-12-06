@@ -31,6 +31,7 @@
 ZmTradController = function(container, mailApp) {
 	ZmDoublePaneController.call(this, container, mailApp);
 	this._msgControllerMode = ZmController.TRAD_VIEW;
+	this._appReadingPane = true;	// follow app-level reading pane state
 };
 
 ZmTradController.prototype = new ZmDoublePaneController;

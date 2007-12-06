@@ -30,7 +30,7 @@ ZmMailApp = function(container, parentController) {
 	this._dataSourceCollection = {};
 	this._identityCollection = {};
 	this._signatureCollection = {};
-
+	
 	var settings = appCtxt.getSettings();
 	settings.getSetting(ZmSetting.VIEW_AS_HTML).addChangeListener(new AjxListener(this, this._settingChangeListener));
 	settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
@@ -625,6 +625,9 @@ function() {
 ZmMailApp.prototype.startup =
 function(result) {
 	this.__getInfoResponse = result.getResponse().GetInfoResponse;
+
+	// initial reading pane state for list views
+	this._readingPaneOn = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
 };
 
 /**

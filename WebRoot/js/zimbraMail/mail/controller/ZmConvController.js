@@ -32,9 +32,11 @@ ZmConvController = function(container, mailApp) {
 
 	ZmDoublePaneController.call(this, container, mailApp);
 
+	// always start with reading pane on
+	this._readingPaneOn = true;
+
 	this._convDeleteListener = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
-	this._readingPaneOn = true;	// always start with reading pane on
 	this._msgControllerMode = ZmController.CONV_VIEW;
 }
 
@@ -70,12 +72,12 @@ function(activeSearch, conv, parentController, callback) {
 
 	// this._list will be set when conv is loaded
 	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv, callback);
-}
+};
 
 ZmConvController.prototype.getConv =
 function() {
 	return this._conv;
-}
+};
 
 /**
  * Returns the list from the view (CLV) that we came from.

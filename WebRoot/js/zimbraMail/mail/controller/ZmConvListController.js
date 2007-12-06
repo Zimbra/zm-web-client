@@ -31,6 +31,7 @@
 ZmConvListController = function(container, mailApp) {
 	ZmDoublePaneController.call(this, container, mailApp);
 	this._msgControllerMode = ZmController.CONVLIST_VIEW;
+	this._appReadingPane = true;	// follow app-level reading pane state
 };
 
 ZmConvListController.prototype = new ZmDoublePaneController;
