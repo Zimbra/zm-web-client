@@ -1230,6 +1230,10 @@ function(calItemNode, instNode) {
 	this.compNum 		= this._getAttr(calItemNode, instNode, "compNum") || "0";
 	this.isException 	= this._getAttr(calItemNode, instNode, "ex");
 	this.allDayEvent 	= this._getAttr(calItemNode, instNode, "allDay") || "0";
+	var dur = this._getAttr(calItemNode, instNode, "dur");
+	if (this.allDayEvent != "0" && this.isException == "1" && dur) {
+		this.allDayEvent = "0";
+	}
 	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
 	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
 
@@ -1248,7 +1252,7 @@ function(calItemNode, instNode) {
 		this.uniqStartTime = this.startDate.getTime();
 	}
 
-	var ed = this._getAttr(calItemNode, instNode, "dur");
+	var ed = dur;
 	if (ed) {
 		var endTime = startTime + (parseInt(ed));
 		this.endDate = new Date(endTime);
