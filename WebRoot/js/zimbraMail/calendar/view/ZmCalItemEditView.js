@@ -372,11 +372,7 @@ function(calItem, mode) {
 	this._repeatSelect.setSelectedValue(calItem.getRecurType());
 
 	// recurrence string
-	if (calItem.isCustomRecurrence()) {
-		this._repeatDescField.innerHTML = calItem.getRecurBlurb();
-	} else {
-		this._repeatDescField.innerHTML = calItem.getRecurType() != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
-	}
+	this._setRepeatDesc(calItem);
 
 	// attachments
 	this._attachDiv = document.getElementById(this._attachDivId);
@@ -391,6 +387,14 @@ function(calItem, mode) {
 	}
 
 	this._setContent(calItem);
+};
+
+ZmCalItemEditView.prototype._setRepeatDesc = function(calItem) {
+	if (calItem.isCustomRecurrence()) {
+		this._repeatDescField.innerHTML = calItem.getRecurBlurb();
+	} else {
+		this._repeatDescField.innerHTML = calItem.getRecurType() != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+	}
 };
 
 ZmCalItemEditView.prototype._setContent =
@@ -736,6 +740,9 @@ function(ev) {
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
+	var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	this._calItem._recurrence._startDate.setTime(sd.getTime());
+	this._setRepeatDesc(this._calItem);
 };
 
 ZmCalItemEditView.prototype._repeatChangeListener =
@@ -775,7 +782,7 @@ function(ev) {
                 this._calItem._endDate = this.startDate ;
 
             }
-            this._repeatDescField.innerHTML = temp.getRecurBlurb();
+			this._setRepeatDesc(temp);
 		} else {
 			// give feedback to user about errors in recur dialog
 			popdown = false;
@@ -870,5 +877,12 @@ ZmCalItemEditView._onChange =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var edv = AjxCore.objectWithId(el._editViewId);
-	ZmApptViewHelper.handleDateChange(edv._startDateField, edv._endDateField, (el == edv._startDateField));
+	var sdField = edv._startDateField;
+	var edField = edv._endDateField;
+	ZmApptViewHelper.handleDateChange(sdField, edField, (el == sdField));
+
+	var calItem = edv._calItem;
+	var sd = AjxDateUtil.simpleParseDateStr(sdField.value);
+	calItem._recurrence._startDate.setTime(sd.getTime());
+	edv._setRepeatDesc(calItem);
 };
