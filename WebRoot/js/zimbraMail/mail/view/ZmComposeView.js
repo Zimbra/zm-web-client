@@ -115,7 +115,7 @@ function(params) {
 	if (this._msg) {
 		this._msg.onChange = null;
 	}
-	var msg = this._msg = params.msg;
+	var msg = this._msg = this._addressesMsg = params.msg;
 	if (msg) {
 		msg.onChange = this._onMsgDataChange;
 	}
@@ -1202,12 +1202,14 @@ function(action, toOverride) {
 		for (var i = 0, count = aliases.length; i < count; i++) {
 			used[aliases[i].toLowerCase()] = true;
 		}
-		
-		if (!this._msg.isSent) {
-			var addr = this._getAddrString(this._msg.getReplyAddresses(action, used), {});
+
+		// When updating address lists, use this._addressesMsg instead of this._msg, because
+		// this._msg changes after a draft is saved.
+		if (!this._addressesMsg.isSent) {
+			var addr = this._getAddrString(this._addressesMsg.getReplyAddresses(action, used), {});
 			this.setAddress(AjxEmailAddress.TO, addr);
 		} else if (action == ZmOperation.REPLY) {
-			var toAddrs = this._msg.getAddresses(AjxEmailAddress.TO);
+			var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
 			this.setAddress(AjxEmailAddress.TO, this._getAddrString(toAddrs, {}));
 		}
 
@@ -1216,9 +1218,9 @@ function(action, toOverride) {
 			this.setAddress(AjxEmailAddress.CC, "");
 		} else if (action == ZmOperation.REPLY_ALL) {
 			var addrs = new AjxVector();
-			addrs.addList(this._msg.getAddresses(AjxEmailAddress.CC));
-			var toAddrs = this._msg.getAddresses(AjxEmailAddress.TO);
-			if (this._msg.isSent) {
+			addrs.addList(this._addressesMsg.getAddresses(AjxEmailAddress.CC));
+			var toAddrs = this._addressesMsg.getAddresses(AjxEmailAddress.TO);
+			if (this._addressesMsg.isSent) {
 				// sent msg replicates To: and Cc: (minus duplicates)
 				this.setAddress(AjxEmailAddress.TO, this._getAddrString(toAddrs, used));
 			} else {
