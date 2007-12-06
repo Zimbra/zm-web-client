@@ -1259,6 +1259,45 @@ function(date, noheader) {
 	}
 };
 
+ZmCalViewController.prototype.getUserStatusToolTipText =
+function(start, end, noheader, email) {
+	try {
+		
+		var calIds = [];
+		if(this._calTreeController) {
+			var calendars = this._calTreeController.getOwnedCalendars(this._app.getOverviewId(),email);
+			for(var i=0;i<calendars.length;i++){
+				var cal = calendars[i];
+				if(cal){
+					calIds.push(cal.nId);
+				}
+			}
+		}		
+		
+		if((calIds.length == 0) || (!email) ){
+			return "<b>" + ZmMsg.unknown + "</b>";
+		}
+		
+		var startTime = start.getTime();
+		var endTime = end.getTime();
+
+		var dayStart = new Date(start.getTime());
+		dayStart.setHours(0, 0, 0, 0);
+		var dayEnd = new Date(dayStart.getTime() + AjxDateUtil.MSEC_PER_DAY);
+		
+		//to avoid frequent request to server we cache the appt for the entire day first before
+		//getting the appts for selected time interval
+		this.getApptSummaries({start:dayStart.getTime(), end:dayEnd.getTime(), fanoutAllDay:true, folderIds: calIds});		
+		
+		var result = this.getApptSummaries({start:startTime, end:endTime, fanoutAllDay:true, folderIds: calIds});
+		
+		return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader, ZmMsg.unknown);
+	} catch (ex) {
+		DBG.println(ex);
+		return "<b>" + ZmMsg.unknown + "</b>";
+	}
+};
+
 ZmCalViewController.prototype._miniCalDateRangeListener =
 function(ev) {
 	this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);

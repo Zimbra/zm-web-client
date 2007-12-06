@@ -56,6 +56,22 @@ function(overviewId) {
 	return calendars;
 };
 
+ZmCalendarTreeController.prototype.getOwnedCalendars =
+function(overviewId, owner) {
+	var calendars = [];
+	var items = this._getItems(overviewId);
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];		
+		if (!item || item._isSeparator) continue;
+		var calendar = item.getData(Dwt.KEY_OBJECT);
+		if(calendar.getOwner() == owner){
+			calendars.push(calendar);				
+		}
+	}
+
+	return calendars;
+};
+
 // XXX: 6/1/07 - each app manages own overview now, do we need this?
 ZmCalendarTreeController.prototype.addSelectionListener =
 function(overviewId, listener) {
