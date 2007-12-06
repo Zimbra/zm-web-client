@@ -133,15 +133,13 @@
          <table width="100%" cellpadding="3" class="ZOptionsSectionMain">
              <tr>
                  <td class='ZOptionsTableLabel'>
-                 </td>
-                 <td>
-                     <app:optCheckbox boxfirst="true" trailingcolon="true" label="shouldShowTimezone" pref="zimbraPrefUseTimeZoneListInCalendar"
+                  <app:optCheckbox boxfirst="true" trailingcolon="false" label="shouldShowTimezone" pref="zimbraPrefUseTimeZoneListInCalendar"
                                       checked="${mailbox.prefs.useTimeZoneListInCalendar}"/>
                  </td>
              </tr>
              <app:optSeparator/>
              <tr>
-                 <td colspan=2 style='text-align:left;font-weight:bold;'>
+                 <td class='ZOptionsTableLabel'  style='width:100%;text-align:left;font-weight:bold;'>
                      <fmt:message key="optionsManageCalendars">
                          <fmt:param><fmt:message key="optionsManageCalendarsPre"/></fmt:param>
                          <fmt:param><a href="mcalendars"><fmt:message key="optionsManageCalendarsLink"/></a></fmt:param>
@@ -150,7 +148,7 @@
                  </td>
              </tr>
              <tr>
-                 <td colspan="2">
+                 <td>
                      &nbsp;
                  </td>
              </tr>
