@@ -111,7 +111,12 @@ function(startDateField, endDateField, isStartDate, skipCheck) {
 };
 
 ZmApptViewHelper.getDayToolTipText =
-function(date, list, controller, noheader) {
+function(date, list, controller, noheader, emptyMsg) {
+	
+	if(!emptyMsg){
+		emptyMsg = ZmMsg.noAppts;
+	}
+	
 	var html = new AjxBuffer();
 
 	var formatter = DwtCalendar.getDateFullFormatter();	
@@ -163,7 +168,7 @@ function(date, list, controller, noheader) {
 		}
 	}
 	if ( size == 0) {
-		html.append("<tr><td>"+ZmMsg.noAppts+"</td></tr>");
+		html.append("<tr><td>"+emptyMsg+"</td></tr>");
 	}
 	html.append("</table>");
 	html.append("</tr></td></table>");

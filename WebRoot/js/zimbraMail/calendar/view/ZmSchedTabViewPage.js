@@ -367,6 +367,21 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 
 	var td = tr.insertCell(-1);
     td.innerHTML = AjxTemplate.expand("calendar.Appointment#AttendeeFreeBusy", data);
+    
+    var freeBusyTable = document.getElementById(sched.dwtTableId);
+	Dwt.setHandler(freeBusyTable, DwtEvent.ONMOUSEOVER, ZmSchedTabViewPage._onFreeBusyMouseOver);	
+	Dwt.setHandler(freeBusyTable, DwtEvent.ONMOUSEOUT, ZmSchedTabViewPage._onFreeBusyMouseOut);
+	
+	for (var k = 0; k < data.cellCount; k++) {
+		var id = sched.dwtTableId + "_" + k;
+		var fbDiv = document.getElementById(id);
+		if(fbDiv){
+			fbDiv._freeBusyCellIndex = k;
+			fbDiv._schedTableIdx = index;
+			fbDiv._schedViewPageId = this._svpId;
+		}
+	}
+	
 
 	// create DwtInputField and DwtSelect for the attendee slots, add handlers
 	if (!isAllAttendees && !organizer) {
@@ -1183,6 +1198,42 @@ function(startTime, emailList, callback) {
 	this._controller.getFreeBusyInfo(startTime, endTime, emailList, callback);
 };
 
+ZmSchedTabViewPage.prototype.showFreeBusyToolTip =
+function() {
+	
+	var fbInfo = this._fbToolTipInfo;	
+	if(!fbInfo) return;
+	
+	var sched = fbInfo.sched;
+	var cellIndex = fbInfo.index;
+	var tableIndex = fbInfo.tableIndex;
+	var x = fbInfo.x;
+	var y = fbInfo.y;
+		
+	var attendee = sched.attendee;
+	var table = sched ? document.getElementById(sched.dwtTableId) : null;
+	if(attendee){
+		var email = attendee.getEmail();
+
+		var startDate  = new Date(this._getStartTime());
+		startDate.setHours(0,0,0,0);
+		var startTime = startDate.getTime() +  cellIndex*30*60*1000;
+		startDate = new Date(startTime);
+		var endTime = startTime + 30*60*1000;
+		var endDate = new Date(endTime);
+
+
+		var cc = AjxDispatcher.run("GetCalController");
+		var tooltipContent = cc.getUserStatusToolTipText(startDate, endDate, true, email);
+
+		var shell = DwtShell.getShell(window);
+		var tooltip = shell.getToolTip();
+		tooltip.setContent(tooltipContent, true);
+		tooltip.popup(x, y, true);		
+	}
+
+};
+
 // Static methods
 
 ZmSchedTabViewPage._onClick =
@@ -1254,4 +1305,41 @@ function(ev) {
 		var tooltip = shell.getToolTip();
 		tooltip.popdown();
 	}
+};
+
+ZmSchedTabViewPage._onFreeBusyMouseOver = 
+function(ev) {
+	ev = DwtUiEvent.getEvent(ev);
+	var fbDiv = DwtUiEvent.getTarget(ev);
+	if(!fbDiv) return;
+	
+	var svp = AjxCore.objectWithId(fbDiv._schedViewPageId);	
+	if(!svp) return;
+	
+	var sched = svp._schedTable[fbDiv._schedTableIdx]; 
+	var cellIndex = fbDiv._freeBusyCellIndex;
+	
+	if(svp && sched){
+		svp._fbToolTipInfo={x: (ev.pageX || ev.clientX), y: (ev.pageY || ev.clientY), el: fbDiv, sched: sched, index: cellIndex, tableIndex: fbDiv._schedTableIdx};
+		//avoid redundant request to server
+		AjxTimedAction.scheduleAction(new AjxTimedAction(svp, svp.showFreeBusyToolTip),1000);
+	}
+	
+};
+
+ZmSchedTabViewPage._onFreeBusyMouseOut = 
+function(ev) {
+	
+	ev = DwtUiEvent.getEvent(ev);
+	var el = DwtUiEvent.getTarget(ev);
+	var svp = AjxCore.objectWithId(el._schedViewPageId);
+	if (!svp) return;
+	svp._fbToolTipInfo = null;
+	var sched = svp._schedTable[el._schedTableIdx];
+	if (sched) {		
+		var shell = DwtShell.getShell(window);
+		var tooltip = shell.getToolTip();
+		tooltip.popdown();
+	}
+
 };
