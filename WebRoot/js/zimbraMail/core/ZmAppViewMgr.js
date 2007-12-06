@@ -402,13 +402,14 @@ function(viewId, appName, elements, callbacks, isAppView, isTransient) {
 ZmAppViewMgr.prototype.pushView =
 function(viewId, force) {
 
-	if ((viewId != ZmAppViewMgr.PENDING_VIEW) && !this._views[viewId]) {
+	var isPendingView = (viewId == ZmAppViewMgr.PENDING_VIEW);
+	if (!isPendingView && !this._views[viewId]) {
 		// view has not been created, bail
 		return false;
 	}
 	
 	var viewController = null;
-	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
+	if (isPendingView) {
 		viewId = this._pendingView;
 		var view = this._views[viewId];
 		if (view) {
@@ -430,7 +431,7 @@ function(viewId, force) {
 
 	DBG.println(AjxDebug.DBG2, "hidden (before): " + this._hidden);
 	
-	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
+	if (isPendingView) {
 		DBG.println(AjxDebug.DBG1, "push of pending view: " + this._pendingView);
 		force = true;
 	}
@@ -510,7 +511,14 @@ function(force, viewId) {
 		return;
 	}
 
-	if (viewId && (this.getCurrentViewId() != viewId)) { return; }
+	var isPendingView = (force == ZmAppViewMgr.PENDING_VIEW);
+	if (isPendingView) {
+		viewId = force;
+		force = true;
+	}
+
+	// check if trying to pop non-current view
+	if (viewId && !isPendingView && (this.getCurrentViewId() != viewId)) { return; }
 
 	if (!this._hidden.length && !this._isNewWindow) {
 		DBG.println(AjxDebug.DBG1, "ERROR: no view to replace popped view");
