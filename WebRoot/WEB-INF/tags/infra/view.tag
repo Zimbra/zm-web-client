@@ -95,7 +95,7 @@
     
         <c:if test="${empty editmode}">
             <td valign="top" class="Overview">
-				<table cellspacing="0" cellpadding="0" border="0" width="100%">
+				<table cellspacing="0" cellpadding="0" border="0" width="100%" class="IEFix">
 			    <tr>
 			    <td class="TbTop">
 			    <%--  compose button
@@ -115,9 +115,9 @@
 			    </tr>
 			    <tr>
 			    <td valign="top">
-			    <table cellspacing="0" cellpadding="0" border="0" align="center" style="margin: 0px 4px;" width="100%">
+			    <table cellspacing="0" cellpadding="0" border="0" align="center" width="100%">
 			    <tr>
-			    <td style="background-color: white;" valign="top">
+			    <td style="background-color: white; padding: 0px 4px;" valign="top">
                 <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tasks="${tasks}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
             	</td>
             	</tr>
@@ -148,9 +148,6 @@
     <!-- td style="width:10px;">
         &nbsp; <%-- for IE's scrollbar, this should be CSS browser-specific --%>
     </td -->
-</tr>
-<tr>
- <td colspan="4">&nbsp;</td>
 </tr>
 </table>
 </c:when>
