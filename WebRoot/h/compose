@@ -71,7 +71,7 @@
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
         onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}">
 <body class="yui-skin-sam">
-<form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8" <c:if test="${composeformat eq 'html'}">onsubmit="submitCompose();"</c:if> >
+<form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8"  >
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
                 <td class='TbTop'>
@@ -286,10 +286,16 @@
 
     var ele = document.getElementById("SOPSEND");
     ele.onclick = function () {
+    <c:if test="${composeformat eq 'html'}" >
+        submitCompose();
+    </c:if>
         return checkSubject();
     }
     var eleI = document.getElementById("IOPSEND");
     eleI.onclick = function () {
+    <c:if test="${composeformat eq 'html'}" >
+        submitCompose();
+    </c:if>
         return checkSubject();
     }
     function checkSubject() {
