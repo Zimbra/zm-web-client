@@ -273,10 +273,11 @@ function(overviewId) {
 ZmCalendarTreeController.prototype._getSubItems =
 function(root, totalItems) {
 	if(!root) return;
+	if(root._isSeparator) return;
 	var items = root.getItems();
 	for(var i in items){				
 		var item = items[i];
-		if(item){
+		if(item && !item._isSeparator){
 			totalItems.push(item);
 			this._getSubItems(item, totalItems);
 		}
