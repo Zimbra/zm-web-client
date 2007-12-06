@@ -520,6 +520,8 @@ A:visited { color: blue; }
     width:100%;
 }
 
+.SearchFieldWidth{width: 80%;}
+
 .NoResults { 
 	text-align: center;	padding: 20px 0px 20px 0px;
 	font-weight: bold;

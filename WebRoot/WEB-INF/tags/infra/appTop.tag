@@ -33,7 +33,7 @@
             <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
 			</td>
            <td class="ImgField_L searchwidth"></td>
-            <td width="80%"><input  id="searchField" class="searchField" maxlength="2048" name="sq" value="${query}"></td>
+            <td class="SearchFieldWidth"><input id="searchField" class="searchField" maxlength="2048" name="sq" value="${query}"></td>
             <td class="ImgField_R searchwidth"></td>
             <td>&nbsp;<fmt:message key="in"/>&nbsp;</td>
             <td style="padding-left: 2px;">
