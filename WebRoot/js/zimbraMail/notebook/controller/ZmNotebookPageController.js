@@ -81,10 +81,12 @@ ZmNotebookPageController.prototype.gotoPage = function(pageRef) {
 	var params = null;//ctry
 	if(pageRef.name=="_Index"){
 		params = {id:pageRef.folderId};
-	}else{
-		params={folderId:pageRef.folderId,name:pageRef.name};
-	}
-	var page = cache.getItemInfo(params);
+	}else if(pageRef.pageId){ //bug:19658
+		params={folderId:pageRef.folderId,id:pageRef.pageId};
+	} else if(pageRef.name) {
+        params={folderId:pageRef.folderId,name:pageRef.name};
+    }
+    var page = cache.getItemInfo(params);
 	this._object = page;
 	this._setViewContents(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView]);
@@ -293,7 +295,7 @@ ZmNotebookPageController.prototype.updateHistory = function() {
 			this._history[i] = null;
 		}
 		this._history.length = ++this._place;
-		var pageRef = { folderId: this._object.folderId, name: this._object.name };
+        var pageRef = { folderId: this._object.folderId, name: this._object.name, pageId: this._object.id };
 		this._history[this._place] = pageRef;
 	}
 	this._enableNaviButtons();

@@ -763,9 +763,12 @@ function(params,overrideCache)
 		
 		if(params.path){
 			folderNode.setAttribute("path", params.path);
-		}else if(params.folderId && params.name){
+        }else if(params.folderId && params.id){ //bug:19658
+			folderNode.setAttribute("l", params.folderId);
+			folderNode.setAttribute("id", params.id);    
+        }else if(params.folderId && params.name){
 			folderNode.setAttribute("l", params.folderId);			
-			folderNode.setAttribute("name", params.name);			
+			folderNode.setAttribute("name", params.name);
 		}else if(params.id){
 			folderNode.setAttribute("id", params.id);			
 		}
