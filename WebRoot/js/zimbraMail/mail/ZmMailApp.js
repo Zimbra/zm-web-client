@@ -625,9 +625,6 @@ function() {
 ZmMailApp.prototype.startup =
 function(result) {
 	this.__getInfoResponse = result.getResponse().GetInfoResponse;
-
-	// initial reading pane state for list views
-	this._readingPaneOn = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
 };
 
 /**
@@ -962,6 +959,9 @@ function(params, callback) {
 
 	// temporarily save GetInfoResponse so we can use it to properly render overview
 	this.__getInfoResponse = params.result ? params.result.getResponse().GetInfoResponse : null;
+
+	// initial reading pane state for list views
+	this._readingPaneOn = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
 
 	if (params.checkQS) {
 		if (location && (location.search.match(/\bview=compose\b/))) {
