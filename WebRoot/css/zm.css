@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -205,7 +205,7 @@
 
 
 /* make calendar nav toolbars at least a certain size, bug: 19325
-	NOTE: this is a hard-coded size, which is generally bad, 
+	NOTE: this is a hard-coded size, which is generally bad,
 	not sure what to do.  min-width doesn't seem to work (in FF).
 */
 .ZmCalendarNavToolbar .ZmNavToolbarTitle {
@@ -1921,6 +1921,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .DwtResizableWindow-focused .ZmChatTabs-MemberBar {
   @ToolbarContainer@
+  height: auto;
   padding: 3px;
   border-width: 2px;
   border-left: none;
@@ -1954,6 +1955,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmChatTabs-TabBar .ZmChatTabs-Tab-Active {
   @ToolbarContainer@
+  height: auto;
   float: left;
   padding: 2px 4px 3px 4px;
   border-width: 2px;
@@ -2185,7 +2187,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 #IFDEF MSIE
 .ZOptionsField input{
-	cursor: expression(this.type=="checkbox"?'pointer':''); 
+	cursor: expression(this.type=="checkbox"?'pointer':'');
 }
 #ENDIF
 

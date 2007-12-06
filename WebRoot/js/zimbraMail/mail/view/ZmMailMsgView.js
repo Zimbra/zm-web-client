@@ -169,7 +169,7 @@ function(msg) {
         var isEdit = action == ZmShare.EDIT;
 		var isDataSource = appCtxt.getById(msg.folderId).isDataSource(null, true);
 
-		if (!isDataSource && 
+		if (!isDataSource &&
 			(isNew || (isEdit && !this.__hasMountpoint(msg.share))) &&
 			msg.share.link.perm)
 		{
@@ -927,8 +927,7 @@ function(container, html, isTextMsg, isTruncated) {
 	}
 
 	// set height of view according to height of iframe on timer
-	var act = new AjxTimedAction(null, ZmMailMsgView._resetIframeHeight, [this, ifw.getIframe()]);
-	AjxTimedAction.scheduleAction(act, 5);
+        this._resetIframeHeightOnTimer(ifw.getIframe());
 };
 
 ZmMailMsgView.prototype._renderMessage =
