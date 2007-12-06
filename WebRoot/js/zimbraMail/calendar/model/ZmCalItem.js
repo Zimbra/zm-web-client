@@ -602,7 +602,15 @@ function(message) {
     this.notesTopPart = new ZmMimePart();
 	if (html) {
         var htmlContent = this._trimNotesSummary(html.content, true);
-        var textContent = AjxStringUtil.convertHtml2Text(htmlContent);
+		var textContent = "";
+
+		// create a temp iframe to create a proper DOM tree
+		var params = {parent:appCtxt.getShell(), hidden:true, html:htmlContent};
+		var dwtIframe = new DwtIframe(params);
+		if (dwtIframe) {
+			textContent = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body);
+			delete dwtIframe;
+		}
 
 		// create two more mp's for text and html content types
 		var textPart = new ZmMimePart();
