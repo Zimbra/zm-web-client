@@ -96,13 +96,13 @@ function() {
 ZmNotebookController.prototype._getBasicToolBarOps =
 function() {
 	var list = [ZmOperation.NEW_MENU];
-	if(appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
+	list.push(ZmOperation.REFRESH, ZmOperation.EDIT);
+    if(appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		list.push(ZmOperation.SEP);
 		list.push(ZmOperation.IMPORT_FILE);
 		list.push(ZmOperation.SEP);
 	}
-	list.push(ZmOperation.REFRESH, ZmOperation.EDIT);
-	return list;
+    return list;
 };
 
 ZmNotebookController.prototype._getItemToolBarOps =
