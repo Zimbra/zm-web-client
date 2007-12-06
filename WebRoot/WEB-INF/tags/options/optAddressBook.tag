@@ -22,38 +22,43 @@
                     </td>
                 </tr>
             </table>
-
-            <table width="100%" cellpadding="3" class="ZOptionsSectionMain">
+            <table class="ZOptionsSectionMain" width="100%">
                 <tr>
-                    <td class='ZOptionsTableLabel'>
-                        <fmt:message key="optionsDisplay"/> :
-                    </td>
                     <td>
-                        <table border="0" cellpadding="0" cellspacing="0">
+                        <table  cellpadding="3" width=100%>
                             <tr>
-                                <td>
-                                    <select name="zimbraPrefMailItemsPerPage" id="itemsPP">
-                                        <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
-                                        <option
-                                                <c:if test="${mailItemsPP eq 10}"> selected</c:if>
-                                                >10
-                                        </option>
-                                        <option
-                                                <c:if test="${mailItemsPP eq 25}"> selected</c:if>
-                                                >25
-                                        </option>
-                                        <option
-                                                <c:if test="${mailItemsPP eq 50}"> selected</c:if>
-                                                >50
-                                        </option>
-                                        <option
-                                                <c:if test="${mailItemsPP eq 100}"> selected</c:if>
-                                                >100
-                                        </option>
-                                    </select>
+                                <td class='ZOptionsTableLabel'>
+                                    <fmt:message key="optionsDisplay"/> :
                                 </td>
-                                <td style='padding-left:5px'>
-                                    <label for="itemsPP"><fmt:message key="optionsContactsPerPage"/></label>
+                                <td>
+                                    <table border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td>
+                                                <select name="zimbraPrefMailItemsPerPage" id="itemsPP">
+                                                    <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
+                                                    <option
+                                                            <c:if test="${mailItemsPP eq 10}"> selected</c:if>
+                                                            >10
+                                                    </option>
+                                                    <option
+                                                            <c:if test="${mailItemsPP eq 25}"> selected</c:if>
+                                                            >25
+                                                    </option>
+                                                    <option
+                                                            <c:if test="${mailItemsPP eq 50}"> selected</c:if>
+                                                            >50
+                                                    </option>
+                                                    <option
+                                                            <c:if test="${mailItemsPP eq 100}"> selected</c:if>
+                                                            >100
+                                                    </option>
+                                                </select>
+                                            </td>
+                                            <td style='padding-left:5px'>
+                                                <label for="itemsPP"><fmt:message key="optionsContactsPerPage"/></label>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </table>
@@ -61,29 +66,42 @@
                 </tr>
                 <app:optSeparator/>
                 <tr>
-                    <td class='ZOptionsTableLabel'>
-                    </td>
                     <td>
-                        <app:optCheckbox boxfirst="true" trailingcolon="true"  label="autoAddContacts" pref="zimbraPrefAutoAddAddressEnabled"
-                                         checked="${mailbox.prefs.autoAddAddressEnabled}"/>
-                    </td>
+                        <table>
+                            <tr>
+                                <td class='ZOptionsTableLabel'>
+                                </td>
+                                <td>
+                                    <app:optCheckbox boxfirst="true" trailingcolon="false"  label="autoAddContacts" pref="zimbraPrefAutoAddAddressEnabled"
+                                                     checked="${mailbox.prefs.autoAddAddressEnabled}"/>
+                                </td>
+                            </tr>
+                            </table>
+                        </td>
                 </tr>
                 <app:optSeparator/>
                 <tr>
-                    <td colspan=2 style='text-align:left;font-weight:bold;'>
-                        <fmt:message key="optionsManageAddressBooks">
-                            <fmt:param><fmt:message key="optionsManageAddressBooksPre"/></fmt:param>
-                            <fmt:param><a href="maddrbooks"><fmt:message key="optionsManageAddressBooksLink"/></a></fmt:param>
-                            <fmt:param><fmt:message key="optionsManageAddressBooksPost"/></fmt:param>
-                        </fmt:message>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        &nbsp;
+                    <td >
+                        <table width="100%">
+                            <tr>
+                                <td class='ZOptionsTableLabel' style='width:100%;text-align:left;font-weight:bold;'>
+                                    <fmt:message key="optionsManageAddressBooks">
+                                        <fmt:param><fmt:message key="optionsManageAddressBooksPre"/></fmt:param>
+                                        <fmt:param><a href="maddrbooks"><fmt:message key="optionsManageAddressBooksLink"/></a></fmt:param>
+                                        <fmt:param><fmt:message key="optionsManageAddressBooksPost"/></fmt:param>
+                                    </fmt:message>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    &nbsp;
+                                </td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
             </table>
+
         </td>
     </tr>
 </table>
