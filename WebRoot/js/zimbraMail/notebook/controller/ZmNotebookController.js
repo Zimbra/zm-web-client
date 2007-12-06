@@ -156,7 +156,9 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
             toolbarOrActionMenu.enable([ZmOperation.IMPORT_FILE], false);
         }
     }
-	toolbarOrActionMenu.enable([ZmOperation.DELETE], this.isDeletable());
+    //bug:22488
+    var deleteEnable = this._object && !this._object.isIndex() && this.isDeletable();
+    toolbarOrActionMenu.enable([ZmOperation.DELETE], deleteEnable);
 
 	var taggable = this._object && !this._object.isShared() && !this._object.isIndex();
 	toolbarOrActionMenu.enable([ZmOperation.TAG_MENU], taggable);
