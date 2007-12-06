@@ -12,13 +12,13 @@
         <form method="get" action="http://search.yahoo.com/search" target='_blank'>
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
-				<td nowrap>
+				<td nowrap="nowrap">
 					<label for="searchWebField">Search web:&nbsp;</label>
 				</td>
-				<td width="100%">
+				<td width="100%" nowrap="nowrap">
                     <input type="hidden" name="fr" value="zim-mails" />
                     <input  id="searchWebField" name='p' class="searchField" maxlength="2048" value=""></td>
-				<td style="padding-left: 5px;">
+				<td style="padding-left: 5px;" nowrap="nowrap">
 					<button class="SearchButton" type="submit" name="search"><div class='ImgWebSearch'></div></button>
 				</td>
             </tr>
