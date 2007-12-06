@@ -1784,6 +1784,7 @@ function(result) {
 
 ZmMailMsgView.detachMsgInNewWindow =
 function(msg) {
+	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var newWinObj = appCtxt.getNewWindow(true);
 	newWinObj.command = "msgViewDetach";
 	newWinObj.params = { msg:msg };
