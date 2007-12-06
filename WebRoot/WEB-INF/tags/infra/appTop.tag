@@ -29,13 +29,13 @@
             </c:if>
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
-            <td nowrap>
+            <td nowrap="nowrap">
             <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
 			</td>
            <td class="ImgField_L searchwidth"></td>
             <td class="SearchFieldWidth"><input id="searchField" class="searchField" maxlength="2048" name="sq" value="${query}"></td>
             <td class="ImgField_R searchwidth"></td>
-            <td>&nbsp;<fmt:message key="in"/>&nbsp;</td>
+            <td nowrap="nowrap" style="padding-left: 2px;">&nbsp;<fmt:message key="in"/>&nbsp;</td>
             <td style="padding-left: 2px;">
             <c:choose>
                 <c:when test="${param.st eq 'contact'}"><c:set var="isContact" value="${true}"/></c:when>
