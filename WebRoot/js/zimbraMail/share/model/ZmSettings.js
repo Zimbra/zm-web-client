@@ -299,12 +299,11 @@ ZmSettings.prototype._handleResponseGetAllLocales =
 function(response) {
 	var locales = response._data.GetAvailableLocalesResponse.locale;
 	if (locales && locales.length) {
-		var setting = this._settings[ZmSetting.LOCALES];
 		for (var i = 0, count = locales.length; i < count; i++) {
 			var locale = locales[i];
-			setting.setValue({ name: locale.name, id: locale.id });
-		}
-		this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(count > 1);
+			ZmLocale.create(locale.id, locale.name);
+		}		
+		this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(ZmLocale.hasChoices());
 	}
 };
 
