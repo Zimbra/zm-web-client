@@ -43,6 +43,7 @@ ZmCalItem = function(type, list, id, folderId) {
 	this.viewMode = ZmCalItem.MODE_NEW;
 
 	this._recurrence = new ZmRecurrence(this);
+	this._noBusyOverlay = null;
 };
 
 ZmCalItem.prototype = new ZmItem;
@@ -441,6 +442,11 @@ function() {
 	return this._uniqueEndDate;
 };
 
+ZmCalItem.prototype.setNoBusyOverlay  =
+function(val) {
+	this._noBusyOverlay = val;
+};
+
 ZmCalItem.prototype.getDetails =
 function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 	var mode = viewMode || this.viewMode;
@@ -453,7 +459,7 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 		var respErrorCallback = !ignoreOutOfDate
 			? (new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]))
 			: errorCallback;
-		this.message.load(appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, respErrorCallback);
+		this.message.load(appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, respErrorCallback, this._noBusyOverlay);
 	} else {
 		this.setFromMessage(this.message, mode);
 		if (callback)

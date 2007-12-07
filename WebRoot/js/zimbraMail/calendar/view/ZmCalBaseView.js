@@ -183,6 +183,7 @@ function(ev, div) {
 ZmCalBaseView.prototype.getApptDetails =
 function(appt, callback, errorCallback) {
 	if(this._toolTipBusy){
+		appt.setNoBusyOverlay(true);
 		appt.getDetails(null, callback, errorCallback);
 	}
 };
