@@ -695,22 +695,6 @@ function(params) {
 	}
 };
 
-ZmComposeView.prototype.setFocus =
-function() {
-	// set the cursor to either to To address for new message or a forward
-	if (this._action == ZmOperation.NEW_MESSAGE || 
-		this._action == ZmOperation.FORWARD_INLINE || 
-		this._action == ZmOperation.FORWARD_ATT)
-	{
-		appCtxt.getKeyboardMgr().grabFocus(this._field[AjxEmailAddress.TO]);
-	}
-	else
-	{
-		// otherwise set cursor to the beginning of first line
-		this._setBodyFieldFocus();
-	}
-};
-
 ZmComposeView.prototype.reEnableDesignMode =
 function() {
 	if (this._composeMode == DwtHtmlEditor.HTML) {
