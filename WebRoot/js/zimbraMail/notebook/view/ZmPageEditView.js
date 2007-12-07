@@ -657,9 +657,20 @@ ZmPageEditor.prototype._insertLink = function(link, target, afterTarget) {
 ZmPageEditor._handleLinkClick = function(event) {
 	event = DwtUiEvent.getEvent(event, this);
 	var target = DwtUiEvent.getTarget(event);
-	var dialog = Dwt.getObjectFromElement(target);
+    //bug:22400
+    var curTarget = target;
+    if(curTarget.nodeName != 'A') {
+        while(curTarget.nodeName != 'A') {
+            curTarget = curTarget.parentNode;
+            if(curTarget.nodeName == 'A') {
+               break;
+            }
+        }
+    }
+    //end
+    var dialog = Dwt.getObjectFromElement(curTarget);
 
-	var url = target.href;
+	var url = curTarget.href;
 	var text = target.innerHTML;
 	dialog._popupLinkPropsDialog(target, url, text);
 
