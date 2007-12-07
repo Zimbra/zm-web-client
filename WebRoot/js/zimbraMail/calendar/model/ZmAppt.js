@@ -609,7 +609,21 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		at = soapDoc.set("at", null, inv);
 		// for now make attendees optional, until UI has a way of setting this
 		at.setAttribute("role", (type == ZmCalItem.PERSON) ? ZmCalItem.ROLE_REQUIRED : ZmCalItem.ROLE_NON_PARTICIPANT);
-		at.setAttribute("ptst", ZmCalItem.PSTATUS_NEEDS_ACTION);
+		
+		var ptst = ZmCalItem.PSTATUS_NEEDS_ACTION;
+		if(notifyList){
+			var attendeeFound = false;
+			for(var i in notifyList) {
+				if(address == notifyList[i]) {
+					attendeeFound = true;
+					break;
+				}
+			}
+			var newptst =  attendee.getAttr("participationStatus") || ZmCalItem.PSTATUS_NEEDS_ACTION;
+			ptst = (attendeeFound ? ZmCalItem.PSTATUS_NEEDS_ACTION : newptst);
+		}
+		at.setAttribute("ptst", ptst);
+		
 		var cutype = (type == ZmCalItem.PERSON) ? null : ZmCalendarApp.CUTYPE_RESOURCE;
 		if (cutype) {
 			at.setAttribute("cutype", cutype);
