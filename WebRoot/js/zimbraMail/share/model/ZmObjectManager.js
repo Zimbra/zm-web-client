@@ -183,7 +183,10 @@ function(view) {
 	    view.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
 	    view.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));
 	    view.addListener(DwtEvent.ONMOUSEMOVE, new AjxListener(this, this._mouseMoveListener));
-	    this._hoverOverListener = new AjxListener(this, this._handleHoverOver);
+		if (AjxEnv.isSafari) {
+			view.addListener(DwtEvent.ONCONTEXTMENU, new AjxListener(this, this._rightClickListener));
+		}
+		this._hoverOverListener = new AjxListener(this, this._handleHoverOver);
 	    this._hoverOutListener = new AjxListener(this, this._handleHoverOut);
 	}
 	this._view = view;
@@ -701,6 +704,12 @@ function(ev) {
 	}
 
 	return false;
+};
+
+ZmObjectManager.prototype._rightClickListener =
+function(ev) {
+	ev.button = DwtMouseEvent.RIGHT;
+	this._mouseDownListener(ev);
 };
 
 ZmObjectManager.prototype._mouseDownListener =
