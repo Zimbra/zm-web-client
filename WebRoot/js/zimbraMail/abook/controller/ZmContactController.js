@@ -246,18 +246,32 @@ function(ev, bIsPopCallback) {
 	if (mods) {
 		var contact = view.getContact();
 
-		if (contact.id && !contact.isGal) {
-			if (view.isEmpty()) {
-				this._doDelete([contact], null, null, true);
-			} else {
-				this._doModify(contact, mods);
+		// bug fix #22041 - when moving betw. shared/local folders, dont modify
+		// the contact since it will be created/deleted into the new folder
+		var newFolderId = mods[ZmContact.F_folderId];
+		var newFolder = newFolderId ? appCtxt.getById(newFolderId) : null;
+		if (newFolderId && (contact.isShared() || (newFolder && newFolder.link))) {
+			// update existing contact with new attrs
+			contact.attr = {};
+			for (var a in view._attr) {
+				if (view._attr[a])
+					contact.attr[a] = view._attr[a];
 			}
-			if (appCtxt.zimletsPresent()) {
-				appCtxt.getZimletMgr().notifyZimlets("onContactModified",
-					ZmZimletContext._translateZMObject(contact), mods);
-			}
+			// set folder will do the right thing for this shared contact
+			contact._setFolder(newFolderId);
 		} else {
-			this._doCreate(AjxDispatcher.run("GetContacts"), mods);
+			if (contact.id && !contact.isGal) {
+				if (view.isEmpty()) {
+					this._doDelete([contact], null, null, true);
+				} else {
+					this._doModify(contact, mods);
+				}
+				if (appCtxt.zimletsPresent()) {
+					appCtxt.getZimletMgr().notifyZimlets("onContactModified", ZmZimletContext._translateZMObject(contact), mods);
+				}
+			} else {
+				this._doCreate(AjxDispatcher.run("GetContacts"), mods);
+			}
 		}
 	} else {
 		// bug fix #5829 - differentiate betw. an empty contact and saving
