@@ -624,7 +624,6 @@ function() {
 
 ZmMailApp.prototype.startup =
 function(result) {
-	this.__getInfoResponse = result.getResponse().GetInfoResponse;
 };
 
 /**
@@ -957,9 +956,6 @@ function(params, callback) {
 	var query;
 	params = params || {};
 
-	// temporarily save GetInfoResponse so we can use it to properly render overview
-	this.__getInfoResponse = params.result ? params.result.getResponse().GetInfoResponse : null;
-
 	// initial reading pane state for list views
 	this._readingPaneOn = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
 
@@ -1181,8 +1177,8 @@ function() {
 
 	if (!this._dataSourceCollection[activeAcct]) {
 		this._dataSourceCollection[activeAcct] = new ZmDataSourceCollection();
-		if (appCtxt.getActiveAccount().isMain && this.__getInfoResponse) {
-			this._dataSourceCollection[activeAcct].initialize(this.__getInfoResponse.dataSources);
+		if (appCtxt.getActiveAccount().isMain) {
+			this._dataSourceCollection[activeAcct].initialize(appCtxt.getSettings().getInfoResponse.dataSources);
 		}
 	}
 	return this._dataSourceCollection[activeAcct];
@@ -1202,8 +1198,8 @@ function() {
 
 	if (!this._identityCollection[activeAcct]) {
 		this._identityCollection[activeAcct] = new ZmIdentityCollection();
-		if (appCtxt.getActiveAccount().isMain && this.__getInfoResponse) {
-			this._identityCollection[activeAcct].initialize(this.__getInfoResponse.identities);
+		if (appCtxt.getActiveAccount().isMain) {
+			this._identityCollection[activeAcct].initialize(appCtxt.getSettings().getInfoResponse.identities);
 		}
 	}
 	return this._identityCollection[activeAcct];
@@ -1216,8 +1212,8 @@ function() {
 
 	if (!this._signatureCollection[activeAcct]) {
 		this._signatureCollection[activeAcct] = new ZmSignatureCollection();
-		if (appCtxt.getActiveAccount().isMain && this.__getInfoResponse) {
-			this._signatureCollection[activeAcct].initialize(this.__getInfoResponse.signatures);
+		if (appCtxt.getActiveAccount().isMain) {
+			this._signatureCollection[activeAcct].initialize(appCtxt.getSettings().getInfoResponse.signatures);
 		}
 	}
 	return this._signatureCollection[activeAcct];

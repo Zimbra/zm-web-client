@@ -35,6 +35,8 @@ ZmSettings = function(noInit) {
 	this._settings = {};	// settings by ID
 	this._nameToId = {};	// map to get from server setting name to setting ID
 	
+	this.getInfoResponse = null; // Cached GetInfoResponse for lazy creation of identities, etc.
+
 	if (!noInit) {
 		this.initialize();
 	}
@@ -144,7 +146,7 @@ function(callback, errorCallback, accountName, response) {
 ZmSettings.prototype._handleResponseLoadUserSettings =
 function(callback, accountName, result) {
 	var response = result.getResponse();
-	var obj = response.GetInfoResponse;
+	var obj = this.getInfoResponse = response.GetInfoResponse;
 	if (obj.name) {
 		this._settings[ZmSetting.USERNAME].setValue(obj.name);
 	}
