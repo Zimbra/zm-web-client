@@ -44,8 +44,8 @@
 								</table>
 							</td>
 						</tr>
-
-                        <$ if (data.obo && data.obo != data.sentBy) { $>
+                        
+                        <$ if ( data.obo && ( AjxStringUtil.stripTags(data.obo) != AjxStringUtil.stripTags(data.sentBy) ) ) { //If Email zimlet is deployed. $>
 							<tr>
 								<td width='110' valign='top' class='LabelColName'><$= ZmMsg.onBehalfOf $>:</td>
 								<td class='LabelColValue' colspan=10><$= data.obo $></td>
