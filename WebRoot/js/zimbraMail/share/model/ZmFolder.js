@@ -193,21 +193,27 @@ function(folderA, folderB) {
 * name is invalid and null if the name is valid. Note that a name, rather than a path, is
 * checked.
 *
-* @param name		a folder name
+* @param name		[string]		a folder name
+* @param parent		[ZmFolder]*		parent folder
 */
 ZmFolder.checkName =
-function(name) {
+function(name, parent) {
 	var error = ZmOrganizer.checkName(name);
-	if (error) return error;
+	if (error) { return error; }
 
-	// make sure name isn't a system folder (possibly not displayed)
-	for (var id in ZmFolder.MSG_KEY) {
-		if (name == ZmMsg[ZmFolder.MSG_KEY[id]]) {
+	// make sure path isn't same as a system folder
+	parent = parent || appCtxt.getFolderTree().root;
+	if (parent && (parent.id == ZmFolder.ID_ROOT)) {
+		var lname = name.toLowerCase();
+		for (var id in ZmFolder.MSG_KEY) {
+			var sysname = ZmMsg[ZmFolder.MSG_KEY[id]];
+			if (sysname && (lname == sysname.toLowerCase())) {
+				return ZmMsg.folderNameReserved;
+			}
+		}
+		if (lname == ZmFolder.SYNC_ISSUES.toLowerCase()) {
 			return ZmMsg.folderNameReserved;
 		}
-	}
-	if (name.toLowerCase() == ZmFolder.SYNC_ISSUES.toLowerCase()) {
-		return ZmMsg.folderNameReserved;
 	}
 
 	return null;
