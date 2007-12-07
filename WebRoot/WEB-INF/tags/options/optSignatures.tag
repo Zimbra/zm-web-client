@@ -25,6 +25,13 @@
 <table cellpadding="3" width="100%"  class="ZOptionsSectionMain">
     <c:set var="numSigs" value="${0}"/>
     <zm:forEachSignature var="signature">
+        <c:if test="${numSigs gt 0}">
+            <tr>
+                <td colspan="4">
+                    <hr>
+                </td>
+            </tr>
+        </c:if>
         <tr>
             <td class='ZOptionsTableLabel'>
                 <fmt:message key="optionsSignatureName"/>
@@ -54,12 +61,18 @@
             </td>
             <td width="20%">&nbsp;</td>
         </tr>
-        <tr><td colspan="4"><hr></td></tr>
         <c:set var="numSigs" value="${numSigs+1}"/>
     </zm:forEachSignature>
-    <input type="hidden" name="numSignatures" value="${numSigs}"/>
-    <c:set var="maxSigs" value="${mailbox.accountInfo.attrs.zimbraSignatureMaxNumEntries[0]}"/>
-        <c:if test="${numSigs lt maxSigs}">
+
+    <tr>
+        <td colspan="4">
+            <input type="hidden" name="numSignatures" value="${numSigs}"/>
+            <hr>
+        </td>
+    </tr>
+    <c:set var="maxSigs" value="${mailbox.accountInfo.attrs.zimbraSignatureMaxNumEntries[0]}"/>    
+    <c:choose>
+        <c:when test="${not empty param.actionNewSig or requestScope.newSignatureWarning}">
             <tr>
                 <td colspan="4" class='ZHeader'>
                     <fmt:message key="optionsNewSignature"/>
@@ -71,10 +84,12 @@
                 </td>
                 <td>
                     <input type="hidden" name="newSignature" value="TRUE"/>
-                    <input id="newSignatureName" size="40" type="text" name='newSignatureName' value="">
+                    <input id="newSignatureName" size="40" type="text" name='newSignatureName'
+                           value="${fn:escapeXml(param.newSignatureName)}">
                 </td>
                 <td align=right>
-                    <input class='tbButton' type="submit" name="actionCancelNewSig" value="<fmt:message key="cancel"/>">
+                    <input class='tbButton' type="submit" name="actionCancelNewSig"
+                           value="<fmt:message key="cancel"/>">
                 </td>
                 <td>&nbsp;</td>
             </tr>
@@ -83,15 +98,35 @@
                     <fmt:message key="optionsSignature"/>:
                 </td>
                 <td colspan=2>
-                    <textarea style='width:100%' id="newSignatureValue" name='newSignatureValue' cols='80'rows='5'></textarea>
+                    <textarea style='width:100%' id="newSignatureValue" name='newSignatureValue' cols='80'rows='5'>${fn:escapeXml(param.newSignatureValue)}</textarea>
                 </td>
                 <td width="20%">&nbsp;</td>
             </tr>
+        </c:when>
+        <c:otherwise>
             <tr>
-                <td class='ZOptionsTableLabel'>&nbsp;</td>
-                <td colspan="3"><fmt:message key="optionsSignatureMaxNumber"><fmt:param value="${maxSigs}"></fmt:param></fmt:message></td>
+                <td>
+                    &nbsp;
+                </td>
+                <td colspan=2>
+                    <c:if test="${numSigs lt maxSigs}">
+                    <input id="OPNEW" class='tbButton' type="submit" name="actionNewSig"
+                           value="<fmt:message key="optionsAddSignature"/>">
+                    </c:if>
+                </td>
+                <td width="20%">&nbsp;</td>
             </tr>
-        </c:if>
+        </c:otherwise>
+    </c:choose>
+    <tr>
+        <td class='ZOptionsTableLabel'>&nbsp;</td>
+        <td colspan="3"><fmt:message key="optionsSignatureMaxNumber"><fmt:param value="${maxSigs}"></fmt:param></fmt:message></td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            &nbsp;
+        </td>
+    </tr>
 </table>
 <br/>
 <table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -149,18 +184,23 @@
             </table>
         </td>
     </tr>
-    <tr>
-        <td colspan="2">
+     <tr>
+        <td colspan="4">
             <hr>
         </td>
     </tr>
     <tr>
-        <td colspan="2" style='text-align:left;font-weight:bold;'>
+        <td colspan=2 style='text-align:left;font-weight:bold;'>
             <fmt:message key="optionsManageAccounts">
                 <fmt:param><fmt:message key="optionsSigManageAccountsPre"/></fmt:param>
                 <fmt:param><a href="options?selected=accounts"><fmt:message key="optionsManageAccountsLink"/></a></fmt:param>
                 <fmt:param><fmt:message key="optionsManageAccountsPost"/></fmt:param>
             </fmt:message>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            &nbsp;
         </td>
     </tr>
 </table>
