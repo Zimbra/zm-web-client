@@ -45,6 +45,7 @@
                         <app:button id="${keys ? 'OPPRINT' : ''}" name="actionPrint" text="actionPrint" tooltip="actionPrint" src="startup/ImgPrint.gif"/>
                     </td>
                     <td><div class='vertSep'></div></td>
+                    <c:if test="${!context.folder.isDrafts}">
                     <td  nowrap valign=middle>
                         <select name="folderId" onchange="zclick('SOPMOVE')">
                             <option value="" selected/><fmt:message key="moveAction"/>
@@ -58,6 +59,7 @@
                     </td>
                     <app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
                     <td><div class='vertSep'></div></td>
+                    </c:if>    
                     <td  nowrap valign=middle>
                         <select name="actionOp"  onchange="zclick('SOPGO')">
                             <option value="" selected/><fmt:message key="moreActions"/>
