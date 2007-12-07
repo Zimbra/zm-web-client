@@ -29,8 +29,7 @@
     </c:if>
 
     <c:if test="${param.action eq 'compose' and mailbox.prefs.composeFormat eq 'html'}">
-        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-	    <!--bug: 21462 yui editor freezes in IE7 without without this header -->
+        
         <link rel="stylesheet" type="text/css" href="../yui/2.3.1/assets/skins/sam/skin.css" />
         <script type="text/javascript" src="../yui/2.3.1/yahoo-dom-event/yahoo-dom-event.js"></script>
         <script type="text/javascript" src="../yui/2.3.1/element/element-beta-min.js"></script>
