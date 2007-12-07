@@ -615,20 +615,23 @@ function(ev, treeView, overviewId) {
 			this._evHandled[overviewId] = true;
 		} else if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE) {
 			var parentNode = this._getParentNode(organizer, ev, overviewId);
-			if (!parentNode) { return; }
-			var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
-			if (ev.event == ZmEvent.E_CREATE) {
+			var idx = parentNode ? ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type])) : null;
+			if (parentNode && (ev.event == ZmEvent.E_CREATE)) {
 				// parent's tree controller should handle creates - root is shared by all folder types
 				var type = (organizer.parent.nId == ZmOrganizer.ID_ROOT) ? ev.type : organizer.parent.type;
 				if (type != this.type) { continue; }
 				node = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
 			} else if (ev.event == ZmEvent.E_MOVE) {
 				node.dispose();
-				node = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
+				if (parentNode) {
+					node = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
+				}
 			}
-			parentNode.setExpanded(true); // so that new node is visible
+			if (parentNode) {
+				parentNode.setExpanded(true); // so that new node is visible
+				this._fixupTreeNode(node, organizer);
+			}
 			this._checkTreeView(overviewId);
-			this._fixupTreeNode(node, organizer);
 			this._evHandled[overviewId] = true;
 		} else if (ev.event == ZmEvent.E_MODIFY) {
 			if (!fields) { return; }

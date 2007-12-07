@@ -533,7 +533,7 @@ function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
  */
 ZmOrganizer.prototype.getToolTip =
 function(force) {
-	if (this.numTotal == null) { return ""; }
+	if (!this.numTotal) { return ""; }
 	if (!this._tooltip || force) {
 		var subs = {itemText:this._getItemsText(), numTotal:this.numTotal, sizeTotal:this.sizeTotal};
 		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
@@ -945,12 +945,20 @@ function(path) {
 	return organizer;
 };
 
+/**
+ * Changes the parent of this organizer. Note that the new parent passed
+ * in may be null, which makes this organizer an orphan.
+ * 
+ * @param newParent		[ZmOrganizer]*		new parent
+ */
 ZmOrganizer.prototype.reparent =
 function(newParent) {
 	if (this.parent) {
 		this.parent.children.remove(this);
 	}
-	newParent.children.add(this);
+	if (newParent) {
+		newParent.children.add(this);
+	}
 	this.parent = newParent;
 };
 
