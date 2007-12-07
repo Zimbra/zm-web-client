@@ -40,12 +40,6 @@ ZmPreferencesPage = function(parent, section, controller) {
 	this._dwtObjects = {};
 	this._tabGroup = new DwtTabGroup(section.id);
 	this._rendered = false;
-
-    // Map of ids to locales.
-    this._localeMap = null;
-
-    // Map whose keys are language ids, and whose values are objects with name and array of locale.
-    this._languageMap = null;
 };
 
 ZmPreferencesPage.prototype = new DwtTabViewPage;
@@ -400,10 +394,8 @@ function(id, value, setup, control) {
 			object.setValue(value);
 		}
 	} else if (type == ZmPref.TYPE_LOCALES) {
-		if (this._localeMap) {
-			var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
-			this._showLocale(value, button);
-		}
+		var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
+		this._showLocale(value, button);
 	} else {
 		var prefId = [this._htmlElId, id].join("_");
 		var element = control || document.getElementById(prefId);
@@ -730,7 +722,6 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupLocales =
 function(id, setup, value) {
-    this._createLocaleData(setup);
     var button = new DwtButton(this);
     button.setSize(60, Dwt.DEFAULT);
     button.setMenu(new AjxListener(this, this._createLocalesMenu, [setup]));
@@ -743,96 +734,10 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._showLocale =
 function(localeId, button) {
-    var locale = this._localeMap[localeId];
-    button.setImage(locale.image);
-    button.setText(locale.name);
-    button._localeId = localeId;
-};
-
-ZmPreferencesPage.prototype._getLanguageImage =
-function(languageId) {
-	switch (languageId) {
-		// Arabic was omitted from this list...not sure what country to use.
-		case "sq": return "FlagAL"; // Albanian -> Albania
-		case "be": return "FlagBY"; // Belarusian -> Belarus
-		case "bg": return "FlagBG"; // Bulgarian -> Bulgaria
-		case "ca": return "FlagES"; // Catalan -> Spain
-		case "zh": return "FlagCN"; // Chinese -> China
-		case "hr": return "FlagHR"; // Croatian -> Croatia
-		case "cs": return "FlagCZ"; // Czech -> Czech Republic
-		case "da": return "FlagDK"; // Danish -> Denmark
-		case "nl": return "FlagNL"; // Dutch -> Netherlands
-		case "en": return "FlagUS"; // English -> USA
-		case "et": return "FlagEE"; // Estonian -> Estonia
-		case "fi": return "FlagFI"; // Finnish -> Finland
-		case "fr": return "FlagFR"; // French -> France
-		case "de": return "FlagDE"; // German -> Germany
-		case "el": return "FlagGR"; // Greek -> Greece
-		case "iw": return "FlagIL"; // Hebrew -> Israel
-		case "hi": return "FlagIN"; // Hindi -> India
-		case "hu": return "FlagHU"; // Hungarian -> Hungary
-		case "is": return "FlagIS"; // Icelandic -> Iceland
-		case "it": return "FlagIT"; // Italian -> Italy
-		case "ja": return "FlagJP"; // Japanese -> Japan
-		case "ko": return "FlagKR"; // Korean -> South Korea
-		case "lv": return "FlagLV"; // Latvian -> Latvia
-		case "lt": return "FlagLT"; // Lithuanian -> Lithuania
-		case "mk": return "FlagMK"; // Macedonian -> Macedonia
-		case "no": return "FlagNO"; // Norwegian -> Norway
-		case "pl": return "FlagPL"; // Polish -> Poland
-		case "pt": return "FlagPT"; // Portugese -> Portugal
-		case "ro": return "FlagRO"; // Romanian -> Romania
-		case "ru": return "FlagRU"; // Russian -> Russia
-		case "sk": return "FlagSK"; // Slovak -> Slovakia
-		case "sl": return "FlagSI"; // Slovenian -> Slovenia
-		case "es": return "FlagES"; // Spanish -> Spain
-		case "sv": return "FlagSE"; // Swedish -> Sweden
-		case "th": return "FlagTH"; // Thai -> Thailand
-		case "tr": return "FlagTR"; // Turkish -> Turkey
-		case "uk": return "FlagUA"; // Ukrainian -> Ukraine
-		case "vi": return "FlagVN"; // Vietnamese -> Vietnam
-		default: return null;
-	}
-};
-
-ZmPreferencesPage.prototype._createLocaleData =
-function(setup) {
-    if (this._localeMap) {
-        return;
-    }
-
-    this._localeMap = {};
-    this._languageMap = {};
-    var locales = appCtxt.get(ZmSetting.LOCALES);
-    for (var i = 0; i < locales.length; i++) {
-        var locale = locales[i];
-        var id = locale.id;
-        var index = id.indexOf("_");
-        var languageId;
-        if (index == -1) {
-            languageId = id;
-        } else {
-            languageId = id.substr(0, index);
-        }
-        if (!this._languageMap[languageId]) {
-			var languageImage = this._getLanguageImage(languageId);
-			var languageObj = { name: "", locales: [], id: languageId, image: languageImage };
-			this._languageMap[languageId] = languageObj;
-			this._localeMap[id] = languageObj;
-        }
-        if (index != -1) {
-            var country = id.substring(id.length - 2);
-            var localeObj = {
-                id: id,
-                name: locale.name,
-                image: "Flag" + country
-            };
-            this._languageMap[languageId].locales.push(localeObj);
-            this._localeMap[id] = localeObj;
-        } else {
-            this._languageMap[languageId].name = locale.name;
-        }
-    }
+    var locale = ZmLocale.localeMap[localeId];
+	button.setImage(locale ? locale.getImage() : null);
+	button.setText(locale ? locale.name : "");
+	button._localeId = localeId;
 };
 
 ZmPreferencesPage.prototype._createLocalesMenu =
@@ -842,14 +747,14 @@ function(setup) {
     var result = new DwtMenu(button);
 
 	var listener = new AjxListener(this, this._localeSelectionListener);
-    for (var language in this._languageMap) {
-		var languageObj = this._languageMap[language];
+    for (var language in ZmLocale.languageMap) {
+		var languageObj = ZmLocale.languageMap[language];
 		var array = languageObj.locales;
         if (array && array.length == 1) {
             this._createLocaleItem(result, array[0], listener);
-        } else if (array.length > 1) {
+        } else if (array && array.length > 1) {
             var menuItem = new DwtMenuItem(result, DwtMenuItem.CASCADE_STYLE);
-            menuItem.setText(this._languageMap[language].name)
+            menuItem.setText(ZmLocale.languageMap[language].name)
             var subMenu = new DwtMenu(result, DwtMenu.DROPDOWN_STYLE);
             menuItem.setMenu(subMenu);
             for (var i = 0, count = array.length; i < count; i++) {
@@ -863,11 +768,11 @@ function(setup) {
 };
 
 ZmPreferencesPage.prototype._createLocaleItem =
-function(parent, obj, listener) {
+function(parent, locale, listener) {
     var result = new DwtMenuItem(parent);
-    result.setText(obj.name);
-    result.setImage(obj.image);
-    result._localeId = obj.id;
+    result.setText(locale.name);
+    result.setImage(locale.getImage());
+    result._localeId = locale.id;
 	result.addSelectionListener(listener);
     return result;
 };
