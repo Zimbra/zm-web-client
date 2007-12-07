@@ -533,7 +533,7 @@ function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
  */
 ZmOrganizer.prototype.getToolTip =
 function(force) {
-	if (this.numTotal == null || this.isRemote()) { return ""; }
+	if (this.numTotal == null) { return ""; }
 	if (!this._tooltip || force) {
 		var subs = {itemText:this._getItemsText(), numTotal:this.numTotal, sizeTotal:this.sizeTotal};
 		this._tooltip = AjxTemplate.expand("share.App#FolderTooltip", subs);
