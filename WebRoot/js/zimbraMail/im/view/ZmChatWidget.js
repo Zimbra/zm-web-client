@@ -346,14 +346,14 @@ ZmChatWidget.prototype._init = function() {
 
 	var btn = this._importantBtn = new DwtToolBarButton(this._toolbar, DwtButton.TOGGLE_STYLE);
 	btn.setToolTipContent(ZmMsg.imMarkChatImportant);
-	btn.setImage("TaskHigh");
+	btn.setImage("UnImportant");
 	btn.addSelectionListener(new AjxListener(this, this._importantListener));
 
 	// this._toolbar.addSeparator("vertSep");
 	new DwtControl(this._toolbar, "vertSep");
 
 	this._sticky = new DwtToolBarButton(this._toolbar, DwtButton.TOGGLE_STYLE);
-	this._sticky.setImage("RoundPlus");
+	this._sticky.setImage(this.isSticky() ? "StickyOn" : "StickyOff");
 	this._sticky.setToolTipContent(ZmMsg.stickyWindow);
 	this._sticky.addSelectionListener(new AjxListener(this, this._stickyListener));
 
@@ -620,8 +620,8 @@ ZmChatWidget.prototype._closeListener = function() {
 	this.close();
 };
 
-ZmChatWidget.prototype._importantListener = function(ev) {
-	var button = ev.item;
+ZmChatWidget.prototype._importantListener = function() {
+        this._importantBtn.setImage(this.isImportant() ? "Important" : "UnImportant");
 };
 
 ZmChatWidget.prototype.isImportant = function() {
@@ -681,6 +681,7 @@ ZmChatWidget.prototype.setSticky = function(sticky, keepPos) {
 	win._prevPos = prevPos;
 	this.parent.restoreScrollPositions();
 	this.parent.updateStickyButtons();
+        this._sticky.setImage(sticky ? "StickyOn" : "StickyOff");
 };
 
 ZmChatWidget.prototype._stickyListener = function(ev) {
