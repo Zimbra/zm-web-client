@@ -52,7 +52,7 @@
                      <c:set var="dow" value="${mailbox.prefs.calendarFirstDayOfWeek}"/>
                      <select name="zimbraPrefCalendarFirstdayOfWeek" id="fdow">
                          <c:forEach var="day" begin="1" end="7">
-                             <option value="${day-1}" <c:if test="${dow eq (day+1)}"> selected</c:if>>${weekDays[day]}</option>
+                             <option value="${day-1}" <c:if test="${dow eq (day-1)}"> selected</c:if>>${weekDays[day]}</option>
                          </c:forEach>
                      </select>
                  </td>
