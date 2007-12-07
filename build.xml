@@ -588,20 +588,15 @@
                 <property name="customer.build.img.dir" value="${customer.build.dir}/img" />
                 <mkdir dir="${customer.build.dir}" />
 
-                <fileset id='customer.base.img.fileset' dir='${customer.web.dir}/img' includes='**' />
+                <fileset id='customer.base.img.fileset' dir='${customer.web.dir}' includes='img/**' />
                 <pathconvert property='customer.base.imgs' refid='customer.base.img.fileset' pathsep=','>
-                    <regexpmapper from="^.*\/img\/(.*)" to="\1" />
+                    <regexpmapper from="^.*\/WebRoot\/(.*)" to="\1" />
                 </pathconvert>
                 <copy todir="${customer.build.img.dir}" verbose="${sync.verbose}">
                     <fileset dir="${img.dir}" includes="**" excludes="${customer.base.imgs}" />
-                    <fileset dir="${customer.web.dir}/img" includes="${customer.base.imgs}" />
+                    <fileset dir="${customer.web.dir}" includes="${customer.base.imgs}" />
                 </copy>
 
-                <!--
-                TODO: Imagemerge the overlaid files in ${customer.build.img.dir}.  This should provide
-                      the subset of only the images that Comcast needs.  Then, need to figure out how
-                      to get the newly merged images deployed, in both Ajax and HTML client.
-                -->
                 <imagemerge destdir='${customer.build.img.dir}'
                             cssfile='${build.css.filename}' csspath='/${deploy.app}/img/'>
                     <dirset dir="${customer.build.dir}" includes="img/**" />
