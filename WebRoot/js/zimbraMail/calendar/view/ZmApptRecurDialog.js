@@ -149,25 +149,55 @@ function(appt) {
 	recur.repeatCustom = "1";
     recur._startDate = new Date(this._origRefDate);
 	var value = this._getRadioOptionValue(this._weeklyRadioName);
-
+    var currentDay = recur._startDate.getDay();
 	if (value == "1") {
 		recur.repeatCustomCount = 1;
-		recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[this._weeklySelect.getValue()]);
-        recur._startDate = AjxDateUtil.getDateForNextDay(new Date(this._origRefDate),this._weeklySelect.getValue());
+        var startDay = this._weeklySelect.getValue();
+        switch(startDay){
+            case 7: //Mon, wed, Fri
+                    recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.MONDAY]);
+                    recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.WEDNESDAY]);
+                    recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.FRIDAY]);
+                    startDay = AjxDateUtil.MONDAY;
+                    while(startDay < currentDay){
+                        startDay += 2;
+                    }
+                    break;
+            case 8: //Tue, Thu
+                    recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.TUESDAY]);
+                    recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.THURSDAY]);
+                    startDay = AjxDateUtil.TUESDAY;
+                    while(startDay < currentDay){
+                        startDay += 2;
+                    }
+                    break;
+            case 9: //Sat, Sunday
+                    recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.SATURDAY]);
+                    recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.SUNDAY]);
+                    startDay = currentDay == AjxDateUtil.SUNDAY? currentDay:AjxDateUtil.SATURDAY;
+                    break;
+            default:recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[this._weeklySelect.getValue()]);
+                    break;
+        }
+        recur._startDate = AjxDateUtil.getDateForNextDay(new Date(this._origRefDate),startDay);
         //recur._endDate = recur._startDate;
     } else {
 		recur.repeatCustomCount = Number(this._weeklyField.getValue());
-        var isSet = false;
+        var selectedDays = [];
         for (var i = 0; i < this._weeklyCheckboxes.length; i++) {
 			if (this._weeklyCheckboxes[i].checked){
-				recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[i]);
-                if(!isSet){
-                    recur._startDate = AjxDateUtil.getDateForNextDay(new Date(this._origRefDate),i);
-                    isSet = true;
-                }
+                selectedDays.push(i);
+                recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[i]);
             }
         }
-
+        var startDay = currentDay;
+        for(var i =0; i < selectedDays.length;i++){
+            var startDay = selectedDays[i];
+            if(startDay >= currentDay) { //In past
+                break;
+            }
+        }
+        recur._startDate = AjxDateUtil.getDateForNextDay(new Date(this._origRefDate),startDay);
     }
 };
 
@@ -872,11 +902,30 @@ function() {
 	var dayFormatter = formatter.getFormatsByArgumentIndex()[0];
 	var day = new Date();
 	day.setDate(day.getDate() - day.getDay());
-	for (var i = 0; i < 7; i++) {
+    var monwedfri = new Array();
+    var tuethu = new Array();
+    var satsun = new Array();
+    for (var i = 0; i < 7; i++) {
 		this._weeklySelect.addOption(dayFormatter.format(day), false, i);
-		day.setDate(day.getDate() + 1);
+        switch(day.getDay()){
+            case AjxDateUtil.SUNDAY:
+            case AjxDateUtil.SATURDAY: satsun.push(dayFormatter.format(day)); break;
+
+            case AjxDateUtil.MONDAY:
+            case AjxDateUtil.WEDNESDAY:
+            case AjxDateUtil.FRIDAY: monwedfri.push(dayFormatter.format(day)); break;
+
+            case AjxDateUtil.TUESDAY:
+            case AjxDateUtil.THURSDAY: tuethu.push(dayFormatter.format(day)); break;
+        }
+        day.setDate(day.getDate() + 1);
 	}
-	this._weeklySelect.reparentHtmlElement(this._weeklySelectId);
+    //Add some custom pattern options too
+    this._weeklySelect.addOption(monwedfri.join(", "), false, i++);
+    this._weeklySelect.addOption(tuethu.join(", "), false, i++);
+    this._weeklySelect.addOption(satsun.join(", "), false, i++);
+
+    this._weeklySelect.reparentHtmlElement(this._weeklySelectId);
 	delete this._weeklySelectId;
 
 	this._monthlyDaySelect = new DwtSelect(this);
