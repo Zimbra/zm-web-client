@@ -355,11 +355,15 @@ ZmContactPicker._keyPressHdlr =
 function(ev) {
     var stb = DwtUiEvent.getDwtObjFromEvent(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
-	if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
+	if (!stb._searchCleared) {
+		stb._searchField.className = stb._searchField.value = "";
+		stb._searchCleared = true;
+	}
+    if (stb._keyPressCallback && (charCode == 13 || charCode == 3)) {
 		stb._keyPressCallback.run();
 	    return false;
 	}
-	return true;
+    return true;
 };
 
 ZmContactPicker._onclickHdlr =
