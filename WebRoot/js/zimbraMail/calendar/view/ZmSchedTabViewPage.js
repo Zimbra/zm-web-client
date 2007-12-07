@@ -44,6 +44,7 @@ ZmSchedTabViewPage = function(parent, attendees, controller, dateInfo) {
 	this._emailToIdx = {};
 	this._schedTable = [];
 	this._allAttendees = [];
+	this._allAttendeesStatus = [];
 	this._allAttendeesSlot = null;
 
 	this._attTypes = [ZmCalItem.PERSON];
@@ -644,7 +645,8 @@ function() {
 	for (var i = 0; i < this._allAttendees.length; i++) {
 		if (this._allAttendees[i] > 0) {
 			// TODO: opacity...
-			row.cells[i].className = this._getClassForStatus(ZmSchedTabViewPage.STATUS_BUSY);
+			var status = this.getAllAttendeeStatus(i);
+			row.cells[i].className = this._getClassForStatus(status);
 			this._allAttendeesSlot._coloredCells.push(row.cells[i]);
 		}
 	}
@@ -834,6 +836,7 @@ ZmSchedTabViewPage.prototype._resetAttendeeCount =
 function() {
 	for (var i = 0; i < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; i++) {
 		this._allAttendees[i] = 0;
+		delete this._allAttendeesStatus[i];
 	}
 };
 
@@ -997,8 +1000,8 @@ function(status, slots, table, sched) {
 				if (row.cells[j]) {
 					if (status != ZmSchedTabViewPage.STATUS_UNKNOWN) {
 						this._allAttendees[j] = this._allAttendees[j] + 1;
-					}
-					sched._coloredCells.push(row.cells[j]);
+						this.updateAllAttendeeCellStatus(j, status);
+					}					sched._coloredCells.push(row.cells[j]);
 					row.cells[j].className = className;
 				}
 			}
@@ -1231,7 +1234,7 @@ function() {
 		tooltip.setContent(tooltipContent, true);
 		tooltip.popup(x, y, true);		
 	}
-
+	this._fbToolTipInfo = null;
 };
 
 // Static methods
@@ -1342,4 +1345,20 @@ function(ev) {
 		tooltip.popdown();
 	}
 
+};
+
+ZmSchedTabViewPage.prototype.updateAllAttendeeCellStatus =
+function(idx, status) {
+	if(!this._allAttendeesStatus[idx]){
+		this._allAttendeesStatus[idx] = status;
+	}else if(status!= this._allAttendeesStatus[idx]) {
+		if(status != ZmSchedTabViewPage.STATUS_UNKNOWN && status != ZmSchedTabViewPage.STATUS_FREE) {
+			this._allAttendeesStatus[idx] = ZmSchedTabViewPage.STATUS_BUSY;;
+		}		
+	}
+};
+
+ZmSchedTabViewPage.prototype.getAllAttendeeStatus =
+function(idx) {
+	return this._allAttendeesStatus[idx] ? this._allAttendeesStatus[idx] : ZmSchedTabViewPage.STATUS_FREE;
 };
