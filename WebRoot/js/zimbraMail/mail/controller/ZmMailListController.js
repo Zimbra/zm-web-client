@@ -767,8 +767,7 @@ function(parent) {
 	var isFeed = (folder && folder.isFeed());
 	var hasExternalAccounts = false;
 
-	// TODO: also consider if IMAP is enabled
-	var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED);
+	var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
 	if (folder && !isInbox && !isFeed && isEnabled) {
 		var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
 		var dataSources = dsCollection.getItemsFor(ZmOrganizer.normalizeId(folderId));
@@ -987,10 +986,9 @@ function() {
     if (isFeed) {
         folder.sync();
     } else {
-		// TODO: also consider if IMAP is enabled
 		var dsCollection;
 		var hasExternalAccounts = false;
-		var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED);
+		var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
 		if (folder && !isFeed && isEnabled) {
 			dsCollection = AjxDispatcher.run("GetDataSourceCollection");
 			var dataSources = dsCollection.getItemsFor(nFid);

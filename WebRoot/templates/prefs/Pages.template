@@ -626,7 +626,7 @@ and the container element is replaced with that control.
 						<td align=left><button id='${id}_DELETE' tabindex='30'><$=ZmMsg.del$></button></td>
 						<td>&nbsp;</td>
 						<td align=right>
-						<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED)) { $>
+						<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) || data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED)) { $>
 							<button id='${id}_ADD_EXTERNAL' tabindex='40'><$=ZmMsg.addExternalAccount$></button>
 						<$ } $>
 						</td>
@@ -648,7 +648,7 @@ and the container element is replaced with that control.
 		<$= AjxTemplate.expand("#PrimaryAccount", data) $>
 	</div>
 
-	<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED)) { $>
+	<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) || data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED)) { $>
 	<div id="${id}_EXTERNAL" class='ZAccountSettings' style='display:none;'>
 		<$= AjxTemplate.expand("#ExternalAccount", data) $>
 	</div>
@@ -769,7 +769,13 @@ and the container element is replaced with that control.
 				<tr><td colspan=2><hr></td></tr>
 
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.accountTypeLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_EXTERNAL_ACCOUNT_TYPE' tabindex='2030'></div></td>
+					<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) && data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED)) { $>
+						<td class='ZOptionsField'><div id='${id}_EXTERNAL_ACCOUNT_TYPE' tabindex='2030'></div></td>
+					<$ } else if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED)) { $>
+						<td class='ZOptionsField'>POP3</div></td>
+					<$ } else { $>
+						<td class='ZOptionsField'>IMAP</div></td>
+					<$ } $>
 				</tr>
 
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.accountUsernameLabel$></td>

@@ -143,8 +143,7 @@ function(parent, type, id) {
             button.setText(ZmMsg.checkFeed);
         }
 		else {
-			// TODO: also consider if IMAP is enabled
-			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED);
+			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
 			if (isEnabled) {
 				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
 				var dataSources = dsCollection.getItemsFor(ZmOrganizer.normalizeId(folder.id));
