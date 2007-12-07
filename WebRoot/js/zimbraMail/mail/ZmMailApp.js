@@ -373,7 +373,9 @@ function() {
 	ZmPref.registerPref("NOTIF_ENABLED", {
 		displayName:		ZmMsg.mailNotifEnabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.NOTIF_FEATURE_ENABLED
+		precondition:		ZmSetting.NOTIF_FEATURE_ENABLED,
+		validationFunction:	ZmMailApp.validateSendNotification,
+		errorMessage:		ZmMsg.errorMissingNotifyAddr
 	});
 
 	ZmPref.registerPref("OPEN_MAIL_IN_NEW_WIN", {
@@ -440,6 +442,16 @@ function(checked) {
 	if (!section) { return false; }
 	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
 	var input = view.getView(section.id).getFormObject(ZmSetting.MAIL_FORWARDING_ADDRESS);
+	return (input != null && input.isValid());
+};
+
+ZmMailApp.validateSendNotification =
+function(checked) {
+	if (!checked) { return true; }
+	var section = ZmPref.getPrefSectionWithPref(ZmSetting.NOTIF_ADDRESS);
+	if (!section) { return false; }
+	var view = appCtxt.getApp(ZmApp.PREFERENCES).getPrefController().getPrefsView();
+	var input = view.getView(section.id).getFormObject(ZmSetting.NOTIF_ADDRESS);
 	return (input != null && input.isValid());
 };
 

@@ -621,6 +621,10 @@ function(id, setup, value) {
 		this._handleDontKeepCopyChange();
 		checkbox.addSelectionListener(new AjxListener(this, this._handleDontKeepCopyChange));
 	}
+	else if (id == ZmSetting.NOTIF_ENABLED) {
+		this._handleNotifyChange();
+		checkbox.addSelectionListener(new AjxListener(this, this._handleNotifyChange));
+	}
 	return checkbox;
 };
 
@@ -634,8 +638,11 @@ function(id, setup, value) {
 	var input = new DwtInputField(params);
 	this.setFormObject(id, input);
 	// TODO: Factor this out
-	if (id == ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED) {
+	if (id == ZmSetting.MAIL_FORWARDING_ADDRESS) {
 		this._handleDontKeepCopyChange();
+	}
+	else if (id == ZmSetting.NOTIF_ADDRESS) {
+		this._handleNotifyChange();
 	}
 	return input;
 };
@@ -787,6 +794,14 @@ function(ev) {
 ZmPreferencesPage.prototype._handleDontKeepCopyChange = function(ev) {
 	var input = this.getFormObject(ZmSetting.MAIL_FORWARDING_ADDRESS);
 	var checkbox = this.getFormObject(ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED);
+	if (input && checkbox) {
+		input.setRequired(checkbox.isSelected());
+	}
+};
+
+ZmPreferencesPage.prototype._handleNotifyChange = function(ev) {
+	var input = this.getFormObject(ZmSetting.NOTIF_ADDRESS);
+	var checkbox = this.getFormObject(ZmSetting.NOTIF_ENABLED);
 	if (input && checkbox) {
 		input.setRequired(checkbox.isSelected());
 	}
