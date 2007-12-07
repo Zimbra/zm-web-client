@@ -1252,8 +1252,16 @@ ZmAccountsPage.prototype._handleTypeOrSslChange = function(evt) {
 
 	var dataSource = this._currentAccount;
 	if (dataSource._new) {
-		var type = controls["ACCOUNT_TYPE"];
-		dataSource.setType((type && type.getSelectedValue()) || ZmAccount.POP);
+		var control = controls["ACCOUNT_TYPE"];
+		var type = control && control.getSelectedValue();
+		if (!type) {
+			type = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.POP : ZmAccount.IMAP;
+		}
+		dataSource.setType(type);
+
+		var isPop = type == ZmAccount.POP;
+		this._setControlEnabled("DELETE_AFTER_DOWNLOAD", this._currentSection, isPop);
+		this._setControlEnabled("DOWNLOAD_TO", this._currentSection, isPop);
 	}
 
 	var ssl = controls["SSL"];
@@ -1640,8 +1648,8 @@ ZmAccountsPage._defineClasses = function() {
 ZmNewDataSource = function() {
 	var number = ++ZmNewDataSource.ID;
 	var id = "new-dsrc-"+number;
-	this.setType(ZmAccount.POP);
-	ZmDataSource.call(this, ZmAccount.POP, id);
+	this.setType(appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.POP : ZmAccount.IMAP);
+	ZmDataSource.call(this, this.type, id);
 	this.name = AjxMessageFormat.format(ZmMsg.newExternalAccount, number);
 	this._new = true;
 	this.folderId = -1;

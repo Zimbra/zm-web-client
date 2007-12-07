@@ -150,18 +150,22 @@ ZmDataSourceCollection.prototype.remove = function(item) {
 ZmDataSourceCollection.prototype.initialize = function(dataSources) {
 	if (!dataSources || this._initialized) { return; }
 
-    var popAccounts = dataSources.pop3 || [];
-    for (var i = 0; i < popAccounts.length; i++) {
-        var pop3 = new ZmPopAccount(popAccounts[i].id);
-        pop3.setFromJson(popAccounts[i]);
-        this.add(pop3);
-    }
+	if (appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
+		var popAccounts = dataSources.pop3 || [];
+		for (var i = 0; i < popAccounts.length; i++) {
+			var pop3 = new ZmPopAccount(popAccounts[i].id);
+			pop3.setFromJson(popAccounts[i]);
+			this.add(pop3);
+		}
+	}
 
-	var imapAccounts = dataSources.imap || [];
-	for (var i = 0; i < imapAccounts.length; i++) {
-		var imap = new ZmImapAccount(imapAccounts[i].id);
-		imap.setFromJson(imapAccounts[i]);
-		this.add(imap);
+	if (appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED)) {
+		var imapAccounts = dataSources.imap || [];
+		for (var i = 0; i < imapAccounts.length; i++) {
+			var imap = new ZmImapAccount(imapAccounts[i].id);
+			imap.setFromJson(imapAccounts[i]);
+			this.add(imap);
+		}
 	}
 
 	this._initialized = true;
