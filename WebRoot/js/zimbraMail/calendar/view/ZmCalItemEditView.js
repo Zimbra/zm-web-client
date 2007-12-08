@@ -635,17 +635,22 @@ function() {
 ZmCalItemEditView.prototype._showRecurDialog =
 function(repeatType) {
 	if (!this._repeatSelectDisabled) {
-		if (!this._recurDialog) {
-			this._recurDialog = new ZmApptRecurDialog(appCtxt.getShell());
-			this._recurDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._recurOkListener));
-			this._recurDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
-		}
-		var type = repeatType || this._recurDialogRepeatValue;
-		var sd = (AjxDateUtil.simpleParseDateStr(this._startDateField.value)) || (new Date());
-		var ed = (AjxDateUtil.simpleParseDateStr(this._endDateField.value)) || (new Date());
-		this._recurDialog.initialize(sd, ed, type, this._calItem);
+		this._initRecurDialog(repeatType);
 		this._recurDialog.popup();
 	}
+};
+
+ZmCalItemEditView.prototype._initRecurDialog =
+function(repeatType) {
+	if (!this._recurDialog) {
+		this._recurDialog = new ZmApptRecurDialog(appCtxt.getShell());
+		this._recurDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._recurOkListener));
+		this._recurDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
+	}
+	var type = repeatType || this._recurDialogRepeatValue;
+	var sd = (AjxDateUtil.simpleParseDateStr(this._startDateField.value)) || (new Date());
+	var ed = (AjxDateUtil.simpleParseDateStr(this._endDateField.value)) || (new Date());
+	this._recurDialog.initialize(sd, ed, type, this._calItem);
 };
 
 ZmCalItemEditView.prototype._showTimeFields =
@@ -728,6 +733,9 @@ function(ev) {
 	var parentButton = ev.item.parent.parent;
 	var newDate = AjxDateUtil.simpleComputeDateStr(ev.detail);
 
+	this._oldStartDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	this._oldEndDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);	
+
 	// change the start/end date if they mismatch
 	if (parentButton == this._startDateButton) {
 		var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
@@ -740,9 +748,17 @@ function(ev) {
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
-	var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-	this._calItem._recurrence._startDate.setTime(sd.getTime());
-	this._setRepeatDesc(this._calItem);
+	var calItem = this._calItem;
+	var repeatType = this._repeatSelect.getValue();
+	if(calItem.isCustomRecurrence()){
+		this._checkRecurrenceValidity = true;
+		this._initRecurDialog(repeatType);
+		this._recurOkListener();		
+	}else{
+		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+		this._calItem._recurrence._startDate.setTime(sd.getTime());
+		this._setRepeatDesc(this._calItem);
+	}
 };
 
 ZmCalItemEditView.prototype._repeatChangeListener =
@@ -774,15 +790,22 @@ function(ev) {
             if(temp._recurrence._startDate.getDate()!= sd.getDate() ||
                 temp._recurrence._startDate.getMonth()!= sd.getMonth() ||
                 temp._recurrence._startDate.getFullYear()!= sd.getFullYear() ){            // If date changed...chnage the values
-                this._startDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
-                this._endDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
-                this.startDate = temp._recurrence._startDate;
-                this.endDate = temp._recurrence._startDate;
-                this._calItem._startDate = this.startDate ;
-                this._calItem._endDate = this.startDate ;
+               	if(this._checkRecurrenceValidity) {
+	                this.validateRecurrence(temp._recurrence._startDate, temp._recurrence._startDate, sd, temp);
+               		this._checkRecurrenceValidity = false;
+               	}else{
+	                this._startDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
+    	            this._endDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
+	                this.startDate = temp._recurrence._startDate;
+    	            this.endDate = temp._recurrence._startDate;
+        	        this._calItem._startDate = this.startDate ;
+            	    this._calItem._endDate = this.startDate ;
+					this._setRepeatDesc(temp);
+               	}
 
+            }else{
+				this._setRepeatDesc(temp);
             }
-			this._setRepeatDesc(temp);
 		} else {
 			// give feedback to user about errors in recur dialog
 			popdown = false;
@@ -791,6 +814,51 @@ function(ev) {
 
 	if (popdown)
 		this._recurDialog.popdown();
+};
+
+ZmCalItemEditView.prototype.validateRecurrence =
+function(startDate,  endDate, sd, temp) {
+	
+	this._newRecurrenceStartDate = startDate;
+	this._newRecurrenceEndDate = endDate;	
+	
+	var ps = this._dateResetWarningDlg = appCtxt.getYesNoMsgDialog();
+	ps.reset();
+	ps.setMessage(ZmMsg.validateRecurrence, DwtMessageDialog.WARNING_STYLE);
+	
+	ps.registerCallback(DwtDialog.YES_BUTTON, this._dateChangeCallback, this, [startDate, endDate, sd, temp]);
+	ps.registerCallback(DwtDialog.NO_BUTTON, this._ignoreDateChangeCallback, this, [startDate, endDate, sd, temp]);
+	ps.popup();
+
+};
+
+ZmCalItemEditView.prototype._dateChangeCallback =
+function(startDate,  endDate, sd, temp) {
+	this._dateResetWarningDlg .popdown();
+    this._startDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
+    this._endDateField.value = AjxDateUtil.simpleComputeDateStr(temp._recurrence._startDate);
+    this.startDate = temp._recurrence._startDate;
+    this.endDate = temp._recurrence._startDate;
+    this._calItem._startDate = this.startDate ;
+    this._calItem._endDate = this.startDate ;
+	this._setRepeatDesc(temp);
+};
+
+ZmCalItemEditView.prototype._ignoreDateChangeCallback =
+function(startDate,  endDate, sd, temp) {
+	this._dateResetWarningDlg .popdown();
+	if(this._oldStartDate && this._oldEndDate){
+	    this._startDateField.value = AjxDateUtil.simpleComputeDateStr(this._oldStartDate);
+    	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(this._oldEndDate);
+	    this.startDate = this._oldStartDate;
+    	this.endDate = this._oldEndDate;
+	    this._calItem._startDate = this.startDate;
+    	this._calItem._endDate = this.endDate;
+    	if(this._calItem._recurrence) {
+			this._calItem._recurrence._startDate.setTime(this.startDate.getTime());
+    	}
+		this._setRepeatDesc(this._calItem);
+	}
 };
 
 ZmCalItemEditView.prototype._recurCancelListener =
@@ -829,6 +897,22 @@ function(el) {
 	}
 };
 
+ZmCalItemEditView.prototype.handleStartDateChange =
+function(sd) {	
+	var calItem = this._calItem;
+	var repeatType = this._repeatSelect.getValue();
+	if(calItem.isCustomRecurrence()){
+		var temp = this._getClone(this._calItem);		
+		this._oldStartDate = temp._startDate;
+		this._oldEndDate = temp._endDate;
+		this._checkRecurrenceValidity = true;
+		this._initRecurDialog(repeatType);
+		this._recurOkListener();		
+	}else{
+		calItem._recurrence._startDate.setTime(sd.getTime());
+		this._setRepeatDesc(calItem);
+	}
+};
 
 // Static methods
 
@@ -871,7 +955,7 @@ function(ev) {
 	if (el == edv._repeatDescField) {
 		edv._handleRepeatDescFieldHover(ev, false);
 	}
-}
+};
 
 ZmCalItemEditView._onChange =
 function(ev) {
@@ -883,6 +967,5 @@ function(ev) {
 
 	var calItem = edv._calItem;
 	var sd = AjxDateUtil.simpleParseDateStr(sdField.value);
-	calItem._recurrence._startDate.setTime(sd.getTime());
-	edv._setRepeatDesc(calItem);
+	edv.handleStartDateChange(sd);	
 };
