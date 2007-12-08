@@ -105,6 +105,12 @@
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
     function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
+    function handleEnter (ev) {
+		var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
+		if (keyCode == 13) {
+            zclick('SSEARCH_CONTACT');
+        }
+	}
     //-->
    </SCRIPT>
 
