@@ -160,3 +160,9 @@ ZmBriefcaseItem.prototype._handleErrorCreateItem =
 function(ex) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateFile, ZmStatusView.LEVEL_CRITICAL);
 };
+
+ZmBriefcaseItem.prototype.getFolder =
+function() {
+	return appCtxt.getById(this.folderId);
+};
+

@@ -19,7 +19,7 @@ ZmBriefcaseTreeController = function(type, dropTgt) {
 	
 	type = type ? type : ZmOrganizer.BRIEFCASE;
 
-	dropTgt = dropTgt ? dropTgt : null;
+	dropTgt = dropTgt ? dropTgt :  new DwtDropTarget(["ZmBriefcaseItem"]);
 	
 	ZmTreeController.call(this, type, dropTgt);
 
@@ -163,8 +163,40 @@ function(briefcase) {
 
 // Handles a drop event
 ZmBriefcaseTreeController.prototype._dropListener =
-function() {
-	// TODO
+function(ev) {
+	var briefcaseItems = ev.srcData.data;
+	var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
+
+	if(!briefcaseItems) {
+		ev.doIt = false;
+		return;
+	}
+
+	briefcaseItems = (briefcaseItems instanceof Array)? briefcaseItems : [briefcaseItems];
+
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		for(var i in briefcaseItems) {
+			var briefcaseItem = briefcaseItems[i];
+			if (briefcaseItem.isReadOnly() || dropFolder.isReadOnly()) {
+				ev.doIt = false;
+			} else if (briefcaseItem.getFolder().id == dropFolder.id) {
+				ev.doIt = false;
+			} else {
+				ev.doIt = this._dropTgt.isValidTarget(briefcaseItem);
+			}
+		}
+		
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+		if(briefcaseItems && briefcaseItems.length >0) {
+			var ctlr = ev.srcData.controller;
+			ctlr._doMove(briefcaseItems, dropFolder, null, true);
+			ctlr._pendingActionData = null;
+			ctlr.removeCachedFolderItems(briefcaseItems[0].getFolder().id);
+			ctlr.removeCachedFolderItems(dropFolder.id);
+			ctlr.reloadFolder();
+		}
+	}
+	
 };
 
 // Listener callbacks
