@@ -165,7 +165,10 @@ function(callback, accountName, result) {
 	if (obj.used) {
 		this._settings[ZmSetting.QUOTA_USED].setValue(obj.used);
 	}
-	if (obj.prefs && obj.prefs._attrs) {
+    if(obj.rest) {
+        this._settings[ZmSetting.REST_URL].setValue(obj.rest);
+    }
+    if (obj.prefs && obj.prefs._attrs) {
 		this.createFromJs(obj.prefs._attrs);
 	}
 	if (obj.attrs && obj.attrs._attrs) {
@@ -175,7 +178,7 @@ function(callback, accountName, result) {
 		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
 	}
 
-	// Create the main account. In the normal case, that is the only account, and
+    // Create the main account. In the normal case, that is the only account, and
 	// represents the user who logged in. If family mailbox is enabled, that account
 	// is a parent account with dominion over child accounts.
 	if (!accountName) {
@@ -469,8 +472,9 @@ function() {
 	this.registerSetting("SERVER_VERSION",					{type:ZmSetting.T_CONFIG});
 	this.registerSetting("TIMEOUT",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:30}); // seconds
 	this.registerSetting("USE_XML",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	
-	// IDs FOR HTML COMPONENTS IN THE SKIN
+
+    
+    // IDs FOR HTML COMPONENTS IN THE SKIN
 	this.registerSetting("SKIN_APP_BOTTOM_TOOLBAR_ID",		{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_app_bottom_toolbar"});
 	this.registerSetting("SKIN_APP_CHOOSER_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_app_chooser"});
 	this.registerSetting("SKIN_APP_MAIN_FULL_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_app_main_full"});
@@ -520,7 +524,7 @@ function() {
 	this.registerSetting("BROWSE_ENABLED",					{name:"zimbraFeatureAdvancedSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name:"zimbraFeatureChangePasswordEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("DISPLAY_NAME",					{name:"displayName", type:ZmSetting.T_COS});
-	this.registerSetting("FLAGGING_ENABLED",				{name:"zimbraFeatureFlaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+    this.registerSetting("FLAGGING_ENABLED",				{name:"zimbraFeatureFlaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("GAL_AUTOCOMPLETE_ENABLED",		{name:"zimbraFeatureGalAutoCompleteEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:false});
 	this.registerSetting("GAL_ENABLED",						{name:"zimbraFeatureGalEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:true});
 	this.registerSetting("GROUP_CALENDAR_ENABLED",			{name:"zimbraFeatureGroupCalendarEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -556,8 +560,9 @@ function() {
 	this.registerSetting("LAST_ACCESS",						{type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
 	this.registerSetting("PREVIOUS_SESSION",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
 	this.registerSetting("RECENT_MESSAGES",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
+    this.registerSetting("REST_URL",                        {name:"rest" , type:ZmSetting.T_COS});
 
-	// CLIENT SIDE FEATURE SUPPORT
+    // CLIENT SIDE FEATURE SUPPORT
 	this.registerSetting("ATTACHMENT_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("ATT_VIEW_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("EVAL_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -568,8 +573,8 @@ function() {
 	this.registerSetting("PRINT_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SEARCH_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SHORTCUT_LIST_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	
-	// USER PREFERENCES (mutable)
+
+    // USER PREFERENCES (mutable)
 	
 	// general preferences
 	this.registerSetting("ACCOUNTS",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
