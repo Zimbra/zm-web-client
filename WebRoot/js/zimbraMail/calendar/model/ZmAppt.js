@@ -87,8 +87,10 @@ function() {
 			(this._attendees[ZmCalItem.LOCATION] && this._attendees[ZmCalItem.LOCATION].length) ||
 			(this._attendees[ZmCalItem.EQUIPMENT] && this._attendees[ZmCalItem.EQUIPMENT].length));
 };
-
-
+ZmAppt.prototype.hasPersonAttendees =
+function() {
+	return ((this._attendees[ZmCalItem.PERSON] && this._attendees[ZmCalItem.PERSON].length));
+};
 
 // Public methods
 
