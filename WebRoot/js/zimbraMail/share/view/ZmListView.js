@@ -554,10 +554,10 @@ function(field, itemIdx, isFolder) {
                 ? ZmMsg.sortBySubject : ZmMsg.subject;
     } else if (field == ZmItem.F_DATE) {
         tooltip = (this._headerList[itemIdx]._sortable)
-                ? (isFolder.sent) ? ZmMsg.sortBySent : (isFolder.drafts) ? ZmMsg.sortByLastSaved : ZmMsg.sortByReceived : ZmMsg.date;
+                ? (isFolder && isFolder.sent) ? ZmMsg.sortBySent : (isFolder && isFolder.drafts) ? ZmMsg.sortByLastSaved : ZmMsg.sortByReceived : ZmMsg.date;
     } else if (field == ZmItem.F_FROM) {
         tooltip = (this._headerList[itemIdx]._sortable)
-                ? (isFolder.sent || isFolder.drafts) ? ZmMsg.sortByTo : ZmMsg.sortByFrom : (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from ;
+                ? (isFolder && (isFolder.sent || isFolder.drafts)) ? ZmMsg.sortByTo : ZmMsg.sortByFrom : (isFolder && (isFolder.sent || isFolder.drafts)) ? ZmMsg.to : ZmMsg.from ;
     } else if ( field == ZmItem.F_SIZE){
         tooltip = (this._headerList[itemIdx]._sortable)
                 ? ZmMsg.sortBySize : ZmMsg.sizeToolTip;
