@@ -570,7 +570,14 @@ function() {
 
 ZmOrganizer.prototype.getRestUrl =
 function() {
-	// return REST URL as seen by server
+    //return REST URL as seen by the GetInfoResponse
+    var restUrl = appCtxt.get(ZmSetting.REST_URL);
+    if(restUrl){
+        restUrl = [restUrl,"/",AjxStringUtil.urlEncode(this.getSearchPath())].join("");
+        return restUrl;
+    }
+    
+    // return REST URL as seen by server
 	if (this.restUrl) {
 		return this.restUrl;
 	}
