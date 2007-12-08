@@ -613,7 +613,7 @@ ZmNotebookPageView._iframeOnLoad1 = function(iframe) {
             view.currentSrc = iSrc;
             view.currentPath = iframe.contentWindow.location.pathname;
             var ndoc = view._iframe.contentWindow.document;
-            if(!view._replaceHTML || AjxEnv.isIE){
+            if(!view._replaceHTML || AjxEnv.isIE || AjxEnv.isSafari){
                 ndoc.open();
                 ndoc.write(doc.documentElement.innerHTML);
                 ndoc.close();
