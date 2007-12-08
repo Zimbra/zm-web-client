@@ -489,7 +489,8 @@ function(conf, field, options, dataValue, rowId, data) {
 			if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
 				var folderTree = appCtxt.getFolderTree();
 				if (folderTree) {
-					organizer = folderTree.getByPath(dataValue.substring(1), true);
+                    dataValue = ( dataValue.charAt(0) == '/' ) ? dataValue.substring(1) : dataValue;
+                    organizer = folderTree.getByPath(dataValue, true);
 				}
 			} else {
 				var tagTree = appCtxt.getTagTree();
@@ -692,7 +693,7 @@ function(button, organizer) {
 	var dialog = isFolder ? appCtxt.getChooseFolderDialog() : appCtxt.getPickTagDialog();
 	if (organizer) {
 		button.setText(organizer.getName(false, null, true));
-		var value = isFolder ? "/" + organizer.getPath(false, false, null, true, true) :
+		var value = isFolder ? organizer.getPath(false, false, null, true, true) :
 							   organizer.getName(false, null, true);
 		button.setData(ZmFilterRuleDialog.DATA, value);
 	}
