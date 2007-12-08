@@ -126,6 +126,7 @@ ZmCalItem.prototype.isOrganizer 		= function() { return (typeof(this.isOrg) === 
 ZmCalItem.prototype.isRecurring 		= function() { return (this.recurring || (this._rawRecurrences != null)); };
 ZmCalItem.prototype.hasAttachments 		= function() { return this.getAttachments() != null; };
 ZmCalItem.prototype.hasAttendees		= function() { return false; } // override if necessary
+ZmCalItem.prototype.hasPersonAttendees	= function() { return false; } // override if necessary
 
 // Setters
 ZmCalItem.prototype.setAllDayEvent 		= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
@@ -1178,7 +1179,7 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 ZmCalItem.prototype._addNotesToSoap =
 function(soapDoc, m, cancel) {
 
-	var hasAttendees = this.hasAttendees();
+	var hasAttendees = this.hasPersonAttendees();
 	var tprefix = hasAttendees ? this._getDefaultBlurb(cancel) : "";
 	var hprefix = hasAttendees ? this._getDefaultBlurb(cancel, true) : "";
 
