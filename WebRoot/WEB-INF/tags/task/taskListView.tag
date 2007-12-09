@@ -31,7 +31,7 @@
                                 <c:if test="${mailbox.features.tagging}">
                                 <th class='Img' nowrap><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/>
                                 </c:if>
-                                <th class='Img' nowrap><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_FLAGGED"/>
+                                <th class='Img' nowrap><app:img src="tasks/ImgTaskHigh.gif" altkey="ALT_PRIORITY"/>
                                 <th class='Img' nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/>
                                 <th nowrap>
                                     <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
