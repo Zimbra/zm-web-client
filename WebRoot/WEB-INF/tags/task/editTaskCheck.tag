@@ -93,7 +93,7 @@
                     </c:choose>
                     <zm:cancelTask compose="${uploader.compose}" message="${message}"/>
                     <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
-                    <app:status><fmt:message key="${uploader.isApptCancel ? 'actionApptCancelled' : 'actionApptDeleted'}"/></app:status>
+                    <app:status><fmt:message key="${uploader.isApptCancel ? 'actionTaskCancelled' : 'actionTaskSingleDeleted'}"/></app:status>
                     <c:set var="needEditView" value="${false}"/>
                 </app:handleError>
             </c:when>
@@ -114,7 +114,7 @@
                         <zm:moveItem var="moveResult" id="${apptId}" folderid="${uploader.compose.apptFolderId}"/>
                     </c:if>
                     <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
-                    <app:status><fmt:message key="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/></app:status>
+                    <app:status><fmt:message key="${empty message ? 'actionTaskCreated' : 'actionTaskSaved'}"/></app:status>
                     <c:set var="needEditView" value="${false}"/>
                      <zm:clearSearchCache/>
                 <%-- </app:handleError>--%>
