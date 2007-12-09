@@ -380,14 +380,16 @@ function(params, noRender, callback, errorCallback) {
 	}
 	if (params.searchFor == ZmSearchToolBar.FOR_MAIL_MI) {
 		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
-	}	
+	}
 
 	// if the user explicitly searched for all types, force mixed view
 	var isMixed = (params.searchFor == ZmSearchToolBar.FOR_ANY_MI);
 
 	// a query hint is part of the query that the user does not see
 	if (this._inclSharedItems) {
-		params.queryHint = ZmSearchController.QUERY_ISREMOTE;
+		params.queryHint = isMixed
+			? ZmSearchController.QUERY_ISREMOTE
+			: this._generateQueryHint(types);
 	}
 
 	// only set contact source if we are searching for contacts
@@ -514,6 +516,30 @@ function(search, isMixed, ex) {
 	}
 }
 
+ZmSearchController.prototype._generateQueryHint =
+function(types) {
+	var list = [];
+	var len = types.size();
+
+	for (var j = 0; j < len; j++) {
+		var type = types.get(j);
+		var app = appCtxt.getApp(ZmItem.APP[type]);
+		if (app) {
+			var ids = app.getRemoteFolderIds();
+			for (var i = 0; i < ids.length; i++) {
+				list.push("inid:" + ids[i]);
+			}
+		}
+	}
+
+	if (list.length > 0) {
+		list.push("is:local");
+		return list.join(" OR ");
+	}
+
+	return null;
+};
+
 /*********** Search Field Callback */
 
 ZmSearchController.prototype._searchFieldCallback =
@@ -594,6 +620,8 @@ function(ev, id) {
 		}
 	} else {
 		if (sharedMI) {
+			// we allow user to check "Shared Items" for appointments since it
+			// is based on whats checked in their tree view
 			if (id == ZmItem.APPT || id == ZmSearchToolBar.CUSTOM_MI) {
 				sharedMI.setChecked(false, true);
 				sharedMI.setEnabled(false);

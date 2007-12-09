@@ -288,6 +288,29 @@ function(type, obj, tree, path) {
 	}
 };
 
+ZmApp.prototype.getRemoteFolderIds =
+function() {
+	// XXX: optimize by caching this list? It would have to be cleared anytime
+	// folder structure changes
+	var list = [];
+	if (this._opc) {
+		var type = ZmApp.ORGANIZER[this.getName()];
+
+		// first, make sure there aren't any deferred folders that need to be created
+		if (this._deferredFolders.length) {
+			this._createDeferredFolders(type);
+		}
+
+		var tree = this._opc.getTreeController(type).getDataTree();
+		var folders = tree ? tree.getByType(type) : [];
+		for (var i = 0; i < folders.length; i++) {
+			if (folders[i].isRemote())
+				list.push(folders[i].id);
+		}
+	}
+	return list;
+};
+
 /**
  * Creates the overview content for this app. The default implementation creates a ZmOverview
  * with standard options. Other apps may want to use different options, or create a DwtAccordion
