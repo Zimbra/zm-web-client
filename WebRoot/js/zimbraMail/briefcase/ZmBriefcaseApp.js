@@ -459,3 +459,16 @@ function(msgId, partId, name, folderId,items) {
 		ZmOrganizer._showErrorMsg(msg);
 	}
 };
+
+ZmBriefcaseApp.prototype.fixCrossDomainReference = 
+function(url, restUrlAuthority) {
+	var refURL = window.location.protocol+"//"+window.location.host;
+	var urlParts = AjxStringUtil.parseURL(url);
+	if(urlParts.authority!=window.location.host){
+		var oldRef = urlParts.protocol +"://"+ urlParts.authority;
+		if((restUrlAuthority && url.indexOf(restUrlAuthority) >=0) || !restUrlAuthority){
+			url = url.replace(oldRef,refURL);			
+		}
+	}
+	return url;
+};
