@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 /*
@@ -115,7 +115,7 @@
  */
 
 /* Outer container of the entire tool tip.  Class "LightOuterBorder" is also applied to this. */
-.DwtToolTip { 
+.DwtToolTip {
 	@TooltipContainer@
 }
 
@@ -536,7 +536,7 @@
 	Class "Dwt[Dark|Light]InnerBorder" is also applied to this elements */
 .DwtDialogBody 	{
   cursor: default;
-  
+
 }
 
 
@@ -559,32 +559,6 @@
 
 
 /* TODO: Rationalize this ? */
-
-/* DwtResizableWindow, LAYOUT PART (very important, please don't modify) */
-
-.DwtResizableWindow { cursor: default; }
-
-.DwtResizableWindow-topcont { position: relative; height: 100%; width: 100%; }
-.DwtResizableWindow-handles { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-collapse: collapse; }
-.DwtResizableWindow-cont { position: absolute; left: 3px; top: 3px; right: 3px; bottom: 3px; }
-
-.DwtResizableWindow-handles td { font-size: 1px !important; line-height: 1px !important; }
-
-.DwtResizableWindow-handles-top td, .DwtResizableWindow-handles-bot td { height: 12px; }
-.DwtResizableWindow-NW, .DwtResizableWindow-NE, .DwtResizableWindow-SW, .DwtResizableWindow-SE, .DwtResizableWindow-W, .DwtResizableWindow-E { width: 10px; }
-
-.DwtResizableWindow-NW { cursor: nw-resize; }
-.DwtResizableWindow-N  { cursor: n-resize; }
-.DwtResizableWindow-NE { cursor: ne-resize; }
-.DwtResizableWindow-W  { cursor: w-resize; }
-.DwtResizableWindow-E  { cursor: e-resize; }
-.DwtResizableWindow-SW { cursor: sw-resize; }
-.DwtResizableWindow-S  { cursor: s-resize; }
-.DwtResizableWindow-SE { cursor: se-resize; }
-
-.DwtResizableWindow-inactiveCover { position: absolute; left: 3px; top: 3px; right: 3px; bottom: 3px; }
-.DwtResizableWindow-focused .DwtResizableWindow-inactiveCover { display: none; }
-.DwtResizableWindow-resizing { @DisableSelection@ /* make sure content is unselectable while resizing */ }
 
 /* DwtResizableWindow, COLORS PART - TODO [Owen]: skin support */
 
@@ -610,6 +584,32 @@
   border-width: 2px;
   -moz-border-radius: 2px;
 }
+
+/* DwtResizableWindow, LAYOUT PART (very important, please don't modify) */
+
+.DwtResizableWindow { cursor: default; }
+
+.DwtResizableWindow-topcont { position: relative !important; height: 100% !important; width: 100% !important; }
+.DwtResizableWindow-handles { position: absolute; left: 0; top: 0; width: 100%; height: 100%; border-collapse: collapse; }
+.DwtResizableWindow-cont { position: absolute; left: 3px; top: 3px; right: 3px; bottom: 3px; }
+
+.DwtResizableWindow-handles td { font-size: 1px !important; line-height: 1px !important; }
+
+.DwtResizableWindow-handles-top td, .DwtResizableWindow-handles-bot td { height: 12px; }
+.DwtResizableWindow-NW, .DwtResizableWindow-NE, .DwtResizableWindow-SW, .DwtResizableWindow-SE, .DwtResizableWindow-W, .DwtResizableWindow-E { width: 10px; }
+
+.DwtResizableWindow-NW { cursor: nw-resize; }
+.DwtResizableWindow-N  { cursor: n-resize; }
+.DwtResizableWindow-NE { cursor: ne-resize; }
+.DwtResizableWindow-W  { cursor: w-resize; }
+.DwtResizableWindow-E  { cursor: e-resize; }
+.DwtResizableWindow-SW { cursor: sw-resize; }
+.DwtResizableWindow-S  { cursor: s-resize; }
+.DwtResizableWindow-SE { cursor: se-resize; }
+
+.DwtResizableWindow-inactiveCover { position: absolute; left: 3px; top: 3px; right: 3px; bottom: 3px; }
+.DwtResizableWindow-focused .DwtResizableWindow-inactiveCover { display: none; }
+.DwtResizableWindow-resizing { @DisableSelection@ /* make sure content is unselectable while resizing */ }
 
 .DwtWindowManager { position: absolute; top: 0; left: 0; width: 0; height: 0; padding: 0; margin: 0; border: none; overflow: visible; }
 
@@ -843,7 +843,7 @@
  * TODO: make sure this has DwtInputField + DwtInputField-error at same time
  *
  */
-.DwtInputField input[type="text"], 
+.DwtInputField input[type="text"],
 .DwtInputField input[type="password"],
 .DwtSimpleInput {
 	@InputField@
@@ -1276,7 +1276,7 @@
  */
 
 /* outer container */
-.oselect, .oselect_check {	
+.oselect, .oselect_check {
 	@SelectBorder@
 	@SelectBorder-normal@
 	@ActiveCursor@
@@ -1286,7 +1286,7 @@
 .oselect_table,
 .oselect_check_table {
 	@CompactTable@
-	
+
 }
 
 .oselect TD,
@@ -1350,12 +1350,12 @@
 .oselect_choice {
 	@MenuItem@
 	@MenuItemText@
-	@MenuItemText-normal@	
+	@MenuItemText-normal@
 	@MenuItemBorder-normal@
 }
 .oselect_choice_selected {
 	@MenuItem@
-	@MenuItemBorder-hover@	
+	@MenuItemBorder-hover@
 	@MenuItemText-hover@
 }
 
@@ -1458,8 +1458,8 @@
 }
 .DwtSpinner td { padding: 0; margin: 0; }
 .DwtSpinner-inputCell input[type='text'],
-.DwtSpinner-inputCell input[type='text'] { 
-	margin: 0; border: none; padding: 1px 2px; text-align: right; 
+.DwtSpinner-inputCell input[type='text'] {
+	margin: 0; border: none; padding: 1px 2px; text-align: right;
 }
 
 .DwtSpinner-UpBtn, .DwtSpinner-DownBtn {
@@ -1735,7 +1735,7 @@
 .DwtComboBox {
 /*	@ZFieldBg-normal@
 	@FieldBorder@
-	height:24px;	
+	height:24px;
 	padding-right:2px;	*/d
 }
 
@@ -2063,7 +2063,7 @@
 .ZMenuItem-Separator	 						{	@MenuItemSeparator@	}
 .ZMenuItemSeparatorBorder TD					{	height:12px !important;}
 
-.ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon DIV, 
+.ZHasIcon .ZMenuItemSeparatorBorder .ZLeftIcon DIV,
 .ZHasCheck .ZMenuItemSeparatorBorder .ZCheckIcon DIV,
 .ZHasSubmenu .ZMenuItemSeparatorBorder .ZDropDown DIV 		{	height:1px !important; }
 
@@ -2139,5 +2139,5 @@
 .ZRadioLabel			{	@ActiveCursor@	}
 .ZRadioLabelDisabled	{	@Text-disabled@ }
 
- 
+
 
