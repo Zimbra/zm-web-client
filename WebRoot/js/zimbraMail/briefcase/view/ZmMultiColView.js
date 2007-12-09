@@ -247,7 +247,10 @@ function(item) {
 	if(name.length > 20){
 		name = name.substring(0,20) + "..";
 	}
-	var fileLink = ["<a ","href='",item.getRestUrl(),"' target='_blank'>",name,"</a>"].join("");
+	
+	var restUrl = item.getRestUrl();
+	restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
+	var fileLink = ["<a ","href='",restUrl,"' target='_blank'>",name,"</a>"].join("");
 
 	var prop = [
 		{name:"Name", value:fileLink},	
@@ -259,8 +262,7 @@ function(item) {
 		{name:"Modifier", value:item.modifier}									
 	];
 	
-	var restUrl = item.getRestUrl();
-	var imgSrc = restUrl.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.bmp$$/) ? item.getRestUrl() : null;
+	var imgSrc = restUrl.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.bmp$$/) ? restUrl : null;
 	
 	var subs = {
 		imgSrc: imgSrc,
