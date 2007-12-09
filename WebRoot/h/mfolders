@@ -16,7 +16,7 @@
     </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
-    
+
     <c:if test="${!empty param.doAction}">
         <app:folderAction/>
     </c:if>
@@ -25,6 +25,9 @@
     <c:set var="selectedFolder" value="${mailbox.inbox}"/>
 
     <c:choose>
+        <c:when test="${not empty requestScope.currentFolderId}">
+            <c:set var="selectedFolder" value="${zm:getFolder(pageContext, requestScope.currentFolderId)}"/>
+        </c:when>
         <c:when test="${not empty requestScope.newlyCreatedFolderId}">
             <c:set var="selectedFolder" value="${zm:getFolder(pageContext, requestScope.newlyCreatedFolderId)}"/>
         </c:when>

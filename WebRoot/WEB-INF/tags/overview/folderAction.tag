@@ -12,6 +12,7 @@
 <c:choose>
     <c:when test="${zm:actionSet(param, 'actionSave')}">
         <c:set var="folder" value="${zm:getFolder(pageContext, param.folderId)}"/>
+        <c:set var="currentFolderId" value="${param.folderId}" scope="request"/>        
         <c:choose>
             <c:when test="${not empty param.folderNameVisible and empty param.folderName}">
                 <app:status style="Warning">
@@ -97,6 +98,7 @@
                 </app:status>
             </c:otherwise>
         </c:choose>
+        <c:set var="currentFolderId" value="${param.folderDeleteId}" scope="request"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionPermDelete')}">
         <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderDeleteId)}"/>
@@ -115,6 +117,7 @@
                 </app:status>
             </c:otherwise>
         </c:choose>
+        <c:set var="currentFolderId" value="${param.folderDeleteId}" scope="request"/>                
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionEmptyFolder')}">
         <zm:emptyFolder id="${param.folderEmptyId}"/>
@@ -124,6 +127,7 @@
                 <fmt:param value="${folderName}"/>
             </fmt:message>
         </app:status>
+        <c:set var="currentFolderId" value="${param.folderEmptyId}" scope="request"/>        
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionEmptyFolderConfirm')}">
         <c:set var="folder" value="${zm:getFolder(pageContext, param.folderEmptyId)}"/>
@@ -144,9 +148,11 @@
                 </app:status>
             </c:otherwise>
         </c:choose>
+        <c:set var="currentFolderId" value="${param.folderEmptyId}" scope="request"/>        
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionMarkRead')}">
         <zm:markFolderRead id="${param.folderId}"/>
+        <c:set var="currentFolderId" value="${param.folderId}" scope="request"/>        
         <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderId)}"/>
         <app:status>
             <fmt:message key="actionFolderMarkRead">
