@@ -265,6 +265,9 @@ function() {
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_CONTACT] = ZmOperation.NEW_CONTACT;
 
+	// bug fix #22603 - redefine since new window does not setup a search toolbar
+	ZmSearchToolBar.FOR_GAL_MI 	= "FOR GAL";
+
 	ZmApp.registerApp(ZmApp.CONTACTS,
 							 {mainPkg:				"Contacts",
 							  nameKey:				"addressBook",
