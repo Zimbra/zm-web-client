@@ -142,10 +142,20 @@ function() {
 			this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 				? ZmItem.CONTACT
 				: ZmSearchToolBar.FOR_GAL_MI;
+
 			if (this._defaultQuery != ZmSearchController.QUERY_ISREMOTE &&
 				searchFor == ZmContactsApp.SEARCHFOR_PAS)
 			{
-				queryHint = ZmSearchController.QUERY_ISREMOTE;
+				var app = appCtxt.getApp(ZmApp.CONTACTS);
+				var ids = app.getRemoteFolderIds();
+				var list = [];
+				for (var i = 0; i < ids.length; i++) {
+					list.push("inid:" + ids[i]);
+				}
+				if (list.length > 0) {
+					list.push("is:local");
+					queryHint = list.join(" OR ");
+				}
 			}
 		} else {
 			this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)

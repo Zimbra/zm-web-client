@@ -373,7 +373,8 @@ function(soapDoc) {
 	method.setAttribute("limit", this.limit);
 
 	// and of course, always set the query and append the query hint if applicable
-	var query = this.queryHint
+	// only use query hint if this is not a "simple" search
+	var query = (!this.folderId && this.queryHint)
 		? ([this.query, " (", this.queryHint, ")"].join(""))
 		: this.query;
 	soapDoc.set("query", query);
