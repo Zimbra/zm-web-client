@@ -22,7 +22,7 @@ ZmPortalView = function(parent, controller, dropTgt) {
         ZmController.PORTAL_VIEW, null, controller, headerList, dropTgt
     );
     this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-	this.setScrollStyle(Dwt.CLIP);
+	this.setScrollStyle(Dwt.SCROLL);
 }
 ZmPortalView.prototype = new ZmListView;
 ZmPortalView.prototype.constructor = ZmPortalView;
