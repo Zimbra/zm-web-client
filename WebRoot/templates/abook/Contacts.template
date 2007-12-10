@@ -418,7 +418,11 @@
 
 <template id="abook.Contacts#SplitView_notes">
 	<$
-		var notes = data.view._generateObject(data.contact.getAttr(ZmContact.F_notes));
+		var notes = data.contact.getAttr(ZmContact.F_notes);
+		if (notes instanceof Array) {
+			notes = notes.join("\n");
+		}
+		notes = data.view._generateObject(notes);
 	$>
 
 	<$ if (notes) { $>
