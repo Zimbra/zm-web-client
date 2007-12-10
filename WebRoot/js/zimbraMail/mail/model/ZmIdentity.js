@@ -222,14 +222,10 @@ function(requestType, respFunction, callback, errorCallback, batchCmd) {
 
 ZmIdentity.prototype._loadFromDom =
 function(data) {
-	if (data.name) {
-		if (data.name == ZmIdentity.DEFAULT_NAME) {
-			this.isDefault = true;
-		}
-	}
-	this.id = data.id;
-	var props = data._attrs;
 
+	this.id = data.id;
+
+    var props = data._attrs;
 	if (props) {
 		for (var i in props) {
 			var field = ZmIdentity._SOAP[i];
@@ -246,6 +242,13 @@ function(data) {
 				}
 			}
 		}
+	}
+
+    if (data.name) {
+		if (data.name == ZmIdentity.DEFAULT_NAME) {
+			this.isDefault = true;
+            this.name = ZmMsg.defaultIdentityName;
+        }
 	}
 };
 
