@@ -56,7 +56,7 @@
                     <td><div class='vertSep'></div></td>
                     <td nowrap>
                         <label for="searchField"><fmt:message key="find"/>&nbsp;:&nbsp;</label>
-                        <input onkeydown="handleEnter(event);" style="background-color:#FFFFFF;height:auto;padding:2px 4px;cursor:text;" type="textbox" id="searchField" maxlength="50" name="contactsq" value="${param.sq}">
+                        <input onkeydown="handleEnter(event);" style="background-color:#FFFFFF;height:auto;padding:2px 4px;cursor:text;" type="text" id="searchField" maxlength="50" name="contactsq" value="${param.sq}">
                     </td>
                     <app:button name="actionSearch" id="${keys ? 'SEARCH_CONTACT' : ''}" tooltip="search" text="search"/>
                     <td><div class='vertSep'></div></td>

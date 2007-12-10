@@ -11,6 +11,7 @@
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
+<c:set var="searchQuery" value="${not empty paramValues.contactsq[0] ? paramValues.contactsq[0] :  paramValues.contactsq[1]}"/>
 <c:set var="contactError" value="${false}"/>
 
 <c:choose>
@@ -27,7 +28,7 @@
         </app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionSearch')}">
-        <c:redirect url="/h/search?sq=${param.contactsq}&st=contact&search=Search"/>
+        <c:redirect url="/h/search?sq=${searchQuery}&st=contact&search=Search"/>
     </c:when>    
 </c:choose>
 
