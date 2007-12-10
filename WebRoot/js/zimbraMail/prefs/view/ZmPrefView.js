@@ -261,18 +261,19 @@ function(dirtyCheck, noValidation, batchCommand) {
 				} else if (!noValidation && validationFunc) {
 					isValid = validationFunc(value);
 				}
-				if (!isValid) {
+				if (isValid) {
+					pref.setValue(value);
+					if (addToList) {
+						list.push(pref);
+					}
+				} else {
 					errorStr += "\n" + AjxMessageFormat.format(setup.errorMessage, value);
-				}
-				pref.setValue(value);
-				if (addToList) {
-					list.push(pref);
 				}
 				this._controller.setDirty(view, true);
 			}
 		}
-		// errorStr can only be non-null if noValidation is false
-		if (errorStr != "") {
+		// errorStr can only have a value if noValidation is false
+		if (errorStr) {
 			throw new AjxException(errorStr);
 		}
 	}
