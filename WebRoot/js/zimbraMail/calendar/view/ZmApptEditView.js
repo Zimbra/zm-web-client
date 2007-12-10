@@ -608,6 +608,7 @@ ZmApptEditView.prototype._handleAttendeeField =
 function(type, useException) {
 	if (!this._activeInputField) return;
 
+	this._invalidAttendees = [];
 	var value = this._attInputField[type].getValue();
 	var attendees = new AjxVector();
 	var items = AjxEmailAddress.split(value);
@@ -624,11 +625,20 @@ function(type, useException) {
 		}
 		if (attendee) {
 			attendees.add(attendee);
+		}else{
+			this._invalidAttendees.push(item);
 		}
 	}
 
 	// *always* force replace of attendees list with what we've found
 	this.parent.parent.updateAttendees(attendees, type);
+	
+	if(this._invalidAttendees.length > 0){
+		var dialog = appCtxt.getMsgDialog();
+		var msg = ZmMsg.invalidAttendees + " " + this._invalidAttendees.join(",");
+		dialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+		dialog.popup();
+	}
 };
 
 ZmApptEditView.prototype._getAttendeeByName =
