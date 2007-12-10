@@ -1876,13 +1876,18 @@ function() {
 	// the main view can use
 	if (work & ZmCalViewController.MAINT_MINICAL)
 	{
-		if ( this._refreshMaintenance || (appCtxt.getCurrentViewId() != ZmController.CAL_VIEW)) {
-			this._refreshMaintenance = false;
+		if ((appCtxt.getCurrentViewId() != ZmController.CAL_VIEW)) {
 			this.fetchMiniCalendarAppts();
 		} else {
 			var view = this._viewMgr.getCurrentView();
 			if (view.getTimeRange) {
 				var rt = view.getTimeRange();
+				if(this._refreshMaintenance) {
+					this._refreshMaintenance = false;
+					var dr = this._miniCalendar.getDateRange();
+					rt = {start: dr.start.getTime(),  end: dr.end.getTime()};
+				}
+			
 				var cb = new AjxCallback(this, this._maintGetApptCallback, [work, null]);
 				this.getApptSummaries({start:rt.start, end:rt.end, fanoutAllDay:view._fanoutAllDay(), callback:cb});
 			}
