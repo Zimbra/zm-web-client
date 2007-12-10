@@ -61,8 +61,9 @@ SUBMIT,
 
 /* ------- tabs --------------- */
 
+
 .Tabs { margin-right: 10px; }
-.Tab {  padding:2px; }
+.Tab { padding:2px;  }
 .Tab SPAN {
 	vertical-align:middle;
 	padding-left:5px;
@@ -71,9 +72,14 @@ SUBMIT,
 .Tab .icon {
 	padding-right:0px;
 }
+.Tab IMG {
+	position:relative;
+	top:-1px;
+	left:4px;
+}
 
 .TabFiller {
-	@AppTabSpacer@
+	@AppTabFiller@
 }
 
 .TabSpacer {
@@ -293,15 +299,11 @@ A:visited { color: blue; }
 /* ---- Top Toolbar Container ----- */
 .TbTop {
 	@ToolbarContainer@
-	border-left-width:2px;
-	border-right-width:2px;
 }
 
 /* ---- Bottom Toolbar Container ----- */
 .TbBottom {
 	@ToolbarContainer@
-	border-left-width:2px;
-	border-right-width:2px;
 	margin-bottom:5px;
 }
 
@@ -445,6 +447,7 @@ A:visited { color: blue; }
 .MsgCompose {
 	@FontFamily-fixed@
 	@FontSize-big@
+	width:99%;
 }
 
 .Fragment {
@@ -516,12 +519,13 @@ A:visited { color: blue; }
 }
 
 .searchField {
+	@FixBoxModel@
 	@InputField@
     height: auto;
-    width:100%;
+    width:95%;
 }
 
-.SearchFieldWidth{width: 80%;}
+.SearchFieldWidth{width: 100%; padding-right:5px;}
 
 .NoResults { 
 	text-align: center;	padding: 20px 0px 20px 0px;

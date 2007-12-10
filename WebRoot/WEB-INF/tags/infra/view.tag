@@ -468,7 +468,7 @@
 				</div
 				--%>
 			</td>
-			<td id='skin_container_app_chooser' colspan=2 valign="bottom">
+			<td id='skin_container_app_chooser_lite' colspan=2 valign="bottom" style='padding:0px'>
 				<app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
 			</td>
 		</tr>
