@@ -28,7 +28,7 @@ ZmLiteHtmlEditor = function(parent, posStyle, className, mode, content) {
 	className = className || "ZmLiteHtmlEditor";
 	DwtComposite.call(this, parent, className, posStyle);
 
-	this._mode = mode || ZmLiteHtmlEditor.TEXT;
+	this._mode = mode || ZmLiteHtmlEditor.HTML;
 	this._initialize();
 
 
@@ -171,7 +171,6 @@ function(mode, force) {
 	this._mode = mode;
 
 	if(mode == ZmLiteHtmlEditor.HTML) {
-                this._createToolbars();
 		this._enableToolbar(true);
 		this._setDefaultStyles();
 	}else{
@@ -225,6 +224,7 @@ function(enable){
 
 ZmLiteHtmlEditor.prototype._initialize = function(){
 
+	this._createToolbars();
 	this._initEditor();
 	this._textArea = document.getElementById(this._textAreaId);
 
@@ -298,8 +298,7 @@ ZmLiteHtmlEditor.prototype._createToolbars = function(){
 
 ZmLiteHtmlEditor.prototype._enableToolbar =
 function(enable){
-        if (this._miniToolBar)
-	        this._miniToolBar.setVisible(!!enable);
+	this._miniToolBar.setVisible(!!enable);
 };
 
 ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){

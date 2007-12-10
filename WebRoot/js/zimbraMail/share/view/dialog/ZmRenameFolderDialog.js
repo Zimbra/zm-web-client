@@ -68,7 +68,7 @@ ZmRenameFolderDialog.prototype._getFolderData =
 function() {
 	// check name for presence and validity
 	var name = AjxStringUtil.trim(this._nameField.value);
-	var msg = ZmFolder.checkName(name, this._folder.parent);
+	var msg = ZmFolder.checkName(name);
 
 	// make sure another folder with this name doesn't already exist at this level
 	if (!msg) {
