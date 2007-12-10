@@ -15,11 +15,11 @@
 				<td nowrap="nowrap">
 					<label for="searchWebField">Search web:&nbsp;</label>
 				</td>
-				<td width="100%" nowrap="nowrap">
+				<td class='SearchFieldWidth' nowrap="nowrap">
                     <input type="hidden" name="fr" value="zim-mails" />
-                    <input  id="searchWebField" name='p' class="searchField" maxlength="2048" value=""></td>
-				<td style="padding-left: 5px;" nowrap="nowrap">
-					<button class="SearchButton" type="submit" name="search"><div class='ImgWebSearch'></div></button>
+                    <input  id="searchWebField" style='width:95%' name='p' class="searchField" maxlength="2048" value=""></td>
+				<td nowrap="nowrap">
+					<button class="SearchButton" type="submit" name="search"><app:img src="startup/ImgWebSearch.gif" altkey='ALT_SEARCH'/></button>
 				</td>
             </tr>
            </table>
