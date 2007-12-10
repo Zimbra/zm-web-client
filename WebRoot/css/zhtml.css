@@ -62,7 +62,7 @@ SUBMIT,
 /* ------- tabs --------------- */
 
 .Tabs { margin-right: 10px; }
-.Tab {  }
+.Tab {  padding:2px; }
 .Tab SPAN {
 	vertical-align:middle;
 	padding-left:5px;
