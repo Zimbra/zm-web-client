@@ -926,7 +926,9 @@ function(folderId, status, aid) {
 													  callback:respCallback, errorCallback:errorCallback,
 													  timeout:ZmPreferencesPage.IMPORT_TIMEOUT});
 	} else {
-        var msg = AjxMessageFormat.format(ZmMsg.errorImportStatus, status);
+		var msg = (status == AjxPost.SC_NO_CONTENT)
+			? ZmMsg.errorImportNoContent
+			: (AjxMessageFormat.format(ZmMsg.errorImportStatus, status));
         appCtlr.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
 		this._importBtn.setEnabled(true);
 	}
