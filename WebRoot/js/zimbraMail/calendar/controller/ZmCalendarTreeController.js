@@ -209,6 +209,11 @@ function(ev) {
 		var overviewId = ev.item.getData(ZmTreeView.KEY_ID);
 		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
 
+		//checkbox event may not be propagated to close action menu
+		if(this._getActionMenu()){
+			this._getActionMenu().popdown();
+		}
+		
 		// notify listeners of selection
 		if (this._eventMgrs[overviewId]) {
 			this._eventMgrs[overviewId].notifyListeners(DwtEvent.SELECTION, ev);
