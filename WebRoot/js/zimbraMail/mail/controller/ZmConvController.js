@@ -115,6 +115,7 @@ function(view) {
 		ZmDoublePaneController.prototype._initializeToolBar.call(this, view, navArrows);
 	}
 	this._setupDeleteMenu(view);	// ALWAYS call setup to turn delete menu on/off
+	this._setupSpamButton(this._toolbar[view]);
 }
 
 ZmConvController.prototype._setupViewMenu =
