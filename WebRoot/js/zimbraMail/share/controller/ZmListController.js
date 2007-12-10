@@ -1298,8 +1298,10 @@ function(event) {
 	var button = toolbar.getButton(ZmOperation.NEW_MENU);
 	var listener = toolbar._ZmListController_newDropDownListener;
 	button.removeDropDownSelectionListener(listener);
+    //Called explicitly as its a selection listener. Refer DwtButton._dropDownCellMouseDownHdlr()
+    button.popup();
 
-	delete toolbar._ZmListController_this;
+    delete toolbar._ZmListController_this;
 	delete toolbar._ZmListController_newDropDownListener;
 };
 
