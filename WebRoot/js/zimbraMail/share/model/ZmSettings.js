@@ -633,7 +633,7 @@ function() {
 				 "appChooser.fullWidth",
 				 "helpButton.hideIcon",
 				 "helpButton.style",
-				 "logo.url",
+				 "banner.url",
 				 "logoutButton.hideIcon",
 				 "logoutButton.style",
 				 "noOverviewHeaders",
