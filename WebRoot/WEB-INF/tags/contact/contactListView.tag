@@ -93,7 +93,7 @@
            </tr>
            <tr>
                <td class='TbBottom'>
-                   <app:contactListViewToolbar context="${context}" contact="${contact}" keys="false"/>
+                   <app:contactListViewToolbar context="${context}" contact="${contact}" keys="true"/>
                </td>
            </tr>
        </table>
@@ -109,8 +109,10 @@
 		var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
 		if (keyCode == 13) {
             zclick('SSEARCH_CONTACT');
+            return false;
         }
-	}
+        return true;
+    }
     //-->
    </SCRIPT>
 
