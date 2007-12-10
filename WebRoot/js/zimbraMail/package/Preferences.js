@@ -27,6 +27,9 @@ AjxPackage.require("zimbraMail.prefs.model.ZmFilterRule");
 AjxPackage.require("zimbraMail.prefs.model.ZmFilterRules");
 AjxPackage.require("zimbraMail.prefs.model.ZmLocale");
 
+AjxPackage.require("zimbraMail.mail.model.ZmIdentity");
+AjxPackage.require("zimbraMail.mail.model.ZmDataSource");
+
 AjxPackage.require("zimbraMail.prefs.view.ZmPreferencesPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmShortcutsPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmAccountsPage");
