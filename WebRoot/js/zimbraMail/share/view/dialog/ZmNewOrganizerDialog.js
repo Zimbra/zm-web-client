@@ -293,8 +293,9 @@ function(overview, treeIds, omit, noRootSelect) {
  */
 ZmNewOrganizerDialog.prototype._getFolderData =
 function() {
-	
-	var msg = null;
+	// check name for presence and validity
+	var name = AjxStringUtil.trim(this._nameField.value);
+	var msg = ZmFolder.checkName(name);
 
 	// make sure a parent was selected
 	var parentFolder;
@@ -309,10 +310,6 @@ function() {
 			parentFolder = appCtxt.getFolderTree().root;
 		}
 	}
-
-	// check name for presence and validity
-	var name = AjxStringUtil.trim(this._nameField.value);
-	var msg = ZmFolder.checkName(name, parentFolder);
 
 	// make sure parent doesn't already have a child by this name
 	if (!msg && parentFolder.hasChild(name)) {

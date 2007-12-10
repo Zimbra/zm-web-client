@@ -3,7 +3,7 @@ function ZmSkin(hints) {
         // info
         name:       "@SkinName@",
         version:    "@SkinVersion@",
-        logo:       { url: "@LogoURL@" },
+        banner:     { url: "@LogoURL@" },
 
         banner:		{ position:"static"},
         userInfo:	{ position:"static"},
