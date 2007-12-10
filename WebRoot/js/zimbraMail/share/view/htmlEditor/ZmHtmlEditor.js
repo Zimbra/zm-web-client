@@ -1451,15 +1451,7 @@ function(ev) {
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
 				menu.createSeparator();
-                  if (plainText) {
-				// in plain text mode we want to be able to edit misspelled words
-				txt = fixall ? "Edit all" : "Edit";
-				item = menu.createMenuItem("edit", {text:txt, className:"ZMenuItem ZmSpellMenuItem"});
-				item.setData("fixall", fixall);
-				item.setData("orig", word);
-				item.setData("spanId", p.id);
-				item.addSelectionListener(self._spellCheckSuggestionListenerObj);
-			    }
+              
                 item = menu.createMenuItem("clear", {text:"Clear text", className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("value", "");
