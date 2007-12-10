@@ -74,9 +74,7 @@ function(buttonId, addrs, str) {
 	this._offset = 0;
 
 	var searchFor = this._selectDiv.getValue();
-	if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS)	{ this._defaultQuery = "is:local"; }
-	else if (searchFor == ZmContactsApp.SEARCHFOR_PAS)	{ this._defaultQuery = ZmSearchController.QUERY_ISREMOTE; }
-	else { this._defaultQuery = "."; }
+	this._defaultQuery = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) ? "is:local" : ".";
 
 	// reset column sorting preference
 	this._chooser.sourceListView.setSortByAsc(ZmItem.F_NAME, true);
@@ -143,19 +141,8 @@ function() {
 				? ZmItem.CONTACT
 				: ZmSearchToolBar.FOR_GAL_MI;
 
-			if (this._defaultQuery != ZmSearchController.QUERY_ISREMOTE &&
-				searchFor == ZmContactsApp.SEARCHFOR_PAS)
-			{
-				var app = appCtxt.getApp(ZmApp.CONTACTS);
-				var ids = app.getRemoteFolderIds();
-				var list = [];
-				for (var i = 0; i < ids.length; i++) {
-					list.push("inid:" + ids[i]);
-				}
-				if (list.length > 0) {
-					list.push("is:local");
-					queryHint = list.join(" OR ");
-				}
+			if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
+				queryHint = ZmContactsHelper.getRemoteQueryHint();
 			}
 		} else {
 			this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)

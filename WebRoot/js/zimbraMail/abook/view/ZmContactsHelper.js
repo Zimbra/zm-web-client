@@ -53,6 +53,25 @@ function(params) {
 	search.execute({callback:params.respCallback, errorCallback:params.errorCallback});
 };
 
+ZmContactsHelper.getRemoteQueryHint =
+function() {
+	var queryHint;
+	var app = appCtxt.getApp(ZmApp.CONTACTS);
+	var ids = app.getRemoteFolderIds();
+	var list = [];
+
+	for (var i = 0; i < ids.length; i++) {
+		list.push("inid:" + ids[i]);
+	}
+
+	if (list.length > 0) {
+		list.push("is:local");
+		queryHint = list.join(" OR ");
+	}
+
+	return queryHint;
+};
+
 // Take the contacts and create a list of their email addresses (a contact may have more than one)
 ZmContactsHelper._processSearchResponse = 
 function(resp) {

@@ -192,7 +192,7 @@ function() {
 				? ZmItem.CONTACT
 				: ZmSearchToolBar.FOR_GAL_MI;
 			if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-				queryHint = ZmSearchController.QUERY_ISREMOTE;
+				queryHint = ZmContactsHelper.getRemoteQueryHint();
 			}
 		} else {
 			this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)

@@ -183,7 +183,8 @@ function() {
 
 	if (this._isClean && this.type == ZmCalItem.PERSON) {
 		this._isClean = false;
-		this._defaultQuery = ".";
+		var searchFor = this._selectDiv.getValue();
+		this._defaultQuery = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) ? "is:local" : ".";
 		this.searchContacts();
 	}
 };
@@ -549,7 +550,7 @@ function(sortBy) {
 			? ZmItem.CONTACT
 			: ZmSearchToolBar.FOR_GAL_MI;
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint = ZmSearchController.QUERY_ISREMOTE;
+			queryHint = ZmContactsHelper.getRemoteQueryHint();
 		}
 	} else {
 		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
