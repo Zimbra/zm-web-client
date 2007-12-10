@@ -284,6 +284,7 @@ A:visited { color: blue; }
 	margin: 0;
 	border: none;
 	cursor: pointer;
+	text-align:left;
 	@FontSize-normal@
 	@Text@
 	@ToolbarBg@
