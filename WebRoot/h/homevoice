@@ -27,6 +27,16 @@
 	<link href="<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" rel="stylesheet" type="text/css" />
     <div class="ZhHomeVoiceBody">
         <table class="ZhHomeVoiceTable" cellpadding=0 cellspacing=0 border=0>
+            <zm:computeSearchContext var="contextunread" usecache="true" query="phone:${phone} is:unread" types="voicemail"/>
+            <tr class="ZhHomeRow">
+                <td class="ZhHomeCell">
+                    <span style="font-weight:bold; font-size:12px;"><c:out value="${account.phone.display}"></c:out><br></span>
+                    <a style="text-decoration:none;" href='/h/voicemail'>
+                        &nbsp;(${contextunread.searchResult.size}) unheard
+                    </a>
+                </td>
+            </tr>
+            <zm:clearSearchCache type="voicemail"/>
             <zm:computeSearchContext var="context" usecache="true" query="phone:${phone}" types="voicemail"/>
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status" begin="0" end="4">
                 <c:url var="url" value="/h/voicemail">
