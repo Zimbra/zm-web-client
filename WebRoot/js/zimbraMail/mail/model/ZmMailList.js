@@ -251,7 +251,7 @@ function(convs, msgs) {
 				var index = conv.msgs._getSortIndex(msg, conv._sortBy);
 				conv.msgs.add(msg, index);
 				msg.list = conv.msgs;
-				if (!msg.isSent) {
+				if (!msg.isSent && msg.isUnread) {
 					conv.isUnread = true;
 					flaggedItems.push(conv);
 				}
