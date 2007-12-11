@@ -1057,13 +1057,18 @@ function(callback) {
 	AjxDispatcher.require("Startup2");
 	var cc = AjxDispatcher.run("GetComposeController");
 	var match = location.search.match(/\bsubject=([^&]+)/);
-	var subject = match ? decodeURIComponent(match[1]) : null;
+	var subject = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
 	match = location.search.match(/\bto=([^&]+)/);
 	var to = match ? decodeURIComponent(match[1]) : null;
 	match = location.search.match(/\bbody=([^&]+)/);
-	var body = match ? decodeURIComponent(match[1]) : null;
-	var params = {action:ZmOperation.NEW_MESSAGE, toOverride:to, subjOverride:subject,
-				  extraBodyText:body, callback:callback};
+	var body = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
+	var params = {
+		action: ZmOperation.NEW_MESSAGE,
+		toOverride: to,
+		subjOverride: subject,
+		extraBodyText: body,
+		callback: callback
+	};
 	cc.doAction(params);
 
 	if (!this._hasRendered) {
