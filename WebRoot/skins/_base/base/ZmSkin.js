@@ -3,7 +3,7 @@ function ZmSkin(hints) {
         // info
         name:       "@SkinName@",
         version:    "@SkinVersion@",
-        logo:       { url: "@LogoURL@" },
+        banner:     { url: "@LogoURL@" },
 
         banner:		{ position:"static"},
         userInfo:	{ position:"static"},
@@ -101,17 +101,15 @@ ZmSkin.prototype = {
 		for (var i = 1; i < arguments.length; i++) {
 			var src = arguments[i];
 			for (var pname in src) {
-				// recurse through properties
+				// recurse through object properties
 				var prop = dest[pname];
 				if (typeof prop == "object" && !(prop instanceof Array)) {
 					this.mergeObjects(dest[pname], src[pname]);
 					continue;
 				}
 	
-				// insert missing property
-				if (!dest[pname]) {
-					dest[pname] = src[pname];
-				}
+				// if not an object, the source property "wins"
+				dest[pname] = src[pname];
 			}
 		}
 	

@@ -88,7 +88,7 @@ ZmFolder.ICON[ZmFolder.ID_INBOX]				= "Inbox";
 ZmFolder.ICON[ZmFolder.ID_TRASH]				= "Trash";
 ZmFolder.ICON[ZmFolder.ID_SPAM]					= "SpamFolder";
 ZmFolder.ICON[ZmFolder.ID_SENT]					= "SentFolder";
-ZmFolder.ICON[ZmFolder.ID_ARCHIVE]				= "ArchiveFolder";
+ZmFolder.ICON[ZmFolder.ID_ARCHIVE]				= "SharedMailFolder";
 ZmFolder.ICON[ZmFolder.ID_OUTBOX]				= "Outbox";
 ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
 ZmFolder.ICON[ZmFolder.ID_CHATS]				= "ChatFolder";
@@ -193,27 +193,21 @@ function(folderA, folderB) {
 * name is invalid and null if the name is valid. Note that a name, rather than a path, is
 * checked.
 *
-* @param name		[string]		a folder name
-* @param parent		[ZmFolder]*		parent folder
+* @param name		a folder name
 */
 ZmFolder.checkName =
-function(name, parent) {
+function(name) {
 	var error = ZmOrganizer.checkName(name);
-	if (error) { return error; }
+	if (error) return error;
 
-	// make sure path isn't same as a system folder
-	parent = parent || appCtxt.getFolderTree().root;
-	if (parent && (parent.id == ZmFolder.ID_ROOT)) {
-		var lname = name.toLowerCase();
-		for (var id in ZmFolder.MSG_KEY) {
-			var sysname = ZmMsg[ZmFolder.MSG_KEY[id]];
-			if (sysname && (lname == sysname.toLowerCase())) {
-				return ZmMsg.folderNameReserved;
-			}
-		}
-		if (lname == ZmFolder.SYNC_ISSUES.toLowerCase()) {
+	// make sure name isn't a system folder (possibly not displayed)
+	for (var id in ZmFolder.MSG_KEY) {
+		if (name == ZmMsg[ZmFolder.MSG_KEY[id]]) {
 			return ZmMsg.folderNameReserved;
 		}
+	}
+	if (name.toLowerCase() == ZmFolder.SYNC_ISSUES.toLowerCase()) {
+		return ZmMsg.folderNameReserved;
 	}
 
 	return null;

@@ -286,9 +286,9 @@ A:visited { color: blue; }
 }
 
 .TbTop INPUT, .TbBottom INPUT {
-	padding: 0;
-	margin: 0;
-	border: none;
+	padding: 0px;
+	margin: 0px;
+	border: 0px none;
 	cursor: pointer;
 	text-align:left;
 	@FontSize-normal@

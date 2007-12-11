@@ -242,7 +242,7 @@ BODY						{	margin:0px; 				}
 
 
 
-
+/*Banner*/
 
 
 
@@ -329,6 +329,8 @@ TEXTAREA
 .BannerTextQuota {
 	text-align:center;
 	vertical-align:top;
+
+
 }
 .BannerTextUser,
 .BannerTextQuota {
