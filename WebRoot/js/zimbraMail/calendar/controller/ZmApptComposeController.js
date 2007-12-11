@@ -59,6 +59,16 @@ ZmApptComposeController.prototype.saveCalItem =
 function(attId) {
 	var appt = this._composeView.getAppt(attId);
 	if (appt) {
+		
+		if (this._invalidAttendees && this._invalidAttendees.length > 0) {
+			var dlg = appCtxt.getYesNoMsgDialog();
+			dlg.registerCallback(DwtDialog.YES_BUTTON, this._clearInvalidAttendeesCallback, this, [appt, attId, dlg]);
+			var msg = AjxMessageFormat.format(ZmMsg.compBadAttendees, this._invalidAttendees.join(","));
+			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+			dlg.popup();
+			return false;
+		}
+		
 		var origAttendees = appt.getOrigAttendees();				// bug fix #4160
 		if (origAttendees && origAttendees.length > 0 && 			// make sure we're not u/l'ing a file
 			attId == null) 											// make sure we are editing an existing appt w/ attendees
@@ -235,4 +245,11 @@ function(appt, attId, dlg) {
 	dlg.popdown();
 	this._saveCalItemFoRealz(appt, attId);
 	this._app.popView(true);
+};
+
+ZmApptComposeController.prototype._clearInvalidAttendeesCallback =
+function(appt, attId, dlg) {	
+	dlg.popdown();
+	delete this._invalidAttendees;
+	this._saveListener();
 };
