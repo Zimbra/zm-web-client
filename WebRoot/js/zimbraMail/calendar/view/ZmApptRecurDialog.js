@@ -1057,7 +1057,7 @@ function() {
 
 	// create inputs for day fields
 	this._dailyField = new DwtInputField({parent: this, type: DwtInputField.INTEGER,
-										  initialValue: "1", size: 3, maxLen: 2,
+										  initialValue: "2", size: 3, maxLen: 2,
 										  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 										  validationStyle: DwtInputField.ONEXIT_VALIDATION,
 										  validator: this._positiveIntValidator,
