@@ -286,7 +286,13 @@ function(errorMsg) {
 ZmCalItemComposeController.prototype._saveCalItemFoRealz =
 function(calItem, attId, notifyList) {
 	if (this._composeView.isDirty()) {
-		var callback = new AjxCallback(this, this._handleResponseSave, calItem);
+        //Chek for folder existance...?
+        if(calItem.getFolder() && calItem.getFolder().noSuchFolder){
+            var msg = AjxMessageFormat.format(ZmMsg.errorInvalidFolder, calItem.getFolder().name);
+            this._showErrorMessage(msg);
+			return false;
+        }
+        var callback = new AjxCallback(this, this._handleResponseSave, calItem);
 		var errorCallback = new AjxCallback(this, this._handleErrorSave);
 		calItem.save(attId, callback, errorCallback, notifyList);
 	}
