@@ -986,7 +986,7 @@ function(appt, shiftKey) {
 		this._quickAddDialog.initialize(appt);
 		this._quickAddDialog.popup();
 	} else {
-		this.newAppointment(appt);
+		this.newAppointment(appt,ZmCalItem.MODE_NEW_FROM_QUICKADD);
 	}
 };
 
