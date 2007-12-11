@@ -421,7 +421,7 @@
                     </tr>
                 </table>
 			</td>
-			<td align="right" style="padding-right:5px;>
+			<td align="right" style="padding-right:5px;">
 				<table cellpadding="2" cellspacing="0" >
 					<tr>
 						<td colspan=3 align='center' class='ZhAppSwitchLink'>
