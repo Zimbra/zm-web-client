@@ -88,7 +88,7 @@ function(startDate, endDate, repeatType, appt) {
 
 	// reset time based fields
 	this._endByField.setValue(AjxDateUtil.simpleComputeDateStr(this._startDate));
-	this._weeklySelect.setSelected(startDay);
+	this._weeklySelectButton.setSelected(startDay);
 	this._weeklyCheckboxes[startDay].checked = true;
 	this._monthlyDayField.setValue(startDate);
 	this._monthlyWeekdaySelect.setSelected(startDay);
@@ -152,9 +152,11 @@ function(appt) {
     var currentDay = recur._startDate.getDay();
 	if (value == "1") {
 		recur.repeatCustomCount = 1;
-        var startDay = this._weeklySelect.getValue();
+        var startDay = this._weeklySelectButton._selected;//getValue();
         switch(startDay){
-            case 7: //Mon, wed, Fri
+            case 7: //Separator
+                    break;
+            case 8: //Mon, wed, Fri
                     recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.MONDAY]);
                     recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.WEDNESDAY]);
                     recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.FRIDAY]);
@@ -163,7 +165,7 @@ function(appt) {
                         startDay += 2;
                     }
                     break;
-            case 8: //Tue, Thu
+            case 9: //Tue, Thu
                     recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.TUESDAY]);
                     recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.THURSDAY]);
                     startDay = AjxDateUtil.TUESDAY;
@@ -171,12 +173,12 @@ function(appt) {
                         startDay += 2;
                     }
                     break;
-            case 9: //Sat, Sunday
+            case 10: //Sat, Sunday
                     recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.SATURDAY]);
                     recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[AjxDateUtil.SUNDAY]);
                     startDay = currentDay == AjxDateUtil.SUNDAY? currentDay:AjxDateUtil.SATURDAY;
                     break;
-            default:recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[this._weeklySelect.getValue()]);
+            default:recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[this._weeklySelectButton._selected/*getValue()*/]);
                     break;
         }
         recur._startDate = AjxDateUtil.getDateForNextDay(new Date(this._origRefDate),startDay);
@@ -896,8 +898,10 @@ function() {
 	delete this._repeatSelectId;
 
 	var selectChangeListener = new AjxListener(this, this._selectChangeListener);
-	this._weeklySelect = new DwtSelect(this);
-	this._weeklySelect.addChangeListener(selectChangeListener);
+	this._weeklySelectButton = new DwtButton(this);//new DwtSelect(this);
+    var wMenu = new ZmPopupMenu(this._weeklySelectButton,null,this);
+    this._weeklySelectButton.setMenu(wMenu);
+    //this._weeklySelect.addChangeListener(selectChangeListener);
 	var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);
 	var dayFormatter = formatter.getFormatsByArgumentIndex()[0];
 	var day = new Date();
@@ -906,7 +910,11 @@ function() {
     var tuethu = new Array();
     var satsun = new Array();
     for (var i = 0; i < 7; i++) {
-		this._weeklySelect.addOption(dayFormatter.format(day), false, i);
+		//this._weeklySelect.addOption(dayFormatter.format(day), false, i);
+        var mi = new DwtMenuItem(wMenu,null,DwtMenuItem.CHECK_STYLE,i);
+        mi.setText(dayFormatter.format(day));
+        mi.addSelectionListener(selectChangeListener);
+        mi.setData("index",i);
         switch(day.getDay()){
             case AjxDateUtil.SUNDAY:
             case AjxDateUtil.SATURDAY: satsun.push(dayFormatter.format(day)); break;
@@ -920,12 +928,31 @@ function() {
         }
         day.setDate(day.getDate() + 1);
 	}
+    //Separator
+    new DwtMenuItem(wMenu,DwtMenuItem.SEPARATOR_STYLE,i++);  //Pos 7 is separator
     //Add some custom pattern options too
-    this._weeklySelect.addOption(monwedfri.join(", "), false, i++);
-    this._weeklySelect.addOption(tuethu.join(", "), false, i++);
-    this._weeklySelect.addOption(satsun.join(", "), false, i++);
-
-    this._weeklySelect.reparentHtmlElement(this._weeklySelectId);
+    //this._weeklySelect.addOption(monwedfri.join(", "), false, i++);
+    var mi = new DwtMenuItem(wMenu,i);
+    mi.setText(monwedfri.join(", "));
+    mi.addSelectionListener(selectChangeListener);
+    mi.setData("index",i++);
+    //this._weeklySelect.addOption(tuethu.join(", "), false, i++);
+    mi = new DwtMenuItem(wMenu,i);
+    mi.setText(tuethu.join(", "));
+    mi.addSelectionListener(selectChangeListener);
+    mi.setData("index",i++);
+    //Let's correct the sequence
+    var satsun1 = [satsun[1],satsun[0]];
+    //this._weeklySelect.addOption(satsun1.join(", "), false, i++);
+    mi = new DwtMenuItem(wMenu,i);
+    mi.setText(satsun1.join(", "));
+    mi.addSelectionListener(selectChangeListener);
+    mi.setData("index",i++);
+    wMenu.setSelectedItem(new Date().getDay());
+    this._weeklySelectButton.setText(wMenu.getItem(new Date().getDay()).getText());
+    
+    //this._weeklySelect.setv
+    this._weeklySelectButton.reparentHtmlElement(this._weeklySelectId);
 	delete this._weeklySelectId;
 
 	this._monthlyDaySelect = new DwtSelect(this);
@@ -1162,7 +1189,7 @@ ZmApptRecurDialog.prototype._createTabGroup = function() {
 	// section: weekly
 	var weekly = this._sectionTabGroups[ZmRecurrence.WEEKLY];
 	weekly.addMember(this._weeklyDefaultRadio); // radio: every {day}
-	weekly.addMember(this._weeklySelect); // select: day
+	weekly.addMember(this._weeklySelectButton); // select: day
 	weekly.addMember(this._weeklyFieldRadio); // radio: every {# weeks} on {days}
 	var checkboxes = new Array(this._weeklyCheckboxes.length);
 	for (var i = 0; i < checkboxes.length; i++) {
@@ -1349,7 +1376,7 @@ function(appt) {
 			weeklyRadioOptions[0].checked = true;
 			for (var j = 0; j < ZmCalItem.SERVER_WEEK_DAYS.length; j++) {
 				if (recur.repeatWeeklyDays[0] == ZmCalItem.SERVER_WEEK_DAYS[j]) {
-					this._weeklySelect.setSelectedValue(j);
+					this._weeklySelectButton.setSelected/*Value*/(j);
 					break;
 				}
 			}
@@ -1427,8 +1454,14 @@ function(ev) {
 
 ZmApptRecurDialog.prototype._selectChangeListener = 
 function(ev) {
-	switch (ev._args.selectObj) {
-		case this._weeklySelect:			this._weeklyDefaultRadio.checked = true; break;
+    if(ev.item && ev.item instanceof DwtMenuItem){
+       this._weeklyDefaultRadio.checked = true;
+       this._weeklySelectButton.setText(ev.item.getText());
+       this._weeklySelectButton.setSelected(ev.item.getData("index"));
+        return;
+    }
+    switch (ev._args.selectObj) {
+		case this._weeklySelectButton:			this._weeklyDefaultRadio.checked = true; break;
 		case this._monthlyDaySelect:
 		case this._monthlyWeekdaySelect:	this._monthlyFieldRadio.checked = true; break;
 		case this._yearlyMonthSelect:
