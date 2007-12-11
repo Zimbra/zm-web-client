@@ -125,7 +125,7 @@ function() {
 	var every = [];
 	switch (this.repeatType) {
 		case ZmRecurrence.DAILY: {
-			if (this.repeatCustom == "1") {
+			if (this.repeatCustom == "1" && this.repeatWeekday) {
 				every.push(ZmMsg.recurDailyEveryWeekday);
 			} else if (this.repeatCustomCount == 1) {
 				every.push(ZmMsg.recurDailyEveryDay);
@@ -247,8 +247,10 @@ function(recurRules) {
 				var rule = rules[j];
 				if (rule.freq) {
 					this.repeatType = rule.freq.substring(0,3);
-					if (rule.interval && rule.interval[0].ival)
+					if (rule.interval && rule.interval[0].ival) {
 						this.repeatCustomCount = parseInt(rule.interval[0].ival);
+						this.repeatCustom = "1";
+					}
 				}
 				if (rule.bymonth) {
 					this.repeatYearlyMonthsList = rule.bymonth[0].molist;
