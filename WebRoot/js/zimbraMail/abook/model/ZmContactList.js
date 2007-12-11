@@ -356,7 +356,7 @@ function(phone) {
 * @param attrs		[Object]		additional attrs for SOAP command
 */
 ZmContactList.prototype.moveItems =
-function(items, folder, attrs) {
+function(items, folder, attrs, outOfTrash) {
 	if (!(items instanceof Array)) items = [items];
 
 	var moveBatchCmd = new ZmBatchCommand();
@@ -399,9 +399,15 @@ function(items, folder, attrs) {
 		}
 	}
 
-	// just call the base class for "soft" moves
+	// for "soft" moves, handle moving out of Trash differently
 	if (softMove.length > 0) {
-		ZmList.prototype.moveItems.call(this, softMove, folder, attrs);
+		attrs = attrs || {};
+		attrs.l = folder.id;
+
+		var respCallback = (outOfTrash)
+			? (new AjxCallback(this, this._handleResponseMoveItems, folder))
+			: null;
+		this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
 	}
 };
 

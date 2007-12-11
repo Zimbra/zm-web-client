@@ -479,6 +479,16 @@ function(list, defaultColumnSort) {
 	this.parent.enableAlphabetBar(!list.isGal);
 };
 
+ZmContactSimpleView.prototype.setSelection =
+function(item, skipNotify) {
+	// clear the right, content pane if no item to select
+	if (!item) {
+		this.parent.clear();
+	}
+
+	ZmContactsBaseView.prototype.setSelection.call(this, item, skipNotify);
+};
+
 ZmContactSimpleView.prototype._setNoResultsHtml =
 function() {
 	ZmContactsBaseView.prototype._setNoResultsHtml.call(this);
