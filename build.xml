@@ -590,7 +590,7 @@
 
                 <fileset id='customer.base.img.fileset' dir='${customer.web.dir}' includes='img/**' />
                 <pathconvert property='customer.base.imgs' refid='customer.base.img.fileset' pathsep=','>
-                    <regexpmapper from="^.*\/WebRoot\/(.*)" to="\1" />
+                    <regexpmapper from="^.*\/WebRoot\/img\/(.*)" to="\1" />
                 </pathconvert>
                 <copy todir="${customer.build.img.dir}" verbose="${sync.verbose}">
                     <fileset dir="${img.dir}" includes="**" excludes="${customer.base.imgs}" />
