@@ -362,9 +362,10 @@
           <url-pattern>/h/printconversations</url-pattern>
           <url-pattern>/y/calendar</url-pattern>
           <url-pattern>/y/eappt</url-pattern>
-          <url-pattern>/y/repeat</url-pattern>
           <url-pattern>/y/mcalendars</url-pattern>
           <url-pattern>/y/options</url-pattern>
+          <url-pattern>/y/repeat</url-pattern>
+          <url-pattern>/y/search</url-pattern>
           <url-pattern>/y/todo</url-pattern>
       </jsp-property-group>
     </jsp-config>
