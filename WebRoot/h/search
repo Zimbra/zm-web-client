@@ -74,6 +74,13 @@
         <fmt:message key="htmlWelcomeMesg"/>
     </app:status>
 </c:if>
+
+<c:if test="${param.actionMessageMovedTrash}" >
+<app:status>
+    <fmt:message key="actionMessageDeleted"/>
+</app:status>
+</c:if>
+
  <%-- switch based on context search types --%>
 <c:choose>
     <c:when test="${context.isConversationSearch and action eq 'view'}">

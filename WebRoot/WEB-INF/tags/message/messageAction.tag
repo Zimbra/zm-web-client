@@ -113,6 +113,9 @@
                         <fmt:param value="${result.idCount}"/>
                     </fmt:message>
                 </app:status>
+                <c:if test="${not empty param.delRedirectUrl}" >
+                    <zm:redirect url="${param.delRedirectUrl}&actionMessageMovedTrash=${true}" />
+                </c:if>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
                 <zm:deleteMessage  var="result" id="${ids}"/>
