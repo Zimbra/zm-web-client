@@ -389,8 +389,25 @@ ZmAccountsPage.prototype.isDirty = function() {
 	return dirty;
 };
 
-ZmAccountsPage.prototype.validate = function() {
-	return true; // TODO
+/**
+ * Does minimal checking - only that related to bug 21104: persona name
+ * and the associated display value for the From address.
+ */
+ZmAccountsPage.prototype.validate =
+function() {
+	var accounts = this._accounts.getArray();
+	for (var i = 0; i < accounts.length; i++) {
+		var account = accounts[i];
+		if (account.type == ZmAccount.PERSONA) {
+			if (account._new || account._dirty) {
+				if (!(account.identity && account.identity.name && account.identity.sendFromDisplay)) {
+					this._errorMsg = ZmMsg.invalidPersonaNameOrFrom;
+					return false;
+				}
+			}
+		}
+	}
+	return true;
 };
 
 ZmAccountsPage.prototype.getErrorMessage = function() {

@@ -317,6 +317,12 @@ function(exception1/*, ..., exceptionN*/) {
 		var exception = arguments[i];
 		var message = exception instanceof AjxException ?
 					  (exception.msg || exception.code) : String(exception);
+		if (exception.code == ZmCsfeException.ACCT_INVALID_ATTR_VALUE ||
+			exception.code == ZmCsfeException.INVALID_REQUEST) {
+			// above faults come with technical/cryptic LDAP error msg; input validation
+			// should keep us from getting here
+			message = ZmMsg.invalidPrefValue;
+		}
 		appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
 	}
 };
