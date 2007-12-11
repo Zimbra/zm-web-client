@@ -910,7 +910,7 @@ function(container, html, isTextMsg, isTruncated) {
 				Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
 			}
 		}
-		else if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) ||
+		else if (appCtxt.get(ZmSetting.DISPLAY_EXTERNAL_IMAGES) &&
 				 (this._msg && this._msg.showImages))
 		{
 			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
