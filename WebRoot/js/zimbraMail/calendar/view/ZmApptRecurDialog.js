@@ -124,19 +124,18 @@ ZmApptRecurDialog.prototype.setCustomDailyValues =
 function(appt) {
 	var recur = appt._recurrence;
 	var value = this._getRadioOptionValue(this._dailyRadioName);
-    recur._startDate = new Date(this._origRefDate);
-	// Bug 16383, need to clear values back to a default state.
-	recur.repeatCustom = "0";
+    recur._startDate = new Date(this._origRefDate);	
+	recur.repeatCustom = "1";
 	recur.repeatWeekday = false;
-
+	
 	if (value == "2") {
-		recur.repeatCustom = "1";
 		recur.repeatWeekday = true;
         //Let's check if it is sat/sunday today
         var d = new Date(this._origRefDate); //Using the start date specified...can be in the past
         if(d.getDay()==AjxDateUtil.SUNDAY || d.getDay()==AjxDateUtil.SATURDAY){
             recur._startDate = AjxDateUtil.getDateForNextDay(d,AjxDateUtil.MONDAY); // get subsequent monday, weekday
         }
+   		recur.repeatCustomCount = 1;
     } else {
 		recur.repeatCustomCount = value == "3" ? (Number(this._dailyField.getValue())) : 1;
 	}
