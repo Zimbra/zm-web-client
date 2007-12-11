@@ -28,7 +28,13 @@ AjxPackage.require("zimbraMail.prefs.model.ZmFilterRules");
 AjxPackage.require("zimbraMail.prefs.model.ZmLocale");
 
 AjxPackage.require("zimbraMail.mail.model.ZmIdentity");
+AjxPackage.require("zimbraMail.mail.model.ZmIdentityCollection");
 AjxPackage.require("zimbraMail.mail.model.ZmDataSource");
+AjxPackage.require("zimbraMail.mail.model.ZmDataSourceCollection");
+AjxPackage.require("zimbraMail.mail.model.ZmPopAccount");
+AjxPackage.require("zimbraMail.mail.model.ZmImapAccount");
+AjxPackage.require("zimbraMail.mail.model.ZmSignature");
+AjxPackage.require("zimbraMail.mail.model.ZmSignatureCollection");
 
 AjxPackage.require("zimbraMail.prefs.view.ZmPreferencesPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmShortcutsPage");
