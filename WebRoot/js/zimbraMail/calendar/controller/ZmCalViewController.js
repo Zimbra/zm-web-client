@@ -1761,7 +1761,7 @@ function(ids) {
 	//handling a case where appt is edited and related calendar is deleted
 	if(appCtxt.getAppViewMgr().getCurrentViewId() == ZmController.APPOINTMENT_VIEW) {
 		var view = appCtxt.getAppViewMgr().getCurrentView();
-		var appt = view.getAppt();
+		var appt = view.getAppt(true);
 		var calendar = appt && appt.getFolder();
 		var idStr = ids+",";
 		if(idStr.indexOf(calendar.id+",")>=0){
