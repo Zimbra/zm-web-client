@@ -600,6 +600,25 @@ function(message) {
 	if (this._recurrence.repeatMonthlyDayList == null)
 		this.resetRepeatMonthlyDayList();
 };
+//We are removing starting 2 \n's for the bug 21823 
+ZmCalItem.prototype._getCleanHtml2Text = 
+function(dwtIframe){
+    var textContent;
+    if (dwtIframe && dwtIframe.getDocument() && dwtIframe.getDocument().body) {
+        dwtIframe.getDocument().body.innerHTML = dwtIframe.getDocument().body.innerHTML.replace(/\n/ig,"");
+        dwtIframe.getDocument().body.innerHTML = dwtIframe.getDocument().body.innerHTML.replace(/<!--.*-->/ig,"");
+        var firstChild = dwtIframe.getDocument().body.firstChild;
+        var removeN = false;
+        if(firstChild && firstChild.tagName && firstChild.tagName.toLocaleLowerCase() == "p"){
+            removeN = true;
+        }
+        textContent = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body);
+        if(removeN){
+            textContent = textContent.replace(/\n\n/i,"");
+        }
+    }
+    return textContent;
+}
 
 ZmCalItem.prototype._setNotes =
 function(message) {
@@ -608,15 +627,15 @@ function(message) {
 
     this.notesTopPart = new ZmMimePart();
 	if (html) {
-        var htmlContent = this._trimNotesSummary(html.content, true);
+        var htmlContent = this._trimNotesSummary(html.content.replace(/<title\s*>.*\/title>/ig,""), true);
 		var textContent = "";
 
 		// create a temp iframe to create a proper DOM tree
 		var params = {parent:appCtxt.getShell(), hidden:true, html:htmlContent};
 		var dwtIframe = new DwtIframe(params);
-		if (dwtIframe) {
-			textContent = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body);
-			delete dwtIframe;
+        if (dwtIframe) {
+            textContent = this._getCleanHtml2Text(dwtIframe);
+            delete dwtIframe;
 		}
 
 		// create two more mp's for text and html content types
