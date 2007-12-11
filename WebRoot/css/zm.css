@@ -1365,6 +1365,7 @@ line-height:normal;
 	border:2px solid;
 	border-color:#AAAAAA #333333 #333333 #AAAAAA;
 #IFDEF GECKO
+	-moz-user-select: none;
     -moz-border-radius:2 2 2 2;
 #ENDIF
     margin:0 0 0 -1;
@@ -1377,7 +1378,8 @@ line-height:normal;
 	border:4px solid;
 	border-color:#339999 #003030 #003030 #339999;
 #IFDEF GECKO
-    -moz-border-radius:2 2 2 2;
+	-moz-user-select: none;
+	-moz-border-radius:2 2 2 2;
 #ENDIF
 	margin:0 -2 -2 0;
 }
@@ -1413,6 +1415,9 @@ line-height:normal;
 	padding-top:0px;
 	padding-left:0px;
 	padding-right:0px;
+#IFDEF GECKO
+	-moz-user-select: none;
+#ENDIF
 }
 
 /* tweak the padding for firefox so the appts don't jump when selected */
@@ -1422,6 +1427,9 @@ HTML>BODY .appt-selected .appt_30_body TD {
 	padding-left:2px;
 	padding-top:2px;
 	padding-right:2px;
+#IFDEF GECKO
+	-moz-user-select: none;
+#ENDIF
 }
 HTML>BODY .appt-selected .appt_body,
 HTML>BODY .appt-selected .appt_30_body,
@@ -1429,6 +1437,9 @@ HTML>BODY .appt-selected .appt_allday_body
 {
 	margin-top:-3px;
 	margin-left:-3px;
+#IFDEF GECKO
+	-moz-user-select: none;
+#ENDIF
 }
 
 
