@@ -38,16 +38,16 @@
             <tr>
                 <td nowrap colspan="2" style="font-family: Arial; white-space: nowrap; font-weight: bold; background-color: rgb(221, 221, 221);">${fn:escapeXml(contact.displayFileAs)}</td>
             </tr>
-            <c:if test="${not empty contact.displayEmail}">
+            <c:if test="${not empty contact.email}">
             <tr>
                 <td nowrap><fmt:message key="email"/> </td>
                 <td nowrap>: ${fn:escapeXml(contact.email)}</td>
             </tr>
             </c:if>
-        <c:if test="${not empty contact.fullAddress}">
+        <c:if test="${not empty contact.displayFileAs}">
         <tr>
                 <td nowrap><fmt:message key="name"/> </td>
-                <td nowrap>: ${fn:escapeXml(contact.fullAddress)}</td>
+                <td nowrap>: ${fn:escapeXml(contact.displayFileAs)}</td>
         </tr>
         </c:if>
         <c:if test="${not empty contact.jobTitle}">
