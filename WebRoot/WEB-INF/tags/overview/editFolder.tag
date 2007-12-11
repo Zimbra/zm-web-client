@@ -6,6 +6,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<zm:getMailbox var="mailbox"/>
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:choose>
     <c:when test="${folder.isAppointmentView or folder.isContactView or folder.isTaskView}">
@@ -362,7 +363,7 @@
     <tr>
         <td align=right><fmt:message key="calendarExport"/>:</td>
         <td>
-            <a href="${fn:escapeXml(folder.restURLAsFile)}.ics">${fn:escapeXml(folder.restURLAsFile)}.ics</a>
+            <a href="${fn:escapeXml(zm:getFolderRestURL(mailbox,folder))}.ics">${fn:escapeXml(zm:getFolderRestURL(mailbox,folder))}.ics</a>
         </td>
     </tr>
 
@@ -394,7 +395,7 @@
     <tr>
         <td align="right"><fmt:message key="contactExport"/>:</td>
         <td>
-            <a href="${fn:escapeXml(folder.restURLAsFile)}.csv">${fn:escapeXml(folder.restURLAsFile)}.csv</a>
+            <a href="${fn:escapeXml(zm:getFolderRestURL(mailbox,folder))}.csv">${fn:escapeXml(zm:getFolderRestURL(mailbox,folder))}.csv</a>
         </td>
     </tr>
 
