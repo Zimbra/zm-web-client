@@ -745,10 +745,10 @@ function(contactList, isDraft, callback, errorCallback, accountName) {
 		this._createMessageNode(soapDoc, contactList, isDraft, aName);
 
 		// if we're sending a draft msg, check if its obo for special handling
-		if (this._origMsg && this._origMsg.isDraft) {
+		if (!isDraft && this._origMsg && this._origMsg.isDraft) {
 			var ac = window.parentAppCtxt || window.appCtxt;
 			var mainAcct = ac.getMainAccount().getEmail();
-			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
+            var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo so reset account name
 			if (from && from.address != mainAcct) {
 				aName = from.address;
@@ -1291,21 +1291,30 @@ function(soapDoc, parent, isDraft, accountName) {
 
 	if (accountName)
 	{
-		// when saving a draft, even if obo, we do it on the main account so reset the from
-		if (isDraft) {
+        var mainAcct = ac.getMainAccount().getEmail();
+        // when saving a draft, even if obo, we do it on the main account so reset the fro
+        if (isDraft) {
 			var folder = appCtxt.getById(this.folderId);
 			if (folder && folder.isRemote()) {
 				accountName = folder.getOwner();
 			}
 		}
-		var from = soapDoc.set("e", null, parent);
+        if (this._origMsg && this._origMsg.isDraft) {
+            var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
+			// this means we're sending a draft msg obo so reset account name
+			if (from && from.address != mainAcct) {
+				accountName = from.address;
+			}
+		}
+        
+        var from = soapDoc.set("e", null, parent);
 		from.setAttribute("t", "f");
 		from.setAttribute("a", accountName);
 
 		// the main account is *always* the sender
 		var sender = soapDoc.set("e", null, parent);
 		sender.setAttribute("t", "s");
-		sender.setAttribute("a", ac.getMainAccount().getEmail());
+		sender.setAttribute("a", mainAcct);
 	}
 	else if (this.identity)
 	{
