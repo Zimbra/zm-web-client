@@ -546,15 +546,15 @@ function(attId, isDraft) {
 			// check if we're resaving a draft that was originally a reply/forward
 			if (msg.isDraft) {
 				// if so, set both origId and the draft id
-				msg.origId = msg.isReplied || msg.isForwarded ? this._msg.nId : null;
+				msg.origId = msg.isReplied || msg.isForwarded ? this._msg.origId : null;
 				msg.id = this._msg.id;
 				msg.nId = this._msg.nId;
 			}
 		} else {
 			msg.isReplied = this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL || isInviteReply;
 			msg.isForwarded = this._action == ZmOperation.FORWARD_INLINE || this._action == ZmOperation.FORWARD_ATT;
-			msg.origId = this._msg.nId;
-		}
+            msg.origId = this._msg.id;
+        }
 		msg.isInviteReply = isInviteReply;
 		msg.inviteMode = isInviteReply ? this._action : null;
 		msg.irtMessageId = this._msg.messageId;
