@@ -274,7 +274,7 @@
     myEditor.saveHTML();
     var stripHTML = /<\S[^><]*>/g;
     var stripNBSP  = /&nbsp;/g
-    document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '');
+    document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
     }
     if(!IE6){
     var myEditor = new YAHOO.widget.Editor('body', {
