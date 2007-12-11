@@ -89,7 +89,7 @@ function() {
 	ZmOperation.registerOp("IM_CREATE_CONTACT"     , { textKey: "addToNewContact", image: "NewContact" });
 	ZmOperation.registerOp("IM_ADD_TO_CONTACT"     , { textKey: "addToExistingContact", image: "Edit" });
 	ZmOperation.registerOp("IM_EDIT_CONTACT"       , { textKey: "editContact", image: "Edit" });
-	ZmOperation.registerOp("IM_GATEWAY_LOGIN"      , { textKey: "imGatewayLogin" });
+	ZmOperation.registerOp("IM_GATEWAY_LOGIN"      , { textKey: "imGatewayLogin", image: "ExternalLink" });
 	ZmOperation.registerOp("IM_TOGGLE_OFFLINE"     , { textKey: "imToggleOffline" });
         ZmOperation.registerOp("IM_TOGGLE_BLOCKED"     , { textKey: "imToggleBlocked" });
         ZmOperation.registerOp("IM_FLOATING_LIST"      , { textKey: "imFloatingBuddyList", image: "ImGroup" });

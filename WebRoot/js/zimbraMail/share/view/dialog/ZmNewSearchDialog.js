@@ -68,15 +68,18 @@ function(ev) {
 
 ZmNewSearchDialog.prototype._getSearchData =
 function() {
-	// check name for presence and validity
-	var name = AjxStringUtil.trim(this._nameField.value);
-	var msg = ZmFolder.checkName(name);
 
+	var msg = null;
+	
 	// make sure a parent was selected
 	var parentFolder = this._getOverview().getSelected();
 	if (!msg && !parentFolder) {
 		msg = ZmMsg.searchNameNoLocation;
 	}
+
+	// check name for presence and validity
+	var name = AjxStringUtil.trim(this._nameField.value);
+	var msg = ZmFolder.checkName(name, parentFolder);
 
 	// make sure parent doesn't already have a child by this name
 	if (!msg && parentFolder.hasChild(name)) {
