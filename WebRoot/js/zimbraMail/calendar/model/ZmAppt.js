@@ -495,10 +495,10 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 		if (end)
 			buf[i++] = formatter.format(end);
 
-		if (showingTimezone) {
+		//if (showingTimezone) { Commented for bug 13897
 			buf[i++] = " ";
 			buf[i++] = AjxTimezone.getLongName(AjxTimezone.getClientId(this.timezone));
-		}
+		//}
 	}
 	// NOTE: This relies on the fact that setModel creates a clone of the
 	//		 appointment object and that the original object is saved in 
