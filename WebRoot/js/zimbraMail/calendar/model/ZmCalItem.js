@@ -1255,11 +1255,10 @@ function(calItemNode, instNode) {
 	this.invId 			= this._getAttr(calItemNode, instNode, "invId");
 	this.compNum 		= this._getAttr(calItemNode, instNode, "compNum") || "0";
 	this.isException 	= this._getAttr(calItemNode, instNode, "ex");
-	this.allDayEvent 	= this._getAttr(calItemNode, instNode, "allDay") || "0";
-	var dur = this._getAttr(calItemNode, instNode, "dur");
-	if (this.allDayEvent != "0" && this.isException == "1" && dur) {
-		this.allDayEvent = "0";
-	}
+	var itemAllDay		= calItemNode.allDay;
+	var instAllDay		= instNode.allDay;
+	var dur				= this._getAttr(calItemNode, instNode, "dur");
+	this.allDayEvent	= (instAllDay || (itemAllDay && !this.isException)) ? "1" : "0";
 	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
 	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
 
