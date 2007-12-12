@@ -1166,20 +1166,32 @@ function () {
 */
 ZmOrganizer.prototype.isDataSource =
 function(type, checkParent) {
-	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) { return false };
+	return this.getDataSource(type, checkParent) ? true : false;
+};
+
+/**
+* Returns the data source this folder maps to (or null). If type is given, returns
+* non-null result only if folder maps to a datasource *and* is of the given type. 
+*
+* @type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
+* @checkParent	[Boolean]*	walk up the parent chain
+*/
+ZmOrganizer.prototype.getDataSource =
+function(type, checkParent) {
+	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) { return null };
 
 	var dsc = appCtxt.getDataSourceCollection();
 	var dataSource = dsc.getByFolderId(this.nId);
 
 	if (!dataSource) {
 		return (checkParent && this.parent)
-			? this.parent.isDataSource(type, checkParent)
-			: false;
+			? this.parent.getDataSource(type, checkParent)
+			: null;
 	}
 
-	return (type)
-		? (dataSource.type == type)
-		: true;
+	return !type || (dataSource.type == type)
+		? dataSource
+		: null;
 };
 
 ZmOrganizer.prototype.getOwner =

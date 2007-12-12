@@ -769,9 +769,7 @@ function(parent) {
 
 	var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
 	if (folder && !isInbox && !isFeed && isEnabled) {
-		var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-		var dataSources = dsCollection.getItemsFor(ZmOrganizer.normalizeId(folderId));
-		hasExternalAccounts = dataSources.length > 0;
+		hasExternalAccounts = folder.isDataSource(null, true);
     }
 
 	if (!isInbox && isFeed) {
@@ -978,28 +976,25 @@ function(ev) {
 
 ZmMailListController.prototype._checkMailListener =
 function() {
-    var folderId = this._getSearchFolderId();
-    var folder = appCtxt.getById(folderId);
-	var nFid = ZmOrganizer.normalizeId(folderId);
+	var folderId = this._getSearchFolderId();
+	var folder = appCtxt.getById(folderId);
 	var isFeed = (folder && folder.isFeed());
-
     if (isFeed) {
         folder.sync();
     } else {
-		var dsCollection;
-		var hasExternalAccounts = false;
 		var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
+		var hasExternalAccounts = false;
 		if (folder && !isFeed && isEnabled) {
-			dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-			var dataSources = dsCollection.getItemsFor(nFid);
-			hasExternalAccounts = dataSources.length > 0;
+			var dataSource = folder.getDataSource(null, true);
+			if (dataSource) {
+				hasExternalAccounts = true;
+				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+				dsCollection.importMail([dataSource]);
+			}
 		}
 
-        if (hasExternalAccounts) {
-            dsCollection.importMailFor(nFid);
-        }
-
-        if ((nFid == ZmFolder.ID_INBOX) || !hasExternalAccounts) {
+		var normalizedFolderId = ZmOrganizer.normalizeId(folderId);
+        if ((normalizedFolderId == ZmFolder.ID_INBOX) || !hasExternalAccounts) {
         	this._app._mailSearch();
         }
     }
