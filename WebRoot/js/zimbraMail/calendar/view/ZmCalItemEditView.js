@@ -386,7 +386,7 @@ function(calItem, mode) {
 			this.addAttachmentField(calItem, attachList[i]);
 	}
 
-	this._setContent(calItem);
+	this._setContent(calItem, mode);
 };
 
 ZmCalItemEditView.prototype._setRepeatDesc = function(calItem) {
@@ -398,10 +398,11 @@ ZmCalItemEditView.prototype._setRepeatDesc = function(calItem) {
 };
 
 ZmCalItemEditView.prototype._setContent =
-function(calItem) {
+function(calItem, mode) {
 	// set notes/content (based on compose mode per user prefs)
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) &&
-		appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML)
+		(appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML ||
+		 mode != ZmCalItem.MODE_NEW && appCtxt.get(ZmSetting.VIEW_AS_HTML)))
 	{
 		this.setComposeMode(DwtHtmlEditor.HTML);
 		this._notesHtmlEditor.setContent(calItem.getNotesPart(ZmMimeTable.TEXT_HTML));
