@@ -1,29 +1,25 @@
 <skin>
 	<common>
 		<substitutions>
-			<file>base.properties</file>
+			<file>../_base/base/skin.properties</file>
 			<file>skin.properties</file>
 		</substitutions>
 		<css>
-			<file>beach.css</file>
+			<file>../_base/base/skin.css</file>
 		</css>
-	</common>		
-	<advanced>
-		<script>
-			<file>beach.js</file>
-		</script>
+    </common>
+    <advanced>
+	    <script>
+    	    <file>../_base/base/ZmSkin.js</file>
+    	</script>
 		<html>
-			<file>beach.html</file>
-			<file>splash.html</file>
+			<file>../_base/base/skin.html</file>
+			<file>../_base/base/splash.html</file>
 		</html>
-		<templates>
-			<file>templates/Quota.template</file>
-			<file>templates/dwt.Widgets.template</file>
-		</templates>
 	</advanced>
 	<standard>
-		<css>
-			<file>../../css/zhtml.css</file>
-		</css>
-	</standard>
+        <css>
+            <file>../../css/zhtml.css</file>
+        </css>
+	</standard>		
 </skin>
