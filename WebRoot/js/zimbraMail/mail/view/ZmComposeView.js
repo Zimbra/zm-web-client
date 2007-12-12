@@ -1704,10 +1704,16 @@ function() {
 
 ZmComposeView.prototype._getIdentityText =
 function(identity) {
+	var name = identity.name;
+	if (identity.isDefault && name == ZmIdentity.DEFAULT_NAME) {
+		name = ZmMsg.accountDefault;  
+	}
 	if (identity.sendFromDisplay) {
-		return [identity.name,  ' ("', identity.sendFromDisplay, '" <', identity.sendFromAddress, '>)'].join("");
+		return [name,  ' ("', identity.sendFromDisplay, '" <', identity.sendFromAddress, '>)'].join("");
+	} else if (identity.sendFromAddress) {
+		return [name,  ' (', identity.sendFromAddress, ')'].join("");
 	} else {
-		return [identity.name,  ' (', identity.sendFromAddress, ')'].join("");
+		return name;
 	}
 };
 

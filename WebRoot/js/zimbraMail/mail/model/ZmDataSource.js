@@ -47,9 +47,11 @@ ZmDataSource.POLL_NEVER = "0";
 // soap attribute to property maps
 
 ZmDataSource.DATASOURCE_ATTRS = {
+	// SOAP attr:		JS property
 	"id":				"id",
 	"name":				"name",
 	"isEnabled":		"enabled",
+	"emailAddress":		"email",
 	"host":				"mailServer",
 	"port":				"port",
 	"username":			"userName",
@@ -61,8 +63,9 @@ ZmDataSource.DATASOURCE_ATTRS = {
 };
 
 ZmDataSource.IDENTITY_ATTRS = {
-	"emailAddress":					"sendFromAddress",
+	// SOAP attr:					JS property
 	"fromDisplay":					"sendFromDisplay",
+	"fromAddress":					"sendFromAddress",
 	"useAddressForForwardReply":	"setReplyTo",
 	"replyToAddress":				"setReplyToAddress",
 	"replyToDisplay":				"setReplyToDisplay",
@@ -99,12 +102,12 @@ ZmDataSource.prototype.pollingInterval = ZmDataSource.POLL_NEVER;
 /** NOTE: Email is same as the identity's from address. */
 ZmDataSource.prototype.setEmail =
 function(email) {
-	this.identity.setField(ZmIdentity.SEND_FROM_ADDRESS, email);
+	this.email = email;
 };
 
 ZmDataSource.prototype.getEmail =
 function() {
-	return this.identity.getField(ZmIdentity.SEND_FROM_ADDRESS);
+	return this.email;
 };
 
 ZmDataSource.prototype.setFolderId =
@@ -143,9 +146,10 @@ function(callback, errorCallback, batchCommand) {
 
 		dsrc.setAttribute(aname, String(pvalue));
 	}
+	var identity = this.getIdentity();
 	for (var aname in ZmDataSource.IDENTITY_ATTRS) {
 		var pname = ZmDataSource.IDENTITY_ATTRS[aname];
-		var pvalue = this.identity[pname];
+		var pvalue = identity[pname];
 		if (!pvalue) continue;
 
 		dsrc.setAttribute(aname, String(pvalue));
@@ -182,11 +186,12 @@ function(callback, errorCallback, batchCommand) {
 			: this[pname];
 		dsrc.setAttribute(aname, String(avalue));
 	}
+	var identity = this.getIdentity();
 	for (var aname in ZmDataSource.IDENTITY_ATTRS) {
 		var pname = ZmDataSource.IDENTITY_ATTRS[aname];
-		if (!this.identity.hasOwnProperty(pname)) continue;
+		if (!identity.hasOwnProperty(pname)) continue;
 
-		var avalue = this.identity[pname];
+		var avalue = identity[pname];
 		dsrc.setAttribute(aname, String(avalue));
 	}
 
@@ -273,6 +278,7 @@ function(obj) {
 	}
 
 	// pseudo-identity fields
+	var identity = this.getIdentity();
 	for (var aname in ZmDataSource.IDENTITY_ATTRS) {
 		var avalue = obj[aname];
 		if (avalue == null) continue;
@@ -281,7 +287,7 @@ function(obj) {
 		}
 
 		var pname = ZmDataSource.IDENTITY_ATTRS[aname];
-		this.identity[pname] = avalue;
+		identity[pname] = avalue;
 	}
 	this._setupIdentity();
 };

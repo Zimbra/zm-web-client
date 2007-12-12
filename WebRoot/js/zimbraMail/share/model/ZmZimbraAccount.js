@@ -77,7 +77,7 @@ function() {
 	if (!name) {
 		name = this.getDisplayName();
 	}
-	return name;
+	return identity.isDefault && name == ZmIdentity.DEFAULT_NAME ? ZmMsg.accountDefault : name;
 }
 
 ZmZimbraAccount.prototype.setEmail =
