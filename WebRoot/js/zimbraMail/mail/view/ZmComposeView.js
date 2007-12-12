@@ -324,6 +324,7 @@ function() {
 	return false;
 };
 
+/*
 ZmComposeView.prototype._fixMultipartRelatedLinks =
 function(idoc) {
 	if (!idoc) { return; }
@@ -334,6 +335,7 @@ function(idoc) {
 		var dfsrc = images[i].getAttribute("dfsrc");
 		if (dfsrc) {
 			images[i].src = dfsrc;
+			//XXX: WHAT!?!
 			if(dfsrc.substring(0,4 == "cid:")){
 				inlineCid.push(dfsrc.substring(4));
 			}
@@ -341,6 +343,7 @@ function(idoc) {
 	}
 	return inlineCid;
 };
+*/
 
 ZmComposeView.prototype._filterInlineAmongForwardAttIds =
 function(msg, atts, forwardAttIds) {
@@ -485,7 +488,7 @@ function(attId, isDraft) {
 
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-		this._fixMultipartRelatedLinks(this._htmlEditor._getIframeDoc());
+//		this._fixMultipartRelatedLinks(this._htmlEditor._getIframeDoc());
 		var defangedContent = this._htmlEditor.getContent(true);
 		var refangedContent = defangedContent.replace(ZmComposeView.REFANG_RE, ZmComposeView.REFANG_RE_REPLACE);
 		htmlPart.setContent(refangedContent);
@@ -501,13 +504,23 @@ function(attId, isDraft) {
 		}
 		//top.children.add(htmlPart);
 	} else {
-		var textPart = this._extraParts ? new ZmMimePart() : top;
+		var textPart = (this._extraParts || inline) ? new ZmMimePart() : top;
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		textPart.setContent(this._htmlEditor.getContent());
 
-		if (this._extraParts) {
+		//Support for Inline
+		if (inline) {
 			top.setContentType(ZmMimeTable.MULTI_ALT);
-			top.children.add(textPart);
+
+			var relatedPart = new ZmMimePart();
+			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);
+			relatedPart.children.add(textPart);
+			top.children.add(relatedPart);
+		} else {
+			if (this._extraParts) {
+				top.setContentType(ZmMimeTable.MULTI_ALT);
+				top.children.add(textPart);
+			}
 		}
 	}
 
