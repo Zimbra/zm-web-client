@@ -152,7 +152,7 @@
 					</td>
 					<td id='${id}_identity_row' nowrap width='45%' style='display:none;'>
 						<table border=0 cellspacing=0 cellpadding=0>
-							<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.from$>:&nbsp;</td>
+							<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.account$>:&nbsp;</td>
 								<td width="*"><select id='${id}_identity_control'></select></td>
 							</tr>
 						</table>

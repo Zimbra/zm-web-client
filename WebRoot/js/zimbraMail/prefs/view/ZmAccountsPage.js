@@ -171,6 +171,7 @@ ZmAccountsPage.SECTIONS = {
 			"EMAIL",			// A
 			"VISIBLE",			// 
 			"FROM_NAME",		// I
+			"FROM_EMAIL",		// I
 			"REPLY_TO",			// I
 			"REPLY_TO_NAME",	// I
 			"REPLY_TO_EMAIL",	// I
@@ -195,6 +196,7 @@ ZmAccountsPage.SECTIONS = {
 			"DOWNLOAD_TO",				// A
 			"DELETE_AFTER_DOWNLOAD",	// A
 			"FROM_NAME",				// I
+			"FROM_EMAIL",				// I
 			"REPLY_TO",					// I
 			"REPLY_TO_NAME",			// I
 			"REPLY_TO_EMAIL",			// I
@@ -299,10 +301,11 @@ ZmAccountsPage.prototype.setAccount = function(account) {
 		this._tabGroup.addMember(this._currentSection.tabGroup);
 	}
 
-	var name = this._currentSection && this._currentSection.controls["NAME"];
+	var isExternal = account instanceof ZmDataSource;
+	var control = this._currentSection && this._currentSection.controls[isExternal ? "EMAIL" : "NAME"];
     //When a hidden field is applied focus(), IE throw's an exception. Thus checking for isActive()
-    if (name && this.isActive()) {
-		name.focus();
+    if (control && this.isActive()) {
+		control.focus();
 	}
 };
 
@@ -627,6 +630,7 @@ function(account, section, enable) {
 	this._setControlEnabled("VISIBLE", section, !enable);
 
 	for (var i in ZmAccountsPage.IDENTITY_PROPS) {
+		if (i == "FROM_EMAIL") continue;
 		var control = section.controls[i];
 		var setup = ZmAccountsPage.PREFS[i];
 		if (!control || !setup) continue;
@@ -680,6 +684,9 @@ ZmAccountsPage.prototype._setControlValue = function(id, section, value) {
 	var setup = ZmAccountsPage.PREFS[id];
 	if (!control || !setup) return;
 
+	if (setup.displayFunction) {
+		value = setup.displayFunction(value);
+	}
 	if (id == "DELETE_AFTER_DOWNLOAD") {
 		value = !value;
 	}
@@ -727,12 +734,13 @@ ZmAccountsPage.prototype._getControlValue = function(id, section) {
 	var setup = ZmAccountsPage.PREFS[id];
 	if (!control || !setup) return null;
 
+	var value = null;
 	if (id == "WHEN_SENT_TO_LIST") {
 		var array = AjxEmailAddress.parseEmailString(control.getValue()).all.getArray();
 		for (var i = 0; i < array.length; i++) {
 			array[i] = array[i].address;
 		}
-		return array;
+		value = array;
 	}
 	else if (id == "WHEN_IN_FOLDER_LIST") {
 		var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
@@ -745,39 +753,44 @@ ZmAccountsPage.prototype._getControlValue = function(id, section) {
 			if (!folder) continue;
 			array.push(folder.id);
 		}
-		return array;
+		value = array;
 	}
-	if (id == "DELETE_AFTER_DOWNLOAD") {
-		return !control.isSelected();
+	else if (id == "DELETE_AFTER_DOWNLOAD") {
+		value = !control.isSelected();
 	}
-	if (id == "DOWNLOAD_TO") {
-		return control.getSelectedValue() == ZmAccountsPage.DOWNLOAD_TO_INBOX ? ZmOrganizer.ID_INBOX : -1;
+	else if (id == "DOWNLOAD_TO") {
+		value = control.getSelectedValue() == ZmAccountsPage.DOWNLOAD_TO_INBOX ? ZmOrganizer.ID_INBOX : -1;
 	}
-
-	switch (setup.displayContainer) {
-		case ZmPref.TYPE_STATIC: {
-			return control.getText();
-		}
-		case ZmPref.TYPE_CHECKBOX: {
-			var value = control.isSelected();
-			if (setup.options) {
-				value = setup.options[Number(value)];
+	else {
+		switch (setup.displayContainer) {
+			case ZmPref.TYPE_STATIC: {
+				value = control.getText();
+				break;
 			}
-			return value;
-		}
-		case ZmPref.TYPE_RADIO_GROUP: {
-			return control.getSelectedValue();
-		}
-		case ZmPref.TYPE_INPUT:
-		case ZmPref.TYPE_SELECT: {
-			return control.getValue();
-		}
-		case ZmPref.TYPE_COMBOBOX: {
-			return control.getValue() || control.getText();
+			case ZmPref.TYPE_CHECKBOX: {
+				value = control.isSelected();
+				if (setup.options) {
+					value = setup.options[Number(value)];
+				}
+				break;
+			}
+			case ZmPref.TYPE_RADIO_GROUP: {
+				value = control.getSelectedValue();
+				break;
+			}
+			case ZmPref.TYPE_INPUT:
+			case ZmPref.TYPE_SELECT: {
+				value = control.getValue();
+				break;
+			}
+			case ZmPref.TYPE_COMBOBOX: {
+				value = control.getValue() || control.getText();
+				break;
+			}
 		}
 	}
 
-	return null;
+	return setup.valueFunction ? setup.valueFunction(value) : value;
 };
 
 ZmAccountsPage.prototype._setControlVisible = function(id, section, visible) {
@@ -931,41 +944,27 @@ ZmAccountsPage.prototype._setupRadioGroup = function(id, setup, value) {
 
 ZmAccountsPage.prototype._setupSelect = function(id, setup, value) {
 	var isEmailSelect = id == "FROM_EMAIL";
-	if (isEmailSelect && appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS)) {
-		var params = {
-			parent: this,
-			hint: ZmMsg.addressHint
-		};
-		var input = new DwtInputField(params);
-		this.setFormObject(id, input);
-
-		// By setting the setSelectedValue method on the input
-		// field, it fakes the setter method of a DwtSelect.
-		input.setSelectedValue = input.setValue;
-
-		/***
-		var sendFromAddress = new DwtInputField(params);
-		sendFromAddress.setRequired(true);
-		sendFromAddress.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-		sendFromAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
-		this._errorMessages[ZmIdentity.SEND_FROM_ADDRESS] = ZmMsg.sendFromAddressError;
-		sendFromAddress.replaceElement(id + "_sendFromAddress");
-		this._inputs[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
-		/***/
-
-		input.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._handleFromEmail));
-
-		return input;
-	}
-
+	var select;
 	if (isEmailSelect) {
 		setup.displayOptions = this._getAllAddresses();
+		if (appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS)) {
+			select = this._setupComboBox(id, setup, value);
+			// By setting the setSelectedValue method on the combox
+			// box, it fakes the setter method of a DwtSelect.
+			select.setSelectedValue = select.setValue;
+			// NOTE: For this control, we always want the text value 
+			select.getValue = select.getText;
+		}
 	}
-	var select = ZmPreferencesPage.prototype._setupSelect.apply(this, arguments);
-	if (isEmailSelect) {
-		select.addChangeListener(new AjxListener(this, this._handleFromEmail));
+	if (!select && setup.displayOptions && setup.displayOptions.length < 2) {
+		select = this._setupInput(id, setup, value);
+		select.setEnabled(false);
+		select.setSelectedValue = select.setValue;
 	}
-	else if (id == "SIGNATURE") {
+	if (!select) {
+		select = ZmPreferencesPage.prototype._setupSelect.apply(this, arguments);
+	}
+	if (id == "SIGNATURE") {
 		var collection = appCtxt.getSignatureCollection();
 		collection.addChangeListener(new AjxListener(this, this._resetSignatureSelect, [select]));
 		this._resetSignatureSelect(select);
@@ -1326,12 +1325,6 @@ ZmAccountsPage.prototype._testFinish = function(button) {
 
 // identity listeners
 
-ZmAccountsPage.prototype._handleFromEmail = function(evt) {
-	this._setWhenSentToControls();
-	var email = this._getControlValue("FROM_EMAIL", this._currentSection);
-	this._updateEmailCell(email);
-};
-
 ZmAccountsPage.prototype._handleReplyTo = function(evt) {
 	this._setReplyToControls();
 };
@@ -1670,6 +1663,9 @@ ZmNewDataSource = function() {
 	this.name = AjxMessageFormat.format(ZmMsg.newExternalAccount, number);
 	this._new = true;
 	this.folderId = -1;
+	var identity = this.getIdentity();
+	identity.sendFromDisplay = appCtxt.get(ZmSetting.DISPLAY_NAME);
+	identity.sendFromAddress = appCtxt.get(ZmSetting.USERNAME);
 };
 ZmNewDataSource.prototype = new ZmDataSource;
 ZmNewDataSource.prototype.constructor = ZmNewDataSource;
@@ -1708,6 +1704,8 @@ ZmNewPersona = function() {
 	ZmPersona.call(this, identity);
 	this.id = id;
 	this._new = true;
+	identity.sendFromDisplay = appCtxt.get(ZmSetting.DISPLAY_NAME);
+	identity.sendFromAddress = appCtxt.get(ZmSetting.USERNAME);
 };
 ZmNewPersona.prototype = new ZmPersona;
 ZmNewPersona.prototype.constructor = ZmNewPersona;
