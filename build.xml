@@ -592,9 +592,12 @@
                 <pathconvert property='customer.base.imgs' refid='customer.base.img.fileset' pathsep=','>
                     <regexpmapper from="^.*\/WebRoot\/img\/(.*)" to="\1" />
                 </pathconvert>
+                <echo>CUSTOMER_FILE_SET ${customer.base.imgs}</echo>
+                <echo message="BASE DIR ${img.dir}" />
+                <echo message="CUSTOMER DIR ${customer.web.dir}" />
                 <copy todir="${customer.build.img.dir}" verbose="${sync.verbose}">
                     <fileset dir="${img.dir}" includes="**" excludes="${customer.base.imgs}" />
-                    <fileset dir="${customer.web.dir}" includes="${customer.base.imgs}" />
+                    <fileset dir="${customer.web.dir}/img" includes="${customer.base.imgs}" />
                 </copy>
 
                 <imagemerge destdir='${customer.build.img.dir}'
