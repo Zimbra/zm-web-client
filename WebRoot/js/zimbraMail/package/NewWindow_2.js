@@ -93,6 +93,7 @@ AjxPackage.require("zimbraMail.mail.model.ZmMailItem");
 AjxPackage.require("zimbraMail.mail.model.ZmMailMsg");
 AjxPackage.require("zimbraMail.mail.model.ZmMimePart");
 AjxPackage.require("zimbraMail.mail.model.ZmMailList");
+AjxPackage.require("zimbraMail.mail.model.ZmIdentity");
 AjxPackage.require("zimbraMail.mail.view.ZmComposeView");
 AjxPackage.require("zimbraMail.mail.view.ZmMailMsgView");
 AjxPackage.require("zimbraMail.mail.controller.ZmComposeController");
