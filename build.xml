@@ -544,7 +544,6 @@
                 <replace token="@jsVersion@" value="${build.simpleDate}" file='${build.img.dir}/${build.css.filename}'/>
 
                 <!-- skin images -->
-                <!--
                 <dirset id='skins.dirset' dir='${skins.dir}' includes='*'/>
                 <pathconvert property='skins.dirs' refid='skins.dirset' pathsep=','>
                     <flattenmapper/>
@@ -553,7 +552,6 @@
                 <foreach list='${skins.dirs}' target='build-skin-images' param='skindir'>
                     <param name="skinbasedir" value="WebRoot"/>
                 </foreach>
-                -->
 
                 <!-- customer skin images -->
                 <antcall target='customer-skin-images'/>
