@@ -849,9 +849,14 @@ function(mimePart) {
 	this._extraParts.push(mimePart);
 };
 
-ZmComposeView.prototype.applySignature = function(content, replaceSignatureId){
+/**
+ * Called when the user selects something from the Signature menu.
+ */
+ZmComposeView.prototype.applySignature =
+function(content, replaceSignatureId){
 	content = content || "";
 	var signature = this.getSignatureContent();
+	var sep = this._getSignatureSeparator();
 	var newLine = this._getSignatureNewLine();
 	var isAbove = this.getSignatureStyle() == ZmSetting.SIG_OUTLOOK;
 	if (replaceSignatureId) {
@@ -863,14 +868,12 @@ ZmComposeView.prototype.applySignature = function(content, replaceSignatureId){
 				replaceRe += "</body></html>";
 			}
 			replaceRe += "$";
-		}
-		else {
+		} else {
 			signature = signature || newLine; 
 		}
 		content = content.replace(new RegExp(replaceRe, "i"), signature);
-	}
-	else {
-		content = isAbove ? signature + content : content + signature;
+	} else {
+		content = this._insertSignature(content, this.getSignatureStyle(), signature, sep, newLine);
 	}
 	this._htmlEditor.setContent(content);
 };
@@ -892,12 +895,14 @@ ZmComposeView.prototype.getSignatureStyle = function(identity) {
 };
 
 /**
-* Adds the user's signature to the message body. An "internet" style signature
-* is prefixed by a special line and added to the bottom. An "outlook" style
-* signature is added before quoted content.
-* 
-* @content 			optional content to use
-*/
+ * Adds the user's signature to the message body. An "internet" style signature
+ * is prefixed by a special line and added to the bottom. An "outlook" style
+ * signature is added before quoted content.
+ * 
+ * This method is only used to add an 
+ * 
+ * @content 			optional content to use
+ */
 ZmComposeView.prototype.addSignature =
 function(content) {
 	// bug fix #6821 - we need to pass in "content" param
@@ -908,15 +913,24 @@ function(content) {
 	var sep = this._getSignatureSeparator();
 	var newLine = this._getSignatureNewLine();
 	var identity = this.getIdentity();
-	if (identity.getSignatureStyle() == ZmSetting.SIG_OUTLOOK) {
+	content = this._insertSignature(content, identity.getSignatureStyle(), sig, sep, newLine);
+
+	this._htmlEditor.setContent(content);
+};
+
+ZmComposeView.prototype._insertSignature =
+function(content, sigStyle, sig, sep, newLine) {
+
+	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
+
 		var regexp = ZmComposeView.QUOTED_CONTENT_RE;
 		var repl = "----- ";
-
+	
 		if (this._composeMode == DwtHtmlEditor.HTML) {
 			regexp = ZmComposeView.HTML_QUOTED_CONTENT_RE;
 			repl = "<br>----- ";
 		}
-
+	
 		if (content.match(regexp)) {
 			content = content.replace(regexp, [sep, sig, newLine, repl].join(""));
 		} else {
@@ -925,8 +939,8 @@ function(content) {
 	} else {
 		content = [content, sep, sig].join("");
 	}
-
-	this._htmlEditor.setContent(content);
+	
+	return content;
 };
 
 ZmComposeView.prototype._dispose =
