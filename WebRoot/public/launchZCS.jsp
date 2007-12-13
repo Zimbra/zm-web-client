@@ -135,11 +135,11 @@
 		document.location = appContextPath + "/h/";
 	}
 </script>
+<noscript>
+<meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
+</noscript>
 </head>
 <body>
-<noscript>
-<fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="/zimbra" value='/h/'></c:url></fmt:param></fmt:message>
-</noscript>
 <jsp:include page="Resources.jsp">
 	<jsp:param name="res" value="I18nMsg,AjxMsg,ZMsg,ZmMsg,AjxKeys,ZmKeys" />
 	<jsp:param name="skin" value="${skin}" />
