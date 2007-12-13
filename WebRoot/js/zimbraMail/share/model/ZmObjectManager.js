@@ -495,6 +495,7 @@ function(content, type) {
 // the server-side, but we check, just in case..).
 ZmObjectManager.prototype.processHtmlNode =
 function(node, handlers, discard, ignore) {
+	var doc = node.ownerDocument;	
 	handlers = handlers != null ? handlers : true;
 	var discardRe = discard instanceof RegExp ? discard : null;
 	if (!discardRe) {
@@ -521,7 +522,7 @@ function(node, handlers, discard, ignore) {
 			{
 				// tricky.
 				var txt = RegExp.$1;
-				tmp = document.createElement("div");
+				tmp = doc.createElement("div");
 				tmp.innerHTML = this.findObjects(AjxStringUtil.trim(RegExp.$1));
 				tmp = tmp.firstChild;
 				if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
@@ -547,7 +548,7 @@ function(node, handlers, discard, ignore) {
 		}
 		else if (ignoreRe && ignoreRe.test(tmp)) {
 			tmp = node.nextSibling;
-			var fragment = document.createDocumentFragment();
+			var fragment = doc.createDocumentFragment();
 			for (var child = node.firstChild; child; child = child.nextSibling) {
 				fragment.appendChild(child);
 			}
@@ -602,8 +603,17 @@ function(node, handlers, discard, ignore) {
 					b = node.splitText(node.data.length - RegExp.lastMatch.length);
 			}
 
-			tmp = document.createElement("div");
-			tmp.innerHTML = this.findObjects(node.data, true);
+			tmp = doc.createElement("div");
+			var code  = this.findObjects(node.data, true, null, false);
+			var disembowel = false;
+			if (AjxEnv.isIE) {
+				// Bug #6481, #4498: innerHTML in IE massacrates whitespace
+				//            unless it sees a <pre> in the code.
+				tmp.innerHTML = [ "<pre>", code, "</pre>" ].join("");
+				disembowel = true;
+			} else {
+				tmp.innerHTML = code;
+			}
 
 			if (a)
 				tmp.insertBefore(a, tmp.firstChild);
@@ -611,6 +621,8 @@ function(node, handlers, discard, ignore) {
 				tmp.appendChild(b);
 
 			a = node.parentNode;
+			if (disembowel)
+				tmp = tmp.firstChild;
 			while (tmp.firstChild)
 				a.insertBefore(tmp.firstChild, node);
 			tmp = node.nextSibling;
