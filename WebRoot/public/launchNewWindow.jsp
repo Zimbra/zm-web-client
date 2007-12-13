@@ -35,7 +35,7 @@
     if (skin == null) {
         skin = application.getInitParameter("zimbraDefaultSkin");
 		if (skin == null) {
-			skin = "sand";
+			skin = "beach";
 		}
 	}
 

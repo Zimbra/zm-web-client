@@ -41,7 +41,7 @@
 
     <context-param>
         <param-name>zimbraDefaultSkin</param-name>
-		<param-value>sand</param-value>
+		<param-value>beach</param-value>
     </context-param>
 
     <context-param>

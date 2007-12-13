@@ -12,7 +12,7 @@
         <c:if test="${empty title}"><fmt:message key="zimbraTitle"/></c:if>
         <c:if test="${!empty title}">${fn:escapeXml(title)}</c:if>
     </title>
-    <c:set var="skin" value="${not empty param.skin ? param.skin : not empty requestScope.zimbra_target_account_prefSkin ? requestScope.zimbra_target_account_prefSkin : 'sand'}"/>
+    <c:set var="skin" value="${not empty param.skin ? param.skin : not empty requestScope.zimbra_target_account_prefSkin ? requestScope.zimbra_target_account_prefSkin : 'beach'}"/>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <style type="text/css">
        @import url( "<c:url value='/css/common,login,images,skin.css?client=standard&skin=${skin}&v=${version}'/>" );

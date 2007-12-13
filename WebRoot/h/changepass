@@ -54,7 +54,7 @@
 
 <head>
     <title><fmt:message key="changePassword"/></title>
-    <c:set var="skin" value="${empty cookie.ZM_SKIN ? 'sand' : cookie.ZM_SKIN.value}"/>
+    <c:set var="skin" value="${empty cookie.ZM_SKIN ? 'beach' : cookie.ZM_SKIN.value}"/>
     <style type="text/css">
          @import url( "<c:url value='/css/common,login,zhtml,${skin},skin.css?skin=${skin}'/>" );
     </style>

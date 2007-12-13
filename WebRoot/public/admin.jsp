@@ -62,9 +62,9 @@
     String ext = (String)request.getAttribute("fileExtension");
     if (ext == null) ext = "";
 
-    String skin = "sand";
+    String skin = "beach";
 
-    //Since we only suppor the sand skin in admin, we will remove the skin related codes.
+    //Since we only suppor the beach skin in admin, we will remove the skin related codes.
 	/* final String SKIN_COOKIE_NAME = "ZA_SKIN";
 	
 	String requestSkin = request.getParameter("skin");
