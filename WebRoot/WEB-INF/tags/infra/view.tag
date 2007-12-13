@@ -25,7 +25,7 @@
 <!--bug: 21462 yui editor freezes in IE7 without without this header -->
 <html>
 <app:head mailbox="${mailbox}" title="${title}"/>
-<c:set var="skin" value="${not empty sessionScope.skin ? sessionScope.skin : (not empty mailbox.prefs.skin ? mailbox.prefs.skin : 'sand')}" />
+<c:set var="skin" value="${not empty sessionScope.skin ? sessionScope.skin : (not empty mailbox.prefs.skin ? mailbox.prefs.skin : 'beach')}" />
 <!-- skin is ${skin} -->
 <body <c:if test="${not empty onload}">onload="${onload}"</c:if>>
 <c:choose>

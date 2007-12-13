@@ -19,7 +19,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 	}
 
 	final String SKIN_COOKIE_NAME = "ZM_SKIN";
-	String skin = "sand";
+	String skin = "beach";
     Cookie[] cookies = request.getCookies();
 	String requestSkin = request.getParameter("skin");
 	if (requestSkin != null) {

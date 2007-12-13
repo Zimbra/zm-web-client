@@ -56,7 +56,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 	if (skin == null) {
 		skin = application.getInitParameter("zimbraDefaultSkin");
 		if (skin == null) {
-			skin = "sand";
+			skin = "beach";
 		}
 	}
 
