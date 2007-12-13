@@ -1110,6 +1110,7 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	if (orgName) org.setAttribute("d", orgName);
 
 	// handle attachments
+	this.getAttachments(); // bug 22874: make sure to populate _validAttachments
 	if (attachmentId != null || (this._validAttachments != null && this._validAttachments.length)) {
 		var attachNode = soapDoc.set("attach", null, m);
 		if (attachmentId)
