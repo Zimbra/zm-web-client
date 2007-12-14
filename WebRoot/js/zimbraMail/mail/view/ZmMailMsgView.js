@@ -490,6 +490,19 @@ ZmMailMsgView.__localLinkClicked = function(msgView, ev) {
 	return false;
 };
 
+ZmMailMsgView.prototype.hasValidHref =
+function (node) {
+	// Bug 22958: IE can throw when you try and get the href if it doesn't like the value,
+	// so we wrap the test in a try/catch.
+	// hrefs formatted like http://www.name@domain.com can cause this to happen.
+	try {
+		var href = node.href;
+		return ZmMailMsgView._URL_RE.test(href) || ZmMailMsgView._MAILTO_RE.test(href);
+	} catch (e) {
+		return false;
+	}
+};
+
 // Dives recursively into the given DOM node.  Creates ObjectHandlers in text
 // nodes and cleans the mess in element nodes.  Discards by default "script",
 // "link", "object", "style", "applet" and "iframe" (most of them shouldn't
@@ -514,10 +527,7 @@ function(doc) {
 			node.normalize();
 			tmp = node.tagName.toLowerCase();
 			if (/^(img|a)$/.test(tmp)) {
-				if (tmp == "a" && node.target
-				    && (ZmMailMsgView._URL_RE.test(node.href)
-					|| ZmMailMsgView._MAILTO_RE.test(node.href)))
-				{
+				if (tmp == "a" && node.target && self.hasValidHref(node)) {
 					if (node.firstChild && node.firstChild.tagName &&
 						node.firstChild.tagName.toLowerCase() == "img")
 					{
