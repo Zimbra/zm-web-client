@@ -600,25 +600,26 @@ function(message) {
 	if (this._recurrence.repeatMonthlyDayList == null)
 		this.resetRepeatMonthlyDayList();
 };
-//We are removing starting 2 \n's for the bug 21823 
+
+// We are removing starting 2 \n's for the bug 21823
+// XXX - this does not look very efficient :/
 ZmCalItem.prototype._getCleanHtml2Text = 
-function(dwtIframe){
+function(dwtIframe) {
     var textContent;
-    if (dwtIframe && dwtIframe.getDocument() && dwtIframe.getDocument().body) {
-        dwtIframe.getDocument().body.innerHTML = dwtIframe.getDocument().body.innerHTML.replace(/\n/ig,"");
-        dwtIframe.getDocument().body.innerHTML = dwtIframe.getDocument().body.innerHTML.replace(/<!--.*-->/ig,"");
-        var firstChild = dwtIframe.getDocument().body.firstChild;
-        var removeN = false;
-        if(firstChild && firstChild.tagName && firstChild.tagName.toLocaleLowerCase() == "p"){
-            removeN = true;
-        }
-        textContent = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body);
-        if(removeN){
-            textContent = textContent.replace(/\n\n/i,"");
+	var idoc = dwtIframe ? dwtIframe.getDocument() : null;
+	var body = idoc ? idoc.body : null;
+	if (body) {
+		var html = body.innerHTML.replace(/\n/ig, "");
+		body.innerHTML = html.replace(/<!--.*-->/ig, "");
+        var firstChild = body.firstChild;
+        var removeN = (firstChild && firstChild.tagName && firstChild.tagName.toLocaleLowerCase() == "p");
+        textContent = AjxStringUtil.convertHtml2Text(body);
+        if (removeN) {
+            textContent = textContent.replace(/\n\n/i, "");
         }
     }
     return textContent;
-}
+};
 
 ZmCalItem.prototype._setNotes =
 function(message) {
@@ -627,7 +628,8 @@ function(message) {
 
     this.notesTopPart = new ZmMimePart();
 	if (html) {
-        var htmlContent = this._trimNotesSummary(html.content.replace(/<title\s*>.*\/title>/ig,""), true);
+		var notes = AjxUtil.isString(html) ? html : html.content;
+		var htmlContent = this._trimNotesSummary(notes.replace(/<title\s*>.*\/title>/ig,""), true);
 		var textContent = "";
 
 		// create a temp iframe to create a proper DOM tree
@@ -656,7 +658,7 @@ function(message) {
 		this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		this.notesTopPart.setContent(textContent);
 	}
-}
+};
 
 /**
  * @param attachmentId 		[string]*		ID of the already uploaded attachment
