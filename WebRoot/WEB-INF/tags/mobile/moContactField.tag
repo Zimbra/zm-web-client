@@ -46,7 +46,10 @@
                     <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
                 <c:when test="${isemail}">
-                    <c:url var="url" value="mailto:${value}"/>
+ë                    <c:url var="url" value="/m/main">
+                        <c:param name="action" value="compose"/>
+                        <c:param name="to" value="${value}"/>
+                    </c:url>
                     <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
                 <c:otherwise>
