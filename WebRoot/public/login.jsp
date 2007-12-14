@@ -1,4 +1,4 @@
-<%@ page buffer="8kb" autoFlush="true" %>
+i<%@ page buffer="8kb" autoFlush="true" %>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page session="false" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -20,7 +20,7 @@
 
 <%-- get useragent --%>
 <zm:getUserAgent var="ua" session="false"/>
-<c:set var="useMobile" value="${ua.isiPhone}"/>
+<c:set var="useMobile" value="${ua.isiPhone or ua.isiPod}"/>
 
 <c:catch var="loginException">
     <c:choose>
