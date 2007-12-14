@@ -24,11 +24,13 @@ function () {
 
 ZmPrintView.prototype.render = 
 function(item, noPrintDialog) {
-	var preferHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	var respCallback = new AjxCallback(this, this._handleResponseRender, [item, noPrintDialog]);
-	var html = item.getPrintHtml(preferHtml, respCallback);
-	if (html) {
-		this.renderHtml(html);
+	if (item) {
+		var preferHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
+		var respCallback = new AjxCallback(this, this._handleResponseRender, [item, noPrintDialog]);
+		var html = item.getPrintHtml(preferHtml, respCallback);
+		if (html) {
+			this.renderHtml(html);
+		}
 	}
 };
 
