@@ -81,6 +81,7 @@ BODY						{	margin:0px; 				}
 
 
 /** Tree Footer (mini-calendar) **/
+#skin_tr_tree_footer					{ display: none; }
 #skin_spacing_tree_footer				{}
 #skin_container_tree_footer				{	@SkinBorderMiniCal@ 	}
 
