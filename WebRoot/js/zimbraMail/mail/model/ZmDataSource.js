@@ -107,7 +107,7 @@ function(email) {
 
 ZmDataSource.prototype.getEmail =
 function() {
-	return this.email;
+	return this.email || this.identity.getField(ZmIdentity.SEND_FROM_ADDRESS); // bug: 23042
 };
 
 ZmDataSource.prototype.setFolderId =
