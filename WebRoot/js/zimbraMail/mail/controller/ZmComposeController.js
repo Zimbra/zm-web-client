@@ -1062,7 +1062,7 @@ function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 
 	var id = ev.source.id;
-	if (id == ZmSetting.SHOW_BCC) {
+	if (id == ZmSetting.SHOW_BCC && this._optionsMenu) {
 		var menu = this._optionsMenu[this._action];
 		if (menu)
 			menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(appCtxt.get(ZmSetting.SHOW_BCC), true);
