@@ -1573,9 +1573,7 @@ function(className, cid) {
     var position = appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
     var posStyle = position || Dwt.ABSOLUTE_STYLE;
     var ui = new DwtComposite(this._shell, className, posStyle);
-    if (posStyle == Dwt.ABSOLUTE_STYLE) {
-        ui.setScrollStyle(Dwt.CLIP);
-    }
+	ui.setScrollStyle(Dwt.CLIP);
     ui._setMouseEventHdlrs();
 	return ui;
 };
