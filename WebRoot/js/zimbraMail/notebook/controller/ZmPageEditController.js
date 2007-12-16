@@ -336,14 +336,12 @@ ZmPageEditController.prototype._saveResponseHandler = function(content, response
 	var pageEditor = this._pageEditView.getPageEditor();
 	pageEditor.setFooterInfo(item);	
 
-	if(isRemote){
-		var nbController = this._app.getNotebookController();
-		var vPage = nbController.getPage();
-		if(vPage && (vPage.id == item.id) ){
-			nbController._object = item;
-		}
+	var nbController = this._app.getNotebookController();
+	var vPage = nbController.getPage();
+	if(vPage && (vPage.id == item.id) ){
+		nbController._object = item;
 	}
-	
+		
 	if (popViewWhenSaved) {
 		this._popViewWhenSaved = false;
 
