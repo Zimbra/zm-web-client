@@ -78,7 +78,7 @@ function(buttonId, addrs, str) {
 
 	// reset column sorting preference
 	this._chooser.sourceListView.setSortByAsc(ZmItem.F_NAME, true);
-                                                                     W
+
 	// reset button states
 	this._chooser.reset();
 	if (buttonId) {
