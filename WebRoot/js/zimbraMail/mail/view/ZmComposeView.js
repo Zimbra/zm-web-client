@@ -1473,6 +1473,7 @@ function(action, msg, extraBodyText, incOption) {
 	this.cleanupAttachments(true);
 	this._setBody(action, msg, extraBodyText, incOption);
 	this._origFormValue = this._formValue();
+	this._resetBodySize();
 };
 
 // Generic routine for attaching an event handler to a field. Since "this" for the handlers is
