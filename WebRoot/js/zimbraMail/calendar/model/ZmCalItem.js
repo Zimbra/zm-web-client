@@ -637,6 +637,12 @@ function(message) {
 		var dwtIframe = new DwtIframe(params);
         if (dwtIframe) {
             textContent = this._getCleanHtml2Text(dwtIframe);
+            //bug: 23034 this hidden iframe under shell is adding more space which breaks calendar
+			//column view
+			var iframe = dwtIframe.getIframe();
+			if(iframe && iframe.parentNode){
+				iframe.parentNode.removeChild(iframe);
+			}
             delete dwtIframe;
 		}
 
