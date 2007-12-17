@@ -352,16 +352,19 @@ ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
 
 ZmLiteHtmlEditor.prototype._smileyListener = function(ev){
 	var obj = ev.item;
-	var id = ev.detail;
 	var smiley = obj.getSelectedSmiley();
 
-	if (this._textArea.createTextRange && this._textArea.selection) {
+    if(smiley) smiley = smiley.text;
+    else return;
+
+
+    if (this._textArea.createTextRange && this._textArea.selection) {
 		var textRange = this._textArea.selection;
 		var text = textRange.text;
-		textRange.text = (textRange.text.charAt(textRange.text.length-1) == '') ? id + ' ' : id;
+		textRange.text = (textRange.text.charAt(textRange.text.length-1) == '') ? smiley + ' ' : smiley;
 		textRange.selection = null;
 	}else{
-		this._textArea.value += id;
+		this._textArea.value += smiley;
 	}
 
 	this.focus();
