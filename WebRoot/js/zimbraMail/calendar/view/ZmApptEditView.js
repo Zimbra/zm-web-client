@@ -207,9 +207,9 @@ function(tabGroup) {
 	tabGroup.addMember(document.getElementById(bodyFieldId));
 };
 
-ZmApptEditView.prototype._reset =
-function(calItem, mode) {
-	ZmCalItemEditView.prototype._reset.call(this, calItem, mode);
+ZmApptEditView.prototype._finishReset =
+function() {
+	ZmCalItemEditView.prototype._finishReset.call(this);
 
 	// save the original form data in its initialized state
 	this._origFormValueMinusAttendees = this._formValue(true);
@@ -223,20 +223,22 @@ function() {
 /**
  * sets any recurrence rules w/in given ZmAppt object
 */
+// bug fix #17048 - reset weekly day to reflect start date in case user
+// changed it. We should not be needing this anymore as we are auto adjusting 
+// the start date like outlook. See bug 12945
+/*
 ZmApptEditView.prototype._getRecurrence =
 function(calItem) {
 	ZmCalItemEditView.prototype._getRecurrence.call(this, calItem);
 
-	// bug fix #17048 - reset weekly day to reflect start date in case user changed it
-    // We shud not be needed this anymore as we are auto adjusting the start date like outlook. See bug 12945
-    /*if (calItem.getRecurType() == "WEE" &&
+    if (calItem.getRecurType() == "WEE" &&
 		calItem._recurrence.repeatCustomCount == 1 &&
 		calItem._recurrence.repeatWeeklyDays.length == 1)
 	{
 		var day = ZmCalItem.SERVER_WEEK_DAYS[calItem.startDate.getDay()];
 		calItem._recurrence.repeatWeeklyDays = [day];
-	}*/
-};
+	}
+};*/
 
 ZmApptEditView.prototype._populateForSave =
 function(calItem) {
