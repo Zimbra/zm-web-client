@@ -534,15 +534,16 @@ function(ev) {
 	// if we get a new msg that's part of an expanded conv, insert it into the
 	// expanded conv, and don't move that conv
 	if (!isConv && (ev.event == ZmEvent.E_CREATE)) {
-		if (this._expanded[item.cid]) {
-			var div = this._createItemHtml(item, {now:this._now});
-			var conv = appCtxt.getById(item.cid);
-			var convIndex = this._getRowIndex(conv);
-			var sortIndex = ev.getDetail("sortIndex");
-			var msgIndex = sortIndex || 0;
-			this._addRow(div, convIndex + msgIndex + 1);
-			this._msgRowIdList[item.cid].push(div.id);
+		var div = this._createItemHtml(item, {now:this._now});
+		if (!this._expanded[item.cid]) {
+			Dwt.setVisible(div, false);
 		}
+		var conv = appCtxt.getById(item.cid);
+		var convIndex = this._getRowIndex(conv);
+		var sortIndex = ev.getDetail("sortIndex");
+		var msgIndex = sortIndex || 0;
+		this._addRow(div, convIndex + msgIndex + 1);
+		this._msgRowIdList[item.cid].push(div.id);
 		ev.handled = true;
 	}
 
