@@ -31,7 +31,7 @@ ZmRecurrence = function(calItem) {
 	this.repeatMonthlyDayList	= null; 										// list of numbers representing days (usually, just one day)
 	this.repeatType				= ZmRecurrence.NONE;							// maps to "freq"
 	this.repeatWeekday			= false; 										// set to true if freq = "DAI" and custom repeats every weekday
-	this.repeatWeeklyDays		= null; 										// SU|MO|TU|WE|TH|FR|SA
+	this.repeatWeeklyDays		= [];	 										// SU|MO|TU|WE|TH|FR|SA
 	this.repeatYearlyMonthsList	= 1; 											// list of numbers representing months (usually, just one month)
 };
 
@@ -232,7 +232,7 @@ ZmRecurrence.prototype.parse =
 function(recurRules) {
 	// bug 16513: This array never gets cleaned.
 	// TODO: Maybe this needs a flag so it doesn't reparse?
-	this.repeatWeeklyDays = null;
+	this.repeatWeeklyDays = [];
 
 	for (var k = 0; k < recurRules.length ; ++k) {
 		var adds = recurRules[k].add;
@@ -271,8 +271,6 @@ function(recurRules) {
 					if (this.repeatType == ZmRecurrence.WEEKLY || (this.repeatType == ZmRecurrence.DAILY && wkday.length == 5)) {
 						this.repeatWeekday = this.repeatType == ZmRecurrence.DAILY;
 						for (var x = 0; x < wkday.length; ++x) {
-							if (this.repeatWeeklyDays == null)
-								this.repeatWeeklyDays = [];
 							this.repeatWeeklyDays.push(wkday[x].day);
 						}
 					} else {
