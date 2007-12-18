@@ -73,7 +73,7 @@ function(buttonId, addrs, str) {
 
 	this._offset = 0;
 
-	var searchFor = this._selectDiv.getValue();
+	var searchFor = this._selectDiv ? this._selectDiv.getValue() : ZmContactsApp.SEARCHFOR_CONTACTS;
 	this._defaultQuery = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) ? "is:local" : ".";
 
 	// reset column sorting preference

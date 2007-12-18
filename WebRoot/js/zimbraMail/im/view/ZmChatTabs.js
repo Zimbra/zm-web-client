@@ -160,7 +160,6 @@ ZmChatTabs.prototype.addTab = function(chat, index) {
 
 ZmChatTabs.prototype.detachChatWidget = function(chatWidget) {
 	chatWidget._sizeSet = false;
-	chatWidget._removedEl = chatWidget.getHtmlElement();
 	var index = this.__tabs.indexOf(chatWidget);
 	var newTab = this.__currentTab;
 	this.__tabs.remove(chatWidget);

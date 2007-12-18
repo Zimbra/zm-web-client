@@ -20,7 +20,7 @@ BODY						{	margin:0px; 				}
 
 
 /** Outer container of the entire skin **/
-#skin_outer 							{	@ChromeBg@			}
+#skin_outer 							{	@SkinOuter@			}
 #skin_table_outer						{	padding:5px;		}
 
 
@@ -154,7 +154,7 @@ BODY						{	margin:0px; 				}
 
 
 /** LoginPanel and Splash screen **/
-#skin_container_splash_screen			{	@ChromeBg@	@FullWindow@ z-index:90000000;		}
+#skin_container_splash_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
 
 #ZLoginPanel 			{	@LoginPanelOuterBorer@	}	
 #ZLoginBodyContainer	{	@LoginPanelInnerBorder@	}
@@ -238,12 +238,6 @@ BODY						{	margin:0px; 				}
 }
 
 
-/* Web search button -- where to place this? */
-.ImgYSearch	{		@WebSearchBanner@	}
-
-
-
-/*Banner*/
 
 
 
@@ -330,8 +324,6 @@ TEXTAREA
 .BannerTextQuota {
 	text-align:center;
 	vertical-align:top;
-
-
 }
 .BannerTextUser,
 .BannerTextQuota {

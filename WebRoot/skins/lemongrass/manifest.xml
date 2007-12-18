@@ -1,20 +1,21 @@
 <skin>
 	<common>
 		<substitutions>
-			<file>../_base/base/skin.properties</file>		
+			<file>../_base/base2/skin.properties</file>		
 			<file>skin.properties</file>
 		</substitutions>
 		<css>
-			<file>../_base/base/skin.css</file>
+			<file>../_base/base2/skin.css</file>
 			<file>skin.css</file>
 		</css>
 	</common>
 	<advanced>	
 		<script>
-			<file>../_base/base/ZmSkin.js</file>
+			<file>../_base/base2/ZmSkin.js</file>
 		</script>
 		<html>
-			<file>../_base/base/skin.html</file>
+			<file>../_base/base2/skin.html</file>
+			<file>../_base/base2/splash.html</file>
 		</html>
 	</advanced>	
 	<standard>

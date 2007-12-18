@@ -33,15 +33,15 @@ ZmTagTreeController = function() {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		list.push("ZmContact");
 	}
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		list.push("ZmAppt");
+	}
 	if (appCtxt.get(ZmSetting.TASKS_ENABLED)) {
 		list.push("ZmTask");
 	}
 	if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
 		list.push("ZmPage");
 		list.push("ZmDocument");
-	}
-	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-		list.push("ZmAppt");
 	}
 	ZmTreeController.call(this, ZmOrganizer.TAG, new DwtDropTarget(list));
 
