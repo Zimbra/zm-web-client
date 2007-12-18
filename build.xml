@@ -969,6 +969,10 @@ if (ext == null) ext = "";
                 <mkdir dir='${build.adminhelp.temp.dir}'/>
 
                 <unzip dest='${build.adminhelp.temp.dir}' src='${adminhelp.dir}/html/ZimbraAdminOLH.zip'/>
+                
+                <copy todir="${build.adminhelp.dir}" overwrite="true" >
+			      <fileset dir="${adminhelp.dir}" includes="pdf/**"/>
+			    </copy>
             </then>
         </if>
     </target>
