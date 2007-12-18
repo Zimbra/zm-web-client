@@ -1660,6 +1660,7 @@ ZmNewDataSource = function() {
 	var id = "new-dsrc-"+number;
 	this.setType(appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) ? ZmAccount.POP : ZmAccount.IMAP);
 	ZmDataSource.call(this, this.type, id);
+	this.email = "";
 	this.name = AjxMessageFormat.format(ZmMsg.newExternalAccount, number);
 	this._new = true;
 	this.folderId = -1;
