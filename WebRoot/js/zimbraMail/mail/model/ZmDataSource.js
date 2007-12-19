@@ -322,7 +322,8 @@ function(callback, result) {
 
 	var overviewId = appCtxt.getApp(ZmApp.MAIL).getOverviewId();
 	var treeView = appCtxt.getOverviewController().getTreeView(overviewId, ZmOrganizer.FOLDER);
-	var treeItem = treeView ? treeView.getTreeItemById(this.folderId) : null;
+	var fid = appCtxt.getActiveAccount().isMain ? this.folderId : ZmOrganizer.getSystemId(this.folderId);
+	var treeItem = treeView ? treeView.getTreeItemById(fid) : null;
 	if (treeItem) {
 		// reset the icon in the tree view if POP account since the first time it
 		// was created, we didnt know it was a data source
@@ -366,7 +367,8 @@ function(callback, result) {
 
 	var overviewId = appCtxt.getApp(ZmApp.MAIL).getOverviewId();
 	var treeView = appCtxt.getOverviewController().getTreeView(overviewId, ZmOrganizer.FOLDER);
-	var treeItem = treeView ? treeView.getTreeItemById(this.folderId) : null;
+	var fid = appCtxt.getActiveAccount().isMain ? this.folderId : ZmOrganizer.getSystemId(this.folderId);
+	var treeItem = treeView ? treeView.getTreeItemById(fid) : null;
 	if (treeItem) {
 		if (this.type == ZmAccount.POP && this.folderId != ZmFolder.ID_INBOX) {
 			// reset icon since POP folder is no longer hooked up to a datasource
