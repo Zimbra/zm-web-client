@@ -1152,8 +1152,13 @@ function(idx) {
 ZmListController.prototype._getMoreToReplenish =
 function(view, replCount, callback) {
 	if (this._list.hasMore()) {
+		// use a cursor if we can
+		var list = this._listView[view].getList();
+		var lastItem = list.getLast();
+		var lastSortVal = (lastItem && lastItem.id) ? lastItem.sf : null;
+		var lastId = lastSortVal ? lastItem.id : null;
 		var respCallback = new AjxCallback(this, this._handleResponseGetMoreToReplenish, [view, callback]);
-		this._search(view, this._list.size(), replCount, respCallback);
+		this._search(view, this._list.size(), replCount, respCallback, false, lastId, lastSortVal);
 	} else {
 		if (callback) {
 			callback.run();
