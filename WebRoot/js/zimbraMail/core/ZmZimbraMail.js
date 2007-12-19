@@ -1574,7 +1574,12 @@ function(className, cid) {
     var posStyle = position || Dwt.ABSOLUTE_STYLE;
     var ui = new DwtComposite(this._shell, className, posStyle);
 	ui.setScrollStyle(Dwt.CLIP);
-    ui._setMouseEventHdlrs();
+	if (AjxEnv.isIE) {
+		var container = document.getElementById("skin_td_tree");
+		var w = container ? Dwt.getSize(document.getElementById("skin_td_tree")).x : null;
+		if (w) ui.setSize(w);
+	}
+	ui._setMouseEventHdlrs();
 	return ui;
 };
 
