@@ -125,6 +125,12 @@ if (application.getInitParameter("offlineMode") != null)  {
     <c:redirect url="${loginRedirectUrl}"/>
 </c:if>
 
+<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
+<c:set var="domainLoginRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLoginURL}" />
+<c:if test="${not empty domainLoginRedirectUrl}" >
+    <c:redirect url="${domainLoginRedirectUrl}"/>
+</c:if>
+
 <c:url var="formActionUrl" value="/">
     <c:forEach var="p" items="${paramValues}">
         <c:forEach var='value' items='${p.value}'>
