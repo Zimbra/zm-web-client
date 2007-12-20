@@ -52,15 +52,18 @@ function() {
 };
 
 /**
-* Override so that we can specify "tcon" attribute for conv move - we don't want
-* to move messages in certain system folders as a side effect. Also, we need to
-* update the UI based on the response if we're moving convs, since the 
-* notifications only tell us about moved messages.
-*
-* @param items		[Array]			a list of items to move
-* @param folder		[ZmFolder]		destination folder
-* @param attrs		[Object]		additional attrs for SOAP command
-*/
+ * Override so that we can specify "tcon" attribute for conv move - we don't want
+ * to move messages in certain system folders as a side effect. Also, we need to
+ * update the UI based on the response if we're moving convs, since the 
+ * notifications only tell us about moved messages. This method should be called
+ * only in response to explicit action by the user, in which case we want to
+ * remove the conv row(s) from the list view (even if the conv still matches the
+ * search).
+ *
+ * @param items		[Array]			a list of items to move
+ * @param folder	[ZmFolder]		destination folder
+ * @param attrs		[Object]		additional attrs for SOAP command
+ */
 ZmMailList.prototype.moveItems =
 function(items, folder, attrs) {
 	if (this.type != ZmItem.CONV) {
@@ -131,23 +134,40 @@ function(markAsSpam, folder, result) {
 };
 
 /**
-* Override so that delete of a conv in Trash doesn't hard-delete its msgs in
-* other folders.
-*
-* @param items			[Array]			list of items to delete
-* @param hardDelete		[boolean]		whether to force physical removal of items
-* @param attrs			[Object]		additional attrs for SOAP command
-*/
+ * Override so that delete of a conv in Trash doesn't hard-delete its msgs in
+ * other folders. If we're in conv mode in Trash, we add a constraint of "t",
+ * meaning that the action is only applied to items (msgs) in the Trash.
+ *
+ * @param items			[Array]			list of items to delete
+ * @param hardDelete	[boolean]		whether to force physical removal of items
+ * @param attrs			[Object]		additional attrs for SOAP command
+ */
 ZmMailList.prototype.deleteItems =
-function(items, folder, attrs) {
+function(items, hardDelete, attrs) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
 		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isInTrash()) {
-			if (!attrs) attrs = {};
+			attrs = attrs || {};
 			attrs.tcon = ZmFolder.TCON_CODE[ZmFolder.ID_TRASH];
+			var respCallback = new AjxCallback(this, this._handleResponseDeleteItems);
+			this._itemAction({items:items, action:"delete", attrs:attrs, callback:respCallback});
+			return;
 		}
 	}
-	ZmList.prototype.deleteItems.call(this, items, folder, attrs);
+	ZmList.prototype.deleteItems.call(this, items, hardDelete, attrs);
+};
+
+ZmMailList.prototype._handleResponseDeleteItems =
+function(result) {
+	var deletedItems = result.getResponse();	
+	if (deletedItems && deletedItems.length) {
+		this.deleteLocal(deletedItems);
+		for (var i = 0; i < deletedItems.length; i++) {
+			deletedItems[i].deleteLocal();
+		}
+		// note: this happens before we process real notifications
+		ZmModel.notifyEach(deletedItems, ZmEvent.E_DELETE);
+	}
 };
 
 /*
