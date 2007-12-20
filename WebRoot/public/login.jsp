@@ -275,9 +275,16 @@ if (application.getInitParameter("offlineMode") != null)  {
 												<script TYPE="text/javascript">
 													// show a message if the should be using the 'standard' client, but have chosen 'advanced' instead
 													function clientChange(selectValue) {
-                                                        var useStandard = ${useStandard ? 'true' : 'false'};
                                                         var it = document.getElementById("ZLoginUnsupported");
-														it.style.display = (("${zm:cook(client)}" == 'standard' && selectValue == 'advanced' && useStandard) ? 'block' : 'none');
+														<c:choose>
+															<c:when test="${zm:cook(client) == 'standard'}">
+																var useStandard = ${useStandard ? 'true' : 'false'};
+																it.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
+															</c:when>
+															<c:otherwise>
+																it.style.display = 'none';
+															</c:otherwise>
+														</c:choose>
 													}
 												
 													// if they have JS, write out a "what's this?" link that shows the message below
