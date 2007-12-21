@@ -1714,9 +1714,11 @@ function(self, iframe) {
 		iframe.style.height = h + "px";
 	} else {
 		try {
-			if (!iframe.contentWindow) { return; }
+			if (!iframe.contentWindow) {
+                                self._resetIframeHeightOnTimer(iframe);
+                        }
 		} catch(ex) {
-			return; // for IE
+			self._resetIframeHeightOnTimer(iframe); // for IE
 		}
 
 		var doc = iframe.contentWindow.document;
