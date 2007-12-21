@@ -1632,33 +1632,43 @@ function(msg, preferHtml, callback) {
 	}
 
 	html[idx++] = "</table>";
-	html[idx++] = "</div>";
+	html[idx++] = "</div><div style='padding: 10px; font-size: 12px'>";
 
 	// finally, print content
-	var content = "";
-	var bodyPart = msg.getBodyPart();
-	if (bodyPart) {
-		html[idx++] = "<div style='padding: 10px; font-size: 12px'>";
+	var bodyParts = msg.getBodyParts();
+	for (var i = 0; i < bodyParts.length; i++) {
+		var content = "";
+		var bodyPart = bodyParts[i];
 		if (bodyPart.ct == ZmMimeTable.TEXT_HTML && preferHtml) {
-			// TODO - html should really sit in its own iframe but not so easy to do...
-            html[idx++] = ZmMailMsgView._fixMultipartRelatedImagesInContent(msg,bodyPart.content);
-        } else {
-			if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
-				content = msg.getTextPart();
-				if (!content && bodyPart.content && bodyPart.ct == ZmMimeTable.TEXT_HTML) {
-					var div = document.createElement("div");
-					div.innerHTML = bodyPart.content;
-					content = AjxStringUtil.convertHtml2Text(div);
-				}
+			html[idx++] = ZmMailMsgView._fixMultipartRelatedImagesInContent(msg, bodyPart.content);
+		} else {
+			if (ZmMimeTable.isRenderableImage(bodyPart.ct)) {
+				html[idx++] = "<img class='InlineImage' src='";
+				html[idx++] = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+				html[idx++] = "&id=";
+				html[idx++] = msg.id;
+				html[idx++] = "&part=";
+				html[idx++] = bodyPart.part;
+				html[idx++] = "'>";
 			} else {
-				content = bodyPart.content;
-            }
-			html[idx++] = "<span style='font-family: courier'>";
-			html[idx++] = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(content, true));
-			html[idx++] = "</span>";
+				if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
+					content = msg.getTextPart();
+					if (!content && bodyPart.content && bodyPart.ct == ZmMimeTable.TEXT_HTML) {
+						var div = document.createElement("div");
+						div.innerHTML = bodyPart.content;
+						content = AjxStringUtil.convertHtml2Text(div);
+					}
+				} else {
+					content = bodyPart.content;
+				}
+				html[idx++] = "<span style='font-family: courier'>";
+				html[idx++] = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(content, true));
+				html[idx++] = "</span>";
+			}
 		}
-		html[idx++] = "</div>";
 	}
+
+	html[idx++] = "</div>";
 
 	if (callback) {
 		var result = new ZmCsfeResult(html.join(""));
