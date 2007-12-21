@@ -195,7 +195,7 @@ function(requestType, respFunction, callback, errorCallback, batchCmd) {
 					if (field.type == ZmIdentity.BOOLEAN) {
 						value = value ? "TRUE" : "FALSE";
 					}
-					if (value != null || i == ZmIdentity.SIGNATURE) {
+					if (value || (i == ZmIdentity.SIGNATURE)) {
 						var propertyNode = soapDoc.set("a", value, identityNode);
 						propertyNode.setAttribute("name", field.soap);
 					}

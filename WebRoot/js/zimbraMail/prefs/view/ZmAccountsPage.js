@@ -403,8 +403,8 @@ function() {
 		var account = accounts[i];
 		if (account.type == ZmAccount.PERSONA) {
 			if (account._new || account._dirty) {
-				if (!(account.identity && account.identity.name && account.identity.sendFromDisplay)) {
-					this._errorMsg = ZmMsg.invalidPersonaNameOrFrom;
+				if (!(account.identity && account.identity.name)) {
+					this._errorMsg = ZmMsg.invalidPersonaName;
 					return false;
 				}
 			}
