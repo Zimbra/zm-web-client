@@ -395,7 +395,9 @@ function(id, value, setup, control) {
 		}
 	} else if (type == ZmPref.TYPE_LOCALES) {
 		var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
-		this._showLocale(value, button);
+		if (button) {
+			this._showLocale(value, button);
+		}
 	} else {
 		var prefId = [this._htmlElId, id].join("_");
 		var element = control || document.getElementById(prefId);
