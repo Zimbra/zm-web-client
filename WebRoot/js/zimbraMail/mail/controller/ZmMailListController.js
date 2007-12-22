@@ -836,7 +836,6 @@ function(params, callback) {
 		callback.run(msg);
 	} else {
 		if (msg.id == this._pendingMsg) { return; }
-		appCtxt.getSearchController().setEnabled(false);
 		msg._loadPending = true;
 		this._pendingMsg = msg.id;
 		// use prototype in callback because these functions are overridden by ZmConvListController
@@ -850,7 +849,6 @@ function(callback, msg) {
 	if (this._pendingMsg && (msg.id != this._pendingMsg)) { return; }
 	msg._loadPending = false;
 	this._pendingMsg = null;
-	appCtxt.getSearchController().setEnabled(true);
 	callback.run(msg);
 };
 

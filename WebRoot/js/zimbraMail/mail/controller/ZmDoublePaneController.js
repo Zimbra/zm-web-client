@@ -388,7 +388,6 @@ function(msg) {
 	msg._loadPending = false;
 	this._pendingMsg = null;
 	this._doublePaneView.setMsg(msg);
-	appCtxt.getSearchController().setEnabled(true);
 };
 
 ZmDoublePaneController.prototype._resetOperations = 

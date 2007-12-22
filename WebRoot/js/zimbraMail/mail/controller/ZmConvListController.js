@@ -261,7 +261,6 @@ function(params, callback) {
 	var item = (sel && sel.length) ? sel[0] : null;
 	if (item) {
 		if (item.type == ZmItem.CONV) {
-			appCtxt.getSearchController().setEnabled(false);
 			var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, callback);
 			item.getFirstHotMsg(params, respCallback);
 		} else if (item.type == ZmItem.MSG) {
@@ -274,7 +273,6 @@ function(params, callback) {
 
 ZmConvListController.prototype._handleResponseGetLoadedMsg =
 function(callback, msg) {
-	appCtxt.getSearchController().setEnabled(true);
 	callback.run(msg);
 };
 
