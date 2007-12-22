@@ -15,10 +15,14 @@
 <c:set var="view" value="${requestScope.zimbra_target_item_view}"/>
 <c:set var="itemColor" value="${not empty param.color ? param.color : requestScope.zimbra_target_item_color}" scope="request"/>
 
+
 <zm:getMailbox var="mailbox" restauthtoken="${requestScope.zimbra_authToken}" resttargetaccountid="${requestScope.zimbra_target_account_id}"/>
 
 <c:choose>
     <c:when test="${(type eq 'folder' or type eq 'mountpoint') and (view eq 'appointment')}">
+        <rest:calendar mailbox="${mailbox}" timezone="${timezone}"/>
+    </c:when>
+    <c:when test="${requestScope.zimbra_freebusy}">
         <rest:calendar mailbox="${mailbox}" timezone="${timezone}"/>
     </c:when>
     <c:otherwise>

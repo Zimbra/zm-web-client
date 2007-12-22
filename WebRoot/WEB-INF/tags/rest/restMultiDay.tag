@@ -21,7 +21,20 @@
     <c:set var="today" value="${zm:getToday(timezone)}"/>
     <c:set var="rangeEnd" value="${zm:addDay(currentDay,numdays).timeInMillis}"/>
 
-    <zm:getAppointmentSummaries  box="${mailbox}" timezone="${timezone}" var="appts" folderid="${not empty param.folderIds ? param.folderIds : requestScope.zimbra_target_item_id}" start="${currentDay.timeInMillis}" end="${rangeEnd}" query="${query}" varexception="gasException"/>
+    <c:choose>
+        <c:when test="${requestScope.zimbra_freebusy}">
+            <zm:getFreeBusyAppointments box="${mailbox}"
+                                        email="${requestScope.zimbra_target_account_name}"
+                                        var="appts"
+                                        start="${currentDay.timeInMillis}"
+                                        end="${rangeEnd}"
+                                        varexception="gasException"/>
+        </c:when>
+        <c:otherwise>
+            <zm:getAppointmentSummaries  box="${mailbox}" timezone="${timezone}" var="appts" folderid="${not empty param.folderIds ? param.folderIds : requestScope.zimbra_target_item_id}" start="${currentDay.timeInMillis}" end="${rangeEnd}" query="${query}" varexception="gasException"/>
+        </c:otherwise>
+    </c:choose>
+    
     <c:if test="${not empty gasException}">
         <zm:getException var="error" exception="${gasException}"/>
         <rest:status style="Critical">
@@ -89,7 +102,7 @@
                 <c:choose>
                     <c:when test="${not empty cell.appt}">
                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
-                            <rest:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${timezone}" color="${zm:getFolderStyleColor(requestScope.itemColor, 'appointment')}"/>
+                            <rest:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${timezone}" color="${zm:getFolderStyleColor(not empty requestScope.itemColor ? requestScope.itemColor : 'blue', 'appointment')}"/>
                     </c:when>
                     <c:otherwise>
                         &nbsp;
@@ -155,7 +168,7 @@
 
                     <td <c:if test="${diffDay}">class='ZhCalDaySEP' </c:if> valign="top" height="100%" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
-                        <rest:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${cell.day.startTime}" end="${cell.day.endTime}" timezone="${timezone}" color="${zm:getFolderStyleColor(requestScope.itemColor, 'appointment')}"/>
+                        <rest:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${cell.day.startTime}" end="${cell.day.endTime}" timezone="${timezone}" color="${zm:getFolderStyleColor(not empty requestScope.itemColor ? requestScope.itemColor : 'blue', 'appointment')}"/>
                     </td>
                 </c:when>
                 <c:when test="${empty cell.appt}">

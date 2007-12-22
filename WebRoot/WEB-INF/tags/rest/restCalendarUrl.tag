@@ -26,6 +26,7 @@
     </c:if>
     <c:if test="${not empty param.numdays and view eq 'day'}"><c:param name='numdays' value='${param.numdays}'/></c:if>
     <c:if test="${not empty param.tz}"><c:param name='tz' value='${param.tz}'/></c:if>
+    <c:if test="${not empty param.fmt}"><c:param name='fmt' value='${param.fmt}'/></c:if>
     <c:if test="${not empty param.skin}"><c:param name='skin' value='${param.skin}'/></c:if>
     <c:if test="${not empty param.color}"><c:param name='color' value='${param.color}'/></c:if>
     <c:if test="${not empty param.notoolbar}"><c:param name='notoolbar' value='${param.notoolbar}'/></c:if>
