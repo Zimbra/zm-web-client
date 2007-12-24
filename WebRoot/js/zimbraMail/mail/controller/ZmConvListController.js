@@ -157,11 +157,11 @@ function() {
 	list.push(ZmOperation.SEP,
 				ZmOperation.SPAM,
 				ZmOperation.SEP,
-				ZmOperation.TAG_MENU,
-				ZmOperation.SEP,
-				ZmOperation.DETACH,
-				ZmOperation.SEP,
-				ZmOperation.VIEW_MENU);
+				ZmOperation.TAG_MENU);
+    if(appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)){
+        list.push(ZmOperation.SEP, ZmOperation.DETACH);
+    }
+    list.push(ZmOperation.SEP,ZmOperation.VIEW_MENU);
 	return list;
 };
 
