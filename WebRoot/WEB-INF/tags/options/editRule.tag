@@ -336,7 +336,7 @@ action_stop                         stop checkbox (true)
                                                 <c:set var="path" value="${fn:toLowerCase(fn:startsWith(fileInto.folderPath, '/') ? fn:substring(fileInto.folderPath, 1, -1) : fileInto.folderPath)}"/>
                                                 <zm:forEachFolder var="folder">
                                                     <c:if test="${folder.isConversationMoveTarget}">
-                                                        <fmt:message key="${fn:escapeXml(folder.rootRelativePath)}" var="rootPath" />
+                                                        <fmt:message key="${fn:toLowerCase(fn:escapeXml(folder.rootRelativePath))}" var="rootPath" />
                                                         <option value="${fn:escapeXml(folder.rootRelativePath)}"
                                                                 <c:if test="${fn:toLowerCase(folder.rootRelativePath) eq path}"> selected </c:if>
                                                                 >${fn:escapeXml(fn:startsWith(rootPath,'???') ? folder.rootRelativePath : rootPath)}</option>
