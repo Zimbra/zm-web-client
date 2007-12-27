@@ -52,7 +52,7 @@
                             <option disabled /><fmt:message key="actionOptSep"/>
                             <zm:forEachFolder var="folder">
                                 <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}" />${fn:escapeXml(zm:getFolderPath(pageContext, folder.id))}
                                 </c:if>
                             </zm:forEachFolder>
                         </select>
