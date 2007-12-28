@@ -459,7 +459,7 @@ function(continuation, rememberMe, result) {
 				continuation.continueCallback.run();
 			} else {
 				// async request
-				continuation.resend = true;
+				continuation.resend = ZmCsfeCommand.REAUTH;
 				appCtxt.getRequestMgr().sendRequest(continuation);
 			}
 		} else {

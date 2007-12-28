@@ -57,6 +57,12 @@ ZmRequestMgr._SENT		= 1;
 ZmRequestMgr._RESPONSE	= 2;
 ZmRequestMgr._CANCEL	= 3;
 
+// retry settings
+ZmRequestMgr.RETRY_MAX			= 2;	// number of times to retry before throwing exception
+ZmRequestMgr.RETRY_DELAY		= 5;	// seconds to delay between retries
+ZmRequestMgr.RETRY_ON_EXCEPTION = {};	// which exceptions to retry on
+ZmRequestMgr.RETRY_ON_EXCEPTION[ZmCsfeException.EMPTY_RESPONSE] = true;
+
 ZmRequestMgr._nextReqId = 1;
 
 ZmRequestMgr.getNextReqId =
@@ -88,7 +94,7 @@ function() {
  *        accountName			[string]*		name of account to execute on behalf of
  *        response				[object]*		pre-determined response (no request will be made)
  *        skipAuthCheck			[boolean]*		don't check if auth token has changed
- *        resend				[boolean]*		if true, we are reusing soapDoc
+ *        resend				[constant]*		reason for resending request
  */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -200,10 +206,10 @@ function(params, result) {
 		if (params.errorCallback) {
 			var handled = params.errorCallback.run(ex);
 			if (!handled) {
-				this._controller._handleException(ex, params);
+				this._handleException(ex, params);
 			}
 		} else {
-			this._controller._handleException(ex, params);
+			this._handleException(ex, params);
 		}
 		var hdr = result.getHeader();
 		this._handleHeader(hdr);
@@ -284,19 +290,19 @@ function(hdr) {
 
 	// for zdesktop to display online | offline and to prompt changepassword
 	if (hdr && hdr.context.zdsync) {
-        if(hdr.context.zdsync.account) {
-            for(var i=0; i < hdr.context.zdsync.account.length; i++) {
+        if (hdr.context.zdsync.account) {
+            for (var i = 0; i < hdr.context.zdsync.account.length; i++) {
                 var userId = appCtxt.get(ZmSetting.USERNAME);
-                if(hdr.context.zdsync.account[i].name == userId) {
+                if (hdr.context.zdsync.account[i].name == userId) {
                     this._offlineHandler(hdr.context.zdsync.account[i]);
                     break;
                 }
             }
         }
-        if(hdr.context.zdsync.datasource) {
-            for(var j=0; j < hdr.context.zdsync.datasource.length; j++) {
+        if (hdr.context.zdsync.datasource) {
+            for (var j=0; j < hdr.context.zdsync.datasource.length; j++) {
                 var userId1 = appCtxt.get(ZmSetting.USERNAME);
-                if(hdr.context.zdsync.datasource[j].name == userId1) {
+                if (hdr.context.zdsync.datasource[j].name == userId1) {
                     this._offlineHandler(hdr.context.zdsync.datasource[j]);
                     break;
                 }
@@ -306,10 +312,39 @@ function(hdr) {
 };
 
 /**
- * A <zdsync> block is returned in a all SOAP response for offlin client
- * to inform the status of offline sync process
+ * For transient network exceptions, retry the request after a small delay.
+ * We will only retry a limited number of times.
+ * 
+ * @param ex			[AjxException]		the exception
+ * @param params		[object]*			original request params
+ */
+ZmRequestMgr.prototype._handleException =
+function(ex, params) {
+	var handled = false;
+	if (ZmRequestMgr.RETRY_ON_EXCEPTION[ex.code]) {
+		params.retryCount = params.retryCount || 0;
+		if (params.retryCount < ZmRequestMgr.RETRY_MAX) {
+			DBG.println(AjxDebug.DBG1, "RETRY " + ex.method + " due to " + ex.code);
+			params.resend = ZmCsfeCommand.RETRY;
+			params.retryCount++;
+			AjxTimedAction.scheduleAction(new AjxTimedAction(this, 
+				function() {
+					this.sendRequest(params);
+				}), ZmRequestMgr.RETRY_DELAY * 1000);
+			handled = true;
+		}
+	}
+	
+	if (!handled) {
+		this._controller._handleException(ex, params);
+	}
+};
+
+/**
+ * A <zdsync> block is returned in all SOAP responses for the offline client
+ * with the status of offline sync process.
  *
- * @param zdsync	[object]	zdsync block (JSON)
+ * @param account	[object]	zdsync block (JSON)
  */
 ZmRequestMgr.prototype._offlineHandler =
 function(account) {
@@ -333,15 +368,13 @@ function(account) {
     }
 };
 
-ZmRequestMgr.showOfflineError = function(){
-    if(ZmRequestMgr.offlineError) {
-        if(ZmRequestMgr.offlineError.exception) {
-            appCtxt.getAppController().popupErrorDialog(ZmRequestMgr.offlineError.message, ZmRequestMgr.offlineError.exception, null, true);
-        } else {
-            appCtxt.getAppController().popupErrorDialog(ZmRequestMgr.offlineError.message, null, null, true);            
-        }
-    }
-}
+ZmRequestMgr.showOfflineError =
+function(){
+	if (ZmRequestMgr.offlineError) {
+		appCtxt.getAppController().popupErrorDialog(ZmRequestMgr.offlineError.message, ZmRequestMgr.offlineError.exception, null, true);
+	}
+};
+
 /**
  * Handles the <notify> block of a response's SOAP header.
  *
