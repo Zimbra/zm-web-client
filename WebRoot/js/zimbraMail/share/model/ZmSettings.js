@@ -110,7 +110,7 @@ function(list) {
 		if (setting) {
 			setting.setValue(val);
 		} else {
-			DBG.println(AjxDebug.DBG1, "*** Unrecognized setting: " + i);
+			DBG.println(AjxDebug.DBG3, "*** Unrecognized setting: " + i);
 		}
 	}
 };
