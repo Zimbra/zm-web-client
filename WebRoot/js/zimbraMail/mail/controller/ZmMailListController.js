@@ -993,7 +993,8 @@ function() {
 
 		var normalizedFolderId = ZmOrganizer.normalizeId(folderId);
         if ((normalizedFolderId == ZmFolder.ID_INBOX) || !hasExternalAccounts) {
-        	this._app._mailSearch();
+        	// call explicitly from mail app (this may be mixed ctlr) - bug 23268
+        	appCtxt.getApp(ZmApp.MAIL)._mailSearch();
         }
     }
 };
