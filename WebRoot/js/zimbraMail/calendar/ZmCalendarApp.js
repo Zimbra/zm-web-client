@@ -83,6 +83,7 @@ function() {
 
 ZmCalendarApp.prototype._defineAPI =
 function() {
+	AjxDispatcher.setPackageLoadFunction("CalendarCore", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.setPackageLoadFunction("Calendar", new AjxCallback(this, this._postLoad, ZmOrganizer.CALENDAR));
 	AjxDispatcher.setPackageLoadFunction("CalendarAppt", new AjxCallback(this, this._postLoadAppt, ZmOrganizer.CALENDAR));		
 	AjxDispatcher.registerMethod("GetCalController", "CalendarCore", new AjxCallback(this, this.getCalController));
@@ -236,6 +237,7 @@ function() {
 						 itemClass:		"ZmAppt",
 						 node:			"appt",
 						 organizer:		ZmOrganizer.CALENDAR,
+						 dropTargets:	[ZmOrganizer.TAG, ZmOrganizer.CALENDAR],
 						 searchType:	"appointment",
 						 resultsList:
 	   AjxCallback.simpleClosure(function(search) {

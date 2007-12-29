@@ -119,11 +119,6 @@ function(parent, type, id) {
 
 // Protected methods
 
-ZmAddrBookTreeController.prototype._getDropTarget =
-function() {
-	return (new DwtDropTarget(["ZmAddrBook, ZmContact"]));
-};
-
 ZmAddrBookTreeController.prototype._getAllowedSubTypes =
 function() {
 	var types = {};

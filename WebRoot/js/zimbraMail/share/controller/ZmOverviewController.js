@@ -105,13 +105,19 @@ function(overviewId) {
  * Returns the given tree controller.
  *
  * @param treeId		[constant]		organizer type
+ * @param noCreate		[boolean]*		if true, only returned an already created controller
  */
 ZmOverviewController.prototype.getTreeController =
-function(treeId) {
+function(treeId, noCreate) {
 	if (!treeId) { return null; }
-	if (!this._controller[treeId]) {
-		var treeControllerCtor = eval(ZmOverviewController.CONTROLLER[treeId]);
-		this._controller[treeId] = new treeControllerCtor(treeId);
+	if (!this._controller[treeId] && !noCreate) {
+		var className = ZmOverviewController.CONTROLLER[treeId];
+		if (className && window[className]) { // make sure the class has been loaded
+			var treeControllerCtor = eval(ZmOverviewController.CONTROLLER[treeId]);
+			if (treeControllerCtor) {
+				this._controller[treeId] = new treeControllerCtor(treeId);
+			}
+		}
 	}
 	return this._controller[treeId];
 };

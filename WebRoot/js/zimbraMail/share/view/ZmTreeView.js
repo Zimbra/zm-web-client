@@ -300,8 +300,12 @@ function(parentNode, organizer, index, noTooltips) {
 			ti.setToolTipContent(tooltip);
 		}
 	}
-	if (this._dragSrc) ti.setDragSource(this._dragSrc);
-	if (this._dropTgt) ti.setDropTarget(this._dropTgt);
+	if (this._dragSrc) {
+		ti.setDragSource(this._dragSrc);
+	}
+	if (this._dropTgt) {
+		ti.setDropTarget(this._dropTgt);
+	}
 	this._treeItemHash[organizer.id] = ti;
 
 	if (ZmTreeView.ADD_SEP[organizer.nId]) {
@@ -313,8 +317,9 @@ function(parentNode, organizer, index, noTooltips) {
 		this._render({treeNode:ti, organizer:organizer});
 	}
 
-	if (ds && ds.type == ZmAccount.IMAP)
+	if (ds && ds.type == ZmAccount.IMAP) {
 		ti.setExpanded(true);
+	}
 
 	return ti;
 };

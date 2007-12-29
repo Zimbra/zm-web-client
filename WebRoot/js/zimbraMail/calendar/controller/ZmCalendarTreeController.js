@@ -17,7 +17,7 @@
 
 ZmCalendarTreeController = function() {
 
-	ZmTreeController.call(this, ZmOrganizer.CALENDAR, new DwtDropTarget(["ZmAppt"]));
+	ZmTreeController.call(this, ZmOrganizer.CALENDAR);
 
 	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);

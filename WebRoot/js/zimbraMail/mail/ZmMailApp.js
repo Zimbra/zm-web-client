@@ -80,6 +80,7 @@ function() {
 
 ZmMailApp.prototype._defineAPI =
 function() {
+	AjxDispatcher.setPackageLoadFunction("MailCore", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.setPackageLoadFunction("Mail", new AjxCallback(this, this._postLoad));
 	AjxDispatcher.registerMethod("Compose", ["MailCore", "Mail"], new AjxCallback(this, this.compose));
 	AjxDispatcher.registerMethod("GetComposeController", ["MailCore", "Mail"], new AjxCallback(this, this.getComposeController));
@@ -549,6 +550,7 @@ function() {
 						 itemClass:		"ZmConv",
 						 node:			"c",
 						 organizer:		ZmOrganizer.FOLDER,
+						 dropTargets:	[ZmOrganizer.FOLDER, ZmOrganizer.TAG, ZmOrganizer.ZIMLET],
 						 searchType:	"conversation",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
@@ -565,6 +567,7 @@ function() {
 						 itemClass:		"ZmMailMsg",
 						 node:			"m",
 						 organizer:		ZmOrganizer.FOLDER,
+						 dropTargets:	[ZmOrganizer.FOLDER, ZmOrganizer.TAG, ZmOrganizer.ZIMLET],
 						 searchType:	"message",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
@@ -574,7 +577,8 @@ function() {
 						});
 
 	ZmItem.registerItem(ZmItem.ATT,
-						{nameKey:		"attachment",
+						{app:			ZmApp.MAIL,
+						 nameKey:		"attachment",
 						 icon:			"Attachment",
 						 itemClass:		"ZmMimePart",
 						 node:			"mp",

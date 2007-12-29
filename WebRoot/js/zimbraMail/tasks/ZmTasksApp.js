@@ -43,6 +43,7 @@ function() {
 
 ZmTasksApp.prototype._defineAPI =
 function() {
+	AjxDispatcher.setPackageLoadFunction("TasksCore", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.setPackageLoadFunction("Tasks", new AjxCallback(this, this._postLoad, ZmOrganizer.TASKS));
 	AjxDispatcher.registerMethod("GetTaskListController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskListController));
 	AjxDispatcher.registerMethod("GetTaskController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskController));
@@ -66,6 +67,7 @@ function() {
 						 itemClass:		"ZmTask",
 						 node:			"task",
 						 organizer:		ZmOrganizer.TASKS,
+						 dropTargets:	[ZmOrganizer.TAG],
 						 searchType:	"task",
 						 resultsList:
 		   AjxCallback.simpleClosure(function(search) {

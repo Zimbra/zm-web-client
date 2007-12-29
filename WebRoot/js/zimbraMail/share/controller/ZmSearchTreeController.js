@@ -25,8 +25,7 @@
  */
 ZmSearchTreeController = function() {
 
-	var dropTgt = new DwtDropTarget("ZmSearchFolder");
-	ZmFolderTreeController.call(this, ZmOrganizer.SEARCH, dropTgt);
+	ZmFolderTreeController.call(this, ZmOrganizer.SEARCH);
 
 	this._listeners[ZmOperation.RENAME_SEARCH] = new AjxListener(this, this._renameListener);
 	

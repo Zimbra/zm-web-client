@@ -164,6 +164,13 @@ function(item, params) {
 	if (params.node) {
 		ZmList.ITEM_TYPE[params.node] = item;
 	}
+	
+	if (params.dropTargets) {
+		if (!ZmApp.DROP_TARGETS[params.app]) {
+			ZmApp.DROP_TARGETS[params.app] = {};
+		}
+		ZmApp.DROP_TARGETS[params.app][item] = params.dropTargets;
+	}
 };
 
 /**

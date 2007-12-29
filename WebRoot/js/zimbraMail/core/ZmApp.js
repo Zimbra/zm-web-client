@@ -42,6 +42,8 @@ ZmApp = function(name, container, parentController) {
 	this._deferredFolderHash = {};
 	this._deferredNotifications = [];
 	
+	ZmApp.DROP_TARGETS[name] = {};
+	
 	this._defineAPI();
 	if (!parentController) {
 		this._registerSettings();
@@ -92,7 +94,8 @@ ZmApp.OPS_R					= {};	// map of operation ID to app
 ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 ZmApp.UPSELL_URL			= {};	// URL for content of upsell
-ZmApp.SUPPORTS_MULTI_MBOX	= {};	// whether this app is supports multiple mailboxes
+ZmApp.SUPPORTS_MULTI_MBOX	= {};	// whether this app supports multiple mailboxes
+ZmApp.DROP_TARGETS			= {};	// drop targets (organizers) by item/organizer type
 
 // assistants for each app; each value is a hash where key is the name of the
 // assistant class and value is the required package
@@ -571,6 +574,15 @@ function(params) {
 };
 
 /**
+ * Default function to run after an app's core package has been loaded. It assumes that the
+ * classes that define items and organizers for this app are in the core package.
+ */
+ZmApp.prototype._postLoadCore =
+function() {
+	this._setupDropTargets();
+};
+
+/**
  * Default function to run after an app's main package has been loaded.
  */
 ZmApp.prototype._postLoad =
@@ -591,6 +603,28 @@ ZmApp.prototype._handleRefresh =
 function(refresh) {
 	if (this._overviewPanelContent) {
 		this.resetOverview();
+	}
+};
+
+ZmApp.prototype._setupDropTargets =
+function() {
+	var appTargets = ZmApp.DROP_TARGETS[this._name];
+	for (var type in appTargets) {
+		var targets = appTargets[type];
+		for (var i = 0; i < targets.length; i++) {
+			var orgType = targets[i];
+			var ctlr = appCtxt.getOverviewController().getTreeController(orgType, true);
+			var className = ZmList.ITEM_CLASS[type] || ZmOrganizer.ORG_CLASS[type];
+			if (ctlr) {
+				DBG.println("Ctlr already created: " + orgType);
+				ctlr._dropTgt.addTransferType(className);
+			} else {
+				if (!ZmTreeController.DROP_SOURCES[orgType]) {
+					ZmTreeController.DROP_SOURCES[orgType] = [];
+				}
+				ZmTreeController.DROP_SOURCES[orgType].push(className);
+			}
+		}
 	}
 };
 

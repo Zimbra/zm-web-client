@@ -267,6 +267,13 @@ function(org, params) {
 		ZmShortcut.ORG_KEY[org] = params.shortcutKey;
 		ZmShortcut.ORG_TYPE[params.shortcutKey] = org;
 	}
+	
+	if (params.dropTargets) {
+		if (!ZmApp.DROP_TARGETS[params.app]) {
+			ZmApp.DROP_TARGETS[params.app] = {};
+		}
+		ZmApp.DROP_TARGETS[params.app][org] = params.dropTargets;
+	}
 };
 
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {};

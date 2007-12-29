@@ -15,13 +15,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBriefcaseTreeController = function(type, dropTgt) {
+ZmBriefcaseTreeController = function(type) {
 	
 	type = type ? type : ZmOrganizer.BRIEFCASE;
 
-	dropTgt = dropTgt ? dropTgt :  new DwtDropTarget(["ZmBriefcaseItem"]);
-	
-	ZmTreeController.call(this, type, dropTgt);
+	ZmTreeController.call(this, type);
 
 	this._listeners[ZmOperation.NEW_BRIEFCASEITEM] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_BRIEFCASE] = new AjxListener(this, this._shareBriefcaseListener);

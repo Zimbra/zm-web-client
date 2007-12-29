@@ -27,11 +27,10 @@
  * @author Conrad Damon
  * 
  * @param type		[constant]		type of organizer we are displaying/controlling
- * @param dropTgt	[DwtDropTgt]	drop target for this type
  */
-ZmTreeController = function(type, dropTgt) {
+ZmTreeController = function(type) {
 
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 
 	ZmController.call(this, null);
 
@@ -51,10 +50,8 @@ ZmTreeController = function(type, dropTgt) {
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-	this._dropTgt = dropTgt;
-	if (this._dropTgt) {
-		this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
-	}
+	this._dropTgt = new DwtDropTarget(ZmTreeController.DROP_SOURCES[type]);
+	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 
 	this._treeView = {};	// hash of tree views of this type, by overview ID
 	this._hideEmpty = {};	// which tree views to hide if they have no data
@@ -76,6 +73,9 @@ ZmTreeController.COLOR_CLASS[ZmOrganizer.C_RED]		= "RedBg";
 ZmTreeController.COLOR_CLASS[ZmOrganizer.C_YELLOW]	= "YellowBg";
 ZmTreeController.COLOR_CLASS[ZmOrganizer.C_PINK]	= "PinkBg";
 ZmTreeController.COLOR_CLASS[ZmOrganizer.C_GRAY]	= "Gray";	// not GrayBg so it doesn't blend in
+
+// valid sources for drop target for different tree controllers
+ZmTreeController.DROP_SOURCES = {};
 
 // Abstract protected methods
 
@@ -823,12 +823,8 @@ ZmTreeController.prototype._dragListener =
 function(ev) {
 	switch (ev.action) {
 		case DwtDragEvent.SET_DATA:
-			ev.srcData = ev.srcControl.getData(Dwt.KEY_OBJECT);
+			ev.srcData = {data:ev.srcControl.getData(Dwt.KEY_OBJECT), controller:this};
 			break;
-		case DwtDragEvent.DRAG_START:
-		case DwtDragEvent.DRAG_END:
-		default:
-			break;		
 	}
 };
 

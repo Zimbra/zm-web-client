@@ -17,16 +17,7 @@
 
 ZmZimletTreeController = function() {
 
-	var list = ["ZmFolder"];
-	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		list.push("ZmMailMsg");
-		list.push("ZmConv");
-	}
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		list.push("ZmContact");
-	}
-	dropTgt = new DwtDropTarget(list);
-	ZmTreeController.call(this, ZmOrganizer.ZIMLET, dropTgt);
+	ZmTreeController.call(this, ZmOrganizer.ZIMLET);
 
 	this._eventMgrs = {};
 }
@@ -160,13 +151,18 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
 		ev.doIt = false;
 		return;
 	}
-	try {
-		z = z.getZimletContext();
-	} catch(ex) {
+	if (z.getZimletContext) {
+		try {
+			z = z.getZimletContext();
+		} catch(ex) {
+			ev.doIt = false;
+			return;
+		}
+	} else {
 		ev.doIt = false;
 		return;
 	}
-	var srcData = ev.srcData.data ? ev.srcData.data : ev.srcData;
+	var srcData = ev.srcData.data;
 	if (!z || !srcData) {
 		ev.doIt = false;
 		return;

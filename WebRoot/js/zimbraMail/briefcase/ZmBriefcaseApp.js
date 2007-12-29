@@ -23,11 +23,11 @@ ZmBriefcaseApp = function(container, parentController) {
 // Organizer and item-related constants
 ZmEvent.S_PAGE					= "PAGE";
 ZmEvent.S_DOCUMENT				= "DOCUMENT";
-ZmEvent.S_BRIEFCASE				= "BRIEFCASE";
+ZmEvent.S_BRIEFCASE				= "BRIEFCASE_ITEM";
 ZmItem.PAGE						= ZmEvent.S_PAGE;
 ZmItem.DOCUMENT					= ZmEvent.S_DOCUMENT;
 ZmItem.BRIEFCASE				= ZmEvent.S_BRIEFCASE;
-ZmOrganizer.BRIEFCASE			= ZmEvent.S_BRIEFCASE;
+ZmOrganizer.BRIEFCASE			= "BRIEFCASE";
 
 // App-related constants
 ZmApp.BRIEFCASE							= "Briefcase";
@@ -54,6 +54,7 @@ ZmBriefcaseApp.prototype._notebookCache;
 
 ZmBriefcaseApp.prototype._defineAPI =
 function() {
+	AjxDispatcher.setPackageLoadFunction("BriefcaseCore", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.setPackageLoadFunction("Briefcase", new AjxCallback(this, this._postLoad, ZmOrganizer.BRIEFCASE));
 	AjxDispatcher.registerMethod("GetBriefcaseController", ["BriefcaseCore", "Briefcase"], new AjxCallback(this, this.getBriefcaseController));	
 };
@@ -80,6 +81,7 @@ function() {
 						 itemClass:		"ZmBriefcaseItem",
 						 node:			"doc",
 						 organizer:		ZmOrganizer.BRIEFCASE,
+						 dropTargets:	[ZmOrganizer.TAG],
 						 searchType:	"document",
 						 resultsList:
 						AjxCallback.simpleClosure(function(search) {

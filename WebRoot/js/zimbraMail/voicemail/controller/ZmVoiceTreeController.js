@@ -103,11 +103,6 @@ function() {
 	return [ZmOperation.EMPTY_FOLDER];
 };
 
-ZmVoiceTreeController.prototype._getDropTarget =
-function() {
-	return (new DwtDropTarget(["ZmVoicemail"]));
-};
-
 ZmVoiceTreeController.prototype._getAllowedSubTypes =
 function() {
 	var types = {};

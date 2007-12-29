@@ -31,8 +31,7 @@ ZmFolderTreeController = function(type, dropTgt) {
 	if (arguments.length == 0) { return; }
 
 	type = type ? type : ZmOrganizer.FOLDER;
-	dropTgt = dropTgt ? dropTgt : this._getDropTarget();
-	ZmTreeController.call(this, type, dropTgt);
+	ZmTreeController.call(this, type);
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
@@ -242,17 +241,6 @@ function(folder) {
 	}
 };
 
-// override this method if you want different drop targets
-ZmFolderTreeController.prototype._getDropTarget =
-function() {
-	var list = ["ZmFolder", "ZmSearchFolder"];
-	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		list.push("ZmMailMsg");
-		list.push("ZmConv");
-	}
-	return (new DwtDropTarget(list));
-};
-
 
 // Actions
 
@@ -347,9 +335,11 @@ function(ev) {
 ZmFolderTreeController.prototype._dragListener =
 function(ev) {
 	if (ev.action == DwtDragEvent.DRAG_START) {
-		var folder = ev.srcData = ev.srcControl.getData(Dwt.KEY_OBJECT);
-		if (!(folder instanceof ZmFolder) || folder.isSystem() || folder.isSyncIssuesFolder())
+		var folder = ev.srcControl.getData(Dwt.KEY_OBJECT);
+		ev.srcData = {data:folder, controller:this};
+		if (!(folder instanceof ZmFolder) || folder.isSystem() || folder.isSyncIssuesFolder()) {
 			ev.operation = Dwt.DND_DROP_NONE;
+		}
 	}
 };
 
@@ -365,32 +355,29 @@ function(ev) {
 ZmFolderTreeController.prototype._dropListener =
 function(ev) {
 	var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
-	var srcData = ev.srcData;
+	var data = ev.srcData.data;
 
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		var type = ev.targetControl.getData(ZmTreeView.KEY_TYPE);
-		if (srcData instanceof ZmFolder) {
-			ev.doIt = dropFolder.mayContain(srcData, type);
-		} else if (srcData instanceof ZmTag) {
+		if (data instanceof ZmFolder) {
+			ev.doIt = dropFolder.mayContain(data, type);
+		} else if (data instanceof ZmTag) {
 			ev.doIt = false; // tags cannot be moved
 		} else {
-			if (this._dropTgt.isValidTarget(srcData.data)) {
-				ev.doIt = dropFolder.mayContain(srcData.data, type);
+			if (this._dropTgt.isValidTarget(data)) {
+				ev.doIt = dropFolder.mayContain(data, type);
 
 				var action = null;
 				var plusDiv = null;
-				var actionData = (!(srcData.data instanceof Array))
-					? [srcData.data]
-					: srcData.data;
+				var actionData = (!(data instanceof Array)) ? [data] : data;
 
 				// walk thru the array and find out what action is allowed
 				for (var i = 0; i < actionData.length; i++) {
-					if (actionData[i] instanceof ZmItem)
+					if (actionData[i] instanceof ZmItem) {
 						action |= actionData[i].getDefaultDndAction();
+					}
 				}
-				plusDiv = actionData.length == 1
-					? ev.dndProxy.firstChild.nextSibling
-					: ev.dndProxy.firstChild.nextSibling.nextSibling;
+				plusDiv = (actionData.length == 1) ? ev.dndProxy.firstChild.nextSibling	: ev.dndProxy.firstChild.nextSibling.nextSibling;
 
 				if (action && plusDiv) {
 					// TODO - what if action is ZmItem.DND_ACTION_BOTH ??
@@ -402,11 +389,10 @@ function(ev) {
 			}
 		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-		if (srcData instanceof ZmFolder) {
-			this._doMove(srcData, dropFolder);
+		if (data instanceof ZmFolder) {
+			this._doMove(data, dropFolder);
 		} else {
-			var data = srcData.data;
-			var ctlr = srcData.controller;
+			var ctlr = ev.srcData.controller;
 			var items = (data instanceof Array) ? data : [data];
 			ctlr._doMove(items, dropFolder);
 		}

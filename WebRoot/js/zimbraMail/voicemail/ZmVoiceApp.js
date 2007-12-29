@@ -57,6 +57,7 @@ function() {
 
 ZmVoiceApp.prototype._defineAPI =
 function() {
+	AjxDispatcher.setPackageLoadFunction("Voicemail", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.registerMethod("GetVoiceController", "Voicemail", new AjxCallback(this, this.getVoiceController));
 	AjxDispatcher.registerMethod("GetCallListController", "Voicemail", new AjxCallback(this, this.getCallListController));
 	AjxDispatcher.registerMethod("GetVoicePrefsController", ["PreferencesCore", "Preferences", "Voicemail"], new AjxCallback(this, this.GetVoicePrefsController));
@@ -72,6 +73,7 @@ function() {
 						 itemClass:		"ZmVoicemail",
 						 node:			"vm",
 						 organizer:		ZmOrganizer.VOICE,
+						 dropTargets:	[ZmOrganizer.VOICE],
 						 searchType:	"voicemail",
 						 resultsList:	AjxCallback.simpleClosure(function(search) {
 											AjxDispatcher.require("Voicemail");

@@ -25,25 +25,7 @@
  */
 ZmTagTreeController = function() {
 
-	var list = [];
-	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		list.push("ZmMailMsg");
-		list.push("ZmConv");
-	}
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		list.push("ZmContact");
-	}
-	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-		list.push("ZmAppt");
-	}
-	if (appCtxt.get(ZmSetting.TASKS_ENABLED)) {
-		list.push("ZmTask");
-	}
-	if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
-		list.push("ZmPage");
-		list.push("ZmDocument");
-	}
-	ZmTreeController.call(this, ZmOrganizer.TAG, new DwtDropTarget(list));
+	ZmTreeController.call(this, ZmOrganizer.TAG);
 
 	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_TAG] = new AjxListener(this, this._renameListener);
@@ -201,8 +183,8 @@ function(ev) {
 */
 ZmTagTreeController.prototype._dropListener =
 function(ev) {
+	var data = ev.srcData.data;
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		var data = ev.srcData.data;
 		var sample = (data instanceof Array) ? data[0] : data;
 		var tag = ev.targetControl.getData(Dwt.KEY_OBJECT);
 		if (tag.id == ZmOrganizer.ID_ROOT) {
@@ -215,7 +197,6 @@ function(ev) {
 			ev.doIt = this._dropTgt.isValidTarget(data);
 		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-		var data = ev.srcData.data;
 		var ctlr = ev.srcData.controller;
 		var items = (data instanceof Array) ? data : [data];
 		ctlr._doTag(items, ev.targetControl.getData(Dwt.KEY_OBJECT), true);

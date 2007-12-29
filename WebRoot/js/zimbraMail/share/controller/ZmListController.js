@@ -701,8 +701,9 @@ function(ev) {
 	var item = div ? view.getItemFromElement(div) : null
 
 	// only tags can be dropped on us
+	var data = ev.srcData.data;
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		ev.doIt = (item && this._dropTgt.isValidTarget(ev.srcData));
+		ev.doIt = (item && this._dropTgt.isValidTarget(data));
 		DBG.println(AjxDebug.DBG3, "DRAG_ENTER: doIt = " + ev.doIt);
 		view.dragSelect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
@@ -714,8 +715,7 @@ function(ev) {
 			if (vec.contains(item))
 				items = sel;
 		}
-		var tag = ev.srcData;
-		this._doTag(items, tag, true);
+		this._doTag(items, data, true);
 	} else if (ev.action == DwtDropEvent.DRAG_LEAVE) {
 		view.dragDeselect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_OP_CHANGED) {

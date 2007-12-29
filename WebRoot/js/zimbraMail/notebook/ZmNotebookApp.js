@@ -53,6 +53,7 @@ ZmNotebookApp.prototype._notebookCache;
 
 ZmNotebookApp.prototype._defineAPI =
 function() {
+	AjxDispatcher.setPackageLoadFunction("NotebookCore", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.setPackageLoadFunction("Notebook", new AjxCallback(this, this._postLoad, ZmOrganizer.NOTEBOOK));
 	AjxDispatcher.registerMethod("GetNotebookController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookController));
 	AjxDispatcher.registerMethod("GetPageEditController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageEditController));
@@ -91,6 +92,7 @@ function() {
 						 itemClass:		"ZmPage",
 						 node:			"w",
 						 organizer:		ZmOrganizer.NOTEBOOK,
+						 dropTargets:	[ZmOrganizer.TAG],
 						 searchType:	"wiki",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
@@ -107,6 +109,7 @@ function() {
 						 itemClass:		"ZmDocument",
 						 node:			"doc",
 						 organizer:		ZmOrganizer.NOTEBOOK,
+						 dropTargets:	[ZmOrganizer.TAG],
 						 searchType:	"document",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
