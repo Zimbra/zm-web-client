@@ -81,7 +81,7 @@ function() {
 						 itemClass:		"ZmBriefcaseItem",
 						 node:			"doc",
 						 organizer:		ZmOrganizer.BRIEFCASE,
-						 dropTargets:	[ZmOrganizer.TAG],
+						 dropTargets:	[ZmOrganizer.TAG, ZmOrganizer.BRIEFCASE],
 						 searchType:	"document",
 						 resultsList:
 						AjxCallback.simpleClosure(function(search) {
