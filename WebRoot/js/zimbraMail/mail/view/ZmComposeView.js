@@ -1327,7 +1327,7 @@ function(action, msg, extraBodyText, incOption) {
 
 	// get reply/forward prefs as necessary
 	if (!incOption) {
-		var isReply = action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL;
+		var isReply = (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
 		if (isReply || isInviteReply) {
 			incOption = identity.getReplyOption();
 		} else if (action == ZmOperation.FORWARD_INLINE) {
@@ -1337,6 +1337,9 @@ function(action, msg, extraBodyText, incOption) {
 			}
 		} else if (action == ZmOperation.FORWARD_ATT) {
 			incOption = ZmSetting.INCLUDE_ATTACH;
+		}
+		if (action == ZmOperation.FORWARD_INLINE && incOption != ZmSetting.INCLUDE_PREFIX) {
+			incOption = ZmSetting.INCLUDE;
 		}
 	}
 
@@ -1403,10 +1406,7 @@ function(action, msg, extraBodyText, incOption) {
 			body = body.replace(ZmItem.NOTES_SEPARATOR, "");
 		}
 
-		// bug fix# 3215 - dont allow prefixing for html msgs
-		if ((action == ZmOperation.FORWARD_INLINE && incOption != ZmSetting.INCLUDE_PREFIX) || 
-			 incOption == ZmSetting.INCLUDE || composingHtml) 
-		{
+		if (incOption == ZmSetting.INCLUDE) {
 			var msgText = (action == ZmOperation.FORWARD_INLINE) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
 			var text = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES, crlf].join("");
 			for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
@@ -1432,28 +1432,30 @@ function(action, msg, extraBodyText, incOption) {
 				}
 				preface = ZmComposeView._replyPrefixFormatter.format(from.toString());
 			}
+			preface = preface + (composingHtml ? '<br>' : '\n');
 			var prefix = identity.getPrefix();
-			if (incOption == ZmSetting.INCLUDE_PREFIX)
-			{
-				value += leadingText + preface + AjxStringUtil.wordWrap(body, ZmComposeView.WRAP_LENGTH, prefix + " ");
-			}
-			else if (incOption == ZmSetting.INCLUDE_SMART)
-			{
-				var chunks = AjxStringUtil.getTopLevel(body);
-				for (var i = 0; i < chunks.length; i++)
-					chunks[i] = AjxStringUtil.wordWrap(chunks[i], ZmComposeView.WRAP_LENGTH, prefix + " ");
-				var text = chunks.length ? chunks.join('\n\n') : body;
+			var sep = composingHtml ? '<br>' : '\n';
+			var wrapParams = {text:body, len:ZmComposeView.WRAP_LENGTH, pre:prefix + " ", eol:sep, htmlMode:composingHtml};
+			if (incOption == ZmSetting.INCLUDE_PREFIX) {
+				value += leadingText + preface + AjxStringUtil.wordWrap(wrapParams);
+			} else if (incOption == ZmSetting.INCLUDE_SMART) {
+				var chunks = AjxStringUtil.getTopLevel(body, sep, composingHtml);
+				for (var i = 0; i < chunks.length; i++) {
+					wrapParams.text = chunks[i];
+					chunks[i] = AjxStringUtil.wordWrap(wrapParams);
+				}
+				var text = chunks.length ? chunks.join(sep + sep) : body;
 				value += leadingText + preface + text;
-			}
-			else if (action == ZmOperation.REPLY_ACCEPT ||
+			} else if (action == ZmOperation.REPLY_ACCEPT ||
 					 action == ZmOperation.REPLY_DECLINE ||
-					 action == ZmOperation.REPLY_TENTATIVE)
-			{
+					 action == ZmOperation.REPLY_TENTATIVE)	{
+
 				var bp = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
 				var bodyStr = bp ? (bp.content.replace(/\r\n/g, "\n")) : "";
 
 				// bug 5122: always show original meeting details
-				value = preface + AjxStringUtil.wordWrap(bodyStr, ZmComposeView.WRAP_LENGTH, prefix + " ");
+				wrapParams.text = bodyStr;
+				value = preface + AjxStringUtil.wordWrap(wrapParams);
 			}
 		}
 	}
