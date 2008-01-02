@@ -481,7 +481,9 @@ function(ev) {
 	// msg moved or deleted	
 	if (!isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
 		var	conv = appCtxt.getById(item.cid);
-		ev.handled = true;
+		if (appCtxt.getCurrentViewId() == this._mode) {
+			ev.handled = true;
+		}
 		if (conv) {
 			if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
 				// msg marked as Junk, or deleted via Empty Trash
