@@ -168,6 +168,13 @@ function(item, params) {
 	return div;
 };
 
+ZmConvListView.prototype._getRowClass =
+function(item) {
+	return (item.type == ZmItem.MSG) ?
+		ZmMailMsgListView.prototype._getRowClass.apply(this, arguments) :
+		ZmMailListView.prototype._getRowClass.apply(this, arguments);
+};
+
 // set isMatched for msgs	
 ZmConvListView.prototype._addParams =
 function(item, params) {

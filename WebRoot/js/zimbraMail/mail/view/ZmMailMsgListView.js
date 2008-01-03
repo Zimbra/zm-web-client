@@ -96,7 +96,7 @@ function(base, item, params) {
 ZmMailMsgListView.prototype._getRowClass =
 function(msg) {
 	var classes = [];
-	if (this._mode == ZmController.CONV_VIEW) {
+	if (this._mode != ZmController.TRAD_VIEW) {
 		var folder = appCtxt.getById(msg.folderId);
 		if (folder && folder.isInTrash()) {
 			classes.push("Trash");
