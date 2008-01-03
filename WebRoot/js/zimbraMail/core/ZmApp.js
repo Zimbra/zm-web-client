@@ -579,7 +579,9 @@ function(params) {
  */
 ZmApp.prototype._postLoadCore =
 function() {
-	this._setupDropTargets();
+	if (!appCtxt.isChildWindow) {
+		this._setupDropTargets();
+	}
 };
 
 /**
