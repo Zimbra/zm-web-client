@@ -690,7 +690,7 @@ line-height:normal;
 /* ??? RENAME */
 .ZmContactSimpleView {
 	@ListBg@
-	@ListBorder@
+	border:solid @darken(AppC,50)@; border-width:1px 1px 1px 1px;
 }
 
 .ZmContactSimpleView .SimpleContact-right,
