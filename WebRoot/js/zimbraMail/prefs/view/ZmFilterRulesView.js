@@ -173,7 +173,7 @@ function(html, idx, item, field, colIdx, params) {
 		html[idx++] = "onchange='ZmFilterListView._activeStateChange' ";
 		html[idx++] = ">";
 	} else if (field == ZmFilterListView.COL_NAME) {
-		html[idx++] = item.getName();
+		html[idx++] = AjxStringUtil.stripTags(item.getName(), true);
 	}
 
 	return idx;

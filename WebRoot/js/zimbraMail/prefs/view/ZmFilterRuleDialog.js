@@ -91,7 +91,7 @@ function(rule, editMode, referenceRule) {
 	this.setTitle(rule ? ZmMsg.editFilter : ZmMsg.addFilter);
 
 	var nameField = document.getElementById(this._nameInputId);
-	var name = rule ? rule.getName() : null;
+	var name = rule ? AjxStringUtil.stripTags(rule.getName(), true) : null;
 	nameField.value = name ? name : "";
 
 	var activeField = document.getElementById(this._activeCheckboxId);
@@ -753,11 +753,15 @@ function(ev) {
 	var rule = this._rule;
 	var msg = null;
 	var name = document.getElementById(this._nameInputId).value;
-	if (!name)
+	if (!name) {
 		msg = ZmMsg.filterErrorNoName;
+	} else {
+		name = AjxStringUtil.stripTags(name, true);
+	}
 	var rule1 = this._rules.getRuleByName(name);
-	if (rule1 && (rule1 != rule))
+	if (rule1 && (rule1 != rule)) {
 		msg = ZmMsg.filterErrorNameExists;
+	}
 	if (msg) {
 		var msgDialog = appCtxt.getMsgDialog();
     	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
