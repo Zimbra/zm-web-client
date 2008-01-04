@@ -267,7 +267,8 @@ function() {
 ZmItem.prototype.getTagImageInfo =
 function() {
 	var tagImageInfo;
-	if (!this.tags.length) {
+	// bug fix #23317 - dont show tag info for shared items until bug 5210 is fixed
+	if (!this.tags.length || this.isShared()) {
 		tagImageInfo = "Blank_16";
 	} else if (this.tags.length == 1) {
 		var tag = appCtxt.getById(this.tags[0]);

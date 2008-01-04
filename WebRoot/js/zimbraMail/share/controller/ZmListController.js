@@ -703,7 +703,7 @@ function(ev) {
 	// only tags can be dropped on us
 	var data = ev.srcData.data;
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		ev.doIt = (item && this._dropTgt.isValidTarget(data));
+		ev.doIt = (item && !item.isShared() && this._dropTgt.isValidTarget(data));
 		DBG.println(AjxDebug.DBG3, "DRAG_ENTER: doIt = " + ev.doIt);
 		view.dragSelect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
