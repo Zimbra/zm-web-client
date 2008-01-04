@@ -813,7 +813,7 @@ ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
 	var args = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	var proto = appCtxt.get(ZmSetting.PROTOCOL_MODE);
-	proto = (proto == ZmSetting.PROTO_MIXED) ? ZmSetting.PROTO_HTTPS : ZmSetting.PROTO_HTTP;
+	proto = (proto == ZmSetting.PROTO_HTTP) ? ZmSetting.PROTO_HTTP : ZmSetting.PROTO_HTTPS;
 	var url = AjxUtil.formatUrl({protocol:proto, path:"/zimbra/h/changepass", qsReset:true});
 	window.open(url, "_blank", args);
 };
