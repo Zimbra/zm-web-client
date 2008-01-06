@@ -252,14 +252,16 @@ function(item) {
 	restUrl = this._controller.getApp().fixCrossDomainReference(restUrl);
 	var fileLink = ["<a ","href='",restUrl,"' target='_blank'>",name,"</a>"].join("");
 
+	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
+	
 	var prop = [
-		{name:"Name", value:fileLink},	
-		{name:"Path", value:path},
-		{name:"Size", value:AjxUtil.formatSize(item.size)},
-		{name:"Created", value:item.createDate},
-		{name:"Creator", value:item.creator},		
-		{name:"Modified", value:item.modifyDate},	
-		{name:"Modifier", value:item.modifier}									
+		{name:ZmMsg.name, value:fileLink},
+		{name:ZmMsg.path, value:path},
+		{name:ZmMsg.size, value:AjxUtil.formatSize(item.size)},
+		{name:ZmMsg.created, value:dateFormatter.format(item.createDate)},
+		{name:ZmMsg.creator, value:item.creator},		
+		{name:ZmMsg.modified, value:dateFormatter.format(item.modifyDate)},
+		{name:ZmMsg.modifier, value:item.modifier}									
 	];
 	
 	var imgSrc = restUrl.toLowerCase().match(/\.jpg$|\.gif$|\.jpeg$|\.bmp$$/) ? restUrl : null;

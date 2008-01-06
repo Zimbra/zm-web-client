@@ -49,23 +49,13 @@
     <c:set var="checkedCalendars" value="${requestScope.zimbra_target_item_id}"/>
 
     <%-- fetch mini cal appts first, so they are in cache, as well as any data neded by this view --%>
-
-    <c:set var="startOfMonth" value="${zm:getFirstDayOfMonthView(date, firstDOW)}"/>
-    <zm:getAppointmentSummaries box="${mailbox}" timezone="${timezone}" var="minicalappts" folderid="${checkedCalendars}" start="${startOfMonth.timeInMillis}" end="${zm:addDay(startOfMonth, 42).timeInMillis}" query="${requestScope.calendarQuery}" varexception="gasException"/>
-    <c:if test="${not empty gasException}">
-        <zm:getException var="error" exception="${gasException}"/>
-        <rest:status style="Critical">
-            <fmt:message key="${error.code}"/>
-        </rest:status>
-        <!-- ${fn:escapeXml(error.stackStrace)} -->
-    </c:if>
     <c:set var="multiDay">
         <rest:multiDay mailbox="${mailbox}" date="${date}" numdays="${numdays}" view="${view}" timezone="${timezone}" query="${requestScope.calendarQuery}"/>
     </c:set>
 
 </rest:handleError>
 
-<rest:view title="${requestScope.zimbra_target_item_name}: ${pageTitle}" rssfeed="${true}">
+<rest:view title="${not empty requestScope.zimbra_target_item_name ? requestScope.zimbra_target_item_name : requestScope.zimbra_target_account_name}: ${pageTitle}" rssfeed="${true}">
     <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
             <td style='padding:20px'>

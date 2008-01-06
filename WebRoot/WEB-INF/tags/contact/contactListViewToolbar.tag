@@ -47,7 +47,7 @@
                             <option disabled /><fmt:message key="actionOptSep"/>
                             <zm:forEachFolder var="folder">
                                 <c:if test="${folder.isContactMoveTarget and !folder.isTrash}">
-                                    <option value="m:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                                    <option value="m:${folder.id}" />${fn:escapeXml(zm:getFolderPath(pageContext, folder.id))}
                                 </c:if>
                             </zm:forEachFolder>
                         </select>

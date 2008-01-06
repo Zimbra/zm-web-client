@@ -168,6 +168,13 @@ function(item, params) {
 	return div;
 };
 
+ZmConvListView.prototype._getRowClass =
+function(item) {
+	return (item.type == ZmItem.MSG) ?
+		ZmMailMsgListView.prototype._getRowClass.apply(this, arguments) :
+		ZmMailListView.prototype._getRowClass.apply(this, arguments);
+};
+
 // set isMatched for msgs	
 ZmConvListView.prototype._addParams =
 function(item, params) {
@@ -477,11 +484,12 @@ function(ev) {
 
 	var fields = ev.getDetail("fields");
 	var isConv = (item.type == ZmItem.CONV);
+	var handled = false;
 	
-	// msg moved or deleted	
+	// msg moved or deleted
 	if (!isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
 		var	conv = appCtxt.getById(item.cid);
-		ev.handled = true;
+		handled = true;
 		if (conv) {
 			if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
 				// msg marked as Junk, or deleted via Empty Trash
@@ -513,7 +521,7 @@ function(ev) {
 					this._controller._list.remove(conv);	// complete list
 					ev.item = item = conv;
 					isConv = true;
-					ev.handled = false;
+					handled = false;
 				} else {
 					// normal case: just change folder name for msg
 					this._changeFolderName(item);
@@ -544,7 +552,7 @@ function(ev) {
 		var msgIndex = sortIndex || 0;
 		this._addRow(div, convIndex + msgIndex + 1);
 		this._msgRowIdList[item.cid].push(div.id);
-		ev.handled = true;
+		handled = ev.handled = true;
 	}
 
 	// virtual conv promoted to real conv, got new ID
@@ -607,7 +615,7 @@ function(ev) {
 		}
 	}
 
-	if (!ev.handled) {
+	if (!handled) {
 		isConv ? ZmMailListView.prototype._changeListener.apply(this, arguments) :
 				 ZmMailMsgListView.prototype._changeListener.apply(this, arguments);
 	}

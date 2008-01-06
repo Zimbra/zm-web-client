@@ -88,11 +88,6 @@ function() {
 	return ops;
 };
 
-ZmTaskTreeController.prototype._getDropTarget =
-function() {
-	return (new DwtDropTarget(["ZmTask"]));
-};
-
 
 // Listeners
 

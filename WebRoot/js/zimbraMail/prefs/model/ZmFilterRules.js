@@ -217,7 +217,7 @@ function(callback, result) {
 				
 			if (ruleNode.action) {
 				for (var j = 0; j < ruleNode.action.length; j++) {
-					var name = ZmFilterRule.A_VALUE_MAP[ruleNode.action[j].name];
+					var name = ZmFilterRule.A_VALUE_MAP[ruleNode.action[j].name.toLowerCase()];
 					var argNodes = ruleNode.action[j].arg;
 					var arg = null;
 					if (argNodes && argNodes.length > 0) {
@@ -391,7 +391,7 @@ ZmFilterRules.prototype._createConditionFromNode =
 function(node, rule) {
 	var name = node.name;
 	var subject = ZmFilterRule.C_VALUE_MAP[name];
-	var subjectMod = node.k0 ? node.k0.substring(2, node.k0.length - 2) : null;
+	var subjectMod = node.k0 ? node.k0.toLowerCase().substring(2, node.k0.length - 2) : null;
 	var subjectModKey = ZmFilterRule.C_VALUE_MAP[subjectMod];
 	// convert convenience headers
 	if (subjectModKey && (subject == ZmFilterRule.C_HEADER) && (ZmFilterRule.IS_HEADER[subjectMod])) {

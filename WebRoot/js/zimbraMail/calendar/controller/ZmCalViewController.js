@@ -1704,7 +1704,6 @@ function(params, callback) {
 
 	this._apptCache.clearCache();
 	this._viewMgr.setNeedsRefresh();
-	appCtxt.getSearchController().setEnabled(false);
 	this._userQuery = params.query;
 
 	// set start/end date boundaries
@@ -1729,7 +1728,6 @@ function(params, callback) {
 
 ZmCalViewController.prototype._searchResponseCallback =
 function(callback, list, userQuery) {
-	appCtxt.getSearchController().setEnabled(true);
 
 	this.show(null, null, true);	// always make sure a calendar view is being shown
 	this._userQuery = userQuery;	// cache the user-entered search query

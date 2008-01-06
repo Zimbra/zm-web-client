@@ -701,8 +701,9 @@ function(ev) {
 	var item = div ? view.getItemFromElement(div) : null
 
 	// only tags can be dropped on us
+	var data = ev.srcData.data;
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		ev.doIt = (item && this._dropTgt.isValidTarget(ev.srcData));
+		ev.doIt = (item && !item.isShared() && this._dropTgt.isValidTarget(data));
 		DBG.println(AjxDebug.DBG3, "DRAG_ENTER: doIt = " + ev.doIt);
 		view.dragSelect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
@@ -714,8 +715,7 @@ function(ev) {
 			if (vec.contains(item))
 				items = sel;
 		}
-		var tag = ev.srcData;
-		this._doTag(items, tag, true);
+		this._doTag(items, data, true);
 	} else if (ev.action == DwtDropEvent.DRAG_LEAVE) {
 		view.dragDeselect(div);
 	} else if (ev.action == DwtDropEvent.DRAG_OP_CHANGED) {
@@ -1152,8 +1152,13 @@ function(idx) {
 ZmListController.prototype._getMoreToReplenish =
 function(view, replCount, callback) {
 	if (this._list.hasMore()) {
+		// use a cursor if we can
+		var list = this._listView[view].getList();
+		var lastItem = list.getLast();
+		var lastSortVal = (lastItem && lastItem.id) ? lastItem.sf : null;
+		var lastId = lastSortVal ? lastItem.id : null;
 		var respCallback = new AjxCallback(this, this._handleResponseGetMoreToReplenish, [view, callback]);
-		this._search(view, this._list.size(), replCount, respCallback);
+		this._search(view, this._list.size(), replCount, respCallback, false, lastId, lastSortVal);
 	} else {
 		if (callback) {
 			callback.run();

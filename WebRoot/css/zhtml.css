@@ -286,9 +286,9 @@ A:visited { color: blue; }
 }
 
 .TbTop INPUT, .TbBottom INPUT {
-	padding: 0px;
-	margin: 0px;
-	border: 0px none;
+	padding: 0;
+	margin: 0;
+	border: none;
 	cursor: pointer;
 	text-align:left;
 	@FontSize-normal@
@@ -522,7 +522,7 @@ A:visited { color: blue; }
 	@FixBoxModel@
 	@InputField@
     height: auto;
-    width:95%;
+    width:100%;
 }
 
 .SearchFieldWidth{width: 100%; padding-right:5px;}

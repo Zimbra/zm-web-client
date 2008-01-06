@@ -1,5 +1,5 @@
 <!-- Show the quota bar and values -->
-<template id='share.Quota#UsedLimited'>
+<template id='share.Quota#UsedLimited' class='BannerBar'>
 	<$
 		// set background color based on percent used
 		var progressClassName = "quotaUsed";
@@ -9,32 +9,26 @@
 			progressClassName = "quotaCritical";
 		}
 	$>
-	<center>
-		<table border=0 cellpadding=0 cellspacing=0 class='BannerBar'>
-			<$ var linStyle = AjxEnv.isLinux ? " style='line-height: 13px'" : ""; $>
-			<tr <$= linStyle $>>
-				<td class='BannerTextQuota'><$= ZmMsg.quota $>:</td>
-				<td>
-					<div class='quotabar'>
-						<div style='width:${percent}' class='<$= progressClassName $>'></div>
-					</div>
-				</td>
-			</tr>
-		</table>
-	</center>
+	<table class='BannerBar' cellspacing=0 cellpadding=0>
+		<tr>
+			<td width='50%'><div></div></td>
+			<td><div class='quotabar'>
+					<div style='width:${percent}' class='<$= progressClassName $>'></div>
+				</div>
+			</td>
+			<td width='50%'><div></div></td>
+		</tr>
+	</table>
 </template>
 
 
 <!-- Show amount used with no quota -->
 <template id='share.Quota#UsedUnlimited'>
-	<center>
-		<table border=0 cellpadding=0 cellspacing=0 class='BannerBar'>
-			<$ var linStyle = AjxEnv.isLinux ? " style='line-height: 13px'" : ""; $>
-			<tr <$= linStyle $>>
-				<td class='BannerTextQuota'>${desc}</td>
-			</tr>
-		</table>
-	</center>
+	<table cellspacing=0 cellpadding=0 width='100%'>
+		<tr>
+			<td class='BannerTextQuota'>${desc}</td>
+		</tr>
+	</table>
 </template>
 
 <template id='share.Quota#Tooltip'>

@@ -650,7 +650,7 @@ function() {
 	}
 	buttons.push(ZmOperation.COMPOSE_OPTIONS, ZmOperation.FILLER);
 
-	if (!appCtxt.isChildWindow) {
+	if (appCtxt.get(ZmSetting.DETACH_COMPOSE_ENABLED) && !appCtxt.isChildWindow) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
 

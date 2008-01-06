@@ -24,10 +24,22 @@
     <c:set var="firstDOW" value="${requestScope.zimbra_target_account_prefCalendarFirstDayOfWeek}"/>
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, firstDOW)}"/>
 
-    <zm:getAppointmentSummaries box="${mailbox}" timezone="${timezone}" var="appts"
-                                folderid="${not empty param.folderIds ? param.folderIds : requestScope.zimbra_target_item_id}" start="${currentDay.timeInMillis}"
-                                end="${zm:addDay(currentDay, 42).timeInMillis}" query="${requestScope.calendarQuery}"
-                                varexception="gasException"/>
+    <c:choose>
+        <c:when test="${requestScope.zimbra_freebusy}">
+            <zm:getFreeBusyAppointments box="${mailbox}"
+                                        email="${requestScope.zimbra_target_account_name}"
+                                        var="appts"
+                                        start="${currentDay.timeInMillis}"
+                                        end="${zm:addDay(currentDay, 42).timeInMillis}"
+                                        varexception="gasException"/>
+        </c:when>
+        <c:otherwise>
+            <zm:getAppointmentSummaries box="${mailbox}" timezone="${timezone}" var="appts"
+                                        folderid="${not empty param.folderIds ? param.folderIds : requestScope.zimbra_target_item_id}" start="${currentDay.timeInMillis}"
+                                        end="${zm:addDay(currentDay, 42).timeInMillis}" query="${requestScope.calendarQuery}"
+                                        varexception="gasException"/>
+        </c:otherwise>
+    </c:choose>
 
     <c:if test="${not empty gasException}">
         <zm:getException var="error" exception="${gasException}"/>
@@ -38,7 +50,7 @@
     </c:if>
 </rest:handleError>
 
-<rest:view title="${requestScope.zimbra_target_item_name}: ${title}" rssfeed="${true}">
+<rest:view title="${not empty requestScope.zimbra_target_item_name ? requestScope.zimbra_target_item_name : requestScope.zimbra_target_account_name}: ${title}" rssfeed="${true}">
 <!-- tz=timezone  date=YYYYMMDD   view=day|workWeek|week|month  notoolbar=1 folderIds=[...]
 skin=skin-name color=defaultColor(0)|blue(1)|cyan(2)|green(3)|purple(4)|red(5)|yellow(6)|pink(7)|gray(8)|orange(9) -->
     <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -106,7 +118,7 @@ skin=skin-name color=defaultColor(0)|blue(1)|cyan(2)|green(3)|purple(4)|red(5)|y
                                                         <tr>
                                                             <td>
                                                                 <rest:monthAppt
-                                                                        color="${zm:getFolderStyleColor(requestScope.itemColor, 'appointment')}"
+                                                                        color="${zm:getFolderStyleColor(not empty requestScope.itemColor ? requestScope.itemColor : 'blue', 'appointment')}"
                                                                         appt="${appt}" start="${dayStart}"
                                                                         end="${dayEnd}" timezone="${timezone}"/>
                                                             </td>

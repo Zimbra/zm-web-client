@@ -191,16 +191,20 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.GOTO_TAG:
-			var tag = shortcut ? appCtxt.getById(shortcut.arg) : null;
-			if (tag) {
-				appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
+			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+				var tag = shortcut ? appCtxt.getById(shortcut.arg) : null;
+				if (tag) {
+					appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
+				}
 			}
 			break;
 
 		case ZmKeyMap.SAVED_SEARCH:
-			var searchFolder = shortcut ? appCtxt.getById(shortcut.arg) : null;
-			if (searchFolder) {
-				appCtxt.getSearchController().redoSearch(searchFolder.search);
+			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
+				var searchFolder = shortcut ? appCtxt.getById(shortcut.arg) : null;
+				if (searchFolder) {
+					appCtxt.getSearchController().redoSearch(searchFolder.search);
+				}
 			}
 			break;
 
@@ -381,7 +385,10 @@ function(ex, continuation) {
             case ZmCsfeException.MAIL_SEND_FAILURE: args = ex.code; break;
         }
 		var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
-		this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
+		// silently ignore polling exceptions
+		if (ex.method != "NoOpRequest") {
+			this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
+		}
 	}
 };
 

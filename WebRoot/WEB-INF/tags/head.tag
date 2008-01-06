@@ -40,7 +40,7 @@
 
         <script src="../yui/2.3.1/button/button-beta-min.js"></script>
         <!-- Source file for Rich Text Editor-->
-        <script src="../yui/2.3.1/editor/editor-beta-min.js"></script>
+        <script src="../yui/2.3.1-patch/editor/editor-beta-min.js"></script>
     </c:if>
 
     <fmt:message key="favIconUrl" var="favIconUrl"/>

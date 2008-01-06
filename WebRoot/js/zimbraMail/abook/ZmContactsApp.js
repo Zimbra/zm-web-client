@@ -73,6 +73,7 @@ function() {
 
 ZmContactsApp.prototype._defineAPI =
 function() {
+	AjxDispatcher.setPackageLoadFunction("ContactsCore", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.setPackageLoadFunction("Contacts", new AjxCallback(this, this._postLoad, ZmOrganizer.ADDRBOOK));
 	AjxDispatcher.registerMethod("GetContacts", "ContactsCore", new AjxCallback(this, this.getContactList));
 	AjxDispatcher.registerMethod("GetContactListController", ["ContactsCore", "Contacts"], new AjxCallback(this, this.getContactListController));
@@ -186,6 +187,7 @@ function() {
 						 itemClass:		"ZmContact",
 						 node:			"cn",
 						 organizer:		ZmOrganizer.ADDRBOOK,
+						 dropTargets:	[ZmOrganizer.TAG, ZmOrganizer.ZIMLET, ZmOrganizer.ADDRBOOK],
 						 searchType:	"contact",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
@@ -221,6 +223,7 @@ function() {
 							 defaultColor:		ZmOrganizer.C_GRAY,
 							 orgColor:			orgColor,
 							 treeType:			ZmOrganizer.FOLDER,
+							 dropTargets:		[ZmOrganizer.ADDRBOOK],
 							 views:				["contact"],
 							 folderKey:			"addressBookFolder",
 							 mountKey:			"mountAddrBook",

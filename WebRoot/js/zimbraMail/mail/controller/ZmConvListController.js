@@ -157,11 +157,11 @@ function() {
 	list.push(ZmOperation.SEP,
 				ZmOperation.SPAM,
 				ZmOperation.SEP,
-				ZmOperation.TAG_MENU,
-				ZmOperation.SEP,
-				ZmOperation.DETACH,
-				ZmOperation.SEP,
-				ZmOperation.VIEW_MENU);
+				ZmOperation.TAG_MENU);
+    if(appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)){
+        list.push(ZmOperation.SEP, ZmOperation.DETACH);
+    }
+    list.push(ZmOperation.SEP,ZmOperation.VIEW_MENU);
 	return list;
 };
 
@@ -261,7 +261,6 @@ function(params, callback) {
 	var item = (sel && sel.length) ? sel[0] : null;
 	if (item) {
 		if (item.type == ZmItem.CONV) {
-			appCtxt.getSearchController().setEnabled(false);
 			var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, callback);
 			item.getFirstHotMsg(params, respCallback);
 		} else if (item.type == ZmItem.MSG) {
@@ -274,7 +273,6 @@ function(params, callback) {
 
 ZmConvListController.prototype._handleResponseGetLoadedMsg =
 function(callback, msg) {
-	appCtxt.getSearchController().setEnabled(true);
 	callback.run(msg);
 };
 

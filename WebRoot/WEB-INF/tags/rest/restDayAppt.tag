@@ -15,9 +15,31 @@
 
 <fmt:setTimeZone value="${timezone}"/>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
-<fmt:message var="noSubject" key="noSubject"/>
-<c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
-<rest:calendarUrl appt="${appt}" var="apptUrl"/>
+
+<c:choose>
+    <c:when test="${not empty appt.name}">
+        <c:set var="subject" value="${appt.name}"/>
+    </c:when>
+    <c:when test="${not appt.isFromFreeBusy}">
+        <fmt:message var="subject" key="noSubject"/>
+    </c:when>
+    <c:when test="${appt.freeBusyActualTentative}">
+        <fmt:message var="subject" key="tentative"/>
+    </c:when>
+    <c:otherwise>
+        <fmt:message var="subject" key="busy"/>
+    </c:otherwise>
+</c:choose>
+
+<c:choose>
+    <c:when test="${not appt.isFromFreeBusy}">
+        <rest:calendarUrl appt="${appt}" var="apptUrl"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="apptUrl" value=""/>
+    </c:otherwise>
+</c:choose>
+
 <c:if test="${selected}">
     <table width="100%" style="height:100%;" border="0" cellspacing="0" cellpadding="0">
         <tr>

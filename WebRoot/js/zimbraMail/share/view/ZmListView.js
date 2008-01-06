@@ -135,6 +135,9 @@ function(ev) {
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: DELETE or MOVE");
         this.removeItem(item, true);
+        // if we've removed it from the view, we should remove it from the reference
+        // list as well so it doesn't get resurrected via replenishment
+        this._controller._list.remove(item);
         this._controller._app._checkReplenishListView = this;
 		this._controller._resetToolbarOperations();
 	}

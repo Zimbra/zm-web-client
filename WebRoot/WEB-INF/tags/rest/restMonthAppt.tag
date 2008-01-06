@@ -10,37 +10,83 @@
 <%@ taglib prefix="rest" uri="com.zimbra.restclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<fmt:message var="noSubject" key="noSubject"/>
-<c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
-<rest:calendarUrl appt="${appt}" var="apptUrl"/>
 
-<fmt:setTimeZone value="${timezone}"/>
-<c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <c:choose>
-    <c:when test="${appt.allDay}">
-        <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
-        <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
-        <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if>
-                class='ZhCalMonthAllDayAppt${needsAction ? 'New ':' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
-            <a href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
-        </div>
+    <c:when test="${not appt.isFromFreeBusy}">
+
+        <fmt:message var="noSubject" key="noSubject"/>
+        <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
+        <rest:calendarUrl appt="${appt}" var="apptUrl"/>
+
+        <fmt:setTimeZone value="${timezone}"/>
+        <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
+        <c:choose>
+            <c:when test="${appt.allDay}">
+            <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
+            <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
+                <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if>
+                     class='ZhCalMonthAllDayAppt${needsAction ? 'New ':' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
+                    <a href="${fn:escapeXml(apptUrl)}">${fn:escapeXml(subject)}</a>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <div class='ZhCalMonthAppt ${color}${needsAction ? 'DarkC' : 'C'}'>
+                    <a href="${fn:escapeXml(apptUrl)}">
+                        &bull;&nbsp;
+                        <c:choose>
+                            <c:when test="${appt.startTime lt start}">
+                                <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="short"/>
+                            </c:when>
+                            <c:otherwise>
+                                <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
+                            </c:otherwise>
+                        </c:choose>
+                        &nbsp;
+                            ${fn:escapeXml(subject)}
+                    </a>
+                </div>
+            </c:otherwise>
+        </c:choose>
     </c:when>
+
     <c:otherwise>
+
+        <c:choose>
+            <c:when test="${appt.freeBusyActualTentative}">
+                <fmt:message var="subject" key="tentative"/>
+            </c:when>
+            <c:otherwise>
+                <fmt:message var="subject" key="busy"/>
+            </c:otherwise>
+        </c:choose>
+
+        <fmt:setTimeZone value="${timezone}"/>
+        <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
         <div class='ZhCalMonthAppt ${color}${needsAction ? 'DarkC' : 'C'}'>
-            <a href="${fn:escapeXml(apptUrl)}">
-                &bull;&nbsp;
+            &bull;&nbsp;
+            <fmt:message key="CAL_HOUR_RANGE_FORMAT">
+                <fmt:param>
                 <c:choose>
                     <c:when test="${appt.startTime lt start}">
-                        <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="short"/>
+                        <fmt:formatDate  value="${zm:getCalendar(start,timezone).time}" type="time" timeStyle="short"/>
                     </c:when>
                     <c:otherwise>
                         <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
                     </c:otherwise>
                 </c:choose>
-                &nbsp;
-                    ${fn:escapeXml(subject)}
-            </a>
+                </fmt:param>
+                <fmt:param>
+                <c:choose>
+                    <c:when test="${appt.endTime gt end}">
+                        <fmt:formatDate value="${zm:getCalendar(end,timezone).time}" type="time" timeStyle="short"/>
+                    </c:when>
+                    <c:otherwise>
+                        <fmt:formatDate value="${appt.endDate}" type="time" timeStyle="short"/>
+                    </c:otherwise>
+                </c:choose>
+                </fmt:param>
+            </fmt:message>
+            &nbsp;${fn:escapeXml(subject)}
         </div>
     </c:otherwise>
 </c:choose>
-

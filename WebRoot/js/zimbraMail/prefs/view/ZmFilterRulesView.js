@@ -123,7 +123,7 @@ ZmFilterListView = function(parent, controller) {
 ZmFilterListView.COL_ACTIVE	= "ac";
 ZmFilterListView.COL_NAME	= "na";
 
-ZmFilterListView.COL_WIDTH_ACTIVE = 40;
+ZmFilterListView.COL_WIDTH_ACTIVE = 50;
 
 ZmFilterListView.prototype = new DwtListView;
 ZmFilterListView.prototype.constructor = ZmFilterListView;

@@ -28,7 +28,7 @@ ZmLiteHtmlEditor = function(parent, posStyle, className, mode, content) {
 	className = className || "ZmLiteHtmlEditor";
 	DwtComposite.call(this, parent, className, posStyle);
 
-	this._mode = mode || ZmLiteHtmlEditor.HTML;
+	this._mode = mode || ZmLiteHtmlEditor.TEXT;
 	this._initialize();
 
 
@@ -171,6 +171,7 @@ function(mode, force) {
 	this._mode = mode;
 
 	if(mode == ZmLiteHtmlEditor.HTML) {
+                this._createToolbars();
 		this._enableToolbar(true);
 		this._setDefaultStyles();
 	}else{
@@ -224,7 +225,6 @@ function(enable){
 
 ZmLiteHtmlEditor.prototype._initialize = function(){
 
-	this._createToolbars();
 	this._initEditor();
 	this._textArea = document.getElementById(this._textAreaId);
 
@@ -298,7 +298,8 @@ ZmLiteHtmlEditor.prototype._createToolbars = function(){
 
 ZmLiteHtmlEditor.prototype._enableToolbar =
 function(enable){
-	this._miniToolBar.setVisible(!!enable);
+        if (this._miniToolBar)
+	        this._miniToolBar.setVisible(!!enable);
 };
 
 ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
@@ -351,16 +352,19 @@ ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
 
 ZmLiteHtmlEditor.prototype._smileyListener = function(ev){
 	var obj = ev.item;
-	var id = ev.detail;
 	var smiley = obj.getSelectedSmiley();
 
-	if (this._textArea.createTextRange && this._textArea.selection) {
+    if(smiley) smiley = smiley.text;
+    else return;
+
+
+    if (this._textArea.createTextRange && this._textArea.selection) {
 		var textRange = this._textArea.selection;
 		var text = textRange.text;
-		textRange.text = (textRange.text.charAt(textRange.text.length-1) == '') ? id + ' ' : id;
+		textRange.text = (textRange.text.charAt(textRange.text.length-1) == '') ? smiley + ' ' : smiley;
 		textRange.selection = null;
 	}else{
-		this._textArea.value += id;
+		this._textArea.value += smiley;
 	}
 
 	this.focus();

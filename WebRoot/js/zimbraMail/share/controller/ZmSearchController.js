@@ -141,8 +141,9 @@ function() {
 
 ZmSearchController.prototype.setEnabled =
 function(enabled) {
-	if (this._searchToolBar)
+	if (this._searchToolBar) {
 		this._searchToolBar.setEnabled(enabled);
+	}
 }
 
 /**
@@ -370,7 +371,6 @@ function(params, noRender, callback, errorCallback) {
 	if (this._searchToolBar) {
 		var value = (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
 		this._searchToolBar.setSearchFieldValue(value);
-		this._searchToolBar.setEnabled(false);
 	}
 
 	// get types from search type if not passed in explicitly
@@ -399,7 +399,6 @@ function(params, noRender, callback, errorCallback) {
 	// find suitable sort by value if not given one (and if applicable)
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
 	params.types = types;
-
 	var search = new ZmSearch(params);
 	var respCallback = new AjxCallback(this, this._handleResponseDoSearch, [search, noRender, isMixed, callback]);
 	if (!errorCallback) {
@@ -437,14 +436,13 @@ function(search, noRender, isMixed, callback, result) {
 	this.currentSearch = search;
 	DBG.timePt("execute search", true);
 
-	if (this._searchToolBar)
-		this._searchToolBar.setEnabled(true);
-
-	if (!results.type)
+	if (!results.type) {
 		results.type = search.types.get(0);
+	}
 
-	if (!noRender)
+	if (!noRender) {
 		this._showResults(results, search, isMixed);
+	}
 
 	if (callback) callback.run(result);
 };
@@ -496,9 +494,6 @@ function(results, search) {
 ZmSearchController.prototype._handleErrorDoSearch =
 function(search, isMixed, ex) {
 	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
-	if (this._searchToolBar) {
-		this._searchToolBar.setEnabled(true);
-	}
 
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR ||

@@ -97,10 +97,11 @@ function(calItem, mode, isDirty) {
 	this._calItem = calItem;
 	this._isDirty = isDirty;
 
+	var firstTime = !this._rendered;
 	this.createHtml();
 
 	this._mode = (mode == ZmCalItem.MODE_NEW_FROM_QUICKADD || !mode) ? ZmCalItem.MODE_NEW : mode;
-	this._reset(calItem, mode || ZmCalItem.MODE_NEW);
+	this._reset(calItem, mode || ZmCalItem.MODE_NEW, firstTime);
 };
 
 ZmCalItemEditView.prototype.cleanup =
@@ -299,7 +300,7 @@ function(tabGroup) {
 };
 
 ZmCalItemEditView.prototype._reset =
-function(calItem, mode) {
+function(calItem, mode, firstTime) {
 	this._resetFolderSelect(calItem, mode);
 	this.enableInputs(true);
 
@@ -309,6 +310,18 @@ function(calItem, mode) {
 	// disable the recurrence select object for editing single instance
 	this._enableRepeat(mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE);
 
+	// if first time reset'ing, delay saving form value since all widgets
+	// (i.e. html editor) may not have finished initializing yet.
+	if (firstTime) {
+		var ta = new AjxTimedAction(this, this._finishReset);
+		AjxTimedAction.scheduleAction(ta, 250);
+	} else {
+		this._finishReset();
+	}
+};
+
+ZmCalItemEditView.prototype._finishReset =
+function() {
 	// save the original form data in its initialized state
 	this._origFormValue = this._formValue(false);
 };

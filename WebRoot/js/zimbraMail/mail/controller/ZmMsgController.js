@@ -139,9 +139,9 @@ function() {
 					ZmOperation.SPAM,
 					ZmOperation.SEP,
 					ZmOperation.TAG_MENU,
-					ZmOperation.SEP,
-					ZmOperation.DETACH);
-		return list;
+					ZmOperation.SEP);
+        if(appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED))  list.push(ZmOperation.DETACH);
+        return list;
 	}
 };
 

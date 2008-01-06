@@ -836,7 +836,6 @@ function(params, callback) {
 		callback.run(msg);
 	} else {
 		if (msg.id == this._pendingMsg) { return; }
-		appCtxt.getSearchController().setEnabled(false);
 		msg._loadPending = true;
 		this._pendingMsg = msg.id;
 		// use prototype in callback because these functions are overridden by ZmConvListController
@@ -850,7 +849,6 @@ function(callback, msg) {
 	if (this._pendingMsg && (msg.id != this._pendingMsg)) { return; }
 	msg._loadPending = false;
 	this._pendingMsg = null;
-	appCtxt.getSearchController().setEnabled(true);
 	callback.run(msg);
 };
 
@@ -995,7 +993,8 @@ function() {
 
 		var normalizedFolderId = ZmOrganizer.normalizeId(folderId);
         if ((normalizedFolderId == ZmFolder.ID_INBOX) || !hasExternalAccounts) {
-        	this._app._mailSearch();
+        	// call explicitly from mail app (this may be mixed ctlr) - bug 23268
+        	appCtxt.getApp(ZmApp.MAIL)._mailSearch();
         }
     }
 };
@@ -1069,8 +1068,9 @@ function(parent, num) {
 				}
 			}
 			var isDrafts = (item && item.isDraft) || (folderId == ZmFolder.ID_DRAFTS);
-			parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD, ZmOperation.DETACH], (!isDrafts && num == 1));
-			parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.FORWARD], (!isDrafts && num > 0));
+			parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD], (!isDrafts && num == 1));
+            parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
+            parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.FORWARD], (!isDrafts && num > 0));
             parent.enable([appCtxt.get(ZmSetting.OFFLINE) ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL, ZmOperation.VIEW_MENU], true);
 		}
 	} else {

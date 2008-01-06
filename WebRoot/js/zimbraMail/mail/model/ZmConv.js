@@ -243,6 +243,7 @@ function(obj) {
 		this._oldId = this.id;
 		this.id = obj._newId;
 		appCtxt.cacheSet(this.id, this);	// make sure we can get it from cache via new ID
+		appCtxt.cacheSet(this._oldId);
 		if (this.msgs) {
 			this.msgs.convId = this.id;
 			var a = this.msgs.getArray();
@@ -252,6 +253,7 @@ function(obj) {
 		}
 		if (this.list && this._oldId) {
 			this.list._idHash[this.id] = this.list._idHash[this._oldId];
+			delete this.list._idHash[this._oldId];
 		}
 		fields[ZmItem.F_ID] = true;
 		this._notify(ZmEvent.E_MODIFY, {fields : fields});
@@ -455,6 +457,7 @@ function(convNode) {
 	this.participantsElided = convNode.elided;
 	this.subject = convNode.su;
 	this.fragment = convNode.fr;
+	this.sf = convNode.sf;
 
 	// should always be an <m> element; note that the list of msg IDs in a
 	// search result is partial - only msgs that matched are included
@@ -493,6 +496,7 @@ function(msg) {
 	}
 	this.subject = msg.subject;
 	this.fragment = msg.fragment;
+	this.sf = msg.sf;
 	this.msgIds = [msg.id];
 };
 

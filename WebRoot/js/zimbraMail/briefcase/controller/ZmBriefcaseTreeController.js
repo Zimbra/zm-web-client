@@ -15,13 +15,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBriefcaseTreeController = function(type, dropTgt) {
+ZmBriefcaseTreeController = function(type) {
 	
 	type = type ? type : ZmOrganizer.BRIEFCASE;
 
-	dropTgt = dropTgt ? dropTgt :  new DwtDropTarget(["ZmBriefcaseItem"]);
-	
-	ZmTreeController.call(this, type, dropTgt);
+	ZmTreeController.call(this, type);
 
 	this._listeners[ZmOperation.NEW_BRIEFCASEITEM] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_BRIEFCASE] = new AjxListener(this, this._shareBriefcaseListener);
@@ -175,19 +173,22 @@ function(ev) {
 	briefcaseItems = (briefcaseItems instanceof Array)? briefcaseItems : [briefcaseItems];
 
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		for(var i in briefcaseItems) {
+		for (var i = 0; i < briefcaseItems.length; i++) {
 			var briefcaseItem = briefcaseItems[i];
-			if (briefcaseItem.isReadOnly() || dropFolder.isReadOnly()) {
+			if (!(briefcaseItem instanceof ZmBriefcaseItem)) {
+				ev.doIt = false;
+			} else if (briefcaseItem.isReadOnly() || dropFolder.isReadOnly()) {
 				ev.doIt = false;
 			} else if (briefcaseItem.getFolder().id == dropFolder.id) {
 				ev.doIt = false;
 			} else {
 				ev.doIt = this._dropTgt.isValidTarget(briefcaseItem);
 			}
+			if (ev.doIt === false) { return; }
 		}
 		
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-		if(briefcaseItems && briefcaseItems.length >0) {
+		if (briefcaseItems && briefcaseItems.length > 0) {
 			var ctlr = ev.srcData.controller;
 			ctlr._doMove(briefcaseItems, dropFolder, null, true);
 			ctlr._pendingActionData = null;
@@ -196,7 +197,6 @@ function(ev) {
 			ctlr.reloadFolder();
 		}
 	}
-	
 };
 
 // Listener callbacks

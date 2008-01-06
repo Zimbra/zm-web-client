@@ -111,6 +111,10 @@ ZmZimbraMail._PREFS_ID	= 1;
 ZmZimbraMail._HELP_ID	= 2;
 ZmZimbraMail._LOGOFF_ID	= 3;
 
+// dummy app (needed when defining drop targets in _registerOrganizers)
+ZmApp.MAIN = "ZmZimbraMail";
+ZmApp.DROP_TARGETS[ZmApp.MAIN] = {};
+
 // Static listener registration
 ZmZimbraMail._listeners = {};
 
@@ -996,7 +1000,8 @@ function() {
 ZmZimbraMail.prototype._registerOrganizers =
 function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.FOLDER,
-							{nameKey:			"folder",
+							{app:				ZmApp.MAIN,
+							 nameKey:			"folder",
 							 defaultFolder:		ZmOrganizer.ID_INBOX,
 							 soapCmd:			"FolderAction",
 							 firstUserId:		256,
@@ -1007,6 +1012,7 @@ function() {
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_NONE,
 							 treeType:			ZmOrganizer.FOLDER,
+							 dropTargets:		[ZmOrganizer.FOLDER],
 							 views:				["message", "conversation"],
 							 folderKey:			"mailFolder",
 							 mountKey:			"mountFolder",
@@ -1016,7 +1022,8 @@ function() {
 							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.SEARCH,
-							{nameKey:			"savedSearch",
+							{app:				ZmApp.MAIN,
+							 nameKey:			"savedSearch",
 							 precondition:		ZmSetting.SAVED_SEARCHES_ENABLED,
 							 soapCmd:			"FolderAction",
 							 firstUserId:		256,
@@ -1024,13 +1031,15 @@ function() {
 							 treeController:	"ZmSearchTreeController",
 							 labelKey:			"searches",
 							 treeType:			ZmOrganizer.FOLDER,
+ 							 dropTargets:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH],
 							 createFunc:		"ZmSearchFolder.create",
 							 compareFunc:		"ZmFolder.sortCompare",
 							 shortcutKey:		"S"
 							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.TAG,
-							{nameKey:			"tag",
+							{app:				ZmApp.MAIN,
+							 nameKey:			"tag",
 							 precondition:		ZmSetting.TAGGING_ENABLED,
 							 soapCmd:			"TagAction",
 							 firstUserId:		64,
@@ -1044,6 +1053,12 @@ function() {
 							 compareFunc:		"ZmTag.sortCompare",
 							 shortcutKey:		"T"
 							});
+
+	// Technically, we don't need to do this because the drop listeners for dragged organizers typically do their
+	// own checks on the class of the dragged object. But it's better to do it anyway, in case it ever gets
+	// validated within the drop target against the valid types.
+	this._name = ZmApp.MAIN;
+	ZmApp.prototype._setupDropTargets.call(this);
 };
 
 /**
