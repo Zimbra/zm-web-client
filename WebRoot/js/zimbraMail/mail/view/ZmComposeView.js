@@ -1448,7 +1448,7 @@ function(action, msg, extraBodyText, incOption) {
 				value += leadingText + preface + text;
 			} else if (action == ZmOperation.REPLY_ACCEPT ||
 					 action == ZmOperation.REPLY_DECLINE ||
-					 action == ZmOperation.REPLY_TENTATIVE)	{
+					 action == ZmOperation.REPLY_TENTATIVE) {
 
 				var bp = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
 				var bodyStr = bp ? (bp.content.replace(/\r\n/g, "\n")) : "";
@@ -1456,6 +1456,19 @@ function(action, msg, extraBodyText, incOption) {
 				// bug 5122: always show original meeting details
 				wrapParams.text = bodyStr;
 				value = preface + AjxStringUtil.wordWrap(wrapParams);
+			} else if (action == ZmOperation.REPLY_CANCEL) {
+				cancelledParts = [ leadingText ];
+				cancelledParts.push(crlf);
+				cancelledParts.push(ZmMsg.subject+": "+msg.subject+crlf);
+				var inv = (msg) ? msg.getInvite() : null;
+				if (inv) {
+					var organizer = "";
+					if (inv)
+					cancelledParts.push(ZmMsg.organizer+": "+inv.getOrganizerName()+crlf);
+					cancelledParts.push(ZmMsg.time+": "+inv.getServerStartDate()+crlf);
+					}
+				cancelledParts.push(ZmItem.NOTES_SEPARATOR);
+				value = cancelledParts.join("");
 			}
 		}
 	}
