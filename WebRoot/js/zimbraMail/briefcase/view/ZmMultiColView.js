@@ -330,6 +330,7 @@ function() {
 
 ZmMultiColView.prototype.scrollToEnd =
 function() {
+	if(this._cellCache.length > 0) { return; }
 	var el = this.getHtmlElement();
 	el.scrollLeft = el.scrollWidth;
 };
