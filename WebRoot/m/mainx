@@ -1,0 +1,165 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<c:if test="${param.ui != null && param.ui != '1'}">
+    <jsp:forward page="main" />
+</c:if>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
+<c:if test="${param.addContact != null}">
+    <zm:createContact var="cnt">
+        <zm:field name="firstName" value="a"/>
+        <zm:field name="lastName" value="b"/>
+        <zm:field name="email" value="a@b.com"/>
+
+    </zm:createContact>
+</c:if>
+
+<c:if test="${param.loginOp=='logout'}">
+    <c:set var="uiv" value="1" scope="session"/>
+    <c:redirect url="/?loginOp=logout&client=mobile"/>
+</c:if>
+<c:if test="${zm:actionSet(param,'actionSearch') && (param.sq == null || param.sq == '')}">
+    <c:redirect url="/m/moquery"/>
+</c:if>
+<mo:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <c:choose>
+        <c:when test="${not empty mailbox.prefs.locale}">
+            <fmt:setLocale value='${mailbox.prefs.locale}' scope='request'/>
+        </c:when>
+        <c:otherwise>
+            <fmt:setLocale value='${pageContext.request.locale}' scope='request'/>
+        </c:otherwise>
+    </c:choose>
+    <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
+
+    <mo:composeCheck/>
+    <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
+</mo:handleError>
+<style type="text/css">
+<c:set var="color" value="lightblue"/>
+<c:if test="${param.st=='contact'}">
+    <c:set var="color" value="#D4FFD4"/>
+</c:if>
+<c:if test="${param.st=='cal'}">
+    <c:set var="color" value="#FFFFAA"/>
+</c:if>
+<c:if test="${param.st=='folders'}">
+    <c:set var="color" value="#FFD4FF"/>
+</c:if>
+
+.tabsbar div.zo_main_info{
+    background:${color};
+}
+</style>
+<mo:view title="${mailbox.name}" context="${null}" mailbox="${mailbox}">
+    <table cellpadding="0" cellspacing="0" width="100%">
+        <tr class="searchbar">
+                <td>
+                    <div class='zo_main_info_cont'>
+                        <div class='zo_main_info'>
+                            <form action="${context_url}" style="width:100%;">
+                                <table cellspacing="0" cellpadding="0" width="100%">
+                                    <tr>
+                                        <td>
+                                            <table cellspacing="1" cellpadding="1" width="100%" align="right">
+                                                <tr>
+                                                    <td align="right" style="padding-right:2px;">
+                                                        <input type="text"
+                                                               style="width:100%;height:20px;border:1px solid lightslategray;"
+                                                               name="sq" value="${param.sq}"/>
+                                                    </td>
+                                                    <td align="right" width="10px;">
+                                                        <input type="submit" name="actionSearch" class="zo_button1"
+                                                               value="<fmt:message key="search"/>"/>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        <tr class="tabsbar">
+            <td>
+                <div class='zo_main_info_cont'>
+                    <div class='zo_main_info'>
+                        <c:set var="aurl" value="${context_url}?"/>
+                        <a id="mails" href="${aurl}">
+                            <fmt:message key="mail"/><c:if
+                                test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if>
+                        </a>
+                        <c:if test="${mailbox.features.contacts}"> |
+                            <c:set var="aurl" value="${context_url}?st=contact"/>
+                            <a id="contacts" href="${aurl}">
+                                <fmt:message key="FOLDER_LABEL_7"/>
+                            </a>
+                        </c:if>
+                        <c:if test="${mailbox.features.calendar}"> |
+                            <c:set var="aurl" value="${context_url}?st=cal"/>
+                            <a id="cal" href="${aurl}"><fmt:message key="calendar"/></a>
+                        </c:if> | <c:set var="aurl" value="${context_url}?st=folders"/>
+                        <a id="folders" href="${aurl}"><fmt:message key="folders"/></a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr class="data">
+            <td>
+                <div class='zo_main_info_cont'>
+                    <div class='zo_main_info'>
+                        <mo:handleError>
+                            <c:choose>
+                                <c:when test="${param.st == null || param.st == (mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message') || param.st == 'contact'}">
+                                    <c:import url="/m/mosearch?sq_limit=${param.sq_limit!=null?param.sq_limit:'5'}"/>
+                                </c:when>
+                                <c:when test="${param.st != null && param.st == 'cal'}">
+                                    <fmt:formatDate var="today" pattern="yyyyMMdd" value="${zm:getToday(tz).time}"/>
+                                    <c:import url="/m/mocalendar?${param.view==null?'view=month':''}&${param.date==null?'date=':''}${today}"/>
+                                </c:when>
+                                <c:when test="${param.st != null && param.st == 'folders'}">
+                                    <c:import url="/m/mofolders"/>
+                                </c:when>
+                            </c:choose>
+                        </mo:handleError>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr class="bottombar">
+            <td>
+                <div class='zo_main_info_cont'>
+                    <div class='zo_main_info'>
+                        <span class="zo_m_list_frag">${zm:truncate(mailbox.accountInfo.name,50,true)}</span> | <c:url
+                            var="logoutUrl" value="${context_url}?loginOp=logout&client=mobile"/>
+                        <a href="${fn:escapeXml(logoutUrl)}" id="_logout">
+                            <fmt:message key="logOut"/>
+                        </a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr class="statusbar">
+            <td>
+                <div class='zo_main_info_cont'>
+                    <div class='zo_main_info'>
+                        <span class="zo_m_list_frag"><fmt:message key="MO_quota"/>:</span>
+                        <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
+                        <fmt:message var="unlimited" key="unlimited"/>
+                        <fmt:message key="MO_quotaUsage">
+                            <fmt:param value="${zm:displaySizeFractions(mailbox.size,2)}"/>
+                            <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
+                        </fmt:message>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</mo:view>

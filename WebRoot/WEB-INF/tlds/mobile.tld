@@ -200,6 +200,31 @@
         <name>messageAction</name>
         <path>/WEB-INF/tags/mobile/moMessageAction.tag</path>
      </tag-file>
+
+    <tag-file>
+            <name>toolbar</name>
+             <path>/WEB-INF/tags/mobile/moToolbar.tag</path>
+    </tag-file>
+    <tag-file>
+            <name>msgToolbar</name>
+             <path>/WEB-INF/tags/mobile/moMsgToolbar.tag</path>
+    </tag-file>
+    <tag-file>
+            <name>convToolbar</name>
+             <path>/WEB-INF/tags/mobile/moConvToolbar.tag</path>
+    </tag-file>
+    <tag-file>
+            <name>contactToolbar</name>
+             <path>/WEB-INF/tags/mobile/moContactToolbar.tag</path>
+    </tag-file>
+    <tag-file>
+            <name>contactAction</name>
+             <path>/WEB-INF/tags/mobile/moContactAction.tag</path>
+    </tag-file>
+    <tag-file>
+            <name>contactEdit</name>
+             <path>/WEB-INF/tags/mobile/moContactEdit.tag</path>
+    </tag-file>
 </taglib>
 
         
