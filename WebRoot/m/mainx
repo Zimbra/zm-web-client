@@ -8,6 +8,9 @@
 <c:if test="${param.ui != null && param.ui != '1'}">
     <jsp:forward page="main" />
 </c:if>
+<c:if test="${param.ui == null || param.ui == ''}">
+    <c:set var="uiv" value="1" scope="session"/>
+</c:if>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
 <c:if test="${param.addContact != null}">
     <zm:createContact var="cnt">
