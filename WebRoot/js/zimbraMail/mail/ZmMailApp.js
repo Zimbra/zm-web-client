@@ -933,7 +933,7 @@ function(refresh) {
 	}
 
 	if (!appCtxt.inStartup) {
-		var account = appCtxt.multiAccounts ? appCtxt.getMainAccount() : null;
+		var account = appCtxt.multiAccounts ? appCtxt.getMainAccount(true) : null;
 		this.resetOverview(this.getOverviewId(account));
 		var req = appCtxt.currentRequestParams;
 		if (appCtxt.getCurrentAppName() == this._name && req.resend && req.methodName == "NoOpRequest") {

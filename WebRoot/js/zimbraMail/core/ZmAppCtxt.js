@@ -582,10 +582,23 @@ function(id) {
 	return this._accounts[id];
 };
 
+/**
+ * Returns the main account for a multi-mbox login
+ *
+ * @param checkOfflineMode		[Boolean]	set to true if we want the first
+ * non-main account. Applies to only when in offline mode since offline hides
+ * the main account in a multi mbox scenario.
+ */
 ZmAppCtxt.prototype.getMainAccount =
-function() {
+function(checkOfflineMode) {
 	for (var id in this._accounts) {
 		var account = this._accounts[id];
+		// if checking for offline mode, return the first non-main account
+		if (checkOfflineMode && appCtxt.get(ZmSetting.OFFLINE)) {
+			if (!account.isMain)
+				return account;
+			continue;
+		}
 		if (account.isMain) {
 			return account;
 		}

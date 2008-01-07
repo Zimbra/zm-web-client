@@ -426,7 +426,7 @@ function(account) {
 			// bug #20310 - default to main account if all else fails
 			account = this.accordionItem
 				? this.accordionItem.data.account
-				: appCtxt.getMainAccount();
+				: appCtxt.getMainAccount(true);
 		}
 		return ([this.getOverviewPanelContentId(), account.name].join(":"));
 	}
@@ -573,15 +573,7 @@ function(item) {
  */
 ZmApp.prototype._setActiveAcctForOffline =
 function() {
-	var activeAcct;
-	var accts = appCtxt.getZimbraAccounts();
-	for (var id in accts) {
-		var account = accts[id];
-		if (!account.isMain) {
-			activeAcct = account;
-			break;
-		}
-	}
+	var activeAcct = appCtxt.getMainAccount(true);
 	var accordionItem = activeAcct
 		? this.getOverviewPanelContent().getItem(activeAcct.itemId) : null;
 
