@@ -583,7 +583,7 @@ function(id) {
 };
 
 ZmAppCtxt.prototype.getMainAccount =
-function(id) {
+function() {
 	for (var id in this._accounts) {
 		var account = this._accounts[id];
 		if (account.isMain) {

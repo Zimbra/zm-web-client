@@ -185,7 +185,6 @@ function(callback, accountName, result) {
 		var mainAcct = appCtxt.getMainAccount();
 		mainAcct.id = obj.id;
 		mainAcct.name = obj.name;
-		mainAcct.visible = true;
 		mainAcct.isMain = true;
 		mainAcct.loaded = true;
 		mainAcct.settings = this;
@@ -195,6 +194,9 @@ function(callback, accountName, result) {
 			delete appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID];
 		}
 		appCtxt.setActiveAccount(mainAcct);
+
+		// set visibility last - based on offline-mode flag
+		mainAcct.visible = !appCtxt.get(ZmSetting.OFFLINE);
 	}
 	
 	var accounts = obj.childAccounts ? obj.childAccounts.childAccount : null;

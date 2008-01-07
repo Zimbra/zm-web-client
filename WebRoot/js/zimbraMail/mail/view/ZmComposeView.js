@@ -1696,7 +1696,7 @@ function(ev) {
 
 ZmComposeView.prototype._getPriority =
 function() {
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+    if (this._priorityButton) {
         return this._priorityButton._priorityFlag || "";
     }
     return "";
@@ -1704,7 +1704,7 @@ function() {
 
 ZmComposeView.prototype._setPriority =
 function(flag) {
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+    if (this._priorityButton) {
         flag = flag || "";
         this._priorityButton.setImage(this._getPriorityImage(flag));
         this._priorityButton._priorityFlag = flag;
