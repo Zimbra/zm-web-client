@@ -384,8 +384,9 @@ function() {
 
 	ZmPref.registerPref("OPEN_MAIL_IN_NEW_WIN", {
 		displayName:		ZmMsg.openMailNewWin,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+        precondition:      ZmSetting.DETACH_MAILVIEW_ENABLED
+    });
 
 	ZmPref.registerPref("REPLY_TO_ADDRESS", {
 		displayName:		ZmMsg.replyToAddress,

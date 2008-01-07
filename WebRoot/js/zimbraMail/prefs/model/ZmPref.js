@@ -361,7 +361,7 @@ ZmPref.requireAllPreConditions = function(pre1 /* ..., preN */) {
 	var controller = app.getPrefController();
 
 	for (var i = 0; i < arguments.length; i++) {
-		if (!controller.checkPreCondition({}, arguments[i])) {
+		if (!controller.checkPreCondition( null, arguments[i])) {
 			return false;
 		}
 	}

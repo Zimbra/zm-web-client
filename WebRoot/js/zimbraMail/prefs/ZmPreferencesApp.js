@@ -258,7 +258,7 @@ function() {
 	ZmPref.registerPref("NEW_WINDOW_COMPOSE", {
 		displayName:		ZmMsg.composeInNewWin,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		ZmSetting.MAIL_ENABLED,
+		precondition:		AjxCallback.simpleClosure(ZmPref.requireAllPreConditions, null, ZmSetting.MAIL_ENABLED, ZmSetting.DETACH_COMPOSE_ENABLED),
 		displaySeparator: 	true
 	});
 
