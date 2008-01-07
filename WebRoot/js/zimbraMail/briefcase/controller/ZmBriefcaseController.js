@@ -98,9 +98,10 @@ function(view) {
 
 		button = toolbar.getButton(ZmOperation.DELETE);
 		button.setToolTipContent(ZmMsg.deletePermanentTooltip);
-	} else {
-		this._setupViewMenu(view, false);
 	}
+
+	this._setupViewMenu(view, false);
+
 };
 
 ZmBriefcaseController.prototype._resetOperations =
@@ -977,4 +978,19 @@ function(ids){
 	}
 
 	this.reloadFolder();
+};
+
+ZmBriefcaseController.prototype.getItemTooltip = 
+function(item, listView) {
+	var prop = [
+		{name:ZmMsg.briefcasePropName, value:item.name},	
+		{name:ZmMsg.briefcasePropSize, value:AjxUtil.formatSize(item.size)},
+		{name:ZmMsg.briefcasePropModified, value:(item.modifyDate ? item.modifyDate+"" : "")},	
+	];
+
+	var subs = {
+		fileProperties: prop,
+		tagTooltip: listView._getTagToolTip(item)
+	};
+    return AjxTemplate.expand("briefcase.Briefcase#Tooltip", subs);
 };
