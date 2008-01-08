@@ -764,8 +764,12 @@ ZmApp.prototype.activate =
 function(active) {
 	this._active = active;
 	if (active) {
-		// if offline mode, active the first non-main account
-		if (appCtxt.inStartup && appCtxt.get(ZmSetting.OFFLINE)) {
+		// during startup, if in offline mode and in multi-mbox scenario, set
+		// active the first non-main account
+		if (appCtxt.inStartup &&
+			appCtxt.multiAccounts &&
+			appCtxt.get(ZmSetting.OFFLINE))
+		{
 			this._setActiveAcctForOffline();
 		}
 		this.setOverviewPanelContent();

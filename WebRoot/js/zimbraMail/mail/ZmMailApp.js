@@ -1017,6 +1017,16 @@ function(accordionItem) {
 	}
 };
 
+ZmMailApp.prototype._setActiveAcctForOffline =
+function() {
+	// call base class *first*
+	ZmApp.prototype._setActiveAcctForOffline.call(this);
+
+	// force a mail search since we dont care about the one returned for the
+	// invisible parent account (offline mode only)
+	this._mailSearch();
+};
+
 ZmMailApp.prototype._mailSearch =
 function(query, callback, response) {
 	query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH);
