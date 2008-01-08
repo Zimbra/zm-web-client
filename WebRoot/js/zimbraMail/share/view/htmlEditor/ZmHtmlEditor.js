@@ -1426,7 +1426,7 @@ function(ev) {
 			}
 			if (plainText) {
 				// in plain text mode we want to be able to edit misspelled words
-				var txt = fixall ? "Edit all" : "Edit";
+				var txt = fixall ? ZmMsg.editAll : ZmMsg.edit;
 				item = menu.createMenuItem("edit", {text:txt, className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("orig", word);
@@ -1445,14 +1445,14 @@ function(ev) {
 					item.addSelectionListener(self._spellCheckSuggestionListenerObj);
 				}
 			} else {
-                item = menu.createMenuItem("clear", {text:"No Suggestions", className:"ZMenuItem ZmSpellMenuItem"});
+                item = menu.createMenuItem("clear", {text:ZmMsg.noSuggestions, className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("value", "");
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
 				menu.createSeparator();
               
-                item = menu.createMenuItem("clear", {text:"Clear text", className:"ZMenuItem ZmSpellMenuItem"});
+                item = menu.createMenuItem("clear", {text:ZmMsg.clearText, className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("value", "");
 				item.setData("orig", word);
@@ -1464,7 +1464,8 @@ function(ev) {
 		sc.menu = makeMenu(0, this);
 		if (sc.wordIds[word].length > 1) {
 			sc.menu.createSeparator();
-			var text = "Replace all (" + sc.wordIds[word].length + " occurrences)";
+			this._replaceAllFormatter = this._replaceAllFormatter || new AjxMessageFormat(ZmMsg.replaceAllMenu);
+			var text = this._replaceAllFormatter.format(sc.wordIds[word].length);
 			var item = sc.menu.createMenuItem("fixall", {text:text});
 			item.setMenu(makeMenu(1, item));
 		}
