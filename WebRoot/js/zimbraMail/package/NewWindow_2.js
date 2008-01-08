@@ -47,6 +47,8 @@ AjxPackage.require("zimbraMail.core.ZmAppCtxt");
 AjxPackage.require("zimbraMail.core.ZmOperation");
 AjxPackage.require("zimbraMail.core.ZmMimeTable");
 
+AjxPackage.require("zimbraMail.share.model.ZmObjectHandler");
+AjxPackage.require("zimbraMail.share.model.ZmObjectManager");
 AjxPackage.require("zimbraMail.share.model.ZmSettings");
 AjxPackage.require("zimbraMail.share.model.ZmKeyMap");
 AjxPackage.require("zimbraMail.share.model.ZmTimezone");
@@ -78,6 +80,7 @@ AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
 
 AjxPackage.require("zimbraMail.share.controller.ZmController");
 AjxPackage.require("zimbraMail.share.controller.ZmListController");
+AjxPackage.require("zimbraMail.share.controller.ZmTreeController");
 AjxPackage.require("zimbraMail.share.controller.ZmSearchController");
 
 AjxPackage.require("zimbraMail.core.ZmAppViewMgr");

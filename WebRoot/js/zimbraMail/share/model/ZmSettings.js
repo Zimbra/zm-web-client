@@ -257,7 +257,10 @@ function(callback, accountName, result) {
 
 ZmSettings.prototype._loadZimlets =
 function(zimlets, props) {
-    appCtxt.getZimletMgr().loadZimlets(zimlets, props);
+	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:zimlets});
+	this.registerSetting("USER_PROPS",	{type:ZmSetting.T_CONFIG, defaultValue:props});
+
+	appCtxt.getZimletMgr().loadZimlets(zimlets, props);
 
     if (zimlets && zimlets.length) {
         // update overview tree

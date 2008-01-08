@@ -198,6 +198,10 @@ function() {
 		}
 		rootTg.addMember(cc.getTabGroup());
 		startupFocusItem = cc._composeView.getAddrFields()[0];
+
+		// setup zimlets for compose
+		var zimletMgr = appCtxt.getZimletMgr();
+		zimletMgr.loadZimlets(this.__hack_zimletArray(), this.__hack_userProps(), "compose-window");
 	} else if (window.command == "msgViewDetach") {
 		var msgController = AjxDispatcher.run("GetMsgController");
 		msgController.show(window.params.msg);
@@ -208,6 +212,37 @@ function() {
 	var kbMgr = appCtxt.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);
 	kbMgr.grabFocus(startupFocusItem);
+};
+
+/**
+ * HACK: This should go away once we have a cleaner server solution that
+ *       allows us to get just those zimlets for the specified target.
+ */
+ZmNewWindow.prototype.__hack_zimletArray = function() {
+	return parentAppCtxt.get(ZmSetting.ZIMLETS);
+};
+ZmNewWindow.prototype.__hack_userProps = function() {
+	var userPropsArray = parentAppCtxt.get(ZmSetting.USER_PROPS);
+
+	// default to original user props
+	userPropsArray = userPropsArray ? [].concat(userPropsArray) : [];
+
+	// current user props take precedence, if available
+	var zimletHash = parentAppCtxt.getZimletMgr().getZimletsHash();
+	var zimletArray = parentAppCtxt.get(ZmSetting.ZIMLETS);
+	for (var i = 0; i < zimletArray.length; i++) {
+		var zname = zimletArray[i].zimlet[0].name;
+		var zimlet = zimletHash[zname];
+		if (!zimlet || !zimlet.userProperties) continue;
+		for (var j = 0; j < zimlet.userProperties.length; j++) {
+			var userProp = zimlet.userProperties[j];
+			var userPropObj = { zimlet: zname, name: userProp.name, _content: userProp.value };
+			userPropsArray.push(userPropObj);
+		}
+	}
+
+	// return user properties
+	return userPropsArray;
 };
 
 /**
