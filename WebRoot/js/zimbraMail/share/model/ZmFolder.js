@@ -132,6 +132,7 @@ ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]			= "o";
 // folders that look like mail folders that we don't want to show
 ZmFolder.HIDE_ID = {};
 ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS]			= true;
+ZmFolder.HIDE_ID[ZmOrganizer.ID_ARCHIVE]		= true;
 
 // Hide folders migrated from Outlook mailbox
 ZmFolder.HIDE_NAME = {};
