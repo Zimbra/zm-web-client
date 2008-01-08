@@ -633,25 +633,26 @@ function() {
 	if (!(window.skin && skin.hints)) { return; }
 	
 	var shSetting = this.registerSetting("SKIN_HINTS", {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_HASH});
-	
-	var hints = ["appChooser.style",
-				 "appChooser.fullWidth",
-				 "helpButton.hideIcon",
-				 "helpButton.style",
-				 "banner.url",
-				 "logoutButton.hideIcon",
-				 "logoutButton.style",
-				 "noOverviewHeaders",
-				 "toast.location",
-				 "toast.transitions"];
-
+	var hints = [["appChooser", "style"],
+				 ["appChooser", "fullWidth"],
+				 ["helpButton", "hideIcon"],
+				 ["helpButton", "style"],
+				 ["banner", "url"],
+				 ["logoutButton", "hideIcon"],
+				 ["logoutButton", "style"],
+				 ["noOverviewHeaders"],
+				 ["toast", "location"],
+				 ["toast", "transitions]"]];
 	for (var i = 0, count = hints.length; i < count; i++) {
 		var hint = hints[i];
-		try {
-			// if we get an exception doing the eval, ignore it - that hint won't get a value
-			var value = eval(["skin.hints", hint].join("."));
-			shSetting.setValue(value, hint, true, true);
-		} catch(e) {}
+		var obj = skin.hints;
+		for (var propIndex = 0, propCount = hint.length; obj && (propIndex < propCount); propIndex++) {
+			var propName = hint[propIndex];
+			obj = obj[propName];
+		}
+		if (obj) {
+			shSetting.setValue(obj, hint.join("."), true, true);
+		}
 	}
 	
 	// skin.hints.[container ID].position
