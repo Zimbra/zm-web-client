@@ -97,7 +97,7 @@
 
     <target name='common'>
         <property name='common.web.includes' value='${custom.web.includes},js/**,css/**'/>
-        <property name='common.web.excludes' value='${custom.web.excludes},**/ZmSettings.js,js/*/package/**'/>
+        <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**'/>
         <property name='common.jsp.includes' value='${custom.jsp.includes},**'/>
         <property name='common.jsp.excludes' value='${custom.jsp.excludes}'/>
         <property name='common.img.includes' value='${custom.img.includes},**'/>
