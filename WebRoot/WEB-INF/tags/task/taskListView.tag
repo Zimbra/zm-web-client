@@ -112,7 +112,7 @@
             </tr>
         </table>
         <input type="hidden" name="doTaskAction" value="1"/>
-        <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : selectedRow}"/>        
+        <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : zm:cook(selectedRow)}"/>        
 
     </form>
 
