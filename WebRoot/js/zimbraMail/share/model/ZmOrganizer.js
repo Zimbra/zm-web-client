@@ -123,14 +123,23 @@ ZmOrganizer.F_REST_URL			= "rest";
 ZmOrganizer.FLAG_CHECKED			= "#";
 ZmOrganizer.FLAG_IMAP_SUBSCRIBED	= "*";
 ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY	= "b";
-ZmOrganizer.ALL_FLAGS = [ZmOrganizer.FLAG_CHECKED, ZmOrganizer.FLAG_IMAP_SUBSCRIBED,
-						 ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY];
+ZmOrganizer.FLAG_OFFLINE_SYNCABLE	= "y";
+ZmOrganizer.FLAG_OFFLINE_SYNCING	= "~";
+ZmOrganizer.ALL_FLAGS = [
+	ZmOrganizer.FLAG_CHECKED,
+	ZmOrganizer.FLAG_IMAP_SUBSCRIBED,
+	ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY,
+	ZmOrganizer.FLAG_OFFLINE_SYNCABLE,
+	ZmOrganizer.FLAG_OFFLINE_SYNCING
+];
 
 // org property for each flag
 ZmOrganizer.FLAG_PROP = {};
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_CHECKED]				= "isChecked";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_IMAP_SUBSCRIBED]		= "imapSubscribed";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY]	= "excludeFreeBusy";
+ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_OFFLINE_SYNCABLE]	= "isOfflineSyncable";
+ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_OFFLINE_SYNCING]		= "isOfflineSyncing";
 
 // Following chars invalid in organizer names: " : / [anything less than " "]
 ZmOrganizer.VALID_NAME_CHARS = "[^\\x00-\\x1F\\x7F:\\/\\\"]";

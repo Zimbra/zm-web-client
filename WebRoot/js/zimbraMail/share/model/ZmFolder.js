@@ -254,6 +254,33 @@ function(newParent) {
 	ZmOrganizer.prototype.move.call(this, newParent);
 };
 
+/**
+ * Sends FolderActionRequest to turn syncing on/off for IMAP folders. Currently,
+ * this is only used by Offline/ZDesktop client
+ *
+ * @param syncIt		[Boolean]		flag indicating whether to sync this folder
+ * @param callback		[AjxCallback]*	callback to call once server request is successful
+ * @param errorCallback	[AjxCallback]*	callback to call if server returns error
+ */
+ZmFolder.prototype.toggleSyncOffline =
+function(callback, errorCallback) {
+	if (!this.isOfflineSyncable) { return; }
+
+	var op = this.isOfflineSyncing ? "!syncon" : "syncon";
+	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+	var actionNode = soapDoc.set("action");
+	actionNode.setAttribute("op", op);
+	actionNode.setAttribute("id", this.id);
+
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: callback,
+		errorCallback: errorCallback
+	}
+	appCtxt.getAppController().sendRequest(params);
+};
+
 ZmFolder.prototype.hasSearch =
 function(id) {
 	if (this.type == ZmOrganizer.SEARCH) { return true; }
