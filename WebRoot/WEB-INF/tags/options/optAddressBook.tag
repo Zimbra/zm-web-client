@@ -34,22 +34,22 @@
                                     <table border="0" cellpadding="0" cellspacing="0">
                                         <tr>
                                             <td>
-                                                <select name="zimbraPrefMailItemsPerPage" id="itemsPP">
-                                                    <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
+                                                <select name="zimbraPrefContactsPerPage" id="itemsPP">
+                                                    <c:set var="pageSize" value="${mailbox.prefs.contactsPerPage}"/>
                                                     <option
-                                                            <c:if test="${mailItemsPP eq 10}"> selected</c:if>
+                                                            <c:if test="${pageSize eq 10}"> selected</c:if>
                                                             >10
                                                     </option>
                                                     <option
-                                                            <c:if test="${mailItemsPP eq 25}"> selected</c:if>
+                                                            <c:if test="${pageSize eq 25}"> selected</c:if>
                                                             >25
                                                     </option>
                                                     <option
-                                                            <c:if test="${mailItemsPP eq 50}"> selected</c:if>
+                                                            <c:if test="${pageSize eq 50}"> selected</c:if>
                                                             >50
                                                     </option>
                                                     <option
-                                                            <c:if test="${mailItemsPP eq 100}"> selected</c:if>
+                                                            <c:if test="${pageSize eq 100}"> selected</c:if>
                                                             >100
                                                     </option>
                                                 </select>
