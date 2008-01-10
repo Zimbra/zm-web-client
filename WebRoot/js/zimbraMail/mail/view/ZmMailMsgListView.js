@@ -331,9 +331,9 @@ function(parent) {
 	var colName = isConvView ? ZmMsg.fragment : ZmMsg.subject;
 	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, colName, null, null, sortBy, null, null, null, null, true));
 
-	hList.push(new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmMailListView.COL_WIDTH_FOLDER, null, true));
-	hList.push(new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmMailListView.COL_WIDTH_SIZE, null, true));
-	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.received, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmMsg.COLUMN_WIDTH_FOLDER, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmMsg.COLUMN_WIDTH_SIZE, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.received, null, ZmMsg.COLUMN_WIDTH_DATE, ZmItem.F_DATE, true));
 
 	return hList;
 };
