@@ -125,7 +125,7 @@
     <SCRIPT TYPE="text/javascript">
         <!--
         var zrc = ${context.searchResult.size};
-        var zsr = ${empty selectedRow ? 0 : zm:cook(selectedRow)};
+        var zsr = ${zm:cookInt(selectedRow, 0)};
         var zss = function(r,s) {
             var e = document.getElementById("R"+r);
             if (e == null) return;
