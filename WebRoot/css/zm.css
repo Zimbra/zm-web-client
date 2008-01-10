@@ -1808,6 +1808,12 @@ HTML>BODY .appt-selected .appt_allday_body
  *	Chat application
  */
 
+/* temporary lite widgets */
+
+.DwtLtIconButton { padding: 2px; }
+.DwtLtIconButton-hover { background-color: white; }
+.DwtLtIconButton-pressed { padding: 1px; border: 1px solid #777; }
+
 .ZmChatMultiWindowView, .ZmChatTabbedView {
 	@PageBg@
 	@FullSize@
