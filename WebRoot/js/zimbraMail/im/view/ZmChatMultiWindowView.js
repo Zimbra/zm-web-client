@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -80,8 +80,8 @@ ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
 	}
 	if (!win) {
 		win = new ZmChatWindow(wm, chat, sticky);
-		var pos = null;
-		if (sticky) {
+		var pos = this._initialWindowPlacement();
+		if (sticky && !pos) {
 			// put it in the bottom-right corner
 			var s = win.getSize();
 			var ws = wm.getSize();
@@ -220,10 +220,8 @@ ZmChatMultiWindowView.prototype._getChatWidgetForChat = function(chat) {
 
 ZmChatMultiWindowView.KEY_CHAT = "zcmwv_chat";
 
-ZmChatMultiWindowView.prototype._initialWindowPlacement =
-function(chatWindow) {
+ZmChatMultiWindowView.prototype._initialWindowPlacement = function() {
 	if (this._nextInitX || this._nextInitY) {
-		// chatWindow.setBounds(this._nextInitX, this._nextInitY, Dwt.DEAFULT, Dwt.DEFAULT);
 		var pos = { x: this._nextInitX,
 			    y: this._nextInitY };
 		delete this._nextInitX;
@@ -265,8 +263,6 @@ function(chatWindow) {
 ZmChatMultiWindowView.prototype._addChatWidget =
 function(chatWidget, chat) {
     	this._chatIdToChatWidget[chat.id] = chatWidget;
-	var pos = this._initialWindowPlacement(chatWidget);
-	chatWidget.popup(pos);
 };
 
 ZmChatMultiWindowView.prototype._removeChatWidget =

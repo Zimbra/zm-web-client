@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -200,28 +200,26 @@ ZmChatTabs.prototype.restoreScrollPositions = function() {
 };
 
 ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
+        //console.time("createTabButton");
 	var cont = new DwtComposite(this, "ZmChatTabs-Tab");
-	var tb = new DwtToolBar(cont);
+        cont.setContent("<table cellpadding='0' cellspacing='0'><tr><td style='padding-right: 3px'></td><td></td></tr></table>");
+	var tb = cont.getHtmlElement().firstChild.rows[0].cells;
 
-	var close = new DwtToolBarButton(tb);
+	var close = new DwtLtIconButton(cont, null, chatWidget.getIcon());
+        close.reparentHtmlElement(tb[0]);
 	close.addSelectionListener(chatWidget._closeListener); // ;-)
-	// close.setHoverImage("Close");
-	// close.setEnabledImage(chatWidget.getIcon());
-
-	close.setImage(chatWidget.getIcon());
-	close.setEnabledImage(chatWidget.getIcon());
 	close.setHoverImage("Close");
-
-	tb.addSpacer();
 
 	var t = this.__tabBarEl;
 	cont.reparentHtmlElement(t, index);
 	Dwt.delClass(t, /ZmChatTabs-TabBarCount-[0-9]+/,
 		     "ZmChatTabs-TabBarCount-" + this.__tabs.size());
 
-	var index = this.__tabs.size() - 1;
+	index = this.__tabs.size() - 1;
 	this.setActiveTab(index);
-	var label = new DwtLabel(tb);
+	var label = new DwtControl(cont);
+        label.reparentHtmlElement(tb[1]);
+        label.setText = label.setContent;
 	label.setText(AjxStringUtil.htmlEncode(chatWidget._titleStr));
 
 	cont.label = label;
@@ -237,22 +235,27 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 	// d'n'd
 	var ds = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	label.setDragSource(ds);
-	ds.addDragListener(new AjxListener(this, function(ev) {
-		if (ev.action == DwtDragEvent.DRAG_START) {
-			this.parent.getWindowManager().takeOver(true);
-		} else if (ev.action == DwtDragEvent.SET_DATA) {
-			ev.srcData = chatWidget;
-		} else if (ev.action == DwtDragEvent.DRAG_END ||
-			   ev.action == DwtDragEvent.DRAG_CANCEL) {
-			this.parent.getWindowManager().takeOver(false);
-		}
-	}));
-	label._getDragProxy = function() {
-		var icon = document.createElement("div");
-		icon.style.position = "absolute";
-		icon.appendChild(label.getHtmlElement().cloneNode(true));
-		DwtShell.getShell(window).getHtmlElement().appendChild(icon);
-		Dwt.setZIndex(icon, Dwt.Z_DND);
-		return icon;
-	};
+	ds.addDragListener(new AjxListener(this, this._tabDragListener, [ chatWidget ]));
+	label._getDragProxy = ZmChatTabs._labelGetDragProxy;
+        //console.timeEnd("createTabButton");
+};
+
+ZmChatTabs.prototype._tabDragListener = function(chatWidget, ev) {
+	if (ev.action == DwtDragEvent.DRAG_START) {
+		this.parent.getWindowManager().takeOver(true);
+	} else if (ev.action == DwtDragEvent.SET_DATA) {
+		ev.srcData = chatWidget;
+	} else if (ev.action == DwtDragEvent.DRAG_END ||
+		   ev.action == DwtDragEvent.DRAG_CANCEL) {
+		this.parent.getWindowManager().takeOver(false);
+	}
+};
+
+ZmChatTabs._labelGetDragProxy = function() {
+	var icon = document.createElement("div");
+	icon.style.position = "absolute";
+	icon.appendChild(this.getHtmlElement().cloneNode(true));
+	DwtShell.getShell(window).getHtmlElement().appendChild(icon);
+	Dwt.setZIndex(icon, Dwt.Z_DND);
+	return icon;
 };
