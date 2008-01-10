@@ -1336,10 +1336,7 @@ function() {
 
 	window.onbeforeunload = null;
 	
-	var url = appCtxt.get(ZmSetting.LOGOUT_URL);
-	if (!url) {
-		url = AjxUtil.formatUrl({path:appContextPath});
-	}
+	var url = AjxUtil.formatUrl({path:appContextPath, qsArgs:{loginOp:'logout'}});
 	ZmZimbraMail.sendRedirect(url);
 };
 
