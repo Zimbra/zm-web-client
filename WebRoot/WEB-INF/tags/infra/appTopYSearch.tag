@@ -13,7 +13,7 @@
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>
 				<td nowrap="nowrap">
-					<label for="searchWebField">Search web:&nbsp;</label>
+					<label for="searchWebField"><fmt:message key="searchWeb"/> :</label>
 				</td>
 				<td class='SearchFieldWidth' nowrap="nowrap">
                     <input type="hidden" name="fr" value="zim-mails" />
