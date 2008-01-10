@@ -51,7 +51,7 @@ ZmZimbraMail = function(params) {
 	window._zimbraMail = this;
 	
 	// setup history support
-	if (!AjxEnv.isSafari) {
+	if (appCtxt.get(ZmSetting.HISTORY_SUPPORT_ENABLED) && !AjxEnv.isSafari) {
 		window.historyMgr = appCtxt.getHistoryMgr();
 	}
 	
