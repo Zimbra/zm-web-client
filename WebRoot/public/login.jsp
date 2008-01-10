@@ -76,7 +76,23 @@
             </c:if>
             <c:choose>
         		<c:when test="${client eq 'advanced'}">
-		            <jsp:forward page="/public/launchZCS.jsp"/>
+                    <c:choose>
+                        <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
+                            <c:redirect url="/">
+                                <c:forEach var="p" items="${paramValues}">
+                                    <c:forEach var='value' items='${p.value}'>
+                                        <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                                            <c:param name="${p.key}" value='${value}'/>
+                                        </c:if>
+                                    </c:forEach>
+                                </c:forEach>
+                            </c:redirect>
+                        </c:when>
+                        <c:otherwise>
+                            <jsp:forward page="/public/launchZCS.jsp"/>
+                        </c:otherwise>
+                    </c:choose>
+
         		</c:when>
         		<c:when test="${client eq 'standard'}">
 		            <c:redirect url="/h/search?mesg=welcome&initial=true">
