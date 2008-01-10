@@ -1129,7 +1129,7 @@ if (ext == null) ext = "";
 		<copy todir="${jspc.src.dir}">
 			<fileset dir='${web.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp,WEB-INF/**"/>
 		</copy>
-		<fileset id='jspc.fileset' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp"/>
+		<fileset id='jspc.fileset' dir='${jspc.src.dir}' includes="${custom.web.jsp.includes},h/**,m/**,public/*.jsp,desktop/*.jsp"/>
 		<pathconvert property='jspc.filelist' refid='jspc.fileset' pathsep=',' />
 
 		<mkdir dir="${jspc.build.dir}"/>
