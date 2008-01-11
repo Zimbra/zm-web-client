@@ -1144,37 +1144,51 @@ ZmHtmlEditor.prototype._rteStateChangeListener =
 function(ev) {
 
 	this._boldButton.setSelected(ev.isBold);
-	this._underlineButton.setSelected(ev.isUnderline);
-	this._italicButton.setSelected(ev.isItalic);
-	if (this._strikeThruButton)
-		this._strikeThruButton.setSelected(ev.isStrikeThru);
-	if (this._subscriptButton)
-		this._subscriptButton.setSelected(ev.isSubscript);
-	if (this._superscriptButton)
-		this._superscriptButton.setSelected(ev.isSuperscript);
+ 	this._underlineButton.setSelected(ev.isUnderline);
+ 	this._italicButton.setSelected(ev.isItalic);
+ 	if (this._strikeThruButton)
+ 		this._strikeThruButton.setSelected(ev.isStrikeThru);
+ 	if (this._subscriptButton)
+ 		this._subscriptButton.setSelected(ev.isSubscript);
+ 	if (this._superscriptButton)
+ 		this._superscriptButton.setSelected(ev.isSuperscript);
 
-	this._numberedListButton.setSelected(ev.isOrderedList);
-	this._listButton.setSelected(ev.isUnorderedList);
+ 	this._numberedListButton.setSelected(ev.isOrderedList);
+ 	this._listButton.setSelected(ev.isUnorderedList);
 
-	if (ev.color)
-		this._fontColorButton.setColor(ev.color);
+ 	if (ev.color)
+ 		this._fontColorButton.setColor(ev.color);
 
-	if (ev.backgroundColor)
-		this._fontBackgroundButton.setColor(ev.backgroundColor);
+ 	if (ev.backgroundColor)
+ 		this._fontBackgroundButton.setColor(ev.backgroundColor);
 
-	if (ev.style)
-		this._styleMenu.checkItem(ZmHtmlEditor._VALUE, ev.style, true);
+ 	if (ev.style)
+ 		this._styleMenu.checkItem(ZmHtmlEditor._VALUE, ev.style, true);
 
-	if (ev.fontFamily) {
-		this._fontFamilyButton.setText(ZmHtmlEditor.FONT_FAMILY[ev.fontFamily].name);
-	}
+        if (!AjxEnv.isIE) {
 
-	if (ev.fontSize) {
-		var mi = this._fontSizeButton.getMenu().getItem(ev.fontSize-1);
-		this._fontSizeButton.setText(mi.getText());
-	}
+                // Bug 20171
 
-	this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, ev.justification, true);
+                // For reasons not known to humanity, the following code resets the undo stack in IE.
+                // It seems to have something to do with modifying the DOM.  The setText() calls use
+                // innerHTML, but it's not about innerHTML, since I tried using DOM methods as well
+                // to modify the text (createTextNode/removeChild/appendChild).  Nothing works.
+
+                // I therefore disable this code for IE, trusting it's better to have working undo
+                // and an un-updated toolbar, rather than the other way around.  I'll commit suicide
+                // next; if you find a better solution please tell my son after about 12 years.  >:)
+
+ 	        if (ev.fontFamily)
+ 		        this._fontFamilyButton.setText(ZmHtmlEditor.FONT_FAMILY[ev.fontFamily].name);
+
+ 	        if (ev.fontSize) {
+ 		        var mi = this._fontSizeButton.getMenu().getItem(ev.fontSize-1);
+ 		        this._fontSizeButton.setText(mi.getText());
+ 	        }
+
+        }
+
+ 	this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, ev.justification, true);
 };
 
 ZmHtmlEditor.prototype._settingChangeListener =
@@ -1426,7 +1440,7 @@ function(ev) {
 			}
 			if (plainText) {
 				// in plain text mode we want to be able to edit misspelled words
-				var txt = fixall ? "Edit all" : "Edit";
+				var txt = fixall ? ZmMsg.editAll : ZmMsg.edit;
 				item = menu.createMenuItem("edit", {text:txt, className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("orig", word);
@@ -1445,14 +1459,14 @@ function(ev) {
 					item.addSelectionListener(self._spellCheckSuggestionListenerObj);
 				}
 			} else {
-                item = menu.createMenuItem("clear", {text:"No Suggestions", className:"ZMenuItem ZmSpellMenuItem"});
+                item = menu.createMenuItem("clear", {text:ZmMsg.noSuggestions, className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("value", "");
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
 				menu.createSeparator();
-              
-                item = menu.createMenuItem("clear", {text:"Clear text", className:"ZMenuItem ZmSpellMenuItem"});
+
+                item = menu.createMenuItem("clear", {text:ZmMsg.clearText, className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("value", "");
 				item.setData("orig", word);
@@ -1464,7 +1478,8 @@ function(ev) {
 		sc.menu = makeMenu(0, this);
 		if (sc.wordIds[word].length > 1) {
 			sc.menu.createSeparator();
-			var text = "Replace all (" + sc.wordIds[word].length + " occurrences)";
+			this._replaceAllFormatter = this._replaceAllFormatter || new AjxMessageFormat(ZmMsg.replaceAllMenu);
+			var text = this._replaceAllFormatter.format(sc.wordIds[word].length);
 			var item = sc.menu.createMenuItem("fixall", {text:text});
 			item.setMenu(makeMenu(1, item));
 		}
