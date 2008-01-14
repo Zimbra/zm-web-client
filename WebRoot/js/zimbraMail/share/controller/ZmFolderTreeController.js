@@ -144,7 +144,7 @@ function(parent, type, id) {
         }
 		else {
 			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
-			if (isEnabled) {
+			if (!appCtxt.get(ZmSetting.OFFLINE) && isEnabled) {
 				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
 				var dataSources = dsCollection.getItemsFor(ZmOrganizer.normalizeId(folder.id));
 				if (dataSources.length > 0) {
