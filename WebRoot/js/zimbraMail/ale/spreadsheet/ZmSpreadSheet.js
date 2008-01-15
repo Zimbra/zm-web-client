@@ -821,7 +821,7 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 		if (this._selectedRangeName) {
 			this._model.forEachCell(this._selectedRangeName,
 						function(cell) {
-							if (dwtev.ctrlKey)
+							if (dwtev.isCommand())
 								cell.clearAll();
 							else
 								cell.clearValue();
@@ -837,8 +837,8 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 		break;
 
 	    default:
-		if (!dwtev.ctrlKey && ( (!needs_keypress && ev.charCode) ||
-					(needs_keypress && /keypress/i.test(dwtev.type)))) {
+		if (!dwtev.isCommand() && ( (!needs_keypress && ev.charCode) ||
+					    (needs_keypress && /keypress/i.test(dwtev.type)))) {
 			var val = String.fromCharCode(dwtev.charCode);
 // 			// FIXME: this sucks.  Isn't there any way to determine
 // 			// if some character is a printable Unicode character? :(
@@ -857,21 +857,21 @@ ZmSpreadSheet.prototype._focus_handleKey = function(dwtev, ev) {
 		switch (String.fromCharCode(dwtev.charCode).toLowerCase()) {
 
 		    case "c":	// COPY
-			if (dwtev.ctrlKey) {
+			if (dwtev.isCommand()) {
 				handled = true;
 				this.clipboardCopy();
 			}
 			break;
 
 		    case "x":	// CUT
-			if (dwtev.ctrlKey) {
+			if (dwtev.isCommand()) {
 				handled = true;
 				this.clipboardCut();
 			}
 			break;
 
 		    case "v":	// PASTE
-			if (dwtev.ctrlKey) {
+			if (dwtev.isCommand()) {
 				handled = true;
 				this.clipboardPaste();
 			}
