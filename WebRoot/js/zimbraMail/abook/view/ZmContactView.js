@@ -630,7 +630,8 @@ function(contact) {
 		folderSelectId: this._folderCellId,
 		imAddress1Id: this._imAddress1Id,
 		imAddress2Id: this._imAddress2Id,
-		imAddress3Id: this._imAddress3Id
+		imAddress3Id: this._imAddress3Id,
+		isMyCard: this._isMyCardView
 	};
 
 	this._fields = [];

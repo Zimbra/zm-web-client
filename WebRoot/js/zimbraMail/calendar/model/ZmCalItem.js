@@ -1286,9 +1286,8 @@ function(calItemNode, instNode) {
 		this.uniqStartTime = this.startDate.getTime();
 	}
 
-	var ed = dur;
-	if (ed) {
-		var endTime = startTime + (parseInt(ed));
+	if (dur) {
+		var endTime = startTime + (parseInt(dur));
 		this.endDate = new Date(endTime);
 	}
 

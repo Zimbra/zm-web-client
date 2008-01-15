@@ -23,3 +23,49 @@
 	</table>
 	
 </template>
+
+<template id='briefcase.Briefcase#Tooltip'>
+	<table cellpadding=0 cellspacing=0 border=0 width=<$= data.width $>>
+	<tr valign='center'>
+			<td colspan=2 align='left'>
+				<div style='border-bottom:1px solid black;'>
+					<table cellpadding=1 cellspacing=1 border=0 width=100%>
+						<tr valign='center'>
+							<td><b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.briefcaseFileProps) $></div></b>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+	</tr>
+	<$ for(var propIdx=0; propIdx< data.fileProperties.length; propIdx++){ $>
+		<tr valign='top'>
+			<td align='right' style='padding-right:5px;'>
+				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(data.fileProperties[propIdx].name) $>:</div></b>
+			</td>
+			<td align='left'>
+				<div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(data.fileProperties[propIdx].value) $></div>
+			</td>
+		</tr>
+	<$ } $>
+
+  <$ if (data.tagTooltip != null && data.tagTooltip !="") { $>
+		<tr valign='center'>
+			<td colspan=2 align='left'>
+				<div style='border-bottom:1px solid black;'>
+					<table cellpadding=1 cellspacing=1 border=0 width=100%>
+						<tr valign='center'>
+							<td><b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.tags) $></div></b>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>							
+
+		<tr valign='top'>
+			<td colspan='2' align='left' style='padding-right:5px;' nowrap><$= data.tagTooltip $></td>
+		</tr>
+		<$ } $>
+	</table>
+</template>

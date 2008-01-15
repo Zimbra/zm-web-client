@@ -58,7 +58,6 @@ function() {
 // column widths
 ZmListView.COL_WIDTH_ICON 					= 19;
 ZmListView.COL_WIDTH_NARROW_ICON			= 11;
-ZmListView.COL_WIDTH_DATE 					= 75;
 
 // TD class for fields
 ZmListView.FIELD_CLASS = {};

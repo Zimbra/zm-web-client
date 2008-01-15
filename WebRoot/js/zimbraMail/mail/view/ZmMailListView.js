@@ -30,9 +30,6 @@ ZmMailListView.prototype.constructor = ZmMailListView;
 
 ZmMailListView.KEY_ID = "_keyId";
 
-ZmMailListView.COL_WIDTH_FOLDER	= 47;
-ZmMailListView.COL_WIDTH_SIZE	= 45;
-
 // Public methods
 
 ZmMailListView.prototype.toString = 

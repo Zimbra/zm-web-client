@@ -39,7 +39,7 @@
 
 /* html message font */
 .MsgBody-html {
-	@MailMsgBodyText@
+	/*@MailMsgBodyText@*/
 	@MailMsgBodyText-html@
 }
 
