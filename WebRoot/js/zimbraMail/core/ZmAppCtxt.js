@@ -594,7 +594,7 @@ function(checkOfflineMode) {
 	for (var id in this._accounts) {
 		var account = this._accounts[id];
 		// if checking for offline mode, return the first non-main account
-		if (checkOfflineMode && appCtxt.get(ZmSetting.OFFLINE)) {
+		if (checkOfflineMode && appCtxt.get(ZmSetting.OFFLINE) && appCtxt.multiAccounts) {
 			if (!account.isMain)
 				return account;
 			continue;
