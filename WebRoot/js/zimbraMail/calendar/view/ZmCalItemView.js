@@ -320,7 +320,7 @@ function(calItem) {
 	var pattern = isAllDay ?
 				  (isMultiDay ? ZmMsg.apptTimeAllDayMulti   : ZmMsg.apptTimeAllDay) :
 				  (isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance);
-	var params = [sd, ed, AjxTimezone.getServerId(AjxTimezone.DEFAULT)];
+	var params = [sd, ed, AjxMsg[AjxTimezone.DEFAULT] || AjxTimezone.getServerId(AjxTimezone.DEFAULT)];
 
 	return AjxMessageFormat.format(pattern, params);
 };
