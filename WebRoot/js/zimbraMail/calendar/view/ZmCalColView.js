@@ -1888,6 +1888,7 @@ function(ev, apptEl) {
 		ZmCalColView._apptMouseMoveHdlr,
 		ZmCalColView._apptMouseUpHdlr,
 		ZmCalColView._emptyHdlr, // mouse out
+		null,					 // mouse wheel
 		true);
 
 	capture.capture();

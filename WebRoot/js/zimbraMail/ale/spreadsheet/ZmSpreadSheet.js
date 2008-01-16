@@ -53,15 +53,17 @@ ZmSpreadSheet = function(parent, className, posStyle, deferred) {
 
 		AjxCallback.simpleClosure(this._clear_selectRangeCapture, this),
 		null,		// no mouseout?
+		null,		// no mouse wheel
 		true);		// hard capture
 
 	this._colsizeCapture = new DwtMouseEventCapture(
 		this, "ZmSpreadSheet",
-		null,
-		null,
+		null,	// no mouse over
+		null,	// no mouse down
 		AjxCallback.simpleClosure(this._colsize_mouseMove, this),
 		AjxCallback.simpleClosure(this._colsize_mouseUp, this),
-		null,
+		null,	// no mouse out
+		null,	// no mouse wheel
 		true);
 
 	this._onResize = new AjxListener(this, this._onResize);
