@@ -42,23 +42,17 @@ ZmZimletMgr.prototype.isLoaded = function() {
 };
 
 ZmZimletMgr.prototype.loadZimlets =
-function(zimletArray, userProps, target) {
+function(zimletArray, userProps) {
 	if(!zimletArray || !zimletArray.length) {
         this.loaded = true;
         return;
     }
 
-	var loadZimletArray = [];
-	var targetRe = new RegExp("\\b"+(target || "main")+"\\b");
+    for (var i = 0; i < zimletArray.length; i++)
+		this._ZIMLETS_BY_ID[zimletArray[i].zimlet[0].name] = true;
 	for(var i=0; i < zimletArray.length; i++) {
-		var zimletObj = zimletArray[i];
-		var zimlet0 = zimletObj.zimlet[0];
-		// NOTE: Only instantiate zimlet context for specified target
-		if (!targetRe.test(zimlet0.target || "main")) continue;
-		var z = new ZmZimletContext(i, zimletObj);
-		this._ZIMLETS_BY_ID[z.name] = z;
-		this._ZIMLETS.push(z);
-		loadZimletArray.push(zimletObj);
+		var z = new ZmZimletContext(i, zimletArray[i]);
+		this._ZIMLETS[i] = this._ZIMLETS_BY_ID[z.name] = z;
 	}
 	if (userProps) {
 		for (i = 0; i < userProps.length; ++i) {
@@ -81,9 +75,9 @@ function(zimletArray, userProps, target) {
  	}
 
     // load zimlet code/CSS
-    var zimletNames = this._getZimletNames(loadZimletArray);
-    this._loadIncludes(loadZimletArray, zimletNames);
-    this._loadStyles(loadZimletArray, zimletNames);
+    var zimletNames = this._getZimletNames(zimletArray);
+    this._loadIncludes(zimletArray, zimletNames);
+    this._loadStyles(zimletArray, zimletNames);
 };
 
 ZmZimletMgr.prototype.getPanelZimlets =

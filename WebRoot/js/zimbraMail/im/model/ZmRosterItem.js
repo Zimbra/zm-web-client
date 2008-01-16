@@ -175,7 +175,7 @@ ZmRosterItem.prototype.getDisplayName = function() {
 	var c = this.getContact();
 	if (c)
 		return c.getFullName();
-	return ZmImAddress.display(this.id);
+	return this.id;
 };
 
 ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; };

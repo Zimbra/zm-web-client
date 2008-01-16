@@ -39,13 +39,7 @@ ZmZimletContext = function(id, zimlet) {
 		this.keyword = zimlet.serverExtension[0].hasKeyword;
 	}
 
-	this.targets = {};
-	var targets = (zimlet.target || "main").split(" ");
-	for (var i = 0; i < targets.length; i++) {
-		this.targets[targets[i]] = true;
-	}
-
-	this._contentActionMenu = null;
+    this._contentActionMenu = null;
 	if (zimlet.contentObject) {
 		this.contentObject = zimlet.contentObject[0];
 		if(this.contentObject.type) {

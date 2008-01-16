@@ -167,9 +167,7 @@ function(overviewId, account) {
 	var treeView = this._treeView[overviewId];
 	if (!overviewId || !treeView) { return;	}
 
-	var rootId = (account != null)
-		? (ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, account))
-		: ZmOrganizer.ID_ROOT;
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, account);
 	var hideMe = (this._hideEmpty[overviewId] && this._hideEmpty[overviewId][this.type]);
 	var hide = (hideMe && !this._treeItemTypeMatch(treeView.getTreeItemById(rootId), this._searchTypes[overviewId]));
 	this._treeView[overviewId].setVisible(!hide);

@@ -194,9 +194,10 @@ ZmBriefcaseView.prototype.refresh = function(restUrl){
 };
 
 ZmBriefcaseView.prototype._getToolTip =
-function(item, ev, div) {
+function(field, item, ev, div, match) {
 	if (!item) { return; }
-	return this._controller.getItemTooltip(item, this);
+	var tooltip = item.name;	
+	return tooltip;
 };
 
 
@@ -206,10 +207,11 @@ function(ev, div) {
 	var id = ev.target.id || div.id;
 	if (!id) return true;
 	
-	if (div) {
+	var match = this._parseId(id);
+	if (match) {
 		var item = this.getItemFromElement(div);
-		if(item && !item.isFolder){
-		this.setToolTipContent(this._getToolTip(item, ev, div));
+		if(item){
+		this.setToolTipContent(this._getToolTip(match.field, item, ev, div, match));
 		}
 	}		
 	return true;

@@ -25,10 +25,8 @@ ZmTaskListView.prototype.constructor = ZmTaskListView;
 
 
 // Consts
-ZmTaskListView.KEY_ID				= "_keyId";
-ZmTaskListView.COL_WIDTH_STATUS		= 145;
-ZmTaskListView.COL_WIDTH_PCOMPLETE	= 75;
-ZmTaskListView.COL_WIDTH_DATE_DUE	= 75;
+ZmTaskListView.COL_WIDTH_STATUS	= 145;
+ZmTaskListView.KEY_ID			= "_keyId";
 
 
 // Public Methods
@@ -280,8 +278,8 @@ function(parent) {
 	hList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
 	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT, null, null, null, null, true));
 	hList.push(new DwtListHeaderItem(ZmItem.F_STATUS, ZmMsg.status, null, ZmTaskListView.COL_WIDTH_STATUS, ZmItem.F_STATUS));
-	hList.push(new DwtListHeaderItem(ZmItem.F_PCOMPLETE, ZmMsg.pComplete, null, ZmTaskListView.COL_WIDTH_PCOMPLETE, ZmItem.F_PCOMPLETE));
-	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.dateDue, null, ZmTaskListView.COL_WIDTH_DATE_DUE, ZmItem.F_DATE));
+	hList.push(new DwtListHeaderItem(ZmItem.F_PCOMPLETE, ZmMsg.pComplete, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_PCOMPLETE));
+	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.dateDue, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE));
 
 	return hList;
 };
@@ -299,12 +297,6 @@ function(ev) {
 	if (ev.event == ZmEvent.E_CREATE) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-
-			// skip if this item does not belong in this list.
-			var folderId = this._controller.getList().search.folderId;
-			if (folderId && folderId != item.folderId)
-				continue;
-
 			if (this._list && this._list.contains(item)) // skip if we already have it
 				continue;
 
