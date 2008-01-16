@@ -49,6 +49,9 @@
             </c:if>
         </c:when>
     </c:choose>
+    <c:if test="${!empty param.voiceid}">
+        <zm:voiceMailCompose compose="${compose}" voiceid="${param.voiceid}" operation="${param.vmop}"/>
+    </c:if>
 
     <c:set var="priority" value=""/>
     <c:if test="${not empty message and message.isDraft}">
