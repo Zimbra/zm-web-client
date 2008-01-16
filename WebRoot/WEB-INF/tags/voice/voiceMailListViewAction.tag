@@ -51,10 +51,10 @@
                 <zm:uploadVoiceMail var="uploadId" phone="${phone}" id="${ids}"/>
                 <c:choose>
                     <c:when test="${zm:actionSet(param, 'actionReplyByEmail')}">
-                        <fmt:message key="voiceMailReplySubject" var="subject"/>
+                        <c:set var="vmop" value="reply"/>
                     </c:when>
                     <c:otherwise>
-                        <fmt:message key="voiceMailForwardSubject" var="subject"/>
+                        <c:set var="vmop" value="forward"/>
                     </c:otherwise>
                 </c:choose>
                 <fmt:message key="voiceMailBody" var="body">
@@ -62,13 +62,11 @@
                     <fmt:param value="${zm:displayDuration(pageContext, hits[0].duration)}"/>
                     <fmt:param value="${zm:displayMsgDate(pageContext, hits[0].date)}"/>
                 </fmt:message>
-                <jsp:forward page="/h/compose">
-                    <jsp:param name="subject" value="${subject}"/>
-                    <jsp:param name="body" value="${body}"/>
-                    <jsp:param name="attachId" value="${uploadId}"/>
-                    <jsp:param name="attachName" value="voicemail.wav"/>
-                    <jsp:param name="attachUrl" value="${hits[0].soundUrl}"/>
-                </jsp:forward>
+                <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
+                                     action="compose" paction="view" css="${param.css}"
+                                     phone="${phone}" voiceid="${param.voiceId}" vmop="${vmop}"
+                                     attachId="${uploadId}" attachName="voicemail.wav" attachUrl="${hits[0].soundUrl}"/>
+                <c:redirect url="${composeUrl}"/>
             </c:otherwise>
         </c:choose>
     </c:when>
