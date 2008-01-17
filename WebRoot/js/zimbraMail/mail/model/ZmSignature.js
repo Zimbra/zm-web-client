@@ -158,6 +158,7 @@ ZmSignature.prototype._handleModifyResponse = function(callback, resp) {
 	var signature = signatures.getById(this.id);
 	signature.name = this.name;
 	signature.value = this.value;
+	signatures._notify(ZmEvent.E_MODIFY, { item: signature });
 
 	if (callback) {
 		callback.run();
