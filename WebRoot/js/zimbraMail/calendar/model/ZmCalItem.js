@@ -1097,6 +1097,9 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	// date/time
 	this._addDateTimeToSoap(soapDoc, inv, comp);
 
+	// xprops
+	this._addXPropsToSoap(soapDoc, inv, comp);
+	
 	// subject/location
 	soapDoc.set("su", this.name, m);
 	comp.setAttribute("name", this.name);
@@ -1140,6 +1143,56 @@ ZmCalItem.prototype._addExtrasToSoap =
 function(soapDoc, inv, comp) {
 	if (this.priority) comp.setAttribute("priority", this.priority);
 	comp.setAttribute("status", this.status);
+};
+
+ZmCalItem.prototype._addXPropsToSoap =
+function(soapDoc, inv, comp) {
+	
+	var message = this.message ? this.message : null;
+	var invite = (message && message.invite) ? message.invite : null;
+	
+	if(!invite) { return; }
+	
+	var xprops = invite.getXProp();
+	
+	if(!xprops) { return; }
+	
+	//bug 16024: preserve x props	
+	xprops = (xprops instanceof Array) ? xprops : [xprops];
+	
+	var xprop = null;
+	for(var i in xprops) {
+		xprop = xprops[i];
+		if(xprop && xprop.name) {
+			var x = soapDoc.set("xprop", null, comp);
+			x.setAttribute("name", xprop.name);
+			if(xprop.value != null) {
+				x.setAttribute("value", xprop.value);
+			}
+			this._addXParamToSoap(soapDoc, x, xprop.xparam);
+		}		
+	}
+	
+};
+
+ZmCalItem.prototype._addXParamToSoap = 
+function(soapDoc, xprop, xparams)  {
+	
+	if(!xparams){ return; }
+	
+	xparams = (xparams instanceof Array) ? xparams : [xparams]
+	
+	var xparam = null;
+	for(var j in xparams) {
+		xparam = xparams[j];
+		if(xparam && xparam.name) {
+			var x = soapDoc.set("xparam", null, xprop);
+			x.setAttribute("name", xparam.name);
+			if(xparam.value != null) {
+				x.setAttribute("value", xparam.value);
+        	}
+		}
+	}
 };
 
 ZmCalItem.prototype._addDateTimeToSoap =
