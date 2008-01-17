@@ -322,6 +322,24 @@ function(visible) {
 };
 
 /**
+ * Performs settings-driven changes to the skin.
+ */
+ZmAppViewMgr.prototype.tweakSkin =
+function() {
+	// Hide the web search bar, expand regular one if web search disabled
+	if (!appCtxt.get(ZmSetting.WEB_SEARCH_ENABLED)) {
+		var el = document.getElementById(appCtxt.get(ZmSetting.SKIN_WEB_SEARCH_ID));
+		if (el) {
+			Dwt.setVisible(el, false);
+		}
+		el = document.getElementById(appCtxt.get(ZmSetting.SKIN_SPACING_SEARCH_ID));
+		if (el) {
+			el.style.width = "100%";
+		}
+	}
+};
+
+/**
 * Returns the ID of the app view currently being displayed.
 */
 ZmAppViewMgr.prototype.getCurrentViewId =

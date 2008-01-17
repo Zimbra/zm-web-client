@@ -465,6 +465,7 @@ function(params) {
 	
 	this.setSessionTimer(true);
 	ZmZimbraMail.killSplash();
+	this._appViewMgr.tweakSkin();
 
 	// next line makes the UI appear
 	this._appViewMgr.addComponents(this._components, true);
