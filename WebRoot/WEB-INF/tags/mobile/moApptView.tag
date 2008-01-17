@@ -22,7 +22,7 @@
 
     <c:set var="apptFolder" value="${zm:getFolder(pageContext, msg.folderId)}"/>
     <c:set var="readOnly" value="${apptFolder.isMountPoint or apptFolder.isFeed}"/>
-    
+
 </mo:handleError>
 
 <mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" clazz="zo_obj_body" scale="true">
@@ -32,14 +32,14 @@
         <tr>
             <td>
                 <table width=100% cellspacing="0" cellpadding="0">
-                    <tr class='zo_toolbar' width=100%>
+                    <tr class='x_toolbar'>
                         <td>
                             <table cellpadding="0" cellspacing="0">
                                 <tr>
-                                <mo:calendarUrl var="backurl" />
-                                <td><a href="${backurl}" class='zo_button'>
-                                    <fmt:message key="close"/>
-                                </a></td>
+                                    <mo:calendarUrl var="backurl" action="${null}"/>
+                                    <td><a href="${backurl}" class='zo_button'>
+                                        <fmt:message key="close"/>
+                                    </a></td>
                                 </tr>
                             </table>
                         </td>
@@ -53,14 +53,17 @@
                 <c:if test="${empty param.xim}">
                     <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
                 </c:if>
-                <%--
-                <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
-                             action="compose" paction="view" id="${msg.id}"/>
-                             --%>
-                <mo:calendarUrl var="composeUrl" id="${id}" action="compose" paction="view" apptFromParam="${true}" inviteReplyInst="${isInstance ? param.instStartTime : ''}"  inviteReplyAllDay="${isInstance and invite.component.allDay ? '1' : ''}"/>
-                <%-- <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/> --%>
+                    <%--
+       <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
+                    action="compose" paction="view" id="${msg.id}"/>
+                    --%>
+                <mo:calendarUrl var="composeUrl" id="${id}" action="compose" paction="view" apptFromParam="${true}"
+                                inviteReplyInst="${isInstance ? param.instStartTime : ''}"
+                                inviteReplyAllDay="${isInstance and invite.component.allDay ? '1' : ''}"/>
+                    <%-- <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/> --%>
                 <mo:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}"
-                                       showInviteReply="${not readOnly}" externalImageUrl="${extImageUrl}" composeUrl="${composeUrl}" newWindowUrl=""/>
+                                       showInviteReply="${not readOnly}" externalImageUrl="${extImageUrl}"
+                                       composeUrl="${composeUrl}" newWindowUrl=""/>
             </td>
         </tr>
     </table>

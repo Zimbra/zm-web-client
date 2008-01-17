@@ -8,23 +8,25 @@
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
-    <c:when test="${not empty mailbox.prefs.locale}">
-        <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
-    </c:when>
-    <c:otherwise>
-        <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-    </c:otherwise>
+        <c:when test="${not empty mailbox.prefs.locale}">
+            <fmt:setLocale value='${mailbox.prefs.locale}' scope='request'/>
+        </c:when>
+        <c:otherwise>
+            <fmt:setLocale value='${pageContext.request.locale}' scope='request'/>
+        </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
-    
+
     <mo:composeCheck/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
     <c:choose>
         <c:when test="${not empty param.actionSearch}">
-            <c:if test="${not empty param.sq_size}"><c:set var="sq_size" value=" ${param.sq_size_comp}:${fn:trim(param.sq_size)}${param.sq_size_units}"/></c:if>
+            <c:if test="${not empty param.sq_size}"><c:set var="sq_size"
+                                                           value=" ${param.sq_size_comp}:${fn:trim(param.sq_size)}${param.sq_size_units}"/></c:if>
             <c:if test="${not empty param.sq_from}"><c:set var="sq_from" value=' from:(${param.sq_from})'/></c:if>
             <c:if test="${not empty param.sq_subject}"><c:set var="sq_subject" value=' subject:(${param.sq_subject})'/></c:if>
-            <c:if test="${not empty param.sq_tocc}"><c:set var="sq_tocc" value=' (to:(${param.sq_tocc}) or cc:(${param.sq_tocc}))'/></c:if>
+            <c:if test="${not empty param.sq_tocc}"><c:set var="sq_tocc"
+                                                           value=' (to:(${param.sq_tocc}) or cc:(${param.sq_tocc}))'/></c:if>
             <c:set var="sq">${param.sq}${param.sq_folder}${param.sq_tag}${param.sq_unread}${param.sq_flagged}${sq_subject}${sq_tocc}${sq_from}${sq_size}</c:set>
         </c:when>
         <c:otherwise>
@@ -33,30 +35,44 @@
     </c:choose>
 
 
-        <%-- switch based on context search types --%>
+    <%-- switch based on context search types --%>
 
-     <c:choose>
-         <%--
-         <c:when test="${not empty param.doConvListViewAction}">
-             <app:convListViewAction/>
-         </c:when>
-         --%>
-         <c:when test="${not empty param.doMessageAction}">
-             <mo:messageAction/>
-         </c:when>
-         <%--
-         <c:when test="${not empty param.doContactListViewAction or param.action eq 'newcontact' or param.action eq 'newcontactgroup'}">
-             <app:contactListViewAction/>
-         </c:when>
-         --%>
-     </c:choose>
-
-    <zm:computeSearchContext var="context" usecache="true" query="${sq}"/>
+    <c:choose>
+        <%--
+        <c:when test="${not empty param.doConvListViewAction}">
+            <app:convListViewAction/>
+        </c:when>
+        --%>
+        <c:when test="${not empty param.doMessageAction}">
+            <mo:messageAction/>
+        </c:when>
+        <c:when test="${not empty param.doContactAction}">
+            <mo:contactAction/>
+        </c:when>
+        <%--
+        <c:when test="${not empty param.doContactListViewAction or param.action eq 'newcontact' or param.action eq 'newcontactgroup'}">
+            <app:contactListViewAction/>
+        </c:when>
+        --%>
+    </c:choose>
+    <c:if test="${param.sq_limit!=null}">
+        <zm:computeSearchContext var="context" usecache="true" query="${sq}" limit="${param.sq_limit}"/>
+    </c:if>
+    <c:if test="${param.sq_limit==null}">
+        <zm:computeSearchContext var="context" usecache="true" query="${sq}"/>
+    </c:if>
 
 </mo:handleError>
 
- <%-- switch based on context search types --%>
+<%-- switch based on context search types --%>
 <c:choose>
+
+    <c:when test="${requestScope.contactAddError != null}">
+        <mo:contactEdit context="${context}"/>
+    </c:when>
+    <c:when test="${requestScope.currentContactId != null}">
+        <mo:contactView context="${context}" id="${requestScope.currentContactId}"/>
+    </c:when>
     <c:when test="${context.isConversationSearch and action eq 'view'}">
         <mo:convView context="${context}"/>
     </c:when>
@@ -71,6 +87,9 @@
     </c:when>
     <c:when test="${context.isContactSearch and action eq'view'}">
         <mo:contactView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isContactSearch and action eq'edit'}">
+        <mo:contactEdit context="${context}"/>
     </c:when>
     <c:when test="${context.isContactSearch}">
         <mo:contactListView context="${context}"/>

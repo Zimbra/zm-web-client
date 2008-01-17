@@ -7,9 +7,9 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd"/>
-<mo:calendarUrl var="dayViewUrl" date="${dateDf}" view="day"/>
-<mo:calendarUrl var="listViewUrl" date="${dateDf}" view="list"/>
-<mo:calendarUrl var="monthViewUrl" date="${dateDf}" view="month"/>
+<mo:calendarUrl var="dayViewUrl" view="day"/>
+<mo:calendarUrl var="listViewUrl" view="list"/>
+<mo:calendarUrl var="monthViewUrl" view="month"/>
 <c:choose>
     <c:when test="${openurl}">
         <c:set var="list">onclick='openURL("${fn:escapeXml(zm:jsEncode(listViewUrl))}")'</c:set>
@@ -23,14 +23,14 @@
     </c:otherwise>
 </c:choose>
 <table width="100%" cellspacing="0" cellpadding="0">
-    <tr class='zo_toolbar'>
+    <tr class='x_toolbar'>
         <td>
             <table cellpadding="0" cellspacing="0">
                 <tr>
-                    <td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>
-                    <td><a ${list} class='zo_button'><fmt:message key="calViewListShort"/></a></td>
-                    <td><a ${day} class='zo_button'><fmt:message key="calViewDayShort"/></a></td>
-                    <td><a ${month} class='zo_button'><fmt:message key="calViewMonthShort"/></a></td>
+                    <%--td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td--%>
+                    <td><a ${list} class='zo_button ${param.view!=null && param.view=='list'?'zo_button_active':''}'><fmt:message key="calViewListShort"/></a></td>
+                    <td><a ${day} class='zo_button ${param.view!=null && param.view=='day'?'zo_button_active':''}'><fmt:message key="calViewDayShort"/></a></td>
+                    <td><a ${month} class='zo_button ${param.view!=null && param.view=='month'?'zo_button_active':''}'><fmt:message key="calViewMonthShort"/></a></td>
                     <%--<td><a zhref="?t=3" class='zo_button'>+</a></td> --%>
                 </tr>
             </table>

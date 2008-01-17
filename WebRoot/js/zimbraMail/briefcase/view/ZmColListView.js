@@ -78,8 +78,6 @@ function(item, field, params) {
 
 ZmColListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
-	DBG.println("item.name:"+item.name+","+field);//cdel
-	
 	var contentType = item.contentType;
 	if(contentType && contentType.match(/;/)) {
 			contentType = contentType.split(";")[0];
@@ -154,6 +152,7 @@ function(clickedEl, ev) {
 	this._controller._listView[ZmController.BRIEFCASE_COLUMN_VIEW] = this;
 	ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
 	var items = this.getSelection();
+	
 	this.parent.removeChildColumns(this._colIdx);
 	this.parent.setCurrentListView(this);				
 	if(items && items.length ==1){
@@ -193,4 +192,25 @@ function(listView){
 ZmColListView.prototype.getPreviousColumn =
 function( ) {
 	return this._previousColumn;
+};
+
+ZmColListView.prototype._mouseOverAction =
+function(ev, div) {
+	DwtListView.prototype._mouseOverAction.call(this, ev, div);
+	var id = ev.target.id || div.id;
+	if (!id) return true;
+	
+	if (div) {
+		var item = this.getItemFromElement(div);
+		if(item && !item.isFolder){
+		this.setToolTipContent(this._getToolTip(item, ev, div));
+		}
+	}		
+	return true;
+};
+
+ZmColListView.prototype._getToolTip =
+function(item, ev, div) {
+	if (!item) { return; }
+	return this._controller.getItemTooltip(item, this);
 };

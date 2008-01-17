@@ -92,7 +92,7 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 	this._shell.addControlListener(this._controlListener);
 	this._sashSupported = (window.skin && typeof window.skin.setTreeWidth == "function");
 
-	if (!AjxEnv.isSafari && !isNewWindow) {
+	if (appCtxt.get(ZmSetting.HISTORY_SUPPORT_ENABLED) && !AjxEnv.isSafari && !isNewWindow) {
 		this._historyMgr = appCtxt.getHistoryMgr();
 		this._historyMgr.addListener(new AjxListener(this, this._historyChangeListener));
 	}
