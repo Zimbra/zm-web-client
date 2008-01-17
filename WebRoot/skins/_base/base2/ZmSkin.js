@@ -166,9 +166,12 @@ ZmSkin.prototype = {
 	},
 	
 	searchWeb : function(what) {
-        var searchUrl = "search.yahoo.com/";
-        if(what != "Search the Web..."){ searchUrl += 'search?p='+what+'&fr=zim-maila', '_blank';}
-        window.open('http://'+searchUrl);
+        var searchUrl = ZmMsg["ysearchURL"];
+        if(!searchUrl || searchUrl == "" || searchUrl == undefined){
+            searchUrl = "http://search.yahoo.com";
+        }
+        if(what != "Search the Web..."){ searchUrl += '/search?p='+what+'&fr=zim-maila', '_blank';}
+        window.open(searchUrl);
 	},
 	
 	searchWebKey : function(event, field) {
