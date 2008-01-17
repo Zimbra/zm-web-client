@@ -54,9 +54,7 @@ function(setup) {
 	for (var i = 0; i < skins.length; i++) {
 		var skin = skins[i];
 		setup.options.push(skin);
-		var skin1 = skin.substr(0, 1).toUpperCase() + skin.substr(1);
-		var text = ZmMsg['skin' + skin1];
-		text = text ? text : skin1;
+		var text = ZmMsg['theme-' + skin] || skin.substr(0, 1).toUpperCase() + skin.substr(1);
 		setup.displayOptions.push(text);
 	}
 };
