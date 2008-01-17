@@ -5,6 +5,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='session' />
 <table width="100%" cellpadding="10" cellspacing="10">
 <tr>
 <td>
@@ -71,10 +72,10 @@
             <select name="zimbraPrefTimeZoneId" id="timeZone">
                 <c:set var="tzpref" value="${mailbox.prefs.timeZoneWindowsId}"/>
                 <zm:forEachTimeZone var="tz">
-                    <%--<fmt:message var="displayName" key="SKIN_${name}"/>--%>
+                    <fmt:message var="displayName" bundle='${AjxMsg}' key="${tz.javaId}"/>
                     <option
                             <c:if test="${tzpref eq tz.id}">selected</c:if>
-                            value="${fn:escapeXml(tz.id)}">${fn:escapeXml(tz.display)}</option>
+                            value="${fn:escapeXml(tz.id)}">${fn:escapeXml(displayName)}</option>
                 </zm:forEachTimeZone>
             </select>
         </td>

@@ -6,6 +6,9 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' />
+<fmt:message bundle='${AjxMsg}' key='${zm:getJavaId(timezone)}' var='timezoneStr' scope='request' />
+
 <%-- TODO: blank for now, could add timezone drop down or more date selection --%>
 <table width="100%" cellspacing="0" class='Tb'>
     <tr>
@@ -15,7 +18,7 @@
             </c:if>
         </td>
         <td align='right' class='ZhCalTimeZone'>
-            ${fn:escapeXml(zm:getWindowsId(timezone))}
+            ${fn:escapeXml(fn:startsWith(timezoneStr,"???") ? (zm:getWindowsId(timezone)) : timezoneStr)}
         </td>
     </tr>
 </table>
