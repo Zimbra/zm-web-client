@@ -303,7 +303,6 @@ function(creates, force) {
 
 ZmNotebookApp.prototype.modifyNotify =
 function(modifies, force) {
-	if(!modifies) return;
 	if (!modifies["w"] && !modifies["doc"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("modify", list)) { return; }
 	
