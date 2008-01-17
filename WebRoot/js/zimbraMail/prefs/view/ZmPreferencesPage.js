@@ -972,7 +972,7 @@ function(dialog, settingId, folder) {
 			? ""
 			: (":" + location.port);
 		var format = (settingId == ZmSetting.IMPORT || settingId == ZmSetting.EXPORT) ? "csv" : "ics";
-		var folderName = folder._systemName || folder.name;
+		var folderName = folder._systemName || AjxStringUtil.urlEncode(folder.getPath());
 		var uri = [location.protocol, "//", document.domain, portPrefix, "/service/home/~/", folderName, "?auth=co&fmt=", format].join("");
 		window.open(uri, "_blank");
 
