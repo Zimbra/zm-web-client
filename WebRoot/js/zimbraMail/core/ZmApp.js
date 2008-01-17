@@ -453,17 +453,14 @@ function() {
 /**
  * Returns the list of trees to show in the overview for this app. Don't show
  * Folders unless mail is enabled. Other organizer types won't be created unless
- * their apps are enabled, so we don't need to check for them. Also don't show
- * tag tree for child accounts (if this is a multi-account mbox).
+ * their apps are enabled, so we don't need to check for them.
  */
 ZmApp.prototype._getOverviewTrees =
 function() {
 	var list = ZmApp.OVERVIEW_TREES[this._name];
 	var newList = [];
 	for (var i = 0, count = list.length; i < count; i++) {
-		if ((list[i] == ZmOrganizer.FOLDER && !appCtxt.get(ZmSetting.MAIL_ENABLED)) ||
-			(list[i] == ZmOrganizer.TAG && appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain))
-		{
+		if ((list[i] == ZmOrganizer.FOLDER && !appCtxt.get(ZmSetting.MAIL_ENABLED))) {
 			continue;
 		}
 		newList.push(list[i]);

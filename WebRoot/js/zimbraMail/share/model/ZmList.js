@@ -304,6 +304,11 @@ function(items, flagOp, on) {
  */
 ZmList.prototype.tagItems =
 function(items, tagId, doTag) {
+	// for multi-account mbox, normalize tagId
+	if (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain) {
+		tagId = ZmOrganizer.normalizeId(tagId);
+	}
+
 	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("tagItems", [items, tagId, doTag]);
 		return;
@@ -312,10 +317,11 @@ function(items, tagId, doTag) {
 
 	// only tag items that don't have the tag, and untag ones that do
 	// always tag a conv, because we don't know if all items in the conv have the tag yet
-	var items1 = new Array();
-	for (var i = 0; i < items.length; i++)
+	var items1 = [];
+	for (var i = 0; i < items.length; i++) {
 		if ((doTag && (!items[i].hasTag(tagId) || items[i].type == ZmItem.CONV)) || (!doTag && items[i].hasTag(tagId)))
 			items1.push(items[i]);
+	}
 	
 	if (items1.length) {
 		var action = doTag ? "tag" : "!tag";
