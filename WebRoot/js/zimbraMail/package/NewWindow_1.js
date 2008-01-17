@@ -44,6 +44,7 @@ AjxPackage.require("ajax.core.AjxImg");
 AjxPackage.require("ajax.events.AjxEvent");
 AjxPackage.require("ajax.events.AjxEventMgr");
 AjxPackage.require("ajax.util.AjxTimedAction");
+AjxPackage.require("ajax.net.AjxInclude");
 AjxPackage.require("ajax.events.AjxListener");
 AjxPackage.require("ajax.util.AjxText");
 AjxPackage.require("ajax.util.AjxCache");
