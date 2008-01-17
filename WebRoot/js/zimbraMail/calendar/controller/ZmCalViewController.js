@@ -1761,8 +1761,8 @@ function(ids) {
 		var view = appCtxt.getAppViewMgr().getCurrentView();
 		var appt = view.getAppt(true);
 		var calendar = appt && appt.getFolder();
-		var idStr = ids+",";
-		if(idStr.indexOf(calendar.id+",")>=0){
+		var idStr = ","+ ids+",";
+		if(idStr.indexOf("," + calendar.id + ",")>=0){			
 			var apptCtrller = this._app.getApptComposeController();
 			apptCtrller._closeView();
 		}	
