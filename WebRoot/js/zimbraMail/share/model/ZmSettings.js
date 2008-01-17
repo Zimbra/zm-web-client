@@ -496,12 +496,14 @@ function() {
 	this.registerSetting("SKIN_SEARCH_BUILDER_TR_ID",		{type:ZmSetting.T_CONFIG, defaultValue:"skin_tr_search_builder"});
 	this.registerSetting("SKIN_SEARCH_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_search"});
 	this.registerSetting("SKIN_SHELL_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_outer"});
+	this.registerSetting("SKIN_SPACING_SEARCH_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_spacing_search"});
 	this.registerSetting("SKIN_SPLASH_SCREEN_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_splash_screen"});
 	this.registerSetting("SKIN_STATUS_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_status"});
 	this.registerSetting("SKIN_STATUS_ROW_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_tr_status"});
 	this.registerSetting("SKIN_TREE_FOOTER_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_tree_footer"});
 	this.registerSetting("SKIN_TREE_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_tree"});
 	this.registerSetting("SKIN_USER_INFO_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_username"});
+	this.registerSetting("SKIN_WEB_SEARCH_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_web_search"});
 	
 	// COS SETTINGS - APPS
 	this.registerSetting("BRIEFCASE_ENABLED",				{name:"zimbraFeatureBriefcasesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -554,6 +556,7 @@ function() {
 	this.registerSetting("SKIN_CHANGE_ENABLED",				{name:"zimbraFeatureSkinChangeEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("TAGGING_ENABLED",					{name:"zimbraFeatureTaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("VIEW_ATTACHMENT_AS_HTML",			{name:"zimbraFeatureViewInHtmlEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("WEB_SEARCH_ENABLED",				{name:"zimbraFeatureWebSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
 	// user metadata (included with COS since the user can't change them)
 	this.registerSetting("LICENSE_STATUS",					{type:ZmSetting.T_COS, defaultValue:ZmSetting.LICENSE_GOOD});
@@ -643,7 +646,7 @@ function() {
 				 ["logoutButton", "style"],
 				 ["noOverviewHeaders"],
 				 ["toast", "location"],
-				 ["toast", "transitions]"]];
+				 ["toast", "transitions"]];
 	for (var i = 0, count = hints.length; i < count; i++) {
 		var hint = hints[i];
 		var obj = skin.hints;
