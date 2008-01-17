@@ -228,30 +228,43 @@ function() {
 };
 
 ZmVoiceApp.prototype.getVoiceInfo =
-function(callback, errorCallback) {
+function(callback, errorCallback, noBusyOverlay) {
 	if (!this.phones.length) {
-	    var soapDoc = AjxSoapDoc.create("GetVoiceInfoRequest", "urn:zimbraVoice");
-	    var respCallback = new AjxCallback(this, this._handleResponseVoiceInfo, [callback]);
-	    var params = {
-	    	soapDoc: soapDoc, 
-	    	asyncMode: true,
-			callback: respCallback,
-			errorCallback: errorCallback
-		};
-		appCtxt.getAppController().sendRequest(params);
+		if (!this._gettingVoiceInfo) {
+			var soapDoc = AjxSoapDoc.create("GetVoiceInfoRequest", "urn:zimbraVoice");
+			var respCallback = new AjxCallback(this, this._handleResponseVoiceInfo);
+			var respErrorCallback = new AjxCallback(this, this._handleErrorResponseVoiceInfo);
+			var params = {
+				soapDoc: soapDoc,
+				asyncMode: true,
+				noBusyOverlay: noBusyOverlay,
+				callback: respCallback,
+				errorCallback: respErrorCallback
+			};
+			appCtxt.getAppController().sendRequest(params);
+			this._gettingVoiceInfo = true;
+		}
+		if (callback) {
+			this._voiceInfoCallbacks = this._voiceInfoCallbacks || [];
+			this._voiceInfoCallbacks.push(callback);
+		}
+		if (errorCallback) {
+			this._voiceInfoErrorCallbacks = this._voiceInfoErrorCallbacks || [];
+			this._voiceInfoErrorCallbacks.push(errorCallback);
+		}
 	} else if (callback) {
 		callback.run();
 	}
 };
 
 ZmVoiceApp.prototype._handleResponseVoiceInfo =
-function(callback, response) {
-	var callback = new AjxCallback(this, this._handleResponseVoiceInfo2, [callback, response]);
+function(response) {
+	var callback = new AjxCallback(this, this._handleResponseVoiceInfo2, [response]);
 	AjxPackage.require({ name: "Voicemail", callback: callback });
 };
 
 ZmVoiceApp.prototype._handleResponseVoiceInfo2 =
-function(callback, response) {
+function(response) {
 	var voiceInfo = response._data.GetVoiceInfoResponse;
 	var storePrinciple = voiceInfo.storeprincipal[0];
 	this._storePrinciple = { name: storePrinciple.name, id: storePrinciple.id };
@@ -269,9 +282,26 @@ function(callback, response) {
 			phone.folderTree.loadFromJs(obj.folder[0], phone);
 		}
 	}
-	if (callback) {
-		callback.run();
+	if (this._voiceInfoCallbacks) {
+		for (i = 0, count = this._voiceInfoCallbacks.length; i < count; i++) {
+			this._voiceInfoCallbacks[i].run(response);
+		}
 	}
+	this._voiceInfoCallbacks = null;
+	this._voiceInfoErrorCallbacks = null;
+	this._gettingVoiceInfo = false;
+};
+
+ZmVoiceApp.prototype._handleErrorResponseVoiceInfo =
+function(response) {
+	if (this._voiceInfoErrorCallbacks) {
+		for (var i = 0, count = this._voiceInfoErrorCallbacks.length; i < count; i++) {
+			this._voiceInfoErrorCallbacks[i].run(response);
+		}
+	}
+	this._voiceInfoCallbacks = null;
+	this._voiceInfoErrorCallbacks = null;
+	this._gettingVoiceInfo = false;
 };
 
 ZmVoiceApp.prototype.refreshFolders =
