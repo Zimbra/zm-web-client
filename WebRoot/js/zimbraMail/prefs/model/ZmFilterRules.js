@@ -37,6 +37,11 @@ ZmFilterRules = function() {
 ZmFilterRules.prototype = new ZmModel;
 ZmFilterRules.prototype.constructor = ZmFilterRules;
 
+ZmFilterRules.prototype.toString =
+function() {
+	return "ZmFilterRules";
+};
+
 /**
 * Adds a rule to the list.
 *
@@ -253,7 +258,6 @@ function(callback, result) {
 ZmFilterRules.prototype._saveRules = 
 function(index, notify, callback, errorCallback) {
 
-	DBG.println(AjxDebug.DBG3, "FILTER RULES: save rules");
 	var soapDoc = AjxSoapDoc.create("SaveRulesRequest", "urn:zimbraMail");
 	var topNode = soapDoc.set("rules");
 
@@ -293,7 +297,8 @@ function(index, notify, callback, errorCallback) {
 				comp = "";
 			} else if (condition.subject == ZmFilterRule.C_HEADER &&
 					   (condition.comparator == ZmFilterRule.OP_EXISTS ||
-					    condition.comparator == ZmFilterRule.OP_NOT_EXISTS)) {
+					    condition.comparator == ZmFilterRule.OP_NOT_EXISTS))
+			{
 				subject = comp;
 				value = subjectMod;
 				subjectMod = comp = null;

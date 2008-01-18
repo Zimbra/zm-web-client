@@ -96,8 +96,7 @@ function(callback, selectedIndex) {
 	if (!listView) return;
 
 	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [listView, callback, selectedIndex]);
-	// bug 23271 change to true to handle accordion view case
-	this._rules.loadRules(true, respCallback);
+	this._rules.loadRules(false, respCallback);
 };
 
 ZmFilterRulesController.prototype._handleResponseSetListView =

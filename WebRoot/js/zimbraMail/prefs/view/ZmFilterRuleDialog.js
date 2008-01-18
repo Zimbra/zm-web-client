@@ -33,9 +33,6 @@ ZmFilterRuleDialog = function() {
 
 	DwtDialog.call(this, appCtxt.getShell(), "ZmFilterRuleDialog", ZmMsg.selectAddresses);
 
-	this._rules = AjxDispatcher.run("GetFilterRules");
-	this._rules.loadRules(); // make sure rules are loaded (for when we save)
-
 	// set content
 	this.setContent(this._contentHtml());
 	this._setConditionSelect();
@@ -84,6 +81,10 @@ ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH	= 20;
 */
 ZmFilterRuleDialog.prototype.popup =
 function(rule, editMode, referenceRule) {
+	// always make sure we have the right rules container in case of multi-mbox
+	this._rules = AjxDispatcher.run("GetFilterRules");
+	this._rules.loadRules(); // make sure rules are loaded (for when we save)
+
 	this._inputs = {};
 	this._rule = rule;
 	this._editMode = editMode;
