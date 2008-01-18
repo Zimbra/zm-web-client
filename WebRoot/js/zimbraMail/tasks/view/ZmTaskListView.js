@@ -299,6 +299,12 @@ function(ev) {
 	if (ev.event == ZmEvent.E_CREATE) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
+
+			// skip if this item does not belong in this list.
+			var folderId = this._controller.getList().search.folderId;
+			if (folderId && folderId != item.folderId)
+				continue;
+
 			if (this._list && this._list.contains(item)) // skip if we already have it
 				continue;
 

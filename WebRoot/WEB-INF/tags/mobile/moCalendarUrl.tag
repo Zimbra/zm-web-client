@@ -3,8 +3,8 @@
 <%@ attribute name="value" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="view" rtexprvalue="true" required="false" %>
 <%@ attribute name="sq" rtexprvalue="true" required="false" %>
-<%@ attribute name="rawdate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
-<%@ attribute name="timezone" rtexprvalue="true" required="false" type="java.util.TimeZone"%>
+<%@ attribute name="rawdate" rtexprvalue="true" required="false" type="java.util.Calendar" %>
+<%@ attribute name="timezone" rtexprvalue="true" required="false" type="java.util.TimeZone" %>
 <%@ attribute name="date" rtexprvalue="true" required="false" %>
 <%@ attribute name="appt" rtexprvalue="true" required="false" type="com.zimbra.cs.zclient.ZAppointmentHit" %>
 <%@ attribute name="nodate" rtexprvalue="true" required="false" %>
@@ -16,15 +16,16 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
-<c:set var='view' value='${not empty view ? view : param.view}'/>
-<c:url value="${not empty value ? value : '/m/mocalendar'}" var="urlVar">
+<c:set var="context_url" value="${not empty requestScope.baseURL?requestScope.baseURL:'/m/mocalendar'}"/>
+<c:set var='view' value='${not empty view ? view : (param.view!=null?param.view:"list")}'/>
+<c:url value="${not empty value ? value : context_url}" var="urlVar">
+    <c:param name="st" value="cal"/>
     <c:if test="${not empty view}">
         <c:param name='view' value='${view}'/>
     </c:if>
     <c:if test="${not empty param.numdays and view eq 'day'}"><c:param name='numdays' value='${param.numdays}'/></c:if>
     <c:if test="${not empty param.tz}"><c:param name='tz' value='${param.tz}'/></c:if>
-    <c:if test="${not empty param.sq or not empty sq}"><c:param name='sq' value='${not empty sq ? sq : param.sq}'/></c:if> 
+    <c:if test="${not empty param.sq or not empty sq}"><c:param name='sq' value='${not empty sq ? sq : param.sq}'/></c:if>
     <c:choose>
         <c:when test="${not empty rawdate}">
             <c:param name='date'><fmt:formatDate timeZone="${timezone}" value="${rawdate.time}" pattern="yyyyMMdd"/></c:param>
@@ -72,7 +73,7 @@
             <c:param name="useInstance" value="${apptFromParam ? param.useInstance : param.useInstance ne '1' ? '1' : '0'}"/>
         </c:when>
         <c:otherwise>
-            <c:if test="${not empty action}">
+            <c:if test="${not empty action && !noAction }">
                 <c:param name="action" value="${action}"/>
             </c:if>
         </c:otherwise>

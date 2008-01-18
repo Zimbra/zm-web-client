@@ -747,7 +747,7 @@ function(contactList, isDraft, callback, errorCallback, accountName) {
 		// if we're sending a draft msg, check if its obo for special handling
 		if (!isDraft && this._origMsg && this._origMsg.isDraft) {
 			var ac = window.parentAppCtxt || window.appCtxt;
-			var mainAcct = ac.getMainAccount().getEmail();
+			var mainAcct = ac.getMainAccount(true).getEmail();
             var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo so reset account name
 			if (from && from.address != mainAcct) {
@@ -1292,7 +1292,7 @@ function(soapDoc, parent, isDraft, accountName) {
 
 	if (accountName)
 	{
-        var mainAcct = ac.getMainAccount().getEmail();
+        var mainAcct = ac.getMainAccount(true).getEmail();
         // when saving a draft, even if obo, we do it on the main account so reset the fro
         if (isDraft) {
 			var folder = appCtxt.getById(this.folderId);
@@ -1324,7 +1324,7 @@ function(soapDoc, parent, isDraft, accountName) {
 
 		// bug fix #20630 - handling sending drafts obo
 		if (this._origMsg && this._origMsg.isDraft) {
-			var mainAcct = ac.getMainAccount().getEmail();
+			var mainAcct = ac.getMainAccount(true).getEmail();
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo
 			if (from && from.address != mainAcct) {

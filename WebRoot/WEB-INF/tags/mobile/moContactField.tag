@@ -46,7 +46,7 @@
                     <a href="${fn:escapeXml(url)}">${fn:escapeXml(value)}</a>
                 </c:when>
                 <c:when test="${isemail}">
-ë                    <c:url var="url" value="/m/main">
+                    <c:url value="/m/mosearch" var="url">
                         <c:param name="action" value="compose"/>
                         <c:param name="to" value="${value}"/>
                     </c:url>

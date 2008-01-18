@@ -187,7 +187,24 @@ function(callback, result) {
 	var folders = resp ? resp.folder[0] : null;
 	if (folders) {
 		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.FOLDER, null, resp.folder[0], "folder", this);
-		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp.tags, null, this);
+	}
+
+	var soapDoc = AjxSoapDoc.create("GetTagRequest", "urn:zimbraMail");
+	var params = {
+		soapDoc: soapDoc,
+		accountName: this.name,
+		asyncMode: true,
+		callback: new AjxCallback(this, this._handleResponseLoad2, callback)
+	};
+	appCtxt.getRequestMgr().sendRequest(params);
+};
+
+ZmZimbraAccount.prototype._handleResponseLoad2 =
+function(callback, result) {
+	var resp = result.getResponse().GetTagResponse;
+	var tags = (resp && resp.tag) ? resp.tag[0] : null;
+	if (tags) {
+		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp, null, this);
 	}
 
 	this.loaded = true;

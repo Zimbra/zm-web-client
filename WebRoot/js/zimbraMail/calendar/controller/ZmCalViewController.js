@@ -1031,7 +1031,7 @@ function(appt) {
 	if (!appt.__creating) {
 		var calendar = appt.getFolder();
 		var isSynced = Boolean(calendar.url);
-		if (appt.isReadOnly() || isSynced) {
+		if (calendar.isReadOnly() || isSynced) {
 			var mode = appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
 	        var clone = ZmAppt.quickClone(appt);
 			clone.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [clone]));
