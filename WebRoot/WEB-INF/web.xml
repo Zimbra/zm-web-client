@@ -58,7 +58,7 @@
 
         <init-param>
             <param-name>mimeTypes</param-name>
-            <param-value>text/html,text/plain,text/css,text/javascript,application/x-javascript,application/soap+xml</param-value>
+            <param-value>text/html,text/plain,text/css,application/soap+xml</param-value>
         </init-param>
 
         <init-param>
