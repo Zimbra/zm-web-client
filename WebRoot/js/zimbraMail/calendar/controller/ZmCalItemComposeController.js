@@ -286,8 +286,8 @@ function(errorMsg) {
 ZmCalItemComposeController.prototype._saveCalItemFoRealz =
 function(calItem, attId, notifyList) {
 	if (this._composeView.isDirty()) {
-        //Chek for folder existance...?
-        if(calItem.getFolder() && calItem.getFolder().noSuchFolder){
+        // bug: 16112 - check for folder existance
+        if (calItem.getFolder() && calItem.getFolder().noSuchFolder) {
             var msg = AjxMessageFormat.format(ZmMsg.errorInvalidFolder, calItem.getFolder().name);
             this._showErrorMessage(msg);
 			return false;
@@ -300,6 +300,12 @@ function(calItem, attId, notifyList) {
 
 ZmCalItemComposeController.prototype._handleResponseSave =
 function(calItem) {
+	if (calItem.__newFolderId) {
+		var folder = appCtxt.getById(calItem.__newFolderId);
+		calItem.__newFolderId = null;
+		this._app.getListController()._doMove(calItem, folder);
+	}
+
 	this._composeView.cleanup();
 };
 

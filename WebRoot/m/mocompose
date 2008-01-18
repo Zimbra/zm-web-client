@@ -8,15 +8,15 @@
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
-    <c:when test="${not empty mailbox.prefs.locale}">
-        <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
-    </c:when>
-    <c:otherwise>
-        <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
-    </c:otherwise>
+        <c:when test="${not empty mailbox.prefs.locale}">
+            <fmt:setLocale value='${mailbox.prefs.locale}' scope='request'/>
+        </c:when>
+        <c:otherwise>
+            <fmt:setLocale value='${pageContext.request.locale}' scope='request'/>
+        </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
-    
+
     <fmt:message var="title" key="compose"/>
     <zm:composeUploader var="uploader"/>
     <c:set var="compose" value="${uploader.compose}"/>
@@ -24,7 +24,9 @@
         <c:when test="${!empty param.id or !empty compose.draftId or !empty requestScope.draftid}">
             <c:choose>
                 <c:when test="${!empty compose.draftId or !empty requestScope.draftid}">
-                    <zm:getMessage var="message" id="${empty requestScope.draftid ? compose.draftId : requestScope.draftid}" wanthtml="${false}"/>
+                    <zm:getMessage var="message"
+                                   id="${empty requestScope.draftid ? compose.draftId : requestScope.draftid}"
+                                   wanthtml="${false}"/>
                 </c:when>
                 <c:otherwise>
                     <zm:getMessage var="message" id="${param.id}" part="${param.part}" wanthtml="${false}"/>
@@ -41,134 +43,203 @@
             <zm:messageCompose var="compose" message="${message}" action="${message.isDraft ? 'draft' : param.op}"/>
         </c:when>
         <c:when test="${uploader.isUpload and !empty message}">
-            <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems or !empty uploader.compose.uploadedAttachment}"/>
+            <zm:fixupMessageCompose message="${message}" compose="${compose}"
+                                    newattachments="${uploader.compose.hasFileItems or !empty uploader.compose.uploadedAttachment}"/>
         </c:when>
     </c:choose>
 
 </mo:handleError>
 
 <c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/>
-<mo:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" context="${null}" 
-        onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}">
+<mo:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" context="${null}"
+         onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}">
 
+<c:set var="caction" value="mosearch"/>
+<c:if test="${uiv=='1'}">
+    <c:set var="caction" value="${header['referer']!=null?header['referer']:'main'}"/>
+</c:if>
+<form action="mosearch" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+<table width=100% cellpadding="0" cellspacing="0">
+<tr>
+    <td>
+        <table width=100% cellspacing="0" cellpadding="0">
+            <tr class='zo_toolbar'>
+                <td class="searchbar">
+                    <div class='zo_main_info_cont'>
+                        <div class='zo_main_info'>
 
-    <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-        <table width=100% cellpadding="0" cellspacing="0">
-            <tr>
-                <td>
-                    <table width=100% cellspacing="0" cellpadding="0">
-                        <tr class='zo_toolbar'>
-                            <td>
-                                <table cellspacing="0" cellpadding="0">
-                                    <tr>
-                                        <td style='padding-left:5px' class='zo_tb_submit'>
-                                            <input name="actionSend" type="submit" value="<fmt:message key="send"/>">
-                                        </td>                                        
-                                        <td style='padding-left:5px' class='zo_tb_submit'>
-                                            <input name="actionCancel" type="submit" value="<fmt:message key="cancel"/>">
-                                        </td>
-                                        <td style='padding-left:5px' class='zo_tb_submit'>
-                                            <input name="actionDraft" type="submit" value="<fmt:message key="save"/>">
-                                        </td>
-                                    </tr>
-                                </table>
-                            </td>
-                        </tr>
-                    </table>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td style='padding-left:5px' class='zo_tb_submit'>
+                                        <input name="actionSend" type="submit" value="<fmt:message key="send"/>">
+                                    </td>
+                                    <td style='padding-left:5px' class='zo_tb_submit'>
+                                        <input name="actionCancel" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
+                                               type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
+                                    </td>
+                                    <td
+                                            <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
+                                            class='zo_tb_submit'>
+                                        <input name="actionDraft" type="submit" value="<fmt:message key="save"/>">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </td>
-            </tr>
-            <tr>
-                <td style='padding:10px'>
-                        <table cellpadding=2 cellspacing=5 width=100% class='Compose'>
-                            <tr>
-                                <td class='zo_mc_fname' valign='top' width=1% align=right nowrap> <label for="toField"><fmt:message key="to"/>: </label></td>
-                                <td class='zo_mc_fvalue' colspan=2 nowrap>
-                                    <textarea  id="toField" rows="2" style='width:100%' 
-                                                               name="to">${fn:escapeXml(compose.to)}</textarea>
-                                </td>
-                            </tr>
 
-                            <tr>
-                                <td class='zo_mc_fname' align=right nowrap> <label for="ccField"><fmt:message key="cc"/>: </label></td>
-                                <td class='zo_mc_fvalue' colspan=2 nowrap>
-                                        <input style='width:100%' id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class='zo_mc_fname' align=right nowrap> <label for="bccField"><fmt:message key="bcc"/>: </label></td>
-                                <td class='zo_mc_fvalue' colspan=2 nowrap>
-                                        <input style='width:100%' id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" name="bcc">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class='zo_mc_fname' align=right nowrap> <label for="subjectField"><fmt:message key="subject"/>: </label></td>
-                                <td  class='zo_mc_fvalue' colspan=2 nowrap><input style='width:100%' type="text" name="subject" id="subjectField"
-                                                            value="${fn:escapeXml(compose.subject)}"></td>
-                            </tr>
-                            <c:set var="firstAttachment" value="${true}"/>
-                            <c:if test="${!empty compose.messageAttachments}">
-                                <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
-                                    <tr>
-                                        <td align='right'>
-                                            <c:if test="${firstAttachment}">
-                                                <mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
-                                                <c:set var="firstAttachment" value="${false}"/>
-                                            </c:if>
-                                        </td>
-                                        <td colspan=2>
-                                            <c:choose>
-                                                <c:when test="${empty ma.subject}"><fmt:message var="subj" key="noSubject"/></c:when>
-                                                <c:otherwise><c:set var="subj" value="${zm:truncate(ma.subject,100,true)}"/></c:otherwise>
-                                            </c:choose>
-                                                ${fn:escapeXml(subj)}
-                                            <input type="hidden" name="messageAttachment" value="${ma.id}:${fn:escapeXml(ma.subject)}"/>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </c:if>
-                            <c:if test="${!empty compose.originalAttachments}">
-                                <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
-                                    <mo:attachment firstAttachment="${firstAttachment}" url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
-                                            displayName="${part.displayName}" contentType="${part.contentType}"
-                                            checked="${compose.checkedAttachmentNames[part.partName]}" displaySize="${part.displaySize}"
-                                            value="${part.partName}" name="originalAttachment"/>
-                                    <c:set var="firstAttachment" value="${false}"/>
-                                </c:forEach>
-                            </c:if>
-                            <c:if test="${(!empty param.attachId) and (!empty param.attachUrl) and (!empty param.attachName)}">
-                                <mo:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
-                                        displayName="${param.attachName}"
-                                        checked="true"
-                                        value="${param.attachId}" name="uploadedAttachment"/>
-                            </c:if>
-                            <tr>
-                                <td colspan="3" >
-                                    <textarea class='zo_msgcompose' rows="30" style='width:100%' cols="40"
-                                              id="bodyField" name="body">${fn:escapeXml(compose.content)}</textarea>
-                                    <!-- Shd be removed later-->
-                                    <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' />
-
-                                </td>
-                            </tr>
-                        </table>
-                </td>
             </tr>
         </table>
-        <input type="hidden" name="sendUID" value="${fn:escapeXml(compose.sendUID)}"/>
-        <input type="hidden" name="replyto" value="${fn:escapeXml(compose.replyTo)}"/>
-        <input type="hidden" name="from" value="${fn:escapeXml(compose.from)}"/>
-        <input type="hidden" name="inreplyto" value="${fn:escapeXml(compose.inReplyTo)}"/>
-        <input type="hidden" name="messageid" value="${fn:escapeXml(compose.messageId)}"/>
-        <input type="hidden" name="compNum" value="${fn:escapeXml(compose.compNum)}"/>
-        <input type="hidden" name="instCompNum" value="${fn:escapeXml(compose.instanceCompNum)}"/>
-        <input type="hidden" name="replytype" value="${fn:escapeXml(compose.replyType)}"/>
-        <input type="hidden" name="inviteReplyVerb" value="${fn:escapeXml(compose.inviteReplyVerb)}"/>
-        <input type="hidden" name="inviteReplyInst" value="${fn:escapeXml(compose.inviteReplyInst)}"/>
-        <input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>        
+    </td>
+</tr>
+<tr>
+    <td class="searchbar">
+        <div class='zo_main_info_cont'>
+            <div class='zo_main_info'>
+                <table cellpadding="2" cellspacing="5" width="100%" class='Compose'>
+                    <tr>
+                        <td class='zo_mc_fname' valign='top' width=1% align=right nowrap><label
+                                for="toField"><fmt:message key="to"/>: </label></td>
+                        <td class='zo_mc_fvalue' colspan=2 nowrap>
+                            <textarea id="toField" rows="1" style='width:100%'
+                                      name="to">${fn:escapeXml(compose.to)}</textarea>
+                        </td>
+                    </tr>
 
-        <c:if test="${message.isDraft}">
-            <input type="hidden" name="draftid" value="${message.id}"/>
-        </c:if>
-    </form>
+                    <tr>
+                        <td class='zo_mc_fname' align=right nowrap><label for="ccField"><fmt:message
+                                key="cc"/>: </label></td>
+                        <td class='zo_mc_fvalue' colspan=2 nowrap>
+                            <input style='width:100%' id="ccField" type="text" value="${fn:escapeXml(compose.cc)}"
+                                   name="cc">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class='zo_mc_fname' align=right nowrap><label for="bccField"><fmt:message
+                                key="bcc"/>: </label></td>
+                        <td class='zo_mc_fvalue' colspan=2 nowrap>
+                            <input style='width:100%' id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}"
+                                   name="bcc">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class='zo_main_info_cont'>
+            <div class='zo_main_info'>
+                <table cellpadding=2 cellspacing=5 width=100% class='Compose'>
+                    <tr>
+                        <td class='zo_mc_fname' align=right nowrap><label for="subjectField"><fmt:message
+                                key="subject"/>: </label></td>
+                        <td class='zo_mc_fvalue' colspan=2 nowrap><input style='width:100%' type="text" name="subject"
+                                                                         id="subjectField"
+                                                                         value="${fn:escapeXml(compose.subject)}"></td>
+                    </tr>
+                    <c:set var="firstAttachment" value="${true}"/>
+                    <c:if test="${!empty compose.messageAttachments}">
+                        <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
+                            <tr>
+                                <td align='right'>
+                                    <c:if test="${firstAttachment}">
+                                        <mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
+                                        <c:set var="firstAttachment" value="${false}"/>
+                                    </c:if>
+                                </td>
+                                <td colspan=2>
+                                    <c:choose>
+                                        <c:when test="${empty ma.subject}"><fmt:message var="subj"
+                                                                                        key="noSubject"/></c:when>
+                                        <c:otherwise><c:set var="subj"
+                                                            value="${zm:truncate(ma.subject,100,true)}"/></c:otherwise>
+                                    </c:choose>
+                                        ${fn:escapeXml(subj)}
+                                    <input type="hidden" name="messageAttachment"
+                                           value="${ma.id}:${fn:escapeXml(ma.subject)}"/>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${!empty compose.originalAttachments}">
+                        <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
+                            <mo:attachment firstAttachment="${firstAttachment}"
+                                           url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
+                                           displayName="${part.displayName}" contentType="${part.contentType}"
+                                           checked="${compose.checkedAttachmentNames[part.partName]}"
+                                           displaySize="${part.displaySize}"
+                                           value="${part.partName}" name="originalAttachment"/>
+                            <c:set var="firstAttachment" value="${false}"/>
+                        </c:forEach>
+                    </c:if>
+                    <c:if test="${(!empty param.attachId) and (!empty param.attachUrl) and (!empty param.attachName)}">
+                        <mo:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
+                                       displayName="${param.attachName}"
+                                       checked="true"
+                                       value="${param.attachId}" name="uploadedAttachment"/>
+                    </c:if>
+                    <tr>
+                        <td colspan="3">
+                            <textarea class='zo_msgcompose' rows="30" style='width:100%' cols="40"
+                                      id="bodyField" name="body">${fn:escapeXml(compose.content)}</textarea>
+                            <!-- Shd be removed later-->
+                            <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value=""
+                                   style='width:100%'/>
 
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td>
+        <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
+        <table width=100% cellspacing="0" cellpadding="0">
+            <tr class='zo_toolbar'>
+                <td class="searchbar">
+                    <div class='zo_main_info_cont'>
+                        <div class='zo_main_info'>
+
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td style='padding-left:5px' class='zo_tb_submit'>
+                                        <input name="actionSend" type="submit" value="<fmt:message key="send"/>">
+                                    </td>
+                                    <td style='padding-left:5px' class='zo_tb_submit'>
+                                        <input name="actionCancel" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
+                                               type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
+                                    </td>
+                                    <td
+                                            <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
+                                            class='zo_tb_submit'>
+                                        <input name="actionDraft" type="submit" value="<fmt:message key="save"/>">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+
+            </tr>
+        </table>
+    </td>
+</tr>
+</table>
+<input type="hidden" name="sendUID" value="${fn:escapeXml(compose.sendUID)}"/>
+<input type="hidden" name="replyto" value="${fn:escapeXml(compose.replyTo)}"/>
+<input type="hidden" name="from" value="${fn:escapeXml(compose.from)}"/>
+<input type="hidden" name="inreplyto" value="${fn:escapeXml(compose.inReplyTo)}"/>
+<input type="hidden" name="messageid" value="${fn:escapeXml(compose.messageId)}"/>
+<input type="hidden" name="compNum" value="${fn:escapeXml(compose.compNum)}"/>
+<input type="hidden" name="instCompNum" value="${fn:escapeXml(compose.instanceCompNum)}"/>
+<input type="hidden" name="replytype" value="${fn:escapeXml(compose.replyType)}"/>
+<input type="hidden" name="inviteReplyVerb" value="${fn:escapeXml(compose.inviteReplyVerb)}"/>
+<input type="hidden" name="inviteReplyInst" value="${fn:escapeXml(compose.inviteReplyInst)}"/>
+<input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>
+
+<c:if test="${message.isDraft}">
+    <input type="hidden" name="draftid" value="${message.id}"/>
+</c:if>
+</form>
+<a href="${caction}" id="_back_to" style="display:none;visibility:hidden">back</a>
 </mo:view>
