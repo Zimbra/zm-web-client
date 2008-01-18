@@ -978,16 +978,14 @@ function() {
     if (isFeed) {
         folder.sync();
     } else {
+		var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
 		var hasExternalAccounts = false;
-		if (!appCtxt.get(ZmSetting.OFFLINE)) {
-			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
-			if (folder && !isFeed && isEnabled) {
-				var dataSource = folder.getDataSource(null, true);
-				if (dataSource) {
-					hasExternalAccounts = true;
-					var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-					dsCollection.importMail([dataSource]);
-				}
+		if (folder && !isFeed && isEnabled) {
+			var dataSource = folder.getDataSource(null, true);
+			if (dataSource) {
+				hasExternalAccounts = true;
+				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+				dsCollection.importMail([dataSource]);
 			}
 		}
 
