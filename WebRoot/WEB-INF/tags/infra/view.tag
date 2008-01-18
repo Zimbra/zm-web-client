@@ -182,7 +182,7 @@
 		</td>
 	</tr>
 	<tr>
-	<td width="99%">
+	<td width="99%" valign="top">
 	<table id='skin_table_outer' width='100%' border=0 class='skin_table' cellspacing=0 cellpadding=0 >
 			<colgroup>
 				<col id='skin_col_L'>
@@ -196,7 +196,7 @@
 				<td><div class='ImgSkin_Chrome_R2_L'></div></td>
 				<td class='ImgSkin_Chrome_R2' colspan=3>
 					
-					<table width=100% cellspacing=0 cellpadding=0 border='0'>
+					<table width=100%  cellspacing=0 cellpadding=0 border='0'>
 					<tr>
 						<td align="left">
 							<c:choose>
@@ -209,14 +209,17 @@
 							</c:choose>
 						</td>
 						<td id='skin_container_app_name'></td>
-						<td width='76%'><div class='float'> 
+						<td width='98%'><div class='float'> 
 						<app:appStatus/>
 						</div></td>
-						<td id='skin_td_search' align='right' width='450'>						
-								<!-- search box -->				
-								<app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}"/>					
+                        <td id='skin_td_search' align='right'>
+                            <!-- search box -->				
+                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}"/>					
 						</td>
-					</tr>
+                        <td>
+                            <app:appTopYSearch keys="${keys}" />
+                        </td>
+                    </tr>
 					</table>
 				</td>
 				<td><div class='ImgSkin_Chrome_R2_R'></div></td>
