@@ -797,23 +797,31 @@ function(creates, force) {
 		}
 	}
 
-	this._checkList(creates, appCtxt.getCurrentList());
-	var ctlr = appCtxt.getCurrentController();
-	if (ctlr && ctlr.getUnderlyingList) {
-		this._checkList(creates, ctlr.getUnderlyingList());
+	if (appCtxt.getCurrentController() == this._tradController) {
+		// can't get to another controller without running a search
+		this._checkList(creates, this._tradController.getList(), this._tradController);
+	} else {
+		// these two controllers can be active together without an intervening search
+		if (this._convListController) {
+			this._checkList(creates, this._convListController.getList(), this._convListController);
+		}
+		if (this._convController) {
+			this._checkList(creates, this._convController.getList(), this._convController);
+		}
 	}
 };
 
 /**
  * We can only handle new mail notifications if:
  *  	- we are currently in a mail view
- *		- the view is the result of a simple folder search
+ *		- the view is the result of a simple folder search (except for CV)
  * 
- * @param creates	[hash]			JSON create objects
- * @param list		[ZmMailList]	mail list to notify
+ * @param creates		[hash]					JSON create objects
+ * @param list			[ZmMailList]			mail list to notify
+ * @param controller	[ZmMailListController]	controller that owns list
  */
 ZmMailApp.prototype._checkList =
-function(creates, list) {
+function(creates, list, controller) {
 
 	if (!(list && list instanceof ZmMailList)) { return; }
 
@@ -821,14 +829,13 @@ function(creates, list) {
 	var msgs = {};
 	var folders = {};
 
-	// for CV, folderId will correspond to parent list view
 	// XXX: should handle simple tag search as well
 	var folderId = list.search ? list.search.folderId : null;
-	if (!folderId) { return; }
+	if (!folderId && (controller != this._convController)) { return; }
 
 	var sortBy = list.search.sortBy;
 	var a = list.getArray();
-	var listView = appCtxt.getCurrentView()._mailListView;
+	var listView = controller.getCurrentView();
 	var limit = listView ? listView.getLimit() : appCtxt.get(ZmSetting.PAGE_SIZE);
 	
 	var last = (a && a.length >= limit) ? a[a.length - 1] : null;

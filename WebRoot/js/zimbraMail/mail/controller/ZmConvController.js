@@ -79,16 +79,6 @@ function() {
 	return this._conv;
 };
 
-/**
- * Returns the list from the view (CLV) that we came from.
- */
-ZmConvController.prototype.getUnderlyingList =
-function() {
-	if (this._parentController) {
-		return this._parentController.getList();
-	}
-};
-
 // Private and protected methods
 
 ZmConvController.prototype._createDoublePaneView = 
