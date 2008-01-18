@@ -282,8 +282,8 @@ ZmBriefcaseView.prototype.processUploadFiles = function() {
 
 ZmBriefcaseView.prototype.uploadFiles = function(){
     var attachDialog = appCtxt.getUploadDialog();
-    this._controller = AjxDispatcher.run("GetBriefcaseController");
-    ZmUploadDialog._uploadCallback = this._controller._handleUploadNewItem;
+    var app = this._controller.getApp();
+    attachDialog._uploadCallback = new AjxCallback(app, app._handleUploadNewItem);
     var files = this.processUploadFiles();
     attachDialog.uploadFiles(files,document.getElementById("zdnd_form"),{id:this._controller._currentFolder});
 };
