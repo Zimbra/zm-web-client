@@ -8,17 +8,19 @@
 <table>
    <tr>
 	<td><div style='width:15px'></div></td>
-    <td height="25" nowrap class="SearchBar" style='width:300px'>
+    <td height="25" nowrap class="SearchBar">
         <form method="get" action="<fmt:message key="searchURL"/>" target='_blank'>
-            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-				<td nowrap="nowrap">
+				<td nowrap="nowrap" style="padding-right: 2px;">
 					<label for="searchWebField"><fmt:message key="searchWeb"/> :</label>
 				</td>
+		    	<td class="ImgField_L searchwidth"></td>
 				<td class='SearchFieldWidth' nowrap="nowrap">
                     <input type="hidden" name="fr" value="zim-mails" />
-                    <input  id="searchWebField" style='width:95%' name='<fmt:message key="searchFieldName"/>' class="searchField" maxlength="2048" value=""></td>
-				<td nowrap="nowrap">
+                    <input  id="searchWebField" name='<fmt:message key="searchFieldName"/>' class="searchField" maxlength="2048" value=""></td>
+				<td class="ImgField_R searchwidth"></td>
+				<td nowrap="nowrap" style="padding-left: 2px;">
 					<button class="SearchButton" type="submit" name="search"><app:img src="startup/ImgWebSearch.gif" altkey='ALT_SEARCH'/></button>
 				</td>
             </tr>

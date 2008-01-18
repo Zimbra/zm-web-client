@@ -182,7 +182,7 @@
 		</td>
 	</tr>
 	<tr>
-	<td width="99%">
+	<td width="99%" valign="top">
 	<table id='skin_table_outer' width='100%' border=0 class='skin_table' cellspacing=0 cellpadding=0 >
 			<colgroup>
 				<col id='skin_col_L'>
@@ -209,14 +209,14 @@
 							</c:choose>
 						</td>
 						<td id='skin_container_app_name'></td>
-						<td width='36%'><div class='float'> 
+						<td width='98%'><div class='float'> 
 						<app:appStatus/>
 						</div></td>
                         <td id='skin_td_search' align='right'>
                             <!-- search box -->				
                             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}"/>					
 						</td>
-                        <td width='350'>
+                        <td>
                             <app:appTopYSearch keys="${keys}" />
                         </td>
                     </tr>
