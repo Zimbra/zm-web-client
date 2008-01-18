@@ -303,7 +303,21 @@
 </c:if>
 <SCRIPT TYPE="text/javascript">
     <!--
-
+  // for Save Draft
+    var eleD = document.getElementById("SOPDRAFT");
+    eleD.onclick = function () {
+    <c:if test="${composeformat eq 'html'}" >
+        if(!IE6) submitCompose();
+    </c:if>
+    }
+   // for ATTACH
+    var eleA = document.getElementById("SOPATTACH");
+    eleA.onclick = function () {
+    <c:if test="${composeformat eq 'html'}" >
+        if(!IE6) submitCompose();
+    </c:if>
+    }
+   // for Mail Send
     var ele = document.getElementById("SOPSEND");
     ele.onclick = function () {
     <c:if test="${composeformat eq 'html'}" >
