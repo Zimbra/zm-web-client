@@ -59,9 +59,13 @@ function(folder) {
 	}
 
 	// dont allow "None" option in color picker
-	if (this._colorSelect) {
-		this._colorSelect.getMenu().getItem(0).setEnabled(false);
-	}
+    // bug 22490 removed None option when not in use
+    if (folder != ZmOrganizer.FOLDER && this._colorSelect) {
+        var noneOption = this._colorSelect.getMenu().getItem(0);
+        if(noneOption.getText() == ZmOrganizer.COLOR_TEXT[0]) {
+            this._colorSelect.getMenu().removeChild(noneOption);
+        }
+    } 
 
 	ZmDialog.prototype.popup.call(this);
 };
