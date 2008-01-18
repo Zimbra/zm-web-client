@@ -50,9 +50,8 @@ function() {
 	if (this._hasRendered == activeAcct) { return; }
 
 	// create the html
-	var data = { id: this._htmlElId };
-	var html = AjxTemplate.expand("prefs.Pages#MailFilters", data);
-	this.getHtmlElement().innerHTML = html;
+	var data = {id:this._htmlElId};
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#MailFilters", data);
 
 	// create toolbar
 	var toolbarEl = document.getElementById(data.id+"_toolbar");
@@ -98,7 +97,8 @@ function() {
 	return this._listView;
 };
 
-ZmFilterRulesView.prototype.getTabGroupMember = function() {
+ZmFilterRulesView.prototype.getTabGroupMember =
+function() {
 	return this._tabGroup;
 };
 
@@ -153,10 +153,10 @@ function(list) {
 
 ZmFilterListView.prototype._getHeaderList =
 function() {
-	var headerList = [];
-	headerList.push(new DwtListHeaderItem(ZmFilterListView.COL_ACTIVE, ZmMsg.active, null, ZmFilterListView.COL_WIDTH_ACTIVE));
-	headerList.push(new DwtListHeaderItem(ZmFilterListView.COL_NAME, ZmMsg.filterName));
-	return headerList;
+	return [
+		(new DwtListHeaderItem(ZmFilterListView.COL_ACTIVE, ZmMsg.active, null, ZmFilterListView.COL_WIDTH_ACTIVE)),
+		(new DwtListHeaderItem(ZmFilterListView.COL_NAME, ZmMsg.filterName))
+	];
 };
 
 ZmFilterListView.prototype._getCellContents =
@@ -166,12 +166,9 @@ function(html, idx, item, field, colIdx, params) {
 		html[idx++] = item.isActive() ? "checked " : "";
 		html[idx++] = "id='_ruleCheckbox";
 		html[idx++] = item.id;
-		html[idx++] = "' ";
-		html[idx++] = "_flvId='";
+		html[idx++] = "' _flvId='";
 		html[idx++] = this._internalId;
-		html[idx++] = "' ";
-		html[idx++] = "onchange='ZmFilterListView._activeStateChange' ";
-		html[idx++] = ">";
+		html[idx++] = "' onchange='ZmFilterListView._activeStateChange'>";
 	} else if (field == ZmFilterListView.COL_NAME) {
 		html[idx++] = AjxStringUtil.stripTags(item.getName(), true);
 	}
@@ -185,12 +182,12 @@ function(html, idx, item, field, colIdx, params) {
 */
 ZmFilterListView.prototype._changeListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_FILTER) return;
+	if (ev.type != ZmEvent.S_FILTER) { return; }
 
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: change listener");
-	if (ev.event == ZmEvent.E_MODIFY) {
-		var index = ev.getDetail("index");
-		this._controller.resetListView(null, index);
+	if (ev.event == ZmEvent.E_MODIFY && !ev.handled) {
+		this._controller.resetListView(null, ev.getDetail("index"));
+		ev.handled = true;
 	}
 };
 
@@ -202,13 +199,13 @@ function(ev) {
 ZmFilterListView._activeStateChange =
 function(ev) {
 	var target = DwtUiEvent.getTarget(ev);
-	DBG.println(AjxDebug.DBG3, "FILTER RULES: active state change for filter with ID " + target.id);
-	var flvId = target.getAttribute("_flvId"); 
+	var flvId = target.getAttribute("_flvId");
 	var flv = AjxCore.objectWithId(flvId);
 	var ruleId = target.id.substring(13);
 	var rule = flv._rules.getRuleById(ruleId);
-	if (rule)
+	if (rule) {
 		flv._rules.setActive(rule, !rule.isActive());
+	}
 };
 
 /*
@@ -223,13 +220,13 @@ function(ev) {
 ZmFilterListView.prototype._allowLeftSelection =
 function(clickedEl, ev, button) {
 	// We only care about mouse events
-	if (!(ev instanceof DwtMouseEvent))
-		return true;
+	if (!(ev instanceof DwtMouseEvent)) { return true; }
 
 	var target = DwtUiEvent.getTarget(ev);
 	var isInput = (target.id.indexOf("_ruleCheckbox") == 0);
-	if (isInput)
+	if (isInput) {
 		ZmFilterListView._activeStateChange(ev);
+	}
 
 	return !isInput;
 };
