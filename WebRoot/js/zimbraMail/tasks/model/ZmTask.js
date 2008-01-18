@@ -160,11 +160,12 @@ function(node, instNode) {
 	var comp = inv ? inv.comp[0] : null;
 
 	if (!node.id) this.id = node.id;
-	if (!this.invId) this.invId = (node.invId) || (inv ? [node.id, inv.id].join("-") : null);
-	if (!node.uid) this.uid = node.uid;				// XXX: what is this?
+	// always set invId since its mutable
+	this.invId = (node.invId) || (inv ? [node.id, inv.id].join("-") : null);
+	this.uid = node.uid; // XXX: what is this?
 
 	if (node.l) this.folderId = node.l;
-	if (node.s) this.size = node.s;					// XXX: do we care?
+	if (node.s) this.size = node.s;
 	if (node.sf) this.sf = node.sf;
 	if (node.dueDate) {
 		this.endDate = new Date(parseInt(node.dueDate,10));
