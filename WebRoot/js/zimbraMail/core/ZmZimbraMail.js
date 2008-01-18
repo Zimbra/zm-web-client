@@ -196,8 +196,10 @@ function(params) {
 		appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
 	}
 
+	// Handle protocol mode - standardize on trailing :
 	if (params.protocolMode) {
-		appCtxt.set(ZmSetting.PROTOCOL_MODE, params.protocolMode);
+		var proto = (params.protocolMode.indexOf(":") == -1) ? params.protocolMode + ":" : params.protocolMode;
+		appCtxt.set(ZmSetting.PROTOCOL_MODE, proto);
 	}
 
 	// Create the shell
