@@ -33,13 +33,6 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	this.setDropTarget(dropTgt);
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
-	if (AjxEnv.isNav) {
-		var padding = new AjxBuffer();
-		for (var i=0; i < 64; i++) padding.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-		this._padding = padding.toString();
-	} else {
-		this._padding = "";
-	}
 }
 
 ZmCalColView.prototype = new ZmCalBaseView;
@@ -773,9 +766,9 @@ function(appt) {
 		newState: isNew ? "_new" : "",
 		headerColor: color + (isNew ? "Dark" : "Light"),
 		bodyColor: color + (isNew ? "" : "Bg"),
-		name: apptName + (is30 ? this._padding : ""),
+		name: apptName,
 		starttime: appt.getDurationText(true, true),
-		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate))+this._padding,
+		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate)),
 		location: location,
 		status: (appt.isOrganizer() ? "" : appt.getParticipantStatusStr()),
 		icon: ((appt.isPrivate()) ? "ReadOnly" : null),
@@ -2063,7 +2056,7 @@ function(ev) {
 				data.startDate = newDate;
 				data.snap = snap;
 				if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalItem._getTTHour(data.startDate);
-				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalItem._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()))+data.view._padding;
+				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalItem._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()));
 			}
 		}
 	}
@@ -2090,7 +2083,7 @@ function(data) {
 		data.startTimeEl.innerHTML = ZmCalItem._getTTHour(data.appt.startDate);
 	}
     if (data.endTimeEl) {
-		data.endTimeEl.innerHTML = ZmCalItem._getTTHour(data.appt.endDate) + data.view._padding;
+		data.endTimeEl.innerHTML = ZmCalItem._getTTHour(data.appt.endDate);
 	}
 	ZmCalColView._setApptOpacity(data.appt, data.apptEl);
 }
@@ -2301,7 +2294,7 @@ function(ev) {
 
         				data.lastDelta = delta;
         				data.endDate.setTime(data.appt.getEndTime() + (delta15 * AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES)); // num msecs in 15 minutes
-        				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalItem._getTTHour(data.endDate)+data.view._padding;
+        				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalItem._getTTHour(data.endDate);
         			}
         		}
         	}
