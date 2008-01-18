@@ -70,13 +70,13 @@
                         <c:when test="${hdr.headerName eq 'subject' or hdr.headerName eq 'to' or hdr.headerName eq 'cc' or hdr.headerName eq 'from'}">
                             <fmt:message key="FILT_COND_HEADER_${hdr.headerOp}">
                                 <fmt:param><fmt:message key="FILT_COND_HEADER_${hdr.headerName}"/></fmt:param>
-                                <fmt:param>${hdr.headerValue}</fmt:param>
+                                <fmt:param>${fn:escapeXml(hdr.headerValue)}</fmt:param>
                             </fmt:message>
                         </c:when>
                         <c:otherwise>
                             <fmt:message key="FILT_COND_GENERIC_HEADER_${hdr.headerOp}">
-                                <fmt:param>${hdr.headerName}</fmt:param>
-                                <fmt:param>${hdr.headerValue}</fmt:param>
+                                <fmt:param>${fn:escapeXml(hdr.headerName)}</fmt:param>
+                                <fmt:param>${fn:escapeXml(hdr.headerValue)}</fmt:param>
                             </fmt:message>
                         </c:otherwise>
                     </c:choose>
@@ -84,7 +84,7 @@
                 <c:when test="${zm:isHeaderExistsCondition(condition)}">
                     <c:set var="hdrexists" value="${zm:getHeaderExists(condition)}"/>
                     <fmt:message key="FILT_COND_HEADER_${hdrexists.exists ? 'EXISTS' : 'NOT_EXISTS'}">
-                        <fmt:param>${hdrexists.headerName}</fmt:param>
+                        <fmt:param>${fn:escapeXml(hdrexists.headerName)}</fmt:param>
                     </fmt:message>
                 </c:when>
                 <c:when test="${zm:isAttachmentExistsCondition(condition)}">
@@ -124,7 +124,7 @@
                     <c:when test="${zm:isFileIntoAction(action)}">
                         <c:set var="fileInto" value="${zm:getFileIntoAction(action)}"/>
                         <fmt:message key="FILT_ACTION_FILEINTO">
-                            <fmt:param>${fn:startsWith(fileInto.folderPath, '/') ? fn:substring(fileInto.folderPath, 1, -1) : fileInto.folderPath}</fmt:param>
+                            <fmt:param>${fn:escapeXml(fn:startsWith(fileInto.folderPath, '/') ? fn:substring(fileInto.folderPath, 1, -1) : fileInto.folderPath)}</fmt:param>
                         </fmt:message>
                     </c:when>
                 </c:choose>
@@ -132,7 +132,7 @@
                     <c:when test="${zm:isTagAction(action)}">
                         <c:set var="tag" value="${zm:getTagAction(action)}"/>
                         <fmt:message key="FILT_ACTION_TAG">
-                            <fmt:param>${tag.tagName}</fmt:param>
+                            <fmt:param>${fn:escapeXml(tag.tagName)}</fmt:param>
                         </fmt:message>
                     </c:when>
                 </c:choose>
@@ -140,7 +140,7 @@
                     <c:when test="${zm:isRedirectAction(action)}">
                         <c:set var="redirect" value="${zm:getRedirectAction(action)}"/>
                         <fmt:message key="FILT_ACTION_REDIRECT">
-                            <fmt:param>${redirect.address}</fmt:param>
+                            <fmt:param>${fn:escapeXml(redirect.address)}</fmt:param>
                         </fmt:message>
                     </c:when>
                 </c:choose>
