@@ -429,9 +429,11 @@ function(calItem, mode) {
 		(appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML ||
 		 mode != ZmCalItem.MODE_NEW && appCtxt.get(ZmSetting.VIEW_AS_HTML)))
 	{
+		this._controller.setFormatBtnItem(true, DwtHtmlEditor.HTML);
 		this.setComposeMode(DwtHtmlEditor.HTML);
 		this._notesHtmlEditor.setContent(calItem.getNotesPart(ZmMimeTable.TEXT_HTML));
 	} else {
+		this._controller.setFormatBtnItem(true, ZmMimeTable.TEXT_PLAIN);
 		this.setComposeMode(DwtHtmlEditor.TEXT);
 		this._notesHtmlEditor.setContent(calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN));
 	}
