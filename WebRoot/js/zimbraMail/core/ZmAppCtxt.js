@@ -461,11 +461,11 @@ function() {
 
 ZmAppCtxt.prototype.getImportDialog =
 function() {
-	if (!this._uploadDialog) {
+	if (!this._importDialog) {
 		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._uploadDialog = new ZmImportDialog(this._shell);
+		this._importDialog = new ZmImportDialog(this._shell);
 	}
-	return this._uploadDialog;
+	return this._importDialog;
 };
 
 
