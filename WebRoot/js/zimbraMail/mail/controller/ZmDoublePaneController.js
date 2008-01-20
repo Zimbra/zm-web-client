@@ -93,6 +93,10 @@ function(item, callback, results) {
 		if (msgView) {
 			appCtxt.getKeyboardMgr().grabFocus(msgView);
 		}
+	} else {
+		if (this._mailListView) {
+			appCtxt.getKeyboardMgr().grabFocus(this._mailListView);
+		}
 	}
 };
 
