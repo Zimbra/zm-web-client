@@ -172,13 +172,17 @@
             </c:when>
             <c:when test="${fn:startsWith(folderId, 'm:')}">
                 <c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
+                <c:set var="movedFolderName" value="${zm:getFolderName(pageContext, folderid)}"/>
                 <zm:moveMessage folderid="${folderid}"var="result" id="${ids}"/>
                 <app:status>
-                    <fmt:message key="actionMessageMoved">
+                    <fmt:message  key="actionMessageMoved">
                         <fmt:param value="${result.idCount}"/>
-                        <fmt:param value="${zm:getFolderName(pageContext, folderid)}"/>
+                        <fmt:param value="${movedFolderName}"/>
                     </fmt:message>
                 </app:status>
+                 <c:if test="${not empty param.delRedirectUrl}" >
+                    <zm:redirect url="${param.delRedirectUrl}&actionMessageMoved=${true}&movedFolderName=${movedFolderName}" />
+                </c:if>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionMove')}">
                 <app:status style="Warning"><fmt:message key="actionNoFolderSelected"/></app:status>
