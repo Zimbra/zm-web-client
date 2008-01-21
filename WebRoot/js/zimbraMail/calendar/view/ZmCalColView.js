@@ -449,8 +449,8 @@ function() {
 		};
 		var cal = this._calendars[i];
 		this._folderIdToColIndex[cal.id] = col;
-		if (cal.isRemote() && cal.rid) {
-			this._folderIdToColIndex[cal.rid] = col;
+		if (cal.isRemote() && cal.rid && cal.zid) {
+			this._folderIdToColIndex[cal.zid + ":" + cal.rid] = col;
 		}
 
 		var div = document.createElement("div");
@@ -1328,8 +1328,7 @@ function(appt) {
 	endOfDay.setHours(23,59,59,999);
 	var et = Math.min(appt.getEndTime(), endOfDay.getTime());
 	if (this._scheduleMode)
-		return this._getBoundsForCalendar(sd, et - sd.getTime(),
-										  ZmOrganizer.normalizeId(appt.folderId));
+		return this._getBoundsForCalendar(sd, et - sd.getTime(), appt.folderId);
 	else
 		return this._getBoundsForDate(sd, et - sd.getTime());
 }
