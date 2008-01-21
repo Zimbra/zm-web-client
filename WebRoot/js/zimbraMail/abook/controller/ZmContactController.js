@@ -250,7 +250,9 @@ function(ev, bIsPopCallback) {
 		// the contact since it will be created/deleted into the new folder
 		var newFolderId = mods[ZmContact.F_folderId];
 		var newFolder = newFolderId ? appCtxt.getById(newFolderId) : null;
-		if (newFolderId && (contact.isShared() || (newFolder && newFolder.link))) {
+		if (contact.id != null && newFolderId &&
+			(contact.isShared() || (newFolder && newFolder.link)))
+		{
 			// update existing contact with new attrs
 			contact.attr = {};
 			for (var a in view._attr) {
@@ -259,7 +261,9 @@ function(ev, bIsPopCallback) {
 			}
 			// set folder will do the right thing for this shared contact
 			contact._setFolder(newFolderId);
-		} else {
+		}
+		else
+		{
 			if (contact.id && !contact.isGal) {
 				if (view.isEmpty()) {
 					this._doDelete([contact], null, null, true);
