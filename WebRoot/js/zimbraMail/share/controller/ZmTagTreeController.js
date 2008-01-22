@@ -191,7 +191,7 @@ function(ev) {
 			ev.doIt = false;
 		} else if (sample instanceof ZmContact && (sample.isGal || sample.isShared())) {
 			ev.doIt = false;
-		} else if (sample && sample.isShared()) {
+		} else if (sample && (sample instanceof ZmItem) && sample.isShared()) {
 			ev.doIt = false;
 		} else {
 			ev.doIt = this._dropTgt.isValidTarget(data);

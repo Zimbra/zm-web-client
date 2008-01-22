@@ -132,10 +132,7 @@ ZmApptComposeView.prototype.set =
 function(appt, mode, isDirty) {
 	this._setData = [appt, mode, isDirty];
 	var button = this.getTabButton(this._apptTabKey);
-	if (mode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
-		button.setImage("Appointment");
-	} else if (mode == ZmCalItem.MODE_EDIT_SERIES ||
-			(mode == ZmCalItem.MODE_NEW_FROM_QUICKADD && appt.getRecurType() != "NON")) {
+	if (mode == ZmCalItem.MODE_EDIT_SERIES || appt.getRecurType() != "NON") {
 		button.setImage("ApptRecur");
 	} else {
 		button.setImage("Appointment");
