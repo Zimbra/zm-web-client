@@ -1256,7 +1256,7 @@ function() {
 	var idx = 0;
 
 	var dividx = idx;	// we might get back here
-	htmlArr[idx++] = "<div style='overflow: auto;'>";
+	htmlArr[idx++] = "<div style='overflow: auto; width: 90%;'>";
 	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0>";
 
 	var rows = 0;
