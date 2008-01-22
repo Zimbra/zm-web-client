@@ -508,6 +508,7 @@
 
                 <mkdir dir='${i18n.msgs.dir}'/>
                 <i18n destdir='${i18n.msgs.dir}'/>
+				<i18n destdir='${i18n.msgs.dir}' basename='L10nMsg' client='false' server='true'/>
             </then>
         </if>
     </target>
