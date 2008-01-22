@@ -217,7 +217,7 @@ function(im) {
 	if (im.n) {
 		// console.log(im.n);
 		var notifications = !this.__avoidNotifyTimeout ||
-			(new Date().getTime() - this.__avoidNotifyTimeout > ZmRoster.NOTIFICATION_FOO_TIMEOUT);
+							(new Date().getTime() - this.__avoidNotifyTimeout > ZmRoster.NOTIFICATION_FOO_TIMEOUT);
 		var cl = this.getChatList();
 		for (var curNot=0; curNot < im.n.length; curNot++) {
 			var not = im.n[curNot];
@@ -235,31 +235,31 @@ function(im) {
 				}
 				// ignore unsubscribed entries for now (TODO FIXME)
 			} else if (not.type == "subscribe") {
-                                appCtxt.getApp(ZmApp.IM).prepareVisuals();
+				appCtxt.getApp(ZmApp.IM).prepareVisuals();
 				var view = ZmChatMultiWindowView.getInstance();
 				// it should always be instantiated by this time, but whatever.
 				if (view) {
-                                        var item = this.getRosterItem(not.from);
+					var item = this.getRosterItem(not.from);
 					ZmImSubscribeAuth.show(view.getActiveWM(), not.from, item);
 				}
-                        } else if (not.ask && /^(un)?subscribed$/.test(not.type)) {
-                                if (not.ask == "subscribe" && not.to) {
-                                        var list = this.getRosterItemList();
-                                        var item = list.getByAddr(not.to);
-                                        if (!item) {
-                                                // create him in offline state
-                                                item = new ZmRosterItem(not.to, list, not.to, null, not.groups);
-                                                list.addItem(item);
-                                                if (notifications) {
-                                                        appCtxt.setStatusMsg("Waiting for " + not.to + " to accept your request");
-                                                }
-                                        }
-                                } else if (not.ask == "unsubscribe" && not.to) {
-                                        // should we do anything here?
-                                        // Do we need to ask buddy's
-                                        // permission for us to remove
-                                        // him from our list? :-)
-                                }
+			} else if (not.ask && /^(un)?subscribed$/.test(not.type)) {
+				if (not.ask == "subscribe" && not.to) {
+					var list = this.getRosterItemList();
+					var item = list.getByAddr(not.to);
+					if (!item) {
+						// create him in offline state
+						item = new ZmRosterItem(not.to, list, not.to, null, not.groups);
+						list.addItem(item);
+						if (notifications) {
+							appCtxt.setStatusMsg("Waiting for " + not.to + " to accept your request");
+						}
+					}
+				} else if (not.ask == "unsubscribe" && not.to) {
+					// should we do anything here?
+					// Do we need to ask buddy's
+					// permission for us to remove
+					// him from our list? :-)
+				}
 			} else if (not.type == "subscribed") {
 				var sub = not;
 				if (sub.to) {
@@ -279,20 +279,20 @@ function(im) {
 						}
 					}
 				} else if (sub.from) {
-				    // toast, should we user if they want to add user if they aren't in buddy list?
+					// toast, should we user if they want to add user if they aren't in buddy list?
 				}
 			} else if (not.type == "unsubscribed") {
 				var unsub = not;
 				if (unsub.to) {
 					var list = this.getRosterItemList();
 					var item = list.getByAddr(unsub.to);
-                                        if (item) {
-					        var displayName = item.getDisplayName();
-                                                list.removeItem(item);
-					        if (notifications) {
-						        appCtxt.setStatusMsg(this._removeRosterItemToastFormatter.format([displayName]));
-					        }
-                                        }
+					if (item) {
+						var displayName = item.getDisplayName();
+						list.removeItem(item);
+						if (notifications) {
+							appCtxt.setStatusMsg(this._removeRosterItemToastFormatter.format([displayName]));
+						}
+					}
 				}
 			} else if (not.type == "presence") {
 				var p = not;
@@ -308,7 +308,7 @@ function(im) {
 						var toast = this._presenceToastFormatter.format([ri.getDisplayName(), ri.getPresence().getShowText()]);
 						var is_status = old_pres == ri.getPresence().getShow();
 						if (notifications && ( (!is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
-								       (is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
+											   (is_status && appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
 							appCtxt.setStatusMsg(toast);
 							var chat = cl.getChatByRosterAddr(p.from);
 							if (chat)
@@ -347,21 +347,21 @@ function(im) {
 						chat.addMessage(chatMessage);
 					}
 				}
-                        } else if (not.type == "enteredchat") {
-                                // console.log("JOIN: %o", not);
-                                appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
-                                var chat = this.getChatList().getChatByThread(not.thread);
-                                if (chat) {
-                                        chat.addMessage(ZmChatMessage.system(this._enteredChatFormatter.format([not.addr])));
-                                        chat.addRosterItem(this.getRosterItem(not.addr));
-                                }
+			} else if (not.type == "enteredchat") {
+				// console.log("JOIN: %o", not);
+				appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
+				var chat = this.getChatList().getChatByThread(not.thread);
+				if (chat) {
+					chat.addMessage(ZmChatMessage.system(this._enteredChatFormatter.format([not.addr])));
+					chat.addRosterItem(this.getRosterItem(not.addr));
+				}
 			} else if (not.type == "leftchat") {
-                                // console.log("LEFT: %o", not);
+				// console.log("LEFT: %o", not);
 				appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
 				var chat = this.getChatList().getChatByThread(not.thread);
 				if (chat) {
 					chat.addMessage(ZmChatMessage.system(this._leftChatFormatter.format([not.addr])));
-                                        chat.removeRosterItem(this.getRosterItem(not.addr));
+					chat.removeRosterItem(this.getRosterItem(not.addr));
 					// chat.setThread(null); // ?
 				}
 			} else if (not.type == "otherLocation") {
@@ -374,16 +374,16 @@ function(im) {
 					appCtxt.setStatusMsg(ZmMsg.errorNotAuthenticated, ZmStatusView.LEVEL_WARNING);
 				}
 			} else if (not.type == "invited") {
-                                appCtxt.getApp(ZmApp.IM).prepareVisuals();
-                                var view = ZmChatMultiWindowView.getInstance();
+				appCtxt.getApp(ZmApp.IM).prepareVisuals();
+				var view = ZmChatMultiWindowView.getInstance();
 				// it should always be instantiated by this time, but whatever.
 				if (view) {
-                                        new ZmImInviteNotification(view.getActiveWM(), not).popup();
+					new ZmImInviteNotification(view.getActiveWM(), not).popup();
 				}
 			} else if (not.type == "privacy") {
-                                // console.log("Received privacy list: %o", not);
-                                this._privacyList.reset(not.list[0].item);
-                        }
+				// console.log("Received privacy list: %o", not);
+				this._privacyList.reset(not.list[0].item);
+			}
 		}
 	}
 
