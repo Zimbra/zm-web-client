@@ -17,7 +17,10 @@
 
 ZmZimlet = function(id, name, parent, tree, color) {
 	ZmOrganizer.call(this, {type: ZmOrganizer.ZIMLET, id: id, name: name, parent: parent, tree: tree});
-}
+};
+
+ZmZimlet.prototype = new ZmOrganizer();
+ZmZimlet.prototype.constructor = ZmZimlet;
 
 ZmEvent.S_ZIMLET	= "ZIMLET";
 ZmOrganizer.ZIMLET	= ZmEvent.S_ZIMLET;
@@ -28,16 +31,14 @@ ZmZimlet.actionMenus["ZmCalViewController"] = [];
 ZmZimlet.listeners = {};
 ZmZimlet.listeners["ZmCalViewController"] = {};
 
-ZmZimlet.prototype = new ZmOrganizer();
-ZmZimlet.prototype.constructor = ZmZimlet;
+// Constants
+ZmZimlet.ID_ZIMLET = ZmOrganizer.ID_ZIMLET;
+ZmZimlet.ID_ZIMLET_ROOT = ZmZimlet.ID_ZIMLET + "_root";
 
 ZmZimlet.prototype.toString =
 function() {
 	return "ZmZimlet - " + this.name;
 };
-
-// Constants
-ZmZimlet.ID_ZIMLET = ZmOrganizer.ID_ZIMLET;
 
 // Static methods
 ZmZimlet.createFromJs =
@@ -45,18 +46,20 @@ function(parent, obj, tree, link) {
 	if (!obj && obj.length < 1) {return null;}
 
 	// create zimlet root
-	var zimletRoot = new ZmZimlet(ZmZimlet.ID_ZIMLET, ZmMsg.zimlets, parent, tree, null, null);
+	var zimletRoot = new ZmZimlet(ZmZimlet.ID_ZIMLET_ROOT, ZmMsg.zimlets, parent, tree, null, null);
 	if (obj && obj.length) {
 		var id = ZmZimlet.ID_ZIMLET;
 		for (var i = 0; i < obj.length; i++) {
 			var lbl = obj[i].processMessage(obj[i].zimletPanelItem.label);
-			var childZimlet = new ZmZimlet(++id, lbl, zimletRoot, tree, null, null);
+			// bug fix #23860 - unique-ify zimlet ID's so they dont conflict!
+			var zimletId = (++id) + "_z";
+			var childZimlet = new ZmZimlet(zimletId, lbl, zimletRoot, tree, null, null);
 			zimletRoot.children.add(childZimlet);
 			// WARNING: it's a bit unorthodox to do this linkage
 			// here, but we really do need these objects know about
 			// each other.
 			childZimlet._zimletContext = obj[i];
-			childZimlet._zimletContext._id = id;
+			childZimlet._zimletContext._id = zimletId;
 			childZimlet._toolTip = obj[i].zimletPanelItem.toolTipText;
 			obj[i]._organizer = childZimlet;
 		}
@@ -85,7 +88,7 @@ function(name) {
 // Public methods
 ZmZimlet.prototype.getName =
 function() {
-	return (this.id == ZmZimlet.ID_ZIMLET) ? ZmMsg.zimlets : this.name;
+	return (this.id == ZmZimlet.ID_ZIMLET_ROOT) ? ZmMsg.zimlets : this.name;
 };
 
 ZmZimlet.prototype.resetNames =
@@ -115,7 +118,7 @@ function(control) {
 
 ZmZimlet.prototype.getIcon =
 function() {
-	return (this.id == ZmZimlet.ID_ZIMLET) ? null : this._zimletContext.icon;
+	return (this.id == ZmZimlet.ID_ZIMLET_ROOT) ? null : this._zimletContext.icon;
 };
 
 ZmZimlet.prototype.getZimletContext =
