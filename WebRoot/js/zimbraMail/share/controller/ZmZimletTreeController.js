@@ -115,8 +115,8 @@ ZmZimletTreeController.prototype.getTreeStyle = function() {
 
 // Method that is run when a tree item is left-clicked
 ZmZimletTreeController.prototype._itemClicked = function(z) {
-	if (z.id == ZmZimlet.ID_ZIMLET)
-		return;
+	if (z.id == ZmZimlet.ID_ZIMLET_ROOT) { return; }
+
 	// to allow both click and dbl-click, we should use a timeout here, as
 	// this function gets called twice in the case of a dbl-click.  If the
 	// timeout already exists, we do nothing since _itemDblClicked will be
@@ -130,8 +130,8 @@ ZmZimletTreeController.prototype._itemClicked = function(z) {
 };
 
 ZmZimletTreeController.prototype._itemDblClicked = function(z) {
-	if (z.id == ZmZimlet.ID_ZIMLET)
-		return;
+	if (z.id == ZmZimlet.ID_ZIMLET_ROOT) { return; }
+
 	if (z.__dbl_click_timeout) {
 		// click will never happen
 		clearTimeout(z.__dbl_click_timeout);
@@ -147,7 +147,7 @@ ZmZimletTreeController.prototype._dropListener = function(ev) {
 		ev.doIt = false;
 		return;
 	}
-	if (z.id == ZmZimlet.ID_ZIMLET) {
+	if (z.id == ZmZimlet.ID_ZIMLET_ROOT) {
 		ev.doIt = false;
 		return;
 	}
