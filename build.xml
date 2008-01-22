@@ -203,7 +203,7 @@
     </target>
 
     <target name='war'
-            depends='templates,timezones,i18n,images,styles,settings,jam-files,compress,help,webxml-package-replace'>
+            depends='templates,timezones,images,styles,settings,jam-files,compress,help,webxml-package-replace'>
         <mkdir dir='${build.war.dir}'/>
         <war warfile="${build.war.file}" webxml='${build.dir}/web.xml' compress='${war.compress}'>
             <webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.excludes}' />
