@@ -778,7 +778,8 @@ function(ev) {
 	}
 	var calItem = this._calItem;
 	var repeatType = this._repeatSelect.getValue();
-	if(calItem.isCustomRecurrence()){
+	
+	if(calItem.isCustomRecurrence() && (this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)){
 		this._checkRecurrenceValidity = true;
 		this._initRecurDialog(repeatType);
 		this._recurOkListener();		
@@ -929,7 +930,7 @@ ZmCalItemEditView.prototype.handleStartDateChange =
 function(sd) {	
 	var calItem = this._calItem;
 	var repeatType = this._repeatSelect.getValue();
-	if(calItem.isCustomRecurrence()){
+	if(calItem.isCustomRecurrence() && (this._mode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)){
 		var temp = this._getClone(this._calItem);		
 		this._oldStartDate = temp._startDate;
 		this._oldEndDate = temp._endDate;
