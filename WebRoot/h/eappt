@@ -546,7 +546,7 @@
         <input type="hidden" name="repeatEndType" value="${fn:escapeXml(compose.repeatEndType)}"/>
         <input type="hidden" name="repeatEndCount" value="${fn:escapeXml(compose.repeatEndCount)}"/>
         <input type="hidden" name="repeatEndDate" value="${fn:escapeXml(compose.repeatEndDate)}"/>
-
+        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     </form>
 
     <app:autoComplete>

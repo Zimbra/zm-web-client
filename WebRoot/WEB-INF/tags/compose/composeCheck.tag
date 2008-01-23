@@ -41,6 +41,7 @@
             </app:status>
         </c:when>
         <c:when test="${uploader.isSend}">
+            <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
             <c:set var="needComposeView" value="${true}"/>
             <app:handleError>
                 <c:choose>
@@ -62,6 +63,7 @@
             </app:handleError>
         </c:when>
         <c:when test="${uploader.isDraft}">
+            <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
             <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
             <c:set scope="request" var="draftid" value="${draftResult.id}"/>
             <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>

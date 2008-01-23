@@ -150,6 +150,7 @@
         </c:if>
     </table>
     <input type="hidden" name="doMessageAction" value="1"/>
+    <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : zm:cook(selectedRow)}"/>
   </form>
 

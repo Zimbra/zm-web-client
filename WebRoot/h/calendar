@@ -98,6 +98,7 @@
                 <c:set var="id" value="${param.invId}"/>
                 <c:choose>
                     <c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
+                        <zm:checkCrumb crumb="${param.crumb}"/>
                         <zm:flagItem var="result" id="${id}" flag="${actionOp eq 'flag'}"/>
                         <app:status>
                             <fmt:message key="${actionOp eq 'flag' ? 'actionApptFlag' : 'actionApptUnflag'}">
@@ -109,6 +110,7 @@
                     <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
                         <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
                         <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
+                        <zm:checkCrumb crumb="${param.crumb}"/>
                         <zm:tagItem tagid="${tagid}"var="result" id="${id}" tag="${tag}"/>
                         <app:status>
                             <fmt:message key="${tag ? 'actionApptTag' : 'actionApptUntag'}">
@@ -124,6 +126,7 @@
                 </c:choose>
             </c:when>
             <c:when test="${zm:actionSet(param,'actionApptDelete')}">
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <c:choose>
                     <c:when test="${param.useInstance eq '1'}">
                         <c:set var="id" value="${not empty param.exInvId ? param.exInvId : param.invId}"/>

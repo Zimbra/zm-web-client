@@ -18,6 +18,7 @@
     <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
 
     <c:if test="${!empty param.doAction}">
+        <zm:checkCrumb crumb="${param.crumb}"/>
         <app:folderAction/>
     </c:if>
 
@@ -149,6 +150,7 @@
             </tr>
         </table>
         <input type="hidden" name="doAction" value="1"/>
+        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     </form>
 
     <SCRIPT TYPE="text/javascript">

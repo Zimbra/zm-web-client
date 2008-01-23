@@ -18,6 +18,7 @@
     <c:otherwise>
         <c:choose>
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <c:set var="count" value="${0}"/>
                 <c:forEach var="taskId" items="${paramValues.id}">
                     <zm:getMessage var="message" id="${taskId}" markread="true" neuterimages="${empty param.xim}"/>
@@ -31,6 +32,7 @@
                 </app:status>
             </c:when>
             <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
                 <c:choose>
                     <c:when test="${untagall}" >
@@ -57,6 +59,7 @@
                 </c:choose>
             </c:when>
             <c:when test="${fn:startsWith(folderId, 'm:')}">
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
                 <zm:moveItem folderid="${folderid}"var="result" id="${ids}"/>
                 <app:status>

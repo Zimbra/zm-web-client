@@ -34,6 +34,7 @@
 
 <c:choose>
     <c:when test="${zm:actionSet(param, 'actionEmpty') and (param.contextFolderId eq mailbox.trash.id or param.contextFolderId eq mailbox.spam.id)}">
+        <zm:checkCrumb crumb="${param.crumb}"/>
         <zm:emptyFolder id="${param.contextFolderId}"/>
         <app:status>
             <fmt:message key="folderEmptied">
@@ -42,11 +43,13 @@
         </app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionCreate') and not contactError}">
+        <zm:checkCrumb crumb="${param.crumb}"/>
         <app:editContactAction id="${param.id}"/>
         <app:status><fmt:message key="${not empty param.dlist and param.isgroup ? 'contactGroupCreated' :'contactCreated'}"/></app:status>
         <zm:clearSearchCache type="contact"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionModify') and not contactError}">
+        <zm:checkCrumb crumb="${param.crumb}"/>
         <app:editContactAction id="${param.id}"/>
         <app:status><fmt:message key="contactModified"/></app:status>
     </c:when>
@@ -72,6 +75,7 @@
         <jsp:forward page="/h/printcontacts"/>
     </c:when>
     <c:otherwise>
+        <zm:checkCrumb crumb="${param.crumb}"/>
         <c:choose>
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
                 <zm:requirePost/>
@@ -110,7 +114,7 @@
 				</c:choose>
 			</c:when>
             <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
-                   <c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
+                <c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
                 <c:choose>
                     <c:when test="${untagall}" >
                         <zm:forEachTag var="eachtag">
@@ -136,7 +140,7 @@
                 </c:choose>
             </c:when>
             <c:when test="${fn:startsWith(folderId, 'm:')}">
-				<c:choose>
+                <c:choose>
 					<c:when test="${zm:getIsMyCard(pageContext, ids)}">
 						<app:status style="Critical">
 							<fmt:message key="errorMyCardMove"/>

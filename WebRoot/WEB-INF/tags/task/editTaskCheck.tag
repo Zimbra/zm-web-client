@@ -16,6 +16,7 @@
                 <c:set var="id" value="${uploader.compose.inviteId}"/>
                 <c:choose>
                     <c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
+                        <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
                         <zm:flagItem var="result" id="${id}" flag="${actionOp eq 'flag'}"/>
                         <app:status>
                             <fmt:message key="${actionOp eq 'flag' ? 'actionTaskFlag' : 'actionTaskUnflag'}">
@@ -25,6 +26,7 @@
                         ${zm:clearMessageCache(mailbox)}
                     </c:when>
                     <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
+                        <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
                         <c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
                         <c:choose>
                             <c:when test="${untagall}" >
@@ -81,6 +83,7 @@
             </c:when>
             <c:when test="${uploader.isApptCancel or uploader.isApptDelete}">
                 <c:set var="needEditView" value="${true}"/>
+                <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
                 <app:handleError>
                     <c:set var="apptId" value="${uploader.compose.useInstance and not empty uploader.compose.exceptionInviteId ? uploader.compose.exceptionInviteId : uploader.compose.inviteId}"/>
                     <c:choose>
@@ -99,6 +102,7 @@
             </c:when>
             <c:when test="${uploader.isSave}">
                 <c:set var="needEditView" value="${true}"/>
+                <zm:checkCrumb crumb="${uploader.paramValues.crumb[0]}"/>
                 <%--<app:handleError>--%>
                     <c:set var="apptId" value="${uploader.compose.useInstance and not empty uploader.compose.exceptionInviteId ? uploader.compose.exceptionInviteId : uploader.compose.inviteId}"/>
                     <c:choose>

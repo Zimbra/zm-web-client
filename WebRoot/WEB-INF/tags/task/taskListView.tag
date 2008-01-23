@@ -113,7 +113,7 @@
         </table>
         <input type="hidden" name="doTaskAction" value="1"/>
         <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : zm:cook(selectedRow)}"/>        
-
+        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     </form>
 
     <SCRIPT TYPE="text/javascript">

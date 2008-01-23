@@ -26,6 +26,7 @@
 
     <c:choose>
         <c:when test="${zm:actionSet(param, 'actionSave')}">
+            <zm:checkCrumb crumb="${param.crumb}"/>
             <c:choose>
                 <c:when test="${selected eq 'voice'}">
                     <app:optVoiceAction accountindex="0" />
@@ -36,6 +37,7 @@
             </c:choose>
         </c:when>
         <c:when test="${selected eq 'signatures'}">
+            <zm:checkCrumb crumb="${param.crumb}"/>
             <c:forEach var="p" items="${paramValues}">
                 <c:if test="${fn:startsWith(p.key,'actionDeleteSig:')}">
                     <c:set var="sigId" value="${fn:substringAfter(p.key,'actionDeleteSig:')}"/>
@@ -50,12 +52,15 @@
             </app:status>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionDeleteFilter') and not empty param.ruleName}">
+            <zm:checkCrumb crumb="${param.crumb}"/>
             <zm:deleteFilterRule name="${param.ruleName}"/>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionMoveFilterUp') and not empty param.ruleName}">
+            <zm:checkCrumb crumb="${param.crumb}"/>
             <zm:moveFilterRule direction="up" name="${param.ruleName}"/>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionMoveFilterDown') and not empty param.ruleName}">
+            <zm:checkCrumb crumb="${param.crumb}"/>
             <zm:moveFilterRule direction="down" name="${param.ruleName}"/>
         </c:when>
         <c:when test="${zm:actionSet(param, 'actionFilterSave') and not empty param.frompost}">
@@ -78,10 +83,12 @@
                     </app:status>
                 </c:when>
                 <c:when test="${zm:actionSet(param, 'actionNewFilter')}">
+                    <zm:checkCrumb crumb="${param.crumb}"/>
                     <zm:createFilterRule rule="${postRule}"/>
                     <c:set var="filterSave" value="success" scope="request"/>
                 </c:when>
                 <c:when test="${zm:actionSet(param, 'actionEditFilter')}">
+                    <zm:checkCrumb crumb="${param.crumb}"/>
                     <zm:modifyFilterRule originalname="${param.origname}"  rule="${postRule}"/>
                     <c:set var="filterSave" value="success" scope="request"/>
                 </c:when>
@@ -220,6 +227,7 @@
             </tr>
         </table>
         <input type="hidden" name="doAction" value="1"/>
+        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     </form>
 
     <app:keyboard cache="options" globals="true" tags="true" folders="true" calendars="true" contacts="true" mailbox="${mailbox}"/>
