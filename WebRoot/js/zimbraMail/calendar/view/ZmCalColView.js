@@ -2230,7 +2230,6 @@ function(ev, sash) {
 			ZmCalColView._sashMouseMoveHdlr,
 			ZmCalColView._sashMouseUpHdlr,
 			ZmCalColView._emptyHdlr, // mouse out
-			null,					 // mouse wheel 
 			true);
 	capture.capture();
 	this.deselectAll();
@@ -2384,7 +2383,6 @@ function(ev, gridEl, gridLoc, isAllDay) {
 			isAllDay? ZmCalColView._gridAllDayMouseMoveHdlr : ZmCalColView._gridMouseMoveHdlr,
 			ZmCalColView._gridMouseUpHdlr,
 			ZmCalColView._emptyHdlr, // mouse out
-			null,					 // mouse wheel
 			true);
 	capture.capture();
 	return false;

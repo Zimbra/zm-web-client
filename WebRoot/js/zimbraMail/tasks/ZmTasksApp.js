@@ -262,12 +262,6 @@ function(accordionItem) {
 	this.search();
 };
 
-// common API shared by calendar app
-ZmTasksApp.prototype.getListController =
-function() {
-	return this.getTaskListController();
-};
-
 ZmTasksApp.prototype.getTaskListController =
 function() {
 	if (!this._taskListController) {

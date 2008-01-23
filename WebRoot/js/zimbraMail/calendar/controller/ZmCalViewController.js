@@ -986,7 +986,7 @@ function(appt, shiftKey) {
 		this._quickAddDialog.initialize(appt);
 		this._quickAddDialog.popup();
 	} else {
-		this.newAppointment(appt);
+		this.newAppointment(appt,ZmCalItem.MODE_NEW_FROM_QUICKADD);
 	}
 };
 
@@ -1031,7 +1031,7 @@ function(appt) {
 	if (!appt.__creating) {
 		var calendar = appt.getFolder();
 		var isSynced = Boolean(calendar.url);
-		if (calendar.isReadOnly() || isSynced) {
+		if (appt.isReadOnly() || isSynced) {
 			var mode = appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
 	        var clone = ZmAppt.quickClone(appt);
 			clone.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [clone]));
