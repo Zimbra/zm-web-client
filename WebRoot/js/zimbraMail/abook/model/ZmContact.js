@@ -214,7 +214,7 @@ function(contact) {
 			if (contact && contact.isGal)
 				return (attr.fullName || attr.email);
 			if (attr.lastName) fa[idx++] = attr.lastName;
-			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
+			if (attr.lastName && attr.firstName) fa[idx++] = ZmMsg.lastCfirstSep;
 			if (attr.firstName) fa[idx++] = attr.firstName;
 		}
 		break;
@@ -233,7 +233,7 @@ function(contact) {
 
 		case ZmContact.FA_LAST_C_FIRST_COMPANY: {								// Last, First (Company)
 			if (attr.lastName) fa[idx++] = attr.lastName;
-			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
+			if (attr.lastName && attr.firstName) fa[idx++] = ZmMsg.lastCfirstSep;
 			if (attr.firstName) fa[idx++] = attr.firstName;
 			if (attr.company) {
 				if (attr.lastName || attr.firstName) fa[idx++] = " ";
@@ -262,7 +262,7 @@ function(contact) {
 			if (attr.lastName || attr.firstName) {
 				fa[idx++] = " (";
 				if (attr.lastName) fa[idx++] = attr.lastName;
-				if (attr.lastName && attr.firstName) fa[idx++] = ", ";
+				if (attr.lastName && attr.firstName) fa[idx++] = ZmMsg.lastCfirstSep;
 				if (attr.firstName) fa[idx++] = attr.firstName;
 				fa[idx++] = ")";
 			}
