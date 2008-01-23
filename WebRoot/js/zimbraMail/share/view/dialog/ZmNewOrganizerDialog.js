@@ -275,6 +275,7 @@ function() {
 			this._omit[syncIssuesFolder.id] = true;
 		}
 	}
+	this._omit[ZmOrganizer.ID_MY_CARD] = true;
 };
 
 // other
