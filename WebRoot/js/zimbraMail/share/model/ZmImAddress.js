@@ -22,11 +22,12 @@
 ZmImAddress = {
 
     IM_SERVICES : [
-    { label: ZmMsg.zimbraTitle , value: "local" },
-    { label: ZmMsg.yahoo  , value: "yahoo" },
-    { label: ZmMsg.msn    , value: "msn" },
-    { label: ZmMsg.aol    , value: "aol" }
-            ],
+            { label: ZmMsg.zimbraTitle , value: "local" },
+            { label: ZmMsg.yahoo       , value: "yahoo" },
+            { label: ZmMsg.msn         , value: "msn" },
+            { label: ZmMsg.aol         , value: "aol" },
+            { label: ZmMsg.other       , value: "other" }
+    ],
 
     REGEXP : [], // it's built at load-time below
 
