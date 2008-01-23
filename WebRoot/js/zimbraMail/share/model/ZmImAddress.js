@@ -22,11 +22,12 @@
 ZmImAddress = {
 
     IM_SERVICES : [
-    { label: ZmMsg.zimbraTitle , value: "local" },
-    { label: ZmMsg.yahoo  , value: "yahoo" },
-    { label: ZmMsg.msn    , value: "msn" },
-    { label: ZmMsg.aol    , value: "aol" }
-            ],
+            { label: ZmMsg.zimbraTitle , value: "local" },
+            { label: ZmMsg.yahoo       , value: "yahoo" },
+            { label: ZmMsg.msn         , value: "msn" },
+            { label: ZmMsg.aol         , value: "aol" },
+            { label: ZmMsg.other       , value: "other" }
+    ],
 
     REGEXP : [], // it's built at load-time below
 
@@ -64,7 +65,12 @@ ZmImAddress = {
 
 };
 
+// HACK for bug 23603
+if (/^SmartZone/.test(ZmMsg.zimbraTitle)) {
+        ZmImAddress.IM_SERVICES.splice(0, 1);
+}
+
 for (var i = 0; i < ZmImAddress.IM_SERVICES.length; ++i)
-    ZmImAddress.REGEXP.push(ZmImAddress.IM_SERVICES[i].value);
+        ZmImAddress.REGEXP.push(ZmImAddress.IM_SERVICES[i].value);
 
 ZmImAddress.REGEXP = new RegExp("^(" + ZmImAddress.REGEXP.join("|") + ")://([^\\s]+)$", "i");
