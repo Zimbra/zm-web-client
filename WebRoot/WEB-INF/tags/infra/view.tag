@@ -216,9 +216,11 @@
                             <!-- search box -->				
                             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}"/>					
 						</td>
-                        <td>
-                            <app:appTopYSearch keys="${keys}" />
-                        </td>
+						<c:if test="${mailbox.features.webSearchEnabled}">
+	                        <td>
+	                            <app:appTopYSearch keys="${keys}" />
+	                        </td>
+	                    </c:if>
                     </tr>
 					</table>
 				</td>
@@ -418,9 +420,11 @@
                         <td width="66%">
                             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}"/>
                         </td>
-                        <td width="33%">
-                            <app:appTopYSearch keys="${keys}" />               
-                        </td>
+						<c:if test="${mailbox.features.webSearchEnabled}">
+	                        <td width="33%">
+	                            <app:appTopYSearch keys="${keys}" />
+	                        </td>
+	                    </c:if>
                     </tr>
                 </table>
 			</td>
