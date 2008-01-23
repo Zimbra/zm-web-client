@@ -1039,9 +1039,15 @@ ZmMailApp.prototype._mailSearch =
 function(query, callback, response) {
 	query = query || appCtxt.get(ZmSetting.INITIAL_SEARCH);
 	var types = new AjxVector();
-	var type = this.getGroupMailBy();
-	types.add(type);
-	var params = {query:query, callback:callback, types:types, response:response};
+	types.add(this.getGroupMailBy());
+
+	var params = {
+		query: query,
+		types: types,
+		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
+		callback: callback,
+		response: response
+	};
 	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
 	appCtxt.getSearchController().search(params);
 };
