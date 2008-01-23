@@ -85,6 +85,7 @@
 			</table>
 			<input type="hidden" name="doVoiceMailListViewAction" value="1"/>
 			<input type="hidden" name="phone" value="${phone}"/>
+			<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 		</form>
 
 		<SCRIPT TYPE="text/javascript">

@@ -6,6 +6,8 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <app:handleError>
+<zm:requirePost/>
+<zm:checkCrumb crumb="${param.crumb}"/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${zm:deserializeVoiceMailItemIds(paramValues.voiceId, paramValues.phone)}"/>
 <c:set var="phone" value="${fn:join(paramValues.phone, ',')}"/>
