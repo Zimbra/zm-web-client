@@ -148,6 +148,7 @@ function(msg) {
 		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
 			invite.getStatus() != ZmCalendarApp.STATUS_CANC &&
 			msg.folderId != ZmFolder.ID_TRASH &&
+			appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) &&
 			!msg.isShared())
 		{
 			var topToolbar = this._getInviteToolbar();
@@ -159,7 +160,6 @@ function(msg) {
 		}
 	}
 	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-			 appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) &&
 			 msg.share && msg.folderId != ZmFolder.ID_TRASH &&
 			 appCtxt.getActiveAccount().id != msg.share.grantor.id)
 	{
