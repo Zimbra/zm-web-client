@@ -97,7 +97,8 @@
                </td>
            </tr>
        </table>
-    <input type="hidden" name="doContactListViewAction" value="1"/>
+       <input type="hidden" name="doContactListViewAction" value="1"/>
+       <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
   </form>
 
    <SCRIPT TYPE="text/javascript">

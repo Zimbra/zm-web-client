@@ -26,6 +26,7 @@
         </app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionMarkFolderRead')}">
+        <zm:checkCrumb crumb="${param.crumb}"/>
         <c:set var="folderName" value="${zm:getFolderName(pageContext, param.contextFolderId)}"/>
         <zm:markFolderRead id="${param.contextFolderId}"/>
         <app:status>
@@ -35,14 +36,16 @@
         </app:status>
     </c:when>
         <c:when test="${zm:actionSet(param, 'actionMarkConvRead')}">
-        <zm:markConversationRead read="true" var="result" id="${param.contextConvId}"/>
-        <app:status>
-            <fmt:message key="actionConvMarkedRead">
-                <fmt:param value="${result.idCount}"/>
-            </fmt:message>
-        </app:status>
-    </c:when>
+            <zm:checkCrumb crumb="${param.crumb}"/>
+            <zm:markConversationRead read="true" var="result" id="${param.contextConvId}"/>
+            <app:status>
+                <fmt:message key="actionConvMarkedRead">
+                    <fmt:param value="${result.idCount}"/>
+                </fmt:message>
+            </app:status>
+        </c:when>
     <c:when test="${zm:actionSet(param, 'actionEmpty') and (param.contextFolderId eq mailbox.trash.id or param.contextFolderId eq mailbox.spam.id)}">
+        <zm:checkCrumb crumb="${param.crumb}"/>
         <zm:emptyFolder id="${param.contextFolderId}"/>
         <app:status>
             <fmt:message key="folderEmptied">
@@ -87,6 +90,7 @@
     <c:otherwise>
         <c:choose>
             <c:when test="${zm:actionSet(param, 'actionSpam')}">
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <zm:markMessageSpam  var="result" id="${ids}" spam="true"/>
                 <app:status>
                     <fmt:message key="actionMessageMarkedSpam">
@@ -99,6 +103,7 @@
                <jsp:forward page="${fn:escapeXml(newWindowUrl)}&print=true" />
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionNotSpam')}">
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <zm:markMessageSpam  var="result" id="${ids}" spam="false"/>
                 <app:status>
                     <fmt:message key="actionMessageMarkedNotSpam">
@@ -107,6 +112,7 @@
                 </app:status>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <zm:trashMessage  var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionMessageMovedTrash">
@@ -118,6 +124,7 @@
                 </c:if>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <zm:deleteMessage  var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionMessageHardDeleted">
@@ -126,6 +133,7 @@
                 </app:status>
             </c:when>
             <c:when test="${actionOp eq 'unread' or actionOp eq 'read'}">
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <zm:markMessageRead var="result" id="${ids}" read="${actionOp eq 'read'}"/>
                 <app:status>
                     <fmt:message key="${actionOp eq 'read' ? 'actionMessageMarkedRead' : 'actionMessageMarkedUnread'}">
@@ -137,6 +145,7 @@
                 </c:if>
             </c:when>
             <c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <zm:flagMessage var="result" id="${ids}" flag="${actionOp eq 'flag'}"/>
                 <app:status>
                     <fmt:message key="${actionOp eq 'flag' ? 'actionMessageFlag' : 'actionMessageUnflag'}">
@@ -145,6 +154,7 @@
                 </app:status>
             </c:when>
             <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <c:set var="untagall" value="${fn:startsWith(actionOp, 'u:all')}"/>
                 <c:choose>
                     <c:when test="${untagall}" >
@@ -173,6 +183,7 @@
             <c:when test="${fn:startsWith(folderId, 'm:')}">
                 <c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
                 <c:set var="movedFolderName" value="${zm:getFolderName(pageContext, folderid)}"/>
+                <zm:checkCrumb crumb="${param.crumb}"/>
                 <zm:moveMessage folderid="${folderid}"var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message  key="actionMessageMoved">

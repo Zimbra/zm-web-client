@@ -447,6 +447,6 @@
     <c:forEach var="orig" items="${uploader.origRepeatValues}">
         <input type="hidden" name="${orig.key}" value="${fn:escapeXml(orig.value)}"/>
     </c:forEach>
-
+    <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 </form>
 </app:view>

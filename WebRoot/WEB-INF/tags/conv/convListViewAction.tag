@@ -8,6 +8,7 @@
 
 <app:handleError>
 <zm:requirePost/>
+<zm:checkCrumb crumb="${param.crumb}"/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
