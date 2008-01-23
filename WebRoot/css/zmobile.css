@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -60,7 +60,7 @@ body {
 #ENDIF
 }
 
-.zo_toolbar {
+.zo_toolbar,.x_toolbar {
     margin: 0;
     padding: 10px;
     font-size: 20px;
@@ -73,12 +73,15 @@ body {
     border-bottom: 1px solid #2d3642;
 }
 
-.zo_toolbar TD {
+.zo_toolbar TD,.x_toolbar TD {
     border: none;
     padding:5px 0;
     line-height: 20px;
     font-size: medium;
     font-weight: bold;
+}
+.x_toolbar,.x_list_container {
+    width:100%;
 }
 
 .zo_tb_submit INPUT {
@@ -88,19 +91,24 @@ body {
     text-decoration: none;
     background: none;
 }
-
-.zo_button {
+.zo_m_chk{
+	width:5px;
+	padding:5px;
+}
+.zo_button{
     -webkit-border-image: url(/img/mobile/iPhoneButton.png) 0 5 0 5;
     -webkit-border-radius: 0;
     border-width: 0 5px 0 5px;
     padding: 4px;
-    margin:5px;
+     -webkit-margin:5px;
     color: #FFFFFF;
     text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0;
     text-decoration: none;
     background: none;
 }
-
+.zo_button_disabled{
+    color:gray;
+}
 .zo_leftbutton {
     -webkit-border-image: url(/img/mobile/iPhoneBackButton.png) 0 8 0 14;
     -webkit-border-radius: 0;
@@ -246,7 +254,7 @@ height: 20px;
     padding: 5px;
     background: url(/img/mobile/iPhoneArrow.png) no-repeat right center;
     font-size: medium;
-    
+
 }
 .zo_fldr_rowsep  {
     margin: 0;
@@ -273,7 +281,7 @@ height: 20px;
 
 .zo_m_list_row A {
     text-decoration: none;
-    
+
 }
 
 .zo_m_list_row {
@@ -314,7 +322,7 @@ height: 20px;
     color: black;
 }
 
-.zo_noresults { 
+.zo_noresults {
 	text-align: center;
 	padding: 20px 0px 20px 0px;
 	font-weight: bold;
@@ -362,7 +370,7 @@ height: 20px;
 
 .zo_cal_listi {
     background: white;
-    color: black;    
+    color: black;
 }
 
 .zo_cal_listi A {
@@ -772,4 +780,3 @@ height: 20px;
 .StatusInfo     { background-color: lightgreen;}
 .StatusWarning  { background-color: yellow;}
 .StatusCritical { background-color: pink; }
-

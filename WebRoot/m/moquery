@@ -22,33 +22,40 @@
     <zm:computeSearchContext var="context" usecache="true"/>
 </mo:handleError>
 <mo:view title="${mailbox.name}" context="${context}" mailbox="${mailbox}">
-<form action="<c:url value="/m/mosearch"/>">
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/main'}"/>
+<form action="<c:url value="${context_url}"/>">
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr>
-    <td>
-        <table width="100%" cellspacing="0" cellpadding="0">
-            <tr class='zo_toolbar'>
-                <td>
-                    <table cellspacing="0" cellpadding="0">
-                        <tr>
-                            <td>
-                                <a href="/m/main" class='zo_leftbutton'>
-                                    <fmt:message key="MO_MAIN"/>
-                                </a>
-                            </td>
-                            <td style='padding-left:5px' class='zo_tb_submit'>
-                                <input name="actionSearch" type="submit" value="<fmt:message key="search"/>"/>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
+    <td class="searchbar">
+        <div class='zo_main_info_cont'>
+            <div class='zo_main_info'>
+                <table width="100%" cellspacing="0" cellpadding="0">
+                    <tr class='x_toolbar'>
+                        <td>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td>
+                                        <a href="${context_url}" class='zo_leftbutton'>
+                                            <fmt:message key="MO_MAIN"/>
+                                        </a>
+                                    </td>
+                                    <td style='padding-left:5px' class='zo_tb_submit'>
+                                        <input name="actionSearch" type="submit" value="<fmt:message key="search"/>"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </td>
 </tr>
 <tr>
-<td>
-<table width="100%" cellspacing="0" cellpadding="0" class='zo_query'>
+<td class="data">
+<div class='zo_main_info_cont'>
+<div class='zo_main_info'>
+<table width="100%" cellspacing="2" cellpadding="5" class='zo_query'>
 <tr>
     <td class='zo_query_fname'><label>
         <fmt:message key="find"/>:
@@ -90,7 +97,7 @@
                     <option value=' in:"${folder.rootRelativePath}"'>
                             ${fn:escapeXml(folder.rootRelativePath)}
                     </option>
-            </c:if>
+                </c:if>
             </zm:forEachFolder>
         </select>
     </td>
@@ -205,8 +212,35 @@
 </tr>
 
 </table>
-
+</div>
+</div>
 </td>
+</tr>
+<tr>
+    <td class="searchbar">
+        <div class='zo_main_info_cont'>
+            <div class='zo_main_info'>
+                <table width="100%" cellspacing="0" cellpadding="0">
+                    <tr class='x_toolbar'>
+                        <td>
+                            <table cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td>
+                                        <a href="${context_url}" class='zo_leftbutton'>
+                                            <fmt:message key="MO_MAIN"/>
+                                        </a>
+                                    </td>
+                                    <td style='padding-left:5px' class='zo_tb_submit'>
+                                        <input name="actionSearch" type="submit" value="<fmt:message key="search"/>"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </td>
 </tr>
 </table>
 </form>
