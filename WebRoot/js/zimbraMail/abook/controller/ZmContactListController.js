@@ -401,6 +401,7 @@ function(view) {
 	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT);
 	if (!printButton) { return; }
 
+	printButton.setToolTipContent(ZmMsg.printMultiTooltip);
 	printButton.noMenuBar = true;
 	var menu = new ZmPopupMenu(printButton);
 	printButton.setMenu(menu);

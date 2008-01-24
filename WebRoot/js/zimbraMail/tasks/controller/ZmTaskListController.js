@@ -169,7 +169,7 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.EDIT,
 			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT_ONE,
+			ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.PRINT,
 			ZmOperation.SEP,
 			ZmOperation.TAG_MENU];
 };

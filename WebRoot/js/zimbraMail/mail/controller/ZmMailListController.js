@@ -397,7 +397,7 @@ function() {
 	list.push(appCtxt.get(ZmSetting.OFFLINE) ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL);
 	list = list.concat([ZmOperation.SEP,
 						ZmOperation.DELETE, ZmOperation.MOVE,
-						ZmOperation.PRINT_ONE, ZmOperation.SEP]);
+						ZmOperation.PRINT, ZmOperation.SEP]);
 	return list;
 };
 

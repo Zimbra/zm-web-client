@@ -130,7 +130,7 @@ function(actionCode) {
 ZmMsgController.prototype._getToolBarOps = 
 function() {
 	if (appCtxt.isChildWindow) {
-		return [ZmOperation.PRINT_ONE, ZmOperation.CLOSE];
+		return [ZmOperation.PRINT, ZmOperation.CLOSE];
 	} else {
 		var list = this._standardToolBarOps();
 		list.push(ZmOperation.SEP);
