@@ -93,7 +93,7 @@ function() {
 	var dispName = this.isMain
 		? this.settings.get(ZmSetting.DISPLAY_NAME)
 		: this.displayName;
-	return (dispName || this.name);
+	return (this.accountName || dispName || this.name);
 };
 
 ZmZimbraAccount.prototype.getIdentity =
@@ -225,6 +225,7 @@ function(node) {
 	this.name = node.name;
 	this.visible = node.visible;
 
-	var data = (node.attrs && node.attrs[0]) ? node.attrs[0].attr[0] : null;
-	this.displayName = data && data.name == "displayName" ? data._content : this.email;
+	var data = (node.attrs && node.attrs._attrs) ? node.attrs._attrs : null;
+	this.displayName = data ? data.displayName : this.email;
+	this.accountName = data ? data.zimbraLabel : null;
 };
