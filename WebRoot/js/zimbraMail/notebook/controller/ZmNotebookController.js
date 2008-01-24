@@ -126,8 +126,13 @@ function(view) {
 	var toolbar = this._toolbar[this._currentView];
 
 	var button = toolbar.getButton(ZmOperation.DELETE);
-	if(button){
+	if (button){
 		button.setToolTipContent(ZmMsg.deletePermanentTooltip);
+	}
+
+	var printButton = toolbar.getButton(ZmOperation.PRINT);
+	if (printButton) {
+		printButton.setToolTipContent(ZmMsg.printDocument);
 	}
 
 	/***

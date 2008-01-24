@@ -145,7 +145,7 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.CHECK_MAIL,
 			ZmOperation.SEP,
-			ZmOperation.DELETE_MENU, ZmOperation.MOVE, ZmOperation.PRINT_ONE];
+			ZmOperation.DELETE_MENU, ZmOperation.MOVE, ZmOperation.PRINT];
 }
 
 ZmConvController.prototype._getViewType =

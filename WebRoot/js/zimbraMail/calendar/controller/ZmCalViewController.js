@@ -386,13 +386,13 @@ function() {
  */
 ZmCalViewController.prototype._initializeToolBar =
 function(viewId) {
-	if (this._toolbar[ZmController.CAL_VIEW]) return;
+	if (this._toolbar[ZmController.CAL_VIEW]) { return; }
 
 	ZmListController.prototype._initializeToolBar.call(this, ZmController.CAL_DAY_VIEW);
+	var toolbar = this._toolbar[ZmController.CAL_DAY_VIEW];
 
 	// NOTE: bug 5720
 	if (AjxEnv.is800x600orLower) {
-		var toolbar = this._toolbar[ZmController.CAL_DAY_VIEW];
 		toolbar.getButton(ZmOperation.DAY_VIEW).setText("");
 		toolbar.getButton(ZmOperation.WEEK_VIEW).setText("");
 		toolbar.getButton(ZmOperation.WORK_WEEK_VIEW).setText("");
@@ -405,19 +405,23 @@ function(viewId) {
 	this._toolbar[ZmController.CAL_SCHEDULE_VIEW] = this._toolbar[ZmController.CAL_WEEK_VIEW] =
 		this._toolbar[ZmController.CAL_WORK_WEEK_VIEW] = this._toolbar[ZmController.CAL_MONTH_VIEW] =
 		this._toolbar[ZmController.CAL_APPT_VIEW] = this._toolbar[ZmController.CAL_DAY_VIEW];
-	this._toolbar[ZmController.CAL_VIEW] = this._toolbar[ZmController.CAL_DAY_VIEW];
+	this._toolbar[ZmController.CAL_VIEW] = toolbar;
 
 	// Setup the toolbar stuff
-	this._toolbar[ZmController.CAL_DAY_VIEW].enable([ZmOperation.TODAY], true);
-	this._toolbar[ZmController.CAL_DAY_VIEW].enable([ZmOperation.CAL_REFRESH], true);
-	this._toolbar[ZmController.CAL_DAY_VIEW].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
-	this._toolbar[ZmController.CAL_DAY_VIEW].enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
+	toolbar.enable([ZmOperation.TODAY], true);
+	toolbar.enable([ZmOperation.CAL_REFRESH], true);
+	toolbar.enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
+	toolbar.enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
 
-	this._toolbar[ZmController.CAL_DAY_VIEW].addFiller();
-	var tb = new ZmNavToolBar(this._toolbar[ZmController.CAL_DAY_VIEW], DwtControl.STATIC_STYLE, "ZmNavToolbar ZmCalendarNavToolbar", ZmNavToolBar.SINGLE_ARROWS, true);
+	toolbar.addFiller();
+	var tb = new ZmNavToolBar(toolbar, DwtControl.STATIC_STYLE, "ZmNavToolbar ZmCalendarNavToolbar", ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb, ZmController.CAL_VIEW);
 
 	this._setNewButtonProps(viewId, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
+	var printButton = toolbar.getButton(ZmOperation.PRINT);
+	if (printButton) {
+		printButton.setToolTipContent(ZmMsg.printCalendar);
+	}
 };
 
 ZmCalViewController.prototype._setViewContents =
