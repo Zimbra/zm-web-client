@@ -64,6 +64,7 @@ function(rule, referenceRule, callback) {
 */
 ZmFilterRules.prototype.removeRule = 
 function(rule) {
+	if (rule == null) {return;}
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: remove rule '" + rule.getName() + "'");
 	var index = this.getIndexOfRule(rule);
 	this._vector.removeAt(index);
@@ -79,6 +80,7 @@ function(rule) {
 */
 ZmFilterRules.prototype.moveUp = 
 function(rule) {
+	if (rule == null) {return;}
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: move up rule '" + rule.getName() + "'");
 	var index = this.getIndexOfRule(rule);
 	if (index == 0) return;
@@ -96,6 +98,7 @@ function(rule) {
 */
 ZmFilterRules.prototype.moveDown = 
 function(rule) {
+	if (rule == null) {return;}
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: move down rule '" + rule.getName() + "'");
 	var index = this.getIndexOfRule(rule);
 	if (index >= (this._vector.size() - 1)) return;
@@ -114,6 +117,7 @@ function(rule) {
 */
 ZmFilterRules.prototype.setActive =
 function(rule, active) {
+	if (rule == null) {return;}
 	DBG.println(AjxDebug.DBG3, "FILTER RULES: set active rule '" + rule.getName() + "', " + active);
 	rule.setActive(active);
 	this._saveRules(null, false);
