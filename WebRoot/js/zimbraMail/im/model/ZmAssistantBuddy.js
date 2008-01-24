@@ -147,7 +147,7 @@ ZmAssistantBuddy.prototype.chatStarted = function(chat, widget) {
 	widget.getEditor().setMode(ZmLiteHtmlEditor.TEXT);
 	
 	widget.handleMessage(new ZmChatMessage({ from: ZmMsg.zimbraAssistant,
-						 body: [ { _content: "Welcome to Zimbra Assistant!" } ] // grr
+						 body: [ { _content: ZmMsg.zimbraAssistantWelcome } ]
 					       }));
 
 	this.__assistantButtonsDivId = Dwt.getNextId();
@@ -160,9 +160,9 @@ ZmAssistantBuddy.prototype.chatStarted = function(chat, widget) {
 		  this.__assistantButtonsDivId,
 		  "'class='body'>",
 		  "<table cellspacing='0' cellpadding='0' border='0'><tbody><tr>",
-		  "<td><span class='ZButtonBorder' onclick='return ZmAssistantBuddy.buttonClicked(this, event, 0)' id='", this.__helpBtnId, "'>Help</span></td>",
-		  "<td><span class='ZButtonBorder' onclick='return ZmAssistantBuddy.buttonClicked(this, event, 1)' id='", this.__extraBtnId, "'>Extra</span></td>",
-		  "<td><span class='ZButtonBorder' onclick='return ZmAssistantBuddy.buttonClicked(this, event, 2)' id='", this.__okBtnId, "'>OK</span></td>",
+		  "<td><span class='ZButtonBorder' onclick='return ZmAssistantBuddy.buttonClicked(this, event, 0)' id='", this.__helpBtnId, "'>"+ZmMsg.help+"</span></td>",
+		  "<td><span class='ZButtonBorder' onclick='return ZmAssistantBuddy.buttonClicked(this, event, 1)' id='", this.__extraBtnId, "'>"+ZmMsg.extra+"</span></td>",
+		  "<td><span class='ZButtonBorder' onclick='return ZmAssistantBuddy.buttonClicked(this, event, 2)' id='", this.__okBtnId, "'>"+ZmMsg.ok+"</span></td>",
 		  "</tr></tbody></table>",
 		  "</div></div>" ].join("")
 	);
