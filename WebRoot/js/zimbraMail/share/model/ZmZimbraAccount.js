@@ -227,5 +227,5 @@ function(node) {
 
 	var data = (node.attrs && node.attrs._attrs) ? node.attrs._attrs : null;
 	this.displayName = data ? data.displayName : this.email;
-	this.accountName = data ? data.zimbraLabel : null;
+	this.accountName = data ? data.zimbraPrefLabel : null;
 };
