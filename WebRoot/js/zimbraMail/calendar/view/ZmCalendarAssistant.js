@@ -51,26 +51,30 @@ function(dialog, verb, args) {
 		//if (startTime) startDate.setHours(startTime.hour, startTime.minute);
 	}
 
-	match = args.match(/\b(day|work|week|month)\b/);
+	match = args.match(RegExp("\\b("
+								+ZmMsg.viewCalForDay+"|"
+								+ZmMsg.viewCalForWeek+"|"
+								+ZmMsg.viewCalForWorkWeek+"|"
+								+ZmMsg.viewCalForMonth+")\\b"));
 	var view = (match) ? match[1] : null;
 	var icon;
 	switch (view) {
-	case 'day':
+	case ZmMsg.viewCalForDay:
 		icon = 'DayView';
 		this._view = ZmController.CAL_DAY_VIEW;
 		view = ZmMsg.viewDay;
 		break;
-	case 'week':
+	case ZmMsg.viewCalForWeek:
 		icon = 'WeekView';
 		this._view = ZmController.CAL_WEEK_VIEW;
 		view = ZmMsg.viewWeek;
 		break;
-	case 'work':
+	case ZmMsg.viewCalForWorkWeek:
 		icon = 'WorkWeekView';
 		this._view = ZmController.CAL_WORK_WEEK_VIEW;
 		view = ZmMsg.viewWorkWeek;
 		break;
-	case 'month':
+	case ZmMsg.viewCalForMonth:
 		icon = 'MonthView';
 		this._view = ZmController.CAL_MONTH_VIEW;
 		view = ZmMsg.viewMonth;
@@ -86,5 +90,5 @@ function(dialog, verb, args) {
 	var startDateValue = DwtCalendar.getDateFullFormatter().format(this._startDate);
 
 	this._setField(ZmMsg.goToDate, startDateValue, false, true);
-	this._setField(ZmMsg.view, view == null ? "day, work week, week, month" : view, view == null, true);
+	this._setField(ZmMsg.view, view == null ? ZmMsg.calAssistDefaultView : view, view == null, true);
 };

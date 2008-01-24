@@ -111,7 +111,7 @@
 
 <!-- NOTE: The header container MUST have an id of ${id}_header -->
 <template id='mail.Message#Compose'>
-	<$ var labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible;"; $>
+	<$ var labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
 	<$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $> 
 	<!-- header -->
 	<table id='${id}_header' border=0 cellpadding=2 cellspacing=2 width=100%>
@@ -161,7 +161,7 @@
                     <td nowrap width='1%'>
                         <table border=0 cellspacing=0 cellpadding=0>
                             <tr>
-                                <td><$=ZmMsg.priority$>:&nbsp;</td>
+                                <td style='<$=labelStyle$>'><$=ZmMsg.priority$>:&nbsp;</td>
                                 <td id="${id}_priority"></td>
                             </tr>
                         </table>
