@@ -1439,7 +1439,7 @@ function(action, msg, extraBodyText, incOption) {
 			if (incOption == ZmSetting.INCLUDE_PREFIX) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(wrapParams);
 			} else if (incOption == ZmSetting.INCLUDE_SMART) {
-				var chunks = AjxStringUtil.getTopLevel(body, sep, composingHtml);
+				var chunks = AjxStringUtil.getTopLevel(body);
 				for (var i = 0; i < chunks.length; i++) {
 					wrapParams.text = chunks[i];
 					chunks[i] = AjxStringUtil.wordWrap(wrapParams);
@@ -1696,7 +1696,7 @@ function(ev) {
 
 ZmComposeView.prototype._getPriority =
 function() {
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+    if (this._priorityButton) {
         return this._priorityButton._priorityFlag || "";
     }
     return "";
@@ -1704,7 +1704,7 @@ function() {
 
 ZmComposeView.prototype._setPriority =
 function(flag) {
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+    if (this._priorityButton) {
         flag = flag || "";
         this._priorityButton.setImage(this._getPriorityImage(flag));
         this._priorityButton._priorityFlag = flag;

@@ -1,0 +1,247 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ *
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2007 Zimbra, Inc.
+ *
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
+ * ***** END LICENSE BLOCK *****
+ */
+
+/*---reset ----------------- */
+ div.zo_main_info_cont {
+    padding:3px;
+    margin:0px;
+    text-align:center;
+ }
+
+div.zo_main_info {
+    padding:5px;
+    border:1px solid black;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,blockquote {
+		margin:0;
+		padding:0;
+}
+table {
+	border-collapse:collapse;
+	border-spacing:0;
+}
+fieldset,img {
+	border:0;
+}
+address,caption,cite,code,dfn,em,strong,th,var {
+	font-style:normal;
+	font-weight:normal;
+}
+ol,ul {
+	list-style:none;
+}
+caption,th {
+	text-align:left;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-size:100%;
+	font-weight:normal;
+}
+q:before,q:after {
+	content:'';
+}
+abbr,acronym { border:0;
+}
+/*-------------------- */
+body {
+    margin: 0;
+    font-family: Helvetica;
+    background: #FFFFFF;
+    color: #000000;
+#IFDEF IPHONE
+    overflow: hidden;
+    -webkit-text-size-adjust: none;
+#ENDIF
+}
+.tabsbar a,.bottombar,.bottombar a,.zo_noresults{
+	text-decoration: none;
+	font-size:small;
+}
+
+.x_toolbar,.zo_m_list_row{
+	border-bottom:1px solid #D0D0D0;
+	width:100%;
+	padding:2px;
+}
+.x_toolbar td{
+	padding:3px;
+}
+.zo_m_list_read a, .zo_m_list_unread a,.zo_m_list_row a{
+	text-decoration:none;
+}
+.zo_m_list_from,.zo_m_list_date,.zo_mv_fname,.zo_mv_fvalue,.zo_msgops,.x_toolbar td,.statusbar{
+	font-size:small;
+}
+.zo_mv_subject{
+	font-size:large;
+}
+.zo_m_list_unread .zo_m_list_from, .zo_m_list_unread,.zo_m_list_unread .zo_m_list_sub,.zo_m_list_unread .zo_m_list_frag  {
+	font-weight:bold;
+	color:black;
+}
+.zo_m_list_read .zo_m_list_sub{
+	font-weight:normal;
+}
+.zo_m_list_frag,.zo_m_list_frag *,.zo_m_list_size,.zo_mv_fname,.zo_mv_date,.zo_mc_fname,.zo_query_fname{
+	color:gray;
+	font-size:small;
+}
+.zo_m_chk{
+	width:5px;
+	padding:5px;
+    vertical-align:top;
+}
+.zo_ab_list td.zo_ab_list_arrow{
+	padding:5px;
+}
+.x_list_container{
+	width:100%;
+	padding:2px;
+}
+
+.zo_cv_cont {
+    border:1px solid silver;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    background: white;
+    padding: 10px 5px;
+	background:#eeeeee;
+}
+
+.zo_cv_heading {
+    padding: 5px 5px;
+}
+
+.zo_cv_fileas {
+    font-size: larger;
+    font-weight: bold;
+}
+
+.zo_cv_title, .zo_cv_comp {
+    font-size: small;
+    font-weight: normal;
+	color:black;
+}
+
+.zo_cv_fname {
+    width:80px;
+    font-size: medium;
+    font-weight: normal;
+    color: steelblue;
+    text-align:right;
+    padding-right:15px;
+}
+
+.zo_cv_fval {
+    font-size: small;
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+}
+
+.YellowLightC		{ color:#FFEE80; }
+.YellowBgC			{ color:#FFF6BF; }
+
+.Green				{ background-color:#40A05F;}
+.GreenDark			{ background-color:#00802A; }
+.GreenLight			{ background-color:#80C095; }
+.GreenBg			{ background-color:#BFDFCA; }
+.GreenC				{ color:#40A05F;}
+.GreenDarkC			{ color:#00802A; }
+.GreenLightC		{ color:#80C095; }
+.GreenBgC			{ color:#BFDFCA; }
+
+.Cyan				{ background-color:#40D9D9;}
+.CyanDark			{ background-color:#00CCCC; }
+.CyanLight			{ background-color:#80E6E6; }
+.CyanBg				{ background-color:#BFF2F2; }
+.CyanC				{ color:#40D9D9;}
+.CyanDarkC			{ color:#00CCCC; }
+.CyanLightC			{ color:#80E6E6; }
+.CyanBgC			{ color:#BFF2F2; }
+
+.Blue				{ background-color:#4073D9;}
+.BlueDark			{ background-color:#0044CC; }
+.BlueLight			{ background-color:#80A2E6; }
+.BlueBg				{ background-color:#BFD0F2; }
+.BlueC				{ color:#4073D9;}
+.BlueDarkC			{ color:#0044CC; }
+.BlueLightC			{ color:#80A2E6; }
+.BlueBgC			{ color:#BFD0F2; }
+
+.Purple				{ background-color:#7940A0;}
+.PurpleDark			{ background-color:#4C0080; }
+.PurpleLight		{ background-color:#A680C0; }
+.PurpleBg			{ background-color:#D2BFDF; }
+.PurpleC			{ color:#7940A0; }
+.PurpleDarkC		{ color:#4C0080; }
+.PurpleLightC		{ color:#A680C0; }
+.PurpleBgC			{ color:#D2BFDF; }
+
+.Gray				{ background-color:#BFBFBF;}
+.GrayDark			{ background-color:#A9A9A9; }
+.GrayLight			{ background-color:#D4D4D4; }
+.GrayBg				{ background-color:#E9E9E9; }
+.GrayC,x_button_disabled a				{ color:#BFBFBF;}
+.GrayDarkC			{ color:#A9A9A9; }
+.GrayLightC			{ color:#D4D4D4; }
+.GrayBgC			{ color:#E9E9E9; }
+.zo_fldr A {
+  text-decoration: none;
+  vertical-align: middle;
+  color:inherit;
+}
+
+.zo_fldr SPAN {
+    vertical-align: middle;
+
+}
+
+.zo_fldr  {
+    margin: 0;
+    border-bottom: 1px solid #E0E0E0;
+    padding: 5px;
+    font-size: small;
+}
+.zo_fldr_rowsep  {
+    margin: 0;
+    background:#EEEEEE;
+	color:#555555;
+    font-size:medium;
+	height:25px;
+	text-indent:10px;
+}
+.zo_noresults{
+	font-size:small;
+}
+.x_toolbar td{
+	color:gray;
+}
+.StatusInfo, .StatusWarning, .StatusCritical {
+    padding: 5px;
+    font-weight: bold;
+    border:1px solid black;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    color:black;
+}
+
+.StatusInfo     { background-color: lightgreen;}
+.StatusWarning  { background-color: orange;}
+.StatusCritical { background-color: pink; }

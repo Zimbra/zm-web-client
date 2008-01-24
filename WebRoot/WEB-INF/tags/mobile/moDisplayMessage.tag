@@ -54,20 +54,20 @@
         </tr>
     </c:if>
     <c:if test="${not empty to}">
-        <tr><td colspan="2"><hr/></td></tr>
+        <tr><td colspan="2"><hr size="1"/></td></tr>
         <tr>
             <td valign='top' class='zo_mv_fname'><fmt:message key="to"/>:</td>
             <td class='zo_mv_fvalue'>${fn:escapeXml(to)}</td>
         </tr>
     </c:if>
     <c:if test="${not empty cc}">
-        <tr><td colspan="2"><hr/></td></tr>
+        <tr><td colspan="2"><hr size="1"/></td></tr>
         <tr>
             <td valign='top' class='zo_mv_fname'><fmt:message key="cc"/>:</td>
             <td class='zo_mv_fvalue'>${fn:escapeXml(cc)}</td>
         </tr>
     </c:if>
-    <tr><td colspan="2"><hr/></td></tr>
+    <tr><td colspan="2"><hr size="1"/></td></tr>
     <fmt:message var="noSubject" key="noSubject"/>
     <tr><td class='zo_mv_subject' colspan="2">${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
                         <c:if test="${message.isFlagged}">&nbsp;<mo:img src="startup/ImgFlagRed.gif" alt="flag"/></c:if>
@@ -91,7 +91,7 @@
     </c:if>
     <c:if test="${not hideops}">
         <c:if test="${showInviteReply}">
-            <tr><td colspan="2"><hr/></td></tr>
+            <tr><td colspan="2"><hr size="1"/></td></tr>
             <tr>
                 <td colspan="2">
                     <table cellspacing="0" cellpadding="0" class='zo_msgops'>
@@ -124,7 +124,7 @@
                 </td>
             </tr>
         </c:if>
-        <tr><td colspan="2"><hr/></td></tr>
+        <tr><td colspan="2"><hr size="1"/></td></tr>
         <tr>
             <td colspan="2">
                 <table cellspacing="0" cellpadding="0" class='zo_msgops'>
@@ -157,7 +157,7 @@
             </td>
         </tr>
     </c:if>
-    <tr><td colspan="2"><hr/></td></tr>
+    <tr><td colspan="2"><hr size="1"/></td></tr>
     <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
         <tr>
             <td colspan="2">
@@ -182,7 +182,7 @@
     </tr>
 
     <c:if test="${not empty message.attachments}">
-        <tr><td colspan="2"><hr/><a name="attachments${message.partName}"></a></td></tr>
+        <tr><td colspan="2"><hr size="1"/><a name="attachments${message.partName}"></a></td></tr>
         <tr>
             <td colspan="2">
                 <mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>

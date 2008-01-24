@@ -8,7 +8,7 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
-<c:url var="url" value="/m/${empty base ? 'mosearch' : base}">
+<c:url var="url" value="${empty base ? 'mosearch' : base}">
     <c:param name="sfi" value="${folder.id}"/>
     <c:if test="${!empty types}"><c:param name="st" value="${types}"/></c:if>
 </c:url>

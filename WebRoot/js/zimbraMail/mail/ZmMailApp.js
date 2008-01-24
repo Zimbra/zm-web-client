@@ -385,8 +385,8 @@ function() {
 	ZmPref.registerPref("OPEN_MAIL_IN_NEW_WIN", {
 		displayName:		ZmMsg.openMailNewWin,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:      ZmSetting.DETACH_MAILVIEW_ENABLED
-	});
+        precondition:      ZmSetting.DETACH_MAILVIEW_ENABLED
+    });
 
 	ZmPref.registerPref("REPLY_TO_ADDRESS", {
 		displayName:		ZmMsg.replyToAddress,
@@ -940,7 +940,8 @@ function(refresh) {
 	}
 
 	if (!appCtxt.inStartup) {
-		var account = appCtxt.multiAccounts ? appCtxt.getMainAccount() : null;
+		var account = (appCtxt.multiAccounts && !appCtxt.get(ZmSetting.OFFLINE))
+			? appCtxt.getMainAccount(true) : null;
 		this.resetOverview(this.getOverviewId(account));
 		var req = appCtxt.currentRequestParams;
 		if (appCtxt.getCurrentAppName() == this._name && req.resend && req.methodName == "NoOpRequest") {
@@ -1022,6 +1023,16 @@ function(accordionItem) {
 	if (!appCtxt.inStartup) {
 		this._mailSearch();
 	}
+};
+
+ZmMailApp.prototype._setActiveAcctForOffline =
+function() {
+	// call base class *first*
+	ZmApp.prototype._setActiveAcctForOffline.call(this);
+
+	// force a mail search since we dont care about the one returned for the
+	// invisible parent account (offline mode only)
+	this._mailSearch();
 };
 
 ZmMailApp.prototype._mailSearch =
