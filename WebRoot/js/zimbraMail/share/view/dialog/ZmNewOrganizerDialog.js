@@ -51,7 +51,8 @@ function(folder) {
 			folder = folder || this._folderTree.root;
 			this._folderTreeView.setSelected(folder);
 			if (folder.id == ZmOrganizer.ID_ROOT) {
-				var ti = this._folderTreeView.getTreeItemById(folder.id);
+				var sid = ZmOrganizer.getSystemId(folder.id);
+				var ti = this._folderTreeView.getTreeItemById(sid);
 				ti.setExpanded(true);
 			}
 		}

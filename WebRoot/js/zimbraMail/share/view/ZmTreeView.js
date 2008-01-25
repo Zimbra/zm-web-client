@@ -184,7 +184,8 @@ function() {
  */
 ZmTreeView.prototype.setSelected =
 function(organizer, skipNotify) {
-	var id = (organizer instanceof ZmOrganizer) ? organizer.id : organizer;
+	var id = (organizer instanceof ZmOrganizer)
+		? (ZmOrganizer.getSystemId(organizer.id)) : organizer;
 	if (!id || !this._treeItemHash[id]) return;
 	this.setSelection(this._treeItemHash[id], skipNotify);
 };
