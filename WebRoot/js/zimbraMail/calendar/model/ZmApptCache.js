@@ -230,7 +230,11 @@ function(params) {
 	// this array will hold a list of appts as we collect them from the server
 	this._rawAppts = [];
 
-	this._search(params);
+	if (params.callback) {
+		this._search(params);
+	} else {
+		return this._search(params);
+	}
 };
 
 ZmApptCache.prototype._search =
