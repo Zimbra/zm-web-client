@@ -240,7 +240,7 @@ function(value, key, setDefault, skipNotify) {
 
 ZmSetting.prototype.notifyModify = 
 function(obj) {
-	if (this.id == ZmSetting.QUOTA_USED && obj._name == "mbx") {
+	if (this.id == ZmSetting.QUOTA_USED && obj._name == "mbx" && obj.s != null) {
 		this.setValue(obj.s);
 		this._notify(ZmEvent.E_MODIFY);
 	}
