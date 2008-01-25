@@ -326,8 +326,8 @@ function(visible) {
  */
 ZmAppViewMgr.prototype.tweakSkin =
 function() {
-	// Hide the web search bar, expand regular one if web search disabled
-	if (!appCtxt.get(ZmSetting.WEB_SEARCH_ENABLED)) {
+	// Hide the web search bar, expand regular one if web search explicitly disabled
+	if (appCtxt.get(ZmSetting.WEB_SEARCH_ENABLED) === false) {
 		var el = document.getElementById(appCtxt.get(ZmSetting.SKIN_WEB_SEARCH_ID));
 		if (el) {
 			Dwt.setVisible(el, false);
