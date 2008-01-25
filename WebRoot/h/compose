@@ -103,7 +103,7 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <div class='ZhAC'>
+                    <div>
                         <table cellpadding="2" cellspacing="5" style="height:80%;" width="100%" class='Compose' border="0">
                             <tr>
                                 <app:button  name="actionContactAdd" width="1%" tooltip="addFromContacts" text="to"/>
@@ -255,86 +255,69 @@
 
 </script>
 <c:if test="${composeformat eq 'html'}" >
-<SCRIPT TYPE="text/javascript">
-   <!--
+    <SCRIPT TYPE="text/javascript">
+        <!--
 
-    isIE6 = function() {
-		var agt = navigator.userAgent.toLowerCase();
-		var agtArr = agt.split(" ");
-		var token,ie=false,browserVersion=0;
-		for (var i = 0; i < agtArr.length; ++i) {
-			token = agtArr[i];
-			if ((index = token.indexOf('msie')) != -1 ) {
-				ie = true;
-				browserVersion = parseFloat(agtArr[i+1]);
-			}
-		}
-		return (ie && (browserVersion == 6.0));
-    }
-    var IE6 = isIE6();
-    
-    submitCompose = function(){
-		myEditor.saveHTML();
-		var stripHTML = /<\S[^><]*>/g;
-		var stripNBSP  = /&nbsp;/g
-		document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-    }
-    if(!IE6){
-		var myEditor = new YAHOO.widget.Editor('body', {
-			height: '300px',
-			width: '100%',
-			dompath: true, //Turns on the bar at the bottom
-			animate: true, //Animates the opening, closing and moving of Editor windows
-			css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}'
-		});
+        submitCompose = function(){
+            myEditor.saveHTML();
+            var stripHTML = /<\S[^><]*>/g;
+            var stripNBSP  = /&nbsp;/g
+            document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+        }
+        var myEditor = new YAHOO.widget.Editor('body', {
+            height: '300px',
+            width: '100%',
+            dompath: true, //Turns on the bar at the bottom
+            animate: true, //Animates the opening, closing and moving of Editor windows
+            css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}'
+        });
 
-		myEditor.on('editorContentLoaded', function() {
-			setTimeout(function() {
-				var b = document.getElementById('body');
-				var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ');
-				myEditor.setEditorHTML(html);
-			}, 1000);
-		}, myEditor, true);
+        myEditor.on('editorContentLoaded', function() {
+            setTimeout(function() {
+                var b = document.getElementById('body');
+                var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ');
+                myEditor.setEditorHTML(html);
+            }, 1000);
+        }, myEditor, true);
 
-		myEditor.render();
-	}
+        myEditor.render();
 
-// -->
-</SCRIPT>
+        // -->
+    </SCRIPT>
 </c:if>
 <SCRIPT TYPE="text/javascript">
     <!--
-  // for Save Draft
+    // for Save Draft
     var eleD = document.getElementById("SOPDRAFT");
     eleD.onclick = function () {
     <c:if test="${composeformat eq 'html'}" >
-        if(!IE6) submitCompose();
+        submitCompose();
     </c:if>
     }
-   // for ATTACH
+    // for ATTACH
     var eleA = document.getElementById("SOPATTACH");
     eleA.onclick = function () {
     <c:if test="${composeformat eq 'html'}" >
-        if(!IE6) submitCompose();
+        submitCompose();
     </c:if>
     }
-   // for Mail Send
+    // for Mail Send
     var ele = document.getElementById("SOPSEND");
     ele.onclick = function () {
     <c:if test="${composeformat eq 'html'}" >
-        if(!IE6) submitCompose();
+        submitCompose();
     </c:if>
         return checkSubject();
     }
     var eleI = document.getElementById("IOPSEND");
     eleI.onclick = function () {
     <c:if test="${composeformat eq 'html'}" >
-        if(!IE6) submitCompose();
+        submitCompose();
     </c:if>
         return checkSubject();
     }
     function checkSubject() {
-       var elesub = document.getElementById("subjectField");
+        var elesub = document.getElementById("subjectField");
         if(trim(elesub.value) == '') {
             if(confirm("<fmt:message key="compSubjectMissing"/>")) {
                 return true;
@@ -351,14 +334,14 @@
 
 
     function handleEnter (ev) {
-		var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
-		if (keyCode == 13) 	return false;
-		else return true;
-	}
+        var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
+        if (keyCode == 13) 	return false;
+        else return true;
+    }
 
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
-	var zselect = function(id) { var e = document.getElementById(id); if (e) { e.selected = true; }}
-    //-->
+    var zselect = function(id) { var e = document.getElementById(id); if (e) { e.selected = true; }}
+        //-->
 </SCRIPT>
         
     <app:keyboard cache="mail.compose" globals="false" passspecial="true" mailbox="${mailbox}">
