@@ -988,22 +988,40 @@ function(ev) {
 	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
 		this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE));
 	} else {
-		var incOption = ZmComposeController.INC_MAP[op];
-		if (incOption) {
-			var curText = this._getBodyContent();
-			if (this._curIncOption == ZmOperation.INC_NO_PREFIX || this._curIncOption == ZmOperation.INC_PREFIX ||
-				this._curIncOption == ZmOperation.INC_SMART) {
+		if (this._composeView.isDirty() &&
+			this._curIncOption != ZmOperation.INC_NONE && this._curIncOption != ZmOperation.INC_ATTACHMENT) {
 
-				var idx = curText.indexOf(this._composeView._includedPreface.replace(/\s+$/, ""));
-				if (idx) {
-					var crlf = (this._composeView.getComposeMode() == DwtHtmlEditor.HTML) ? "<br>" : "\\r?\\n";
-					var regEx = new RegExp(crlf + "+$", "i");
-					curText = curText.substring(0, idx).replace(regEx, "");
-				}
+			// warn user of possible lost content
+			if (!this._switchIncludeDialog) {
+				this._switchIncludeDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+				this._switchIncludeDialog.setMessage(ZmMsg.switchIncludeWarning, DwtMessageDialog.WARNING_STYLE);
+				this._switchIncludeDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._switchIncludeCancelCallback, this);
 			}
-			this._composeView.resetBody(this._action, this._msg, curText, incOption);
-			this._curIncOption = ZmComposeController.INC_OP[incOption];
+			this._switchIncludeDialog.registerCallback(DwtDialog.OK_BUTTON, this._switchIncludeOkCallback, this, op);
+			this._switchIncludeDialog.popup(this._composeView._getDialogXY());
+		} else {
+			this._switchInclude(op);
 		}
+	}
+};
+
+ZmComposeController.prototype._switchInclude =
+function(op) {
+	var incOption = ZmComposeController.INC_MAP[op];
+	if (incOption) {
+		var curText = this._getBodyContent();
+		if (this._curIncOption == ZmOperation.INC_NO_PREFIX || this._curIncOption == ZmOperation.INC_PREFIX ||
+			this._curIncOption == ZmOperation.INC_SMART) {
+
+			var idx = curText.indexOf(this._composeView._includedPreface.replace(/\s+$/, ""));
+			if (idx) {
+				var crlf = (this._composeView.getComposeMode() == DwtHtmlEditor.HTML) ? "<br>" : "\\r?\\n";
+				var regEx = new RegExp(crlf + "+$", "i");
+				curText = curText.substring(0, idx).replace(regEx, "");
+			}
+		}
+		this._composeView.resetBody(this._action, this._msg, curText, incOption);
+		this._curIncOption = ZmComposeController.INC_OP[incOption];
 	}
 };
 
@@ -1155,6 +1173,21 @@ function() {
 	this._popShield.removePopdownListener(this._dialogPopdownListener);
 	this._popShield.popdown();
 	this._cancelViewPop();
+};
+
+ZmComposeController.prototype._switchIncludeOkCallback =
+function(op) {
+	this._switchIncludeDialog.popdown();
+	this._switchInclude(op);
+};
+
+ZmComposeController.prototype._switchIncludeCancelCallback =
+function() {
+	this._switchIncludeDialog.popdown();
+	// reset the radio button for the include mode
+	var menu = this._optionsMenu[this._action];
+	if (!menu) { return; }
+	menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
 };
 
 /**
