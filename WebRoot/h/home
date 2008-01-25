@@ -147,7 +147,7 @@
 	<c:set var="comcast_msgcenterad" value="false"/>
 		<c:forEach var="zimlets" items="${mailbox.attrs.zimbraZimletAvailableZimlets}">
 		    <c:if test="${zimlets eq 'comcast_msgcenterad'}">
-	        <c:set var="comcast_msgcenterad" value="true"/>    
+	        <c:set var="comcast_msgcenterad" value="true"/>
 		</c:if>
 		</c:forEach>
 		<c:if test="${comcast_msgcenterad}">

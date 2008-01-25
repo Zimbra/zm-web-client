@@ -33,6 +33,7 @@
                 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
                 <div class="wh_bg">
                     <form id="action" action="${fn:escapeXml(actionUrl)}" method="post">
+                        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                         <input type="hidden" name="doContactAction" value="1"/>
                         <input type="hidden" name="id" value="${contact.id}"/>
                         <table cellspacing="2" cellpadding="2" width="100%">

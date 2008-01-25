@@ -11,21 +11,25 @@
 <table class="x_toolbar" cellpadding="0" cellspacing="0">
     <tr>
         <td class="x_main_buttons">
-            <c:if test="${context.st=='message' || context.st=='conversation'}">
-                <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
-                <a href="${composeUrl}" class="zo_button">
-                    <fmt:message key="compose"/>
-                </a>
+            <c:if test="${uiv == '1'}">
+                <c:if test="${context.st=='message' || context.st=='conversation'}">
+                    <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
+                    <a href="${composeUrl}" class="zo_button">
+                        <fmt:message key="compose"/>
+                    </a>
+                </c:if>
+                <c:if test="${context.st=='contact'}">
+                    <c:url var="composeUrl" value="${closeUrl}">
+                        <c:param name="action" value="edit"/>
+                    </c:url>
+                    <a href="${composeUrl}" class="zo_button">
+                        <fmt:message key="add"/>
+                    </a>
+                </c:if>
             </c:if>
-            <c:if test="${context.st=='contact'}">
-                <c:url var="composeUrl" value="${closeUrl}">
-                    <c:param name="action" value="edit"/>
-                </c:url>
-                <a href="${composeUrl}" class="zo_button">
-                    <fmt:message key="add"/>
-                </a>
+            <c:if test="${uiv != '1'}">
+                <a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a>
             </c:if>
-
         </td>
         <c:if test="${context.searchResult.size > 0 }">
         <td class="x_sub_buttons" align="right">

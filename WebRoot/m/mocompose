@@ -59,6 +59,7 @@
     <c:set var="caction" value="${header['referer']!=null?header['referer']:'main'}"/>
 </c:if>
 <form action="mosearch" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <table width=100% cellpadding="0" cellspacing="0">
 <tr>
     <td>

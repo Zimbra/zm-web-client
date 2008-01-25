@@ -66,6 +66,7 @@
                     <div class='zo_main_info_cont'>
                         <div class='zo_main_info'>
                             <form action="${context_url}" style="width:100%;">
+                               <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                                 <table cellspacing="0" cellpadding="0" width="100%">
                                     <tr>
                                         <td>

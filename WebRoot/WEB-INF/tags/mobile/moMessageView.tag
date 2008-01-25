@@ -100,6 +100,7 @@
 <zm:currentResultUrl var="actionUrl" value="mosearch" context="${context}" mview="1"
                      action="view" id="${msg.id}"/>
 <form id="action" action="${fn:escapeXml(actionUrl)}" method="post">
+<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
 <table width="100%" cellspacing="0" cellpadding="2">
 <tr>

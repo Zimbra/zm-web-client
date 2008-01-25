@@ -45,6 +45,7 @@
 </c:if>--%>
 <form action="${caction}" method="post" accept-charset="utf-8">
 <input type="hidden" name="doContactAction" value="1"/>
+<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <table width=100% cellpadding="0" cellspacing="0">
     <%-- <tr>
         <td>

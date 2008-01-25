@@ -27,7 +27,9 @@
         <td>
             <table cellpadding="0" cellspacing="0">
                 <tr>
-                    <%--td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td--%>
+                    <c:if test="${uiv != '1'}">
+                        <td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>
+                    </c:if>    
                     <td><a ${list} class='zo_button ${param.view!=null && param.view=='list'?'zo_button_active':''}'><fmt:message key="calViewListShort"/></a></td>
                     <td><a ${day} class='zo_button ${param.view!=null && param.view=='day'?'zo_button_active':''}'><fmt:message key="calViewDayShort"/></a></td>
                     <td><a ${month} class='zo_button ${param.view!=null && param.view=='month'?'zo_button_active':''}'><fmt:message key="calViewMonthShort"/></a></td>

@@ -26,6 +26,7 @@
 <mo:view mailbox="${mailbox}" title="${title}" context="${context}" scale="${true}">
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
+<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
 <table class="x_list_container" cellspacing="0" cellpadding="0">
 <tr>

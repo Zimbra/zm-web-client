@@ -6,6 +6,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <zm:requirePost/>
+<zm:checkCrumb crumb="${param.crumb}"/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:set var="_selectedIds" scope="request" value=",${ids},"/>
