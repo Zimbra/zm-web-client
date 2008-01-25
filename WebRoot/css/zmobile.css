@@ -75,12 +75,14 @@ body {
 
 .zo_toolbar TD {
     border: none;
-    padding:5px 0;
+    padding:5px 3px;
     line-height: 20px;
     font-size: medium;
     font-weight: bold;
 }
-
+.x_main_buttons{
+    text-align:left;
+}
 .zo_tb_submit INPUT {
     padding:4px;
     font-size: medium;

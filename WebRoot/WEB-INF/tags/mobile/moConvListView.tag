@@ -27,6 +27,7 @@
                                         <td>
                                         <mo:searchPageLeft urlTarget="mosearch" context="${context}" keys="false"/>
                                     </td>
+<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                                     <td>
                                         <mo:searchPageRight urlTarget="mosearch" context="${context}" keys="false"/>
                                     </td>

@@ -28,6 +28,7 @@
 <mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" scale="true">
 
     <table width="100%" cellpadding="0" cellspacing="0" border="0">
+<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
         <tr>
             <td>
                 <table width="100%" cellspacing="0" cellpadding="0">

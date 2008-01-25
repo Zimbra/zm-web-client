@@ -51,6 +51,7 @@
         <tr>
             <td>
                 <table width="100%" cellpadding="0" cellspacing="0" class='zo_m_list'>
+<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 
                     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                         <c:set var="mhit" value="${hit.messageHit}"/>

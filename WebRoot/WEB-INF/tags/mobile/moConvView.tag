@@ -53,6 +53,7 @@
          scale="${true or convSummary.messageCount eq 1}">
 
 <table width="100%" cellspacing="0" cellpadding="0">
+<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 
 <c:choose>
 

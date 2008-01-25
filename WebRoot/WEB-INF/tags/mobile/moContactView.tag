@@ -37,6 +37,7 @@
                 <mo:displayContact contact="${contact}"/>
             </td>
         </tr>
+                        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
     </table>
 
 </mo:view>

@@ -13,6 +13,7 @@
 </mo:handleError>
 
 <mo:view mailbox="${mailbox}" title="${title}" context="${context}">
+<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>    
     <table width=100% cellspacing="0" cellpadding="0" >
         <tr>
             <td>
