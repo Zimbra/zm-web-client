@@ -1345,10 +1345,9 @@ function(action, msg, extraBodyText, incOption) {
 
 	this._msgAttId = null;
 	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
-		if (extraBodyText) {
-			value = extraBodyText + value;
-		}
+		value = extraBodyText + value;
 	} else if (incOption == ZmSetting.INCLUDE_ATTACH && this._msg) {
+		value = extraBodyText + value;
 		this._msgAttId = this._msg.id;
 	} else if (!this._msgIds) {
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
@@ -1408,7 +1407,8 @@ function(action, msg, extraBodyText, incOption) {
 
 		if (incOption == ZmSetting.INCLUDE) {
 			var msgText = (action == ZmOperation.FORWARD_INLINE) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
-			var text = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES, crlf].join("");
+			var preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
+			var text = [preface, crlf].join("");
 			for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
 				var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
 				if (hdr) {
@@ -1432,6 +1432,7 @@ function(action, msg, extraBodyText, incOption) {
 				}
 				preface = ZmComposeView._replyPrefixFormatter.format(from.toString());
 			}
+			this._includedPreface = preface;
 			preface = preface + (composingHtml ? '<br>' : '\n');
 			var prefix = identity.getPrefix();
 			var sep = composingHtml ? '<br>' : '\n';
@@ -1553,6 +1554,7 @@ function(composeMode) {
 //	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 	this._bodyField = document.getElementById(this._bodyFieldId);
+	this._includedPreface = "";
 
 	// misc. inits
 	this.setScrollStyle(DwtControl.SCROLL);
