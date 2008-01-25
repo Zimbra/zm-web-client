@@ -363,6 +363,35 @@ function(notify) {
 	}
 };
 
+ZmImApp.prototype.startup =
+function(result) {
+	if (appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN)) {
+		// Do the auto login after a short delay. I chose 1000ms because that means
+		// im login will after zimlets are loaded.
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._autoLogin), 1000);
+	}
+};
+
+ZmImApp.prototype._autoLogin =
+function() {
+	var callback = new AjxCallback(this, this._postLoadAutoLogin);
+	AjxDispatcher.require([ "IMCore", "IM" ], true, callback);
+};
+
+ZmImApp.prototype._postLoadAutoLogin =
+function() {
+	var callback = new AjxCallback(this, this._backgroundCreateCallback);
+	ZmRoster.createInBackground(callback);
+};
+
+ZmImApp.prototype._backgroundCreateCallback =
+function(roster) {
+	if (!this._roster) { // Roster could have conceivably been set by getRoster...don't overwrite that one.
+		this._setRoster(roster);
+		this._roster.reload();		
+	}
+};
+
 ZmImApp.prototype.launch = function(params, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require([ "IMCore", "IM" ], true, loadCallback, null, true);
@@ -406,13 +435,20 @@ function() {
 ZmImApp.prototype.getRoster =
 function() {
 	if (!this._roster) {
-		this._roster = new ZmRoster(this);
-		// enable instant notify?
-		if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) &&
-                    appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY))
-			appCtxt.getAppController().setInstantNotify(true);
+		this._setRoster(new ZmRoster(this));
+		this._roster.refresh();
 	}
 	return this._roster;
+};
+
+ZmImApp.prototype._setRoster =
+function(roster) {
+	this._roster = roster;
+
+	// enable instant notify?
+	if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) && appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY)) {
+		appCtxt.getAppController().setInstantNotify(true);
+	}
 };
 
 ZmImApp.prototype.getAutoCompleteGroups =

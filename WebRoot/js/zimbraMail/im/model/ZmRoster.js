@@ -22,17 +22,16 @@ ZmRoster = function(imApp) {
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
-        this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
-        this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
+	this._enteredChatFormatter = new AjxMessageFormat(ZmMsg.imEnteredChat);
+	this._removeRosterItemToastFormatter = new AjxMessageFormat(ZmMsg.imRemoveRosterItemToast);
 	this._imApp = imApp;
-        this._privacyList = new ZmImPrivacyList(this);
+	this._privacyList = new ZmImPrivacyList(this);
 
-        this._idleTimer = new DwtIdleTimer(appCtxt.get(ZmSetting.IM_PREF_IDLE_TIMEOUT) * 60 * 1000 /* minutes */,
-                                           new AjxCallback(this, this.setIdle));
-        if (!appCtxt.get(ZmSetting.IM_PREF_REPORT_IDLE))
-                this._idleTimer.kill();
-
-        this.refresh();
+	this._idleTimer = new DwtIdleTimer(appCtxt.get(ZmSetting.IM_PREF_IDLE_TIMEOUT) * 60 * 1000 /* minutes */,
+									   new AjxCallback(this, this.setIdle));
+	if (!appCtxt.get(ZmSetting.IM_PREF_REPORT_IDLE)) {
+		this._idleTimer.kill();
+	}
 };
 
 ZmRoster.prototype = new ZmModel;
@@ -45,6 +44,29 @@ ZmRoster.NOTIFICATION_FOO_TIMEOUT = 10000; // 10 sec.
 ZmRoster.prototype.toString =
 function() {
 	return "ZmRoster";
+};
+
+// Creates a roster asyncronously without a busy overlay so that the user can get on with
+// reading his mail or whatever while logging into im.
+ZmRoster.createInBackground =
+function(callback) {
+	var requestCallback = new AjxCallback(null, ZmRoster._backgroundGatewayCallback, [callback]);
+	var args = {
+		soapDoc: AjxSoapDoc.create("IMGatewayListRequest", "urn:zimbraIM"),
+		callback: requestCallback,
+		asyncMode: true,
+		noBusyOverlay: true
+	};
+	appCtxt.getAppController().sendRequest(args);
+};
+
+ZmRoster._backgroundGatewayCallback =
+function(callback, response) {
+	var roster = new ZmRoster(ZmImApp.INSTANCE);
+	roster._handleRequestGateways(response.getResponse());
+	if (callback) {
+		callback.run(roster);
+	}
 };
 
 ZmRoster.prototype.getPrivacyList = function() {
@@ -100,11 +122,11 @@ function() {
 };
 
 ZmRoster.prototype.reload =
-function() {
+function(noBusyOverlay) {
 	this.getRosterItemList().removeAllItems();
 	var soapDoc = AjxSoapDoc.create("IMGetRosterRequest", "urn:zimbraIM");
 	var respCallback = new AjxCallback(this, this._handleResponseReload);
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, noBusyOverlay: noBusyOverlay, callback: respCallback});
 };
 
 ZmRoster.prototype._handleResponseReload =
