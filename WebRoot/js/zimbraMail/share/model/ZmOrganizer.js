@@ -514,10 +514,12 @@ function() {
 * @param showUnread		whether to display the number of unread items (in parens)
 * @param maxLength		length in chars to truncate the name to
 * @param noMarkup		if true, don't return any HTML
+* @param useSystemName	if true, don't use translated version of name
 */
 ZmOrganizer.prototype.getName = 
-function(showUnread, maxLength, noMarkup) {
-	var name = (maxLength && this.name.length > maxLength) ? this.name.substring(0, maxLength - 3) + "..." : this.name;
+function(showUnread, maxLength, noMarkup, useSystemName) {
+	var name = (useSystemName && this._systemName) ? this._systemName : this.name;
+	name = (maxLength && name.length > maxLength) ? name.substring(0, maxLength - 3) + "..." : name;
 	return this._markupName(name, showUnread, noMarkup);
 };
 
@@ -564,7 +566,7 @@ function(force) {
 /** Returns the full path, suitable for use in search expressions. */
 ZmOrganizer.prototype.getSearchPath =
 function() {
-	return (this.nId != ZmOrganizer.ID_ROOT) ? this.getPath(null, null, null, true) : "/";
+	return (this.nId != ZmOrganizer.ID_ROOT) ? this.getPath(null, null, null, true, true) : "/";
 };
 
 /** @deprecated Use getRestUrl. */

@@ -76,14 +76,15 @@ function(params, ex) {
 };
 
 ZmCalendar.prototype.getName = 
-function(showUnread, maxLength, noMarkup) {
+function(showUnread, maxLength, noMarkup, useSystemName) {
     if (this.nId == ZmOrganizer.ID_ROOT) {
     	return ZmMsg.calendars;
     }
+	var name = (useSystemName && this._systemName) ? this._systemName : this.name;
     if (this.path) {
-    	return [this.path, this.name].join("/");
+    	return [this.path, name].join("/");
     }
-    return this.name;
+    return name;
 };
 
 ZmCalendar.prototype.getIcon = 
