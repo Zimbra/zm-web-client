@@ -259,44 +259,45 @@
    <!--
 
     isIE6 = function() {
-    var agt = navigator.userAgent.toLowerCase();
-    var agtArr = agt.split(" ");
-    var token,ie=false,browserVersion=0;
-    for (var i = 0; i < agtArr.length; ++i) {
-    token = agtArr[i];
-    if ((index = token.indexOf('msie')) != -1 ) {
-    ie = true;
-    browserVersion = parseFloat(agtArr[i+1]);
-    }
-    }
-    return (ie && (browserVersion == 6.0));
+		var agt = navigator.userAgent.toLowerCase();
+		var agtArr = agt.split(" ");
+		var token,ie=false,browserVersion=0;
+		for (var i = 0; i < agtArr.length; ++i) {
+			token = agtArr[i];
+			if ((index = token.indexOf('msie')) != -1 ) {
+				ie = true;
+				browserVersion = parseFloat(agtArr[i+1]);
+			}
+		}
+		return (ie && (browserVersion == 6.0));
     }
     var IE6 = isIE6();
     
-    submitCompose= function(){
-    myEditor.saveHTML();
-    var stripHTML = /<\S[^><]*>/g;
-    var stripNBSP  = /&nbsp;/g
-    document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+    submitCompose = function(){
+		myEditor.saveHTML();
+		var stripHTML = /<\S[^><]*>/g;
+		var stripNBSP  = /&nbsp;/g
+		document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
     }
     if(!IE6){
-    var myEditor = new YAHOO.widget.Editor('body', {
-    height: '300px',
-    width: '100%',
-    dompath: true, //Turns on the bar at the bottom
-    animate: true, //Animates the opening, closing and moving of Editor windows
-    css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}'
-    });
+		var myEditor = new YAHOO.widget.Editor('body', {
+			height: '300px',
+			width: '100%',
+			dompath: true, //Turns on the bar at the bottom
+			animate: true, //Animates the opening, closing and moving of Editor windows
+			css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}'
+		});
 
-    myEditor.on('editorContentLoaded', function() {
-    setTimeout(function() {
-    var b = document.getElementById('body');
-    var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ');
-    myEditor.setEditorHTML(html);
-    }, 1000);
-    }, myEditor, true);
-    myEditor.render();
-    }
+		myEditor.on('editorContentLoaded', function() {
+			setTimeout(function() {
+				var b = document.getElementById('body');
+				var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ');
+				myEditor.setEditorHTML(html);
+			}, 1000);
+		}, myEditor, true);
+
+		myEditor.render();
+	}
 
 // -->
 </SCRIPT>
