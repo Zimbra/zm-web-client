@@ -155,7 +155,7 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 	var writable = this._object && !this._object.isReadOnly();
 	toolbarOrActionMenu.enable([ZmOperation.EDIT], writable);
 	if(appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) ) {
-        if(this._object.isIndex() && !this._object.isFolderReadOnly()) {
+        if(this._object && this._object.isIndex() && !this._object.isFolderReadOnly()) {
             toolbarOrActionMenu.enable([ZmOperation.IMPORT_FILE], true);
         } else {
             toolbarOrActionMenu.enable([ZmOperation.IMPORT_FILE], false);
