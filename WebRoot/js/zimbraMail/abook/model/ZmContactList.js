@@ -1010,8 +1010,9 @@ function(contact, str) {
 			var val = contact.getGroupMembers().good;
 			results.push(this._createMatch(name, val, fullName, val, contact));
 		} else {
-			for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
- 				var val = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
+			var emailAttrs = contact.isGal ? [ZmContact.F_email] : ZmContact.F_EMAIL_FIELDS;
+			for (var i = 0; i < emailAttrs.length; i++) {
+ 				var val = ZmContact.getAttr(contact, emailAttrs[i]);
 	 			if (val) {
  					results.push(this._createMatch(name, val, fullName, val, contact));
  				}
