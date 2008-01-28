@@ -245,6 +245,9 @@
             <input type="hidden" name="draftid" value="${message.id}"/>
         </c:if>
     </form>
+	<form id="SpellCheckForm">
+		<input type="hidden" id="SpellCheckData" name="SpellCheckData" value=""/>
+	</form>
 
 <app:autoComplete>
     initAuto("toField","toContainer");
@@ -269,8 +272,10 @@
             width: '100%',
             dompath: true, //Turns on the bar at the bottom
             animate: true, //Animates the opening, closing and moving of Editor windows
-            css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}'
-        });
+			css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
+			extracss: '.yui-spellcheck { background-color: yellow; }'
+		});
+		enableSpellCheck(myEditor);
 
         myEditor.on('editorContentLoaded', function() {
             setTimeout(function() {
@@ -280,8 +285,7 @@
             }, 1000);
         }, myEditor, true);
 
-        myEditor.render();
-
+		myEditor.render();
         // -->
     </SCRIPT>
 </c:if>
