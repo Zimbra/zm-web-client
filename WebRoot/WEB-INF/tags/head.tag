@@ -40,7 +40,7 @@
 
         <script src="../yui/2.3.1/button/button-beta-min.js"></script>
         <!-- Source file for Rich Text Editor-->
-        <script src="../yui/2.4.0/editor/editor-beta-min.js"></script>
+        <script src="../yui/2.4.0-patch/editor/editor-beta-min.js"></script>
 
 		<script src="../yui/2.4.0/editor/spellcheck.js"></script>
 		<style type="text/css" media="screen">
