@@ -1323,7 +1323,7 @@ function(action, msg, extraBodyText, incOption) {
 		var sig = this._getSignature();
 		sigStyle = sig ? identity.getSignatureStyle() : null;
 	}
-	var value = sigStyle == ZmSetting.SIG_OUTLOOK ? (this._getSignatureSeparator() + sig) : "";
+	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? (this._getSignatureSeparator() + sig) : "";
 
 	// get reply/forward prefs as necessary
 	if (!incOption) {
@@ -1345,9 +1345,9 @@ function(action, msg, extraBodyText, incOption) {
 
 	this._msgAttId = null;
 	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
-		value = extraBodyText + value;
+		value = extraBodyText ? extraBodyText + value : value;
 	} else if (incOption == ZmSetting.INCLUDE_ATTACH && this._msg) {
-		value = extraBodyText + value;
+		value = extraBodyText ? extraBodyText + value : value;
 		this._msgAttId = this._msg.id;
 	} else if (!this._msgIds) {
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
