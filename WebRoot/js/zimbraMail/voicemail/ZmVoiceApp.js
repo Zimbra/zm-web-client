@@ -294,14 +294,16 @@ function(response) {
 
 ZmVoiceApp.prototype._handleErrorResponseVoiceInfo =
 function(response) {
+	var returnValue = false;
 	if (this._voiceInfoErrorCallbacks) {
 		for (var i = 0, count = this._voiceInfoErrorCallbacks.length; i < count; i++) {
-			this._voiceInfoErrorCallbacks[i].run(response);
+			returnValue = this._voiceInfoErrorCallbacks[i].run(response) || returnValue;
 		}
 	}
 	this._voiceInfoCallbacks = null;
 	this._voiceInfoErrorCallbacks = null;
 	this._gettingVoiceInfo = false;
+	return returnValue;
 };
 
 ZmVoiceApp.prototype.refreshFolders =
