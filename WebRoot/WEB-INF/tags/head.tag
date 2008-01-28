@@ -40,7 +40,29 @@
 
         <script src="../yui/2.3.1/button/button-beta-min.js"></script>
         <!-- Source file for Rich Text Editor-->
-        <script src="../yui/2.3.1-patch/editor/editor-beta-min.js"></script>
+        <script src="../yui/2.4.0/editor/editor-beta-min.js"></script>
+
+		<script src="../yui/2.4.0/editor/spellcheck.js"></script>
+		<style type="text/css" media="screen">
+			.yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck span.yui-toolbar-icon {
+				background-image: url( ../yui/2.4.0/editor/assets/skins/sam/spellcheck.gif );
+				background-position: 1px 0px;
+				top: 1px;
+				left: 4px;
+			}
+			.yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck-selected span.yui-toolbar-icon {
+				background-image: url( ../yui/2.4.0/editor/assets/skins/sam/spellcheck.gif );
+				background-position: 1px 0px;
+				top: 1px;
+				left: 4px;
+			}
+			.yui-spellcheck-list {
+				cursor: pointer;
+			}
+			.yui-skin-sam .yui-editor-panel .yui-spellcheck-list li {
+				padding-left: 5px;
+			}
+		</style>
     </c:if>
 
     <fmt:message key="favIconUrl" var="favIconUrl"/>
