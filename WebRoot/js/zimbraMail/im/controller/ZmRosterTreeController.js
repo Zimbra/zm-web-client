@@ -118,6 +118,9 @@ function(ev) {
 		// select from GAL
 		ZmImNewChatDlg.show(
 			{ onAutocomplete: AjxCallback.simpleClosure(function(contact, dlg){
+				if (!contact) {
+					return;
+				}
 				dlg.popdown();
 				var addr = contact.getIMAddress();
                                 addr = ZmImAddress.parse(addr);
@@ -179,6 +182,9 @@ ZmRosterTreeController.prototype._imAddToContactListener = function(ev) {
 	ZmImNewChatDlg.show(
 		{
 			onAutocomplete: AjxCallback.simpleClosure(function(contact, dlg) {
+				if (!contact) {
+					return;
+				}
 				dlg.popdown();
 				var fields = [ ZmContact.F_imAddress1, ZmContact.F_imAddress2, ZmContact.F_imAddress3 ];
                                 var roster = AjxDispatcher.run("GetRoster");
