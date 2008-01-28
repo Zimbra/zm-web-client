@@ -1156,10 +1156,10 @@ function(colIndex, data) {
 		data.numDays = 1;
         if (this.view != ZmController.CAL_SCHEDULE_VIEW) {
             if (startTime != endTime) {
-                data.numDays = Math.floor((endTime-startTime) / AjxDateUtil.MSEC_PER_DAY);
+                data.numDays = Math.round((endTime-startTime) / AjxDateUtil.MSEC_PER_DAY);
             }
             if (startTime < data.startTime) {
-                data.numDays -= Math.floor(data.startTime - startTime) / AjxDateUtil.MSEC_PER_DAY;
+                data.numDays -= Math.round(data.startTime - startTime) / AjxDateUtil.MSEC_PER_DAY;
             }
         }
     }
