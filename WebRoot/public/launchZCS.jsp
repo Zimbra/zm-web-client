@@ -132,7 +132,7 @@
 	appDevMode     = ${isDevMode};
 
 	function switchToStandardClient() {
-		document.location = appContextPath + "/h/";
+		document.location = appContextPath + "/?client=standard";
 	}
 </script>
 <noscript>
