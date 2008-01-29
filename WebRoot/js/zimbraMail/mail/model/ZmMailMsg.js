@@ -1109,8 +1109,8 @@ function(findHits) {
 						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.id + ",\"" + attach.part + "\");";
 						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
 					}
-					else if (attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct) &&
-						appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML))
+					else if (ZmMimeTable.hasHtmlVersion(attach.ct) &&
+							 appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML))
 					{
 						// set the anchor html for the HTML version of this attachment on the server
 						props.htmlLink = "<a style='text-decoration:underline' target='_blank' class='AttLink' href='" + url + "&view=html" + "'>";
