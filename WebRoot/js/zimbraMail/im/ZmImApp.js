@@ -444,8 +444,11 @@ function() {
 ZmImApp.prototype._setRoster =
 function(roster) {
 	this._roster = roster;
+	this.requestInstantNotify();
+};
 
-	// enable instant notify?
+ZmImApp.prototype.requestInstantNotify =
+function(roster) {
 	if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) && appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY)) {
 		appCtxt.getAppController().setInstantNotify(true);
 	}
