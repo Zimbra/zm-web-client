@@ -56,8 +56,8 @@ ZmImOverview = function(parent, args) {
 
                 assistant : [ ZmOperation.IM_NEW_CHAT ],
 
-                group : [ ZmOperation.IM_NEW_GROUP_CHAT,
-                          ZmOperation.SEP,
+                group : [ // ZmOperation.IM_NEW_GROUP_CHAT,
+                          // ZmOperation.SEP,
                           ZmOperation.NEW_ROSTER_ITEM ]
 
         };
