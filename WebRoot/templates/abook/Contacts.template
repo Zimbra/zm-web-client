@@ -556,7 +556,9 @@
 								, "<$= i == 1 ? '9' : data.alphabet[i+1] $>"
 							<$ } $>
 						<$ } $>
-						); return false;' class='DwtButton AlphabetBarCell' onmouseover='ZmContactAlphabetBar._onMouseOver(this)' onmouseout='ZmContactAlphabetBar._onMouseOut(this)' <$= (i>0) ? " style='border-left-width:0;'>" : ">" $>
+						); return false;'
+						<$ if (data.alphabet[i].length > 1) { $> colspan='<$= data.alphabet[i].length/2 + 1 $>' <$ } $>
+						class='DwtButton AlphabetBarCell' onmouseover='ZmContactAlphabetBar._onMouseOver(this)' onmouseout='ZmContactAlphabetBar._onMouseOut(this)' <$= (i>0) ? " style='border-left-width:0;'>" : ">" $>
 						<$= data.alphabet[i] $>
 					</td>
 				<$ } $>
