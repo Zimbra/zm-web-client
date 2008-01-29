@@ -60,12 +60,16 @@ function(cmdStr, searchController) {
 		this._settings[id] = !on;
 		appCtxt.getAppController().restart(this._settings);
 	} else if (arg0 == "instant_notify") {
-		var on = false;
-		if (argv[1] && argv[1] == 1) {
-			on = true;
+		if (argv.length <= 1) {
+			this._alert("Instant notify is "+ (appCtxt.getAppController().getInstantNotify() ? "ON" : "OFF"));
+		} else {
+			var on = false;
+			if (argv[1] && argv[1] == 1) {
+				on = true;
+			}
+			this._alert("Set instant notify to "+ (on ? "ON" : "OFF"));
+			appCtxt.getAppController().setInstantNotify(on);
 		}
-		this._alert("Set instant notify to "+ (on ? "ON" : "OFF"));
-		appCtxt.getAppController().setInstantNotify(on);
 	} else if (arg0 == "poll") {
 		if (!argv[1]) return;
 		appCtxt.set(ZmSetting.POLLING_INTERVAL, argv[1]);

@@ -802,6 +802,11 @@ function(on) {
     }
 }
 
+ZmZimbraMail.prototype.getInstantNotify =
+function() {
+	return this._pollInstantNotifications;
+};
+
 /**
  * Resets the interval between poll requests, based on what's in the settings,
  * only if we are not in instant notify mode.
