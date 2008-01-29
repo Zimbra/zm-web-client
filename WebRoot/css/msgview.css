@@ -37,12 +37,6 @@
 	@MailMsgBodyText-fixed@
 }
 
-/* html message font */
-.MsgBody-html {
-	/*@MailMsgBodyText@*/
-	@MailMsgBodyText-html@
-}
-
 .MsgBody-text, .MsgBody-html {
 	padding: 10px;
 }
