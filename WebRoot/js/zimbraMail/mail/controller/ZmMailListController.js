@@ -640,6 +640,8 @@ function(items, on) {
 */
 ZmMailListController.prototype._doSpam =
 function(items, markAsSpam, folder) {
+	if (!(items instanceof Array)) items = [items];
+
 	var list = items[0].list || this._list;
 	list.spamItems(items, markAsSpam, folder);
 };
