@@ -354,6 +354,7 @@ ZmChatWidget.prototype._init = function() {
 	this._sticky.addSelectionListener(new AjxListener(this, this._stickyListener));
 
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
+        this._content._setAllowSelection();
 	this._content.setScrollStyle(Dwt.SCROLL);
         // this._content._setMouseEventHdlrs();
 
