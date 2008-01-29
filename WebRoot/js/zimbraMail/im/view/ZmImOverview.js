@@ -276,6 +276,7 @@ ZmImOverview.prototype._init = function() {
         var buddyList = roster.getRosterItemList();
 
         var tree = this._tree = new DwtTree(this);
+        tree.getHtmlElement().style.width = "100%";
         if (!this._options.inactiveTree)
                 tree.addSelectionListener(new AjxListener(this, this._treeSelectionListener));
         tree.setScrollStyle(DwtControl.SCROLL);
@@ -316,11 +317,17 @@ ZmImOverview.prototype._init = function() {
 ZmImOverview.prototype._controlListener = function(ev) {
         var s1 = { x: ev.oldWidth, y: ev.oldHeight };
         var s2 = { x: ev.newWidth, y: ev.newHeight };
+        //DBG.println(AjxDebug.DBG1, "x1: " + s1.x + ", y1: " + s1.y);
+        //DBG.println(AjxDebug.DBG1, "x2: " + s2.x + ", y2: " + s2.y);
         if (s1.x != s2.x || s1.y != s2.y) {
                 var h = s2.y;
                 if (this.__searchInputEl)
                         h -= this.__searchInputEl.offsetHeight;
-                this._tree.setSize(s2.x, h);
+                //this._tree.setSize(s2.x, h);
+                if (AjxEnv.isIE) {
+                        h -= 2;
+                }
+                this._tree.setSize(Dwt.DEFAULT, h);
         }
 };
 
