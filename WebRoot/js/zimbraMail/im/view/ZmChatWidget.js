@@ -357,9 +357,9 @@ ZmChatWidget.prototype._init = function() {
 	this._content.setScrollStyle(Dwt.SCROLL);
         // this._content._setMouseEventHdlrs();
 
-	var dropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
-	this._content.setDropTarget(dropTgt);
-	dropTgt.addDropListener(new AjxListener(this, this._dropOnContentListener));
+// 	var dropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
+// 	this._content.setDropTarget(dropTgt);
+// 	dropTgt.addDropListener(new AjxListener(this, this._dropOnContentListener));
 
         var dropTgt = new DwtDropTarget([ "ZmRosterItem", "ZmContact" ]);
         this._liteEditor.setDropTarget(dropTgt);
@@ -685,16 +685,16 @@ ZmChatWidget.prototype._stickyListener = function() {
         this._sticky._on_mouseOut(); // XXX: we must remove the hovered state
 };
 
-ZmChatWidget.prototype._dropOnContentListener = function(ev) {
-	if (ev.action == DwtDropEvent.DRAG_DROP) {
-		var item = ev.srcData;
-		var roster = AjxDispatcher.run("GetRoster");
-		roster.modifyChatRequest(this.chat.getConfThread(),
-					 "adduser", item.getAddress(),
-					 "Join my conference..." // XXX: customize this
-					);
-	}
-};
+// ZmChatWidget.prototype._dropOnContentListener = function(ev) {
+// 	if (ev.action == DwtDropEvent.DRAG_DROP) {
+// 		var item = ev.srcData;
+// 		var roster = AjxDispatcher.run("GetRoster");
+// 		roster.modifyChatRequest(this.chat.getConfThread(),
+// 					 "adduser", item.getAddress(),
+// 					 "Join my conference..." // XXX: customize this
+// 					);
+// 	}
+// };
 
 ZmChatWidget.prototype._dropOnEditorListener = function(ev) {
         if (ev.action == DwtDropEvent.DRAG_DROP) {
