@@ -185,6 +185,7 @@ function(callback, accountName, result) {
 		var mainAcct = appCtxt.getMainAccount();
 		mainAcct.id = obj.id;
 		mainAcct.name = obj.name;
+		mainAcct.visible = true;
 		mainAcct.isMain = true;
 		mainAcct.loaded = true;
 		mainAcct.settings = this;
@@ -194,9 +195,6 @@ function(callback, accountName, result) {
 			delete appCtxt._accounts[ZmZimbraAccount.DEFAULT_ID];
 		}
 		appCtxt.setActiveAccount(mainAcct);
-
-		// set visibility last - based on offline-mode flag
-		mainAcct.visible = !appCtxt.get(ZmSetting.OFFLINE);
 	}
 	
 	var accounts = obj.childAccounts ? obj.childAccounts.childAccount : null;
@@ -456,7 +454,7 @@ function() {
 	// CONFIG SETTINGS
 	this.registerSetting("AC_TIMER_INTERVAL",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300});
 	this.registerSetting("ASYNC_MODE",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"main"});
+	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"FRANKLIN"});
 	// next 3 are replaced during deployment
 	this.registerSetting("CLIENT_DATETIME",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildDateTime@"});
 	this.registerSetting("CLIENT_RELEASE",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildRelease@"});
@@ -514,7 +512,7 @@ function() {
 	this.registerSetting("CONTACTS_UPSELL_ENABLED",			{name:"zimbraFeatureContactsUpsellEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CONTACTS_UPSELL_URL",				{name:"zimbraFeatureContactsUpsellURL", type:ZmSetting.T_COS});
 	this.registerSetting("IM_ENABLED",						{name:"zimbraFeatureIMEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("MAIL_ENABLED",					{name:"zimbraFeatureMailEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	this.registerSetting("MAIL_ENABLED",					{name:"zimbraFeatureMailEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("MAIL_UPSELL_ENABLED",				{name:"zimbraFeatureMailUpsellEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("MAIL_UPSELL_URL",					{name:"zimbraFeatureMailUpsellURL", type:ZmSetting.T_COS});
 	this.registerSetting("NOTEBOOK_ENABLED",				{name:"zimbraFeatureNotebookEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -576,7 +574,6 @@ function() {
 	this.registerSetting("EVAL_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("FEED_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("HELP_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("HISTORY_SUPPORT_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("MIXED_VIEW_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("NOTES_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("PRINT_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -637,26 +634,25 @@ function() {
 	if (!(window.skin && skin.hints)) { return; }
 	
 	var shSetting = this.registerSetting("SKIN_HINTS", {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_HASH});
-	var hints = [["appChooser", "style"],
-				 ["appChooser", "fullWidth"],
-				 ["helpButton", "hideIcon"],
-				 ["helpButton", "style"],
-				 ["banner", "url"],
-				 ["logoutButton", "hideIcon"],
-				 ["logoutButton", "style"],
-				 ["noOverviewHeaders"],
-				 ["toast", "location"],
-				 ["toast", "transitions"]];
+	
+	var hints = ["appChooser.style",
+				 "appChooser.fullWidth",
+				 "helpButton.hideIcon",
+				 "helpButton.style",
+				 "banner.url",
+				 "logoutButton.hideIcon",
+				 "logoutButton.style",
+				 "noOverviewHeaders",
+				 "toast.location",
+				 "toast.transitions"];
+
 	for (var i = 0, count = hints.length; i < count; i++) {
 		var hint = hints[i];
-		var obj = skin.hints;
-		for (var propIndex = 0, propCount = hint.length; obj && (propIndex < propCount); propIndex++) {
-			var propName = hint[propIndex];
-			obj = obj[propName];
-		}
-		if (obj) {
-			shSetting.setValue(obj, hint.join("."), true, true);
-		}
+		try {
+			// if we get an exception doing the eval, ignore it - that hint won't get a value
+			var value = eval(["skin.hints", hint].join("."));
+			shSetting.setValue(value, hint, true, true);
+		} catch(e) {}
 	}
 	
 	// skin.hints.[container ID].position
