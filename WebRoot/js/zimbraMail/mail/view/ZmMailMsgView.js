@@ -729,11 +729,9 @@ function(msg, idoc, id, iframe) {
 		}
 
 		ZmMailMsgView._resetIframeHeight(self, iframe);
-        if(msg){
-            msg.setHtmlContent(this._htmlBody);
-            msg.showImages = true;
-        }
-    };
+		msg.setHtmlContent(this._htmlBody);
+		msg.showImages = true;
+	};
 	return func;
 };
 
@@ -1005,10 +1003,7 @@ function(msg, container, callback) {
 		}
 	}
 
-    var hasAttachments = msg.getAttachmentLinks(true);
-    hasAttachments = ( hasAttachments.length != 0 );
-
-    var subs = {
+	var subs = {
 		id: this._htmlElId,
 		subject: subject,
 		dateString: dateString,
@@ -1018,10 +1013,8 @@ function(msg, container, callback) {
 		obo: obo,
 		participants: participants,
 		hasHeaderCloseBtn: this._hasHeaderCloseBtn,
-		infoBarId: this._infoBarId,
-        hasAttachments: hasAttachments,
-        attachId: this._attLinksId
-    };
+		infoBarId: this._infoBarId
+	};
 
 	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
 
@@ -1245,14 +1238,26 @@ function() {
 	if (attLinks.length == 0) { return; }
 
 	// prevent appending attachment links more than once
-	var attLinksTable = document.getElementById(this._attLinksId+"_table");
-	if (attLinksTable) { return; }
+	var attLinksCell = document.getElementById(this._attLinksId);
+	if (attLinksCell) { return; }
+
+	var headerTable = document.getElementById(this._hdrTableId);
+	var row = headerTable.insertRow(-1);
+	var cell = row.insertCell(-1);
+	cell.width = "100";
+	cell.className = "LabelColName";
+	cell.id = this._attLinksId;
+	cell.innerHTML = ZmMsg.attachments + ":";
+
+	cell = row.insertCell(-1);
+	cell.colSpan = 3;
 
 	var htmlArr = [];
 	var idx = 0;
 
-    var dividx = idx;	// we might get back here
-	htmlArr[idx++] = "<table id='"+this._attLinksId+"_table' border=0 cellpadding=0 cellspacing=0>";
+	var dividx = idx;	// we might get back here
+	htmlArr[idx++] = "<div style='overflow: auto; width: 90%;'>";
+	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0>";
 
 	var rows = 0;
 	if (attLinks.length > 1) {
@@ -1358,10 +1363,9 @@ function() {
 		htmlArr[dividx] = this._attcMaxSize;//ZmMailMsgView.ATTC_MAX_SIZE;
 		htmlArr[dividx] = "px; overflow:auto;' />";
 	}
-	htmlArr[idx++] = "</tr></table>";
+	htmlArr[idx++] = "</tr></table></div>";
 
-    var attLinksDiv = document.getElementById(this._attLinksId);
-    attLinksDiv.innerHTML = htmlArr.join("");
+	cell.innerHTML = htmlArr.join("");
 };
 
 //AttachmentLink Handlers
@@ -1694,8 +1698,7 @@ ZmMailMsgView._swapIdAndSrc =
 function (image, i, len, msg, idoc, iframe, view) {
 	image.src = image.getAttribute("dfsrc");
 	if (i == len - 1) {
-        if(msg)
-            msg.setHtmlContent(idoc.documentElement.innerHTML);
+		msg.setHtmlContent(idoc.documentElement.innerHTML);
 		view._resetIframeHeightOnTimer(iframe);
 	}
 };
