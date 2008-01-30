@@ -136,7 +136,7 @@
 							Going with the theory that voice access is really really slow, we put
 							the voice account summary in an iframe to speed up home page loading
 							--%> 
-							<iframe class="ZhHomeVoiceIframe" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="/h/homevoice"></iframe>
+							<iframe class="ZhHomeVoiceIframe" scrolling="auto" marginWidth="0" marginHeight="0" frameBorder="0" src="<c:url value="/h/homevoice"/>"></iframe>
 						</td>
 						</tr>
 					</table>
