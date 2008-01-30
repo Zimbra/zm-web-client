@@ -66,9 +66,10 @@
         <table width=100% cellspacing="0" cellpadding="0">
             <tr class='zo_toolbar'>
                 <td class="searchbar">
+                    <c:if test="${uiv == '1'}">
                     <div class='zo_main_info_cont'>
                         <div class='zo_main_info'>
-
+                    </c:if>
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td style='padding-left:5px' class='zo_tb_submit'>
@@ -85,8 +86,10 @@
                                     </td>
                                 </tr>
                             </table>
+                        <c:if test="${uiv == '1'}">
                         </div>
                     </div>
+                        </c:if>
                 </td>
 
             </tr>
@@ -198,9 +201,10 @@
         <table width=100% cellspacing="0" cellpadding="0">
             <tr class='zo_toolbar'>
                 <td class="searchbar">
+                    <c:if test="${uiv == '1'}">
                     <div class='zo_main_info_cont'>
                         <div class='zo_main_info'>
-
+                    </c:if>
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td style='padding-left:5px' class='zo_tb_submit'>
@@ -217,8 +221,10 @@
                                     </td>
                                 </tr>
                             </table>
+                    <c:if test="${uiv == '1'}">
                         </div>
                     </div>
+                    </c:if>
                 </td>
 
             </tr>
