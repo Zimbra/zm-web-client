@@ -21,7 +21,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
 <!--bug: 21462 yui editor freezes in IE7 without without this header -->
 <html>
 <app:head mailbox="${mailbox}" title="${title}"/>
@@ -228,7 +228,7 @@
 			</tr>
 	
 			<tr id='skin_R3'>
-				<td><div class='ImgSkin_Chrome_R3_L'></div></td>
+				<td style=""><div class='ImgSkin_Chrome_R3_L'></div></td>
 				<td class='ImgSkin_Chrome_R3'>
 					<div style='position:relative;width:150px;;height:100%;'>
 						<div id='skin_container_current_app' class='skin_container'></div>
@@ -284,7 +284,7 @@
 			<c:if test="${empty editmode}">
 	
 	
-				<td id='skin_td_tree_outer' colspan=2>
+				<td id='skin_td_tree_outer' colspan=2 style="background-color: white;">
 					<table id='skin_tree_table' class='skin_table fullSize' cellspacing=0 cellpadding=0 border="0">
 						<c:if test="${selected ne 'voice'}">
 							<tr><td id='skin_td_tree_header' valign=bottom>
@@ -349,7 +349,7 @@
 				
 				<td id='skin_td_tree_app_sash'><div class='ZVerticalSash'></div></td>
 				</c:if>
-				<td id='skin_td_app_outer'  colspan='${empty editmode ? 2 : 5}' style='padding-left:${editmode ? 5 : 0}px;width:100%;'>
+				<td id='skin_td_app_outer'  colspan='${empty editmode ? 2 : 5}' style='padding-left:${editmode ? 5 : 0}px;width:100%; background-color: white;'>
 					<table id='skin_app_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 						<tr>
 							<td id='skin_td_app' valign="top"><div id='skin_container_app_main' class='skin_container' style='border-color:#C6C6C6;border-style:solid;border-width:0px 0px 0px 1px;'>
@@ -361,7 +361,7 @@
 			</tr>
 	
 			<tr id='skin_tr_main_full' style='display:none'>
-				<td id='skin_td_app_full_outer'  class='full_height' colspan='5' height='100%'>
+				<td id='skin_td_app_full_outer'  class='full_height' colspan='5' height='100%' style="background-color: white;">
 					<table id='skin_app_full_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 						<tr>
 							<td id='skin_full_toolbar_container' >
