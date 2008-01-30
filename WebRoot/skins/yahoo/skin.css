@@ -2,7 +2,7 @@
 #skin_td_username				{	padding-top:0px;	}
 
 #skin_td_app_chooser 			{	padding:5px 0px 0px 0px !important;	}
-#skin_container_app_chooser		{	height:25px;			}
+#skin_container_app_chooser		{	height:25px;}
 .ZAppTabBorder		 			{	border-width:0px !important;	}
 .ZmAppChooser .ZToolbarTable	{	margin-left:5px;	}
 .ZAppTabBorder .ZLeftIcon DIV	{	margin-top:4px;		}
@@ -21,6 +21,7 @@
 #skin_container_app_top_toolbar, 
 #skin_container_app_toolbar_sep {	height:28px !important;	}
 
+
 #skin_td_search					{	width:200px;	}
 #skin_container_search			{	border-width:0px !important; 
 									padding:0px !important; 
@@ -38,10 +39,17 @@
 
 #ZLoginPanel					{	background-color:#d3e7f7;	}
 
-.ZHover .ZToolbarButtonBorder	{	border-color:red !important;	}
+.ZHover .ZToolbarButtonBorder	{	background-color:#E9F2FA !important;	}
 /* NOT SURE WHY THIS REQUIRES A SPECIFIC OVERRIDE -- SEEMS TO A PROBLEM WITH IMAGEMERGE */
 .ImgPrefsHeader					{	background:url(@SkinImgDir@/icons/ImgPrefsHeader.repeatx.gif) repeat-x !important;	}
 .ZOptionsHeader					{	color:black;	}
 
 .DialogBody 					{	background-color:#f2f9ff;	}
 .DwtDialogTitle					{	padding-top:4px;	}
+#IFDEF MSIE
+
+#skin_container_app_toolbar_sep,#skin_container_current_app,#skin_container_app_top_toolbar{margin-top: 5px;}
+
+#ENDIF
+
+.ZHover .ZMenuItemTable TD{background-color:#3e79b0 !important;}
