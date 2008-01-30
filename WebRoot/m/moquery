@@ -28,8 +28,10 @@
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr>
     <td class="searchbar">
+        <c:if test="${uiv == '1'}">
         <div class='zo_main_info_cont'>
             <div class='zo_main_info'>
+        </c:if>        
                 <table width="100%" cellspacing="0" cellpadding="0">
                     <tr class='x_toolbar'>
                         <td>
@@ -48,8 +50,10 @@
                         </td>
                     </tr>
                 </table>
+        <c:if test="${uiv == '1'}">
             </div>
         </div>
+        </c:if>
     </td>
 </tr>
 <tr>
@@ -219,8 +223,10 @@
 </tr>
 <tr>
     <td class="searchbar">
+        <c:if test="${uiv == '1'}">
         <div class='zo_main_info_cont'>
             <div class='zo_main_info'>
+        </c:if>        
                 <table width="100%" cellspacing="0" cellpadding="0">
                     <tr class='x_toolbar'>
                         <td>
@@ -239,8 +245,10 @@
                         </td>
                     </tr>
                 </table>
+        <c:if test="${uiv == '1'}">
             </div>
         </div>
+        </c:if>
     </td>
 </tr>
 </table>
