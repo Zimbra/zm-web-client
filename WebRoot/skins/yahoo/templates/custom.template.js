@@ -133,17 +133,17 @@ function(name, params, data, buffer) {
 
 	buffer[_i++] = "<div class='DwtDialog'><table cellspacing=0 cellpadding=0><tr id='";
 	buffer[_i++] = data["dragId"];
-	buffer[_i++] = "'><td class='minWidth'><div class='Dialog_NW'></div></td><td class='minWidth' class='Dialog_N'>";
+	buffer[_i++] = "'><td class='minWidth Dialog_NW'></td><td class='minWidth Dialog_N'>";
 	buffer[_i++] = data["icon"];
 	buffer[_i++] = "</td><td id='";
 	buffer[_i++] = data["id"];
 	buffer[_i++] = "_title' class='Dialog_N DwtDialogTitle'>";
 	buffer[_i++] = data["title"];
-	buffer[_i++] = "</td><td class='minWidth' class='Dialog_N'><div class='";
+	buffer[_i++] = "</td><td class='minWidth Dialog_N'>";
 	buffer[_i++] = data["closeIcon2"];
-	buffer[_i++] = "'></div></td><td class='minWidth' class='Dialog_N'><div class='";
+	buffer[_i++] = "</td><td class='minWidth Dialog_N'>";
 	buffer[_i++] = data["closeIcon1"];
-	buffer[_i++] = "'></div></td><td class='minWidth'><div class='Dialog_NE'></div></td></tr><tr><td class='Dialog_W'><div></div></td><td class='DialogBody' colspan='4'><div id='";
+	buffer[_i++] = "</td><td class='minWidth Dialog_NE'></td></tr><tr><td class='Dialog_W'></td><td class='DialogBody' colspan='4'><div id='";
 	buffer[_i++] = data["id"];
 	buffer[_i++] = "_content' class='DwtDialogBody'></div>";
 	 if (data.controlsTemplateId) { 
