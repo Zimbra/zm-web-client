@@ -23,7 +23,8 @@
 </mo:handleError>
 <mo:view title="${mailbox.name}" context="${context}" mailbox="${mailbox}">
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/main'}"/>
-<form action="<c:url value="${context_url}"/>">
+<c:set var="action_url" value="${uiv == '1'? context_url:'/m/mosearch'}"/>
+<form action="<c:url value="${action_url}"/>" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <table width="100%" cellspacing="0" cellpadding="0">
 <tr>
