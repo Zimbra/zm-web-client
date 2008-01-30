@@ -69,7 +69,7 @@
                 <td colspan=2>&nbsp;</td>
             </tr>
             <tr>
-                <td colspan=2><hr></td>
+                <td colspan=2><hr size="1"></td>
             </tr>
 
             <tr>
@@ -86,7 +86,7 @@
             </tr>
 
             <c:if test="${not empty message.attachments}">
-            <tr><td colspan=2><hr/><a name="attachments${message.partName}"></a></td></tr>
+            <tr><td colspan=2><hr size="1"/><a name="attachments${message.partName}"></a></td></tr>
             <tr>
                 <td colspan=2>
                     <mo:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
@@ -385,7 +385,7 @@
                 </c:otherwise>
             </c:choose>
             <c:if test="${not empty message.attachments}">
-                <hr/>
+                <hr size="1"/>
                 <a name="attachments${message.partName}"/>
                 <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
             </c:if>
