@@ -524,7 +524,12 @@ A:visited { color: blue; }
     height: auto;
     width:99%;
 }
-
+.YsearchField{
+@FixBoxModel@
+	@InputField@
+    height: auto;
+    width:97%;
+}
 .SearchFieldWidth{width: 100%; padding-right:5px;}
 
 .NoResults { 
