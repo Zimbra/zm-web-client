@@ -138,13 +138,29 @@ if (application.getInitParameter("offlineMode") != null)  {
 
 <c:set var="loginRedirectUrl" value="${zm:getPreLoginRedirectUrl(pageContext, '/')}"/>
 <c:if test="${not empty loginRedirectUrl}">
-    <c:redirect url="${loginRedirectUrl}"/>
+    <c:redirect url="${loginRedirectUrl}">
+        <c:forEach var="p" items="${paramValues}">
+            <c:forEach var='value' items='${p.value}'>
+                <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                    <c:param name="${p.key}" value='${value}'/>
+                </c:if>
+            </c:forEach>
+        </c:forEach>
+    </c:redirect>
 </c:if>
 
 <zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
 <c:set var="domainLoginRedirectUrl" value="${domainInfo.attrs.zimbraWebClientLoginURL}" />
 <c:if test="${not empty domainLoginRedirectUrl}" >
-    <c:redirect url="${domainLoginRedirectUrl}"/>
+    <c:redirect url="${domainLoginRedirectUrl}">
+        <c:forEach var="p" items="${paramValues}">
+            <c:forEach var='value' items='${p.value}'>
+                <c:if test="${not fn:contains(ignoredQueryParams, p.key)}">
+                    <c:param name="${p.key}" value='${value}'/>
+                </c:if>
+            </c:forEach>
+        </c:forEach>
+    </c:redirect>
 </c:if>
 
 <c:url var="formActionUrl" value="/">
