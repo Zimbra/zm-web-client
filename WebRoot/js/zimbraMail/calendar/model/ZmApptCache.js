@@ -225,11 +225,11 @@ function(params) {
 	}
 	params.queryHint = query;
 	params.folderIdMapper = folderIdMapper;
+	params.offset = 0;
 
 	// this array will hold a list of appts as we collect them from the server
 	this._rawAppts = [];
 
-    params.offset = 0;
 	if (params.callback) {
 		this._search(params);
 	} else {
@@ -238,7 +238,7 @@ function(params) {
 };
 
 ZmApptCache.prototype._search =
-function(params, offset) {
+function(params) {
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 
 	var method = soapDoc.getMethod();
@@ -292,8 +292,8 @@ function(params, result) {
 		if (searchResp.more) {
 			var lastAppt = searchResp.appt[searchResp.appt.length-1];
 			if (lastAppt) {
-                params.offset+=500;
-				this._search(params, lastAppt.id, lastAppt.sf);
+                params.offset += 500;
+				this._search(params);
 				return;
 			}
 		}
