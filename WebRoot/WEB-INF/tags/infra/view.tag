@@ -182,8 +182,8 @@
 		</td>
 	</tr>
 	<tr>
-	<td width="99%" valign="top">
-	<table id='skin_table_outer' width='100%' border=0 class='skin_table' cellspacing=0 cellpadding=0 >
+	<td width="100%" valign="top">
+	<table id='skin_table_outer' width='100%' border=0 class='skin_table' cellspacing=0 cellpadding=0>
 			<colgroup>
 				<col id='skin_col_L'>
 				<col id='skin_col_tree'>
@@ -230,7 +230,7 @@
 			<tr id='skin_R3'>
 				<td><div class='ImgSkin_Chrome_R3_L'></div></td>
 				<td class='ImgSkin_Chrome_R3'>
-					<div style='position:relative;width:100%;height:100%;'>
+					<div style='position:relative;width:150px;;height:100%;'>
 						<div id='skin_container_current_app' class='skin_container'></div>
 					</div>
 				</td>
@@ -285,11 +285,11 @@
 	
 	
 				<td id='skin_td_tree_outer' colspan=2>
-					<table id='skin_tree_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
+					<table id='skin_tree_table' class='skin_table fullSize' cellspacing=0 cellpadding=0 border="0">
 						<c:if test="${selected ne 'voice'}">
 							<tr><td id='skin_td_tree_header' valign=bottom>
 								<div id='skin_tree_header_container' class='skin_container'>
-									<table class='skin_table fullSize' cellspacing=0 cellpadding=0>
+									<table class='skin_table fullSize' cellspacing=0 cellpadding=0 border="0">
 										<tr>
 											<td class='TbTop'>
 												<c:if test="${selected != 'contacts'}">
@@ -339,8 +339,8 @@
 							</td>
 						</tr>
 						<tr>
-							<td id='skin_td_tree_bottom_ad' style="padding-left:0px;" height=120>
-								<iframe src="<c:url value='/h/overviewAds'/>" align="left" frameborder="0" marginheight="0" style="overflow:hidden;" scrolling="false" marginwidth="0" height="120" width="100%" >
+							<td id='skin_td_tree_bottom_ad' style="padding-left:0px; overflow: hidden;" height=120>
+								<iframe src="<c:url value='/h/overviewAds'/>" align="left" frameborder="0" marginheight="0" style="overflow:hidden;" scrolling="no" marginwidth="0" height="130" width="100%" >
 								</iframe>
 							</td>
 						</tr>
