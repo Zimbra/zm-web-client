@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -50,45 +50,6 @@ ZmSpreadSheetModel = function(rows, cols) {
 
 // Note that debug and profile code might require Firebug (FF extension)
 ZmSpreadSheetModel.DEBUG = false;
-ZmSpreadSheetModel.PROFILE = false;
-
-if (ZmSpreadSheetModel.PROFILE && console.log) {
-	ZmSpreadSheetModel.PROFILE = function(funcName) {
-		var f = eval(funcName);
-		var calls = 0;
-		var minTime = null;
-		var maxTime = null;
-		var avgTime = 0;
-		var totTime = 0;
-		var timer = null;
-		var prof = function() {
-			var TIME = new Date().getTime();
-			var ret = f.apply(this, arguments);
-			var diff = (new Date().getTime() - TIME) / 1000;
-			totTime += diff;
-			if (minTime == null || minTime > diff)
-				minTime = diff;
-			if (maxTime == null || maxTime < diff)
-				maxTime = diff;
-			avgTime = (avgTime * calls + diff) / ++calls;
-			if (timer)
-				clearTimeout(timer);
-			timer = setTimeout(function() {
-				console.log("%s: %f | %f | %f (%d, %f)", funcName, minTime, avgTime, maxTime, calls, totTime);
-				calls = 0;
-				minTime = null;
-				maxTime = null;
-				avgTime = 0;
-				totTime = 0;
-				timer = null;
-			}, 100);
-			return ret;
-		};
-		eval(funcName + " = prof");
-	};
-} else {
-	ZmSpreadSheetModel.PROFILE = AjxCallback.returnFalse;
-}
 
 ZmSpreadSheetModel.getDefaultColProp = function() {
 	var prop = {
@@ -1122,12 +1083,3 @@ ZmSpreadSheetCellModel.prototype.getTooltipText = function() {
 	html.push("</div>");
 	return html.join("");
 };
-
-
-
-
-ZmSpreadSheetModel.PROFILE("ZmSpreadSheetModel.prototype.deserialize");
-ZmSpreadSheetModel.PROFILE("ZmSpreadSheetModel.prototype.doneSetView");
-ZmSpreadSheetModel.PROFILE("ZmSpreadSheetCellModel.prototype.setToElement");
-ZmSpreadSheetModel.PROFILE("ZmSpreadSheetModel.prototype._orderExpressionCells");
-ZmSpreadSheetModel.PROFILE("ZmSpreadSheetCellModel.prototype.setValue");

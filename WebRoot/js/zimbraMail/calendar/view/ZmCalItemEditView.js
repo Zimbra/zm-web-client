@@ -349,7 +349,19 @@ function(calItem) {
 
 	// save field values of this view w/in given appt
 	calItem.setName(this._subjectField.getValue());
+
 	var folderId = this._folderSelect.getValue();
+	if (this._mode != ZmCalItem.MODE_NEW && this._calItem.folderId != folderId) {
+		// if moving existing calitem across mail boxes, cache the new folderId
+		// so we can save it as a separate request
+		var origFolder = appCtxt.getById(this._calItem.folderId);
+		var newFolder = appCtxt.getById(folderId);
+		if (origFolder.isRemote() || newFolder.isRemote()) {
+			calItem.__newFolderId = folderId;
+			folderId = this._calItem.folderId;
+		}
+	}
+
 	calItem.setFolderId(folderId);
 	calItem.setOrganizer(this._calendarOrgs[folderId]);
 
@@ -417,9 +429,11 @@ function(calItem, mode) {
 		(appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML ||
 		 mode != ZmCalItem.MODE_NEW && appCtxt.get(ZmSetting.VIEW_AS_HTML)))
 	{
+		this._controller.setFormatBtnItem(true, DwtHtmlEditor.HTML);
 		this.setComposeMode(DwtHtmlEditor.HTML);
 		this._notesHtmlEditor.setContent(calItem.getNotesPart(ZmMimeTable.TEXT_HTML));
 	} else {
+		this._controller.setFormatBtnItem(true, ZmMimeTable.TEXT_PLAIN);
 		this.setComposeMode(DwtHtmlEditor.TEXT);
 		this._notesHtmlEditor.setContent(calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN));
 	}
