@@ -209,6 +209,7 @@
             <webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.excludes}' />
 			<webinf refid='customer.webinf.fileset' />
             <classes dir='${build.classes.dir}' excludes='**/kabuki/tools/**,**/build/**'/>
+			<classes dir='${build.classes.dir}' includes='**/kabuki/tools/img/**,**/kabuki/tools/templates/**' />
             <classes dir='${web.dir}' includes='messages/**,keys/**'/>
             <lib dir='${lib.dir}' includes='gifencoder.jar'/>
             <lib dir='${webinf.lib.dir}'/>
