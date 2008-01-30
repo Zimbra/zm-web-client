@@ -87,7 +87,7 @@ function() {
 	return appCtxt.getById(this.folderId);
 };
 
-ZmCalItem.prototype.getSummary =
+ZmTask.prototype.getSummary =
 function(isHtml) {
 	// TODO
 };
@@ -136,7 +136,7 @@ function() {
 * @param mode		[Int]				Required constant. Usually ZmCalItem.MODE_DELETE
 * @param batchCmd	[ZmBatchCommand]	Required API for batch request
 */
-ZmCalItem.prototype.cancel =
+ZmTask.prototype.cancel =
 function(mode, batchCmd) {
 	this.setViewMode(mode);
 	var soapDoc = AjxSoapDoc.create(this._getSoapForMode(mode), "urn:zimbraMail");
