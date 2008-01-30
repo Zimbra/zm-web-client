@@ -56,9 +56,19 @@
 							<tr>
 								<td width=110 valign='top' class='LabelColName'><$= data.participants[i].prefix $>:</td>
 								<td class='LabelColValue' colspan=10><$= data.participants[i].partStr $></td>
-							</tr>
-						<$ } $>
-					</table>
+                            </tr>
+                        <$ } $>
+                        <$ if(data.hasAttachments) { $>
+                            <tr>
+                                <td width="100" class="LabelColName">
+                                    <$= ZmMsg.attachments$> :
+                                </td>
+                                <td colspan="3">
+                                    <div id="${attachId}" style='overflow: auto;'></div>
+                                </td>
+                            </tr>
+                        <$ } $>
+                    </table>
 				</td>
 				<td id='${id}_contactArea' class='ContactArea'>
 					<!-- Area reserved zimlets to add to message views. -->
