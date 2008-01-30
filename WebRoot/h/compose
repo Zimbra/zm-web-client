@@ -20,6 +20,8 @@
     <fmt:message var="title" key="compose"/>
     <zm:composeUploader var="uploader"/>
     <c:set var="compose" value="${uploader.compose}"/>
+    <c:set var="composeformat" value="${mailbox.prefs.composeFormat}" />
+    <c:set var="isHtml" value="${composeformat eq 'html'}"/>
 </app:handleError>
 
 <app:handleError>
@@ -27,10 +29,10 @@
         <c:when test="${!empty param.id or !empty compose.draftId or !empty requestScope.draftid}">
             <c:choose>
                 <c:when test="${!empty compose.draftId or !empty requestScope.draftid}">
-                    <zm:getMessage var="message" id="${empty requestScope.draftid ? compose.draftId : requestScope.draftid}" wanthtml="${false}"/>
+                    <zm:getMessage var="message" id="${empty requestScope.draftid ? compose.draftId : requestScope.draftid}" wanthtml="${(isHtml ? true : false)}"/>
                 </c:when>
                 <c:otherwise>
-                    <zm:getMessage var="message" id="${param.id}" part="${param.part}" wanthtml="${false}"/>
+                    <zm:getMessage var="message" id="${param.id}" part="${param.part}" wanthtml="${(isHtml ? true : false)}"/>
                 </c:otherwise>
             </c:choose>
         </c:when>
@@ -67,7 +69,6 @@
         </c:choose>
     </c:if>
 
-    <c:set var="composeformat" value="${mailbox.prefs.composeFormat}" />    
 </app:handleError>
 
 <c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/>
@@ -257,7 +258,7 @@
 <script type="text/javascript">
 
 </script>
-<c:if test="${composeformat eq 'html'}" >
+<c:if test="${(isHtml)}" >
     <SCRIPT TYPE="text/javascript">
         <!--
 
@@ -280,7 +281,7 @@
         myEditor.on('editorContentLoaded', function() {
             setTimeout(function() {
                 var b = document.getElementById('body');
-                var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ');
+                var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
                 myEditor.setEditorHTML(html);
             }, 1000);
         }, myEditor, true);
@@ -294,28 +295,28 @@
     // for Save Draft
     var eleD = document.getElementById("SOPDRAFT");
     eleD.onclick = function () {
-    <c:if test="${composeformat eq 'html'}" >
+    <c:if test="${(isHtml)}" >
         submitCompose();
     </c:if>
     }
     // for ATTACH
     var eleA = document.getElementById("SOPATTACH");
     eleA.onclick = function () {
-    <c:if test="${composeformat eq 'html'}" >
+    <c:if test="${(isHtml)}" >
         submitCompose();
     </c:if>
     }
     // for Mail Send
     var ele = document.getElementById("SOPSEND");
     ele.onclick = function () {
-    <c:if test="${composeformat eq 'html'}" >
+    <c:if test="${(isHtml)}" >
         submitCompose();
     </c:if>
         return checkSubject();
     }
     var eleI = document.getElementById("IOPSEND");
     eleI.onclick = function () {
-    <c:if test="${composeformat eq 'html'}" >
+    <c:if test="${(isHtml)}" >
         submitCompose();
     </c:if>
         return checkSubject();
