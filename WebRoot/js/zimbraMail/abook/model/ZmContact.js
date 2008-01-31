@@ -95,6 +95,9 @@ ZmContact.F_pager					= "pager";
 ZmContact.F_type					= "type";
 ZmContact.F_workCity				= "workCity";
 ZmContact.F_workCountry				= "workCountry";
+ZmContact.F_workEmail1				= "workEmail1";
+ZmContact.F_workEmail2				= "workEmail2";
+ZmContact.F_workEmail3				= "workEmail3";
 ZmContact.F_workFax					= "workFax";
 ZmContact.F_workPhone				= "workPhone";
 ZmContact.F_workPhone2				= "workPhone2";
@@ -738,7 +741,10 @@ ZmContact.prototype.getEmail =
 function() {
 	return (this.getAttr(ZmContact.F_email) ||
 			this.getAttr(ZmContact.F_email2) ||
-			this.getAttr(ZmContact.F_email3));
+			this.getAttr(ZmContact.F_email3) ||
+			this.getAttr(ZmContact.F_workEmail1) ||
+			this.getAttr(ZmContact.F_workEmail2) ||
+			this.getAttr(ZmContact.F_workEmail3));
 };
 
 ZmContact.prototype.getIMAddress =
