@@ -330,7 +330,7 @@ function(view) {
 		}
     	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
     	this._addMenuListeners(this._participantActionMenu);
-		this._participantActionMenu.addPopdownListener(this._popdownListener);
+		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._participantActionMenu);
     }
 };
