@@ -40,9 +40,16 @@
 
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                 <c:set var="mhit" value="${hit.messageHit}"/>
-                <zm:currentResultUrl index="${status.index}" var="msgUrl" value="${context_url}" action="view"
-                                     context="${context}" id="${mhit.id}"/>
-
+                <c:choose>
+                    <c:when test="${mhit.isDraft}">
+                        <zm:currentResultUrl index="${status.index}" var="msgUrl" value="${context_url}" action="compose"
+                                         context="${context}" id="${mhit.id}"/>
+                    </c:when>
+                    <c:otherwise>
+                        <zm:currentResultUrl index="${status.index}" var="msgUrl" value="${context_url}" action="view"
+                                         context="${context}" id="${mhit.id}"/>
+                    </c:otherwise>    
+                </c:choose>
                 <tr id="msg${mhit.id}">
                     <td class='zo_m_list_row'>
                         <table width="100%">
