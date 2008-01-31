@@ -707,9 +707,9 @@ function(view, firstTime) {
 	if (firstTime) {
 		var menu;
 		if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
-			menu = this._setupGroupByMenuItems(view);
+			var viewButton = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
+			viewButton.setMenu(new AjxCallback(this, this._setupGroupByMenuItems, [view]));
 		}
-		this._setupReadingPaneMenuItem(view, menu, this._readingPaneOn);
 
 		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 		if (btn) {
@@ -718,7 +718,7 @@ function(view, firstTime) {
 	} else {
 		// always set the switched view to be the checked menu item
 		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
-		var menu = btn ? btn.getMenu() : null;
+		var menu = btn ? btn.getMenu(true) : null;
 		var mi = menu ? menu.getItemById(ZmOperation.MENUITEM_ID, view) : null;
 		if (mi) { mi.setChecked(true, true); }
 	}
@@ -1012,21 +1012,20 @@ function(folderId) {
 ZmMailListController.prototype._setupGroupByMenuItems =
 function(view) {
 	var viewBtn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
-	var menu = viewBtn ? viewBtn.getMenu() : null;
-	if (!menu) {
-		menu = new ZmPopupMenu(viewBtn);
-		viewBtn.setMenu(menu);
-		for (var i = 0; i < ZmMailListController.GROUP_BY_VIEWS.length; i++) {
-			var id = ZmMailListController.GROUP_BY_VIEWS[i];
-			var mi = menu.createMenuItem(id, {image:ZmMailListController.GROUP_BY_ICON[id],
-											  text:ZmMsg[ZmMailListController.GROUP_BY_MSG_KEY[id]],
-											  style:DwtMenuItem.RADIO_STYLE});
-			mi.setData(ZmOperation.MENUITEM_ID, id);
-			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-			if (id == this._defaultView())
-				mi.setChecked(true, true);
-		}
+	var menu = new ZmPopupMenu(viewBtn);
+	viewBtn.setMenu(menu);
+	for (var i = 0; i < ZmMailListController.GROUP_BY_VIEWS.length; i++) {
+		var id = ZmMailListController.GROUP_BY_VIEWS[i];
+		var mi = menu.createMenuItem(id, {image:ZmMailListController.GROUP_BY_ICON[id],
+										  text:ZmMsg[ZmMailListController.GROUP_BY_MSG_KEY[id]],
+										  style:DwtMenuItem.RADIO_STYLE});
+		mi.setData(ZmOperation.MENUITEM_ID, id);
+		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+		if (id == this._defaultView())
+			mi.setChecked(true, true);
 	}
+	this._setupReadingPaneMenuItem(view, menu, this._readingPaneOn);
+	
 	return menu;
 };
 
