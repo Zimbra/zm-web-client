@@ -277,11 +277,6 @@ function(participants, participantsElided, width) {
 	return [originator];
 };
 
-ZmMailListView.prototype.createHeaderHtml = function(defaultColumnSort){
-    ZmListView.prototype.createHeaderHtml.call(this,defaultColumnSort);
-    this._getActionMenuForColHeader();
-};
-
 ZmMailListView.prototype._getActionMenuForColHeader = 
 function() {
 	if (!this._colHeaderActionMenu) {
@@ -301,6 +296,7 @@ function() {
                 this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
 			}
 		}
+		this._resetFromColumnLabel();
 	}
 	return this._colHeaderActionMenu;
 };
