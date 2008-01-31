@@ -156,7 +156,7 @@ BODY						{	margin:0px; 				}
 /** LoginPanel and Splash screen **/
 #skin_container_splash_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
 
-#ZLoginPanel 			{	@LoginPanelOuterBorer@	}	
+#ZLoginPanel 			{	@LoginPanelOuterBorder@	}	
 #ZLoginBodyContainer	{	@LoginPanelInnerBorder@	}
 
 #ZSplashPanel			{	@SplashOuterBorder@		}
