@@ -62,12 +62,6 @@ function() {
 	return "ZmBriefcase";
 };
 
-ZmBriefcase.prototype.getName = 
-function(showUnread, maxLength, noMarkup) {
-	var name = (this.nId == ZmOrganizer.ID_ROOT) ? ZmMsg.notebooks : this.name;
-	return this._markupName(name, showUnread, noMarkup);
-};
-
 ZmBriefcase.prototype.getIcon = 
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }

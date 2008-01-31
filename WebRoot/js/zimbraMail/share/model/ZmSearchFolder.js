@@ -60,15 +60,6 @@ function() {
 	return "ZmSearchFolder";
 };
 
-ZmSearchFolder.prototype.getName = 
-function(showUnread, maxLength, noMarkup) {
-	if (this.nId == ZmOrganizer.ID_ROOT) {
-		return ZmMsg.searches;
-	} else {
-		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
-	}
-};
-
 ZmSearchFolder.prototype.getIcon = 
 function() {
 	return (this.nId == ZmOrganizer.ID_ROOT) ? null : "SearchFolder";

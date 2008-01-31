@@ -96,7 +96,8 @@ function() {
 							 views:				["task"],
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmTaskFolder.sortCompare",
-							 deferrable:		true
+							 deferrable:		true,
+							 pathInName:		true
 							});
 };
 
