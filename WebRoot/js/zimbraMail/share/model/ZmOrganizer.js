@@ -214,7 +214,6 @@ ZmOrganizer.PATH_IN_NAME	= {};		// if true, provide full path when asked for nam
  * @param params			[hash]		hash of params:
  *        app				[constant]	app that handles this org type
  *        nameKey			[string]	msg key for org name
- *        rootNameKey		[string]	key for name of root (used as tree header)
  *        precondition		[constant]	setting that this org type depends on
  *        defaultFolder		[int]		ID of default folder for this org
  *        soapCmd			[string]	SOAP command for acting on this org
