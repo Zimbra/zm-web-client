@@ -312,15 +312,16 @@ function(actionCode) {
 
 // Private and protected methods
 
-// Creates a participant menu in addition to standard initialization.
 ZmMailListController.prototype._initialize =
 function(view) {
-
 	this._setActiveSearch(view);
 
 	// call base class
 	ZmListController.prototype._initialize.call(this, view);
+};
 
+ZmMailListController.prototype._initializeParticipantActionMenu =
+function(view) {
 	if (!this._participantActionMenu) {
 		var menuItems = this._participantOps();
 		menuItems.push(ZmOperation.SEP);
@@ -333,6 +334,7 @@ function(view) {
 		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._participantActionMenu);
     }
+	return this._participantActionMenu;
 };
 
 ZmMailListController.prototype._initializeToolBar =
@@ -466,6 +468,7 @@ function(ev) {
 
 	if (address && items.length == 1 &&	(ev.field == ZmItem.F_PARTICIPANT || ev.field == ZmItem.F_FROM)) {
 		// show participant menu
+		this._initializeParticipantActionMenu();
 		this._setTagMenu(this._participantActionMenu);
 		this._actionEv.address = address;
 		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
