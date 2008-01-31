@@ -990,7 +990,7 @@ function(appt, shiftKey) {
 		this._quickAddDialog.initialize(appt);
 		this._quickAddDialog.popup();
 	} else {
-		this.newAppointment(appt,ZmCalItem.MODE_NEW_FROM_QUICKADD);
+		this.newAppointment(appt);
 	}
 };
 
@@ -1035,7 +1035,7 @@ function(appt) {
 	if (!appt.__creating) {
 		var calendar = appt.getFolder();
 		var isSynced = Boolean(calendar.url);
-		if (appt.isReadOnly() || isSynced) {
+		if (calendar.isReadOnly() || isSynced) {
 			var mode = appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
 	        var clone = ZmAppt.quickClone(appt);
 			clone.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [clone]));
@@ -1540,7 +1540,7 @@ function() {
 				actionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
 			}
 		}
-		actionMenu.addPopdownListener(this._popdownListener);
+		actionMenu.addPopdownListener(this._menuPopdownListener);
 
 		var menuItems = this._getRecurringActionMenuOps();
 		if (menuItems && menuItems.length > 0) {
@@ -1554,7 +1554,7 @@ function() {
 				var menuItemListener = new AjxListener(item, this._recurringMenuPopup);
 				item.addListener(DwtEvent.ONMOUSEOVER, menuItemListener);
 			}
-			this._recurringActionMenu.addPopdownListener(this._popdownListener);
+			this._recurringActionMenu.addPopdownListener(this._menuPopdownListener);
 		}
 
 		if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {

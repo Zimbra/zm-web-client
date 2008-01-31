@@ -74,12 +74,20 @@
         <fmt:message key="htmlWelcomeMesg"/>
     </app:status>
 </c:if>
-
-<c:if test="${param.actionMessageMovedTrash}" >
-<app:status>
-    <fmt:message key="actionMessageDeleted"/>
-</app:status>
-</c:if>
+<c:choose>
+<c:when test="${param.actionMessageMovedTrash}" >
+    <app:status>
+        <fmt:message key="actionMessageDeleted"/>
+    </app:status>
+</c:when>
+<c:when test="${param.actionMessageMoved}" >
+    <app:status>
+        <fmt:message  key="actionSingleMessageMoved">
+            <fmt:param value="${param.movedFolderName}"/>
+        </fmt:message>
+    </app:status>
+</c:when>
+</c:choose>
 
  <%-- switch based on context search types --%>
 <c:choose>

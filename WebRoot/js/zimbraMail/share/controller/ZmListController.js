@@ -527,9 +527,11 @@ function(item) {
 
 ZmListController.prototype._printListener =
 function(ev) {
-	var items = this._listView[this._currentView].getSelection();
+	var listView = this._listView[this._currentView];
+	var items = listView.getSelection();
 	var item = (items instanceof Array) ? items[0] : items;
 	appCtxt.getPrintView().render(item);
+	this._restoreFocus(listView);
 };
 
 ZmListController.prototype._backListener =

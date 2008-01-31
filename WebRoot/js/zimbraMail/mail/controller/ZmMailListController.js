@@ -330,7 +330,7 @@ function(view) {
 		}
     	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
     	this._addMenuListeners(this._participantActionMenu);
-		this._participantActionMenu.addPopdownListener(this._popdownListener);
+		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._participantActionMenu);
     }
 };
@@ -980,14 +980,16 @@ function() {
     if (isFeed) {
         folder.sync();
     } else {
-		var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
 		var hasExternalAccounts = false;
-		if (folder && !isFeed && isEnabled) {
-			var dataSource = folder.getDataSource(null, true);
-			if (dataSource) {
-				hasExternalAccounts = true;
-				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-				dsCollection.importMail([dataSource]);
+		if (!appCtxt.get(ZmSetting.OFFLINE)) {
+			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
+			if (folder && !isFeed && isEnabled) {
+				var dataSource = folder.getDataSource(null, true);
+				if (dataSource) {
+					hasExternalAccounts = true;
+					var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+					dsCollection.importMail([dataSource]);
+				}
 			}
 		}
 

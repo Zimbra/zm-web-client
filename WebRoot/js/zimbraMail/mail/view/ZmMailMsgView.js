@@ -729,9 +729,11 @@ function(msg, idoc, id, iframe) {
 		}
 
 		ZmMailMsgView._resetIframeHeight(self, iframe);
-		msg.setHtmlContent(this._htmlBody);
-		msg.showImages = true;
-	};
+        if(msg){
+            msg.setHtmlContent(this._htmlBody);
+            msg.showImages = true;
+        }
+    };
 	return func;
 };
 
@@ -1692,7 +1694,8 @@ ZmMailMsgView._swapIdAndSrc =
 function (image, i, len, msg, idoc, iframe, view) {
 	image.src = image.getAttribute("dfsrc");
 	if (i == len - 1) {
-		msg.setHtmlContent(idoc.documentElement.innerHTML);
+        if(msg)
+            msg.setHtmlContent(idoc.documentElement.innerHTML);
 		view._resetIframeHeightOnTimer(iframe);
 	}
 };
