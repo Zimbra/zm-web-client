@@ -250,7 +250,6 @@ function(view) {
 ZmListController.prototype._initialize =
 function(view) {
 	this._initializeToolBar(view);
-	this._initializeActionMenu();
 	this._initializeListView(view);
 	this._initializeTabGroup(view);
 };
