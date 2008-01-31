@@ -23,7 +23,8 @@
     <c:set var="composeformat" value="${mailbox.prefs.composeFormat}" />
     <c:set var="isHtml" value="${composeformat eq 'html'}"/>
 </app:handleError>
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<!--bug: 21462 yui editor freezes in IE7 without without this header -->
 <app:handleError>
     <c:choose>
         <c:when test="${!empty param.id or !empty compose.draftId or !empty requestScope.draftid}">
@@ -194,8 +195,8 @@
                             </c:if>
                             <tr>
                                 <td colspan="3"  width="100%" >
-                                    <textarea class='MsgCompose' name="body" id="body" rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea>
-                                    <!-- <textarea class='MsgCompose' name="body" id="bodyText" rows="30" cols="80" style='width:100%'></textarea> -->
+                                    <textarea class='MsgCompose' name="body" id="body" rows="30" cols="80" style='width:100%'>${fn:escapeXml(isHtml ? (empty compose.htmlContent ?  compose.content : compose.htmlContent) : compose.content)}</textarea>
+                                    <!-- <textarea class='MsgCompose' name="body"  rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea> -->
                                    <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' /> 
                                     
                                 </td>
@@ -281,7 +282,7 @@
         myEditor.on('editorContentLoaded', function() {
             setTimeout(function() {
                 var b = document.getElementById('body');
-                var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
+                var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
                 myEditor.setEditorHTML(html);
             }, 1000);
         }, myEditor, true);
