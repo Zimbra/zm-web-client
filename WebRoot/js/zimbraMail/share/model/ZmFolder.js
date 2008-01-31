@@ -383,11 +383,8 @@ function(pathOnly) {
 
 ZmFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup, useSystemName) {
-	var name = (useSystemName && this._systemName) ? this._systemName : this.name;
-	name = (maxLength && name.length > maxLength) ? name.substring(0, maxLength - 3) + "..." : name;
-	if (this.nId == ZmOrganizer.ID_ROOT) {
-		return ZmMsg.folders;
-	} else if (this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_OUTBOX) {
+	if (this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_OUTBOX) {
+		var name = (useSystemName && this._systemName) ? this._systemName : this.name;
 		if (showUnread && this.numTotal > 0) {
 			name = [name, " (", this.numTotal, ")"].join("");
 			if (!noMarkup) {
@@ -396,7 +393,7 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 		}
 		return name;
 	} else {
-		return this._markupName(name, showUnread, noMarkup);
+		return ZmOrganizer.prototype.getName.apply(this, arguments);
 	}
 };
 

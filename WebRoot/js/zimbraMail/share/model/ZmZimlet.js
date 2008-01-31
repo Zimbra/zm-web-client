@@ -86,11 +86,6 @@ function(name) {
 };
 
 // Public methods
-ZmZimlet.prototype.getName =
-function() {
-	return (this.id == ZmZimlet.ID_ZIMLET_ROOT) ? ZmMsg.zimlets : this.name;
-};
-
 ZmZimlet.prototype.resetNames =
 function() {
 	var oldName = this.name;

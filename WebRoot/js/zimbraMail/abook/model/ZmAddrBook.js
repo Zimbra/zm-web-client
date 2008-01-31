@@ -76,12 +76,6 @@ function() {
 	return "ZmAddrBook";
 };
 
-ZmAddrBook.prototype.getName = 
-function(showUnread, maxLength, noMarkup) {
-	var name = (this.nId == ZmOrganizer.ID_ROOT) ? ZmMsg.addressBooks : this.name;
-	return this._markupName(name, showUnread, noMarkup);
-};
-
 ZmAddrBook.prototype.getIcon = 
 function() {
 	if (this.nId == ZmFolder.ID_ROOT)			{ return null; }

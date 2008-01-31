@@ -101,13 +101,6 @@ ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 ZmOrganizer.ID_MY_CARD			= -15;
 
-ZmOrganizer.MSG_KEY 			= {};		// keys for org names
-ZmOrganizer.ITEM_ORGANIZER 		= {};		// primary organizer for item types
-ZmOrganizer.DEFAULT_FOLDER 		= {};		// default folder for org type
-ZmOrganizer.SOAP_CMD 			= {};		// SOAP command for modifying an org
-ZmOrganizer.FIRST_USER_ID 		= {};		// lowest valid user ID for an org type
-ZmOrganizer.PRECONDITION 		= {};		// setting that this org type depends on
-
 // fields that can be part of a displayed organizer
 ZmOrganizer.F_NAME				= "name";
 ZmOrganizer.F_UNREAD			= "unread";
@@ -188,6 +181,13 @@ ZmOrganizer.COLOR_CHOICES = [];
 })();
 
 
+ZmOrganizer.MSG_KEY 		= {};		// keys for org names
+ZmOrganizer.ROOT_MSG_KEY	= {};		// key for name of root (used as tree header)
+ZmOrganizer.ITEM_ORGANIZER 	= {};		// primary organizer for item types
+ZmOrganizer.DEFAULT_FOLDER 	= {};		// default folder for org type
+ZmOrganizer.SOAP_CMD 		= {};		// SOAP command for modifying an org
+ZmOrganizer.FIRST_USER_ID 	= {};		// lowest valid user ID for an org type
+ZmOrganizer.PRECONDITION 	= {};		// setting that this org type depends on
 ZmOrganizer.HAS_COLOR 		= {};		// whether an org uses colors
 ZmOrganizer.DEFAULT_COLOR 	= {};		// default color for each org type
 ZmOrganizer.ORG_COLOR 		= {};		// color overrides by ID
@@ -203,6 +203,7 @@ ZmOrganizer.TYPE 			= {};		// types by view (reverse map of above)
 ZmOrganizer.FOLDER_KEY 		= {};		// keys for label "[org] folder"
 ZmOrganizer.MOUNT_KEY 		= {}		// keys for label "mount [org]"
 ZmOrganizer.DEFERRABLE 		= {};		// creation can be deferred to app launch
+ZmOrganizer.PATH_IN_NAME	= {};		// if true, provide full path when asked for name
 
 // Abstract methods
 
@@ -213,6 +214,7 @@ ZmOrganizer.DEFERRABLE 		= {};		// creation can be deferred to app launch
  * @param params			[hash]		hash of params:
  *        app				[constant]	app that handles this org type
  *        nameKey			[string]	msg key for org name
+ *        rootNameKey		[string]	key for name of root (used as tree header)
  *        precondition		[constant]	setting that this org type depends on
  *        defaultFolder		[int]		ID of default folder for this org
  *        soapCmd			[string]	SOAP command for acting on this org
@@ -233,6 +235,7 @@ ZmOrganizer.DEFERRABLE 		= {};		// creation can be deferred to app launch
  *        compareFunc		[string]	name of function for comparing instances of this org
  *        deferrable		[boolean]	true if creation can be deferred to app launch
  *        shortcutKey		[string]	letter encoding of this org type for custom shortcuts
+ *        pathInName		[boolean]	if true, provide full path when asked for name
  */
 ZmOrganizer.registerOrg =
 function(org, params) {
@@ -251,6 +254,7 @@ function(org, params) {
 	if (params.folderKey)		{ ZmOrganizer.FOLDER_KEY[org]			= params.folderKey; }
 	if (params.mountKey)		{ ZmOrganizer.MOUNT_KEY[org]			= params.mountKey; }
 	if (params.deferrable)		{ ZmOrganizer.DEFERRABLE[org]			= params.deferrable; }
+	if (params.pathInName)		{ ZmOrganizer.PATH_IN_NAME[org]			= params.pathInName; }
 
 	if (!appCtxt.isChildWindow) {
 		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }
@@ -518,7 +522,13 @@ function() {
 */
 ZmOrganizer.prototype.getName = 
 function(showUnread, maxLength, noMarkup, useSystemName) {
+    if (this.nId == ZmFolder.ID_ROOT) {
+		return ZmOrganizer.LABEL[this.type] ? ZmMsg[ZmOrganizer.LABEL[this.type]] : "";
+    }
 	var name = (useSystemName && this._systemName) ? this._systemName : this.name;
+    if (ZmOrganizer.PATH_IN_NAME[this.type] && this.path) {
+    	name = [this.path, name].join("/");
+    }
 	name = (maxLength && name.length > maxLength) ? name.substring(0, maxLength - 3) + "..." : name;
 	return this._markupName(name, showUnread, noMarkup);
 };

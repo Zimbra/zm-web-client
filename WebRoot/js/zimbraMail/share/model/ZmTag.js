@@ -117,14 +117,6 @@ function(params, ex) {
 	return false;
 };
 
-ZmTag.prototype.getName = 
-function(showUnread, maxLength, noMarkup) {
-	if (this.id == ZmOrganizer.ID_ROOT)
-		return ZmMsg.tags;
-
-	return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
-};
-
 ZmTag.prototype.getIcon = 
 function() {
 	return (this.id == ZmOrganizer.ID_ROOT) ? null : ZmTag.COLOR_ICON[this.color];

@@ -48,13 +48,6 @@ function() {
 	return "ZmTaskFolder";
 };
 
-ZmTaskFolder.prototype.getName =
-function(showUnread, maxLength, noMarkup) {
-    if (this.id == ZmFolder.ID_ROOT) return ZmMsg.tasks;
-    if (this.path) return [this.path, this.name].join("/");
-    return this.name;
-};
-
 ZmTaskFolder.prototype.getIcon =
 function() {
 	if (this.id == ZmFolder.ID_ROOT)	{ return null; }

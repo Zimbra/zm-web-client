@@ -75,18 +75,6 @@ function(params, ex) {
 	}
 };
 
-ZmCalendar.prototype.getName = 
-function(showUnread, maxLength, noMarkup, useSystemName) {
-    if (this.nId == ZmOrganizer.ID_ROOT) {
-    	return ZmMsg.calendars;
-    }
-	var name = (useSystemName && this._systemName) ? this._systemName : this.name;
-    if (this.path) {
-    	return [this.path, name].join("/");
-    }
-    return name;
-};
-
 ZmCalendar.prototype.getIcon = 
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
