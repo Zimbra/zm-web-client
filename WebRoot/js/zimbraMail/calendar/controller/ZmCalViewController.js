@@ -82,8 +82,6 @@ ZmCalViewController = function(container, calApp) {
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmController.CAL_MONTH_VIEW;
 	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmController.CAL_SCHEDULE_VIEW;
 
-	this._initializeViewActionMenu();
-
 	this._errorCallback = new AjxCallback(this, this._handleError);
 };
 
@@ -1471,31 +1469,6 @@ function(msgDialog) {
 	this._refreshAction(false);
 };
 
-/**
- * action menu for right-clicking on the view background
- */
-ZmCalViewController.prototype._initializeViewActionMenu =
-function() {
-	if (this._viewActionMenu) return;
-
-	var menuItems = this._getViewActionMenuOps();
-	if (!menuItems) return;
-	var overrides = {};
-	overrides[ZmOperation.TODAY] = {textKey:"todayGoto"};
-	var params = {parent:this._shell, menuItems:menuItems, overrides:overrides};
-	this._viewActionMenu = new ZmActionMenu(params);
-	menuItems = this._viewActionMenu.opList;
-	for (var i = 0; i < menuItems.length; i++) {
-		var menuItem = menuItems[i];
-		if (menuItem == ZmOperation.CAL_VIEW_MENU) {
-			var menu = this._viewActionMenu.getOp(ZmOperation.CAL_VIEW_MENU).getMenu();
-			this._initCalViewMenu(menu);
-		} else if (this._listeners[menuItem]) {
-			this._viewActionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
-		}
-	}
-};
-
 ZmCalViewController.prototype._initCalViewMenu =
 function(menu) {
 	menu.addSelectionListener(ZmOperation.DAY_VIEW, this._listeners[ZmOperation.DAY_VIEW]);
@@ -1643,6 +1616,24 @@ function(ev) {
 
 ZmCalViewController.prototype._viewActionListener =
 function(ev) {
+	if (!this._viewActionMenu) {
+		var menuItems = this._getViewActionMenuOps();
+		if (!menuItems) return;
+		var overrides = {};
+		overrides[ZmOperation.TODAY] = {textKey:"todayGoto"};
+		var params = {parent:this._shell, menuItems:menuItems, overrides:overrides};
+		this._viewActionMenu = new ZmActionMenu(params);
+		menuItems = this._viewActionMenu.opList;
+		for (var i = 0; i < menuItems.length; i++) {
+			var menuItem = menuItems[i];
+			if (menuItem == ZmOperation.CAL_VIEW_MENU) {
+				var menu = this._viewActionMenu.getOp(ZmOperation.CAL_VIEW_MENU).getMenu();
+				this._initCalViewMenu(menu);
+			} else if (this._listeners[menuItem]) {
+				this._viewActionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
+			}
+		}
+	}
 	this._viewActionMenu.__view = ev.item;
 	this._viewActionMenu.popup(0, ev.docX, ev.docY);
 };
