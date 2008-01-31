@@ -1540,7 +1540,7 @@ function() {
 				actionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
 			}
 		}
-		actionMenu.addPopdownListener(this._popdownListener);
+		actionMenu.addPopdownListener(this._menuPopdownListener);
 
 		var menuItems = this._getRecurringActionMenuOps();
 		if (menuItems && menuItems.length > 0) {
@@ -1554,7 +1554,7 @@ function() {
 				var menuItemListener = new AjxListener(item, this._recurringMenuPopup);
 				item.addListener(DwtEvent.ONMOUSEOVER, menuItemListener);
 			}
-			this._recurringActionMenu.addPopdownListener(this._popdownListener);
+			this._recurringActionMenu.addPopdownListener(this._menuPopdownListener);
 		}
 
 		if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {

@@ -227,7 +227,7 @@ ZmChatListController.prototype._initializeActionMenu = function(view) {
 			this._actionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
 		}
 	}
-	this._actionMenu.addPopdownListener(this._popdownListener);
+	this._actionMenu.addPopdownListener(this._menuPopdownListener);
 
 };
 
