@@ -276,7 +276,7 @@ function(reqId) {
  */
 ZmRequestMgr.prototype._handleHeader =
 function(hdr) {
-	if (!hdr) return;
+	if (!hdr) { return; }
 
 	// update change token if we got one
 	if (hdr && hdr.context && hdr.context.change) {
@@ -288,27 +288,16 @@ function(hdr) {
 		this._refreshHandler(hdr.context.refresh);
 	}
 
-	// for zdesktop to display online | offline and to prompt changepassword
-	if (hdr && hdr.context.zdsync) {
-        if (hdr.context.zdsync.account) {
-            for (var i = 0; i < hdr.context.zdsync.account.length; i++) {
-                var userId = appCtxt.get(ZmSetting.USERNAME);
-                if (hdr.context.zdsync.account[i].name == userId) {
-                    this._offlineHandler(hdr.context.zdsync.account[i]);
-                    break;
-                }
-            }
-        }
-        if (hdr.context.zdsync.datasource) {
-            for (var j=0; j < hdr.context.zdsync.datasource.length; j++) {
-                var userId1 = appCtxt.get(ZmSetting.USERNAME);
-                if (hdr.context.zdsync.datasource[j].name == userId1) {
-                    this._offlineHandler(hdr.context.zdsync.datasource[j]);
-                    break;
-                }
-            }
-        }
-    }
+	// offline/zdesktop only
+	if (hdr && hdr.context.zdsync && hdr.context.zdsync.account) {
+		var acctList = hdr.context.zdsync.account;
+		for (var i = 0; i < acctList.length; i++) {
+			var acct = appCtxt.getAccount(acctList[i].id);
+			if (acct) {
+				acct.updateState(acctList[i]);
+			}
+		}
+	}
 };
 
 /**
@@ -337,41 +326,6 @@ function(ex, params) {
 	
 	if (!handled) {
 		this._controller._handleException(ex, params);
-	}
-};
-
-/**
- * A <zdsync> block is returned in all SOAP responses for the offline client
- * with the status of offline sync process.
- *
- * @param account	[object]	zdsync block (JSON)
- */
-ZmRequestMgr.prototype._offlineHandler =
-function(account) {
-	var offlineStat = document.getElementById("skin_container_offline_status");
-    ZmRequestMgr.offlineError = null;
-	if (offlineStat) {
-		if (account.state == "RUNNING") {
-			offlineStat.innerHTML = "<span class='ImgImAvailable' style='padding-left: 18px;padding-bottom:3px;'>online</span>";
-		} else if (account.state == "OFFLINE") {
-			offlineStat.innerHTML = "<span class='ImgOffline' style='padding-left: 18px; padding-bottom:3px;'>offline</span>";
-		} else if (account.state == "ONLINE") {
-			offlineStat.innerHTML = "<span class='ImgImAvailable' style='padding-left: 18px; padding-bottom:3px;'>online</span>";
-		} else if (account.state == "ERROR") {
-            offlineStat.innerHTML = "<a href='#' class='ImgClose' style='padding-left: 18px; padding-bottom:3px;' onclick='ZmRequestMgr.showOfflineError();'>"+ZmMsg.ALT_ERROR+" (click to see error)</a>";
-			if (account.error[0].code == "REMOTEAUTH") {
-				alert("Your account password for " + account.name + " has been changed. Update the account password in offine client to sync.");
-				window.location.href = "http://localhost:7633/zimbra/";
-			}
-            ZmRequestMgr.offlineError = account.error[0];
-        }
-    }
-};
-
-ZmRequestMgr.showOfflineError =
-function(){
-	if (ZmRequestMgr.offlineError) {
-		appCtxt.getAppController().popupErrorDialog(ZmRequestMgr.offlineError.message, ZmRequestMgr.offlineError.exception, null, true);
 	}
 };
 

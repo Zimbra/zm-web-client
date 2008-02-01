@@ -102,11 +102,8 @@ BODY						{	margin:0px; 				}
 }
 #skin_container_offline_status			{	
 	position:absolute; 
-	white-space:nowrap; 
-	height:auto;
-	right:12px;
-	top:5px;
-	z-index:2;
+	left:10px;
+	top:6px;
 }
 
 

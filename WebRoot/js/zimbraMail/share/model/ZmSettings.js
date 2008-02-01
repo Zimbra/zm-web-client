@@ -489,6 +489,7 @@ function() {
 	this.registerSetting("SKIN_APP_TOP_TOOLBAR_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_app_top_toolbar"});
 	this.registerSetting("SKIN_CURRENT_APP_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_current_app"});
 	this.registerSetting("SKIN_LOGO_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_logo"});
+	this.registerSetting("SKIN_OFFLINE_STATUS",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_offline_status"});
 	this.registerSetting("SKIN_QUOTA_INFO_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_quota"});
 	this.registerSetting("SKIN_SASH_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_tree_app_sash"});
 	this.registerSetting("SKIN_SEARCH_BUILDER_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_search_builder"});

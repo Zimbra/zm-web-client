@@ -108,6 +108,30 @@ function() {
 	return this.dummyIdentity;
 };
 
+ZmZimbraAccount.prototype.updateState =
+function(acctInfo) {
+	this.lastSync = acctInfo.lastsync;
+	if (this.status != acctInfo.status) {
+		this.status = acctInfo.status;
+		if (this.isMain || this.visible) {
+			appCtxt.getOverviewController().updateAccountIcon(this, this.getStatusIcon());
+		}
+	}
+};
+
+ZmZimbraAccount.prototype.getStatusIcon =
+function() {
+	switch (this.status) {
+		case "unknown":		return "ImgOffline";
+		case "offline":		return "ImgImAway";
+		case "online":		return "ImgImAvailable";
+		case "running":		return "DwtWait16Icon";
+		case "authfailed":	return "ImgImDnd";
+		case "error":		return "ImgCritical";
+	}
+	return "";
+};
+
 ZmZimbraAccount.createFromDom =
 function(node) {
 	var acct = new ZmZimbraAccount();

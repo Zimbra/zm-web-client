@@ -340,7 +340,12 @@ function() {
 			var data = {};
 			var acct = data.account = accts[i];
 			if (acct.visible) {
-				var item = accordion.addAccordionItem({title:acct.getDisplayName(), data:data});
+				var params = {
+					title: acct.getDisplayName(),
+					data: data,
+					icon:acct.getStatusIcon()
+				};
+				var item = accordion.addAccordionItem(params);
 				acct.itemId = item.id;
 				if (appCtxt.getActiveAccount() == acct) {
 					this._activateAccordionItem(item);
