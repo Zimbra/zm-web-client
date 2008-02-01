@@ -108,6 +108,17 @@ function() {
 	return this.dummyIdentity;
 };
 
+ZmZimbraAccount.prototype.getToolTip =
+function() {
+	if (this.status || this.lastSync) {
+		var lastSyncDate = this.lastSync ? (new Date(parseInt(this.lastSync))) : null;
+		var lastSyncStr = lastSyncDate ? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null;
+
+		return AjxTemplate.expand("share.App#ZimbraAccountTooltip", {lastSync:lastSyncStr, status:this.status});
+	}
+	return "";
+};
+
 ZmZimbraAccount.prototype.updateState =
 function(acctInfo) {
 	this.lastSync = acctInfo.lastsync;

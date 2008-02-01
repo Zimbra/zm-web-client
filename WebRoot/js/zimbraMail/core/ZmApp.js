@@ -331,7 +331,11 @@ function() {
 		// create accordion
 		var accordionId = this.getOverviewPanelContentId();
 		var accordion = this._overviewPanelContent = this._opc.createAccordion({accordionId:accordionId});
-		accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
+		accordion.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
+		// for now, we only care to show tooltip for offline client
+		if (appCtxt.get(ZmSetting.OFFLINE)) {
+			accordion.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._accordionMouseoverListener));
+		}
 
 		// add an accordion item for each account, and create overview for main account
 		var accts = appCtxt.getZimbraAccounts();
@@ -493,6 +497,15 @@ function() {
 ZmApp.prototype._accordionSelectionListener =
 function(ev) {
 	this._expandAccordionItem(ev.detail);
+	return true;
+};
+
+ZmApp.prototype._accordionMouseoverListener =
+function(ev) {
+	if (ev.detail && ev.item) {
+		var account = ev.detail.data.account;
+		ev.item.setToolTipContent(account.getToolTip());
+	}
 	return true;
 };
 
