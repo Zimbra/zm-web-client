@@ -511,6 +511,12 @@ function(show, delay) {
 	appCtxt.getAppViewMgr().showTreeFooter(show);
 };
 
+// common API shared by tasks app
+ZmCalendarApp.prototype.getListController =
+function() {
+	return this.getCalController();
+};
+
 ZmCalendarApp.prototype.getCalController =
 function() {
 	if (!this._calController) {

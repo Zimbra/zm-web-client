@@ -349,7 +349,19 @@ function(calItem) {
 
 	// save field values of this view w/in given appt
 	calItem.setName(this._subjectField.getValue());
+
 	var folderId = this._folderSelect.getValue();
+	if (this._mode != ZmCalItem.MODE_NEW && this._calItem.folderId != folderId) {
+		// if moving existing calitem across mail boxes, cache the new folderId
+		// so we can save it as a separate request
+		var origFolder = appCtxt.getById(this._calItem.folderId);
+		var newFolder = appCtxt.getById(folderId);
+		if (origFolder.isRemote() || newFolder.isRemote()) {
+			calItem.__newFolderId = folderId;
+			folderId = this._calItem.folderId;
+		}
+	}
+
 	calItem.setFolderId(folderId);
 	calItem.setOrganizer(this._calendarOrgs[folderId]);
 
