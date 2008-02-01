@@ -964,8 +964,8 @@ function(msg, container, callback) {
 	    								   this._dateObjectHandlerDate);
 
 		subject 	= this._objectManager.findObjects(subject, true);
-		sentBy		= this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL);
-		dateString	= this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE);
+		sentBy		= this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL); 
+        dateString	= this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE);
 		if (obo) {
 			obo		= this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
 		}
@@ -995,7 +995,7 @@ function(msg, container, callback) {
 					parts[idx++] = this._objectManager
 						? (this._objectManager.findObjects(email, true, ZmObjectManager.EMAIL))
 						: email.address;
-				} else {
+                } else {
 					parts[idx++] = AjxStringUtil.htmlEncode(email.name);
 				}
 			}
@@ -1047,7 +1047,6 @@ function(msg, container, callback) {
 		this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener))
 	}
 
-	this._expandRows(this._expandHeader);
 
 	// add the close button if applicable
 	if (this._hasHeaderCloseBtn) {
@@ -1097,7 +1096,9 @@ function(msg, container, callback) {
 		}
 	}
 
-	if (callback) { callback.run(); }
+    this._expandRows(this._expandHeader);
+
+    if (callback) { callback.run(); }
 };
 
 ZmMailMsgView.prototype._handleResponseRenderMessage =
