@@ -111,8 +111,11 @@ function() {
 ZmZimbraAccount.prototype.getToolTip =
 function() {
 	if (this.status || this.lastSync) {
-		var lastSyncDate = this.lastSync ? (new Date(parseInt(this.lastSync))) : null;
-		var lastSyncStr = lastSyncDate ? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null;
+		var lastSyncDate = (this.lastSync && this.lastSync != 0)
+			? (new Date(parseInt(this.lastSync))) : null;
+
+		var lastSyncStr = lastSyncDate
+			? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null;
 
 		return AjxTemplate.expand("share.App#ZimbraAccountTooltip", {lastSync:lastSyncStr, status:this.status});
 	}
