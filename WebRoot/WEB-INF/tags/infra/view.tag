@@ -266,7 +266,7 @@
 											<fmt:message var="unlimited" key="unlimited"/>
 											<fmt:message key="quotaUsage">
 												<fmt:param value="${usage}"/>
-												<fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
+												<fmt:param value="${max == null || max == '' || max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
 											</fmt:message>
 										</td>
 									</tr>
