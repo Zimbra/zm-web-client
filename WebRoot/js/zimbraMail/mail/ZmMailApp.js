@@ -673,8 +673,9 @@ function(notify) {
 	var newDeletedIds = [];
 	for (var i = 0; i < deletedIds.length; i++) {
 		var id = deletedIds[i];
-		if (id < 0) {
-			virtConv[id] = true;
+		var nId = ZmOrganizer.normalizeId(id);
+		if (nId < 0) {
+			virtConv[nId] = true;
 			virtConvDeleted = true;
 		} else {
 			newDeletedIds.push(id);
@@ -709,13 +710,14 @@ function(notify) {
 	for (var i = 0; i < modList.length; i++) {
 		var mod = modList[i];
 		var id = mod.id;
+		var nId = ZmOrganizer.normalizeId(id);
 		var name = mod._name;
 		if (name == "m") {
-			var virtCid = id * -1;
+			var virtCid = nId * -1;
 			if (virtConv[virtCid] && createdConvs[mod.cid]) {
 				msgMoved = true;
 				movedMsgs[id] = mod;
-				newToOldCid[mod.cid] = virtCid;
+				newToOldCid[mod.cid] = appCtxt.multiAccounts ? ZmOrganizer.getSystemId(virtCid) : virtCid;
 				createdConvs[mod.cid]._wasVirtConv = true;
 				createdConvs[mod.cid].m = [{id:id}];
 				// go ahead and update the msg cid, since it's used in
