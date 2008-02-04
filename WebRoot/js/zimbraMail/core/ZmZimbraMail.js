@@ -279,9 +279,11 @@ function() {
  */
 ZmZimbraMail.prototype.startup =
 function(params) {
-	if (appCtxt.get(ZmSetting.OFFLINE)) {
-		this.setInstantNotify(true);
-	}
+
+	// bug: 23432 - disable instant notify until we figure out why it causes FF2 to lockup
+//	if (appCtxt.get(ZmSetting.OFFLINE)) {
+//		this.setInstantNotify(true);
+//	}
 
 	appCtxt.inStartup = true;
 	if (typeof(skin) == "undefined") {
@@ -865,8 +867,14 @@ function(kickMe) {
  */
 ZmZimbraMail.prototype._kickPolling =
 function(resetBackoff) {
-	var msg = ["ZmZimbraMail._kickPolling(1) ", this._pollInterval, ", ", this._pollActionId, 
-			   ", ", this._pollRequest ? "request_pending" : "no_request_pending"].join("");
+	var msg = [
+		"ZmZimbraMail._kickPolling(1) ",
+		this._pollInterval,
+		", ",
+		this._pollActionId,
+		", ",
+		this._pollRequest ? "request_pending" : "no_request_pending"
+	].join("");
     DBG.println(AjxDebug.DBG2, msg);
 
     // reset the polling timeout
@@ -915,17 +923,20 @@ function() {
             method.setAttribute("wait", 1);
             method.setAttribute("limitToOneBlocked", 1);
         }
-        var responseCallback = new AjxCallback(this, this._handleResponseDoPoll);
-        var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
-
-        this._pollRequest = this.sendRequest({soapDoc:soapDoc, asyncMode:true, callback:responseCallback, errorCallback:errorCallback,
-        									  noBusyOverlay:true, timeout:appCtxt.get(ZmSetting.INSTANT_NOTIFY_TIMEOUT)});
+		var params = {
+			soapDoc: soapDoc,
+			asyncMode: true,
+			callback: new AjxCallback(this, this._handleResponseDoPoll),
+			errorCallback: new AjxCallback(this, this._handleErrorDoPoll),
+			noBusyOverlay: true,
+			timeout: appCtxt.get(ZmSetting.INSTANT_NOTIFY_TIMEOUT)
+		};
+        this._pollRequest = this.sendRequest(params);
     } catch (ex) {
         // oops!
         this._handleErrorDoPoll(ex);
     }
-}
-
+};
 
 ZmZimbraMail.prototype._handleErrorDoPoll =
 function(ex) {
@@ -944,8 +955,7 @@ function(ex) {
     return (ex.code != ZmCsfeException.SVC_AUTH_EXPIRED &&
   			ex.code != ZmCsfeException.SVC_AUTH_REQUIRED &&
   			ex.code != ZmCsfeException.NO_AUTH_TOKEN);
-  };
-
+};
 
 ZmZimbraMail.prototype._handleResponseDoPoll =
 function(result) {
