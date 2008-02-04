@@ -1065,7 +1065,7 @@ function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 
 	// remember selected index if told to
 	var selItem = saveSelection ? this._listView[this._currentView].getSelection()[0] : null;
-	var selectedIdx = selItem ? this._listView[this._currentView]._getItemIndex(selItem) : -1;
+	var selectedIdx = selItem ? this._listView[this._currentView].getItemIndex(selItem) : -1;
 
 	this._setViewContents(view);
 	this.pageIsDirty[this.currentPage] = false;

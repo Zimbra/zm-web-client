@@ -258,10 +258,11 @@ function(actionCode) {
 				}
 				if (start) {
 					if (sel && sel.length) {
-						index = (actionCode == ZmKeyMap.NEXT_UNREAD) ? lv._getItemIndex(start) + 1 :
-																	   lv._getItemIndex(start) - 1;
+						index = (actionCode == ZmKeyMap.NEXT_UNREAD)
+							? (lv.getItemIndex(start) + 1)
+							: (lv.getItemIndex(start) - 1);
 					} else {
-						index = lv._getItemIndex(start);
+						index = lv.getItemIndex(start);
 					}
 					var unreadItem = null;
 					while ((index >= 0 && index < size) && !unreadItem) {
