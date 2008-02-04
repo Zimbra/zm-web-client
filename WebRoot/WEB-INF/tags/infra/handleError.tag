@@ -30,7 +30,7 @@
             <app:status style="Critical">
                 <fmt:message key="${error.code}"/>
             </app:status>
-            <!-- ${fn:escapeXml(error.stackStrace)} -->
+            <!-- ${fn:escapeXml(error.id)} -->
         </c:otherwise>
     </c:choose>
 </c:if>
