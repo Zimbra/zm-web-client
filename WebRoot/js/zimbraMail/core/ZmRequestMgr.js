@@ -285,7 +285,11 @@ function(hdr) {
 
 	if (hdr && hdr.context && hdr.context.refresh) {
 		this._highestNotifySeen = 0;
-		this._refreshHandler(hdr.context.refresh);
+		// bug: 24269 - offline does not handle refresh block well so ignore it
+		// until we find a better solution
+		if (!appCtxt.get(ZmSetting.OFFLINE)) {
+			this._refreshHandler(hdr.context.refresh);
+		}
 	}
 
 	// offline/zdesktop only
