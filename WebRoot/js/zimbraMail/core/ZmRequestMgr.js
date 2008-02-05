@@ -287,7 +287,7 @@ function(hdr) {
 		this._highestNotifySeen = 0;
 		// bug: 24269 - offline does not handle refresh block well so ignore it
 		// until we find a better solution
-		if (!appCtxt.get(ZmSetting.OFFLINE)) {
+		if (!appCtxt.get(ZmSetting.OFFLINE) || !appCtxt.multiAccounts) {
 			this._refreshHandler(hdr.context.refresh);
 		}
 	}
