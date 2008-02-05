@@ -586,13 +586,15 @@ function(params) {
 	params.identity = identity;
 	this._currentSignatureId = identity.signature;
 
-	this.initComposeView(null, params.composeMode);
+    this._composeMode = params.composeMode ? params.composeMode : this._getComposeMode(msg, identity);
+    if(!this._composeView) {
+        this.initComposeView(null, this._composeMode);
+     } else {
+        this._composeView.setComposeMode(this._composeMode);
+    }
 
-	this._initializeToolBar();
+    this._initializeToolBar();
 	this.resetToolbarOperations(this._toolbar);
-
-	this._composeMode = params.composeMode ? params.composeMode : this._getComposeMode(msg, identity);
-	this._composeView.setComposeMode(this._composeMode);
 
 	this._setOptionsMenu(this._composeMode, identity);
 	this._setAddSignatureVisibility(identity);
