@@ -143,3 +143,27 @@ function(overviewId, treeId) {
 	if (!overviewId || !treeId) { return null; }
 	return this.getOverview(overviewId).getTreeView(treeId);
 };
+
+/**
+ * For offline/zdesktop, this method updates the status icon for each account
+ * as returned by each server response in the context part of the SOAP header
+ *
+ * @param accountList	[Array]		JSON list of accounts that need to be updated
+ */
+ZmOverviewController.prototype.updateAccountIcon =
+function(account, icon) {
+	// if multi-account, update accordion item's status icon for each account
+	if (appCtxt.multiAccounts) {
+		for (var i in this._accordion) {
+			var accordionItem = this._accordion[i].getItem(account.itemId);
+			if (accordionItem) {
+				accordionItem.setIcon(icon);
+			}
+		}
+	} else {
+		var el = document.getElementById(ZmSetting.SKIN_OFFLINE_STATUS);
+		if (el) {
+			el.className = icon;
+		}
+	}
+};

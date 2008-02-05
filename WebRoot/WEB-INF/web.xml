@@ -22,7 +22,7 @@
     -->
 	<context-param>
 	   <param-name>zimbra.jsp.session.timeout</param-name>
-	   <param-value>900</param-value>
+	   <param-value>300</param-value>
 	</context-param>
 	<context-param>
         <!-- how long to cache the result of the zm:getDomainInfo tag result  -->

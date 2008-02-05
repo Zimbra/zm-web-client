@@ -46,15 +46,15 @@ function(calItem, mode, isDirty) {
 
 	this._initToolbar(mode);
 	var initial = this.initComposeView();
-	this._setFormatBtnItem(true);
 
 	this._app.pushView(this._getViewType());
 	this._composeView.set(calItem, mode, isDirty);
 	this._composeView.reEnableDesignMode();
 	this._composeView.applyCaretHack();
 
-	if (initial)
+	if (initial) {
 		this._setComposeTabGroup();
+	}
 };
 
 ZmCalItemComposeController.prototype._preHideCallback =
@@ -188,6 +188,25 @@ function() {
 	return this._composeView;
 };
 
+// inits check mark for menu item depending on compose mode preference
+ZmCalItemComposeController.prototype.setFormatBtnItem =
+function(skipNotify, composeMode) {
+	var mode;
+	if (composeMode) {
+		mode = composeMode;
+	} else {
+		var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+		var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+		mode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
+			? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+	}
+
+	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+	if (formatBtn) {
+		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, mode, skipNotify);
+	}
+};
+
 // Private / Protected methods
 
 
@@ -259,20 +278,6 @@ function() {
 	}
 
 	this._toolbar.addSelectionListener(ZmOperation.SPELL_CHECK, new AjxListener(this, this._spellCheckListener));
-};
-
-// inits check mark for menu item depending on compose mode preference
-ZmCalItemComposeController.prototype._setFormatBtnItem =
-function(skipNotify) {
-	// based on preference, set the compose mode
-	var bComposeEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
-	var composeFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
-	var composeMode = (bComposeEnabled && composeFormat == ZmSetting.COMPOSE_HTML)
-		? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
-
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-	if (formatBtn)
-		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, composeMode, skipNotify);
 };
 
 ZmCalItemComposeController.prototype._showErrorMessage =
