@@ -41,6 +41,7 @@ ZmMimeTable.AUDIO_MP3			= "audio/mpeg";
 ZmMimeTable.IMG					= "image";
 ZmMimeTable.IMG_GIF				= "image/gif";
 ZmMimeTable.IMG_JPEG			= "image/jpeg";
+ZmMimeTable.IMG_PJPEG			= "image/pjpeg";				// bug 23607
 ZmMimeTable.IMG_PNG				= "image/png";
 ZmMimeTable.IMG_TIFF			= "image/tiff";
 ZmMimeTable.MSG_RFC822			= "message/rfc822";
