@@ -207,7 +207,7 @@ function(contact) {
 	if (!attr) return;
 
 	var val = parseInt(attr.fileAs);
-	var fa = [];
+	var fa;
 	var idx = 0;
 
 	switch (val) {
@@ -216,71 +216,41 @@ function(contact) {
 			// if GAL contact, use full name instead (bug fix #4850,4009)
 			if (contact && contact.isGal)
 				return (attr.fullName || attr.email);
-			if (attr.lastName) fa[idx++] = attr.lastName;
-			if (attr.lastName && attr.firstName) fa[idx++] = ZmMsg.lastCfirstSep;
-			if (attr.firstName) fa[idx++] = attr.firstName;
+			fa = ZmContact.fileAsLastFirst(attr.firstName, attr.lastName);
 		}
 		break;
 
 		case ZmContact.FA_FIRST_LAST: { 										// First Last
-			if (attr.firstName) fa[idx++] = attr.firstName;
-			if (attr.lastName && attr.firstName) fa[idx++] = " ";
-			if (attr.lastName) fa[idx++] = attr.lastName;
+			fa = ZmContact.fileAsFirstLast(attr.firstName, attr.lastName);
 		}
 		break;
 
 		case ZmContact.FA_COMPANY: {											// Company
-			if (attr.company) fa[idx++] = attr.company;
+			if (attr.company) fa = attr.company;
 		}
 		break;
 
 		case ZmContact.FA_LAST_C_FIRST_COMPANY: {								// Last, First (Company)
-			if (attr.lastName) fa[idx++] = attr.lastName;
-			if (attr.lastName && attr.firstName) fa[idx++] = ZmMsg.lastCfirstSep;
-			if (attr.firstName) fa[idx++] = attr.firstName;
-			if (attr.company) {
-				if (attr.lastName || attr.firstName) fa[idx++] = " ";
-				fa[idx++] = "(";
-				fa[idx++] = attr.company;
-				fa[idx++] = ")";
-			}
+			var name = ZmContact.fileAsLastFirst(attr.firstName, attr.lastName);
+			fa = ZmContact.fileAsNameCompany(name, attr.company);
 		}
 		break;
 
 		case ZmContact.FA_FIRST_LAST_COMPANY: {									// First Last (Company)
-			if (attr.firstName) fa[idx++] = attr.firstName;
-			if (attr.lastName && attr.firstName) fa[idx++] = " ";
-			if (attr.lastName) fa[idx++] = attr.lastName;
-			if (attr.company) {
-				if (attr.lastName || attr.firstName) fa[idx++] = " ";
-				fa[idx++] = "(";
-				fa[idx++] = attr.company;
-				fa[idx++] = ")";
-			}
+			var name = ZmContact.fileAsFirstLast(attr.firstName, attr.lastName);
+			fa = ZmContact.fileAsNameCompany(name, attr.company);
 		}
 		break;
 
-		case ZmContact.FA_COMPANY_LAST_C_FIRST: {								// Company (Last,  First)
-			if (attr.company) fa[idx++] = attr.company;
-			if (attr.lastName || attr.firstName) {
-				fa[idx++] = " (";
-				if (attr.lastName) fa[idx++] = attr.lastName;
-				if (attr.lastName && attr.firstName) fa[idx++] = ZmMsg.lastCfirstSep;
-				if (attr.firstName) fa[idx++] = attr.firstName;
-				fa[idx++] = ")";
-			}
+		case ZmContact.FA_COMPANY_LAST_C_FIRST: {								// Company (Last, First)
+			var name = ZmContact.fileAsLastFirst(attr.firstName, attr.lastName);
+			fa = ZmContact.fileAsCompanyName(name, attr.company);
 		}
 		break;
 
 		case ZmContact.FA_COMPANY_FIRST_LAST: {									// Company (First Last)
-			if (attr.company) fa[idx++] = attr.company;
-			if (attr.lastName || attr.firstName) {
-				fa[idx++] = " (";
-				if (attr.firstName) fa[idx++] = attr.firstName;
-				if (attr.lastName && attr.firstName) fa[idx++] = " ";
-				if (attr.lastName) fa[idx++] = attr.lastName;
-				fa[idx++] = ")";
-			}
+			var name = ZmContact.fileAsFirstLast(attr.firstName, attr.lastName);
+			fa = ZmContact.fileAsCompanyName(name, attr.company);
 		}
 		break;
 
@@ -289,9 +259,52 @@ function(contact) {
 		}
 		break;
 	}
-	var fileAs = fa.join("");
-	return fileAs.length ? fileAs : (attr.fullName || "");
+	return fa || attr.fullName || "";
 };
+
+/**
+* Name printing helper.  e.g. First Last
+*/
+ZmContact.fileAsFirstLast =
+function(first, last) {
+	if (first && last)
+		return AjxMessageFormat.format(ZmMsg.fileAsFirstLast, [first, last]);
+	return first || last || "";
+}
+
+/**
+* Name printing helper.  e.g. Last, First
+*/
+ZmContact.fileAsLastFirst =
+function(first, last) {
+	if (first && last)
+		return AjxMessageFormat.format(ZmMsg.fileAsLastFirst, [first, last]);
+	return first || last || "";
+}
+
+/**
+* Name printing helper.  e.g. Name (Company)
+*/
+ZmContact.fileAsNameCompany =
+function(name, company) {
+	if (name && company)
+		return AjxMessageFormat.format(ZmMsg.fileAsNameCompany, [name, company]);
+	if (company)
+		return AjxMessageFormat.format(ZmMsg.fileAsCompanyAsSecondaryOnly, [company]);
+	return name;
+}
+
+/**
+* Name printing helper.  e.g. Company (Name)
+*/
+ZmContact.fileAsCompanyName =
+function(name, company) {
+	if (company && name)
+		return AjxMessageFormat.format(ZmMsg.fileAsCompanyName, [name, company]);
+	if (name)
+		return AjxMessageFormat.format(ZmMsg.fileAsNameAsSecondaryOnly, [name]);
+	return company;
+}
 
 /**
 * Basically prepends "8:" to the given custom fileAs str
