@@ -1323,7 +1323,7 @@ function(action, msg, extraBodyText, incOption) {
 		var sig = this._getSignature();
 		sigStyle = sig ? identity.getSignatureStyle() : null;
 	}
-	var value = sigStyle == ZmSetting.SIG_OUTLOOK ? (this._getSignatureSeparator() + sig) : "";
+	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? (this._getSignatureSeparator() + sig) : "";
 
 	// get reply/forward prefs as necessary
 	if (!incOption) {
@@ -1345,10 +1345,9 @@ function(action, msg, extraBodyText, incOption) {
 
 	this._msgAttId = null;
 	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
-		if (extraBodyText) {
-			value = extraBodyText + value;
-		}
+		value = extraBodyText ? extraBodyText + value : value;
 	} else if (incOption == ZmSetting.INCLUDE_ATTACH && this._msg) {
+		value = extraBodyText ? extraBodyText + value : value;
 		this._msgAttId = this._msg.id;
 	} else if (!this._msgIds) {
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
@@ -1408,7 +1407,8 @@ function(action, msg, extraBodyText, incOption) {
 
 		if (incOption == ZmSetting.INCLUDE) {
 			var msgText = (action == ZmOperation.FORWARD_INLINE) ? ZmMsg.forwardedMessage : ZmMsg.origMsg;
-			var text = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES, crlf].join("");
+			var preface = this._includedPreface = [ZmMsg.DASHES, " ", msgText, " ", ZmMsg.DASHES].join("");
+			var text = [preface, crlf].join("");
 			for (var i = 0; i < ZmComposeView.QUOTED_HDRS.length; i++) {
 				var hdr = msg.getHeaderStr(ZmComposeView.QUOTED_HDRS[i]);
 				if (hdr) {
@@ -1432,6 +1432,7 @@ function(action, msg, extraBodyText, incOption) {
 				}
 				preface = ZmComposeView._replyPrefixFormatter.format(from.toString());
 			}
+			this._includedPreface = preface;
 			preface = preface + (composingHtml ? '<br>' : '\n');
 			var prefix = identity.getPrefix();
 			var sep = composingHtml ? '<br>' : '\n';
@@ -1439,7 +1440,7 @@ function(action, msg, extraBodyText, incOption) {
 			if (incOption == ZmSetting.INCLUDE_PREFIX) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(wrapParams);
 			} else if (incOption == ZmSetting.INCLUDE_SMART) {
-				var chunks = AjxStringUtil.getTopLevel(body, sep, composingHtml);
+				var chunks = AjxStringUtil.getTopLevel(body);
 				for (var i = 0; i < chunks.length; i++) {
 					wrapParams.text = chunks[i];
 					chunks[i] = AjxStringUtil.wordWrap(wrapParams);
@@ -1553,6 +1554,7 @@ function(composeMode) {
 //	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 	this._bodyField = document.getElementById(this._bodyFieldId);
+	this._includedPreface = "";
 
 	// misc. inits
 	this.setScrollStyle(DwtControl.SCROLL);
@@ -1696,7 +1698,7 @@ function(ev) {
 
 ZmComposeView.prototype._getPriority =
 function() {
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+    if (this._priorityButton) {
         return this._priorityButton._priorityFlag || "";
     }
     return "";
@@ -1704,7 +1706,7 @@ function() {
 
 ZmComposeView.prototype._setPriority =
 function(flag) {
-    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+    if (this._priorityButton) {
         flag = flag || "";
         this._priorityButton.setImage(this._getPriorityImage(flag));
         this._priorityButton._priorityFlag = flag;

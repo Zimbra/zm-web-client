@@ -10,25 +10,21 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <zm:currentResultUrl var="closeUrl" value="${urlTarget}" context="${context}"/>
 <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
+
 <table class="x_toolbar" cellpadding="0" cellspacing="0">
     <tr>
         <td class="x_main_buttons">
-            <c:if test="${uiv == '1'}">
-                <c:if test="${context.st=='message' || context.st=='conversation'}">
-                    <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
-                    <a href="${composeUrl}" class="zo_button">
-                        <fmt:message key="compose"/>
-                    </a>
-                </c:if>
-                <c:if test="${context.st=='contact'}">
-                    <c:url var="composeUrl" value="${urlTarget}?action=add"/>
-                    <a href="${composeUrl}" class="zo_button">
-                        <fmt:message key="add"/>
-                    </a>
-                </c:if>
+            <c:if test="${context.st=='message' || context.st=='conversation'}">
+                <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
+                <a href="${composeUrl}" class="zo_button">
+                    <fmt:message key="compose"/>
+                </a>
             </c:if>
-            <c:if test="${uiv != '1'}">
-                <a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a>
+            <c:if test="${context.st=='contact'}">
+                <c:url var="composeUrl" value="${urlTarget}?action=add"/>
+                <a href="${composeUrl}" class="zo_button">
+                    <fmt:message key="add"/>
+                </a>
             </c:if>
         </td>
         <td  align="right" class="x_sub_buttons">

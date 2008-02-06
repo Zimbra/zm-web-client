@@ -132,6 +132,7 @@ ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]			= "o";
 // folders that look like mail folders that we don't want to show
 ZmFolder.HIDE_ID = {};
 ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS]			= true;
+ZmFolder.HIDE_ID[ZmOrganizer.ID_ARCHIVE]		= true;
 
 // Hide folders migrated from Outlook mailbox
 ZmFolder.HIDE_NAME = {};
@@ -251,6 +252,33 @@ function(newParent) {
 		this.rename(name);
 	}
 	ZmOrganizer.prototype.move.call(this, newParent);
+};
+
+/**
+ * Sends FolderActionRequest to turn syncing on/off for IMAP folders. Currently,
+ * this is only used by Offline/ZDesktop client
+ *
+ * @param syncIt		[Boolean]		flag indicating whether to sync this folder
+ * @param callback		[AjxCallback]*	callback to call once server request is successful
+ * @param errorCallback	[AjxCallback]*	callback to call if server returns error
+ */
+ZmFolder.prototype.toggleSyncOffline =
+function(callback, errorCallback) {
+	if (!this.isOfflineSyncable) { return; }
+
+	var op = this.isOfflineSyncing ? "!syncon" : "syncon";
+	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
+	var actionNode = soapDoc.set("action");
+	actionNode.setAttribute("op", op);
+	actionNode.setAttribute("id", this.id);
+
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: callback,
+		errorCallback: errorCallback
+	}
+	appCtxt.getAppController().sendRequest(params);
 };
 
 ZmFolder.prototype.hasSearch =

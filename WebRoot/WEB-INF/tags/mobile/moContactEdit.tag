@@ -44,18 +44,17 @@
     <c:set var="factionurl" value="${caction}"/>
 </c:if>--%>
 <form action="${caction}" method="post" accept-charset="utf-8">
+
+
 <input type="hidden" name="doContactAction" value="1"/>
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-<table width=100% cellpadding="0" cellspacing="0">
+<table width=100% cellpadding="0" cellspacing="0" border="0" class="Stripes">
     <%-- <tr>
         <td>
             <table width=100% cellspacing="0" cellpadding="0">
                 <tr class='zo_toolbar'>
                     <td class="searchbar">
-                        <div class='zo_main_info_cont'>
-                        <div class='zo_main_info'>
-
-                        <table cellspacing="0" cellpadding="0">
+                                      <table cellspacing="0" cellpadding="0">
                             <tr>
                                 <td style='padding-left:5px' class='zo_tb_submit'>
                                     <c:if test="${contact!=null}">
@@ -70,8 +69,6 @@
                                 </td>
                             </tr>
                         </table>
-                            </div>
-                          </div>
                     </td>
 
                 </tr>
@@ -79,77 +76,71 @@
         </td>
     </tr>--%>
 <tr>
-    <td class="searchbar">
-                    <span style="font-size:large;font-weight:bold;">
+    <td>
+	                    <br>
+                        <strong class="Padding">
                         <c:if test="${contact!=null}">
+                         
                             <fmt:message key="modify"/>
                         </c:if>
                         <c:if test="${contact==null}">
                             <fmt:message key="add"/>
-                        </c:if>&nbsp;<fmt:message key="contact"/>
-                    </span>
-                    <hr size="1"/>
-        <div class='zo_main_info_cont'>
-            <div class='zo_cv_cont'>
-                <table cellpadding="2" cellspacing="5" width="100%" class='Compose'>
-                    <tr>
-                                <td class='zo_mc_fname' valign='top' width=1% align=right nowrap> <label for="firstNameField"><fmt:message key="AB_FIELD_firstName"/>&nbsp;<fmt:message key="name"/>: </label></td>
-                                <td class='zo_mc_fvalue' colspan=2 nowrap>
-                                    <input  id="firstNameField"style='width:100%'
-                                                               name="firstName" value="${fn:escapeXml(contact.firstName)}"/>
-                                </td>
-                            </tr>
+                        </c:if> <fmt:message key="contact"/></strong>
 
+                <div class="View">
+                <table cellpadding="0" cellspacing="0" width="100%">
                     <tr>
-                                <td class='zo_mc_fname' valign='top' width=1% align=right nowrap> <label for="lastNameField"><fmt:message key="AB_FIELD_lastName"/>&nbsp;<fmt:message key="name"/>: </label></td>
-                                <td class='zo_mc_fvalue' colspan=2 nowrap>
-                                    <input  id="lastNameField"style='width:100%'
-                                                               name="lastName" value="${fn:escapeXml(contact.lastName)}"/>
-                                </td>
-                            </tr>
-                           <tr>
-                                <td class='zo_mc_fname' valign='top' width=1% align=right nowrap> <label for="emailField"><fmt:message key="email"/>: </label></td>
-                                <td class='zo_mc_fvalue' colspan=2 nowrap>
-                                    <input  id="emailField"style='width:100%'
-                                                               name="email" value="${fn:escapeXml(contact.email)}"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class='zo_mc_fname' valign='top' width=1% align=right nowrap> <label for="emailField"><fmt:message key="AB_FIELD_mobilePhone"/>: </label></td>
-                                <td class='zo_mc_fvalue' colspan=2 nowrap>
-                                    <input  id="mobileField"style='width:100%'
-                                                               name="mobilePhone" value="${fn:escapeXml(contact.mobilePhone)}"/>
+                                <td class='label' width="35" align=right nowrap="nowrap"> <label for="firstNameField"><fmt:message key="AB_FIELD_firstName"/> <fmt:message key="name"/>: </label></td>
+                                <td><input  id="firstNameField" name="firstName" value="${fn:escapeXml(contact.firstName)}" class="Textarea"/>
                                 </td>
                             </tr>
                             </table>
-                        </div>
-                        </div>
-                </td>
-            </tr>
-        <tr>
-                <td> <hr size="1">
-                    <table width=100% cellspacing="0" cellpadding="0">
-                        <tr class='zo_toolbar'>
-                            <td class="searchbar">
-                                <table cellspacing="0" cellpadding="0">
-                                    <tr>
-                                        <td style='padding-left:5px' class='zo_tb_submit'>
+						</div>
+                <div class="View">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                          <tr>
+                                <td class='label' width=35 align=right nowrap="nowrap"><label for="lastNameField"><fmt:message key="AB_FIELD_lastName"/> <fmt:message key="name"/>: </label></td>
+                                <td>
+                                    <input  id="lastNameField" class="Textarea" name="lastName" value="${fn:escapeXml(contact.lastName)}"/>
+                                </td>
+                            </tr>
+                            </table>
+                            </div>
+                            <div class="View">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                               <tr>
+                                <td class='label' width=35 align=right nowrap="nowrap"><label for="emailField"><fmt:message key="email"/>: </label></td>
+                                <td>
+                                    <input  id="emailField" class="Textarea" name="email" value="${fn:escapeXml(contact.email)}"/>
+                                </td>
+                            </tr>
+                            </table></div>
+                            <div class="View">
+                <table cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                <td class='label' width="32" align=right nowrap="nowrap"><label for="emailField"><fmt:message key="AB_FIELD_mobilePhone"/>: </label></td>
+                                <td><input  id="mobileField" class="Textarea" name="mobilePhone" value="${fn:escapeXml(contact.mobilePhone)}"/>
+                                </td>
+                            </tr>
+                            </table>
+                            </div>
+	<br>
+        <table cellspacing="0" cellpadding="0" align="center">
+                        <tr>
+                            <td>
                                             <c:if test="${contact!=null}">
 	                                            <input name="actionSave" type="submit" value="<fmt:message key="save"/>">
 											</c:if>
 											<c:if test="${contact==null}">
 	                                            <input name="actionAdd" type="submit" value="<fmt:message key="add"/>">
 											</c:if>
-                                        </td>
-                                        <td style='padding-left:5px' class='zo_tb_submit'>
                                             <input name="actionCancel" onclick='zClickLink("_back_to")' type="button" value="<fmt:message key="cancel"/>">
-                                        </td>
-                                    </tr>
-                                </table>
+                             
                             </td>
 
                         </tr>
                     </table>
+                    <br>
                 </td>
             </tr>
         </table>

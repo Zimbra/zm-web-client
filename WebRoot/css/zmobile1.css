@@ -20,6 +20,7 @@
     padding:3px;
     margin:0px;
     text-align:center;
+	display: none;
  }
 
 div.zo_main_info {
@@ -35,14 +36,18 @@ body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,textarea,p,
 table {
 	border-collapse:collapse;
 	border-spacing:0;
+	padding: 0;
+
 }
 fieldset,img {
 	border:0;
 }
-address,caption,cite,code,dfn,em,strong,th,var {
+
+address,caption,cite,code,dfn,em,th,var {
 	font-style:normal;
 	font-weight:normal;
 }
+
 ol,ul {
 	list-style:none;
 }
@@ -59,9 +64,9 @@ q:before,q:after {
 abbr,acronym { border:0;
 }
 /*-------------------- */
-body {
+html,body {
     margin: 0;
-    font-family: Helvetica;
+    font-family: Myriad, "Lucida Grande", Helvetica, Arial, Verdana, Sans-serif;
     background: #FFFFFF;
     color: #000000;
 #IFDEF IPHONE
@@ -69,61 +74,339 @@ body {
     -webkit-text-size-adjust: none;
 #ENDIF
 }
-.tabsbar a,.bottombar,.bottombar a,.zo_noresults{
-	text-decoration: none;
-	font-size:small;
+
+.NavbarBg{
+	background: black url("/img/mobile/NavbarBg.gif") repeat-x top left;
+	height: 48px;
 }
 
-.x_toolbar,.zo_m_list_row{
-	border-bottom:1px solid #D0D0D0;
-	width:100%;
-	padding:2px;
-}
-.x_toolbar td{
-	padding:3px;
-}
-.zo_m_list_read a, .zo_m_list_unread a,.zo_m_list_row a{
-	text-decoration:none;
-}
-.zo_m_list_from,.zo_m_list_date,.zo_mv_fname,.zo_mv_fvalue,.zo_msgops,.x_toolbar td,.statusbar{
-	font-size:small;
-}
-.zo_mv_subject{
-	font-size:large;
-}
-.zo_m_list_unread .zo_m_list_from, .zo_m_list_unread,.zo_m_list_unread .zo_m_list_sub,.zo_m_list_unread .zo_m_list_frag  {
-	font-weight:bold;
-	color:black;
-}
-.zo_m_list_read .zo_m_list_sub{
-	font-weight:normal;
-}
-.zo_m_list_frag,.zo_m_list_frag *,.zo_m_list_size,.zo_mv_fname,.zo_mv_date,.zo_mc_fname,.zo_query_fname{
-	color:gray;
-	font-size:small;
-}
-.zo_m_chk{
-	width:5px;
-	padding:5px;
-    vertical-align:top;
-}
-.zo_ab_list td.zo_ab_list_arrow{
-	padding:5px;
-}
-.x_list_container{
-	width:100%;
-	padding:2px;
+.ToolbarBg{
+	background: #e7e7e6 url("/img/mobile/ToolbarBg.gif") repeat-x top left;
+	height: 37px;
 }
 
-.zo_cv_cont {
-    border:1px solid silver;
+.zo_unread, .zo_m_list_unread .zo_m_list_from, .zo_m_list_unread .zo_m_cv_sub, .zo_m_list_unread .zo_m_list_from, .zo_m_list_unread .zo_m_list_sub a:link{
+    	font-weight: bold;
+}
+.zo_unread a:link,.Folders a:link{text-decoration: none; color:333333; font-size: small;}
+
+.Email,.zo_m_list_sub p{ font-weight: normal;line-height: 18px; margin-top: 2px;}
+
+.zo_m_list_sub a:link{text-decoration: none; color: #333333;font-size: small;}
+
+.zo_m_list_from{color: #999999; font-size:small;}
+
+.Email a,.zo_m_list_frag {font-size: small; color: 999999;}
+.Email a{text-decoration: none;}
+.zo_ab_list_arrow {display: none;} /*background: url("/img/mobile/iPhoneArrow.png") no-repeat right center; width:25px;*/
+
+.zo_m_list_date {font-size: small;color: 4d8dc3;}
+
+.zo_m_list_row {border-bottom: 1px dotted #E0E0E0;}
+
+.Stripes{background: #c5ccd4 url("/img/mobile/pinstripes.png") top left;}
+
+.View{-moz-border-radius: 8px; -webkit-border-radius: 8px; background-color: white; margin: 10px; border: 1px solid #a7b2bc; padding: 10px;}
+
+.label{color: #4d8dc3;}
+
+.zo_m_list_frag a{color: #4d8dc3; text-decoration: none;}
+.zo_m_list_frag a:hover{color: #ffffff; background-color: #4d8dc3; text-decoration: none;}
+
+/*.highlight:hover td{ background-color: blue;}
+.highlight:hover td a,p,span{color: white;} need to work on it more!*/
+
+.Action:link{font-size: medium; color: #4d8dc3; text-decoration: none;}
+.Action:hover{background-color: #4d8dc3; color: white;}
+
+.Padding{padding: 0 4px;}
+
+.Textarea{border: 0; padding: 3px; font: inherit; width: 100%;}
+
+.SmallText{font-size: small; color: black;}
+
+.StatusInfo, .StatusWarning, .StatusCritical {
+    padding: 3px;
+    font-weight: bold;	
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    text-align: center;
+}
+
+.StatusInfo     { background-color: lightgreen;}
+.StatusWarning  { background-color: yellow;}
+.StatusCritical { background-color: red; }
+
+.Medium{font-size: small !important;}
+.Title{ text-align: left !important;}
+
+
+/* calendar */
+.zo_cal_list TD, .zo_ab_list TD {
+    border-bottom: 1px solid #E0E0E0; /**/
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.zo_cal_lpage {
+  border-bottom: 1px solid #E0E0E0;
+  padding:5px;
+}
+
+.zo_cal_lpage_row {
+  background-color: #A6A6A6;
+  color:black;
+}
+.zo_cal_listheader {
+	text-align:center;
+    border-bottom: 1px solid #E0E0E0;
+    line-height: 2.0em;
+    font-size: medium;
+    color:white;
+    font-weight:bold;
+}
+
+.zo_cal_listh td{
+    background: #c0c0c0 url("/img/mobile/CalDatebar.gif") top left repeat-x; /*background: #A6A6A6;  #D0D0F0;*/
+    color: white;
+    font-weight:bold;
+    text-align: center;
+    padding: 0px;
+    height: 25px;
+}
+
+.zo_cal_listh_date {
+    text-align:right !important;
+	padding-right: 5px !important;
+}
+
+.zo_cal_listi td{
+    background-color: white;
+    color: black;
+    border-bottom: 1px dotted #E0E0E0;
+}
+
+.zo_cal_listi A {
+    text-decoration: none;
+    color: black;
+}
+.zo_cal_listi_time{
+    text-align: center;
+    font-weight: normal;
+    font-size: small;
+    padding: 5px 5px;
+    white-space:nowrap;
+    color: #333333;
+}
+.zo_cal_listi_time_ampm {
+    color: #999999;
+    font-size: x-small;
+}
+.zo_cal_listi_subject {
+    font-weight: bold;
+    padding: 5px 0 5px 5px;
+    /*white-space:nowrap;
+    text-overflow: ellipsis-word;
+    overflow:hidden;*/
+}
+
+.zo_cal_listi_empty {
+    font-size: medium;
+    font-weight: bold;
+    padding: 5px 0 5px 5px;
+    color:gray;
+    text-align:center;
+}
+
+/* day of week label for the month */
+.zo_cal_dayhour {
+/*    border-bottom: 1px solid #E0E0E0;*/
+	text-align:center;
+    font-size: small;
+    color: #666666;
+}
+
+/* day of week label for the month */
+.zo_cal_allday {
+	text-align:center;
+    font-size: small;
+    color: #666666;
+}
+
+/* header for day view */
+.zo_cal_dayheader, .zo_cal_dayheader_today {
+	text-align:center;
+    border-bottom: 1px solid #E0E0E0;
+    line-height: 2.0em;
+    font-size: large;
+    color:white;
+    font-weight:bold;
+}
+
+.zo_cal_dayheader_today {
+    color:lightsteelblue;
+}
+
+.zo_cal_mlist { display: none; }
+
+.zo_cal_mpage {
+  background: #D6D6D6; /*#D0D0F0;*/
+  padding:5px;
+  color: black;
+    font-size: x-large;
+  font-weight: bold;
+  text-align: center;
+}
+
+.zo_cal_mdow {
+    background: #D6D6D6; /*#D0D0F0;*/
+    font-weight: bold;
+    font-size: smaller;
+    text-align: center;
+    color: black;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.zo_cal_mday, .zo_cal_mday_select {
+   background: #E6E6E6; /*#D0D0F0;*/
+   border: 1px inset gray;
+   vertical-align: middle;
+   text-align: center;
+   padding: 5px;
+}
+
+.zo_cal_mday_text, .zo_cal_mday_textO {
+   font-size: larger;
+   font-weight:bold;
+   color: black;
+
+}
+
+.zo_cal_mday_appt {
+       text-decoration:underline;
+}
+
+.zo_cal_mday_textO {
+   color: gray;
+}
+
+
+.zo_cal_mday_select {
+   background: lightsteelblue;
+}
+
+.zo_cal_dpage {
+  border-bottom: 1px solid #E0E0E0;
+  padding:5px;
+}
+
+
+/* column between hours and appts */
+
+.zo_cal_adds, .zo_cal_dsep {
+    border-left: 1px solid #E0E0E0;
+}
+
+
+/* allday bottom */
+.zo_cal_adb, .zo_cal_adhs {
+    border-bottom: 4px solid #C0C0C0; /*    @BottomSeparator-light@ */
+}
+
+/* hour bottom */
+.zo_cal_dhb, .zo_cal_dhhb {
+    border-bottom: 1px solid #C0C0C0; /*    @BottomSeparator-light@ */
+}
+/* half hour bottom */
+.zo_cal_dhhb {
+    border-bottom-style: dashed;
+}
+
+.zo_allday_appt A, .zo_day_appt A {
+    text-decoration: none;
+    color: black;
+}
+
+.zo_allday_appt {
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+}
+.Orange				{ background-color:#FF9940;}
+
+.zo_allday_appt_noright {
+    border-right: none;
+    -moz-border-radius-topright: 0px;
+    -moz-border-radius-bottomright: 0px;
+    -webkit-border-top-right-radius: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+}
+
+.zo_allday_appt_noleft {
+    border-left: none;
+    -moz-border-radius-topleft: 0px;
+    -moz-border-radius-bottomleft: 0px;
+    -webkit-border-top-left-radius: 0px;
+    -webkit-border-bottom-left-radius: 0px;
+}
+
+.zo_day_appt {
+    width: 100%;
+    height: 100%;
+     -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+}
+
+.zo_allday_appt .zo_appt_text {
+    padding: 1px 5px;
+    /*font-weight: bold;*/
+    color:black;
+}
+
+.zo_day_appt .zo_appt_text {
+    padding: 5px;
+    /*font-weight: bold;*/
+    color:black;
+}
+
+.zo_appt_view {
+    width: 100%;
+    padding: 5px;
+}
+
+.zo_appt_view_cont {
+    border:1px solid #333333;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     background: white;
     padding: 10px 5px;
-	background:#eeeeee;
 }
 
+.zo_av_sub {
+    font-size: large;
+    font-weight: bold;
+ }
+
+
+.zo_av_time {
+    font-size: medium;
+    color: darkslateblue;
+}
+
+
+.zo_ab_list_arrow {
+  background: url(/img/mobile/iPhoneArrow.png) no-repeat right center;
+}
+.zo_ab_list_arrow A {
+  text-decoration: none;
+}
+/*.zo_cv_cont {
+    border:1px solid #333333;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    background: white;
+    padding: 10px 5px;
+}
+*/
 .zo_cv_heading {
     padding: 5px 5px;
 }
@@ -136,7 +419,6 @@ body {
 .zo_cv_title, .zo_cv_comp {
     font-size: small;
     font-weight: normal;
-	color:black;
 }
 
 .zo_cv_fname {
@@ -149,99 +431,18 @@ body {
 }
 
 .zo_cv_fval {
-    font-size: small;
+    font-size: medium;
     font-weight: bold;
     color: black;
     text-decoration: none;
 }
 
-.YellowLightC		{ color:#FFEE80; }
-.YellowBgC			{ color:#FFF6BF; }
 
-.Green				{ background-color:#40A05F;}
-.GreenDark			{ background-color:#00802A; }
-.GreenLight			{ background-color:#80C095; }
-.GreenBg			{ background-color:#BFDFCA; }
-.GreenC				{ color:#40A05F;}
-.GreenDarkC			{ color:#00802A; }
-.GreenLightC		{ color:#80C095; }
-.GreenBgC			{ color:#BFDFCA; }
 
-.Cyan				{ background-color:#40D9D9;}
-.CyanDark			{ background-color:#00CCCC; }
-.CyanLight			{ background-color:#80E6E6; }
-.CyanBg				{ background-color:#BFF2F2; }
-.CyanC				{ color:#40D9D9;}
-.CyanDarkC			{ color:#00CCCC; }
-.CyanLightC			{ color:#80E6E6; }
-.CyanBgC			{ color:#BFF2F2; }
 
-.Blue				{ background-color:#4073D9;}
-.BlueDark			{ background-color:#0044CC; }
-.BlueLight			{ background-color:#80A2E6; }
-.BlueBg				{ background-color:#BFD0F2; }
-.BlueC				{ color:#4073D9;}
-.BlueDarkC			{ color:#0044CC; }
-.BlueLightC			{ color:#80A2E6; }
-.BlueBgC			{ color:#BFD0F2; }
 
-.Purple				{ background-color:#7940A0;}
-.PurpleDark			{ background-color:#4C0080; }
-.PurpleLight		{ background-color:#A680C0; }
-.PurpleBg			{ background-color:#D2BFDF; }
-.PurpleC			{ color:#7940A0; }
-.PurpleDarkC		{ color:#4C0080; }
-.PurpleLightC		{ color:#A680C0; }
-.PurpleBgC			{ color:#D2BFDF; }
 
-.Gray				{ background-color:#BFBFBF;}
-.GrayDark			{ background-color:#A9A9A9; }
-.GrayLight			{ background-color:#D4D4D4; }
-.GrayBg				{ background-color:#E9E9E9; }
-.GrayC,x_button_disabled a				{ color:#BFBFBF;}
-.GrayDarkC			{ color:#A9A9A9; }
-.GrayLightC			{ color:#D4D4D4; }
-.GrayBgC			{ color:#E9E9E9; }
-.zo_fldr A {
-  text-decoration: none;
-  vertical-align: middle;
-  color:inherit;
-}
 
-.zo_fldr SPAN {
-    vertical-align: middle;
 
-}
 
-.zo_fldr  {
-    margin: 0;
-    border-bottom: 1px solid #E0E0E0;
-    padding: 5px;
-    font-size: small;
-}
-.zo_fldr_rowsep  {
-    margin: 0;
-    background:#EEEEEE;
-	color:#555555;
-    font-size:medium;
-	height:25px;
-	text-indent:10px;
-}
-.zo_noresults{
-	font-size:small;
-}
-.x_toolbar td{
-	color:gray;
-}
-.StatusInfo, .StatusWarning, .StatusCritical {
-    padding: 5px;
-    font-weight: bold;
-    border:1px solid black;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    color:black;
-}
 
-.StatusInfo     { background-color: lightgreen;}
-.StatusWarning  { background-color: orange;}
-.StatusCritical { background-color: pink; }

@@ -333,7 +333,7 @@ ZmChatListController.prototype._presenceCustomItemListener = function(ev) {
         existingCustomMsg = presence.getStatus();
     }
     var dlg = appCtxt.getDialog();
-	dlg.setTitle("New Status Message");
+	dlg.setTitle(ZmMsg.newStatusMessage);
     var id = Dwt.getNextId();
 	var html = [ "<div width='320px'>",
 		"<textarea type='text' id='",id,"' rows='3' cols='30'>",

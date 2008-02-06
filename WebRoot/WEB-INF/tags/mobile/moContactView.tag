@@ -15,44 +15,53 @@
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 </mo:handleError>
 
+
 <mo:view mailbox="${mailbox}" title="${contact.displayFileAs}" context="${null}" clazz="zo_obj_body" scale="true">
 
-    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" class="Stripes">
         <tr>
             <td>
                 <mo:contactToolbar cid="${contact.id}" urlTarget="${context_url}" context="${context}" keys="false"/>
             </td>
         </tr>
         <tr>
-            <td class='zo_appt_view'>
+            <td><br>
+            	<table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                <td width="1%" class="Padding"><img src="/img/large/ImgPerson_48.gif" border="0" width="48" height="48" class="Padding"/></td>
+                <td>
+                <b>${fn:escapeXml(contact.displayFileAs)}</b>
+				<br>		            
+                <c:if test="${not empty contact.jobTitle}">
+                   <span class="SmallText">${fn:escapeXml(contact.jobTitle)}</span>
+                <br>
+                </c:if>
+                <c:if test="${not empty contact.company}">
+                   <span class="SmallText">${fn:escapeXml(contact.company)}</span>
+                </c:if>
+                </td></tr>
+				</table>
                 <mo:displayContact contact="${contact}"/>
             </td>
         </tr>
         <tr>
-            <td>
+            <td align="center">
                 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
-                <div class="wh_bg">
                     <form id="action" action="${fn:escapeXml(actionUrl)}" method="post">
-                        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                         <input type="hidden" name="doContactAction" value="1"/>
                         <input type="hidden" name="id" value="${contact.id}"/>
-                        <table cellspacing="2" cellpadding="2" width="100%">
-                            <tr class="zo_m_list_row">
-                                <td>
-                                    <hr size="1"/>
-                                    <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
+
                                     <input type="button" onclick="zClickLink('_edit_link')"
                                            value="<fmt:message key="edit"/>"/>
-                                </td>
-                            </tr>
+                                    <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>					
                                 <%--<tr>
-                                    <td align="right"><a href="#top" style="font-size:large;">&nbsp;^&nbsp;</a></td>
+                                    <td align="right"><a href="#top">&nbsp;^&nbsp;</a></td>
                                 </tr>--%>
-                        </table>
+                        
                     </form>
-                </div>
+            	<br>
             </td>
         </tr>
     </table>
-
 </mo:view>

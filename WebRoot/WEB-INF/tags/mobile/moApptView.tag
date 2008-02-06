@@ -28,27 +28,20 @@
 <mo:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" clazz="zo_obj_body" scale="true">
 
 
-    <table width=100% height=100% cellpadding="0" cellspacing="0" border=0>
-        <tr>
-            <td>
-                <table width=100% cellspacing="0" cellpadding="0">
-                    <tr class='x_toolbar'>
+
+                <table width=100% cellspacing="0" cellpadding="2" border=0 class="ToolbarBg">
+                    <tr>
                         <td>
-                            <table cellpadding="0" cellspacing="0">
-                                <tr>
                                     <mo:calendarUrl var="backurl" action="${null}"/>
-                                    <td><a href="${backurl}" class='zo_button'>
+                                    <a href="${backurl}">
                                         <fmt:message key="close"/>
-                                    </a></td>
+                                    </a>
+								</td>
                                 </tr>
                             </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+    <table width=100% height=100% class="Stripes" border="0">
         <tr>
-            <td class='zo_appt_view'>
+            <td>
                 <c:set var="extImageUrl" value=""/>
                 <c:if test="${empty param.xim}">
                     <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
