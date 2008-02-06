@@ -119,7 +119,7 @@ ZmTreeView.prototype.set =
 function(params) {
 	this._showUnread = params.showUnread;
 	this._dataTree = params.dataTree;
-	
+
 	this.clear();
 
 	// create header item
@@ -280,9 +280,11 @@ ZmTreeView.prototype._addNew =
 function(parentNode, organizer, index, noTooltips) {
 	var ti;
 	// check if we're adding a datasource folder
-	var ds = (organizer.type == ZmOrganizer.FOLDER)
+	var dss = (organizer.type == ZmOrganizer.FOLDER)
 		? appCtxt.getDataSourceCollection().getByFolderId(organizer.nId)
 		: null;
+	var ds = (dss && dss.length > 0) ? dss[0] : null;
+
 	if (ds && ds.type == ZmAccount.IMAP) {
 		ti = new DwtTreeItem(this, null, organizer.getName(), null, null, this._headerClass);
 		ti.enableSelection(false);

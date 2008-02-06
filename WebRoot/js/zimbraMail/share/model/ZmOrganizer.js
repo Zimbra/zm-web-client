@@ -403,7 +403,6 @@ function(callback, result) {
 };
 ZmOrganizer.prototype._handlePostCreatePath =
 function(path, attrs, callback, errorCallback, response) {
-	debugger;
 	var folderId = response.CreateFolderResponse.folder.id;
 	var organizer = appCtxt.getById(folderId);
 	if (path != "") {
@@ -1197,32 +1196,32 @@ function () {
 */
 ZmOrganizer.prototype.isDataSource =
 function(type, checkParent) {
-	return this.getDataSource(type, checkParent) ? true : false;
+	var dss = this.getDataSources(type, checkParent);
+	return (dss && dss.length > 0);
 };
 
 /**
-* Returns the data source this folder maps to (or null). If type is given, returns
-* non-null result only if folder maps to a datasource *and* is of the given type. 
+* Returns the data sources this folder maps to (or null). If type is given,
+* returns non-null result only if folder maps to datasource(s) *and* is of the
+* given type.
 *
 * @type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
 * @checkParent	[Boolean]*	walk up the parent chain
 */
-ZmOrganizer.prototype.getDataSource =
+ZmOrganizer.prototype.getDataSources =
 function(type, checkParent) {
 	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) { return null };
 
 	var dsc = appCtxt.getDataSourceCollection();
-	var dataSource = dsc.getByFolderId(this.nId);
+	var dataSources = dsc.getByFolderId(this.nId, type);
 
-	if (!dataSource) {
+	if (dataSources.length == 0) {
 		return (checkParent && this.parent)
 			? this.parent.getDataSource(type, checkParent)
 			: null;
 	}
 
-	return !type || (dataSource.type == type)
-		? dataSource
-		: null;
+	return dataSources;
 };
 
 ZmOrganizer.prototype.getOwner =

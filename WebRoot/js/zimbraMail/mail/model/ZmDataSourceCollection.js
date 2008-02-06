@@ -113,13 +113,22 @@ ZmDataSourceCollection.prototype.getById = function(id) {
 	return this._itemMap[id];
 };
 
-ZmDataSourceCollection.prototype.getByFolderId = function(folderId) {
+/**
+ * Returns list of data sources associated with the given folder ID.
+ *
+ * @param folderId		[String]	the folderId we want to get data source for
+ * @param type			[String]*	type of datasource we're looking for (either "POP" or "IMAP")
+ */
+ZmDataSourceCollection.prototype.getByFolderId = function(folderId, type) {
+	var list = [];
 	for (var id in this._itemMap) {
 		var item = this._itemMap[id];
-		if (item.folderId == folderId)
-			return item;
+		if (item.folderId == folderId) {
+			if (!type || (type && type == item.type))
+				list.push(item);
+		}
 	}
-	return null;
+	return list;
 };
 
 ZmDataSourceCollection.prototype.add = function(item) {
