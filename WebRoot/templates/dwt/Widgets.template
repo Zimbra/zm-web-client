@@ -362,8 +362,9 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 	<div id='${id}_header_${itemNum}' class='ZAccordionHeader'>
 		<table class='ZAccordionHeaderBorder ZWidgetTable' cellspacing=0 cellpadding=0>
 		<tr>
+			<td><div class='${icon}' id='${id}_icon_${itemNum}'></div></td>
 			<td><div class='ZAccordionTitle' id='${id}_title_${itemNum}'>${title}</div></td>
-			<td><div class='ImgAccordionClosed' id='${id}_icon_${itemNum}'></div></td>
+			<td><div class='ImgAccordionClosed' id='${id}_status_${itemNum}'></div></td>
 		</tr>
 		</table>
 	</div>

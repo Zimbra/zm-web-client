@@ -331,7 +331,11 @@ function() {
 		// create accordion
 		var accordionId = this.getOverviewPanelContentId();
 		var accordion = this._overviewPanelContent = this._opc.createAccordion({accordionId:accordionId});
-		accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
+		accordion.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
+		// for now, we only care to show tooltip for offline client
+		if (appCtxt.get(ZmSetting.OFFLINE)) {
+			accordion.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._accordionMouseoverListener));
+		}
 
 		// add an accordion item for each account, and create overview for main account
 		var accts = appCtxt.getZimbraAccounts();
@@ -340,7 +344,12 @@ function() {
 			var data = {};
 			var acct = data.account = accts[i];
 			if (acct.visible) {
-				var item = accordion.addAccordionItem({title:acct.getDisplayName(), data:data});
+				var params = {
+					title: acct.getDisplayName(),
+					data: data,
+					icon:acct.getStatusIcon()
+				};
+				var item = accordion.addAccordionItem(params);
 				acct.itemId = item.id;
 				if (appCtxt.getActiveAccount() == acct) {
 					this._activateAccordionItem(item);
@@ -426,7 +435,7 @@ function(account) {
 			// bug #20310 - default to main account if all else fails
 			account = this.accordionItem
 				? this.accordionItem.data.account
-				: appCtxt.getMainAccount();
+				: appCtxt.getMainAccount(true);
 		}
 		return ([this.getOverviewPanelContentId(), account.name].join(":"));
 	}
@@ -453,17 +462,14 @@ function() {
 /**
  * Returns the list of trees to show in the overview for this app. Don't show
  * Folders unless mail is enabled. Other organizer types won't be created unless
- * their apps are enabled, so we don't need to check for them. Also don't show
- * tag tree for child accounts (if this is a multi-account mbox).
+ * their apps are enabled, so we don't need to check for them.
  */
 ZmApp.prototype._getOverviewTrees =
 function() {
 	var list = ZmApp.OVERVIEW_TREES[this._name];
 	var newList = [];
 	for (var i = 0, count = list.length; i < count; i++) {
-		if ((list[i] == ZmOrganizer.FOLDER && !appCtxt.get(ZmSetting.MAIL_ENABLED)) ||
-			(list[i] == ZmOrganizer.TAG && appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain))
-		{
+		if ((list[i] == ZmOrganizer.FOLDER && !appCtxt.get(ZmSetting.MAIL_ENABLED))) {
 			continue;
 		}
 		newList.push(list[i]);
@@ -490,7 +496,21 @@ function() {
  */
 ZmApp.prototype._accordionSelectionListener =
 function(ev) {
-	var accordionItem = ev.detail;
+	this._expandAccordionItem(ev.detail);
+	return true;
+};
+
+ZmApp.prototype._accordionMouseoverListener =
+function(ev) {
+	if (ev.detail && ev.item) {
+		var account = ev.detail.data.account;
+		ev.item.setToolTipContent(account.getToolTip());
+	}
+	return true;
+};
+
+ZmApp.prototype._expandAccordionItem =
+function(accordionItem) {
 	if (accordionItem == this.accordionItem) { return; }
 
 	this.accordionItem = accordionItem;
@@ -524,7 +544,6 @@ function(ev) {
 
 	var callback = new AjxCallback(this, this._handleSetActiveAccount, this.accordionItem);
 	appCtxt.setActiveAccount(activeAcct, callback);
-	return true;
 };
 
 ZmApp.prototype._handleSetActiveAccount =
@@ -560,6 +579,21 @@ function(item) {
 		var overview = this._opc.createOverview(params);
 		overview.set(this._getOverviewTrees(), null, item.data.account);
 		accordion.setItemContent(item.id, overview);
+	}
+};
+
+/**
+ * UGH: in offline mode, the main account is really the first non-main account
+ * so reset the active account to it (spurs a GetInfoRequest and sets accordion)
+ */
+ZmApp.prototype._setActiveAcctForOffline =
+function() {
+	var activeAcct = appCtxt.getMainAccount(true);
+	var accordionItem = activeAcct
+		? this.getOverviewPanelContent().getItem(activeAcct.itemId) : null;
+
+	if (accordionItem) {
+		this._expandAccordionItem(accordionItem);
 	}
 };
 
@@ -637,7 +671,8 @@ ZmApp.prototype._createDeferredFolders =
 function(type) {
 	for (var i = 0; i < this._deferredFolders.length; i++) {
 		var params = this._deferredFolders[i];
-		var parent = params.tree.getById(params.obj.l);
+		var nId = ZmOrganizer.normalizeId(params.obj.l);
+		var parent = params.tree.getById(nId);
 		var folder = ZmFolderTree.createFolder(params.type, parent, params.obj, params.tree, params.path);
 		parent.children.add(folder); // necessary?
 		folder.parent = parent;
@@ -744,6 +779,14 @@ ZmApp.prototype.activate =
 function(active) {
 	this._active = active;
 	if (active) {
+		// during startup, if in offline mode and in multi-mbox scenario, set
+		// active the first non-main account
+		if (appCtxt.inStartup &&
+			appCtxt.multiAccounts &&
+			appCtxt.get(ZmSetting.OFFLINE))
+		{
+			this._setActiveAcctForOffline();
+		}
 		this.setOverviewPanelContent();
 	}
 };

@@ -213,7 +213,9 @@ function(items, folderId) {
 
 ZmMailList.prototype.notifyCreate = 
 function(convs, msgs) {
-	var searchFolder = this.search ? this.search.folderId : null;
+	var searchFolder = this.search
+		? (appCtxt.getActiveAccount().isMain ? this.search.folderId : ZmOrganizer.getSystemId(this.search.folderId))
+		: null;
 	var createdItems = [];
 	var newConvs = [];
 	var newMsgs = [];

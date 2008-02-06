@@ -160,8 +160,12 @@ function(node, instNode) {
 	var comp = inv ? inv.comp[0] : null;
 
 	if (!node.id) this.id = node.id;
-	// always set invId since its mutable
-	this.invId = (node.invId) || (inv ? [node.id, inv.id].join("-") : null);
+	// always re-compute invId if given since its mutable
+	if (node.invId) {
+		this.invId = node.invId;
+	} else if (inv) {
+		this.invId = [node.id, inv.id].join("-");
+	}
 	this.uid = node.uid; // XXX: what is this?
 
 	if (node.l) this.folderId = node.l;
