@@ -22,7 +22,7 @@
             </c:url>
         </c:otherwise>
     </c:choose>
-    <td class='Folders${tag.hasUnread ? ' zo_unread' : ''}'>
+    <td class='Folders${tag.hasUnread ? ' zo_unread' : ''} zo_m_list_row' style='padding: 5px;'>
         <a id="TAG${tag.id}" href="${fn:escapeXml(url)}">
             <mo:img src="${tag.image}" alt='${fn:escapeXml(tag.name)}'/>
             ${fn:escapeXml(tag.name)}

@@ -14,7 +14,7 @@
 </c:url>
 
 <tr onclick='zClickLink("FLDR${folder.id}")'>
-    <td class='Folders${folder.hasUnread ? ' zo_unread':''}' style='padding-left: ${8+folder.depth*8}px'>
+    <td class='Folders${folder.hasUnread ? ' zo_unread':''} zo_m_list_row' style='padding: 5px;'>
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
             <mo:img src="${folder.image}" alt="${fn:escapeXml(folder.name)}"/>
             ${fn:escapeXml(label)}
