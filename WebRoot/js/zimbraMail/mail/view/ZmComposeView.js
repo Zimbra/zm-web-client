@@ -561,6 +561,7 @@ function(attId, isDraft) {
 				// if so, set both origId and the draft id
 				msg.origId = msg.isReplied || msg.isForwarded ? this._msg.origId : null;
 				msg.id = this._msg.id;
+				msg.acctId = this._msg.acctId;
 				msg.nId = this._msg.nId;
 			}
 		} else {

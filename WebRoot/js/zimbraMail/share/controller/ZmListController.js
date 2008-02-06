@@ -812,17 +812,19 @@ function(items, hardDelete, attrs) {
 */
 ZmListController.prototype._doMove =
 function(items, folder, attrs, force) {
-	if (!(items instanceof Array)) items = [items];
+	if (!(items instanceof Array)) { items = [items]; }
 
 	var move = [];
 	var copy = [];
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if (!item.folderId || item.folderId != folder.id) {
-			if (!force && (item.isShared() || item.isReadOnly() || folder.isRemote()))
-				copy.push(item);
-			else
+			var action = item.getDefaultMoveAction(folder);
+			if (force || action == ZmItem.ACTION_MOVE) {
 				move.push(item);
+			} else {
+				copy.push(item);
+			}
 		}
 	}
 

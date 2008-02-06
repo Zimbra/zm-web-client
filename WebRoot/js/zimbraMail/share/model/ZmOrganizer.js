@@ -47,9 +47,8 @@ ZmOrganizer = function(params) {
 	if (arguments.length == 0) { return; }
 	
 	this.type = params.type;
-	var id = this.id = params.id;
-	// save the local ID, for comparing against system IDs
-	this.nId = ZmOrganizer.normalizeId(id);
+	var id = this.id = (params.zid && (params.id.indexOf(":") == -1)) ? [params.zid, params.id].join(":") : params.id;
+	ZmOrganizer.normalizeId(id, this);
 	this.name = ZmFolder.MSG_KEY[id] ? ZmMsg[ZmFolder.MSG_KEY[id]] : params.name;
 	this.parent = params.parent;
 	this.tree = params.tree;
@@ -488,19 +487,31 @@ function(id, account) {
 };
 
 /**
- * Strips the account ID portion from a system ID for a child account, which
- * can then be used to check against known system IDs. Any non-system ID is
- * returned unchanged (if type is provided).
+ * Parses a remote ID into its two component parts: the account ID and the local ID.
+ * For a remote ID, optionally sets properties into a given item and returns the local
+ * ID. Otherwise just returns the given ID unchanged.
  * 
- * @param id	[string]		ID of an organizer
- * @param type	[constant]		type of organizer
+ * @param id	[string]	ID
+ * @param item	[object]*	object to set component properties in
  */
 ZmOrganizer.normalizeId =
-function(id, type) {
-	if (typeof(id) != "string") { return id; }
-	var idx = id.indexOf(":");
-	var localId = (idx == -1) ? id : id.substr(idx + 1);
-	return (type && (localId >= ZmOrganizer.FIRST_USER_ID[type])) ? id : localId;
+function(id, obj) {
+	// parse the remote ID if this item is shared
+	if (id && typeof(id) == "string") {
+		var parts = id.split(":");
+		if (parts.length == 2) {
+			if (obj) {
+				obj.acctId = parts[0];
+				obj.nId = parts[1];
+			}
+			return parts[1];
+		} else {
+			if (obj) {
+				obj.nId = id;
+			}
+		}
+	}
+	return id;
 };
 
 // Public methods
@@ -729,7 +740,7 @@ ZmOrganizer.prototype.move =
 function(newParent) {
 	var newId = (newParent.nId > 0) ? newParent.id : ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	if ((newId == this.id || newId == this.parent.id) ||
-		(this.type == ZmOrganizer.FOLDER && (ZmOrganizer.normalizeId(newId, this.type) == ZmFolder.ID_SPAM)) ||
+		(this.type == ZmOrganizer.FOLDER && (ZmOrganizer.normalizeId(newId) == ZmFolder.ID_SPAM)) ||
 		(newParent.isChildOf(this)))
 	{
 		return;
@@ -1162,9 +1173,7 @@ function() {
 		if (this.zid != null) {
 			this._isRemote = true;
 		} else {
-			var acct = appCtxt.getActiveAccount();
-			var id = String(this.id);
-			this._isRemote = ((id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0));
+			this._isRemote = (this.acctId && (this.acctId != appCtxt.getActiveAccount().id));
 		}
 	}
 	return this._isRemote;

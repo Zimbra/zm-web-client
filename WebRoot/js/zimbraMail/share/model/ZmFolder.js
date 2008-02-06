@@ -440,9 +440,10 @@ function() {
 */
 ZmFolder.prototype.mayContain =
 function(what, folderType) {
-	if (!what) return true;
-	if (this.isFeed()) return false;
-	if (this.isSyncIssuesFolder()) return false;
+	if (!what) { return true; }
+	if (this.isFeed()) { return false; }
+	if (this.isSyncIssuesFolder()) { return false; }
+	if (this.link && this.isReadOnly()) { return false; }
 
 	var thisType = folderType || this.type;
 	var invalid = false;
@@ -459,8 +460,6 @@ function(what, folderType) {
 		var item = items[0];
 		if (this.nId == ZmOrganizer.ID_ROOT) {
 			invalid = true;														// container can only have folders/searches
-		} else if (this.link) {
-			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
 		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {

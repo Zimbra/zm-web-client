@@ -41,6 +41,7 @@ ZmItem = function(type, id, list, noCache) {
 
 	this.type = type;
 	this.id = id;
+	ZmOrganizer.normalizeId(id, this);
 	this.list = list;
 	
 	this.tags = [];
@@ -127,9 +128,9 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]	= "isLowPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]	= "isHighPriority";
 
 // DnD actions this item is allowed
-ZmItem.DND_ACTION_MOVE = 1 << 0;
-ZmItem.DND_ACTION_COPY = 1 << 1;
-ZmItem.DND_ACTION_BOTH = ZmItem.DND_ACTION_MOVE | ZmItem.DND_ACTION_COPY;
+ZmItem.ACTION_MOVE = 1 << 0;
+ZmItem.ACTION_COPY = 1 << 1;
+ZmItem.ACTION_BOTH = ZmItem.ACTION_MOVE | ZmItem.ACTION_COPY;
 
 // Used by items (such as calendar or share invites) that have notes
 ZmItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
@@ -284,11 +285,11 @@ function() {
 * Returns what the default action should be when dragging this item. This method
 * is meant to be overloaded for items that are read-only and can only be copied.
 */
-ZmItem.prototype.getDefaultDndAction =
-function() {
+ZmItem.prototype.getDefaultMoveAction =
+function(folder) {
 	return (this.isShared() || this.isReadOnly())
-		? ZmItem.DND_ACTION_COPY
-		: ZmItem.DND_ACTION_MOVE;
+		? ZmItem.ACTION_COPY
+		: ZmItem.ACTION_MOVE;
 };
 
 /**
@@ -309,9 +310,7 @@ function() {
 		if (this.id == -1) {
 			this._isShared = false;
 		} else {
-			var acct = appCtxt.getActiveAccount();
-			var id = String(this.id);
-			this._isShared = ((id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0));
+			this._isShared = (this.acctId && (this.acctId != appCtxt.getActiveAccount().id));
 		}
 	}
 	return this._isShared;
