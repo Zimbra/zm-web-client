@@ -8,35 +8,32 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <zm:currentResultUrl var="closeUrl" value="${urlTarget}" context="${context}"/>
-<table class="x_toolbar" cellpadding="0" cellspacing="0">
+
+<table cellpadding="0" cellspacing="0" border="0" class="ToolbarBg" width="100%">
     <tr>
-        <td class="x_main_buttons">
-            <c:if test="${uiv == '1'}">
-                <c:if test="${context.st=='message' || context.st=='conversation'}">
-                    <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
-                    <a href="${composeUrl}" class="zo_button">
-                        <fmt:message key="compose"/>
-                    </a>
-                </c:if>
-                <c:if test="${context.st=='contact'}">
-                    <c:url var="composeUrl" value="${closeUrl}">
-                        <c:param name="action" value="edit"/>
-                    </c:url>
-                    <a href="${composeUrl}" class="zo_button">
-                        <fmt:message key="add"/>
-                    </a>
-                </c:if>
+        <td class="Padding">
+            <c:if test="${context.st=='message' || context.st=='conversation'}">
+                <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
+                <a href="${composeUrl}" class="zo_button">
+                    <fmt:message key="compose"/>
+                </a>
             </c:if>
-            <c:if test="${uiv != '1'}">
-                <a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a>
+            <c:if test="${context.st=='contact'}">
+                <c:url var="composeUrl" value="${closeUrl}">
+                    <c:param name="action" value="edit"/>
+                </c:url>
+                <a href="${composeUrl}" class="zo_button">
+                    <fmt:message key="add"/>
+                </a>
             </c:if>
+
         </td>
         <c:if test="${context.searchResult.size > 0 }">
-        <td class="x_sub_buttons" align="right">
-            <table>
+        <td align="right" class="Padding">
+            <table border="0">
                 <tr>
                     <c:if test="${isTop == null || isTop}">
-                    <td>
+                    <td class="Padding">
                         <a href="#action" class='zo_button'>
                             <fmt:message key="MO_actions"/>
                         </a>
@@ -45,21 +42,21 @@
                     <c:choose>
                         <c:when test="${context.searchResult.hasPrevPage}">
                             <zm:prevResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>
-                            <td>
+                            <td class="Padding">
                                 <a href="${fn:escapeXml(url)}" class='zo_button'>
                                     <fmt:message key="MO_PREV"/>
                                 </a>
                             </td>
                         </c:when>
                         <c:otherwise>
-                            <td>
+                            <td class="Padding">
                                 <a class='zo_button_disabled'>
                                     <fmt:message key="MO_PREV"/>
                                 </a>
                             </td>
                         </c:otherwise>
                     </c:choose>
-                    <td>
+                    <td class="Padding">
                         <c:choose>
                             <c:when test="${context.searchResult.hasNextPage}">
                                 <zm:nextResultUrl var="url" value="${urlTarget}" index="0" context="${context}"/>

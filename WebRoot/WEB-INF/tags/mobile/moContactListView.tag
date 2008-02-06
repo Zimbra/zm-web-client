@@ -15,9 +15,9 @@
 <mo:view mailbox="${mailbox}" title="${title}" context="${context}">
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
-<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>    
+
 <input type="hidden" name="doContactAction" value="1"/>
-    <table width=100% cellspacing="0" cellpadding="0" >
+    <table width=100% cellspacing="0" cellpadding="0" border="0">
         <tr>
             <td>
                 <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="true"/>
@@ -25,29 +25,30 @@
         </tr>
         <tr>
             <td>
-                <table width=100% cellpadding="0" cellspacing="0" class='zo_ab_list'>
+                <table width=100% cellpadding="4" cellspacing="0" border="0">
                     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                         <c:set var="chit" value="${hit.contactHit}"/>
                         <zm:currentResultUrl var="contactUrl" value="${context_url}" action="view" id="${chit.id}" index="${status.index}" context="${context}"/>
-                        <tr class="zo_m_list_row" id="cn${chit.id}">
-                            <td class="zo_m_chk">
+                        <tr class="zo_m_list_row highlight" id="cn${chit.id}">
+                            <td width="1%">
                                 <input type="checkbox"  name="id" value="${chit.id}">    
                             </td>
-                            <td><mo:img src="${chit.image}" altkey="${chit.imageAltKey}" valign="top"/></td>
-                            <td class='zo_ab_list_arrow' onclick='zClickLink("a${chit.id}")'>
-                                <a id="a${chit.id}" href="${contactUrl}">${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? '<None>' : chit.fileAsStr),50, true)}</a>
+                            <td width="1%"><mo:img src="${chit.image}" altkey="${chit.imageAltKey}" valign="top"/></td>
+                            <td onclick='zClickLink("a${chit.id}")'>
+                            <span class="zo_m_list_sub">
+                                <a id="a${chit.id}" href="${contactUrl}"><strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? '<None>' : chit.fileAsStr),50, true)}</strong></a></span>
                                 <c:if test="${uiv=='1'}">
-                                <br style="margin:2px;"/>
                                 <c:url var="murl" value="?action=compose&to=${chit.email}"/>
-                                <a class="zo_m_list_frag" href="${fn:escapeXml(murl)}">${fn:escapeXml(chit.email)}</a>
+                                <p class="Email"><a href="${fn:escapeXml(murl)}">${fn:escapeXml(chit.email)}</a></p>
                                 </c:if>
                             </td>
+                            <td class="zo_ab_list_arrow">&nbsp;</td>
 
                         </tr>
                     </c:forEach>
                 </table>
                 <c:if test="${empty context or context.searchResult.size eq 0}">
-                    <div class='zo_noresults'><fmt:message key="noResultsFound"/></div>
+                    <span class='zo_noresults'><fmt:message key="noResultsFound"/></span>
                 </c:if>
             </td>
         </tr>
@@ -59,14 +60,12 @@
             </tr>
                     <tr>
                     <td>
-                        <div class="wh_bg">
                         <a name="action" id="action"/> 
                     <table cellspacing="2" cellpadding="2" width="100%">
                     <tr class="zo_m_list_row">
                        <td><input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/></td>
                     </tr>
                     </table>
-                     </div>
                     </td>
                     </tr>
                     </c:if>

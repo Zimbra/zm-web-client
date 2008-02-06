@@ -60,66 +60,42 @@
 }
 </style>
 <mo:view title="${mailbox.name}" context="${null}" mailbox="${mailbox}">
-    <table cellpadding="0" cellspacing="0" width="100%">
-        <tr class="searchbar">
-                <td>
-                    <div class='zo_main_info_cont'>
-                        <div class='zo_main_info'>
-                            <form action="${context_url}" style="width:100%;">
-                               <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
-                                <table cellspacing="0" cellpadding="0" width="100%">
-                                    <tr>
-                                        <td>
-                                            <table cellspacing="1" cellpadding="1" width="100%" align="right">
-                                                <tr>
-                                                    <td align="right" style="padding-right:2px;">
-                                                        <input type="text"
-                                                               style="width:100%;height:20px;border:1px solid lightslategray;"
-                                                               name="sq" value="${param.sq}"/>
-                                                    </td>
-                                                    <td align="right" width="10px;">
-                                                        <input type="submit" name="actionSearch" class="zo_button1"
-                                                               value="<fmt:message key="search"/>"/>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </form>
-                        </div>
-                    </div>
-                </td>
-            </tr>
-        <tr class="tabsbar">
-            <td>
-                <div class='zo_main_info_cont'>
-                    <div class='zo_main_info'>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" class="NavbarBg">
+        <tr>
+            <td width="5%" align="center" valign="top">
+            <!-- Tabs starts here -->
                         <c:set var="aurl" value="${context_url}?"/>
-                        <a id="mails" href="${aurl}">
-                            <fmt:message key="mail"/><c:if
-                                test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if>
+                        <a id="mails" href="${aurl}"><img src="/img/mobile/Mail-sel.gif" border="0" width="55" height="48">
+                        <%-- c:if test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if --%>
                         </a>
-                        <c:if test="${mailbox.features.contacts}"> |
+                        </td>
+                        <td align="center" width="5%" valign="top">
+                        <c:if test="${mailbox.features.contacts}">
                             <c:set var="aurl" value="${context_url}?st=contact"/>
-                            <a id="contacts" href="${aurl}">
-                                <fmt:message key="FOLDER_LABEL_7"/>
-                            </a>
+                            <a id="contacts" href="${aurl}"><img src="/img/mobile/Contacts.gif" border="0" width="55" height="48"></a>
                         </c:if>
-                        <c:if test="${mailbox.features.calendar}"> |
+                        </td>
+                        <td width="5%" align="center" valign="top">
+                        <c:if test="${mailbox.features.calendar}">
                             <c:set var="aurl" value="${context_url}?st=cal"/>
-                            <a id="cal" href="${aurl}"><fmt:message key="calendar"/></a>
-                        </c:if> | <c:set var="aurl" value="${context_url}?st=folders"/>
-                        <a id="folders" href="${aurl}"><fmt:message key="folders"/></a>
-                    </div>
-                </div>
+                            <a id="cal" href="${aurl}"><img src="/img/mobile/Calendar.gif" border="0" width="55" height="48"></a>
+                        </c:if>
+                        </td>
+                        <td width="5%" align="center" valign="top">
+                         <c:set var="aurl" value="${context_url}?st=folders"/>
+                        <a id="folders" href="${aurl}"><img src="/img/mobile/Folders.gif" border="0" width="55" height="48"></a>
+            </td>
+            <td width="5%" align="center" valign="top">
+            	<img src="/img/mobile/Search.gif" border="0" width="55" height="48">
             </td>
         </tr>
-        <tr class="data">
-            <td>
-                <div class='zo_main_info_cont'>
-                    <div class='zo_main_info'>
-                        <mo:handleError>
+        </table>
+  
+    
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" border="2">        
+        <tr>
+            <td colspan="2">
+                       <mo:handleError>
                             <c:choose>
                                 <c:when test="${param.st == null || param.st == (mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message') || param.st == 'contact'}">
                                     <c:import url="/m/mosearch?sq_limit=${param.sq_limit!=null?param.sq_limit:'5'}"/>
@@ -133,36 +109,25 @@
                                 </c:when>
                             </c:choose>
                         </mo:handleError>
-                    </div>
-                </div>
             </td>
         </tr>
-        <tr class="bottombar">
-            <td>
-                <div class='zo_main_info_cont'>
-                    <div class='zo_main_info'>
-                        <span class="zo_m_list_frag">${zm:truncate(mailbox.accountInfo.name,50,true)}</span> | <c:url
-                            var="logoutUrl" value="${context_url}?loginOp=logout&client=mobile"/>
+        <tr>
+            <td class="zo_m_list_frag" align="left">
                         <a href="${fn:escapeXml(logoutUrl)}" id="_logout">
                             <fmt:message key="logOut"/>
                         </a>
-                    </div>
-                </div>
+                        (${mailbox.accountInfo.attrs["uid"][0]}
+                        <c:url var="logoutUrl" value="${context_url}?loginOp=logout&client=mobile"/>)
             </td>
-        </tr>
-        <tr class="statusbar">
-            <td>
-                <div class='zo_main_info_cont'>
-                    <div class='zo_main_info'>
-                        <span class="zo_m_list_frag"><fmt:message key="MO_quota"/>:</span>
+        
+            <td class="zo_m_list_frag" align="right">
+                        <fmt:message key="MO_quota"/>:
                         <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
                         <fmt:message var="unlimited" key="unlimited"/>
                         <fmt:message key="MO_quotaUsage">
                             <fmt:param value="${zm:displaySizeFractions(mailbox.size,2)}"/>
                             <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
                         </fmt:message>
-                    </div>
-                </div>
             </td>
         </tr>
     </table>

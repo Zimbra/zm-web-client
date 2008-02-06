@@ -39,7 +39,7 @@
 </mo:handleError>
 
 
-<table width="100%" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse; height:100%'>
+<table width="100%" border="0" cellpadding="0" cellspacing="0" style='height:100%'>
 
 <c:forEach var="row" items="${layout.allDayRows}">
     <tr>
@@ -60,7 +60,7 @@
             </c:otherwise>
         </c:choose>
         <c:forEach var="cell" items="${row.cells}">
-            <td style='padding: 1px' class='zo_cal_adds' valign="middle" height="100%" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
+            <td style='padding: 1px'  valign="middle" height="100%" width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
                 <c:choose>
                     <c:when test="${not empty cell.appt}">
                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
@@ -93,7 +93,7 @@
         </c:otherwise>
     </c:choose>
     <c:forEach var="day" items="${layout.days}">
-        <td class='zo_cal_dsep zo_cal_adb' colspan="${day.maxColumns}" width="${day.width}%">
+        <td class='zo_cal_adb' colspan="${day.maxColumns}" width="${day.width}%">
             &nbsp;
         </td>
     </c:forEach>
@@ -102,7 +102,7 @@
 <c:forEach var="row" items="${layout.rows}">
     <tr style='height:100%'>
         <c:if test="${row.rowNum % 4 eq 0}">
-            <td valign="top" class='zo_cal_dayhour' nowrap="nowrap" width="1%" rowspan="4" style='border-left:none'>
+            <td class='zo_cal_dayhour' nowrap="nowrap" width="1%" rowspan="4" style='border-left:none'>
                 <fmt:formatDate value="${row.date}" type="time" timeStyle="short"/>
             </td>
         </c:if>

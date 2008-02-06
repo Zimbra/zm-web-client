@@ -9,7 +9,7 @@
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/main'}"/>
 <tr onclick='zClickLink("FLDR${folder.id}")'>
     <c:set var="url" value="${context_url}?sfi=${folder.id}"/>
-    <td class='zo_fldr' style='padding-left: ${8+folder.depth*8}px'>
+    <td class='Folders' style='padding-left: ${8+folder.depth*8}px'>
         <a id="FLDR${folder.id}" href="${fn:escapeXml(url)}">
             <mo:img alt='${fn:escapeXml(label)}' src="${folder.image}"/>
             ${fn:escapeXml(label)}

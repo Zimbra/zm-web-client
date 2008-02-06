@@ -40,44 +40,87 @@
 <c:set var="cc" value="${message.displayCc}"/>
 <c:set var="sender" value="${message.displaySender}"/>
 
-<table width="100%" cellpadding="0" cellspacing="0">
+
     <c:if test="${not empty from}">
+    
+	<div class="View">
+	<table width="100%" cellpadding="0" cellspacing="0">
     <tr>
-        <td valign='top' class='zo_mv_fname'><fmt:message key="from"/>:</td>
-        <td class='zo_mv_fvalue'>${fn:escapeXml(from)}</td>
+        <td valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="from"/>:</td>
+        <td class="Padding">${fn:escapeXml(from)}</td>
     </tr>
+    </table>
+    </div>
     </c:if>
     <c:if test="${not empty sender}">
+       	<div class="View">
+       	<table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-            <td valign='top' class='zo_mv_fname'><fmt:message key="sender"/>:</td>
-            <td class='zo_mv_fvalue'>${fn:escapeXml(sender)}</td>
+            <td valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="sender"/>:</td>
+            <td class="Padding">${fn:escapeXml(sender)}</td>
         </tr>
+    	</table>
+    	</div>
     </c:if>
     <c:if test="${not empty to}">
-        <tr><td colspan="2"><hr size="1"/></td></tr>
-        <tr>
-            <td valign='top' class='zo_mv_fname'><fmt:message key="to"/>:</td>
-            <td class='zo_mv_fvalue'>${fn:escapeXml(to)}</td>
+        <div class="View">
+       	<table width="100%" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign='top' class='label' nowrap="nowrap" width="35" align="right"><fmt:message key="to"/>:</td>
+            <td class="Padding">${fn:escapeXml(to)}</td>
         </tr>
+        </table>
+        </div>
     </c:if>
     <c:if test="${not empty cc}">
-        <tr><td colspan="2"><hr size="1"/></td></tr>
+        <div class="View">
+       	<table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-            <td valign='top' class='zo_mv_fname'><fmt:message key="cc"/>:</td>
-            <td class='zo_mv_fvalue'>${fn:escapeXml(cc)}</td>
+            <td valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="cc"/>:</td>
+            <td class="Padding">${fn:escapeXml(cc)}</td>
         </tr>
+        </table>
+        </div>
     </c:if>
-    <tr><td colspan="2"><hr size="1"/></td></tr>
+	<div class="View">
+      	<table cellspacing="2" cellpadding="0" border="0" align="center">
+                    <tr>
+ 						<td valign="top"><mo:img src="startup/ImgReply.gif" alt="reply"/></td>	                   
+                        <td class="Padding">
+                            <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=reply" class="Action">
+                                 <fmt:message key="reply"/>
+                            </a> &nbsp; 
+                        </td>
+						<td valign="top"><mo:img src="startup/ImgReplyAll.gif" alt="replyall"/> </td>
+                        <td class="Padding">
+                            <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=replyAll" class="Action">
+                                <fmt:message key="replyAll"/>
+                            </a> &nbsp; 
+                        </td>
+						<td valign="top"><mo:img src="startup/ImgForward.gif" alt="forward"/></td>
+                        <td class="Padding">
+                            <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=forward" class="Action">
+                                 <fmt:message key="forward"/>
+                            </a> 
+                        </td>
+                    </tr>
+                </table>
+            <hr size="1"/>
+      	<table width="100%" cellpadding="0" cellspacing="0">
     <fmt:message var="noSubject" key="noSubject"/>
-    <tr><td class='zo_mv_subject' colspan="2">${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
-                        <c:if test="${message.isFlagged}">&nbsp;<mo:img src="startup/ImgFlagRed.gif" alt="flag"/></c:if>
-    </td></tr>
-    <tr>
-        <td colspan="2" class='zo_mv_date'>
-            <fmt:message var="dateFmt" key="formatDateSent"/>
+    <tr><td>
+    <p class='zo_m_list_from'>
+    <fmt:message var="dateFmt" key="formatDateSent"/>
             <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/>
-        </td>
-    </tr>
+    </p>
+    <p class="zo_unread">
+    ${fn:escapeXml(empty message.subject ? noSubject : message.subject)}
+                        <c:if test="${message.isFlagged}">&nbsp;<mo:img src="startup/ImgFlagRed.gif" alt="flag"/></c:if>
+    
+    </p>
+    <hr size="1"/>
+    </td></tr>
+    
     <c:if test="${message.hasTags and mailbox.features.tagging}">
         <tr>
             <td valign="middle" class="mo_taglist" colspan="2">
@@ -91,31 +134,26 @@
     </c:if>
     <c:if test="${not hideops}">
         <c:if test="${showInviteReply}">
-            <tr><td colspan="2"><hr size="1"/></td></tr>
             <tr>
                 <td colspan="2">
-                    <table cellspacing="0" cellpadding="0" class='zo_msgops'>
+                
+                    <table cellspacing="0" cellpadding="0" border="0" align="center">
                         <tr>
-                            <td style='padding: 0 2px 0 2px'>
-                                <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=accept">
-                                    <mo:img src="common/ImgCheck.gif" alt="check"/>
-                                    &nbsp;
+							<td><mo:img src="common/ImgCheck.gif" alt="check"/></td>                        
+                            <td class="Padding">
+                                <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=accept" class="Action">
                                     <span><fmt:message key="replyAccept"/></span>
-                                </a>
+                                </a> &nbsp;
                             </td>
-                            <td><div class='zo_vertsep'></div></td>
-                            <td style='padding: 0 2px 0 2px'>
-                                <a <c:if test="${not isPart}">id="OPTENT"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=tentative">
-                                    <mo:img src="common/ImgQuestionMark.gif" alt="tentative"/>
-                                    &nbsp;
+							<td><mo:img src="common/ImgQuestionMark.gif" alt="tentative"/></td>
+                            <td class="Padding">
+                                <a <c:if test="${not isPart}">id="OPTENT"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=tentative" class="Action">
                                     <span><fmt:message key="replyTentative"/></span>
-                                </a>
+                                </a> &nbsp;
                             </td>
-                            <td><div class='zo_vertsep'></div></td>
-                            <td style='padding: 0 2px 0 2px'>
-                                <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=decline">
-                                    <mo:img src="common/ImgCancel.gif" alt="cancel"/>
-                                    &nbsp;
+                            <td><mo:img src="common/ImgCancel.gif" alt="cancel"/></td>
+                            <td class="Padding">
+                                <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=decline" class="Action">
                                     <span><fmt:message key="replyDecline"/></span>
                                 </a>
                             </td>
@@ -124,40 +162,7 @@
                 </td>
             </tr>
         </c:if>
-        <tr><td colspan="2"><hr size="1"/></td></tr>
-        <tr>
-            <td colspan="2">
-                <table cellspacing="0" cellpadding="0" class='zo_msgops'>
-                    <tr>
-                        <td style='padding: 0 2px 0 2px'>
-                            <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=reply">
-                                <mo:img src="startup/ImgReply.gif" alt="reply"/>
-                                &nbsp;
-                                <span><fmt:message key="reply"/></span>
-                            </a>
-                        </td>
-                        <td><div class='zo_vertsep'></div></td>
-                        <td style='padding: 0 2px 0 2px'>
-                            <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=replyAll">
-                                <mo:img src="startup/ImgReplyAll.gif" alt="replyall"/>
-                                &nbsp;
-                                <span><fmt:message key="replyAll"/></span>
-                            </a>
-                        </td>
-                        <td><div class='zo_vertsep'></div></td>
-                        <td style='padding: 0 2px 0 2px'>
-                            <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=forward">
-                                <mo:img src="startup/ImgForward.gif" alt="forward"/>
-                                &nbsp;
-                                <span><fmt:message key="forward"/></span>
-                            </a>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
     </c:if>
-    <tr><td colspan="2"><hr size="1"/></td></tr>
     <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
         <tr>
             <td colspan="2">

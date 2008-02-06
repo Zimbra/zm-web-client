@@ -15,11 +15,14 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+
 <c:if test="${(not empty value) or isaddress}">
+<div class="View">
+	<table cellpadding="0" cellspacing="0" border="0">
     <fmt:message key="${label}" var="label"/>
     <tr>
-        <td <c:if test="${isaddress}">valign="top"</c:if> class='zo_cv_fname'>${fn:escapeXml(label)}</td>
-        <td class='zo_cv_fval'>
+        <td <c:if test="${isaddress}">valign="top"</c:if> class='label' width="35" nowrap="nowrap" align="right">${fn:escapeXml(label)}</td>
+        <td class="Padding">
             <c:choose>
                 <c:when test="${isurl}">
                     <c:set var="prefix" value="${fn:contains(value,'//') ? '' : 'http://'}"/>
@@ -58,4 +61,6 @@
             </c:choose>
         </td>
     </tr>
+    </table>
+    </div>
 </c:if>
