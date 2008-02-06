@@ -22,7 +22,7 @@
     -->
 	<context-param>
 	   <param-name>zimbra.jsp.session.timeout</param-name>
-	   <param-value>300</param-value>
+	   <param-value>900</param-value>
 	</context-param>
 	<context-param>
         <!-- how long to cache the result of the zm:getDomainInfo tag result  -->
@@ -351,7 +351,6 @@
           <url-pattern>/h/voicemail</url-pattern>
           <url-pattern>/m/login</url-pattern>
           <url-pattern>/m/main</url-pattern>
-          <url-pattern>/m/mainx</url-pattern>          
           <url-pattern>/m/mosearch</url-pattern>
           <url-pattern>/m/mocalendar</url-pattern>
           <url-pattern>/m/mofolders</url-pattern>

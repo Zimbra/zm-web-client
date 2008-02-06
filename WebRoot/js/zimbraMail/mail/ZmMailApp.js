@@ -385,8 +385,8 @@ function() {
 	ZmPref.registerPref("OPEN_MAIL_IN_NEW_WIN", {
 		displayName:		ZmMsg.openMailNewWin,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-        precondition:      ZmSetting.DETACH_MAILVIEW_ENABLED
-    });
+		precondition:      ZmSetting.DETACH_MAILVIEW_ENABLED
+	});
 
 	ZmPref.registerPref("REPLY_TO_ADDRESS", {
 		displayName:		ZmMsg.replyToAddress,
@@ -673,9 +673,8 @@ function(notify) {
 	var newDeletedIds = [];
 	for (var i = 0; i < deletedIds.length; i++) {
 		var id = deletedIds[i];
-		var nId = ZmOrganizer.normalizeId(id);
-		if (nId < 0) {
-			virtConv[nId] = true;
+		if (id < 0) {
+			virtConv[id] = true;
 			virtConvDeleted = true;
 		} else {
 			newDeletedIds.push(id);
@@ -710,14 +709,13 @@ function(notify) {
 	for (var i = 0; i < modList.length; i++) {
 		var mod = modList[i];
 		var id = mod.id;
-		var nId = ZmOrganizer.normalizeId(id);
 		var name = mod._name;
 		if (name == "m") {
-			var virtCid = nId * -1;
+			var virtCid = id * -1;
 			if (virtConv[virtCid] && createdConvs[mod.cid]) {
 				msgMoved = true;
 				movedMsgs[id] = mod;
-				newToOldCid[mod.cid] = appCtxt.multiAccounts ? ZmOrganizer.getSystemId(virtCid) : virtCid;
+				newToOldCid[mod.cid] = virtCid;
 				createdConvs[mod.cid]._wasVirtConv = true;
 				createdConvs[mod.cid].m = [{id:id}];
 				// go ahead and update the msg cid, since it's used in
@@ -942,8 +940,7 @@ function(refresh) {
 	}
 
 	if (!appCtxt.inStartup) {
-		var account = (appCtxt.multiAccounts && !appCtxt.get(ZmSetting.OFFLINE))
-			? appCtxt.getMainAccount(true) : null;
+		var account = appCtxt.multiAccounts ? appCtxt.getMainAccount() : null;
 		this.resetOverview(this.getOverviewId(account));
 		var req = appCtxt.currentRequestParams;
 		if (appCtxt.getCurrentAppName() == this._name && req.resend && req.methodName == "NoOpRequest") {
@@ -1025,16 +1022,6 @@ function(accordionItem) {
 	if (!appCtxt.inStartup) {
 		this._mailSearch();
 	}
-};
-
-ZmMailApp.prototype._setActiveAcctForOffline =
-function() {
-	// call base class *first*
-	ZmApp.prototype._setActiveAcctForOffline.call(this);
-
-	// force a mail search since we dont care about the one returned for the
-	// invisible parent account (offline mode only)
-	this._mailSearch();
 };
 
 ZmMailApp.prototype._mailSearch =

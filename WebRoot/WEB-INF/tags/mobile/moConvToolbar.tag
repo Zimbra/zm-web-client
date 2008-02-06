@@ -14,37 +14,41 @@
     <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" limit="100"
                    context="${context}" fetch="none" markread="false" sort="${param.css}"/>
 </c:if>
-
-<table class="ToolbarBg" cellpadding="0" cellspacing="0" border="0" width="100%">
+<table class="x_toolbar" cellpadding="0" cellspacing="0">
 <tr>
-<td class="Padding">
-    <c:if test="${context.st=='message' || context.st=='conversation'}">
-        <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
-        <a href="${composeUrl}">
-            <fmt:message key="compose"/>
-        </a>
+<td class="x_main_buttons">
+    <c:if test="${uiv == '1'}">
+        <c:if test="${context.st=='message' || context.st=='conversation'}">
+            <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
+            <a href="${composeUrl}" class="zo_button">
+                <fmt:message key="compose"/>
+            </a>
+        </c:if>
+        <c:if test="${context.st=='contact'}">
+            <c:url var="composeUrl" value="${urlTarget}?action=add"/>
+            <a href="${composeUrl}" class="zo_button">
+                <fmt:message key="add"/>
+            </a>
+        </c:if>
     </c:if>
-    <c:if test="${context.st=='contact'}">
-        <c:url var="composeUrl" value="${urlTarget}?action=add"/>
-        <a href="${composeUrl}">
-            <fmt:message key="add"/>
-        </a>
+    <c:if test="${uiv != '1'}">
+        <a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a>
     </c:if>
 </td>
-<td align="right">
-<table cellpadding="0" cellspacing="0" border="0">
+<td class="x_sub_buttons" align="right">
+<table>
 <tr>
 <c:if test="${isConv==null || !isConv }">
     <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
                          cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
-    <td class="Padding"><a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'><fmt:message key="backToConv"/></a></td>
+    <td><a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'><fmt:message key="backToConv"/></a></td>
 </c:if>
 <c:if test="${isConv!=null && isConv}">
     <zm:currentResultUrl var="closeurl" value="${urlTarget}"
                          index="${context.currentItemIndex}"
                          context="${context}"/>
 </c:if>
-<td class="Padding">
+<td>
     <c:if test="${isConv != null && isConv}">
         <zm:currentResultUrl var="closeurl" value="${urlTarget}"
                              index="${context.currentItemIndex}"
@@ -54,11 +58,11 @@
         </a>
     </c:if>
     <c:if test="${(singleMessage == null || singleMessage)}">
-        <!-- a class='zo_button' href="#action"><fmt:message key="MO_actions"/></a -->
+        <a class='zo_button' href="#action"><fmt:message key="MO_actions"/></a>
     </c:if>
 </td>
 <c:if test="${isConv !=null && isConv}">
-    <td class="Padding">
+    <td>
         <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"
                                 index="${context.currentItemIndex}"/>
         <c:choose>
@@ -79,7 +83,7 @@
     </td>
 </c:if>
 <c:if test="${isConv == null || !isConv}">
-    <td class="Padding">
+    <td>
         <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}"
                                 index="${param.csi}"/>
         <c:choose>
@@ -101,7 +105,7 @@
     </td>
 </c:if>
 <c:if test="${isConv !=null && isConv}">
-    <td class="Padding">
+    <td>
         <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"
                                 index="${context.currentItemIndex}"/>
         <c:choose>
@@ -122,7 +126,7 @@
     </td>
 </c:if>
 <c:if test="${isConv == null || !isConv}">
-    <td class="Padding">
+    <td>
         <c:choose>
             <c:when test="${messCursor.hasNext}">
                 <zm:currentResultUrl var="nextMsgUrl" value="${urlTarget}" action="view"

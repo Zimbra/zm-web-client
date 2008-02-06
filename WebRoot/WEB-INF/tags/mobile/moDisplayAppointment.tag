@@ -29,18 +29,24 @@
 </c:catch>
 <fmt:message var="noSubject" key="noSubject"/>
 <c:set var="isPart" value="${!empty message.partName}"/>
-    <div class='View'>
-        <table width=100% cellpadding="5" border="0">
+
+    <div class='zo_appt_view_cont'>
+        <table width=100% cellpadding="5">
             <tr>
-                <td>
-                    <strong>${fn:escapeXml(empty appt.name ? noSubject : appt.name)}</strong>
-                <br>
+                <td colspan=2 class='zo_av_sub'>
+                    ${fn:escapeXml(empty appt.name ? noSubject : appt.name)}
+                </td>
+            </tr>
             <c:if test="${not empty appt.location}">
-                
-                    <span class='zo_m_list_frag'>${fn:escapeXml(appt.location)}</span>
-            <br><br>       
+                <tr>
+                    <td colspan=2 class='zo_av_loc'>${fn:escapeXml(appt.location)}</td>
+                </tr>
             </c:if>
-			<p class='label Medium'>
+            <tr>
+                <td colspan=2>&nbsp;</td>
+            </tr>            
+            <tr>
+                <td class='zo_av_time'>
                     <c:choose>
                         <c:when test="${param.useInstance eq '1' and (not empty param.instStartTime and not empty param.instDuration)}">
                             <c:set var="startDateCal" value="${zm:getCalendar(param.instStartTime, mailbox.prefs.timeZone)}"/>
@@ -57,10 +63,17 @@
                     </c:choose>
                     ${fn:escapeXml(zm:getApptDateBlurb(pageContext, mailbox.prefs.timeZone, startDate.time, endDate.time, appt.allDay))}
                     <%--&nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneWindowsId}</span> --%>
-                </p>
+                </td>
+            </tr>
+            <tr>
+                <td colspan=2>&nbsp;</td>
+            </tr>
+            <tr>
+                <td colspan=2><hr size="1"></td>
+            </tr>
 
- <br><br>  
-					<p id="iframeBody">
+            <tr>
+                <td width=100% id="iframeBody" class="zo_mv_body" valign='top' colspan="2">
                     <mo:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}"/>
                     <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
                     <c:if test="${not empty bodies}">
@@ -69,7 +82,6 @@
                                      theBody="${zm:getPartHtmlContent(addbody, message)}" counter="${bstatus.count}"/>
                         </c:forEach>
                     </c:if>
-                </p>
                 </td>
             </tr>
 
