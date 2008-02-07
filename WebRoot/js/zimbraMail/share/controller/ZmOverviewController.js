@@ -161,7 +161,7 @@ function(account, icon) {
 			}
 		}
 	} else {
-		var el = document.getElementById(ZmSetting.SKIN_OFFLINE_STATUS);
+		var el = document.getElementById(appCtxt.get(ZmSetting.SKIN_OFFLINE_STATUS));
 		if (el) {
 			el.className = icon;
 		}
