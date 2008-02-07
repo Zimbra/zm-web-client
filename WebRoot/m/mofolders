@@ -21,27 +21,29 @@
 </mo:handleError>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mosearch'}"/>
 <mo:view title="${title}" context="${null}" mailbox="${mailbox}">
-    <%--<table width="100%" cellspacing="0" cellpadding="0">
+    <c:if test="${uiv  != '1'}">
+        <table width="100%" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>
+                    <table width="100%" cellspacing="0" cellpadding="0">
+                        <tr class='x_toolbar'>
+                            <td>
+                                <table cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </c:if>
+    <table width="100%" cellspacing="0" cellpadding="0">
         <tr>
-            <td>
-                <table width="100%" cellspacing="0" cellpadding="0" border="1">
-                    <tr class='x_toolbar'>
-                        <td>
-                            <table cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <td><a href="main" class='zo_leftbutton'><fmt:message key="MO_MAIN"/></a></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>--%>
-    <table width="100%" cellspacing="0" cellpadding="2" border="0">
-        <tr class="zo_cal_listh">
-            <td class="Title">
-			   <fmt:message key="folders"/>
+            <td class='zo_fldr_rowsep'>
+                <fmt:message key="folders"/>
             </td>
         </tr>
         <mo:overviewFolder base="${context_url}" folder="${mailbox.inbox}"/>
@@ -61,9 +63,9 @@
 
         <mo:doFolderTree skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}"/>
 
-        <tr class="zo_cal_listh">
-            <td class="Title">
-           <fmt:message key="searches"/>
+        <tr>
+            <td class='zo_fldr_rowsep'>
+                <fmt:message key="searches"/>
             </td>
         </tr>
         <zm:forEachFolder var="folder">
@@ -71,8 +73,8 @@
                 <mo:overviewSearchFolder folder="${folder}"/>
             </c:if>
         </zm:forEachFolder>
-        <tr class="zo_cal_listh">
-            <td class="Title">
+        <tr>
+            <td class='zo_fldr_rowsep'>
                 <fmt:message key="tags"/>
             </td>
         </tr>
@@ -81,6 +83,5 @@
             <mo:overviewTag calendars="${false}" tag="${tag}"/>
         </zm:forEachTag>
     </table>
-    <br>
 </mo:view>
  

@@ -115,23 +115,14 @@ ZmOrganizer.F_REST_URL			= "rest";
 ZmOrganizer.FLAG_CHECKED			= "#";
 ZmOrganizer.FLAG_IMAP_SUBSCRIBED	= "*";
 ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY	= "b";
-ZmOrganizer.FLAG_OFFLINE_SYNCABLE	= "y";
-ZmOrganizer.FLAG_OFFLINE_SYNCING	= "~";
-ZmOrganizer.ALL_FLAGS = [
-	ZmOrganizer.FLAG_CHECKED,
-	ZmOrganizer.FLAG_IMAP_SUBSCRIBED,
-	ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY,
-	ZmOrganizer.FLAG_OFFLINE_SYNCABLE,
-	ZmOrganizer.FLAG_OFFLINE_SYNCING
-];
+ZmOrganizer.ALL_FLAGS = [ZmOrganizer.FLAG_CHECKED, ZmOrganizer.FLAG_IMAP_SUBSCRIBED,
+						 ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY];
 
 // org property for each flag
 ZmOrganizer.FLAG_PROP = {};
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_CHECKED]				= "isChecked";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_IMAP_SUBSCRIBED]		= "imapSubscribed";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY]	= "excludeFreeBusy";
-ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_OFFLINE_SYNCABLE]	= "isOfflineSyncable";
-ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_OFFLINE_SYNCING]		= "isOfflineSyncing";
 
 // Following chars invalid in organizer names: " : / [anything less than " "]
 ZmOrganizer.VALID_NAME_CHARS = "[^\\x00-\\x1F\\x7F:\\/\\\"]";
@@ -402,6 +393,7 @@ function(callback, result) {
 };
 ZmOrganizer.prototype._handlePostCreatePath =
 function(path, attrs, callback, errorCallback, response) {
+	debugger;
 	var folderId = response.CreateFolderResponse.folder.id;
 	var organizer = appCtxt.getById(folderId);
 	if (path != "") {
@@ -1205,32 +1197,32 @@ function () {
 */
 ZmOrganizer.prototype.isDataSource =
 function(type, checkParent) {
-	var dss = this.getDataSources(type, checkParent);
-	return (dss && dss.length > 0);
+	return this.getDataSource(type, checkParent) ? true : false;
 };
 
 /**
-* Returns the data sources this folder maps to (or null). If type is given,
-* returns non-null result only if folder maps to datasource(s) *and* is of the
-* given type.
+* Returns the data source this folder maps to (or null). If type is given, returns
+* non-null result only if folder maps to a datasource *and* is of the given type. 
 *
 * @type			[Int]*		Either ZmAccount.POP or ZmAccount.IMAP
 * @checkParent	[Boolean]*	walk up the parent chain
 */
-ZmOrganizer.prototype.getDataSources =
+ZmOrganizer.prototype.getDataSource =
 function(type, checkParent) {
 	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) { return null };
 
 	var dsc = appCtxt.getDataSourceCollection();
-	var dataSources = dsc.getByFolderId(this.nId, type);
+	var dataSource = dsc.getByFolderId(this.nId);
 
-	if (dataSources.length == 0) {
+	if (!dataSource) {
 		return (checkParent && this.parent)
-			? this.parent.getDataSources(type, checkParent)
+			? this.parent.getDataSource(type, checkParent)
 			: null;
 	}
 
-	return dataSources;
+	return !type || (dataSource.type == type)
+		? dataSource
+		: null;
 };
 
 ZmOrganizer.prototype.getOwner =

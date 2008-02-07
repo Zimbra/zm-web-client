@@ -38,7 +38,6 @@ ZmFolderTreeController = function(type, dropTgt) {
 	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareAddrBookListener);
 	this._listeners[ZmOperation.MOUNT_FOLDER] = new AjxListener(this, this._mountAddrBookListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this, this._emptyListener);
-	this._listeners[ZmOperation.SYNC_OFFLINE_FOLDER] = new AjxListener(this, this._syncOfflineFolderListener);
 };
 
 ZmFolderTreeController.prototype = new ZmTreeController;
@@ -144,7 +143,7 @@ function(parent, type, id) {
         }
 		else {
 			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
-			if (!appCtxt.get(ZmSetting.OFFLINE) && isEnabled) {
+			if (isEnabled) {
 				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
 				var dataSources = dsCollection.getItemsFor(folder.nId);
 				if (dataSources.length > 0) {
@@ -158,19 +157,6 @@ function(parent, type, id) {
 			}
 		}
     }
-
-	button = parent.getOp(ZmOperation.SYNC_OFFLINE_FOLDER);
-	if (button) {
-		if (!folder.isOfflineSyncable) {
-			button.setVisible(false);
-		} else {
-			button.setVisible(true);
-			button.setEnabled(true);
-			var text = (folder.isOfflineSyncing)
-				? ZmMsg.syncOfflineFolderOff : ZmMsg.syncOfflineFolderOn;
-			button.setText(text);
-		}
-	}
 };
 
 // Private methods
@@ -200,8 +186,7 @@ function() {
 			ZmOperation.EDIT_PROPS,
 			ZmOperation.EXPAND_ALL,
 			ZmOperation.SYNC,
-			ZmOperation.EMPTY_FOLDER,
-			ZmOperation.SYNC_OFFLINE_FOLDER];
+			ZmOperation.EMPTY_FOLDER];
 };
 
 ZmFolderTreeController.prototype._getAllowedSubTypes =
@@ -338,19 +323,6 @@ function(ev) {
 	if(!(organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash())){
 		var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
 		cancelButton.focus();
-	}
-};
-
-/*
-* Toggles on/off flag for syncing IMAP folder with server. Only for offline use.
-*
-* @param ev		[DwtUiEvent]	the UI event
-*/
-ZmFolderTreeController.prototype._syncOfflineFolderListener =
-function(ev) {
-	var folder = this._getActionedOrganizer(ev);
-	if (folder) {
-		folder.toggleSyncOffline();
 	}
 };
 

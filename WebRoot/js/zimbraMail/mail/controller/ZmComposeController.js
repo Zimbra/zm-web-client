@@ -169,7 +169,7 @@ function() {
 	var addrs = this._composeView.getRawAddrFields();
 	var subj = this._composeView._subjectField.value;
 	var forAttHtml = this._composeView.getForwardLinkHtml();
-	var body = this._getBodyContent();
+	var body = this._composeView.getHtmlEditor().getContent();
 	var composeMode = this._composeView.getComposeMode();
 	var identityId = this._composeView.getIdentity().id;
 	var backupForm = this._composeView.backupForm;
@@ -280,8 +280,7 @@ function(attId, draftType, callback) {
 	} else {
 		// if shared folder, make sure we send the email on-behalf-of
 		var folder = msg.folderId ? appCtxt.getById(msg.folderId) : null;
-		// always save draft on the main account *unless* in offline mode
-		var acctName = (isDraft && !appCtxt.get(ZmSetting.OFFLINE))
+		var acctName = isDraft
 			? (appCtxt.getMainAccount().name)
 			: ((folder && folder.isRemote()) ? folder.getOwner() : this._accountName);
 		var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
@@ -402,7 +401,8 @@ function(setSignature,resetBody) {
 	if (newMode != this._composeView.getComposeMode()) {
 		this._composeView.setComposeMode(newMode);
 	}
-	this._composeView.applySignature(this._getBodyContent(), this._currentSignatureId);
+	var content = this._composeView.getHtmlEditor().getContent();
+	this._composeView.applySignature(content, this._currentSignatureId);
 	this._setAddSignatureVisibility(identity);
 };
 
@@ -410,7 +410,8 @@ ZmComposeController.prototype._handleSelectSignature = function(evt) {
 	var signatureId = evt.item.getData(ZmComposeController.SIGNATURE_KEY);
 	this.setSelectedSignature(signatureId);
 
-	this._composeView.applySignature(this._getBodyContent(), this._currentSignatureId);
+	var content = this._composeView.getHtmlEditor().getContent();
+	this._composeView.applySignature(content, this._currentSignatureId);
 	this._currentSignatureId = signatureId;
 };
 
@@ -834,11 +835,6 @@ function(msg, identity) {
 	return composeMode;
 };
 
-ZmComposeController.prototype._getBodyContent =
-function() {
-	return this._composeView.getHtmlEditor().getContent();
-};
-
 ZmComposeController.prototype._setFormat =
 function(mode) {
 	if (mode == this._composeView.getComposeMode())	{ return; }
@@ -915,12 +911,12 @@ function(ev) {
 	this._send();
 };
 
-ZmComposeController.prototype._imListener =
-function(ev) {
+ZmComposeController.prototype._imListener = function(ev) {
 	var msg = this._composeView.getMsg();
 	if (msg) {
+		var text = this._composeView._htmlEditor.getContent();
 		var contacts = msg.getAddresses(AjxEmailAddress.TO, {}, true);
-		AjxDispatcher.run("GetChatListController").chatWithContacts(contacts, msg, this._getBodyContent());
+		AjxDispatcher.run("GetChatListController").chatWithContacts(contacts, msg, text);
 	}
 };
 
@@ -983,47 +979,28 @@ function(ev) {
 	}
 
 	// the rest are radio buttons, we only care when they're selected
-	if (ev.detail != DwtMenuItem.CHECKED) { return; }
+	if (ev.detail != DwtMenuItem.CHECKED) return;
 
 	if (op == ZmOperation.REPLY || op == ZmOperation.REPLY_ALL) {
 		this._composeView._setAddresses(op, this._toOverride);
 	} else if (op == ZmOperation.FORMAT_HTML || op == ZmOperation.FORMAT_TEXT) {
 		this._setFormat(ev.item.getData(ZmHtmlEditor._VALUE));
 	} else {
-		if (this._composeView.isDirty() &&
-			this._curIncOption != ZmOperation.INC_NONE && this._curIncOption != ZmOperation.INC_ATTACHMENT) {
-
-			// warn user of possible lost content
-			if (!this._switchIncludeDialog) {
-				this._switchIncludeDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
-				this._switchIncludeDialog.setMessage(ZmMsg.switchIncludeWarning, DwtMessageDialog.WARNING_STYLE);
-				this._switchIncludeDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._switchIncludeCancelCallback, this);
-			}
-			this._switchIncludeDialog.registerCallback(DwtDialog.OK_BUTTON, this._switchIncludeOkCallback, this, op);
-			this._switchIncludeDialog.popup(this._composeView._getDialogXY());
-		} else {
-			this._switchInclude(op);
-		}
-	}
-};
-
-ZmComposeController.prototype._switchInclude =
-function(op) {
-	var incOption = ZmComposeController.INC_MAP[op];
-	if (incOption) {
-		var curText = this._getBodyContent();
-		if (this._curIncOption == ZmOperation.INC_NO_PREFIX || this._curIncOption == ZmOperation.INC_PREFIX ||
-			this._curIncOption == ZmOperation.INC_SMART) {
-
-			var idx = curText.indexOf(this._composeView._includedPreface.replace(/\s+$/, ""));
-			if (idx) {
-				var crlf = (this._composeView.getComposeMode() == DwtHtmlEditor.HTML) ? "<br>" : "\\r?\\n";
-				var regEx = new RegExp(crlf + "+$", "i");
-				curText = curText.substring(0, idx).replace(regEx, "");
+		var incOption = ZmComposeController.INC_MAP[op];
+		if (incOption) {
+			if (this._composeView.isDirty()) {
+				if (!this._switchIncludeDialog) {
+					this._switchIncludeDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+					this._switchIncludeDialog.setMessage(ZmMsg.switchIncludeWarning, DwtMessageDialog.WARNING_STYLE);
+					this._switchIncludeDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._switchIncludeCancelCallback, this);
+				}
+				this._switchIncludeDialog.registerCallback(DwtDialog.OK_BUTTON, this._switchIncludeOkCallback, this, incOption);
+				this._switchIncludeDialog.popup(this._composeView._getDialogXY());
+			} else {
+				this._composeView.resetBody(this._action, this._msg, this._extraBodyText, incOption);
+				this._curIncOption = ZmComposeController.INC_OP[incOption];
 			}
 		}
-		this._composeView.resetBody(this._action, this._msg, curText, incOption);
-		this._curIncOption = ZmComposeController.INC_OP[incOption];
 	}
 };
 
@@ -1177,21 +1154,6 @@ function() {
 	this._cancelViewPop();
 };
 
-ZmComposeController.prototype._switchIncludeOkCallback =
-function(op) {
-	this._switchIncludeDialog.popdown();
-	this._switchInclude(op);
-};
-
-ZmComposeController.prototype._switchIncludeCancelCallback =
-function() {
-	this._switchIncludeDialog.popdown();
-	// reset the radio button for the include mode
-	var menu = this._optionsMenu[this._action];
-	if (!menu) { return; }
-	menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
-};
-
 /**
  * Handles re-enabling inputs if the pop shield is dismissed via
  * Esc. Otherwise, the handling is done explicitly by a callback.
@@ -1206,6 +1168,22 @@ function() {
 	this._composeView.enableInputs(true);
 	appCtxt.getAppViewMgr().showPendingView(false);
 	this._composeView.reEnableDesignMode();
+};
+
+ZmComposeController.prototype._switchIncludeOkCallback =
+function(incOption) {
+	this._switchIncludeDialog.popdown();
+	this._composeView.resetBody(this._action, this._msg, this._extraBodyText, incOption);
+	this._curIncOption = ZmComposeController.INC_OP[incOption];
+};
+
+ZmComposeController.prototype._switchIncludeCancelCallback =
+function() {
+	this._switchIncludeDialog.popdown();
+	// reset the radio button for the include mode
+	var menu = this._optionsMenu[this._action];
+	if (!menu) return;
+	menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
 };
 
 ZmComposeController.prototype._getDefaultFocusItem =

@@ -20,8 +20,7 @@
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
-
-<table class="x_list_container" cellspacing="0" cellpadding="0" border="0" width="100%">
+<table class="x_list_container" cellspacing="0" cellpadding="0">
 <tr>
     <td>
             <%--table width="100%" cellspacing="0" cellpadding="0">
@@ -47,7 +46,7 @@
 </tr>
 <tr>
     <td>
-        <table cellspacing="0" width="100%" cellspaing="0" border="0">
+        <table width="100%" cellpadding="0" cellspacing="0" class='zo_m_list'>
             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                 <c:set var="chit" value="${hit.conversationHit}"/>
 
@@ -62,18 +61,18 @@
                                              index="${status.index}" context="${context}" usecache="true"/>
                     </c:otherwise>
                 </c:choose>
-                <tr id="conv${chit.id}" class="highlight">
+                <tr id="conv${chit.id}">
                     <td class='zo_m_list_row'>
-                        <table cellspacing="0" cellpadding="4" width="100%">
+                        <table width="100%">
                             <tr>
-                                <td class="zo_m_chk" width="1%">
+                                <td class="zo_m_chk">
                                     <c:set value=",${chit.id}," var="stringToCheck"/>
                                     <input type="checkbox" ${fn:contains(requestScope._selectedCids,stringToCheck)?'checked="checked"':'unchecked'} name="cid" value="${chit.id}">
                                     <c:forEach items="${chit.matchedMessageIds}" var="mid">
                                         <input type="hidden" name="id_${chit.id}" value="${mid}"/>
                                     </c:forEach>
                                 </td>
-                                <td width="1%">
+                                <td style='width:20px; ' valign="middle" align="center">
                                     <c:if test="${chit.messageCount ge 2}">
                                         <mo:img src="startup/ImgConversationView.gif"/>
                                     </c:if>
@@ -82,46 +81,55 @@
                                     </c:if>
                                 </td>
                                 <td onclick='zClickLink("a${chit.id}")'>
-                                    <table cellspacing="0" width="100%">
+                                    <table width="100%">
                                         <tr class='zo_m_list_<c:if test="${chit.isUnread}">un</c:if>read'>
-                                            <td class='zo_m_list_sub' width="95%">
+                                            <td class='zo_m_list_sub'>
                                                 <a id="a${chit.id}"
                                                    href="${fn:escapeXml(convUrl)}">${fn:escapeXml(empty chit.subject ? unknownSubject : zm:truncate(chit.subject,50,true))}</a>
-                                                   <span class='zo_m_list_<c:if test="${chit.isUnread}">un</c:if>read'>
-                                                    <span class='zo_m_list_from'>&nbsp; 
-                                                       <c:set var="dispRec" value="${chit.displayRecipients}"/>
-                                                        ${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}
-                                                    </span>
-                                                   </span>
-                                                   <p class='zo_m_list_frag'>${fn:escapeXml(zm:truncate(chit.fragment,50,true))}</p>
                                             </td>
-                                            <td align="center" width="2%" valign="middle" style="padding-top: 5px;padding-left: 4px;">
+                                            <td align="right" class='zo_m_list_frag'>
+                                                <table>
+                                                    <tr>
                                                         <c:if test="${chit.isFlagged}">
-                                                            <mo:img src="startup/ImgFlagRed.gif" alt="flag"/>
+                                                            <td><mo:img src="startup/ImgFlagRed.gif" alt="flag"/></td>
                                                         </c:if>
                                                         <c:if test="${chit.hasTags}">
-                                                            <mo:miniTagImage
-                                                                    ids="${hit.conversationHit.tagIds}"/>
+                                                            <td><mo:miniTagImage
+                                                                    ids="${hit.conversationHit.tagIds}"/></td>
                                                         </c:if>
-                                                                <c:choose>
+                                                        <td>
+                                                            <c:choose>
                                                                 <c:when test="${chit.messageCount gt 1}">(${chit.messageCount}
                                                                     )</c:when>
                                                                 <c:otherwise>&nbsp;</c:otherwise>
                                                             </c:choose>
-                                                       
+                                                        </td>
+                                                    </tr>
+                                                </table>
                                             </td>
-                                        <td class='zo_m_list_date' nowrap="nowrap" width="3%>
+                                        </tr>
+                                        <tr class='zo_m_list_<c:if test="${chit.isUnread}">un</c:if>read'>
+                                            <td class='zo_m_list_from'>
+                                                <c:set var="dispRec" value="${chit.displayRecipients}"/>
+                                                    ${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}
+                                            </td>
+                                            <td align="right" class='zo_m_list_date' nowrap="nowrap">
                                                 <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt"
                                                                 pattern="yyyyMMdd" value="${chit.date}"/>
                                                 <a
                                                         <c:if test="${uiv == '1' && mailbox.features.calendar}">href="${context_url}?st=cal&view=month&date=${on_dt}"</c:if>>
                                                         ${fn:escapeXml(zm:displayMsgDate(pageContext, chit.date))}
                                                 </a>
-                                         </td>
-                                         <td class="zo_ab_list_arrow" nowrap="nowrap">&nbsp;</td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class='zo_m_list_frag' colspan="2">
+                                                    ${fn:escapeXml(zm:truncate(chit.fragment,50,true))}
+                                            </td>
                                         </tr>
                                     </table>
                                 </td>
+                                <td style='width:5px'>&nbsp;</td>
                             </tr>
                         </table>
                     </td>
@@ -135,9 +143,14 @@
     </td>
 </tr>
 <c:if test="${context.searchResult.size gt 0}">
-    
     <tr>
         <td>
+            <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false"/>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="wh_bg">
                 <a name="action" id="action"/>
                 <table cellspacing="2" cellpadding="2" width="100%">
                     <tr class="zo_m_list_row">
@@ -168,15 +181,10 @@
                         </td>
                     </tr>
                 </table>
-        </td>
-    </tr>
-<tr>
-        <td>
-            <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false"/>
+            </div>
         </td>
     </tr>
 </c:if>
 </table>
 </form>
-<br>
 </mo:view>

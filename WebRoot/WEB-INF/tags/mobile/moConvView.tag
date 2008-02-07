@@ -57,7 +57,7 @@
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
-<table cellspacing="0" cellpadding="0" width="100%" border="0" class="Stripes">
+<table class="x_list_container" cellspacing="0" cellpadding="0">
 
 <c:choose>
 
@@ -67,7 +67,7 @@
                 <%--<table width="100%" cellspacing="0" cellpadding="0">
                     <tr class='zo_toolbar<c:out value="${pageContext.request.servletPath=='/m/main'?'1':''}"/>'>
                         <td>
-                            <table cellspacing="0" cellpadding="0" width="100%">
+                            <table cellspacing="0" cellpadding="0">
                                 <tr>
                                     <zm:currentResultUrl var="closeUrl" value="${context_url}" action='view' context="${context}"
                                                          cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
@@ -210,18 +210,21 @@
 
 
 <tr>
-
 <td>
     <%--form id="action" action="${fn:escapeXml(actionUrl)}" method="post">
  <input type="hidden" name="doMessageAction" value="1"/--%>
 <a name="action" id="action"/>
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
+<table width="100%" cellspacing="0" cellpadding="2">
+<tr>
+    <td colspan="2">
+        <hr size='1'/>
+    </td>
+</tr>
 <tr class='zo_action'>
     <td colspan="2">
-        <table cellspacing="0" cellpadding="0" align="center">
+        <table cellspacing="0" cellpadding="0">
             <tr>
                 <td>
-                 <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/> 
                     <c:choose>
                         <c:when test="${not message.isUnread}">
                             <input name="actionMarkUnread" type="submit" value="<fmt:message key="actionMarkUnread"/>"/>
@@ -230,7 +233,8 @@
                             <input name="actionMarkRead" type="submit" value="<fmt:message key="actionMarkRead"/>"/>
                         </c:otherwise>
                     </c:choose>
-
+                </td>
+                <td style='padding-left:5px'>
                     <c:choose>
                         <c:when test="${not message.isFlagged}">
                             <input name="actionFlag" type="submit" value="<fmt:message key="actionAddFlag"/>"/>
@@ -239,7 +243,24 @@
                             <input name="actionUnflag" type="submit" value="<fmt:message key="actionRemoveFlag"/>"/>
                         </c:otherwise>
                     </c:choose>
-                    
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td colspan="2">
+        <hr size='1'/>
+    </td>
+</tr>
+<tr class='zo_action'>
+    <td colspan="2">
+        <table cellspacing="0" cellpadding="0">
+            <tr>
+                <td>
+                    <input name="actionMove" type="submit" value="<fmt:message key="actionMove"/>"/>
+                </td>
+                <td style='padding-left:5px'>
                     <select name="folderId">
                         <option value="" selected="selected"><fmt:message key="moveAction"/></option>
                         <zm:forEachFolder var="folder">
@@ -247,19 +268,22 @@
                                 <option value="${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
                             </c:if>
                         </zm:forEachFolder>
-                    </select> <input name="actionMove" type="submit" value="<fmt:message key="actionMove"/>"/>
-                    &nbsp; 
+                    </select>
                 </td>
             </tr>
         </table>
-        <br>
     </td>
 </tr>
 <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
     <c:set var="tagsToAdd" value="${zm:getAvailableTags(pageContext,message.tagIds,true)}"/>
     <c:set var="tagsToRemove" value="${zm:getAvailableTags(pageContext,message.tagIds,false)}"/>
     <c:if test="${not empty tagsToAdd}">
-          <tr class='zo_action'>
+        <tr>
+            <td colspan="2">
+                <hr size='1'/>
+            </td>
+        </tr>
+        <tr class='zo_action'>
             <td colspan="2">
                 <table cellspacing="0" cellpadding="0">
                     <tr>
@@ -279,6 +303,11 @@
         </tr>
     </c:if>
     <c:if test="${not empty tagsToRemove}">
+        <tr>
+            <td colspan="2">
+                <hr size='1'/>
+            </td>
+        </tr>
         <tr class='zo_action'>
             <td colspan="2">
                 <table cellspacing="0" cellpadding="0">
@@ -300,6 +329,16 @@
         </tr>
     </c:if>
 </c:if>
+<tr>
+    <td colspan="2">
+        <hr size='1'/>
+    </td>
+</tr>
+<tr class='zo_action'>
+    <td colspan="2">
+        <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
+    </td>
+</tr>
 <c:if test="${uiv!='1'}">
     <tr>
         <td colspan="2">

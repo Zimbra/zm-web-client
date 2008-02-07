@@ -40,17 +40,22 @@
 
 <mo:view mailbox="${mailbox}" title="${title}" context="${null}">
 
-           <mo:calendarViewToolbar date="${date}"/>
-
-
-                <table width="100%" border="0" cellpadding="2" cellspacing="0">
-                    <tr>
+<table width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+        <td>
+            <mo:calendarViewToolbar date="${date}"/>
+        </td>
+    </tr>
+    <tr>
+            <td>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                    <tr class='zo_cal_lpage_row'>
                         <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                         <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
-                        <td width="1%" class='Padding'>
+                        <td width="1%" class='zo_cal_lpage'>
                             <a href="${fn:escapeXml(prevUrl)}"><mo:img src="arrows/ImgPreviousPage.gif" alt="previous"/></a>
                         </td>
-                        <td nowrap="nowrap" class="zo_unread Medium" align="center">
+                        <td nowrap="nowrap" class='zo_cal_listheader'>
                             <fmt:message var="titleFormat" key="MO_CAL_LIST_DATE_FORMAT"/>
                             <fmt:message key="MO_CAL_LIST_TITLE_FORMAT">
                                 <fmt:param>
@@ -61,12 +66,16 @@
                                 </fmt:param>
                             </fmt:message>
                         </td>
-                        <td width="1%" class='Padding'>
+                        <td width="1%" class='zo_cal_lpage'>
                             <a href="${fn:escapeXml(nextUrl)}"><mo:img src="arrows/ImgNextPage.gif" alt="next"/></a>
                         </td>
                     </tr>
                 </table>
-            <table width="100%" cellpadding="0" cellspacing="0" class='zo_cal_list' border="0">
+            </td>
+        </tr>
+    <tr>
+        <td>
+            <table width="100%" cellpadding="0" cellspacing="0" class='zo_cal_list'>
                 <c:set var="id" value="0"/>
                 <c:forEach var="day" begin="1" end="${numDays}">                    
                     <c:set var="count" value="0"/>
@@ -109,5 +118,7 @@
                     ${zm:getNextDay(currentDay)}
                 </c:forEach>
             </table>
-        
+        </td>
+    </tr>
+</table>
 </mo:view>

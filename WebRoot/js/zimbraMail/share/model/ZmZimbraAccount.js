@@ -93,7 +93,7 @@ function() {
 	var dispName = this.isMain
 		? this.settings.get(ZmSetting.DISPLAY_NAME)
 		: this.displayName;
-	return (this.accountName || dispName || this.name);
+	return (dispName || this.name);
 };
 
 ZmZimbraAccount.prototype.getIdentity =
@@ -106,44 +106,6 @@ function() {
 		this.dummyIdentity = new ZmIdentity(this.name);
 	}
 	return this.dummyIdentity;
-};
-
-ZmZimbraAccount.prototype.getToolTip =
-function() {
-	if (this.status || this.lastSync) {
-		var lastSyncDate = (this.lastSync && this.lastSync != 0)
-			? (new Date(parseInt(this.lastSync))) : null;
-
-		var lastSyncStr = lastSyncDate
-			? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null;
-
-		return AjxTemplate.expand("share.App#ZimbraAccountTooltip", {lastSync:lastSyncStr, status:this.status});
-	}
-	return "";
-};
-
-ZmZimbraAccount.prototype.updateState =
-function(acctInfo) {
-	this.lastSync = acctInfo.lastsync;
-	if (this.status != acctInfo.status) {
-		this.status = acctInfo.status;
-		if (this.isMain || this.visible) {
-			appCtxt.getOverviewController().updateAccountIcon(this, this.getStatusIcon());
-		}
-	}
-};
-
-ZmZimbraAccount.prototype.getStatusIcon =
-function() {
-	switch (this.status) {
-		case "unknown":		return "ImgOffline";
-		case "offline":		return "ImgImAway";
-		case "online":		return "ImgImAvailable";
-		case "running":		return "DwtWait16Icon";
-		case "authfailed":	return "ImgImDnd";
-		case "error":		return "ImgCritical";
-	}
-	return "";
 };
 
 ZmZimbraAccount.createFromDom =
@@ -225,24 +187,7 @@ function(callback, result) {
 	var folders = resp ? resp.folder[0] : null;
 	if (folders) {
 		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.FOLDER, null, resp.folder[0], "folder", this);
-	}
-
-	var soapDoc = AjxSoapDoc.create("GetTagRequest", "urn:zimbraMail");
-	var params = {
-		soapDoc: soapDoc,
-		accountName: this.name,
-		asyncMode: true,
-		callback: new AjxCallback(this, this._handleResponseLoad2, callback)
-	};
-	appCtxt.getRequestMgr().sendRequest(params);
-};
-
-ZmZimbraAccount.prototype._handleResponseLoad2 =
-function(callback, result) {
-	var resp = result.getResponse().GetTagResponse;
-	var tags = (resp && resp.tag) ? resp.tag[0] : null;
-	if (tags) {
-		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp, null, this);
+		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp.tags, null, this);
 	}
 
 	this.loaded = true;
@@ -263,7 +208,6 @@ function(node) {
 	this.name = node.name;
 	this.visible = node.visible;
 
-	var data = (node.attrs && node.attrs._attrs) ? node.attrs._attrs : null;
-	this.displayName = data ? data.displayName : this.email;
-	this.accountName = data ? data.zimbraPrefLabel : null;
+	var data = (node.attrs && node.attrs[0]) ? node.attrs[0].attr[0] : null;
+	this.displayName = data && data.name == "displayName" ? data._content : this.email;
 };

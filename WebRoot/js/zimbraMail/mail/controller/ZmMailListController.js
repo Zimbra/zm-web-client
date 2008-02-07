@@ -258,11 +258,10 @@ function(actionCode) {
 				}
 				if (start) {
 					if (sel && sel.length) {
-						index = (actionCode == ZmKeyMap.NEXT_UNREAD)
-							? (lv.getItemIndex(start) + 1)
-							: (lv.getItemIndex(start) - 1);
+						index = (actionCode == ZmKeyMap.NEXT_UNREAD) ? lv._getItemIndex(start) + 1 :
+																	   lv._getItemIndex(start) - 1;
 					} else {
-						index = lv.getItemIndex(start);
+						index = lv._getItemIndex(start);
 					}
 					var unreadItem = null;
 					while ((index >= 0 && index < size) && !unreadItem) {
@@ -984,16 +983,14 @@ function() {
     if (isFeed) {
         folder.sync();
     } else {
+		var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
 		var hasExternalAccounts = false;
-		if (!appCtxt.get(ZmSetting.OFFLINE)) {
-			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
-			if (folder && !isFeed && isEnabled) {
-				var dataSources = folder.getDataSources(null, true);
-				if (dataSources) {
-					hasExternalAccounts = true;
-					var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-					dsCollection.importMail(dataSources);
-				}
+		if (folder && !isFeed && isEnabled) {
+			var dataSource = folder.getDataSource(null, true);
+			if (dataSource) {
+				hasExternalAccounts = true;
+				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+				dsCollection.importMail([dataSource]);
 			}
 		}
 
