@@ -104,6 +104,16 @@ ZmMailMsgView.prototype.reset =
 function() {
 	this._msg = null;
 	this._htmlBody = null;
+
+	if (this._expandButton) {
+		this._expandButton.dispose();
+		this._expandButton = null;
+	}
+	if (this._ifw) {
+		this._ifw.dispose();
+		this._ifw = null;
+	}
+
 	this.getHtmlElement().innerHTML = "";
 	if (this._objectManager && this._objectManager.reset) {
 		this._objectManager.reset();
@@ -870,7 +880,7 @@ function(container, html, isTextMsg, isTruncated) {
 		processHtmlCallback: callback,
 		useKbMgmt: true
 	};
-	var ifw = new DwtIframe(params);
+	var ifw = this._ifw = new DwtIframe(params);
 	this._iframeId = ifw.getIframe().id;
 
 	var idoc = ifw.getDocument();
@@ -892,7 +902,7 @@ function(container, html, isTextMsg, isTruncated) {
 		? "MsgBody MsgBody-text"
 		: "MsgBody MsgBody-html";
 
-	ifw.getIframe().onload = AjxCallback.simpleClosure(ZmMailMsgView._resetIframeHeight, ZmMailMsgView, this, ifw.getIframe());
+	ifw.getIframe().onload = AjxCallback.simpleClosure(this._onloadIframe, this, ifw);
 
 	// import the object styles
 	var head = idoc.getElementsByTagName("head")[0];
@@ -1699,6 +1709,13 @@ function (image, i, len, msg, idoc, iframe, view) {
             msg.setHtmlContent(idoc.documentElement.innerHTML);
 		view._resetIframeHeightOnTimer(iframe);
 	}
+};
+
+ZmMailMsgView.prototype._onloadIframe =
+function(dwtIframe) {
+	var iframe = dwtIframe.getIframe();
+	iframe.onload = null;
+	ZmMailMsgView._resetIframeHeight(this, iframe);
 };
 
 ZmMailMsgView._resetIframeHeight =
