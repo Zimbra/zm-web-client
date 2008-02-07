@@ -95,7 +95,10 @@
                         <td class='label' valign='top' width="35" align=right nowrap="nowrap">
                         <label for="toField"><fmt:message key="to"/>: </label></td>
                         <td>
-                            <textarea id="toField" rows="1" name="to" class="Textarea">${fn:escapeXml(compose.to)}</textarea>
+                        	<div class="ZhAC ZhACTo">
+                            	<textarea id="toField" rows="1" name="to" class="Textarea">${fn:escapeXml(compose.to)}</textarea>
+                            	<div class='ZhACCont' id="toContainer" style='width:99%;top:1.5em;'></div>
+                            </div>
                         </td>
                     </tr>
                 </table>
@@ -107,7 +110,10 @@
                         <td align=right class="label" width="35" nowrap="nowrap"><label for="ccField"><fmt:message
                                 key="cc"/>: </label></td>
                         <td>
-                            <input class="Textarea" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
+                            <div class="ZhAC ZhACCc">
+                            	<input class="Textarea" id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" name="cc">
+                            	<div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
+                            </div>
                         </td>
                     </tr>
                 </table>
@@ -233,5 +239,9 @@
     <input type="hidden" name="draftid" value="${message.id}"/>
 </c:if>
 </form>
+<mo:autoComplete>
+    initAuto("toField","toContainer");
+    initAuto("ccField","ccContainer");
+</mo:autoComplete>
 <a href="${caction}" id="_back_to" style="display:none;visibility:hidden">back</a>
 </mo:view>

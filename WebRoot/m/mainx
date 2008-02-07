@@ -43,47 +43,31 @@
     <mo:composeCheck/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
 </mo:handleError>
-<style type="text/css">
-<c:set var="color" value="lightblue"/>
-<c:if test="${param.st=='contact'}">
-    <c:set var="color" value="#D4FFD4"/>
-</c:if>
-<c:if test="${param.st=='cal'}">
-    <c:set var="color" value="#FFFFAA"/>
-</c:if>
-<c:if test="${param.st=='folders'}">
-    <c:set var="color" value="#FFD4FF"/>
-</c:if>
-
-.tabsbar div.zo_main_info{
-    background:${color};
-}
-</style>
 <mo:view title="${mailbox.name}" context="${null}" mailbox="${mailbox}">
     <table border="0" cellpadding="0" cellspacing="0" width="100%" class="NavbarBg">
         <tr>
             <td width="5%" align="center" valign="top">
             <!-- Tabs starts here -->
                         <c:set var="aurl" value="${context_url}?"/>
-                        <a id="mails" href="${aurl}"><img src="/img/mobile/Mail-sel.gif" border="0" width="55" height="48">
+                        <a id="mails" href="${aurl}"><img src="/img/mobile/Mail<c:if test="${param.st eq '' or param.st eq null}"><c:out value="-sel"/></c:if>.gif" border="0" width="55" height="48">
                         <%-- c:if test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if --%>
                         </a>
                         </td>
                         <td align="center" width="5%" valign="top">
                         <c:if test="${mailbox.features.contacts}">
                             <c:set var="aurl" value="${context_url}?st=contact"/>
-                            <a id="contacts" href="${aurl}"><img src="/img/mobile/Contacts.gif" border="0" width="55" height="48"></a>
+                            <a id="contacts" href="${aurl}"><img src="/img/mobile/Contacts<c:if test="${param.st=='contact'}"><c:out value="-sel"/></c:if>.gif" border="0" width="55" height="48"></a>
                         </c:if>
                         </td>
                         <td width="5%" align="center" valign="top">
                         <c:if test="${mailbox.features.calendar}">
                             <c:set var="aurl" value="${context_url}?st=cal"/>
-                            <a id="cal" href="${aurl}"><img src="/img/mobile/Calendar.gif" border="0" width="55" height="48"></a>
+                            <a id="cal" href="${aurl}"><img src="/img/mobile/Calendar<c:if test="${param.st=='cal'}"><c:out value="-sel"/></c:if>.gif" border="0" width="55" height="48"></a>
                         </c:if>
                         </td>
                         <td width="5%" align="center" valign="top">
                          <c:set var="aurl" value="${context_url}?st=folders"/>
-                        <a id="folders" href="${aurl}"><img src="/img/mobile/Folders.gif" border="0" width="55" height="48"></a>
+                        <a id="folders" href="${aurl}"><img src="/img/mobile/Folders<c:if test="${param.st=='folders'}"><c:out value="-sel"/></c:if>.gif" border="0" width="55" height="48"></a>
             </td>
             <td width="5%" align="center" valign="top">
             	<img src="/img/mobile/Search.gif" border="0" width="55" height="48">
