@@ -21,7 +21,7 @@
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
 
-<table class="x_list_container" cellspacing="0" cellpadding="0" border="0" width="100%">
+<table cellspacing="0" cellpadding="0" border="0" width="100%">
 <tr>
     <td>
             <%--table width="100%" cellspacing="0" cellpadding="0">
@@ -86,14 +86,14 @@
                                         <tr class='zo_m_list_<c:if test="${chit.isUnread}">un</c:if>read'>
                                             <td class='zo_m_list_sub' width="95%">
                                                 <a id="a${chit.id}"
-                                                   href="${fn:escapeXml(convUrl)}">${fn:escapeXml(empty chit.subject ? unknownSubject : zm:truncate(chit.subject,50,true))}</a>
+                                                   href="${fn:escapeXml(convUrl)}">${fn:escapeXml(empty chit.subject ? unknownSubject : zm:truncate(chit.subject,30,true))}</a>
                                                    <span class='zo_m_list_<c:if test="${chit.isUnread}">un</c:if>read'>
                                                     <span class='zo_m_list_from'>&nbsp; 
                                                        <c:set var="dispRec" value="${chit.displayRecipients}"/>
                                                         ${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}
                                                     </span>
                                                    </span>
-                                                   <p class='zo_m_list_frag'>${fn:escapeXml(zm:truncate(chit.fragment,50,true))}</p>
+                                                   <p class='zo_m_list_frag'>${fn:escapeXml(zm:truncate(chit.fragment,30,true))}</p>
                                             </td>
                                             <td align="center" width="2%" valign="middle" style="padding-top: 5px;padding-left: 4px;">
                                                         <c:if test="${chit.isFlagged}">
@@ -139,9 +139,9 @@
     <tr>
         <td>
                 <a name="action" id="action"/>
-                <table cellspacing="2" cellpadding="2" width="100%">
+                <table cellspacing="2" cellpadding="2" width="100%" border="0">
                     <tr class="zo_m_list_row">
-                        <td>
+                        <td align="center">
                             <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
                            <select name="anAction">
                                <option value="" selected="selected"><fmt:message key="moreActions"/></option>

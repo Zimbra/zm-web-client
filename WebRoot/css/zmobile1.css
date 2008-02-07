@@ -88,7 +88,7 @@ html,body {
 .zo_unread, .zo_m_list_unread .zo_m_list_from, .zo_m_list_unread .zo_m_cv_sub, .zo_m_list_unread .zo_m_list_from, .zo_m_list_unread .zo_m_list_sub a:link{
     	font-weight: bold;
 }
-.zo_unread a:link,.Folders a:link{text-decoration: none; color:333333; font-size: small;}
+.zo_unread a:link,.Folders a:link{text-decoration: none; color:#333333; font-size: small;}
 
 .Email,.zo_m_list_sub p{ font-weight: normal;line-height: 18px; margin-top: 2px;}
 
@@ -96,11 +96,11 @@ html,body {
 
 .zo_m_list_from{color: #999999; font-size:small;}
 
-.Email a,.zo_m_list_frag {font-size: small; color: 999999;}
+.Email a,.zo_m_list_frag {font-size: small; color: #999999;}
 .Email a{text-decoration: none;}
 .zo_ab_list_arrow {display: none;} /*background: url("/img/mobile/iPhoneArrow.png") no-repeat right center; width:25px;*/
 
-.zo_m_list_date {font-size: small;color: 4d8dc3;}
+.zo_m_list_date, .zo_m_list_date a:link{font-size: small;color: #4d8dc3;}
 
 .zo_m_list_row {border-bottom: 1px dotted #E0E0E0;}
 

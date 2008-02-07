@@ -44,13 +44,13 @@
             }
 
             if(sResult) {
-                return ["<table><tr><td><img src='/zimbra/img/contacts/Img",
+                return ["<table class='zo_m_list_row' style='margin-bottom: 5px;'><tr><td><img src='/zimbra/img/contacts/Img",
                         t == "g" ? "GALContact.gif" : t == "dl" ? "Group.gif" : "Contact.gif",
-                        "'><"+"/td><td style='padding:0px 5px;'>",
+                        "'><"+"/td><td style='padding:3px 5px;'>",
                         zhFmt(f, fls ? fq : query, fs),
                         " ",
                         zhFmt(l, fls ? lq : query, ls),
-                        "<br><span style='color:red;'>",
+                        "<br><span style='color:#666666;'>",
                         //t == "dl" ? "" :  " &lt;",
                         zhFmt(e,query,es),
                         //t == "dl" ? "" : "&gt;",
