@@ -74,17 +74,17 @@
         <tr>
             <td>
                 <table width="100%" border="0" cellpadding="0" cellspacing="0">
-                    <tr>
+                    <tr class='zo_cal_dpage_row'>
                         <mo:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
                         <mo:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
-                        <td width="1%">
+                        <td width="1%" class='zo_cal_dpage'>
                             <a href="${fn:escapeXml(prevUrl)}"><mo:img src="arrows/ImgPreviousPage.gif" alt="previous"/></a>
                         </td>
-                        <td align="center" nowrap="nowrap" class='zo_unread Medium${(date.timeInMillis eq today.timeInMillis) ? '_today':''}'>
+                        <td nowrap="nowrap" class='zo_cal_dayheader${(date.timeInMillis eq today.timeInMillis) ? '_today':''}'>
                             <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
                             <fmt:formatDate value="${date.time}" pattern="${titleFormat}"/>
                         </td>
-                        <td width="1%">
+                        <td width="1%" class='zo_cal_dpage'>
                             <a href="${fn:escapeXml(nextUrl)}"><mo:img src="arrows/ImgNextPage.gif" alt="next"/></a>
                         </td>
                     </tr>

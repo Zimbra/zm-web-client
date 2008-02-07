@@ -102,8 +102,11 @@ BODY						{	margin:0px; 				}
 }
 #skin_container_offline_status			{	
 	position:absolute; 
-	left:10px;
-	top:6px;
+	white-space:nowrap; 
+	height:auto;
+	right:12px;
+	top:5px;
+	z-index:2;
 }
 
 
@@ -153,7 +156,7 @@ BODY						{	margin:0px; 				}
 /** LoginPanel and Splash screen **/
 #skin_container_splash_screen			{	@SkinOuter@	@FullWindow@ z-index:90000000;		}
 
-#ZLoginPanel 			{	@LoginPanelOuterBorder@	}	
+#ZLoginPanel 			{	@LoginPanelOuterBorer@	}	
 #ZLoginBodyContainer	{	@LoginPanelInnerBorder@	}
 
 #ZSplashPanel			{	@SplashOuterBorder@		}
