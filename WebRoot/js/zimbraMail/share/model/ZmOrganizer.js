@@ -1226,7 +1226,7 @@ function(type, checkParent) {
 
 	if (dataSources.length == 0) {
 		return (checkParent && this.parent)
-			? this.parent.getDataSource(type, checkParent)
+			? this.parent.getDataSources(type, checkParent)
 			: null;
 	}
 
