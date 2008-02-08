@@ -19,15 +19,7 @@
     <c:if test="${not empty param.skin}">
         <c:set var="skin" value="${param.skin}" scope="session"/>
     </c:if>
-    <c:if test="${not empty mailbox.prefs.skin}">
-        <c:set var="prefSkin"  value="${mailbox.prefs.skin}" />
-        <c:forEach var="name" items="${mailbox.availableSkins}">
-            <c:if test="${name eq prefSkin}">
-                <c:set value="${true}" var="skinAvailable" />
-            </c:if>
-        </c:forEach>
-    </c:if>
-    <c:set var="skin" value="${not empty sessionScope.skin ? sessionScope.skin : (not empty mailbox.prefs.skin ? (skinAvailable ? prefSkin : 'beach') : 'beach')}"/>
+    <c:set var="skin" value="${not empty sessionScope.skin ? sessionScope.skin : (not empty mailbox.prefs.skin ? mailbox.prefs.skin : 'beach')}"/>
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <!-- skin is ${skin} -->
     <c:if test="${empty param.print}" >
