@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -49,12 +49,12 @@ ZmZimbraMail = function(params) {
 
 	// ALWAYS set back reference into our world (also used by unload handler)
 	window._zimbraMail = this;
-	
+
 	// setup history support
 	if (appCtxt.get(ZmSetting.HISTORY_SUPPORT_ENABLED) && !AjxEnv.isSafari) {
 		window.historyMgr = appCtxt.getHistoryMgr();
 	}
-	
+
 	// settings structure and defaults
 	this._settings = appCtxt.getSettings();
 	var branch = appCtxt.get(ZmSetting.BRANCH);
@@ -139,11 +139,11 @@ function() {
  */
 ZmZimbraMail.run =
 function(params) {
-	
+
 	if (!window.DBG) {
 		ZmZimbraMail._createDummyDBG();
 	}
-	
+
 	if (params.noSplashScreen) {
 		ZmZimbraMail.killSplash();
 	}
@@ -178,7 +178,7 @@ function(params) {
 			}
 		}
 	}
-    
+
     // Create generic operations
 	ZmOperation.initialize();
 
@@ -186,7 +186,7 @@ function(params) {
 	if (params.offlineMode) {
 		DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
 		appCtxt.set(ZmSetting.OFFLINE, true);
-		appCtxt.set(ZmSetting.POLLING_INTERVAL, 60);
+		appCtxt.set(ZmSetting.POLLING_INTERVAL, 60, null, null, true);
 	}
 
 	// Handle dev mode
@@ -237,7 +237,7 @@ function() {
 
 /**
  * Returns sort order using a and b as keys into given hash.
- * 
+ *
  * @param hash		[hash]		hash with sort values
  * @param a			[string]	key into hash
  * @param b			[string]	key into hash
@@ -256,7 +256,7 @@ function(hash, a, b) {
  */
 ZmZimbraMail.killSplash =
 function() {
-	// 	Splash screen is now a part of the skin, loaded in statically via the JSP 
+	// 	Splash screen is now a part of the skin, loaded in statically via the JSP
 	//	as a well-known ID.  To hide the splash screen, just hide that div.
 	var splashDiv = Dwt.byId("skin_container_splash_screen");
 	if (splashDiv) {
@@ -279,11 +279,6 @@ function() {
  */
 ZmZimbraMail.prototype.startup =
 function(params) {
-
-	// bug: 23432 - disable instant notify until we figure out why it causes FF2 to lockup
-//	if (appCtxt.get(ZmSetting.OFFLINE)) {
-//		this.setInstantNotify(true);
-//	}
 
 	appCtxt.inStartup = true;
 	if (typeof(skin) == "undefined") {
@@ -396,8 +391,10 @@ function(params, result) {
 			}
 		}
 	}
-	
-	this.setPollInterval(true);
+
+	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+		this.setPollInterval(true);
+	}
 
 	window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
 
@@ -417,9 +414,9 @@ function(params, result) {
 	} else {
 		AjxDispatcher.require("Startup2");
 	}
-	
+
 	// Set up post-render callbacks
-	
+
 	// focus the content pane - we want this to happen soon, give it priority 1
 	var callback = new AjxCallback(this,
 		function() {
@@ -442,7 +439,7 @@ function(params, result) {
 			this._evtMgr.notifyListeners(ZmAppEvent.POST_STARTUP, this._evt);
 		});
 	this.addPostRenderCallback(callback, 6, 100);
-	
+
 	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
 };
 
@@ -466,7 +463,7 @@ function(params) {
 	}
 
 	this._initKeyboardHandling();
-	
+
 	this.setSessionTimer(true);
 	ZmZimbraMail.killSplash();
 	this._appViewMgr.tweakSkin();
@@ -483,6 +480,10 @@ function(params) {
 
 	if (!this._doingPostRenderStartup) {
 		this._postRenderStartup();
+	}
+
+	if (appCtxt.get(ZmSetting.OFFLINE) && !appCtxt.multiAccounts) {
+		this.setInstantNotify(true, true);
 	}
 };
 
@@ -506,13 +507,12 @@ function() {
 		var prcb = this._postRenderCallbacks.shift();
 		if (!prcb) { return; }
 		DBG.println(AjxDebug.DBG2, "POST-RENDER CALLBACK: #" + prcb.order + ", delay " + prcb.delay + " in " + prcb.callback.obj.toString());
-		AjxTimedAction.scheduleAction(new AjxTimedAction(this, 
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this,
 			function() {
 				prcb.callback.run();
 				this._runNextPostRenderCallback();
 			}), prcb.delay);
 	}
-	
 };
 
 /**
@@ -521,7 +521,7 @@ function() {
  * when it will run relative to other callbacks. A delay can also be given, so that
  * the UI has a chance to do some work between callbacks (they are called via
  * setTimeout).
- * 
+ *
  * @param callback		[AjxCallback]		callback
  * @param order			[int]				run order for the callback
  * @param delay			[int]				how long to pause before running the callback
@@ -586,7 +586,7 @@ function(params) {
 	}
 
 	params.startApp = startApp;
-	params.checkQS = checkQS;	
+	params.checkQS = checkQS;
 };
 
 /**
@@ -628,7 +628,8 @@ function() {
 	this._appViewMgr.reset();
 };
 
-ZmZimbraMail.prototype.cancelRequest = function(reqId, errorCallback, noBusyOverlay) {
+ZmZimbraMail.prototype.cancelRequest =
+function(reqId, errorCallback, noBusyOverlay) {
 	this._requestMgr.cancelRequest(reqId, errorCallback, noBusyOverlay)
 };
 
@@ -639,7 +640,7 @@ function(params) {
 
 /**
  * Runs the given function for all enabled apps, passing args.
- * 
+ *
  * @param funcName		[string]	function name
  * @param force			[boolean]*	if true, run func for disabled apps as well
  */
@@ -665,7 +666,7 @@ function(funcName, force) {
 /**
  * Instantiates enabled apps. An optional argument may be given limiting the set
  * of apps that may be created.
- * 
+ *
  * @param apps	[hash]*		the set of apps to create
  */
 ZmZimbraMail.prototype._createEnabledApps =
@@ -678,7 +679,7 @@ function(apps) {
 	ZmApp.APPS.sort(function(a, b) {
 		return ZmZimbraMail.hashSortCompare(ZmApp.LOAD_SORT, a, b);
 	});
-	
+
 	// Instantiate enabled apps, which will invoke app registration.
 	// We also create "upsell" apps, which will only show the content of a URL in an iframe,
 	// to encourage the user to upgrade.
@@ -739,7 +740,7 @@ function(type, listener) {
  */
 ZmZimbraMail.prototype.removeListener =
 function(type, listener) {
-	return this._evtMgr.removeListener(type, listener);    	
+	return this._evtMgr.removeListener(type, listener);
 };
 
 /**
@@ -785,12 +786,13 @@ function(callback) {
 
 /**
  * Put the client into "instant notifications" mode.
+ * @param on				[Boolean]*		turn on instant notify
  */
 ZmZimbraMail.prototype.setInstantNotify =
 function(on) {
 	if (on) {
 		this._pollInstantNotifications = true;
-		// set nonzero poll interval so we cant ever get into a full-speed request loop
+		// set nonzero poll interval so cant ever get into a full-speed request loop
 		this._pollInterval = 100;
 		if (this._pollActionId) {
 			AjxTimedAction.cancelAction(this._pollActionId);
@@ -818,17 +820,12 @@ ZmZimbraMail.prototype.setPollInterval =
 function(kickMe) {
 	if (!this._pollInstantNotifications) {
 		this._pollInterval = appCtxt.get(ZmSetting.POLLING_INTERVAL) * 1000;
-		DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
 
 		if (this._pollInterval) {
+			DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
 			if (kickMe)
 				this._kickPolling(true);
 		} else {
-			// cancel pending request if there is one
-			if (this._pollRequest) {
-				this._requestMgr.cancelRequest(this._pollRequest);
-				this._pollRequest = null;
-			}
 			// cancel timer if it is waiting...
 			if (this._pollActionId) {
 				AjxTimedAction.cancelAction(this._pollActionId);
@@ -865,6 +862,13 @@ function(kickMe) {
  */
 ZmZimbraMail.prototype._kickPolling =
 function(resetBackoff) {
+	if (appCtxt.get(ZmSetting.OFFLINE) &&
+		appCtxt.getActiveAccount().isMain &&
+		appCtxt.multiAccounts)
+	{
+		return;
+	}
+
 	DBG.println(AjxDebug.DBG2, [
 		"ZmZimbraMail._kickPolling ",
 		this._pollInterval, ", ",
@@ -886,8 +890,7 @@ function(resetBackoff) {
 
 	if (this._pollInterval && !this._pollRequest) {
 		try {
-			var pollAction = new AjxTimedAction(this, this._execPoll);
-			this._pollActionId = AjxTimedAction.scheduleAction(pollAction, this._pollInterval);
+			this._pollActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._execPoll), this._pollInterval);
 		} catch (ex) {
 			this._pollActionId = null;
 			DBG.println(AjxDebug.DBG1, "Caught exception in ZmZimbraMail._kickPolling.  Polling chain broken!");
@@ -900,6 +903,11 @@ function(resetBackoff) {
  */
 ZmZimbraMail.prototype._execPoll =
 function() {
+	if (this._pollRequest) {
+		this._requestMgr.cancelRequest(this._pollRequest);
+		this._pollRequest = null;
+	}
+
 	this._pollActionId = null;
 
 	// It'd be more efficient to make these instance variables, but for some
@@ -921,17 +929,24 @@ function() {
 		};
 		this._pollRequest = this.sendRequest(params);
 	} catch (ex) {
-		// oops!
-		this._handleErrorDoPoll(ex);
+		this._handleErrorDoPoll(ex); // oops!
 	}
 };
 
 ZmZimbraMail.prototype._handleErrorDoPoll =
 function(ex) {
-	this._pollRequest = null;
+	if (this._pollRequest) {
+		// reset the polling timeout
+		if (this._pollActionId) {
+			AjxTimedAction.cancelAction(this._pollActionId);
+			this._pollActionId = null;
+		}
+		this._requestMgr.cancelRequest(this._pollRequest);
+		this._pollRequest = null;
+	}
 
 	if (this._pollInstantNotifications) {
-		// very simpleminded exponential backoff
+		// very simple-minded exponential backoff
 		this._pollInterval *= 2;
 		if (this._pollInterval > (1000 * 60 * 2)) {
 			this._pollInterval = 1000 * 60 * 2;
@@ -995,7 +1010,7 @@ function() {
 			rootTg.addMember(appChooserTg);
 		}
 		kbMgr.setTabGroup(rootTg);
-		
+
 		this._settings._loadShortcuts();
 	} else {
 		kbMgr.enable(false);
@@ -1178,7 +1193,7 @@ function(appName, view) {
 	if (toolbar) {
 		toolbar.setupView(appName);
 	}
-	
+
 	if (this._activeApp != appName) {
 
 		// deactivate previous app
@@ -1200,15 +1215,15 @@ function(appName, view) {
 				if (ZmApp.DEFAULT_SEARCH[appName]) {
 					appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName]);
 				}
-				
-				// set search string value to match current app's last search, if applicable		
+
+				// set search string value to match current app's last search, if applicable
 				var stb = appCtxt.getSearchController().getSearchToolbar();
 				if (appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) && stb) {
 					var value = app.currentSearch ? app.currentSearch.query : app.currentQuery;
 					stb.setSearchFieldValue(value || "");
 				}
 			}
-	
+
 			// activate current app - results in rendering of overview
 			if (app) {
 				if (appCtxt.inStartup && this._doingPostRenderStartup) {
@@ -1251,7 +1266,7 @@ function(appName) {
 	this._apps[appName] = new appClass(this._shell);
 };
 
-ZmZimbraMail.prototype._setUserInfo = 
+ZmZimbraMail.prototype._setUserInfo =
 function() {
 	if (this._TAB_SKIN_ENABLED) {
 		var hideIcon = appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon");
@@ -1340,7 +1355,7 @@ function() {
 	ZmCsfeCommand.clearAuthToken();
 
 	window.onbeforeunload = null;
-	
+
 	var url = AjxUtil.formatUrl({path:appContextPath, qsArgs:{loginOp:'logout'}});
 	ZmZimbraMail.sendRedirect(url);
 };
@@ -1396,7 +1411,7 @@ function(locationStr){
 ZmZimbraMail.prototype.setSessionTimer =
 function(bStartTimer) {
 
-	// if no timeout value, user's client never times out from inactivity	
+	// if no timeout value, user's client never times out from inactivity
 	var timeout = appCtxt.get(ZmSetting.IDLE_SESSION_TIMEOUT) * 1000;
 	if (timeout <= 0)
 		return;
@@ -1404,7 +1419,7 @@ function(bStartTimer) {
 	if (bStartTimer) {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER SET (" + (new Date()).toLocaleString() + ")");
 		this._sessionTimerId = AjxTimedAction.scheduleAction(this._sessionTimer, timeout);
-		
+
 		DwtEventManager.addListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		this._shell.setHandler(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		if (AjxEnv.isIE)
@@ -1413,7 +1428,7 @@ function(bStartTimer) {
 			window.onkeydown = ZmZimbraMail._userEventHdlr;
 	} else {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER CANCELED (" + (new Date()).toLocaleString() + ")");
-		
+
 		AjxTimedAction.cancelAction(this._sessionTimerId);
 		this._sessionTimerId = -1;
 
@@ -1426,7 +1441,7 @@ function(bStartTimer) {
 	}
 };
 
-ZmZimbraMail.prototype.addChildWindow = 
+ZmZimbraMail.prototype.addChildWindow =
 function(childWin) {
 	if (this._childWinList == null)
 		this._childWinList = new AjxVector();
@@ -1441,7 +1456,7 @@ function(childWin) {
 	return newWinObj;
 };
 
-ZmZimbraMail.prototype.getChildWindow = 
+ZmZimbraMail.prototype.getChildWindow =
 function(childWin) {
 	if (this._childWinList) {
 		for (var i = 0; i < this._childWinList.size(); i++) {
@@ -1497,18 +1512,20 @@ function(ex, continuation) {
 // This method is called by the window.onbeforeunload method.
 ZmZimbraMail._confirmExitMethod =
 function() {
+	if (this._pollRequest) {
+		this._requestMgr.cancelRequest(this._pollRequest);
+	}
+
 	if (window._zimbraMail && !window._zimbraMail._appViewMgr.isOkToUnload()) {
 		return ZmMsg.appExitWarning;
 	}
-	return;
 };
 
 ZmZimbraMail.unloadHackCallback =
 function() {
 	window.onbeforeunload = null;
 	var f = function() { window.onbeforeunload = ZmZimbraMail._confirmExitMethod; };
-	var t = new AjxTimedAction(null, f);
-	AjxTimedAction.scheduleAction(t, 3000);
+	AjxTimedAction.scheduleAction((new AjxTimedAction(null, f)), 3000);
 };
 
 ZmZimbraMail._userEventHdlr =
@@ -1526,7 +1543,7 @@ function(ev) {
 ZmZimbraMail.prototype._settingChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
-	
+
 	var id = ev.source.id;
 	if (id == ZmSetting.QUOTA_USED) {
 		this._setUserInfo();
@@ -1602,7 +1619,7 @@ function(className, cid) {
 
 ZmZimbraMail.prototype._createAppChooser =
 function() {
-	
+
 	var buttons = [];
 	for (var id in ZmApp.CHOOSER_SORT) {
 		if (this._TAB_SKIN_ENABLED && (id == ZmAppChooser.SPACER || id == ZmAppChooser.B_HELP || id == ZmAppChooser.B_LOGOUT)) {
@@ -1620,7 +1637,7 @@ function() {
 	});
 
 	var appChooser = new ZmAppChooser(this._shell, null, buttons, this._TAB_SKIN_ENABLED);
-	
+
 	var buttonListener = new AjxListener(this, this._appButtonListener);
 	for (var i = 0; i < buttons.length; i++) {
 		var id = buttons[i];
@@ -1680,7 +1697,7 @@ function(actionCode, ev) {
 
 	// don't honor plain Enter in an input field as an app shortcut, since it often
 	// equates to button press in that situation
-	if (ev && (ev.keyCode == 13 || ev.keyCode == 3) && 
+	if (ev && (ev.keyCode == 13 || ev.keyCode == 3) &&
 		!(ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) &&
 		 ev.target && (ev.target.id != DwtKeyboardMgr.FOCUS_FIELD_ID)) { return false; }
 
@@ -1689,22 +1706,22 @@ function(actionCode, ev) {
 			appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.NONE);
 			DBG.setDebugLevel(AjxDebug.NONE);
 			break;
-			
+
 		case ZmKeyMap.DBG_1:
 			appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG1);
 			DBG.setDebugLevel(AjxDebug.DBG1);
 			break;
-			
+
 		case ZmKeyMap.DBG_2:
 			appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG2);
 			DBG.setDebugLevel(AjxDebug.DBG2);
 			break;
-			
+
 		case ZmKeyMap.DBG_3:
 			appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG3);
 			DBG.setDebugLevel(AjxDebug.DBG3);
 			break;
-			
+
 		case ZmKeyMap.DBG_TIMING: {
 			var on = DBG._showTiming;
 			var newState = on ? "off" : "on";
@@ -1712,7 +1729,7 @@ function(actionCode, ev) {
 			DBG.showTiming(!on);
 			break;
 		}
-		
+
 		case ZmKeyMap.ASSISTANT: {
 			if (!this._assistantDialog) {
 				AjxDispatcher.require("Assistant");
@@ -1721,12 +1738,12 @@ function(actionCode, ev) {
 			this._assistantDialog.popup();
 			break;
 		}
-		
+
 		case ZmKeyMap.LOGOFF: {
 			ZmZimbraMail.conditionalLogOff();
 			break;
 		}
-		
+
 		case ZmKeyMap.FOCUS_SEARCH_BOX: {
 			var stb = appCtxt.getSearchController().getSearchToolbar();
 			if (stb) {
@@ -1740,7 +1757,7 @@ function(actionCode, ev) {
 			this.focusContentPane();
 			break;
 		}
-			
+
 		default: {
 			var ctlr = appCtxt.getCurrentController();
 			return (ctlr && ctlr.handleKeyAction)
@@ -1767,7 +1784,7 @@ function() {
  * Creates an "upsell view", which is a placeholder view for an app that's not
  * enabled but which has a button so that it can be promoted. The app will have
  * a URL for its upsell content, which we put into an IFRAME.
- * 
+ *
  * @param appName	[constant]		name of app
  */
 ZmZimbraMail.prototype._createUpsellView =

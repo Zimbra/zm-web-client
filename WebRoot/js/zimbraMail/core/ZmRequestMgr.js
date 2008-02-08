@@ -223,10 +223,10 @@ function(params, result) {
 
     // if we didn't get an exception, then we should make sure that the
     // poll timer is running (just in case it got an exception and stopped)
-    if (!isCannedResponse) {
-	    this._controller._kickPolling(true);
+	if (!appCtxt.get(ZmSetting.OFFLINE) && !isCannedResponse) {
+		this._controller._kickPolling(true);
 		this._clearPendingRequest(params.reqId);
-    }
+	}
 
 	var methodName = params.soapDoc ? params.soapDoc._methodEl.tagName : "[unknown]";
 	if (params.asyncMode && params.callback) {
@@ -285,11 +285,7 @@ function(hdr) {
 
 	if (hdr && hdr.context && hdr.context.refresh) {
 		this._highestNotifySeen = 0;
-		// bug: 24269 - offline does not handle refresh block well so ignore it
-		// until we find a better solution
-		if (!appCtxt.get(ZmSetting.OFFLINE) || !appCtxt.multiAccounts) {
-			this._refreshHandler(hdr.context.refresh);
-		}
+		this._refreshHandler(hdr.context.refresh);
 	}
 
 	// offline/zdesktop only
