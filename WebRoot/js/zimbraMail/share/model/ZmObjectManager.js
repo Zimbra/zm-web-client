@@ -304,6 +304,116 @@ function(content, htmlEncode, type, isTextMsg) {
 	return html.join("");
 };
 
+
+//Added this customized method for the sake of ZmMailMsgView performance. 
+//TODO: Integrate this method to findObjectsInNode()
+ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
+
+    var objectManager = this;
+    var tmpdiv = doc.createElement("div");
+
+    doc || ( doc = node.ownerDocument ); 
+
+
+    recurse = function(node, handlers) {
+		var tmp, i, val, next;
+		switch (node.nodeType) {
+		    case 1:	// ELEMENT_NODE
+			node.normalize();
+			tmp = node.tagName.toLowerCase();
+
+			if (next == null) {
+				if (/^(img|a)$/.test(tmp)) {
+					if (tmp == "a" && node.target
+					    && (ZmMailMsgView._URL_RE.test(node.href)
+						|| ZmMailMsgView._MAILTO_RE.test(node.href)))
+					{
+						// tricky.
+						var txt = RegExp.$1;
+						tmp = doc.createElement("div");
+						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
+						tmp = tmp.firstChild;
+						if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
+							// probably no objects were found.  A warning would be OK here
+							// since the regexps guarantee that objects _should_ be found.
+							return tmp.nextSibling;
+						}
+						// here, tmp is an object span, but it
+						// contains the URL (href) instead of
+						// the original link text.
+						node.parentNode.insertBefore(tmp, node); // add it to DOM
+						tmp.innerHTML = "";
+						tmp.appendChild(node); // we have the original link now
+						return tmp.nextSibling;	// move on
+					}
+					handlers = false;
+				}
+			} else {
+				// consider processed
+				node = next;
+			}
+                    
+            for (i = node.firstChild; i; i = recurse(i, handlers));
+			return node.nextSibling;
+
+		    case 3:	// TEXT_NODE
+		    case 4:	// CDATA_SECTION_NODE (just in case)
+			// generate ObjectHandler-s
+			if (handlers && /[^\s\xA0]/.test(node.data)) try {
+ 				var a = null, b = null;
+
+				if (!AjxEnv.isIE) {
+					// this block of code is supposed to free the object handlers from
+					// dealing with whitespace.  However, IE sometimes crashes here, for
+					// reasons that weren't possible to determine--hence we avoid this
+					// step for IE.  (bug #5345)
+					var results = /^[\s\xA0]+/.exec(node.data);
+					if (results) {
+						a = node;
+						node = node.splitText(results[0].length);
+					}
+					results = /[\s\xA0]+$/.exec(node.data);
+					if (results)
+						b = node.splitText(node.data.length - results[0].length);
+				}
+
+				tmp = tmpdiv;
+				var code = objectManager.findObjects(node.data, true, null, false);
+				var disembowel = false;
+				if (AjxEnv.isIE) {
+					// Bug #6481, #4498: innerHTML in IE massacrates whitespace
+					//            unless it sees a <pre> in the code.
+					tmp.innerHTML = [ "<pre>", code, "</pre>" ].join("");
+					disembowel = true;
+				} else {
+					tmp.innerHTML = code;
+				}
+
+				if (a)
+					tmp.insertBefore(a, tmp.firstChild);
+				if (b)
+					tmp.appendChild(b);
+
+				a = node.parentNode;
+				if (disembowel)
+					tmp = tmp.firstChild;
+				while (tmp.firstChild)
+					a.insertBefore(tmp.firstChild, node);
+				tmp = node.nextSibling;
+				a.removeChild(node);
+				return tmp;
+			} catch(ex) {};
+		}
+		return node.nextSibling;
+	};
+
+    //Parse thorough the DOM directly and find objects.
+    for(var i=0; i<node.childNodes.length; i++){
+        recurse(node.childNodes[i], true);
+    }
+    
+};
+
 ZmObjectManager.prototype.findObjectsInNode =
 function(node, re_discard, re_allow, callbacks) {
 	var objectManager = this, doc = node.ownerDocument, tmpdiv = doc.createElement("div");
@@ -746,8 +856,8 @@ function(ev) {
 		var menu = object.handler.getActionMenu(object.object, span, object.context, isDialog);
 		if (menu) {
 			menu.popup(0, ev.docX, ev.docY);
-		}
-		return true;
+            return true;
+        }
 	} else if (ev.button == DwtMouseEvent.LEFT) {
 		if (this._selectCallback) {
 			this._selectCallback.run();
