@@ -754,6 +754,8 @@ function(ev) {
 	var rule = this._rule;
 	var msg = null;
 	var name = document.getElementById(this._nameInputId).value;
+	name = name.replace (/\s*$/,'');
+	name = name.replace (/^\s*/,'');
 	if (!name) {
 		msg = ZmMsg.filterErrorNoName;
 	} else {
