@@ -28,7 +28,7 @@
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
-<table class="x_list_container" cellspacing="0" cellpadding="0">
+<table cellspacing="0" cellpadding="0" width="100%">
 <tr>
     <td>
         <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="true"/>
@@ -54,11 +54,11 @@
                     <td class='zo_m_list_row'>
                         <table width="100%">
                             <tr>
-                                <td class="zo_m_chk">
+                                <td width="1%">
                                     <c:set value=",${mhit.id}," var="stringToCheck"/>
                                     <input type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':'unchecked'} name="id" value="${mhit.id}">
                                 </td>
-                                <td style='width:40px; ' valign="middle" align="center">
+                                <td valign="middle" align="center" width="1%">
                                     <table>
                                         <tr>
                                             <td>
@@ -83,11 +83,11 @@
                                         <tr ${mhit.isUnread ? "class='zo_m_list_unread'" : ""}>
                                             <td class='zo_m_list_sub'>
                                                 <a id="a${mhit.id}"
-                                                   href="${fn:escapeXml(msgUrl)}">${fn:escapeXml(zm:truncate(mhit.subject,60,true))}</a>
+                                                   href="${fn:escapeXml(msgUrl)}">${fn:escapeXml(zm:truncate(mhit.subject,50,true))}</a>
                                             </td>
-                                            <td nowrap="nowrap" class='zo_m_list_size' align="right" valign="top">
+                                            <!-- td nowrap="nowrap" class='zo_m_list_size' align="right" valign="top">
                                                     ${fn:escapeXml(zm:displaySize(mhit.size))}
-                                            </td>
+                                            </td -->
                                         </tr>
                                         <tr>
                                             <td class='zo_m_list_from'>
@@ -97,7 +97,7 @@
                                             <td nowrap="nowrap" align="right" valign="top" class='zo_m_list_date'>
                                                 <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt"
                                                                 pattern="yyyyMMdd" value="${mhit.date}"/>
-                                                <a
+                                                <a	
                                                         <c:if test="${uiv == '1' && mailbox.features.calendar}">href="${context_url}?st=cal&view=month&date=${on_dt}"</c:if>>
                                                         ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
                                                 </a>
@@ -105,7 +105,7 @@
                                         </tr>
                                         <tr>
                                             <td class='zo_m_list_frag' colspan="2">
-                                                <c:out value="${zm:truncate(mhit.fragment,100,true)}"/>
+                                                <c:out value="${zm:truncate(mhit.fragment,50,true)}"/>
                                             </td>
                                         </tr>
                                     </table>
@@ -130,11 +130,11 @@
     </tr>
     <tr>
         <td>
-            <div class="wh_bg">
+            
                 <a name="action" id="action"/>
                   <table cellspacing="2" cellpadding="2" width="100%">
                         <tr class="zo_m_list_row">
-                            <td>
+                            <td align="center">
                                 <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
                                <select name="anAction">
                                    <option value="" selected="selected"><fmt:message key="moreActions"/></option>
@@ -161,7 +161,7 @@
                             </td>
                         </tr>
                     </table>
-            </div>
+
         </td>
     </tr>
 </c:if>
