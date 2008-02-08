@@ -693,6 +693,9 @@ function(button, organizer) {
 	var isFolder = (type == ZmFilterRule.TYPE_FOLDER_PICKER);
 	var dialog = isFolder ? appCtxt.getChooseFolderDialog() : appCtxt.getPickTagDialog();
 	if (organizer) {
+		// Bug 24425, don't allow root folder selection
+		if (isFolder && organizer.nId == ZmFolder.ID_ROOT)
+			return;
 		button.setText(organizer.getName(false, null, true));
 		var value = isFolder ? organizer.getPath(false, false, null, true, true) :
 							   organizer.getName(false, null, true);
