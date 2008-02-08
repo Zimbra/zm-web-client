@@ -109,6 +109,17 @@ function(cmdStr, searchController) {
 	} else if (arg0 == "refresh") {
 		ZmCsfeCommand.setSessionId(null);
 		appCtxt.getAppController().sendNoOp();
+	} else if (arg0 == "leak") {
+		if (!window.AjxLeakDetector) {
+			this._alert("AjxLeakDetector is not loaded", ZmStatusView.LEVEL_WARNING);
+		} else {
+			var leakResult = AjxLeakDetector.execute(argv[1]);
+			this._alert(leakResult.message, leakResult.success ? ZmStatusView.LEVEL_INFO : ZmStatusView.LEVEL_WARNING);
+			if (leakResult.details) {
+				DBG.println("Leak detector report.....");
+				DBG.printRaw(leakResult.details);
+			}
+		}
 	}
 };
 
