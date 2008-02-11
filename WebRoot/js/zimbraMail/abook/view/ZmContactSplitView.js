@@ -322,6 +322,7 @@ function(contact, isGal, oldContact) {
 	var subs = {
 		id: this._htmlElId,
 		contact: contact,
+		addrbook: contact.getAddressBook(),
 		contactHdrClass: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
 		isInTrash: (folder && folder.isInTrash())
 	};
