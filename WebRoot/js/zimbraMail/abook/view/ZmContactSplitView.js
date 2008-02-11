@@ -468,8 +468,10 @@ function() {
 };
 
 ZmContactSimpleView.prototype.set =
-function(list, defaultColumnSort) {
-	ZmContactsBaseView.prototype.set.call(this, list, defaultColumnSort, this._controller.getFolderId());
+function(list, defaultColumnSort, folderId) {
+	var fid = folderId || this._controller.getFolderId();
+	ZmContactsBaseView.prototype.set.call(this, list, defaultColumnSort, fid);
+
 	if (!(this._list instanceof AjxVector) || this._list.size() == 0) {
 		this.parent.clear();
 		var view = this._controller._getViewType();
