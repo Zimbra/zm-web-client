@@ -942,6 +942,14 @@ function(instance) {
 	return this._getAddressField(attrs.otherStreet, attrs.otherCity, attrs.otherState, attrs.otherPostalCode, attrs.otherCountry);
 };
 
+ZmContact.prototype.getAddressBook =
+function() {
+	if (!this.addrbook) {
+		this.addrbook = appCtxt.getById(this.folderId);
+	}
+	return this.addrbook;
+};
+
 ZmContact.prototype.isMyCard =
 function() {
 	return this.list && (this.list.getMyCard() == this);
