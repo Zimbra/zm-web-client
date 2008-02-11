@@ -135,8 +135,10 @@ function(ev) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: DELETE or MOVE");
         this.removeItem(item, true);
         // if we've removed it from the view, we should remove it from the reference
-        // list as well so it doesn't get resurrected via replenishment
-        this._controller._list.remove(item);
+        // list as well so it doesn't get resurrected via replenishment *unless*
+		// we're dealing with a canonical list (i.e. contacts)
+		if (ev.event == ZmEvent.E_MOVE && !this._controller._list.isCanonical)
+			this._controller._list.remove(item);
         this._controller._app._checkReplenishListView = this;
 		this._controller._resetToolbarOperations();
 		this._controller._restoreFocus(this);
