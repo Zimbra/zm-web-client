@@ -105,6 +105,7 @@ function() {
 	this._msg = null;
 	this._htmlBody = null;
 
+	// TODO: reuse all thses controls that are being disposed here.....
 	if (this._expandButton) {
 		this._expandButton.dispose();
 		this._expandButton = null;
@@ -112,6 +113,14 @@ function() {
 	if (this._ifw) {
 		this._ifw.dispose();
 		this._ifw = null;
+	}
+	if (this._inviteToolbar) {
+		this._inviteToolbar.dispose();
+		this._inviteToolbar = null;
+	}
+	if (this._shareToolbar) {
+		this._shareToolbar.dispose();
+		this._shareToolbar = null;
 	}
 
 	this.getHtmlElement().innerHTML = "";
@@ -312,10 +321,6 @@ function (listener) {
 
 ZmMailMsgView.prototype._getInviteToolbar =
 function() {
-	// TODO: reuse the toolbar
-	if (this._inviteToolbar)
-		this._inviteToolbar.dispose();
-
 	var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
 	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
 	var params = {
@@ -357,11 +362,6 @@ function() {
 
 ZmMailMsgView.prototype._getShareToolbar =
 function() {
-	// TODO: reuse the toolbar
-	if (this._shareToolbar) {
-		this._shareToolbar.dispose();
-	}
-
 	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
 	var params = {
 		parent: this,
