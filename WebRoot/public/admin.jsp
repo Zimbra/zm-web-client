@@ -1,6 +1,6 @@
 <%@ page session="false" %>
 <%@ page session="false" language="java" import="javax.naming.*"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
    	Cookie[] cookies = request.getCookies();
@@ -103,7 +103,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
 -->
-	<fmt:setBundle basename="/messages/ZaMsg" scope="request"/>
+	<fmt:setBundle basename="/messages/ZaMsg" />
 	<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
     <title><fmt:message key="zimbraAdminTitle"/></title>
     <fmt:message key="favIconUrl" var="favIconUrl"/>

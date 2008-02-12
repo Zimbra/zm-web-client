@@ -5,7 +5,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
 <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
 <c:set var="expanded" value="${sessionScope.expanded.searches ne 'collapse'}"/>

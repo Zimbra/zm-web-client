@@ -3,7 +3,7 @@
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
     <option disabled /><fmt:message key="actionOptSep"/>

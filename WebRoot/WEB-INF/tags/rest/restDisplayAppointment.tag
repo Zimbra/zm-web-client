@@ -10,7 +10,7 @@
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
@@ -28,7 +28,7 @@
 
 <fmt:message var="noSubject" key="noSubject"/>
 
-<fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' />
+<fmt:setBundle basename='/messages/AjxMsg' var='AjxMsg' scope='request' />
 <fmt:message bundle='${AjxMsg}' key='${zm:getJavaId(timezone)}' var='timezoneStr' scope='request' />
 
 <c:set var="isPart" value="${!empty message.partName}"/>
