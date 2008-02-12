@@ -66,79 +66,79 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	var listener = this._on_buttonPress;
 	var b;
 
-	b = this._buttons.clipboardCopy = new DwtButton(toolbar, null, "DwtToolbarButton");
+	b = this._buttons.clipboardCopy = new DwtToolBarButton(toolbar, null);
 	b.setImage("Copy");
 	b.setData("SS", "ClipboardCopy");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.copy);
 
-	b = this._buttons.clipboardCut = new DwtButton(toolbar, null, "DwtToolbarButton");
+	b = this._buttons.clipboardCut = new DwtToolBarButton(toolbar, null);
 	b.setImage("Cut");
 	b.setData("SS", "ClipboardCut");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.cut);
 
-	b = this._buttons.clipboardPaste = new DwtButton(toolbar, null, "DwtToolbarButton");
+	b = this._buttons.clipboardPaste = new DwtToolBarButton(toolbar, null);
 	b.setImage("Paste");
 	b.setData("SS", "ClipboardPaste");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.paste);
 
-	toolbar.addSeparator("vertSep");
-
-	b = this._buttons.bold = new DwtButton(toolbar, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+	new DwtControl(toolbar, "vertSep");
+	
+	b = this._buttons.bold = new DwtToolBarButton(toolbar, DwtButton.TOGGLE_STYLE);
 	b.setImage("Bold");
 	b.setData("SS", "Bold");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.boldText);
 
-	b = this._buttons.italic = new DwtButton(toolbar, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+	b = this._buttons.italic = new DwtToolBarButton(toolbar, DwtButton.TOGGLE_STYLE);
 	b.setImage("Italics");
 	b.setData("SS", "Italic");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.italicText);
 
-	b = this._buttons.underline = new DwtButton(toolbar, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+	b = this._buttons.underline = new DwtToolBarButton(toolbar, DwtButton.TOGGLE_STYLE);
 	b.setImage("Underline");
 	b.setData("SS", "Underline");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.underlineText);
 
-	b = this._buttons.strike = new DwtButton(toolbar, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+	b = this._buttons.strike = new DwtToolBarButton(toolbar, DwtButton.TOGGLE_STYLE);
 	b.setImage("StrikeThru");
 	b.setData("SS", "Strike");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.strikeThruText);
 
-	toolbar.addSeparator("vertSep");
-
-	b = this._buttons.justifyLeft = new DwtButton(toolbar, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+	new DwtControl(toolbar, "vertSep");
+	
+	b = this._buttons.justifyLeft = new DwtToolBarButton(toolbar, DwtButton.TOGGLE_STYLE);
 	b.setImage("LeftJustify");
 	b.setData("SS", "JustifyLeft");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.leftJustify);
 
-	b = this._buttons.justifyCenter = new DwtButton(toolbar, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+	b = this._buttons.justifyCenter = new DwtToolBarButton(toolbar, DwtButton.TOGGLE_STYLE);
 	b.setImage("CenterJustify");
 	b.setData("SS", "JustifyCenter");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.centerJustify);
 
-	b = this._buttons.justifyRight = new DwtButton(toolbar, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+	b = this._buttons.justifyRight = new DwtToolBarButton(toolbar, DwtButton.TOGGLE_STYLE);
 	b.setImage("RightJustify");
 	b.setData("SS", "JustifyRight");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.rightJustify);
 
-	toolbar.addSeparator("vertSep");
-
-	b = this._buttons.fontColor = new DwtButtonColorPicker(toolbar, null, "DwtToolbarButton", null, null, null, ZmMsg.auto);
+	new DwtControl(toolbar, "vertSep");
+	
+	b = this._buttons.fontColor = new ZmSpreadSheetEditorColorPicker(toolbar, null, "DwtToolbarButton", null, null, null, ZmMsg.auto);
 	b.setImage("FontColor");
 	b.showColorDisplay();
 	b.setToolTipContent(ZmMsg.fontColor);
 	b.addSelectionListener(new AjxListener(this, this._on_fontColor));
 
-	b = this._buttons.bgColor = new DwtButtonColorPicker(toolbar, null, "DwtToolbarButton", null, null, null, ZmMsg.auto);
+	b = this._buttons.bgColor = new ZmSpreadSheetEditorColorPicker(toolbar, null, "DwtToolbarButton", null, null, null, ZmMsg.auto);
 	b.setImage("FontBackground");
 	b.showColorDisplay();
 	b.setToolTipContent(ZmMsg.fontBackground);
@@ -169,13 +169,13 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	var toolbar = new DwtToolBar(this, "ToolBar ToolBar2", DwtControl.RELATIVE_STYLE, 0);
 	var listener = this._on_buttonPress;
 
-// 	var b = new DwtButton(toolbar, 0, "DwtToolbarButton");
+// 	var b = new DwtToolBarButton(toolbar, 0);
 // 	b.setImage("Check");
 // 	b.setToolTipContent(ZmMsg.subjectAccept);
 // 	b.setData("SS", "DataEntry-OK");
 // 	b.addSelectionListener(listener);
 
-// 	b = new DwtButton(toolbar, 0, "DwtToolbarButton");
+// 	b = new DwtToolBarButton(toolbar, 0);
 // 	b.setImage("Cancel");
 // 	b.setToolTipContent(ZmMsg.cancel);
 // 	b.setData("SS", "DataEntry-Cancel");
@@ -190,47 +190,47 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 
 	// toolbar.getHtmlElement().style.display = "none";
 
-	b = this._buttons.rowInsertAbove = new DwtButton(toolbar, 0, "DwtToolbarButton");
+	b = this._buttons.rowInsertAbove = new DwtToolBarButton(toolbar, 0);
 	b.setImage("InsertRowBefore");
 	b.setData("SS", "RowInsertAbove");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.insertRowAbove);
 
-	b = this._buttons.rowInsertUnder = new DwtButton(toolbar, 0, "DwtToolbarButton");
+	b = this._buttons.rowInsertUnder = new DwtToolBarButton(toolbar, 0);
 	b.setImage("InsertRowAfter");
 	b.setData("SS", "RowInsertUnder");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.insertRowUnder);
 
-	b = this._buttons.rowDelete = new DwtButton(toolbar, 0, "DwtToolbarButton");
+	b = this._buttons.rowDelete = new DwtToolBarButton(toolbar, 0);
 	b.setImage("DeleteRow");
 	b.setData("SS", "RowDelete");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.deleteRow);
 
-	toolbar.addSeparator("vertSep");
-
-	b = this._buttons.colInsertBefore = new DwtButton(toolbar, 0, "DwtToolbarButton");
+	new DwtControl(toolbar, "vertSep");
+		
+	b = this._buttons.colInsertBefore = new DwtToolBarButton(toolbar, 0);
 	b.setImage("InsertColBefore");
 	b.setData("SS", "ColInsertBefore");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.insertColumnBefore);
 
-	b = this._buttons.colInsertAfter = new DwtButton(toolbar, 0, "DwtToolbarButton");
+	b = this._buttons.colInsertAfter = new DwtToolBarButton(toolbar, 0);
 	b.setImage("InsertColAfter");
 	b.setData("SS", "ColInsertAfter");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.insertColumnAfter);
 
-	b = this._buttons.colDelete = new DwtButton(toolbar, 0, "DwtToolbarButton");
+	b = this._buttons.colDelete = new DwtToolBarButton(toolbar, 0);
 	b.setImage("DeleteCol");
 	b.setData("SS", "ColDelete");
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.deleteColumn);
 
-	toolbar.addSeparator("vertSep");
+	new DwtControl(toolbar, "vertSep");
 
-	b = new DwtButton(toolbar, 0, "DwtToolbarButton");
+	b = new DwtToolBarButton(toolbar, 0);
 	b.setImage("Sum");
 	b.setToolTipContent("Sum cells");
 	b.setData("SS", "Func-SumCells");
@@ -238,7 +238,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 
 	// BEGIN: Insert Function menu
 
-	b = new DwtButton(toolbar, 0, "DwtToolbarButton");
+	b = new DwtToolBarButton(toolbar, 0);
 	b.setText("Insert function");
 
 	var menu = new DwtMenu(b);
@@ -270,9 +270,11 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 
 	// END: insert function
 
-	toolbar.addSeparator("vertSep");
+	new DwtControl(toolbar, "vertSep");
 
-	var s = this._buttons.typeSelect = new DwtSelect(toolbar, null);
+	
+
+	var s = this._buttons.typeSelect = new ZmSpreadSheetEditorSelect(toolbar, null);
 	s.addChangeListener(new AjxListener(this, this._on_typeSelect));
 	s.addOption("Auto type", true, null);
 	s.addOption("Number", false, "number");
@@ -280,7 +282,8 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	s.addOption("Percentage", false, "percentage");
 	s.addOption("Text", false, "string");
 
-	var s = this._buttons.decimalsSelect = new DwtSelect(toolbar, null);
+
+	var s = this._buttons.decimalsSelect = new ZmSpreadSheetEditorSelect(toolbar, null);
 	s.addChangeListener(new AjxListener(this, this._on_decimalsSelect));
 	s.addOption("Auto decimals", true, -1);
 	s.addOption("No decimals", false, 0);
@@ -292,10 +295,9 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	s.addOption("6 decimals", false, 6);
 
 	if (ZmSpreadSheetModel.DEBUG) {
-		// DEBUG
-		toolbar.addSeparator("vertSep");
+		new DwtControl(toolbar, "vertSep");
 		new DwtLabel(toolbar).setText("DEBUG: ");
-		b = new DwtButton(toolbar, 0, "DwtToolbarButton");
+		b = new DwtToolBarButton(toolbar, 0);
 		b.setText("Serialize");
 		b.addSelectionListener(new AjxListener(this, function() {
 			var txt = this.getModel().serialize();
@@ -314,7 +316,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 				} catch(ex) {}
 			}, 250);
 		}));
-		b = new DwtButton(toolbar, 0, "DwtToolbarButton");
+		b = new DwtToolBarButton(toolbar, 0);
 		b.setText("getHtml");
 		b.addSelectionListener(new AjxListener(this, function() {
 			var txt = this.getModel().getHtml();
@@ -490,3 +492,19 @@ ZmSpreadSheetToolbars.prototype.applyStyle = function(propName, propValue) {
 		cell.setStyleProp(propName, propValue);
 	}, this);
 };
+
+ZmSpreadSheetEditorColorPicker = function(parent, style, className, posStyle, id, index, noFillLabel) {
+    DwtButtonColorPicker.call(this, parent, style, className, posStyle, id, index, noFillLabel);
+}
+ZmSpreadSheetEditorColorPicker.prototype = new DwtButtonColorPicker;
+ZmSpreadSheetEditorColorPicker.prototype.constructor = ZmSpreadSheetEditorColorPicker;
+
+ZmSpreadSheetEditorColorPicker.prototype.TEMPLATE = "dwt.Widgets#ZToolbarButton";
+
+ZmSpreadSheetEditorSelect = function(parent, options, className, posStyle) {
+    DwtSelect.call(this, parent, options, className, posStyle);
+}
+ZmSpreadSheetEditorSelect.prototype = new DwtSelect;
+ZmSpreadSheetEditorSelect.prototype.constructor = ZmSpreadSheetEditorSelect;
+
+ZmSpreadSheetEditorSelect.prototype.TEMPLATE = "dwt.Widgets#ZBorderlessButton";
