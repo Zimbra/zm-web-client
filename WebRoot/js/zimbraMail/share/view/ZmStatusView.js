@@ -121,6 +121,10 @@ ZmToast = function(parent) {
 }
 ZmToast.prototype = new DwtControl;
 ZmToast.prototype.constructor = ZmToast;
+ZmToast.prototype.toString =
+function() {
+	return "ZmToast";
+};
 
 // Constants
 
@@ -147,6 +151,14 @@ ZmToast.prototype.TEMPLATE = "share.Widgets#ZToast";
 
 
 // Public methods
+
+ZmToast.prototype.dispose =
+function() {
+	this._textEl = null;
+	this._iconEl = null;
+	this._detailEl = null;
+	DwtControl.prototype.dispose.call(this);
+};
 
 ZmToast.prototype.popup =
 function(level, text, icon, loc, customTransitions) {
