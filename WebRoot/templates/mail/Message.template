@@ -10,7 +10,7 @@
 								<td>&nbsp;</td>
 							<$ } $>
 							<td class='SubjectCol LabelColName' valign=top>
-								<$= AjxStringUtil.htmlEncode(ZmMsg.subject); $>:
+								<$= AjxStringUtil.htmlEncode(ZmMsg.subjectLabel); $>
 							</td>
 							<td class='SubjectCol LabelColValue' valign=top width=100%>
 								<$= data.subject $>
@@ -22,7 +22,7 @@
 								<table align=right border=0 cellpadding=0 cellspacing=0>
 									<tr>
 										<td valign=top id='${id}_expandHeader' class='arrowbtn'></td>
-										<td class='LabelColName' style='vertical-align:middle'><$= ZmMsg.sentBy $>: </td>
+										<td class='LabelColName' style='vertical-align:middle'><$= ZmMsg.sentBy $> </td>
 									</tr>
 								</table>
 							</td>
@@ -38,7 +38,7 @@
 											<td>&nbsp;</td>
 										<$ } $>
 										<td>${sentBy}&nbsp;&nbsp;</td>
-										<td class='LabelColName'><$= ZmMsg.on $>:</td>
+										<td class='LabelColName'><$= ZmMsg.on $></td>
 										<td class='LabelColValue'>${dateString}</td>
 									</tr>
 								</table>
@@ -47,15 +47,17 @@
                         
                         <$ if ( data.obo && ( AjxStringUtil.stripTags(data.obo) != AjxStringUtil.stripTags(data.sentBy) ) ) { //If Email zimlet is deployed. $>
 							<tr>
-								<td width='110' valign='top' class='LabelColName'><$= ZmMsg.onBehalfOf $>:</td>
+								<td width='110' valign='top' class='LabelColName'><$= ZmMsg.onBehalfOfLabel $></td>
 								<td class='LabelColValue' colspan=10><$= data.obo $></td>
 							</tr>
 						<$ } $>
                         
                         <$ for (var i = 0; i < data.participants.length; i++) { $>
 							<tr>
-								<td width=110 valign='top' class='LabelColName'><$= data.participants[i].prefix $>:</td>
-								<td class='LabelColValue' colspan=10><$= data.participants[i].partStr $></td>
+								<td width=110 valign='top' class='LabelColName'>
+									<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.participants[i].prefix) $>
+								</td>
+								<td class='LabelColValue' colspan='10'><$= data.participants[i].partStr $></td>
                             </tr>
                         <$ } $>
                         <$ if(data.hasAttachments) { $>
@@ -127,7 +129,7 @@
 	<table id='${id}_header' border=0 cellpadding=2 cellspacing=2 width=100%>
 		<tr id='${id}_to_row'>
 			<td align=right valign=top style='<$=labelStyle$>'>
-				<div id='${id}_to_picker'><$=ZmMsg.to$>:</div>
+				<div id='${id}_to_picker'><$=ZmMsg.toLabel$></div>
 			</td>
 			<td width="96%">
 				<textarea id='${id}_to_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
@@ -136,7 +138,7 @@
 
 		<tr id='${id}_cc_row' style='display:none;'>
 			<td align=right valign=top style='<$=labelStyle$>'>
-				<div id='${id}_cc_picker'><$=ZmMsg.cc$>:</div>
+				<div id='${id}_cc_picker'><$=ZmMsg.ccLabel$></div>
 			</td>
 			<td>
 				<textarea id='${id}_cc_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
@@ -145,7 +147,7 @@
 
 		<tr id='${id}_bcc_row' style='display:none;'>
 			<td align=right valign=top style='<$=labelStyle$>'>
-				<div id='${id}_bcc_picker'><$=ZmMsg.bcc$>:</div>
+				<div id='${id}_bcc_picker'><$=ZmMsg.bccLabel$></div>
 			</td>
 			<td>
 				<textarea id='${id}_bcc_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
@@ -153,7 +155,7 @@
 		</tr>
 
 		<tr id='${id}_subject_row'>
-			<td align=right style='<$=labelStyle$>'><$=ZmMsg.subject$>:</td>
+			<td align=right style='<$=labelStyle$>'><$=ZmMsg.subjectLabel$></td>
 			<td>
 				<table border=0 cellpadding=0 cellspacing=0 width='100%'>
 				<tr>
@@ -162,7 +164,7 @@
 					</td>
 					<td id='${id}_identity_row' nowrap width='45%' style='display:none;'>
 						<table border=0 cellspacing=0 cellpadding=0>
-							<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.account$>:&nbsp;</td>
+							<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.accountLabel$>&nbsp;</td>
 								<td width="*"><select id='${id}_identity_control'></select></td>
 							</tr>
 						</table>
@@ -171,7 +173,7 @@
                     <td nowrap width='1%'>
                         <table border=0 cellspacing=0 cellpadding=0>
                             <tr>
-                                <td style='<$=labelStyle$>'><$=ZmMsg.priority$>:&nbsp;</td>
+                                <td style='<$=labelStyle$>'><$=ZmMsg.priorityLabel$>&nbsp;</td>
                                 <td id="${id}_priority"></td>
                             </tr>
                         </table>

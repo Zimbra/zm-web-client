@@ -5,11 +5,11 @@
       <legend class="ZmLegend"><$= ZmMsg.description $></legend>
       <table width="100%">
         <tr>
-          <td class="Label" style="width: auto"><$= ZmMsg.caption $>:</td>
+          <td class="Label" style="width: auto"><$= ZmMsg.caption $></td>
           <td width="100%" id="${id}_Caption"></td>
         </tr>
         <tr>
-          <td class="Label" style="width: auto"><$= ZmMsg.summary $>:</td>
+          <td class="Label" style="width: auto"><$= ZmMsg.summary $></td>
           <td width="100%" id="${id}_Summary"></td>
         </tr>
       </table>
@@ -19,7 +19,7 @@
       <legend class="ZmLegend"><$= ZmMsg.layout $></legend>
       <table cellspacing="0">
         <tr>
-          <td class="Label"><$= ZmMsg.tableWidth $>:</td>
+          <td class="Label"><$= ZmMsg.tableWidth $></td>
           <td colspan="4">
             <table cellpadding="0" cellspacing="0">
               <tr>
@@ -37,7 +37,7 @@
       </table>
       <table cellspacing="0" id="${id}_AdvancedMode1" style="margin-top: 4px; display: none">
         <tr>
-          <td class="Label"><$= ZmMsg.tableAlignment $>:</td>
+          <td class="Label"><$= ZmMsg.tableAlignment $></td>
           <td class="col2" id="${id}_Align"></td>
           <td class="VSep-L">&nbsp;</td>
           <td class="VSep-R">&nbsp;</td>
@@ -57,24 +57,24 @@
       <legend class="ZmLegend"><$= ZmMsg.textStyle $></legend>
       <table cellspacing="0">
         <tr>
-          <td class="Label"><$= ZmMsg.textAlign $>:</td>
+          <td class="Label"><$= ZmMsg.textAlign $></td>
           <td class="col2" id="${id}_TextAlign"></td>
 
           <td class="VSep-L">&nbsp;</td>
           <td class="VSep-R">&nbsp;</td>
 
-          <td class="Label"><$= ZmMsg.fontColor $>:</td>
+          <td class="Label"><$= ZmMsg.fontColorLabel $></td>
           <td id="${id}_ForegroundColor"></td>
         </tr>
 
         <tr>
-          <td class="Label"><$= ZmMsg.verticalAlign $>:</td>
+          <td class="Label"><$= ZmMsg.verticalAlign $></td>
           <td id="${id}_TextVAlign"></td>
 
           <td class="VSep-L">&nbsp;</td>
           <td class="VSep-R">&nbsp;</td>
 
-          <td class="Label"><$= ZmMsg.fontBackground $>:</td>
+          <td class="Label"><$= ZmMsg.fontBackgroundLabel $></td>
           <td id="${id}_BackgroundColor"></td>
         </tr>
       </table>
@@ -84,13 +84,13 @@
       <legend class="ZmLegend"><$= ZmMsg.borderStyle $></legend>
       <table cellspacing="0">
         <tr>
-          <td class="Label"><$= ZmMsg.borderWidth $>:</td>
+          <td class="Label"><$= ZmMsg.borderWidth $></td>
           <td class="col2" id="${id}_BorderWidth"></td>
 
           <td class="VSep-L">&nbsp;</td>
           <td class="VSep-R">&nbsp;</td>
 
-          <td class="Label"><$= ZmMsg.borderColor $>:</td>
+          <td class="Label"><$= ZmMsg.borderColorLabel $></td>
           <td>
             <table cellspacing="0">
               <tr>
@@ -101,18 +101,18 @@
         </tr>
 
         <tr>
-          <td class="Label"><$= ZmMsg.cellPadding $>:</td>
+          <td class="Label"><$= ZmMsg.cellPadding $></td>
           <td id="${id}_CellPadding"></td>
 
           <td class="VSep-L">&nbsp;</td>
           <td class="VSep-R">&nbsp;</td>
 
-          <td class="Label"><$= ZmMsg.borderStyle $>:</td>
+          <td class="Label"><$= ZmMsg.borderStyleLabel $></td>
           <td id="${id}_BorderStyle"></td>
         </tr>
 
         <tr id="${id}_AdvancedMode2" style="display: none">
-          <td class="Label"><$= ZmMsg.cellSpacing $>:</td>
+          <td class="Label"><$= ZmMsg.cellSpacing $></td>
           <td id="${id}_BorderSpacing"></td>
 
           <td class="VSep-L">&nbsp;</td>
@@ -145,13 +145,13 @@
               <td style="width: 19em">
                 <!-- If you're wondering why this has to be so complex, check out this bug:
                      https://bugzilla.mozilla.org/show_bug.cgi?id=258255 -->
-                <div style="padding-left: 1em; padding-top: 1em"><$= ZmMsg.clickToDrawABorder $>:</div>
+                <div style="padding-left: 1em; padding-top: 1em"><$= ZmMsg.clickToDrawABorder $></div>
                 <div style="margin-top: 10px;">
                   <table align="center">
                     <tr>
-                      <td><$= ZmMsg.style $>:</td>
+                      <td><$= ZmMsg.styleLabel $></td>
                       <td><$= ZmMsg.colorLabel $></td>
-                      <td><$= ZmMsg.width $>:</td>
+                      <td><$= ZmMsg.widthLabel $></td>
                     </tr>
                     <tr>
                       <td id="${id}_BorderStyle"></td>
@@ -185,7 +185,7 @@
               <td class="VSep-L">&nbsp;</td>
               <td class="VSep-R">&nbsp;</td>
               <td valign="top">
-                <div style="padding-left: 1em; padding-top: 1em; padding-bottom: 1em"><$= ZmMsg.orPickAStyleBelow $>:</div>
+                <div style="padding-left: 1em; padding-top: 1em; padding-bottom: 1em"><$= ZmMsg.orPickAStyleBelow $></div>
                 <table align="center" id="${id}_QuickBorders">
                   <tr>
                     <td></td>
@@ -207,7 +207,7 @@
               <td class="Label">
                 <table align="right" cellspacing="0" cellpadding="0"><tr>
                   <td style="padding-right: 3px"><input id="${id}_EnableWidth" type="checkbox" /></td>
-                  <td><label for="${id}_EnableWidth"><$= ZmMsg.width $>:</label></td>
+                  <td><label for="${id}_EnableWidth"><$= ZmMsg.widthLabel $></label></td>
                 </tr></table>
               </td>
               <td class="col2" id="${id}_Width"></td>
@@ -218,7 +218,7 @@
               <td class="Label">
                 <table align="right" cellspacing="0" cellpadding="0"><tr>
                   <td style="padding-right: 3px"><input id="${id}_EnableHorizPadding" type="checkbox" /></td>
-                  <td><label for="${id}_EnableHorizPadding"><$= ZmMsg.paddingHorizontal $>:</label></td>
+                  <td><label for="${id}_EnableHorizPadding"><$= ZmMsg.paddingHorizontal $></label></td>
                 </tr></table>
               </td>
               <td id="${id}_HorizPadding"></td>
@@ -227,7 +227,7 @@
               <td class="Label">
                 <table align="right" cellspacing="0" cellpadding="0"><tr>
                   <td style="padding-right: 3px"><input id="${id}_EnableHeight" type="checkbox" /></td>
-                  <td><label for="${id}_EnableHeight"><$= ZmMsg.height $>:</label></td>
+                  <td><label for="${id}_EnableHeight"><$= ZmMsg.heightLabel $></label></td>
                 </tr></table>
               </td>
               <td class="col2" id="${id}_Height"></td>
@@ -238,7 +238,7 @@
               <td class="Label">
                 <table align="right" cellspacing="0" cellpadding="0"><tr>
                   <td style="padding-right: 3px"><input id="${id}_EnableVertPadding" type="checkbox" /></td>
-                  <td><label for="${id}_EnableVertPadding"><$= ZmMsg.paddingVertical $>:</label></td>
+                  <td><label for="${id}_EnableVertPadding"><$= ZmMsg.paddingVertical $></label></td>
                 </tr></table>
               </td>
               <td id="${id}_VertPadding"></td>
@@ -253,7 +253,7 @@
               <td class="Label">
                 <table align="right" cellspacing="0" cellpadding="0"><tr>
                   <td style="padding-right: 3px"><input id="${id}_EnableTextAlign" type="checkbox" /></td>
-                  <td><label for="${id}_EnableTextAlign"><$= ZmMsg.textAlign $>:</label></td>
+                  <td><label for="${id}_EnableTextAlign"><$= ZmMsg.textAlign $></label></td>
                 </tr></table>
               </td>
               <td class="col2" id="${id}_TextAlign"></td>
@@ -264,7 +264,7 @@
               <td class="Label">
                 <table align="right" cellspacing="0" cellpadding="0"><tr>
                   <td style="padding-right: 3px"><input id="${id}_EnableForegroundColor" type="checkbox" /></td>
-                  <td><label for="${id}_EnableForegroundColor"><$= ZmMsg.fontColor $>:</label></td>
+                  <td><label for="${id}_EnableForegroundColor"><$= ZmMsg.fontColorLabel $></label></td>
                 </tr></table>
               </td>
               <td id="${id}_ForegroundColor"></td>
@@ -274,7 +274,7 @@
               <td class="Label">
                 <table align="right" cellspacing="0" cellpadding="0"><tr>
                   <td style="padding-right: 3px"><input id="${id}_EnableTextVAlign" type="checkbox" /></td>
-                  <td><label for="${id}_EnableTextVAlign"><$= ZmMsg.verticalAlign $>:</label></td>
+                  <td><label for="${id}_EnableTextVAlign"><$= ZmMsg.verticalAlign $></label></td>
                 </tr></table>
               </td>
               <td class="col2" id="${id}_TextVAlign"></td>
@@ -285,7 +285,7 @@
               <td class="Label">
                 <table align="right" cellspacing="0" cellpadding="0"><tr>
                   <td style="padding-right: 3px"><input id="${id}_EnableBackgroundColor" type="checkbox" /></td>
-                  <td><label for="${id}_EnableBackgroundColor"><$= ZmMsg.fontBackground $>:</label></td>
+                  <td><label for="${id}_EnableBackgroundColor"><$= ZmMsg.fontBackgroundLabel $></label></td>
                 </tr></table>
               </td>
               <td id="${id}_BackgroundColor"></td>
@@ -301,7 +301,7 @@
 <template id="share.Dialogs#NewSearch">
 	<table cellpadding='0' cellspacing='0' border='0'>
 		<tr>
-			<td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'><$= ZmMsg.searchName $>: </td>
+			<td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'><$= ZmMsg.searchName $> </td>
 		</tr>
 		<tr>
 			<td>
@@ -314,7 +314,7 @@
 		<tr>
 			<td>
 				<div id='${id}_overviewDiv'>
-					<div class="Label"><$= ZmMsg.newSearchParent $>:</div>
+					<div class="Label"><$= ZmMsg.newSearchParent $></div>
 					<div id='${id}_folderTreeCell'></div>
 				</div>
 			</td>

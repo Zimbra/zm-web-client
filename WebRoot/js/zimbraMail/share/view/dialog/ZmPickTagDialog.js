@@ -54,7 +54,7 @@ function() {
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
 	html[idx++] = "<tr><td class='Label' colspan=2>";
 	html[idx++] = ZmMsg.targetTag;
-	html[idx++] = ":</td></tr>";
+	html[idx++] = "</td></tr>";
 	html[idx++] = "<tr><td colspan=2'><div style='background-color:white; width:300px; border:1px solid black; overflow:auto' id='";
 	html[idx++] = this._tagTreeCellId;
 	html[idx++] = "'></div></td></tr>";

@@ -199,11 +199,11 @@ function(html, idx) {
 
 ZmNewOrganizerDialog.prototype._createFolderContentHtml = 
 function(html, idx) {
-	this._folderTreeCellId = Dwt.getNextId();	
+	this._folderTreeCellId = Dwt.getNextId();
 
 	html[idx++] = "<tr><td class='Label' colspan=2>";
 	html[idx++] = ZmMsg.newFolderParent;
-	html[idx++] = ":</td></tr>";
+	html[idx++] = "</td></tr>";
 	html[idx++] = "<tr><td colspan=2 id='";
 	html[idx++] = this._folderTreeCellId;
 	html[idx++] = "'/></tr>";

@@ -671,6 +671,6 @@ function(field, item, ev) {
 
 ZmContactSimpleView.prototype._getDateToolTip =
 function(item, div) {
-	div._dateStr = div._dateStr || this._getDateToolTipText(item.modified, ["<b>", ZmMsg.lastModified, ":</b><br>"].join(""));
+	div._dateStr = div._dateStr || this._getDateToolTipText(item.modified, ["<b>", ZmMsg.lastModified, "</b><br>"].join(""));
 	return div._dateStr;
 };

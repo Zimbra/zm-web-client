@@ -254,7 +254,7 @@ function(isHtml) {
 		buf[i++] = "<p>\n<table border='0'>\n";
 	}
 	var modified = isEdit && (orig.getName() != this.getName());
-	var params = [ ZmMsg.subject + ":", this.name, modified ? ZmMsg.apptModifiedStamp : "" ];
+	var params = [ ZmMsg.subjectLabel, this.name, modified ? ZmMsg.apptModifiedStamp : "" ];
 	buf[i++] = formatter.format(params);
 	buf[i++] = "\n";
 	
@@ -275,7 +275,7 @@ function(isHtml) {
 	var location = this.getLocation(true);
 	if (location) {
 		modified = isEdit && (this.getOrigLocation(true) != location);
-		params = [ ZmMsg.location + ":", location, modified ? ZmMsg.apptModifiedStamp : "" ];
+		params = [ ZmMsg.locationLabel, location, modified ? ZmMsg.apptModifiedStamp : "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
@@ -283,7 +283,7 @@ function(isHtml) {
 	var equipment = this.getEquipmentText(true);
 	if (equipment) {
 		modified = isEdit && (this.getOrigEquipmentText(true) != equipment);
-		params = [ ZmMsg.resources + ":", equipment, modified ? ZmMsg.apptModifiedStamp : "" ];
+		params = [ ZmMsg.resourcesLabel, equipment, modified ? ZmMsg.apptModifiedStamp : "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
@@ -319,11 +319,11 @@ function(isHtml) {
 	else 
 	{
 		var hasTime = isEdit ? (orig.startDate.getTime() != this.startDate.getTime()) : false;
-		params = [ ZmMsg.start + ":", this._getTextSummaryTime(isEdit, ZmMsg.start, s, s, null, hasTime), "" ];
+		params = [ ZmMsg.startLabel, this._getTextSummaryTime(isEdit, ZmMsg.start, s, s, null, hasTime), "" ];
 		buf[i++] = formatter.format(params);
 
 		hasTime = isEdit ? (orig.endDate.getTime() != this.endDate.getTime()) : false;
-		params = [ ZmMsg.end + ":", this._getTextSummaryTime(isEdit, ZmMsg.end, e, null, e, hasTime), "" ];
+		params = [ ZmMsg.endLabel, this._getTextSummaryTime(isEdit, ZmMsg.end, e, null, e, hasTime), "" ];
 		buf[i++] = formatter.format(params);
 	}
 

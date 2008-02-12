@@ -81,7 +81,7 @@
 <template id="share.App#PrintView">
 	<html>
 		<head>
-			<title><$= ZmMsg.zimbraTitle $>: <$= data.username $></title>
+			<title><$= ZmMsg.zimbraLabel $> <$= data.username $></title>
 			<link rel='stylesheet' href='<$= data.appContextPath $>/css/msgview,zm,wiki.css?v=<$= data.cacheKillerVersion $>' media='screen'></link>
 			<$ if (data.onloadStr) { $>
 				<script language='javascript'>
@@ -118,7 +118,7 @@
 	<table cellpadding=0 cellspacing=0 border=0>
 		<tr>
 			<td valign='top' style='padding-right:20px'>
-				<$= data.itemText $>:
+				<$= AjxMessageFormat.format(ZmMsg.makeLabel, data.itemText) $>
 			</td>
 			<td valign='top'>
 				<$= data.numTotal $>
@@ -127,7 +127,7 @@
 <$ if (data.sizeTotal) { $>
 		<tr>
 			<td valign='top'>
-				<$= ZmMsg.size $>:
+				<$= ZmMsg.sizeLabel $>
 			</td>
 			<td valign='top'>
 				<$= AjxUtil.formatSize(data.sizeTotal) $>

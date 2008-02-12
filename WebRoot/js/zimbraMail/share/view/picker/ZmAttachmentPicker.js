@@ -113,7 +113,7 @@ function(parent) {
 	html[idx++] = fileDivId;
 	html[idx++] = "'><hr /><table border=0><tr><td width=1%>";
 	html[idx++] = ZmMsg.filename;
-	html[idx++] = ":</td><td>";
+	html[idx++] = "</td><td>";
 	html[idx++] = Dwt.CARET_HACK_BEGIN;
 	html[idx++] = "<input type='text' autocomplete='off' nowrap style='width:90%' id='";
 	html[idx++] = fileInputId;
