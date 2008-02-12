@@ -115,10 +115,6 @@ function(cmdStr, searchController) {
 		} else {
 			var leakResult = AjxLeakDetector.execute(argv[1]);
 			this._alert(leakResult.message, leakResult.success ? ZmStatusView.LEVEL_INFO : ZmStatusView.LEVEL_WARNING);
-			if (leakResult.details) {
-				DBG.println("Leak detector report.....");
-				DBG.printRaw(leakResult.details);
-			}
 		}
 	}
 };
