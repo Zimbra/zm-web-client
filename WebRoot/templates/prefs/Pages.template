@@ -244,10 +244,32 @@ and the container element is replaced with that control.
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField' style='padding-left:2em;'>
-						<textarea id='${id}_VACATION_MSG' tabindex='160' rows=3 cols=70></textarea>
-					</td>
+                        <table width="100%" border="0">
+                            <tr>
+                                <td width="44%">
+                                    <textarea id='${id}_VACATION_MSG' tabindex='160' rows=3 cols=70></textarea>
+                                    <span style="display:none">
+                                        <input type="hidden" name="st_dt" id="${id}_VACATION_FROM"/>
+                                        <input type="hidden" name="ed_dt" id="${id}_VACATION_UNTIL"/>
+                                    </span>
+                                </td>
+                                <td width="28%">
+                                    <fieldset>
+                                        <legend><$=ZmMsg.startDate$> </legend>
+                                        <table><tr><td> Start On:</td><td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_VACATION_FROM1'></td> <td id='${id}_startMiniCal'></td></tr></table>
+                                    </fieldset>
+                                </td>
+                                <td width="28%">
+                                   <fieldset>
+                                        <legend> End Date </legend>
+                                        <table><tr><td> End On:</td><td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_VACATION_UNTIL1'></td><td id='${id}_endMiniCal'></td></tr></table>
+                                    </fieldset> 
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
 				</tr>
-				<$ } $>
+                <$ } $>
 
 				<tr><td colspan=2><hr></td></tr>
 
