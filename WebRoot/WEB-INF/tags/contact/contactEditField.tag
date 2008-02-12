@@ -5,7 +5,7 @@
 <%@ attribute name="address" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
 <c:set var="value" value="${contact != null ? contact.attrs[field] : ''}"/>
 <fmt:message key="${label}" var="label"/>

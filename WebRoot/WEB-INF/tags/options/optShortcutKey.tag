@@ -3,7 +3,7 @@
 <%@ attribute name="suffix" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
 <fmt:bundle basename="/keys/ZhKeys">
     <c:set var="msgkey" value="${fn:trim(msgkey)}"/>

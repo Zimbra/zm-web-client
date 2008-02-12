@@ -15,7 +15,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
 <c:if test="${folders}"><app:folderTree keys="${keys}" editmode="${editmode}"/></c:if>
 <c:if test="${calendars}"><app:calendarFolderTree keys="${keys}" editmode="${editmode}"/></c:if>

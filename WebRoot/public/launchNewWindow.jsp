@@ -1,6 +1,6 @@
 <%@ page session="false" %>
 <%@ page import='java.util.Locale' %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %><%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 

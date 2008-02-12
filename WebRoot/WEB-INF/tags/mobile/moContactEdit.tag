@@ -5,7 +5,7 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <c:set var="id" value="${id != null ?id : param.id}"/>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mosearch'}"/>
 <zm:currentResultUrl var="closeUrl" value="${context_url}" context="${context}"/>
@@ -19,7 +19,7 @@
             <fmt:setLocale value='${pageContext.request.locale}' scope='request'/>
         </c:otherwise>
     </c:choose>
-    <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
+    <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
     <fmt:message var="title" key="contact"/>
     <c:choose>
         <c:when test="${!empty id or requestScope.contactId}">

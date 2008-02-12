@@ -7,7 +7,7 @@
 <%@ attribute name="title" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <c:url value="/img/${src}" var="src"/>
 <c:if test="${not empty altkey}"><fmt:message key="${altkey}" var="alt"/></c:if>
 <c:if test="${not empty title}"><fmt:message key="${title}" var="title"/></c:if> 

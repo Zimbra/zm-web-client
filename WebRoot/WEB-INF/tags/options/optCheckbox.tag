@@ -6,7 +6,7 @@
 <%@ attribute name="trailingcolon" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <c:choose>
     <c:when test="${boxfirst}">
         <table cellspacing="0" cellpadding="0">
