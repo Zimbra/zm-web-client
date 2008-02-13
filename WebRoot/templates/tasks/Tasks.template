@@ -10,9 +10,9 @@
 	<div style="overflow:auto;" id="${id}_content">
 		<table border=0 width=100%>
 			<tr>
-				<td class="editLabel">*&nbsp;<$=ZmMsg.subject$>:</td>
+				<td class="editLabel">*&nbsp;<$=ZmMsg.subjectLabel$></td>
 				<td><input type="text" autocomplete="off" size=35 id="${id}_subject"></td>
-				<td id="${id}_folderLabel" class="editLabel"><$=ZmMsg.taskFolder$>:</td>
+				<td id="${id}_folderLabel" class="editLabel"><$=ZmMsg.taskFolder$></td>
 				<td id="${id}_folder"></td>
 			</tr>
 			<tr>

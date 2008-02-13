@@ -1460,7 +1460,7 @@ function(action, msg, extraBodyText, incOption) {
 			} else if (action == ZmOperation.REPLY_CANCEL) {
 				cancelledParts = [ leadingText ];
 				cancelledParts.push(crlf);
-				cancelledParts.push(ZmMsg.subject+": "+msg.subject+crlf);
+				cancelledParts.push(ZmMsg.subjectLabel+" "+msg.subject+crlf);
 				var inv = (msg) ? msg.getInvite() : null;
 				if (inv) {
 					var organizer = "";

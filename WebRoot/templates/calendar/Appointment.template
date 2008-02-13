@@ -17,11 +17,11 @@
 									<col />
 								</colgroup>
 								<tr>
-									<td class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subject $>:</nobr></td>
+									<td class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
 									<td id='${id}_subject'></td>
 								</tr>
 								<tr>
-									<td class='ZmApptTabViewPageField'><nobr><$= ZmMsg.location $>:</nobr></td>
+									<td class='ZmApptTabViewPageField'><nobr><$= ZmMsg.locationLabel $></nobr></td>
 									<td id='${locationId}'></td>
 								</tr>
 								<$ if (data.isAppt) { $>
@@ -40,12 +40,12 @@
 								</tr>
 								<$ } else { $>
 								<tr>
-									<td class='ZmFieldLabelRight'><nobr><$= ZmMsg.priority $>:</nobr></td>
+									<td class='ZmFieldLabelRight'><nobr><$= ZmMsg.priorityLabel $></nobr></td>
 									<td id='${id}_priority'></td>
 								</tr>
 								<$ } $>
 								<tr>
-									<td class='ZmFieldLabelRight' id='${id}_folderLabel'><nobr><$= data.isAppt ? ZmMsg.calendar : ZmMsg.taskFolder $>:</nobr></td>
+									<td class='ZmFieldLabelRight' id='${id}_folderLabel'><nobr><$= data.isAppt ? ZmMsg.calendarLabel : ZmMsg.taskFolder $></nobr></td>
 									<td id='${id}_folderSelect'></td>
 								</tr>
 							</table>
@@ -66,7 +66,7 @@
 								<$= (data.isAppt ? "" : AjxTemplate.expand("calendar.Appointment#TaskDueSection", data)) $>
 								<$= AjxTemplate.expand("calendar.Appointment#ApptTimeSection", data) $>
 								<tr>
-								  <td valign=top class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'><nobr><$= ZmMsg.repeat $>:</nobr></td>
+								  <td valign=top class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'><nobr><$= ZmMsg.repeatLabel $></nobr></td>
 								  <td valign=top colspan=10>
 									<table border=0 cellpadding=0 cellspacing=0 width=100%>
 									  <tr>
@@ -87,13 +87,13 @@
 					<!-- appointment attendees / resources -->
 					<table border=0 width=100%>
 						<tr>
-							<td width='1%' align='right' valign='top' class='ZmApptTabViewPageField'><$= ZmMsg.attendees $>:</td>
+							<td width='1%' align='right' valign='top' class='ZmApptTabViewPageField'><$= ZmMsg.attendeesLabel $></td>
 							<td id='${personId}'></td>
 						</tr>
 
 					<$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
 						<tr>
-							<td width=1% align=right class='ZmApptTabViewPageField'><$= ZmMsg.resources $>:</td>
+							<td width=1% align=right class='ZmApptTabViewPageField'><$= ZmMsg.resourcesLabel $></td>
 							<td id='${equipmentId}'></td>
 						</tr>
 					<$ } $>
@@ -110,11 +110,11 @@
 <template id='calendar.Appointment#ZmApptQuickAddDialog'>
 	<table border=0 width=330>
 		<tr>
-			<td class='ZmApptTabViewPageField'><div style='width:70px'><sup>*</sup><$= ZmMsg.subject $>:</div></td>
+			<td class='ZmApptTabViewPageField'><div style='width:70px'><sup>*</sup><$= ZmMsg.subjectLabel $></div></td>
 			<td colspan=2 id='${id}_subject'></td>
 		</tr>
 		<tr>
-			<td class='ZmApptTabViewPageField'><$= ZmMsg.location $>:</td>
+			<td class='ZmApptTabViewPageField'><$= ZmMsg.locationLabel $></td>
 			<td colspan=2 id='${id}_location'></td>
 		</tr>
 		<tr>
@@ -131,12 +131,12 @@
 			</td>
 		</tr>
 		<tr id='${id}_calendarRow'>
-			<td class='ZmApptTabViewPageField' id='${id}_calendarLabel'><$= ZmMsg.calendar $>:</td>
+			<td class='ZmApptTabViewPageField' id='${id}_calendarLabel'><$= ZmMsg.calendarLabel $></td>
 			<td colspan=2 id='${id}_calendar'></td>
 		</tr>
 		<tr><td></td></tr>
 		<tr>
-			<td class='ZmApptTabViewPageField'><$= ZmMsg.startTime $>:</td>
+			<td class='ZmApptTabViewPageField'><$= ZmMsg.startTimeLabel $></td>
 			<td colspan=2>
 				<table border=0 cellpadding=0 cellspacing=0>
 					<tr>
@@ -151,7 +151,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td class='ZmApptTabViewPageField'><$= ZmMsg.endTime $>:</td>
+			<td class='ZmApptTabViewPageField'><$= ZmMsg.endTimeLabel $></td>
 			<td colspan=2>
 				<table border=0 cellpadding=0 cellspacing=0>
 					<tr>
@@ -167,7 +167,7 @@
 		</tr>
 		<tr><td></td></tr>
 		<tr>
-			<td class='ZmApptTabViewPageField'><$= ZmMsg.repeat $>:</td>
+			<td class='ZmApptTabViewPageField'><$= ZmMsg.repeatLabel $></td>
 			<td id='${id}_repeat'></td>
 			<td><span class='ZmApptTabViewPageField' style='width:100%' id='${id}_repeatDesc'></span></td>
 		</tr>
@@ -202,7 +202,7 @@
 		</tr>
 		<$ } $>
 		<tr>
-			<td class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.start : ZmMsg.startDate ) $>:</nobr></td>
+			<td class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.startLabel : ZmMsg.startDateLabel ) $></nobr></td>
 			<td>
 				<table border=0 cellpadding=0 cellspacing=0><tr>
 					<td><input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='${id}_startDateField' value='${currDate}'></td>
@@ -215,7 +215,7 @@
 			<$ } $>
 		</tr>
 		<tr>
-			<td class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.end : ZmMsg.dateDue ) $>:</nobr></td>
+			<td class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.endLabel : ZmMsg.dateDueLabel ) $></nobr></td>
 			<td>
 				<table border=0 cellpadding=0 cellspacing=0><tr>
 					<td><input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='${id}_endDateField' value='${currDate}'></td>
@@ -374,7 +374,7 @@
 	<$ if (data.cal && data.cal.getName()) { $>
 		<tr valign='top'>
 			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.calendar) $>:</div></b>
+				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.calendarLabel) $></div></b>
 			</td>
 			<td align='left'>
 				<div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(data.cal.getName()) $></div>
@@ -385,7 +385,7 @@
   <$ if (data.organizer) { $>
     <tr valign='top'>
       <td align='right' style='padding-right:5px;'>
-        <b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.organizer) $>:</div></b>
+        <b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.organizerLabel) $></div></b>
       </td>
       <td align='left'>
         <div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.organizer) $></div>
@@ -396,7 +396,7 @@
   <$ if (data.sentBy) { $>
     <tr valign='top'>
       <td align='right' style='padding-right:5px;'>
-        <b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.sentBy) $>:</div></b>
+        <b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.sentBy) $></div></b>
       </td>
       <td align='left'>
         <div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.sentBy) $></div>
@@ -407,7 +407,7 @@
   <$ if (data.appt.hasOtherAttendees()) { $>
 		<tr valign='top'>
 			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.status) $>:</div></b>
+				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.statusLabel) $></div></b>
 			</td>
 			<td align='left'>
 				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.appt.getParticipantStatusStr()) $></div>
@@ -418,7 +418,7 @@
 	<$ if (data.when && data.when != "") { $>
 		<tr valign='top'>
 			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.when) $>:</div></b>
+				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.whenLabel) $></div></b>
 			</td>
 			<td align='left'>
 				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.when) $></div>
@@ -429,7 +429,7 @@
 	<$ if (data.location && data.location != "") { $>
 		<tr valign='top'>
 			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.location) $>:</div></b>
+				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.locationLabel) $></div></b>
 			</td>
 			<td align='left'>
 				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.location) $></div>
@@ -440,7 +440,7 @@
 	<$ if (data.appt.fragment && data.appt.fragment != "") { $>
 		<tr valign='top'>
 			<td align='right' style='padding-right:5px;'>
-				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.notes) $>:</div></b>
+				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.notesLabel) $></div></b>
 			</td>
 			<td align='left'>
 				<$= AjxStringUtil.htmlEncode(data.appt.fragment) $>
@@ -475,7 +475,9 @@
 				if(!ptstStatus[i]) { continue; }
 			$>
 				<tr valign='top'>
-					<td align='right' style='padding-right:5px;' nowrap><b><$= AjxStringUtil.htmlEncode(i) $>:</b></td>
+					<td align='right' style='padding-right:5px;' nowrap><b>
+						<$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(i)) $>
+					</b></td>
 					<td nowrap> &nbsp; <$= ptstStatus[i] $></td>
 				</tr>
 			<$ } 
@@ -489,7 +491,7 @@
 		<tr>
 			<td id='${id}_closeBtnCell'></td>
 			<td>&nbsp;</td>
-			<td class='SubjectCol LabelColName'><$= AjxStringUtil.htmlEncode(ZmMsg.subject) $>:</td>
+			<td class='SubjectCol LabelColName'><$= AjxStringUtil.htmlEncode(ZmMsg.subjectLabel) $></td>
 			<td class='SubjectCol LabelColValue' colspan=3 width=100%><$= data.subject $></td>
 		</tr>
 
@@ -550,14 +552,14 @@
 
 <template id="calendar.Appointment#AddEntry">
 	<tr>
-		<td class='LabelColName'><$= AjxStringUtil.htmlEncode(data.lbl) $>: </td>
+		<td class='LabelColName'><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.lbl)) $> </td>
 		<td class='LabelColValue' colspan=100><$= data.val $></td>
 	</tr>
 </template>
 
 <template id="calendar.Appointment#AddPrintEntry">
 	<tr>
-		<td valign=top style='text-align:right; font-size:14px'><$= data.lbl $>: </td>
+		<td valign=top style='text-align:right; font-size:14px'><$= AjxMessageFormat.format(ZmMsg.makeLabel, data.lbl) $> </td>
 		<td width=100% style='font-size:14px'><$= data.noEncode ? data.val : AjxStringUtil.htmlEncode(data.val) $></td>
 	</tr>
 </template>

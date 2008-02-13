@@ -1496,8 +1496,8 @@ function(msg, preferHtml, callback) {
 		var len = addrs.size();
 		if (len > 0) {
 			html[idx++] = "<tr><td valign=top style='text-align:right; font-size:14px'>";
-			html[idx++] = ZmMsg[AjxEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]];
-			html[idx++] = ": </td><td width=100% style='font-size: 14px'>";
+			html[idx++] = AjxMessageFormat.format(ZmMsg.makeLable, ZmMsg[AjxEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]]);
+			html[idx++] = " </td><td width=100% style='font-size: 14px'>";
 			for (var i = 0; i < len; i++) {
 				html[idx++] = i > 0 ? AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR) : "";
 				html[idx++] = addrs.get(i).address;

@@ -233,7 +233,8 @@ function(ev, bIsPopCallback) {
 	} catch (ex) {
 		if (AjxUtil.isString(ex)) {
 			var ed = appCtxt.getMsgDialog();
-			var msg = ZmMsg.errorSaving + (ex ? (":<p>" + ex) : ".");
+			//var msg = ZmMsg.errorSaving + (ex ? (":<p>" + ex) : ".");
+			var msg = ex ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, ex) : ZmMsg.errorSaving;
 			ed.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 			ed.popup();
 		}

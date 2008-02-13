@@ -42,8 +42,8 @@ function(text, id) {
     var i = 0;
     html[i++] = "<tr valign='middle'>";
     html[i++] = "<td align='right' nowrap>";
-	html[i++] = text;
-	html[i++] = ":</td>";
+	html[i++] = AjxMessageFormat.format(ZmMsg.makeLabel, text);
+	html[i++] = "</td>";
     html[i++] = "<td align='left' nowrap><input type='text' autocomplete='off' nowrap size='";
 	html[i++] = size;
 	html[i++] = "' id='";
@@ -51,7 +51,7 @@ function(text, id) {
 	html[i++] = "'/></td>";
     html[i++] = "</tr>";
 
-	return html.join("");		
+	return html.join("");
 };
 
 // TODO: if we really wanted, we could add a prefs listener to update the "also search" checkboxes

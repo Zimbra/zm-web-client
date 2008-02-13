@@ -47,7 +47,7 @@
   <$ if (data.data) { $>
     <tr>
       <td align="right" valign="middle" style="padding-right: 5px"><b><div style="white-space: nowrap">
-        <$= AjxStringUtil.htmlEncode(data.label) $>:
+        <$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.label)) $>
       </div></b></td>
       <td align="left"><div style="white-space: nowrap">
         <$= AjxStringUtil.htmlEncode(data.data) $>
@@ -96,25 +96,27 @@
 </template>
 
 <template id="im.Chat#ChatMessagePlainText">
-  <$= data.isSystem ? ZmMsg.imSystem : data.from $>: <$= data.getTextBody() $>
+  <$= AjxMessageFormat.format(ZmMsg.makeLabel, (data.isSystem ? ZmMsg.imSystem : data.from)) $>
+  <$= data.getTextBody() $>
 </template>
 
 <template id="im.Chat#ChatMessageHTML">
-  <$= data.isSystem ? ZmMsg.imSystem : data.from $>: <$= data.getHtmlBody() $>
+  <$= AjxMessageFormat.format(ZmMsg.makeLabel, (data.isSystem ? ZmMsg.imSystem : data.from)) $>
+  <$= data.getHtmlBody() $>
 </template>
 
 <template id="im.Chat#GatewayLoginDlg">
   <table>
     <tr>
-      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.imGateway $>:</td>
+      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.imGatewayLabel $></td>
       <td id="${id}_gatewayLayout"></td>
     </tr>
     <tr>
-      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.imScreenName $>:</td>
+      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.imScreenName $></td>
       <td id="${id}_screenNameLayout"></td>
     </tr>
     <tr>
-      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.password $>:</td>
+      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.passwordLabel $></td>
       <td id="${id}_passwordLayout"></td>
     </tr>
   </table>
@@ -195,7 +197,7 @@
     <legend><$= ZmMsg.contacts $></legend>
     <table>
       <tr>
-        <td><label for="${id}_entry"><$= ZmMsg.search $>:</label></td>
+        <td><label for="${id}_entry"><$= ZmMsg.searchLabel $></label></td>
         <td id="${id}_entryCell"></td>
       </tr>
     </table>

@@ -321,11 +321,11 @@ and the container element is replaced with that control.
 						</colgroup>
 						<tr valign=top>
 							<td class='ZOptionsFieldTop'><div id='${id}_COMPOSE_AS_FORMAT' tabindex='20'></div></td>
-							<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fontFamilyLabel$></td>
+							<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fFamilyLabel$></td>
 							<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_FAMILY' tabindex='30'></select></td>
-							<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fontSizeLabel$></td>
+							<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fSizeLabel$></td>
 							<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_SIZE' tabindex='40'></select></td>
-							<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fontColorLabel$></td>
+							<td class='ZOptionsLabelTop ZOptionsLabelNarrow'><$=ZmMsg.fColorLabel$></td>
 							<td class='ZOptionsField'><select id='${id}_COMPOSE_INIT_FONT_COLOR' tabindex='50'></select></td>
 						</tr>
 					</table>
@@ -1024,7 +1024,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 -->
 <template id='prefs.Pages#MailFilterRule'>
 	<table width='100%'>
-		<tr><td width='1%' nowrap><$=ZmMsg.filterName$>:</td>
+		<tr><td width='1%' nowrap><$=ZmMsg.filterNameLabel$></td>
 			<td><$=Dwt.CARET_HACK_BEGIN$>
 				<input id='${id}_name' type='text' width=100 tabindex='10'>
 				<$=Dwt.CARET_HACK_END$>
@@ -1231,7 +1231,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                                             </tr>
                                             <tr>
                                               <td style="padding-left: 10px; text-align: right;">
-                                                <$=ZmMsg.imPrefIdleTimeout $>:
+                                                <$=ZmMsg.imPrefIdleTimeoutLabel $>
                                               </td>
                                               <td style="padding: 3px">
                                                 <div id='${id}_IM_PREF_IDLE_TIMEOUT' tabindex='80'></div>
@@ -1239,7 +1239,7 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
                                             </tr>
                                             <tr>
                                               <td style="padding-left: 10px; text-align: right;">
-                                                <$=ZmMsg.imPrefIdleStatus $>:
+                                                <$=ZmMsg.imPrefIdleStatusLabel $>
                                               </td>
                                               <td style="padding: 3px">
                                                 <div id='${id}_IM_PREF_IDLE_STATUS' tabindex='90'></div>

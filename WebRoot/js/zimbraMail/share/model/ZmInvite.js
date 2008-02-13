@@ -521,8 +521,8 @@ ZmInvite.prototype._addEntryRow =
 function(field, data, html, idx, wrap, width, asIs) {
 	if (data != null && data != "") {
 		html[idx++] = "<tr valign='top'><td align='right' style='padding-right: 5px;'><b><div style='white-space:nowrap'>";
-		html[idx++] = AjxStringUtil.htmlEncode(field);
-		html[idx++] = ":</div></b></td><td align='left'><div style='white-space:";
+		html[idx++] = AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(field));
+		html[idx++] = "</div></b></td><td align='left'><div style='white-space:";
 		html[idx++] = wrap ? "wrap;" : "nowrap;";
 		if (width) {
 			html[idx++] = "width:";

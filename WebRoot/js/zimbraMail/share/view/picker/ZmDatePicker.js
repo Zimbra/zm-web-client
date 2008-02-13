@@ -44,8 +44,8 @@ function(parent) {
     var i = 0;
     html[i++] = "<table cellpadding=3 cellspacing=0 border=0 style='width:100%;'>";
     html[i++] = "<tr align='center' valign='middle'><td align='right' nowrap>";
-    html[i++] = ZmMsg.date;
-    html[i++] = ":</td><td align='left' id='";
+    html[i++] = ZmMsg.dateLabel;
+    html[i++] = "</td><td align='left' id='";
     html[i++] = selectId;
     html[i++] = "'></td></tr>";
     html[i++] = "<tr valign='left'>";
