@@ -104,7 +104,7 @@ ZmNewRosterItemDialog.prototype._groupsMenuItemListener = function(ev) {
 };
 
 ZmNewRosterItemDialog.prototype._getGroupsMenu = function() {
-        var menu = new ZmPopupMenu(this._groupsDropDown, null, this);
+        var menu = new ZmPopupMenu(this._groupsDropDown, null, true);
 
         // find groups currently defined in the buddy list
 	var groups = AjxDispatcher.run("GetRoster").getGroups();

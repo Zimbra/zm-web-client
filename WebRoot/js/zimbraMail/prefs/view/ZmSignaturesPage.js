@@ -268,7 +268,7 @@ ZmSignaturesPage.prototype._addSignature = function(signature) {
 		if (defaultEl) {
 			var name = this._htmlElId;
 			var isDefault = false; // TODO
-			var radio = new DwtRadioButton(listComp, null, name, isDefault);
+			var radio = new DwtRadioButton({parent:listComp, name:name, checked:isDefault});
 			radio.setText(ZmMsg.def);
 			this._replaceControlElement(defaultEl, radio);
 

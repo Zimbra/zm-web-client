@@ -291,7 +291,8 @@ function(property){
 
 ZmLiteHtmlEditor.prototype._createToolbars = function(){
 	if (!this._miniToolBar) {
-		var miniToolBar = this._miniToolBar = new DwtToolBar(this, "ZToolbar", DwtControl.RELATIVE_STYLE, 2, null, null, null, 0);
+		var miniToolBar = this._miniToolBar = new DwtToolBar({parent:this, className:"ZToolbar",
+												  posStyle:DwtControl.RELATIVE_STYLE, cellSpacing:2, index:0});
 		this._createMiniToolBar(miniToolBar);
 	}
 };

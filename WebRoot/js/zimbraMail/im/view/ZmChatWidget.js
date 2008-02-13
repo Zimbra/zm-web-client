@@ -307,7 +307,7 @@ ZmChatWidget.prototype._init = function() {
 
 	this._initEditor(this);
 
-	this._toolbar = new DwtToolBar(this, null, Dwt.ABSOLUTE_STYLE);
+	this._toolbar = new DwtToolBar({parent:this, posStyle:Dwt.ABSOLUTE_STYLE});
 
 	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
 	this._close.setToolTipContent(ZmMsg.imEndChat);

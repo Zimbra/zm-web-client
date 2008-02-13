@@ -23,7 +23,7 @@
  */
 ZmCurrentAppToolBar = function(parent) {
 
-	DwtToolBar.call(this, parent, null, Dwt.ABSOLUTE_STYLE);
+	DwtToolBar.call(this, {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE});
 
 	this._newFolderBtn = new DwtToolBarButton({parent:this});
 	this._newFolderBtn.setVisible(false);

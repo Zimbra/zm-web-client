@@ -28,12 +28,12 @@
  *
  * @param parent		[DwtComposite]		the containing widget
  * @param menuItems		[array]*			a list of operation IDs
- * @param dialog		[DwtDialog]*		containing dialog, if any
+ * @param inDialog 		[boolean]*			if true, menu is part of a dialog
  * @param overrides		[hash]*				hash of overrides by op ID
  */
 ZmActionMenu = function(params) {
 
-	ZmPopupMenu.call(this, params.parent, null, params.dialog);
+	ZmPopupMenu.call(this, params.parent, null, params.inDialog);
 
 	// standard menu items default to Tag/Print/Delete
 	var menuItems = params.menuItems;

@@ -1673,7 +1673,7 @@ function(menu, text, flag) {
 
 ZmComposeView.prototype._priorityButtonMenuCallback =
 function() {
-    var menu = new DwtMenu(this._priorityButton);
+    var menu = new DwtMenu({parent:this._priorityButton});
     this._priorityMenuListnerObj = new AjxListener(this, this._priorityMenuListner);
     this._createPrioityMenuItem(menu, ZmMsg.high, ZmItem.FLAG_HIGH_PRIORITY);
     this._createPrioityMenuItem(menu, ZmMsg.normal, "");

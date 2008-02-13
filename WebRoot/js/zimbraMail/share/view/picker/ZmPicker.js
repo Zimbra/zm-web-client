@@ -19,7 +19,7 @@ ZmPicker = function(parent, id) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, {parent:parent, className:"ZmPicker", posStyle:DwtControl.ABSOLUTE_STYLE});
 
-	this._header = new DwtToolBar(this);
+	this._header = new DwtToolBar({parent:this});
 	this._label = new DwtLabel(this._header, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmPickerLabel");
 	this._header.addFiller();
 	this._close = new DwtButton({parent:this._header, style:DwtLabel.IMAGE_LEFT, className:"DwtToolbarButton"});

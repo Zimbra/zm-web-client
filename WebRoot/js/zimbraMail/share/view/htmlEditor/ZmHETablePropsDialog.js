@@ -138,7 +138,7 @@ ZmHETablePropsDialog = function(parent) {
 	this._borderWidthField.reparentHtmlElement(borderWidthId);
 	
 	var b = new DwtButton({parent:this.shell});
-	var m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE, null, null, this);
+	var m = new DwtMenu({parent:b, style:DwtMenu.COLOR_PICKER_STYLE, inDialog:true});
 	var c = new DwtColorPicker(m);
 	c.addSelectionListener(new AjxListener(this, this._borderColorPickerListener));
 	b.setText(ZmMsg.borderColor);

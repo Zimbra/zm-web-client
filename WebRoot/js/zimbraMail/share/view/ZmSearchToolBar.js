@@ -230,7 +230,7 @@ function(icon, text, listener) {
 			var params = {parent:menu, enabled:true, style:DwtMenuItem.RADIO_STYLE, radioGroupId:0};
 			if (!menu) {
 				var data = this._customSearchBtn.getData("CustomSearchItem");
-				menu = new DwtMenu(this._customSearchBtn, null, "ActionMenu");
+				menu = new DwtMenu({parent:this._customSearchBtn, className:"ActionMenu"});
 				this._customSearchBtn.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 				params.imageInfo = data[0];
 				params.text = data[1];
@@ -356,7 +356,7 @@ function() {
 
 ZmSearchToolBar.prototype._createSearchMenu =
 function() {
-	var menu = new DwtMenu(this._searchMenuButton, null, "ActionMenu");
+	var menu = new DwtMenu({parent:this._searchMenuButton, className:"ActionMenu"});
 	var mi;
 	if (this._customSearchMenuItems) {
 		for (var i = 0; i < this._customSearchMenuItems.length; i++) {

@@ -412,8 +412,8 @@ function(parent) {
 * @param dialog		containing dialog, if any
 */
 ZmOperation.addColorMenu =
-function(parent, dialog) {
-	var menu = new ZmPopupMenu(parent, null, dialog);
+function(parent, inDialog) {
+	var menu = new ZmPopupMenu(parent, null, inDialog);
 	parent.setMenu(menu);
 	var list = ZmTagTree.COLOR_LIST;
 	for (var i = 0; i < list.length; i++) {
