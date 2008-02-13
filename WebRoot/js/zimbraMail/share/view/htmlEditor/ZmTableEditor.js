@@ -118,10 +118,10 @@ ZmTableEditor = {
 ZmTablePropsDialog = function(parent) {
 	if (arguments.length == 0) return;
 	var advancedBtn = new DwtDialog_ButtonDescriptor(ZmTablePropsDialog.ADVANCED_BUTTON, ZmMsg.advanced, DwtDialog.ALIGN_LEFT);
-	DwtDialog.call(this, parent, null, ZmMsg.tableProperties,
-		       [ DwtDialog.OK_BUTTON,
+	DwtDialog.call(this, {parent:parent, title:ZmMsg.tableProperties,
+		       standardButtons:[ DwtDialog.OK_BUTTON,
 			 DwtDialog.CANCEL_BUTTON ],
-		       [ advancedBtn ] );
+		       extraButtons:[ advancedBtn ]});
 
 	var base_id = Dwt.getNextId();
 	for (var i = ZmTablePropsDialog.IDS.length; --i >= 0;) {

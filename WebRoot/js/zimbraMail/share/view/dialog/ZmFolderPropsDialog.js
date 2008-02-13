@@ -26,7 +26,7 @@ ZmFolderPropsDialog = function(parent, className) {
 		];
 	}
 
-	DwtDialog.call(this, parent, className, ZmMsg.folderProperties, null, extraButtons);
+	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.folderProperties, extraButtons:extraButtons});
 
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))

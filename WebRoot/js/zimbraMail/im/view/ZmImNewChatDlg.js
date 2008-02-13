@@ -18,7 +18,7 @@
 /** small dialog for picking one contact with an autocompletion entry */
 
 ZmImNewChatDlg = function() {
-	DwtDialog.call(this, DwtShell.getShell(window), null, ZmMsg.selectBuddyOrContact);
+	DwtDialog.call(this, {parent:DwtShell.getShell(window), title:ZmMsg.selectBuddyOrContact});
 	this._init();
 };
 

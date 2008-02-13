@@ -31,7 +31,7 @@
  */
 ZmFilterRuleDialog = function() {
 
-	DwtDialog.call(this, appCtxt.getShell(), "ZmFilterRuleDialog", ZmMsg.selectAddresses);
+	DwtDialog.call(this, {parent:appCtxt.getShell(), className:"ZmFilterRuleDialog", title:ZmMsg.selectAddresses});
 
 	// set content
 	this.setContent(this._contentHtml());

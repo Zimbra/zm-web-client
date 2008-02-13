@@ -37,7 +37,7 @@ ZmReminderDialog = function(parent, reminderController, calController) {
 	var dismissAllButton = new DwtDialog_ButtonDescriptor(ZmReminderDialog.DISMISS_ALL_BUTTON, 
 														   ZmMsg.dismissAll, DwtDialog.ALIGN_RIGHT);														   
 
-	DwtDialog.call(this, parent, null, null, [], [snoozeButton, dismissAllButton]);	
+	DwtDialog.call(this, {parent:parent, standardButtons:DwtDialog.NO_BUTTONS, extraButtons:[snoozeButton, dismissAllButton]});
 
 	this.setContent(this._contentHtml(selectId));
 	this.setTitle(ZmMsg.apptReminders);

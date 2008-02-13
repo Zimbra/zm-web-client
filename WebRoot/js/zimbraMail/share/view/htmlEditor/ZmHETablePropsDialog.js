@@ -23,7 +23,7 @@
 ZmHETablePropsDialog = function(parent) {
 	if (arguments.length == 0) return;
 
-	DwtDialog.call(this, parent, null, ZmMsg.insertTable, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+	DwtDialog.call(this, {parent:parent, title:ZmMsg.insertTable, standardButtons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 
  	var tableAlignmentId = Dwt.getNextId();
 	var floatId = Dwt.getNextId();
@@ -151,7 +151,7 @@ ZmHETablePropsDialog = function(parent) {
 	
 };
 
-ZmHETablePropsDialog.prototype = new DwtDialog();
+ZmHETablePropsDialog.prototype = new DwtDialog;
 ZmHETablePropsDialog.prototype.constructor = ZmHETablePropsDialog;
 
 // Public methods

@@ -17,7 +17,8 @@
 
 ZmAcceptShareDialog = function(parent, className) {
 	className = className || "ZmAcceptShareDialog";
-	DwtDialog.call(this, parent, className, ZmMsg.acceptShare, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
+	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.acceptShare,
+						  standardButtons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]});
 	this.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._handleYesButton));
 	this.setButtonListener(DwtDialog.NO_BUTTON, new AjxListener(this, this._handleNoButton));
 	

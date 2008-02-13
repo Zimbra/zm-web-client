@@ -17,7 +17,7 @@
 
 ZmLinkPropsDialog = function(shell, className) {
 	className = className || "ZmLinkPropsDialog";
-	DwtDialog.call(this, shell, className, ZmMsg.linkProperties);
+	DwtDialog.call(this, {parent:shell, className:className, title:ZmMsg.linkProperties});
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 
 	this._cache = AjxDispatcher.run("GetNotebookCache");

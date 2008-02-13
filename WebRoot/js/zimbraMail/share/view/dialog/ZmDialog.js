@@ -34,8 +34,7 @@
 ZmDialog = function(params) {
 
 	if (arguments.length == 0) return;
-	DwtDialog.call(this, params.parent, params.className, params.title,
-				   params.standardButtons, params.extraButtons);
+	DwtDialog.call(this, params);
 	if (params.view) {
 		this.setView(params.view);
 	} else {
