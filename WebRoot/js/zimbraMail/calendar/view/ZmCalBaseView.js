@@ -681,7 +681,7 @@ function() {
 
 	// set up the mini calendar
 	var fdow = this.firstDayOfWeek(); 
-	var miniCal = new DwtCalendar(this, null, null, fdow, null, null, true, true);
+	var miniCal = new DwtCalendar({parent:this, firstDayOfWeek:fdow, hidePrevNextMo:true, readOnly:true});
 	miniCal.setVisible(false);
 	// set the working week as per user pref
 	var workingWeek = []; 

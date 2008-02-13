@@ -322,7 +322,7 @@ function() {
 
 ZmCallFeatureUI.prototype._createCheckbox =
 function(text, id) {
-	this._checkbox = new DwtCheckbox(this._view);
+	this._checkbox = new DwtCheckbox({parent:this._view});
 	this._checkbox.setText(text);
 	this._checkbox.replaceElement(id);
 	this._checkbox.addSelectionListener(new AjxListener(this, this._checkboxListener));
@@ -476,7 +476,7 @@ function(id) {
 		validator: ZmVoicePrefsView._validatePhoneNumber,
 		validationStyle: DwtInputField.CONTINUAL_VALIDATION
 	};
-	this._comboBox = new DwtComboBox(this._view, inputParams);
+	this._comboBox = new DwtComboBox({parent:this._view, inputParams:inputParams});
 	this._comboBox.replaceElement(id + "_callForwardingComboBox");
 };
 
@@ -547,7 +547,7 @@ function(id) {
 		validator: ZmVoicePrefsView._validateEmailAddress,
 		validationStyle: DwtInputField.CONTINUAL_VALIDATION
 	};
-	this._comboBox = new DwtComboBox(this._view, inputParams);
+	this._comboBox = new DwtComboBox({parent:this._view, inputParams:inputParams});
 	this._comboBox.replaceElement(id + "_emailNotificationComboBox");
 };
 

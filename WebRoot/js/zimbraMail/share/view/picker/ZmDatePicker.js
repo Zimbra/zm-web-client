@@ -65,7 +65,7 @@ function(parent) {
 
 	// create and add DwtCalendar
 	var firstDay = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
-	var cal = this._cal = new DwtCalendar(picker, null, null, firstDay);
+	var cal = this._cal = new DwtCalendar({parent:picker, firstDayOfWeek:firstDay});
 	cal.setDate(new Date());
 	cal.addSelectionListener(new AjxListener(this, this._calSelectionListener));
 	cal.reparentHtmlElement(calId);

@@ -447,7 +447,8 @@ ZmCalViewController.prototype._createMiniCalendar =
 function(date) {
 	date = date ? date : new Date();
 
-	this._miniCalendar = new DwtCalendar(this._container, null, DwtControl.ABSOLUTE_STYLE, this.firstDayOfWeek());
+	this._miniCalendar = new DwtCalendar({parent:this._container, posStyle:DwtControl.ABSOLUTE_STYLE,
+										  firstDayOfWeek:this.firstDayOfWeek()});
 	this._miniCalendar.setDate(date);
 	this._miniCalendar.setScrollStyle(Dwt.CLIP);
 	this._miniCalendar.addSelectionListener(new AjxListener(this, this._miniCalSelectionListener));

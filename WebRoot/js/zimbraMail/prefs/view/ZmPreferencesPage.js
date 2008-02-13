@@ -514,7 +514,7 @@ function(id, setup, value) {
 ZmPreferencesPage.prototype._setupComboBox = function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var cboxObj = new DwtComboBox(this);
+	var cboxObj = new DwtComboBox({parent:this});
 	this.setFormObject(id, cboxObj);
 
 	var options = setup.options || setup.displayOptions || setup.choices || [];
@@ -612,7 +612,7 @@ ZmPreferencesPage.__radioGroup_getTabGroupMember = function(radioIds) {
 
 ZmPreferencesPage.prototype._setupCheckbox =
 function(id, setup, value) {
-	var checkbox = new DwtCheckbox(this, null, null, value);
+	var checkbox = new DwtCheckbox({parent:this, checked:value});
 	this.setFormObject(id, checkbox);
 	var cboxLabel = ZmPreferencesPage.__formatLabel(setup.displayName, value);
 	checkbox.setText(cboxLabel);

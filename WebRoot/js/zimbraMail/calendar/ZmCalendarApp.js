@@ -659,7 +659,7 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	dateButton.setMenu(calMenu, true);
 
 	// create mini cal for menu for button
-	var cal = new DwtCalendar(calMenu);
+	var cal = new DwtCalendar({parent:calMenu});
 	cal.setData(Dwt.KEY_ID, buttonId);
 	cal.setSkipNotifyOnPage(true);
 	var fdow = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
