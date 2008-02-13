@@ -274,8 +274,9 @@ ZmZimletMgr.prototype.__getIncludes = function(zimletArray, zimletNames, isJS) {
 
 	// add link to aggregated files
 	if (!appDevMode) {
+		var extension = !AjxEnv.isIE || (!AjxEnv.isIE6 && AjxEnv.isIE6up) ? appExtension : "";
 		includes.unshift( [
-			"/service/zimlet/res/Zimlets-nodev_all", isJS ? ".js"+(AjxEnv.isIE?"":appExtension) : ".css"
+			"/service/zimlet/res/Zimlets-nodev_all", isJS ? ".js"+extension : ".css"
 		].join("") );
 	}
 
