@@ -18,7 +18,7 @@
 ZmLoginDialog = function(parent, className) {
 	
     className = className || "ZmLoginDialog";
-    DwtComposite.call(this, parent, className, DwtControl.ABSOLUTE_STYLE);
+    DwtComposite.call(this, {parent:parent, className:className, posStyle:DwtControl.ABSOLUTE_STYLE});
     this._origClassName = className;
     this._xparentClassName = className + "-Transparent";
     this.setBounds(0, 0, "100%", "100%");

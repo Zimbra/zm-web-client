@@ -357,7 +357,7 @@ function(appt, id, body_style, controller) {
 * @param id			[string]*		an ID that is propagated to component select objects
 */
 ZmTimeSelect = function(parent, id) {
-	DwtComposite.call(this, parent);
+	DwtComposite.call(this, {parent:parent});
 
 	this.id = id;
 	this._isLocale24Hour = true;

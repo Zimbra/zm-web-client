@@ -17,7 +17,7 @@
 
 ZmBrowseView = function(parent, pickers) {
 
-	DwtComposite.call(this, parent, "ZmBrowseView", DwtControl.ABSOLUTE_STYLE);
+	DwtComposite.call(this, {parent:parent, className:"ZmBrowseView", posStyle:DwtControl.ABSOLUTE_STYLE});
 
 	this.setScrollStyle(DwtControl.SCROLL);
 	this.addControlListener(new AjxListener(this, this._controlListener));

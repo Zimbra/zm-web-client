@@ -21,7 +21,7 @@ ZmMultiColView = 	function(parent, className, posStyle, controller, dropTgt) {
 
 	className = className || "ZmMultiColView";
 	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
-	DwtComposite.call(this, parent, className, posStyle);
+	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
 	this._controller = controller;
 

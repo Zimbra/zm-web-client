@@ -28,7 +28,7 @@
  */
 ZmComposeView = function(parent, controller, composeMode) {
 
-	DwtComposite.call(this, parent, "ZmComposeView", Dwt.ABSOLUTE_STYLE);
+	DwtComposite.call(this, {parent:parent, className:"ZmComposeView", posStyle:Dwt.ABSOLUTE_STYLE});
 
 	ZmComposeView.ADDR_SETTING[AjxEmailAddress.BCC]	= ZmSetting.SHOW_BCC;
 

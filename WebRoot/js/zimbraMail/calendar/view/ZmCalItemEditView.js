@@ -32,7 +32,7 @@
 ZmCalItemEditView = function(parent, attendees, controller, dateInfo, posStyle) {
 	if (arguments.length == 0) { return; }
 
-	DwtComposite.call(this, parent, null, posStyle);
+	DwtComposite.call(this, {parent:parent, posStyle:posStyle});
 
 	this._attendees = attendees;
 	this._controller = controller;

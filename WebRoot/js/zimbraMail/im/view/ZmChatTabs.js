@@ -16,7 +16,7 @@
  */
 
 ZmChatTabs = function(parent) {
-	DwtComposite.call(this, parent, "ZmChatTabs", Dwt.RELATIVE_STYLE);
+	DwtComposite.call(this, {parent:parent, className:"ZmChatTabs", posStyle:Dwt.RELATIVE_STYLE});
 	this.addControlListener(new AjxListener(this, this.__onResize));
 	this.__tabs = new AjxVector();
 	this.__currentTab = null;

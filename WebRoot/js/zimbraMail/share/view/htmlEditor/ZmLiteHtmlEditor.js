@@ -26,7 +26,7 @@ ZmLiteHtmlEditor = function(parent, posStyle, className, mode, content) {
 	if (arguments.length == 0) return;
 
 	className = className || "ZmLiteHtmlEditor";
-	DwtComposite.call(this, parent, className, posStyle);
+	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
 	this._mode = mode || ZmLiteHtmlEditor.TEXT;
 	this._initialize();

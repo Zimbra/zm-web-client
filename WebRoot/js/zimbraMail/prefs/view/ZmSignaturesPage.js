@@ -442,7 +442,7 @@ ZmSignaturesPage.prototype._validateName = function(id, value) {
 //
 
 ZmSignatureList = function(parent) {
-	DwtComposite.call(this, parent);
+	DwtComposite.call(this, {parent:parent});
 	this._tabGroup = new DwtTabGroup(this._htmlElId);
 };
 ZmSignatureList.prototype = new DwtComposite;

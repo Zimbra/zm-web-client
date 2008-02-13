@@ -23,7 +23,7 @@ ZmSpreadSheet = function(parent, className, posStyle, deferred) {
 	if (arguments.length == 0)
 		return;
 	className = className || "ZmSpreadSheet";
-	DwtComposite.call(this, parent, className, posStyle, deferred);
+	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle, deferred:deferred});
 
 	// WARNING: the mousemove handler is a crazy workaround to the fact
 	// that the range DIV blocks events from reaching the table element.

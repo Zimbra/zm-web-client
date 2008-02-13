@@ -19,7 +19,7 @@ ZmImOverview = function(parent, args) {
         if (!args)
                 args = {};
 
-        DwtComposite.call(this, parent, null, args.posStyle || Dwt.ABSOLUTE_STYLE);
+        DwtComposite.call(this, {parent:parent, posStyle:args.posStyle || Dwt.ABSOLUTE_STYLE});
 
         this._groupItems = {};
         this._itemsById = {};

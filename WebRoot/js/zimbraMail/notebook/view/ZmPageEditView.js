@@ -16,7 +16,7 @@
  */
 
 ZmPageEditView = function(parent, controller) {
-	DwtComposite.call(this, parent, "ZmPageEditView", DwtControl.ABSOLUTE_STYLE);
+	DwtComposite.call(this, {parent:parent, className:"ZmPageEditView", posStyle:DwtControl.ABSOLUTE_STYLE});
 	
 	this._controller = controller;
 	
