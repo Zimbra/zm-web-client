@@ -105,7 +105,7 @@ function(enabled) {
  */
 ZmPopupMenu.prototype.createMenuItem =
 function(id, params) {
-	var mi = this._menuItems[id] = new DwtMenuItem(this, params.style, params.radioGroupId);
+	var mi = this._menuItems[id] = new DwtMenuItem({parent:this, style:params.style, radioGroupId:params.radioGroupId});
 	if (params.image) {
 		mi.setImage(params.image);
 	}
@@ -119,5 +119,5 @@ function(id, params) {
 
 ZmPopupMenu.prototype.createSeparator =
 function() {
-	new DwtMenuItem(this, DwtMenuItem.SEPARATOR_STYLE);
+	new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
 };

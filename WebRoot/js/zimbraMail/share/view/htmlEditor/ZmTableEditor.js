@@ -55,22 +55,23 @@ ZmTableEditor = {
 
 	// call this in the context of a dialog object that knows this stuff ;-)
 	__makeCommonWidgets : function() {
-		this._wBgColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
+		var params = {parent:this, noFillLabel:ZmMsg.auto};
+		this._wBgColor = new DwtButtonColorPicker(params);
 		this._wBgColor.reparentHtmlElement(this._idBackgroundColor);
 		this._wBgColor.setImage("FontBackground");
 		this._wBgColor.showColorDisplay();
 
-		this._wFgColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
+		this._wFgColor = new DwtButtonColorPicker(params);
 		this._wFgColor.reparentHtmlElement(this._idForegroundColor);
 		this._wFgColor.setImage("FontColor");
 		this._wFgColor.showColorDisplay();
 
-		this._wBorderColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
+		this._wBorderColor = new DwtButtonColorPicker(params);
 		this._wBorderColor.reparentHtmlElement(this._idBorderColor);
 		this._wBorderColor.setImage("FontBorder");
 		this._wBorderColor.showColorDisplay();
 
-		this._wBorderStyle = new DwtSelect(this, [ new DwtSelectOption("none", false, ZmMsg.none),
+		this._wBorderStyle = new DwtSelect({parent:this, options:[ new DwtSelectOption("none", false, ZmMsg.none),
 							   new DwtSelectOption("solid", true, ZmMsg.borderStyleSolid),
 							   new DwtSelectOption("dashed", false, ZmMsg.borderStyleDashed),
 							   new DwtSelectOption("dotted", false, ZmMsg.borderStyleDotted),
@@ -78,23 +79,23 @@ ZmTableEditor = {
 							   new DwtSelectOption("groove", false, ZmMsg.borderStyleGroove),
 							   new DwtSelectOption("ridge", false, ZmMsg.borderStyleRidge),
 							   new DwtSelectOption("inset", false, ZmMsg.borderStyleInset),
-							   new DwtSelectOption("outset", false, ZmMsg.borderStyleOutset) ]);
+							   new DwtSelectOption("outset", false, ZmMsg.borderStyleOutset) ]});
 		this._wBorderStyle.reparentHtmlElement(this._idBorderStyle);
 		this._wBorderStyle.addChangeListener(new AjxListener(this, ZmTableEditor.__onBorderStyleChange));
 
 		this._wBorderWidth = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
 		this._wBorderWidth.reparentHtmlElement(this._idBorderWidth);
 
-		this._wTextAlign = new DwtSelect(this, [ new DwtSelectOption("", true, ZmMsg.notSet),
+		this._wTextAlign = new DwtSelect({parent:this, options:[ new DwtSelectOption("", true, ZmMsg.notSet),
 							 new DwtSelectOption("left", false, ZmMsg.left),
 							 new DwtSelectOption("center", false, ZmMsg.center),
-							 new DwtSelectOption("right", false, ZmMsg.right) ]);
+							 new DwtSelectOption("right", false, ZmMsg.right) ]});
 		this._wTextAlign.reparentHtmlElement(this._idTextAlign);
 
-		this._wTextVAlign = new DwtSelect(this, [ new DwtSelectOption("", false, ZmMsg.notSet),
+		this._wTextVAlign = new DwtSelect({parent:this, options:[ new DwtSelectOption("", false, ZmMsg.notSet),
 							  new DwtSelectOption("top", false, ZmMsg.top),
 							  new DwtSelectOption("middle", true, ZmMsg.middle),
-							  new DwtSelectOption("bottom", false, ZmMsg.bottom) ]);
+							  new DwtSelectOption("bottom", false, ZmMsg.bottom) ]});
 		this._wTextVAlign.reparentHtmlElement(this._idTextVAlign);
 
 		this._wWidth = new DwtSpinner({ parent: this, size : 3, min: 0 });
@@ -133,10 +134,10 @@ ZmTablePropsDialog = function(parent) {
 
 	ZmTableEditor.__makeCommonWidgets.call(this);
 
-	this._wAlign = new DwtSelect(this, [ new DwtSelectOption("", true, ZmMsg.notSet),
+	this._wAlign = new DwtSelect({parent:this, options:[ new DwtSelectOption("", true, ZmMsg.notSet),
 					     new DwtSelectOption("center", false, ZmMsg.center),
 					     new DwtSelectOption("left", false, ZmMsg.left),
-					     new DwtSelectOption("right", false, ZmMsg.right) ]);
+					     new DwtSelectOption("right", false, ZmMsg.right) ]});
 	this._wAlign.reparentHtmlElement(this._idAlign);
 
 	this._wCaption = new DwtInputField(
@@ -157,8 +158,8 @@ ZmTablePropsDialog = function(parent) {
 	this._wSummary.reparentHtmlElement(this._idSummary);
 	this._wSummary.getInputElement().style.width = "100%";
 
-	this._wWidthUnit = new DwtSelect(this, [ new DwtSelectOption("%", false, ZmMsg.percent),
-						 new DwtSelectOption("px", true, ZmMsg.pixels) ]);
+	this._wWidthUnit = new DwtSelect({parent:this, options:[ new DwtSelectOption("%", false, ZmMsg.percent),
+						 new DwtSelectOption("px", true, ZmMsg.pixels) ]});
 	this._wWidthUnit.reparentHtmlElement(this._idWidthUnit);
 
 	this._wBorderSpacing = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
@@ -400,7 +401,7 @@ ZmCellPropsDialog = function(parent) {
 	var quickSetListener = new AjxListener(this, this._quickSetBorder);
 	for (var i = 0; i < ZmCellPropsDialog.QUICK_BORDERS.length; ++i) {
 		var info = ZmCellPropsDialog.QUICK_BORDERS[i];
-		var btn = new DwtButton(this, null, "TBButton");
+		var btn = new DwtButton({parent:this, className:"TBButton"});
 		btn.setImage(info.img);
 		btn.setData("ZmTableEditor", info);
 		btn.addSelectionListener(quickSetListener);

@@ -25,7 +25,7 @@ ZmCurrentAppToolBar = function(parent) {
 
 	DwtToolBar.call(this, parent, null, Dwt.ABSOLUTE_STYLE);
 
-	this._newFolderBtn = new DwtToolBarButton(this);
+	this._newFolderBtn = new DwtToolBarButton({parent:this});
 	this._newFolderBtn.setVisible(false);
 	this._newFolderBtn.addSelectionListener(new AjxListener(this, this._newFolderListener));
 };

@@ -414,7 +414,7 @@ function() {
 	// add search button
 	if (this._searchBtnTdId) {
 		var element = document.getElementById(this._searchBtnTdId);
-		var searchButton = this._searchButton = new DwtButton(this);
+		var searchButton = this._searchButton = new DwtButton({parent:this});
 		searchButton.setText(ZmMsg.search);
 		searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
 		element.appendChild(searchButton.getHtmlElement());
@@ -427,7 +427,7 @@ function() {
 	// add select menu for contact source if we need one
 	if (this._listSelectId) {
 		var listSelect = document.getElementById(this._listSelectId);
-		this._selectDiv = new DwtSelect(this);
+		this._selectDiv = new DwtSelect({parent:this});
 		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
 		if (appCtxt.get(ZmSetting.SHARING_ENABLED))
 			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
@@ -440,13 +440,13 @@ function() {
 	if (this._prevButtonId && this._nextButtonId) {
 		var pageListener = new AjxListener(this, this._pageListener);
 
-		this._prevButton = new DwtButton(this);
+		this._prevButton = new DwtButton({parent:this});
 		this._prevButton.setImage("LeftArrow");
 		this._prevButton.addSelectionListener(pageListener);
 		this._prevButton.reparentHtmlElement(this._prevButtonId);
 		this._prevButton.setEnabled(false);
 
-		this._nextButton = new DwtButton(this);
+		this._nextButton = new DwtButton({parent:this});
 		this._nextButton.setImage("RightArrow");
 		this._nextButton.addSelectionListener(pageListener);
 		this._nextButton.reparentHtmlElement(this._nextButtonId);

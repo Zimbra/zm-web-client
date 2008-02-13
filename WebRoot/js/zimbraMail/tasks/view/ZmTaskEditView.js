@@ -181,7 +181,7 @@ function(width) {
 	this._location.reparentHtmlElement(this._htmlElId + "_location");
 
 	// add priority DwtSelect
-	this._prioritySelect = new DwtSelect(this);
+	this._prioritySelect = new DwtSelect({parent:this});
 	for (var i = 0; i < ZmTaskEditView.PRIORITY_VALUES.length; i++) {
 		var v = ZmTaskEditView.PRIORITY_VALUES[i];
 		this._prioritySelect.addOption(ZmCalItem.getLabelForPriority(v), i==1, v);
@@ -190,7 +190,7 @@ function(width) {
 
 	var listener = new AjxListener(this, this._selectListener);
 	// add status DwtSelect
-	this._statusSelect = new DwtSelect(this);
+	this._statusSelect = new DwtSelect({parent:this});
 	for (var i = 0; i < ZmTaskEditView.STATUS_VALUES.length; i++) {
 		var v = ZmTaskEditView.STATUS_VALUES[i];
 		this._statusSelect.addOption(ZmCalItem.getLabelForStatus(v), i==0, v);
@@ -199,7 +199,7 @@ function(width) {
 	this._statusSelect.reparentHtmlElement(this._htmlElId + "_status");
 
 	// add percent complete DwtSelect
-	this._pCompleteSelect = new DwtSelect(this);
+	this._pCompleteSelect = new DwtSelect({parent:this});
 	for (var i = 0; i <= 100; i += ZmTask.PCOMPLETE_INT) {
 		this._pCompleteSelect.addOption((i+"%"), i==0, i);
 	}

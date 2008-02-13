@@ -105,8 +105,8 @@ ZmHETablePropsDialog = function(parent) {
 	this._numRowsField.setValidationCallback(cb);
 	this._numRowsField.reparentHtmlElement(numRowsId);
 
-	this._widthUnit = new DwtSelect(this.shell, [new DwtSelectOption(ZmHtmlEditor._PERCENT, true, ZmMsg.percent), 
-													new DwtSelectOption(ZmHtmlEditor._PIXELS, false, ZmMsg.pixels)]);
+	this._widthUnit = new DwtSelect({parent:this.shell, options:[new DwtSelectOption(ZmHtmlEditor._PERCENT, true, ZmMsg.percent), 
+																 new DwtSelectOption(ZmHtmlEditor._PIXELS, false, ZmMsg.pixels)]});
 	this._widthUnit.reparentHtmlElement(widthUnitId);
 
 	inputFieldParams.initialValue = 100;
@@ -117,7 +117,7 @@ ZmHETablePropsDialog = function(parent) {
 	this._tableWidthField.reparentHtmlElement(tableWidthId);
     
 	// Layout
-	this._tableAlignment = new DwtSelect(this.shell, ["Center", "Left", "Right"]);
+	this._tableAlignment = new DwtSelect({parent:this.shell, options:["Center", "Left", "Right"]});
 	this._tableAlignment.reparentHtmlElement(tableAlignmentId);
 
 	inputFieldParams.initialValue = 1;
@@ -137,7 +137,7 @@ ZmHETablePropsDialog = function(parent) {
 	this._borderWidthField.setValidationCallback(cb);
 	this._borderWidthField.reparentHtmlElement(borderWidthId);
 	
-	var b = new DwtButton(this.shell);
+	var b = new DwtButton({parent:this.shell});
 	var m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE, null, null, this);
 	var c = new DwtColorPicker(m);
 	c.addSelectionListener(new AjxListener(this, this._borderColorPickerListener));

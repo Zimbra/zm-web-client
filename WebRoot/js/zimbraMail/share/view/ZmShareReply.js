@@ -99,7 +99,7 @@ function(event) {
 
 ZmShareReply.prototype._initControl =
 function() {
-	this._replyType = new DwtSelect(this);
+	this._replyType = new DwtSelect({parent:this});
 	this.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
 	this._replyType.addChangeListener(new AjxListener(this, this._handleReplyType));
 	

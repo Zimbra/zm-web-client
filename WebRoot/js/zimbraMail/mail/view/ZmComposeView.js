@@ -1619,7 +1619,7 @@ function(templateId, data) {
 			var pickerId = this._buttonTdId[type];
 			var pickerEl = document.getElementById(pickerId);
 			if (pickerEl) {
-				var button = new DwtButton(this);
+				var button = new DwtButton({parent:this});
 				button.setText(pickerEl.innerHTML);
 				button.replaceElement(pickerEl);
 
@@ -1645,7 +1645,7 @@ function(templateId, data) {
 
 	// initialize identity select
 	var identityOptions = this._getIdentityOptions();
-	this._identitySelect = new DwtSelect(this, identityOptions);
+	this._identitySelect = new DwtSelect({parent:this, options:identityOptions});
 	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 
 	var identityCollection = appCtxt.getIdentityCollection();
@@ -1658,7 +1658,7 @@ function(templateId, data) {
 	this._setIdentityVisible();
 
     if  (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        this._priorityButton = new DwtButton(this);
+        this._priorityButton = new DwtButton({parent:this});
         this._priorityButton.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
         this._priorityButton.reparentHtmlElement(data.id + "_priority");
 		this._priorityButton.setToolTipContent(ZmMsg.setPriority);
@@ -1667,7 +1667,7 @@ function(templateId, data) {
 
 ZmComposeView.prototype._createPrioityMenuItem =
 function(menu, text, flag) {
-    var item = DwtMenuItem.create(menu, this._getPriorityImage(flag), text);
+    var item = DwtMenuItem.create({parent:menu, imageInfo:this._getPriorityImage(flag), text:text});
     item._priorityFlag = flag;
     item.addSelectionListener(this._priorityMenuListnerObj);
 };

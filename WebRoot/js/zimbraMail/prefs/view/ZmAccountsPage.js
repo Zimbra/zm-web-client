@@ -1000,13 +1000,13 @@ ZmAccountsPage.prototype._setupCustom = function(id, setup, value) {
 		return listView;
 	}
 	if (id == "TEST") {
-		var button = new DwtButton(this);
+		var button = new DwtButton({parent:this});
 		button.setText(setup.displayName);
 		button.addSelectionListener(new AjxListener(this, this._handleTestButton));
 		return button;
 	}
 	if (id == "WHEN_IN_FOLDER_BUTTON") {
-		var button = new DwtButton(this);
+		var button = new DwtButton({parent:this});
 		button.setImage("SearchFolder");
 		button.addSelectionListener(new AjxListener(this, this._handleFolderButton));
 		return button;
@@ -1055,7 +1055,7 @@ ZmAccountsPage.prototype._resetSignatureSelect = function(select) {
 ZmAccountsPage.prototype._setupButtons = function() {
 	var deleteButtonDiv = document.getElementById(this._htmlElId+"_DELETE");
 	if (deleteButtonDiv) {
-		var button = new DwtButton(this);
+		var button = new DwtButton({parent:this});
 		button.setText(ZmMsg.del);
 		button.setEnabled(false);
 		button.addSelectionListener(new AjxListener(this, this._handleDeleteButton));
@@ -1065,7 +1065,7 @@ ZmAccountsPage.prototype._setupButtons = function() {
 
 	var addExternalButtonDiv = document.getElementById(this._htmlElId+"_ADD_EXTERNAL");
 	if (addExternalButtonDiv) {
-		var button = new DwtButton(this);
+		var button = new DwtButton({parent:this});
 		button.setText(ZmMsg.addExternalAccount);
 		button.addSelectionListener(new AjxListener(this, this._handleAddExternalButton));
 		this._replaceControlElement(addExternalButtonDiv, button);
@@ -1074,7 +1074,7 @@ ZmAccountsPage.prototype._setupButtons = function() {
 
 	var addPersonaButtonDiv = document.getElementById(this._htmlElId+"_ADD_PERSONA");
 	if (addPersonaButtonDiv) {
-		var button = new DwtButton(this);
+		var button = new DwtButton({parent:this});
 		button.setText(ZmMsg.addPersona);
 		button.addSelectionListener(new AjxListener(this, this._handleAddPersonaButton));
 		this._replaceControlElement(addPersonaButtonDiv, button);

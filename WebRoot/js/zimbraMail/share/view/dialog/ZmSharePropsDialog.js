@@ -428,7 +428,7 @@ function() {
 	Dwt.setSize(this._passwordInput.getInputElement(), "100%");
 	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
 	this._passwordInput.setRequired(true);
-	this._passwordButton = new DwtButton(password);
+	this._passwordButton = new DwtButton({parent:password});
 	this._passwordButton.setText(ZmMsg.changePassword);
 	this._passwordButton.addSelectionListener(new AjxListener(this, this._handleChangeButton));
 

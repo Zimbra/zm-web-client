@@ -69,7 +69,7 @@ function(selectId) {
 	this._listId = Dwt.getNextId();
 
 	var snooze = [1, 5, 10, 15, 30, 45, 60];
-	this._select = new DwtSelect(this);
+	this._select = new DwtSelect({parent:this});
     var snoozeFormatter = new AjxMessageFormat(ZmMsg.reminderSnoozeMinutes);
     for (var i = 0; i < snooze.length; i++) {
 		var label = snoozeFormatter.format(snooze[i]);
@@ -167,7 +167,7 @@ function(list) {
 		var appt = list.get(i);
 		var uid = appt.getUniqueId(true);		
 		var data = this._apptData[uid];
-		var button = new DwtButton(this, DwtLabel.ALIGN_CENTER , "DwtToolbarButton");
+		var button = new DwtButton({parent:this, style:DwtLabel.ALIGN_CENTER, className:"DwtToolbarButton"});
 		button.setImage("Cancel");
 		button.addSelectionListener(new AjxListener(this, this._closeButtonListener));
 		button.__apptUniqueId = uid;

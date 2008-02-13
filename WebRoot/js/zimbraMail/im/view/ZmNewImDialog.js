@@ -20,14 +20,14 @@ ZmNewImDialog = function(parent, className, screenName) {
 	this._screenName = screenName;
 	var title = "Instant Message - " + screenName;
 
-	DwtBaseDialog.call(this, parent, className, title);
+	DwtBaseDialog.call(this, {parent:parent, className:className, title:title});
 	this.setContent(this._contentHtml());
 
-    this._sendButton = new DwtButton(this);
+    this._sendButton = new DwtButton({parent:this});
     this._sendButton.setText("Send");
     this._sendButton.addSelectionListener(new AjxListener(this, ZmNewImDialog.prototype._sendButtonListener));
     
-    this._cancelButton = new DwtButton(this);
+    this._cancelButton = new DwtButton({parent:this});
     this._cancelButton.setText("Cancel");
     this._cancelButton.addSelectionListener(new AjxListener(this, ZmNewImDialog.prototype._cancelButtonListener));
 

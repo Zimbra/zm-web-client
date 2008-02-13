@@ -461,7 +461,7 @@ function(id, useDefault) {
 // Add a button to the preferences page
 ZmPreferencesPage.prototype._addButton =
 function(parentIdOrElem, text, width, listener) {
-	var button = new DwtButton(this);
+	var button = new DwtButton({parent:this});
 	button.setSize(width, Dwt.DEFAULT);
 	button.setText(text);
 	button.addSelectionListener(listener);
@@ -491,7 +491,7 @@ ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
-	var selObj = new DwtSelect(this);
+	var selObj = new DwtSelect({parent:this});
 	this.setFormObject(id, selObj);
 
 	var options = setup.options || setup.displayOptions || setup.choices || [];
@@ -712,7 +712,7 @@ function(containerDiv, settingId, setup) {
 
 ZmPreferencesPage.prototype._setupColor =
 function(id, setup, value) {
-	var picker = new DwtButtonColorPicker(this);
+	var picker = new DwtButtonColorPicker({parent:this});
 	picker.setImage("FontColor");
 	picker.showColorDisplay(true);
 	picker.setToolTipContent(ZmMsg.fontColor);
@@ -730,7 +730,7 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupLocales =
 function(id, setup, value) {
-    var button = new DwtButton(this);
+    var button = new DwtButton({parent:this});
     button.setSize(60, Dwt.DEFAULT);
     button.setMenu(new AjxListener(this, this._createLocalesMenu, [setup]));
     this._showLocale(value, button);
@@ -761,7 +761,7 @@ function(setup) {
         if (array && array.length == 1) {
             this._createLocaleItem(result, array[0], listener);
         } else if (array && array.length > 1) {
-            var menuItem = new DwtMenuItem(result, DwtMenuItem.CASCADE_STYLE);
+            var menuItem = new DwtMenuItem({parent:result, style:DwtMenuItem.CASCADE_STYLE});
             menuItem.setText(ZmLocale.languageMap[language].name)
             var subMenu = new DwtMenu(result, DwtMenu.DROPDOWN_STYLE);
             menuItem.setMenu(subMenu);
@@ -777,7 +777,7 @@ function(setup) {
 
 ZmPreferencesPage.prototype._createLocaleItem =
 function(parent, locale, listener) {
-    var result = new DwtMenuItem(parent);
+    var result = new DwtMenuItem({parent:parent});
     result.setText(locale.name);
     result.setImage(locale.getImage());
     result._localeId = locale.id;

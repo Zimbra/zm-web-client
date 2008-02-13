@@ -193,7 +193,7 @@ function() {
 
 	// add search button
 	var searchCellId = this._htmlElId + "_searchButton";
-	this._searchButton = new DwtButton(this);
+	this._searchButton = new DwtButton({parent:this});
 	this._searchButton.setText(ZmMsg.search);
 	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
 	this._searchButton.reparentHtmlElement(searchCellId);
@@ -202,7 +202,7 @@ function() {
 	var selectCellId = this._htmlElId + "_listSelect";
 	var selectCell = document.getElementById(selectCellId);
 	if (selectCell) {
-		this._selectDiv = new DwtSelect(this);
+		this._selectDiv = new DwtSelect({parent:this});
 		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
 
@@ -223,13 +223,13 @@ function() {
 
 	// add paging buttons
 	var pageListener = new AjxListener(this, this._pageListener);
-	this._prevButton = new DwtButton(this);
+	this._prevButton = new DwtButton({parent:this});
 	this._prevButton.setText(ZmMsg.previous);
 	this._prevButton.setImage("LeftArrow");
 	this._prevButton.addSelectionListener(pageListener);
 	this._prevButton.reparentHtmlElement(this._htmlElId + "_pageLeft");
 
-	this._nextButton = new DwtButton(this, DwtLabel.IMAGE_RIGHT);
+	this._nextButton = new DwtButton({parent:this, style:DwtLabel.IMAGE_RIGHT});
 	this._nextButton.setText(ZmMsg.next);
 	this._nextButton.setImage("RightArrow");
 	this._nextButton.addSelectionListener(pageListener);

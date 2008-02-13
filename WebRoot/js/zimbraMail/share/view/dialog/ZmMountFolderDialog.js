@@ -208,7 +208,7 @@ function() {
 	this._nameInput = new DwtInputField(params);
 	this._nameInput.reparentHtmlElement(this._htmlElId + "_name");
 
-	this._colorSelect = new DwtSelect(this);
+	this._colorSelect = new DwtSelect({parent:this});
 	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
 		var choice = ZmOrganizer.COLOR_CHOICES[i];
 		this._colorSelect.addOption(choice.label, i == 0, choice.value);

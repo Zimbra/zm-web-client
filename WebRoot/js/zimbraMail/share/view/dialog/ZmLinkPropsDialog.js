@@ -288,10 +288,10 @@ function() {
 		].join("");
 
 		// create dwt controls
-		this._notebookSelect = new DwtSelect(view);
+		this._notebookSelect = new DwtSelect({parent:view});
 		var notebookChange = new AjxListener(this,this.notebookChangeListener);
 		this._notebookSelect.addChangeListener(notebookChange);
-		this._pageSelect = new DwtSelect(view);
+		this._pageSelect = new DwtSelect({parent:view});
 		var pageChange = new AjxListener(this,this.pageChangeListener);
 		this._pageSelect.addChangeListener(pageChange);
 		this._pageInput = new DwtInputField(inputParams);

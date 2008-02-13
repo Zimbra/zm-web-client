@@ -63,6 +63,11 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	this.addListener(DwtEvent.ONSELECTSTART, new AjxListener(this, this._selectStartListener));
 	this.addListener(DwtEvent.CONTROL, new AjxListener(this, this._controlEventListener));
 	this._setAllowSelection();
+
+    this._expandButton = new DwtToolBarButton({parent:this});
+    this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener));
+    this._expandButton.setDisplay(Dwt.DISPLAY_NONE);
+
 }
 
 ZmMailMsgView.prototype = new DwtComposite;

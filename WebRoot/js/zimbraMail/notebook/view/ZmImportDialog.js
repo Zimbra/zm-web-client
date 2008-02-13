@@ -327,7 +327,7 @@ ZmImportDialog.prototype._createUploadHtml = function() {
 	this._formId = Dwt.getNextId();
 	this._tableId = Dwt.getNextId();
 
-	this._selector = new DwtSelect(this);
+	this._selector = new DwtSelect({parent:this});
 	this._selector.addOption(ZmMsg.uploadActionKeepMine, false, ZmImportDialog.ACTION_KEEP_MINE);
 	this._selector.addOption(ZmMsg.uploadActionKeepTheirs, false, ZmImportDialog.ACTION_KEEP_THEIRS);
 	this._selector.addOption(ZmMsg.uploadActionAsk, true, ZmImportDialog.ACTION_ASK);

@@ -674,7 +674,7 @@ function() {
 	Dwt.setHandler(linkElement, DwtEvent.ONCLICK, linkCallback);
 
 	// Create the help button.
-	var helpButton = new DwtButton(this, DwtLabel.ALIGN_RIGHT | DwtButton.ALWAYS_FLAT, "DwtToolbarButton");
+	var helpButton = new DwtButton({parent:this, style:DwtLabel.ALIGN_RIGHT | DwtButton.ALWAYS_FLAT, className:"DwtToolbarButton"});
 	helpButton.setImage("Information");
 	helpButton.reparentHtmlElement(helpButtonId);
 	helpButton.addSelectionListener(new AjxListener(this, this._toggleInfoBoxHandler));
@@ -767,7 +767,7 @@ function(html, i) {
 
 ZmShortcutsPageTabViewCustom.prototype._addButton =
 function(parentId, text, width, listener) {
-	var button = new DwtButton(this);
+	var button = new DwtButton({parent:this});
 	button.setSize(width, Dwt.DEFAULT);
 	button.setText(text);
 	button.addSelectionListener(listener);
@@ -816,7 +816,7 @@ function(shortcut) {
 	var i = 0;
 	html[i++] = ["<tr id='", rowId, "'>"].join("");
 
-	var button = new DwtButton(this, DwtLabel.ALIGN_CENTER);
+	var button = new DwtButton({parent:this, style:DwtLabel.ALIGN_CENTER});
 	var bWidth = AjxEnv.isIE ? ZmShortcutsPageTabViewCustom.COL1_WIDTH - 5 : ZmShortcutsPageTabViewCustom.COL1_WIDTH;
 	var bHeight = AjxEnv.isIE ? 24 : Dwt.DEFAULT;
 	button.setSize(bWidth, bHeight);

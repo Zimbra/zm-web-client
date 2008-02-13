@@ -613,26 +613,27 @@ function(tb) {
 	new DwtControl(tb, "vertSep");
 
 	var insListener = new AjxListener(this, this._insElementListener);
-	this._listButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
+	this._listButton = new DwtToolBarButton(params);
 	this._listButton.setToolTipContent(ZmMsg.bulletedList);
 	this._listButton.setImage("BulletedList");
 	this._listButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNORDERED_LIST);
 	this._listButton.addSelectionListener(insListener);
 
-	this._numberedListButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	this._numberedListButton = new DwtToolBarButton(params);
 	this._numberedListButton.setToolTipContent(ZmMsg.numberedList);
 	this._numberedListButton.setImage("NumberedList");
 	this._numberedListButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ORDERED_LIST);
 	this._numberedListButton.addSelectionListener(insListener);
 
 	var listener = new AjxListener(this, this._indentListener);
-	this._outdentButton = new DwtToolBarButton(tb);
+	this._outdentButton = new DwtToolBarButton({parent:tb});
 	this._outdentButton.setToolTipContent(ZmMsg.outdent);
 	this._outdentButton.setImage("Outdent");
 	this._outdentButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.OUTDENT);
 	this._outdentButton.addSelectionListener(listener);
 
-	this._indentButton = new DwtToolBarButton(tb);
+	this._indentButton = new DwtToolBarButton({parent:tb});
 	this._indentButton.setToolTipContent(ZmMsg.indent);
 	this._indentButton.setImage("Indent");
 	this._indentButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
@@ -641,19 +642,19 @@ function(tb) {
 	new DwtControl(tb, "vertSep");
 
 	var listener = new AjxListener(this, this._fontStyleListener);
-	this._boldButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	this._boldButton = new DwtToolBarButton(params);
 	this._boldButton.setImage("Bold");
 	this._boldButton.setToolTipContent(ZmMsg.boldText);
 	this._boldButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
 	this._boldButton.addSelectionListener(listener);
 
-	this._italicButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	this._italicButton = new DwtToolBarButton(params);
 	this._italicButton.setImage("Italics");
 	this._italicButton.setToolTipContent(ZmMsg.italicText);
 	this._italicButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
 	this._italicButton.addSelectionListener(listener);
 
-	this._underlineButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	this._underlineButton = new DwtToolBarButton(params);
 	this._underlineButton.setImage("Underline");
 	this._underlineButton.setToolTipContent(ZmMsg.underlineText);
 	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
@@ -682,21 +683,22 @@ function(tb) {
 
 	new DwtControl(tb, "vertSep");
 
-	this._horizRuleButton = new DwtToolBarButton(tb);
+	var params = {parent:tb};
+	this._horizRuleButton = new DwtToolBarButton(params);
 	this._horizRuleButton.setImage("HorizRule");
 	this._horizRuleButton.setToolTipContent(ZmMsg.horizRule);
 	this._horizRuleButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
 	this._horizRuleButton.addSelectionListener(new AjxListener(this, this._insElementListener));
 
 // BEGIN: Table operations
-	var b = new DwtToolBarButton(tb);
+	var b = new DwtToolBarButton(params);
 	b.setToolTipContent(ZmMsg.insertTable);
 	b.dontStealFocus();
 	b.setImage("Table");
 	var menu = new DwtMenu(b);
 	b.setMenu(menu);
 
-	var item = new DwtMenuItem(menu);
+	var item = new DwtMenuItem({parent:menu});
 	item.setText(ZmMsg.insertTable);
 	var grid_menu = new DwtMenu(item, DwtMenu.GENERIC_WIDGET_STYLE);
  	var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
@@ -704,13 +706,14 @@ function(tb) {
  	item.setMenu(grid_menu);
 	item.setImage("InsertTable");
 
-	new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+	new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
 	this.__createTableOperationItems(menu);
 // END: table operations
 
 	if (this.ACE_ENABLED) {
 		tb.addSeparator("vertSep");
-		var b = new DwtToolBarButton(tb, 0);
+		params.style = 0;
+		var b = new DwtToolBarButton(params);
 		b.setImage("SpreadSheet");
 		b.setData("ACE", "ZmSpreadSheet");
 		b.setToolTipContent(ZmMsg.insertSpreadsheet);
@@ -740,14 +743,14 @@ function(menu) {
 	for (var i = 0; i < tblCommands.length; ++i) {
 		var cmd = tblCommands[i];
 		if (cmd == null)
-			new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+			new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
 		else {
 			var dots = "";
 			if (/\.\.\.$/.test(cmd)) {
 				cmd = cmd.substr(0, cmd.length - 3);
 				dots = "&hellip;";
 			}
-			var item = new DwtMenuItem(menu);
+			var item = new DwtMenuItem({parent:menu});
 			menu._tblItems[cmd] = item;
 			var txt = ZmMsg[cmd] || cmd;
 			item.setText(txt + dots);
@@ -1033,7 +1036,7 @@ function() {
 
 ZmHtmlEditor.prototype._createStyleMenu =
 function(tb) {
-	var s = new DwtToolBarButton(tb);
+	var s = new DwtToolBarButton({parent:tb});
 	// minor hack to set section symbol - avoids d/l'ing an icon :]
 	s.setText("x");
     s._textEl.innerHTML = "<span style='font-size:13px'>&sect;</span>";
@@ -1066,7 +1069,7 @@ function(tb) {
 
 ZmHtmlEditor.prototype._createJustifyMenu =
 function(tb) {
-	var b = new DwtToolBarButton(tb);
+	var b = new DwtToolBarButton({parent:tb});
 	b.dontStealFocus();
 	b.setImage("LeftJustify");
 	b.setToolTipContent(ZmMsg.alignment);
@@ -1092,7 +1095,7 @@ function(tb) {
 
 ZmHtmlEditor.prototype._createFontFamilyMenu =
 function(tb) {
-	this._fontFamilyButton = new DwtToolBarButton(tb);
+	this._fontFamilyButton = new DwtToolBarButton({parent:tb});
 	this._fontFamilyButton.dontStealFocus();
 	this._fontFamilyButton.setSize(Dwt.DEFAULT);
 	this._fontFamilyButton.setAlign(DwtLabel.ALIGN_LEFT);
@@ -1111,7 +1114,7 @@ function(tb) {
 
 ZmHtmlEditor.prototype._createFontSizeMenu =
 function(tb) {
-	this._fontSizeButton = new DwtToolBarButton(tb);
+	this._fontSizeButton = new DwtToolBarButton({parent:tb});
 	this._fontSizeButton.dontStealFocus();
 	var menu = new ZmPopupMenu(this._fontSizeButton);
 	var listener = new AjxListener(this, this._fontSizeListener);

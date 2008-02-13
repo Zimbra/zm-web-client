@@ -227,17 +227,22 @@ function(icon, text, listener) {
 		} else {
 			var menu = this._customSearchBtn.getMenu();
 			var item;
+			var params = {parent:menu, enabled:true, style:DwtMenuItem.RADIO_STYLE, radioGroupId:0};
 			if (!menu) {
 				var data = this._customSearchBtn.getData("CustomSearchItem");
 				menu = new DwtMenu(this._customSearchBtn, null, "ActionMenu");
 				this._customSearchBtn.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
-				item = DwtMenuItem.create(menu, data[0], data[1], null, true, DwtMenuItem.RADIO_STYLE, 0);
+				params.imageInfo = data[0];
+				params.text = data[1];
+				item = DwtMenuItem.create(params);
 				item.setData("CustomSearchItem", data);
 				item.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.CUSTOM_MI);
 				item.setChecked(true, true);
 				item.addSelectionListener(this._customSearchListener);
 			}
-			item = DwtMenuItem.create(menu, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 0);
+			params.imageInfo = icon;
+			params.text = text;
+			item = DwtMenuItem.create(params);
 			item.setData("CustomSearchItem", [icon, text, listener] );
 			item.addSelectionListener(this._customSearchListener);
 		}
@@ -258,14 +263,15 @@ ZmSearchToolBar.prototype._createCustomSearchMenuItem =
 function(menu, icon, text, listener) {
 	var mi = menu.getItem(0);
 	var addSep = !(mi && mi.getData("CustomSearchItem"));
-	mi = DwtMenuItem.create(menu, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 0, 0);
+	var params = {parent:menu, imageInfo:icon, text:text, enabled:true, style:DwtMenuItem.RADIO_STYLE, radioGroupId:0, index:0};
+	mi = DwtMenuItem.create(params);
 	mi.setData("CustomSearchItem", [icon, text, listener]);
 	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.CUSTOM_MI);
 	mi.addSelectionListener(this._customSearchListener);
 
 	// only add separator if this is the first custom search menu item
 	if (addSep) {
-		mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE, null, 1);
+		mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE, index:1});
 	}
 };
 
@@ -358,26 +364,29 @@ function() {
 			this._createCustomSearchMenuItem(menu, csmi.icon, csmi.text, csmi.listener);
 		}
 	}
+	var params = {parent:menu, enabled:true, radioGroupId:0};
 	for (var i = 0; i < ZmSearchToolBar.MENU_ITEMS.length; i++) {
 		var id = ZmSearchToolBar.MENU_ITEMS[i];
 
 		// add separator *before* "shared" menu item
 		if (id == ZmSearchToolBar.FOR_SHARED_MI) {
 			if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
-			mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+			mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
 		}
 
 		var setting = ZmSearchToolBar.SETTING[id];
 		if (setting && !appCtxt.get(setting)) { continue; }
 
-		var style = (id == ZmSearchToolBar.FOR_SHARED_MI) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
-		mi = DwtMenuItem.create(menu, ZmSearchToolBar.ICON[id], ZmMsg[ZmSearchToolBar.MSG_KEY[id]], null, true, style, 0);
+		params.style = (id == ZmSearchToolBar.FOR_SHARED_MI) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
+		params.imageInfo = ZmSearchToolBar.ICON[id];
+		params.text = ZmMsg[ZmSearchToolBar.MSG_KEY[id]];
+		mi = DwtMenuItem.create(params);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
 
 		// add separator *after* "all" menu item
 		if (id == ZmSearchToolBar.FOR_ANY_MI) {
 			if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
-			mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+			mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
 		}
 	}
 	
@@ -395,9 +404,8 @@ function(params) {
 	var buttonId = this._htmlElId + params.buttonId;
 	var buttonEl = document.getElementById(buttonId);
 	if (buttonEl) {
-		button = (params.type && params.type == "toolbar")
-			? (new DwtToolBarButton(this, params.style))
-			: (new DwtButton(this, params.style));
+		var btnParams = {parent:this, style:params.style};
+		button = (params.type && params.type == "toolbar") ? (new DwtToolBarButton(btnParams)) : (new DwtButton(btnParams));
 		var hint = Dwt.getAttr(buttonEl, "hint");
 		this._setButtonStyle(button, hint, params.lbl, params.icon);
 		if (params.tooltip) {

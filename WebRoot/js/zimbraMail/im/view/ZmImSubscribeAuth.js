@@ -41,18 +41,18 @@ ZmImSubscribeAuth.prototype._init = function() {
                                                    inList : !!this._buddy
 					   }));
         if (!this._buddy) {
-                var btn = new DwtButton(this);
+                var btn = new DwtButton({parent:this});
                 btn.setText(ZmMsg.imSubscribeAuthRequest_acceptAndAdd);
                 btn.addSelectionListener(new AjxListener(this, this._acceptAndAdd));
                 btn.reparentHtmlElement(base_id + "_acceptAndAdd");
         }
 
-        var btn = new DwtButton(this);
+        var btn = new DwtButton({parent:this});
         btn.setText(ZmMsg.imSubscribeAuthRequest_accept);
         btn.addSelectionListener(new AjxListener(this, this._accept));
         btn.reparentHtmlElement(base_id + "_accept");
 
-        var btn = new DwtButton(this);
+        var btn = new DwtButton({parent:this});
         btn.setText(ZmMsg.imSubscribeAuthRequest_deny);
         btn.addSelectionListener(new AjxListener(this, this._deny));
         btn.reparentHtmlElement(base_id + "_deny");

@@ -395,7 +395,7 @@ function(width) {
 	}
 
 	// show-as DwtSelect
-	this._showAsSelect = new DwtSelect(this);
+	this._showAsSelect = new DwtSelect({parent:this});
 	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
 		this._showAsSelect.addOption(option.label, option.selected, option.value);
@@ -403,7 +403,7 @@ function(width) {
 	this._showAsSelect.reparentHtmlElement(this._htmlElId + "_showAsSelect");
 
 	// privacy DwtSelect
-	this._privacySelect = new DwtSelect(this);
+	this._privacySelect = new DwtSelect({parent:this});
 	for (var j = 0; j < ZmApptEditView.PRIVACY_OPTIONS.length; j++) {
 		var option = ZmApptEditView.PRIVACY_OPTIONS[j];
 		this._privacySelect.addOption(option.label, option.selected, option.value);
@@ -422,7 +422,7 @@ function(width) {
 	// timezone DwtSelect
 	var timezoneListener = new AjxListener(this, this._timezoneListener);
 
-	this._tzoneSelect = new DwtSelect(this);
+	this._tzoneSelect = new DwtSelect({parent:this});
 	this._tzoneSelect.reparentHtmlElement(this._htmlElId + "_tzoneSelect");
 	this._tzoneSelect.addChangeListener(timezoneListener);
 	// NOTE: tzone select is initialized later

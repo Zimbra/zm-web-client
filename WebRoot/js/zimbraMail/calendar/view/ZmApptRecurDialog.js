@@ -887,7 +887,7 @@ function() {
 
 ZmApptRecurDialog.prototype._createSelects = 
 function() {
-	this._repeatSelect = new DwtSelect(this);
+	this._repeatSelect = new DwtSelect({parent:this});
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
 	for (var i = 0; i < ZmApptRecurDialog.REPEAT_OPTIONS.length; i++) {
 		var option = ZmApptRecurDialog.REPEAT_OPTIONS[i];
@@ -897,7 +897,7 @@ function() {
 	delete this._repeatSelectId;
 
 	var selectChangeListener = new AjxListener(this, this._selectChangeListener);
-	this._weeklySelectButton = new DwtButton(this);//new DwtSelect(this);
+	this._weeklySelectButton = new DwtButton({parent:this});//new DwtSelect({parent:this});
     var wMenu = new ZmPopupMenu(this._weeklySelectButton,null,this);
     this._weeklySelectButton.setMenu(wMenu);
     //this._weeklySelect.addChangeListener(selectChangeListener);
@@ -910,7 +910,7 @@ function() {
     var satsun = new Array();
     for (var i = 0; i < 7; i++) {
 		//this._weeklySelect.addOption(dayFormatter.format(day), false, i);
-        var mi = new DwtMenuItem(wMenu,null,DwtMenuItem.CHECK_STYLE,i);
+        var mi = new DwtMenuItem({parent:wMenu, style:DwtMenuItem.CHECK_STYLE, radioGroupId:i});
         mi.setText(dayFormatter.format(day));
         mi.addSelectionListener(selectChangeListener);
         mi.setData("index",i);
@@ -928,22 +928,22 @@ function() {
         day.setDate(day.getDate() + 1);
 	}
     //Separator
-    new DwtMenuItem(wMenu,DwtMenuItem.SEPARATOR_STYLE,i++);  //Pos 7 is separator
+    new DwtMenuItem({parent:wMenu, style:DwtMenuItem.SEPARATOR_STYLE, radioGroupId:i++});  //Pos 7 is separator
     //Add some custom pattern options too
     //this._weeklySelect.addOption(monwedfri.join(", "), false, i++);
-    var mi = new DwtMenuItem(wMenu,i);
+    var mi = new DwtMenuItem({parent:wMenu, radioGroupId:i});
     mi.setText(monwedfri.join(", "));
     mi.addSelectionListener(selectChangeListener);
     mi.setData("index",i++);
     //this._weeklySelect.addOption(tuethu.join(", "), false, i++);
-    mi = new DwtMenuItem(wMenu,i);
+    mi = new DwtMenuItem({parent:wMenu, radioGroupId:i});
     mi.setText(tuethu.join(", "));
     mi.addSelectionListener(selectChangeListener);
     mi.setData("index",i++);
     //Let's correct the sequence
     var satsun1 = [satsun[1],satsun[0]];
     //this._weeklySelect.addOption(satsun1.join(", "), false, i++);
-    mi = new DwtMenuItem(wMenu,i);
+    mi = new DwtMenuItem({parent:wMenu, radioGroupId:i});
     mi.setText(satsun1.join(", "));
     mi.addSelectionListener(selectChangeListener);
     mi.setData("index",i++);
@@ -954,7 +954,7 @@ function() {
     this._weeklySelectButton.reparentHtmlElement(this._weeklySelectId);
 	delete this._weeklySelectId;
 
-	this._monthlyDaySelect = new DwtSelect(this);
+	this._monthlyDaySelect = new DwtSelect({parent:this});
 	this._monthlyDaySelect.addChangeListener(selectChangeListener);
 	var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
 	var ordinalFormatter = formatter.getFormatsByArgumentIndex()[0];
@@ -969,7 +969,7 @@ function() {
 	this._monthlyDaySelect.reparentHtmlElement(this._monthlyDaySelectId);
 	delete this._monthlyDaySelectId;
 
-	this._monthlyWeekdaySelect = new DwtSelect(this);
+	this._monthlyWeekdaySelect = new DwtSelect({parent:this});
 	this._monthlyWeekdaySelect.addChangeListener(selectChangeListener);
 	var formatter = new AjxMessageFormat(ZmMsg.recurMonthlyEveryNumMonthsNumDay);
 	var dayFormatter = formatter.getFormatsByArgumentIndex()[1];
@@ -982,7 +982,7 @@ function() {
 	this._monthlyWeekdaySelect.reparentHtmlElement(this._monthlyWeekdaySelectId);
 	delete this._monthlyWeekdaySelectId;
 
-	this._yearlyMonthSelect = new DwtSelect(this);
+	this._yearlyMonthSelect = new DwtSelect({parent:this});
 	this._yearlyMonthSelect.addChangeListener(selectChangeListener);
 	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryDate);
 	var monthFormatter = formatter.getFormatsByArgumentIndex()[0];
@@ -995,7 +995,7 @@ function() {
 	this._yearlyMonthSelect.reparentHtmlElement(this._yearlyMonthSelectId);
 	delete this._yearlyMonthSelectId;
 
-	this._yearlyDaySelect = new DwtSelect(this);
+	this._yearlyDaySelect = new DwtSelect({parent:this});
 	this._yearlyDaySelect.addChangeListener(selectChangeListener);
 	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
 	var ordinalFormatter = formatter.getFormatsByArgumentIndex()[0];
@@ -1010,7 +1010,7 @@ function() {
 	this._yearlyDaySelect.reparentHtmlElement(this._yearlyDaySelectId);
 	delete this._yearlyDaySelectId;
 
-	this._yearlyWeekdaySelect = new DwtSelect(this);
+	this._yearlyWeekdaySelect = new DwtSelect({parent:this});
 	this._yearlyWeekdaySelect.addChangeListener(selectChangeListener);
 	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryMonthNumDay);
 	var dayFormatter = formatter.getFormatsByArgumentIndex()[1];
@@ -1023,7 +1023,7 @@ function() {
 	this._yearlyWeekdaySelect.reparentHtmlElement(this._yearlyWeekdaySelectId);
 	delete this._yearlyWeekdaySelectId;
 
-	this._yearlyMonthSelectEx = new DwtSelect(this);
+	this._yearlyMonthSelectEx = new DwtSelect({parent:this});
 	this._yearlyMonthSelectEx.addChangeListener(selectChangeListener);
 	for (var i = 0; i < AjxDateUtil.MONTH_LONG.length; i++)
 		this._yearlyMonthSelectEx.addOption(AjxDateUtil.MONTH_LONG[i], false, i);

@@ -391,7 +391,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		var selectId = sched.dwtSelectId;
 		var selectDiv = document.getElementById(selectId);
 		if (selectDiv) {
-			select = new DwtSelect(this);
+			select = new DwtSelect({parent:this});
 			select.addOption(new DwtSelectOption(ZmCalItem.PERSON, true, null, null, null, "Person"));
 			select.addOption(new DwtSelectOption(ZmCalItem.LOCATION, false, null, null, null, "Location"));
 			select.addOption(new DwtSelectOption(ZmCalItem.EQUIPMENT, false, null, null, null, "Resource"));
@@ -462,7 +462,7 @@ ZmSchedTabViewPage.prototype._createDwtObjects =
 function() {
     var timezoneListener = new AjxListener(this, this._timezoneListener);
 
-    this._tzoneSelect = new DwtSelect(this);
+    this._tzoneSelect = new DwtSelect({parent:this});
 	this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
     this._tzoneSelect.addChangeListener(timezoneListener);
     // NOTE: tzone select is initialized later

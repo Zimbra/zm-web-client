@@ -621,7 +621,7 @@ function() {
 	var limit = this._isLocale24Hour ? 24 : 13;
 
 	// create new DwtSelect for hour slot
-	this._hourSelect = new DwtSelect(this);
+	this._hourSelect = new DwtSelect({parent:this});
 	this._hourSelect.id = this.id;
 	this._hourSelect.compId = ZmTimeSelect.HOUR;
 	for (var i = start; i < limit; i++) {
@@ -633,7 +633,7 @@ function() {
 	delete this._hourSelectId;
 
 	// create new DwtSelect for minute slot
-	this._minuteSelect = new DwtSelect(this);
+	this._minuteSelect = new DwtSelect({parent:this});
 	this._minuteSelect.id = this.id;
 	this._minuteSelect.compId = ZmTimeSelect.MINUTE;
 	for (var i = 0; i < 60; i = i + 5) {
@@ -646,7 +646,7 @@ function() {
 
 	// if locale is 12-hour time, add AM|PM DwtSelect
 	if (!this._isLocale24Hour) {
-		this._amPmSelect = new DwtSelect(this);
+		this._amPmSelect = new DwtSelect({parent:this});
 		this._amPmSelect.id = this.id;
 		this._amPmSelect.compId = ZmTimeSelect.AMPM;
 		this._amPmSelect.addOption(I18nMsg["periodAm"], false, "AM");

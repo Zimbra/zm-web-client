@@ -645,7 +645,7 @@ function(ev) {
 ZmCalendarApp.createMiniCalButton =
 function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDialog) {
 	// create button
-	var dateButton = new DwtButton(parent);
+	var dateButton = new DwtButton({parent:parent});
 	dateButton.addDropDownSelectionListener(dateButtonListener);
 	dateButton.setData(Dwt.KEY_ID, buttonId);
 	if (AjxEnv.isIE) {

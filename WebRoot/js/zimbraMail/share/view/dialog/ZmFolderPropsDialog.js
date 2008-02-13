@@ -416,7 +416,7 @@ function() {
 	propsGroup.setLabel(ZmMsg.properties);
 
 	this._props = new DwtPropertySheet(propsGroup);
-	this._color = new DwtSelect(this._props);
+	this._color = new DwtSelect({parent:this._props});
 	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
 		var color = ZmOrganizer.COLOR_CHOICES[i];
 		this._color.addOption(color.label, false, color.value);

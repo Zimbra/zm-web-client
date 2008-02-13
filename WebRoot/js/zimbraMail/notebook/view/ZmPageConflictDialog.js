@@ -104,9 +104,9 @@ ZmPageConflictDialog.prototype._keepTheirsListener = function(event) {
 // view creation
 
 ZmPageConflictDialog.prototype._createContentHtml = function() {
-	var viewTheirs = new DwtButton(this);
-	var keepMine = new DwtButton(this);
-	var keepTheirs = new DwtButton(this);
+	var viewTheirs = new DwtButton({parent:this});
+	var keepMine = new DwtButton({parent:this});
+	var keepTheirs = new DwtButton({parent:this});
 
 	viewTheirs.setText(ZmMsg.saveConflictViewTheirs);
 	keepMine.setText(ZmMsg.saveConflictKeepMine);

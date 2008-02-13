@@ -252,7 +252,7 @@ ZmRosterTreeController.prototype._imFloatingListListener = function(ev) {
 
                 toolbar.addFiller();
 
-	        var close = new DwtToolBarButton(toolbar);
+	        var close = new DwtToolBarButton({parent:toolbar});
 	        close.setImage("Close");
 	        close.addSelectionListener(new AjxListener(this, function() {
                         win.popdown();
@@ -265,14 +265,14 @@ ZmRosterTreeController.prototype._imFloatingListListener = function(ev) {
 
                 var toolbar2 = new DwtToolBar(cont);
 
-                var newBuddy = new DwtToolBarButton(toolbar2);
+                var newBuddy = new DwtToolBarButton({parent:toolbar2});
                 newBuddy.setImage("ImBuddy");
                 newBuddy.setToolTipContent(ZmMsg.newRosterItem);
                 newBuddy.addSelectionListener(this._imApp.getRosterTreeController()._listeners[ZmOperation.NEW_ROSTER_ITEM]);
 
                 toolbar2.addFiller();
 
-                var presence = new DwtToolBarButton(toolbar2);
+                var presence = new DwtToolBarButton({parent:toolbar2});
                 presence.setText(ZmMsg.imStatusOnline);
                 presence.setToolTipContent(ZmMsg.imPresence);
                 presence.setImage("ImAvailable");
