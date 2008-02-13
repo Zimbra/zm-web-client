@@ -126,17 +126,6 @@ function(node) {
 	this.participants.add(new AjxEmailAddress(node.a, type, node.p, node.d));
 }
 
-ZmMailItem.prototype.getEmails =
-function() {
+ZmMailItem.prototype.getEmails = function() {
 	return this.participants.map("address");
-};
-
-
-ZmMailItem.prototype.getDefaultMoveAction =
-function(folder) {
-	if (this.isShared() && folder && folder.acctId) {
-		return (this.acctId == folder.acctId) ? ZmItem.ACTION_MOVE : ZmItem.ACTION_COPY;
-	} else {
-		return ZmItem.prototype.getDefaultMoveAction.apply(this, arguments);
-	}
 };

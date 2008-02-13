@@ -399,7 +399,7 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 	}
 };
 
-ZmFolder.prototype.getIcon = 
+ZmFolder.prototype.getIcon =
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT)	{ return null; }
 	if (ZmFolder.ICON[this.nId])			{ return ZmFolder.ICON[this.nId]; }
@@ -442,15 +442,14 @@ function() {
 */
 ZmFolder.prototype.mayContain =
 function(what, folderType) {
-	if (!what) { return true; }
-	if (this.isFeed()) { return false; }
-	if (this.isSyncIssuesFolder()) { return false; }
-	if (this.link && this.isReadOnly()) { return false; }
+	if (!what) return true;
+	if (this.isFeed()) return false;
+	if (this.isSyncIssuesFolder()) return false;
 
 	var thisType = folderType || this.type;
 	var invalid = false;
 	if (what instanceof ZmFolder) {
-		invalid = (what.parent == this || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM || 
+		invalid = (what.parent == this || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM ||
 				   (!this.isInTrash() && this.hasChild(what.name)) ||
 				   (what.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
 				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
@@ -462,6 +461,8 @@ function(what, folderType) {
 		var item = items[0];
 		if (this.nId == ZmOrganizer.ID_ROOT) {
 			invalid = true;														// container can only have folders/searches
+		} else if (this.link) {
+			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
 		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
