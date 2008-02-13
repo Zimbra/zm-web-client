@@ -533,19 +533,19 @@ ZmImApp.OUTGOING_MSG_NOTIFICATION = "outgoing";
 ZmImApp.INCOMING_MSG_NOTIFICATION = "incoming";
 ZmImApp.prototype.playAlert = function(type){
     //Need to comment this untill we get hold of sound files in ZCS.
-    appCtxt.getSound().play(appContextPath+"/public/notify.wav");
+    appCtxt.getSound().play(appContextPath+"/public/sounds/notify.wav");
     return;
 
     type = type || "";
     switch(type){
         case ZmImApp.OUTGOING_MSG_NOTIFICATION:
-            appCtxt.getSound().play(appContextPath+"/public/notify.wav");
+            appCtxt.getSound().play(appContextPath+"/public/sounds/notify.wav");
             break;
         case ZmImApp.INCOMING_MSG_NOTIFICATION:
-            appCtxt.getSound().play(appContextPath+"/public/info.wav");
+            appCtxt.getSound().play(appContextPath+"/public/sounds/info.wav");
             break;
         default:
-            appCtxt.getSound().play(appContextPath+"/public/default.wav");
+            appCtxt.getSound().play(appContextPath+"/public/sounds/default.wav");
             break;
     }
 };
