@@ -548,16 +548,9 @@ function(accordionItem) {
 
 ZmApp.prototype._handleSetActiveAccount =
 function(accordionItem) {
-	var ac = appCtxt.getAppController();
-	ac._setUserInfo();
+	appCtxt.getAppController()._setUserInfo();
 	this._activateAccordionItem(accordionItem);
 	this._setMiniCalForActiveAccount();
-
-	// reset instant notify every time account changes
-	if (appCtxt.get(ZmSetting.OFFLINE)) {
-		var interval = (AjxEnv.isFirefox2_0up && !AjxEnv.isFirefox3up) ? 10000 : 100;
-		AjxTimedAction.scheduleAction(new AjxTimedAction(ac, ac.setInstantNotify, true), interval);
-	}
 };
 
 // NOTE: calendar overloads this method since it handles minical independently

@@ -107,34 +107,25 @@ function() {
 
 ZmMailMsgView.prototype.reset =
 function() {
-        // Bug 23692: cancel any pending actions
-        if (this._resizeAction) {
-                AjxTimedAction.cancelAction(this._resizeAction);
-                this._resizeAction = null;
-        }
-        if (this._objectsAction) {
-                AjxTimedAction.cancelAction(this._objectsAction);
-                this._objectsAction = null;
-        }
 	this._msg = null;
 	this._htmlBody = null;
 
 	// TODO: reuse all thses controls that are being disposed here.....
 	if (this._expandButton) {
-                this._expandButton.setVisible(Dwt.DISPLAY_NONE);
-                this._expandButton.reparentHtmlElement(this.getHtmlElement());
-        }
+		this._expandButton.dispose();
+		this._expandButton = null;
+	}
 	if (this._ifw) {
 		this._ifw.dispose();
 		this._ifw = null;
 	}
 	if (this._inviteToolbar) {
-                this._inviteToolbar.setVisible(Dwt.DISPLAY_NONE);
-                this._inviteToolbar.reparentHtmlElement(this.getHtmlElement());
+		this._inviteToolbar.dispose();
+		this._inviteToolbar = null;
 	}
 	if (this._shareToolbar) {
-                this._shareToolbar.setVisible(Dwt.DISPLAY_NONE);
-                this._shareToolbar.reparentHtmlElement(this.getHtmlElement());
+		this._shareToolbar.dispose();
+		this._shareToolbar = null;
 	}
 
 	this.getHtmlElement().innerHTML = "";
@@ -151,7 +142,7 @@ function() {
 
 ZmMailMsgView.prototype.set =
 function(msg) {
-    if (this._msg && msg && (this._msg.id == msg.id)) { return; }
+	if (this._msg && msg && (this._msg.id == msg.id)) { return; }
 
 	var oldMsg = this._msg;
 	this.reset();
@@ -185,9 +176,12 @@ function(msg) {
 			!msg.isShared())
 		{
 			var topToolbar = this._getInviteToolbar();
-            topToolbar.reparentHtmlElement(contentDiv);
-            topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
-        }
+			// nuke the old toolbar if it exists b4 appending the new one
+			var tEl = topToolbar.getHtmlElement();
+			if (tEl && tEl.parentNode)
+				tEl.parentNode.removeChild(tEl);
+			contentDiv.appendChild(tEl);
+		}
 	}
 	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 			 msg.share && msg.folderId != ZmFolder.ID_TRASH &&
@@ -204,8 +198,11 @@ function(msg) {
 			msg.share.link.perm)
 		{
 			var topToolbar = this._getShareToolbar();
-            topToolbar.reparentHtmlElement(contentDiv);
-            topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+			var tEl = topToolbar.getHtmlElement();
+			if (tEl && tEl.parentNode) {
+				tEl.parentNode.removeChild(tEl);
+			}
+			contentDiv.appendChild(tEl);
 		}
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
@@ -329,10 +326,7 @@ function (listener) {
 
 ZmMailMsgView.prototype._getInviteToolbar =
 function() {
-
-    if(this._inviteToolbar) return this._inviteToolbar;
-
-    var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
+	var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
 	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
 	var params = {
 		parent: this,
@@ -373,10 +367,7 @@ function() {
 
 ZmMailMsgView.prototype._getShareToolbar =
 function() {
-
-    if(this._shareToolbar) return this._shareToolbar;
-
-    var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
+	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
 	var params = {
 		parent: this,
 		buttons: buttonIds,
@@ -534,38 +525,140 @@ function (node) {
 // the server-side, but we check, just in case..).
 ZmMailMsgView.prototype._processHtmlDoc =
 function(doc) {
-    DBG.timePt("Starting ZmMailMsgView.prototype._processHtmlDoc");
+	DBG.timePt("Starting ZmMailMsgView.prototype._processHtmlDoc");
 
-    if(!doc) return;
-    //bug 8632
-    var images = doc.getElementsByTagName("img");
-    if(images.length > 0){
-        var length = images.length;
-        for(var i=0; i<images.length; i++ ){
-            this._checkImgInAttachments(images[i]);
-        }
-    }
+	// var T1 = new Date().getTime();
+	this._lazyCreateObjectManager();
+	var objectManager = this._objectManager,
+		tmpdiv = doc.createElement("div"),
+		node = doc.body;
 
-    //Find Zimlet Objects lazly
-    this.lazyFindMailMsgObjects(500, doc);
+	// This inner function does the actual work.  BEWARE that it return-s
+	// in various places, not only at the end.
+	function recurse(node, handlers, self) {
+		var tmp, i, val;
+		switch (node.nodeType) {
+		    case 1:	// ELEMENT_NODE
+			node.normalize();
+			tmp = node.tagName.toLowerCase();
+			if (/^(img|a)$/.test(tmp)) {
+				if (tmp == "a" && node.target && self.hasValidHref(node)) {
+					if (node.firstChild && node.firstChild.tagName &&
+						node.firstChild.tagName.toLowerCase() == "img")
+					{
+						self._checkImgInAttachments(node.firstChild);
+					}
+					// tricky.
+					var txt = RegExp.$1;
+					tmp = doc.createElement("div");
+					tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
+					tmp = tmp.firstChild;
+					if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
+						// probably no objects were found.  A warning would be OK here
+						// since the regexps guarantee that objects _should_ be found.
+						// DBG.println(AjxDebug.DBG1, "No objects found for potentially valid text!");
+						return tmp.nextSibling;
+					}
+					// here, tmp is an object span, but it
+					// contains the URL (href) instead of
+					// the original link text.
+					node.parentNode.insertBefore(tmp, node); // add it to DOM
+					tmp.innerHTML = "";
+					tmp.appendChild(node); // we have the original link now
+					return tmp.nextSibling;	// move on
+				} else if (tmp == "img") {
+					self._checkImgInAttachments(node);
+				}
+				handlers = false;
+			} else if (/^(script|link|object|iframe|applet)$/.test(tmp)) {
+				tmp = node.nextSibling;
+				node.parentNode.removeChild(node);
+				return tmp;
+			}
+			// fix style
+			// node.nowrap = "";
+			// node.className = "";
 
-    DBG.timePt("-- END _processHtmlDoc");
+			if (AjxEnv.isIE)
+				// strips expression()-s, bwuahahaha!
+				// granted, they get lost on the server-side anyway, but assuming some get through...
+				// the line below exterminates them.
+				node.style.cssText = node.style.cssText;
+
+			// Clear dangerous rules.  FIXME: implement proper way
+			// using removeAttribute (kind of difficult as it's
+			// (expectedly) quite different in IE from *other*
+			// browsers, so for now style.prop="" will do.)
+			tmp = ZmMailMsgView._dangerousCSS;
+			for (i in tmp) {
+				val = tmp[i];
+				if (!val || val.test(node.style[i]))
+					node.style[i] = "";
+			}
+			for (i = node.firstChild; i; i = recurse(i, handlers, self));
+			return node.nextSibling;
+
+		    case 3:	// TEXT_NODE
+		    case 4:	// CDATA_SECTION_NODE (just in case)
+			// generate ObjectHandler-s
+			if (handlers && /[^\s\xA0]/.test(node.data)) try {
+ 				var a = null, b = null;
+
+				if (!AjxEnv.isIE) {
+					// this block of code is supposed to free the object handlers from
+					// dealing with whitespace.  However, IE sometimes crashes here, for
+					// reasons that weren't possible to determine--hence we avoid this
+					// step for IE.  (bug #5345)
+					var results = /^[\s\xA0]+/.exec(node.data);
+					if (results) {
+						a = node;
+						node = node.splitText(results[0].length);
+					}
+					results = /[\s\xA0]+$/.exec(node.data);
+					if (results)
+						b = node.splitText(node.data.length - results[0].length);
+				}
+
+				tmp = tmpdiv;
+				var code = objectManager.findObjects(node.data, true, null, false);
+				var disembowel = false;
+				if (AjxEnv.isIE) {
+					// Bug #6481, #4498: innerHTML in IE massacrates whitespace
+					//            unless it sees a <pre> in the code.
+					tmp.innerHTML = [ "<pre>", code, "</pre>" ].join("");
+					disembowel = true;
+				} else {
+					tmp.innerHTML = code;
+				}
+
+				if (a)
+					tmp.insertBefore(a, tmp.firstChild);
+				if (b)
+					tmp.appendChild(b);
+
+				a = node.parentNode;
+				if (disembowel)
+					tmp = tmp.firstChild;
+				while (tmp.firstChild)
+					a.insertBefore(tmp.firstChild, node);
+				tmp = node.nextSibling;
+				a.removeChild(node);
+				return tmp;
+			} catch(ex) {};
+		}
+		return node.nextSibling;
+	};
+	var df = doc.createDocumentFragment();
+	while (node.firstChild) {
+		df.appendChild(node.firstChild); // NODE now out of the displayable DOM
+		recurse(df.lastChild, true, this);	 // parse tree and findObjects()
+	}
+	node.appendChild(df);	// put nodes back in the document
+
+	DBG.timePt("-- END _processHtmlDoc");
 
 	// bug fix #8632 - finally, set the attachment links
 	this._setAttachmentLinks();
-
-};
-
-ZmMailMsgView.prototype.lazyFindMailMsgObjects = function(interval, doc ){
-        if (this._objectManager) {
-                this._lazyCreateObjectManager();
-                this._objectsAction = new AjxTimedAction(this, this._findMailMsgObjects, [doc]), ( interval || 500 );
-                AjxTimedAction.scheduleAction(this._objectsAction);
-        }
-};
-
-ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
-    this._objectManager.processObjectsInNode(doc, doc.body);
 };
 
 ZmMailMsgView.prototype._checkImgInAttachments =
@@ -660,11 +753,10 @@ function(msg, idoc, id, iframe) {
 };
 
 ZmMailMsgView.prototype._resetIframeHeightOnTimer =
-function(iframe, attempt) {
-        DBG.println(AjxDebug.DBG1, "_resetIframeHeightOnTimer attempt: " + (attempt != null ? attempt : "null"));
+function(iframe) {
 	// Because sometimes our view contains images that are slow to download, wait a
 	// little while before resizing the iframe.
-	var act = this._resizeAction = new AjxTimedAction(this, ZmMailMsgView._resetIframeHeight, [this, iframe, attempt]);
+	var act = new AjxTimedAction(this, ZmMailMsgView._resetIframeHeight, [this, iframe]);
 	AjxTimedAction.scheduleAction(act, 200);
 };
 
@@ -733,9 +825,12 @@ function(container, html, isTextMsg, isTruncated) {
 	if (isTextMsg) {
 		if (this._objectManager) {
 			if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT) {
-                //Using callback to lazily find objects instead of doing it on a run.
-                callback = new AjxCallback(this, this.lazyFindMailMsgObjects, [500]);
-                html = AjxStringUtil.nl2br(html);
+				// better process objects directly rather than scanning the DOM afterwards.
+				this._lazyCreateObjectManager();
+				DBG.timePt("START: small text msg -- findObjects");
+				html = this._objectManager.findObjects(html, true, null, true);
+				DBG.timePt("END: small text msg -- findObjects");
+				html = AjxStringUtil.nl2br(html);
 			} else {
 				this._makeHighlightObjectsDiv(html);
 				html = AjxStringUtil.convertToHtml(html);
@@ -884,7 +979,7 @@ function(msg, container, callback) {
 	    								   this._dateObjectHandlerDate);
 
 		subject 	= this._objectManager.findObjects(subject, true);
-		sentBy		= this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL);
+		sentBy		= this._objectManager.findObjects(sentBy, true, ZmObjectManager.EMAIL); 
         dateString	= this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE);
 		if (obo) {
 			obo		= this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
@@ -960,17 +1055,18 @@ function(msg, container, callback) {
 	// add the expand/collapse arrow button now that we have add to the DOM tree
 	var expandHeaderEl = document.getElementById(expandHeaderId);
 	if (expandHeaderEl) {
+		this._expandButton = new DwtToolBarButton(this);
 		var image = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
 		this._expandButton.setImage(image);
 		this._expandButton.reparentHtmlElement(expandHeaderId);
-        this._expandButton.setVisible(Dwt.DISPLAY_BLOCK);
+		this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener))
 	}
 
 
 	// add the close button if applicable
 	if (this._hasHeaderCloseBtn) {
 		var closeBtnCellId	= this._htmlElId + "_closeBtnCell";
-		this._closeButton = new DwtButton({parent:this});
+		this._closeButton = new DwtButton(this);
 		this._closeButton.setImage("Close");
 		this._closeButton.setText(ZmMsg.close);
 		this._closeButton.reparentHtmlElement(closeBtnCellId);
@@ -1311,7 +1407,8 @@ function(ev) {
 	var iframe = document.getElementById(this._iframeId);
 	// we get here before we have a chance to initialize the IFRAME
 	if (iframe) {
-                this._resetIframeHeightOnTimer(iframe);
+		var act = new AjxTimedAction(null, ZmMailMsgView._resetIframeHeight, [this, iframe]);
+		AjxTimedAction.scheduleAction(act, 5);
 	}
 };
 
@@ -1622,14 +1719,12 @@ function (image, i, len, msg, idoc, iframe, view) {
 ZmMailMsgView.prototype._onloadIframe =
 function(dwtIframe) {
 	var iframe = dwtIframe.getIframe();
-	try { iframe.onload = null; } catch(ex) {};
+	iframe.onload = null;
 	ZmMailMsgView._resetIframeHeight(this, iframe);
 };
 
-ZmMailMsgView.SETHEIGHT_MAX_TRIES = 3;
-
 ZmMailMsgView._resetIframeHeight =
-function(self, iframe, attempt) {
+function(self, iframe) {
 	var h;
 	if (self._scrollWithIframe) {
 		h = self.getH() - 7;
@@ -1648,18 +1743,12 @@ function(self, iframe, attempt) {
 			substract(self._inviteToolbar.getHtmlElement());
 		iframe.style.height = h + "px";
 	} else {
-                if (attempt == null)
-                        attempt = 0;
 		try {
-			if (!iframe.contentWindow || !iframe.contentWindow.document) {
-                                if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
-                                        self._resetIframeHeightOnTimer(iframe, attempt);
-                                return; // give up
+			if (!iframe.contentWindow) {
+                                self._resetIframeHeightOnTimer(iframe);
                         }
 		} catch(ex) {
-                        if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
-			        self._resetIframeHeightOnTimer(iframe, attempt++); // for IE
-                        return; // give up
+			self._resetIframeHeightOnTimer(iframe); // for IE
 		}
 
 		var doc = iframe.contentWindow.document;
