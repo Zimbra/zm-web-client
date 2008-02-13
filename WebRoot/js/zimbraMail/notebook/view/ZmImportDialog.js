@@ -18,7 +18,7 @@
 ZmImportDialog = function(shell, className) {
 	className = className || "ZmImportDialog";
 	var title = ZmMsg.importDocs;
-	DwtDialog.call(this, shell, className, title);
+	DwtDialog.call(this, {parent:shell, className:className, title:title});
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._upload));
 	this._createUploadHtml();
 }

@@ -19,7 +19,7 @@ ZmAttachDialog = function(shell, className) {
 
     className = className || "ZmAttachDialog";
     var title = ZmMsg.attachFile;
-    DwtDialog.call(this, shell, className, title);
+    DwtDialog.call(this, {parent:shell, className:className, title:title});
 
 	//Initialize
     this._createBaseHtml();

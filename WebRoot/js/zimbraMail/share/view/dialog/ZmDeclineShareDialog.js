@@ -19,7 +19,7 @@ ZmDeclineShareDialog = function(parent, className) {
 	className = className || "ZmDeclineShareDialog";
 	var title = ZmMsg.declineShare;
 	var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON ];
-	DwtDialog.call(this, parent, className, title, buttons);
+	DwtDialog.call(this, {parent:parent, className:className, title:title, standardButtons:buttons});
 	this.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._handleYesButton));
 
 	// create controls

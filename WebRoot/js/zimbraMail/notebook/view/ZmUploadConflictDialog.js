@@ -19,7 +19,7 @@ ZmUploadConflictDialog = function(shell, className) {
 	className = className || "ZmUploadConflictDialog";
 	var title = ZmMsg.uploadConflict;
 	var standardButtons = [ DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON ];
-	DwtDialog.call(this, shell, className, title, standardButtons);
+	DwtDialog.call(this, {parent:shell, className:className, title:title, standardButtons:standardButtons});
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._resolve));
 
 	this._mineId = this._htmlElId+"_mine";

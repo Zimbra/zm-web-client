@@ -18,8 +18,7 @@
 ZmPageConflictDialog = function(shell, className) {
 	className = className || "ZmPageConflictDialog";
 	var title = ZmMsg.saveConflict;
-	var standardButtons = [ DwtDialog.CANCEL_BUTTON ];
-	DwtDialog.call(this, shell, className, title, standardButtons);
+	DwtDialog.call(this, {parent:shell, className:className, title:title, standardButtons:[ DwtDialog.CANCEL_BUTTON ]});
 
 	this._createContentHtml();
 }

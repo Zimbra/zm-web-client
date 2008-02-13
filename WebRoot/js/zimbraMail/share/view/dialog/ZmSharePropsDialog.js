@@ -17,7 +17,7 @@
 
 ZmSharePropsDialog = function(shell, className) {
 	className = className || "ZmSharePropsDialog";
-	DwtDialog.call(this, shell, className, ZmMsg.shareProperties);
+	DwtDialog.call(this, {parent:shell, className:className, title:ZmMsg.shareProperties});
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 	
 	// create auto-completer	

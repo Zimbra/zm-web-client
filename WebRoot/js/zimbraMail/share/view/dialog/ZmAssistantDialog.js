@@ -22,7 +22,8 @@ ZmAssistantDialog = function() {
 	var extraButton = new DwtDialog_ButtonDescriptor(ZmAssistantDialog.EXTRA_BUTTON, 
 														   ZmMsg.moreDetails, DwtDialog.ALIGN_LEFT);														   
 														   
-	DwtDialog.call(this, appCtxt.getShell(), "ZmAssistantDialog", ZmMsg.zimbraAssistant, null, [helpButton, extraButton]);
+	DwtDialog.call(this, {parent:appCtxt.getShell(), className:"ZmAssistantDialog", title:ZmMsg.zimbraAssistant,
+						  standardButtons:[helpButton, extraButton]});
 //	ZmQuickAddDialog.call(this, appCtxt.getShell(), null, null, []);
 
 	this.setContent(this._contentHtml());

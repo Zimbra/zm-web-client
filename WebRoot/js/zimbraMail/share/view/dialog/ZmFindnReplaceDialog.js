@@ -25,7 +25,8 @@ ZmFindnReplaceDialog = function(shell, className) {
 	var replaceAllBtn = new DwtDialog_ButtonDescriptor(ZmFindnReplaceDialog.REPLACE_ALL_BUTTON, 
 													ZmMsg.replaceAll, DwtDialog.ALIGN_LEFT);
 	
-	DwtDialog.call(this, shell, className, ZmMsg.findNReplaceTitle,[DwtDialog.CANCEL_BUTTON],[findBtn,replaceBtn,replaceAllBtn]);
+	DwtDialog.call(this, {parent:shell, className:className, title:ZmMsg.findNReplaceTitle,
+						  standardButtons:[DwtDialog.CANCEL_BUTTON], extraButtons:[findBtn,replaceBtn,replaceAllBtn]});
 
 	this._findId = Dwt.getNextId();
 	this._replaceId = Dwt.getNextId();

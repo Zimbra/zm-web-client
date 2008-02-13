@@ -28,7 +28,7 @@
  */
 ZmApptRecurDialog = function(parent, className) {
 
-	DwtDialog.call(this, parent, className, ZmMsg.customRepeat);
+	DwtDialog.call(this, {parent:parent, className:className, title:ZmMsg.customRepeat});
 
 	// set html content once (hence, in ctor)
 	this.setContent(this._setHtml());

@@ -37,7 +37,8 @@
 ZmQuickAddDialog = function(parent, title, standardButtons, extraButtons, loc) {
 	if (arguments.length == 0) return;
 
-	DwtDialog.call(this, parent, null, title, standardButtons, extraButtons, null, null, loc);
+	DwtDialog.call(this, {parent:parent, title:title, standardButtons:standardButtons,
+						  extraButtons:extraButtons, loc:loc});
 };
 
 ZmQuickAddDialog.prototype = new DwtDialog;

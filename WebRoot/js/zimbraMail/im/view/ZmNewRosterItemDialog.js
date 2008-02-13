@@ -16,7 +16,7 @@
  */
 
 ZmNewRosterItemDialog = function(parent) {
-	DwtDialog.call(this, parent, null, ZmMsg.createNewRosterItem);
+	DwtDialog.call(this, {parent:parent, title:ZmMsg.createNewRosterItem});
 
 	this._init();
 };

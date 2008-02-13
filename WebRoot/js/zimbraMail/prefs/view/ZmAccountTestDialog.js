@@ -16,7 +16,7 @@
  */
 
 ZmAccountTestDialog = function(parent) {
-	DwtDialog.call(this, parent, null, ZmMsg.accountTest);
+	DwtDialog.call(this, {parent:parent, title:ZmMsg.accountTest});
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._handleCancelButton));
 };

@@ -30,7 +30,7 @@
  */
 ZmContactPicker = function(buttonInfo) {
 
-	DwtDialog.call(this, appCtxt.getShell(), null, ZmMsg.selectAddresses);
+	DwtDialog.call(this, {parent:appCtxt.getShell(), title:ZmMsg.selectAddresses});
 
 	this._buttonInfo = buttonInfo;
 	this._initialized = false;

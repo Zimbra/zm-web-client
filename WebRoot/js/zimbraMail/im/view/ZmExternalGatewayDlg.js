@@ -19,11 +19,11 @@ ZmExternalGatewayDlg = function(parent) {
 	var logoutBtn = new DwtDialog_ButtonDescriptor(ZmExternalGatewayDlg.LOGOUT_BUTTON,
 						       ZmMsg.logOff,
 						       DwtDialog.ALIGN_LEFT);
-	DwtDialog.call(this, parent, null, ZmMsg.imGatewayLogin,
-		       [ DwtDialog.OK_BUTTON,
+	DwtDialog.call(this, {parent:parent, title:ZmMsg.imGatewayLogin,
+		       standardButtons:[ DwtDialog.OK_BUTTON,
 			 DwtDialog.CANCEL_BUTTON ],
-		       [ logoutBtn ]
-		      );
+		       extraButtons:[ logoutBtn ]
+			});
 	var id = this._baseId = Dwt.getNextId();
 	this.setContent(AjxTemplate.expand("im.Chat#GatewayLoginDlg", { id: id }));
 	this.__initWidgets();
