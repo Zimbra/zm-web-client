@@ -17,8 +17,18 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
     String contextPath = request.getContextPath();
     if (contextPath.equals("/")) contextPath = "";
 
-    String mode = (String)request.getAttribute("mode");
-    boolean inDevMode = mode != null && mode.equals("mjsf");
+	String dev = request.getParameter("dev");
+	boolean isDev = dev != null && dev.equals("1");
+	if (isDev) {
+		request.setAttribute("mode", "mjsf");
+//		request.setAttribute("gzip", "false");
+//		request.setAttribute("fileExtension", "");
+//		request.setAttribute("debug", "1");
+//		request.setAttribute("packages", "dev");
+	}
+
+	String mode = (String)request.getAttribute("mode");
+	boolean isDevMode = mode != null && mode.equalsIgnoreCase("mjsf");
 
     String vers = (String)request.getAttribute("version");
     if (vers == null) vers = "";
@@ -28,12 +38,14 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 %>
 <!-- bootstrap classes -->
 <script type="text/javascript">
-<jsp:include page='/js/Boot_all.js' />
+<jsp:include>
+	<jsp:attribute name='page'>/js/Boot_all.js<%= isDevMode ? "" : ".min" %></jsp:attribute>
+</jsp:include>
 </script>
 
 <script type="text/javascript">
 AjxPackage.setBasePath("<%=contextPath%>/js");
-AjxPackage.setExtension("<%= inDevMode ? "" : "_all" %>.js<%=ext%>");
+AjxPackage.setExtension("<%= isDevMode ? "" : "_all" %>.js<%=ext%>");
 AjxPackage.setQueryString("v=<%=vers%>");
 
 AjxTemplate.setBasePath("<%=contextPath%>/templates");
