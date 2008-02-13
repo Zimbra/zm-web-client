@@ -32,7 +32,7 @@ function() {
 
 ZmZimletPicker.prototype._addZimlet =
 function(tree, text, imageInfo, type) {
-	var ti = this._zimlets[type] = new DwtTreeItem(tree);
+	var ti = this._zimlets[type] = new DwtTreeItem({parent:tree});
 	ti.setText(text);
 	ti.setImage(imageInfo);
 };
@@ -42,7 +42,7 @@ function(parent) {
     this._zimlets = {};
     var idxZimlets = appCtxt.getZimletMgr().getIndexedZimlets()
     if (idxZimlets.length) {
-        var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
+        var tree = this._tree = new DwtTree({parent:picker, style:DwtTree.CHECKEDITEM_STYLE});
         tree.addSelectionListener(new AjxListener(this, ZmZimletPicker.prototype._treeListener));
         for (var i = 0; i < idxZimlets.length; i += 1) {
             this._addZimlet(tree, idxZimlets[i].description, idxZimlets[i].icon, idxZimlets[i].keyword);

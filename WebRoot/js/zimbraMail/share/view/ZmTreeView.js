@@ -38,11 +38,11 @@
  */
 ZmTreeView = function(params) {
 
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 
-	var className = params.className ? params.className : "OverviewTree";
-	var treeStyle = params.treeStyle ? params.treeStyle : DwtTree.SINGLE_STYLE;
-	DwtTree.call(this, params.parent, treeStyle, className, params.posStyle);
+	var className = params.className || "OverviewTree";
+	var treeStyle = params.treeStyle || DwtTree.SINGLE_STYLE;
+	DwtTree.call(this, {parent:params.parent, style:treeStyle, className:className, posStyle:params.posStyle});
 
 	this._headerClass = params.headerClass ? params.headerClass : "overviewHeader";
 	this.overviewId = params.overviewId;
@@ -124,7 +124,7 @@ function(params) {
 
 	// create header item
 	var root = this._dataTree.root;
-	var ti = this._headerItem = new DwtTreeItem(this, null, null, null, null, this._headerClass);
+	var ti = this._headerItem = new DwtTreeItem({parent:this, className:this._headerClass});
 	ti.enableSelection(false); // by default, disallow selection
 	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];
 	if (name) {
@@ -286,10 +286,11 @@ function(parentNode, organizer, index, noTooltips) {
 	var ds = (dss && dss.length > 0) ? dss[0] : null;
 
 	if (ds && ds.type == ZmAccount.IMAP) {
-		ti = new DwtTreeItem(this, null, organizer.getName(), null, null, this._headerClass);
+		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:this._headerClass});
 		ti.enableSelection(false);
 	} else {
-		ti = new DwtTreeItem(parentNode, index, organizer.getName(this._showUnread), organizer.getIcon());
+		ti = new DwtTreeItem({parent:parentNode, index:index, text:organizer.getName(this._showUnread),
+							  imageInfo:organizer.getIcon()});
 	}
 
 	ti.setDndText(organizer.getName());

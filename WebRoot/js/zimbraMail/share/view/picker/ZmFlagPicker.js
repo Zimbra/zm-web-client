@@ -31,34 +31,34 @@ function() {
 
 ZmFlagPicker.prototype._setupPicker =
 function(parent) {
-	var tree = this._tree = new DwtTree(parent, DwtTree.CHECKEDITEM_STYLE);
+	var tree = this._tree = new DwtTree({parent:picker, style:DwtTree.CHECKEDITEM_STYLE});
 	tree.addSelectionListener(new AjxListener(this, ZmFlagPicker.prototype._treeListener));
 	
-	var ti = this._flagged = new DwtTreeItem(tree);
+	var ti = this._flagged = new DwtTreeItem({parent:tree});
 	ti.setText(ZmMsg.flagged);
 	ti.setImage("FlagRed");
 	
-	ti = this._unflagged = new DwtTreeItem(tree);
+	ti = this._unflagged = new DwtTreeItem({parent:tree});
 	ti.setText(ZmMsg.unflagged);
 	ti.setImage("FlagRedDis");
 	
 	tree.addSeparator();
 
-	ti = this._read = new DwtTreeItem(tree);
+	ti = this._read = new DwtTreeItem({parent:tree});
 	ti.setText(ZmMsg.read);
 	ti.setImage("ReadMessage");
 	
-	ti = this._unread = new DwtTreeItem(tree);
+	ti = this._unread = new DwtTreeItem({parent:tree});
 	ti.setText(ZmMsg.unread);
 	ti.setImage("UnreadMessage");	
 
 	tree.addSeparator();
 
-	ti = this._replied = new DwtTreeItem(tree);
+	ti = this._replied = new DwtTreeItem({parent:tree});
 	ti.setText(ZmMsg.replied);
 	ti.setImage("Reply");
 	
-	ti = this._forwarded = new DwtTreeItem(tree);
+	ti = this._forwarded = new DwtTreeItem({parent:tree});
 	ti.setText(ZmMsg.forwarded);
 	ti.setImage("Forward");	
 };

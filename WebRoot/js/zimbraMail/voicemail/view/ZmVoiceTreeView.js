@@ -55,7 +55,7 @@ function(parentNode, organizer, index) {
 
 ZmVoiceTreeView.prototype._createAccountItem =
 function(organizer) {
-	var item = new DwtTreeItem(this, null, null, null, null, "overviewHeader");
+	var item = new DwtTreeItem({parent:this, className:"overviewHeader"});
 	item.enableSelection(false);
 	item.showExpansionIcon(false);
 	item.setData(Dwt.KEY_ID, organizer.id);

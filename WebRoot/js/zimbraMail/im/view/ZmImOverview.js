@@ -275,14 +275,14 @@ ZmImOverview.prototype._init = function() {
         var roster = this._roster = AjxDispatcher.run("GetRoster");
         var buddyList = roster.getRosterItemList();
 
-        var tree = this._tree = new DwtTree(this);
+        var tree = this._tree = new DwtTree({parent:this});
         tree.getHtmlElement().style.width = "100%";
         if (!this._options.inactiveTree)
                 tree.addSelectionListener(new AjxListener(this, this._treeSelectionListener));
         tree.setScrollStyle(DwtControl.SCROLL);
 
         // create the root item
-        this._rootItem = new DwtTreeItem(tree, null, null, null, null, "overviewHeader");
+        this._rootItem = new DwtTreeItem({parent:tree, className:"overviewHeader"});
         this._rootItem.setData("ZmImOverview.data", { type: "root" });
         this._rootItem.setText(ZmMsg.buddyList);
 
@@ -369,10 +369,10 @@ ZmImOverview.prototype._createBuddy = function(type, buddy) {
         var items = [];
         for (var i = 0; i < groups.length; ++i) {
                 var parent = this.getGroupItem(groups[i]);
-                var item = new DwtTreeItem(parent,
-                                           this.getSortIndex(buddy, parent),
-                                           label,
-                                           icon);
+                var item = new DwtTreeItem({parent:parent,
+                                            index:this.getSortIndex(buddy, parent),
+                                            text:label,
+                                            imageInfo:icon});
                 item.addClassName("ZmImPresence-" + buddy.getPresence().getShow());
                 item.setToolTipContent("-"); // force it to have a tooltip
                 item.getToolTipContent = AjxCallback.simpleClosure(buddy.getToolTip, buddy);
@@ -434,11 +434,11 @@ ZmImOverview.prototype.getGroupItem = function(group) {
                 return this._rootItem;
         var g = this._groupItems[group];
         if (!g) {
-                g = this._groupItems[group] = new DwtTreeItem(this._rootItem,
-                                                              this.getSortIndex(group), // index
-                                                              group, // text
-                                                              "ImGroup" // image
-                                                             );
+                g = this._groupItems[group] = new DwtTreeItem({parent:this._rootItem,
+                                                               index:this.getSortIndex(group), // index
+                                                               text:group, // text
+                                                               imageInfo:"ImGroup" // image
+											                });
                 g.setToolTipContent("-");
                 g.getToolTipContent = function() {
                         var data = this.getData("ZmImOverview.data");

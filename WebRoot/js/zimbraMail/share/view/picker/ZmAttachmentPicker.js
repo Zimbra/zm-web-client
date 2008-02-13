@@ -46,7 +46,7 @@ function() {
 
 ZmAttachmentPicker.prototype._newType =
 function(tree, atts) {
-	var ti = new DwtTreeItem(tree);
+	var ti = new DwtTreeItem({parent:tree});
 	ti.setImage(atts[0].image);
 	ti.setData(ZmAttachmentPicker.ATT_KEY, atts[0].desc);
 	ti.setText(atts[0].desc);
@@ -136,7 +136,7 @@ function(parent) {
 	Dwt.associateElementWithObject(this._fileNameInput, this);
 
 	// set up attachment tree widget
-	this._tree = new DwtTree(picker, DwtTree.CHECKEDITEM_STYLE);
+	this._tree = new DwtTree({parent:picker, style:DwtTree.CHECKEDITEM_STYLE});
 	this._tree.addSelectionListener(new AjxListener(this, this._treeListener));	
 	var attachTypeList = new ZmAttachmentTypeList();
 	var respCallback = new AjxCallback(this, this._handleResponseSetupPicker, [attachTypeList, this._tree, treeId]);
