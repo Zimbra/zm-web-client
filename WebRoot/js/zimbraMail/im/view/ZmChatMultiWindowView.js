@@ -128,7 +128,7 @@ function() {
 		}, [ gw ]));
 
 		var cls = "ZmChatGwIcon Img" + AjxStringUtil.capitalize(gw.type) + "Big";
-		var btn = new DwtControl(tb2, cls);
+		var btn = new DwtControl({parent:tb2, className:cls});
 		btn._setMouseEventHdlrs();
 		btn.condClassName(!gw.isOnline(), "ZmChatGwIcon-offline");
 		btn.setToolTipContent("-");

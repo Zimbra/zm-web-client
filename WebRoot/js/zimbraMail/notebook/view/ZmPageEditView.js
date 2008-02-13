@@ -484,7 +484,7 @@ ZmPageEditor.prototype._createToolbars = function() {
 		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
 		b.addSelectionListener(listener);
 
-		new DwtControl(tb, "vertSep");
+		new DwtControl({parent:tb, className:"vertSep"});
 
 		this._createToolBar2(tb);
 		this._toolbars.push(tb);

@@ -308,7 +308,7 @@ ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
 
 	this._createFontSizeMenu(tb);
 
-	new DwtControl(tb, "vertSep");
+	new DwtControl({parent:tb, className:"vertSep"});
 
 	var listener = new AjxListener(this, this._fontStyleListener);
 	var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
@@ -330,7 +330,7 @@ ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
 	this._underlineButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.UNDERLINE_STYLE);
 	this._underlineButton.addSelectionListener(listener);
 
-	new DwtControl(tb, "vertSep");
+	new DwtControl({parent:tb, className:"vertSep"});
 
 	this._fontColorButton = new ZmLiteHtmlEditorColorPicker(tb,null,"ZToolbarButton");
 	this._fontColorButton.dontStealFocus();

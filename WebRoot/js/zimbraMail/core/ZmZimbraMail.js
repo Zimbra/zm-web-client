@@ -1789,7 +1789,7 @@ function() {
  */
 ZmZimbraMail.prototype._createUpsellView =
 function(appName) {
-	var upsellView = this._upsellView[appName] = new DwtControl(this._shell, null, Dwt.ABSOLUTE_STYLE);
+	var upsellView = this._upsellView[appName] = new DwtControl({parent:this._shell, posStyle:Dwt.ABSOLUTE_STYLE});
 	var upsellUrl = appCtxt.get(ZmApp.UPSELL_URL[appName]);
 	var el = upsellView.getHtmlElement();
 	var htmlArr = [];

@@ -22,7 +22,7 @@
  * @param parent	{DwtControl} Parent widget (required)
  * @param voicemail	{ZmVoicemail} The voicemail this player is showing
  * @param className {string} CSS class. If not provided defaults to the class name (optional)
- * @param positionType {string} Positioning style (absolute, static, or relative). If
+ * @param posStyle {string} Positioning style (absolute, static, or relative). If
  * 		not provided defaults to DwtControl.STATIC_STYLE (optional)
  */
 ZmSoundPlayer = function(parent, voicemail, className, posStyle) {
@@ -272,7 +272,7 @@ function() {
 			width: 200,
 			height: 16,
 			offscreen: this._isScriptable, 
-			positionType: DwtControl.RELATIVE_STYLE,
+			posStyle: DwtControl.RELATIVE_STYLE,
 			url: this.voicemail.soundUrl,
 			volume: DwtSoundPlugin.MAX_VOLUME
 		};

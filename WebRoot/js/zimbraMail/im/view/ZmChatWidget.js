@@ -329,7 +329,7 @@ ZmChatWidget.prototype._init = function() {
 	btn.setToolTipContent("Change Editor Mode");
 	btn.addSelectionListener(new AjxListener(this,this._changeEditorModeListener));
 
-	new DwtControl(this._toolbar, "vertSep");
+	new DwtControl({parent:this._toolbar, className:"vertSep"});
 
 	var btn = this._addToBuddyListBtn = new DwtLtIconButton(this._toolbar, null, "NewContact");
 	btn.setToolTipContent("-");
@@ -346,7 +346,7 @@ ZmChatWidget.prototype._init = function() {
 	btn.addSelectionListener(new AjxListener(this, this._importantListener));
 
 	// this._toolbar.addSeparator("vertSep");
-	new DwtControl(this._toolbar, "vertSep");
+	new DwtControl({parent:this._toolbar, className:"vertSep"});
 
 	this._sticky = new DwtLtIconButton(this._toolbar, DwtButton.TOGGLE_STYLE);
 	this._sticky.setImage(this.isSticky() ? "StickyOn" : "StickyOff");
@@ -859,7 +859,7 @@ ZmChatWidget.prototype._sashMouseUp = function(ev) {
 /// @class DwtLtIconButton
 
 DwtLtIconButton = function(parent, type, icon, className) {
-        DwtControl.call(this, parent, className || "DwtLtIconButton");
+        DwtControl.call(this, {parent:parent, className:className || "DwtLtIconButton"});
         this._selected = null;
         if (type != null && (type & DwtButton.TOGGLE_STYLE))
                 this._selected = false;

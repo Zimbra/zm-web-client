@@ -85,7 +85,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.paste);
 
-	new DwtControl(toolbar, "vertSep");
+	new DwtControl({parent:toolbar, className:"vertSep"});
 	
 	params.style = DwtButton.TOGGLE_STYLE;
 	b = this._buttons.bold = new DwtToolBarButton(params);
@@ -112,7 +112,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.strikeThruText);
 
-	new DwtControl(toolbar, "vertSep");
+	new DwtControl({parent:toolbar, className:"vertSep"});
 	
 	b = this._buttons.justifyLeft = new DwtToolBarButton(params);
 	b.setImage("LeftJustify");
@@ -132,7 +132,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.rightJustify);
 
-	new DwtControl(toolbar, "vertSep");
+	new DwtControl({parent:toolbar, className:"vertSep"});
 	
 	b = this._buttons.fontColor = new ZmSpreadSheetEditorColorPicker(toolbar, null, "DwtToolbarButton", null, null, null, ZmMsg.auto);
 	b.setImage("FontColor");
@@ -211,7 +211,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.deleteRow);
 
-	new DwtControl(toolbar, "vertSep");
+	new DwtControl({parent:toolbar, className:"vertSep"});
 		
 	b = this._buttons.colInsertBefore = new DwtToolBarButton(params);
 	b.setImage("InsertColBefore");
@@ -231,7 +231,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	b.addSelectionListener(listener);
 	b.setToolTipContent(ZmMsg.deleteColumn);
 
-	new DwtControl(toolbar, "vertSep");
+	new DwtControl({parent:toolbar, className:"vertSep"});
 
 	b = new DwtToolBarButton(params);
 	b.setImage("Sum");
@@ -273,7 +273,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 
 	// END: insert function
 
-	new DwtControl(toolbar, "vertSep");
+	new DwtControl({parent:toolbar, className:"vertSep"});
 
 	
 
@@ -298,7 +298,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	s.addOption("6 decimals", false, 6);
 
 	if (ZmSpreadSheetModel.DEBUG) {
-		new DwtControl(toolbar, "vertSep");
+		new DwtControl({parent:toolbar, className:"vertSep"});
 		new DwtLabel({parent:toolbar}).setText("DEBUG: ");
 		b = new DwtToolBarButton(params);
 		b.setText("Serialize");
