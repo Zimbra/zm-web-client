@@ -23,7 +23,7 @@
  */
 ZmShareReply = function(parent, className) {
 	className = className || "ZmShareReply";
-	DwtComposite.call(this, parent, className);
+	DwtComposite.call(this, {parent:parent, className:className});
 	this._initControl();
 };
 

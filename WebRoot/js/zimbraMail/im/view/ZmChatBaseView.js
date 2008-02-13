@@ -18,7 +18,7 @@
 ZmChatBaseView = function(parent, className, posStyle, controller, view) {
 	if (arguments.length == 0) return;
 
-	DwtComposite.call(this, parent, className, posStyle, view);
+	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
 //	this._setMouseEventHdlrs();
 	this.setCursor("default");

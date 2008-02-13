@@ -1,7 +1,7 @@
 ZmSound = function(parent,className){
     if(arguments.length == 0) return;
     className = className || "ZmSound";
-    DwtComposite.call(this,parent);
+    DwtComposite.call(this, {parent:parent});
     this.setEnabled(false);
     this._initializePlayer();
 };

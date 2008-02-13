@@ -18,7 +18,7 @@
 ZmContactView = function(parent, controller, isMyCardView) {
 	if (arguments.length == 0) return;
 
-	DwtComposite.call(this, parent, "ZmContactView", DwtControl.ABSOLUTE_STYLE);
+	DwtComposite.call(this, {parent:parent, className:"ZmContactView", posStyle:DwtControl.ABSOLUTE_STYLE});
 
 	this._controller = controller;
 

@@ -18,7 +18,7 @@
 ZmDoublePaneView = function(parent, className, posStyle, mode, controller, dropTgt) {
 
 	if (arguments.length == 0) return;
-	DwtComposite.call(this, parent, className, posStyle);
+	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
 	this._controller = controller;
 	this._initHeader();

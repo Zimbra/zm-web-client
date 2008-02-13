@@ -20,7 +20,7 @@
 // routines are defined in ../model/ZmImAddress.js
 
 ZmImAddressEntry = function(parent) {
-        DwtComposite.call(this, parent, "ZmImAddressEntry");
+        DwtComposite.call(this, {parent:parent, className:"ZmImAddressEntry"});
         this._init();
 };
 

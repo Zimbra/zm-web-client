@@ -17,7 +17,7 @@
 
 ZmImNotification = function(parent, id) {
         if (arguments.length > 0) {
-	        DwtComposite.call(this, parent, "ZmImNotification", DwtControl.ABSOLUTE_STYLE);
+	        DwtComposite.call(this, {parent:parent, className:"ZmImNotification", posStyle:DwtControl.ABSOLUTE_STYLE});
                 this._anim = new AjxAnimation({ onUpdate : new AjxCallback(this, this._animUpdate),
 					        length   : 20,
 					        speed    : 25

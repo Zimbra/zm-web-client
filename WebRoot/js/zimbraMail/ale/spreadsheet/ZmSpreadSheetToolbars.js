@@ -23,7 +23,7 @@ ZmSpreadSheetToolbars = function(parent, spreadSheet) {
 	if (spreadSheet == null)
 		spreadSheet = parent;
 	this._spreadSheet = spreadSheet;
-	DwtComposite.call(this, parent, "ZmSpreadSheetToolbars", DwtControl.RELATIVE_STYLE);
+	DwtComposite.call(this, {parent:parent, className:"ZmSpreadSheetToolbars", posStyle:DwtControl.RELATIVE_STYLE});
 	this._on_buttonPress = new AjxListener(this, this._on_buttonPress);
 	this._buttons = {};
 	this._createWidgets();

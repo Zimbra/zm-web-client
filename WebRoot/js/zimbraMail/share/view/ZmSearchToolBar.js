@@ -17,7 +17,7 @@
 
 ZmSearchToolBar = function(parent, posStyle) {
 
-	DwtComposite.call(this, parent, "ZmSearchToolbar");
+	DwtComposite.call(this, {parent:parent, className:"ZmSearchToolbar"});
 
 	// set up "search all" menu item
 	var params = { msgKey:"searchAll", tooltipKey:"searchForAny", icon:"Globe", setting:ZmSetting.MIXED_VIEW_ENABLED, index:0 };

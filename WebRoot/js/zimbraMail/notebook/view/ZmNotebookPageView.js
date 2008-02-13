@@ -17,7 +17,7 @@
 
 ZmNotebookPageView = function(parent, controller, dropTgt) {
 	if (arguments.length == 0) return;	
-	DwtComposite.call(this, parent, "ZmNotebookPageView", DwtControl.ABSOLUTE_STYLE);
+	DwtComposite.call(this, {parent:parent, className:"ZmNotebookPageView", posStyle:DwtControl.ABSOLUTE_STYLE});
 	
 	this._controller = controller;
 

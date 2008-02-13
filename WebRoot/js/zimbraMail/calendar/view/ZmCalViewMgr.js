@@ -17,7 +17,7 @@
 
 ZmCalViewMgr = function(parent, controller, dropTgt) {
 
-	DwtComposite.call(this, parent, "ZmCalViewMgr", Dwt.ABSOLUTE_STYLE);
+	DwtComposite.call(this, {parent:parent, className:"ZmCalViewMgr", posStyle:Dwt.ABSOLUTE_STYLE});
 	this.addControlListener(new AjxListener(this, this._controlListener));
 
 	this._controller = controller;

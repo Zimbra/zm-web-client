@@ -18,7 +18,7 @@
 ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	if (arguments.length == 0) return;
 	className = className ? className : "ZmMailMsgView";
-	DwtComposite.call(this, parent, className, posStyle);
+	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
 	this._mode = mode;
 	this._controller = controller;

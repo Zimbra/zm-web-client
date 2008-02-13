@@ -184,7 +184,7 @@ function() {
 	
 ZmContactAlphabetBar = function(parent) {
 
-	DwtComposite.call(this, parent);
+	DwtComposite.call(this, {parent:parent});
 
 	this._createHtml();
 

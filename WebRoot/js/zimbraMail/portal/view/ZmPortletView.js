@@ -17,7 +17,7 @@
 
 ZmPortletView = function(parentEl, portlet, className) {
     className = className || "ZmPortlet";
-    DwtComposite.call(this, DwtShell.getShell(window), className, DwtControl.STATIC_STYLE);
+    DwtComposite.call(this, {parent:DwtShell.getShell(window), className:className, posStyle:DwtControl.STATIC_STYLE});
 
     // save data
     this._portlet = portlet;

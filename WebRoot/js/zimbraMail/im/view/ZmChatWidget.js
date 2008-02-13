@@ -17,7 +17,7 @@
 
 ZmChatWidget = function(parent, posStyle) {
         //console.time("ZmChatWidget");
-	DwtComposite.call(this, parent, "ZmChatWidget", posStyle);
+	DwtComposite.call(this, {parent:parent, className:"ZmChatWidget", posStyle:posStyle});
 	this._chatChangeListenerListener = new AjxListener(this, this._chatChangeListener);
 	this._init();
         //console.timeEnd("ZmChatWidget");
