@@ -1174,6 +1174,10 @@ function(msgNode) {
 	if (msgNode._attrs) { this.attrs = msgNode._attrs; }
 	if (msgNode.sf) 	{ this.sf = msgNode.sf; }
 	
+	// set the "normalized" Id if this message belongs to a shared folder
+	var idx = this.id.indexOf(":");
+	this.nId = (idx != -1) ? (this.id.substr(idx + 1)) : this.id;
+
 	if (msgNode._convCreateNode) {
 		this._convCreateNode = msgNode._convCreateNode;
 	}

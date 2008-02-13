@@ -87,7 +87,7 @@ function(parent, type, id) {
 	var hasContent = ((folder.numTotal > 0) || (folder.children && (folder.children.size() > 0)));
 
 	// user folder or Folders header
-	var nId = ZmOrganizer.normalizeId(id);
+	var nId = ZmOrganizer.normalizeId(id, this.type);
 	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder()))	{
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed());
@@ -146,7 +146,7 @@ function(parent, type, id) {
 			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
 			if (!appCtxt.get(ZmSetting.OFFLINE) && isEnabled) {
 				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-				var dataSources = dsCollection.getItemsFor(folder.nId);
+				var dataSources = dsCollection.getItemsFor(ZmOrganizer.normalizeId(folder.id));
 				if (dataSources.length > 0) {
 					button.setText(ZmMsg.checkExternalMail);
 				} else {
@@ -262,10 +262,11 @@ function(folder) {
 ZmFolderTreeController.prototype._doSync =
 function(folder) {
     var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-	var dataSources = dsCollection.getItemsFor(folder.nId);
+	var nFid = ZmOrganizer.normalizeId(folder.id);
+	var dataSources = dsCollection.getItemsFor(nFid);
 
     if (dataSources.length > 0) {
-        dsCollection.importMailFor(folder.nId);
+        dsCollection.importMailFor(nFid);
     }
     else {
         ZmTreeController.prototype._doSync.call(this, folder);
@@ -274,13 +275,13 @@ function(folder) {
 
 /*
 * Makes a request to add a new item to the tree.
-* 
+*
 * @param treeView	[ZmTreeView]	a tree view
 * @param parentNode	[DwtTreeItem]	node under which to add the new one
 * @param organizer	[ZmOrganizer]	organizer for the new node
 * @param index		[int]*			position at which to add the new node
  */
-ZmFolderTreeController.prototype._addNew = 
+ZmFolderTreeController.prototype._addNew =
 function(treeView, parentNode, organizer, idx) {
 	if (ZmFolder.HIDE_ID[organizer.id]) {
 		return false;
@@ -297,7 +298,7 @@ function(treeView, parentNode, organizer, idx) {
 *
 * @param ev		[DwtUiEvent]	the UI event
 */
-ZmFolderTreeController.prototype._deleteListener = 
+ZmFolderTreeController.prototype._deleteListener =
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 	if (organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash()) {
@@ -316,25 +317,25 @@ function(ev) {
 };
 
 /*
-* Empties a folder. 
+* Empties a folder.
 * It removes all the items in the folder except sub-folders.
 * If the folder is Trash, it empties even the sub-folders.
 * A warning dialog will be shown before any folder is emptied.
 *
 * @param ev		[DwtUiEvent]	the UI event
 */
-ZmFolderTreeController.prototype._emptyListener = 
+ZmFolderTreeController.prototype._emptyListener =
 function(ev) {
 	var organizer = this._pendingActionData = this._getActionedOrganizer(ev);
 	var ds = this._emptyShield = appCtxt.getOkCancelMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.OK_BUTTON, this._emptyShieldYesCallback, this, organizer);
 	ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._emptyShield);
-	
+
 	var msg = AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName());
 	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 	ds.popup();
-		
+
 	if(!(organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash())){
 		var cancelButton = ds.getButton(DwtDialog.CANCEL_BUTTON);
 		cancelButton.focus();
@@ -401,15 +402,15 @@ function(ev) {
 				// walk thru the array and find out what action is allowed
 				for (var i = 0; i < actionData.length; i++) {
 					if (actionData[i] instanceof ZmItem) {
-						action |= actionData[i].getDefaultMoveAction(dropFolder);
+						action |= actionData[i].getDefaultDndAction();
 					}
 				}
 				plusDiv = (actionData.length == 1) ? ev.dndProxy.firstChild.nextSibling	: ev.dndProxy.firstChild.nextSibling.nextSibling;
 
 				if (action && plusDiv) {
-					// TODO - what if action is ZmItem.ACTION_BOTH ??
-					var isCopy = ((action & ZmItem.ACTION_COPY) != 0);
-					Dwt.setVisibility(plusDiv, isCopy || (!action && dropFolder.isRemote()));
+					// TODO - what if action is ZmItem.DND_ACTION_BOTH ??
+					var isCopy = ((action & ZmItem.DND_ACTION_COPY) != 0);
+					Dwt.setVisibility(plusDiv, isCopy || dropFolder.isRemote());
 				}
 			} else {
 				ev.doIt = false;

@@ -41,13 +41,12 @@ ZmItem = function(type, id, list, noCache) {
 
 	this.type = type;
 	this.id = id;
-	ZmOrganizer.normalizeId(id, this);
 	this.list = list;
-	
+
 	this.tags = [];
 	this.tagHash = {};
 	this.folderId = 0;
-	
+
 	if (id && !noCache) {
 		appCtxt.cacheSet(id, this);
 	}
@@ -128,16 +127,16 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_LOW_PRIORITY]	= "isLowPriority";
 ZmItem.FLAG_PROP[ZmItem.FLAG_HIGH_PRIORITY]	= "isHighPriority";
 
 // DnD actions this item is allowed
-ZmItem.ACTION_MOVE = 1 << 0;
-ZmItem.ACTION_COPY = 1 << 1;
-ZmItem.ACTION_BOTH = ZmItem.ACTION_MOVE | ZmItem.ACTION_COPY;
+ZmItem.DND_ACTION_MOVE = 1 << 0;
+ZmItem.DND_ACTION_COPY = 1 << 1;
+ZmItem.DND_ACTION_BOTH = ZmItem.DND_ACTION_MOVE | ZmItem.DND_ACTION_COPY;
 
 // Used by items (such as calendar or share invites) that have notes
 ZmItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
 
 /**
  * Stores information about the given item type.
- * 
+ *
  * @param item			[constant]	item type
  * @param app			[constant]	app that handles this item type
  * @param nameKey		[string]	msg key for item name
@@ -161,11 +160,11 @@ function(item, params) {
 	if (params.organizer)		{ ZmOrganizer.ITEM_ORGANIZER[item]	= params.organizer; }
 	if (params.searchType)		{ ZmSearch.TYPE[item]				= params.searchType; }
 	if (params.resultsList)		{ ZmItem.RESULTS_LIST[item]			= params.resultsList; }
-	
+
 	if (params.node) {
 		ZmList.ITEM_TYPE[params.node] = item;
 	}
-	
+
 	if (params.dropTargets) {
 		if (!ZmApp.DROP_TARGETS[params.app]) {
 			ZmApp.DROP_TARGETS[params.app] = {};
@@ -285,11 +284,11 @@ function() {
 * Returns what the default action should be when dragging this item. This method
 * is meant to be overloaded for items that are read-only and can only be copied.
 */
-ZmItem.prototype.getDefaultMoveAction =
-function(folder) {
+ZmItem.prototype.getDefaultDndAction =
+function() {
 	return (this.isShared() || this.isReadOnly())
-		? ZmItem.ACTION_COPY
-		: ZmItem.ACTION_MOVE;
+		? ZmItem.DND_ACTION_COPY
+		: ZmItem.DND_ACTION_MOVE;
 };
 
 /**
@@ -310,7 +309,9 @@ function() {
 		if (this.id == -1) {
 			this._isShared = false;
 		} else {
-			this._isShared = (this.acctId && (this.acctId != appCtxt.getActiveAccount().id));
+			var acct = appCtxt.getActiveAccount();
+			var id = String(this.id);
+			this._isShared = ((id.indexOf(":") != -1) && (id.indexOf(acct.id) != 0));
 		}
 	}
 	return this._isShared;
