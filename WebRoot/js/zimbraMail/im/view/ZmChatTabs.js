@@ -217,7 +217,7 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 
 	index = this.__tabs.size() - 1;
 	this.setActiveTab(index);
-	var label = new DwtControl(cont);
+	var label = new DwtControl({parent:cont});
         label.reparentHtmlElement(tb[1]);
         label.setText = label.setContent;
 	label.setText(AjxStringUtil.htmlEncode(chatWidget._titleStr));

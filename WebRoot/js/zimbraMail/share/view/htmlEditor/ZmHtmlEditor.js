@@ -596,7 +596,7 @@ function() {
 
 		// Default is to have ONE toolbar now
 		this._createToolBar1(tb);
-		new DwtControl(tb, "vertSep");
+		new DwtControl({parent:tb, className:"vertSep"});
 		this._createToolBar2(tb);
 
 		this._toolbars.push(tb);
@@ -610,7 +610,7 @@ function(tb) {
 	this._createStyleMenu(tb);
 	this._createJustifyMenu(tb);
 
-	new DwtControl(tb, "vertSep");
+	new DwtControl({parent:tb, className:"vertSep"});
 
 	var insListener = new AjxListener(this, this._insElementListener);
 	var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
@@ -639,7 +639,7 @@ function(tb) {
 	this._indentButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
 	this._indentButton.addSelectionListener(listener);
 
-	new DwtControl(tb, "vertSep");
+	new DwtControl({parent:tb, className:"vertSep"});
 
 	var listener = new AjxListener(this, this._fontStyleListener);
 	this._boldButton = new DwtToolBarButton(params);
@@ -681,7 +681,7 @@ function(tb) {
 	this._fontBackgroundButton.setToolTipContent(ZmMsg.fontBackground);
 	this._fontBackgroundButton.addSelectionListener(new AjxListener(this, this._fontHiliteListener));
 
-	new DwtControl(tb, "vertSep");
+	new DwtControl({parent:tb, className:"vertSep"});
 
 	var params = {parent:tb};
 	this._horizRuleButton = new DwtToolBarButton(params);

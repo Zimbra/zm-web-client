@@ -738,7 +738,7 @@ function() {
 
 ZmAppViewMgr.prototype._createLoadingView =
 function() {
-	var loadingView = new DwtControl(this._shell, "DwtListView", Dwt.ABSOLUTE_STYLE);
+	var loadingView = new DwtControl({parent:this._shell, className:"DwtListView", posStyle:Dwt.ABSOLUTE_STYLE});
 	var el = loadingView.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("share.App#Loading", this._htmlElId);
 	var elements = {};

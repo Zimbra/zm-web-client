@@ -16,7 +16,7 @@
  */
 ZmStatusView = function(parent, className, posStyle) {
 
-	DwtControl.call(this, parent, (className || "ZmStatus"), posStyle);
+	DwtControl.call(this, {parent:parent, className:(className || "ZmStatus"), posStyle:posStyle});
 
 	this._toast = new ZmToast(this);
 	this._statusQueue = [];
