@@ -110,7 +110,7 @@ ZmFilterRulesView.prototype.reset = function() {};
 */
 ZmFilterListView = function(parent, controller) {
 	var headerList = this._getHeaderList();
-	DwtListView.call(this, parent, "ZmFilterListView", null, headerList);
+	DwtListView.call(this, {parent:parent, className:"ZmFilterListView", headerList:headerList});
 
 	this._rules = AjxDispatcher.run("GetFilterRules");
 

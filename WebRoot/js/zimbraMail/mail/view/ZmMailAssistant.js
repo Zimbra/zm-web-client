@@ -247,7 +247,7 @@ function(dialog, verb, args) {
 ZmMailAssistant.prototype._getConfirmDialog = 
 function(dialog) {
 	if (!this._confirmDialog) {
-		this._confirmDialog = new DwtMessageDialog(dialog.shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+		this._confirmDialog = new DwtMessageDialog({parent:dialog.shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 	}
 	return this._confirmDialog;
 };
