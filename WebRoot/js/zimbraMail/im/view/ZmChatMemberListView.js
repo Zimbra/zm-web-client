@@ -16,7 +16,8 @@
  */
  
 ZmChatMemberListView = function(parent, rosterList) {
-	DwtListView.call(this, parent, "ZmChatMemberList", DwtControl.ABSOLUTE_STYLE, this._getHeaderList());
+	DwtListView.call(this, {parent:parent, className:"ZmChatMemberList", posStyle:DwtControl.ABSOLUTE_STYLE,
+							headerList:this._getHeaderList()});
 	this.type = ZmItem.ROSTER_ITEM;
 	this.rosterList = rosterList;
 	this.rosterList.addChangeListener(new AjxListener(this, this._rosterListChangeListener));

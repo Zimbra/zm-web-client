@@ -31,7 +31,8 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	if (this.ACE_ENABLED)
 		this._ace_componentsLoading = 0;
 
-	DwtHtmlEditor.call(this, parent, "ZmHtmlEditor", posStyle, content, mode, appContextPath+"/public/blank.html");
+	DwtHtmlEditor.call(this, {parent:parent, className:"ZmHtmlEditor", posStyle:posStyle,
+							  content:content, mode:mode, blankIframeSrc:appContextPath+"/public/blank.html"});
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
 
@@ -42,7 +43,7 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, withAce) {
 	settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
 };
 
-ZmHtmlEditor.prototype = new DwtHtmlEditor();
+ZmHtmlEditor.prototype = new DwtHtmlEditor;
 ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 
 

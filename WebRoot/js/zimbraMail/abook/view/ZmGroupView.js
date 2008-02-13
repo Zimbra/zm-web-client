@@ -600,7 +600,7 @@ function(contact, abridged) {
 */
 ZmGroupListView = function(parent) {
 	if (arguments.length == 0) return;
-	DwtListView.call(this, parent, "DwtChooserListView", null, this._getHeaderList(parent));
+	DwtListView.call(this, {parent:parent, className:"DwtChooserListView", headerList:this._getHeaderList(parent)});
 };
 
 ZmGroupListView.prototype = new DwtListView;

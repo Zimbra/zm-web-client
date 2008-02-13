@@ -1549,7 +1549,8 @@ ZmAccountsPage.__proxy_getIdentity = function(identity) {
 ZmAccountsListView = function(parent, className, posStyle, noMaximize) {
 	className = className || "DwtListView";
 	className += " ZOptionsItemsListView";
-	DwtListView.call(this, parent, className, posStyle, this._getHeaderList(), noMaximize);
+	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle,
+							headerList:this._getHeaderList(), noMaximize:noMaximize});
 	this.setMultiSelect(false);
 	this.setViewPrefix("acct");
 };

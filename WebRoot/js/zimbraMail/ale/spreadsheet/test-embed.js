@@ -18,9 +18,9 @@ Test = function() {
 		b.setText("Insert Spreadsheet");
 		b.setSize(100, null);
 
-		var editor = new DwtHtmlEditor(container, "ZmHtmlEditor",
-					       null, "<h1>Check This Out</h1><p>paragraph</p>",
-					       DwtHtmlEditor.HTML, "/public/blank.html");
+		var editor = new DwtHtmlEditor({parent:container, className:"ZmHtmlEditor",
+					       content:"<h1>Check This Out</h1><p>paragraph</p>",
+					       mode:DwtHtmlEditor.HTML, blankIframeSrc:"/public/blank.html"});
 
 		container.setLocation(20, 20);
 		editor.setSize(800, 600);

@@ -191,7 +191,7 @@ function() {
 ZmAppCtxt.prototype.getMsgDialog =
 function() {
 	if (!this._msgDialog) {
-		this._msgDialog = new DwtMessageDialog(this._shell);
+		this._msgDialog = new DwtMessageDialog({parent:this._shell});
 	}
 	return this._msgDialog;
 };
@@ -199,7 +199,7 @@ function() {
 ZmAppCtxt.prototype.getYesNoMsgDialog =
 function() {
 	if (!this._yesNoMsgDialog) {
-		this._yesNoMsgDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
+		this._yesNoMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]});
 	}	
 	return this._yesNoMsgDialog;
 };
@@ -207,7 +207,7 @@ function() {
 ZmAppCtxt.prototype.getYesNoCancelMsgDialog =
 function() {
 	if (!this._yesNoCancelMsgDialog) {
-		this._yesNoCancelMsgDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
+		this._yesNoCancelMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]});
 	}	
 	return this._yesNoCancelMsgDialog;
 };
@@ -215,7 +215,7 @@ function() {
 ZmAppCtxt.prototype.getOkCancelMsgDialog =
 function() {
 	if (!this._okCancelMsgDialog) {
-		this._okCancelMsgDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+		this._okCancelMsgDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 	}	
 	return this._okCancelMsgDialog;
 };

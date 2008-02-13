@@ -846,7 +846,7 @@ function(mode) {
 	if ((this._composeView.isDirty() || this._action == ZmOperation.DRAFT))
 	{
 		if (!this._formatWarningDialog) {
-			this._formatWarningDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+			this._formatWarningDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 		}
 		this._formatWarningDialog.registerCallback(DwtDialog.OK_BUTTON, this._formatOkCallback, this, [mode]);
 		this._formatWarningDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._formatCancelCallback, this);
@@ -955,7 +955,7 @@ function(ev) {
 
 	if (!this._detachOkCancel) {
 		// detach ok/cancel dialog is only necessary if user clicked on the add attachments button
-		this._detachOkCancel = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+		this._detachOkCancel = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 		this._detachOkCancel.setMessage(ZmMsg.detachAnyway, DwtMessageDialog.WARNING_STYLE);
 		this._detachOkCancel.registerCallback(DwtDialog.OK_BUTTON, this._detachCallback, this);
 	}
@@ -995,7 +995,7 @@ function(ev) {
 
 			// warn user of possible lost content
 			if (!this._switchIncludeDialog) {
-				this._switchIncludeDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+				this._switchIncludeDialog = new DwtMessageDialog({parent:this._shell, buttons:[DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]});
 				this._switchIncludeDialog.setMessage(ZmMsg.switchIncludeWarning, DwtMessageDialog.WARNING_STYLE);
 				this._switchIncludeDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._switchIncludeCancelCallback, this);
 			}

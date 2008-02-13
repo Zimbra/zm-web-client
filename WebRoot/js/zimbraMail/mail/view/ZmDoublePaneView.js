@@ -23,7 +23,8 @@ ZmDoublePaneView = function(parent, className, posStyle, mode, controller, dropT
 	this._controller = controller;
 	this._initHeader();
 	this._mailListView = this._createMailListView(mode, controller, dropTgt);
-	this._msgSash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", ZmDoublePaneView.SASH_THRESHOLD, Dwt.ABSOLUTE_STYLE);
+	this._msgSash = new DwtSash({parent:this, style:DwtSash.VERTICAL_STYLE, className:"AppSash-vert",
+								 threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
 	this._msgView = new ZmMailMsgView(this, null, posStyle, mode, controller);
 
 	if (!controller._readingPaneOn) {
