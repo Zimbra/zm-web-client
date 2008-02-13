@@ -258,7 +258,11 @@ function(treeItem, organizer) {
 	}
 	if (this.isCheckedStyle) {
 		treeItem.setChecked(organizer.isChecked);
-	}
+	}      
+    var treeItems = treeItem.getItems();
+    for (var i = 0; i < treeItems.length; i++) {
+        this._fixupTreeNode(treeItems[i]);
+    }
 };
 
 /**
