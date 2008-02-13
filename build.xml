@@ -220,7 +220,7 @@
 			<zipfileset refid='customer.web.fileset'/>
             <zipfileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' prefix='public'/>
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
-			<zipfileset dir='${build.web.dir}' includes='${build.web.dir}/js/Boot_all.js${jsmin.ext}' />
+			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
             <zipfileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' prefix='img'/>
             <zipfileset dir='${skins.dir}' prefix='skins'/>
             <zipfileset refid='help.fileset'/>
