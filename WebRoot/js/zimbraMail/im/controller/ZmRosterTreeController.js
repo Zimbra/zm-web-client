@@ -246,9 +246,10 @@ ZmRosterTreeController.prototype._imFloatingListListener = function(ev) {
 
                 var toolbar = new DwtToolBar(cont);
 
-                var label = new DwtLabel(toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
-                label.setImage("ImGroup");
-	        label.setText(ZmMsg.buddyList);
+                var lab = new DwtLabel({parent:toolbar, style:DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT,
+                						  className:"ZmChatWindowLabel"});
+                lab.setImage("ImGroup");
+	        lab.setText(ZmMsg.buddyList);
 
                 toolbar.addFiller();
 

@@ -299,7 +299,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 
 	if (ZmSpreadSheetModel.DEBUG) {
 		new DwtControl(toolbar, "vertSep");
-		new DwtLabel(toolbar).setText("DEBUG: ");
+		new DwtLabel({parent:toolbar}).setText("DEBUG: ");
 		b = new DwtToolBarButton(params);
 		b.setText("Serialize");
 		b.addSelectionListener(new AjxListener(this, function() {
