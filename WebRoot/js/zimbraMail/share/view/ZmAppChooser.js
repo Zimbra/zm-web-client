@@ -21,7 +21,7 @@ ZmAppChooser = function(parent, className, buttons, useTabs) {
 	var tbStyle = useTabs ? DwtToolBar.HORIZ_STYLE : DwtToolBar.VERT_STYLE;
 	var width = appCtxt.get(ZmSetting.SKIN_HINTS, "appChooser.fullWidth") ? "100%" : null;
 
-	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE, null, null, width, tbStyle);
+	DwtToolBar.call(this, {parent:parent, className:className, posStyle:Dwt.ABSOLUTE_STYLE, width:width, style:tbStyle});
     Dwt.setLocation(this.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 
 	this.setScrollStyle(Dwt.CLIP);

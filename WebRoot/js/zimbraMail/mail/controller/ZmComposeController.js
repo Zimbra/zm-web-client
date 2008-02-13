@@ -1230,7 +1230,7 @@ function() {
 	if (!this._composeView) { return null; }
 	var button = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 	if (!button) { return null; }
-	var menu = new DwtMenu(button);
+	var menu = new DwtMenu({parent:button});
 	var options = appCtxt.getSignatureCollection().getSignatureOptions();
 	if (options.length > 0) {
 		var listener = new AjxListener(this, this._handleSelectSignature);

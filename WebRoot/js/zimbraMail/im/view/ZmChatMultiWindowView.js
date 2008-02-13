@@ -113,7 +113,7 @@ function() {
 	// s.left = "100%";
 	// s.top = "100%";
 	s.right = s.bottom = "20px";
-	var toolbar = new DwtToolBar(cont, null, null, 10);
+	var toolbar = new DwtToolBar({parent:cont, cellSpacing:10});
 	for (var i = 1; i < gws.length; ++i) {
 		var gw = gws[i];
 

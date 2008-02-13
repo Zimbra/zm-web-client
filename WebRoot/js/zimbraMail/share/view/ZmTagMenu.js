@@ -191,7 +191,7 @@ function(tagList, addRemove) {
 		if (removeList.length > 1) {
 			for (i = 0; i < removeList.length; i++) {
 				if (!removeMenu) {
-					removeMenu = new DwtMenu(miRemove, null, this._className);
+					removeMenu = new DwtMenu({parent:miRemove, className:this._className});
 					miRemove.setMenu(removeMenu);
 				}
 				var tag = tagList.getById(removeList[i]);

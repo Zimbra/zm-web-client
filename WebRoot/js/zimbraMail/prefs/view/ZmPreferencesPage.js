@@ -567,7 +567,7 @@ function(id, setup, value) {
 		optLabel = ZmPreferencesPage.__formatLabel(optLabel, optValue);
 		var isSelected = value == optValue; 
 
-		var radioBtn = new DwtRadioButton(container, null, id, isSelected);
+		var radioBtn = new DwtRadioButton({parent:container, name:id, checked:isSelected});
 		radioBtn.setText(optLabel);
 		radioBtn.setValue(optValue);
 
@@ -752,7 +752,7 @@ ZmPreferencesPage.prototype._createLocalesMenu =
 function(setup) {
 
     var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
-    var result = new DwtMenu(button);
+    var result = new DwtMenu({parent:button});
 
 	var listener = new AjxListener(this, this._localeSelectionListener);
     for (var language in ZmLocale.languageMap) {
@@ -763,7 +763,7 @@ function(setup) {
         } else if (array && array.length > 1) {
             var menuItem = new DwtMenuItem({parent:result, style:DwtMenuItem.CASCADE_STYLE});
             menuItem.setText(ZmLocale.languageMap[language].name)
-            var subMenu = new DwtMenu(result, DwtMenu.DROPDOWN_STYLE);
+            var subMenu = new DwtMenu({parent:result, style:DwtMenu.DROPDOWN_STYLE});
             menuItem.setMenu(subMenu);
             for (var i = 0, count = array.length; i < count; i++) {
                 this._createLocaleItem(subMenu, array[i], listener);

@@ -261,7 +261,7 @@ function() {
 
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var formatButton = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-		var m = new DwtMenu(formatButton);
+		var m = new DwtMenu({parent:formatButton});
 		formatButton.setMenu(m);
 
 		var mi = new DwtMenuItem({parent:m, style:DwtMenuItem.RADIO_STYLE});

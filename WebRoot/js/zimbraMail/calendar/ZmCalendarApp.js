@@ -653,7 +653,7 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	}
 
 	// create menu for button
-	var calMenu = new DwtMenu(dateButton, null, null, null, isInDialog);
+	var calMenu = new DwtMenu({parent:dateButton, inDialog:isInDialog});
 	calMenu.setSize("150");
 	calMenu._table.width = "100%";
 	dateButton.setMenu(calMenu, true);

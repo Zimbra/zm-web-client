@@ -16,23 +16,23 @@
  */
 
 /**
-* Creates a popup menu.
-* @const
-* @class
-* This class represents a basic popup menu which can add menu items, manage listeners, and
-* enable/disabled its menu items.
-*
-* @author Conrad Damon
-*
-* @param parent			[DwtComposite]		the containing widget
-* @param className		[string]*			CSS class
-* @param dialog			[DwtDialog]*		containing dialog, if any
-*/
-ZmPopupMenu = function(parent, className, dialog) {
+ * Creates a popup menu.
+ * @const
+ * @class
+ * This class represents a basic popup menu which can add menu items, manage listeners, and
+ * enable/disabled its menu items.
+ *
+ * @author Conrad Damon
+ *
+ * @param parent		[DwtComposite]		the containing widget
+ * @param className		[string]*			CSS class
+ * @param inDialog 		[boolean]*			if true, menu is part of a dialog
+ */
+ZmPopupMenu = function(parent, className, inDialog) {
 
 	if (arguments.length == 0) return;
 	className = className ? className : "ActionMenu";
-	DwtMenu.call(this, parent, DwtMenu.POPUP_STYLE, className, null, dialog);
+	DwtMenu.call(this, {parent:parent, style:DwtMenu.POPUP_STYLE, className:className, inDialog:inDialog});
 
 	this._menuItems = {};
 };

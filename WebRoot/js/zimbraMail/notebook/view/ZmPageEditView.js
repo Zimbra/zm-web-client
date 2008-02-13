@@ -453,14 +453,15 @@ function(html) {
 
 ZmPageEditor.prototype._createToolbars = function() {
 	// notebook page editor will have two separate toolbars
+	var tbParams = {parent:this, className:"ZToolbar", posStyle:DwtControl.RELATIVE_STYLE, cellSpacing:2};
 	if (!this._toolbar1) {
-		var tb = this._toolbar1 = new DwtToolBar(this, "ZToolbar", DwtControl.RELATIVE_STYLE, 2);
+		var tb = this._toolbar1 = new DwtToolBar(tbParams);
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 		this._createToolBar1(tb);
 		this._toolbars.push(tb);
 	}
 	if (!this._toolbar2) {
-		var tb = this._toolbar2 = new DwtToolBar(this, "ZToolbar", DwtControl.RELATIVE_STYLE, 2);
+		var tb = this._toolbar2 = new DwtToolBar(tbParams);
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 
 		// add extra buttons here
@@ -524,7 +525,7 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 
 /*** TODO: Add this back later...
 ZmPageEditor.prototype._createWikiToolBar = function(parent) {
-	var toolbar = this._wikiToolBar = new ZmToolBar(parent, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
+	var toolbar = this._wikiToolBar = new ZmToolBar({parent:this, className:"ZToolbar", posStyle:DwtControl.RELATIVE_STYLE, cellSpacing:2});
 	toolbar.setVisible(this._mode == DwtHtmlEditor.HTML);
 	
 	var listener = new AjxListener(this, this._wikiToolBarListener);

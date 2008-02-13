@@ -244,7 +244,7 @@ ZmRosterTreeController.prototype._imFloatingListListener = function(ev) {
                 this.__floatingBuddyListWin = win = new DwtResizableWindow(wm);
                 var cont = new DwtComposite(win);
 
-                var toolbar = new DwtToolBar(cont);
+                var toolbar = new DwtToolBar({parent:cont});
 
                 var lab = new DwtLabel({parent:toolbar, style:DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT,
                 						  className:"ZmChatWindowLabel"});
@@ -264,7 +264,7 @@ ZmRosterTreeController.prototype._imFloatingListListener = function(ev) {
                 var list = new ZmImOverview(cont, { posStyle   : Dwt.STATIC_STYLE,
                                                     isFloating : true });
 
-                var toolbar2 = new DwtToolBar(cont);
+                var toolbar2 = new DwtToolBar({parent:cont});
 
                 var newBuddy = new DwtToolBarButton({parent:toolbar2});
                 newBuddy.setImage("ImBuddy");

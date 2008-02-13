@@ -31,7 +31,7 @@
 ZmToolBar = function(parent, className, posStyle) {
 	if (arguments.length == 0) return;
 
-	DwtToolBar.call(this, parent, className, (posStyle || DwtControl.ABSOLUTE_STYLE));
+	DwtToolBar.call(this, {parent:parent, className:className, posStyle:(posStyle || DwtControl.ABSOLUTE_STYLE)});
 	this._buttons = {};
 };
 

@@ -592,7 +592,8 @@ ZmHtmlEditor.prototype._createToolbars =
 function() {
 	// NOTE: overload this method to place toolbars differently.
 	if (!this._toolbar1) {
-		var tb = this._toolbar1 = new DwtToolBar(this, "ZToolbar", DwtControl.RELATIVE_STYLE, 2, null, null, null, 0);
+		var tb = this._toolbar1 = new DwtToolBar({parent:this, className:"ZToolbar",
+												  posStyle:DwtControl.RELATIVE_STYLE, cellSpacing:2, index:0});
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 
 		// Default is to have ONE toolbar now
@@ -696,12 +697,12 @@ function(tb) {
 	b.setToolTipContent(ZmMsg.insertTable);
 	b.dontStealFocus();
 	b.setImage("Table");
-	var menu = new DwtMenu(b);
+	var menu = new DwtMenu({parent:b});
 	b.setMenu(menu);
 
 	var item = new DwtMenuItem({parent:menu});
 	item.setText(ZmMsg.insertTable);
-	var grid_menu = new DwtMenu(item, DwtMenu.GENERIC_WIDGET_STYLE);
+	var grid_menu = new DwtMenu({parent:item, style:DwtMenu.GENERIC_WIDGET_STYLE});
  	var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
  	grid.addSelectionListener(new AjxListener(this, this._createTableListener));
  	item.setMenu(grid_menu);

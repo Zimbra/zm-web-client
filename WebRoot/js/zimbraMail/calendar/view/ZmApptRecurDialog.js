@@ -898,7 +898,7 @@ function() {
 
 	var selectChangeListener = new AjxListener(this, this._selectChangeListener);
 	this._weeklySelectButton = new DwtButton({parent:this});//new DwtSelect({parent:this});
-    var wMenu = new ZmPopupMenu(this._weeklySelectButton,null,this);
+    var wMenu = new ZmPopupMenu(this._weeklySelectButton,null,true);
     this._weeklySelectButton.setMenu(wMenu);
     //this._weeklySelect.addChangeListener(selectChangeListener);
 	var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);
