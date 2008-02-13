@@ -129,7 +129,7 @@ function() {
 		nameElement.appendChild(this._nameEl);
 	}
 
-	this._color = new DwtSelect(view);
+	this._color = new DwtSelect({parent:view});
 	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
 		var color = ZmOrganizer.COLOR_CHOICES[i];
 		this._color.addOption(color.label, false, color.value);

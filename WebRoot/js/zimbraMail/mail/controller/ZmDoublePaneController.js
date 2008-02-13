@@ -298,7 +298,7 @@ function(view, menu, checked) {
 		}
 		viewBtn.setMenu(menu);
 	} else if (menu.getItemCount() > 0) {
-		new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+		new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
 	}
 
 	var id = ZmMailListController.READING_PANE_MENU_ITEM_ID;

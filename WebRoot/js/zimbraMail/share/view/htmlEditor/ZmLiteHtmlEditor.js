@@ -311,19 +311,20 @@ ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
 	new DwtControl(tb, "vertSep");
 
 	var listener = new AjxListener(this, this._fontStyleListener);
-	this._boldButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
+	this._boldButton = new DwtToolBarButton(params);
 	this._boldButton.setImage("Bold");
 	this._boldButton.setToolTipContent(ZmMsg.boldText);
 	this._boldButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.BOLD_STYLE);
 	this._boldButton.addSelectionListener(listener);
 
-	this._italicButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	this._italicButton = new DwtToolBarButton(params);
 	this._italicButton.setImage("Italics");
 	this._italicButton.setToolTipContent(ZmMsg.italicText);
 	this._italicButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.ITALIC_STYLE);
 	this._italicButton.addSelectionListener(listener);
 
-	this._underlineButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	this._underlineButton = new DwtToolBarButton(params);
 	this._underlineButton.setImage("Underline");
 	this._underlineButton.setToolTipContent(ZmMsg.underlineText);
 	this._underlineButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.UNDERLINE_STYLE);
@@ -372,7 +373,7 @@ ZmLiteHtmlEditor.prototype._smileyListener = function(ev){
 
 ZmLiteHtmlEditor.prototype._createFontFamilyMenu =
 function(tb) {
-	this._fontFamilyButton = new DwtToolBarButton(tb);
+	this._fontFamilyButton = new DwtToolBarButton({parent:tb});
 	this._fontFamilyButton.dontStealFocus();
 	this._fontFamilyButton.setAlign(DwtLabel.ALIGN_LEFT);
 	var menu = new ZmPopupMenu(this._fontFamilyButton);
@@ -393,7 +394,7 @@ function(tb) {
 
 ZmLiteHtmlEditor.prototype._createFontSizeMenu =
 function(tb) {
-	this._fontSizeButton = new DwtToolBarButton(tb);
+	this._fontSizeButton = new DwtToolBarButton({parent:tb});
 	this._fontSizeButton.dontStealFocus();
 	var menu = new ZmPopupMenu(this._fontSizeButton);
 	var listener = new AjxListener(this, this._fontSizeListener);

@@ -269,7 +269,7 @@ function() {
 	var folderCell = document.getElementById(folderCellId);
 	if (folderCell) {
 		// add select widget for user to choose folder
-		this._folderSelect = new DwtSelect(this);
+		this._folderSelect = new DwtSelect({parent:this});
 		this._folderSelect.reparentHtmlElement(folderCellId);
 		this._folderSelect.addChangeListener(new AjxListener(this, this._selectChangeListener));
 	}
@@ -278,7 +278,7 @@ function() {
 	var selectId = this._htmlElId + "_listSelect";
 	var selectCell = document.getElementById(selectId);
 	if (selectCell) {
-		this._searchInSelect = new DwtSelect(this);
+		this._searchInSelect = new DwtSelect({parent:this});
 		this._searchInSelect.addOption(ZmMsg.contacts, true, ZmContactsApp.SEARCHFOR_CONTACTS);
 		if (appCtxt.get(ZmSetting.SHARING_ENABLED))
 			this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
@@ -288,7 +288,7 @@ function() {
 	}
 
 	// add "Search" button
-	this._searchButton = new DwtButton(this);
+	this._searchButton = new DwtButton({parent:this});
 	this._searchButton.setText(ZmMsg.search);
 	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
 	this._searchButton.reparentHtmlElement(this._htmlElId + "_searchButton");
@@ -302,14 +302,14 @@ function() {
 
 	var addListener = new AjxListener(this, this._addListener);
 	// add "Add" button
-	this._addButton = new DwtButton(this);
+	this._addButton = new DwtButton({parent:this});
 	this._addButton.setText(ZmMsg.add);
 	this._addButton.addSelectionListener(addListener);
 	this._addButton.reparentHtmlElement(this._htmlElId + "_addButton");
 	this._addButton.setEnabled(false);
 
 	// add "Add All" button
-	this._addAllButton = new DwtButton(this);
+	this._addAllButton = new DwtButton({parent:this});
 	this._addAllButton.setText(ZmMsg.addAll);
 	this._addAllButton.addSelectionListener(addListener);
 	this._addAllButton.reparentHtmlElement(this._htmlElId + "_addAllButton");
@@ -317,13 +317,13 @@ function() {
 
 	var pageListener = new AjxListener(this, this._pageListener);
 	// add paging buttons
-	this._prevButton = new DwtButton(this);
+	this._prevButton = new DwtButton({parent:this});
 	this._prevButton.setImage("LeftArrow");
 	this._prevButton.addSelectionListener(pageListener);
 	this._prevButton.reparentHtmlElement(this._htmlElId + "_prevButton");
 	this._prevButton.setEnabled(false);
 
-	this._nextButton = new DwtButton(this);
+	this._nextButton = new DwtButton({parent:this});
 	this._nextButton.setImage("RightArrow");
 	this._nextButton.addSelectionListener(pageListener);
 	this._nextButton.reparentHtmlElement(this._htmlElId + "_nextButton");

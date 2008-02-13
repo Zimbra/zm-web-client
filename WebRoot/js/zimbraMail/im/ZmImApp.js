@@ -497,7 +497,7 @@ function(parent) {
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
                 if (op == ZmOperation.SEP)
-                        new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+                        new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
                 else {
 		        var mi = menu.createMenuItem(op, { image : ZmOperation.getProp(op, "image"),
 						           text	 : ZmMsg[ZmOperation.getProp(op, "textKey")],

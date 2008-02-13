@@ -464,20 +464,21 @@ ZmPageEditor.prototype._createToolbars = function() {
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 
 		// add extra buttons here
+		var params = {parent:tb, style:DwtButton.TOGGLE_STYLE};
 		var listener = new AjxListener(this, this._fontStyleListener);
-		b = this._strikeThruButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+		b = this._strikeThruButton = new DwtToolBarButton(params);
 		b.setImage("StrikeThru");
 		b.setToolTipContent(ZmMsg.strikeThruText);
 		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.STRIKETHRU_STYLE);
 		b.addSelectionListener(listener);
 
-		b = this._superscriptButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+		b = this._superscriptButton = new DwtToolBarButton(params);
 		b.setImage("SuperScript");
 		b.setToolTipContent(ZmMsg.superscript);
 		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUPERSCRIPT_STYLE);
 		b.addSelectionListener(listener);
 
-		b = this._subscriptButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+		b = this._subscriptButton = new DwtToolBarButton(params);
 		b.setImage("Subscript");
 		b.setToolTipContent(ZmMsg.subscript);
 		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
@@ -498,22 +499,23 @@ ZmPageEditor.prototype._createToolbars = function() {
 ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	ZmHtmlEditor.prototype._createToolBar2.call(this, parent);
 
-	var button = new DwtToolBarButton(this._toolbar2)
+	var params = {parent:this._toolbar2};
+	var button = new DwtToolBarButton(params)
 	button.setImage("ImageDoc");
 	button.setToolTipContent(ZmMsg.insertImage);
 	button.addSelectionListener(new AjxListener(this, this._insertImagesListener));
 
-	button = new DwtToolBarButton(this._toolbar2)
+	button = new DwtToolBarButton(params)
 	button.setImage("Attachment");
 	button.setToolTipContent(ZmMsg.insertAttachment);
 	button.addSelectionListener(new AjxListener(this, this._insertAttachmentsListener));
 
-	button = new DwtToolBarButton(this._toolbar2, null);
+	button = new DwtToolBarButton(params);
 	button.setImage("URL");
 	button.setToolTipContent(ZmMsg.insertLink);
 	button.addSelectionListener(new AjxListener(this, this._insertLinkListener));
 	
-	button = new DwtToolBarButton(this._toolbar2, null);
+	button = new DwtToolBarButton(params);
 	button.setImage("FindReplace");
 	button.setToolTipContent(ZmMsg.findNReplaceTitle);
 	button.addSelectionListener(new AjxListener(this, this._findReplaceListener));
@@ -530,7 +532,7 @@ ZmPageEditor.prototype._createWikiToolBar = function(parent) {
 	var wiklets = ZmWiklet.getWiklets();
 	for (var name in wiklets) {
 		var wiklet = wiklets[name];
-		var button = new DwtButton(toolbar, null, "DwtToolbarButton");
+		var button = new DwtButton({parent:toolbar, className:"DwtToolbarButton"});
 		button.setText(wiklet.label || name);
 		button.setToolTipContent(wiklet.tooltip);
 		button.setData("wiklet", name);

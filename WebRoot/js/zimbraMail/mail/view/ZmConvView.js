@@ -154,7 +154,7 @@ function() {
 	this._summary.getHtmlElement().innerHTML = AjxTemplate.expand("mail.Message#MessageListHeader", subs);
 
 	// add the close button
-	this._closeButton = new DwtButton(this, null, "DwtToolbarButton");
+	this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
 	this._closeButton.setImage("Close");
 	this._closeButton.setText(ZmMsg.close);
 	this._closeButton.reparentHtmlElement(this._htmlElId + "_closeBtnCell");

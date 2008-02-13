@@ -166,7 +166,7 @@ ZmFilterRuleDialog.prototype._createConditionControl = function(parent, segment,
 		var formats = format.getFormats();
 		var values = [ZmFilterRule.GROUP_ANY, ZmFilterRule.GROUP_ALL];
 
-		var select = this._conditionSelect = new DwtSelect(parent);
+		var select = this._conditionSelect = new DwtSelect({parent:parent});
 		for (var i = 0; i < values.length; i++) {
 			// TODO: guard against badly specified message
 			select.addOption(formats[i].toPattern(), i == 0, values[i]);
@@ -410,7 +410,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 
 	} else if (type == ZmFilterRule.TYPE_SELECT) {
-		var select = new DwtSelect(this);
+		var select = new DwtSelect({parent:this});
 		select.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		this._inputs[rowId][field] = {id: id, dwtObj: select};
 		if (isMainSelect) {
@@ -456,7 +456,7 @@ function(conf, field, options, dataValue, rowId, data) {
 
 	} else if (type == ZmFilterRule.TYPE_CALENDAR) {
 		// create button with calendar that hangs off menu
-		var dateButton = new DwtButton(this);
+		var dateButton = new DwtButton({parent:this});
 		dateButton.setSize(ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH, Dwt.DEFAULT);
 		var date, dateText;
 		if (dataValue) {
@@ -484,7 +484,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 
 	} else if (type == ZmFilterRule.TYPE_FOLDER_PICKER || type == ZmFilterRule.TYPE_TAG_PICKER) {
-		var button = new DwtButton(this);
+		var button = new DwtButton({parent:this});
 		var organizer = null;
 		if (dataValue) {
 			if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
@@ -526,7 +526,7 @@ function(rowId, isCondition) {
 	var buttons = ["Plus", "Minus"];
 	for (var i = 0; i < buttons.length; i++) {
 		var b = buttons[i];
-		var button = new DwtButton(this);
+		var button = new DwtButton({parent:this});
 // MOW: this was messing up velodrome skin
 //		button.setSize(ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH, Dwt.DEFAULT);
 		button.setImage(b);

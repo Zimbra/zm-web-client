@@ -187,7 +187,7 @@ ZmSignaturesPage.prototype._setupCustom = function(id, setup, value) {
 		var lessThanEqual = sigCount <= this._maxEntries;
 		var buttonEl = document.getElementById(this._htmlElId+"_ADD_SIGNATURE");
 		if (buttonEl) {
-			var button = new DwtButton(this);
+			var button = new DwtButton({parent:this});
 			button.setText(ZmMsg.addSignature);
 			button.setEnabled(lessThanEqual);
 			button.addSelectionListener(new AjxListener(this, this._handleAddButton));
@@ -281,7 +281,7 @@ ZmSignaturesPage.prototype._addSignature = function(signature) {
 
 		var deleteEl = document.getElementById(signature._htmlElId+"_SIGNATURE_DELETE");
 		if (deleteEl) {
-			var button = new DwtButton(listComp);
+			var button = new DwtButton({parent:listComp});
 			button.addSelectionListener(new AjxListener(this, this._handleDeleteButton, [signature._htmlElId]));
 			this._replaceControlElement(deleteEl, button);
 

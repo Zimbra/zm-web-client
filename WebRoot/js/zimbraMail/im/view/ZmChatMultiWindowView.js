@@ -119,7 +119,7 @@ function() {
 
 		var tb2 = new DwtComposite(toolbar);
 
-		var btnReconnect = new DwtButton(tb2, null);
+		var btnReconnect = new DwtButton({parent:tb2});
 		btnReconnect.setVisibility(gw.getState() == ZmImGateway.STATE.BOOTED_BY_OTHER_LOGIN);
 		btnReconnect.setText(ZmMsg.imReconnect);
 

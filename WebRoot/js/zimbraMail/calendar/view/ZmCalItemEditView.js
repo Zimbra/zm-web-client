@@ -493,11 +493,11 @@ function(width) {
 	this._subjectField.reparentHtmlElement(this._htmlElId + "_subject");
 
 	// CalItem folder DwtSelect
-	this._folderSelect = new DwtSelect(this);
+	this._folderSelect = new DwtSelect({parent:this});
 	this._folderSelect.reparentHtmlElement(this._htmlElId + "_folderSelect");
 
 	// recurrence DwtSelect
-	this._repeatSelect = new DwtSelect(this);
+	this._repeatSelect = new DwtSelect({parent:this});
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
 	for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length; i++) {
 		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];

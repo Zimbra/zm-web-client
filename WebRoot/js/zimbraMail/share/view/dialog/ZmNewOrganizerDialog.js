@@ -234,7 +234,7 @@ function() {
 
 ZmNewOrganizerDialog.prototype._setupColorControl =
 function() {
-	this._colorSelect = new DwtSelect(this);
+	this._colorSelect = new DwtSelect({parent:this});
 	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
 		var choice = ZmOrganizer.COLOR_CHOICES[i];
 		this._colorSelect.addOption(choice.label, i == 0, choice.value);

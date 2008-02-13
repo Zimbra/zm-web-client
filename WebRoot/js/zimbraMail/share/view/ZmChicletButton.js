@@ -31,7 +31,7 @@ ZmChicletButton = function(parent, className, icon, text, isLast) {
 	if (arguments.length == 0) return;
 
     var style = DwtLabel.IMAGE_LEFT;
-    DwtButton.call(this, parent, style, className, DwtControl.RELATIVE_STYLE);
+    DwtButton.call(this, {parent:parent, style:style, className:className, posStyle:DwtControl.RELATIVE_STYLE});
 
     this.setImage(icon);
     this.setText(text);

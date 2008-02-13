@@ -55,7 +55,7 @@ function(parent) {
 	picker.getHtmlElement().innerHTML = html.join("");
 
 	// create and add DwtSelect
-	this._select = new DwtSelect(this);
+	this._select = new DwtSelect({parent:this});
 	this._select.addChangeListener(new AjxListener(this, this._dateChangeListener));
 	for (var i = 0; i < ZmDatePicker.SELECT_OPTIONS.length; i++) {
 		var option = ZmDatePicker.SELECT_OPTIONS[i];

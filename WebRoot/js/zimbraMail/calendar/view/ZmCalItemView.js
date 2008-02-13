@@ -141,7 +141,7 @@ function(calItem) {
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
 
 	// add the close button
-	this._closeButton = new DwtButton(this, null, "DwtToolbarButton");
+	this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
 	this._closeButton.setImage("Close");
 	this._closeButton.setText(ZmMsg.close);
 	this._closeButton.reparentHtmlElement(closeBtnCellId);

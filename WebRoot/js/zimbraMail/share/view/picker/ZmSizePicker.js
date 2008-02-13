@@ -70,7 +70,7 @@ function(parent) {
 
 	// set up DwtSelects
 	var selectChangeListener = new AjxListener(this, this._selectChangeListener);
-	this._op = new DwtSelect(this);
+	this._op = new DwtSelect({parent:this});
 	this._op.addChangeListener(selectChangeListener);
 	for (var i = 0; i < ZmSizePicker.OP_SELECT_OPTIONS.length; i++) {
 		var option = ZmSizePicker.OP_SELECT_OPTIONS[i];
@@ -78,7 +78,7 @@ function(parent) {
 	}
 	this._op.reparentHtmlElement(opId);
 
-	this._units = new DwtSelect(this);
+	this._units = new DwtSelect({parent:this});
 	this._units.addChangeListener(selectChangeListener);
 	for (var i = 0; i < ZmSizePicker.UNIT_SELECT_OPTIONS.length; i++) {
 		var option = ZmSizePicker.UNIT_SELECT_OPTIONS[i];

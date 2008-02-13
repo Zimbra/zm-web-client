@@ -35,12 +35,12 @@ ZmImInviteNotification.prototype._init = function() {
 
         document.getElementById(base_id + "_content").innerHTML = this._not._content;
 
-	var btn = new DwtButton(this);
+	var btn = new DwtButton({parent:this});
 	btn.setText("Accept");
 	btn.reparentHtmlElement(document.getElementById(base_id + "_buttonOK"));
 	btn.addSelectionListener(new AjxListener(this, this._okClicked));
 
-        var btn = new DwtButton(this);
+        var btn = new DwtButton({parent:this});
         btn.setText("Deny");
         btn.reparentHtmlElement(document.getElementById(base_id + "_buttonCancel"));
         // just popdown when invitation denied, since the API doesn't allow us to say "Deny"

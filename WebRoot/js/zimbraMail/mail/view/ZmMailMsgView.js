@@ -64,7 +64,7 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	this.addListener(DwtEvent.CONTROL, new AjxListener(this, this._controlEventListener));
 	this._setAllowSelection();
 
-    this._expandButton = new DwtToolBarButton(this);
+    this._expandButton = new DwtToolBarButton({parent:this});
     this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener));
     this._expandButton.setDisplay(Dwt.DISPLAY_NONE);
 
@@ -959,7 +959,7 @@ function(msg, container, callback) {
 	// add the close button if applicable
 	if (this._hasHeaderCloseBtn) {
 		var closeBtnCellId	= this._htmlElId + "_closeBtnCell";
-		this._closeButton = new DwtButton(this);
+		this._closeButton = new DwtButton({parent:this});
 		this._closeButton.setImage("Close");
 		this._closeButton.setText(ZmMsg.close);
 		this._closeButton.reparentHtmlElement(closeBtnCellId);

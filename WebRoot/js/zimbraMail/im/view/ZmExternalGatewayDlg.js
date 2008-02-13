@@ -41,7 +41,7 @@ ZmExternalGatewayDlg.prototype.__initWidgets = function() {
 	for (var i = 1; i < gws.length; ++i) {
 		options.push(new DwtSelectOption(gws[i].type, i == 0, gws[i].type));
 	}
-	var select = new DwtSelect(this, options);
+	var select = new DwtSelect({parent:this, options:options});
 	select.reparentHtmlElement(this._baseId + "_gatewayLayout");
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setButtonListener(ZmExternalGatewayDlg.LOGOUT_BUTTON, new AjxListener(this, this._logoutButtonListener));

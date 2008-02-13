@@ -297,7 +297,7 @@ function() {
 	var fileAsCell = document.getElementById(this._fileAsSelectCellId);
 	if (fileAsCell) {
 		// add select widget for user to choose FileAs
-		this._fileAsSelect = new DwtSelect(this);
+		this._fileAsSelect = new DwtSelect({parent:this});
 		var fileAsSelectOptions = ZmContactView._selectFields["fileAs"];
 		var count = 0;
 		for (var i in fileAsSelectOptions) {
@@ -311,7 +311,7 @@ function() {
 	var folderCell = document.getElementById(this._folderCellId);
 	if (folderCell) {
 		// add select widget for user to choose folder
-		this._folderSelect = new DwtSelect(this);
+		this._folderSelect = new DwtSelect({parent:this});
 		this._folderSelect.reparentHtmlElement(this._folderCellId);
 		this._folderSelect.addChangeListener(scl);
 	}

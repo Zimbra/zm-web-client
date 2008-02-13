@@ -192,14 +192,14 @@ function() {
 	this._locationField.reparentHtmlElement(this._htmlElId + "_location");
 
 	// create DwtSelects
-	this._showAsSelect = new DwtSelect(this);
+	this._showAsSelect = new DwtSelect({parent:this});
 	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
 		this._showAsSelect.addOption(option.label, option.selected, option.value);
 	}
 	this._showAsSelect.reparentHtmlElement(this._htmlElId + "_showAs");
 
-	this._privacySelect = new DwtSelect(this);
+	this._privacySelect = new DwtSelect({parent:this});
 	for (var j = 0; j < ZmApptEditView.PRIVACY_OPTIONS.length; j++) {
 		var option = ZmApptEditView.PRIVACY_OPTIONS[j];
 		this._privacySelect.addOption(option.label, option.selected, option.value);
@@ -207,7 +207,7 @@ function() {
 	this._privacySelect.reparentHtmlElement(this._htmlElId + "_privacy");
 
 
-	this._calendarSelect = new DwtSelect(this);
+	this._calendarSelect = new DwtSelect({parent:this});
 	this._calendarSelect.reparentHtmlElement(this._htmlElId + "_calendar");
 
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
@@ -229,7 +229,7 @@ function() {
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 	this._endTimeSelect.reparentHtmlElement(this._htmlElId + "_endTime");
 
-	this._repeatSelect = new DwtSelect(this);
+	this._repeatSelect = new DwtSelect({parent:this});
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
 	for (var i = 0; i < ZmApptViewHelper.REPEAT_OPTIONS.length-1; i++) {
 		var option = ZmApptViewHelper.REPEAT_OPTIONS[i];

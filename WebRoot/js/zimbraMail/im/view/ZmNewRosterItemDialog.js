@@ -43,7 +43,7 @@ ZmNewRosterItemDialog.prototype._init = function() {
 	this._groupsEntry = new DwtInputField({ parent: this, size: 30 });
 	this._groupsEntry.reparentHtmlElement(id + "_groups");
 
-        this._groupsDropDown = new DwtButton(this);
+        this._groupsDropDown = new DwtButton({parent:this});
         // this._groupsDropDown.setImage("SelectPullDownArrow");
         // this._groupsDropDown.addSelectionListener(new AjxListener(this, this._groupsDropDownListener));
         this._groupsDropDown.reparentHtmlElement(id + "_groupsDropDown");
@@ -60,7 +60,7 @@ ZmNewRosterItemDialog.prototype._init = function() {
 		        options.push(new DwtSelectOption(gw.type, i == 0, label));
                 }
 	}
-	this._serviceTypeSelect = new DwtSelect(this, options);
+	this._serviceTypeSelect = new DwtSelect({parent:this, options:options});
 	this._serviceTypeSelect.reparentHtmlElement(id + "_serviceType");
 
 	this.setTitle(ZmMsg.createNewRosterItem);
@@ -120,7 +120,7 @@ ZmNewRosterItemDialog.prototype._getGroupsMenu = function() {
         var itemListener = new AjxListener(this, this._groupsMenuItemListener);
 
         groups.foreach(function(label) {
-                var item = new DwtMenuItem(menu, DwtMenuItem.CHECK_STYLE);
+                var item = new DwtMenuItem({parent:menu, style:DwtMenuItem.CHECK_STYLE});
                 item.addSelectionListener(itemListener);
                 item.setText(label);
                 item.setData("ZmImGroup", label);
@@ -136,10 +136,10 @@ ZmNewRosterItemDialog.prototype._getGroupsMenu = function() {
                 if (selected_groups[i] == 0) {
                         // not encountered
                         if (!added) {
-                                new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+                                new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
                                 added = true;
                         }
-                        var item = new DwtMenuItem(menu, DwtMenuItem.CHECK_STYLE);
+                        var item = new DwtMenuItem({parent:menu, style:DwtMenuItem.CHECK_STYLE});
                         item.addSelectionListener(itemListener);
                         item.setText(i);
                         item.setData("ZmImGroup", i);

@@ -1237,7 +1237,7 @@ function() {
 		var radioId = this._composeView._htmlElId + "_sig";
 		for (var i = 0; i < options.length; i++) {
 			var option = options[i];
-			var menuitem = new DwtMenuItem(menu, DwtMenuItem.RADIO_STYLE, radioId);
+			var menuitem = new DwtMenuItem({parent:menu, style:DwtMenuItem.RADIO_STYLE, radioGroupId:radioId});
 			menuitem.setText(option.displayValue);
 			menuitem.setData(ZmComposeController.SIGNATURE_KEY, option.value);
 			menuitem.addSelectionListener(listener);

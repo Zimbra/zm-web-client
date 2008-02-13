@@ -52,7 +52,7 @@ ZmImAddressEntry.prototype._init = function() {
                         )
                 );
 
-        this._selectService = new DwtSelect(this, options);
+        this._selectService = new DwtSelect({parent:this, options:options});
         this._selectService.reparentHtmlElement(this._idSelect);
         this._selectService.addChangeListener(new AjxListener(this, this._on_selectService_change));
 

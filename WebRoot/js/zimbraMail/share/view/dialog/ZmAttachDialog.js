@@ -583,7 +583,7 @@ ZmMyComputerTabViewPage.prototype._addAttachmentFieldButton = function() {
     var row = attTable.insertRow(-1);
     var cell = row.insertCell(-1);
 
-    var addAttachmentFieldButton = new DwtButton(this);
+    var addAttachmentFieldButton = new DwtButton({parent:this});
     addAttachmentFieldButton.setText(ZmMsg.addMoreAttachments);
     cell.appendChild(addAttachmentFieldButton.getHtmlElement());
     addAttachmentFieldButton.addSelectionListener(new AjxListener(this, this.addAttachmentField));

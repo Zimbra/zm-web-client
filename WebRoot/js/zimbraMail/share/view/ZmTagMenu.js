@@ -170,17 +170,17 @@ function(tagList, addRemove) {
 	}
 
 	if (this._tagList.size())
-		new DwtMenuItem(this, DwtMenuItem.SEPARATOR_STYLE);
+		new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
 
 	// add static "New Tag" menu item
-	var miNew = new DwtMenuItem(this);
+	var miNew = new DwtMenuItem({parent:this});
 	miNew.setText(AjxStringUtil.htmlEncode(ZmMsg.newTag));
 	miNew.setImage("NewTag");
 	miNew.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_CREATE);
 	miNew.addSelectionListener(new AjxListener(this, this._menuItemSelectionListener), 0);
 
 	// add static "Remove Tag" menu item
-	var miRemove = new DwtMenuItem(this);
+	var miRemove = new DwtMenuItem({parent:this});
 	miRemove.setEnabled(false);
 	miRemove.setText(AjxStringUtil.htmlEncode(ZmMsg.removeTag));
 	miRemove.setImage("DeleteTag");
@@ -207,8 +207,8 @@ function(tagList, addRemove) {
 
 		// if multiple removable tags, offer "Remove All"
 		if (removeList.length > 1) {
-			new DwtMenuItem(removeMenu, DwtMenuItem.SEPARATOR_STYLE);
-			var mi = new DwtMenuItem(removeMenu);
+			new DwtMenuItem({parent:removeMenu, style:DwtMenuItem.SEPARATOR_STYLE});
+			var mi = new DwtMenuItem({parent:removeMenu});
 			mi.setText(ZmMsg.allTags);
 			mi.setImage("TagStack");
 			mi.setData(ZmTagMenu.KEY_TAG_EVENT, ZmEvent.E_REMOVE_ALL);
@@ -220,7 +220,7 @@ function(tagList, addRemove) {
 ZmTagMenu.tagNameLength = 20;
 ZmTagMenu.prototype._addNewTag =
 function(menu, newTag, add, index, tagHash) {
-	var mi = new DwtMenuItem(menu, null, null, index);
+	var mi = new DwtMenuItem({parent:menu, index:index});
     var tagName = AjxStringUtil.clipByLength(newTag.getName(false),ZmTagMenu.tagNameLength);
     mi.setText(tagName);
     mi.setImage(ZmTag.COLOR_ICON[newTag.color]);

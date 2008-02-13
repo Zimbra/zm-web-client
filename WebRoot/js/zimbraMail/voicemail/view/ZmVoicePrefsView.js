@@ -605,7 +605,7 @@ function(id) {
 		var selected = current == choice;
 		options[i] = new DwtSelectOptionData(choice, choice, selected);
 	}
-	this._select = new DwtSelect(this._view, options);
+	this._select = new DwtSelect({parent:this._view, options:options});
 	this._select.replaceElement(id + "_itemsPerPageSelect");
 };
 

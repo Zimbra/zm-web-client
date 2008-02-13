@@ -14,7 +14,7 @@ Test = function() {
 
 		var container = new DwtComposite(this.shell, "", "absolute");
 
-		var b = new DwtButton(container, 0);
+		var b = new DwtButton({parent:container, style:0});
 		b.setText("Insert Spreadsheet");
 		b.setSize(100, null);
 
