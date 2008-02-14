@@ -106,7 +106,7 @@ function() {
 };
 
 ZmFindnReplaceDialog._handleKeyPress = function(ev){
-    var inputField = DwtUiEvent.getDwtObjFromEvent(ev);
+    var inputField = DwtControl.getTargetControl(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
 	if (charCode == 13 || charCode == 3) {		
 		var dialog = inputField.parent.parent;

@@ -227,7 +227,7 @@ function(name) {
 
 ZmPageEditView._onNameChange =
 function(ev) {
-    var control = DwtUiEvent.getDwtObjFromEvent(ev);
+    var control = DwtControl.getTargetControl(ev);
     while (control) {
     	if (control instanceof ZmPageEditView) {
     		// Update the warning text on a timer, after the keyboard event has 

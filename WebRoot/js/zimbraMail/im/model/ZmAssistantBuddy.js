@@ -193,7 +193,7 @@ ZmAssistantBuddy.prototype.chatStarted = function(chat, widget) {
 ZmAssistantBuddy.buttonClicked = function(span, ev, type) {
 	var dwtEv = DwtShell.mouseEvent;
 	dwtEv.setFromDhtmlEvent(ev);
-	var widget = DwtUiEvent.getDwtObjFromEvent(dwtEv);
+	var widget = DwtControl.getTargetControl(dwtEv);
 	while (widget && !(widget instanceof ZmChatWidget))
 		widget = widget.parent;
 	var self = widget.chat.getRosterItem(0);

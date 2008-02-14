@@ -445,7 +445,7 @@ function(ev) {
 ZmSearchToolBar._keyPressHdlr =
 function(ev) {
     // DwtInputField > ZmSearchToolBar
-    var inputField = DwtUiEvent.getDwtObjFromEvent(ev);
+    var inputField = DwtControl.getTargetControl(ev);
     var stb = inputField.parent;
 
     var charCode = DwtKeyEvent.getCharCode(ev);

@@ -156,7 +156,7 @@ function(ev, div) {
 
 	var item = this.getItemFromElement(div);
 	
-	var obj = DwtUiEvent.getDwtObjFromEvent(ev);
+	var obj = DwtControl.getTargetControl(ev);
 	var mouseEv = DwtShell.mouseEvent;
 	mouseEv.setFromDhtmlEvent(ev);
 	
