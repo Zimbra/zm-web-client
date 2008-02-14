@@ -1009,12 +1009,12 @@ function(d) {
 ZmCalItem.prototype._addInviteAndCompNum =
 function(soapDoc) {
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SERIES || this.viewMode == ZmCalItem.MODE_DELETE_SERIES) {
-		if (this.recurring && this._seriesInvId !== void 0 && this._seriesInvId != null) {
+		if (this.recurring && this._seriesInvId != null) {
 			soapDoc.setMethodAttribute("id", this._seriesInvId);
 			soapDoc.setMethodAttribute("comp", this.getCompNum());
 		}
 	} else {
-		if (this.invId !== void 0 && this.invId != null && this.invId != -1) {
+		if (this.invId != null && this.invId != -1) {
 			soapDoc.setMethodAttribute("id", this.invId);
 			soapDoc.setMethodAttribute("comp", this.getCompNum());
 		}
@@ -1083,7 +1083,7 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	}
 
 	var inv = soapDoc.set("inv", null, m);
-	if (this.uid !== void 0 && this.uid != null && this.uid != -1)
+	if (this.uid != null && this.uid != -1)
 		inv.setAttribute("uid", this.uid);
 
 	var comp = soapDoc.set("comp", null, inv);
