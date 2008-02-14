@@ -229,6 +229,16 @@ function() {
 	ZmMailItem.prototype.clear.call(this);
 };
 
+ZmConv.prototype.isReadOnly =
+function() {
+	var folderId = this.getFolderId();
+	var folder = appCtxt.getById(folderId);
+	// NOTE: if no folder, we're in a search so we dont know whether this conv
+	// is read-only or not. That means we should load the whole conv and iterate
+	// thru its messages to see if they all belong w/in read-only folders.
+	return (folder ? folder.isReadOnly() : false);
+};
+
 /**
 * Handles a modification notification.
 * TODO: Bundle MODIFY notifs (should bubble up to parent handlers as well)

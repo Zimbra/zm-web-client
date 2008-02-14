@@ -280,6 +280,15 @@ function() {
 	return this.date;
 };
 
+ZmMailMsg.prototype.isReadOnly =
+function() {
+	if (!this._isReadOnly) {
+		var folder = appCtxt.getById(this.folderId);
+		this._isReadOnly = (folder ? folder.isReadOnly() : false);
+	}
+	return this._isReadOnly;
+};
+
 ZmMailMsg.prototype.getHeaderStr =
 function(hdr) {
 	if (hdr == ZmMailMsg.HDR_DATE) {
@@ -552,9 +561,7 @@ function(callback, result) {
 	this._attachments.length = 0;
 
 	this._loadFromDom(response.m[0]);
-	var folder = appCtxt.getById(this.folderId);
-	var isReadOnly = folder ? folder.isReadOnly() : false;
-	if (!isReadOnly) {
+	if (!this.isReadOnly()) {
 		this._markReadLocal(true);
 	}
 

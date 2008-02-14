@@ -283,10 +283,12 @@ function() {
 /**
 * Returns what the default action should be when dragging this item. This method
 * is meant to be overloaded for items that are read-only and can only be copied.
+*
+* @param forceCopy		[Boolean]*		If set, default DnD action is a copy
 */
 ZmItem.prototype.getDefaultDndAction =
-function() {
-	return (this.isShared() || this.isReadOnly())
+function(forceCopy) {
+	return (this.isReadOnly() || forceCopy)
 		? ZmItem.DND_ACTION_COPY
 		: ZmItem.DND_ACTION_MOVE;
 };
