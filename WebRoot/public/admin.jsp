@@ -103,8 +103,8 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
  * ***** END LICENSE BLOCK *****
 -->
-	<fmt:setBundle basename="/messages/ZaMsg" />
 	<fmt:setLocale value='${pageContext.request.locale}' scope='request' />
+	<fmt:setBundle basename="/messages/ZaMsg" scope='request' />
     <title><fmt:message key="zimbraAdminTitle"/></title>
     <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
