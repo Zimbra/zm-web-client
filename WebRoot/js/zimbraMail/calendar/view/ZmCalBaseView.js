@@ -221,7 +221,7 @@ function(ev) {
 
 ZmCalBaseView.prototype._findAncestor =
 function(elem, attr) {
-	while (elem && (elem[attr] == void 0)){
+	while (elem && (elem[attr] == null)){
 		elem = elem.parentNode;
 	}
 	return elem;
@@ -338,7 +338,7 @@ function(clickedEl, ev) {
 
 ZmCalBaseView.prototype.getItemFromElement =
 function (element){
-	if (element._itemIndex !== void 0){
+	if (element._itemIndex != null){
 		switch (element._type){
 			case ZmCalBaseView.TYPE_APPT:
 			  return AjxCore.objectWithId(element._itemIndex);
