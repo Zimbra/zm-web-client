@@ -52,18 +52,20 @@ ZmOrganizer = function(params) {
 	this.name = ZmFolder.MSG_KEY[id] ? ZmMsg[ZmFolder.MSG_KEY[id]] : params.name;
 	this.parent = params.parent;
 	this.tree = params.tree;
-	this.color = params.color || ZmOrganizer.ORG_COLOR[id] || ZmOrganizer.DEFAULT_COLOR[this.type];
 	this.numUnread = params.numUnread || 0;
 	this.numTotal = params.numTotal || 0;
 	this.sizeTotal = params.sizeTotal || 0;
 	this.url = params.url;
 	this.owner = params.owner;
-	this.link = params.link || (Boolean(params.zid));
+	this.link = params.link || (Boolean(params.zid)) || (this.parent && this.parent.link);
 	this.zid = params.zid;
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
 	if (params.perm) this.setPermissions(params.perm);
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
+
+	var color = (this.parent && !params.color) ? this.parent.color : params.color;
+	this.color = color || ZmOrganizer.ORG_COLOR[id] || ZmOrganizer.DEFAULT_COLOR[this.type];
 
 	if (id && params.tree) {
 		appCtxt.cacheSet(id, this);

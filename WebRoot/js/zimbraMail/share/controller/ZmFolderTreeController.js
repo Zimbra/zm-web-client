@@ -384,6 +384,7 @@ ZmFolderTreeController.prototype._dropListener =
 function(ev) {
 	var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
 	var data = ev.srcData.data;
+	var isShiftKey = (ev.shiftKey || ev.uiEvent.shiftKey);
 
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		var type = ev.targetControl.getData(ZmTreeView.KEY_TYPE);
@@ -395,22 +396,24 @@ function(ev) {
 			if (this._dropTgt.isValidTarget(data)) {
 				ev.doIt = dropFolder.mayContain(data, type);
 
-				var action = null;
-				var plusDiv = null;
+				var action;
 				var actionData = (!(data instanceof Array)) ? [data] : data;
 
 				// walk thru the array and find out what action is allowed
 				for (var i = 0; i < actionData.length; i++) {
 					if (actionData[i] instanceof ZmItem) {
-						action |= actionData[i].getDefaultDndAction();
+						action |= actionData[i].getDefaultDndAction(isShiftKey);
 					}
 				}
-				plusDiv = (actionData.length == 1) ? ev.dndProxy.firstChild.nextSibling	: ev.dndProxy.firstChild.nextSibling.nextSibling;
+
+				var plusDiv = (actionData.length == 1) 
+					? ev.dndProxy.firstChild.nextSibling
+					: ev.dndProxy.firstChild.nextSibling.nextSibling;
 
 				if (action && plusDiv) {
 					// TODO - what if action is ZmItem.DND_ACTION_BOTH ??
 					var isCopy = ((action & ZmItem.DND_ACTION_COPY) != 0);
-					Dwt.setVisibility(plusDiv, isCopy || dropFolder.isRemote());
+					Dwt.setVisibility(plusDiv, isCopy);
 				}
 			} else {
 				ev.doIt = false;
@@ -422,7 +425,7 @@ function(ev) {
 		} else {
 			var ctlr = ev.srcData.controller;
 			var items = (data instanceof Array) ? data : [data];
-			ctlr._doMove(items, dropFolder);
+			ctlr._doMove(items, dropFolder, null, !isShiftKey);
 		}
 	}
 };

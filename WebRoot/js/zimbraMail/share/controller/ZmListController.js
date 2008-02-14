@@ -819,7 +819,8 @@ function(items, folder, attrs, force) {
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if (!item.folderId || item.folderId != folder.id) {
-			if (!force && (item.isShared() || item.isReadOnly() || folder.isRemote()))
+			// regardless of force flag, read-only items *cannot* be moved
+			if (!force && (item.isShared() || folder.isRemote()) || item.isReadOnly())
 				copy.push(item);
 			else
 				move.push(item);
