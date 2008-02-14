@@ -349,7 +349,13 @@ function(view, arrowStyle) {
 		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, arrowStyle, true);
 		this._setNavToolBar(tb, view);
 
-		// nuke the text for tag menu for 800x600 resolutions
+	this._setupViewMenu(view, false);
+	this._setupDeleteButton(this._toolbar[view]);
+	this._setupSpamButton(this._toolbar[view]);
+	this._setupReplyForwardOps(this._toolbar[view]);
+	this._setupCheckMailButton(this._toolbar[view]);
+
+    // nuke the text for tag menu for 800x600 resolutions
 		if (AjxEnv.is800x600orLower) {
 			var buttons = [];
 			if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
@@ -363,8 +369,11 @@ function(view, arrowStyle) {
 				buttons.push(ZmOperation.FORWARD);
 			}
 
-			for (var i = 0; i < buttons.length; i++) {
-				var button = tb.getButton(buttons[i]);
+            buttons.push(ZmOperation.DELETE);
+            buttons.push(ZmOperation.SPAM);
+
+            for (var i = 0; i < buttons.length; i++) {
+				var button = this._toolbar[view].getButton(buttons[i]);
 				if (button) {
 					button.setText("");
 				}
@@ -372,13 +381,7 @@ function(view, arrowStyle) {
 		}
 	}
 
-	this._setupViewMenu(view, false);
-	this._setupDeleteButton(this._toolbar[view]);
-	this._setupSpamButton(this._toolbar[view]);
-	this._setupReplyForwardOps(this._toolbar[view]);
-	this._setupCheckMailButton(this._toolbar[view]);
-
-	// reset new button properties
+    // reset new button properties
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
 
