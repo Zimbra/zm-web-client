@@ -391,12 +391,19 @@ function(viewId) {
 
 	// NOTE: bug 5720
 	if (AjxEnv.is800x600orLower) {
-		toolbar.getButton(ZmOperation.DAY_VIEW).setText("");
-		toolbar.getButton(ZmOperation.WEEK_VIEW).setText("");
-		toolbar.getButton(ZmOperation.WORK_WEEK_VIEW).setText("");
-		toolbar.getButton(ZmOperation.MONTH_VIEW).setText("");
-		toolbar.getButton(ZmOperation.SCHEDULE_VIEW).setText("");
-	}
+        var buttons = [];
+        //View Buttons
+        buttons.push(ZmOperation.DAY_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW  );
+        //Delete Button
+        buttons.push(ZmOperation.DELETE);
+
+        for (var i = 0; i < buttons.length; i++) {
+				var button = toolbar.getButton(buttons[i]);
+				if (button) {
+					button.setText("");
+				}
+		}
+    }
 
 	// Set the other view toolbar entries to point to the Day view entry. I.e. this is a trick
 	// to fool the ZmListController into thinking there are multiple toolbars
