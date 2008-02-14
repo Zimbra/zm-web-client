@@ -153,6 +153,8 @@ function(settings) {
 	settings.registerSetting("SPAM_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("USER_FOLDERS_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
+    settings.registerSetting("START_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    settings.registerSetting("END_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
     settings.registerSetting("VACATION_FROM",       			{name:"zimbraPrefOutOfOfficeFromDate", type:ZmSetting.T_PREF});
     settings.registerSetting("VACATION_UNTIL",       			{name:"zimbraPrefOutOfOfficeUntilDate", type:ZmSetting.T_PREF});
     settings.registerSetting("VACATION_MSG",					{name:"zimbraPrefOutOfOfficeReply", type:ZmSetting.T_PREF});
@@ -190,6 +192,8 @@ function() {
 				ZmSetting.SHOW_FRAGMENTS,
 				ZmSetting.VACATION_MSG_ENABLED,
 				ZmSetting.VACATION_MSG,
+                ZmSetting.START_DATE_ENABLED,
+                ZmSetting.END_DATE_ENABLED,
                 ZmSetting.VACATION_FROM,
                 ZmSetting.VACATION_UNTIL,
                 ZmSetting.VIEW_AS_HTML
@@ -454,6 +458,17 @@ function() {
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
 		validationFunction:	ZmMailApp.validateVacationMsgEnabled,
 		errorMessage:		ZmMsg.missingAwayMessage
+	});
+
+    ZmPref.registerPref("START_DATE_ENABLED", {
+        displayContainer:	ZmPref.TYPE_CHECKBOX,
+        displayName:		ZmMsg.startDate,
+        precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+	});
+    ZmPref.registerPref("END_DATE_ENABLED", {
+        displayName:		ZmMsg.endDate,
+        displayContainer:	ZmPref.TYPE_CHECKBOX,
+        precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
 	});
 };
 
