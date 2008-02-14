@@ -350,7 +350,7 @@ function(ev) {
 
 ZmContactPicker._keyPressHdlr =
 function(ev) {
-    var stb = DwtUiEvent.getDwtObjFromEvent(ev);
+    var stb = DwtControl.getTargetControl(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
 	if (!stb._searchCleared) {
 		stb._searchField.className = stb._searchField.value = "";
@@ -365,7 +365,7 @@ function(ev) {
 
 ZmContactPicker._onclickHdlr =
 function(ev) {
-	var stb = DwtUiEvent.getDwtObjFromEvent(ev);
+	var stb = DwtControl.getTargetControl(ev);
 	if (!stb._searchCleared) {
 		stb._searchField.className = stb._searchField.value = "";
 		stb._searchCleared = true;

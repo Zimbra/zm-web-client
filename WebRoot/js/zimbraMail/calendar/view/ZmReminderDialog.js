@@ -181,7 +181,7 @@ function(list) {
 // Button listener that checks for callbacks
 ZmReminderDialog.prototype._closeButtonListener =
 function(ev, args) {
-	var obj = DwtUiEvent.getDwtObjFromEvent(ev);
+	var obj = DwtControl.getTargetControl(ev);
 	var buttonId = obj.buttonId;
 	
 	var size = this._list ? this._list.size() : 0;

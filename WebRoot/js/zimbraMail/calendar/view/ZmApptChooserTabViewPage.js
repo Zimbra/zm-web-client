@@ -648,7 +648,7 @@ function() {
 
 ZmApptChooserTabViewPage._keyPressHdlr =
 function(ev) {
-    var tvp = DwtUiEvent.getDwtObjFromEvent(ev);
+    var tvp = DwtControl.getTargetControl(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
 	if (tvp._keyPressCallback && (charCode == 13 || charCode == 3)) {
 		tvp._keyPressCallback.run();
@@ -660,7 +660,7 @@ function(ev) {
 
 ZmApptChooserTabViewPage._keyUpHdlr =
 function(ev) {
-    var tvp = DwtUiEvent.getDwtObjFromEvent(ev);
+    var tvp = DwtControl.getTargetControl(ev);
 	var field = DwtUiEvent.getTarget(ev);
 	if (tvp.type == ZmCalItem.PERSON) {
 		tvp._searchButton.setEnabled(field && field.value);
@@ -672,7 +672,7 @@ function(ev) {
 ZmApptChooserTabViewPage._multLocsCheckboxHdlr =
 function(ev) {
 	var cb = DwtUiEvent.getTarget(ev);
-    var tvp = DwtUiEvent.getDwtObjFromEvent(ev);
+    var tvp = DwtControl.getTargetControl(ev);
     if (tvp) {
 		tvp._chooser.setSelectStyle(cb.checked ? DwtChooser.MULTI_SELECT : DwtChooser.SINGLE_SELECT, true);
 		var pSize = tvp.parent.getSize();

@@ -45,17 +45,17 @@
  * 
  * @author Conrad Damon
  * 
- * @param parent				[DwtComposite]		the element that created this list
+ * @param parent			[DwtComposite]		the element that created this list
  * @param className			[string]*			CSS class
  * @param dataClass			[function]			the class that has the data loader
- * @param dataLoader			[function]			a method of dataClass that returns data to match against
- * @param matchValue			[string]			name of field in match result to use for completion
+ * @param dataLoader		[function]			a method of dataClass that returns data to match against
+ * @param matchValue		[string]			name of field in match result to use for completion
  * @param separator			[string]*			separator (gets added to the end of a match)
  * @param locCallback		[AjxCallback]		callback into client to get desired location of autocomplete list
  * @param compCallback		[AjxCallback]*		callback into client to notify it that completion happened
  * @param keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
  * @param keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
- * @param smartPos		    [boolean]*		Whether to support smart positioning (top/bottom placement), false by default 
+ * @param smartPos		    [boolean]*			if true, support smart positioning (top/bottom placement)
  */
 ZmAutocompleteListView = function(params) {
 
@@ -79,6 +79,7 @@ ZmAutocompleteListView = function(params) {
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
 	this._addSelectionListener(new AjxListener(this, this._listSelectionListener));
 	this._outsideListener = new AjxListener(null, ZmAutocompleteListView._outsideMouseDownListener);
+	this._ignoreInternalOverOut = false;
 
 	// only trigger matching after a sufficient pause
 	this._acInterval = appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
@@ -278,7 +279,7 @@ ZmAutocompleteListView._outsideMouseDownListener =
 function(ev) {
 	var curList = ZmAutocompleteListView._activeAcList;
     if (curList.getVisible()) {
-		var obj = DwtUiEvent.getDwtObjFromEvent(ev);
+		var obj = DwtControl.getTargetControl(ev);
 		if (obj != curList) {
 			curList.show(false);
 			ev._stopPropagation = false;

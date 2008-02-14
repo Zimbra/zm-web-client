@@ -1924,7 +1924,7 @@ function(incAddrs, incSubject) {
 // Address buttons invoke contact picker
 ZmComposeView.prototype._addressButtonListener =
 function(ev, addrType) {
-	var obj = ev ? DwtUiEvent.getDwtObjFromEvent(ev) : null;
+	var obj = ev ? DwtControl.getTargetControl(ev) : null;
 	this.enableInputs(false);
 
 	if (!this._contactPicker) {
