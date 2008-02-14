@@ -4,7 +4,7 @@
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
@@ -15,7 +15,7 @@
         <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
     </c:otherwise>
     </c:choose>
-    <fmt:setBundle basename="/messages/ZhMsg" scope="session"/>
+    <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
     <fmt:message var="title" key="MO_mailFoldersTags"/>
 </mo:handleError>
