@@ -69,6 +69,15 @@ function(organizer) {
 		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, !organizer.link);
 	}
 
+	// dont allow "None" option in color picker
+    // bug 22490 removed None option when not in use
+    if (organizer.type != ZmOrganizer.FOLDER && this._color) {
+        var noneOption = this._color.getMenu().getItem(0);
+        if(noneOption.getText() == ZmOrganizer.COLOR_TEXT[0]) {
+            this._color.getMenu().removeChild(noneOption);
+        }
+    }
+    
 	// only mail folders are allowed to unset their folder color
 	this._color.getMenu().getItem(0).setEnabled(organizer.type == ZmOrganizer.FOLDER);
 
