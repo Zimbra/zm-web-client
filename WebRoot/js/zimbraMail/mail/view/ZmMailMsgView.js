@@ -559,8 +559,8 @@ function(doc) {
 ZmMailMsgView.prototype.lazyFindMailMsgObjects = function(interval, doc ){
         if (this._objectManager) {
                 this._lazyCreateObjectManager();
-                this._objectsAction = new AjxTimedAction(this, this._findMailMsgObjects, [doc]), ( interval || 500 );
-                AjxTimedAction.scheduleAction(this._objectsAction);
+                this._objectsAction = new AjxTimedAction(this, this._findMailMsgObjects, [doc]);
+                AjxTimedAction.scheduleAction(this._objectsAction, ( interval || 500 ));
         }
 };
 
