@@ -244,27 +244,32 @@ and the container element is replaced with that control.
 				</tr>
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField' style='padding-left:2em;'>
-                        <table width="100%" border="0">
+                        <table border="0">
                             <tr>
-                                <td width="44%">
+                                <td>
                                     <textarea id='${id}_VACATION_MSG' tabindex='160' rows=3 cols=70></textarea>
                                     <span style="display:none">
                                         <input type="hidden" name="st_dt" id="${id}_VACATION_FROM"/>
                                         <input type="hidden" name="ed_dt" id="${id}_VACATION_UNTIL"/>
                                     </span>
                                 </td>
-                                <td width="28%">
-                                    <fieldset>
-                                        <legend><$=ZmMsg.startDate$> </legend>
-                                        <table><tr><td> Start On:</td><td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_VACATION_FROM1'></td> <td id='${id}_startMiniCal'></td></tr></table>
-                                    </fieldset>
-                                </td>
-                                <td width="28%">
-                                   <fieldset>
-                                        <legend> End Date </legend>
-                                        <table><tr><td> End On:</td><td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_VACATION_UNTIL1'></td><td id='${id}_endMiniCal'></td></tr></table>
-                                    </fieldset> 
-                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <table><tr><td>
+                                        <fieldset>
+                                            <legend> <input type="checkbox" id="${id}_START_DATE_ENABLED"> </legend>
+                                            <table><tr><td> <$=ZmMsg.startOn$></td><td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_VACATION_FROM1'></td> <td id='${id}_startMiniCal'></td></tr></table>
+                                        </fieldset>
+                                    </td>
+                                    <td>
+                                       <fieldset>
+                                            <legend> <input type="checkbox" id="${id}_END_DATE_ENABLED"></legend>
+                                            <table><tr><td> <$=ZmMsg.endOn$></td><td><input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='${id}_VACATION_UNTIL1'></td><td id='${id}_endMiniCal'></td></tr></table>
+                                        </fieldset>
+                                    </td>
+                                    </tr>
+                                    </table>
                             </tr>
                         </table>
                     </td>

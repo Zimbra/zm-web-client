@@ -47,32 +47,45 @@ ZmMailPrefsPage.prototype._createControls = function() {
 
     this._startDateVal 	= document.getElementById(this._htmlElId + "_VACATION_FROM");
     this._endDateVal 		= document.getElementById(this._htmlElId + "_VACATION_UNTIL");
+
     this._formatter = new AjxDateFormat("yyyyMMddHHmmss'Z'");
 
-    
-    this._startDateField.value = AjxDateUtil.simpleComputeDateStr(this._formatter.parse(this._startDateVal.value));
-    this._endDateField.value = AjxDateUtil.simpleComputeDateStr(this._formatter.parse(this._endDateVal.value));
+    if(this._startDateVal.value != null && this._startDateVal.value != ""){
+        this._startDateField.value = AjxDateUtil.simpleComputeDateStr(this._formatter.parse(this._startDateVal.value));
+    }else{
+        this._startDateField.value =  AjxDateUtil.simpleComputeDateStr(new Date());
+    }
+    if(this._endDateVal.value != null && this._endDateVal.value != ""){
+        this._endDateField.value = AjxDateUtil.simpleComputeDateStr(this._formatter.parse(this._endDateVal.value));
+    }else{
+        this._endDateField.value =  AjxDateUtil.simpleComputeDateStr(AjxDateUtil.getDateForNextDay(new Date(),AjxDateUtil.FRIDAY));
+    }
 
-
-    /*this._startDateVal.value =  this._formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value) || new Date());
-    this._endDateVal.value =  this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value) || new Date());//this._formatter.format(this._endDateField.value);*/
-
-    /*var today =  new Date();
-    this._startDateField.value = AjxDateUtil.simpleComputeDateStr(today);
-    today.setDate(today.getDate()+1);
-    var nextDay = AjxDateUtil.getDateForNextDay(today,AjxDateUtil.FRIDAY,1)
-    this._endDateField.value = AjxDateUtil.simpleComputeDateStr(nextDay);*/
-    
     var dateButtonListener = new AjxListener(this, this._dateButtonListener);
     var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
     this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._sId, dateButtonListener, dateCalSelectionListener, true);
     this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._eId, dateButtonListener, dateCalSelectionListener, true);
 
+    this._startDateCheckbox = this.getFormObject(ZmSetting.START_DATE_ENABLED);
+    this._endDateCheckbox = this.getFormObject(ZmSetting.END_DATE_ENABLED);    
+
+
     var cbox = this.getFormObject(ZmSetting.VACATION_MSG_ENABLED);
-	if (cbox) {
+	if(cbox && cbox.isSelected()){
+        if(this._startDateVal.value){
+            this._startDateCheckbox.setSelected(true);
+            this._setEnabledStartDate(true);
+        }
+        if(this._endDateVal.value){
+            this._endDateCheckbox.setSelected(true);
+            this._setEnabledEndDate(true);
+        }
+    }
+    if (cbox) {
 		this._handleEnableVacationMsg(cbox);
-	}
+    }
+
 };
 
 ZmMailPrefsPage.prototype._dateButtonListener =
@@ -118,17 +131,20 @@ function(ev) {
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
-    this._startDateVal.value =  this._formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value));
-    this._endDateVal.value =  this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value));
-    
+    if(this._startDateCheckbox.isSelected()){
+       this._startDateVal.value =  this._formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value));
+    }
+    if(this._endDateCheckbox.isSelected()){
+        this._endDateVal.value =  this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value));
+    }
 };
 
 
 
 ZmMailPrefsPage.prototype._setupCheckbox = function(id, setup, value) {
 	var cbox = ZmPreferencesPage.prototype._setupCheckbox.apply(this, arguments);
-	if (id == ZmSetting.VACATION_MSG_ENABLED) {
-		cbox.addSelectionListener(new AjxListener(this, this._handleEnableVacationMsg, [cbox]));
+	if (id == ZmSetting.VACATION_MSG_ENABLED || id == ZmSetting.START_DATE_ENABLED || id == ZmSetting.END_DATE_ENABLED) {
+		cbox.addSelectionListener(new AjxListener(this, this._handleEnableVacationMsg, [cbox, id]));
 	}
 	return cbox;
 };
@@ -137,16 +153,45 @@ ZmMailPrefsPage.prototype._setupCheckbox = function(id, setup, value) {
 // Protected methods
 //
 
-ZmMailPrefsPage.prototype._handleEnableVacationMsg = function(cbox, evt) {
+ZmMailPrefsPage.prototype._handleEnableVacationMsg = function(cbox, id, evt) {
 	var textarea = this.getFormObject(ZmSetting.VACATION_MSG);
     if (textarea) {
-		textarea.setEnabled(cbox.isSelected());
-
-        this._startDateField.disabled = !cbox.isSelected();
-        this._endDateField.disabled = !cbox.isSelected();
-
-        this._startDateButton.setEnabled(cbox.isSelected());
-        this._endDateButton.setEnabled(cbox.isSelected());
-
+        if(id == ZmSetting.START_DATE_ENABLED){
+            this._setEnabledStartDate(cbox.isSelected());
+        }else if(id == ZmSetting.END_DATE_ENABLED){
+            this._setEnabledEndDate(cbox.isSelected());
+        }else{
+            textarea.setEnabled(cbox.isSelected());
+            this._startDateCheckbox.setEnabled(cbox.isSelected());
+            this._endDateCheckbox.setEnabled(cbox.isSelected());
+            
+            this._setEnabledStartDate(cbox.isSelected());
+            this._setEnabledEndDate(cbox.isSelected());
+        }
     }
 };
+
+ZmMailPrefsPage.prototype._setEnabledStartDate = function(val) {
+    //this._startDateCheckbox.setEnabled(val);
+    var condition = val && this._startDateCheckbox.isSelected(); 
+    this._startDateField.disabled = !condition;
+    this._startDateButton.setEnabled(condition);
+    if(!condition){
+        this._startDateVal.value = null;
+    }else{
+        this._startDateVal.value =  this._formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value));    
+    }
+};
+
+ZmMailPrefsPage.prototype._setEnabledEndDate = function(val) {
+    //this._endDateCheckbox.setEnabled(val);
+    var condition = val && this._endDateCheckbox.isSelected();
+    this._endDateField.disabled = !condition;
+    this._endDateButton.setEnabled(condition);
+    if(!condition){
+        this._endDateVal.value = null;
+    }else{
+        this._endDateVal.value =  this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value));
+    }
+};
+
