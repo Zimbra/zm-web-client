@@ -385,6 +385,15 @@ function(view, arrowStyle) {
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
 
+ZmMailListController.prototype._getNumTotal =
+function(){
+    //Yuck, remove "of Total" from Nav toolbar at lower resolutions
+     if (AjxEnv.is800x600orLower) {
+         return null;
+     }
+    return ZmListController.prototype._getNumTotal.call(this);
+};
+
 ZmMailListController.prototype._initializeActionMenu =
 function() {
 	ZmListController.prototype._initializeActionMenu.call(this);
