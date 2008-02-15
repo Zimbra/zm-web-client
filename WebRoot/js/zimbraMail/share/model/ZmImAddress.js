@@ -49,8 +49,8 @@ ZmImAddress = {
         return "";
     },
 
-    display : function(addr) {
-        addr = ZmImAddress.parse(addr);
+    display : function(id) {
+        addr = ZmImAddress.parse(id);
         if (addr) {
             var a = ZmImAddress.IM_SERVICES, i = 0, s;
             while (s = a[i++]) {
@@ -60,7 +60,7 @@ ZmImAddress = {
             if (s)
                 return addr.screenName + " (" + s.label + ")";
         }
-        return "";
+        return id;
     }
 
 };
