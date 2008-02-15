@@ -301,6 +301,39 @@ function() {
 	return this._colHeaderActionMenu;
 };
 
+ZmMailListView.prototype._getNoResultsMessage =
+function() {
+	if (appCtxt.get(ZmSetting.OFFLINE)) {
+		// offline folders which are "syncable" but currently not syncing should
+		// display a different message
+		var fid = this._controller._getSearchFolderId();
+		var folder = fid ? appCtxt.getById(fid) : null;
+		if (folder && folder.isOfflineSyncable && !folder.isOfflineSyncing) {
+			var link = "ZmMailListView.toggleSync('" + folder.id + "', '" + this._htmlElId + "');";
+			return AjxMessageFormat.format(ZmMsg.notSyncing, link);
+		}
+	}
+
+	return DwtListView.prototype._getNoResultsMessage.call(this);
+};
+
+ZmMailListView.toggleSync =
+function(folderId, htmlElementId) {
+	var folder = appCtxt.getById(folderId);
+	var htmlEl = folder ? document.getElementById(htmlElementId) : null;
+	var listview = htmlEl ? Dwt.getObjectFromElement(htmlEl) : null;
+	if (listview) {
+		var callback = new AjxCallback(listview, listview._handleToggleSync);
+		folder.toggleSyncOffline(callback);
+	}
+};
+
+ZmMailListView.prototype._handleToggleSync =
+function() {
+	appCtxt.getAppController().sendSync();
+	this._controller._checkMailListener();
+};
+
 
 // Listeners
 
