@@ -306,8 +306,13 @@ function() {
 	if (appCtxt.get(ZmSetting.OFFLINE)) {
 		// offline folders which are "syncable" but currently not syncing should
 		// display a different message
+		var folder;
 		var fid = this._controller._getSearchFolderId();
-		var folder = fid ? appCtxt.getById(fid) : null;
+		if (fid) {
+			if (appCtxt.multiAccounts)
+				fid = ZmOrganizer.getSystemId(fid);
+			folder = appCtxt.getById(fid);
+		}
 		if (folder && folder.isOfflineSyncable && !folder.isOfflineSyncing) {
 			var link = "ZmMailListView.toggleSync('" + folder.id + "', '" + this._htmlElId + "');";
 			return AjxMessageFormat.format(ZmMsg.notSyncing, link);
