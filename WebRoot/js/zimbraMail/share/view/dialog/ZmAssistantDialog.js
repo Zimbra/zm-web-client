@@ -131,7 +131,7 @@ function() {
 ZmAssistantDialog._keyUpHdlr =
 function(ev) {
 	var keyEv = DwtShell.keyEvent;
-	keyEv.setFromDhtmlEvent(ev);
+	keyEv.setFromDhtmlEvent(ev, true);
 	var obj = keyEv.dwtObj;
 	obj._commandUpdated();
 //	DBG.println("value = "+obj._commandEl.value);

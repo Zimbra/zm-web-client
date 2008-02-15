@@ -1582,7 +1582,7 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 			// console.log("BLUR!");
 			var enableFocus = false;
 			var dwtev = DwtShell.mouseEvent;
-			dwtev.setFromDhtmlEvent(ev);
+			dwtev.setFromDhtmlEvent(ev, true);
 			if(dwtev && dwtev.dwtObj) {
 				for (var i = 0; i < this._toolbars.length; i++){
 					if(dwtev.dwtObj.parent == this._toolbars[i]){

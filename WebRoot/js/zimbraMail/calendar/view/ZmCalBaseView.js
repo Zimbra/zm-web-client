@@ -158,7 +158,7 @@ function(ev, div) {
 	
 	var obj = DwtControl.getTargetControl(ev);
 	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev);
+	mouseEv.setFromDhtmlEvent(ev, obj);
 	
 	if (item instanceof ZmAppt) {			
 		this.setToolTipContent(item.getToolTip(this._controller));
@@ -219,6 +219,7 @@ function(ev) {
 		return;
 }
 
+// XXX: why not use Dwt.findAncestor?
 ZmCalBaseView.prototype._findAncestor =
 function(elem, attr) {
 	while (elem && (elem[attr] == null)){
