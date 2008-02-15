@@ -9,7 +9,6 @@ AjxPackage.require("ajax.util.AjxSHA1");
 AjxPackage.require("ajax.dwt.core.DwtDraggable");
 AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 AjxPackage.require("ajax.dwt.events.DwtDateRangeEvent");
-AjxPackage.require("ajax.dwt.events.DwtDisposeEvent");
 AjxPackage.require("ajax.dwt.widgets.DwtColorPicker");
 AjxPackage.require("ajax.dwt.widgets.DwtCheckbox");
 AjxPackage.require("ajax.dwt.widgets.DwtRadioButton");
