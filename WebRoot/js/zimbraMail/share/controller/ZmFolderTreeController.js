@@ -114,7 +114,7 @@ function(parent, type, id) {
 		if (nId == ZmFolder.ID_SPAM ||
 			nId == ZmFolder.ID_TRASH)
 		{
-			emptyText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
+			emptyText = (nId == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
 			parent.enable(ZmOperation.EMPTY_FOLDER, hasContent);
 		}
 		// only allow Inbox and Sent system folders to be share-able for now
