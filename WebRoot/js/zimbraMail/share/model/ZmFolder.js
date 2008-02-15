@@ -354,12 +354,10 @@ function(obj) {
 
 	if (obj.l != null && (!this.parent || (obj.l != this.parent.id))) {
 		var newParent = this._getNewParent(obj.l);
-		if (newParent) {
-			this.reparent(newParent);
-			details.oldPath = this.getPath();
-			this._notify(ZmEvent.E_MOVE, details);
-			obj.l = null;
-		}
+		this.reparent(newParent);
+		details.oldPath = this.getPath();
+		this._notify(ZmEvent.E_MOVE, details);
+		obj.l = null;
 	}
 
 	ZmOrganizer.prototype.notifyModify.apply(this, [obj]);

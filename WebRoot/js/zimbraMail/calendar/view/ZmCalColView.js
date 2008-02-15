@@ -265,16 +265,16 @@ function(appt) {
 	var attendees = appt.getAttendeesText();
 
 	if (organizer && attendees) {
-		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.organizer + ":</u></td>";
+		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.organizerLabel + "</u></td>";
 		html[idx++] = "<td style='" + style + "'>" + appt.getOrganizer() + "</td></tr>";
-		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.attendees + ":</u></td>";
+		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.attendeesLabel + "</u></td>";
 		html[idx++] = "<td style='" + style + "'>" + attendees + "</td></tr>";
 	}
 
 	var attachments = appt.getAttachments();
 	if (attachments) {
 		html[idx++] = "<tr>";
-		html[idx++] = "<td width=1% style='" + style + "'><u>" + ZmMsg.attachments + ":</u></td>";
+		html[idx++] = "<td width=1% style='" + style + "'><u>" + ZmMsg.attachmentsLabel + "</u></td>";
 		html[idx++] = "<td style='" + style + "'>";
 		for (var i = 0; i < attachments.length; i++) {
 			 html[idx++] = attachments[i].filename;
