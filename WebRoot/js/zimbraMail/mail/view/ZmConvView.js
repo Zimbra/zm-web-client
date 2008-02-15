@@ -29,7 +29,9 @@ ZmConvView = function(parent, controller, dropTgt) {
 	
 	// Add a change listener to taglist to track tag color changes
 	this._tagList = appCtxt.getTagTree();
-	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+	if (this._tagList) {
+		this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+	}
 	
 	this._controller = controller;
 }
