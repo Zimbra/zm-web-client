@@ -367,11 +367,16 @@ ZmChatWidget.prototype._init = function() {
         dropTgt.addDropListener(new AjxListener(this, this._dropOnEditorListener));
 
 	this._objectManager = new ZmObjectManager(this._content);
+
 	// add YM Emoticons if zimlet installed
-	var YM_smileys = appCtxt.getZimletMgr().zimletExists("com_zimbra_ymemoticons");
-	if (YM_smileys) {
-		this._objectManager.addHandler(YM_smileys.handlerObject);
-		this._objectManager.sortHandlers();
+	try { // Try catch because I saw this fail on hosted demo, can't reproduce, probly a better way to fix.
+		var YM_smileys = appCtxt.getZimletMgr().zimletExists("com_zimbra_ymemoticons");
+		if (YM_smileys) {
+			this._objectManager.addHandler(YM_smileys.handlerObject);
+			this._objectManager.sortHandlers();
+		}
+	} catch (e) {
+		DBG.println("Error setting up smileys: " + e);
 	}
 
 	// this.parent.enableMoveWithElement(this._toolbar);
