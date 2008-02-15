@@ -1130,15 +1130,14 @@ function(parentId) {
 
 ZmOrganizer.prototype.isUnder =
 function(id) {
-	if (this.id == id) return true;
+	if (this.nId == id) { return true; }
 
 	var parent = this.parent;
 	while (parent && parent.nId != ZmOrganizer.ID_ROOT) {
-		if (parent.id == id) {
+		if (parent.nId == id) {
 			return true;
-		} else {
-			parent = parent.parent;
 		}
+		parent = parent.parent;
 	}
 	return false;
 };
