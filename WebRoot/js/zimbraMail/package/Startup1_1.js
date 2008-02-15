@@ -60,6 +60,7 @@ AjxPackage.require("ajax.dwt.graphics.DwtUnits");
 AjxPackage.require("ajax.dwt.events.DwtEvent");
 AjxPackage.require("ajax.dwt.events.DwtEventManager");
 AjxPackage.require("ajax.dwt.events.DwtUiEvent");
+AjxPackage.require("ajax.dwt.events.DwtDisposeEvent");
 AjxPackage.require("ajax.dwt.events.DwtControlEvent");
 AjxPackage.require("ajax.dwt.events.DwtFocusEvent");
 AjxPackage.require("ajax.dwt.events.DwtKeyEvent");
