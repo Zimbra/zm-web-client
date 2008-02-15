@@ -263,7 +263,12 @@ function() {
 		// get the search folder if one exists
 		var clc = AjxDispatcher.run("GetConvListController");
 		var search = clc.getList().search;
-		var folderId = search.folderId ? (parseInt(search.folderId)) : null;
+		var folderId;
+		if (search.folderId) {
+			folderId = parseInt(search.folderId);
+			if (appCtxt.multiAccounts)
+				folderId = ZmOrganizer.getSystemId(folderId);
+		}
 		if (folderId && this._conv.msgs) {
 			// search all msgs in conv to see if at least one is in search folder
 			var msgs = this._conv.msgs.getArray();

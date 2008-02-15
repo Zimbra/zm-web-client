@@ -360,8 +360,9 @@ function(folderId) {
 	var msgs = this.msgs.getArray();
 	var doNotify = true;
 	if (msgs.length > 1) {
+		var fid = appCtxt.multiAccounts ? ZmOrganizer.getSystemId(folderId) : folderId;
 		for (var i = 0; i < msgs.length; i++) {
-			if (msgs[i].folderId == folderId) {
+			if (msgs[i].folderId == fid) {
 				doNotify = false;
 				break;
 			}

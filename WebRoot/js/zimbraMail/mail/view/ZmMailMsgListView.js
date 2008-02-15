@@ -273,14 +273,11 @@ function(ev) {
 ZmMailMsgListView.prototype._changeFolderName = 
 function(msg) {
 	var folderCell = this._getElement(msg, ZmItem.F_FOLDER);
-	if (folderCell) {
-		var folder = appCtxt.getById(msg.folderId);
-		if (folder) {
-			folderCell.innerHTML = folder.getName();
-		}
-		if (msg.folderId == ZmFolder.ID_TRASH) {
+	var folder = folderCell ? appCtxt.getById(msg.folderId) : null;
+	if (folder) {
+		folderCell.innerHTML = folder.getName();
+		if (folder.nId == ZmFolder.ID_TRASH)
 			this._changeTrashStatus(msg);
-		}
 	}
 };
 

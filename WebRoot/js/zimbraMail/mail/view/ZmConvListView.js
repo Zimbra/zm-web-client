@@ -504,7 +504,12 @@ function(ev) {
 				// if this conv now has no msgs that match current search, remove it
 				var removeConv = true;
 				var curSearch = this._controller._app.currentSearch;
-				var folderId = curSearch ? curSearch.folderId : null;
+				var folderId;
+				if (curSearch) {
+					folderId = appCtxt.multiAccounts
+						? ZmOrganizer.getSystemId(curSearch.folderId)
+						: curSearch.folderId;
+				}
 				if (folderId && conv.msgs) {
 					var msgs = conv.msgs.getArray();
 					for (var i = 0; i < msgs.length; i++) {
