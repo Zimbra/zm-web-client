@@ -326,7 +326,7 @@ ZmChatWidget.prototype._init = function() {
         );
 
 	var btn = this._changEditorModeBtn = new DwtLtIconButton(this._toolbar, null, "HtmlDoc");
-	btn.setToolTipContent("Change Editor Mode");
+	btn.setToolTipContent(ZmMsg.changeEditorMode);
 	btn.addSelectionListener(new AjxListener(this,this._changeEditorModeListener));
 
 	new DwtControl({parent:this._toolbar, className:"vertSep"});
