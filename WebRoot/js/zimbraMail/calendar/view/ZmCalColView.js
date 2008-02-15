@@ -1955,7 +1955,7 @@ function(data) {
 ZmCalColView._apptMouseMoveHdlr =
 function(ev) {
 	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev);
+	mouseEv.setFromDhtmlEvent(ev, true);
 	var data = DwtMouseEventCapture.getTargetObj();
 
 	var deltaX = mouseEv.docX - data.docX;
@@ -2093,7 +2093,7 @@ function(ev) {
 	var data = DwtMouseEventCapture.getTargetObj();
 
 	var mouseEv = DwtShell.mouseEvent;
-	mouseEv.setFromDhtmlEvent(ev);
+	mouseEv.setFromDhtmlEvent(ev, true);
 
 	DwtMouseEventCapture.getCaptureObj().release();
 
