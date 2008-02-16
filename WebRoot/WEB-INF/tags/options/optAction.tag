@@ -36,6 +36,36 @@
             <c:if test="${mailbox.features.outOfOfficeReply}">
                 <zm:pref name="zimbraPrefOutOfOfficeReplyEnabled" value="${param.zimbraPrefOutOfOfficeReplyEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
                 <zm:pref name="zimbraPrefOutOfOfficeReply" value="${param.zimbraPrefOutOfOfficeReply}"/>
+	            <c:choose>
+		            <c:when test="${param.zimbraPrefOutOfOfficeReplyEnabled eq 'TRUE'}">
+			            <c:set var="fromDate" value="${param.zimbraPrefOutOfOfficeFromDate}" />
+			            <c:set var="untilDate" value="${param.zimbraPrefOutOfOfficeUntilDate}" />
+			            <c:if test="${not empty fromDate}">
+				            <c:catch var="parseError">
+					            <fmt:parseDate pattern="MM/dd/yyyy" value="${fromDate}" var="parsedDate"  />
+					            <fmt:formatDate value="${parsedDate}" pattern="yyyyMMddHHmmss'Z'" var="fmtDate" />
+				            </c:catch>
+				            <c:if test="${not empty parseError}">
+					            <c:set var="fmtDate" value=""/>
+				            </c:if>
+				            <zm:pref name="zimbraPrefOutOfOfficeFromDate" value="${fmtDate}"/>
+			            </c:if>
+			            <c:if test="${not empty untilDate}">
+				            <c:catch var="parseError">
+					            <fmt:parseDate pattern="MM/dd/yyyy" value="${untilDate}" var="parsedDate"  />
+					            <fmt:formatDate value="${parsedDate}" pattern="yyyyMMddHHmmss'Z'" var="fmtDate" />
+				            </c:catch>
+				            <c:if test="${not empty parseError}">
+					            <c:set var="fmtDate" value=""/>
+				            </c:if>
+				            <zm:pref name="zimbraPrefOutOfOfficeUntilDate" value="${fmtDate}"/>
+			            </c:if>
+		            </c:when>
+		            <c:otherwise>
+			            <zm:pref name="zimbraPrefOutOfOfficeFromDate" value=""/>
+			            <zm:pref name="zimbraPrefOutOfOfficeUntilDate" value=""/>
+		            </c:otherwise>
+	            </c:choose>
             </c:if>
 
             <c:if test="${mailbox.features.newMailNotification}">
