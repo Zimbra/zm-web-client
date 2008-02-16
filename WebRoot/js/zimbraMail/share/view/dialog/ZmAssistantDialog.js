@@ -23,7 +23,7 @@ ZmAssistantDialog = function() {
 														   ZmMsg.moreDetails, DwtDialog.ALIGN_LEFT);														   
 														   
 	DwtDialog.call(this, {parent:appCtxt.getShell(), className:"ZmAssistantDialog", title:ZmMsg.zimbraAssistant,
-						  standardButtons:[helpButton, extraButton]});
+						  extraButtons:[helpButton, extraButton]});
 //	ZmQuickAddDialog.call(this, appCtxt.getShell(), null, null, []);
 
 	this.setContent(this._contentHtml());
