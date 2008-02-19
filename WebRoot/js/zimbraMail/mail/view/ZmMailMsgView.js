@@ -107,25 +107,34 @@ function() {
 
 ZmMailMsgView.prototype.reset =
 function() {
+        // Bug 23692: cancel any pending actions
+        if (this._resizeAction) {
+                AjxTimedAction.cancelAction(this._resizeAction);
+                this._resizeAction = null;
+        }
+        if (this._objectsAction) {
+                AjxTimedAction.cancelAction(this._objectsAction);
+                this._objectsAction = null;
+        }
 	this._msg = null;
 	this._htmlBody = null;
 
 	// TODO: reuse all thses controls that are being disposed here.....
 	if (this._expandButton) {
-        this._expandButton.setVisible(Dwt.DISPLAY_NONE);
-        this._expandButton.reparentHtmlElement(this.getHtmlElement());
-    }
+                this._expandButton.setVisible(Dwt.DISPLAY_NONE);
+                this._expandButton.reparentHtmlElement(this.getHtmlElement());
+        }
 	if (this._ifw) {
 		this._ifw.dispose();
 		this._ifw = null;
 	}
 	if (this._inviteToolbar) {
-        this._inviteToolbar.setVisible(Dwt.DISPLAY_NONE);
-        this._inviteToolbar.reparentHtmlElement(this.getHtmlElement());
+                this._inviteToolbar.setVisible(Dwt.DISPLAY_NONE);
+                this._inviteToolbar.reparentHtmlElement(this.getHtmlElement());
 	}
 	if (this._shareToolbar) {
-        this._shareToolbar.setVisible(Dwt.DISPLAY_NONE);
-        this._shareToolbar.reparentHtmlElement(this.getHtmlElement());
+                this._shareToolbar.setVisible(Dwt.DISPLAY_NONE);
+                this._shareToolbar.reparentHtmlElement(this.getHtmlElement());
 	}
 
 	this.getHtmlElement().innerHTML = "";
@@ -655,7 +664,12 @@ function(doc) {
 	}
 	node.appendChild(df);	// put nodes back in the document
 
-	DBG.timePt("-- END _processHtmlDoc");
+        if (this._objectManager) {
+                this._lazyCreateObjectManager();
+                this._objectsAction = new AjxTimedAction(this, this._findMailMsgObjects, [doc]), ( interval || 500 );
+                AjxTimedAction.scheduleAction(this._objectsAction);
+        }
+};
 
 	// bug fix #8632 - finally, set the attachment links
 	this._setAttachmentLinks();
@@ -757,7 +771,7 @@ function(iframe, attempt) {
         DBG.println(AjxDebug.DBG1, "_resetIframeHeightOnTimer attempt: " + (attempt != null ? attempt : "null"));
 	// Because sometimes our view contains images that are slow to download, wait a
 	// little while before resizing the iframe.
-	var act = new AjxTimedAction(this, ZmMailMsgView._resetIframeHeight, [this, iframe, attempt]);
+	var act = this._resizeAction = new AjxTimedAction(this, ZmMailMsgView._resetIframeHeight, [this, iframe, attempt]);
 	AjxTimedAction.scheduleAction(act, 200);
 };
 
@@ -1407,8 +1421,7 @@ function(ev) {
 	var iframe = document.getElementById(this._iframeId);
 	// we get here before we have a chance to initialize the IFRAME
 	if (iframe) {
-		var act = new AjxTimedAction(null, ZmMailMsgView._resetIframeHeight, [this, iframe]);
-		AjxTimedAction.scheduleAction(act, 5);
+                this._resetIframeHeightOnTimer(iframe);
 	}
 };
 
@@ -1719,7 +1732,7 @@ function (image, i, len, msg, idoc, iframe, view) {
 ZmMailMsgView.prototype._onloadIframe =
 function(dwtIframe) {
 	var iframe = dwtIframe.getIframe();
-	iframe.onload = null;
+	try { iframe.onload = null; } catch(ex) {};
 	ZmMailMsgView._resetIframeHeight(this, iframe);
 };
 
@@ -1748,17 +1761,15 @@ function(self, iframe, attempt) {
                 if (attempt == null)
                         attempt = 0;
 		try {
-			if (!iframe.contentWindow) {
+			if (!iframe.contentWindow || !iframe.contentWindow.document) {
                                 if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
                                         self._resetIframeHeightOnTimer(iframe, attempt);
-                                else
-                                        return; // give up
+                                return; // give up
                         }
 		} catch(ex) {
                         if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
 			        self._resetIframeHeightOnTimer(iframe, attempt++); // for IE
-                        else
-                                return; // give up
+                        return; // give up
 		}
 
 		var doc = iframe.contentWindow.document;
