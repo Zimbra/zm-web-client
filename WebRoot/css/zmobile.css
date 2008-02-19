@@ -60,10 +60,10 @@ body {
 #ENDIF
 }
 
-.zo_toolbar,.x_toolbar {
+.zo_toolbar,.ToolbarBg {
     margin: 0;
     padding: 10px;
-    font-size: 20px;
+    font-size: inherit;
     font-weight: bold;
     text-align: center;
     text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0;
@@ -71,20 +71,18 @@ body {
     color: #FFFFFF;
     background: url(/img/mobile/iPhoneToolbar.png) #6d84a2 repeat-x;
     border-bottom: 1px solid #2d3642;
+    height:40px;
 }
 
-.zo_toolbar TD,.x_toolbar TD {
+.zo_toolbar TD {
     border: none;
     padding:5px 3px;
     line-height: 20px;
     font-size: medium;
     font-weight: bold;
 }
-.x_toolbar,.x_list_container {
+.ToolbarBg,.x_list_container {
     width:100%;
-}
-.x_main_buttons{
-    text-align:left;
 }
 .zo_tb_submit INPUT {
     padding:4px;
@@ -95,14 +93,15 @@ body {
 }
 .zo_m_chk{
 	width:5px;
-	padding:5px;
+	padding:3px;
 }
 .zo_button{
     -webkit-border-image: url(/img/mobile/iPhoneButton.png) 0 5 0 5;
     -webkit-border-radius: 0;
     border-width: 0 5px 0 5px;
     padding: 4px;
-     -webkit-margin:5px;
+    margin:2px;
+     -webkit-margin:2px;
     color: #FFFFFF;
     text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0;
     text-decoration: none;
@@ -110,6 +109,15 @@ body {
 }
 .zo_button_disabled{
     color:gray;
+    -webkit-border-image: url(/img/mobile/iPhoneButton.png) 0 5 0 5;
+    -webkit-border-radius: 0;
+    border-width: 0 5px 0 5px;
+    padding: 4px;
+    margin:3px;
+     -webkit-margin:3px;
+    text-shadow: rgba(0, 0, 0, 0.6) 0px -1px 0;
+    text-decoration: none;
+    background: none;
 }
 .zo_leftbutton {
     -webkit-border-image: url(/img/mobile/iPhoneBackButton.png) 0 8 0 14;
@@ -148,6 +156,15 @@ body {
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
 }
+.Stripes{background: #c5ccd4 url("/img/mobile/pinstripes.png") top left;}
+
+.View{-moz-border-radius: 8px; -webkit-border-radius: 8px; background-color: white; margin: 5px; border: 1px solid #a7b2bc; padding: 5px; font-size:small;}
+.Email a{text-decoration: none;}
+.Padding{padding: 0 2px;}
+.label{color: #4d8dc3;}
+.Textarea{border: 0; padding: 3px; font: inherit; width: 100%;}
+
+.SmallText{font-size: small; color: black;}
 
 .zo_main_fname {
     font-size:medium;
@@ -298,7 +315,8 @@ height: 20px;
 }
 
 .zo_m_list_from {
-    font-size: large;
+    font-size: small;
+    color:gray;
 }
 
 .zo_unread, .zo_m_list_unread .zo_m_list_from, .zo_m_list_unread .zo_m_cv_sub, .zo_m_list_unread .zo_m_list_from {
@@ -314,7 +332,7 @@ height: 20px;
     font-size: small;
     color: black;
 }
-.zo_m_list_frag {
+.Email a,.zo_m_list_frag {
     font-size: small;
     color: gray;
 }
@@ -605,6 +623,7 @@ height: 20px;
 
 .zo_ab_list_arrow {
   background: url(/img/mobile/iPhoneArrow.png) no-repeat right center;
+  width:15px;  
 }
 .zo_ab_list_arrow A {
   text-decoration: none;

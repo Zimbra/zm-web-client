@@ -85,9 +85,9 @@
                                                 <a id="a${mhit.id}"
                                                    href="${fn:escapeXml(msgUrl)}">${fn:escapeXml(zm:truncate(mhit.subject,50,true))}</a>
                                             </td>
-                                            <!-- td nowrap="nowrap" class='zo_m_list_size' align="right" valign="top">
-                                                    ${fn:escapeXml(zm:displaySize(mhit.size))}
-                                            </td -->
+                                            <td nowrap="nowrap" class='zo_m_list_size' align="right" valign="top">
+                                                    (${fn:escapeXml(zm:displaySize(mhit.size))})
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td class='zo_m_list_from'>
@@ -125,16 +125,11 @@
 <c:if test="${context.searchResult.size gt 0}">
     <tr>
         <td>
-            <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="false"/>
-        </td>
-    </tr>
-    <tr>
-        <td>
             
                 <a name="action" id="action"/>
                   <table cellspacing="2" cellpadding="2" width="100%">
                         <tr class="zo_m_list_row">
-                            <td align="center">
+                            <td>
                                 <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
                                <select name="anAction">
                                    <option value="" selected="selected"><fmt:message key="moreActions"/></option>
@@ -149,19 +144,37 @@
                                   <optgroup label="<fmt:message key="moveAction"/>">
                                     <zm:forEachFolder var="folder">
                                         <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                            <option value="moveto_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
+                                            <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
                                         </c:if>
                                     </zm:forEachFolder>
                                   </optgroup>
-                                  <zm:forEachFolder var="folder">
+                                  <%--<zm:forEachFolder var="folder">
                                       <input type="hidden" name="folderId" value="${folder.id}"/>
-                                  </zm:forEachFolder>
+                                  </zm:forEachFolder>--%>
+                                  <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                               <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
+                               <optgroup label="<fmt:message key="MO_actionAddTag"/>">
+                                <c:forEach var="atag" items="${allTags}">
+                                <option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
+                                </c:forEach>
+                               </optgroup>
+                               <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
+                                <c:forEach var="atag" items="${allTags}">
+                                <option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
+                                </c:forEach>
+                               </optgroup>
+                               </c:if> 
                                </select>
                                <input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/>
                             </td>
                         </tr>
                     </table>
 
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <mo:toolbar urlTarget="${context_url}" context="${context}" isTop="false"/>
         </td>
     </tr>
 </c:if>

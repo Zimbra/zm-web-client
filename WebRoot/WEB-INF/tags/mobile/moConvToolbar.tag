@@ -3,6 +3,7 @@
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %>
 <%@ attribute name="isConv" rtexprvalue="true" required="false" %>
 <%@ attribute name="cid" rtexprvalue="true" required="false" %>
+<%@ attribute name="isTop" rtexprvalue="true" required="false" %>
 <%@ attribute name="singleMessage" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -17,21 +18,8 @@
 
 <table class="ToolbarBg" cellpadding="0" cellspacing="0" border="0" width="100%">
 <tr>
-<td class="Padding">
-    <c:if test="${context.st=='message' || context.st=='conversation'}">
-        <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
-        <a href="${composeUrl}">
-            <fmt:message key="compose"/>
-        </a>
-    </c:if>
-    <c:if test="${context.st=='contact'}">
-        <c:url var="composeUrl" value="${urlTarget}?action=add"/>
-        <a href="${composeUrl}">
-            <fmt:message key="add"/>
-        </a>
-    </c:if>
-</td>
-<td align="right">
+
+<td align="left">
 <table cellpadding="0" cellspacing="0" border="0">
 <tr>
 <c:if test="${isConv==null || !isConv }">
@@ -143,6 +131,27 @@
 </c:if>
 </tr>
 </table>
+</td>
+<td class="Padding" align="right">
+    <c:if test="${uiv != '1' && isTop != null && isTop}">
+                <a href="#action" class='zo_button'>
+                    <fmt:message key="MO_actions"/>
+                </a>
+            </c:if>
+    <c:if test="${uiv == '1'}">
+    <c:if test="${context.st=='message' || context.st=='conversation'}">
+        <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
+        <a href="${composeUrl}">
+            <fmt:message key="compose"/>
+        </a>
+    </c:if>
+    <c:if test="${context.st=='contact'}">
+        <c:url var="composeUrl" value="${urlTarget}?action=add"/>
+        <a href="${composeUrl}">
+            <fmt:message key="add"/>
+        </a>
+    </c:if>
+    </c:if>
 </td>
 </tr>
 </table>

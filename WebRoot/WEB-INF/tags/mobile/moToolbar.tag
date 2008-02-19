@@ -11,32 +11,22 @@
 
 <table cellpadding="0" cellspacing="0" border="0" class="ToolbarBg" width="100%">
     <tr>
-        <td class="Padding">
-            <c:if test="${context.st=='message' || context.st=='conversation'}">
-                <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
-                <a href="${composeUrl}" class="zo_button">
-                    <fmt:message key="compose"/>
-                </a>
-            </c:if>
-            <c:if test="${context.st=='contact'}">
-                <c:url var="composeUrl" value="${closeUrl}">
-                    <c:param name="action" value="edit"/>
-                </c:url>
-                <a href="${composeUrl}" class="zo_button">
-                    <fmt:message key="add"/>
-                </a>
-            </c:if>
-
-        </td>
-        <c:if test="${context.searchResult.size > 0 }">
-        <td align="right" class="Padding">
+        <%--<c:if test="${context.searchResult.size > 0 }">--%>
+        <td align="left" class="Padding">
             <table border="0">
                 <tr>
-                    <c:if test="${isTop == null || isTop}">
+                    <c:if test="${isTop == null || isTop || uiv != '1'}">
                     <td class="Padding">
+                        <c:if test="${uiv != '1'}">
+                            <a href="main" class='zo_leftbutton'>
+                                <fmt:message key="MO_MAIN"/> 
+                            </a>
+                        </c:if>
+                        <c:if test="${uiv == '1'}">
                         <a href="#action" class='zo_button'>
                             <fmt:message key="MO_actions"/>
                         </a>
+                        </c:if>
                     </td>
                     </c:if>    
                     <c:choose>
@@ -74,6 +64,30 @@
                 </tr>
             </table>
         </td>
+        <%--</c:if>--%>
+        <td class="Padding" align="right">
+            <c:if test="${uiv != '1' && isTop != null && isTop}">
+                <a href="#action" class='zo_button'>
+                    <fmt:message key="MO_actions"/>
+                </a>
+            </c:if>
+        <c:if test="${uiv == '1'}">
+
+            <c:if test="${context.st=='message' || context.st=='conversation'}">
+                <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
+                <a href="${composeUrl}" class="zo_button">
+                    <fmt:message key="compose"/>
+                </a>
+            </c:if>
+            <c:if test="${context.st=='contact'}">
+                <c:url var="composeUrl" value="${closeUrl}">
+                    <c:param name="action" value="edit"/>
+                </c:url>
+                <a href="${composeUrl}" class="zo_button">
+                    <fmt:message key="add"/>
+                </a>
+            </c:if>
         </c:if>    
+        </td>
     </tr>
 </table>

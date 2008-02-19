@@ -63,6 +63,10 @@ q:before,q:after {
 }
 abbr,acronym { border:0;
 }
+/*a{
+      font-size:small;
+      text-decoration: none;  
+}*/
 /*-------------------- */
 html,body {
     margin: 0;
@@ -96,7 +100,7 @@ html,body {
 
 .zo_m_list_from{color: #999999; font-size:small;}
 
-.Email a,.zo_m_list_frag {font-size: small; color: #999999;}
+.Email a,.zo_m_list_frag, .zo_m_list_size {font-size: small; color: #999999;}
 .Email a{text-decoration: none;}
 .zo_ab_list_arrow {display: none;} /*background: url("/img/mobile/iPhoneArrow.png") no-repeat right center; width:25px;*/
 
@@ -106,13 +110,13 @@ html,body {
 
 .Stripes{background: #c5ccd4 url("/img/mobile/pinstripes.png") top left;}
 
-.View{-moz-border-radius: 8px; -webkit-border-radius: 8px; background-color: white; margin: 10px; border: 1px solid #a7b2bc; padding: 10px;}
+.View{-moz-border-radius: 8px; -webkit-border-radius: 8px; background-color: white; margin: 5px; border: 1px solid #a7b2bc; padding: 5px; font-size:small;}
 
 .label{color: #4d8dc3;}
 
-.zo_m_list_frag a{color: #4d8dc3; text-decoration: none;}
-.zo_m_list_frag a:hover{color: #ffffff; background-color: #4d8dc3; text-decoration: none;}
-
+/*.zo_m_list_frag */a{color: #4d8dc3; text-decoration: none; font-size:small;padding:2px;}
+/*.zo_m_list_frag*/ a:hover{color: #ffffff; background-color: #4d8dc3; text-decoration: none;}
+a.zo_button_disabled {color:gray;background-color:none;}
 /*.highlight:hover td{ background-color: blue;}
 .highlight:hover td a,p,span{color: white;} need to work on it more!*/
 
@@ -125,17 +129,22 @@ html,body {
 
 .SmallText{font-size: small; color: black;}
 
-.StatusInfo, .StatusWarning, .StatusCritical {
+.StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
     padding: 3px;
     font-weight: bold;	
     -moz-border-radius: 6px;
     -webkit-border-radius: 6px;
     text-align: center;
+    font-size:small;
 }
-
+.zo_noresults{
+    padding:10px;
+    height:60px;
+    vertical-align:middle;
+}
 .StatusInfo     { background-color: lightgreen;}
 .StatusWarning  { background-color: yellow;}
-.StatusCritical { background-color: red; }
+.StatusCritical  { background-color: red; }
 
 .Medium{font-size: small !important;}
 .Title{ text-align: left !important;}
