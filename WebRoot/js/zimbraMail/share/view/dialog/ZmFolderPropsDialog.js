@@ -62,25 +62,31 @@ ZmFolderPropsDialog.prototype.popup =
 function(organizer) {
 	this._organizer = organizer;
 	organizer.addChangeListener(this._folderChangeListener);
+	
+	// dont allow "None" option in color picker
+    // bug 22490 removed None option when not in use
+    if (organizer.type != ZmOrganizer.FOLDER && this._color) {
+        this._color.clearOptions();
+		for (var i = 1; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
+			var color = ZmOrganizer.COLOR_CHOICES[i];
+			this._color.addOption(color.label, false, color.value);
+		}
+    } else {
+    	this._color.clearOptions();
+		for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
+			var color = ZmOrganizer.COLOR_CHOICES[i];
+			this._color.addOption(color.label, false, color.value);
+		}
+        this._color.getMenu().getItem(0).setEnabled(organizer.type == ZmOrganizer.FOLDER);
+    }
+    
 	this._handleFolderChange();
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
 	{
 		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, !organizer.link);
 	}
-
-	// dont allow "None" option in color picker
-    // bug 22490 removed None option when not in use
-    if (organizer.type != ZmOrganizer.FOLDER && this._color) {
-        var noneOption = this._color.getMenu().getItem(0);
-        if(noneOption.getText() == ZmOrganizer.COLOR_TEXT[0]) {
-            this._color.getMenu().removeChild(noneOption);
-        }
-    }
-    
-	// only mail folders are allowed to unset their folder color
-	this._color.getMenu().getItem(0).setEnabled(organizer.type == ZmOrganizer.FOLDER);
-
+   
 	DwtDialog.prototype.popup.call(this);
 
 	if (organizer.id != ZmOrganizer.ID_CALENDAR &&
