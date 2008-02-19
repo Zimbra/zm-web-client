@@ -45,13 +45,13 @@ function(searchResult, folder) {
 		this._list.setHasMore(searchResult.getAttribute("more"));	
 	this._setup(this._currentView);
 
-    var offset = parseInt(this._activeSearch.getAttribute("offset"));
-    if (this._listView[this._currentView]) {
-        this._listView[this._currentView].setOffset(offset);
+	var lv = this._listView[this._currentView];
+	if (lv) {
+		lv.offset = parseInt(this._activeSearch.getAttribute("offset"));
     }
-    var elements = new Object();
+    var elements = {};
     elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-    elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+    elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
     this._setView(this._currentView, elements, true);
     this._resetNavToolBarButtons(this._currentView);
 };

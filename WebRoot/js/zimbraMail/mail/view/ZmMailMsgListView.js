@@ -364,9 +364,9 @@ function(conv, columnItem, controller, result) {
 	var searchResult = result.getResponse();
 	var list = searchResult.getResults(ZmItem.MSG);
 	controller.setList(list); // set the new list returned
-	this.setOffset(0);
+	this.offset = 0;
 	this.set(conv.msgs, columnItem);
-	this.setSelection(conv.getFirstHotMsg({offset:this.getOffset(), limit:this.getLimit()}));
+	this.setSelection(conv.getFirstHotMsg({offset:this.offset, limit:this.getLimit()}));
 };
 
 ZmMailMsgListView.prototype._getDefaultSortbyForCol = 

@@ -116,7 +116,7 @@ function(searchResult, bIsGalSearch, folderId) {
 	// reset offset if list view has been created
 	var view = this._currentView;
 	if (this._listView[view])
-		this._listView[view].setOffset(0);
+		this._listView[view].offset = 0;
 
 	this.switchView(view, true);
 };
@@ -481,14 +481,14 @@ function(view) {
 
 ZmContactListController.prototype._getNavStartEnd =
 function(view) {
-	var offset = this._listView[view].getOffset();
-	var list = this._listView[view].getList();
+	var lv = this._listView[view];
+	var list = lv.getList();
 	var size = list ? list.size() : null;
 
 	var start, end;
 	if (size && size > 0) {
-		start = offset + 1;
-		end = offset + size;
+		start = lv.offset + 1;
+		end = lv.offset + size;
 	}
 
 	return (start && end) ? {start:start, end:end} : null;

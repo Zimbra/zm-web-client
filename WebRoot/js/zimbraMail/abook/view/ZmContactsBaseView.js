@@ -38,7 +38,7 @@ function(list, sortField, folderId) {
 	if (list instanceof ZmContactList) {
 		// compute the sublist based on the folderId if applicable
 		list.addChangeListener(this._listChangeListener);
-		subList = list.getSubList(this.getOffset(), this.getLimit(), folderId);
+		subList = list.getSubList(this.offset, this.getLimit(), folderId);
 	} else {
 		subList = list;
 	}
@@ -51,7 +51,7 @@ function(contacts, bPageForward) {
 	var offset = this.getNewOffset(bPageForward);
 	var subVector = contacts.getSubList(offset, this.getLimit(), this._controller.getFolderId());
 	ZmListView.prototype.set.call(this, subVector);
-	this.setOffset(offset);
+	this.offset = offset;
 	this.setSelection(this.getList().get(0));
 };
 
@@ -108,7 +108,7 @@ function(ev) {
 			if (folderId && newFolder && folderId == newFolderId) {
 				var currFolder = appCtxt.getById(folderId);
 				var list = (currFolder && currFolder.isRemote()) ? this._controller.getList() : ev.source;
-				var subVector = list.getSubList(this.getOffset(), this.getLimit(), folderId);
+				var subVector = list.getSubList(this.offset, this.getLimit(), folderId);
 				ZmListView.prototype.set.call(this, subVector);
 
 				// only relayout if this is cards view

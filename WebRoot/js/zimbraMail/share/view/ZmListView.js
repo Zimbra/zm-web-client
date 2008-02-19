@@ -83,7 +83,7 @@ function(list, sortField) {
 	var subList;
 	if (list instanceof ZmList) {
 		list.addChangeListener(this._listChangeListener);
-		subList = list.getSubList(this.getOffset(), this.getLimit());
+		subList = list.getSubList(this.offset, this.getLimit());
 	} else {
 		subList = list;
 	}
