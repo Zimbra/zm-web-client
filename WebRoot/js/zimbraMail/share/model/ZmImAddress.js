@@ -50,7 +50,7 @@ ZmImAddress = {
     },
 
     display : function(id) {
-        addr = ZmImAddress.parse(id);
+        var addr = ZmImAddress.parse(id);
         if (addr) {
             var a = ZmImAddress.IM_SERVICES, i = 0, s;
             while (s = a[i++]) {
