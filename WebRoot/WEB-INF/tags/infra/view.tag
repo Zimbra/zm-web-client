@@ -250,22 +250,34 @@
 										<c:choose>
 											<c:when test="${max gt 0}">
 												<c:set var="usage" value="${zm:displaySizePercentage(mailbox.size,max)}" />
-												<td class="BannerTextQuota">Email:</td>
+                                                <c:set var="usageNumeric" value="${fn:replace(usage, '%','')}"/>
+                                                <td class="BannerTextQuota">Email:</td>
 												<td class="BannerTextQuota">
 													<div class="quotabar">
-														<div class="quotaUsed" style="width:${usage}"/>
+                                                        <c:choose>
+                                                            <c:when test="${usageNumeric < 65 }">
+                                                                <div class="quotaUsed" style="width:${usage}"/>
+                                                            </c:when>
+                                                            <c:when test="${usageNumeric >= 65 && usageNumeric < 85}">
+                                                                <div class="quotaWarning" style="width:${usage}"/>
+                                                            </c:when>
+                                                            <c:when test="${usageNumeric >= 85}">
+                                                                <div class="quotaCritical" style="width:${usage}"/>
+                                                            </c:when>
+                                                        </c:choose>
+
 													</div>
 												</td>
 											</c:when>
 											<c:otherwise>
-												<c:set var="usage" value="${zm:displaySizeFractions(mailbox.size,2)}" />
+												<c:set var="usage" value="${zm:displaySizeFractions(mailbox.size,1)}" />
 											</c:otherwise>
 										</c:choose>
 										<td class="BannerTextQuota" style="white-space: nowrap;">
 											<fmt:message var="unlimited" key="unlimited"/>
-											<fmt:message key="quotaUsage">
+											<fmt:message  key="quotaUsage">
 												<fmt:param value="${usage}"/>
-												<fmt:param value="${max == null || max == '' || max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
+												<fmt:param value="${max == null || max == '' || max==0 ? unlimited : zm:displaySizeFractions(max,1)}"/>
 											</fmt:message>
 										</td>
 									</tr>
@@ -472,8 +484,8 @@
 				<div class="SearchButton" style="padding:2px;" >
 					<a  href="${fn:escapeXml(composeUrl)}" style="text-decoration:none;color:black;"><span id='tab_ikon_compose'><app:img src="startup/ImgNewMessage.gif" altkey='ALT_APP_COMPOSE'/></span> &nbsp; <span id='tab_ikon_compose'></span><span><fmt:message key="compose"/></span></a>
 				</div
-				--%>
-			</td>
+
+			</td>--%>
 			<td id='skin_container_app_chooser_lite' colspan=2 valign="bottom" style='padding:0px'>
 				<app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
 			</td>
