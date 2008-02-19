@@ -63,10 +63,11 @@ function() {
 ZmConvController.prototype.show =
 function(activeSearch, conv, parentController, callback) {
 	this._conv = conv;
+	var lv = this._listView[this._currentView];
 	// always reset offset & sortby to asc.
-	if (this._listView[this._currentView]) {
-		this._listView[this._currentView].setOffset(0);	
-		this._listView[this._currentView].setSortByAsc(ZmItem.F_DATE, false);
+	if (lv) {
+		lv.offset = 0;
+		lv.setSortByAsc(ZmItem.F_DATE, false);
 	}
 	this._parentController = parentController;
 

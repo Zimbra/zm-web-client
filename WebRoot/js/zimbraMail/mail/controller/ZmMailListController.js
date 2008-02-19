@@ -442,12 +442,12 @@ ZmMailListController.prototype._setActiveSearch =
 function(view) {
 	// save info. returned by search result
 	if (this._activeSearch) {
-		if (this._list)
+		if (this._list) {
 			this._list.setHasMore(this._activeSearch.getAttribute("more"));
-
-		var newOffset = parseInt(this._activeSearch.getAttribute("offset"));
-		if (this._listView[view])
-			this._listView[view].setOffset(newOffset);
+		}
+		if (this._listView[view]) {
+			this._listView[view].offset = parseInt(this._activeSearch.getAttribute("offset"));
+		}
 	}
 };
 
@@ -1142,6 +1142,7 @@ function(currentItem, forward) {
 		throw new DwtException("Bad index!", DwtException.INTERNAL_ERROR, "ZmMailListController.pageItemSilently");
 
 	var pageWasCached = true;
+	var lv = this._listView[this._currentView];
 	if (itemIdx >= list.length) {
 		if (this._list.hasMore()) {
 			pageWasCached = this._paginate(this._currentView, true, itemIdx);
@@ -1151,17 +1152,15 @@ function(currentItem, forward) {
 		}
 	} else {
 		// this means the conv must be cached. Find out if we need to page back/forward.
-		var offset = this._listView[this._currentView].getOffset();
-		var limit = this._listView[this._currentView].getLimit();
-		if (itemIdx >= offset + limit) {
+		if (itemIdx >= lv.offset + lv.getLimit()) {
 			pageWasCached = this._paginate(this._currentView, true);
-		} else if (itemIdx < offset) {
+		} else if (itemIdx < lv.offset) {
 			pageWasCached = this._paginate(this._currentView, false);
 		}
 	}
 	if (pageWasCached) {
 		var newItem = list[itemIdx];
-		this._listView[this._currentView].emulateDblClick(newItem);
+		lv.emulateDblClick(newItem);
 	}
 };
 

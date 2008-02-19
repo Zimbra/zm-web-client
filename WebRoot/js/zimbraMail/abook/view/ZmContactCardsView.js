@@ -58,7 +58,7 @@ ZmContactCardsView.prototype.paginate =
 function(contacts, bPageForward) {
 	ZmContactsBaseView.prototype.paginate.call(this, contacts, bPageForward);
 	this._layout();
-	this.setSelection(contacts.getVector().get(this.getOffset()));
+	this.setSelection(contacts.getVector().get(this.offset));
 };
 
 ZmContactCardsView.prototype.replenish = 

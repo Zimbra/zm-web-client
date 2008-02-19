@@ -649,13 +649,18 @@ function(ev) {
 	var ctlr = appCtxt.getCurrentController();
 	var isCurrentList = (appCtxt.getCurrentList() == this);
 
-	if (ev.event == ZmEvent.E_DELETE && ev.source instanceof ZmFolder && ev.source.id == ZmFolder.ID_TRASH) {
+	if (ev.event == ZmEvent.E_DELETE &&
+		(ev.source instanceof ZmFolder) &&
+		ev.source.id == ZmFolder.ID_TRASH)
+	{
 		// user emptied trash - reset a bunch of stuff w/o having to redo the search
 		var curView = ctlr.getCurrentView();
-		if (curView) curView.setOffset(0);
+		if (curView) { curView.offset = 0; }
 		ctlr._resetNavToolBarButtons(view);
-	} else if (isCurrentList && ctlr && ctlr._currentSearch && (ev.event == ZmEvent.E_MOVE ||
-			   (ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME])) {
+	}
+	else if (isCurrentList && ctlr && ctlr._currentSearch &&
+			 (ev.event == ZmEvent.E_MOVE || (ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME]))
+	{
 		// on folder rename or move, update current query if folder is part of query
 		var oldPath = ev.getDetail("oldPath");
 		if (ctlr._currentSearch.hasFolderTerm(oldPath)) {

@@ -58,12 +58,12 @@ function(list, folderId) {
 	this._setup(this._currentView);
 
 	// reset offset if list view has been created
-	if (this._listView[this._currentView])
-		this._listView[this._currentView].setOffset(0);
+	var lv = this._listView[this._currentView];
+	if (lv) { lv.offset = 0; }
 
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
 
 	this._setView(this._currentView, elements, true);
 

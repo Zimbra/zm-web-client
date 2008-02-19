@@ -1008,12 +1008,13 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 */
 ZmListController.prototype._paginate =
 function(view, forward, loadIndex) {
-	var offset = this._listView[view].getNewOffset(forward);
-	var limit = this._listView[view].getLimit();
+	var lv = this._listView[view];
+	var offset = lv.getNewOffset(forward);
+	var limit = lv.getLimit();
 	forward ? this.currentPage++ : this.currentPage--;
 	this.maxPage = Math.max(this.maxPage, this.currentPage);
 
-	this._listView[view].setOffset(offset);
+	lv.offset = offset; // cache new offset
 
 	// see if we're out of items and the server has more
 	if ((offset + limit > this._list.size() && this._list.hasMore()) || this.pageIsDirty[this.currentPage]) {
@@ -1024,8 +1025,8 @@ function(view, forward, loadIndex) {
 			offset = ((offset + limit) - max) + 1;
 
 		// figure out if this requires cursor-based paging
-		var list = this._listView[this._currentView].getList();
-		var lastItem = list.getLast();
+		var list = lv.getList();
+		var lastItem = list ? list.getLast() : null;
 		var lastSortVal = (lastItem && lastItem.id) ? lastItem.sf : null;
 		var lastId = lastSortVal ? lastItem.id : null;
 
@@ -1114,15 +1115,12 @@ function(listView) {
 ZmListController.prototype._replenishList =
 function(view, replCount, callback) {
 	// determine if there are any more items to replenish with
-	var idxStart = this._listView[view].getOffset() + this._listView[view].size();
+	var idxStart = this._listView[view].offset + this._listView[view].size();
 	var totalCount = this._list.size();
 
 	if (idxStart < totalCount) {
 		// replenish from cache
-		var idxEnd = idxStart + replCount;
-		if (idxEnd > totalCount) {
-			idxEnd = totalCount;
-		}
+		var idxEnd = (idxEnd > totalCount) ? totalCount : (idxStart + replCount);
 		var list = this._list.getVector().getArray();
 		var sublist = list.slice(idxStart, idxEnd);
 		var subVector = AjxVector.fromArray(sublist);
@@ -1215,14 +1213,14 @@ function(view) {
 	}
 
 	if (this._navToolBar[view].hasSingleArrows) {
-		var offset = this._listView[view].getOffset();
-		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, offset > 0);
+		var lv = this._listView[view];
+		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, lv.offset > 0);
 
 		// determine if we have more cached items to show (in case hasMore is wrong)
 		var hasMore = false;
 		if (this._list) {
 			hasMore = this._list.hasMore();
-			if (!hasMore && ((offset + this._listView[view].getLimit()) < this._list.size())) {
+			if (!hasMore && ((lv.offset + lv.getLimit()) < this._list.size())) {
 				hasMore = true;
 			}
 		}
@@ -1259,14 +1257,14 @@ function(view) {
 
 ZmListController.prototype._getNavStartEnd =
 function(view) {
-	var offset = this._listView[view].getOffset();
-	var limit = this._listView[view].getLimit();
+	var lv = this._listView[view];
+	var limit = lv.getLimit();
 	var size = this._list.size();
 
 	var start, end;
 	if (size > 0) {
-		start = offset + 1;
-		end = Math.min(offset + limit, size);
+		start = lv.offset + 1;
+		end = Math.min(lv.offset + limit, size);
 	}
 
 	return (start && end) ? {start:start, end:end} : null;

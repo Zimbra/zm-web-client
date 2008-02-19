@@ -47,6 +47,7 @@ function(searchResults, fromUserSearch) {
 	this._setup(this._currentView);
 
 	this._list = searchResults.getResults(ZmItem.MIXED);
+	var lv = this._listView[this._currentView];
 	if (this._activeSearch) {
 		if (this._list) {
 			var items = this._list.getArray();
@@ -58,22 +59,21 @@ function(searchResults, fromUserSearch) {
 			}		
 			this._list.setHasMore(this._activeSearch.getAttribute("more"));
 		}
-
-		var newOffset = parseInt(this._activeSearch.getAttribute("offset"));
-		if (this._listView[this._currentView])
-			this._listView[this._currentView].setOffset(newOffset);
+		if (lv) {
+			lv.offset = parseInt(this._activeSearch.getAttribute("offset"));
+		}
 	}
 
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = lv;
 	this._setView(this._currentView, elements, true);
 	this._resetNavToolBarButtons(this._currentView);
 
 	// always set the selection to the first item in the list
-	var list = this._listView[this._currentView].getList();
+	var list = lv.getList();
 	if (list && list.size() > 0) {
-		this._listView[this._currentView].setSelection(list.get(0));
+		lv.setSelection(list.get(0));
 	}
 };
 
