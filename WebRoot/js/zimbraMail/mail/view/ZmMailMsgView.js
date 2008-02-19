@@ -557,19 +557,15 @@ function(doc) {
 };
 
 ZmMailMsgView.prototype.lazyFindMailMsgObjects = function(interval, doc ){
-    if (this._objectManager) {
-        this._lazyCreateObjectManager();
-        AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._findMailMsgObjects, [doc]), ( interval || 500 ));
-    }
+        if (this._objectManager) {
+                this._lazyCreateObjectManager();
+                this._objectsAction = new AjxTimedAction(this, this._findMailMsgObjects, [doc]);
+                AjxTimedAction.scheduleAction(this._objectsAction, ( interval || 500 ));
+        }
 };
 
 ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
     this._objectManager.processObjectsInNode(doc, doc.body);
-};
-
-	// bug fix #8632 - finally, set the attachment links
-	this._setAttachmentLinks();
-<<<<
 };
 
 ZmMailMsgView.prototype._checkImgInAttachments =
@@ -974,7 +970,7 @@ function(msg, container, callback) {
 	// add the close button if applicable
 	if (this._hasHeaderCloseBtn) {
 		var closeBtnCellId	= this._htmlElId + "_closeBtnCell";
-		this._closeButton = new DwtButton(this);
+		this._closeButton = new DwtButton({parent:this});
 		this._closeButton.setImage("Close");
 		this._closeButton.setText(ZmMsg.close);
 		this._closeButton.reparentHtmlElement(closeBtnCellId);
