@@ -262,7 +262,7 @@
 		var imAddress1  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress1));
 		var imAddress2  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress2));
 		var imAddress3  = ZmImAddress.display(contact.getAttr(ZmContact.F_imAddress3));
-		var hasIM		= (imAddress1 != "") || (imAddress2 != "") || (imAddress3 != "");
+		var hasIM		= imAddress1 || imAddress2 || imAddress3;
 	$>
 	<$ if (hasEmail || hasIM) { $>
 		<table border=0 cellpadding=2 cellspacing=2 width=100%>
