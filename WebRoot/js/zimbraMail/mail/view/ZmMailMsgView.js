@@ -112,9 +112,9 @@ function() {
 
 	// TODO: reuse all thses controls that are being disposed here.....
 	if (this._expandButton) {
-		this._expandButton.dispose();
-		this._expandButton = null;
-	}
+        this._expandButton.setVisible(Dwt.DISPLAY_NONE);
+        this._expandButton.reparentHtmlElement(this.getHtmlElement());
+    }
 	if (this._ifw) {
 		this._ifw.dispose();
 		this._ifw = null;
@@ -1055,11 +1055,10 @@ function(msg, container, callback) {
 	// add the expand/collapse arrow button now that we have add to the DOM tree
 	var expandHeaderEl = document.getElementById(expandHeaderId);
 	if (expandHeaderEl) {
-		this._expandButton = new DwtToolBarButton(this);
 		var image = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
 		this._expandButton.setImage(image);
 		this._expandButton.reparentHtmlElement(expandHeaderId);
-		this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener))
+        this._expandButton.setVisible(Dwt.DISPLAY_BLOCK);
 	}
 
 
