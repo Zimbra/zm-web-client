@@ -73,7 +73,7 @@
                                         <input type="hidden" name="id_${chit.id}" value="${mid}"/>
                                     </c:forEach>
                                 </td>
-                                <td width="1%">
+                                <td width="1%" class="zo_m_chk">
                                     <c:if test="${chit.messageCount ge 2}">
                                         <mo:img src="startup/ImgConversationView.gif"/>
                                     </c:if>
@@ -103,22 +103,18 @@
                                                             <mo:miniTagImage
                                                                     ids="${hit.conversationHit.tagIds}"/>
                                                         </c:if>
-                                                                <c:choose>
-                                                                <c:when test="${chit.messageCount gt 1}">(${chit.messageCount}
-                                                                    )</c:when>
-                                                                <c:otherwise>&nbsp;</c:otherwise>
-                                                            </c:choose>
-                                                       
                                             </td>
-                                        <td class='zo_m_list_date' nowrap="nowrap" width="3%>
-                                                <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt"
-                                                                pattern="yyyyMMdd" value="${chit.date}"/>
-                                                <a
-                                                        <c:if test="${uiv == '1' && mailbox.features.calendar}">href="${context_url}?st=cal&view=month&date=${on_dt}"</c:if>>
-                                                        ${fn:escapeXml(zm:displayMsgDate(pageContext, chit.date))}
-                                                </a>
-                                         </td>
-                                         <td class="zo_ab_list_arrow" nowrap="nowrap">&nbsp;</td>
+                                            <td nowrap="nowrap" class='zo_m_list_size' align="right" valign="top">
+                                                <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${chit.date}"/>
+                                                <a <c:if test="${sessionScope.uiv == '1' && mailbox.features.calendar}">href='${context_url}?st=cal&view=month&date=${on_dt}'</c:if>>
+                                                    ${fn:escapeXml(zm:displayMsgDate(pageContext, chit.date))}
+                                                </a><br/>
+                                                 <c:choose>
+                                                            <c:when test="${chit.messageCount gt 1}">(${chit.messageCount})</c:when>
+                                                            <c:otherwise>&nbsp;</c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <!--<td class="zo_ab_list_arrow">&nbsp;</td>-->
                                         </tr>
                                     </table>
                                 </td>
@@ -141,7 +137,7 @@
                 <a name="action" id="action"/>
                 <table cellspacing="2" cellpadding="2" width="100%" border="0">
                     <tr class="zo_m_list_row">
-                        <td align="center">
+                        <td>
                             <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
                            <select name="anAction">
                                <option value="" selected="selected"><fmt:message key="moreActions"/></option>
@@ -156,13 +152,26 @@
                               <optgroup label="<fmt:message key="moveAction"/>">
                                 <zm:forEachFolder var="folder">
                                     <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                        <option value="moveto_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
+                                        <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
                                     </c:if>
                                 </zm:forEachFolder>
                               </optgroup>
-                              <zm:forEachFolder var="folder">
+                             <%-- <zm:forEachFolder var="folder">
                                   <input type="hidden" name="folderId" value="${folder.id}"/>
-                              </zm:forEachFolder>
+                              </zm:forEachFolder>--%>
+                               <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                               <c:set var="allTags" value="${mailbox.mailbox.allTags}"/>
+                               <optgroup label="<fmt:message key="MO_actionAddTag"/>">
+                                <c:forEach var="atag" items="${allTags}">
+                                <option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
+                                </c:forEach>
+                               </optgroup>
+                               <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
+                                <c:forEach var="atag" items="${allTags}">
+                                <option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
+                                </c:forEach>
+                               </optgroup>
+                               </c:if>
                            </select>
                            <input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/>
                         </td>

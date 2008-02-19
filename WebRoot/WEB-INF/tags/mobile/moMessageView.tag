@@ -81,7 +81,7 @@
         <mo:msgToolbar mid="${msg.id}" urlTarget="${context_url}" context="${context}" keys="false"/>
     </td>
 </tr>
-<tr>
+<tr class="Stripes">
     <td class='zo_appt_view'>
         <c:set var="extImageUrl" value=""/>
         <c:if test="${empty param.xim}">
@@ -103,14 +103,14 @@
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
 <table width="100%" cellspacing="0" cellpadding="2">
-<tr>
+<!--<tr>
     <td colspan="2">
         <hr size='1'/>
     </td>
-</tr>
+</tr>-->
 <tr class='zo_action'>
     <td colspan="2">
-        <table cellspacing="0" cellpadding="0">
+        <%--<table cellspacing="0" cellpadding="0">
             <tr>
                 <td>
                     <c:choose>
@@ -133,10 +133,58 @@
                     </c:choose>
                 </td>
             </tr>
-        </table>
+        </table>--%>
+        <table cellspacing="2" cellpadding="2" width="100%" border="0">
+                    <tr class="zo_m_list_row">
+                        <td>
+                            <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                           <select name="anAction">
+                               <option value="" selected="selected"><fmt:message key="moreActions"/></option>
+                               <optgroup label="Mark">
+                                   <c:if test="${msg.isUnread}">
+                                        <option value="actionMarkRead">Read</option>
+                                   </c:if>
+                                   <c:if test="${not msg.isUnread}">
+                                        <option value="actionMarkUnread">Unread</option>
+                                   </c:if>
+                               </optgroup>
+                               <optgroup label="Flag">
+                                   <c:if test="${not msg.isFlagged}">
+                                    <option value="actionFlag">Add</option>
+                                   </c:if>
+                                   <c:if test="${msg.isFlagged}">
+                                        <option value="actionUnflag">Remove</option>
+                                   </c:if>
+                              </optgroup>
+                              <optgroup label="<fmt:message key="moveAction"/>">
+                                <zm:forEachFolder var="folder">
+                                    <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                                        <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
+                                    </c:if>
+                                </zm:forEachFolder>
+                              </optgroup>
+                               <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+                               <c:set var="tagsToAdd" value="${zm:getAvailableTags(pageContext,msg.tagIds,true)}"/>
+                               <c:set var="tagsToRemove" value="${zm:getAvailableTags(pageContext,msg.tagIds,false)}"/>
+                               <optgroup label="<fmt:message key="MO_actionAddTag"/>">
+                                <c:forEach var="atag" items="${tagsToAdd}">
+                                <option value="addTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
+                                </c:forEach>
+                               </optgroup>
+                               <optgroup label="<fmt:message key="MO_actionRemoveTag"/>">
+                                <c:forEach var="atag" items="${tagsToRemove}">
+                                <option value="remTag_${atag.id}">${fn:escapeXml(atag.name)}</option>
+                                </c:forEach>
+                               </optgroup>
+                               </c:if>
+                           </select>
+                           <input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/>
+                        </td>
+                    </tr>
+                </table>
     </td>
 </tr>
-<tr>
+<%--<tr>
     <td colspan="2">
         <hr size='1'/>
     </td>
@@ -161,7 +209,7 @@
             </tr>
         </table>
     </td>
-</tr>
+</tr>--%>
 <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
     <c:set var="tagsToAdd" value="${zm:getAvailableTags(pageContext,msg.tagIds,true)}"/>
     <c:set var="tagsToRemove" value="${zm:getAvailableTags(pageContext,msg.tagIds,false)}"/>
@@ -217,7 +265,7 @@
         </tr>
     </c:if>
 </c:if>
-<tr>
+<%--<tr>
     <td colspan="2">
         <hr size='1'/>
     </td>
@@ -233,7 +281,7 @@
             <hr size='1'/>
         </td>
     </tr>
-</c:if>
+</c:if>--%>
 </table>
 </form>
 </td>

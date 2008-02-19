@@ -13,28 +13,11 @@
 
 <table cellpadding="0" cellspacing="0" class="ToolbarBg" border="0" width="100%">
     <tr>
-        <td class="Padding">
-            <c:if test="${context.st=='message' || context.st=='conversation'}">
-                <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
-                <a href="${composeUrl}">
-                    <fmt:message key="compose"/>
-                </a>
-            </c:if>
-            <c:if test="${context.st=='contact'}">
-                <c:url var="addUrl" value="${closeUrl}">
-                    <c:param name="action" value="edit"/>
-                    <c:param name="pid" value="${cid}"/>
-                </c:url>
-                <a href="${addUrl}">
-                    <fmt:message key="add"/>
-                </a>
-            </c:if>
-        </td>
-        <td align="right">
+        <td align="left" class="Padding">
             <table>
                 <tr>
                     <td class="Padding">
-                        <a href="${fn:escapeXml(closeUrl)}#cn${cid}">
+                        <a href="${fn:escapeXml(closeUrl)}#cn${cid}" class='zo_leftbutton'>
                             <fmt:message key="close"/>
                         </a></td>
                     <td class="Padding">
@@ -46,7 +29,9 @@
                         <a href="${editUrl}" id="_edit_link" style="display:none;visibility:hidden;">
                             <fmt:message key="edit"/>
                         </a>
-                        <a href="#action"><fmt:message key="MO_actions"/> </a>
+                        <c:if test="${uiv == '1'}">
+                        <a href="#action" class='zo_button'><fmt:message key="MO_actions"/> </a>
+                        </c:if>    
                     </td>
                     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}"
                                             index="${context.currentItemIndex}"/>
@@ -55,12 +40,12 @@
                             <c:when test="${cursor.hasPrev}">
                                 <zm:prevItemUrl var="prevMsgUrl" value="${urlTarget}" action='view'
                                                 cursor="${cursor}" context="${context}"/>
-                                <a href="${fn:escapeXml(prevMsgUrl)}">
+                                <a href="${fn:escapeXml(prevMsgUrl)}" class='zo_button'>
                                     <fmt:message key="MO_PREV"/>
                                 </a>
                             </c:when>
                             <c:otherwise>
-                                <a>
+                                <a class='zo_button_disabled'>
                                     <fmt:message key="MO_PREV"/>
                                 </a>
                             </c:otherwise>
@@ -71,12 +56,12 @@
                             <c:when test="${cursor.hasNext}">
                                 <zm:nextItemUrl var="nextMsgUrl" value="${urlTarget}" action='view'
                                                 cursor="${cursor}" context="${context}"/>
-                                <a href="${fn:escapeXml(nextMsgUrl)}">
+                                <a href="${fn:escapeXml(nextMsgUrl)}" class='zo_button'>
                                     <fmt:message key="MO_NEXT"/>
                                 </a>
                             </c:when>
                             <c:otherwise>
-                                <a>
+                                <a class='zo_button_disabled'>
                                     <fmt:message key="MO_NEXT"/>
                                 </a>
                             </c:otherwise>
@@ -85,5 +70,22 @@
                 </tr>
             </table>
         </td>
+        <td class="Padding" align="right">
+                    <c:if test="${context.st=='message' || context.st=='conversation'}">
+                        <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
+                        <a href="${composeUrl}" class='zo_button'>
+                            <fmt:message key="compose"/>
+                        </a>
+                    </c:if>
+                    <c:if test="${context.st=='contact'}">
+                        <c:url var="addUrl" value="${closeUrl}">
+                            <c:param name="action" value="edit"/>
+                            <c:param name="pid" value="${cid}"/>
+                        </c:url>
+                        <a href="${addUrl}" class='zo_button'>
+                            <fmt:message key="add"/>
+                        </a>
+                    </c:if>
+                </td>
     </tr>
 </table>

@@ -160,33 +160,36 @@
         </fmt:message>
     </mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionAddTag')}">
-    <zm:tagMessage tagid="${param.tagId}" var="result" id="${ids}" tag="${true}"/>
+<c:when test="${zm:actionSet(param, 'actionAddTag') || (zm:actionSet(param,'moreActions') && fn:startsWith(param.anAction,'addTag_'))}">
+    <c:set var="tag" value="${param.tagId}"/>
+    <c:if test="${tag == null}">
+        <c:set var="tag" value="${fn:replace(param.anAction,'addTag_','')}"/>
+    </c:if>
+    <zm:tagMessage tagid="${tag}" var="result" id="${ids}" tag="${true}"/>
     <mo:status>
         <fmt:message key="actionMessageTag">
             <fmt:param value="${result.idCount}"/>
-            <fmt:param value="${zm:getTagName(pageContext, param.tagId)}"/>
+            <fmt:param value="${zm:getTagName(pageContext, tag)}"/>
         </fmt:message>
     </mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionRemoveTag')}">
-    <zm:tagMessage tagid="${param.tagRemoveId}" var="result" id="${ids}" tag="${false}"/>
+<c:when test="${zm:actionSet(param, 'actionRemoveTag') || (zm:actionSet(param,'moreActions') && fn:startsWith(param.anAction,'remTag_'))}">
+    <c:set var="tag" value="${param.tagRemoveId}"/>
+    <c:if test="${tag == null}">
+        <c:set var="tag" value="${fn:replace(param.anAction,'remTag_','')}"/>
+    </c:if>
+    <zm:tagMessage tagid="${tag}" var="result" id="${ids}" tag="${false}"/>
     <mo:status>
         <fmt:message key="actionMessageUntag">
             <fmt:param value="${result.idCount}"/>
-            <fmt:param value="${zm:getTagName(pageContext, param.tagRemoveId)}"/>
+            <fmt:param value="${zm:getTagName(pageContext, tag)}"/>
         </fmt:message>
     </mo:status>
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionMove') || (zm:actionSet(param,'moreActions') && zm:actionSet(paramValues,'folderId'))}">
     <c:choose>
-        <c:when test="${zm:actionSet(param,'moreActions')}">
-            <c:forEach var="fid" items="${paramValues.folderId}">
-                <c:set var="aname" value="moveto_${fid}"/>
-		<c:if test="${param.anAction==aname}">
-                      <c:set var="folderId" value="${fid}"/>
-                </c:if>
-            </c:forEach>
+        <c:when test="${fn:startsWith(param.anAction,'moveTo_')}">
+        <c:set var="folderId" value="${fn:replace(param.anAction,'moveTo_','')}"/>
 	    <zm:moveMessage folderid="${folderId}" var="result" id="${ids}"/>
             <mo:status>
                 <fmt:message key="actionMessageMoved">

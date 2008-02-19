@@ -2,6 +2,7 @@
 <%@ attribute name="urlTarget" rtexprvalue="true" required="true" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %>
 <%@ attribute name="mid" rtexprvalue="true" required="true" %>
+<%@ attribute name="isTop" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -11,23 +12,9 @@
 <zm:currentResultUrl var="closeUrl" value="${urlTarget}" context="${context}"/>
 <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 
-<table class="x_toolbar" cellpadding="0" cellspacing="0">
+<table class="ToolbarBg" cellpadding="0" cellspacing="0" border="0" width="100%">
     <tr>
-        <td class="x_main_buttons">
-            <c:if test="${context.st=='message' || context.st=='conversation'}">
-                <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
-                <a href="${composeUrl}" class="zo_button">
-                    <fmt:message key="compose"/>
-                </a>
-            </c:if>
-            <c:if test="${context.st=='contact'}">
-                <c:url var="composeUrl" value="${urlTarget}?action=add"/>
-                <a href="${composeUrl}" class="zo_button">
-                    <fmt:message key="add"/>
-                </a>
-            </c:if>
-        </td>
-        <td  align="right" class="x_sub_buttons">
+        <td  align="left" class="Padding">
             <table>
                 <tr>
                     <td>
@@ -35,10 +22,11 @@
                             ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
                         </a>
                     </td>
+                    <c:if test="${uiv == '1'}">
                     <td>
                         <a class='zo_button' href="#action"><fmt:message key="MO_actions"/></a>
-
                     </td>
+                    </c:if>    
                     <td>
                         <c:choose>
                             <c:when test="${cursor.hasPrev}">
@@ -73,6 +61,27 @@
                     </td>
                 </tr>
             </table>
+        </td>
+        <td class="Padding" align="right">
+            <c:if test="${uiv != '1' && isTop != null && isTop}">
+                <a href="#action" class='zo_button'>
+                    <fmt:message key="MO_actions"/>
+                </a>
+            </c:if>
+    <c:if test="${uiv == '1'}">
+            <c:if test="${context.st=='message' || context.st=='conversation'}">
+                <c:url var="composeUrl" value="${urlTarget}?action=compose"/>
+                <a href="${composeUrl}" class="zo_button">
+                    <fmt:message key="compose"/>
+                </a>
+            </c:if>
+            <c:if test="${context.st=='contact'}">
+                <c:url var="composeUrl" value="${urlTarget}?action=add"/>
+                <a href="${composeUrl}" class="zo_button">
+                    <fmt:message key="add"/>
+                </a>
+            </c:if>
+       </c:if> 
         </td>
     </tr>
 </table>

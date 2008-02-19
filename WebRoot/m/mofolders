@@ -21,11 +21,12 @@
 </mo:handleError>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mosearch'}"/>
 <mo:view title="${title}" context="${null}" mailbox="${mailbox}">
-    <%--<table width="100%" cellspacing="0" cellpadding="0">
-        <tr>
+    <c:if test="${uiv != '1'}">
+    <table width="100%" cellspacing="0" cellpadding="0">
+        <tr class='ToolbarBg'>
             <td>
-                <table width="100%" cellspacing="0" cellpadding="0" border="1">
-                    <tr class='x_toolbar'>
+                <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                    <tr>
                         <td>
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
@@ -37,28 +38,34 @@
                 </table>
             </td>
         </tr>
-    </table>--%>
+    </table>
+    </c:if>
     <table width="100%" cellspacing="0" cellpadding="2" border="0">
         <tr class="zo_cal_listh">
             <td class="Title">
 			   <fmt:message key="folders"/>
             </td>
         </tr>
-        <mo:overviewFolder base="${context_url}" folder="${mailbox.inbox}"/>
-        <mo:doFolderTree skiproot="${true}" parentid="${mailbox.inbox.id}" skipsystem="false"/>
-
-        <mo:overviewFolder base="${context_url}" folder="${mailbox.sent}"/>
-        <mo:doFolderTree skiproot="${true}" parentid="${mailbox.sent.id}" skipsystem="false"/>
-
-        <mo:overviewFolder base="${context_url}" folder="${mailbox.drafts}"/>
-        <mo:doFolderTree skiproot="${true}" parentid="${mailbox.drafts.id}" skipsystem="false"/>
-
-        <mo:overviewFolder base="${context_url}" folder="${mailbox.spam}"/>
-        <mo:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
-
-        <mo:overviewFolder base="${context_url}" folder="${mailbox.trash}"/>
-        <mo:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
-
+        <c:if test="${param.sq == null || param.sq == '' || fn:containsIgnoreCase(mailbox.inbox.name,param.sq)}">
+            <mo:overviewFolder base="${context_url}" folder="${mailbox.inbox}"/>
+            <mo:doFolderTree skiproot="${true}" parentid="${mailbox.inbox.id}" skipsystem="false"/>
+        </c:if>
+        <c:if test="${param.sq == null || param.sq == '' ||fn:containsIgnoreCase(mailbox.sent.name,param.sq)}">
+             <mo:overviewFolder base="${context_url}" folder="${mailbox.sent}"/>
+            <mo:doFolderTree skiproot="${true}" parentid="${mailbox.sent.id}" skipsystem="false"/>
+        </c:if>
+        <c:if test="${param.sq == null || param.sq == '' ||fn:containsIgnoreCase(mailbox.drafts.name,param.sq)}">
+            <mo:overviewFolder base="${context_url}" folder="${mailbox.drafts}"/>
+            <mo:doFolderTree skiproot="${true}" parentid="${mailbox.drafts.id}" skipsystem="false"/>
+        </c:if>
+        <c:if test="${param.sq == null || param.sq == '' ||fn:containsIgnoreCase(mailbox.spam.name,param.sq)}">
+            <mo:overviewFolder base="${context_url}" folder="${mailbox.spam}"/>
+            <mo:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
+        </c:if>
+        <c:if test="${param.sq == null || param.sq == '' ||fn:containsIgnoreCase(mailbox.trash.name,param.sq)}">
+            <mo:overviewFolder base="${context_url}" folder="${mailbox.trash}"/>
+            <mo:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
+        </c:if>
         <mo:doFolderTree skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}"/>
 
         <tr class="zo_cal_listh">
@@ -67,7 +74,7 @@
             </td>
         </tr>
         <zm:forEachFolder var="folder">
-            <c:if test="${folder.isSearchFolder and (folder.depth eq 0)}">
+            <c:if test="${(param.sq != null && param.sq != '' && fn:containsIgnoreCase(folder.name,param.sq)) || folder.isSearchFolder and (folder.depth eq 0)}">
                 <mo:overviewSearchFolder folder="${folder}"/>
             </c:if>
         </zm:forEachFolder>

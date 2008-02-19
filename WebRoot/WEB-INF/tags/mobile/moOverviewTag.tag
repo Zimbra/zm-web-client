@@ -8,7 +8,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/main'}"/>
+<c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'/m/mosearch'}"/>
 <c:set var="types" value="${not empty types ? types : not empty param.st ? param.st : ''}"/>
 <tr onclick='zClickLink("TAG${tag.id}")'>
     <c:choose>
@@ -18,7 +18,7 @@
         <c:otherwise>
             <c:url value="${context_url}" var="url">
                 <c:param name="sti" value="${tag.id}"/>
-                <c:if test="${not empty types}"><c:param name='st' value='${types}'/></c:if>
+                <c:if test="${not empty types && uiv != '1'}"><c:param name='st' value='${types}'/></c:if>
             </c:url>
         </c:otherwise>
     </c:choose>

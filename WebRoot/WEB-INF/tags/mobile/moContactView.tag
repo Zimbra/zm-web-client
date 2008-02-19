@@ -51,7 +51,7 @@
                     <form id="action" action="${fn:escapeXml(actionUrl)}" method="post">
                         <input type="hidden" name="doContactAction" value="1"/>
                         <input type="hidden" name="id" value="${contact.id}"/>
-
+                        <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
                                     <input type="button" onclick="zClickLink('_edit_link')"
                                            value="<fmt:message key="edit"/>"/>
                                     <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>					

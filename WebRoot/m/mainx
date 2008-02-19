@@ -25,9 +25,9 @@
     <c:set var="uiv" value="1" scope="session"/>
     <c:redirect url="/?loginOp=logout&client=mobile"/>
 </c:if>
-<c:if test="${zm:actionSet(param,'actionSearch') && (param.sq == null || param.sq == '')}">
+<%--<c:if test="${zm:actionSet(param,'actionSearch') && (param.sq == null || param.sq == '')}">
     <c:redirect url="/m/moquery"/>
-</c:if>
+</c:if>--%>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
@@ -69,39 +69,97 @@
                          <c:set var="aurl" value="${context_url}?st=folders"/>
                         <a id="folders" href="${aurl}"><img src="/img/mobile/Folders<c:if test="${param.st=='folders'}"><c:out value="-sel"/></c:if>.gif" border="0" width="55" height="48"></a>
             </td>
-            <td width="5%" align="center" valign="top">
+            <td width="5%" align="center" valign="top" onclick="javascript:toggleSearch()">
             	<img src="/img/mobile/Search.gif" border="0" width="55" height="48">
             </td>
         </tr>
+        
         </table>
-  
+        <div style="width:95%;padding:2px;display:block" id="SEARCH_BOX">
+        <table width="100%" align="center">
+            <tr class="searchbar">
+                <td>
+                    <form action="${context_url}" style="width:100%;">
+                               <input type="hidden" name="showSearch" value="1"/> 
+                               <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+                                <table cellspacing="0" cellpadding="0" width="100%">
+                                    <tr>
+                                        <td>
+                                            <table cellspacing="1" cellpadding="1" width="100%" align="right">
+                                                <tr>
+                                                    <td colspan="3" align="left">
+                                                        <fmt:message key="in"/>
+                                                        <select name="st">
+                                                            <option value="${(mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message')}"><fmt:message key="mail"/></option>
+                                                            <c:if test="${mailbox.features.contacts}">
+                                                                <option value="contact" <c:if test="${param.st == 'contact'}">selected='selected'</c:if> ><fmt:message key="contacts"/></option>
+                                                            </c:if>
+                                                            <c:if test="${mailbox.features.calendar}">
+                                                                <option value="cal" <c:if test="${param.st == 'cal'}">selected='selected'</c:if>><fmt:message key="calendar"/></option>
+                                                            </c:if>
+                                                            <option value="folders" <c:if test="${param.st == 'folders'}">selected='selected'</c:if>><fmt:message key="folders"/></option>
+                                                        </select>
+                                                        <!--</td>
+                                                        <td align="right">-->
+                                                            | <a href="mainx?moquery"><fmt:message key="advancedSearch"/></a>
+                                                        </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="2" align="left" style="padding-right:2px;">
+                                                        <input type="text"
+                                                               style="width:100%;height:20px;border:1px solid lightslategray;"
+                                                               name="sq" value="${param.sq}"/>
+                                                    </td>
+                                                    <td align="right">
+                                                        <input type="submit" name="actionSearch" class="zo_button1"
+                                                               value="<fmt:message key="search"/>"/>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+
+                </td>
+            </tr>
+        </table>
+        </div>    
     
     <table border="0" cellpadding="0" cellspacing="0" width="100%" border="0">        
         <tr>
             <td colspan="2">
                        <mo:handleError>
                             <c:choose>
+                                <c:when test="${param.moquery != null}">
+                                    <c:import url="/m/moquery"/>
+                                </c:when>
                                 <c:when test="${param.st == null || param.st == (mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message') || param.st == 'contact'}">
                                     <c:import url="/m/mosearch?sq_limit=${param.sq_limit!=null?param.sq_limit:'5'}"/>
                                 </c:when>
                                 <c:when test="${param.st != null && param.st == 'cal'}">
-                                    <fmt:formatDate var="today" pattern="yyyyMMdd" value="${zm:getToday(tz).time}"/>
-                                    <c:import url="/m/mocalendar?${param.view==null?'view=month':''}&${param.date==null?'date=':''}${today}"/>
+                                    <c:if test="${param.sq == null}">
+                                        <fmt:formatDate var="today" pattern="yyyyMMdd" value="${zm:getToday(tz).time}"/>
+                                        <c:set var="arg" value="${param.view==null?'view=month':''}&${param.date==null?'date=':''}${today}">
+                                        </c:set>
+                                    </c:if>
+                                    <c:import url="/m/mocalendar?${arg}"/>
                                 </c:when>
                                 <c:when test="${param.st != null && param.st == 'folders'}">
                                     <c:import url="/m/mofolders"/>
                                 </c:when>
+
                             </c:choose>
                         </mo:handleError>
             </td>
         </tr>
         <tr>
             <td class="zo_m_list_frag" align="left">
+                        <c:url var="logoutUrl" value="${context_url}?loginOp=logout&client=mobile"/>
                         <a href="${fn:escapeXml(logoutUrl)}" id="_logout">
                             <fmt:message key="logOut"/>
                         </a>
-                        (${mailbox.accountInfo.attrs["uid"][0]}
-                        <c:url var="logoutUrl" value="${context_url}?loginOp=logout&client=mobile"/>)
+                        (${mailbox.accountInfo.attrs["uid"][0]})
             </td>
         
             <td class="zo_m_list_frag" align="right">
@@ -115,4 +173,16 @@
             </td>
         </tr>
     </table>
+    <script type="text/javascript" language="JavaScript">
+        <c:if test="${param.showSearch == null || param.showSearch != '1'}">
+            document.getElementById("SEARCH_BOX").style.display="none";
+        </c:if>
+        var toggleSearch = function(){
+            if(document.getElementById("SEARCH_BOX").style.display=="block"){
+                document.getElementById("SEARCH_BOX").style.display="none";                
+            }else{
+                document.getElementById("SEARCH_BOX").style.display="block";                
+            }
+        }
+    </script>
 </mo:view>

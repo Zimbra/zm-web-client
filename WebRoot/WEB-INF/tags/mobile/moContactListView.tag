@@ -15,7 +15,7 @@
 <mo:view mailbox="${mailbox}" title="${title}" context="${context}">
 <zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}"/>
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
-
+<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doContactAction" value="1"/>
     <table width=100% cellspacing="0" cellpadding="0" border="0">
         <tr>
@@ -36,14 +36,14 @@
                             <td width="1%"><mo:img src="${chit.image}" altkey="${chit.imageAltKey}" valign="top"/></td>
                             <td onclick='zClickLink("a${chit.id}")'>
                             <span class="zo_m_list_sub">
-                                <a id="a${chit.id}" href="${contactUrl}"><strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? '<None>' : chit.fileAsStr),50, true)}</strong></a></span>
-                                <c:if test="${uiv=='1'}">
+                                <a id="a${chit.id}" href="${contactUrl}"><strong>${zm:truncate(fn:escapeXml(empty chit.fileAsStr ? '<None>' : chit.fileAsStr),50, true)}</strong></a>
+                            </span>
+                                <%--<c:if test="${uiv=='1'}">--%>
                                 <c:url var="murl" value="?action=compose&to=${chit.email}"/>
                                 <p class="Email"><a href="${fn:escapeXml(murl)}">${fn:escapeXml(chit.email)}</a></p>
-                                </c:if>
+                                <%--</c:if>--%>
                             </td>
                             <td class="zo_ab_list_arrow">&nbsp;</td>
-
                         </tr>
                     </c:forEach>
                 </table>
@@ -54,21 +54,21 @@
         </tr>
         <c:if test="${context.searchResult.size gt 0}">
             <tr>
+            <td>
+            <a name="action" id="action"/>
+            <table cellspacing="2" cellpadding="2" width="100%">
+                <tr class="zo_m_list_row">
+                   <td><input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/></td>
+                </tr>
+            </table>
+            </td>
+            </tr>
+            <tr>
                 <td>
                     <mo:toolbar context="${context}" urlTarget="${context_url}" isTop="false"/>
                 </td>
             </tr>
-                    <tr>
-                    <td>
-                        <a name="action" id="action"/> 
-                    <table cellspacing="2" cellpadding="2" width="100%">
-                    <tr class="zo_m_list_row">
-                       <td><input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/></td>
-                    </tr>
-                    </table>
-                    </td>
-                    </tr>
-                    </c:if>
+        </c:if>
     </table>
 </form>
 </mo:view>
