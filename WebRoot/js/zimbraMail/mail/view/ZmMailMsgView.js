@@ -120,12 +120,12 @@ function() {
 		this._ifw = null;
 	}
 	if (this._inviteToolbar) {
-		this._inviteToolbar.dispose();
-		this._inviteToolbar = null;
+        this._inviteToolbar.setVisible(Dwt.DISPLAY_NONE);
+        this._inviteToolbar.reparentHtmlElement(this.getHtmlElement());
 	}
 	if (this._shareToolbar) {
-		this._shareToolbar.dispose();
-		this._shareToolbar = null;
+        this._shareToolbar.setVisible(Dwt.DISPLAY_NONE);
+        this._shareToolbar.reparentHtmlElement(this.getHtmlElement());
 	}
 
 	this.getHtmlElement().innerHTML = "";
@@ -176,12 +176,9 @@ function(msg) {
 			!msg.isShared())
 		{
 			var topToolbar = this._getInviteToolbar();
-			// nuke the old toolbar if it exists b4 appending the new one
-			var tEl = topToolbar.getHtmlElement();
-			if (tEl && tEl.parentNode)
-				tEl.parentNode.removeChild(tEl);
-			contentDiv.appendChild(tEl);
-		}
+            topToolbar.reparentHtmlElement(contentDiv);
+            topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+        }
 	}
 	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 			 msg.share && msg.folderId != ZmFolder.ID_TRASH &&
@@ -198,11 +195,8 @@ function(msg) {
 			msg.share.link.perm)
 		{
 			var topToolbar = this._getShareToolbar();
-			var tEl = topToolbar.getHtmlElement();
-			if (tEl && tEl.parentNode) {
-				tEl.parentNode.removeChild(tEl);
-			}
-			contentDiv.appendChild(tEl);
+            topToolbar.reparentHtmlElement(contentDiv);
+            topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
 		}
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
@@ -326,7 +320,10 @@ function (listener) {
 
 ZmMailMsgView.prototype._getInviteToolbar =
 function() {
-	var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
+
+    if(this._inviteToolbar) return this._inviteToolbar;
+
+    var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
 	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
 	var params = {
 		parent: this,
@@ -367,7 +364,10 @@ function() {
 
 ZmMailMsgView.prototype._getShareToolbar =
 function() {
-	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
+
+    if(this._shareToolbar) return this._shareToolbar;
+
+    var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
 	var params = {
 		parent: this,
 		buttons: buttonIds,
