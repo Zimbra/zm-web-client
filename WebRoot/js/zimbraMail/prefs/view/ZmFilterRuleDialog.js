@@ -589,6 +589,7 @@ function(ev) {
 	var row = document.getElementById(rowId);
 	var index = this._getIndexForRow(row, isCondition);
 	var table = document.getElementById(isCondition ? this._conditionsTableId : this._actionsTableId);
+	this._removeDwtObjects(rowId);
 	table.deleteRow(index);
 	var newIndex = (index >= table.rows.length) ? null : index; // null means add to end
 	
