@@ -23,7 +23,7 @@
  *
  * @author Conrad Damon
  *
- * @param parent				[DwtControl]	parent widget
+ * @param parent			[DwtControl]	parent widget
  * @param msgDialog			[DwtMsgDialog]*	message dialog
  * @param className			[string]*		CSS class
  * @param title				[string]*		dialog title
@@ -32,12 +32,11 @@
  * @param view				[DwtControl]*	dialog contents
  */
 ZmDialog = function(params) {
+	if (arguments.length == 0) { return; }
 
-	if (arguments.length == 0) return;
 	DwtDialog.call(this, params);
-	if (params.view) {
-		this.setView(params.view);
-	} else {
+
+	if (!params.view) {
 		this.setContent(this._contentHtml());
 	}
 
@@ -53,7 +52,10 @@ ZmDialog = function(params) {
 ZmDialog.prototype = new DwtDialog;
 ZmDialog.prototype.constructor = ZmDialog;
 
-ZmDialog.prototype._contentHtml = function () {return "";};
+ZmDialog.prototype._contentHtml =
+function() {
+	return "";
+};
 
 ZmDialog.prototype.setView =
 function(newView, noReset) {
@@ -61,8 +63,7 @@ function(newView, noReset) {
 	if (newView) {
         var contentDiv = this._getContentDiv();
         var el = newView.getHtmlElement();
-		var td = contentDiv.parentNode;
-		td.replaceChild(el, contentDiv);
+		contentDiv.parentNode.replaceChild(el, contentDiv);
 		this._contentDiv = el;
 	}
 };
@@ -70,8 +71,8 @@ function(newView, noReset) {
 ZmDialog.prototype.popup =
 function() {
 	if (!this._tabGroupComplete) {
-		// tab group filled in here rather than in the constructor
-		// because we need all the content fields to have been created
+		// tab group filled in here rather than in the constructor b/c we need
+		// all the content fields to have been created
 		var members = this._getTabGroupMembers();
 		for (var i = 0; i < members.length; i++) {
 			this._tabGroup.addMember(members[i], i);
@@ -83,8 +84,9 @@ function() {
 
 ZmDialog.prototype.reset =
 function() {
-	if (this._nameField)
+	if (this._nameField) {
 		this._nameField.value = "";
+	}
 	DwtDialog.prototype.reset.call(this);
 };
 
@@ -96,8 +98,9 @@ function() {
 ZmDialog.prototype._setNameField =
 function(fieldId) {
 	this._nameField = document.getElementById(fieldId);
-	if (this._nameField) this._focusElementId = fieldId;
-	//this.setTabOrder([fieldId]);
+	if (this._nameField) {
+		this._focusElementId = fieldId;
+	}
 	this.addEnterListener(new AjxListener(this, this._enterListener));
 };
 
@@ -111,10 +114,11 @@ function() {
 };
 
 /**
- * Displays the given list of tree views in an overview, creating it if necessary, and appends
- * the overview to an element in the dialog. Since dialogs may be reused, it is possible that
- * it will display different overviews. That is handled by making sure that only the current
- * overview is visible.
+ * Displays the given list of tree views in an overview, creating it if
+ * necessary, and appends the overview to an element in the dialog. Since
+ * dialogs may be reused, it is possible that it will display different
+ * overviews. That is handled by making sure that only the current overview is
+ * visible.
  * 
  * @param params		[hash]		hash of params:
  *        treeIds		[array]		list of tree views to show
@@ -128,8 +132,12 @@ function(params) {
 	var overviewId = params.overviewId || this.getOverviewId();
 	var overview = this._opc.getOverview(overviewId);
 	if (!overview) {
-		var ovParams = {overviewId:overviewId, overviewClass:"dialogOverview",
-						headerClass:"DwtTreeItem", noTooltips:true};
+		var ovParams = {
+			overviewId: overviewId,
+			overviewClass: "dialogOverview",
+			headerClass: "DwtTreeItem",
+			noTooltips: true
+		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
 		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);
 		document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
@@ -145,8 +153,8 @@ function(params) {
 
 /**
  * Renders the tree views in the overview, and makes the header items
- * selectable (since they can generally be targets of whatever action
- * the dialog is facilitating).
+ * selectable (since they can generally be targets of whatever action the dialog
+ * is facilitating).
  * 
  * @param overview		[ZmOverview]	the overview
  * @param treeIds		[array]			list of tree views to show
@@ -161,9 +169,7 @@ function(overview, treeIds, omit, noRootSelect) {
 			var treeView = overview.getTreeView(treeIds[i]);
 			if (treeView) {
 				var hi = treeView.getHeaderItem();
-				if (hi) {
-					hi.enableSelection(true);
-				}
+				if (hi) hi.enableSelection(true);
 			}
 		}
 	}
@@ -174,31 +180,19 @@ function() {
 	return this._overview[this._curOverviewId];
 };
 
-/*
-ZmDialog.prototype._createOverview =
-function(fieldId) {
-	var params = {overviewId:this.getOverviewId(), overviewClass:"dialogOverview", headerClass:"DwtTreeItem"};
-	var overview = this._opc.createOverview(params);
-	if (fieldId) {
-		document.getElementById(fieldId).appendChild(overview.getHtmlElement());
-	}
-};
-*/
-
-ZmDialog.prototype._getInputFields = 
+ZmDialog.prototype._getInputFields =
 function() {
-	if (this._nameField)
-		return [this._nameField];
+	return (this._nameField) ? [this._nameField] : null;
 };
 
 ZmDialog.prototype._showError =
 function(msg, loc) {
+	var nLoc = loc || (new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100));
 	var msgDialog = appCtxt.getMsgDialog();
+
 	msgDialog.reset();
-	loc = loc ? loc : new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
     msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-    msgDialog.popup(loc);
-    return null;
+	msgDialog.popup(nLoc);
 };
 
 ZmDialog.prototype._getTabGroupMembers =
