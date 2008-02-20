@@ -463,7 +463,8 @@ function(parent, num) {
 		// gal contacts cannot be tagged/moved/deleted
 		parent.enableAll(false);
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW_MENU], true);
-		parent.enable([ZmOperation.CONTACT, ZmOperation.NEW_MESSAGE, printOp], num > 0);
+		parent.enable([ZmOperation.NEW_MESSAGE, printOp], num > 0);
+		parent.enable(ZmOperation.CONTACT, num == 1);
 	}
 };
 
@@ -656,10 +657,13 @@ function(items, folder, attrs, force) {
 
 	var move = [];
 	var copy = [];
+	var moveFromGal = [];
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		if (!item.folderId || item.folderId != folder.id) {
-			if (!force && (item.isShared() || item.isReadOnly() || folder.isRemote()))
+		if (item.isGal) {
+			moveFromGal.push(item);
+		} else if (!item.folderId || item.folderId != folder.id) {
+			if (!force && (item.isShared() || folder.isRemote()) || item.isReadOnly())
 				copy.push(item);
 			else
 				move.push(item);
@@ -668,15 +672,33 @@ function(items, folder, attrs, force) {
 
 	var moveOutFolder = appCtxt.getById(this.getFolderId());
 	var outOfTrash = (moveOutFolder && moveOutFolder.isInTrash() && !folder.isInTrash());
-	var list = (outOfTrash)
-		? this._list
-		: (items[0].list || this._list);
+	var list = (outOfTrash) ? this._list : (items[0].list || this._list);
+
 	if (move.length) {
 		list.moveItems(move, folder, attrs, outOfTrash);
 	}
 
 	if (copy.length) {
 		list.copyItems(copy, folder, attrs);
+	}
+
+	if (moveFromGal) {
+		var batchCmd = new ZmBatchCommand();
+		for (var j = 0; j < moveFromGal.length; j++) {
+			var contact = moveFromGal[j];
+			contact.attr[ZmContact.F_folderId] = folder.id;
+			batchCmd.add(new AjxCallback(contact, contact.create, [contact.attr]));
+		}
+		batchCmd.run(new AjxCallback(this, this._handleMoveFromGal));
+	}
+};
+
+ZmContactListController.prototype._handleMoveFromGal =
+function(result) {
+	var resp = result.getResponse().BatchResponse.CreateContactResponse;
+	if (resp.length > 0) {
+		var msg = AjxMessageFormat.format(ZmMsg.itemCopied, resp.length);
+		appCtxt.getAppController().setStatusMsg(msg);
 	}
 };
 
