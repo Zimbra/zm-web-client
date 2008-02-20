@@ -504,7 +504,14 @@ function(attr, batchCmd) {
 	cn.setAttribute("l", folderId);
 
 	for (var name in attr) {
-		if (name == ZmContact.F_folderId) { continue; }
+		if (name == ZmContact.F_folderId ||
+			name == "objectClass" ||
+			name == "zimbraId" ||
+			name == "createTimeStamp" ||
+			name == "modifyTimeStamp")
+		{
+			continue;
+		}
 
 		// handle contact photo
 		var a;
