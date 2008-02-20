@@ -157,7 +157,7 @@ function(params) {
 	appCtxt.setSettings(settings);
 
     // Note: removing cookie support will affect zdesktop when connecting 4.x remote server
-    if(params.offlineMode) {
+    if (params.offlineMode) {
         var apps = AjxCookie.getCookie(document, ZmSetting.APPS_COOKIE);
         DBG.println(AjxDebug.DBG1, "apps: " + apps);
         if (apps) {
@@ -200,6 +200,10 @@ function(params) {
 	if (params.protocolMode) {
 		var proto = (params.protocolMode.indexOf(":") == -1) ? params.protocolMode + ":" : params.protocolMode;
 		appCtxt.set(ZmSetting.PROTOCOL_MODE, proto);
+	}
+
+	if (/dogfood/.test(location.hostname) || (params.devMode == "1")) {
+		AjxUtil.enableLogType("rpc", true);
 	}
 
 	// Create the shell
