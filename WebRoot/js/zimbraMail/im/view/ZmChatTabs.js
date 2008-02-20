@@ -65,7 +65,7 @@ ZmChatTabs.prototype.getTabLabelDiv = function(pos) {
 
 ZmChatTabs.prototype.getTabLabelWidget = function(pos) {
 	var div = this.getTabLabelDiv(pos);
-	return div ? Dwt.getObjectFromElement(div) : null;
+	return div ? DwtControl.fromElement(div) : null;
 };
 
 ZmChatTabs.prototype.getCurrentChatWidget = ZmChatTabs.prototype.getTabWidget;
