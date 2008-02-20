@@ -160,7 +160,14 @@ function(list) {
 		this._addAppt(html, appt, data, i > 0);
 	}
 	html.append("</table>");
-	
+
+	if (this._buttons) {
+		for (var buttonId in this._buttons) {
+			this._buttons[buttonId].dispose();
+		}
+	}
+	this._buttons = {};
+
 	var div = document.getElementById(this._listId);
 	div.innerHTML = html.toString();
 	for (var i=0; i < size; i++) {
@@ -171,6 +178,7 @@ function(list) {
 		button.setImage("Cancel");
 		button.addSelectionListener(new AjxListener(this, this._closeButtonListener));
 		button.__apptUniqueId = uid;
+		this._buttons[data.buttonId] = button;
 		//button.setToolTipContent(ZmMsg.dismissReminderToolTip);
 		document.getElementById(data.buttonId).appendChild(button.getHtmlElement());
 		this._updateDelta(data);
@@ -192,10 +200,17 @@ function(ev, args) {
 			var data = this._apptData[uid];
 			this._reminderController.dismissAppt(data.appt);
 			if (!data) break;
+			var button = this._buttons[data.buttonId];
+			if (button) {
+				button.dispose();
+				delete this._buttons[data.buttonId];
+			}
 			var rowIds = data.rowIds;
 			for (var j=0; j < rowIds.length; j++) {
 				var row = document.getElementById(rowIds[j]);
-				if (row) row.parentNode.removeChild(row);
+				if (row) {
+					row.parentNode.removeChild(row);
+				}
 			}
 			delete this._apptData[uid];
 			// if size was 1, then we need to popdown
