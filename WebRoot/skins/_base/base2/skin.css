@@ -8,8 +8,8 @@ BODY						{	margin:0px; 				}
 .skin_container				{	width:100%; height:100%; position:relative;		}
 .skin_container_ad			{	width:100%; height:100%; position:relative; 	}
 
-/* hide the main screen initially */
-#skin_outer					{	display:none;				}
+/* hide the main screen initially - hide if html facade is not needed */
+#skin_outer					{					}
 
 /* hide search builder initially */
 #skin_tr_search_builder		{	display:none;				}

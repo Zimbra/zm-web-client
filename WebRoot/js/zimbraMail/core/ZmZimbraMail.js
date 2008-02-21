@@ -1258,6 +1258,11 @@ ZmZimbraMail.prototype.appRendered =
 function(appName) {
 	var eventType = [appName, ZmAppEvent.POST_RENDER].join("_");
 	this._evtMgr.notifyListeners(eventType, this._evt);
+
+    if(window._facadeCleanup) {
+        window._facadeCleanup();
+        window._facadeCleanup = null;
+    }    
 };
 
 // Private methods

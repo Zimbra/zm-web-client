@@ -50,6 +50,24 @@ ZmMailListView.prototype.set =
 function(list, sortField) {
 	this._folderId = (list && list.search) ? list.search.folderId : null;
 	ZmListView.prototype.set.call(this, list, sortField);
+    this.markDefaultSelection(list);
+};
+
+ZmMailListView.prototype.markDefaultSelection =
+function(list) {
+	if(window.defaultSelection) {
+		var sel = [];
+		var a = list.getArray();
+		for(var i in a) {
+			if(window.defaultSelection[a[i].id]) {
+				sel.push(a[i]);
+			}
+		}
+		if(sel.length >0) {
+			this.setSelectedItems(sel);
+		}
+		window.defaultSelection = null;
+	}
 };
 
 ZmMailListView.prototype.getTitle =
