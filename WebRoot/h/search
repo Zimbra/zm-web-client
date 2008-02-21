@@ -54,6 +54,7 @@
          </c:when>
      </c:choose>
 
+
     <c:if test="${param.st eq 'appointment'}">
         <c:redirect url="/h/calendar">
             <c:param name="sq" value="${param.sq}"/>
@@ -88,6 +89,42 @@
     </app:status>
 </c:when>
 </c:choose>
+
+<%-- Deep linking  --%>
+  <c:if test="${not empty param.app}">
+	  <c:choose>
+		  <c:when test="${param.app eq 'calendar'}">
+			  <c:redirect url="/h/calendar" />
+		  </c:when>
+		  <c:when test="${param.app eq 'options'}">
+			  <c:redirect url="/h/options" />
+		  </c:when>
+		  <c:when test="${param.app eq 'contacts'}">
+			  <c:redirect url="/h/search?st=contact" />
+		  </c:when>
+		  <c:when test="${param.app eq 'task'}">
+			  <c:redirect url="/h/search?st=task" />
+		  </c:when>
+	  </c:choose>
+  </c:if>
+  <c:if test="${not empty param.view}">
+	  <c:if test="${param.view eq 'compose'}">
+		  <c:redirect url="/h/search?action=compose">
+			  <c:param name="subject" value="${param.subject}" />
+			  <c:param name="to" value="${param.to}" />
+			  <c:param name="body" value="${param.body}" />
+		  </c:redirect>
+	  </c:if>
+	  <c:if test="${(param.view eq 'day') or (param.view eq 'workWeek') or (param.view eq 'week') or (param.view eq 'month')}">
+		  <c:redirect url="/h/calendar" >
+			  <c:param name="view" value="${param.view}" />
+			  <c:param name="date" value="${param.date}" />
+		  </c:redirect>
+	  </c:if>
+  </c:if>
+
+  <%-- end --%>
+		
 
  <%-- switch based on context search types --%>
 <c:choose>
