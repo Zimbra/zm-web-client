@@ -549,13 +549,14 @@ td.DDSepInvisible div {
 	color:black;
 }
 
-.ZmHtmlEditor .ZmHtmlEditorFooter {
+/* NOTE: used in different places like documents, briefcase */
+.ZmHtmlEditorFooter {
 width: 100%;
 padding-right:5px;
 padding-top:2px;
 }
 
-.ZmHtmlEditor .ZmHtmlEditorFooter td{
+.ZmHtmlEditorFooter td{
 border:1px inset #EEEEEE;
 color:#666666;
 padding: 4px;
@@ -2672,8 +2673,6 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 
-
-
 /*  NEW TEMPLATE STYLES */
 
 .ZScrollContainerOuter {
@@ -3215,4 +3214,30 @@ overflow-y: hidden;
 
 .ZmFilePropertiesLabel {
 @TreeHeaderText@
+}
+
+.ZmSpreadSheetDoc { background-color: #eee; }
+
+.ZmSpreadSheetDoc .Label {
+	@FontFamily-html@
+	@FontSize-normal@
+	font-weight: bold;
+	text-align: right;
+	width: 1%;
+}
+
+.HF_Header{
+	border-right: 1px solid #8A8A8A;
+	border-left: 1px solid #FFFFFF;
+	font-weight: normal;
+}
+
+.HF_Header_Left{
+	border-right: 1px solid #8A8A8A;
+	font-weight: normal;
+}
+
+.HF_Header_Right{
+	border-left: 1px solid #FFFFFF;
+	font-weight: normal;
 }

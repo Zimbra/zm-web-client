@@ -4,6 +4,10 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+
+
+
 <%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
@@ -176,11 +180,43 @@
   --
   --
   -->
+<div id="htmlContent" style="display:none;">
+	<jsp:include page="/public/search.jsp">
+		<jsp:param name='skin' value='${skin}' />
+		<jsp:param name="locale" value="${locale}" />
+		<jsp:param name='debug' value='${isDebug}' />
+	</jsp:include>
+</div>
 
+<script>
+var appMain = document.getElementById("skin_container_app_main");
+var treeContainer = document.getElementById("skin_container_tree");
+var htmlContent = document.getElementById("htmlContent");
+var splashContent = document.getElementById("skin_container_splash_screen");
+var appLoaded = "<c:out value="${app}"/>";
+if(htmlContent && treeContainer && ((appLoaded == "") || (appLoaded == "mail"))) {
 
+	if(splashContent) {
+		splashContent.style.display = "none";
+	}
 
-
-
+    var h = appMain.offsetHeight;
+    var w = appMain.offsetWidth;
+    appMain.innerHTML = ["<div id='facadeContainer' style='height:" + (h-10) + "px;width:" + w + "px;display:block;overflow:auto;'>"].join("") + htmlContent.innerHTML + "</div>";
+    treeContainer.innerHTML = '<table id="loadingFacade" height="100%" width="100%" align=center><tr><td bgcolor="white" align=center><b>' + ZmMsg.splashScreenLoading + '</b></td></tr></table>';
+    htmlContent.parentNode.removeChild(htmlContent);
+    window._facadeCleanup = function() {
+        var fc = document.getElementById("facadeContainer");
+        if(fc) {
+            fc.parentNode.removeChild(fc);
+        }
+        var fc1 = document.getElementById("loadingFacade");
+        if(fc1) {
+            fc1.parentNode.removeChild(fc1);
+        }
+    };
+}
+</script>
 <jsp:include page="Boot.jsp"/>
 <script>
 	AjxEnv.DEFAULT_LOCALE = "${locale}";
