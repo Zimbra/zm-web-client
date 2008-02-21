@@ -36,7 +36,6 @@
                     <!-- ${fn:escapeXml(error.id)} -->
                 </center>
                 </body>
-                
         </c:otherwise>
     </c:choose>
 </c:if>
