@@ -9,6 +9,7 @@
 <table id='skin_container_tree_top' cellspacing=0 cellpadding=0 style='width:100%'>
    <tr>
 	<td>
+        <%--<c:catch var="exp">--%>
         <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
         <table cellpadding="0" cellspacing="0" width="100%">
             <tr>
@@ -20,14 +21,20 @@
             </tr>
             <tr>
                 <td align="center" style='font-size:9px'>
+                    <c:catch>
                     <fmt:message var="unlimited" key="unlimited"/>
                     <fmt:message key="quotaUsage">
                         <fmt:param value="${zm:displaySizeFractions(mailbox.size,2)}"/>
                         <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
                     </fmt:message>
+                    </c:catch>    
                 </td>
             </tr>
         </table>
+        <%--</c:catch>
+        <c:if test="${exp!=null}">
+            <c:out value="${exp}"/>
+        </c:if>--%>
     </td>
   </tr>
 </table>
