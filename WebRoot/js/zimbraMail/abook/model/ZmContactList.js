@@ -112,7 +112,7 @@ function(callback, errorCallback) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
 	DBG.timePt("requesting contact list", true);
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, noBusyOverlay: true,
 												  callback: respCallback, errorCallback: errorCallback});
 };
 
