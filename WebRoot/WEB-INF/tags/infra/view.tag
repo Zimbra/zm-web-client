@@ -27,6 +27,7 @@
 <c:set var="skin" value="${not empty sessionScope.skin ? sessionScope.skin : (not empty mailbox.prefs.skin ? mailbox.prefs.skin : 'beach')}" />
 <!-- skin is ${skin} -->
 <body <c:if test="${not empty onload}">onload="${onload}"</c:if>>
+<app:handleViewError>
 <c:choose>
 <c:when test="${skin eq 'yahoo'}">
 <c:set value="/skins/yahoo/img/icons" var="iconPath" scope="request"/>
@@ -525,5 +526,6 @@
 	
 </c:otherwise>
 </c:choose>
+</app:handleViewError>
 </body>
 </html>
