@@ -16,7 +16,7 @@
  */
 
 ZmCalBaseView = function(parent, className, posStyle, controller, view) {
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 
 	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
 
@@ -44,7 +44,15 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view) {
 	this._selectedItems = new AjxVector();
 	this._selEv = new DwtSelectionEvent(true);
 	this._actionEv = new DwtListViewActionEvent(true);	
-	
+
+	this._normalClass = "appt";
+	this._selectedClass = [this._normalClass, DwtCssStyle.SELECTED].join('-');
+	this._disabledSelectedClass = [this._selectedClass, DwtCssStyle.DISABLED].join("-");
+
+	// the key is the HTML ID of the item's associated DIV; the value is an object
+	// with information about that row
+	this._data = {};
+
 	// END LIST-RELATED
 		
 	this._timeRangeStart = 0;
@@ -120,10 +128,33 @@ function() {
 
 ZmCalBaseView.prototype.associateItemWithElement =
 function (item, element, type, optionalId) {
-	element.id = optionalId ? optionalId : this._getItemId(item);
-	element._itemIndex = AjxCore.assignId(item);
-	element._type = type;
-}
+	DwtListView.prototype.associateItemWithElement.apply(this, arguments);
+};
+
+ZmCalBaseView.prototype.getItemFromElement =
+function(el) {
+	return DwtListView.prototype.getItemFromElement.apply(this, arguments);
+};
+
+ZmCalBaseView.prototype.getTargetItemDiv =
+function(ev)  {
+	return this.findItemDiv(DwtUiEvent.getTarget(ev));
+};
+
+ZmCalBaseView.prototype.findItemDiv =
+function(el) {
+	return DwtListView.prototype.findItemDiv.apply(this, arguments);
+};
+
+ZmCalBaseView.prototype._getItemData =
+function(el, field, id) {
+	return DwtListView.prototype._getItemData.apply(this, arguments);
+};
+
+ZmCalBaseView.prototype._setItemData =
+function(id, field, value) {
+	DwtListView.prototype._setItemData.apply(this, arguments);
+};
 
 ZmCalBaseView.prototype._getViewPrefix = 
 function() { 
@@ -135,24 +166,36 @@ function() {
 	var a = this._selectedItems.getArray();
 	var sz = this._selectedItems.size();
 	for (var i = 0; i < sz; i++) {
-		a[i].className = a[i][DwtListView._STYLE_CLASS];
+		a[i].className = this._getStyle(this._getItemData(a[i], "type"));
 	}
 	this._selectedItems.removeAll();
 }
 
+/**
+ * Returns a style appropriate to the given item type. Subclasses should override to return
+ * styles for different item types. This implementation does not consider the type.
+ * 
+ * @param type		[constant]*		a type constant
+ * @param selected	[boolean]*		if true, return a style for an item that has been selected
+ * @param disabled	[boolean]*		if true, return a style for an item that has been disabled
+ * @param item		[object]*		item behind the div
+ */
+ZmCalBaseView.prototype._getStyle =
+function(type, selected, disabled, item) {
+	return !selected ? this._normalClass : disabled ? this._disabledSelectedClass : this._selectedClass;
+};
+
 ZmCalBaseView.prototype._mouseOverListener = 
 function(ev) {
-	var div = ev.target;
-	div = this._findAncestor(div, "_type");
-	if (!div)
-		return;
+	var div = this.getTargetItemDiv(ev);
+	if (!div) { return; }
 	
 	this._mouseOverAction(ev, div);
 }
 
 ZmCalBaseView.prototype._mouseOverAction = 
 function(ev, div) {
-	if (div._type != ZmCalBaseView.TYPE_APPT) return true;
+	if (this._getItemData(div, "type") != ZmCalBaseView.TYPE_APPT) { return true; }
 
 	var item = this.getItemFromElement(div);
 	
@@ -162,7 +205,7 @@ function(ev, div) {
 	
 	if (item instanceof ZmAppt) {			
 		this.setToolTipContent(item.getToolTip(this._controller));
-		if(item.hasOtherAttendees() && (item._ptstHashMap == null)){
+		if (item.hasOtherAttendees() && (item._ptstHashMap == null)){
 
 			//getDetails of original appt will reset the start date and time
 			//and will break the ui layout
@@ -171,9 +214,7 @@ function(ev, div) {
 			var errorCallback = new AjxCallback(this, this._handleParticipantStatusError, [clone, item]);
 			this._toolTipBusy = true;
 			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.getApptDetails, [clone, callback, errorCallback]),2000);			
-
 		}
-	
 	} else {
 		this.setToolTipContent(null);
 	}
@@ -190,17 +231,16 @@ function(appt, callback, errorCallback) {
 
 ZmCalBaseView.prototype._mouseOutListener = 
 function(ev) {
-	var div = ev.target;
-	div = this._findAncestor(div, "_type");
-	if (!div)
-		return;
+	var div = this.getTargetItemDiv(ev);
+	if (!div) { return; }
+
 	// NOTE: The DwtListView handles the mouse events on the list items
 	//		 that have associated tooltip text. Therefore, we must
 	//		 explicitly null out the tooltip content whenever we handle
 	//		 a mouse out event. This will prevent the tooltip from
 	//		 being displayed when we re-enter the listview even though
 	//		 we're not over a list item.
-	if (div._type == ZmCalBaseView.TYPE_APPT) {
+	if (this._getItemData(div, "type") == ZmCalBaseView.TYPE_APPT) {
 		this._toolTipBusy = false;
 		this.setToolTipContent(null);
 	}
@@ -215,8 +255,7 @@ function(ev, div) {
 
 ZmCalBaseView.prototype._mouseMoveListener = 
 function(ev) {
-	if (this._clickDiv == null)
-		return;
+	if (!this._clickDiv) { return; }
 }
 
 // XXX: why not use Dwt.findAncestor?
@@ -230,65 +269,48 @@ function(elem, attr) {
 
 ZmCalBaseView.prototype._mouseDownListener = 
 function(ev) {
-	var div = ev.target;
-
-	div = this._findAncestor(div, "_type");
-	if (!div) return false;
+	var div = this.getTargetItemDiv(ev);
+	if (!div) { return; }
 
 	this._clickDiv = div;
-	if (div._type == ZmCalBaseView.TYPE_APPT) {
-		if (ev.button == DwtMouseEvent.LEFT || ev.button == DwtMouseEvent.RIGHT)
+	if (this._getItemData(div, "type") == ZmCalBaseView.TYPE_APPT) {
+		if (ev.button == DwtMouseEvent.LEFT || ev.button == DwtMouseEvent.RIGHT) {
 			this._itemClicked(div, ev);
+		}
 	}
 	return this._mouseDownAction(ev, div);	
 }
 
 ZmCalBaseView.prototype._mouseDownAction = 
 function(ev, div) {
-/*
-	if (ev.button == DwtMouseEvent.RIGHT) {
-		if (this._evtMgr.isListenerRegistered(DwtEvent.ACTION)) {
-			this._evtMgr.notifyListeners(DwtEvent.ACTION, this._actionEv);
-		}
-	}
-	*/
 	return true;
-}
+};
 
 ZmCalBaseView.prototype._mouseUpListener = 
 function(ev) {
-	var div = ev.target;
-	div = this._findAncestor(div, "_type");
+	var div = this.getTargetItemDiv(ev);
 
 	delete this._clickDiv;
 	
-	if (!div) return true;
+	if (!div) { return true; }
 	return this._mouseUpAction(ev, div);
-}
+};
 
 ZmCalBaseView.prototype._mouseUpAction = 
 function(ev, div) {
-	if (div._type != ZmCalBaseView.TYPE_APPT) return true;
-/*	if (ev.button == DwtMouseEvent.LEFT) {
-		if (this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
-			this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
-		}
-	}
-	*/
 	return true;
-}
+};
 
 ZmCalBaseView.prototype._doubleClickAction = 
 function(ev, div) {return true;}
 
 ZmCalBaseView.prototype._doubleClickListener =
 function(ev) {
-	var div = ev.target;
-	div = this._findAncestor(div, "_type");
+	var div = this.getTargetItemDiv(ev);
 	
-	if (!div) return;	
+	if (!div) { return;	}
 		
-	if (div._type == ZmCalBaseView.TYPE_APPT) {
+	if (this._getItemData(div, "type") == ZmCalBaseView.TYPE_APPT) {
 		if (this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
 			DwtUiEvent.copy(this._selEv, ev);
 			this._selEv.item = this.getItemFromElement(div);
@@ -309,47 +331,34 @@ function(clickedEl, ev) {
 	var bContained = this._selectedItems.contains(clickedEl);
 
 	DwtUiEvent.copy(this._selEv, ev);
-	this._selEv.item = AjxCore.objectWithId(clickedEl._itemIndex);
+	var item = this._selEv.item = this.getItemFromElement(clickedEl);
+	var type = this._getItemData(clickedEl, "type");
 
 	if (ev.shiftKey && bContained) {
 		this._selectedItems.remove(clickedEl);
-		clickedEl.className = clickedEl[DwtListView._STYLE_CLASS];
+		clickedEl.className = this._getStyle(type);
 		this._selEv.detail = DwtListView.ITEM_DESELECTED;
 		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 	} else if (!bContained) {
 		// clear out old left click selection(s)
 		for (i = 0; i < numSelectedItems; i++) {
-			a[i].className = a[i][DwtListView._STYLE_CLASS];
+			a[i].className = this._getStyle(type);
 		}
 		this._selectedItems.removeAll();
-			
+
 		// save new left click selection
 		this._selectedItems.add(clickedEl);
-		clickedEl.className = clickedEl[DwtListView._SELECTED_STYLE_CLASS];
+		clickedEl.className = this._getStyle(type, true, !this.getEnabled(), item);
 		this._selEv.detail = DwtListView.ITEM_SELECTED;
 		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 	}
 
 	if (ev.button == DwtMouseEvent.RIGHT) {
 		DwtUiEvent.copy(this._actionEv, ev);
-		this._actionEv.item = AjxCore.objectWithId(clickedEl._itemIndex);
+		this._actionEv.item = item;
 		this._evtMgr.notifyListeners(DwtEvent.ACTION, this._actionEv);
 	}
-}
-
-ZmCalBaseView.prototype.getItemFromElement =
-function (element){
-	if (element._itemIndex != null){
-		switch (element._type){
-			case ZmCalBaseView.TYPE_APPT:
-			  return AjxCore.objectWithId(element._itemIndex);
-			default:
-			  return null;
-		}
-	} else {
-		return null;
-	}
-}
+};
 
 // YUCK: ZmListView overloads b/c ZmListController thinks its always dealing w/ ZmListView's
 ZmCalBaseView.prototype.setSelectionCbox = function(obj, bContained) {};
@@ -363,12 +372,11 @@ function(item, skipNotify) {
 		var a = this._selectedItems.getArray();
 		var sz = this._selectedItems.size();
 		for (i = 0; i < sz; i++) {
-			a[i].className = a[i][DwtListView._STYLE_CLASS];
+			a[i].className = this._getStyle(this._getItemData(a[i], "type"));
 		}
 		this._selectedItems.removeAll();
 		this._selectedItems.add(el);
-		el.className = this.getEnabled() ? el[DwtListView._SELECTED_STYLE_CLASS] :
-										   el[DwtListView._SELECTED_DIS_STYLE_CLASS];
+		el.className = this._getStyle(this._getItemData(el, "type"), true, !this.getEnabled(), item);
 		if (!skipNotify && this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
 			var selEv = new DwtSelectionEvent(true);
 			selEv.button = DwtMouseEvent.LEFT;
@@ -378,32 +386,33 @@ function(item, skipNotify) {
 			this._evtMgr.notifyListeners(DwtEvent.SELECTION, selEv);
 		}	
 	}
-}
+};
 
 ZmCalBaseView.prototype.getSelectionCount =
 function() {
 	return this._selectedItems.size();
-}
+};
 
 ZmCalBaseView.prototype.getSelection =
 function() {
 	var a = new Array();
 	var sa = this._selectedItems.getArray();
 	var saLen = this._selectedItems.size();
-	for (var i = 0; i < saLen; i++)
-		a[i] = AjxCore.objectWithId(sa[i]._itemIndex);
+	for (var i = 0; i < saLen; i++) {
+		a[i] = this.getItemFromElement(sa[i]);
+	}
 	return a;
-}
+};
 
 ZmCalBaseView.prototype.getSelectedItems =
 function() {
 	return this._selectedItems;
-}
+};
 
 ZmCalBaseView.prototype.handleActionPopdown = 
 function(ev) {
 	// clear out old right click selection
-}
+};
 
 // END LIST-RELATED
 
@@ -439,64 +448,63 @@ function() {
 ZmCalBaseView.prototype._getItemId =
 function(item) {
 	return item ? (this._getViewPrefix()+item.getUniqueId()) : null;
-}
+};
 
 ZmCalBaseView.prototype.addTimeSelectionListener = 
 function(listener) {
 	this.addListener(ZmCalBaseView.TIME_SELECTION, listener);
-}
+};
 
 ZmCalBaseView.prototype.removeTimeSelectionListener = 
 function(listener) { 
 	this.removeListener(ZmCalBaseView.TIME_SELECTION, listener);
-}
+};
 
 ZmCalBaseView.prototype.addDateRangeListener = 
 function(listener) {
 	this.addListener(DwtEvent.DATE_RANGE, listener);
-}
+};
 
 ZmCalBaseView.prototype.removeDateRangeListener = 
 function(listener) { 
 	this.removeListener(DwtEvent.DATE_RANGE, listener);
-}
+};
 
 ZmCalBaseView.prototype.getRollField =
-function(isDouble)
-{
+function(isDouble) {
 	// override.
 	return 0;
-}
+};
 
 ZmCalBaseView.prototype.getDate =
 function() {
 	return this._date;
-}
+};
 
 ZmCalBaseView.prototype.getTimeRange =
 function() {
 	return { start: this._timeRangeStart, end: this._timeRangeEnd };
-}
+};
 
 ZmCalBaseView.prototype.isInView =
 function(appt) {
 	return appt.isInRange(this._timeRangeStart, this._timeRangeEnd);
-}
+};
 
 ZmCalBaseView.prototype.isStartInView =
 function(appt) {
 	return appt.isStartInRange(this._timeRangeStart, this._timeRangeEnd);
-}
+};
 
 ZmCalBaseView.prototype.isEndInView =
 function(appt) {
 	return appt.isEndInRange(this._timeRangeStart, this._timeRangeEnd);
-}
+};
 
 ZmCalBaseView.prototype._dayKey =
 function(date) {
 	return (date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate());
-}
+};
 
 ZmCalBaseView.prototype.setDate =
 function(date, duration, roll) {
@@ -523,13 +531,13 @@ function(date, duration, roll) {
 	} else {
 		this._dateUpdate(false);
 	}
-}
+};
 
 ZmCalBaseView.prototype._dateUpdate =
 function(rangeChanged) {
 	// override: responsible for updating any view-specific data when the date
 	// changes during a setDate call.
-}
+};
 
 ZmCalBaseView.prototype._apptSelected =
 function() {
@@ -539,7 +547,7 @@ function() {
 	// should be de-selected. If you are in month view though and have a day
 	// selected, thne day should still be selected if the appt you clicked on is
 	// in the same day.
-}
+};
 
 // override
 ZmCalBaseView.prototype._updateRange =
@@ -547,11 +555,11 @@ function() {
 	this._updateDays();
 	this._timeRangeStart = this._days[0].date.getTime();
 	this._timeRangeEnd = this._days[this.getNumDays()-1].date.getTime() + AjxDateUtil.MSEC_PER_DAY;
-}
+};
 
 // override 
 ZmCalBaseView.prototype._updateTitle =
-function() { }
+function() { };
 
 ZmCalBaseView.prototype.addAppt = 
 function(ao) {
@@ -559,12 +567,12 @@ function(ao) {
 	var div = this._getDivForAppt(ao);
 	if (div) div.appendChild(item);
 	this._postApptCreate(ao,div);	
-}
+};
 
 // override
 ZmCalBaseView.prototype._postApptCreate =
 function(appt,div) {
-}
+};
 
 ZmCalBaseView.prototype.set = 
 function(list) {
@@ -583,25 +591,25 @@ function(list) {
 	}
 	this._postSet(list);
 	this._controller.fetchMiniCalendarAppts();
-}
+};
 
 // override
 ZmCalBaseView.prototype._fanoutAllDay =
 function(appt) {
 	return true;
-}
+};
 
 // override
 ZmCalBaseView.prototype._postSet =
-function(appt) {}
+function(appt) {};
 
 // override
 ZmCalBaseView.prototype._preSet =
-function(appt) {}
+function(appt) {};
 
 // override
 ZmCalBaseView.prototype._getDivForAppt =
-function(appt) {}
+function(appt) {};
 
 ZmCalBaseView.prototype._addApptIcons =
 function(appt, html, idx) {
@@ -631,12 +639,12 @@ function(appt, html, idx) {
 	html[idx++] = "</tr></table>";
 
 	return idx;
-}
+};
 
 ZmCalBaseView.prototype._getElFromItem = 
 function(item) {
 	return document.getElementById(this._getItemId(item));
-}
+};
 
 ZmCalBaseView.prototype._resetList =
 function() {
@@ -654,17 +662,17 @@ function() {
 	}
 	list.removeAll();
 	this.removeAll();	
-}
+};
 
 ZmCalBaseView.prototype.removeAll =
 function() {
 	this._selectedItems.removeAll();
-}
+};
 
 ZmCalBaseView.prototype.getCalTitle = 
 function() {
 	return this._title;
-}
+};
 
 //
 // Print methods
@@ -735,11 +743,11 @@ function() {
 
 // override
 ZmCalBaseView.prototype._createItemHtml =
-function(appt) {}
+function(appt) {};
 
 // override
 ZmCalBaseView.prototype._createHtml =
-function() {}
+function() {};
 
 ZmCalBaseView.prototype._controlListener =
 function(ev) {
@@ -747,13 +755,13 @@ function(ev) {
 		(ev.oldHeight != ev.newHeight)) {
 		this._layout();
 	}
-}
+};
 
 /**
 * override
 */
 ZmCalBaseView.prototype._layout =
-function() {}
+function() {};
 
 ZmCalBaseView.prototype._timeSelectionEvent =
 function(date, duration, isDblClick, allDay, folderId, shiftKey) {

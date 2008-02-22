@@ -39,7 +39,7 @@ ZmListView = function(parent, className, posStyle, view, type, controller, heade
 
     //Item IDs are integers, with the following exception:
     //		- a shared item:	f9d58245-fb61-4e9a-9202-6ebc7ad4b0c4:-368
-    this._parseIdRegex = /^V_([A-Z]+)_([a-z]*)_([a-zA-Z0-9:\-]+)_?(\d*)$/;
+    this._parseIdRegex = /^V_([A-Z]+)_([a-z]*)_?([a-zA-Z0-9:\-]+)_?(\d*)$/;
 
 	this._handleEventType = {};
 	this._handleEventType[this.type] = true;
@@ -320,12 +320,13 @@ ZmListView.prototype._mouseOverAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
 	var id = ev.target.id || div.id;
-	if (!id) return true;
+	if (!id) { return true; }
 
 	// check if we're hovering over a column header
-	var type = Dwt.getAttr(div, "_type");
+	var data = this._data[div.id];
+	var type = data.type;
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
-		var itemIdx = Dwt.getAttr(div, "_itemIndex");
+		var itemIdx = data.index;
 		var field = DwtListHeaderItem.getHeaderField(this._headerList[itemIdx]._id);
 		this.setToolTipContent(this._getHeaderToolTip(field, itemIdx));
 	} else {
@@ -343,9 +344,10 @@ function(ev, div) {
 	DwtListView.prototype._mouseOutAction.call(this, ev, div);
 
 	var id = ev.target.id || div.id;
-	if (!id) return true;
+	if (!id) { return true; }
 
-	var type = Dwt.getAttr(div, "_type");
+	var data = this._data[div.id];
+	var type = data.type;
 	if (type && type == DwtListView.TYPE_LIST_ITEM) {
 		var m = this._parseId(id);
 		if (m && m.field) {
@@ -369,7 +371,7 @@ function(ev, div) {
 ZmListView.prototype._doubleClickAction =
 function(ev, div) {
 	var id = ev.target.id ? ev.target.id : div.id;
-	if (!id) return true;
+	if (!id) { return true; }
 
 	var m = this._parseId(id);
 	return (!(m && (m.field == ZmItem.F_FLAG)));
@@ -377,9 +379,7 @@ function(ev, div) {
 
 ZmListView.prototype._itemClicked =
 function(clickedEl, ev) {
-	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) &&
-		ev.button == DwtMouseEvent.LEFT)
-	{
+	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) && ev.button == DwtMouseEvent.LEFT) {
 		if (!ev.shiftKey && !ev.ctrlKey) {
 			// get the field being clicked
 			var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1)
@@ -390,7 +390,7 @@ function(clickedEl, ev) {
 			if (m && m.field == ZmItem.F_SELECTION) {
 				if (this._selectedItems.size() == 1) {
 					var sel = this._selectedItems.get(0);
-					var item = AjxCore.objectWithId(Dwt.getAttr(sel, "_itemIndex"));
+					var item = this.getItemFromElement(sel);
 					var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 					var selField = selFieldId ? document.getElementById(selFieldId) : null;
 					if (selField && sel == clickedEl) {
@@ -435,7 +435,8 @@ function(clickedCol, ev) {
 		var list = this.getList();
 		var size = list ? list.size() : null;
 		if (size > 0) {
-			var item = this._headerList[Dwt.getAttr(clickedCol, "_itemIndex")];
+			var idx = this._data[clickedCol.id].index;
+			var item = this._headerList[idx];
 			if (item && item._id.indexOf(ZmItem.F_SELECTION) != -1) {
 				var hdrId = DwtListView.HEADERITEM_ICON + item._id;
 				var hdrDiv = document.getElementById(hdrId);
@@ -485,8 +486,7 @@ ZmListView.prototype.setSelectionCbox =
 function(obj, bContained) {
 	if (!obj) { return; }
 
-	var item = obj.tagName
-		? AjxCore.objectWithId(Dwt.getAttr(obj, "_itemIndex")) : obj;
+	var item = obj.tagName ? this.getItemFromElement(obj) : obj;
 	var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 	var selField = selFieldId ? document.getElementById(selFieldId) : null;
 	if (selField) {
@@ -684,11 +684,11 @@ function (ev, listEv, clickedEl) {
 ZmListView.prototype._allowLeftSelection =
 function(clickedEl, ev, button) {
 	// We only care about mouse events
-	if (!(ev instanceof DwtMouseEvent))
-		return true;
+	if (!(ev instanceof DwtMouseEvent)) { return true; }
 
 	var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
-	var type = Dwt.getAttr(clickedEl, "_type");
+	var data = this._data[clickedEl.id];
+	var type = data.type;
 	if (id && type && type == DwtListView.TYPE_LIST_ITEM) {
 		var m = this._parseId(id);
 		if (m && m.field) {

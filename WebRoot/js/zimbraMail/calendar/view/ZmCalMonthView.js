@@ -21,6 +21,10 @@ ZmCalMonthView = function(parent, posStyle, controller, dropTgt) {
 	this.setScrollStyle(DwtControl.CLIP);
 	this._needFirstLayout = true;
 	this.setNumDays(42);
+
+	this._monthItemClass = "calendar_month_day_item_row";
+	this._monthItemSelectedClass = [this._monthItemClass, DwtCssStyle.SELECTED].join('-');
+	this._monthItemDisabledSelectedClass = [this._monthItemSelectedClass, DwtCssStyle.DISABLED].join("-");
 };
 
 ZmCalMonthView.prototype = new ZmCalBaseView;
@@ -369,9 +373,7 @@ function(appt, apptEnd) {
 
 	div.style.position = 'absolute';
 	Dwt.setSize(div, 10, 10);
-	div[DwtListView._STYLE_CLASS] = "appt";	
-	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
-	div.className = div[DwtListView._STYLE_CLASS];
+	div.className = this._getStyle();
 
 	ZmCalColView._setApptOpacity(appt, div);
 
@@ -389,11 +391,9 @@ function(appt, apptEnd) {
 
 ZmCalMonthView.prototype._createAllDayFillerHtml =
 function(day) {
-	var dayTable = document.getElementById( day.dayId);
+	var dayTable = document.getElementById(day.dayId);
 	var	result = dayTable.insertRow(-1);
-	result[DwtListView._STYLE_CLASS] = "allday";
-	result[DwtListView._SELECTED_STYLE_CLASS] = result[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
-	result.className = result[DwtListView._STYLE_CLASS];	
+	result.className = "allday";
 	var cell = result.insertCell(-1);
 	cell.innerHTML = "<table class=allday><tr><td><div class=allday_item_filler></div></td></tr></table>";
 	cell.className = "calendar_month_day_item";
@@ -403,9 +403,8 @@ function(day) {
 ZmCalMonthView.prototype._createItemHtml =	
 function(appt) {
 	var result = this._getDivForAppt(appt).insertRow(-1);
-	result[DwtListView._STYLE_CLASS] = "calendar_month_day_item_row";
-	result[DwtListView._SELECTED_STYLE_CLASS] = result[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
-	result.className = result[DwtListView._STYLE_CLASS];
+	result.className = "calendar_month_day_item_row";
+	this._getStyle(ZmCalBaseView.TYPE_APPT);
 	this.associateItemWithElement(appt, result, ZmCalBaseView.TYPE_APPT);
 
 	var data = {
@@ -423,6 +422,15 @@ function(appt) {
 	cell.className = "calendar_month_day_item";
 
 	return result;
+};
+
+ZmCalMonthView.prototype._getStyle =
+function(type, selected, disabled, item) {
+	if (type == ZmCalBaseView.TYPE_APPT && item && !item.isAllDayEvent()) {
+		return selected ? this._monthItemSelectedClass : this._monthItemClass;
+	} else {
+		return ZmCalBaseView.prototype._getStyle.apply(this, arguments);
+	}
 };
 
 ZmCalMonthView.prototype._createDay =
@@ -541,11 +549,11 @@ function() {
 			//te.innerHTML = d.getTime() == today.getTime() ? ("<div class=calendar_month_day_today>" + this._dayTitle(d) + "</div>") : this._dayTitle(d);
 			te.innerHTML = this._dayTitle(d);			
 			te.className = (thisMonth ? 'calendar_month_day_label' : 'calendar_month_day_label_off_month') + (isToday ? "_today" : "");
-	 		var de = document.getElementById(day.tdId);			
-			de.className = 'calendar_month_cells_td';	
-			de._loc = loc;
-			de._type = ZmCalBaseView.TYPE_MONTH_DAY;
-			d.setDate(d.getDate()+1);
+			var id = day.tdId;
+	 		var de = document.getElementById(id);			
+			de.className = 'calendar_month_cells_td';
+			this.associateItemWithElement(null, de, ZmCalBaseView.TYPE_MONTH_DAY, id, {loc:loc});
+			d.setDate(d.getDate() + 1);
 		}
 	}
 	
@@ -693,7 +701,8 @@ function(date, list, controller, noheader) {
 
 ZmCalMonthView.prototype._mouseDownAction = 
 function(ev, div) {
-	switch (div._type) {
+	var type = this._getItemData(div, "type");
+	switch (type) {
 		case ZmCalBaseView.TYPE_MONTH_DAY:
 			this._timeSelectionAction(ev, div, false);
 			if (ev.button == DwtMouseEvent.RIGHT) {
@@ -709,7 +718,8 @@ function(ev, div) {
 ZmCalMonthView.prototype._doubleClickAction =
 function(ev, div) {
 	ZmCalBaseView.prototype._doubleClickAction.call(this, ev, div);
-	if (div._type == ZmCalBaseView.TYPE_MONTH_DAY) {
+	var type = this._getItemData(div, "type");
+	if (type == ZmCalBaseView.TYPE_MONTH_DAY) {
 		this._timeSelectionAction(ev, div, true);
 	}
 };
@@ -719,9 +729,11 @@ function(ev, div, dblclick) {
 	
 	var date;
 	
-	switch (div._type) {
+	var type = this._getItemData(div, "type");
+	switch (type) {
 		case ZmCalBaseView.TYPE_MONTH_DAY:
-			date = new Date(this._days[div._loc].date.getTime());
+			var loc = this._getItemData(div, "loc");
+			date = new Date(this._days[loc].date.getTime());
 			var now = new Date();
 			date.setHours(now.getHours(), now.getMinutes());
 			break;

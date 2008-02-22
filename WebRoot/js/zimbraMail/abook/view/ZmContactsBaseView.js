@@ -43,7 +43,7 @@ function(list, sortField, folderId) {
 		subList = list;
 	}
 	DwtListView.prototype.set.call(this, subList, sortField);
-}
+};
 
 
 ZmContactsBaseView.prototype.paginate =
@@ -89,16 +89,12 @@ function(ev) {
 	var folderId = this._controller.getFolderId();
 
 	// if we dont have a folder, then assume user did a search of contacts
-	if (folderId != null || ev.event != ZmEvent.E_MOVE)
-	{
+	if (folderId != null || ev.event != ZmEvent.E_MOVE) {
 		ZmListView.prototype._changeListener.call(this, ev);
 
-		if (ev.event == ZmEvent.E_MODIFY)
-		{
+		if (ev.event == ZmEvent.E_MODIFY) {
 			this._modifyContact(ev);
-		}
-		else if (ev.event == ZmEvent.E_CREATE)
-		{
+		} else if (ev.event == ZmEvent.E_CREATE) {
 			var newContact = ev._details.items[0];
 			var newFolder = appCtxt.getById(newContact.folderId);
 			var newFolderId = appCtxt.getActiveAccount().isMain ? newFolder.nId : newFolder.id;
@@ -112,8 +108,9 @@ function(ev) {
 				ZmListView.prototype.set.call(this, subVector);
 
 				// only relayout if this is cards view
-				if (this instanceof ZmContactCardsView)
+				if (this instanceof ZmContactCardsView) {
 					this._layout();
+				}
 
 				// always select newly added contact if its been added to the
 				// current page of contacts
@@ -134,8 +131,9 @@ ZmContactsBaseView.prototype._modifyContact =
 function(ev) {
 	// if fileAs changed, resort the internal list
 	// XXX: this is somewhat inefficient. We should just remove this contact and reinsert
-	if (ev.getDetail("fileAsChanged"))
+	if (ev.getDetail("fileAsChanged")) {
 		this.getList().sort(ZmContact.compareByFileAs);
+	}
 };
 
 ZmContactsBaseView.prototype._setNextSelection =
@@ -173,7 +171,10 @@ function() {
 			// reset first sel index
 			if (item) {
 				var div = document.getElementById(this._getItemId(item));
-				this._firstSelIndex = div ? this._list.indexOf(AjxCore.objectWithId(Dwt.getAttr(div, "_itemIndex"))) : -1;
+				if (div) {
+					var data = this._data[div.id];
+					this._firstSelIndex = this._list ? this._list.indexOf(data.item) : -1;
+				}
 			}
 		}
 	}
