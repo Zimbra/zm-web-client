@@ -1583,17 +1583,18 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 			var enableFocus = false;
 			var dwtev = DwtShell.mouseEvent;
 			dwtev.setFromDhtmlEvent(ev, true);
-			if(dwtev && dwtev.dwtObj) {
+            
+            //bug: 24782 - we dont have option to get info related to toolbar button selection
+			var kbMgr = DwtShell.getShell(window).getKeyboardMgr();
+			if(kbMgr && kbMgr.__focusObj) {
 				for (var i = 0; i < this._toolbars.length; i++){
-					if(dwtev.dwtObj.parent == this._toolbars[i]){
+					if((kbMgr.__focusObj == this._toolbars[i]) || (kbMgr.__focusObj.parent == this._toolbars[i])){
 						enableFocus = true;
+						break;
 					}
 				}
 			}
-
-			if(!enableFocus){
-			enableToolbars.call(this, false);
-			}
+			enableToolbars.call(this, enableFocus);
 
 			var doc = this._getIframeDoc();
 			doc.designMode = "off";
