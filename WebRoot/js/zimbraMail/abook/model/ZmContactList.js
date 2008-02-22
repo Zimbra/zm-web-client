@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -581,29 +581,33 @@ function(contact, doAdd) {
 	}
 
 	// Update phone hash.
-	for (var i = 0; i < ZmContact.F_PHONE_FIELDS.length; i++) {
-		var field = ZmContact.F_PHONE_FIELDS[i];
-		var phone = ZmContact.getAttr(contact, field);
-		if (phone) {
-			var digits = this._getPhoneDigits(phone);
-			if (digits) {
-				if (doAdd)
-					this._phoneToContact[digits] = {contact: contact, field: field};
-				else
-					delete this._phoneToContact[digits];
+	if (appCtxt.get(ZmSetting.VOICE_ENABLED)) {
+		for (var i = 0; i < ZmContact.F_PHONE_FIELDS.length; i++) {
+			var field = ZmContact.F_PHONE_FIELDS[i];
+			var phone = ZmContact.getAttr(contact, field);
+			if (phone) {
+				var digits = this._getPhoneDigits(phone);
+				if (digits) {
+					if (doAdd)
+						this._phoneToContact[digits] = {contact: contact, field: field};
+					else
+						delete this._phoneToContact[digits];
+				}
 			}
 		}
 	}
 
 	// Update IM hash.
-	for (var i = 0; i < ZmContact.F_IM_FIELDS.length; i++) {
-		var imaddr = ZmContact.getAttr(contact, ZmContact.F_IM_FIELDS[i]);
-		if (imaddr) {
-			imaddr = imaddr.toLowerCase();
-			if (doAdd)
-				this._imAddressToContact[imaddr] = contact;
-			else
-				delete this._imAddressToContact[imaddr];
+	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
+		for (var i = 0; i < ZmContact.F_IM_FIELDS.length; i++) {
+			var imaddr = ZmContact.getAttr(contact, ZmContact.F_IM_FIELDS[i]);
+			if (imaddr) {
+				imaddr = imaddr.toLowerCase();
+				if (doAdd)
+					this._imAddressToContact[imaddr] = contact;
+				else
+					delete this._imAddressToContact[imaddr];
+			}
 		}
 	}
 
