@@ -111,7 +111,7 @@ function(searchResults, view) {
 
 ZmListController.prototype.getSearchString =
 function() {
-	return this._currentSearch.query;
+	return this._currentSearch ? this._currentSearch.query : "";
 };
 
 ZmListController.prototype.getCurrentView =
@@ -698,8 +698,8 @@ function(ev) {
 ZmListController.prototype._dropListener =
 function(ev) {
 	var view = this._listView[this._currentView];
-	var div = Dwt.getAttr(ev.uiEvent.target, "_itemIndex", true);
-	var item = div ? view.getItemFromElement(div) : null
+	var div = view.getTargetItemDiv(ev.uiEvent);
+	var item = view.getItemFromElement(div);
 
 	// only tags can be dropped on us
 	var data = ev.srcData.data;

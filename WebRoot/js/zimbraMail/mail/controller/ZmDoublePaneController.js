@@ -439,7 +439,7 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
 		if (!item) { return; }
-		var div = Dwt.findAncestor(ev.target, "_itemIndex");
+		var div = this._mailListView.getTargetItemDiv(ev);
 		this._mailListView._itemSelected(div, ev);
 
 		if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {

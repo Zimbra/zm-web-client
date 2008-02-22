@@ -229,7 +229,7 @@ function(ev) {
 	ZmListController.prototype._dropListener.call(this, ev);
 	// need to check to make sure tagging actually happened
 	if (ev.action == DwtDropEvent.DRAG_DROP) {
-		var div = Dwt.getAttr(ev.uiEvent.target, "_itemIndex", true);
+		var div = this._listView[this._currentView].getTargetItemDiv(ev.uiEvent);
 		if (div) {
 			var tag = ev.srcData;
 			if (!this._conv.hasTag(tag.id)) {

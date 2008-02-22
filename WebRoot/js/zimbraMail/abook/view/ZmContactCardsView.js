@@ -19,6 +19,7 @@ ZmContactCardsView = function(parent, className, posStyle, controller, dropTgt) 
 
 	className = className ? className : "ZmContactCardsView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
+
 	ZmContactsBaseView.call(this, parent, className, posStyle, ZmController.CONTACT_CARDS_VIEW, controller, null, dropTgt);
 
 	this._setMouseEventHdlrs(); // needed by object manager
@@ -26,7 +27,7 @@ ZmContactCardsView = function(parent, className, posStyle, controller, dropTgt) 
 	this._objectManager = new ZmObjectManager(this);
 
 	// find out if the user's locale has a alphabet defined
-	if (ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
+	if (ZmMsg.alphabet && ZmMsg.alphabet.length > 0) {
 		this._alphabetBar = new ZmContactAlphabetBar(this);
 	}
 
@@ -35,9 +36,12 @@ ZmContactCardsView = function(parent, className, posStyle, controller, dropTgt) 
 	this._addrbookTree = appCtxt.getFolderTree();
 	this._addrbookTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
 
-	this._htmlAttrs = this._getHtmlAttributes();
-	this._dndAttrs = this._getHtmlAttributes(true);
-
+	this._normalClass = "ZmContactCard";
+	var base = DwtListView.ROW_CLASS;
+	this._selectedClass = [base, DwtCssStyle.SELECTED].join("-");
+	this._kbFocusClass = [base, DwtCssStyle.FOCUSED].join("-");
+	this._dndClass = [base, DwtCssStyle.DRAG_PROXY].join("-");
+	
 	this._initialResized = false;
 };
 
@@ -75,14 +79,16 @@ function(defaultColumnSort) {
 
 ZmContactCardsView.prototype.set = 
 function(contacts, sortField, folderId) {
-	if (this._objectManager)
+	if (this._objectManager) {
 		this._objectManager.reset();
+	}
 
 	// XXX: optimize later - switch view always forces layout unnecessarily
 	ZmContactsBaseView.prototype.set.call(this, contacts, sortField, this._controller.getFolderId());
 
-	if (this._initialResized)
+	if (this._initialResized) {
 		this._layout();
+	}
 
 	// disable alphabet bar for gal searches
 	this._alphabetBar.enable(!contacts.isGal);
@@ -105,10 +111,7 @@ ZmContactCardsView.prototype._createItemHtml =
 function(contact, params) {
 
 	var isDnd = !!(params && params.isDragProxy);
-	var attrs = isDnd ? this._dndAttrs : this._htmlAttrs;
-	var color = contact.addrbook
-		? contact.addrbook.color
-		: ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
+	var color = contact.addrbook ? contact.addrbook.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 	var tagCellId;
 	var tagIcon;
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
@@ -120,9 +123,9 @@ function(contact, params) {
 
 	var subs = {
 		id: this._getItemId(contact),
-		attrs: attrs,
+		name: ZmContactCardsView.CARD_NAME,
+		className: isDnd ? this._dndClass : this._normalClass,
 		width: this._cardWidth,
-		itemIndex: AjxCore.assignId(contact),
 		headerColor: (ZmOrganizer.COLOR_TEXT[color] + "Bg"),
 		tagCellId: tagCellId,
 		tagIcon: tagIcon,
@@ -133,24 +136,21 @@ function(contact, params) {
 	};
 	var html = AjxTemplate.expand("abook.Contacts#CardBase", subs);
 
-	return isDnd
-		? Dwt.parseHtmlFragment(html)
-		: html;
+	return isDnd ? Dwt.parseHtmlFragment(html) : html;
 };
 
 ZmContactCardsView.prototype._layout =
 function() {
 	this._resetListView();
 
-	if (this._list instanceof AjxVector && this._list.size())
-	{
+	if (this._list instanceof AjxVector && this._list.size()) {
 		var list = this._list.getArray();
 		var subs = {
 			id: this._htmlElId,
 			cardTableId: ZmContactCardsView.CARD_TABLE_ID,
 			list: list
 		};
-		html = AjxTemplate.expand("abook.Contacts#CardsView", subs);
+		var html = AjxTemplate.expand("abook.Contacts#CardsView", subs);
 		this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
 
 		for (var i = 0; i < list.length; i++) {
@@ -159,36 +159,17 @@ function() {
 			var el = document.getElementById(cid);
 			if (el) {
 				el.innerHTML = this._createItemHtml(contact);
+				var div = document.getElementById(this._getItemId(contact));
+				this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
 			}
 		}
-	}
-	else
-	{
+	} else {
 		var subs = {
 			id: ZmContactCardsView.CARD_TABLE_ID
 		};
-		html = AjxTemplate.expand("abook.Contacts#CardsView-NoResults", subs);
+		var html = AjxTemplate.expand("abook.Contacts#CardsView-NoResults", subs);
 		this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
 	}
-};
-
-ZmContactCardsView.prototype._getHtmlAttributes =
-function(isDnd) {
-	var base = "ZmContactCard";
-
-	var attrs = {};
-	attrs.name = ZmContactCardsView.CARD_NAME;
-	attrs[DwtListView._STYLE_CLASS] = attrs['class'] = isDnd ? ([base, DwtCssStyle.DRAG_PROXY].join("-")) : base;
-	attrs[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");
-	attrs[DwtListView._KBFOCUS_CLASS] = [base, DwtCssStyle.FOCUSED].join("-");
-	attrs['_type'] = DwtListView.TYPE_LIST_ITEM;
-
-	var attrList = [];
-	for (var attr in attrs) {
-		attrList.push([attr, "='", attrs[attr], "'"].join(""));
-	}
-
-	return (attrList.join(" "));
 };
 
 ZmContactCardsView.prototype._setNoResultsHtml =
@@ -205,7 +186,7 @@ function() {
 	// explicitly remove each child (setting innerHTML causes mem leak)
 	for (var i = 0; i < cards.length; i++) {
 		cDiv = cards[0].parentNode.removeChild(cards[0]);
-		AjxCore.unassignId(Dwt.getAttr(cDiv, "_itemIndex"));
+		this._data[cDiv.id] = null;
 	}
 
 	var cardTable = document.getElementById(ZmContactCardsView.CARD_TABLE_ID);
@@ -219,7 +200,7 @@ function(ev) {
 	// always call base class first to resort list if necessary
 	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
 
-	// XXX: opitimize later - always re-layout no matter which field changed
+	// XXX: optimize later - always re-layout no matter which field changed
 	this._resetListView();
 	this._layout();
 };
@@ -231,8 +212,9 @@ function(item) {
 	var comparisonId = this._getItemId(item);
 
 	for (var i = 0; i < children.length; i++) {
-		if (children[i].id == comparisonId)
+		if (children[i].id == comparisonId) {
 			return children[i];
+		}
 	}
 	return null;
 };
@@ -260,9 +242,9 @@ function(result, contact) {
 ZmContactCardsView.prototype._getSiblingElement =
 function(element, next){
 	var item = this.getItemFromElement(this._kbAnchor);
-	if (!item) return element;
+	if (!item) { return element; }
 	var index = this._list.indexOf(item);
-	if ((next && (index >= this._list.size() - 1)) || (!next && index <= 0)) return element;
+	if ((next && (index >= this._list.size() - 1)) || (!next && index <= 0)) { return element; }
 	index = next ? index + 1 : index - 1;
 	var id = this._getItemId(this._list.get(index));
 	var el = document.getElementById(id);
@@ -304,8 +286,7 @@ function(ev) {
 
 ZmContactCardsView.prototype._controlListener =
 function(ev) {
-	if (ev.newWidth < 0 || ev.oldWidth == ev.newWidth)
-		return;
+	if (ev.newWidth < 0 || ev.oldWidth == ev.newWidth) { return; }
 
 	// calc. width of card based on width of window
 	this._cardWidth = Math.round((ev.newWidth / 2) - 40);

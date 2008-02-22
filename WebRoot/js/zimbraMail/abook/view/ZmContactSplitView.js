@@ -20,7 +20,7 @@
 // - parent for the simple list view and xform view
 //////////////////////////////////////////////////////////////////////////////
 ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) {
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 
 	className = className || "ZmContactSplitView";
 	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
@@ -225,8 +225,7 @@ function(controller, dropTgt) {
 		}
 
 		this._tabViewHtml = {};
-	}
-	else {
+	} else {
 		// otherwise, create an empty slate
 		this._contactView = new DwtComposite(this);
 		this._contactView.reparentHtmlElement(this._htmlElId + "_content");
@@ -285,14 +284,14 @@ function(ev) {
 
 ZmContactSplitView.prototype._addrbookTreeListener =
 function(ev, treeView) {
-	if (!this._contact)
-		return;
+	if (!this._contact) { return; }
 
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && fields && fields[ZmOrganizer.F_COLOR]) {
 		var organizers = ev.getDetail("organizers");
-		if (!organizers && ev.source)
+		if (!organizers && ev.source) {
 			organizers = [ev.source];
+		}
 
 		for (var i = 0; i < organizers.length; i++) {
 			var organizer = organizers[i];
@@ -300,8 +299,9 @@ function(ev, treeView) {
 				? appCtxt.getById(this._contact.folderId).id
 				: this._contact.folderId;
 
-			if (organizer.id == folderId)
+			if (organizer.id == folderId) {
 				this._setHeaderInfo();
+			}
 		}
 	}
 };
@@ -327,8 +327,7 @@ function(contact, isGal, oldContact) {
 		isInTrash: (folder && folder.isInTrash())
 	};
 
-	if (contact.isGroup())
-	{
+	if (contact.isGroup()) {
 		subs.folderIcon = contact.addrbook.getIcon();
 		subs.folderName = contact.addrbook.getName();
 		subs.groupMembers = contact.getGroupMembers().good.getArray();
@@ -338,9 +337,7 @@ function(contact, isGal, oldContact) {
 		this._contactGroupView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitViewGroup", subs);
 		var size = this.getSize();
 		this._sizeChildren(size.x, size.y);
-	}
-	else
-	{
+	} else {
 		subs.view = this;
 		subs.isGal = isGal;
 
@@ -456,6 +453,9 @@ ZmContactSimpleView = function(parent, controller, dropTgt) {
 
 	ZmContactsBaseView.call(this, parent, "ZmContactSimpleView", null, ZmController.CONTACT_SIMPLE_VIEW, controller, null, dropTgt);
 
+	this._normalClass = DwtListView.ROW_CLASS + " SimpleContact";
+	this._selectedClass = [DwtListView.ROW_CLASS, DwtCssStyle.SELECTED].join("-") + " SimpleContact";
+
 	// handle a GAL ID such as:		V_CNS_uid=user5,ou=people,dc=pshahmacbook,dc=local
 	this._parseIdRegex = /^V_([A-Z]+)_([a-z]*)_(.+)$/
 };
@@ -554,15 +554,16 @@ function() {
 	// explicitly remove each child (setting innerHTML causes mem leak)
 	while (this._parentEl.hasChildNodes()) {
 		cDiv = this._parentEl.removeChild(this._parentEl.firstChild);
-		AjxCore.unassignId(cDiv._itemIndex);
+		this._data[cDiv.id] = null;
 	}
 
 	var size = this._list.size();
 	for (var i = 0; i < size; i++) {
 		var item = this._list.get(i);
 		var div = item ? this._createItemHtml(item, {now:this._now}) : null;
-		if (div)
+		if (div) {
 			this._addRow(div);
+		}
 	}
 };
 
@@ -587,8 +588,7 @@ function(contact, params) {
 		div.style.width = "175px";
 		div.style.padding = "4px";
 	}
-	div.className = div[DwtListView._STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + " SimpleContact";
-	div[DwtListView._SELECTED_STYLE_CLASS] += " SimpleContact";
+	div.className = this._normalClass + " SimpleContact";
 	div.id = this._getItemId(contact);
 
 	var htmlArr = [];
@@ -630,13 +630,13 @@ function(contact, params) {
 		}
 	}
 
-        if (appCtxt.get(ZmSetting.IM_ENABLED)) {
-                htmlArr[idx++] = "<td style='vertical-align:middle' width=16 class='Presence'>";
-                var presence = contact.getImPresence();
-                var img = presence ? presence.getIcon() : "Blank_16";
-                idx = this._getImageHtml(htmlArr, idx, img, this._getFieldId(contact, ZmItem.F_PRESENCE));
-                htmlArr[idx++] = "</td>";
-        }
+    if (appCtxt.get(ZmSetting.IM_ENABLED)) {
+            htmlArr[idx++] = "<td style='vertical-align:middle' width=16 class='Presence'>";
+            var presence = contact.getImPresence();
+            var img = presence ? presence.getIcon() : "Blank_16";
+            idx = this._getImageHtml(htmlArr, idx, img, this._getFieldId(contact, ZmItem.F_PRESENCE));
+            htmlArr[idx++] = "</td>";
+    }
 
 	htmlArr[idx++] = "</tr></table>";
 
