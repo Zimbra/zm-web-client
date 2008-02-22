@@ -925,7 +925,7 @@ if (ext == null) ext = "";
         </for>
     </target>
 
-    <target name='help' depends='init' if='build.prod'>
+    <target name='help' depends='init' if='build.prod' unless='help.ignore'>
         <!-- TODO: This has to be fixed. -->
 	    <if>
             <not>
