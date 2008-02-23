@@ -227,7 +227,8 @@ function(dropAllowed) {
 		// bug fix #3235 - no opacity for linux
 		var addClass = dropAllowed ? DwtCssStyle.DROPPABLE : DwtCssStyle.NOT_DROPPABLE;
 		var linuxClass = [addClass, DwtCssStyle.LINUX].join("-");
-		this._dndProxy.className = [this._dndProxy._origClassName, linuxClass].join(" ");
+		var origClass = this._getItemData(this._dndProxy, "origClassName");
+		this._dndProxy.className = [origClass, linuxClass].join(" ");
 	}
 };
 

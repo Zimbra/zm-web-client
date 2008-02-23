@@ -352,7 +352,7 @@ function(ev, div) {
 		var m = this._parseId(id);
 		if (m && m.field) {
 			if (m.field == ZmItem.F_SELECTION) {
-				var origClassName = Dwt.getAttr(ev.target, "_origClassName");
+				var origClassName = this._getItemData(div, "origSelClassName");
 				if (origClassName) {
 					ev.target.className = origClassName;
 				}
@@ -394,10 +394,13 @@ function(clickedEl, ev) {
 					var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 					var selField = selFieldId ? document.getElementById(selFieldId) : null;
 					if (selField && sel == clickedEl) {
-						if (selField._origClassName == "ImgTaskCheckboxCompleted") {
-							selField.className = selField._origClassName = "ImgTaskCheckbox";
-						} else if (selField._origClassName == "ImgTaskCheckbox") {
-							selField.className = selField._origClassName = "ImgTaskCheckboxCompleted";
+						var origClass = this._getItemData(sel, "origSelClassName");
+						if (origClass == "ImgTaskCheckboxCompleted") {
+							selField.className = "ImgTaskCheckbox";
+							this._setItemData(sel, "origSelClassName", "ImgTaskCheckbox");
+						} else if (origClass == "ImgTaskCheckbox") {
+							selField.className = "ImgTaskCheckboxCompleted";
+							this._setItemData(sel, "origSelClassName", "ImgTaskCheckboxCompleted");
 							return;
 						}
 					} else {
@@ -490,9 +493,8 @@ function(obj, bContained) {
 	var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
 	var selField = selFieldId ? document.getElementById(selFieldId) : null;
 	if (selField) {
-		selField.className = selField._origClassName = bContained
-			? "ImgTaskCheckbox"
-			: "ImgTaskCheckboxCompleted";
+		selField.className = bContained	? "ImgTaskCheckbox"	: "ImgTaskCheckboxCompleted";
+		this._setItemData(obj, "origSelClassName", selField.className);
 	}
 };
 
@@ -574,9 +576,10 @@ ZmListView.prototype._getToolTip =
 function(field, item, ev, div, match) {
     var tooltip;
     if (field == ZmItem.F_SELECTION) {
-        ev.target._origClassName = ev.target.className;
-        if (ev.target.className != "ImgTaskCheckboxCompleted")
+		this._setItemData(div, "origSelClassName", ev.target.className);
+        if (ev.target.className != "ImgTaskCheckboxCompleted") {
             ev.target.className = "ImgTaskCheckboxCompleted";
+        }
     } else if (field == ZmItem.F_FLAG) {
         if (!item.isFlagged) {
             AjxImg.setDisabledImage(ev.target, "FlagRed", true);
