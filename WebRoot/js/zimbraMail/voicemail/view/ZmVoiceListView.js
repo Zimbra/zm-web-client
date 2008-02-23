@@ -159,10 +159,12 @@ function(ev, div) {
 
 	var type = Dwt.getAttr(div, "_type");
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
-		var itemIdx = Dwt.getAttr(div, "_itemIndex");
-		var field = DwtListHeaderItem.getHeaderField(this._headerList[itemIdx]._id);
-		if (field) {
-			tooltip = this._getHeaderTooltip(field);
+		var hdr = this.getItemFromElement(div);
+		if (hdr) {
+			var field = DwtListHeaderItem.getHeaderField(hdr._id);
+			if (field) {
+				tooltip = this._getHeaderTooltip(field);
+			}
 		}
 	} else {
 		var match = this._parseId(id);

@@ -1650,7 +1650,7 @@ function(ev) {
 ZmCalViewController.prototype._dropListener =
 function(ev) {
 	var view = this._listView[this._currentView];
-	var div = Dwt.getAttr(ev.uiEvent.target, "_itemIndex", true);
+	var div = view.getTargetItemDiv(ev.uiEvent)
 	var item = div ? view.getItemFromElement(div) : null
 
 	// only tags can be dropped on us *if* we are not readonly

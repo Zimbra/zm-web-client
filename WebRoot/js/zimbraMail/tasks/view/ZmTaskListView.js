@@ -127,10 +127,9 @@ function() {
 	// explicitly remove each child (setting innerHTML causes mem leak)
 	var cDiv;
 	while (this._parentEl.hasChildNodes()) {
-		if (this._parentEl.lastChild.id == "_newTaskBannerId")
-			break;
+		if (this._parentEl.lastChild.id == "_newTaskBannerId") { break; }
 		cDiv = this._parentEl.removeChild(this._parentEl.lastChild);
-		AjxCore.unassignId(Dwt.getAttr(cDiv, "_itemIndex"));
+		this._data[cDiv.id] = null;
 	}
 	this._selectedItems.removeAll();
 	this._rightSelItems = null;
