@@ -340,49 +340,50 @@ function(view) {
 
 ZmMailListController.prototype._initializeToolBar =
 function(view, arrowStyle) {
-	if (!this._toolbar[view]) {
-		ZmListController.prototype._initializeToolBar.call(this, view);
-		this._setupViewMenu(view, true);
-		this._setReplyText(this._toolbar[view]);
-		this._toolbar[view].addFiller();
-		arrowStyle = arrowStyle ? arrowStyle : ZmNavToolBar.SINGLE_ARROWS;
-		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, arrowStyle, true);
-		this._setNavToolBar(tb, view);
 
-	this._setupViewMenu(view, false);
-	this._setupDeleteButton(this._toolbar[view]);
-	this._setupSpamButton(this._toolbar[view]);
-	this._setupReplyForwardOps(this._toolbar[view]);
-	this._setupCheckMailButton(this._toolbar[view]);
+    if (!this._toolbar[view]) {
+        ZmListController.prototype._initializeToolBar.call(this, view);
+        this._setupViewMenu(view, true);
+        this._setReplyText(this._toolbar[view]);
+        this._toolbar[view].addFiller();
+        arrowStyle = arrowStyle ? arrowStyle : ZmNavToolBar.SINGLE_ARROWS;
+        var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, arrowStyle, true);
+        this._setNavToolBar(tb, view);
+    }
 
-    // nuke the text for tag menu for 800x600 resolutions
-		if (AjxEnv.is800x600orLower) {
-			var buttons = [];
-			if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-				buttons.push(ZmOperation.TAG_MENU);
-			}
+    this._setupViewMenu(view, false);
+    this._setupDeleteButton(this._toolbar[view]);
+    this._setupSpamButton(this._toolbar[view]);
+    this._setupReplyForwardOps(this._toolbar[view]);
+    this._setupCheckMailButton(this._toolbar[view]);
 
-			if (appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-				buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
-			}
-			if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-				buttons.push(ZmOperation.FORWARD);
-			}
+        // nuke the text for tag menu for 800x600 resolutions
+    if (AjxEnv.is800x600orLower) {
+        var buttons = [];
+        if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+            buttons.push(ZmOperation.TAG_MENU);
+        }
 
-            buttons.push(ZmOperation.DELETE);
-            buttons.push(ZmOperation.SPAM);
+        if (appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
+            buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+        }
+        if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
+            buttons.push(ZmOperation.FORWARD);
+        }
 
-            for (var i = 0; i < buttons.length; i++) {
-				var button = this._toolbar[view].getButton(buttons[i]);
-				if (button) {
-					button.setText("");
-				}
-			}
-		}
-	}
+        buttons.push(ZmOperation.DELETE);
+        buttons.push(ZmOperation.SPAM);
 
+        for (var i = 0; i < buttons.length; i++) {
+            var button = this._toolbar[view].getButton(buttons[i]);
+            if (button) {
+                button.setText("");
+            }
+        }
+    }
+    
     // reset new button properties
-	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+    this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
 
 ZmMailListController.prototype._getNumTotal =
