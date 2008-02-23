@@ -19,9 +19,6 @@ ZmNotebookPageController = function(container, app) {
 	if (arguments.length == 0) return;
 	ZmNotebookController.call(this, container, app);
 
-	this._listeners[ZmOperation.PAGE_BACK] = new AjxListener(this, this._pageBackListener);
-	this._listeners[ZmOperation.PAGE_FORWARD] = new AjxListener(this, this._pageForwardListener);
-
 	this._history = [];
 }
 ZmNotebookPageController.prototype = new ZmNotebookController;
@@ -156,7 +153,6 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 			this._history[i] = null;
 		}
 	}
-	this._enableNaviButtons();
 
 	// REVISIT: Need to do proper list management! For now we fake
 	//          a list of a single item so that operations like
@@ -180,8 +176,6 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 ZmNotebookPageController.prototype._getNaviToolBarOps = function() {
 	var list = ZmNotebookController.prototype._getNaviToolBarOps.call(this);
 	list = list.concat(
-		ZmOperation.SEP,
-		ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD,
 		ZmOperation.CLOSE
 	);
 	return list;
@@ -192,55 +186,15 @@ ZmNotebookPageController.prototype._initializeToolBar = function(view) {
 	var toolbar = this._toolbar[this._currentView];
 	var button = toolbar.getButton(ZmOperation.CLOSE);
 	button.setVisible(this._fromSearch);
-
-	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
-	button.setToolTipContent("");
-
-	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
-	button.setToolTipContent("");
 };
 
 ZmNotebookPageController.prototype._resetOperations =
 function(toolbarOrActionMenu, num) {
 	if (!toolbarOrActionMenu) return;
 	ZmNotebookController.prototype._resetOperations.call(this, toolbarOrActionMenu, num);
-	if (toolbarOrActionMenu instanceof ZmToolBar) {
-		this._enableNaviButtons();
-	}
-};
-
-ZmNotebookPageController.prototype._enableNaviButtons = function() {
-	var enabled = this._currentView == ZmController.NOTEBOOK_PAGE_VIEW;
-
-	var toolbar = this._toolbar[this._currentView];
-	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
-	if(button){
-		button.setEnabled(enabled && this._place > 0);
-		ZmNotebookPageController.__setButtonToolTip(button, this._history[this._place - 1], ZmMsg.goBack);
-	}
-	
-	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
-	if(button){
-		button.setEnabled(enabled && this._place + 1 < this._history.length);
-		ZmNotebookPageController.__setButtonToolTip(button, this._history[this._place + 1], ZmMsg.goForward);
-	}
 };
 
 // listeners
-
-ZmNotebookPageController.prototype._pageBackListener = function(event) {
-	this.historyLoading = true;
-	if (this._place > 0) {
-		this.gotoPage(this._history[--this._place]);
-	}
-};
-ZmNotebookPageController.prototype._pageForwardListener = function(event) {
-	this.historyLoading = true;
-	if (this._place + 1 < this._history.length) {
-		this.gotoPage(this._history[++this._place]);
-	}
-};
-
 ZmNotebookPageController.prototype._dropListener =
 function(ev) {
 	// only tags can be dropped on us
@@ -298,7 +252,6 @@ ZmNotebookPageController.prototype.updateHistory = function() {
         var pageRef = { folderId: this._object.folderId, name: this._object.name, pageId: this._object.id };
 		this._history[this._place] = pageRef;
 	}
-	this._enableNaviButtons();
 
 	// REVISIT: Need to do proper list management! For now we fake
 	//          a list of a single item so that operations like
