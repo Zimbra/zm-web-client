@@ -817,10 +817,12 @@ function(ev, div) {
 	// check if we're hovering over a column header
 	var type = Dwt.getAttr(div, "_type");
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
-		var itemIdx = Dwt.getAttr(div, "_itemIndex");
-		var field = DwtListHeaderItem.getHeaderField(this._headerList[itemIdx]._id);
-		if (field == ZmItem.F_NOTES) {
-			this.setToolTipContent(ZmMsg.notes);
+		var hdr = this.getItemFromElement(div);
+		if (hdr) {
+			var field = DwtListHeaderItem.getHeaderField(hdr._id);
+			if (field == ZmItem.F_NOTES) {
+				this.setToolTipContent(ZmMsg.notes);
+			}
 		}
 	} else {
 		var note = this._notes[id];

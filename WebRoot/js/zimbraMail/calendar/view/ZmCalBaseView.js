@@ -381,7 +381,7 @@ function(item, skipNotify) {
 			var selEv = new DwtSelectionEvent(true);
 			selEv.button = DwtMouseEvent.LEFT;
 			selEv.target = el;
-			selEv.item = AjxCore.objectWithId(el._itemIndex);
+			selEv.item = item;
 			selEv.detail = DwtListView.ITEM_SELECTED;
 			this._evtMgr.notifyListeners(DwtEvent.SELECTION, selEv);
 		}	
@@ -654,10 +654,11 @@ function() {
 
 	for (var i=0; i < size; i++) {
 		var ao = list.get(i);
-		var appt = document.getElementById(this._getItemId(ao));
+		var id = this._getItemId(ao);
+		var appt = document.getElementById(id);
 		if (appt) {
 			appt.parentNode.removeChild(appt);
-			AjxCore.unassignId(appt._itemIndex);
+			this._data[id] = null;
 		}
 	}
 	list.removeAll();
