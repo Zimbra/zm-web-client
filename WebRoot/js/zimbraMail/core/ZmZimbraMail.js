@@ -486,10 +486,6 @@ function(params) {
 	if (!this._doingPostRenderStartup) {
 		this._postRenderStartup();
 	}
-
-	if (appCtxt.get(ZmSetting.OFFLINE) && !appCtxt.multiAccounts) {
-		this.setInstantNotify(true, true);
-	}
 };
 
 /**

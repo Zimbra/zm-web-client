@@ -833,6 +833,20 @@ function() {
 	return this._zimletMgr;
 };
 
+ZmAppCtxt.prototype.allZimletsLoaded =
+function() {
+	if (this._zimletMgr && appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
+		var portletMgr = this.getApp(ZmApp.PORTAL).getPortletMgr();
+		if (portletMgr) {
+			portletMgr.allZimletsLoaded();
+		}
+	}
+
+	if (this.get(ZmSetting.OFFLINE) && !this.multiAccounts) {
+		this.getAppController().setInstantNotify(true);
+	}
+};
+
 ZmAppCtxt.prototype.getPrintView =
 function() {
 	if (!this._printView) {

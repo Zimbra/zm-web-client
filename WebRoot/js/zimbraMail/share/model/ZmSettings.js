@@ -236,8 +236,7 @@ function(callback, accountName, result) {
 		}
 	}
 
-	// load Zimlets
-	// NOTE: only load zimlets if main account
+	// load Zimlets..  NOTE: only load zimlets if main account
 	if (!accountName && obj.zimlets && obj.zimlets.zimlet) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
 		var prCallback = new AjxCallback(this,
@@ -246,6 +245,8 @@ function(callback, accountName, result) {
 				AjxDispatcher.require("Zimlet", false, zimletsCallback);
 			});
 		appCtxt.getAppController().addPostRenderCallback(prCallback, 4, 500, true);
+	} else {
+		appCtxt.allZimletsLoaded();
 	}
 
     this.userSettingsLoaded = true;
