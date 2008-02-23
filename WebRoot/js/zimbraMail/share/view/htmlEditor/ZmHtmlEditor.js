@@ -134,7 +134,7 @@ function() {
 };
 
 ZmHtmlEditor.prototype.getContent =
-function(insertFontStyle) {
+function(insertFontStyle, onlyInnerContent ) {
 	this.discardMisspelledWords();
 
 	// NOTE: this code is same as base class except we use insertFontStyle
@@ -143,14 +143,14 @@ function(insertFontStyle) {
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var iframeDoc = this._getIframeDoc();
 		var html = iframeDoc && iframeDoc.body ? (this._getIframeDoc().body.innerHTML) : "";
-		content = this._embedHtmlContent(html, insertFontStyle);
-	} else {
+		content = this._embedHtmlContent(html, insertFontStyle, onlyInnerContent);
+        if(this.ACE_ENABLED){
+           content = this._serializeAceObjects(content);
+        }
+    } else {
 		content = document.getElementById(this._textAreaId).value;
 	}
-
-	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML)
-		content = this._serializeAceObjects(content);
-
+	
 	return content;
 };
 
@@ -940,13 +940,27 @@ function() {
 };
 
 ZmHtmlEditor.prototype._embedHtmlContent =
-function(html, insertFontStyle) {
-	if (!insertFontStyle) {
+function(html, insertFontStyle, onlyInnerContent) {
+	if (!insertFontStyle && !onlyInnerContent) {
 		if (!(this.ACE_ENABLED && this._headContent))
 			return DwtHtmlEditor.prototype._embedHtmlContent.call(this, html);
 	}
 
-        var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
+    if(onlyInnerContent){
+        var cont = [], idx=0;
+        cont[idx++] = "<div";
+        if(insertFontStyle){
+          cont[idx++] = " style='font-family:" + appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+		  cont[idx++] = "; font-size: "+ appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+		  cont[idx++] = "; color: "+appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)+";'";
+        }
+        cont[idx++] = ">";
+        cont[idx++] = html;
+        cont[idx++] = "</div>";
+        return cont.join("");
+    }
+
+    var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
 	var fontStyle = insertFontStyle ? this._getFontStyle() : "";
 	var headContent = this._headContent ? this._headContent.join("") : "";
 
@@ -975,10 +989,10 @@ function() {
 		head[i++] = "}";
 		head[i++] = "</style>";
 
-		this._fontStyle = head.join("");
-	}
+        this._fontStyle = head.join("");
+    }
 
-	return this._fontStyle;
+    return this._fontStyle;
 };
 
 ZmHtmlEditor.prototype._serializeAceObjects =
@@ -1579,7 +1593,7 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 		function(ev) {
 			if (state < 0)
 				return;
-			// console.log("BLUR!");
+			//console.log("BLUR!");
 			var enableFocus = false;
 			var dwtev = DwtShell.mouseEvent;
 			dwtev.setFromDhtmlEvent(ev, true);

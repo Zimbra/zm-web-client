@@ -899,7 +899,7 @@ ZmComposeView.prototype.getSignatureContent = function(signatureId) {
 	var newLine = this._getSignatureNewLine();
 	var isAbove = this.getSignatureStyle() == ZmSetting.SIG_OUTLOOK;
 	var isText = this.getHtmlEditor().getMode() == DwtHtmlEditor.TEXT;
-	return isAbove ? [sep, sig, isText ? newLine : ""].join("") : sep + sig;
+	return isAbove ? [sep, sig/*,  isText ? newLine : ""*/ ].join("") : sep + sig;
 };
 
 ZmComposeView.prototype.getSignatureStyle = function(identity) {
@@ -934,7 +934,7 @@ function(content) {
 ZmComposeView.prototype._insertSignature =
 function(content, sigStyle, sig, sep, newLine) {
 
-	if (sigStyle == ZmSetting.SIG_OUTLOOK) {
+    if (sigStyle == ZmSetting.SIG_OUTLOOK) {
 
 		var regexp = ZmComposeView.QUOTED_CONTENT_RE;
 		var repl = "----- ";
@@ -970,11 +970,8 @@ function(signatureId) {
 	if (!signatureId) { return; }
 
 	var signature = appCtxt.getSignatureCollection().getById(signatureId);
-	var sig = signature.value;
 	var newLine = this._getSignatureNewLine();
-	if (this._composeMode == DwtHtmlEditor.HTML) {
-		sig = AjxStringUtil.htmlEncodeSpace(sig).replace(/\n/g,"<br>");
-	}
+    var sig = signature.getValue( (this._composeMode == DwtHtmlEditor.HTML) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN );
 	return sig + newLine;
 };
 

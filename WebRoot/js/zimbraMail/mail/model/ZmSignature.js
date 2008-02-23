@@ -78,6 +78,14 @@ ZmSignature.prototype.setFromJson = function(object) {
 	}
 };
 
+ZmSignature.prototype.getContentType = function(){
+    return this.contentType;
+};
+
+ZmSignature.prototype.setContentType = function(ct){
+    this.contentType = ct || ZmMimeTable.TEXT_PLAIN;  
+};
+
 /**
  * @param outputType	[string]	(Optional) Formats the resulting
  *									signature text to the specified
@@ -85,27 +93,25 @@ ZmSignature.prototype.setFromJson = function(object) {
  *									the signature text is returned in
  *									the original format.
  */
-/***
-ZmSignature.prototype.getValue = function(outputType) {
-	var isHtml = this.contentType == ZmMimeTable.TEXT_HTML;
 
-	var prefix = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET ? "-- " : "";
-	var newline = isHtml ? "<br>" : "\n";
+ZmSignature.prototype.getValue = function(outputType) {
+	
+    var isHtml = this.contentType == ZmMimeTable.TEXT_HTML;
+    //Commented: Considering this code should not belong here.
+	//var prefix = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET ? "-- " : "";
+	//var newline = isHtml ? "<br>" : "\n";
 	var value = this.value;
 
 	var type = outputType || this.contentType;
 	if (type != this.contentType) {
-		if (isHtml) {
-			value = AjxStringUtil.convertHtml2Text(value);
-		}
-		else {
-			value = AjxStringUtil.convertToHtml(value);
-		}
+        value = isHtml ? AjxStringUtil.convertHtml2Text(value) : AjxStringUtil.convertToHtml(value);
 	}
 
-	return [prefix, newline, value].join(newline);
+    return value;
+
+    //return [prefix, newline, value].join(newline);
 };
-/***/
+
 
 //
 // Protected methods
