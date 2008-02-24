@@ -194,7 +194,7 @@ var treeContainer = document.getElementById("skin_container_tree");
 var htmlContent = document.getElementById("htmlContent");
 var splashContent = document.getElementById("skin_container_splash_screen");
 var appLoaded = "<c:out value="${app}"/>";
-if(htmlContent && treeContainer && ((appLoaded == "") || (appLoaded == "mail"))) {
+if(htmlContent && treeContainer && (splashContent.className == "SplashScreen") && ((appLoaded == "") || (appLoaded == "mail"))) {
 
 	if(splashContent) {
 		splashContent.style.display = "none";
