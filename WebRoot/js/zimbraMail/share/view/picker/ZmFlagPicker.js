@@ -30,7 +30,7 @@ function() {
 };
 
 ZmFlagPicker.prototype._setupPicker =
-function(parent) {
+function(picker) {
 	var tree = this._tree = new DwtTree({parent:picker, style:DwtTree.CHECKEDITEM_STYLE});
 	tree.addSelectionListener(new AjxListener(this, ZmFlagPicker.prototype._treeListener));
 	
