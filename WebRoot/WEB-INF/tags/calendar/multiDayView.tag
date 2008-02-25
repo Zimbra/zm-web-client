@@ -46,17 +46,7 @@
 
     <c:set var="rangeEnd" value="${zm:addDay(currentDay,numdays).timeInMillis}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
-
-    <%-- fetch mini cal appts first, so they are in cache, as well as any data neded by this view --%>
-    <c:set var="startOfMonth" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
-    <zm:getAppointmentSummaries timezone="${timezone}" var="minicalappts" folderid="${checkedCalendars}" start="${startOfMonth.timeInMillis}" end="${zm:addDay(startOfMonth, 42).timeInMillis}" query="${requestScope.calendarQuery}" varexception="gasException"/>
-    <c:if test="${not empty gasException}">
-        <zm:getException var="error" exception="${gasException}"/>
-        <app:status style="Critical">
-            <fmt:message key="${error.code}"/>
-        </app:status>
-        <!-- ${fn:escapeXml(error.stackStrace)} -->
-    </c:if>
+    
     <c:set var="multiDay">
         <app:multiDay date="${date}" numdays="${numdays}" view="${view}" timezone="${timezone}" checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
     </c:set>

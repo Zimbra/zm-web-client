@@ -31,7 +31,7 @@
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:set var="currentWeekDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
-    <zm:getAppointmentSummaries var="appts" timezone="${timezone}" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${zm:addDay(currentDay, 42).timeInMillis}" query="${requestScope.calendarQuery}" varexception="gasException"/>
+    <zm:getMiniCal var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${zm:addDay(currentDay, 42).timeInMillis}" varexception="gasException"/>
 </app:handleError>
 
 <div class='ZhCalMiniContainer'>
@@ -88,8 +88,9 @@
                     <c:set var="clazz" value='ZhCalMDOM'/>
                 </c:otherwise>
             </c:choose>
-            <c:set var="hasappt" value="${zm:hasAnyAppointments(appts, currentDay.timeInMillis, zm:addDay(currentDay, 1).timeInMillis) ? ' ZhCalMDHA' : ''}"/>
-            <td align=center class='${clazz}${hasappt}${(currentDay.timeInMillis ge rangeStart.timeInMillis and currentDay.timeInMillis lt rangeEnd.timeInMillis) ? ' ZhCalMDS':''}'>
+            <fmt:formatDate value="${currentDay.time}" pattern="yyyyMMdd" var="dayKey"/>
+            <c:set var="hasappt" value="${appts.days[dayKey]}"/>
+            <td align=center class='${clazz}${hasappt ? " ZhCalMDHA" : ""}${(currentDay.timeInMillis ge rangeStart.timeInMillis and currentDay.timeInMillis lt rangeEnd.timeInMillis) ? ' ZhCalMDS':''}'>
                 <app:calendarUrl var="dayUrl" timezone="${timezone}" rawdate="${currentDay}"/>
                 <a href="${fn:escapeXml(dayUrl)}">
                 <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}"/>
