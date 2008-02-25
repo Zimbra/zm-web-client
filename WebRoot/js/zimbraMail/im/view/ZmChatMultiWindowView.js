@@ -114,6 +114,7 @@ function() {
 	// s.top = "100%";
 	s.right = s.bottom = "20px";
 	var toolbar = new DwtToolBar({parent:cont, cellSpacing:10});
+	var jiveLogo = new DwtLabel({parent:toolbar, className:"ZmChatJiveIcon ImgJiveBig"});
 	for (var i = 1; i < gws.length; ++i) {
 		var gw = gws[i];
 
