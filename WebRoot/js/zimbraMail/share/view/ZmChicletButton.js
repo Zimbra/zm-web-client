@@ -112,4 +112,9 @@ ZmChicletButton.prototype.stopFlashing = function() {
 ZmChicletButton.prototype.__flashIconCallback = function() {
 	this.__flashIconStatus = !this.__flashIconStatus;
 	this.setImage(this.__flashIconStatus ? "Blank_16" : this._origImage);
+
+	// Also flash the favicon.
+	// (This probably doesn't belong in the chiclet class, but the setInterval is
+	// already here, and I just want to see if people start noticing their IMs.) 
+	Dwt.setFavIcon(appContextPath + (this.__flashIconStatus ? "/img/logo/blank.ico" : "/img/logo/favicon.ico"));
 };
