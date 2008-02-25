@@ -494,7 +494,7 @@ function(items) {
 		while (true) {
 			var found = false;
 			for (var j = 0; j < addrs.length; j++) {
-				if (items[i] == addrs[j]) {
+				if (items[i].toString() == AjxStringUtil.trim(addrs[j])) {
 					items.splice(i,1);
 					found = true;
 					break;
