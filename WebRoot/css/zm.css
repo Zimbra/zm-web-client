@@ -1997,10 +1997,19 @@ HTML>BODY .appt-selected .appt_allday_body
   padding: 1px;
 }
 
+.ZmChatJiveIcon {
+  width: 87px;
+  height: 44px;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  padding: 1px;
+}
+
 /* FIXME: these are temporary until Owen adds them as proper icons */
 .ImgYahooBig { background-image: url("/zimbra/public/tmp/yahoo.png"); }
 .ImgMsnBig { background-image: url("/zimbra/public/tmp/msn.png"); }
 .ImgAolBig { background-image: url("/zimbra/public/tmp/aol.png"); }
+.ImgJiveBig { background-image: url("/zimbra/public/tmp/jive.png"); }
 
 .ZmChatGwIcon-offline {
  opacity: 0.3;
