@@ -733,9 +733,9 @@ function(container, html, isTextMsg, isTruncated) {
 	if (isTextMsg) {
 		if (this._objectManager) {
 			if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT) {
-                //Using callback to lazily find objects instead of doing it on a run.
-                callback = new AjxCallback(this, this.lazyFindMailMsgObjects, [500]);
-                html = AjxStringUtil.nl2br(html);
+                                //Using callback to lazily find objects instead of doing it on a run.
+                                callback = new AjxCallback(this, this.lazyFindMailMsgObjects, [500]);
+                                html = AjxStringUtil.convertToHtml(html);
 			} else {
 				this._makeHighlightObjectsDiv(html);
 				html = AjxStringUtil.convertToHtml(html);
