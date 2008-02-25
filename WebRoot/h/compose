@@ -74,9 +74,9 @@
 
 <c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/>
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
-        onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}">
+        onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}" >
 <body class="yui-skin-sam">
-<form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8"  >
+<form action="" method="post" name="composeForm" enctype="multipart/form-data" accept-charset="utf-8"  >
 <table width="100%" cellpadding="0" cellspacing="0">
 <tr>
                 <td class='TbTop'>
@@ -256,100 +256,154 @@
     initAuto("ccField","ccContainer");
     initAuto("bccField","bccContainer");
 </app:autoComplete>
-<script type="text/javascript">
 
-</script>
 <c:if test="${(isHtml)}" >
-    <SCRIPT TYPE="text/javascript">
-        <!--
+	<script type="text/javascript">
+		<!--
 
-        submitCompose = function(){
-            myEditor.saveHTML();
-            var stripHTML = /<\S[^><]*>/g;
-            var stripNBSP  = /&nbsp;/g
-            document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-        }
-        var myEditor = new YAHOO.widget.Editor('body', {
-            height: '300px',
-            width: '100%',
-            dompath: true, //Turns on the bar at the bottom
-            animate: true, //Animates the opening, closing and moving of Editor windows
+		submitCompose = function(){
+			myEditor.saveHTML();
+			var stripHTML = /<\S[^><]*>/g;
+			var stripNBSP  = /&nbsp;/g
+			document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+		}
+		var myEditor = new YAHOO.widget.Editor('body', {
+			height: '300px',
+			width: '100%',
+			dompath: true, //Turns on the bar at the bottom
+			animate: true, //Animates the opening, closing and moving of Editor windows
 			css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
 			extracss: '.yui-spellcheck { background-color: yellow; }'
 		});
 		enableSpellCheck(myEditor);
 
-        myEditor.on('editorContentLoaded', function() {
-            setTimeout(function() {
-                var b = document.getElementById('body');
-                var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-                myEditor.setEditorHTML(html);
-            }, 1000);
-        }, myEditor, true);
+		myEditor.on('editorContentLoaded', function() {
+			setTimeout(function() {
+				var b = document.getElementById('body');
+				var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+				myEditor.setEditorHTML(html);
+			}, 1000);
+		}, myEditor, true);
 
 		myEditor.render();
-        // -->
-    </SCRIPT>
+		// -->
+	</script>
 </c:if>
-<SCRIPT TYPE="text/javascript">
-    <!--
-    // for Save Draft
-    var eleD = document.getElementById("SOPDRAFT");
-    eleD.onclick = function () {
-    <c:if test="${(isHtml)}" >
-        submitCompose();
-    </c:if>
-    }
-    // for ATTACH
-    var eleA = document.getElementById("SOPATTACH");
-    eleA.onclick = function () {
-    <c:if test="${(isHtml)}" >
-        submitCompose();
-    </c:if>
-    }
-    // for Mail Send
-    var ele = document.getElementById("SOPSEND");
-    ele.onclick = function () {
-    <c:if test="${(isHtml)}" >
-        submitCompose();
-    </c:if>
-        return checkSubject();
-    }
-    var eleI = document.getElementById("IOPSEND");
-    eleI.onclick = function () {
-    <c:if test="${(isHtml)}" >
-        submitCompose();
-    </c:if>
-        return checkSubject();
-    }
-    function checkSubject() {
-        var elesub = document.getElementById("subjectField");
-        if(trim(elesub.value) == '') {
-            if(confirm("<fmt:message key="compSubjectMissing"/>")) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
-    }
-    function trim(strVal){
-        return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
-    }
+<script type="text/javascript">
+<!--
+// for Save Draft
+var eleD = document.getElementById("SOPDRAFT");
+eleD.onclick = function () {
+	cancelOnbeforeUnload();
+<c:if test="${(isHtml)}" >
+           submitCompose();
+</c:if>
+}
+// for ATTACH
+var eleA = document.getElementById("SOPATTACH");
+eleA.onclick = function () {
+	cancelOnbeforeUnload();
+<c:if test="${(isHtml)}" >
+           submitCompose();
+</c:if>
+}
+// for Mail Send
+var ele = document.getElementById("SOPSEND");
+ele.onclick = function () {
+	cancelOnbeforeUnload();
+<c:if test="${(isHtml)}" >
+           submitCompose();
+</c:if>
+	return checkSubject();
+}
+var eleI = document.getElementById("IOPSEND");
+eleI.onclick = function () {
+	cancelOnbeforeUnload();
+<c:if test="${(isHtml)}" >
+           submitCompose();
+</c:if>
+	return checkSubject();
+}
+function checkSubject() {
+	var elesub = document.getElementById("subjectField");
+	if(trim(elesub.value) == '') {
+		if(confirm("<fmt:message key="compSubjectMissing"/>")) {
+		return true;
+	} else{
+		return false;
+	}
+	} else {
+		return true;
+	}
+}
+function trim(strVal){
+	return strVal.replace(/^\s*/, "").replace(/\s*$/, "");
+}
 
 
-    function handleEnter (ev) {
-        var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
-        if (keyCode == 13) 	return false;
-        else return true;
-    }
+function handleEnter (ev) {
+	var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
+	if (keyCode == 13) 	return false;
+	else return true;
+}
 
-    var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
-    var zselect = function(id) { var e = document.getElementById(id); if (e) { e.selected = true; }}
-        //-->
-</SCRIPT>
-        
+var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
+var zselect = function(id) { var e = document.getElementById(id); if (e) { e.selected = true; }}
+
+var _form = document.forms["composeForm"];
+
+var _fields = {} ;
+
+grabFieldValues = function(){
+	var _el = _form.elements;
+	for ( var _i=0;_i < _el.length; _i++){
+		if(_el[_i].type == "text" || _el[_i].type == "textarea" ){
+			_fields[_el[_i].name] = _el[_i].value;
+		}
+	}
+	<c:if test="${(isHtml)}" >
+	setTimeout(function() { myEditor.saveHTML() }, 1000);  // Saves to content text area
+	_fields["body"] = trim(document.getElementById("body").value);
+	</c:if>
+}
+grabFieldValues();
+
+checkForChanges = function(){
+	var _checkFail = false;
+	var _el = _form.elements;
+	for ( var _i=0;_i < _el.length; _i++){
+		if(_el[_i].type == "text" || _el[_i].type == "textarea"){
+			if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true;}
+		}
+	}
+<c:if test="${(isHtml)}">
+	myEditor.saveHTML();
+	_bodyVal = trim(document.getElementById("body").value);
+	if(trim(_fields["body"]) != _bodyVal) {
+		_checkFail = true;
+		if(_fields["body"] == "<html><body>"+_bodyVal+"</body></html>"){  // Allow after save draft
+			_checkFail = false;
+			}
+
+	}
+</c:if>
+
+if(_checkFail){
+		return "<fmt:message key="composeExitConfirmation"/>";
+	}else{
+		return;
+	}
+}
+
+window.onbeforeunload = checkForChanges;
+
+cancelOnbeforeUnload = function(){
+	window.onbeforeunload = null;
+}
+
+// -->
+</script>
+
     <app:keyboard cache="mail.compose" globals="false" passspecial="true" mailbox="${mailbox}">
         <zm:bindKey message="compose.Send" func="function() { zclick('SOPSEND')}"/>
         <zm:bindKey message="compose.Save" func="function() { zclick('SOPDRAFT')}"/>
