@@ -92,6 +92,10 @@ function(actionCode, ev) {
 };
 
 ZmChicletButton.prototype.startFlashing = function() {
+	if (!this._favIcon) {
+		this._favIcon = appContextPath + "/img/logo/favicon.ico";
+		this._blankIcon = appContextPath + "/img/logo/blank.ico"; 
+	}
 	if (!this.__flashTimer) {
 		// don't start twice
 		this._origImage = this.getImage();
@@ -106,6 +110,7 @@ ZmChicletButton.prototype.stopFlashing = function() {
 		this.__flashTimer = null;
 		this.setImage(this._origImage);
 		this._origImage = null;
+		Dwt.setFavIcon(this._favIcon);
 	}
 };
 
@@ -116,5 +121,5 @@ ZmChicletButton.prototype.__flashIconCallback = function() {
 	// Also flash the favicon.
 	// (This probably doesn't belong in the chiclet class, but the setInterval is
 	// already here, and I just want to see if people start noticing their IMs.) 
-	Dwt.setFavIcon(appContextPath + (this.__flashIconStatus ? "/img/logo/blank.ico" : "/img/logo/favicon.ico"));
+	Dwt.setFavIcon(this.__flashIconStatus ? this._blankIcon : this._favIcon);
 };
