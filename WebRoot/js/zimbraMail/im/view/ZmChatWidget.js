@@ -246,6 +246,13 @@ ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
 };
 
 ZmChatWidget.prototype.sendInput = function(text) {
+    if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS)){
+        appCtxt.getApp("IM").playAlert(ZmImApp.OUTGOING_MSG_NOTIFICATION);
+    }
+
+    //appCtxt.getApp("IM").playAlert();
+    //appCtxt.getSound().play(appContextPath+"/public/ding.wav");
+
     text = AjxStringUtil.trim(text);
 	if (text == "")
 		return;		// don't send empty strings
@@ -816,7 +823,6 @@ ZmChatWidget.prototype._setupSash = function() {
 		AjxCallback.simpleClosure(this._sashMouseMove, this),
 		AjxCallback.simpleClosure(this._sashMouseUp, this),
 		null, // no mouseout
-		null, // no mouse wheel
 		true);
 	this._getElement("sash").onmousedown = AjxCallback.simpleClosure(this._sashMouseDown, this);
 };
