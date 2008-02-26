@@ -265,16 +265,16 @@ function(appt) {
 	var attendees = appt.getAttendeesText();
 
 	if (organizer && attendees) {
-		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.organizer + ":</u></td>";
+		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.organizerLabel + "</u></td>";
 		html[idx++] = "<td style='" + style + "'>" + appt.getOrganizer() + "</td></tr>";
-		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.attendees + ":</u></td>";
+		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.attendeesLabel + "</u></td>";
 		html[idx++] = "<td style='" + style + "'>" + attendees + "</td></tr>";
 	}
 
 	var attachments = appt.getAttachments();
 	if (attachments) {
 		html[idx++] = "<tr>";
-		html[idx++] = "<td width=1% style='" + style + "'><u>" + ZmMsg.attachments + ":</u></td>";
+		html[idx++] = "<td width=1% style='" + style + "'><u>" + ZmMsg.attachmentsLabel + "</u></td>";
 		html[idx++] = "<td style='" + style + "'>";
 		for (var i = 0; i < attachments.length; i++) {
 			 html[idx++] = attachments[i].filename;
@@ -488,7 +488,7 @@ function() {
 	if (!this._needFirstLayout)
 		this._layoutAppts();
 	this._layout();
-	this._scrollTo8AM();
+	this._scrollToTime(8);
 };
 
 ZmCalColView._inSyncScroll = false;
@@ -540,11 +540,13 @@ function() {
 	el.scrollTop = this._allDayFullDivHeight;
 };
 
-ZmCalColView.prototype._scrollTo8AM =
-function() {
+ZmCalColView.prototype._scrollToTime =
+function(hour) {
+	hour = hour || 8; // default to 8am
+
 	if (!this._autoScrollDisabled) {
 		var bodyElement = document.getElementById(this._bodyDivId);
-		bodyElement.scrollTop = ZmCalColView._HOUR_HEIGHT*8 - 10;
+		bodyElement.scrollTop = ZmCalColView._HOUR_HEIGHT*hour - 10;
 		this._syncScroll();
 	} else {
 		this._autoScrollDisabled = false;
@@ -989,8 +991,8 @@ function(abook) {
 	for (var i = 0; i < ids.length; i++) {
 		this.associateItemWithElement(null, document.getElementById(ids[i]), types[i], ids[i]);
 	}
+	this._scrollToTime(8);
 
-	this._scrollTo8AM();
 };
 
 ZmCalColView.prototype._computeMaxCols =
@@ -1273,7 +1275,6 @@ function(ao, apptDiv, x, y, w, h) {
 
 ZmCalColView.prototype._layoutAppts =
 function() {
-
 	// for starting x and width
 	var data = this._hours[0];
 
@@ -2437,7 +2438,7 @@ function(list, skipMiniCalUpdate) {
 		}
 	}
 	this._layout();
-	this._scrollTo8AM();
+	this._scrollToTime(8);
 	if (!skipMiniCalUpdate) {
 		this._controller.fetchMiniCalendarAppts();
 	}
