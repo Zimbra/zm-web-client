@@ -54,6 +54,10 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 
 	this._setMouseEventHdlrs(); // needed by object manager
 
+	// we want to process internal OVER and OUT since those handlers are on the view
+	// as a whole, but we want to show tooltips as the user moves between child elements
+	this._ignoreInternalOverOut = false;
+
 	// XXX: for now, turn off object handling in new window
 	if (!appCtxt.isChildWindow) {
 		this._objectManager = true;
