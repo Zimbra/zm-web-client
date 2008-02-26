@@ -529,23 +529,11 @@ ZmImApp.prototype.getOverviewPanelContent = function() {
 	return this._imOvw;
 };
 
-ZmImApp.OUTGOING_MSG_NOTIFICATION = "outgoing";
 ZmImApp.INCOMING_MSG_NOTIFICATION = "incoming";
 ZmImApp.prototype.playAlert = function(type){
-    //Need to comment this untill we get hold of sound files in ZCS.
-    appCtxt.getSound().play(appContextPath+"/public/notify.wav");
-    return;
-
-    type = type || "";
     switch(type){
-        case ZmImApp.OUTGOING_MSG_NOTIFICATION:
-            appCtxt.getSound().play(appContextPath+"/public/notify.wav");
-            break;
         case ZmImApp.INCOMING_MSG_NOTIFICATION:
-            appCtxt.getSound().play(appContextPath+"/public/info.wav");
-            break;
-        default:
-            appCtxt.getSound().play(appContextPath+"/public/default.wav");
+            appCtxt.getSimpleSoundPlayer().play(appContextPath+"/public/sounds/im/alert.wav");
             break;
     }
 };

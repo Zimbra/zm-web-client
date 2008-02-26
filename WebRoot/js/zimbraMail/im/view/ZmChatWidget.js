@@ -246,13 +246,6 @@ ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
 };
 
 ZmChatWidget.prototype.sendInput = function(text) {
-    if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS)){
-        appCtxt.getApp("IM").playAlert(ZmImApp.OUTGOING_MSG_NOTIFICATION);
-    }
-
-    //appCtxt.getApp("IM").playAlert();
-    //appCtxt.getSound().play(appContextPath+"/public/ding.wav");
-
     text = AjxStringUtil.trim(text);
 	if (text == "")
 		return;		// don't send empty strings
