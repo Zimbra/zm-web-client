@@ -138,7 +138,9 @@ function() {
 ZmGroupView.prototype.enableInputs =
 function(bEnable) {
 	document.getElementById(this._groupNameId).disabled = !bEnable;
-	this._groupMembers.disabled = !bEnable;
+	if (!this._noManualEntry) {
+		this._groupMembers.disabled = !bEnable;
+	}
 	document.getElementById(this._searchFieldId).disabled = !bEnable;
 };
 
@@ -263,6 +265,7 @@ function() {
 ZmGroupView.prototype._addWidgets =
 function() {
 	this._groupMembers = document.getElementById(this._htmlElId + "_groupMembers");
+	this._noManualEntry = this._groupMembers.disabled; // see bug 23858
 
 	// add folder DwtSelect
 	var folderCellId = this._htmlElId + "_folderSelect";
@@ -336,8 +339,10 @@ function() {
 	Dwt.setHandler(groupName, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
 	Dwt.associateElementWithObject(groupName, this);
 
-	Dwt.setHandler(this._groupMembers, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
-	Dwt.associateElementWithObject(this._groupMembers, this);
+	if (!this._noManualEntry) {
+		Dwt.setHandler(this._groupMembers, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
+		Dwt.associateElementWithObject(this._groupMembers, this);
+	}
 
 	var searchField = document.getElementById(this._searchFieldId);
 	Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmGroupView._keyPressHdlr);
@@ -348,7 +353,9 @@ ZmGroupView.prototype._getTabGroupMembers =
 function() {
 	var fields = [];
 	fields.push(document.getElementById(this._groupNameId));
-	fields.push(this._groupMembers);
+	if (!this._noManualEntry) {
+		fields.push(this._groupMembers);
+	}
 	fields.push(document.getElementById(this._searchFieldId));
 	return fields;
 };
@@ -394,7 +401,7 @@ function() {
 ZmGroupView.prototype._setGroupMembers =
 function() {
 	var members = this._contact.getGroupMembers().good.getArray();
-	this._groupMembers.value = members.join("\n");
+	this._setGroupMemberValue(members.join("\n"));
 	this._appendNewline();
 };
 
@@ -471,7 +478,7 @@ function(list) {
 	this._dedupe(items);
 	if (items.length > 0) {
 		this._appendNewline();
-		this._groupMembers.value += (items.join("\n") + "\n");
+		this._setGroupMemberValue((items.join("\n") + "\n"), true);
 		this._isDirty = true;
 	}
 };
@@ -482,7 +489,7 @@ function() {
 	var members = this._groupMembers.value;
 	if (members.length) {
 		if (members.charAt(members.length-1) != "\n")
-			this._groupMembers.value += "\n";
+			this._setGroupMemberValue("\n", true);
 	}
 };
 
@@ -503,6 +510,23 @@ function(items) {
 			if (!found) i++;
 			if (i == items.length) break;
 		}
+	}
+};
+
+ZmGroupView.prototype._setGroupMemberValue =
+function(value, append) {
+	if (this._noManualEntry) {
+		this._groupMembers.disabled = false;
+	}
+
+	if (append) {
+		this._groupMembers.value += value;
+	} else {
+		this._groupMembers.value = value;
+	}
+
+	if (this._noManualEntry) {
+		this._groupMembers.disabled = true;
 	}
 };
 
