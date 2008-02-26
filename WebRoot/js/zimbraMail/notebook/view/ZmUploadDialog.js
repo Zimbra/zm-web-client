@@ -321,8 +321,7 @@ ZmUploadDialog._removeHandler = function(event) {
 	var cell = span.parentNode;
 	var row = cell.parentNode;
 	if (row.prevSibling == null && row.nextSibling == null) {
-		var compElem = DwtControl.findControl(span);
-		var comp = Dwt.getObjectFromElement(compElem);
+		var comp = DwtControl.findControl(span);
 		comp._addFileInputRow();
 	}
 	row.parentNode.removeChild(row);
@@ -330,8 +329,7 @@ ZmUploadDialog._removeHandler = function(event) {
 
 ZmUploadDialog._addHandler = function(event) {
 	var span = DwtUiEvent.getTarget(event || window.event);
-	var compElem = DwtControl.findControl(span);
-	var comp = Dwt.getObjectFromElement(compElem);
+	var comp = DwtControl.findControl(span);
 	comp._addFileInputRow();
 };
 
