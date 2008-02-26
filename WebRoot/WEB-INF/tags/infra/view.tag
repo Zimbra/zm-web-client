@@ -443,8 +443,14 @@
 			<td align="right" style="padding-right:5px;">
 				<table cellpadding="2" cellspacing="0" >
 					<tr>
-						<td colspan=3 align='center' class='ZhAppSwitchLink'>
+						<td align='center' class='ZhAppSwitchLink'>
 							<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>
+						</td>
+						<td>
+							<b>|</b>
+						</td>
+						<td  align='center' class='ZhAppSwitchLink'>
+							<span id="switch_to_offline"><a href="<fmt:message key="switchToOfflineURL"/>" ><fmt:message key="switchToOfflineClient" /></a></span>
 						</td>
 					</tr>
 					<tr>
