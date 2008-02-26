@@ -125,7 +125,7 @@ ZmChatWidget.prototype.setTyping = function(item, typing) {
 };
 
 ZmChatWidget.prototype.handleMessage = function(msg) {
-    if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS)){
+    if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS) && !msg.fromMe){
         appCtxt.getApp("IM").playAlert(ZmImApp.INCOMING_MSG_NOTIFICATION);
     }
     var str = msg.displayHtml(this._objectManager, this.chat, this.__lastFrom);
@@ -347,7 +347,7 @@ ZmChatWidget.prototype._init = function() {
 	this._sticky.addSelectionListener(new AjxListener(this, this._stickyListener));
 
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
-        this._content._setAllowSelection();
+	this._content._setAllowSelection();
 	this._content.setScrollStyle(Dwt.SCROLL);
         // this._content._setMouseEventHdlrs();
 
