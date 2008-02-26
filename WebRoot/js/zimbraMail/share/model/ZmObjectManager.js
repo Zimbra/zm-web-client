@@ -188,10 +188,6 @@ function(view) {
 		}
 		this._hoverOverListener = new AjxListener(this, this._handleHoverOver);
 	    this._hoverOutListener = new AjxListener(this, this._handleHoverOut);
-
-		// Process mouse movement across all elements to allow zimlets' tooltips
-		// to pop up and down correctly.
-		view._ignoreInternalOverOut = false;
 	}
 	this._view = view;
 };

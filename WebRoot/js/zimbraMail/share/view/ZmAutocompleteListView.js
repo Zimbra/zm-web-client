@@ -79,7 +79,6 @@ ZmAutocompleteListView = function(params) {
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
 	this._addSelectionListener(new AjxListener(this, this._listSelectionListener));
 	this._outsideListener = new AjxListener(null, ZmAutocompleteListView._outsideMouseDownListener);
-	this._ignoreInternalOverOut = false;
 
 	// only trigger matching after a sufficient pause
 	this._acInterval = appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
