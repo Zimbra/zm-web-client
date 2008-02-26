@@ -146,8 +146,8 @@ function() {
 	if (window.parentController) {
 		var childWinObj = window.parentController.getChildWindow(window);
 		if (childWinObj) {
-			window.command = childWinObj.command;
-			window.params = childWinObj.params;
+			window.newWindowCommand = childWinObj.command;
+			window.newWindowParams = childWinObj.params;
 		}
 	}
 
@@ -162,20 +162,20 @@ function() {
 	appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
 
 	// depending on the command, do the right thing
-	if (window.command == "compose" || window.command == "composeDetach") {
+	if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
 		var cc = AjxDispatcher.run("GetComposeController");
 		cc.isChildWindow = true;
-		if (window.params.action == ZmOperation.REPLY_ALL) {
-			window.params.msg = this._deepCopyMsg(window.params.msg);
+		if (window.newWindowParams.action == ZmOperation.REPLY_ALL) {
+			window.newWindowParams.msg = this._deepCopyMsg(window.newWindowParams.msg);
 		}
-		if (window.command == "compose") {
+		if (window.newWindowCommand == "compose") {
 			// bug fix #4681
-			var action = window.params.action;
-			cc._setView(window.params);
+			var action = window.newWindowParams.action;
+			cc._setView(window.newWindowParams);
 		} else {
-			var op = window.params.action ? window.params.action : ZmOperation.NEW_MESSAGE;
-			if (window.params.msg && window.params.msg._mode) {
-				switch (window.params.msg._mode) {
+			var op = window.newWindowParams.action ? window.newWindowParams.action : ZmOperation.NEW_MESSAGE;
+			if (window.newWindowParams.msg && window.newWindowParams.msg._mode) {
+				switch (window.newWindowParams.msg._mode) {
 					case ZmAppt.MODE_DELETE:
 					case ZmAppt.MODE_DELETE_INSTANCE:
 					case ZmAppt.MODE_DELETE_SERIES: {
@@ -184,9 +184,9 @@ function() {
 					}
 				}
 			}
-			window.params.action = op;
-			cc._setView(params);
-			cc._composeView.setDetach(window.params);
+			window.newWindowParams.action = op;
+			cc._setView(window.newWindowParams);
+			cc._composeView.setDetach(window.newWindowParams);
 
 			// bug fix #5887 - get the parent window's compose controller
 			var parentCC = window.parentController.getApp(ZmApp.MAIL).getComposeController();
@@ -202,9 +202,9 @@ function() {
 		// setup zimlets for compose
 		var zimletMgr = appCtxt.getZimletMgr();
 		zimletMgr.loadZimlets(this.__hack_zimletArray(), this.__hack_userProps(), "compose-window");
-	} else if (window.command == "msgViewDetach") {
+	} else if (window.newWindowCommand == "msgViewDetach") {
 		var msgController = AjxDispatcher.run("GetMsgController");
-		msgController.show(window.params.msg);
+		msgController.show(window.newWindowParams.msg);
 		rootTg.addMember(msgController.getTabGroup());
 		startupFocusItem = msgController.getCurrentView();
 	}
@@ -432,7 +432,7 @@ function(msg) {
 
 ZmNewWindow._confirmExitMethod =
 function(ev) {
-	if (window.parentController && (window.command == "compose" || window.command == "composeDetach")) {
+	if (window.parentController && (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach")) {
 		var cc = AjxDispatcher.run("GetComposeController");
 		// only show native confirmation dialog if compose view is dirty
 		if (cc && cc._composeView.isDirty()) {
