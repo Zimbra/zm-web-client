@@ -39,11 +39,11 @@ ZmAppCtxt = function() {
 	this.numAccounts = 1;	// init to 1 b/c there is always a main account
 };
 
-ZmAppCtxt.prototype.getSound = function(){
-    if(!this._soundPlayer){
-        this._soundPlayer = new ZmSound(this.getShell());
+ZmAppCtxt.prototype.getSimpleSoundPlayer = function(){
+    if(!this._simpleSoundPlayer){
+        this._simpleSoundPlayer = new DwtSimpleSoundPlayer(this.getShell());
     }
-    return this._soundPlayer;
+    return this._simpleSoundPlayer;
 };
 
 ZmAppCtxt.prototype.toString =
