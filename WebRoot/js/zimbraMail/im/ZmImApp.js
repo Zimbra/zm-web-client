@@ -409,6 +409,9 @@ ZmImApp.prototype.activate =
 function(active) {
 	if (active) {
 		this.stopFlashingIcon();
+		if (this._toast && this._toast.isPoppedUp()) {
+			this._toast.transition();
+		}
 	}
 	return ZmApp.prototype.activate.call(this, active);
 };
@@ -536,4 +539,27 @@ ZmImApp.prototype.playAlert = function(type){
             appCtxt.getSimpleSoundPlayer().play(appContextPath+"/public/sounds/im/alert.wav");
             break;
     }
+};
+
+ZmImApp.prototype.showToast = function(chat, chatMessage){
+	if (!this._toast) {
+		this._toast = new ZmImToast(appCtxt.getAppController().statusView);
+	}
+	if (this._toast.isPoppedUp()) {
+		return;
+	}
+	var msgArgs = {
+		body: chatMessage.body,
+		from: chat.getDisplayName(chatMessage.from, false)
+	}
+	for (var i in msgArgs) {
+		msgArgs[i] = AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(msgArgs[i], 30));
+	}
+	var args = {
+		msg: AjxTemplate.expand("im.Chat#ToastText", msgArgs),
+		level: ZmStatusView.LEVEL_INFO,
+		transitions: [ ZmToast.FADE_IN, ZmImToast.REMAIN, ZmToast.PAUSE, ZmToast.FADE_OUT ],
+		toast: this._toast
+	};
+	appCtxt.setStatusMsg(args);
 };
