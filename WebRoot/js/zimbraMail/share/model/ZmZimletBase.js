@@ -462,12 +462,11 @@ function(icon) {
 	if (!this.xmlObj("zimletPanelItem"))
 		return;
 	this.xmlObj().icon = icon;
-	var app = appCtxt.getCurrentApp()
-	var ctrl = appCtxt.getOverviewController();
-	var treeView = ctrl.getTreeView(app.getOverviewId(), ZmOrganizer.ZIMLET);
-	var treeItem = treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
-	// OMG, what we had to go through!
-	treeItem.setImage(icon);
+	var treeView = appCtxt.getAppViewMgr().getCurrentViewComponent(ZmAppViewMgr.C_TREE);
+	var treeItem = treeView && treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
+	if (treeItem) {
+		treeItem.setImage(icon);
+	}
 };
 
 /**
