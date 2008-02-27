@@ -52,12 +52,14 @@ function() {
 ZmStatusView.prototype.setStatusMsg =
 function(params) {
 	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
-
+	if (typeof params == "string") {
+		params = { msg: params };
+	}
 	var work = {
-		msg:params.msg,
-		level:params.level || ZmStatusView.LEVEL_INFO,
-		detail:params.detail,
-		date:new Date(),
+		msg: params.msg,
+		level: params.level || ZmStatusView.LEVEL_INFO,
+		detail: params.detail,
+		date: new Date(),
 		transitions: params.transitions,
 		toast: params.toast || this._standardToast
 	};
