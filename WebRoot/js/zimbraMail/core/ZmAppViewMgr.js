@@ -347,6 +347,10 @@ function() {
 	return this._currentView;
 };
 
+ZmAppViewMgr.prototype.getCurrentViewComponent = function(compId) {
+	return this._components[compId];
+};
+
 /**
 * Returns the ID of the app view last displayed.
 */
