@@ -114,13 +114,14 @@
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
                 <zm:checkCrumb crumb="${param.crumb}"/>
                 <zm:trashMessage  var="result" id="${ids}"/>
+	            <c:set var="mesgCount" value="${result.idCount}" />
                 <app:status>
                     <fmt:message key="actionMessageMovedTrash">
                         <fmt:param value="${result.idCount}"/>
                     </fmt:message>
                 </app:status>
                 <c:if test="${not empty param.delRedirectUrl}" >
-                    <zm:redirect url="${param.delRedirectUrl}&actionMessageMovedTrash=${true}" />
+                    <zm:redirect url="${param.delRedirectUrl}&actionMessageMovedTrash=${true}&mesgcount=${mesgCount}" />
                 </c:if>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionHardDelete')}">

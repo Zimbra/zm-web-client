@@ -18,6 +18,8 @@
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
+	                    <zm:currentResultUrl var="delRedirectUrl" value="/h/search" context="${context}" />
+                        <input type="hidden" value="${delRedirectUrl}" name="delRedirectUrl" />
                         <a href="${fn:escapeXml(closeurl)}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.gif" alt="close"/> <span>&nbsp;${fn:escapeXml(context.backTo)}&nbsp;</span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
