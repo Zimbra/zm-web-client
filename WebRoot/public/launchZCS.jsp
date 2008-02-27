@@ -254,8 +254,19 @@ if(htmlContent && treeContainer && (splashContent.className == "SplashScreen") &
 	<jsp:param name='skin' value='${skin}' />
 	<jsp:param name="locale" value="${locale}" />
 	<jsp:param name='debug' value='${isDebug}' />
+	<jsp:param name="templates" value="split" />
 </jsp:include>
 </script>
+<c:if test="${not requestScope['skin.templates.included']}">
+	<script type="text/javascript" src="<c:url value='/js/skin.js'>
+	<c:param name='client' value='advanced' />
+	<c:param name='skin' value='${skin}' />
+	<c:param name="locale" value="${locale}" />
+	<c:param name='debug' value='${isDebug}' />
+	<c:param name="templates" value="only" />
+	<c:param name="v" value="${vers}" />
+</c:url>"></script>
+</c:if>
 
 <script>
 	<zm:getDomainInfo var="domainInfo" by="virtualHostname" value="${zm:getServerName(pageContext)}"/>
