@@ -550,11 +550,11 @@ function(attId, isDraft) {
 		msg._instanceDate = this._msg._instanceDate;
 	}
 
-	if (this._action != ZmOperation.NEW_MESSAGE && !this._msgIds) {
+	if (this._action != ZmOperation.NEW_MESSAGE && this._msg && !this._msgIds) {
 		var isInviteReply = this._isInviteReply(this._action);
 		if (this._action == ZmOperation.DRAFT) {
-			msg.isReplied = this._msg.rt == "r";
-			msg.isForwarded = this._msg.rt == "w";
+			msg.isReplied = (this._msg.rt == "r");
+			msg.isForwarded = (this._msg.rt == "w");
 			msg.isDraft = this._msg.isDraft;
 			// check if we're resaving a draft that was originally a reply/forward
 			if (msg.isDraft) {
@@ -564,8 +564,8 @@ function(attId, isDraft) {
 				msg.nId = this._msg.nId;
 			}
 		} else {
-			msg.isReplied = this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL || isInviteReply;
-			msg.isForwarded = this._action == ZmOperation.FORWARD_INLINE || this._action == ZmOperation.FORWARD_ATT;
+			msg.isReplied = (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL || isInviteReply);
+			msg.isForwarded = (this._action == ZmOperation.FORWARD_INLINE || this._action == ZmOperation.FORWARD_ATT);
             msg.origId = this._msg.id;
         }
 		msg.isInviteReply = isInviteReply;
