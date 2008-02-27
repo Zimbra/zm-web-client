@@ -166,7 +166,7 @@ function(node, instNode) {
 	} else if (inv) {
 		var remoteIndex = inv.id.indexOf(":");
 		if (remoteIndex != -1) {
-			this.invId = this.id + "-" + inv.id.substring(inv.id.indexOf(":")+1);
+			this.invId = this.id + "-" + inv.id.substring(remoteIndex+1);
 		} else {
 			this.invId = [node.id, inv.id].join("-");
 		}
