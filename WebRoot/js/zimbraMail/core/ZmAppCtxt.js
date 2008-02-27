@@ -81,9 +81,18 @@ function() {
 	return this._requestMgr;
 };
 
+/**
+ * Displays a status message
+ * @param msg the message
+ * @param level ZmStatusView.LEVEL_INFO, ZmStatusView.LEVEL_WARNING, or ZmStatusView.LEVEL_CRITICAL (optional)
+ * @param detail details (optional)
+ * @param transitions transitions (optional)
+ * @param toast the toast control (optional)
+ */
 ZmAppCtxt.prototype.setStatusMsg =
-function(msg, level, detail, transitions) {
-	this._appController.setStatusMsg(msg, level, detail, transitions);
+function(params) {
+	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+	this._appController.setStatusMsg(params);
 };
 
 ZmAppCtxt.prototype.getSettings =

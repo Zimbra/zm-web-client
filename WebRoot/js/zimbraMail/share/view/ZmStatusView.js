@@ -18,7 +18,7 @@ ZmStatusView = function(parent, className, posStyle) {
 
 	DwtControl.call(this, {parent:parent, className:(className || "ZmStatus"), posStyle:posStyle});
 
-	this._toast = new ZmToast(this);
+	this._toast = this._standardToast = new ZmToast(this);
 	this._statusQueue = [];
 };
 
@@ -32,6 +32,7 @@ ZmStatusView.LEVEL_INFO 			= 1;	// informational
 ZmStatusView.LEVEL_WARNING			= 2;	// warning
 ZmStatusView.LEVEL_CRITICAL			= 3;	// critical
 
+ZmStatusView.MSG_PARAMS = ["msg", "level", "detail", "transitions", "toast"];
 
 // Public methods
 
@@ -40,11 +41,26 @@ function() {
 	return "ZmStatusView";
 };
 
+/**
+ * Displays a status message 
+ * @param msg the message
+ * @param level ZmStatusView.LEVEL_INFO, ZmStatusView.LEVEL_WARNING, or ZmStatusView.LEVEL_CRITICAL (optional) 
+ * @param detail details (optional)
+ * @param transitions transitions (optional)
+ * @param toast the toast control (optional)
+ */
 ZmStatusView.prototype.setStatusMsg =
-function(msg, level, detail, transitions) {
-	if (!level) { level = ZmStatusView.LEVEL_INFO; }
+function(params) {
+	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
 
-	var work = { msg:msg, level:level, detail:detail, date:new Date(), transitions: transitions };
+	var work = {
+		msg:params.msg,
+		level:params.level || ZmStatusView.LEVEL_INFO,
+		detail:params.detail,
+		date:new Date(),
+		transitions: params.transitions,
+		toast: params.toast || this._standardToast
+	};
 
 	// always push so we know one is active
 	this._statusQueue.push(work);
@@ -95,7 +111,8 @@ function() {
     var level = ZmStatusView.getClass(work);
     var icon = ZmStatusView.getImageHtml32(work);
 
-    this._toast.popup(level, work.msg, icon, null, work.transitions);
+    this._toast = work.toast;
+	this._toast.popup(level, work.msg, icon, null, work.transitions);
 };
 
 
@@ -104,7 +121,9 @@ function() {
 //
 
 ZmToast = function(parent) {
-    DwtControl.call(this, parent.shell, "ZToast", Dwt.ABSOLUTE_STYLE);
+	if (arguments.length == 0) { return; }
+
+    DwtComposite.call(this, parent.shell, "ZToast", Dwt.ABSOLUTE_STYLE);
     this._statusView = parent;
     this._createHtml();
 
@@ -117,9 +136,9 @@ ZmToast = function(parent) {
     this._funcs["fade"] = AjxCallback.simpleClosure(this.__fade, this);
     this._funcs["fade-in"] = this._funcs["fade"];
     this._funcs["fade-out"] = this._funcs["fade"];
-    this._funcs["next"] = AjxCallback.simpleClosure(this._transition, this);
+    this._funcs["next"] = AjxCallback.simpleClosure(this.transition, this);
 }
-ZmToast.prototype = new DwtControl;
+ZmToast.prototype = new DwtComposite;
 ZmToast.prototype.constructor = ZmToast;
 ZmToast.prototype.toString =
 function() {
@@ -157,7 +176,7 @@ function() {
 	this._textEl = null;
 	this._iconEl = null;
 	this._detailEl = null;
-	DwtControl.prototype.dispose.call(this);
+	DwtComposite.prototype.dispose.call(this);
 };
 
 ZmToast.prototype.popup =
@@ -185,7 +204,7 @@ function(level, text, icon, loc, customTransitions) {
 
     // start animation
     this._transitions = transitions;
-    this._transition();
+    this.transition();
 };
 
 ZmToast.prototype.popdown =
@@ -200,26 +219,7 @@ function() {
     return this._poppedUp;
 };
 
-// Protected methods
-
-ZmToast.prototype._createHtml =
-function(templateId) {
-    var data = { id: this._htmlElId };
-    this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
-    Dwt.setZIndex(this.getHtmlElement(), Dwt.Z_TOAST);
-};
-
-ZmToast.prototype._createHtmlFromTemplate =
-function(templateId, data) {
-    DwtControl.prototype._createHtmlFromTemplate.call(this, templateId, data);
-    this._textEl = document.getElementById(data.id+"_text");
-    this._iconEl = document.getElementById(data.id+"_icon");
-    this._detailEl = document.getElementById(data.id+"_detail");
-};
-
-// Protected methods
-
-ZmToast.prototype._transition =
+ZmToast.prototype.transition =
 function() {
     var transition = this._transitions && this._transitions.shift();
     if (!transition) {
@@ -237,6 +237,23 @@ function() {
     Dwt.setLocation(el, state.x, state.y);
 
     this._funcs[transition.type || "next"]();
+};
+
+// Protected methods
+
+ZmToast.prototype._createHtml =
+function(templateId) {
+    var data = { id: this._htmlElId };
+    this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
+    Dwt.setZIndex(this.getHtmlElement(), Dwt.Z_TOAST);
+};
+
+ZmToast.prototype._createHtmlFromTemplate =
+function(templateId, data) {
+    DwtComposite.prototype._createHtmlFromTemplate.call(this, templateId, data);
+    this._textEl = document.getElementById(data.id+"_text");
+    this._iconEl = document.getElementById(data.id+"_icon");
+    this._detailEl = document.getElementById(data.id+"_detail");
 };
 
 ZmToast.prototype._createState =
@@ -329,7 +346,7 @@ function() {
 ZmToast.prototype.__idleCallback =
 function(idle) {
 	if (!idle) {
-		this._transition();
+		this.transition();
 		this._idleTimer.kill();
 	}
 };
