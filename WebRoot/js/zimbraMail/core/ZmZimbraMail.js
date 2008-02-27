@@ -82,6 +82,8 @@ ZmZimbraMail = function(params) {
 	this._pollRequest = null;	// HTTP request of poll we've sent to server
 	this._pollInstantNotifications = false; // if TRUE, we're in "instant notification" mode
 
+	this.statusView = null;
+
 	AjxDispatcher.setPackageLoadFunction("Zimlet", new AjxCallback(this, this._postLoadZimlet));
 
 	AjxDispatcher.setPreLoadFunction(new AjxCallback(this, function() {
@@ -306,7 +308,7 @@ function(params) {
 		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell);
 		appCtxt.setCurrentAppToolbar(currentAppToolbar);
 		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
-		this._components[ZmAppViewMgr.C_STATUS] = this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE);
+		this._components[ZmAppViewMgr.C_STATUS] = this.statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE);
 	}
 
 	this._createEnabledApps();
@@ -1677,9 +1679,18 @@ function() {
 	return this._appChooser;
 };
 
+/**
+ * Displays a status message
+ * @param msg the message
+ * @param level ZmStatusView.LEVEL_INFO, ZmStatusView.LEVEL_WARNING, or ZmStatusView.LEVEL_CRITICAL (optional)
+ * @param detail details (optional)
+ * @param transitions transitions (optional)
+ * @param toast the toast control (optional)
+ */
 ZmZimbraMail.prototype.setStatusMsg =
-function(msg, level, detail, transitions) {
-	this._statusView.setStatusMsg(msg, level, detail, transitions);
+function(params) {
+	params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+	this.statusView.setStatusMsg(params);
 };
 
 ZmZimbraMail.prototype.getKeyMapName =
