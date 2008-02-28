@@ -114,6 +114,7 @@ function() {
  *        include		[object]*		hash of organizer IDs to include
  *        searchTypes	[hash]*			types of saved searches to show
  *        noTooltips	[boolean]*		if true, don't show tooltips for tree items
+ *        collapsed		[boolean]*		if true, initially leave the root collapsed
  */
 ZmTreeView.prototype.set =
 function(params) {
@@ -143,7 +144,7 @@ function(params) {
 	params.treeNode = ti;
 	params.organizer = root;
 	this._render(params);
-	ti.setExpanded(true);
+	ti.setExpanded(!params.collapsed);
 	if (appCtxt.get(ZmSetting.SKIN_HINTS, "noOverviewHeaders")) {
 		ti.setVisible(false, true);
 	}
