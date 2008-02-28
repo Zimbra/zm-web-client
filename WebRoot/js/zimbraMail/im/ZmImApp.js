@@ -453,7 +453,6 @@ function(roster) {
 	if (appCtxt.get(ZmSetting.INSTANT_NOTIFY) && appCtxt.get(ZmSetting.IM_PREF_INSTANT_NOTIFY)) {
 		var action = new AjxTimedAction(this, this.requestInstantNotify);
 		AjxTimedAction.scheduleAction(action, 4000);
-		this.requestInstantNotify();
 	}
 };
 
