@@ -252,6 +252,9 @@ function(response) {
 		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [value]);
 	} else if (response.code == ZmCsfeException.MAIL_IMMUTABLE) {
 		msg = AjxMessageFormat.format(ZmMsg.errorCannotRename, [value]);
+	} else if (response.code == ZmCsfeException.SVC_INVALID_REQUEST) { 
+		// triggered on an empty name
+		msg = response.msg;
 	}
 	appCtxt.getAppController().popupErrorDialog(msg, response.msg, null, true);
 	return true;
