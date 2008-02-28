@@ -2003,6 +2003,8 @@ HTML>BODY .appt-selected .appt_allday_body
   background-position: 50% 50%;
   background-repeat: no-repeat;
   padding: 1px;
+  margin-left:20;
+  margin-top:36; /* to align with the smaller interop buttons */
 }
 
 /* FIXME: these are temporary until Owen adds them as proper icons */
