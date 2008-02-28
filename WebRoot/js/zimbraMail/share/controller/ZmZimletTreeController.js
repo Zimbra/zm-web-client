@@ -30,6 +30,16 @@ ZmZimletTreeController.prototype.toString = function() {
 };
 
 // Public methods
+
+/**
+* Displays the zimlet tree.
+*/
+ZmZimletTreeController.prototype.show = 
+function(params) {
+	params.collapsed = true;
+	return ZmTreeController.prototype.show.call(this, params);
+};
+
 ZmZimletTreeController.prototype.addSelectionListener =
 function(overviewId, listener) {
 	// Each overview gets its own event manager
