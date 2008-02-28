@@ -695,7 +695,7 @@ function(items, folder, attrs, force) {
 ZmContactListController.prototype._handleMoveFromGal =
 function(result) {
 	var resp = result.getResponse().BatchResponse.CreateContactResponse;
-	if (resp && resp.length > 0) {
+	if (resp != null && resp.length > 0) {
 		var msg = AjxMessageFormat.format(ZmMsg.itemCopied, resp.length);
 		appCtxt.getAppController().setStatusMsg(msg);
 	}
