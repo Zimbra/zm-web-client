@@ -134,6 +134,15 @@ function() {
 	return "ZmSearch";
 };
 
+ZmSearch.prototype.execute =
+function(params) {
+	if (params.batchCmd || this.soapInfo) {
+		this._executeSoap(params);
+	} else {
+		this._executeJson(params);
+	}
+};
+
 /**
  * Creates a SOAP request that represents this search and sends it to the server.
  *
@@ -144,7 +153,7 @@ function() {
  *        timeout		[int]*				timeout value (in seconds)
  *        noBusyOverlay	[boolean]*			if true, don't use the busy overlay
  */
-ZmSearch.prototype.execute =
+ZmSearch.prototype._executeSoap =
 function(params) {
 
 	this.isGalSearch = (this.contactSource && (this.contactSource == ZmSearchToolBar.FOR_GAL_MI));
@@ -245,9 +254,119 @@ function(params) {
 	}
 };
 
-/*
-* Convert the SOAP response into a ZmSearchResult and pass it along.
-*/
+/**
+ * Creates a JSON request that represents this search and sends it to the server.
+ *
+ * @param params		[hash]				hash of params:
+ *        callback		[AjxCallback]*		callback to run when response is received
+ *        errorCallback	[AjxCallback]*		callback to run if there is an exception
+ *        batchCmd		[ZmBatchCommand]*	batch command that contains this request
+ *        timeout		[int]*				timeout value (in seconds)
+ *        noBusyOverlay	[boolean]*			if true, don't use the busy overlay
+ */
+ZmSearch.prototype._executeJson =
+function(params) {
+
+	this.isGalSearch = (this.contactSource && (this.contactSource == ZmSearchToolBar.FOR_GAL_MI));
+	this.isCalResSearch = (this.conds != null);
+	if (!this.query && !this.isCalResSearch) { return; }
+
+	var jsonObj, request, soapDoc;
+	if (!this.response) {
+		if (this.isGalSearch) {
+			jsonObj = {SearchGalRequest:{_jsns:"urn:zimbraAccount"}};
+			request = jsonObj.SearchGalRequest;
+			if (this.galType) {
+				request.type = this.galType;
+			}
+			request.name = this.query;
+		} else if (this.isGalAutocompleteSearch) {
+			jsonObj = {AutoCompleteGalRequest:{_jsns:"urn:zimbraAccount"}};
+			request = jsonObj.AutoCompleteGalRequest;
+			request.limit = ZmContactList.AC_MAX;
+			request.name = this.query;
+		} else if (this.isCalResSearch) {
+			jsonObj = {SearchCalendarResourcesRequest:{_jsns:"urn:zimbraAccount"}};
+			request = jsonObj.SearchCalendarResourcesRequest;
+			if (this.attrs) {
+				request.attrs = this.attrs.join(",");
+			}
+			if (this.conds && this.conds.length) {
+				request.searchFilter = {conds:{_content:[]}};
+				var conds = request.searchFilter.conds;
+				if (this.join == ZmSearch.JOIN_OR) {
+					conds.or = 1;
+				}
+				for (var i = 0; i < this.conds.length; i++) {
+					var cond = this.conds[i];
+					conds._content.push({cond:{attr:cond.attr, op:cond.op, value:cond.value}});
+				}
+			}
+		} else {
+			if (this.soapInfo) {
+				soapDoc = AjxSoapDoc.create(this.soapInfo.method, this.soapInfo.namespace);
+				// Pass along any extra soap data. (Voice searches use this to pass user identification.)
+				for (var nodeName in this.soapInfo.additional) {
+					var node = soapDoc.set(nodeName);
+					var attrs = this.soapInfo.additional[nodeName];
+					for (var attr in attrs) {
+						node.setAttribute(attr, attrs[attr]);
+					}
+				}
+			} else {
+				jsonObj = {SearchRequest:{_jsns:"urn:zimbraMail"}};
+				request = jsonObj.SearchRequest;
+			}
+			this._getStandardMethodJson(request);
+			if (this.types) {
+				var a = this.types.getArray();
+				if (a.length) {
+					var typeStr = [];
+					for (var i = 0; i < a.length; i++) {
+						typeStr.push(ZmSearch.TYPE[a[i]]);
+					}
+					request.types = typeStr.join(",");
+					// special handling for showing participants ("To" instead of "From")
+					var folder = appCtxt.getById(this.folderId);
+					if (folder &&
+						(folder.isUnder(ZmFolder.ID_SENT) ||
+						folder.isUnder(ZmFolder.ID_DRAFTS) ||
+						folder.isUnder(ZmFolder.ID_OUTBOX)))
+					{
+						request.recip = 1;
+					}
+					// if we're prefetching the first hit message, also mark it as read
+					if (this.fetch) {
+						request.fetch = 1;
+						// and set the html flag if we want the html version
+						if (this.getHtml) {
+							request.html = 1;
+						}
+					}
+					if (this.markRead) {
+						request.read = 1;
+					}
+				}
+			}
+		}
+	}
+		
+	var respCallback = new AjxCallback(this, this._handleResponseExecute,
+						[this.isGalSearch, this.isGalAutocompleteSearch, this.isCalResSearch, params.callback]);
+	
+	if (params.batchCmd) {
+		params.batchCmd.addRequestParams(soapDoc, respCallback);
+	} else {
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, soapDoc:soapDoc, asyncMode:true, callback:respCallback,
+												errorCallback:params.errorCallback,
+												timeout:params.timeout, noBusyOverlay:params.noBusyOverlay,
+												response:this.response});
+	}
+};
+
+/**
+ * Converts the response into a ZmSearchResult and passes it along.
+ */
 ZmSearch.prototype._handleResponseExecute = 
 function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result) {
 	var response = result.getResponse();
@@ -385,6 +504,65 @@ function(soapDoc) {
 	}
 
 	return method;
+};
+
+ZmSearch.prototype._getStandardMethodJson = 
+function(req) {
+
+	if (this.sortBy) {
+		req.sortBy = ZmSearch.SORT_BY[this.sortBy];
+	}
+
+	if (ZmSearch._mailEnabled) {
+		var hdrs = ZmMailMsg.getAdditionalHeaders();
+		if (hdrs && hdrs.length) {
+			req.header = [];
+			for (var hdr in hdrs) {
+				req.header.push({n:hdr});
+			}
+		}
+	}
+
+	// bug 5771: add timezone and locale info
+	ZmTimezone.set(req, AjxTimezone.DEFAULT);
+	req.locale = {_content:appCtxt.get(ZmSetting.LOCALE_NAME)};
+
+	if (this.lastId != null && this.lastSortVal) {
+		// cursor is used for paginated searches
+		req.cursor = {id:this.lastId, sortVal:this.lastSortVal};
+		if (this.endSortVal) {
+			req.cursor.endSortVal = this.endSortVal;
+		}
+	}
+
+	this.offset = this.offset || 0;
+	req.offset = this.offset;
+
+	// always set limit (init to user pref for page size if not provided)
+	if (!this.limit) {
+		if (this.contactSource && this.types.size() == 1) {
+			this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+		} else if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+			this.limit = appCtxt.get(ZmSetting.PAGE_SIZE);
+		} else if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			this.limit = appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
+		} else {
+			this.limit = ZmSearch.DEFAULT_LIMIT;
+		}
+	}
+	req.limit = this.limit;
+
+	// and of course, always set the query and append the query hint if applicable
+	// only use query hint if this is not a "simple" search
+	var query = (!this.folderId && this.queryHint)
+		? ([this.query, " (", this.queryHint, ")"].join(""))
+		: this.query;
+	req.query = this.query;
+
+	// set search field if provided
+	if (this.field) {
+		req.field = this.field;
+	}
 };
 
 /**
