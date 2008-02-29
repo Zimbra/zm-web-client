@@ -349,7 +349,12 @@ ZmChatWidget.prototype._init = function() {
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content._setAllowSelection();
 	this._content.setScrollStyle(Dwt.SCROLL);
-	this._content._setMouseEventHdlrs();
+	var mouseEvents = [ // All the usual ones except ONSELECTSTART.
+		DwtEvent.ONCONTEXTMENU, DwtEvent.ONDBLCLICK, DwtEvent.ONMOUSEDOWN,
+		DwtEvent.ONMOUSEMOVE, DwtEvent.ONMOUSEUP,
+		DwtEvent.ONMOUSEOVER, DwtEvent.ONMOUSEOUT
+	];
+	this._content._setEventHdlrs(mouseEvents);
 
 // 	var dropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
 // 	this._content.setDropTarget(dropTgt);
