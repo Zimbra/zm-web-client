@@ -813,6 +813,9 @@ function(ev) {
 
 ZmObjectManager.prototype._mouseMoveListener =
 function(ev) {
+	ev._returnValue = true;
+	ev._dontCallPreventDefault = true;
+	ev._stopPropagation = true;
 	var span = this._findObjectSpan(ev.target);
 	var object = span ? this._objects[span.id] : null;
 
@@ -836,6 +839,9 @@ function(ev) {
 
 ZmObjectManager.prototype._mouseDownListener =
 function(ev) {
+	ev._returnValue = true;
+	ev._dontCallPreventDefault = true;
+	ev._stopPropagation = true;
 	var span = this._findObjectSpan(ev.target);
 	if (!span) {return true;}
 	var object = this._objects[span.id];
@@ -870,6 +876,9 @@ function(ev) {
 
 ZmObjectManager.prototype._mouseUpListener =
 function(ev) {
+	ev._returnValue = true;
+	ev._dontCallPreventDefault = true;
+	ev._stopPropagation = true;
 	var span = this._findObjectSpan(ev.target);
 	if (!span) {return false;}
 	var object = this._objects[span.id];
