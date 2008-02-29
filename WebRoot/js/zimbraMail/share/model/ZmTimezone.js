@@ -40,43 +40,77 @@ ZmTimezone.getDefaultRule = function() {
  * in ZimbraServer/docs/soap.txt.
  * </pre>
  *
- * @param soapDoc			[AjxSoapDoc]	The soap document.
- * @param timezoneClientId	[string]		The client identifer.
- * @param parentNode		[Node]			(optional) The parent
- * 											node at which to add.
- * @param skipKnownTimezone	[boolean]		(optional) If set,
- *											doesn't add the "tz"
- *											element if it's one of
- *											the known set.
+ * @param request			[object|AjxSoapDoc]	The JSON request object, or soap document.
+ * @param timezoneClientId	[string]			The client identifer.
+ * @param parentNode		[Node]				(optional) The parent
+ * 												node at which to add.
+ * @param skipKnownTimezone	[boolean]			(optional) If set,
+ *												doesn't add the "tz"
+ *												element if it's one of
+ *												the known set.
  */
 ZmTimezone.set =
-function(soapDoc, timezoneClientId, parentNode, skipKnownTimezone) {
+function(request, timezoneClientId, parentNode, skipKnownTimezone) {
 	var timezone = AjxTimezone.getRule(timezoneClientId);
-	if (!timezone) return;
+	if (!timezone) { return; }
 
 	if (timezone.autoDetected || !skipKnownTimezone) {
-		var tz = soapDoc.set("tz", null, parentNode);
-		var id = AjxTimezone.getServerId(timezoneClientId);
-		tz.setAttribute("id", id);
-		if (timezone.autoDetected) {
-			tz.setAttribute("stdoff", timezone.standard.offset);
-			if (timezone.daylight) {
-				tz.setAttribute("dayoff", timezone.daylight.offset);
-                var enames = [ "standard", "daylight" ];
-                var pnames = [ "mon", "mday", "week", "wkday", "hour", "min", "sec" ];
-                for (var i = 0; i < enames.length; i++) {
-                    var ename = enames[i];
-                    var onset = timezone[ename];
-                    
-                    var el = soapDoc.set(ename, null, tz);
-                    for (var j = 0; j < pnames.length; j++) {
-                        var pname = pnames[j];
-                        if (pname in onset) {
-                            el.setAttribute(pname, onset[pname]);
-                        }
+		if (request instanceof AjxSoapDoc) {
+			ZmTimezone._setSoap(request, timezoneClientId, parentNode, timezone);
+		} else {
+			ZmTimezone._setJson(request, timezoneClientId, timezone);
+		}
+	}
+};
+
+ZmTimezone._setSoap =
+function(soapDoc, timezoneClientId, parentNode, timezone) {
+	var tz = soapDoc.set("tz", null, parentNode);
+	var id = AjxTimezone.getServerId(timezoneClientId);
+	tz.setAttribute("id", id);
+	if (timezone.autoDetected) {
+		tz.setAttribute("stdoff", timezone.standard.offset);
+		if (timezone.daylight) {
+			tz.setAttribute("dayoff", timezone.daylight.offset);
+            var enames = [ "standard", "daylight" ];
+            var pnames = [ "mon", "mday", "week", "wkday", "hour", "min", "sec" ];
+            for (var i = 0; i < enames.length; i++) {
+                var ename = enames[i];
+                var onset = timezone[ename];
+                
+                var el = soapDoc.set(ename, null, tz);
+                for (var j = 0; j < pnames.length; j++) {
+                    var pname = pnames[j];
+                    if (pname in onset) {
+                        el.setAttribute(pname, onset[pname]);
                     }
                 }
             }
-		}
+        }
+	}
+};
+
+ZmTimezone._setJson =
+function(request, timezoneClientId, timezone) {
+	var id = AjxTimezone.getServerId(timezoneClientId);
+	var tz = request.tz = {id:id};
+	if (timezone.autoDetected) {
+		tz.stdoff = timezone.standard.offset;
+		if (timezone.daylight) {
+			tz.dayoff = timezone.daylight.offset;
+            var enames = [ "standard", "daylight" ];
+            var pnames = [ "mon", "mday", "week", "wkday", "hour", "min", "sec" ];
+            for (var i = 0; i < enames.length; i++) {
+                var ename = enames[i];
+                var onset = timezone[ename];
+                tz[ename] = {};
+                for (var j = 0; j < pnames.length; j++) {
+                    var pname = pnames[j];
+                    if (pname in onset) {
+                    	tz[ename][pname] = onset[pname];
+                    }
+                }
+            }
+        }
 	}
 };

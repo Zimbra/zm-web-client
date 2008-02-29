@@ -83,6 +83,7 @@ function() {
  *
  * @param params				[hash]			hash of params:
  *        soapDoc				[AjxSoapDoc]	SOAP document that represents the request
+ *        jsonObj				[object]		JSON object that represents the request (alternative to soapDoc)
  *        asyncMode				[boolean]*		if true, request will be made asynchronously
  *        callback				[AjxCallback]*	next callback in chain for async request
  *        errorCallback			[AjxCallback]*	callback to run if there is an exception
@@ -117,7 +118,6 @@ function(params) {
 		accountName = (acct && acct.id != ZmZimbraAccount.DEFAULT_ID) ? acct.name : null;
 	}
 	var cmdParams = {
-		soapDoc:params.soapDoc,
 		accountName:accountName,
 		useXml:this._useXml,
 		changeToken:(accountName ? null : this._changeToken),
@@ -128,8 +128,19 @@ function(params) {
 		skipAuthCheck:params.skipAuthCheck,
 		resend:params.resend
 	};
+	var methodName = "[unknown]";
+	if (params.soapDoc) {
+		cmdParams.soapDoc = params.soapDoc;
+		methodName = params.soapDoc._methodEl.tagName;
+	} else if (params.jsonObj) {
+		cmdParams.jsonObj = params.jsonObj;
+		for (var prop in params.jsonObj) {
+			methodName = prop;
+			break;
+		}
+	}
+	params.methodName = methodName;
 
-	var methodName = params.methodName = params.soapDoc ? params.soapDoc._methodEl.tagName : "[unknown]";
 	appCtxt.currentRequestParams = params;
 	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + methodName);
 	var cancelParams = timeout ? [reqId, params.errorCallback, params.noBusyOverlay] : null;
@@ -226,7 +237,17 @@ function(params, result) {
 		this._clearPendingRequest(params.reqId);
 	}
 
-	var methodName = params.soapDoc ? params.soapDoc._methodEl.tagName : "[unknown]";
+	var methodName = "[unknown]";
+	if (DBG && DBG.getDebugLevel() > 0) {
+		if (params.soapDoc) {
+			methodName = params.soapDoc._methodEl.tagName;
+		} else if (params.jsonObj) {
+			for (var prop in params.jsonObj) {
+				methodName = prop;
+				break;
+			}
+		}
+	}
 	if (params.asyncMode && params.callback) {
 		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback for " + methodName);
 		params.callback.run(result);
