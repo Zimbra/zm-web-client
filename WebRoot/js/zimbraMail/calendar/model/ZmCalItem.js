@@ -1333,7 +1333,8 @@ function(calItemNode, instNode) {
 
 	var sd = this._getAttr(calItemNode, instNode, "s");
 	if (sd) {
-		var adjustMs = this.isAllDayEvent() ? (instNode.tzo + new Date(instNode.s).getTimezoneOffset()*60*1000) : 0;
+        var tzo = instNode.tzo != null ? instNode.tzo : calItemNode.tzo;
+		var adjustMs = this.isAllDayEvent() ? (tzo + new Date(instNode.s).getTimezoneOffset()*60*1000) : 0;
 		var startTime = parseInt(sd,10) + adjustMs;
 		this.startDate = new Date(startTime);
 		this.uniqStartTime = this.startDate.getTime();
