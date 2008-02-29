@@ -771,6 +771,9 @@ function(fullVersion) {
 	url[i++] = appCurrentSkin;
 	if (fullVersion)
 		url[i++] = "&full=1";
+	if (appDevMode) {
+		url[i++] = "&dev=1";
+	}
 
 	var args = "height=465,width=705,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	var newWin = window.open(url.join(""), "_blank", args);

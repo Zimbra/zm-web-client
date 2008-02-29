@@ -27,6 +27,17 @@
 -->
 <html>
 <head>
+<%!
+	static String getParameter(HttpServletRequest request, String pname, String defValue) {
+		String value = request.getParameter(pname);
+		return value != null ? value : defValue;
+	}
+	static String getAttribute(HttpServletRequest request, String aname, String defValue) {
+		Object object = request.getAttribute(aname);
+		String value = object != null ? String.valueOf(object) : null;
+		return value != null ? value : defValue;
+	}
+%>
 <%
 	String contextPath = request.getContextPath();
 	if(contextPath.equals("/")) contextPath = "";
@@ -39,15 +50,26 @@
 		}
 	}
 
-	String mode = (String) request.getAttribute("mode");
-	boolean isDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
-	boolean isSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
+	boolean isDev = getParameter(request, "dev", "0").equals("1");
+	if (isDev) {
+		request.setAttribute("mode", "mjsf");
+		request.setAttribute("gzip", "false");
+		request.setAttribute("fileExtension", "");
+		request.setAttribute("debug", "1");
+		request.setAttribute("packages", "dev");
+	}
+	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
 
-	String vers = (String) request.getAttribute("version");
-	if (vers == null) vers = "";
+	String mode = getAttribute(request, "mode", null);
+	boolean isDevMode = mode != null && mode.equalsIgnoreCase("mjsf");
+	boolean isSkinDebugMode = mode != null && mode.equalsIgnoreCase("skindebug");
 
-	String ext = (String) request.getAttribute("fileExtension");
-	if (ext == null) ext = "";
+	String vers = getAttribute(request, "version", "");
+
+//	String prodMode = getAttribute(request, "prodMode", "");
+
+	String ext = getAttribute(request, "fileExtension", null);
+	if (ext == null || isDevMode) ext = "";
 
 	Locale locale = request.getLocale();
     String localeId = (String)request.getAttribute("localeId");
