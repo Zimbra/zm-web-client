@@ -136,7 +136,7 @@ function(obj, tag, wantarray_re) {
 					cool_json[i] = doit(obj[i], tag);
 				}
 			}
-		} else if (typeof obj == "object") {
+		} else if (obj && typeof obj == "object") {
 			if (obj._content) {
 				cool_json = new String(obj._content);
 			} else {
@@ -262,14 +262,14 @@ ZmZimletContext.prototype.getProp = function(name) {
 };
 
 ZmZimletContext.prototype._translateConfig = function() {
-	if (this.config.global) {
+	if (this.config.global && this.config.global[0]) {
 		var prop = this.config.global[0].property;
 		this.config.global = {};
 		for (var i in prop) {
 			this.config.global[prop[i].name] = prop[i]._content;
 		}
 	}
-	if (this.config.local) {
+	if (this.config.local && this.config.local[0]) {
 		var propLocal = this.config.local[0].property;
 		this.config.local = {};
 		for (var j in propLocal) {
