@@ -659,7 +659,6 @@ function() {
 			var ctlr = appCtxt.getOverviewController().getTreeController(orgType, true);
 			var className = ZmList.ITEM_CLASS[type] || ZmOrganizer.ORG_CLASS[type];
 			if (ctlr) {
-				DBG.println("Ctlr already created: " + orgType);
 				ctlr._dropTgt.addTransferType(className);
 			} else {
 				if (!ZmTreeController.DROP_SOURCES[orgType]) {
