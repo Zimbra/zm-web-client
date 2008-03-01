@@ -363,7 +363,7 @@ function(im) {
 						if (chat) chat.setThread(chatMessage.thread);
 					}
 					if (chat) {
-						if (!this._imApp.isActive()) {
+						if (!chatMessage.fromMe && !this._imApp.isActive()) {
 							this.startFlashingIcon();
 						}
 						chat.addMessage(chatMessage);
