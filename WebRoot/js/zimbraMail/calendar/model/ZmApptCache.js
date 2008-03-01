@@ -272,25 +272,24 @@ function(searchParams, miniCalParams) {
 	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra", null);
 	soapDoc.setMethodAttribute("onerror", "continue");	
 
+    if(searchParams) {
+        if (!searchParams.folderIds) {
+		    searchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds();
+	    }
+	    searchParams.query = this._calViewController._userQuery;
 	
-	if (!searchParams.folderIds) {
-		searchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds();
-	}
-	searchParams.query = this._calViewController._userQuery;	
-	
-	var apptVec = this.setSearchParams(searchParams);
-	
-	var srchRequest = soapDoc.set("SearchRequest", null, null, "urn:zimbraMail");	
-	
-	this._setSoapParams(soapDoc, srchRequest, searchParams);
-	
-	var miniCalCache = this._calViewController.getMiniCalCache();
+	    var apptVec = this.setSearchParams(searchParams);
+	    var srchRequest = soapDoc.set("SearchRequest", null, null, "urn:zimbraMail");	
+	    this._setSoapParams(soapDoc, srchRequest, searchParams);
+    }
+
+    var miniCalCache = this._calViewController.getMiniCalCache();
 	
 	var miniCalRequest = soapDoc.set("GetMiniCalRequest", null, null, "urn:zimbraMail");
 	
 	miniCalCache._setSoapParams(soapDoc, miniCalRequest, miniCalParams);
 
-	if(searchParams.callback) {
+	if((searchParams && searchParams.callback) || miniCalParams.callback) {
 		var respCallback = new AjxCallback(this, this.handleBatchResponse,[searchParams, miniCalParams]);
 		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:true});
 	}else {		
@@ -318,8 +317,9 @@ function(batchResp, searchParams, miniCalParams) {
 		miniCalParams.callback.run(data)
 	}
 
-
-	//currently we send only one search request in batch
+    if(!searchResp || !searchParams) { return; }
+    
+    //currently we send only one search request in batch
 	if(searchResp && (searchResp instanceof Array)){
 		searchResp = searchResp[0];
 	}	

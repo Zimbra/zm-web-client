@@ -1990,7 +1990,10 @@ function(work) {
 		var params = this.getMiniCalendarParams(work);
 		var reminderController = AjxDispatcher.run("GetReminderController");
 		var searchParams = reminderController.getRefreshParams();
-		this._apptCache.batchRequest(searchParams, params);
+        if(reminderController._warningTime == 0) {
+			searchParams = null;
+		}
+        this._apptCache.batchRequest(searchParams, params);
 
 	}else { 
 		var params = this.getMiniCalendarParams(work);
