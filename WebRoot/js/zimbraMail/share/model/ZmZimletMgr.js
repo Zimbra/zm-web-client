@@ -44,12 +44,19 @@ function() {
 };
 
 ZmZimletMgr.prototype.loadZimlets =
-function(zimletArray, userProps, target) {
+function(zimletArray, userProps, target, callback) {
 	if(!zimletArray || !zimletArray.length) {
 		this.loaded = true;
 		return;
 	}
+	var packageCallback = callback ? new AjxCallback(this, this._loadZimlets, arguments) : null;
+	AjxPackage.require({ name: "Zimlet", callback: packageCallback });
+	if (!callback) {
+		this._loadZimlets.apply(this, arguments);
+	}
+}
 
+ZmZimletMgr.prototype._loadZimlets = function(zimletArray, userProps, target, callback) {
 	var z;
 	var loadZimletArray = [];
 	var targetRe = new RegExp("\\b"+(target || "main")+"\\b");
@@ -87,6 +94,10 @@ function(zimletArray, userProps, target) {
 	var zimletNames = this._getZimletNames(loadZimletArray);
 	this._loadIncludes(loadZimletArray, zimletNames);
 	this._loadStyles(loadZimletArray, zimletNames);
+
+	if (callback) {
+		callback.run();
+	}
 };
 
 ZmZimletMgr.prototype.getPanelZimlets =

@@ -162,6 +162,7 @@ function() {
 	appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
 
 	// depending on the command, do the right thing
+	var target;
 	if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
 		var cc = AjxDispatcher.run("GetComposeController");
 		cc.isChildWindow = true;
@@ -199,14 +200,25 @@ function() {
 		rootTg.addMember(cc.getTabGroup());
 		startupFocusItem = cc._composeView.getAddrFields()[0];
 
-		// setup zimlets for compose
-		var zimletMgr = appCtxt.getZimletMgr();
-		zimletMgr.loadZimlets(this.__hack_zimletArray(), this.__hack_userProps(), "compose-window");
-	} else if (window.newWindowCommand == "msgViewDetach") {
+		target = "compose-window";
+	}
+	else if (window.newWindowCommand == "msgViewDetach") {
 		var msgController = AjxDispatcher.run("GetMsgController");
 		msgController.show(window.newWindowParams.msg);
 		rootTg.addMember(msgController.getTabGroup());
 		startupFocusItem = msgController.getCurrentView();
+
+		target = "view-window";
+	}
+
+	// setup zimlets
+	if (target) {
+		var zimletArray = this.__hack_zimletArray();
+		if (this.__hack_hasZimletsForTarget(zimletArray, target)) {
+			var zimletMgr = appCtxt.getZimletMgr();
+			var userProps = this.__hack_userProps();
+			zimletMgr.loadZimlets(zimletArray, userProps, target);
+		}
 	}
 
 	var kbMgr = appCtxt.getKeyboardMgr();
@@ -218,6 +230,17 @@ function() {
  * HACK: This should go away once we have a cleaner server solution that
  *       allows us to get just those zimlets for the specified target.
  */
+ZmNewWindow.prototype.__hack_hasZimletsForTarget = function(zimletArray, target) {
+	var targetRe = new RegExp("\\b"+target+"\\b");
+	for (var i=0; i < zimletArray.length; i++) {
+		var zimletObj = zimletArray[i];
+		var zimlet0 = zimletObj.zimlet[0];
+		if (targetRe.test(zimlet0.target || "main")) {
+			return true;
+		}
+	}
+	return false;
+};
 ZmNewWindow.prototype.__hack_zimletArray = function() {
 	return parentAppCtxt.get(ZmSetting.ZIMLETS);
 };
