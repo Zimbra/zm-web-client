@@ -110,7 +110,7 @@
 	appDevMode     = true;
 </script>
 <%
-	String packages = "NewWindow_1,NewWindow_2,Zimlet";
+	String packages = "NewWindow_1,NewWindow_2";
 
     String extraPackages = request.getParameter("packages");
     if (extraPackages != null) packages += ","+extraPackages;
