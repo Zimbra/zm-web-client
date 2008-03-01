@@ -61,7 +61,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 	</jsp:include>
 	<jsp:include page="Boot.jsp"/>
     <%
-      String packages = "Ajax,Spreadsheet";
+      String packages = "Ajax,SpreadsheetALE";
 
       String extraPackages = request.getParameter("packages");
       if (extraPackages != null) packages += ","+extraPackages;
