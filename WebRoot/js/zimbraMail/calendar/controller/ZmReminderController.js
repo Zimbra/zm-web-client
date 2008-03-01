@@ -81,6 +81,19 @@ function(ev) {
 ZmReminderController.prototype.refresh =
 function() {
 	if (this._warningTime == 0) { return; }
+	var params = this.getRefreshParams();
+	this._calController.getApptSummaries(params);
+	
+	// cancel outstanding refresh, since we are doing one now, and re-schedule a new one
+	if (this._refreshActionId) {
+		AjxTimedAction.cancelAction(this._refreshActionId);
+	}
+	this._refreshActionId = AjxTimedAction.scheduleAction(this._refreshTimedAction, (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_REFRESH));
+};
+
+ZmReminderController.prototype.getRefreshParams =
+function() {
+	
 	// grab appts -1 hour through +23 hours
 	// schedule another refresh in + 12 hours
 	var start = new Date();
@@ -94,13 +107,7 @@ function() {
 		folderIds: this._calController.getCheckedCalendarFolderIds(true),
 		callback: (new AjxCallback(this, this._refreshCallback))
 	};
-	this._calController.getApptSummaries(params);
-	
-	// cancel outstanding refresh, since we are doing one now, and re-schedule a new one
-	if (this._refreshActionId) {
-		AjxTimedAction.cancelAction(this._refreshActionId);
-	}
-	this._refreshActionId = AjxTimedAction.scheduleAction(this._refreshTimedAction, (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_REFRESH));
+	return params;
 };
 
 ZmReminderController.prototype._cancelRefreshAction =

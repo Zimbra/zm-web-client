@@ -342,15 +342,16 @@ ZmCalendarApp.prototype.startup =
 function(result) {
 	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
 		var miniCalAction = new AjxTimedAction(this, function() {
+				AjxDispatcher.run("GetCalController")._refreshReminder = true;
 				AjxDispatcher.run("ShowMiniCalendar", true);
 			});
 		AjxTimedAction.scheduleAction(miniCalAction, ZmCalendarApp.MINICAL_DELAY);
+	}else {
+		var refreshAction = new AjxTimedAction(this, function() {
+				AjxDispatcher.run("GetReminderController").refresh(true);
+			});
+		AjxTimedAction.scheduleAction(refreshAction, ZmCalendarApp.REMINDER_START_DELAY);
 	}
-
-	var refreshAction = new AjxTimedAction(this, function() {
-			AjxDispatcher.run("GetReminderController").refresh();
-		});
-	AjxTimedAction.scheduleAction(refreshAction, ZmCalendarApp.REMINDER_START_DELAY);
 };
 
 ZmCalendarApp.prototype.refresh =

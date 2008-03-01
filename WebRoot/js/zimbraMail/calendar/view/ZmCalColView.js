@@ -2439,9 +2439,6 @@ function(list, skipMiniCalUpdate) {
 	}
 	this._layout();
 	this._scrollToTime(8);
-	if (!skipMiniCalUpdate) {
-		this._controller.fetchMiniCalendarAppts();
-	}
 };
 
 ZmCalColView._gridMouseMoveHdlr =

@@ -1818,11 +1818,12 @@ function(dontClearCache) {
 	if (this._viewMgr != null) {
 		// mark all views as dirty
 		this._viewMgr.setNeedsRefresh(true);
-		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);
+		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW|ZmCalViewController.MAINT_REMINDER);
 	} else if (this._miniCalendar != null) {
-		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
+		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_REMINDER);
+	} else {
+		this._scheduleMaintenance(ZmCalViewController.MAINT_REMINDER);
 	}
-	this._scheduleMaintenance(ZmCalViewController.MAINT_REMINDER);
 };
 
 ZmCalViewController.prototype._maintErrorHandler =
@@ -1840,22 +1841,26 @@ function(work, view, list, skipMiniCalUpdate) {
 	}
 
 	if (work & ZmCalViewController.MAINT_MINICAL) {
-		var highlight = [];
-		for (var i=0; i < list.size(); i++) {
-			var sd = list.get(i).startDate;
-			highlight[sd.getFullYear()+"/"+sd.getMonth()+"/"+sd.getDate()] = sd;
+		var pendingWork = ZmCalViewController.MAINT_NONE;
+		
+		if(work & ZmCalViewController.MAINT_VIEW) {
+			pendingWork |= ZmCalViewController.MAINT_VIEW;
 		}
-		this._miniCalendar.setHilite(highlight, true, true);
-
-		if (work & ZmCalViewController.MAINT_VIEW) {
-			// now schedule view for maint
-			this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
+		
+		if(work & ZmCalViewController.MAINT_REMINDER) {
+			pendingWork |= ZmCalViewController.MAINT_REMINDER;
 		}
+		
+		this._scheduleMaintenance(pendingWork);
+		
 	} else if (work & ZmCalViewController.MAINT_VIEW) {
 		this._list = list;
 		view.set(list, skipMiniCalUpdate);
+		if(work & ZmCalViewController.MAINT_REMINDER) {
+			this._app.getReminderController().refresh();
+		}
 	}
-	if (work & ZmCalViewController.MAINT_REMINDER) {
+	else if (work & ZmCalViewController.MAINT_REMINDER) {
 		this._app.getReminderController().refresh();
 	}
 };
@@ -1878,22 +1883,7 @@ function() {
 	// the main view can use
 	if (work & ZmCalViewController.MAINT_MINICAL)
 	{
-		if ((appCtxt.getCurrentViewId() != ZmController.CAL_VIEW)) {
-			this.fetchMiniCalendarAppts();
-		} else {
-			var view = this._viewMgr.getCurrentView();
-			if (view.getTimeRange) {
-				var rt = view.getTimeRange();
-				if(this._refreshMaintenance) {
-					this._refreshMaintenance = false;
-					var dr = this._miniCalendar.getDateRange();
-					rt = {start: dr.start.getTime(),  end: dr.end.getTime()};
-				}
-			
-				var cb = new AjxCallback(this, this._maintGetApptCallback, [work, null]);
-				this.getApptSummaries({start:rt.start, end:rt.end, fanoutAllDay:view._fanoutAllDay(), callback:cb});
-			}
-		}
+		this.fetchMiniCalendarAppts(work);
 	}
 	else if (work & ZmCalViewController.MAINT_VIEW)
 	{
@@ -1991,14 +1981,42 @@ function() {
 };
 
 ZmCalViewController.prototype.fetchMiniCalendarAppts = 
-function() {	
-	var dr = this._miniCalendar.getDateRange();
+function(work) {	
+	var miniCalCache = this.getMiniCalCache();
+	
+	//if remainder maintenance is pending group them to minical maintencance request
+	if(this._refreshReminder) {
+		this._refreshReminder = null;
+		var params = this.getMiniCalendarParams(work);
+		var reminderController = AjxDispatcher.run("GetReminderController");
+		var searchParams = reminderController.getRefreshParams();
+		this._apptCache.batchRequest(searchParams, params);
+
+	}else { 
+		var params = this.getMiniCalendarParams(work);
+		miniCalCache._getMiniCalData(params);
+	}
+};
+
+ZmCalViewController.prototype.getMiniCalendarParams =
+function(work) {
+	var miniCalendar = this.getMiniCalendar();
+	var dr = miniCalendar.getDateRange();
 	var params = {
 		start: dr.start.getTime(),
 		end: dr.end.getTime(),
 		fanoutAllDay: true,
-		callback: new AjxCallback(this, this._maintGetApptCallback, [ZmCalViewController.MAINT_MINICAL, null]),
-		noBusyOverlay:true
+		callback: new AjxCallback(this, this._maintGetApptCallback, [work, null]),
+		noBusyOverlay:true		
 	};
-	this.getApptSummaries(params);
+	params.folderIds = this.getCheckedCalendarFolderIds();
+	return params;
+};
+
+ZmCalViewController.prototype.getMiniCalCache =
+function() {
+	if(!this._miniCalCache) {
+		this._miniCalCache = new ZmMiniCalCache(this);
+	}
+	return this._miniCalCache;
 };

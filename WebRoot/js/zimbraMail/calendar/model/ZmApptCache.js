@@ -31,6 +31,8 @@ function() {
 	this._cachedApptVectors = {};
 	this._cachedMergedApptVectors = {};
 	this._cachedIds = {};
+	var miniCalCache = this._calViewController.getMiniCalCache();
+	miniCalCache.clearCache();
 };
 
 ZmApptCache._sortFolderId =
@@ -162,6 +164,25 @@ function(apptList) {
 */
 ZmApptCache.prototype.getApptSummaries =
 function(params) {
+	
+	var apptVec = this.setSearchParams(params);
+	
+	if(apptVec != null && (apptVec instanceof AjxVector)) {
+		return apptVec;
+	}
+	
+	// this array will hold a list of appts as we collect them from the server
+	this._rawAppts = [];
+
+	if (params.callback) {
+		this._search(params);
+	} else {
+		return this._search(params);
+	}
+};
+
+ZmApptCache.prototype.setSearchParams =
+function(params) {
 	if (!(params.folderIds instanceof Array)) {
 		params.folderIds = [params.folderIds];
 	} else if (params.folderIds.length == 0) {
@@ -225,16 +246,7 @@ function(params) {
 	}
 	params.queryHint = query;
 	params.folderIdMapper = folderIdMapper;
-	params.offset = 0;
-
-	// this array will hold a list of appts as we collect them from the server
-	this._rawAppts = [];
-
-	if (params.callback) {
-		this._search(params);
-	} else {
-		return this._search(params);
-	}
+	params.offset = 0;	
 };
 
 ZmApptCache.prototype._search =
@@ -242,6 +254,93 @@ function(params) {
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 
 	var method = soapDoc.getMethod();
+	this._setSoapParams(soapDoc, method, params);
+		
+	if (params.callback) {
+		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [params]);
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
+	} else {
+		var response = appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
+		var result = new ZmCsfeResult(response, false);
+		return this._getApptSummariesResponse(params, result);
+	}
+};
+
+ZmApptCache.prototype.batchRequest =
+function(searchParams, miniCalParams) {
+
+	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra", null);
+	soapDoc.setMethodAttribute("onerror", "continue");	
+
+	
+	if (!searchParams.folderIds) {
+		searchParams.folderIds = this._calViewController.getCheckedCalendarFolderIds();
+	}
+	searchParams.query = this._calViewController._userQuery;	
+	
+	var apptVec = this.setSearchParams(searchParams);
+	
+	var srchRequest = soapDoc.set("SearchRequest", null, null, "urn:zimbraMail");	
+	
+	this._setSoapParams(soapDoc, srchRequest, searchParams);
+	
+	var miniCalCache = this._calViewController.getMiniCalCache();
+	
+	var miniCalRequest = soapDoc.set("GetMiniCalRequest", null, null, "urn:zimbraMail");
+	
+	miniCalCache._setSoapParams(soapDoc, miniCalRequest, miniCalParams);
+
+	if(searchParams.callback) {
+		var respCallback = new AjxCallback(this, this.handleBatchResponse,[searchParams, miniCalParams]);
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:true});
+	}else {		
+		var response = appCtxt.getAppController().sendRequest({soapDoc: soapDoc});	
+		var batchResp = (response && response.BatchResponse) ? response.BatchResponse : null;
+		return this.processBatchResponse(batchResp, searchParams, miniCalParams);
+	}
+};
+
+ZmApptCache.prototype.processBatchResponse =
+function(batchResp, searchParams, miniCalParams) {
+	
+	var miniCalCache = this._calViewController.getMiniCalCache();
+	
+	var miniCalResp = (batchResp && batchResp.GetMiniCalResponse) ? batchResp.GetMiniCalResponse :  null;
+	var searchResp = (batchResp && batchResp.SearchResponse) ? batchResp.SearchResponse :  null;
+
+	var data = [];
+	
+	miniCalCache.processBatchResponse(miniCalResp, data);	
+	miniCalCache.highlightMiniCal(miniCalParams, data);
+	miniCalCache.updateCache(miniCalParams, data);	
+	
+	if(miniCalParams.callback) {
+		miniCalParams.callback.run(data)
+	}
+
+
+	//currently we send only one search request in batch
+	if(searchResp && (searchResp instanceof Array)){
+		searchResp = searchResp[0];
+	}	
+
+	var newList = this.processSearchResponse(searchResp, searchParams);
+
+	if (searchParams.callback) {
+		searchParams.callback.run(newList, searchParams.query);
+	} else {
+		return newList;
+	}
+};
+
+ZmApptCache.prototype.handleBatchResponse =
+function(searchParams, miniCalParams, response) {
+	var batchResp = response && response._data && response._data.BatchResponse;	
+	return this.processBatchResponse(batchResp, searchParams, miniCalParams);
+};
+
+ZmApptCache.prototype._setSoapParams =
+function(soapDoc, method, params) {	
 	method.setAttribute("sortBy", "none");
 	method.setAttribute("limit", "500");
 	method.setAttribute("calExpandInstStart", params.start);
@@ -255,16 +354,7 @@ function(params) {
 			? (query + " (" + params.queryHint + ")")
 			: params.queryHint;
 	}
-	soapDoc.set("query", query);
-
-	if (params.callback) {
-		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [params]);
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
-	} else {
-		var response = appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
-		var result = new ZmCsfeResult(response, false);
-		return this._getApptSummariesResponse(params, result);
-	}
+	soapDoc.set("query", query, method);
 };
 
 ZmApptCache.prototype._getApptSummariesResponse =
@@ -283,6 +373,21 @@ function(params, result) {
 	}
 
 	var searchResp = resp.SearchResponse;
+	var newList = this.processSearchResponse(searchResp, params);
+	if(newList == null) { return; }
+
+	if (callback) {
+		callback.run(newList, params.query);
+	} else {
+		return newList;
+	}
+};
+
+ZmApptCache.prototype.processSearchResponse = 
+function(searchResp, params) {
+	
+	if(!searchResp) { return; }
+	
 	if (searchResp && searchResp.appt && searchResp.appt.length) {
 		this._rawAppts = this._rawAppts != null 
 			? this._rawAppts.concat(searchResp.appt)
@@ -341,12 +446,8 @@ function(params, result) {
 	this._cacheMergedVector(newList, params.mergeKey);
 
 	this._rawAppts = null;
-
-	if (callback) {
-		callback.run(newList, params.query);
-	} else {
-		return newList;
-	}
+	return newList;	
+	
 };
 
 // return true if the cache contains the specified id(s)
