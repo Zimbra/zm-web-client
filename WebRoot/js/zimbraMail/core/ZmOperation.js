@@ -406,14 +406,13 @@ function(parent) {
 };
 
 /**
-* Adds a color submenu for choosing tag color.
-*
-* @param parent		parent widget (a toolbar or action menu)
-* @param dialog		containing dialog, if any
-*/
+ * Adds a color submenu for choosing tag color.
+ *
+ * @param parent		parent widget (a toolbar or action menu)
+ */
 ZmOperation.addColorMenu =
-function(parent, inDialog) {
-	var menu = new ZmPopupMenu(parent, null, inDialog);
+function(parent) {
+	var menu = new ZmPopupMenu(parent);
 	parent.setMenu(menu);
 	var list = ZmTagTree.COLOR_LIST;
 	for (var i = 0; i < list.length; i++) {

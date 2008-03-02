@@ -200,7 +200,6 @@ ZmImOverview.prototype._getActionMenu = function(nodeType, buddy, group) {
                         while (dialog && !(dialog instanceof DwtDialog))
                                 dialog = dialog.parent;
                         menu = ops._dwtControl = new ZmActionMenu({ parent    : this,
-                                                                    inDialog    : (dialog != null),
                                                                     menuItems : ops });
                         for (var i = 0; i < menu.opList.length; ++i) {
                                 var item = menu.opList[i];

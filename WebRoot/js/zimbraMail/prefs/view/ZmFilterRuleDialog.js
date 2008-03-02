@@ -472,7 +472,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		}
 		dateButton.setText(dateText);
 		dateButton.setData(ZmFilterRuleDialog.DATA, date);
-		var calMenu = new DwtMenu({parent:dateButton, style:DwtMenu.CALENDAR_PICKER_STYLE, inDialog:true});
+		var calMenu = new DwtMenu({parent:dateButton, style:DwtMenu.CALENDAR_PICKER_STYLE});
 		dateButton.setMenu(calMenu, true);
 		var cal = new DwtCalendar({parent:calMenu});
 		cal.setSkipNotifyOnPage(true);

@@ -64,8 +64,8 @@ ZmMailPrefsPage.prototype._createControls = function() {
     var dateButtonListener = new AjxListener(this, this._dateButtonListener);
     var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-    this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._sId, dateButtonListener, dateCalSelectionListener, true);
-    this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._eId, dateButtonListener, dateCalSelectionListener, true);
+    this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._sId, dateButtonListener, dateCalSelectionListener);
+    this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._eId, dateButtonListener, dateCalSelectionListener);
 
     this._startDateCheckbox = this.getFormObject(ZmSetting.START_DATE_ENABLED);
     this._endDateCheckbox = this.getFormObject(ZmSetting.END_DATE_ENABLED);    
