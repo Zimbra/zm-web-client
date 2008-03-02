@@ -879,7 +879,7 @@ function() {
 	// create mini calendar button for end by field
 	var dateButtonListener = new AjxListener(this, this._endByButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
-	ZmCalendarApp.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener, true);
+	ZmCalendarApp.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener);
 
 	// create all DwtInputField's
 	this._createInputs();
@@ -898,7 +898,7 @@ function() {
 
 	var selectChangeListener = new AjxListener(this, this._selectChangeListener);
 	this._weeklySelectButton = new DwtButton({parent:this});//new DwtSelect({parent:this});
-    var wMenu = new ZmPopupMenu(this._weeklySelectButton,null,true);
+    var wMenu = new ZmPopupMenu(this._weeklySelectButton);
     this._weeklySelectButton.setMenu(wMenu);
     //this._weeklySelect.addChangeListener(selectChangeListener);
 	var formatter = new AjxMessageFormat(ZmMsg.recurWeeklyEveryWeekday);

@@ -26,13 +26,12 @@
  *
  * @param parent		[DwtComposite]		the containing widget
  * @param className		[string]*			CSS class
- * @param inDialog 		[boolean]*			if true, menu is part of a dialog
  */
-ZmPopupMenu = function(parent, className, inDialog) {
+ZmPopupMenu = function(parent, className) {
 
 	if (arguments.length == 0) return;
 	className = className ? className : "ActionMenu";
-	DwtMenu.call(this, {parent:parent, style:DwtMenu.POPUP_STYLE, className:className, inDialog:inDialog});
+	DwtMenu.call(this, {parent:parent, style:DwtMenu.POPUP_STYLE, className:className});
 
 	this._menuItems = {};
 };

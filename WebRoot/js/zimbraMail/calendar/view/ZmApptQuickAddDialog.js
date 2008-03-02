@@ -214,9 +214,9 @@ function() {
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
 	var startMiniCalId = this._htmlElId + "_startMiniCal";
-	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, startMiniCalId, dateButtonListener, dateCalSelectionListener, true);
+	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, startMiniCalId, dateButtonListener, dateCalSelectionListener);
 	var endMiniCalId = this._htmlElId + "_endMiniCal";
-	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, endMiniCalId, dateButtonListener, dateCalSelectionListener, true);
+	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, endMiniCalId, dateButtonListener, dateCalSelectionListener);
 
 	// create selects for Time section
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);

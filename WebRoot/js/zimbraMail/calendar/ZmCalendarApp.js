@@ -641,10 +641,9 @@ function(ev) {
  * @buttonId 					buttonId to fetch inside DOM and append DwtButton to
  * @dateButtonListener			AjxListener to call when date button is pressed
  * @dateCalSelectionListener	AjxListener to call when date is selected in DwtCalendar
- * @isInDialog 					true if mini cal is inside a DwtDialog (otherwise z-index will be too low)
 */
 ZmCalendarApp.createMiniCalButton =
-function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDialog) {
+function(parent, buttonId, dateButtonListener, dateCalSelectionListener) {
 	// create button
 	var dateButton = new DwtButton({parent:parent});
 	dateButton.addDropDownSelectionListener(dateButtonListener);
@@ -654,7 +653,7 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	}
 
 	// create menu for button
-	var calMenu = new DwtMenu({parent:dateButton, inDialog:isInDialog});
+	var calMenu = new DwtMenu({parent:dateButton});
 	calMenu.setSize("150");
 	calMenu._table.width = "100%";
 	dateButton.setMenu(calMenu, true);
