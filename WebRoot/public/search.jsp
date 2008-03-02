@@ -97,6 +97,7 @@
   	<zm:computeSearchContext var="context" usecache="true"/>
 </app:handleError>
 
+<div id="htmlContent" style="display:none;">
 <form action="" onsubmit="return false;" method="post" name="zform">
 	<c:choose>
         <c:when test="${context.isConversationSearch}">
@@ -106,21 +107,21 @@
                             <tr class='HF_Header'>
                                 <th width="16" height="16" class='CB HF_Header_Left DwtListView-Column DwtListHeaderItem-label' style="font-weight:normal;" nowrap='nowrap'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type="checkbox" name="allids"/></th>
                                 <c:if test="${mailbox.features.flagging}">
-                                <th class='Img HF_Header DwtListView-Column DwtListHeaderItem-label' style="font-weight:normal;" nowrap='nowrap' width='20'><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
+                                <th class='Img HF_Header DwtListView-Column DwtListHeaderItem-label' style="font-weight:normal;" nowrap='nowrap' width='20'><div class="ImgFlagRed"/></th>
                                 </c:if>
                                 <c:if test="${mailbox.features.mailPriority}">
-                                <th class='ImgNarrow HF_Header DwtListView-Column DwtListHeaderItem-label'  style="font-weight:normal;" nowrap='nowrap' width='12'><app:img src="startup/ImgPriorityHigh_list.gif" altkey="ALT_PRIORITY"/></th>
+                                <th class='ImgNarrow HF_Header DwtListView-Column DwtListHeaderItem-label'  style="font-weight:normal;" nowrap='nowrap' width='12'><div class="ImgPriorityHigh_list"/></th>
                                 </c:if>
                                 <c:if test="${mailbox.features.tagging}">
-                                <th class='Img HF_Header DwtListView-Column DwtListHeaderItem-label' style="font-weight:normal;" nowrap width='20'><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
+                                <th class='Img HF_Header DwtListView-Column DwtListHeaderItem-label' style="font-weight:normal;" nowrap width='20'><div class="ImgTag"/></th>
                                 </c:if>
                                 <th class="HF_Header DwtListView-Column DwtListHeaderItem-label" style="font-weight:normal;" width="10%" nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/></th>
-                                <th class='Img HF_Header DwtListView-Column DwtListHeaderItem-label' style="font-weight:normal;" nowrap width='1%'><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/></th>
+                                <th class='Img HF_Header DwtListView-Column DwtListHeaderItem-label' style="font-weight:normal;" nowrap width='1%'><div class="ImgAttachment"/></th>
                                 <th class="HF_Header HF_Header DwtListView-Column DwtListHeaderItem-label" style="font-weight:normal;" nowrap>
                                     <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
                                     <fmt:message key="subject"/>
 								</th>
-                                <th class="HF_Header DwtListView-Column DwtListHeaderItem-label" style="font-weight:normal;" width="2%" nowrap><app:img src="mail/ImgConversation.gif" altkey="ALT_CONVERSATION"/></th>
+                                <th class="HF_Header DwtListView-Column DwtListHeaderItem-label" style="font-weight:normal;" width="2%" nowrap><div class="ImgConversation"/></th>
                                 <th class="HF_Header_Right DwtListView-Column DwtListHeaderItem-label" style="font-weight:normal;" nowrap width="2%">
                                     <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss) ? 'dateAsc' : 'dateDesc'}"/>
                                     <fmt:message key="received"/>
@@ -155,7 +156,7 @@
                                     <td><%-- allow this column to wrap --%>
                                         <c:set var="dispRec" value="${convHit.displayRecipients}"/>${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}
                                     </td>
-                                    <td class='Img'><app:attachmentImage attachment="${convHit.hasAttachment}"/></td>
+                                    <td class='Img'><c:choose><c:when test="${convHit.hasAttachment}"><div class="ImgAttachment" /></c:when><c:otherwise>&nbsp;</c:otherwise></c:choose></td>
 
                                    <td><%-- allow this column to wrap --%>
                                             <c:set var='subj' value="${empty convHit.subject ? unknownSubject : zm:truncate(convHit.subject,100,true)}"/>
@@ -189,20 +190,20 @@
                         <tr class='HF_Header'>
                             <th width="16" height="16" class='CB HF_Header_Left DwtListView-Column DwtListHeaderItem-label' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/></th>
                             <c:if test="${mailbox.features.flagging}">
-                            <th class='Img HF_Header DwtListView-Column DwtListHeaderItem-label' nowrap><app:img src="startup/ImgFlagRed.gif" altkey="ALT_FLAGGED"/></th>
+                            <th class='Img HF_Header DwtListView-Column DwtListHeaderItem-label' nowrap><div class="ImgFlagRed"/></th>
                             </c:if>
                             <c:if test="${mailbox.features.mailPriority}">
-                            <th class='ImgNarrow HF_Header DwtListView-Column DwtListHeaderItem-label' nowrap='nowrap' width='12'><app:img src="startup/ImgPriorityHigh_list.gif" altkey="ALT_PRIORITY"/></th>
+                            <th class='ImgNarrow HF_Header DwtListView-Column DwtListHeaderItem-label' nowrap='nowrap' width='12'><div class="ImgPriorityHigh_list"/></th>
                             </c:if>
                             <c:if test="${mailbox.features.tagging}">
-                            <th class='Img HF_Header DwtListView-Column DwtListHeaderItem-label' nowrap><app:img src="startup/ImgTagOrange.gif" altkey="ALT_TAG_TAG"/></th>
+                            <th class='Img HF_Header DwtListView-Column DwtListHeaderItem-label' nowrap><div class="ImgTag"/></th>
                             </c:if>
-                            <th class='MsgStatusImg HF_Header DwtListView-Column DwtListHeaderItem-label' nowrap><app:img src="startup/ImgMsgStatus.gif" altkey="ALT_ATTACHMENT"/></th>
+                            <th class='MsgStatusImg HF_Header DwtListView-Column DwtListHeaderItem-label' nowrap><div class="ImgMsgStatus"/></th>
                             <th class='HF_Header DwtListView-Column DwtListHeaderItem-label' width="10%">
                                 <zm:newSortUrl var="fromSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                                 <fmt:message key="${useTo ? 'to' : 'from'}"/>
                             </th>
-                            <th class='HF_Header DwtListView-Column DwtListHeaderItem-label' width="1%" nowrap><app:img src="startup/ImgAttachment.gif" altkey="ALT_ATTACHMENT"/></th>
+                            <th class='HF_Header DwtListView-Column DwtListHeaderItem-label' width="1%" nowrap><div class="ImgAttachment"/></th>
                             <th class='HF_Header DwtListView-Column DwtListHeaderItem-label' nowrap>
                                 <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
                                 <fmt:message key="subject"/>
@@ -244,7 +245,7 @@
                                 <td><%-- allow wrap --%>
                                     <c:set var="dispAddr" value="${hit.messageHit.displayAddresses}"/>${fn:escapeXml(empty dispAddr ? unknownRecipient :  dispAddr)}
                                 </td>
-                                <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
+                                <td class='Img'><c:choose><c:when test="${hit.messageHit.hasAttachment}"><div class="ImgAttachment" /></c:when><c:otherwise>&nbsp;</c:otherwise></c:choose></td>
                                 <td > <%-- allow this col to wrap --%>
 
                                         <c:set var="subj" value="${empty hit.messageHit.subject ? noSubject : hit.messageHit.subject}"/>
@@ -270,3 +271,35 @@
 			</c:when>
 	</c:choose>
 </form>
+</div>
+
+<script>
+var appMain = document.getElementById("skin_container_app_main");
+var treeContainer = document.getElementById("skin_container_tree");
+var htmlContent = document.getElementById("htmlContent");
+var splashContent = document.getElementById("skin_container_splash_screen");
+var appLoaded = "<c:out value="${app}"/>";
+if(htmlContent && treeContainer && (splashContent.className == "SplashScreen") && ((appLoaded == "") || (appLoaded == "mail"))) {
+
+	if(splashContent) {
+		splashContent.style.display = "none";
+	}
+
+    var h = appMain.offsetHeight;
+    var w = appMain.offsetWidth;
+    appMain.innerHTML = ["<div id='facadeContainer' style='height:" + (h-10) + "px;width:" + w + "px;display:block;overflow:auto;'>"].join("") + htmlContent.innerHTML + "</div>";
+    treeContainer.innerHTML = '<table id="loadingFacade" height="100%" width="100%" align=center><tr><td bgcolor="white" align=center><b>' + ZmMsg.splashScreenLoading + '</b></td></tr></table>';
+    htmlContent.parentNode.removeChild(htmlContent);
+    window._facadeCleanup = function() {
+        var fc = document.getElementById("facadeContainer");
+        if(fc) {
+            fc.parentNode.removeChild(fc);
+        }
+        var fc1 = document.getElementById("loadingFacade");
+        if(fc1) {
+            fc1.parentNode.removeChild(fc1);
+        }
+    };
+}
+</script>
+
