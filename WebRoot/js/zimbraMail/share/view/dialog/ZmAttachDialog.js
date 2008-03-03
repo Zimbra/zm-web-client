@@ -423,7 +423,7 @@ ZmMyComputerTabViewPage.prototype._createHtml = function() {
 
     this._contentEl = this.getContentHtmlElement();
     this._contentEl.innerHTML = html.join("");
-	
+
 	//Initialize
     this._attachmentTable = document.getElementById(this._attachmentTableId);
     delete this._attachmentTableId;
@@ -460,56 +460,9 @@ ZmMyComputerTabViewPage.prototype.getUploadForm = function() {
     return this._uploadForm;
 };
 
-//Inline Options
-/*
-ZmMyComputerTabViewPage.INLINE_OPTION_MSG = "Show images in message body";
-ZmMyComputerTabViewPage.prototype.showInlineOption = function() {
-
-    this._inline = false;
-    var optTable = this._getOptionTable();
-    this._cleanTable(optTable);
-    var html = [];
-    var idx = 0;
-	//Adding inline option
-    html[idx++] = "<input type='checkbox' name='inlineimages' id='inline'>&nbsp;" + ZmMyComputerTabViewPage.INLINE_OPTION_MSG;
-    html = html.join("");
-
-    optTable.setAttribute("option", "inline");
-    var row = optTable.insertRow(-1);
-    var cell = row.insertCell(-1);
-    cell.innerHTML = html;
-
-    var inlineOption = document.getElementById("inline");
-    inlineOption.onclick = AjxCallback.simpleClosure(this._handleInline, this, inlineOption);
-};
-
-ZmMyComputerTabViewPage.prototype.hideInlineOption = function() {
-    var optTable = this._getOptionTable();
-    if (optTable.getAttribute("option") != "inline") return;
-    optTable.setAttribute("option", "");
-    this._cleanTable(optTable);
-    this._inline = false;
-};
-*/
 ZmMyComputerTabViewPage.prototype._handleInline = function(inline) {
     this._uploadForm.setAttribute("action", this._uri + (inline? "?fmt=extended" : ""));
 };
-/*
-ZmMyComputerTabViewPage.prototype._resetInlineOption = function() {
-
-    var inlineOption = document.getElementById("inline");
-    if (inlineOption) {
-        inlineOption.checked = false;
-    }
-    this._inline = false;
-    this._uploadForm.setAttribute("action", this._uri);
-};
-
-ZmMyComputerTabViewPage.prototype.isInline = function() {
-    return ((this._inline) ? this._inline : false);
-};
-*/
-
 
 //Attachments
 ZmMyComputerTabViewPage.prototype.addAttachmentField = function(noRemoveLink) {
@@ -529,13 +482,14 @@ ZmMyComputerTabViewPage.prototype.addAttachmentField = function(noRemoveLink) {
     var attRemoveId = attId + "_r";
     var attInputId = attId + "_i";
     row.id = attId;
-	
+
 	// add new cell and build html for inserting file upload input element
     var cell = row.insertCell(-1);
     var html = [];
     var idx = 0;
     html[idx++] = "<table cellspacing=2 cellpadding=0 border=0><tr><td><div class='attachText'>";
-    html[idx++] = AjxMessageFormat.format(ZmMsg.attachFileNo, this._attachCount);
+    html[idx++] = ZmMsg.attach;//AjxMessageFormat.format(ZmMsg.attachFileNo, this._attachCount);
+    html[idx++] = ':';
     html[idx++] = "</div></td><td class='nobreak'><input id='";
     html[idx++] = attInputId;
     html[idx++] = "' type='file' name='";
@@ -570,10 +524,10 @@ ZmMyComputerTabViewPage.prototype.addAttachmentField = function(noRemoveLink) {
 ZmMyComputerTabViewPage.prototype._removeAttachmentField = function(attId) {
     var row = document.getElementById(attId);
     this._attachmentTable.deleteRow(row.rowIndex);
-    if (--this._attachCount == 0) {
-        return false; // disables following of link
+    this._attachCount--;
+    if(this._attachCount == 0){
+        this.addAttachmentField();
     }
-    return true;
 };
 
 
@@ -616,8 +570,8 @@ ZmMyComputerTabViewPage.prototype.resetAttachments = function() {
     cell.appendChild(document.createElement("br"));
     cell.appendChild(document.createElement("br"));
 
-    this.addAttachmentField(true);
-    for (var i = 1; i < ZmMyComputerTabViewPage.SHOW_NO_ATTACHMENTS; i++) {
+    //this.addAttachmentField(true);
+    for (var i = 0; i < ZmMyComputerTabViewPage.SHOW_NO_ATTACHMENTS; i++) {
         this.addAttachmentField();
     }
     delete i;
