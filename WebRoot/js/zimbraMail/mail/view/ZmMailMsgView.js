@@ -465,8 +465,9 @@ ZmMailMsgView._MAILTO_RE = /^mailto:[\x27\x22]?([^@?&\x22\x27]+@[^@?&]+\.[^@?&\x
 ZmMailMsgView.prototype._lazyCreateObjectManager =
 function() {
 	// objectManager will be 'true' at create time, after that it will be the real object
-	if (this._objectManager === true) {
-		// this manages all the detected objects within the view
+	//Replaced if(this._objectManager === true) as "===" does deep comparision of objects which might take a while.
+    if( AjxUtil.isBoolean(this._objectManager) && this._objectManager){
+        // this manages all the detected objects within the view
 		this._objectManager = new ZmObjectManager(this);
 	}
 };
