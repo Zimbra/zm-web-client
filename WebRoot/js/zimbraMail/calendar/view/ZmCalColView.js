@@ -1493,8 +1493,16 @@ function(refreshApptLayout) {
 	if (this._allDayApptsList && this._allDayApptsList.length > 0) numRows++;
 	this._allDayFullDivHeight = (ZmCalColView._ALL_DAY_APPT_HEIGHT+ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD) * numRows + ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD;
 
-	this._allDayDivHeight = numRows <= ZmCalColView.MAX_ALLDAY_APPTS ? this._allDayFullDivHeight :
-		(ZmCalColView._ALL_DAY_APPT_HEIGHT+ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD) * ZmCalColView.MAX_ALLDAY_APPTS + ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD;
+	var percentageHeight = (this._allDayFullDivHeight/height)*100;
+	this._allDayDivHeight = this._allDayFullDivHeight;
+	
+	//if height overflows more than 50% of full height set its height 
+	// to nearest no of rows which occupies less than 50% of total height
+	if(percentageHeight > 50) {		
+		var nearestNoOfRows = Math.floor( (0.50*height-ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD)/(ZmCalColView._ALL_DAY_APPT_HEIGHT+ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD));
+		this._allDayDivHeight = (ZmCalColView._ALL_DAY_APPT_HEIGHT+ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD) * nearestNoOfRows + ZmCalColView._ALL_DAY_APPT_HEIGHT_PAD;
+	}
+
 	var allDayDivY = allDayHeadingDivHeight;
 
 	this._setBounds(this._allDayApptScrollDivId, bodyX, allDayDivY, this._bodyDivWidth, this._allDayDivHeight);
