@@ -763,7 +763,7 @@ function() {
 	this.parent._onEditorContentInitialized();	
 	this._resetFormatControls();
 	var action = new AjxTimedAction(this, this.focus);
-	AjxTimedAction.scheduleAction(action, DwtHtmlEditor._INITDELAY + 3);
+	AjxTimedAction.scheduleAction(action, DwtHtmlEditor._INITDELAY + 5);
 };
 
 ZmPageEditor.prototype._findReplaceListener =
