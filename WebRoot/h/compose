@@ -23,8 +23,7 @@
     <c:set var="composeformat" value="${mailbox.prefs.composeFormat}" />
     <c:set var="isHtml" value="${composeformat eq 'html'}"/>
 </app:handleError>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<!--bug: 21462 yui editor freezes in IE7 without without this header -->
+
 <app:handleError>
     <c:choose>
         <c:when test="${!empty param.id or !empty compose.draftId or !empty requestScope.draftid}">
