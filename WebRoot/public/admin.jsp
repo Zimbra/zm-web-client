@@ -84,6 +84,12 @@
     if(contextPath == null || contextPath.equals("/")) {
 		response.sendRedirect(adminUrl+"?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
     }
+      /*
+    Need a way to get the zimbraPrefLocale after user login, so this pref can take effect for the admin to display the right i18n interface
+	java.util.List<String> localePref = authResult.getPrefs().get("zimbraPrefLocale");
+	if (localePref != null && localePref.size() > 0) {
+		request.setAttribute("localeId", localePref.get(0));
+	}   */
 
 	pageContext.setAttribute("skin", skin);
 %><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -165,8 +171,12 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 					}
 				}
 			}
-			ZaZimbraAdmin.run(document.domain);
-		}
+            try {
+                ZaZimbraAdmin.run(document.domain);
+            }catch (ex) {
+                if (AjxEnv && AjxEnv.hasFirebug) console.error ("Exception in launch(): " + ex.msg ) ;
+            }
+        }
 
        //	START DOMContentLoaded
        // Mozilla and Opera 9 expose the event we could use
