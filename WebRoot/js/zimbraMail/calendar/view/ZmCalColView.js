@@ -223,21 +223,17 @@ function(list, numAppts) {
 
 	if (makeBatchReq) {
 		// set up batch request call
-		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
-		soapDoc.setMethodAttribute("onerror", "continue");
-
+		var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
+		var request = jsonObj.BatchRequest;
+		var msgRequests = request.GetMsgRequest = [];
 		for (var i in needToLoad) {
-			var msgRequest = soapDoc.set("GetMsgRequest", null, null, "urn:zimbraMail");
-
-			var doc = soapDoc.getDoc();
-			var msgNode = doc.createElement("m");
-			msgNode.setAttribute("requestId", i);
-
-			msgRequest.appendChild(msgNode);
+			var msgRequest = {_jsns:"urn:zimbraMail"};
+			msgRequest.m = {requestId:i};
+			msgRequests.push(msgRequest);
 		}
 
 		var command = new ZmCsfeCommand();
-		var resp = command.invoke({soapDoc: soapDoc}).Body.BatchResponse.GetMsgResponse;
+		var resp = command.invoke({jsonObj:jsonObj}).Body.BatchResponse.GetMsgResponse;
 
 		for (var i = 0; i < resp.length; i++) {
 			var msgNode = resp[i].m[0];
@@ -246,8 +242,9 @@ function(list, numAppts) {
 				msg._loadFromDom(msgNode);
 				// parse ZmMailMsg into ZmAppt
 				var appt = apptHash[msgNode.requestId];
-				if (appt)
+				if (appt) {
 					appt.setFromMessage(msg);
+				}
 			}
 		}
 	}

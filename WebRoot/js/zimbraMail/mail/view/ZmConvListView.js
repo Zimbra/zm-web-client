@@ -704,22 +704,22 @@ function(conv, preferHtml, result) {
 ZmConvListView._printMessages =
 function(conv, preferHtml, callback) {
 	// XXX: optimize? Once these msgs are d/l'ed should they be cached?
-	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
-	soapDoc.setMethodAttribute("onerror", "continue");
-
-	for (var i = 0; i < conv.msgIds.length; i++) {
-		// make a request to get this mail message from the server
-		var msgRequest = soapDoc.set("GetMsgRequest", null, null, "urn:zimbraMail");
-
-		var doc = soapDoc.getDoc();
-		var msgNode = doc.createElement("m");
-		msgNode.setAttribute("id", conv.msgIds[i]);
-		if (preferHtml)
-			msgNode.setAttribute("html", "1");
-		msgRequest.appendChild(msgNode);
+	var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
+	var request = jsonObj.BatchRequest;
+	if (conv && conv.msgIds && conv.msgIds.length) {
+		var msgRequests = request.GetMsgRequest = [];
+		for (var i = 0; i < conv.msgIds.length; i++) {
+			// make a request to get this mail message from the server
+			var msgRequest = {_jsns:"urn:zimbraMail"};
+			msgRequest.m = {id:conv.msgIds[i]};
+			if (preferHtml) {
+				msgRequest.m.html = 1;
+			}
+			msgRequests.push(msgRequest);
+		}
 	}
 	var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetMessages, [conv, preferHtml, callback]);
-	window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	window._zimbraMail.sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
 
 ZmConvListView._handleResponseGetMessages =
