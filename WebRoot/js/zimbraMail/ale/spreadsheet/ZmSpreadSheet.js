@@ -31,40 +31,32 @@ ZmSpreadSheet = function(parent, className, posStyle, deferred) {
 	// timeout the table will catch on mouseover-s.  Produces a short
 	// flicker :-(  I donno how to work around this...
 	var footimeout = null;
-	this._selectRangeCapture = new DwtMouseEventCapture(
-		this, "ZmSpreadSheet",
-		AjxCallback.simpleClosure(this._table_selrange_MouseOver, this),
-		null,		// no mousedown
+	this._selectRangeCapture = new DwtMouseEventCapture({
+		targetObj:this,
+		id:"ZmSpreadSheet",
+		mouseOverHdlr:AjxCallback.simpleClosure(this._table_selrange_MouseOver, this),
+		mouseMoveHdlr:
+			// mousemove handler (see warning above)
+			AjxCallback.simpleClosure(function(ev) {
+				var self = this;
+				if (footimeout)
+					clearTimeout(footimeout);
+				footimeout = setTimeout(function() {
+					self._getRangeDiv().style.display = "none";
+					setTimeout(function() {
+						self._getRangeDiv().style.display = "";
+					}, 1);
+				}, 50);
+			}, this),
+		mouseUpHdlr:AjxCallback.simpleClosure(this._clear_selectRangeCapture, this)
+	});
 
-		// mousemove handler (see warning above)
-		AjxCallback.simpleClosure(function(ev) {
-			var self = this;
-			if (footimeout)
-				clearTimeout(footimeout);
-			footimeout = setTimeout(function() {
-				self._getRangeDiv().style.display = "none";
-				setTimeout(function() {
-					self._getRangeDiv().style.display = "";
-				}, 1);
-			}, 50);
-		}, this),
-
-// 		null, // for now
-
-		AjxCallback.simpleClosure(this._clear_selectRangeCapture, this),
-		null,		// no mouseout?
-		null,		// no mouse wheel
-		true);		// hard capture
-
-	this._colsizeCapture = new DwtMouseEventCapture(
-		this, "ZmSpreadSheet",
-		null,	// no mouse over
-		null,	// no mouse down
-		AjxCallback.simpleClosure(this._colsize_mouseMove, this),
-		AjxCallback.simpleClosure(this._colsize_mouseUp, this),
-		null,	// no mouse out
-		null,	// no mouse wheel
-		true);
+	this._colsizeCapture = new DwtMouseEventCapture({
+		targetObj:this,
+		id:"ZmSpreadSheet",
+		mouseMoveHdlr:AjxCallback.simpleClosure(this._colsize_mouseMove, this),
+		mouseUpHdlr:AjxCallback.simpleClosure(this._colsize_mouseUp, this)
+	});
 
 	this._onResize = new AjxListener(this, this._onResize);
 	this._hoverOverListener = new AjxListener(this, this._handleOverListener);

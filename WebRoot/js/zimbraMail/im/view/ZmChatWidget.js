@@ -814,14 +814,12 @@ ZmChatWidget.prototype._disposeListener = function() {
 };
 
 ZmChatWidget.prototype._setupSash = function() {
-	this._sashCapture = new DwtMouseEventCapture(
-		this, "ZmChatWidget",
-		null, // no mouseover
-		null, // no mousedown
-		AjxCallback.simpleClosure(this._sashMouseMove, this),
-		AjxCallback.simpleClosure(this._sashMouseUp, this),
-		null, // no mouseout
-		true);
+	this._sashCapture = new DwtMouseEventCapture({
+		targetObj:this,
+		id:"ZmChatWidget",
+		mouseMoveHdlr:AjxCallback.simpleClosure(this._sashMouseMove, this),
+		mouseUpHdlr:AjxCallback.simpleClosure(this._sashMouseUp, this)
+	});
 	this._getElement("sash").onmousedown = AjxCallback.simpleClosure(this._sashMouseDown, this);
 };
 

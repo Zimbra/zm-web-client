@@ -1885,14 +1885,14 @@ function(ev, apptEl) {
 		docY: ev.docY
 	};
 
-	var capture = new DwtMouseEventCapture(data, null,
-		ZmCalColView._emptyHdlr, // mouse over
-		ZmCalColView._emptyHdlr, // mouse down (already handled by action)
-		ZmCalColView._apptMouseMoveHdlr,
-		ZmCalColView._apptMouseUpHdlr,
-		ZmCalColView._emptyHdlr, // mouse out
-		null,					 // mouse wheel
-		true);
+	var capture = new DwtMouseEventCapture({
+		targetObj:data,
+		mouseOverHdlr:ZmCalColView._emptyHdlr,
+		mouseDownHdlr:ZmCalColView._emptyHdlr, // mouse down (already handled by action)
+		mouseMoveHdlr:ZmCalColView._apptMouseMoveHdlr,
+		mouseUpHdlr:ZmCalColView._apptMouseUpHdlr,
+		mouseOutHdlr:ZmCalColView._emptyHdlr
+	});
 
 	capture.capture();
 	return false;
@@ -2236,14 +2236,14 @@ function(ev, sash) {
 	else data.endDate = new Date(appt.getEndTime());
 
 	//TODO: only create one of these and change data each time...
-	var capture = new DwtMouseEventCapture	(data, null,
-			ZmCalColView._emptyHdlr, // mouse over
-			ZmCalColView._emptyHdlr, // mouse down (already handled by action)
-			ZmCalColView._sashMouseMoveHdlr,
-			ZmCalColView._sashMouseUpHdlr,
-			ZmCalColView._emptyHdlr, // mouse out
-			null,					 // mouse wheel 
-			true);
+	var capture = new DwtMouseEventCapture({
+		targetObj:data,
+		mouseOverHdlr:ZmCalColView._emptyHdlr,
+		mouseDownHdlr:ZmCalColView._emptyHdlr, // mouse down (already handled by action)
+		mouseMoveHdlr:ZmCalColView._sashMouseMoveHdlr,
+		mouseUpHdlr:ZmCalColView._sashMouseUpHdlr,
+		mouseOutHdlr:ZmCalColView._emptyHdlr
+	});
 	capture.capture();
 	this.deselectAll();
 	this.setSelection(data.appt);
@@ -2390,14 +2390,14 @@ function(ev, gridEl, gridLoc, isAllDay) {
 		isAllDay: isAllDay
 	};
 
-	var capture = new DwtMouseEventCapture	(data, null,
-			ZmCalColView._emptyHdlr, // mouse over
-			ZmCalColView._emptyHdlr, // mouse down (already handled by action)
-			isAllDay? ZmCalColView._gridAllDayMouseMoveHdlr : ZmCalColView._gridMouseMoveHdlr,
-			ZmCalColView._gridMouseUpHdlr,
-			ZmCalColView._emptyHdlr, // mouse out
-			null,					 // mouse wheel
-			true);
+	var capture = new DwtMouseEventCapture({
+		targetObj:data,
+		mouseOverHdlr:ZmCalColView._emptyHdlr,
+		mouseDownHdlr:ZmCalColView._emptyHdlr, // mouse down (already handled by action)
+		mouseMoveHdlr: isAllDay ? ZmCalColView._gridAllDayMouseMoveHdlr : ZmCalColView._gridMouseMoveHdlr,
+		mouseUpHdlr:ZmCalColView._gridMouseUpHdlr,
+		mouseOutHdlr:ZmCalColView._emptyHdlr
+	});
 	capture.capture();
 	return false;
 };
