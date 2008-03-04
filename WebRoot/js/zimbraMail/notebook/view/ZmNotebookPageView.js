@@ -675,7 +675,18 @@ ZmNotebookPageView.prototype.loadURL = function(restUrl){
 	var refURL = window.location.protocol+"//"+window.location.host;
 	var url = this.fixLinkProtocol(restUrl,refURL);		
 	url = this.fixCrossDomainReference(url);
-	this._iframe1.src = url;
+    if(appCtxt.get(ZmSetting.LOCALE_NAME)) {
+        var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
+        var index = locale.indexOf("_");
+        var languageId;
+        if (index == -1) {
+            languageId = locale;
+        } else {
+            languageId = locale.substr(0, index);
+        }
+        url += (url.match(/\?/) ?  '&' : '?') + 'language=' + languageId;
+    }    
+    this._iframe1.src = url;
 };
 
 ZmNotebookPageView.prototype.fetchInfo = function(path)
