@@ -1327,9 +1327,10 @@ function(calItemNode, instNode) {
 	this.recurring 		= instNode.recur != null ? instNode.recur : calItemNode.recur; // TEST for null since recur can be FALSE
 	this._seriesInvId 	= this.recurring ? calItemNode.invId : null;
 
-	// override ptst for this instance if map-able
-	if (instNode.fba && ZmCalItem.FBA_TO_PTST[instNode.fba])
-		this.ptst = ZmCalItem.FBA_TO_PTST[instNode.fba];
+	// override ptst for this instance if map-able and is not NEEDS-ACTION
+    var fba = this._getAttr(calItemNode, instNode, "fba");
+	if (fba && this.ptst != ZmCalItem.PSTATUS_NEEDS_ACTION && ZmCalItem.FBA_TO_PTST[fba])
+		this.ptst = ZmCalItem.FBA_TO_PTST[fba];
 
 	var sd = this._getAttr(calItemNode, instNode, "s");
 	if (sd) {
