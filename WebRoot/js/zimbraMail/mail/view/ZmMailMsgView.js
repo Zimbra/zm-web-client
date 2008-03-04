@@ -1457,22 +1457,23 @@ function() {
 
 ZmMailMsgView.getPrintHtml =
 function(msg, preferHtml, callback) {
-	if (!(msg.toString() == "ZmMailMsg"))
-		return;
+	if (!(msg.toString() == "ZmMailMsg")) { return; }
 
 	if (!msg._loaded) {
-		var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
-		var msgNode = soapDoc.set("m");
-		msgNode.setAttribute("id", msg.id);
-		if (preferHtml)
-			msgNode.setAttribute("html", "1");
+		var jsonObj = {GetMsgRequest:{_jsns:"urn:zimbraMail"}};
+		var request = jsonObj.GetMsgRequest;
+		request.m = {id:msg.id};
+		if (preferHtml) {
+			request.m.html = 1;
+		}
 		var respCallback = new AjxCallback(null, ZmMailMsgView._handleResponseGetPrintHtml, [msg, preferHtml, callback]);
-		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+		window._zimbraMail.sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 	} else {
-		if (callback)
+		if (callback) {
 			ZmMailMsgView._printMessage(msg, preferHtml, callback);
-		else
+		} else {
 			return ZmMailMsgView._printMessage(msg, preferHtml);
+		}
 	}
 };
 

@@ -93,29 +93,32 @@ ZmMailMsg._requestHeaders = {};
  */
 ZmMailMsg.fetchMsg =
 function(params) {
-	var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
-	var msgNode = soapDoc.set("m");
-	msgNode.setAttribute("id", params.msgId);
+	var jsonObj = {GetMsgRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.GetMsgRequest;
+	var m = request.m = {};
+	m.id = params.msgId;
 	if (params.partId) {
-		msgNode.setAttribute("part", params.partId);
+		m.part = params.partId;
 	}
-	msgNode.setAttribute("read", "1");
+	m.read = 1;
 	if (params.getHtml) {
-		msgNode.setAttribute("html", "1");
+		m.html = 1;
 	}
 
-	// Request additional headers
-	for (var hdr in ZmMailMsg.getAdditionalHeaders()) {
-		var headerNode = soapDoc.set('header', null, msgNode);
-		headerNode.setAttribute('n', hdr);
+	var hdrs = ZmMailMsg.getAdditionalHeaders();
+	if (hdrs && hdrs.length) {
+		req.header = [];
+		for (var hdr in hdrs) {
+			req.header.push({n:hdr});
+		}
 	}
 
 	if (!params.dontTruncate) {
-		msgNode.setAttribute("max", appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE));
+		m.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE);
 	}
 
 	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback]);
-	params.sender.sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback,
+	params.sender.sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback,
 							errorCallback:params.errorCallback, noBusyOverlay:params.noBusyOverlay});
 };
 
