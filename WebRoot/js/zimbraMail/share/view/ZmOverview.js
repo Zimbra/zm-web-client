@@ -80,7 +80,8 @@ function() {
 ZmOverview.prototype.set =
 function(treeIds, omit, account) {
 	if (!(treeIds && treeIds.length)) { return; }
-	this._treeIds = treeIds;	
+	this._treeIds = treeIds;
+	this.account = account;
 	for (var i = 0; i < treeIds.length; i++) {
 		this.setTreeView(treeIds[i], omit, account);
 	}

@@ -35,8 +35,8 @@ ZmTagMenu = function(parent) {
 	ZmPopupMenu.call(this, parent);
 
 	parent.setMenu(this);
-	this._addHash = new Object();
-	this._removeHash = new Object();
+	this._addHash = {};
+	this._removeHash = {};
 	this._evtMgr = new AjxEventMgr();
 	this._desiredState = true;
 	this._items = null;
@@ -76,8 +76,8 @@ ZmTagMenu.prototype.setEnabled =
 function(enabled) {
 	// If there are no tags, then enable later
 	this._desiredState = enabled;
-	if (enabled && !this._tagList)
-		return;
+	if (enabled && !this._tagList) { return; }
+
 	this.parent.setEnabled(enabled);
 }
 
@@ -125,7 +125,7 @@ function(x, y, kbGenerated) {
 ZmTagMenu.prototype._getAddRemove = 
 function(items, tagList) {
 	// find out how many times each tag shows up in the items
-	var tagCount = new Object();
+	var tagCount = {};
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if (!item) continue;
@@ -136,19 +136,20 @@ function(items, tagList) {
 			}
 		}
 	}
-	var add = new Object();
-	var remove = new Object();
+	var add = {};
+	var remove = {};
 	// any tag held by fewer than all the items can be added
 	var a = tagList.children.getArray();
 	for (var i = 0; i < a.length; i++) {
-		var tagId = a[i].id;
+		var tagId = a[i].nId;
 		if (!tagCount[tagId] || (tagCount[tagId] < items.length)) {
 			add[tagId] = true;
 		}
 	}
 	// any tag we saw can be removed
-	for (var tagId in tagCount)
+	for (var tagId in tagCount) {
 		remove[tagId] = true;
+	}
 
 	return {add: add, remove: remove};
 }
@@ -159,10 +160,10 @@ ZmTagMenu.prototype._render =
 function(tagList, addRemove) {
 	var sz = tagList.size();
 	var a = tagList.children.getArray();
-	var removeList = new Array();
+	var removeList = [];
 	for (var i = 0; i < sz; i++) {
 		var tag = a[i];
-		var tagId = tag.id;
+		var tagId = tag.nId;
 		if (addRemove.add[tagId])
 			this._addNewTag(this, tag, true, null, this._addHash);
 		if (addRemove.remove[tagId])

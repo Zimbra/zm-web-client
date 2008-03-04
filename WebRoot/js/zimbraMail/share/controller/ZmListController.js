@@ -249,6 +249,17 @@ function(view) {
 // Creates the basic elements: toolbar, list view, and action menu
 ZmListController.prototype._initialize =
 function(view) {
+
+	// we want to know when user switches accounts but can't do it until the
+	// overview panel content has been created. So, let's always check here.
+	if (appCtxt.multiAccounts &&
+		this._app._overviewPanelContent &&
+		!this._initMultiAccount)
+	{
+		this._initMultiAccount = true;
+		this._app._overviewPanelContent.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
+	}
+
 	this._initializeToolBar(view);
 	this._initializeListView(view);
 	this._initializeTabGroup(view);
@@ -740,6 +751,20 @@ function(ev) {
 	}
 };
 
+ZmListController.prototype._accordionSelectionListener =
+function(ev) {
+	// first remove change listener for existing tag list
+	if (this._tagList && this._tagChangeLstnr) {
+		this._tagList.removeChangeListener(this._tagChangeLstnr);
+	}
+
+	// set tag list and add change listener for new account
+	this._tagList = appCtxt.getTagTree();
+	if (this._tagList) {
+		this._tagList.addChangeListener(this._tagChangeLstnr);
+	}
+};
+
 // new organizer callbacks
 
 // Move stuff to a new folder.
@@ -899,7 +924,8 @@ function(parent) {
 		var items = this._listView[this._currentView].getSelection();
 		if (items instanceof ZmItem)
 			items = [items];
-		tagMenu.set(items, this._tagList);
+		// fetch tag tree from appctxt (not cache) for multi-account case
+		tagMenu.set(items, appCtxt.getTagTree());
 		if (parent instanceof ZmActionMenu)
 			tagOp.setText(this._getTagMenuMsg(items.length));
 		else {

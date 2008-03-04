@@ -241,9 +241,7 @@ ZmZimbraAccount.prototype._handleResponseLoad2 =
 function(callback, result) {
 	var resp = result.getResponse().GetTagResponse;
 	var tags = (resp && resp.tag) ? resp.tag[0] : null;
-	if (tags) {
-		appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp, null, this);
-	}
+	appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp, null, this);
 
 	this.loaded = true;
 

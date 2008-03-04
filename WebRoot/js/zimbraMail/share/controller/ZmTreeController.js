@@ -621,6 +621,16 @@ function(ev, treeView, overviewId) {
 			this._checkTreeView(overviewId);
 			this._evHandled[overviewId] = true;
 		} else if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE) {
+			// YUCK: for multi-account, make sure this organizer applies to the given overview
+			if (appCtxt.multiAccounts) {
+				var idx = organizer.id.indexOf(":");
+				var acctId = (idx > 0) ? organizer.id.substring(0, idx) : null;
+				var account = acctId ? appCtxt.getAccount(acctId) : null;
+				var overview = account ? this._opc.getOverview(overviewId) : null;
+				if (overview && overview.account != account) {
+					continue;
+				}
+			}
 			var parentNode = this._getParentNode(organizer, ev, overviewId);
 			var idx = parentNode ? ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type])) : null;
 			if (parentNode && (ev.event == ZmEvent.E_CREATE)) {
