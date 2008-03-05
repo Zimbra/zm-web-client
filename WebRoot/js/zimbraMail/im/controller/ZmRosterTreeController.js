@@ -244,7 +244,7 @@ ZmRosterTreeController.prototype._imFloatingListListener = function(ev) {
                 this.__floatingBuddyListWin = win = new DwtResizableWindow(wm);
                 var cont = new DwtComposite(win);
 
-                var toolbar = new DwtToolBar({parent:cont});
+                var toolbar = new DwtToolBar({parent:cont, handleMouse: false});
 
                 var lab = new DwtLabel({parent:toolbar, style:DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT,
                 						  className:"ZmChatWindowLabel"});
