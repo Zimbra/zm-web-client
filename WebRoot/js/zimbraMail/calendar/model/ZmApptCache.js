@@ -251,16 +251,16 @@ function(params) {
 
 ZmApptCache.prototype._search =
 function(params) {
-	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
+	var jsonObj = {SearchRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.SearchRequest;
 
-	var method = soapDoc.getMethod();
-	this._setSoapParams(soapDoc, method, params);
+	this._setSoapParams(request, params);
 		
 	if (params.callback) {
 		var respCallback = new AjxCallback(this, this._getApptSummariesResponse, [params]);
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
-		var response = appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
+		var response = appCtxt.getAppController().sendRequest({jsonObj: jsonObj});
 		var result = new ZmCsfeResult(response, false);
 		return this._getApptSummariesResponse(params, result);
 	}
