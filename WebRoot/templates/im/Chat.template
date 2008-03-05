@@ -203,3 +203,21 @@
     </table>
   </fieldset>
 </template>
+
+<template id="im.Chat#Toast">
+  <div class='ZToastBG'>
+    <div class='ZToastContent'>
+      <div><$= ZmMsg.newInstantMessage $></div>
+        <table><tr>
+          <td id="${id}_text" class="ZmImToastText">
+      	  </td>
+          <td id="${id}_close"><div class='ImgClose'/></td>
+        </tr></table>
+    </div>
+  </div>
+</template>
+
+<template id="im.Chat#ToastText">
+	<div><b><$= ZmMsg.fromLabel $></b> ${from}</div>
+	<div><b><$= ZmMsg.messageLabel $></b> ${body}</div>
+</template>
