@@ -254,7 +254,7 @@
                                                 <c:set var="usageNumeric" value="${fn:replace(usage, '%','')}"/>
                                                 <td class="BannerTextQuota">Email:</td>
 												<td class="BannerTextQuota">
-													<div class="quotabar">
+													<div class="quotabar" align="left">
                                                         <c:choose>
                                                             <c:when test="${usageNumeric < 65 }">
                                                                 <div class="quotaUsed" style="width:${usage}"/>
