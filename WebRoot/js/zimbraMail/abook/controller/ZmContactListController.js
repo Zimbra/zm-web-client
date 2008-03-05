@@ -662,10 +662,11 @@ function(items, folder, attrs, force) {
 		if (item.isGal) {
 			moveFromGal.push(item);
 		} else if (!item.folderId || item.folderId != folder.id) {
-			if (!force && (item.isShared() || folder.isRemote()) || item.isReadOnly())
+			if (!force && (item.isShared() || folder.isRemote()) || item.isReadOnly()) {
 				copy.push(item);
-			else
+			} else {
 				move.push(item);
+			}
 		}
 	}
 
@@ -682,7 +683,7 @@ function(items, folder, attrs, force) {
 	}
 
 	if (moveFromGal) {
-		var batchCmd = new ZmBatchCommand();
+		var batchCmd = new ZmBatchCommand(true, null, true);
 		for (var j = 0; j < moveFromGal.length; j++) {
 			var contact = moveFromGal[j];
 			contact.attr[ZmContact.F_folderId] = folder.id;

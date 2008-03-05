@@ -299,10 +299,8 @@ ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
  */
 ZmOrganizer.create =
 function(params) {
-	// create SOAP command
-	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
-	var folderNode = soapDoc.set("folder");
-
+	var jsonObj = {CreateFolderRequest:{_jsns:"urn:zimbraMail"}};
+	var folder = jsonObj.CreateFolderRequest.folder = {};
 	var errorCallback = params.errorCallback || new AjxCallback(null, ZmOrganizer._handleErrorCreate, params);
 	var type = params.type;
 
@@ -318,11 +316,11 @@ function(params) {
 			}
 		}
 		if (value) {
-			folderNode.setAttribute(i, value);
+			folder[i] = value;
 		}
 	}
 
-	return appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
+	return appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, errorCallback:errorCallback});
 };
 
 ZmOrganizer._handleErrorCreate =

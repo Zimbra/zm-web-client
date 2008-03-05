@@ -118,6 +118,8 @@ function(params) {
 		accountName = (acct && acct.id != ZmZimbraAccount.DEFAULT_ID) ? acct.name : null;
 	}
 	var cmdParams = {
+		jsonObj:params.jsonObj,
+		soapDoc:params.soapDoc,
 		accountName:accountName,
 		useXml:this._useXml,
 		changeToken:(accountName ? null : this._changeToken),
@@ -128,18 +130,7 @@ function(params) {
 		skipAuthCheck:params.skipAuthCheck,
 		resend:params.resend
 	};
-	var methodName = "[unknown]";
-	if (params.soapDoc) {
-		cmdParams.soapDoc = params.soapDoc;
-		methodName = params.soapDoc._methodEl.tagName;
-	} else if (params.jsonObj) {
-		cmdParams.jsonObj = params.jsonObj;
-		for (var prop in params.jsonObj) {
-			methodName = prop;
-			break;
-		}
-	}
-	params.methodName = methodName;
+	var methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
 
 	appCtxt.currentRequestParams = params;
 	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + methodName);
@@ -237,17 +228,7 @@ function(params, result) {
 		this._clearPendingRequest(params.reqId);
 	}
 
-	var methodName = "[unknown]";
-	if (DBG && DBG.getDebugLevel() > 0) {
-		if (params.soapDoc) {
-			methodName = params.soapDoc._methodEl.tagName;
-		} else if (params.jsonObj) {
-			for (var prop in params.jsonObj) {
-				methodName = prop;
-				break;
-			}
-		}
-	}
+	var methodName = (DBG && DBG.getDebugLevel() > 0) ? ZmCsfeCommand.getMethodName(params.jsonObj || params.soapDoc) : "";
 	if (params.asyncMode && params.callback) {
 		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback for " + methodName);
 		params.callback.run(result);

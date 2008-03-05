@@ -105,15 +105,11 @@ function(callback, errorCallback) {
 	// only the canonical list gets loaded
 	DBG.println(AjxDebug.DBG1, "loading contacts");
 	this.isCanonical = true;
-	var soapDoc = AjxSoapDoc.create("GetContactsRequest", "urn:zimbraMail");
-	// set sorting pref (for now, always sort by name asc)
-	var method = soapDoc.getMethod();
-	method.setAttribute("sortBy", "nameAsc");
-
+	var jsonObj = {GetContactsRequest:{_jsns:"urn:zimbraMail", sortBy:"nameAsc"}};
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
 	DBG.timePt("requesting contact list", true);
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, noBusyOverlay: true,
-												  callback: respCallback, errorCallback: errorCallback});
+	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, noBusyOverlay:true,
+											callback:respCallback, errorCallback:errorCallback});
 };
 
 ZmContactList.prototype._handleResponseLoad =
@@ -357,10 +353,12 @@ function(phone) {
 */
 ZmContactList.prototype.moveItems =
 function(items, folder, attrs, outOfTrash) {
-	if (!(items instanceof Array)) items = [items];
+	if (!(items instanceof Array)) {
+		items = [items];
+	}
 
-	var moveBatchCmd = new ZmBatchCommand();
-	var loadBatchCmd = new ZmBatchCommand();
+	var moveBatchCmd = new ZmBatchCommand(true, null, true);
+	var loadBatchCmd = new ZmBatchCommand(true, null, true);
 	var softMove = [];
 	var hardMove = [];
 
@@ -369,8 +367,7 @@ function(items, folder, attrs, outOfTrash) {
 	for (var i = 0; i < items.length; i++) {
 		var contact = items[i];
 
-		if (contact.isReadOnly())
-			continue;
+		if (contact.isReadOnly()) { continue; }
 
 		if (contact.isShared() || folder.link) {
 			hardMove.push(contact);
@@ -443,8 +440,9 @@ function(batchCmd, folder, result, contact) {
 ZmContactList.prototype._getCopyCmd =
 function(contact, folder) {
 	var temp = new ZmContact(null, this);
-	for (var j in contact.attr)
+	for (var j in contact.attr) {
 		temp.attr[j] = contact.attr[j];
+	}
 	temp.attr[ZmContact.F_folderId] = folder.id;
 
 	return new AjxCallback(temp, temp.create, [temp.attr]);

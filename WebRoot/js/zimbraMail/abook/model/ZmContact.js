@@ -343,19 +343,21 @@ function(contact) {
 
 ZmContact.prototype.load =
 function(callback, errorCallback, batchCmd) {
-	var soapDoc = AjxSoapDoc.create("GetContactsRequest", "urn:zimbraMail");
-	var msgNode = soapDoc.set("cn");
-	msgNode.setAttribute("id", this.id);
+	var jsonObj = {GetContactsRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.GetContactsRequest;
+	request.cn = [{id:this.id}];
 
 	var respCallback = new AjxCallback(this, this._handleLoadResponse, [callback]);
 
 	if (batchCmd) {
-		batchCmd.addRequestParams(soapDoc, respCallback, errorCallback);
+		var jsonObj = {GetContactsRequest:{_jsns:"urn:zimbraMail"}};
+		jsonObj.GetContactsRequest.cn = {id:this.id};
+		batchCmd.addRequestParams(jsonObj, respCallback, errorCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({soapDoc: soapDoc,
-												asyncMode: true,
-												callback: respCallback,
-												errorCallback: errorCallback});
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj,
+												asyncMode:true,
+												callback:respCallback,
+												errorCallback:errorCallback});
 	}
 };
 
@@ -490,51 +492,39 @@ function() {
 * <p>
 * If this is a GAL contact, we assume it is being added to the contact list.</p>
 *
-* @param attr	[hash]		attr/value pairs for this contact
+* @param attr		[hash]				attr/value pairs for this contact
+* @param batchCmd	[ZmBatchCommand]*	batch command that contains this request
 */
 ZmContact.prototype.create =
 function(attr, batchCmd) {
-	var soapDoc = AjxSoapDoc.create("CreateContactRequest", "urn:zimbraMail");
-	var cn = soapDoc.set("cn");
+	var jsonObj = {CreateContactRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.CreateContactRequest;
+	var cn = request.cn = {};
 
 	var folderId = attr[ZmContact.F_folderId] || ZmFolder.ID_CONTACTS;
 	var folder = appCtxt.getById(folderId);
-	if (folder && folder.isRemote())
+	if (folder && folder.isRemote()) {
 		folderId = folder.getRemoteId();
-	cn.setAttribute("l", folderId);
+	}
+	cn.l = folderId;
+	cn.a = [];
 
 	for (var name in attr) {
 		if (name == ZmContact.F_folderId ||
 			name == "objectClass" ||
 			name == "zimbraId" ||
 			name == "createTimeStamp" ||
-			name == "modifyTimeStamp")
-		{
-			continue;
-		}
+			name == "modifyTimeStamp") { continue; }
 
-		// handle contact photo
-		var a;
-		if (name == ZmContact.F_image) {
-			a = soapDoc.set("a", null, cn);
-			if (AjxUtil.isString(attr[name])) {
-				if (attr[name].indexOf("aid_") != -1)
-					a.setAttribute("aid", attr[name].substring(4));
-				else
-					a.setAttribute("part", attr[name].substring(5));
-			}
-		} else {
-			a = soapDoc.set("a", attr[name], cn);
-		}
-		a.setAttribute("n", name);
+		this._addRequestAttr(cn.a, name, attr[name]);
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr, batchCmd != null]);
 
 	if (batchCmd) {
-		batchCmd.addRequestParams(soapDoc, respCallback);
+		batchCmd.addRequestParams(jsonObj, respCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 	}
 };
 
@@ -568,15 +558,12 @@ function(attr, isBatchMode, result) {
 
 ZmContact.prototype.createFromVCard =
 function(msgId, vcardPartId) {
-	var soapDoc = AjxSoapDoc.create("CreateContactRequest", "urn:zimbraMail");
-	var cn = soapDoc.set("cn");
-	cn.setAttribute("l", ZmFolder.ID_CONTACTS);
-	var vcard = soapDoc.set("vcard", null, cn);
-	vcard.setAttribute("mid", msgId);
-	vcard.setAttribute("part", vcardPartId);
+	var jsonObj = {CreateContactRequest:{_jsns:"urn:zimbraMail"}};
+	var cn = jsonObj.CreateContactRequest.cn = {l:ZmFolder.ID_CONTACTS};
+	cn.vcard = {mid:msgId, part:vcardPartId};
 
 	var params = {
-		soapDoc: soapDoc,
+		jsonObj: jsonObj,
 		asyncMode: true,
 		callback: (new AjxCallback(this, this._handleResponseCreateVCard)),
 		errorCallback: (new AjxCallback(this, this._handleErrorCreateVCard))
@@ -605,38 +592,21 @@ ZmContact.prototype.modify =
 function(attr, callback) {
 	if (this.list.isGal) { return; }
 
-	var soapDoc = AjxSoapDoc.create("ModifyContactRequest", "urn:zimbraMail");
-	soapDoc.getMethod().setAttribute("replace", "0");
 	// change force to 0 and put up dialog if we get a MODIFY_CONFLICT fault?
-	soapDoc.getMethod().setAttribute("force", "1");
-	var cn = soapDoc.set("cn");
-	cn.setAttribute("id", this.id);
-
+	var jsonObj = {ModifyContactRequest:{_jsns:"urn:zimbraMail", replace:"0", force:"1"}};
+	var cn = jsonObj.ModifyContactRequest.cn = {id:this.id};
+	cn.a = [];
 	var continueRequest = false;
 
 	for (var name in attr) {
 		if (name == ZmContact.F_folderId) { continue; }
-
-		// handle modify photo
-		var a;
-		if (name == ZmContact.F_image) {
-			a = soapDoc.set("a", null, cn);
-			if (attr[name].indexOf("aid_") != -1) {
-				a.setAttribute("aid", attr[name].substring(4));
-			} else if (attr[name].indexOf("part_") != -1) {
-				a.setAttribute("part", attr[name].substring(5));
-			}
-		} else {
-			a = soapDoc.set("a", attr[name], cn);
-		}
-
-		a.setAttribute("n", name);
+		this._addRequestAttr(cn.a, name, attr[name]);
 		continueRequest = true;
 	}
 
 	if (continueRequest) {
 		var respCallback = new AjxCallback(this, this._handleResponseModify, [attr, callback]);
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 	} else {
 		if (attr[ZmContact.F_folderId]) {
 			this._setFolder(attr[ZmContact.F_folderId]);
@@ -682,14 +652,10 @@ function(newFolderId) {
 			this.list.moveItems(this, newFolder);
 		}
 	} else {
-		var soapDoc = AjxSoapDoc.create("ContactActionRequest", "urn:zimbraMail");
-		var cn = soapDoc.set("action");
-		cn.setAttribute("id", this.id);
-		cn.setAttribute("op", "move");
-		cn.setAttribute("l", newFolderId);
-
+		var jsonObj = {ContactActionRequest:{_jsns:"urn:zimbraMail"}};
+		jsonObj.ContactActionRequest.cn = {id:this.id, op:"move", l:newFolderId};
 		var respCallback = new AjxCallback(this, this._handleResponseMove);
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 	}
 };
 
@@ -1038,6 +1004,24 @@ function(text, delims) {
 		this.setAttr(ZmContact.F_middleName, parts[1]);
 		this.setAttr(ZmContact.F_lastName, parts[2]);
 	}
+};
+
+ZmContact.prototype._addRequestAttr =
+function(attrs, name, value) {
+	var a = {n:name};
+	if (name == ZmContact.F_image) {
+		// handle contact photo
+		if (AjxUtil.isString(value)) {
+			if (value.indexOf("aid_") != -1) {
+				a.aid = value.substring(4);
+			} else {
+				a.part = value.substring(5);
+			}
+		}
+	} else {
+		a._content = value;
+	}
+	attrs.push(a);
 };
 
 // Reset computed fields.

@@ -157,12 +157,13 @@ function() {
 				if (a == ZmContact.F_fileAs) {
 					var parsed = parseInt(val);
 					// only set val to parsed if not custom fileAs
-					if (parsed != ZmContact.FA_CUSTOM)
+					if (parsed != ZmContact.FA_CUSTOM) {
 						val = parsed;
+					}
 				}
 			}
 
-			if (this._attr[a] != val) {
+			if ((this._attr[a] || val) && this._attr[a] != val) {
 				foundOne = true;
 				mods[a] = this._attr[a];
 				DBG.println(AjxDebug.DBG2, "DIFF: " + a + " = " + mods[a]);

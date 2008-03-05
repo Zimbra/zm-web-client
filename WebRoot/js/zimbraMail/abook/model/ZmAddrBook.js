@@ -92,34 +92,6 @@ function() {
 	return true;
 };
 
-ZmAddrBook.create =
-function(params) {
-	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
-	var folderNode = soapDoc.set("folder");
-	folderNode.setAttribute("name", params.name);
-	folderNode.setAttribute("l", params.parent.id);
-	folderNode.setAttribute("color", params.color || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK]);
-	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK][0]);
-
-	var errorCallback = new AjxCallback(null, ZmAddrBook._handleErrorCreate, params);
-	var appController = appCtxt.getAppController();
-	appController.sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
-};
-
-ZmAddrBook._handleErrorCreate =
-function(params, ex) {
-	if (params.name && ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS) {
-		var msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [params.name]);
-		var msgDialog = appCtxt.getMsgDialog();
-		msgDialog.reset();
-		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-		msgDialog.popup();
-		return true;
-	}
-
-	return false;
-};
-
 ZmAddrBook.prototype.mayContain =
 function(what) {
 	if (!what) return true;

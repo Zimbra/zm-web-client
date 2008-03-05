@@ -55,42 +55,42 @@ function(params) {
 	
 	var cacheKey = this._getCacheKey(params);
 	var cachedData = this._miniCalData[cacheKey];
-	if(cachedData) {
+	if (cachedData) {
 		this.highlightMiniCal(params, cachedData);
-		if(params.callback) {
+		if (params.callback) {
 			params.callback.run(cachedData);
 			return;
 		}
 		return cachedData;
 	}	
 	
+	var jsonObj = {GetMiniCalRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.GetMiniCalRequest;
 	
-	var soapDoc = AjxSoapDoc.create("GetMiniCalRequest", "urn:zimbraMail");
-
-	var method = soapDoc.getMethod();
-	
-	this._setSoapParams(soapDoc, method, params);
+	this._setSoapParams(request, params);
 
 	if (params.callback) {
 		var respCallback = new AjxCallback(this, this._getMiniCalResponse, [params]);
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
-		var response = appCtxt.getAppController().sendRequest({soapDoc: soapDoc});
+		var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj});
 		var result = new ZmCsfeResult(response, false);
 		return this._getMiniCalResponse(params, result);
 	}
 };
 
 ZmMiniCalCache.prototype._setSoapParams = 
-function(soapDoc, method, params) {
+function(request, params) {
 	
-	method.setAttribute("s", params.start);
-	method.setAttribute("e", params.end);
+	request.s = params.start;
+	request.e = params.end;
 
 	var folderNode = null;
-	for(var i=0; i < params.folderIds.length; i++) {		
-		folderNode = soapDoc.set("folder", null, method);
-		folderNode.setAttribute("id", params.folderIds[i]);
+	if (params.folderIds && params.folderIds.length) {
+		request.folder = [];
+		for (var i = 0; i < params.folderIds.length; i++) {
+			request.folder.push({id:params.folderIds[i]});
+		}
 	}
 };	
 
