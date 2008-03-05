@@ -5,11 +5,13 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <c:choose>
+	<app:skin mailbox="${mailbox}" />
+	<c:choose>
     <c:when test="${not empty mailbox.prefs.locale}">
         <fmt:setLocale value='${mailbox.prefs.locale}' scope='request' />
     </c:when>
@@ -21,15 +23,15 @@
     
     <c:set var="successfullLogin" value="false"/>
     <fmt:message var="errorMessage" key="enterNewPassword"/>
-    <c:set var="messageImage" value="/img/dwt/ImgInformation_32.gif"/>
+    <c:set var="messageImage" value="dwt/ImgInformation_32.gif"/>
     <c:choose>
         <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
             <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
-            <c:set var="messageImage" value="/img/dwt/ImgCritical_32.gif"/>
+            <c:set var="messageImage" value="dwt/ImgCritical_32.gif"/>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && ((empty param.loginNewPassword) or (empty param.password) or (empty param.loginConfirmNewPassword))}">
             <fmt:message var="errorMessage" key="passwordFieldMissing"/>
-            <c:set var="messageImage" value="/img/dwt/ImgCritical_32.gif"/>
+            <c:set var="messageImage" value="dwt/ImgCritical_32.gif"/>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && (not empty param.loginNewPassword) && (not empty param.password)}">
             <c:catch var="loginException">
@@ -42,7 +44,7 @@
                 <zm:getException var="error" exception="${loginException}"/>
                 <c:set var="errorCode" value="${error.code}"/>
                 <fmt:message var="errorMessage" key="${errorCode}"/>
-                <c:set var="messageImage" value="/img/dwt/ImgCritical_32.gif"/>
+                <c:set var="messageImage" value="dwt/ImgCritical_32.gif"/>
             </c:if>
         </c:when>
 
@@ -54,10 +56,10 @@
 
 <head>
     <title><fmt:message key="changePassword"/></title>
-    <c:set var="skin" value="${empty cookie.ZM_SKIN ? 'beach' : cookie.ZM_SKIN.value}"/>
-    <style type="text/css">
-         @import url( "<c:url value='/css/common,login,zhtml,${skin},skin.css?skin=${skin}'/>" );
-    </style>
+	<c:url var='cssurl' value='/css/common,login,zhtml,${skin},skin.css'>
+		<c:param name="skin" value="${skin}" />
+	</c:url>
+	<link rel="stylesheet" type="text/css" href="${cssurl}">
     <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
@@ -94,7 +96,7 @@
                                     <table width=100%>
                                         <tr>
                                             <td valign='top' width='40'>
-                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<c:url value='${messageImage}'/>"/>
+                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<app:imgurl value='${messageImage}'/>"/>
                                             </td>
                                             <td class='errorText'>
                                                 <c:out value="${errorMessage}"/> 

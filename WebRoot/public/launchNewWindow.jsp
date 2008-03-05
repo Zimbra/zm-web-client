@@ -45,9 +45,6 @@
     String skin = request.getParameter("skin");
     if (skin == null) {
         skin = application.getInitParameter("zimbraDefaultSkin");
-		if (skin == null) {
-			skin = "beach";
-		}
 	}
 
 	boolean isDev = getParameter(request, "dev", "0").equals("1");

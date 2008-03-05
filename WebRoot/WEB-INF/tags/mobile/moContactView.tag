@@ -6,6 +6,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <c:set var="id" value="${not empty id?id:(empty param.id ? context.currentItem.id : param.id)}"/>
 <mo:handleError>
     <zm:getMailbox var="mailbox"/>
@@ -29,7 +30,7 @@
             <td><br>
             	<table cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                <td width="1%" class="Padding"><img src="/img/large/ImgPerson_48.gif" border="0" width="48" height="48" class="Padding"/></td>
+                <td width="1%" class="Padding"><img src="<app:imgurl value='large/ImgPerson_48.gif' />" border="0" width="48" height="48" class="Padding"/></td>
                 <td>
                 <b>${fn:escapeXml(contact.displayFileAs)}</b>
 				<br>		            

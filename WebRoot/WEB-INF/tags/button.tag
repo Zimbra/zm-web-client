@@ -10,26 +10,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
-<c:if test="${not empty src}">
-  <c:url value="${iconPath}/${src}" var="src"/>
-</c:if>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <c:if test="${not empty text}"><fmt:message key="${text}" var="text"/></c:if>
 <c:if test="${not empty tooltip}"><fmt:message key="${tooltip}" var="tooltip"/></c:if>
 <c:if test="${disabled}"><c:set var="clazz" value="${clazz} ImgDisabled"/></c:if>
 <c:if test="${width}"><c:set var="width" value="${width}"/></c:if>
 
-<%--
- <button <c:if test="${disabled}">disabled </c:if> type="submit" name="${name}" value="1" <c:if test="${not empty tooltip}">title="${fn:escapeXml(tooltip)}"</c:if> >
-   <c:if test="${not empty src}">
-   <img src="${src}" <c:if test="${not empty tooltip}">alt="${fn:escapeXml(tooltip)}" </c:if> <c:if test="${not empty clazz}">class='${clazz}'</c:if>>
-   </c:if>
-    <c:if test="${not empty text}"><span>${text}</span></c:if>
-  </button>
---%>
-
 <c:if test="${not empty src}">
     <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-        <input <c:if test="${not empty id}">id="I${id}"</c:if> <c:if test="${disabled}">disabled </c:if> name="${name}" type="image" src="${src}" <c:if test="${not empty tooltip}">alt="${fn:escapeXml(tooltip)}" title="${fn:escapeXml(tooltip)}" </c:if> <c:if test="${not empty clazz}">class='${clazz}'</c:if>>
+        <input <c:if test="${not empty id}">id="I${id}"</c:if> <c:if test="${disabled}">disabled </c:if> name="${name}" type="image" src="<app:imgurl value='${src}' />" <c:if test="${not empty tooltip}">alt="${fn:escapeXml(tooltip)}" title="${fn:escapeXml(tooltip)}" </c:if> <c:if test="${not empty clazz}">class='${clazz}'</c:if>>
     </td>
 </c:if>
 <c:if test="${not empty text}">

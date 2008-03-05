@@ -76,7 +76,7 @@
             <td class='TbBt'>
                 <table cellspacing=0 cellpadding=0 class='Tb'>
                     <tr>
-                        <app:button name="actionContactAdd" src="img/contacts/ImgContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
+                        <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
                     </tr>
                 </table>
             </td>

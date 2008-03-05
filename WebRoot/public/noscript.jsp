@@ -34,7 +34,7 @@
 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 <title><fmt:message key="zimbraTitle"/></title>
-<link href="/zimbra/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="<c:url value='/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin' />">
 <fmt:message key="favIconUrl" var="favIconUrl"/>
 </head>
 <body>

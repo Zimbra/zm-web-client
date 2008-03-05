@@ -58,7 +58,7 @@
 	}
 
 	final String SKIN_COOKIE_NAME = "ZM_SKIN";
-	String skin = "beach";
+	String skin = application.getInitParameter("zimbraDefaultSkin");
 
 	String requestSkin = request.getParameter("skin");
 	if (requestSkin != null) {
@@ -232,9 +232,9 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 </head>
 <body>
 <noscript><fmt:setBundle basename="/messages/ZmMsg"/>
-    <fmt:message key="errorJavaScriptRequired"><fmt:param>
-    <c:url context="/zimbra" value='/h/'></c:url>
-    </fmt:param></fmt:message>
+    <fmt:message key="errorJavaScriptRequired">
+		<fmt:param><c:url value='/h/' /></fmt:param>
+	</fmt:message>
 </noscript>
 <script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%>"></script> 
 <%

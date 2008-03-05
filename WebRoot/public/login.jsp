@@ -5,6 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setLocale value='${pageContext.request.locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
@@ -193,11 +194,14 @@ if (application.getInitParameter("offlineMode") != null)  {
 -->
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title><fmt:message key="zimbraLoginTitle"/></title>
-    <c:set var="skin" value="${empty initParam.zimbraDefaultSkin ? 'beach' : initParam.zimbraDefaultSkin}"/>
+    <app:skin />
     <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <meta name="viewport" content="width=320; initial-scale=1.0; maximum-scale=8.0; user-scalable=1;">
     <meta name="description" content="<fmt:message key="zimbraLoginMetaDesc"/>">
-    <link href="<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" rel="stylesheet" type="text/css" />
+    <link  rel="stylesheet" type="text/css" href="<c:url value='/css/common,login,zhtml,skin.css'>
+		<c:param name="skin"	value="${skin}" />
+		<c:param name="v"		value="${version}" />
+	</c:url>">
     <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
@@ -231,7 +235,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                                     <table width="100%">
                                         <tr>
                                             <td valign="top" width="40">
-                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<c:url value='/img/dwt/ImgCritical_32.gif'/>"/>
+                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<app:imgurl value='dwt/ImgCritical_32.gif'/>"/>
                                             </td>
                                             <td class="errorText">
                                                 <c:out value="${errorMessage}"/>

@@ -23,8 +23,8 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
 <html>
+<app:skin mailbox="${mailbox}" />
 <app:head mailbox="${mailbox}" title="${title}"/>
-<c:set var="skin" value="${not empty sessionScope.skin ? sessionScope.skin : (not empty mailbox.prefs.skin ? mailbox.prefs.skin : 'beach')}" />
 <!-- skin is ${skin} -->
 <body <c:if test="${not empty onload}">onload="${onload}"</c:if>>
 <app:handleViewError>

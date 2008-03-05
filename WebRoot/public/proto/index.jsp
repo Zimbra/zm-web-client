@@ -11,7 +11,7 @@
 	String controller = request.getParameter("controller");
 	String template = request.getParameter("template");
 	String skin = request.getParameter("skin");
-	if (skin == null) skin = "beach";
+	if (skin == null) skin = application.getInitParameter("zimbraDefaultSkin");
 
 %><html>
 <head>

@@ -50,28 +50,28 @@
             <td width="5%" align="center" valign="top">
             <!-- Tabs starts here -->
                         <c:set var="aurl" value="${context_url}?"/>
-                        <a id="mails" href="${aurl}"><img id="mail_img" src="/img/mobile/Mail<c:if test="${param.st eq '' or param.st eq null}"><c:out value="-sel"/></c:if>.gif" border="0" width="55" height="48">
+                        <a id="mails" href="${aurl}"><img id="mail_img" src="<app:imgurl value='mobile/Mail${empty param.st ? "-sel" : ""}.gif' />" border="0" width="55" height="48">
                         <%-- c:if test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if --%>
                         </a>
                         </td>
                         <td align="center" width="5%" valign="top">
                         <c:if test="${mailbox.features.contacts}">
                             <c:set var="aurl" value="${context_url}?st=contact"/>
-                            <a id="contacts" href="${aurl}"><img id="contact_img" src="/img/mobile/Contacts<c:if test="${param.st=='contact'}"><c:out value="-sel"/></c:if>.gif" border="0" width="55" height="48"></a>
+                            <a id="contacts" href="${aurl}"><img id="contact_img" src="<app:imgurl value='mobile/Contacts${param.st eq 'contact' ? "-sel" : ""}.gif' />" border="0" width="55" height="48"></a>
                         </c:if>
                         </td>
                         <td width="5%" align="center" valign="top">
                         <c:if test="${mailbox.features.calendar}">
                             <c:set var="aurl" value="${context_url}?st=cal"/>
-                            <a id="cal" href="${aurl}"><img id="cal_img" src="/img/mobile/Calendar<c:if test="${param.st=='cal'}"><c:out value="-sel"/></c:if>.gif" border="0" width="55" height="48"></a>
+                            <a id="cal" href="${aurl}"><img id="cal_img" src="<app:imgurl value='mobile/Calendar${param.st eq 'cal' ? "-sel" : ""}.gif' />" border="0" width="55" height="48"></a>
                         </c:if>
                         </td>
                         <td width="5%" align="center" valign="top">
                          <c:set var="aurl" value="${context_url}?st=folders"/>
-                        <a id="folders" href="${aurl}"><img id="folder_img" src="/img/mobile/Folders<c:if test="${param.st=='folders'}"><c:out value="-sel"/></c:if>.gif" border="0" width="55" height="48"></a>
+                        <a id="folders" href="${aurl}"><img id="folder_img" src="<app:imgurl value='mobile/Folders${param.st eq 'folders' ? "-sel" : ""}.gif' />" border="0" width="55" height="48"></a>
             </td>
             <td width="5%" align="center" valign="top" onclick="javascript:toggleSearch()">
-            	<img id="search_img" src="/img/mobile/Search.gif" border="0" width="55" height="48">
+            	<img id="search_img" src="<app:imgurl value='mobile/Search.gif' />" border="0" width="55" height="48">
             </td>
         </tr>
         
@@ -186,11 +186,11 @@
         var toggleSearch = function(){
             if(document.getElementById("SEARCH_BOX").style.display=="block"){
                 document.getElementById("SEARCH_BOX").style.display="none";
-                document.getElementById("search_img").src = "/img/mobile/Search.gif";
+                document.getElementById("search_img").src = "<app:imgurl value='mobile/Search.gif' />";
                 document.getElementById(selectedImgId).src = document.getElementById(selectedImgId).src.replace(".gif","-sel.gif");;
             }else{
                 document.getElementById("SEARCH_BOX").style.display="block";
-                document.getElementById("search_img").src = "/img/mobile/Search-sel.gif";
+                document.getElementById("search_img").src = "<app:imgurl value='mobile/Search-sel.gif' />";
                 document.getElementById(selectedImgId).src = document.getElementById(selectedImgId).src.replace("-sel","");
             }
         }

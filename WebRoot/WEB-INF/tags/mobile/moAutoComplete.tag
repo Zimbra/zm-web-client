@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <c:set var="yahooDomEvent" value="true" scope="request"/>
 <script type="text/javascript" src="<c:url value='/yui/2.3.0/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
@@ -44,8 +45,13 @@
             }
 
             if(sResult) {
-                return ["<table class='zo_m_list_row' style='margin-bottom: 5px;'><tr><td><img src='/zimbra/img/contacts/Img",
-                        t == "g" ? "GALContact.gif" : t == "dl" ? "Group.gif" : "Contact.gif",
+				var imgsrc = t == 'g' ?
+							 "<app:imgurl value='contacts/ImgGALContact.gif' />" :
+							 t == 'dl' ?
+							 "<app:imgurl value='contacts/ImgGroup.gif' />" :
+							 "<app:imgurl value='contacts/ImgContact.gif' />"
+				;
+				return ["<table class='zo_m_list_row' style='margin-bottom: 5px;'><tr><td><img src='",imgsrc,
                         "'><"+"/td><td style='padding:3px 5px;'>",
                         zhFmt(f, fls ? fq : query, fs),
                         " ",
@@ -60,7 +66,7 @@
                 return "";
             }
         };
-        var myDataSource = new YAHOO.widget.DS_XHR("/zimbra/h/ac", ["Result","m","e","f","l","t"]);
+        var myDataSource = new YAHOO.widget.DS_XHR("<c:url value='/h/ac' />", ["Result","m","e","f","l","t"]);
         var initAuto = function(field,container) {
             var ac = new YAHOO.widget.AutoComplete(field, container, myDataSource);
             ac.delimChar = [",",";"];

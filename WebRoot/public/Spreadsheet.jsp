@@ -20,7 +20,7 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
 
     final String SKIN_COOKIE_NAME = "ZM_SKIN";
-    String skin = "beach";
+    String skin = application.getInitParameter("zimbraDefaultSkin");
     Cookie[] cookies = request.getCookies();
     String requestSkin = request.getParameter("skin");
     if (requestSkin != null) {
