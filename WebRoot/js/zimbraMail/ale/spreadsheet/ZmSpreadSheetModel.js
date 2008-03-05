@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- *
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
- *
+ * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- *
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -485,6 +485,48 @@ ZmSpreadSheetModel.prototype.deserialize = function(str) {
 	}
 };
 
+ZmSpreadSheetModel.prototype.loadFromXml = function(xmlStr) {
+	var xml = AjxXmlDoc.createFromXml(xmlStr);
+	if(xml) {
+		var workbook = xml.toJSObject(false, false, true);
+		if(!workbook) return;
+	
+		var worksheet = (workbook && workbook.Worksheet) ? workbook.Worksheet : null;
+		var colProps = (worksheet && worksheet.ColProps) ? worksheet.ColProps : null;		
+		var table = (worksheet && worksheet.Table) ? worksheet.Table : null;
+		var rows = (table && table.Row) ? table.Row : [];
+
+		this.ROWS = (table && table.ExpandedRowCount) ? table.ExpandedRowCount : 0;
+		this.COLS = (table && table.ExpandedColumnCount) ? table.ExpandedColumnCount : 0;
+		this.colProps = (colProps && colProps.Col) ? colProps.Col : [];
+		this.version = (worksheet && worksheet.version) ? worksheet.version : 0;
+
+		var d = this.data = new Array(this.ROWS);
+		var cell = null;
+		var cellData = null;
+		
+		for (var i = 0; i < this.ROWS; ++i) {
+			if(!rows || !rows[i]) continue;
+			var cells = rows[i].Cell;
+			if(!cells) continue;
+			var row = d[i] = new Array(this.COLS);
+			for (var j = 0; j < this.COLS; ++j) {
+					if(!cells[j]) continue;
+					cell = cells[j];
+					cellData = {
+						row: cell.row,
+						col: cell.col,
+						type: cell.type,
+						decimals: cell.decimals,
+						editValue: cell.editValue,
+						style: cell.Style
+					};
+					row[j] = ZmSpreadSheetCellModel.deserialize(this, cellData);
+			}
+		}
+	}
+};
+
 // This function is important for deserialization to work fine.  It's called
 // automatically from the view after all cells have been associated a <td>.
 ZmSpreadSheetModel.prototype.doneSetView = function() {
@@ -521,6 +563,41 @@ ZmSpreadSheetModel.prototype.getHtml = function() {
 	}
 	html.push("</table>");
 	return html.join("");
+};
+
+ZmSpreadSheetModel.prototype.getXml = function() {
+
+	var workbookN = AjxXmlDoc.createRoot("Workbook");
+	
+	var worksheetN = AjxXmlDoc.createElement("Worksheet");		
+	worksheetN.root.setAttribute("version", 1);
+
+	var colPropsN = AjxXmlDoc.createElement("ColProps");
+	
+	for (var i = 0; i < this.COLS; ++i){
+		var colN = AjxXmlDoc.createElement("Col");
+		colN.root.setAttribute("width", this.colProps[i].width);
+		colPropsN.appendChild(colN);
+	}
+	worksheetN.appendChild(colPropsN);
+		
+	var tableN = AjxXmlDoc.createElement("Table");
+	tableN.root.setAttribute("ExpandedRowCount", this.ROWS);
+	tableN.root.setAttribute("ExpandedColumnCount", this.COLS);
+
+	var rowsN = null;
+	
+	for (var i = 0; i < this.ROWS; ++i) {
+		rowN = AjxXmlDoc.createElement("Row");
+		for (var j = 0; j < this.COLS; ++j) {
+			var cellN = this.data[i][j].getXml(i+1,j+1);
+			rowN.appendChild(cellN);
+		}
+		tableN.appendChild(rowN);
+	}
+	worksheetN.appendChild(tableN);
+	workbookN.appendChild(worksheetN);	
+	return workbookN;
 };
 
 /// A Range copy
@@ -694,6 +771,29 @@ ZmSpreadSheetCellModel.prototype.getHtml = function() {
 	if (val == "")
 		val = "&nbsp;";
 	return [ "<td", cls, style, ">", val, "</td>" ].join("");
+};
+
+ZmSpreadSheetCellModel.prototype.getXml = function(row, col) {
+
+	var styleN = AjxXmlDoc.createElement("Style");
+	for (var i in this._style) {
+		if (this._style[i] != "") {
+			var css_name = i;
+			if(css_name != "toString") {
+				styleN.root.setAttribute(css_name,this._style[i]);
+			}
+		}
+	}
+
+	var cellN = AjxXmlDoc.createElement("Cell");
+	var cellRoot = cellN.root;
+	cellRoot.setAttribute("row", row);
+	cellRoot.setAttribute("col", col);	
+	cellRoot.setAttribute("editValue", (this._editValue ? this._editValue : ""));
+	cellRoot.setAttribute("decimals", (this._decimals ? this._decimals : ""));
+	cellRoot.setAttribute("type", (this._type ? this._type : ""));
+	cellN.appendChild(styleN);
+	return cellN;
 };
 
 ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
