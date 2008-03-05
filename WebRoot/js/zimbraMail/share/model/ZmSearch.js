@@ -292,14 +292,15 @@ function(params) {
 				request.attrs = this.attrs.join(",");
 			}
 			if (this.conds && this.conds.length) {
-				request.searchFilter = {conds:{_content:[]}};
+				request.searchFilter = {conds:{}};
 				var conds = request.searchFilter.conds;
+				var cond = conds.cond = [];
 				if (this.join == ZmSearch.JOIN_OR) {
 					conds.or = 1;
 				}
 				for (var i = 0; i < this.conds.length; i++) {
-					var cond = this.conds[i];
-					conds._content.push({cond:{attr:cond.attr, op:cond.op, value:cond.value}});
+					var c = this.conds[i];
+					cond.push({attr:c.attr, op:c.op, value:c.value});
 				}
 			}
 		} else {
