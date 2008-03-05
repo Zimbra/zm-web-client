@@ -67,11 +67,11 @@ function(rootObj, elementType) {
  */
 ZmFolderTree.createFromJs =
 function(parent, obj, tree, elementType, path) {
-	if (!(obj && obj.id)) return;
+	if (!(obj && obj.id)) { return; }
 
-	var folder = null;
+	var folder;
 	if (elementType == "search") {
-		var types = null;
+		var types;
 		if (obj.types) {
 			var t = obj.types.split(",");
 			types = [];
@@ -79,11 +79,20 @@ function(parent, obj, tree, elementType, path) {
 				types.push(ZmSearch.TYPE_MAP[t[i]]);
 			}
 		}
-		var sortBy = obj.sortBy ? ZmSearch.SORT_BY_MAP[obj.sortBy] : null;
 		DBG.println(AjxDebug.DBG2, "Creating SEARCH with id " + obj.id + " and name " + obj.name);
-		folder = new ZmSearchFolder({id:obj.id, name:obj.name, parent:parent, tree:tree, numUnread:obj.u,
-									 query:obj.query, types:types, sortBy:sortBy});
+		var params = {
+			id: obj.id,
+			name: obj.name,
+			parent: parent,
+			tree: tree,
+			numUnread: obj.u,
+			query: obj.query,
+			types: types,
+			sortBy: (obj.sortBy ? ZmSearch.SORT_BY_MAP[obj.sortBy] : null)
+		};
+		folder = new ZmSearchFolder(params);
 		ZmFolderTree._fillInFolder(folder, obj, path);
+		ZmFolderTree._traverse(folder, obj, tree, (path || []), elementType);
 	} else {
 		var type = obj.view ? ZmOrganizer.TYPE[obj.view] : parent ? parent.type : ZmOrganizer.FOLDER;
 		if (!type) {
