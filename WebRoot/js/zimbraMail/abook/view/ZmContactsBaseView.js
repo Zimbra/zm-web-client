@@ -32,22 +32,6 @@ function() {
 	return "ZmContactsBaseView";
 };
 
-ZmContactsBaseView.prototype._setNoResultsHtml =
-function(){
-    var list = this._controller.getApp().getContactList();
-    if(list && list.size() > 1){ // There are contacts
-        ZmListView.prototype._setNoResultsHtml.call(this);
-    }else{
-        var subs = { message1: ZmMsg.plaxoMessage1,message2: ZmMsg.plaxoMessage2, label: ZmMsg.plaxoButtonLabel, link:ZmMsg.plaxoButtonLink };
-        var tempData = AjxTemplate.expand("abook.Contacts#Plaxo", subs);
-        if(tempData){
-            var	div = document.createElement("div");
-            div.innerHTML = tempData;
-            this._addRow(div);
-        }
-    }
-}
-
 ZmContactsBaseView.prototype.set =
 function(list, sortField, folderId) {
 	var subList;
