@@ -820,6 +820,7 @@ ZmChatWidget.prototype._setupSash = function() {
 		mouseMoveHdlr:AjxCallback.simpleClosure(this._sashMouseMove, this),
 		mouseUpHdlr:AjxCallback.simpleClosure(this._sashMouseUp, this)
 	});
+		null, // no mouse wheel
 	this._getElement("sash").onmousedown = AjxCallback.simpleClosure(this._sashMouseDown, this);
 };
 
