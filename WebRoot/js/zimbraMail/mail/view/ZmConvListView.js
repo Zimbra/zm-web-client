@@ -95,17 +95,17 @@ function(defaultColumnSort) {
 	ZmMailListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
 
 	// Show "From" or "To" depending on which folder we're looking at
-	isFolder = this._resetFromColumnLabel();
-      // set the received column name based on query string
-		colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
-		var recdColIdx = this.getColIndexForId(ZmItem.F_DATE);
-		var recdColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
-		if (recdColSpan) {
-			recdColSpan.innerHTML = "&nbsp;" + colLabel;
-		}
-		if (this._colHeaderActionMenu) {
-			this._colHeaderActionMenu.getItem(recdColIdx).setText(colLabel);
-            }
+	var isFolder = this._resetFromColumnLabel();
+	// set the received column name based on query string
+	colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
+	var recdColIdx = this.getColIndexForId(ZmItem.F_DATE);
+	var recdColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
+	if (recdColSpan) {
+		recdColSpan.innerHTML = "&nbsp;" + colLabel;
+	}
+	if (this._colHeaderActionMenu) {
+		this._colHeaderActionMenu.getItem(recdColIdx).setText(colLabel);
+	}
 };
 
 // Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op

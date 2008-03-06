@@ -111,7 +111,7 @@ function() {
 ZmMailListView.prototype._isSentOrDraftsFolder =
 function() {
 	var folder = appCtxt.getById(this._folderId);
-	var isSentFolder = folder && folder.isUnder(ZmFolder.ID_SENT);
+	var isSentFolder = folder && (folder.isUnder(ZmFolder.ID_SENT) || folder.isUnder(ZmFolder.ID_OUTBOX));
 	var isDraftsFolder = folder && folder.isUnder(ZmFolder.ID_DRAFTS);
 
 	// XXX: is the code below necessary?
