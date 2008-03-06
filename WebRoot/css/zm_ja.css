@@ -1,0 +1,50 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ *
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
+ *
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ *
+ * ***** END LICENSE BLOCK *****
+ */
+
+/*
+* Conventions
+*
+* - Classes that start with "Dwt" or "Zm" have a corollary Javascript object.
+* - Use one line if there is only one selector and one declaration. Otherwise, indent each declaration on its own line.
+* - Group selectors to avoid repetition of styles, as appropriate (ie group within a section). That means you may have
+*   to look at more than one definition to figure out all the applicable styles, but it lets you give the styles a
+*   hierarchy. That way, you're more likely to need to change a style in just one place.
+* - Use shorthand styles when possible (font, margin, padding, etc).
+* - When grouping selectors that correspond to our Javascript objects, show inheritance by using a different line for
+*   each level of inheritance. CSS doesn't care about our object hierarchy, but doing that enhances readability.
+* - Use hex RGB values for colors that don't have names (eg:  #EEEEEE)
+* - Try to stick to hex values of   00, 33, 66, 99, AA, FF so they map cleanly to the web palette,
+*    eg: #666666 rather than #616161
+* - Modifiers are lower case, whether they're a class (eg .hover) or tacked on (eg -selected).
+*
+* Classes are laid out in the following general order:
+*	- HTML elements
+*	- General app stuff (shell, overlays, banner)
+*	- Widgets that tend toward abstract (minimal subclassing), such as tool tips and sashes
+*	- Heavier use widgets such as buttons and dialogs
+*		- General widget stuff, then specialized subclasses
+*	- List views, with common stuff first
+*	- Other views (lots of them)
+*	- Miscellaneous stuff that multiple apps might use (objects, autocomplete)
+*	- Modifiers
+*
+* Many of the Dwt widgets don't have corresponding classes here, since they are only subclassed.
+*/
+/* bug 23552: unexpected line wrapped strings in briefcase */
+.ZmColListDivPad {
+width: 350px;
+}
