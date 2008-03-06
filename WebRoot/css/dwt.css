@@ -1709,12 +1709,12 @@
 
 .ZTab									{	@Tab@	@TabSpacing@	}
 
-			.ZTabBorder					{	@TabBorder@	@TabBorder-normal@		}
-.ZHover		.ZTabBorder					{				@TabBorder-hover@		}
-.ZDisabled	.ZTabBorder					{				@TabBorder-disabled@ 	}
-.ZFocused	.ZTabBorder					{				@TabBorder-focused@		}
-.ZActive	.ZTabBorder					{				@TabBorder-active@		}
-.ZSelected	.ZTabBorder					{				@TabBorder-selected@	}
+			.ZTabBorder		td			{	@TabBorder@	@TabBorder-normal@		}
+.ZHover		.ZTabBorder		td			{				@TabBorder-hover@		}
+.ZDisabled	.ZTabBorder		td			{				@TabBorder-disabled@ 	}
+.ZFocused	.ZTabBorder		td			{				@TabBorder-focused@		}
+.ZActive	.ZTabBorder		td			{				@TabBorder-active@		}
+.ZSelected	.ZTabBorder		td			{				@TabBorder-selected@	}
 
 			.ZTabTable .ZWidgetTitle	{	@TabText@ 	@TabText-normal@		}
 .ZHover		.ZTabTable .ZWidgetTitle	{				@TabText-hover@			}
