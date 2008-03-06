@@ -31,9 +31,16 @@
                     <a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgNewMessage.gif" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
-                     <td nowrap>
-                         <app:button name="actionPrint" id="${keys ? 'OPPRINT' : ''}" src="startup/ImgPrint.gif" tooltip="actionPrint" text="actionPrint"/>
-                    </td>
+	                <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+	                     <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+	                </td>
+	                <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+	                     <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+	                </td>
+	                     <%--
+	                     <zm:currentResultUrl var="refreshUrl" value="/h/printconversations" context="${context}" refresh="true" />
+                        <a id="OPPRINT" target="_blank" href="${refreshUrl}"><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/>&nbsp;<fmt:message key="actionPrint"/></a>
+                        --%>
                     <td><div class='vertSep'></div></td>
                     <c:choose>
                         <c:when test="${context.isFolderSearch and context.folder.isTrash}">

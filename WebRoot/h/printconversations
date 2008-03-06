@@ -16,7 +16,7 @@
     </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
-    <c:set var="cid" value="${paramValues.id[0]}"/>
+    <c:set var="cid" value="${(not empty param.cid) ? param.cid : paramValues.id[0]}"/>
     <zm:computeSearchContext var="context" usecache="true"/>
 
 </app:handleError>
@@ -30,7 +30,7 @@
         </tr></table>
         <hr/>
 <zm:searchConv var="convSearchResult" id="${cid}" context="${context}"  markread="false" />
-<table cellpadding="0" cellspacing="5" >
+<table cellpadding="0" cellspacing="5"  width="100%">
     <tr>
         <td>
             <div style="padding: 10px; font-size: 20px; font-weight: bold;">${convSearchResult.hits[0].subject}</div><hr/>
