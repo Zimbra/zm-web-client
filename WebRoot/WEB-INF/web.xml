@@ -362,6 +362,7 @@
           <url-pattern>/h/sidebarads</url-pattern>
           <url-pattern>/h/printcontacts</url-pattern>
           <url-pattern>/h/printconversations</url-pattern>
+          <url-pattern>/h/printmessage</url-pattern>
           <url-pattern>/y/calendar</url-pattern>
           <url-pattern>/y/eappt</url-pattern>
           <url-pattern>/y/mcalendars</url-pattern>

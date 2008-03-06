@@ -151,6 +151,15 @@
         var zunread = function() { zaction("OPUNREAD"); }
         var zjunk = function() { zclick("SOPSPAM"); }
         function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
+        var zprint = function(){
+	       var idex = 0;
+			while (idex <= zrc )
+			{
+			if(document.getElementById("C"+idex).checked) {cid = document.getElementById("C"+idex).value;break; }
+				idex++ ;
+			}
+	         window.open("/h/printconversations?cid="+cid);
+        }
         //-->
     </SCRIPT>
 
