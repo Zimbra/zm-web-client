@@ -469,7 +469,7 @@ function(what, folderType) {
 			invalid = true;
 		} else if ((item.type == ZmItem.CONV) &&
 			 item.list.search &&
-			 (item.list.search.folderId == this.id)) {
+			 (item.list.search.folderId == this.nId)) {
 
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
