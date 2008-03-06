@@ -177,7 +177,7 @@ ZmMailPrefsPage.prototype._setEnabledStartDate = function(val) {
     this._startDateField.disabled = !condition;
     this._startDateButton.setEnabled(condition);
     if(!condition){
-        this._startDateVal.value = null;
+        this._startDateVal.value = "";
     }else{
         this._startDateVal.value =  this._formatter.format(AjxDateUtil.simpleParseDateStr(this._startDateField.value));    
     }
@@ -189,7 +189,7 @@ ZmMailPrefsPage.prototype._setEnabledEndDate = function(val) {
     this._endDateField.disabled = !condition;
     this._endDateButton.setEnabled(condition);
     if(!condition){
-        this._endDateVal.value = null;
+        this._endDateVal.value = "";
     }else{
         this._endDateVal.value =  this._formatter.format(AjxDateUtil.simpleParseDateStr(this._endDateField.value));
     }
