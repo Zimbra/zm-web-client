@@ -653,7 +653,7 @@ function(newFolderId) {
 		}
 	} else {
 		var jsonObj = {ContactActionRequest:{_jsns:"urn:zimbraMail"}};
-		jsonObj.ContactActionRequest.cn = {id:this.id, op:"move", l:newFolderId};
+		jsonObj.ContactActionRequest.action = {id:this.id, op:"move", l:newFolderId};
 		var respCallback = new AjxCallback(this, this._handleResponseMove);
 		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 	}
