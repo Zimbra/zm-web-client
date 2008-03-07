@@ -88,12 +88,13 @@ ZmAddrBookTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
 	var addrBook = appCtxt.getById(id);
+	var nId = addrBook ? addrBook.nId : ZmOrganizer.normalizeId(id);
 
-	if (id == ZmFolder.ID_TRASH) {
+	if (nId == ZmFolder.ID_TRASH) {
 		parent.enableAll(false);
 		parent.enable(ZmOperation.DELETE, true);
 		deleteText = ZmMsg.emptyTrash;
-	} else if (id == ZmOrganizer.ID_MY_CARD){
+	} else if (nId == ZmOrganizer.ID_MY_CARD){
 		parent.enableAll(false);
 	} else {
 		parent.enableAll(true);
