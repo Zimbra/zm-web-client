@@ -70,7 +70,10 @@
 
 	Locale locale = request.getLocale();
     String localeId = (String)request.getAttribute("localeId");
-    if (localeId != null) {
+	if (localeId == null) {
+		localeId = request.getParameter("localeId");
+	}
+	if (localeId != null) {
         int index = localeId.indexOf("_");
         if (index == -1) {
 			locale = new Locale(localeId);
@@ -80,6 +83,7 @@
 			locale = new Locale(language, country);
 		}
     }
+	request.setAttribute("localeId", locale.toString());
 
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);

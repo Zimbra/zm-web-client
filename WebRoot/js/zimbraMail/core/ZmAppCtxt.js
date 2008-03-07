@@ -769,6 +769,8 @@ function(fullVersion) {
 	url[i++] = appContextPath;
 	url[i++] = "/public/launchNewWindow.jsp?skin=";
 	url[i++] = appCurrentSkin;
+	url[i++] = "&localeId=";
+	url[i++] = AjxEnv.DEFAULT_LOCALE || "";
 	if (fullVersion)
 		url[i++] = "&full=1";
 	if (appDevMode) {
