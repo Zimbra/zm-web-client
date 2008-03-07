@@ -124,8 +124,7 @@ function() {
 	ZmPref.registerPref("CONTACTS_PER_PAGE", {
 		displayName:		ZmMsg.contactsPerPage,
 	 	displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		["10", "25", "50", "100"],
-		displaySeparator:	true
+		displayOptions:		["10", "25", "50", "100"]
 	});
 	
 	ZmPref.registerPref("CONTACTS_VIEW", {
@@ -137,8 +136,7 @@ function() {
 
 	ZmPref.registerPref("EXPORT", {
 		displayName:		ZmMsg.exportToCSV,
-		displayContainer:	ZmPref.TYPE_EXPORT,
-		displaySeparator:	true
+		displayContainer:	ZmPref.TYPE_EXPORT
 	});
 
 	ZmPref.registerPref("GAL_AUTOCOMPLETE", {

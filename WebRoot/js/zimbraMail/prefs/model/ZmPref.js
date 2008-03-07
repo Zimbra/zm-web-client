@@ -253,7 +253,6 @@ function(prefsId, list) {
  * displayOptions		text for the select input's values
  * validationFunction	function to validate the value
  * errorMessage			message to show if validation fails
- * displaySeparator		if true, a line will be drawn below this pref
  * precondition			pref will not be displayed unless precondition is true
  */
 ZmPref.SETUP = {};

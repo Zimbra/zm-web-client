@@ -139,8 +139,7 @@ function() {
 	
 	ZmPref.registerPref("CAL_EXPORT", {
 		displayName:		ZmMsg.exportToICS,
-		displayContainer:	ZmPref.TYPE_EXPORT,
-		displaySeparator:	true
+		displayContainer:	ZmPref.TYPE_EXPORT
 	});
 
 	ZmPref.registerPref("CAL_FIRST_DAY_OF_WEEK", {
@@ -159,8 +158,7 @@ function() {
 		displayName:		ZmMsg.numberOfMinutes,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		[ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore],
-		options:			[0, 1, 5, 10, 15, 30, 45, 60],
-		displaySeparator:	true
+		options:			[0, 1, 5, 10, 15, 30, 45, 60]
 	});
 	
 	ZmPref.registerPref("CAL_SHOW_TIMEZONE", {

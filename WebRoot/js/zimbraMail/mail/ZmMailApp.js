@@ -292,7 +292,6 @@ function() {
 		displayContainer:	ZmPref.TYPE_INPUT,
 		maxLength:			ZmPref.MAX_LENGTH[ZmSetting.INITIAL_SEARCH],
 		errorMessage:       AjxMessageFormat.format(ZmMsg.invalidInitialSearch, ZmPref.MAX_LENGTH[ZmSetting.INITIAL_SEARCH]),
-		displaySeparator:	false,
 		precondition:		ZmSetting.INITIAL_SEARCH_ENABLED
 	});
 
@@ -368,7 +367,6 @@ function() {
 	ZmPref.registerPref("MAIL_LOCAL_DELIVERY_DISABLED", {
 		displayName:		ZmMsg.mailDeliveryDisabled,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		displaySeparator:	true,
 		precondition:		ZmSetting.MAIL_FORWARDING_ENABLED,
 		validationFunction:	ZmMailApp.validateMailLocalDeliveryDisabled,
 		errorMessage:		ZmMsg.errorMissingFwdAddr
@@ -379,8 +377,7 @@ function() {
 		displayContainer:	ZmPref.TYPE_INPUT,
 		validationFunction: ZmPref.validateEmail,
 		errorMessage:       ZmMsg.invalidEmail,
-		precondition:		ZmSetting.NOTIF_FEATURE_ENABLED,
-		displaySeparator:	true
+		precondition:		ZmSetting.NOTIF_FEATURE_ENABLED
 	});
 
 	ZmPref.registerPref("NOTIF_ENABLED", {
@@ -408,8 +405,7 @@ function() {
 		displayName:		ZmMsg.signature,
 		displayContainer:	ZmPref.TYPE_TEXTAREA,
 		maxLength:			ZmPref.MAX_LENGTH[ZmSetting.SIGNATURE],
-		errorMessage:       AjxMessageFormat.format(ZmMsg.invalidSignature, ZmPref.MAX_LENGTH[ZmSetting.SIGNATURE]),
-		displaySeparator:	true
+		errorMessage:       AjxMessageFormat.format(ZmMsg.invalidSignature, ZmPref.MAX_LENGTH[ZmSetting.SIGNATURE])
 	});
 
 	ZmPref.registerPref("SIGNATURE_ENABLED", {
@@ -447,9 +443,7 @@ function() {
 		maxLength:			ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE],
 		errorMessage:       AjxMessageFormat.format(ZmMsg.invalidAwayMessage, ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE]),
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
-		displaySeparator:	true,
-		validationFunction:	ZmMailApp.validateVacationMsg,
-		errorMessage:		ZmMsg.missingAwayMessage
+		validationFunction:	ZmMailApp.validateVacationMsg
 	});
 
 	ZmPref.registerPref("VACATION_MSG_ENABLED", {
