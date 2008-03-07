@@ -7,12 +7,12 @@
 			<col id='skin_col_main'>
 		</colgroup>
 	
-	<!-- top ad row -->
+		<!-- top ad row -->
 		<tr id='skin_tr_top_ad'>
 			<td id='skin_td_top_ad' colspan=3><div id='skin_container_top_ad'><!-- top ad here --></div></td>
 		</tr>
 
-	<!-- top row: logo, search box, quota -->
+		<!-- top row: logo, search box, quota -->
 		<tr id='skin_tr_top'>
 			<td id='skin_td_logo' colspan=2>
 				<div id='skin_container_logo' class='skin_container'>
@@ -21,42 +21,47 @@
 			</td>
 			<td>
 				<table cellspacing=0 cellpadding=0 width='100%' border=0>
-				<tr>
-					<td>
-						<table cellspacing=0 cellpadding=0 width='100%' border=0>
-						<tr>
-							<td rowspan=2>&nbsp;&nbsp;</td>
-							<td id='skin_td_username' height=100% style='text-align:left'><span id='skin_container_username'></span></td>
-							<td><div id='skin_container_offline_status' class='skin_container'></div></td>
-						</tr>
-						<tr>
-							<td id='skin_td_logoff' colspan=2><nobr>
-								<span id='skin_container_logoff'></span>,&nbsp;
-								<span>My Account</span>,&nbsp;
-								<span class='skin_container_switch'><a href='javascript:switchToStandardClient()'>Mail Classic</a></span>
-							</nobr></td>
-						</tr>
-						</table>
-					</td>
-					<td style='width:100%'>&nbsp;</td>
-<!--
-					<td id='skin_td_quota'>
-						<div id='skin_container_quota' class='skin_container'></div>
-					</td>
--->
-					<td><nobr><a href='http://www.yahoo.com' target='_blank'>Yahoo!</a> 
-							&nbsp|&nbsp 
-								<a href='http://my.yahoo.com' target='_blank'>My Yahoo!</a>
-							&nbsp|&nbsp 
-								<a href='http://news.yahoo.com' target='_blank'>News</a>
-							&nbsp</nobr></td>
-					<td id='skin_td_search'><div id='skin_container_search' class='skin_container'></div></td>
-				</tr>
+					<tr>
+						<td>
+							<table cellspacing=0 cellpadding=0 width='100%' border=0>
+							<tr>
+								<td rowspan=2>&nbsp;&nbsp;</td>
+								<td id='skin_td_username' height=100% style='text-align:left'>
+									<span id='skin_container_username'></span>
+								</td>
+								<td>
+									<div id='skin_container_offline_status' class='skin_container'></div>
+								</td>
+							</tr>
+							<tr>
+								<td id='skin_td_logoff' colspan=2><nobr>
+									<span id='skin_container_logoff'><a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>Sign Out</a></span>,&nbsp;
+									<span><a href="javascript:;">My Account</a></span>,&nbsp;
+									<span class='skin_container_switch'><a href='javascript:switchToStandardClient()'>Mail Classic</a></span>
+								</nobr></td>
+							</tr>
+							</table>
+						</td>
+						<td style='width:100%'>&nbsp;</td>
+	<!--
+						<td id='skin_td_quota'>
+							<div id='skin_container_quota' class='skin_container'></div>
+						</td>
+	-->
+						<td><nobr>
+							<a href='http://www.yahoo.com' target='_blank'>Yahoo!</a>&nbsp;|&nbsp;
+							<a href='http://my.yahoo.com' target='_blank'>My Yahoo!</a>&nbsp;|&nbsp;
+							<a href='http://news.yahoo.com' target='_blank'>News</a>&nbsp;
+						</nobr></td>
+						<td id='skin_td_search'>
+							<div id='skin_container_search' class='skin_container'></div>
+						</td>
+					</tr>
 				</table>
 			</td>
 		</tr>
 
-	<!-- search builder -->
+		<!-- search builder -->
 		<tr id='skin_tr_search_builder'>
 			<td colspan=3 id='skin_td_search_builder'  class='skin_container'>
 				<div id='skin_container_search_builder_outer'>
@@ -70,7 +75,7 @@
 			</td>
 		</tr>
 
-	<!-- app chooser row -->
+		<!-- app chooser row -->
 		<tr id='skin_tr_app_chooser'>
 			<td id='skin_td_app_chooser' colspan=3>
 				<table width=100% cellspacing=0 cellpadding=0>
@@ -81,18 +86,16 @@
 						</div>
 					</td>
 					<td class='ZmAppChooser' style='padding-right:10px;'><nobr>
-								<a href='/zimbra/m/'>Mobile</a>
-							&nbsp;|&nbsp; 
-								<a href='javascript:skin.gotoPrefs()'>Options</a>
-							&nbsp;|&nbsp; 
-								<span id='skin_container_help'></span>
+						<a href='/zimbra/m/'>Mobile</a>&nbsp;|&nbsp;
+						<a href='javascript:skin.gotoPrefs()'>Options</a>&nbsp;|&nbsp;
+						<span id='skin_container_help'><a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'>Help</a></span>
 					</nobr></td>
 				</tr>
 				</table>
 			</td>
 		</tr>
 	
-	<!-- tree toolbar and main toolbar -->
+		<!-- tree toolbar and main toolbar -->
 		<tr id='skin_tr_toolbar'>
 			<td id='skin_td_current_app'>
 				<div id='skin_container_current_app' class='skin_container skin_border_app_top_toolbar'>
@@ -109,7 +112,7 @@
 			</td>
 		</tr>
 	
-	<!-- app chooser, tree and mini-cal, main app wd -->
+		<!-- app chooser, tree and mini-cal, main app wd -->
 		<tr id='skin_tr_main'>
 			<td height='100%' colspan='3'>
 				<table border=0 id='skin_table_inner' class='skin_table' cellpadding=0 cellspacing=0>
@@ -159,20 +162,17 @@
 			</td>
 		</tr>
 	
-	<!-- IE7 pegs the CPU *for some unknown reason* if we split out the toolbar and -->
-	<!-- main content into two different table rows.                                -->
+		<!-- IE7 pegs the CPU *for some unknown reason* if we split out the toolbar and -->
+		<!-- main content into two different table rows.                                -->
 			<tr id='skin_tr_main_full' style='display:none'>
 				<td id='skin_td_app_full_outer' class='full_height' colspan='3' height='100%'>
 					<table id='skin_app_full_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 						<tr>
-							<td id='skin_border_app_top_toolbar_full' class='skin_td_app_toolbar'>
-							</td>
+							<td id='skin_border_app_top_toolbar_full' class='skin_td_app_toolbar'></td>
 						</tr>
 						<tr>
 							<td id='skin_td_app_full' class='full_height' height='100%'>
-								<div id='skin_container_app_main_full' class='skin_container'>
-									&nbsp;
-								</div>
+								<div id='skin_container_app_main_full' class='skin_container'>&nbsp;</div>
 							</td>
 						</tr>
 					</table>
@@ -184,8 +184,8 @@
 	
 	<!-- hidden stuff, deprecate and remove soon -->
 	<div style='display:none;left:-200;top:-200;width:100;height:100;overflow:hidden;'>
-			<div id='skin_container_quota' class='skin_container'></div>
-			<div id='skin_container_status' class='skin_container'><!-- status area --></div>
+		<div id='skin_container_quota' class='skin_container'></div>
+		<div id='skin_container_status' class='skin_container'><!-- status area --></div>
 	</div>
 </div>
 <!-- END SKIN -->

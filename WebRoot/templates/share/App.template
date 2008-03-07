@@ -1,16 +1,19 @@
 <template id="share.App#Loading">
 	<table border=0 cellpadding=0 cellspacing=0 style='width:100%;height=100%'>
-		<tr><td align='center' valign='middle'>
-			<br><br><br>
-			<$= ZmMsg.loading $>
-			<br><br>
-			<div class='Imgwait_64'></div>
-			<br><br><br>			
-		</td></tr>
-		<tr><td style='height:100%'>&nbsp;</td></tr>
+		<tr>
+			<td align='center' valign='middle'>
+				<br><br><br>
+				<$= ZmMsg.loading $>
+				<br><br>
+				<div class='Imgwait_64'></div>
+				<br><br><br>
+			</td>
+		</tr>
+		<tr>
+			<td style='height:100%'>&nbsp;</td>
+		</tr>
 	</table>
 </template>
-
 
 <template id="share.App#Banner">
 	<table border=0 cellpadding=0 cellspacing=0 style='width:100%;height:100%'>
@@ -18,61 +21,65 @@
 	</table>
 </template>
 
-<template id="share.App#ChicletButton">
-	<div id='${id}_inner'>
-		<table border=0 cellpadding=0 cellspacing=0>
-			<tr>
-				<td id="${id}_icon" nowrap class='<$= AjxImg.getClassForImage(data.innerClass) $>'></td>
-				<td>&nbsp;</td>
-				<td nowrap>${text}</td>
-			</tr>
-		</table>
-	</div>
-</template>
-
-<template id="share.App#ChicletButtonEx">
-	<div id='${id}_inner'>
-		<table border=0 cellpadding=0 cellspacing=0 width=100%>
-			<tr>
-				<td width=1 class='skin_tab_L'>
-					<div id='${id}_leftBtn' class='ImgSkin_Tab_Normal_L'></div>
-				</td>
-				<td class='skin_tab_stretch'>
-					<div id='${id}_middleBtn' class='ImgSkin_Tab_Normal skin_tab_text'>
-						<table border=0 cellpadding=0 cellspacing=0 width=100%>
-							<tr>
-								<td id="${id}_icon" width=1 nowrap class='skin_tab_text'>
-									<$= AjxImg.getImageHtml(data.innerClass) $>
-								</td>
-								<td width=1>&nbsp;</td>
-								<td nowrap class='skin_tab_text'>${text}</td>
-							</tr>
-						</table>
-					</div>
-				</td>
-				<td width=1 class='skin_tab_R'>
-					<div id='${id}_rightBtn' class='ImgSkin_Tab_Normal_R'></div>
-				</td>
-				<$ if (!data.isLast) { $>
-				<td>
-					<div class='skin_tab_sep ImgSkin_Tab_Bg'>&nbsp;</div>
-				</td>
-				<$ } $>
-			</tr>
-		</table>
-	</div>
-</template>
-
 <template id="share.App#UserInfo">
-	<table border=0 cellpadding=0 cellspacing=0>
+	<table class='skin_table' cellpadding=0 cellspacing=0 border=0>
+	<$ if (data.showStandardLink || data.showOfflineLink) { $>
+		<$ var twoCells = (data.showStandardLink && data.showOfflineLink); $>
+
 		<tr>
-			<$ if (!data.hideIcon) { $>
-				<td style='padding-right:3px;'>
-					<a href='javascript:;' onclick='${staticFunc}'><$= AjxImg.getImageHtml(data.icon, null, "border=0") $></a>
-				</td>
+			<$ if (data.showStandardLink) { $>
+				<$ if (twoCells) { $>
+					<td id='skin_container_switch'>
+						<a href='javascript:;' onclick="switchToStandardClient()"><$= ZmMsg.switchToStandardClient $></a>
+					</td>
+				<$ } else { $>
+					<td id='skin_container_switch' colspan=2>
+						<a href='javascript:;' onclick="switchToStandardClient()"><$= ZmMsg.switchToStandardClientEx $></a>
+					</td>
+				<$ } $>
 			<$ } $>
-			<td style='white-space:nowrap; font-weight:bold'>
-				<a href='javascript:;' onclick='${staticFunc}'>${lbl}</a>
+
+			<$ if (data.showOfflineLink) { $>
+				<$ if (twoCells) { $>
+					<td id='skin_td_switch_offline'>
+						<a href="http://www.zimbra.com/products/desktop.html" target="_blank"><$= ZmMsg.switchToOfflineClient $></a>
+					</td>
+				<$ } else { $>
+					<td id='skin_td_switch_offline' colspan=2>
+						<a href="http://www.zimbra.com/products/desktop.html" target="_blank"><$= ZmMsg.switchToOfflineClientEx $></a>
+					</td>
+				<$ } $>
+			<$ } $>
+		</tr>
+	<$ } $>
+		<tr>
+			<td id='skin_container_help'>
+				<table border=0 cellpadding=0 cellspacing=0>
+					<tr>
+						<$ if (data.helpIcon) { $>
+							<td style='padding-right:3px;'>
+								<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= AjxImg.getImageHtml(data.helpIcon, null, "border=0") $></a>
+							</td>
+						<$ } $>
+						<td style='white-space:nowrap; font-weight:bold'>
+							<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= ZmMsg.help $></a>
+						</td>
+					</tr>
+				</table>
+			</td>
+			<td id='skin_container_logoff'>
+				<table border=0 cellpadding=0 cellspacing=0>
+					<tr>
+						<$ if (data.logoutIcon) { $>
+							<td style='padding-right:3px;'>
+								<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'><$= AjxImg.getImageHtml(data.logoutIcon, null, "border=0") $></a>
+							</td>
+						<$ } $>
+						<td style='white-space:nowrap; font-weight:bold'>
+							<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>${logoutText}</a>
+						</td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>

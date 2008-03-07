@@ -8,27 +8,16 @@
 			<table class='skin_table' cellpadding=0 cellspacing=0 border=0><tr>
 				<td id='skin_spacing_logo'><div id='skin_container_logo' class='skin_container'></div></td>
 				<td id='skin_spacing_search'><div id='skin_container_search' class='skin_container'></div></td>
-				<td id='skin_spacing_web_search'><div id='skin_container_web_search' class='skin_container'>
-					<table width=100% cellspacing=0 cellpadding=0><tr>
-						<td width='100%'  class='DwtInputField-hint'><input id='skin_search_web_input' value='Search the Web...' style='width:100%;' onfocus='skin.searchWebFocus(event,this)' onblur='skin.searchWebBlur(event,this)' onkeypress='return skin.searchWebKey(event, this)'></td>
-						<td style='padding-left:3px;'><button class='DwtButton' style='height:24px' onclick='skin.searchWeb(skin._getEl("skin_search_web_input").value)'><div class='ImgWebSearch'></div></button></td>
-					</tr></table>
-				</div></td>
-				<td><table class='skin_table' cellpadding=0 cellspacing=0 border=0>
-					<tr>
-						<td id='skin_spacing_switch' colspan=2
-							><table cellspacing=0 cellpadding=0 align='center'>
-								<tr><td id='skin_container_switch'><script>document.write(ZmMsg.switchToStandardClient)</script></td>
-									<td><b>|</b>&nbsp;</td>
-								<td id='skin_td_switch_offline'><span id="switch_to_offline"><nobr><script>document.write(ZmMsg.switchToOfflineClient)</script></nobr></span></td></tr>
-							</table
-						></td>
-					</tr>
-					<tr>
-						<td id='skin_spacing_help'><div id='skin_container_help' class='skin_container'></div></td>
-						<td id='skin_spacing_logoff'><div id='skin_container_logoff' class='skin_container'></div></td>
-					</tr>
-				</table></td>
+				<td id='skin_spacing_web_search'>
+					<div id='skin_container_web_search' class='skin_container'>
+						<table width=100% cellspacing=0 cellpadding=0><tr>
+							<td width='100%'  class='DwtInputField-hint'><input id='skin_search_web_input' value='Search the Web...' style='width:100%;' onfocus='skin.searchWebFocus(event,this)' onblur='skin.searchWebBlur(event,this)' onkeypress='return skin.searchWebKey(event, this)'></td>
+							<td style='padding-left:3px;'><button class='DwtButton' style='height:24px' onclick='skin.searchWeb(skin._getEl("skin_search_web_input").value)'><div class='ImgWebSearch'></div></button></td>
+						</tr></table>
+					</div>
+				</td>
+				<td id='skin_container_links' class='skin_table'>
+				</td>
 			</tr></table>
 		</td></tr>
 		

@@ -11,7 +11,7 @@ function ZmSkin(hints) {
         quota:      { position:"static" },
         
         // specific components
-        appChooser:    { style: "tabs", direction: "LR" },
+        appChooser:    { direction: "LR" },
         helpButton:    { style: "link", container: "quota" },
         logoutButton:  { style: "link", container: "quota" },
         toast:          { location: "N", transitions: [

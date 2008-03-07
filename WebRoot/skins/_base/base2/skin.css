@@ -41,13 +41,6 @@ BODY						{	margin:0px; 				}
 #skin_container_web_search				{	@SkinBorderWebSearch@	}
 	
 	
-/** Help link **/	
-#skin_spacing_help						{}
-#skin_container_help					{	padding:0px 10px;}
-	
-/** Logoff link **/	
-#skin_spacing_logoff					{}
-#skin_container_logoff					{	padding:0px 10px;		}
 
 /** Search Builder & its toolbar **/
 #skin_spacing_search_builder			{	padding-bottom:5px;	}
@@ -72,8 +65,20 @@ BODY						{	margin:0px; 				}
 #skin_spacing_current_app				{}
 #skin_container_current_app				{	@SkinBorderCurrentApp@		}
 
-#skin_spacing_switch					{}
-#skin_container_switch					{	white-space:nowrap; padding:0px 10px;	}
+#skin_container_switch					{ padding-right: 8px;			}
+#skin_container_switch,
+#skin_td_switch_offline,
+#skin_container_help,
+#skin_container_logoff					{
+	white-space:nowrap;
+	text-align: center;
+}
+
+#skin_container_help,
+#skin_container_logoff					{
+	padding-left: 5px;
+	padding-right: 10px;
+}
 
 /** Tree Toolbar **/
 #skin_spacing_tree						{	height:100%; padding-bottom:5px;			}
@@ -189,6 +194,7 @@ BODY						{	margin:0px; 				}
 
 .BannerTextUser {
 	font-weight:bold;
+	overflow: hidden !important;
 }
 
 
