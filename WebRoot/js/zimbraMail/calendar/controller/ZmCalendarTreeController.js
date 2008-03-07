@@ -98,11 +98,15 @@ ZmCalendarTreeController.prototype.resetOperations =
 function(actionMenu, type, id) {
 	if (actionMenu) {
 		var calendar = appCtxt.getById(id);
+		var nId;
 		if (calendar) {
+			nId = calendar.nId;
 			actionMenu.enable(ZmOperation.SHARE_CALENDAR, !calendar.link);
 			actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());
+		} else {
+			nId = ZmOrganizer.normalizeId(id);
 		}
-		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_CALENDAR);
+		actionMenu.enable(ZmOperation.DELETE, nId != ZmOrganizer.ID_CALENDAR);
 		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 		if (id == rootId) {
 			var items = this._getItems(this._actionedOverviewId);
