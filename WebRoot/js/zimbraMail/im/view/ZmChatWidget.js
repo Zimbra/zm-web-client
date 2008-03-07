@@ -146,7 +146,7 @@ ZmChatWidget.prototype.handleMessage = function(msg) {
 
 ZmChatWidget.prototype.handleHtmlMessage = function(str) {
 	var div = document.createElement("div");
-	div.innerHTML = AjxStringUtil.htmlDecode(str);
+	div.innerHTML = str;
 	return this.scrollTo(div, true);
 };
 
