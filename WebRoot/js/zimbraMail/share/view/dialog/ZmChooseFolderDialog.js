@@ -66,6 +66,7 @@ function(params) {
 	params = params || {};
 	var omit = params.omit || {};
 	omit[ZmFolder.ID_DRAFTS] = true;
+	omit[ZmFolder.ID_OUTBOX] = true;
 	var treeIds = (params.treeIds && params.treeIds.length) ? params.treeIds : [ZmOrganizer.FOLDER];
 	var folderTree = appCtxt.getFolderTree();
 

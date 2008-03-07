@@ -461,6 +461,8 @@ function(what, folderType) {
 		var item = items[0];
 		if (this.nId == ZmOrganizer.ID_ROOT) {
 			invalid = true;														// container can only have folders/searches
+		} else if (this.nId == ZmOrganizer.ID_OUTBOX) {
+			invalid = true;														// bug fix #25175 - nothing can be moved to outbox
 		} else if (this.link) {
 			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
 		} else if (thisType == ZmOrganizer.SEARCH) {
