@@ -113,13 +113,13 @@ ZmChatMessage.prototype.toHtml = function() {
 ZmChatMessage.prototype.displayHtml =
 function(objectManager, chat, lastFrom) {
 	var body;
-	body = this.body.replace(/\r?\n/g, "<br/>");
 	if (objectManager && this.objectify) {
 		body = this.getHtmlBody(objectManager);
 	} else {
-		body = this.htmlEncode
-			? AjxStringUtil.htmlEncode(body)
-			: body;
+		body = this.body.replace(/\r?\n/g, "<br/>");
+		if (this.htmlEncode) {
+			body = AjxStringUtil.htmlEncode(body);
+		}
 	}
 	var params = { isSystem		 : this.isSystem,
 		       fromMe		 : this.fromMe,
