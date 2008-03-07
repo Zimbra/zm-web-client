@@ -127,7 +127,7 @@ function(params) {
 		callback:asyncCallback,
 		logRequest:this._logRequest,
 		highestNotifySeen:this._highestNotifySeen,
-		skipAuthCheck:params.skipAuthCheck || appCtxt.get(ZmSetting.OFFLINE),	// workaround for 24842
+		skipAuthCheck:params.skipAuthCheck,
 		resend:params.resend
 	};
 	var methodName = params.methodName = ZmCsfeCommand.getMethodName(cmdParams.jsonObj || cmdParams.soapDoc);
