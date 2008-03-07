@@ -559,7 +559,7 @@ function(req) {
 	var query = (!this.folderId && this.queryHint)
 		? ([this.query, " (", this.queryHint, ")"].join(""))
 		: this.query;
-	req.query = this.query;
+	req.query = query;
 
 	// set search field if provided
 	if (this.field) {

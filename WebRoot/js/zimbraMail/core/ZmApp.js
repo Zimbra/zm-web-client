@@ -304,7 +304,7 @@ function() {
 			this._createDeferredFolders(type);
 		}
 
-		var tree = this._opc.getTreeController(type).getDataTree();
+		var tree = appCtxt.getFolderTree();
 		var folders = tree ? tree.getByType(type) : [];
 		for (var i = 0; i < folders.length; i++) {
 			if (folders[i].isRemote())
