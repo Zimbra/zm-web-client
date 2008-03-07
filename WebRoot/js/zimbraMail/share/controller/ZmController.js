@@ -500,7 +500,7 @@ function(result) {
 	var response = result.getResponse();
 	var obj = response.GetInfoResponse;
 	if (obj.name != appCtxt.getUsername()) {
-		DBG.println(AjxDebug.DBG1, "AUTH TOKEN CHANGED, NEW USER");
+		DBG.println(AjxDebug.DBG1, "AUTH TOKEN CHANGED, NEW USER: " + obj.name + " (old user: " + appCtxt.getUsername() + ")");
 		var loginDialog = appCtxt.getLoginDialog();
 		loginDialog.registerCallback(this._loginCallback, this);
 		loginDialog.setError(ZmMsg.authChanged);
@@ -508,7 +508,7 @@ function(result) {
 		loginDialog.setReloginMode(reloginMode);
 		this._handleLogin(reloginMode);
 	} else {
-		DBG.println(AjxDebug.DBG1, "AUTH TOKEN CHANGED, SAME USER");
+		DBG.println(AjxDebug.DBG1, "AUTH TOKEN CHANGED, SAME USER: " + obj.name);
 	}
 };
 
