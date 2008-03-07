@@ -179,13 +179,16 @@ function(addr, name, groups) {
  * set presence on the server
  */
 ZmRoster.prototype.setPresence =
-function(show, priority, customStatusMsg) {
+function(show, priority, customStatusMsg, requestParams) {
 	var soapDoc = AjxSoapDoc.create("IMSetPresenceRequest", "urn:zimbraIM");
 	var presence = soapDoc.set("presence");
 	if(show) presence.setAttribute("show", show);
 	if (priority) presence.setAttribute("priority", priority);
-	if (customStatusMsg) presence.setAttribute("status",customStatusMsg); //soapDoc.set("status", customStatus, presence);
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	if (customStatusMsg) presence.setAttribute("status",customStatusMsg);
+	requestParams = requestParams || {};
+	requestParams.soapDoc = soapDoc;
+	requestParams.asyncMode = true;
+	appCtxt.getAppController().sendRequest(requestParams);
 	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
@@ -591,7 +594,9 @@ ZmRoster.prototype.getGroups = function() {
 };
 
 ZmRoster.prototype.setIdle = function(idle) {
-        if (idle) {
+		this._idlePresenceErrorCallbackObj = this._idlePresenceErrorCallbackObj || new AjxCallback(this, this._idlePresenceErrorCallback);
+		var requestParams = { errorCallback: this._idlePresenceErrorCallbackObj };
+		if (idle) {
                 if (!this._presenceBeforeIdle) {
                         this._presenceBeforeIdle = this.getPresence().getShow();
                 }
@@ -599,17 +604,21 @@ ZmRoster.prototype.setIdle = function(idle) {
                 //          only lowercase.
                 var idlePresence = appCtxt.get(ZmSetting.IM_PREF_IDLE_STATUS).toUpperCase();
                 if (this._presenceBeforeIdle != idlePresence) {
-                        this.setPresence(idlePresence);
+                        this.setPresence(idlePresence, null, null, requestParams);
                 }
         } else {
                 // back
                 if (this._presenceBeforeIdle != this.getPresence().getShow()) {
-                        this.setPresence(this._presenceBeforeIdle);
+                        this.setPresence(this._presenceBeforeIdle, null, null, requestParams);
                 }
         }
 };
 
-
+ZmRoster.prototype._idlePresenceErrorCallback = function(ex) {
+	// Return true (meaning we handled the exception) if the response was empty because we don't want
+	// to display an error message if this idle request happens while the network connection is down.
+	return ex.code == ZmCsfeException.EMPTY_RESPONSE;
+};
 
 //------------------------------------------
 // for autocomplete
