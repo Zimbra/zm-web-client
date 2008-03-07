@@ -133,6 +133,9 @@ function(respEl) {
 	if ((isGalSearch || this.search.isGalAutocompleteSearch) && this._results[ZmItem.CONTACT]) {
 		this._results[ZmItem.CONTACT].setIsGal(true);
 	}
+	if (this.search.isGalAutocompleteSearch) {
+		this.isTokenized = (this._respEl.tokenizeKey != null);
+	}
 	
 	var _en = new Date();
 	DBG.println(AjxDebug.DBG1, "TOTAL PARSE TIME for " + count + " NODES: " + (_en.getTime() - _st.getTime()));
