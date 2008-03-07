@@ -827,7 +827,8 @@ function(str, which, checkMore) {
 		var old = (new Date()).getTime() - ZmContactList.GAL_RESULTS_TTL;
 		// GAL results must be fresh and complete
 		return (this._acAddrList[str] && this._acAddrList[str].galMatchingDone &&
-				this._galResults[str] && (this._galResults[str].ts > old) && (!this._galResults[str].more));
+				this._galResults[str] && (this._galResults[str].ts > old) &&
+				!this._galResults[str].isTokenized && !this._galResults[str].more);
 	}
 };
 
@@ -1132,6 +1133,13 @@ ZmContactList.prototype._handleResponseGetGalMatches =
 function(str, aclv, callback, result) {
 	delete this._galRequests[str];
 	var resp = result.getResponse();
+	
+	// Bug 21873 - don't cache GAL results if tokenized
+	this._galResults[str] = {isTokenized:resp.isTokenized};
+	if (resp.isTokenized) {
+		callback.run();
+	}
+	
 	var list = resp.getResults(ZmItem.CONTACT);
 	var a = list ? list.getArray() : [];
 
@@ -1159,7 +1167,6 @@ function(str, aclv, callback, result) {
 	this._acAddrList[str].hasGalMatches = (a.length > 0);
 	this._acAddrList[str].galMatchingDone = true;
 
-	this._galResults[str] = {};
 	this._galResults[str].ts = (new Date()).getTime();
 	this._galResults[str].more = resp._respEl.more;
 
