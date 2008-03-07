@@ -1315,7 +1315,17 @@
 }
 
 
-/* Continer of the menu of items for the oselect widget */
+/* Container of the menu of items for the oselect widget */
+.oselect_note {
+	@MenuContainer@
+	@NoticeText@
+	@NoticeContainer-info@	
+	position:absolute;
+	z-index:10000000000;
+	border-bottom-width:1px;
+	border-right-width:1px;
+}
+
 .oselect_menu {
 	@MenuContainer@
 	position:absolute;
