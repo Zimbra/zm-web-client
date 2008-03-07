@@ -72,7 +72,6 @@ function() {
 ZmApptQuickAddDialog.prototype.initialize = 
 function(appt) {
 	this._appt = appt;
-	this._subjectField.focus();
 
 	// reset fields...
 	this._subjectField.setValue(appt.getName() ? appt.getName() : "");
@@ -166,6 +165,7 @@ function() {
 ZmApptQuickAddDialog.prototype.popup =
 function(loc) {
 	ZmQuickAddDialog.prototype.popup.call(this, loc);
+	this._subjectField.focus();
 	DBG.timePt("ZmQuickAddDialog#popup", true);
 };
 
