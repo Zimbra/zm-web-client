@@ -713,7 +713,7 @@ function(tb) {
 // END: table operations
 
 	if (this.ACE_ENABLED) {
-		tb.addSeparator("vertSep");
+		new DwtControl({parent:tb, className:"vertSep"});
 		params.style = 0;
 		var b = new DwtToolBarButton(params);
 		b.setImage("SpreadSheet");
