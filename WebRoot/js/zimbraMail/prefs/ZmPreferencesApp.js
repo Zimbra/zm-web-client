@@ -251,15 +251,13 @@ function() {
 	ZmPref.registerPref("LOCALE_NAME", {
 		displayName:		ZmMsg.selectLanguage,
 		displayContainer:	ZmPref.TYPE_LOCALES,
-		displaySeparator:	true,
 		precondition:		ZmSetting.LOCALE_CHANGE_ENABLED
 	});
 
 	ZmPref.registerPref("NEW_WINDOW_COMPOSE", {
 		displayName:		ZmMsg.composeInNewWin,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		AjxCallback.simpleClosure(ZmPref.requireAllPreConditions, null, ZmSetting.MAIL_ENABLED, ZmSetting.DETACH_COMPOSE_ENABLED),
-		displaySeparator: 	true
+		precondition:		AjxCallback.simpleClosure(ZmPref.requireAllPreConditions, null, ZmSetting.MAIL_ENABLED, ZmSetting.DETACH_COMPOSE_ENABLED)
 	});
 
 	ZmPref.registerPref("PAGE_SIZE", {
@@ -271,8 +269,7 @@ function() {
 	ZmPref.registerPref("PASSWORD", {
 		displayName:		ZmMsg.changePassword,
 		displayContainer:	ZmPref.TYPE_PASSWORD,
-		precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED,
-		displaySeparator:	true
+		precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED
 	});
 
     //Polling Interval Options - Dynamically consturcted accord. to MIN_POLLING_INTERVAL,POLLING_INTERVAL
@@ -325,8 +322,7 @@ function() {
 
     ZmPref.registerPref("READING_PANE_ENABLED", {
 		displayName:		ZmMsg.alwaysShowReadingPane,
-		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		displaySeparator:	true
+		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
 	ZmPref.registerPref("REPLY_INCLUDE_ORIG", {
@@ -346,8 +342,7 @@ function() {
 		displayName:		ZmMsg.prefix,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
 		orientation:		ZmPref.ORIENT_HORIZONTAL,
-		displayOptions:		[">", "|"],
-		displaySeparator:	true
+		displayOptions:		[">", "|"]
 	});
 
 	ZmPref.registerPref("SAVE_TO_SENT", {
@@ -368,8 +363,7 @@ function() {
 	ZmPref.registerPref("SEARCH_INCLUDES_TRASH", {
 		displayName:		ZmMsg.includeTrashFolder,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		precondition:		[ZmSetting.MAIL_ENABLED, ZmSetting.CONTACTS_ENABLED],
-		displaySeparator:	true
+		precondition:		[ZmSetting.MAIL_ENABLED, ZmSetting.CONTACTS_ENABLED]
 	});
 
 	ZmPref.registerPref("SHORTCUTS", {
@@ -398,7 +392,6 @@ function() {
 		displayOptions:		[],
 		options:			[],
 		loadFunction:		ZmPref.loadSkins,
-		displaySeparator:	true,
 		precondition:		ZmSetting.SKIN_CHANGE_ENABLED
 	});
 

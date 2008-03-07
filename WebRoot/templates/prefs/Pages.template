@@ -49,11 +49,13 @@ and the container element is replaced with that control.
 					<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE' tabindex='45'></div></td>
 				</tr>
 
+			<$ if (!data.isEnabled(ZmSetting.OFFLINE)) { $>
 				<tr><td colspan=2><hr></td></tr>
 
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
 					<td class='ZOptionsField'><div id='${id}_PASSWORD' tabindex='50'></div></td>
 				</tr>
+			<$ } $>
 			</table>
 		</td></tr>
 	</table>
