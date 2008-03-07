@@ -130,11 +130,11 @@ function() {
 	}
 	if (this._inviteToolbar) {
                 this._inviteToolbar.setVisible(Dwt.DISPLAY_NONE);
-                this._inviteToolbar.reparentHtmlElement(this.getHtmlElement());
+                this._inviteToolbar.reparentHtmlElement(this.parent.getHtmlElement());
 	}
 	if (this._shareToolbar) {
                 this._shareToolbar.setVisible(Dwt.DISPLAY_NONE);
-                this._shareToolbar.reparentHtmlElement(this.getHtmlElement());
+                this._shareToolbar.reparentHtmlElement(this.parent.getHtmlElement());
 	}
 
 	this.getHtmlElement().innerHTML = "";
