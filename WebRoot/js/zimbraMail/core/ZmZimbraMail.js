@@ -109,10 +109,6 @@ ZmZimbraMail.prototype.constructor = ZmZimbraMail;
 //          remove the beta suffix from the app name.
 ZmMsg.BETA_documents = [ZmMsg.documents, ZmMsg.beta].join(" ");
 
-ZmZimbraMail._PREFS_ID	= 1;
-ZmZimbraMail._HELP_ID	= 2;
-ZmZimbraMail._LOGOFF_ID	= 3;
-
 // dummy app (needed when defining drop targets in _registerOrganizers)
 ZmApp.MAIN = "ZmZimbraMail";
 ZmApp.DROP_TARGETS[ZmApp.MAIN] = {};
@@ -296,8 +292,6 @@ function(params) {
 	}
 
 	skin.show("skin", true);
-	var hint = appCtxt.get(ZmSetting.SKIN_HINTS, "appChooser.style");
-	this._TAB_SKIN_ENABLED = (hint == "tabs");
 	if (!this._components) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash({parent:this._shell, style:DwtSash.HORIZONTAL_STYLE,
@@ -463,6 +457,7 @@ function(params, result) {
 ZmZimbraMail.prototype._handleResponseStartup1 =
 function(params) {
 
+	this._setExternalLinks();
 	this._setUserInfo();
 
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
@@ -1001,17 +996,13 @@ function() {
 		}
 		var appChooserTg = new DwtTabGroup("ZmAppChooser");
 		appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
-		if (this._TAB_SKIN_ENABLED) {
-			rootTg.addMember(appChooserTg);
-		}
+		rootTg.addMember(appChooserTg);
+
 		// Add dummy app view tab group. This will get replaced right away when the
 		// app view comes into play
 		var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
 		ZmController._setCurrentAppViewTabGroup(dummyTg);
 		rootTg.addMember(dummyTg);
-		if (!this._TAB_SKIN_ENABLED) {
-			rootTg.addMember(appChooserTg);
-		}
 		kbMgr.setTabGroup(rootTg);
 
 		this._settings._loadShortcuts();
@@ -1274,15 +1265,23 @@ function(appName) {
 	this._apps[appName] = new appClass(this._shell);
 };
 
+ZmZimbraMail.prototype._setExternalLinks =
+function() {
+	var el = document.getElementById("skin_container_links");
+	if (el) {
+		var data = {
+			showStandardLink: (!appCtxt.multiAccounts),
+			showOfflineLink: (!appCtxt.get(ZmSetting.OFFLINE)),
+			helpIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon") ? null : "Help"),
+			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
+			logoutText: (appCtxt.get(ZmSetting.OFFLINE) ? ZmMsg.setup : ZmMsg.logOff)
+		}
+		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data)
+	}
+};
+
 ZmZimbraMail.prototype._setUserInfo =
 function() {
-	if (this._TAB_SKIN_ENABLED) {
-		var hideIcon = appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon");
-		this._setUserInfoLink("ZmZimbraMail.helpLinkCallback();", "Help", ZmMsg.help, "skin_container_help", hideIcon);
-		hideIcon = appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon");
-		var text = appCtxt.get(ZmSetting.OFFLINE) ? ZmMsg.setup : ZmMsg.logOff;
-		this._setUserInfoLink("ZmZimbraMail._onClickLogOff();", "Logoff", text, "skin_container_logoff", hideIcon);
-	}
 
 	var login = appCtxt.get(ZmSetting.USERNAME);
 	var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
@@ -1335,20 +1334,6 @@ function() {
 	}
 };
 
-ZmZimbraMail.prototype._setUserInfoLink =
-function(staticFunc, icon, lbl, id, hideIcon) {
-	var subs = {
-		staticFunc: staticFunc,
-		icon: icon,
-		lbl: lbl,
-		hideIcon: hideIcon
-	};
-
-	var cell = document.getElementById(id);
-	if (cell) {
-		cell.innerHTML = AjxTemplate.expand('share.App#UserInfo', subs);
-	}
-};
 
 // Listeners
 
@@ -1615,7 +1600,6 @@ function(className, cid) {
     var position = appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
     var posStyle = position || Dwt.ABSOLUTE_STYLE;
     var ui = new DwtComposite(this._shell, className, posStyle);
-	ui.setScrollStyle(Dwt.CLIP);
 	if (AjxEnv.isIE) {
 		var container = document.getElementById("skin_td_tree");
 		var w = container ? Dwt.getSize(document.getElementById("skin_td_tree")).x : null;
@@ -1630,7 +1614,7 @@ function() {
 
 	var buttons = [];
 	for (var id in ZmApp.CHOOSER_SORT) {
-		if (this._TAB_SKIN_ENABLED && (id == ZmAppChooser.SPACER || id == ZmAppChooser.B_HELP || id == ZmAppChooser.B_LOGOUT)) {
+		if (id == ZmAppChooser.SPACER || id == ZmAppChooser.B_HELP || id == ZmAppChooser.B_LOGOUT) {
 			continue;
 		}
 
@@ -1644,7 +1628,7 @@ function() {
 		return ZmZimbraMail.hashSortCompare(ZmApp.CHOOSER_SORT, a, b);
 	});
 
-	var appChooser = new ZmAppChooser(this._shell, null, buttons, this._TAB_SKIN_ENABLED);
+	var appChooser = new ZmAppChooser(this._shell, null, buttons);
 
 	var buttonListener = new AjxListener(this, this._appButtonListener);
 	for (var i = 0; i < buttons.length; i++) {
