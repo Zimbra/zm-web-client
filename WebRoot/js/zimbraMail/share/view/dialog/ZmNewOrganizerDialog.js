@@ -50,7 +50,7 @@ function(folder) {
 
 			folder = folder || this._folderTree.root;
 			this._folderTreeView.setSelected(folder);
-			if (folder.id == ZmOrganizer.ID_ROOT) {
+			if (folder.nId == ZmOrganizer.ID_ROOT) {
 				var sid = ZmOrganizer.getSystemId(folder.id);
 				var ti = this._folderTreeView.getTreeItemById(sid);
 				ti.setExpanded(true);
