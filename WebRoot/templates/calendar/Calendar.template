@@ -118,3 +118,17 @@
 		</tr>
 	</table>
 </template>
+
+<template id='calendar.Calendar#ApptDragProxy'>
+	<div class='${color}'>
+		<table>
+			<tr>
+				<td rowspan=2><$= AjxImg.getImageHtml("Appointment") $></td>
+				<td><b>${shortDate}</b> ${dur}</td>
+			</tr>
+			<tr>
+				<td><b>${apptName}</b></td>
+			</tr>
+		</table>
+	</div>
+</template>

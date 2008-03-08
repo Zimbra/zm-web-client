@@ -166,6 +166,7 @@ ZmCalendarTreeController.prototype._dropListener =
 function(ev) {
 	var appt = ev.srcData.data;
 	var dropFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
+	var isShiftKey = (ev.shiftKey || ev.uiEvent.shiftKey);
 
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		if (appt.isReadOnly() || dropFolder.isReadOnly()) {
@@ -174,10 +175,17 @@ function(ev) {
 			ev.doIt = false;
 		} else {
 			ev.doIt = this._dropTgt.isValidTarget(appt);
+			var action = (appt instanceof ZmItem)
+				? appt.getDefaultDndAction(isShiftKey) : null;
+
+			if (((action & ZmItem.DND_ACTION_COPY) != 0)) {
+				var plusDiv = ev.dndProxy.firstChild.nextSibling;
+				Dwt.setVisibility(plusDiv, true);
+			}
 		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var ctlr = ev.srcData.controller;
-		ctlr._doMove(appt, dropFolder);
+		ctlr._doMove(appt, dropFolder, null, !isShiftKey);
 	}
 };
 
