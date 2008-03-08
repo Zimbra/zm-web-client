@@ -165,7 +165,24 @@ function() {
 ZmApptQuickAddDialog.prototype.popup =
 function(loc) {
 	ZmQuickAddDialog.prototype.popup.call(this, loc);
-	this._subjectField.focus();
+	if (!this._tabGroupComplete) {
+		// tab group filled in here rather than in the constructor b/c we need
+		// all the content fields to have been created
+		var members = [this._subjectField, this._locationField, this._showAsSelect, this._privacySelect];
+		if (this._calendarSelect.size() > 1) {
+			members.push(this._calendarSelect);
+		}
+		// XXX: ZmTimeSelect doesn't handle focus yet
+		members = members.concat([this._startDateField, this._startDateButton,
+								  this._endDateField, this._endDateButton,
+								  this._repeatSelect]);
+		for (var i = 0; i < members.length; i++) {
+			this._tabGroup.addMember(members[i], i);
+		}
+		this._tabGroupComplete = true;
+	}
+	this._tabGroup.setFocusMember(this._subjectField);
+
 	DBG.timePt("ZmQuickAddDialog#popup", true);
 };
 
