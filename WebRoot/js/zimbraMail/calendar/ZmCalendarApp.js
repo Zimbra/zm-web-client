@@ -651,7 +651,7 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener) {
 	}
 
 	// create menu for button
-	var calMenu = new DwtMenu({parent:dateButton});
+	var calMenu = new DwtMenu({parent:dateButton, style:DwtMenu.CALENDAR_PICKER_STYLE});
 	calMenu.setSize("150");
 	calMenu._table.width = "100%";
 	dateButton.setMenu(calMenu, true);
