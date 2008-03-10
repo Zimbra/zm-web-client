@@ -131,18 +131,28 @@ function() {
 // Returns a list of desired header action menu operations
 ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_ADDRBOOK, ZmOperation.MOUNT_ADDRBOOK, ZmOperation.EXPAND_ALL];
+	var ops = [ZmOperation.NEW_ADDRBOOK];
+	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+		ops.push(ZmOperation.MOUNT_ADDRBOOK);
+	}
+	ops.push(ZmOperation.EXPAND_ALL);
+
+	return ops;
 };
 
 // Returns a list of desired action menu operations
 ZmAddrBookTreeController.prototype._getActionMenuOps =
 function() {
-	return [ZmOperation.NEW_ADDRBOOK,
-			ZmOperation.SHARE_ADDRBOOK,
-			ZmOperation.DELETE,
+	var ops = [ZmOperation.NEW_ADDRBOOK];
+	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+		ops.push(ZmOperation.SHARE_ADDRBOOK);
+	}
+	ops.push(ZmOperation.DELETE,
 			ZmOperation.RENAME_FOLDER,
 			ZmOperation.EDIT_PROPS,
-			ZmOperation.EXPAND_ALL];
+			ZmOperation.EXPAND_ALL);
+
+	return ops;
 };
 
 /*

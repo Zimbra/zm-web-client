@@ -72,9 +72,10 @@ function() {
 // Returns a list of desired header action menu operations
 ZmTaskTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = [ ZmOperation.NEW_TASK_FOLDER ];
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED))
+	var ops = [ZmOperation.NEW_TASK_FOLDER];
+	if (!appCtxt.get(ZmSetting.OFFLINE)) {
 		ops.push(ZmOperation.MOUNT_TASK_FOLDER);
+	}
 	return ops;
 };
 
@@ -82,8 +83,9 @@ function() {
 ZmTaskTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [];
-	if (appCtxt.get(ZmSetting.SHARING_ENABLED))
+	if (!appCtxt.get(ZmSetting.OFFLINE)) {
 		ops.push(ZmOperation.SHARE_TASKFOLDER);
+	}
 	ops.push(ZmOperation.DELETE, ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);
 	return ops;
 };

@@ -180,10 +180,14 @@ function(parent, type, id) {
 */
 ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_FOLDER,
-			ZmOperation.MOUNT_FOLDER,
-			ZmOperation.EXPAND_ALL,
-			ZmOperation.SYNC];
+	var ops = [ZmOperation.NEW_FOLDER];
+	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+		ops.push(ZmOperation.MOUNT_FOLDER);
+	}
+	ops.push(ZmOperation.EXPAND_ALL);
+	ops.push(ZmOperation.SYNC);
+
+	return ops;
 };
 
 /*
@@ -191,17 +195,23 @@ function() {
 */
 ZmFolderTreeController.prototype._getActionMenuOps =
 function() {
-	return [ZmOperation.NEW_FOLDER,
-			ZmOperation.MARK_ALL_READ,
-			ZmOperation.DELETE,
-			ZmOperation.RENAME_FOLDER,
-			ZmOperation.MOVE,
-			ZmOperation.SHARE_FOLDER,
-			ZmOperation.EDIT_PROPS,
-			ZmOperation.EXPAND_ALL,
-			ZmOperation.SYNC,
-			ZmOperation.EMPTY_FOLDER,
-			ZmOperation.SYNC_OFFLINE_FOLDER];
+	var ops = [
+		ZmOperation.NEW_FOLDER,
+		ZmOperation.MARK_ALL_READ,
+		ZmOperation.DELETE,
+		ZmOperation.RENAME_FOLDER,
+		ZmOperation.MOVE
+	];
+	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+		ops.push(ZmOperation.SHARE_FOLDER);
+	}
+	ops.push(ZmOperation.EDIT_PROPS,
+		ZmOperation.EXPAND_ALL,
+		ZmOperation.SYNC,
+		ZmOperation.EMPTY_FOLDER,
+		ZmOperation.SYNC_OFFLINE_FOLDER);
+
+	return ops;
 };
 
 ZmFolderTreeController.prototype._getAllowedSubTypes =
