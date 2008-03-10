@@ -172,8 +172,8 @@ action_stop                         stop checkbox (true)
         <select name="${condi}_op">
             <option <c:if test="${date.dateOp eq 'BEFORE'}">selected</c:if> value="BEFORE"><fmt:message key="EFILT_COND_DATE_BEFORE"/>
             <option <c:if test="${date.dateOp eq 'NOT_BEFORE'}">selected</c:if> value="NOT_BEFORE"><fmt:message key="EFILT_COND_DATE_NOT_BEFORE"/>
-            <option <c:if test="${date.dateOp eq 'AFTER'}">selected</c:if> value="BEFORE"><fmt:message key="EFILT_COND_DATE_AFTER"/>
-            <option <c:if test="${date.dateOp eq 'NOT_AFTER'}">selected</c:if> value="NOT_BEFORE"><fmt:message key="EFILT_COND_DATE_NOT_AFTER"/>
+            <option <c:if test="${date.dateOp eq 'AFTER'}">selected</c:if> value="AFTER"><fmt:message key="EFILT_COND_DATE_AFTER"/>
+            <option <c:if test="${date.dateOp eq 'NOT_AFTER'}">selected</c:if> value="NOT_AFTER"><fmt:message key="EFILT_COND_DATE_NOT_AFTER"/>
         </select>
     </td>
     <td colspan='3'>
