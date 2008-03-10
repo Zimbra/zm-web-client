@@ -213,9 +213,6 @@ ZmNotebookPageView.prototype._getObjectMgr =
 function() {
 	if (!this._objectMgr) {
 		this._objectMgr = new ZmObjectManager(this);
-		var handler = new ZmNotebookObjectHandler();
-		this._objectMgr.addHandler(handler, ZmNotebookObjectHandler.TYPE, 1);
-		this._objectMgr.sortHandlers();
 	}
 	return this._objectMgr;
 };
