@@ -95,7 +95,7 @@ function() {
 		for (var id in treeView._treeItemHash) {
 			var ti = treeView._treeItemHash[id];
 			var organizer = ti.getData(Dwt.KEY_OBJECT);
-			if (organizer.type == ZmOrganizer.FOLDER && organizer.id != ZmOrganizer.ID_ROOT) {
+			if (organizer.type == ZmOrganizer.FOLDER && organizer.nId != ZmOrganizer.ID_ROOT) {
 				if (organizer.hasSearch()) {
 					if (ti._checkBoxCell)
 						Dwt.setVisible(ti._checkBoxCell, false);
