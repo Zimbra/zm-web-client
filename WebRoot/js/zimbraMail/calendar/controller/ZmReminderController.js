@@ -131,7 +131,14 @@ function() {
 * and call housekeeping. 
 */
 ZmReminderController.prototype._refreshCallback =
-function(list) {	
+function(list) {
+
+	if(this._refreshDelay > 0) {
+		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._refreshCallback, [list]), this._refreshDelay);
+		this._refreshDelay = 0;
+		return;
+	}
+	
 	if (list instanceof ZmCsfeException) {	
 		this._calController._handleError(list, new AjxCallback(this, this._maintErrorHandler));
 		return;

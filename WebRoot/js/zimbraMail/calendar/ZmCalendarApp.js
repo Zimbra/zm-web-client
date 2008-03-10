@@ -341,6 +341,7 @@ function(result) {
 	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
 		var miniCalAction = new AjxTimedAction(this, function() {
 				AjxDispatcher.run("GetCalController")._refreshReminder = true;
+				AjxDispatcher.run("GetReminderController")._refreshDelay = ZmCalendarApp.REMINDER_START_DELAY;
 				AjxDispatcher.run("ShowMiniCalendar", true);
 			});
 		AjxTimedAction.scheduleAction(miniCalAction, ZmCalendarApp.MINICAL_DELAY);
