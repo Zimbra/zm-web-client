@@ -416,11 +416,7 @@ ZmSpreadSheet.prototype._getTopHeaderCell = function(td) {
 };
 
 ZmSpreadSheet.prototype._getLeftHeaderCell = function(td) {
-	var cell = null;
-	var table = this._getTable();
-	var rows = (table && table.rows)? table.rows : null;
-	var rowIndex = (td && td.parentNode)? td.parentNode.rowIndex : 0;
-	return (rows ? rows[rowIndex][0] : null);
+	return this._getTable().rows[td.parentNode.rowIndex].cells[0];
 };
 
 ZmSpreadSheet.prototype._colsize_mouseMove = function(ev) {
