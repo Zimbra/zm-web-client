@@ -45,6 +45,10 @@ ZmLoginDialog = function(parent, className) {
 	html[idx++] = ZLoginFactory.getLoginDialogHTML(params);
 	html[idx++] = "</td></tr></table>";
 	htmlElement.innerHTML = html.join("");
+	
+	// Login button is not a DwtButton, so set up reference to this dialog
+	var id = ZLoginFactory.LOGIN_BUTTON_ID;
+	DwtControl.ALL_BY_ID[id] = this;
 
     this.setReloginMode(false);
 };
@@ -151,15 +155,9 @@ function() {
 
 ZmLoginDialog._loginListener =
 function(target) {
-	// Get the dialog instance.
-	var element = target;
-	while (element) {
-		var object = Dwt.getObjectFromElement(element);
-		if (object instanceof ZmLoginDialog) {
-			object._loginSelListener();
-			break;
-		}
-		element = element.parentNode;
+	var dialog = DwtControl.fromElement(target);
+	if (dialog) {
+		dialog._loginSelListener();
 	}
 };
 
