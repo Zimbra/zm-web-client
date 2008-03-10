@@ -145,6 +145,7 @@ function(params) {
 	params.organizer = root;
 	this._render(params);
 	ti.setExpanded(!params.collapsed);
+	this.addSeparator();
 	if (appCtxt.get(ZmSetting.SKIN_HINTS, "noOverviewHeaders")) {
 		ti.setVisible(false, true);
 	}
@@ -235,10 +236,6 @@ ZmTreeView.prototype._render =
 function(params) {
 	var org = params.organizer;
 	var children = org.children.getArray();
-    if(children.length == 0){
-        this.addSeparator();
-        return;
-    }
     if (org.isDataSource(ZmAccount.IMAP)) {
 		children.sort(ZmImapAccount.sortCompare);
 	} else {
