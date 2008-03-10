@@ -664,6 +664,11 @@ function() {
 		if (!sched) continue;
 		if (sched.uid)
 			uids.push(sched.uid);
+		while (sched._coloredCells && sched._coloredCells.length > 0) {
+			sched._coloredCells[0].className = ZmSchedTabViewPage.FREE_CLASS;
+			sched._coloredCells.shift();
+		}
+		
 	}
 
 	this._resetAttendeeCount();
