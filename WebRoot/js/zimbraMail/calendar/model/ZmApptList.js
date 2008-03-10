@@ -63,9 +63,11 @@ function(vec) {
 // merge all the sorted vectors in the specified array into a single sorted vector
 ZmApptList.mergeVectors = 
 function(vecArray) {
+	var result = new AjxVector();	
+	if(!vecArray) {  return result; }
+
 	// clone the single array case!
 	if (vecArray.length == 1) return vecArray[0].clone();
-	var result = new AjxVector();
 	for (var i=0; i < vecArray.length; i++) result.addList(vecArray[i]);
 	ZmApptList.sortVector(result);
 	return result;
