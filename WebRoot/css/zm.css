@@ -3234,6 +3234,7 @@ overflow-y: hidden;
 
 .ZmFilePropertiesLabel {
 @TreeHeaderText@
+white-space: nowrap;
 }
 
 .ZmSpreadSheetDoc { background-color: #eee; }
