@@ -167,7 +167,7 @@ function(overviewId, account) {
 	var treeView = this._treeView[overviewId];
 	if (!overviewId || !treeView) { return;	}
 
-	var rootId = (account != null)
+	var rootId = (account != null || appCtxt.multiAccounts)
 		? (ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, account))
 		: ZmOrganizer.ID_ROOT;
 	var hideMe = (this._hideEmpty[overviewId] && this._hideEmpty[overviewId][this.type]);
