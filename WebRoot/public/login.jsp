@@ -67,7 +67,17 @@
 <c:if test="${not empty authResult}">
     <c:choose>
         <c:when test="${not empty postLoginUrl}">
-            <c:redirect url="${postLoginUrl}"/>
+            <c:choose>
+                <c:when test="${not empty param.client}">
+                    <c:redirect url="${postLoginUrl}">
+                        <c:param name="client" value="${param.client}"/>
+                    </c:redirect>
+                </c:when>
+                <c:otherwise>
+                    <c:redirect url="${postLoginUrl}"/>
+                </c:otherwise>
+            </c:choose>
+
         </c:when>
         <c:otherwise>
             <c:set var="client" value="${param.client}"/>
