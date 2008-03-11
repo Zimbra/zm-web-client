@@ -637,13 +637,15 @@ function() {
 
 	buttons.push(ZmOperation.CANCEL);
 
-	if (appCtxt.get(ZmSetting.IM_ENABLED))
+	if (appCtxt.get(ZmSetting.IM_ENABLED)) {
 		buttons.push(ZmOperation.IM);
+	}
 
 	buttons.push(ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
 
-	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))
+	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
 		buttons.push(ZmOperation.ATTACHMENT);
+	}
 
 	buttons.push(ZmOperation.SPELL_CHECK);
 	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
@@ -1238,7 +1240,7 @@ function() {
 		for (var i = 0; i < options.length; i++) {
 			var option = options[i];
 			var menuitem = new DwtMenuItem({parent:menu, style:DwtMenuItem.RADIO_STYLE, radioGroupId:radioId});
-			menuitem.setText(option.displayValue);
+			menuitem.setText(AjxStringUtil.htmlEncode(option.displayValue));
 			menuitem.setData(ZmComposeController.SIGNATURE_KEY, option.value);
 			menuitem.addSelectionListener(listener);
 			menu.checkItem(ZmComposeController.SIGNATURE_KEY, option.value, option.selected);
