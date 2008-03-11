@@ -95,6 +95,16 @@
   </td></tr></table>
 </template>
 
+<template id="im.Chat#ChatMessageError">
+  <div class="ZmChatWindowChatEntry ZmChatWindowChatEntryError">
+	 <div class="from"><img src="<$= appContextPath $>/img/dwt/ImgCritical_12.gif"/><$= "&nbsp;&nbsp;" $><$= ZmMsg.errorCap $></div>
+	 <div class="body">
+		${message} 
+	 	<span id="${detailsId}" class="removeLink"><$= ZmMsg.showDetails $></span>
+	</div>
+  </div>
+</template>
+
 <template id="im.Chat#ChatMessagePlainText">
   <$= AjxMessageFormat.format(ZmMsg.makeLabel, (data.isSystem ? ZmMsg.imSystem : data.from)) $>
   <$= data.getTextBody() $>

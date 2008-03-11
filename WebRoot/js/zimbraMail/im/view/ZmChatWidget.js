@@ -125,7 +125,12 @@ ZmChatWidget.prototype.setTyping = function(item, typing) {
 };
 
 ZmChatWidget.prototype.handleMessage = function(msg) {
-    if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS) && !msg.fromMe){
+	if (msg.error) {
+		this.handleErrorMessage(msg);
+		return;
+	}
+
+	if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS) && !msg.fromMe){
         appCtxt.getApp("IM").playAlert(ZmImApp.INCOMING_MSG_NOTIFICATION);
     }
     var str = msg.displayHtml(this._objectManager, this.chat, this.__lastFrom);
@@ -148,6 +153,20 @@ ZmChatWidget.prototype.handleHtmlMessage = function(str) {
 	var div = document.createElement("div");
 	div.innerHTML = str;
 	return this.scrollTo(div, true);
+};
+
+ZmChatWidget.prototype.handleErrorMessage = function(msg) {
+	var subs = {
+		message: msg.getErrorMessage(),
+		detailsId: Dwt.getNextId()
+	};
+	var str = AjxTemplate.expand("im.Chat#ChatMessageError", subs)
+	this.handleHtmlMessage(str);
+	var el = Dwt.byId(subs.detailsId);
+	if (el) {
+		var callback = AjxCallback.simpleClosure(this._handleOnclickErrorDetails, this, msg);
+		Dwt.setHandler(el, DwtEvent.ONCLICK, callback);
+	}
 };
 
 ZmChatWidget.prototype.saveScrollPos = function() {
@@ -853,7 +872,17 @@ ZmChatWidget.prototype._sashMouseUp = function(ev) {
 	this._sashCapture.pos = null;
 };
 
-
+ZmChatWidget.prototype._handleOnclickErrorDetails = function(msg) {
+	var msgStr = [
+		msg.getErrorMessage(),
+		"<hr>",
+		AjxStringUtil.htmlEncode(msg.body)
+	].join("");
+	var dialog = appCtxt.getMsgDialog();
+	dialog.reset();
+	dialog.setMessage(msgStr, DwtMessageDialog.CRITICAL_STYLE, ZmMsg.zimbraTitle);
+	dialog.popup();
+};
 
 ////// light widgets.  XXX: move this to Dwt when ready
 
