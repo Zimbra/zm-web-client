@@ -40,7 +40,7 @@
          <c:when test="${not empty param.doMessageAction}">
              <app:messageAction/>
          </c:when>
-         <c:when test="${param.action eq 'newtask' or param.action eq 'edittask'}">
+         <c:when test="${param.action eq 'newtask' or param.action eq 'edittask' or param.action eq 'viewtask' }">
              <app:editTaskCheck/>
          </c:when>
          <c:when test="${not empty param.doTaskAction}">
