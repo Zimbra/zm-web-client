@@ -1801,6 +1801,23 @@ function(refresh) {
 	}
 };
 
+// returns true if moving given appt from local to remote folder
+ZmCalViewController.prototype.isMovingToRemote =
+function(appt, newFolderId) {
+	var isMovingToRemote = false;
+	if (appt._orig) {
+		var origFolder = appt._orig.getFolder();
+		var newFolder = appCtxt.getById(newFolderId);
+		if ((origFolder.id != newFolderId) &&
+			!origFolder.link && newFolder && newFolder.link)
+		{
+			isMovingToRemote = true;
+		}
+	}
+
+	return isMovingToRemote;
+};
+
 // this gets called when we get a refresh block from the server
 ZmCalViewController.prototype.refreshHandler =
 function() {

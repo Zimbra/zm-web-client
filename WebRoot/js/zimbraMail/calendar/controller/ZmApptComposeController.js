@@ -83,13 +83,18 @@ function(attId) {
 			}
 
 			// check whether moving appt from local to remote folder with attendees
-			if (this._isMovingToRemote(appt)) {
+			var cc = AjxDispatcher.run("GetCalController");
+			if (cc.isMovingToRemote(appt, appt.__newFolderId)) {
 				var dlg = appCtxt.getYesNoMsgDialog();
 				dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [appt, attId, dlg]);
-				var msg = AjxMessageFormat.format(ZmMsg.orgChange, appt.getFolder().owner);
-				dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-				dlg.popup();
-				return false;
+				var newFolder = appCtxt.getById(appt.__newFolderId);
+				var newOrg = newFolder ? newFolder.owner : null;
+				if (newOrg) {
+					var msg = AjxMessageFormat.format(ZmMsg.orgChange, newOrg);
+					dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+					dlg.popup();
+					return false;
+				}
 			}
 		}
         // otherwise, just save the appointment
@@ -147,6 +152,7 @@ function(actionCode) {
 	}
 };
 
+
 // Private / Protected methods
 
 ZmApptComposeController.prototype._getViewType =
@@ -195,23 +201,6 @@ function(appt, attId, attendees, origAttendees) {
 	}
 
 	return false;
-};
-
-// returns true if moving given appt from local to remote folder
-ZmApptComposeController.prototype._isMovingToRemote =
-function(appt) {
-	var isMovingToRemote = false;
-	if (appt._orig) {
-		var origFolder =  appt._orig.getFolder();
-		var newFolder = appt.getFolder();
-		if (origFolder.id != newFolder.id &&
-			!origFolder.link && newFolder.link)
-		{
-			isMovingToRemote = true;
-		}
-	}
-
-	return isMovingToRemote;
 };
 
 

@@ -185,8 +185,23 @@ function(ev) {
 		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var ctlr = ev.srcData.controller;
-		ctlr._doMove(appt, dropFolder, null, !isShiftKey);
+		var cc = AjxDispatcher.run("GetCalController");
+		if (!isShiftKey && cc.isMovingToRemote(appt, dropFolder.id)) {
+			var dlg = appCtxt.getYesNoMsgDialog();
+			dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [ctlr, dlg, appt, dropFolder]);
+			var msg = AjxMessageFormat.format(ZmMsg.orgChange, dropFolder.owner);
+			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+			dlg.popup();
+		} else {
+			ctlr._doMove(appt, dropFolder, null, !isShiftKey);
+		}
 	}
+};
+
+ZmCalendarTreeController.prototype._changeOrgCallback =
+function(controller, dialog, appt, dropFolder) {
+	dialog.popdown();
+	controller._doMove(appt, dropFolder, null, true);
 };
 
 /*
