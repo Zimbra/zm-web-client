@@ -43,12 +43,7 @@
             }
 
             if(sResult) {
-				var imgsrc = t == 'g' ?
-							 "<app:imgurl value='contacts/ImgGALContact.gif' />" :
-							 t == 'dl' ?
-							 "<app:imgurl value='contacts/ImgGroup.gif' />" :
-							 "<app:imgurl value='contacts/ImgContact.gif' />"
-				;
+				var imgsrc = t == 'g' ? "<app:imgurl value='contacts/ImgGALContact.gif' />" : t == 'dl' ? "<app:imgurl value='contacts/ImgGroup.gif' />" : "<app:imgurl value='contacts/ImgContact.gif' />" ;                                                                                                                                                                                                        
 				return ["<table><tr><td><img src='",imgsrc,"'><"+"/td><td>",
                         zhFmt(f, fls ? fq : query, fs),
                         " ",
