@@ -245,17 +245,9 @@ function() {
 		}
 	};
 
-
-    for (var id in sections) {
-        //bug:19183 Disable editing filter rules in desktop client
-        if (appCtxt.get(ZmSetting.OFFLINE)) {
-            if (id != "FILTERS") {
-                ZmPref.registerPrefSection(id, sections[id]);
-            }
-        } else {
-            ZmPref.registerPrefSection(id, sections[id]);                
-        }
-    }
+	for (var id in sections) {
+		ZmPref.registerPrefSection(id, sections[id]);
+	}
 
 	ZmPref.registerPref("ACCOUNTS", {
 		displayContainer:	ZmPref.TYPE_CUSTOM
