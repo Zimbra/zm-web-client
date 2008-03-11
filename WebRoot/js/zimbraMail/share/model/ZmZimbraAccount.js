@@ -114,10 +114,12 @@ function() {
 		var lastSyncDate = (this.lastSync && this.lastSync != 0)
 			? (new Date(parseInt(this.lastSync))) : null;
 
-		var lastSyncStr = lastSyncDate
-			? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null;
+		var params = {
+			lastSyncStr: (lastSyncDate ? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null),
+			status: this.getStatusMessage()
+		};
 
-		return AjxTemplate.expand("share.App#ZimbraAccountTooltip", {lastSync:lastSyncStr, status:this.status});
+		return AjxTemplate.expand("share.App#ZimbraAccountTooltip", params);
 	}
 	return "";
 };
@@ -140,8 +142,21 @@ function() {
 		case "offline":		return "ImgImAway";
 		case "online":		return "ImgImAvailable";
 		case "running":		return "DwtWait16Icon";
-		case "authfailed":	return "ImgImDnd";
+		case "authfail":	return "ImgImDnd";
 		case "error":		return "ImgCritical";
+	}
+	return "";
+};
+
+ZmZimbraAccount.prototype.getStatusMessage =
+function() {
+	switch (this.status) {
+		case "unknown":		return ZmMsg.unknown;
+		case "offline":		return ZmMsg.imStatusOffline;
+		case "online":		return ZmMsg.imStatusOnline;
+		case "running":		return ZmMsg.running;
+		case "authfail":	return ZmMsg.authFailure;
+		case "error":		return ZmMsg.error;
 	}
 	return "";
 };
