@@ -38,7 +38,7 @@ function(tree, text, imageInfo, type) {
 };
 
 ZmZimletPicker.prototype._setupPicker =
-function(parent) {
+function(picker) {
     this._zimlets = {};
     var idxZimlets = appCtxt.getZimletMgr().getIndexedZimlets()
     if (idxZimlets.length) {
