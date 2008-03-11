@@ -49,6 +49,13 @@ function(x, y, width, height) {
 	this._resetColWidth();
 };
 
+ZmTaskListView.prototype.getLimit =
+function() {
+	// dont rely on page size being set (in case mail app is disabled)
+	// at least until tasks app gets its own prefs page
+	return (appCtxt.get(ZmSetting.PAGE_SIZE) || 25);
+};
+
 ZmTaskListView.prototype.saveNewTask =
 function(keepFocus) {
 	if (this._newTaskInputEl && Dwt.getVisibility(this._newTaskInputEl)) {
