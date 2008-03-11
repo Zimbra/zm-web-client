@@ -1880,6 +1880,14 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWindowChatEntryMe .from { color: #00c; }
 .ZmChatWindowChatEntryThem .from { color: #c00; }
 
+.ZmChatWindowChatEntryError {
+	@CriticalContainer@
+	@CriticalText@
+	margin-bottom: 5px;
+}
+
+.ZmChatWindowChatEntryError .from { color: #cc1111; }
+
 .ZmImPresence-OFFLINE .DwtTreeItem-Text { color: #888; }
 .ZmImPresence-UNKNOWN .DwtTreeItem-Text { color: #888; }
 

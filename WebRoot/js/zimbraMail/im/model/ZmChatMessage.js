@@ -25,6 +25,7 @@ ZmChatMessage = function(notifyJs, fromMe, isSystem) {
 		this.to = notifyJs.to;
 		this.thread = notifyJs.thread;
 		this.ts = notifyJs.ts;
+		this.error = notifyJs.error;
 	}
 	if (!this.ts) this.ts = new Date().getTime();
 	this.fromMe = fromMe;
@@ -134,3 +135,8 @@ function(objectManager, chat, lastFrom) {
 	html.push(AjxTemplate.expand("im.Chat#ChatMessageLine", params));
 	return html.join("");
 };
+
+ZmChatMessage.prototype.getErrorMessage = function() {
+	return ZMsg["im." + this.error] || ZMsg["im.unknown_error"];
+};
+
