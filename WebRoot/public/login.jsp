@@ -226,7 +226,7 @@ if (application.getInitParameter("offlineMode") != null)  {
                             <table width="100%">
                                 <tr>
                                     <td align="center" valign="middle">
-                                        <a href="http://www.zimbra.com/" target="_new"><span style="cursor:pointer;display:block;" class="ImgLoginBanner"></span></a>
+                                        <a href="http://www.zimbra.com/" id="bannerLink" target="_new"><span style="cursor:pointer;display:block;" class="ImgLoginBanner"></span></a>
                                     </td>
                                 </tr>
                                 <tr>
@@ -370,5 +370,16 @@ if (application.getInitParameter("offlineMode") != null)  {
         </td>
     </tr>
 </table>
+<script>
+  <jsp:include page="/js/skin.js">
+    <jsp:param name="templates" value="false" />
+    <jsp:param name="client" value="advanced" />
+    <jsp:param name='servlet-path' value='/js/skin.js' />
+  </jsp:include>
+  var link = document.getElementById("bannerLink");
+  if (link) {
+    link.href = skin.hints.banner.url;
+  }
+</script>
 </body>
 </html>
