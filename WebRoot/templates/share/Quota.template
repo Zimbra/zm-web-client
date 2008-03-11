@@ -31,14 +31,18 @@
 	</table>
 </template>
 
+
 <template id='share.Quota#Tooltip'>
 	<table>
-		<$ if (data.userTooltip) { $>
-			<tr><td>${userTooltip}</td></tr>
+		<$ if (data.username != data.login) { $>
+			<tr><td><center>${login}</center></td></tr>
 		<$ } $>
 
-		<$ if (data.quotaTooltip) { $>
-			<tr><td><center>${quotaTooltip}</center></td></tr>
+		<$ if (data.quota) { $>
+			<$
+				var tooltipMsg = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.size, data.limit]);
+			$>
+			<tr><td><center><$= ZmMsg.quota $>: ${percent}% (<$= tooltipMsg $>)</center></td></tr>
 		<$ } $>
 	</table>
 </template>

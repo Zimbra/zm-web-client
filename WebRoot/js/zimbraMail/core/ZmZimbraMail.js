@@ -1282,7 +1282,7 @@ function() {
 
 ZmZimbraMail.prototype._setUserInfo =
 function() {
-
+	// username
 	var login = appCtxt.get(ZmSetting.USERNAME);
 	var username = (appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
 	if (username) {
@@ -1292,46 +1292,35 @@ function() {
 		}
 	}
 
-	var userTooltip = (username != login) ? login : null;
-	var quota = appCtxt.get(ZmSetting.QUOTA);
+	// quota
 	var usedQuota = (appCtxt.get(ZmSetting.QUOTA_USED)) || 0;
-	var size = AjxUtil.formatSize(usedQuota, false, 1);
 
 	var data = {
+		id: this._usedQuotaField._htmlElId,
 		login: login,
 		username: username,
-		quota: quota,
+		quota: appCtxt.get(ZmSetting.QUOTA),
 		usedQuota: usedQuota,
-		size: size
+		size: (AjxUtil.formatSize(usedQuota, false, 1))
 	};
 
-	var quotaTooltip;
 	var quotaTemplateId;
-	if (quota) {
+	if (data.quota) {
 		quotaTemplateId = 'UsedLimited';
 		data.limit = AjxUtil.formatSize(data.quota, false, 1);
 		data.percent = Math.min(Math.round((data.usedQuota / data.quota) * 100), 100);
 		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.percent+'%', data.limit]);
-		var tooltipDesc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [size, data.limit]);
-		quotaTooltip = [ZmMsg.quota, ": ", data.percent, "% ", '('+tooltipDesc+')'].join("");
 	}
 	else {
-		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [size]);
+		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [data.size]);
 		quotaTemplateId = 'UsedUnlimited';
 	}
-
-	data['id'] = this._usedQuotaField._htmlElId;
 	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data)
 
-	if (userTooltip || quotaTooltip) {
-		var subs = {
-			userTooltip: userTooltip,
-			quotaTooltip: quotaTooltip
-		};
-		var html = AjxTemplate.expand('share.Quota#Tooltip', subs);
-		this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
-		this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(html);
-	}
+	// tooltip for username/quota fields
+	var html = AjxTemplate.expand('share.Quota#Tooltip', data);
+	this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(html);
+	this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(html);
 };
 
 

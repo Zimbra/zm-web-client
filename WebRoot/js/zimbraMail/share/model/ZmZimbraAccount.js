@@ -115,7 +115,7 @@ function() {
 			? (new Date(parseInt(this.lastSync))) : null;
 
 		var params = {
-			lastSyncStr: (lastSyncDate ? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null),
+			lastSync: (lastSyncDate ? (AjxDateUtil.computeWordyDateStr(new Date(), lastSyncDate)) : null),
 			status: this.getStatusMessage()
 		};
 
@@ -131,6 +131,27 @@ function(acctInfo) {
 		this.status = acctInfo.status;
 		if (this.isMain || this.visible) {
 			appCtxt.getOverviewController().updateAccountIcon(this, this.getStatusIcon());
+
+			// update tooltip for offline, single account
+			if (!appCtxt.multiAccounts) {
+				var avm = appCtxt.getAppViewMgr();
+				var tt = this.getToolTip();
+				var sep = "<hr size=1>";
+				var userInfo = avm.getCurrentViewComponent(ZmAppViewMgr.C_USER_INFO);
+				if (userInfo) {
+					if (!this._origUserInfoTT) {
+						this._origUserInfoTT = userInfo.getToolTipContent() + sep;
+					}
+					userInfo.setToolTipContent(this._origUserInfoTT + tt);
+				}
+				var quotaInfo = avm.getCurrentViewComponent(ZmAppViewMgr.C_QUOTA_INFO);
+				if (quotaInfo) {
+					if (!this._origQuotaInfoTT) {
+						this._origQuotaInfoTT = quotaInfo.getToolTipContent() + sep;
+					}
+					quotaInfo.setToolTipContent(this._origQuotaInfoTT + tt);
+				}
+			}
 		}
 	}
 };

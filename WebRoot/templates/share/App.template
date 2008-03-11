@@ -153,10 +153,10 @@
 			</tr>
 		<$	} $>
 		<$	if (data.status && data.status != "") { $>
-		<tr>
-			<td align=right><$= ZmMsg.status $>:</td>
-			<td>${status}</td>
-		</tr>
+			<tr>
+				<td align=right><$= ZmMsg.status $>:</td>
+				<td>${status}</td>
+			</tr>
 		<$	} $>
 	</table>
 </template>
