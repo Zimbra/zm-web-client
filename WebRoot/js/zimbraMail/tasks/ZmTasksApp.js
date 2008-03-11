@@ -67,7 +67,7 @@ function() {
 						 itemClass:		"ZmTask",
 						 node:			"task",
 						 organizer:		ZmOrganizer.TASKS,
-						 dropTargets:	[ZmOrganizer.TAG],
+						 dropTargets:	[ZmOrganizer.TAG, ZmOrganizer.TASKS],
 						 searchType:	"task",
 						 resultsList:
 		   AjxCallback.simpleClosure(function(search) {
