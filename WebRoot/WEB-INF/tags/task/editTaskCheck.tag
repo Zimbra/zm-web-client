@@ -9,6 +9,7 @@
     <zm:getMailbox var="mailbox"/>
     <zm:composeUploader var="uploader"/>
     <c:set var="needEditView" value="${param.action eq 'edittask' or param.action eq 'newtask'}"/>
+    <c:set var="needNonEditView" value="${param.action eq 'viewtask'}"/>
     <c:if test="${uploader.isUpload}">
         <c:choose>
             <c:when test="${not empty uploader.paramValues.actionGo}">
@@ -125,7 +126,10 @@
             </c:when>
         </c:choose>
     </c:if>
-    
+
+     <c:if test="${needNonEditView}">
+        <jsp:forward page="/h/task"/>
+    </c:if>
     <c:if test="${needEditView}">
         <jsp:forward page="/h/etask"/>
     </c:if>
