@@ -186,7 +186,7 @@
         </fmt:message>
     </mo:status>
 </c:when>
-<c:when test="${zm:actionSet(param, 'actionMove') || (zm:actionSet(param,'moreActions') && zm:actionSet(paramValues,'folderId'))}">
+<c:when test="${zm:actionSet(param, 'actionMove') || zm:actionSet(param,'moreActions')}">
     <c:choose>
         <c:when test="${fn:startsWith(param.anAction,'moveTo_')}">
         <c:set var="folderId" value="${fn:replace(param.anAction,'moveTo_','')}"/>

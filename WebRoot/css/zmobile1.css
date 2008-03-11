@@ -114,8 +114,12 @@ html,body {
 
 .label{color: #4d8dc3;}
 
-/*.zo_m_list_frag */a{color: #4d8dc3; text-decoration: none; font-size:small;padding:2px;}
-/*.zo_m_list_frag*/ a:hover{color: #ffffff; background-color: #4d8dc3; text-decoration: none;}
+/*.zo_m_list_frag */a {color: #4d8dc3; text-decoration: none; font-size:small;padding:2px;}
+/*.zo_m_list_frag*/ a:hover {color: #ffffff; background-color: #4d8dc3; text-decoration: none;}
+.NavbarBg a {color: #FFFFFF; text-decoration: none; padding:2px;}
+.NavbarBg a:hover {color: #FFFFFF; background-color: transparent;text-decoration: none; padding:2px;}
+
+
 a.zo_button_disabled {color:gray;background-color:none;}
 /*.highlight:hover td{ background-color: blue;}
 .highlight:hover td a,p,span{color: white;} need to work on it more!*/
