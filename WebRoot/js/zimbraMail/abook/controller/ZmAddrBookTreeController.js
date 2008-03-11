@@ -218,6 +218,7 @@ function(folder) {
 			};
 			sc.search(params);
 		} else {
+			capp.currentSearch = null;
 			capp.showFolder(folder);
 		}
 
