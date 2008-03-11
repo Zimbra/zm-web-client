@@ -1553,7 +1553,6 @@
 .ZRequired	{}							/* == fields in required state (when in a new form, not an error yet) */
 .ZHint		{}							/* == fields in 'hint' state (helper text that shows before value put in) */
 
-
 /* generics for all widgets */
 
 /* make all widgets do same box model as IE */
@@ -1719,12 +1718,12 @@
 
 .ZTab									{	@Tab@	@TabSpacing@	}
 
-			.ZTabBorder		td			{	@TabBorder@	@TabBorder-normal@		}
-.ZHover		.ZTabBorder		td			{				@TabBorder-hover@		}
-.ZDisabled	.ZTabBorder		td			{				@TabBorder-disabled@ 	}
-.ZFocused	.ZTabBorder		td			{				@TabBorder-focused@		}
-.ZActive	.ZTabBorder		td			{				@TabBorder-active@		}
-.ZSelected	.ZTabBorder		td			{				@TabBorder-selected@	}
+			.ZTabBorder					{	@TabBorder@	@TabBorder-normal@		}
+.ZHover		.ZTabBorder					{				@TabBorder-hover@		}
+.ZDisabled	.ZTabBorder					{				@TabBorder-disabled@ 	}
+.ZFocused	.ZTabBorder					{				@TabBorder-focused@		}
+.ZActive	.ZTabBorder					{				@TabBorder-active@		}
+.ZSelected	.ZTabBorder					{				@TabBorder-selected@ 	}
 
 			.ZTabTable .ZWidgetTitle	{	@TabText@ 	@TabText-normal@		}
 .ZHover		.ZTabTable .ZWidgetTitle	{				@TabText-hover@			}
@@ -1734,7 +1733,10 @@
 .ZSelected	.ZTabTable .ZWidgetTitle	{				@TabText-selected@		}
 
 
-
+#IFDEF MSIE
+.ZTabBar	.ZSelected	{@PanelBg@}
+.ZTabBar	.ZHover		{background: @Darken(TabColor,20)@;}
+#ENDIF
 
 /***************
  *
