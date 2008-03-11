@@ -1,0 +1,1234 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * 
+ * Zimbra Collaboration Suite Web Client
+ * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * 
+ * The contents of this file are subject to the Yahoo! Public License
+ * Version 1.0 ("License"); you may not use this file except in
+ * compliance with the License.  You may obtain a copy of the License at
+ * http://www.zimbra.com/license.
+ * 
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
+ * 
+ * ***** END LICENSE BLOCK *****
+ */
+
+IMG {
+	border: none;
+	vertical-align: middle;
+
+}
+
+LEGEND {
+	@Text-disabled@
+}
+
+SUBMIT,
+.tbButton, 
+.searchButton {
+	@ButtonBorder@
+	@ButtonBorder-normal@
+	@ButtonText@
+	@ButtonText-normal@
+	@FontSize-normal@
+}
+
+
+
+.ZhAppLinks {
+	vertical-align: middle;
+}
+
+.ZhAppLinks a:link, .ZhAppLinks a:visited {
+	text-decoration: none;
+	font-weight: bold;
+	color: darkblue;
+}
+
+.ZhAppSwitchLink a,
+.ZhAppSwitchLink a:link,
+.ZhAppSwitchLink a:visited {
+	font-size:10px;
+	font-weight:normal;
+}
+
+
+/* ------- tabs --------------- */
+
+.Tabs { margin-right: 10px; }
+
+.Tab {  }
+.Tab SPAN {
+	vertical-align:middle;
+	padding-left:2px;
+	padding-right:2px;
+}
+.Tab .icon {
+	padding-right:0px;
+}
+
+.TabFiller {
+	padding:5px;
+	border: none;
+}
+
+.TabSpacer {
+	padding:2px; 
+	width: 2px;
+	border: none;
+}
+
+.TabNormal {
+	@AppTabBorder@
+	@AppTabBorder-normal@
+	background-color:#abc3de !important;
+	border-width: 1px 1px 0px 1px!important;
+	padding: 0px 3px;
+}
+
+.TabSelected {
+	@AppTabBorder@
+	@AppTabBorder-selected@
+	background-color:#dbe9fa !important;
+	border-width: 1px 1px 0px 1px !important;
+	padding: 0px 3px;
+}
+
+.Tabs A:link, .Tabs A:visited  {
+	@Text@
+	text-decoration: none;
+}
+
+
+
+/* ------- tree --------------- */
+
+.Overview { 
+	width: 180px; 
+	padding:0px; 
+}
+
+
+.Tree {
+	@SkinBorderTree@
+	height:auto;
+}
+
+.Tree TD {
+	@TreeItem@
+	padding: 2px 0px 2px 10px;
+}
+
+.Tree TH {
+ 	@TreeHeaderContainer@    
+}
+
+.Tree .Header {
+	text-align: left;
+	font-weight:bold;
+	height:18px;
+	padding: 1px 5px 0px 0px;
+	
+}
+
+.Tree a:link, .Tree a:visited { 
+	@Text@ 
+	text-decoration: none; 
+}
+
+.ZhTISelected {  @SelectedBg-blurred@	}
+
+
+
+/* ------- list --------------- */
+
+.List {
+	@SkinBorderApp@
+	border-top-width:0px;
+}
+
+.ZhRow TD {
+	@ListItemContainer@
+	@ListItemContainer-normal@
+    padding-right: 6px;
+}
+
+.ZhRowOdd TD {
+   	@ListItemContainer@
+	@ListItemContainer-alt@
+    padding-right: 6px;
+}
+
+.List TH {
+	text-align: left;
+	border-top:0px;
+	border-right:1px;
+    background:#c3dcf3 url("@SkinImgDir@/skin/DwtListView-Column.repeatx.gif") repeat-x top left;
+	overflow:hidden;
+	height:28px;
+	font-weight:normal;
+    padding: 0px 0px 0px 0;
+    vertical-align: middle;
+}
+
+.topborder{border-top: 1px solid #99aabd; }
+
+.List A:link, .List A:visited  {
+	@Text@
+	text-decoration: none;
+}
+
+.List TH A:link, .List TH A:visited  {
+	text-decoration: underline;
+}
+
+.List .Img {
+	width: 20px;
+	padding-right: 0px;
+}
+
+.List .ImgNarrow {
+	width: 12px;
+	padding-right: 0px;
+}
+
+.List .CB {
+	width: 20px;
+	padding-right: 0px;
+}
+
+.List .Radio {
+	width: 20px;
+	padding-right: 0px;
+	text-align: center;
+}
+
+
+/* ---- filter rules ----------- */
+
+
+.RuleList TD {
+	@ItemBottomBorder@
+	padding: 8px;
+}
+
+.ZhDisplayRuleContent {
+	@AppBg@  
+	@NormalOutsetBorder@
+}
+
+.ZhEditRuleContent {
+	@SkinBorderApp@
+}
+
+.RuleList {
+	@AppBg@
+/*@InsetBorder@*/
+  /*  @ListContainer@ */
+}
+
+.RuleHint {
+	@Text-disabled@
+	@FontSize-smaller@
+}
+
+.RuleList A:link, .RuleList A:visited  {
+	@Text@
+	text-decoration: underline;
+}
+
+.MsgStatusImg {
+	width: 20px;
+	padding-right: 6px;    
+}
+
+A:Link,
+A:visited { color: #5d86e7; }
+
+
+
+.ConvSummary A {
+	@Text@
+	text-decoration: none;    
+}
+
+
+.TopContent {
+	padding:0 15px 0 0;
+ /*   border-bottom: 1px solid #98adbe;*/ 
+}
+
+
+.Tree .ZhTreeEdit a:link, .Tree .ZhTreeEdit a:visited { @Text@ text-decoration: underline; }
+.ZhTreeEdit {
+	@Text-light@
+	@FontSize-normal@
+	padding-right:4px;
+	font-weight: normal;
+  	text-decoration: underline;
+}
+
+.ZhAppContent2 {
+	@AppBg@
+	@InsetBorder@
+}
+
+.Conv2Tb {
+	@ToolbarBg@
+}
+
+.ZhAppContent {
+	@SkinBorderApp@
+}
+
+.ZhAppViewContent {
+	@AppBg@
+	@NormalOutsetBorder@
+	border-top-width:0px;
+}
+
+.SearchBar {
+	padding: 5px;
+	width: 300px;
+}
+
+.TbTop INPUT, .TbBottom INPUT {
+	padding: 0;
+	margin: 0;
+	border: none;
+	cursor: pointer;
+	@FontSize-normal@
+	@Text@
+    background-color: transparent;
+}
+
+/* ---- Top Toolbar Container ----- */
+.TbTop{
+	background: transparent url("@SkinImgDir@/skin/skin_border_app_top_toolbar.repeatx.gif") repeat-x;
+	height:28px;
+	width: 100%;
+}
+#IFDEF MSIE
+.IEFix{ width: 184px;
+}
+
+#ENDIF
+
+
+/* ---- Bottom Toolbar Container ----- */
+
+.TbBottom {
+background:url("@SkinImgDir@/skin/skin_border_app_top_toolbar.repeatx.gif") repeat-x;
+height:28px;
+overflow:hidden;
+border-top: 1px solid #eee;
+}
+
+.Tb a:link, .Tb a:visited {
+	text-decoration: none;
+	font-weight: normal;
+	@Text@
+}
+
+.Tb2 {
+	@ToolbarBg@
+}
+
+.TbBt {
+	padding:5px;
+}
+
+.TbBt A {
+	padding: 0px 5px 0px 5px;
+}
+
+.TbBt#caltb a:link, .TbBt#caltb a:visited { @Text@ text-decoration: none; }
+
+.Tb SPAN { vertical-align: middle; }
+
+.Tags SPAN { vertical-align: middle;  padding-right:5px;}
+
+.Unread {	font-weight:bold; }
+
+.RowSelected TD { @SelectedBg@ }
+.RowMatched TD { background-color: @HilightColor@ }
+
+
+.Folder { padding-bottom: 2px;  }
+
+.Folder SPAN { vertical-align: middle; padding-left: 3px; }
+
+
+.Paging {
+	padding: 0px 5px 0px 5px;
+}
+
+.Compose {
+	
+}
+
+.ConvSummary  {
+	@PageHeaderBg@
+	@BottomSeparator@
+	padding: 5px 0px 5px 0px; 
+}
+
+.ConvSummary2  {
+	@BottomSeparator@
+	@ToolbarBg@
+	padding: 5px 0px 5px 5px;
+}
+
+.ConvSummary SPAN, .CompOrigAtt SPAN { vertical-align: middle; }
+
+
+/* Header section for an email message */
+.MsgHdr {
+	@MailMsgHeader@
+	@NormalOutsetBorder@
+}
+.MsgHdr TABLE {
+	background-color: @HeaderColor@;
+	padding: 5px 0 5px 0;
+}
+
+.MsgOps {
+	@ToolbarBg@;
+/*    background-color: @HeaderColor@;*/
+}
+
+.Msg { }
+
+.MsgHdrName {
+	width: 10%;
+	padding: 3px 0px 3px 0px;
+	vertical-align: top;
+	text-align: right;
+	font-weight: bold;
+	white-space: nowrap;
+}
+
+.MsgHdrValue {
+	padding: 3px 3px 3px 3px;
+	vertical-align: top;
+	overflow: hidden;
+}
+
+.MsgHdrValue IMG { vertical-align: top; }
+
+.MsgHdrSub {
+	@FontSize-bigger@
+}
+
+.MsgHdrSender {
+	@FontSize-big@
+	font-weight:bold;
+	padding: 3px 3px 3px 3px;
+	vertical-align: top;
+	overflow: hidden;
+}
+
+.MsgHdrSent {
+	padding: 3px 3px 3px 3px;
+	vertical-align: top;
+	overflow: hidden; 
+	white-space: nowrap;
+}
+
+.MsgHdrAttAnchor {
+	padding: 3px 3px 3px 3px;
+	vertical-align: top;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.MsgHdrAttAnchor A, .CompOrigAtt A {
+	@Text@
+	text-decoration: none;
+}
+
+.MsgBody {
+	@AppBorder@
+	background-color: #FFFFFF;
+	font-family:monospace;
+	font-size:13px;
+	padding: 10px;
+	overflow: auto;
+}
+
+.MsgBody .zUrl {
+	@FontFamily-fixed@
+	@FontSize-big@
+}
+
+.MsgCompose {
+	@FontFamily-fixed@
+	@FontSize-big@
+}
+
+.Fragment {
+	color: gray; 
+	font-weight: normal; 
+}
+
+.contactLabel {
+	
+	@Text@  white-space:nowrap; overflow:hidden;
+	width: 1%;
+	text-align: right;
+}
+
+.editContactLabel {
+	@Text@  white-space:nowrap; overflow:hidden;
+	width: 18em;
+	text-align: right;
+}
+
+.editContactGroupLabel {
+	width: 18em;    
+	@Text@  white-space:nowrap; overflow:hidden;
+	text-align: left;
+}
+
+.editContactGroupHintLabel {
+	color: gray;  white-space:nowrap; overflow:hidden;
+	text-align: right;
+}
+
+.optionSectionLabel {
+	@Text@  white-space:nowrap; overflow:hidden; font-size:15px; font-weight:bold;
+}
+
+
+.sectionLabel {
+	@Text@  white-space:nowrap; overflow:hidden; border-bottom: 1px solid #8597a7; font-size:15px; font-weight:bold;
+}
+
+.companyName {
+	font-size:15px; font-weight:bold;
+}
+
+.companyFolder {
+	font-size:13px;
+	white-space:nowrap; overflow:hidden;
+	width: 1%;
+}
+
+.contactHeaderRow {
+	background-color:#E9E9E9; /* TODO: dynamic based on folder */
+	height:36px;
+}
+
+.contactTagsRow {
+	background-color:#E9E9E9; /* TODO: dynamic based on folder */
+}
+
+.contactHeader, .ZhFolderHeader {
+	@FontSize-biggest@
+	@Text@
+	overflow:hidden;
+	padding: 3 0 3 2;
+}
+
+.ZhFolderHeader {
+	white-space:nowrap;
+}
+
+.searchField {
+	@InputField@
+    height: auto;
+    width:200px;
+}
+
+.SearchFieldWidth{width: 1%;}
+
+.NoResults { 
+	text-align: center;	padding: 20px 0px 20px 0px;
+	font-weight: bold;
+}
+
+.InitialContactSearch {
+	text-align: center;
+	padding: 20px 0px 20px 0px;
+	color: gray;
+}
+
+.ImgDisabled {
+	@Icon-disabled@
+}
+
+.Displayimages {
+	cursor: pointer;
+	background-color: #FFFFCC;
+	padding: 7px;
+	font-size: 10pt;
+	border-bottom: 1px solid #777777;
+}
+
+.AttachmentImage {
+  width: 120px;
+  height: 80px;
+}
+
+.Status  {
+	padding: 2px 0px 2px 0px;
+}
+
+.StatusEmpty  {
+	padding: 8px 0px 6px 0px;
+}
+
+.Status DIV {
+	padding: 5px;
+	font-weight: bold;
+}
+
+.StatusInfo     { @InfoContainer@		@ToastContainer@	}
+.StatusWarning  { @WarningContainer@	@ToastContainer@	}
+.StatusCritical { @CriticalContainer@ 	@ToastContainer@	}
+
+/*
+ *   Shortcut key display
+ */
+
+.shortcutIntro {
+	background-color: #FFFFCC;
+	padding: 7px;
+	border-bottom: 1px solid #777777;
+}
+
+.shortcutList {
+	width:100%;
+	border-collapse:collapse;
+	margin-bottom:10px;
+}
+
+.shortcutListHeader {
+	border:1px solid #999999;
+}
+
+.shortcutKeys {
+	text-align:right;
+	padding:6px 0;
+	vertical-align:top;
+	border: 1px solid #e5f1ff;
+	font-weight:bold;
+	@Text-disabled@;
+}
+
+.shortcutDescription {
+	border: 1px solid #e5f1ff;
+	padding:5px;
+	width:auto;
+}
+
+.shortcutKeyCombo {
+	white-space:nowrap;
+	padding:5px;
+}
+
+.shortcutKey {
+	@SeparatorBorder@
+	@Text@
+	font-weight:bold;
+	padding:2px 4px 2px 4px;
+	margin:1px 1px 1px 1px;
+	line-height:22px;
+}
+
+.shortcutTable {
+	table-layout:fixed;
+	border-collapse:collapse;
+	margin-bottom:10px;
+	border:1px solid #999999;
+}
+
+.shortcutTable TH {
+	font-size:11px;
+	text-align:left;
+	font-weight:bold;
+	padding-left:5px;
+	color:#666666;
+	border-bottom:1px solid #999999;
+}
+
+.SubHead,
+.PanelHead {
+	font-size:12px; font-weight:bold;
+	padding:3 10 5 7;
+}
+
+
+.PanelHead {
+	background: transparent url("/zimbra/skins/yahoo/img/icons/prefs/ImgPrefsHeader.repeatx.gif") top left repeat-x;
+}
+
+.ImgPrefsHeader {
+	background:transparent url("/zimbra/skins/yahoo/img/icons/prefs/ImgPrefsHeader.repeatx.gif") repeat-x !important;
+}
+
+.ZhSubTabs {
+	padding-top: 10px;
+}
+
+.ZhEditFolderContent,
+.ZhEditAddressBookContent, 
+.ZhEditCalendarContent, 
+.ZhEditTagContent {
+	@AppBg@  @NormalOutsetBorder@
+}
+
+.ZhCalType, .ZhABType, .ZhFolderType {
+@Text-disabled@;
+}
+
+.ZhCalMonthHeaderRow {
+	@PageHeaderBg@
+}
+
+
+.ZhCalMonthTable {
+	@CompactTable@
+	@AppBg@
+}
+
+/* label for the month */
+.ZhCalMonthHeaderMonth {
+	@PageHeaderBg@
+	@PageHeaderText@
+	@FontSize-biggest@
+	@Label@
+	text-align:center;
+}
+
+/* day of week label for the month */
+.ZhCalMonthHeaderCellsText {
+ 	@PageHeaderBg@
+	@PageHeaderText@
+	@FontSize-big@
+	@SmallBoxPadding@
+	@BottomSeparator@
+	@Label@
+	text-align:center;   
+}
+
+/* cell for each day in the month view in various states*/
+.ZhCalMonthDay, .ZhCalMonthDaySelected {
+	@SeparatorBorder@
+	@NoWrap@
+	vertical-align:top;
+}
+
+.ZhCalMonthDaySelected { @SelectedBg@ }
+
+/* header for day view */
+.ZhCalDayHeader, .ZhCalDayHeaderToday {
+	@PageHeaderBg@
+	@PageHeaderText@
+	@FontSize-big@
+    @Label@
+	text-align:center;
+	@BottomSeparator@
+	line-height: 2.0em;
+}
+
+.ZhCalPager {
+	@PageHeaderText@
+	@FontSize-big@
+    @Label@
+	text-align:center;
+	
+}
+
+.ZhCalMonthHeaderRow a:link, .ZhCalMonthHeaderRow a:visited {
+	@Text@
+}
+
+.ZhCalDayHeaderToday, .ZhCalDayHeaderToday a:link, .ZhCalDayHeaderToday a:visited {
+	@Text-today@
+}
+
+/* label of a particular day in various states */
+.ZhCalDOM,
+.ZhCalDOMT,
+.ZhCalDOMO,
+.ZhCalDOMOT
+{
+	@NoWrap@
+	@FontSize-big@
+	@TextPadding@
+	text-align:right;
+}
+
+.ZhCalMonthTable a:link, .ZhCalMonthTable a:visited,
+.ZhCalMiniContainer a:link, .ZhCalMiniContainer a:visited,
+	.ZhCalMonthHeaderRow a:link, .ZhCalMonthHeaderRow a:visited { text-decoration: none; color:inherit;}
+
+.ZhCalDOM, .ZhCalDOM a:link, .ZhCalDOM a:visited {
+	@Text@
+}
+
+.ZhCalDOMT, .ZhCalDOMT a:link, .ZhCalDOMT:visited {
+	@Text-today@
+}
+
+.ZhCalDOMO, .ZhCalDOMO a:link, .ZhCalDOMO a:visited {
+	@Text-disabled@
+}
+
+.ZhCalDOMOT, .ZhCalDOMOT a:link, .ZhCalDOMOT a:visited {
+	@Text-disabled@
+	@Text-today@
+}
+
+.ZhCalMiniContainer {
+	@AppBg@ @NormalOutsetBorder@
+    height: 135px;
+	padding-bottom: 5px;
+}
+
+.ZhCalMDS { @SelectedBg@ }
+
+.ZhCalMDOM,
+.ZhCalMDOMT,
+.ZhCalMDOMO,
+.ZhCalMDOMOT
+{
+	@NoWrap@
+	@FontSize-small@
+	@TextPadding@
+	padding:2px; border:0px;
+	text-align:center;
+}
+
+.ZhCalMDOMT {
+padding:1px; border:1px solid darkred;
+}
+
+.ZhCalMDOMO, .ZhCalMDOMO a:link, .ZhCalMDOMO a:visited {
+	@MiniCalDay-gray@
+
+}
+
+
+/*mini cal day has appt */
+.ZhCalMDHA {
+	@MiniCalDay-hilited@
+}
+
+.ZhCalMDOMOT, .ZhCalMDOMOT a:link, .ZhCalMDOMOT a:visited {
+	padding:1px; border:1px solid darkred;
+	@MiniCalDay-gray@
+}
+
+.ZhCalMDOM a:link, .ZhCalMDOM a:visited, ZhCalMDOMT a:link, .ZhCalMDOMT a:visited {
+	@Text@
+}
+
+
+/* Container of the calendar titlebar (arrows and month label, not DOW labels) */
+.ZhCalMiniTitlebar {
+	@MiniCalHeaderBg@
+}
+
+
+/* Name of the month in the calendar titlebar */
+.ZhCalMiniTitleCell {
+	white-space:nowrap;	@MiniCalHeaderText@
+	@ActiveCursor@
+	font-weight: normal;
+}
+
+.ZhCalMiniTitleCell a:link, .ZhCalMiniTitleCell a:visited {
+	@Text@
+}
+
+/* Label for the days of the week in calendar titlebar */
+.ZhCalMiniDow {
+	@MiniCalDOWText@
+	font-weight: normal;
+}
+
+/* text box for a single appt in the month view in various states */
+.ZhCalMonthAppt {
+padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
+}
+
+.ZhApptSel {
+	border: 1px dashed black;
+}
+
+.ZhCalMonthAllDayAppt, .ZhCalMonthAllDayApptNew, .ZhCalDayAllDayAppt, .ZhCalDayAllDayApptNew {
+	border:2px solid #333333;
+#IFDEF GECKO
+	-moz-border-radius:2 2 2 2;
+#ENDIF
+	border-top-width:1px;
+	border-bottom-width:1px;
+}
+
+.ZhCalMonthAllDayAppt, .ZhCalMonthAllDayApptNew {
+	padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
+}
+
+.ZhCalDayAllDayAppt, .ZhCalDayAllDayApptNew {
+	padding: 1 @BoxPaddingSize@ 1 @BoxPaddingSize@;
+    cursor: pointer;
+}
+
+.ZhCalDayAppt, .ZhCalDayApptNew {
+	border:1px solid;
+  	border-color:#AAAAAA #333333 #333333 #AAAAAA;
+    cursor: pointer;
+}
+
+.ZhCalDayApptNew, .ZhCalDayAllDayApptNew, .ZhCalMonthAllDayApptNew {
+	color:white;
+}
+
+.ZhCalDayApptEnd, .ZhCalTimeZone {
+	@Text-disabled@
+}
+
+/* day of week label for the month */
+.ZhCalDayHour {
+ 	@AppBg@
+	@PageHeaderText@
+	@SmallBoxPadding@
+	@BottomSeparator@
+	@Label@
+	text-align:center;   
+}
+
+/* column between hours and appts */
+.ZhCalDayHS {
+	@RightSeparator@
+}
+.ZhCalAllDayDS {
+	@LeftSeparator@
+}
+.ZhCalDayHSB {
+	@RightSeparator@
+  	@BottomSeparator@
+}
+/* half hour bottom */
+.ZhCalDayHHB {
+	@BottomSeparator-light@
+	border-bottom-style: dashed;
+}
+
+/* hour bottom */
+.ZhCalDayHB {
+	@BottomSeparator-light@
+}
+
+/* allday bottom */
+.ZhCalDayADB {
+	@BottomSeparator-light@
+	border-bottom-width:4px;
+}
+
+.ZhCalDaySEP {
+	@LeftSeparator@       
+}
+
+.ZhCalDayADHS {
+	@RightSeparator@
+  	@BottomSeparator-light@
+	border-bottom-width:4px;
+}
+/* day of week label for the month */
+.ZhCalDayGrid {
+ 	@AppBg@
+}
+
+.ZhCalDayUnionSEP {
+	@LeftSeparator@
+	@RightSeparator@       
+}
+
+/* used in sched view for thermometer*/
+.ZhCalSchedUnion {
+	text-align:center;
+	background-color:#D90000;
+	@Text@
+	width:25px;
+}
+
+.apptHeaderRow {
+	height:28px;
+}
+
+.apptHeader {
+	font-size:18px;
+	font-weight:bold;
+	@Text@
+	overflow:hidden;
+}
+
+.ZhCalDayGrid A:link, .ZhCalDayGrid A:visited, .ZhCalMonthTable A:link, .ZhCalMonthTable A:visited  {
+	color: inherit;
+	text-decoration: none;
+}
+
+.ZhBottomSep {
+	@BottomSeparator@
+}
+
+.ZhApptRecurrInfo {
+	cursor: pointer;
+	background-color: #FFFFCC;
+	padding: 7px 0;
+	font-size: 10pt;
+	border-bottom: 1px solid #777777;
+}
+
+.ZhCallListPrintView {
+	padding:10px;
+}
+
+.ZhCallListPrintTable TH {
+	font-weight:bold;
+}
+
+.ZhCallListPrintTable TD,
+.ZhCallListPrintTable TH {
+	padding-left:20;
+	padding-right:20;
+	border-bottom:1px solid;
+	text-align:left;
+}
+
+.ZhZimbraTitle {
+	@FontSize-biggest@
+}
+
+.ZhOptVoice .List TD,
+.ZhOptVoice .List TH {
+	padding-left:20px;
+}
+
+ .ZhOptVoiceCBCell {
+	width:23;
+ }
+
+/* Submit button that's made to look like text in an <a> tag */
+.ZhOptVoiceRemove {
+	padding: 0;
+	margin: 0;
+	border: none;
+	cursor: pointer;
+	@FontSize-normal@
+	@Text@
+	background-color:transparent;
+	text-decoration:underline;
+}
+
+/*
+ * Colors, for use in calendar and elsewhere.
+ *
+ * Use the base color (eg: "Red") to show a list of colors.
+ * Use the "Bg" version ("RedBg" as background in a list, etc)
+ * Dark and Light are primarily for use in borders
+ *
+ */
+
+.Selection	{ background-color:#ADD6D6;}
+.SelectionDark	{ background-color:#91C8C8; }
+.SelectionLight	{ background-color:#C8E4E4; }
+.SelectionBg	{ background-color:#E3F1F1; }
+
+.Red	{ background-color:#E34040;}
+.RedDark	{ background-color:#D90000; }
+.RedLight	{ background-color:#EC8080; }
+.RedBg	{ background-color:#F5BFBF; }
+.RedC	{ color:#E34040;}
+.RedDarkC	{ color:#D90000; }
+.RedLightC	{ color:#EC8080; }
+.RedBgC	{ color:#F5BFBF; }
+
+.Pink	{ background-color:#F492BF;}
+.PinkDark	{ background-color:#F06EA9; }
+.PinkLight	{ background-color:#F8B7D4; }
+.PinkBg	{ background-color:#FBDBE9; }
+.PinkC	{ color:#F492BF;}
+.PinkDarkC	{ color:#F06EA9; }
+.PinkLightC	{ color:#F8B7D4; }
+.PinkBgC	{ color:#FBDBE9; }
+
+.Orange	{ background-color:#FF9940;}
+.OrangeDark	{ background-color:#FF7700; }
+.OrangeLight	{ background-color:#FFBB80; }
+.OrangeBg	{ background-color:#FFDDBF; }
+.OrangeC	{ color:#FF9940;}
+.OrangeDarkC	{ color:#FF7700; }
+.OrangeLightC	{ color:#FFBB80; }
+.OrangeBgC	{ color:#FFDDBF; }
+
+.Yellow	{ background-color:#FFE640;}
+.YellowDark	{ background-color:#FFDD00; }
+.YellowLight	{ background-color:#FFEE80; }
+.YellowBg	{ background-color:#FFF6BF; }
+.YellowC	{ color:#FFE640;}
+.YellowDarkC	{ color:#FFDD00; }
+.YellowLightC	{ color:#FFEE80; }
+.YellowBgC	{ color:#FFF6BF; }
+
+.Green	{ background-color:#40A05F;}
+.GreenDark	{ background-color:#00802A; }
+.GreenLight	{ background-color:#80C095; }
+.GreenBg	{ background-color:#BFDFCA; }
+.GreenC	{ color:#40A05F;}
+.GreenDarkC	{ color:#00802A; }
+.GreenLightC	{ color:#80C095; }
+.GreenBgC	{ color:#BFDFCA; }
+
+.Cyan	{ background-color:#40D9D9;}
+.CyanDark	{ background-color:#00CCCC; }
+.CyanLight	{ background-color:#80E6E6; }
+.CyanBg	{ background-color:#BFF2F2; }
+.CyanC	{ color:#40D9D9;}
+.CyanDarkC	{ color:#00CCCC; }
+.CyanLightC	{ color:#80E6E6; }
+.CyanBgC	{ color:#BFF2F2; }
+
+.Blue	{ background-color:#4073D9;}
+.BlueDark	{ background-color:#0044CC; }
+.BlueLight	{ background-color:#80A2E6; }
+.BlueBg	{ background-color:#BFD0F2; }
+.BlueC	{ color:#4073D9;}
+.BlueDarkC	{ color:#0044CC; }
+.BlueLightC	{ color:#80A2E6; }
+.BlueBgC	{ color:#BFD0F2; }
+
+.Purple	{ background-color:#7940A0;}
+.PurpleDark	{ background-color:#4C0080; }
+.PurpleLight	{ background-color:#A680C0; }
+.PurpleBg	{ background-color:#D2BFDF; }
+.PurpleC	{ color:#7940A0; }
+.PurpleDarkC	{ color:#4C0080; }
+.PurpleLightC	{ color:#A680C0; }
+.PurpleBgC	{ color:#D2BFDF; }
+
+.Gray	{ background-color:#BFBFBF;}
+.GrayDark	{ background-color:#A9A9A9; }
+.GrayLight	{ background-color:#D4D4D4; }
+.GrayBg	{ background-color:#E9E9E9; }
+.GrayC	{ color:#BFBFBF;}
+.GrayDarkC	{ color:#A9A9A9; }
+.GrayLightC	{ color:#D4D4D4; }
+.GrayBgC	{ color:#E9E9E9; }
+
+
+
+.ZhAC {position:relative;}
+.ZhACB { font-weight: bold; }
+.ZhACCont {position:absolute;bottom:0;}
+.ZhACCont .yui-ac-content {position:absolute;border:1px solid #404040;background:#fff;overflow:hidden;z-index:9050;}
+.ZhACCont .yui-ac-shadow {position:absolute;margin:.3em;background:#a0a0a0;z-index:9010;}
+.ZhACCont ul {margin: 0; padding:1px 0; list-style: none}
+.ZhACCont li { margin: 0; padding:0 1px;cursor:default;white-space:nowrap;}
+.ZhACCont li.yui-ac-highlight {  @SelectedBg@ }
+.ZhACCont li.yui-ac-prehighlight {background:#FFFFCC;}
+
+.ZhACTo {z-index:9050;}
+.ZhACCc {z-index:9040;}
+.ZhACBcc {z-index:9030;}
+
+.ZOptionsSectionTable {
+}
+
+.ZOptionsHeaderL,
+.ZOptionsHeaderR { }
+.ZOptionsHeader {
+ 	@FontSize-bigger@
+ 	color:black;
+}
+
+.ZHeader{
+	font-size: 13px;
+	font-weight: bold;
+}
+
+.ZOptionsHint {
+	@Text-disabled@;
+}
+
+.ZOptionsSectionMain {
+	@ChromeBg@
+	padding:1em;
+}
+.ZOptionsLabel,
+.ZOptionsLabelTop,
+.ZOptionsLabelNarrow,
+.ZOptionsTableLabel {
+	width: 150px;
+	font-weight: bold;
+	white-space: nowrap;
+	text-align: right;
+	vertical-align: middle;
+	line-height:20px;
+}
+
+.ZOptionsSectionTable LABEL {
+	white-space:nowrap;
+}
+
+.ZOptionsLabelTop {
+	vertical-align:top;
+	line-height:20px;
+}
+
+.ZOptionsLabelNarrow {
+	width:auto;
+}
+
+.ZOptionsInfo {
+	@Text-disabled@		/* TODO: Text-hint ? */
+}
+
+.ZhDateHint {
+	@Text-disabled@;
+    padding-left: 5px;
+}
+
+.ZhHomeVoiceCell {
+    padding:0;
+}
+
+.ZhHomeVoiceIframe {
+	background-color:#FFFFFF;
+	width:100%;
+    height:230px;
+}
+
+.ZhHomeVoiceBody {
+    background-color:#FFFFFF;
+    width:100%;
+    height:100%;
+}
+
+.ZhHomeVoiceTable {
+	background-color:#FFFFFF;
+	width:100%;
+}
+
+.ZhHomeVoiceTable .ZhHomeCell {
+    padding-left:15px;
+}
+
+.ZhHomeRow {
+	height:40px;
+}
+
+.ZhHomeCell {
+	border-bottom:1px solid #ccc;
+	padding:5px
+}
+
+.ZhHomeTextLink {
+	color:#000;
+	text-decoration:none;
+}
