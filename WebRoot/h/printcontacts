@@ -20,7 +20,7 @@
 
 <html>
 <app:head mailbox="${mailbox}"/>
-<body style='background-color:white;' onload="window.print();">
+<body style='background-color:white;'>
     <div class='ZhCallListPrintView'>
         <table><tr>
             <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
@@ -79,6 +79,10 @@
         <div class='NoResults'><fmt:message key="noResultsFound"/></div>
     </c:if>
     </div>
-
+<script type="text/javascript">
+    <!--
+    window.print();
+    // -->
+</script>
 </body>
 </html>
