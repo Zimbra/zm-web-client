@@ -1320,7 +1320,12 @@ function(calItemNode, instNode) {
 	var itemAllDay		= calItemNode.allDay;
 	var instAllDay		= instNode.allDay;
 	var dur				= this._getAttr(calItemNode, instNode, "dur");
-	this.allDayEvent	= (instAllDay || (itemAllDay && !this.isException)) ? "1" : "0";
+	this.allDayEvent	= (instAllDay || itemAllDay) ? "1" : "0";
+	
+	if((instAllDay == false) && this.isException) {
+		this.allDayEvent = "0";
+	}
+	
 	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
 	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
 
