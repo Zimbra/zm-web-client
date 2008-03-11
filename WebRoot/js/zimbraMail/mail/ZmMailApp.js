@@ -171,6 +171,7 @@ function() {
 			title: ZmMsg.mail,
 			templateId: "prefs.Pages#Mail",
 			priority: 10,
+			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
 			prefs: [
 				ZmSetting.DEDUPE_MSG_TO_SELF,
 				ZmSetting.DISPLAY_EXTERNAL_IMAGES,
@@ -218,7 +219,7 @@ function() {
 			title: ZmMsg.signatures,
 			templateId: "prefs.Pages#Signatures",
 			priority: 30,
-			precondition: appCtxt.get(ZmSetting.SIGNATURES_ENABLED),
+			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)),
 			prefs: [
 				ZmSetting.SIGNATURES,
 				ZmSetting.SIGNATURE_STYLE,
