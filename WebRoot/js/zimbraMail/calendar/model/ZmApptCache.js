@@ -168,12 +168,7 @@ function(params) {
 	var apptVec = this.setSearchParams(params);
 	
 	if(apptVec != null && (apptVec instanceof AjxVector)) {
-		if(params.callback) {
-			params.callback.run(apptVec, params.query);
-			return;
-		}else {
-			return apptVec;
-		}
+        return apptVec;
 	}
 	
 	// this array will hold a list of appts as we collect them from the server
