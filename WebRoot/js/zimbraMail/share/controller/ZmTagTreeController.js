@@ -138,7 +138,8 @@ function(tag) {
 	}
 
 	var sc = appCtxt.getSearchController();
-	sc.search({query:'tag:"' + tag.name + '"', searchFor:searchFor});
+	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	sc.search({query:'tag:"' + tag.name + '"', searchFor:searchFor, getHtml:getHtml});
 };
 
 // Listeners

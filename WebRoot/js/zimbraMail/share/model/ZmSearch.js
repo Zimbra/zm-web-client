@@ -401,7 +401,7 @@ function(cid, callback, fetchId, dontTruncate) {
 	this._getStandardMethodJson(request);
 	request.cid = cid;
 	if (fetchId) {
-		request.fetchId = fetchId;	// fetch content of this msg
+		request.fetch = fetchId;	// fetch content of this msg
 		request.read = 1;			// mark that msg read
 		if (this.getHtml) {
 			request.html = 1;		// get it as HTML
