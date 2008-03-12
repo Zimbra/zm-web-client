@@ -1228,7 +1228,7 @@ function(type, checkParent) {
 
 ZmOrganizer.prototype.getOwner =
 function() {
-	return this.owner;
+	return (this.owner || appCtxt.get(ZmSetting.USERNAME));
 };
 
 ZmOrganizer.getSortIndex =

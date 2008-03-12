@@ -186,10 +186,10 @@ function(ev) {
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var ctlr = ev.srcData.controller;
 		var cc = AjxDispatcher.run("GetCalController");
-		if (!isShiftKey && cc.isMovingToRemote(appt, dropFolder.id)) {
+		if (!isShiftKey && cc.isMovingBetwAccounts(appt, dropFolder.id)) {
 			var dlg = appCtxt.getYesNoMsgDialog();
 			dlg.registerCallback(DwtDialog.YES_BUTTON, this._changeOrgCallback, this, [ctlr, dlg, appt, dropFolder]);
-			var msg = AjxMessageFormat.format(ZmMsg.orgChange, dropFolder.owner);
+			var msg = AjxMessageFormat.format(ZmMsg.orgChange, dropFolder.getOwner());
 			dlg.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 			dlg.popup();
 		} else {
