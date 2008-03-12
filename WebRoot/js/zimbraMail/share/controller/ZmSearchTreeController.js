@@ -136,7 +136,7 @@ function() {
 ZmSearchTreeController.prototype._itemClicked =
 function(searchFolder) {
 	var searchController = appCtxt.getSearchController();
-	searchController.redoSearch(searchFolder.search);
+	searchController.redoSearch(searchFolder.search, false, {getHtml:appCtxt.get(ZmSetting.VIEW_AS_HTML)});
 };
 
 ZmSearchTreeController.prototype._getMoveParams =
