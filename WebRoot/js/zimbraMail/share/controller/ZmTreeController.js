@@ -281,11 +281,9 @@ function(treeItem, organizer) {
 	
 	// a color value of 0 means DEFAULT
 	var color = organizer.color ? organizer.color : ZmOrganizer.DEFAULT_COLOR[organizer.type];
-	var element = treeItem.getHtmlElement();
-	if (element) {
-		element.className = (color && (color != ZmOrganizer.C_NONE))
-			? ZmTreeController.COLOR_CLASS[color]
-			: "";
+	var className = (color && (color != ZmOrganizer.C_NONE)) ? ZmTreeController.COLOR_CLASS[color] : "";
+	if(treeItem.getHtmlElement())  {
+		treeItem.setTreeItemColor(className);
 	}
 };
 

@@ -336,7 +336,7 @@ NOTE: The outer table/tr is a necessary hack. It is NOT inserted in the
 
 <template id='dwt.Widgets#ZTreeItem'>
 	<div class='${divClassName}' id='${id}_div'>
-		<table border=0 cellpadding=0 cellspacing=0>
+		<table id='${id}_table' border=0 cellpadding=0 cellspacing=0>
 			<tr>
 				<td align=center nowrap id='${id}_nodeCell'></td>
 				<$ if (data.isCheckedStyle) { $>
