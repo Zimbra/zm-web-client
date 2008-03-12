@@ -869,7 +869,7 @@ function(ignorePendingContent) {
 ZmPageEditor.prototype._handleEditorEvent = 
 function(ev) {
 	DwtHtmlEditor._KEY2CMDS['s'] = null; 
-	var	retVal = DwtHtmlEditor.prototype._handleEditorEvent.call(this, ev);
+	var	retVal = ZmHtmlEditor.prototype._handleEditorEvent.call(this, ev);
 
 	if (DwtKeyEvent.isKeyPressEvent(ev)) {
 		var ke = this._keyEvent;
