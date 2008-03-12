@@ -36,6 +36,10 @@ function() {
 
 ZmNewSearchDialog.prototype.popup =
 function(params) {
+	if (!params && params.search) {
+		this._showError(ZmMsg.errorGeneric);
+		return;
+	}
 	this._setOverview({treeIds:[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH], fieldId:this._folderTreeCellId, omit:this._omit});
 	this._folderTreeView = this._getOverview().getTreeView(ZmOrganizer.FOLDER);
 	this._searchTreeView = this._getOverview().getTreeView(ZmOrganizer.SEARCH);
@@ -87,8 +91,9 @@ function() {
 	}
 		
 	// if we're creating a top-level search, check for conflict with top-level folder
-	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT) && this._folderTree.root.hasChild(name))
+	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT) && this._folderTree.root.hasChild(name)) {
 		msg = ZmMsg.folderOrSearchNameExists;
+	}
 
 	return (msg ? this._showError(msg) : {parent:parentFolder, name:name, search:this._search});
 };

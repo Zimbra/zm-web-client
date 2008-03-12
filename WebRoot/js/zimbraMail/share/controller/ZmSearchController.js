@@ -577,12 +577,8 @@ function(ev) {
 		stc._newCb = new AjxCallback(stc, stc._newCallback);
 	}
 
-	var search = {};
-	search.query = this._searchToolBar.getSearchFieldValue();
-	search.types = this.getTypes({});
-	search.sortBy = (this._results && this._results.search) ? this._results.search.sortBy : null;
 	var params = {
-		search: search,
+		search: this._results ? this._results.search : null,
 		showOverview: (this._searchFor == ZmSearchToolBar.FOR_MAIL_MI)
 	};
 	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
