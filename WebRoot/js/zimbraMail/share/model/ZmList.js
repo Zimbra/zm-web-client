@@ -519,18 +519,34 @@ function(params, batchCmd) {
 	var type = (this.type == ZmItem.MIXED) ? this._mixedType : this.type;
 	if (!type) return;
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
-	var soapDoc = AjxSoapDoc.create(soapCmd, this._getActionNamespace());
-	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("id", idStr);
-	actionNode.setAttribute("op", params.action);
-	for (var attr in params.attrs)
-		actionNode.setAttribute(attr, params.attrs[attr]);
-	var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
+    var useJson = batchCmd ? batchCmd._useJson : true ;
+    var itemActionRequest = null;
+    if(useJson){
+        itemActionRequest = {};
+        itemActionRequest[soapCmd] = {_jsns:"urn:zimbraMail"};
+        var request = itemActionRequest[soapCmd];
+        var action = request.action = {};
+        action.id = idStr;
+        action.op = params.action;
+        for(var attr in params.attrs)
+            action[attr] = params.attrs[attr];
+    }else{
+        itemActionRequest = AjxSoapDoc.create(soapCmd, this._getActionNamespace());
+        var actionNode = itemActionRequest.set("action");
+        actionNode.setAttribute("id", idStr);
+        actionNode.setAttribute("op", params.action);
+        for (var attr in params.attrs)
+            actionNode.setAttribute(attr, params.attrs[attr]);
+    }
+
+    var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
 
 	if (batchCmd) {
-		batchCmd.addRequestParams(soapDoc, respCallback);
+		batchCmd.addRequestParams(itemActionRequest, respCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+        var params = { asyncMode: true, callback: respCallback };
+        useJson ? params.jsonObj = itemActionRequest : params.soapDoc = itemActionRequest;
+        appCtxt.getAppController().sendRequest(params);
 	}
 };
 
