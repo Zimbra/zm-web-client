@@ -45,12 +45,7 @@
             }
 
             if(sResult) {
-				var imgsrc = t == 'g' ?
-							 "<app:imgurl value='contacts/ImgGALContact.gif' />" :
-							 t == 'dl' ?
-							 "<app:imgurl value='contacts/ImgGroup.gif' />" :
-							 "<app:imgurl value='contacts/ImgContact.gif' />"
-				;
+				var imgsrc = t == 'g' ? "<app:imgurl value='contacts/ImgGALContact.gif' />" : t == 'dl' ? "<app:imgurl value='contacts/ImgGroup.gif' />" : "<app:imgurl value='contacts/ImgContact.gif' />" ;
 				return ["<table class='zo_m_list_row' style='margin-bottom: 5px;'><tr><td><img src='",imgsrc,
                         "'><"+"/td><td style='padding:3px 5px;'>",
                         zhFmt(f, fls ? fq : query, fs),
