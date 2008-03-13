@@ -1139,6 +1139,14 @@ if (ext == null) ext = "";
 		<foreach target='jspc' list='${jspc.filelist}' param='param.jspfile' />
 	</target>
 
+	<target name="jspc.offline_precompile">
+		<fileset id='jspc.fileset' dir='${jspc.src.dir}' includes="desktop/*.jsp"/>
+		<pathconvert property='jspc.filelist' refid='jspc.fileset' pathsep=',' />
+
+		<mkdir dir="${jspc.build.dir}"/>
+		<foreach target='jspc' list='${jspc.filelist}' param='param.jspfile' />
+	</target>
+
      <target name="jspc.compile">
          <javac destdir="${jspc.build.dir}" optimize="off" debug="on" srcdir="${jspc.build.dir}" classpathref="jspc.class.path">
              <include name="**" />
@@ -1146,6 +1154,7 @@ if (ext == null) ext = "";
      </target>
 
      <target name="jspc.build" depends="jspc.precompile,jspc.compile"/>
+     <target name="jspc.offline_build" depends="jspc.offline_precompile,jspc.compile"/>
 
      <target name="jspc.deploy" depends="jspc.build">
      	<mkdir dir="/opt/zimbra/jetty/work/zimbra/jsp"/>
