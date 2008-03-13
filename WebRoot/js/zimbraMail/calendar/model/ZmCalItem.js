@@ -236,20 +236,16 @@ function(contentType) {
 };
 
 // returns "owner" of remote/shared calItem folder this calItem belongs to
-// (null if folder is not remote/shared)
 ZmCalItem.prototype.getRemoteFolderOwner =
 function() {
-	// bug fix #18855 - dont return the folder owner if this is a folder move
-	// from local to remote (server will do the right thing)
-	if (this._orig &&
-		(this._orig.folderId != this.folderId) &&
-		(!this._orig.getFolder().link && this.getFolder().link))
-	{
+	// bug fix #18855 - dont return the folder owner if moving betw. accounts
+	var controller = AjxDispatcher.run("GetCalController");
+	if (controller.isMovingBetwAccounts(this, this.folderId)) {
 		return null;
 	}
 
 	var folder = this.getFolder();
-	return folder && folder.link ? folder.owner : null;
+	return (folder && folder.link) ? folder.owner : null;
 };
 
 ZmCalItem.prototype.isReadOnly =
@@ -1089,8 +1085,9 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	var comp = soapDoc.set("comp", null, inv);
 
 	// attendees
-	if (this.isOrganizer())
+	if (this.isOrganizer()) {
 		this._addAttendeesToSoap(soapDoc, comp, m, notifyList, onBehalfOf);
+	}
 
 	this._addExtrasToSoap(soapDoc, inv, comp);
 
@@ -1321,11 +1318,11 @@ function(calItemNode, instNode) {
 	var instAllDay		= instNode.allDay;
 	var dur				= this._getAttr(calItemNode, instNode, "dur");
 	this.allDayEvent	= (instAllDay || itemAllDay) ? "1" : "0";
-	
-	if((instAllDay == false) && this.isException) {
+
+	if (!instAllDay && this.isException) {
 		this.allDayEvent = "0";
 	}
-	
+
 	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
 	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
 
@@ -1334,8 +1331,9 @@ function(calItemNode, instNode) {
 
 	// override ptst for this instance if map-able and is not NEEDS-ACTION
     var fba = this._getAttr(calItemNode, instNode, "fba");
-	if (fba && this.ptst != ZmCalItem.PSTATUS_NEEDS_ACTION && ZmCalItem.FBA_TO_PTST[fba])
+	if (fba && this.ptst != ZmCalItem.PSTATUS_NEEDS_ACTION && ZmCalItem.FBA_TO_PTST[fba]) {
 		this.ptst = ZmCalItem.FBA_TO_PTST[fba];
+	}
 
 	var sd = this._getAttr(calItemNode, instNode, "s");
 	if (sd) {
