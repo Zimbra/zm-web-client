@@ -551,10 +551,6 @@ function(msg) {
 	if (from) {
 		rule.addCondition(new ZmCondition(ZmFilterRule.C_FROM, ZmFilterRule.OP_CONTAINS, from.address));
 	}
-	var to = msg.getAddress(AjxEmailAddress.TO);
-	if (to)	{
-		rule.addCondition(new ZmCondition(ZmFilterRule.C_TO, ZmFilterRule.OP_CONTAINS, to.address));
-	}
 	var cc = msg.getAddress(AjxEmailAddress.CC);
 	if (cc)	{
 		rule.addCondition(new ZmCondition(ZmFilterRule.C_CC, ZmFilterRule.OP_CONTAINS, cc.address));
@@ -563,6 +559,7 @@ function(msg) {
 	if (subj) {
 		rule.addCondition(new ZmCondition(ZmFilterRule.C_SUBJECT, ZmFilterRule.OP_IS, subj));
 	}
+	rule.setGroupOp(ZmFilterRule.GROUP_ALL);
 	rule.addAction(new ZmAction(ZmFilterRule.A_KEEP));
 	var dialog = appCtxt.getFilterRuleDialog();
 	dialog.popup(rule);
