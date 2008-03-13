@@ -2085,7 +2085,12 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmAutocompleteListView {
 	@MenuContainer@
 	background-color:@ListItemBgColor-normal@;
+	#IFDEF MSIE
 	width: 25%;
+	#ENDIF
+	#IFNDEF MSIE
+	width: auto;
+	#ENDIF
 	padding: 0px !important;
 }
 
