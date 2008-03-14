@@ -234,7 +234,7 @@ function() {
 			childWin.win.close();
 		}
 	}
-	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
+	window._zimbraMail = window.onload = window.onresize = window.document.onkeypress = null;
 };
 
 /**
@@ -1270,7 +1270,7 @@ function() {
 	var el = document.getElementById("skin_container_links");
 	if (el) {
 		var data = {
-			showStandardLink: (!appCtxt.multiAccounts && !appCtxt.get(ZmSetting.OFFLINE)),
+			showStandardLink: (!appCtxt.multiAccounts),
 			showOfflineLink: (!appCtxt.get(ZmSetting.OFFLINE)),
 			helpIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon") ? null : "Help"),
 			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
