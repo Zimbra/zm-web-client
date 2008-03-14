@@ -279,7 +279,7 @@ function() {
 							  organizer:			ZmOrganizer.ADDRBOOK,
 							  overviewTrees:		[ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
-							  assistants:			{"ZmContactAssistant":"Contacts"},
+							  assistants:			{"ZmContactAssistant":["ContactsCore", "Contacts"]},
 							  searchTypes:			[ZmItem.CONTACT],
 							  newItemOps:			newItemOps,
 							  newOrgOps:			newOrgOps,
