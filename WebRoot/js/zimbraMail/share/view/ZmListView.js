@@ -327,7 +327,7 @@ function(ev, div) {
 	var type = data.type;
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var itemIdx = data.index;
-		var field = DwtListHeaderItem.getHeaderField(this._headerList[itemIdx]._id);
+		var field = this._headerList[itemIdx]._field;
 		this.setToolTipContent(this._getHeaderToolTip(field, itemIdx));
 	} else {
 		var match = this._parseId(id);

@@ -153,18 +153,15 @@ function(ev, div) {
 	// set up to handle yet....
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
 
-	var tooltip = null;
 	var id = ev.target.id || div.id;
-	if (!id) return true;
+	if (!id) { return true; }
 
+	var tooltip;
 	var type = Dwt.getAttr(div, "_type");
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var hdr = this.getItemFromElement(div);
-		if (hdr) {
-			var field = DwtListHeaderItem.getHeaderField(hdr._id);
-			if (field) {
-				tooltip = this._getHeaderTooltip(field);
-			}
+		if (hdr && hdr._field) {
+			tooltip = this._getHeaderTooltip(hdr._field);
 		}
 	} else {
 		var match = this._parseId(id);

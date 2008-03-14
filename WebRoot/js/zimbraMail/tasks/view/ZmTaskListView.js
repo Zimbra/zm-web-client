@@ -105,12 +105,10 @@ function(list, noResultsOk) {
 
 	htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='newTaskBannerSep'><tr>";
 	for (var i = 0; i < this._headerList.length; i++) {
-		if (!this._headerList[i]._visible) { continue; }
+		var hdr = this._headerList[i];
+		if (!hdr._visible) { continue; }
 
-		var field = DwtListHeaderItem.getHeaderField(this._headerList[i]._id);
-		var width = this._headerList[i]._width;
-
-		if (field == ZmItem.F_SUBJECT) {
+		if (hdr._field == ZmItem.F_SUBJECT) {
 			htmlArr[idx++] = "<td><div class='newTaskBanner' onclick='ZmTaskListView._handleOnClick(this)' id='";
 			htmlArr[idx++] = Dwt.getNextId(); 									// bug: 17653 - for QA
 			htmlArr[idx++] = "'>";
@@ -118,7 +116,7 @@ function(list, noResultsOk) {
 			htmlArr[idx++] = "</div></td>";
 		} else {
 			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = width;
+			htmlArr[idx++] = hdr._width;
 			htmlArr[idx++] = ">&nbsp;</td>";
 		}
 	}
