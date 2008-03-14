@@ -521,22 +521,25 @@ function(params, batchCmd) {
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
     var useJson = batchCmd ? batchCmd._useJson : true ;
     var itemActionRequest = null;
-    if(useJson){
+    if (useJson) {
         itemActionRequest = {};
-        itemActionRequest[soapCmd] = {_jsns:"urn:zimbraMail"};
+        var urn = this._getActionNamespace();
+        itemActionRequest[soapCmd] = {_jsns:urn};
         var request = itemActionRequest[soapCmd];
         var action = request.action = {};
         action.id = idStr;
         action.op = params.action;
-        for(var attr in params.attrs)
+        for (var attr in params.attrs) {
             action[attr] = params.attrs[attr];
-    }else{
+		}
+    } else {
         itemActionRequest = AjxSoapDoc.create(soapCmd, this._getActionNamespace());
         var actionNode = itemActionRequest.set("action");
         actionNode.setAttribute("id", idStr);
         actionNode.setAttribute("op", params.action);
-        for (var attr in params.attrs)
+        for (var attr in params.attrs) {
             actionNode.setAttribute(attr, params.attrs[attr]);
+        }
     }
 
     var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
