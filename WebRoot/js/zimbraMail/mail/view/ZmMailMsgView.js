@@ -985,10 +985,8 @@ function(msg, container, callback) {
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
 			if (ZmMimeTable.isRenderableImage(bp.ct)) {
-				var img = document.createElement("IMG");
-				img.className = "InlineImage";
-				img.src = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + msg.id + "&part=" + bp.part;
-				el.appendChild(img);
+				var imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
+				this._makeIframeProxy(el, imgHtml);
 			} else {
 				this._makeIframeProxy(el, bp.content, bp.ct == ZmMimeTable.TEXT_PLAIN, bp.truncated)
 			}
