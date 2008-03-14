@@ -170,7 +170,7 @@
 					<td class='R1Sep'>|</td>
 					<td><div class=ImgHelp></div></td>
 					<td>&nbsp;</td>
-					<td class='R1Link' id='skin_container_help_lite'> <a target=_new href="<c:url value="http://www.comcast.net/help/"/>"><fmt:message key="help"/></a></td>
+					<td class='R1Link' id='skin_container_help_lite'> <a target=_new href="<c:url value="http://www.comcast.net/help/faq/index.jsp?cat=Email#SmartZone"/>"><fmt:message key="help"/></a></td>
 					<td>&nbsp;&nbsp;</td>
 					<td><div class=ImgPadlock></div></td>
 					<td class='R1Link'><nobr>&nbsp;<a href="http://www.comcast.net/security/" target=_new>Security</a></nobr></td>
