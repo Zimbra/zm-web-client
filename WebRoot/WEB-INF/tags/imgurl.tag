@@ -1,5 +1,4 @@
-<%@ tag body-content="empty" dynamic-attributes="dynattrs" %><%@ tag import="java.io.*,java.util.*" %><%@ attribute name="value" rtexprvalue="true" required="true" %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<%!
+<%@ tag body-content="empty" dynamic-attributes="dynattrs" %><%@ tag import="java.io.*,java.util.*" %><%@ attribute name="value" rtexprvalue="true" required="true" %><%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%@ taglib prefix="zm" uri="com.zimbra.zm" %><%!
 	static final String A_IMAGES = "com.zimbra.htmlclient:images";
 	static final String V_NO_SKIN = "<noskin>";
 	static final Map<String,Map<String,String>> SKIN_IMAGES = new HashMap<String,Map<String,String>>();
