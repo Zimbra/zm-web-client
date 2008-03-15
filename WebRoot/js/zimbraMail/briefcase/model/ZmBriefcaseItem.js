@@ -15,38 +15,24 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBriefcaseItem = function(type, id, list) {
-	if(!type){
-		type = ZmItem.BRIEFCASE;
-	}
-	ZmItem.call(this, type, id, list);
-	this.folderId = ZmBriefcaseItem.DEFAULT_FOLDER;
+ZmBriefcaseItem = function(id, list) {
+	ZmItem.call(this, ZmItem.BRIEFCASE, id, list);
+	this.folderId = ZmOrganizer.ID_BRIEFCASE;
+	this.version = 0;
 }
 ZmBriefcaseItem.prototype = new ZmItem;
 ZmBriefcaseItem.prototype.constructor = ZmBriefcaseItem;
 
-ZmBriefcaseItem.prototype.toString = function() {
+ZmBriefcaseItem.prototype.toString =
+function() {
 	return "ZmBriefcaseItem";
 };
 
-// Constants
-
-ZmBriefcaseItem.DEFAULT_FOLDER = ZmOrganizer.ID_BRIEFCASE;
-
-// Data
-
-ZmBriefcaseItem.prototype.name;
-ZmBriefcaseItem.prototype.creator;
-ZmBriefcaseItem.prototype.createDate;
-ZmBriefcaseItem.prototype.modifier;
-ZmBriefcaseItem.prototype.modifyDate;
-ZmBriefcaseItem.prototype.size;
-ZmBriefcaseItem.prototype.version = 0;
-ZmBriefcaseItem.prototype.contentType;
 
 // Static functions
 
-ZmBriefcaseItem.createFromDom = function(node, args) {
+ZmBriefcaseItem.createFromDom =
+function(node, args) {
 	var item = new ZmBriefcaseItem(args.type || -1, node.id, args.list);
 	item.set(node);
 	return item;
@@ -54,57 +40,52 @@ ZmBriefcaseItem.createFromDom = function(node, args) {
 
 // Public methods
 
-ZmBriefcaseItem.prototype.getPath = function(dontIncludeThisName) {
+ZmBriefcaseItem.prototype.getPath =
+function(dontIncludeThisName) {
 	var notebook = appCtxt.getById(this.folderId);
 	var name = !dontIncludeThisName ? this.name : "";
-	return [ notebook.getPath(), "/", name ].join("");
+	return [notebook.getPath(), "/", name].join("");
 };
 
-ZmBriefcaseItem.prototype.getRestUrl = function(dontIncludeThisName) {
+ZmBriefcaseItem.prototype.getRestUrl =
+function(dontIncludeThisName) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
-
-	var notebook = appCtxt.getById(this.folderId);
-	/*if (notebook) {
-		url = url.replace(/^.*\/([^\/]+)$/, notebook.getRestUrl()+"$1");
-	}*/
-
 	if (dontIncludeThisName) {
 		url = url.replace(/[^\/]+$/,"");
 	}
 	return url;
 };
 
-ZmBriefcaseItem.prototype.set = function(data) {
+ZmBriefcaseItem.prototype.set =
+function(data) {
 	this.id = data.id;
-	this.restUrl = data.rest != null ? data.rest : this.restUrl;
-	this.folderId = data.l != null ? data.l : this.folderId;
+	if (data.rest) this.restUrl = data.rest;
+	if (data.l) this.folderId = data.l;
+	if (data.name) this.name = data.name;
+	if (data.cr) this.creator = data.cr;
+	if (data.d) this.createDate = new Date(Number(data.d));
+	if (data.md) this.modifyDate = new Date(Number(data.md));
+	if (data.leb) this.modifier = data.leb;
+	if (data.s) this.size = Number(data.s);
+	if (data.ver) this.version = Number(data.ver);
+	if (data.ct) this.contentType = data.ct.split(";")[0];
 	this._parseTags(data.t);
-
-	// ZmBriefcaseItem fields
-	this.name = data.name != null ? data.name : this.name;
-	this.creator = data.cr != null ? data.cr : this.creator;
-	this.createDate = data.d != null ? new Date(Number(data.d)) : this.createDate;
-	this.modifier = data.leb != null ? data.leb : this.modifier;
-	this.modifyDate = data.md != null ? new Date(Number(data.md)) : this.modifyDate;
-	this.size = data.s != null ? Number(data.s) : this.size;
-	this.version = data.ver != null ? Number(data.ver) : this.version;
-	this.contentType = data.ct != null ? data.ct : this.contentType;	
 };
 
 ZmBriefcaseItem.prototype.isReadOnly =
 function() {
-
-	//if one of the ancestor is readonly then no chances of childs being writable		
+	// if one of the ancestor is readonly then no chances of childs being writable
 	var isReadOnly = false;
 	var folder = appCtxt.getById(this.folderId);
 	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
 		folder = folder.parent;
 	}
-	if(folder && folder.isReadOnly()){
+
+	if (folder && folder.isReadOnly()) {
 		isReadOnly = true;
 	}
-	
+
 	return isReadOnly;
 };
 
@@ -137,20 +118,21 @@ function(msgId, partId, name, folderId) {
 	mnode.setAttribute("id", msgId);
 	mnode.setAttribute("part", partId);
 
-	var respCallback = new AjxCallback(this, this._handleResponseCreateItem,[folderId]);
-	var errorCallback = new AjxCallback(this, this._handleErrorCreateItem);
-	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
-												callback:respCallback,
-												errorCallback:errorCallback});
-	
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._handleResponseCreateItem, [folderId])),
+		errorCallback: (new AjxCallback(this, this._handleErrorCreateItem))
+	};
+	appCtxt.getAppController().sendRequest(params);
 };
 
 ZmBriefcaseItem.prototype._handleResponseCreateItem =
 function(folderId,response) {
 	appCtxt.getAppController().setStatusMsg(ZmMsg.fileCreated);
-	var copyToDialog =  appCtxt.getChooseFolderDialog();
-	copyToDialog.popdown();
-	if (response && (response.SaveDocumentResponse || response._data.SaveDocumentResponse)) {		
+	appCtxt.getChooseFolderDialog().popdown();
+
+	if (response && (response.SaveDocumentResponse || response._data.SaveDocumentResponse)) {
 		var bController = AjxDispatcher.run("GetBriefcaseController");
 		bController.removeCachedFolderItems(folderId);		
 	}
@@ -165,4 +147,3 @@ ZmBriefcaseItem.prototype.getFolder =
 function() {
 	return appCtxt.getById(this.folderId);
 };
-

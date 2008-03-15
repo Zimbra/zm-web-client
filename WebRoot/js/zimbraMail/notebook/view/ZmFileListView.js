@@ -17,8 +17,6 @@
 
 ZmFileListView = function(parent, className, posStyle, mode, controller, dropTgt) {
 
-	// save data
-	//this._folderId = null;
 	this._mode = mode; // ???
 
 	// call super constructor
@@ -39,12 +37,13 @@ ZmFileListView = function(parent, className, posStyle, mode, controller, dropTgt
 			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
 		}
 	}
-}
+};
 
 ZmFileListView.prototype = new ZmListView;
 ZmFileListView.prototype.constructor = ZmFileListView;
 
-ZmFileListView.prototype.toString = function() {
+ZmFileListView.prototype.toString =
+function() {
 	return "ZmFileListView";
 };
 
@@ -53,43 +52,32 @@ ZmFileListView.prototype.toString = function() {
 ZmFileListView.KEY_ID = "_keyId";
 
 ZmFileListView.COLWIDTH_ICON 			= 20;
-ZmFileListView.COLWIDTH_NAME			= 160;
 ZmFileListView.COLWIDTH_TYPE			= 80;
 ZmFileListView.COLWIDTH_SIZE 			= 45;
 ZmFileListView.COLWIDTH_DATE 			= 80;
 ZmFileListView.COLWIDTH_OWNER			= 80;
-ZmFileListView.COLWIDTH_FOLDER			= null;
+ZmFileListView.COLWIDTH_FOLDER			= 120;
 
 // Protected methods
 
-ZmFileListView.prototype._getHeaderList = function(parent) {
+ZmFileListView.prototype._getHeaderList =
+function(parent) {
 	// Columns: tag, name, type, size, date, owner, folder
 	var headers = [];
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headers.push(
-			new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmFileListView.COLWIDTH_ICON, null, null, true, ZmMsg.tag)
-		);
+		headers.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmFileListView.COLWIDTH_ICON, null, null, true, ZmMsg.tag));
 	}
 	headers.push(
 		// new DwtListHeaderItem(id, label, icon, width, sortable, resizeable, visible, tt)
-		new DwtListHeaderItem(ZmItem.F_TYPE, null, "Globe", ZmFileListView.COLWIDTH_ICON, null, null, true, null),
-		new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg._name, null, ZmFileListView.COLWIDTH_NAME, null, true, true, null),
-		new DwtListHeaderItem(ZmItem.F_FILE_TYPE, ZmMsg.type, null, ZmFileListView.COLWIDTH_TYPE, null, null, true, null),
-		new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmFileListView.COLWIDTH_SIZE, null, null, true, null),
-		new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.date, null, ZmFileListView.COLWIDTH_DATE, null, null, true, null),
-		new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.owner, null, ZmFileListView.COLWIDTH_OWNER, null, null, true, null),
-		new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmFileListView.COLWIDTH_FOLDER, null, null, true, null)
+		new DwtListHeaderItem(ZmItem.F_TYPE, null, "Globe", ZmFileListView.COLWIDTH_ICON),
+		new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg._name, null, null, null, true),
+		new DwtListHeaderItem(ZmItem.F_FILE_TYPE, ZmMsg.type, null, ZmFileListView.COLWIDTH_TYPE),
+		new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmFileListView.COLWIDTH_SIZE),
+		new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.date, null, ZmFileListView.COLWIDTH_DATE),
+		new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.owner, null, ZmFileListView.COLWIDTH_OWNER),
+		new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmFileListView.COLWIDTH_FOLDER)
 	);
 	return headers;
-};
-
-ZmFileListView.prototype._getCellAttrText =
-function(item, field, params) {
-	if (field == ZmItem.F_SIZE) {
-		return "align='right'";
-	} else if (field == ZmItem.F_TYPE) {
-		return "align='middle'";
-	}
 };
 
 ZmFileListView.prototype._getCellContents =
@@ -128,8 +116,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		htmlArr[idx++] = "</span>";
 	} else if (field == ZmItem.F_FOLDER) {
 		var notebook = appCtxt.getById(item.folderId);
-		var path = notebook ? notebook.getPath() : item.folderId;
-		htmlArr[idx++] = path;
+		htmlArr[idx++] = notebook ? notebook.getPath() : item.folderId;
 	} else {
 		if (field == ZmItem.F_DATE) {
 			item = AjxUtil.createProxy(item);
@@ -143,7 +130,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 
 // listeners
 
-ZmFileListView.prototype._colHeaderActionListener = function(event) {
+ZmFileListView.prototype._colHeaderActionListener =
+function(event) {
   	// TODO
 };
 
@@ -151,7 +139,8 @@ ZmFileListView.prototype._colHeaderActionListener = function(event) {
 // Private functions
 //
 
-ZmFileListView.__typify = function(array, type) {
+ZmFileListView.__typify =
+function(array, type) {
 	for (var i = 0; i < array.length; i++) {
 		array[i]._type = type;
 	}

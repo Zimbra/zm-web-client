@@ -44,7 +44,8 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 ZmDetailListView.prototype = new ZmListView;
 ZmDetailListView.prototype.constructor = ZmDetailListView;
 
-ZmDetailListView.prototype.toString = function() {
+ZmDetailListView.prototype.toString =
+function() {
 	return "ZmDetailListView";
 };
 
@@ -53,16 +54,16 @@ ZmDetailListView.prototype.toString = function() {
 ZmDetailListView.KEY_ID = "_keyId";
 
 ZmDetailListView.COLWIDTH_ICON 			= 20;
-ZmDetailListView.COLWIDTH_NAME			= 160;
 ZmDetailListView.COLWIDTH_TYPE			= 80;
 ZmDetailListView.COLWIDTH_SIZE 			= 45;
 ZmDetailListView.COLWIDTH_DATE 			= 80;
 ZmDetailListView.COLWIDTH_OWNER			= 80;
-ZmDetailListView.COLWIDTH_FOLDER			= 100;
+ZmDetailListView.COLWIDTH_FOLDER		= 100;
 
 // Protected methods
 
-ZmDetailListView.prototype._getHeaderList = function(parent) {
+ZmDetailListView.prototype._getHeaderList =
+function(parent) {
 	// Columns: tag, name, type, size, date, owner, folder
 	var headers = [];
 	
@@ -70,30 +71,19 @@ ZmDetailListView.prototype._getHeaderList = function(parent) {
 		headers.push(new DwtListHeaderItem(ZmItem.F_SELECTION, null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.selection));
 	}	
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headers.push(
-			new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmDetailListView.COLWIDTH_ICON, null, null, true, ZmMsg.tag)
-		);
+		headers.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmDetailListView.COLWIDTH_ICON, null, null, true, ZmMsg.tag));
 	}	
 	headers.push(
 		// new DwtListHeaderItem(id, label, icon, width, sortable, resizeable, visible, tt)
-		new DwtListHeaderItem(ZmItem.F_TYPE, null, "Globe", ZmDetailListView.COLWIDTH_ICON, null, null, true, null),
-		new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg._name, null, ZmDetailListView.COLWIDTH_NAME, null, true, true, null),
-		new DwtListHeaderItem(ZmItem.F_FILE_TYPE, ZmMsg.type, null, ZmDetailListView.COLWIDTH_TYPE, null, null, true, null),
-		new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmDetailListView.COLWIDTH_SIZE, null, null, true, null),
-		new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.date, null, ZmDetailListView.COLWIDTH_DATE, null, null, true, null),
-		new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.owner, null, ZmDetailListView.COLWIDTH_OWNER, null, null, true, null),
-		new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmDetailListView.COLWIDTH_FOLDER, null, null, true, null)
+		new DwtListHeaderItem(ZmItem.F_TYPE, null, "Globe", ZmDetailListView.COLWIDTH_ICON),
+		new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg._name, null, null, null, true),
+		new DwtListHeaderItem(ZmItem.F_FILE_TYPE, ZmMsg.type, null, ZmDetailListView.COLWIDTH_TYPE),
+		new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmDetailListView.COLWIDTH_SIZE),
+		new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.date, null, ZmDetailListView.COLWIDTH_DATE),
+		new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.owner, null, ZmDetailListView.COLWIDTH_OWNER),
+		new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmDetailListView.COLWIDTH_FOLDER)
 	);
 	return headers;
-};
-
-ZmDetailListView.prototype._getCellAttrText =
-function(item, field, params) {
-	if (field == ZmItem.F_SIZE) {
-		return "align='right'";
-	} else if (field == ZmItem.F_TYPE) {
-		return "align='middle'";
-	}
 };
 
 ZmDetailListView.prototype._getCellContents =
@@ -102,34 +92,30 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_SELECTION) {
 		var icon = params.bContained ? "TaskCheckboxCompleted" : "TaskCheckbox";
 		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(item, field));
+	} else if (field == ZmItem.F_TYPE) {
+		var contentType = item.contentType;
+		if (contentType && contentType.match(/;/)) {
+			contentType = contentType.split(";")[0];
+		}
+		var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
+		var icon = mimeInfo ? mimeInfo.image : "UnknownDoc" ;
+		if (item.isFolder) {
+			icon = "Folder";
+		}
+		htmlArr[idx++] = AjxImg.getImageHtml(icon);
 	} else if (field == ZmItem.F_SUBJECT) {
 		htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
+	} else if (field == ZmItem.F_FILE_TYPE) {
+		var mimeInfo = item.contentType ? ZmMimeTable.getInfo(item.contentType) : null;
+		htmlArr[idx++] = mimeInfo ? mimeInfo.desc : "&nbsp;";
 	} else if (field == ZmItem.F_SIZE) {
-		if(!item.isFolder){
+		if (!item.isFolder) {
 			htmlArr[idx++] = AjxUtil.formatSize(item.size);
 		}
-	} else if (field == ZmItem.F_FILE_TYPE) {
-		var desc = null;
-		if (!desc) {
-			var mimeInfo = item.ct ? ZmMimeTable.getInfo(item.ct) : null;
-			desc = mimeInfo ? mimeInfo.desc : "&nbsp;";
+	} else if (field == ZmItem.F_DATE) {
+		if (item.modifyDate) {
+			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(item.modifyDate);
 		}
-		htmlArr[idx++] = desc;
-	} else if (field == ZmItem.F_TYPE) {
-		var icon = null;
-		if (!icon) {
-			var contentType = item.contentType;
-			if(contentType && contentType.match(/;/)) {
-				contentType = contentType.split(";")[0];
-			}
-			var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
-			icon = mimeInfo ? mimeInfo.image : "UnknownDoc" ;
-			if(item.isFolder){
-				icon = "Folder";
-			}
-
-		}
-		htmlArr[idx++] = "<div class='Img" + icon + "'></div>";
 	} else if (field == ZmItem.F_FROM) {
 		var creator = item.creator? item.creator.split("@") : [""];
 		var cname = creator[0];
@@ -145,13 +131,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 		htmlArr[idx++] = "</span>";
 	} else if (field == ZmItem.F_FOLDER) {
 		var notebook = appCtxt.getById(item.folderId);
-		var path = notebook ? notebook.getPath() : item.folderId;
-		htmlArr[idx++] = path;
+		htmlArr[idx++] = notebook ? notebook.getPath() : item.folderId;
 	} else {
-		if (field == ZmItem.F_DATE) {
-			item = AjxUtil.createProxy(item);
-			item.date = item.modifyDate;
-		}
 		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
 	
@@ -160,7 +141,8 @@ function(htmlArr, idx, item, field, colIdx, params) {
 
 // listeners
 
-ZmDetailListView.prototype._colHeaderActionListener = function(event) {
+ZmDetailListView.prototype._colHeaderActionListener =
+function(event) {
   	// TODO
 };
 
@@ -168,7 +150,8 @@ ZmDetailListView.prototype._colHeaderActionListener = function(event) {
 // Private functions
 //
 
-ZmDetailListView.__typify = function(array, type) {
+ZmDetailListView.__typify =
+function(array, type) {
 	for (var i = 0; i < array.length; i++) {
 		array[i]._type = type;
 	}
@@ -186,27 +169,26 @@ function(folderId) {
 	var items = this._controller.getItemsInFolderFromCache(folderId);
 
 	var list = new AjxVector();
-	for(var i in items){
+	for (var i in items) {
 		list.add(items[i]);
 	}
 	DwtListView.prototype.set.call(this,list);		
 };
 
 //for ZimbraDnD to do make even more generic
-ZmDetailListView.prototype.processUploadFiles = function() {
-    var ulEle = document.getElementById('zdnd_ul');
-    var files = [];
-    if (ulEle);
-    {
-        for (var i = 0; i < ulEle.childNodes.length; i++)
-        {
+ZmDetailListView.prototype.processUploadFiles =
+function() {
+	var files = [];
+	var ulEle = document.getElementById('zdnd_ul');
+    if (ulEle) {
+        for (var i = 0; i < ulEle.childNodes.length; i++) {
             var liEle = ulEle.childNodes[i];
-            var inputEle = liEle.childNodes[0];
-            if (inputEle.name != "_attFile_") continue;
-            if (!inputEle.value) continue;
+            var inputEl = liEle.childNodes[0];
+            if (inputEl.name != "_attFile_") continue;
+            if (!inputEl.value) continue;
             var file = {
-                fullname: inputEle.value,
-                name: inputEle.value.replace(/^.*[\\\/:]/, "")
+                fullname: inputEl.value,
+                name: inputEl.value.replace(/^.*[\\\/:]/, "")
             };
             files.push(file);
          }
@@ -214,11 +196,12 @@ ZmDetailListView.prototype.processUploadFiles = function() {
    return files;
 }
 
-ZmDetailListView.prototype.uploadFiles = function(){
+ZmDetailListView.prototype.uploadFiles =
+function() {
     var attachDialog = appCtxt.getUploadDialog();
     var app = this._controller.getApp();
     attachDialog._uploadCallback = new AjxCallback(app, app._handleUploadNewItem);
     var files = this.processUploadFiles();
-    attachDialog.uploadFiles(files,document.getElementById("zdnd_form"),{id:this._controller._currentFolder});
+    attachDialog.uploadFiles(files, document.getElementById("zdnd_form"), {id:this._controller._currentFolder});
 };
 //end zimbradnd
