@@ -554,16 +554,16 @@ function(params) {
 
 	var action = params.action;
 	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD)	{
-		action = params.action = (identity.getForwardOption() == ZmSetting.INCLUDE_ATTACH) ?
-									ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
+		action = params.action = (appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INCLUDE_ATTACH)
+			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
 	}
 
 	// if html compose is allowed and if opening draft always request html
 	//   otherwise check if user prefers html or
 	//   msg hasn't been loaded yet and user prefers format of orig msg
     var htmlEnabled = appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
-	var prefersHtml = (identity.getComposeAsFormat() == ZmSetting.COMPOSE_HTML);
-	var sameFormat = identity.getComposeSameFormat();
+	var prefersHtml = (appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML);
+	var sameFormat = appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
 	params.getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (prefersHtml || (!msg._loaded && sameFormat))));
 	if (action == ZmOperation.DRAFT) {
 		params.listController = this;
