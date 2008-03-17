@@ -35,6 +35,7 @@ ZmAppEvent.prototype.constructor = ZmAppEvent;
 ZmAppEvent.POST_STARTUP	= "POSTSTARTUP";
 ZmAppEvent.PRE_LAUNCH	= "PRELAUNCH";
 ZmAppEvent.POST_RENDER	= "POSTRENDER";
+ZmAppEvent.ACTIVATE	= "ACTIVATE";
 
 ZmAppEvent.prototype.toString =
 function() {

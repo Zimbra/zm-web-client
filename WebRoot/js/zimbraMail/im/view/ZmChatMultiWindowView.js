@@ -54,8 +54,13 @@ ZmChatMultiWindowView.prototype.getWindowManager = function() {
 };
 
 ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
-	if (!this._shellWm)
+	if (!this._shellWm) {
 		this._shellWm = new ZmChatWindowManager(DwtShell.getShell(window));
+		if (Dwt.CARET_HACK_ENABLED) {
+			var caretHackListener = new AjxListener(this._shellWm, this._shellWm.applyCaretHack);
+			ZmZimbraMail.addListener(ZmAppEvent.ACTIVATE, caretHackListener);
+		}
+	}
 	return this._shellWm;
 };
 
