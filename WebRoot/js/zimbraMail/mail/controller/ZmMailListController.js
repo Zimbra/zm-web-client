@@ -229,7 +229,7 @@ function(actionCode) {
 					var loc = Dwt.getLocation(subjectField);
 					var frag;
 					if (item.type == ZmItem.MSG && item.isInvite() && item.needsRsvp()) {
-						frag = item.getInvite().getToolTip();
+						frag = item.invite.getToolTip();
 					} else {
 						frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
 						if (frag != "") { lv.setToolTipContent(AjxStringUtil.htmlEncode(frag)); }
@@ -945,7 +945,7 @@ function(type, componentId, instanceDate, accountName) {
 
 		msg.setTopPart(topPart);
 	}
-	var subject = this._getInviteReplySubject(type) + msg._origMsg.getInvite().getEventName();
+	var subject = this._getInviteReplySubject(type) + msg._origMsg.invite.getEventName();
 	if (subject != null) {
 		msg.setSubject(subject);
 	}

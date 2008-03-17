@@ -172,7 +172,7 @@ function(msg) {
 		? new Date(msg.sentDate)
 		: new Date(msg.date);
 
-	var invite = msg.getInvite();
+	var invite = msg.invite;
 
 	if ((appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
 		invite && invite.type != "task" &&

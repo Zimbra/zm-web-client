@@ -29,7 +29,7 @@ ZmMailMsg = function(id, list, noCache) {
 
 	ZmMailItem.call(this, ZmItem.MSG, id, list, noCache);
 
-	this._inHitList = false;
+	this.inHitList = false;
 	this._attHitList = [];
 	this.attachments = [];
 	this._bodyParts = [];
@@ -260,14 +260,6 @@ function(maxLen) {
 	return frag;
 };
 
-/**
-* Returns the date
-*/
-ZmMailMsg.prototype.getDate =
-function() {
-	return this.date;
-};
-
 ZmMailMsg.prototype.isReadOnly =
 function() {
 	if (!this._isReadOnly) {
@@ -290,14 +282,6 @@ function(hdr) {
 		if (addrStr)
 			return ZmMailMsg.HDR_KEY[hdr] + ": " + addrStr;
 	}
-};
-
-/**
-* Returns true if this message was matched during a search
-*/
-ZmMailMsg.prototype.isInHitList =
-function() {
-	return this._inHitList;
 };
 
 /**
@@ -663,7 +647,7 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 
 	soapDoc.setMethodAttribute("verb", verb);
 
-	var inv = this._origMsg.getInvite();
+	var inv = this._origMsg.invite;
 	if (this.getAddress(AjxEmailAddress.TO) == null && !inv.isOrganizer()) {
 		var to = inv.getSentBy() || inv.getOrganizerEmail();
 		this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
@@ -1150,7 +1134,7 @@ function(msgNode) {
 	if (msgNode.sd) 	{ this.sentDate = msgNode.sd; }
 	if (msgNode.l) 		{ this.folderId = msgNode.l; }
 	if (msgNode.t) 		{ this._parseTags(msgNode.t); }
-	if (msgNode.cm) 	{ this._inHitList = msgNode.cm; }
+	if (msgNode.cm) 	{ this.inHitList = msgNode.cm; }
 	if (msgNode.su) 	{ this.subject = msgNode.su; }
 	if (msgNode.fr) 	{ this.fragment = msgNode.fr; }
 	if (msgNode.rt) 	{ this.rt = msgNode.rt; }
@@ -1238,14 +1222,6 @@ function () {
 ZmMailMsg.prototype.needsRsvp =
 function () {
 	return (this.isInvite() && this.invite.shouldRsvp() && !this.invite.isOrganizer());
-};
-
-/**
- * returns an ZmInvite object
- */
-ZmMailMsg.prototype.getInvite =
-function() {
-	return this.invite;
 };
 
 // Adds child address nodes for the given address type.

@@ -1455,12 +1455,12 @@ function(action, msg, extraBodyText, incOption) {
 				cancelledParts = [ leadingText ];
 				cancelledParts.push(crlf);
 				cancelledParts.push(ZmMsg.subjectLabel+" "+msg.subject+crlf);
-				var inv = (msg) ? msg.getInvite() : null;
+				var inv = (msg) ? msg.invite : null;
 				if (inv) {
 					var organizer = "";
 					if (inv)
-					cancelledParts.push(ZmMsg.organizer+": "+inv.getOrganizerName()+crlf);
-					cancelledParts.push(ZmMsg.time+": "+inv.getServerStartDate()+crlf);
+						cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
+						cancelledParts.push(ZmMsg.time + ": " + inv.getServerStartDate() + crlf);
 					}
 				cancelledParts.push(ZmItem.NOTES_SEPARATOR);
 				value = cancelledParts.join("");
