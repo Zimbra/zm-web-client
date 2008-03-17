@@ -571,7 +571,7 @@ ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
 
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
-	var attachments = this._msg.getAttachments();
+	var attachments = this._msg.attachments;
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
 	for (var i = 0; i < attachments.length; i++) {
@@ -1517,7 +1517,7 @@ function(msg, preferHtml, callback) {
 	}
 
 	// bug fix# 3928
-	var attachments = msg.getAttachments();
+	var attachments = msg.attachments;
 	for (var i = 0; i < attachments.length; i++) {
 		var attach = attachments[i];
 		if (!msg.isRealAttachment(attach))

@@ -424,9 +424,9 @@ function(msg) {
 		}
 	}
 
-	if (msg._attachments.length > 0) {
-		for (var i in msg._attachments) {
-			newMsg._attachments.push(msg._attachments[i]);
+	if (msg.attachments.length > 0) {
+		for (var i in msg.attachments) {
+			newMsg.attachments.push(msg.attachments[i]);
 		}
 	}
 

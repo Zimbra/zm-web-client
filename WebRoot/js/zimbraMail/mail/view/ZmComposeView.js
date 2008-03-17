@@ -312,8 +312,8 @@ function() {
 		return false;
 	}
 
-	if (this._msg && this._msg.getAttachments()) {
-		var atts = this._msg.getAttachments();
+	if (this._msg && this._msg.attachments) {
+		var atts = this._msg.attachments;
 		for (var i = 0; i < atts.length; i++) {
 			if (atts[i].ci) {
 				return true;
@@ -463,9 +463,9 @@ function(attId, isDraft) {
 	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME);
 	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME);
 
-	//Handle Inline Attachments as a part of forwardAttIds
-	if (this._msg && this._msg.getAttachments()) {
-		var atts = this._msg.getAttachments();
+	// Handle Inline Attachments as a part of forwardAttIds
+	if (this._msg && this._msg.attachments) {
+		var atts = this._msg.attachments;
 		var filteredForwardAttIds = this._filterInlineAmongForwardAttIds(msg,atts,forwardAttIds);
 		msg._setFilteredForwardAttIds(filteredForwardAttIds);
 	}
@@ -574,12 +574,9 @@ function(attId, isDraft) {
 		msg.folderId = this._msg.folderId;
 	}
 
-	if (this._msg) {
-		// replied/forw msg or draft shouldn't have att ID (a repl/forw voicemail mail msg may)
-		var msgAttId = this._msg.getAttachmentId();
-		if (msgAttId) {
-			msg.addAttachmentId(msgAttId);
-		}
+	// replied/forw msg or draft shouldn't have att ID (a repl/forw voicemail mail msg may)
+	if (this._msg && this._msg.attId) {
+		msg.addAttachmentId(this._msg.attId);
 	}
 
 	if (this._msgAttId) {
@@ -1035,7 +1032,7 @@ function(all) {
 
 	// make sure att IDs don't get reused
 	if (this._msg) {
-		this._msg._attId = null;
+		this._msg.attId = null;
 	}
 };
 

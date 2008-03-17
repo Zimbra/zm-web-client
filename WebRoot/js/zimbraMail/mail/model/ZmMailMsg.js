@@ -31,7 +31,7 @@ ZmMailMsg = function(id, list, noCache) {
 
 	this._inHitList = false;
 	this._attHitList = [];
-	this._attachments = [];
+	this.attachments = [];
 	this._bodyParts = [];
 	this._addrs = [];
 
@@ -178,11 +178,6 @@ function(type, used, addAsContact) {
 		return AjxVector.fromArray(addrs);
 	}
 };
-
-ZmMailMsg.prototype.getAttachments =
-function() {
-	return this._attachments;
-}
 
 /**
 * Returns a Reply-To address if there is one, otherwise the From address
@@ -419,44 +414,37 @@ function(parts) {
 */
 ZmMailMsg.prototype.addAttachmentId =
 function(id) {
-	if (this._attId) {
-		id = this._attId + "," + id;
+	if (this.attId) {
+		id = this.attId + "," + id;
 	}
 	this._onChange("attachmentId", id);
-	this._attId = id;
+	this.attId = id;
 };
 
-/**
-* Returns the ID of any attachments which have already been uploaded.
-*
-*/
-ZmMailMsg.prototype.getAttachmentId = 
-function() {
-	return this._attId;
-};
-
-ZmMailMsg.prototype.addInlineAttachmentId = function(cid,aid,part){
-	if(!this._inlineAtts) {
+ZmMailMsg.prototype.addInlineAttachmentId =
+function (cid,aid,part) {
+	if (!this._inlineAtts) {
 		this._inlineAtts = [];
 	}
 	this._onChange("inlineAttachments",aid);
-	if(aid){
+	if (aid) {
 		this._inlineAtts.push({"cid":cid,"aid":aid});
-	}else if(part){
+	} else if (part) {
 		this._inlineAtts.push({"cid":cid,"part":part});
 	}
 };
 
-ZmMailMsg.prototype.setInlineAttachments = function(inlineAtts){
-	if(inlineAtts){
+ZmMailMsg.prototype.setInlineAttachments =
+function(inlineAtts){
+	if (inlineAtts) {
 		this._inlineAtts = inlineAtts;
 	}
 };
 
-ZmMailMsg.prototype.getInlineAttachments = function(){
+ZmMailMsg.prototype.getInlineAttachments =
+function() {
 	return this._inlineAtts;
 };
-
 
 /**
 * Sets the IDs of messages to attach (as a forward)
@@ -551,7 +539,7 @@ function(callback, result) {
 	}
 
 	// clear all attachments
-	this._attachments.length = 0;
+	this.attachments.length = 0;
 
 	this._loadFromDom(response.m[0]);
 	if (!this.isReadOnly()) {
@@ -877,13 +865,13 @@ function(soapDoc, contactList, isDraft, accountName) {
 	if (this.irtMessageId)
 		soapDoc.set("irt", this.irtMessageId, msgNode);
 
-	if (this._attId ||
+	if (this.attId ||
 		(this._msgAttIds && this._msgAttIds.length) ||
 		(this._forAttIds && this._forAttIds.length))
 	{
 		var attachNode = soapDoc.set("attach", null, msgNode);
-		if (this._attId) {
-			attachNode.setAttribute("aid", this._attId);
+		if (this.attId) {
+			attachNode.setAttribute("aid", this.attId);
 		}
 
 		// attach mail msgs
@@ -1007,15 +995,14 @@ function(attachment) {
 // this is a helper method to get an attachment url for multipart/related content
 ZmMailMsg.prototype.getContentPartAttachUrl =
 function(contentPartType, contentPart) {
-	if (this._attachments &&
-		this._attachments.length > 0 &&
+	if (this.attachments && this.attachments.length > 0 &&
 		(contentPartType == ZmMailMsg.CONTENT_PART_ID ||
 		 contentPartType == ZmMailMsg.CONTENT_PART_LOCATION))
 	{
-    	for (var i = 0; i < this._attachments.length; i++) {
-    		var attach = this._attachments[i];
+    	for (var i = 0; i < this.attachments.length; i++) {
+    		var attach = this.attachments[i];
 			if (attach[contentPartType] == contentPart) {
-    			return appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&part=" + attach.part;
+    			return [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", this.id, "&part=", attach.part].join("");
     		}
 		}
 	}
@@ -1034,11 +1021,11 @@ function(findHits) {
 
 	this._attLinks = [];
 
-	if (this._attachments && this._attachments.length > 0) {
+	if (this.attachments && this.attachments.length > 0) {
 		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&amp;part=";
 
-		for (var i = 0; i < this._attachments.length; i++) {
-    		var attach = this._attachments[i];
+		for (var i = 0; i < this.attachments.length; i++) {
+    		var attach = this.attachments[i];
 
 			if (!this.isRealAttachment(attach) ||
 				(attach.body && ZmMimeTable.isRenderableImage(attach.ct)))
@@ -1194,9 +1181,9 @@ function(msgNode) {
 	this._parseFlags(msgNode.f);
 
 	if (msgNode.mp) {
-		var params = {attachments: this._attachments, bodyParts: this._bodyParts};
+		var params = {attachments: this.attachments, bodyParts: this._bodyParts};
 		this._topPart = ZmMimePart.createFromDom(msgNode.mp, params);
-		this._loaded = this._bodyParts.length > 0 || this._attachments.length > 0;
+		this._loaded = this._bodyParts.length > 0 || this.attachments.length > 0;
 	}
 
 	if (msgNode.shr) {
@@ -1235,7 +1222,7 @@ function(msgNode) {
                 textPart.content = desc;
                 this._bodyParts.push(textPart);
             }
-            this._loaded = this._bodyParts.length > 0  || this._attachments.length > 0;
+            this._loaded = this._bodyParts.length > 0  || this.attachments.length > 0;
         } catch (ex) {
 			// do nothing - this means we're trying to load an ZmInvite in new
 			// window, which we dont currently load (re: support).
