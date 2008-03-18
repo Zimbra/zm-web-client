@@ -733,7 +733,7 @@ function(conv, preferHtml, callback, result) {
 	html[idx++] = conv.subject;
 	html[idx++] = "</font><br><font size=+1>";
 	html[idx++] = conv.numMsgs;
-	html[idx++] = (conv.numMsgs > 1) ? " messages" : " message";
+	html[idx++] = (conv.numMsgs > 1) ? " "+ZmMsg.message : " "+ZmMsg.messages;
 	html[idx++] = "</font><hr>";
 
 	for (var i = 0; i < resp.length; i++) {
