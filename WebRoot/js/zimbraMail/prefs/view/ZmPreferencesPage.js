@@ -861,12 +861,13 @@ function(ev) {
 		dialog.setTitle(ZmMsg._import);
 		dialog.registerCallback(DwtDialog.OK_BUTTON, this._importOkCallback, this, dialog);
 
+		var overviewId = [this.toString, settingId].join("-");
 		if (settingId == ZmSetting.IMPORT) {
 			AjxDispatcher.require(["ContactsCore", "Contacts"]);
-			dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true});
+			dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, overviewId: overviewId, description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true});
 		} else {
 			AjxDispatcher.require(["CalendarCore", "Calendar"]);
-			dialog.popup({treeIds:[ZmOrganizer.CALENDAR], title:ZmMsg.chooseCalendar, description:ZmMsg.chooseCalendarToImport, skipReadOnly:true});
+			dialog.popup({treeIds:[ZmOrganizer.CALENDAR], title:ZmMsg.chooseCalendar, overviewId: overviewId, description:ZmMsg.chooseCalendarToImport, skipReadOnly:true});
 		}
 	}
 };
