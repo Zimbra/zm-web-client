@@ -574,7 +574,7 @@ ZmImApp.prototype.startAlert = function() {
 		}
 	}
 	if (appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
-		if (!this._clientHasFocus || !this._active) {
+		if (!this._active) {
 			type |= ZmImApp.ALERT_APP_TAB;
 			this._origImage = this._origImage || this._getAppButton().getImage();
 		}
@@ -586,13 +586,10 @@ ZmImApp.prototype.startAlert = function() {
 };
 
 ZmImApp.prototype.stopAlert = function(type) {
-	if ((this._alerts & ZmImApp.ALERT_CLIENT) && (type & ZmImApp.ALERT_CLIENT)) {
-		Dwt.setFavIcon(this._favIcon);
-	}
-	if ((this._alerts & ZmImApp.ALERT_APP_TAB) && (type & ZmImApp.ALERT_APP_TAB) ){
-		this._getAppButton().setImage(this._origImage);
-		this._origImage = null;
-	}
+	// Reset the state of all the alerts being turned off here.
+	this._updateAlerts(false, type & this._alerts);
+
+	// Update bits and stop loop if all alerts are off.
 	this._alerts = this._alerts & ~type; // Turn off the bit for type.
 	if (!this._alerts && this._alertInterval) {
 		clearInterval(this._alertInterval);
@@ -603,14 +600,32 @@ ZmImApp.prototype.stopAlert = function(type) {
 ZmImApp.prototype._alertTimerCallback = function() {
 	// Flash the im app tab.
 	this.__flashIconStatus = !this.__flashIconStatus;
-	if (this._alerts & ZmImApp.ALERT_APP_TAB) {
-		this._getAppButton().setImage(this.__flashIconStatus ? "Blank_16" : this._origImage);
+	this._updateAlerts(this.__flashIconStatus, this._alerts);
+};
+
+ZmImApp.prototype._updateAlerts = function(status, alerts) {
+	if (alerts & ZmImApp.ALERT_APP_TAB) {
+		this._getAppButton().setImage(status ? "Blank_16" : this._origImage);
 	}
 
 	// Flash the favicon.
-	if (this._alerts & ZmImApp.ALERT_CLIENT) {
-		Dwt.setFavIcon(this.__flashIconStatus ? this._blankIcon : this._favIcon);
+	if (alerts & ZmImApp.ALERT_CLIENT) {
+		Dwt.setFavIcon(status ? this._blankIcon : this._favIcon);
 	}
+
+	// Flash the title.
+	if (alerts & ZmImApp.ALERT_CLIENT) {
+		var doc = document;
+		if (status) {
+			this._origTitle = doc.title;
+			doc.title = ZmMsg.newMessage;
+		} else {
+			if (doc.title == ZmMsg.newMessage) {
+				doc.title = this._origTitle;
+			}
+			// else if someone else changed the title, just leave it.
+		}
+	}	
 };
 
 ZmImApp.prototype._getAppButton = function() {
