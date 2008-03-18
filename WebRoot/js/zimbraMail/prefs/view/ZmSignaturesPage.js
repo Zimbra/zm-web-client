@@ -392,7 +392,6 @@ ZmSignaturesPage.prototype._resetSignature = function(signature, clear ) {
         comps.value.setEnabled(false);
 
         comps.value.setDisplay(Dwt.DISPLAY_BLOCK);
-
     }
 };
 
@@ -408,10 +407,16 @@ ZmSignaturesPage.prototype._resetDeleteButtons = function() {
 	var text = this._deleteState ? ZmMsg.del : ZmMsg.clear;
 	for (var id in this._signatureComps) {
 		var comps = this._signatureComps[id];
-		if (comps.doDelete) {
+        var signature = comps.signature;
+        if (comps.doDelete) {
 			comps.doDelete.setText(text);
-		}
-	}
+            if( !this._deleteState && (signature.name == "" || signature.value == "") ){
+                comps.doDelete.setEnabled(false);
+            }else{
+                comps.doDelete.setEnabled(true);
+            }
+        }
+    }
 };
 
 // buttons
@@ -504,6 +509,8 @@ ZmSignaturesPage.prototype._handleDoneButton = function(id, evt){
     this._resetSignature(signature);
 
     this._editState = null;
+
+    this._resetDeleteButtons();
 
 };
 
