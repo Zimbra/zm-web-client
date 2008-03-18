@@ -521,6 +521,15 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	button.setToolTipContent(ZmMsg.findNReplaceTitle);
 	button.addSelectionListener(new AjxListener(this, this._findReplaceListener));
 	
+
+	//bug: 23678 uncomment this after icons are available for the new toolbar operation
+	/*
+	button = new DwtToolBarButton(params);
+	button.setImage("FindReplace");
+	button.setToolTipContent("");
+	button.addSelectionListener(new AjxListener(this, this._convertCamelCaseListener));
+	*/
+
 };
 
 /*** TODO: Add this back later...
@@ -893,3 +902,92 @@ function(ev) {
 		
 		return retVal;
 };
+
+
+
+ZmPageEditor.WIKIWORD_RE = /[A-Z]+[a-z]+[A-Z]+[a-zA-Z0-9]*/;
+ZmPageEditor.LITERAL_RE = /[^\]\|]+?/; // REVISIT: escaped ']'
+
+ZmPageEditor.WIKI_LINK_RE =  /(^\[\[|\]\]$)/;
+
+ZmPageEditor.TWIKI_KEYWORD_RE = new RegExp(
+	"\\b(" + ZmPageEditor.WIKIWORD_RE.source + ")\\b" +
+	"|" +
+	"(?:\\[" +
+		"\\[(" + ZmPageEditor.LITERAL_RE.source + ")\\]" +
+		"(?:\\[(" + ZmPageEditor.LITERAL_RE.source + ")\\])?" +
+	"\\])",
+	"g"
+);
+
+ZmPageEditor.prototype._convertCamelCaseListener = 
+function () {
+		var doc = this._getIframeDoc();
+		if(doc && doc.body) {
+			this._convertCamelCaseToLink(doc.body);
+		}		
+};
+
+ZmPageEditor.prototype._convertCamelCaseToLink =
+function(node) {
+	
+	if(!node) { return; }	
+	var doc = node.ownerDocument;	
+
+	var tmp, i, val;
+	switch (node.nodeType) {
+	    case 1:	// ELEMENT_NODE
+		var child = node.firstChild;
+		while (child) {
+			child = this._convertCamelCaseToLink(child);
+		}
+		return node.nextSibling;
+
+	    case 3:	// TEXT_NODE
+	    case 4:	// CDATA_SECTION_NODE (just in case)
+				var str = node.data;
+				var m;
+				var replaceTextNode = false;
+				DBG.println("node.data:"+str);
+				ZmPageEditor.TWIKI_KEYWORD_RE.lastIndex = 0;
+				while(m = ZmPageEditor.TWIKI_KEYWORD_RE.exec(str)) {			
+					var firstMatch = m[0];
+					if(firstMatch && !firstMatch.match(ZmPageEditor.WIKI_LINK_RE)) {
+						str = this._replaceCamelCaseWord(str, firstMatch, ZmPageEditor.TWIKI_KEYWORD_RE.lastIndex);							
+						replaceTextNode = true;
+					}					
+				}
+								
+				if(replaceTextNode) {
+						var nextSibling = node.nextSibling;
+						this._replaceTextNode(node, doc.createTextNode(str));
+						return nextSibling;
+				}				
+		}
+
+		return node.nextSibling;
+};
+
+ZmPageEditor.prototype._replaceCamelCaseWord =
+function(str, firstMatch, lastIndex) {
+	var beginStr = str.substring(0, lastIndex - firstMatch.length);	
+	var endStr = str.substring(lastIndex - firstMatch.length);
+	if(beginStr!=null && endStr!=null) {
+		str = beginStr + endStr.replace(firstMatch, "[["+firstMatch+"]]");
+	}	
+	return str;	
+};
+
+ZmPageEditor.prototype._replaceTextNode =
+function(node, newNode) {
+	var doc = node.ownerDocument;
+	var nextSibling = node.nextSibling;
+	var parentNode = node.parentNode;
+	parentNode.removeChild(node);
+	if(nextSibling) {
+		parentNode.insertBefore(newNode, nextSibling);
+	}else {
+		parentNode.appendChild(newNode);
+	}
+};
+
