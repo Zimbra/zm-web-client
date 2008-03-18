@@ -93,10 +93,10 @@ function() {
 ZmFilterRulesController.prototype.resetListView =
 function(callback, selectedIndex) {
 	var listView = this._filterRulesView.getListView();
-	if (!listView) return;
+	if (!listView) { return; }
 
 	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [listView, callback, selectedIndex]);
-	this._rules.loadRules(false, respCallback);
+	this._rules.loadRules(appCtxt.get(ZmSetting.OFFLINE), respCallback);		// bug #15044 - force loading rules in offline mode
 };
 
 ZmFilterRulesController.prototype._handleResponseSetListView =
