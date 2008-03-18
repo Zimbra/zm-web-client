@@ -577,8 +577,9 @@ ZmChatWidget.prototype._setUnreadStatus = function() {
 			}, 150);
 		}
 
-		if (this.getChatWindow().isSticky())
-			AjxDispatcher.run("GetRoster").stopFlashingIcon();
+		if (this.getChatWindow().isSticky()) {
+			ZmImApp.INSTANCE.stopAlert(ZmImApp.ALERT_APP_TAB);
+		}
 	}
 };
 

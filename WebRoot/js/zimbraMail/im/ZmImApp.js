@@ -46,6 +46,9 @@ ZmApp.SETTING[ZmApp.IM]		= ZmSetting.IM_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.IM]	= 70;
 ZmApp.QS_ARG[ZmApp.IM]		= "chat";
 
+ZmImApp.ALERT_CLIENT = 1;  // Displays an alert for entire web client, flashing favicon & document.title
+ZmImApp.ALERT_APP_TAB = 2; // Displays an alert for im app tab 
+
 ZmImApp.prototype = new ZmApp;
 ZmImApp.prototype.constructor = ZmImApp;
 
@@ -365,6 +368,9 @@ function(notify) {
 
 ZmImApp.prototype.startup =
 function(result) {
+	var listener = new AjxListener(this, this._focusListener);
+	DwtShell.getShell(window).addFocusListener(listener);
+	DwtShell.getShell(window).addBlurListener(listener);
 	if (appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN)) {
 		// Do the auto login after a short delay. I chose 1000ms because that means
 		// im login will after zimlets are loaded.
@@ -408,7 +414,7 @@ ZmImApp.prototype._handleLoadLaunch = function(callback) {
 ZmImApp.prototype.activate =
 function(active) {
 	if (active) {
-		this.stopFlashingIcon();
+		this.stopAlert(ZmImApp.ALERT_APP_TAB);
 		if (this._toast && this._toast.isPoppedUp()) {
 			this._toast.transition();
 		}
@@ -466,18 +472,6 @@ function(roster) {
 ZmImApp.prototype.getAutoCompleteGroups =
 function() {
 	return new ZmRosterTreeGroups(this.getRoster());
-};
-
-ZmImApp.prototype.startFlashingIcon = function() {
-	if (appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
-		appCtxt.getAppController().getAppChooserButton("IM").startFlashing();
-	}
-};
-
-ZmImApp.prototype.stopFlashingIcon = function() {
-	if (appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
-		appCtxt.getAppController().getAppChooserButton("IM").stopFlashing();
-	}
 };
 
 ZmImApp.getImPresenceMenuOps = function() {
@@ -569,3 +563,65 @@ ZmImApp.prototype.showToast = function(chat, chatMessage){
 	};
 	appCtxt.setStatusMsg(args);
 };
+
+ZmImApp.prototype.startAlert = function() {
+	var type = 0;
+	if (!this._clientHasFocus) {
+		type |= ZmImApp.ALERT_CLIENT;
+		if (!this._favIcon) {
+			this._favIcon = appContextPath + "/img/logo/favicon.ico";
+			this._blankIcon = appContextPath + "/img/logo/blank.ico";
+		}
+	}
+	if (appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
+		if (!this._clientHasFocus || !this._active) {
+			type |= ZmImApp.ALERT_APP_TAB;
+			this._origImage = this._origImage || this._getAppButton().getImage();
+		}
+	}
+	this._alerts |= type;
+	if (this._alerts && !this._alertInterval) {
+		this._alertInterval = setInterval(AjxCallback.simpleClosure(this._alertTimerCallback, this), 333);
+	}
+};
+
+ZmImApp.prototype.stopAlert = function(type) {
+	if ((this._alerts & ZmImApp.ALERT_CLIENT) && (type & ZmImApp.ALERT_CLIENT)) {
+		Dwt.setFavIcon(this._favIcon);
+	}
+	if ((this._alerts & ZmImApp.ALERT_APP_TAB) && (type & ZmImApp.ALERT_APP_TAB) ){
+		this._getAppButton().setImage(this._origImage);
+		this._origImage = null;
+	}
+	this._alerts = this._alerts & ~type; // Turn off the bit for type.
+	if (!this._alerts && this._alertInterval) {
+		clearInterval(this._alertInterval);
+		this._alertInterval = 0;
+	}
+};
+
+ZmImApp.prototype._alertTimerCallback = function() {
+	// Flash the im app tab.
+	this.__flashIconStatus = !this.__flashIconStatus;
+	if (this._alerts & ZmImApp.ALERT_APP_TAB) {
+		this._getAppButton().setImage(this.__flashIconStatus ? "Blank_16" : this._origImage);
+	}
+
+	// Flash the favicon.
+	if (this._alerts & ZmImApp.ALERT_CLIENT) {
+		Dwt.setFavIcon(this.__flashIconStatus ? this._blankIcon : this._favIcon);
+	}
+};
+
+ZmImApp.prototype._getAppButton = function() {
+	return appCtxt.getAppController().getAppChooserButton("IM");
+};
+
+ZmImApp.prototype._focusListener =
+function(ev) {
+	this._clientHasFocus = ev.state == DwtFocusEvent.FOCUS;
+	if (this._clientHasFocus) {
+		this.stopAlert(ZmImApp.ALERT_CLIENT);
+	}
+};
+

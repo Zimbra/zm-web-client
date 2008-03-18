@@ -366,8 +366,8 @@ function(im) {
 						if (chat) chat.setThread(chatMessage.thread);
 					}
 					if (chat) {
-						if (!chatMessage.fromMe && !this._imApp.isActive()) {
-							this.startFlashingIcon();
+						if (!chatMessage.fromMe) {
+							this._imApp.startAlert();
 						}
 						chat.addMessage(chatMessage);
 					}
@@ -412,14 +412,6 @@ function(im) {
 		}
 	}
 
-};
-
-ZmRoster.prototype.startFlashingIcon = function() {
-	this._imApp.startFlashingIcon();
-};
-
-ZmRoster.prototype.stopFlashingIcon = function() {
-	this._imApp.stopFlashingIcon();
 };
 
 ZmRoster.prototype.joinChatRequest = function(thread, addr) {
