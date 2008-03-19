@@ -97,6 +97,10 @@ function() {
 
 ZmTaskListView.prototype._renderList =
 function(list, noResultsOk) {
+	// call base class first
+	ZmListView.prototype._renderList.call(this, list, noResultsOk);
+
+	// add custom row to allow user to quickly enter tasks from w/in listview
 	var div = document.createElement("DIV");
 	div.id = "_newTaskBannerId";
 
@@ -122,9 +126,7 @@ function(list, noResultsOk) {
 	}
 	htmlArr[idx++] = "</tr></table>";
 	div.innerHTML = htmlArr.join("");
-	this._addRow(div);
-
-	ZmListView.prototype._renderList.call(this, list, noResultsOk);
+	this._addRow(div, 0);
 };
 
 ZmTaskListView.prototype._resetListView =
