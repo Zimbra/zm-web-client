@@ -47,33 +47,11 @@ ZmColListView.prototype.toString = function() {
 
 ZmColListView.KEY_ID = "_keyId";
 
-ZmColListView.COLWIDTH_ICON 			= 20;
-ZmColListView.COLWIDTH_NAME			= 160;
-ZmColListView.COLWIDTH_TYPE			= 80;
-ZmColListView.COLWIDTH_SIZE 			= 45;
-ZmColListView.COLWIDTH_DATE 			= 80;
-ZmColListView.COLWIDTH_OWNER			= 80;
-ZmColListView.COLWIDTH_FOLDER			= 100;
-
 // Protected methods
 
-ZmColListView.prototype._getHeaderList = function(parent) {
+ZmColListView.prototype._getHeaderList =
+function(parent) {
 	return null;
-/*	var headers = [];
-	headers.push(
-		new DwtListHeaderItem(ZmItem.F_TYPE, null, "Globe", ZmDetailListView.COLWIDTH_ICON, null, null, false, null),
-		new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg._name, null, ZmDetailListView.COLWIDTH_NAME, null, false, false, null)	
-	);
-	return headers;*/
-};
-
-ZmColListView.prototype._getCellAttrText =
-function(item, field, params) {
-	if (field == ZmItem.F_SIZE) {
-		return "align='right'";
-	} else if (field == ZmItem.F_TYPE) {
-		return "align='middle'";
-	}
 };
 
 ZmColListView.prototype._getCellContents =

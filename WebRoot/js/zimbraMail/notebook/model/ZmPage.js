@@ -26,15 +26,10 @@ function() {
 	return "ZmPage";
 };
 
-// Data
-
-ZmPage.prototype.fragment;
-ZmPage.prototype._content; // NOTE: content loading can be deferred
-ZmPage.prototype._notebook;
-
 // Static functions
 
-ZmPage.load = function(folderId, name, version, callback, errorCallback, traverseUp) {
+ZmPage.load =
+function(folderId, name, version, callback, errorCallback, traverseUp) {
 	var page = new ZmPage();
 	page.folderId = folderId;
 	page.name = name;
@@ -42,7 +37,8 @@ ZmPage.load = function(folderId, name, version, callback, errorCallback, travers
 	return page;
 };
 
-ZmPage.save = function(folderId, name, content, callback, errorCallback) {
+ZmPage.save =
+function(folderId, name, content, callback, errorCallback) {
 	var page = new ZmPage();
 	page.folderId = folderId;
 	page.name = name;
@@ -50,7 +46,8 @@ ZmPage.save = function(folderId, name, content, callback, errorCallback) {
 	page.save(callback, errorCallback);
 };
 
-ZmPage.createFromDom = function(node, args) {
+ZmPage.createFromDom =
+function(node, args) {
 	var page = new ZmPage(null, args.list);
 	page.set(node);
 	var notebookApp = appCtxt.getApp(ZmApp.NOTEBOOK);
@@ -63,23 +60,28 @@ ZmPage.createFromDom = function(node, args) {
 
 // query
 
-ZmPage.prototype.getPath = function() {
+ZmPage.prototype.getPath =
+function() {
 	var dontIncludeThisName = this.name == ZmNotebook.PAGE_INDEX;
 	return ZmNotebookItem.prototype.getPath.call(this, dontIncludeThisName);
 };
-ZmPage.prototype.getRestUrl = function() {
+
+ZmPage.prototype.getRestUrl =
+function() {
 	var dontIncludeThisName = this.name == ZmNotebook.PAGE_INDEX;
 	return ZmNotebookItem.prototype.getRestUrl.call(this, dontIncludeThisName);
 };
 
-ZmPage.prototype.setContent = function(content) {
+ZmPage.prototype.setContent =
+function(content) {
 	this._content = content;
 };
-ZmPage.prototype.getContent = function(callback, errorCallback) {
+
+ZmPage.prototype.getContent =
+function(callback, errorCallback) {
 	if (this.name && this._content == null && this.version != 0) {
 		this.load(this.version, callback, errorCallback);
-	}
-	else if (callback) {
+	} else if (callback) {
 		callback.run();
 	}
 	return this._content;
@@ -108,14 +110,16 @@ function() {
 	return notebook && notebook.link;
 };
 
-ZmPage.prototype.isFolderReadOnly = function() {
+ZmPage.prototype.isFolderReadOnly =
+function() {
     var isFolderReadOnly = false;
 	var folder = appCtxt.getById(this.folderId);
 	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
     while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
 		folder = folder.parent;
 	}
-	if(folder && folder.isReadOnly()){
+
+	if (folder && folder.isReadOnly()) {
 		isFolderReadOnly = true;
 	}
 	return isFolderReadOnly;
@@ -123,8 +127,7 @@ ZmPage.prototype.isFolderReadOnly = function() {
 
 ZmPage.prototype.isReadOnly =
 function() {
-	if (this.isIndex())
-		return true;
+	if (this.isIndex()) {return true; }
 	
 	//if one of the ancestor is readonly then no chances of childs being writable		
 	var isReadOnly = false;
@@ -133,7 +136,8 @@ function() {
 	while (folder && folder.parent && (folder.parent.id != rootId) && !folder.isReadOnly()) {
 		folder = folder.parent;
 	}
-	if(folder && folder.isReadOnly()){
+
+	if (folder && folder.isReadOnly()) {
 		isReadOnly = true;
 	}
 	
@@ -144,7 +148,7 @@ ZmPage.prototype.isChildOf =
 function(folderId) {
 	var folder = appCtxt.getById(this.folderId);
 
-	if(this.folderId == folderId) return true;
+	if (this.folderId == folderId) { return true; }
 
 	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	while (folder && folder.id && (folder.id != rootId) ) {
@@ -180,13 +184,12 @@ function(callback, errorCallback) {
 
 	// execute call
 	var params = {
-		soapDoc:soapDoc,
-		asyncMode:true,
-		callback:callback,
-		errorCallback:errorCallback
+		soapDoc: soapDoc,
+		asyncMode: true,
+		callback: callback,
+		errorCallback: errorCallback
 	};
-	var appController = appCtxt.getAppController();
-	appController.sendRequest(params);
+	appCtxt.getAppController().sendRequest(params);
 };
 
 /**
@@ -253,7 +256,8 @@ ZmPage.prototype.notifyModify = function(obj) {
 
 // initialization
 
-ZmPage.prototype.set = function(data) {
+ZmPage.prototype.set =
+function(data) {
 	var version = this.version;
 	ZmNotebookItem.prototype.set.call(this, data);
 
@@ -262,11 +266,11 @@ ZmPage.prototype.set = function(data) {
 	if (data.fr != null) {
 		this.fragment = data.fr instanceof Array ? data.fr[0]._content : data.fr;
 	}
+
 	if (version != this.version && data.body == null) {
 		this._content = null;
-	}
-	else if (data.body != null) {
-		this._content = data.body instanceof Array ? data.body[0]._content : data.body;
+	} else if (data.body != null) {
+		this._content = (data.body instanceof Array) ? data.body[0]._content : data.body;
 	}
 };
 

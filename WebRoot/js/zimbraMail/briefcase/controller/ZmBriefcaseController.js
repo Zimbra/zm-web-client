@@ -292,7 +292,7 @@ function(objects) {
 ZmBriefcaseController.prototype.show =
 function(folderId, force, fromSearch) {
 	if (folderId == null) {
-		folderId = ZmBriefcaseItem.DEFAULT_FOLDER;
+		folderId = ZmOrganizer.ID_BRIEFCASE;
 	}
 	
 	DBG.println(AjxDebug.DBG2,"ZmBriefcaseController.show folder id:"+folderId);
@@ -451,7 +451,7 @@ function(docs,folderId) {
 			DBG.println("briefcase folder:"+briefcase.name);//cdel
 			var item = this.getItemById(briefcase.id);
 			if(!item){
-				item = new ZmBriefcaseItem(this._appCtxt);
+				item = new ZmBriefcaseItem();
 			}
 			item.id = briefcase.id;
 			item.name = briefcase.name;
@@ -525,7 +525,7 @@ function(itemId) {
 
 ZmBriefcaseController.prototype.getItemsInFolder =
 function(folderId,callback) {
-	folderId = folderId || ZmBriefcaseItem.DEFAULT_FOLDER;
+	folderId = folderId || ZmOrganizer.ID_BRIEFCASE;
 	if (!this._foldersMap[folderId]) {
 		this._foldersMap[folderId] = {};
 		this.searchFolder(folderId,callback);

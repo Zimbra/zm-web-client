@@ -765,11 +765,6 @@ function() {
 	return headerList;
 };
 
-ZmApptChooserListView.prototype._getCellAttrText =
-function(item, field, params) {
-	return (field == ZmItem.F_CAPACITY) ? "align='center'" : "align='left'";
-};
-
 ZmApptChooserListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	html[idx++] = "&nbsp;";
