@@ -57,7 +57,7 @@ function(searchResult, folder) {
 };
 
 ZmVoiceListController.prototype.getFolder =
-function(searchResult, folder) {
+function() {
 	return this._folder;
 };
 
