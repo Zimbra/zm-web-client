@@ -91,35 +91,3 @@ function(actionCode, ev) {
 	return true;
 };
 
-ZmChicletButton.prototype.startFlashing = function() {
-	if (!this._favIcon) {
-		this._favIcon = appContextPath + "/img/logo/favicon.ico";
-		this._blankIcon = appContextPath + "/img/logo/blank.ico"; 
-	}
-	if (!this.__flashTimer) {
-		// don't start twice
-		this._origImage = this.getImage();
-		this.__flashIconStatus = false;
-		this.__flashTimer = setInterval(AjxCallback.simpleClosure(this.__flashIconCallback, this), 333);
-	}
-};
-
-ZmChicletButton.prototype.stopFlashing = function() {
-	if (this.__flashTimer) {
-		clearInterval(this.__flashTimer);
-		this.__flashTimer = null;
-		this.setImage(this._origImage);
-		this._origImage = null;
-		Dwt.setFavIcon(this._favIcon);
-	}
-};
-
-ZmChicletButton.prototype.__flashIconCallback = function() {
-	this.__flashIconStatus = !this.__flashIconStatus;
-	this.setImage(this.__flashIconStatus ? "Blank_16" : this._origImage);
-
-	// Also flash the favicon.
-	// (This probably doesn't belong in the chiclet class, but the setInterval is
-	// already here, and I just want to see if people start noticing their IMs.) 
-	Dwt.setFavIcon(this.__flashIconStatus ? this._blankIcon : this._favIcon);
-};
