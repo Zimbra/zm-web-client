@@ -1270,7 +1270,7 @@ function() {
 	var el = document.getElementById("skin_container_links");
 	if (el) {
 		var data = {
-			showStandardLink: (!appCtxt.multiAccounts),
+			showStandardLink: (!appCtxt.multiAccounts && !appCtxt.get(ZmSetting.OFFLINE)),
 			showOfflineLink: (!appCtxt.get(ZmSetting.OFFLINE)),
 			helpIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon") ? null : "Help"),
 			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
