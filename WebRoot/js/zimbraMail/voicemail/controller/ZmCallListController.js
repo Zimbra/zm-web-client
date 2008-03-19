@@ -73,6 +73,7 @@ function() {
 ZmCallListController.prototype._initializeToolBar =
 function(view) {
 	ZmVoiceListController.prototype._initializeToolBar.call(this, view);
+	this._toolbar[view].getButton(ZmOperation.PRINT).setToolTipContent(ZmMsg.printCallTooltip)
 };
 
 ZmCallListController.prototype._resetOperations = 
