@@ -157,7 +157,7 @@ function(ev, div) {
 	if (!id) { return true; }
 
 	var tooltip;
-	var type = Dwt.getAttr(div, "_type");
+	var type = this._getItemData(div, "type");
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var hdr = this.getItemFromElement(div);
 		if (hdr && hdr._field) {
