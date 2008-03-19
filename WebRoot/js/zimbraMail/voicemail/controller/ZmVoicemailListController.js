@@ -237,6 +237,7 @@ function(items) {
 		view.removeItem(items[i]);
 	}
 	this._checkReplenish();
+	this._resetToolbarOperations();
 };
 
 ZmVoicemailListController.prototype._downloadListener =
