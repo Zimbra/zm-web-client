@@ -225,8 +225,7 @@ function(enable){
 
 ZmLiteHtmlEditor.prototype._initialize = function(){
 
-	this._initEditor();
-	this._textArea = document.getElementById(this._textAreaId);
+	this._textArea = this._initEditor();
 
 	this._textArea[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = AjxCallback.simpleClosure(this._keyPressHandler,this);
 
@@ -237,13 +236,15 @@ ZmLiteHtmlEditor.prototype._initialize = function(){
 ZmLiteHtmlEditor.prototype._initEditor = function(){
 	var htmlEl = this.getHtmlElement();
 
-	var textArea = document.createElement("textarea");
-	textArea.id =  this._textAreaId = "textarea_" + Dwt.getNextId();
-	textArea.className = "DwtHtmlEditorTextArea";
-	textArea.style.width = "100%";
-	htmlEl.appendChild(textArea);
-
-	return textArea;
+	this._textAreaId = "textarea_" + Dwt.getNextId();
+	var html = [
+			Dwt.CARET_HACK_BEGIN,
+			"<textarea id='",
+			this._textAreaId,
+			"' class='DwtHtmlEditorTextArea' style='width:100%;'/>"
+	].join("");
+	htmlEl.innerHTML = html; 
+	return Dwt.byId(this._textAreaId);
 };
 
 ZmLiteHtmlEditor.prototype._keyPressHandler =

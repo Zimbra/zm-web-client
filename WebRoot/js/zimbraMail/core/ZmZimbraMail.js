@@ -1231,6 +1231,8 @@ function(appName, view) {
 				}
 			}
 		}
+		this._evt.item = this._apps[appName];
+		this._evtMgr.notifyListeners(ZmAppEvent.ACTIVATE, this._evt);
 	}
 };
 
