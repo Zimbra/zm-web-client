@@ -130,8 +130,9 @@ function() {
 
 ZmVoiceFolder.prototype.mayContain =
 function(what, folderType) {
-	for (var i = 0, count = what.length; i < count; i++) {
-		var voicemail = what[i];
+	var items = (what instanceof Array) ? what : [what];
+	for (var i = 0, count = items.length; i < count; i++) {
+		var voicemail = items[i];
 		if (!(voicemail instanceof ZmVoicemail)) {
 			return false;
 		}
