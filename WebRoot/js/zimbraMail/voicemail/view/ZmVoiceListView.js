@@ -189,7 +189,7 @@ function(ev, div) {
 	var id = ev.target.id || div.id;
 	if (!id) return true;
 
-	var type = Dwt.getAttr(div, "_type");
+	var type = this._getItemData(div, "type");
 	if (type && type == DwtListView.TYPE_LIST_ITEM) {
 		var m = this._parseId(id);
 		if (m && m.field) {
