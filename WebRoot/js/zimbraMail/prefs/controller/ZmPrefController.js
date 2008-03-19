@@ -263,9 +263,7 @@ function(ev, callback, noPop) {
 ZmPrefController.prototype._doPreSave =
 function(continueCallback, preSaveCallbacks, callback, noPop, success) {
 	// cancel save
-	if (success != null && !success) {
-		return;
-	}
+	if (success != null && !success) { return; }
 
 	// perform save
 	if (preSaveCallbacks.length == 0) {
@@ -279,7 +277,8 @@ function(continueCallback, preSaveCallbacks, callback, noPop, success) {
 	}
 };
 
-ZmPrefController.prototype._doSave = function(callback, noPop) {
+ZmPrefController.prototype._doSave =
+function(callback, noPop) {
 	var batchCommand = new ZmBatchCommand(false);
 
 	//  get changed prefs

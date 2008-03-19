@@ -67,12 +67,14 @@ function(account) {
 	return (this._hasRendered == acct.name);
 };
 
-ZmPreferencesPage.prototype._replaceControlElement = function(elemOrId, control) {
+ZmPreferencesPage.prototype._replaceControlElement =
+function(elemOrId, control) {
 	this._addControlTabIndex(elemOrId, control);
 	control.replaceElement(elemOrId);
 };
 
-ZmPreferencesPage.prototype._enterTabScope = function() {
+ZmPreferencesPage.prototype._enterTabScope =
+function() {
 	if (!this._tabScopeStack) {
 		this._tabScopeStack = [];
 	}
@@ -81,17 +83,20 @@ ZmPreferencesPage.prototype._enterTabScope = function() {
 	return scope;
 };
 
-ZmPreferencesPage.prototype._getCurrentTabScope = function() {
+ZmPreferencesPage.prototype._getCurrentTabScope =
+function() {
 	var stack = this._tabScopeStack;
 	return stack && stack[stack.length - 1];
 };
 
-ZmPreferencesPage.prototype._exitTabScope = function() {
+ZmPreferencesPage.prototype._exitTabScope =
+function() {
 	var stack = this._tabScopeStack;
 	return stack && stack.pop();
 };
 
-ZmPreferencesPage.prototype._addControlTabIndex = function(elemOrId, control) {
+ZmPreferencesPage.prototype._addControlTabIndex =
+function(elemOrId, control) {
 	// remember control's tab index
 	var elem = Dwt.byId(elemOrId);
 	var tabIndex = elem.getAttribute("tabindex");
@@ -110,7 +115,8 @@ ZmPreferencesPage.prototype._addControlTabIndex = function(elemOrId, control) {
 	entry.push(control);
 };
 
-ZmPreferencesPage.prototype._addTabLinks = function(elemOrId) {
+ZmPreferencesPage.prototype._addTabLinks =
+function(elemOrId) {
 	var elem = Dwt.byId(elemOrId);
 	if (!elem) return;
 
@@ -144,7 +150,8 @@ function() {
 	this._createControls();
 }
 
-ZmPreferencesPage.prototype._createPageTemplate = function() {
+ZmPreferencesPage.prototype._createPageTemplate =
+function() {
 	// expand template
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._section.id);
 	var templateId = this._section.templateId;
@@ -158,7 +165,8 @@ ZmPreferencesPage.prototype._createPageTemplate = function() {
 	this.setVisible(false); // hide until ready
 };
 
-ZmPreferencesPage.prototype._createControls = function() {
+ZmPreferencesPage.prototype._createControls =
+function() {
 	// create controls for prefs, if present in template
 	this._prefPresent = {};
 	this._enterTabScope();
@@ -168,7 +176,10 @@ ZmPreferencesPage.prototype._createControls = function() {
 
 		// add preference controls
 		var prefs = this._section.prefs || [];
-		var settings = appCtxt.getSettings();
+		var settings = (appCtxt.isOffline && appCtxt.multiAccounts && this._section.id == "GENERAL")
+			? appCtxt.getMainAccount().settings
+			: appCtxt.getSettings();
+
 		for (var i = 0; i < prefs.length; i++) {
 			var id = prefs[i];
 			if (!id) { continue; }
@@ -272,7 +283,8 @@ ZmPreferencesPage.prototype._createControls = function() {
 	this._hasRendered = appCtxt.getActiveAccount().name;
 };
 
-ZmPreferencesPage.prototype._addControlsToTabGroup = function(tabGroup) {
+ZmPreferencesPage.prototype._addControlsToTabGroup =
+function(tabGroup) {
 	var scope = this._getCurrentTabScope();
 	var keys = AjxUtil.keys(scope).sort(AjxUtil.byNumber);
 	for (var i = 0; i < keys.length; i++) {
@@ -411,7 +423,8 @@ function() {
 	return this._title;
 };
 
-ZmPreferencesPage.prototype.getTabGroupMember = function() {
+ZmPreferencesPage.prototype.getTabGroupMember =
+function() {
 	return this._tabGroup;
 };
 
@@ -437,6 +450,29 @@ function(useDefaults) {
 	}
 };
 
+ZmPreferencesPage.prototype.getPreSaveCallback =
+function() {
+	// in offline mode, general (aka global) prefs apply to the *parent* account
+	if (appCtxt.isOffline && appCtxt.multiAccounts && this._section.id == "GENERAL") {
+		// just get changed prefs for general/global tab only
+		var prefView = {"GENERAL": this.parent.prefView["GENERAL"]};
+		var list = this.parent.getChangedPrefs(false, false, null, prefView);
+
+		return (list && list.length) ? (new AjxCallback(this, this._preSave, [list])) : null;
+	}
+	return null;
+};
+
+ZmPreferencesPage.prototype._preSave =
+function(list, continueCallback) {
+	// if we're here, that means we're in offline mode and user changed something in Global tab
+	var accountName = appCtxt.getMainAccount().name;
+	var batchCommand = new ZmBatchCommand(false, accountName);
+	appCtxt.getSettings().save(list, null, batchCommand);
+
+	batchCommand.run(continueCallback);
+};
+
 //
 // Protected methods
 //
@@ -454,7 +490,9 @@ function(templateId, data) {
 */
 ZmPreferencesPage.prototype._getPrefValue =
 function(id, useDefault) {
-	var pref = appCtxt.getSettings().getSetting(id);
+	var pref = (appCtxt.isOffline && appCtxt.multiAccounts && this._section.id == "GENERAL")
+		? appCtxt.getMainAccount().settings.getSetting(id)
+		: appCtxt.getSettings().getSetting(id);
 	return useDefault ? pref.getDefaultValue() : pref.getValue();
 };
 
@@ -469,7 +507,8 @@ function(parentIdOrElem, text, width, listener) {
 	return button;
 };
 
-ZmPreferencesPage.prototype._prepareValue = function(id, setup, value) {
+ZmPreferencesPage.prototype._prepareValue =
+function(id, setup, value) {
 	if (setup.displayFunction) {
 		value = setup.displayFunction(value);
 	}
@@ -511,7 +550,8 @@ function(id, setup, value) {
 	return selObj;
 };
 
-ZmPreferencesPage.prototype._setupComboBox = function(id, setup, value) {
+ZmPreferencesPage.prototype._setupComboBox =
+function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
 
 	var cboxObj = new DwtComboBox({parent:this});
@@ -600,7 +640,8 @@ function(id, setup, value) {
 	return container;
 };
 
-ZmPreferencesPage.__radioGroup_getTabGroupMember = function(radioIds) {
+ZmPreferencesPage.__radioGroup_getTabGroupMember =
+function(radioIds) {
 	var tg = new DwtTabGroup(this.toString());
 	if (radioIds) {
 		for (var id in radioIds) {
@@ -693,7 +734,8 @@ function(containerDiv, settingId, setup) {
 	}
 };
 
-ZmPreferencesPage.__hack_TabGroupControl = function(tabGroup) {
+ZmPreferencesPage.__hack_TabGroupControl =
+function(tabGroup) {
 	this.getTabGroupMember = function() { return tabGroup; }
 };
 
@@ -991,7 +1033,8 @@ function(ev) {
 };
 
 /** Reset the form values to the last save. */
-ZmPreferencesPage.prototype._resetPageListener = function(ev) {
+ZmPreferencesPage.prototype._resetPageListener =
+function(ev) {
 	this.reset(false);
 	this._controller.setDirty(this._section.id, false);
 	appCtxt.setStatusMsg(ZmMsg.defaultsPageRestore);

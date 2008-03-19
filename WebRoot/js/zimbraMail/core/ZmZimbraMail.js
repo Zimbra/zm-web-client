@@ -61,13 +61,6 @@ ZmZimbraMail = function(params) {
     if (window.DBG && !DBG.isDisabled()) {
 		DBG.setTitle("Debug (" + branch + ")");
     }
-    var listener = new AjxListener(this, this._settingChangeListener);
-	this._settings.getSetting(ZmSetting.QUOTA_USED).addChangeListener(listener);
-	this._settings.getSetting(ZmSetting.POLLING_INTERVAL).addChangeListener(listener);
-	this._settings.getSetting(ZmSetting.SKIN_NAME).addChangeListener(listener);
-	this._settings.getSetting(ZmSetting.LOCALE_NAME).addChangeListener(listener);
-	this._settings.getSetting(ZmSetting.SHORTCUTS).addChangeListener(listener);
-	this._settings.getSetting(ZmSetting.CHILD_ACCTS_VISIBLE).addChangeListener(listener);
 
 	appCtxt.setAppController(this);
 
@@ -183,7 +176,7 @@ function(params) {
 	// Handle offline mode
 	if (params.offlineMode) {
 		DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
-		appCtxt.set(ZmSetting.OFFLINE, true);
+		appCtxt.isOffline = true;
 		appCtxt.set(ZmSetting.POLLING_INTERVAL, 60, null, null, true);
 	}
 
@@ -393,7 +386,7 @@ function(params, result) {
 		}
 	}
 
-	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+	if (!appCtxt.isOffline) {
 		this.setPollInterval(true);
 	}
 
@@ -458,7 +451,7 @@ ZmZimbraMail.prototype._handleResponseStartup1 =
 function(params) {
 
 	this._setExternalLinks();
-	this._setUserInfo();
+	this.setUserInfo();
 
 	if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchPanel();
@@ -860,10 +853,7 @@ function(kickMe) {
  */
 ZmZimbraMail.prototype._kickPolling =
 function(resetBackoff) {
-	if (appCtxt.get(ZmSetting.OFFLINE) &&
-		appCtxt.getActiveAccount().isMain &&
-		appCtxt.multiAccounts)
-	{
+	if (appCtxt.isOffline && appCtxt.multiAccounts && appCtxt.getActiveAccount().isMain) {
 		return;
 	}
 
@@ -1272,17 +1262,17 @@ function() {
 	var el = document.getElementById("skin_container_links");
 	if (el) {
 		var data = {
-			showStandardLink: (!appCtxt.multiAccounts && !appCtxt.get(ZmSetting.OFFLINE)),
-			showOfflineLink: (!appCtxt.get(ZmSetting.OFFLINE)),
+			showStandardLink: (!appCtxt.multiAccounts && !appCtxt.isOffline),
+			showOfflineLink: (!appCtxt.isOffline),
 			helpIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon") ? null : "Help"),
 			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
-			logoutText: (appCtxt.get(ZmSetting.OFFLINE) ? ZmMsg.setup : ZmMsg.logOff)
+			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
 		}
 		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data)
 	}
 };
 
-ZmZimbraMail.prototype._setUserInfo =
+ZmZimbraMail.prototype.setUserInfo =
 function() {
 	// username
 	var login = appCtxt.get(ZmSetting.USERNAME);
@@ -1522,58 +1512,6 @@ function(ev) {
 		zm._sessionTimerId = AjxTimedAction.scheduleAction(zm._sessionTimer, timeout);
 	}
 	DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER RESET (" + (new Date()).toLocaleString() + ")");
-};
-
-ZmZimbraMail.prototype._settingChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_SETTING) return;
-
-	var id = ev.source.id;
-	if (id == ZmSetting.QUOTA_USED) {
-		this._setUserInfo();
-	} else if (id == ZmSetting.POLLING_INTERVAL) {
-		this.setPollInterval();
-	} else if (id == ZmSetting.SKIN_NAME) {
-		var cd = appCtxt.getYesNoMsgDialog();
-		cd.reset();
-		var skin = ev.source.getValue();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this, [skin, cd]);
-		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
-		cd.popup();
-	} else if (id == ZmSetting.LOCALE_NAME) {
-		var cd = appCtxt.getYesNoMsgDialog();
-		cd.reset();
-		var skin = ev.source.getValue();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
-		cd.setMessage(ZmMsg.localeChangeRestart, DwtMessageDialog.WARNING_STYLE);
-		cd.popup();
-	} else if (id == ZmSetting.SHORTCUTS) {
-		appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap());
-		this._settings._loadShortcuts();
-	} else if (id == ZmSetting.CHILD_ACCTS_VISIBLE) {
-		var cd = appCtxt.getYesNoMsgDialog();
-		cd.reset();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._refreshBrowserCallback, this, [cd]);
-		cd.setMessage(ZmMsg.accountChangeRestart, DwtMessageDialog.WARNING_STYLE);
-		cd.popup();
-	}
-};
-
-ZmZimbraMail.prototype._newSkinYesCallback =
-function(skin, dialog) {
-	dialog.popdown();
-    window.onbeforeunload = null;
-    var url = AjxUtil.formatUrl({qsArgs:{skin:skin}});
-	DBG.println(AjxDebug.DBG1, "skin change, redirect to: " + url);
-    ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
-};
-
-ZmZimbraMail.prototype._refreshBrowserCallback =
-function(dialog) {
-	dialog.popdown();
-    window.onbeforeunload = null;
-    var url = AjxUtil.formatUrl({});
-    ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
 ZmZimbraMail.prototype._createBanner =

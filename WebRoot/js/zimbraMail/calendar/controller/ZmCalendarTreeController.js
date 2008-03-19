@@ -127,7 +127,7 @@ function(actionMenu, type, id) {
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_CALENDAR];
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !appCtxt.get(ZmSetting.OFFLINE)) {
+	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !appCtxt.isOffline) {
 		ops.push(ZmOperation.MOUNT_CALENDAR);
 	}
 	ops.push(ZmOperation.CHECK_ALL);
@@ -140,7 +140,7 @@ function() {
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [];
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !appCtxt.get(ZmSetting.OFFLINE)) {
+	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) && !appCtxt.isOffline) {
 		ops.push(ZmOperation.SHARE_CALENDAR);
 	}
 	ops.push(ZmOperation.DELETE);

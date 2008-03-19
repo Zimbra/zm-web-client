@@ -96,7 +96,7 @@ function(callback, selectedIndex) {
 	if (!listView) { return; }
 
 	var respCallback = new AjxCallback(this, this._handleResponseSetListView, [listView, callback, selectedIndex]);
-	this._rules.loadRules(appCtxt.get(ZmSetting.OFFLINE), respCallback);		// bug #15044 - force loading rules in offline mode
+	this._rules.loadRules(appCtxt.isOffline, respCallback);		// bug #15044 - force loading rules in offline mode
 };
 
 ZmFilterRulesController.prototype._handleResponseSetListView =

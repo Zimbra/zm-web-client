@@ -1697,7 +1697,7 @@ function() {
 		var identity = identities[i];
 
 		// bug fix #21497 - skip the *fake* local account if offline and is main
-		var acct = (appCtxt.get(ZmSetting.OFFLINE) && appCtxt.multiAccounts)
+		var acct = (appCtxt.isOffline && appCtxt.multiAccounts)
 			? appCtxt.getAccount(identity.id) : null;
 		if (acct && acct.isMain) { continue; }
 

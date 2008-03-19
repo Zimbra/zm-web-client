@@ -144,7 +144,7 @@ function(parent, type, id) {
         }
 		else {
 			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
-			if (!appCtxt.get(ZmSetting.OFFLINE) && isEnabled) {
+			if (!appCtxt.isOffline && isEnabled) {
 				var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
 				var dataSources = dsCollection.getItemsFor(ZmOrganizer.normalizeId(folder.id));
 				if (dataSources.length > 0) {
@@ -181,7 +181,7 @@ function(parent, type, id) {
 ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_FOLDER];
-	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+	if (!appCtxt.isOffline) {
 		ops.push(ZmOperation.MOUNT_FOLDER);
 	}
 	ops.push(ZmOperation.EXPAND_ALL);
@@ -202,7 +202,7 @@ function() {
 		ZmOperation.RENAME_FOLDER,
 		ZmOperation.MOVE
 	];
-	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+	if (!appCtxt.isOffline) {
 		ops.push(ZmOperation.SHARE_FOLDER);
 	}
 	ops.push(ZmOperation.EDIT_PROPS,

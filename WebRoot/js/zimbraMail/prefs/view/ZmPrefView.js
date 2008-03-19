@@ -167,20 +167,21 @@ ZmPrefView.prototype.getPreSaveCallbacks = function() {
 * @param dirtyCheck		[boolean]* 			if true, only check if any prefs have changed
 * @param noValidation	[boolean]*			if true, don't perform any validation
 * @param batchCommand	[ZmBatchCommand]*	if not null, add soap docs to this batch command
+* @param prefView		[Object]*			if not null, specific prefView to check instead of all
 */
 ZmPrefView.prototype.getChangedPrefs =
-function(dirtyCheck, noValidation, batchCommand) {
+function(dirtyCheck, noValidation, batchCommand, prefView) {
 	var settings = appCtxt.getSettings();
 	var list = [];
 	var errorStr = "";
 	var sections = ZmPref.getPrefSectionMap();
-	for (var view in this.prefView) {
+	var pv = prefView || this.prefView;
+	for (var view in pv) {
 		var section = sections[view];
 		if (section.manageChanges) continue;
         
-		var viewPage = this.prefView[view];
-		if (!viewPage) continue; // if feature is disabled, may not have a view page
-		if (!viewPage.hasRendered()) continue; // if page hasn't rendered, nothing has changed
+		var viewPage = pv[view];
+		if (!viewPage || (viewPage && !viewPage.hasRendered())) { continue; }
 
 		if (section.manageDirty) {
 			var isDirty = viewPage.isDirty();
@@ -197,7 +198,7 @@ function(dirtyCheck, noValidation, batchCommand) {
 				}
 			}
 			if (!dirtyCheck && batchCommand) {
-				this.prefView[view].addCommand(batchCommand);
+				pv[view].addCommand(batchCommand);
 			}
 		}
 
@@ -226,7 +227,9 @@ function(dirtyCheck, noValidation, batchCommand) {
 					throw e;
 				}
 			}
-			var pref = settings.getSetting(id);
+			var pref = (appCtxt.isOffline && appCtxt.multiAccounts && section.id == "GENERAL")
+				? appCtxt.getMainAccount().settings.getSetting(id)
+				: settings.getSetting(id);
 			var origValue = pref.origValue;
 			if (setup.approximateFunction) {
 				if (setup.displayFunction) {

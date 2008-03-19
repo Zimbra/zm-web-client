@@ -321,7 +321,7 @@ function() {
 
 ZmMailListView.prototype._getNoResultsMessage =
 function() {
-	if (appCtxt.get(ZmSetting.OFFLINE)) {
+	if (appCtxt.isOffline) {
 		// offline folders which are "syncable" but currently not syncing should
 		// display a different message
 		var folder;

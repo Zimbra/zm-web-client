@@ -232,16 +232,13 @@ ZmZimbraAccount.prototype._handleResponseLoad =
 function(callback, result) {
 	DBG.println(AjxDebug.DBG1, "Account settings successfully loaded for " + this.name);
 
-	// reset offline setting based on parent's setting
-	var isOffline = appCtxt.get(ZmSetting.OFFLINE, null, appCtxt.getMainAccount());
-	appCtxt.set(ZmSetting.OFFLINE, isOffline);
-
 	// initialize identities/data-sources/signatures for this account
 	var obj = result.getResponse().GetInfoResponse
 	appCtxt.getIdentityCollection().initialize(obj.identities);
 	AjxDispatcher.run("GetDataSourceCollection").initialize(obj.dataSources);
 	appCtxt.getSignatureCollection().initialize(obj.signatures);
 
+	// get folder info for this account
 	var soapDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("visible", "1");

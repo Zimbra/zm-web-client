@@ -165,7 +165,7 @@ function(folderA, folderB) {
 	if (check != null) { return check; }
 
 	// offline client wants POP folders above all else *unless* we are POP'ing into Inbox
-	if (appCtxt.get(ZmSetting.OFFLINE)) {
+	if (appCtxt.isOffline) {
 		if (folderA.isDataSource(ZmAccount.POP)) {
 			if (folderA.id == ZmFolder.ID_INBOX) return -1;
 			if (folderB.isDataSource(ZmAccount.POP)) {

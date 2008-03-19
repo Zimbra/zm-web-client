@@ -281,7 +281,7 @@ function(attId, draftType, callback) {
 		// if shared folder, make sure we send the email on-behalf-of
 		var folder = msg.folderId ? appCtxt.getById(msg.folderId) : null;
 		// always save draft on the main account *unless* in offline mode
-		var acctName = (isDraft && !appCtxt.get(ZmSetting.OFFLINE))
+		var acctName = (isDraft && !appCtxt.isOffline)
 			? (appCtxt.getMainAccount().name)
 			: ((folder && folder.isRemote()) ? folder.getOwner() : this._accountName);
 		var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
@@ -901,7 +901,7 @@ function(draftType, msg, resp) {
 			this._listController._draftSaved(msg);
 		}
 	}
-	if (appCtxt.get(ZmSetting.OFFLINE)) {
+	if (appCtxt.isOffline) {
 		appCtxt.getAppController().sendSync();
 	}
 };

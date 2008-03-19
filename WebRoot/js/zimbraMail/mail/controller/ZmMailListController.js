@@ -410,7 +410,7 @@ function() {
 ZmMailListController.prototype._standardToolBarOps =
 function() {
 	var list = [ZmOperation.NEW_MENU, ZmOperation.SEP];
-	list.push(appCtxt.get(ZmSetting.OFFLINE) ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL);
+	list.push(appCtxt.isOffline ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL);
 	list = list.concat([ZmOperation.SEP,
 						ZmOperation.DELETE, ZmOperation.MOVE,
 						ZmOperation.PRINT, ZmOperation.SEP]);
@@ -998,7 +998,7 @@ function() {
         folder.sync();
     } else {
 		var hasExternalAccounts = false;
-		if (!appCtxt.get(ZmSetting.OFFLINE)) {
+		if (!appCtxt.isOffline) {
 			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
 			if (folder && !isFeed && isEnabled) {
 				var dataSources = folder.getDataSources(null, true);
@@ -1090,7 +1090,7 @@ function(parent, num) {
 			parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
             parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
             parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.FORWARD], (!isDrafts && num > 0));
-            parent.enable([appCtxt.get(ZmSetting.OFFLINE) ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL, ZmOperation.VIEW_MENU], true);
+            parent.enable([appCtxt.isOffline ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL, ZmOperation.VIEW_MENU], true);
 		}
 	} else {
 		if (folder && folder.isReadOnly() && num > 0) {

@@ -223,7 +223,7 @@ function(params, result) {
 
     // if we didn't get an exception, then we should make sure that the
     // poll timer is running (just in case it got an exception and stopped)
-	if (!appCtxt.get(ZmSetting.OFFLINE) && !isCannedResponse) {
+	if (!appCtxt.isOffline && !isCannedResponse) {
 		this._controller._kickPolling(true);
 		this._clearPendingRequest(params.reqId);
 	}
@@ -287,7 +287,7 @@ function(hdr) {
 		this._highestNotifySeen = 0;
 		// bug: 24269 - offline does not handle refresh block well so ignore it
 		// until we find a better solution
-		if (!appCtxt.get(ZmSetting.OFFLINE) || !appCtxt.multiAccounts) {
+		if (!appCtxt.isOffline || !appCtxt.multiAccounts) {
 			this._refreshHandler(hdr.context.refresh);
 		}
 	}

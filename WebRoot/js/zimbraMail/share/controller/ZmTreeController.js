@@ -136,7 +136,7 @@ function(params) {
 		treeViewCreated = true;
 	}
 	// bug fix #24241 - for offline, zimlet tree is re-used across accounts
-	var realAcct = (this.type == ZmOrganizer.ZIMLET && appCtxt.get(ZmSetting.OFFLINE) && appCtxt.multiAccounts)
+	var realAcct = (this.type == ZmOrganizer.ZIMLET && appCtxt.isOffline && appCtxt.multiAccounts)
 		? appCtxt.getMainAccount(true) : params.account;
 	var dataTree = this.getDataTree(realAcct);
     if (dataTree) {

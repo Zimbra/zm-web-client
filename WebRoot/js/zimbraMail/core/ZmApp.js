@@ -333,7 +333,7 @@ function() {
 		var accordion = this._overviewPanelContent = this._opc.createAccordion({accordionId:accordionId});
 		accordion.addListener(DwtEvent.SELECTION, new AjxListener(this, this._accordionSelectionListener));
 		// for now, we only care to show tooltip for offline client
-		if (appCtxt.get(ZmSetting.OFFLINE)) {
+		if (appCtxt.isOffline) {
 			accordion.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._accordionMouseoverListener));
 		}
 
@@ -549,12 +549,12 @@ function(accordionItem) {
 ZmApp.prototype._handleSetActiveAccount =
 function(accordionItem) {
 	var ac = appCtxt.getAppController();
-	ac._setUserInfo();
+	ac.setUserInfo();
 	this._activateAccordionItem(accordionItem);
 	this._setMiniCalForActiveAccount();
 
 	// reset instant notify every time account changes
-	if (appCtxt.get(ZmSetting.OFFLINE)) {
+	if (appCtxt.isOffline) {
 		var interval = (AjxEnv.isFirefox2_0up && !AjxEnv.isFirefox3up) ? 10000 : 100;
 		AjxTimedAction.scheduleAction(new AjxTimedAction(ac, ac.setInstantNotify, true), interval);
 	}
@@ -787,10 +787,7 @@ function(active) {
 	if (active) {
 		// during startup, if in offline mode and in multi-mbox scenario, set
 		// active the first non-main account
-		if (appCtxt.inStartup &&
-			appCtxt.multiAccounts &&
-			appCtxt.get(ZmSetting.OFFLINE))
-		{
+		if (appCtxt.inStartup && appCtxt.multiAccounts && appCtxt.isOffline) {
 			this._setActiveAcctForOffline();
 		}
 		this.setOverviewPanelContent();

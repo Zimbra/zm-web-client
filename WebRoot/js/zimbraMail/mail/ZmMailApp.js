@@ -896,8 +896,7 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 		if (currList.getById(create.id) || create._wasVirtConv) { continue; }
 
 		// perform stricter checking if we're in offline mode
-		if (appCtxt.get(ZmSetting.OFFLINE) &&
-			!this._checkCreate(create, type, currList, sortBy, cutoff)) { continue; }
+		if (appCtxt.isOffline && !this._checkCreate(create, type, currList, sortBy, cutoff)) { continue; }
 
 		DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + nodeName);
 		var itemClass = eval(ZmList.ITEM_CLASS[type]);
@@ -961,7 +960,7 @@ function(refresh) {
 	}
 
 	if (!appCtxt.inStartup) {
-		var account = (appCtxt.multiAccounts && !appCtxt.get(ZmSetting.OFFLINE))
+		var account = (appCtxt.multiAccounts && !appCtxt.isOffline)
 			? appCtxt.getMainAccount(true) : null;
 		this.resetOverview(this.getOverviewId(account));
 		var req = appCtxt.currentRequestParams;

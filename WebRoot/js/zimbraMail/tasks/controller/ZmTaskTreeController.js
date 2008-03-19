@@ -73,7 +73,7 @@ function() {
 ZmTaskTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_TASK_FOLDER];
-	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+	if (!appCtxt.isOffline) {
 		ops.push(ZmOperation.MOUNT_TASK_FOLDER);
 	}
 	return ops;
@@ -83,7 +83,7 @@ function() {
 ZmTaskTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [];
-	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+	if (!appCtxt.isOffline) {
 		ops.push(ZmOperation.SHARE_TASKFOLDER);
 	}
 	ops.push(ZmOperation.DELETE, ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);

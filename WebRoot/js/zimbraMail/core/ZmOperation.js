@@ -142,7 +142,7 @@ function() {
 	ZmOperation.registerOp("SPELL_CHECK", {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip"});
 	ZmOperation.registerOp("SYNC", {textKey:"reload", image:"Refresh"});
 	ZmOperation.registerOp("SYNC_OFFLINE", {textKey:"checkMail", tooltipKey:"syncTooltip", image:"Refresh"});
-	ZmOperation.registerOp("SYNC_OFFLINE_FOLDER", {textKey:"syncOfflineFolderOff", image:"Refresh"}, ZmSetting.OFFLINE); /* offline only */
+	ZmOperation.registerOp("SYNC_OFFLINE_FOLDER", {textKey:"syncOfflineFolderOff", image:"Refresh"}, appCtxt.isOffline); /* offline only */
 	ZmOperation.registerOp("TAG", null, ZmSetting.TAGGING_ENABLED);
 	ZmOperation.registerOp("TAG_COLOR_MENU", {textKey:"tagColor"}, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {

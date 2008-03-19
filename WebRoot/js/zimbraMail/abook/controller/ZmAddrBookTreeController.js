@@ -132,7 +132,7 @@ function() {
 ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_ADDRBOOK];
-	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+	if (!appCtxt.isOffline) {
 		ops.push(ZmOperation.MOUNT_ADDRBOOK);
 	}
 	ops.push(ZmOperation.EXPAND_ALL);
@@ -144,7 +144,7 @@ function() {
 ZmAddrBookTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [ZmOperation.NEW_ADDRBOOK];
-	if (!appCtxt.get(ZmSetting.OFFLINE)) {
+	if (!appCtxt.isOffline) {
 		ops.push(ZmOperation.SHARE_ADDRBOOK);
 	}
 	ops.push(ZmOperation.DELETE,

@@ -318,7 +318,7 @@ ZmAccountsPage.prototype.isActive = function(){
 ZmAccountsPage.prototype.showMe = function() {
 	var hasRendered = this.hasRendered();
 
-	if (appCtxt.get(ZmSetting.OFFLINE) && !hasRendered) {
+	if (appCtxt.isOffline && !hasRendered) {
 		this.getContentHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#AccountsOffline");
 		return;
 	}

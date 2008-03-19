@@ -603,14 +603,11 @@ function(checkOfflineMode) {
 	for (var id in this._accounts) {
 		var account = this._accounts[id];
 		// if checking for offline mode, return the first non-main account
-		if (checkOfflineMode && appCtxt.get(ZmSetting.OFFLINE) && appCtxt.multiAccounts) {
-			if (!account.isMain)
-				return account;
+		if (checkOfflineMode && appCtxt.isOffline && appCtxt.multiAccounts) {
+			if (!account.isMain) { return account; }
 			continue;
 		}
-		if (account.isMain) {
-			return account;
-		}
+		if (account.isMain) { return account; }
 	}
 	return this._accounts[ZmZimbraAccount.DEFAULT_ID];
 };
@@ -856,7 +853,7 @@ function() {
 		}
 	}
 
-	if (this.get(ZmSetting.OFFLINE) && !this.multiAccounts) {
+	if (this.isOffline && !this.multiAccounts) {
 		this.getAppController().setInstantNotify(true);
 	}
 };
