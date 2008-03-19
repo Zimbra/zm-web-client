@@ -577,6 +577,7 @@ ZmImApp.prototype.startAlert = function() {
 		if (!this._active) {
 			type |= ZmImApp.ALERT_APP_TAB;
 			this._origImage = this._origImage || this._getAppButton().getImage();
+			this._getAppButton().showAlert(true);
 		}
 	}
 	this._alerts |= type;
@@ -588,6 +589,11 @@ ZmImApp.prototype.startAlert = function() {
 ZmImApp.prototype.stopAlert = function(type) {
 	// Reset the state of all the alerts being turned off here.
 	this._updateAlerts(false, type & this._alerts);
+
+	// If turning off app tab alert, take off the alert status.
+	if (type & this._alerts & ZmImApp.ALERT_APP_TAB) {
+		this._getAppButton().showAlert(false);
+	}
 
 	// Update bits and stop loop if all alerts are off.
 	this._alerts = this._alerts & ~type; // Turn off the bit for type.

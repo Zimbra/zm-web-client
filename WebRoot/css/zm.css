@@ -3112,6 +3112,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZFocused	.ZAppTabBorder					{					@AppTabBorder-focused@	}
 .ZActive	.ZAppTabBorder					{					@AppTabBorder-active@	}
 .ZSelected	.ZAppTabBorder					{					@AppTabBorder-selected@	}
+.ZAlert		.ZAppTabBorder					{					@AppTabBorder-alert@	}
 
 			.ZAppTabTable .ZWidgetTitle		{	@AppTabText@ 	@AppTabText-normal@		}
 .ZHover		.ZAppTabTable .ZWidgetTitle		{					@AppTabText-hover@		}
