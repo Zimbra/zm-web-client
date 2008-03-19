@@ -29,10 +29,12 @@ ZmVoicePrefsView = function(parent, controller) {
     this._section = ZmPref.getPrefSectionWithPref(ZmSetting.VOICE_ACCOUNTS);
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), this._section && this._section.title].join(": ");
 	this._ui = [
-		new ZmVoicePageSizeUI(this),
+		this._pageSizeUI = new ZmVoicePageSizeUI(this),
 		new ZmEmailNotificationUI(this),
 		new ZmCallForwardingUI(this)
 	];
+	this._prefPresent = { };
+	this._prefPresent[ZmSetting.VOICE_PAGE_SIZE] = true;
 	this._changes = null;
 };
 
@@ -165,7 +167,6 @@ function() {
 
 ZmVoicePrefsView.prototype._addChange =
 function(ui) {
-	var features;
 	if (!this._changes) {
 		this._changes = {};
 	}
@@ -184,7 +185,6 @@ function() {
 
 ZmVoicePrefsView.prototype.showItem =
 function(phone) {
-//Retarded: saving a reference to the phone here, even though the parent class has it (as _item).
 	this._phone = phone;
 	phone.getCallFeatures(this._handleResponseGetFeaturesObj, this._handleErrorGetFeaturesObj);
 };
@@ -241,6 +241,14 @@ function(batchCommand) {
 ZmVoicePrefsView.prototype._handleResponse =
 function() {
 	this._changes = null;
+};
+
+ZmVoicePrefsView.prototype.getFormValue =
+function(id, setup, control) {
+	if (id == ZmSetting.VOICE_PAGE_SIZE) {
+		return this._pageSizeUI._getSelectedValue();
+	}
+	return null;
 };
 
 ZmVoicePrefsView.prototype._containsMyCard =
