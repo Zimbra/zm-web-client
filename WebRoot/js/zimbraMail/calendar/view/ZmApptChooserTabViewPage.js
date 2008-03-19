@@ -819,8 +819,7 @@ function(ev, div) {
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var hdr = this.getItemFromElement(div);
 		if (hdr) {
-			var field = DwtListHeaderItem.getHeaderField(hdr._id);
-			if (field == ZmItem.F_NOTES) {
+			if (hdr._field == ZmItem.F_NOTES) {
 				this.setToolTipContent(ZmMsg.notes);
 			}
 		}

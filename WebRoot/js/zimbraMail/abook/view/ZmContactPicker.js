@@ -322,7 +322,7 @@ function() {
 	// find the participant column
 	var part = 0;
 	for (var i = 0; i < slv._headerList.length; i++) {
-		if (DwtListHeaderItem.getHeaderField(slv._headerList[i]._id) == ZmItem.F_NAME) {
+		if (slv._headerList[i]._field == ZmItem.F_NAME) {
 			part = i;
 			break;
 		}
