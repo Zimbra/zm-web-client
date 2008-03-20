@@ -168,7 +168,7 @@ function() {
 	var msg = this._composeView._msg;
 	var addrs = this._composeView.getRawAddrFields();
 	var subj = this._composeView._subjectField.value;
-	var forAttHtml = this._composeView.getForwardLinkHtml();
+	var forAttHtml = this._composeView._attcDiv.innerHTML;
 	var body = this._getBodyContent();
 	var composeMode = this._composeView.getComposeMode();
 	var identityId = this._composeView.getIdentity().id;

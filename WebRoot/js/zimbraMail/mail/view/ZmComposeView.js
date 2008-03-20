@@ -201,11 +201,6 @@ function() {
 	return this._controller;
 };
 
-ZmComposeView.prototype.getForwardLinkHtml =
-function() {
-	return this._attcDiv.innerHTML;
-};
-
 ZmComposeView.prototype.getHtmlEditor =
 function() {
 	return this._htmlEditor;
@@ -312,27 +307,6 @@ function() {
 	return false;
 };
 
-/*
-ZmComposeView.prototype._fixMultipartRelatedLinks =
-function(idoc) {
-	if (!idoc) { return; }
-
-	var images = idoc.getElementsByTagName("img");
-	var inlineCid = [];
-	for (var i = 0; i < images.length; i++) {
-		var dfsrc = images[i].getAttribute("dfsrc");
-		if (dfsrc) {
-			images[i].src = dfsrc;
-			//XXX: WHAT!?!
-			if(dfsrc.substring(0,4 == "cid:")){
-				inlineCid.push(dfsrc.substring(4));
-			}
-		}
-	}
-	return inlineCid;
-};
-*/
-
 ZmComposeView.prototype._filterInlineAmongForwardAttIds =
 function(msg, atts, forwardAttIds) {
 	var fwdAttIds = [];
@@ -376,7 +350,7 @@ function(attId, isDraft) {
 	    return;
 	}
 
-	var cd = this._confirmDialog = appCtxt.getOkCancelMsgDialog();
+	var cd = appCtxt.getOkCancelMsgDialog();
 	cd.reset();
 
 	// Is there a subject? If not, ask the user if they want to send anyway.
@@ -384,8 +358,8 @@ function(attId, isDraft) {
 	if (!isDraft && subject.length == 0 && !this._noSubjectOkay) {
 		this.enableInputs(false);
     	cd.setMessage(ZmMsg.compSubjectMissing, DwtMessageDialog.WARNING_STYLE);
-		cd.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this);
-		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this);
+		cd.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this, cd);
+		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this, cd);
 	    cd.popup(this._getDialogXY());
 		return;
 	}
@@ -396,8 +370,8 @@ function(attId, isDraft) {
 	    var bad = AjxStringUtil.htmlEncode(addrs[ZmComposeView.BAD].toString(AjxEmailAddress.SEPARATOR));
 	    var msg = AjxMessageFormat.format(ZmMsg.compBadAddresses, bad);
     	cd.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
-		cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this);
-		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, addrs.badType);
+		cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this, cd);
+		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, [addrs.badType, cd]);
 		cd.setVisible(true); // per fix for bug 3209
 		cd.popup(this._getDialogXY());
 		return;
@@ -409,27 +383,22 @@ function(attId, isDraft) {
 	var msg = new ZmMailMsg();
 	msg.setSubject(subject);
 	
-	//Handle Inline Attachments
+	// handle Inline Attachments
 	var inline = this._isInline();
-	
-	//Removed as I have added relavent code in ZmMailMsg._creatMsgNode()
-	/*if(this._msg && inline){
-		msg.setInlineAttachments(this._msg.getInlineAttachments());
-	}*/
 	
 	if (this._attachDialog && inline && attId) {
 		for (var i = 0; i < attId.length; i++) {
 			var att = attId[i];
 			var contentType = att.ct;
 			if (contentType && contentType.indexOf("image") != -1) {
-				var cid = Dwt.getNextId(); //Change this to more uniqueId
-				msg.addInlineAttachmentId(cid,att.aid);
-				this._htmlEditor.insertImage("cid:"+cid);
+				var cid = Dwt.getNextId();
+				msg.addInlineAttachmentId(cid, att.aid);
+				this._htmlEditor.insertImage("cid:" + cid);
 			} else {
 				msg.addAttachmentId(att.aid);
 			}
 		}
-	} else if(attId && typeof attId != "string") {
+	} else if (attId && typeof attId != "string") {
 		for (var i = 0; i < attId.length; i++) {
 			msg.addAttachmentId(attId[i].aid);
 		}
@@ -761,12 +730,11 @@ function(msg, idoc) {
 
 ZmComposeView.prototype.showAttachmentDialog =
 function() {
-	var attachDialog = appCtxt.getAttachDialog();
+	var attachDialog = this._attachDialog = appCtxt.getAttachDialog();
 	var callback = new AjxCallback(this, this._attsDoneCallback, [true]);
 	attachDialog.setUploadCallback(callback);
-    attachDialog.popup();
-    attachDialog.enableInlineOption(this._composeMode == DwtHtmlEditor.HTML);
-	this._attachDialog = attachDialog;
+	attachDialog.popup();
+	attachDialog.enableInlineOption(this._composeMode == DwtHtmlEditor.HTML);
 };
 
 /**
@@ -1768,11 +1736,14 @@ ZmComposeView.prototype._showForwardField =
 function(msg, action, replyPref) {
 	
 	var html = "";
-	if (!(this._msgIds && this._msgIds.length) && (replyPref == ZmSetting.INCLUDE_ATTACH ||action == ZmOperation.FORWARD_ATT)) {
-		var data = { message: msg };
-		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", data);
+	if (!(this._msgIds && this._msgIds.length) &&
+		(replyPref == ZmSetting.INCLUDE_ATTACH || action == ZmOperation.FORWARD_ATT))
+	{
+		html = AjxTemplate.expand("mail.Message#ForwardOneMessage", {message:msg});
 		this._attachCount = 1;
-	}else if (msg && msg.hasAttach) {
+	}
+	else if (msg && msg.hasAttach)
+	{
 		var attLinks = msg.getAttachmentLinks();
 		if (attLinks.length > 0) {
 			var data = {
@@ -1790,7 +1761,7 @@ function(msg, action, replyPref) {
 			}
 			this._attachCount = attLinks.length;
 		}
-	}else if (this._msgIds && this._msgIds.length) {
+	} else if (this._msgIds && this._msgIds.length) {
 		// use main window's appCtxt
 		var appCtxt = window.parentAppCtxt || window.appCtxt;
 		var messages = [];
@@ -1983,7 +1954,7 @@ function() {
 
 // User has agreed to send message without a subject
 ZmComposeView.prototype._noSubjectOkCallback =
-function() {
+function(dialog) {
 	this._noSubjectOkay = true;
 	// not sure why: popdown (in FF) seems to create a race condition,
 	// we can't get the attachments from the document anymore.
@@ -1991,12 +1962,12 @@ function() {
 	// alerts, and gotAttachments will return false after the popdown call.
 
  	if (AjxEnv.isIE) {
-		this._confirmDialog.popdown();
+		dialog.popdown();
  	}
 	// bug fix# 3209
 	// - hide the dialog instead of popdown (since window will go away anyway)
 	if (AjxEnv.isNav && appCtxt.isChildWindow) {
-		this._confirmDialog.setVisible(false);
+		dialog.setVisible(false);
 	}
 
 	// dont make any calls after sendMsg if child window since window gets destroyed
@@ -2004,16 +1975,16 @@ function() {
 		this._controller.sendMsg();
 	} else {
 		// bug fix #3251 - call popdown BEFORE sendMsg
-		this._confirmDialog.popdown();
+		dialog.popdown();
 		this._controller.sendMsg();
 	}
 };
 
 // User has canceled sending message without a subject
 ZmComposeView.prototype._noSubjectCancelCallback =
-function() {
+function(dialog) {
 	this.enableInputs(true);
-	this._confirmDialog.popdown();
+	dialog.popdown();
 	appCtxt.getKeyboardMgr().grabFocus(this._subjectField);
 	this._controller.resetToolbarOperations();
 	this.reEnableDesignMode();
@@ -2021,19 +1992,19 @@ function() {
 
 // User has agreed to send message with bad addresses
 ZmComposeView.prototype._badAddrsOkCallback =
-function() {
+function(dialog) {
 	this.enableInputs(true);
 	this._badAddrsOkay = true;
-	this._confirmDialog.popdown();
+	dialog.popdown();
 	this._controller.sendMsg();
 };
 
 // User has declined to send message with bad addresses - set focus to bad field
 ZmComposeView.prototype._badAddrsCancelCallback =
-function(type) {
+function(type, dialog) {
 	this.enableInputs(true);
 	this._badAddrsOkay = false;
-	this._confirmDialog.popdown();
+	dialog.popdown();
 	if (this._using[type]) {
 		appCtxt.getKeyboardMgr().grabFocus(this._field[type]);
 	}
@@ -2045,7 +2016,6 @@ function(type) {
 ZmComposeView.prototype._attsDoneCallback =
 function(isDraft, status, attId) {
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
-	DBG.dumpObj(AjxDebug.DBG1,attId);
 	if (status == AjxPost.SC_OK) {
 		this._controller._saveDraft(ZmComposeController.DRAFT_TYPE_AUTO, attId);
 	} else if (status == AjxPost.SC_UNAUTHORIZED) {

@@ -452,13 +452,11 @@ function(ids) {
 	this._forAttIds = ids;
 };
 
-ZmMailMsg.prototype._setFilteredForwardAttIds = function(filteredFwdAttIds){
-	
-	this._onChange("filteredForwardAttIds",filteredFwdAttIds);
+ZmMailMsg.prototype._setFilteredForwardAttIds =
+function (filteredFwdAttIds) {
+	this._onChange("filteredForwardAttIds", filteredFwdAttIds);
 	this._filteredFwdAttIds = filteredFwdAttIds;
-	
 };
-
 
 // Actions
 
@@ -812,24 +810,24 @@ function(soapDoc, contactList, isDraft, accountName) {
 			
 			//If each part again has subparts, add them as children
 			var numSubSubParts = part.children ? part.children.size():0;
-			if(numSubSubParts > 0){
-				for(var j=0;j<numSubSubParts; j++){
+			if (numSubSubParts > 0) {
+				for (var j=0;j<numSubSubParts; j++) {
 					var subPart = part.children.get(j);
 					var subPartNode = soapDoc.set("mp",null,partNode);
 					subPartNode.setAttribute("ct",subPart.getContentType());
 					soapDoc.set("content",subPart.getContent(),subPartNode);
 				}
 				//Handle Related SubPart , a specific condition
-				if(part.getContentType() == ZmMimeTable.MULTI_RELATED){
+				if (part.getContentType() == ZmMimeTable.MULTI_RELATED) {
 					//Handle Inline Attachments
 					var inlineAtts = this.getInlineAttachments() || [];
-					for(j=0;j<inlineAtts.length;j++){
+					for (j = 0; j < inlineAtts.length; j++) {
 						var inlineAttNode = soapDoc.set("mp",null,partNode);
 						inlineAttNode.setAttribute("ci",inlineAtts[j].cid);
 						var attachNode = soapDoc.set("attach", null, inlineAttNode);
-						if(inlineAtts[j].aid){
+						if (inlineAtts[j].aid) {
 							attachNode.setAttribute("aid", inlineAtts[j].aid);
-						}else{
+						} else {
 							var attachPartNode = soapDoc.set("mp",null,attachNode);
 							var id = (isDraft || this.isDraft) ? (this.id || this.origId) : (this.origId || this.id);
 							attachPartNode.setAttribute("mid", id);
@@ -837,7 +835,7 @@ function(soapDoc, contactList, isDraft, accountName) {
 						}
 					}
 				}
-			}else{
+			} else {
 				soapDoc.set("content", part.getContent(), partNode);
 			}
 			//soapDoc.set("content", part.getContent(), partNode);
@@ -846,8 +844,9 @@ function(soapDoc, contactList, isDraft, accountName) {
 		soapDoc.set("content", this._topPart.getContent(), topNode);
 	}
 
-	if (this.irtMessageId)
+	if (this.irtMessageId) {
 		soapDoc.set("irt", this.irtMessageId, msgNode);
+	}
 
 	if (this.attId ||
 		(this._msgAttIds && this._msgAttIds.length) ||
