@@ -517,7 +517,7 @@ and the container element is replaced with that control.
 			</td>
 		</tr>
 
-		<tr><td colspan=5><hr></td></tr>
+		<tr><td colspan=6><hr></td></tr>
 	</table>
 </template>
 
