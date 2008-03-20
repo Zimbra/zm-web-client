@@ -33,6 +33,7 @@ AjxPackage.require("ajax.dwt.keyboard.DwtTabGroup");
 
 AjxPackage.require("ajax.dwt.dnd.DwtDropEvent");
 AjxPackage.require("ajax.dwt.dnd.DwtDropTarget");
+AjxPackage.require("ajax.dwt.events.DwtDisposeEvent");
 
 AjxPackage.require("zimbra.csfe.ZmBatchCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
