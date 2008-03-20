@@ -1107,8 +1107,11 @@ function(findHits) {
 						].join("");
 				}
 
-				if( (attach.name || attach.filename) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) ){
-					var onclickStr1 = "ZmMailMsgView.briefcaseCallback(" + this.id + ",\"" + attach.part + "\",\""+props.label+"\");";
+                var folder = appCtxt.getById(this.folderId);
+                if( (attach.name || attach.filename) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) && (folder && !folder.isRemote())){
+                    var partLabel = props.label;
+                    partLabel = partLabel.replace(/'/g,"\\'");
+                    var onclickStr1 = "ZmMailMsgView.briefcaseCallback(\"" + this.id + "\",\"" + attach.part + "\",\""+partLabel+"\");";
 					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
 				}
 
