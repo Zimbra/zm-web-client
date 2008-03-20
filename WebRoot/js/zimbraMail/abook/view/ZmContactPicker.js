@@ -169,11 +169,8 @@ function() {
 
 ZmContactPicker.prototype._contentHtml =
 function() {
-	var showSelect = false;
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		if (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
-			showSelect = true;
-	}
+	var showSelect = (appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+					  (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED)));
 	var subs = {
 		id: this._htmlElId,
 		showSelect: showSelect
@@ -214,12 +211,14 @@ function() {
 		}
 
 		this._selectDiv.reparentHtmlElement(selectCellId);
+	} else {
+		this.setSize("600");
 	}
 
 	// add chooser
 	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
 	this._chooser.reparentHtmlElement(this._htmlElId + "_chooser");
-	this._chooser.resize(this.getSize().x, ZmContactPicker.CHOOSER_HEIGHT);
+	this._chooser.resize(this.getSize().x-25, ZmContactPicker.CHOOSER_HEIGHT);
 
 	// add paging buttons
 	var pageListener = new AjxListener(this, this._pageListener);
