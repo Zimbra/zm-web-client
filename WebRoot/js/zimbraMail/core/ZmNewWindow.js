@@ -280,9 +280,10 @@ function(params) {
 * Set status messages via the main controller, so they show up in the client's status area.
 */
 ZmNewWindow.prototype.setStatusMsg =
-function(msg, level, detail, delay, transition) {
+function(params) {
 	if (window.parentController) {
-		window.parentController.setStatusMsg(msg, level, detail, delay, transition);
+                params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+		window.parentController.setStatusMsg(params);
 	}
 };
 
