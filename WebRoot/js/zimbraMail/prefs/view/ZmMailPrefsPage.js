@@ -45,31 +45,32 @@ ZmMailPrefsPage.prototype._createControls = function() {
     this._startDateField 	= document.getElementById(this._htmlElId + "_VACATION_FROM1");
     this._endDateField 		= document.getElementById(this._htmlElId + "_VACATION_UNTIL1");
 
-    this._startDateVal 	= document.getElementById(this._htmlElId + "_VACATION_FROM");
-    this._endDateVal 		= document.getElementById(this._htmlElId + "_VACATION_UNTIL");
+    if(this._startDateField && this._endDateField){
+        this._startDateVal 	= document.getElementById(this._htmlElId + "_VACATION_FROM");
+        this._endDateVal 		= document.getElementById(this._htmlElId + "_VACATION_UNTIL");
 
-    this._formatter = new AjxDateFormat("yyyyMMddHHmmss'Z'");
+        this._formatter = new AjxDateFormat("yyyyMMddHHmmss'Z'");
 
-    if(this._startDateVal.value != null && this._startDateVal.value != ""){
-        this._startDateField.value = AjxDateUtil.simpleComputeDateStr(this._formatter.parse(this._startDateVal.value));
-    }else{
-        this._startDateField.value =  AjxDateUtil.simpleComputeDateStr(new Date());
+        if(this._startDateVal.value != null && this._startDateVal.value != ""){
+            this._startDateField.value = AjxDateUtil.simpleComputeDateStr(this._formatter.parse(this._startDateVal.value));
+        }else{
+            this._startDateField.value =  AjxDateUtil.simpleComputeDateStr(new Date());
+        }
+        if(this._endDateVal.value != null && this._endDateVal.value != ""){
+            this._endDateField.value = AjxDateUtil.simpleComputeDateStr(this._formatter.parse(this._endDateVal.value));
+        }else{
+            this._endDateField.value =  AjxDateUtil.simpleComputeDateStr(AjxDateUtil.getDateForNextDay(new Date(),AjxDateUtil.FRIDAY));
+        }
+
+        var dateButtonListener = new AjxListener(this, this._dateButtonListener);
+        var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
+
+        this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._sId, dateButtonListener, dateCalSelectionListener);
+        this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._eId, dateButtonListener, dateCalSelectionListener);
+
+        this._startDateCheckbox = this.getFormObject(ZmSetting.START_DATE_ENABLED);
+        this._endDateCheckbox = this.getFormObject(ZmSetting.END_DATE_ENABLED);    
     }
-    if(this._endDateVal.value != null && this._endDateVal.value != ""){
-        this._endDateField.value = AjxDateUtil.simpleComputeDateStr(this._formatter.parse(this._endDateVal.value));
-    }else{
-        this._endDateField.value =  AjxDateUtil.simpleComputeDateStr(AjxDateUtil.getDateForNextDay(new Date(),AjxDateUtil.FRIDAY));
-    }
-
-    var dateButtonListener = new AjxListener(this, this._dateButtonListener);
-    var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
-
-    this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._sId, dateButtonListener, dateCalSelectionListener);
-    this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._eId, dateButtonListener, dateCalSelectionListener);
-
-    this._startDateCheckbox = this.getFormObject(ZmSetting.START_DATE_ENABLED);
-    this._endDateCheckbox = this.getFormObject(ZmSetting.END_DATE_ENABLED);    
-
 
     var cbox = this.getFormObject(ZmSetting.VACATION_MSG_ENABLED);
 	if(cbox && cbox.isSelected()){
