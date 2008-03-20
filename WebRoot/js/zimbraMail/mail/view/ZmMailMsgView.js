@@ -172,7 +172,7 @@ function(msg) {
 		? new Date(msg.sentDate)
 		: new Date(msg.date);
 
-	var invite = msg.getInvite();
+	var invite = msg.invite;
 
 	if ((appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
 		invite && invite.type != "task" &&
@@ -571,7 +571,7 @@ ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
 
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
-	var attachments = this._msg.getAttachments();
+	var attachments = this._msg.attachments;
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
 	for (var i = 0; i < attachments.length; i++) {
@@ -1517,7 +1517,7 @@ function(msg, preferHtml, callback) {
 	}
 
 	// bug fix# 3928
-	var attachments = msg.getAttachments();
+	var attachments = msg.attachments;
 	for (var i = 0; i < attachments.length; i++) {
 		var attach = attachments[i];
 		if (!msg.isRealAttachment(attach))
@@ -1664,6 +1664,8 @@ function(self, iframe, attempt) {
 
 		var doc = iframe.contentWindow.document;
 
+		var origHeight = AjxEnv.isIE ? doc.body.scrollHeight : 0;
+
 		// first off, make it wide enough to fill ZmMailMsgView.
 		iframe.style.width = "100%"; // *** changes height!
 
@@ -1694,7 +1696,7 @@ function(self, iframe, attempt) {
 		}
 
 		// we are finally in the right position to determine height.
-		h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+		h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight, origHeight);
 
 		iframe.style.height = h + "px";
 	}
