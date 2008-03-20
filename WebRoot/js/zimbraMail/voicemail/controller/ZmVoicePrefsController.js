@@ -53,14 +53,12 @@ function() {
 
 ZmVoicePrefsController.prototype._setup =
 function() {
-	// Fill in the list view.
 	var listControl = this._listView.getList();
 	listControl.addSelectionListener(new AjxListener(this, this._listSelectionListener));
-	listControl.set(this._getListData());
-
-	var list = listControl.getList();
-	if (list.size()) {
-		listControl.setSelection(list.get(0));
+	var listData = this._getListData();
+	listControl.set(listData);
+	if (listData.size()) {
+		listControl.setSelection(listData.get(0));
 	}
 };
 

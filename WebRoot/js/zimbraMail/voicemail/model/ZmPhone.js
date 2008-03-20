@@ -90,6 +90,7 @@ function() {
 ZmPhone.prototype._loadFromDom = 
 function(node) {
 	this.name =  node.name;
+	this.id = node.name; // March '08: id only used in list view in voice prefs.
 	if (node.used && node.used.length) this.used =  node.used[0]._content;
 	if (this.limit && this.limit.length) this.limit = node.limit[0]._content;
 	this._initializeFeatures();

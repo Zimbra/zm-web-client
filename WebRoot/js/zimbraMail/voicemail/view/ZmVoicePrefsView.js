@@ -29,18 +29,16 @@ ZmVoicePrefsView = function(parent, controller) {
     this._section = ZmPref.getPrefSectionWithPref(ZmSetting.VOICE_ACCOUNTS);
 	this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), this._section && this._section.title].join(": ");
 	this._ui = [
-		this._pageSizeUI = new ZmVoicePageSizeUI(this),
+		new ZmVoicePageSizeUI(this),
 		new ZmEmailNotificationUI(this),
 		new ZmCallForwardingUI(this)
 	];
-	this._prefPresent = { };
-	this._prefPresent[ZmSetting.VOICE_PAGE_SIZE] = true;
 	this._changes = null;
 };
 
 ZmVoicePrefsView.prototype = new DwtTabViewPage;
 ZmVoicePrefsView.prototype.constructor = ZmVoicePrefsView;
- 
+
 ZmVoicePrefsView.prototype.toString =
 function() {
 	return "ZmVoicePrefsView";
@@ -71,7 +69,7 @@ function() {
 	}
 	var errors = [];
 	for(var i = 0, count = this._ui.length; i < count; i++) {
-		var ui = this._ui[i]; 
+		var ui = this._ui[i];
 		if (!ui._checkbox || ui._checkbox.isSelected()) {
 			ui.validate(errors);
 		}
@@ -171,7 +169,7 @@ function(ui) {
 		this._changes = {};
 	}
 	if (!this._changes[this._phone.name]) {
-		this._changes[this._phone.name] = { phone: this._phone, features: {} }; 
+		this._changes[this._phone.name] = { phone: this._phone, features: {} };
 	}
 	var feature = ui.getFeature();
 	this._changes[this._phone.name].features[feature.name] = feature;
@@ -191,12 +189,12 @@ function(phone) {
 
 ZmVoicePrefsView.prototype._handleResponseGetFeatures =
 function(features, phone) {
-	var changedFeatures = (this._changes && this._changes[phone.name]) ? this._changes[phone.name].features : null; 
+	var changedFeatures = (this._changes && this._changes[phone.name]) ? this._changes[phone.name].features : null;
 	for(var i = 0, count = this._ui.length; i < count; i++) {
 		var featureName = this._ui[i].getName();
 		var feature;
 		if (changedFeatures && changedFeatures[featureName]) {
-			feature = changedFeatures[featureName]; 
+			feature = changedFeatures[featureName];
 		} else {
 			feature = features[featureName];
 		}
@@ -240,15 +238,18 @@ function(batchCommand) {
 
 ZmVoicePrefsView.prototype._handleResponse =
 function() {
-	this._changes = null;
-};
-
-ZmVoicePrefsView.prototype.getFormValue =
-function(id, setup, control) {
-	if (id == ZmSetting.VOICE_PAGE_SIZE) {
-		return this._pageSizeUI._getSelectedValue();
+	var redoSearch;
+	for (var phone in this._changes) {
+		var changeObj = this._changes[phone];
+		if (changeObj.features && changeObj.features[ZmCallFeature.NUMBER_PER_PAGE]) {
+			redoSearch = true;
+			break;
+		}
 	}
-	return null;
+	this._changes = null;
+	if (redoSearch) {
+		appCtxt.getApp(ZmApp.VOICE).redoSearch();
+	}
 };
 
 ZmVoicePrefsView.prototype._containsMyCard =

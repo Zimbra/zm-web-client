@@ -28,8 +28,6 @@ ZmVoiceApp = function(container, parentController) {
 
 	this._storePrinciple = null;
 	ZmApp.call(this, ZmApp.VOICE, container, parentController);
-
-	appCtxt.getSettings().addChangeListener(new AjxListener(this, this._settingsChangeListener));
 }
 
 // Organizer and item-related constants
@@ -158,7 +156,7 @@ ZmVoiceApp.prototype._registerPrefs = function() {
             priority: 40,
             precondition: ZmSetting.VOICE_ENABLED,
             prefs: [
-                ZmSetting.VOICE_ACCOUNTS, ZmSetting.VOICE_PAGE_SIZE 
+                ZmSetting.VOICE_ACCOUNTS 
             ],
             manageDirty: true,
             createView: function(parent, section, controller) {
@@ -169,7 +167,6 @@ ZmVoiceApp.prototype._registerPrefs = function() {
     for (var id in sections) {
         ZmPref.registerPrefSection(id, sections[id]);
     }
-	ZmPref.registerPref("VOICE_PAGE_SIZE", { });
 };
 
 ZmVoiceApp.prototype._registerSettings =
@@ -575,21 +572,5 @@ function(creates) {
 
 ZmVoiceApp.prototype._handleModifies =
 function(list) {
-};
-
-ZmVoiceApp.prototype._settingsChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_SETTINGS) { return; }
-
-	var list = ev.getDetail("settings");
-	if (!(list && list.length)) { return; }
-
-	for (var i = 0; i < list.length; i++) {
-		var setting = list[i];
-		if (setting.id == ZmSetting.VOICE_PAGE_SIZE) {
-			this.redoSearch();
-			continue;
-		}
-	}
 };
 
