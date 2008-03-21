@@ -2247,6 +2247,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	height: auto;
 }
 
+.ZOptionsOfflineAccts {
+	font-size: 14px;
+	text-align: center;
+}
+
 .ZmFilterRulesView .DwtListView-Rows {
 	/*overflow: visible;*/
 	height: auto;

@@ -30,7 +30,8 @@ ZmAccountsPage = function(parent, section, controller) {
 ZmAccountsPage.prototype = new ZmPreferencesPage;
 ZmAccountsPage.prototype.constructor = ZmAccountsPage;
 
-ZmAccountsPage.prototype.toString = function() {
+ZmAccountsPage.prototype.toString =
+function() {
 	return "ZmAccountsPage";
 };
 
@@ -50,7 +51,8 @@ ZmAccountsPage.__externalCount = 0;
 
 // section prefs
 
-ZmAccountsPage._definePrefs = function() {
+ZmAccountsPage._definePrefs =
+function() {
 	ZmAccountsPage.PREFS = {
 		// Primary / Common
 		ALERT: {
@@ -253,7 +255,8 @@ ZmAccountsPage.IDENTITY_PROPS = {
 // Public methods
 //
 
-ZmAccountsPage.prototype.setAccount = function(account) {
+ZmAccountsPage.prototype.setAccount =
+function(account) {
 	// keep track of changes made to current account
 	if (this._currentAccount) {
 		this._setAccountFields(this._currentAccount, this._currentSection);
@@ -301,7 +304,7 @@ ZmAccountsPage.prototype.setAccount = function(account) {
 		this._tabGroup.addMember(this._currentSection.tabGroup);
 	}
 
-	var isExternal = account instanceof ZmDataSource;
+	var isExternal = (account instanceof ZmDataSource);
 	var control = this._currentSection && this._currentSection.controls[isExternal ? "EMAIL" : "NAME"];
     //When a hidden field is applied focus(), IE throw's an exception. Thus checking for isActive()
     if (control && this.isActive()) {
@@ -309,27 +312,26 @@ ZmAccountsPage.prototype.setAccount = function(account) {
 	}
 };
 
-ZmAccountsPage.prototype.isActive = function(){
-    return  (this._controller.getTabView().getActiveView().toString() == this.toString()) 
+ZmAccountsPage.prototype.isActive =
+function() {
+    return (this._controller.getTabView().getActiveView().toString() == this.toString());
 };
 
 // ZmPreferencesPage methods
 
-ZmAccountsPage.prototype.showMe = function() {
-	var hasRendered = this.hasRendered();
-
-	if (appCtxt.isOffline && !hasRendered) {
-		this.getContentHtmlElement().innerHTML = AjxTemplate.expand("prefs.Pages#AccountsOffline");
-		return;
-	}
+ZmAccountsPage.prototype.showMe =
+function() {
+	var hasRendered = this.hasRendered(); // cache before calling base
 
 	ZmPreferencesPage.prototype.showMe.apply(this, arguments);
+
 	if (!hasRendered) {
 		this.reset();
 	}
 };
 
-ZmAccountsPage.prototype.reset = function(useDefaults) {
+ZmAccountsPage.prototype.reset =
+function(useDefaults) {
 	ZmPreferencesPage.prototype.reset.apply(this, arguments);
 
 	// clear current list of accounts
@@ -348,13 +350,16 @@ ZmAccountsPage.prototype.reset = function(useDefaults) {
 		}
 	}
 
-	// add various other account types
-	var dataSourceCollection = appCtxt.getDataSourceCollection();
-	var dataSources = dataSourceCollection.getItems(); // TODO: rename getItems or rename getIdentities/getSignatures
-	for (var i = 0; i < dataSources.length; i++) {
-		this._accounts.add(ZmAccountsPage.__createProxy(dataSources[i]));
+	// add data sources unless we're in offline mode
+	if (!appCtxt.isOffline) {
+		var dataSourceCollection = appCtxt.getDataSourceCollection();
+		var dataSources = dataSourceCollection.getItems(); // TODO: rename getItems or rename getIdentities/getSignatures
+		for (var i = 0; i < dataSources.length; i++) {
+			this._accounts.add(ZmAccountsPage.__createProxy(dataSources[i]));
+		}
 	}
 
+	// add identities/personas
 	var identityCollection = appCtxt.getIdentityCollection();
 	var identities = identityCollection.getIdentities();
 	for (var i = 0; i < identities.length; i++) {
@@ -374,7 +379,8 @@ ZmAccountsPage.prototype.reset = function(useDefaults) {
 
 // saving
 
-ZmAccountsPage.prototype.isDirty = function() {
+ZmAccountsPage.prototype.isDirty =
+function() {
 	// make sure that the current object proxy is up-to-date
 	this._setAccountFields(this._currentAccount, this._currentSection);
 
@@ -413,15 +419,18 @@ function() {
 	return true;
 };
 
-ZmAccountsPage.prototype.getErrorMessage = function() {
+ZmAccountsPage.prototype.getErrorMessage =
+function() {
 	return this._errorMsg;
 };
 
-ZmAccountsPage.prototype.getPreSaveCallback = function() {
+ZmAccountsPage.prototype.getPreSaveCallback =
+function() {
     return new AjxCallback(this, this._preSave);
 };
 
-ZmAccountsPage.prototype.addCommand = function(batchCmd) {
+ZmAccountsPage.prototype.addCommand =
+function(batchCmd) {
 	// make sure that the current object proxy is up-to-date
 	this._setAccountFields(this._currentAccount, this._currentSection);
 
@@ -468,16 +477,18 @@ ZmAccountsPage.prototype.addCommand = function(batchCmd) {
 // Protected methods
 //
 
-ZmAccountsPage.prototype._testAccounts = function(accounts, okCallback, cancelCallback) {
+ZmAccountsPage.prototype._testAccounts =
+function(accounts, okCallback, cancelCallback) {
 	var dialog = this._controller.getTestDialog();
 	dialog.popup(accounts, okCallback, cancelCallback);
 };
 
 // set controls based on account
 
-ZmAccountsPage.prototype._setZimbraAccount = function(account, section) {
+ZmAccountsPage.prototype._setZimbraAccount =
+function(account, section) {
 	this._setGenericFields(account, section);
-	if (account.isMain) {
+	if (account.isMain || appCtxt.isOffline) {
 		this._enableZimbraAccountFields(account, section, true);
 		this._setIdentityFields(account, section);
 	} else {
@@ -485,7 +496,8 @@ ZmAccountsPage.prototype._setZimbraAccount = function(account, section) {
 	}
 };
 
-ZmAccountsPage.prototype._setExternalAccount = function(account, section) {
+ZmAccountsPage.prototype._setExternalAccount =
+function(account, section) {
 	this._setGenericFields(account, section);
 	this._setDataSourceFields(account, section);
 	this._setIdentityFields(account, section);
@@ -497,19 +509,22 @@ ZmAccountsPage.prototype._setExternalAccount = function(account, section) {
 	}
 };
 
-ZmAccountsPage.prototype._setPersona = function(account, section) {
+ZmAccountsPage.prototype._setPersona =
+function(account, section) {
 	this._setGenericFields(account, section);
 	this._setIdentityFields(account, section);
 };
 
-ZmAccountsPage.prototype._setGenericFields = function(account, section) {
+ZmAccountsPage.prototype._setGenericFields =
+function(account, section) {
 	this._setControlValue("NAME", section, account.getName());
 	this._setControlValue("HEADER", section, account.getName());
 	this._setControlValue("EMAIL", section, account.getEmail());
 	this._setControlValue("VISIBLE", section, account.visible);
 };
 
-ZmAccountsPage.prototype._setDataSourceFields = function(account, section) {
+ZmAccountsPage.prototype._setDataSourceFields =
+function(account, section) {
 	var isSsl = account.connectionType == ZmDataSource.CONNECT_SSL;
 	var isInbox = account.folderId == ZmOrganizer.ID_INBOX;
 	var isPortChanged = account.port != account.getDefaultPort();
@@ -529,7 +544,8 @@ ZmAccountsPage.prototype._setDataSourceFields = function(account, section) {
 	this._setPortControls(account.type, account.connectionType, account.port);
 };
 
-ZmAccountsPage.prototype._setDownloadToFolder = function() {
+ZmAccountsPage.prototype._setDownloadToFolder =
+function() {
 	var section = this._currentSection;
 	var radioGroup = section.controls["DOWNLOAD_TO"];
 	if (!radioGroup) return;
@@ -544,7 +560,8 @@ ZmAccountsPage.prototype._setDownloadToFolder = function() {
 	radioButton.setText(text);
 };
 
-ZmAccountsPage.prototype._setPortControls = function(accountType, connectionType, accountPort) {
+ZmAccountsPage.prototype._setPortControls =
+function(accountType, connectionType, accountPort) {
 	var isPop = accountType == ZmAccount.POP;
 	var isSsl = connectionType == ZmDataSource.CONNECT_SSL;
 
@@ -569,7 +586,8 @@ ZmAccountsPage.prototype._setPortControls = function(accountType, connectionType
 	this._setControlLabel("PORT_DEFAULT", section, defaultPortLabel);
 };
 
-ZmAccountsPage.prototype._setIdentityFields = function(account, section) {
+ZmAccountsPage.prototype._setIdentityFields =
+function(account, section) {
 	var identity = account.getIdentity();
 
 	this._setControlValue("FROM_NAME", section, identity.sendFromDisplay);
@@ -642,7 +660,8 @@ function(account, section, enable) {
 	}
 };
 
-ZmAccountsPage.prototype._setReplyToControls = function() {
+ZmAccountsPage.prototype._setReplyToControls =
+function() {
 	var section = this._currentSection;
 	var replyTo = this._getControlValue("REPLY_TO", section);
 
@@ -650,14 +669,16 @@ ZmAccountsPage.prototype._setReplyToControls = function() {
 	this._setControlEnabled("REPLY_TO_EMAIL", section, replyTo);
 };
 
-ZmAccountsPage.prototype._setWhenSentToControls = function() {
+ZmAccountsPage.prototype._setWhenSentToControls =
+function() {
 	var section = this._currentSection;
 	var whenSentTo = this._getControlValue("WHEN_SENT_TO", section);
 
 	this._setControlEnabled("WHEN_SENT_TO_LIST", section, whenSentTo);
 };
 
-ZmAccountsPage.prototype._setWhenInFolderControls = function() {
+ZmAccountsPage.prototype._setWhenInFolderControls =
+function() {
 	var section = this._currentSection;
 	var whenInFolder = this._getControlValue("WHEN_IN_FOLDER", section);
 
@@ -665,7 +686,8 @@ ZmAccountsPage.prototype._setWhenInFolderControls = function() {
 	this._setControlEnabled("WHEN_IN_FOLDER_BUTTON", section, whenInFolder);
 };
 
-ZmAccountsPage.prototype._setControlLabel = function(id, section, value) {
+ZmAccountsPage.prototype._setControlLabel =
+function(id, section, value) {
 	var control = section.controls[id];
 	var setup = ZmAccountsPage.PREFS[id];
 	if (!control || !setup) return;
@@ -679,7 +701,8 @@ ZmAccountsPage.prototype._setControlLabel = function(id, section, value) {
 	}
 };
 
-ZmAccountsPage.prototype._setControlValue = function(id, section, value) {
+ZmAccountsPage.prototype._setControlValue =
+function(id, section, value) {
 	var control = section.controls[id];
 	var setup = ZmAccountsPage.PREFS[id];
 	if (!control || !setup) return;
@@ -696,11 +719,11 @@ ZmAccountsPage.prototype._setControlValue = function(id, section, value) {
 	else if (id == "WHEN_IN_FOLDER_LIST") {
 		var tree = appCtxt.getTree(ZmOrganizer.FOLDER);
 		var folderIds = value;
-		var array = new Array(value);
+		var array = [value];
 		var seenComma = false;
 		for (var i = 0; i < folderIds.length; i++) {
-			var searchPath = tree.getById(folderIds[i]).getSearchPath();
-			array[i] = searchPath;
+			var fid = ZmOrganizer.normalizeId(folderIds[i]);
+			var searchPath = array[i] = tree.getById(fid).getSearchPath();
 			seenComma = seenComma || searchPath.match(/,/);
 		}
 		value = array.join(seenComma ? "; " : ", ");
@@ -729,7 +752,8 @@ ZmAccountsPage.prototype._setControlValue = function(id, section, value) {
 	}
 };
 
-ZmAccountsPage.prototype._getControlValue = function(id, section) {
+ZmAccountsPage.prototype._getControlValue =
+function(id, section) {
 	var control = section.controls[id];
 	var setup = ZmAccountsPage.PREFS[id];
 	if (!control || !setup) return null;
@@ -793,7 +817,8 @@ ZmAccountsPage.prototype._getControlValue = function(id, section) {
 	return setup.valueFunction ? setup.valueFunction(value) : value;
 };
 
-ZmAccountsPage.prototype._setControlVisible = function(id, section, visible) {
+ZmAccountsPage.prototype._setControlVisible =
+function(id, section, visible) {
 	var control = section.controls[id];
 	var setup = ZmAccountsPage.PREFS[id];
 	if (!control || !setup) return false;
@@ -802,7 +827,8 @@ ZmAccountsPage.prototype._setControlVisible = function(id, section, visible) {
 	return visible;
 };
 
-ZmAccountsPage.prototype._setControlEnabled = function(id, section, enabled) {
+ZmAccountsPage.prototype._setControlEnabled =
+function(id, section, enabled) {
 	var control = section.controls[id];
 	var setup = ZmAccountsPage.PREFS[id];
 	if (!control || !setup) return;
@@ -810,7 +836,8 @@ ZmAccountsPage.prototype._setControlEnabled = function(id, section, enabled) {
 	control.setEnabled(enabled);
 };
 
-ZmAccountsPage.prototype._setAccountFields = function(account, section) {
+ZmAccountsPage.prototype._setAccountFields =
+function(account, section) {
 	if (!account || !section) return;
 
 	for (var id in ZmAccountsPage.ACCOUNT_PROPS) {
@@ -861,7 +888,8 @@ ZmAccountsPage.prototype._setAccountFields = function(account, section) {
 	}
 };
 
-ZmAccountsPage.prototype._valuesEqual = function(ovalue, nvalue) {
+ZmAccountsPage.prototype._valuesEqual =
+function(ovalue, nvalue) {
 	if (AjxUtil.isArray(ovalue) && AjxUtil.isArray(nvalue)) {
 		if (ovalue.length != nvalue.length) {
 			return false;
@@ -880,7 +908,8 @@ ZmAccountsPage.prototype._valuesEqual = function(ovalue, nvalue) {
 
 // init ui
 
-ZmAccountsPage.prototype._setupInput = function(id, setup, value) {
+ZmAccountsPage.prototype._setupInput =
+function(id, setup, value) {
 	if (id == "PASSWORD") {
 		var input = new DwtPasswordField({ parent: this });
 		input.setValue(value);
@@ -913,7 +942,8 @@ ZmAccountsPage.prototype._setupInput = function(id, setup, value) {
 	return input;
 };
 
-ZmAccountsPage.prototype._setupCheckbox = function(id, setup, value) {
+ZmAccountsPage.prototype._setupCheckbox =
+function(id, setup, value) {
 	var checkbox = ZmPreferencesPage.prototype._setupCheckbox.apply(this, arguments);
 	if (id == "SSL") {
 		checkbox.addSelectionListener(new AjxListener(this, this._handleTypeOrSslChange));
@@ -933,7 +963,8 @@ ZmAccountsPage.prototype._setupCheckbox = function(id, setup, value) {
 	return checkbox;
 };
 
-ZmAccountsPage.prototype._setupRadioGroup = function(id, setup, value) {
+ZmAccountsPage.prototype._setupRadioGroup =
+function(id, setup, value) {
 	var container = ZmPreferencesPage.prototype._setupRadioGroup.apply(this, arguments);
 	if (id == "ACCOUNT_TYPE") {
 		var radioGroup = this.getFormObject("ACCOUNT_TYPE");
@@ -942,7 +973,8 @@ ZmAccountsPage.prototype._setupRadioGroup = function(id, setup, value) {
 	return container;
 };
 
-ZmAccountsPage.prototype._setupSelect = function(id, setup, value) {
+ZmAccountsPage.prototype._setupSelect =
+function(id, setup, value) {
 	var isEmailSelect = id == "FROM_EMAIL";
 	var select;
 	if (isEmailSelect) {
@@ -972,14 +1004,16 @@ ZmAccountsPage.prototype._setupSelect = function(id, setup, value) {
 	return select;
 };
 
-ZmAccountsPage.prototype._setupComboBox = function(id, setup, value) {
+ZmAccountsPage.prototype._setupComboBox =
+function(id, setup, value) {
 	if (id == "REPLY_TO_EMAIL") {
 		setup.displayOptions = this._getAllAddresses();
 	}
 	return ZmPreferencesPage.prototype._setupComboBox.apply(this, arguments);
 };
 
-ZmAccountsPage.prototype._setupCustom = function(id, setup, value) {
+ZmAccountsPage.prototype._setupCustom =
+function(id, setup, value) {
 	if (id == ZmSetting.ACCOUNTS) {
 		// setup list
 		var listView = this._accountListView = new ZmAccountsListView(this);
@@ -1018,14 +1052,16 @@ ZmAccountsPage.prototype._setupCustom = function(id, setup, value) {
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
 };
 
-ZmAccountsPage.prototype._getAllAddresses = function() {
+ZmAccountsPage.prototype._getAllAddresses =
+function() {
 	var username = appCtxt.get(ZmSetting.USERNAME); 
 	var addresses = appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES);
 	var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
 	return [].concat(username, addresses, aliases);
 };
 
-ZmAccountsPage.prototype._resetAccountListView = function(accountOrIndex) {
+ZmAccountsPage.prototype._resetAccountListView =
+function(accountOrIndex) {
 	this._accountListView.set(this._accounts.clone());
 	var account = accountOrIndex;
 	if (AjxUtil.isNumber(account)) {
@@ -1040,7 +1076,8 @@ ZmAccountsPage.prototype._resetAccountListView = function(accountOrIndex) {
 	this._accountListView.setSelection(account || appCtxt.getMainAccount());
 };
 
-ZmAccountsPage.prototype._resetSignatureSelect = function(select) {
+ZmAccountsPage.prototype._resetSignatureSelect =
+function(select) {
 	var selectedValue = select.getValue();
 	select.clearOptions();
 	var options = appCtxt.getSignatureCollection().getSignatureOptions();
@@ -1052,7 +1089,8 @@ ZmAccountsPage.prototype._resetSignatureSelect = function(select) {
 
 // account buttons
 
-ZmAccountsPage.prototype._setupButtons = function() {
+ZmAccountsPage.prototype._setupButtons =
+function() {
 	var deleteButtonDiv = document.getElementById(this._htmlElId+"_DELETE");
 	if (deleteButtonDiv) {
 		var button = new DwtButton({parent:this});
@@ -1084,7 +1122,8 @@ ZmAccountsPage.prototype._setupButtons = function() {
 
 // account sections
 
-ZmAccountsPage.prototype._setupPrimaryDiv = function() {
+ZmAccountsPage.prototype._setupPrimaryDiv =
+function() {
 	var div = document.getElementById(this._htmlElId+"_PRIMARY");
 	if (div) {
 		this._sectionDivs[ZmAccount.ZIMBRA] = div;
@@ -1092,7 +1131,8 @@ ZmAccountsPage.prototype._setupPrimaryDiv = function() {
 	}
 };
 
-ZmAccountsPage.prototype._setupExternalDiv = function() {
+ZmAccountsPage.prototype._setupExternalDiv =
+function() {
 	var div = document.getElementById(this._htmlElId+"_EXTERNAL");
 	if (div) {
 		this._sectionDivs[ZmAccount.POP] = div;
@@ -1101,7 +1141,8 @@ ZmAccountsPage.prototype._setupExternalDiv = function() {
 	}
 };
 
-ZmAccountsPage.prototype._setupPersonaDiv = function() {
+ZmAccountsPage.prototype._setupPersonaDiv =
+function() {
 	var div = document.getElementById(this._htmlElId+"_PERSONA");
 	if (div) {
 		this._sectionDivs[ZmAccount.PERSONA] = div;
@@ -1109,7 +1150,8 @@ ZmAccountsPage.prototype._setupPersonaDiv = function() {
 	}
 };
 
-ZmAccountsPage.prototype._createSection = function(name, sectionDiv) {
+ZmAccountsPage.prototype._createSection =
+function(name, sectionDiv) {
 	var section = ZmAccountsPage.SECTIONS[name];
 	var prefIds = section && section.prefs;
 	if (!prefIds) return;
@@ -1187,12 +1229,14 @@ ZmAccountsPage.prototype._createSection = function(name, sectionDiv) {
 
 // listeners
 
-ZmAccountsPage.prototype._handleAccountSelection = function(evt) {
+ZmAccountsPage.prototype._handleAccountSelection =
+function(evt) {
 	var account = this._accountListView.getSelection()[0];
 	this.setAccount(account);
 };
 
-ZmAccountsPage.prototype._handleDeleteButton = function(evt) {
+ZmAccountsPage.prototype._handleDeleteButton =
+function(evt) {
 	var account = this._accountListView.getSelection()[0];
 	if (!account._new) {
 		account._deleted = true;
@@ -1203,14 +1247,16 @@ ZmAccountsPage.prototype._handleDeleteButton = function(evt) {
 	this._resetAccountListView(index);
 };
 
-ZmAccountsPage.prototype._handleAddExternalButton = function(evt) {
+ZmAccountsPage.prototype._handleAddExternalButton =
+function(evt) {
 	var account = new ZmNewDataSource();
 	this._accounts.add(account);
 	this._accounts.sort(ZmAccountsPage.__ACCOUNT_COMPARATOR);
 	this._resetAccountListView(account);
 };
 
-ZmAccountsPage.prototype._handleAddPersonaButton = function(evt) {
+ZmAccountsPage.prototype._handleAddPersonaButton =
+function(evt) {
 	var persona = new ZmNewPersona();
 	this._accounts.add(persona);
 	this._accounts.sort(ZmAccountsPage.__ACCOUNT_COMPARATOR);
@@ -1220,7 +1266,8 @@ ZmAccountsPage.prototype._handleAddPersonaButton = function(evt) {
 
 // generic listeners
 
-ZmAccountsPage.prototype._handleNameChange = function(evt) {
+ZmAccountsPage.prototype._handleNameChange =
+function(evt) {
 	var inputEl = DwtUiEvent.getTarget(evt);
 	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_NAME, inputEl.value);
 	this._setControlValue("HEADER", this._currentSection, inputEl.value);
@@ -1231,7 +1278,8 @@ ZmAccountsPage.prototype._handleNameChange = function(evt) {
 	}
 };
 
-ZmAccountsPage.prototype._handleEmailChange = function(evt) {
+ZmAccountsPage.prototype._handleEmailChange =
+function(evt) {
 	// update email cell
 	var section = this._currentSection;
 	var email = this._getControlValue("EMAIL", section);
@@ -1250,20 +1298,23 @@ ZmAccountsPage.prototype._handleEmailChange = function(evt) {
 	}
 };
 
-ZmAccountsPage.prototype._updateEmailCell = function(email) {
+ZmAccountsPage.prototype._updateEmailCell =
+function(email) {
 	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_EMAIL, email);
 };
 
 // data source listeners
 
-ZmAccountsPage.prototype._handleTypeChange = function(evt) {
+ZmAccountsPage.prototype._handleTypeChange =
+function(evt) {
 	var radio = this._currentSection.controls["ACCOUNT_TYPE"];
 	var type = ZmAccountsListView.TYPES[radio.getSelectedValue()] || "???";
 	this._accountListView.setCellContents(this._currentAccount, ZmItem.F_TYPE, type);
 	this._handleTypeOrSslChange(evt);
 };
 
-ZmAccountsPage.prototype._handleTypeOrSslChange = function(evt) {
+ZmAccountsPage.prototype._handleTypeOrSslChange =
+function(evt) {
 	var controls = this._currentSection.controls;
 
 	var dataSource = this._currentAccount;
@@ -1286,19 +1337,23 @@ ZmAccountsPage.prototype._handleTypeOrSslChange = function(evt) {
 	this._setPortControls(dataSource.type, dataSource.connectionType, dataSource.port);
 };
 
-ZmAccountsPage.prototype._handleUserNameChange = function(evt) {
+ZmAccountsPage.prototype._handleUserNameChange =
+function(evt) {
 	this._currentAccount.userName = this._getControlValue("USERNAME", this._currentSection);
 };
 
-ZmAccountsPage.prototype._handleHostChange = function(evt) {
+ZmAccountsPage.prototype._handleHostChange =
+function(evt) {
 	this._currentAccount.mailServer = this._getControlValue("HOST", this._currentSection);
 };
 
-ZmAccountsPage.prototype._handleChangePort = function(evt) {
+ZmAccountsPage.prototype._handleChangePort =
+function(evt) {
 	this._setControlEnabled("PORT", this._currentSection, evt.detail);
 };
 
-ZmAccountsPage.prototype._handleTestButton = function(evt) {
+ZmAccountsPage.prototype._handleTestButton =
+function(evt) {
 	var button = evt.item;
 	button.setEnabled(false);
 
@@ -1319,13 +1374,15 @@ ZmAccountsPage.prototype._handleTestButton = function(evt) {
 	this._testAccounts(accounts, callback, callback);
 };
 
-ZmAccountsPage.prototype._testFinish = function(button) {
+ZmAccountsPage.prototype._testFinish =
+function(button) {
 	button.setEnabled(true);
 };
 
 // identity listeners
 
-ZmAccountsPage.prototype._handleReplyTo = function(evt) {
+ZmAccountsPage.prototype._handleReplyTo =
+function(evt) {
 	this._setReplyToControls();
 };
 
@@ -1337,15 +1394,18 @@ function(select, evt) {
 	}
 };
 
-ZmAccountsPage.prototype._handleWhenSentTo = function(evt) {
+ZmAccountsPage.prototype._handleWhenSentTo =
+function(evt) {
 	this._setWhenSentToControls();
 };
 
-ZmAccountsPage.prototype._handleWhenInFolder = function(evt) {
+ZmAccountsPage.prototype._handleWhenInFolder =
+function(evt) {
 	this._setWhenInFolderControls();
 };
 
-ZmAccountsPage.prototype._handleFolderButton = function(evt) {
+ZmAccountsPage.prototype._handleFolderButton =
+function(evt) {
 	if (!this._folderAddCallback) {
 		this._folderAddCallback = new AjxCallback(this, this._handleFolderAdd);
 	}
@@ -1353,7 +1413,8 @@ ZmAccountsPage.prototype._handleFolderButton = function(evt) {
 	ZmController.showDialog(dialog, this._folderAddCallback);
 };
 
-ZmAccountsPage.prototype._handleFolderAdd = function(folder) {
+ZmAccountsPage.prototype._handleFolderAdd =
+function(folder) {
 	var section = this._currentSection;
 	var folders = this._getControlValue("WHEN_IN_FOLDER_LIST", section);
 	if (!folders) return;
@@ -1365,7 +1426,8 @@ ZmAccountsPage.prototype._handleFolderAdd = function(folder) {
 
 // pre-save callbacks
 
-ZmAccountsPage.prototype._preSave = function(continueCallback) {
+ZmAccountsPage.prototype._preSave =
+function(continueCallback) {
 	// make sure that the current object proxy is up-to-date
 	this._setAccountFields(this._currentAccount, this._currentSection);
 
@@ -1373,7 +1435,8 @@ ZmAccountsPage.prototype._preSave = function(continueCallback) {
 	this._preSaveTest(continueCallback);
 };
 
-ZmAccountsPage.prototype._preSaveTest = function(continueCallback) {
+ZmAccountsPage.prototype._preSaveTest =
+function(continueCallback) {
 	// get dirty external accounts
 	var dirtyAccounts = []
 	var accounts = this._accounts.getArray();
@@ -1399,7 +1462,8 @@ ZmAccountsPage.prototype._preSaveTest = function(continueCallback) {
 	}
 };
 
-ZmAccountsPage.prototype._preSaveTestOk = function(continueCallback, accounts, successes) {
+ZmAccountsPage.prototype._preSaveTestOk =
+function(continueCallback, accounts, successes) {
 	// en/disable accounts based on test results 
 	for (var i = 0; i < accounts.length; i++) {
 		accounts[i].enabled = successes[i];
@@ -1409,13 +1473,15 @@ ZmAccountsPage.prototype._preSaveTestOk = function(continueCallback, accounts, s
 	this._preSaveCreateFolders(continueCallback);
 };
 
-ZmAccountsPage.prototype._preSaveTestCancel = function(continueCallback) {
+ZmAccountsPage.prototype._preSaveTestCancel =
+function(continueCallback) {
 	if (continueCallback) {
 		continueCallback.run(false);
 	}
 };
 
-ZmAccountsPage.prototype._preSaveCreateFolders = function(continueCallback) {
+ZmAccountsPage.prototype._preSaveCreateFolders =
+function(continueCallback) {
 	var batchCmd;
 	var root = appCtxt.getById(ZmOrganizer.ID_ROOT);
 	var accounts = this._accounts.getArray();
@@ -1506,7 +1572,8 @@ function(account, resp) {
 	delete account._dirty;
 };
 
-ZmAccountsPage.prototype._handleSaveVisibleAccount = function() {
+ZmAccountsPage.prototype._handleSaveVisibleAccount =
+function() {
 	var accounts = this._accounts.getArray();
 	for (var i = 0; i < accounts.length; i++) {
 		var account = accounts[i];
@@ -1517,7 +1584,8 @@ ZmAccountsPage.prototype._handleSaveVisibleAccount = function() {
 	setting._notify(ZmEvent.E_MODIFY);
 };
 
-ZmAccountsPage.prototype._handleCreateAccount = function(account, resp) {
+ZmAccountsPage.prototype._handleCreateAccount =
+function(account, resp) {
 	delete account._new;
 };
 
@@ -1525,20 +1593,23 @@ ZmAccountsPage.prototype._handleCreateAccount = function(account, resp) {
 // Private functions
 //
 
-ZmAccountsPage.__ACCOUNT_COMPARATOR = function(a, b) {
+ZmAccountsPage.__ACCOUNT_COMPARATOR =
+function(a, b) {
 	if (a.type == ZmAccount.ZIMBRA && a.isMain) return -1;
 	if (b.type == ZmAccount.ZIMBRA && b.isMain) return 1;
 	return a.getName().localeCompare(b.getName());
 };
 
-ZmAccountsPage.__createProxy = function(account) {
+ZmAccountsPage.__createProxy =
+function(account) {
 	var identityProxy = AjxUtil.createProxy(account.getIdentity());
 	var proxy = AjxUtil.createProxy(account);
 	proxy.getIdentity = AjxCallback.simpleClosure(ZmAccountsPage.__proxy_getIdentity, proxy, identityProxy);
 	return proxy;
 };
 
-ZmAccountsPage.__proxy_getIdentity = function(identity) {
+ZmAccountsPage.__proxy_getIdentity =
+function(identity) {
 	return identity;
 };
 
@@ -1557,7 +1628,8 @@ ZmAccountsListView = function(parent, className, posStyle, noMaximize) {
 ZmAccountsListView.prototype = new DwtListView;
 ZmAccountsListView.prototype.constructor = ZmAccountsListView;
 
-ZmAccountsListView.prototype.toString = function() {
+ZmAccountsListView.prototype.toString =
+function() {
 	return "ZmAccountsListView";
 };
 
@@ -1575,11 +1647,13 @@ ZmAccountsListView.WIDTH_TYPE	= 80;
 
 // Public methods
 
-ZmAccountsListView.prototype.getCellElement = function(account, field) {
+ZmAccountsListView.prototype.getCellElement =
+function(account, field) {
 	return document.getElementById(this._getCellId(account, field));
 };
 
-ZmAccountsListView.prototype.setCellContents = function(account, field, html) {
+ZmAccountsListView.prototype.setCellContents =
+function(account, field, html) {
 	var el = this.getCellElement(account, field);
 	if (!el) return;
 
@@ -1627,7 +1701,8 @@ function(buffer, i, item, field, col, params) {
 	return DwtListView.prototype._getCellContents.apply(this, arguments);
 }
 
-ZmAccountsListView.prototype._getCellId = function(item, field, params) {
+ZmAccountsListView.prototype._getCellId =
+function(item, field, params) {
 	return [this.getViewPrefix(), item.id, field].join("-");
 };
 
@@ -1641,7 +1716,8 @@ ZmAccountsListView.prototype._getToolTip = function(field, item, ev, div, match)
 };
 /***/
 
-ZmAccountsListView.prototype._getHeaderList = function() {
+ZmAccountsListView.prototype._getHeaderList =
+function() {
 	return [
 		//new DwtListHeaderItem(id, label, iconInfo, width, sortable, resizeable, visible, name, align)
 		new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg.accountName, null, ZmAccountsListView.WIDTH_NAME),
@@ -1655,7 +1731,8 @@ ZmAccountsListView.prototype._getHeaderList = function() {
 // New data source class
 //
 
-ZmAccountsPage._defineClasses = function() {
+ZmAccountsPage._defineClasses =
+function() {
 ZmNewDataSource = function() {
 	var number = ++ZmNewDataSource.ID;
 	var id = "new-dsrc-"+number;
@@ -1672,7 +1749,8 @@ ZmNewDataSource = function() {
 ZmNewDataSource.prototype = new ZmDataSource;
 ZmNewDataSource.prototype.constructor = ZmNewDataSource;
 
-ZmNewDataSource.prototype.toString = function() {
+ZmNewDataSource.prototype.toString =
+function() {
 	return "ZmNewDataSource";
 };
 
@@ -1686,7 +1764,8 @@ ZmNewDataSource.prototype.ELEMENT_NAME = ZmPopAccount.prototype.ELEMENT_NAME;
 
 // Public methods
 
-ZmNewDataSource.prototype.setType = function(type) {
+ZmNewDataSource.prototype.setType =
+function(type) {
 	this.type = type;
 	var TYPE = this.type == ZmAccount.POP ? ZmPopAccount : ZmImapAccount;
 	this.ELEMENT_NAME = TYPE.prototype.ELEMENT_NAME;
@@ -1712,7 +1791,8 @@ ZmNewPersona = function() {
 ZmNewPersona.prototype = new ZmPersona;
 ZmNewPersona.prototype.constructor = ZmNewPersona;
 
-ZmNewPersona.prototype.toString = function() {
+ZmNewPersona.prototype.toString =
+function() {
 	return "ZmNewPersona";
 };
 

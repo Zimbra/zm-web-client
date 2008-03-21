@@ -643,35 +643,38 @@ and the container element is replaced with that control.
 		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td style='padding:0;margin:0;border:solid 1px silver'> <!-- TODO: correct border color -->
-					<div id='${id}_ACCOUNTS' tabindex='20'></div>
-				</td></tr>
-				<tr><td>
-					<table width=100%>
-					<colgroup>
-						<col width=1>
-						<col width=*>
-						<col width=1>
-						<col width=1>
-					</colgroup>
+				<table width=100%>
 					<tr>
-						<td align=left><button id='${id}_DELETE' tabindex='30'><$=ZmMsg.del$></button></td>
-						<td>&nbsp;</td>
-						<td align=right>
-						<$ if (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) || data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED)) { $>
-							<button id='${id}_ADD_EXTERNAL' tabindex='40'><$=ZmMsg.addExternalAccount$></button>
-						<$ } $>
+						<td style='padding:0;margin:0;border:solid 1px silver'> <!-- TODO: correct border color -->
+							<div id='${id}_ACCOUNTS' tabindex='20'></div>
 						</td>
-						<td align=right>
-						<$ if (data.isEnabled(ZmSetting.IDENTITIES_ENABLED)) { $>
-							<button id='${id}_ADD_PERSONA' tabindex='50'><$=ZmMsg.addPersona$></button>
-						<$ } $>
+					</tr>
+					<tr>
+						<td>
+							<table width=100%>
+							<colgroup>
+								<col width=1>
+								<col width=*>
+								<col width=1>
+								<col width=1>
+							</colgroup>
+							<tr>
+								<td align=left><button id='${id}_DELETE' tabindex='30'><$=ZmMsg.del$></button></td>
+								<td>&nbsp;</td>
+								<td align=right>
+								<$ if (!appCtxt.isOffline && (data.isEnabled(ZmSetting.POP_ACCOUNTS_ENABLED) || data.isEnabled(ZmSetting.IMAP_ACCOUNTS_ENABLED))) { $>
+									<button id='${id}_ADD_EXTERNAL' tabindex='40'><$=ZmMsg.addExternalAccount$></button>
+								<$ } $>
+								</td>
+								<td align=right>
+								<$ if (data.isEnabled(ZmSetting.IDENTITIES_ENABLED)) { $>
+									<button id='${id}_ADD_PERSONA' tabindex='50'><$=ZmMsg.addPersona$></button>
+								<$ } $>
+								</td>
+							</tr></table>
 						</td>
-					</tr></table>
-					</td>
-				</tr>
-			</table>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>
@@ -694,26 +697,6 @@ and the container element is replaced with that control.
 	<$ } $>
 </template>
 
-<template id='prefs.Pages#AccountsOffline'>
-	<div><br><br><br></div>
-	<table border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
-			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accounts$></td>
-			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
-		</tr>
-		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
-		<tr>
-			<td class='ZOptionsSectionMain'>
-				<table width=100%>
-					<tr><td><$= ZmMsg.setupOfflineAccts $></td></tr>
-				</table>
-			</td>
-		</tr>
-	</table>
-</template>
-
 <template id='prefs.Pages#PrimaryAccount'>
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
@@ -721,61 +704,76 @@ and the container element is replaced with that control.
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.accountHeaderPrimary$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
-		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.emailAddrLabel$></td>
-					<td class='ZOptionsField'><span id='${id}_PRIMARY_EMAIL' tabindex='1010'></span></td>
-				</tr>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.accountNameLabel$></td>
-					<td class='ZOptionsField'><input id='${id}_PRIMARY_NAME' tabindex='1020'></td>
-				</tr>
-				<$ if (data.isMultiAccount) { $>
-					<tr><td class='ZOptionsLabel'>Is Visible:</td>
-						<td class='ZOptionsField'><span id='${id}_PRIMARY_VISIBLE' tabindex='1021'></span></td>
+				<table width=100%>
+					<tr>
+						<td colspan=2 class='ZOptionsSectionMain'>
+							<table width=100%>
+								<tr><td class='ZOptionsOfflineAccts'><$= ZmMsg.setupOfflineAccts $></td></tr>
+							</table>
+						</td>
 					</tr>
-				<$ } $>
 
-				<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr></td></tr>
 
-				<tr><td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td></tr>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
-					<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
-				</tr>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<table><tr>
-							<td style='padding-right:.5em;'>
-								<input id='${id}_PRIMARY_FROM_NAME' tabindex='1030' size=30 title='<$=ZmMsg.exampleEmailName$>'>
-							</td>
-							<td><select id='${id}_PRIMARY_FROM_EMAIL' tabindex='1035' size=40 title='<$=ZmMsg.emailAddr$>'></select></td>
-						</tr></table>
-					</td>
-				</tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.emailAddrLabel$></td>
+						<td class='ZOptionsField'><span id='${id}_PRIMARY_EMAIL' tabindex='1010'></span></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.accountNameLabel$></td>
+						<td class='ZOptionsField'><input id='${id}_PRIMARY_NAME' tabindex='1020'></td>
+					</tr>
+					<$ if (data.isMultiAccount) { $>
+						<tr>
+							<td class='ZOptionsLabel'>Is Visible:</td>
+							<td class='ZOptionsField'><span id='${id}_PRIMARY_VISIBLE' tabindex='1021'></span></td>
+						</tr>
+					<$ } $>
 
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.setReplyTo$></td>
-					<td class='ZOptionsField'><input id='${id}_PRIMARY_REPLY_TO' tabindex='1040' type=checkbox></td>
-				</tr>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'>
-						<table cellpadding='0' cellspacing='0' border='0'><tr>
-							<td style='padding-right:.5em;'>
-								<input id='${id}_PRIMARY_REPLY_TO_NAME' tabindex='1050' size=30 title='<$=ZmMsg.exampleEmailName$>'>
-							</td>
-							<td>
-								<select id='${id}_PRIMARY_REPLY_TO_EMAIL' tabindex='1060' title='<$=ZmMsg.emailAddr$>'></select>
-							</td>
-						</tr></table>
-					</td>
-				</tr>
+					<tr><td colspan=2><hr></td></tr>
 
-				<tr valign=top>
-					<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
-					<td class='ZOptionsField'><select id='${id}_PRIMARY_SIGNATURE' tabindex='1070'></select></td>
-				</tr>
-			</table>
+					<tr><td class='ZOptionsLabel' style='text-align:left' colspan=2><$=ZmMsg.accountFromPrompt$></td></tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.fromLabel$></td>
+						<td class='ZOptionsField'><$=ZmMsg.fromDetail$></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'>
+							<table>
+								<tr>
+									<td style='padding-right:.5em;'><input id='${id}_PRIMARY_FROM_NAME' tabindex='1030' size=30 title='<$=ZmMsg.exampleEmailName$>'></td>
+									<td><select id='${id}_PRIMARY_FROM_EMAIL' tabindex='1035' size=40 title='<$=ZmMsg.emailAddr$>'></select></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.setReplyTo$></td>
+						<td class='ZOptionsField'><input id='${id}_PRIMARY_REPLY_TO' tabindex='1040' type=checkbox></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'>
+							<table cellpadding='0' cellspacing='0' border='0'>
+								<tr>
+									<td style='padding-right:.5em;'><input id='${id}_PRIMARY_REPLY_TO_NAME' tabindex='1050' size=30 title='<$=ZmMsg.exampleEmailName$>'></td>
+									<td><select id='${id}_PRIMARY_REPLY_TO_EMAIL' tabindex='1060' title='<$=ZmMsg.emailAddr$>'></select></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<tr valign=top>
+						<td class='ZOptionsLabel'><$=ZmMsg.signatureLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_PRIMARY_SIGNATURE' tabindex='1070'></select></td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>
