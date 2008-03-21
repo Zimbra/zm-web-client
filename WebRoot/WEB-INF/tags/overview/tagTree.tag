@@ -18,9 +18,8 @@
                 <c:param name="sti" value="${param.sti}"/>
             </c:if>
         </c:url>
-	    <c:set var="url" value="${calendars ? '/h/calendar' : '/h/search' }"  />  
         <tr>
-            <c:url var="toggleUrl" value="${url}">
+            <c:url var="toggleUrl" value="/h/search">
                 <c:param name="${expanded ? 'collapse' : 'expand'}" value="tags"/>
                 <c:if test="${not empty param.st}"><c:param name="st" value="${param.st}"/></c:if>
             </c:url>
