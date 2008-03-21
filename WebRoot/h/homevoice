@@ -8,17 +8,10 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
-
 <c:catch var="ex">
 	<zm:getMailbox var="mailbox"/>
-	<c:set var="account" value="${zm:getFirstPhoneAccount(pageContext)}"/>
-	<c:set var="phone" value="${account.phone.name}"/>
-	<c:set var="unheardCount" value="-1" />
-	<zm:forEachFolder var="folder" parentfolder="${account.rootFolder}">
-		<c:if test="${folder.isVoiceMailInbox}">
-			<c:set var="unheardCount" value="${folder.unreadCount}"/>
-		</c:if>
-	</zm:forEachFolder>
+	<app:skin mailbox="${mailbox}" />
+	<c:set var="initialCallJustToCatchErrorsConnectingToTheVoiceServer" value="${zm:getFirstPhoneAccount(pageContext)}"/>
 </c:catch>
 
 <c:choose>
@@ -30,41 +23,24 @@
 </c:when>
 <c:otherwise>
 <app:head mailbox="${mailbox}" title=""/>
-	<link href="<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" rel="stylesheet" type="text/css" />
     <div class="ZhHomeVoiceBody">
         <table class="ZhHomeVoiceTable" cellpadding=0 cellspacing=0 border=0>
-            <tr class="ZhHomeRow">
-                <td class="ZhHomeCell" colspan="3">
-                    <span style="font-weight:bold; font-size:12px;"><c:out value="${account.phone.display}"></c:out><br></span>
-					<c:if test="${unheardCount ge 0}">
-						<a style="text-decoration:none;" href='/h/voicemail'>
-							&nbsp;(${unheardCount}) unheard
-						</a>
+			<zm:forEachPhoneAccount var="account">
+				<c:set var="phone" value="${account.phone.name}"/>
+				<zm:forEachFolder var="folder" parentfolder="${account.rootFolder}">
+					<c:if test="${folder.isVoiceMailInbox}">
+						<tr class="ZhHomeRow">
+							<td class="ZhHomeCell" >
+								<span style="font-weight:bold; font-size:12px;"><c:out value="${account.phone.display}"/><br></span>
+								<a style="text-decoration:none;" href='/h/search?st=voicemail&sq=phone:${phone}' target="_top">
+									${folder.unreadCount}&nbsp;<fmt:message key="unheard"/>
+								</a>
+								| ${folder.messageCount}&nbsp;<fmt:message key="total"/>
+							</td>
+						</tr>
 					</c:if>
-				</td>
-            </tr>
-            <zm:clearSearchCache type="voicemail"/>
-            <zm:computeSearchContext var="context" usecache="true" query="phone:${phone}" types="voicemail"/>
-            <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status" begin="0" end="4">
-                <c:url var="url" value="/h/voicemail">
-                    <c:param name="phone" value="${phone}"/>
-                    <c:param name="id" value="${hit.voiceMailItemHit.id}"/>
-                </c:url>
-                <tr class='ZhHomeRow ${hit.voiceMailItemHit.isUnheard ? ' Unread':''}'>
-                    <td nowrap width=120px class="ZhHomeCell">
-                        ${hit.voiceMailItemHit.displayCaller}
-                    </td>
-                    <td nowrap width=90px class="ZhHomeCell">
-                        ${fn:escapeXml(zm:displayMsgDate(pageContext, hit.voiceMailItemHit.date))}
-                    </td>
-                    <td nowrap class="ZhHomeCell">
-                        <a target="_top" class="ZhHomeTextLink" href="${url}">
-                            <app:img src="voicemail/ImgPlayMessage.gif" altkey="ALT_FLAGGED"/>
-                            <u><fmt:message key="listen"/></u>
-                        </a>
-                    </td>
-                </tr>
-            </c:forEach>
+				</zm:forEachFolder>
+			</zm:forEachPhoneAccount>
         </table>
     </div>
 </c:otherwise>
