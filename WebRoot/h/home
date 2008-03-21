@@ -43,7 +43,6 @@
 <c:param name="sfi" value="${folder.id}"/>
 </c:url>
 <app:handleError>
-<zm:computeSearchContext var="context" usecache="true"/>
     <fmt:message var="unknownRecipient" key="unknownRecipient"/>
     <fmt:message var="noSubject" key="noSubject"/>
 </app:handleError>
@@ -78,36 +77,11 @@
                 <td class="ZhHomeCell">
                     <span style="font-weight:bold; font-size:12px;"><c:out value="${mailbox.name}"></c:out><br></span>
                     <a style="text-decoration:none;" href='${url}'>
-                        <c:if test="${folder.hasUnread}">&nbsp;(${folder.unreadCount})  unread</c:if>
-                        <c:if test="${not folder.hasUnread}">&nbsp;(0)  unread</c:if>
+                        ${folder.unreadCount}&nbsp;<fmt:message key="unread"/>
                     </a>
-                </td>
+					| ${folder.messageCount}&nbsp;<fmt:message key="total"/>
+				</td>
             </tr>
-            <c:if test="${context.isMessageSearch}">
-                <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status" begin="0" end="4">
-                    <tr class="ZhHomeRow">
-                        <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
-                        <td  class="ZhHomeCell"><p><a style="text-decoration:none;"  href="${convUrl}"><b>${fn:escapeXml(empty hit.messageHit.displaySender ? unknownRecipient :  hit.messageHit.displaySender)}</b></a><br>
-                        <a class="ZhHomeTextLink" href="${convUrl}">
-                            <c:set var='subj' value="${empty hit.messageHit.subject ? noSubject : zm:truncate(hit.messageHit.subject,80,true)}"/>
-                            <c:out value="${subj}"/></a>
-                        </p></td>
-                    </tr>
-                </c:forEach>
-            </c:if>
-            <c:if test="${context.isConversationSearch}">
-                <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status" begin="0" end="4">
-                    <tr class="ZhHomeRow">
-                        <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
-                        <td class="ZhHomeCell" style="width:25%;"><p><a style="text-decoration:none;"  href="${convUrl}">${fn:escapeXml(empty hit.conversationHit.displayRecipients ? unknownRecipient :  hit.conversationHit.displayRecipients)}</a><br>
-                        <a class="ZhHomeTextLink" href="${convUrl}">
-                            <c:set var='subj' value="${empty hit.conversationHit.subject ? noSubject : zm:truncate(hit.conversationHit.subject,80,true)}"/>
-                            <c:out value="${subj}"/></a>
-                        </p></td>
-                    </tr>
-                </c:forEach>
-            </c:if>
-
         </table>
     </td>
     <td valign="top" width="50%">
