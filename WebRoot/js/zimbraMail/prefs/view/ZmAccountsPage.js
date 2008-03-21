@@ -1595,8 +1595,9 @@ function(account, resp) {
 
 ZmAccountsPage.__ACCOUNT_COMPARATOR =
 function(a, b) {
-	if (a.type == ZmAccount.ZIMBRA && a.isMain) return -1;
-	if (b.type == ZmAccount.ZIMBRA && b.isMain) return 1;
+	var isOfflineMulti = appCtxt.isOffline && appCtxt.multiAccounts;
+	if (a.type == ZmAccount.ZIMBRA && (a.isMain || isOfflineMulti)) return -1;
+	if (b.type == ZmAccount.ZIMBRA && (b.isMain || isOfflineMulti)) return 1;
 	return a.getName().localeCompare(b.getName());
 };
 
@@ -1693,7 +1694,8 @@ function(buffer, i, item, field, col, params) {
 		return i;
 	}
 	if (field == ZmItem.F_TYPE) {
-		buffer[i++] = (item.type == ZmAccount.ZIMBRA && !item.isMain)
+		var isOfflineMulti = appCtxt.isOffline && appCtxt.multiAccounts;
+		buffer[i++] = (item.type == ZmAccount.ZIMBRA && !item.isMain && !isOfflineMulti)
 			? ZmMsg.accountTypeSecondary
 			: ZmAccountsListView.TYPES[item.type];
 		return i;
