@@ -822,9 +822,10 @@ function(items) {
 ZmListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
 	if (!(items instanceof Array)) items = [items];
-
-	var list = items[0].list || this._list;
-	list.deleteItems(items, hardDelete, attrs);
+	if (items.length) {
+		var list = items[0].list || this._list;
+		list.deleteItems(items, hardDelete, attrs);
+	}
 };
 
 /**
