@@ -57,9 +57,11 @@
                                                 <app:img src="common/ImgClose.gif" alt="close"/><span style='padding-left:5px'><fmt:message key="close"/></span>
                                             </a>
                                         </td>
-                                        <td><div class='vertSep'></div></td>
-                                        <app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
-                                        <td><div class='vertSep'></div></td>
+										<c:if test="${mailbox.features.newAddrBookEnabled}">
+											<td><div class='vertSep'></div></td>
+											<app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
+										</c:if>
+										<td><div class='vertSep'></div></td>
                                         <app:button id="OPNEWLINK" name="actionNewSharedAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNewShared" text="addressBookNewShared"/>
                                     </tr>
                                 </table>

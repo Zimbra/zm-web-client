@@ -322,7 +322,7 @@
 																	<c:if test="${selected != 'contacts' and selected != 'calendar'}">
 																		<app:button name="actionNewFolder" src="startup/ImgNewFolder.gif" tooltip="folderNew" text="folderNew"/>
 																	</c:if>
-																	<c:if test="${selected eq 'contacts'}">
+																	<c:if test="${selected eq 'contacts' and mailbox.features.newAddrBookEnabled}">
 																		<app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
 																	</c:if>
 																	<c:if test="${selected eq 'calendar'}">
