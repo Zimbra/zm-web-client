@@ -131,7 +131,10 @@ function() {
 // Returns a list of desired header action menu operations
 ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = [ZmOperation.NEW_ADDRBOOK];
+	var ops = [];
+	if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
+		ops.push(ZmOperation.NEW_ADDRBOOK);
+	}
 	if (!appCtxt.isOffline) {
 		ops.push(ZmOperation.MOUNT_ADDRBOOK);
 	}
@@ -143,7 +146,10 @@ function() {
 // Returns a list of desired action menu operations
 ZmAddrBookTreeController.prototype._getActionMenuOps =
 function() {
-	var ops = [ZmOperation.NEW_ADDRBOOK];
+	var ops = [];
+	if (appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED)) {
+		ops.push(ZmOperation.NEW_ADDRBOOK);
+	}
 	if (!appCtxt.isOffline) {
 		ops.push(ZmOperation.SHARE_ADDRBOOK);
 	}
