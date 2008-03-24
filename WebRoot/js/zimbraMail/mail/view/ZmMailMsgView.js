@@ -1719,7 +1719,7 @@ function(val) {
 
 ZmMailMsgView._tagClick =
 function(myId, tagId) {
-	var dwtObj = Dwt.getObjectFromElement(document.getElementById(myId));
+	var dwtObj = DwtControl.fromElementId(myId);
 	dwtObj.notifyListeners(ZmMailMsgView._TAG_CLICK, tagId);
 };
 

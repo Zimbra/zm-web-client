@@ -1566,7 +1566,7 @@ function(ev) {
 
 	var el = DwtUiEvent.getTarget(ev);
 	var ard = AjxCore.objectWithId(el._recurDialogId);
-	var dwtObj = Dwt.getObjectFromElement(el);
+	var dwtObj = DwtControl.findControl(el);
 
 	switch (dwtObj) {
 		case ard._endIntervalField: 	ard._endAfterRadio.checked = true; break;
