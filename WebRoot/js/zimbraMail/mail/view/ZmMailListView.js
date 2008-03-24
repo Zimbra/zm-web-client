@@ -344,7 +344,7 @@ ZmMailListView.toggleSync =
 function(folderId, htmlElementId) {
 	var folder = appCtxt.getById(folderId);
 	var htmlEl = folder ? document.getElementById(htmlElementId) : null;
-	var listview = htmlEl ? Dwt.getObjectFromElement(htmlEl) : null;
+	var listview = htmlEl ? DwtControl.fromElement(htmlEl) : null;
 	if (listview) {
 		var callback = new AjxCallback(listview, listview._handleToggleSync);
 		folder.toggleSyncOffline(callback);
