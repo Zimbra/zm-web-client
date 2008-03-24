@@ -118,7 +118,6 @@ ZmNotebookCache.prototype.putItem =
 function(item1, ignoreFolderContents) {
 	
 	var folderId = item1.folderId || ZmNotebookItem.DEFAULT_FOLDER;
-	var items = ignoreFolderContents ? null : this.getItemsInFolder(folderId);
 	var item = this.getPage(item1);
 	
 	if (item.id) {
@@ -129,16 +128,15 @@ function(item1, ignoreFolderContents) {
 		this._idPathMap[item.id] = item.path;
 	}
 	
-	if(items != null){
-		items.all[item.name] = item;
+    if(this._foldersMap[folderId] != null) {
+	    this._foldersMap[folderId].all[item.name] = item;
 		if (item instanceof ZmPage) {
-			items.pages[item.name] = item;
+	    	this._foldersMap[folderId].pages[item.name] = item;
+		}else if (item instanceof ZmDocument) {
+		    this._foldersMap[folderId].docs[item.name] = item;
 		}
-		else if (item instanceof ZmDocument) {
-			items.docs[item.name] = item;
-		}
-	}
-	
+    }
+
 	/*** REVISIT ***/
 	var remoteFolderId = item.remoteFolderId;
 	if (remoteFolderId) {

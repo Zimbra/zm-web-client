@@ -234,9 +234,9 @@ function(ids, force) {
 		appCtxt.cacheRemove(ids[i]);
 	}
 	
-	if(nextData && pageInUse){
-	var pageRef = { folderId: nextData.id, name: ZmNotebook.PAGE_INDEX };
-	notebookController.gotoPage(pageRef);
+	if(pageInUse){
+	    var pageRef = { folderId: (nextData ? nextData.id : shownPage.folderId) , name: ZmNotebook.PAGE_INDEX };
+	    notebookController.gotoPage(pageRef);
 	}
 	
 	
