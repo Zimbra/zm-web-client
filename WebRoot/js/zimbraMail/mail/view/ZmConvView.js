@@ -348,6 +348,6 @@ function(delta) {
 
 ZmConvView._tagClick =
 function(myId, tagId) {
-	var dwtObj = Dwt.getObjectFromElement(document.getElementById(myId));
+	var dwtObj = DwtControl.fromElement(document.getElementById(myId));
 	dwtObj.notifyListeners(ZmConvView._TAG_CLICK, tagId);
 };
