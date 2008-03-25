@@ -122,20 +122,27 @@ function(item1, ignoreFolderContents) {
 	
 	if (item.id) {
 		this._idMap[item.id] = item;
-	}
-	if(item.path && item.id) {
-		this._pathMap[item.path] = item;
-		this._idPathMap[item.id] = item.path;
+		
+		if(item.path) {
+			this._pathMap[item.path] = item;
+			this._idPathMap[item.id] = item.path;
+		}else {
+			//construct the path from folder rest url
+			var restUrl = item.getRestUrl();
+			var path = this.getPath(restUrl);
+			this._pathMap[path] = item;
+			this._idPathMap[item.id] = path;
+		}
 	}
 	
-    if(this._foldersMap[folderId] != null) {
-	    this._foldersMap[folderId].all[item.name] = item;
+	if(this._foldersMap[folderId] != null) {
+		this._foldersMap[folderId].all[item.name] = item;
 		if (item instanceof ZmPage) {
-	    	this._foldersMap[folderId].pages[item.name] = item;
+	    		this._foldersMap[folderId].pages[item.name] = item;
 		}else if (item instanceof ZmDocument) {
-		    this._foldersMap[folderId].docs[item.name] = item;
+			this._foldersMap[folderId].docs[item.name] = item;
 		}
-    }
+    	}
 
 	/*** REVISIT ***/
 	var remoteFolderId = item.remoteFolderId;
