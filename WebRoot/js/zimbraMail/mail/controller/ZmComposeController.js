@@ -154,7 +154,9 @@ function(params) {
 ZmComposeController.prototype.toggleSpellCheckButton =
 function(selected) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
-	spellCheckButton.setSelected((selected || false));
+	if (spellCheckButton) {
+		spellCheckButton.setSelected((selected || false));
+	}
 };
 
 /**
@@ -645,7 +647,9 @@ function() {
 		buttons.push(ZmOperation.ATTACHMENT);
 	}
 
-	buttons.push(ZmOperation.SPELL_CHECK);
+	if (!appCtxt.isOffline) {
+		buttons.push(ZmOperation.SPELL_CHECK);
+	}
 	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
 		buttons.push(ZmOperation.ADD_SIGNATURE);
 	}
@@ -691,7 +695,9 @@ function() {
 
 	// change default button style to select for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
-	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
+	if (spellCheckButton) {
+		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
+	}
 
 	// reduce toolbar width if low-res display
 	if (AjxEnv.is800x600orLower) {

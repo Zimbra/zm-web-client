@@ -243,7 +243,10 @@ function(tabKey) {
 		this._apptEditView.enableInputs(true);
 		this._apptEditView.reEnableDesignMode();
 	} else {
-		var buttons = [ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK];
+		var buttons = [ZmOperation.ATTACHMENT];
+		if (!appCtxt.isOffline) {
+			buttons.push(ZmOperation.SPELL_CHECK);
+		}
 		if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 			buttons.push(ZmOperation.COMPOSE_FORMAT);
 		}

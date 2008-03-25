@@ -78,33 +78,17 @@ function() {
 
 ZmPageEditController.prototype._getToolBarOps =
 function() {
-	var list = [];
-	list.push(
-		ZmOperation.SAVE, ZmOperation.CLOSE,
-		ZmOperation.SEP
-	);
-	/***
-	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		list.push(
-			ZmOperation.TAG_MENU,
-			ZmOperation.SEP
-		);
-	}
-	if (appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	list.push(
-		ZmOperation.DELETE,
-		ZmOperation.SEP
-	);
-	/***/
-	list.push(
-		//ZmOperation.ATTACHMENT,
-		ZmOperation.SPELL_CHECK,
-		ZmOperation.FILLER
-	);
+	var list = [ZmOperation.SAVE, ZmOperation.CLOSE, ZmOperation.SEP];
 
-	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
+	if (!appCtxt.isOffline) {
+		list.push(ZmOperation.SPELL_CHECK);
+	}
+
+	list.push(ZmOperation.FILLER);
+
+	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		list.push(ZmOperation.COMPOSE_FORMAT);
+	}
 
 	return list;
 };
@@ -123,9 +107,11 @@ function(view) {
 	/***/
 
 	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
-	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
-	if (AjxEnv.is800x600orLower) {
-		spellCheckButton.setText("");
+	if (spellCheckButton) {
+		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
+		if (AjxEnv.is800x600orLower) {
+			spellCheckButton.setText("");
+		}
 	}
 
 	// NOTE: probably cleaner to use ZmActionMenu, which knows about operations
@@ -441,7 +427,9 @@ ZmPageEditController.prototype.toggleSpellCheckButton =
 function(selected) {
 	var toolbar = this._toolbar[this._currentView];
 	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
-	spellCheckButton.setSelected((selected || false));
+	if (spellCheckButton) {
+		spellCheckButton.setSelected((selected || false));
+	}
 };
 
 ZmPageEditController.prototype._formatListener = function(ev) {
