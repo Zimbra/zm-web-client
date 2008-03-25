@@ -8,7 +8,7 @@
 .ZAppTabBorder .ZLeftIcon DIV	{	margin-top:4px;		}
 
 
-#skin_td_logoff					{	text-align:left;	}
+#skin_td_logoff					{	text-align:left; white-space:nowrap;	}
 .BannerTextUser 				{	text-align:left;	}
 
 .DwtListView-Column				{	background:#c3dcf3 url(@SkinImgDir@/skin/DwtListView-Column.repeatx.gif) left top repeat-x;	
@@ -28,6 +28,7 @@
 									@ChromeBg@
 									width:450px;
 								}
+#skin_container_links			{	padding-right: 10px; white-space:nowrap; }
 .ZmSearchToolbar				{	margin-top:3px;	}								
 .ZmSearchToolbarCell			{	padding:0px; vertical-align:top;		}
 .ZmSearchToolbarCell .ZButton	{	margin-left:-1px;	}

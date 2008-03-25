@@ -137,7 +137,7 @@ ZmPreferencesApp.prototype._registerPrefs =
 function() {
 	var sections = {
 		GENERAL: {
-			title: (appCtxt.isOffline ? ZmMsg.global : ZmMsg.general),
+			title: ((appCtxt.isOffline && appCtxt.multiAccounts) ? ZmMsg.global : ZmMsg.general),
 			templateId: "prefs.Pages#General",
 			priority: 0,
 			prefs: [

@@ -25,34 +25,30 @@
 						<td>
 							<table cellspacing=0 cellpadding=0 width='100%' border=0>
 							<tr>
-								<td rowspan=2>&nbsp;&nbsp;</td>
-								<td id='skin_td_username' height=100% style='text-align:left'>
-									<span id='skin_container_username'></span>
-								</td>
 								<td>
 									<div id='skin_container_offline_status' class='skin_container'></div>
 								</td>
+								<td>&nbsp;</td>
+								<td id='skin_td_username' style='text-align:left;padding:0px'>
+									<div id='skin_container_username' />
+								</td>
 							</tr>
 							<tr>
-								<td id='skin_td_logoff' colspan=2><nobr>
-									<span id='skin_container_logoff'><a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>Sign Out</a></span>,&nbsp;
-									<span><a href="javascript:;">My Account</a></span>,&nbsp;
-									<span class='skin_container_switch'><a href='javascript:switchToStandardClient()'>Mail Classic</a></span>
-								</nobr></td>
+								<td id='skin_td_logoff' colspan=5>
+									<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>Sign Out</a>,
+									<span id='skin_container_switch'><a href='javascript:switchToStandardClient()'>Mail Classic</a></span>
+								</td>
 							</tr>
 							</table>
 						</td>
 						<td style='width:100%'>&nbsp;</td>
-	<!--
-						<td id='skin_td_quota'>
-							<div id='skin_container_quota' class='skin_container'></div>
+						<td>
+							<nobr>
+								<a href='http://www.yahoo.com' target='_blank'>Yahoo!</a>&nbsp;|&nbsp;
+								<a href='http://my.yahoo.com' target='_blank'>My Yahoo!</a>&nbsp;|&nbsp;
+								<a href='http://news.yahoo.com' target='_blank'>News</a>&nbsp;
+							</nobr>
 						</td>
-	-->
-						<td><nobr>
-							<a href='http://www.yahoo.com' target='_blank'>Yahoo!</a>&nbsp;|&nbsp;
-							<a href='http://my.yahoo.com' target='_blank'>My Yahoo!</a>&nbsp;|&nbsp;
-							<a href='http://news.yahoo.com' target='_blank'>News</a>&nbsp;
-						</nobr></td>
 						<td id='skin_td_search'>
 							<div id='skin_container_search' class='skin_container'></div>
 						</td>
@@ -85,11 +81,9 @@
 							<!-- app chooser -->
 						</div>
 					</td>
-					<td class='ZmAppChooser' style='padding-right:10px;'><nobr>
-						<a href='/zimbra/m/'>Mobile</a>&nbsp;|&nbsp;
-						<a href='javascript:skin.gotoPrefs()'>Options</a>&nbsp;|&nbsp;
-						<span id='skin_container_help'><a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'>Help</a></span>
-					</nobr></td>
+					<td class='ZmAppChooser' id='skin_container_links'>
+						<!-- populated by App.template -->
+					</td>
 				</tr>
 				</table>
 			</td>
@@ -116,14 +110,6 @@
 		<tr id='skin_tr_main'>
 			<td height='100%' colspan='3'>
 				<table border=0 id='skin_table_inner' class='skin_table' cellpadding=0 cellspacing=0>
-<!--
-					<colgroup>
-						<col id='skin_col_tree_inner'>
-						<col id='skin_col_tree_app_sash_inner'>
-						<col id='skin_col_main_inner'>
-						<col id='skin_col_sidebar_ad'>
-					</colgroup>
--->
 					<tr>
 						<td height='100%'  id='skin_td_outer_tree'>
 							<!-- NOTE: tree and mini-cal need to be their own table so the mini-cal can be hidden -->
@@ -152,11 +138,11 @@
 						<td id='skin_td_app_main' class='full_height' height='100%'>
 							<div id='skin_container_app_main' class='skin_container'></div>
 						</td>
-						<td id='skin_td_sidebar_ad' style='vertical-align:top;'
-							><div class='skin_sidebar_ad' style='position:relative;height:100%;overflow:hidden;'
-								><div id='skin_container_sidebar_ad' style='position:absolute;'><!-- sidebar ad --></div
-							></div
-						></td>
+						<td id='skin_td_sidebar_ad' style='vertical-align:top;'>
+							<div class='skin_sidebar_ad' style='position:relative;height:100%;overflow:hidden;'>
+								<div id='skin_container_sidebar_ad' style='position:absolute;'><!-- sidebar ad --></div>
+							</div>
+						</td>
 					</tr>
 				</table>
 			</td>
@@ -164,24 +150,22 @@
 	
 		<!-- IE7 pegs the CPU *for some unknown reason* if we split out the toolbar and -->
 		<!-- main content into two different table rows.                                -->
-			<tr id='skin_tr_main_full' style='display:none'>
-				<td id='skin_td_app_full_outer' class='full_height' colspan='3' height='100%'>
-					<table id='skin_app_full_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
-						<tr>
-							<td id='skin_border_app_top_toolbar_full' class='skin_td_app_toolbar'></td>
-						</tr>
-						<tr>
-							<td id='skin_td_app_full' class='full_height' height='100%'>
-								<div id='skin_container_app_main_full' class='skin_container'>&nbsp;</div>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
-	</td>
-	</tr></table>
-	
+		<tr id='skin_tr_main_full' style='display:none'>
+			<td id='skin_td_app_full_outer' class='full_height' colspan='3' height='100%'>
+				<table id='skin_app_full_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
+					<tr>
+						<td id='skin_border_app_top_toolbar_full' class='skin_td_app_toolbar'></td>
+					</tr>
+					<tr>
+						<td id='skin_td_app_full' class='full_height' height='100%'>
+							<div id='skin_container_app_main_full' class='skin_container'>&nbsp;</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+
 	<!-- hidden stuff, deprecate and remove soon -->
 	<div style='display:none;left:-200;top:-200;width:100;height:100;overflow:hidden;'>
 		<div id='skin_container_quota' class='skin_container'></div>
