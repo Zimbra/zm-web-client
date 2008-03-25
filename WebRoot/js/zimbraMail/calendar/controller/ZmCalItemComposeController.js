@@ -104,7 +104,9 @@ function(attId) {
 ZmCalItemComposeController.prototype.toggleSpellCheckButton =
 function(toggled) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
-	spellCheckButton.setSelected((toggled || false));
+	if (spellCheckButton) {
+		spellCheckButton.setSelected((toggled || false));
+	}
 };
 
 ZmCalItemComposeController.prototype.initComposeView =
@@ -233,18 +235,15 @@ function(mode) {
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
 	
-	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL,ZmOperation.SEP];
+	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP];
 	
-	if(appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))
+	if (appCtxt.get(ZmSetting.ATTACHMENT_ENABLED)) {
 		buttons.push(ZmOperation.ATTACHMENT);
-	
-	buttons.push( ZmOperation.SEP, ZmOperation.SPELL_CHECK,ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
-	
-	
-	/*var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL,
-				   ZmOperation.SEP, ZmOperation.ATTACHMENT,
-				   ZmOperation.SEP, ZmOperation.SPELL_CHECK,
-				   ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT];*/
+	}
+	if (!appCtxt.isOffline) {
+		buttons.push(ZmOperation.SEP, ZmOperation.SPELL_CHECK);
+	}
+	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
 
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
@@ -254,9 +253,11 @@ function() {
 
 	// change default button style to toggle for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
-	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
-	if (AjxEnv.is800x600orLower) {
-		spellCheckButton.setText("");
+	if (spellCheckButton) {
+		spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
+		if (AjxEnv.is800x600orLower) {
+			spellCheckButton.setText("");
+		}
 	}
 
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
