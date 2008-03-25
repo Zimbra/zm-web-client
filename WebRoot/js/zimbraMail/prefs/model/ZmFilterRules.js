@@ -426,6 +426,6 @@ function(node, rule) {
 		}
 	}
 
-	var condition = new ZmCondition(subject, comparator, value, subjectMod);
+	var condition = new ZmCondition(subject, comparator, value, subjectMod, valueMod);
 	rule.addCondition(condition);
 };
