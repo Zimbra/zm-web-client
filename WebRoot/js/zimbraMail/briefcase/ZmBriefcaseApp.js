@@ -357,11 +357,10 @@ function(results, callback) {
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-
 //	this.getFileController().show(results, true);
-	if (callback) {
-		callback.run();
-	}
+// 	if (callback) {
+// 		callback.run();
+// 	}
 };
 
 ZmBriefcaseApp.prototype.setActive =

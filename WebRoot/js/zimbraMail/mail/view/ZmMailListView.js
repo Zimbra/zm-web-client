@@ -184,7 +184,7 @@ function(field, item, ev, div, match) {
 		tooltip = this._getParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
 	} else if (field == ZmItem.F_SUBJECT) {
 		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
-			tooltip = item.getInvite().getToolTip();
+			tooltip = item.invite.getToolTip();
 		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
             if (tooltip == "") {
