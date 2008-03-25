@@ -16,7 +16,6 @@
     <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <c:url var="toggleUrl" value="/h/calendar">
-                <c:param name="st" value="contact"/>
                 <%--TODO: add context (date, view, etc) --%>
                  <c:param name="${expanded ? 'collapse' : 'expand'}" value="calendars"/>
              </c:url>
