@@ -657,7 +657,13 @@ function(params) {
 	}
 
 	this._subjectField.value = params.subj || "";
-	this._htmlEditor.setContent(params.body || "");
+
+	var content = params.body || "";
+	if((content == "") && (this._htmlEditor.getMode() == DwtHtmlEditor.HTML)) {
+		content	= "<br>";
+	}
+	this._htmlEditor.setContent(content);
+
 
 	if (params.forwardHtml) {
 		this._attcDiv.innerHTML = params.forwardHtml;
@@ -1442,6 +1448,7 @@ function(action, msg, extraBodyText, incOption) {
 	if (sigStyle == ZmSetting.SIG_INTERNET) {
 		this.addSignature(value);
 	} else {
+		value = value || (composingHtml ? "<br>" : "");		
 		this._htmlEditor.setContent(value);
 	}
 	
