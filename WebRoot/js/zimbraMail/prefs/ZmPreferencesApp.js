@@ -167,9 +167,8 @@ function() {
 				ZmSetting.AUTO_SAVE_DRAFT_INTERVAL,
 				ZmSetting.REPLY_INCLUDE_ORIG,
 				ZmSetting.REPLY_PREFIX,
-				ZmSetting.SAVE_TO_SENT,
-                ZmSetting.COMPOSE_SAME_FORMAT
-            ]
+				ZmSetting.SAVE_TO_SENT
+			]
 		},
 		SHORTCUTS: {
 			title: ZmMsg.shortcuts,
