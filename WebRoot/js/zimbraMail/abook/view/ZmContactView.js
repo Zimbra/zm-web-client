@@ -104,22 +104,14 @@ function() {
 
 	// compute fullName if first/middle/last fields exist
 	// otherwise assume fullName is a separate field
-	var fullName;
 	var first = this._attr[ZmContact.F_firstName];
 	var middle = this._attr[ZmContact.F_middleName];
 	var last = this._attr[ZmContact.F_lastName];
-	if (first || middle || last) {
-		var fn = [];
-		if (first) fn.push(first);
-		if (middle) fn.push(middle);
-		if (last) fn.push(last);
-		fullName = fn.join(" ");
-	} else {
-		fullName = this._attr[ZmContact.X_fullName];
-		if (fullName) {
-			this._attr[ZmContact.F_fileAs] = "8:" + fullName;
-		}
-	}
+	var fn = [];
+	if (first) fn.push(first);
+	if (middle) fn.push(middle);
+	if (last) fn.push(last);
+	var fullName = fn.join(" ");
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
 	if (this._contact.id == null || this._contact.isGal) {
