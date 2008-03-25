@@ -74,7 +74,7 @@ function(msg, params) {
 	// bug fix #3595 - dont hilite if search was in:<folder name>
 	var curSearch = this._controller._app.currentSearch;
 	var folderId = curSearch ? curSearch.folderId : null;
-	params.isMatched = (msg.isInHitList() && (this._mode == ZmController.CONV_VIEW) && !folderId);
+	params.isMatched = (msg.inHitList && (this._mode == ZmController.CONV_VIEW) && !folderId);
 };
 
 ZmMailMsgListView.prototype._getDivClass =
