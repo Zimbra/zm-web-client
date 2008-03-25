@@ -340,7 +340,11 @@ and the container element is replaced with that control.
 				</tr>
 				<tr><td></td><td><hr></td></tr>
 			<$ } $>
-
+            <tr><td>&nbsp;</td>
+                <td class='ZOptionsField'>
+                    <input type=checkbox id="${id}_COMPOSE_SAME_FORMAT">
+                </td>
+		    </tr>
 			<$ var isNewWindow = data.isEnabled(ZmSetting.NEW_WINDOW_COMPOSE); $>
 			<$ if (isNewWindow) { $>
 				<tr><td>&nbsp;</td>
