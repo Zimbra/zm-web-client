@@ -1,0 +1,92 @@
+<template id='share.Widgets#ZmAppChooserButton' class='ZAppTab'>
+  <table id='${id}_select' class='ZWidgetTable  ZWidgetBorder ZAppTabBorder' cellspacing=0 cellpadding=0><tr>
+    <td style='width:5px'><div class='ImgAppTab_L'></div></td>
+	<td id='${id}_left_icon'  	class='ImgAppTab ZLeftIcon ZWidgetIcon'></td>
+	<td id='${id}_title'		class='ImgAppTab ZWidgetTitle'></td>
+	<td id='${id}_right_icon' 	class='ImgAppTab ZRightIcon ZWidgetIcon'></td>
+    <td style='width:5px'><div class='ImgAppTab_R'></div></td>
+  </tr></table>
+</template>
+
+<template id="share.App#UserInfo">
+	<$ if (!appCtxt.isOffline) { $>
+		<a href='/zimbra/m/'>Mobile</a>&nbsp;|&nbsp;
+	<$ } else { $>
+		<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>Setup</a>&nbsp;|&nbsp;
+	<$ } $>
+	<a href='javascript:skin.gotoPrefs()'>Options</a>&nbsp;|&nbsp;
+	<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= ZmMsg.help $></a>
+
+	<!-- HACK HACK HACK -->
+	<!-- In Y! skin, when in offline mode, we want to hide standard place of "Sign Out" link   -->
+	<$
+		if (appCtxt.isOffline) {
+			var container = document.getElementById("skin_td_logoff");
+			if (container) {
+				container.innerHTML = "";
+			}
+		}
+	$>
+</template>
+
+
+<template id='dwt.Widgets#ZTabBar' class='ZWidget'>
+  <table border=0 cellpadding=0 cellspacing=0 width=100%>
+    <tr valign='bottom' id='${id}_items'>
+      <$= AjxTemplate.expand("#ZTabBarPrefix", data) $>
+      <$= AjxTemplate.expand("#ZTabBarSuffix", data) $>
+    </tr>
+  </table>
+</template>
+
+<template id='dwt.Widgets#ZTabBarPrefix'></template>
+
+<template id='dwt.Widgets#ZTabBarSuffix'></template>
+
+
+<template id='share.Widgets#ZmSearchToolBar'>
+	<table border=0 cellpadding=0 cellspacing=0 width='100%' height='100%'>
+		<tr>
+			<td id='${id}_inputField' width='100%' class='ZmSearchToolbarCell'></td>
+			<td id='${id}_searchMenuButton' class='ZmSearchToolbarCell'></td>
+			<td id='${id}_searchButton' hint='text' class='ZmSearchToolbarCell ZSearchButtonCell'></td>
+			<!-- UNCOMMENT THIS IF YOU WANT CUSTOM SEARCH TO APPEAR AS A SEPARATE BUTTON ON SEARCH TOOLBAR
+			<td class='ZmSearchToolbarSeparatorCell'><div id='${id}_customSearchButtonSep' class='vertSep' style='display:none'></div></td>
+			<td id='${id}_customSearchButton' class='ZmSearchToolbarCell'></td>
+			-->
+			<td id='${id}_saveButton' hint='text' class='ZmSearchToolbarCell ZmSearchLink'></td>
+			<td id='${id}_advancedButton' hint='text' class='ZmSearchToolbarCell ZmSearchLink'></td>
+		</tr>
+	</table>
+</template>
+
+
+<template id='dwt.Widgets#DwtBaseDialog' width='20' height='32'>
+    <div class='DwtDialog'>
+        <table cellspacing=0 cellpadding=0>
+            <tr id='${dragId}'>
+                <td class='minWidth Dialog_NW'></td>
+                <td class='minWidth Dialog_N'>${icon}</td>
+                <td id='${id}_title' class='Dialog_N DwtDialogTitle'>${title}</td>
+                <td class='minWidth Dialog_N'>${closeIcon2}</td>
+                <td class='minWidth Dialog_N'>${closeIcon1}</td>
+                <td class='minWidth Dialog_NE'></td>
+            </tr>
+            <tr>
+                <td class='Dialog_W'></td>
+                <td class='DialogBody' colspan='4'>
+                  <div id='${id}_content' class='DwtDialogBody'></div>
+                  <$ if (data.controlsTemplateId) { $>
+                    <$= AjxTemplate.expand(data.controlsTemplateId, data) $>
+                  <$ } $>
+                </td>
+                <td class='Dialog_E'><div></div></td>
+            </tr>
+            <tr>
+                <td class='minWidth'><div class='Dialog_SW'></div></td>
+                <td colspan='4' class='Dialog_S'><div></div></td>
+                <td class='minWidth'><div class='Dialog_SE'></div></td>
+            </tr>
+        </table>
+    </div>
+</template>

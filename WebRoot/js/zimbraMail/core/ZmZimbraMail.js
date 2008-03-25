@@ -1304,7 +1304,9 @@ function() {
 		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [data.percent+'%', data.limit]);
 	}
 	else {
-		data.desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [data.size]);
+		data.desc = appCtxt.isOffline
+			? AjxMessageFormat.format(ZmMsg.offlineQuota, [data.size])
+			: AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [data.size]);
 		quotaTemplateId = 'UsedUnlimited';
 	}
 	this._usedQuotaField.getHtmlElement().innerHTML = AjxTemplate.expand('share.Quota#'+quotaTemplateId, data)
