@@ -334,7 +334,8 @@
 															</tr>
 														</table>
 														<input type="hidden" name="doAction" value="1"/>
-												</form>
+                                                     <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+                                                </form>
 											</td>
 										</tr>
 									</table>
