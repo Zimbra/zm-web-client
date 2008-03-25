@@ -340,7 +340,16 @@ function(optionsSaved, callback, noPop, result) {
 		appCtxt.getAppViewMgr().popView(true);
 	}
 	
-	if (callback) callback.run(result);
+	if (callback) {
+		callback.run(result);
+	}
+
+	var postSaveCallbacks = this._prefsView.getPostSaveCallbacks();
+	if (postSaveCallbacks && postSaveCallbacks.length) {
+		for (var i = 0; i < postSaveCallbacks.length; i++) {
+			postSaveCallbacks[i].run();
+		}
+	}
 };
 
 ZmPrefController.prototype._backListener = 

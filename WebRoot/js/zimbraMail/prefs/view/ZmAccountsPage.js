@@ -429,6 +429,11 @@ function() {
     return new AjxCallback(this, this._preSave);
 };
 
+ZmAccountsPage.prototype.getPostSaveCallback =
+function() {
+    return new AjxCallback(this, this._postSave);
+};
+
 ZmAccountsPage.prototype.addCommand =
 function(batchCmd) {
 	// make sure that the current object proxy is up-to-date
@@ -1587,6 +1592,28 @@ function() {
 ZmAccountsPage.prototype._handleCreateAccount =
 function(account, resp) {
 	delete account._new;
+	account._needsSync = true;
+};
+
+ZmAccountsPage.prototype._postSave =
+function() {
+	var needsSync = [];
+	var accounts = this._accounts.getArray();
+	for (var i = 0; i < accounts.length; i++) {
+		var account = accounts[i];
+		if (account._needsSync) {
+			needsSync.push(account);
+		}
+	}
+
+	if (needsSync.length) {
+	    var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+		for (var i = 0; i < needsSync.length; i++) {
+			var account = needsSync[i];
+			dsCollection.importMailFor(account.folderId);
+			delete account._needsSync;
+		}
+	}
 };
 
 //

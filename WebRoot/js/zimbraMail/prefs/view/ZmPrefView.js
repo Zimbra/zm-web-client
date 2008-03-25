@@ -159,6 +159,29 @@ ZmPrefView.prototype.getPreSaveCallbacks = function() {
 };
 
 /**
+ * This method iterates over the preference pages to see if any
+ * of them have actions to perform <em>after</em> saving. If
+ * the page has a <code>getPostSaveCallback</code> method and it
+ * returns a callback, the pref controller will call it after
+ * performing any save. This is done for each page that returns
+ * a callback.
+ */
+ZmPrefView.prototype.getPostSaveCallbacks =
+function() {
+	var callbacks = [];
+	for (var id in this.prefView) {
+		var viewPage = this.prefView[id];
+		if (viewPage && viewPage.getPostSaveCallback && viewPage.hasRendered()) {
+			var callback = viewPage.getPostSaveCallback();
+			if (callback) {
+				callbacks.push(callback);
+			}
+		}
+	}
+	return callbacks;
+};
+
+/**
 * Returns a list of prefs whose values have changed due to user form input.
 * Each prefs page is checked in turn. This method can also be used to check 
 * simply whether _any_ prefs have changed, in which case it short-circuits as
