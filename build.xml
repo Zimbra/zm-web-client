@@ -523,7 +523,7 @@
         <!--<property name='img.dir.nomerge' value='examples,logo,translate' />-->
 
 		<copy todir="${build.web.dir}" flatten="true">
-			<fileset dir='${img.dir}' includes='**/favicon.ico'/>
+			<fileset dir='${img.dir}' includes='**/favicon.ico,**/apple-touch-icon.png'/>
 		</copy>
 
         <dependset>
