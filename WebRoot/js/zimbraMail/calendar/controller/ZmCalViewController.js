@@ -1534,7 +1534,7 @@ function() {
 				item.setMenu(actionMenu);
 				// NOTE: Target object for listener is menu item
 				var menuItemListener = new AjxListener(item, this._recurringMenuPopup);
-				item.addListener(DwtEvent.ONMOUSEOVER, menuItemListener);
+				item.addListener(AjxEnv.isIE ? DwtEvent.ONMOUSEENTER : DwtEvent.ONMOUSEOVER, menuItemListener);
 			}
 			this._recurringActionMenu.addPopdownListener(this._menuPopdownListener);
 		}
