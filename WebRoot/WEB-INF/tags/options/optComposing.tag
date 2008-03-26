@@ -90,6 +90,15 @@
         </tr>
         <app:optSeparator/>
         <tr>
+            <td class='ZOptionsTableLabel'>&nbsp;
+            </td>
+            <td>
+                <app:optCheckbox boxfirst="true" trailingcolon="false"  label="optionsReplyForwardInSameFormat" pref="zimbraPrefForwardReplyInOriginalFormat"
+                                 checked="${mailbox.prefs.forwardReplyInOriginalFormat}"/>
+            </td>
+        </tr>
+        <app:optSeparator/>
+        <tr>
             <td class='ZOptionsTableLabel'>
                 <fmt:message key="optionsReplyReplyAll"/> :
             </td>
