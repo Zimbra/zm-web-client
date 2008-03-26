@@ -526,8 +526,11 @@ function(modifies) {
 
 	for (var name in modifies) {
 		if (name == "mbx") {
-			var setting = appCtxt.getSettings().getSetting(ZmSetting.QUOTA_USED);
-			setting.notifyModify({_name:name, s:modifies[name].s});
+			var acct = modifies[name].acct;
+			if (!acct || (acct && acct == appCtxt.getActiveAccount().id)) {
+				var setting = appCtxt.getSettings().getSetting(ZmSetting.QUOTA_USED);
+				setting.notifyModify({_name:name, s:modifies[name].s});
+			}
 			continue;
 		}
 
