@@ -265,6 +265,10 @@ function(overviewId, parent, types) {
 ZmPicker.prototype._hideRoot =
 function(type) {
 	var ti = this._treeView[type].getTreeItemById(ZmOrganizer.ID_ROOT);
+	if (!ti) {
+		var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT)
+		ti = this._treeView[type].getTreeItemById(rootId);
+	}
 	Dwt.setVisible(ti._checkBoxCell, false);
 	ti.setExpanded(true);
 	ti.setVisible(false, true);
