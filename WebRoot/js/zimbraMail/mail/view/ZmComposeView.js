@@ -1060,7 +1060,18 @@ function() {
 ZmComposeView.prototype._getForwardAttIds =
 function(name) {
 	var forAttIds = [];
-	var forAttList = document.getElementsByName(name);
+	var forAttList = [];
+	// bug fix #26114 - safari 3.1 doesnt find checkboxes via getElementsByName
+	// so do it the hard way :/
+	if (AjxEnv.isSafari) {
+		var inputs = document.getElementsByTagName("input");
+		for (var i = 0; i < inputs.length; i++) {
+			if (inputs[i].type == "checkbox" && inputs[i].name == name)
+				forAttList.push(inputs[i]);
+		}
+	} else {
+		forAttList = document.getElementsByName(name);
+	}
 
 	// walk collection of input elements
 	for (var i = 0; i < forAttList.length; i++) {

@@ -222,8 +222,9 @@
 	<table cellspacing=0 cellpadding=0 border=0 width=100%>
 	<$ for (var i = 0; i < data.attachments.length; i++) { $>
 		<$ var attachment = data.attachments[i]; $>
-		<tr><td width=65 align=right>
-		<$ if (i == 0) { $>
+		<tr>
+			<td width=65 align=right>
+			<$ if (i == 0) { $>
 				<div class='ImgAttachment'></div>
 			<$ } $>
 			</td>
@@ -231,7 +232,7 @@
 				<$ if (!data.isNew) { $>
 					<$ var isChecked = data.isForward || data.isForwardInline || data.isDraft || attachment.ci $>
 					<input type='checkbox' value='<$=attachment.part$>' name='<$= ZmComposeView.FORWARD_ATT_NAME $>' <$= isChecked ? "checked='checked'>" : ">" $>
-			<$ } $>
+				<$ } $>
 			</td>
 			<td class='nobreak'>
 				<!-- The open A element is within the attachment.link string -->
