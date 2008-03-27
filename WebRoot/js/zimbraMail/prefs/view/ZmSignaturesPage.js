@@ -104,13 +104,25 @@ ZmSignaturesPage.prototype.reset = function(useDefaults) {
 // saving
 
 ZmSignaturesPage.prototype.isDirty = function() {
-	return	this.getNewSignatures().length > 0 ||
+
+    if(this._editState){
+        var sign = this._editState;
+        this._handleDoneButton(sign._htmlElId, null);
+    }
+
+    return	this.getNewSignatures().length > 0 ||
 			this.getDeletedSignatures().length > 0 ||
 			this.getModifiedSignatures().length > 0;
 };
 
 ZmSignaturesPage.prototype.validate = function() {
-	var signatures = this.getAllSignatures();
+
+    if(this._editState){
+        var sign = this._editState;
+        this._handleDoneButton(sign._htmlElId, null);
+    }
+
+    var signatures = this.getAllSignatures();
 	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
 	for (var i = 0; i < signatures.length; i++) {
         var signature = signatures[i];
