@@ -21,11 +21,11 @@
  * button/menu for switching views within the current app.
  * @class
  */
-ZmCurrentAppToolBar = function(parent) {
+ZmCurrentAppToolBar = function(parent, id) {
 
-	DwtToolBar.call(this, {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE});
+	DwtToolBar.call(this, {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE, id:id});
 
-	this._newFolderBtn = new DwtToolBarButton({parent:this});
+	this._newFolderBtn = new DwtToolBarButton({parent:this, id:ZmId.NEW_FOLDER_BUTTON});
 	this._newFolderBtn.setVisible(false);
 	this._newFolderBtn.addSelectionListener(new AjxListener(this, this._newFolderListener));
 };

@@ -57,6 +57,7 @@ ZmApp.SETTING[ZmApp.MAIL]			= ZmSetting.MAIL_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.MAIL]	= ZmSetting.MAIL_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.MAIL]			= 20;
 ZmApp.QS_ARG[ZmApp.MAIL]			= "mail";
+ZmApp.BUTTON_ID[ZmApp.MAIL]			= ZmId.MAIL_APP;
 
 ZmMailApp.DEFAULT_AUTO_SAVE_DRAFT_INTERVAL = 30;
 
@@ -616,7 +617,8 @@ function() {
 								{msgKey:		"searchMail",
 								 tooltipKey:	"searchMail",
 								 icon:			"Message",
-								 shareIcon:		"SharedMailFolder"
+								 shareIcon:		"SharedMailFolder",
+								 id:			ZmId.SEARCH_MENU_MAIL
 								});
 };
 

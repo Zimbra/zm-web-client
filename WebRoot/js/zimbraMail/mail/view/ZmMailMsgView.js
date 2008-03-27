@@ -15,13 +15,15 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
-	if (arguments.length == 0) return;
-	className = className ? className : "ZmMailMsgView";
-	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
+ZmMailMsgView = function(params) {
 
-	this._mode = mode;
-	this._controller = controller;
+	if (arguments.length == 0) { return; }
+	
+	params.className = params.className || "ZmMailMsgView";
+	DwtComposite.call(this, params);
+
+	this._mode = params.mode;
+	this._controller = params.controller;
 
 	this._displayImagesId = Dwt.getNextId();
 	this._msgTruncatedId = Dwt.getNextId();

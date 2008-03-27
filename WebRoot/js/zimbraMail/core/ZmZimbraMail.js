@@ -198,11 +198,11 @@ function(params) {
 	}
 
 	// Create the shell
-	var userShell = params.userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
+	var userShell = params.userShell = window.document.getElementById(ZmId.SKIN_SHELL);
 	if (!userShell) {
 		alert("Could not get user shell - skin file did not load properly");
 	}
-	var shell = new DwtShell({userShell:userShell, docBodyScrollable:false});
+	var shell = new DwtShell({userShell:userShell, docBodyScrollable:false, id:ZmId.SHELL});
 	appCtxt.setShell(shell);
 
 	appCtxt.setItemCache(new AjxCache());
@@ -288,14 +288,17 @@ function(params) {
 	if (!this._components) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash({parent:this._shell, style:DwtSash.HORIZONTAL_STYLE,
-															 className:"console_inset_app_l", threshold:20});
+															 className:"console_inset_app_l", threshold:20, id:ZmId.MAIN_SASH});
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
-		this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField = this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO);
-		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField = this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO);
-		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell);
+		this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField =
+			this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO, ZmId.USER_NAME);
+		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField =
+			this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO, ZmId.USER_QUOTA);
+		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell, ZmId.CURRENT_APP_TOOLBAR);
 		appCtxt.setCurrentAppToolbar(currentAppToolbar);
 		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
-		this._components[ZmAppViewMgr.C_STATUS] = this.statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE);
+		this._components[ZmAppViewMgr.C_STATUS] = this.statusView =
+			new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
 
 	this._createEnabledApps();
@@ -1518,19 +1521,18 @@ function(ev) {
 
 ZmZimbraMail.prototype._createBanner =
 function() {
-	var banner = new DwtComposite(this._shell, null, Dwt.ABSOLUTE_STYLE);
+	var banner = new DwtComposite({parent:this._shell, posStyle:Dwt.ABSOLUTE_STYLE, id:ZmId.BANNER});
 	var logoUrl = appCtxt.get(ZmSetting.SKIN_HINTS, "banner.url") || appCtxt.get(ZmSetting.LOGO_URI);
-
-	var data = {	url: logoUrl	};
+	var data = {url:logoUrl};
 	banner.getHtmlElement().innerHTML  = AjxTemplate.expand('share.App#Banner', data);
 	return banner;
 };
 
 ZmZimbraMail.prototype._createUserInfo =
-function(className, cid) {
+function(className, cid, id) {
     var position = appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
     var posStyle = position || Dwt.ABSOLUTE_STYLE;
-    var ui = new DwtComposite(this._shell, className, posStyle);
+    var ui = new DwtComposite({parent:this._shell, className:className, posStyle:posStyle, id:id});
 	if (AjxEnv.isIE) {
 		var container = document.getElementById("skin_td_tree");
 		var w = container ? Dwt.getSize(document.getElementById("skin_td_tree")).x : null;
@@ -1559,7 +1561,7 @@ function() {
 		return ZmZimbraMail.hashSortCompare(ZmApp.CHOOSER_SORT, a, b);
 	});
 
-	var appChooser = new ZmAppChooser(this._shell, null, buttons);
+	var appChooser = new ZmAppChooser(this._shell, null, buttons, ZmId.APP_CHOOSER);
 
 	var buttonListener = new AjxListener(this, this._appButtonListener);
 	for (var i = 0; i < buttons.length; i++) {

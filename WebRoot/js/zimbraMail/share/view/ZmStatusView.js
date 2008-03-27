@@ -14,11 +14,11 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-ZmStatusView = function(parent, className, posStyle) {
+ZmStatusView = function(parent, className, posStyle, id) {
 
-	DwtControl.call(this, {parent:parent, className:(className || "ZmStatus"), posStyle:posStyle});
+	DwtControl.call(this, {parent:parent, className:(className || "ZmStatus"), posStyle:posStyle, id:id});
 
-	this._toast = this._standardToast = new ZmToast(this);
+	this._toast = this._standardToast = new ZmToast(this, ZmId.TOAST);
 	this._statusQueue = [];
 };
 
@@ -122,10 +122,10 @@ function() {
 // ZmToast
 //
 
-ZmToast = function(parent) {
+ZmToast = function(parent, id) {
 	if (arguments.length == 0) { return; }
 
-    DwtComposite.call(this, parent.shell, "ZToast", Dwt.ABSOLUTE_STYLE);
+    DwtComposite.call(this, {parent:parent.shell, className:"ZToast", posStyle:Dwt.ABSOLUTE_STYLE, id:id});
     this._statusView = parent;
     this._createHtml();
 

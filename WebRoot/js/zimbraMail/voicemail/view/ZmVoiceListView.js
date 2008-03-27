@@ -15,9 +15,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmVoiceListView = function(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
-	if (arguments.length == 0) return;
-	ZmListView.call(this, parent, className, posStyle, view, type, controller, headerList, dropTgt);
+ZmVoiceListView = function(params) {
+	if (arguments.length == 0) { return; }
+	ZmListView.call(this, params);
 
 	this._contactToItem = {}; // Map of contact ids to the items we draw them in.
 

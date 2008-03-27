@@ -73,7 +73,8 @@ function(search) {
 
 ZmTradController.prototype._createDoublePaneView = 
 function() {
-	return (new ZmTradView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt));
+	return (new ZmTradView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,
+							controller:this, dropTgt:this._dropTgt}));
 };
 
 ZmTradController.prototype._getViewType =

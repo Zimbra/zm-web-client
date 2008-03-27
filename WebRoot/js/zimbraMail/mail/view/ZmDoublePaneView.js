@@ -15,19 +15,24 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDoublePaneView = function(parent, className, posStyle, mode, controller, dropTgt) {
+ZmDoublePaneView = function(params) {
 
-	if (arguments.length == 0) return;
-	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
+	if (arguments.length == 0) { return; }
 
-	this._controller = controller;
+	DwtComposite.call(this, params);
+
+	this._controller = params.controller;
 	this._initHeader();
-	this._mailListView = this._createMailListView(mode, controller, dropTgt);
+	params.className = null;
+	this._mailListView = this._createMailListView(params);
 	this._msgSash = new DwtSash({parent:this, style:DwtSash.VERTICAL_STYLE, className:"AppSash-vert",
 								 threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
-	this._msgView = new ZmMailMsgView(this, null, posStyle, mode, controller);
+	params.parent = this;
+	params.className = null;
+	params.id = params.msgViewId;
+	this._msgView = new ZmMailMsgView(params);
 
-	if (!controller._readingPaneOn) {
+	if (!params.controller._readingPaneOn) {
 		this._msgView.setVisible(false);
 		this._msgSash.setVisible(false);
 	}
@@ -75,8 +80,10 @@ function() {
 };
 
 ZmDoublePaneView.prototype._createMailListView =
-function(mode, controller, dropTgt) {
-	return new ZmMailMsgListView(this, null, Dwt.ABSOLUTE_STYLE, mode, controller, dropTgt);
+function(params) {
+	params.parent = this;
+	params.posStyle = Dwt.ABSOLUTE_STYLE;
+	return new ZmMailMsgListView(params);
 };
 
 ZmDoublePaneView.prototype.getMailListView =

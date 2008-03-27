@@ -510,34 +510,6 @@ function() {
 	this.registerSetting("TIMEOUT",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:30}); // seconds
 	this.registerSetting("USE_XML",							{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
-    
-    // IDs FOR HTML COMPONENTS IN THE SKIN
-	this.registerSetting("SKIN_APP_BOTTOM_TOOLBAR_ID",		{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_app_bottom_toolbar"});
-	this.registerSetting("SKIN_APP_CHOOSER_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_app_chooser"});
-	this.registerSetting("SKIN_APP_MAIN_FULL_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_app_main_full"});
-	this.registerSetting("SKIN_APP_MAIN_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_app_main"});
-	this.registerSetting("SKIN_APP_MAIN_ROW_FULL_ID",		{type:ZmSetting.T_CONFIG, defaultValue:"skin_tr_main_full"});
-	this.registerSetting("SKIN_APP_MAIN_ROW_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_tr_main"});
-	this.registerSetting("SKIN_APP_TOP_TOOLBAR_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_app_top_toolbar"});
-	this.registerSetting("SKIN_CURRENT_APP_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_current_app"});
-	this.registerSetting("SKIN_LOGO_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_logo"});
-	this.registerSetting("SKIN_OFFLINE_STATUS",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_offline_status"});
-	this.registerSetting("SKIN_QUOTA_INFO_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_quota"});
-	this.registerSetting("SKIN_SASH_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_tree_app_sash"});
-	this.registerSetting("SKIN_SEARCH_BUILDER_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_search_builder"});
-	this.registerSetting("SKIN_SEARCH_BUILDER_TOOLBAR_ID",	{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_search_builder_toolbar"});
-	this.registerSetting("SKIN_SEARCH_BUILDER_TR_ID",		{type:ZmSetting.T_CONFIG, defaultValue:"skin_tr_search_builder"});
-	this.registerSetting("SKIN_SEARCH_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_search"});
-	this.registerSetting("SKIN_SHELL_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_outer"});
-	this.registerSetting("SKIN_SPACING_SEARCH_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_spacing_search"});
-	this.registerSetting("SKIN_SPLASH_SCREEN_ID",			{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_splash_screen"});
-	this.registerSetting("SKIN_STATUS_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_status"});
-	this.registerSetting("SKIN_STATUS_ROW_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_tr_status"});
-	this.registerSetting("SKIN_TREE_FOOTER_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_tree_footer"});
-	this.registerSetting("SKIN_TREE_ID",					{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_tree"});
-	this.registerSetting("SKIN_USER_INFO_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_username"});
-	this.registerSetting("SKIN_WEB_SEARCH_ID",				{type:ZmSetting.T_CONFIG, defaultValue:"skin_container_web_search"});
-	
 	// COS SETTINGS - APPS
 	this.registerSetting("BRIEFCASE_ENABLED",				{name:"zimbraFeatureBriefcasesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CALENDAR_ENABLED",				{name:"zimbraFeatureCalendarEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});

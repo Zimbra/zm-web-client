@@ -27,11 +27,12 @@
 *
 * @author Conrad Damon
 */
-ZmChicletButton = function(parent, className, icon, text, isLast) {
+ZmChicletButton = function(parent, className, icon, text, isLast, id) {
 	if (arguments.length == 0) return;
 
     var style = DwtLabel.IMAGE_LEFT;
-    DwtButton.call(this, {parent:parent, style:style, className:className, posStyle:DwtControl.RELATIVE_STYLE});
+    DwtButton.call(this, {parent:parent, style:style, className:className,
+    					  posStyle:DwtControl.RELATIVE_STYLE, id:id});
 
     this.setImage(icon);
     this.setText(text);

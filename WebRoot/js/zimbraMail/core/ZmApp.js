@@ -69,6 +69,7 @@ ZmApp.CLASS					= {};	// constructor for app class
 ZmApp.SETTING				= {};	// ID of setting that's true when app is enabled
 ZmApp.UPSELL_SETTING		= {};	// ID of setting that's true when app upsell is enabled
 ZmApp.LOAD_SORT				= {};	// controls order in which apps are instantiated
+ZmApp.BUTTON_ID				= {};	// ID for app button on app chooser toolbar
 
 // these are set via registerApp() in app constructor
 ZmApp.MAIN_PKG				= {};	// main package that composes the app

@@ -31,10 +31,12 @@
  *
  * @author Conrad Damon
  */
-ZmConvDoublePaneView = function(parent, className, posStyle, controller, dropTgt) {
+ZmConvDoublePaneView = function(params) {
 
-	className = className || "ZmConvDoublePaneView";
-	ZmDoublePaneView.call(this, parent, className, posStyle, ZmController.CONVLIST_VIEW, controller, dropTgt);
+	params.className = params.className || "ZmConvDoublePaneView";
+	params.mode = ZmController.CONVLIST_VIEW;
+	params.msgViewId = ZmId.CONV_LIST_MSG_VIEW;
+	ZmDoublePaneView.call(this, params);
 }
 
 ZmConvDoublePaneView.prototype = new ZmDoublePaneView;
@@ -46,8 +48,11 @@ function() {
 }
 
 ZmConvDoublePaneView.prototype._createMailListView =
-function(mode, controller, dropTgt) {
-	return new ZmConvListView(this, null, Dwt.ABSOLUTE_STYLE, controller, dropTgt);
+function(params) {
+	params.parent = this;
+	params.posStyle = Dwt.ABSOLUTE_STYLE;
+	params.id = ZmId.CONV_LIST_VIEW;
+	return new ZmConvListView(params);
 };
 
 /**
@@ -55,10 +60,12 @@ function(mode, controller, dropTgt) {
  * It handles expanding convs as well as paging additional messages in. Message rows are
  * inserted after the row of the owning conv.
  */
-ZmConvListView = function(parent, className, posStyle, controller, dropTgt) {
+ZmConvListView = function(params) {
 
-	var headerList = this._getHeaderList(parent);
-	ZmMailListView.call(this, parent, className, posStyle, ZmController.CONVLIST_VIEW, ZmItem.CONV, controller, headerList, dropTgt);
+	params.headerList = this._getHeaderList(parent);
+	params.view = ZmController.CONVLIST_VIEW;
+	params.type = ZmItem.CONV;
+	ZmMailListView.call(this, params);
 
 	// change listener needs to handle both types of events
 	this._handleEventType[ZmItem.CONV] = true;

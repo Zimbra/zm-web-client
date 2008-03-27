@@ -39,6 +39,7 @@ ZmApp.SETTING[ZmApp.CALENDAR]			= ZmSetting.CALENDAR_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.CALENDAR]	= ZmSetting.CALENDAR_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.CALENDAR]			= 40;
 ZmApp.QS_ARG[ZmApp.CALENDAR]			= "calendar";
+ZmApp.BUTTON_ID[ZmApp.CALENDAR]			= ZmId.CALENDAR_APP;
 
 // ms to wait before fetching reminders
 ZmCalendarApp.REMINDER_START_DELAY = 10000;
@@ -288,7 +289,8 @@ function() {
 								 tooltipKey:	"searchAppts",
 								 icon:			"Appointment",
 								 shareIcon:		"SharedCalendarFolder",
-								 setting:		ZmSetting.CALENDAR_ENABLED
+								 setting:		ZmSetting.CALENDAR_ENABLED,
+								 id:			ZmId.SEARCH_MENU_APPTS
 								});
 };
 

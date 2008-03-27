@@ -63,7 +63,7 @@ function() {
 
 // Consts
 
-ZmCalItemEditView.UPLOAD_FIELD_NAME = "attUpload_" + Dwt.getNextId();
+ZmCalItemEditView.UPLOAD_FIELD_NAME = "__calAttUpload__";
 ZmCalItemEditView.SHOW_MAX_ATTACHMENTS = AjxEnv.is800x600orLower ? 2 : 3;
 
 ZmCalItemEditView._REPEAT_CHANGE = "REPEAT_CHANGE";

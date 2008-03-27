@@ -17,7 +17,8 @@
 
 ZmTaskListView = function(parent, controller, dropTgt) {
 	var headerList = this._getHeaderList(parent);
-	ZmListView.call(this, parent, null, Dwt.ABSOLUTE_STYLE, ZmController.TASKLIST_VIEW, ZmItem.TASK, controller, headerList, dropTgt);
+	ZmListView.call(this, {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE, view:ZmController.TASKLIST_VIEW,
+						   type:ZmItem.TASK, controller:controller, headerList:headerList, dropTgt:dropTgt});
 };
 
 ZmTaskListView.prototype = new ZmListView;

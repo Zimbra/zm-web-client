@@ -16,12 +16,7 @@
  */
 
 ZmNotebookFileView = function(parent, controller) {
-	var className = null;
-	var posStyle = null;
-	var mode = null;
-	var dropTgt = null;
-	ZmListView.call(this, parent, className, posStyle, mode, controller, dropTgt);
-
+	ZmListView.call(this, {parent:parent, controller:controller});
 	this._controller = controller;
 }
 

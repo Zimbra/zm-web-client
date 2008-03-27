@@ -164,8 +164,8 @@ ZmSearchController.prototype._setView =
 function() {
 	// Create search panel - a composite is needed because the search builder
 	// element (ZmBrowseView) is added to it (can't add it to the toolbar)
-	this._searchPanel = new DwtComposite(this._container, "SearchPanel", Dwt.ABSOLUTE_STYLE);
-	this._searchToolBar = new ZmSearchToolBar(this._searchPanel);
+	this._searchPanel = new DwtComposite({parent:this._container, className:"SearchPanel", posStyle:Dwt.ABSOLUTE_STYLE});
+	this._searchToolBar = new ZmSearchToolBar(this._searchPanel, ZmId.SEARCH_TOOLBAR);
 
 	var tg = this._createTabGroup();
 	tg.addMember(this._searchToolBar.getSearchField());

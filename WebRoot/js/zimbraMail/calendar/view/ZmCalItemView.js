@@ -33,7 +33,7 @@
 ZmCalItemView = function(parent, posStyle, controller) {
 	if (arguments.length == 0) return;
 
-	ZmMailMsgView.call(this, parent, null, posStyle, null, controller);
+	ZmMailMsgView.call(this, {parent:parent, posStyle:posStyle, controller:controller});
     this.setScrollWithIframe(true);// For the bug no 12995
 };
 

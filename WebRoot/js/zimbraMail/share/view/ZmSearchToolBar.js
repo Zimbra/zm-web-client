@@ -15,16 +15,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmSearchToolBar = function(parent, posStyle) {
+ZmSearchToolBar = function(parent, id) {
 
-	DwtComposite.call(this, {parent:parent, className:"ZmSearchToolbar"});
+	DwtComposite.call(this, {parent:parent, className:"ZmSearchToolbar", id:id});
 
 	// set up "search all" menu item
-	var params = { msgKey:"searchAll", tooltipKey:"searchForAny", icon:"Globe", setting:ZmSetting.MIXED_VIEW_ENABLED, index:0 };
+	var params = { msgKey:"searchAll", tooltipKey:"searchForAny", icon:"Globe",
+				   setting:ZmSetting.MIXED_VIEW_ENABLED, index:0, id:ZmId.SEARCH_MENU_ALL };
 	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_ANY_MI, params);
 
 	// set up "incl. shared items" menu item
-	params = { msgKey:"searchShared", tooltipKey:"searchShared", icon:"Group", setting:ZmSetting.SHARING_ENABLED };
+	params = { msgKey:"searchShared", tooltipKey:"searchShared", icon:"Group",
+			   setting:ZmSetting.SHARING_ENABLED, id:ZmId.SEARCH_MENU_SHARED };
 	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_SHARED_MI, params);
 
 	this._createHtml();
@@ -51,6 +53,7 @@ ZmSearchToolBar.MSG_KEY 				= {};									// text for menu item
 ZmSearchToolBar.TT_MSG_KEY 				= {};									// tooltip text for menu item
 ZmSearchToolBar.ICON 					= {};									// icon for menu item
 ZmSearchToolBar.SHARE_ICON				= {};									// icon for shared menu item
+ZmSearchToolBar.ID 						= {};									// ID for menu item
 
 
 // Public methods
@@ -80,6 +83,7 @@ function(id) {
 		ZmSearchToolBar.ICON[id]		= "";
 		ZmSearchToolBar.SHARE_ICON[id]	= "";
 		ZmSearchToolBar.SETTING[id]		= "";
+		ZmSearchToolBar.ID[id]			= "";
 	}
 	this.dedupSeparators(menu);
 }
@@ -120,6 +124,7 @@ function(id, params) {
 	if (params.icon)		{ ZmSearchToolBar.ICON[id]			= params.icon; }
 	if (params.shareIcon)	{ ZmSearchToolBar.SHARE_ICON[id]	= params.shareIcon; }
 	if (params.setting)		{ ZmSearchToolBar.SETTING[id]		= params.setting; }
+	if (params.id)			{ ZmSearchToolBar.ID[id]			= params.id; }
 
 	// test for null since index value can be zero :)
 	if (params.index == null || params.index < 0 || params.index >= ZmSearchToolBar.MENU_ITEMS.length) {
@@ -206,7 +211,7 @@ function() {
 };
 
 ZmSearchToolBar.prototype.createCustomSearchBtn =
-function(icon, text, listener) {
+function(icon, text, listener, id) {
 	if (!this._customSearchListener) {
 		this._customSearchListener = new AjxListener(this, this._customSearchBtnListener);
 	}
@@ -215,7 +220,8 @@ function(icon, text, listener) {
 	var customSearchBtn = document.getElementById(this._htmlElId + "_customSearchButton");
 	if (customSearchBtn) {
 		if (!this._customSearchBtn) {
-			this._customSearchBtn = this._addButton({ buttonId:"_customSearchButton", lbl:text, icon:icon} );
+			this._customSearchBtn = this._addButton({ tdId:"_customSearchButton", buttonId:ZmId.CUSTOM_SEARCH_BUTTON,
+													  lbl:text, icon:icon, id:id} );
 			this._customSearchBtn.setData("CustomSearchItem", [ icon, text, listener ]);
 			this._customSearchBtn.addSelectionListener(this._customSearchListener);
 
@@ -227,7 +233,7 @@ function(icon, text, listener) {
 		} else {
 			var menu = this._customSearchBtn.getMenu();
 			var item;
-			var params = {parent:menu, enabled:true, style:DwtMenuItem.RADIO_STYLE, radioGroupId:0};
+			var params = {parent:menu, enabled:true, style:DwtMenuItem.RADIO_STYLE, radioGroupId:0, id:id};
 			if (!menu) {
 				var data = this._customSearchBtn.getData("CustomSearchItem");
 				menu = new DwtMenu({parent:this._customSearchBtn, className:"ActionMenu"});
@@ -249,21 +255,22 @@ function(icon, text, listener) {
 	} else {
 		if (this._searchMenuCreated) {
 			var menu = this._searchMenuButton.getMenu();
-			this._createCustomSearchMenuItem(menu, icon, text, listener);
+			this._createCustomSearchMenuItem(menu, icon, text, listener, id);
 		} else {
 			if (!this._customSearchMenuItems) {
 				this._customSearchMenuItems = [];
 			}
-			this._customSearchMenuItems.push({icon:icon, text:text, listener:listener});
+			this._customSearchMenuItems.push({icon:icon, text:text, listener:listener, id:id});
 		}
 	}
 };
 
 ZmSearchToolBar.prototype._createCustomSearchMenuItem =
-function(menu, icon, text, listener) {
+function(menu, icon, text, listener, id) {
 	var mi = menu.getItem(0);
 	var addSep = !(mi && mi.getData("CustomSearchItem"));
-	var params = {parent:menu, imageInfo:icon, text:text, enabled:true, style:DwtMenuItem.RADIO_STYLE, radioGroupId:0, index:0};
+	var params = {parent:menu, imageInfo:icon, text:text, enabled:true, style:DwtMenuItem.RADIO_STYLE,
+				  radioGroupId:0, index:0, id:id};
 	mi = DwtMenuItem.create(params);
 	mi.setData("CustomSearchItem", [icon, text, listener]);
 	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.CUSTOM_MI);
@@ -314,7 +321,7 @@ function() {
 	var inputFieldId = this._htmlElId + "_inputField";
 	var inputField = document.getElementById(inputFieldId);
 	if (inputField) {
-		this._searchField = new DwtInputField({parent:this, hint:ZmMsg.search});
+		this._searchField = new DwtInputField({parent:this, hint:ZmMsg.search, inputId:ZmId.SEARCH_INPUT});
 		var inputEl = this._searchField.getInputElement();
 		inputEl.className = "search_input";
 		Dwt.setHandler(inputEl, DwtEvent.ONKEYPRESS, ZmSearchToolBar._keyPressHdlr);
@@ -325,18 +332,21 @@ function() {
 	var searchMenuBtnId = this._htmlElId + "_searchMenuButton";
 	var searchMenuBtn = document.getElementById(searchMenuBtnId);
 	if (searchMenuBtn) {
-		this._searchMenuButton = this._addButton({ buttonId:"_searchMenuButton", lbl:ZmMsg.searchMail, icon:"Message"} );
+		this._searchMenuButton = this._addButton({ tdId:"_searchMenuButton", buttonId:ZmId.SEARCH_MENU_BUTTON,
+												   lbl:ZmMsg.searchMail, icon:"Message"} );
 		var menu = new AjxCallback(this, this._createSearchMenu);
 		this._searchMenuButton.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 		this._searchMenuButton.reparentHtmlElement(searchMenuBtnId);
 	}
 
 	// add search button
-	this._searchButton = this._addButton({ buttonId:"_searchButton", lbl:ZmMsg.search, icon:"Search", tooltip:ZmMsg.searchTooltip} );
+	this._searchButton = this._addButton({ tdId:"_searchButton", buttonId:ZmId.SEARCH_BUTTON,
+										   lbl:ZmMsg.search, icon:"Search", tooltip:ZmMsg.searchTooltip} );
 
 	// add save search button if saved-searches enabled
 	this._saveButton = this._addButton({ setting:ZmSetting.SAVED_SEARCHES_ENABLED,
-										 buttonId:"_saveButton",
+										 tdId:"_saveButton",
+										 buttonId:ZmId.SAVE_SEARCH_BUTTON,
 										 lbl:ZmMsg.save,
 										 icon:"Save",
   										 type:"toolbar",
@@ -346,12 +356,13 @@ function() {
 
 	// add advanced search button
 	this._browseButton = this._addButton({ setting:ZmSetting.BROWSE_ENABLED,
-											buttonId:"_advancedButton",
-											style: (DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE),
-											lbl:ZmMsg.searchBuilder,
-											icon:"SearchBuilder",
-											type:"toolbar",
-											tooltip:ZmMsg.openSearchBuilder } );
+										   tdId:"_advancedButton",
+										   buttonId:ZmId.ADVANCED_SEARCH_BUTTON,
+										   style: (DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE),
+										   lbl:ZmMsg.searchBuilder,
+										   icon:"SearchBuilder",
+										   type:"toolbar",
+										   tooltip:ZmMsg.openSearchBuilder } );
 };
 
 ZmSearchToolBar.prototype._createSearchMenu =
@@ -380,6 +391,7 @@ function() {
 		params.style = (id == ZmSearchToolBar.FOR_SHARED_MI) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
 		params.imageInfo = ZmSearchToolBar.ICON[id];
 		params.text = ZmMsg[ZmSearchToolBar.MSG_KEY[id]];
+		params.id = ZmSearchToolBar.ID[id];
 		mi = DwtMenuItem.create(params);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
 
@@ -396,22 +408,35 @@ function() {
 	return menu;
 };
 
+/**
+ * Creates a button on the search toolbar.
+ * 
+ * @param params	[hash]		hash of params:
+ *        setting	[const]		setting that must be true for this button to be added
+ *        tdId		[string]	ID of TD that is to contain this button
+ *        buttonId	[string]*	ID of the button
+ *        style		[const]*	button style
+ *        type		[string]*	used to differentiate between regular and toolbar buttons
+ *        lbl		[string]*	button text
+ *        icon		[string]*	button icon
+ *        tooltip	[string]*	button tooltip
+ */
 ZmSearchToolBar.prototype._addButton =
 function(params) {
 	if (params.setting && !appCtxt.get(params.setting)) { return; }
 
 	var button;
-	var buttonId = this._htmlElId + params.buttonId;
-	var buttonEl = document.getElementById(buttonId);
+	var tdId = this._htmlElId + (params.tdId || params.buttonId);
+	var buttonEl = document.getElementById(tdId);
 	if (buttonEl) {
-		var btnParams = {parent:this, style:params.style};
+		var btnParams = {parent:this, style:params.style, id:params.buttonId};
 		button = (params.type && params.type == "toolbar") ? (new DwtToolBarButton(btnParams)) : (new DwtButton(btnParams));
 		var hint = Dwt.getAttr(buttonEl, "hint");
 		this._setButtonStyle(button, hint, params.lbl, params.icon);
 		if (params.tooltip) {
 			button.setToolTipContent(params.tooltip);
 		}
-		button.reparentHtmlElement(buttonId);
+		button.reparentHtmlElement(tdId);
 	}
 
 	return button;

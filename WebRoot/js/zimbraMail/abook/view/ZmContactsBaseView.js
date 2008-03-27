@@ -15,11 +15,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmContactsBaseView = function(parent, className, posStyle, view, controller, headerList, dropTgt) {
+ZmContactsBaseView = function(params) {
 
-	if (arguments.length == 0) return;
-	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
-	ZmListView.call(this, parent, className, posStyle, view, ZmItem.CONTACT, controller, headerList, dropTgt);
+	if (arguments.length == 0) { return; }
+
+	params.posStyle = params.posStyle || Dwt.ABSOLUTE_STYLE;
+	params.type = ZmItem.CONTACT;
+	ZmListView.call(this, params);
 
 	this._handleEventType[ZmItem.GROUP] = true;
 };

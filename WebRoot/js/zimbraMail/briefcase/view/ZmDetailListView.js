@@ -24,7 +24,9 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 	// call super constructor
 	var headerList = this._getHeaderList(parent);
 	var view = ZmController.BRIEFCASE_VIEW;
-	ZmListView.call(this, parent, "ZmBriefcaseDetailListView", DwtControl.ABSOLUTE_STYLE, view, ZmItem.DOCUMENT, controller, headerList, dropTgt);
+	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseDetailListView",
+					posStyle:DwtControl.ABSOLUTE_STYLE, view:view, type:ZmItem.DOCUMENT,
+					controller:controller, headerList:headerList, dropTgt:dropTgt});
 
 	// create a action menu for the header list
 	this._colHeaderActionMenu = new ZmPopupMenu(this);

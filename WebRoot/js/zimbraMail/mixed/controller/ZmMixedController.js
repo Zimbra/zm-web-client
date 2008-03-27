@@ -153,7 +153,8 @@ function() {
 
 ZmMixedController.prototype._createNewView = 
 function(view) {
-	var mv = new ZmMixedView(this._container, null, DwtControl.ABSOLUTE_STYLE, this, this._dropTgt);
+	var mv = new ZmMixedView({parent:this._container, posStyle:DwtControl.ABSOLUTE_STYLE,
+							  controller:this, dropTgt:this._dropTgt});
 	mv.setDragSource(this._dragSrc);
 	return mv;
 };

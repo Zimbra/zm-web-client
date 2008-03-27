@@ -15,10 +15,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmMailMsgListView = function(parent, className, posStyle, mode, controller, dropTgt) {
-	this._mode = mode;
-	var headerList = this._getHeaderList(parent);
-	ZmMailListView.call(this, parent, className, posStyle, mode, ZmItem.MSG, controller, headerList, dropTgt);
+ZmMailMsgListView = function(params) {
+	this._mode = params.mode;
+	params.type = ZmItem.MSG;
+	params.headerList = this._getHeaderList(params.parent);
+	ZmMailListView.call(this, params);
 };
 
 ZmMailMsgListView.prototype = new ZmMailListView;

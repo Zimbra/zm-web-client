@@ -48,6 +48,7 @@ ZmApp.CLASS[ZmApp.PORTAL]		= "ZmPortalApp";
 ZmApp.SETTING[ZmApp.PORTAL]		= ZmSetting.PORTAL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PORTAL]	= 1;
 ZmApp.QS_ARG[ZmApp.PORTAL]		= "home";
+ZmApp.BUTTON_ID[ZmApp.PORTAL]	= ZmId.PORTAL_APP;
 
 ZmEvent.S_PORTLET   = "PORTLET";
 ZmItem.PORTLET      = ZmEvent.S_PORTLET;

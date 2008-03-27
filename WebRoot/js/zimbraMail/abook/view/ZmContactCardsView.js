@@ -15,12 +15,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmContactCardsView = function(parent, className, posStyle, controller, dropTgt) {
+ZmContactCardsView = function(params) {
 
-	className = className ? className : "ZmContactCardsView";
-	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
-
-	ZmContactsBaseView.call(this, parent, className, posStyle, ZmController.CONTACT_CARDS_VIEW, controller, null, dropTgt);
+	params.className = params.className || "ZmContactCardsView";
+	params.posStyle = params.posStyle || Dwt.ABSOLUTE_STYLE;
+	params.view = ZmController.CONTACT_CARDS_VIEW;
+	ZmContactsBaseView.call(this, params);
 
 	this._setMouseEventHdlrs(); // needed by object manager
 	// this manages all the detected objects within the view
@@ -41,6 +41,7 @@ ZmContactCardsView = function(parent, className, posStyle, controller, dropTgt) 
 	this._selectedClass = [base, DwtCssStyle.SELECTED].join("-");
 	this._kbFocusClass = [base, DwtCssStyle.FOCUSED].join("-");
 	this._dndClass = [base, DwtCssStyle.DRAG_PROXY].join("-");
+	this._cardTableId = Dwt.getNextId();
 	
 	this._initialResized = false;
 };
@@ -48,8 +49,7 @@ ZmContactCardsView = function(parent, className, posStyle, controller, dropTgt) 
 ZmContactCardsView.prototype = new ZmContactsBaseView;
 ZmContactCardsView.prototype.constructor = ZmContactCardsView;
 
-ZmContactCardsView.CARD_NAME = Dwt.getNextId();
-ZmContactCardsView.CARD_TABLE_ID = Dwt.getNextId();
+ZmContactCardsView.CARD_NAME = "__contactCard__";
 
 // Public methods
 
@@ -147,7 +147,7 @@ function() {
 		var list = this._list.getArray();
 		var subs = {
 			id: this._htmlElId,
-			cardTableId: ZmContactCardsView.CARD_TABLE_ID,
+			cardTableId: this._cardTableId,
 			list: list
 		};
 		var html = AjxTemplate.expand("abook.Contacts#CardsView", subs);
@@ -165,7 +165,7 @@ function() {
 		}
 	} else {
 		var subs = {
-			id: ZmContactCardsView.CARD_TABLE_ID
+			id: this._cardTableId
 		};
 		var html = AjxTemplate.expand("abook.Contacts#CardsView-NoResults", subs);
 		this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html));
@@ -189,7 +189,7 @@ function() {
 		this._data[cDiv.id] = null;
 	}
 
-	var cardTable = document.getElementById(ZmContactCardsView.CARD_TABLE_ID);
+	var cardTable = document.getElementById(this._cardTableId);
 	if (cardTable) {
 		cardTable.parentNode.removeChild(cardTable);
 	}

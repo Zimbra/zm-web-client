@@ -15,15 +15,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmListView = function(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
+ZmListView = function(params) {
 
-	if (arguments.length == 0) return;
-	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle, headerList:headerList});
+	if (arguments.length == 0) { return; }
+	
+	DwtListView.call(this, params);
 
-	this.view = view;
-	this.type = type;
-	this._controller = controller;
-	this.setDropTarget(dropTgt);
+	this.view = params.view;
+	this.type = params.type;
+	this._controller = params.controller;
+	this.setDropTarget(params.dropTgt);
 	this._viewPrefix = ["V_", this.view, "_"].join("");
 
 	// create listeners for changes to the list model, folder tree, and tag list

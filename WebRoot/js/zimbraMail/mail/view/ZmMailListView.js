@@ -15,10 +15,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmMailListView = function(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
+ZmMailListView = function(params) {
 
-	if (arguments.length == 0) return;
-	ZmListView.call(this, parent, className, posStyle, view, type, controller, headerList, dropTgt);
+	if (arguments.length == 0) { return; }
+	
+	ZmListView.call(this, params);
 
 	this._folderId = null;
 };

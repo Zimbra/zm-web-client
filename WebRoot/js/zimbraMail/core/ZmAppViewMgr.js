@@ -179,22 +179,22 @@ ZmAppViewMgr.BROWSER_FORWARD	= "FORWARD";
 
 ZmAppViewMgr._setContainerIds =
 function() {
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmSetting.SKIN_LOGO_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_USER_INFO]				= ZmSetting.SKIN_USER_INFO_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_QUOTA_INFO]				= ZmSetting.SKIN_QUOTA_INFO_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmSetting.SKIN_SEARCH_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER]			= ZmSetting.SKIN_SEARCH_BUILDER_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= ZmSetting.SKIN_SEARCH_BUILDER_TOOLBAR_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_CURRENT_APP]			= ZmSetting.SKIN_CURRENT_APP_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CHOOSER]			= ZmSetting.SKIN_APP_CHOOSER_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE]					= ZmSetting.SKIN_TREE_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE_FOOTER]			= ZmSetting.SKIN_TREE_FOOTER_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_TOP]			= ZmSetting.SKIN_APP_TOP_TOOLBAR_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_BOTTOM]			= ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT]			= ZmSetting.SKIN_APP_MAIN_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT_FULL]		= ZmSetting.SKIN_APP_MAIN_FULL_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_STATUS]					= ZmSetting.SKIN_STATUS_ID;
-	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SASH]					= ZmSetting.SKIN_SASH_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmId.SKIN_LOGO;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_USER_INFO]				= ZmId.SKIN_USER_INFO;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_QUOTA_INFO]				= ZmId.SKIN_QUOTA_INFO;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmId.SKIN_SEARCH;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER]			= ZmId.SKIN_SEARCH_BUILDER;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= ZmId.SKIN_SEARCH_BUILDER_TOOLBAR;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_CURRENT_APP]			= ZmId.SKIN_CURRENT_APP;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CHOOSER]			= ZmId.SKIN_APP_CHOOSER;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE]					= ZmId.SKIN_TREE;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE_FOOTER]			= ZmId.SKIN_TREE_FOOTER;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_TOP]			= ZmId.SKIN_APP_TOP_TOOLBAR;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_BOTTOM]			= ZmId.SKIN_APP_BOTTOM_TOOLBAR;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT]			= ZmId.SKIN_APP_MAIN;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT_FULL]		= ZmId.SKIN_APP_MAIN_FULL;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_STATUS]					= ZmId.SKIN_STATUS;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SASH]					= ZmId.SKIN_SASH;
 };
 
 // Public methods
@@ -226,13 +226,13 @@ function(components, doFit, noSetZ) {
 		this._components[cid] = comp;
 		if (this._hasSkin) {
 			if (!this._containers[cid]) {
-				var contId = appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[cid]);
+				var contId = ZmAppViewMgr.CONT_ID_KEY[cid];
 				var contEl = document.getElementById(contId);
 				// HACK: This allows full screen apps to place their content in
 				//       the main app content area if the skin does not have a
 				//       a container for the full screen app content.
 				if (!contEl && cid == ZmAppViewMgr.C_APP_CONTENT_FULL) {
-					contId = appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT]);
+					contId = ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT];
 					contEl = document.getElementById(contId);
 				}
 				if (!contEl) {
@@ -328,11 +328,11 @@ ZmAppViewMgr.prototype.tweakSkin =
 function() {
 	// Hide the web search bar, expand regular one if web search explicitly disabled
 	if (appCtxt.get(ZmSetting.WEB_SEARCH_ENABLED) === false) {
-		var el = document.getElementById(appCtxt.get(ZmSetting.SKIN_WEB_SEARCH_ID));
+		var el = document.getElementById(ZmId.SKIN_WEB_SEARCH);
 		if (el) {
 			Dwt.setVisible(el, false);
 		}
-		el = document.getElementById(appCtxt.get(ZmSetting.SKIN_SPACING_SEARCH_ID));
+		el = document.getElementById(ZmId.SKIN_SPACING_SEARCH);
 		if (el) {
 			el.style.width = "100%";
 		}
@@ -742,7 +742,8 @@ function() {
 
 ZmAppViewMgr.prototype._createLoadingView =
 function() {
-	var loadingView = new DwtControl({parent:this._shell, className:"DwtListView", posStyle:Dwt.ABSOLUTE_STYLE});
+	var loadingView = new DwtControl({parent:this._shell, className:"DwtListView",
+									  posStyle:Dwt.ABSOLUTE_STYLE, id:ZmId.LOADING_VIEW});
 	var el = loadingView.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("share.App#Loading", this._htmlElId);
 	var elements = {};

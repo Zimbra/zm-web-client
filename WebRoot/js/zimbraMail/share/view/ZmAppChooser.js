@@ -15,12 +15,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAppChooser = function(parent, className, buttons) {
+ZmAppChooser = function(parent, className, buttons, id) {
 
 	className = className || "ZmAppChooser";
 	var width = appCtxt.get(ZmSetting.SKIN_HINTS, "appChooser.fullWidth") ? "100%" : null;
 
-	DwtToolBar.call(this, {parent:parent, className:className, posStyle:Dwt.ABSOLUTE_STYLE, width:width, style:DwtToolBar.HORIZ_STYLE});
+	DwtToolBar.call(this, {parent:parent, className:className, posStyle:Dwt.ABSOLUTE_STYLE,
+						   width:width, style:DwtToolBar.HORIZ_STYLE, id:id});
     Dwt.setLocation(this.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 
 	this.setScrollStyle(Dwt.CLIP);
@@ -100,7 +101,7 @@ ZmAppChooser.prototype._createButton =
 function(id, isLast) {
 	var text = ZmMsg[ZmApp.NAME[id]];
     var outerClass = null;
-    var b = new ZmChicletButton(this, outerClass, ZmApp.ICON[id], text, isLast);
+    var b = new ZmChicletButton(this, outerClass, ZmApp.ICON[id], text, isLast, ZmApp.BUTTON_ID[id]);
 	b.setToolTipContent(ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]]);
 	b.setData(Dwt.KEY_ID, id);
 	this._buttons[id] = b;

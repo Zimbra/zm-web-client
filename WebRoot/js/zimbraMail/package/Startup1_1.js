@@ -108,6 +108,7 @@ AjxPackage.require("zimbra.csfe.ZmCsfeCommand");
 AjxPackage.require("zimbra.csfe.ZmCsfeException");
 AjxPackage.require("zimbra.csfe.ZmCsfeResult");
 
+AjxPackage.require("zimbraMail.core.ZmId");
 AjxPackage.require("zimbraMail.share.model.events.ZmEvent");
 AjxPackage.require("zimbraMail.share.model.events.ZmAppEvent");
 AjxPackage.require("zimbraMail.share.model.ZmModel");

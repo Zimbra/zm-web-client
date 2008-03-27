@@ -15,14 +15,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmFileListView = function(parent, className, posStyle, mode, controller, dropTgt) {
-
-	this._mode = mode; // ???
+ZmFileListView = function(params) {
 
 	// call super constructor
-	var headerList = this._getHeaderList(parent);
-	var view = ZmController.NOTEBOOK_FILE_VIEW;
-	ZmListView.call(this, parent, className, posStyle, view, ZmItem.PAGE, controller, headerList, dropTgt);
+	params.headerList = this._getHeaderList(parent);
+	params.view = ZmController.NOTEBOOK_FILE_VIEW;
+	params.type = ZmItem.PAGE;
+	ZmListView.call(this, params);
 
 	// create a action menu for the header list
 	this._colHeaderActionMenu = new ZmPopupMenu(this);

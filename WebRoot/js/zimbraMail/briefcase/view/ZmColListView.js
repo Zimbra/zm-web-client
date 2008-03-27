@@ -15,17 +15,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmColListView = 	function(parent, controller, dropTgt, index) {
+ZmColListView =	function(parent, controller, dropTgt, index) {
 
 	// save data
 	//this._folderId = null;
 	this._controller = controller;
-
-	// call super constructor
-	var headerList = this._getHeaderList(parent);
 	var view = ZmController.BRIEFCASE_COLUMN_VIEW;
 	controller._currentView = view;//cdel
-	ZmListView.call(this, parent, "ZmColListView", null, view, ZmItem.DOCUMENT, controller, headerList, dropTgt);
+	ZmListView.call(this, {parent:parent, className:"ZmColListView",
+						   view:view, type:ZmItem.DOCUMENT,
+						   controller:controller, headerList:this._getHeaderList(parent),
+						   dropTgt:dropTgt});
 	
 	this._colIdx = index;
 	// create a action menu for the header list
@@ -33,7 +33,6 @@ ZmColListView = 	function(parent, controller, dropTgt, index) {
 	//adding the listeners in constructors so that we get listener events
 	//for all new columns created on fly
 	this._controller._addListListeners(this);	
-	
 }
 
 ZmColListView.prototype = new ZmListView;

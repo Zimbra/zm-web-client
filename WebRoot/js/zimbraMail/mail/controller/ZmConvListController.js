@@ -146,7 +146,8 @@ function(currentItem, forward) {
 
 ZmConvListController.prototype._createDoublePaneView = 
 function() {
-	return new ZmConvDoublePaneView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
+	return new ZmConvDoublePaneView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,
+									 controller:this, dropTgt:this._dropTgt});
 };
 
 ZmConvListController.prototype._getToolBarOps =

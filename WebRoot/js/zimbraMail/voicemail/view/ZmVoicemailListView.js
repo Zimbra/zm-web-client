@@ -17,7 +17,10 @@
 
 ZmVoicemailListView = function(parent, controller, dropTgt) {
 	var headerList = this._getHeaderList(parent);
-	ZmVoiceListView.call(this, parent, "DwtListView ZmVoicemailListView", Dwt.ABSOLUTE_STYLE, ZmController.VOICEMAIL_VIEW, ZmItem.VOICEMAIL, controller, headerList, dropTgt);
+	ZmVoiceListView.call(this, {parent:parent, className:"DwtListView ZmVoicemailListView",
+								posStyle:Dwt.ABSOLUTE_STYLE, view:ZmController.VOICEMAIL_VIEW,
+								type:ZmItem.VOICEMAIL, controller:controller,
+								headerList:headerList, dropTgt:dropTgt});
 
 	this._playing = null;	// The voicemail currently loaded in the player.
 	this._players = {}; 	// Map of voicemail.id to sound player

@@ -158,13 +158,8 @@ function() {
 
 ZmNotebookFileController.prototype._createNewView =
 function(viewType) {
-	var parent = this._container;
-	var className;
-	var posStyle = Dwt.ABSOLUTE_STYLE;
-	var mode; // ???
-	var controller = this;
-	var dropTgt = this._dropTgt;
-	var result = new ZmFileListView(parent, className, posStyle, mode, controller, dropTgt);
+	var result = new ZmFileListView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,
+									 controller:this, dropTgt:this._dropTgt});
 	result.setDragSource(this._dragSrc);
 	return result;
 };

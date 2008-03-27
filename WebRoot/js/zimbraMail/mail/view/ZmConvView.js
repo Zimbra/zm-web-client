@@ -15,9 +15,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmConvView = function(parent, controller, dropTgt) {
+ZmConvView = function(params) {
 
-	ZmDoublePaneView.call(this, parent, "ZmConvView", Dwt.ABSOLUTE_STYLE, ZmController.CONV_VIEW, controller, dropTgt);
+	params.className = "ZmConvView";
+	params.posStyle = Dwt.ABSOLUTE_STYLE;
+	params.view = ZmController.CONV_VIEW;
+	params.msgViewId = ZmId.CONV_MSG_VIEW;
+	ZmDoublePaneView.call(this, params);
 
 	this._changeListener = new AjxListener(this, this._convChangeListener);
 	
@@ -33,7 +37,7 @@ ZmConvView = function(parent, controller, dropTgt) {
 		this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	}
 	
-	this._controller = controller;
+	this._controller = params.controller;
 }
 
 ZmConvView.prototype = new ZmDoublePaneView;
@@ -102,6 +106,12 @@ function() {
 };
 
 // Private / protected methods
+
+ZmConvView.prototype._createMailListView =
+function(params) {
+	params.id = ZmId.CONV_MSG_LIST_VIEW;
+	return ZmDoublePaneView.prototype._createMailListView.apply(this, arguments);
+};
 
 ZmConvView.prototype._resetSize = 
 function(newWidth, newHeight) {

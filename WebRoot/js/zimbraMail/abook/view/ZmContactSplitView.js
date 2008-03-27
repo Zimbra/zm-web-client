@@ -19,14 +19,14 @@
 // ZmContactSplitView
 // - parent for the simple list view and xform view
 //////////////////////////////////////////////////////////////////////////////
-ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) {
+ZmContactSplitView = function(params) {
 	if (arguments.length == 0) { return; }
 
-	className = className || "ZmContactSplitView";
-	posStyle = posStyle || Dwt.ABSOLUTE_STYLE;
-	DwtComposite.call(this, {parent:parent, className:className, posStyle:posStyle});
+	params.className = params.className || "ZmContactSplitView";
+	params.posStyle = params.posStyle || Dwt.ABSOLUTE_STYLE;
+	DwtComposite.call(this, params);
 
-	this._controller = controller;
+	this._controller = params.controller;
 
 	this.setScrollStyle(Dwt.CLIP);
 
@@ -42,7 +42,7 @@ ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) 
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 	this._objectManager = new ZmObjectManager();
 
-	this._initialize(controller, dropTgt);
+	this._initialize(params.controller, params.dropTgt);
 };
 
 ZmContactSplitView.prototype = new DwtComposite;
@@ -181,7 +181,7 @@ function(controller, dropTgt) {
 	// create listview based on *required* existence in template
 	var listviewCellId = this._htmlElId + "_listview";
 	var listviewCell = document.getElementById(listviewCellId);
-	this._listPart = new ZmContactSimpleView(this, controller, dropTgt);
+	this._listPart = new ZmContactSimpleView({parent:this, controller:controller, dropTgt:dropTgt});
 	this._listPart.reparentHtmlElement(listviewCellId);
 
 	// define well-known Id's
@@ -449,9 +449,11 @@ function(tagId) {
 // ZmContactSimpleView
 // - a simple contact list view (contains only full name)
 //////////////////////////////////////////////////////////////////////////////
-ZmContactSimpleView = function(parent, controller, dropTgt) {
+ZmContactSimpleView = function(params) {
 
-	ZmContactsBaseView.call(this, parent, "ZmContactSimpleView", null, ZmController.CONTACT_SIMPLE_VIEW, controller, null, dropTgt);
+	params.view = ZmController.CONTACT_SIMPLE_VIEW;
+	params.className = "ZmContactSimpleView";
+	ZmContactsBaseView.call(this, params);
 
 	this._normalClass = DwtListView.ROW_CLASS + " SimpleContact";
 	this._selectedClass = [DwtListView.ROW_CLASS, DwtCssStyle.SELECTED].join("-") + " SimpleContact";

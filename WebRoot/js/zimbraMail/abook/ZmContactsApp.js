@@ -50,6 +50,7 @@ ZmApp.SETTING[ZmApp.CONTACTS]			= ZmSetting.CONTACTS_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.CONTACTS]	= ZmSetting.CONTACTS_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.CONTACTS]			= 30;
 ZmApp.QS_ARG[ZmApp.CONTACTS]			= "contacts";
+ZmApp.BUTTON_ID[ZmApp.CONTACTS]			= ZmId.CONTACTS_APP;
 
 // fields used for autocomplete matching
 ZmContactsApp.AC_VALUE_FULL 	= "fullAddress";
@@ -238,7 +239,8 @@ function() {
 								{msgKey:		"searchContacts",
 								 tooltipKey:	"searchPersonalContacts",
 								 icon:			"ContactsFolder",
-								 shareIcon:		"SharedContactsFolder"
+								 shareIcon:		"SharedContactsFolder",
+								 id:			ZmId.SEARCH_MENU_CONTACTS
 								});
 
 	ZmSearchToolBar.FOR_GAL_MI 	= "FOR GAL";
@@ -246,7 +248,8 @@ function() {
 								{msgKey:		"searchGALContacts",
 								 tooltipKey:	"searchGALContacts",
 								 icon:			"GAL",
-								 setting:		ZmSetting.GAL_ENABLED
+								 setting:		ZmSetting.GAL_ENABLED,
+								 id:			ZmId.SEARCH_MENU_GAL
 								});
 };
 

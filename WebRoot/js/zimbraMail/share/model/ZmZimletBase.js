@@ -73,9 +73,9 @@ function() {
 /// class (null for no icon), a label and optionally a listener that
 /// will be called when the item is selected.
 ZmZimletBase.prototype.addSearchDomainItem =
-function(icon, label, listener) {
+function(icon, label, listener, id) {
 	var searchToolbar = appCtxt.getSearchController().getSearchToolbar();
-	return searchToolbar ? searchToolbar.createCustomSearchBtn(icon, label, listener) : null;
+	return searchToolbar ? searchToolbar.createCustomSearchBtn(icon, label, listener, id) : null;
 };
 
 /// Returns the text entered in the search bar

@@ -30,6 +30,7 @@ ZmApp.CLASS[ZmApp.TASKS]		= "ZmTasksApp";
 ZmApp.SETTING[ZmApp.TASKS]		= ZmSetting.TASKS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.TASKS]	= 45;
 ZmApp.QS_ARG[ZmApp.TASKS]		= "tasks";
+ZmApp.BUTTON_ID[ZmApp.TASKS]	= ZmId.TASKS_APP;
 
 ZmTasksApp.prototype = new ZmApp;
 ZmTasksApp.prototype.constructor = ZmTasksApp;
@@ -108,7 +109,8 @@ function() {
 								 tooltipKey:	"searchTasks",
 								 icon:			"TaskList",
 								 shareIcon:		"SharedTaskList",
-								 setting:		ZmSetting.TASKS_ENABLED
+								 setting:		ZmSetting.TASKS_ENABLED,
+								 id:			ZmId.SEARCH_MENU_TASKS
 								});
 };
 

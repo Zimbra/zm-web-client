@@ -15,10 +15,10 @@
  * ***** END LICENSE BLOCK *****
  */
 ZmBriefcaseView = function(parent, controller, dropTgt) {
-	// call super constructor
-	var headerList = null;//no headers for this view
-	var view = ZmController.BRIEFCASE_VIEW;
-	ZmListView.call(this, parent, "ZmBriefcaseView", DwtControl.ABSOLUTE_STYLE, view, ZmItem.DOCUMENT, controller, headerList, dropTgt);
+
+	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseView", posStyle:DwtControl.ABSOLUTE_STYLE,
+					view:ZmController.BRIEFCASE_VIEW, type:ZmItem.DOCUMENT, controller:controller,
+					dropTgt:dropTgt});
 	
 	this._controller = controller;
 

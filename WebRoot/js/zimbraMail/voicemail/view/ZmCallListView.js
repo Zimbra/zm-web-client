@@ -17,7 +17,9 @@
 
 ZmCallListView = function(parent, controller, dropTgt) {
 	var headerList = this._getHeaderList();
-	ZmVoiceListView.call(this, parent, null, Dwt.ABSOLUTE_STYLE, ZmController.CALLLIST_VIEW, ZmItem.CALL, controller, headerList, dropTgt);
+	ZmVoiceListView.call(this, {parent:parent, posStyle:Dwt.ABSOLUTE_STYLE,
+								view:ZmController.CALLLIST_VIEW, type:ZmItem.CALL, controller:controller,
+								headerList:headerList, dropTgt:dropTgt});
 }
 ZmCallListView.prototype = new ZmVoiceListView;
 ZmCallListView.prototype.constructor = ZmCallListView;

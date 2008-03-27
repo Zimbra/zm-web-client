@@ -86,7 +86,7 @@ ZmCalItem.EQUIPMENT					= 3;
 
 ZmCalItem.SERVER_WEEK_DAYS			= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
-ZmCalItem.ATTACHMENT_CHECKBOX_NAME	= Dwt.getNextId();
+ZmCalItem.ATTACHMENT_CHECKBOX_NAME	= "__calAttCbox__";
 
 ZmCalItem.FBA_TO_PTST = {
 	B: ZmCalItem.PSTATUS_ACCEPT,

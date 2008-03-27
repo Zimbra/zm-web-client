@@ -44,6 +44,7 @@ ZmApp.SETTING[ZmApp.VOICE]			= ZmSetting.VOICE_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.VOICE]	= ZmSetting.VOICE_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.VOICE]		= 80;
 ZmApp.QS_ARG[ZmApp.VOICE]			= "voice";
+ZmApp.BUTTON_ID[ZmApp.VOICE]		= ZmId.VOICE_APP;
 
 ZmVoiceApp.prototype = new ZmApp;
 ZmVoiceApp.prototype.constructor = ZmVoiceApp;

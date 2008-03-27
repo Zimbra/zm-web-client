@@ -15,10 +15,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmMixedView = function(parent, className, posStyle, controller, dropTgt) {
+ZmMixedView = function(params) {
 
-	var headerList = this._getHeaderList(parent);
-	ZmListView.call(this, parent, className, posStyle, ZmController.MIXED_VIEW, ZmItem.MIXED, controller, headerList, dropTgt);
+	params.headerList = this._getHeaderList(parent);
+	params.view = ZmController.MIXED_VIEW;
+	params.type = ZmItem.MIXED;
+	ZmListView.call(this, params);
 };
 
 ZmMixedView.prototype = new ZmListView;

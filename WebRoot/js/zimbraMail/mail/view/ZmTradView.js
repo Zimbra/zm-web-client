@@ -15,10 +15,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTradView = function(parent, className, posStyle, controller, dropTgt) {
+ZmTradView = function(params) {
 
-	className = className || "ZmTradView";
-	ZmDoublePaneView.call(this, parent, className, posStyle, ZmController.TRAD_VIEW, controller, dropTgt);
+	params.className = params.className || "ZmTradView";
+	params.view = ZmController.TRAD_VIEW;
+	params.msgViewId = ZmId.MSG_LIST_MSG_VIEW;
+	ZmDoublePaneView.call(this, params);
 }
 
 ZmTradView.prototype = new ZmDoublePaneView;
@@ -27,4 +29,10 @@ ZmTradView.prototype.constructor = ZmTradView;
 ZmTradView.prototype.toString = 
 function() {
 	return "ZmTradView";
+};
+
+ZmTradView.prototype._createMailListView =
+function(params) {
+	params.id = ZmId.MSG_LIST_VIEW;
+	return ZmDoublePaneView.prototype._createMailListView.apply(this, arguments);
 };
