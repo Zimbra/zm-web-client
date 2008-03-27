@@ -5,7 +5,7 @@ function ZmSkin(hints) {
         version:    "@SkinVersion@",
         logo:       { url: "@LogoURL@" },
 
-        banner:		{ position:"static"},
+        banner:		{ position:"static",url: "@LogoURL@"},
         userInfo:	{ position:"static"},
         search:		{ position:"static"},
         quota:      { position:"static" },
