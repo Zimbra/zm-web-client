@@ -210,18 +210,34 @@ function() {
 	this._players = {};
 };
 
+ZmVoicemailListView.prototype._renderList =
+function(list, noResultsOk) {
+	ZmVoiceListView.prototype._renderList.call(this, list, noResultsOk);
+
+	for (var i = 0, count = list.size(); i < count; i++) {
+		var voicemail = list.get(i);
+		var row = this._getElFromItem(voicemail);
+		this._addPlayerToRow(row, voicemail);
+	}
+};
+
 ZmVoicemailListView.prototype._addRow =
 function(row, index) {
 	ZmVoiceListView.prototype._addRow.call(this, row, index);
+	var voicemail = this.getItemFromElement(row);
+	this._addPlayerToRow(row, voicemail);
+};
+
+ZmVoicemailListView.prototype._addPlayerToRow =
+function(row, voicemail) {
 	var list = this.getList();
-	
 	if (!list || !list.size()) {
 		return;
 	}
 	if (this._getCallType() != ZmVoiceFolder.VOICEMAIL) {
 		return;
 	}
-	var voicemail = this.getItemFromElement(row);
+	
 	var cell = this._getElement(voicemail, ZmVoiceListView.F_DURATION);
 	
 	var player;
