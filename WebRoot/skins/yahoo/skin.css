@@ -42,7 +42,7 @@
 
 .ZHover .ZToolbarButtonBorder	{	background-color:#E9F2FA !important;	}
 /* NOT SURE WHY THIS REQUIRES A SPECIFIC OVERRIDE -- SEEMS TO A PROBLEM WITH IMAGEMERGE */
-.ImgPrefsHeader					{	background:url(@SkinImgDir@/icons/ImgPrefsHeader.repeatx.gif) repeat-x !important;	}
+.ImgPrefsHeader					{	background:url(@SkinImgDir@/icons/prefs/ImgPrefsHeader.repeatx.gif) repeat-x !important;	}
 .ZOptionsHeader					{	color:black;	}
 
 .DialogBody 					{	background-color:#f2f9ff;	}
@@ -54,4 +54,9 @@
 #ENDIF
 
 .ZHover .ZMenuItemTable TD{background-color:#3e79b0 !important;}
+
+.Row-Selected .ZmConvListFragment {
+	@Text-contrast@
+	font-weight: normal;
+}
 
