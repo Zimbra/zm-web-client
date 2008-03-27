@@ -47,7 +47,7 @@
                 </td>
             </tr>
         </table>
-            <a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>&nbsp;<a href='<c:url value="/"/>'><fmt:message key="switchToAdvancedClient" /></a>
+            <a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>, <a href='<c:url value="/"/>'><fmt:message key="switchToAdvancedClient" /></a>, <a target="_blank" href="http://www.zimbra.com/products/desktop.html">Offline version</a>
         </td>
         
         <td valign="top" class="TopContent" align="right" width="25%">
@@ -448,7 +448,7 @@
 							<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>
 						</td>
 						<td>
-							<b>|</b>
+							
 						</td>
 						<td  align='center' class='ZhAppSwitchLink'>
 							<span id="switch_to_offline"><a href="<fmt:message key="switchToOfflineURL"/>" target="_new" ><fmt:message key="switchToOfflineClient" /></a></span>
