@@ -95,27 +95,26 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOrganizers =
 function() {
-	
-	
 	ZmOrganizer.registerOrg(ZmOrganizer.BRIEFCASE,
-							{app:				ZmApp.BRIEFCASE,
-							 nameKey:			"folders",
-							 defaultFolder:		ZmOrganizer.ID_BRIEFCASE,
-							 soapCmd:			"FolderAction",
-							 firstUserId:		256,
-							 orgClass:			"ZmBriefcase",
-							 orgPackage:		"BriefcaseCore",
-							 treeController:	"ZmBriefcaseTreeController",
-							 labelKey:			"folders",
-							 itemsKey:			"folders",
-							 treeType:			ZmOrganizer.FOLDER,
-							 views:				["document"],
-							 folderKey:			"briefcase",
-							 mountKey:			"mountFolder",
-							 createFunc:		"ZmOrganizer.create",
-							 compareFunc:		"ZmBriefcase.sortCompare",
-							 deferrable:		true
-							});
+                                { app            : ZmApp.BRIEFCASE,
+                                  nameKey        : "folders",
+                                  defaultFolder  : ZmOrganizer.ID_BRIEFCASE,
+                                  soapCmd        : "FolderAction",
+                                  firstUserId    : 256,
+                                  orgClass       : "ZmBriefcase",
+                                  orgPackage     : "BriefcaseCore",
+                                  treeController : "ZmBriefcaseTreeController",
+                                  labelKey       : "folders",
+                                  itemsKey       : "folders",
+                                  treeType       : ZmOrganizer.FOLDER,
+                                  views          : ["document"],
+                                  folderKey      : "briefcase",
+                                  mountKey       : "mountFolder",
+                                  createFunc     : "ZmOrganizer.create",
+                                  compareFunc    : "ZmBriefcase.sortCompare",
+                                  deferrable     : true,
+                                  hasColor       : true
+                                });
 };
 
 ZmBriefcaseApp.prototype._setupSearchToolbar =
