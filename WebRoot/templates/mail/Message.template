@@ -173,7 +173,7 @@
                     <td nowrap width='1%'>
                         <table border=0 cellspacing=0 cellpadding=0>
                             <tr>
-                                <td style='<$=labelStyle$>'><$=ZmMsg.priorityLabel$>&nbsp;</td>
+                                <td style='<$=labelStyle$>' nowrap="nowrap"><$=ZmMsg.priorityLabel$>&nbsp;</td>
                                 <td id="${id}_priority"></td>
                             </tr>
                         </table>
