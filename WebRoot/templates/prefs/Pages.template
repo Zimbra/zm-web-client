@@ -454,7 +454,7 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain'>
 			<table width=100%>
-				<tr><td><div id='${id}_SIGNATURES' tabindex='20'></div></td></tr>
+				<tr><td><div id='${id}_SIGNATURES' tabindex='20'></div><hr></td></tr>
 
 				<tr><td class='ZOptionsField' align=right>
 						<table><tr><td><div id='${id}_ADD_SIGNATURE' tabindex='30'></div></td></tr></table>
@@ -477,7 +477,7 @@ and the container element is replaced with that control.
 			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 <!--
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.signatureAttachLabel$></td>
+				<tr><td class='ZOptionsLabel'><$=ZmMsg.signatureAttachLabel$>sdsd</td>
 					<td class='ZOptionsField'><input id='${id}_SIGNATURE_ENABLED' type=checkbox></td>
 				</tr>
 				<tr><td colspan=2><hr></td></tr>
@@ -497,17 +497,9 @@ and the container element is replaced with that control.
 
 <!-- NOTE: Signature container node MUST have id! -->
 <template id='prefs.Pages#Signature'>
-	<table id='${id}' width='80%' border=0 cellpadding=2 cellspacing=2>
-		<colgroup>
-			<col width=1>
-			<col width=*>
-			<col width=1>
-            <col width=*>
-            <col width=1>
-            <col width=1>
-        </colgroup>
+	<table id='${id}' border=0 cellpadding=4 cellspacing=0 width="80%">
 		<tr>
-			<td class='ZOptionsLabel'><$=ZmMsg.signatureNameLabel$></td>
+			<td class='ZOptionsLabel' nowrap="nowrap"><$=ZmMsg.signatureNameLabel$></td>
 			<td class='ZOptionsField'><input id='${id}_SIGNATURE_NAME' tabindex='10' size=30></td>
 			<td class='ZOptionsField'>&nbsp;</td>
             <td class="ZOptionsField" align='right'><div id='${id}_SIGNATURE_FORMAT' tabIndex='20'></div></td>
@@ -516,13 +508,12 @@ and the container element is replaced with that control.
         </tr>
 		<tr>
 			<td class='ZOptionsLabel'>&nbsp;</td>
-			<td class='ZOptionsField' width='100%' valign='top' style='border:1px solid #111;' height='150px' colspan=5>
+			<td class='ZOptionsField' width='100%' valign='top' style='border:1px solid #CCCCCC; padding: 0px;' height='150px' colspan=5>
                 <div id='${id}_SIGNATURE' width='100%' tabindex='40'></div>
 			</td>
 		</tr>
-
-		<tr><td colspan=6><hr></td></tr>
 	</table>
+
 </template>
 
 <template id='prefs.Pages#Contacts'>
