@@ -118,6 +118,11 @@ function(settings, account) {
  */
 ZmAppCtxt.prototype.get =
 function(id, key, account) {
+	// for offline / multi-account, global settings should always come from the
+	// invisible parent account
+	if (this.isOffline && this.multiAccounts && ZmSetting.IS_GLOBAL[id]) {
+		return this.getSettings(this.getMainAccount()).get(id, key);
+	}
 	return this.getSettings(account).get(id, key);
 };
 
@@ -132,7 +137,12 @@ function(id, key, account) {
  */
 ZmAppCtxt.prototype.set =
 function(id, value, key, setDefault, skipNotify) {
-	var setting = this.getSettings().getSetting(id);
+	// for offline / multi-account, global settings should always come from the
+	// invisible parent account
+	var setting = (this.isOffline && this.multiAccounts && ZmSetting.IS_GLOBAL[id])
+		? this.getSettings(this.getMainAccount())
+		: this.getSettings().getSetting(id);
+
 	if (setting) {
 		setting.setValue(value, key, setDefault, skipNotify);
 	}

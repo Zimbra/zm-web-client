@@ -19,17 +19,16 @@ ZmTimezone = function() {}
 
 // Static methods
 
-ZmTimezone.getDefault = function() {
+ZmTimezone.getDefault =
+function() {
 	var shell = DwtShell.getShell(window);
-	var serverId = appCtxt.get(ZmSetting.DEFAULT_CALENDAR_TIMEZONE);
-	var clientId = serverId ? AjxTimezone.getClientId(serverId) : AjxTimezone.DEFAULT;
-	return clientId;
+	var serverId = appCtxt.get(ZmSetting.DEFAULT_TIMEZONE);
+	return (serverId) ? AjxTimezone.getClientId(serverId) : AjxTimezone.DEFAULT;
 };
 
-ZmTimezone.getDefaultRule = function() {
-	var clientId = ZmTimezone.getDefault();
-	var timezone = AjxTimezone.getRule(clientId);
-	return timezone;
+ZmTimezone.getDefaultRule =
+function() {
+	return AjxTimezone.getRule(ZmTimezone.getDefault());
 };
 
 /**

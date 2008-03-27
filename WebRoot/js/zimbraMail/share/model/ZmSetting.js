@@ -27,21 +27,26 @@
 * @author Conrad Damon
 * 
 * @param id				a unique ID
-* @param name			the name of the pref or attr on the server
-* @param type			config, pref, or COS
-* @param dataType		string, int, or boolean
-* @param defaultValue	default value
+* @param params			hash:
+*        name			the name of the pref or attr on the server
+*        type			config, pref, or COS
+*        dataType		string, int, or boolean
+*        defaultValue	default value
+*        isGlobal		whether this setting is global across accounts
 */
-ZmSetting = function(id, name, type, dataType, defaultValue) {
+ZmSetting = function(id, params) {
 
 	if (arguments.length == 0) return;
 	ZmModel.call(this, ZmEvent.S_SETTING);
 	
 	this.id = id;
-	this.name = name;
-	this.type = type;
-	this.dataType = dataType ? dataType : ZmSetting.D_STRING;
-	this.defaultValue = defaultValue;
+	this.name = params.name;
+	this.type = params.type;
+	this.dataType = params.dataType || ZmSetting.D_STRING;
+	this.defaultValue = params.defaultValue;
+	if (params.isGlobal) {
+		ZmSetting.IS_GLOBAL[id] = true;
+	}
 	
 	if (this.dataType == ZmSetting.D_HASH) {
 		this.value = {};
@@ -142,6 +147,9 @@ ZmSetting.APP_LETTER[ZmSetting.BRIEFCASE_ENABLED]	= "b";
 ZmSetting.APP_LETTER[ZmSetting.TASKS_ENABLED]		= "t";
 ZmSetting.APP_LETTER[ZmSetting.MIXED_VIEW_ENABLED]	= "x";
 ZmSetting.APP_LETTER[ZmSetting.VOICE_ENABLED]		= "v";
+
+// hash of global settings
+ZmSetting.IS_GLOBAL = {};
 
 ZmSetting.prototype.toString =
 function() {
