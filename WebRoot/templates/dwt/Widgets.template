@@ -14,7 +14,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtCheckbox'>
-  <table cellpadding='0' cellspacing='0' border='0'>
+  <table cellpadding='2' cellspacing='0' border='0'>
     <tr>
       <td>
         <label id='${id}_text_left' for='${id}_input' class='Test' style='text-align:right'></label>
@@ -28,7 +28,7 @@
 </template>
 
 <template id='dwt.Widgets#DwtRadioButton'>
-  <table cellpadding='0' cellspacing='0' border='0'>
+  <table cellpadding='2' cellspacing='0' border='0'>
     <tr>
       <td>
         <label id='${id}_text_left' for='${id}_input' class='Test' style='text-align:right'></label>
