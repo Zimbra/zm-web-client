@@ -92,7 +92,7 @@
 	<$ var continued = data.multiday && !data.first; $>
 	<$ var style = continues ? "padding-right:15px;" : ""; $>
 
-	<div class='${color}' style='overflow:hidden; position:relative; <$=style$>'>
+	<div class='${color}' style='overflow:hidden; <$=style$>'>
 		<$ if (continues) { $>
 			<div class='calendar_month_day_item_continues'>&raquo;</div>
 		<$ } $>
