@@ -526,10 +526,15 @@ function(modifies) {
 
 	for (var name in modifies) {
 		if (name == "mbx") {
-			var acct = modifies[name].acct;
-			if (!acct || (acct && acct == appCtxt.getActiveAccount().id)) {
-				var setting = appCtxt.getSettings().getSetting(ZmSetting.QUOTA_USED);
-				setting.notifyModify({_name:name, s:modifies[name].s});
+			// bug fix #26318 - only update quota for the active account
+			var mboxes = modifies[name];
+			for (var i = 0; i < mboxes.length; i++) {
+				var mbox = mboxes[i];
+				var acct = mbox.acct;
+				if (!acct || (acct && acct == appCtxt.getActiveAccount().id)) {
+					var setting = appCtxt.getSettings().getSetting(ZmSetting.QUOTA_USED);
+					setting.notifyModify({_name:name, s:mbox.s});
+				}
 			}
 			continue;
 		}
