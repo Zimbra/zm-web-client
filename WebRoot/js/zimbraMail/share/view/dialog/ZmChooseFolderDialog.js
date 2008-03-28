@@ -97,9 +97,14 @@ function(params) {
 	
 	// use an overview ID that comprises calling class, this class, and current account
 	var base = [this.toString(), params.overviewId].join("-");
-	var overviewId = appCtxt.multiAccounts ? [base, appCtxt.getActiveAccount().name].join(":") : base;
-	this._setOverview({treeIds:treeIds, omit:omit, fieldId:this._folderTreeCellId,
-					   overviewId:overviewId, noRootSelect:params.noRootSelect});
+	var params = {
+		treeIds: treeIds,
+		omit: omit,
+		fieldId: this._folderTreeCellId,
+		overviewId: (appCtxt.multiAccounts) ? ([base, appCtxt.getActiveAccount().name].join(":")) : base,
+		noRootSelect: params.noRootSelect
+	};
+	this._setOverview(params);
 
 	this._orgType = params.orgType || treeIds[0];
 	this._folderTreeView = this._getOverview().getTreeView(this._orgType);
@@ -113,7 +118,8 @@ function(params) {
 
 		// bug fix #13159 (regression of #10676)
 		// - small hack to get selecting Trash folder working again
-		var ti = this._folderTreeView.getTreeItemById(ZmOrganizer.ID_TRASH);
+		var trashId = ZmOrganizer.getSystemId(ZmOrganizer.ID_TRASH);
+		var ti = this._folderTreeView.getTreeItemById(trashId);
 		if (ti) {
 			ti.setData(ZmTreeView.KEY_TYPE, this._orgType);
 		}
