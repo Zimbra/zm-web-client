@@ -23,12 +23,15 @@
  * allocated only for elements it would be useful to locate: major components of the UI,
  * toolbars, buttons, views, menus, some menu items, and some selects.
  * 
+ * In general, a getElementById() on any of the non-skin IDs will return a DIV. One exception
+ * is input fields. The ID is given to the DwtInputField's actual INPUT, rather than to the
+ * DIV that contains it.
+ * 
  * There is a simple naming scheme for the IDs themselves. Each ID has two parts, separated
  * by an underscore ("_"). The first part starts with "z", followed by zero or more lowercase
  * letters that indicate the type of element/widget:
  * 
- * 		z		a component that is not a special-purpose widget
- * 		zv		a view within the content area (eg conv list view)
+ * 		z		a component that is not a special-purpose widget listed below
  * 		ztb		a toolbar
  * 		zb		a button
  * 		zi		an input field
@@ -99,21 +102,119 @@ ZmId.SEARCH_MENU_PAGES		= "zmi_searchPages";	// search menu item for notebook pa
 ZmId.SEARCH_MENU_TASKS		= "zmi_searchTasks";	// search menu item for tasks
 
 // app buttons in the app chooser toolbar
-ZmId.CONTACTS_APP			= "zb_contacts";
-ZmId.BRIEFCASE_APP			= "zb_briefcase";
-ZmId.CALENDAR_APP			= "zb_calendar";
-ZmId.IM_APP					= "zb_im";
-ZmId.MAIL_APP				= "zb_mail";
-ZmId.NOTEBOOK_APP			= "zb_notebook";
-ZmId.PORTAL_APP				= "zb_portal";
-ZmId.PREFERENCES_APP		= "zb_options";
-ZmId.TASKS_APP				= "zb_tasks";
-ZmId.VOICE_APP				= "zb_voice";
+ZmId.CONTACTS_APP		= "zb_contacts";
+ZmId.BRIEFCASE_APP		= "zb_briefcase";
+ZmId.CALENDAR_APP		= "zb_calendar";
+ZmId.IM_APP				= "zb_im";
+ZmId.MAIL_APP			= "zb_mail";
+ZmId.NOTEBOOK_APP		= "zb_notebook";
+ZmId.PORTAL_APP			= "zb_portal";
+ZmId.PREFERENCES_APP	= "zb_options";
+ZmId.TASKS_APP			= "zb_tasks";
+ZmId.VOICE_APP			= "zb_voice";
 
 // content area views and their components
-ZmId.CONV_LIST_VIEW			= "zv_convList";		// conv list view
-ZmId.CONV_LIST_MSG_VIEW		= "zv_convListMsgView";	// msg view within conv list view
-ZmId.MSG_LIST_VIEW			= "zv_msgList";			// msg list view
-ZmId.MSG_LIST_MSG_VIEW		= "zv_msgListMsgView";	// msg view within msg list view
-ZmId.CONV_MSG_LIST_VIEW		= "zv_convMsgList";		// msg list within conv view
-ZmId.CONV_MSG_VIEW			= "zv_convMsgView";		// msg view within conv view
+//
+// Note that there is a lot of repetition here, since each view has its own toolbar, even
+// though it has the same buttons as other toolbars. See bug 26421. If that bug gets fixed
+// (it's not certain at this point that it should be), then there would be only one set of
+// IDs for the buttons on a mail toolbar (for example, there would be one ID for MAIL_NEW_MENU_BUTTON
+// instead of the 4 versions we currently have).
+
+// conv list view (CLV)
+ZmId.CLV_LIST				= "z_clvListView";		// conv list view
+ZmId.CLV_MSG				= "z_clvMsgView";		// msg view within conv list view
+ZmId.CLV_TOOLBAR			= "ztb_clv";
+ZmId.CLV_NEW_MENU_BUTTON	= "zb_clvNewMenu";
+ZmId.CLV_CHECK_MAIL_BUTTON	= "zb_clvCheckMail";
+ZmId.CLV_DELETE_BUTTON		= "zb_clvDelete";
+ZmId.CLV_MOVE_BUTTON		= "zb_clvMove";
+ZmId.CLV_PRINT_BUTTON		= "zb_clvPrint";
+ZmId.CLV_REPLY_BUTTON		= "zb_clvReply";
+ZmId.CLV_REPLY_ALL_BUTTON	= "zb_clvReplyAll";
+ZmId.CLV_FORWARD_BUTTON		= "zb_clvForward";
+ZmId.CLV_EDIT_BUTTON		= "zb_clvEdit";
+ZmId.CLV_SPAM_BUTTON		= "zb_clvSpam";
+ZmId.CLV_TAG_MENU_BUTTON	= "zb_clvTag";
+ZmId.CLV_DETACH_BUTTON		= "zb_clvDetach";
+ZmId.CLV_VIEW_MENU_BUTTON	= "zb_clvView";
+
+ZmId.CLV_INV_REPLY_ACCEPT_BUTTON	= "zb_clvInvAccept";
+ZmId.CLV_INV_REPLY_TENTATIVE_BUTTON	= "zb_clvInvTentative";
+ZmId.CLV_INV_REPLY_DECLINE_BUTTON	= "zb_clvInvDecline";
+
+// traditional (msg) list view (TV)
+ZmId.TV_LIST				= "z_tvListView";		// msg list view
+ZmId.TV_MSG					= "z_tvMsgView";		// msg view within msg list view
+ZmId.TV_TOOLBAR				= "ztb_tv";
+ZmId.TV_NEW_MENU_BUTTON		= "zb_tvNewMenu";
+ZmId.TV_CHECK_MAIL_BUTTON	= "zb_tvCheckMail";
+ZmId.TV_DELETE_BUTTON		= "zb_tvDelete";
+ZmId.TV_MOVE_BUTTON			= "zb_tvMove";
+ZmId.TV_PRINT_BUTTON		= "zb_tvPrint";
+ZmId.TV_REPLY_BUTTON		= "zb_tvReply";
+ZmId.TV_REPLY_ALL_BUTTON	= "zb_tvReplyAll";
+ZmId.TV_FORWARD_BUTTON		= "zb_tvForward";
+ZmId.TV_EDIT_BUTTON			= "zb_tvEdit";
+ZmId.TV_SPAM_BUTTON			= "zb_tvSpam";
+ZmId.TV_TAG_MENU_BUTTON		= "zb_tvTag";
+ZmId.TV_DETACH_BUTTON		= "zb_tvDetach";
+ZmId.TV_VIEW_MENU_BUTTON	= "zb_tvView";
+
+ZmId.TV_INV_REPLY_ACCEPT_BUTTON		= "zb_tvInvAccept";
+ZmId.TV_INV_REPLY_TENTATIVE_BUTTON	= "zb_tvInvTentative";
+ZmId.TV_INV_REPLY_DECLINE_BUTTON	= "zb_tvInvDecline";
+
+// single conv view (CV)
+ZmId.CV_LIST				= "z_cvListView";		// msg list within conv view
+ZmId.CV_MSG					= "z_cvMsgView";		// msg view within conv view
+ZmId.CV_TOOLBAR				= "ztb_cv";
+ZmId.CV_NEW_MENU_BUTTON		= "zb_cvNewMenu";
+ZmId.CV_CHECK_MAIL_BUTTON	= "zb_cvCheckMail";
+ZmId.CV_DELETE_BUTTON		= "zb_cvDelete";
+ZmId.CV_MOVE_BUTTON			= "zb_cvMove";
+ZmId.CV_PRINT_BUTTON		= "zb_cvPrint";
+ZmId.CV_REPLY_BUTTON		= "zb_cvReply";
+ZmId.CV_REPLY_ALL_BUTTON	= "zb_cvReplyAll";
+ZmId.CV_FORWARD_BUTTON		= "zb_cvForward";
+ZmId.CV_EDIT_BUTTON			= "zb_cvEdit";
+ZmId.CV_SPAM_BUTTON			= "zb_cvSpam";
+ZmId.CV_TAG_MENU_BUTTON		= "zb_cvTag";
+ZmId.CV_DETACH_BUTTON		= "zb_cvDetach";
+ZmId.CV_VIEW_MENU_BUTTON	= "zb_cvView";
+
+ZmId.CV_INV_REPLY_ACCEPT_BUTTON		= "zb_cvInvAccept";
+ZmId.CV_INV_REPLY_TENTATIVE_BUTTON	= "zb_cvInvTentative";
+ZmId.CV_INV_REPLY_DECLINE_BUTTON	= "zb_cvInvDecline";
+
+ZmId.MSG_TOOLBAR			= "ztb_msg";
+ZmId.MSG_NEW_MENU_BUTTON	= "zb_msgNewMenu";
+ZmId.MSG_CHECK_MAIL_BUTTON	= "zb_msgCheckMail";
+ZmId.MSG_DELETE_BUTTON		= "zb_msgDelete";
+ZmId.MSG_MOVE_BUTTON		= "zb_msgMove";
+ZmId.MSG_PRINT_BUTTON		= "zb_msgPrint";
+ZmId.MSG_REPLY_BUTTON		= "zb_msgReply";
+ZmId.MSG_REPLY_ALL_BUTTON	= "zb_msgReplyAll";
+ZmId.MSG_FORWARD_BUTTON		= "zb_msgForward";
+ZmId.MSG_EDIT_BUTTON		= "zb_msgEdit";
+ZmId.MSG_SPAM_BUTTON		= "zb_msgSpam";
+ZmId.MSG_TAG_MENU_BUTTON	= "zb_msgTag";
+ZmId.MSG_DETACH_BUTTON		= "zb_msgDetach";
+ZmId.MSG_VIEW_MENU_BUTTON	= "zb_msgView";
+
+ZmId.MSG_INV_REPLY_ACCEPT_BUTTON	= "zb_msgInvAccept";
+ZmId.MSG_INV_REPLY_TENTATIVE_BUTTON	= "zb_msgInvTentative";
+ZmId.MSG_INV_REPLY_DECLINE_BUTTON	= "zb_msgInvDecline";
+
+ZmId.COMPOSE_SEND_BUTTON			= "zb_compSend";
+ZmId.COMPOSE_CANCEL_BUTTON			= "zb_compCancel";
+ZmId.COMPOSE_SAVE_DRAFT_BUTTON		= "zb_compSave";
+ZmId.COMPOSE_ATTACHMENT_BUTTON		= "zb_compAtt";
+ZmId.COMPOSE_SPELL_CHECK_BUTTON		= "zb_compSpell";
+ZmId.COMPOSE_ADD_SIGNATURE_BUTTON	= "zb_compAddSig";
+ZmId.COMPOSE_COMPOSE_OPTIONS_BUTTON	= "zb_compOptions";
+ZmId.COMPOSE_DETACH_COMPOSE_BUTTON	= "zb_compDetach";
+
+ZmId.PREF_SAVE_BUTTON				= "zb_prefSave";
+ZmId.PREF_CANCEL_BUTTON				= "zb_prefCancel";
+

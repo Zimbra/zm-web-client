@@ -23,6 +23,7 @@ ZmMailMsgView = function(params) {
 	DwtComposite.call(this, params);
 
 	this._mode = params.mode;
+	this._view = params.view;
 	this._controller = params.controller;
 
 	this._displayImagesId = Dwt.getNextId();
@@ -336,12 +337,14 @@ function() {
 
     var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
 	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
+	var view = this._view ? [this._view, "INV"].join("_") : "INV";
 	var params = {
 		parent: this,
 		buttons: operationButtonIds,
 		posStyle: DwtControl.STATIC_STYLE,
 		className: "ZmInviteToolBar",
-		buttonClassName: "DwtToolbarButton"
+		buttonClassName: "DwtToolbarButton",
+		view: view
 	};
 	this._inviteToolbar = new ZmButtonToolBar(params);
 

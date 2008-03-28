@@ -107,6 +107,7 @@ function(enabled) {
  */
 ZmToolBar.prototype.createButton =
 function(id, params) {
+	params.id = id;
 	var b = this._buttons[id] = this._createButton(params);
 	if (params.image) {
 		b.setImage(params.image);
@@ -135,7 +136,10 @@ ZmToolBar.prototype.SEPARATOR_TEMPLATE = "share.Widgets#ZmToolBarSeparator";
 
 ZmToolBar.prototype._createButton =
 function(params, className) {
-    return new DwtToolBarButton({parent:this, style:params.style, className:className, index:params.index});
+	var idKey = this._view ? [this._view, params.id, "BUTTON"].join("_") : null;
+//	DBG.println("ZmId." + idKey);
+	var id = idKey ? ZmId[idKey] : null;
+    return new DwtToolBarButton({parent:this, style:params.style, className:className, index:params.index, id:id});
 };
 
 ZmToolBar.prototype._buttonId =

@@ -152,7 +152,8 @@ function(view, arrowStyle) {
 	} else {
 		var buttons = this._getToolBarOps();
 		if (!buttons) return;
-		this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:"ZmMsgViewToolBar_cw"});
+		this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:"ZmMsgViewToolBar_cw",
+												   view:this._getViewType()});
 
 		buttons = this._toolbar[view].opList;
 		for (var i = 0; i < buttons.length; i++) {
