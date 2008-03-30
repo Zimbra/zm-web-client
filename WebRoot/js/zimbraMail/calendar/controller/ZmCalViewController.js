@@ -462,8 +462,9 @@ function(date) {
 	this._miniCalendar.addActionListener(new AjxListener(this, this._miniCalActionListener));
 	this._miniCalendar.addDateRangeListener(new AjxListener(this, this._miniCalDateRangeListener));
 	this._miniCalendar.setMouseOverDayCallback(new AjxCallback(this, this._miniCalMouseOverDayCallback));
+    this._miniCalendar.setMouseOutDayCallback(new AjxCallback(this, this._miniCalMouseOutDayCallback));
 
-	var list = [];
+    var list = [];
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		list.push("ZmMailMsg");
 		list.push("ZmConv");
@@ -1322,8 +1323,34 @@ function(ev) {
 
 ZmCalViewController.prototype._miniCalMouseOverDayCallback =
 function(control, day) {
-	control.setToolTipContent(this.getDayToolTipText(day));
+	this._currentMouseOverDay = day;
+	var action = new AjxTimedAction(this, this._getDayToolTipOnDelay, [control, day]);
+	AjxTimedAction.scheduleAction(action, 1000);
+
 };
+
+ZmCalViewController.prototype._miniCalMouseOutDayCallback =
+function(control) {
+	this._currentMouseOverDay = null;
+};
+
+ZmCalViewController.prototype._getDayToolTipOnDelay =
+function(control, day) {
+	if(!this._currentMouseOverDay) { return; }
+	if((this._currentMouseOverDay.getDate() == day.getDate()) && (this._currentMouseOverDay.getMonth() == day.getMonth())) {
+		this._currentMouseOverDay = null;
+		control.setToolTipContent(this.getDayToolTipText(day));
+		var mouseEv = DwtShell.mouseEvent;
+		if(mouseEv && mouseEv.docX > 0 && mouseEv.docY > 0) {
+			var shell = DwtShell.getShell(window);
+			var tooltip = shell.getToolTip();
+			tooltip.setContent(this.getDayToolTipText(day));
+			tooltip.popup(mouseEv.docX, mouseEv.docY);
+			control.__tooltipClosed = false;
+		}
+	}
+};
+
 
 ZmCalViewController.prototype._getViewType =
 function() {
