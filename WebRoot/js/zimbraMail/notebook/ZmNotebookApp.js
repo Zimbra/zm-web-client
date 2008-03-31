@@ -63,23 +63,23 @@ function() {
 
 ZmNotebookApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp("EDIT_NOTEBOOK_CHROME", {textKey:"editNotebookChrome", image:"Edit"});
-	ZmOperation.registerOp("EDIT_NOTEBOOK_INDEX", {textKey:"editNotebookIndex", image:"Edit"});
-	ZmOperation.registerOp("EDIT_NOTEBOOK_HEADER", {textKey:"editNotebookHeader", image:"Edit"});
-	ZmOperation.registerOp("EDIT_NOTEBOOK_FOOTER", {textKey:"editNotebookFooter", image:"Edit"});
-	ZmOperation.registerOp("EDIT_NOTEBOOK_SIDE_BAR", {textKey:"editNotebookSideBar", image:"Edit"});
-	ZmOperation.registerOp("EDIT_NOTEBOOK_CHROME", {textKey:"editNotebookChrome", image:"Edit"});
-	ZmOperation.registerOp("FORMAT_HTML_SOURCE", {textKey:"formatHtmlSource"}, ZmSetting.HTML_COMPOSE_ENABLED);
-	ZmOperation.registerOp("FORMAT_MEDIA_WIKI", {textKey:"formatMediaWiki"}, ZmSetting.HTML_COMPOSE_ENABLED);
-	ZmOperation.registerOp("FORMAT_RICH_TEXT", {textKey:"formatRichText"}, ZmSetting.HTML_COMPOSE_ENABLED);
-	ZmOperation.registerOp("FORMAT_TWIKI", {textKey:"formatTWiki"}, ZmSetting.HTML_COMPOSE_ENABLED);
-	ZmOperation.registerOp("MOUNT_NOTEBOOK", {textKey:"mountNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("NEW_NOTEBOOK", {textKey:"newNotebook", image:"NewNotebook"});
-	ZmOperation.registerOp("NEW_PAGE", {textKey:"newPage", tooltipKey:"createNewPage", image:"NewPage"});
-	ZmOperation.registerOp("IMPORT_FILE", {textKey:"_import", tooltipKey:"importDocs"});
-	ZmOperation.registerOp("SEND_PAGE", {textKey:"send", tooltipKey:"sendPageTT", image:"Send"}, ZmSetting.MAIL_ENABLED);
-	ZmOperation.registerOp("SHARE_NOTEBOOK", {textKey:"shareNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("REVERT_PAGE", {textKey:"revert", tooltipKey:"restorePage", image:"Edit"});	
+	ZmOperation.registerOp(ZmId.OP_EDIT_NOTEBOOK_CHROME, {textKey:"editNotebookChrome", image:"Edit"});
+	ZmOperation.registerOp(ZmId.OP_EDIT_NOTEBOOK_INDEX, {textKey:"editNotebookIndex", image:"Edit"});
+	ZmOperation.registerOp(ZmId.OP_EDIT_NOTEBOOK_HEADER, {textKey:"editNotebookHeader", image:"Edit"});
+	ZmOperation.registerOp(ZmId.OP_EDIT_NOTEBOOK_FOOTER, {textKey:"editNotebookFooter", image:"Edit"});
+	ZmOperation.registerOp(ZmId.OP_EDIT_NOTEBOOK_SIDE_BAR, {textKey:"editNotebookSideBar", image:"Edit"});
+	ZmOperation.registerOp(ZmId.OP_EDIT_NOTEBOOK_CHROME, {textKey:"editNotebookChrome", image:"Edit"});
+	ZmOperation.registerOp(ZmId.OP_FORMAT_HTML_SOURCE, {textKey:"formatHtmlSource"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_FORMAT_MEDIA_WIKI, {textKey:"formatMediaWiki"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_FORMAT_RICH_TEXT, {textKey:"formatRichText"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_FORMAT_TWIKI, {textKey:"formatTWiki"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_MOUNT_NOTEBOOK, {textKey:"mountNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_NEW_NOTEBOOK, {textKey:"newNotebook", image:"NewNotebook"});
+	ZmOperation.registerOp(ZmId.OP_NEW_PAGE, {textKey:"newPage", tooltipKey:"createNewPage", image:"NewPage"});
+	ZmOperation.registerOp(ZmId.OP_IMPORT_FILE, {textKey:"_import", tooltipKey:"importDocs"});
+	ZmOperation.registerOp(ZmId.OP_SEND_PAGE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"}, ZmSetting.MAIL_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SHARE_NOTEBOOK, {textKey:"shareNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_REVERT_PAGE, {textKey:"revert", tooltipKey:"restorePage", image:"Edit"});	
 };
 
 ZmNotebookApp.prototype._registerItems =

@@ -96,70 +96,70 @@ ZmOperation._operationDesc = {};
  */
 ZmOperation.initialize =
 function() {
-	ZmOperation.registerOp("ATTACHMENT", {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment"});
-	ZmOperation.registerOp("BROWSE", {textKey:"advancedSearch", image:"SearchBuilder"}, ZmSetting.BROWSE_ENABLED);
-	ZmOperation.registerOp("CALL", {image:"Telephone"});
-	ZmOperation.registerOp("CANCEL", {textKey:"cancel", tooltipKey:"cancelTooltip", image:"Cancel"});
-	ZmOperation.registerOp("CHECK_ALL", {textKey:"checkAll", image:"Check"});
-	ZmOperation.registerOp("CLEAR_ALL", {textKey:"clearAll", image:"Cancel"});
-	ZmOperation.registerOp("CLOSE", {textKey:"close", tooltipKey:"closeTooltip", image:"Close"});
-	ZmOperation.registerOp("COMPOSE_FORMAT", {textKey:"format", tooltipKey:"formatTooltip", image:"SwitchFormat"}, ZmSetting.HTML_COMPOSE_ENABLED);
-	ZmOperation.registerOp("DELETE", {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete"});
-	ZmOperation.registerOp("DETACH", {tooltipKey:"detachTT", image:"OpenInNewWindow"});
-	ZmOperation.registerOp("EDIT", {textKey:"edit", tooltipKey:"editTooltip", image:"Edit"});
-	ZmOperation.registerOp("EDIT_PROPS", {textKey:"editProperties", tooltipKey:"editPropertiesTooltip", image:"Properties"});
-	ZmOperation.registerOp("EXPAND_ALL", {textKey:"expandAll", image:"Plus"});
-	ZmOperation.registerOp("EMPTY_FOLDER",{textKey:"emptyFolder",image:"EmptyFolder"});
-	ZmOperation.registerOp("FORMAT_HTML", {textKey:"formatAsHtml", image:"HtmlDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
-	ZmOperation.registerOp("FORMAT_TEXT", {textKey:"formatAsText", image:"GenericDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
-	ZmOperation.registerOp("GO_TO_URL", {image:"URL"});
-	ZmOperation.registerOp("MARK_ALL_READ", {textKey:"markAllRead", image:"ReadMessage"});
-	ZmOperation.registerOp("MOUNT_FOLDER", {textKey:"mountFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("MOVE", {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder"});
-	ZmOperation.registerOp("NEW_FOLDER", {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder"}, ZmSetting.USER_FOLDERS_ENABLED);
-	ZmOperation.registerOp("NEW_MENU", {textKey:"_new"}, null,
+	ZmOperation.registerOp(ZmId.OP_ATTACHMENT, {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment"});
+	ZmOperation.registerOp(ZmId.OP_BROWSE, {textKey:"advancedSearch", image:"SearchBuilder"}, ZmSetting.BROWSE_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_CALL, {image:"Telephone"});
+	ZmOperation.registerOp(ZmId.OP_CANCEL, {textKey:"cancel", tooltipKey:"cancelTooltip", image:"Cancel"});
+	ZmOperation.registerOp(ZmId.OP_CHECK_ALL, {textKey:"checkAll", image:"Check"});
+	ZmOperation.registerOp(ZmId.OP_CLEAR_ALL, {textKey:"clearAll", image:"Cancel"});
+	ZmOperation.registerOp(ZmId.OP_CLOSE, {textKey:"close", tooltipKey:"closeTooltip", image:"Close"});
+	ZmOperation.registerOp(ZmId.OP_COMPOSE_FORMAT, {textKey:"format", tooltipKey:"formatTooltip", image:"SwitchFormat"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_DELETE, {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete"});
+	ZmOperation.registerOp(ZmId.OP_DETACH, {tooltipKey:"detachTT", image:"OpenInNewWindow"});
+	ZmOperation.registerOp(ZmId.OP_EDIT, {textKey:"edit", tooltipKey:"editTooltip", image:"Edit"});
+	ZmOperation.registerOp(ZmId.OP_EDIT_PROPS, {textKey:"editProperties", tooltipKey:"editPropertiesTooltip", image:"Properties"});
+	ZmOperation.registerOp(ZmId.OP_EXPAND_ALL, {textKey:"expandAll", image:"Plus"});
+	ZmOperation.registerOp(ZmId.OP_EMPTY_FOLDER,{textKey:"emptyFolder",image:"EmptyFolder"});
+	ZmOperation.registerOp(ZmId.OP_FORMAT_HTML, {textKey:"formatAsHtml", image:"HtmlDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_FORMAT_TEXT, {textKey:"formatAsText", image:"GenericDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_GO_TO_URL, {image:"URL"});
+	ZmOperation.registerOp(ZmId.OP_MARK_ALL_READ, {textKey:"markAllRead", image:"ReadMessage"});
+	ZmOperation.registerOp(ZmId.OP_MOUNT_FOLDER, {textKey:"mountFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_MOVE, {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder"});
+	ZmOperation.registerOp(ZmId.OP_NEW_FOLDER, {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder"}, ZmSetting.USER_FOLDERS_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_NEW_MENU, {textKey:"_new"}, null,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addNewMenu, parent);
 		}));
-	ZmOperation.registerOp("NEW_TAG", {textKey:"newTag", tooltipKey:"newTagTooltip", image:"NewTag"}, ZmSetting.TAGGING_ENABLED);
-	ZmOperation.registerOp("PAGE_BACK", {image:"LeftArrow"});
-	ZmOperation.registerOp("PAGE_DBL_BACK", {image:"LeftDoubleArrow"});
-	ZmOperation.registerOp("PAGE_DBL_FORW", {image:"RightDoubleArrow"});
-	ZmOperation.registerOp("PAGE_FORWARD", {image:"RightArrow"});
-	ZmOperation.registerOp("PRINT", {textKey:"print", tooltipKey:"printTooltip", image:"Print"}, ZmSetting.PRINT_ENABLED);
-    ZmOperation.registerOp("REFRESH", {textKey:"refresh", tooltipKey:"refreshTooltip"});
-	ZmOperation.registerOp("RENAME_FOLDER", {textKey:"renameFolder", image:"Rename"});
-	ZmOperation.registerOp("RENAME_SEARCH", {textKey:"renameSearch", image:"Rename"});
-	ZmOperation.registerOp("RENAME_TAG", {textKey:"renameTag", image:"Rename"}, ZmSetting.TAGGING_ENABLED);
-	ZmOperation.registerOp("SAVE", {textKey:"save", image:"Save"});
-	ZmOperation.registerOp("SEARCH", {textKey:"search", image:"Search"}, ZmSetting.SEARCH_ENABLED);
-	ZmOperation.registerOp("SEND", {textKey:"send", tooltipKey:"sendTooltip", image:"Send"});
-	ZmOperation.registerOp("SHARE", {textKey:"share", tooltipKey:"shareTooltip"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("SHARE_ACCEPT", {textKey:"acceptShare", image:"Check"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("SHARE_DECLINE", {textKey:"declineShare", image:"Cancel"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("SHARE_FOLDER", {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("SHOW_ALL_ITEM_TYPES", {textKey:"showAllItemTypes", image:"Globe"});
-	ZmOperation.registerOp("SPELL_CHECK", {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip"});
-	ZmOperation.registerOp("SYNC", {textKey:"reload", image:"Refresh"});
-	ZmOperation.registerOp("SYNC_OFFLINE", {textKey:"checkMail", tooltipKey:"syncTooltip", image:"Refresh"});
-	ZmOperation.registerOp("SYNC_OFFLINE_FOLDER", {textKey:"syncOfflineFolderOff", image:"Refresh"}, appCtxt.isOffline); /* offline only */
-	ZmOperation.registerOp("TAG", null, ZmSetting.TAGGING_ENABLED);
-	ZmOperation.registerOp("TAG_COLOR_MENU", {textKey:"tagColor"}, ZmSetting.TAGGING_ENABLED,
+	ZmOperation.registerOp(ZmId.OP_NEW_TAG, {textKey:"newTag", tooltipKey:"newTagTooltip", image:"NewTag"}, ZmSetting.TAGGING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_PAGE_BACK, {image:"LeftArrow"});
+	ZmOperation.registerOp(ZmId.OP_PAGE_DBL_BACK, {image:"LeftDoubleArrow"});
+	ZmOperation.registerOp(ZmId.OP_PAGE_DBL_FORW, {image:"RightDoubleArrow"});
+	ZmOperation.registerOp(ZmId.OP_PAGE_FORWARD, {image:"RightArrow"});
+	ZmOperation.registerOp(ZmId.OP_PRINT, {textKey:"print", tooltipKey:"printTooltip", image:"Print"}, ZmSetting.PRINT_ENABLED);
+    ZmOperation.registerOp(ZmId.OP_REFRESH, {textKey:"refresh", tooltipKey:"refreshTooltip"});
+	ZmOperation.registerOp(ZmId.OP_RENAME_FOLDER, {textKey:"renameFolder", image:"Rename"});
+	ZmOperation.registerOp(ZmId.OP_RENAME_SEARCH, {textKey:"renameSearch", image:"Rename"});
+	ZmOperation.registerOp(ZmId.OP_RENAME_TAG, {textKey:"renameTag", image:"Rename"}, ZmSetting.TAGGING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SAVE, {textKey:"save", image:"Save"});
+	ZmOperation.registerOp(ZmId.OP_SEARCH, {textKey:"search", image:"Search"}, ZmSetting.SEARCH_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SEND, {textKey:"send", tooltipKey:"sendTooltip", image:"Send"});
+	ZmOperation.registerOp(ZmId.OP_SHARE, {textKey:"share", tooltipKey:"shareTooltip"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SHARE_ACCEPT, {textKey:"acceptShare", image:"Check"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SHARE_DECLINE, {textKey:"declineShare", image:"Cancel"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SHARE_FOLDER, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_SHOW_ALL_ITEM_TYPES, {textKey:"showAllItemTypes", image:"Globe"});
+	ZmOperation.registerOp(ZmId.OP_SPELL_CHECK, {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip"});
+	ZmOperation.registerOp(ZmId.OP_SYNC, {textKey:"reload", image:"Refresh"});
+	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE, {textKey:"checkMail", tooltipKey:"syncTooltip", image:"Refresh"});
+	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE_FOLDER, {textKey:"syncOfflineFolderOff", image:"Refresh"}, appCtxt.isOffline); /* offline only */
+	ZmOperation.registerOp(ZmId.OP_TAG, null, ZmSetting.TAGGING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_TAG_COLOR_MENU, {textKey:"tagColor"}, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, parent);
 		}));
-	ZmOperation.registerOp("TAG_MENU", {tooltipKey:"tagTooltip", image:"Tag"}, ZmSetting.TAGGING_ENABLED,
+	ZmOperation.registerOp(ZmId.OP_TAG_MENU, {tooltipKey:"tagTooltip", image:"Tag"}, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, parent);
 		}));
 	// placeholder for toolbar text
-	ZmOperation.registerOp("TEXT");
+	ZmOperation.registerOp(ZmId.OP_TEXT);
 	// XXX: need new icon? -
 	//      Undelete is stupid. We should either add it for all items types (not just contacts) or just kill it
-	ZmOperation.registerOp("UNDELETE", {textKey:"undelete", tooltipKey:"undelete", image:"MoveToFolder"});
-	ZmOperation.registerOp("VIEW", {textKey:"view", image:"SplitView"});
-	ZmOperation.registerOp("VIEW_MENU", {tooltipKey:"viewTooltip", textKey:"view", image:"SplitPane"});
-	ZmOperation.registerOp("ZIMLET", {image:"ZimbraIcon"});
+	ZmOperation.registerOp(ZmId.OP_UNDELETE, {textKey:"undelete", tooltipKey:"undelete", image:"MoveToFolder"});
+	ZmOperation.registerOp(ZmId.OP_VIEW, {textKey:"view", image:"SplitView"});
+	ZmOperation.registerOp(ZmId.OP_VIEW_MENU, {tooltipKey:"viewTooltip", textKey:"view", image:"SplitPane"});
+	ZmOperation.registerOp(ZmId.OP_ZIMLET, {image:"ZimbraIcon"});
 };
 
 /**

@@ -99,15 +99,15 @@ function() {
 
 ZmVoiceApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp("CHECK_VOICEMAIL", {textKey:"checkVoicemail", tooltipKey:"checkVoicemailTooltip"});
-	ZmOperation.registerOp("CHECK_CALLS", {textKey:"checkCalls", tooltipKey:"checkCallsTooltip"});
-	ZmOperation.registerOp("CALL_MANAGER", {textKey:"callManager", tooltipKey:"callManagerTooltip", image:"CallManager"});
-	ZmOperation.registerOp("MARK_HEARD", {textKey:"markAsHeard", image:"MarkAsHeard"});
-	ZmOperation.registerOp("MARK_UNHEARD", {textKey:"markAsUnheard", image:"MarkAsUnheard"});
-	ZmOperation.registerOp("VIEW_BY_DATE", {textKey:"viewByDate"});
-	ZmOperation.registerOp("REPLY_BY_EMAIL", {textKey:"replyByEmail", tooltipKey:"replyByEmailTooltip", image:"Reply"});
-	ZmOperation.registerOp("FORWARD_BY_EMAIL", {textKey:"forwardByEmail", tooltipKey:"forwardByEmailTooltip", image:"Forward"});
-	ZmOperation.registerOp("DOWNLOAD_VOICEMAIL", {textKey: "downloadVoicemail", tooltipKey:"downloadVoicemailTooltip", image:"Save"});
+	ZmOperation.registerOp(ZmId.OP_CHECK_VOICEMAIL, {textKey:"checkVoicemail", tooltipKey:"checkVoicemailTooltip"});
+	ZmOperation.registerOp(ZmId.OP_CHECK_CALLS, {textKey:"checkCalls", tooltipKey:"checkCallsTooltip"});
+	ZmOperation.registerOp(ZmId.OP_CALL_MANAGER, {textKey:"callManager", tooltipKey:"callManagerTooltip", image:"CallManager"});
+	ZmOperation.registerOp(ZmId.OP_MARK_HEARD, {textKey:"markAsHeard", image:"MarkAsHeard"});
+	ZmOperation.registerOp(ZmId.OP_MARK_UNHEARD, {textKey:"markAsUnheard", image:"MarkAsUnheard"});
+	ZmOperation.registerOp(ZmId.OP_VIEW_BY_DATE, {textKey:"viewByDate"});
+	ZmOperation.registerOp(ZmId.OP_REPLY_BY_EMAIL, {textKey:"replyByEmail", tooltipKey:"replyByEmailTooltip", image:"Reply"});
+	ZmOperation.registerOp(ZmId.OP_FORWARD_BY_EMAIL, {textKey:"forwardByEmail", tooltipKey:"forwardByEmailTooltip", image:"Forward"});
+	ZmOperation.registerOp(ZmId.OP_DOWNLOAD_VOICEMAIL, {textKey: "downloadVoicemail", tooltipKey:"downloadVoicemailTooltip", image:"Save"});
 };
 
 ZmVoiceApp.prototype._registerOrganizers =

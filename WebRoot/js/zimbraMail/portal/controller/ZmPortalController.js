@@ -20,7 +20,7 @@ ZmPortalController = function(container, app) {
 	ZmListController.call(this, container, app);
 
     // TODO: Where does this really belong?
-    ZmOperation.registerOp("PAUSE_TOGGLE", {textKey:"pause", image:"Pause", style: DwtButton.TOGGLE_STYLE});
+    ZmOperation.registerOp(ZmId.OP_PAUSE_TOGGLE, {textKey:"pause", image:"Pause", style: DwtButton.TOGGLE_STYLE});
 
     this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
     this._listeners[ZmOperation.PAUSE_TOGGLE] = new AjxListener(this, this._pauseListener);

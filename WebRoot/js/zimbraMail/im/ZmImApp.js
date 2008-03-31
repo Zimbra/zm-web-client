@@ -78,32 +78,32 @@ function() {
 
 ZmImApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp("IM_NEW_CHAT"	       , { textKey: "imNewChat", image: "ImFree2Chat" });
-	ZmOperation.registerOp("IM_NEW_GROUP_CHAT"     , { textKey: "imNewGroupChat", image: "ImFree2Chat" });
-	ZmOperation.registerOp("IM_PRESENCE_AWAY"      , { textKey: "imStatusAway", image: "ImAway" });
-	ZmOperation.registerOp("IM_PRESENCE_CHAT"      , { textKey: "imStatusChat", image: "ImFree2Chat" });
-	ZmOperation.registerOp("IM_PRESENCE_DND"       , { textKey: "imStatusDND", image: "ImDnd" });
-	ZmOperation.registerOp("IM_PRESENCE_INVISIBLE" , { textKey: "imStatusInvisible", image: "ImInvisible" });
-	ZmOperation.registerOp("IM_PRESENCE_MENU"      , { textKey: "imPresence" }, null, ZmImApp.addImPresenceMenu );
-	ZmOperation.registerOp("IM_PRESENCE_OFFLINE"   , { textKey: "imStatusOffline", image: "Offline" });
-	ZmOperation.registerOp("IM_PRESENCE_ONLINE"    , { textKey: "imStatusOnline", image: "ImAvailable" });
-	ZmOperation.registerOp("IM_PRESENCE_XA"	       , { textKey: "imStatusExtAway", image: "ImExtendedAway" });
-	ZmOperation.registerOp("NEW_ROSTER_ITEM"       , { textKey: "newRosterItem", image: "ImBuddy" });
-	ZmOperation.registerOp("IM_CREATE_CONTACT"     , { textKey: "addToNewContact", image: "NewContact" });
-	ZmOperation.registerOp("IM_ADD_TO_CONTACT"     , { textKey: "addToExistingContact", image: "Edit" });
-	ZmOperation.registerOp("IM_EDIT_CONTACT"       , { textKey: "editContact", image: "Edit" });
-	ZmOperation.registerOp("IM_GATEWAY_LOGIN"      , { textKey: "imGatewayLogin", image: "ExternalLink" });
-	ZmOperation.registerOp("IM_TOGGLE_OFFLINE"     , { textKey: "imToggleOffline" });
-        ZmOperation.registerOp("IM_TOGGLE_BLOCKED"     , { textKey: "imToggleBlocked" });
-        ZmOperation.registerOp("IM_FLOATING_LIST"      , { textKey: "imFloatingBuddyList", image: "ImGroup" });
+	ZmOperation.registerOp(ZmId.OP_IM_NEW_CHAT	       , { textKey: "imNewChat", image: "ImFree2Chat" });
+	ZmOperation.registerOp(ZmId.OP_IM_NEW_GROUP_CHAT     , { textKey: "imNewGroupChat", image: "ImFree2Chat" });
+	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_AWAY      , { textKey: "imStatusAway", image: "ImAway" });
+	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CHAT      , { textKey: "imStatusChat", image: "ImFree2Chat" });
+	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_DND       , { textKey: "imStatusDND", image: "ImDnd" });
+	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_INVISIBLE , { textKey: "imStatusInvisible", image: "ImInvisible" });
+	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU      , { textKey: "imPresence" }, null, ZmImApp.addImPresenceMenu );
+	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_OFFLINE   , { textKey: "imStatusOffline", image: "Offline" });
+	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_ONLINE    , { textKey: "imStatusOnline", image: "ImAvailable" });
+	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_XA	       , { textKey: "imStatusExtAway", image: "ImExtendedAway" });
+	ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_ITEM       , { textKey: "newRosterItem", image: "ImBuddy" });
+	ZmOperation.registerOp(ZmId.OP_IM_CREATE_CONTACT     , { textKey: "addToNewContact", image: "NewContact" });
+	ZmOperation.registerOp(ZmId.OP_IM_ADD_TO_CONTACT     , { textKey: "addToExistingContact", image: "Edit" });
+	ZmOperation.registerOp(ZmId.OP_IM_EDIT_CONTACT       , { textKey: "editContact", image: "Edit" });
+	ZmOperation.registerOp(ZmId.OP_IM_GATEWAY_LOGIN      , { textKey: "imGatewayLogin", image: "ExternalLink" });
+	ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_OFFLINE     , { textKey: "imToggleOffline" });
+        ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_BLOCKED     , { textKey: "imToggleBlocked" });
+        ZmOperation.registerOp(ZmId.OP_IM_FLOATING_LIST      , { textKey: "imFloatingBuddyList", image: "ImGroup" });
 
-        ZmOperation.registerOp("IM_SORT_BY_PRESENCE"   , { textKey: "imSortListByPresence" });
-        ZmOperation.registerOp("IM_SORT_BY_NAME"       , { textKey: "imSortListByName" });
+        ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_PRESENCE   , { textKey: "imSortListByPresence" });
+        ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_NAME       , { textKey: "imSortListByName" });
 
-	ZmOperation.registerOp("IM_PRESENCE_CUSTOM_MSG"		, { textKey: "imCustomStatusMsg", image: "ImFree2Chat"});
+	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MSG		, { textKey: "imCustomStatusMsg", image: "ImFree2Chat"});
 
-        ZmOperation.registerOp("IM_BLOCK_BUDDY" , { textKey: "imBlock", image: "BlockUser" });
-        ZmOperation.registerOp("IM_UNBLOCK_BUDDY" , { textKey: "imUnblock", image: "AllowUser" });
+        ZmOperation.registerOp(ZmId.OP_IM_BLOCK_BUDDY , { textKey: "imBlock", image: "BlockUser" });
+        ZmOperation.registerOp(ZmId.OP_IM_UNBLOCK_BUDDY , { textKey: "imUnblock", image: "AllowUser" });
 };
 
 ZmImApp.prototype._registerItems =
