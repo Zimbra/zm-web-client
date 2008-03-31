@@ -337,14 +337,14 @@ function() {
 
     var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
 	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
-	var view = this._view ? [this._view, "INV"].join("_") : "INV";
 	var params = {
 		parent: this,
 		buttons: operationButtonIds,
 		posStyle: DwtControl.STATIC_STYLE,
 		className: "ZmInviteToolBar",
 		buttonClassName: "DwtToolbarButton",
-		view: view
+		view: this._view,
+		toolbarType: ZmId.TB_INV
 	};
 	this._inviteToolbar = new ZmButtonToolBar(params);
 

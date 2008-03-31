@@ -33,13 +33,12 @@ ZmItem.RESOURCE				= ZmEvent.S_RESOURCE;
 ZmOrganizer.CALENDAR		= "CALENDAR";
 
 // App-related constants
-ZmApp.CALENDAR							= "Calendar";
+ZmApp.CALENDAR							= ZmId.APP_CALENDAR;
 ZmApp.CLASS[ZmApp.CALENDAR]				= "ZmCalendarApp";
 ZmApp.SETTING[ZmApp.CALENDAR]			= ZmSetting.CALENDAR_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.CALENDAR]	= ZmSetting.CALENDAR_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.CALENDAR]			= 40;
 ZmApp.QS_ARG[ZmApp.CALENDAR]			= "calendar";
-ZmApp.BUTTON_ID[ZmApp.CALENDAR]			= ZmId.CALENDAR_APP;
 
 // ms to wait before fetching reminders
 ZmCalendarApp.REMINDER_START_DELAY = 10000;

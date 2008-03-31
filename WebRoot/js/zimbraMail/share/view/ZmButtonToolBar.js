@@ -34,6 +34,7 @@
  *        buttonClassName	[string]*			CSS class name for buttons
  *        overrides			[hash]*				hash of overrides by op ID
  *        view				[const]*			view ID (used to generate button IDs)
+ *        toolbarType		[const]*			toolbar type (used to generate button IDs)
  */
 ZmButtonToolBar = function(params) {
 	if (arguments.length == 0) return;
@@ -42,6 +43,7 @@ ZmButtonToolBar = function(params) {
     ZmToolBar.call(this, params.parent, className, params.posStyle);
 	
 	this._view = params.view;
+	this._toolbarType = params.toolbarType;
 	this._buttonStyle = params.buttonClassName;
 
 	// standard buttons default to New/Tag/Print/Delete

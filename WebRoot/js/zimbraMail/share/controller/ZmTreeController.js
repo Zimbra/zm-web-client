@@ -307,6 +307,8 @@ function(overviewId) {
 		allowedTypes: this._getAllowedTypes(),
 		allowedSubTypes: this._getAllowedSubTypes()
 	};
+	var idKey = ["TREE", params.overviewId, params.type].join("_").toUpperCase();
+	params.id = ZmId[idKey];
 	var treeView = this._createTreeView(params);
 	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
 

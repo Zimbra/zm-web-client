@@ -42,7 +42,7 @@
 ZmOverview = function(params, controller) {
 	
 	var overviewClass = params.overviewClass ? params.overviewClass : "ZmOverview";
-	DwtComposite.call(this, params.parent, overviewClass, params.posStyle);
+	DwtComposite.call(this, {parent:params.parent, className:overviewClass, posStyle:params.posStyle, id:params.id});
 	
 	this.id = params.overviewId;
 	this._controller = controller;

@@ -30,7 +30,7 @@ ZmItem.BRIEFCASE				= ZmEvent.S_BRIEFCASE;
 ZmOrganizer.BRIEFCASE			= "BRIEFCASE";
 
 // App-related constants
-ZmApp.BRIEFCASE							= "Briefcase";
+ZmApp.BRIEFCASE							= ZmId.APP_BRIEFCASE;
 ZmApp.CLASS[ZmApp.BRIEFCASE]			= "ZmBriefcaseApp";
 ZmApp.SETTING[ZmApp.BRIEFCASE]			= ZmSetting.BRIEFCASE_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.BRIEFCASE]		= 60;

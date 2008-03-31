@@ -347,7 +347,8 @@ function(view, arrowStyle) {
         this._setReplyText(this._toolbar[view]);
         this._toolbar[view].addFiller();
         arrowStyle = arrowStyle ? arrowStyle : ZmNavToolBar.SINGLE_ARROWS;
-        var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, arrowStyle, true);
+        var tb = new ZmNavToolBar({parent:this._toolbar[view], posStyle:DwtControl.STATIC_STYLE,
+        						   arrowStyle:arrowStyle, hasText:true, view:view});
         this._setNavToolBar(tb, view);
     }
 

@@ -31,12 +31,11 @@ ZmPreferencesApp = function(container) {
 ZmEvent.S_FILTER			= "FILTER";
 
 // App-related constants
-ZmApp.PREFERENCES					= "Options";
+ZmApp.PREFERENCES					= ZmId.APP_PREFERENCES;
 ZmApp.CLASS[ZmApp.PREFERENCES]		= "ZmPreferencesApp";
 ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.OPTIONS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PREFERENCES]	= 10;
 ZmApp.QS_ARG[ZmApp.PREFERENCES]		= "options";
-ZmApp.BUTTON_ID[ZmApp.PREFERENCES]	= ZmId.PREFERENCES_APP;
 
 ZmPreferencesApp.prototype = new ZmApp;
 ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
