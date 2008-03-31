@@ -129,13 +129,14 @@ function(tag) {
 	var app = appCtxt.getCurrentAppName();
 
 	var searchFor;
-	switch (app) {
-		case ZmApp.CONTACTS:	searchFor = ZmItem.CONTACT; break;
-		case ZmApp.NOTEBOOK:	searchFor = ZmItem.PAGE; break;
-		case ZmApp.CALENDAR:	searchFor = ZmItem.APPT; break;
-		case ZmApp.TASKS:		searchFor = ZmItem.TASK; break;
-		default: 				searchFor = ZmSearchToolBar.FOR_MAIL_MI; break;
-	}
+        switch (app) {
+                case ZmApp.CONTACTS:    searchFor = ZmItem.CONTACT; break;
+                case ZmApp.NOTEBOOK:    searchFor = ZmItem.PAGE; break;
+                case ZmApp.CALENDAR:    searchFor = ZmItem.APPT; break;
+                case ZmApp.BRIEFCASE:   searchFor = ZmItem.PAGE; break;
+                case ZmApp.TASKS:       searchFor = ZmItem.TASK; break;
+                default:                searchFor = ZmSearchToolBar.FOR_MAIL_MI; break;
+        }
 
 	var sc = appCtxt.getSearchController();
 	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
