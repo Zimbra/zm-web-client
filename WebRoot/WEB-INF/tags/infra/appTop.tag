@@ -35,6 +35,7 @@
            <td class="ImgField_L searchwidth"></td>
             <td class="SearchFieldWidth"><input id="searchField" class="searchField" maxlength="2048" name="sq" value="${query}"></td>
             <td class="ImgField_R searchwidth"></td>
+            <c:if test="${mailbox.features.mail||mailbox.features.contacts||mailbox.features.calendar||mailbox.features.tasks}">    
             <td nowrap="nowrap" style="padding-left: 2px;">&nbsp;<fmt:message key="in"/>&nbsp;</td>
             <td style="padding-left: 2px;">
             <c:choose>
@@ -56,6 +57,7 @@
                 </c:if>
             </select>
             </td>
+            </c:if>    
             <td style="padding-left: 10px;">
             <input class="SearchButton" type="submit" name="search" value="<fmt:message key="search"/>">
             <c:if test="${calendars}">
