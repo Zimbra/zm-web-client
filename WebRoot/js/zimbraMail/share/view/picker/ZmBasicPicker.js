@@ -68,38 +68,38 @@ function(parent) {
     
 	var html = [];
 	var i = 0;
-	html[i++] = "<table cellpadding='5' cellspacing='0' border='0'>";
+	html[i++] = "<table cellpadding='5' cellspacing='0' border='0' width='100%'>";
 	html[i++] = this._makeRow(ZmMsg.from, fromId);
 	html[i++] = this._makeRow(ZmMsg.toCc, toId);
 	html[i++] = this._makeRow(ZmMsg.subject, subjectId);
 	html[i++] = this._makeRow(ZmMsg.content, contentId);
-	
+	html[i++] = "</table>";
+    html[i++] = "<div style='overflow: auto; padding-left: 20px;'>";
 	if (appCtxt.get(ZmSetting.SPAM_ENABLED)) {
 		inSpamId = Dwt.getNextId();
 		checked = appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM) ? " checked" : "";
-		html[i++] = "<tr valign='middle'>";
-		html[i++] = "<td align='right'><input type='checkbox'";
+		/*html[i++] = "<tr valign='middle'>";*/
+		html[i++] = "<span><input type='checkbox'";
 		html[i++] = checked;
 		html[i++] = " id='";
 		html[i++] = inSpamId;
-		html[i++] = "' /></td>";
-		html[i++] = "<td align='left' nowrap>";
+		html[i++] = "' /></span>";
+		html[i++] = "<span>";
 		html[i++] = ZmMsg.includeJunk;
-		html[i++] = "</td>";
-		html[i++] = "</tr>";
-	}
+		html[i++] = "</span>";
+		html[i++] = "<br>";
+
+    }
 	checked = appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH) ? " checked" : "";
-	html[i++] = "<tr valign='middle'>";
-	html[i++] = "<td align='right'><input type='checkbox'";
+	html[i++] = "<span><input type='checkbox'";
 	html[i++] = checked;
 	html[i++] = " id='";
 	html[i++] = inTrashId;
-	html[i++] = "' /></td>";
-	html[i++] = "<td align='left' nowrap>";
+	html[i++] = "' /></span>";
+	html[i++] = "<span>";
 	html[i++] = ZmMsg.includeTrash;
-	html[i++] = "</td>";
-	html[i++] = "</tr>";
-	html[i++] = "</table>";
+	html[i++] = "</span>";
+	html[i++] = "</div>";
 	picker.getHtmlElement().innerHTML = html.join("");
 
 	this._from = this._setupField(fromId);
