@@ -825,7 +825,7 @@ function(ev) {
             var rootTreeItem = treeView.getTreeItemById(rootId);
             if (!rootTreeItem) { return; }
             var treeItems = rootTreeItem.getItems();
-            if(treeItems && treeItems[i] && (treeItems[i].isFeed() || (treeItems[i].hasFeeds && treeItems[i].hasFeeds()))){
+            if(treeItems && treeItems[i] && (treeItems[i].isFeed && treeItems[i].isFeed() || (treeItems[i].hasFeeds && treeItems[i].hasFeeds()))){
                 this._syncFeeds(treeItems[i]);
             }
         }
