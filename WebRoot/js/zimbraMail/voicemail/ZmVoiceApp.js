@@ -31,7 +31,7 @@ ZmVoiceApp = function(container, parentController) {
 }
 
 // Organizer and item-related constants
-ZmEvent.S_VOICEMAIL				= "VOICEMAIL";
+ZmEvent.S_VOICEMAIL				= ZmId.APP_VOICE;
 ZmItem.VOICEMAIL				= ZmEvent.S_VOICEMAIL;
 ZmEvent.S_CALL					= "CALL";
 ZmItem.CALL						= ZmEvent.S_CALL;
@@ -44,7 +44,6 @@ ZmApp.SETTING[ZmApp.VOICE]			= ZmSetting.VOICE_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.VOICE]	= ZmSetting.VOICE_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.VOICE]		= 80;
 ZmApp.QS_ARG[ZmApp.VOICE]			= "voice";
-ZmApp.BUTTON_ID[ZmApp.VOICE]		= ZmId.VOICE_APP;
 
 ZmVoiceApp.prototype = new ZmApp;
 ZmVoiceApp.prototype.constructor = ZmVoiceApp;

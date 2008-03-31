@@ -51,13 +51,12 @@ ZmItem.DATA_SOURCE			= ZmEvent.S_DATA_SOURCE;
 ZmOrganizer.FOLDER			= ZmEvent.S_FOLDER;
 
 // App-related constants
-ZmApp.MAIL							= "Mail";
+ZmApp.MAIL							= ZmId.APP_MAIL;
 ZmApp.CLASS[ZmApp.MAIL]				= "ZmMailApp";
 ZmApp.SETTING[ZmApp.MAIL]			= ZmSetting.MAIL_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.MAIL]	= ZmSetting.MAIL_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.MAIL]			= 20;
 ZmApp.QS_ARG[ZmApp.MAIL]			= "mail";
-ZmApp.BUTTON_ID[ZmApp.MAIL]			= ZmId.MAIL_APP;
 
 ZmMailApp.DEFAULT_AUTO_SAVE_DRAFT_INTERVAL = 30;
 

@@ -44,13 +44,12 @@ ZmItem.GROUP					= ZmEvent.S_GROUP;
 ZmOrganizer.ADDRBOOK			= "ADDRBOOK";
 
 // App-related constants
-ZmApp.CONTACTS							= "Contacts";
+ZmApp.CONTACTS							= ZmId.APP_CONTACTS;
 ZmApp.CLASS[ZmApp.CONTACTS]				= "ZmContactsApp";
 ZmApp.SETTING[ZmApp.CONTACTS]			= ZmSetting.CONTACTS_ENABLED;
 ZmApp.UPSELL_SETTING[ZmApp.CONTACTS]	= ZmSetting.CONTACTS_UPSELL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.CONTACTS]			= 30;
 ZmApp.QS_ARG[ZmApp.CONTACTS]			= "contacts";
-ZmApp.BUTTON_ID[ZmApp.CONTACTS]			= ZmId.CONTACTS_APP;
 
 // fields used for autocomplete matching
 ZmContactsApp.AC_VALUE_FULL 	= "fullAddress";

@@ -40,12 +40,11 @@ ZmItem.F_PRESENCE = "PRESENCE";
 ZmItem.F_PRESENCE_CELL = "PRESENCE_cell";
 
 // App-related constants
-ZmApp.IM					= "IM";
+ZmApp.IM					= ZmId.APP_IM;
 ZmApp.CLASS[ZmApp.IM]		= "ZmImApp";
 ZmApp.SETTING[ZmApp.IM]		= ZmSetting.IM_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.IM]	= 70;
 ZmApp.QS_ARG[ZmApp.IM]		= "chat";
-ZmApp.BUTTON_ID[ZmApp.IM]	= ZmId.IM_APP;
 
 ZmImApp.ALERT_CLIENT = 1;  // Displays an alert for entire web client, flashing favicon & document.title
 ZmImApp.ALERT_APP_TAB = 2; // Displays an alert for im app tab 

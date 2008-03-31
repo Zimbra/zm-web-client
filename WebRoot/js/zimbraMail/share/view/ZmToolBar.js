@@ -136,9 +136,9 @@ ZmToolBar.prototype.SEPARATOR_TEMPLATE = "share.Widgets#ZmToolBarSeparator";
 
 ZmToolBar.prototype._createButton =
 function(params, className) {
-	var idKey = this._view ? [this._view, params.id, "BUTTON"].join("_") : null;
+//	var idKey = this._view ? [this._view, params.id, "BUTTON"].join("_") : null;
 //	DBG.println("ZmId." + idKey);
-	var id = idKey ? ZmId[idKey] : null;
+	var id = ZmId.getToolbarButtonId(this._view, params.id, this._toolbarType);
     return new DwtToolBarButton({parent:this, style:params.style, className:className, index:params.index, id:id});
 };
 

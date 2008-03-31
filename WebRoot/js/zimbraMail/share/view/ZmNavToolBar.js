@@ -16,11 +16,19 @@
  */
 
 /**
-* Navigation toolbar for the client. This toolbar is affected by every 
-* push/pop of a view and must be context sensitive since it can custom apply 
-* to any view. A new class was created since nav toolbar may be expanded in 
-* the future (i.e. to incl. a text input indicating current page, etc)
-*
+ * Navigation toolbar for the client. This toolbar is affected by every 
+ * push/pop of a view and must be context sensitive since it can custom apply 
+ * to any view. A new class was created since nav toolbar may be expanded in 
+ * the future (i.e. to incl. a text input indicating current page, etc)
+ *
+ * @param params			[hash]				hash of params:
+ *        parent			[DwtComposite]		the containing widget
+ *        posStyle			[constant]*			positioning style
+ *        className			[string]*			CSS class name
+ *        arrowStyle		[const]				single arrows, double arrows, or both
+ *        hasText			[boolean]*			true if this toolbar includes text in the middle
+ *        view				[const]*			view ID (used to generate button IDs)
+
 * @param parent			parent DwtControl for this toolbar
 * @param posStyle		CSS style position (absolute, static, relative)
 * @param className 		CSS class name this toolbar should respect
@@ -28,13 +36,13 @@
 * @param hasText		true if this toolbar includes text in the middle
 */
 
-ZmNavToolBar = function(parent, posStyle, className, arrowStyle, hasText) {
+ZmNavToolBar = function(params) {
 
-	className = className || "ZmNavToolBar";
-	var buttons = this._getButtons(arrowStyle, hasText);
-	var params = {parent:parent, buttons:buttons, posStyle:posStyle, className:className};
+	params.className = params.className || "ZmNavToolBar";
+	params.buttons = this._getButtons(params.arrowStyle, params.hasText);
+	params.toolbarType = ZmId.TB_NAV;
 	ZmButtonToolBar.call(this, params);
-	if (hasText) {
+	if (params.hasText) {
 		this._textButton = this.getButton(ZmOperation.TEXT);
 	}
 };

@@ -25,12 +25,11 @@ ZmItem.TASK				= ZmEvent.S_TASK;
 ZmOrganizer.TASKS		= ZmEvent.S_TASK;
 
 // App-related constants
-ZmApp.TASKS						= "Tasks";
+ZmApp.TASKS						= ZmId.APP_TASKS;
 ZmApp.CLASS[ZmApp.TASKS]		= "ZmTasksApp";
 ZmApp.SETTING[ZmApp.TASKS]		= ZmSetting.TASKS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.TASKS]	= 45;
 ZmApp.QS_ARG[ZmApp.TASKS]		= "tasks";
-ZmApp.BUTTON_ID[ZmApp.TASKS]	= ZmId.TASKS_APP;
 
 ZmTasksApp.prototype = new ZmApp;
 ZmTasksApp.prototype.constructor = ZmTasksApp;
