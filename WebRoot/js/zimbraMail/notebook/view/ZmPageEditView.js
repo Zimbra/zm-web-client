@@ -522,13 +522,10 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	button.addSelectionListener(new AjxListener(this, this._findReplaceListener));
 	
 
-	//bug: 23678 uncomment this after icons are available for the new toolbar operation
-	/*
 	button = new DwtToolBarButton(params);
-	button.setImage("FindReplace");
-	button.setToolTipContent("");
+	button.setImage("CamelCase");
+	button.setToolTipContent(ZmMsg.convertCamelCase);
 	button.addSelectionListener(new AjxListener(this, this._convertCamelCaseListener));
-	*/
 
 };
 
@@ -921,11 +918,21 @@ ZmPageEditor.TWIKI_KEYWORD_RE = new RegExp(
 );
 
 ZmPageEditor.prototype._convertCamelCaseListener = 
-function () {
-		var doc = this._getIframeDoc();
-		if(doc && doc.body) {
-			this._convertCamelCaseToLink(doc.body);
-		}		
+function () {	
+	var dlg = this._warningDlg = appCtxt.getYesNoMsgDialog();
+	dlg.reset();
+	dlg.setMessage(ZmMsg.convertCamelCaseMsg, DwtMessageDialog.WARNING_STYLE);
+	dlg.registerCallback(DwtDialog.YES_BUTTON, this._camelcaseYesCallback, this);
+	dlg.popup();
+};
+
+ZmPageEditor.prototype._camelcaseYesCallback = 
+function() {
+	this._warningDlg.popdown();
+	var doc = this._getIframeDoc();
+	if(doc && doc.body) {
+		this._convertCamelCaseToLink(doc.body);
+	}	
 };
 
 ZmPageEditor.prototype._convertCamelCaseToLink =
