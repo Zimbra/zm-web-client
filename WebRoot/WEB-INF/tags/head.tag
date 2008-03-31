@@ -29,15 +29,15 @@
 
     <c:if test="${param.action eq 'compose' and mailbox.prefs.composeFormat eq 'html'}">
         
-        <link rel="stylesheet" type="text/css" href="../yui/2.3.1/assets/skins/sam/skin.css" />
-        <script type="text/javascript" src="../yui/2.3.1/yahoo-dom-event/yahoo-dom-event.js"></script>
-        <script type="text/javascript" src="../yui/2.3.1/element/element-beta-min.js"></script>
+        <link rel="stylesheet" type="text/css" href="../yui/2.5.1/assets/skins/sam/skin.css" />
+        <script type="text/javascript" src="../yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js"></script>
+        <script type="text/javascript" src="../yui/2.5.1/element/element-beta-min.js"></script>
         <!-- Needed for Menus, Buttons and Overlays used in the Toolbar -->
-        <script src="../yui/2.3.1/container/container_core-min.js"></script>
+        <script src="../yui/2.5.1/container/container_core-min.js"></script>
 
-        <script src="../yui/2.3.1/menu/menu-min.js"></script>
+        <script src="../yui/2.5.1/menu/menu-min.js"></script>
 
-        <script src="../yui/2.3.1/button/button-beta-min.js"></script>
+        <script src="../yui/2.5.1/button/button-beta-min.js"></script>
         <!-- Source file for Rich Text Editor-->
         <script src="../yui/2.4.0-patch/editor/editor-beta-min.js"></script>
 
