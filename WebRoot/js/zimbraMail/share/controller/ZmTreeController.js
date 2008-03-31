@@ -44,7 +44,8 @@ ZmTreeController = function(type) {
 	this._listeners[ZmOperation.EXPAND_ALL]		= new AjxListener(this, this._expandAllListener);
 	this._listeners[ZmOperation.MARK_ALL_READ]	= new AjxListener(this, this._markAllReadListener);
 	this._listeners[ZmOperation.SYNC]			= new AjxListener(this, this._syncListener);
-	this._listeners[ZmOperation.EDIT_PROPS]		= new AjxListener(this, this._editPropsListener);
+    this._listeners[ZmOperation.SYNC_ALL]		= new AjxListener(this, this._syncAllListener);
+    this._listeners[ZmOperation.EDIT_PROPS]		= new AjxListener(this, this._editPropsListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER]   = new AjxListener(this,this._emptyListener);
 
 	// drag-and-drop
@@ -56,7 +57,7 @@ ZmTreeController = function(type) {
 	this._treeView = {};	// hash of tree views of this type, by overview ID
 	this._hideEmpty = {};	// which tree views to hide if they have no data
 	this._dataTree = {};	// data tree per account
-	
+
 	this.isCheckedStyle = (this.getTreeStyle() & DwtTree.CHECKEDITEM_STYLE);
 }
 
@@ -108,7 +109,7 @@ ZmTreeController.prototype._getMoveDialogTitle = function() {};
 
 // Public methods
 
-ZmTreeController.prototype.toString = 
+ZmTreeController.prototype.toString =
 function() {
 	return "ZmTreeController";
 };
@@ -126,7 +127,7 @@ function() {
  *        hideEmpty		[boolean]*	if true, don't show header if there is no data
  *        noTooltips	[boolean]*	if true, don't show tooltips for tree items
  */
-ZmTreeController.prototype.show = 
+ZmTreeController.prototype.show =
 function(params) {
 	var id = params.overviewId;
 	this._hideEmpty[id] = params.hideEmpty;
@@ -147,7 +148,7 @@ function(params) {
 	if (treeViewCreated) {
 		this._postSetup(id, params.account);
 	}
-	
+
 	return this._treeView[id];
 };
 
@@ -225,7 +226,7 @@ function(overviewId) {
 /**
  * Performs any little fixups after the tree view is first created
  * and shown.
- * 
+ *
  * @param overviewId		[constant]		overview ID
  * @param account			[ZmZimbraAccount]*	current account
  */
@@ -248,7 +249,7 @@ function(overviewId, account) {
 
 /**
  * Takes care of the tree item's color and/or checkbox.
- * 
+ *
  * @param treeItem	[DwtTreeItem]		tree item
  * @param organizer	[ZmOrganizer]		organizer it represents
  */
@@ -261,7 +262,7 @@ function(treeItem, organizer) {
 	}
 	if (this.isCheckedStyle) {
 		treeItem.setChecked(organizer.isChecked);
-	}      
+	}
     var treeItems = treeItem.getItems();
     for (var i = 0; i < treeItems.length; i++) {
         this._fixupTreeNode(treeItems[i]);
@@ -270,7 +271,7 @@ function(treeItem, organizer) {
 
 /**
  * Sets the background color of the tree item.
- * 
+ *
  * @param treeItem	[DwtTreeItem]		tree item
  * @param organizer	[ZmOrganizer]		organizer it represents
  */
@@ -278,7 +279,7 @@ ZmTreeController.prototype._setTreeItemColor =
 function(treeItem, organizer) {
 	if (!treeItem || !organizer) { return; }
 	if (organizer.isInTrash()) { return; }
-	
+
 	// a color value of 0 means DEFAULT
 	var color = organizer.color ? organizer.color : ZmOrganizer.DEFAULT_COLOR[organizer.type];
 	var className = (color && (color != ZmOrganizer.C_NONE)) ? ZmTreeController.COLOR_CLASS[color] : "";
@@ -308,7 +309,7 @@ function(overviewId) {
 	};
 	var treeView = this._createTreeView(params);
 	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
-	
+
 	return treeView;
 };
 
@@ -325,7 +326,7 @@ ZmTreeController.prototype.getTreeStyle = function() {};
 
 /**
  * Creates up to two action menus, one for the tree view's header item, and
- * one for the rest of the items. Note that each of these two menus is a 
+ * one for the rest of the items. Note that each of these two menus is a
  * singleton, shared among the tree views of this type.
  */
 ZmTreeController.prototype._initializeActionMenus =
@@ -371,14 +372,14 @@ function() {
 
 /**
  * Creates and returns an action menu, and sets its listeners.
- * 
+ *
  * @param parent		[DwtControl]	menu's parent widget
  * @param menuItems		[Array]*		list of menu items
  */
-ZmTreeController.prototype._createActionMenu = 
+ZmTreeController.prototype._createActionMenu =
 function(parent, menuItems) {
 	if (!menuItems) return;
-	
+
 	var actionMenu = new ZmActionMenu({parent:parent, menuItems:menuItems});
 	menuItems = actionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
@@ -444,7 +445,7 @@ function(organizer) {
 	organizer._delete();
 };
 
-ZmTreeController.prototype._doEmpty = 
+ZmTreeController.prototype._doEmpty =
 function(organizer) {
 	organizer._empty();
 	var ctlr = appCtxt.getCurrentController();
@@ -544,7 +545,7 @@ function(ev) {
 	if (ev.detail == DwtTree.ITEM_ACTIONED) {
 		// right click
 		if (overview.actionSupported) {
-			var actionMenu = (item.nId == ZmOrganizer.ID_ROOT || item.isDataSource(ZmAccount.IMAP)) 
+			var actionMenu = (item.nId == ZmOrganizer.ID_ROOT || item.isDataSource(ZmAccount.IMAP))
 				? this._getHeaderActionMenu(ev)
 				: this._getActionMenu(ev);
 			if (actionMenu) {
@@ -588,7 +589,7 @@ ZmTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
 	if (this._evHandled[overviewId]) { return; }
 	if (!treeView.allowedTypes[ev.type] && !treeView.allowedSubTypes[ev.type]) { return; }
-	
+
 	var organizers = ev.getDetail("organizers");
 	if (!organizers && ev.source) {
 		organizers = [ev.source];
@@ -600,7 +601,7 @@ function(ev, treeView, overviewId) {
 		var node = treeView.getTreeItemById(organizer.id);
 		// Note: source tree handles moves - it will have node
 		if (!node && (ev.event != ZmEvent.E_CREATE)) { continue; }
-		
+
 		var fields = ev.getDetail("fields");
 		if (ev.event == ZmEvent.E_FLAGS) {
 			var flag = ev.getDetail("flag");
@@ -684,7 +685,7 @@ function(ev, treeView, overviewId) {
 	}
 };
 
-ZmTreeController.prototype._getParentNode = 
+ZmTreeController.prototype._getParentNode =
 function(organizer, ev, overviewId) {
 	if (organizer.parent) {
 		// if node being moved to root, we assume new parent must be the container of its type
@@ -694,15 +695,15 @@ function(organizer, ev, overviewId) {
 };
 
 /**
- * Makes a request to add a new item to the tree, returning true if the item was 
+ * Makes a request to add a new item to the tree, returning true if the item was
  * actually added, or false if it was omitted.
- * 
+ *
  * @param treeView	[ZmTreeView]	a tree view
  * @param parentNode	[DwtTreeItem]	node under which to add the new one
  *  @param organizer	[ZmOrganizer]	organizer for the new node
  * @param index		[int]*			position at which to add the new node
  */
-ZmTreeController.prototype._addNew = 
+ZmTreeController.prototype._addNew =
 function(treeView, parentNode, organizer, idx) {
 	return treeView._addNew(parentNode, organizer, idx);
 };
@@ -712,7 +713,7 @@ function(treeView, parentNode, organizer, idx) {
  *
  * @param ev		[DwtUiEvent]	the UI event
  */
-ZmTreeController.prototype._newListener = 
+ZmTreeController.prototype._newListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	var newDialog = this._getNewDialog();
@@ -728,7 +729,7 @@ function(ev) {
  *
  * @param ev		[DwtUiEvent]	the UI event
  */
-ZmTreeController.prototype._renameListener = 
+ZmTreeController.prototype._renameListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	var renameDialog = this._getRenameDialog();
@@ -744,7 +745,7 @@ function(ev) {
  *
  * @param ev		[DwtUiEvent]	the UI event
  */
-ZmTreeController.prototype._deleteListener = 
+ZmTreeController.prototype._deleteListener =
 function(ev) {
 	this._doDelete(this._getActionedOrganizer(ev));
 };
@@ -777,7 +778,7 @@ function() {
 	omit[ZmFolder.ID_SPAM] = true;
 	return {
 		data: this._pendingActionData,
-		treeIds: [this.type], 
+		treeIds: [this.type],
 		overviewId: "ZmTreeController",
 		omit:omit,
 		title: this._getMoveDialogTitle(),
@@ -803,11 +804,35 @@ function(ev) {
  *
  * @param ev		[DwtUiEvent]	the UI event
  */
-ZmTreeController.prototype._markAllReadListener = 
+ZmTreeController.prototype._markAllReadListener =
 function(ev) {
 	this._doMarkAllRead(this._getActionedOrganizer(ev));
 };
 
+/**
+ * Syncs all the organizers to its feed (URL).
+ *
+ * @param ev		[DwtUiEvent]	the UI event
+ */
+ZmTreeController.prototype._syncAllListener =
+function(ev) {
+    var f  = this._getActionedOrganizer(ev);
+    if(f.isFeed()){
+    // Loop over all the TreeViews
+        for(var overviewId in this._treeView){
+            var treeView = this.getTreeView(overviewId);
+            var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, appCtxt.getActiveAccount());
+            var rootTreeItem = treeView.getTreeItemById(rootId);
+            if (!rootTreeItem) { return; }
+            var treeItems = rootTreeItem.getItems();
+            if(treeItems && treeItems[i] && (treeItems[i].isFeed() || (treeItems[i].hasFeeds && treeItems[i].hasFeeds()))){
+                this._syncFeeds(treeItems[i]);
+            }
+        }
+    }else{
+        this._syncListener(ev);
+    }
+};
 /**
  * Syncs an organizer to its feed (URL).
  *
@@ -815,7 +840,23 @@ function(ev) {
  */
 ZmTreeController.prototype._syncListener =
 function(ev) {
-	this._doSync(this._getActionedOrganizer(ev));
+    var f  = this._getActionedOrganizer(ev);
+    this._syncFeeds(f);
+};
+
+ZmTreeController.prototype._syncFeeds =
+function(f) {
+    if(f.isFeed()){
+        this._doSync(f);
+    }else if(f.hasFeeds()){
+        var a = f.children.getArray();
+        var sz = f.children.size();
+        for (var i = 0; i < sz; i++) {
+            if (a[i].isFeed() || (a[i].hasFeeds && a[i].hasFeeds())) {
+                this._syncFeeds(a[i]);
+            }
+        }
+    }
 };
 
 /**

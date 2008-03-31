@@ -91,8 +91,9 @@ function(parent, type, id) {
 	var nId = ZmOrganizer.normalizeId(id, this.type);
 	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder()))	{
 		parent.enableAll(true);
-		parent.enable(ZmOperation.SYNC, folder.isFeed() /*|| folder.hasFeeds()*/);
-		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
+		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
+        parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
+        parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
 		parent.enable(ZmOperation.EMPTY_FOLDER, (hasContent || folder.link));	// numTotal is not set for shared folders
 		parent.enable(ZmOperation.RENAME_FOLDER, !folder.isDataSource());		// dont allow datasource'd folder to be renamed via overview
 
@@ -138,18 +139,26 @@ function(parent, type, id) {
     // are there any external accounts associated to this folder?
     var button = parent.getOp(ZmOperation.SYNC);
     if (button) {
-        button.setEnabled(true);
-        button.setVisible(true);
         if (folder.isFeed()) {
+            button.setEnabled(true);
+            button.setVisible(true);
             button.setText(ZmMsg.checkFeed);
-            /*var button1 = parent.getOp(ZmOperation.SYNC_ALL);
+            var button1 = parent.getOp(ZmOperation.SYNC_ALL);
             if(button1){
                 button1.setEnabled(true);
                 button1.setVisible(true);
                 button1.setText(ZmMsg.checkAllFeed);
             }
         }else if(folder.hasFeeds()){
-            button.setText(ZmMsg.checkAllFeed);*/
+            //button.setText(ZmMsg.checkAllFeed);
+            var button1 = parent.getOp(ZmOperation.SYNC_ALL);
+            button1.setEnabled(true);
+            button1.setVisible(true);
+            if(button1){
+                button1.setEnabled(true);
+                button1.setVisible(true);
+                button1.setText(ZmMsg.checkAllFeed);
+            }
         }
 		else {
 			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
@@ -219,7 +228,8 @@ function() {
 	ops.push(ZmOperation.EDIT_PROPS,
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SYNC,
-		ZmOperation.EMPTY_FOLDER,
+        ZmOperation.SYNC_ALL,
+        ZmOperation.EMPTY_FOLDER,
 		ZmOperation.SYNC_OFFLINE_FOLDER);
 
 	return ops;
