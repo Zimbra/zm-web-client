@@ -120,12 +120,13 @@ function() {
  * overviews. That is handled by making sure that only the current overview is
  * visible.
  * 
- * @param params		[hash]		hash of params:
- *        treeIds		[array]		list of tree views to show
- *        omit			[hash]		IDs of organizers to exclude
- *        fieldId		[string]	DOM ID of element that contains overview
- *        overviewId	[string]*	ID for the overview
- *        noRootSelect	[boolean]*	if true, don't make root tree item(s) selectable
+ * @param params		[hash]				hash of params:
+ *        treeIds		[array]				list of tree views to show
+ *        omit			[hash]				IDs of organizers to exclude
+ *        fieldId		[string]			DOM ID of element that contains overview
+ *        overviewId	[string]*			ID for the overview
+ *        noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
+ *        account		[ZmZimbraAccount]*	account this overview belongs to
  */
 ZmDialog.prototype._setOverview =
 function(params) {
@@ -139,8 +140,10 @@ function(params) {
 			noTooltips: true
 		};
 		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
-		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect);
+		this._renderOverview(overview, params.treeIds, params.omit, params.noRootSelect, params.account);
 		document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
+	} else if (params.account) {
+		overview.account = params.account;
 	}
 	// make the current overview the only visible one
 	if (overviewId != this._curOverviewId) {
@@ -156,14 +159,15 @@ function(params) {
  * selectable (since they can generally be targets of whatever action the dialog
  * is facilitating).
  * 
- * @param overview		[ZmOverview]	the overview
- * @param treeIds		[array]			list of tree views to show
- * @param omit			[hash]*			IDs of organizers to exclude
- * @param noRootSelect	[boolean]*		if true, don't make root tree item(s) selectable
+ * @param overview		[ZmOverview]		the overview
+ * @param treeIds		[array]				list of tree views to show
+ * @param omit			[hash]*				IDs of organizers to exclude
+ * @param noRootSelect	[boolean]*			if true, don't make root tree item(s) selectable
+ * @param account		[ZmZimbraAccount]*	account this overview belongs to
  */
 ZmDialog.prototype._renderOverview =
-function(overview, treeIds, omit, noRootSelect) {
-	overview.set(treeIds, omit);
+function(overview, treeIds, omit, noRootSelect, account) {
+	overview.set(treeIds, omit, account);
 	if (!noRootSelect) {
 		for (var i = 0; i < treeIds.length; i++) {
 			var treeView = overview.getTreeView(treeIds[i]);

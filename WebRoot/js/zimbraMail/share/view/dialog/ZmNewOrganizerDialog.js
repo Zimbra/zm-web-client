@@ -43,12 +43,25 @@ function() {
 ZmNewOrganizerDialog.prototype.popup =
 function(folder) {
 	if (this._folderTreeCellId) {
-		this._setOverview({treeIds:this._treeIds, omit:this._omit, fieldId:this._folderTreeCellId});
+		var params = {
+			treeIds: this._treeIds,
+			omit: this._omit,
+			fieldId: this._folderTreeCellId,
+			account: appCtxt.getActiveAccount()
+		};
+		this._setOverview(params);
+
+		// reset folder tree view if user has multiple accounts set up
+		if (appCtxt.multiAccounts) {
+			var overview = this._opc.getOverview(this.getOverviewId());
+			this._folderTreeView = overview ? overview.getTreeView(this._organizerType) : null;
+		}
+
 		if (this._folderTreeView) {
 			// bug #18533 - always make sure header item is visible in "New" dialog
 			this._folderTreeView.getHeaderItem().setVisible(true, true);
 
-			folder = folder || this._folderTree.root;
+			folder = folder || appCtxt.getFolderTree().root;
 			this._folderTreeView.setSelected(folder);
 			if (folder.nId == ZmOrganizer.ID_ROOT) {
 				var sid = ZmOrganizer.getSystemId(folder.id);
@@ -269,12 +282,10 @@ function() {
 	this._omit = {};
 	this._omit[ZmFolder.ID_SPAM] = true;
 	this._omit[ZmFolder.ID_DRAFTS] = true;
-	this._folderTree = appCtxt.getFolderTree();
-	if (this._folderTree) {
-		var syncIssuesFolder = this._folderTree.getByName(ZmFolder.SYNC_ISSUES);
-		if (syncIssuesFolder) {
-			this._omit[syncIssuesFolder.id] = true;
-		}
+	var folderTree = appCtxt.getFolderTree();
+	var syncIssuesFolder = folderTree ? folderTree.getByName(ZmFolder.SYNC_ISSUES) : null;
+	if (syncIssuesFolder) {
+		this._omit[syncIssuesFolder.id] = true;
 	}
 	this._omit[ZmOrganizer.ID_MY_CARD] = true;
 };
@@ -299,20 +310,14 @@ function(overview, treeIds, omit, noRootSelect) {
  */
 ZmNewOrganizerDialog.prototype._getFolderData =
 function() {
-	
-	var msg = null;
-
 	// make sure a parent was selected
 	var parentFolder;
 	if (this._folderTreeView) {
 		parentFolder = this._folderTreeView.getSelected();
-		if (!msg && !parentFolder) {
-			msg = ZmMsg.folderNameNoLocation;
-		}
 	} else {
 		var folderTree = appCtxt.getFolderTree();
 		if (folderTree) {
-			parentFolder = appCtxt.getFolderTree().root;
+			parentFolder = folderTree.root;
 		}
 	}
 

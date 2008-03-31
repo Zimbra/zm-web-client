@@ -97,12 +97,14 @@ function(params) {
 	
 	// use an overview ID that comprises calling class, this class, and current account
 	var base = [this.toString(), params.overviewId].join("-");
+	var acct = appCtxt.getActiveAccount();
 	var params = {
 		treeIds: treeIds,
 		omit: omit,
 		fieldId: this._folderTreeCellId,
-		overviewId: (appCtxt.multiAccounts) ? ([base, appCtxt.getActiveAccount().name].join(":")) : base,
-		noRootSelect: params.noRootSelect
+		overviewId: (appCtxt.multiAccounts) ? ([base, acct.name].join(":")) : base,
+		noRootSelect: params.noRootSelect,
+		account: acct
 	};
 	this._setOverview(params);
 
@@ -184,15 +186,13 @@ function() {
 	var ftc = this._opc.getTreeController(this._orgType);
 	var dialog = ftc._getNewDialog();
 	dialog.reset();
-	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this, [ftc, dialog]);
 	dialog.popup();
 };
 
 ZmChooseFolderDialog.prototype._newCallback =
-function(params) {
-	var ftc = this._opc.getTreeController(this._orgType);
+function(ftc, dialog, params) {
 	ftc._doCreate(params);
-	var dialog = ftc._getNewDialog();
 	dialog.popdown();
 	this._creatingFolder = true;
 };
@@ -212,15 +212,14 @@ function(ev) {
 
 ZmChooseFolderDialog.prototype._okButtonListener =
 function(ev) {
-	var msg;
 	var tgtFolder = this._getOverview().getSelected();
-	if (!tgtFolder) {
-		msg = ZmMsg.noTargetFolder;
-	}
+	var msg = (!tgtFolder) ? ZmMsg.noTargetFolder : null;
 
 	// check for valid target
 	if (!msg && this._data && !tgtFolder.mayContain(this._data)) {
-	    msg = (this._data instanceof ZmFolder) ? ZmMsg.badTargetFolder : ZmMsg.badTargetFolderItems;
+	    msg = (this._data instanceof ZmFolder)
+			? ZmMsg.badTargetFolder
+			: ZmMsg.badTargetFolderItems;
 	}
 
 	if (msg) {

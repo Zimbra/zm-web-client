@@ -20,8 +20,7 @@ ZmRenameFolderDialog = function(parent, className) {
 	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameFolder});
 
 	this._setNameField(this._nameFieldId);
-	this._folderTree = appCtxt.getFolderTree();
-}
+};
 
 ZmRenameFolderDialog.prototype = new ZmDialog;
 ZmRenameFolderDialog.prototype.constructor = ZmRenameFolderDialog;
@@ -29,7 +28,7 @@ ZmRenameFolderDialog.prototype.constructor = ZmRenameFolderDialog;
 ZmRenameFolderDialog.prototype.toString = 
 function() {
 	return "ZmRenameFolderDialog";
-}
+};
 
 ZmRenameFolderDialog.prototype.popup =
 function(folder, source) {
@@ -38,31 +37,33 @@ function(folder, source) {
 	this.setTitle(title + ': ' + folder.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
 	this._nameField.value = folder.getName(false, null, true);
 	this._folder = folder;
-}
+};
 
 ZmRenameFolderDialog.prototype._contentHtml = 
 function() {
 	this._nameFieldId = Dwt.getNextId();
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
-	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>" + ZmMsg.newName + ": </td></tr>";
-	html[idx++] = "<tr><td>";
+	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>";
+	html[idx++] = ZmMsg.newName;
+	html[idx++] = ": </td></tr><tr><td>";
     html[idx++] = Dwt.CARET_HACK_BEGIN;
-	html[idx++] = "<input type='text' autocomplete='off' class='Field' id='" + this._nameFieldId + "' />"
+	html[idx++] = "<input type='text' autocomplete='off' class='Field' id='";
+	html[idx++] = this._nameFieldId;
+	html[idx++] = "' />"
     html[idx++] = Dwt.CARET_HACK_END;
-	html[idx++] = "</td></tr>";
-	html[idx++] = "</table>";
+	html[idx++] = "</td></tr></table>";
 	
 	return html.join("");
-}
+};
 
 ZmRenameFolderDialog.prototype._okButtonListener =
 function(ev) {
 	var results = this._getFolderData();
 	if (results)
 		DwtDialog.prototype._buttonListener.call(this, ev, results);
-}
+};
 
 ZmRenameFolderDialog.prototype._getFolderData =
 function() {
@@ -79,11 +80,12 @@ function() {
 	}
 
 	return (msg ? this._showError(msg) : [this._folder, name]);
-}
+};
 
 ZmRenameFolderDialog.prototype._enterListener =
 function (ev){
 	var results = this._getFolderData();
-	if (results)
+	if (results) {
 		this._runEnterCallback(results);
-}
+	}
+};

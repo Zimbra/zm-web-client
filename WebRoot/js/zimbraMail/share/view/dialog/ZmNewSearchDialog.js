@@ -23,7 +23,6 @@ ZmNewSearchDialog = function(parent, className) {
 	this._omit[ZmFolder.ID_SPAM] = true;
 	this._omit[ZmFolder.ID_DRAFTS] = true;
 	this._setNameField(this._nameFieldId);
-	this._folderTree = appCtxt.getFolderTree();
 };
 
 ZmNewSearchDialog.prototype = new ZmDialog;
@@ -44,7 +43,7 @@ function(params) {
 	this._folderTreeView = this._getOverview().getTreeView(ZmOrganizer.FOLDER);
 	this._searchTreeView = this._getOverview().getTreeView(ZmOrganizer.SEARCH);
 	this._search = params.search;
-	this._searchTreeView.setSelected(this._folderTree.root, true);
+	this._searchTreeView.setSelected(appCtxt.getFolderTree().root, true);
 
 	var overviewDiv = document.getElementById(this._overviewDivId);
 	if (overviewDiv) {
@@ -91,7 +90,7 @@ function() {
 	}
 		
 	// if we're creating a top-level search, check for conflict with top-level folder
-	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT) && this._folderTree.root.hasChild(name)) {
+	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT) && appCtxt.getFolderTree().root.hasChild(name)) {
 		msg = ZmMsg.folderOrSearchNameExists;
 	}
 
