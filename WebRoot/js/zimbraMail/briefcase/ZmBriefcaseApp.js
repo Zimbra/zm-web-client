@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- *
+ * 
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
- *
+ * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- *
+ * 
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- *
+ * 
  * ***** END LICENSE BLOCK *****
  */
 
@@ -35,12 +35,11 @@ ZmApp.CLASS[ZmApp.BRIEFCASE]			= "ZmBriefcaseApp";
 ZmApp.SETTING[ZmApp.BRIEFCASE]			= ZmSetting.BRIEFCASE_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.BRIEFCASE]		= 60;
 ZmApp.QS_ARG[ZmApp.BRIEFCASE]			= "briefcase";
-ZmApp.BUTTON_ID[ZmApp.BRIEFCASE]		= ZmId.BRIEFCASE_APP;
 
 ZmBriefcaseApp.prototype = new ZmApp;
 ZmBriefcaseApp.prototype.constructor = ZmBriefcaseApp;
 
-ZmBriefcaseApp.prototype.toString =
+ZmBriefcaseApp.prototype.toString = 
 function() {
 	return "ZmBriefcaseApp";
 }
@@ -57,18 +56,18 @@ ZmBriefcaseApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.setPackageLoadFunction("BriefcaseCore", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.setPackageLoadFunction("Briefcase", new AjxCallback(this, this._postLoad, ZmOrganizer.BRIEFCASE));
-	AjxDispatcher.registerMethod("GetBriefcaseController", ["BriefcaseCore", "Briefcase"], new AjxCallback(this, this.getBriefcaseController));
+	AjxDispatcher.registerMethod("GetBriefcaseController", ["BriefcaseCore", "Briefcase"], new AjxCallback(this, this.getBriefcaseController));	
 };
 
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp("NEW_BRIEFCASEITEM", {textKey:"newBriefcase", image:"NewFolder"});
 	ZmOperation.registerOp("NEW_FILE", {textKey:"uploadNewFile", tooltipKey:"newFile", image:"NewPage"});
-	ZmOperation.registerOp("SHARE_BRIEFCASE", {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp("SHARE_BRIEFCASE", {textKey:"shareFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("MOUNT_BRIEFCASE", {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("OPEN_FILE", {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
-	ZmOperation.registerOp("VIEW_FILE_AS_HTML", {textKey:"viewAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});
-	ZmOperation.registerOp("SEND_FILE", {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});
+	ZmOperation.registerOp("VIEW_FILE_AS_HTML", {textKey:"viewAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});	
+	ZmOperation.registerOp("SEND_FILE", {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});	
 };
 
 ZmBriefcaseApp.prototype._registerItems =
@@ -95,26 +94,27 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOrganizers =
 function() {
+	
+	
 	ZmOrganizer.registerOrg(ZmOrganizer.BRIEFCASE,
-                                { app            : ZmApp.BRIEFCASE,
-                                  nameKey        : "folders",
-                                  defaultFolder  : ZmOrganizer.ID_BRIEFCASE,
-                                  soapCmd        : "FolderAction",
-                                  firstUserId    : 256,
-                                  orgClass       : "ZmBriefcase",
-                                  orgPackage     : "BriefcaseCore",
-                                  treeController : "ZmBriefcaseTreeController",
-                                  labelKey       : "folders",
-                                  itemsKey       : "folders",
-                                  treeType       : ZmOrganizer.FOLDER,
-                                  views          : ["document"],
-                                  folderKey      : "briefcase",
-                                  mountKey       : "mountFolder",
-                                  createFunc     : "ZmOrganizer.create",
-                                  compareFunc    : "ZmBriefcase.sortCompare",
-                                  deferrable     : true,
-                                  hasColor       : true
-                                });
+							{app:				ZmApp.BRIEFCASE,
+							 nameKey:			"folders",
+							 defaultFolder:		ZmOrganizer.ID_BRIEFCASE,
+							 soapCmd:			"FolderAction",
+							 firstUserId:		256,
+							 orgClass:			"ZmBriefcase",
+							 orgPackage:		"BriefcaseCore",
+							 treeController:	"ZmBriefcaseTreeController",
+							 labelKey:			"folders",
+							 itemsKey:			"folders",
+							 treeType:			ZmOrganizer.FOLDER,
+							 views:				["document"],
+							 folderKey:			"briefcase",
+							 mountKey:			"mountFolder",
+							 createFunc:		"ZmOrganizer.create",
+							 compareFunc:		"ZmBriefcase.sortCompare",
+							 deferrable:		true
+							});
 };
 
 ZmBriefcaseApp.prototype._setupSearchToolbar =
@@ -170,81 +170,66 @@ ZmBriefcaseApp.prototype.deleteNotify =
 function(ids, force) {
 
 	if (!force && this._deferNotifications("delete", ids)) { return; }
-
-        var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
-        for (var i = 0; i < ids.length; i++) {
-                // FIXME: sometimes ids[i] is null, which suggests a bug somewhere in ZmApp.js (?)
-                //        should investigate
-                var item = briefcaseController.getItemById(ids[i]);
-                if (item) {
-                        item.notifyDelete();
-                        briefcaseController.removeItem(item);
-                }
-        }
-
-/** <WTF ?!> **/
-
-// 	var nextData = null;
-// 	var idStr = ids.join(",")+",";
-// 	var folderInUse = false;
-// 	var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
-// 	var shownFolder = briefcaseController._object;
-// 	var overviewController = appCtxt.getOverviewController();
-// 	var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
-// 	var treeView = treeController.getTreeView(this.getOverviewId());
-
-// 	if(!treeView){
-// 		return;
-// 	}
-
-// 	for (var i = 0; i < ids.length; i++) {
-// 			var tmp = treeView.getNextData(ids[i]);
-// 			//next node might also be in the delete list : parent deleted
-// 			if(tmp && idStr.indexOf(tmp.id+",")<0){
-// 				nextData = tmp;
-// 			}
-// 			if (shownFolder && shownFolder == ids[i]) {
-// 				folderInUse = true;
-// 			}
-// 	}
-
-// 	for (var i = 0; i < ids.length; i++) {
-
-// 		briefcaseController.removeItem({id:ids[i]});
-// 		appCtxt.cacheRemove(ids[i]);
-// 	}
-
-// 	if(nextData && folderInUse){
-// 	briefcaseController.show(nextData.id);
-// 	}else{
-// 	//handled in delete callback : currently we dont get notification
-// 	//for the op in remote folders, so handled differently
-// 	//briefcaseController.show(shownFolder);
-// 	}
-
-// 	for (var i = 0; i < ids.length; i++) {
-// 		var tmp1 = treeView.getTreeItemById(ids[i]);
-// 		if(tmp1){
-// 			tmp1.dispose();
-// 		}
-// 		ids[i] = null;
-// 	}
-
-/** </WTF ?!> **/
-
+	
+	var nextData = null;
+	var idStr = ids.join(",")+",";
+	var folderInUse = false;
+	var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
+	var shownFolder = briefcaseController._object;
+	var overviewController = appCtxt.getOverviewController();
+	var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
+	var treeView = treeController.getTreeView(this.getOverviewId());
+	
+	if(!treeView){
+		return;
+	}
+	
+	for (var i = 0; i < ids.length; i++) {
+			var tmp = treeView.getNextData(ids[i]);
+			//next node might also be in the delete list : parent deleted
+			if(tmp && idStr.indexOf(tmp.id+",")<0){
+				nextData = tmp;
+			}
+			if (shownFolder && shownFolder == ids[i]) {
+				folderInUse = true;				
+			}
+	}	
+				
+	for (var i = 0; i < ids.length; i++) {
+	
+		briefcaseController.removeItem({id:ids[i]});
+		appCtxt.cacheRemove(ids[i]);
+	}
+	
+	if(nextData && folderInUse){
+	briefcaseController.show(nextData.id);
+	}else{
+	//handled in delete callback : currently we dont get notification
+	//for the op in remote folders, so handled differently
+	//briefcaseController.show(shownFolder);
+	}
+		
+	for (var i = 0; i < ids.length; i++) {
+		var tmp1 = treeView.getTreeItemById(ids[i]);
+		if(tmp1){
+			tmp1.dispose();
+		}
+		ids[i] = null;			
+	}
+	
 };
 
 /**
  * Checks for the creation of a notebook or a mount point to one, or of a page
  * or document.
- *
+ * 
  * @param creates	[hash]		hash of create notifications
  */
 ZmBriefcaseApp.prototype.createNotify =
 function(creates, force) {
 
 	if (!creates["folder"] && !creates["doc"] && !creates["link"]) { return; }
-
+	
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
 	var bcController = AjxDispatcher.run("GetBriefcaseController");
@@ -253,21 +238,21 @@ function(creates, force) {
 		var list = creates[name];
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
-			if (appCtxt.cacheGet(create.id)) { continue; }
-			if (name == "folder") {
-				this._handleCreateFolder(create, ZmOrganizer.BRIEFCASE);
+			if (appCtxt.cacheGet(create.id)) { continue; }	
+			if (name == "folder") {				
+				this._handleCreateFolder(create, ZmOrganizer.BRIEFCASE);		
 			}else if (name == "link") {
 				this._handleCreateLink(create, ZmOrganizer.BRIEFCASE);
-			}else if (name == "doc") {
+			}else if (name == "doc") {				
 				//DBG.println(AjxDebug.DBG1, "ZmBriefcaseApp: handling CREATE for node: " + name);
-				// REVISIT: use app context item cache
+				// REVISIT: use app context item cache				
 				//var doc = new ZmBriefcaseItem();
 				//doc.set(create);
 				//bcController.putItem(doc);
 			}
 		}
 	}
-
+	
 	//bcController.refreshFolder();
 };
 
@@ -286,7 +271,7 @@ function(modifies, force) {
 			var mod = list[i];
 			var id = mod.id;
 			if (!id) { continue; }
-
+	
 			 if (name == "doc") {
 				DBG.println(AjxDebug.DBG2, "ZmBriefcaseApp: handling modified notif for ID " + id + ", node type = " + name);
 				// REVISIT: Use app context item cache
@@ -326,10 +311,10 @@ ZmBriefcaseApp.prototype._handleNewItem =
 function() {
 	var briefcaseController = this.getBriefcaseController();
 	var callback  =new AjxCallback(this,this._handleUploadNewItem);
-	briefcaseController.__popupUploadDialog(callback,ZmMsg.uploadFileToBriefcase);
+	briefcaseController.__popupUploadDialog(callback,ZmMsg.uploadFileToBriefcase);	
 };
 
-ZmBriefcaseApp.prototype._handleUploadNewItem =
+ZmBriefcaseApp.prototype._handleUploadNewItem = 
 function(folder,filenames) {
 	var briefcaseController = this.getBriefcaseController();
 	briefcaseController.removeCachedFolderItems();
@@ -372,10 +357,11 @@ function(results, callback) {
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
+
 //	this.getFileController().show(results, true);
-// 	if (callback) {
-// 		callback.run();
-// 	}
+	if (callback) {
+		callback.run();
+	}
 };
 
 ZmBriefcaseApp.prototype.setActive =
@@ -407,7 +393,7 @@ function(parent, name, color) {
 
 ZmBriefcaseApp.prototype.getBriefcaseController = function() {
 	if (!this._briefcaseController) {
-		this._briefcaseController = new ZmBriefcaseController(this._container, this);
+		this._briefcaseController = new ZmBriefcaseController(this._container, this);		
 	}
 	return this._briefcaseController;
 };
@@ -452,7 +438,7 @@ function(msgId, partId, name, folderId,items) {
 
 	var bController = this.getBriefcaseController();
 	if( bController.isReadOnly(folderId) ){
-		ZmOrganizer._showErrorMsg(ZmMsg.errorPermission);
+		ZmOrganizer._showErrorMsg(ZmMsg.errorPermission);	
 		return;
 	}else if(bController.isShared(folderId)) {
 		ZmOrganizer._showErrorMsg(ZmMsg.sharedFolderNotSupported);
@@ -461,14 +447,14 @@ function(msgId, partId, name, folderId,items) {
 
 	var itemFound = false;
 	for(var i in items){
-		var item = items[i];
+		var item = items[i];		
 		if(item.name == name){
 			itemFound = true;
 			break;
 		}
 	}
-	if(!itemFound){
-		var srcData = new ZmBriefcaseItem();
+	if(!itemFound){	
+		var srcData = new ZmBriefcaseItem();	
 		srcData.createFromAttachment(msgId, partId, name, folderId);
 	}else{
 		var	msg = AjxMessageFormat.format(ZmMsg.errorFileAlreadyExists, name);
@@ -476,14 +462,14 @@ function(msgId, partId, name, folderId,items) {
 	}
 };
 
-ZmBriefcaseApp.prototype.fixCrossDomainReference =
+ZmBriefcaseApp.prototype.fixCrossDomainReference = 
 function(url, restUrlAuthority) {
 	var refURL = window.location.protocol+"//"+window.location.host;
 	var urlParts = AjxStringUtil.parseURL(url);
 	if(urlParts.authority!=window.location.host){
 		var oldRef = urlParts.protocol +"://"+ urlParts.authority;
 		if((restUrlAuthority && url.indexOf(restUrlAuthority) >=0) || !restUrlAuthority){
-			url = url.replace(oldRef,refURL);
+			url = url.replace(oldRef,refURL);			
 		}
 	}
 	return url;
