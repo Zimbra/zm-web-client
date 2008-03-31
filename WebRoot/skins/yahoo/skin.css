@@ -60,3 +60,7 @@
 	font-weight: normal;
 }
 
+.ImgCalendarDayGrid {
+	background:transparent url(@SkinImgDir@/icons/calendar/ImgCalendarDayGrid.repeat.gif)!important;
+}
+
