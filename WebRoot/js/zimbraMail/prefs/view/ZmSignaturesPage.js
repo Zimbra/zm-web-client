@@ -334,7 +334,7 @@ ZmSignaturesPage.prototype._addSignature = function(signature) {
         //Signature SIGNATURE
         var valueEl = document.getElementById(signature._htmlElId+"_SIGNATURE");
 		if (valueEl) {
-            var displaySignature = new DwtComposite(listComp);
+            var displaySignature = new DwtComposite(listComp, "DwtComposite ZmSignature-disabled");
             displaySignature.setEnabled(false);
             this._replaceControlElement(valueEl, displaySignature);
 			comps.value = displaySignature;
