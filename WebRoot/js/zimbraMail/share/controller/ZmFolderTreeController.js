@@ -39,6 +39,7 @@ ZmFolderTreeController = function(type, dropTgt) {
 	this._listeners[ZmOperation.MOUNT_FOLDER] = new AjxListener(this, this._mountAddrBookListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this, this._emptyListener);
 	this._listeners[ZmOperation.SYNC_OFFLINE_FOLDER] = new AjxListener(this, this._syncOfflineFolderListener);
+    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 };
 
 ZmFolderTreeController.prototype = new ZmTreeController;
@@ -46,7 +47,7 @@ ZmFolderTreeController.prototype.constructor = ZmFolderTreeController;
 
 // Public methods
 
-ZmFolderTreeController.prototype.toString = 
+ZmFolderTreeController.prototype.toString =
 function() {
 	return "ZmFolderTreeController";
 };
@@ -54,11 +55,11 @@ function() {
 /**
 * Displays a folder tree. Certain folders are hidden.
 */
-ZmFolderTreeController.prototype.show = 
+ZmFolderTreeController.prototype.show =
 function(params) {
 	var omit = params.omit || {};
 	for (var id in ZmFolder.HIDE_ID) {
-		omit[id] = true;		
+		omit[id] = true;
 	}
     var dataTree = this.getDataTree(params.account);
     if (dataTree) {
@@ -79,9 +80,9 @@ function(params) {
 * @param parent		[DwtControl]	the widget that contains the operations
 * @param id			[int]			ID of the currently selected/activated organizer
 */
-ZmFolderTreeController.prototype.resetOperations = 
+ZmFolderTreeController.prototype.resetOperations =
 function(parent, type, id) {
-	
+
 	var emptyText = ZmMsg.emptyFolder; //ZmMsg.empty + (ZmFolder.MSG_KEY[id]?" "+ZmFolder.MSG_KEY[id] : "");
 	var folder = appCtxt.getById(id);
 	var hasContent = ((folder.numTotal > 0) || (folder.children && (folder.children.size() > 0)));
@@ -90,7 +91,7 @@ function(parent, type, id) {
 	var nId = ZmOrganizer.normalizeId(id, this.type);
 	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder()))	{
 		parent.enableAll(true);
-		parent.enable(ZmOperation.SYNC, folder.isFeed());
+		parent.enable(ZmOperation.SYNC, folder.isFeed() /*|| folder.hasFeeds()*/);
 		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
 		parent.enable(ZmOperation.EMPTY_FOLDER, (hasContent || folder.link));	// numTotal is not set for shared folders
 		parent.enable(ZmOperation.RENAME_FOLDER, !folder.isDataSource());		// dont allow datasource'd folder to be renamed via overview
@@ -141,6 +142,14 @@ function(parent, type, id) {
         button.setVisible(true);
         if (folder.isFeed()) {
             button.setText(ZmMsg.checkFeed);
+            /*var button1 = parent.getOp(ZmOperation.SYNC_ALL);
+            if(button1){
+                button1.setEnabled(true);
+                button1.setVisible(true);
+                button1.setText(ZmMsg.checkAllFeed);
+            }
+        }else if(folder.hasFeeds()){
+            button.setText(ZmMsg.checkAllFeed);*/
         }
 		else {
 			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
@@ -171,6 +180,7 @@ function(parent, type, id) {
 			button.setText(text);
 		}
 	}
+    parent.enable(ZmOperation.BROWSE, true);
 };
 
 // Private methods
@@ -186,8 +196,9 @@ function() {
 	}
 	ops.push(ZmOperation.EXPAND_ALL);
 	ops.push(ZmOperation.SYNC);
+    ops.push(ZmOperation.BROWSE);
 
-	return ops;
+    return ops;
 };
 
 /*
@@ -364,7 +375,15 @@ function(ev) {
 		folder.toggleSyncOffline();
 	}
 };
-
+ZmFolderTreeController.prototype._browseListener =
+function(ev){
+    var folder = this._getActionedOrganizer(ev);
+    if (folder) {
+        AjxPackage.require("zimbraMail.share.view.picker.ZmPicker");
+        appCtxt.getSearchController().showBrowsePickers([ZmPicker.FOLDER]);
+        //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
+    }
+}
 /*
 * Don't allow dragging of system folders.
 *
@@ -416,7 +435,7 @@ function(ev) {
 					}
 				}
 
-				var plusDiv = (actionData.length == 1) 
+				var plusDiv = (actionData.length == 1)
 					? ev.dndProxy.firstChild.nextSibling
 					: ev.dndProxy.firstChild.nextSibling.nextSibling;
 
