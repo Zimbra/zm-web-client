@@ -1267,11 +1267,11 @@ function() {
 		var data = {
 			showStandardLink: (!appCtxt.multiAccounts && !appCtxt.isOffline),
 			showOfflineLink: (!appCtxt.isOffline),
-			helpIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon") ? null : "Help"),
-			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
+			helpIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon") ? null : ZmMsg.help),
+			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : ZmMsg.logOff),
 			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
 		}
-		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data)
+		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
 	}
 };
 
