@@ -66,7 +66,7 @@ function(folder) {
 			if (folder.nId == ZmOrganizer.ID_ROOT) {
 				var sid = ZmOrganizer.getSystemId(folder.id);
 				var ti = this._folderTreeView.getTreeItemById(sid);
-				ti.setExpanded(true);
+				if (ti) ti.setExpanded(true);
 			}
 		}
 		DBG.timePt("selected folder", true);
@@ -313,7 +313,8 @@ function() {
 	// make sure a parent was selected
 	var parentFolder;
 	if (this._folderTreeView) {
-		parentFolder = this._folderTreeView.getSelected();
+		// default to the root if no folder is selected
+		parentFolder = this._folderTreeView.getSelected() || appCtxt.getFolderTree().root;
 	} else {
 		var folderTree = appCtxt.getFolderTree();
 		if (folderTree) {
