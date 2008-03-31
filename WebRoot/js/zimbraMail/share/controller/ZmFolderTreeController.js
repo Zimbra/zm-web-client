@@ -152,8 +152,6 @@ function(parent, type, id) {
         }else if(folder.hasFeeds()){
             //button.setText(ZmMsg.checkAllFeed);
             var button1 = parent.getOp(ZmOperation.SYNC_ALL);
-            button1.setEnabled(true);
-            button1.setVisible(true);
             if(button1){
                 button1.setEnabled(true);
                 button1.setVisible(true);
