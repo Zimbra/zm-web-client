@@ -369,7 +369,7 @@ function(ids) {
 
 ZmCalItem.prototype.getAttachments =
 function() {
-	var attachs = this.message ? this.message._attachments : null;
+	var attachs = this.message ? this.message.attachments : null;
 	if (attachs) {
 		if (this._validAttachments == null) {
 			this._validAttachments = [];
