@@ -61,7 +61,12 @@ function(folder) {
 			// bug #18533 - always make sure header item is visible in "New" dialog
 			this._folderTreeView.getHeaderItem().setVisible(true, true);
 
-			folder = folder || appCtxt.getFolderTree().root;
+			if (folder) {
+				if (folder.nId == ZmOrganizer.ID_ROOT)
+					folder = appCtxt.getFolderTree().root;
+			} else {
+				folder = appCtxt.getFolderTree().root;
+			}
 			this._folderTreeView.setSelected(folder);
 			if (folder.nId == ZmOrganizer.ID_ROOT) {
 				var sid = ZmOrganizer.getSystemId(folder.id);
