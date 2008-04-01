@@ -628,49 +628,51 @@ function(canvasData, url) {
 
 	switch (canvasData.type) {
 	    case "window":
-			var browserUrl = url;
-			if (browserUrl == null)
-				browserUrl = appContextPath+"/public/blank.html";
-			var props = []; // use browser default props by not specifying them
-			if (canvasData.width)
-				props.push("width=" + canvasData.width);
-			if (canvasData.height)
-				props.push("height=" + canvasData.height);
-			props = props.join(",");
-			canvas = window.open(browserUrl, this.xmlObj("name"), props);
-			if (!url) {
-				// TODO: add div element in the window.
-				//canvas.document.getHtmlElement().appendChild(div);
-			}
-			break;
+		var browserUrl = url;
+		if (browserUrl == null)
+			browserUrl = appContextPath+"/public/blank.html";
+		var props = []; // use browser default props by not specifying them
+                if (!canvasData.noScroll)
+                        props.push("scrollbars=yes");
+		if (canvasData.width)
+			props.push("width=" + canvasData.width);
+		if (canvasData.height)
+			props.push("height=" + canvasData.height);
+		props = props.join(",");
+		canvas = window.open(browserUrl, this.xmlObj("name"), props);
+		if (!url) {
+			// TODO: add div element in the window.
+			//canvas.document.getHtmlElement().appendChild(div);
+		}
+		break;
 
 	    case "dialog":
-			var view = new DwtComposite(this.getShell());
-			if (canvasData.width)
-				view.setSize(canvasData.width, Dwt.DEFAULT);
-			if (canvasData.height)
-				view.setSize(Dwt.DEFAULT, canvasData.height);
-			var title = canvasData.title || ("Zimlet dialog (" + this.xmlObj("description") + ")");
-			canvas = this._createDialog({ view: view, title: title });
-			canvas.view = view;
-			if (url) {
-				// create an IFRAME here to open the given URL
-				var el = document.createElement("iframe");
-				el.src = url;
-				var sz = view.getSize();
-				if (!AjxEnv.isIE) {
-					// substract default frame borders
-					sz.x -= 4;
-					sz.y -= 4;
-				}
-				el.style.width = sz.x + "px";
-				el.style.height = sz.y + "px";
-				view.getHtmlElement().appendChild(el);
-				canvas.iframe = el;
-			} else {
-				view.getHtmlElement().appendChild(div);
+		var view = new DwtComposite(this.getShell());
+		if (canvasData.width)
+			view.setSize(canvasData.width, Dwt.DEFAULT);
+		if (canvasData.height)
+			view.setSize(Dwt.DEFAULT, canvasData.height);
+		var title = canvasData.title || ("Zimlet dialog (" + this.xmlObj("description") + ")");
+		canvas = this._createDialog({ view: view, title: title });
+		canvas.view = view;
+		if (url) {
+			// create an IFRAME here to open the given URL
+			var el = document.createElement("iframe");
+			el.src = url;
+			var sz = view.getSize();
+			if (!AjxEnv.isIE) {
+				// substract default frame borders
+				sz.x -= 4;
+				sz.y -= 4;
 			}
-			canvas.popup();
+			el.style.width = sz.x + "px";
+			el.style.height = sz.y + "px";
+			view.getHtmlElement().appendChild(el);
+			canvas.iframe = el;
+		} else {
+			view.getHtmlElement().appendChild(div);
+		}
+		canvas.popup();
 		break;
 	}
 	return canvas;
