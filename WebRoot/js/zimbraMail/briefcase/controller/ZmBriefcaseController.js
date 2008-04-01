@@ -323,7 +323,7 @@ function(items) {
 	// REVISIT: Need to do proper list management! For now we fake
 	//          a list of a single item so that operations like
 	//          tagging and delete work.
-	this._list = new ZmList(ZmItem.PAGE);
+	this._list = new ZmList(ZmItem.BRIEFCASE);
 	
 	if (this._object) {
 		var item = new ZmBriefcaseItem();
