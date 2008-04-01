@@ -179,8 +179,8 @@ ZmChatListController.prototype._initializeToolBar = function(view) {
 		}
 	}
 
-	// init presence menu
-	this.updatePresenceMenu(true);
+	// init presence button
+	this.updatePresenceButton();
 
 	this._propagateMenuListeners(this._toolbar[view], ZmOperation.NEW_MENU);
 	// this._setupViewMenu(view);
@@ -189,29 +189,14 @@ ZmChatListController.prototype._initializeToolBar = function(view) {
 	this._setNewButtonProps(view, ZmMsg.imNewChat, "ImFree2Chat", "ImFree2ChatDis", ZmOperation.IM_NEW_CHAT);
 };
 
-ZmChatListController.prototype.updatePresenceMenu = function(addListeners, presenceButton) {
-        if (!presenceButton) {
-	        var view = view || this._currentView || this._defaultView();
-	        var toolbar = this._toolbar[view];
-	        if (!toolbar) { return; }
-	        presenceButton = toolbar.getButton(ZmOperation.IM_PRESENCE_MENU);
-        }
-	var presenceMenu = presenceButton.getMenu();
-
-   	var list = ZmImApp.getImPresenceMenuOps();
-	var presence = this._imApp.getRoster().getPresence();
-	var currentShowOp = presence.getShowOperation();
-	for (var i = 0; i < list.length; i++) {
-                if (list[i] != ZmOperation.SEP) {
-		        var mi = presenceMenu.getItemById(ZmOperation.MENUITEM_ID, list[i]);
-		        if (addListeners) {
-			        mi.addSelectionListener(new AjxListener(this, this._presenceItemListener));
-		        }
-		        if (list[i] == currentShowOp) {
-			        mi.setChecked(true, true);
-		        }
-                }
+ZmChatListController.prototype.updatePresenceButton = function() {
+	var view = view || this._currentView || this._defaultView();
+	var toolbar = this._toolbar[view];
+	if (!toolbar) {
+		return;
 	}
+	var presenceButton = toolbar.getButton(ZmOperation.IM_PRESENCE_MENU);
+	var presence = this._imApp.getRoster().getPresence();
 	presenceButton.setImage(presence.getIcon());
 	presenceButton.setText(presence.getShowText());
 };
@@ -314,48 +299,6 @@ ZmChatListController.prototype._newListener = function(ev) {
  	ZmListController.prototype._newListener.call(this, ev);
 };
 
-ZmChatListController.prototype._presenceItemListener = function(ev) {
-	if (ev.detail != DwtMenuItem.CHECKED) return;
-	var id = ev.item.getData(ZmOperation.KEY_ID);
-	if( id == ZmOperation.IM_PRESENCE_CUSTOM_MSG){
-		this._presenceCustomItemListener(ev);
-		return;
-	}
-	ev.item.parent.parent.setText(ev.item.getText());
-	ev.item.parent.parent.setImage(ev.item.getImage());
-	var show = ZmRosterPresence.operationToShow(id);
-	this._imApp.getRoster().setPresence(show, 0, null);
-};
-
-ZmChatListController.prototype._presenceCustomItemListener = function(ev) {
-    var roster = this._imApp.getRoster();
-    var presence = roster.getPresence();
-    var existingCustomMsg = presence.getShow() == ZmRosterPresence.SHOW_ONLINE  && presence.getStatus();
-    if(existingCustomMsg){
-        existingCustomMsg = presence.getStatus();
-    }
-    var dlg = appCtxt.getDialog();
-	dlg.setTitle(ZmMsg.newStatusMessage);
-    var id = Dwt.getNextId();
-	var html = [ "<div width='320px'>",
-		"<textarea type='text' id='",id,"' rows='3' cols='30'>",
-        existingCustomMsg || "",    
-        "</textarea>",
-		"</div>"
-	].join("");
-	dlg.setContent(html);
-
-    dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function(){
-		var statusMsg = document.getElementById(id).value;
-		if(statusMsg != "") {
-			roster.setPresence(null, 0, statusMsg);
-		}
-		dlg.popdown();
-	}));
-    
-    dlg.popup();
-};
-
 // Adds the same listener to all of a menu's items
 ZmChatListController.prototype._propagateMenuListeners = function(parent, op, listener) {
 	if (!parent) return;
@@ -434,12 +377,12 @@ ZmChatListController.prototype._getView = function() {
 };
 
 ZmChatListController.prototype._rosterChangeListener = function(ev) {
-        if (ev.event == ZmEvent.E_MODIFY) {
-                var fields = ev.getDetail("fields");
-                if (ZmRoster.F_PRESENCE in fields) {
-                        this.updatePresenceMenu();
-                }
-        }
+	if (ev.event == ZmEvent.E_MODIFY) {
+		var fields = ev.getDetail("fields");
+		if (ZmRoster.F_PRESENCE in fields) {
+			this.updatePresenceButton();
+		}
+	}
 };
 
 ZmChatListController.prototype._rosterListChangeListener = function(ev) {

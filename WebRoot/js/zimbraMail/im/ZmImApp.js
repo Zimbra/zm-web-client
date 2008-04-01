@@ -367,13 +367,39 @@ function(notify) {
 };
 
 ZmImApp.prototype.startup =
-function(result) {
+function() {
+	// Set up the presence indicator next to the user info & quota.
+	var container = Dwt.byId(ZmId.SKIN_PRESENCE);
+	if (container) {
+		var buttonArgs = {
+			parent:appCtxt.getShell(),
+			id:ZmId.PRESENCE,
+			posStyle:Dwt.ABSOLUTE_STYLE
+		};
+		this._presenceButton = new DwtButton(buttonArgs);
+		this._updatePresenceButton(null);
+		ZmImApp.addImPresenceMenu(this._presenceButton);
+
+		// Fix the size of the skin container.
+		// (We do this here rather than in the skin because the skin
+		// has no way of knowing whether IM is enabled.)
+		var width = appCtxt.get(ZmSetting.SKIN_HINTS, "presence.width") || 46;
+		Dwt.setSize(container, width, Dwt.DEFAULT);
+
+		var components = { };
+		components[ZmAppViewMgr.C_PRESENCE] = this._presenceButton;
+		appCtxt.getAppViewMgr().addComponents(components, true);
+	}
+
+	// Keep track of focus on the app.
 	var listener = new AjxListener(this, this._focusListener);
 	DwtShell.getShell(window).addFocusListener(listener);
 	DwtShell.getShell(window).addBlurListener(listener);
+
+	// Implement auto login.
 	if (appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN)) {
 		// Do the auto login after a short delay. I chose 1000ms because that means
-		// im login will after zimlets are loaded.
+		// im login will happen after zimlets are loaded.
 		AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._autoLogin), 1000);
 	}
 };
@@ -453,6 +479,8 @@ function() {
 ZmImApp.prototype._setRoster =
 function(roster) {
 	this._roster = roster;
+	roster.addChangeListener(new AjxListener(this, this._rosterChangeListener));
+
 
 	// Turn on instant notifications after a short delay, to prevent
 	// a flurry of no-op requests on startup.
@@ -474,46 +502,16 @@ function() {
 	return new ZmRosterTreeGroups(this.getRoster());
 };
 
-ZmImApp.getImPresenceMenuOps = function() {
-
-	var list = [ ZmOperation.IM_PRESENCE_OFFLINE,
-		     ZmOperation.IM_PRESENCE_ONLINE,
-		     ZmOperation.IM_PRESENCE_CHAT,
-                     ZmOperation.IM_PRESENCE_DND,
-		     ZmOperation.IM_PRESENCE_AWAY,
-		     ZmOperation.IM_PRESENCE_XA,
-                     ZmOperation.IM_PRESENCE_INVISIBLE,
-                     ZmOperation.SEP,
-                     ZmOperation.IM_PRESENCE_CUSTOM_MSG
-		   ];
-
-	return list;
+ZmImApp.addImPresenceMenu =
+function(button) {
+	button.setMenu(new AjxCallback(null, ZmImApp.createImPresenceMenu, [button]));
 };
 
-ZmImApp.addImPresenceMenu =
-function(parent) {
-
-	var list = ZmImApp.getImPresenceMenuOps();
-
-	var menu = new ZmPopupMenu(parent);
-
-	for (var i = 0; i < list.length; i++) {
-		var op = list[i];
-                if (op == ZmOperation.SEP)
-                        new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
-                else {
-		        var mi = menu.createMenuItem(op, { image : ZmOperation.getProp(op, "image"),
-						           text	 : ZmMsg[ZmOperation.getProp(op, "textKey")],
-						           style : DwtMenuItem.RADIO_STYLE
-						         });
-		        mi.setData(ZmOperation.MENUITEM_ID, op);
-		        mi.setData(ZmOperation.KEY_ID, op);
-		        if (op == ZmOperation.IM_PRESENCE_OFFLINE)
-			        mi.setChecked(true, true);
-                }
-	}
-
-	parent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
+ZmImApp.createImPresenceMenu =
+function(button) {
+	AjxPackage.require("IMCore");
+	var menu = new ZmPresenceMenu(button);
+	button.setMenu(menu);
 	return menu;
 };
 
@@ -646,3 +644,25 @@ function(ev) {
 	}
 };
 
+ZmImApp.prototype._rosterChangeListener = function(ev) {
+	if (!this._presenceButton) {
+		return;
+	}
+	if (ev.event == ZmEvent.E_MODIFY) {
+		var fields = ev.getDetail("fields");
+		if (ZmRoster.F_PRESENCE in fields) {
+			var presence = this.getRoster().getPresence();
+			this._updatePresenceButton(presence);
+		}
+	}
+};
+
+ZmImApp.prototype._updatePresenceButton = function(presence) {
+	var icon = presence ? presence.getIcon() : "Offline";
+	var showText = presence ? presence.getShowText() : ZmMsg.imStatusOffline;
+
+	this._presenceButton.setImage(icon);
+	this._presenceTooltipFormat = this._presenceTooltipFormat || new AjxMessageFormat(ZmMsg.presenceTooltip);
+	var tooltip = this._presenceTooltipFormat.format(showText);
+	this._presenceButton.setToolTipContent(tooltip);
+};

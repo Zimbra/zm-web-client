@@ -34,3 +34,7 @@ AjxPackage.require("zimbraMail.im.model.ZmChat");
 AjxPackage.require("zimbraMail.im.model.ZmChatList");
 AjxPackage.require("zimbraMail.im.model.ZmChatMessage");
 AjxPackage.require("zimbraMail.im.model.ZmImPrivacyList");
+
+// The following files are needed to display IM stuff in mail & other apps.
+AjxPackage.require("zimbraMail.im.view.ZmPresenceMenu");
+
