@@ -19,7 +19,7 @@ ZmConvView = function(params) {
 
 	params.className = "ZmConvView";
 	params.posStyle = Dwt.ABSOLUTE_STYLE;
-	params.view = ZmController.CONV_VIEW;
+	params.mode = ZmController.CONV_VIEW;
 	params.msgViewId = ZmId.CV_MSG;
 	ZmDoublePaneView.call(this, params);
 
