@@ -280,6 +280,25 @@ function(callback, errorCallback) {
 	}
 	appCtxt.getAppController().sendRequest(params);
 };
+/**
+ * Recursivce search for folders if it has feeds in it.
+ */
+ZmFolder.prototype.hasFeeds =
+function() {
+	if (this.type != ZmOrganizer.FOLDER) { return false; }
+
+	var a = this.children.getArray();
+	var sz = this.children.size();
+	for (var i = 0; i < sz; i++) {
+		if (a[i].isFeed()) {
+			return true;
+		}
+        if(a[i].children && a[i].children.size() > 0){
+            return a[i].hasFeeds && a[i].hasFeeds();
+        }
+    }
+    return false;
+};
 
 ZmFolder.prototype.hasSearch =
 function(id) {

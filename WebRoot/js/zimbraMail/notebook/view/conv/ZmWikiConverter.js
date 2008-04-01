@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -29,11 +29,17 @@ ZmWikiConverter = function(toHtmlRules, toWikiRules) {
 
 ZmWikiConverter.prototype.toHtml = function(wiki) {
 	ZmWikiConverter._converter = this;
-	return ZmWikiConverter.convert(wiki, this._toHtmlRules);
+        var a = [];
+        wiki = ZmWikiConverter._saveComments(wiki, a);
+	wiki = ZmWikiConverter.convert(wiki, this._toHtmlRules);
+        return ZmWikiConverter._restoreComments(wiki, a);
 };
 ZmWikiConverter.prototype.toWiki = function(html) {
 	ZmWikiConverter._converter = this;
-	return ZmWikiConverter.convert(html, this._toWikiRules);
+        var a = [];
+        html = ZmWikiConverter._saveComments(html, a);
+	html = ZmWikiConverter.convert(html, this._toWikiRules);
+        return ZmWikiConverter._restoreComments(html, a);
 };
 
 
@@ -53,6 +59,19 @@ ZmWikiConverter.store = function(s) {
 };
 ZmWikiConverter.restore = function(id) {
 	return ZmWikiConverter._data[id - 1];
+};
+
+ZmWikiConverter._saveComments = function(text, a) {
+        return text.replace(/<!--(.|\n)+?-->/g, function(s) {
+                a.push(s);
+                return "<ZmWikiConverter-COMMENT" + (a.length - 1) + ">";
+        });
+};
+
+ZmWikiConverter._restoreComments = function(text, a) {
+        return text.replace(/<ZmWikiConverter-COMMENT([0-9]+)>/g, function(s, p) {
+                return a[p];
+        });
 };
 
 //
@@ -209,7 +228,7 @@ MediaWikiConverter.toWiki._list = function(match, type) {
 	MediaWikiConverter.toWiki._listLevel += type;
 	return [
 		match.substring(0, match.length-1),
-		" level=", MediaWikiConverter.toWiki._listLevel, 
+		" level=", MediaWikiConverter.toWiki._listLevel,
 		">"
 	].join("");
 };
@@ -301,7 +320,7 @@ TWikiConverter.prototype.putVariable = function(name, stringOrFunc) {
 TWikiConverter.toHtml = {};
 
 TWikiConverter.toHtml._verbatim = function(match, content) {
-	var text = [ "<pre><nowiklet>", content, "</nowiklet></pre>" ].join(""); 
+	var text = [ "<pre><nowiklet>", content, "</nowiklet></pre>" ].join("");
 	return ZmWikiConverter.store(text);
 };
 TWikiConverter.toHtml._list = function(match, level, type, content) {
