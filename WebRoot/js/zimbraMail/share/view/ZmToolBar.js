@@ -16,22 +16,25 @@
  */
 
 /**
-* Creates a toolbar.
-* @const
-* @class
-* This class represents a basic toolbar which can add buttons, manage listeners, and
-* enable/disabled its buttons.
-*
-* @author Conrad Damon
-*
-* @param parent			[DwtComposite]		the containing widget
-* @param className		[string]*			CSS class
-* @param posStyle		[constant]*			positioning style
-*/
-ZmToolBar = function(parent, className, posStyle) {
+ * Creates a toolbar.
+ * @const
+ * @class
+ * This class represents a basic toolbar which can add buttons, manage listeners, and
+ * enable/disabled its buttons.
+ *
+ * @author Conrad Damon
+ *
+ * @param params		[hash]				hash of params:
+ *        parent		[DwtComposite]		the containing widget
+ *        className		[string]*			CSS class
+ *        posStyle		[constant]*			positioning style
+ *        id			[string]*			an explicit ID to use for the control's HTML element
+ */
+ZmToolBar = function(params) {
 	if (arguments.length == 0) return;
 
-	DwtToolBar.call(this, {parent:parent, className:className, posStyle:(posStyle || DwtControl.ABSOLUTE_STYLE)});
+	params.posStyle = params.posStyle || DwtControl.ABSOLUTE_STYLE;
+	DwtToolBar.call(this, params);
 	this._buttons = {};
 };
 
@@ -107,7 +110,6 @@ function(enabled) {
  */
 ZmToolBar.prototype.createButton =
 function(id, params) {
-	params.id = id;
 	var b = this._buttons[id] = this._createButton(params);
 	if (params.image) {
 		b.setImage(params.image);
@@ -136,10 +138,7 @@ ZmToolBar.prototype.SEPARATOR_TEMPLATE = "share.Widgets#ZmToolBarSeparator";
 
 ZmToolBar.prototype._createButton =
 function(params, className) {
-//	var idKey = this._view ? [this._view, params.id, "BUTTON"].join("_") : null;
-//	DBG.println("ZmId." + idKey);
-	var id = ZmId.getToolbarButtonId(this._view, params.id, this._toolbarType);
-    return new DwtToolBarButton({parent:this, style:params.style, className:className, index:params.index, id:id});
+    return new DwtToolBarButton({parent:this, style:params.style, className:className, index:params.index, id:params.id});
 };
 
 ZmToolBar.prototype._buttonId =

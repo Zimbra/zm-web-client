@@ -33,16 +33,17 @@
  *        className			[string]*			CSS class name
  *        buttonClassName	[string]*			CSS class name for buttons
  *        overrides			[hash]*				hash of overrides by op ID
- *        view				[const]*			view ID (used to generate button IDs)
+ *        context			[const]*			vcontextID (used to generate button IDs)
  *        toolbarType		[const]*			toolbar type (used to generate button IDs)
  */
 ZmButtonToolBar = function(params) {
 	if (arguments.length == 0) return;
 
-    var className = params.className || "ZToolbar";
-    ZmToolBar.call(this, params.parent, className, params.posStyle);
+    params.className = params.className || "ZToolbar";
+    params.id = params.context ? ZmId.getToolbarId(params.context, params.toolbarType) : null;
+    ZmToolBar.call(this, params);
 	
-	this._view = params.view;
+	this._context = params.context;
 	this._toolbarType = params.toolbarType;
 	this._buttonStyle = params.buttonClassName;
 
@@ -55,7 +56,6 @@ ZmButtonToolBar = function(params) {
 	}
 	// weed out disabled ops, save list of ones that make it
 	this.opList = ZmOperation.filterOperations(buttons);
-//	DBG.println("tb", "=============== new toolbar for " + params.parent.toString() + " (" + this._view + ") : " + this.opList);
 	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 };
 
@@ -86,9 +86,16 @@ function() {
 ZmButtonToolBar.prototype.createOp =
 function(id, params) {
 	params.className = this._buttonStyle;
-	var b = (id == ZmOperation.TEXT)
-		? (new DwtText(this, "ZWidgetTitle"))
-		: this.createButton(id, params);
+	var b;
+	if (id == ZmOperation.TEXT) {
+		var context = this._toolbarType ? [this._context, this._toolbarType].join("_") : this._context;
+		var id = [ZmId.WIDGET, AjxStringUtil.toMixed(context, "_", true), AjxStringUtil.toMixed(id, "_")].join("");
+		params.textClassName = params.textClassName || "ZWidgetTitle";
+		b = new DwtText({parent:this, className:params.textClassName, id:id});
+	} else {
+		params.id = ZmId.getToolbarButtonId(this._context, id, this._toolbarType);
+		b = this.createButton(id, params);
+	}
 	b.setData(ZmOperation.KEY_ID, id);
 
 	return b;

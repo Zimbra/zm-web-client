@@ -26,12 +26,13 @@
  *
  * @param parent		[DwtComposite]		the containing widget
  * @param className		[string]*			CSS class
+ * @param id			[string]*			an explicit ID to use for the control's HTML element
  */
-ZmPopupMenu = function(parent, className) {
+ZmPopupMenu = function(parent, className, id) {
 
 	if (arguments.length == 0) return;
 	className = className ? className : "ActionMenu";
-	DwtMenu.call(this, {parent:parent, style:DwtMenu.POPUP_STYLE, className:className});
+	DwtMenu.call(this, {parent:parent, style:DwtMenu.POPUP_STYLE, className:className, id:id});
 
 	this._menuItems = {};
 };
@@ -104,7 +105,8 @@ function(enabled) {
  */
 ZmPopupMenu.prototype.createMenuItem =
 function(id, params) {
-	var mi = this._menuItems[id] = new DwtMenuItem({parent:this, style:params.style, radioGroupId:params.radioGroupId});
+	var mi = this._menuItems[id] = new DwtMenuItem({parent:this, style:params.style, radioGroupId:params.radioGroupId,
+													id:params.id});
 	if (params.image) {
 		mi.setImage(params.image);
 	}

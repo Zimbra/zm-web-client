@@ -419,7 +419,8 @@ function(viewId) {
 	toolbar.enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
 
 	toolbar.addFiller();
-	var tb = new ZmNavToolBar(toolbar, DwtControl.STATIC_STYLE, "ZmNavToolbar ZmCalendarNavToolbar", ZmNavToolBar.SINGLE_ARROWS, true);
+	var tb = new ZmNavToolBar({parent:toolbar, className:"ZmNavToolbar ZmCalendarNavToolbar",
+							   context:ZmController.CAL_VIEW});
 	this._setNavToolBar(tb, ZmController.CAL_VIEW);
 
 	this._setNewButtonProps(viewId, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
@@ -1531,7 +1532,7 @@ ZmCalViewController.prototype._initializeActionMenu =
 function() {
 	var menuItems = this._getActionMenuOps();
 	if (menuItems && menuItems.length > 0) {
-		var params = {parent:this._shell, menuItems:menuItems};
+		var params = {parent:this._shell, menuItems:menuItems, context:this._getMenuContext()};
 		var actionMenu = this._actionMenu = new ZmActionMenu(params);
 		menuItems = actionMenu.opList;
 		for (var i = 0; i < menuItems.length; i++) {

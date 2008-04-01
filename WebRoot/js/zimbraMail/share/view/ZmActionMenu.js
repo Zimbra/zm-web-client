@@ -26,13 +26,17 @@
  *
  * @author Conrad Damon
  *
- * @param parent		[DwtComposite]		the containing widget
- * @param menuItems		[array]*			a list of operation IDs
- * @param overrides		[hash]*				hash of overrides by op ID
+ * @param params		[hash]				hash of params:
+ *        parent		[DwtComposite]		the containing widget
+ *        menuItems		[array]*			a list of operation IDs
+ *        overrides		[hash]*				hash of overrides by op ID
+ *        context		[string]*			context (used to create ID)
+ *        menuType		[const]*			menu type (used to generate menu item IDs)
  */
 ZmActionMenu = function(params) {
 
-	ZmPopupMenu.call(this, params.parent);
+    var id = params.context ? ZmId.getActionMenuId(params.context, params.menuType) : null;
+	ZmPopupMenu.call(this, params.parent, null, id);
 
 	// standard menu items default to Tag/Print/Delete
 	var menuItems = params.menuItems;
@@ -44,6 +48,7 @@ ZmActionMenu = function(params) {
 	// weed out disabled ops, save list of ones that make it
 	this.opList = ZmOperation.filterOperations(menuItems);
 	var extraItems = params.extraMenuItems;
+	this._context = params.context;
 	this._menuItems = ZmOperation.createOperations(this, this.opList, params.overrides);
 }
 
@@ -70,6 +75,7 @@ function() {
  */
 ZmActionMenu.prototype.createOp =
 function(id, params) {
+	params.id = ZmId.getActionMenuItemId(this._context, id, this._menuType);
 	var mi = this.createMenuItem(id, params);
 	mi.setData(ZmOperation.KEY_ID, id);
 

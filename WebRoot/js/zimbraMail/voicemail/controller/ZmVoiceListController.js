@@ -78,7 +78,7 @@ function(view) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._toolbar[view].addFiller();
-		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
+		var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
 		this._setNavToolBar(tb, view);
 	};
 };

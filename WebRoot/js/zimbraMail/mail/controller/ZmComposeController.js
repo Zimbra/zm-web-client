@@ -660,7 +660,8 @@ function() {
 	}
 
 	var className = appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className+" ImgSkin_Toolbar", view:ZmController.COMPOSE_VIEW});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className+" ImgSkin_Toolbar",
+										 context:ZmController.COMPOSE_VIEW});
 
 	for (var i = 0; i < this._toolbar.opList.length; i++) {
 		var button = this._toolbar.opList[i];

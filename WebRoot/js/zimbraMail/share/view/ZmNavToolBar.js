@@ -25,24 +25,21 @@
  *        parent			[DwtComposite]		the containing widget
  *        posStyle			[constant]*			positioning style
  *        className			[string]*			CSS class name
- *        arrowStyle		[const]				single arrows, double arrows, or both
- *        hasText			[boolean]*			true if this toolbar includes text in the middle
- *        view				[const]*			view ID (used to generate button IDs)
-
-* @param parent			parent DwtControl for this toolbar
-* @param posStyle		CSS style position (absolute, static, relative)
-* @param className 		CSS class name this toolbar should respect
-* @param arrowStyle		single arrows, double arrows, or both
-* @param hasText		true if this toolbar includes text in the middle
-*/
+ *        arrowStyle		[const]				single arrows (default), double arrows, or both
+ *        hasText			[boolean]*			true (default) if this toolbar includes text in the middle
+ *        context			[const]*			view ID (used to generate button IDs)
+ */
 
 ZmNavToolBar = function(params) {
 
 	params.className = params.className || "ZmNavToolBar";
-	params.buttons = this._getButtons(params.arrowStyle, params.hasText);
+	params.arrowStyle = params.arrowStyle || ZmNavToolBar.SINGLE_ARROWS;
+	var hasText = (params.hasText !== false);
+	params.buttons = this._getButtons(params.arrowStyle, hasText);
 	params.toolbarType = ZmId.TB_NAV;
+	params.posStyle = params.posStyle || DwtControl.STATIC_STYLE;
 	ZmButtonToolBar.call(this, params);
-	if (params.hasText) {
+	if (hasText) {
 		this._textButton = this.getButton(ZmOperation.TEXT);
 	}
 };
@@ -110,11 +107,6 @@ function(arrowStyle, hasText) {
 
 ZmNavToolBar.prototype.createOp =
 function(id, params) {
-	params.className = this._buttonStyle;
-	var b = (id == ZmOperation.TEXT)
-		? (new DwtText(this, "ZWidgetTitle ZmNavToolBarTitle"))
-		: this.createButton(id, params);
-	b.setData(ZmOperation.KEY_ID, id);
-
-	return b;
+	params.textClassName = "ZWidgetTitle ZmNavToolBarTitle";
+	return ZmButtonToolBar.prototype.createOp.apply(this, arguments);
 };

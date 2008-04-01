@@ -183,7 +183,7 @@ function(view) {
 	this._setNewButtonProps(view, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
 
 	this._toolbar[view].addFiller();
-	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
+	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
 	this._setNavToolBar(tb, view);
 };
 
