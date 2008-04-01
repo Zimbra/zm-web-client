@@ -60,6 +60,11 @@ BODY						{	margin:0px; 				}
 /** Quota section **/	
 #skin_container_quota					{	@SkinBorderQuota@	}
 
+/** Presence section **/	
+#z_presence {
+	margin-top: -10px;
+	margin-left: -4px;
+}
 
 /** Tree Toolbar a.k.a.  "current app" **/
 #skin_spacing_current_app				{}

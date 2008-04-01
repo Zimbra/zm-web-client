@@ -16,6 +16,7 @@ ZmSkin.hints = {
 	search:		  	{ position:"static" },
 	webSearch:	  	{ position:"static", containers: "skin_spacing_web_search" },
 	quota:		  	{ position:"static" },
+	presence:	  	{ width:"46px" },
 	appView:		{ position:"static" },
 
 	searchBuilder:  { containers: ["skin_tr_search_builder"] },

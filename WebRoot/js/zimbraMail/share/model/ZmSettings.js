@@ -622,6 +622,7 @@ function() {
 				 ["banner", "url"],
 				 ["logoutButton", "hideIcon"],
 				 ["logoutButton", "style"],
+				 ["presence", "width"],
 				 ["noOverviewHeaders"],
 				 ["toast", "location"],
 				 ["toast", "transitions"]];

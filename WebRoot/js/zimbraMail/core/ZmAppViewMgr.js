@@ -129,6 +129,7 @@ ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 ZmAppViewMgr.C_BANNER					= "banner";
 ZmAppViewMgr.C_USER_INFO				= "userInfo";
 ZmAppViewMgr.C_QUOTA_INFO				= "quota";
+ZmAppViewMgr.C_PRESENCE					= "presence";
 ZmAppViewMgr.C_SEARCH					= "search";
 ZmAppViewMgr.C_SEARCH_BUILDER			= "searchBuilder";
 ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR	= "searchBuilderToolbar";
@@ -143,7 +144,7 @@ ZmAppViewMgr.C_APP_CONTENT_FULL			= "fullScreen";
 ZmAppViewMgr.C_STATUS					= "status";
 ZmAppViewMgr.C_SASH						= "sash";
 
-ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
+ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO, ZmAppViewMgr.C_PRESENCE,
 							   ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_SEARCH_BUILDER,
 							   ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR, ZmAppViewMgr.C_CURRENT_APP,
 							   ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
@@ -182,6 +183,7 @@ function() {
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmId.SKIN_LOGO;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_USER_INFO]				= ZmId.SKIN_USER_INFO;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_QUOTA_INFO]				= ZmId.SKIN_QUOTA_INFO;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_PRESENCE]				= ZmId.SKIN_PRESENCE;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmId.SKIN_SEARCH;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER]			= ZmId.SKIN_SEARCH_BUILDER;
 	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= ZmId.SKIN_SEARCH_BUILDER_TOOLBAR;
@@ -1000,7 +1002,7 @@ function(ev) {
                             ZmAppViewMgr.C_STATUS];
 				this._fitToContainer(list);
 			} else if (deltaWidth) {
-				var list = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
+				var list = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO, ZmAppViewMgr.C_PRESENCE, 
 							ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
 							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL, 
                             ZmAppViewMgr.C_TOOLBAR_BOTTOM];

@@ -273,21 +273,6 @@ ZmRosterTreeController.prototype._imFloatingListListener = function(ev) {
 
                 toolbar2.addFiller();
 
-                var presence = new DwtToolBarButton({parent:toolbar2});
-                presence.setText(ZmMsg.imStatusOnline);
-                presence.setToolTipContent(ZmMsg.imPresence);
-                presence.setImage("ImAvailable");
-                var menu = ZmImApp.addImPresenceMenu(presence);
-                AjxDispatcher.run("GetChatListController").updatePresenceMenu(true, presence);
-                this._imApp.getRoster().addChangeListener(new AjxListener(this, function(ev) {
-                        var fields = ev.getDetail("fields");
-                        if (ev.event == ZmEvent.E_MODIFY) {
-                                if (ZmRoster.F_PRESENCE in fields) {
-                                        AjxDispatcher.run("GetChatListController").updatePresenceMenu(false, presence);
-                                }
-                        }
-                }));
-
                 cont.addControlListener(new AjxListener(this, function(ev) {
                         var s1 = { x: ev.oldWidth, y: ev.oldHeight };
                         var s2 = { x: ev.newWidth, y: ev.newHeight };
