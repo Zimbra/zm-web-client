@@ -266,7 +266,7 @@ function(ev, bIsPopCallback) {
 		else
 		{
 			if (contact.id && !contact.isGal) {
-				if (view.isEmpty()) {
+				if (view.isEmpty() && !contact.isMyCard()) {
 					this._doDelete([contact], null, null, true);
 				} else {
 					this._doModify(contact, mods);
