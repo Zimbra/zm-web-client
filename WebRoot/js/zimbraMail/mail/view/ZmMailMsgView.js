@@ -343,8 +343,8 @@ function() {
 		posStyle: DwtControl.STATIC_STYLE,
 		className: "ZmInviteToolBar",
 		buttonClassName: "DwtToolbarButton",
-		view: this._view,
-		toolbarType: ZmId.TB_INV
+		context: this._view,
+		toolbarType: ZmId.TB_INVITE
 	};
 	this._inviteToolbar = new ZmButtonToolBar(params);
 
@@ -387,7 +387,9 @@ function() {
 		buttons: buttonIds,
 		posStyle: DwtControl.STATIC_STYLE,
 		className: "ZmShareToolBar",
-		buttonClassName: "DwtToolbarButton"
+		buttonClassName: "DwtToolbarButton",
+		context: this._view,
+		toolbarType: ZmId.TB_SHARE
 	};
 	this._shareToolbar = new ZmButtonToolBar(params);
 

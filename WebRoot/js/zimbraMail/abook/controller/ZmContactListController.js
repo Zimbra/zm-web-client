@@ -322,8 +322,7 @@ function(view) {
 		this._setNewButtonProps(view, ZmMsg.createNewContact, "NewContact", "NewContactDis", ZmOperation.NEW_CONTACT);
 		this._setupPrintMenu(view);
 		this._toolbar[view].addFiller();
-		var tb = new ZmNavToolBar({parent:this._toolbar[view], posStyle:DwtControl.STATIC_STYLE,
-								   arrowStyle:ZmNavToolBar.SINGLE_ARROWS, hasText:true, view:view});
+		var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
 		this._setNavToolBar(tb, view);
 	} else {
 		this._setupViewMenu(view, false);

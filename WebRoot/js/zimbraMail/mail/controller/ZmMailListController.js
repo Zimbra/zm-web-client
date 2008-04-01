@@ -330,7 +330,8 @@ function(view) {
 		if (ops && ops.length) {
 			menuItems = menuItems.concat(ops);
 		}
-    	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
+    	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems,
+    													context:context, menuType:ZmId.MENU_PARTICIPANT});
     	this._addMenuListeners(this._participantActionMenu);
 		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._participantActionMenu);
@@ -346,9 +347,7 @@ function(view, arrowStyle) {
         this._setupViewMenu(view, true);
         this._setReplyText(this._toolbar[view]);
         this._toolbar[view].addFiller();
-        arrowStyle = arrowStyle ? arrowStyle : ZmNavToolBar.SINGLE_ARROWS;
-        var tb = new ZmNavToolBar({parent:this._toolbar[view], posStyle:DwtControl.STATIC_STYLE,
-        						   arrowStyle:arrowStyle, hasText:true, view:view});
+        var tb = new ZmNavToolBar({parent:this._toolbar[view], arrowStyle:arrowStyle, context:view});
         this._setNavToolBar(tb, view);
     }
 
@@ -1179,4 +1178,9 @@ function(view, saveSelection, loadIndex, offset, result) {
 	if (newItem) {
 		this._listView[this._currentView].emulateDblClick(newItem);
 	}
+};
+
+ZmMailListController.prototype._getMenuContext =
+function() {
+	return this._getViewType();
 };

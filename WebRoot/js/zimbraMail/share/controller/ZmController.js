@@ -32,6 +32,7 @@ ZmController = function(container, app) {
 // view identifiers - need to be all caps
 ZmController.APPOINTMENT_VIEW 			= "APPT";
 ZmController.APPT_DETAIL_VIEW			= "APPTD";
+ZmController.APPT_SCHEDULE_VIEW			= "APPTS";
 ZmController.ATT_ICON_VIEW 				= "ATI";
 ZmController.ATT_LIST_VIEW 				= "ATL";
 ZmController.CAL_APPT_VIEW				= "CLA";
@@ -50,6 +51,7 @@ ZmController.CONTACT_TGT_VIEW			= "CNTGT"; // contact picker target list
 ZmController.CONTACT_VIEW				= "CN";
 ZmController.CONVLIST_VIEW 				= "CLV";
 ZmController.CONV_VIEW 					= "CV";
+ZmController.FILTER_RULES_VIEW			= "FRV";
 ZmController.GROUP_VIEW					= "GRP";
 ZmController.IM_CHAT_MULTI_WINDOW_VIEW	= "IMCMW";
 ZmController.IM_CHAT_TAB_VIEW			= "IMCT";

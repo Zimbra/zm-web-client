@@ -128,19 +128,62 @@ function(app) {
 // content area views and their components
 
 /**
+ * Generates the ID for a toolbar.
+ * 
+ * Examples: ztb_clv ztb_tvNav ztb_cvInv
+ * 
+ * @param context	[string]	toolbar context (ID of owning view)
+ * @param tbType	[const]*	type of toolbar (eg invite or nav)
+ */
+ZmId.getToolbarId =
+function(context, tbType) {
+	context = tbType ? [context, tbType].join("_") : context;
+	return [ZmId.WIDGET_TOOLBAR, AjxStringUtil.toMixed(context, "_", true)].join("");
+};
+
+/**
  * Generates the ID for a button in a toolbar. Intended for use with the top toolbar, nav toolbar,
  * and invite toolbar.
  * 
  * Examples: zb_clvCheckMail zb_tvReply zb_composeSend zb_clvNavPageForward zb_clvInvReplyAccept
  * 
- * @param tbId		[string]	string that uniquely identifies toolbar (eg ID of owning view)
+ * @param context	[string]	toolbar context (ID of owning view)
  * @param op		[const]		the button operation
  * @param tbType	[const]*	type of toolbar (eg invite or nav)
  */
 ZmId.getToolbarButtonId =
-function(tbId, op, tbType) {
-	tbId = tbType ? [tbId, tbType].join("_") : tbId;
-	return [ZmId.WIDGET_BUTTON, AjxStringUtil.toMixed(tbId, "_", true), AjxStringUtil.toMixed(op, "_")].join("");
+function(context, op, tbType) {
+	context = tbType ? [context, tbType].join("_") : context;
+	return [ZmId.WIDGET_BUTTON, AjxStringUtil.toMixed(context, "_", true), AjxStringUtil.toMixed(op, "_")].join("");
+};
+
+/**
+ * Generates the ID for an action menu.
+ * 
+ * Examples: zm_clv zm_contacts
+ * 
+ * @param context		[string]	menu context (eg ID of owning view, or app)
+ * @param menuType		[const]*	type of menu (eg participant)
+ */
+ZmId.getActionMenuId =
+function(context, menuType) {
+	context = menuType ? [context, menuType].join("_") : context;
+	return [ZmId.WIDGET_MENU, AjxStringUtil.toMixed(context, "_", true)].join("");
+};
+
+/**
+ * Generates the ID for a menu item in an action menu.
+ * 
+ * Examples: 
+ * 
+ * @param context		[string]	menu context
+ * @param op			[const]		the menu operation
+ * @param menuType		[const]*	type of menu (eg participant)
+ */
+ZmId.getActionMenuItemId =
+function(context, op, menuType) {
+	context = menuType ? [context, menuType].join("_") : context;
+	return [ZmId.WIDGET_MENU_ITEM, AjxStringUtil.toMixed(context, "_", true), AjxStringUtil.toMixed(op, "_")].join("");
 };
 
 // conv list view (CLV)
@@ -259,6 +302,7 @@ ZmId.TREEITEM_BRIEFCASE_BRIEFCASE	= "zti_briefcase_16";
 //
 
 // widget types (used to prefix IDs)
+ZmId.WIDGET					= "z_";
 ZmId.WIDGET_TOOLBAR			= "ztb_";
 ZmId.WIDGET_BUTTON			= "zb_";
 ZmId.WIDGET_INPUT			= "zi_";
@@ -284,8 +328,12 @@ ZmId.APP_TASKS			= "Tasks";
 ZmId.APP_VOICE			= "Voice";
 
 // special toolbars
-ZmId.TB_INV	= "INV";
-ZmId.TB_NAV	= "NAV";
+ZmId.TB_INVITE	= "INV";
+ZmId.TB_NAV		= "NAV";
+ZmId.TB_SHARE	= "SHR";
+
+// special menus
+ZmId.MENU_PARTICIPANT	= "PAR";
 
 // operations
 ZmId.OP_ADD_FILTER_RULE			= "ADD_FILTER_RULE"

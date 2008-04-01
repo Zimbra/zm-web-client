@@ -306,7 +306,7 @@ function(view) {
 
 	var buttons = this._getToolBarOps();
 	if (!buttons) return;
-	this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, view:view});
+	this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:view});
 	// remove text for Print, Delete, and Move buttons
 	var list = [ZmOperation.PRINT, ZmOperation.MOVE];
 	for (var i = 0; i < list.length; i++) {
@@ -360,7 +360,7 @@ function() {
 
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
-	this._actionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
+	this._actionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems, context:this._getMenuContext()});
 	this._addMenuListeners(this._actionMenu);
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setupTagMenu(this._actionMenu);
@@ -1351,4 +1351,13 @@ function() {
 		//DBG.timePt("this._resetOperation(actionMenu)");
 	}
 	return this._actionMenu;
+};
+
+/**
+ * Returns the context for the action menu created by this controller (used to create
+ * an ID for the menu).
+ */
+ZmListController.prototype._getMenuContext =
+function() {
+	return this._app && this._app._name;
 };

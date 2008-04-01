@@ -245,7 +245,7 @@ function() {
 	}
 	buttons.push(ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
 
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._getViewType()});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 	if(appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))

@@ -488,7 +488,7 @@ function() {
 	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener);
 
 	var navBarListener = new AjxListener(this, this._navBarListener);
-	this._navToolbar = new ZmNavToolBar(this, DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
+	this._navToolbar = new ZmNavToolBar({parent:this, context:ZmController.APPT_SCHEDULE_VIEW});
 	this._navToolbar._textButton.getHtmlElement().className = "ZmSchedulerDate";
 	this._navToolbar.addSelectionListener(ZmOperation.PAGE_BACK, navBarListener);
 	this._navToolbar.addSelectionListener(ZmOperation.PAGE_FORWARD, navBarListener);

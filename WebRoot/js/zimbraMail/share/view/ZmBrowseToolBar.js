@@ -17,7 +17,7 @@
 
 ZmBrowseToolBar = function(parent, pickers) {
 
-	ZmToolBar.call(this, parent, "ZmBrowseToolBar");
+	ZmToolBar.call(this, {parent:parent, className:"ZmBrowseToolBar"});
 	
 	for (var i = 0; i < pickers.length; i++) {
 		var id = pickers[i];

@@ -113,7 +113,7 @@ function(view) {
 	ZmNotebookController.prototype._initializeToolBar.call(this, view);
 	this._toolbar[view].addFiller();
 
-	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
+	var tb = new ZmNavToolBar({parent:this._toolbar[view], context:view});
 	this._setNavToolBar(tb, view);
 
 	this._setNewButtonProps(view, ZmMsg.compose, "NewPage", "NewPageDis", ZmOperation.NEW_PAGE);
