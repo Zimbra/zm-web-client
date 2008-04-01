@@ -631,9 +631,7 @@ function(canvasData, url) {
 		var browserUrl = url;
 		if (browserUrl == null)
 			browserUrl = appContextPath+"/public/blank.html";
-		var props = []; // use browser default props by not specifying them
-                if (!canvasData.noScroll)
-                        props.push("scrollbars=yes");
+		var props = [ "toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes" ];
 		if (canvasData.width)
 			props.push("width=" + canvasData.width);
 		if (canvasData.height)
