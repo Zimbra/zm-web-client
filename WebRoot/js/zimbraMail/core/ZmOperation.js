@@ -141,7 +141,6 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SHOW_ALL_ITEM_TYPES, {textKey:"showAllItemTypes", image:"Globe"});
 	ZmOperation.registerOp(ZmId.OP_SPELL_CHECK, {textKey:"spellCheck", image:"SpellCheck", tooltipKey:"spellCheckTooltip"});
 	ZmOperation.registerOp(ZmId.OP_SYNC, {textKey:"reload", image:"Refresh"});
-	ZmOperation.registerOp(ZmId.OP_SYNC_ALL, {textKey:"checkAllFeed", image:"Refresh"});
 	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE, {textKey:"checkMail", tooltipKey:"syncTooltip", image:"Refresh"});
 	ZmOperation.registerOp(ZmId.OP_SYNC_OFFLINE_FOLDER, {textKey:"syncOfflineFolderOff", image:"Refresh"}, appCtxt.isOffline); /* offline only */
 	ZmOperation.registerOp(ZmId.OP_TAG, null, ZmSetting.TAGGING_ENABLED);
