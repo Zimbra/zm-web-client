@@ -623,6 +623,7 @@ function() {
 				 ["logoutButton", "hideIcon"],
 				 ["logoutButton", "style"],
 				 ["presence", "width"],
+				 ["presence", "height"],
 				 ["noOverviewHeaders"],
 				 ["toast", "location"],
 				 ["toast", "transitions"]];

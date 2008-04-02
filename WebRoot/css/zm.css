@@ -1810,6 +1810,28 @@ HTML>BODY .appt-selected .appt_allday_body
  *	Chat application
  */
 
+/** Presence section **/
+#z_presence {
+	margin-top: 2px;
+}
+
+#z_presence_left_icon {
+	margin-left: 1px;
+	margin-right: 1px;
+	padding-left: 1px;
+	padding-right: 1px;
+	float: left;
+	width: 16px;
+}
+
+#z_presence_dropdown {
+	margin-left: 1px;
+	margin-right: 1px;
+	padding-left: 1px;
+	padding-right: 1px;
+	float: left;
+}
+
 /* temporary lite widgets */
 
 .DwtLtIconButton { padding: 2px; }
