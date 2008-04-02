@@ -366,8 +366,8 @@ function(notify) {
 	}
 };
 
-ZmImApp.prototype.startup =
-function() {
+ZmImApp.prototype.addComponents =
+function(components) {
 	// Set up the presence indicator next to the user info & quota.
 	var container = Dwt.byId(ZmId.SKIN_PRESENCE);
 	if (container) {
@@ -379,6 +379,7 @@ function() {
 		this._presenceButton = new ZmPresenceButton(buttonArgs);
 		this._updatePresenceButton(null);
 		ZmImApp.addImPresenceMenu(this._presenceButton);
+		components[ZmAppViewMgr.C_PRESENCE] = this._presenceButton;
 
 		// Fix the size of the skin container.
 		// (We do this here rather than in the skin because the skin
@@ -386,12 +387,11 @@ function() {
 		var width = appCtxt.get(ZmSetting.SKIN_HINTS, "presence.width") || 46;
 		var height = appCtxt.get(ZmSetting.SKIN_HINTS, "presence.height") || 24;
 		Dwt.setSize(container, width, height);
-
-		var components = { };
-		components[ZmAppViewMgr.C_PRESENCE] = this._presenceButton;
-		appCtxt.getAppViewMgr().addComponents(components, true);
 	}
+};
 
+ZmImApp.prototype.startup =
+function() {
 	// Keep track of focus on the app.
 	var listener = new AjxListener(this, this._focusListener);
 	DwtShell.getShell(window).addFocusListener(listener);

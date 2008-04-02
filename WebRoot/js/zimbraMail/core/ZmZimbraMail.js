@@ -466,6 +466,9 @@ function(params) {
 	ZmZimbraMail.killSplash();
 	this._appViewMgr.tweakSkin();
 
+	// Give apps a chance to add their own ui components.
+	this.runAppFunction("addComponents", false, this._components);
+
 	// next line makes the UI appear
 	this._appViewMgr.addComponents(this._components, true);
 
