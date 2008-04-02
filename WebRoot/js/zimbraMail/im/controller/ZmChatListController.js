@@ -180,25 +180,14 @@ ZmChatListController.prototype._initializeToolBar = function(view) {
 	}
 
 	// init presence button
-	this.updatePresenceButton();
+	var presenceButton = this._toolbar[view].getButton(ZmOperation.IM_PRESENCE_MENU);
+	ZmImApp.INSTANCE.syncImPresenceButton(presenceButton, true, false);
 
 	this._propagateMenuListeners(this._toolbar[view], ZmOperation.NEW_MENU);
 	// this._setupViewMenu(view);
 
 	// this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 	this._setNewButtonProps(view, ZmMsg.imNewChat, "ImFree2Chat", "ImFree2ChatDis", ZmOperation.IM_NEW_CHAT);
-};
-
-ZmChatListController.prototype.updatePresenceButton = function() {
-	var view = view || this._currentView || this._defaultView();
-	var toolbar = this._toolbar[view];
-	if (!toolbar) {
-		return;
-	}
-	var presenceButton = toolbar.getButton(ZmOperation.IM_PRESENCE_MENU);
-	var presence = this._imApp.getRoster().getPresence();
-	presenceButton.setImage(presence.getIcon());
-	presenceButton.setText(presence.getShowText());
 };
 
 ZmChatListController.prototype._initializeActionMenu = function(view) {
@@ -374,15 +363,6 @@ ZmChatListController.prototype.endChat = function(chat) {
 
 ZmChatListController.prototype._getView = function() {
 	return ZmChatMultiWindowView.getInstance();
-};
-
-ZmChatListController.prototype._rosterChangeListener = function(ev) {
-	if (ev.event == ZmEvent.E_MODIFY) {
-		var fields = ev.getDetail("fields");
-		if (ZmRoster.F_PRESENCE in fields) {
-			this.updatePresenceButton();
-		}
-	}
 };
 
 ZmChatListController.prototype._rosterListChangeListener = function(ev) {

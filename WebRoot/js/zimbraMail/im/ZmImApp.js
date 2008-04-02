@@ -377,7 +377,7 @@ function(components) {
 			posStyle: Dwt.ABSOLUTE_STYLE
 		};
 		this._presenceButton = new ZmPresenceButton(buttonArgs);
-		this._updatePresenceButton(null);
+		this._updatePresenceButton(null, this._presenceButton, false, true);
 		ZmImApp.addImPresenceMenu(this._presenceButton);
 		components[ZmAppViewMgr.C_PRESENCE] = this._presenceButton;
 
@@ -480,8 +480,9 @@ function() {
 ZmImApp.prototype._setRoster =
 function(roster) {
 	this._roster = roster;
-	roster.addChangeListener(new AjxListener(this, this._rosterChangeListener));
-
+	if (this._presenceButton) {
+		this.syncImPresenceButton(this._presenceButton, false, true);
+	}
 
 	// Turn on instant notifications after a short delay, to prevent
 	// a flurry of no-op requests on startup.
@@ -505,15 +506,15 @@ function() {
 
 ZmImApp.addImPresenceMenu =
 function(button) {
-	button.setMenu(new AjxCallback(null, ZmImApp.createImPresenceMenu, [button]));
+	button.setMenu(new AjxCallback(ZmImApp.INSTANCE, ZmImApp.INSTANCE._createImPresenceMenu, [button]));
 };
 
-ZmImApp.createImPresenceMenu =
-function(button) {
-	AjxPackage.require("IMCore");
-	var menu = new ZmPresenceMenu(button);
-	button.setMenu(menu);
-	return menu;
+ZmImApp.prototype.syncImPresenceButton =
+function(button, doText, doTooltip) {
+	var roster = this.getRoster();
+	this._updatePresenceButton(roster.getPresence(), button, doText, doTooltip);
+	var listener = new AjxListener(this, this._rosterChangeListener, [button, doText, doTooltip]);
+	roster.addChangeListener(listener);
 };
 
 ZmImApp.prototype.prepareVisuals = function() {
@@ -645,27 +646,38 @@ function(ev) {
 	}
 };
 
-ZmImApp.prototype._rosterChangeListener = function(ev) {
-	if (!this._presenceButton) {
-		return;
-	}
+ZmImApp.prototype._createImPresenceMenu =
+function(button) {
+	AjxPackage.require("IMCore");
+	var menu = new ZmPresenceMenu(button);
+	button.setMenu(menu);
+	return menu;
+};
+
+ZmImApp.prototype._rosterChangeListener =
+function(button, doText, doTooltip, ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var fields = ev.getDetail("fields");
 		if (ZmRoster.F_PRESENCE in fields) {
-			var presence = this.getRoster().getPresence();
-			this._updatePresenceButton(presence);
+			var presence = this._roster.getPresence();
+			this._updatePresenceButton(presence, button, doText, doTooltip)
 		}
 	}
 };
 
-ZmImApp.prototype._updatePresenceButton = function(presence) {
+ZmImApp.prototype._updatePresenceButton =
+function(presence, button, doText, doTooltip) {
 	var icon = presence ? presence.getIcon() : "Offline";
+	button.setImage(icon);
 	var showText = presence ? presence.getShowText() : ZmMsg.imStatusOffline;
-
-	this._presenceButton.setImage(icon);
-	this._presenceTooltipFormat = this._presenceTooltipFormat || new AjxMessageFormat(ZmMsg.presenceTooltip);
-	var tooltip = this._presenceTooltipFormat.format(showText);
-	this._presenceButton.setToolTipContent(tooltip);
+	if (doTooltip) {
+		this._presenceTooltipFormat = this._presenceTooltipFormat || new AjxMessageFormat(ZmMsg.presenceTooltip);
+		var tooltip = this._presenceTooltipFormat.format(showText);
+		button.setToolTipContent(tooltip);
+	}
+	if (doText) {
+		button.setText(showText);
+	}
 };
 
 ZmPresenceButton = function(params) {
