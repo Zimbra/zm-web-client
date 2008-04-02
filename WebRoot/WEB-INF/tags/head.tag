@@ -39,18 +39,18 @@
 
         <script src="../yui/2.5.1/button/button-beta-min.js"></script>
         <!-- Source file for Rich Text Editor-->
-        <script src="../yui/2.4.0-patch/editor/editor-beta-min.js"></script>
+        <script src="../yui/2.5.1/editor/editor-beta-min.js"></script>
 
-		<script src="../yui/2.4.0/editor/spellcheck.js"></script>
+		<script src="../yui/2.5.1/editor/spellcheck.js"></script>
 		<style type="text/css" media="screen">
 			.yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck span.yui-toolbar-icon {
-				background-image: url( ../yui/2.4.0/editor/assets/skins/sam/spellcheck.gif );
+				background-image: url( ../yui/2.5.1/editor/assets/skins/sam/spellcheck.gif );
 				background-position: 1px 0px;
 				top: 1px;
 				left: 4px;
 			}
 			.yui-skin-sam .yui-toolbar-container .yui-toolbar-spellcheck-selected span.yui-toolbar-icon {
-				background-image: url( ../yui/2.4.0/editor/assets/skins/sam/spellcheck.gif );
+				background-image: url( ../yui/2.5.1/editor/assets/skins/sam/spellcheck.gif );
 				background-position: 1px 0px;
 				top: 1px;
 				left: 4px;

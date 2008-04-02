@@ -6,9 +6,9 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <c:set var="yahooDomEvent" value="true" scope="request"/>
-<script type="text/javascript" src="<c:url value='/yui/2.3.0/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.3.0/connection/connection-min.js'/>"></script>
-<script type="text/javascript" src="<c:url value='/yui/2.3.0/autocomplete/autocomplete-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.5.1/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.5.1/connection/connection-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.5.1/autocomplete/autocomplete-min.js'/>"></script>
 
 <script type="text/javascript">
     <!--
