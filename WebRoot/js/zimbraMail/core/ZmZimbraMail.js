@@ -997,8 +997,6 @@ function() {
 		ZmController._setCurrentAppViewTabGroup(dummyTg);
 		rootTg.addMember(dummyTg);
 		kbMgr.setTabGroup(rootTg);
-
-		this._settings._loadShortcuts();
 	} else {
 		kbMgr.enable(false);
 	}

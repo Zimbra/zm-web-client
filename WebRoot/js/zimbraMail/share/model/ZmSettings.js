@@ -145,47 +145,32 @@ function(name) {
  */
 ZmSettings.prototype.loadUserSettings =
 function(callback, errorCallback, accountName, response) {
-	var soapDoc = response ? null : AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
-	var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName]);
-	var params = {soapDoc:soapDoc, accountName:accountName, asyncMode:true,
-				  callback:respCallback, errorCallback:errorCallback, response:response};
+	var params = {
+		soapDoc: (response ? null : AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount")),
+		accountName: accountName,
+		asyncMode: true,
+		callback: (new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName])),
+		errorCallback: errorCallback,
+		response: response
+	};
 	appCtxt.getAppController().sendRequest(params);
 };
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
 function(callback, accountName, result) {
-	var response = result.getResponse();
-	var obj = this.getInfoResponse = response.GetInfoResponse;
-	if (obj.name) {
-		this._settings[ZmSetting.USERNAME].setValue(obj.name);
-	}
-	if (obj.lifetime) {
-		this._settings[ZmSetting.TOKEN_LIFETIME].setValue(obj.lifetime);
-	}
-	if (obj.accessed) {
-		this._settings[ZmSetting.LAST_ACCESS].setValue(obj.accessed);
-	}
-	if (obj.prevSession) {
-		this._settings[ZmSetting.PREVIOUS_SESSION].setValue(obj.prevSession);
-	}
-	if (obj.recent) {
-		this._settings[ZmSetting.RECENT_MESSAGES].setValue(obj.recent);
-	}
-	if (obj.used) {
-		this._settings[ZmSetting.QUOTA_USED].setValue(obj.used);
-	}
-    if(obj.rest) {
-        this._settings[ZmSetting.REST_URL].setValue(obj.rest);
-    }
-    if (obj.prefs && obj.prefs._attrs) {
-		this.createFromJs(obj.prefs._attrs);
-	}
-	if (obj.attrs && obj.attrs._attrs) {
-		this.createFromJs(obj.attrs._attrs);
-	}
-	if (obj.license) {
-		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
-	}
+	var obj = this.getInfoResponse = result.getResponse().GetInfoResponse;
+
+	if (obj.name) 			this._settings[ZmSetting.USERNAME].setValue(obj.name);
+	if (obj.lifetime)		this._settings[ZmSetting.TOKEN_LIFETIME].setValue(obj.lifetime);
+	if (obj.accessed)		this._settings[ZmSetting.LAST_ACCESS].setValue(obj.accessed);
+	if (obj.prevSession)	this._settings[ZmSetting.PREVIOUS_SESSION].setValue(obj.prevSession);
+	if (obj.recent)			this._settings[ZmSetting.RECENT_MESSAGES].setValue(obj.recent);
+	if (obj.used)			this._settings[ZmSetting.QUOTA_USED].setValue(obj.used);
+    if (obj.rest)			this._settings[ZmSetting.REST_URL].setValue(obj.rest);
+	if (obj.license)		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
+
+    if (obj.prefs && obj.prefs._attrs) 	this.createFromJs(obj.prefs._attrs);
+	if (obj.attrs && obj.attrs._attrs)	this.createFromJs(obj.attrs._attrs);
 
     // Create the main account. In the normal case, that is the only account, and
 	// represents the user who logged in. If family mailbox is enabled, that account
@@ -245,8 +230,8 @@ function(callback, accountName, result) {
 		}
 	}
 
-	// HACK:
-	// for offline/multi-account, general prefs come from the invisible parent account
+	// HACK HACK HACK: for offline/multi-account, general prefs come from the
+	// invisible parent account
 	if (appCtxt.isOffline && appCtxt.multiAccounts) {
 		var main = appCtxt.getMainAccount();
 		for (var i in ZmSetting.IS_GLOBAL) {
@@ -271,8 +256,11 @@ function(callback, accountName, result) {
 		appCtxt.allZimletsLoaded();
 	}
 
-    this.userSettingsLoaded = true;
-	
+	// load shortcuts
+	this._loadShortcuts();
+
+	// DONE
+	this.userSettingsLoaded = true;
 	if (callback) {
 		callback.run(result);
 	}
