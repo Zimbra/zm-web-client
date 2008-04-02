@@ -106,6 +106,12 @@ function(respEl) {
 			var type = types[i];
 			var data = respEl[ZmList.NODE[type]];
 
+			// A chat isa message. Futz with the types to deal with this.
+			// (Eventually we'll avoid this problem by displying chat history in im app.)
+			if (!data && (type == "MSG")) {
+				data = respEl["chat"];
+			}
+
 			// do a bunch of sanity checks
 			if (data && data.length) {
 				count += data.length;
