@@ -378,6 +378,7 @@ function(ex, continuation) {
 		method.setAttribute("sections", "mbox");
 		var respCallback = new AjxCallback(this, this._handleResponseGetInfo);
 		var params = {soapDoc:soapDoc, asyncMode:true, callback:respCallback, skipAuthCheck:true};
+		ZmCsfeCommand._oldSessionId = ZmCsfeCommand._sessionId;	// offline hack (research bug 24842)
 		appCtxt.getAppController().sendRequest(params);
 	} else {
 		// bug fix #5603 - error msg for mail.SEND_FAILURE takes an argument
@@ -501,7 +502,19 @@ ZmController.prototype._handleResponseGetInfo =
 function(result) {
 	var response = result.getResponse();
 	var obj = response.GetInfoResponse;
-	if (obj.name != appCtxt.getUsername()) {
+	if (appCtxt.isOffline) {
+		// ignore token change for offline; maybe put out diagnostic info (bug 24842)
+		if (location.search.indexOf("offlineHack") != -1) {
+			var text = "old user: " + appCtxt.getUsername() + "\n" +
+					   "old auth token: " + ZmCsfeCommand._curAuthToken + "\n" +
+					   "old session ID: " + ZmCsfeCommand._oldSessionId + "\n" +
+					   "\n" +
+					   "new user: " + obj.name + "\n" +
+					   "new auth token: " + ZmCsfeCommand.getAuthToken() + "\n" +
+					   "new session ID: " + ZmCsfeCommand._sessionId + "\n";
+			alert(text);
+		}
+	} else if (obj.name != appCtxt.getUsername()) {
 		DBG.println(AjxDebug.DBG1, "AUTH TOKEN CHANGED, NEW USER: " + obj.name + " (old user: " + appCtxt.getUsername() + ")");
 		var loginDialog = appCtxt.getLoginDialog();
 		loginDialog.registerCallback(this._loginCallback, this);
