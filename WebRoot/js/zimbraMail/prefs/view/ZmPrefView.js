@@ -64,24 +64,18 @@ function() {
 */
 ZmPrefView.prototype.show =
 function() {
-	if (this._hasRendered) return;
+	if (this._hasRendered) { return; }
 
 	var sections = ZmPref.getPrefSectionArray();
 	for (var i = 0; i < sections.length; i++) {
-		// does the section meet the precondition?
 		var section = sections[i];
-		if (!this._controller.checkPreCondition(section)) {
-			continue;
-		}
+		// does the section meet the precondition?
+		if (!this._controller.checkPreCondition(section)) { continue; }
 
 		// add section as a tab
-		var view;
-		if (section.createView) {
-			view = section.createView(this._parent, section, this._controller);
-		}
-		else {
-			view = new ZmPreferencesPage(this, section, this._controller);
-		}
+		var view = (section.createView)
+			? (section.createView(this._parent, section, this._controller))
+			: (new ZmPreferencesPage(this, section, this._controller));
 		this.prefView[section.id] = view;
 		var tabId = this.addTab(section.title, view);
         this._tabId[section.id] = tabId;
@@ -96,8 +90,9 @@ ZmPrefView.prototype.reset =
 function() {
 	for (var id in this.prefView) {
 		var viewPage = this.prefView[id];
-		if (!viewPage) continue; // if feature is disabled, may not have a view page
-		if (!viewPage.hasRendered()) continue; // if page hasn't rendered, nothing has changed
+		// if feature is disabled, may not have a view page
+		// or if page hasn't rendered, nothing has changed
+		if (!viewPage || (viewPage && !viewPage.hasRendered())) { continue; }
 		viewPage.reset();
 	}
 };
@@ -113,22 +108,20 @@ function(view) {
 };
 
 /**
- * This method iterates over the preference pages to see if any
- * of them have actions to perform <em>before</em> saving. If
- * the page has a <code>getPreSaveCallback</code> method and it
- * returns a callback, the pref controller will call it before
- * performing any save. This is done for each page that returns
- * a callback.
+ * This method iterates over the preference pages to see if any of them have
+ * actions to perform <em>before</em> saving. If the page has a
+ * <code>getPreSaveCallback</code> method and it returns a callback, the pref
+ * controller will call it before performing any save. This is done for each
+ * page that returns a callback.
  * <p>
- * The pre-save callback is passed a callback that <em>MUST</em>
- * be called upon completion of the pre-save code. This is so
- * the page can perform its pre-save behavior asynchronously
- * without the need to immediately return to the pref controller.
+ * The pre-save callback is passed a callback that <em>MUST</em> be called upon
+ * completion of the pre-save code. This is so the page can perform its pre-save
+ * behavior asynchronously without the need to immediately return to the pref
+ * controller.
  * <p>
  * <strong>Note:</strong>
- * When calling the continue callback, the pre-save code <em>MUST</em>
- * pass a single boolean signifying the success of the the pre-save
- * operation.
+ * When calling the continue callback, the pre-save code <em>MUST</em> pass a
+ * single boolean signifying the success of the the pre-save operation.
  * <p>
  * An example pre-save callback implementation:
  * <pre>
@@ -144,7 +137,8 @@ function(view) {
  * };
  * </pre>
  */
-ZmPrefView.prototype.getPreSaveCallbacks = function() {
+ZmPrefView.prototype.getPreSaveCallbacks =
+function() {
 	var callbacks = [];
 	for (var id in this.prefView) {
 		var viewPage = this.prefView[id];
@@ -159,12 +153,11 @@ ZmPrefView.prototype.getPreSaveCallbacks = function() {
 };
 
 /**
- * This method iterates over the preference pages to see if any
- * of them have actions to perform <em>after</em> saving. If
- * the page has a <code>getPostSaveCallback</code> method and it
- * returns a callback, the pref controller will call it after
- * performing any save. This is done for each page that returns
- * a callback.
+ * This method iterates over the preference pages to see if any of them have
+ * actions to perform <em>after</em> saving. If the page has a
+ * <code>getPostSaveCallback</code> method and it returns a callback, the pref
+ * controller will call it after performing any save. This is done for each page
+ * that returns a callback.
  */
 ZmPrefView.prototype.getPostSaveCallbacks =
 function() {

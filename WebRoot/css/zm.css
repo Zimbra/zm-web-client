@@ -2347,19 +2347,19 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmFilterRuleDialog .FilterRuleSection {
 	margin-left: 2em;
-	#IFDEF GECKO
+#IFDEF GECKO
 	border: 1px dotted #555555;
-	#ENDIF
+#ENDIF
 }
 
 .infoBox {
-	margin:0px 5px 10px 0px;
+	margin:10px;
 	background-color:#FFF6BF;
 	border:1px solid #FFDD00;
 #IFDEF GECKO
     -moz-border-radius:10px;
 #ENDIF
-	padding:10px 10px 10px 10px;
+	padding:10px;
 }
 
 .infoBoxImg {

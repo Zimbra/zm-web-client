@@ -103,7 +103,7 @@ function() {
 	}
 
 	this._scTabView.show();
-	
+
 	// save the current value (for checking later if it changed)
 	var pref = appCtxt.getSettings().getSetting(this._prefId);
 	pref.origValue = this._getPrefValue(this._prefId);
@@ -656,7 +656,7 @@ function() {
 	html[i++] = "'><tbody>";
 
 	i = this._getTableHeaderHtml(html, i);
-	
+
 	html[i++] = "</table>";
 	html[i++] = "<div id='";
 	html[i++] = this._addButtonDivId;
@@ -665,7 +665,7 @@ function() {
 	html[i++] = "</div>";
 	
 	this.getHtmlElement().innerHTML = html.join("");
-	
+
 	this._table = document.getElementById(tableId);
 
 	// Handle the link to close the info box.
@@ -822,7 +822,12 @@ function(shortcut) {
 	button.setSize(bWidth, bHeight);
 	var organizer = null, value = "";
 	if (shortcut) {
-		organizer = appCtxt.getById(shortcut.arg);
+		var id = shortcut.arg;
+		if (appCtxt.multiAccounts) {
+			if (appCtxt.isOffline || !appCtxt.getActiveAccount().isMain)
+				id = ZmOrganizer.getSystemId(shortcut.arg);
+		}
+		organizer = appCtxt.getById(id);
 		if (organizer) {
 			value = (org == ZmOrganizer.FOLDER) ? organizer.getPath(false, false, null, true, true) :
 												  organizer.getName(false, null, true);
