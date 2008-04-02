@@ -372,11 +372,11 @@ function() {
 	var container = Dwt.byId(ZmId.SKIN_PRESENCE);
 	if (container) {
 		var buttonArgs = {
-			parent:appCtxt.getShell(),
-			id:ZmId.PRESENCE,
-			posStyle:Dwt.ABSOLUTE_STYLE
+			parent: appCtxt.getShell(),
+			id: ZmId.PRESENCE,
+			posStyle: Dwt.ABSOLUTE_STYLE
 		};
-		this._presenceButton = new DwtButton(buttonArgs);
+		this._presenceButton = new ZmPresenceButton(buttonArgs);
 		this._updatePresenceButton(null);
 		ZmImApp.addImPresenceMenu(this._presenceButton);
 
@@ -384,7 +384,8 @@ function() {
 		// (We do this here rather than in the skin because the skin
 		// has no way of knowing whether IM is enabled.)
 		var width = appCtxt.get(ZmSetting.SKIN_HINTS, "presence.width") || 46;
-		Dwt.setSize(container, width, Dwt.DEFAULT);
+		var height = appCtxt.get(ZmSetting.SKIN_HINTS, "presence.height") || 24;
+		Dwt.setSize(container, width, height);
 
 		var components = { };
 		components[ZmAppViewMgr.C_PRESENCE] = this._presenceButton;
@@ -666,3 +667,14 @@ ZmImApp.prototype._updatePresenceButton = function(presence) {
 	var tooltip = this._presenceTooltipFormat.format(showText);
 	this._presenceButton.setToolTipContent(tooltip);
 };
+
+ZmPresenceButton = function(params) {
+	params.className = params.className || "ZToolbarButton";
+	DwtButton.call(this, params);
+};
+
+ZmPresenceButton.prototype = new DwtButton;
+ZmPresenceButton.prototype.constructor = ZmPresenceButton;
+
+// Data
+ZmPresenceButton.prototype.TEMPLATE = "share.App#presenceButton";

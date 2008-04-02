@@ -160,3 +160,12 @@
 		<$	} $>
 	</table>
 </template>
+
+<template id='share.App#presenceButton' class='ZWidget'>
+	<$ var buttonClass = data.buttonClass || "ToolbarButton"; $>
+	<div class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border'>
+		<div id='${id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></div>
+		<div id='${id}_dropdown' 	class='ZDropDown'></div>
+	</div>
+</template>
+
