@@ -1005,7 +1005,7 @@ function(findHits) {
 	this._attLinks = [];
 
 	if (this.attachments && this.attachments.length > 0) {
-		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&amp;part=";
+		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
 
 		for (var i = 0; i < this.attachments.length; i++) {
     		var attach = this.attachments[i];
@@ -1107,7 +1107,7 @@ function(findHits) {
 			props.isHit = findHits && this._isAttInHitList(attach);
 			props.part = attach.part;
 			if (!useCL)
-				props.url = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&part=" + attach.part;
+				props.url = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=" + attach.part;
 			
 			if(attach.ci){
 				props.ci = attach.ci;
