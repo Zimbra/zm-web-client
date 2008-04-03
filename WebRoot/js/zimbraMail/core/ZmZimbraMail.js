@@ -141,7 +141,7 @@ function(params) {
 
 	// Create the global app context
 	window.appCtxt = new ZmAppCtxt();
-	appCtxt.setRememberMe(false);
+	appCtxt.rememberMe = false;
 
 	// Create and initialize settings
 	var settings = new ZmSettings();
