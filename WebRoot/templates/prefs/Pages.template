@@ -454,13 +454,15 @@ and the container element is replaced with that control.
 		<tr>
 			<td class='ZOptionsSectionMain'>
 			<table width=100%>
-				<tr><td><div id='${id}_SIGNATURES' tabindex='20'></div><hr></td></tr>
+				<tr><td><div id='${id}_SIGNATURES' tabindex='20'></div></td></tr>
 
 				<tr><td class='ZOptionsField' align=right>
 						<table><tr><td><div id='${id}_ADD_SIGNATURE' tabindex='30'></div></td></tr></table>
+						
 					</td>
 				</tr>
 			</table>
+			
 			</td>
 		</tr>
 	</table>
@@ -477,7 +479,7 @@ and the container element is replaced with that control.
 			<td class='ZOptionsSectionMain'>
 			<table width=100%>
 <!--
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.signatureAttachLabel$>sdsd</td>
+				<tr><td class='ZOptionsLabel'><$=ZmMsg.signatureAttachLabel$></td>
 					<td class='ZOptionsField'><input id='${id}_SIGNATURE_ENABLED' type=checkbox></td>
 				</tr>
 				<tr><td colspan=2><hr></td></tr>
@@ -490,6 +492,7 @@ and the container element is replaced with that control.
 				<tr><td colspan=2><b><$=ZmMsg.signatureMoreOptions$></b></td>
 				</tr>
 			</table>
+			
 			</td>
 		</tr>
 	</table>
@@ -497,11 +500,11 @@ and the container element is replaced with that control.
 
 <!-- NOTE: Signature container node MUST have id! -->
 <template id='prefs.Pages#Signature'>
-	<table id='${id}' border=0 cellpadding=4 cellspacing=0 width="80%">
+	<table id='${id}' border=0 cellpadding=4 cellspacing=0 width="100%">
 		<tr>
 			<td class='ZOptionsLabel' nowrap="nowrap"><$=ZmMsg.signatureNameLabel$></td>
 			<td class='ZOptionsField'><input id='${id}_SIGNATURE_NAME' tabindex='10' size=30></td>
-			<td class='ZOptionsField'>&nbsp;</td>
+			<td class='ZOptionsField' width="100%">&nbsp;</td>
             <td class="ZOptionsField" align='right'><div id='${id}_SIGNATURE_FORMAT' tabIndex='20'></div></td>
             <td class='ZOptionsField' width='8%'><div id='${id}_SIGNATURE_BUTTON' tabindex='30'></div></td>
             <td class='ZOptionsField' width='8%'><div id='${id}_SIGNATURE_DELETE_BUTTON' tabindex='30'></div></td>
@@ -512,6 +515,7 @@ and the container element is replaced with that control.
                 <div id='${id}_SIGNATURE' width='100%' tabindex='40'></div>
 			</td>
 		</tr>
+		<tr><td colspan="6"><hr></td></tr>
 	</table>
 
 </template>
