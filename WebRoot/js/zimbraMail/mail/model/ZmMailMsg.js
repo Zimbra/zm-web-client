@@ -720,7 +720,7 @@ function(contactList, isDraft, callback, errorCallback, accountName) {
 			var mainAcct = ac.getMainAccount(true).getEmail();
             var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo so reset account name
-			if (from && from.address != mainAcct) {
+			if (from && from.address != mainAcct && (this.id.indexOf(":") != -1)/* Remote mail item or draft mail item*/) { 
 				aName = from.address;
 			}
 		}
@@ -769,8 +769,19 @@ function(soapDoc, contactList, isDraft, accountName) {
 
 	// if id is given, means we are re-saving a draft
 	if ((isDraft || this.isDraft) && this.id) {
-		msgNode.setAttribute("id", this.nId);
-	}
+        /*if (this._origMsg && this._origMsg.isDraft){
+            var mainAcct = appCtxt.getMainAccount(true);
+			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
+			// this means we're sending a draft msg obo
+			if (from && from.address != mainAcct.getEmail()) {
+                msgNode.setAttribute("id", [ mainAcct.id, ":", this.nId].join("") );
+            }else{
+                msgNode.setAttribute("id", this.nId);
+            }
+        }else{*/
+            msgNode.setAttribute("id", this.nId);
+        /*}*/
+    }
 
 	if (this.isForwarded) {
 		msgNode.setAttribute("rt", "w");
