@@ -154,12 +154,6 @@ and the container element is replaced with that control.
 				<tr><td colspan=2><hr></td></tr>
 
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.messagePreviewLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_READING_PANE_ENABLED' tabindex='60'></div></td>
-				</tr>
-
-				<tr><td class='ZOptionsLabel'>
-					<$= (!data.isEnabled('READING_PANE_ENABLED') ? ZmMsg.messagePreviewLabel : "&nbsp;") $>
-					</td>
 					<td class='ZOptionsField'><div id='${id}_SHOW_FRAGMENTS' tabindex='70'></div></td>
 				</tr>
 

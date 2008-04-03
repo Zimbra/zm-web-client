@@ -189,7 +189,6 @@ function() {
 				ZmSetting.OPEN_MAIL_IN_NEW_WIN,
 				ZmSetting.PAGE_SIZE,
 				ZmSetting.POLLING_INTERVAL,
-				ZmSetting.READING_PANE_ENABLED,
 				ZmSetting.SHOW_FRAGMENTS,
 				ZmSetting.VACATION_MSG_ENABLED,
 				ZmSetting.VACATION_MSG,
@@ -1005,9 +1004,6 @@ function(params, callback) {
 	var query;
 	params = params || {};
 
-	// initial reading pane state for list views
-	this._readingPaneOn = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
-
 	if (params.checkQS) {
 		if (location && (location.search.match(/\bview=compose\b/))) {
 			this._showComposeView(callback);
@@ -1064,8 +1060,7 @@ function(query, callback, response) {
 ZmMailApp.prototype.getSearchParams =
 function(params) {
 	params = params || {};
-	var mc = this.getMailListController();
-	if (mc._readingPaneOn && !appCtxt.inStartup) {
+	if (!appCtxt.inStartup && appCtxt.get(ZmSetting.READING_PANE_ENABLED)) {
 		params.fetch = true;
 	}
 	return params;
@@ -1311,10 +1306,12 @@ function(ev) {
 
 	var list = ev.getDetail("settings");
 	if (!(list && list.length)) { return; }
+
 	var mlc = this.getMailListController();
 	if (!mlc) { return; }
+
 	var curView = mlc._currentView;
-	var newView = null, groupByView = null, toggle = false;
+	var newView, groupByView;
 
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
@@ -1330,13 +1327,6 @@ function(ev) {
 					groupByView = view;
 				}
 			}
-		} else if (setting.id == ZmSetting.READING_PANE_ENABLED) {
-			if (curView != ZmController.MSG_VIEW) {
-				var value = appCtxt.get(setting.id);
-				if (value != mlc._readingPaneOn) {
-					toggle = true;
-				}
-			}
 		} else if (setting.id == ZmSetting.SHOW_FRAGMENTS) {
 			if (curView != ZmController.MSG_VIEW) {
 				newView = groupByView || curView;
@@ -1345,9 +1335,6 @@ function(ev) {
 	}
 	newView = groupByView || newView;
 	
-	if (toggle) {
-		mlc.switchView(ZmMailListController.READING_PANE_MENU_ITEM_ID, true);
-	}
 	if (newView) {
 		mlc.switchView(newView, true);
 	}

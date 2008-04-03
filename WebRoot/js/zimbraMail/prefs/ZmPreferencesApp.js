@@ -320,11 +320,6 @@ function() {
 		validationFunction:  ZmPref.validatePollingInterval
 	});
 
-    ZmPref.registerPref("READING_PANE_ENABLED", {
-		displayName:		ZmMsg.alwaysShowReadingPane,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
 	ZmPref.registerPref("REPLY_INCLUDE_ORIG", {
 		displayName:		ZmMsg.replyInclude,
 		displayContainer:	ZmPref.TYPE_SELECT,

@@ -181,8 +181,14 @@ function() {
 ZmMsgController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {
-		this._listView[view] = new ZmMailMsgView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE,
-												  view:ZmController.MSG_VIEW, controller:this});
+		var params = {
+			parent: this._container,
+			posStyle: Dwt.ABSOLUTE_STYLE,
+			mode: ZmController.MSG_VIEW,  // XXX: we should consolidate these
+			view: ZmController.MSG_VIEW,  //      two settings
+			controller: this
+		};
+		this._listView[view] = new ZmMailMsgView(params);
 		this._listView[view].addInviteReplyListener(this._inviteReplyListener);
 		this._listView[view].addShareListener(this._shareListener);
 	}

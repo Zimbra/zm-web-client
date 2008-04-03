@@ -31,8 +31,6 @@ ZmDoublePaneController = function(container, mailApp) {
 
 	if (arguments.length == 0) { return; }
 	ZmMailListController.call(this, container, mailApp);
-	this._readingPaneOn = mailApp._readingPaneOn;
-	this._appReadingPane = false;	// whether to follow app-level reading pane state
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));	
@@ -81,14 +79,15 @@ function(item, callback, results) {
 	if (callback) {
 		callback.run();
 	}
-	
-	if (this._appReadingPane && (this._readingPaneOn != this._app._readingPaneOn)) {
-		this._toggleReadingPane(true);
+
+	var readingPaneOn = this.isReadingPaneOn();
+	if (this._doublePaneView.isMsgViewVisible() != readingPaneOn) {
+		this._doublePaneView.toggleView();
 	}
-	
+
 	// If there's only one item in the list, go ahead and set focus to it since
 	// there's no use in the one-item list having focus (arrow keys do nothing)
-	if (this._readingPaneOn && (this._list.size() == 1)) {
+	if (readingPaneOn && (this._list.size() == 1)) {
 		var msgView = this._doublePaneView._msgView;
 		if (msgView) {
 			appCtxt.getKeyboardMgr().grabFocus(msgView);
@@ -140,20 +139,35 @@ function(force) {
 	if (force) {
 		checked = !checked;
 		mi.setChecked(checked, true);
-	} else {
-		if (this._readingPaneOn == checked) { return; }
+	} else if (this.isReadingPaneOn() == checked) {
+		return;
 	}
 
-	this._readingPaneOn = checked;
+	this._saveReadingPanePref(checked);
+};
+
+ZmDoublePaneController.prototype._saveReadingPanePref =
+function(checked) {
+	// persist user pref for reading pane
+	var prefName = appCtxt.getSettings().getSetting(ZmSetting.READING_PANE_ENABLED).name;
+	var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+	var node = soapDoc.set("pref", (checked ? "TRUE" : "FALSE"));
+	node.setAttribute("name", prefName);
+
+	var respCallback = new AjxCallback(this, this._handleResponseReadingPane, [checked]);
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback: respCallback});
+};
+
+ZmDoublePaneController.prototype._handleResponseReadingPane =
+function(checked) {
+	appCtxt.set(ZmSetting.READING_PANE_ENABLED, checked);
+
 	this._doublePaneView.toggleView();
 
 	// set msg in msg view if reading pane is being shown
-	if (this._readingPaneOn) {
+	if (checked) {
 		this._setSelectedItem();
 	}
-
-	// need to reset special dbl-click handling for list view
-//	this._mailListView._dblClickIsolation = (this._readingPaneOn && !AjxEnv.isIE);
 
 	this._mailListView._resetColWidth();
 };
@@ -186,7 +200,6 @@ function(view) {
 	if (!this._doublePaneView){
 		var dpv = this._doublePaneView = this._createDoublePaneView();
 		this._mailListView = dpv.getMailListView();
-//		this._mailListView._dblClickIsolation = (this._readingPaneOn && !AjxEnv.isIE);
 		dpv.addInviteReplyListener(this._inviteReplyListener);
 		dpv.addShareListener(this._shareListener);
 	}
@@ -327,7 +340,8 @@ function(item, view, callback) {
 		DBG.timePt("***** CONV: load", true);
 		if (!conv._loaded) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadConv, [view, callback]);
-			conv.load({getFirstMsg:this._readingPaneOn}, respCallback);
+			var getFirstMsg = this.isReadingPaneOn();
+			conv.load({getFirstMsg:getFirstMsg}, respCallback);
 		} else {
 			this._handleResponseLoadConv(view, callback, conv._createResult());
 		}
@@ -457,7 +471,7 @@ function(ev) {
 			return false;
 		}
 	} else {
-		if (this._readingPaneOn) {
+		if (this.isReadingPaneOn()) {
 			// Give the user a chance to zip around the list view via shortcuts without having to
 			// wait for each successively selected msg to load, by waiting briefly for more list
 			// selection shortcut actions. An event will have the 'ersatz' property set if it's
@@ -516,7 +530,7 @@ ZmDoublePaneController.prototype._listActionListener =
 function(ev) {
 	ZmMailListController.prototype._listActionListener.call(this, ev);
 
-	if (!this._readingPaneOn) {
+	if (!this.isReadingPaneOn()) {
 		// reset current message
 		var msg = this._listView[this._currentView].getSelection()[0];
 		if (msg) {

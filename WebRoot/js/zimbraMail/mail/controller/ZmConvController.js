@@ -80,6 +80,12 @@ function() {
 	return this._conv;
 };
 
+ZmConvController.prototype.isReadingPaneOn =
+function() {
+	return this._readingPaneOn;
+};
+
+
 // Private and protected methods
 
 ZmConvController.prototype._createDoublePaneView = 
@@ -135,6 +141,20 @@ function(view) {
 	else if (delButton.getMenu()) {
 		delButton.setMenu(null);
 	}
+};
+
+// NOTE: reading pane pref in CV is *not* persisted so we dont save to server
+ZmConvController.prototype._saveReadingPanePref =
+function(checked) {
+	this._readingPaneOn = checked;
+	this._doublePaneView.toggleView();
+
+	// set msg in msg view if reading pane is being shown
+	if (checked) {
+		this._setSelectedItem();
+	}
+
+	this._mailListView._resetColWidth();
 };
 
 /*

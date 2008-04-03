@@ -119,7 +119,7 @@ function(newWidth, newHeight) {
 		return;
 	
 	var summaryHeight = this._summary.getHtmlElement().offsetHeight;
-	if (this._isMsgViewVisible()) {
+	if (this.isMsgViewVisible()) {
 		var sashHeight = this._msgSash.getSize().y;
 		if (!this._sashMoved) {
 			// calc. height MLV based on num of msgs in conv

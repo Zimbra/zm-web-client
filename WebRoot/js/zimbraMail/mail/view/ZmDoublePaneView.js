@@ -32,7 +32,7 @@ ZmDoublePaneView = function(params) {
 	params.id = params.msgViewId;
 	this._msgView = new ZmMailMsgView(params);
 
-	if (!params.controller._readingPaneOn) {
+	if (!this._controller.isReadingPaneOn()) {
 		this._msgView.setVisible(false);
 		this._msgSash.setVisible(false);
 	}
@@ -68,13 +68,11 @@ function() {
 
 ZmDoublePaneView.prototype.toggleView = 
 function() {
-	var visible = !this._isMsgViewVisible();
-	
+	var visible = !this.isMsgViewVisible();
+
 	this._msgView.setVisible(visible);
 	this._msgSash.setVisible(visible);
 
-	this._controller._app._readingPaneOn = visible;
-	
 	var sz = this.getSize();
 	this._resetSize(sz.x, sz.y);
 };
@@ -136,6 +134,11 @@ function(newMsg) {
 	this._msgView.resetMsg(newMsg);
 };
 
+ZmDoublePaneView.prototype.isMsgViewVisible =
+function() {
+	return this._msgView.getVisible();
+};
+
 ZmDoublePaneView.prototype.setBounds = 
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
@@ -145,7 +148,7 @@ function(x, y, width, height) {
 ZmDoublePaneView.prototype.setItem =
 function(items) {
 	this._mailListView.set(items, ZmItem.F_DATE);
-	if (!this._controller._readingPaneOn) {
+	if (!this._controller.isReadingPaneOn()) {
 		this._selectFirstItem();
 	} else {
 		this._mailListView.scrollToTop();
@@ -167,7 +170,7 @@ ZmDoublePaneView.prototype._resetSize =
 function(newWidth, newHeight) {
 	if (newHeight <= 0) { return; }
 	
-	if (this._isMsgViewVisible()) {
+	if (this.isMsgViewVisible()) {
 		var sashHeight = this._msgSash.getSize().y;
 		if (!this._sashMoved) {
 			var listViewHeight = (newHeight / 2) - DwtListView.HEADERITEM_HEIGHT;
@@ -242,12 +245,7 @@ function(delta) {
 	return delta;
 };
 
-ZmDoublePaneView.prototype._isMsgViewVisible = 
-function() {
-	return this._msgView.getVisible();
-};
-
-ZmDoublePaneView.prototype._selectFirstItem = 
+ZmDoublePaneView.prototype._selectFirstItem =
 function() {
 	var list = this._mailListView.getList();
 	var selectedItem = list ? list.get(0) : null

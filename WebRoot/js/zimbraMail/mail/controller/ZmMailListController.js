@@ -131,6 +131,15 @@ function(view, force) {
 // override if reading pane is supported
 ZmMailListController.prototype._setupReadingPaneMenuItem = function() {};
 
+/**
+ * This method should get overloaded by derived classes in case they don't obey
+ * user preference (i.e. see ZmConvController)
+ */
+ZmMailListController.prototype.isReadingPaneOn =
+function() {
+	return appCtxt.get(ZmSetting.READING_PANE_ENABLED);
+};
+
 ZmMailListController.prototype.getKeyMapName =
 function() {
 	return "ZmMailListController";
@@ -335,64 +344,64 @@ function(view) {
     	this._addMenuListeners(this._participantActionMenu);
 		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._participantActionMenu);
-    }
+	}
 	return this._participantActionMenu;
 };
 
 ZmMailListController.prototype._initializeToolBar =
 function(view, arrowStyle) {
 
-    if (!this._toolbar[view]) {
-        ZmListController.prototype._initializeToolBar.call(this, view);
-        this._setupViewMenu(view, true);
-        this._setReplyText(this._toolbar[view]);
-        this._toolbar[view].addFiller();
-        var tb = new ZmNavToolBar({parent:this._toolbar[view], arrowStyle:arrowStyle, context:view});
-        this._setNavToolBar(tb, view);
-    }
+	if (!this._toolbar[view]) {
+		ZmListController.prototype._initializeToolBar.call(this, view);
+		this._setupViewMenu(view, true);
+		this._setReplyText(this._toolbar[view]);
+		this._toolbar[view].addFiller();
+		var tb = new ZmNavToolBar({parent:this._toolbar[view], arrowStyle:arrowStyle, context:view});
+		this._setNavToolBar(tb, view);
+	}
 
-    this._setupViewMenu(view, false);
-    this._setupDeleteButton(this._toolbar[view]);
-    this._setupSpamButton(this._toolbar[view]);
-    this._setupReplyForwardOps(this._toolbar[view]);
-    this._setupCheckMailButton(this._toolbar[view]);
+	this._setupViewMenu(view, false);
+	this._setupDeleteButton(this._toolbar[view]);
+	this._setupSpamButton(this._toolbar[view]);
+	this._setupReplyForwardOps(this._toolbar[view]);
+	this._setupCheckMailButton(this._toolbar[view]);
 
-        // nuke the text for tag menu for 800x600 resolutions
-    if (AjxEnv.is800x600orLower) {
-        var buttons = [];
-        if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-            buttons.push(ZmOperation.TAG_MENU);
-        }
+	// nuke the text for tag menu for 800x600 resolutions
+	if (AjxEnv.is800x600orLower) {
+		var buttons = [];
+		if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+			buttons.push(ZmOperation.TAG_MENU);
+		}
 
-        if (appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-            buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
-        }
-        if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-            buttons.push(ZmOperation.FORWARD);
-        }
+		if (appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
+			buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+		}
+		if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
+			buttons.push(ZmOperation.FORWARD);
+		}
 
-        buttons.push(ZmOperation.DELETE);
-        buttons.push(ZmOperation.SPAM);
+		buttons.push(ZmOperation.DELETE);
+		buttons.push(ZmOperation.SPAM);
 
-        for (var i = 0; i < buttons.length; i++) {
-            var button = this._toolbar[view].getButton(buttons[i]);
-            if (button) {
-                button.setText("");
-            }
-        }
-    }
-    
-    // reset new button properties
-    this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+		for (var i = 0; i < buttons.length; i++) {
+			var button = this._toolbar[view].getButton(buttons[i]);
+			if (button) {
+				button.setText("");
+			}
+		}
+	}
+
+	// reset new button properties
+	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
 
 ZmMailListController.prototype._getNumTotal =
 function(){
-    //Yuck, remove "of Total" from Nav toolbar at lower resolutions
-     if (AjxEnv.is800x600orLower) {
-         return null;
-     }
-    return ZmListController.prototype._getNumTotal.call(this);
+	// Yuck, remove "of Total" from Nav toolbar at lower resolutions
+	if (AjxEnv.is800x600orLower) {
+		 return null;
+	}
+	return ZmListController.prototype._getNumTotal.call(this);
 };
 
 ZmMailListController.prototype._initializeActionMenu =
@@ -736,8 +745,14 @@ function(view, firstTime) {
 		// always set the switched view to be the checked menu item
 		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 		var menu = btn ? btn.getMenu(true) : null;
-		var mi = menu ? menu.getItemById(ZmOperation.MENUITEM_ID, view) : null;
-		if (mi) { mi.setChecked(true, true); }
+		if (menu) {
+			var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);
+			if (mi) { mi.setChecked(true, true); }
+
+			// always make sure the reading pane menu item is set correctly
+			mi = menu.getItemById(ZmOperation.MENUITEM_ID, ZmMailListController.READING_PANE_MENU_ITEM_ID);
+			if (mi) { mi.setChecked(this.isReadingPaneOn(), true); }
+		}
 	}
 
 	// always reset the view menu button icon to reflect the current view
@@ -1041,8 +1056,8 @@ function(view) {
 		if (id == this._defaultView())
 			mi.setChecked(true, true);
 	}
-	this._setupReadingPaneMenuItem(view, menu, this._readingPaneOn);
-	
+	this._setupReadingPaneMenuItem(view, menu, this.isReadingPaneOn());
+
 	return menu;
 };
 

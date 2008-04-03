@@ -31,7 +31,6 @@
 ZmTradController = function(container, mailApp) {
 	ZmDoublePaneController.call(this, container, mailApp);
 	this._msgControllerMode = ZmController.TRAD_VIEW;
-	this._appReadingPane = true;	// follow app-level reading pane state
 };
 
 ZmTradController.prototype = new ZmDoublePaneController;
@@ -103,7 +102,7 @@ function(view) {
 ZmTradController.prototype._getMoreSearchParams = 
 function(params) {
 	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
-	params.fetch = this._readingPaneOn;
+	params.fetch = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
 	params.markRead = true;
 };
 

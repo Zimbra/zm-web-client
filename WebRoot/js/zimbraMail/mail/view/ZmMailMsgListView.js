@@ -328,7 +328,6 @@ function(parent) {
 	var sortBy = isConvView ? null : ZmItem.F_SUBJECT;
 	var colName = isConvView ? ZmMsg.fragment : ZmMsg.subject;
 	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, colName, null, null, sortBy, null, null, null, null, true));
-
 	hList.push(new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmMsg.COLUMN_WIDTH_FOLDER, null, true));
 	hList.push(new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmMsg.COLUMN_WIDTH_SIZE, null, true));
 	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.received, null, ZmMsg.COLUMN_WIDTH_DATE, ZmItem.F_DATE, true));
@@ -351,7 +350,7 @@ function(columnItem, bSortAsc) {
 			var conv = controller.getConv();
 			if (conv) {
 				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller]);
-				conv.load({query:searchString, sortBy:this._sortByString, getFirstMsg:controller._readingPaneOn}, respCallback);
+				conv.load({query:searchString, sortBy:this._sortByString, getFirstMsg:controller.isReadingPaneOn()}, respCallback);
 			}
 		} else {
 			var params = {query:searchString, types:[ZmItem.MSG], sortBy:this._sortByString, limit:this.getLimit()};

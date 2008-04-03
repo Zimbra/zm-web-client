@@ -74,7 +74,6 @@ ZmConvListView = function(params) {
 	this._mode = ZmController.CONVLIST_VIEW;
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 	this._msgRowIdList = {};	// hash of lists, each list has row IDs for an expandable item
-//	this._dblClickIsolation = (this._controller._readingPaneOn && !AjxEnv.isIE);
 };
 
 ZmConvListView.prototype = new ZmMailListView;

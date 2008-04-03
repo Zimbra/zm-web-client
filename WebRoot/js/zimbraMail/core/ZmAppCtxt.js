@@ -488,8 +488,9 @@ function() {
 };
 
 
-ZmAppCtxt.prototype.getAttachDialog = function() {
-	if(!this._attachDialog){
+ZmAppCtxt.prototype.getAttachDialog =
+function() {
+	if (!this._attachDialog) {
 		AjxDispatcher.require("Share");
 		this._attachDialog = new ZmAttachDialog(this._shell);
 	}
@@ -505,57 +506,22 @@ function() {
 	return this._uploadConflictDialog;
 };
 
-ZmAppCtxt.prototype.clearAllDialogs =
+ZmAppCtxt.prototype.getNewBriefcaseDialog =
 function() {
-	this.clearFolderDialogs();
-	this.clearCalendarDialogs();
-	this.clearNotebookDialogs();
-	this.clearShareDialogs();
-	this.clearUploadDialogs();
-	this.clearOtherDialogs();
+	if (!this._newBriefcaseDialog) {
+		AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
+		this._newBriefcaseDialog = new ZmNewBriefcaseDialog(this._shell);
+	}
+	return this._newBriefcaseDialog;
 };
 
-ZmAppCtxt.prototype.clearFolderDialogs =
+ZmAppCtxt.prototype.getReplaceDialog =
 function() {
-	this._newFolderDialog = null;
-	this._newSearchDialog = null;
-	this._renameFolderDialog = null;
-	this._folderPropsDialog = null;
-	this._chooseFolderDialog = null;
-};
-
-ZmAppCtxt.prototype.clearCalendarDialogs =
-function() {
-	this._newCalendarDialog = null;
-};
-
-ZmAppCtxt.prototype.clearNotebookDialogs =
-function() {
-	this._newNotebookDialog = null;
-	this._pageConflictDialog = null;
-};
-
-ZmAppCtxt.prototype.clearShareDialogs = 
-function() {
-	this._sharePropsDialog = null;
-	this._acceptShareDialog = null;
-	this._declineShareDialog = null;
-	this._revokeShareDialog = null;
-	this._mountFolderDialog = null;
-};
-
-ZmAppCtxt.prototype.clearUploadDialogs =
-function() {
-	this._uploadDialog = null;
-	this._uploadConflictDialog = null;
-};
-
-ZmAppCtxt.prototype.clearOtherDialogs =
-function() {
-	this._filterRuleDialog = null;
-	this._confirmDialog = null;
-	this._pickTagDialog = null;
-	this._renameTagDialog = null;
+	if (!this._replaceDialog) {
+		AjxDispatcher.require("Share");
+		this._replaceDialog = new ZmFindnReplaceDialog(this._shell);
+	}
+	return this._replaceDialog;
 };
 
 ZmAppCtxt.prototype.getRootTabGroup =
@@ -875,22 +841,4 @@ function() {
 		this._printView = new ZmPrintView();
 	}
 	return this._printView;
-};
-
-ZmAppCtxt.prototype.getNewBriefcaseDialog =
-function() {
-	if (!this._newBriefcaseDialog) {
-		AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
-		this._newBriefcaseDialog = new ZmNewBriefcaseDialog(this._shell);
-	}
-	return this._newBriefcaseDialog;
-};
-
-ZmAppCtxt.prototype.getReplaceDialog =
-function() {
-	if (!this._replaceDialog) {
-		AjxDispatcher.require("Share");
-		this._replaceDialog = new ZmFindnReplaceDialog(this._shell);
-	}
-	return this._replaceDialog;
 };

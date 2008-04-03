@@ -31,7 +31,6 @@
 ZmConvListController = function(container, mailApp) {
 	ZmDoublePaneController.call(this, container, mailApp);
 	this._msgControllerMode = ZmController.CONVLIST_VIEW;
-	this._appReadingPane = true;	// follow app-level reading pane state
 };
 
 ZmConvListController.prototype = new ZmDoublePaneController;
@@ -201,7 +200,7 @@ ZmConvListController.prototype._getNumTotal = function() { return null; }
 ZmConvListController.prototype._getMoreSearchParams = 
 function(params) {
 	// OPTIMIZATION: find out if we need to pre-fetch the first hit message
-	params.fetch = this._readingPaneOn;
+	params.fetch = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
 	params.markRead = true;
 };
 
@@ -229,7 +228,7 @@ function(ev) {
 ZmConvListController.prototype._handleResponseListSelectionListener =
 function(item) {
 	// make sure correct msg is displayed in msg pane when user returns
-	if (this._readingPaneOn) {
+	if (appCtxt.get(ZmSetting.READING_PANE_ENABLED)) {
 		this._setSelectedItem();
 	}
 };
@@ -312,7 +311,7 @@ function(conv, msg, offset, getFirstMsg) {
 		}
 	} else if (!conv._loaded) {
 		// no msgs have been loaded yet
-		var getFirstMsg = (getFirstMsg === false) ? false : this._readingPaneOn;
+		var getFirstMsg = (getFirstMsg === false) ? false : appCtxt.get(ZmSetting.READING_PANE_ENABLED);
 		conv.load({getFirstMsg:getFirstMsg}, respCallback);
 	} else {
 		// re-expanding first page of msgs
@@ -342,7 +341,8 @@ function(conv, offset, callback) {
 			offset = ((offset + limit) - max) + 1;
 		}
 		var respCallback = new AjxCallback(this, this._handleResponsePaginateConv, [conv, offset, callback]);
-		conv.load({offset:offset, limit:limit, getFirstMsg:this._readingPaneOn}, respCallback);
+		var getFirstMsg = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
+		conv.load({offset:offset, limit:limit, getFirstMsg:getFirstMsg}, respCallback);
 		return false;
 	} else {
 		return true;
