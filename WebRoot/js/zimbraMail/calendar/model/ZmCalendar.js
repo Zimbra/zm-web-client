@@ -93,8 +93,27 @@ function(exclude, callback, errorCallback) {
 ZmCalendar.prototype.setChecked = 
 function(checked, batchCmd) {
 	if (this.isChecked == checked) { return; }
+	this.checkAction(checkAction, batchCmd);
+};
+
+ZmCalendar.prototype.checkAction = 
+function(checked, batchCmd) {
 	var action = checked ? "check" : "!check";
-	this._organizerAction({action: action, batchCmd: batchCmd});
+	var checkedCallback = new AjxCallback(this, this.checkedCallback, [checked]);
+	this._organizerAction({action: action, batchCmd: batchCmd,callback: checkedCallback});
+};
+
+ZmCalendar.prototype.checkedCallback = 
+function(checked, result) {
+	var overviewController = appCtxt.getOverviewController();
+	var treeController = overviewController.getTreeController(this.type);
+	var overviewId = appCtxt.getCurrentApp().getOverviewId();
+	var treeView = treeController.getTreeView(overviewId);
+	
+	if(treeView && this.id && treeView._treeItemHash[this.id]) {
+		treeView._treeItemHash[this.id].setChecked(checked);
+	}
+	
 };
 
 // Callbacks

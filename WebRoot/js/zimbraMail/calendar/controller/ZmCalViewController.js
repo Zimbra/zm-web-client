@@ -313,19 +313,50 @@ function(ev) {
 	this._updateCheckedCalendars();
 	this._refreshAction(true);
 
-	// save checkbox state to server
+	if(!this._calItemStatus) {
+		this._calItemStatus = {};
+	}
+	
 	if (ev.item) {
 		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
-		calendar.setChecked(ev.item.getChecked());
+		this._calItemStatus[calendar.id] = {item: calendar, checked: ev.item.getChecked()};
 	} else if (ev.items && ev.items.length) {
-		var batchCmd = new ZmBatchCommand();
 		for (var i = 0; i < ev.items.length; i++) {
 			var item = ev.items[i];
 			var calendar = item.getData(Dwt.KEY_OBJECT);
-			batchCmd.add(new AjxCallback(calendar, calendar.setChecked, [item.getChecked()]));
+			this._calItemStatus[calendar.id] = {item: calendar, checked: item.getChecked()};
 		}
+	}
+
+	if(!this._updateCalItemStateActionId) {
+		//update calendar state on time delay to avoid race condition
+		this._updateCalItemStateActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._updateCalItemState), 1200);
+	}	
+};
+
+ZmCalViewController.prototype._updateCalItemState =
+function() {
+	if(!this._calItemStatus) {
+		return;
+	}
+	
+	var batchCmd = new ZmBatchCommand();
+	var itemCount = 0;
+	for(var i in this._calItemStatus) {
+			var info = this._calItemStatus[i];
+			if(info.item) {
+				var calendar = info.item;
+				batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
+				itemCount++;
+			}
+	}
+
+	this._calItemStatus = {};
+	if(itemCount > 0) {
 		batchCmd.run();
 	}
+	
+	this._updateCalItemStateActionId = null;
 };
 
 ZmCalViewController.prototype._calTreeChangeListener =
