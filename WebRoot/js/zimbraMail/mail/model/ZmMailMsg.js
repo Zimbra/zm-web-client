@@ -812,46 +812,48 @@ function(soapDoc, contactList, isDraft, accountName) {
 	var topNode = soapDoc.set("mp", null, msgNode);
 	topNode.setAttribute("ct", this._topPart.getContentType());
 
-	var inlineAttsHandled = false;
 	// if the top part has sub parts, add them as children
 	var numSubParts = this._topPart.children ? this._topPart.children.size() : 0;
 	if (numSubParts > 0) {
 		for (var i = 0; i < numSubParts; i++) {
 			var part = this._topPart.children.get(i);
+			var content = part.getContent();
+			if (content == null) { continue; } // bug fix #13591 - ignore mp's w/ no content
 			var partNode = soapDoc.set("mp", null, topNode);
 			partNode.setAttribute("ct", part.getContentType());
 			
-			//If each part again has subparts, add them as children
-			var numSubSubParts = part.children ? part.children.size():0;
+			// If each part again has subparts, add them as children
+			var numSubSubParts = part.children ? part.children.size() : 0;
 			if (numSubSubParts > 0) {
-				for (var j=0;j<numSubSubParts; j++) {
+				for (var j = 0; j < numSubSubParts; j++) {
 					var subPart = part.children.get(j);
-					var subPartNode = soapDoc.set("mp",null,partNode);
-					subPartNode.setAttribute("ct",subPart.getContentType());
-					soapDoc.set("content",subPart.getContent(),subPartNode);
+					var subPartNode = soapDoc.set("mp", null, partNode);
+					subPartNode.setAttribute("ct", subPart.getContentType());
+					soapDoc.set("content", subPart.getContent(), subPartNode);
 				}
-				//Handle Related SubPart , a specific condition
+				// Handle Related SubPart, a specific condition
 				if (part.getContentType() == ZmMimeTable.MULTI_RELATED) {
-					//Handle Inline Attachments
+					// Handle Inline Attachments
 					var inlineAtts = this.getInlineAttachments() || [];
 					for (j = 0; j < inlineAtts.length; j++) {
 						var inlineAttNode = soapDoc.set("mp",null,partNode);
-						inlineAttNode.setAttribute("ci",inlineAtts[j].cid);
+						inlineAttNode.setAttribute("ci", inlineAtts[j].cid);
 						var attachNode = soapDoc.set("attach", null, inlineAttNode);
 						if (inlineAtts[j].aid) {
 							attachNode.setAttribute("aid", inlineAtts[j].aid);
 						} else {
-							var attachPartNode = soapDoc.set("mp",null,attachNode);
-							var id = (isDraft || this.isDraft) ? (oboDraftMsgId || this.id || this.origId) : (this.origId || this.id);
+							var attachPartNode = soapDoc.set("mp", null, attachNode);
+							var id = (isDraft || this.isDraft)
+								? (oboDraftMsgId || this.id || this.origId)
+								: (this.origId || this.id);
 							attachPartNode.setAttribute("mid", id);
 							attachPartNode.setAttribute("part", inlineAtts[j].part);
 						}
 					}
 				}
 			} else {
-				soapDoc.set("content", part.getContent(), partNode);
+				soapDoc.set("content", content, partNode);
 			}
-			//soapDoc.set("content", part.getContent(), partNode);
 		}
 	} else {
 		soapDoc.set("content", this._topPart.getContent(), topNode);
