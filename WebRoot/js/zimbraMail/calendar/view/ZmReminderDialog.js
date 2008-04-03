@@ -156,7 +156,8 @@ function(list) {
 	html.append("<table cellpadding=0 cellspacing=0 border=0 width=100%>");
 	for (var i=0; i < size; i++) {
 		var appt = list.get(i);
-		var data = this._apptData[appt.getUniqueId(true)] = { appt: appt};
+		var uid = appt.getUniqueId(true);
+		var data = this._apptData[uid] = { appt: appt};
 		this._addAppt(html, appt, data, i > 0);
 	}
 	html.append("</table>");
@@ -172,7 +173,7 @@ function(list) {
 	div.innerHTML = html.toString();
 	for (var i=0; i < size; i++) {
 		var appt = list.get(i);
-		var uid = appt.getUniqueId(true);		
+		var uid = appt.getUniqueId(true);
 		var data = this._apptData[uid];
 		var button = new DwtButton({parent:this, style:DwtLabel.ALIGN_CENTER, className:"DwtToolbarButton"});
 		button.setImage("Cancel");
@@ -229,12 +230,9 @@ function(ev, args) {
 };
 
 ZmReminderDialog.prototype._snoozeAction =
-function() {
-	if (!this.isPoppedUp()) {
-		for (var id in this._apptData) {
-			this._updateDelta(this._apptData[id]);
-		}
-		this.popup();
+function(list) {
+	if(list) {
+		this._reminderController.activateSnoozedAppts(list);
 	}
 };
 
@@ -246,13 +244,23 @@ function() {
 
 ZmReminderDialog._computeDelta =
 function(appt) {
-	return (new Date()).getTime() - appt.getStartTime();
+	if(appt.alarm && appt.alarmData && appt.alarmData.length > 0) {
+		var alarmData = appt.alarmData[0];
+		var alarmInstStart = alarmData.alarmInstStart;		
+		return (new Date()).getTime() - alarmInstStart;
+	}else {
+		return (new Date()).getTime() - appt.getStartTime();
+	}
 };
 
 ZmReminderDialog.prototype._handleSnoozeButton =
-function() {
-	this._snoozeActionId = AjxTimedAction.scheduleAction(this._snoozeTimedAction, this._select.getValue()*60*1000);
+function() {	
+	//this._snoozeActionId = AjxTimedAction.scheduleAction(this._snoozeTimedAction, this._select.getValue()*60*1000);
 	this.popdown();
+	var snoozedIds = this._reminderController.snoozeAppt(this._list);
+	var list = this._list.clone();
+	var snoozeTimedAction = new AjxTimedAction(this, this._snoozeAction, [list]);
+	AjxTimedAction.scheduleAction(snoozeTimedAction, this._select.getValue()*60*1000);		
 };
 
 ZmReminderDialog.prototype._cancelSnooze =
@@ -266,13 +274,8 @@ function() {
 ZmReminderDialog.prototype._handleDismissAllButton =
 function() {
 	this._cancelSnooze();
-		this.popdown();
-	// dismiss all of them
-	var size = this._list.size();
-	for (var i=0; i < size; i++) {
-		var appt = this._list.get(i);
-		this._reminderController.dismissAppt(appt);
-	}
+	this.popdown();
+	this._reminderController.dismissAppt(this._list);
 };
 	
 ZmReminderDialog._formatReminderString =

@@ -134,6 +134,8 @@ function() {
 	appt.setRecurType(this._repeatSelect.getValue());
 	appt.setAttendees(AjxEmailAddress.split(this._locationField.getValue()), ZmCalItem.LOCATION);
 
+	//set alarm for reminders
+	appt.setReminderMinutes(this._reminderSelect.getValue());
 	return appt;
 };
 
@@ -256,6 +258,19 @@ function() {
 	if (repeatCell) {
 		repeatCell.appendChild(this._repeatSelect.getHtmlElement());
 	}
+	
+	//reminder DwtSelect
+	var	displayOptions = [ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore];
+	var	options = [0, 1, 5, 10, 15, 30, 45, 60];
+	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+	
+	this._reminderSelect = new DwtSelect({parent:this});
+	this._reminderSelect.addChangeListener(new AjxListener(this, this._reminderChangeListener));
+	for (var j = 0; j < options.length; j++) {
+		var optLabel = ZmPreferencesPage.__formatLabel(displayOptions[j], options[j]);			
+		this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
+	}
+	this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
 };
 
 ZmApptQuickAddDialog.prototype._cacheFields = 

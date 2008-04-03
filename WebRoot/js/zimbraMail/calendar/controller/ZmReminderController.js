@@ -41,6 +41,7 @@ ZmReminderController.prototype.constructor = ZmReminderController;
 
 ZmReminderController._STATE_ACTIVE = 1; // appt was in reminder, never dismissed
 ZmReminderController._STATE_DISMISSED = 2; // appt was in reminder, and was dismissed
+ZmReminderController._STATE_SNOOZED = 3; // appt was in reminder, and was snoozed
 
 ZmReminderController._CACHE_RANGE = 24; // range of appts to grab 24 hours (-1, +23)
 ZmReminderController._CACHE_REFRESH = 16; // when to grab another range
@@ -105,7 +106,8 @@ function() {
 		end: endTime,
 		fanoutAllDay: false,
 		folderIds: this._calController.getCheckedCalendarFolderIds(true),
-		callback: (new AjxCallback(this, this._refreshCallback))
+		callback: (new AjxCallback(this, this._refreshCallback)),
+		includeReminders: true
 	};
 	return params;
 };
@@ -151,6 +153,11 @@ function(list) {
 	this._housekeepingAction();
 };
 
+ZmReminderController.prototype.isApptSnoozed =
+function(uid) {
+	return (this._apptState[uid] == ZmReminderController._STATE_SNOOZED);
+};
+
 /**
 * go through list to see if we should add any cachedAppts to activeAppts and
 * popup the dialog or not.
@@ -181,27 +188,41 @@ function() {
 
 	for (var i=0; i < cachedSize; i++) {
 		var appt = this._cachedAppts.get(i);
-		if (!appt || appt.isAllDayEvent() || appt.getEndTime() < startTime || appt.ptst == ZmCalItem.PSTATUS_DECLINED) {
+
+		if(appt && this._snoozedAppt) {
+			var uid = appt.getUniqueId(true);
+			if(this._snoozedAppt[uid]) {
+				this._apptState[uid] = ZmReminderController._STATE_ACTIVE;				
+				toRemove.push(appt);
+				numNotify++;
+				this._activeAppts.add(appt);
+				delete this._snoozedAppt[uid];
+				continue;
+			}
+		}
+		
+		if (!appt || appt.isAllDayEvent() || appt.ptst == ZmCalItem.PSTATUS_DECLINED) {
 			toRemove.push(appt);
-		} else if (appt.isInRange(startTime, endTime)) {
-			toRemove.push(appt);
-			// see if we already have state on this one
+		} else if (appt.alarm && appt.isAlarmInRange()) {			
 			var uid = appt.getUniqueId(true);
 			var state = this._apptState[uid];
+			var addToActiveList = false;
 			if (state == ZmReminderController._STATE_DISMISSED) {
 				// just remove themn
 			} else if (state == ZmReminderController._STATE_ACTIVE) {
-				this._activeAppts.add(appt);
-			} else {
+				addToActiveList = true;
+			} else if (state != ZmReminderController._STATE_SNOOZED) {
 				// we need to notify on this one
 				numNotify++;
-				this._activeAppts.add(appt);
+				addToActiveList = true;
 				this._apptState[uid] = ZmReminderController._STATE_ACTIVE;
 			}
-		} else if (appt.getStartTime() > endTime) {
-			// list should be sorted, so break out...
-			break;
-		}
+			
+			if(addToActiveList) {
+				toRemove.push(appt);	
+				this._activeAppts.add(appt);
+			}
+		}		
 	}
 
 	// remove any appts in cachedAppts that are no longer supposed to be in there	
@@ -229,9 +250,131 @@ function() {
 * called when an appointment (individually or as part of "dismiss all") is removed from reminders
 */
 ZmReminderController.prototype.dismissAppt =
-function(appt) {
-	this._apptState[appt.getUniqueId(true)] = ZmReminderController._STATE_DISMISSED;
-	this._activeAppts.remove(appt);
+function(list) {
+	var appt;
+	if(!(list instanceof AjxVector)) {
+		list = AjxVector.fromArray((list instanceof Array)? list: [list]);
+	}
+
+	for(var i=0; i<list.size(); i++) {
+		var appt = list.get(i);
+		this._apptState[appt.getUniqueId(true)] = ZmReminderController._STATE_DISMISSED;
+		this._activeAppts.remove(appt);
+	}
+
+	this.dismissApptRequest(list);
+	
+};
+
+ZmReminderController.prototype.snoozeAppt =
+function(list) {
+	var snoozedIds = [];
+	var appt;
+	var uid;
+	for(var i=0; i<list.size(); i++) {
+		appt = list.get(i);
+		uid = appt.getUniqueId(true);
+		this._apptState[uid] = ZmReminderController._STATE_SNOOZED;
+		snoozedIds.push(uid);
+		this._activeAppts.remove(appt);
+		this._cachedAppts.add(appt);
+	}
+	return snoozedIds;
+};
+
+ZmReminderController.prototype.activateSnoozedAppts =
+function(list) {
+	var rd = this.getReminderDialog();
+	if (rd && rd.isPoppedUp()) {
+		rd.popdown();
+	}
+	
+	if(this._snoozedAppt == null) {
+		this._snoozedAppt = {};
+	}
+	
+	var appt;
+	var uid;
+	
+	for(var i=0; i<list.size(); i++) {
+		appt = list.get(i);
+		if(appt) {
+			uid = appt.getUniqueId(true);
+			this._snoozedAppt[uid] = true;
+		}
+	}
+	
+	this._cancelHousekeepingAction();
+	this._housekeepingAction();
+};
+
+ZmReminderController.prototype.dismissApptRequest = 
+function(list) {
+		
+		var soapDoc = AjxSoapDoc.create("DismissCalendarItemAlarmRequest", "urn:zimbraMail");
+		
+		var dismissedAt = (new Date()).getTime();
+		for(var i=0; i<list.size(); i++) {
+			var appt = list.get(i);
+			var apptNode = soapDoc.set("appt");
+			apptNode.setAttribute("id", appt.id);
+			apptNode.setAttribute("dismissedAt", dismissedAt);
+		}
+		
+		var respCallback = new AjxCallback(this, this._handleDismissAppt, [list]);
+		var errorCallback = new AjxCallback(this, this._handleErrorDismissAppt, [list]);
+		var params = {
+			soapDoc: soapDoc,
+			asyncMode: true,
+			callback: respCallback,
+			errorCallback: errorCallback
+		};
+		appCtxt.getAppController().sendRequest(params);
+		return true;	
+};
+
+ZmReminderController.prototype.setAlarmData =
+function (soapDoc, request, params) {
+	var alarmData = soapDoc.set("alarmData", null, request);
+	alarmData.setAttribute("")
+};
+
+ZmReminderController.prototype._handleDismissAppt =
+function(list, result) {
+	if(result.isException()) return;
+	var response = result.getResponse();
+	var dismissResponse = response.DismissCalendarItemAlarmResponse;
+	
+	if(!dismissResponse){ return; }
+	
+	var appts = dismissResponse.appt;
+	
+	var updateData = {};
+	
+	if(!appts) { return; }
+	
+	for(var i in appts) {
+		var appt = appts[i];
+		if(appt && appt.calItemId) {
+			updateData[appt.calItemId] = appt.alarmData ? appt.alarmData : {};
+		}
+	}
+
+	var size = list.size();
+	for(var i=0;i<size; i++) {
+		var appt = list.get(i);
+		if(appt) {
+			if(updateData[appt.id]) {
+				appt.setAlarmData((updateData[appt.id] != {})? updateData[appt.id] : null);
+			}
+		}
+	}
+	
+};
+
+ZmReminderController.prototype._handleErrorDismissAppt =
+function(list, response) {
+
 };
 
 ZmReminderController.prototype.getReminderDialog =

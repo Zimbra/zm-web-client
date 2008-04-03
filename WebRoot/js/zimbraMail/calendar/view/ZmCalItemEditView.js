@@ -387,6 +387,9 @@ function(calItem) {
 
 	calItem.notesTopPart = top;
 
+	//set the reminder time for alarm
+	calItem.setReminderMinutes(this._reminderSelect.getValue());
+
 	return calItem;
 };
 
@@ -412,6 +415,25 @@ function(calItem, mode) {
 	}
 
 	this._setContent(calItem, mode);
+	this.adjustReminderValue(calItem);
+};
+
+ZmCalItemEditView.prototype.adjustReminderValue =
+function(calItem) {
+	var m = calItem._reminderMinutes;
+	this._reminderSelect.setSelectedValue(m);
+	
+	//if the reminder is not within supported options
+	if(this._reminderSelect.getValue() != m) {
+		var closestValue = 0;
+		for(var i in this._reminderOptions) {
+			if( this._reminderOptions[i] > m) {
+				break;
+			}			
+			closestValue = this._reminderOptions[i];
+		}
+		this._reminderSelect.setSelectedValue(closestValue);			
+	}	
 };
 
 ZmCalItemEditView.prototype._setRepeatDesc = function(calItem) {
@@ -504,6 +526,18 @@ function(width) {
 		this._repeatSelect.addOption(option.label, option.selected, option.value);
 	}
 	this._repeatSelect.reparentHtmlElement(this._htmlElId + "_repeatSelect");
+
+	//reminder DwtSelect
+	var	displayOptions = [ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore];
+	var	options = this._reminderOptions = [0, 1, 5, 10, 15, 30, 45, 60];
+	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+	
+	this._reminderSelect = new DwtSelect({parent:this});
+	for (var j = 0; j < options.length; j++) {
+		var optLabel = ZmPreferencesPage.__formatLabel(displayOptions[j], options[j]);			
+		this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
+	}
+	this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
 
 	// start/end date DwtButton's
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);

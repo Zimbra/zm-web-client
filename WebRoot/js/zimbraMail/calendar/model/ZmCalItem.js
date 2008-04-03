@@ -44,6 +44,12 @@ ZmCalItem = function(type, list, id, folderId) {
 
 	this._recurrence = new ZmRecurrence(this);
 	this._noBusyOverlay = null;
+	
+	this._reminderMinutes = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+	
+	if(this._reminderMinutes == null) {
+		this._reminderMinutes = 0;
+	}
 };
 
 ZmCalItem.prototype = new ZmItem;
@@ -302,6 +308,70 @@ function(startTime, endTime) {
 	var tst = this.getStartTime();
 	var tet = this.getEndTime();
 	return (tst < endTime && tet > startTime);
+};
+
+ZmCalItem.prototype.setAlarmData =
+function(alarmData) {
+	this.alarmData = alarmData;
+};
+
+ZmCalItem.prototype.isAlarmInRange =
+function() {
+	
+	if(!this.alarm || !this.alarmData) { return false; }
+	
+	var alarmData = this.alarmData[0];
+	
+	this._nextAlarmTime = alarmData.nextAlarm;
+	this._alarmInstStart = alarmData.alarmInstStart;
+	
+	var startTime = (new Date()).getTime();
+	//var endTime = startTime + (this._warningTime * 60 * 1000);
+	
+	var tst = this.getStartTime();
+	var tet = this.getEndTime();
+	if(this._alarmInstStart == tst) {
+		return (startTime > this._nextAlarmTime && startTime < tet);
+	}else {
+		//remind older alarms
+		return (startTime> this._nextAlarmTime);
+	}
+};
+
+ZmCalItem.prototype.parseAlarmData =
+function() {
+	if(!this.alarmData){ return; }
+	
+	for(var i in this.alarmData) {
+		var alarm = this.alarmData[i];
+		if(alarm) {
+			var m,h,d;
+			for(var j in alarm) {
+				var tmp = alarm[j];
+				var trigger = (tmp && (tmp.length > 0)) ? tmp[0].trigger : null;
+				var rel = (trigger && (trigger.length > 0)) ? trigger[0].rel : null;				
+				m = (rel && (rel.length > 0)) ? rel[0].m : null;
+				d = (rel && (rel.length > 0)) ? rel[0].d : null;
+				h = (rel && (rel.length > 0)) ? rel[0].h : null;
+								
+				if(tmp[0].action == "DISPLAY"){
+					if(m != null) {
+						this._reminderMinutes = m;
+					}
+					if(h !=null) {
+						h = parseInt(h);
+						this._reminderMinutes = h*60;
+					}
+					if(d !=null) {
+						d = parseInt(d);
+						this._reminderMinutes = d*24*60;
+					}					
+					break;
+				}
+				
+			}
+		}
+	}
 };
 
 /**
@@ -711,7 +781,29 @@ function(attachmentId, callback, errorCallback, notifyList) {
 		this._recurrence.setSoap(soapDoc, comp);
 	}
 
+	//set alarm data
+	this._setAlarmData(soapDoc, comp);
+
 	this._sendRequest(soapDoc, accountName, callback, errorCallback);
+};
+
+ZmCalItem.prototype._setAlarmData = 
+function(soapDoc, comp) {
+	var alarm = soapDoc.set("alarm", null, comp);
+	alarm.setAttribute("action", "DISPLAY");
+	
+	var trigger = soapDoc.set("trigger", null, alarm);
+	
+	var rel = soapDoc.set("rel", null, trigger);
+	rel.setAttribute("m", this._reminderMinutes ? this._reminderMinutes:0);
+	//default option is to remind before appt start
+	rel.setAttribute("related", "START");
+	rel.setAttribute("neg", "1");
+};
+
+ZmCalItem.prototype.setReminderMinutes =
+function(minutes) {
+	this._reminderMinutes = minutes;
 };
 
 ZmCalItem.prototype.cancel =
@@ -1324,6 +1416,8 @@ function(calItemNode, instNode) {
 	}
 
 	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
+	this.alarmData 		= this._getAttr(calItemNode, instNode, "alarmData");	
+	this.parseAlarmData(this.alarmData);
 	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
 
 	this.recurring 		= instNode.recur != null ? instNode.recur : calItemNode.recur; // TEST for null since recur can be FALSE
