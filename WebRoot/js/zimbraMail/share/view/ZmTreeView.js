@@ -68,6 +68,8 @@ ZmTreeView.COMPARE_FUNC = {};
 ZmTreeView.ADD_SEP = {};
 ZmTreeView.ADD_SEP[ZmFolder.ID_TRASH] = true;
 
+ZmTreeView.MAX_ITEMS = 50;
+
 // Static methods
 
 /**
@@ -229,6 +231,7 @@ function(show) {
  * 										folder of this type, as well as the folder
  *        searchTypes	[hash]*			types of saved searches to show
  *        noTooltips	[boolean]*		if true, don't show tooltips for tree items
+ *        startPos		[int]*			start rendering this far into list of children
  * 
  * TODO: Add logic to support display of folders that are not normally allowed in
  * 		this tree, but that have children (orphans) of an allowed type
@@ -245,7 +248,9 @@ function(params) {
 	}
 	DBG.println(AjxDebug.DBG3, "Render: " + org.name + ": " + children.length);
 	var addSep = true;
-	for (var i = 0; i < children.length; i++) {
+	var numItems = 0;
+	var len = children.length;
+	for (var i = params.startPos || 0; i < len; i++) {
 		var child = children[i];
 		if (!child || (params.omit && params.omit[child.nId])) { continue; }
 		if (!(params.include && params.include[child.nId])) {
@@ -259,12 +264,35 @@ function(params) {
 			}
 			if (this._allowedTypes && !this._allowedTypes[child.type]) { continue; }
 		}
+		
+		// if there's a large number of folders to display, make user click on special placeholder
+		// to display remainder; we then display them MAX_ITEMS at a time
+		if (numItems >= ZmTreeView.MAX_ITEMS) {
+			if (params.startPos) {
+				// render next chunk
+				params.startPos = i;
+				params.len = (params.startPos + ZmTreeView.MAX_ITEMS >= len) ? len : 0;	// hint that we're done
+				this._showRemainingFolders(params);
+				return;
+			} else if (numItems >= ZmTreeView.MAX_ITEMS * 2) {
+				// add placeholder tree item "Show remaining folders"
+				var orgs = ZmMsg[ZmOrganizer.LABEL[this.type]].toLowerCase();
+				child = new ZmFolder({id:ZmFolder.ID_LOAD_FOLDERS, name:AjxMessageFormat.format(ZmMsg.showRemainingFolders, orgs)});
+				child._tooltip = AjxMessageFormat.format(ZmMsg.showRemainingFoldersTooltip, [(children.length - i), orgs]);
+				this._addNew(params.treeNode, child);
+				params.startPos = i + 1;
+				child._showFoldersCallback = new AjxCallback(this, this._showRemainingFolders, [params]);
+				return;
+			}
+		}
+		
 		// NOTE: Separates public and shared folders
 		if ((org.nId == ZmOrganizer.ID_ROOT) && child.link && addSep) {
 			params.treeNode.addSeparator();
 			addSep = false;
 		}
 		this._addNew(params.treeNode, child, null, params.noTooltips);
+		numItems++;
 	}
 };
 
@@ -284,7 +312,6 @@ function(parentNode, organizer, index, noTooltips) {
 		? appCtxt.getDataSourceCollection().getByFolderId(organizer.nId)
 		: null;
 	var ds = (dss && dss.length > 0) ? dss[0] : null;
-
 
 	if (ds && ds.type == ZmAccount.IMAP) {
 		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:this._headerClass});
@@ -384,4 +411,27 @@ function(treeItem, treeItems, i) {
 		}
    	}
 	return null;
+};
+
+/**
+ * Renders a chunk of tree items, using a timer so that the browser doesn't get overloaded.
+ * 
+ * @param params	[hash]		hash of params (see _render)
+ */
+ZmTreeView.prototype._showRemainingFolders =
+function(params) {
+	var ti = this.getTreeItemById(ZmFolder.ID_LOAD_FOLDERS);
+	if (ti) {
+		ti.dispose();
+	}
+	DBG.println(AjxDebug.DBG1, "load remaining folders: " + params.startPos);
+	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
+		function() {
+			this._render(params);
+			if (params.len) {
+				var orgs = ZmMsg[ZmOrganizer.LABEL[this.type]].toLowerCase();
+				appCtxt.setStatusMsg(AjxMessageFormat.format(ZmMsg.foldersShown, [params.len, orgs]));
+				params.len = 0;
+			}
+		}), 100);
 };
