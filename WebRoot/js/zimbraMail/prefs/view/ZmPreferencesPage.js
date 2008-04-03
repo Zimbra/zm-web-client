@@ -1016,7 +1016,8 @@ function(dialog, settingId, folder) {
 			: (":" + location.port);
 		var format = (settingId == ZmSetting.IMPORT || settingId == ZmSetting.EXPORT) ? "csv" : "ics";
 		var folderName = folder._systemName || AjxStringUtil.urlEncode(folder.getPath());
-		var uri = [location.protocol, "//", document.domain, portPrefix, "/service/home/~/", folderName, "?auth=co&fmt=", format].join("");
+		var username = appCtxt.multiAccounts ? (AjxStringUtil.urlComponentEncode(appCtxt.get(ZmSetting.USERNAME))) : "~";
+		var uri = [location.protocol, "//", document.domain, portPrefix, "/service/home/", username, "/", folderName, "?auth=co&fmt=", format].join("");
 		window.open(uri, "_blank");
 
 		dialog.popdown();
