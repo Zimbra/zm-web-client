@@ -227,7 +227,7 @@ function() {
 			childWin.win.close();
 		}
 	}
-	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
+	window._zimbraMail = window.onload = window.onresize = window.document.onkeypress = null;
 };
 
 /**
@@ -1268,11 +1268,11 @@ function() {
 		var data = {
 			showStandardLink: (!appCtxt.multiAccounts && !appCtxt.isOffline),
 			showOfflineLink: (!appCtxt.isOffline),
-			helpIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon") ? null : ZmMsg.help),
-			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : ZmMsg.logOff),
+			helpIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "helpButton.hideIcon") ? null : "Help"),
+			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
 			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
 		}
-		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
+		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data)
 	}
 };
 
@@ -1691,21 +1691,6 @@ function(actionCode, ev) {
 		case ZmKeyMap.FOCUS_CONTENT_PANE: {
 			this.focusContentPane();
 			break;
-		}
-
-		case ZmKeyMap.CANCEL: {
-			// see if there's a current drag operation we can cancel
-			var handled = false;
-			var captureObj = (DwtMouseEventCapture.getId() == "DwtControl") ? DwtMouseEventCapture.getCaptureObj() : null;
-			var obj = captureObj && captureObj.targetObj;
-			if (obj && (obj._dragging == DwtControl._DRAGGING)) {
-				captureObj.release();
-				obj.__lastDestDwtObj = null;
-				obj._setDragProxyState(false);					// turn dnd icon red so user knows no drop is happening
-				DwtControl.__badDrop(obj, DwtShell.mouseEvent);	// shell's mouse ev should have latest info
-				handled = true;
-			}
-			if (handled) { break; }
 		}
 
 		default: {
