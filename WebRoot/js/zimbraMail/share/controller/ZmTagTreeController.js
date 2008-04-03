@@ -30,6 +30,7 @@ ZmTagTreeController = function() {
 	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_TAG] = new AjxListener(this, this._renameListener);
 	this._listeners[ZmOperation.TAG_COLOR_MENU] = new AjxListener(this, this._colorListener);
+    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 };
 
 ZmTagTreeController.prototype = new ZmTreeController;
@@ -85,7 +86,8 @@ function(parent, type, id) {
 */
 ZmTagTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_TAG];
+	return [ZmOperation.NEW_TAG,
+            ZmOperation.BROWSE];
 };
 
 /*
@@ -129,13 +131,14 @@ function(tag) {
 	var app = appCtxt.getCurrentAppName();
 
 	var searchFor;
-	switch (app) {
-		case ZmApp.CONTACTS:	searchFor = ZmItem.CONTACT; break;
-		case ZmApp.NOTEBOOK:	searchFor = ZmItem.PAGE; break;
-		case ZmApp.CALENDAR:	searchFor = ZmItem.APPT; break;
-		case ZmApp.TASKS:		searchFor = ZmItem.TASK; break;
-		default: 				searchFor = ZmSearchToolBar.FOR_MAIL_MI; break;
-	}
+        switch (app) {
+                case ZmApp.CONTACTS:    searchFor = ZmItem.CONTACT; break;
+                case ZmApp.NOTEBOOK:    searchFor = ZmItem.PAGE; break;
+                case ZmApp.CALENDAR:    searchFor = ZmItem.APPT; break;
+                case ZmApp.BRIEFCASE:   searchFor = ZmItem.PAGE; break;
+                case ZmApp.TASKS:       searchFor = ZmItem.TASK; break;
+                default:                searchFor = ZmSearchToolBar.FOR_MAIL_MI; break;
+        }
 
 	var sc = appCtxt.getSearchController();
 	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
@@ -174,6 +177,15 @@ function(ev) {
 		tag.setColor(ev.item.getData(ZmOperation.MENUITEM_ID));
 };
 
+ZmTagTreeController.prototype._browseListener =
+function(ev){
+    var folder = this._getActionedOrganizer(ev);
+    if (folder) {
+        AjxPackage.require("zimbraMail.share.view.picker.ZmPicker");
+        appCtxt.getSearchController().showBrowsePickers([ZmPicker.TAG]);
+        //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
+    }
+}
 /*
 * Handles the potential drop of something onto a tag. Only items may be dropped.
 * The source data is not the items themselves, but an object with the items (data)
