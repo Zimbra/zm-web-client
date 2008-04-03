@@ -53,20 +53,22 @@
 		</tr>
 	<$ } $>
 		<tr>
-			<td id='skin_container_help'>
-				<table border=0 cellpadding=0 cellspacing=0>
-					<tr>
-						<$ if (data.helpIcon) { $>
-							<td style='padding-right:3px;'>
-								<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= AjxImg.getImageHtml(data.helpIcon, null, "border=0") $></a>
+			<$ if (!appCtxt.isOffline) { $>
+				<td id='skin_container_help'>
+					<table border=0 cellpadding=0 cellspacing=0>
+						<tr>
+							<$ if (data.helpIcon) { $>
+								<td style='padding-right:3px;'>
+									<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= AjxImg.getImageHtml(data.helpIcon, null, "border=0") $></a>
+								</td>
+							<$ } $>
+							<td style='white-space:nowrap; font-weight:bold'>
+								<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= ZmMsg.help $></a>
 							</td>
-						<$ } $>
-						<td style='white-space:nowrap; font-weight:bold'>
-							<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= ZmMsg.help $></a>
-						</td>
-					</tr>
-				</table>
-			</td>
+						</tr>
+					</table>
+				</td>
+			<$ } $>
 			<td id='skin_container_logoff'>
 				<table border=0 cellpadding=0 cellspacing=0>
 					<tr>
