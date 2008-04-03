@@ -63,6 +63,7 @@ ZmFolder.ID_CONTACTS							= ZmOrganizer.ID_ADDRBOOK;
 ZmFolder.ID_AUTO_ADDED							= ZmOrganizer.ID_AUTO_ADDED;
 ZmFolder.ID_TAGS	 							= 8;
 ZmFolder.ID_TASKS								= ZmOrganizer.ID_TASKS;
+ZmFolder.ID_SYNC_FAILURES						= ZmOrganizer.ID_SYNC_FAILURES;
 ZmFolder.ID_ARCHIVE	 							= ZmOrganizer.ID_ARCHIVE;
 ZmFolder.ID_OUTBOX	 							= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 							= ZmOrganizer.ID_CHATS;
@@ -89,6 +90,7 @@ ZmFolder.ICON[ZmFolder.ID_INBOX]				= "Inbox";
 ZmFolder.ICON[ZmFolder.ID_TRASH]				= "Trash";
 ZmFolder.ICON[ZmFolder.ID_SPAM]					= "SpamFolder";
 ZmFolder.ICON[ZmFolder.ID_SENT]					= "SentFolder";
+ZmFolder.ICON[ZmFolder.ID_SYNC_FAILURES]		= "SendReceive"; // XXX: need a new icon
 ZmFolder.ICON[ZmFolder.ID_ARCHIVE]				= "ArchiveFolder";
 ZmFolder.ICON[ZmFolder.ID_OUTBOX]				= "Outbox";
 ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
@@ -101,6 +103,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_INBOX]			= "inbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TRASH]			= "trash";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]			= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]			= "sent";
+ZmFolder.QUERY_NAME[ZmFolder.ID_SYNC_FAILURES]	= '"Sync Failures"';
 ZmFolder.QUERY_NAME[ZmFolder.ID_ARCHIVE]		= "archive";
 ZmFolder.QUERY_NAME[ZmFolder.ID_OUTBOX]			= "outbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]			= "drafts";
@@ -121,7 +124,8 @@ ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]			= 5;
 ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]			= 6;
 ZmFolder.SORT_ORDER[ZmFolder.ID_ARCHIVE]		= 7;
 ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]			= 8;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 9;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SYNC_FAILURES]	= 9;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 10;
 
 // character codes for "tcon" attribute in conv action request, which controls
 // which folders are affected
@@ -406,7 +410,10 @@ function(pathOnly) {
 
 ZmFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup, useSystemName) {
-	if (this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_OUTBOX) {
+	if (this.nId == ZmFolder.ID_DRAFTS ||
+		this.nId == ZmFolder.ID_OUTBOX ||
+		this.nId == ZmFolder.ID_SYNC_FAILURES)
+	{
 		var name = (useSystemName && this._systemName) ? this._systemName : this.name;
 		if (showUnread && this.numTotal > 0) {
 			name = [name, " (", this.numTotal, ")"].join("");
@@ -415,7 +422,8 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 			}
 		}
 		return name;
-	} else {
+	}
+	else {
 		return ZmOrganizer.prototype.getName.apply(this, arguments);
 	}
 };
@@ -484,6 +492,8 @@ function(what, folderType) {
 			invalid = true;														// container can only have folders/searches
 		} else if (this.nId == ZmOrganizer.ID_OUTBOX) {
 			invalid = true;														// bug fix #25175 - nothing can be moved to outbox
+		} else if (this.nId == ZmOrganizer.ID_SYNC_FAILURES) {
+			invalid = true;														// nothing can be moved to "sync failures"
 		} else if (this.link) {
 			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
 		} else if (thisType == ZmOrganizer.SEARCH) {
@@ -511,10 +521,16 @@ function(what, folderType) {
 					break;
 				}
 			}
+			// items in the "Sync Failures" folder cannot be dragged out
+			if (appCtxt.isOffline && !invalid && item.folderId &&
+				ZmOrganizer.normalizeId(item.folderId) == ZmOrganizer.ID_SYNC_FAILURES)
+			{
+				invalid = true;
+			}
 			// can't move items to folder they're already in; we're okay if we
 			// have one item from another folder
 			if (!invalid) {
-				if (items[0].folderId) {
+				if (item.folderId) {
 					invalid = true;
 					for (var i = 0; i < items.length; i++) {
 						if (items[i].folderId != this.id) {
