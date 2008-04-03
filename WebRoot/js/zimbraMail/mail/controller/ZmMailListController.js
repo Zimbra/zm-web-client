@@ -331,7 +331,7 @@ function(view) {
 			menuItems = menuItems.concat(ops);
 		}
     	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems,
-    													context:context, menuType:ZmId.MENU_PARTICIPANT});
+    													context:view, menuType:ZmId.MENU_PARTICIPANT});
     	this._addMenuListeners(this._participantActionMenu);
 		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._participantActionMenu);
