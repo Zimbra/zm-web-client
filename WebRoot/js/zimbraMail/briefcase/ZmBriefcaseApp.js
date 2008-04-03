@@ -94,8 +94,6 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOrganizers =
 function() {
-	
-	
 	ZmOrganizer.registerOrg(ZmOrganizer.BRIEFCASE,
 							{app:				ZmApp.BRIEFCASE,
 							 nameKey:			"folders",
@@ -113,7 +111,8 @@ function() {
 							 mountKey:			"mountFolder",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmBriefcase.sortCompare",
-							 deferrable:		true
+                                  deferrable     : true,
+                                  hasColor       : true
 							});
 };
 
@@ -357,11 +356,10 @@ function(results, callback) {
 
 ZmBriefcaseApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-
 //	this.getFileController().show(results, true);
-	if (callback) {
-		callback.run();
-	}
+// 	if (callback) {
+// 		callback.run();
+// 	}
 };
 
 ZmBriefcaseApp.prototype.setActive =
