@@ -127,8 +127,12 @@ ZmSignaturesPage.prototype.validate = function() {
 	for (var i = 0; i < signatures.length; i++) {
         var signature = signatures[i];
 		if (signature.name.replace(/\s*/g,"") == "") {
-			this._errorMsg = ZmMsg.errorMissingRequired;
-			return false;
+			if (signature.value.replace(/\s*/g,"") == "") {
+				this._handleDeleteButton(signature._htmlElId);
+			} else {
+				this._errorMsg = ZmMsg.errorMissingRequired;
+				return false;
+			}
 		}
 		if (signature.value.length > maxLength) {
 			this._errorMsg = AjxMessageFormat.format(ZmMsg.errorSignatureTooLong, maxLength);
