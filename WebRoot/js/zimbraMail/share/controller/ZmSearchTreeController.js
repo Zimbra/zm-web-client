@@ -148,6 +148,10 @@ function() {
 */
 ZmSearchTreeController.prototype._itemClicked =
 function(searchFolder) {
+	if (searchFolder._showFoldersCallback) {
+		searchFolder._showFoldersCallback.run();
+		return;
+	}
 	var searchController = appCtxt.getSearchController();
 	searchController.redoSearch(searchFolder.search, false, {getHtml:appCtxt.get(ZmSetting.VIEW_AS_HTML)});
 };

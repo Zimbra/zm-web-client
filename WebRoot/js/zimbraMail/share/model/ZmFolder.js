@@ -50,6 +50,7 @@ ZmFolder.prototype.constructor = ZmFolder;
 ZmFolder.SEP 									= "/";							// path separator
 
 // system folders (see Mailbox.java in ZimbraServer for positive int consts)
+ZmFolder.ID_LOAD_FOLDERS						= -3;							// special "Load remaining folders" placeholder
 ZmFolder.ID_OTHER								= -2;							// used for tcon value (see below)
 ZmFolder.ID_SEP									= -1;							// separator
 ZmFolder.ID_ROOT								= ZmOrganizer.ID_ROOT;
@@ -92,6 +93,7 @@ ZmFolder.ICON[ZmFolder.ID_ARCHIVE]				= "ArchiveFolder";
 ZmFolder.ICON[ZmFolder.ID_OUTBOX]				= "Outbox";
 ZmFolder.ICON[ZmFolder.ID_DRAFTS]				= "DraftFolder";
 ZmFolder.ICON[ZmFolder.ID_CHATS]				= "ChatFolder";
+ZmFolder.ICON[ZmFolder.ID_LOAD_FOLDERS]			= "Plus";
 
 // name to use within the query language
 ZmFolder.QUERY_NAME = {};

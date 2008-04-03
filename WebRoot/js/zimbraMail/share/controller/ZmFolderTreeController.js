@@ -272,6 +272,10 @@ function(folder) {
 		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 		stc._itemClicked(folder);
 	} else {
+		if (folder._showFoldersCallback) {
+			folder._showFoldersCallback.run();
+			return;
+		}
 		var searchFor = ZmSearchToolBar.FOR_MAIL_MI;
 		if (folder.isInTrash()) {
 			var app = appCtxt.getCurrentAppName();

@@ -558,7 +558,7 @@ function(ev) {
 	} else if ((ev.detail == DwtTree.ITEM_SELECTED) && item) {
 		// left click
 		overview.itemSelected(type);
-		if (overview.selectionSupported) {
+		if (overview.selectionSupported || item._showFoldersCallback) {
 			this._itemClicked(item);
 		}
 	} else if ((ev.detail == DwtTree.ITEM_DBL_CLICKED) && item) {
