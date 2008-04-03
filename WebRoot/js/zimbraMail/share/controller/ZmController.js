@@ -455,7 +455,7 @@ function(continuation, rememberMe, result) {
 	try {
 		result.getResponse();
 		this._authenticating = false;
-		appCtxt.setRememberMe(rememberMe);
+		appCtxt.rememberMe = rememberMe;
 		if (continuation) {
 			if (continuation.continueCallback) {
 				// sync request
