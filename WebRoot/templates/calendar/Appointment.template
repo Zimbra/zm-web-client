@@ -48,6 +48,12 @@
 									<td class='ZmFieldLabelRight' id='${id}_folderLabel'><nobr><$= data.isAppt ? ZmMsg.calendarLabel : ZmMsg.taskFolder $></nobr></td>
 									<td id='${id}_folderSelect'></td>
 								</tr>
+								<$ if (data.isAppt) { $>
+                                <tr>
+									<td class='ZmFieldLabelRight' style="height:22px;">&nbsp;</td>
+									<td>&nbsp;</td>
+								</tr>
+								<$ } $>
 							</table>
 						</div>
 					</fieldset>
@@ -76,6 +82,13 @@
 									</table>
 								  </td>
 								</tr>
+							    <$ if(data.isAppt) { $>
+								<tr>
+								  <td valign=top class='ZmFieldLabelRight' style='line-height:22px' id='${id}_repeatLabel'></nobr><$= ZmMsg.reminderLabel $></td>
+								  <td valign=top colspan=10 align='left' id='${id}_reminderSelect'>									
+								  </td>
+								</tr>
+							    <$ } $>
 							</table>
 						</div>
 					</fieldset>
@@ -170,6 +183,10 @@
 			<td class='ZmApptTabViewPageField'><$= ZmMsg.repeatLabel $></td>
 			<td id='${id}_repeat'></td>
 			<td><span class='ZmApptTabViewPageField' style='width:100%' id='${id}_repeatDesc'></span></td>
+		</tr>
+		<tr>
+			<td class='ZmApptTabViewPageField'><$= ZmMsg.reminderLabel $></td>
+			<td colspan='2' id='${id}_reminderSelect'></td>
 		</tr>
 	</table>
 </template>

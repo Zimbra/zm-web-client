@@ -74,17 +74,17 @@ function(vecArray) {
 };
 
 ZmApptList.toVector =
-function(apptList, startTime, endTime, fanoutAllDay) {
+function(apptList, startTime, endTime, fanoutAllDay, includeReminders) {
 	var result = new AjxVector();
 	var list = apptList.getVector();
 	var size = list.size();
 	for (var i = 0; i < size; i++) {
 		var ao = list.get(i);
-		if (ao.isInRange(startTime, endTime)) {
+		if (ao.isInRange(startTime, endTime) || (ao.isAlarmInRange() && includeReminders)) {
 			if (ao.isAllDayEvent() && !fanoutAllDay) {
 				result.add(ZmAppt.quickClone(ao));
 			} else {
-				ZmApptList._fanout(ao, result, startTime, endTime, fanoutAllDay);
+				ZmApptList._fanout(ao, result, startTime, endTime, fanoutAllDay, includeReminders);
 			}
 		}
 	}
@@ -95,7 +95,7 @@ function(apptList, startTime, endTime, fanoutAllDay) {
 // fanout multi-day appoints into multiple single day appts. This has nothing to do with recurrence...
 // TODO: should be more efficient by not fanning out appts in if part of the while if they are not in the range.
 ZmApptList._fanout =
-function(orig, result, startTime, endTime) {
+function(orig, result, startTime, endTime, fanoutAllDay, includeReminders) {
 	var appt = ZmAppt.quickClone(orig);
 	var fanoutNum = 0;
 
@@ -114,7 +114,7 @@ function(orig, result, startTime, endTime) {
 		origEndTime = origEndDate.getTime();
 	}
 
-	while (appt.isInRange(startTime,endTime)) {
+	while (appt.isInRange(startTime,endTime) || (appt.isAlarmInRange() && includeReminders)) {
 		if (appt.isMultiDay()) {
 			var apptStartTime = appt.getStartTime();
 			// bug 12205: If someone mistypes "2007" as "200", we get into
@@ -148,7 +148,7 @@ function(orig, result, startTime, endTime) {
 			if (appt.getStartTime() >= appt.getEndTime())
 				break;
 		} else {
-			if (appt.isInRange(startTime,endTime)) {
+			if (appt.isInRange(startTime,endTime)  || (appt.isAlarmInRange() && includeReminders) ) {
 				appt._fanoutFirst = fanoutNum == 0;
 				appt._fanoutLast = appt.getEndTime() == origEndTime;
 				if (!appt._fanoutFirst)

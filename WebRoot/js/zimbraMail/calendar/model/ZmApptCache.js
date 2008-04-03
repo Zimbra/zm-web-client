@@ -431,7 +431,7 @@ function(searchResp, params) {
 			this._cacheApptSummaries(apptList, start, end, systemFolderId, query);
 
 			// convert to sorted vector
-			var list = ZmApptList.toVector(apptList, start, end, fanoutAllDay);
+			var list = ZmApptList.toVector(apptList, start, end, fanoutAllDay, params.includeReminders);
 			this._cacheVector(list, start, end, fanoutAllDay, systemFolderId, query); // id in response tied back to folder id
 
 			params.resultList.push(list);
