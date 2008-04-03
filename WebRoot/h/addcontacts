@@ -35,7 +35,7 @@
             <c:set var="query" value="${uploader.contactSearchQuery}"/>
         </c:when>
         <c:otherwise>
-            <zm:search var="search" limit="1000"  query="*" types="contact" field="contact:"/>
+            <zm:search var="search" limit="100"  query="is:local" types="contact" field="contact:"/>
             <c:set var="query" value=""/>
         </c:otherwise>
     </c:choose>
