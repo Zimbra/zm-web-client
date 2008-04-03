@@ -49,6 +49,7 @@
     <zm:field name="mobilePhone" value="${param.mobilePhone}"/>
     <zm:field name="pager" value="${param.pager}"/>
     <zm:field name="carPhone" value="${param.carPhone}"/>
+    <zm:field name="tollFree" value="${param.tollFree}"/>
 
     <zm:field name="otherStreet" value="${param.otherStreet}"/>
     <zm:field name="otherCity" value="${param.otherCity}"/>
