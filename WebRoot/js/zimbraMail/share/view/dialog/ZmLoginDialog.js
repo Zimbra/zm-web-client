@@ -148,8 +148,7 @@ function() {
 	}
 	if (this._callback) {
 		var password = ZLoginFactory.get(ZLoginFactory.PASSWORD_ID).value;
-		var rememberMe = appCtxt.rememberMe();
-		this._callback.run(username, password, rememberMe);		
+		this._callback.run(username, password, appCtxt.rememberMe);		
 	}
 };
 

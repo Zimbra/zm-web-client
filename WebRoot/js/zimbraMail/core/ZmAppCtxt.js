@@ -33,32 +33,16 @@ ZmAppCtxt = function() {
 	// public properties
 	this.inStartup = false;				// true if we are starting app (set in ZmZimbraMail)
 	this.currentRequestParams = null;	// params of current SOAP request (set in ZmRequestMgr)
+	this.rememberMe = null;
 
 	// account-specific
 	this.multiAccounts = false;
 	this.numAccounts = 1;	// init to 1 b/c there is always a main account
 };
 
-ZmAppCtxt.prototype.getSimpleSoundPlayer = function(){
-    if(!this._simpleSoundPlayer){
-        this._simpleSoundPlayer = new DwtSimpleSoundPlayer(this.getShell());
-    }
-    return this._simpleSoundPlayer;
-};
-
 ZmAppCtxt.prototype.toString =
 function() {
 	return "ZmAppCtxt";
-};
-
-ZmAppCtxt.prototype.rememberMe =
-function() {
-	return this._rememberMe;
-};
-
-ZmAppCtxt.prototype.setRememberMe =
-function(rememberMe) {
-	this._rememberMe = rememberMe;
 };
 
 ZmAppCtxt.prototype.setAppController =
@@ -686,6 +670,14 @@ function() {
 		this._uploadManager = new AjxPost(this.getUploadFrameId());
 	}
 	return this._uploadManager;
+};
+
+ZmAppCtxt.prototype.getSimpleSoundPlayer =
+function() {
+    if (!this._simpleSoundPlayer) {
+        this._simpleSoundPlayer = new DwtSimpleSoundPlayer(this.getShell());
+    }
+    return this._simpleSoundPlayer;
 };
 
 ZmAppCtxt.prototype.getCurrentAppToolbar =
