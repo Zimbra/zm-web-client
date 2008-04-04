@@ -326,8 +326,8 @@ function(params) {
 			girJSON.Body = {};
 			girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
 			girJSON.Header = params.batchInfoResponse.Header;
-			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.sessionId) {
-				ZmCsfeCommand.setSessionId(girJSON.Header.context.sessionId);
+			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
+				ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
 			}
 			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "GetInfoResponse");
 			DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
