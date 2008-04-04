@@ -102,9 +102,9 @@ function() {
 ZmComposeController.SIGNATURE_KEY = "sigKeyId";
 
 // Constants for defining the reason for saving a draft message.
-ZmComposeController.DRAFT_TYPE_NONE = "none";
-ZmComposeController.DRAFT_TYPE_MANUAL = "manual";
-ZmComposeController.DRAFT_TYPE_AUTO = "auto";
+ZmComposeController.DRAFT_TYPE_NONE		= "none";
+ZmComposeController.DRAFT_TYPE_MANUAL	= "manual";
+ZmComposeController.DRAFT_TYPE_AUTO		= "auto";
 
 //
 // Public methods
@@ -684,17 +684,17 @@ function() {
 		}
 	}
 
-	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY,
-					ZmOperation.FORWARD_ATT,ZmOperation.DRAFT,
-					ZmOperation.REPLY_CANCEL, ZmOperation.REPLY_ACCEPT,
-					ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE];
+	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT];
 	this._optionsMenu = {};
 	for (var i = 0; i < actions.length; i++) {
 		this._optionsMenu[actions[i]] = this._createOptionsMenu(actions[i]);
 	}
 	this._optionsMenu[ZmOperation.REPLY_ALL] = this._optionsMenu[ZmOperation.REPLY];
 	this._optionsMenu[ZmOperation.FORWARD_INLINE] = this._optionsMenu[ZmOperation.FORWARD_ATT];
-	this._optionsMenu[ZmOperation.SHARE] = this._optionsMenu[ZmOperation.NEW_MESSAGE];
+	this._optionsMenu[ZmOperation.REPLY_CANCEL] = this._optionsMenu[ZmOperation.REPLY_ACCEPT] =
+		this._optionsMenu[ZmOperation.REPLY_DECLINE] = this._optionsMenu[ZmOperation.REPLY_TENTATIVE] =
+		this._optionsMenu[ZmOperation.SHARE] = this._optionsMenu[ZmOperation.DRAFT] =
+		this._optionsMenu[ZmOperation.NEW_MESSAGE];
 
 	// change default button style to select for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
@@ -763,7 +763,7 @@ function(action) {
 
 	}
 
-	var menu = new ZmActionMenu({parent:button, menuItems:list, overrides:overrides});
+	var menu = new ZmActionMenu({parent:button, menuItems:list, overrides:overrides, context:[ZmController.COMPOSE_VIEW, action].join("_")});
 
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
