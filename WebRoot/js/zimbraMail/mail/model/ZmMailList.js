@@ -148,7 +148,7 @@ function(items, hardDelete, attrs) {
 		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isHardDelete()) {
 			attrs = attrs || {};
-			attrs.tcon = ZmFolder.TCON_CODE[ZmFolder.ID_TRASH];
+			attrs.tcon = ZmFolder.TCON_CODE[searchFolder.nId];
 			var respCallback = new AjxCallback(this, this._handleResponseDeleteItems);
 			this._itemAction({items:items, action:"delete", attrs:attrs, callback:respCallback});
 			return;
