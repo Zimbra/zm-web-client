@@ -534,7 +534,7 @@ function(width) {
 	
 	this._reminderSelect = new DwtSelect({parent:this});
 	for (var j = 0; j < options.length; j++) {
-		var optLabel = ZmPreferencesPage.__formatLabel(displayOptions[j], options[j]);			
+		var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], options[j]);			
 		this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
 	}
 	this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");

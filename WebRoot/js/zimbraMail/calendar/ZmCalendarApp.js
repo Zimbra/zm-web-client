@@ -725,3 +725,9 @@ function(parent) {
 	parent.setMenu(menu);
 	return menu;
 };
+
+ZmCalendarApp.__formatLabel =
+function(prefLabel, prefValue) {
+	prefLabel = prefLabel || "";
+	return prefLabel.match(/\{/) ? AjxMessageFormat.format(prefLabel, prefValue) : prefLabel;
+};
