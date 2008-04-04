@@ -201,7 +201,7 @@ function(ev) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			var folder = item.folderId ? appCtxt.getById(item.folderId) : null;
-			var canDelete = (!folder || (folder && !folder.isInTrash()));
+			var canDelete = (!folder || (folder && !folder.isHardDelete()));
 			if (canDelete) {
 				delItems.push(item);
 			}

@@ -555,3 +555,12 @@ ZmFolder.prototype.isSyncIssuesFolder =
 function() {
 	return (this.name == ZmFolder.SYNC_ISSUES);
 };
+
+/**
+ * Returns true if deleting items w/in this folder should be hard deleted.
+ */
+ZmFolder.prototype.isHardDelete =
+function() {
+	return (this.isInTrash() || (appCtxt.isOffline && this.isUnder(ZmOrganizer.ID_SYNC_FAILURES)));
+
+};
