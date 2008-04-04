@@ -63,7 +63,6 @@ function() {
 		ZmOperation.IM_PRESENCE_DND,
 		ZmOperation.IM_PRESENCE_AWAY,
 		ZmOperation.IM_PRESENCE_XA,
-		ZmOperation.IM_PRESENCE_INVISIBLE,
 		ZmOperation.SEP,
 		ZmOperation.IM_PRESENCE_CUSTOM_MSG
 	];
