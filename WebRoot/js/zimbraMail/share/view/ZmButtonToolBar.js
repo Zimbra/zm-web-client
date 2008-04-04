@@ -88,12 +88,15 @@ function(id, params) {
 	params.className = this._buttonStyle;
 	var b;
 	if (id == ZmOperation.TEXT) {
-		var context = this._toolbarType ? [this._context, this._toolbarType].join("_") : this._context;
-		var id = [ZmId.WIDGET, AjxStringUtil.toMixed(context, "_", true), AjxStringUtil.toMixed(id, "_")].join("");
+		var id;
+		if (this._context) {
+			var context = this._toolbarType ? [this._context, this._toolbarType].join("_") : this._context;
+			id = [ZmId.WIDGET, AjxStringUtil.toMixed(context, "_", true), AjxStringUtil.toMixed(id, "_")].join("");
+		}
 		params.textClassName = params.textClassName || "ZWidgetTitle";
 		b = new DwtText({parent:this, className:params.textClassName, id:id});
 	} else {
-		params.id = ZmId.getToolbarButtonId(this._context, id, this._toolbarType);
+		params.id = this._context ? ZmId.getToolbarButtonId(this._context, id, this._toolbarType) : null;
 		b = this.createButton(id, params);
 	}
 	b.setData(ZmOperation.KEY_ID, id);

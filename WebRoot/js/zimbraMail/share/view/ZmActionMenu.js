@@ -75,7 +75,7 @@ function() {
  */
 ZmActionMenu.prototype.createOp =
 function(id, params) {
-	params.id = ZmId.getActionMenuItemId(this._context, id, this._menuType);
+	params.id = this._context ? ZmId.getActionMenuItemId(this._context, id, this._menuType) : null;
 	var mi = this.createMenuItem(id, params);
 	mi.setData(ZmOperation.KEY_ID, id);
 
