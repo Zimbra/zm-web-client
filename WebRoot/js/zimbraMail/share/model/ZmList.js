@@ -430,7 +430,7 @@ function(items, hardDelete, attrs) {
 	for (var i = 0; i < items.length; i++) {
 		var folderId = items[i].getFolderId();
 		var folder = appCtxt.getById(folderId);
-		if (hardDelete || (folder && folder.isInTrash()))
+		if (hardDelete || (folder && folder.isHardDelete()))
 			toDelete.push(items[i]);
 		else
 			toMove.push(items[i]);

@@ -146,7 +146,7 @@ ZmMailList.prototype.deleteItems =
 function(items, hardDelete, attrs) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
 		var searchFolder = this.search ? appCtxt.getById(this.search.folderId) : null;
-		if (searchFolder && searchFolder.isInTrash()) {
+		if (searchFolder && searchFolder.isHardDelete()) {
 			attrs = attrs || {};
 			attrs.tcon = ZmFolder.TCON_CODE[ZmFolder.ID_TRASH];
 			var respCallback = new AjxCallback(this, this._handleResponseDeleteItems);
