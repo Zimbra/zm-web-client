@@ -160,18 +160,15 @@ ZmSignaturesPage.prototype.addCommand = function(batchCommand) {
 	for (var i = 0; i < modifiedSigs.length; i++) {
 		var signature = modifiedSigs[i];
 		var comps = this._signatureComps[signature._htmlElId];
-
-		var proxy = AjxUtil.createProxy(signature);
-
 		var callback = new AjxCallback(this, this._handleModifyResponse, [signature]);
-		proxy.save(callback, null, batchCommand);
+		var errorCallback = new AjxCallback(this, this._handleModifyError, [signature]);
+		signature.save(callback, errorCallback, batchCommand);
 	}
 
 	// add signatures
 	var newSigs = this.getNewSignatures();
 	for (var i = 0; i < newSigs.length; i++) {
 		var signature = newSigs[i];
-
 		var callback = new AjxCallback(this, this._handleNewResponse, [signature]);
 		signature.create(callback, null, batchCommand);
 	}
@@ -511,18 +508,20 @@ ZmSignaturesPage.prototype._handleDoneButton = function(id, evt){
     
     var sigList = this.getFormObject(ZmSetting.SIGNATURES);
     var comps = this._signatureComps[id];
-    var signature = comps.signature;
-
-    signature.name = comps.name.getValue();
-
-    var htmlEditor = this._getSignatureEditor();
-    signature.value = htmlEditor.getContent(false, true);
-    signature.setContentType((htmlEditor.getMode() == DwtHtmlEditor.HTML) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
-
-    htmlEditor.reparentHtmlElement(this.getHtmlElement());
-    htmlEditor.setVisibility(false);
-    
-    this._resetSignature(signature);
+    if (comps) {
+	    var signature = comps.signature;
+	
+	    signature.name = comps.name.getValue();
+	
+	    var htmlEditor = this._getSignatureEditor();
+	    signature.value = htmlEditor.getContent(false, true);
+	    signature.setContentType((htmlEditor.getMode() == DwtHtmlEditor.HTML) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
+	
+	    htmlEditor.reparentHtmlElement(this.getHtmlElement());
+	    htmlEditor.setVisibility(false);
+	    
+	    this._resetSignature(signature);
+    }
 
     this._editState = null;
 
@@ -583,6 +582,16 @@ ZmSignaturesPage.prototype._handleModifyResponse = function(signature, resp) {
             value: signature.getValue(),
             contentType:  signature.getContentType()
     }
+};
+
+ZmSignaturesPage.prototype._handleModifyError =
+function(signature) {
+	if (signature._orig) {
+		signature.name = signature._orig.name;
+		signature.value = signature._orig.value;
+		signature.contentType = signature._orig.contentType;
+	}
+	return true;
 };
 
 ZmSignaturesPage.prototype._handleNewResponse = function(signature, resp) {
