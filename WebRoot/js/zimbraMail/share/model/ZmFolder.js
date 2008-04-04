@@ -131,6 +131,7 @@ ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]			= 10;
 // which folders are affected
 ZmFolder.TCON_CODE = {};
 ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]			= "t";
+ZmFolder.TCON_CODE[ZmFolder.ID_SYNC_FAILURES]	= "o";
 ZmFolder.TCON_CODE[ZmFolder.ID_SPAM]			= "j";
 ZmFolder.TCON_CODE[ZmFolder.ID_SENT]			= "s";
 ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]			= "o";
