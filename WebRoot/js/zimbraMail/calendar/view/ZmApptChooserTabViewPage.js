@@ -39,6 +39,7 @@ ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
 
 	this.setScrollStyle(DwtControl.CLIP);
 	this._offset = 0;
+	this._defaultQuery = ".";
 	this._rendered = false;
 	this._isClean = true;
 	this._searchFields = {};
@@ -183,8 +184,6 @@ function() {
 
 	if (this._isClean && this.type == ZmCalItem.PERSON) {
 		this._isClean = false;
-		var searchFor = this._selectDiv.getValue();
-		this._defaultQuery = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) ? "is:local" : ".";
 		this.searchContacts();
 	}
 };
@@ -434,6 +433,7 @@ function() {
 		if (appCtxt.get(ZmSetting.GAL_ENABLED))
 			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
+		this._selectDiv.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	}
 
 	// add paging buttons
@@ -496,10 +496,19 @@ ZmApptChooserTabViewPage.prototype._searchButtonListener =
 function(ev) {
 	if (this.type == ZmCalItem.PERSON) {
 		this._offset = 0;
-		this._defaultQuery = "";
 		this.searchContacts();
 	} else {
 		this.searchCalendarResources();
+	}
+};
+
+ZmApptChooserTabViewPage.prototype._searchTypeListener =
+function(ev) {
+	var oldValue = ev._args.oldValue;
+	var newValue = ev._args.newValue;
+
+	if (oldValue != newValue) {
+		this._searchButtonListener();
 	}
 };
 
@@ -541,7 +550,6 @@ function(sortBy) {
 	if (!query.length) {
 		query = this._defaultQuery;
 	}
-	if (!query.length) { return; }
 
 	var queryHint;
 	if (this._selectDiv) {
@@ -551,11 +559,17 @@ function(sortBy) {
 			: ZmSearchToolBar.FOR_GAL_MI;
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
 			queryHint = ZmContactsHelper.getRemoteQueryHint();
+		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
+			queryHint = "is:local";
 		}
 	} else {
 		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
 			? ZmItem.CONTACT
 			: ZmSearchToolBar.FOR_GAL_MI;
+
+		if (this._contactSource == ZmItem.CONTACT) {
+			queryHint = "is:local";
+		}
 	}
 	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
 	this._chooser.sourceListView.enableSorting(this._contactSource == ZmItem.CONTACT);
