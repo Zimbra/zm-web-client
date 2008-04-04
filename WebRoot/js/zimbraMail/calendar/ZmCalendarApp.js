@@ -85,7 +85,6 @@ ZmCalendarApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.setPackageLoadFunction("CalendarCore", new AjxCallback(this, this._postLoadCore));
 	AjxDispatcher.setPackageLoadFunction("Calendar", new AjxCallback(this, this._postLoad, ZmOrganizer.CALENDAR));
-	AjxDispatcher.setPackageLoadFunction("CalendarAppt", new AjxCallback(this, this._postLoadAppt, ZmOrganizer.CALENDAR));		
 	AjxDispatcher.registerMethod("GetCalController", "CalendarCore", new AjxCallback(this, this.getCalController));
 	AjxDispatcher.registerMethod("GetReminderController", "CalendarCore", new AjxCallback(this, this.getReminderController));
 	AjxDispatcher.registerMethod("ShowMiniCalendar", "CalendarCore", new AjxCallback(this, this.showMiniCalendar));
@@ -538,7 +537,7 @@ function() {
 ZmCalendarApp.prototype.getApptComposeController = 
 function() {
 	if (!this._apptController) {
-		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);		
+		AjxDispatcher.require(["CalendarCore", "Calendar", "CalendarAppt"]);
 		this._apptController = new ZmApptComposeController(this._container, this);
 	}
 	return this._apptController;
@@ -591,11 +590,6 @@ ZmCalendarApp.prototype.getEquipment =
 function() {
      this.initResources();
     return this._equipment;
-};
-
-ZmCalendarApp.prototype._postLoadAppt =
-function(type) {
-	this.getApptComposeController().initComposeView(true);
 };
 
 ZmCalendarApp.prototype._setMiniCalForActiveAccount =

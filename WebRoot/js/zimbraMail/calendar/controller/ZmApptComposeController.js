@@ -35,6 +35,9 @@ ZmApptComposeController = function(container, app) {
 	
 	app.loadResources();	// make sure resources are available for autocomplete
 	this._kbMgr = appCtxt.getKeyboardMgr();
+
+	// preload compose view for faster loading
+	this.initComposeView(true)
 };
 
 ZmApptComposeController.prototype = new ZmCalItemComposeController;
