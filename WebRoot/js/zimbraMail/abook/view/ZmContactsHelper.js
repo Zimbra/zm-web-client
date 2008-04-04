@@ -67,6 +67,8 @@ function() {
 	if (list.length > 0) {
 		list.push("is:local");
 		queryHint = list.join(" OR ");
+	} else {
+		queryHint = "is:local";
 	}
 
 	return queryHint;

@@ -23,6 +23,7 @@ ZmGroupView = function(parent, controller) {
 
 	this.setScrollStyle(Dwt.CLIP);
 	this._offset = 0;
+	this._defaultQuery = ".";
 };
 
 ZmGroupView.prototype = new ZmContactView;
@@ -186,32 +187,36 @@ function() {
 		query = this._defaultQuery;
 	}
 
-	if (query.length) {
-		var queryHint;
-		if (this._searchInSelect) {
-			var searchFor = this._searchInSelect.getValue();
-			this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
-				? ZmItem.CONTACT
-				: ZmSearchToolBar.FOR_GAL_MI;
-			if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-				queryHint = ZmContactsHelper.getRemoteQueryHint();
-			}
-		} else {
-			this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
-				? ZmItem.CONTACT
-				: ZmSearchToolBar.FOR_GAL_MI;
+	var queryHint;
+	if (this._searchInSelect) {
+		var searchFor = this._searchInSelect.getValue();
+		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
+			? ZmItem.CONTACT
+			: ZmSearchToolBar.FOR_GAL_MI;
+		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
+			queryHint = ZmContactsHelper.getRemoteQueryHint();
+		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
+			queryHint = "is:local";
 		}
-		var params = {
-			obj: this,
-			ascending: true,
-			query: query,
-			queryHint: queryHint,
-			offset: this._offset,
-			respCallback: this._searchRespCallback,
-			errorCallback: this._searchErrorCallback
+	} else {
+		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
+			? ZmItem.CONTACT
+			: ZmSearchToolBar.FOR_GAL_MI;
+
+		if (this._contactSource == ZmItem.CONTACT) {
+			queryHint = "is:local";
 		}
-		ZmContactsHelper.search(params);
 	}
+	var params = {
+		obj: this,
+		ascending: true,
+		query: query,
+		queryHint: queryHint,
+		offset: this._offset,
+		respCallback: this._searchRespCallback,
+		errorCallback: this._searchErrorCallback
+	}
+	ZmContactsHelper.search(params);
 };
 
 
@@ -225,8 +230,6 @@ function() {
 	this._setHeaderInfo();
 	this._setTitle();
 	this._setTags();
-
-	this._defaultQuery = ".";
 };
 
 ZmGroupView.prototype._setTitle =
@@ -288,6 +291,7 @@ function() {
 		if (appCtxt.get(ZmSetting.GAL_ENABLED))
 			this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
 		this._searchInSelect.reparentHtmlElement(selectId);
+		this._searchInSelect.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	}
 
 	// add "Search" button
@@ -417,7 +421,6 @@ function() {
 ZmGroupView.prototype._searchButtonListener =
 function(ev) {
 	this._offset = 0;
-	this._defaultQuery = "";
 	this.search();
 };
 
@@ -436,6 +439,16 @@ ZmGroupView.prototype._selectChangeListener =
 function(ev) {
 	this._attr[ZmContact.F_folderId] = ev._args.newValue;
 	this._isDirty = true;
+};
+
+ZmGroupView.prototype._searchTypeListener =
+function(ev) {
+	var oldValue = ev._args.oldValue;
+	var newValue = ev._args.newValue;
+
+	if (oldValue != newValue) {
+		this._searchButtonListener();
+	}
 };
 
 ZmGroupView.prototype._pageListener =
