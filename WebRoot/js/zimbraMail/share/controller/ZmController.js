@@ -179,13 +179,6 @@ function(actionCode) {
 
 		case ZmKeyMap.NEW_FOLDER:
 		case ZmKeyMap.NEW_TAG:
-			// dont allow new tags for child 
-			if (actionCode == ZmKeyMap.NEW_TAG &&
-				appCtxt.multiAccounts &&
-				!appCtxt.getActiveAccount().isMain)
-			{
-				break;
-			}
 			var op = ZmApp.ACTION_CODES[actionCode];
 			if (op) {
 				this._newListener(null, op);

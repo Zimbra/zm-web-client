@@ -664,7 +664,7 @@ function(ev) {
 		cd.popup();
 	} else if (id == ZmSetting.SHORTCUTS) {
 		appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap());
-		this._settings._loadShortcuts();
+		this._loadShortcuts();
 	} else if (id == ZmSetting.CHILD_ACCTS_VISIBLE) {
 		var cd = appCtxt.getYesNoMsgDialog();
 		cd.reset();
