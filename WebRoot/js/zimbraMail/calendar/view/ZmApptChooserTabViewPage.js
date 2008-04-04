@@ -432,6 +432,9 @@ function() {
 			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
 		if (appCtxt.get(ZmSetting.GAL_ENABLED))
 			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+		if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+		}
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 		this._selectDiv.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	}

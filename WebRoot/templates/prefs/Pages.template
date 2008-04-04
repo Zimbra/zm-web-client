@@ -516,74 +516,87 @@ and the container element is replaced with that control.
 
 <template id='prefs.Pages#Contacts'>
 	<!-- REVERT_PAGE (button) -->
-  <div align=right>
-	<table class='ZOptionsDefaultsTable'>
-		<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE' tabindex='10'></div></td></tr>
-	</table>
-  </div>
-
+	<div align=right>
+		<table class='ZOptionsDefaultsTable'>
+			<tr>
+				<td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE' tabindex='10'></div></td>
+			</tr>
+		</table>
+	</div>
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.options$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
-		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.displayContactsLabel$></td>
-					<td class='ZOptionsField'><select id='${id}_CONTACTS_PER_PAGE' tabindex='20'></select></td>
-				</tr>
+				<table width=100%>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.displayContactsLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_CONTACTS_PER_PAGE' tabindex='20'></select></td>
+					</tr>
 
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.defaultViewLabel$></td>
-					<td class='ZOptionsField'><select id='${id}_CONTACTS_VIEW' tabindex='30'></select></td>
-				</tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.defaultViewLabel$></td>
+						<td class='ZOptionsField'><select id='${id}_CONTACTS_VIEW' tabindex='30'></select></td>
+					</tr>
 
-				<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr></td></tr>
 
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
-					<td class='ZOptionsField'><input id='${id}_AUTO_ADD_ADDRESS' tabindex='40' type=checkbox></td>
-				</tr>
-				<$ if (data.isEnabled(ZmSetting.GAL_AUTOCOMPLETE)) { $>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><input id='${id}_GAL_AUTOCOMPLETE' tabindex='50' type=checkbox></td>
-				</tr>
-				<$ } $>
-			</table>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
+						<td class='ZOptionsField'><input id='${id}_AUTO_ADD_ADDRESS' tabindex='40' type=checkbox></td>
+					</tr>
+					<$ if (data.isEnabled(ZmSetting.GAL_AUTOCOMPLETE)) { $>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_GAL_AUTOCOMPLETE' tabindex='50' type=checkbox></td>
+						</tr>
+					<$ } $>
+					<$ if (data.isEnabled(ZmSetting.INITIALLY_SEARCH_GAL)) { $>
+						<tr>
+							<td class='ZOptionsLabel'>&nbsp;</td>
+							<td class='ZOptionsField'><input id='${id}_INITIALLY_SEARCH_GAL' tabindex='60' type=checkbox></td>
+						</tr>
+					<$ } $>
+				</table>
 			</td>
 		</tr>
 	</table>
-
-
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'><div class='ImgPrefsHeader_L'></div></td>
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.importExport$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
-		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>	
+	</table>
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.importLabel$></td>
-					<td class='ZOptionsInfo'><$=ZmMsg.importFromCSVHint$></td>
-				</tr>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsInfo'><div id='${id}_IMPORT' tabindex='60'></div></td>
-				</tr>
+				<table width=100%>
+					<tr>
+						<td class='ZOptionsLabelTop'><$=ZmMsg.importLabel$></td>
+						<td class='ZOptionsInfo'><$=ZmMsg.importFromCSVHint$></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsInfo'><div id='${id}_IMPORT' tabindex='60'></div></td>
+					</tr>
 
-				<tr><td colspan=2><hr></td></tr>
+					<tr><td colspan=2><hr></td></tr>
 
-				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.exportLabel$></td>
-					<td class='ZOptionsInfo'><$=ZmMsg.exportToCSVHint$></td>
-				</tr>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsInfo'><div id='${id}_EXPORT' tabindex='70'></div></td>
-				</tr>
-			</table>
+					<tr>
+						<td class='ZOptionsLabelTop'><$=ZmMsg.exportLabel$></td>
+						<td class='ZOptionsInfo'><$=ZmMsg.exportToCSVHint$></td>
+					</tr>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsInfo'><div id='${id}_EXPORT' tabindex='70'></div></td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 	</table>

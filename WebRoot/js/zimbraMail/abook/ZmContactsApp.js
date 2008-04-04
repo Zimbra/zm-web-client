@@ -109,6 +109,7 @@ function() {
 				ZmSetting.EXPORT,
 				ZmSetting.GAL_AUTOCOMPLETE,
 				ZmSetting.GAL_AUTOCOMPLETE_SESSION,
+				ZmSetting.INITIALLY_SEARCH_GAL,
 				ZmSetting.IMPORT
 			]
 		}
@@ -121,13 +122,13 @@ function() {
 		displayName:		ZmMsg.autoAddContacts,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-	
+
 	ZmPref.registerPref("CONTACTS_PER_PAGE", {
 		displayName:		ZmMsg.contactsPerPage,
 	 	displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		["10", "25", "50", "100"]
 	});
-	
+
 	ZmPref.registerPref("CONTACTS_VIEW", {
 		displayName:		ZmMsg.viewContacts,
 	 	displayContainer:	ZmPref.TYPE_SELECT,
@@ -149,13 +150,19 @@ function() {
 					   appCtxt.get(ZmSetting.GAL_ENABLED);
 			}
 	});
-	
+
 	ZmPref.registerPref("GAL_AUTOCOMPLETE_SESSION", {
 		displayName:		ZmMsg.galAutocompleteSession,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		ZmSetting.GAL_AUTOCOMPLETE
 	});
-	
+
+	ZmPref.registerPref("INITIALLY_SEARCH_GAL", {
+		displayName:		ZmMsg.initiallySearchGal,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		ZmSetting.GAL_ENABLED
+	});
+
 	ZmPref.registerPref("IMPORT", {
 		displayName:		ZmMsg.importFromCSV,
 		displayContainer:	ZmPref.TYPE_IMPORT
