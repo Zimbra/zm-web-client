@@ -22,8 +22,8 @@
  * @class
  * This variation of a double pane view combines a conv list view with a reading
  * pane in which the first msg of a conv is shown. Any conv with more than one
- * message is expandable, and gets a + icon in the left column. Clicking on that
- * will display the conv's first page of messages. The icon then becomes a - and
+ * message is expandable, and gets an expansion icon in the left column. Clicking on that
+ * will display the conv's first page of messages. The icon then becomes a collapse icon and
  * clicking it will collapse the conv (hide the messages).
  * <p>
  * If a conv has more than one page of messages, the last message on the first page

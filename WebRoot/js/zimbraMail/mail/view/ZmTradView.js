@@ -18,7 +18,7 @@
 ZmTradView = function(params) {
 
 	params.className = params.className || "ZmTradView";
-	params.view = ZmController.TRAD_VIEW;
+	params.mode = ZmController.TRAD_VIEW;
 	params.msgViewId = ZmId.TV_MSG;
 	ZmDoublePaneView.call(this, params);
 }
