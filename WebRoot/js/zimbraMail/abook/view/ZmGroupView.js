@@ -290,6 +290,9 @@ function() {
 			this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
 		if (appCtxt.get(ZmSetting.GAL_ENABLED))
 			this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+		if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			this._searchInSelect.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+		}
 		this._searchInSelect.reparentHtmlElement(selectId);
 		this._searchInSelect.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	}

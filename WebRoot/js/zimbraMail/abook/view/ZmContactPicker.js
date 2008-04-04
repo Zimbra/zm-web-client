@@ -214,6 +214,10 @@ function() {
 			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
 		}
 
+		if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			this._selectDiv.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
+		}
+
 		this._selectDiv.reparentHtmlElement(selectCellId);
 		this._selectDiv.addChangeListener(new AjxListener(this, this._searchTypeListener));
 	} else {
