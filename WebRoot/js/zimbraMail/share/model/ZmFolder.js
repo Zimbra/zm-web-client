@@ -522,10 +522,12 @@ function(what, folderType) {
 				}
 			}
 			// items in the "Sync Failures" folder cannot be dragged out
-			if (appCtxt.isOffline && !invalid && item.folderId &&
-				ZmOrganizer.normalizeId(item.folderId) == ZmOrganizer.ID_SYNC_FAILURES)
-			{
-				invalid = true;
+			if (appCtxt.isOffline && !invalid) {
+				var cs = appCtxt.getCurrentSearch();
+				var folder = cs ? appCtxt.getById(cs.folderId) : null;
+				if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
+					invalid = true;
+				}
 			}
 			// can't move items to folder they're already in; we're okay if we
 			// have one item from another folder
