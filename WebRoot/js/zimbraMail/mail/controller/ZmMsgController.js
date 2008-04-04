@@ -184,8 +184,7 @@ function(view) {
 		var params = {
 			parent: this._container,
 			posStyle: Dwt.ABSOLUTE_STYLE,
-			mode: ZmController.MSG_VIEW,  // XXX: we should consolidate these
-			view: ZmController.MSG_VIEW,  //      two settings
+			mode: ZmController.MSG_VIEW,
 			controller: this
 		};
 		this._listView[view] = new ZmMailMsgView(params);

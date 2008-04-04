@@ -23,7 +23,6 @@ ZmMailMsgView = function(params) {
 	DwtComposite.call(this, params);
 
 	this._mode = params.mode;
-	this._view = params.view;
 	this._controller = params.controller;
 
 	this._displayImagesId = Dwt.getNextId();
@@ -343,7 +342,7 @@ function() {
 		posStyle: DwtControl.STATIC_STYLE,
 		className: "ZmInviteToolBar",
 		buttonClassName: "DwtToolbarButton",
-		context: this._view,
+		context: this._mode,
 		toolbarType: ZmId.TB_INVITE
 	};
 	this._inviteToolbar = new ZmButtonToolBar(params);
@@ -388,7 +387,7 @@ function() {
 		posStyle: DwtControl.STATIC_STYLE,
 		className: "ZmShareToolBar",
 		buttonClassName: "DwtToolbarButton",
-		context: this._view,
+		context: this._mode,
 		toolbarType: ZmId.TB_SHARE
 	};
 	this._shareToolbar = new ZmButtonToolBar(params);
