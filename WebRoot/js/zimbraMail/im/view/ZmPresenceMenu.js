@@ -15,24 +15,17 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPresenceMenu = function(parent) {
+ZmPresenceMenu = function(parent, addFloatingBuddyItem) {
 	ZmPopupMenu.call(this, parent);
 	var list = ZmPresenceMenu._getOperations();
+	var presenceListener = new AjxListener(this, this._presenceItemListener);
 	for (var i = 0; i < list.length; i++) {
-		var op = list[i];
-		if (op == ZmOperation.SEP) {
-			new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
-		} else {
-			var args = {
-				image : ZmOperation.getProp(op, "image"),
-				text : ZmMsg[ZmOperation.getProp(op, "textKey")],
-				style : DwtMenuItem.RADIO_STYLE
-			};
-			var mi = this.createMenuItem(op, args);
-			mi.setData(ZmOperation.MENUITEM_ID, op);
-			mi.setData(ZmOperation.KEY_ID, op);
-			mi.addSelectionListener(new AjxListener(this, this._presenceItemListener));
-		}
+		this._addOperation(list[i], presenceListener, DwtMenuItem.RADIO_STYLE);
+	}
+	if (addFloatingBuddyItem) {
+		this._addOperation(ZmOperation.SEP);
+		var buddyListener = new AjxListener(this, this._buddyListListener);
+		this._addOperation(ZmOperation.IM_FLOATING_LIST, buddyListener, DwtMenuItem.CHECK_STYLE);
 	}
 };
 
@@ -54,6 +47,23 @@ function(delay, x, y, kbGenerated) {
 
 // Protected methods
 
+ZmPresenceMenu.prototype._addOperation =
+function(op, listener, style) {
+	if (op == ZmOperation.SEP) {
+		new DwtMenuItem({parent:this, style:DwtMenuItem.SEPARATOR_STYLE});
+	} else {
+		var args = {
+			image : ZmOperation.getProp(op, "image"),
+			text : ZmMsg[ZmOperation.getProp(op, "textKey")],
+			style : style
+		};
+		var mi = this.createMenuItem(op, args);
+		mi.setData(ZmOperation.MENUITEM_ID, op);
+		mi.setData(ZmOperation.KEY_ID, op);
+		mi.addSelectionListener(listener);
+	}
+};
+
 ZmPresenceMenu._getOperations =
 function() {
 	ZmPresenceMenu._LIST = ZmPresenceMenu._LIST || [
@@ -63,7 +73,6 @@ function() {
 		ZmOperation.IM_PRESENCE_DND,
 		ZmOperation.IM_PRESENCE_AWAY,
 		ZmOperation.IM_PRESENCE_XA,
-		ZmOperation.SEP,
 		ZmOperation.IM_PRESENCE_CUSTOM_MSG
 	];
 	return ZmPresenceMenu._LIST;
@@ -85,17 +94,37 @@ function(ev) {
 
 ZmPresenceMenu.prototype._updatePresenceMenu =
 function() {
-	var currentShowOp = ZmImApp.loggedIn() ?
-		ZmImApp.INSTANCE.getRoster().getPresence().getShowOperation() :
-		ZmOperation.IM_PRESENCE_OFFLINE;
-	var list = ZmPresenceMenu._getOperations();
-	for (var i = 0; i < list.length; i++) {
-		if (list[i] != ZmOperation.SEP) {
-			var mi = this.getItemById(ZmOperation.MENUITEM_ID, list[i]);
-			if (list[i] == currentShowOp) {
-				mi.setChecked(true, true);
-			}
-		}
+	var currentShowOp;
+    var status;
+    if (ZmImApp.loggedIn()) {
+        var presence = ZmImApp.INSTANCE.getRoster().getPresence();
+        currentShowOp = presence.getShowOperation();
+        status = presence.getStatus();
+    } else {
+        currentShowOp = ZmOperation.IM_PRESENCE_OFFLINE;
+    }
+
+    if (status) {
+        var mi = this.getItemById(ZmOperation.MENUITEM_ID, ZmOperation.IM_PRESENCE_CUSTOM_MSG);
+        mi.setChecked(true, true);
+    } else {
+        var list = ZmPresenceMenu._getOperations();
+        for (var i = 0; i < list.length; i++) {
+            if (list[i] != ZmOperation.SEP) {
+                var mi = this.getItemById(ZmOperation.MENUITEM_ID, list[i]);
+                if (list[i] == currentShowOp) {
+                    mi.setChecked(true, true);
+                    break;
+                }
+            }
+        }
+    }
+
+	var buddiesItem = this.getItemById(ZmOperation.MENUITEM_ID, ZmOperation.IM_FLOATING_LIST);
+	if (buddiesItem) {
+		var buddyWindow = ZmImApp.INSTANCE.getRosterTreeController().getFloatingBuddyListWin();
+		var buddiesVisible = buddyWindow && buddyWindow.isWindowVisible();
+		buddiesItem.setChecked(buddiesVisible, true);
 	}
 };
 
@@ -127,4 +156,10 @@ function() {
 	}));
 
     dlg.popup();
+};
+
+ZmPresenceMenu.prototype._buddyListListener =
+function() {
+	ZmImApp.INSTANCE.prepareVisuals();
+	ZmImApp.INSTANCE.getRosterTreeController()._imFloatingListListener();
 };

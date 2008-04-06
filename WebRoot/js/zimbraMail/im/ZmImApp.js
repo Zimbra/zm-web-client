@@ -78,32 +78,32 @@ function() {
 
 ZmImApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp(ZmId.OP_IM_NEW_CHAT	       , { textKey: "imNewChat", image: "ImFree2Chat" });
-	ZmOperation.registerOp(ZmId.OP_IM_NEW_GROUP_CHAT     , { textKey: "imNewGroupChat", image: "ImFree2Chat" });
-	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_AWAY      , { textKey: "imStatusAway", image: "ImAway" });
-	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CHAT      , { textKey: "imStatusChat", image: "ImFree2Chat" });
-	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_DND       , { textKey: "imStatusDND", image: "ImDnd" });
-	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_INVISIBLE , { textKey: "imStatusInvisible", image: "ImInvisible" });
-	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU      , { textKey: "imPresence" }, null, ZmImApp.addImPresenceMenu );
-	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_OFFLINE   , { textKey: "imStatusOffline", image: "Offline" });
-	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_ONLINE    , { textKey: "imStatusOnline", image: "ImAvailable" });
-	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_XA	       , { textKey: "imStatusExtAway", image: "ImExtendedAway" });
-	ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_ITEM       , { textKey: "newRosterItem", image: "ImBuddy" });
-	ZmOperation.registerOp(ZmId.OP_IM_CREATE_CONTACT     , { textKey: "addToNewContact", image: "NewContact" });
-	ZmOperation.registerOp(ZmId.OP_IM_ADD_TO_CONTACT     , { textKey: "addToExistingContact", image: "Edit" });
-	ZmOperation.registerOp(ZmId.OP_IM_EDIT_CONTACT       , { textKey: "editContact", image: "Edit" });
-	ZmOperation.registerOp(ZmId.OP_IM_GATEWAY_LOGIN      , { textKey: "imGatewayLogin", image: "ExternalLink" });
-	ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_OFFLINE     , { textKey: "imToggleOffline" });
-        ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_BLOCKED     , { textKey: "imToggleBlocked" });
-        ZmOperation.registerOp(ZmId.OP_IM_FLOATING_LIST      , { textKey: "imFloatingBuddyList", image: "ImGroup" });
+    ZmOperation.registerOp(ZmId.OP_IM_NEW_CHAT, { textKey: "imNewChat", image: "ImFree2Chat" });
+    ZmOperation.registerOp(ZmId.OP_IM_NEW_GROUP_CHAT, { textKey: "imNewGroupChat", image: "ImFree2Chat" });
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_AWAY, { textKey: "imStatusAway", image: "ImAway" });
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CHAT, { textKey: "imStatusChat", image: "ImFree2Chat" });
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_DND, { textKey: "imStatusDND", image: "ImDnd" });
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_INVISIBLE, { textKey: "imStatusInvisible", image: "ImInvisible" });
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU, { textKey: "imPresence" }, null, ZmImApp.addImPresenceMenu);
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_OFFLINE, { textKey: "imStatusOffline", image: "Offline" });
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_ONLINE, { textKey: "imStatusOnline", image: "ImAvailable" });
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_XA, { textKey: "imStatusExtAway", image: "ImExtendedAway" });
+    ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_ITEM, { textKey: "newRosterItem", image: "ImBuddy" });
+    ZmOperation.registerOp(ZmId.OP_IM_CREATE_CONTACT, { textKey: "addToNewContact", image: "NewContact" });
+    ZmOperation.registerOp(ZmId.OP_IM_ADD_TO_CONTACT, { textKey: "addToExistingContact", image: "Edit" });
+    ZmOperation.registerOp(ZmId.OP_IM_EDIT_CONTACT, { textKey: "editContact", image: "Edit" });
+    ZmOperation.registerOp(ZmId.OP_IM_GATEWAY_LOGIN, { textKey: "imGatewayLogin", image: "ExternalLink" });
+    ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_OFFLINE, { textKey: "imToggleOffline" });
+    ZmOperation.registerOp(ZmId.OP_IM_TOGGLE_BLOCKED, { textKey: "imToggleBlocked" });
+    ZmOperation.registerOp(ZmId.OP_IM_FLOATING_LIST, { textKey: "imFloatingBuddyList", image: "ImGroup" });
 
-        ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_PRESENCE   , { textKey: "imSortListByPresence" });
-        ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_NAME       , { textKey: "imSortListByName" });
+    ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_PRESENCE, { textKey: "imSortListByPresence" });
+    ZmOperation.registerOp(ZmId.OP_IM_SORT_BY_NAME, { textKey: "imSortListByName" });
 
-	ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MSG		, { textKey: "imCustomStatusMsg", image: "ImFree2Chat"});
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MSG, { textKey: "imCustomStatusMsg", image: "ImAvailable"});
 
-        ZmOperation.registerOp(ZmId.OP_IM_BLOCK_BUDDY , { textKey: "imBlock", image: "BlockUser" });
-        ZmOperation.registerOp(ZmId.OP_IM_UNBLOCK_BUDDY , { textKey: "imUnblock", image: "AllowUser" });
+    ZmOperation.registerOp(ZmId.OP_IM_BLOCK_BUDDY, { textKey: "imBlock", image: "BlockUser" });
+    ZmOperation.registerOp(ZmId.OP_IM_UNBLOCK_BUDDY, { textKey: "imUnblock", image: "AllowUser" });
 };
 
 ZmImApp.prototype._registerItems =
@@ -124,7 +124,6 @@ ZmImApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.IM_NEW_CHAT] = "chat";
-        newItemOps[ZmOperation.IM_FLOATING_LIST] = "im_floating_list";
 	ZmApp.registerApp(ZmApp.IM,
 			  { mainPkg	      : "IM",
 			    nameKey	      : "imAppTitle",
@@ -348,14 +347,10 @@ function() {
 
 ZmImApp.prototype.handleOp = function(op) {
 	switch (op) {
-	    case ZmOperation.IM_NEW_CHAT:
-		this.prepareVisuals(); // ... and create views, if not yet done
-		this.getRosterTreeController()._imNewChatListener();
-		break;
-            case ZmOperation.IM_FLOATING_LIST:
-                this.prepareVisuals();
-                this.getRosterTreeController()._imFloatingListListener();
-                break;
+		case ZmOperation.IM_NEW_CHAT:
+			this.prepareVisuals(); // ... and create views, if not yet done
+			this.getRosterTreeController()._imNewChatListener();
+			break;
 	}
 };
 
@@ -378,7 +373,7 @@ function(components) {
 		};
 		this._presenceButton = new ZmPresenceButton(buttonArgs);
 		this._updatePresenceButton(null, this._presenceButton, false, true);
-		ZmImApp.addImPresenceMenu(this._presenceButton);
+		ZmImApp.addImPresenceMenu(this._presenceButton, true);
 		components[ZmAppViewMgr.C_PRESENCE] = this._presenceButton;
 
 		// Fix the size of the skin container.
@@ -505,8 +500,8 @@ function() {
 };
 
 ZmImApp.addImPresenceMenu =
-function(button) {
-	button.setMenu(new AjxCallback(ZmImApp.INSTANCE, ZmImApp.INSTANCE._createImPresenceMenu, [button]));
+function(button, addFloatingBuddyItem) {
+	button.setMenu(new AjxCallback(ZmImApp.INSTANCE, ZmImApp.INSTANCE._createImPresenceMenu, [button, addFloatingBuddyItem]));
 };
 
 ZmImApp.prototype.syncImPresenceButton =
@@ -647,9 +642,9 @@ function(ev) {
 };
 
 ZmImApp.prototype._createImPresenceMenu =
-function(button) {
+function(button, addFloatingBuddyItem) {
 	AjxPackage.require("IMCore");
-	var menu = new ZmPresenceMenu(button);
+	var menu = new ZmPresenceMenu(button, addFloatingBuddyItem);
 	button.setMenu(menu);
 	return menu;
 };

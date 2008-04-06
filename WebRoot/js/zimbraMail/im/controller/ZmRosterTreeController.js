@@ -42,6 +42,10 @@ ZmRosterTreeController.prototype.toString = function() {
 	return "ZmRosterTreeController";
 };
 
+ZmRosterTreeController.prototype.getFloatingBuddyListWin = function(ev) {
+	return this.__floatingBuddyListWin;
+};
+
 ZmRosterTreeController.prototype._deleteListener =
 function(ev) {
 	var ds = this._deleteShield = appCtxt.getYesNoCancelMsgDialog();
@@ -236,60 +240,64 @@ ZmRosterTreeController.prototype._unblockBuddyListener = function(ev) {
 };
 
 ZmRosterTreeController.prototype._imFloatingListListener = function(ev) {
-        var wm = ZmChatMultiWindowView.getInstance().getShellWindowManager();
-        var win = this.__floatingBuddyListWin;
-        if (!win) {
-                // FIXME: should we have this as a specialized
-                // DwtResizableWindow? (i.e. new widget?)  I guess not for now.
-                this.__floatingBuddyListWin = win = new DwtResizableWindow(wm);
-                var cont = new DwtComposite(win);
+	var wm = ZmChatMultiWindowView.getInstance().getShellWindowManager();
+	var win = this.__floatingBuddyListWin;
+	if (!win) {
+		// FIXME: should we have this as a specialized
+		// DwtResizableWindow? (i.e. new widget?)  I guess not for now.
+		this.__floatingBuddyListWin = win = new DwtResizableWindow(wm);
+		var cont = new DwtComposite(win);
 
-                var toolbar = new DwtToolBar({parent:cont, handleMouse: false});
+		var toolbar = new DwtToolBar({parent:cont, handleMouse: false});
 
-                var lab = new DwtLabel({parent:toolbar, style:DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT,
-                						  className:"ZmChatWindowLabel"});
-                lab.setImage("ImGroup");
-	        lab.setText(ZmMsg.buddyList);
+		var lab = new DwtLabel({parent:toolbar, style:DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT,
+			className:"ZmChatWindowLabel"});
+		lab.setImage("ImGroup");
+		lab.setText(ZmMsg.buddyList);
 
-                toolbar.addFiller();
+		toolbar.addFiller();
 
-	        var close = new DwtToolBarButton({parent:toolbar});
-	        close.setImage("Close");
-	        close.addSelectionListener(new AjxListener(this, function() {
-                        win.popdown();
-                }));
+		var close = new DwtToolBarButton({parent:toolbar});
+		close.setImage("Close");
+		close.addSelectionListener(new AjxListener(this, function() {
+			win.popdown();
+		}));
 
-                win.enableMoveWithElement(toolbar);
+		win.enableMoveWithElement(toolbar);
 
-                var list = new ZmImOverview(cont, { posStyle   : Dwt.STATIC_STYLE,
-                                                    isFloating : true });
+		var list = new ZmImOverview(cont, { posStyle   : Dwt.STATIC_STYLE,
+			isFloating : true });
 
-                var toolbar2 = new DwtToolBar({parent:cont});
+		var toolbar2 = new DwtToolBar({parent:cont});
 
-                var newBuddy = new DwtToolBarButton({parent:toolbar2});
-                newBuddy.setImage("ImBuddy");
-                newBuddy.setToolTipContent(ZmMsg.newRosterItem);
-                newBuddy.addSelectionListener(this._imApp.getRosterTreeController()._listeners[ZmOperation.NEW_ROSTER_ITEM]);
+		var newBuddy = new DwtToolBarButton({parent:toolbar2});
+		newBuddy.setImage("ImBuddy");
+		newBuddy.setToolTipContent(ZmMsg.newRosterItem);
+		newBuddy.addSelectionListener(this._imApp.getRosterTreeController()._listeners[ZmOperation.NEW_ROSTER_ITEM]);
 
-                toolbar2.addFiller();
+		toolbar2.addFiller();
 
-                cont.addControlListener(new AjxListener(this, function(ev) {
-                        var s1 = { x: ev.oldWidth, y: ev.oldHeight };
-                        var s2 = { x: ev.newWidth, y: ev.newHeight };
-                        if (s1.x != s2.x || s1.y != s2.y) {
-                                var h = s2.y - toolbar.getSize().y - toolbar2.getSize().y;
-                                list.setSize(s2.x, h);
-                        }
-                }));
+		cont.addControlListener(new AjxListener(this, function(ev) {
+			var s1 = { x: ev.oldWidth, y: ev.oldHeight };
+			var s2 = { x: ev.newWidth, y: ev.newHeight };
+			if (s1.x != s2.x || s1.y != s2.y) {
+				var h = s2.y - toolbar.getSize().y - toolbar2.getSize().y;
+				list.setSize(s2.x, h);
+			}
+		}));
 
-                win.setView(cont);
-                win.setSize(200, 600);
-                var wm_size = wm.getSize();
-                var win_size = win.getSize();
-                wm.manageWindow(win, { x: wm_size.x - win_size.x - 50,
-                                       y: (wm_size.y - win_size.y) / 2
-                                     });
-        } else {
-                win.popup();
-        }
+		win.setView(cont);
+		win.setSize(200, 600);
+		var wm_size = wm.getSize();
+		var win_size = win.getSize();
+		wm.manageWindow(win, { x: wm_size.x - win_size.x - 50,
+			y: (wm_size.y - win_size.y) / 2
+		});
+	} else {
+		if (win.isPoppedUp()) {
+			win.popdown();
+		} else {
+			win.popup();
+		}
+	}
 };
