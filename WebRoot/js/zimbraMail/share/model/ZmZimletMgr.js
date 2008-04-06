@@ -299,11 +299,23 @@ function(zimletArray, zimletNames, isJS) {
 
 	// add link to aggregated files
 	if (!appDevMode) {
-		var extension = (!AjxEnv.isIE || (!AjxEnv.isIE6 && AjxEnv.isIE6up)) ? appExtension : "";
+        var languageId = null;
+        if(appCtxt.get(ZmSetting.LOCALE_NAME)) {
+            var locale = appCtxt.get(ZmSetting.LOCALE_NAME);
+            var index = locale.indexOf("_");
+            var languageId;
+            if (index == -1) {
+                languageId = locale;
+                } else {
+                languageId = locale.substr(0, index);
+            }
+        }        
+        var extension = (!AjxEnv.isIE || (!AjxEnv.isIE6 && AjxEnv.isIE6up)) ? appExtension : "";
 		includes.unshift([
 			"/service/zimlet/res/Zimlets-nodev_all",
-			(isJS ? (".js" + extension) : ".css")
-		].join(""));
+			(isJS ? (".js" + extension) : ".css"),
+            (languageId ? "?language=" + languageId : "")
+        ].join(""));
 	}
 
 	return includes;
