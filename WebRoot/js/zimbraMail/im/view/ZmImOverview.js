@@ -62,9 +62,6 @@ ZmImOverview = function(parent, args) {
 
         };
 
-        if (!args.isFloating)
-                this._actionMenuOps.root.push(ZmOperation.IM_FLOATING_LIST);
-
         this._actionMenuListener = new AjxListener(this, this._actionMenuListener);
         this._actionMenuPopdownListener = new AjxListener(this, this._actionMenuPopdownListener);
 
