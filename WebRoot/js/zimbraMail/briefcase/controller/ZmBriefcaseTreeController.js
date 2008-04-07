@@ -68,7 +68,7 @@ function(actionMenu, type, id) {
 
 			menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_BRIEFCASE);
 			menuItem.setText(ZmMsg.shareFolder);
-			menuItem.setImage(isBriefcase ? "Folder" : "Section");
+			menuItem.setImage(isBriefcase ? "SharedMailFolder" : "Section");
 			menuItem.setEnabled(!isLinkOrRemote);
 		}
     }
