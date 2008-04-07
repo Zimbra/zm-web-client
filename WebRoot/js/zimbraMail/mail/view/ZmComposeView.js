@@ -134,7 +134,9 @@ function(params) {
 	// reset To/Cc/Bcc fields
 	this._showAddressField(AjxEmailAddress.TO, true, true, true);
 	this._showAddressField(AjxEmailAddress.CC, true, true, true);
-	this._showAddressField(AjxEmailAddress.BCC, appCtxt.get(ZmSetting.SHOW_BCC), true, true);
+    //Set BCC Field to Default
+    this._toggleBccField(null, appCtxt.get(ZmSetting.SHOW_BCC));
+    //this._showAddressField(AjxEmailAddress.BCC, appCtxt.get(ZmSetting.SHOW_BCC), true, true);
 
 	// populate fields based on the action and user prefs
 	this._setAddresses(action, params.toOverride);
@@ -1500,7 +1502,8 @@ function(composeMode) {
 	this._using = {};
 	this._button = {};
 	this._field = {};
-	this._internalId = AjxCore.assignId(this);
+    this._divEl = {};
+    this._internalId = AjxCore.assignId(this);
 
 	// init html
 	this._createHtml();
@@ -1569,8 +1572,10 @@ function(templateId, data) {
 		this._divId[type] = [data.id, typeStr, "row"].join("_");
 		this._buttonTdId[type] = [data.id, typeStr, "picker"].join("_");
 		this._fieldId[type] = [data.id, typeStr, "control"].join("_");
+        // save field elements
+        this._divEl[type]   = document.getElementById(this._divId[type]);
 
-		// save field control
+        // save field control
 		this._field[type] = document.getElementById(this._fieldId[type]);
 		if (this._field[type]) {
 			this._field[type].addrType = type;
@@ -1625,6 +1630,18 @@ function(templateId, data) {
         this._priorityButton.reparentHtmlElement(data.id + "_priority");
 		this._priorityButton.setToolTipContent(ZmMsg.setPriority);
 	}
+
+    //Toggle BCC
+    this._toggleBccEl = document.getElementById(data.id+"_toggle_bcc");
+    Dwt.setHandler(this._toggleBccEl,DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
+
+};
+
+ZmComposeView.prototype._toggleBccField = function(ev, force){
+    var isBccFieldVisible = Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]);
+    if (typeof force != "undefined") isBccFieldVisible = !force;
+    Dwt.setInnerHtml(this._toggleBccEl, isBccFieldVisible? ZmMsg.showBCC : ZmMsg.hideBCC );
+    this._showAddressField(AjxEmailAddress.BCC, !isBccFieldVisible);
 };
 
 ZmComposeView.prototype._createPrioityMenuItem =
@@ -1823,7 +1840,7 @@ function() {
 ZmComposeView.prototype._showAddressField =
 function(type, show, skipNotify, skipFocus) {
 	this._using[type] = show;
-	Dwt.setVisible(document.getElementById(this._divId[type]), show);
+	Dwt.setVisible(this._divEl[type], show);
 	this._field[type].value = ""; // bug fix #750 and #3680
 	this._field[type].noTab = !show;
 	var setting = ZmComposeView.ADDR_SETTING[type];

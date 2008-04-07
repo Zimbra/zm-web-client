@@ -737,7 +737,6 @@ function(action) {
 	if (appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		list.push(ZmOperation.FORMAT_HTML, ZmOperation.FORMAT_TEXT, ZmOperation.SEP);
 	}
-	list.push(ZmOperation.SHOW_BCC);
 	if (isReply) {
 		list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_ATTACHMENT, ZmOperation.INC_NO_PREFIX,
 				  ZmOperation.INC_PREFIX, ZmOperation.INC_SMART);
@@ -752,9 +751,8 @@ function(action) {
 		var op = list[i];
 		if (op == ZmOperation.SEP) { continue; }
 		overrides[op] = {};
-		var style = (op == ZmOperation.SHOW_BCC) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
-		overrides[op].style = style;
-		overrides[op].radioGroupId = (style == DwtMenuItem.RADIO_STYLE) ? ZmComposeController.RADIO_GROUP[op] : null;
+        overrides[op].style = DwtMenuItem.RADIO_STYLE;
+        overrides[op].radioGroupId = ZmComposeController.RADIO_GROUP[op];
 		if (op == ZmOperation.REPLY) {
 			overrides[op].text = ZmMsg.replySender;
 		}
@@ -799,8 +797,6 @@ function(composeMode, identity) {
 			menu.checkItem(ZmOperation.KEY_ID, this._action, true);
 		}
 	}
-	menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(appCtxt.get(ZmSetting.SHOW_BCC), true);
-
 	button.setMenu(menu);
 };
 
@@ -974,13 +970,6 @@ ZmComposeController.prototype._optionsListener =
 function(ev) {
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 
-	// Show BCC is checkbox
-	if (op == ZmOperation.SHOW_BCC) {
-		var showField = (ev.detail == DwtMenuItem.CHECKED);
-		this._composeView._showAddressField(AjxEmailAddress.BCC, showField);
-		return;
-	}
-
 	// Click on "Options" button.
 	if (op == ZmOperation.COMPOSE_OPTIONS && this._optionsMenu[this._action]) {
 		var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
@@ -1094,10 +1083,8 @@ function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 
 	var id = ev.source.id;
-	if (id == ZmSetting.SHOW_BCC && this._optionsMenu) {
-		var menu = this._optionsMenu[this._action];
-		if (menu)
-			menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(appCtxt.get(ZmSetting.SHOW_BCC), true);
+	if (id == ZmSetting.SHOW_BCC) {
+		//Handle, if SHOW_BCC setting is changed, need to do when we come up with a COS Preference.
 	}
 };
 
