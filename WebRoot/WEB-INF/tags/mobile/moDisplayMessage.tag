@@ -12,7 +12,7 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="mo" uri="com.zimbra.mobileclient" %>
-
+<c:if test="${! empty message}">
 <%--compute body up front, so attachments refereneced in multipart/related don't show up --%>
 <c:set var="body" value="${message.body}"/>
 
@@ -201,3 +201,5 @@
         </td></tr>
     </c:if>
 </table>
+</div>
+</c:if>
