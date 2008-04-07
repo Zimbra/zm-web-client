@@ -460,7 +460,7 @@ function(params) {
 		this._components[ZmAppViewMgr.C_SEARCH] = appCtxt.getSearchController().getSearchPanel();
 	}
 
-	this._initKeyboardHandling();
+	this.getKeyMapMgr();	// make sure keyboard handling is initialized
 
 	this.setSessionTimer(true);
 	ZmZimbraMail.killSplash();
@@ -979,6 +979,7 @@ function() {
 ZmZimbraMail.prototype._initKeyboardHandling =
 function() {
 	var kbMgr = appCtxt.getKeyboardMgr();
+	if (kbMgr.__keyMapMgr) { return; }
 	if (appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
 		// Register our keymap and global key action handler with the shell's keyboard manager
 		kbMgr.enable(true);
