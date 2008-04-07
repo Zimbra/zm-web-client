@@ -95,25 +95,25 @@ function() {
 ZmBriefcaseApp.prototype._registerOrganizers =
 function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.BRIEFCASE,
-							{app:				ZmApp.BRIEFCASE,
-							 nameKey:			"folders",
-							 defaultFolder:		ZmOrganizer.ID_BRIEFCASE,
-							 soapCmd:			"FolderAction",
-							 firstUserId:		256,
-							 orgClass:			"ZmBriefcase",
-							 orgPackage:		"BriefcaseCore",
-							 treeController:	"ZmBriefcaseTreeController",
-							 labelKey:			"folders",
-							 itemsKey:			"folders",
-							 treeType:			ZmOrganizer.FOLDER,
-							 views:				["document"],
-							 folderKey:			"briefcase",
-							 mountKey:			"mountFolder",
-							 createFunc:		"ZmOrganizer.create",
-							 compareFunc:		"ZmBriefcase.sortCompare",
+                                { app            : ZmApp.BRIEFCASE,
+                                  nameKey        : "folders",
+                                  defaultFolder  : ZmOrganizer.ID_BRIEFCASE,
+                                  soapCmd        : "FolderAction",
+                                  firstUserId    : 256,
+                                  orgClass       : "ZmBriefcase",
+                                  orgPackage     : "BriefcaseCore",
+                                  treeController : "ZmBriefcaseTreeController",
+                                  labelKey       : "folders",
+                                  itemsKey       : "folders",
+                                  treeType       : ZmOrganizer.FOLDER,
+                                  views          : ["document"],
+                                  folderKey      : "briefcase",
+                                  mountKey       : "mountFolder",
+                                  createFunc     : "ZmOrganizer.create",
+                                  compareFunc    : "ZmBriefcase.sortCompare",
                                   deferrable     : true,
                                   hasColor       : true
-							});
+                                });
 };
 
 ZmBriefcaseApp.prototype._setupSearchToolbar =
@@ -170,51 +170,66 @@ function(ids, force) {
 
 	if (!force && this._deferNotifications("delete", ids)) { return; }
 	
-	var nextData = null;
-	var idStr = ids.join(",")+",";
-	var folderInUse = false;
 	var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
-	var shownFolder = briefcaseController._object;
-	var overviewController = appCtxt.getOverviewController();
-	var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
-	var treeView = treeController.getTreeView(this.getOverviewId());
-	
-	if(!treeView){
-		return;
-	}
-	
 	for (var i = 0; i < ids.length; i++) {
-			var tmp = treeView.getNextData(ids[i]);
-			//next node might also be in the delete list : parent deleted
-			if(tmp && idStr.indexOf(tmp.id+",")<0){
-				nextData = tmp;
+                // FIXME: sometimes ids[i] is null, which suggests a bug somewhere in ZmApp.js (?)
+                //        should investigate
+                var item = briefcaseController.getItemById(ids[i]);
+                if (item) {
+                        item.notifyDelete();
+                        briefcaseController.removeItem(item);
 			}
-			if (shownFolder && shownFolder == ids[i]) {
-				folderInUse = true;				
 			}
-	}	
 				
-	for (var i = 0; i < ids.length; i++) {
+/** <WTF ?!> **/
 	
-		briefcaseController.removeItem({id:ids[i]});
-		appCtxt.cacheRemove(ids[i]);
-	}
+// 	var nextData = null;
+// 	var idStr = ids.join(",")+",";
+// 	var folderInUse = false;
+// 	var briefcaseController = AjxDispatcher.run("GetBriefcaseController");
+// 	var shownFolder = briefcaseController._object;
+// 	var overviewController = appCtxt.getOverviewController();
+// 	var treeController = overviewController.getTreeController(ZmOrganizer.BRIEFCASE);
+// 	var treeView = treeController.getTreeView(this.getOverviewId());
 	
-	if(nextData && folderInUse){
-	briefcaseController.show(nextData.id);
-	}else{
-	//handled in delete callback : currently we dont get notification
-	//for the op in remote folders, so handled differently
-	//briefcaseController.show(shownFolder);
-	}
+// 	if(!treeView){
+// 		return;
+// 	}
 		
-	for (var i = 0; i < ids.length; i++) {
-		var tmp1 = treeView.getTreeItemById(ids[i]);
-		if(tmp1){
-			tmp1.dispose();
-		}
-		ids[i] = null;			
-	}
+// 	for (var i = 0; i < ids.length; i++) {
+// 			var tmp = treeView.getNextData(ids[i]);
+// 			//next node might also be in the delete list : parent deleted
+// 			if(tmp && idStr.indexOf(tmp.id+",")<0){
+// 				nextData = tmp;
+// 			}
+// 			if (shownFolder && shownFolder == ids[i]) {
+// 				folderInUse = true;
+// 			}
+// 	}
+
+// 	for (var i = 0; i < ids.length; i++) {
+
+// 		briefcaseController.removeItem({id:ids[i]});
+// 		appCtxt.cacheRemove(ids[i]);
+// 	}
+
+// 	if(nextData && folderInUse){
+// 	briefcaseController.show(nextData.id);
+// 	}else{
+// 	//handled in delete callback : currently we dont get notification
+// 	//for the op in remote folders, so handled differently
+// 	//briefcaseController.show(shownFolder);
+// 	}
+
+// 	for (var i = 0; i < ids.length; i++) {
+// 		var tmp1 = treeView.getTreeItemById(ids[i]);
+// 		if(tmp1){
+// 			tmp1.dispose();
+// 		}
+// 		ids[i] = null;
+// 	}
+
+/** </WTF ?!> **/
 	
 };
 
