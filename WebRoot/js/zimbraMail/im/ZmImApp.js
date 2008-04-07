@@ -391,8 +391,8 @@ function() {
 	var listener = new AjxListener(this, this._focusListener);
 	DwtShell.getShell(window).addFocusListener(listener);
 	DwtShell.getShell(window).addBlurListener(listener);
-
-	// Implement auto login.
+    
+    // Implement auto login.
 	if (appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN)) {
 		// Do the auto login after a short delay. I chose 1000ms because that means
 		// im login will happen after zimlets are loaded.
@@ -470,6 +470,11 @@ function() {
 		this._roster.refresh();
 	}
 	return this._roster;
+};
+
+ZmImApp.prototype.hasRoster =
+function(){
+        return !!this._roster;  
 };
 
 ZmImApp.prototype._setRoster =
