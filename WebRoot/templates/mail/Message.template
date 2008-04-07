@@ -131,7 +131,7 @@
 			<td align=right valign=top style='<$=labelStyle$>'>
 				<div id='${id}_to_picker'><$=ZmMsg.toLabel$></div>
 			</td>
-			<td width="96%">
+			<td width='96%' colspan=2>
 				<textarea id='${id}_to_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
 			</td>
 		</tr>
@@ -143,20 +143,23 @@
 			<td>
 				<textarea id='${id}_cc_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
 			</td>
-		</tr>
+            <td width='5%'>
+                <div><a href='#' id='${id}_toggle_bcc'><$=ZmMsg.showBCC$></a></div>
+            </td>
+        </tr>
 
 		<tr id='${id}_bcc_row' style='display:none;'>
 			<td align=right valign=top style='<$=labelStyle$>'>
 				<div id='${id}_bcc_picker'><$=ZmMsg.bccLabel$></div>
 			</td>
-			<td>
+			<td colspan='2'>
 				<textarea id='${id}_bcc_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
 			</td>
-		</tr>
+        </tr>
 
 		<tr id='${id}_subject_row'>
 			<td align=right style='<$=labelStyle$>'><$=ZmMsg.subjectLabel$></td>
-			<td>
+			<td colspan='2'>
 				<table border=0 cellpadding=0 cellspacing=0 width='100%'>
 				<tr>
 					<td style='padding-right:4px;'>
@@ -185,7 +188,7 @@
 		</tr>
 
 		<tr id='${id}_attachments_row'>
-			<td colspan=2><div id='${id}_attachments_div'></div></td>
+			<td colspan=3><div id='${id}_attachments_div'></div></td>
 		</tr>
 	</table>
 	<div align='right' id='zdnd_tooltip' style='display:none; padding-right:10px; color:#666666;'><$=ZmMsg.dndTooltip$></div>
