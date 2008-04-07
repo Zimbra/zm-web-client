@@ -906,10 +906,6 @@ function(draftType, msg, resp) {
 			this._listController._draftSaved(msg);
 		}
 	}
-
-	if (appCtxt.isOffline && !isDraft) {
-		appCtxt.getAppController().sendSync();
-	}
 };
 
 
