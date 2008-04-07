@@ -23,13 +23,15 @@ ZmSharePropsDialog = function(shell, className) {
 	// create auto-completer	
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var dataClass = appCtxt.getApp(ZmApp.CONTACTS);
-		var dataLoader = dataClass.getContactList;
-		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, [this]);
-		var compCallback = new AjxCallback(this, this._handleCompletionData, [this]);
-		var params = {parent: this, dataClass: dataClass, dataLoader: dataLoader,
-					  matchValue: ZmContactsApp.AC_VALUE_EMAIL, locCallback: locCallback,
-					  compCallback: compCallback,
-					  keyUpCallback: new AjxCallback(this, this._acKeyUpListener) };
+		var params = {
+			parent: this,
+			dataClass: dataClass,
+			dataLoader: dataClass.getContactList,
+			matchValue: ZmContactsApp.AC_VALUE_EMAIL,
+			locCallback: (new AjxCallback(this, this._getNewAutocompleteLocation, [this])),
+			compCallback: (new AjxCallback(this, this._handleCompletionData, [this])),
+			keyUpCallback: (new AjxCallback(this, this._acKeyUpListener))
+		};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 
@@ -159,22 +161,23 @@ function(event) {
 	var isPublicShare = this._publicRadioEl.checked;
 
 	// validate input
-    if(!isPublicShare)    {
-        var error;
-        if (this._granteeInput.isValid() == null) {
-            error = this._granteeInput.getValue() ? AjxMsg.invalidEmailAddr : AjxMsg.valueIsRequired;
-        }
-        if (!error && isGuestShare && this._passwordInput.isValid() == null) {
-            error = AjxMsg.valueIsRequired;
-        }
-        if (error) {
-            var dialog = appCtxt.getErrorDialog();
-            dialog.setMessage(error);
-            dialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
-            dialog.popup();
-            return;
-        }
-    }
+	if (!isPublicShare) {
+		var error;
+		if (this._granteeInput.isValid() == null) {
+			error = this._granteeInput.getValue() ? AjxMsg.invalidEmailAddr : AjxMsg.valueIsRequired;
+		}
+		if (!error && isGuestShare && this._passwordInput.isValid() == null) {
+			error = AjxMsg.valueIsRequired;
+		}
+		if (error) {
+			var dialog = appCtxt.getErrorDialog();
+			dialog.setMessage(error);
+			dialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
+			dialog.popup();
+			return;
+		}
+	}
+
 	var shares = [];
 	if (this._shareMode == ZmSharePropsDialog.NEW) {
 		var type = this._getType(isUserShare, isGuestShare, isPublicShare);
@@ -182,8 +185,12 @@ function(event) {
 			var addrs = AjxEmailAddress.split(this._granteeInput.getValue());
 			if (addrs && addrs.length) {
 				for (var i = 0; i < addrs.length; i++) {
+					// bug fix #26428 - exclude me from list of addresses
+					var addr = addrs[i];
+					if (this._isMe(addr)) { continue; }
+
 					var share = this._setUpShare();
-					share.grantee.name = addrs[i];
+					share.grantee.name = addr;
 					share.grantee.type = type;
 					shares.push(share);
 				}
@@ -217,6 +224,9 @@ function(event) {
 
 ZmSharePropsDialog.prototype._handleResponseBatchCmd =
 function(shares, result) {
+	if (!shares || (shares && shares.length == 0)) { return; }
+
+	var ignore = this._getFaultyEmails(result);
 	var replyType = this._reply.getReplyType();
 	if (replyType != ZmShareReply.NONE) {
 		var notes = replyType == ZmShareReply.QUICK ? this._reply.getReplyNote() : "";
@@ -224,6 +234,13 @@ function(shares, result) {
 		for (var i = 0; i < shares.length; i++) {
 			var share = shares[i];
 			var email = share.grantee.email || share.grantee.id;
+			if (!email) {
+				// last resort: check if grantee name is a valid email address
+				if (AjxEmailAddress.isValid(share.grantee.name))
+					email = share.grantee.name;
+			}
+
+			if (!email || (email && ignore[email])) { continue; }
 
 			var addrs = new AjxVector();
 			var addr = new AjxEmailAddress(email, AjxEmailAddress.TO);
@@ -267,6 +284,36 @@ function(shares, result) {
 			}
 		}
 	}
+};
+
+ZmSharePropsDialog.prototype._isMe =
+function(addr) {
+	if (addr == appCtxt.get(ZmSetting.USERNAME)) {
+		return true;
+	}
+
+	var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
+	for (var i = 0; i < aliases.length; i++) {
+		if (addr == aliases[i])
+			return true;
+	}
+
+	return false; 
+};
+
+// HACK: grep the Faults in BatchResponse and sift out the bad emails
+ZmSharePropsDialog.prototype._getFaultyEmails =
+function(result) {
+	var noSuchAccount = "no such account: ";
+	var bad = {};
+	var fault = result.getResponse().BatchResponse.Fault || [];
+	for (var i = 0; i < fault.length; i++) {
+		var reason = fault[i].Reason.Text;
+		if (reason.indexOf(noSuchAccount) == 0) {
+			bad[reason.substring(noSuchAccount.length)] = true;
+		}
+	}
+	return bad;
 };
 
 ZmSharePropsDialog.prototype._setUpShare =
