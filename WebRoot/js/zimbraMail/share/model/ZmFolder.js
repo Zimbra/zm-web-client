@@ -489,6 +489,8 @@ function(what, folderType) {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
+		var searchFolder = (item.list && item.list.search) ? appCtxt.getById(item.list.search.folderId) : null;
+
 		if (this.nId == ZmOrganizer.ID_ROOT) {
 			invalid = true;														// container can only have folders/searches
 		} else if (this.nId == ZmOrganizer.ID_OUTBOX) {
@@ -501,10 +503,7 @@ function(what, folderType) {
 			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
 			invalid = true;
-		} else if ((item.type == ZmItem.CONV) &&
-			 item.list.search &&
-			 (item.list.search.folderId == this.nId)) {
-
+		} else if (item.type == ZmItem.CONV && searchFolder && searchFolder.nId == this.nId) {
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
