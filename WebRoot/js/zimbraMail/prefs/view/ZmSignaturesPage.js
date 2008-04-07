@@ -591,6 +591,7 @@ function(signature) {
 		signature.value = signature._orig.value;
 		signature.contentType = signature._orig.contentType;
 	}
+	this._resetSignature(signature);
 	return true;
 };
 
