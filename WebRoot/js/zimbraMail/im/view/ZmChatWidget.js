@@ -331,12 +331,6 @@ ZmChatWidget.prototype._init = function() {
 
 	this._toolbar.addFiller();
 
-        var btn = new DwtLtIconButton(this._toolbar, null, "ImGroup");
-        btn.setToolTipContent(ZmMsg.imFloatingBuddyList);
-        btn.addSelectionListener(
-                appCtxt.getApp("IM").getRosterTreeController()._listeners[ZmOperation.IM_FLOATING_LIST]
-        );
-
 	var btn = this._changEditorModeBtn = new DwtLtIconButton(this._toolbar, null, "HtmlDoc");
 	btn.setToolTipContent(ZmMsg.changeEditorMode);
 	btn.addSelectionListener(new AjxListener(this,this._changeEditorModeListener));

@@ -122,12 +122,10 @@ function() {
 
 	var buddiesItem = this.getItemById(ZmOperation.MENUITEM_ID, ZmOperation.IM_FLOATING_LIST);
 	if (buddiesItem) {
-        try{ //ZmRosterTreeController is not a part of IMCore. So, just wait untill it gets loaded as a part of IM.
-            var buddyWindow = ZmImApp.INSTANCE.getRosterTreeController().getFloatingBuddyListWin();
-		    var buddiesVisible = buddyWindow && buddyWindow.isPoppedUp();
-		    buddiesItem.setChecked(buddiesVisible, true);
-        }catch(ex){};
-    }
+		var buddyWindow = window.ZmBuddyListWindow && ZmBuddyListWindow.instance;
+		var buddiesVisible = buddyWindow && buddyWindow.isPoppedUp();
+		buddiesItem.setChecked(buddiesVisible, true);
+	}
 };
 
 ZmPresenceMenu.prototype._presenceCustomItemListener =
@@ -162,6 +160,15 @@ function() {
 
 ZmPresenceMenu.prototype._buddyListListener =
 function() {
-    ZmImApp.INSTANCE.prepareVisuals();
-	ZmImApp.INSTANCE.getRosterTreeController()._imFloatingListListener();
+	ZmImApp.INSTANCE.prepareVisuals();
+	var buddyWindow = ZmBuddyListWindow.instance;
+	if (!buddyWindow) {
+		ZmBuddyListWindow.create();
+	} else {
+		if (buddyWindow.isPoppedUp()) {
+			buddyWindow.popdown();
+		} else {
+			buddyWindow.popup();
+		}
+	}
 };
