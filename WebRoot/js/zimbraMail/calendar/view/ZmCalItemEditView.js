@@ -100,6 +100,8 @@ function(calItem, mode, isDirty) {
 	var firstTime = !this._rendered;
 	this.createHtml();
 
+	this._hasReminderSupport = Boolean(Dwt.byId(this._htmlElId + "_reminderSelect") != null);
+
 	this._mode = (mode == ZmCalItem.MODE_NEW_FROM_QUICKADD || !mode) ? ZmCalItem.MODE_NEW : mode;
 	this._reset(calItem, mode || ZmCalItem.MODE_NEW, firstTime);
 };
@@ -388,7 +390,9 @@ function(calItem) {
 	calItem.notesTopPart = top;
 
 	//set the reminder time for alarm
-	calItem.setReminderMinutes(this._reminderSelect.getValue());
+	if (this._hasReminderSupport) {
+		calItem.setReminderMinutes(this._reminderSelect.getValue());
+	}
 
 	return calItem;
 };
@@ -415,7 +419,9 @@ function(calItem, mode) {
 	}
 
 	this._setContent(calItem, mode);
-	this.adjustReminderValue(calItem);
+	if (this._hasReminderSupport) {
+		this.adjustReminderValue(calItem);
+	}
 };
 
 ZmCalItemEditView.prototype.adjustReminderValue =
@@ -532,12 +538,14 @@ function(width) {
 	var	options = this._reminderOptions = [0, 1, 5, 10, 15, 30, 45, 60];
 	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 	
-	this._reminderSelect = new DwtSelect({parent:this});
-	for (var j = 0; j < options.length; j++) {
-		var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], options[j]);			
-		this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
+	if (this._hasReminderSupport) {
+		this._reminderSelect = new DwtSelect({parent:this});
+		for (var j = 0; j < options.length; j++) {
+			var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], options[j]);			
+			this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
+		}
+		this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
 	}
-	this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
 
 	// start/end date DwtButton's
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
