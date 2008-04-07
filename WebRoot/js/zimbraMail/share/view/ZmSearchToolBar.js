@@ -333,7 +333,7 @@ function() {
 	var searchMenuBtn = document.getElementById(searchMenuBtnId);
 	if (searchMenuBtn) {
 		this._searchMenuButton = this._addButton({ tdId:"_searchMenuButton", buttonId:ZmId.SEARCH_MENU_BUTTON,
-												   lbl:ZmMsg.searchMail, icon:"Message"} );
+												   lbl:ZmMsg.searchAll, icon:"Globe"} );
 		var menu = new AjxCallback(this, this._createSearchMenu);
 		this._searchMenuButton.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 		this._searchMenuButton.reparentHtmlElement(searchMenuBtnId);
