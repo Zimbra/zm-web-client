@@ -18,7 +18,7 @@
 ZmFileListView = function(params) {
 
 	// call super constructor
-	params.headerList = this._getHeaderList(parent);
+	var headerList = params.headerList = this._getHeaderList(parent);
 	params.view = ZmController.NOTEBOOK_FILE_VIEW;
 	params.type = ZmItem.PAGE;
 	ZmListView.call(this, params);
