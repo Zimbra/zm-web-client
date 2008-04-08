@@ -235,7 +235,9 @@ function() {
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.SPAM);
 	list.push(ZmOperation.SHOW_ORIG);
-	list.push(ZmOperation.ADD_FILTER_RULE);
+	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+		list.push(ZmOperation.ADD_FILTER_RULE);
+	}
 	return list;
 };
 

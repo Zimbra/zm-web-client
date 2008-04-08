@@ -229,6 +229,12 @@ function(callback, accountName, result) {
 			setting.setValue(false, null, true);
 		}
 	}
+	if (!this.get(ZmSetting.OPTIONS_ENABLED)) {
+		setting = this._settings[ZmSetting.FILTERS_ENABLED];
+		if (setting) {
+			setting.setValue(false, null, true);
+		}
+	}
 
 	// HACK HACK HACK: for offline/multi-account, general prefs come from the
 	// invisible parent account
