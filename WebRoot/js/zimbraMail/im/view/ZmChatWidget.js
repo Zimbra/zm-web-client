@@ -392,8 +392,6 @@ ZmChatWidget.prototype._init = function() {
 
 	// this.parent.enableMoveWithElement(this._toolbar);
 
-	this.addControlListener(new AjxListener(this, this.__onResize));
-
 	var dropTgt = new DwtDropTarget([ "ZmRosterItem", "ZmChatWidget" ]);
 	this._label.setDropTarget(dropTgt);
 	this._toolbar.setDropTarget(dropTgt);
@@ -527,9 +525,16 @@ ZmChatWidget.prototype._doResize = function() {
 	placeElement(this._content, "convLayout", 4);
 };
 
-ZmChatWidget.prototype.__onResize = function(ev) {
+ZmChatWidget.prototype.setBounds =
+function(x, y, width, height) {
+	DwtControl.prototype.setBounds.call(this, x, y, width, height);
 	this._doResize();
+};
 
+ZmChatWidget.prototype.setSize =
+function(width, height) {
+	DwtControl.prototype.setSize.call(this, width, height);
+	this._doResize();
 };
 
 ZmChatWidget.prototype.focus = function() {
