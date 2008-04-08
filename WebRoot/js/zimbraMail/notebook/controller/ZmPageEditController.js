@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -219,7 +219,7 @@ function(popViewWhenSaved) {
 	}
 
 	this._filterScripts();
-	
+
 	// set fields on page object
 	var content = this._pageEditView.getContent(true);
 	this._page.name = name;
@@ -236,25 +236,25 @@ function(popViewWhenSaved) {
 ZmPageEditController.prototype._filterScripts =
 function() {
 	var view = this._pageEditView;
-	var editor = view._pageEditor;	
+	var editor = view._pageEditor;
 	if (editor && (editor._mode == DwtHtmlEditor.HTML)) {
-		var doc = editor._getIframeDoc();	
+		var doc = editor._getIframeDoc();
 		this.removeComponent(doc, "script");
 		this.removeComponent(doc, "object");
 		this.removeComponent(doc, "embed");
-		this.removeComponent(doc, "applet");		
-	}	
+		this.removeComponent(doc, "applet");
+	}
 };
 
 ZmPageEditController.prototype.removeComponent =
 function(doc, tagName) {
-	if(!tagName){ return; }
-	
-	var elements = doc.getElementsByTagName(tagName);	
-	if(!elements){ return; }
-	
-	for(var i in elements){
-		if(elements[i].parentNode){
+	if (!tagName) return;
+
+	var elements = doc.getElementsByTagName(tagName);
+	if (!elements) return;
+
+	for (var i = 0; i < elements.length; ++i) {
+		if (elements[i].parentNode) {
 			DBG.dumpObj(elements[i].innerHTML);
 			elements[i].parentNode.removeChild(elements[i]);
 		}
@@ -314,20 +314,20 @@ ZmPageEditController.prototype._saveResponseHandler = function(content, response
 		wiki.l = this._page.folderId;
 		wiki.name = this._page.name;
 	}
-	
-	//Temporary Fix: currently we don't get notification header for 
+
+	//Temporary Fix: currently we don't get notification header for
 	//operations on remote folder, this fix will avoid some nasty bugs
 	var item = cache.getItemInfo({id:this._page.id},true);
 	cache.putPage(item);
 	var pageEditor = this._pageEditView.getPageEditor();
-	pageEditor.setFooterInfo(item);	
+	pageEditor.setFooterInfo(item);
 
 	var nbController = this._app.getNotebookController();
 	var vPage = nbController.getPage();
 	if(vPage && (vPage.id == item.id) ){
 		nbController._object = item;
 	}
-		
+
 	if (popViewWhenSaved) {
 		this._popViewWhenSaved = false;
 
