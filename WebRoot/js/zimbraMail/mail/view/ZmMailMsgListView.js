@@ -17,6 +17,7 @@
 
 ZmMailMsgListView = function(params) {
 	this._mode = params.mode;
+	params.view = params.view || params.mode;
 	params.type = ZmItem.MSG;
 	params.headerList = this._getHeaderList(params.parent);
 	ZmMailListView.call(this, params);
