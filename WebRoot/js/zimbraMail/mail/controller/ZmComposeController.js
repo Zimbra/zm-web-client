@@ -879,7 +879,7 @@ function(draftType, msg, resp) {
 
 			// if the original message was a draft, we need to nuke it
 			var origMsg = msg._origMsg;
-			if (origMsg && origMsg.isDraft && !appCtxt.isOffline)
+			if (origMsg && origMsg.isDraft)
 				this._deleteDraft(origMsg);
 
 			this._app.popView(true);
