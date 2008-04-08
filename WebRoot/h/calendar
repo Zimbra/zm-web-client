@@ -18,8 +18,9 @@
     </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope='request' />
-    
-
+    <c:if test="${not mailbox.features.calendar}">
+        <c:redirect url="/h/search" />
+    </c:if>
     <c:if test="${not empty param.st and param.st ne 'appointment'}">
         <c:redirect url="/h/search">
             <c:param name="sq" value="${param.sq}"/>
