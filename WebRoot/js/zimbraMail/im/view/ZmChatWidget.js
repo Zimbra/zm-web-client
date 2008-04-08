@@ -527,13 +527,13 @@ ZmChatWidget.prototype._doResize = function() {
 
 ZmChatWidget.prototype.setBounds =
 function(x, y, width, height) {
-	DwtControl.prototype.setBounds.call(this, x, y, width, height);
+	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 	this._doResize();
 };
 
 ZmChatWidget.prototype.setSize =
 function(width, height) {
-	DwtControl.prototype.setSize.call(this, width, height);
+	DwtComposite.prototype.setSize.call(this, width, height);
 	this._doResize();
 };
 
