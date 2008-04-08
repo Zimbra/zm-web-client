@@ -500,8 +500,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td nowrap>*&nbsp;<$= ZmMsg.groupMembers $></td>
-						<td class='hintLabel'><$= ZmMsg.groupHint $></td>
+						<td colspan='2' nowrap>*&nbsp;<$= ZmMsg.groupMembers $></td>
 					</tr>
                 </table>
                 <div class='groupMembers'  id='${id}_groupMembers'></div>
