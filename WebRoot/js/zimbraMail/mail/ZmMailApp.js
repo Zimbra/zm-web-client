@@ -1039,7 +1039,9 @@ ZmMailApp.prototype._activateAccordionItem =
 function(accordionItem) {
 	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
 
-	this._mailSearch();
+	if (appCtxt.isOffline || !appCtxt.inStartup) {
+		this._mailSearch();
+	}
 };
 
 ZmMailApp.prototype._mailSearch =
