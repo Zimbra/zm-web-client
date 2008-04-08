@@ -308,13 +308,11 @@ function(appt) {
 		// don't show calendar if remote or don't have write perms
 		if (cal.url) continue;
 		if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
-		this._calendarSelect.addOption(cal.getName(), false, id);
+		this._calendarSelect.addOption(cal.getName(), (appt.folderId==cal.id), id);
 	}
 
 	var len = this._calendarSelect.size();
 	Dwt.setVisible(this._calendarRow, len > 1);
-
-    this._calendarSelect.setSelectedValue(appt.folderId);
 };
 
 ZmApptQuickAddDialog.prototype._showTimeFields = 
