@@ -78,8 +78,8 @@
                     <span style="font-weight:bold; font-size:12px;"><c:out value="${mailbox.name}"></c:out><br></span>
                     <a style="text-decoration:none;" href='${url}'>
                         ${folder.unreadCount}&nbsp;<fmt:message key="unread"/>
+						| ${folder.messageCount}&nbsp;<fmt:message key="total"/>
                     </a>
-					| ${folder.messageCount}&nbsp;<fmt:message key="total"/>
 				</td>
             </tr>
         </table>
