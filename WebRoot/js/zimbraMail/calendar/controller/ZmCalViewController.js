@@ -57,7 +57,8 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = apptEditListener;
 	this._listeners[ZmOperation.VIEW_APPOINTMENT] = new AjxListener(this, this._handleMenuViewAction);
 	this._listeners[ZmOperation.TODAY] = new AjxListener(this, this._todayButtonListener);
-	this._listeners[ZmOperation.DAY_VIEW] = calViewListener;
+    this._listeners[ZmOperation.FREE_BUSY_LINK] = new AjxListener(this, this._freeBusyLinkListener);
+    this._listeners[ZmOperation.DAY_VIEW] = calViewListener;
 	this._listeners[ZmOperation.WEEK_VIEW] = calViewListener;
 	this._listeners[ZmOperation.WORK_WEEK_VIEW] = calViewListener;
 	this._listeners[ZmOperation.MONTH_VIEW] = calViewListener;
@@ -407,7 +408,9 @@ function() {
 			ZmOperation.SEP,
 			ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW,
 			ZmOperation.SEP,
-			ZmOperation.TODAY];
+			ZmOperation.TODAY,
+            ZmOperation.SEP,
+            ZmOperation.FREE_BUSY_LINK];
 };
 
 /* This method is called from ZmListController._setup. We control when this method is called in our
@@ -444,7 +447,7 @@ function(viewId) {
 	this._toolbar[ZmController.CAL_VIEW] = toolbar;
 
 	// Setup the toolbar stuff
-	toolbar.enable([ZmOperation.TODAY], true);
+	toolbar.enable([ZmOperation.TODAY,ZmOperation.FREE_BUSY_LINK], true);
 	toolbar.enable([ZmOperation.CAL_REFRESH], true);
 	toolbar.enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
 	toolbar.enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
@@ -694,6 +697,23 @@ function(ev) {
 ZmCalViewController.prototype._todayButtonListener =
 function(ev) {
 	this.setDate(new Date(), 0, true);
+};
+
+ZmCalViewController.prototype._freeBusyLinkListener =
+function(ev){
+  var inNewWindow = this._app._inNewWindow(ev);
+    var restUrl = appCtxt.get(ZmSetting.REST_URL);
+    if(restUrl){
+       restUrl += "?fmt=freebusy";
+    }
+    var action = ZmOperation.NEW_MESSAGE;
+	var msg = new ZmMailMsg();
+	var toOverride = null;
+	var subjOverride = null;
+	var extraBodyText = restUrl;
+	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
+								  toOverride: toOverride, subjOverride: subjOverride,
+								  extraBodyText: extraBodyText});
 };
 
 ZmCalViewController.prototype._newApptAction =
