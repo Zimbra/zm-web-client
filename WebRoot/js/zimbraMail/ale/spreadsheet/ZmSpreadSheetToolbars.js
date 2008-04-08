@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -86,7 +86,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	b.setToolTipContent(ZmMsg.paste);
 
 	new DwtControl({parent:toolbar, className:"vertSep"});
-	
+
 	params.style = DwtButton.TOGGLE_STYLE;
 	b = this._buttons.bold = new DwtToolBarButton(params);
 	b.setImage("Bold");
@@ -113,7 +113,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	b.setToolTipContent(ZmMsg.strikeThruText);
 
 	new DwtControl({parent:toolbar, className:"vertSep"});
-	
+
 	b = this._buttons.justifyLeft = new DwtToolBarButton(params);
 	b.setImage("LeftJustify");
 	b.setData("SS", "JustifyLeft");
@@ -133,7 +133,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	b.setToolTipContent(ZmMsg.rightJustify);
 
 	new DwtControl({parent:toolbar, className:"vertSep"});
-	
+
 	b = this._buttons.fontColor = new ZmSpreadSheetEditorColorPicker(toolbar, null, "DwtToolbarButton", null, null, null, ZmMsg.auto);
 	b.setImage("FontColor");
 	b.showColorDisplay();
@@ -212,7 +212,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	b.setToolTipContent(ZmMsg.deleteRow);
 
 	new DwtControl({parent:toolbar, className:"vertSep"});
-		
+
 	b = this._buttons.colInsertBefore = new DwtToolBarButton(params);
 	b.setImage("InsertColBefore");
 	b.setData("SS", "ColInsertBefore");
@@ -242,7 +242,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	// BEGIN: Insert Function menu
 
 	b = new DwtToolBarButton(params);
-	b.setText("Insert function");
+	b.setText(ZmMsg.insertFunction);
 
 	var menu = new DwtMenu({parent:b});
 	menu.dontStealFocus();
@@ -275,27 +275,28 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 
 	new DwtControl({parent:toolbar, className:"vertSep"});
 
-	
+
 
 	var s = this._buttons.typeSelect = new ZmSpreadSheetEditorSelect(toolbar, null);
 	s.addChangeListener(new AjxListener(this, this._on_typeSelect));
-	s.addOption("Auto type", true, null);
-	s.addOption("Number", false, "number");
-	s.addOption("Currency", false, "currency");
-	s.addOption("Percentage", false, "percentage");
-	s.addOption("Text", false, "string");
+	s.addOption(ZmMsg.spreadSheet_msg_autoType, true, null);
+	s.addOption(ZmMsg.number, false, "number");
+	s.addOption(ZmMsg.currency, false, "currency");
+	s.addOption(ZmMsg.percent, false, "percentage");
+	s.addOption(ZmMsg.text, false, "string");
 
 
 	var s = this._buttons.decimalsSelect = new ZmSpreadSheetEditorSelect(toolbar, null);
 	s.addChangeListener(new AjxListener(this, this._on_decimalsSelect));
-	s.addOption("Auto decimals", true, -1);
-	s.addOption("No decimals", false, 0);
-	s.addOption("1 decimal", false, 1);
-	s.addOption("2 decimals", false, 2);
-	s.addOption("3 decimals", false, 3);
-	s.addOption("4 decimals", false, 4);
-	s.addOption("5 decimals", false, 5);
-	s.addOption("6 decimals", false, 6);
+	s.addOption(ZmMsg.spreadSheet_msg_autoDecimals, true, -1);
+	s.addOption(ZmMsg.spreadSheet_msg_noDecimals, false, 0);
+	s.addOption(ZmMsg.oneDecimal, false, 1);
+        var tmp = new AjxMessageFormat(ZmMsg.manyDecimals);
+	s.addOption(tmp.format(2), false, 2);
+	s.addOption(tmp.format(3), false, 3);
+	s.addOption(tmp.format(4), false, 4);
+	s.addOption(tmp.format(5), false, 5);
+	s.addOption(tmp.format(6), false, 6);
 
 	if (ZmSpreadSheetModel.DEBUG) {
 		new DwtControl({parent:toolbar, className:"vertSep"});
