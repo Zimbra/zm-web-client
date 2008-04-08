@@ -5,7 +5,7 @@
 				<col width='<$= AjxEnv.is800x600orLower ? "235" : "50%" $>' />
 				<col width='<$= AjxEnv.is800x600orLower ? "*" : "50%" $>' />
 			</colgroup>
-			<tr style='height:<$= AjxEnv.isIE ? "150" : "110" $>px'>
+			<tr style='height:<$= AjxEnv.isIE ? "160" : "110" $>px'>
 				<!-- appointmenet details section -->
 				<td valign=top>
 					<fieldset>
@@ -17,16 +17,16 @@
 									<col />
 								</colgroup>
 								<tr>
-									<td class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
+									<td width="1%" class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
 									<td id='${id}_subject'></td>
 								</tr>
 								<tr>
-									<td class='ZmApptTabViewPageField'><nobr><$= ZmMsg.locationLabel $></nobr></td>
+									<td width="1%" class='ZmApptTabViewPageField'><nobr><$= ZmMsg.locationLabel $></nobr></td>
 									<td id='${locationId}'></td>
 								</tr>
 								<$ if (data.isAppt) { $>
 								<tr>
-									<td colspan=2>
+									<td width="100%" colspan=2>
 										<table border=0 cellpadding=0 cellspacing=2>
 											<tr>
 												<td class='ZmFieldLabelRight'><nobr><$= ZmMsg.showAs $>&nbsp;</nobr></td>
