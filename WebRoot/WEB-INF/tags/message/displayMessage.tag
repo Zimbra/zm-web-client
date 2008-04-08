@@ -17,6 +17,12 @@
 
 <c:set var="theBody">
     <c:if test="${body.isTextHtml or body.isTextPlain}">
+        <c:if test="${body.isTextPlain}">
+            <c:set var="replyFormat" value="text"/>
+        </c:if>
+        <c:if test="${body.isTextHtml}">
+            <c:set var="replyFormat" value="html"/>
+        </c:if>
         <c:catch>
           ${zm:getPartHtmlContent(body, message)}
         </c:catch>
@@ -204,8 +210,12 @@
                                     </td>
                                     <td><div class='vertSep'></div></td>
                                 </c:if>
+                                <c:set var="hurl" value="${composeUrl}"/>
+                                <c:if test="${!empty replyFormat}">
+                                    <c:set var="hurl" value="${hurl}&rf=${replyFormat}"/>
+                                </c:if>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=reply">
+                                    <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${fn:escapeXml(hurl)}&amp;op=reply">
                                         <app:img src="startup/ImgReply.gif" alt="reply"/>
                                         &nbsp;
                                         <span><fmt:message key="reply"/></span>
@@ -213,7 +223,7 @@
                                 </td>
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=replyAll">
+                                    <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${fn:escapeXml(hurl)}&amp;op=replyAll">
                                         <app:img src="startup/ImgReplyAll.gif" alt="replyall"/>
                                         &nbsp;
                                         <span><fmt:message key="replyAll"/></span>
@@ -221,7 +231,7 @@
                                 </td>
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${fn:escapeXml(composeUrl)}&amp;op=forward">
+                                    <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${fn:escapeXml(hurl)}&amp;op=forward">
                                         <app:img src="startup/ImgForward.gif" alt="forward"/>
                                         &nbsp;
                                         <span><fmt:message key="forward"/></span>

@@ -21,6 +21,9 @@
     <zm:composeUploader var="uploader"/>
     <c:set var="compose" value="${uploader.compose}"/>
     <c:set var="composeformat" value="${mailbox.prefs.composeFormat}" />
+    <c:if test="${mailbox.prefs.forwardReplyInOriginalFormat && !empty param.rf && (param.rf eq 'html' || param.rf eq 'text')}">
+            <c:set var="composeformat" value="${param.rf}"/>        
+    </c:if>
     <c:set var="isHtml" value="${composeformat eq 'html'}"/>
 </app:handleError>
 
