@@ -104,11 +104,11 @@ function() {
 ZmGroupView.prototype.isEmpty =
 function(checkEither) {
 	var groupName = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
-	var members = AjxStringUtil.trim(this._groupMembers.value);
+	var members = ( this._groupListView.getList() && this._groupListView.getList().size() > 0 );
 
 	return checkEither
-		? (groupName == "" || members == "")
-		: (groupName == "" && members == "");
+		? (groupName == "" || !members )
+		: (groupName == "" && !members );
 };
 
 ZmGroupView.prototype.isValid =
@@ -117,23 +117,7 @@ function() {
 	if (this.isDirty() && this.isEmpty(true)) {
 		throw ZmMsg.errorMissingGroup;
 	}
-
-	// validate email addresses
-	var addrs = this._getGroupMembers(true);
-	if (addrs) {
-		var invalidAddrs = [];
-		for (var i = 0; i < addrs.length; i++) {
-			var addr = addrs[i];
-			if (!AjxEmailAddress.isValid(addr))
-				invalidAddrs.push(addr);
-		}
-		if (invalidAddrs.length) {
-			var bad = invalidAddrs.join("<br>");
-			throw AjxMessageFormat.format(ZmMsg.groupBadAddresses, bad);
-		}
-	}
-
-	return true;
+    return true;
 };
 
 ZmGroupView.prototype.enableInputs =
@@ -164,20 +148,26 @@ function(width, height) {
 ZmGroupView.prototype.setBounds =
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
-	Dwt.setSize(this._groupMembers, Dwt.DEFAULT, height-100);
-	var fudge = (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
+    if(this._addNewField){
+        Dwt.setSize(this._addNewField, Dwt.DEFAULT, 50);
+    }
+    this._groupListView.setSize(Dwt.DEFAULT, height-150);
+    var fudge = (appCtxt.get(ZmSetting.GAL_ENABLED) || appCtxt.get(ZmSetting.SHARING_ENABLED))
 		? 185 : 160;
-	this._listview.setSize(Dwt.DEFAULT, height-fudge);
+	this._listview.setSize(Dwt.DEFAULT, height-fudge-(this._addNewField? 100 : 0));
 };
 
 ZmGroupView.prototype.cleanup  =
 function() {
 	document.getElementById(this._searchFieldId).value = "";
 	this._listview.removeAll(true);
-	this._addButton.setEnabled(false);
+    this._groupListView.removeAll(true);
+    this._addButton.setEnabled(false);
 	this._addAllButton.setEnabled(false);
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
+    this._delButton.setEnabled(false);    
+    if(this._addNewField) this._addNewField.value = '';
 };
 
 ZmGroupView.prototype.search =
@@ -310,7 +300,29 @@ function() {
 	this._listview.setUI(null, true); // renders headers and empty list
 	this._listview._initialized = true;
 
-	var addListener = new AjxListener(this, this._addListener);
+    //add list view for group memebers
+    this._groupListView = new ZmGroupMembersListView(this);
+    this._groupListView.reparentHtmlElement(this._htmlElId+"_groupMembers");
+    this._groupListView.addSelectionListener(new AjxListener(this, this._groupMembersSelectionListener));
+    this._groupListView.setUI(null, true);
+    this._groupListView._initialized = true;    
+
+    //Delete Button & Listener
+    var delListener = new AjxListener(this, this._delListener);
+    this._delButton = new DwtButton({parent:this});
+    this._delButton.setText(ZmMsg.del);
+    this._delButton.addSelectionListener(delListener);
+    this._delButton.reparentHtmlElement(this._htmlElId + "_delButton");
+    this._delButton.setEnabled(false);
+
+    //DeleteAll Button & Listener
+    this._delAllButton = new DwtButton({parent:this});
+    this._delAllButton.setText(ZmMsg.delAll);
+    this._delAllButton.addSelectionListener(delListener);
+    this._delAllButton.reparentHtmlElement(this._htmlElId + "_delAllButton");
+
+    //Add Button Listener
+    var addListener = new AjxListener(this, this._addListener);
 	// add "Add" button
 	this._addButton = new DwtButton({parent:this});
 	this._addButton.setText(ZmMsg.add);
@@ -338,6 +350,17 @@ function() {
 	this._nextButton.addSelectionListener(pageListener);
 	this._nextButton.reparentHtmlElement(this._htmlElId + "_nextButton");
 	this._nextButton.setEnabled(false);
+
+    //Add New Button
+    this._addNewField = document.getElementById(this._htmlElId + "_addNewField");
+    if(this._addNewField){
+        this._addNewButton = new DwtButton({parent:this});
+        this._addNewButton.setText(ZmMsg.add);
+        this._addNewButton.addSelectionListener(new AjxListener(this, this._addNewListener));
+        this._addNewButton.reparentHtmlElement(this._htmlElId + "_addNewButton");
+    }
+
+
 };
 
 ZmGroupView.prototype._installKeyHandlers =
@@ -378,7 +401,11 @@ function() {
 */
 ZmGroupView.prototype._getGroupMembers =
 function(asArray) {
-	var addrs = AjxStringUtil.split(this._groupMembers.value, ['\n', ';', ',']);
+
+    var addrs = this._groupListView.getList();
+
+    if(!addrs) return null;
+    addrs = addrs.getArray();
 
 	// if there are any empty values, remove them
 	var i = 0;
@@ -408,8 +435,11 @@ function() {
 ZmGroupView.prototype._setGroupMembers =
 function() {
 	var members = this._contact.getGroupMembers().good.getArray();
-	this._setGroupMemberValue(members.join("\n"));
-	this._appendNewline();
+    var membersList = [];
+    for(var i=0; i<members.length; i++){
+        membersList[i] = members[i].toString();
+    }
+    this._setGroupMembersListView(membersList, false);
 };
 
 ZmGroupView.prototype._setGroupName =
@@ -425,6 +455,13 @@ ZmGroupView.prototype._searchButtonListener =
 function(ev) {
 	this._offset = 0;
 	this.search();
+};
+
+
+ZmGroupView.prototype._groupMembersSelectionListener =
+function(ev){
+   var selection = this._groupListView.getSelection();
+   this._delButton.setEnabled(selection.length > 0);
 };
 
 ZmGroupView.prototype._selectionListener =
@@ -465,6 +502,43 @@ function(ev) {
 	this.search();
 };
 
+ZmGroupView.prototype._delListener =
+function(ev){
+
+    if(ev.dwtObj == this._delButton){
+        var list = this._groupListView.getSelectedItems();
+        var items = this._groupListView.getSelection();
+
+        while(list.get(0)){
+            this._groupListView.removeItem(list.get(0));
+        }
+        for(var i=0; i<items.length; i++){
+            this._groupListView.getList().remove(items[i]);
+        }
+    }else{
+        this._groupListView.removeAll(true);
+        this._groupListView.getList().removeAll();
+    }
+
+    this._isDirty = true;
+};
+
+ZmGroupView.prototype._addNewListener =
+function(ev){
+    var emailStr = this._addNewField.value;
+    if(!emailStr || emailStr == '') return;
+
+    var addrs = AjxEmailAddress.parseEmailString(emailStr);
+    if(addrs && addrs.good){
+        var goodArry = addrs.good.getArray();
+        var goodAddr = [];
+        for(var i=0; i<goodArry.length; i++) goodAddr[i] = goodArry[i].toString();
+        this._setGroupMembersListView(goodAddr, true);
+    }
+
+    this._addNewField.value = '';
+};
+
 ZmGroupView.prototype._addListener =
 function(ev) {
 
@@ -477,9 +551,10 @@ function(ev) {
 
 ZmGroupView.prototype._addItems =
 function(list) {
-	if (list.length == 0) return;
 
-	// we have to walk the results in case we hit a group which needs to be split
+    if (list.length == 0) return;
+
+    // we have to walk the results in case we hit a group which needs to be split
 	var items = [];
 	for (var i = 0; i < list.length; i++) {
 		if (list[i].isGroup) {
@@ -487,37 +562,36 @@ function(list) {
 			for (var j = 0; j < emails.length; j++)
 				items.push(emails[j]);
 		} else {
-			items.push(list[i]);
+			items.push(list[i].toString());
 		}
 	}
 
 	this._dedupe(items);
 	if (items.length > 0) {
-		this._appendNewline();
-		this._setGroupMemberValue((items.join("\n") + "\n"), true);
-		this._isDirty = true;
+        this._setGroupMembersListView(items, true);
 	}
 };
 
-// appends newline at the end of textarea if one does not already exist
-ZmGroupView.prototype._appendNewline =
-function() {
-	var members = this._groupMembers.value;
-	if (members.length) {
-		if (members.charAt(members.length-1) != "\n")
-			this._setGroupMemberValue("\n", true);
-	}
+ZmGroupView.prototype._setGroupMembersListView =
+function(list, append){
+    if (append) {
+        var membersList = this._groupListView.getList();
+        list = list.concat( membersList ? membersList.getArray() : [] );
+    }
+    this._groupListView.set(AjxVector.fromArray(list));
+    this._isDirty = true;
 };
 
 ZmGroupView.prototype._dedupe =
 function(items) {
-	var addrs = this._getGroupMembers(true);
+    var addrs = this._groupListView.getList();
 	if (addrs) {
-		var i = 0;
+        addrs = addrs.getArray();
+        var i = 0;
 		while (true) {
 			var found = false;
 			for (var j = 0; j < addrs.length; j++) {
-				if (items[i].toString() == AjxStringUtil.trim(addrs[j])) {
+				if (items[i] == AjxStringUtil.trim(addrs[j])) {
 					items.splice(i,1);
 					found = true;
 					break;
@@ -630,7 +704,6 @@ function(contact, abridged) {
 };
 
 
-
 /**
 * Creates a group list view for search results
 * @constructor
@@ -679,4 +752,37 @@ function(clickedEl, ev) {
 	} else {
 		DwtListView.prototype._itemClicked.call(this, clickedEl, ev);
 	}
+};
+
+/**
+* Creates a group members list view
+* @constructor
+* @class
+*
+* @param parent			[ZmGroupView]	containing widget
+*/
+
+
+ZmGroupMembersListView = function(parent){
+    if(arguments.length == 0) return;
+
+    ZmGroupListView.call(this, parent);
+};
+
+ZmGroupMembersListView.prototype = new ZmGroupListView;
+ZmGroupMembersListView.prototype.constructor = ZmGroupMembersListView;
+
+ZmGroupMembersListView.prototype._getHeaderList =
+function() {
+	var headerList = [];
+	headerList.push(new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.email));
+	return headerList;
+};
+
+ZmGroupMembersListView.prototype._getCellContents =
+function(html, idx, item, field, colIdx, params) {
+    if (field == ZmItem.F_EMAIL) {
+		html[idx++] = AjxStringUtil.htmlEncode(item, true);
+	}
+	return idx;
 };

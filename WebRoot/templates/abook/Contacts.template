@@ -503,8 +503,15 @@
 						<td nowrap>*&nbsp;<$= ZmMsg.groupMembers $></td>
 						<td class='hintLabel'><$= ZmMsg.groupHint $></td>
 					</tr>
-				</table>
-				<textarea wrap=off class='groupMembers' id='${id}_groupMembers'></textarea>
+                </table>
+                <div class='groupMembers'  id='${id}_groupMembers'></div>
+                <table border=0 cellpadding=3 cellspacing=2 width=100%>
+                    <tr>
+                        <td id='${id}_delButton'></td>
+                        <td id='${id}_delAllButton'></td>
+                        <td width=100%></td>                        
+                    </tr>
+                </table>
 			</td>
 
 			<!-- content: right pane -->
@@ -534,7 +541,18 @@
 							<td id='${id}_nextButton'></td>
 						</tr>
 					</table>
-				</fieldset>
+                   <table border=0 cellpadding=3 cellspacing=2 width=100%>
+						<tr>
+                            <td><$=ZmMsg.enterAddrBelow$></td>
+                        </tr>
+                        <tr>
+                            <td>
+                              <textarea class='groupMembers' id='${id}_addNewField'></textarea>
+                            </td>
+                            <td id='${id}_addNewButton'></td>
+                        </tr>
+                    </table>
+                </fieldset>
 			</td>
 		</tr>
 	</table>
