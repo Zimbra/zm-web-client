@@ -390,6 +390,10 @@ function(creates, force) {
 			} else if (name == "appt") {
 				AjxDispatcher.run("GetCalController").notifyCreate(create);
 			}
+			
+			if((name == "folder" || name == "link") && this._calController) {
+				this._calController._updateCheckedCalendars();
+			}			
 		}
 	}
 };
