@@ -280,7 +280,7 @@ function(convs, msgs) {
 				// if the new msg matches current search, update conv date, fragment, and sort order
 				// TODO: handle simple tag searches
 				if (msgMatches) {
-					msg._inHitList = true;
+					msg.inHitList = true;
 					if (conv.fragment != msg.fragment) {
 						conv.fragment = msg.fragment;
 						fields[ZmItem.F_FRAGMENT] = true;
@@ -401,7 +401,7 @@ function(offset, limit) {
 		var end = (offset + limit > numMsgs) ? numMsgs : offset + limit;
 		var list = this.getArray();
 		for (var i = offset; i < end; i++) {
-			if (list[i].isInHitList()) {
+			if (list[i].inHitList) {
 				msg = list[i];
 				break;
 			}
