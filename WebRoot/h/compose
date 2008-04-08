@@ -107,7 +107,7 @@
                     <div>
                         <table cellpadding="2" cellspacing="5" style="height:80%;" width="100%" class='Compose' border="0">
                             <tr>
-                                <app:button  name="actionContactAdd" width="1%" tooltip="addFromContacts" text="to"/>
+                                <app:button  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="to"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhACTo">
                                     <textarea  id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" 
@@ -117,7 +117,7 @@
                             </tr>
 
                             <tr>
-                                <app:button  name="actionContactAdd" width="1%" tooltip="addFromContacts" text="cc"/>
+                                <app:button  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="cc"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhACCc">
                                         <input style='width:99%; height:18px;' id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);" size=100  name="cc">
@@ -126,7 +126,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <app:button  name="actionContactAdd" width="1%" tooltip="addFromContacts" text="bcc"/>
+                                <app:button  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="bcc"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhAcBcc">
                                         <input style='width:99%; height:18px;' id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);" size="100" name="bcc">

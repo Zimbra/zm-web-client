@@ -350,6 +350,10 @@ A:visited { color: blue; }
 	@SkinBorderApp@
 }
 
+.Compose .tobutton {
+    width: 50px;
+}
+
 .ConvSummary  {
 	@PageHeaderBg@
 	@BottomSeparator@
