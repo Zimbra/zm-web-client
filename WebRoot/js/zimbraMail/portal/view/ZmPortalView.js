@@ -48,7 +48,10 @@ ZmPortalView.prototype._getHeaderList = function() {
 
 //ZmPortalView.prototype._initializeView = function() {
 ZmPortalView.prototype.set = function() {
-	if (this._rendered) return;
+	if (this._rendered)  { 
+		Dwt.setTitle(this.getTitle()); //bug:24787
+		return;
+	}
 	var callback = new AjxCallback(this, this._initializeView2);
     appCtxt.getApp(ZmApp.PORTAL).getManifest(callback);
 };
@@ -65,4 +68,9 @@ ZmPortalView.prototype._initializeView2 = function(manifest) {
     this._portletIds = portletMgr.createPortlets();
 
 	this._rendered = true;
+};
+
+ZmPortalView.prototype.getTitle =
+function() {
+	return [ZmMsg.zimbraTitle, this._controller.getApp().getDisplayName()].join(": ");
 };
