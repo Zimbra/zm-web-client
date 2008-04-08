@@ -610,7 +610,8 @@ function() {
 
 ZmMailApp.prototype._setupSearchToolbar =
 function() {
-	ZmSearchToolBar.FOR_MAIL_MI = "FOR MAIL";
+    if(appCtxt.get(ZmSetting.MAIL_ENABLED)){
+    ZmSearchToolBar.FOR_MAIL_MI = "FOR MAIL";
 	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_MAIL_MI,
 								{msgKey:		"searchMail",
 								 tooltipKey:	"searchMail",
@@ -618,6 +619,7 @@ function() {
 								 shareIcon:		"SharedMailFolder",
 								 id:			ZmId.SEARCH_MENU_MAIL
 								});
+    }
 };
 
 ZmMailApp.prototype._setupCurrentAppToolbar =
