@@ -71,11 +71,23 @@ function(params) {
 
 	if (params.callback) {
 		var respCallback = new AjxCallback(this, this._getMiniCalResponse, [params]);
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, noBusyOverlay:params.noBusyOverlay});
+		var errorCallback = new AjxCallback(this, this._handleMiniCalResponseError, [params]);		
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:params.noBusyOverlay});
 	} else {
 		var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj});
 		var result = new ZmCsfeResult(response, false);
 		return this._getMiniCalResponse(params, result);
+	}
+};
+
+ZmMiniCalCache.prototype._handleMiniCalResponseError =
+function(params, result) {
+	//todo: add code to handle fault
+
+ 
+	//continue with callback operation	
+	if(params.callback) {
+		params.callback.run([]);
 	}
 };
 
