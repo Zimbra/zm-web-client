@@ -65,7 +65,8 @@ function() {
 };
 
 /** Returns the account test dialog. */
-ZmPrefController.prototype.getTestDialog = function() {
+ZmPrefController.prototype.getTestDialog =
+function() {
 	if (!this._testDialog) {
 		this._testDialog = new ZmAccountTestDialog(this._container);
 	}

@@ -26,7 +26,8 @@ ZmPersona = function(identity, list) {
 ZmPersona.prototype = new ZmAccount;
 ZmPersona.prototype.constructor = ZmPersona;
 
-ZmPersona.prototype.toString = function() {
+ZmPersona.prototype.toString =
+function() {
 	return "ZmPersona";
 };
 
@@ -40,34 +41,42 @@ ZmAccount.PERSONA = "PERSONA";
 // Public methods
 //
 
-ZmPersona.prototype.setName = function(name) {
+ZmPersona.prototype.setName =
+function(name) {
 	this.getIdentity().name = name;
 };
 
-ZmPersona.prototype.getName = function() {
+ZmPersona.prototype.getName =
+function() {
 	return this.getIdentity().name;
 };
 
-ZmPersona.prototype.setEmail = function(email) {
+ZmPersona.prototype.setEmail =
+function(email) {
 	this.getIdentity().sendFromAddress = email;
 };
 
-ZmPersona.prototype.getEmail = function() {
+ZmPersona.prototype.getEmail =
+function() {
 	return this.getIdentity().sendFromAddress;
 };
 
-ZmPersona.prototype.getIdentity = function() {
+ZmPersona.prototype.getIdentity =
+function() {
 	return this.identity;
 };
 
-ZmPersona.prototype.create = function(callback, errorCallback, batchCmd) {
+ZmPersona.prototype.create =
+function(callback, errorCallback, batchCmd) {
 	return this.getIdentity().create(callback, errorCallback, batchCmd);
 };
 
-ZmPersona.prototype.save = function(callback, errorCallback, batchCmd) {
+ZmPersona.prototype.save =
+function(callback, errorCallback, batchCmd) {
 	return this.getIdentity().save(callback, errorCallback, batchCmd);
 };
 
-ZmPersona.prototype.doDelete = function(callback, errorCallback, batchCmd) {
+ZmPersona.prototype.doDelete = 
+function(callback, errorCallback, batchCmd) {
 	return this.getIdentity().doDelete(callback, errorCallback, batchCmd);
 };

@@ -98,7 +98,7 @@ function() {
 
 ZmZimbraAccount.prototype.getIdentity =
 function() {
-	if (this.isMain) {
+	if (this.isMain || appCtxt.isOffline) {
 		return appCtxt.getIdentityCollection().defaultIdentity;
 	}
 
