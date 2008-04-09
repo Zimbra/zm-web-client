@@ -151,9 +151,10 @@
     </td>
     <td>
         <input type="hidden" name="folderId" value="${folder.id}"/>
+        <fmt:message key="${fn:toLowerCase(fn:escapeXml(folder.name))}" var="folderName" />
         <input id="name"
-        <c:if test="${folder.isSystemFolder}"> disabled </c:if> name='folderName' type='text' 
-                                               size='35' value="${fn:escapeXml(folder.name)}">
+        <c:if test="${folder.isSystemFolder}"> disabled </c:if> name='folderName' type='text'
+                                               size='35' value="${fn:escapeXml(fn:startsWith(folderName,'???') ? folder.name : folderName)}">
         <c:if test="${not folder.isSystemFolder}">
         <input name='folderNameVisible' type='hidden' value="true"/>
         </c:if>
