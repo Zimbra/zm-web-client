@@ -106,8 +106,8 @@ function(view) {
 ZmConvController.prototype._initializeToolBar = 
 function(view) {
 	if (!this._toolbar[view]) {
-		// nuke the double arrows for 800x600 resolutions or lower
-		var navArrows = AjxEnv.is800x600orLower ? ZmNavToolBar.SINGLE_ARROWS : ZmNavToolBar.ALL_ARROWS;
+		// nuke the double arrows for lower resolutions
+		var navArrows = AjxEnv.is1024x768orLower ? ZmNavToolBar.SINGLE_ARROWS : ZmNavToolBar.ALL_ARROWS;
 
 		ZmDoublePaneController.prototype._initializeToolBar.call(this, view, navArrows);
 	}
