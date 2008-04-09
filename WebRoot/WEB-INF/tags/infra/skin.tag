@@ -1,4 +1,5 @@
 <%@ attribute name="mailbox" rtexprvalue="true" required="false" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
+<%@ attribute name="defaultSkin" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <c:catch>
@@ -19,7 +20,7 @@
 			</c:if>
 		</c:catch>
 		<c:if test="${not empty ex}">
-			<c:set var="skin" scope="request" value="${initParam.zimbraDefaultSkin}" />
+			<c:set var="skin" scope="request" value="${not empty defaultSkin ? defaultSkin : initParam.zimbraDefaultSkin}" />
 		</c:if>
 	</c:when>
 	<c:when test="${not empty sessionScope_skin}">
@@ -27,6 +28,9 @@
 	</c:when>
 	<c:when test="${not empty mailbox}">
 		<c:set var="skin" scope="request" value="${mailbox.prefs.skin}" />
+	</c:when>
+	<c:when test='${not empty defaultSkin}'>
+		<c:set var="skin" scope="request" value="${defaultSkin}" />
 	</c:when>
 	<c:otherwise>
 		<c:set var="skin" scope="request" value="${initParam.zimbraDefaultSkin}" />
