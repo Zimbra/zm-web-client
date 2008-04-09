@@ -354,7 +354,8 @@ function() {
 				d = (rel && (rel.length > 0)) ? rel[0].d : null;
 				h = (rel && (rel.length > 0)) ? rel[0].h : null;
 								
-				if(tmp[0].action == "DISPLAY"){
+				this._reminderMinutes = 0;								
+				if(tmp && (tmp.length>1) && (tmp[0].action == "DISPLAY")){
 					if(m != null) {
 						this._reminderMinutes = m;
 					}
