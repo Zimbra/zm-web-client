@@ -22,6 +22,7 @@ ZmCalendarTreeController = function() {
 	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);
 	this._listeners[ZmOperation.CLEAR_ALL] = new AjxListener(this, this._clearAllListener);
+    this._listeners[ZmOperation.DETACH_WIN] = new AjxListener(this, this._detachListener);
 
 	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
@@ -123,6 +124,16 @@ function(actionMenu, type, id) {
 	}
 };
 
+ZmCalendarTreeController.prototype._detachListener =
+function(ev){
+    var folder = this._getActionedOrganizer(ev);
+    if (folder) {
+        var url = folder.getRestUrl();
+        if(url){
+            var newWin = window.open(url+".html", "_blank");
+        }
+    }
+};
 // Returns a list of desired header action menu operations
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
@@ -146,8 +157,9 @@ function() {
 	ops.push(ZmOperation.DELETE);
 	ops.push(ZmOperation.EDIT_PROPS);
 	ops.push(ZmOperation.SYNC);
+    ops.push(ZmOperation.DETACH_WIN);
 
-	return ops;
+    return ops;
 };
 
 ZmCalendarTreeController.prototype.getTreeStyle =
