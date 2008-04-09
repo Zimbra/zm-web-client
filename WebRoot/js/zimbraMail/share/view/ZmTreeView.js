@@ -131,6 +131,7 @@ function(params) {
 	var treeItemId = ZmId.getTreeItemId(this.overviewId, null, this.type);
 	var ti = this._headerItem = new DwtTreeItem({parent:this, className:this._headerClass, id:treeItemId});
 	ti.enableSelection(false); // by default, disallow selection
+	ti._isHeader = true;
 	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];
 	if (name) {
 		ti.setText(name);
@@ -148,7 +149,7 @@ function(params) {
 	params.treeNode = ti;
 	params.organizer = root;
 	this._render(params);
-	ti.setExpanded(!params.collapsed);
+	ti.setExpanded(!params.collapsed, null, true);
 	this.addSeparator();
 	if (appCtxt.get(ZmSetting.SKIN_HINTS, "noOverviewHeaders")) {
 		ti.setVisible(false, true);

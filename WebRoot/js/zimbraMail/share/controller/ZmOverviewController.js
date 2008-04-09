@@ -33,11 +33,12 @@ ZmOverviewController = function(container) {
 
 	ZmController.call(this, container);
 	
-	this._overview = {};
-	this._accordion = {};
-	this._controller = {};
-	this._treeIds = {};
-	this._treeIdHash = {};
+	this._overview		= {};
+	this._accordion		= {};
+	this._controller	= {};
+	this._treeIds		= {};
+	this._treeIdHash	= {};
+	this._appOverviewId	= {};
 };
 
 // Controller for given org type
@@ -168,4 +169,20 @@ function(account, icon) {
 			el.className = icon;
 		}
 	}
+};
+
+ZmOverviewController.prototype.isAppOverviewId =
+function(overviewId) {
+	if (this._appOverviewId[overviewId] != null) {
+		return this._appOverviewId[overviewId]
+	}
+	this._appOverviewId[overviewId] = false;
+	for (var i = 0; i < ZmApp.APPS.length; i++) {
+		var app = appCtxt.getApp(ZmApp.APPS[i]);
+		if (app && (app.getOverviewPanelContentId() == overviewId)) {
+			this._appOverviewId[overviewId] = true;
+			return true;
+		}
+	}
+	return false;
 };

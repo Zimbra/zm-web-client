@@ -203,9 +203,10 @@ ZmOrganizer.TREE_TYPE 		= {};		// type of server data tree that contains this ty
 ZmOrganizer.VIEWS 			= {};		// views by type
 ZmOrganizer.TYPE 			= {};		// types by view (reverse map of above)
 ZmOrganizer.FOLDER_KEY 		= {};		// keys for label "[org] folder"
-ZmOrganizer.MOUNT_KEY 		= {}		// keys for label "mount [org]"
+ZmOrganizer.MOUNT_KEY 		= {};		// keys for label "mount [org]"
 ZmOrganizer.DEFERRABLE 		= {};		// creation can be deferred to app launch
 ZmOrganizer.PATH_IN_NAME	= {};		// if true, provide full path when asked for name
+ZmOrganizer.OPEN_SETTING	= {};		// setting that controls whether the tree view is open
 
 // Abstract methods
 
@@ -237,6 +238,7 @@ ZmOrganizer.PATH_IN_NAME	= {};		// if true, provide full path when asked for nam
  *        deferrable		[boolean]	true if creation can be deferred to app launch
  *        shortcutKey		[string]	letter encoding of this org type for custom shortcuts
  *        pathInName		[boolean]	if true, provide full path when asked for name
+ *        openSetting		[const]		setting that controls whether the tree view is open
  */
 ZmOrganizer.registerOrg =
 function(org, params) {
@@ -256,6 +258,7 @@ function(org, params) {
 	if (params.mountKey)		{ ZmOrganizer.MOUNT_KEY[org]			= params.mountKey; }
 	if (params.deferrable)		{ ZmOrganizer.DEFERRABLE[org]			= params.deferrable; }
 	if (params.pathInName)		{ ZmOrganizer.PATH_IN_NAME[org]			= params.pathInName; }
+	if (params.openSetting)		{ ZmOrganizer.OPEN_SETTING[org]			= params.openSetting; }
 
 	if (!appCtxt.isChildWindow) {
 		if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }

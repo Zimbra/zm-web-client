@@ -142,6 +142,8 @@ function(params) {
 	var dataTree = this.getDataTree(realAcct);
     if (dataTree) {
         params.dataTree = dataTree;
+        var setting = ZmOrganizer.OPEN_SETTING[this.type];
+        params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
 		this._treeView[id].set(params);
 		this._checkTreeView(id, params.account);
 	}
@@ -311,6 +313,7 @@ function(overviewId) {
 	params.id = ZmId[idKey];
 	var treeView = this._createTreeView(params);
 	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
+	treeView.addTreeListener(new AjxListener(this, this._treeListener));
 
 	return treeView;
 };
@@ -563,6 +566,34 @@ function(ev) {
 		}
 	} else if ((ev.detail == DwtTree.ITEM_DBL_CLICKED) && item) {
 		this._itemDblClicked(item);
+	}
+};
+
+/**
+ * Propagates a change in tree state to other trees of the same type in app overviews.
+ * 
+ * @param ev		[ZmTreeEvent]	a tree event
+ */
+ZmTreeController.prototype._treeListener =
+function(ev) {
+	var treeItem = ev && ev.item;
+	var overviewId = treeItem ? treeItem._tree.overviewId : null;
+	// only handle events that come from headers in app overviews
+	var isAppOverview = overviewId ? appCtxt.getOverviewController().isAppOverviewId(overviewId) : null;
+	if (!(ev && ev.detail && isAppOverview && treeItem._isHeader)) { return; }
+
+	var expanded = (ev.detail == DwtTree.ITEM_EXPANDED);
+	for (var ovId in this._treeView) {
+		if (ovId == overviewId) { continue; }
+		if (!appCtxt.getOverviewController().isAppOverviewId(ovId)) { continue; }
+		var treeView = this._treeView[ovId];
+		treeView._headerItem.setExpanded(expanded, null, true);
+	}
+	var setting = ZmOrganizer.OPEN_SETTING[this.type];
+	if (setting) {
+		appCtxt.set(setting, expanded);
+		var settings = appCtxt.getSettings();
+		settings.save([settings.getSetting(setting)]);
 	}
 };
 
