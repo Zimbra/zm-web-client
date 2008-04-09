@@ -714,17 +714,6 @@ function(contactList, isDraft, callback, errorCallback, accountName) {
 			soapDoc.setMethodAttribute("suid", this.sendUID);
 		this._createMessageNode(soapDoc, contactList, isDraft, aName);
 
-		// if we're sending a draft msg, check if its obo for special handling
-		if (!isDraft && this._origMsg && this._origMsg.isDraft) {
-			var ac = window.parentAppCtxt || window.appCtxt;
-			var mainAcct = ac.getMainAccount(true).getEmail();
-            var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
-			// this means we're sending a draft msg obo so reset account name
-			if (from && from.address != mainAcct) { 
-				aName = from.address;
-			}
-		}
-
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
 		var params = {
 			soapDoc: soapDoc,
