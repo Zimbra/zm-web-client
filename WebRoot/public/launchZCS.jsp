@@ -1,6 +1,7 @@
 <%@ page buffer="8kb" session="false" autoFlush="true" pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ page import="java.util.*,javax.naming.*,com.zimbra.cs.zclient.ZAuthResult" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -17,7 +18,6 @@
 	// Set standard HTTP/1.0 no-cache header.
 	response.setHeader("Pragma", "no-cache");
 %><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<fmt:setBundle basename="/messages/ZmMsg" scope="request"/>
 <html>
 <head>
 <!--
@@ -125,7 +125,9 @@
 	pageContext.setAttribute("isLeakDetectorOn", isLeakDetectorOn);
 %>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<app:skin defaultSkin="${skin}" />
 <fmt:setLocale value='${locale}' scope='request' />
+<fmt:setBundle basename="/messages/ZmMsg" scope="request" force="true" />
 <title><fmt:message key="zimbraTitle"/></title>
 <link href="${contextPath}/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin?v=${vers}${isDebug?"&debug=1":""}&skin=${skin}" rel="stylesheet" type="text/css" />
 <fmt:message key="favIconUrl" var="favIconUrl"/>
