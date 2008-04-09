@@ -284,6 +284,11 @@ function() {
 	var cc = [];	
 	if (this._calTreeController) {
 		cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
+		//bug:25512 avoid race condition 
+		if( (cc == "") && (this._app._overviewPanelContent ==null)) {
+	        this._app.setOverviewPanelContent(true);
+	        cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());			        
+		}		
 	} else {
 		this._app._createDeferredFolders(ZmOrganizer.ID_CALENDAR);
 		var calendars = appCtxt.getFolderTree().getByType(ZmOrganizer.CALENDAR);
