@@ -332,11 +332,12 @@ function() {
 	var searchMenuBtnId = this._htmlElId + "_searchMenuButton";
 	var searchMenuBtn = document.getElementById(searchMenuBtnId);
 	if (searchMenuBtn) {
-		this._searchMenuButton = this._addButton({ tdId:"_searchMenuButton", buttonId:ZmId.SEARCH_MENU_BUTTON,
-												   lbl:ZmMsg.searchMail, icon:"Message"} );
-        if(!appCtxt.get(ZmSetting.MAIL_ENABLED)){
+		if(!appCtxt.get(ZmSetting.MAIL_ENABLED)){
             this._searchMenuButton = this._addButton({ tdId:"_searchMenuButton", buttonId:ZmId.SEARCH_MENU_BUTTON,
                                                     lbl:ZmMsg.searchAll, icon:"Globe"} );
+        }else{
+            this._searchMenuButton = this._addButton({ tdId:"_searchMenuButton", buttonId:ZmId.SEARCH_MENU_BUTTON,
+                                                               lbl:ZmMsg.searchMail, icon:"Message"} );
         }
         var menu = new AjxCallback(this, this._createSearchMenu);
 		this._searchMenuButton.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
