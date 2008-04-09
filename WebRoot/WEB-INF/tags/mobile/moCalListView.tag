@@ -76,10 +76,10 @@
                         <c:if test="${count eq 0}">
                             <tr class='zo_cal_listh'>
                                 <td class='zo_cal_listh_dow'>
-                                    <fmt:formatDate value="${appt.startDate}" pattern="${dayFormat}"/>
+                                    <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}"/>
                                 </td>
                                 <td class='zo_cal_listh_date'>
-                                    <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="medium"/>
+                                    <fmt:formatDate value="${currentDay.time}" type="date" dateStyle="medium"/>
                                 </td>
                             </tr>
                         </c:if>
