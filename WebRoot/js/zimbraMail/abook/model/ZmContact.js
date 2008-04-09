@@ -133,7 +133,15 @@ ZmContact.FA_COMPANY_LAST_C_FIRST	= i++;
 ZmContact.FA_COMPANY_FIRST_LAST		= i++;
 ZmContact.FA_CUSTOM					= i++;
 
-ZmContact.F_EMAIL_FIELDS = [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
+ZmContact.F_EMAIL_FIELDS = [
+	ZmContact.F_email,
+	ZmContact.F_email2,
+	ZmContact.F_email3,
+	ZmContact.F_workEmail1,
+	ZmContact.F_workEmail2,
+	ZmContact.F_workEmail3
+];
+
 ZmContact.F_PHONE_FIELDS = [
 	ZmContact.F_assistantPhone,
 	ZmContact.F_callbackPhone,
