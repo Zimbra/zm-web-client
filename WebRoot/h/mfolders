@@ -43,8 +43,8 @@
     <c:set var="newFolder" value="${zm:actionSet(param, 'actionNewFolder') or zm:actionSet(param, 'actionNewSearchFolder') or zm:actionSet(param, 'actionNewFeedFolder')}"/>
 
     <fmt:message var="title" key="manageFolders"/>
-
-    <c:if test="${not empty param.sync}">
+   <c:set var="isFolderUpdated" value="${zm:actionSet(param, 'actionSave')}" />
+    <c:if test="${not empty param.sync and not isFolderUpdated}">
         <zm:syncFolder id="${param.sync}"/>
         <c:set var="folderName" value="${zm:getFolderName(pageContext, param.sync)}"/>
         <app:status>
