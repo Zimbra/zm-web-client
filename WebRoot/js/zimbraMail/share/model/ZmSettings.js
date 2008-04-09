@@ -274,7 +274,7 @@ function(callback, accountName, result) {
 
 ZmSettings.prototype._loadZimlets =
 function(zimlets, props) {
-	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:zimlets});
+	this.registerSetting("ZIMLETS",		{type:ZmSetting.T_CONFIG, defaultValue:zimlets, isGlobal:true});
 	this.registerSetting("USER_PROPS",	{type:ZmSetting.T_CONFIG, defaultValue:props});
 
 	appCtxt.getZimletMgr().loadZimlets(zimlets, props);

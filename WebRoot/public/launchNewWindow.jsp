@@ -49,10 +49,8 @@
 
 	boolean isDev = getParameter(request, "dev", "0").equals("1");
 	if (isDev) {
-		request.setAttribute("mode", "mjsf");
-		request.setAttribute("gzip", "false");
+		request.setAttribute("dev", "1");
 		request.setAttribute("fileExtension", "");
-		request.setAttribute("debug", "1");
 		request.setAttribute("packages", "dev");
 	}
 	String debug = getParameter(request, "debug", getAttribute(request, "debug", null));
