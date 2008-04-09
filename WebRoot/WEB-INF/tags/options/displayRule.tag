@@ -123,8 +123,10 @@
                 <c:choose>
                     <c:when test="${zm:isFileIntoAction(action)}">
                         <c:set var="fileInto" value="${zm:getFileIntoAction(action)}"/>
+                        <c:set var="path" value="${fn:toLowerCase(fn:startsWith(fileInto.folderPath, '/') ? fn:substring(fileInto.folderPath, 1, -1) : fileInto.folderPath)}"/>
+                        <fmt:message key="${fn:toLowerCase(fn:escapeXml(path))}" var="rootPath" />
                         <fmt:message key="FILT_ACTION_FILEINTO">
-                            <fmt:param>${fn:escapeXml(fn:startsWith(fileInto.folderPath, '/') ? fn:substring(fileInto.folderPath, 1, -1) : fileInto.folderPath)}</fmt:param>
+                            <fmt:param>${fn:escapeXml(fn:startsWith(rootPath,'???') ? path : rootPath)}</fmt:param>
                         </fmt:message>
                     </c:when>
                 </c:choose>
