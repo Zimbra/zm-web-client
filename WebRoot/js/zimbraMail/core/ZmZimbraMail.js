@@ -1027,7 +1027,8 @@ function() {
 							 mountKey:			"mountFolder",
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmFolder.sortCompare",
-							 shortcutKey:		"F"
+							 shortcutKey:		"F",
+							 openSetting:		ZmSetting.FOLDER_TREE_OPEN
 							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.SEARCH,
@@ -1043,7 +1044,8 @@ function() {
  							 dropTargets:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH],
 							 createFunc:		"ZmSearchFolder.create",
 							 compareFunc:		"ZmFolder.sortCompare",
-							 shortcutKey:		"S"
+							 shortcutKey:		"S",
+							 openSetting:		ZmSetting.SEARCH_TREE_OPEN
 							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.TAG,
@@ -1060,7 +1062,8 @@ function() {
 							 treeType:			ZmOrganizer.TAG,
 							 createFunc:		"ZmTag.create",
 							 compareFunc:		"ZmTag.sortCompare",
-							 shortcutKey:		"T"
+							 shortcutKey:		"T",
+							 openSetting:		ZmSetting.TAG_TREE_OPEN
 							});
 
 	// Technically, we don't need to do this because the drop listeners for dragged organizers typically do their
@@ -1782,11 +1785,14 @@ function() {
 ZmZimbraMail.prototype._postLoadZimlet =
 function() {
 	appCtxt.setZimletsPresent(true);
+	this._settings.registerSetting("ZIMLET_TREE_OPEN",
+		{name:"zimbraPrefZimletTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
 							{orgClass:			"ZmZimlet",
 							 treeController:	"ZmZimletTreeController",
 							 labelKey:			"zimlets",
-							 compareFunc:		"ZmZimlet.sortCompare"
+							 compareFunc:		"ZmZimlet.sortCompare",
+							 openSetting:		ZmSetting.ZIMLET_TREE_OPEN
 							});
 	for (var app in ZmApp.SHOW_ZIMLETS) {
 		var trees = ZmApp.OVERVIEW_TREES[app] || [];

@@ -43,15 +43,6 @@ function(ev){
 // Public methods
 
 /**
-* Displays the zimlet tree.
-*/
-ZmZimletTreeController.prototype.show = 
-function(params) {
-	params.collapsed = true;
-	return ZmTreeController.prototype.show.call(this, params);
-};
-
-/**
 * Enables/disables operations based on context.
 *
 * @param parent		the widget that contains the operations
