@@ -265,10 +265,9 @@
                         <c:url var="syncUrl" value="">
                             <c:param name="id" value="${folder.id}"/>
                             <c:param name="sync" value="${folder.id}"/>
-                        </c:url>
-                        <fmt:message key="reloadCalendar" var="reload"/>
+                        </c:url>                        
                         <a href="${fn:escapeXml(syncUrl)}">
-                            <app:img src="arrows/ImgRefresh.gif" title="${reload}"/>
+                            <app:img src="arrows/ImgRefresh.gif" title="refresh"/>
                         </a>
                     </td>
                 </tr>
