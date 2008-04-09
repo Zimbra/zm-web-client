@@ -817,12 +817,16 @@ function(soapDoc, contactList, isDraft, accountName) {
 	if (numSubParts > 0) {
 		for (var i = 0; i < numSubParts; i++) {
 			var part = this._topPart.children.get(i);
-			var partNode = soapDoc.set("mp", null, topNode);
-			partNode.setAttribute("ct", part.getContentType());
 
-			//If each part again has subparts, add them as children
-			var numSubSubParts = part.children ? part.children.size():0;
-			if (numSubSubParts > 0) {
+            var content = part.getContent();
+            var numSubSubParts = part.children ? part.children.size():0;
+            if(content == null && numSubSubParts == 0) continue;
+           
+            var partNode = soapDoc.set("mp", null, topNode);
+			partNode.setAttribute("ct", part.getContentType());
+            //If each part again has subparts, add them as children
+			
+            if (numSubSubParts > 0) {
 				for (var j=0;j<numSubSubParts; j++) {
 					var subPart = part.children.get(j);
 					var subPartNode = soapDoc.set("mp",null,partNode);
@@ -850,7 +854,7 @@ function(soapDoc, contactList, isDraft, accountName) {
 					}
 				}
 			} else {
-				soapDoc.set("content", part.getContent(), partNode);
+				soapDoc.set("content", content, partNode);
 			}
 		}
 	} else {
