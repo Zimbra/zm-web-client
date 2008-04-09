@@ -398,7 +398,7 @@ function(view, arrowStyle) {
 ZmMailListController.prototype._getNumTotal =
 function(){
 	// Yuck, remove "of Total" from Nav toolbar at lower resolutions
-	if (AjxEnv.is800x600orLower) {
+	if (AjxEnv.is1024x768orLower) {
 		 return null;
 	}
 	return ZmListController.prototype._getNumTotal.call(this);
