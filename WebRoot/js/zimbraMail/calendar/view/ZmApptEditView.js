@@ -701,6 +701,9 @@ function(el) {
         var edv = AjxCore.objectWithId(el._editViewId);
         ZmApptViewHelper.getDateInfo(edv, edv._dateInfo);
 		this._showTimeFields(el.checked ? false : true);
+		if(el.checked && this._reminderSelect) {
+			this._reminderSelect.setSelectedValue(1080);
+		}
 	} else {
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
 	}

@@ -789,6 +789,11 @@ function(attachmentId, callback, errorCallback, notifyList) {
 
 ZmCalItem.prototype._setAlarmData = 
 function(soapDoc, comp) {
+	
+	if(this._reminderMinutes == 0 || this._reminderMinutes == null) {
+		return;
+	}
+	
 	var alarm = soapDoc.set("alarm", null, comp);
 	alarm.setAttribute("action", "DISPLAY");
 	

@@ -261,14 +261,15 @@ function() {
 	}
 	
 	//reminder DwtSelect
-	var	displayOptions = [ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore];
-	var	options = [0, 1, 5, 10, 15, 30, 45, 60];
+	var	displayOptions = [ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore ];
+	var	options = this._reminderOptions = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080];
+	var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18];
 	var defaultWarningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
 	
 	this._reminderSelect = new DwtSelect({parent:this});
 	this._reminderSelect.addChangeListener(new AjxListener(this, this._reminderChangeListener));
 	for (var j = 0; j < options.length; j++) {
-		var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], options[j]);			
+		var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], labels[j]);			
 		this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
 	}
 	this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
