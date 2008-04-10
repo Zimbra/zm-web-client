@@ -98,6 +98,10 @@
 			var zunheard = function() { zclick("SOPUNHEARD"); }
 			var zprint = function() { var e = document.getElementById("OPPRINT"); window.open(e.href, e.target); }
 			var zcallManager = function() { var e = document.getElementById("OPCALLMANAGER"); window.location = e.href; }
+			<%-- Still need to implement the listen method, and document it in ZhKeys.
+			     For now it's just a no-op to prevent enter key from submitting the form (which does a delete)
+			--%>
+			var zlisten = function() { };
 			//-->
 		</SCRIPT>
 
@@ -109,6 +113,7 @@
 			<zm:bindKey message="voicemail.MarkUnheard" func="zunheard"/>
 			<zm:bindKey message="voicemail.Print" func="zprint"/>
 			<zm:bindKey message="voicemail.CallManager" func="zcallManager"/>
+			<zm:bindKey message="voicemail.Listen" func="zlisten"/>
 		</app:keyboard>
 	</c:if>
 </app:view>
