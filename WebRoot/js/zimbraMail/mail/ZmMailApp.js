@@ -206,6 +206,7 @@ function() {
 			title: ZmMsg.accounts,
 			templateId: "prefs.Pages#Accounts",
 			priority: 60,
+			precondition: appCtxt.get(ZmSetting.MAIL_ENABLED),
 			prefs: [
 				ZmSetting.ACCOUNTS
 			],
@@ -233,7 +234,7 @@ function() {
 			title: ZmMsg.filterRules,
 			templateId: "prefs.Pages#MailFilters",
 			priority: 70,
-			precondition: appCtxt.get(ZmSetting.FILTERS_ENABLED),
+			precondition: (appCtxt.get(ZmSetting.MAIL_ENABLED) && appCtxt.get(ZmSetting.FILTERS_ENABLED)),
 			prefs: [
 				ZmSetting.FILTERS
 			],
