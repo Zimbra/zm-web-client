@@ -210,7 +210,6 @@
         </table>
     </td>
 </tr>--%>
-<%--
 <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
     <c:set var="tagsToAdd" value="${zm:getAvailableTags(pageContext,msg.tagIds,true)}"/>
     <c:set var="tagsToRemove" value="${zm:getAvailableTags(pageContext,msg.tagIds,false)}"/>
@@ -266,7 +265,6 @@
         </tr>
     </c:if>
 </c:if>
---%>
 <%--<tr>
     <td colspan="2">
         <hr size='1'/>
