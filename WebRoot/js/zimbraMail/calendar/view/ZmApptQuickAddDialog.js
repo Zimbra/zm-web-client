@@ -224,11 +224,12 @@ function() {
 		this._privacySelect.addOption(option.label, option.selected, option.value);
 	}
 	this._privacySelect.reparentHtmlElement(this._htmlElId + "_privacy");
-
+	this._privacySelect.addChangeListener(new AjxListener(this, this._privacyListener));
 
 	this._calendarSelect = new DwtSelect({parent:this});
 	this._calendarSelect.reparentHtmlElement(this._htmlElId + "_calendar");
-
+	this._calendarSelect.addChangeListener(new AjxListener(this, this._privacyListener));
+	
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
@@ -271,6 +272,23 @@ function() {
 		this._reminderSelect.addOption(optLabel, (defaultWarningTime == options[j]), options[j]);
 	}
 	this._reminderSelect.reparentHtmlElement(this._htmlElId + "_reminderSelect");
+};
+
+ZmApptQuickAddDialog.prototype._privacyListener =
+function() {
+	if(!this._privacySelect || !this._calendarSelect){ return; }
+
+	var value = this._privacySelect.getValue();
+	var calId = this._calendarSelect.getValue();	
+	var cal = appCtxt.getById(cal);
+	
+	var isRemote = (calId.match(/:/));
+	if(value == "PRI" && isRemote) {
+		this._privacySelect.setSelectedValue("PUB");
+		this._privacySelect.disable();
+	}else{
+		this._privacySelect.enable();
+	}
 };
 
 ZmApptQuickAddDialog.prototype._cacheFields = 

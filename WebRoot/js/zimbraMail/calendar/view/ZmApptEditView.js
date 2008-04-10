@@ -409,6 +409,8 @@ function(width) {
 		this._privacySelect.addOption(option.label, option.selected, option.value);
 	}
 	this._privacySelect.reparentHtmlElement(this._htmlElId + "_privacySelect");
+	this._privacySelect.addChangeListener(new AjxListener(this, this._privacyListener));
+	this._folderSelect.addChangeListener(new AjxListener(this, this._privacyListener));	
 
 		// time ZmTimeSelect
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
@@ -431,6 +433,22 @@ function(width) {
 	// init auto-complete widget if contacts app enabled
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this._initAutocomplete();
+	}
+};
+
+ZmApptEditView.prototype._privacyListener =
+function() {
+	if(!this._privacySelect || !this._folderSelect){ return; }
+	
+	var value = this._privacySelect.getValue();
+	var calId = this._folderSelect.getValue();	
+	var isRemote = (calId.match(/:/));
+	
+	if(value == "PRI" && isRemote) {
+		this._privacySelect.setSelectedValue("PUB");
+		this._privacySelect.disable();
+	}else{
+		this._privacySelect.enable();
 	}
 };
 

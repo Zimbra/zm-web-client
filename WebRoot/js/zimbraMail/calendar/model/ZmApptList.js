@@ -80,6 +80,11 @@ function(apptList, startTime, endTime, fanoutAllDay, includeReminders) {
 	var size = list.size();
 	for (var i = 0; i < size; i++) {
 		var ao = list.get(i);
+		var folder = ao.getFolder();
+		if(folder.isRemote() && ao.isPrivate()) {
+			ao.name = "";
+			ao._attendees = {};
+		}		
 		if (ao.isInRange(startTime, endTime) || (ao.isAlarmInRange() && includeReminders)) {
 			if (ao.isAllDayEvent() && !fanoutAllDay) {
 				result.add(ZmAppt.quickClone(ao));
