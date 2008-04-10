@@ -210,10 +210,14 @@ function(ev, div) {
 			//getDetails of original appt will reset the start date and time
 			//and will break the ui layout
 			var clone = ZmAppt.quickClone(item);
-			var callback = new AjxCallback(this, this._loadParticipantStatus, [clone,item, obj, mouseEv.docX, mouseEv.docY]);
+			var callback = new AjxCallback(this, this._loadParticipantStatus, [clone,item, obj]);
 			var errorCallback = new AjxCallback(this, this._handleParticipantStatusError, [clone, item]);
 			this._toolTipBusy = true;
-			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.getApptDetails, [clone, callback, errorCallback]),2000);			
+			var uid = clone.getUniqueId();
+			this._currentMouseOverApptId  = uid;
+			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.getApptDetails, [clone, callback, errorCallback, uid]),2000);			
+		}else {
+			this._currentMouseOverApptId  = null;
 		}
 	} else {
 		this.setToolTipContent(null);
@@ -222,8 +226,10 @@ function(ev, div) {
 }
 
 ZmCalBaseView.prototype.getApptDetails =
-function(appt, callback, errorCallback) {
-	if(this._toolTipBusy){
+function(appt, callback, errorCallback, uid) {
+	if(!this._currentMouseOverApptId) {	return;	}
+	if(this._currentMouseOverApptId == uid) {	
+		this._currentMouseOverApptId = null;
 		appt.setNoBusyOverlay(true);
 		appt.getDetails(null, callback, errorCallback);
 	}
@@ -243,12 +249,14 @@ function(ev) {
 	if (this._getItemData(div, "type") == ZmCalBaseView.TYPE_APPT) {
 		this._toolTipBusy = false;
 		this.setToolTipContent(null);
+		this._currentMouseOverApptId = null;
 	}
 	this._mouseOutAction(ev, div);
 }
 
 ZmCalBaseView.prototype._mouseOutAction = 
 function(ev, div) {
+	
 	return true;
 }
 
@@ -782,12 +790,17 @@ function(date, duration, isDblClick, allDay, folderId, shiftKey) {
 //once the message is loaded, attendee participation status will be available
 //need to show this on tooptip
 ZmCalBaseView.prototype._loadParticipantStatus =
-function(item, origItem, obj, x, y) {	
+function(item, origItem, obj) {
+	if(!item) {  return; }
+
 	item._updateParticipantStatus();				
 	origItem.setAttendeeToolTipData(item.getAttendeeToolTipData());
 	this.setToolTipContent(item.getToolTip(this._controller, true));
-	this._showToolTipOnDemand(obj, x, y);
-	this._toolTipBusy = false;
+	var mouseEv = DwtShell.mouseEvent;
+	if(mouseEv && mouseEv.docX > 0 && mouseEv.docY > 0) {
+		this._showToolTipOnDemand(obj, mouseEv.docX, mouseEv.docY);
+		this._toolTipBusy = false;
+	}
 };
 
 //after the attendee status is updated the tooltip has to be shown
