@@ -1529,7 +1529,7 @@ function(composeMode) {
 	// init listeners
 	this.addControlListener(new AjxListener(this, this._controlListener));
 
-	if (appCtxt.multiAccounts) {
+	if (!appCtxt.isChildWindow && appCtxt.multiAccounts) {
 		var opc = this._controller._app.getOverviewPanelContent();
 		opc.addSelectionListener(new AjxListener(this, this._accountChangeListener));
 	}

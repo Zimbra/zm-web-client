@@ -759,20 +759,20 @@ function(soapDoc, contactList, isDraft, accountName) {
 	// if id is given, means we are re-saving a draft
     var oboDraftMsgId = null;   //On Behalf of Draft MsgId
     if ((isDraft || this.isDraft) && this.id) {
-        if (!isDraft && this._origMsg && this._origMsg.isDraft){
+        if (!appCtxt.isOffline && !isDraft && this._origMsg && this._origMsg.isDraft) {
             var mainAcct = appCtxt.getMainAccount(true);
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo
 			if (from && from.address != mainAcct.getEmail()) {
-                oboDraftMsgId = [ mainAcct.id, ":", this.id].join("");
-                msgNode.setAttribute("id", oboDraftMsgId );
-            }else{
-                msgNode.setAttribute("id", this.nId);
-            }
-        }else{
-            msgNode.setAttribute("id", this.nId);
-        }
-    }
+				oboDraftMsgId = [mainAcct.id, ":", this.id].join("");
+				msgNode.setAttribute("id", oboDraftMsgId);
+			} else {
+				msgNode.setAttribute("id", this.nId);
+			}
+		} else {
+			msgNode.setAttribute("id", this.nId);
+		}
+	}
 
 	if (this.isForwarded) {
 		msgNode.setAttribute("rt", "w");
@@ -800,31 +800,30 @@ function(soapDoc, contactList, isDraft, accountName) {
 
 	var topNode = soapDoc.set("mp", null, msgNode);
 	topNode.setAttribute("ct", this._topPart.getContentType());
-    
+
     // if the top part has sub parts, add them as children
 	var numSubParts = this._topPart.children ? this._topPart.children.size() : 0;
 	if (numSubParts > 0) {
 		for (var i = 0; i < numSubParts; i++) {
 			var part = this._topPart.children.get(i);
+			var content = part.getContent();
+			var numSubSubParts = part.children ? part.children.size() : 0;
+			if (content == null && numSubSubParts == 0) { continue; }
 
-            var content = part.getContent();
-            var numSubSubParts = part.children ? part.children.size():0;
-            if(content == null && numSubSubParts == 0) continue;
-           
-            var partNode = soapDoc.set("mp", null, topNode);
+			var partNode = soapDoc.set("mp", null, topNode);
 			partNode.setAttribute("ct", part.getContentType());
-            //If each part again has subparts, add them as children
-			
-            if (numSubSubParts > 0) {
-				for (var j=0;j<numSubSubParts; j++) {
+
+			if (numSubSubParts > 0) {
+				// If each part again has subparts, add them as children
+				for (var j = 0; j < numSubSubParts; j++) {
 					var subPart = part.children.get(j);
 					var subPartNode = soapDoc.set("mp",null,partNode);
 					subPartNode.setAttribute("ct",subPart.getContentType());
 					soapDoc.set("content",subPart.getContent(),subPartNode);
 				}
-				//Handle Related SubPart , a specific condition
+				// Handle Related SubPart , a specific condition
 				if (part.getContentType() == ZmMimeTable.MULTI_RELATED) {
-					//Handle Inline Attachments
+					// Handle Inline Attachments
 					var inlineAtts = this.getInlineAttachments() || [];
 					for (j = 0; j < inlineAtts.length; j++) {
 						var inlineAttNode = soapDoc.set("mp",null,partNode);
