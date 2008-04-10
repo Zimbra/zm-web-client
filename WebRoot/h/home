@@ -77,7 +77,7 @@
                 <td class="ZhHomeCell">
                     <span style="font-weight:bold; font-size:12px;"><c:out value="${mailbox.name}"></c:out><br></span>
                     <a style="text-decoration:none;" href='${url}'>
-                        ${folder.unreadCount}&nbsp;<fmt:message key="unread"/>
+                        ${mailbox.accountInfo.recent}&nbsp;<fmt:message key="new"/>
 						| ${folder.messageCount}&nbsp;<fmt:message key="total"/>
                     </a>
 				</td>
