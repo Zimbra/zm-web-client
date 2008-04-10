@@ -421,17 +421,22 @@
                                                 <c:set var="sender" value="${mhit.displaySender}"/>
                                                     ${fn:escapeXml(empty sender ? unknownSender : sender)}
                                             </td>
-                                            <td nowrap="nowrap" align="right" valign="top" class='zo_m_list_date'>
+                                            <td nowrap="nowrap" alimgn="right" valign="top" class='zo_m_list_size'>
+                                                <c:if test="${uiv == '1'}">
                                                 <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt"
                                                                 pattern="yyyyMMdd" value="${mhit.date}"/>
                                                 <a <c:if test="${mailbox.features.calendar}">href="${context_url}?st=cal&view=month&date=${on_dt}"</c:if>>
                                                         ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
                                                 </a>
+                                                </c:if>
+                                                <c:if test="${uiv != '1'}">
+                                                    ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
+                                                </c:if>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class='zo_m_list_frag'>
-                                                <a id="a${mhit.id}"
+                                            <td>
+                                                <a class='zo_m_list_frag' id="a${mhit.id}"
                                                    href="${fn:escapeXml(msgUrl)}">${fn:escapeXml(zm:truncate(mhit.fragment,100,true))}</a>
                                             </td>
                                             <td nowrap="nowrap" class='zo_m_list_size' align="right" valign="top">
