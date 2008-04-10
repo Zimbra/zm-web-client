@@ -18,9 +18,8 @@
 ZmZimletTreeController = function() {
 
 	ZmTreeController.call(this, ZmOrganizer.ZIMLET);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 
-    this._eventMgrs = {};
+	this._eventMgrs = {};
 }
 
 ZmZimletTreeController.prototype = new ZmTreeController;
@@ -30,28 +29,7 @@ ZmZimletTreeController.prototype.toString = function() {
 	return "ZmZimletTreeController";
 };
 
-ZmZimletTreeController.prototype._browseListener =
-function(ev){
-    var folder = this._getActionedOrganizer(ev);
-    if (folder) {
-        AjxPackage.require("zimbraMail.share.view.picker.ZmPicker");
-        appCtxt.getSearchController().showBrowsePickers([ZmPicker.ZIMLET]);
-        //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
-    }
-}
-
 // Public methods
-
-/**
-* Enables/disables operations based on context.
-*
-* @param parent		the widget that contains the operations
-* @param id			the currently selected/activated organizer
-*/
-ZmZimletTreeController.prototype.resetOperations =
-function(parent, type, id) {
-	parent.enable(ZmOperation.BROWSE, true);
-};
 
 ZmZimletTreeController.prototype.addSelectionListener =
 function(overviewId, listener) {
@@ -72,10 +50,7 @@ function(overviewId, listener) {
 	}
 };
 
-
-
 // Protected methods
-
 ZmZimletTreeController.prototype._postSetup =
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
@@ -118,7 +93,7 @@ function() {
 
 // Returns a list of desired header action menu operations
 ZmZimletTreeController.prototype._getHeaderActionMenuOps = function() {
-	return [ZmOperation.BROWSE];
+	return null;
 };
 
 // Returns a list of desired action menu operations
