@@ -304,6 +304,9 @@ function() {
 	this._checkedLocalCalendarFolderIds = [];
 	for (var i = 0; i < cc.length; i++) {
 		var cal = cc[i];
+		
+		if(cal.isInvalidFolder){ continue; }
+		
 		this._checkedCalendarFolderIds.push(cal.nId);
 		if (cal.isRemote && !cal.isRemote()) {
 			this._checkedLocalCalendarFolderIds.push(cal.nId);
@@ -2084,11 +2087,11 @@ function() {
 };
 
 ZmCalViewController.prototype.fetchMiniCalendarAppts = 
-function(work) {	
+function(work, batchRequest) {	
 	var miniCalCache = this.getMiniCalCache();
 	
 	//if remainder maintenance is pending group them to minical maintencance request
-	if(this._refreshReminder) {
+	if(this._refreshReminder || batchRequest) {
 		this._refreshReminder = null;
 		var params = this.getMiniCalendarParams(work);
 		var reminderController = AjxDispatcher.run("GetReminderController");
@@ -2096,6 +2099,7 @@ function(work) {
         if(reminderController._warningTime == 0) {
 			searchParams = null;
 		}
+		this.onErrorRecovery = new AjxCallback(this, this.fetchMiniCalendarAppts, [work, true]);		
         this._apptCache.batchRequest(searchParams, params);
 
 	}else { 

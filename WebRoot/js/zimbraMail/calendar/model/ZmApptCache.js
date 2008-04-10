@@ -268,7 +268,6 @@ function(params) {
 
 ZmApptCache.prototype.batchRequest =
 function(searchParams, miniCalParams) {
-
 	var jsonObj = {BatchRequest:{_jsns:"urn:zimbra", onerror:"continue"}};
 	var request = jsonObj.BatchRequest;
 
@@ -288,7 +287,8 @@ function(searchParams, miniCalParams) {
 
 	if ((searchParams && searchParams.callback) || miniCalParams.callback) {
 		var respCallback = new AjxCallback(this, this.handleBatchResponse,[searchParams, miniCalParams]);
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, noBusyOverlay:true});
+		var errorCallback = new AjxCallback(this, this.handleBatchResponseError,[searchParams, miniCalParams]);		
+		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback, errorCallback: errorCallback, noBusyOverlay:true});
 	} else {		
 		var response = appCtxt.getAppController().sendRequest({jsonObj:jsonObj});	
 		var batchResp = (response && response.BatchResponse) ? response.BatchResponse : null;
@@ -303,6 +303,12 @@ function(batchResp, searchParams, miniCalParams) {
 	
 	var miniCalResp = (batchResp && batchResp.GetMiniCalResponse) ? batchResp.GetMiniCalResponse :  null;
 	var searchResp = (batchResp && batchResp.SearchResponse) ? batchResp.SearchResponse :  null;
+
+	if (batchResp && batchResp.Fault) {
+		if(this._processErrorCode(batchResp)) {
+			return;
+		}
+	}
 
 	var data = [];
 	
@@ -327,6 +333,90 @@ function(batchResp, searchParams, miniCalParams) {
 		searchParams.callback.run(newList, searchParams.query);
 	} else {
 		return newList;
+	}
+};
+
+ZmApptCache.prototype.handleBatchResponseError =
+function(searchParams, miniCalParams, response) {
+	var resp = response && response._data && response._data.BatchResponse;	
+	this._processErrorCode(resp);
+};
+
+ZmApptCache.prototype._processErrorCode = 
+function(resp) {
+	if (resp && resp.Fault && (resp.Fault.length > 0)) {
+		var errors = [];
+		var id = null;
+		for (var i = 0; i < resp.Fault.length; i++) {
+			var fault = resp.Fault[i];
+			var error = (fault && fault.Detail) ? fault.Detail.Error : null;
+			var code = error ? error.Code : null;
+			var attrs = error ? error.a : null;
+			if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || code == "mail.NO_SUCH_MOUNTPOINT") {
+				for(var j in attrs) {
+					var attr = attrs[j];
+					if(attr && (attr.t == "IID") && (attr.n == "itemId")) {
+						id = attr._content;
+					}
+				}
+				
+			}else {
+				DBG.println("Unknown error occurred: "+code);
+				errors[fault.requestId] = fault;
+			}
+		}
+		
+		if(id && appCtxt.getById(id)) {
+			var folder = appCtxt.getById(id);
+			folder.isInvalidFolder = true;
+			this.handleDeleteMountpoint(folder);
+			return true;
+		}else {
+			return false;
+		}
+	}
+	
+	return false;
+};
+
+ZmApptCache.prototype.handleDeleteMountpoint =
+function(organizer) {
+	var ds = appCtxt.getYesNoMsgDialog();
+	ds.reset();
+	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteMountpointYesCallback, this, [organizer, ds]);
+	ds.registerCallback(DwtDialog.NO_BUTTON, this._deleteMountpointNoCallback, this, [organizer, ds]);
+	var msg = AjxMessageFormat.format(ZmMsg.confirmDeleteMissingFolder, organizer.getName(false, 0, true));
+	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	ds.popup();
+};
+
+// Handles the "Yes" button in the delete organizer dialog.
+ZmApptCache.prototype._deleteMountpointYesCallback =
+function(organizer, dialog) {
+	if(organizer && !organizer.isSystem()) {
+		var callback = new AjxCallback(this, this.runErrorRecovery);
+		organizer._organizerAction({action: "delete", callback: callback});
+	}else {
+		this.runErrorRecovery();
+	}
+	appCtxt.getAppController()._clearDialog(dialog);
+};
+
+// Handles the "No" button in the delete organizer dialog.
+ZmApptCache.prototype._deleteMountpointNoCallback =
+function(organizer, dialog) {
+	appCtxt.getAppController()._clearDialog(dialog);
+	//calendar is already marked for delete and will not be included next time
+	this.runErrorRecovery();
+};
+
+ZmApptCache.prototype.runErrorRecovery =
+function() {
+	if(this._calViewController) {
+		this._calViewController._updateCheckedCalendars();
+		if(this._calViewController.onErrorRecovery) {
+			this._calViewController.onErrorRecovery.run();
+		}
 	}
 };
 
