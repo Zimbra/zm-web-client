@@ -1160,11 +1160,15 @@ function(msgNode) {
 		this._convCreateNode = msgNode._convCreateNode;
 	}
 
-	// update conv's folder list
 	if (msgNode.cid && msgNode.l) {
 		var conv = appCtxt.getById(msgNode.cid);
 		if (conv) {
+			// update conv's folder list
 			conv.folders[msgNode.l] = true;
+			// update msg list if none exists since we know this conv has at least one msg
+			if (!conv.msgIds) {
+				conv.msgIds = [this.id];
+			}
 		}
 	}
 
@@ -1204,16 +1208,12 @@ function(msgNode) {
 		try {
 			this.invite = ZmInvite.createFromDom(msgNode.inv);
 			this.invite.setMessageId(this.id);
-            //bug:18613
-            var desc = this.invite.getComponentDescription();
-            if((this._bodyParts.length == 0) && desc){
-                var textPart = new Object();
-                textPart.ct = ZmMimeTable.TEXT_PLAIN;
-                textPart.s = desc.length;
-                textPart.content = desc;
-                this._bodyParts.push(textPart);
-            }
-            this._loaded = this._bodyParts.length > 0  || this.attachments.length > 0;
+			// bug fix #18613
+			var desc = this.invite.getComponentDescription();
+			if (desc && this._bodyParts.length == 0) {
+				var textPart = { ct:ZmMimeTable.TEXT_PLAIN, s:desc.length, content:desc };
+				this._bodyParts.push(textPart);
+			}
         } catch (ex) {
 			// do nothing - this means we're trying to load an ZmInvite in new
 			// window, which we dont currently load (re: support).
