@@ -343,19 +343,19 @@ function() {
 	if(!this.alarmData){ return; }
 	
 	for(var i in this.alarmData) {
-		var alarm = this.alarmData[i];
+		var alarm = this.alarmData[i].alarm;
 		if(alarm) {
 			var m,h,d;
 			for(var j in alarm) {
 				var tmp = alarm[j];
-				var trigger = (tmp && (tmp.length > 0)) ? tmp[0].trigger : null;
+				var trigger = (tmp) ? tmp.trigger : null;
 				var rel = (trigger && (trigger.length > 0)) ? trigger[0].rel : null;				
 				m = (rel && (rel.length > 0)) ? rel[0].m : null;
 				d = (rel && (rel.length > 0)) ? rel[0].d : null;
 				h = (rel && (rel.length > 0)) ? rel[0].h : null;
 								
-				this._reminderMinutes = 0;								
-				if(tmp && (tmp.length>1) && (tmp[0].action == "DISPLAY")){
+				this._reminderMinutes = 0;		
+				if(tmp && (tmp.action == "DISPLAY")){
 					if(m != null) {
 						this._reminderMinutes = m;
 					}
@@ -369,7 +369,6 @@ function() {
 					}					
 					break;
 				}
-				
 			}
 		}
 	}

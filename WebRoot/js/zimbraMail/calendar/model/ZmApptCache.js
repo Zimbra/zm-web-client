@@ -352,7 +352,7 @@ function(resp) {
 			var error = (fault && fault.Detail) ? fault.Detail.Error : null;
 			var code = error ? error.Code : null;
 			var attrs = error ? error.a : null;
-			if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || code == "mail.NO_SUCH_MOUNTPOINT") {
+			if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT) {
 				for(var j in attrs) {
 					var attr = attrs[j];
 					if(attr && (attr.t == "IID") && (attr.n == "itemId")) {

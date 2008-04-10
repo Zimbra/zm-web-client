@@ -2104,6 +2104,8 @@ function(work, batchRequest) {
 
 	}else { 
 		var params = this.getMiniCalendarParams(work);
+		this.onErrorRecovery = new AjxCallback(this, this.fetchMiniCalendarAppts, [work]);		
+		miniCalCache.setFaultHandler(new AjxCallback(this._apptCache, this._apptCache.handleDeleteMountpoint));		
 		miniCalCache._getMiniCalData(params);
 	}
 };

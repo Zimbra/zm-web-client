@@ -82,13 +82,24 @@ function(params) {
 
 ZmMiniCalCache.prototype._handleMiniCalResponseError =
 function(params, result) {
-	//todo: add code to handle fault
-
- 
+	var code = result ? result.code : null;	
+	if (code == ZmCsfeException.ACCT_NO_SUCH_ACCOUNT || code == ZmCsfeException.MAIL_NO_SUCH_MOUNTPOINT) {
+		var data = (result && result.data) ? result.data : null;		
+		var id = (data && data.itemId && (data.itemId.length>0)) ? data.itemId[0] : null;
+		if(id && appCtxt.getById(id) && this._faultHandler) {
+			var folder = appCtxt.getById(id);
+			folder.isInvalidFolder = true;
+			this._faultHandler.run(folder);
+			return true;
+		}
+	}
+	
 	//continue with callback operation	
 	if(params.callback) {
 		params.callback.run([]);
 	}
+	
+	return true;
 };
 
 ZmMiniCalCache.prototype._setSoapParams = 
@@ -104,24 +115,20 @@ function(request, params) {
 			request.folder.push({id:params.folderIds[i]});
 		}
 	}
-};	
+};
+
+ZmMiniCalCache.prototype.setFaultHandler =
+function(faultHandler) {
+	this._faultHandler = faultHandler;
+};
 
 ZmMiniCalCache.prototype._getMiniCalResponse =
 function(params, result) {
-
 	var data = [];
 	if (!result) { return data; }
 
 	var callback = params.callback;
-	var resp;
-	try {
-		resp = result.getResponse();
-	} catch (ex) {
-		if (callback)
-			callback.run(data);
-		return;
-	}
-	
+	var resp = result && result._data && result._data;	
 	var miniCalResponse = resp.GetMiniCalResponse;
 	
 	if(miniCalResponse && miniCalResponse.date) {
