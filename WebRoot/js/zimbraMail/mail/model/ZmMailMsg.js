@@ -107,9 +107,9 @@ function(params) {
 
 	var hdrs = ZmMailMsg.getAdditionalHeaders();
 	if (hdrs && hdrs.length) {
-		req.header = [];
+		request.header = [];
 		for (var hdr in hdrs) {
-			req.header.push({n:hdr});
+			request.header.push({n:hdr});
 		}
 	}
 
