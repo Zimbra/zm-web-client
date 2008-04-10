@@ -465,7 +465,7 @@
 		</tr>
 	<$ } $>
 
-  <$ if (data.appt.hasOtherAttendees()) { $>
+  <$ if (data.appt.isOrganizer() && data.appt.hasOtherAttendees()) { $>
 		<tr valign='center'>
 			<td colspan=2 align='left'>
 				<div style='border-bottom:1px solid black;'>
