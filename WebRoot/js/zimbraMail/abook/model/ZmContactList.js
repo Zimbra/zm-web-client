@@ -153,10 +153,7 @@ function(callback, result) {
 	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE).addChangeListener(listener);
 	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION).addChangeListener(listener);
 
-	if (callback) {
-		debugger;
-		callback.run();
-	}
+	if (callback) callback.run();
 };
 
 ZmContactList.prototype.set =
