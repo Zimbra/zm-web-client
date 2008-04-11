@@ -259,38 +259,50 @@
     initAuto("bccField","bccContainer");
 </app:autoComplete>
 
-<c:if test="${(isHtml)}" >
-	<script type="text/javascript">
-		<!--
+<c:choose>
+	<c:when test="${(isHtml)}" >
+		<script type="text/javascript">
+			<!--
 
-		submitCompose = function(){
-			myEditor.saveHTML();
-			var stripHTML = /<\S[^><]*>/g;
-			var stripNBSP  = /&nbsp;/g
-			document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-		}
-		var myEditor = new YAHOO.widget.Editor('body', {
-			height: '300px',
-			width: '100%',
-			dompath: true, //Turns on the bar at the bottom
-			animate: true, //Animates the opening, closing and moving of Editor windows
-			css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
-			extracss: '.yui-spellcheck { background-color: yellow; }'
-		});
-		enableSpellCheck(myEditor);
+			submitCompose = function(){
+				myEditor.saveHTML();
+				var stripHTML = /<\S[^><]*>/g;
+				var stripNBSP  = /&nbsp;/g
+				document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+			}
+			var myEditor = new YAHOO.widget.Editor('body', {
+				height: '300px',
+				width: '100%',
+				dompath: true, //Turns on the bar at the bottom
+				animate: true, //Animates the opening, closing and moving of Editor windows
+				css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
+				extracss: '.yui-spellcheck { background-color: yellow; }'
+			});
+			enableSpellCheck(myEditor);
 
-		myEditor.on('editorContentLoaded', function() {
-			setTimeout(function() {
-				var b = document.getElementById('body');
-				var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-				myEditor.setEditorHTML(html);
-			}, 1000);
-		}, myEditor, true);
+			myEditor.on('editorContentLoaded', function() {
+				setTimeout(function() {
+					var b = document.getElementById('body');
+					var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+					myEditor.setEditorHTML(html);
+				}, 1000);
+			}, myEditor, true);
 
-		myEditor.render();
+			myEditor.render();
+			// -->
+		</script>
+	</c:when>
+	<c:otherwise>
+		<script type="text/javascript">
+		<!-- <%-- Move the body caret to the top of the textarea--%>
+			var bodyEl = document.getElementById('body');
+			if (bodyEl.setSelectionRange) { <%-- FF --%>
+				bodyEl.setSelectionRange(0, 0);
+			}
 		// -->
-	</script>
-</c:if>
+		</script>
+	</c:otherwise>
+</c:choose>
 <script type="text/javascript">
 <!--
 // for Save Draft
