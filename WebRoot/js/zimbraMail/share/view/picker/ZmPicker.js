@@ -30,7 +30,7 @@ ZmPicker = function(parent, id) {
 
 	this._picker = new DwtComposite(this, "ZmPickerOverview");
 	this._picker.setSize(Dwt.DEFAULT, parent.getH() - this._header.getH());
-	this._picker.setScrollStyle(Dwt.CLIP);
+	this._picker.setScrollStyle(Dwt.SCROLL);
 	this._pickerEvent = new ZmEvent(ZmEvent.S_PICKER);
 	this._pickerEvent.set(ZmEvent.E_MODIFY, this);
 
