@@ -411,7 +411,10 @@ ZmContactsApp.prototype._handleLoadLaunch =
 function(callback) {
 	// contacts should already be loaded
 	var respCallback = new AjxCallback(this, this._handleLoadLaunchResponse, callback);
-	this.getContactList(respCallback);
+	var contactList = this.getContactList(respCallback);
+	if (!contactList.isLoaded) {
+		contactList.addLoadedCallback(new AjxCallback(this, this._showContactList));
+	}
 };
 
 ZmContactsApp.prototype._handleLoadLaunchResponse =
@@ -426,8 +429,7 @@ function(callback) {
 			}
 		}
 		// create contact view for the first time
-		var acctId = appCtxt.getActiveAccount().id;
-		clc.show(this._contactList[acctId], null, ZmOrganizer.ID_ADDRBOOK);
+		this._showContactList();
 	} else {
 		// just push the view so it looks the same as last you saw it
 		clc.switchView(clc._getViewType(), true, this._initialized);
@@ -438,6 +440,12 @@ function(callback) {
 	}
 
 	this._initialized = true;
+};
+
+ZmContactsApp.prototype._showContactList = function() {
+	var clc = AjxDispatcher.run("GetContactListController");
+	var acctId = appCtxt.getActiveAccount().id;
+	clc.show(this._contactList[acctId], null, ZmOrganizer.ID_ADDRBOOK);
 };
 
 ZmContactsApp.prototype.showSearchResults =

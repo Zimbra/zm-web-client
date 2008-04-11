@@ -94,6 +94,27 @@ function() {
 	return "ZmContactList";
 };
 
+ZmContactList.prototype.addLoadedCallback = function(callback) {
+	if (this.isLoaded) {
+		callback.run();
+		return;
+	}
+	if (!this._loadedCallbacks) {
+		this._loadedCallbacks = [];
+	}
+	this._loadedCallbacks.push(callback);
+};
+
+ZmContactList.prototype._finishLoading = function() {
+	this.isLoaded = true;
+	if (this._loadedCallbacks) {
+		var callback;
+		while (callback = this._loadedCallbacks.shift()) {
+			callback.run();
+		}
+	}
+};
+
 /**
 * Retrieves the contacts from the back end, and parses the response. The list is then sorted.
 * This method is used only by the canonical list of contacts, in order to load their content.
@@ -121,8 +142,10 @@ function(callback, result) {
 			this._loadAction = new AjxTimedAction(this, this._smartLoad, [list]);
 		}
 		this.set(list);
-	} else {
-		this.isLoaded = true; // user has no contacts
+	}
+	// user has no contacts
+	else {
+		this._finishLoading();
 	}
 	this._setGalAutocompleteEnabled();
     var listener = new AjxListener(this, this._settingChangeListener);
@@ -130,7 +153,10 @@ function(callback, result) {
 	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE).addChangeListener(listener);
 	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION).addChangeListener(listener);
 
-	if (callback) callback.run();
+	if (callback) {
+		debugger;
+		callback.run();
+	}
 };
 
 ZmContactList.prototype.set =
@@ -173,7 +199,7 @@ function(list) {
 		AjxTimedAction.scheduleAction(this._loadAction, ZmContactList.LOAD_PAUSE);
 	} else {
 		DBG.timePt("done loading contacts");
-		this.isLoaded = true;
+		this._finishLoading();
 	}
 };
 
