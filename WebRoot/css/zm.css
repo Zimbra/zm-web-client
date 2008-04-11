@@ -294,11 +294,6 @@ td.DDSepInvisible div {
 	font-weight:bold;
 }
 
-/* Container for the body of each picker */
-.ZmPickerOverview {
-	overflow: hidden;
-}
-
 /* ??? SHOTGUN */
 .ZmPickerOverview td {
 	 @Label@
