@@ -1016,6 +1016,7 @@ function(params, callback) {
 			var id = match ? match[1] : null;
 			if (id) {
 				query = ["item:", id].join("");
+				params.searchResponse = null;
 			}
 		}
 	}
