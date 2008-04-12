@@ -337,11 +337,20 @@ function() {
 
 ZmCalendarApp.prototype.startup =
 function(result) {
+	
+	if(!appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL) && (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) == 0) ) {
+		return;
+	}
+	
 	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
 		var miniCalAction = new AjxTimedAction(this, function() {
-				AjxDispatcher.run("GetCalController")._refreshReminder = true;
-				AjxDispatcher.run("GetReminderController")._refreshDelay = ZmCalendarApp.REMINDER_START_DELAY;
+				var calController = AjxDispatcher.run("GetCalController");
+				calController._refreshReminder = true;
+				calController._skipMiniCalMarkingOnCreate = true;
+				var reminderController = AjxDispatcher.run("GetReminderController");
+				reminderController._refreshDelay = ZmCalendarApp.REMINDER_START_DELAY;				
 				AjxDispatcher.run("ShowMiniCalendar", true);
+				reminderController.refresh(true);
 			});
 		AjxTimedAction.scheduleAction(miniCalAction, ZmCalendarApp.MINICAL_DELAY);
 	}else {
