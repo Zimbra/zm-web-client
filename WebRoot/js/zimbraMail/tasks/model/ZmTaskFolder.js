@@ -125,7 +125,7 @@ ZmTaskFolder.prototype.notifyModify =
 function(obj) {
 	ZmFolder.prototype.notifyModify.call(this, obj);
 
-	if (obj.f != null) {
+	if (obj.f != null && !obj._isRemote) {
 		this._parseFlags(obj.f);
 		// TODO: Should a F_EXCLUDE_FB property be added to ZmOrganizer?
 		//       It doesn't make sense to require the base class to know about

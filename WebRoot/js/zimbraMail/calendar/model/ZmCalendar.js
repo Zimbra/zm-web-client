@@ -132,7 +132,7 @@ function(obj) {
 
 	var doNotify = false;
 	var fields = {};
-	if (obj.f != null) {
+	if (obj.f != null && !obj._isRemote) {
 		this._parseFlags(obj.f);
 		// TODO: Should a F_EXCLUDE_FB property be added to ZmOrganizer?
 		//       It doesn't make sense to require the base class to know about
@@ -142,8 +142,9 @@ function(obj) {
 		doNotify = true;
 	}
 	
-	if (doNotify)
+	if (doNotify) {
 		this._notify(ZmEvent.E_MODIFY, {fields: fields});
+	}
 };
 
 

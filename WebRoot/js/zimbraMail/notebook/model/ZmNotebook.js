@@ -99,19 +99,19 @@ function(obj) {
 
 	var doNotify = false;
 	var fields = new Object();
-	if (obj.name != null && this.name != obj.name) {
+	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
 		doNotify = true;
-	}
-	else if (obj.color != null && this.color != obj.color) {
+	} else if (obj.color != null && this.color != obj.color && !obj._isRemote) {
 		this.color = obj.color;
 		fields[ZmOrganizer.F_COLOR] = true;
 		doNotify = true;
 	}
 	
-	if (doNotify)
+	if (doNotify) {
 		this._notify(ZmEvent.E_MODIFY, {fields: fields});
+	}
 };
 
 // Static methods

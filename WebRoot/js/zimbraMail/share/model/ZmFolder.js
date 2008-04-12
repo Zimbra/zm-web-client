@@ -365,7 +365,7 @@ function(obj) {
 	var details = {};
 	var fields = {};
 	var doNotify = false;
-	if (obj.name != null && this.name != obj.name) {
+	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
 		details.oldPath = this.getPath();
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
@@ -378,7 +378,7 @@ function(obj) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (obj.l != null && (!this.parent || (obj.l != this.parent.id))) {
+	if (obj.l != null && (!this.parent || (obj.l != this.parent.id)) && !obj._isRemote) {
 		var newParent = this._getNewParent(obj.l);
 		if (newParent) {
 			this.reparent(newParent);

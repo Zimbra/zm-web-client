@@ -832,7 +832,7 @@ function(obj, details) {
 	var doNotify = false;
 	var details = details || {};
 	var fields = {};
-	if (obj.name != null && this.name != obj.name) {
+	if (obj.name != null && this.name != obj.name && !obj._isRemote) {
 		details.oldName = this.name;
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
@@ -854,7 +854,7 @@ function(obj, details) {
 		fields[ZmOrganizer.F_SIZE] = true;
 		doNotify = true;
 	}
-	if (obj.color != null) {
+	if (obj.color != null && !obj._isRemote) {
 		var color = ZmOrganizer.checkColor(obj.color);
 		if (this.color != color) {
 			this.color = color;
@@ -862,7 +862,7 @@ function(obj, details) {
 		}
 		doNotify = true;
 	}
-	if (obj.f != null) {
+	if (obj.f != null && !obj._isRemote) {
 		var oflags = this._setFlags().split("").sort().join("");
 		var nflags = obj.f.split("").sort().join("");
 		if (oflags != nflags) {
@@ -871,7 +871,7 @@ function(obj, details) {
 			doNotify = true;
 		}
 	}
-	if (obj.rest != null && this.restUrl != obj.rest) {
+	if (obj.rest != null && this.restUrl != obj.rest && !obj._isRemote) {
 		this.restUrl = obj.rest;
 		fields[ZmOrganizer.F_REST_URL] = true;
 		doNotify = true;
@@ -896,7 +896,7 @@ function(obj, details) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (this.parent && obj.l != null && obj.l != this.parent.id) {
+	if (this.parent && obj.l != null && obj.l != this.parent.id && !obj._isRemote) {
 		var newParent = this._getNewParent(obj.l);
 		this.reparent(newParent);
 		this._notify(ZmEvent.E_MOVE);

@@ -546,6 +546,7 @@ function(modifies) {
 			DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling modified notif for ID " + mod.id + ", node type = " + name);
 			var item = appCtxt.cacheGet(mod.id);
 			if (item) {
+				mod._isRemote = (name == "folder" && item.link);
 				item.notifyModify(mod);
 			}
 		}
