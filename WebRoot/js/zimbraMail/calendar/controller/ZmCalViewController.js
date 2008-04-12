@@ -526,7 +526,9 @@ function(date) {
 		workingWeek[i] = (d > 0 && d < 6);
 	}
 	this._miniCalendar.setWorkingWeek(workingWeek);
-	this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
+	if(!this._skipMiniCalMarkingOnCreate) {
+		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
+	}
 
 	// add mini-calendar to skin
 	var components = {};
