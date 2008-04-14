@@ -89,12 +89,14 @@ function(ev) {
 		this._newRosterItemCb = new AjxCallback(this, this._newRosterItemCallback);
 	}
 	ZmController.showDialog(newDialog, this._newRosterItemCb);
-	if (ev.group)
-		newDialog.setGroups(ev.group);
-	if (ev.name)
-		newDialog.setName(ev.name);
-	if (ev.address)
-		newDialog.setAddress(ev.address);
+	if (ev) {
+		if (ev.group)
+			newDialog.setGroups(ev.group);
+		if (ev.name)
+			newDialog.setName(ev.name);
+		if (ev.address)
+			newDialog.setAddress(ev.address);
+	}
 };
 
 ZmRosterTreeController.prototype._editRosterItemListener =

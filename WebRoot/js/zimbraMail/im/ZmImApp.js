@@ -124,6 +124,10 @@ ZmImApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.IM_NEW_CHAT] = "chat";
+
+	var newOrgOps = {};
+	newOrgOps[ZmOperation.NEW_ROSTER_ITEM] = "rosterItem";
+
 	ZmApp.registerApp(ZmApp.IM,
 			  { mainPkg	      : "IM",
 			    nameKey	      : "imAppTitle",
@@ -133,6 +137,7 @@ function() {
 			    gotoActionCode    : ZmKeyMap.GOTO_IM,
 			    chooserSort	      : 40,
 			    defaultSort	      : 50,
+			    newOrgOps		  : newOrgOps,
 			    newItemOps        : newItemOps
 			  });
 };
@@ -350,6 +355,9 @@ ZmImApp.prototype.handleOp = function(op) {
 		case ZmOperation.IM_NEW_CHAT:
 			this.prepareVisuals(); // ... and create views, if not yet done
 			this.getRosterTreeController()._imNewChatListener();
+			break;
+		case ZmOperation.NEW_ROSTER_ITEM:
+			this.getRosterTreeController()._newRosterItemListener()
 			break;
 	}
 };
