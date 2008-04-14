@@ -417,8 +417,7 @@ function() {
 			ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW,
 			ZmOperation.SEP,
 			ZmOperation.TODAY,
-            ZmOperation.SEP,
-            ZmOperation.FREE_BUSY_LINK];
+			];
 };
 
 /* This method is called from ZmListController._setup. We control when this method is called in our
