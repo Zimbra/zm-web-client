@@ -759,8 +759,9 @@ function(soapDoc, contactList, isDraft, accountName) {
 	// if id is given, means we are re-saving a draft
     var oboDraftMsgId = null;   //On Behalf of Draft MsgId
     if ((isDraft || this.isDraft) && this.id) {
-        if (!appCtxt.isOffline && !isDraft && this._origMsg && this._origMsg.isDraft) {
-            var mainAcct = appCtxt.getMainAccount(true);
+		var ac = window.parentAppCtxt || window.appCtxt;
+		if (!ac.isOffline && !isDraft && this._origMsg && this._origMsg.isDraft) {
+            var mainAcct = ac.getMainAccount(true);
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo
 			if (from && from.address != mainAcct.getEmail()) {
