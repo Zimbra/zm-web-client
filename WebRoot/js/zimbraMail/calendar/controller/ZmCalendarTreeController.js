@@ -190,7 +190,10 @@ function(ev) {
 	var isShiftKey = (ev.shiftKey || ev.uiEvent.shiftKey);
 
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		if (appt.isReadOnly() || dropFolder.isReadOnly()) {
+		if (!(appt instanceof ZmAppt)) {
+			ev.doIt = false;
+		}
+		else if (appt.isReadOnly() || dropFolder.isReadOnly()) {
 			ev.doIt = false;
 		} else if (appt.getFolder().id == dropFolder.id) {
 			ev.doIt = false;
