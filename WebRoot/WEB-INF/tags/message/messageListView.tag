@@ -14,7 +14,7 @@
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:set var="context" value="${context}" />
     <c:if test="${false and mailbox.prefs.readingPaneEnabled}">
-        <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true" neuterimages="${empty param.xim}"/>
+        <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}"/>
         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
         <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
     </c:if>
