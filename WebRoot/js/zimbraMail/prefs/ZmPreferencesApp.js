@@ -52,7 +52,7 @@ function() {
 ZmPreferencesApp._registerAllPrefs =
 function() {
 	AjxDispatcher.require("PreferencesCore");
-	appCtxt.getAppController().runAppFunction("_registerPrefs", true);
+	appCtxt.getAppController().runAppFunction("_registerPrefs");
 };
 ZmZimbraMail.addAppListener(ZmApp.PREFERENCES, ZmAppEvent.PRE_LAUNCH, new AjxListener(ZmPreferencesApp._registerAllPrefs));
 
