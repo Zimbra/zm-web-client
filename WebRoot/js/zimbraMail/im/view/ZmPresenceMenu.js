@@ -103,7 +103,7 @@ function(ev) {
 
 ZmPresenceMenu.prototype._presenceMRUListener =
 function(ev) {
-	var message = ev.dwtObj.getText();
+	var message = AjxStringUtil.htmlDecode(ev.dwtObj.getText());
 	ZmImApp.INSTANCE.getRoster().setPresence(null, 0, message);
 	this._addToMRU(message);
 };
@@ -138,7 +138,7 @@ function() {
 		var mruItem = this._getMRUItem(i);
 		mruItem.setVisible(mruVisible);
 		if (mruVisible) {
-			mruItem.setText(mru[i]);
+			mruItem.setText(AjxStringUtil.htmlEncode(mru[i]));
 			var mruChecked = mru[i] == status;
 			mruItem.setChecked(mruChecked, mruChecked);
 		}

@@ -683,7 +683,7 @@ ZmImApp.prototype._updatePresenceButton =
 function(presence, button, doText, doTooltip) {
 	var icon = presence ? presence.getIcon() : "Offline";
 	button.setImage(icon);
-	var showText = presence ? presence.getShowText() : ZmMsg.imStatusOffline;
+	var showText = presence ? AjxStringUtil.htmlEncode(presence.getShowText()) : ZmMsg.imStatusOffline;
 	if (doTooltip) {
 		this._presenceTooltipFormat = this._presenceTooltipFormat || new AjxMessageFormat(ZmMsg.presenceTooltip);
 		var tooltip = this._presenceTooltipFormat.format(showText);
