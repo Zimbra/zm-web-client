@@ -31,8 +31,6 @@ ZmAddrBookTreeController = function() {
 	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
 	this._listeners[ZmOperation.MOUNT_ADDRBOOK] = new AjxListener(this, this._mountAddrBookListener);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
-
 }
 
 ZmAddrBookTreeController.prototype = new ZmFolderTreeController;
@@ -141,7 +139,7 @@ function() {
 		ops.push(ZmOperation.MOUNT_ADDRBOOK);
 	}
 	ops.push(ZmOperation.EXPAND_ALL);
-	ops.push(ZmOperation.BROWSE);
+
 	return ops;
 };
 
@@ -216,7 +214,7 @@ function(folder) {
 		var capp = appCtxt.getApp(ZmApp.CONTACTS);
 
 		// force a search if user clicked Trash folder or share
-		if (folder.nId == ZmFolder.ID_TRASH || folder.link) {
+		if (folder.id == ZmFolder.ID_TRASH || folder.link) {
 			var params = {
 				query: folder.createQuery(),
 				searchFor: ZmItem.CONTACT,
@@ -241,7 +239,7 @@ ZmAddrBookTreeController.prototype._handleSearchResponse =
 function(folder, capp, result) {
 	// bug fix #19307 - Trash is special when in Contacts app since it
 	// is a FOLDER type in ADDRBOOK tree. So reset selection if clicked
-	if (folder.nId == ZmFolder.ID_TRASH) {
+	if (folder.id == ZmFolder.ID_TRASH) {
 		this._treeView[capp.getOverviewId()].setSelected(ZmFolder.ID_TRASH, true);
 	}
 };

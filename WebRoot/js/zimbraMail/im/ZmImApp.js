@@ -124,10 +124,6 @@ ZmImApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.IM_NEW_CHAT] = "chat";
-
-	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_ROSTER_ITEM] = "rosterItem";
-
 	ZmApp.registerApp(ZmApp.IM,
 			  { mainPkg	      : "IM",
 			    nameKey	      : "imAppTitle",
@@ -137,7 +133,6 @@ function() {
 			    gotoActionCode    : ZmKeyMap.GOTO_IM,
 			    chooserSort	      : 40,
 			    defaultSort	      : 50,
-			    newOrgOps		  : newOrgOps,
 			    newItemOps        : newItemOps
 			  });
 };
@@ -356,9 +351,6 @@ ZmImApp.prototype.handleOp = function(op) {
 			this.prepareVisuals(); // ... and create views, if not yet done
 			this.getRosterTreeController()._imNewChatListener();
 			break;
-		case ZmOperation.NEW_ROSTER_ITEM:
-			this.getRosterTreeController()._newRosterItemListener()
-			break;
 	}
 };
 
@@ -445,9 +437,6 @@ ZmImApp.prototype.activate =
 function(active) {
 	if (active) {
 		this.stopAlert(ZmImApp.ALERT_APP_TAB);
-		if (this._toast && this._toast.isPoppedUp()) {
-			this._toast.transition();
-		}
 	}
 	return ZmApp.prototype.activate.call(this, active);
 };
@@ -547,29 +536,6 @@ ZmImApp.prototype.playAlert = function(type){
             appCtxt.getSimpleSoundPlayer().play(appContextPath+"/public/sounds/im/alert.wav");
             break;
     }
-};
-
-ZmImApp.prototype.showToast = function(chat, chatMessage){
-	if (!this._toast) {
-		this._toast = new ZmImToast(appCtxt.getAppController().statusView);
-	}
-	if (this._toast.isPoppedUp()) {
-		return;
-	}
-	var msgArgs = {
-		body: chatMessage.body,
-		from: chat.getDisplayName(chatMessage.from, false)
-	}
-	for (var i in msgArgs) {
-		msgArgs[i] = AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(msgArgs[i], 30));
-	}
-	var args = {
-		msg: AjxTemplate.expand("im.Chat#ToastText", msgArgs),
-		level: ZmStatusView.LEVEL_INFO,
-		transitions: [ ZmToast.FADE_IN, ZmImToast.REMAIN, ZmToast.PAUSE, ZmToast.FADE_OUT ],
-		toast: this._toast
-	};
-	appCtxt.setStatusMsg(args);
 };
 
 ZmImApp.prototype.startAlert = function() {
