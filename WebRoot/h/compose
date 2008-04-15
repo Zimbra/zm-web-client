@@ -298,6 +298,34 @@
 			var bodyEl = document.getElementById('body');
 			if (bodyEl.setSelectionRange) { <%-- FF --%>
 				bodyEl.setSelectionRange(0, 0);
+			} else if (bodyEl.createTextRange) { // IE
+				var range = bodyEl.createTextRange();
+				range.collapse(true);
+				range.moveStart("character", -60000);
+				range.collapse(true);
+				range.select();
+				window._composerBookmark = document.selection.createRange().getBookmark();
+				setTimeout(function(){
+					bodyEl.onfocus = _on_composerFocus_IE;
+					bodyEl.onmouseup = bodyEl.onkeyup = _on_composerEvent_IE;
+				}, 10);
+			}
+
+			function _on_composerFocus_IE() {
+				if (window._composerBookmark) {
+					setTimeout(function() {
+						var range = document.selection.createRange();
+						range.moveToBookmark(window._composerBookmark);
+						range.select();
+					}, 10);
+				}
+			}
+
+			function _on_composerEvent_IE(ev) {
+				var range = document.selection.createRange();
+				if (range.parentElement() === this) /*this* is the textarea*/ {
+					window._composerBookmark = range.getBookmark();
+				}
 			}
 		// -->
 		</script>
