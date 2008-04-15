@@ -43,7 +43,7 @@ ZmItem.F_PRESENCE_CELL = "PRESENCE_cell";
 ZmApp.IM					= ZmId.APP_IM;
 ZmApp.CLASS[ZmApp.IM]		= "ZmImApp";
 ZmApp.SETTING[ZmApp.IM]		= ZmSetting.IM_ENABLED;
-ZmApp.LOAD_SORT[ZmApp.IM]	= 70;
+ZmApp.LOAD_SORT[ZmApp.IM]	= 47;
 ZmApp.QS_ARG[ZmApp.IM]		= "chat";
 
 ZmImApp.ALERT_CLIENT = 1;  // Displays an alert for entire web client, flashing favicon & document.title
