@@ -37,11 +37,11 @@ ZmContactsApp = function(container, parentController) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_CONTACT				= "CONTACT";
-ZmEvent.S_GROUP					= "GROUP";
+ZmEvent.S_CONTACT				= ZmId.ITEM_CONTACT;
+ZmEvent.S_GROUP					= ZmId.ITEM_GROUP;
 ZmItem.CONTACT					= ZmEvent.S_CONTACT;
 ZmItem.GROUP					= ZmEvent.S_GROUP;
-ZmOrganizer.ADDRBOOK			= "ADDRBOOK";
+ZmOrganizer.ADDRBOOK			= ZmId.ORG_ADDRBOOK;
 
 // App-related constants
 ZmApp.CONTACTS							= ZmId.APP_CONTACTS;

@@ -26,11 +26,11 @@ ZmImApp = function(container) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_CHAT        			= "CHAT";
+ZmEvent.S_CHAT        			= ZmId.ITEM_CHAT;
 ZmEvent.S_ROSTER				= "ROSTER";
-ZmEvent.S_ROSTER_ITEM			= "ROSTER ITEM";
-ZmEvent.S_ROSTER_TREE_ITEM		= "ROSTER TREE ITEM";
-ZmEvent.S_ROSTER_TREE_GROUP		= "ROSTER TREE GROUP";
+ZmEvent.S_ROSTER_ITEM			= ZmId.ITEM_ROSTER;
+ZmEvent.S_ROSTER_TREE_ITEM		= ZmId.ORG_ROSTER_TREE_ITEM;
+ZmEvent.S_ROSTER_TREE_GROUP		= ZmId.ORG_ROSTER_TREE_GROUP;
 ZmItem.CHAT						= ZmEvent.S_CHAT;
 ZmItem.ROSTER_ITEM				= ZmEvent.S_ROSTER_ITEM;
 ZmOrganizer.ROSTER_TREE_ITEM	= ZmEvent.S_ROSTER_TREE_ITEM;

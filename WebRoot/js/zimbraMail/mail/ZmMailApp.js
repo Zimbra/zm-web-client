@@ -37,11 +37,11 @@ ZmMailApp = function(container, parentController) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_CONV				= "CONV";
-ZmEvent.S_MSG				= "MSG";
-ZmEvent.S_ATT				= "ATT";
-ZmEvent.S_FOLDER			= "FOLDER";
-ZmEvent.S_DATA_SOURCE       = "DATA SOURCE";
+ZmEvent.S_CONV				= ZmId.ITEM_CONV;
+ZmEvent.S_MSG				= ZmId.ITEM_MSG;
+ZmEvent.S_ATT				= ZmId.ITEM_ATT;
+ZmEvent.S_FOLDER			= ZmId.ORG_FOLDER;
+ZmEvent.S_DATA_SOURCE       = ZmId.ITEM_DATA_SOURCE;
 ZmEvent.S_IDENTITY       	= "IDENTITY";
 ZmEvent.S_SIGNATURE			= "SIGNATURE";
 ZmItem.CONV					= ZmEvent.S_CONV;

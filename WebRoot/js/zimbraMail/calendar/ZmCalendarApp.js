@@ -26,11 +26,11 @@ ZmCalendarApp = function(container) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_APPT				= "APPT";
-ZmEvent.S_RESOURCE			= "RESOURCE";
+ZmEvent.S_APPT				= ZmId.ITEM_APPT;
+ZmEvent.S_RESOURCE			= ZmId.ITEM_RESOURCE;
 ZmItem.APPT					= ZmEvent.S_APPT;
 ZmItem.RESOURCE				= ZmEvent.S_RESOURCE;
-ZmOrganizer.CALENDAR		= "CALENDAR";
+ZmOrganizer.CALENDAR		= ZmId.ORG_CALENDAR;
 
 // App-related constants
 ZmApp.CALENDAR							= ZmId.APP_CALENDAR;

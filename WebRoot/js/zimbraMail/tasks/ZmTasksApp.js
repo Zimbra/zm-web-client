@@ -20,7 +20,7 @@ ZmTasksApp = function(container) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_TASK			= "TASK";
+ZmEvent.S_TASK			= ZmId.ITEM_TASK;
 ZmItem.TASK				= ZmEvent.S_TASK;
 ZmOrganizer.TASKS		= ZmEvent.S_TASK;
 
