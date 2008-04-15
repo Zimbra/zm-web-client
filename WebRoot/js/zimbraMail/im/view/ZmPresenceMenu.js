@@ -130,34 +130,26 @@ function() {
 
 ZmPresenceMenu.prototype._presenceCustomItemListener =
 function() {
-	var roster = ZmImApp.INSTANCE.getRoster();
-	var presence = roster.getPresence();
-	var existingCustomMsg = presence.getShow() == ZmRosterPresence.SHOW_ONLINE && presence.getStatus();
-	if (existingCustomMsg) {
-		existingCustomMsg = presence.getStatus();
+	var initialMessage = "";
+	if (ZmImApp.loggedIn()) {
+		var presence = ZmImApp.INSTANCE.getRoster().getPresence();
+		initialMessage = (presence.getShow() == ZmRosterPresence.SHOW_ONLINE) && presence.getStatus();
 	}
-	var dlg = appCtxt.getDialog();
-	dlg.setTitle(ZmMsg.newStatusMessage);
-	var id = Dwt.getNextId();
-	var html = [ "<div width='320px'>",
-		Dwt.CARET_HACK_BEGIN,
-		"<textarea type='text' id='",id,"' rows='3' cols='30'>",
-		existingCustomMsg || "",
-		"</textarea>",
-		Dwt.CARET_HACK_END,
-		"</div>"
-	].join("");
-	dlg.setContent(html);
 
-	dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, function() {
-		var statusMsg = document.getElementById(id).value;
-		if (statusMsg != "") {
-			roster.setPresence(null, 0, statusMsg);
-		}
-		dlg.popdown();
-	}));
+	if (!this._customStatusDialog) {
+		this._customStatusDialog = new ZmCustomStatusDlg({ parent: appCtxt.getShell(), title: ZmMsg.newStatusMessage });
+		this._customStatusDialog.registerCallback(DwtDialog.OK_BUTTON, new AjxListener(this, this._customDialogOk));
+	}
+	this._customStatusDialog.popup(initialMessage);
+};
 
-	dlg.popup();
+ZmPresenceMenu.prototype._customDialogOk =
+function() {
+	var statusMsg = this._customStatusDialog.getValue();
+	if (statusMsg != "") {
+		ZmImApp.INSTANCE.getRoster().setPresence(null, 0, statusMsg);
+	}
+	this._customStatusDialog.popdown();
 };
 
 ZmPresenceMenu.prototype._buddyListListener =
