@@ -1258,7 +1258,9 @@ ZmMailMsg.prototype._addFrom =
 function(soapDoc, parent, isDraft, accountName) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 
-	if (accountName)
+	// only use account name if we either dont have any identities to choose
+	// from or the one we have is the default anyway
+	if (accountName && (!this.identity || (this.identity && this.identity.isDefault)))
 	{
         // when saving a draft, even if obo, we do it on the main account so reset the fro
         if (isDraft) {
