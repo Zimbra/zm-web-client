@@ -18,7 +18,7 @@
 ZmVoicemailListView = function(parent, controller, dropTgt) {
 	var headerList = this._getHeaderList(parent);
 	ZmVoiceListView.call(this, {parent:parent, className:"DwtListView ZmVoicemailListView",
-								posStyle:Dwt.ABSOLUTE_STYLE, view:ZmController.VOICEMAIL_VIEW,
+								posStyle:Dwt.ABSOLUTE_STYLE, view:ZmId.VIEW_VOICEMAIL,
 								type:ZmItem.VOICEMAIL, controller:controller,
 								headerList:headerList, dropTgt:dropTgt});
 

@@ -19,6 +19,7 @@ ZmListView = function(params) {
 
 	if (arguments.length == 0) { return; }
 	
+	params.id = params.id || ZmId.getViewId(params.view);
 	DwtListView.call(this, params);
 
 	this.view = params.view;

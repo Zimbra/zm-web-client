@@ -44,7 +44,7 @@ function(defaultColumnSort) {
 	ZmMailListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
 	
 	// Show "From" or "To" depending on which folder we're looking at
-	if (this._mode == ZmController.TRAD_VIEW) {
+	if (this._mode == ZmId.VIEW_TRAD) {
 		var isFolder = this._resetFromColumnLabel();
 
 		// set the received column name based on query string
@@ -76,7 +76,7 @@ function(msg, params) {
 	// bug fix #3595 - dont hilite if search was in:<folder name>
 	var curSearch = this._controller._app.currentSearch;
 	var folderId = curSearch ? curSearch.folderId : null;
-	params.isMatched = (msg.inHitList && (this._mode == ZmController.CONV_VIEW) && !folderId);
+	params.isMatched = (msg.inHitList && (this._mode == ZmId.VIEW_CONV) && !folderId);
 };
 
 ZmMailMsgListView.prototype._getDivClass =
@@ -98,7 +98,7 @@ function(base, item, params) {
 ZmMailMsgListView.prototype._getRowClass =
 function(msg) {
 	var classes = [];
-	if (this._mode != ZmController.TRAD_VIEW) {
+	if (this._mode != ZmId.VIEW_TRAD) {
 		var folder = appCtxt.getById(msg.folderId);
 		if (folder && folder.isInTrash()) {
 			classes.push("Trash");
@@ -112,8 +112,8 @@ function(msg) {
 
 ZmMailMsgListView.prototype._getCellId =
 function(item, field) {
-	if (field == ZmItem.F_SUBJECT && (this._mode == ZmController.CONV_VIEW ||
-									  this._mode == ZmController.CONVLIST_VIEW)) {
+	if (field == ZmItem.F_SUBJECT && (this._mode == ZmId.VIEW_CONV ||
+									  this._mode == ZmId.VIEW_CONVLIST)) {
 		return this._getFieldId(item, field);
 	} else {
 		return ZmMailListView.prototype._getCellId.apply(this, arguments);
@@ -130,7 +130,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
 		// setup participants list for Sent/Drafts/Outbox folders
 		var folder = appCtxt.getById(this._folderId);
-		if (this._mode == ZmController.TRAD_VIEW && folder &&
+		if (this._mode == ZmId.VIEW_TRAD && folder &&
 			(folder.isUnder(ZmFolder.ID_SENT) ||
 			 folder.isUnder(ZmFolder.ID_DRAFTS) ||
 			 folder.isUnder(ZmFolder.ID_OUTBOX)))
@@ -169,7 +169,7 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		{
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 			if (fromAddr) {
-				if (this._mode == ZmController.CONVLIST_VIEW) {
+				if (this._mode == ZmId.VIEW_CONVLIST) {
 					htmlArr[idx++] = ZmConvListView.INDENT;
 				}
 				htmlArr[idx++] = "<span style='white-space:nowrap' id='";
@@ -182,9 +182,9 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 		}
 
 	} else if (field == ZmItem.F_SUBJECT) {
-		if (this._mode == ZmController.CONV_VIEW || this._mode == ZmController.CONVLIST_VIEW) {
+		if (this._mode == ZmId.VIEW_CONV || this._mode == ZmId.VIEW_CONVLIST) {
 			// msg within a conv shows just the fragment
-			if (this._mode == ZmController.CONVLIST_VIEW) {
+			if (this._mode == ZmId.VIEW_CONVLIST) {
 				htmlArr[idx++] = ZmConvListView.INDENT;
 			}
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
@@ -232,7 +232,7 @@ function(ev) {
 		(this._mode != appCtxt.getCurrentViewId()) &&
 		(this._mode != appCtxt.getAppViewMgr().getLastViewId())) { return; }
 
-	if ((ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) && this._mode == ZmController.CONV_VIEW) {
+	if ((ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) && this._mode == ZmId.VIEW_CONV) {
 		if (!this._controller.handleDelete()) {
 			if (ev.event == ZmEvent.E_DELETE) {
 				ZmMailListView.prototype._changeListener.call(this, ev);
@@ -247,7 +247,7 @@ function(ev) {
 				}
 			}
 		}
-	} else if (this._mode == ZmController.CONV_VIEW && ev.event == ZmEvent.E_CREATE) {
+	} else if (this._mode == ZmId.VIEW_CONV && ev.event == ZmEvent.E_CREATE) {
 		var conv = AjxDispatcher.run("GetConvController").getConv();
 		if (conv && (msg.cid == conv.id)) {
 			ZmMailListView.prototype._changeListener.call(this, ev);
@@ -325,7 +325,7 @@ function(parent) {
 	hList.push(new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.from, null, ZmMailMsgListView.COL_WIDTH_FROM, ZmItem.F_FROM, true));
 	hList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
 
-	var isConvView = (this._mode == ZmController.CONV_VIEW);
+	var isConvView = (this._mode == ZmId.VIEW_CONV);
 	var sortBy = isConvView ? null : ZmItem.F_SUBJECT;
 	var colName = isConvView ? ZmMsg.fragment : ZmMsg.subject;
 	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, colName, null, null, sortBy, null, null, null, null, true));
@@ -343,11 +343,11 @@ function(columnItem, bSortAsc) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	if (this.getList().size() > 1 && this._sortByString) {
-		var controller = AjxDispatcher.run((this._mode == ZmController.CONV_VIEW) ? "GetConvController" :
+		var controller = AjxDispatcher.run((this._mode == ZmId.VIEW_CONV) ? "GetConvController" :
 																					"GetTradController");
 		var searchString = controller.getSearchString();
 
-		if (this._mode == ZmController.CONV_VIEW) {
+		if (this._mode == ZmId.VIEW_CONV) {
 			var conv = controller.getConv();
 			if (conv) {
 				var respCallback = new AjxCallback(this, this._handleResponseSortColumn, [conv, columnItem, controller]);

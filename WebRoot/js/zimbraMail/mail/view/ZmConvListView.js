@@ -34,7 +34,7 @@
 ZmConvDoublePaneView = function(params) {
 
 	params.className = params.className || "ZmConvDoublePaneView";
-	params.mode = ZmController.CONVLIST_VIEW;
+	params.mode = ZmId.VIEW_CONVLIST;
 	params.msgViewId = ZmId.CLV_MSG;
 	ZmDoublePaneView.call(this, params);
 }
@@ -63,7 +63,7 @@ function(params) {
 ZmConvListView = function(params) {
 
 	params.headerList = this._getHeaderList(parent);
-	params.view = ZmController.CONVLIST_VIEW;
+	params.view = ZmId.VIEW_CONVLIST;
 	params.type = ZmItem.CONV;
 	ZmMailListView.call(this, params);
 
@@ -71,7 +71,7 @@ ZmConvListView = function(params) {
 	this._handleEventType[ZmItem.CONV] = true;
 	this._handleEventType[ZmItem.MSG] = true;
 
-	this._mode = ZmController.CONVLIST_VIEW;
+	this._mode = ZmId.VIEW_CONVLIST;
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 	this._msgRowIdList = {};	// hash of lists, each list has row IDs for an expandable item
 };

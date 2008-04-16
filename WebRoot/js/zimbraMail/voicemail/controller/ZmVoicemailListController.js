@@ -48,12 +48,12 @@ function(searchResult, folder) {
 
 ZmVoicemailListController.prototype._defaultView =
 function() {
-	return ZmController.VOICEMAIL_VIEW;
+	return ZmId.VIEW_VOICEMAIL;
 };
 
 ZmVoicemailListController.prototype._getViewType = 
 function() {
-	return ZmController.VOICEMAIL_VIEW;
+	return ZmId.VIEW_VOICEMAIL;
 };
 
 ZmVoicemailListController.prototype._getItemType =

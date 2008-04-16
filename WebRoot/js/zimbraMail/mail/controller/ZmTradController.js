@@ -30,19 +30,19 @@
  */
 ZmTradController = function(container, mailApp) {
 	ZmDoublePaneController.call(this, container, mailApp);
-	this._msgControllerMode = ZmController.TRAD_VIEW;
+	this._msgControllerMode = ZmId.VIEW_TRAD;
 };
 
 ZmTradController.prototype = new ZmDoublePaneController;
 ZmTradController.prototype.constructor = ZmTradController;
 
-ZmMailListController.GROUP_BY_ITEM[ZmController.TRAD_VIEW]		= ZmItem.MSG;
-ZmMailListController.GROUP_BY_SETTING[ZmController.TRAD_VIEW]	= ZmSetting.GROUP_BY_MESSAGE;
+ZmMailListController.GROUP_BY_ITEM[ZmId.VIEW_TRAD]		= ZmItem.MSG;
+ZmMailListController.GROUP_BY_SETTING[ZmId.VIEW_TRAD]	= ZmSetting.GROUP_BY_MESSAGE;
 
 // view menu
-ZmMailListController.GROUP_BY_ICON[ZmController.TRAD_VIEW]		= "MessageView";
-ZmMailListController.GROUP_BY_MSG_KEY[ZmController.TRAD_VIEW]	= "byMessage";
-ZmMailListController.GROUP_BY_VIEWS.push(ZmController.TRAD_VIEW);
+ZmMailListController.GROUP_BY_ICON[ZmId.VIEW_TRAD]		= "MessageView";
+ZmMailListController.GROUP_BY_MSG_KEY[ZmId.VIEW_TRAD]	= "byMessage";
+ZmMailListController.GROUP_BY_VIEWS.push(ZmId.VIEW_TRAD);
 
 // Public methods
 
@@ -65,7 +65,7 @@ function(search) {
 	// call base class
 	ZmDoublePaneController.prototype.show.call(this, search, this._list);
 	appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_MSG);
-	this._resetNavToolBarButtons(ZmController.TRAD_VIEW);
+	this._resetNavToolBarButtons(ZmId.VIEW_TRAD);
 };
 
 // Private methods
@@ -78,7 +78,7 @@ function() {
 
 ZmTradController.prototype._getViewType =
 function() {
-	return ZmController.TRAD_VIEW;
+	return ZmId.VIEW_TRAD;
 };
 
 ZmTradController.prototype._getItemType =

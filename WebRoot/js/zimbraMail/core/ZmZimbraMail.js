@@ -80,10 +80,10 @@ ZmZimbraMail = function(params) {
 	AjxDispatcher.setPackageLoadFunction("Zimlet", new AjxCallback(this, this._postLoadZimlet));
 
 	AjxDispatcher.setPreLoadFunction(new AjxCallback(this, function() {
-		this._appViewMgr.pushView(ZmController.LOADING_VIEW);
+		this._appViewMgr.pushView(ZmId.VIEW_LOADING);
 	}));
 	AjxDispatcher.setPostLoadFunction(new AjxCallback(this, function() {
-		this._appViewMgr._toRemove.push(ZmController.LOADING_VIEW);
+		this._appViewMgr._toRemove.push(ZmId.VIEW_LOADING);
 	}));
 
 	for (var i in ZmApp.QS_ARG) {

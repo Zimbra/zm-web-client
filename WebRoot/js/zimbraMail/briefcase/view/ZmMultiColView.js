@@ -219,7 +219,7 @@ function(folderId) {
 			this.removeChildColumns(listView.getColumnIndex());
 		}
 	}
-	this._controller._listView[ZmController.BRIEFCASE_COLUMN_VIEW] = listView;
+	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = listView;
 	listView.set(folderId);
 };
 

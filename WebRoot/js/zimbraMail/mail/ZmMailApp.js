@@ -969,7 +969,7 @@ function(refresh) {
 		var req = appCtxt.currentRequestParams;
 		if (appCtxt.getCurrentAppName() == this._name && req.resend && req.methodName == "NoOpRequest") {
 			var curView = appCtxt.getCurrentViewId();
-			if (curView == ZmController.CONVLIST_VIEW || curView == ZmController.TRAD_VIEW) {
+			if (curView == ZmId.VIEW_CONVLIST || curView == ZmId.VIEW_TRAD) {
 				appCtxt.getSearchController().redoSearch(this.currentSearch);
 			}
 		}
@@ -1322,19 +1322,19 @@ function(ev) {
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
 		if (setting.id == ZmSetting.PAGE_SIZE) {
-			if (curView != ZmController.MSG_VIEW) {
+			if (curView != ZmId.VIEW_MSG) {
 				newView = groupByView || curView;
 			}
 		} else if (setting.id == ZmSetting.INITIAL_GROUP_MAIL_BY) {
-			if (curView == ZmController.CONVLIST_VIEW || curView == ZmController.TRAD_VIEW) {
+			if (curView == ZmId.VIEW_CONVLIST || curView == ZmId.VIEW_TRAD) {
 				var value = appCtxt.get(setting.id);
-				var view = (value == ZmSetting.GROUP_BY_CONV) ? ZmController.CONVLIST_VIEW : ZmController.TRAD_VIEW;
+				var view = (value == ZmSetting.GROUP_BY_CONV) ? ZmId.VIEW_CONVLIST : ZmId.VIEW_TRAD;
 				if (view != curView) {
 					groupByView = view;
 				}
 			}
 		} else if (setting.id == ZmSetting.SHOW_FRAGMENTS) {
-			if (curView != ZmController.MSG_VIEW) {
+			if (curView != ZmId.VIEW_MSG) {
 				newView = groupByView || curView;
 			}
 		}

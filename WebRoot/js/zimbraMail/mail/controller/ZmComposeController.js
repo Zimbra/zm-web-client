@@ -370,7 +370,7 @@ function(initHide, composeMode) {
 	this._initializeToolBar();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks, false, true);
+    this._app.createView(ZmId.VIEW_COMPOSE, elements, callbacks, false, true);
     if (initHide) {
 	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	    this._composeView.enableInputs(false);
@@ -607,7 +607,7 @@ function(params) {
 
 	this._composeView.set(params);
 	this._setComposeTabGroup();
-	this._app.pushView(ZmController.COMPOSE_VIEW);
+	this._app.pushView(ZmId.VIEW_COMPOSE);
 	this._composeView.reEnableDesignMode();
 
 	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) &&
@@ -668,7 +668,7 @@ function() {
 
 	var className = appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className+" ImgSkin_Toolbar",
-										 context:ZmController.COMPOSE_VIEW});
+										 context:ZmId.VIEW_COMPOSE});
 
 	for (var i = 0; i < this._toolbar.opList.length; i++) {
 		var button = this._toolbar.opList[i];
@@ -766,7 +766,7 @@ function(action) {
 
 	}
 
-	var menu = new ZmActionMenu({parent:button, menuItems:list, overrides:overrides, context:[ZmController.COMPOSE_VIEW, action].join("_")});
+	var menu = new ZmActionMenu({parent:button, menuItems:list, overrides:overrides, context:[ZmId.VIEW_COMPOSE, action].join("_")});
 
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];

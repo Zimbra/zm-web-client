@@ -135,8 +135,8 @@ function() {
 // Method that is run when a tree item is left-clicked
 ZmNotebookTreeController.prototype._itemClicked =
 function(notebook) {
-	if (appCtxt.getCurrentViewId() != ZmController.NOTEBOOK_PAGE_VIEW) {
-		appCtxt.getAppViewMgr().setView(ZmController.NOTEBOOK_PAGE_VIEW);
+	if (appCtxt.getCurrentViewId() != ZmId.VIEW_NOTEBOOK_PAGE) {
+		appCtxt.getAppViewMgr().setView(ZmId.VIEW_.NOTEBOOK_PAGE);
 	};
 
 	var notebookController = AjxDispatcher.run("GetNotebookController");

@@ -218,11 +218,11 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.VIEW_BY_CONV:
-			this.switchView(ZmController.CONVLIST_VIEW);
+			this.switchView(ZmId.VIEW_CONVLIST);
 			break;
 
 		case ZmKeyMap.VIEW_BY_MSG:
-			this.switchView(ZmController.TRAD_VIEW);
+			this.switchView(ZmId.VIEW_TRAD);
 			break;
 
 		case ZmKeyMap.READING_PANE:

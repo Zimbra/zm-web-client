@@ -27,7 +27,7 @@ ZmEvent.S_BRIEFCASE				= ZmId.ITEM_BRIEFCASE;
 ZmItem.PAGE						= ZmEvent.S_PAGE;
 ZmItem.DOCUMENT					= ZmEvent.S_DOCUMENT;
 ZmItem.BRIEFCASE				= ZmEvent.S_BRIEFCASE;
-ZmOrganizer.BRIEFCASE			= ZmItem.ORG_BRIEFCASE;
+ZmOrganizer.BRIEFCASE			= ZmId.ORG_BRIEFCASE;
 
 // App-related constants
 ZmApp.BRIEFCASE							= ZmId.APP_BRIEFCASE;
@@ -338,7 +338,7 @@ function(folder,filenames) {
 
 ZmBriefcaseApp.prototype._handleLoadNewBriefcaseItem =
 function() {
-	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
+	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
 	var dialog = appCtxt.getNewBriefcaseDialog();
 	if (!this._newNotebookCb) {
 		this._newNotebookCb = new AjxCallback(this, this._newBriefcaseCallback);

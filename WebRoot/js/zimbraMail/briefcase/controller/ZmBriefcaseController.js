@@ -41,26 +41,26 @@ function() {
 
 // Constants
 ZmBriefcaseController._VIEWS = {};
-ZmBriefcaseController._VIEWS[ZmController.BRIEFCASE_VIEW] = ZmBriefcaseView;
-ZmBriefcaseController._VIEWS[ZmController.BRIEFCASE_DETAIL_VIEW] = ZmDetailListView;
-ZmBriefcaseController._VIEWS[ZmController.BRIEFCASE_COLUMN_VIEW] = ZmMultiColView;
+ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE] = ZmBriefcaseView;
+ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_DETAIL] = ZmDetailListView;
+ZmBriefcaseController._VIEWS[ZmId.VIEW_BRIEFCASE_COLUMN] = ZmMultiColView;
 
 // Stuff for the View menu
 ZmBriefcaseController.GROUP_BY_ICON = {};
 ZmBriefcaseController.GROUP_BY_MSG_KEY = {};
 ZmBriefcaseController.GROUP_BY_VIEWS = [];
 
-ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmController.BRIEFCASE_VIEW]			= "explorerView";
-ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmController.BRIEFCASE_DETAIL_VIEW]	= "detailView";
-ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmController.BRIEFCASE_COLUMN_VIEW]	= "columnBrowserView";
+ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE]			= "explorerView";
+ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_DETAIL]	= "detailView";
+ZmBriefcaseController.GROUP_BY_MSG_KEY[ZmId.VIEW_BRIEFCASE_COLUMN]	= "columnBrowserView";
 
-ZmBriefcaseController.GROUP_BY_ICON[ZmController.BRIEFCASE_VIEW]			= "Folder";
-ZmBriefcaseController.GROUP_BY_ICON[ZmController.BRIEFCASE_DETAIL_VIEW]		= "ListView";
-ZmBriefcaseController.GROUP_BY_ICON[ZmController.BRIEFCASE_COLUMN_VIEW]		= "ListView";
+ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE]			= "Folder";
+ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_DETAIL]		= "ListView";
+ZmBriefcaseController.GROUP_BY_ICON[ZmId.VIEW_BRIEFCASE_COLUMN]		= "ListView";
 
-ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmController.BRIEFCASE_VIEW);
-ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmController.BRIEFCASE_DETAIL_VIEW);
-ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmController.BRIEFCASE_COLUMN_VIEW);
+ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE);
+ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_DETAIL);
+ZmBriefcaseController.GROUP_BY_VIEWS.push(ZmId.VIEW_BRIEFCASE_COLUMN);
 
 // Overrides ZmListController method, leaving ZmOperation.MOVE off the menu.
 ZmBriefcaseController.prototype._standardActionMenuOps =
@@ -216,14 +216,14 @@ function() {
 
 ZmBriefcaseController.prototype._defaultView =
 function() {
-	return ZmController.BRIEFCASE_COLUMN_VIEW;
+	return ZmId.VIEW_BRIEFCASE_COLUMN;
 };
 
 ZmBriefcaseController.prototype._createNewView =
 function(view) {
 	if (!this._listView[view]) {
 		var viewCtor = ZmBriefcaseController._VIEWS[view];
-		if(view == ZmController.BRIEFCASE_COLUMN_VIEW) {
+		if(view == ZmId.VIEW_BRIEFCASE_COLUMN) {
 			this._parentView[view] = new viewCtor(this._container, null, null, this, this._dropTgt);
 			var listView = this._listView[view] = this._parentView[view].getListView();
 			listView.setDragSource(this._dragSrc);
@@ -238,7 +238,7 @@ function(view) {
 
 ZmBriefcaseController.prototype._setViewContents =
 function(view) {
-	if(view == ZmController.BRIEFCASE_COLUMN_VIEW){
+	if(view == ZmId.VIEW_BRIEFCASE_COLUMN){
 		this._parentView[view].set(this._object);	
 	}else{
 		this._listView[view].set(this._object);
@@ -350,7 +350,7 @@ function(view, force) {
 	if (viewChanged) {
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-		if(this._currentView == ZmController.BRIEFCASE_COLUMN_VIEW){
+		if(this._currentView == ZmId.VIEW_BRIEFCASE_COLUMN){
 			elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[this._currentView];
 		}else{
 			elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
@@ -905,7 +905,7 @@ function() {
 ZmBriefcaseController.prototype._initializeListView =
 function(view) {
 	
-	if(view != ZmController.BRIEFCASE_COLUMN_VIEW){
+	if(view != ZmId.VIEW_BRIEFCASE_COLUMN){
 		ZmListController.prototype._initializeListView.call(this,view);
 		return;
 	}
@@ -945,7 +945,7 @@ function(folderId) {
 
 ZmBriefcaseController.prototype.isMultiColView =
 function() {
-	return (this._currentView == ZmController.BRIEFCASE_COLUMN_VIEW);
+	return (this._currentView == ZmId.VIEW_BRIEFCASE_COLUMN);
 };
 
 ZmBriefcaseController.prototype.deleteCallback = 
