@@ -297,7 +297,8 @@ function(zimlets, props) {
 
 ZmSettings.prototype.loadSkinsAndLocales =
 function(callback) {
-	var command = new ZmBatchCommand();
+	// force main account (in case multi-account) since locale/skins are global
+	var command = new ZmBatchCommand(null, appCtxt.getMainAccount().name);
 
 	var skinDoc = AjxSoapDoc.create("GetAvailableSkinsRequest", "urn:zimbraAccount");
 	var skinCallback = new AjxCallback(this, this._handleResponseLoadAvailableSkins);
@@ -315,9 +316,10 @@ function(result) {
 	var resp = result.getResponse().GetAvailableSkinsResponse;
 	var skins = resp.skin;
 	if (skins && skins.length) {
+		var setting = appCtxt.getMainAccount().settings.getSetting(ZmSetting.AVAILABLE_SKINS);
 		for (var i = 0; i < skins.length; i++) {
-			var name = skins[i].name;
-			this._settings[ZmSetting.AVAILABLE_SKINS].setValue(name);
+			// always save available skins on the main account (in case multi-account)
+			setting.setValue(skins[i].name);
 		}
 	}
 };
@@ -505,7 +507,7 @@ function() {
 
 	// COS SETTINGS
 	this.registerSetting("ATTACHMENTS_BLOCKED",				{name:"zimbraAttachmentsBlocked", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("AVAILABLE_SKINS",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
+	this.registerSetting("AVAILABLE_SKINS",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST, isGlobal:true});
 	this.registerSetting("BROWSE_ENABLED",					{name:"zimbraFeatureAdvancedSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name:"zimbraFeatureChangePasswordEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("DISPLAY_NAME",					{name:"displayName", type:ZmSetting.T_COS});

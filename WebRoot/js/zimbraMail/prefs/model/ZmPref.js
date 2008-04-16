@@ -51,6 +51,7 @@ ZmPref.ORIENT_HORIZONTAL    = "horizontal";
 ZmPref.loadSkins =
 function(setup) {
 	var skins = appCtxt.get(ZmSetting.AVAILABLE_SKINS);
+	setup.options = []; // re-init otherwise we could possibly have dupes.
 	for (var i = 0; i < skins.length; i++) {
 		var skin = skins[i];
 		setup.options.push(skin);
