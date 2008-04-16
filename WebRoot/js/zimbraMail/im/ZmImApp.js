@@ -89,6 +89,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_ONLINE, { textKey: "imStatusOnline", image: "ImAvailable" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_XA, { textKey: "imStatusExtAway", image: "ImExtendedAway" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MRU, { image: "ImAvailable" });
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU, { }); // Keyboard only.
     ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_ITEM, { textKey: "newRosterItem", image: "ImBuddy" });
     ZmOperation.registerOp(ZmId.OP_IM_CREATE_CONTACT, { textKey: "addToNewContact", image: "NewContact" });
     ZmOperation.registerOp(ZmId.OP_IM_ADD_TO_CONTACT, { textKey: "addToExistingContact", image: "Edit" });
@@ -132,6 +133,7 @@ function() {
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_CHAT] = ZmOperation.IM_NEW_CHAT;
 	actionCodes[ZmKeyMap.NEW_ROSTER_ITEM] = ZmOperation.NEW_ROSTER_ITEM;
+	actionCodes[ZmKeyMap.PRESENCE_MENU] = ZmOperation.IM_PRESENCE_MENU;
 
 	ZmApp.registerApp(ZmApp.IM,
 			  { mainPkg	      : "IM",
@@ -370,6 +372,11 @@ ZmImApp.prototype.handleOp = function(op) {
 			break;
 		case ZmOperation.NEW_ROSTER_ITEM:
 			this.getRosterTreeController()._newRosterItemListener()
+			break;
+		case ZmOperation.IM_PRESENCE_MENU:
+			if (this._presenceButton) {
+				this._presenceButton.popup();
+			}
 			break;
 	}
 };
