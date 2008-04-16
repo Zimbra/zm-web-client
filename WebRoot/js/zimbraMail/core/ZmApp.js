@@ -106,6 +106,8 @@ ZmApp.ASSISTANTS			= {};
 ZmApp.CHOOSER_SORT			= {};	// controls order of apps in app chooser toolbar
 ZmApp.DEFAULT_SORT			= {};	// controls order in which app is chosen as default start app
 
+ZmApp.ENABLED_APPS			= {};	// hash for quick detection if app is enabled
+
 // ordered lists of apps
 ZmApp.APPS					= [];	// ordered list
 ZmApp.DEFAULT_APPS			= [];	// ordered list

@@ -507,6 +507,32 @@ function(checked) {
 	return (awayMsg && (awayMsg.length > 0));
 };
 
+ZmMailApp.prototype._registerOrganizers =  function() {
+	ZmOrganizer.registerOrg(ZmOrganizer.FOLDER,
+							{app:				ZmApp.MAIL,
+							 nameKey:			"folder",
+							 defaultFolder:		ZmOrganizer.ID_INBOX,
+							 soapCmd:			"FolderAction",
+							 firstUserId:		256,
+							 orgClass:			"ZmFolder",
+							 treeController:	"ZmFolderTreeController",
+							 labelKey:			"folders",
+							 itemsKey:			"messages",
+							 hasColor:			true,
+							 defaultColor:		ZmOrganizer.C_NONE,
+							 treeType:			ZmOrganizer.FOLDER,
+							 dropTargets:		[ZmOrganizer.FOLDER],
+							 views:				["message", "conversation"],
+							 folderKey:			"mailFolder",
+							 mountKey:			"mountFolder",
+							 createFunc:		"ZmOrganizer.create",
+							 compareFunc:		"ZmFolder.sortCompare",
+							 shortcutKey:		"F",
+							 openSetting:		ZmSetting.FOLDER_TREE_OPEN
+							});
+
+};
+
 ZmMailApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE, {textKey:"newFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);

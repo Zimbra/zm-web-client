@@ -326,13 +326,12 @@ function(ev) {
 	}
 	
 	if (ev.item) {
-		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
-		this._calItemStatus[calendar.id] = {item: calendar, checked: ev.item.getChecked()};
-	} else if (ev.items && ev.items.length) {
+		ev.items = [ ev.item ];
+	}
+	if (ev.items && ev.items.length) {
 		for (var i = 0; i < ev.items.length; i++) {
 			var item = ev.items[i];
-			var calendar = item.getData(Dwt.KEY_OBJECT);
-			this._calItemStatus[calendar.id] = {item:calendar, checked:item.getChecked()};
+			this.__addCalItemStatus(item, item.getChecked());
 		}
 	}
 
@@ -341,6 +340,20 @@ function(ev) {
 		this._updateCalItemStateActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._updateCalItemState), 1200);
 	}	
 };
+
+ZmCalViewController.prototype.__addCalItemStatus = function(item, checked) {
+	item.setChecked(checked);
+	var organizer = item.getData(Dwt.KEY_OBJECT);
+	if (organizer && organizer.type == ZmOrganizer.CALENDAR) {
+		this._calItemStatus[organizer.id] = {item: organizer, checked: checked};
+	}
+	// bug 6410
+	var items = item.getItems();
+	for (var i = 0; i < items.length; i++) {
+		item = items[i];
+		this.__addCalItemStatus(item, checked);
+	}
+}
 
 ZmCalViewController.prototype._updateCalItemState =
 function() {

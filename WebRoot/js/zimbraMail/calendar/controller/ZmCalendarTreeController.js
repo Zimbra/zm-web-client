@@ -178,8 +178,32 @@ function() {
 
 // Method that is run when a tree item is left-clicked
 ZmCalendarTreeController.prototype._itemClicked =
-function() {
-	// TODO
+function(organizer) {
+	if (organizer.type != ZmOrganizer.CALENDAR) {
+		var appId = ZmOrganizer.APP[organizer.type];
+		var app = appId && appCtxt.getApp(appId);
+		if (app) {
+			var callback = new AjxCallback(this, this._postActivateApp, [organizer, app]);
+			appCtxt.getAppController().activateApp(appId, null, callback);
+		}
+		else {
+			appCtxt.setStatusMsg({
+				msg:	AjxMessageFormat.format(ZmMsg.appUnknown, [appId]),
+				level:	ZmStatusView.LEVEL_WARNING
+			});
+		}
+	}
+};
+
+ZmCalendarTreeController.prototype._postActivateApp =
+function(organizer, app) {
+	var controller = appCtxt.getOverviewController();
+	var overviewId = app.getOverviewId();
+	var treeId = organizer.type;
+	var treeView = controller.getTreeView(overviewId, treeId);
+	if (treeView) {
+		treeView.setSelected(organizer);
+	}
 };
 
 // Handles a drop event
@@ -361,9 +385,12 @@ function(ev, checked) {
 	var overviewId = this._actionedOverviewId;
 	var items = this._getItems(overviewId);
 	var checkedItems = [];
+	var item, organizer;
 	for (var i = 0;  i < items.length; i++) {
-		var item = items[i];
+		item = items[i];
 		if (item._isSeparator) continue;
+		organizer = item.getData(Dwt.KEY_OBJECT);
+		if (!organizer || organizer.type != ZmOrganizer.CALENDAR) continue;
 		item.setChecked(checked);
 		checkedItems.push(item);
 	}
