@@ -64,7 +64,7 @@ function(search) {
 
 	// call base class
 	ZmDoublePaneController.prototype.show.call(this, search, this._list);
-	appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_MSG);
+	appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_MESSAGE);
 	this._resetNavToolBarButtons(ZmId.VIEW_TRAD);
 };
 

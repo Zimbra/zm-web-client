@@ -113,9 +113,10 @@ function() {
 ZmMailListController.prototype.switchView =
 function(view, force) {
 	if (view) {
-		var groupBySetting = ZmMailListController.GROUP_BY_SETTING[view];
-		if (groupBySetting && (groupBySetting != this._app._groupBy)) {
-			this._app._groupBy = groupBySetting;
+		var localGroupBy = ZmMailListController.GROUP_BY_SETTING[view];
+		var appGroupBy = this._app._groupBy[appCtxt.getActiveAccount().name];
+		if (localGroupBy && (localGroupBy != appGroupBy)) {
+			this._app.setGroupMailBy(localGroupBy);
 		} else if (!force) {
 			return;
 		}

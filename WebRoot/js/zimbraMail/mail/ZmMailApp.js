@@ -30,10 +30,8 @@ ZmMailApp = function(container, parentController) {
 	this._dataSourceCollection = {};
 	this._identityCollection = {};
 	this._signatureCollection = {};
-	
-	var settings = appCtxt.getSettings();
-	settings.getSetting(ZmSetting.VIEW_AS_HTML).addChangeListener(new AjxListener(this, this._settingChangeListener));
-	settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
+	this._groupBy = {};
+	this._addSettingsChangeListeners();
 };
 
 // Organizer and item-related constants
@@ -1047,7 +1045,8 @@ function(params, callback) {
 		}
 	}
 
-	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
+	// set type for initial search
+	this._groupBy[appCtxt.getActiveAccount().name] = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	this._mailSearch(query, callback, params.searchResponse);
 };
 
@@ -1068,6 +1067,9 @@ function(accordionItem) {
 	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
 
 	if (appCtxt.isOffline || !appCtxt.inStartup) {
+		this._addSettingsChangeListeners();
+		// *reset* type for initial search
+		this._groupBy[appCtxt.getActiveAccount().name] = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 		this._mailSearch();
 	}
 };
@@ -1225,8 +1227,15 @@ function(organizer) {
 */
 ZmMailApp.prototype.getGroupMailBy =
 function() {
-	var setting = this._groupBy || appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	var groupBy = this._groupBy[appCtxt.getActiveAccount().name];
+	var setting = groupBy || appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return setting ? ZmMailApp.GROUP_MAIL_BY_ITEM[setting] : ZmItem.MSG;
+};
+
+ZmMailApp.prototype.setGroupMailBy =
+function(groupBy) {
+	this._groupBy[appCtxt.getActiveAccount().name] = groupBy;
+	appCtxt.set(ZmSetting.GROUP_MAIL_BY, groupBy);
 };
 
 /**
@@ -1302,6 +1311,20 @@ function() {
 		}
 	}
 	return this._signatureCollection[activeAcct];
+};
+
+ZmMailApp.prototype._addSettingsChangeListeners =
+function() {
+	if (!this._settingListener) {
+		this._settingListener = new AjxListener(this, this._settingChangeListener);
+	}
+	if (!this._settingsListener) {
+		this._settingsListener = new AjxListener(this, this._settingsChangeListener);
+	}
+
+	var settings = appCtxt.getSettings();
+	settings.getSetting(ZmSetting.VIEW_AS_HTML).addChangeListener(this._settingListener);
+	settings.addChangeListener(this._settingsListener);
 };
 
 /**
