@@ -129,6 +129,10 @@ function() {
 	var newOrgOps = {};
 	newOrgOps[ZmOperation.NEW_ROSTER_ITEM] = "rosterItem";
 
+	var actionCodes = {};
+	actionCodes[ZmKeyMap.NEW_CHAT] = ZmOperation.IM_NEW_CHAT;
+	actionCodes[ZmKeyMap.NEW_ROSTER_ITEM] = ZmOperation.NEW_ROSTER_ITEM;
+
 	ZmApp.registerApp(ZmApp.IM,
 			  { mainPkg	      : "IM",
 			    nameKey	      : "imAppTitle",
@@ -139,7 +143,8 @@ function() {
 			    chooserSort	      : 40,
 			    defaultSort	      : 50,
 			    newOrgOps		  : newOrgOps,
-			    newItemOps        : newItemOps
+			    newItemOps        : newItemOps,
+				actionCodes		  : actionCodes
 			  });
 };
 
