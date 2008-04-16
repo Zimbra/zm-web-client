@@ -171,6 +171,15 @@ function() {
     return ops;
 };
 
+ZmCalendarTreeController.prototype._getActionMenu =
+function(ev) {
+	var organizer = ev.item.getData(Dwt.KEY_OBJECT);
+	if (organizer.type != this.type) {
+		return null;
+	}
+	return ZmTreeController.prototype._getActionMenu.apply(this, arguments);
+};
+
 ZmCalendarTreeController.prototype.getTreeStyle =
 function() {
 	return DwtTree.CHECKEDITEM_STYLE;

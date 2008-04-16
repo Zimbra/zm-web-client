@@ -361,7 +361,7 @@ function() {
  * Instantiates the header action menu if necessary.
  */
 ZmTreeController.prototype._getHeaderActionMenu =
-function() {
+function(ev) {
 	if (this._headerActionMenu instanceof AjxCallback) {
 		var callback = this._headerActionMenu;
 		this._headerActionMenu = callback.run();
@@ -373,7 +373,7 @@ function() {
  * Instantiates the action menu if necessary.
  */
 ZmTreeController.prototype._getActionMenu =
-function() {
+function(ev) {
 	if (this._actionMenu instanceof AjxCallback) {
 		var callback = this._actionMenu;
 		this._actionMenu = callback.run();
