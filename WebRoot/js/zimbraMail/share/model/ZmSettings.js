@@ -360,8 +360,15 @@ function(list, callback, batchCommand) {
 		if (setting.dataType == ZmSetting.D_BOOLEAN) {
 			value = value ? "TRUE" : "FALSE";
 		}
-		var node = soapDoc.set("pref", value);
-		node.setAttribute("name", setting.name);
+		if (setting.dataType == ZmSetting.D_LIST) {
+			for (var j = 0; j < value.length; j++) {
+				var node = soapDoc.set("pref", value[j]);
+				node.setAttribute("name", setting.name);
+			}
+		} else {
+			var node = soapDoc.set("pref", value);
+			node.setAttribute("name", setting.name);
+		}
 		gotOne = true;
 	}
 

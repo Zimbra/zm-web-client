@@ -104,8 +104,15 @@ function(ev) {
 ZmPresenceMenu.prototype._presenceMRUListener =
 function(ev) {
 	var message = AjxStringUtil.htmlDecode(ev.dwtObj.getText());
-	ZmImApp.INSTANCE.getRoster().setPresence(null, 0, message);
-	this._addToMRU(message);
+	this._setCustom(message);
+};
+
+ZmPresenceMenu.prototype._setCustom =
+function(message) {
+	var batchCommand = new ZmBatchCommand();
+	ZmImApp.INSTANCE.getRoster().setPresence(null, 0, message, batchCommand);
+	this._addToMRU(message, batchCommand);
+	batchCommand.run();
 };
 
 ZmPresenceMenu.prototype._getMRUItem =
@@ -178,15 +185,17 @@ ZmPresenceMenu.prototype._customDialogOk =
 function() {
 	var statusMsg = this._customStatusDialog.getValue();
 	if (statusMsg != "") {
-		ZmImApp.INSTANCE.getRoster().setPresence(null, 0, statusMsg);
-		this._addToMRU(statusMsg);
+		this._setCustom(statusMsg);
 	}
 	this._customStatusDialog.popdown();
 };
 
 ZmPresenceMenu.prototype._addToMRU =
-function(message) {
-	var mru = appCtxt.get(ZmSetting.IM_CUSTOM_STATUS_MRU);
+function(message, batchCommand) {
+	var settings = appCtxt.getSettings(),
+		setting = settings.getSetting(ZmSetting.IM_CUSTOM_STATUS_MRU), 
+		mru = setting.getValue();
+	
 	if (mru.length && (message == mru[0])) {
 		return;
 	}
@@ -200,6 +209,7 @@ function(message) {
 	if (mru.length > ZmPresenceMenu.MRU_SIZE) {
 		mru.pop();
 	}
+	settings.save([setting], null, batchCommand);
 };
 
 ZmPresenceMenu.prototype._buddyListListener =
