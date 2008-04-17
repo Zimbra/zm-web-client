@@ -66,6 +66,7 @@ AjxPackage.require("zimbraMail.im.view.ZmImInviteNotification");
 AjxPackage.require("zimbraMail.im.view.ZmImNewChatDlg");
 AjxPackage.require("zimbraMail.im.view.ZmImToast");
 AjxPackage.require("zimbraMail.im.view.ZmBuddyListWindow");
+AjxPackage.require("zimbraMail.im.view.ZmCustomStatusDlg");
 
 AjxPackage.require("zimbraMail.im.controller.ZmChatListController");
 AjxPackage.require("zimbraMail.im.controller.ZmRosterTreeController");

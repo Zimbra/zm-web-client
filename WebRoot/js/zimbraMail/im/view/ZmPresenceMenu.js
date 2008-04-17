@@ -175,6 +175,7 @@ function() {
 ZmPresenceMenu.prototype._presenceCustomItemListener =
 function() {
 	if (!this._customStatusDialog) {
+		AjxDispatcher.require([ "IM" ]);
 		this._customStatusDialog = new ZmCustomStatusDlg({ parent: appCtxt.getShell(), title: ZmMsg.newStatusMessage });
 		this._customStatusDialog.registerCallback(DwtDialog.OK_BUTTON, new AjxListener(this, this._customDialogOk));
 	}
