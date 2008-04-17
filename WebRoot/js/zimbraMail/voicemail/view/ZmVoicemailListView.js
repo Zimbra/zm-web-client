@@ -214,10 +214,12 @@ ZmVoicemailListView.prototype._renderList =
 function(list, noResultsOk) {
 	ZmVoiceListView.prototype._renderList.call(this, list, noResultsOk);
 
-	for (var i = 0, count = list.size(); i < count; i++) {
-		var voicemail = list.get(i);
-		var row = this._getElFromItem(voicemail);
-		this._addPlayerToRow(row, voicemail);
+	if (list) {
+		for (var i = 0, count = list.size(); i < count; i++) {
+			var voicemail = list.get(i);
+			var row = this._getElFromItem(voicemail);
+			this._addPlayerToRow(row, voicemail);
+		}
 	}
 };
 
