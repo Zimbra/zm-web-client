@@ -134,8 +134,16 @@ function(parent, num) {
 		parent.enable(ZmOperation.FORWARD_BY_EMAIL, false);
 	}
 
-	if (this._folder && (this._folder.callType == ZmVoiceFolder.TRASH)) {
-		parent.enable(ZmOperation.DELETE, false);
+	if (parent instanceof DwtMenu) {
+		if (this._folder && (this._folder.callType == ZmVoiceFolder.TRASH)) {
+			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.moveToVoiceMail, "MoveToFolder");
+		} else {
+			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.del, "Delete");
+		}
+	} else {
+		if (this._folder && (this._folder.callType == ZmVoiceFolder.TRASH)) {
+			parent.enable(ZmOperation.DELETE, false);
+		}
 	}
 };
 
@@ -222,8 +230,9 @@ function(ev) {
 	if (!items.length) {
 		return;
 	}
+	var folderType = this._folder && (this._folder.callType == ZmVoiceFolder.TRASH) ? ZmVoiceFolder.VOICEMAIL_ID : ZmVoiceFolder.TRASH_ID;
 	var phone = this._folder.phone;
-	var folderId = ZmVoiceFolder.TRASH_ID + "-" + phone.name;
+	var folderId = folderType + "-" + phone.name;
 	var destination = phone.folderTree.getById(folderId);
 	var list = items[0].list;
 	list.moveItems(items, destination);
