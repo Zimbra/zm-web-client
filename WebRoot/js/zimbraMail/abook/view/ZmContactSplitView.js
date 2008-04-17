@@ -212,7 +212,8 @@ function(controller, dropTgt) {
 
 		for (var i = 0; i < this._tabs.length; i++) {
 			var tab = this._tabs[i] = AjxStringUtil.trim(this._tabs[i]);
-			var idx = this._contactTabView.addTab(ZmMsg[tab]);
+			var tabButtonId = ZmId.getTabId(this._controller._currentView, tab);
+			var idx = this._contactTabView.addTab(ZmMsg[tab], null, tabButtonId);
 			var view = new DwtTabViewPage(this._contactTabView, "ZmContactTabViewPage");
 			view._setAllowSelection();
 			view.setScrollStyle(Dwt.SCROLL);

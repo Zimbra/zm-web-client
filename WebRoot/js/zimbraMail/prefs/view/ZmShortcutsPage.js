@@ -200,7 +200,7 @@ ZmShortcutsPageTabView = function(parent, controller, organizers, prefId) {
 	this._shortcuts = kmm ? ZmShortcut.parse(this._setting, kmm) : null;
 };
 
-ZmShortcutsPageTabView.SHORTCUTS_LIST = 0;
+ZmShortcutsPageTabView.SHORTCUTS_LIST = "list";
 
 ZmShortcutsPageTabView.TAB_NAME = {};
 ZmShortcutsPageTabView.TAB_NAME[ZmShortcutsPageTabView.SHORTCUTS_LIST]	= ZmMsg.shortcutList;
@@ -220,12 +220,15 @@ ZmShortcutsPageTabView.prototype.show =
 function() {
 	if (this._hasRendered) { return; }
 
+	var context = ZmId.VIEW_SHORTCUTS;
+
 	// shortcut list
 	if (appCtxt.get(ZmSetting.SHORTCUT_LIST_ENABLED)) {
 		var view = ZmShortcutsPageTabView.SHORTCUTS_LIST;
 		var viewObj = new ZmShortcutsPageTabViewList(this._parent, this._controller);
 		this._scTabView[view] = viewObj;
-		this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view]);
+		var tabButtonId = ZmId.getTabId(context, view);
+		this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view], tabButtonId);
 	}
 
 	// custom shortcuts
@@ -233,7 +236,8 @@ function() {
 		view = this._organizers[i];
         viewObj = new ZmShortcutsPageTabViewCustom(this._parent, view, this._controller, this._setting, this._shortcuts);
 		this._scTabView[view] = viewObj;
-		this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view]);
+		var tabButtonId = ZmId.getTabId(context, view);
+		this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view], tabButtonId);
 	}
 
 	this._resetSize();
