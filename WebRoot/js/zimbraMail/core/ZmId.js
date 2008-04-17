@@ -25,11 +25,10 @@
  * 
  * In general, a getElementById() on any of the non-skin IDs will return a DIV. One exception
  * is input fields. The ID is given to the DwtInputField's actual INPUT, rather than to the
- * DIV that contains it.
+ * DIV that contains it. Other exceptions are table-related: TABLE, TR, and TD.
  * 
- * There is a simple naming scheme for the IDs themselves. Each ID has two parts, separated
- * by an underscore ("_"). The first part starts with "z", followed by zero or more lowercase
- * letters that indicate the type of element/widget:
+ * There is a simple naming scheme for the IDs themselves. Each ID starts with a "z" followed
+ * by one to a few letters that indicate the type of object (widget) represented by the element:
  * 
  * 		z		a component that is not a special-purpose widget listed below
  * 		ztb		a toolbar
