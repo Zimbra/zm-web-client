@@ -105,7 +105,7 @@ function(defaultColumnSort) {
 	// set the received column name based on query string
 	colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
 	var recdColIdx = this.getColIndexForId(ZmItem.F_DATE);
-	var recdColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
+	var recdColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, this._headerList[recdColIdx]._field));
 	if (recdColSpan) {
 		recdColSpan.innerHTML = "&nbsp;" + colLabel;
 	}
@@ -140,27 +140,30 @@ ZmConvListView.prototype._getHeaderList =
 function(parent) {
 
 	var hList = [];
-
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem(ZmItem.F_SELECTION, null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.selection));
+		hList.push(new DwtListHeaderItem({id:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON,
+										  name:ZmMsg.selection}));
 	}
-	hList.push(new DwtListHeaderItem(ZmItem.F_EXPAND, null, "NodeCollapsed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.expand));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_EXPAND, icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON,
+									  name:ZmMsg.expand}));
 	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem(ZmItem.F_FLAG, null, "FlagRed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.flag));
+		hList.push(new DwtListHeaderItem({id:ZmItem.F_FLAG, icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON,
+										  name:ZmMsg.flag}));
 	}
     if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        hList.push(new DwtListHeaderItem(ZmItem.F_PRIORITY, null, "PriorityHigh_list", ZmListView.COL_WIDTH_NARROW_ICON, null, null, null, ZmMsg.priority));
+        hList.push(new DwtListHeaderItem({id:ZmItem.F_PRIORITY, icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON,
+        								  name:ZmMsg.priority}));
     }
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
+		hList.push(new DwtListHeaderItem({id:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag}));
 	}
-	hList.push(new DwtListHeaderItem(ZmItem.F_STATUS, null, "MsgStatus", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.status));
-	hList.push(new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.from, null, ZmConvListView.COL_WIDTH_FROM, null, true));
-	hList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
-    hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT, null, null, null, null, true));
-	hList.push(new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmMsg.COLUMN_WIDTH_FOLDER, null, true));
-	hList.push(new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmMsg.COLUMN_WIDTH_SIZE, null, true));
-	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.received, null, ZmMsg.COLUMN_WIDTH_DATE, ZmItem.F_DATE));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_STATUS, icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status}));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_FROM, text:ZmMsg.from, width:ZmConvListView.COL_WIDTH_FROM, resizeable:true}));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment}));
+    hList.push(new DwtListHeaderItem({id:ZmItem.F_SUBJECT, text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true}));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true}));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, resizeable:true}));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_DATE, text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE}));
 
 	return hList;
 };

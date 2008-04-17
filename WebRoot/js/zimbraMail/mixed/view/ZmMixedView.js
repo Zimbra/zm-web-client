@@ -68,22 +68,22 @@ function(parent) {
 	var hList = [];
 
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem(ZmItem.F_SELECTION, null, "TaskCheckbox", ZmMixedView.COLWIDTH_ICON));
+		hList.push(new DwtListHeaderItem({id:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmMixedView.COLWIDTH_ICON}));
 	}
 
 	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem(ZmItem.F_FLAG, null, "FlagRed", ZmMixedView.COLWIDTH_ICON));
+		hList.push(new DwtListHeaderItem({id:ZmItem.F_FLAG, icon:"FlagRed", width:ZmMixedView.COLWIDTH_ICON}));
 	}
 
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmMixedView.COLWIDTH_ICON));
+		hList.push(new DwtListHeaderItem({id:ZmItem.F_TAG, icon:"Tag", width:ZmMixedView.COLWIDTH_ICON}));
 	}
 
-	hList.push(new DwtListHeaderItem(ZmItem.F_TYPE, null, "Globe", ZmMixedView.COLWIDTH_ICON));
-	hList.push(new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.from, null, ZmMixedView.COLWIDTH_FROM, null, true));
-	hList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmMixedView.COLWIDTH_ICON));
-	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null, null, true));
-	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.date, null, ZmMixedView.COLWIDTH_DATE));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_TYPE, icon:"Globe", width:ZmMixedView.COLWIDTH_ICON}));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_FROM, text:ZmMsg.from, width:ZmMixedView.COLWIDTH_FROM, resizeable:true}));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmMixedView.COLWIDTH_ICON}));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_SUBJECT, text:ZmMsg.subject, resizeable:true}));
+	hList.push(new DwtListHeaderItem({id:ZmItem.F_DATE, text:ZmMsg.date, width:ZmMixedView.COLWIDTH_DATE}));
 
 	return hList;
 };

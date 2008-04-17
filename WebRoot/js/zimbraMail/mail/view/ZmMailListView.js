@@ -98,7 +98,7 @@ function() {
 	// set the from column name based on query string
 	var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
 	var fromColIdx = this.getColIndexForId(ZmItem.F_FROM);
-	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
+	var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, this._headerList[fromColIdx]._field));
 	if (fromColSpan) {
 		fromColSpan.innerHTML = "&nbsp;" + colLabel;
 	}

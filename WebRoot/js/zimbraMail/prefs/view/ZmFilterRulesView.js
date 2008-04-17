@@ -155,8 +155,8 @@ function(list) {
 ZmFilterListView.prototype._getHeaderList =
 function() {
 	return [
-		(new DwtListHeaderItem(ZmFilterListView.COL_ACTIVE, ZmMsg.active, null, ZmFilterListView.COL_WIDTH_ACTIVE)),
-		(new DwtListHeaderItem(ZmFilterListView.COL_NAME, ZmMsg.filterName))
+		(new DwtListHeaderItem({id:ZmFilterListView.COL_ACTIVE, text:ZmMsg.active, width:ZmFilterListView.COL_WIDTH_ACTIVE})),
+		(new DwtListHeaderItem({id:ZmFilterListView.COL_NAME, text:ZmMsg.filterName}))
 	];
 };
 
