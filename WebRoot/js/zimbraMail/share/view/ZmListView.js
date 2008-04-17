@@ -19,6 +19,7 @@ ZmListView = function(params) {
 
 	if (arguments.length == 0) { return; }
 	
+	params.id = params.id || ZmId.getViewId(params.view);
 	DwtListView.call(this, params);
 
 	this.view = params.view;
@@ -626,7 +627,7 @@ function(item) {
 ZmListView.prototype._getAttachmentToolTip =
 function(item) {
 	var tooltip = null;
-	var atts = item.getAttachments ? item.getAttachments() : [];
+	var atts = item && item.attachments ? item.attachments : [];
 	if (atts.length == 1) {
 		var info = ZmMimeTable.getInfo(atts[0].ct);
 		tooltip = info ? info.desc : null;

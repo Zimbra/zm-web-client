@@ -297,7 +297,8 @@ function(zimlets, props) {
 
 ZmSettings.prototype.loadSkinsAndLocales =
 function(callback) {
-	var command = new ZmBatchCommand();
+	// force main account (in case multi-account) since locale/skins are global
+	var command = new ZmBatchCommand(null, appCtxt.getMainAccount().name);
 
 	var skinDoc = AjxSoapDoc.create("GetAvailableSkinsRequest", "urn:zimbraAccount");
 	var skinCallback = new AjxCallback(this, this._handleResponseLoadAvailableSkins);
@@ -315,9 +316,10 @@ function(result) {
 	var resp = result.getResponse().GetAvailableSkinsResponse;
 	var skins = resp.skin;
 	if (skins && skins.length) {
+		var setting = appCtxt.getMainAccount().settings.getSetting(ZmSetting.AVAILABLE_SKINS);
 		for (var i = 0; i < skins.length; i++) {
-			var name = skins[i].name;
-			this._settings[ZmSetting.AVAILABLE_SKINS].setValue(name);
+			// always save available skins on the main account (in case multi-account)
+			setting.setValue(skins[i].name);
 		}
 	}
 };
@@ -360,8 +362,15 @@ function(list, callback, batchCommand) {
 		if (setting.dataType == ZmSetting.D_BOOLEAN) {
 			value = value ? "TRUE" : "FALSE";
 		}
-		var node = soapDoc.set("pref", value);
-		node.setAttribute("name", setting.name);
+		if (setting.dataType == ZmSetting.D_LIST) {
+			for (var j = 0; j < value.length; j++) {
+				var node = soapDoc.set("pref", value[j]);
+				node.setAttribute("name", setting.name);
+			}
+		} else {
+			var node = soapDoc.set("pref", value);
+			node.setAttribute("name", setting.name);
+		}
 		gotOne = true;
 	}
 
@@ -413,15 +422,15 @@ function() {
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 	
 	// default sorting preferences
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONVLIST_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONV_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.TRAD_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SRC_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SIMPLE_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_CARDS_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_ASC, ZmController.CAL_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DUE_DATE_DESC, ZmController.TASKLIST_VIEW, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONV, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_TRAD, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SRC, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_TGT, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SIMPLE, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_CARDS, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_ASC, ZmId.VIEW_CAL, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DUE_DATE_DESC, ZmId.VIEW_TASKLIST, true, true);
 };
 
 /**
@@ -455,7 +464,7 @@ function() {
 	// CONFIG SETTINGS
 	this.registerSetting("AC_TIMER_INTERVAL",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300});
 	this.registerSetting("ASYNC_MODE",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"FRANKLIN"});
+	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"main"});
 	// next 3 are replaced during deployment
 	this.registerSetting("CLIENT_DATETIME",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildDateTime@"});
 	this.registerSetting("CLIENT_RELEASE",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildRelease@"});
@@ -498,7 +507,7 @@ function() {
 
 	// COS SETTINGS
 	this.registerSetting("ATTACHMENTS_BLOCKED",				{name:"zimbraAttachmentsBlocked", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("AVAILABLE_SKINS",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
+	this.registerSetting("AVAILABLE_SKINS",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST, isGlobal:true});
 	this.registerSetting("BROWSE_ENABLED",					{name:"zimbraFeatureAdvancedSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name:"zimbraFeatureChangePasswordEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("DISPLAY_NAME",					{name:"displayName", type:ZmSetting.T_COS});

@@ -29,53 +29,6 @@ ZmController = function(container, app) {
 	this._authenticating = false;
 };
 
-// view identifiers - need to be all caps
-ZmController.APPOINTMENT_VIEW 			= "APPT";
-ZmController.APPT_DETAIL_VIEW			= "APPTD";
-ZmController.APPT_SCHEDULE_VIEW			= "APPTS";
-ZmController.ATT_ICON_VIEW 				= "ATI";
-ZmController.ATT_LIST_VIEW 				= "ATL";
-ZmController.CAL_APPT_VIEW				= "CLA";
-ZmController.CAL_DAY_VIEW				= "CLD";
-ZmController.CAL_MONTH_VIEW				= "CLM";
-ZmController.CAL_SCHEDULE_VIEW			= "CLS";
-ZmController.CAL_VIEW					= "CAL";
-ZmController.CAL_WEEK_VIEW				= "CLW";
-ZmController.CAL_WORK_WEEK_VIEW			= "CLWW";
-ZmController.CALLLIST_VIEW				= "CLIST";
-ZmController.COMPOSE_VIEW				= "COMPOSE";
-ZmController.CONTACT_CARDS_VIEW			= "CNC";
-ZmController.CONTACT_SIMPLE_VIEW 		= "CNS";
-ZmController.CONTACT_SRC_VIEW			= "CNSRC"; // contact picker source list
-ZmController.CONTACT_TGT_VIEW			= "CNTGT"; // contact picker target list
-ZmController.CONTACT_VIEW				= "CN";
-ZmController.CONVLIST_VIEW 				= "CLV";
-ZmController.CONV_VIEW 					= "CV";
-ZmController.FILTER_RULES_VIEW			= "FRV";
-ZmController.GROUP_VIEW					= "GRP";
-ZmController.IM_CHAT_MULTI_WINDOW_VIEW	= "IMCMW";
-ZmController.IM_CHAT_TAB_VIEW			= "IMCT";
-ZmController.LOADING_VIEW				= "LOADING";
-ZmController.MIXED_VIEW					= "MX";
-ZmController.MSG_NEW_WIN_VIEW			= "MSGNW"; // needed for HACK (see ZmMailMsg)
-ZmController.MSG_VIEW 					= "MSG";
-ZmController.MY_CARD_VIEW				= "MYC";
-ZmController.NOTEBOOK_FILE_VIEW			= "NBF";
-ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= "NBPE";
-ZmController.NOTEBOOK_PAGE_VIEW			= "NBP";
-ZmController.NOTEBOOK_PAGE_VERSION_VIEW = "NBPV";
-ZmController.NOTEBOOK_SITE_VIEW			= "NBS";
-ZmController.PORTAL_VIEW                = "PORTAL";
-ZmController.PREF_VIEW					= "PREF";
-ZmController.TASK_VIEW					= "TKV";
-ZmController.TASKEDIT_VIEW				= "TKE";
-ZmController.TASKLIST_VIEW				= "TKL";
-ZmController.TRAD_VIEW 					= "TV";
-ZmController.VOICEMAIL_VIEW				= "VM";
-ZmController.BRIEFCASE_VIEW			    = "BC";
-ZmController.BRIEFCASE_DETAIL_VIEW		= "BCD";
-ZmController.BRIEFCASE_COLUMN_VIEW		= "BCC";
-
 ZmController._currAppViewTabGroup = null;
 
 ZmController._setCurrentAppViewTabGroup =

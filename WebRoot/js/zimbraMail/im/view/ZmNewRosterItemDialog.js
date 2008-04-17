@@ -66,12 +66,14 @@ ZmNewRosterItemDialog.prototype._init = function() {
 	this.setTitle(ZmMsg.createNewRosterItem);
 	this._initAddressAutocomplete();
 	this._initGroupAutocomplete();
-    	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
+	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 
 	this._tabGroup.addMember(this._serviceTypeSelect);
 	this._tabGroup.addMember(this._addrEntry);
 	this._tabGroup.addMember(this._nameEntry);
 	this._tabGroup.addMember(this._groupsEntry);
+
+	this.addEnterListener(new AjxListener(this, this._enterListener));
 
 	this.addPopupListener(new AjxListener(this, this._popupListener));
 };
@@ -283,4 +285,9 @@ ZmNewRosterItemDialog.prototype._showError = function(msg, loc) {
 	msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 	msgDialog.popup(loc);
 	return null;
+};
+
+ZmNewRosterItemDialog.prototype._enterListener = function() {
+	var results = this._getRosterItemData();
+	this._runCallbackForButtonId(DwtDialog.OK_BUTTON, results);
 };

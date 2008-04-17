@@ -26,11 +26,11 @@ ZmImApp = function(container) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_CHAT        			= "CHAT";
+ZmEvent.S_CHAT        			= ZmId.ITEM_CHAT;
 ZmEvent.S_ROSTER				= "ROSTER";
-ZmEvent.S_ROSTER_ITEM			= "ROSTER ITEM";
-ZmEvent.S_ROSTER_TREE_ITEM		= "ROSTER TREE ITEM";
-ZmEvent.S_ROSTER_TREE_GROUP		= "ROSTER TREE GROUP";
+ZmEvent.S_ROSTER_ITEM			= ZmId.ITEM_ROSTER;
+ZmEvent.S_ROSTER_TREE_ITEM		= ZmId.ORG_ROSTER_TREE_ITEM;
+ZmEvent.S_ROSTER_TREE_GROUP		= ZmId.ORG_ROSTER_TREE_GROUP;
 ZmItem.CHAT						= ZmEvent.S_CHAT;
 ZmItem.ROSTER_ITEM				= ZmEvent.S_ROSTER_ITEM;
 ZmOrganizer.ROSTER_TREE_ITEM	= ZmEvent.S_ROSTER_TREE_ITEM;
@@ -43,7 +43,7 @@ ZmItem.F_PRESENCE_CELL = "PRESENCE_cell";
 ZmApp.IM					= ZmId.APP_IM;
 ZmApp.CLASS[ZmApp.IM]		= "ZmImApp";
 ZmApp.SETTING[ZmApp.IM]		= ZmSetting.IM_ENABLED;
-ZmApp.LOAD_SORT[ZmApp.IM]	= 70;
+ZmApp.LOAD_SORT[ZmApp.IM]	= 47;
 ZmApp.QS_ARG[ZmApp.IM]		= "chat";
 
 ZmImApp.ALERT_CLIENT = 1;  // Displays an alert for entire web client, flashing favicon & document.title
@@ -88,6 +88,8 @@ function() {
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_OFFLINE, { textKey: "imStatusOffline", image: "Offline" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_ONLINE, { textKey: "imStatusOnline", image: "ImAvailable" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_XA, { textKey: "imStatusExtAway", image: "ImExtendedAway" });
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MRU, { image: "ImAvailable" });
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_MENU, { }); // Keyboard only.
     ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_ITEM, { textKey: "newRosterItem", image: "ImBuddy" });
     ZmOperation.registerOp(ZmId.OP_IM_CREATE_CONTACT, { textKey: "addToNewContact", image: "NewContact" });
     ZmOperation.registerOp(ZmId.OP_IM_ADD_TO_CONTACT, { textKey: "addToExistingContact", image: "Edit" });
@@ -124,6 +126,15 @@ ZmImApp.prototype._registerApp =
 function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.IM_NEW_CHAT] = "chat";
+
+	var newOrgOps = {};
+	newOrgOps[ZmOperation.NEW_ROSTER_ITEM] = "rosterItem";
+
+	var actionCodes = {};
+	actionCodes[ZmKeyMap.NEW_CHAT] = ZmOperation.IM_NEW_CHAT;
+	actionCodes[ZmKeyMap.NEW_ROSTER_ITEM] = ZmOperation.NEW_ROSTER_ITEM;
+	actionCodes[ZmKeyMap.PRESENCE_MENU] = ZmOperation.IM_PRESENCE_MENU;
+
 	ZmApp.registerApp(ZmApp.IM,
 			  { mainPkg	      : "IM",
 			    nameKey	      : "imAppTitle",
@@ -133,7 +144,9 @@ function() {
 			    gotoActionCode    : ZmKeyMap.GOTO_IM,
 			    chooserSort	      : 40,
 			    defaultSort	      : 50,
-			    newItemOps        : newItemOps
+			    newOrgOps		  : newOrgOps,
+			    newItemOps        : newItemOps,
+				actionCodes		  : actionCodes
 			  });
 };
 
@@ -208,8 +221,14 @@ ZmImApp.prototype._registerSettings = function(settings) {
                                    dataType     : ZmSetting.D_STRING,
                                    defaultValue : "xa"
                                  });
+	settings.registerSetting("IM_CUSTOM_STATUS_MRU",
+								 { name			: "zimbraPrefIMCustomStatusMessage",
+								   type			: ZmSetting.T_PREF,
+								   dataType		: ZmSetting.D_LIST
+								 });
 
-        var listener = new AjxListener(this, this._onSettingChange);
+
+		var listener = new AjxListener(this, this._onSettingChange);
 	settings.getSetting(ZmSetting.IM_PREF_INSTANT_NOTIFY).addChangeListener(listener);
         settings.getSetting(ZmSetting.IM_PREF_REPORT_IDLE).addChangeListener(listener);
         settings.getSetting(ZmSetting.IM_PREF_IDLE_TIMEOUT).addChangeListener(listener);
@@ -351,6 +370,14 @@ ZmImApp.prototype.handleOp = function(op) {
 			this.prepareVisuals(); // ... and create views, if not yet done
 			this.getRosterTreeController()._imNewChatListener();
 			break;
+		case ZmOperation.NEW_ROSTER_ITEM:
+			this.getRosterTreeController()._newRosterItemListener()
+			break;
+		case ZmOperation.IM_PRESENCE_MENU:
+			if (this._presenceButton) {
+				this._presenceButton.popup();
+			}
+			break;
 	}
 };
 
@@ -437,6 +464,9 @@ ZmImApp.prototype.activate =
 function(active) {
 	if (active) {
 		this.stopAlert(ZmImApp.ALERT_APP_TAB);
+		if (this._toast && this._toast.isPoppedUp()) {
+			this._toast.transition();
+		}
 	}
 	return ZmApp.prototype.activate.call(this, active);
 };
@@ -536,6 +566,29 @@ ZmImApp.prototype.playAlert = function(type){
             appCtxt.getSimpleSoundPlayer().play(appContextPath+"/public/sounds/im/alert.wav");
             break;
     }
+};
+
+ZmImApp.prototype.showToast = function(chat, chatMessage){
+	if (!this._toast) {
+		this._toast = new ZmImToast(appCtxt.getAppController().statusView);
+	}
+	if (this._toast.isPoppedUp()) {
+		return;
+	}
+	var msgArgs = {
+		body: chatMessage.body,
+		from: chat.getDisplayName(chatMessage.from, false)
+	}
+	for (var i in msgArgs) {
+		msgArgs[i] = AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(msgArgs[i], 30));
+	}
+	var args = {
+		msg: AjxTemplate.expand("im.Chat#ToastText", msgArgs),
+		level: ZmStatusView.LEVEL_INFO,
+		transitions: [ ZmToast.FADE_IN, ZmImToast.REMAIN, ZmToast.PAUSE, ZmToast.FADE_OUT ],
+		toast: this._toast
+	};
+	appCtxt.setStatusMsg(args);
 };
 
 ZmImApp.prototype.startAlert = function() {
@@ -643,7 +696,7 @@ ZmImApp.prototype._updatePresenceButton =
 function(presence, button, doText, doTooltip) {
 	var icon = presence ? presence.getIcon() : "Offline";
 	button.setImage(icon);
-	var showText = presence ? presence.getShowText() : ZmMsg.imStatusOffline;
+	var showText = presence ? AjxStringUtil.htmlEncode(presence.getShowText()) : ZmMsg.imStatusOffline;
 	if (doTooltip) {
 		this._presenceTooltipFormat = this._presenceTooltipFormat || new AjxMessageFormat(ZmMsg.presenceTooltip);
 		var tooltip = this._presenceTooltipFormat.format(showText);

@@ -106,6 +106,8 @@ ZmApp.ASSISTANTS			= {};
 ZmApp.CHOOSER_SORT			= {};	// controls order of apps in app chooser toolbar
 ZmApp.DEFAULT_SORT			= {};	// controls order in which app is chosen as default start app
 
+ZmApp.ENABLED_APPS			= {};	// hash for quick detection if app is enabled
+
 // ordered lists of apps
 ZmApp.APPS					= [];	// ordered list
 ZmApp.DEFAULT_APPS			= [];	// ordered list
@@ -497,7 +499,7 @@ function() {
  */
 ZmApp.prototype._accordionSelectionListener =
 function(ev) {
-	this._expandAccordionItem(ev.detail);
+	this._expandAccordionItem(ev.detail, true);
 	return true;
 };
 
@@ -511,7 +513,7 @@ function(ev) {
 };
 
 ZmApp.prototype._expandAccordionItem =
-function(accordionItem) {
+function(accordionItem, byUser) {
 	if (accordionItem == this.accordionItem) { return; }
 
 	this.accordionItem = accordionItem;
@@ -543,16 +545,16 @@ function(accordionItem) {
 		}
 	}
 
-	var callback = new AjxCallback(this, this._handleSetActiveAccount, this.accordionItem);
+	var callback = new AjxCallback(this, this._handleSetActiveAccount, [this.accordionItem, byUser]);
 	appCtxt.setActiveAccount(activeAcct, callback);
 };
 
 ZmApp.prototype._handleSetActiveAccount =
-function(accordionItem) {
+function(accordionItem, byUser) {
 	var ac = appCtxt.getAppController();
 	ac.setUserInfo();
 	this._activateAccordionItem(accordionItem);
-	this._setMiniCalForActiveAccount();
+	this._setMiniCalForActiveAccount(byUser);
 
 	// reset instant notify every time account changes
 	if (appCtxt.isOffline) {
@@ -563,11 +565,20 @@ function(accordionItem) {
 
 // NOTE: calendar overloads this method since it handles minical independently
 ZmApp.prototype._setMiniCalForActiveAccount =
-function() {
+function(byUser) {
 	// show/hide mini cal based on active account's pref
 	// XXX: forces calendar core to load even if no accounts have minical enabled!
 	var showMiniCal = appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
 	AjxDispatcher.run("ShowMiniCalendar", showMiniCal);
+
+	// refetch minical data for newly active account
+	if (showMiniCal && byUser) {
+		var cc = AjxDispatcher.run("GetCalController");
+		cc._checkedCalendars = null;
+		cc._checkedCalendarFolderIds = null;
+		cc.getMiniCalCache().clearCache();
+		cc.fetchMiniCalendarAppts(ZmCalViewController.MAINT_MINICAL);
+	}
 };
 
 /**

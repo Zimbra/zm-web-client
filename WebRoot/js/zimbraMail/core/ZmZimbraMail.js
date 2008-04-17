@@ -80,10 +80,10 @@ ZmZimbraMail = function(params) {
 	AjxDispatcher.setPackageLoadFunction("Zimlet", new AjxCallback(this, this._postLoadZimlet));
 
 	AjxDispatcher.setPreLoadFunction(new AjxCallback(this, function() {
-		this._appViewMgr.pushView(ZmController.LOADING_VIEW);
+		this._appViewMgr.pushView(ZmId.VIEW_LOADING);
 	}));
 	AjxDispatcher.setPostLoadFunction(new AjxCallback(this, function() {
-		this._appViewMgr._toRemove.push(ZmController.LOADING_VIEW);
+		this._appViewMgr._toRemove.push(ZmId.VIEW_LOADING);
 	}));
 
 	for (var i in ZmApp.QS_ARG) {
@@ -227,7 +227,7 @@ function() {
 			childWin.win.close();
 		}
 	}
-	window._zimbraMail = window.onload = window.onresize = window.document.onkeypress = null;
+	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
 };
 
 /**
@@ -326,8 +326,8 @@ function(params) {
 			girJSON.Body = {};
 			girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
 			girJSON.Header = params.batchInfoResponse.Header;
-			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.sessionId) {
-				ZmCsfeCommand.setSessionId(girJSON.Header.context.sessionId);
+			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
+				ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
 			}
 			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "GetInfoResponse");
 			DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
@@ -671,6 +671,7 @@ function(apps) {
 	for (var app in ZmApp.CLASS) {
 		if (!apps || apps[app]) {
 			ZmApp.APPS.push(app);
+			ZmApp.ENABLED_APPS[app] = true;
 		}
 	}
 	ZmApp.APPS.sort(function(a, b) {
@@ -1008,29 +1009,6 @@ function() {
 
 ZmZimbraMail.prototype._registerOrganizers =
 function() {
-	ZmOrganizer.registerOrg(ZmOrganizer.FOLDER,
-							{app:				ZmApp.MAIN,
-							 nameKey:			"folder",
-							 defaultFolder:		ZmOrganizer.ID_INBOX,
-							 soapCmd:			"FolderAction",
-							 firstUserId:		256,
-							 orgClass:			"ZmFolder",
-							 treeController:	"ZmFolderTreeController",
-							 labelKey:			"folders",
-							 itemsKey:			"messages",
-							 hasColor:			true,
-							 defaultColor:		ZmOrganizer.C_NONE,
-							 treeType:			ZmOrganizer.FOLDER,
-							 dropTargets:		[ZmOrganizer.FOLDER],
-							 views:				["message", "conversation"],
-							 folderKey:			"mailFolder",
-							 mountKey:			"mountFolder",
-							 createFunc:		"ZmOrganizer.create",
-							 compareFunc:		"ZmFolder.sortCompare",
-							 shortcutKey:		"F",
-							 openSetting:		ZmSetting.FOLDER_TREE_OPEN
-							});
-
 	ZmOrganizer.registerOrg(ZmOrganizer.SEARCH,
 							{app:				ZmApp.MAIN,
 							 nameKey:			"savedSearch",
@@ -1080,6 +1058,9 @@ function() {
 */
 ZmZimbraMail.prototype.getApp =
 function(appName) {
+	if (!ZmApp.ENABLED_APPS[appName]) {
+		return null;
+	}
 	if (!this._apps[appName]) {
 		this._createApp(appName);
 	}
@@ -1276,7 +1257,7 @@ function() {
 			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
 			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
 		}
-		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data)
+		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
 	}
 };
 
@@ -1695,6 +1676,21 @@ function(actionCode, ev) {
 		case ZmKeyMap.FOCUS_CONTENT_PANE: {
 			this.focusContentPane();
 			break;
+		}
+
+		case ZmKeyMap.CANCEL: {
+			// see if there's a current drag operation we can cancel
+			var handled = false;
+			var captureObj = (DwtMouseEventCapture.getId() == "DwtControl") ? DwtMouseEventCapture.getCaptureObj() : null;
+			var obj = captureObj && captureObj.targetObj;
+			if (obj && (obj._dragging == DwtControl._DRAGGING)) {
+				captureObj.release();
+				obj.__lastDestDwtObj = null;
+				obj._setDragProxyState(false);					// turn dnd icon red so user knows no drop is happening
+				DwtControl.__badDrop(obj, DwtShell.mouseEvent);	// shell's mouse ev should have latest info
+				handled = true;
+			}
+			if (handled) { break; }
 		}
 
 		default: {

@@ -259,11 +259,18 @@ ZmTreeController.prototype._fixupTreeNode =
 function(treeItem, organizer) {
 	if (treeItem._isSeparator) { return; }
 	organizer = organizer || treeItem.getData(Dwt.KEY_OBJECT);
-	if (ZmOrganizer.HAS_COLOR[this.type]) {
-		this._setTreeItemColor(treeItem, organizer);
-	}
-	if (this.isCheckedStyle) {
-		treeItem.setChecked(organizer.isChecked);
+	if (organizer) {
+		if (ZmOrganizer.HAS_COLOR[this.type]) {
+			this._setTreeItemColor(treeItem, organizer);
+		}
+		if (this.isCheckedStyle) {
+			if (organizer.type == this.type) {
+				treeItem.setChecked(organizer.isChecked);
+			}
+			else {
+				treeItem.showCheckBox(false);
+			}
+		}
 	}
     var treeItems = treeItem.getItems();
     for (var i = 0; i < treeItems.length; i++) {
@@ -309,8 +316,7 @@ function(overviewId) {
 		allowedTypes: this._getAllowedTypes(),
 		allowedSubTypes: this._getAllowedSubTypes()
 	};
-	var idKey = ["TREE", params.overviewId, params.type].join("_").toUpperCase();
-	params.id = ZmId[idKey];
+	params.id = ZmId.getTreeId(overviewId, params.type);
 	var treeView = this._createTreeView(params);
 	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
 	treeView.addTreeListener(new AjxListener(this, this._treeListener));
@@ -355,7 +361,7 @@ function() {
  * Instantiates the header action menu if necessary.
  */
 ZmTreeController.prototype._getHeaderActionMenu =
-function() {
+function(ev) {
 	if (this._headerActionMenu instanceof AjxCallback) {
 		var callback = this._headerActionMenu;
 		this._headerActionMenu = callback.run();
@@ -367,7 +373,7 @@ function() {
  * Instantiates the action menu if necessary.
  */
 ZmTreeController.prototype._getActionMenu =
-function() {
+function(ev) {
 	if (this._actionMenu instanceof AjxCallback) {
 		var callback = this._actionMenu;
 		this._actionMenu = callback.run();
@@ -858,7 +864,7 @@ function(ev) {
             var rootTreeItem = treeView.getTreeItemById(rootId);
             if (!rootTreeItem) { return; }
             var treeItems = rootTreeItem.getItems();
-            if(treeItems && treeItems[i] && (treeItems[i].isFeed() || (treeItems[i].hasFeeds && treeItems[i].hasFeeds()))){
+            if(treeItems && treeItems[i] && (treeItems[i].isFeed && treeItems[i].isFeed() || (treeItems[i].hasFeeds && treeItems[i].hasFeeds()))){
                 this._syncFeeds(treeItems[i]);
             }
         }

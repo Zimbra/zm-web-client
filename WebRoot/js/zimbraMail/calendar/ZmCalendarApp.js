@@ -26,11 +26,11 @@ ZmCalendarApp = function(container) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_APPT				= "APPT";
-ZmEvent.S_RESOURCE			= "RESOURCE";
+ZmEvent.S_APPT				= ZmId.ITEM_APPT;
+ZmEvent.S_RESOURCE			= ZmId.ITEM_RESOURCE;
 ZmItem.APPT					= ZmEvent.S_APPT;
 ZmItem.RESOURCE				= ZmEvent.S_RESOURCE;
-ZmOrganizer.CALENDAR		= "CALENDAR";
+ZmOrganizer.CALENDAR		= ZmId.ORG_CALENDAR;
 
 // App-related constants
 ZmApp.CALENDAR							= ZmId.APP_CALENDAR;
@@ -274,8 +274,7 @@ function() {
 							 mountKey:			"mountCalendar",
 							 createFunc:		"ZmCalendar.create",
 							 compareFunc:		"ZmCalendar.sortCompare",
-							 deferrable:		true,
-							 pathInName:		true
+							 deferrable:		true
 							});
 };
 
@@ -441,7 +440,7 @@ function() {
 
 ZmCalendarApp.prototype._handleLoadNewCalendar =
 function() {
-	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
+	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
 	var dialog = appCtxt.getNewCalendarDialog();
 	if (!this._newCalendarCb) {
 		this._newCalendarCb = new AjxCallback(this, this._newCalendarCallback);
@@ -469,16 +468,16 @@ function(params, callback) {
 		var found = false;
 		if (search.match(/\bview=day\b/)) {
 			found = true;
-			view = ZmController.CAL_DAY_VIEW;
+			view = ZmId.VIEW_CAL_DAY;
 		} else if (search.match(/\bview=workWeek\b/)) {
 			found = true;
-			view = ZmController.CAL_WORK_WEEK_VIEW;
+			view = ZmId.VIEW_CAL_WORK_WEEK;
 		} else if (search.match(/\bview=week\b/)) {
 			found = true;
-			view = ZmController.CAL_WEEK_VIEW;
+			view = ZmId.VIEW_CAL_WEEK;
 		} else if (search.match(/\bview=month\b/)) {
 			found = true;
-			view = ZmController.CAL_MONTH_VIEW;
+			view = ZmId.VIEW_CAL_MONTH;
 		}
 
 		if (found) {

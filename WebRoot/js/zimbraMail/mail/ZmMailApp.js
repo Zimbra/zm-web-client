@@ -30,18 +30,16 @@ ZmMailApp = function(container, parentController) {
 	this._dataSourceCollection = {};
 	this._identityCollection = {};
 	this._signatureCollection = {};
-	
-	var settings = appCtxt.getSettings();
-	settings.getSetting(ZmSetting.VIEW_AS_HTML).addChangeListener(new AjxListener(this, this._settingChangeListener));
-	settings.addChangeListener(new AjxListener(this, this._settingsChangeListener));
+	this._groupBy = {};
+	this._addSettingsChangeListeners();
 };
 
 // Organizer and item-related constants
-ZmEvent.S_CONV				= "CONV";
-ZmEvent.S_MSG				= "MSG";
-ZmEvent.S_ATT				= "ATT";
-ZmEvent.S_FOLDER			= "FOLDER";
-ZmEvent.S_DATA_SOURCE       = "DATA SOURCE";
+ZmEvent.S_CONV				= ZmId.ITEM_CONV;
+ZmEvent.S_MSG				= ZmId.ITEM_MSG;
+ZmEvent.S_ATT				= ZmId.ITEM_ATT;
+ZmEvent.S_FOLDER			= ZmId.ORG_FOLDER;
+ZmEvent.S_DATA_SOURCE       = ZmId.ITEM_DATA_SOURCE;
 ZmEvent.S_IDENTITY       	= "IDENTITY";
 ZmEvent.S_SIGNATURE			= "SIGNATURE";
 ZmItem.CONV					= ZmEvent.S_CONV;
@@ -507,6 +505,32 @@ function(checked) {
 	return (awayMsg && (awayMsg.length > 0));
 };
 
+ZmMailApp.prototype._registerOrganizers =  function() {
+	ZmOrganizer.registerOrg(ZmOrganizer.FOLDER,
+							{app:				ZmApp.MAIL,
+							 nameKey:			"folder",
+							 defaultFolder:		ZmOrganizer.ID_INBOX,
+							 soapCmd:			"FolderAction",
+							 firstUserId:		256,
+							 orgClass:			"ZmFolder",
+							 treeController:	"ZmFolderTreeController",
+							 labelKey:			"folders",
+							 itemsKey:			"messages",
+							 hasColor:			true,
+							 defaultColor:		ZmOrganizer.C_NONE,
+							 treeType:			ZmOrganizer.FOLDER,
+							 dropTargets:		[ZmOrganizer.FOLDER],
+							 views:				["message", "conversation"],
+							 folderKey:			"mailFolder",
+							 mountKey:			"mountFolder",
+							 createFunc:		"ZmOrganizer.create",
+							 compareFunc:		"ZmFolder.sortCompare",
+							 shortcutKey:		"F",
+							 openSetting:		ZmSetting.FOLDER_TREE_OPEN
+							});
+
+};
+
 ZmMailApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp(ZmId.OP_ADD_FILTER_RULE, {textKey:"newFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
@@ -969,7 +993,7 @@ function(refresh) {
 		var req = appCtxt.currentRequestParams;
 		if (appCtxt.getCurrentAppName() == this._name && req.resend && req.methodName == "NoOpRequest") {
 			var curView = appCtxt.getCurrentViewId();
-			if (curView == ZmController.CONVLIST_VIEW || curView == ZmController.TRAD_VIEW) {
+			if (curView == ZmId.VIEW_CONVLIST || curView == ZmId.VIEW_TRAD) {
 				appCtxt.getSearchController().redoSearch(this.currentSearch);
 			}
 		}
@@ -1021,7 +1045,8 @@ function(params, callback) {
 		}
 	}
 
-	this._groupBy = appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
+	// set type for initial search
+	this._groupBy[appCtxt.getActiveAccount().name] = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	this._mailSearch(query, callback, params.searchResponse);
 };
 
@@ -1042,6 +1067,9 @@ function(accordionItem) {
 	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
 
 	if (appCtxt.isOffline || !appCtxt.inStartup) {
+		this._addSettingsChangeListeners();
+		// *reset* type for initial search
+		this._groupBy[appCtxt.getActiveAccount().name] = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 		this._mailSearch();
 	}
 };
@@ -1199,8 +1227,15 @@ function(organizer) {
 */
 ZmMailApp.prototype.getGroupMailBy =
 function() {
-	var setting = this._groupBy || appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	var groupBy = this._groupBy[appCtxt.getActiveAccount().name];
+	var setting = groupBy || appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return setting ? ZmMailApp.GROUP_MAIL_BY_ITEM[setting] : ZmItem.MSG;
+};
+
+ZmMailApp.prototype.setGroupMailBy =
+function(groupBy) {
+	this._groupBy[appCtxt.getActiveAccount().name] = groupBy;
+	appCtxt.set(ZmSetting.GROUP_MAIL_BY, groupBy);
 };
 
 /**
@@ -1278,6 +1313,20 @@ function() {
 	return this._signatureCollection[activeAcct];
 };
 
+ZmMailApp.prototype._addSettingsChangeListeners =
+function() {
+	if (!this._settingListener) {
+		this._settingListener = new AjxListener(this, this._settingChangeListener);
+	}
+	if (!this._settingsListener) {
+		this._settingsListener = new AjxListener(this, this._settingsChangeListener);
+	}
+
+	var settings = appCtxt.getSettings();
+	settings.getSetting(ZmSetting.VIEW_AS_HTML).addChangeListener(this._settingListener);
+	settings.addChangeListener(this._settingsListener);
+};
+
 /**
  * Individual setting listener.
  */
@@ -1322,19 +1371,19 @@ function(ev) {
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
 		if (setting.id == ZmSetting.PAGE_SIZE) {
-			if (curView != ZmController.MSG_VIEW) {
+			if (curView != ZmId.VIEW_MSG) {
 				newView = groupByView || curView;
 			}
 		} else if (setting.id == ZmSetting.INITIAL_GROUP_MAIL_BY) {
-			if (curView == ZmController.CONVLIST_VIEW || curView == ZmController.TRAD_VIEW) {
+			if (curView == ZmId.VIEW_CONVLIST || curView == ZmId.VIEW_TRAD) {
 				var value = appCtxt.get(setting.id);
-				var view = (value == ZmSetting.GROUP_BY_CONV) ? ZmController.CONVLIST_VIEW : ZmController.TRAD_VIEW;
+				var view = (value == ZmSetting.GROUP_BY_CONV) ? ZmId.VIEW_CONVLIST : ZmId.VIEW_TRAD;
 				if (view != curView) {
 					groupByView = view;
 				}
 			}
 		} else if (setting.id == ZmSetting.SHOW_FRAGMENTS) {
-			if (curView != ZmController.MSG_VIEW) {
+			if (curView != ZmId.VIEW_MSG) {
 				newView = groupByView || curView;
 			}
 		}

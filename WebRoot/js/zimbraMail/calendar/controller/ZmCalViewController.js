@@ -37,11 +37,11 @@ ZmCalViewController = function(container, calApp) {
 
 	// get view based on op
 	ZmCalViewController.OP_TO_VIEW = {};
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmController.CAL_DAY_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmController.CAL_WEEK_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmController.CAL_WORK_WEEK_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmController.CAL_MONTH_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmController.CAL_SCHEDULE_VIEW;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmId.VIEW_CAL_DAY;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmId.VIEW_CAL_WEEK;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmId.VIEW_CAL_WORK_WEEK;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmId.VIEW_CAL_SCHEDULE;
 
 	// get op based on view
 	ZmCalViewController.VIEW_TO_OP = {};
@@ -57,8 +57,8 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = apptEditListener;
 	this._listeners[ZmOperation.VIEW_APPOINTMENT] = new AjxListener(this, this._handleMenuViewAction);
 	this._listeners[ZmOperation.TODAY] = new AjxListener(this, this._todayButtonListener);
-    this._listeners[ZmOperation.FREE_BUSY_LINK] = new AjxListener(this, this._freeBusyLinkListener);
-    this._listeners[ZmOperation.DAY_VIEW] = calViewListener;
+	this._listeners[ZmOperation.FREE_BUSY_LINK] = new AjxListener(this, this._freeBusyLinkListener);
+	this._listeners[ZmOperation.DAY_VIEW] = calViewListener;
 	this._listeners[ZmOperation.WEEK_VIEW] = calViewListener;
 	this._listeners[ZmOperation.WORK_WEEK_VIEW] = calViewListener;
 	this._listeners[ZmOperation.MONTH_VIEW] = calViewListener;
@@ -77,11 +77,11 @@ ZmCalViewController = function(container, calApp) {
 
 	// get view based on op
 	ZmCalViewController.OP_TO_VIEW = {};
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmController.CAL_DAY_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmController.CAL_WEEK_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmController.CAL_WORK_WEEK_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmController.CAL_MONTH_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmController.CAL_SCHEDULE_VIEW;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmId.VIEW_CAL_DAY;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmId.VIEW_CAL_WEEK;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmId.VIEW_CAL_WORK_WEEK;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmId.VIEW_CAL_SCHEDULE;
 
 	this._errorCallback = new AjxCallback(this, this._handleError);
 };
@@ -99,11 +99,11 @@ ZmCalViewController.MAINT_REMINDER	= 0x4; // reminders need refresh
 
 // get view based on op
 ZmCalViewController.ACTION_CODE_TO_VIEW = {};
-ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_DAY_VIEW]			= ZmController.CAL_DAY_VIEW;
-ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WEEK_VIEW]			= ZmController.CAL_WEEK_VIEW;
-ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WORK_WEEK_VIEW]	= ZmController.CAL_WORK_WEEK_VIEW;
-ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MONTH_VIEW]		= ZmController.CAL_MONTH_VIEW;
-ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_SCHEDULE_VIEW]		= ZmController.CAL_SCHEDULE_VIEW;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_DAY_VIEW]			= ZmId.VIEW_CAL_DAY;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WEEK_VIEW]			= ZmId.VIEW_CAL_WEEK;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WORK_WEEK_VIEW]	= ZmId.VIEW_CAL_WORK_WEEK;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MONTH_VIEW]		= ZmId.VIEW_CAL_MONTH;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_SCHEDULE_VIEW]		= ZmId.VIEW_CAL_SCHEDULE;
 
 ZmCalViewController.prototype.toString =
 function() {
@@ -128,12 +128,12 @@ ZmCalViewController.prototype._defaultView =
 function() {
 	var view = appCtxt.get(ZmSetting.CALENDAR_INITIAL_VIEW);
 	switch (view) {
-		case "day": 		return ZmController.CAL_DAY_VIEW;
-		case "workWeek": 	return ZmController.CAL_WORK_WEEK_VIEW;
-		case "week": 		return ZmController.CAL_WEEK_VIEW;
-		case "month": 		return ZmController.CAL_MONTH_VIEW;
-		case "schedule": 	return ZmController.CAL_SCHEDULE_VIEW;
-		default:  			return ZmController.CAL_WORK_WEEK_VIEW;
+		case "day": 		return ZmId.VIEW_CAL_DAY;
+		case "workWeek": 	return ZmId.VIEW_CAL_WORK_WEEK;
+		case "week": 		return ZmId.VIEW_CAL_WEEK;
+		case "month": 		return ZmId.VIEW_CAL_MONTH;
+		case "schedule": 	return ZmId.VIEW_CAL_SCHEDULE;
+		default:  			return ZmId.VIEW_CAL_WORK_WEEK;
 	}
 };
 
@@ -145,7 +145,7 @@ function() {
 ZmCalViewController.prototype.show =
 function(viewId, startDate, skipMaintenance) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
-	if (!viewId || viewId == ZmController.CAL_VIEW)
+	if (!viewId || viewId == ZmId.VIEW_CAL)
 		viewId = this._currentView ? this._currentView : this._defaultView();
 
 	if (!this._calTreeController) {
@@ -188,48 +188,48 @@ function(viewId, startDate, skipMaintenance) {
 	DBG.timePt("setup and set view");
 
 	var elements = {};
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[ZmController.CAL_VIEW];
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[ZmId.VIEW_CAL];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._viewMgr;
-	this._setView(ZmController.CAL_VIEW, elements, true);
+	this._setView(ZmId.VIEW_CAL, elements, true);
 	this._currentView = this._viewMgr.getCurrentViewName();
 	this._listView[this._currentView] = this._viewMgr.getCurrentView();
 	this._resetToolbarOperations();
 
 	switch(viewId) {
-		case ZmController.CAL_DAY_VIEW:
-		case ZmController.CAL_SCHEDULE_VIEW:
+		case ZmId.VIEW_CAL_DAY:
+		case ZmId.VIEW_CAL_SCHEDULE:
 			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousDay);
-			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextDay);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousDay);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextDay);
 			break;
-		case ZmController.CAL_WORK_WEEK_VIEW:
+		case ZmId.VIEW_CAL_WORK_WEEK:
 			this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
-			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWorkWeek);
-			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWorkWeek);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWorkWeek);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWorkWeek);
 			break;
-		case ZmController.CAL_WEEK_VIEW:
+		case ZmId.VIEW_CAL_WEEK:
 			this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
-			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWeek);
-			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWeek);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);
 			break;
-		case ZmController.CAL_MONTH_VIEW:
+		case ZmId.VIEW_CAL_MONTH:
 			// use day until month does something
 			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);
-			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMonth);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);
+			this._navToolBar[ZmId.VIEW_CAL].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMonth);
 			break;
 	}
 	DBG.timePt("switching selection mode and tooltips");
 
-	if (viewId == ZmController.CAL_APPT_VIEW) {
-		this._navToolBar[ZmController.CAL_VIEW].setVisible(false);
+	if (viewId == ZmId.VIEW_CAL_APPT) {
+		this._navToolBar[ZmId.VIEW_CAL].setVisible(false);
 	} else {
-		this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
+		this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
 		var cv = this._viewMgr.getCurrentView();
-		var navText = viewId == ZmController.CAL_MONTH_VIEW
+		var navText = viewId == ZmId.VIEW_CAL_MONTH
 			? cv.getShortCalTitle()
 			: cv.getCalTitle();
-		this._navToolBar[ZmController.CAL_VIEW].setText(navText);
+		this._navToolBar[ZmId.VIEW_CAL].setText(navText);
 		if (!skipMaintenance) {
 			this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
 		}
@@ -284,11 +284,11 @@ function() {
 	var cc = [];	
 	if (this._calTreeController) {
 		cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
-		//bug:25512 avoid race condition 
-		if( (cc == "") && (this._app._overviewPanelContent ==null)) {
-	        this._app.setOverviewPanelContent(true);
-	        cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());			        
-		}		
+		// bug fix #25512 - avoid race condition
+		if (cc == "" && this._app._overviewPanelContent == null) {
+			this._app.setOverviewPanelContent(true);
+			cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
+		}
 	} else {
 		this._app._createDeferredFolders(ZmOrganizer.ID_CALENDAR);
 		var calendars = appCtxt.getFolderTree().getByType(ZmOrganizer.CALENDAR);
@@ -304,9 +304,8 @@ function() {
 	this._checkedLocalCalendarFolderIds = [];
 	for (var i = 0; i < cc.length; i++) {
 		var cal = cc[i];
-		
-		if(cal.isInvalidFolder){ continue; }
-		
+		if (cal.isInvalidFolder) { continue; }
+
 		this._checkedCalendarFolderIds.push(cal.nId);
 		if (cal.isRemote && !cal.isRemote()) {
 			this._checkedLocalCalendarFolderIds.push(cal.nId);
@@ -322,49 +321,60 @@ function(ev) {
 	this._updateCheckedCalendars();
 	this._refreshAction(true);
 
-	if(!this._calItemStatus) {
+	if (!this._calItemStatus) {
 		this._calItemStatus = {};
 	}
 	
 	if (ev.item) {
-		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
-		this._calItemStatus[calendar.id] = {item: calendar, checked: ev.item.getChecked()};
-	} else if (ev.items && ev.items.length) {
+		ev.items = [ ev.item ];
+	}
+	if (ev.items && ev.items.length) {
 		for (var i = 0; i < ev.items.length; i++) {
 			var item = ev.items[i];
-			var calendar = item.getData(Dwt.KEY_OBJECT);
-			this._calItemStatus[calendar.id] = {item: calendar, checked: item.getChecked()};
+			this.__addCalItemStatus(item, item.getChecked());
 		}
 	}
 
-	if(!this._updateCalItemStateActionId) {
-		//update calendar state on time delay to avoid race condition
+	//update calendar state on time delay to avoid race condition
+	if (!this._updateCalItemStateActionId) {
 		this._updateCalItemStateActionId = AjxTimedAction.scheduleAction(new AjxTimedAction(this, this._updateCalItemState), 1200);
 	}	
 };
 
+ZmCalViewController.prototype.__addCalItemStatus = function(item, checked) {
+	item.setChecked(checked);
+	var organizer = item.getData(Dwt.KEY_OBJECT);
+	if (organizer && organizer.type == ZmOrganizer.CALENDAR) {
+		this._calItemStatus[organizer.id] = {item: organizer, checked: checked};
+	}
+	// bug 6410
+	var items = item.getItems();
+	for (var i = 0; i < items.length; i++) {
+		item = items[i];
+		this.__addCalItemStatus(item, checked);
+	}
+}
+
 ZmCalViewController.prototype._updateCalItemState =
 function() {
-	if(!this._calItemStatus) {
-		return;
-	}
-	
+	if (!this._calItemStatus) { return; }
+
 	var batchCmd = new ZmBatchCommand();
 	var itemCount = 0;
-	for(var i in this._calItemStatus) {
-			var info = this._calItemStatus[i];
-			if(info.item) {
-				var calendar = info.item;
-				batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
-				itemCount++;
-			}
+	for (var i in this._calItemStatus) {
+		var info = this._calItemStatus[i];
+		if (info.item) {
+			var calendar = info.item;
+			batchCmd.add(new AjxCallback(calendar, calendar.checkAction, [info.checked]));
+			itemCount++;
+		}
 	}
 
 	this._calItemStatus = {};
-	if(itemCount > 0) {
+	if (itemCount > 0) {
 		batchCmd.run();
 	}
-	
+
 	this._updateCalItemStateActionId = null;
 };
 
@@ -425,33 +435,33 @@ function() {
  */
 ZmCalViewController.prototype._initializeToolBar =
 function(viewId) {
-	if (this._toolbar[ZmController.CAL_VIEW]) { return; }
+	if (this._toolbar[ZmId.VIEW_CAL]) { return; }
 
-	ZmListController.prototype._initializeToolBar.call(this, ZmController.CAL_DAY_VIEW);
-	var toolbar = this._toolbar[ZmController.CAL_DAY_VIEW];
+	ZmListController.prototype._initializeToolBar.call(this, ZmId.VIEW_CAL_DAY);
+	var toolbar = this._toolbar[ZmId.VIEW_CAL_DAY];
 
-	// NOTE: bug 5720
+	// bug fix #5720
 	if (AjxEnv.is800x600orLower) {
-        var buttons = [];
-        //View Buttons
-        buttons.push(ZmOperation.DAY_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW  );
-        //Delete Button
-        buttons.push(ZmOperation.DELETE);
-
-        for (var i = 0; i < buttons.length; i++) {
-				var button = toolbar.getButton(buttons[i]);
-				if (button) {
-					button.setText("");
-				}
+		var buttons = [
+			ZmOperation.DAY_VIEW,
+			ZmOperation.WEEK_VIEW,
+			ZmOperation.WORK_WEEK_VIEW,
+			ZmOperation.MONTH_VIEW,
+			ZmOperation.SCHEDULE_VIEW,
+			ZmOperation.DELETE
+		];
+		for (var i = 0; i < buttons.length; i++) {
+			var button = toolbar.getButton(buttons[i]);
+			if (button) button.setText("");
 		}
-    }
+	}
 
 	// Set the other view toolbar entries to point to the Day view entry. I.e. this is a trick
 	// to fool the ZmListController into thinking there are multiple toolbars
-	this._toolbar[ZmController.CAL_SCHEDULE_VIEW] = this._toolbar[ZmController.CAL_WEEK_VIEW] =
-		this._toolbar[ZmController.CAL_WORK_WEEK_VIEW] = this._toolbar[ZmController.CAL_MONTH_VIEW] =
-		this._toolbar[ZmController.CAL_APPT_VIEW] = this._toolbar[ZmController.CAL_DAY_VIEW];
-	this._toolbar[ZmController.CAL_VIEW] = toolbar;
+	this._toolbar[ZmId.VIEW_CAL_SCHEDULE] = this._toolbar[ZmId.VIEW_CAL_WEEK] =
+	this._toolbar[ZmId.VIEW_CAL_WORK_WEEK] = this._toolbar[ZmId.VIEW_CAL_MONTH] =
+	this._toolbar[ZmId.VIEW_CAL_APPT] = this._toolbar[ZmId.VIEW_CAL_DAY];
+	this._toolbar[ZmId.VIEW_CAL] = toolbar;
 
 	// Setup the toolbar stuff
 	toolbar.enable([ZmOperation.TODAY,ZmOperation.FREE_BUSY_LINK], true);
@@ -461,8 +471,8 @@ function(viewId) {
 
 	toolbar.addFiller();
 	var tb = new ZmNavToolBar({parent:toolbar, className:"ZmNavToolbar ZmCalendarNavToolbar",
-							   context:ZmController.CAL_VIEW});
-	this._setNavToolBar(tb, ZmController.CAL_VIEW);
+							   context:ZmId.VIEW_CAL});
+	this._setNavToolBar(tb, ZmId.VIEW_CAL);
 
 	this._setNewButtonProps(viewId, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
 	var printButton = toolbar.getButton(ZmOperation.PRINT);
@@ -473,7 +483,7 @@ function(viewId) {
 
 ZmCalViewController.prototype._setViewContents =
 function(viewId) {
-	// Ignore since this will always be ZmController.CAL_VIEW as we are fooling
+	// Ignore since this will always be ZmId.VIEW_CAL as we are fooling
 	// ZmListController (see our show method)
 };
 
@@ -525,7 +535,7 @@ function(date) {
 		workingWeek[i] = (d > 0 && d < 6);
 	}
 	this._miniCalendar.setWorkingWeek(workingWeek);
-	if(!this._skipMiniCalMarkingOnCreate) {
+	if (!this._skipMiniCalMarkingOnCreate) {
 		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
 	}
 
@@ -679,13 +689,12 @@ function(contact, date) {
  */
 ZmCalViewController.prototype.newApptFromEmailAddr =
 function(emailAddr, date) {
-	if (!emailAddr || emailAddr == "")
-		return;
+	if (!emailAddr || emailAddr == "") {return; }
+
 	var newAppt = this._newApptObject(date);
 	newAppt.setAttendees(emailAddr, ZmCalItem.PERSON);
 	this.newAppointment(newAppt, ZmCalItem.MODE_NEW);
 };
-
 
 ZmCalViewController.prototype.getMiniCalendar =
 function(delay) {
@@ -709,20 +718,18 @@ function(ev) {
 };
 
 ZmCalViewController.prototype._freeBusyLinkListener =
-function(ev){
-  var inNewWindow = this._app._inNewWindow(ev);
+function(ev) {
     var restUrl = appCtxt.get(ZmSetting.REST_URL);
-    if(restUrl){
+    if (restUrl) {
        restUrl += "?fmt=freebusy";
     }
-    var action = ZmOperation.NEW_MESSAGE;
-	var msg = new ZmMailMsg();
-	var toOverride = null;
-	var subjOverride = null;
-	var extraBodyText = restUrl;
-	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
-								  toOverride: toOverride, subjOverride: subjOverride,
-								  extraBodyText: extraBodyText});
+	var params = {
+		action: ZmOperation.NEW_MESSAGE,
+		inNewWindow: this._app._inNewWindow(ev),
+		msg: (new ZmMailMsg()),
+		extraBodyText: restUrl
+	}
+	AjxDispatcher.run("Compose", params);
 };
 
 ZmCalViewController.prototype._newApptAction =
@@ -752,7 +759,7 @@ function(ev) {
 
 ZmCalViewController.prototype._handleLoadNewApptAction =
 function(d) {
-	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
+	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
 	this.newAppointmentHelper(d);
 };
 
@@ -778,7 +785,7 @@ function(ev) {
 
 ZmCalViewController.prototype._handleLoadNewAllDayApptAction =
 function(d) {
-	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
+	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
 	this.newAllDayAppointmentHelper(d);
 };
 
@@ -824,21 +831,21 @@ function(date, duration, roll) {
 	if (this._viewMgr != null) {
 		this._viewMgr.setDate(date, duration, roll);
 		var viewId = this._viewMgr.getCurrentViewName();
-		if (viewId == ZmController.CAL_APPT_VIEW) {
+		if (viewId == ZmId.VIEW_CAL_APPT) {
 			this._viewMgr.getCurrentView().close();
 		}
 		var title = this._viewMgr.getCurrentView().getCalTitle();
 		Dwt.setTitle([ZmMsg.zimbraTitle, ": ", title].join(""));
 		if (!roll &&
-			this._currentView == ZmController.CAL_WORK_WEEK_VIEW &&
+			this._currentView == ZmId.VIEW_CAL_WORK_WEEK &&
 			(date.getDay() == 0 || date.getDay() ==  6))
 		{
-			this.show(ZmController.CAL_WEEK_VIEW);
+			this.show(ZmId.VIEW_CAL_WEEK);
 		}
-		if (ZmController.CAL_MONTH_VIEW == this._currentView) {
+		if (ZmId.VIEW_CAL_MONTH == this._currentView) {
 			title = this._viewMgr.getCurrentView().getShortCalTitle();
 		}
-		this._navToolBar[ZmController.CAL_VIEW].setText(title);
+		this._navToolBar[ZmId.VIEW_CAL].setText(title);
 	}
 };
 
@@ -919,7 +926,7 @@ function(ev) {
 	var view = this._viewMgr.getCurrentView();
 	if (view.getSelectedItems().size() > 0) {
 		view.deselectAll();
-		this._resetOperations(this._toolbar[ZmController.CAL_DAY_VIEW], 0);
+		this._resetOperations(this._toolbar[ZmId.VIEW_CAL_DAY], 0);
 	}
 	this.setDate(ev.detail, 0, ev.force);
 
@@ -1014,7 +1021,7 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._handleResponseContinueDelete =
 function() {
- 	if (this._viewMgr.getCurrentViewName() == ZmController.CAL_APPT_VIEW) {
+ 	if (this._viewMgr.getCurrentViewName() == ZmId.VIEW_CAL_APPT) {
  		this._viewMgr.getCurrentView().close();
  	}
 };
@@ -1033,7 +1040,7 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._showApptReadOnlyView =
 function(appt) {
-	var viewId = ZmController.CAL_APPT_VIEW;
+	var viewId = ZmId.VIEW_CAL_APPT;
 	var apptView = this._viewMgr.getView(viewId);
 	if (!apptView) {
 		this._setup(viewId);
@@ -1165,17 +1172,16 @@ function(ev) {
 		if (this._quickAddDialog.isValid()) {
 			var appt = this._quickAddDialog.getAppt();
 			if (appt) {
-                if(appt.getFolder() && appt.getFolder().noSuchFolder){
-                    throw AjxMessageFormat.format(ZmMsg.errorInvalidFolder, appt.getFolder().name);
-                }
-                this._quickAddDialog.popdown();
-                appt.save();
+				if (appt.getFolder() && appt.getFolder().noSuchFolder) {
+					throw AjxMessageFormat.format(ZmMsg.errorInvalidFolder, appt.getFolder().name);
+				}
+				this._quickAddDialog.popdown();
+				appt.save();
 			}
 		}
 	} catch(ex) {
 		if (typeof ex == "string") {
 			var errorDialog = new DwtMessageDialog({parent:this._shell});
-			//var msg = ZmMsg.errorSaving + (ex ? (":<p>" + ex) : ".");
 			var msg = ex ? AjxMessageFormat.format(ZmMsg.errorSavingWithMessage, ex) : ZmMsg.errorSaving;
 			errorDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
 			errorDialog.popup();
@@ -1215,7 +1221,7 @@ function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 	var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDate, endDate, callback]);
 	appt.getDetails(viewMode, respCallback, errorCallback);
 	*/
-    appt.dndUpdate = true;
+	appt.dndUpdate = true;
 	if (!appt.isRecurring()) {
 		var viewMode = ZmCalItem.MODE_EDIT;
 		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback]);
@@ -1335,35 +1341,35 @@ function(date, noheader) {
 ZmCalViewController.prototype.getUserStatusToolTipText =
 function(start, end, noheader, email) {
 	try {
-		
 		var calIds = [];
-		if(this._calTreeController) {
+		if (this._calTreeController) {
 			var calendars = this._calTreeController.getOwnedCalendars(this._app.getOverviewId(),email);
-			for(var i=0;i<calendars.length;i++){
+			for (var i = 0; i < calendars.length; i++) {
 				var cal = calendars[i];
-				if(cal){
+				if (cal) {
 					calIds.push(cal.nId);
 				}
 			}
 		}		
 		
-		if((calIds.length == 0) || (!email) ){
+		if ((calIds.length == 0) || !email) {
 			return "<b>" + ZmMsg.unknown + "</b>";
 		}
-		
+
 		var startTime = start.getTime();
 		var endTime = end.getTime();
 
 		var dayStart = new Date(start.getTime());
 		dayStart.setHours(0, 0, 0, 0);
+
 		var dayEnd = new Date(dayStart.getTime() + AjxDateUtil.MSEC_PER_DAY);
-		
-		//to avoid frequent request to server we cache the appt for the entire day first before
-		//getting the appts for selected time interval
+
+		// to avoid frequent request to server we cache the appt for the entire
+		// day first before getting the appts for selected time interval
 		this.getApptSummaries({start:dayStart.getTime(), end:dayEnd.getTime(), fanoutAllDay:true, folderIds: calIds});		
-		
+
 		var result = this.getApptSummaries({start:startTime, end:endTime, fanoutAllDay:true, folderIds: calIds});
-		
+
 		return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader, ZmMsg.unknown);
 	} catch (ex) {
 		DBG.println(ex);
@@ -1415,7 +1421,7 @@ function(control, day) {
 
 ZmCalViewController.prototype._getViewType =
 function() {
-	return ZmController.CAL_VIEW;
+	return ZmId.VIEW_CAL;
 };
 
 ZmCalViewController.prototype.setCurrentView =
@@ -1425,21 +1431,21 @@ function(view) {
 
 ZmCalViewController.prototype._resetNavToolBarButtons =
 function(view) {
-	this._navToolBar[ZmController.CAL_VIEW].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
+	this._navToolBar[ZmId.VIEW_CAL].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
 };
 
 ZmCalViewController.prototype._resetOperations =
 function(parent, num) {
 	parent.enableAll(true);
 	var currViewName = this._viewMgr.getCurrentViewName();
-	if (currViewName == ZmController.CAL_APPT_VIEW)
+	if (currViewName == ZmId.VIEW_CAL_APPT)
 	{
 		// disable DELETE since CAL_APPT_VIEW is a read-only view
 		parent.enable([ZmOperation.DELETE, ZmOperation.CAL_REFRESH, ZmOperation.TODAY], false);
 	}
 	else
 	{
-		this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
+		this._navToolBar[ZmId.VIEW_CAL].setVisible(true);
 		var currView = this._viewMgr.getCurrentView();
 		var appt = currView ? currView.getSelection()[0] : null;
 		var calendar = appt && appt.getFolder();
@@ -1841,7 +1847,8 @@ function(create) {
 
 ZmCalViewController.prototype.notifyDelete =
 function(ids) {
-	if (this._clearCache) return;
+	if (this._clearCache) { return; }
+
 	this._clearCache = this._apptCache.containsAnyId(ids);
 	this.handleEditConflict(ids);	
 };
@@ -1849,27 +1856,27 @@ function(ids) {
 ZmCalViewController.prototype.handleEditConflict =
 function(ids) {
 	//handling a case where appt is edited and related calendar is deleted
-	if(appCtxt.getAppViewMgr().getCurrentViewId() == ZmController.APPOINTMENT_VIEW) {
+	if(appCtxt.getAppViewMgr().getCurrentViewId() == ZmId.VIEW_APPOINTMENT) {
 		var view = appCtxt.getAppViewMgr().getCurrentView();
 		var appt = view.getAppt(true);
 		var calendar = appt && appt.getFolder();
 		var idStr = ","+ ids+",";
-		if(idStr.indexOf("," + calendar.id + ",")>=0){			
-			var apptCtrller = this._app.getApptComposeController();
-			apptCtrller._closeView();
-		}	
-	}	
+		if (idStr.indexOf("," + calendar.id + ",") >= 0) {
+			this._app.getApptComposeController()._closeView();
+		}
+	}
 };
 
 ZmCalViewController.prototype.notifyModify =
 function(modifies) {
-	if (this._clearCache) return;
+	if (this._clearCache) { return; }
+
 	// if any of the ids are in the cache then...
 	for (var name in modifies) {
 		var list = modifies[name];
 		this._clearCache = this._clearCache || this._apptCache.containsAnyItem(list);
 	}
-}
+};
 
 // this gets called afer all the above notify* methods get called
 ZmCalViewController.prototype.notifyComplete =
@@ -1949,21 +1956,21 @@ function(work, view, list, skipMiniCalUpdate) {
 
 	if (work & ZmCalViewController.MAINT_MINICAL) {
 		var pendingWork = ZmCalViewController.MAINT_NONE;
-		
-		if(work & ZmCalViewController.MAINT_VIEW) {
+
+		if (work & ZmCalViewController.MAINT_VIEW) {
 			pendingWork |= ZmCalViewController.MAINT_VIEW;
 		}
 		
-		if(work & ZmCalViewController.MAINT_REMINDER) {
+		if (work & ZmCalViewController.MAINT_REMINDER) {
 			pendingWork |= ZmCalViewController.MAINT_REMINDER;
 		}
-		
+
 		this._scheduleMaintenance(pendingWork);
-		
-	} else if (work & ZmCalViewController.MAINT_VIEW) {
+	}
+	else if (work & ZmCalViewController.MAINT_VIEW) {
 		this._list = list;
 		view.set(list, skipMiniCalUpdate);
-		if(work & ZmCalViewController.MAINT_REMINDER) {
+		if (work & ZmCalViewController.MAINT_REMINDER) {
 			this._app.getReminderController().refresh();
 		}
 	}
@@ -2053,7 +2060,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.CANCEL:
-			if (this._currentView == ZmController.CAL_APPT_VIEW) {
+			if (this._currentView == ZmId.VIEW_CAL_APPT) {
 				this._listView[this._currentView].close();
 			}
 			break;
@@ -2066,7 +2073,7 @@ function(actionCode) {
 
 ZmCalViewController.prototype._getDefaultFocusItem =
 function() {
-	return this._toolbar[ZmController.CAL_VIEW];
+	return this._toolbar[ZmId.VIEW_CAL];
 };
 
 /**
@@ -2090,45 +2097,38 @@ function() {
 ZmCalViewController.prototype.fetchMiniCalendarAppts = 
 function(work, batchRequest) {	
 	var miniCalCache = this.getMiniCalCache();
-	
-	//if remainder maintenance is pending group them to minical maintencance request
-	if(this._refreshReminder || batchRequest) {
-		this._refreshReminder = null;
-		var params = this.getMiniCalendarParams(work);
-		var reminderController = AjxDispatcher.run("GetReminderController");
-		var searchParams = reminderController.getRefreshParams();
-        if(reminderController._warningTime == 0) {
-			searchParams = null;
-		}
-		this.onErrorRecovery = new AjxCallback(this, this.fetchMiniCalendarAppts, [work, true]);		
-        this._apptCache.batchRequest(searchParams, params);
 
-	}else { 
-		var params = this.getMiniCalendarParams(work);
-		this.onErrorRecovery = new AjxCallback(this, this.fetchMiniCalendarAppts, [work]);		
-		miniCalCache.setFaultHandler(new AjxCallback(this._apptCache, this._apptCache.handleDeleteMountpoint));		
-		miniCalCache._getMiniCalData(params);
+	// if remainder maintenance is pending, group them w/ minical maintenance request
+	if (this._refreshReminder || batchRequest) {
+		this._refreshReminder = null;
+		var rc = AjxDispatcher.run("GetReminderController");
+		var searchParams = (rc._warningTime != 0) ? rc.getRefreshParams() : null;
+		this.onErrorRecovery = new AjxCallback(this, this.fetchMiniCalendarAppts, [work, true]);
+		this._apptCache.batchRequest(searchParams, this.getMiniCalendarParams(work));
+
+	} else {
+		this.onErrorRecovery = new AjxCallback(this, this.fetchMiniCalendarAppts, [work]);
+		miniCalCache.setFaultHandler(new AjxCallback(this._apptCache, this._apptCache.handleDeleteMountpoint));
+		miniCalCache._getMiniCalData(this.getMiniCalendarParams(work));
 	}
 };
 
 ZmCalViewController.prototype.getMiniCalendarParams =
 function(work) {
-	var miniCalendar = this.getMiniCalendar();
-	var dr = miniCalendar.getDateRange();
-	var params = {
+	var dr = this.getMiniCalendar().getDateRange();
+	return {
 		start: dr.start.getTime(),
 		end: dr.end.getTime(),
 		fanoutAllDay: true,
-		callback: new AjxCallback(this, this._maintGetApptCallback, [work, null]),
-		noBusyOverlay:true		
+		callback: (new AjxCallback(this, this._maintGetApptCallback, [work, null])),
+		noBusyOverlay: true,
+		folderIds: this.getCheckedCalendarFolderIds()
 	};
-	params.folderIds = this.getCheckedCalendarFolderIds();
-	return params;
 };
 
 ZmCalViewController.prototype.getMiniCalCache =
 function() {
-	if(!this._miniCalCache) {
+	if (!this._miniCalCache) {
 		this._miniCalCache = new ZmMiniCalCache(this);
 	}
 	return this._miniCalCache;

@@ -161,7 +161,7 @@ function(params, callback, batchCmd) {
 	}
 
 	// Request additional headers
-	for (var hdr in ZmMailMsg.getAdditionalHeaders()) {
+	for (var hdr in ZmMailMsg.requestHeaders) {
 		var headerNode = soapDoc.set('header', null, convNode);
 		headerNode.setAttribute('n', hdr);
 	}

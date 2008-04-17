@@ -20,7 +20,7 @@ ZmColListView =	function(parent, controller, dropTgt, index) {
 	// save data
 	//this._folderId = null;
 	this._controller = controller;
-	var view = ZmController.BRIEFCASE_COLUMN_VIEW;
+	var view = ZmId.VIEW_BRIEFCASE_COLUMN;
 	controller._currentView = view;//cdel
 	ZmListView.call(this, {parent:parent, className:"ZmColListView",
 						   view:view, type:ZmItem.DOCUMENT,
@@ -126,7 +126,7 @@ function(folderId) {
 
 ZmColListView.prototype._itemClicked =
 function(clickedEl, ev) {
-	this._controller._listView[ZmController.BRIEFCASE_COLUMN_VIEW] = this;
+	this._controller._listView[ZmId.VIEW_BRIEFCASE_COLUMN] = this;
 	ZmListView.prototype._itemClicked.call(this,clickedEl,ev);
 	var items = this.getSelection();
 	

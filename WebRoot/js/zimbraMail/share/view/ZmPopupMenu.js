@@ -106,7 +106,7 @@ function(enabled) {
 ZmPopupMenu.prototype.createMenuItem =
 function(id, params) {
 	var mi = this._menuItems[id] = new DwtMenuItem({parent:this, style:params.style, radioGroupId:params.radioGroupId,
-													id:params.id});
+													id:params.id, index:params.index});
 	if (params.image) {
 		mi.setImage(params.image);
 	}

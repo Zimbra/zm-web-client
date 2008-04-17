@@ -113,11 +113,11 @@ function() {
 ZmContactController.prototype._getViewType =
 function() {
 	if (this._contact.isGroup()) {
-		return ZmController.GROUP_VIEW; 
+		return ZmId.VIEW_GROUP; 
 	} else if (this._contact.isMyCard && this._contact.isMyCard()) {
-		return ZmController.MY_CARD_VIEW;
+		return ZmId.VIEW_MY_CARD;
 	} else {
-		return ZmController.CONTACT_VIEW;
+		return ZmId.VIEW_CONTACT;
 	}
 };
 
@@ -125,13 +125,13 @@ ZmContactController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {
 		switch (view) {
-			case ZmController.CONTACT_VIEW:
+			case ZmId.VIEW_CONTACT:
 		    	this._listView[view] = new ZmContactView(this._container, this, false);
 				break;
-			case ZmController.GROUP_VIEW:
+			case ZmId.VIEW_GROUP:
 		    	this._listView[view] = new ZmGroupView(this._container, this);
 				break;
-			case ZmController.MY_CARD_VIEW:
+			case ZmId.VIEW_MY_CARD:
 		    	this._listView[view] = new ZmContactView(this._container, this, true);
 				break;
 		}
@@ -282,12 +282,12 @@ function(ev, bIsPopCallback) {
 		// bug fix #5829 - differentiate betw. an empty contact and saving
 		//                 an existing contact w/o editing
 		if (this._contact.isEmpty()) {
-			var msg = this._currentView == ZmController.GROUP_VIEW
+			var msg = this._currentView == ZmId.VIEW_GROUP
 				? ZmMsg.emptyGroup
 				: ZmMsg.emptyContact;
 			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		} else {
-			var msg = this._currentView == ZmController.GROUP_VIEW
+			var msg = this._currentView == ZmId.VIEW_GROUP
 				? ZmMsg.groupSaved
 				: ZmMsg.contactSaved;
 			appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);

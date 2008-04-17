@@ -167,7 +167,7 @@ function() {
 	// bug fix #7192 - disable detach toolbar button
 	this._toolbar.enable(ZmOperation.DETACH_COMPOSE, false);
 
-	var msg = this._composeView.getOrigMsg();
+	var msg = this._composeView._msg;
 	var addrs = this._composeView.getRawAddrFields();
 	var subj = this._composeView._subjectField.value;
 	var forAttHtml = this._composeView._attcDiv.innerHTML;
@@ -175,7 +175,7 @@ function() {
 	var composeMode = this._composeView.getComposeMode();
 	var identityId = this._composeView.getIdentity().id;
 	var backupForm = this._composeView.backupForm;
-	var sendUID = this._composeView.getSendUID();
+	var sendUID = this._composeView.sendUID;
 	var action = this._composeView._action || this._action;
 
 	// this is how child window knows what to do once loading:
@@ -370,14 +370,13 @@ function(initHide, composeMode) {
 	this._initializeToolBar();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks, false, true);
+    this._app.createView(ZmId.VIEW_COMPOSE, elements, callbacks, false, true);
     if (initHide) {
 	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	    this._composeView.enableInputs(false);
 	}
 
-	var identitySelect = this._composeView.getIdentitySelect();
-	identitySelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [true]));
+	this._composeView.identitySelect.addChangeListener(new AjxListener(this, this._identityChangeListener, [true]));
 };
 
 ZmComposeController.prototype._identityChangeListener =
@@ -386,9 +385,7 @@ function(setSignature, event) {
 	var resetBody = this._composeView.isDirty();
 
 	// don't do anything if signature is same
-	if (signatureId == this._currentSignatureId) {
-		return;
-	}
+	if (signatureId == this._currentSignatureId) { return; }
 
 	// apply settings
 	this._applyIdentityToBody(setSignature, resetBody);
@@ -409,7 +406,8 @@ function(setSignature,resetBody) {
 	this._setAddSignatureVisibility(identity);
 };
 
-ZmComposeController.prototype._handleSelectSignature = function(evt) {
+ZmComposeController.prototype._handleSelectSignature =
+function(evt) {
 	var signatureId = evt.item.getData(ZmComposeController.SIGNATURE_KEY);
 	this.setSelectedSignature(signatureId);
 
@@ -595,11 +593,11 @@ function(params) {
 	this._currentSignatureId = identity.signature;
 
     this._composeMode = params.composeMode ? params.composeMode : this._getComposeMode(msg, identity);
-    if(!this._composeView) {
-        this.initComposeView(null, this._composeMode);
-     } else {
-        this._composeView.setComposeMode(this._composeMode);
-    }
+	if (!this._composeView) {
+		this.initComposeView(null, this._composeMode);
+	} else {
+		this._composeView.setComposeMode(this._composeMode);
+	}
 
     this._initializeToolBar();
 	this.resetToolbarOperations(this._toolbar);
@@ -609,7 +607,7 @@ function(params) {
 
 	this._composeView.set(params);
 	this._setComposeTabGroup();
-	this._app.pushView(ZmController.COMPOSE_VIEW);
+	this._app.pushView(ZmId.VIEW_COMPOSE);
 	this._composeView.reEnableDesignMode();
 
 	if (appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED) &&
@@ -670,7 +668,7 @@ function() {
 
 	var className = appCtxt.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className+" ImgSkin_Toolbar",
-										 context:ZmController.COMPOSE_VIEW});
+										 context:ZmId.VIEW_COMPOSE});
 
 	for (var i = 0; i < this._toolbar.opList.length; i++) {
 		var button = this._toolbar.opList[i];
@@ -768,7 +766,7 @@ function(action) {
 
 	}
 
-	var menu = new ZmActionMenu({parent:button, menuItems:list, overrides:overrides, context:[ZmController.COMPOSE_VIEW, action].join("_")});
+	var menu = new ZmActionMenu({parent:button, menuItems:list, overrides:overrides, context:[ZmId.VIEW_COMPOSE, action].join("_")});
 
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
@@ -799,7 +797,7 @@ function(composeMode, identity) {
 	var isReply = (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL);
 	var isForward = (this._action == ZmOperation.FORWARD_ATT || this._action == ZmOperation.FORWARD_INLINE);
 	if (identity && (isReply || isForward)) {
-		var includePref = isReply ? identity.getReplyOption() : identity.getForwardOption();
+		var includePref = isReply ? appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG) : appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
 		this._curIncOption = ZmComposeController.INC_OP[includePref];
 		menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
 		if (isReply) {
@@ -823,8 +821,8 @@ function(msg, identity) {
 			this._action == ZmOperation.REPLY_DECLINE ||
 			this._action == ZmOperation.REPLY_TENTATIVE) && identity)
 		{
-			var bComposeSameFormat = identity.getComposeSameFormat();
-			var bComposeAsFormat = identity.getComposeAsFormat();
+			var bComposeSameFormat = appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
+			var bComposeAsFormat = appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
 			if ((!bComposeSameFormat && bComposeAsFormat == ZmSetting.COMPOSE_HTML) ||
 			    (bComposeSameFormat && msg.isHtmlMail()))
 			{
@@ -1165,7 +1163,7 @@ function() {
 
 ZmComposeController.prototype._popShieldDiscardCallback =
 function() {
-	this._deleteDraft(this._composeView.getOrigMsg());
+	this._deleteDraft(this._composeView._msg);
 	this._popShieldNoCallback();
 };
 

@@ -22,9 +22,10 @@ ZmCalendarTreeController = function() {
 	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);
 	this._listeners[ZmOperation.CLEAR_ALL] = new AjxListener(this, this._clearAllListener);
+    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
     this._listeners[ZmOperation.DETACH_WIN] = new AjxListener(this, this._detachListener);
 
-	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
+    if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
 		this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
 	}
@@ -124,6 +125,14 @@ function(actionMenu, type, id) {
 	}
 };
 
+ZmCalendarTreeController.prototype._browseListener =
+function(ev){
+    var folder = this._getActionedOrganizer(ev);
+    if (folder) {
+        AjxPackage.require("zimbraMail.share.view.picker.ZmPicker");
+        appCtxt.getSearchController().showBrowsePickers([ZmPicker.DATE,ZmPicker.TIME]);
+    }
+};
 ZmCalendarTreeController.prototype._detachListener =
 function(ev){
     var folder = this._getActionedOrganizer(ev);
@@ -143,7 +152,7 @@ function() {
 	}
 	ops.push(ZmOperation.CHECK_ALL);
 	ops.push(ZmOperation.CLEAR_ALL);
-
+    ops.push(ZmOperation.BROWSE);
 	return ops;
 };
 
@@ -162,6 +171,15 @@ function() {
     return ops;
 };
 
+ZmCalendarTreeController.prototype._getActionMenu =
+function(ev) {
+	var organizer = ev.item.getData(Dwt.KEY_OBJECT);
+	if (organizer.type != this.type) {
+		return null;
+	}
+	return ZmTreeController.prototype._getActionMenu.apply(this, arguments);
+};
+
 ZmCalendarTreeController.prototype.getTreeStyle =
 function() {
 	return DwtTree.CHECKEDITEM_STYLE;
@@ -169,8 +187,32 @@ function() {
 
 // Method that is run when a tree item is left-clicked
 ZmCalendarTreeController.prototype._itemClicked =
-function() {
-	// TODO
+function(organizer) {
+	if (organizer.type != ZmOrganizer.CALENDAR) {
+		var appId = ZmOrganizer.APP[organizer.type];
+		var app = appId && appCtxt.getApp(appId);
+		if (app) {
+			var callback = new AjxCallback(this, this._postActivateApp, [organizer, app]);
+			appCtxt.getAppController().activateApp(appId, null, callback);
+		}
+		else {
+			appCtxt.setStatusMsg({
+				msg:	AjxMessageFormat.format(ZmMsg.appUnknown, [appId]),
+				level:	ZmStatusView.LEVEL_WARNING
+			});
+		}
+	}
+};
+
+ZmCalendarTreeController.prototype._postActivateApp =
+function(organizer, app) {
+	var controller = appCtxt.getOverviewController();
+	var overviewId = app.getOverviewId();
+	var treeId = organizer.type;
+	var treeView = controller.getTreeView(overviewId, treeId);
+	if (treeView) {
+		treeView.setSelected(organizer);
+	}
 };
 
 // Handles a drop event
@@ -181,7 +223,10 @@ function(ev) {
 	var isShiftKey = (ev.shiftKey || ev.uiEvent.shiftKey);
 
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		if (appt.isReadOnly() || dropFolder.isReadOnly()) {
+		if (!(appt instanceof ZmAppt)) {
+			ev.doIt = false;
+		}
+		else if (appt.isReadOnly() || dropFolder.isReadOnly()) {
 			ev.doIt = false;
 		} else if (appt.getFolder().id == dropFolder.id) {
 			ev.doIt = false;
@@ -349,9 +394,12 @@ function(ev, checked) {
 	var overviewId = this._actionedOverviewId;
 	var items = this._getItems(overviewId);
 	var checkedItems = [];
+	var item, organizer;
 	for (var i = 0;  i < items.length; i++) {
-		var item = items[i];
+		item = items[i];
 		if (item._isSeparator) continue;
+		organizer = item.getData(Dwt.KEY_OBJECT);
+		if (!organizer || organizer.type != ZmOrganizer.CALENDAR) continue;
 		item.setChecked(checked);
 		checkedItems.push(item);
 	}
