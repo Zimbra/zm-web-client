@@ -371,6 +371,7 @@ ZmImApp.prototype.handleOp = function(op) {
 			this.getRosterTreeController()._imNewChatListener();
 			break;
 		case ZmOperation.NEW_ROSTER_ITEM:
+			this.prepareVisuals(); // ... and create views, if not yet done
 			this.getRosterTreeController()._newRosterItemListener()
 			break;
 		case ZmOperation.IM_PRESENCE_MENU:
@@ -430,7 +431,7 @@ function() {
 ZmImApp.prototype._autoLogin =
 function() {
 	var callback = new AjxCallback(this, this._postLoadAutoLogin);
-	AjxDispatcher.require([ "IMCore", "IM" ], true, callback);
+	AjxDispatcher.require([ "IMCore" ], true, callback);
 };
 
 ZmImApp.prototype._postLoadAutoLogin =
