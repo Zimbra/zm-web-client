@@ -1150,7 +1150,15 @@ function(msgNode) {
 	if (msgNode._attrs) { this.attrs = msgNode._attrs; }
 	if (msgNode.sf) 	{ this.sf = msgNode.sf; }
 
-	// set the "normalized" Id if this message belongs to a shared folder
+    //Copying msg. header's
+    if(msgNode.header) {
+        this.headers = {};
+        for (var i = 0; i < msgNode.header.length; i++) {
+            this.headers[msgNode.header[i].n] = msgNode.header[i]._content;
+		}
+    }
+
+    // set the "normalized" Id if this message belongs to a shared folder
 	var idx = this.id.indexOf(":");
 	this.nId = (idx != -1) ? (this.id.substr(idx + 1)) : this.id;
 
