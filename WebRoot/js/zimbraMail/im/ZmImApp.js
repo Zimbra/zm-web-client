@@ -88,6 +88,7 @@ function() {
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_OFFLINE, { textKey: "imStatusOffline", image: "Offline" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_ONLINE, { textKey: "imStatusOnline", image: "ImAvailable" });
     ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_XA, { textKey: "imStatusExtAway", image: "ImExtendedAway" });
+    ZmOperation.registerOp(ZmId.OP_IM_PRESENCE_CUSTOM_MRU, { image: "ImAvailable" });
     ZmOperation.registerOp(ZmId.OP_NEW_ROSTER_ITEM, { textKey: "newRosterItem", image: "ImBuddy" });
     ZmOperation.registerOp(ZmId.OP_IM_CREATE_CONTACT, { textKey: "addToNewContact", image: "NewContact" });
     ZmOperation.registerOp(ZmId.OP_IM_ADD_TO_CONTACT, { textKey: "addToExistingContact", image: "Edit" });
@@ -213,8 +214,13 @@ ZmImApp.prototype._registerSettings = function(settings) {
                                    dataType     : ZmSetting.D_STRING,
                                    defaultValue : "xa"
                                  });
+	settings.registerSetting("IM_CUSTOM_STATUS_MRU",
+								 { type:ZmSetting.T_COS,
+								   dataType:ZmSetting.D_LIST
+								 });
 
-        var listener = new AjxListener(this, this._onSettingChange);
+
+		var listener = new AjxListener(this, this._onSettingChange);
 	settings.getSetting(ZmSetting.IM_PREF_INSTANT_NOTIFY).addChangeListener(listener);
         settings.getSetting(ZmSetting.IM_PREF_REPORT_IDLE).addChangeListener(listener);
         settings.getSetting(ZmSetting.IM_PREF_IDLE_TIMEOUT).addChangeListener(listener);

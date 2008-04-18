@@ -29,11 +29,9 @@ function() {
 };
 
 ZmCustomStatusDlg.prototype.popup =
-function (message) {
+function () {
 	ZmDialog.prototype.popup.call(this);
-	var inputEl = Dwt.byId(this._messageFieldId);
-	inputEl.value = message;
-	inputEl.select(); // Grrrrrr...this doesn't work in firefox.
+	Dwt.byId(this._messageFieldId).focus();
 };
 
 ZmCustomStatusDlg.prototype.getValue =
