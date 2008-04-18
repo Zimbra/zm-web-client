@@ -266,14 +266,18 @@ function(ev, bIsPopCallback) {
 		else
 		{
 			if (contact.id && !contact.isGal) {
-				if (view.isEmpty() && !contact.isMyCard()) {
-					this._doDelete([contact], null, null, true);
-				} else {
+				if (view.isEmpty() && !contact.isMyCard()) { //If contact empty, alert the user
+                    var ed = appCtxt.getMsgDialog();
+                    ed.setMessage(ZmMsg.emptyContactSave, DwtMessageDialog.CRITICAL_STYLE);
+                    ed.popup();
+                    view.enableInputs(true);
+                    bIsPopCallback = true;
+                } else {
 					this._doModify(contact, mods);
-				}
-				if (appCtxt.zimletsPresent()) {
-					appCtxt.getZimletMgr().notifyZimlets("onContactModified", ZmZimletContext._translateZMObject(contact), mods);
-				}
+                    if (appCtxt.zimletsPresent()) {
+                        appCtxt.getZimletMgr().notifyZimlets("onContactModified", ZmZimletContext._translateZMObject(contact), mods);
+                    }
+                }
 			} else {
 				this._doCreate(AjxDispatcher.run("GetContacts"), mods);
 			}
