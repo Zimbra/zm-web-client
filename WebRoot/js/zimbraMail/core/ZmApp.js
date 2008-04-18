@@ -348,9 +348,9 @@ function() {
 			var acct = data.account = accts[i];
 			if (acct.visible) {
 				var params = {
-					title: acct.getDisplayName(),
+					title: acct.getTitle(),
 					data: data,
-					icon:acct.getStatusIcon()
+					icon: acct.getStatusIcon()
 				};
 				var item = accordion.addAccordionItem(params);
 				acct.itemId = item.id;
@@ -551,6 +551,17 @@ function(accordionItem, byUser) {
 
 ZmApp.prototype._handleSetActiveAccount =
 function(accordionItem, byUser) {
+	if (byUser) {
+		// reset unread count for all accordion items
+		var accounts = appCtxt.getZimbraAccounts();
+		for (var i in accounts) {
+			var acct = accounts[i];
+			if (acct.visible) {
+				this._opc.updateAccountTitle(acct.itemId, acct.getTitle());
+			}
+		}
+	}
+
 	var ac = appCtxt.getAppController();
 	ac.setUserInfo();
 	this._activateAccordionItem(accordionItem);

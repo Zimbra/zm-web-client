@@ -170,6 +170,19 @@ function(account, icon) {
 	}
 };
 
+ZmOverviewController.prototype.updateAccountTitle =
+function(itemId, newTitle) {
+	if (itemId == null || !newTitle) { return; }
+
+	// update accordion for each app loaded
+	for (var i in this._accordion) {
+		var accordionItem = this._accordion[i].getItem(itemId);
+		if (accordionItem) {
+			accordionItem.setTitle(newTitle);
+		}
+	}
+};
+
 ZmOverviewController.prototype.isAppOverviewId =
 function(overviewId) {
 	if (this._appOverviewId[overviewId] != null) {
