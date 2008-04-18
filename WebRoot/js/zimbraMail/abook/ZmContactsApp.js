@@ -412,7 +412,7 @@ function(callback) {
 	// contacts should already be loaded
 	var respCallback = new AjxCallback(this, this._handleLoadLaunchResponse, callback);
 	var contactList = this.getContactList(respCallback);
-	if (!contactList.isLoaded) {
+	if (contactList && !contactList.isLoaded) {
 		contactList.addLoadedCallback(new AjxCallback(this, this._showContactList));
 	}
 };
