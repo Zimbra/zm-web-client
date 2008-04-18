@@ -151,6 +151,7 @@ ZmKeyMap.NEXT_PAGE			= "NextPage";
 ZmKeyMap.NEXT_UNREAD		= "NextUnread";
 ZmKeyMap.NORMAL_PRIORITY	= "NormalPriority";
 ZmKeyMap.PLAY				= "Play";
+ZmKeyMap.PRESENCE_MENU		= "PresenceMenu";
 ZmKeyMap.PREV_CONV			= "PreviousConversation";
 ZmKeyMap.PREV_PAGE			= "PreviousPage";
 ZmKeyMap.PREV_UNREAD		= "PreviousUnread";
@@ -267,6 +268,7 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_TASKS]			= ZmSetting.TASKS_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TASK]			= ZmSetting.TASKS_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_VOICE]			= ZmSetting.VOICE_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.PRESENCE_MENU]		= ZmSetting.IM_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"] = {};
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.ADDRESS_PICKER]	= ZmSetting.CONTACTS_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.HTML_FORMAT]		= ZmSetting.HTML_COMPOSE_ENABLED;
