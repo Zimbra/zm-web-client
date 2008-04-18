@@ -215,8 +215,9 @@ ZmImApp.prototype._registerSettings = function(settings) {
                                    defaultValue : "xa"
                                  });
 	settings.registerSetting("IM_CUSTOM_STATUS_MRU",
-								 { type:ZmSetting.T_COS,
-								   dataType:ZmSetting.D_LIST
+								 { name			: "zimbraPrefIMCustomStatusMessage",
+								   type			: ZmSetting.T_PREF,
+								   dataType		: ZmSetting.D_LIST
 								 });
 
 
