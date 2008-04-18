@@ -71,7 +71,7 @@ function(display) {
 ZmPhone.isValid =
 function(str) {
 	var nameLength = ZmPhone.calculateName(str).length;
-	return (7 <= nameLength) && (nameLength <= 20);
+	return (7 <= nameLength) && (nameLength <= 20) && !/[^0-9()\-\s\+]/.exec(str);
 };
 
 ZmPhone.prototype.getDisplay =
