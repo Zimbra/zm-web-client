@@ -531,7 +531,7 @@ ZmSignaturesPage.prototype._handleDoneButton = function(id, evt){
 
 ZmSignaturesPage.prototype._getSignatureEditor = function(){
     if(!this._signatureEditor){
-        this._signatureEditor = new ZmHtmlEditor(this);
+        this._signatureEditor = new ZmSignatureEditor(this);
     }
     return this._signatureEditor;
 };
@@ -635,3 +635,63 @@ ZmSignatureList.prototype.getTabGroupMember = function() {
 	return this._tabGroup;
 };
 ZmSignatureList.prototype.getTabGroup = ZmSignatureList.prototype.getTabGroupMember;
+
+
+//ZmSignatureEditor
+
+ZmSignatureEditor = function(parent){
+    ZmHtmlEditor.call(this, parent);
+};
+
+ZmSignatureEditor.prototype = new ZmHtmlEditor;
+ZmSignatureEditor.prototype.constructor = ZmSignatureEditor;
+
+ZmSignatureEditor.prototype._createToolbars = function(){
+    if (!this._toolbar1) {
+        ZmHtmlEditor.prototype._createToolbars.call(this);
+        this._createImageButton(this._toolbar1);
+    }
+};
+
+ZmSignatureEditor.prototype._createImageButton = function(tb){
+
+	var button = new DwtToolBarButton({parent:tb})
+	button.setImage("ImageDoc");
+	button.setToolTipContent(ZmMsg.insertImage);
+	button.addSelectionListener(new AjxListener(this, this._insertImagesListener));
+};
+
+ZmSignatureEditor.prototype._insertImagesListener = function(ev){
+     var dlg = this._getImgSelDlg();
+     dlg.popup();
+};
+
+ZmSignatureEditor.prototype._getImgSelDlg = function(){
+    if(this._imgSelDlg){
+        this._imgSelField.value = '';
+        return this._imgSelDlg;
+    }
+
+    var dlg = this._imgSelDlg = new DwtDialog(appCtxt.getShell(), null, ZmMsg.addImg);
+    dlg.getButton(DwtDialog.OK_BUTTON).setText(ZmMsg.add);
+
+    var inputId = Dwt.getNextId();
+    var html = [
+            "<div style='padding:5px;' class='ImgSel'>",
+                "<strong>Url:&nbsp;</strong>","<input size='50' id='",inputId,"' type='text' value=''>",
+            "</div>"
+    ].join("");
+    dlg.setContent(html);
+
+    this._imgSelField = document.getElementById(inputId);
+    delete inputId;
+
+    dlg.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this,function(){
+        this.insertImage(this._imgSelField.value);
+        dlg.popdown();
+    }));
+
+    return this._imgSelDlg;
+};
+
+
