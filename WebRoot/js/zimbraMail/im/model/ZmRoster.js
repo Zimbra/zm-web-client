@@ -282,8 +282,8 @@ function(im) {
 					var item = list.getByAddr(not.to);
 					if (!item) {
 						// create him in offline state
-						item = new ZmRosterItem(not.to, list, not.to, null, not.groups);
-						list.addItem(item);
+						item = new ZmRosterItem(not.to, list, ( not.name || not.to ), null, not.groups);
+                        list.addItem(item);
 						if (notifications) {
 							appCtxt.setStatusMsg("Waiting for " + not.to + " to accept your request");
 						}
