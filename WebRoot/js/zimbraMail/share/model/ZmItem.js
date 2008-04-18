@@ -61,38 +61,36 @@ ZmItem.MSG_KEY 			= {};	// Type names
 ZmItem.ICON 			= {};	// Representative icons
 ZmItem.RESULTS_LIST 	= {};	// Function for creating search results list
 
-// fields that can be part of a displayed item (need to be short because
-// they are used in many DOM IDs)
-// XXX: define these in appropriate apps
-ZmItem.F_ATTACHMENT		= "at";
-ZmItem.F_CAPACITY		= "cp";
-ZmItem.F_COMPANY		= "co";
-ZmItem.F_DATE			= "dt";
-ZmItem.F_EMAIL			= "em";
-ZmItem.F_EXPAND			= "ex";	// CLV
-ZmItem.F_FILE_TYPE		= "ft";	// Notebook
-ZmItem.F_FLAG			= "fg";
-ZmItem.F_FOLDER			= "fo";
-ZmItem.F_FRAGMENT		= "fm";
-ZmItem.F_FROM			= "fr";
-ZmItem.F_HOME_PHONE		= "hp"; // Contacts
-ZmItem.F_ID				= "id";
-ZmItem.F_INDEX			= "ix";
-ZmItem.F_ITEM_ROW		= "rw";
-ZmItem.F_LOCATION		= "lo";
-ZmItem.F_NAME			= "na";
-ZmItem.F_NOTES			= "no";
-ZmItem.F_PARTICIPANT	= "pa";
-ZmItem.F_PCOMPLETE		= "pc"; // Tasks
-ZmItem.F_PRIORITY		= "pr"; // Tasks
-ZmItem.F_SELECTION		= "se";
-ZmItem.F_SIZE			= "sz";
-ZmItem.F_STATUS			= "st";
-ZmItem.F_SUBJECT		= "su";
-ZmItem.F_TAG			= "tg";
-ZmItem.F_TAG_CELL		= "tc";
-ZmItem.F_TYPE			= "ty";
-ZmItem.F_WORK_PHONE		= "wp"; // Contacts
+// fields that can be part of a displayed item
+ZmItem.F_ATTACHMENT		= ZmId.FLD_ATTACHMENT;
+ZmItem.F_CAPACITY		= ZmId.FLD_CAPACITY;
+ZmItem.F_COMPANY		= ZmId.FLD_COMPANY;
+ZmItem.F_DATE			= ZmId.FLD_DATE;
+ZmItem.F_EMAIL			= ZmId.FLD_EMAIL;
+ZmItem.F_EXPAND			= ZmId.FLD_EXPAND;
+ZmItem.F_FILE_TYPE		= ZmId.FLD_FILE_TYPE;
+ZmItem.F_FLAG			= ZmId.FLD_FLAG;
+ZmItem.F_FOLDER			= ZmId.FLD_FOLDER;
+ZmItem.F_FRAGMENT		= ZmId.FLD_FRAGMENT;
+ZmItem.F_FROM			= ZmId.FLD_FROM;
+ZmItem.F_HOME_PHONE		= ZmId.FLD_HOME_PHONE;
+ZmItem.F_ID				= ZmId.FLD_ID;
+ZmItem.F_INDEX			= ZmId.FLD_INDEX;
+ZmItem.F_ITEM_ROW		= ZmId.FLD_ITEM_ROW;
+ZmItem.F_LOCATION		= ZmId.FLD_LOCATION;
+ZmItem.F_NAME			= ZmId.FLD_NAME;
+ZmItem.F_NOTES			= ZmId.FLD_NOTES;
+ZmItem.F_PARTICIPANT	= ZmId.FLD_PARTICIPANT;
+ZmItem.F_PCOMPLETE		= ZmId.FLD_PCOMPLETE;
+ZmItem.F_PRIORITY		= ZmId.FLD_PRIORITY;
+ZmItem.F_SELECTION		= ZmId.FLD_SELECTION;
+ZmItem.F_SIZE			= ZmId.FLD_SIZE;
+ZmItem.F_STATUS			= ZmId.FLD_STATUS;
+ZmItem.F_SUBJECT		= ZmId.FLD_SUBJECT;
+ZmItem.F_TAG			= ZmId.FLD_TAG;
+ZmItem.F_TAG_CELL		= ZmId.FLD_TAG_CELL;
+ZmItem.F_TYPE			= ZmId.FLD_TYPE;
+ZmItem.F_WORK_PHONE		= ZmId.FLD_WORK_PHONE;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};

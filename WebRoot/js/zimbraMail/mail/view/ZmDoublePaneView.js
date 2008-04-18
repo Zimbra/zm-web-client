@@ -83,7 +83,7 @@ ZmDoublePaneView.prototype._createMailListView =
 function(params) {
 	params.parent = this;
 	params.posStyle = Dwt.ABSOLUTE_STYLE;
-	params.id = ZmId.getListViewId(this._controller._getViewType());
+	params.id = DwtId.getListViewId(this._controller._getViewType());
 	return new ZmMailMsgListView(params);
 };
 
