@@ -90,10 +90,13 @@ function() {
 
 ZmZimbraAccount.prototype.getDisplayName =
 function() {
-	var dispName = this.isMain
-		? this.settings.get(ZmSetting.DISPLAY_NAME)
-		: this.displayName;
-	return (this.accountName || dispName || this.name);
+	if (!this.displayName) {
+		var dispName = this.isMain
+			? this.settings.get(ZmSetting.DISPLAY_NAME)
+			: this.displayName;
+		this.displayName = (this.accountName || dispName || this.name);
+	}
+	return this.displayName;
 };
 
 ZmZimbraAccount.prototype.getIdentity =
@@ -154,6 +157,22 @@ function(acctInfo) {
 			}
 		}
 	}
+
+	if (this.visible &&
+		appCtxt.multiAccounts &&
+		acctInfo.unread != this.unread &&
+		appCtxt.getActiveAccount() != this)
+	{
+		this.unread = acctInfo.unread;
+		appCtxt.getOverviewController().updateAccountTitle(this.itemId, this.getTitle());
+	}
+};
+
+ZmZimbraAccount.prototype.getTitle =
+function() {
+	return (appCtxt.getActiveAccount() != this && this.unread && this.unread != 0)
+		? (["<b>", this.getDisplayName(), " (", this.unread, ")</b>"].join(""))
+		: this.getDisplayName();
 };
 
 ZmZimbraAccount.prototype.getStatusIcon =
