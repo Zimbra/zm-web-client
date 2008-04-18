@@ -213,3 +213,11 @@
     </table>
   </fieldset>
 </template>
+
+
+
+<template id='im.Chat#ZmCustomStatusDlg'>
+	<div width='320px'>
+		<$= Dwt.CARET_HACK_BEGIN $><input type='text' id='${id}' size='30'/><$= Dwt.CARET_HACK_END $>
+	</div>
+</template>	
