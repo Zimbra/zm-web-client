@@ -105,12 +105,9 @@ function(params) {
 		m.html = 1;
 	}
 
-	var hdrs = ZmMailMsg.getAdditionalHeaders();
-	if (hdrs && hdrs.length) {
-		request.header = [];
-		for (var hdr in hdrs) {
-			request.header.push({n:hdr});
-		}
+    for (var hdr in ZmMailMsg.requestHeaders) {
+		if(!request.header) request.header = [];
+        request.header.push({n:hdr});
 	}
 
 	if (!params.dontTruncate) {
@@ -552,7 +549,7 @@ function(callback, result) {
 	var response = result.getResponse().GetMsgResponse;
 
 	this.clearAddresses();
-	
+
 	// clear all participants (since it'll get re-parsed w/ diff. ID's)
 	if (this.participants) {
 		this.participants.removeAll();
@@ -1147,17 +1144,17 @@ function(findHits) {
 			var mimeInfo = ZmMimeTable.getInfo(attach.ct);
 			props.linkIcon = mimeInfo ? mimeInfo.image : "GenericDoc";
 	        props.ct = attach.ct;
-	        
+
 			// set other meta info
 			props.isHit = findHits && this._isAttInHitList(attach);
 			props.part = attach.part;
 			if (!useCL)
 				props.url = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=" + attach.part;
-			
+
 			if(attach.ci){
 				props.ci = attach.ci;
 			}
-			
+
 			// and finally, add to attLink array
 			this._attLinks.push(props);
 		}
@@ -1191,8 +1188,16 @@ function(msgNode) {
 	if (msgNode.mid)	{ this.messageId = msgNode.mid; }
 	if (msgNode._attrs) { this.attrs = msgNode._attrs; }
 	if (msgNode.sf) 	{ this.sf = msgNode.sf; }
-	
-	// set the "normalized" Id if this message belongs to a shared folder
+
+    //Copying msg. header's
+    if(msgNode.header) {
+        this.headers = {};
+        for (var i = 0; i < msgNode.header.length; i++) {
+            this.headers[msgNode.header[i].n] = msgNode.header[i]._content;
+		}
+    }
+
+    // set the "normalized" Id if this message belongs to a shared folder
 	var idx = this.id.indexOf(":");
 	this.nId = (idx != -1) ? (this.id.substr(idx + 1)) : this.id;
 
