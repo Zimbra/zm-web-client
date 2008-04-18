@@ -62,7 +62,6 @@ ZmImOverview = function(parent, args) {
 
         };
 
-        this._actionMenuListener = new AjxListener(this, this._actionMenuListener);
         this._actionMenuPopdownListener = new AjxListener(this, this._actionMenuPopdownListener);
 
         this._im_dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -73,6 +72,11 @@ ZmImOverview = function(parent, args) {
 
 ZmImOverview.prototype = new DwtComposite;
 ZmImOverview.prototype.constructor = ZmImOverview;
+
+ZmImOverview.prototype.toString =
+function() {
+	return "ZmImOverview";
+};
 
 ZmImOverview.prototype._dragListener = function(ev) {
         var data = ev.srcControl.getData("ZmImOverview.data");
@@ -86,53 +90,55 @@ ZmImOverview.prototype._dragListener = function(ev) {
         }
 };
 
-ZmImOverview.prototype._actionMenuListener = function(ev) {
-        var operation = ev.item.getData(ZmOperation.KEY_ID);
-        switch (operation) {
+ZmImOverview.prototype._actionMenuListener =
+function(useActionedItem, ev) {
+	var operation = ev.item.getData(ZmOperation.KEY_ID);
+	switch (operation) {
 
-            case ZmOperation.IM_SORT_BY_PRESENCE:
-                this.sort("presence");
-                break;
+		case ZmOperation.IM_SORT_BY_PRESENCE:
+			this.sort("presence");
+			break;
 
-            case ZmOperation.IM_SORT_BY_NAME:
-                this.sort("name");
-                break;
+		case ZmOperation.IM_SORT_BY_NAME:
+			this.sort("name");
+			break;
 
-            case ZmOperation.IM_TOGGLE_OFFLINE:
-                this.__filterOffline = !this.__filterOffline;
-                if (this.__filterOffline) {
-                        ev.dwtObj.setImage("Check");
-                        this.addFilter(ZmImOverview.FILTER_OFFLINE_BUDDIES);
-                } else {
-                        ev.dwtObj.setImage(null);
-                        this.removeFilter(ZmImOverview.FILTER_OFFLINE_BUDDIES);
-                }
-                break;
+		case ZmOperation.IM_TOGGLE_OFFLINE:
+			this.__filterOffline = !this.__filterOffline;
+			if (this.__filterOffline) {
+				ev.dwtObj.setImage("Check");
+				this.addFilter(ZmImOverview.FILTER_OFFLINE_BUDDIES);
+			} else {
+				ev.dwtObj.setImage(null);
+				this.removeFilter(ZmImOverview.FILTER_OFFLINE_BUDDIES);
+			}
+			break;
 
-            case ZmOperation.IM_TOGGLE_BLOCKED:
-                this.__filterBlocked = !this.__filterBlocked;
-                if (this.__filterBlocked) {
-                        ev.dwtObj.setImage("Check");
-                        this.addFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES);
-                } else {
-                        ev.dwtObj.setImage(null);
-                        this.removeFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES);
-                }
-                break;
+		case ZmOperation.IM_TOGGLE_BLOCKED:
+			this.__filterBlocked = !this.__filterBlocked;
+			if (this.__filterBlocked) {
+				ev.dwtObj.setImage("Check");
+				this.addFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES);
+			} else {
+				ev.dwtObj.setImage(null);
+				this.removeFilter(ZmImOverview.FILTER_BLOCKED_BUDDIES);
+			}
+			break;
 
-            default:
-                var ctrl = appCtxt.getApp("IM").getRosterTreeController();
-                var listener = ctrl._listeners[operation];
-                if (listener) {
-                        var data = this._actionedItem.getData("ZmImOverview.data");
-                        listener.handleEvent({ type   : data.type,
-                                               buddy  : data.buddy,
-                                               group  : data.group,
-                                               dwtObj : ev.dwtObj
-                                             });
-                }
-
-        }
+		default:
+			var ctrl = appCtxt.getApp("IM").getRosterTreeController();
+			var listener = ctrl._listeners[operation];
+			if (listener) {
+				var args = { dwtObj : ev.dwtObj };
+				if (useActionedItem && this._actionedItem) {
+					var data = this._actionedItem.getData("ZmImOverview.data");
+					args.type = data.type;
+					args.buddy = data.buddy;
+					args.group = data.group;
+				}
+				listener.handleEvent(args);
+			}
+	}
 };
 
 ZmImOverview.PRESENCE_SORT_INDEX = {
@@ -198,9 +204,10 @@ ZmImOverview.prototype._getActionMenu = function(nodeType, buddy, group) {
                                 dialog = dialog.parent;
                         menu = ops._dwtControl = new ZmActionMenu({ parent    : this,
                                                                     menuItems : ops });
-                        for (var i = 0; i < menu.opList.length; ++i) {
+						var listener = new AjxListener(this, this._actionMenuListener, [true]);
+						for (var i = 0; i < menu.opList.length; ++i) {
                                 var item = menu.opList[i];
-                                menu.addSelectionListener(item, this._actionMenuListener);
+                                menu.addSelectionListener(item, listener);
                         }
 
                         menu.addPopdownListener(this._actionMenuPopdownListener);
@@ -218,6 +225,22 @@ ZmImOverview.prototype._getActionMenu = function(nodeType, buddy, group) {
         } else {
                 console.log("ERROR: no such node type for _getActionMenu: %s", nodeType);
         }
+};
+
+// This is called when the clicking in the tree view, but only if
+// no tree item was clicked.
+ZmImOverview.prototype._treeMouseUpListener = function(ev) {
+	if ((ev.button == DwtMouseEvent.RIGHT)) {
+		if (!this._treeViewActionMenu) {
+			var list = [ZmOperation.NEW_ROSTER_ITEM, ZmOperation.IM_NEW_CHAT];
+			this._treeViewActionMenu = new ZmActionMenu({parent:this.shell, menuItems:list});
+			var listener = new AjxListener(this, this._actionMenuListener, [false]);
+			for (var i = 0, count = list.length; i < count; i++) {
+				this._treeViewActionMenu.addSelectionListener(list[i], listener);
+			}
+		}
+		this._treeViewActionMenu.popup(0, ev.docX,  ev.docY);
+	}
 };
 
 ZmImOverview.prototype._treeSelectionListener = function(ev) {
@@ -249,65 +272,66 @@ ZmImOverview.prototype._treeSelectionListener = function(ev) {
 
 ZmImOverview.prototype._init = function() {
 
-        var dropTgt = this._groupDropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
-        dropTgt.addDropListener(new AjxListener(this, this._groupDropListener));
+	var dropTgt = this._groupDropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
+	dropTgt.addDropListener(new AjxListener(this, this._groupDropListener));
 
-        if (ZmImOverview.FILTER_SEARCH) {
-                // enable the search filter
-                var div = this.getHtmlElement();
-                var input = div.ownerDocument.createElement("input");
-                this.__searchInputEl = input;
-                input.autocomplete = "off";
+	if (ZmImOverview.FILTER_SEARCH) {
+		// enable the search filter
+		var div = this.getHtmlElement();
+		var input = div.ownerDocument.createElement("input");
+		this.__searchInputEl = input;
+		input.autocomplete = "off";
                 // input.type = "text"; // DwtSimpleInput-hint gets overriden if we specify type="text"
-                input.style.width = "100%";
-                input.className = "DwtSimpleInput";
-                div.appendChild(input);
-                input.onkeydown = AjxCallback.simpleClosure(ZmImOverview.FILTER_SEARCH.inputKeyPress, this);
-                input.onfocus = AjxCallback.simpleClosure(ZmImOverview.FILTER_SEARCH.inputFocus, this);
-                input.onblur = AjxCallback.simpleClosure(ZmImOverview.FILTER_SEARCH.inputBlur, this);
-                input.onblur();
-        }
+		input.style.width = "100%";
+		input.className = "DwtSimpleInput";
+		div.appendChild(input);
+		input.onkeydown = AjxCallback.simpleClosure(ZmImOverview.FILTER_SEARCH.inputKeyPress, this);
+		input.onfocus = AjxCallback.simpleClosure(ZmImOverview.FILTER_SEARCH.inputFocus, this);
+		input.onblur = AjxCallback.simpleClosure(ZmImOverview.FILTER_SEARCH.inputBlur, this);
+		input.onblur();
+	}
 
-        var roster = this._roster = AjxDispatcher.run("GetRoster");
-        var buddyList = roster.getRosterItemList();
+	var roster = this._roster = AjxDispatcher.run("GetRoster");
+	var buddyList = roster.getRosterItemList();
 
-        var tree = this._tree = new DwtTree({parent:this});
-        tree.getHtmlElement().style.width = "100%";
-        if (!this._options.inactiveTree)
-                tree.addSelectionListener(new AjxListener(this, this._treeSelectionListener));
-        tree.setScrollStyle(DwtControl.SCROLL);
+	var tree = this._tree = new DwtTree({parent:this});
+	tree.getHtmlElement().style.width = "100%";
+	if (!this._options.inactiveTree)
+		tree.addSelectionListener(new AjxListener(this, this._treeSelectionListener));
+	tree.setScrollStyle(DwtControl.SCROLL);
+	tree.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._treeMouseUpListener));
 
-        // create the root item
-        this._rootItem = new DwtTreeItem({parent:tree, className:"overviewHeader"});
-        this._rootItem.setData("ZmImOverview.data", { type: "root" });
-        this._rootItem.setText(ZmMsg.buddyList);
+		// create the root item
+	this._rootItem = new DwtTreeItem({parent:tree, className:"overviewHeader"});
+	this._rootItem.setData("ZmImOverview.data", { type: "root" });
+	this._rootItem.setText(ZmMsg.buddyList);
 
-        if (!this._options.noAssistant) {
-                // Zimbra Assistant buddy
-                var assistant = new ZmAssistantBuddy(buddyList);
-                this._createBuddy("assistant", assistant);
-        }
+	if (!this._options.noAssistant) {
+		// Zimbra Assistant buddy
+		var assistant = new ZmAssistantBuddy(buddyList);
+		this._createBuddy("assistant", assistant);
+	}
 
-        var createBuddy = AjxCallback.simpleClosure(this._createBuddy, this, "buddy");
+	var createBuddy = AjxCallback.simpleClosure(this._createBuddy, this, "buddy");
 
         // ZmRosterItemList might not be initially empty
-        buddyList.getVector().foreach(createBuddy);
+	buddyList.getVector().foreach(createBuddy);
 
-        buddyList.addChangeListener(new AjxListener(this, function(ev) {
-                var buddies = AjxVector.fromArray(ev.getItems());
-                var fields = ev.getDetail("fields");
-                if (ev.event == ZmEvent.E_CREATE) {
-                        buddies.foreach(createBuddy);
-                } else if (ev.event == ZmEvent.E_MODIFY) {
-                        buddies.foreach(AjxCallback.simpleClosure(this._modifyBuddy,
-                                                                  this, fields));
-                } else if (ev.event == ZmEvent.E_REMOVE ||
-                           ev.event == ZmEvent.E_DELETE) {
-                        buddies.foreach(this._removeBuddy, this);
-                }
-        }));
+	buddyList.addChangeListener(new AjxListener(this, function(ev) {
+		var buddies = AjxVector.fromArray(ev.getItems());
+		var fields = ev.getDetail("fields");
+		if (ev.event == ZmEvent.E_CREATE) {
+			buddies.foreach(createBuddy);
+		} else if (ev.event == ZmEvent.E_MODIFY) {
+			buddies.foreach(AjxCallback.simpleClosure(this._modifyBuddy,
+					this, fields));
+		} else if (ev.event == ZmEvent.E_REMOVE ||
+				   ev.event == ZmEvent.E_DELETE) {
+			buddies.foreach(this._removeBuddy, this);
+		}
+	}));
 
-        this.addControlListener(new AjxListener(this, this._controlListener));
+	this.addControlListener(new AjxListener(this, this._controlListener));
 };
 
 ZmImOverview.prototype._controlListener = function(ev) {
