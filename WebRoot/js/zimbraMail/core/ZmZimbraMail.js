@@ -671,6 +671,7 @@ function(apps) {
 	for (var app in ZmApp.CLASS) {
 		if (!apps || apps[app]) {
 			ZmApp.APPS.push(app);
+			ZmApp.ENABLED_APPS[app] = true;
 		}
 	}
 	ZmApp.APPS.sort(function(a, b) {
@@ -1008,29 +1009,6 @@ function() {
 
 ZmZimbraMail.prototype._registerOrganizers =
 function() {
-	ZmOrganizer.registerOrg(ZmOrganizer.FOLDER,
-							{app:				ZmApp.MAIN,
-							 nameKey:			"folder",
-							 defaultFolder:		ZmOrganizer.ID_INBOX,
-							 soapCmd:			"FolderAction",
-							 firstUserId:		256,
-							 orgClass:			"ZmFolder",
-							 treeController:	"ZmFolderTreeController",
-							 labelKey:			"folders",
-							 itemsKey:			"messages",
-							 hasColor:			true,
-							 defaultColor:		ZmOrganizer.C_NONE,
-							 treeType:			ZmOrganizer.FOLDER,
-							 dropTargets:		[ZmOrganizer.FOLDER],
-							 views:				["message", "conversation"],
-							 folderKey:			"mailFolder",
-							 mountKey:			"mountFolder",
-							 createFunc:		"ZmOrganizer.create",
-							 compareFunc:		"ZmFolder.sortCompare",
-							 shortcutKey:		"F",
-							 openSetting:		ZmSetting.FOLDER_TREE_OPEN
-							});
-
 	ZmOrganizer.registerOrg(ZmOrganizer.SEARCH,
 							{app:				ZmApp.MAIN,
 							 nameKey:			"savedSearch",
@@ -1080,6 +1058,9 @@ function() {
 */
 ZmZimbraMail.prototype.getApp =
 function(appName) {
+	if (!ZmApp.ENABLED_APPS[appName]) {
+		return null;
+	}
 	if (!this._apps[appName]) {
 		this._createApp(appName);
 	}

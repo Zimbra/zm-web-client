@@ -344,9 +344,13 @@ function(parentNode, organizer, index, noTooltips) {
 					parent: parentNode,
 					text: parentOrganizer.getName(),
 					imageInfo: parentOrganizer.getIcon(),
+					forceNotifySelection: true,
 					id: ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
 				});
+				parentNode.setData(Dwt.KEY_ID, parentOrganizer.id);
 				parentNode.setData(Dwt.KEY_OBJECT, parentOrganizer);
+				parentNode.setData(ZmTreeView.KEY_ID, this.overviewId);
+				parentNode.setData(ZmTreeView.KEY_TYPE, parentOrganizer.type);
 				this._treeItemHash[parentOrganizer.id] = parentNode;
 			}
 		}
