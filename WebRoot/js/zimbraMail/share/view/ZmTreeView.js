@@ -256,13 +256,25 @@ function(params) {
 		if (!(params.include && params.include[child.nId])) {
 			var allowed = ((org.nId == ZmOrganizer.ID_ROOT) && this.allowedTypes[child.type]) ||
 						  ((org.nId != ZmOrganizer.ID_ROOT) && this.allowedSubTypes[child.type]);
-			if (!allowed) { continue; }
+			if (!allowed) {
+				var proxy = AjxUtil.createProxy(params);
+				proxy.treeNode = null;
+				proxy.organizer = child;
+				this._render(proxy);
+				continue; 
+			}
 			// if this is a tree view of saved searches, make sure to only show saved searches
 			// that are for one of the given types
 			if ((child.type == ZmOrganizer.SEARCH) && params.searchTypes && !child._typeMatch(params.searchTypes)) {
 				continue;
 			}
-			if (this._allowedTypes && !this._allowedTypes[child.type]) { continue; }
+			if (this._allowedTypes && !this._allowedTypes[child.type]) {
+				var proxy = AjxUtil.createProxy(params);
+				proxy.treeNode = null;
+				proxy.organizer = child;
+				this._render(proxy);
+				continue;
+			}
 		}
 		
 		// if there's a large number of folders to display, make user click on special placeholder
@@ -317,6 +329,28 @@ function(parentNode, organizer, index, noTooltips) {
 		ti = new DwtTreeItem({parent:this, text:organizer.getName(), className:this._headerClass});
 		ti.enableSelection(false);
 	} else {
+		// create parent chain
+		if (!parentNode) {
+			var stack = [];
+			var parentOrganizer = organizer.parent;
+			while ((parentNode = this.getTreeItemById(parentOrganizer.id)) == null) {
+				stack.push(parentOrganizer);
+				parentOrganizer = parentOrganizer.parent;
+			}
+			var parentId;
+			while (parentOrganizer = stack.pop()) {
+				parentNode = this.getTreeItemById(parentOrganizer.parent.id);
+				parentNode = new DwtTreeItem({
+					parent: parentNode,
+					text: parentOrganizer.getName(),
+					imageInfo: parentOrganizer.getIcon(),
+					id: ZmId.getTreeItemId(this.overviewId, parentOrganizer.id)
+				});
+				parentNode.setData(Dwt.KEY_OBJECT, parentOrganizer);
+				this._treeItemHash[parentOrganizer.id] = parentNode;
+			}
+		}
+		// now add item
 		ti = new DwtTreeItem({parent:parentNode, index:index, text:organizer.getName(this._showUnread),
 							  imageInfo:organizer.getIcon(), id:ZmId.getTreeItemId(this.overviewId, organizer.id)});
 	}

@@ -274,8 +274,7 @@ function() {
 							 mountKey:			"mountCalendar",
 							 createFunc:		"ZmCalendar.create",
 							 compareFunc:		"ZmCalendar.sortCompare",
-							 deferrable:		true,
-							 pathInName:		true
+							 deferrable:		true
 							});
 };
 

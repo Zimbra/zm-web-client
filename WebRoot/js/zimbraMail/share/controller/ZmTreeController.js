@@ -259,11 +259,18 @@ ZmTreeController.prototype._fixupTreeNode =
 function(treeItem, organizer) {
 	if (treeItem._isSeparator) { return; }
 	organizer = organizer || treeItem.getData(Dwt.KEY_OBJECT);
-	if (ZmOrganizer.HAS_COLOR[this.type]) {
-		this._setTreeItemColor(treeItem, organizer);
-	}
-	if (this.isCheckedStyle) {
-		treeItem.setChecked(organizer.isChecked);
+	if (organizer) {
+		if (ZmOrganizer.HAS_COLOR[this.type]) {
+			this._setTreeItemColor(treeItem, organizer);
+		}
+		if (this.isCheckedStyle) {
+			if (organizer.type == this.type) {
+				treeItem.setChecked(organizer.isChecked);
+			}
+			else {
+				treeItem.showCheckBox(false);
+			}
+		}
 	}
     var treeItems = treeItem.getItems();
     for (var i = 0; i < treeItems.length; i++) {
