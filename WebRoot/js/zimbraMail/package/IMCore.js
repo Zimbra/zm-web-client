@@ -35,7 +35,3 @@ AjxPackage.require("zimbraMail.im.model.ZmChatList");
 AjxPackage.require("zimbraMail.im.model.ZmChatMessage");
 AjxPackage.require("zimbraMail.im.model.ZmImPrivacyList");
 
-// The following files are not really core-like,
-// but they are needed to display IM stuff in mail & other apps.
-AjxPackage.require("zimbraMail.im.view.ZmPresenceMenu");
-

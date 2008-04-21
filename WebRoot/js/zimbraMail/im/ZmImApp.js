@@ -676,7 +676,7 @@ function(ev) {
 
 ZmImApp.prototype._createImPresenceMenu =
 function(button, addFloatingBuddyItem) {
-	AjxPackage.require("IMCore");
+	AjxDispatcher.require(["IMCore", "IM"]);
 	var menu = new ZmPresenceMenu(button, addFloatingBuddyItem);
 	button.setMenu(menu);
 	return menu;
