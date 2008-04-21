@@ -6,6 +6,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <mo:handleError>
+    <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:(uiv =='1'?'mainx':'mosearch')}"/>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
         <c:when test="${not empty mailbox.prefs.locale}">
@@ -54,11 +55,16 @@
 <mo:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" context="${null}"
          onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}">
 
-<c:set var="caction" value="mosearch"/>
+<c:set var="caction" value="${context_url}"/>
 <c:if test="${uiv=='1'}">
-    <c:set var="caction" value="${header['referer']!=null?header['referer']:'main'}"/>
+    <c:if test="${not empty header['referer']}">
+        <c:set var="caction" value='${header["referer"]}'/>    
+    </c:if>
+    <c:if test="${empty header['referer']}">
+        <c:set var="caction" value='${context_url}'/>        
+    </c:if>
 </c:if>
-<form action="mosearch" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+<form action="${context_url}" method="post" enctype="multipart/form-data" accept-charset="utf-8">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <table width=100% cellpadding="0" cellspacing="0" class="Stripes">
 <tr>
@@ -72,8 +78,9 @@
                                         <input name="actionSend" type="submit" value="<fmt:message key="send"/>">
                                     </td>
                                     <td style='padding-left:5px' class='zo_tb_submit'>
-                                        <input name="actionCancel" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
+                                        <input id='actionCancel' name="actionCancel" style="display:none;" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
                                                type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
+                                        <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
                                     </td>
                                     <td
                                             <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
@@ -130,7 +137,6 @@
                     </table>
                     </div>
                    
-                    
                     <c:set var="firstAttachment" value="${true}"/>
                     <c:if test="${!empty compose.messageAttachments}">
                         <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
@@ -142,9 +148,7 @@
                                         <mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
                                         <c:set var="firstAttachment" value="${false}"/>
                                     </c:if>
-                                </td>
-                                <td>
-                                    <c:choose>
+                                 <c:choose>
                                         <c:when test="${empty ma.subject}"><fmt:message var="subj"
                                                                                         key="noSubject"/></c:when>
                                         <c:otherwise><c:set var="subj"
@@ -160,21 +164,22 @@
                     
                     <c:if test="${!empty compose.originalAttachments}">
                         <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
-                            <mo:attachment firstAttachment="${firstAttachment}"
+                            <table width="100%"><mo:attachment firstAttachment="${firstAttachment}"
                                            url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
                                            displayName="${part.displayName}" contentType="${part.contentType}"
                                            checked="${compose.checkedAttachmentNames[part.partName]}"
                                            displaySize="${part.displaySize}"
                                            value="${part.partName}" name="originalAttachment"/>
                             <c:set var="firstAttachment" value="${false}"/>
+                            </table>     
                         </c:forEach>
                     </c:if>
                     <c:if test="${(!empty param.attachId) and (!empty param.attachUrl) and (!empty param.attachName)}">
-                        <mo:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
+                        <table width="100%"> <mo:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
                                        displayName="${param.attachName}"
                                        checked="true"
                                        value="${param.attachId}" name="uploadedAttachment"/>
-                       </td>
+                       </table> </td>
                       </tr>
                     </table>
                     </div>
@@ -207,8 +212,9 @@
                                         <input name="actionSend" type="submit" value="<fmt:message key="send"/>">
                                     </td>
                                     <td style='padding-left:5px' class='zo_tb_submit'>
-                                        <input name="actionCancel" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
+                                        <input id="actionCancel1" style="display:none" name="actionCancel" ${uiv=='1'?'onclick=zClickLink("_back_to")':''}
                                                type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
+                                        <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
                                     </td>
                                     <td
                                             <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
@@ -245,4 +251,9 @@
     initAuto("ccField","ccContainer");
 </mo:autoComplete>
 <a href="${caction}" id="_back_to" style="display:none;visibility:hidden">back</a>
+<script type="text/javascript">
+    document.getElementById('actionCancel').style.display='';
+    document.getElementById('actionCancel1').style.display='';
+
+</script>
 </mo:view>

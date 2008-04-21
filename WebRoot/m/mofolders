@@ -41,7 +41,7 @@
     </table>
     </c:if>
     <table width="100%" cellspacing="0" cellpadding="2" border="0">
-        <tr class="zo_cal_listh">
+        <tr class="ToolbarBg">
             <td class="Title">
 			   <fmt:message key="folders"/>
             </td>
@@ -68,17 +68,17 @@
         </c:if>
         <mo:doFolderTree skiproot="${true}" skipsystem="${true}" skiptopsearch="${true}"/>
 
-        <tr class="zo_cal_listh">
+        <tr class="ToolbarBg">
             <td class="Title">
            <fmt:message key="searches"/>
             </td>
         </tr>
-        <zm:forEachFolder var="folder">
+        <zm:forEachFolder var="folder" skipsystem="${true}">
             <c:if test="${(param.sq != null && param.sq != '' && fn:containsIgnoreCase(folder.name,param.sq)) || folder.isSearchFolder and (folder.depth eq 0)}">
                 <mo:overviewSearchFolder folder="${folder}"/>
             </c:if>
         </zm:forEachFolder>
-        <tr class="zo_cal_listh">
+        <tr class="ToolbarBg">
             <td class="Title">
                 <fmt:message key="tags"/>
             </td>
@@ -88,6 +88,5 @@
             <mo:overviewTag calendars="${false}" tag="${tag}"/>
         </zm:forEachTag>
     </table>
-    <br>
 </mo:view>
  

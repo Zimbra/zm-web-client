@@ -47,7 +47,7 @@
 	<table width="100%" cellpadding="0" cellspacing="0">
     <tr>
         <td valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="from"/>:</td>
-        <td class="Padding">${fn:escapeXml(from)}</td>
+        <td class="Padding" <c:if test="${uiv eq '1'}">style="font-size:small;"</c:if> >${fn:escapeXml(from)}</td>
     </tr>
     </table>
     </div>
@@ -57,7 +57,7 @@
        	<table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <td valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="sender"/>:</td>
-            <td class="Padding">${fn:escapeXml(sender)}</td>
+            <td class="Padding" <c:if test="${uiv eq '1'}">style="font-size:small;"</c:if>>${fn:escapeXml(sender)}</td>
         </tr>
     	</table>
     	</div>
@@ -67,7 +67,7 @@
        	<table width="100%" cellpadding="0" cellspacing="0">
            <tr>
             <td valign='top' class='label' nowrap="nowrap" width="35" align="right"><fmt:message key="to"/>:</td>
-            <td class="Padding">${fn:escapeXml(to)}</td>
+            <td class="Padding" <c:if test="${uiv eq '1'}">style="font-size:small;"</c:if>>${fn:escapeXml(to)}</td>
         </tr>
         </table>
         </div>
@@ -77,7 +77,7 @@
        	<table width="100%" cellpadding="0" cellspacing="0">
         <tr>
             <td valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="cc"/>:</td>
-            <td class="Padding">${fn:escapeXml(cc)}</td>
+            <td class="Padding" <c:if test="${uiv eq '1'}">style="font-size:small;"</c:if>>${fn:escapeXml(cc)}</td>
         </tr>
         </table>
         </div>

@@ -37,7 +37,9 @@
             <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
         </c:otherwise>
     </c:choose>
-
+    <%--!TODO find out why this hack is needed?
+    Date to calendar object conversion has one day less in calendar than date--%> 
+    <c:set var="dateContext" value="${zm:addDay(dateContext, 1)}"/>
     <c:set scope="request" var="calendarQuery" value="${param.sq}"/>
     
     <c:if test="${not empty param.refresh}">
