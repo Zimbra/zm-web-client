@@ -106,7 +106,7 @@
                                                 </td>
                                                 <td nowrap class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>' style='padding-left: ${folder.depth*8}px'>
                                                     <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
-                                                    <c:url var="selectUrl" value="">
+                                                    <c:url var="selectUrl" value="/h/mfolders">
                                                         <c:param name="id" value="${folder.id}"/>
                                                     </c:url>
                                                     <a id="A${index}" href="${fn:escapeXml(selectUrl)}">
