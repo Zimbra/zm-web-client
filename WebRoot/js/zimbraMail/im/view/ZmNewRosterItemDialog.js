@@ -152,13 +152,21 @@ ZmNewRosterItemDialog.prototype._getGroupsMenu = function() {
 
         // make sure it's gone when it pops down; the groups can
         // change very dinamically so we don't wanna cache this menu.
-        menu.addPopdownListener(new AjxListener(this, function() {
-                // force rebuild the next time.
-                this._groupsDropDown.setMenu(this._getGroupsMenu);
-                menu.dispose();
-        }));
+        menu.addPopdownListener(new AjxListener(this, this._groupsPopdownListener, [menu]));
 
         return menu;
+};
+
+ZmNewRosterItemDialog.prototype._groupsPopdownListener =
+function(menu) {
+	// Dispose the menu on a timer, to make sure other listners get the popdown event
+	// before we dispose the menu.
+	var action = new AjxTimedAction(this, function() {
+			// force rebuild the next time.
+			this._groupsDropDown.setMenu(this._getGroupsMenu);
+			menu.dispose();
+	});
+	AjxTimedAction.scheduleAction(action, 0);
 };
 
 ZmNewRosterItemDialog.prototype._popupListener = function() {
