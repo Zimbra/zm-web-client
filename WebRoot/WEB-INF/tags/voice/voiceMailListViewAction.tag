@@ -23,6 +23,14 @@
             </fmt:message>
         </app:status>
     </c:when>
+    <c:when test="${zm:actionSet(param, 'actionUndelete')}">
+        <zm:untrashVoiceMail var="result" phone="${phone}" id="${ids}"/>
+        <app:status>
+            <fmt:message key="actionVoiceMailMovedInbox">
+                <fmt:param value="${result.idCount}"/>
+            </fmt:message>
+        </app:status>
+    </c:when>
     <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
         <zm:emptyVoiceMailTrash var="result" phone="${phone}" folderId="${folderId}"/>
         <app:status>
