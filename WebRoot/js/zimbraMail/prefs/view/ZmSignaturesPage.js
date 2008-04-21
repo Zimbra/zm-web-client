@@ -93,7 +93,13 @@ ZmSignaturesPage.prototype.getModifiedSignatures = function(includeNonModified) 
 };
 
 ZmSignaturesPage.prototype.reset = function(useDefaults) {
-	ZmPreferencesPage.prototype.reset.apply(this, arguments);
+
+    if(this._editState){
+        var sign = this._editState;
+        this._handleDoneButton(sign._htmlElId, null);
+    }
+
+    ZmPreferencesPage.prototype.reset.apply(this, arguments);
 	for (var elemId in this._signatureComps) {
 		var compEl = document.getElementById(elemId);
 		compEl.parentNode.removeChild(compEl);
