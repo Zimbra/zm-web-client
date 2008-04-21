@@ -906,8 +906,13 @@ function(params) {
 
 	// bug fix #4325 - its safer to make sync request when dealing w/ new window
 	if (window.parentController) {
-		var resp = appCtxt.getAppController().sendRequest({soapDoc:params.soapDoc, errorCallback:params.errorCallback});
-		if (!resp) return; // bug fix #9154
+		var newParams = {
+			soapDoc: params.soapDoc,
+			accountName: params.accountName,
+			errorCallback: params.errorCallback
+		};
+		var resp = appCtxt.getAppController().sendRequest(newParams);
+		if (!resp) { return; } // bug fix #9154
 
 		if (resp.SendInviteReplyResponse) {
 			return resp.SendInviteReplyResponse;
