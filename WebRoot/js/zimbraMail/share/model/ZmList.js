@@ -730,7 +730,7 @@ function(ev) {
 			var view = ctlr.getCurrentView();
 			if (view && view.enableSorting)
 				view.enableSorting(false);
-			if (viewId == ZmController.CONVLIST_VIEW)
+			if (viewId == ZmId.VIEW_CONVLIST)
 				ctlr._currentSearch.query = "is:read is:unread";
 			ctlr._currentSearch.tagId = null;
 			appCtxt.getSearchController().setSearchField("");

@@ -422,15 +422,15 @@ function() {
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 	
 	// default sorting preferences
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONVLIST_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONV_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.TRAD_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SRC_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SIMPLE_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_CARDS_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_ASC, ZmController.CAL_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DUE_DATE_DESC, ZmController.TASKLIST_VIEW, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONVLIST, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_CONV, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmId.VIEW_TRAD, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SRC, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_TGT, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_SIMPLE, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmId.VIEW_CONTACT_CARDS, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_ASC, ZmId.VIEW_CAL, true, true);
+	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DUE_DATE_DESC, ZmId.VIEW_TASKLIST, true, true);
 };
 
 /**
@@ -464,7 +464,7 @@ function() {
 	// CONFIG SETTINGS
 	this.registerSetting("AC_TIMER_INTERVAL",				{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300});
 	this.registerSetting("ASYNC_MODE",						{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"FRANKLIN"});
+	this.registerSetting("BRANCH",							{type:ZmSetting.T_CONFIG, defaultValue:"main"});
 	// next 3 are replaced during deployment
 	this.registerSetting("CLIENT_DATETIME",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildDateTime@"});
 	this.registerSetting("CLIENT_RELEASE",					{type:ZmSetting.T_CONFIG, defaultValue:"@buildRelease@"});

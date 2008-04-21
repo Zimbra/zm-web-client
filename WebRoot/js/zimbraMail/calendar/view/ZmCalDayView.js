@@ -16,7 +16,7 @@
  */
 
 ZmCalDayView = function(parent, posStyle, controller, dropTgt, view, numDays) {
-	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmController.CAL_DAY_VIEW, 1, false);
+	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_DAY, 1, false);
 }
 
 ZmCalDayView.prototype = new ZmCalColView;
