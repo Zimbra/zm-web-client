@@ -61,8 +61,10 @@
 											<td><div class='vertSep'></div></td>
 											<app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
 										</c:if>
-										<td><div class='vertSep'></div></td>
+                                        <c:if test="${mailbox.features.sharing}">
+                                        <td><div class='vertSep'></div></td>
                                         <app:button id="OPNEWLINK" name="actionNewSharedAddressBook" src="contacts/ImgNewContact.gif" tooltip="addressBookNewShared" text="addressBookNewShared"/>
+                                        </c:if>
                                     </tr>
                                 </table>
                             </td>
