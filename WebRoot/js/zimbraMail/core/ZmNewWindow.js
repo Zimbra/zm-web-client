@@ -172,11 +172,9 @@ function() {
 			window.newWindowParams.msg = this._deepCopyMsg(window.newWindowParams.msg);
 		}
 		if (window.newWindowCommand == "compose") {
-			// bug fix #4681
-			var action = window.newWindowParams.action;
 			cc._setView(window.newWindowParams);
 		} else {
-			var op = window.newWindowParams.action ? window.newWindowParams.action : ZmOperation.NEW_MESSAGE;
+			var op = window.newWindowParams.action || ZmOperation.NEW_MESSAGE;
 			if (window.newWindowParams.msg && window.newWindowParams.msg._mode) {
 				switch (window.newWindowParams.msg._mode) {
 					case ZmAppt.MODE_DELETE:
