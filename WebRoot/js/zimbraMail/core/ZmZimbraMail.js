@@ -1484,6 +1484,13 @@ function() {
 	if (window._zimbraMail && !window._zimbraMail._appViewMgr.isOkToUnload()) {
 		return ZmMsg.appExitWarning;
 	}
+
+	// Experimental: trying an end session request when exiting the web app.
+	// (I'm checking this in unsure of what the consequesnces are so Tim can
+	// debug the server handling.)
+	// TODO: Need to try doing this in onunload.
+	var jsonObj = {EndSessionRequest:{_jsns:"urn:zimbraAccount"}};
+	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, noBusyOverlay:true});
 };
 
 ZmZimbraMail.unloadHackCallback =
