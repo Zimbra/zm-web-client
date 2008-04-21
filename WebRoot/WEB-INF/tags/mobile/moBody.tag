@@ -9,17 +9,11 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<zm:getUserAgent var="ua" session="true"/>
 <c:choose>
-    <c:when test="${body.isTextHtml}">
-        <c:url var="iframeUrl" value="/h/imessage">
-            <c:param name="id" value="${message.id}"/>
-            <c:param name="part" value="${message.partName}"/>
-            <c:param name="bodypart" value="${body.partName}"/>
-            <c:param name="xim" value="${param.xim}"/>
-        </c:url>
-        <noscript>
-            <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" border="0" frameBorder="0" src="${iframeUrl}"></iframe>
-        </noscript>
+    <c:when test="${ua.isiPhone or ua.isiPod}">
+        <c:choose>
+            <c:when test="${body.isTextHtml}">
         <script type="text/javascript">
        (function() {
             var isKonqueror = /KHTML/.test(navigator.userAgent);
@@ -54,7 +48,11 @@
                 else iframe.onload = onIframeLoad;
             })();
         </script>
-        <noframes>${theBody}</noframes>
+            </c:when>
+            <c:otherwise>
+                ${theBody}
+            </c:otherwise>
+        </c:choose>
     </c:when>
     <c:otherwise>
         ${theBody}
