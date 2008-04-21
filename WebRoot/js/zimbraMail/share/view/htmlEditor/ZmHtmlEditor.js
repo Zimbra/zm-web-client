@@ -854,7 +854,7 @@ function(name, target, data) {
 	// chose from.
 	switch (name) {
 	    case "ZmSpreadSheet":
-		component_url = toplevel_url + appContextPath + "/public/Spreadsheet.jsp";
+		component_url = [toplevel_url, appContextPath, "/public/Spreadsheet.jsp?localeId=", AjxEnv.DEFAULT_LOCALE].join("");
 		break;
 	}
 
