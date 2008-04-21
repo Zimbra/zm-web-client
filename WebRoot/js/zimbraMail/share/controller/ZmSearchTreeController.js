@@ -28,9 +28,8 @@ ZmSearchTreeController = function() {
 	ZmFolderTreeController.call(this, ZmOrganizer.SEARCH);
 
 	this._listeners[ZmOperation.RENAME_SEARCH] = new AjxListener(this, this._renameListener);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
-
-    this._searchTypes = {};	// search types for each overview ID
+	
+	this._searchTypes = {};	// search types for each overview ID
 };
 
 ZmSearchTreeController.prototype = new ZmFolderTreeController;
@@ -93,17 +92,6 @@ function(parent, type, id) {
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
 };
 
-ZmSearchTreeController.prototype._browseListener =
-function(ev){
-    var search = this._getActionedOrganizer(ev);
-    if (search) {
-        AjxPackage.require("zimbraMail.share.view.picker.ZmPicker");
-        appCtxt.getSearchController().showBrowsePickers([ZmPicker.SEARCH]);
-        //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
-    }
-}
-
-
 // Private methods
 
 /*
@@ -111,8 +99,7 @@ function(ev){
 */
 ZmSearchTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.EXPAND_ALL,
-            ZmOperation.BROWSE];
+	return [ZmOperation.EXPAND_ALL];
 };
 
 /*

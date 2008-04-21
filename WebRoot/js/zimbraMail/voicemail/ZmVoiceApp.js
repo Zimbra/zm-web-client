@@ -32,8 +32,8 @@ ZmVoiceApp = function(container, parentController) {
 
 // Organizer and item-related constants
 ZmEvent.S_VOICEMAIL				= ZmId.APP_VOICE;
-ZmItem.VOICEMAIL				= ZmId.ITEM_VOICEMAIL;
-ZmEvent.S_CALL					= ZmId.ITEM_CALL;
+ZmItem.VOICEMAIL				= ZmEvent.S_VOICEMAIL;
+ZmEvent.S_CALL					= "CALL";
 ZmItem.CALL						= ZmEvent.S_CALL;
 ZmOrganizer.VOICE				= ZmEvent.S_VOICEMAIL;
 
@@ -403,7 +403,7 @@ function(ev) {
 ZmVoiceApp.prototype.search =
 function(folder, callback, sortBy) {
 	if (!sortBy) {
-		var viewType = (folder.getSearchType() == ZmItem.VOICEMAIL) ? ZmId.VIEW_VOICEMAIL : ZmId.VIEW_CALL_LIST;
+		var viewType = (folder.getSearchType() == ZmItem.VOICEMAIL) ? ZmController.VOICEMAIL_VIEW : ZmController.CALLLIST_VIEW;
 		sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
 	}
 	var searchParams = {
@@ -551,9 +551,9 @@ function() {
 	var view = appCtxt.getAppViewMgr().getAppView(ZmApp.VOICE);
 	if (view) {
 		var controller;
-		if (view == ZmId.VIEW_VOICEMAIL) {
+		if (view == ZmController.VOICEMAIL_VIEW) {
 			controller = AjxDispatcher.run("GetVoiceController");
-		} else if (view == ZmId.VIEW_CALL_LIST) {
+		} else if (view == ZmController.CALLLIST_VIEW) {
 			controller = AjxDispatcher.run("GetCallListController");
 		}
 		if (controller) {
