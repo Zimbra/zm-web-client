@@ -67,6 +67,7 @@ function() {
 	ZmOperation.registerOp("SHARE_BRIEFCASE", {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("MOUNT_BRIEFCASE", {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("OPEN_FILE", {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
+        ZmOperation.registerOp("SAVE_FILE", {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"Save"});
 	ZmOperation.registerOp("VIEW_FILE_AS_HTML", {textKey:"viewAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});
 	ZmOperation.registerOp("SEND_FILE", {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});
 };
