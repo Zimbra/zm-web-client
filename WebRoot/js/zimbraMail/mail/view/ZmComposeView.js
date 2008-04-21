@@ -1244,7 +1244,7 @@ function(action, msg, subjOverride) {
 };
 
 ZmComposeView.prototype._setBody =
-function(action, msg, extraBodyText, incOption) {
+function(action, msg, extraBodyText, incOption, nosig) {
 	var composingHtml = this._composeMode == DwtHtmlEditor.HTML;
 
 	// XXX: consolidate this code later.
@@ -1283,7 +1283,7 @@ function(action, msg, extraBodyText, incOption) {
 
 	var sigStyle;
 	var sig;
-	if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
+	if (!nosig && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
 		sig = this._getSignature();
 		sigStyle = sig ? appCtxt.get(ZmSetting.SIGNATURE_STYLE) : null;
 	}
@@ -1438,7 +1438,7 @@ function(action, msg, extraBodyText, incOption) {
 		}
 	}
 
-	if (sigStyle == ZmSetting.SIG_INTERNET) {
+	if (!nosig && sigStyle == ZmSetting.SIG_INTERNET) {
 		this.addSignature(value);
 	} else {
 		value = value || (composingHtml ? "<br>" : "");		
@@ -1450,9 +1450,9 @@ function(action, msg, extraBodyText, incOption) {
 };
 
 ZmComposeView.prototype.resetBody =
-function(action, msg, extraBodyText, incOption) {
+function(action, msg, extraBodyText, incOption, nosig) {
 	this.cleanupAttachments(true);
-	this._setBody(action, msg, extraBodyText, incOption);
+	this._setBody(action, msg, extraBodyText, incOption, nosig);
 	this._origFormValue = this._formValue();
 	this._resetBodySize();
 };

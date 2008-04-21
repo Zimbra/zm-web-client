@@ -1022,7 +1022,8 @@ function(op) {
 				curText = curText.substring(0, idx).replace(regEx, "");
 			}
 		}
-		this._composeView.resetBody(this._action, this._msg, curText, incOption);
+		this._composeView.resetBody(this._action, this._msg, curText, incOption,
+                                            true /* don't reattach signature (bug 26831) */);
 		this._curIncOption = ZmComposeController.INC_OP[incOption];
 	}
 };
