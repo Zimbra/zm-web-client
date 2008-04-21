@@ -22,10 +22,9 @@ ZmCalendarTreeController = function() {
 	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);
 	this._listeners[ZmOperation.CLEAR_ALL] = new AjxListener(this, this._clearAllListener);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
     this._listeners[ZmOperation.DETACH_WIN] = new AjxListener(this, this._detachListener);
 
-    if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
+	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
 		this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
 	}
@@ -125,14 +124,6 @@ function(actionMenu, type, id) {
 	}
 };
 
-ZmCalendarTreeController.prototype._browseListener =
-function(ev){
-    var folder = this._getActionedOrganizer(ev);
-    if (folder) {
-        AjxPackage.require("zimbraMail.share.view.picker.ZmPicker");
-        appCtxt.getSearchController().showBrowsePickers([ZmPicker.DATE,ZmPicker.TIME]);
-    }
-};
 ZmCalendarTreeController.prototype._detachListener =
 function(ev){
     var folder = this._getActionedOrganizer(ev);
@@ -152,7 +143,7 @@ function() {
 	}
 	ops.push(ZmOperation.CHECK_ALL);
 	ops.push(ZmOperation.CLEAR_ALL);
-    ops.push(ZmOperation.BROWSE);
+
 	return ops;
 };
 

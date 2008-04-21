@@ -143,7 +143,7 @@ function() {
 
 ZmMixedController.prototype._getViewType = 
 function() {
-	return ZmId.VIEW_MIXED;
+	return ZmController.MIXED_VIEW;
 };
 
 ZmMixedController.prototype._getItemType =

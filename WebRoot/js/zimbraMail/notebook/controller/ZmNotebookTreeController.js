@@ -23,8 +23,7 @@ ZmNotebookTreeController = function() {
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);
 	this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
-    this._eventMgrs = {};
+	this._eventMgrs = {};
 };
 
 ZmNotebookTreeController.prototype = new ZmTreeController;
@@ -100,9 +99,8 @@ function() {
 	ops.push(
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SEP,
-		ZmOperation.REFRESH,
-        ZmOperation.BROWSE    
-    );
+		ZmOperation.REFRESH
+	);
 	return ops;
 };
 
@@ -135,8 +133,8 @@ function() {
 // Method that is run when a tree item is left-clicked
 ZmNotebookTreeController.prototype._itemClicked =
 function(notebook) {
-	if (appCtxt.getCurrentViewId() != ZmId.VIEW_NOTEBOOK_PAGE) {
-		appCtxt.getAppViewMgr().setView(ZmId.VIEW_.NOTEBOOK_PAGE);
+	if (appCtxt.getCurrentViewId() != ZmController.NOTEBOOK_PAGE_VIEW) {
+		appCtxt.getAppViewMgr().setView(ZmController.NOTEBOOK_PAGE_VIEW);
 	};
 
 	var notebookController = AjxDispatcher.run("GetNotebookController");

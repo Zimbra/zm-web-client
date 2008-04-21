@@ -43,7 +43,7 @@ function(searchResults, fromUserSearch) {
 	ZmListController.prototype.show.call(this, searchResults);
 
 	this._fromSearch = fromUserSearch;
-	this._currentView = ZmId.VIEW_NOTEBOOK_FILE;
+	this._currentView = ZmController.NOTEBOOK_FILE_VIEW;
 	this._setup(this._currentView);
 
 	this._list = searchResults.getResults(ZmItem.MIXED);
@@ -148,7 +148,7 @@ function() {
 
 ZmNotebookFileController.prototype._getViewType =
 function() {
-	return ZmId.VIEW_NOTEBOOK_FILE;
+	return ZmController.NOTEBOOK_FILE_VIEW;
 };
 
 ZmNotebookFileController.prototype._getItemType =

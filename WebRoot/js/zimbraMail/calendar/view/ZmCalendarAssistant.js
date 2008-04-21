@@ -61,22 +61,22 @@ function(dialog, verb, args) {
 	switch (view) {
 	case ZmMsg.viewCalForDay:
 		icon = 'DayView';
-		this._view = ZmId.VIEW_CAL_DAY;
+		this._view = ZmController.CAL_DAY_VIEW;
 		view = ZmMsg.viewDay;
 		break;
 	case ZmMsg.viewCalForWeek:
 		icon = 'WeekView';
-		this._view = ZmId.VIEW_CAL_WEEK;
+		this._view = ZmController.CAL_WEEK_VIEW;
 		view = ZmMsg.viewWeek;
 		break;
 	case ZmMsg.viewCalForWorkWeek:
 		icon = 'WorkWeekView';
-		this._view = ZmId.VIEW_CAL_WORK_WEEK;
+		this._view = ZmController.CAL_WORK_WEEK_VIEW;
 		view = ZmMsg.viewWorkWeek;
 		break;
 	case ZmMsg.viewCalForMonth:
 		icon = 'MonthView';
-		this._view = ZmId.VIEW_CAL_MONTH;
+		this._view = ZmController.CAL_MONTH_VIEW;
 		view = ZmMsg.viewMonth;
 		break;
 	default:

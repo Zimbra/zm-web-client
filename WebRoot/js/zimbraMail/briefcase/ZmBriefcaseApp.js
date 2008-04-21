@@ -21,13 +21,13 @@ ZmBriefcaseApp = function(container, parentController) {
 }
 
 // Organizer and item-related constants
-ZmEvent.S_PAGE					= ZmId.ITEM_PAGE;
-ZmEvent.S_DOCUMENT				= ZmId.ITEM_DOCUMENT;
-ZmEvent.S_BRIEFCASE				= ZmId.ITEM_BRIEFCASE;
+ZmEvent.S_PAGE					= "PAGE";
+ZmEvent.S_DOCUMENT				= "DOCUMENT";
+ZmEvent.S_BRIEFCASE				= "BRIEFCASE_ITEM";
 ZmItem.PAGE						= ZmEvent.S_PAGE;
 ZmItem.DOCUMENT					= ZmEvent.S_DOCUMENT;
 ZmItem.BRIEFCASE				= ZmEvent.S_BRIEFCASE;
-ZmOrganizer.BRIEFCASE			= ZmId.ORG_BRIEFCASE;
+ZmOrganizer.BRIEFCASE			= "BRIEFCASE";
 
 // App-related constants
 ZmApp.BRIEFCASE							= ZmId.APP_BRIEFCASE;
@@ -35,7 +35,6 @@ ZmApp.CLASS[ZmApp.BRIEFCASE]			= "ZmBriefcaseApp";
 ZmApp.SETTING[ZmApp.BRIEFCASE]			= ZmSetting.BRIEFCASE_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.BRIEFCASE]		= 65;
 ZmApp.QS_ARG[ZmApp.BRIEFCASE]			= "briefcase";
-ZmApp.BUTTON_ID[ZmApp.BRIEFCASE]		= ZmId.BRIEFCASE_APP;
 
 ZmBriefcaseApp.prototype = new ZmApp;
 ZmBriefcaseApp.prototype.constructor = ZmBriefcaseApp;
@@ -62,14 +61,14 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp("NEW_BRIEFCASEITEM", {textKey:"newBriefcase", image:"NewFolder"});
-	ZmOperation.registerOp("NEW_FILE", {textKey:"uploadNewFile", tooltipKey:"newFile", image:"NewPage"});
-	ZmOperation.registerOp("SHARE_BRIEFCASE", {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("MOUNT_BRIEFCASE", {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("OPEN_FILE", {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
+	ZmOperation.registerOp(ZmId.OP_NEW_BRIEFCASEITEM, {textKey:"newBriefcase", image:"NewFolder"});
+	ZmOperation.registerOp(ZmId.OP_NEW_FILE, {textKey:"uploadNewFile", tooltipKey:"newFile", image:"NewPage"});
+	ZmOperation.registerOp(ZmId.OP_SHARE_BRIEFCASE, {textKey:"shareFolder", image:"SharedMailFolder"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_MOUNT_BRIEFCASE, {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp(ZmId.OP_OPEN_FILE, {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
+	ZmOperation.registerOp(ZmId.OP_VIEW_FILE_AS_HTML, {textKey:"viewAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});	
+	ZmOperation.registerOp(ZmId.OP_SEND_FILE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});	
         ZmOperation.registerOp("SAVE_FILE", {textKey:"saveFile", tooltipKey:"saveFileTooltip", image:"Save"});
-	ZmOperation.registerOp("VIEW_FILE_AS_HTML", {textKey:"viewAsHtml", tooltipKey:"viewAsHtml", image:"HtmlDoc"});
-	ZmOperation.registerOp("SEND_FILE", {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});
 };
 
 ZmBriefcaseApp.prototype._registerItems =
@@ -339,7 +338,7 @@ function(folder,filenames) {
 
 ZmBriefcaseApp.prototype._handleLoadNewBriefcaseItem =
 function() {
-	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
+	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
 	var dialog = appCtxt.getNewBriefcaseDialog();
 	if (!this._newNotebookCb) {
 		this._newNotebookCb = new AjxCallback(this, this._newBriefcaseCallback);

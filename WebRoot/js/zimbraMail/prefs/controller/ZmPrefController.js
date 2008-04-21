@@ -30,8 +30,6 @@ ZmPrefController = function(container, prefsApp) {
 
 	ZmController.call(this, container, prefsApp);
 
-	this._currentView = ZmId.VIEW_PREF;
-
 	this._listeners = {};
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._backListener);
@@ -55,7 +53,7 @@ ZmPrefController.prototype.show =
 function() {
 	this._setView();
 	this._prefsView.show();
-	this._app.pushView(this._currentView);
+	this._app.pushView(ZmController.PREF_VIEW);
 };
 
 /**
@@ -191,11 +189,11 @@ function() {
 		callbacks[ZmAppViewMgr.CB_PRE_UNLOAD] = new AjxCallback(this, this._preUnloadCallback);
 		callbacks[ZmAppViewMgr.CB_PRE_SHOW] = new AjxCallback(this, this._preShowCallback);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-		this._prefsView = new ZmPrefView({parent:this._container, posStyle:Dwt.ABSOLUTE_STYLE, controller:this});
+		this._prefsView = new ZmPrefView(this._container, Dwt.ABSOLUTE_STYLE, this);
 		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = this._prefsView;
-		this._app.createView(this._currentView, elements, callbacks, true);
+		this._app.createView(ZmController.PREF_VIEW, elements, callbacks, true);
 		this._initializeTabGroup();
 	}
 };
@@ -208,7 +206,7 @@ function () {
 	if (this._toolbar) return;
 	
 	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL];
-	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:this._currentView});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:ZmController.PREF_VIEW});
 	buttons = this._toolbar.opList;
 	for (var i = 0; i < buttons.length; i++) {
 		var button = buttons[i];
