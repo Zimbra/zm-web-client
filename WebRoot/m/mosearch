@@ -74,13 +74,27 @@
         <mo:contactView context="${context}" id="${requestScope.currentContactId}"/>
     </c:when>
     <c:when test="${context.isConversationSearch and action eq 'view'}">
-        <mo:convView context="${context}"/>
+        <c:choose>
+            <c:when test="${!empty requestScope.op && requestScope.op eq 'x'}">
+                <mo:convListView context="${context}"/>                
+            </c:when>    
+            <c:otherwise>
+                <mo:convView context="${context}"/>
+            </c:otherwise>
+        </c:choose>
     </c:when>
     <c:when test="${context.isConversationSearch}">
         <mo:convListView context="${context}"/>
     </c:when>
     <c:when test="${context.isMessageSearch and action eq 'view'}">
-        <mo:messageView context="${context}"/>
+        <c:choose>
+            <c:when test="${!empty requestScope.op && requestScope.op eq 'x'}">
+                <mo:messageListView context="${context}"/>
+            </c:when>
+            <c:otherwise>
+                <mo:messageView context="${context}"/>
+            </c:otherwise>
+       </c:choose>
     </c:when>
     <c:when test="${context.isMessageSearch}">
         <mo:messageListView context="${context}"/>

@@ -111,6 +111,7 @@
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionDelete')}">
     <zm:trashMessage var="result" id="${ids}"/>
+    <c:set var="op" value="x" scope="request"/>
     <mo:status>
         <fmt:message key="actionMessageMovedTrash">
             <fmt:param value="${result.idCount}"/>
@@ -119,13 +120,16 @@
 </c:when>
 <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
     <zm:deleteMessage var="result" id="${ids}"/>
+    <c:set var="op" value="x" scope="request"/>
     <mo:status>
         <fmt:message key="actionMessageHardDeleted">
             <fmt:param value="${result.idCount}"/>
         </fmt:message>
     </mo:status>
 </c:when>
-
+<c:when test="${(zm:actionSet(param,'moreActions') && empty param.anAction) }">
+    <mo:status style="Warning"><fmt:message key="actionNoActionSelected"/></mo:status>
+</c:when>
 <c:when test="${zm:actionSet(param, 'actionMarkRead') || (zm:actionSet(param,'moreActions') && param.anAction == 'actionMarkRead') }">
     <zm:markMessageRead var="result" id="${ids}" read="${true}"/>
     <mo:status>
@@ -197,6 +201,7 @@
                     <fmt:param value="${zm:getFolderName(pageContext, folderId)}"/>
                 </fmt:message>
             </mo:status>
+            <c:set var="op" value="x" scope="request"/>
         </c:when>
         <c:when test="${empty param.folderId}">
             <mo:status style="Warning"><fmt:message key="actionNoFolderSelected"/></mo:status>
@@ -209,6 +214,7 @@
                     <fmt:param value="${zm:getFolderName(pageContext, param.folderId)}"/>
                 </fmt:message>
             </mo:status>
+            <c:set var="op" value="x" scope="request"/>
         </c:otherwise>
     </c:choose>
 </c:when>
