@@ -42,7 +42,8 @@ basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
 
     String localeQs = "";
     String localeId = (String) request.getAttribute("localeId");
-    if (localeId != null) {
+	if (localeId == null) localeId = request.getParameter("localeId");
+	if (localeId != null) {
         int index = localeId.indexOf("_");
         if (index == -1) {
             localeQs = "&language=" + localeId;
