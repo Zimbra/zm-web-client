@@ -97,11 +97,12 @@
 </tr>
 <tr>
 <td>
-<zm:currentResultUrl var="actionUrl" value="mosearch" context="${context}" mview="1"
+<zm:currentResultUrl var="actionUrl" value="${context_url}" context="${context}" mview="1"
                      action="view" id="${msg.id}"/>
-<form id="action" action="${fn:escapeXml(actionUrl)}" method="post">
+<form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
+<script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
 <table width="100%" cellspacing="0" cellpadding="2">
 <!--<tr>
     <td colspan="2">
@@ -109,36 +110,21 @@
     </td>
 </tr>-->
 <tr class='zo_action'>
-    <td colspan="2">
-        <%--<table cellspacing="0" cellpadding="0">
-            <tr>
-                <td>
-                    <c:choose>
-                        <c:when test="${not msg.isUnread}">
-                            <input name="actionMarkUnread" type="submit" value="<fmt:message key="actionMarkUnread"/>"/>
-                        </c:when>
-                        <c:otherwise>
-                            <input name="actionMarkRead" type="submit" value="<fmt:message key="actionMarkRead"/>"/>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-                <td style='padding-left:5px'>
-                    <c:choose>
-                        <c:when test="${not msg.isFlagged}">
-                            <input name="actionFlag" type="submit" value="<fmt:message key="actionAddFlag"/>"/>
-                        </c:when>
-                        <c:otherwise>
-                            <input name="actionUnflag" type="submit" value="<fmt:message key="actionRemoveFlag"/>"/>
-                        </c:otherwise>
-                    </c:choose>
-                </td>
-            </tr>
-        </table>--%>
+    <td colspan="2" class="Stripes">
+        <div class="View">
         <table cellspacing="2" cellpadding="2" width="100%" border="0">
                     <tr class="zo_m_list_row">
-                        <td>
-                            <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
-                           <select name="anAction">
+                        <td><c:set var="inTrash" value="${zm:getFolder(pageContext, msg.folderId).isInTrash}"/>
+                            <c:choose>
+                                <c:when test="${inTrash}">
+                                    <input name="actionHardDelete" type="submit" value="<fmt:message key="delete"/>"/>    
+                                </c:when>
+                                <c:otherwise>
+                                    <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                                </c:otherwise>
+                            </c:choose>
+                            <%--<input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>--%>
+                           <select name="anAction" onchange="document.getElementById('actions').submit();">
                                <option value="" selected="selected"><fmt:message key="moreActions"/></option>
                                <optgroup label="Mark">
                                    <c:if test="${msg.isUnread}">
@@ -158,7 +144,7 @@
                               </optgroup>
                               <optgroup label="<fmt:message key="moveAction"/>">
                                 <zm:forEachFolder var="folder">
-                                    <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                                    <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
                                         <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
                                     </c:if>
                                 </zm:forEachFolder>
@@ -178,112 +164,13 @@
                                </optgroup>
                                </c:if>
                            </select>
-                           <input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/>
+                           <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
                         </td>
                     </tr>
                 </table>
+        </div>    
     </td>
 </tr>
-<%--<tr>
-    <td colspan="2">
-        <hr size='1'/>
-    </td>
-</tr>
-<tr class='zo_action'>
-    <td colspan="2">
-        <table cellspacing="0" cellpadding="0">
-            <tr>
-                <td>
-                    <input name="actionMove" type="submit" value="<fmt:message key="actionMove"/>"/>
-                </td>
-                <td style='padding-left:5px'>
-                    <select name="folderId">
-                        <option value="" selected="selected"><fmt:message key="moveAction"/></option>
-                        <zm:forEachFolder var="folder">
-                            <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                <option value="${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
-                            </c:if>
-                        </zm:forEachFolder>
-                    </select>
-                </td>
-            </tr>
-        </table>
-    </td>
-</tr>--%>
-<%--
-<c:if test="${mailbox.features.tagging and mailbox.hasTags}">
-    <c:set var="tagsToAdd" value="${zm:getAvailableTags(pageContext,msg.tagIds,true)}"/>
-    <c:set var="tagsToRemove" value="${zm:getAvailableTags(pageContext,msg.tagIds,false)}"/>
-    <c:if test="${not empty tagsToAdd}">
-        <tr>
-            <td colspan="2">
-                <hr size='1'/>
-            </td>
-        </tr>
-        <tr class='zo_action'>
-            <td colspan="2">
-                <table cellspacing="0" cellpadding="0">
-                    <tr>
-                        <td>
-                            <input name="actionAddTag" type="submit" value="<fmt:message key="MO_actionAddTag"/>"/>
-                        </td>
-                        <td style='padding-left:5px'>
-                            <select name="tagId">
-                                <c:forEach var="tag" items="${tagsToAdd}">
-                                    <option value="${tag.id}">${fn:escapeXml(tag.name)}</option>
-                                </c:forEach>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </c:if>
-    <c:if test="${not empty tagsToRemove}">
-        <tr>
-            <td colspan="2">
-                <hr size='1'/>
-            </td>
-        </tr>
-        <tr class='zo_action'>
-            <td colspan="2">
-                <table cellspacing="0" cellpadding="0">
-                    <tr>
-                        <td>
-                            <input name="actionRemoveTag" type="submit"
-                                   value="<fmt:message key="MO_actionRemoveTag"/>"/>
-                        </td>
-                        <td style='padding-left:5px'>
-                            <select name="tagRemoveId">
-                                <c:forEach var="tag" items="${tagsToRemove}">
-                                    <option value="${tag.id}">${fn:escapeXml(tag.name)}</option>
-                                </c:forEach>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </c:if>
-</c:if>
---%>
-<%--<tr>
-    <td colspan="2">
-        <hr size='1'/>
-    </td>
-</tr>
-<tr class='zo_action'>
-    <td colspan="2">
-        <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
-    </td>
-</tr>
-<c:if test="${uiv!='1'}">
-    <tr>
-        <td colspan="2">
-            <hr size='1'/>
-        </td>
-    </tr>
-</c:if>--%>
 </table>
 </form>
 </td>

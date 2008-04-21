@@ -57,6 +57,7 @@
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
+<script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
 <table cellspacing="0" cellpadding="0" width="100%" border="0">
 
 <c:choose>
@@ -208,53 +209,26 @@
     </td>
 </tr>
 <tr>
-<td>
-    <%--form id="action" action="${fn:escapeXml(actionUrl)}" method="post">
- <input type="hidden" name="doMessageAction" value="1"/--%>
+<td class="Stripes">
+<div class="View">
 <a name="action" id="action"/>
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
 <tr class='zo_action'>
     <td colspan="2">
-        <%--<table cellspacing="0" cellpadding="0" align="center">
-            <tr>
-                <td>
-                 <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/> 
-                    <c:choose>
-                        <c:when test="${not message.isUnread}">
-                            <input name="actionMarkUnread" type="submit" value="<fmt:message key="actionMarkUnread"/>"/>
-                        </c:when>
-                        <c:otherwise>
-                            <input name="actionMarkRead" type="submit" value="<fmt:message key="actionMarkRead"/>"/>
-                        </c:otherwise>
-                    </c:choose>
-
-                    <c:choose>
-                        <c:when test="${not message.isFlagged}">
-                            <input name="actionFlag" type="submit" value="<fmt:message key="actionAddFlag"/>"/>
-                        </c:when>
-                        <c:otherwise>
-                            <input name="actionUnflag" type="submit" value="<fmt:message key="actionRemoveFlag"/>"/>
-                        </c:otherwise>
-                    </c:choose>
-                    
-                    <select name="folderId">
-                        <option value="" selected="selected"><fmt:message key="moveAction"/></option>
-                        <zm:forEachFolder var="folder">
-                            <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                <option value="${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
-                            </c:if>
-                        </zm:forEachFolder>
-                    </select> <input name="actionMove" type="submit" value="<fmt:message key="actionMove"/>"/>
-                    &nbsp; 
-                </td>
-            </tr>
-        </table>
-        <br>--%>
         <table cellspacing="2" cellpadding="2" width="100%" border="0">
                     <tr class="zo_m_list_row">
                         <td>
-                            <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
-                           <select name="anAction">
+                            <c:set var="inTrash" value="${zm:getFolder(pageContext, message.folderId).isInTrash}"/>
+                            <c:choose>
+                                <c:when test="${inTrash}">
+                                    <input name="actionHardDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                                </c:otherwise>
+                            </c:choose>
+                            <%--<input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>--%>
+                           <select name="anAction" onchange="document.getElementById('actions').submit();">
                                <option value="" selected="selected"><fmt:message key="moreActions"/></option>
                                <optgroup label="Mark">
                                    <c:if test="${message.isUnread}">
@@ -274,7 +248,7 @@
                               </optgroup>
                               <optgroup label="<fmt:message key="moveAction"/>">
                                 <zm:forEachFolder var="folder">
-                                    <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                                    <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
                                         <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
                                     </c:if>
                                 </zm:forEachFolder>
@@ -297,7 +271,7 @@
                                   <input type="hidden" name="folderId" value="${folder.id}"/>
                               </zm:forEachFolder>--%>
                            </select>
-                           <input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/>
+                           <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
                         </td>
                     </tr>
                 </table>
@@ -357,6 +331,7 @@
 </c:if>
 </table>
     <%--/form--%>
+</div>
 </td>
 </tr>
 </c:when>
@@ -385,7 +360,7 @@
                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
                 <tr>
                     <td class='zo_m_list_row'>
-                        <table width="100%">
+                        <table cellspacing="0" cellpadding="4" width="100%">
                             <tr>
                                 <td class="zo_m_chk">
                                     <c:set value=",${mhit.id}," var="stringToCheck"/>
@@ -462,8 +437,16 @@
                  <table cellspacing="2" cellpadding="2" width="100%">
                         <tr class="zo_m_list_row">
                             <td>
-                                <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
-                               <select name="anAction">
+                                 <c:choose>
+                                    <c:when test="${not context.folder.isInTrash}">
+                                        <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <input name="actionHardDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                                    </c:otherwise>
+                                </c:choose>
+                                <%--<input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>--%>
+                               <select name="anAction" onchange="document.getElementById('actions').submit();">
                                    <option value="" selected="selected"><fmt:message key="moreActions"/></option>
                                    <optgroup label="Mark">
                                        <option value="actionMarkRead">Read</option>
@@ -475,7 +458,7 @@
                                   </optgroup>
                                   <optgroup label="<fmt:message key="moveAction"/>">
                                     <zm:forEachFolder var="folder">
-                                        <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                                        <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
                                             <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
                                         </c:if>
                                     </zm:forEachFolder>
@@ -497,7 +480,7 @@
                                </optgroup>
                                </c:if>
                                </select>
-                               <input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/>
+                               <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
                             </td>
                         </tr>
                     </table>

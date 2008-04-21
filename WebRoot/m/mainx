@@ -14,14 +14,14 @@
 </c:if>
 <script type="text/javascript">var selectedImgId = "mail_img";</script>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
-<c:if test="${param.addContact != null}">
+<%--<c:if test="${param.addContact != null}">
     <zm:createContact var="cnt">
         <zm:field name="firstName" value="a"/>
         <zm:field name="lastName" value="b"/>
         <zm:field name="email" value="a@b.com"/>
 
     </zm:createContact>
-</c:if>
+</c:if>--%>
 
 <c:if test="${param.loginOp=='logout'}">
     <c:set var="uiv" value="1" scope="session"/>
@@ -48,36 +48,36 @@
 <mo:view title="${mailbox.name}" context="${null}" mailbox="${mailbox}">
     <table border="0" cellpadding="0" cellspacing="0" width="100%" class="NavbarBg">
         <tr>
-            <td width="5%" align="center" valign="top">
+            <td width="5%" align="center" valign="top" id="mails">
             <!-- Tabs starts here -->
                         <c:set var="aurl" value="${context_url}?"/>
-                        <a id="mails" href="${aurl}"><img id="mail_img" src="<app:imgurl value='mobile/Mail${empty param.st || param.st == "message" || param.st == "conversation" ? "-sel" : ""}.gif' />" border="0" width="55" height="48">
+                        <a id="mails" href="${aurl}"><img id="mail_img" alt="<fmt:message key="mail"/>" src="<app:imgurl value='mobile/Mail${empty param.st || param.st == "message" || param.st == "conversation" ? "-sel" : ""}.gif' />" border="0" width="55" height="48">
                         <%-- c:if test="${mailbox.inbox.hasUnread}">&nbsp;(${mailbox.inbox.unreadCount})</c:if --%>
                         </a>
                         </td>
                         <td align="center" width="5%" valign="top">
                         <c:if test="${mailbox.features.contacts}">
                             <c:set var="aurl" value="${context_url}?st=contact"/>
-                            <a id="contacts" href="${aurl}"><img id="contact_img" src="<app:imgurl value='mobile/Contacts${param.st eq "contact" ? "-sel" : ""}.gif' />" border="0" width="55" height="48"></a>
+                            <a id="contacts" href="${aurl}"><img alt="<fmt:message key="contacts"/>" id="contact_img" src="<app:imgurl value='mobile/Contacts${param.st eq "contact" ? "-sel" : ""}.gif' />" border="0" width="55" height="48"></a>
                         </c:if>
                         </td>
                         <td width="5%" align="center" valign="top">
                         <c:if test="${mailbox.features.calendar}">
                             <c:set var="aurl" value="${context_url}?st=cal"/>
-                            <a id="cal" href="${aurl}"><img id="cal_img" src="<app:imgurl value='mobile/Calendar${param.st eq "cal" ? "-sel" : ""}.gif' />" border="0" width="55" height="48"></a>
+                            <a id="cal" href="${aurl}"><img alt="<fmt:message key="calendar"/>" id="cal_img" src="<app:imgurl value='mobile/Calendar${param.st eq "cal" ? "-sel" : ""}.gif' />" border="0" width="55" height="48"></a>
                         </c:if>
                         </td>
                         <td width="5%" align="center" valign="top">
                          <c:set var="aurl" value="${context_url}?st=folders"/>
-                        <a id="folders" href="${aurl}"><img id="folder_img" src="<app:imgurl value='mobile/Folders${param.st eq "folders" ? "-sel" : ""}.gif' />" border="0" width="55" height="48"></a>
+                        <a id="folders" href="${aurl}"><img alt="<fmt:message key="folder"/>" id="folder_img" src="<app:imgurl value='mobile/Folders${param.st eq "folders" ? "-sel" : ""}.gif' />" border="0" width="55" height="48"></a>
             </td>
-            <td width="5%" align="center" valign="top" onclick="javascript:toggleSearch()">
-            	<img id="search_img" src="<app:imgurl value='mobile/Search.gif' />" border="0" width="55" height="48">
+            <td id="search_tab" width="5%" align="center" valign="top" onclick="javascript:toggleSearch()">
+            	<img id="search_img" alt="<fmt:message key="search"/>" src="<app:imgurl value='mobile/Search.gif' />" border="0" width="55" height="48">
             </td>
         </tr>
         
         </table>
-        <div style="width:95%;padding:2px;display:block" id="SEARCH_BOX">
+        <div style="width:100%;display:block" class="Stripes" id="SEARCH_BOX">
         <table width="100%" align="center">
             <tr class="searchbar">
                 <td>
@@ -89,9 +89,9 @@
                                         <td>
                                             <table cellspacing="1" cellpadding="1" width="100%" align="right">
                                                 <tr>
-                                                    <td colspan="3" align="left">
-                                                        <fmt:message key="in"/>
-                                                        <select name="st">
+                                                    <td>
+                                                        <%--<fmt:message key="in"/>--%>
+                                                        <select name="st" style="width:100%">
                                                             <option value="${(mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message')}"><fmt:message key="mail"/></option>
                                                             <c:if test="${mailbox.features.contacts}">
                                                                 <option value="contact" <c:if test="${param.st == 'contact'}">selected='selected'</c:if> ><fmt:message key="contacts"/></option>
@@ -101,21 +101,21 @@
                                                             </c:if>
                                                             <option value="folders" <c:if test="${param.st == 'folders'}">selected='selected'</c:if>><fmt:message key="folders"/></option>
                                                         </select>
-                                                        <!--</td>
-                                                        <td align="right">-->
-                                                            | <a href="mainx?moquery"><fmt:message key="advancedSearch"/></a>
-                                                        </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2" align="left" style="padding-right:2px;">
+                                                    </td>
+                                                    <td align="left" style="padding-right:2px;">
                                                         <input type="text"
-                                                               style="width:100%;height:20px;border:1px solid lightslategray;"
+                                                               style="width:99%;height:20px;border:1px solid lightslategray;"
                                                                name="sq" value="${param.sq}"/>
                                                     </td>
                                                     <td align="right">
                                                         <input type="submit" name="actionSearch" class="zo_button1"
                                                                value="<fmt:message key="search"/>"/>
                                                     </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3" align="right">
+                                                            <a href="mainx?moquery"><fmt:message key="advancedSearch"/></a>
+                                                        </td>
                                                 </tr>
                                             </table>
                                         </td>
@@ -130,7 +130,7 @@
     
     <table border="0" cellpadding="0" cellspacing="0" width="100%" border="0">        
         <tr>
-            <td colspan="2">
+            <td colspan="2" height="100%" valign="top">
                        <mo:handleError>
                             <c:choose>
                                 <c:when test="${param.moquery != null}">
@@ -160,7 +160,7 @@
                         </mo:handleError>
             </td>
         </tr>
-        <tr>
+        <tr style="font-size:small;height: 37px;">
             <td class="zo_m_list_frag" align="left">
                         <c:url var="logoutUrl" value="${context_url}?loginOp=logout&client=mobile"/>
                         <a href="${fn:escapeXml(logoutUrl)}" id="_logout">
@@ -179,16 +179,20 @@
                         </fmt:message>
             </td>
         </tr>
+        <tr>
+            <td colspan="2" align="center" style="border-top:1px solid silver;padding:5px;"><a class="zo_m_list_date" href="?ui=0">Old interface</a></td>
+        </tr>
     </table>
     <script type="text/javascript" language="JavaScript">
         <c:if test="${param.showSearch == null || param.showSearch != '1'}">
             document.getElementById("SEARCH_BOX").style.display="none";
         </c:if>
+        //document.getElementById("search_tab").style.display="";
         var toggleSearch = function(){
             if(document.getElementById("SEARCH_BOX").style.display=="block"){
                 document.getElementById("SEARCH_BOX").style.display="none";
                 document.getElementById("search_img").src = "<app:imgurl value='mobile/Search.gif' />";
-                document.getElementById(selectedImgId).src = document.getElementById(selectedImgId).src.replace(".gif","-sel.gif");;
+                document.getElementById(selectedImgId).src = document.getElementById(selectedImgId).src.replace("-sel","").replace(".gif","-sel.gif");;
             }else{
                 document.getElementById("SEARCH_BOX").style.display="block";
                 document.getElementById("search_img").src = "<app:imgurl value='mobile/Search-sel.gif' />";

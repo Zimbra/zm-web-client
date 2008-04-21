@@ -22,29 +22,29 @@
 <td align="left">
 <table cellpadding="0" cellspacing="0" border="0">
 <tr>
-<c:if test="${isConv==null || !isConv }">
-    <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
-                         cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
-    <td class="Padding"><a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'><fmt:message key="backToConv"/></a></td>
-</c:if>
 <c:if test="${isConv!=null && isConv}">
     <zm:currentResultUrl var="closeurl" value="${urlTarget}"
                          index="${context.currentItemIndex}"
                          context="${context}"/>
 </c:if>
 <td class="Padding">
-    <c:if test="${isConv != null && isConv}">
+    <%--<c:if test="${isConv != null && isConv}">--%>
         <zm:currentResultUrl var="closeurl" value="${urlTarget}"
                              index="${context.currentItemIndex}"
                              context="${context}"/>
         <a href="${fn:escapeXml(closeurl)}#conv${cid}" class='zo_leftbutton'>
                 ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
         </a>
-    </c:if>
+    <%--</c:if>--%>
     <c:if test="${(singleMessage == null || singleMessage)}">
         <!-- a class='zo_button' href="#action"><fmt:message key="MO_actions"/></a -->
     </c:if>
 </td>
+<c:if test="${isConv==null || !isConv }">
+    <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
+                         cso="${param.cso}" csi="${param.csi}" css="${param.css}"/>
+    <td class="Padding"><a href="${fn:escapeXml(closeUrl)}" class='zo_leftbutton'><fmt:message key="backToConv"/></a></td>
+</c:if>
 <c:if test="${isConv !=null && isConv}">
     <td class="Padding">
         <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}"

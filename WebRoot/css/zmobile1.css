@@ -83,7 +83,10 @@ html,body {
 	background: black url("/img/mobile/NavbarBg.gif") repeat-x top left;
 	height: 48px;
 }
-
+.ToolbarBg1{
+    background: url(/img/mobile/iPhoneToolbar.png) #6d84a2 repeat-x;
+    height: 37px;
+}
 .ToolbarBg{
 	background: #e7e7e6 url("/img/mobile/ToolbarBg.gif") repeat-x top left;
 	height: 37px;
@@ -115,7 +118,7 @@ html,body {
 .label{color: #4d8dc3;}
 
 /*.zo_m_list_frag */a {color: #4d8dc3; text-decoration: none; font-size:small;padding:2px;}
-/*.zo_m_list_frag*/ a:hover {color: #ffffff; background-color: #4d8dc3; text-decoration: none;}
+/*.zo_m_list_frag*/ a:hover {/*color: #ffffff;*/ background-color: transparent; text-decoration: none;}
 .NavbarBg a {color: #FFFFFF; text-decoration: none; padding:2px;}
 .NavbarBg a:hover {color: #FFFFFF; background-color: transparent;text-decoration: none; padding:2px;}
 
@@ -133,6 +136,7 @@ a.zo_button_disabled {color:gray;background-color:none;}
 
 .SmallText{font-size: small; color: black;}
 
+
 .StatusInfo, .StatusWarning, .StatusCritical, .zo_noresults {
     padding: 3px;
     font-weight: bold;	
@@ -142,10 +146,16 @@ a.zo_button_disabled {color:gray;background-color:none;}
     font-size:small;
 }
 .zo_noresults{
+    height:250px;
+    text-align:center;
+    vertical-align:middle;
+    padding:10px;
+}
+/*.zo_noresults{
     padding:10px;
     height:60px;
     vertical-align:middle;
-}
+}*/
 .StatusInfo     { background-color: lightgreen;}
 .StatusWarning  { background-color: yellow;}
 .StatusCritical  { background-color: red; }
@@ -345,7 +355,7 @@ a.zo_button_disabled {color:gray;background-color:none;}
     -webkit-border-radius: 8px;
 }
 .Orange				{ background-color:#FF9940;}
-
+.OrangeLight		{ background-color:#FFBB80; }
 .zo_allday_appt_noright {
     border-right: none;
     -moz-border-radius-topright: 0px;

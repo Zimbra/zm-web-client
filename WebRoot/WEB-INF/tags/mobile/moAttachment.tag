@@ -15,21 +15,21 @@
 <fmt:setBundle basename="/msgs/ZhMsg" scope='request' />
 
 <tr class="CompOrigAtt" valign="middle">
-    <td align='right'>
-        <c:if test="${firstAttachment}">
-            <mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
-            <c:set var="firstAttachment" value="${false}"/>
-        </c:if>
-    </td>
-    <c:set var="pname" value="${displayName}"/>
-    <c:if test="${empty displayName}">
-        <fmt:message key="unknownContentType" var="displayName">
-            <fmt:param value="${contentType}"/>
-        </fmt:message>
-    </c:if>
     <td>
-        <table cellpadding="0" cellspacing="0" border="0">
+        <c:set var="pname" value="${displayName}"/>
+        <c:if test="${empty displayName}">
+            <fmt:message key="unknownContentType" var="displayName">
+                <fmt:param value="${contentType}"/>
+            </fmt:message>
+        </c:if>
+        <table cellpadding="2" cellspacing="0" border="0">
             <tr valign="middle">
+                <td align='right'>
+                <%--<c:if test="${firstAttachment}">--%>
+                    <mo:img altkey="ALT_ATTACHMENT" src="startup/ImgAttachment.gif"/>
+                    <%--<c:set var="firstAttachment" value="${true}"/>
+                </c:if>--%>
+                </td>
                 <td>
                     <input <c:if test="${checked}">checked </c:if>type=checkbox name="${name}" value="${value}">
                 </td>

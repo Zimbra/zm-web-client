@@ -28,6 +28,7 @@
 <form id="actions" action="${fn:escapeXml(actionUrl)}" method="post">
 <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 <input type="hidden" name="doMessageAction" value="1"/>
+<script>document.write('<input name="moreActions" type="hidden" value="<fmt:message key="actionGo"/>"/>');</script>
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
     <td>
@@ -105,7 +106,10 @@
                                         </tr>
                                         <tr>
                                             <td class='zo_m_list_frag' colspan="2">
+                                                <a id="a${mhit.id}"
+                                                   href="${fn:escapeXml(msgUrl)}">
                                                 <c:out value="${zm:truncate(mhit.fragment,50,true)}"/>
+                                                </a>    
                                             </td>
                                         </tr>
                                     </table>
@@ -130,8 +134,15 @@
                   <table cellspacing="2" cellpadding="2" width="100%">
                         <tr class="zo_m_list_row">
                             <td>
-                                <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
-                               <select name="anAction">
+                                <c:choose>
+                                    <c:when test="${not context.folder.isInTrash}">
+                                        <input name="actionDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <input name="actionHardDelete" type="submit" value="<fmt:message key="delete"/>"/>
+                                    </c:otherwise>
+                                </c:choose>
+                               <select name="anAction" onchange="document.getElementById('actions').submit();">
                                    <option value="" selected="selected"><fmt:message key="moreActions"/></option>
                                    <optgroup label="Mark">
                                        <option value="actionMarkRead">Read</option>
@@ -143,7 +154,7 @@
                                   </optgroup>
                                   <optgroup label="<fmt:message key="moveAction"/>">
                                     <zm:forEachFolder var="folder">
-                                        <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                                        <c:if test="${folder.id != context.folder.id and folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
                                             <option value="moveTo_${folder.id}">${fn:escapeXml(folder.rootRelativePath)}</option>
                                         </c:if>
                                     </zm:forEachFolder>
@@ -165,7 +176,7 @@
                                </optgroup>
                                </c:if> 
                                </select>
-                               <input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/>
+                               <noscript><input name="moreActions" type="submit" value="<fmt:message key="actionGo"/>"/></noscript>
                             </td>
                         </tr>
                     </table>

@@ -27,8 +27,9 @@
     </c:choose>
 
     <style type="text/css" media="screen">
-    <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>        
+    <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
        @import url( "<c:url value='/css/zmobile${uiv!="0"?uiv:""}${param.st!=null && param.st=="cal"?",mcal":""}.css?v=${version}'/>" );
+       #action{padding:0px;margin:0px;border:0px;}
     </style>
     <jsp:doBody/>
     <script type="text/javascript">

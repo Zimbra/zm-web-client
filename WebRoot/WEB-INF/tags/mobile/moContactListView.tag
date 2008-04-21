@@ -24,7 +24,7 @@
             </td>
         </tr>
         <tr>
-            <td>
+            <td valign="top" height="100%"> 
                 <table width=100% cellpadding="4" cellspacing="0" border="0">
                     <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                         <c:set var="chit" value="${hit.contactHit}"/>
@@ -48,7 +48,7 @@
                     </c:forEach>
                 </table>
                 <c:if test="${empty context or context.searchResult.size eq 0}">
-                    <span class='zo_noresults'><fmt:message key="noResultsFound"/></span>
+                    <div class='zo_noresults'><fmt:message key="noResultsFound"/></div>
                 </c:if>
             </td>
         </tr>

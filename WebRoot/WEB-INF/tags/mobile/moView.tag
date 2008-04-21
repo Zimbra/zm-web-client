@@ -15,7 +15,7 @@
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
     <mo:head mailbox="${mailbox}" title="${title}" scale="${scale}"/>
-    <body <c:if test="${not empty onload}">onload="${onload}"</c:if> <c:if test="${not empty clazz}">class="${clazz}
+    <body onload="<c:if test="${not empty onload}">${onload}</c:if>" <c:if test="${not empty clazz}">class="${clazz}
     "</c:if>>
     <c:set value="true" var="headIncluded" scope="request"/>
 </c:if>
@@ -31,12 +31,11 @@
 <jsp:doBody/>
 <c:if test="${!requestScope.headIncluded}">
     </body>
-    <%--
     <script type="text/javascript" xml:space="preserve">
         addEventListener("load", function()
           {
               window.scrollTo(0, 1);
           }, false);
-    </script>--%>
+    </script>
     </html>
 </c:if>
