@@ -54,6 +54,7 @@
                 else iframe.onload = onIframeLoad;
             })();
         </script>
+        <noframes>${theBody}</noframes>
     </c:when>
     <c:otherwise>
         ${theBody}
