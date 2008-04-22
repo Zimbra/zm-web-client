@@ -27,12 +27,12 @@ ZmCalViewMgr = function(parent, controller, dropTgt) {
 	this._views = {};
 	this._date = new Date();
 	this._viewFactory = {};
-	this._viewFactory[ZmController.CAL_DAY_VIEW]		= ZmCalDayView;
-	this._viewFactory[ZmController.CAL_WORK_WEEK_VIEW]	= ZmCalWorkWeekView;
-	this._viewFactory[ZmController.CAL_WEEK_VIEW]		= ZmCalWeekView;
-	this._viewFactory[ZmController.CAL_MONTH_VIEW]		= ZmCalMonthView;
-	this._viewFactory[ZmController.CAL_SCHEDULE_VIEW]	= ZmCalScheduleView;
-	this._viewFactory[ZmController.CAL_APPT_VIEW]		= ZmApptView;
+	this._viewFactory[ZmId.VIEW_CAL_DAY]		= ZmCalDayView;
+	this._viewFactory[ZmId.VIEW_CAL_WORK_WEEK]	= ZmCalWorkWeekView;
+	this._viewFactory[ZmId.VIEW_CAL_WEEK]		= ZmCalWeekView;
+	this._viewFactory[ZmId.VIEW_CAL_MONTH]		= ZmCalMonthView;
+	this._viewFactory[ZmId.VIEW_CAL_SCHEDULE]	= ZmCalScheduleView;
+	this._viewFactory[ZmId.VIEW_CAL_APPT]		= ZmApptView;
 };
 
 ZmCalViewMgr.prototype = new DwtComposite;
@@ -54,7 +54,7 @@ function() {
 ZmCalViewMgr.prototype.setNeedsRefresh = 
 function() {
 	for (var name in this._views) {
-		if (name != ZmController.CAL_APPT_VIEW)
+		if (name != ZmId.VIEW_CAL_APPT)
 			this._views[name].setNeedsRefresh(true);
 	}
 };
@@ -95,7 +95,7 @@ ZmCalViewMgr.prototype.setDate =
 function(date, duration, roll) {
 	this._date = new Date(date.getTime());
 	this._duration = duration;
-	if (this._currentViewName && this._currentViewName != ZmController.CAL_APPT_VIEW) {
+	if (this._currentViewName && this._currentViewName != ZmId.VIEW_CAL_APPT) {
 		var view = this._views[this._currentViewName];
 		view.setDate(date, duration, roll);
 	}
@@ -104,7 +104,7 @@ function(date, duration, roll) {
 ZmCalViewMgr.prototype.createView =
 function(viewName) {
 	var view = new this._viewFactory[viewName](this, DwtControl.ABSOLUTE_STYLE, this._controller, this._dropTgt);
-	if (viewName != ZmController.CAL_APPT_VIEW) {
+	if (viewName != ZmId.VIEW_CAL_APPT) {
 		view.setDragSource(this._dragSrc);
 		view.addTimeSelectionListener(new AjxListener(this, this._viewTimeSelectionListener));	
 		view.addDateRangeListener(new AjxListener(this, this._viewDateRangeListener));
@@ -153,7 +153,7 @@ function(viewName) {
 		var view = this._views[viewName];
 		this._currentViewName = viewName;
 
-		if (viewName != ZmController.CAL_APPT_VIEW) {
+		if (viewName != ZmId.VIEW_CAL_APPT) {
 			var vd = view.getDate();
 			if (vd == null || (view.getDate().getTime() != this._date.getTime())) {
 				view.setDate(this._date, this._duration, true);

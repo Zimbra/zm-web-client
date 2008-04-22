@@ -36,7 +36,7 @@ ZmChatListController = function(container, imApp) {
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 
 	this._viewFactory = {};
-	this._viewFactory[ZmController.IM_CHAT_MULTI_WINDOW_VIEW] = ZmChatMultiWindowView;
+	this._viewFactory[ZmId.VIEW_IM_CHAT_MULTI_WINDOW] = ZmChatMultiWindowView;
 
 	this._parentView = {};
 
@@ -54,15 +54,15 @@ ZmChatListController.prototype = new ZmController;
 ZmChatListController.prototype.constructor = ZmChatListController;
 
 ZmChatListController.ICON = new Object();
-//ZmChatListController.ICON[ZmController.IM_CHAT_TAB_VIEW]		= "SinglePane"; // TODO: get real icon
-ZmChatListController.ICON[ZmController.IM_CHAT_MULTI_WINDOW_VIEW]	= "OpenInNewWindow"; // TODO: get real icon
+//ZmChatListController.ICON[ZmId.VIEW_IM_CHAT_TAB]		= "SinglePane"; // TODO: get real icon
+ZmChatListController.ICON[ZmId.VIEW_IM_CHAT_MULTI_WINDOW]	= "OpenInNewWindow"; // TODO: get real icon
 
 ZmChatListController.MSG_KEY = new Object();
-//ZmChatListController.MSG_KEY[ZmController.IM_CHAT_TAB_VIEW]	= "imChatTabbed";
-ZmChatListController.MSG_KEY[ZmController.IM_CHAT_MULTI_WINDOW_VIEW]= "imChatMultiWindow";
+//ZmChatListController.MSG_KEY[ZmId.VIEW_IM_CHAT_TAB]	= "imChatTabbed";
+ZmChatListController.MSG_KEY[ZmId.VIEW_IM_CHAT_MULTI_WINDOW]= "imChatMultiWindow";
 
-//ZmChatListController.VIEWS = [ZmController.IM_CHAT_TAB_VIEW, ZmController.IM_CHAT_MULTI_WINDOW_VIEW];
-ZmChatListController.VIEWS = [ZmController.IM_CHAT_MULTI_WINDOW_VIEW];
+//ZmChatListController.VIEWS = [ZmId.VIEW_IM_CHAT_TAB, ZmId.VIEW_IM_CHAT_MULTI_WINDOW];
+ZmChatListController.VIEWS = [ZmId.VIEW_IM_CHAT_MULTI_WINDOW];
 
 ZmChatListController.prototype.toString =
 function() {
@@ -154,7 +154,7 @@ function() {
 
 ZmChatListController.prototype._defaultView =
 function() {
-	return (appCtxt.get(ZmSetting.IM_VIEW) == "tabbed") ? ZmController.IM_CHAT_TAB_VIEW : ZmController.IM_CHAT_MULTI_WINDOW_VIEW;
+	return (appCtxt.get(ZmSetting.IM_VIEW) == "tabbed") ? ZmId.VIEW_IM_CHAT_TAB : ZmId.VIEW_IM_CHAT_MULTI_WINDOW;
 };
 
 ZmChatListController.prototype._initializeToolBar = function(view) {

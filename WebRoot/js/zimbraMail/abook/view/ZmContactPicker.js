@@ -431,7 +431,8 @@ function(item, list) {
  * This class creates a specialized source list view for the contact chooser.
  */
 ZmContactChooserSourceListView = function(parent) {
-	DwtChooserListView.call(this, parent, DwtChooserListView.SOURCE);
+	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.SOURCE,
+								   view:ZmId.VIEW_CONTACT_SRC});
 
 	this.setScrollStyle(Dwt.CLIP);
 };
@@ -447,9 +448,9 @@ function() {
 ZmContactChooserSourceListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem(ZmItem.F_TYPE, null, "Folder", 20));
-	headerList.push(new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg._name, null, 100));
-	headerList.push(new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.email));
+	headerList.push(new DwtListHeaderItem({id:ZmItem.F_TYPE, icon:"Folder", width:20}));
+	headerList.push(new DwtListHeaderItem({id:ZmItem.F_NAME, text:ZmMsg._name, width:100}));
+	headerList.push(new DwtListHeaderItem({id:ZmItem.F_EMAIL, text:ZmMsg.email}));
 
 	return headerList;
 };
@@ -488,7 +489,8 @@ function(html, idx, item, field, colIdx, params) {
 ZmContactChooserTargetListView = function(parent, showType) {
 	this._showType = showType; // call before base class since base calls getHeaderList
 
-	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET);
+	DwtChooserListView.call(this, {parent:parent, type:DwtChooserListView.TARGET,
+								   view:ZmId.VIEW_CONTACT_TGT});
 
 	this.setScrollStyle(Dwt.CLIP);
 };
@@ -504,11 +506,12 @@ function() {
 ZmContactChooserTargetListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
+	var view = this._view;
 	if (this._showType) {
-		headerList.push(new DwtListHeaderItem(ZmItem.F_TYPE, null, "ContactsPicker", 20));
+		headerList.push(new DwtListHeaderItem({id:ZmItem.F_TYPE, icon:"ContactsPicker", width:20}));
 	}
-	headerList.push(new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg._name, null, 100));
-	headerList.push(new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.email));
+	headerList.push(new DwtListHeaderItem({id:ZmItem.F_NAME, text:ZmMsg._name, width:100}));
+	headerList.push(new DwtListHeaderItem({id:ZmItem.F_EMAIL, text:ZmMsg.email}));
 
 	return headerList;
 };

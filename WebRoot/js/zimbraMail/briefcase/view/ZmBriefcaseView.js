@@ -17,7 +17,7 @@
 ZmBriefcaseView = function(parent, controller, dropTgt) {
 
 	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseView", posStyle:DwtControl.ABSOLUTE_STYLE,
-					view:ZmController.BRIEFCASE_VIEW, type:ZmItem.DOCUMENT, controller:controller,
+					view:ZmId.VIEW_BRIEFCASE, type:ZmItem.DOCUMENT, controller:controller,
 					dropTgt:dropTgt});
 	
 	this._controller = controller;

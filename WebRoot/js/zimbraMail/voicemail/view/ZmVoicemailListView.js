@@ -18,7 +18,7 @@
 ZmVoicemailListView = function(parent, controller, dropTgt) {
 	var headerList = this._getHeaderList(parent);
 	ZmVoiceListView.call(this, {parent:parent, className:"DwtListView ZmVoicemailListView",
-								posStyle:Dwt.ABSOLUTE_STYLE, view:ZmController.VOICEMAIL_VIEW,
+								posStyle:Dwt.ABSOLUTE_STYLE, view:ZmId.VIEW_VOICEMAIL,
 								type:ZmItem.VOICEMAIL, controller:controller,
 								headerList:headerList, dropTgt:dropTgt});
 
@@ -111,12 +111,12 @@ function(parent) {
 	var headerList = [];
 
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		headerList.push(new DwtListHeaderItem(ZmItem.F_SELECTION, null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.selection));
+		headerList.push(new DwtListHeaderItem({id:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
 	}
-	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_PRIORITY, null, "TaskHigh", ZmVoicemailListView.PRIORITY_WIDTH, null, false));
-	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_CALLER, ZmMsg.from, null, ZmVoicemailListView.FROM_WIDTH, null, true));
-	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_DURATION, ZmMsg.message, null, ZmVoicemailListView.PLAYING_WIDTH, ZmVoiceListView.F_DURATION, true));
-	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_DATE, ZmMsg.received, null, ZmVoicemailListView.DATE_WIDTH, ZmVoiceListView.F_DATE, true));
+	headerList.push(new DwtListHeaderItem({id:ZmVoicemailListView.F_PRIORITY, icon:"TaskHigh", width:ZmVoicemailListView.PRIORITY_WIDTH}));
+	headerList.push(new DwtListHeaderItem({id:ZmVoiceListView.F_CALLER, text:ZmMsg.from, width:ZmVoicemailListView.FROM_WIDTH, resizeable:true}));
+	headerList.push(new DwtListHeaderItem({id:ZmVoiceListView.F_DURATION, text:ZmMsg.message, width:ZmVoicemailListView.PLAYING_WIDTH, sortable:ZmVoiceListView.F_DURATION, resizeable:true}));
+	headerList.push(new DwtListHeaderItem({id:ZmVoiceListView.F_DATE, text:ZmMsg.received, width:ZmVoicemailListView.DATE_WIDTH, sortable:ZmVoiceListView.F_DATE, resizeable:true}));
 
 	return headerList;
 };

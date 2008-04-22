@@ -83,7 +83,7 @@ function(page) {
 ZmNotebookPageView.getPrintHtml =
 function(page) {
 	var nbController = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookController();
-	if( nbController._getViewType()  == ZmController.NOTEBOOK_PAGE_VIEW ) {
+	if( nbController._getViewType()  == ZmId.VIEW_NOTEBOOK_PAGE ) {
 		var view = nbController._getViewType();
 		if(nbController._listView[view] && nbController._listView[view]._iframe){
 			return nbController._listView[view]._iframe.contentWindow.document.documentElement.innerHTML;
