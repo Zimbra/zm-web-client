@@ -107,11 +107,7 @@
 			<%------------------- More voice controls ------------------%>
 			<tr><td colspan=2><hr></td></tr>
 			<tr valign='top'>
-				<td>&nbsp;</td>
-				<td class='ZOptionsTableLabel' style="text-align:left;"><fmt:message key="moreVoiceControlsLabel"/></td>
-			</tr>
-			<tr valign='top'>
-				<td>&nbsp;</td>
+				<td class='ZOptionsTableLabel'><fmt:message key="moreVoiceControlsLabel"/></td>
 				<td class='ZhOptVoiceCBCell'><fmt:message key="moreVoiceControlsText"/></td>
 			</tr>
 			<input type="hidden" name="phone" value="${account.phone.name}">
