@@ -1540,7 +1540,7 @@ function(msg, preferHtml, callback) {
             else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;";
 		}
 
-		html[idx++] = "<tr><td style='font-size:14px'>";
+		html[idx++] = "<tr><td nowrap='nowrap' style='font-size:14px'>";
 		if (i == 0) {
 			html[idx++] = ZmMsg.attachments;
 			html[idx++] = ":";
