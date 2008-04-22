@@ -118,30 +118,38 @@ function(parent, num) {
 	parent.enable(ZmOperation.CHECK_VOICEMAIL, true);
 	parent.enable(ZmOperation.PRINT, true);
 	parent.enable(ZmOperation.CALL_MANAGER, true);
-	
-	var hasHeard = false;
-	var hasUnheard = false;
-	var items = this._listView[this._currentView].getSelection();
-	for (var i = 0; i < items.length; i++) {
-		(items[i].isUnheard) ? hasUnheard = true : hasHeard = true;
-		if (hasUnheard && hasHeard)
-			break;
+
+	var isTrash = this._folder && (this._folder.callType == ZmVoiceFolder.TRASH);
+	var enableHeard = false,
+		enableUnheard = false;
+	if (!isTrash) {
+		var hasHeard = false,
+			hasUnheard = false;
+		var items = this._listView[this._currentView].getSelection();
+		for (var i = 0; i < items.length; i++) {
+			(items[i].isUnheard) ? hasUnheard = true : hasHeard = true;
+			if (hasUnheard && hasHeard)
+				break;
+		}
+		enableHeard = hasUnheard;
+		enableUnheard = hasHeard;
 	}
-	parent.enable(ZmOperation.MARK_HEARD, hasUnheard);
-	parent.enable(ZmOperation.MARK_UNHEARD, hasHeard);
+	parent.enable(ZmOperation.MARK_HEARD, enableHeard);
+	parent.enable(ZmOperation.MARK_UNHEARD, enableUnheard);
+
 	if (!appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		parent.enable(ZmOperation.REPLY_BY_EMAIL, false);
 		parent.enable(ZmOperation.FORWARD_BY_EMAIL, false);
 	}
 
 	if (parent instanceof DwtMenu) {
-		if (this._folder && (this._folder.callType == ZmVoiceFolder.TRASH)) {
+		if (isTrash) {
 			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.moveToVoiceMail, "MoveToFolder");
 		} else {
 			ZmOperation.setOperation(parent, ZmOperation.DELETE, ZmOperation.DELETE, ZmMsg.del, "Delete");
 		}
 	} else {
-		if (this._folder && (this._folder.callType == ZmVoiceFolder.TRASH)) {
+		if (isTrash) {
 			parent.enable(ZmOperation.DELETE, false);
 		}
 	}
