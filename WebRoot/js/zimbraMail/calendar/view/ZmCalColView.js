@@ -19,7 +19,7 @@ ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, sc
 	if (arguments.length == 0) { return; }
 
 	numDays = numDays || 1;
-	view = view || ZmId.VIEW_CAL_DAY;
+	view = view || ZmController.CAL_DAY_VIEW;
 	// set before call to parent
 	this._scheduleMode = scheduleMode;
 	this.setNumDays(numDays);
@@ -80,12 +80,12 @@ function() {
 ZmCalColView.prototype.getRollField =
 function(isDouble) {
 	switch(this.view) {
-		case ZmId.VIEW_CAL_WORK_WEEK:
-		case ZmId.VIEW_CAL_WEEK:
+		case ZmController.CAL_WORK_WEEK_VIEW:
+		case ZmController.CAL_WEEK_VIEW:
 			return isDouble ? AjxDateUtil.MONTH : AjxDateUtil.WEEK;
 			break;
-		case ZmId.VIEW_CAL_DAY:
-		case ZmId.VIEW_CAL_SCHEDULE:
+		case ZmController.CAL_DAY_VIEW:
+		case ZmController.CAL_SCHEDULE_VIEW:
 		default:
 			return isDouble ? AjxDateUtil.WEEK : AjxDateUtil.DAY;
 			break;
@@ -585,21 +585,21 @@ function() {
 	var dow;
 
 	switch(this.view) {
-		case ZmId.VIEW_CAL_WORK_WEEK:
+		case ZmController.CAL_WORK_WEEK_VIEW:
 			dow = d.getDay();
 			if (dow == 0)
 				d.setDate(d.getDate()+1);
 			else if (dow != 1)
 				d.setDate(d.getDate()-(dow-1));
 			break;
-		case ZmId.VIEW_CAL_WEEK:
+		case ZmController.CAL_WEEK_VIEW:
 			var fdow = this.firstDayOfWeek();
 			dow = d.getDay();
 			if (dow != fdow) {
 				d.setDate(d.getDate()-((dow+(7-fdow))%7));
 			}
 			break;
-		case ZmId.VIEW_CAL_DAY:
+		case ZmController.CAL_DAY_VIEW:
 		default:
 			/* nothing */
 			break;
@@ -746,8 +746,8 @@ function(appt) {
 		? ("<i>" + AjxStringUtil.htmlEncode(appt.getLocation()) + "</i>") : null;
 
 	if (is30 &&
-		(this.view != ZmId.VIEW_CAL_DAY) &&
-		(this.view != ZmId.VIEW_CAL_SCHEDULE))
+		(this.view != ZmController.CAL_DAY_VIEW) &&
+		(this.view != ZmController.CAL_SCHEDULE_VIEW))
 	{
 		var widthLimit = Math.floor(8 * apptWidthPercent)
 		if (apptName.length > widthLimit) {
@@ -1153,7 +1153,7 @@ function(colIndex, data) {
 		var startTime = appt.getStartTime();
 		var endTime = appt.getEndTime();
 		data.numDays = 1;
-        if (this.view != ZmId.VIEW_CAL_SCHEDULE) {
+        if (this.view != ZmController.CAL_SCHEDULE_VIEW) {
             if (startTime != endTime) {
                 data.numDays = Math.round((endTime-startTime) / AjxDateUtil.MSEC_PER_DAY);
             }
@@ -1751,13 +1751,13 @@ function(ev, div) {
 
 		if (this.getNumDays() > 1) {
 			cc.setDate(date);
-			cc.show(ZmId.VIEW_CAL_DAY);
+			cc.show(ZmController.CAL_DAY_VIEW);
 		} else {
 			// TODO: use pref for work week
 			if (date.getDay() > 0 && date.getDay() < 6)
-				cc.show(ZmId.VIEW_CAL_WORK_WEEK);
+				cc.show(ZmController.CAL_WORK_WEEK_VIEW);
 			else
-				cc.show(ZmId.VIEW_CAL_WEEK);
+				cc.show(ZmController.CAL_WEEK_VIEW);
 		}
 	} else if (type == ZmCalBaseView.TYPE_DAY_SEP) {
 		this.toggleAllDayAppt(!this._hideAllDayAppt);

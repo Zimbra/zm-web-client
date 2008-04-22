@@ -36,8 +36,8 @@ ZmNotebookController.prototype.toString = function() {
 // Constants
 
 ZmNotebookController._VIEWS = {};
-ZmNotebookController._VIEWS[ZmId.VIEW_NOTEBOOK_PAGE] = ZmNotebookPageView;
-//ZmNotebookController._VIEWS[ZmId.VIEW_NOTEBOOK_FILE] = ZmPageEditView;
+ZmNotebookController._VIEWS[ZmController.NOTEBOOK_PAGE_VIEW] = ZmNotebookPageView;
+//ZmNotebookController._VIEWS[ZmController.NOTEBOOK_FILE_VIEW] = ZmPageEditView;
 
 //
 // Public methods
@@ -236,7 +236,7 @@ ZmNotebookController.prototype._doDelete2 = function(items,delcallback) {
 	actionNode.setAttribute("id", ids);
 	actionNode.setAttribute("op", "delete");
 
-	var responseHandler = this._currentView == ZmId.VIEW_NOTEBOOK_PAGE ? this._listeners[ZmOperation.PAGE_BACK] : null;
+	var responseHandler = this._currentView == ZmController.NOTEBOOK_PAGE_VIEW ? this._listeners[ZmOperation.PAGE_BACK] : null;
 
 	if(delcallback){
 		responseHandler = delcallback;
@@ -262,7 +262,7 @@ ZmNotebookController.prototype._getViewType = function() {
 };
 
 ZmNotebookController.prototype._defaultView = function() {
-	return ZmId.VIEW_NOTEBOOK_PAGE;
+	return ZmController.NOTEBOOK_PAGE_VIEW;
 };
 
 ZmNotebookController.prototype._createNewView = function(view) {
@@ -299,11 +299,11 @@ ZmNotebookController.prototype._setViewMenu = function(view) {
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
 
 		var item = menu.createMenuItem(ZmNotebookApp.PAGE, {image:"Page", text:ZmMsg.notebookPageView, style:DwtMenuItem.RADIO_STYLE});
-		item.setData(ZmOperation.MENUITEM_ID, ZmId.VIEW_NOTEBOOK_PAGE);
+		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTEBOOK_PAGE_VIEW);
 		item.addSelectionListener(listener);
 
 		var item = menu.createMenuItem(ZmNotebookApp.FILE, {image:"Folder", text:ZmMsg.notebookFileView, style:DwtMenuItem.RADIO_STYLE});
-		item.setData(ZmOperation.MENUITEM_ID, ZmId.VIEW_NOTEBOOK_FILE);
+		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTEBOOK_FILE_VIEW);
 		item.addSelectionListener(listener);
 	}
 

@@ -91,5 +91,5 @@ function() {
 
 ZmTaskController.prototype._getViewType =
 function() {
-	return ZmId.VIEW_TASKEDIT;
+	return ZmController.TASKEDIT_VIEW;
 };

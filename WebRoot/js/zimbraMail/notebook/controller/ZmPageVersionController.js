@@ -56,7 +56,7 @@ function(page) {
 
 ZmPageVersionController.prototype._defaultView =
 function() {
-	return ZmId.VIEW_NOTEBOOK_PAGE_VERSION;
+	return ZmController.NOTEBOOK_PAGE_VERSION_VIEW;
 };
 
 // Data

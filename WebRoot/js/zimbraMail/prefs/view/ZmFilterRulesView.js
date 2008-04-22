@@ -58,7 +58,7 @@ function() {
 	if (toolbarEl) {
 		var buttons = this._controller.getToolbarButtons();
 		this._toolbar = new ZmButtonToolBar({parent:this, buttons:buttons, posStyle:Dwt.STATIC_STYLE,
-											 context:ZmId.VIEW_FILTER_RULES});
+											 context:ZmController.FILTER_RULES_VIEW});
 		this._toolbar.replaceElement(toolbarEl);
 		this._tabGroup.addMember(this._toolbar);
 	}
@@ -155,8 +155,8 @@ function(list) {
 ZmFilterListView.prototype._getHeaderList =
 function() {
 	return [
-		(new DwtListHeaderItem({id:ZmFilterListView.COL_ACTIVE, text:ZmMsg.active, width:ZmFilterListView.COL_WIDTH_ACTIVE})),
-		(new DwtListHeaderItem({id:ZmFilterListView.COL_NAME, text:ZmMsg.filterName}))
+		(new DwtListHeaderItem(ZmFilterListView.COL_ACTIVE, ZmMsg.active, null, ZmFilterListView.COL_WIDTH_ACTIVE)),
+		(new DwtListHeaderItem(ZmFilterListView.COL_NAME, ZmMsg.filterName))
 	];
 };
 

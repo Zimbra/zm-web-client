@@ -19,8 +19,6 @@ ZmDoublePaneView = function(params) {
 
 	if (arguments.length == 0) { return; }
 
-	var view = params.controller._getViewType();
-	params.id = ZmId.getViewId(view);
 	DwtComposite.call(this, params);
 
 	this._controller = params.controller;
@@ -31,7 +29,7 @@ ZmDoublePaneView = function(params) {
 								 threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
 	params.parent = this;
 	params.className = null;
-	params.id = ZmId.getMsgViewId(view);
+	params.id = params.msgViewId;
 	this._msgView = new ZmMailMsgView(params);
 
 	if (!this._controller.isReadingPaneOn()) {
@@ -83,7 +81,6 @@ ZmDoublePaneView.prototype._createMailListView =
 function(params) {
 	params.parent = this;
 	params.posStyle = Dwt.ABSOLUTE_STYLE;
-	params.id = DwtId.getListViewId(this._controller._getViewType());
 	return new ZmMailMsgListView(params);
 };
 

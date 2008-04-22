@@ -37,7 +37,7 @@ ZmMailMsgView = function(params) {
 	this._expandDivId = Dwt.getNextId();
 
 	// do we add a close button in the header section?
-	this._hasHeaderCloseBtn = (this._mode == ZmId.VIEW_MSG && !appCtxt.isChildWindow);
+	this._hasHeaderCloseBtn = (this._mode == ZmController.MSG_VIEW && !appCtxt.isChildWindow);
 
 	//this.SCROLL_WITH_IFRAME = ZmMailMsgView.SCROLL_WITH_IFRAME;
     this._scrollWithIframe = ZmMailMsgView.SCROLL_WITH_IFRAME; // Making it local var
@@ -174,7 +174,7 @@ function(msg) {
 		? new Date(msg.sentDate)
 		: new Date(msg.date);
 
-	var invite = msg.invite;
+	var invite = msg.getInvite();
 
 	if ((appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
 		invite && invite.type != "task" &&
@@ -413,7 +413,7 @@ function() {
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg) {
 	if (!appCtxt.isChildWindow) {
-		if (this._mode == ZmId.VIEW_MSG) {
+		if (this._mode == ZmController.MSG_VIEW) {
 			this._setTags(msg);
 			// Remove listener for current msg if it exists
 			if (oldMsg) {
@@ -577,7 +577,7 @@ ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
 
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
-	var attachments = this._msg.attachments;
+	var attachments = this._msg.getAttachments();
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
 	for (var i = 0; i < attachments.length; i++) {
@@ -1331,7 +1331,7 @@ ZmMailMsgView.prototype._msgChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_MSG) { return; }
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
-		if (ev.source == this._msg && (appCtxt.getCurrentViewId() == ZmId.VIEW_MSG)) {
+		if (ev.source == this._msg && (appCtxt.getCurrentViewId() == ZmController.MSG_VIEW)) {
 			this._controller._app.popView();
 		}
 	} else if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
@@ -1523,7 +1523,7 @@ function(msg, preferHtml, callback) {
 	}
 
 	// bug fix# 3928
-	var attachments = msg.attachments;
+	var attachments = msg.getAttachments();
 	for (var i = 0; i < attachments.length; i++) {
 		var attach = attachments[i];
 		if (!msg.isRealAttachment(attach))
