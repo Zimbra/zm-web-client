@@ -217,15 +217,8 @@ function(params) {
 */
 ZmZimbraMail.unload =
 function() {
-	// Let the server know that the session is ending.
-	var errorCallback = new AjxCallback(null, function() { return true; } ); // Ignores any error.
-	var args = {
-		jsonObj: { EndSessionRequest: { _jsns: "urn:zimbraAccount" } },
-		asyncMode: true,
-		errorCallback: errorCallback
-	};
-	appCtxt.getAppController().sendRequest(args);
-	
+	ZmZimbraMail._endSession();
+
 	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
 	if (childWinList) {
 		// close all child windows
@@ -1241,7 +1234,7 @@ function(appName) {
     if(window._facadeCleanup) {
         window._facadeCleanup();
         window._facadeCleanup = null;
-    }    
+    }
 };
 
 // Private methods
@@ -1320,6 +1313,7 @@ function() {
 
 ZmZimbraMail.logOff =
 function() {
+	ZmZimbraMail._endSession();
 
 	// stop keeping track of user input (if applicable)
 	if (window._zimbraMail) {
@@ -1789,5 +1783,21 @@ function() {
 		trees.push(ZmOrganizer.ZIMLET);
 	}
 };
+
+ZmZimbraMail._endSession =
+function() {
+	// Let the server know that the session is ending.
+	var self = window._zimbraMail;
+	if (self) {
+		var errorCallback = new AjxCallback(null, function() { return true; } ); // Ignores any error.
+		var args = {
+			jsonObj: { EndSessionRequest: { _jsns: "urn:zimbraAccount" } },
+			asyncMode: true,
+			errorCallback: errorCallback
+		};
+		self.sendRequest(args);
+	}
+};
+
 // YUCK:
 ZmOrganizer.ZIMLET = "Zimlet";
