@@ -9,10 +9,11 @@
 
 <c:if test="${empty requestScope.vmlvToolbarCache}">
     <zm:getMailbox var="mailbox"/>
-    <c:set var="vmlvToolbarCache" scope="request">
+	<c:set var="isTrash" value="${context.isFolderSearch and context.folder.isVoiceMailTrash}"/>
+	<c:set var="vmlvToolbarCache" scope="request">
         <td><div class='vertSep'></div></td>
 		<c:choose>
-			<c:when test="${context.isFolderSearch and context.folder.isVoiceMailTrash}">
+			<c:when test="${isTrash}">
 				<app:button id="OPUNDELETE" text="actionUntrashVoiceMail" name="actionUndelete" tooltip="actionUntrashVoiceMail" src="startup/ImgMoveToFolder.gif"/>
 			</c:when>
 			<c:otherwise>
@@ -29,8 +30,8 @@
 		<app:button id="OPREPLYBYEMAIL" name="actionReplyByEmail" text="actionReplyByEmail" src="startup/ImgReply.gif" tooltip="actionReplyByEmailTT" disabled="${disableMailButtons}"/>
         <app:button id="OPFORWARDBYEMAIL" name="actionForwardByEmail" text="actionForwardByEmail" src="startup/ImgForward.gif" tooltip="actionForwardByEmailTT" disabled="${disableMailButtons}"/>
         <td><div class='vertSep'></div></td>
-        <app:button id="OPHEARD" name="actionMarkHeard" text="actionMarkHeard" src="voicemail/ImgMarkAsHeard.gif" tooltip="actionMarkHeardTT"/>
-        <app:button id="OPUNHEARD" name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/ImgMarkAsUnheard.gif" tooltip="actionMarkUnheardTT"/>
+        <app:button id="OPHEARD" name="actionMarkHeard" text="actionMarkHeard" src="voicemail/ImgMarkAsHeard.gif" tooltip="actionMarkHeardTT" disabled="${isTrash}"/>
+        <app:button id="OPUNHEARD" name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/ImgMarkAsUnheard.gif" tooltip="actionMarkUnheardTT" disabled="${isTrash}"/>
         <td><div class='vertSep'></div></td>
         <td nowrap>
             <c:url var="optionsUrl" value="/h/options">
