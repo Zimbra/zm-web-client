@@ -606,13 +606,12 @@ function(calItem, mode) {
 		{
 			continue;
 		}
-		this._folderSelect.addOption(cal.getName(), false, id);
+		this._folderSelect.addOption(cal.getName(), (calItem.folderId == cal.id), id);
 	}
 	var num = this._folderSelect.size();
 	Dwt.setVisibility(this._folderSelect.getHtmlElement(), num > 1);
 	Dwt.setVisibility(this._folderLabelField, num > 1);
 
-	this._folderSelect.setSelectedValue(calItem.folderId);
 };
 
 ZmCalItemEditView.prototype._initAttachContainer =
