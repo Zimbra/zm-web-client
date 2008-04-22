@@ -57,7 +57,6 @@ ZmCalViewController = function(container, calApp) {
 	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = apptEditListener;
 	this._listeners[ZmOperation.VIEW_APPOINTMENT] = new AjxListener(this, this._handleMenuViewAction);
 	this._listeners[ZmOperation.TODAY] = new AjxListener(this, this._todayButtonListener);
-	this._listeners[ZmOperation.FREE_BUSY_LINK] = new AjxListener(this, this._freeBusyLinkListener);
 	this._listeners[ZmOperation.DAY_VIEW] = calViewListener;
 	this._listeners[ZmOperation.WEEK_VIEW] = calViewListener;
 	this._listeners[ZmOperation.WORK_WEEK_VIEW] = calViewListener;
@@ -464,7 +463,6 @@ function(viewId) {
 	this._toolbar[ZmId.VIEW_CAL] = toolbar;
 
 	// Setup the toolbar stuff
-	toolbar.enable([ZmOperation.TODAY,ZmOperation.FREE_BUSY_LINK], true);
 	toolbar.enable([ZmOperation.CAL_REFRESH], true);
 	toolbar.enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
 	toolbar.enable([ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.DAY_VIEW], true);
@@ -715,21 +713,6 @@ function(ev) {
 ZmCalViewController.prototype._todayButtonListener =
 function(ev) {
 	this.setDate(new Date(), 0, true);
-};
-
-ZmCalViewController.prototype._freeBusyLinkListener =
-function(ev) {
-    var restUrl = appCtxt.get(ZmSetting.REST_URL);
-    if (restUrl) {
-       restUrl += "?fmt=freebusy";
-    }
-	var params = {
-		action: ZmOperation.NEW_MESSAGE,
-		inNewWindow: this._app._inNewWindow(ev),
-		msg: (new ZmMailMsg()),
-		extraBodyText: restUrl
-	}
-	AjxDispatcher.run("Compose", params);
 };
 
 ZmCalViewController.prototype._newApptAction =

@@ -24,7 +24,7 @@ ZmCalendarTreeController = function() {
 	this._listeners[ZmOperation.CLEAR_ALL] = new AjxListener(this, this._clearAllListener);
     this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
     this._listeners[ZmOperation.DETACH_WIN] = new AjxListener(this, this._detachListener);
-
+    this._listeners[ZmOperation.FREE_BUSY_LINK] = new AjxListener(this, this._freeBusyLinkListener);
     if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
 		this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
 		this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
@@ -143,6 +143,27 @@ function(ev){
         }
     }
 };
+ZmCalendarTreeController.prototype._freeBusyLinkListener =
+function(ev){
+    var inNewWindow = false;
+    var app = appCtxt.getApp(ZmApp.CALENDAR);
+    if(app){
+        inNewWindow = app._inNewWindow(ev);
+    }
+    var restUrl = appCtxt.get(ZmSetting.REST_URL);
+    if(restUrl){
+       restUrl += "?fmt=freebusy";
+    }
+    var action = ZmOperation.NEW_MESSAGE;
+	var msg = new ZmMailMsg();
+	var toOverride = null;
+	var subjOverride = null;
+	var extraBodyText = restUrl;
+	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
+								  toOverride: toOverride, subjOverride: subjOverride,
+								  extraBodyText: extraBodyText});
+};
+
 // Returns a list of desired header action menu operations
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
@@ -153,7 +174,9 @@ function() {
 	ops.push(ZmOperation.CHECK_ALL);
 	ops.push(ZmOperation.CLEAR_ALL);
     ops.push(ZmOperation.BROWSE);
-	return ops;
+    ops.push(ZmOperation.SEP,ZmOperation.FREE_BUSY_LINK);
+
+    return ops;
 };
 
 // Returns a list of desired action menu operations
