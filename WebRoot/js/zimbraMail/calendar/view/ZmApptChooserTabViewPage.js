@@ -754,7 +754,7 @@ function(item, list) {
 ZmApptChooserListView = function(parent, type, chooserType) {
 
 	this._chooserType = chooserType;
-	DwtChooserListView.call(this, parent, type);
+	DwtChooserListView.call(this, {parent:parent, type:type});
 
 	this._notes = {};
 };
@@ -773,10 +773,10 @@ function() {
 	var cols = ZmApptChooserTabViewPage.COLS[this._chooserType];
 	for (var i = 0; i < cols.length; i++) {
 		var id = cols[i];
-		var label = ZmMsg[ZmApptChooserTabViewPage.COL_LABEL[id]];
+		var text = ZmMsg[ZmApptChooserTabViewPage.COL_LABEL[id]];
 		var image = ZmApptChooserTabViewPage.COL_IMAGE[id];
 		var width = ZmApptChooserTabViewPage.COL_WIDTH[id];
-		headerList.push(new DwtListHeaderItem(id, label, image, width));
+		headerList.push(new DwtListHeaderItem({id:id, text:text, icon:image, width:width}));
 	}
 	
 	return headerList;

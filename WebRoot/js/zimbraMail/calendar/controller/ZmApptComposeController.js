@@ -160,7 +160,7 @@ function(actionCode) {
 
 ZmApptComposeController.prototype._getViewType =
 function() {
-	return ZmController.APPOINTMENT_VIEW;
+	return ZmId.VIEW_APPOINTMENT;
 };
 
 ZmApptComposeController.prototype._attendeesUpdated =

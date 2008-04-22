@@ -98,7 +98,7 @@ function() {
 	// set the from column name based on query string
 	var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
 	var fromColIdx = this.getColIndexForId(ZmItem.F_FROM);
-	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
+	var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, this._headerList[fromColIdx]._field));
 	if (fromColSpan) {
 		fromColSpan.innerHTML = "&nbsp;" + colLabel;
 	}
@@ -185,7 +185,7 @@ function(field, item, ev, div, match) {
 		tooltip = this._getParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
 	} else if (field == ZmItem.F_SUBJECT) {
 		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
-			tooltip = item.getInvite().getToolTip();
+			tooltip = item.invite.getToolTip();
 		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
             if (tooltip == "") {

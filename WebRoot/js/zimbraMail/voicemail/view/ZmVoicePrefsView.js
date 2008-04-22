@@ -623,7 +623,7 @@ function(id) {
 * The list of phone accounts.
 */
 ZmPhoneList = function(parent) {
-	var headerList = [new DwtListHeaderItem(1, ZmMsg.number, null, null)];
+	var headerList = [new DwtListHeaderItem({id:1, text:ZmMsg.number})];
 	DwtListView.call(this, {parent:parent, className:"ZmPhoneList", headerList:headerList});
 
 	this.setMultiSelect(false);

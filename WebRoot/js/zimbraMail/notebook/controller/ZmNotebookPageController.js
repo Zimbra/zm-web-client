@@ -264,14 +264,14 @@ ZmNotebookPageController.prototype.updateHistory = function() {
 };
 
 ZmNotebookPageController.prototype.refreshCurrentPage = function(){
-	if(this._object && this._listView[ZmController.NOTEBOOK_PAGE_VIEW]){
-	this._listView[ZmController.NOTEBOOK_PAGE_VIEW].refresh(this._object.getRestUrl());
+	if(this._object && this._listView[ZmId.VIEW_NOTEBOOK_PAGE]){
+	this._listView[ZmId.VIEW_NOTEBOOK_PAGE].refresh(this._object.getRestUrl());
 	}
 };
 
 ZmNotebookPageController.prototype.isIframeEnabled = function(){
-	if(this._listView[ZmController.NOTEBOOK_PAGE_VIEW]){
-		return this._listView[ZmController.NOTEBOOK_PAGE_VIEW]._USE_IFRAME;
+	if(this._listView[ZmId.VIEW_NOTEBOOK_PAGE]){
+		return this._listView[ZmId.VIEW_NOTEBOOK_PAGE]._USE_IFRAME;
 	}else{
 		return false;	
 	}
@@ -315,7 +315,7 @@ function(ev, organizers) {
             	cache.updateItems(id, oldUrl, organizer.restUrl);
             }
             var appViewMgr = appCtxt.getAppViewMgr();
-            if( appViewMgr.getCurrentViewId() != ZmController.NOTEBOOK_FILE_VIEW  && !this._importInProgress) {
+            if( appViewMgr.getCurrentViewId() != ZmId.VIEW_NOTEBOOK_FILE  && !this._importInProgress) {
                 this.gotoPage(item);
             }
         }

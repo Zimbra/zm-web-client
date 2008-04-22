@@ -1748,11 +1748,10 @@ ZmAccountsListView.prototype._getToolTip = function(field, item, ev, div, match)
 ZmAccountsListView.prototype._getHeaderList =
 function() {
 	return [
-		//new DwtListHeaderItem(id, label, iconInfo, width, sortable, resizeable, visible, name, align)
-		new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg.accountName, null, ZmAccountsListView.WIDTH_NAME),
-		new DwtListHeaderItem(ZmItem.F_STATUS, ZmMsg.status, null, ZmAccountsListView.WIDTH_STATUS, null, null, null, null, "center"),
-		new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.emailAddr),
-		new DwtListHeaderItem(ZmItem.F_TYPE, ZmMsg.type, null, ZmAccountsListView.WIDTH_TYPE)
+		new DwtListHeaderItem({id:ZmItem.F_NAME, text:ZmMsg.accountName, width:ZmAccountsListView.WIDTH_NAME}),
+		new DwtListHeaderItem({id:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmAccountsListView.WIDTH_STATUS, align:"center"}),
+		new DwtListHeaderItem({id:ZmItem.F_EMAIL, text:ZmMsg.emailAddr}),
+		new DwtListHeaderItem({id:ZmItem.F_TYPE, text:ZmMsg.type, width:ZmAccountsListView.WIDTH_TYPE})
 	];
 };
 

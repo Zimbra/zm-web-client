@@ -18,7 +18,7 @@
 ZmPortalView = function(parent, controller, dropTgt) {
 	var headerList = this._getHeaderList();
 	ZmListView.call(this, {parent:parent, className:"ZmPortalView",
-						   posStyle:Dwt.ABSOLUTE_STYLE, view:ZmController.PORTAL_VIEW,
+						   posStyle:Dwt.ABSOLUTE_STYLE, view:ZmId.VIEW_PORTAL,
 						   controller:controller, headerList:headerList, dropTgt:dropTgt});
     this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	this.setScrollStyle(Dwt.SCROLL);

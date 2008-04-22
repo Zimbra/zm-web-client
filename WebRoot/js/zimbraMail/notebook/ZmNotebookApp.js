@@ -21,9 +21,9 @@ ZmNotebookApp = function(container, parentController) {
 }
 
 // Organizer and item-related constants
-ZmEvent.S_PAGE					= "PAGE";
-ZmEvent.S_DOCUMENT				= "DOCUMENT";
-ZmEvent.S_NOTEBOOK				= "NOTEBOOK";
+ZmEvent.S_PAGE					= ZmId.ITEM_PAGE;
+ZmEvent.S_DOCUMENT				= ZmId.ITEM_DOCUMENT;
+ZmEvent.S_NOTEBOOK				= ZmId.ORG_NOTEBOOK;
 ZmItem.PAGE						= ZmEvent.S_PAGE;
 ZmItem.DOCUMENT					= ZmEvent.S_DOCUMENT;
 ZmOrganizer.NOTEBOOK			= ZmEvent.S_NOTEBOOK;
@@ -396,7 +396,7 @@ function() {
 
 ZmNotebookApp.prototype._handleLoadNewNotebook =
 function() {
-	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
+	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
 	var dialog = appCtxt.getNewNotebookDialog();
 	if (!this._newNotebookCb) {
 		this._newNotebookCb = new AjxCallback(this, this._newNotebookCallback);
