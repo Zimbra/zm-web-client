@@ -68,7 +68,7 @@
                      <table border="0" cellpadding="0" cellspacing="0" width="100%">
         				<tr>
        						 <td class="ImgAccountsHeader_L"></td>
-       						 <td class="ImgAccountsHeader__H AccountsHeader">My Email Messages </td>
+       						 <td class="ImgAccountsHeader__H AccountsHeader"><fmt:message key="mailHeader"/></td>
        						 <td class="ImgAccountsHeader_R"></td>
 				        </tr>
 				       </table>
@@ -101,7 +101,7 @@
 								<tr>
 									<td class="ImgVoiceAccountsHeader_L"></td>
 									<td class="ImgVoiceAccountsHeader__H AccountsHeader">
-										Voice Mail
+										<fmt:message key="voiceHeader"/>
 									</td>
 									<td class="ImgVoiceAccountsHeader_R"></td>
 								</tr>
