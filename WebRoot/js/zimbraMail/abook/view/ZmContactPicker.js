@@ -127,8 +127,11 @@ function() {
 };
 
 ZmContactPicker.prototype.search =
-function() {
-	var query = this._searchCleared ? AjxStringUtil.trim(this._searchField.value) : "";
+function(colItem, ascending) {
+
+    if(typeof ascending == "undefined") ascending = true;
+
+    var query = this._searchCleared ? AjxStringUtil.trim(this._searchField.value) : "";
 	if (!query.length) {
 		query = this._defaultQuery;
 	}
@@ -144,7 +147,9 @@ function() {
 			queryHint = ZmContactsHelper.getRemoteQueryHint();
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
 			queryHint = "is:local";
-		}
+		}else if( searchFor == ZmContactsApp.SEARCHFOR_GAL ){
+            ascending = true;
+        }
 	} else {
 		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
 			? ZmItem.CONTACT
@@ -161,7 +166,7 @@ function() {
 	this._chooser.sourceListView.enableSorting(this._contactSource == ZmItem.CONTACT);
 	var params = {
 		obj: this,
-		ascending: true,
+		ascending: ascending,
 		query: query,
 		queryHint: queryHint,
 		offset: this._offset,
