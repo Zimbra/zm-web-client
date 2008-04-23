@@ -158,12 +158,12 @@ function(ev, div) {
 
 	var tooltip;
 	var type = this._getItemData(div, "type");
-	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
+	if (type == DwtListView.TYPE_HEADER_ITEM) {
 		var hdr = this.getItemFromElement(div);
 		if (hdr && hdr._field) {
 			tooltip = this._getHeaderTooltip(hdr._field);
 		}
-	} else {
+	} else if (type == DwtListView.TYPE_LIST_ITEM) {
 		var match = this._parseId(id);
 		if (match && match.field && match.field == ZmItem.F_SELECTION) {
 			if (ev.target.className != "ImgTaskCheckboxCompleted")
