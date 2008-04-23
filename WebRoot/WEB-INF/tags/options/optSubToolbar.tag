@@ -25,7 +25,6 @@
                                     <app:button  name="actionFilterCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                        <input type="hidden"
                                               name="${zm:actionSet(param, 'actionEditFilter') ? 'actionEditFilter' : 'actionNewFilter'}" value="1"/>
-                                   </td>
                                </c:when>
                                <c:otherwise>
                                    <app:button name="actionNewFilter" src="startup/ImgPlus.gif" tooltip="newFilter" text="newFilter"/>
@@ -44,6 +43,8 @@
                            <c:if test="${selected ne 'shortcuts'}">
                                 <app:button name="actionSave" src="common/ImgSave.gif" tooltip="save" text="save"/>
                            </c:if>
+                           <td><div class='vertSep'></div></td>
+                           <app:button  name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                        </c:otherwise>
                    </c:choose>
                </tr>
