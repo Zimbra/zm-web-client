@@ -115,7 +115,8 @@
     </tr>
 </table>
 <table cellpadding="3" width="100%" class="ZOptionsSectionMain">
-    <tr>
+	<c:if test="${mailbox.features.mail}">
+	<tr>
         <td class='ZOptionsTableLabel'>
             <fmt:message key="optionsSearchFolders"/>
             :
@@ -133,7 +134,8 @@
         </td>
     </tr>
     <app:optSeparator/>
-    <tr>
+	</c:if>
+	<tr>
         <td class='ZOptionsTableLabel'>
             <fmt:message key="optionsSearchLanguage"/>:
         </td>
