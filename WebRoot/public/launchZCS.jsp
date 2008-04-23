@@ -227,6 +227,7 @@
 	<c:param name='skin' value='${skin}' />
 	<c:param name="locale" value="${locale}" />
 	<c:param name='debug' value='${isDebug}' />
+	<c:param name="compress" value="${not isDebug}" />
 	<c:param name="templates" value="only" />
 	<c:param name="v" value="${vers}" />
 </c:url>"></script>
