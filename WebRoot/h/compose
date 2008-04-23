@@ -123,7 +123,8 @@
                                 <app:button  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="cc"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhACCc">
-                                        <input style='width:99%; height:18px;' id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);" size=100  name="cc">
+                                    	<textarea id="ccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="cc" onkeydown="return handleEnter(event);" 
+                                    		onkeypress="return handleEnter(event);">${fn:escapeXml(compose.cc)}</textarea>
                                         <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
                                     </div>
                                 </td>
@@ -132,7 +133,8 @@
                                 <app:button  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="bcc"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhAcBcc">
-                                        <input style='width:99%; height:18px;' id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);" size="100" name="bcc">
+                                        <textarea id="bccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="bcc" onkeydown="return handleEnter(event);" 
+                                        	onkeypress="return handleEnter(event);">${fn:escapeXml(compose.bcc)}</textarea>
                                         <br><div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
                                     </div>
                                 </td>
