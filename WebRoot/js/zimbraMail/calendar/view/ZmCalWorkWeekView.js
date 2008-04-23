@@ -16,7 +16,7 @@
  */
 
 ZmCalWorkWeekView = function(parent, posStyle, controller, dropTgt) {
-	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmController.CAL_WORK_WEEK_VIEW, 5, false);
+	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmId.VIEW_CAL_WORK_WEEK, 5, false);
 }
 
 ZmCalWorkWeekView.prototype = new ZmCalColView;

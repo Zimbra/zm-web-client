@@ -148,7 +148,7 @@ function(view) {
 
 ZmPageEditController.prototype._defaultView =
 function() {
-	return ZmController.NOTEBOOK_PAGE_EDIT_VIEW;
+	return ZmId.VIEW_NOTEBOOK_PAGE_EDIT;
 };
 
 ZmPageEditController.prototype._createNewView =

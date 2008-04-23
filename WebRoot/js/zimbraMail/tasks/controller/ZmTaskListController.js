@@ -124,7 +124,7 @@ function(name, callback) {
 // default callback before a view is shown - enable/disable nav buttons
 ZmTaskListController.prototype._preShowCallback =
 function(view, viewPushed) {
-	if (view == ZmController.TASKLIST_VIEW) {
+	if (view == ZmId.VIEW_TASKLIST) {
 		return ZmListController.prototype._preShowCallback.call(this, view, viewPushed);
 	}
 	return true;
@@ -132,7 +132,7 @@ function(view, viewPushed) {
 
 ZmTaskListController.prototype._defaultView =
 function() {
-	return ZmController.TASKLIST_VIEW;
+	return ZmId.VIEW_TASKLIST;
 };
 
 ZmTaskListController.prototype._getItemType =
@@ -154,7 +154,7 @@ function() {
 
 ZmTaskListController.prototype._createNewView =
 function(view) {
-	if (view == ZmController.TASK_VIEW) {
+	if (view == ZmId.VIEW_TASK) {
 		this._listView[view] = new ZmTaskView(this._container, DwtControl.ABSOLUTE_STYLE, this);
 	} else {
 		this._listView[view] = new ZmTaskListView(this._container, this, this._dropTgt);
@@ -274,7 +274,7 @@ function(listView) {
 
 ZmTaskListController.prototype._showTaskReadOnlyView =
 function(task) {
-	var viewId = ZmController.TASK_VIEW;
+	var viewId = ZmId.VIEW_TASK;
 	var calItemView = this._listView[viewId];
 
 	if (!calItemView) {
@@ -282,7 +282,7 @@ function(task) {
 		calItemView = this._listView[viewId];
 	}
 
-	calItemView.set(task, ZmController.TASKLIST_VIEW);
+	calItemView.set(task, ZmId.VIEW_TASKLIST);
 	this._resetOperations(this._toolbar[viewId], 1); // enable all buttons
 	this._navToolBar[viewId].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
 

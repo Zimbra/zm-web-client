@@ -92,8 +92,8 @@ ZmChatMemberListView.prototype._getHeaderList =
 function() {
     return null;
 	var headerList = new Array();
-    headerList.push(new DwtListHeaderItem(ZmChatMemberListView.ID_SHOW_ICON, null, "ImStartChat", 20, false, false, true));
-	headerList.push(new DwtListHeaderItem(ZmChatMemberListView.ID_NAME, ZmMsg.buddy));
+    headerList.push(new DwtListHeaderItem({id:ZmChatMemberListView.ID_SHOW_ICON, icon:"ImStartChat", width:20}));
+	headerList.push(new DwtListHeaderItem({id:ZmChatMemberListView.ID_NAME, text:ZmMsg.buddy}));
 	return headerList;
 };
 

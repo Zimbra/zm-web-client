@@ -19,6 +19,7 @@ ZmListView = function(params) {
 
 	if (arguments.length == 0) { return; }
 	
+	params.id = params.id || ZmId.getViewId(params.view);
 	DwtListView.call(this, params);
 
 	this.view = params.view;
@@ -442,7 +443,7 @@ function(clickedCol, ev) {
 			var idx = this._data[clickedCol.id].index;
 			var item = this._headerList[idx];
 			if (item && item._id.indexOf(ZmItem.F_SELECTION) != -1) {
-				var hdrId = DwtListView.HEADERITEM_ICON + item._id;
+				var hdrId = DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, item._field);
 				var hdrDiv = document.getElementById(hdrId);
 				if (hdrDiv) {
 					if (hdrDiv.className == "ImgTaskCheckboxCompleted") {
@@ -503,7 +504,7 @@ ZmListView.prototype.setSelectionHdrCbox =
 function(check) {
 	var idx = this.getColIndexForId(ZmItem.F_SELECTION);
 	var col = this._headerList ? this._headerList[idx] : null;
-	var hdrId = col ? (DwtListView.HEADERITEM_ICON + col._id) : null;
+	var hdrId = col ? DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, col._field) : null;
 	var hdrDiv = hdrId ? document.getElementById(hdrId) : null;
 	if (hdrDiv) {
 		hdrDiv.className = check
@@ -626,7 +627,7 @@ function(item) {
 ZmListView.prototype._getAttachmentToolTip =
 function(item) {
 	var tooltip = null;
-	var atts = item.getAttachments ? item.getAttachments() : [];
+	var atts = item && item.attachments ? item.attachments : [];
 	if (atts.length == 1) {
 		var info = ZmMimeTable.getInfo(atts[0].ct);
 		tooltip = info ? info.desc : null;

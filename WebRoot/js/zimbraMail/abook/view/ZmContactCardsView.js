@@ -19,7 +19,7 @@ ZmContactCardsView = function(params) {
 
 	params.className = params.className || "ZmContactCardsView";
 	params.posStyle = params.posStyle || Dwt.ABSOLUTE_STYLE;
-	params.view = ZmController.CONTACT_CARDS_VIEW;
+	params.view = ZmId.VIEW_CONTACT_CARDS;
 	ZmContactsBaseView.call(this, params);
 
 	this._setMouseEventHdlrs(); // needed by object manager
