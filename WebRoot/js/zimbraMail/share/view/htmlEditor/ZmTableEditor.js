@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -55,51 +55,54 @@ ZmTableEditor = {
 
 	// call this in the context of a dialog object that knows this stuff ;-)
 	__makeCommonWidgets : function() {
-		var params = {parent:this, noFillLabel:ZmMsg.auto};
+		var params = { parent:this, noFillLabel:ZmMsg.auto, parentElement: this._idBackgroundColor };
 		this._wBgColor = new DwtButtonColorPicker(params);
-		this._wBgColor.reparentHtmlElement(this._idBackgroundColor);
 		this._wBgColor.setImage("FontBackground");
 		this._wBgColor.showColorDisplay();
 
+                params.parentElement = this._idForegroundColor;
 		this._wFgColor = new DwtButtonColorPicker(params);
-		this._wFgColor.reparentHtmlElement(this._idForegroundColor);
 		this._wFgColor.setImage("FontColor");
 		this._wFgColor.showColorDisplay();
 
+                params.parentElement = this._idBorderColor;
 		this._wBorderColor = new DwtButtonColorPicker(params);
-		this._wBorderColor.reparentHtmlElement(this._idBorderColor);
 		this._wBorderColor.setImage("FontBorder");
 		this._wBorderColor.showColorDisplay();
 
-		this._wBorderStyle = new DwtSelect({parent:this, options:[ new DwtSelectOption("none", false, ZmMsg.none),
-							   new DwtSelectOption("solid", true, ZmMsg.borderStyleSolid),
-							   new DwtSelectOption("dashed", false, ZmMsg.borderStyleDashed),
-							   new DwtSelectOption("dotted", false, ZmMsg.borderStyleDotted),
-							   new DwtSelectOption("double", false, ZmMsg.borderStyleDouble),
-							   new DwtSelectOption("groove", false, ZmMsg.borderStyleGroove),
-							   new DwtSelectOption("ridge", false, ZmMsg.borderStyleRidge),
-							   new DwtSelectOption("inset", false, ZmMsg.borderStyleInset),
-							   new DwtSelectOption("outset", false, ZmMsg.borderStyleOutset) ]});
-		this._wBorderStyle.reparentHtmlElement(this._idBorderStyle);
+		this._wBorderStyle = new DwtSelect({ parent:this,
+                                                     options: [ new DwtSelectOption("none", false, ZmMsg.none),
+							        new DwtSelectOption("solid", true, ZmMsg.borderStyleSolid),
+							        new DwtSelectOption("dashed", false, ZmMsg.borderStyleDashed),
+							        new DwtSelectOption("dotted", false, ZmMsg.borderStyleDotted),
+							        new DwtSelectOption("double", false, ZmMsg.borderStyleDouble),
+							        new DwtSelectOption("groove", false, ZmMsg.borderStyleGroove),
+							        new DwtSelectOption("ridge", false, ZmMsg.borderStyleRidge),
+							        new DwtSelectOption("inset", false, ZmMsg.borderStyleInset),
+							        new DwtSelectOption("outset", false, ZmMsg.borderStyleOutset) ],
+                                                     parentElement: this._idBorderStyle
+                                                   });
 		this._wBorderStyle.addChangeListener(new AjxListener(this, ZmTableEditor.__onBorderStyleChange));
 
-		this._wBorderWidth = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
-		this._wBorderWidth.reparentHtmlElement(this._idBorderWidth);
+		this._wBorderWidth = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10, parentElement: this._idBorderWidth });
 
-		this._wTextAlign = new DwtSelect({parent:this, options:[ new DwtSelectOption("", true, ZmMsg.notSet),
-							 new DwtSelectOption("left", false, ZmMsg.left),
-							 new DwtSelectOption("center", false, ZmMsg.center),
-							 new DwtSelectOption("right", false, ZmMsg.right) ]});
-		this._wTextAlign.reparentHtmlElement(this._idTextAlign);
+		this._wTextAlign = new DwtSelect({parent:this,
+                                                  options: [ new DwtSelectOption("", true, ZmMsg.notSet),
+							     new DwtSelectOption("left", false, ZmMsg.left),
+							     new DwtSelectOption("center", false, ZmMsg.center),
+							     new DwtSelectOption("right", false, ZmMsg.right) ],
+                                                  parentElement: this._idTextAlign
+                                                 });
 
-		this._wTextVAlign = new DwtSelect({parent:this, options:[ new DwtSelectOption("", false, ZmMsg.notSet),
-							  new DwtSelectOption("top", false, ZmMsg.top),
-							  new DwtSelectOption("middle", true, ZmMsg.middle),
-							  new DwtSelectOption("bottom", false, ZmMsg.bottom) ]});
-		this._wTextVAlign.reparentHtmlElement(this._idTextVAlign);
+		this._wTextVAlign = new DwtSelect({ parent:this,
+                                                    options: [ new DwtSelectOption("", false, ZmMsg.notSet),
+							       new DwtSelectOption("top", false, ZmMsg.top),
+							       new DwtSelectOption("middle", true, ZmMsg.middle),
+							       new DwtSelectOption("bottom", false, ZmMsg.bottom) ],
+                                                    parentElement: this._idTextVAlign
+                                                  });
 
-		this._wWidth = new DwtSpinner({ parent: this, size : 3, min: 0 });
-		this._wWidth.reparentHtmlElement(this._idWidth);
+		this._wWidth = new DwtSpinner({ parent: this, size : 3, min: 0, parentElement: this._idWidth });
 	},
 
 	__onBorderStyleChange : function(ev) {
@@ -134,39 +137,43 @@ ZmTablePropsDialog = function(parent) {
 
 	ZmTableEditor.__makeCommonWidgets.call(this);
 
-	this._wAlign = new DwtSelect({parent:this, options:[ new DwtSelectOption("", true, ZmMsg.notSet),
-					     new DwtSelectOption("center", false, ZmMsg.center),
-					     new DwtSelectOption("left", false, ZmMsg.left),
-					     new DwtSelectOption("right", false, ZmMsg.right) ]});
-	this._wAlign.reparentHtmlElement(this._idAlign);
+	this._wAlign = new DwtSelect({ parent: this,
+                                       options: [ new DwtSelectOption("", true, ZmMsg.notSet),
+					          new DwtSelectOption("center", false, ZmMsg.center),
+					          new DwtSelectOption("left", false, ZmMsg.left),
+					          new DwtSelectOption("right", false, ZmMsg.right) ],
+                                       parentElement: this._idAlign
+                                     });
 
 	this._wCaption = new DwtInputField(
-	{ parent: this,
-			  type            : DwtInputField.STRING,
-			  size            : 38,
-			  maxLen          : 255,
-			  validationStyle : DwtInputField.CONTINUAL_VALIDATION });
-	this._wCaption.reparentHtmlElement(this._idCaption);
+	        { parent: this,
+		  type            : DwtInputField.STRING,
+		  size            : 38,
+		  maxLen          : 255,
+		  validationStyle : DwtInputField.CONTINUAL_VALIDATION,
+                  parentElement   : this._idCaption
+                });
 	this._wCaption.getInputElement().style.width = "100%";
 
 	this._wSummary = new DwtInputField(
-	{ parent: this,
-			  type            : DwtInputField.STRING,
-			  size            : 38,
-			  maxLen          : 255,
-			  validationStyle : DwtInputField.CONTINUAL_VALIDATION });
-	this._wSummary.reparentHtmlElement(this._idSummary);
+	        { parent: this,
+		  type            : DwtInputField.STRING,
+		  size            : 38,
+		  maxLen          : 255,
+		  validationStyle : DwtInputField.CONTINUAL_VALIDATION,
+                  parentElement   : this._idSummary
+                });
 	this._wSummary.getInputElement().style.width = "100%";
 
-	this._wWidthUnit = new DwtSelect({parent:this, options:[ new DwtSelectOption("%", false, ZmMsg.percent),
-						 new DwtSelectOption("px", true, ZmMsg.pixels) ]});
-	this._wWidthUnit.reparentHtmlElement(this._idWidthUnit);
+	this._wWidthUnit = new DwtSelect({ parent: this,
+                                           options: [ new DwtSelectOption("%", false, ZmMsg.percent),
+						      new DwtSelectOption("px", true, ZmMsg.pixels) ],
+                                           parentElement: this._idWidthUnit
+                                         });
 
-	this._wBorderSpacing = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
-	this._wBorderSpacing.reparentHtmlElement(this._idBorderSpacing);
+	this._wBorderSpacing = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10, parentElement: this._idBorderSpacing });
 
-	this._wCellPadding = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
-	this._wCellPadding.reparentHtmlElement(this._idCellPadding);
+	this._wCellPadding = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10, parentElement: this._idCellPadding });
 
 	var tmp = AjxCallback.simpleClosure(this._setManualWidthState, this);
 	document.getElementById(this._idWidthAuto).onclick = tmp;
@@ -384,14 +391,9 @@ ZmCellPropsDialog = function(parent) {
 
 	ZmTableEditor.__makeCommonWidgets.call(this);
 
-	this._wHeight = new DwtSpinner({ parent: this, size : 3, min: 0 });
-	this._wHeight.reparentHtmlElement(this._idHeight);
-
-	this._wHorizPadding = new DwtSpinner({ parent: this, size : 3, min: 0, max: 10 });
-	this._wHorizPadding.reparentHtmlElement(this._idHorizPadding);
-
-	this._wVertPadding = new DwtSpinner({ parent: this, size : 3, min: 0, max: 10 });
-	this._wVertPadding.reparentHtmlElement(this._idVertPadding);
+	this._wHeight = new DwtSpinner({ parent: this, size : 3, min: 0, parentElement: this._idHeight });
+	this._wHorizPadding = new DwtSpinner({ parent: this, size : 3, min: 0, max: 10, parentElement: this._idHorizPadding });
+	this._wVertPadding = new DwtSpinner({ parent: this, size : 3, min: 0, max: 10, parentElement: this._idVertPadding });
 
 	// insert the "quick borders buttons"
 	var table = document.getElementById(this._idQuickBorders);
@@ -401,10 +403,6 @@ ZmCellPropsDialog = function(parent) {
 	var quickSetListener = new AjxListener(this, this._quickSetBorder);
 	for (var i = 0; i < ZmCellPropsDialog.QUICK_BORDERS.length; ++i) {
 		var info = ZmCellPropsDialog.QUICK_BORDERS[i];
-		var btn = new DwtButton({parent:this, className:"TBButton"});
-		btn.setImage(info.img);
-		btn.setData("ZmTableEditor", info);
-		btn.addSelectionListener(quickSetListener);
 		if (cell_index == row.cells.length) {
 			cell_index = 0;
 			row = clrow.cloneNode(true);
@@ -412,7 +410,10 @@ ZmCellPropsDialog = function(parent) {
 		}
 		var td = row.cells[cell_index];
 		cell_index++;
-		btn.reparentHtmlElement(td);
+                var btn = new DwtButton({ parent: this, className: "TBButton", parentElement: td });
+		btn.setImage(info.img);
+		btn.setData("ZmTableEditor", info);
+		btn.addSelectionListener(quickSetListener);
 	}
 	clrow = null;
 

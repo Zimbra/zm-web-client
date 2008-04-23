@@ -1,4 +1,3 @@
-AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHETablePropsDialog");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmSpellChecker");
 AjxPackage.require("zimbraMail.share.view.htmlEditor.ZmHtmlEditor");
 
