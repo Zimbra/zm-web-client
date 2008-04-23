@@ -221,7 +221,8 @@
 	<jsp:param name="templates" value="split" />
 </jsp:include>
 </script>
-<c:if test="${not requestScope['skin.templates.included']}">
+<c:set var="INCLUDED" value="skin.templates.included" />
+<c:if test="${not empty requestScope[INCLUDED] and not requestScope[INCLUDED]}">
 	<script type="text/javascript" src="<c:url value='/js/skin.js'>
 	<c:param name='client' value='advanced' />
 	<c:param name='skin' value='${skin}' />
