@@ -142,7 +142,9 @@ function(compact) {
 			} else {
 				this._getPlugin();
 			}
-			this._playButton.setSelected(!compact);
+			if (this._isScriptable) {
+				this._playButton.setSelected(!compact);
+			}
 		}
 		this._isCompact = compact;
 
