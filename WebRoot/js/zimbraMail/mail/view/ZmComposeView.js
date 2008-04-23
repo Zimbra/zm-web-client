@@ -1640,7 +1640,6 @@ function(templateId, data) {
 ZmComposeView.prototype._toggleBccField = function(ev, force){
     var isBccFieldVisible = Dwt.getVisible(this._divEl[AjxEmailAddress.BCC]);
     if (typeof force != "undefined") isBccFieldVisible = !force;
-    Dwt.setInnerHtml(this._toggleBccEl, isBccFieldVisible? ZmMsg.showBCC : ZmMsg.hideBCC );
     this._showAddressField(AjxEmailAddress.BCC, !isBccFieldVisible);
 };
 
@@ -1847,6 +1846,9 @@ function(type, show, skipNotify, skipFocus) {
 	if (setting) {
 		appCtxt.set(setting, show, null, false, skipNotify);
 	}
+    if(type == AjxEmailAddress.BCC){
+       Dwt.setInnerHtml(this._toggleBccEl, show ? ZmMsg.hideBCC : ZmMsg.showBCC ); 
+    }
 	this._resetBodySize();
 };
 
