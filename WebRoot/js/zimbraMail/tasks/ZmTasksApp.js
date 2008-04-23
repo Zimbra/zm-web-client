@@ -20,7 +20,7 @@ ZmTasksApp = function(container) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_TASK			= ZmId.ITEM_TASK;
+ZmEvent.S_TASK			= "TASK";
 ZmItem.TASK				= ZmEvent.S_TASK;
 ZmOrganizer.TASKS		= ZmEvent.S_TASK;
 
@@ -190,7 +190,7 @@ function(params) {
 
 ZmTasksApp.prototype._handleLoadNewTaskFolder =
 function() {
-	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
+	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
 	var dialog = appCtxt.getNewTaskFolderDialog();
 	if (!this._newTaskFolderCb) {
 		this._newTaskFolderCb = new AjxCallback(this, this._newTaskFolderCallback);

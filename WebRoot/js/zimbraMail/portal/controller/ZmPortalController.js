@@ -63,7 +63,7 @@ ZmPortalController.prototype.setPaused = function(paused) {
 //
 
 ZmPortalController.prototype._defaultView = function() {
-	return ZmId.VIEW_PORTAL;
+	return ZmController.PORTAL_VIEW;
 };
 
 ZmPortalController.prototype._getToolBarOps = function() {

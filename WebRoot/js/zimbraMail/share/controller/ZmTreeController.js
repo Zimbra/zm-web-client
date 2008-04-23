@@ -316,7 +316,8 @@ function(overviewId) {
 		allowedTypes: this._getAllowedTypes(),
 		allowedSubTypes: this._getAllowedSubTypes()
 	};
-	params.id = ZmId.getTreeId(overviewId, params.type);
+	var idKey = ["TREE", params.overviewId, params.type].join("_").toUpperCase();
+	params.id = ZmId[idKey];
 	var treeView = this._createTreeView(params);
 	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
 	treeView.addTreeListener(new AjxListener(this, this._treeListener));
@@ -864,7 +865,7 @@ function(ev) {
             var rootTreeItem = treeView.getTreeItemById(rootId);
             if (!rootTreeItem) { return; }
             var treeItems = rootTreeItem.getItems();
-            if(treeItems && treeItems[i] && (treeItems[i].isFeed && treeItems[i].isFeed() || (treeItems[i].hasFeeds && treeItems[i].hasFeeds()))){
+            if(treeItems && treeItems[i] && (treeItems[i].isFeed() || (treeItems[i].hasFeeds && treeItems[i].hasFeeds()))){
                 this._syncFeeds(treeItems[i]);
             }
         }

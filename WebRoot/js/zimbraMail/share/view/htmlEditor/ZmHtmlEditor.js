@@ -568,13 +568,11 @@ ZmHtmlEditor.prototype._insertLinkListener = function() {
                 var html = AjxTemplate.expand("share.Dialogs#EditorInsertLink", { id: id });
                 dlg.setContent(html);
 
-                dlg.linkText = new DwtInputField({ parent        : dlg,
-                                                   size          : 40,
-                                                   parentElement : id + "_linkTextCont" });
+                dlg.linkText = new DwtInputField({ parent: dlg, size: 40 });
+                dlg.linkText.reparentHtmlElement(id + "_linkTextCont");
 
-                dlg.linkTarget = new DwtInputField({ parent        : dlg,
-                                                     size          : 40,
-                                                     parentElement : id + "_linkTargetCont" });
+                dlg.linkTarget = new DwtInputField({ parent: dlg, size: 40 });
+                dlg.linkTarget.reparentHtmlElement(id + "_linkTargetCont");
 
                 function getURL() {
                         var url = dlg.linkTarget.getValue();
@@ -585,9 +583,10 @@ ZmHtmlEditor.prototype._insertLinkListener = function() {
                         return url;
                 };
 
-                var btn = new DwtButton({ parent: dlg, parentElement: id + "_testBtnCont" });
+                var btn = new DwtButton({ parent: dlg });
                 btn.setText(ZmMsg.testUrl);
                 btn.setToolTipContent(ZmMsg.testUrlTooltip);
+                btn.reparentHtmlElement(id + "_testBtnCont");
                 btn.addSelectionListener(new AjxListener(this, function(){
                         window.open(getURL());
                 }));

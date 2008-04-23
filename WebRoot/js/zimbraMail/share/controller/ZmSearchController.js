@@ -77,27 +77,7 @@ function(name) {
 	var loadCallback = new AjxCallback(this, this._handleLoadFromBrowse, [name]);
 	this.showBrowseView(true, loadCallback);
 };
-/**
- *
- * @param pickers Array of pickers to show browser with
- * @param showBasic
- */
-ZmSearchController.prototype.showBrowsePickers =
-function(pickers,showBasic) {
-    showBasic = (!showBasic || showBasic == null)?true:showBasic;
-    //Pickers array
-    this.showBrowseView(true, null);
-    //now remove all pickers and add those from array
-    if(pickers instanceof Array){
-       this._browseViewController.removeAllPickers();
-       if(showBasic){ //
-           this._browseViewController.addPicker(ZmPicker.BASIC);
-       }
-       for(var i=0;i<pickers.length;i++){
-           this._browseViewController.addPicker(pickers[i]);
-       }
-    }
-}
+
 ZmSearchController.prototype._handleLoadFromBrowse =
 function(name, bv) {
 	this.setDefaultSearchType(ZmSearchToolBar.FOR_MAIL_MI);
@@ -356,11 +336,11 @@ function(types) {
 		var type = types.get(0);
 		var viewType;
 		switch (type) {
-			case ZmItem.CONV:		viewType = ZmId.VIEW_CONVLIST; break;
-			case ZmItem.MSG:		viewType = ZmId.VIEW_TRAD; break;
-			case ZmItem.CONTACT:	viewType = ZmId.VIEW_CONTACT_SIMPLE; break;
-			case ZmItem.APPT:		viewType = ZmId.VIEW_CAL; break;
-			case ZmItem.TASK:		viewType = ZmId.VIEW_TASKLIST; break;
+			case ZmItem.CONV:		viewType = ZmController.CONVLIST_VIEW; break;
+			case ZmItem.MSG:		viewType = ZmController.TRAD_VIEW; break;
+			case ZmItem.CONTACT:	viewType = ZmController.CONTACT_SIMPLE_VIEW; break;
+			case ZmItem.APPT:		viewType = ZmController.CAL_VIEW; break;
+			case ZmItem.TASK:		viewType = ZmController.TASKLIST_VIEW; break;
 			// more types go here as they are suported...
 		}
 

@@ -33,12 +33,12 @@ function() {
 
 ZmCallListController.prototype._defaultView =
 function() {
-	return ZmId.VIEW_CALL_LIST;
+	return ZmController.CALLLIST_VIEW;
 };
 
 ZmCallListController.prototype._getViewType = 
 function() {
-	return ZmId.VIEW_CALL_LIST;
+	return ZmController.CALLLIST_VIEW;
 };
 
 ZmCallListController.prototype._getItemType =

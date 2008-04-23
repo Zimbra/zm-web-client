@@ -37,7 +37,7 @@ ZmConvController = function(container, mailApp) {
 
 	this._convDeleteListener = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
-	this._msgControllerMode = ZmId.VIEW_CONV;
+	this._msgControllerMode = ZmController.CONV_VIEW;
 }
 
 ZmConvController.prototype = new ZmDoublePaneController;
@@ -171,7 +171,7 @@ function() {
 
 ZmConvController.prototype._getViewType =
 function() {
-	return ZmId.VIEW_CONV;
+	return ZmController.CONV_VIEW;
 }
 
 ZmConvController.prototype._getItemType =
@@ -310,7 +310,7 @@ function() {
 
 	// bug fix #4356 - if currViewId is compose (among other restrictions) then still pop
 	var popAnyway = false;
-	if (currViewId == ZmId.VIEW_COMPOSE && this._conv.numMsgs == 1 && this._conv.msgs) {
+	if (currViewId == ZmController.COMPOSE_VIEW && this._conv.numMsgs == 1 && this._conv.msgs) {
 		var msg = this._conv.msgs.getArray()[0];
 		popAnyway = msg.isInvite() && msg.folderId == ZmFolder.ID_TRASH;
 	}
