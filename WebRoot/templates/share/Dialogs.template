@@ -298,6 +298,22 @@
   </table>
 </template>
 
+<template id="share.Dialogs#EditorInsertLink">
+  <table class="ZmHEDialog"><tr><td>
+    <fieldset class="ZmFieldset">
+      <legend class="ZmLegend"><$= ZmMsg.linkText $></legend>
+      <$= ZmMsg.linkTextDesc $><br />
+      <div id="${id}_linkTextCont"></div>
+    </fieldset>
+    <fieldset class="ZmFieldset">
+      <legend class="ZmLegend"><$= ZmMsg.linkTarget $></legend>
+      <$= ZmMsg.linkTargetDesc $><br />
+      <table cellspacing="0" cellpadding="0"><tr><td id="${id}_linkTargetCont" style="padding-right: 5px">
+      </td><td id="${id}_testBtnCont"></td></tr></table>
+    </fieldset>
+  </td></tr></table>
+</template>
+
 <template id="share.Dialogs#NewSearch">
 	<table cellpadding='0' cellspacing='0' border='0'>
 		<tr>

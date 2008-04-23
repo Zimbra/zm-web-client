@@ -150,7 +150,7 @@ function(insertFontStyle, onlyInnerContent ) {
     } else {
 		content = document.getElementById(this._textAreaId).value;
 	}
-	
+
 	return content;
 };
 
@@ -559,6 +559,59 @@ function(ev) {
 	this.setIndent(ev.item.getData(ZmHtmlEditor._VALUE));
 };
 
+ZmHtmlEditor.prototype._insertLinkListener = function() {
+        var dlg = this._insertLinkDialog;
+        if (!dlg) {
+                dlg = this._insertLinkDialog = new DwtDialog({ parent : DwtShell.getShell(window),
+                                                               title  : ZmMsg.linkProperties });
+                var id = dlg.base_id = Dwt.getNextId();
+                var html = AjxTemplate.expand("share.Dialogs#EditorInsertLink", { id: id });
+                dlg.setContent(html);
+
+                dlg.linkText = new DwtInputField({ parent: dlg, size: 40 });
+                dlg.linkText.reparentHtmlElement(id + "_linkTextCont");
+
+                dlg.linkTarget = new DwtInputField({ parent: dlg, size: 40 });
+                dlg.linkTarget.reparentHtmlElement(id + "_linkTargetCont");
+
+                function getURL() {
+                        var url = dlg.linkTarget.getValue();
+                        if (!/^(https?|ftp):\x2f\x2f/i.test(url)) {
+                                url = "http://" + url;
+                                dlg.linkTarget.setValue(url);
+                        }
+                        return url;
+                };
+
+                var btn = new DwtButton({ parent: dlg });
+                btn.setText(ZmMsg.testUrl);
+                btn.setToolTipContent(ZmMsg.testUrlTooltip);
+                btn.reparentHtmlElement(id + "_testBtnCont");
+                btn.addSelectionListener(new AjxListener(this, function(){
+                        window.open(getURL());
+                }));
+
+                dlg._tabGroup.addMember(dlg.linkText, 0);
+                dlg._tabGroup.addMember(dlg.linkTarget, 1);
+                dlg._tabGroup.addMember(btn, 2);
+
+                dlg.registerCallback(DwtDialog.OK_BUTTON, new AjxListener(this, function(){
+                        this.insertLink({ text : dlg.linkText.getValue(),
+                                          url  : getURL() });
+                        dlg.popdown();
+                }));
+        }
+        var link = this.getLinkProps();
+        dlg.linkText.setValue(link.text || "");
+        dlg.linkTarget.setValue(link.url || "");
+        dlg.popup();
+        if (/\S/.test(link.text)) {
+                dlg.linkTarget.focus();
+        } else {
+                dlg.linkText.focus();
+        }
+};
+
 ZmHtmlEditor.prototype._insElementListener =
 function(ev) {
 	var elType = ev.item.getData(ZmHtmlEditor._VALUE);
@@ -691,6 +744,11 @@ function(tb) {
 	this._horizRuleButton.setToolTipContent(ZmMsg.horizRule);
 	this._horizRuleButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
 	this._horizRuleButton.addSelectionListener(new AjxListener(this, this._insElementListener));
+
+        this._insertLinkButton = new DwtToolBarButton(params);
+        this._insertLinkButton.setImage("URL");
+        this._insertLinkButton.setToolTipContent(ZmMsg.insertLink);
+        this._insertLinkButton.addSelectionListener(new AjxListener(this, this._insertLinkListener));
 
 // BEGIN: Table operations
 	var b = new DwtToolBarButton(params);
@@ -1597,7 +1655,7 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 			var enableFocus = false;
 			var dwtev = DwtShell.mouseEvent;
 			dwtev.setFromDhtmlEvent(ev, true);
-            
+
             //bug: 24782 - we dont have option to get info related to toolbar button selection
 			var kbMgr = DwtShell.getShell(window).getKeyboardMgr();
 			if(kbMgr && kbMgr.__focusObj) {
