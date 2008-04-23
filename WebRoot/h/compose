@@ -114,7 +114,7 @@
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhACTo">
                                     <textarea  id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" 
-                                                               name="to">${fn:escapeXml(compose.to)}</textarea>
+                                                               name="to" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);">${fn:escapeXml(compose.to)}</textarea>
                                         <br><div class='ZhACCont' id="toContainer" style='width:99%;top:3em;'></div></div>
                                 </td>
                             </tr>
