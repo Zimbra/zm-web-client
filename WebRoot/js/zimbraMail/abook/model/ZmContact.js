@@ -222,8 +222,12 @@ function(contact) {
 		case ZmContact.FA_LAST_C_FIRST: 										// Last, First
 		default: {
 			// if GAL contact, use full name instead (bug fix #4850,4009)
-			if (contact && contact.isGal)
-				return (attr.fullName || attr.email);
+			if (contact && contact.isGal) {
+				if (attr.fullName) { // bug fix #27428 - if fullName is Array, return first
+					return (attr.fullName instanceof Array) ? attr.fullName[0] : attr.fullName;
+				}
+				return attr.email;
+			}
 			fa = ZmContact.fileAsLastFirst(attr.firstName, attr.lastName);
 		}
 		break;
@@ -787,7 +791,7 @@ function() {
 	if (!this._fullName) {
 		var fullName = this.getAttr(ZmContact.X_fullName); // present if GAL contact
 		if (fullName) {
-			this._fullName = fullName;
+			this._fullName = (fullName instanceof Array) ? fullName[0] : fullName;
 		} else {
 			var fn = [];
 			var idx = 0;
@@ -802,8 +806,9 @@ function() {
 	}
 
 	// as a last resort, set it to fileAs
-	if (!this._fullName)
+	if (!this._fullName) {
 		this._fullName = this.getFileAs();
+	}
 
 	return this._fullName;
 };
