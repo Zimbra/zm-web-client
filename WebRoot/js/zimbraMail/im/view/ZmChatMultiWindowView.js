@@ -30,6 +30,8 @@ ZmChatMultiWindowView = function(parent, className, posStyle, controller) {
 	this._initX = 20;
 	this._initY = 20;
 
+	this._setEventHdlrs([DwtEvent.ONMOUSEUP]);
+
 	// This is a singleton.  Why on Earth should I jump to 20
 	// source files just to figure out how to get a reference to
 	// it is beyond me.  I'm a simple guy, so I'll just store this

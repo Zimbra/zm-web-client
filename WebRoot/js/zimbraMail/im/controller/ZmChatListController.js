@@ -35,15 +35,12 @@ ZmChatListController = function(container, imApp) {
 	this._listeners[ZmOperation.NEW_MENU] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 
-	this._viewFactory = {};
-	this._viewFactory[ZmId.VIEW_IM_CHAT_MULTI_WINDOW] = ZmChatMultiWindowView;
-
 	this._parentView = {};
 
 	// listen for roster list changes
 	this._rosterListListener = new AjxListener(this, this._rosterListChangeListener);
 
-        imApp.getRoster().addChangeListener(new AjxListener(this, this._rosterChangeListener));
+	imApp.getRoster().addChangeListener(new AjxListener(this, this._rosterChangeListener));
 
 	var rosterList = imApp.getRoster().getRosterItemList();
 	rosterList.addChangeListener(this._rosterListListener);
@@ -213,8 +210,9 @@ ZmChatListController.prototype._setViewContents = function(view) {
 };
 
 ZmChatListController.prototype._createNewView = function(view) {
-	var view = this._parentView[view] = new this._viewFactory[view](this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
+	var view = this._parentView[view] = new ZmChatMultiWindowView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
 	view.set(this._list);
+	view.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));
 	//view.setDragSource(this._dragSrc);
 	return view;
 };
@@ -380,5 +378,22 @@ ZmChatListController.prototype._rosterListChangeListener = function(ev) {
 				}
 			}
 		}
+	}
+};
+
+ZmChatListController.prototype._mouseUpListener =
+function(ev) {
+	if (ev.button == DwtMouseEvent.RIGHT) {
+		if (!this._contextMenu) {
+			var newChat = ZmOperation.IM_NEW_CHAT;
+			var menuArgs = {
+				parent: DwtShell.getShell(window),
+				menuItems: [newChat]
+			};
+			this._contextMenu = new ZmActionMenu(menuArgs);
+			var treeController = ZmImApp.INSTANCE.getRosterTreeController();
+			this._contextMenu.getOp(newChat).addSelectionListener(treeController._listeners[newChat]);
+		}
+		this._contextMenu.popup(0, ev.docX,  ev.docY);
 	}
 };

@@ -146,7 +146,8 @@ function() {
 			    defaultSort	      : 50,
 			    newOrgOps		  : newOrgOps,
 			    newItemOps        : newItemOps,
-				actionCodes		  : actionCodes
+				actionCodes		  : actionCodes,
+				newActionCode	  :	ZmKeyMap.NEW_CHAT
 			  });
 };
 
