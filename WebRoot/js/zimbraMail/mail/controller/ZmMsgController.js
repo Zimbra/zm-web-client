@@ -34,9 +34,9 @@ ZmMsgController = function(container, mailApp) {
 };
 
 ZmMsgController.MODE_TO_CONTROLLER = {};
-ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_TRAD]		= "GetTradController";
-ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_CONV]		= "GetConvController";
-ZmMsgController.MODE_TO_CONTROLLER[ZmId.VIEW_CONVLIST]	= "GetConvListController";
+ZmMsgController.MODE_TO_CONTROLLER[ZmController.TRAD_VIEW]		= "GetTradController";
+ZmMsgController.MODE_TO_CONTROLLER[ZmController.CONV_VIEW]		= "GetConvController";
+ZmMsgController.MODE_TO_CONTROLLER[ZmController.CONVLIST_VIEW]	= "GetConvListController";
 
 ZmMsgController.prototype = new ZmMailListController;
 ZmMsgController.prototype.constructor = ZmMsgController;
@@ -175,7 +175,7 @@ function() {
 
 ZmMsgController.prototype._getViewType =
 function() {
-	return ZmId.VIEW_MSG;
+	return ZmController.MSG_VIEW;
 };
 
 ZmMsgController.prototype._initializeListView =
@@ -184,7 +184,7 @@ function(view) {
 		var params = {
 			parent: this._container,
 			posStyle: Dwt.ABSOLUTE_STYLE,
-			mode: ZmId.VIEW_MSG,
+			mode: ZmController.MSG_VIEW,
 			controller: this
 		};
 		this._listView[view] = new ZmMailMsgView(params);

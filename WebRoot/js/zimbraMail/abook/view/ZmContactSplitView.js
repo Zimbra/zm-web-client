@@ -212,8 +212,7 @@ function(controller, dropTgt) {
 
 		for (var i = 0; i < this._tabs.length; i++) {
 			var tab = this._tabs[i] = AjxStringUtil.trim(this._tabs[i]);
-			var tabButtonId = ZmId.getTabId(this._controller._currentView, tab);
-			var idx = this._contactTabView.addTab(ZmMsg[tab], null, tabButtonId);
+			var idx = this._contactTabView.addTab(ZmMsg[tab]);
 			var view = new DwtTabViewPage(this._contactTabView, "ZmContactTabViewPage");
 			view._setAllowSelection();
 			view.setScrollStyle(Dwt.SCROLL);
@@ -452,12 +451,15 @@ function(tagId) {
 //////////////////////////////////////////////////////////////////////////////
 ZmContactSimpleView = function(params) {
 
-	params.view = ZmId.VIEW_CONTACT_SIMPLE;
+	params.view = ZmController.CONTACT_SIMPLE_VIEW;
 	params.className = "ZmContactSimpleView";
 	ZmContactsBaseView.call(this, params);
 
 	this._normalClass = DwtListView.ROW_CLASS + " SimpleContact";
 	this._selectedClass = [DwtListView.ROW_CLASS, DwtCssStyle.SELECTED].join("-") + " SimpleContact";
+
+	// handle a GAL ID such as:		V_CNS_uid=user5,ou=people,dc=pshahmacbook,dc=local
+	this._parseIdRegex = /^V_([A-Z]+)_([a-z]*)_(.+)$/
 };
 
 ZmContactSimpleView.prototype = new ZmContactsBaseView;
@@ -502,7 +504,7 @@ ZmContactSimpleView.prototype._changeListener =
 function(ev) {
 	// not sure if checking for the view is the right thing to do :/
 	if (ev.event != ZmEvent.E_CREATE &&
-		appCtxt.getCurrentViewId() != ZmId.VIEW_CONTACT_SIMPLE)
+		appCtxt.getCurrentViewId() != ZmController.CONTACT_SIMPLE_VIEW)
 	{
 		return;
 	}

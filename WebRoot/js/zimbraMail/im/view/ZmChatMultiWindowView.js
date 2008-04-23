@@ -19,7 +19,7 @@ ZmChatMultiWindowView = function(parent, className, posStyle, controller) {
 	if (arguments.length == 0) return;
 	className = className ? className : "ZmChatMultiWindowView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
-	ZmChatBaseView.call(this, parent, className, posStyle, controller, ZmId.VIEW_IM_CHAT_TAB);
+	ZmChatBaseView.call(this, parent, className, posStyle, controller, ZmController.IM_CHAT_TAB_VIEW);
 	var dropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
 	this.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropListener, [ dropTgt ]));
@@ -29,8 +29,6 @@ ZmChatMultiWindowView = function(parent, className, posStyle, controller) {
 	this._chatIdToChatWidget = {};
 	this._initX = 20;
 	this._initY = 20;
-
-	this._setEventHdlrs([DwtEvent.ONMOUSEUP]);
 
 	// This is a singleton.  Why on Earth should I jump to 20
 	// source files just to figure out how to get a reference to

@@ -34,7 +34,8 @@
 ZmConvDoublePaneView = function(params) {
 
 	params.className = params.className || "ZmConvDoublePaneView";
-	params.mode = ZmId.VIEW_CONVLIST;
+	params.mode = ZmController.CONVLIST_VIEW;
+	params.msgViewId = ZmId.CLV_MSG;
 	ZmDoublePaneView.call(this, params);
 }
 
@@ -50,6 +51,7 @@ ZmConvDoublePaneView.prototype._createMailListView =
 function(params) {
 	params.parent = this;
 	params.posStyle = Dwt.ABSOLUTE_STYLE;
+	params.id = ZmId.CLV_LIST;
 	return new ZmConvListView(params);
 };
 
@@ -61,7 +63,7 @@ function(params) {
 ZmConvListView = function(params) {
 
 	params.headerList = this._getHeaderList(parent);
-	params.view = ZmId.VIEW_CONVLIST;
+	params.view = ZmController.CONVLIST_VIEW;
 	params.type = ZmItem.CONV;
 	ZmMailListView.call(this, params);
 
@@ -69,7 +71,7 @@ ZmConvListView = function(params) {
 	this._handleEventType[ZmItem.CONV] = true;
 	this._handleEventType[ZmItem.MSG] = true;
 
-	this._mode = ZmId.VIEW_CONVLIST;
+	this._mode = ZmController.CONVLIST_VIEW;
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 	this._msgRowIdList = {};	// hash of lists, each list has row IDs for an expandable item
 };
@@ -102,13 +104,13 @@ function(defaultColumnSort) {
 	var isFolder = this._resetFromColumnLabel();
 	// set the received column name based on query string
 	colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
-	var headerCol = this._headerHash[ZmItem.F_DATE];
-	var recdColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
+	var recdColIdx = this.getColIndexForId(ZmItem.F_DATE);
+	var recdColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
 	if (recdColSpan) {
 		recdColSpan.innerHTML = "&nbsp;" + colLabel;
 	}
 	if (this._colHeaderActionMenu) {
-		this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
+		this._colHeaderActionMenu.getItem(recdColIdx).setText(colLabel);
 	}
 };
 
@@ -138,30 +140,27 @@ ZmConvListView.prototype._getHeaderList =
 function(parent) {
 
 	var hList = [];
+
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON,
-										  name:ZmMsg.selection}));
+		hList.push(new DwtListHeaderItem(ZmItem.F_SELECTION, null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.selection));
 	}
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_EXPAND, icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON,
-									  name:ZmMsg.expand}));
+	hList.push(new DwtListHeaderItem(ZmItem.F_EXPAND, null, "NodeCollapsed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.expand));
 	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_FLAG, icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON,
-										  name:ZmMsg.flag}));
+		hList.push(new DwtListHeaderItem(ZmItem.F_FLAG, null, "FlagRed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.flag));
 	}
     if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        hList.push(new DwtListHeaderItem({field:ZmItem.F_PRIORITY, icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON,
-        								  name:ZmMsg.priority}));
+        hList.push(new DwtListHeaderItem(ZmItem.F_PRIORITY, null, "PriorityHigh_list", ZmListView.COL_WIDTH_NARROW_ICON, null, null, null, ZmMsg.priority));
     }
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag}));
+		hList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
 	}
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.from, width:ZmConvListView.COL_WIDTH_FROM, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment}));
-    hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE}));
+	hList.push(new DwtListHeaderItem(ZmItem.F_STATUS, null, "MsgStatus", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.status));
+	hList.push(new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.from, null, ZmConvListView.COL_WIDTH_FROM, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
+    hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT, null, null, null, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmMsg.COLUMN_WIDTH_FOLDER, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmMsg.COLUMN_WIDTH_SIZE, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.received, null, ZmMsg.COLUMN_WIDTH_DATE, ZmItem.F_DATE));
 
 	return hList;
 };
@@ -250,8 +249,7 @@ function(conv, fieldId) {
 	var origLen = part1 ? part1.length : 0;
 	// might get a weird case where there are no participants in message
 	if (origLen > 0) {
-		var headerCol = this._headerHash[ZmItem.F_FROM];
-		var partColWidth = headerCol._width;
+		var partColWidth = this._headerList[this.getColIndexForId(ZmItem.F_FROM)]._width;
 		var part2 = this._fitParticipants(part1, conv.participantsElided, partColWidth);
 		for (var j = 0; j < part2.length; j++) {
 			if (j == 1 && (conv.participantsElided || part2.length < origLen)) {
@@ -259,7 +257,7 @@ function(conv, fieldId) {
 			} else if (part2.length > 1 && j > 0) {
 				html[idx++] = ", ";
 			}
-			var spanId = [fieldId, part2[j].index].join(DwtId.SEP);
+			var spanId = [fieldId, part2[j].index].join("_");
 			html[idx++] = "<span style='white-space: nowrap' id='";
 			html[idx++] = spanId;
 			html[idx++] = "'>";
@@ -328,10 +326,7 @@ function(conv, msg, offset) {
 			var msg = a[offset + i];
 			var div = this._createItemHtml(msg, {now:this._now});
 			this._addRow(div, index + i + 1);
-			var list = this._msgRowIdList[item.id];
-			if (list) {
-				list.push(div.id);
-			}
+			this._msgRowIdList[item.id].push(div.id);
 		}
 	}
 
@@ -626,7 +621,7 @@ function(ev) {
 		var dateField = document.getElementById(fieldId);
 		if (dateField) {
 			var html = [];
-			this._getCellContents(html, 0, item, ZmItem.F_DATE, this._headerHash[ZmItem.F_DATE]._index, new Date());
+			this._getCellContents(html, 0, item, ZmItem.F_DATE, this.getColIndexForId(ZmItem.F_DATE), new Date());
 			dateField.innerHTML = html.join("");
 		}
 	}

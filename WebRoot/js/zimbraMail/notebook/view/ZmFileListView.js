@@ -19,7 +19,7 @@ ZmFileListView = function(params) {
 
 	// call super constructor
 	var headerList = params.headerList = this._getHeaderList(parent);
-	params.view = ZmId.VIEW_NOTEBOOK_FILE;
+	params.view = ZmController.NOTEBOOK_FILE_VIEW;
 	params.type = ZmItem.PAGE;
 	ZmListView.call(this, params);
 
@@ -64,16 +64,17 @@ function(parent) {
 	// Columns: tag, name, type, size, date, owner, folder
 	var headers = [];
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headers.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmFileListView.COLWIDTH_ICON, name:ZmMsg.tag}));
+		headers.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmFileListView.COLWIDTH_ICON, null, null, true, ZmMsg.tag));
 	}
 	headers.push(
-		new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"Globe", width:ZmFileListView.COLWIDTH_ICON}),
-		new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg._name, resizeable:true}),
-		new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmFileListView.COLWIDTH_TYPE}),
-		new DwtListHeaderItem({field:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmFileListView.COLWIDTH_SIZE}),
-		new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.date, width:ZmFileListView.COLWIDTH_DATE}),
-		new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.owner, width:ZmFileListView.COLWIDTH_OWNER}),
-		new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmFileListView.COLWIDTH_FOLDER})
+		// new DwtListHeaderItem(id, label, icon, width, sortable, resizeable, visible, tt)
+		new DwtListHeaderItem(ZmItem.F_TYPE, null, "Globe", ZmFileListView.COLWIDTH_ICON),
+		new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg._name, null, null, null, true),
+		new DwtListHeaderItem(ZmItem.F_FILE_TYPE, ZmMsg.type, null, ZmFileListView.COLWIDTH_TYPE),
+		new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmFileListView.COLWIDTH_SIZE),
+		new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.date, null, ZmFileListView.COLWIDTH_DATE),
+		new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.owner, null, ZmFileListView.COLWIDTH_OWNER),
+		new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmFileListView.COLWIDTH_FOLDER)
 	);
 	return headers;
 };

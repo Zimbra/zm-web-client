@@ -35,11 +35,11 @@ ZmMailApp = function(container, parentController) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_CONV				= ZmId.ITEM_CONV;
-ZmEvent.S_MSG				= ZmId.ITEM_MSG;
-ZmEvent.S_ATT				= ZmId.ITEM_ATT;
-ZmEvent.S_FOLDER			= ZmId.ORG_FOLDER;
-ZmEvent.S_DATA_SOURCE       = ZmId.ITEM_DATA_SOURCE;
+ZmEvent.S_CONV				= "CONV";
+ZmEvent.S_MSG				= "MSG";
+ZmEvent.S_ATT				= "ATT";
+ZmEvent.S_FOLDER			= "FOLDER";
+ZmEvent.S_DATA_SOURCE       = "DATA SOURCE";
 ZmEvent.S_IDENTITY       	= "IDENTITY";
 ZmEvent.S_SIGNATURE			= "SIGNATURE";
 ZmItem.CONV					= ZmEvent.S_CONV;
@@ -993,7 +993,7 @@ function(refresh) {
 		var req = appCtxt.currentRequestParams;
 		if (appCtxt.getCurrentAppName() == this._name && req.resend && req.methodName == "NoOpRequest") {
 			var curView = appCtxt.getCurrentViewId();
-			if (curView == ZmId.VIEW_CONVLIST || curView == ZmId.VIEW_TRAD) {
+			if (curView == ZmController.CONVLIST_VIEW || curView == ZmController.TRAD_VIEW) {
 				appCtxt.getSearchController().redoSearch(this.currentSearch);
 			}
 		}
@@ -1371,19 +1371,19 @@ function(ev) {
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
 		if (setting.id == ZmSetting.PAGE_SIZE) {
-			if (curView != ZmId.VIEW_MSG) {
+			if (curView != ZmController.MSG_VIEW) {
 				newView = groupByView || curView;
 			}
 		} else if (setting.id == ZmSetting.INITIAL_GROUP_MAIL_BY) {
-			if (curView == ZmId.VIEW_CONVLIST || curView == ZmId.VIEW_TRAD) {
+			if (curView == ZmController.CONVLIST_VIEW || curView == ZmController.TRAD_VIEW) {
 				var value = appCtxt.get(setting.id);
-				var view = (value == ZmSetting.GROUP_BY_CONV) ? ZmId.VIEW_CONVLIST : ZmId.VIEW_TRAD;
+				var view = (value == ZmSetting.GROUP_BY_CONV) ? ZmController.CONVLIST_VIEW : ZmController.TRAD_VIEW;
 				if (view != curView) {
 					groupByView = view;
 				}
 			}
 		} else if (setting.id == ZmSetting.SHOW_FRAGMENTS) {
-			if (curView != ZmId.VIEW_MSG) {
+			if (curView != ZmController.MSG_VIEW) {
 				newView = groupByView || curView;
 			}
 		}

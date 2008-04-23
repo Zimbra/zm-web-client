@@ -35,12 +35,15 @@ ZmChatListController = function(container, imApp) {
 	this._listeners[ZmOperation.NEW_MENU] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 
+	this._viewFactory = {};
+	this._viewFactory[ZmController.IM_CHAT_MULTI_WINDOW_VIEW] = ZmChatMultiWindowView;
+
 	this._parentView = {};
 
 	// listen for roster list changes
 	this._rosterListListener = new AjxListener(this, this._rosterListChangeListener);
 
-	imApp.getRoster().addChangeListener(new AjxListener(this, this._rosterChangeListener));
+        imApp.getRoster().addChangeListener(new AjxListener(this, this._rosterChangeListener));
 
 	var rosterList = imApp.getRoster().getRosterItemList();
 	rosterList.addChangeListener(this._rosterListListener);
@@ -51,15 +54,15 @@ ZmChatListController.prototype = new ZmController;
 ZmChatListController.prototype.constructor = ZmChatListController;
 
 ZmChatListController.ICON = new Object();
-//ZmChatListController.ICON[ZmId.VIEW_IM_CHAT_TAB]		= "SinglePane"; // TODO: get real icon
-ZmChatListController.ICON[ZmId.VIEW_IM_CHAT_MULTI_WINDOW]	= "OpenInNewWindow"; // TODO: get real icon
+//ZmChatListController.ICON[ZmController.IM_CHAT_TAB_VIEW]		= "SinglePane"; // TODO: get real icon
+ZmChatListController.ICON[ZmController.IM_CHAT_MULTI_WINDOW_VIEW]	= "OpenInNewWindow"; // TODO: get real icon
 
 ZmChatListController.MSG_KEY = new Object();
-//ZmChatListController.MSG_KEY[ZmId.VIEW_IM_CHAT_TAB]	= "imChatTabbed";
-ZmChatListController.MSG_KEY[ZmId.VIEW_IM_CHAT_MULTI_WINDOW]= "imChatMultiWindow";
+//ZmChatListController.MSG_KEY[ZmController.IM_CHAT_TAB_VIEW]	= "imChatTabbed";
+ZmChatListController.MSG_KEY[ZmController.IM_CHAT_MULTI_WINDOW_VIEW]= "imChatMultiWindow";
 
-//ZmChatListController.VIEWS = [ZmId.VIEW_IM_CHAT_TAB, ZmId.VIEW_IM_CHAT_MULTI_WINDOW];
-ZmChatListController.VIEWS = [ZmId.VIEW_IM_CHAT_MULTI_WINDOW];
+//ZmChatListController.VIEWS = [ZmController.IM_CHAT_TAB_VIEW, ZmController.IM_CHAT_MULTI_WINDOW_VIEW];
+ZmChatListController.VIEWS = [ZmController.IM_CHAT_MULTI_WINDOW_VIEW];
 
 ZmChatListController.prototype.toString =
 function() {
@@ -151,7 +154,7 @@ function() {
 
 ZmChatListController.prototype._defaultView =
 function() {
-	return (appCtxt.get(ZmSetting.IM_VIEW) == "tabbed") ? ZmId.VIEW_IM_CHAT_TAB : ZmId.VIEW_IM_CHAT_MULTI_WINDOW;
+	return (appCtxt.get(ZmSetting.IM_VIEW) == "tabbed") ? ZmController.IM_CHAT_TAB_VIEW : ZmController.IM_CHAT_MULTI_WINDOW_VIEW;
 };
 
 ZmChatListController.prototype._initializeToolBar = function(view) {
@@ -210,9 +213,8 @@ ZmChatListController.prototype._setViewContents = function(view) {
 };
 
 ZmChatListController.prototype._createNewView = function(view) {
-	var view = this._parentView[view] = new ZmChatMultiWindowView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
+	var view = this._parentView[view] = new this._viewFactory[view](this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
 	view.set(this._list);
-	view.addListener(DwtEvent.ONMOUSEUP, new AjxListener(this, this._mouseUpListener));
 	//view.setDragSource(this._dragSrc);
 	return view;
 };
@@ -378,22 +380,5 @@ ZmChatListController.prototype._rosterListChangeListener = function(ev) {
 				}
 			}
 		}
-	}
-};
-
-ZmChatListController.prototype._mouseUpListener =
-function(ev) {
-	if (ev.button == DwtMouseEvent.RIGHT) {
-		if (!this._contextMenu) {
-			var newChat = ZmOperation.IM_NEW_CHAT;
-			var menuArgs = {
-				parent: DwtShell.getShell(window),
-				menuItems: [newChat]
-			};
-			this._contextMenu = new ZmActionMenu(menuArgs);
-			var treeController = ZmImApp.INSTANCE.getRosterTreeController();
-			this._contextMenu.getOp(newChat).addSelectionListener(treeController._listeners[newChat]);
-		}
-		this._contextMenu.popup(0, ev.docX,  ev.docY);
 	}
 };

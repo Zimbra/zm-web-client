@@ -26,11 +26,11 @@ ZmImApp = function(container) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_CHAT        			= ZmId.ITEM_CHAT;
+ZmEvent.S_CHAT        			= "CHAT";
 ZmEvent.S_ROSTER				= "ROSTER";
-ZmEvent.S_ROSTER_ITEM			= ZmId.ITEM_ROSTER;
-ZmEvent.S_ROSTER_TREE_ITEM		= ZmId.ORG_ROSTER_TREE_ITEM;
-ZmEvent.S_ROSTER_TREE_GROUP		= ZmId.ORG_ROSTER_TREE_GROUP;
+ZmEvent.S_ROSTER_ITEM			= "ROSTER ITEM";
+ZmEvent.S_ROSTER_TREE_ITEM		= "ROSTER TREE ITEM";
+ZmEvent.S_ROSTER_TREE_GROUP		= "ROSTER TREE GROUP";
 ZmItem.CHAT						= ZmEvent.S_CHAT;
 ZmItem.ROSTER_ITEM				= ZmEvent.S_ROSTER_ITEM;
 ZmOrganizer.ROSTER_TREE_ITEM	= ZmEvent.S_ROSTER_TREE_ITEM;
@@ -146,8 +146,7 @@ function() {
 			    defaultSort	      : 50,
 			    newOrgOps		  : newOrgOps,
 			    newItemOps        : newItemOps,
-				actionCodes		  : actionCodes,
-				newActionCode	  :	ZmKeyMap.NEW_CHAT
+				actionCodes		  : actionCodes
 			  });
 };
 
@@ -466,9 +465,6 @@ ZmImApp.prototype.activate =
 function(active) {
 	if (active) {
 		this.stopAlert(ZmImApp.ALERT_APP_TAB);
-		if (this._toast && this._toast.isPoppedUp()) {
-			this._toast.transition();
-		}
 	}
 	return ZmApp.prototype.activate.call(this, active);
 };
@@ -568,29 +564,6 @@ ZmImApp.prototype.playAlert = function(type){
             appCtxt.getSimpleSoundPlayer().play(appContextPath+"/public/sounds/im/alert.wav");
             break;
     }
-};
-
-ZmImApp.prototype.showToast = function(chat, chatMessage){
-	if (!this._toast) {
-		this._toast = new ZmImToast(appCtxt.getAppController().statusView);
-	}
-	if (this._toast.isPoppedUp()) {
-		return;
-	}
-	var msgArgs = {
-		body: chatMessage.body,
-		from: chat.getDisplayName(chatMessage.from, false)
-	}
-	for (var i in msgArgs) {
-		msgArgs[i] = AjxStringUtil.htmlEncode(AjxStringUtil.clipByLength(msgArgs[i], 30));
-	}
-	var args = {
-		msg: AjxTemplate.expand("im.Chat#ToastText", msgArgs),
-		level: ZmStatusView.LEVEL_INFO,
-		transitions: [ ZmToast.FADE_IN, ZmImToast.REMAIN, ZmToast.PAUSE, ZmToast.FADE_OUT ],
-		toast: this._toast
-	};
-	appCtxt.setStatusMsg(args);
 };
 
 ZmImApp.prototype.startAlert = function() {

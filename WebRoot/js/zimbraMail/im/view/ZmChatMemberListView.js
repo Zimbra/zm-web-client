@@ -21,7 +21,7 @@ ZmChatMemberListView = function(parent, rosterList) {
 	this.type = ZmItem.ROSTER_ITEM;
 	this.rosterList = rosterList;
 	this.rosterList.addChangeListener(new AjxListener(this, this._rosterListChangeListener));
-	this._view = ZmId.VIEW_IM_CHAT_MEMBER_LIST;
+    this._viewPrefix = Dwt.getNextId() + "_";
     this.set(rosterList.getVector().clone());
 };
 
@@ -58,7 +58,7 @@ function(width, height) {
 
 ZmChatMemberListView.prototype._getFieldId =
 function(item, id) {
-	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item.id, id);
+	return this.getViewPrefix() + id + item.id;
 };
 
 ZmChatMemberListView.prototype._setNoResultsHtml = 
@@ -92,8 +92,8 @@ ZmChatMemberListView.prototype._getHeaderList =
 function() {
     return null;
 	var headerList = new Array();
-    headerList.push(new DwtListHeaderItem({field:ZmChatMemberListView.ID_SHOW_ICON, icon:"ImStartChat", width:20}));
-	headerList.push(new DwtListHeaderItem({field:ZmChatMemberListView.ID_NAME, text:ZmMsg.buddy}));
+    headerList.push(new DwtListHeaderItem(ZmChatMemberListView.ID_SHOW_ICON, null, "ImStartChat", 20, false, false, true));
+	headerList.push(new DwtListHeaderItem(ZmChatMemberListView.ID_NAME, ZmMsg.buddy));
 	return headerList;
 };
 
@@ -108,7 +108,7 @@ function(clickedEl, ev) {
 	}
 };
 
-// NOTE: this is adapted from ZmListView but we no longer derive from it
+// NOTE: this is taken from ZmListView but we no longer derive from it
 ZmChatMemberListView.prototype._setListEvent =
 function (ev, listEv, clickedEl) {
 
@@ -127,7 +127,11 @@ function (ev, listEv, clickedEl) {
 // NOTE: this is taken from ZmListView but we no longer derive from it
 ZmChatMemberListView.prototype._parseId =
 function(id) {
-	return ZmListView.prototype._parseId.apply(this, arguments);
+	var m = id.match(/^V(\d+)_([a-z]?)((DWT)?-?\d+)_?(\d*)$/);
+	if (m)
+		return {view: m[1], field: m[2], item: m[3], participant: m[5]};
+	else
+		return null;
 };
 
 ZmChatMemberListView.prototype._sortColumn = 
@@ -149,6 +153,11 @@ function(ev) {
             break;
         }
    }
+};
+
+ZmChatMemberListView.prototype.getViewPrefix = 
+function() {
+	return this._viewPrefix;
 };
 
 ZmChatMemberListView.prototype._rosterItemChangeListener =

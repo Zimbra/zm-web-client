@@ -24,7 +24,6 @@ ZmGroupView = function(parent, controller) {
 	this.setScrollStyle(Dwt.CLIP);
 	this._offset = 0;
 	this._defaultQuery = ".";
-	this._view = ZmId.VIEW_GROUP;
 };
 
 ZmGroupView.prototype = new ZmContactView;
@@ -714,8 +713,7 @@ function(contact, abridged) {
 */
 ZmGroupListView = function(parent) {
 	if (arguments.length == 0) return;
-	DwtListView.call(this, {parent:parent, className:"DwtChooserListView",
-							headerList:this._getHeaderList(parent), view:parent._view});
+	DwtListView.call(this, {parent:parent, className:"DwtChooserListView", headerList:this._getHeaderList(parent)});
 };
 
 ZmGroupListView.prototype = new DwtListView;
@@ -734,11 +732,10 @@ function(items) {
 
 ZmGroupListView.prototype._getHeaderList =
 function() {
-	var view = this._view;
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"Contact", width:20}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:100}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email}));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_TYPE, null, "Contact", 20));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg._name, null, 100));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.email));
 	return headerList;
 };
 
@@ -778,7 +775,7 @@ ZmGroupMembersListView.prototype.constructor = ZmGroupMembersListView;
 ZmGroupMembersListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email, view:this._view}));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.email));
 	return headerList;
 };
 

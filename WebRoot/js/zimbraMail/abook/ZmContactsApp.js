@@ -37,11 +37,11 @@ ZmContactsApp = function(container, parentController) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_CONTACT				= ZmId.ITEM_CONTACT;
-ZmEvent.S_GROUP					= ZmId.ITEM_GROUP;
+ZmEvent.S_CONTACT				= "CONTACT";
+ZmEvent.S_GROUP					= "GROUP";
 ZmItem.CONTACT					= ZmEvent.S_CONTACT;
 ZmItem.GROUP					= ZmEvent.S_GROUP;
-ZmOrganizer.ADDRBOOK			= ZmId.ORG_ADDRBOOK;
+ZmOrganizer.ADDRBOOK			= "ADDRBOOK";
 
 // App-related constants
 ZmApp.CONTACTS							= ZmId.APP_CONTACTS;
@@ -388,7 +388,7 @@ function(contact) {
 
 ZmContactsApp.prototype._handleLoadNewAddrBook =
 function() {
-	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
+	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
 	var dialog = appCtxt.getNewAddrBookDialog();
 	if (!this._newAddrBookCb) {
 		this._newAddrBookCb = new AjxCallback(this, this._newAddrBookCallback);

@@ -97,13 +97,13 @@ function() {
 
 	// set the from column name based on query string
 	var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
-	var headerCol = this._headerHash[ZmItem.F_FROM];
-	var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
+	var fromColIdx = this.getColIndexForId(ZmItem.F_FROM);
+	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
 	if (fromColSpan) {
 		fromColSpan.innerHTML = "&nbsp;" + colLabel;
 	}
 	if (this._colHeaderActionMenu) {
-		this._colHeaderActionMenu.getItem(headerCol._index).setText(colLabel);
+		this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
 	}
 
 	return isFolder;
@@ -185,7 +185,7 @@ function(field, item, ev, div, match) {
 		tooltip = this._getParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
 	} else if (field == ZmItem.F_SUBJECT) {
 		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
-			tooltip = item.invite.getToolTip();
+			tooltip = item.getInvite().getToolTip();
 		} else if (appCtxt.get(ZmSetting.SHOW_FRAGMENTS)) {
 		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
             if (tooltip == "") {

@@ -19,7 +19,8 @@ ZmConvView = function(params) {
 
 	params.className = "ZmConvView";
 	params.posStyle = Dwt.ABSOLUTE_STYLE;
-	params.mode = ZmId.VIEW_CONV;
+	params.mode = ZmController.CONV_VIEW;
+	params.msgViewId = ZmId.CV_MSG;
 	ZmDoublePaneView.call(this, params);
 
 	this._changeListener = new AjxListener(this, this._convChangeListener);
@@ -108,6 +109,7 @@ function() {
 
 ZmConvView.prototype._createMailListView =
 function(params) {
+	params.id = ZmId.CV_LIST;
 	return ZmDoublePaneView.prototype._createMailListView.apply(this, arguments);
 };
 

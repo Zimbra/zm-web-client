@@ -23,18 +23,16 @@
  *
  * @author Conrad Damon
  *
- * @param params		[hash]				hash of params:
- *        parent		[DwtComposite] 		parent widget
- *        posStyle		[constant]*			positioning style
- *        controller	[ZmController]		owning controller
+ * @param parent			[DwtControl]				the containing widget
+ * @param posStyle			[constant]					positioning style
+ * @param controller		[ZmPrefController]			prefs controller
  */
-ZmPrefView = function(params) {
+ZmPrefView = function(parent, posStyle, controller) {
 
-	params.className = "ZmPrefView";
-	DwtTabView.call(this, params);
+	DwtTabView.call(this, parent, "ZmPrefView", posStyle);
 
-	this._parent = params.parent;
-	this._controller = params.controller;
+	this._parent = parent;
+	this._controller = controller;
 
 	this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = {};
@@ -42,7 +40,7 @@ ZmPrefView = function(params) {
     this._hasRendered = false;
 
 	this.setVisible(false);
-}
+};
 
 ZmPrefView.prototype = new DwtTabView;
 ZmPrefView.prototype.constructor = ZmPrefView;
@@ -79,8 +77,7 @@ function() {
 			? (section.createView(this._parent, section, this._controller))
 			: (new ZmPreferencesPage(this, section, this._controller));
 		this.prefView[section.id] = view;
-		var tabButtonId = ZmId.getTabId(this._controller._currentView, section.title);
-		var tabId = this.addTab(section.title, view, tabButtonId);
+		var tabId = this.addTab(section.title, view);
         this._tabId[section.id] = tabId;
     }
 

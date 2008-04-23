@@ -39,6 +39,7 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view) {
 	
 	this._controller = controller;
 	this.view = view;	
+	this._viewPrefix = ["V", "_", this.view, "_"].join("");
 	this._evtMgr = new AjxEventMgr();	 
 	this._selectedItems = new AjxVector();
 	this._selEv = new DwtSelectionEvent(true);
@@ -154,6 +155,11 @@ ZmCalBaseView.prototype._setItemData =
 function(id, field, value) {
 	DwtListView.prototype._setItemData.apply(this, arguments);
 };
+
+ZmCalBaseView.prototype._getViewPrefix = 
+function() { 
+	return this._viewPrefix;
+}
 
 ZmCalBaseView.prototype.deselectAll =
 function() {
@@ -449,7 +455,7 @@ function() {
 
 ZmCalBaseView.prototype._getItemId =
 function(item) {
-	return item ? DwtId.getListViewItemId(DwtId.WIDGET_ITEM, this.view, item.getUniqueId()) : null;
+	return item ? (this._getViewPrefix()+item.getUniqueId()) : null;
 };
 
 ZmCalBaseView.prototype.addTimeSelectionListener = 
