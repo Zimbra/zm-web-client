@@ -28,7 +28,6 @@ ZmFilterRulesView = function(parent, controller) {
     this._title = [ZmMsg.zimbraTitle, controller.getApp().getDisplayName(), section && section.title].join(": ");
 
 	this._rendered = false;
-	this._viewPrefix = "F_";
 
 	this._tabGroup = new DwtTabGroup(this._htmlElId);
 };
@@ -64,7 +63,7 @@ function() {
 	}
 
 	// create list view
-	var listViewEl = document.getElementById(data.id+"_list");
+	var listViewEl = document.getElementById(data.id + "_list");
 	if (listViewEl) {
 		this._listView = new ZmFilterListView(this, this._controller);
 		this._listView.replaceElement(listViewEl);
@@ -111,7 +110,8 @@ ZmFilterRulesView.prototype.reset = function() {};
 */
 ZmFilterListView = function(parent, controller) {
 	var headerList = this._getHeaderList();
-	DwtListView.call(this, {parent:parent, className:"ZmFilterListView", headerList:headerList});
+	DwtListView.call(this, {parent:parent, className:"ZmFilterListView", headerList:headerList,
+							view:ZmId.VIEW_FILTER_RULES});
 
 	this._rules = AjxDispatcher.run("GetFilterRules");
 
@@ -155,8 +155,8 @@ function(list) {
 ZmFilterListView.prototype._getHeaderList =
 function() {
 	return [
-		(new DwtListHeaderItem({id:ZmFilterListView.COL_ACTIVE, text:ZmMsg.active, width:ZmFilterListView.COL_WIDTH_ACTIVE})),
-		(new DwtListHeaderItem({id:ZmFilterListView.COL_NAME, text:ZmMsg.filterName}))
+		(new DwtListHeaderItem({field:ZmFilterListView.COL_ACTIVE, text:ZmMsg.active, width:ZmFilterListView.COL_WIDTH_ACTIVE})),
+		(new DwtListHeaderItem({field:ZmFilterListView.COL_NAME, text:ZmMsg.filterName}))
 	];
 };
 

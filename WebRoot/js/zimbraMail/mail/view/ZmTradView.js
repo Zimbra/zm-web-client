@@ -19,7 +19,6 @@ ZmTradView = function(params) {
 
 	params.className = params.className || "ZmTradView";
 	params.mode = ZmId.VIEW_TRAD;
-//	params.msgViewId = ZmId.TV_MSG;
 	ZmDoublePaneView.call(this, params);
 }
 
@@ -33,6 +32,5 @@ function() {
 
 ZmTradView.prototype._createMailListView =
 function(params) {
-//	params.id = ZmId.TV_LIST;
 	return ZmDoublePaneView.prototype._createMailListView.apply(this, arguments);
 };

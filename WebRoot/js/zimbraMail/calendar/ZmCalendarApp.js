@@ -26,7 +26,7 @@ ZmCalendarApp = function(container) {
 };
 
 // Organizer and item-related constants
-ZmEvent.S_APPT				= ZmId.ITEM_APPT;
+ZmEvent.S_APPT				= ZmId.ITEM_APPOINTMENT;
 ZmEvent.S_RESOURCE			= ZmId.ITEM_RESOURCE;
 ZmItem.APPT					= ZmEvent.S_APPT;
 ZmItem.RESOURCE				= ZmEvent.S_RESOURCE;

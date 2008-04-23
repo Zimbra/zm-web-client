@@ -69,21 +69,21 @@ function(parent) {
 	var headers = [];
 	var view = this._view;
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		headers.push(new DwtListHeaderItem({id:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON,
+		headers.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON,
 											name:ZmMsg.selection}));
 	}	
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headers.push(new DwtListHeaderItem({id:ZmItem.F_TAG, icon:"Tag", width:ZmDetailListView.COLWIDTH_ICON,
+		headers.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmDetailListView.COLWIDTH_ICON,
 											name:ZmMsg.tag}));
 	}	
 	headers.push(
-		new DwtListHeaderItem({id:ZmItem.F_TYPE, icon:"Globe", width:ZmDetailListView.COLWIDTH_ICON}),
-		new DwtListHeaderItem({id:ZmItem.F_SUBJECT, text:ZmMsg._name}),
-		new DwtListHeaderItem({id:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmDetailListView.COLWIDTH_TYPE}),
-		new DwtListHeaderItem({id:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmDetailListView.COLWIDTH_SIZE}),
-		new DwtListHeaderItem({id:ZmItem.F_DATE, text:ZmMsg.date, width:ZmDetailListView.COLWIDTH_DATE}),
-		new DwtListHeaderItem({id:ZmItem.F_FROM, text:ZmMsg.owner, width:ZmDetailListView.COLWIDTH_OWNER}),
-		new DwtListHeaderItem({id:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmDetailListView.COLWIDTH_FOLDER})
+		new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"Globe", width:ZmDetailListView.COLWIDTH_ICON}),
+		new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg._name}),
+		new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmDetailListView.COLWIDTH_TYPE}),
+		new DwtListHeaderItem({field:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmDetailListView.COLWIDTH_SIZE}),
+		new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.date, width:ZmDetailListView.COLWIDTH_DATE}),
+		new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.owner, width:ZmDetailListView.COLWIDTH_OWNER}),
+		new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmDetailListView.COLWIDTH_FOLDER})
 	);
 	return headers;
 };

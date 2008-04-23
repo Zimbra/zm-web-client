@@ -42,8 +42,8 @@ function(defaultColumnSort) {
 
 ZmCallListView.prototype._setColumnHeader = 
 function(fieldId, label) {
-	var index = this.getColIndexForId(fieldId);
-	var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, this._headerList[index]._field));
+	var headerCol = this._headerHash[fieldId];
+	var fromColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
 	if (fromColSpan) {
 		fromColSpan.innerHTML = "&nbsp;" + label;
 	}
@@ -54,9 +54,9 @@ ZmCallListView.prototype._getHeaderList =
 function() {
 
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem({id:ZmVoiceListView.F_CALLER, text:ZmMsg.from, width:ZmCallListView.FROM_WIDTH, resizeable:true}));
-	headerList.push(new DwtListHeaderItem({id:ZmVoiceListView.F_DURATION, text:ZmMsg.duration, width:ZmCallListView.DURATION_WIDTH, sortable:ZmVoiceListView.F_DURATION, resizeable:true}));
-	headerList.push(new DwtListHeaderItem({id:ZmVoiceListView.F_DATE, text:ZmMsg.received, width:ZmCallListView.DATE_WIDTH, sortable:ZmVoiceListView.F_DATE, resizeable:true}));
+	headerList.push(new DwtListHeaderItem({field:ZmVoiceListView.F_CALLER, text:ZmMsg.from, width:ZmCallListView.FROM_WIDTH, resizeable:true}));
+	headerList.push(new DwtListHeaderItem({field:ZmVoiceListView.F_DURATION, text:ZmMsg.duration, width:ZmCallListView.DURATION_WIDTH, sortable:ZmVoiceListView.F_DURATION, resizeable:true}));
+	headerList.push(new DwtListHeaderItem({field:ZmVoiceListView.F_DATE, text:ZmMsg.received, width:ZmCallListView.DATE_WIDTH, sortable:ZmVoiceListView.F_DATE, resizeable:true}));
 
 	return headerList;
 };
