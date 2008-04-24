@@ -1769,8 +1769,6 @@ function() {
 ZmZimbraMail.prototype._postLoadZimlet =
 function() {
 	appCtxt.setZimletsPresent(true);
-	this._settings.registerSetting("ZIMLET_TREE_OPEN",
-		{name:"zimbraPrefZimletTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	ZmOrganizer.registerOrg(ZmOrganizer.ZIMLET,
 							{orgClass:			"ZmZimlet",
 							 treeController:	"ZmZimletTreeController",

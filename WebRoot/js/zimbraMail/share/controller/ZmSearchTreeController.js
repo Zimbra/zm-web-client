@@ -73,6 +73,8 @@ function(params) {
     if (dataTree) {
 		params.dataTree = dataTree;
 		params.searchTypes = searchTypes;
+        var setting = ZmOrganizer.OPEN_SETTING[this.type];
+        params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
 		this._treeView[id].set(params);
 		this._checkTreeView(id, params.account);
 	}
