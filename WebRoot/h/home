@@ -28,6 +28,22 @@
 <c:if test="${not empty param.collapse}">
     <c:set target="${sessionScope.expanded}" property="${param.collapse}" value="collapse"/>
 </c:if>
+<c:set var="toolbar">
+    <table width=100% cellspacing=0>
+        <tr valign='middle'>
+            <td class='TbBt'>
+                <table cellspacing=0 cellpadding=0 class='Tb'>
+                    <tr>
+                        <td>
+                            <c:set var="refreshUrl" value="/h/home" />
+                            <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span style='padding-left:5px'><fmt:message key="refresh"/></span></a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</c:set>
 </app:handleError>
 
 <c:if test="${param.mesg eq 'welcome'}">
