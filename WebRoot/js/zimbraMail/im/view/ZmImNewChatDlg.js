@@ -92,13 +92,18 @@ ZmImNewChatDlg.prototype._autocompleteCallback = function(text, el, match) {
 };
 
 ZmImNewChatDlg.prototype._okButtonListener = function() {
-	if (this._callbacks.onOK)
-		this._callbacks.onOK(this._selectedItem);
-	this.popdown();
+	var doPopdown = true;
+	if (this._callbacks.onOk) {
+		doPopdown = this._callbacks.onOk(this._selectedItem, this._contactField.getValue());
+	}
+	if (doPopdown) {
+		this.popdown();
+	}
 };
 
 ZmImNewChatDlg.prototype._cancelButtonListener = function() {
-	if (this._callbacks.onCancel)
+	if (this._callbacks.onCancel) {
 		this._callbacks.onCancel();
+	}
 	this.popdown();
 };
