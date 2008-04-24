@@ -53,66 +53,6 @@ ZmId = function() {}
 // Element IDs, and functions to generate them
 //
 
-// containers defined by the skin
-ZmId.SKIN_APP_BOTTOM_TOOLBAR		= "skin_container_app_bottom_toolbar";
-ZmId.SKIN_APP_CHOOSER				= "skin_container_app_chooser";
-ZmId.SKIN_APP_MAIN_FULL				= "skin_container_app_main_full";
-ZmId.SKIN_APP_MAIN					= "skin_container_app_main";
-ZmId.SKIN_APP_MAIN_ROW_FULL			= "skin_tr_main_full";
-ZmId.SKIN_APP_MAIN_ROW				= "skin_tr_main";
-ZmId.SKIN_APP_TOP_TOOLBAR			= "skin_container_app_top_toolbar";
-ZmId.SKIN_CURRENT_APP				= "skin_container_current_app";
-ZmId.SKIN_LOGO						= "skin_container_logo";
-ZmId.SKIN_OFFLINE_STATUS			= "skin_container_offline_status";
-ZmId.SKIN_QUOTA_INFO				= "skin_container_quota";
-ZmId.SKIN_PRESENCE					= "skin_container_presence";
-ZmId.SKIN_SASH						= "skin_container_tree_app_sash";
-ZmId.SKIN_SEARCH_BUILDER			= "skin_container_search_builder";
-ZmId.SKIN_SEARCH_BUILDER_TOOLBAR	= "skin_container_search_builder_toolbar";
-ZmId.SKIN_SEARCH_BUILDER_TR			= "skin_tr_search_builder";
-ZmId.SKIN_SEARCH					= "skin_container_search";
-ZmId.SKIN_SHELL						= "skin_outer";
-ZmId.SKIN_SPACING_SEARCH			= "skin_spacing_search";
-ZmId.SKIN_SPLASH_SCREEN				= "skin_container_splash_screen";
-ZmId.SKIN_STATUS					= "skin_container_status";
-ZmId.SKIN_STATUS_ROW				= "skin_tr_status";
-ZmId.SKIN_TREE_FOOTER				= "skin_container_tree_footer";
-ZmId.SKIN_TREE						= "skin_container_tree";
-ZmId.SKIN_USER_INFO					= "skin_container_username";
-ZmId.SKIN_WEB_SEARCH				= "skin_container_web_search";
-
-// top-level components
-ZmId.SHELL					= "z_shell";			// the main shell
-ZmId.LOADING_VIEW			= "z_loading";			// "Loading..." view
-ZmId.MAIN_SASH				= "z_sash";				// sash between overview and content
-ZmId.BANNER					= "z_banner";			// logo (at upper left by default)
-ZmId.USER_NAME				= "z_userName";			// account name
-ZmId.USER_QUOTA				= "z_userQuota";		// quota
-ZmId.PRESENCE				= "z_presence";			// presence
-ZmId.CURRENT_APP_TOOLBAR	= "ztb_currentApp";		// current app toolbar (above overview)
-ZmId.NEW_FOLDER_BUTTON		= "zb_newFolder";		// New Folder button on current app toolbar
-ZmId.STATUS_VIEW			= "z_status";			// status view (shows toast)
-ZmId.TOAST					= "z_toast";			// toast
-ZmId.APP_CHOOSER			= "ztb_appChooser";		// app chooser toolbar
-
-// search panel
-ZmId.SEARCH_TOOLBAR			= "ztb_search";			// search toolbar
-ZmId.SEARCH_INPUT			= "zi_search";			// text input in search toolbar
-ZmId.CUSTOM_SEARCH_BUTTON	= "zb_searchCustom";	// custom search button
-ZmId.SEARCH_MENU_BUTTON		= "zb_searchMenu";		// menu with choices of types to search for
-ZmId.SEARCH_BUTTON			= "zb_search";			// button that triggers the search
-ZmId.SAVE_SEARCH_BUTTON		= "zb_searchSave";		// button for creating a saved search
-ZmId.ADVANCED_SEARCH_BUTTON	= "zb_searchAdvanced";	// opens/closes advanced search
-ZmId.LOCAL_SEARCH_BUTTON	= "zb_searchLocal";		// local search button (created by local zimlet)
-ZmId.SEARCH_MENU_ALL		= "zmi_searchAll";		// search menu item for all types
-ZmId.SEARCH_MENU_SHARED		= "zmi_searchShared";	// search menu item (check) to include shared items
-ZmId.SEARCH_MENU_CONTACTS	= "zmi_searchContacts";	// search menu item for contacts
-ZmId.SEARCH_MENU_GAL		= "zmi_searchGal";		// search menu item for GAL
-ZmId.SEARCH_MENU_APPTS		= "zmi_searchAppts";	// search menu item for appointments
-ZmId.SEARCH_MENU_MAIL		= "zmi_searchMail";		// search menu item for email
-ZmId.SEARCH_MENU_PAGES		= "zmi_searchPages";	// search menu item for notebook pages/files
-ZmId.SEARCH_MENU_TASKS		= "zmi_searchTasks";	// search menu item for tasks
-
 // app buttons in the app chooser toolbar
 
 /**
@@ -188,62 +128,16 @@ function(context, op, menuType) {
 	return [ZmId.WIDGET_MENU_ITEM, AjxStringUtil.toMixed(context, "_", true), AjxStringUtil.toMixed(op, "_")].join("");
 };
 
-// conv list view (CLV)
-ZmId.CLV_LIST				= "z_clvListView";		// conv list view
-ZmId.CLV_MSG				= "z_clvMsgView";		// msg view within conv list view
-ZmId.CLV_TOOLBAR			= "ztb_clv";			// top toolbar within conv list view
+ZmId.getOverviewId =
+function(overview) {
+	return [ZmId.WIDGET_OVERVIEW, overview.toLowerCase()].join("");
+};
 
-// traditional (msg) list view (TV)
-ZmId.TV_LIST				= "z_tvListView";		// msg list view
-ZmId.TV_MSG					= "z_tvMsgView";		// msg view within msg list view
-ZmId.TV_TOOLBAR				= "ztb_tv";				// top toolbar within msg list view
-
-// single conv view (CV)
-ZmId.CV_LIST				= "z_cvListView";		// msg list within conv view
-ZmId.CV_MSG					= "z_cvMsgView";		// msg view within conv view
-ZmId.CV_TOOLBAR				= "ztb_cv";				// top toolbar within conv view
-
-// msg view (MV)
-ZmId.MSG_TOOLBAR			= "ztb_msg";
-
-// overviews, trees, and tree items
-
-// main overviews
-ZmId.OVERVIEW_MAIL					= "zov_mail";
-ZmId.OVERVIEW_CONTACTS				= "zov_contacts";
-ZmId.OVERVIEW_CALENDAR				= "zov_calendar";
-ZmId.OVERVIEW_NOTEBOOK				= "zov_notebook";
-ZmId.OVERVIEW_TASKS					= "zov_tasks";
-ZmId.OVERVIEW_BRIEFCASE				= "zov_briefcase";
-
-// trees within the main overviews
-ZmId.TREE_MAIL_FOLDER			= "zt_mailFolder";
-ZmId.TREE_MAIL_SEARCH			= "zt_mailSearch";
-ZmId.TREE_MAIL_TAG				= "zt_mailTag";
-ZmId.TREE_MAIL_ZIMLET			= "zt_mailZimlet";
-
-ZmId.TREE_CONTACTS_ADDRBOOK		= "zt_contactsAddrbook";
-ZmId.TREE_CONTACTS_SEARCH		= "zt_contactsSearch";
-ZmId.TREE_CONTACTS_TAG			= "zt_contactsTag";
-ZmId.TREE_CONTACTS_ZIMLET		= "zt_contactsZimlet";
-
-ZmId.TREE_CALENDAR_CALENDAR		= "zt_calendarCalendar";
-ZmId.TREE_CALENDAR_SEARCH		= "zt_calendarSearch";
-ZmId.TREE_CALENDAR_TAG			= "zt_calendarTag";
-ZmId.TREE_CALENDAR_ZIMLET		= "zt_calendarZimlet";
-
-ZmId.TREE_NOTEBOOK_NOTEBOOK		= "zt_notebookNotebook";
-ZmId.TREE_NOTEBOOK_TAG			= "zt_notebookTag";
-ZmId.TREE_NOTEBOOK_ZIMLET		= "zt_notebookZimlet";
-
-ZmId.TREE_BRIEFCASE_BRIEFCASE	= "zt_briefcaseBriefcase";
-ZmId.TREE_BRIEFCASE_TAG			= "zt_briefcaseTag";
-ZmId.TREE_BRIEFCASE_ZIMLET		= "zt_briefcaseZimlet";
-
-ZmId.TREE_TASKS_TASKS			= "zt_tasksTasks";
-ZmId.TREE_TASKS_SEARCH			= "zt_tasksSearch";
-ZmId.TREE_TASKS_TAG				= "zt_tasksTag";
-ZmId.TREE_TASKS_ZIMLET			= "zt_tasksZimlet";
+ZmId.getTreeId =
+function(overviewId, orgType) {
+	var text = AjxStringUtil.toMixed([overviewId, orgType].join(" "), " ", true);
+	return [ZmId.WIDGET_TREE, text].join("");
+};
 
 /**
  * Returns a tree item ID based on the underlying organizer and the overview ID (since the same
@@ -271,7 +165,110 @@ function(overviewId, organizerId, type) {
 	}
 };
 
-ZmId._OV_MAIL = "Mail";
+// containers defined by the skin
+ZmId.SKIN_APP_BOTTOM_TOOLBAR		= "skin_container_app_bottom_toolbar";
+ZmId.SKIN_APP_CHOOSER				= "skin_container_app_chooser";
+ZmId.SKIN_APP_MAIN_FULL				= "skin_container_app_main_full";
+ZmId.SKIN_APP_MAIN					= "skin_container_app_main";
+ZmId.SKIN_APP_MAIN_ROW_FULL			= "skin_tr_main_full";
+ZmId.SKIN_APP_MAIN_ROW				= "skin_tr_main";
+ZmId.SKIN_APP_TOP_TOOLBAR			= "skin_container_app_top_toolbar";
+ZmId.SKIN_CURRENT_APP				= "skin_container_current_app";
+ZmId.SKIN_LINKS						= "skin_container_links";
+ZmId.SKIN_LOGO						= "skin_container_logo";
+ZmId.SKIN_OFFLINE_STATUS			= "skin_container_offline_status";
+ZmId.SKIN_QUOTA_INFO				= "skin_container_quota";
+ZmId.SKIN_PRESENCE					= "skin_container_presence";
+ZmId.SKIN_SASH						= "skin_container_tree_app_sash";
+ZmId.SKIN_SEARCH_BUILDER			= "skin_container_search_builder";
+ZmId.SKIN_SEARCH_BUILDER_TOOLBAR	= "skin_container_search_builder_toolbar";
+ZmId.SKIN_SEARCH_BUILDER_TR			= "skin_tr_search_builder";
+ZmId.SKIN_SEARCH					= "skin_container_search";
+ZmId.SKIN_SHELL						= "skin_outer";
+ZmId.SKIN_SPACING_SEARCH			= "skin_spacing_search";
+ZmId.SKIN_SPLASH_SCREEN				= "skin_container_splash_screen";
+ZmId.SKIN_STATUS					= "skin_container_status";
+ZmId.SKIN_STATUS_ROW				= "skin_tr_status";
+ZmId.SKIN_TREE_FOOTER				= "skin_container_tree_footer";
+ZmId.SKIN_TREE						= "skin_container_tree";
+ZmId.SKIN_USER_INFO					= "skin_container_username";
+ZmId.SKIN_WEB_SEARCH				= "skin_container_web_search";
+
+// top-level components
+ZmId.SHELL					= "z_shell";			// the main shell
+ZmId.LOADING_VIEW			= "z_loading";			// "Loading..." view
+ZmId.MAIN_SASH				= "z_sash";				// sash between overview and content
+ZmId.BANNER					= "z_banner";			// logo (at upper left by default)
+ZmId.USER_NAME				= "z_userName";			// account name
+ZmId.USER_QUOTA				= "z_userQuota";		// quota
+ZmId.PRESENCE				= "z_presence";			// presence
+ZmId.CURRENT_APP_TOOLBAR	= "ztb_currentApp";		// current app toolbar (above overview)
+ZmId.NEW_FOLDER_BUTTON		= "zb_newFolder";		// New Folder button on current app toolbar
+ZmId.STATUS_VIEW			= "z_status";			// status view (shows toast)
+ZmId.TOAST					= "z_toast";			// toast
+ZmId.APP_CHOOSER			= "ztb_appChooser";		// app chooser toolbar
+
+// search panel
+ZmId.SEARCH_TOOLBAR			= "ztb_search";			// search toolbar
+ZmId.SEARCH_INPUT			= "zi_search";			// text input in search toolbar
+ZmId.CUSTOM_SEARCH_BUTTON	= "zb_searchCustom";	// custom search button
+ZmId.SEARCH_MENU_BUTTON		= "zb_searchMenu";		// menu with choices of types to search for
+ZmId.SEARCH_BUTTON			= "zb_search";			// button that triggers the search
+ZmId.SAVE_SEARCH_BUTTON		= "zb_searchSave";		// button for creating a saved search
+ZmId.ADVANCED_SEARCH_BUTTON	= "zb_searchAdvanced";	// opens/closes advanced search
+ZmId.LOCAL_SEARCH_BUTTON	= "zb_searchLocal";		// local search button (created by local zimlet)
+ZmId.SEARCH_MENU_ALL		= "zmi_searchAll";		// search menu item for all types
+ZmId.SEARCH_MENU_SHARED		= "zmi_searchShared";	// search menu item (check) to include shared items
+ZmId.SEARCH_MENU_CONTACTS	= "zmi_searchContacts";	// search menu item for contacts
+ZmId.SEARCH_MENU_GAL		= "zmi_searchGal";		// search menu item for GAL
+ZmId.SEARCH_MENU_APPTS		= "zmi_searchAppts";	// search menu item for appointments
+ZmId.SEARCH_MENU_MAIL		= "zmi_searchMail";		// search menu item for email
+ZmId.SEARCH_MENU_PAGES		= "zmi_searchPages";	// search menu item for notebook pages/files
+ZmId.SEARCH_MENU_TASKS		= "zmi_searchTasks";	// search menu item for tasks
+
+// conv list view (CLV)
+ZmId.CLV_LIST				= "z_clvListView";		// conv list view
+ZmId.CLV_MSG				= "z_clvMsgView";		// msg view within conv list view
+
+// traditional (msg) list view (TV)
+ZmId.TV_LIST				= "z_tvListView";		// msg list view
+ZmId.TV_MSG					= "z_tvMsgView";		// msg view within msg list view
+
+// single conv view (CV)
+ZmId.CV_LIST				= "z_cvListView";		// msg list within conv view
+ZmId.CV_MSG					= "z_cvMsgView";		// msg view within conv view
+
+// overviews, trees, and tree items
+
+// trees within the main overviews
+ZmId.ORG_ADDRBOOK			= "ADDRBOOK";
+ZmId.ORG_BRIEFCASE			= "BRIEFCASE";
+ZmId.ORG_CALENDAR			= "CALENDAR";
+ZmId.ORG_FOLDER				= "FOLDER";
+ZmId.ORG_NOTEBOOK			= "NOTEBOOK";
+ZmId.ORG_ROSTER_TREE_ITEM	= "ROSTER_TREE_ITEM";
+ZmId.ORG_ROSTER_TREE_GROUP	= "ROSTER_TREE_GROUP";
+ZmId.ORG_SEARCH				= "SEARCH";
+ZmId.ORG_TAG				= "TAG";
+ZmId.ORG_TASKS				= "TASKS";
+ZmId.ORG_ZIMLET				= "ZIMLET";
+
+ZmId.ITEM_APPOINTMENT	= "APPT";
+ZmId.ITEM_ATT			= "ATT";
+ZmId.ITEM_BRIEFCASE		= "BRIEFCASE_ITEM";
+ZmId.ITEM_CALL			= "CALL";
+ZmId.ITEM_CHAT			= "CHAT";
+ZmId.ITEM_CONTACT		= "CONTACT";
+ZmId.ITEM_CONV			= "CONV";
+ZmId.ITEM_DATA_SOURCE	= "DATA_SOURCE";
+ZmId.ITEM_DOCUMENT		= "DOCUMENT";
+ZmId.ITEM_GROUP			= "GROUP";
+ZmId.ITEM_MSG			= "MSG";
+ZmId.ITEM_PAGE			= "PAGE";
+ZmId.ITEM_RESOURCE		= "RESOURCE";
+ZmId.ITEM_ROSTER		= "ROSTER_ITEM";
+ZmId.ITEM_TASK			= "TASK";
+ZmId.ITEM_VOICEMAIL		= "VOICEMAIL";
 
 // system folder tree items
 

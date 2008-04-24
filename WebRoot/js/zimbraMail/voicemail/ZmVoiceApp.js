@@ -32,8 +32,8 @@ ZmVoiceApp = function(container, parentController) {
 
 // Organizer and item-related constants
 ZmEvent.S_VOICEMAIL				= ZmId.APP_VOICE;
-ZmItem.VOICEMAIL				= ZmEvent.S_VOICEMAIL;
-ZmEvent.S_CALL					= "CALL";
+ZmItem.VOICEMAIL				= ZmId.ITEM_VOICEMAIL;
+ZmEvent.S_CALL					= ZmId.ITEM_CALL;
 ZmItem.CALL						= ZmEvent.S_CALL;
 ZmOrganizer.VOICE				= ZmEvent.S_VOICEMAIL;
 

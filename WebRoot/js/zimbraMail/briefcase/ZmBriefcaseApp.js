@@ -21,13 +21,13 @@ ZmBriefcaseApp = function(container, parentController) {
 }
 
 // Organizer and item-related constants
-ZmEvent.S_PAGE					= "PAGE";
-ZmEvent.S_DOCUMENT				= "DOCUMENT";
-ZmEvent.S_BRIEFCASE				= "BRIEFCASE_ITEM";
+ZmEvent.S_PAGE					= ZmId.ITEM_PAGE;
+ZmEvent.S_DOCUMENT				= ZmId.ITEM_DOCUMENT;
+ZmEvent.S_BRIEFCASE				= ZmId.ITEM_BRIEFCASE;
 ZmItem.PAGE						= ZmEvent.S_PAGE;
 ZmItem.DOCUMENT					= ZmEvent.S_DOCUMENT;
 ZmItem.BRIEFCASE				= ZmEvent.S_BRIEFCASE;
-ZmOrganizer.BRIEFCASE			= "BRIEFCASE";
+ZmOrganizer.BRIEFCASE			= ZmItem.ORG_BRIEFCASE;
 
 // App-related constants
 ZmApp.BRIEFCASE							= ZmId.APP_BRIEFCASE;
