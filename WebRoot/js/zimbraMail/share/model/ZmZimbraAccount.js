@@ -93,8 +93,8 @@ function() {
 	if (!this.displayName) {
 		var dispName = this.isMain
 			? this.settings.get(ZmSetting.DISPLAY_NAME)
-			: this.displayName;
-		this.displayName = (this.accountName || dispName || this.name);
+			: this._displayName;
+		this.displayName = (this._accountName || dispName || this.name);
 	}
 	return this.displayName;
 };
@@ -314,6 +314,6 @@ function(node) {
 	this.visible = node.visible;
 
 	var data = (node.attrs && node.attrs._attrs) ? node.attrs._attrs : null;
-	this.displayName = data ? data.displayName : this.email;
-	this.accountName = data ? data.zimbraPrefLabel : null;
+	this._displayName = data ? data.displayName : this.email;
+	this._accountName = data ? data.zimbraPrefLabel : null;
 };
