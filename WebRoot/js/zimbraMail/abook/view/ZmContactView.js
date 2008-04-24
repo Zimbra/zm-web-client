@@ -631,7 +631,8 @@ function(contact) {
 	var defaultTab;
 	for (var i = 0; i < this._tabs.length; i++) {
 		var tab = AjxStringUtil.trim(this._tabs[i]);
-		var idx = subs.tabIdx = this._contactTabView.addTab(ZmMsg[tab]);
+		var tabButtonId = ZmId.getTabId(this._controller._getViewType(), tab);
+		var idx = subs.tabIdx = this._contactTabView.addTab(ZmMsg[tab], null, tabButtonId);
 		var view = new DwtTabViewPage(this._contactTabView, "ZmContactEditTabViewPage");
 		var template = "abook.Contacts#ZmContactView_" + tab;
 		view.getHtmlElement().innerHTML = AjxTemplate.expand(template, subs);
