@@ -310,8 +310,10 @@ function() {
 		var tree = appCtxt.getFolderTree();
 		var folders = tree ? tree.getByType(type) : [];
 		for (var i = 0; i < folders.length; i++) {
-			if (folders[i].isRemote())
-				list.push(folders[i].id);
+			var folder = folders[i];
+			if (folder.isRemote()) {
+				list.push(folder.id);
+			}
 		}
 	}
 	return list;
