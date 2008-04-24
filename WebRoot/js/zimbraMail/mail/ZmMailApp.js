@@ -1041,6 +1041,7 @@ function(params, callback) {
 			if (id) {
 				query = ["item:", id].join("");
 				params.searchResponse = null;
+				this._forceMsgView = true;
 			}
 		}
 	}
@@ -1108,11 +1109,13 @@ function(results, callback) {
 
 ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-	if (results.type == ZmItem.MSG) {
-		this.getTradController().show(results);
-	} else {
-		this.getConvListController().show(results);
+	var controller = (results.type == ZmItem.MSG) ? this.getTradController() : this.getConvListController();
+	controller.show(results);
+	if (this._forceMsgView) {
+		controller.selectFirstItem();
+		this._forceMsgView = false;
 	}
+	
 	if (callback) {
 		callback.run();
 	}

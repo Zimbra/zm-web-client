@@ -605,3 +605,8 @@ function(msg) {
 	this._listView[this._currentView].redrawItem(msg);
 	this._listView[this._currentView].setSelection(msg, true);
 };
+
+ZmDoublePaneController.prototype.selectFirstItem =
+function() {
+	this._doublePaneView._selectFirstItem();
+};

@@ -75,6 +75,11 @@ function() {
 // abstract methods
 ZmList.prototype.getPrintHtml = function(preferHtml, callback) {};
 
+ZmList.prototype.get =
+function(index) {
+	return this._vector.get(index);
+};
+
 /**
  * Adds an item to the list.
  *
