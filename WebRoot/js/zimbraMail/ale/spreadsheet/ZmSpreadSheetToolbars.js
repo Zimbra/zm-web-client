@@ -289,14 +289,10 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	var s = this._buttons.decimalsSelect = new ZmSpreadSheetEditorSelect(toolbar, null);
 	s.addChangeListener(new AjxListener(this, this._on_decimalsSelect));
 	s.addOption(ZmMsg.spreadSheet_msg_autoDecimals, true, -1);
-	s.addOption(ZmMsg.spreadSheet_msg_noDecimals, false, 0);
-	s.addOption(ZmMsg.oneDecimal, false, 1);
-        var tmp = new AjxMessageFormat(ZmMsg.manyDecimals);
-	s.addOption(tmp.format(2), false, 2);
-	s.addOption(tmp.format(3), false, 3);
-	s.addOption(tmp.format(4), false, 4);
-	s.addOption(tmp.format(5), false, 5);
-	s.addOption(tmp.format(6), false, 6);
+	var formatter = new AjxMessageFormat(ZmMsg.spreadsheet_msg_numberOfDecimals);
+	for (var i = 0; i <= 6; i++) {
+		s.addOption(formatter.format(i), false, i);
+	}
 
 	if (ZmSpreadSheetModel.DEBUG) {
 		new DwtControl({parent:toolbar, className:"vertSep"});
