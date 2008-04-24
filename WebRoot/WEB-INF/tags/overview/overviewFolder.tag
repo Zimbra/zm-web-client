@@ -13,7 +13,7 @@
 <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
 <tr>
-    <td nowrap colspan="3" class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
+    <td nowrap colspan="3" class='Folder<c:if test="${folder.hasUnread and types ne 'contact'}"> Unread</c:if>'
         style="padding-left: ${padFudge+folder.depth*8}px">
         <c:url var="url" value="/h/${empty base ? 'search' : base}">
             <c:param name="sfi" value="${folder.id}"/>
@@ -29,11 +29,10 @@
                     <app:img src="${expanded ? 'startup/ImgNodeExpanded.gif' : 'startup/ImgNodeCollapsed.gif'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
                 </a>
         </c:if>
-
         <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="startup/ImgNodeExpanded.gif"/></c:if></span>--%>
         <a href='${fn:escapeXml(url)}' id="FLDR${folder.id}">
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
-            <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${zm:truncate(fn:escapeXml(label),20,true)}<c:if test="${folder.hasUnread}">
+            <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${zm:truncate(fn:escapeXml(label),20,true)}<c:if test="${folder.hasUnread and types ne 'contact'}">
                 (${folder.unreadCount}) </c:if></span>
         </a>
 
