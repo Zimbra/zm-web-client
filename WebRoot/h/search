@@ -109,7 +109,7 @@
 		  <c:when test="${param.app eq 'contacts'}">
 			  <c:redirect url="/h/search?st=contact" />
 		  </c:when>
-		  <c:when test="${param.app eq 'task'}">
+		  <c:when test="${param.app eq 'tasks'}">
 			  <c:redirect url="/h/search?st=task" />
 		  </c:when>
 	  </c:choose>
