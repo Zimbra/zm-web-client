@@ -23,9 +23,8 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 
 	// call super constructor
 	var headerList = this._getHeaderList(parent);
-	var view = ZmId.VIEW_BRIEFCASE;
 	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseDetailListView",
-					posStyle:DwtControl.ABSOLUTE_STYLE, view:view, type:ZmItem.DOCUMENT,
+					posStyle:DwtControl.ABSOLUTE_STYLE, view:ZmId.VIEW_BRIEFCASE, type:ZmItem.DOCUMENT,
 					controller:controller, headerList:headerList, dropTgt:dropTgt});
 
 	// create a action menu for the header list
@@ -68,22 +67,23 @@ ZmDetailListView.prototype._getHeaderList =
 function(parent) {
 	// Columns: tag, name, type, size, date, owner, folder
 	var headers = [];
-	
+	var view = this._view;
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		headers.push(new DwtListHeaderItem(ZmItem.F_SELECTION, null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.selection));
+		headers.push(new DwtListHeaderItem({id:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON,
+											name:ZmMsg.selection}));
 	}	
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headers.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmDetailListView.COLWIDTH_ICON, null, null, true, ZmMsg.tag));
+		headers.push(new DwtListHeaderItem({id:ZmItem.F_TAG, icon:"Tag", width:ZmDetailListView.COLWIDTH_ICON,
+											name:ZmMsg.tag}));
 	}	
 	headers.push(
-		// new DwtListHeaderItem(id, label, icon, width, sortable, resizeable, visible, tt)
-		new DwtListHeaderItem(ZmItem.F_TYPE, null, "Globe", ZmDetailListView.COLWIDTH_ICON),
-		new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg._name, null, null, null, true),
-		new DwtListHeaderItem(ZmItem.F_FILE_TYPE, ZmMsg.type, null, ZmDetailListView.COLWIDTH_TYPE),
-		new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmDetailListView.COLWIDTH_SIZE),
-		new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.date, null, ZmDetailListView.COLWIDTH_DATE),
-		new DwtListHeaderItem(ZmItem.F_FROM, ZmMsg.owner, null, ZmDetailListView.COLWIDTH_OWNER),
-		new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmDetailListView.COLWIDTH_FOLDER)
+		new DwtListHeaderItem({id:ZmItem.F_TYPE, icon:"Globe", width:ZmDetailListView.COLWIDTH_ICON}),
+		new DwtListHeaderItem({id:ZmItem.F_SUBJECT, text:ZmMsg._name}),
+		new DwtListHeaderItem({id:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmDetailListView.COLWIDTH_TYPE}),
+		new DwtListHeaderItem({id:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmDetailListView.COLWIDTH_SIZE}),
+		new DwtListHeaderItem({id:ZmItem.F_DATE, text:ZmMsg.date, width:ZmDetailListView.COLWIDTH_DATE}),
+		new DwtListHeaderItem({id:ZmItem.F_FROM, text:ZmMsg.owner, width:ZmDetailListView.COLWIDTH_OWNER}),
+		new DwtListHeaderItem({id:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmDetailListView.COLWIDTH_FOLDER})
 	);
 	return headers;
 };
