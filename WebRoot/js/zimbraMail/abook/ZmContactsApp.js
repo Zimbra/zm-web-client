@@ -388,7 +388,7 @@ function(contact) {
 
 ZmContactsApp.prototype._handleLoadNewAddrBook =
 function() {
-	appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
+	appCtxt.getAppViewMgr().popView(true, ZmId.VIEW_LOADING);	// pop "Loading..." page
 	var dialog = appCtxt.getNewAddrBookDialog();
 	if (!this._newAddrBookCb) {
 		this._newAddrBookCb = new AjxCallback(this, this._newAddrBookCallback);

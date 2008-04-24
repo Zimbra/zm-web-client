@@ -23,7 +23,7 @@ ZmDetailListView = 	function(parent, controller, dropTgt) {
 
 	// call super constructor
 	var headerList = this._getHeaderList(parent);
-	var view = ZmController.BRIEFCASE_VIEW;
+	var view = ZmId.VIEW_BRIEFCASE;
 	ZmListView.call(this, {parent:parent, className:"ZmBriefcaseDetailListView",
 					posStyle:DwtControl.ABSOLUTE_STYLE, view:view, type:ZmItem.DOCUMENT,
 					controller:controller, headerList:headerList, dropTgt:dropTgt});

@@ -18,7 +18,7 @@
 ZmMixedView = function(params) {
 
 	params.headerList = this._getHeaderList(parent);
-	params.view = ZmController.MIXED_VIEW;
+	params.view = ZmId.VIEW_MIXED;
 	params.type = ZmItem.MIXED;
 	ZmListView.call(this, params);
 };

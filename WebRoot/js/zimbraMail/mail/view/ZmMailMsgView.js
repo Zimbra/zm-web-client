@@ -37,7 +37,7 @@ ZmMailMsgView = function(params) {
 	this._expandDivId = Dwt.getNextId();
 
 	// do we add a close button in the header section?
-	this._hasHeaderCloseBtn = (this._mode == ZmController.MSG_VIEW && !appCtxt.isChildWindow);
+	this._hasHeaderCloseBtn = (this._mode == ZmId.VIEW_MSG && !appCtxt.isChildWindow);
 
 	//this.SCROLL_WITH_IFRAME = ZmMailMsgView.SCROLL_WITH_IFRAME;
     this._scrollWithIframe = ZmMailMsgView.SCROLL_WITH_IFRAME; // Making it local var
@@ -413,7 +413,7 @@ function() {
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg) {
 	if (!appCtxt.isChildWindow) {
-		if (this._mode == ZmController.MSG_VIEW) {
+		if (this._mode == ZmId.VIEW_MSG) {
 			this._setTags(msg);
 			// Remove listener for current msg if it exists
 			if (oldMsg) {
@@ -1331,7 +1331,7 @@ ZmMailMsgView.prototype._msgChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_MSG) { return; }
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
-		if (ev.source == this._msg && (appCtxt.getCurrentViewId() == ZmController.MSG_VIEW)) {
+		if (ev.source == this._msg && (appCtxt.getCurrentViewId() == ZmId.VIEW_MSG)) {
 			this._controller._app.popView();
 		}
 	} else if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {

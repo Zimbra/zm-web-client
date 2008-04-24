@@ -403,7 +403,7 @@ function(ev) {
 ZmVoiceApp.prototype.search =
 function(folder, callback, sortBy) {
 	if (!sortBy) {
-		var viewType = (folder.getSearchType() == ZmItem.VOICEMAIL) ? ZmController.VOICEMAIL_VIEW : ZmController.CALLLIST_VIEW;
+		var viewType = (folder.getSearchType() == ZmItem.VOICEMAIL) ? ZmId.VIEW_VOICEMAIL : ZmId.VIEW_CALL_LIST;
 		sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
 	}
 	var searchParams = {
@@ -551,9 +551,9 @@ function() {
 	var view = appCtxt.getAppViewMgr().getAppView(ZmApp.VOICE);
 	if (view) {
 		var controller;
-		if (view == ZmController.VOICEMAIL_VIEW) {
+		if (view == ZmId.VIEW_VOICEMAIL) {
 			controller = AjxDispatcher.run("GetVoiceController");
-		} else if (view == ZmController.CALLLIST_VIEW) {
+		} else if (view == ZmId.VIEW_CALL_LIST) {
 			controller = AjxDispatcher.run("GetCallListController");
 		}
 		if (controller) {

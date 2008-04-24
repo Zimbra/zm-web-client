@@ -165,7 +165,27 @@ function(overviewId, organizerId, type) {
 	}
 };
 
-// containers defined by the skin
+/**
+ * Returns an ID for a view that fills the content area.
+ * 
+ * @param view		[constant]		
+ */
+ZmId.getViewId =
+function(view) {
+	return [ZmId.WIDGET, view.toLowerCase(), "View"].join("");
+};
+
+ZmId.getListViewId =
+function(view) {
+	return [ZmId.WIDGET, view.toLowerCase(), "ListView"].join("");
+};
+
+ZmId.getMsgViewId =
+function(view) {
+	return [ZmId.WIDGET, view.toLowerCase(), "MsgView"].join("");
+};
+
+// cotainers defined by the skin
 ZmId.SKIN_APP_BOTTOM_TOOLBAR		= "skin_container_app_bottom_toolbar";
 ZmId.SKIN_APP_CHOOSER				= "skin_container_app_chooser";
 ZmId.SKIN_APP_MAIN_FULL				= "skin_container_app_main_full";
@@ -325,6 +345,49 @@ ZmId.APP_PORTAL			= "Portal";
 ZmId.APP_PREFERENCES	= "Options";
 ZmId.APP_TASKS			= "Tasks";
 ZmId.APP_VOICE			= "Voice";
+
+// view identifiers - need to be all caps
+ZmId.VIEW_APPOINTMENT 			= "APPT";
+ZmId.VIEW_APPT_SCHEDULE			= "APPTS";
+ZmId.VIEW_CAL_APPT				= "CLA";
+ZmId.VIEW_CAL_DAY				= "CLD";
+ZmId.VIEW_CAL_MONTH				= "CLM";
+ZmId.VIEW_CAL_SCHEDULE			= "CLS";
+ZmId.VIEW_CAL					= "CAL";
+ZmId.VIEW_CAL_WEEK				= "CLW";
+ZmId.VIEW_CAL_WORK_WEEK			= "CLWW";
+ZmId.VIEW_CALL_LIST				= "CLIST";
+ZmId.VIEW_COMPOSE				= "COMPOSE";
+ZmId.VIEW_CONTACT_CARDS			= "CNC";
+ZmId.VIEW_CONTACT_SIMPLE 		= "CNS";
+ZmId.VIEW_CONTACT_SRC			= "CNSRC"; // contact picker source list
+ZmId.VIEW_CONTACT_TGT			= "CNTGT"; // contact picker target list
+ZmId.VIEW_CONTACT				= "CN";
+ZmId.VIEW_CONVLIST 				= "CLV";
+ZmId.VIEW_CONV 					= "CV";
+ZmId.VIEW_FILTER_RULES			= "FRV";
+ZmId.VIEW_GROUP					= "GRP";
+ZmId.VIEW_IM_CHAT_MULTI_WINDOW	= "IMCMW";
+ZmId.VIEW_IM_CHAT_TAB			= "IMCT";
+ZmId.VIEW_LOADING				= "LOADING";
+ZmId.VIEW_MIXED					= "MX";
+ZmId.VIEW_MSG 					= "MSG";
+ZmId.VIEW_MY_CARD				= "MYC";
+ZmId.VIEW_NOTEBOOK_FILE			= "NBF";
+ZmId.VIEW_NOTEBOOK_PAGE_EDIT	= "NBPE";
+ZmId.VIEW_NOTEBOOK_PAGE			= "NBP";
+ZmId.VIEW_NOTEBOOK_PAGE_VERSION = "NBPV";
+ZmId.VIEW_NOTEBOOK_SITE			= "NBS";
+ZmId.VIEW_PORTAL                = "PORTAL";
+ZmId.VIEW_PREF					= "PREF";
+ZmId.VIEW_TASK					= "TKV";
+ZmId.VIEW_TASKEDIT				= "TKE";
+ZmId.VIEW_TASKLIST				= "TKL";
+ZmId.VIEW_TRAD 					= "TV";
+ZmId.VIEW_VOICEMAIL				= "VM";
+ZmId.VIEW_BRIEFCASE			    = "BC";
+ZmId.VIEW_BRIEFCASE_DETAIL		= "BCD";
+ZmId.VIEW_BRIEFCASE_COLUMN		= "BCC";
 
 // special toolbars
 ZmId.TB_INVITE	= "INV";

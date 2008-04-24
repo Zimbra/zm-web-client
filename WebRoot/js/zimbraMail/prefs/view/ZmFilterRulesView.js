@@ -58,7 +58,7 @@ function() {
 	if (toolbarEl) {
 		var buttons = this._controller.getToolbarButtons();
 		this._toolbar = new ZmButtonToolBar({parent:this, buttons:buttons, posStyle:Dwt.STATIC_STYLE,
-											 context:ZmController.FILTER_RULES_VIEW});
+											 context:ZmId.VIEW_FILTER_RULES});
 		this._toolbar.replaceElement(toolbarEl);
 		this._tabGroup.addMember(this._toolbar);
 	}

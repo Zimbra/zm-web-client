@@ -492,7 +492,7 @@ function(viewId, force) {
 		DBG.println(AjxDebug.DBG2, "noHistory: push " + viewId);
 		this._noHistory = false;
 	} else {
-		if (viewId != ZmController.LOADING_VIEW) {
+		if (viewId != ZmId.VIEW_LOADING) {
 			this._nextHashIndex++;
 			this._curHashIndex = this._nextHashIndex;
 			this._hashView[this._curHashIndex] = viewId;
@@ -751,7 +751,7 @@ function() {
 	el.innerHTML = AjxTemplate.expand("share.App#Loading", this._htmlElId);
 	var elements = {};
 	elements[ZmAppViewMgr.C_APP_CONTENT] = loadingView;
-	this.createView(ZmController.LOADING_VIEW, null, elements);
+	this.createView(ZmId.VIEW_LOADING, null, elements);
 };
 
 // Locates and sizes the given list of components to fit within their containers.

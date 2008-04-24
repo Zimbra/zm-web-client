@@ -35,8 +35,8 @@ ZmContactListController = function(container, contactsApp) {
 	ZmListController.call(this, container, contactsApp);
 
 	this._viewFactory = {};
-	this._viewFactory[ZmController.CONTACT_CARDS_VIEW] = ZmContactCardsView;
-	this._viewFactory[ZmController.CONTACT_SIMPLE_VIEW] = ZmContactSplitView;
+	this._viewFactory[ZmId.VIEW_CONTACT_CARDS] = ZmContactCardsView;
+	this._viewFactory[ZmId.VIEW_CONTACT_SIMPLE] = ZmContactSplitView;
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -53,19 +53,19 @@ ZmContactListController.prototype = new ZmListController;
 ZmContactListController.prototype.constructor = ZmContactListController;
 
 ZmContactListController.ICON = {};
-ZmContactListController.ICON[ZmController.CONTACT_SIMPLE_VIEW]		= "ListView";
-ZmContactListController.ICON[ZmController.CONTACT_CARDS_VIEW]		= "CardsView";
+ZmContactListController.ICON[ZmId.VIEW_CONTACT_SIMPLE]		= "ListView";
+ZmContactListController.ICON[ZmId.VIEW_CONTACT_CARDS]		= "CardsView";
 
 ZmContactListController.MSG_KEY = {};
-ZmContactListController.MSG_KEY[ZmController.CONTACT_SIMPLE_VIEW]	= "contactList";
-ZmContactListController.MSG_KEY[ZmController.CONTACT_CARDS_VIEW]	= "detailedCards";
+ZmContactListController.MSG_KEY[ZmId.VIEW_CONTACT_SIMPLE]	= "contactList";
+ZmContactListController.MSG_KEY[ZmId.VIEW_CONTACT_CARDS]	= "detailedCards";
 
 ZmContactListController.SEARCH_TYPE_CANONICAL	= 1 << 0;
 ZmContactListController.SEARCH_TYPE_GAL			= 1 << 1;
 ZmContactListController.SEARCH_TYPE_NEW			= 1 << 2;
 ZmContactListController.SEARCH_TYPE_ANYWHERE	= 1 << 3;
 
-ZmContactListController.VIEWS = [ZmController.CONTACT_SIMPLE_VIEW, ZmController.CONTACT_CARDS_VIEW];
+ZmContactListController.VIEWS = [ZmId.VIEW_CONTACT_SIMPLE, ZmId.VIEW_CONTACT_CARDS];
 
 ZmContactListController.prototype.toString =
 function() {
@@ -266,8 +266,8 @@ function() {
 ZmContactListController.prototype._defaultView =
 function() {
 	return (appCtxt.get(ZmSetting.CONTACTS_VIEW) == "cards")
-		? ZmController.CONTACT_CARDS_VIEW
-		: ZmController.CONTACT_SIMPLE_VIEW;
+		? ZmId.VIEW_CONTACT_CARDS
+		: ZmId.VIEW_CONTACT_SIMPLE;
 };
 
 ZmContactListController.prototype._createNewView =
@@ -514,7 +514,7 @@ function(ev) {
 
 	if (ev.detail == DwtListView.ITEM_SELECTED)	{
 		this._resetNavToolBarButtons(this._currentView);
-		if (this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
+		if (this._currentView == ZmId.VIEW_CONTACT_SIMPLE)
 			this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var folder = appCtxt.getById(ev.item.folderId);
@@ -720,7 +720,7 @@ function(items, hardDelete, attrs) {
 	var size = this._listView[this._currentView].getSelectedItems().size();
 	if (size == 0) {
 		// and if in split view allow split view to clear
-		if (this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
+		if (this._currentView == ZmId.VIEW_CONTACT_SIMPLE)
 			this._listView[this._currentView].parent.clear();
 
 		this._resetOperations(this._toolbar[this._currentView], 0);
