@@ -77,7 +77,27 @@ function(name) {
 	var loadCallback = new AjxCallback(this, this._handleLoadFromBrowse, [name]);
 	this.showBrowseView(true, loadCallback);
 };
-
+/**
+ *
+ * @param pickers Array of pickers to show browser with
+ * @param showBasic
+ */
+ZmSearchController.prototype.showBrowsePickers =
+function(pickers,showBasic) {
+    showBasic = (!showBasic || showBasic == null)?true:showBasic;
+    //Pickers array
+    this.showBrowseView(true, null);
+    //now remove all pickers and add those from array
+    if(pickers instanceof Array){
+       this._browseViewController.removeAllPickers();
+       if(showBasic){ //
+           this._browseViewController.addPicker(ZmPicker.BASIC);
+       }
+       for(var i=0;i<pickers.length;i++){
+           this._browseViewController.addPicker(pickers[i]);
+       }
+    }
+}
 ZmSearchController.prototype._handleLoadFromBrowse =
 function(name, bv) {
 	this.setDefaultSearchType(ZmSearchToolBar.FOR_MAIL_MI);
