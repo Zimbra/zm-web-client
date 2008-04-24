@@ -126,13 +126,13 @@ ZmId.SEARCH_MENU_TASKS		= "zmi_searchTasks";	// search menu item for tasks
 /**
  * Generates the ID for a button in the app chooser.
  * 
- * Example: zb_mail
+ * Example: zb_Mail
  * 
  * @param app	[const]		app
  */
 ZmId.getAppChooserButtonId =
 function(app) {
-	return [ZmId.WIDGET_BUTTON, app.toLowerCase()].join("");
+	return DwtId._makeId(ZmId.WIDGET_BUTTON, app);
 };
 
 // content area views and their components
@@ -140,22 +140,21 @@ function(app) {
 /**
  * Generates the ID for a toolbar.
  * 
- * Examples: ztb_clv ztb_tvNav ztb_cvInv
+ * Examples: ztb_CLV ztb_TV_Nav ztb_CV_Inv
  * 
  * @param context	[string]	toolbar context (ID of owning view)
  * @param tbType	[const]*	type of toolbar (eg invite or nav)
  */
 ZmId.getToolbarId =
 function(context, tbType) {
-	context = tbType ? [context, tbType].join("_") : context;
-	return [ZmId.WIDGET_TOOLBAR, AjxStringUtil.toMixed(context, "_", true)].join("");
+	return DwtId._makeId(ZmId.WIDGET_TOOLBAR, context, tbType);
 };
 
 /**
  * Generates the ID for a button in a toolbar. Intended for use with the top toolbar, nav toolbar,
  * and invite toolbar.
  * 
- * Examples: zb_clvCheckMail zb_tvReply zb_composeSend zb_clvNavPageForward zb_clvInvReplyAccept
+ * Examples: zb_CLV_CheckMail zb_TV_Reply zb_COMPOSE_Send zb_CLV_Nav_PageForward zb_CLV_Inv_ReplyAccept
  * 
  * @param context	[string]	toolbar context (ID of owning view)
  * @param op		[const]		the button operation
@@ -163,28 +162,26 @@ function(context, tbType) {
  */
 ZmId.getToolbarButtonId =
 function(context, op, tbType) {
-	context = tbType ? [context, tbType].join("_") : context;
-	return [ZmId.WIDGET_BUTTON, AjxStringUtil.toMixed(context, "_", true), AjxStringUtil.toMixed(op, "_")].join("");
+	return DwtId._makeId(ZmId.WIDGET_BUTTON, context, tbType, op);
 };
 
 /**
  * Generates the ID for an action menu.
  * 
- * Examples: zm_clv zm_contacts
+ * Examples: zm_CLV zm_Contacts zm_TV_Par
  * 
  * @param context		[string]	menu context (eg ID of owning view, or app)
  * @param menuType		[const]*	type of menu (eg participant)
  */
 ZmId.getActionMenuId =
 function(context, menuType) {
-	context = menuType ? [context, menuType].join("_") : context;
-	return [ZmId.WIDGET_MENU, AjxStringUtil.toMixed(context, "_", true)].join("");
+	return DwtId._makeId(ZmId.WIDGET_MENU, context, menuType);
 };
 
 /**
  * Generates the ID for a menu item in an action menu.
  * 
- * Examples: 
+ * Examples: zm_CLV_ReplyAll zm_TV_Par_Search
  * 
  * @param context		[string]	menu context
  * @param op			[const]		the menu operation
@@ -192,19 +189,17 @@ function(context, menuType) {
  */
 ZmId.getActionMenuItemId =
 function(context, op, menuType) {
-	context = menuType ? [context, menuType].join("_") : context;
-	return [ZmId.WIDGET_MENU_ITEM, AjxStringUtil.toMixed(context, "_", true), AjxStringUtil.toMixed(op, "_")].join("");
+	return DwtId._makeId(ZmId.WIDGET_MENU_ITEM, context, menuType, op);
 };
 
 ZmId.getOverviewId =
 function(overview) {
-	return [ZmId.WIDGET_OVERVIEW, overview.toLowerCase()].join("");
+	return DwtId._makeId(ZmId.WIDGET_OVERVIEW, overview);
 };
 
 ZmId.getTreeId =
 function(overviewId, orgType) {
-	var text = AjxStringUtil.toMixed([overviewId, orgType].join(" "), " ", true);
-	return [ZmId.WIDGET_TREE, text].join("");
+	return DwtId._makeId(ZmId.WIDGET_TREE, overviewId, orgType);
 };
 
 /**
@@ -227,9 +222,9 @@ ZmId.getTreeItemId =
 function(overviewId, organizerId, type) {
 	if (!organizerId && !type) { return; }
 	if (type) {
-		return [ZmId.WIDGET_TREE_ITEM_HDR, overviewId.toLowerCase(), "_", type.toLowerCase()].join("");
+		return DwtId._makeId(ZmId.WIDGET_TREE_ITEM_HDR, overviewId, type);
 	} else {
-		return [ZmId.WIDGET_TREE_ITEM, overviewId.toLowerCase(), "_", organizerId].join("");
+		return DwtId._makeId(ZmId.WIDGET_TREE_ITEM, overviewId, organizerId);
 	}
 };
 
@@ -240,7 +235,7 @@ function(overviewId, organizerId, type) {
  */
 ZmId.getViewId =
 function(context) {
-	return [ZmId.WIDGET, context.toLowerCase(), "View"].join("");
+	return DwtId._makeId(ZmId.WIDGET, context, "View");
 };
 
 /**
@@ -250,7 +245,7 @@ function(context) {
  */
 ZmId.getMsgViewId =
 function(context) {
-	return [ZmId.WIDGET, context.toLowerCase(), "MsgView"].join("");
+	return DwtId._makeId(ZmId.WIDGET, context, "MsgView");
 };
 
 /**
@@ -269,7 +264,7 @@ function(context) {
  */
 ZmId.getTabId =
 function(context, tab) {
-	return [ZmId.WIDGET_TAB, context.toLowerCase(), AjxStringUtil.toMixed(tab)].join("");
+	return DwtId._makeId(ZmId.WIDGET_TAB, context, tab);
 };
 
 //
@@ -277,18 +272,18 @@ function(context, tab) {
 //
 
 // widget types (used to prefix IDs)
-ZmId.WIDGET					= "z_";			// generic element
-ZmId.WIDGET_TOOLBAR			= "ztb_";		// toolbar
-ZmId.WIDGET_BUTTON			= "zb_";		// button
-ZmId.WIDGET_INPUT			= "zi_";		// text input or textarea
-ZmId.WIDGET_MENU			= "zm_";		// menu
-ZmId.WIDGET_MENU_ITEM		= "zmi_";		// menu item
-ZmId.WIDGET_SELECT			= "zs_";		// dropdown select
-ZmId.WIDGET_OVERVIEW		= "zov_";		// collection of tree views
-ZmId.WIDGET_TREE			= "zt_";		// tree view
-ZmId.WIDGET_TREE_ITEM_HDR	= "ztih_";		// root tree item
-ZmId.WIDGET_TREE_ITEM		= "zti_";		// tree item (node)
-ZmId.WIDGET_TAB				= "ztab_";		// tab button
+ZmId.WIDGET					= "z";			// generic element
+ZmId.WIDGET_TOOLBAR			= "ztb";		// toolbar
+ZmId.WIDGET_BUTTON			= "zb";			// button
+ZmId.WIDGET_INPUT			= "zi";			// text input or textarea
+ZmId.WIDGET_MENU			= "zm";			// menu
+ZmId.WIDGET_MENU_ITEM		= "zmi";		// menu item
+ZmId.WIDGET_SELECT			= "zs";			// dropdown select
+ZmId.WIDGET_OVERVIEW		= "zov";		// collection of tree views
+ZmId.WIDGET_TREE			= "zt";			// tree view
+ZmId.WIDGET_TREE_ITEM_HDR	= "ztih";		// root tree item
+ZmId.WIDGET_TREE_ITEM		= "zti";		// tree item (node)
+ZmId.WIDGET_TAB				= "ztab";		// tab button
 
 // apps
 ZmId.APP_BRIEFCASE		= "Briefcase";
@@ -303,7 +298,8 @@ ZmId.APP_PREFERENCES	= "Options";
 ZmId.APP_TASKS			= "Tasks";
 ZmId.APP_VOICE			= "Voice";
 
-// views (must be all caps) - often used as context for ID
+// views - often used as context for ID
+ZmId.VIEW_ACCOUNT				= "ACCT";
 ZmId.VIEW_APPOINTMENT 			= "APPT";
 ZmId.VIEW_APPT_SCHEDULE			= "APPTS";
 ZmId.VIEW_BRIEFCASE			    = "BC";
@@ -327,6 +323,7 @@ ZmId.VIEW_CONVLIST 				= "CLV";
 ZmId.VIEW_CONV 					= "CV";
 ZmId.VIEW_FILTER_RULES			= "FRV";
 ZmId.VIEW_GROUP					= "GRP";
+ZmId.VIEW_IM_CHAT_MEMBER_LIST	= "IMCML";
 ZmId.VIEW_IM_CHAT_MULTI_WINDOW	= "IMCMW";
 ZmId.VIEW_IM_CHAT_TAB			= "IMCT";
 ZmId.VIEW_LOADING				= "LOADING";
@@ -423,12 +420,12 @@ ZmId.TREEITEM_TASKS_TASKS			= "zti_tasks_15";
 ZmId.TREEITEM_BRIEFCASE_BRIEFCASE	= "zti_briefcase_16";
 
 // special toolbars
-ZmId.TB_INVITE	= "INV";
-ZmId.TB_NAV		= "NAV";
-ZmId.TB_SHARE	= "SHR";
+ZmId.TB_INVITE	= "Inv";
+ZmId.TB_NAV		= "Nav";
+ZmId.TB_SHARE	= "Shr";
 
 // special menus
-ZmId.MENU_PARTICIPANT	= "PAR";
+ZmId.MENU_PARTICIPANT	= "Par";
 
 // operations
 ZmId.OP_ADD_FILTER_RULE			= "ADD_FILTER_RULE"

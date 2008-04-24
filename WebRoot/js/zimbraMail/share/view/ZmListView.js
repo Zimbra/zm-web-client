@@ -26,7 +26,6 @@ ZmListView = function(params) {
 	this.type = params.type;
 	this._controller = params.controller;
 	this.setDropTarget(params.dropTgt);
-	this._viewPrefix = ["V_", this.view, "_"].join("");
 
 	// create listeners for changes to the list model, folder tree, and tag list
 	this._listChangeListener = new AjxListener(this, this._changeListener);
@@ -38,10 +37,6 @@ ZmListView = function(params) {
 	if (folderTree) {
 		folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
 	}
-
-    //Item IDs are integers, with the following exception:
-    //		- a shared item:	f9d58245-fb61-4e9a-9202-6ebc7ad4b0c4:-368
-    this._parseIdRegex = /^V_([A-Z]+)_([a-z]*)_?([a-zA-Z0-9:\-]+)_?(\d*)$/;
 
 	this._handleEventType = {};
 	this._handleEventType[this.type] = true;
@@ -229,7 +224,7 @@ function() {
 
 ZmListView.prototype._getRowId =
 function(item) {
-	return this._getFieldId(item, ZmItem.F_ITEM_ROW);
+	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_FIELD, this._view, item ? item.id : Dwt.getNextId(), ZmItem.F_ITEM_ROW);
 };
 
 // Note that images typically get IDs in _getCellContents().
@@ -294,25 +289,20 @@ function(item, field, imageInfo) {
 };
 
 /**
- * Parse the DOM ID to figure out what got clicked. Most IDs will look something like
- * "V_CLV_fg551".
- * Item IDs will look like "V_CLV_551". Participant IDs will look like
- * "V_CLV_pa551_0".
+ * Parse the DOM ID to figure out what got clicked. IDs consist of three to five parts
+ * joined by the "|" character.
  *
- *     V_CLV		- conv list view (string of caps is from view constant in ZmController)
- *     _   			- separator
- *     fg  			- flag field (two small letters - see constants ZmItem.F_*)
- *     551 			- item ID
- *     _   			- separator
- *     0   			- first participant
- *
- * TODO: see if it's faster to create a RegExp once and reuse it
+ *		type		type of ID (zli, zlir, zlic, zlif) - see DwtId.WIDGET_ITEM*)
+ * 		view		view identifier (eg "TV")
+ * 		item ID		usually numeric
+ * 		field		field identifier (eg "fg") - see ZmId.FLG_*
+ * 		participant	index of participant
  */
 ZmListView.prototype._parseId =
 function(id) {
-	var m = id.match(this._parseIdRegex);
-	if (m) {
-		return {view:m[1], field:m[2], item:m[3], participant:m[4]};
+	var parts = id.split(DwtId.SEP);
+	if (parts && parts.length) {
+		return {view:parts[1], item:parts[2], field:parts[3], participant:parts[4]};
 	} else {
 		return null;
 	}
@@ -502,8 +492,7 @@ function(obj, bContained) {
 
 ZmListView.prototype.setSelectionHdrCbox =
 function(check) {
-	var idx = this.getColIndexForId(ZmItem.F_SELECTION);
-	var col = this._headerList ? this._headerList[idx] : null;
+	var col = this._headerHash ? this._headerHash[ZmItem.F_SELECTION] : null;
 	var hdrId = col ? DwtId.getListViewHdrId(DwtId.WIDGET_HDR_ICON, this._view, col._field) : null;
 	var hdrDiv = hdrId ? document.getElementById(hdrId) : null;
 	if (hdrDiv) {

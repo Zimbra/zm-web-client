@@ -776,7 +776,7 @@ function() {
 		var text = ZmMsg[ZmApptChooserTabViewPage.COL_LABEL[id]];
 		var image = ZmApptChooserTabViewPage.COL_IMAGE[id];
 		var width = ZmApptChooserTabViewPage.COL_WIDTH[id];
-		headerList.push(new DwtListHeaderItem({id:id, text:text, icon:image, width:width}));
+		headerList.push(new DwtListHeaderItem({field:id, text:text, icon:image, width:width}));
 	}
 	
 	return headerList;

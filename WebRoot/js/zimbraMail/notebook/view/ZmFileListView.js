@@ -64,16 +64,16 @@ function(parent) {
 	// Columns: tag, name, type, size, date, owner, folder
 	var headers = [];
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headers.push(new DwtListHeaderItem({id:ZmItem.F_TAG, icon:"Tag", width:ZmFileListView.COLWIDTH_ICON, name:ZmMsg.tag}));
+		headers.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmFileListView.COLWIDTH_ICON, name:ZmMsg.tag}));
 	}
 	headers.push(
-		new DwtListHeaderItem({id:ZmItem.F_TYPE, icon:"Globe", width:ZmFileListView.COLWIDTH_ICON}),
-		new DwtListHeaderItem({id:ZmItem.F_SUBJECT, text:ZmMsg._name, resizeable:true}),
-		new DwtListHeaderItem({id:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmFileListView.COLWIDTH_TYPE}),
-		new DwtListHeaderItem({id:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmFileListView.COLWIDTH_SIZE}),
-		new DwtListHeaderItem({id:ZmItem.F_DATE, text:ZmMsg.date, width:ZmFileListView.COLWIDTH_DATE}),
-		new DwtListHeaderItem({id:ZmItem.F_FROM, text:ZmMsg.owner, width:ZmFileListView.COLWIDTH_OWNER}),
-		new DwtListHeaderItem({id:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmFileListView.COLWIDTH_FOLDER})
+		new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"Globe", width:ZmFileListView.COLWIDTH_ICON}),
+		new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg._name, resizeable:true}),
+		new DwtListHeaderItem({field:ZmItem.F_FILE_TYPE, text:ZmMsg.type, width:ZmFileListView.COLWIDTH_TYPE}),
+		new DwtListHeaderItem({field:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmFileListView.COLWIDTH_SIZE}),
+		new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.date, width:ZmFileListView.COLWIDTH_DATE}),
+		new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.owner, width:ZmFileListView.COLWIDTH_OWNER}),
+		new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmFileListView.COLWIDTH_FOLDER})
 	);
 	return headers;
 };

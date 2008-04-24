@@ -1651,7 +1651,7 @@ ZmAccountsListView = function(parent, className, posStyle, noMaximize) {
 	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle,
 							headerList:this._getHeaderList(), noMaximize:noMaximize});
 	this.setMultiSelect(false);
-	this.setViewPrefix("acct");
+	this._view = ZmId.VIEW_ACCOUNT;
 };
 ZmAccountsListView.prototype = new DwtListView;
 ZmAccountsListView.prototype.constructor = ZmAccountsListView;
@@ -1732,7 +1732,7 @@ function(buffer, i, item, field, col, params) {
 
 ZmAccountsListView.prototype._getCellId =
 function(item, field, params) {
-	return [this.getViewPrefix(), item.id, field].join("-");
+	return DwtId.getListViewItemId(DwtId.WIDGET_ITEM_CELL, this._view, item.id, field);
 };
 
 /***
@@ -1748,10 +1748,10 @@ ZmAccountsListView.prototype._getToolTip = function(field, item, ev, div, match)
 ZmAccountsListView.prototype._getHeaderList =
 function() {
 	return [
-		new DwtListHeaderItem({id:ZmItem.F_NAME, text:ZmMsg.accountName, width:ZmAccountsListView.WIDTH_NAME}),
-		new DwtListHeaderItem({id:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmAccountsListView.WIDTH_STATUS, align:"center"}),
-		new DwtListHeaderItem({id:ZmItem.F_EMAIL, text:ZmMsg.emailAddr}),
-		new DwtListHeaderItem({id:ZmItem.F_TYPE, text:ZmMsg.type, width:ZmAccountsListView.WIDTH_TYPE})
+		new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg.accountName, width:ZmAccountsListView.WIDTH_NAME}),
+		new DwtListHeaderItem({field:ZmItem.F_STATUS, text:ZmMsg.status, width:ZmAccountsListView.WIDTH_STATUS, align:"center"}),
+		new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.emailAddr}),
+		new DwtListHeaderItem({field:ZmItem.F_TYPE, text:ZmMsg.type, width:ZmAccountsListView.WIDTH_TYPE})
 	];
 };
 

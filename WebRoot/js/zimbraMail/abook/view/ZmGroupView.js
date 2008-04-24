@@ -736,9 +736,9 @@ ZmGroupListView.prototype._getHeaderList =
 function() {
 	var view = this._view;
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem({id:ZmItem.F_TYPE, icon:"Contact", width:20}));
-	headerList.push(new DwtListHeaderItem({id:ZmItem.F_NAME, text:ZmMsg._name, width:100}));
-	headerList.push(new DwtListHeaderItem({id:ZmItem.F_EMAIL, text:ZmMsg.email}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"Contact", width:20}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:100}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email}));
 	return headerList;
 };
 
@@ -778,7 +778,7 @@ ZmGroupMembersListView.prototype.constructor = ZmGroupMembersListView;
 ZmGroupMembersListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem({id:ZmItem.F_EMAIL, text:ZmMsg.email, view:this._view}));
+	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email, view:this._view}));
 	return headerList;
 };
 

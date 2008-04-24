@@ -458,9 +458,6 @@ ZmContactSimpleView = function(params) {
 
 	this._normalClass = DwtListView.ROW_CLASS + " SimpleContact";
 	this._selectedClass = [DwtListView.ROW_CLASS, DwtCssStyle.SELECTED].join("-") + " SimpleContact";
-
-	// handle a GAL ID such as:		V_CNS_uid=user5,ou=people,dc=pshahmacbook,dc=local
-	this._parseIdRegex = /^V_([A-Z]+)_([a-z]*)_(.+)$/
 };
 
 ZmContactSimpleView.prototype = new ZmContactsBaseView;
