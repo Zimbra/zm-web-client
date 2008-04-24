@@ -407,9 +407,7 @@ function(params, noRender, callback, errorCallback) {
 
 	// a query hint is part of the query that the user does not see
 	if (this._inclSharedItems) {
-		params.queryHint = isMixed
-			? ZmSearchController.QUERY_ISREMOTE
-			: this._generateQueryHint(types);
+		params.queryHint = isMixed ? ZmSearchController.QUERY_ISREMOTE : ZmSearchController.generateQueryHint(types);
 	}
 
 	// only set contact source if we are searching for contacts
@@ -531,7 +529,7 @@ function(search, isMixed, ex) {
 	}
 }
 
-ZmSearchController.prototype._generateQueryHint =
+ZmSearchController.generateQueryHint =
 function(types) {
 	var list = [];
 	var len = types.size();
@@ -542,7 +540,9 @@ function(types) {
 		if (app) {
 			var ids = app.getRemoteFolderIds();
 			for (var i = 0; i < ids.length; i++) {
-				list.push("inid:" + ids[i]);
+				var id = ids[i];
+				var idText = AjxUtil.isNumeric(id) ? id : ['"', id, '"'].join("");
+				list.push("inid:" + idText);
 			}
 		}
 	}

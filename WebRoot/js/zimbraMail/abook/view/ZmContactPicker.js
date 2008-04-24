@@ -144,10 +144,10 @@ function(colItem, ascending) {
 			: ZmSearchToolBar.FOR_GAL_MI;
 
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
-			queryHint = ZmContactsHelper.getRemoteQueryHint();
+			queryHint = ZmSearchController.generateQueryHint([ZmId.ITEM_CONTACT]) || "is:local";
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
 			queryHint = "is:local";
-		}else if( searchFor == ZmContactsApp.SEARCHFOR_GAL ){
+		} else if (searchFor == ZmContactsApp.SEARCHFOR_GAL) {
             ascending = true;
         }
 	} else {
