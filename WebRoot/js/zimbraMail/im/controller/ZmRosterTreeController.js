@@ -116,47 +116,68 @@ function(ev) {
 
 ZmRosterTreeController.prototype._imNewChatListener =
 function(ev) {
-	var clc = AjxDispatcher.run("GetChatListController");
 	if (ev && ev.buddy) {
+		var clc = AjxDispatcher.run("GetChatListController");
 		clc.chatWithRosterItem(ev.buddy);
 	} else {
 		// select from GAL
 		ZmImNewChatDlg.show(
-			{ onAutocomplete: AjxCallback.simpleClosure(function(contact, dlg){
-				if (!contact) {
-					return;
-				}
-				dlg.popdown();
-				var addr = contact.getIMAddress();
-                                addr = ZmImAddress.parse(addr);
-                                var roster = AjxDispatcher.run("GetRoster");
-                                if (addr)
-                                        addr = roster.makeServerAddress(addr.screenName, addr.service);
-// XXX: we can't look for a suitable address since the server doesn't return the default domain.  ugh.
-// 				if (!addr) {
-// 					var fields = [ ZmContact.F_email,
-// 						       ZmContact.F_email1,
-// 						       ZmContact.F_email2 ];
-// 					for (var i = 0; i < fields.length; ++i) {
-// 						addr = contact.getAttr(fields[i]);
-// 						var gwAddr = roster.breakDownAddress(addr);
-// 					}
-// 				}
-				if (!addr)
-					addr = contact.getEmail();
-				var list = roster.getRosterItemList();
-				var item = list.getByAddr(addr);
-				if (!item)
-					// create a temporary item
-					item = new ZmRosterItem(addr, list, contact.getAttendeeText(),
-								new ZmRosterPresence(ZmRosterPresence.SHOW_UNKNOWN,
-										     null,
-										     ZmMsg.unknown));
-				clc.chatWithRosterItem(item);
-			}, this)
+			{ onAutocomplete: AjxCallback.simpleClosure(this._newChatAutoCompleteCallback, this),
+			  onOk: AjxCallback.simpleClosure(this._newChatOkCallback, this) 
 			}
 		);
 	}
+};
+
+ZmRosterTreeController.prototype._newChatAutoCompleteCallback =
+function(contact, dlg, text, el, match) {
+	var item = this._getRosterItemForChat(contact, match.fullAddress);
+	if (item) {
+		dlg.popdown();
+		var clc = AjxDispatcher.run("GetChatListController");
+		clc.chatWithRosterItem(item);
+	}
+};
+
+ZmRosterTreeController.prototype._newChatOkCallback =
+function(selectedContact, contactText) {
+	var item = this._getRosterItemForChat(selectedContact, contactText);
+	if (item) {
+		var clc = AjxDispatcher.run("GetChatListController");
+		clc.chatWithRosterItem(item);
+		return true;
+	}
+};
+
+ZmRosterTreeController.prototype._getRosterItemForChat =
+function(contact, fullAddress){
+	var addr;
+	if (contact) {
+		addr = contact.getIMAddress();
+		addr = ZmImAddress.parse(addr);
+	}
+	var roster = AjxDispatcher.run("GetRoster");
+	if (addr) {
+		addr = roster.makeServerAddress(addr.screenName, addr.service);
+	}
+	if (!addr && contact) {
+		addr = contact.getEmail();
+	}
+	if (!addr && fullAddress) {
+		addr = fullAddress;
+	}
+	if (!addr) {
+		return null;
+	}
+	var list = roster.getRosterItemList();
+	var item = list.getByAddr(addr);
+	if (!item) {
+		// create a temporary item
+		var name = contact ? contact.getAttendeeText(null, true) : addr,
+			presence = new ZmRosterPresence(ZmRosterPresence.SHOW_UNKNOWN, null, ZmMsg.unknown);
+		item = new ZmRosterItem(addr, list, name, presence);
+	}
+	return item;
 };
 
 ZmRosterTreeController.prototype._imNewGroupChatListener =
