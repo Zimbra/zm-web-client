@@ -287,9 +287,8 @@ function(id) {
 };
 
 ZmApptComposeView.prototype.switchToTab =
-function(id) {
-	var tabKey = this._tabKeys[id];
-	if (tabKey) {
+function(tabKey) {
+	if (this._tabIdByKey[tabKey]) {
 		DwtTabView.prototype.switchToTab.call(this, tabKey);
 		this._curTabId = this._tabIdByKey[tabKey];
 	}
@@ -408,7 +407,7 @@ ZmApptComposeView.prototype._initialize =
 function() {
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
-		this._tabPages[id] = i == 0 ? this._createTabViewPage(id) : new AjxCallback(this, this._initializeAddTab, [id]);
+		this._tabPages[id] = (i == 0) ? this._createTabViewPage(id) : new AjxCallback(this, this._initializeAddTab, [id]);
 		var tabButtonId = ZmId.getTabId(this._controller._getViewType(), id);
 		this._tabKeys[id] = this.addTab(ZmMsg[ZmApptComposeView.TAB_NAME[id]], this._tabPages[id], tabButtonId);
 		this._tabIdByKey[this._tabKeys[id]] = id;
