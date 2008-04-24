@@ -31,6 +31,8 @@ AjxPackage.require("ajax.dwt.keyboard.DwtKeyMapMgr");
 AjxPackage.require("ajax.dwt.keyboard.DwtKeyboardMgr");
 AjxPackage.require("ajax.dwt.keyboard.DwtTabGroup");
 
+AjxPackage.require("ajax.dwt.core.DwtId");
+
 AjxPackage.require("ajax.dwt.dnd.DwtDropEvent");
 AjxPackage.require("ajax.dwt.dnd.DwtDropTarget");
 AjxPackage.require("ajax.dwt.events.DwtDisposeEvent");
