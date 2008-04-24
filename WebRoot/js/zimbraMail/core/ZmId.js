@@ -244,16 +244,6 @@ function(context) {
 };
 
 /**
- * Returns an ID for a list view.
- * 
- * @param context		[constant]		owning view identifier (ZmId.VIEW_*)
- */
-ZmId.getListViewId =
-function(context) {
-	return [ZmId.WIDGET, context.toLowerCase(), "ListView"].join("");
-};
-
-/**
  * Returns an ID for a msg view within another view.
  * 
  * @param context		[constant]		owning view identifier (ZmId.VIEW_*)
@@ -300,6 +290,19 @@ ZmId.WIDGET_TREE_ITEM_HDR	= "ztih_";		// root tree item
 ZmId.WIDGET_TREE_ITEM		= "zti_";		// tree item (node)
 ZmId.WIDGET_TAB				= "ztab_";		// tab button
 
+// apps
+ZmId.APP_BRIEFCASE		= "Briefcase";
+ZmId.APP_CALENDAR		= "Calendar";
+ZmId.APP_CONTACTS		= "Contacts";
+ZmId.APP_IM				= "IM";
+ZmId.APP_MAIL			= "Mail";
+ZmId.APP_MIXED			= "Mixed";
+ZmId.APP_NOTEBOOK		= "Notebook";
+ZmId.APP_PORTAL			= "Portal";
+ZmId.APP_PREFERENCES	= "Options";
+ZmId.APP_TASKS			= "Tasks";
+ZmId.APP_VOICE			= "Voice";
+
 // views (must be all caps) - often used as context for ID
 ZmId.VIEW_APPOINTMENT 			= "APPT";
 ZmId.VIEW_APPT_SCHEDULE			= "APPTS";
@@ -344,9 +347,7 @@ ZmId.VIEW_TASKLIST				= "TKL";
 ZmId.VIEW_TRAD 					= "TV";
 ZmId.VIEW_VOICEMAIL				= "VM";
 
-// overviews, trees, and tree items
-
-// trees within the main overviews
+// organizers
 ZmId.ORG_ADDRBOOK			= "ADDRBOOK";
 ZmId.ORG_BRIEFCASE			= "BRIEFCASE";
 ZmId.ORG_CALENDAR			= "CALENDAR";
@@ -359,6 +360,7 @@ ZmId.ORG_TAG				= "TAG";
 ZmId.ORG_TASKS				= "TASKS";
 ZmId.ORG_ZIMLET				= "ZIMLET";
 
+// items
 ZmId.ITEM_APPOINTMENT	= "APPT";
 ZmId.ITEM_ATT			= "ATT";
 ZmId.ITEM_BRIEFCASE		= "BRIEFCASE_ITEM";
@@ -376,37 +378,49 @@ ZmId.ITEM_ROSTER		= "ROSTER_ITEM";
 ZmId.ITEM_TASK			= "TASK";
 ZmId.ITEM_VOICEMAIL		= "VOICEMAIL";
 
-// system folder tree items
+// fields of an item
+ZmId.FLD_ATTACHMENT		= "at";
+ZmId.FLD_CAPACITY		= "cp";
+ZmId.FLD_COMPANY		= "co";
+ZmId.FLD_DATE			= "dt";
+ZmId.FLD_EMAIL			= "em";
+ZmId.FLD_EXPAND			= "ex";	// CLV
+ZmId.FLD_FILE_TYPE		= "ft";	// Notebook
+ZmId.FLD_FLAG			= "fg";
+ZmId.FLD_FOLDER			= "fo";
+ZmId.FLD_FRAGMENT		= "fm";
+ZmId.FLD_FROM			= "fr";
+ZmId.FLD_HOME_PHONE		= "hp"; // Contacts
+ZmId.FLD_ID				= "id";
+ZmId.FLD_INDEX			= "ix";
+ZmId.FLD_ITEM_ROW		= "rw";
+ZmId.FLD_LOCATION		= "lo";
+ZmId.FLD_NAME			= "na";
+ZmId.FLD_NOTES			= "no";
+ZmId.FLD_PARTICIPANT	= "pa";
+ZmId.FLD_PCOMPLETE		= "pc"; // Tasks
+ZmId.FLD_PRIORITY		= "pr"; // Tasks
+ZmId.FLD_SELECTION		= "se";
+ZmId.FLD_SIZE			= "sz";
+ZmId.FLD_STATUS			= "st";
+ZmId.FLD_SUBJECT		= "su";
+ZmId.FLD_TAG			= "tg";
+ZmId.FLD_TAG_CELL		= "tc";
+ZmId.FLD_TYPE			= "ty";
+ZmId.FLD_WORK_PHONE		= "wp"; // Contacts
 
+// convenience IDs for system folder tree items - may also be generated
+// via getTreeItemId()
 ZmId.TREEITEM_MAIL_INBOX			= "zti_mail_2";
 ZmId.TREEITEM_MAIL_TRASH			= "zti_mail_3";
 ZmId.TREEITEM_MAIL_JUNK				= "zti_mail_4";
 ZmId.TREEITEM_MAIL_SENT				= "zti_mail_5";
 ZmId.TREEITEM_MAIL_DRAFTS			= "zti_mail_6";
-
 ZmId.TREEITEM_CONTACTS_CONTACTS		= "zti_contacts_7";
-
 ZmId.TREEITEM_CALENDAR_CALENDAR		= "zti_calendar_10";
-
 ZmId.TREEITEM_NOTEBOOK_NOTEBOOK		= "zti_notebook_12";
-
 ZmId.TREEITEM_TASKS_TASKS			= "zti_tasks_15";
-
 ZmId.TREEITEM_BRIEFCASE_BRIEFCASE	= "zti_briefcase_16";
-
-
-// apps
-ZmId.APP_BRIEFCASE		= "Briefcase";
-ZmId.APP_CALENDAR		= "Calendar";
-ZmId.APP_CONTACTS		= "Contacts";
-ZmId.APP_IM				= "IM";
-ZmId.APP_MAIL			= "Mail";
-ZmId.APP_MIXED			= "Mixed";
-ZmId.APP_NOTEBOOK		= "Notebook";
-ZmId.APP_PORTAL			= "Portal";
-ZmId.APP_PREFERENCES	= "Options";
-ZmId.APP_TASKS			= "Tasks";
-ZmId.APP_VOICE			= "Voice";
 
 // special toolbars
 ZmId.TB_INVITE	= "INV";
