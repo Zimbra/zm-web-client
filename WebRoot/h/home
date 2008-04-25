@@ -101,7 +101,14 @@
             </tr>
         </table>
     </td>
-    </c:if>    
+    </c:if>
+    <!-- for comcast cdv user -->
+    <c:if test="${not mailbox.features.mail}" >
+    <td valign="top" width="40%">
+        <iframe width="100%" scrolling="no" frameborder="0" src="http://www.comcast.net/szcc_mc_hsd_upsell.html"></iframe>
+    </td>
+    </c:if>
+    <!-- end -->    
     <td valign="top" width="50%">
 		<c:choose>
 			<c:when test="${mailbox.features.calendar}">
