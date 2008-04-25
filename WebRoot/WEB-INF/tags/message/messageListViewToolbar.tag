@@ -105,7 +105,7 @@
         </td>
         <td nowrap align=right>
             <app:searchPageLeft keys="${keys}" urlTarget="/h/search" context="${context}"/>
-            <app:searchPageOffset searchResult="${context.searchResult}"/>
+            <app:searchPageOffset searchResult="${context.searchResult}" max="${context.folder.messageCount}"/>
             <app:searchPageRight keys="${keys}" urlTarget="/h/search" context="${context}"/>
         </td>
     </tr>
