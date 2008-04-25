@@ -387,12 +387,11 @@ function(params, noRender, callback, errorCallback) {
 
 	// a query hint is part of the query that the user does not see
 	if (this._inclSharedItems) {
-		params.queryHint = isMixed ? ZmSearchController.QUERY_ISREMOTE : ZmSearchController.generateQueryHint(types);
+		params.queryHint = isMixed ? ZmSearchController.QUERY_ISREMOTE : ZmSearchController.generateQueryHint(types.getArray());
 	}
 
 	// only set contact source if we are searching for contacts
-	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmSearchToolBar.FOR_GAL_MI))
-		? this._contactSource : null;
+	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmSearchToolBar.FOR_GAL_MI)) ? this._contactSource : null;
 
 	// find suitable sort by value if not given one (and if applicable)
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
@@ -509,13 +508,17 @@ function(search, isMixed, ex) {
 	}
 }
 
+/**
+ * Provides a string to add to the query when the search includes
+ * shared items.
+ * 
+ * @param types		[array]		list of item types
+ */
 ZmSearchController.generateQueryHint =
 function(types) {
 	var list = [];
-	var len = types.size();
-
-	for (var j = 0; j < len; j++) {
-		var type = types.get(j);
+	for (var j = 0; j < types.length; j++) {
+		var type = types[j];
 		var app = appCtxt.getApp(ZmItem.APP[type]);
 		if (app) {
 			var ids = app.getRemoteFolderIds();
