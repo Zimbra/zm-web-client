@@ -128,10 +128,11 @@ function() {
 
 ZmContactPicker.prototype.search =
 function(colItem, ascending) {
+	if (typeof ascending == "undefined") {
+		ascending = true;
+	}
 
-    if(typeof ascending == "undefined") ascending = true;
-
-    var query = this._searchCleared ? AjxStringUtil.trim(this._searchField.value) : "";
+	var query = this._searchCleared ? AjxStringUtil.trim(this._searchField.value) : "";
 	if (!query.length) {
 		query = this._defaultQuery;
 	}

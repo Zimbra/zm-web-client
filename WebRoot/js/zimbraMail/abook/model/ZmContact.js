@@ -1070,7 +1070,8 @@ function(node) {
 
 	// check if the folderId is found in our address book (otherwise, we assume
 	// this contact to be a shared contact)
-	this.addrbook = appCtxt.getById(this.folderId);
+	var ac = window.parentAppCtxt || window.appCtxt;
+	this.addrbook = ac.getById(this.folderId);
 
 	// dont process tags/flags for shared contacts until we get server support
 	if (!this.isShared()) {

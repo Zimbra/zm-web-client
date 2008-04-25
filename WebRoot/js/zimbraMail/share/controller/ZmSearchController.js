@@ -536,10 +536,11 @@ function(search, isMixed, ex) {
  */
 ZmSearchController.generateQueryHint =
 function(types) {
+	var ac = window.parentAppCtxt || window.appCtxt;
 	var list = [];
 	for (var j = 0; j < types.length; j++) {
 		var type = types[j];
-		var app = appCtxt.getApp(ZmItem.APP[type]);
+		var app = ac.getApp(ZmItem.APP[type]);
 		if (app) {
 			var ids = app.getRemoteFolderIds();
 			for (var i = 0; i < ids.length; i++) {
