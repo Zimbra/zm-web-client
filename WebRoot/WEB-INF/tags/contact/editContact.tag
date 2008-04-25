@@ -273,4 +273,65 @@
 </tr>
 </table>
 
+<script type="text/javascript" >
+var _fields = {} ;
+grabFieldValues = function(){
+    var form = document.forms["contactForm"];
+    var _el = form.elements;
+    for ( var _i=0;_i < _el.length; _i++){
+        if((_el[_i].type == "hidden") || (_el[_i].type == "submit")){
+            // do nothing
+        }else if(_el[_i].type == "text"){
+            _fields[_el[_i].name] = _el[_i].value;
+        }else if(_el[_i].type == "radio"){
+            if(_el[_i].checked){
+                _fields[_el[_i].name] = _el[_i].value+"::"+_el[_i].checked;
+            }
+        }else if(_el[_i].type == "checkbox"){
+            _fields[_el[_i].name] = _el[_i].checked;
+        }else if(_el[_i].type == "select-one"){
+            _fields[_el[_i].name] = _el[_i].options[_el[_i].selectedIndex].value;
+        }else if(_el[_i].type == "textarea"){
+            _fields[_el[_i].name] = _el[_i].value;
+        }
+    }
+}
+grabFieldValues();
+var _form = document.forms["contactForm"];
+
+checkForChanges = function(){
+    var _el = _form.elements;
+    var _checkFail = false;
+    for ( var _i=0;_i < _el.length; _i++){
+        if((_el[_i].type == "hidden") || (_el[_i].type == "submit")){
+            // do nothing
+        }else if(_el[_i].type == "text"){
+            if(_fields[_el[_i].name] != _el[_i].value) { _checkFail = true;}
+        }else if(_el[_i].type == "radio"){
+            if(_el[_i].checked){
+                if(_fields[_el[_i].name] != _el[_i].value+"::"+_el[_i].checked) { _checkFail = true; }
+            }
+        }else if(_el[_i].type == "checkbox"){
+            if(_fields[_el[_i].name] != _el[_i].checked) {_checkFail = true; }
+
+        }else if(_el[_i].type == "select-one"){
+            if(_fields[_el[_i].name] != _el[_i].options[_el[_i].selectedIndex].value) {_checkFail = true;  }
+
+        }else if(_el[_i].type == "textarea"){
+            if(_fields[_el[_i].name] != _el[_i].value) {_checkFail = true;}
+        }
+    }
+    if(_checkFail){
+        return "<fmt:message key="optionsExitConfirmation"/>";
+    }else{
+        return;
+    }
+}
+
+window.onbeforeunload = checkForChanges;
+
+cancelOnbeforeUnload = function(){
+    window.onbeforeunload = null;
+}
+</script>
 
