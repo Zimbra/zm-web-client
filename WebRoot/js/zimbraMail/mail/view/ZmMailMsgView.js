@@ -615,14 +615,14 @@ function(msg, idoc) {
 				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
 				if (src) {
 					images[i].src = src;
-					images[i].dfsrc = src;
+					images[i].setAttribute("dfsrc", src);
 				}
 			} else if (dfsrc.indexOf("//") == -1) { // check for content-location verison
 				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, dfsrc);
 				if (src) {
 					num++;
 					images[i].src = src;
-					images[i].dfsrc = src;
+					images[i].setAttribute("dfsrc", src);
 				}
 			}
 		}
