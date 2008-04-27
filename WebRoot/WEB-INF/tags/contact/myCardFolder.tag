@@ -19,7 +19,8 @@
             <c:param name="id" value="${myCard.id}"/>
             <c:param name="actionEdit" value="true"/>
             <c:param name="doContactListViewAction" value="true"/>
-		</c:url>
+            <c:param name="myCard" value="${true}"/>            
+        </c:url>
 
         <a href='${fn:escapeXml(url)}'>
             <app:img src="contacts/ImgPerson.gif" alt='${fn:escapeXml(label)}'/>
