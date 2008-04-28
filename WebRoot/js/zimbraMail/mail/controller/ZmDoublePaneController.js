@@ -424,7 +424,10 @@ function(parent, num) {
 	}
 	parent.enable(ZmOperation.SHOW_ORIG, isMsg);
 	if (appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
-		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg);
+		var folderId = this._getSearchFolderId();
+		var folder = folderId ? appCtxt.getById(folderId) : null;
+		var isSyncFailuresFolder = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
+		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg && !isSyncFailuresFolder);
 	}
 	parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && isMsg && !isDraft));
 };
