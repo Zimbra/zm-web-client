@@ -62,7 +62,7 @@ ZmSpreadSheetToolbars.prototype._createWidgets = function() {
 };
 
 ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
-	var toolbar = new DwtToolBar({parent:this, className:"ToolBar", posStyle:DwtControl.RELATIVE_STYLE, cellSpacing:0});
+	var toolbar = new DwtToolBar({parent:this, className:"ToolBar", posStyle:DwtControl.RELATIVE_STYLE});
 	var listener = this._on_buttonPress;
 	var b;
 
@@ -168,7 +168,7 @@ ZmSpreadSheetToolbars.prototype._input_clicked = function(ev) {
 };
 
 ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
-	var toolbar = new DwtToolBar({parent:this, className:"ToolBar ToolBar2", posStyle:DwtControl.RELATIVE_STYLE, cellSpacing:0});
+	var toolbar = new DwtToolBar({parent:this, className:"ToolBar ToolBar2", posStyle:DwtControl.RELATIVE_STYLE});
 	var listener = this._on_buttonPress;
 	var params = {parent:toolbar, style:0};
 
