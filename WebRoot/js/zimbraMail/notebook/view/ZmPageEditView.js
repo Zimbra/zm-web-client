@@ -531,7 +531,7 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 
 /*** TODO: Add this back later...
 ZmPageEditor.prototype._createWikiToolBar = function(parent) {
-	var toolbar = this._wikiToolBar = new ZmToolBar({parent:this, className:"ZToolbar", posStyle:DwtControl.RELATIVE_STYLE, cellSpacing:2});
+	var toolbar = this._wikiToolBar = new ZmToolBar({parent:this, className:"ZToolbar", posStyle:DwtControl.RELATIVE_STYLE});
 	toolbar.setVisible(this._mode == DwtHtmlEditor.HTML);
 	
 	var listener = new AjxListener(this, this._wikiToolBarListener);
