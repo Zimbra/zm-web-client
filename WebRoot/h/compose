@@ -199,7 +199,7 @@
                             </c:if>
                             <tr>
                                 <td colspan="3"  width="100%" >
-                                    <textarea class='MsgCompose' name="body" id="body" rows="30" cols="80" style='width:100%'>${fn:escapeXml(isHtml ? (empty compose.htmlContent ?  compose.content : compose.htmlContent) : compose.content)}</textarea>
+                                    <textarea class='MsgCompose' name="body" id="body" rows="30" cols="80" style='visibility: hidden;width:100%'>${fn:escapeXml(isHtml ? (empty compose.htmlContent ?  compose.content : compose.htmlContent) : compose.content)}</textarea>
                                     <!-- <textarea class='MsgCompose' name="body"  rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea> -->
                                    <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' /> 
                                     
@@ -277,14 +277,14 @@
 				width: '100%',
 				dompath: true, //Turns on the bar at the bottom
 				animate: true, //Animates the opening, closing and moving of Editor windows
-				css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
+                plainText: true,
+                css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
 				extracss: '.yui-spellcheck { background-color: yellow; }'
-			});
+            });
 			enableSpellCheck(myEditor);
-
 			myEditor.on('editorContentLoaded', function() {
 					var b = document.getElementById('body');
-					var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+					var html = b.innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 					myEditor.setEditorHTML(html);
 			}, myEditor, true);
 			myEditor.render();
