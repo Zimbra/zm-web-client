@@ -1091,6 +1091,12 @@ function(parent, num) {
 	var folderId = this._getSearchFolderId();
 	var folder = folderId ? appCtxt.getById(folderId) : null;
 
+	if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
+		parent.enableAll(false);
+		parent.enable([ZmOperation.NEW_MENU, ZmOperation.CHECK_MAIL, ZmOperation.DELETE, ZmOperation.PRINT, ZmOperation.FORWARD], true);
+		return;
+	}
+
 	if (parent && parent instanceof ZmToolBar) {
 		if (folder && folder.isReadOnly() && num > 0) {
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE, ZmOperation.SPAM, ZmOperation.TAG_MENU], false);

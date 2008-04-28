@@ -285,7 +285,9 @@ function(folder) {
 			}
 		}
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
-		appCtxt.getSearchController().search({query:folder.createQuery(), searchFor:searchFor, getHtml:getHtml});
+		// for Sync Failures folder, always show in traditional view
+		var types = (folder.nId == ZmOrganizer.ID_SYNC_FAILURES) ? [ZmItem.MSG] : null;
+		appCtxt.getSearchController().search({query:folder.createQuery(), searchFor:searchFor, getHtml:getHtml, types:types});
 	}
 };
 
