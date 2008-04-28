@@ -283,13 +283,10 @@
 			enableSpellCheck(myEditor);
 
 			myEditor.on('editorContentLoaded', function() {
-				setTimeout(function() {
 					var b = document.getElementById('body');
 					var html = b.innerHTML.replace(/\n/g, '<br>').replace(/\t/g, '    ').replace(/  /g, '  ').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 					myEditor.setEditorHTML(html);
-				}, 1000);
 			}, myEditor, true);
-
 			myEditor.render();
 			// -->
 		</script>
