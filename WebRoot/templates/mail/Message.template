@@ -15,6 +15,10 @@
 							<td class='SubjectCol LabelColValue' valign=top width=100%>
 								<$= data.subject $>
 							</td>
+							<$ if (data.isSyncFailureMsg) { $>
+								<td id='${id}_reportBtnCell'></td>
+								<td>&nbsp;</td>
+							<$ } $>
 						</tr>
 
 						<tr id='${id}_expandRow'>
