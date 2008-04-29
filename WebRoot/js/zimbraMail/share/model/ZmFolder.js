@@ -506,10 +506,16 @@ function(what, folderType) {
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
-				if ((items[i].type == ZmItem.CONTACT) && (this.nId != ZmFolder.ID_TRASH)) {
-					// can only move contacts into Trash
-					invalid = true;
-					break;
+				if (items[i].type == ZmItem.CONTACT) {
+					if (this.nId != ZmFolder.ID_TRASH) {
+						// can only move contacts into Trash
+						invalid = true;
+						break;
+					} else if (items[i].isMyCard()) {
+						// can't trash my card
+						invalid = true;
+						break;
+					}
 				} else if (items[i].isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS)) {
 					// can move drafts into Trash or Drafts
 					invalid = true;
