@@ -29,6 +29,8 @@ ZmVoicemailListController = function(container, app) {
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+
+	this._markingHeard = {}; // Prevents repeated markHeard requests during playback.
 }
 ZmVoicemailListController.prototype = new ZmVoiceListController;
 ZmVoicemailListController.prototype.constructor = ZmVoicemailListController;
@@ -43,6 +45,7 @@ function(searchResult, folder) {
 	if (this._folder && (folder != this._folder)) {
 		this._getView().stopPlaying(true);
 	}
+	this._markingHeard = {};
 	ZmVoiceListController.prototype.show.call(this, searchResult, folder)
 };
 
@@ -210,29 +213,47 @@ ZmVoicemailListController.prototype._markHeard =
 function(items, heard) {
 	var changeItems = [];
 	for (var i = 0, count = items.length; i < count; i++) {
-		if (items[i].isUnheard == heard) {
-			changeItems.push(items[i]);
+		var item = items[i];
+		if (!this._markingHeard[item.id] && (item.isUnheard == heard)) {
+			changeItems.push(item);
+			this._markingHeard[item.id] = true;
 		}
 	}
 	if (changeItems.length) {
 		var callback = new AjxCallback(this, this._handleResponseMarkHeard, [changeItems, heard]);
+		var errorCallback = new AjxCallback(this, this._handleErrorMarkHeard, [changeItems]);
 		var app = appCtxt.getApp(ZmApp.VOICE);
-		app.markItemsHeard(changeItems, heard, callback);
+		app.markItemsHeard(changeItems, heard, callback, errorCallback);
 	}
 };
 
 ZmVoicemailListController.prototype._handleResponseMarkHeard = 
 function(items, heard) {
+	var changeItems = [];
+	var isUnheard = !heard;
 	for (var i = 0, count = items.length; i < count; i++) {
-		items[i].isUnheard = !heard;
+		var item = items[i];
+		if (item.isUnheard != isUnheard) {
+			item.isUnheard = isUnheard;
+			changeItems.push(item);
+		}
+		delete this._markingHeard[item.id];
 	}
-	var delta = heard ? -count : count;
+	var delta = heard ? -changeItems.length : changeItems.length;
 	this._folder.changeNumUnheardBy(delta);
-	this._getView().markUIAsRead(items, heard);
+	this._getView().markUIAsRead(changeItems, heard);
 	this._resetToolbarOperations();
 };
 
-ZmVoicemailListController.prototype._deleteListener = 
+ZmVoicemailListController.prototype._handleErrorMarkHeard =
+function(items) {
+	for (var i = 0, count = items.length; i < count; i++) {
+		delete this._markingHeard[items[i].id];
+	}
+	return true;
+};
+
+ZmVoicemailListController.prototype._deleteListener =
 function(ev) {
 	var items = this._getView().getSelection();
 	if (!items.length) {
