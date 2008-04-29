@@ -308,8 +308,8 @@ function(ev) {
 		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
 
 		//checkbox event may not be propagated to close action menu
-		if(this._getActionMenu()){
-			this._getActionMenu().popdown();
+		if(this._getActionMenu(ev)){
+			this._getActionMenu(ev).popdown();
 		}
 		
 		// notify listeners of selection
