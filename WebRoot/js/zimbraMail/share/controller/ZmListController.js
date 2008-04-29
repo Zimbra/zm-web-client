@@ -172,7 +172,6 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.PRINT:
-		case ZmKeyMap.PRINT_ALL:
 			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
 				this._printListener();
 			}

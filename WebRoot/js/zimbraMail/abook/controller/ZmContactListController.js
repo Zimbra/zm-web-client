@@ -224,6 +224,12 @@ function(actionCode) {
 			}
 			break;
 
+		case ZmKeyMap.PRINT_ALL:
+			if (appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+				this._printAddrBookListener();
+			}
+			break;
+
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 	}

@@ -169,7 +169,7 @@ function(actionCode) {
 	var view = this._getView();
 	var num = view.getSelectionCount();
 	switch (actionCode) {
-		case ZmKeyMap.DOWNLOAD_VOICEMAIL:
+		case ZmKeyMap.DOWNLOAD:
 			if (num == 1) {
 				this._downloadListener();
 			}
