@@ -18,7 +18,8 @@ ZmIdentity = function(name) {
 	this.name = name;
 };
 
-ZmIdentity.prototype.toString = function() {
+ZmIdentity.prototype.toString =
+function() {
 	return "ZmIdentity";
 };
 
@@ -113,54 +114,19 @@ function(fieldId, value) {
 
 // requests
 
-ZmIdentity.prototype.create = function(callback, errorCallback, batchCmd) {
+ZmIdentity.prototype.create =
+function(callback, errorCallback, batchCmd) {
 	return this._doRequest("Create", this._handleCreateResponse, callback, errorCallback, batchCmd);
 };
 
-ZmIdentity.prototype.save = function(callback, errorCallback, batchCmd) {
+ZmIdentity.prototype.save =
+function(callback, errorCallback, batchCmd) {
 	return this._doRequest("Modify", this._handleSaveResponse, callback, errorCallback, batchCmd);
 };
 
-ZmIdentity.prototype.doDelete = function(callback, errorCallback, batchCmd) {
+ZmIdentity.prototype.doDelete =
+function(callback, errorCallback, batchCmd) {
 	return this._doRequest("Delete", this._handleDeleteResponse, callback, errorCallback, batchCmd);
-};
-
-// TODO: remove these obsolete methods once compose is fixed to use account settings
-
-ZmIdentity.prototype.getUseWhenSentTo = function() {
-	return this.useWhenSentTo;
-};
-
-ZmIdentity.prototype.getComposeSameFormat = function() {
-	return appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
-};
-
-ZmIdentity.prototype.getComposeAsFormat = function() {
-	return appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
-};
-
-ZmIdentity.prototype.getPrefix = function() {
-	return appCtxt.get(ZmSetting.REPLY_PREFIX);
-};
-
-ZmIdentity.prototype.getForwardOption = function() {
-	return appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
-};
-
-ZmIdentity.prototype.getReplyOption = function() {
-	return appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
-};
-
-ZmIdentity.prototype.getSignatureStyle = function() {
-	return appCtxt.get(ZmSetting.SIGNATURE_STYLE);
-};
-
-ZmIdentity.prototype.getAdvancedIdentity = function() {
-	return this.isDefault ? this : appCtxt.getIdentityCollection().defaultIdentity;
-};
-
-ZmIdentity.prototype.setAllDefaultAdvancedFields = function() {
-	// NOP
 };
 
 //
@@ -252,7 +218,8 @@ function(data) {
 	}
 };
 
-ZmIdentity.prototype._handleCreateResponse = function(callback, result, response) {
+ZmIdentity.prototype._handleCreateResponse =
+function(callback, result, response) {
 	this.id = response.identity[0].id;
 	delete this._new;
 	delete this._dirty;
@@ -265,7 +232,8 @@ ZmIdentity.prototype._handleCreateResponse = function(callback, result, response
 	}
 };
 
-ZmIdentity.prototype._handleSaveResponse = function(callback, result, response) {
+ZmIdentity.prototype._handleSaveResponse =
+function(callback, result, response) {
 	delete this._dirty;
 
 	var collection = appCtxt.getIdentityCollection();
@@ -281,7 +249,8 @@ ZmIdentity.prototype._handleSaveResponse = function(callback, result, response) 
 	}
 };
 
-ZmIdentity.prototype._handleDeleteResponse = function(callback, result, response) {
+ZmIdentity.prototype._handleDeleteResponse =
+function(callback, result, response) {
 	var collection = appCtxt.getIdentityCollection();
 	collection.remove(this);
 
