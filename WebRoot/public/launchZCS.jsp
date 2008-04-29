@@ -139,11 +139,7 @@
 	appDevMode     = ${isDevMode};
 
 	function switchToStandardClient() {
-		var qs = "client=standard";
-		if (screen.width) {
-			qs = [qs, "&scrW=", screen.width, "&scrH=", screen.height].join("");
-		}
-		document.location = appContextPath + "/?" + qs;
+		document.location = appContextPath + "/?client=standard";
 	}
 	
 	if (screen.width <= 800 && screen.height <= 600) {
