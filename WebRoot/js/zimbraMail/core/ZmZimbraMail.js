@@ -685,10 +685,11 @@ function(apps) {
 	// to encourage the user to upgrade.
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var app = ZmApp.APPS[i];
-		var setting = ZmApp.SETTING[app];
-		var upsellSetting = ZmApp.UPSELL_SETTING[app];
-		if ((setting && appCtxt.get(setting)) || (upsellSetting && appCtxt.get(upsellSetting))) {
+		var appEnabled = ZmApp.SETTING[app] && appCtxt.get(ZmApp.SETTING[app]);
+		var upsellEnabled = ZmApp.UPSELL_SETTING[app] && appCtxt.get(ZmApp.UPSELL_SETTING[app]);
+		if (appEnabled || upsellEnabled) {
 			this._createApp(app);
+			this._apps[app].isUpsell = (!appEnabled && upsellEnabled);
 		}
 	}
 };
