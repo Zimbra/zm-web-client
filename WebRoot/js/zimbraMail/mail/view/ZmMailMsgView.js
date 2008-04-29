@@ -947,8 +947,9 @@ function(msg, container, callback) {
 		hasHeaderCloseBtn: this._hasHeaderCloseBtn,
 		infoBarId: this._infoBarId,
         hasAttachments: hasAttachments,
-        attachId: this._attLinksId
-    };
+        attachId: this._attLinksId,
+		isSyncFailureMsg: (appCtxt.getById(msg.folderId).nId == ZmOrganizer.ID_SYNC_FAILURES)
+	};
 
 	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
 
@@ -982,6 +983,14 @@ function(msg, container, callback) {
 		this._closeButton.setText(ZmMsg.close);
 		this._closeButton.reparentHtmlElement(closeBtnCellId);
 		this._closeButton.addSelectionListener(new AjxListener(this, this._closeButtonListener));
+	}
+
+	// add the report button if applicable
+	var reportBtnCell = document.getElementById(this._htmlElId + "_reportBtnCell");
+	if (reportBtnCell) {
+		var reportBtn = new DwtButton({parent:this, parentElement:reportBtnCell});
+		reportBtn.setText(ZmMsg.reportSyncFailure);
+		reportBtn.addSelectionListener(new AjxListener(this, this._reportButtonListener, msg));
 	}
 
 	// if multiple body parts, screw the prefs and just append everything
@@ -1400,6 +1409,29 @@ function(expand) {
 ZmMailMsgView.prototype._closeButtonListener =
 function(ev) {
 	this._controller._app.popView();
+};
+
+ZmMailMsgView.prototype._reportButtonListener =
+function(msg, ev) {
+	var proxy = AjxUtil.createProxy(msg);
+
+	proxy.clearAddresses();
+	var toAddress = new AjxEmailAddress("zdesktop-report@zimbra.com");
+	proxy._addrs[AjxEmailAddress.TO] = AjxVector.fromArray([toAddress]);
+
+	var respCallback = new AjxCallback(this, this._sendReportCallback, msg);
+	var errorCallback = new AjxCallback(this, this._sendReportError);
+	proxy.send(null, null, respCallback, errorCallback, null, true);
+};
+	
+ZmMailMsgView.prototype._sendReportCallback =
+function(msg) {
+	this._controller._doDelete(msg, true);
+};
+
+ZmMailMsgView.prototype._sendReportError =
+function() {
+	appCtxt.setStatusMsg(ZmMsg.reportSyncError, ZmStatusView.LEVEL_WARNING);
 };
 
 

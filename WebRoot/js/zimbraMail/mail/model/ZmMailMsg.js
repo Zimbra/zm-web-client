@@ -692,7 +692,7 @@ function(callback, result) {
 * Sends the message out into the world.
 */
 ZmMailMsg.prototype.send =
-function(contactList, isDraft, callback, errorCallback, accountName) {
+function(contactList, isDraft, callback, errorCallback, accountName, noSave) {
 	var aName = accountName;
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
@@ -707,17 +707,20 @@ function(contactList, isDraft, callback, errorCallback, accountName) {
 	} else {
 		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
 		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
-		if (!isDraft && this.sendUID)
+		if (!isDraft && this.sendUID) {
 			soapDoc.setMethodAttribute("suid", this.sendUID);
+		}
+		if (noSave) {
+			soapDoc.setMethodAttribute("noSave", "1");
+		}
 		this._createMessageNode(soapDoc, contactList, isDraft, aName);
 
-		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
 		var params = {
 			soapDoc: soapDoc,
 			isInvite: false,
 			isDraft: isDraft,
 			accountName: aName,
-			callback: respCallback,
+			callback: (new AjxCallback(this, this._handleResponseSend, [isDraft, callback])),
 			errorCallback: errorCallback
 		};
 		return this._sendMessage(params);
@@ -950,14 +953,14 @@ function(params, result) {
 
 ZmMailMsg.prototype._notifySendListeners =
 function() {
-	var flag = null;
+	var flag;
 	if (this.isForwarded) {
 		flag = ZmItem.FLAG_FORWARDED;
 	} else if (this.isReplied) {
 		flag = ZmItem.FLAG_REPLIED;
 	}
 
-	if (flag) {
+	if (flag && this._origMsg) {
 		this._origMsg[ZmItem.FLAG_PROP[flag]] = true;
 		if (this._origMsg.list) {
         	this._origMsg.list._notify(ZmEvent.E_FLAGS, {items: [this._origMsg], flags: [flag]});

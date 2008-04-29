@@ -170,7 +170,7 @@ function(actionCode) {
 		case ZmKeyMap.REPLY_ALL:
 		case ZmKeyMap.FORWARD_INLINE:
 		case ZmKeyMap.FORWARD_ATT:
-			if (!isDrafts && num == 1) {
+			if (!isDrafts && num == 1 && folder.nId != ZmOrganizer.ID_SYNC_FAILURES) {
 				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode]});
 			}
 			break;
@@ -192,6 +192,7 @@ function(actionCode) {
 		case ZmKeyMap.MOVE_TO_INBOX:
 		case ZmKeyMap.MOVE_TO_TRASH:
 		case ZmKeyMap.MOVE_TO_JUNK:
+			if (folder.nId == ZmOrganizer.ID_SYNC_FAILURES) break;
 			if (num && !(isDrafts && actionCode != ZmKeyMap.MOVE_TO_TRASH)) {
 				folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
 				folder = appCtxt.getById(folderId);
@@ -201,7 +202,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SPAM:
-			if (num && !isDrafts) {
+			if (num && !isDrafts && folder.nId != ZmOrganizer.ID_SYNC_FAILURES) {
 				this._spamListener();
 			}
 			break;
@@ -219,11 +220,15 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.VIEW_BY_CONV:
-			this.switchView(ZmId.VIEW_CONVLIST);
+			if (folder.nId != ZmOrganizer.ID_SYNC_FAILURES) {
+				this.switchView(ZmId.VIEW_CONVLIST);
+			}
 			break;
 
 		case ZmKeyMap.VIEW_BY_MSG:
-			this.switchView(ZmId.VIEW_TRAD);
+			if (folder.nId != ZmOrganizer.ID_SYNC_FAILURES) {
+				this.switchView(ZmId.VIEW_TRAD);
+			}
 			break;
 
 		case ZmKeyMap.READING_PANE:
@@ -304,6 +309,7 @@ function(actionCode) {
 
 		case ZmKeyMap.MOVE_TO_FOLDER:
 			// Handle action code like "MoveToFolder3"
+			if (folder.nId == ZmOrganizer.ID_SYNC_FAILURES) break;
 			if (!folder || (folder && !folder.isReadOnly())) {
 				if (num && !isDrafts) {
 					folder = appCtxt.getById(shortcut.arg);
@@ -732,7 +738,6 @@ function(view, firstTime) {
 	var btn;
 
 	if (firstTime) {
-		var menu;
 		if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 			var viewButton = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 			viewButton.setMenu(new AjxCallback(this, this._setupGroupByMenuItems, [view]));
