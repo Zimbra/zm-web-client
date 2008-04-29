@@ -179,14 +179,14 @@ function() {
 	var appName = null;
 	for (var i = 0; i < apps.length; i++) {
 		var app = apps[i];
-		if (app.name == this._name) continue;
+		if (app.name == this._name) { continue; }
+		if (appCtxt.getApp(app.name).isUpsell) { continue; }
 
 		appName = app.name;
 		break;
 	}
 	if (appName) {
-		var app = appCtxt.getApp(appName);
-		return app.getOverviewPanelContent();
+		return appCtxt.getApp(appName).getOverviewPanelContent();
 	}
 	return null;
 };
