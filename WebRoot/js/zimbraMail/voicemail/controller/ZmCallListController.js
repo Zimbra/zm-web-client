@@ -82,6 +82,8 @@ function(parent, num) {
 	if (parent) {
 		parent.enableAll(true);
 	}
+	var list = this.getList();
+	parent.enable(ZmOperation.PRINT, list && list.size());
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		parent.enable(ZmOperation.CONTACT, num == 1);
 	}

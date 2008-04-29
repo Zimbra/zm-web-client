@@ -119,7 +119,8 @@ ZmVoicemailListController.prototype._resetOperations =
 function(parent, num) {
 	ZmVoiceListController.prototype._resetOperations.call(this, parent, num);
 	parent.enable(ZmOperation.CHECK_VOICEMAIL, true);
-	parent.enable(ZmOperation.PRINT, true);
+	var list = this.getList();
+	parent.enable(ZmOperation.PRINT, list && list.size());
 	parent.enable(ZmOperation.CALL_MANAGER, true);
 
 	var isTrash = this._folder && (this._folder.callType == ZmVoiceFolder.TRASH);
