@@ -355,6 +355,20 @@ function(view) {
 	return this._participantActionMenu;
 };
 
+ZmMailListController.prototype._initializeDraftsActionMenu =
+function(view) {
+	if (!this._draftsActionMenu) {
+		var menuItems = [ZmOperation.EDIT];
+		menuItems.push(ZmOperation.SEP);
+		menuItems.push(ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT);
+    	this._draftsActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems,
+    											   context:view, menuType:ZmId.MENU_DRAFTS});
+    	this._addMenuListeners(this._draftsActionMenu);
+		this._draftsActionMenu.addPopdownListener(this._menuPopdownListener);
+		this._setupTagMenu(this._draftsActionMenu);
+	}
+};
+
 ZmMailListController.prototype._initializeToolBar =
 function(view, arrowStyle) {
 
@@ -450,8 +464,6 @@ function() {
 		list.push(ZmOperation.FORWARD);
 	}
 
-	list.push(ZmOperation.EDIT);
-
 	return list;
 };
 
@@ -496,7 +508,12 @@ function(ev) {
 	var address = (ev.field == ZmItem.F_PARTICIPANT) ? ev.detail :
 		((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null);
 
-	if (address && items.length == 1 &&	(ev.field == ZmItem.F_PARTICIPANT || ev.field == ZmItem.F_FROM)) {
+	if (this._getSearchFolderId() == ZmFolder.ID_DRAFTS) {
+		// show drafts menu
+		this._initializeDraftsActionMenu();
+		this._setTagMenu(this._draftsActionMenu);
+		this._draftsActionMenu.popup(0, ev.docX, ev.docY);
+	} else if (address && items.length == 1 &&	(ev.field == ZmItem.F_PARTICIPANT || ev.field == ZmItem.F_FROM)) {
 		// show participant menu
 		this._initializeParticipantActionMenu();
 		this._setTagMenu(this._participantActionMenu);
@@ -516,8 +533,7 @@ function(ev) {
 		this._setupSpamButton(this._participantActionMenu);
 		this._enableFlags(this._participantActionMenu, bHasUnread, bHasRead);
 		this._participantActionMenu.popup(0, ev.docX, ev.docY);
-	}
-	else {
+	} else {
 		var actionMenu = this.getActionMenu();
 		this._enableFlags(actionMenu, bHasUnread, bHasRead);
 		actionMenu.popup(0, ev.docX, ev.docY);
@@ -837,17 +853,6 @@ function(parent) {
 
 	if (appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 		ops.push(ZmOperation.FORWARD);
-	}
-
-	ops.push(ZmOperation.EDIT);
-
-	for (var i = 0; i < ops.length; i++) {
-		var op = ops[i];
-		var show = (inDraftsFolder == (op == ZmOperation.EDIT));
-		var item = parent.getOp(op);
-		if (item) {
-			item.setVisible(show);
-		}
 	}
 };
 

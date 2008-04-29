@@ -426,6 +426,7 @@ ZmId.TB_SHARE	= "Shr";
 
 // special menus
 ZmId.MENU_PARTICIPANT	= "Par";
+ZmId.MENU_DRAFTS		= "Dra";
 
 // operations
 ZmId.OP_ADD_FILTER_RULE			= "ADD_FILTER_RULE"
