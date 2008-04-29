@@ -268,17 +268,7 @@ function(event) {
 ZmFolderPropsDialog.prototype._handleFolderChange =
 function(event) {
 	
-	var organizer;
-	if (event) {
-		var organizers = event.getDetail("organizers");
-		organizer = organizers ? organizers[0] : null;
-		if(organizer.id != this._organizer.id){
-			return;
-		}
-	} else {
-		organizer = this._organizer;
-	}
-	if (!organizer) { return; }
+	var organizer = this._organizer;
 	
 	if (organizer.isSystem()) {
 		this._nameOutputEl.innerHTML = AjxStringUtil.htmlEncode(organizer.name);
