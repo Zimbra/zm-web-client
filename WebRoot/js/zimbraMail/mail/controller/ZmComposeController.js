@@ -280,11 +280,12 @@ function(attId, draftType, callback) {
 			appt.save();
 		}
 	} else {
+		var ac = window.parentAppCtxt || window.appCtxt;
 		// if shared folder, make sure we send the email on-behalf-of
-		var folder = msg.folderId ? appCtxt.getById(msg.folderId) : null;
+		var folder = msg.folderId ? ac.getById(msg.folderId) : null;
 		// always save draft on the main account *unless* in offline mode
-		var acctName = (isDraft && !appCtxt.isOffline)
-			? (appCtxt.getMainAccount().name)
+		var acctName = (isDraft && !ac.isOffline)
+			? (ac.getMainAccount().name)
 			: ((folder && folder.isRemote()) ? folder.getOwner() : this._accountName);
 		var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
 		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [draftType, msg, callback]);
