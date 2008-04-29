@@ -17,8 +17,16 @@
                 </td>
                 <td><div class='vertSep'></div></td>
                 <td nowrap>
-                    <zm:currentResultUrl var="refreshUrl" value="/h/printcalls" context="${context}" refresh="true" />
-                    <a id="OPPRINT" target="_blank" href="${refreshUrl}"><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/></a>
+					<c:choose>
+						<c:when test="${context.searchResult.size > 0}">
+							<zm:currentResultUrl var="refreshUrl" value="/h/printcalls" context="${context}" refresh="true" />
+							<a id="OPPRINT" target="_blank" href="${refreshUrl}"><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/></a>
+						</c:when>
+						<c:otherwise>
+							<%-- Empty <a> to pick up styles... --%>
+							<a><app:img src="startup/ImgPrint.gif" altkey="actionPrint" clazz="ImgDisabled"/></a>
+						</c:otherwise>
+					</c:choose>
                 </td>
                 <td><div class='vertSep'></div></td>
                 <td nowrap>
