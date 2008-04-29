@@ -443,13 +443,13 @@ function(folder, callback, response) {
 };
 
 ZmVoiceApp.prototype.markItemsHeard =
-function(items, heard, callback) {
+function(items, heard, callback, errorCallback) {
 	var op = heard ? "read" : "!read";
-	this._performAction(items, op, null, callback);
+	this._performAction(items, op, null, callback, errorCallback);
 };
 
 ZmVoiceApp.prototype._performAction =
-function(items, op, attributes, callback) {
+function(items, op, attributes, callback, errorCallback) {
 	if (!items.length) {
 		if (callback) {
 			callback.run(items);
@@ -472,7 +472,8 @@ function(items, op, attributes, callback) {
     var params = {
     	soapDoc: soapDoc, 
     	asyncMode: true,
-		callback: callback
+		callback: callback,
+		errorCallback: errorCallback
 	};
 	appCtxt.getAppController().sendRequest(params);
 };
