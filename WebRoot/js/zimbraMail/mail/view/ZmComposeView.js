@@ -136,7 +136,6 @@ function(params) {
 	this._showAddressField(AjxEmailAddress.CC, true, true, true);
     //Set BCC Field to Default
     this._toggleBccField(null, appCtxt.get(ZmSetting.SHOW_BCC));
-    //this._showAddressField(AjxEmailAddress.BCC, appCtxt.get(ZmSetting.SHOW_BCC), true, true);
 
 	// populate fields based on the action and user prefs
 	this._setAddresses(action, params.toOverride);
@@ -814,6 +813,10 @@ function(bEnableInputs) {
 
 		this._accountChanged = false;
 	}
+
+    //reset state of previous Signature cache variable.
+    this._previousSignature = null;
+    this._previousSignatureMode = null;
 };
 
 ZmComposeView.prototype.enableInputs =
@@ -849,7 +852,16 @@ function(content, replaceSignatureId){
 	var newLine = this._getSignatureNewLine();
 	var isAbove = this.getSignatureStyle() == ZmSetting.SIG_OUTLOOK;
 	if (replaceSignatureId) {
-		var replaceSignature = this.getSignatureContent(replaceSignatureId);
+        var replaceSignature;
+        //Check if there is change if mode of editor
+        if(this._previousSignatureMode && this._previousSignatureMode != this._htmlEditor.getMode()){
+            replaceSignature = ( this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML )
+                    ? AjxStringUtil.convertToHtml(this._previousSignature)
+                    : AjxStringUtil.convertHtml2Text(this._previousSignature);
+        }else{
+            replaceSignature = this.getSignatureContent(replaceSignatureId);
+        }
+        
 		var replaceRe = AjxStringUtil.regExEscape(replaceSignature);
 		if (!isAbove) {
 			replaceRe += "\\s*";
@@ -858,13 +870,18 @@ function(content, replaceSignatureId){
 			}
 			replaceRe += "$";
 		} else {
-			signature = signature || newLine; 
+			signature = signature || newLine;
 		}
 		content = content.replace(new RegExp(replaceRe, "i"), signature);
 	} else {
 		content = this._insertSignature(content, this.getSignatureStyle(), signature, sep, newLine);
 	}
 	this._htmlEditor.setContent(content);
+
+    //Caching previous Signature state.
+    this._previousSignature = signature;
+    this._previousSignatureMode = this._htmlEditor.getMode();
+    
 };
 
 ZmComposeView.prototype.getSignatureContent = function(signatureId) {
