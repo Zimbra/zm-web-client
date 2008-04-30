@@ -637,8 +637,7 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var item = ev.item;
 		if (item && item.restUrl) {
-			var restUrl = this._app.fixCrossDomainReference(item.restUrl);
-			window.open(restUrl);
+			window.open(item.restUrl);
 		}else if(item && item.isFolder){
 			if(!this.isMultiColView()){
 			this.show(item.id);
