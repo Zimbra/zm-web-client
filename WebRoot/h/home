@@ -64,7 +64,7 @@
 </app:handleError>
 
 <c:set var="selected" value="${empty param.selected ? 'home' : param.selected}"/>
-<app:view mailbox="${mailbox}" title="${fn:escapeXml(empty label ? folder.name : label)} ( ${folder.unreadCount})" context="${context}" selected='home' folders="true" tags="true" searches="true" keys="true">
+<app:view mailbox="${mailbox}" title="${fn:escapeXml(empty label ? folder.name : label)} (${folder.unreadCount})" context="${context}" selected='home' folders="true" tags="true" searches="true" keys="true">
 
 <table width="100%" cellpadding="0" cellspacing="0" >
 <tr>
