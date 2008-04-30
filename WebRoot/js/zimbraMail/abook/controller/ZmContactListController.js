@@ -300,7 +300,8 @@ function(num) {
 ZmContactListController.prototype._getMoveParams =
 function() {
 	var params = ZmListController.prototype._getMoveParams.call(this);
-	var omit = {};
+    params.hideNewButton = !appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED);
+    var omit = {};
 	var folderTree = appCtxt.getFolderTree();
 	if (!folderTree) { return params; }
 	var folders = folderTree.getByType(ZmOrganizer.ADDRBOOK);

@@ -906,7 +906,8 @@ function(ev) {
 		var overviewId = [this.toString, settingId].join("-");
 		if (settingId == ZmSetting.IMPORT) {
 			AjxDispatcher.require(["ContactsCore", "Contacts"]);
-			dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, overviewId: overviewId, description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true});
+            var noNew = !appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED);
+            dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, overviewId: overviewId, description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true, hideNewButton:noNew});
 		} else {
 			AjxDispatcher.require(["CalendarCore", "Calendar"]);
 			dialog.popup({treeIds:[ZmOrganizer.CALENDAR], title:ZmMsg.chooseCalendar, overviewId: overviewId, description:ZmMsg.chooseCalendarToImport, skipReadOnly:true});
