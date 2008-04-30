@@ -1005,53 +1005,47 @@ function(html, insertFontStyle, onlyInnerContent) {
 			return DwtHtmlEditor.prototype._embedHtmlContent.call(this, html);
 	}
 
-    if(onlyInnerContent){
-        var cont = [], idx=0;
-        cont[idx++] = "<div";
-        if(insertFontStyle){
-          cont[idx++] = " style='font-family:" + appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-		  cont[idx++] = "; font-size: "+ appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-		  cont[idx++] = "; color: "+appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)+";'";
+        if(onlyInnerContent){
+                var cont = [], idx=0;
+                cont[idx++] = "<div";
+                if(insertFontStyle){
+                        cont[idx++] = " style='font-family:" + appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+		        cont[idx++] = "; font-size: "+ appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+		        cont[idx++] = "; color: "+appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR)+";'";
+                }
+                cont[idx++] = ">";
+                cont[idx++] = html;
+                cont[idx++] = "</div>";
+                return cont.join("");
         }
-        cont[idx++] = ">";
-        cont[idx++] = html;
-        cont[idx++] = "</div>";
-        return cont.join("");
-    }
 
-    var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
-	var fontStyle = insertFontStyle ? this._getFontStyle() : "";
+        var p_style = "<style type='text/css'>p { margin: 0; }</style>"; // bug 3264
+        if (insertFontStyle)
+                html = this._getFontStyle(html);
 	var headContent = this._headContent ? this._headContent.join("") : "";
 
 	return ["<html><head>",
                 p_style,
-		fontStyle, headContent,
+		headContent,
 		"</head><body>",
 		html,
 		"</body></html>"].join("");
 };
 
 ZmHtmlEditor.prototype._getFontStyle =
-function() {
-	if (!this._fontStyle) {
-		var head = [];
-		var i = 0;
-		head[i++] = "<style type='text/css'>";
-		head[i++] = "body { font-family: '";
-		head[i++] =  appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-		head[i++] = "'; ";
-		head[i++] = "font-size: ";
-		head[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-		head[i++] = "; ";
-		head[i++] = "color: ";
-		head[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-		head[i++] = "}";
-		head[i++] = "</style>";
-
-        this._fontStyle = head.join("");
-    }
-
-    return this._fontStyle;
+function(html) {
+	var a = [], i = 0;
+	a[i++] = "<div style='";
+	a[i++] = "font-family: ";
+	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
+	a[i++] = "; font-size: ";
+	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
+	a[i++] = "; color: ";
+	a[i++] = appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
+	a[i++] = "'>";
+        a[i++] = html;
+	a[i++] = "</div>";
+        return a.join("");
 };
 
 ZmHtmlEditor.prototype._serializeAceObjects =
