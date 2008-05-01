@@ -734,9 +734,8 @@ function(ev) {
 
 ZmMailListController.prototype._acceptShareHandler =
 function(ev) {
-	var cache = appCtxt.getItemCache();
-	var msg = cache.get(ev._share._msgId);
-	var folder = cache.get(ZmFolder.ID_TRASH);
+	var msg = appCtxt.getById(ev._share._msgId);
+	var folder = appCtxt.getById(ZmFolder.ID_TRASH);
 
 	var list = msg.list || this.getList();
 	list.moveItems(msg, folder);

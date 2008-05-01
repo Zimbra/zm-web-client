@@ -101,5 +101,6 @@ AjxPackage.require("ajax.dwt.widgets.DwtHtmlEditor");
 AjxPackage.require("ajax.dwt.widgets.DwtColorPicker");
 AjxPackage.require("ajax.dwt.widgets.DwtButtonColorPicker");
 AjxPackage.require("ajax.dwt.widgets.DwtChooser");
+AjxPackage.require("ajax.dwt.widgets.DwtPropertySheet");
 AjxPackage.require("ajax.dwt.widgets.DwtPropertyPage");
 AjxPackage.require("ajax.dwt.widgets.DwtTabView");
