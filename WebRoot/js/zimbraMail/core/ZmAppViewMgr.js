@@ -787,7 +787,11 @@ function(components) {
 					this._contBounds[cid] = contBds;
 					comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
                 }
-			}
+
+                if(cid == ZmAppViewMgr.C_TOOLBAR_TOP){
+                    this.fitAppToolbar(); //Fit Toolbar according to resolution.
+                }
+            }
 		}
 	}
 
@@ -1011,6 +1015,16 @@ function(ev) {
 			}
 		}
 	}
+};
+
+ZmAppViewMgr.prototype.fitAppToolbar =function(doOnce){
+    //Assuming every view has a toolbar.
+    var toolbar = this._views[this._currentView][ZmAppViewMgr.C_TOOLBAR_TOP];
+    if(doOnce && toolbar._adjustWidth) return;
+    if(toolbar && toolbar.autoAdjustWidth){
+        toolbar.autoAdjustWidth(this._containers[ZmAppViewMgr.C_TOOLBAR_TOP], true);
+        toolbar._adjustWidth = true;
+    }
 };
 
 ZmAppViewMgr.prototype._debugShowMetrics =
