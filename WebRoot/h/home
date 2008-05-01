@@ -95,7 +95,7 @@
                     <span style="font-weight:bold; font-size:12px;"><c:out value="${mailbox.name}"></c:out><br></span>
                     <a style="text-decoration:none;" href='${url}'>
                         ${mailbox.accountInfo.recent}&nbsp;<fmt:message key="new"/>
-						| ${folder.messageCount}&nbsp;<fmt:message key="total"/>
+						| ${folder.unreadCount}&nbsp;<fmt:message key="unread"/>
                     </a>
 				</td>
             </tr>
