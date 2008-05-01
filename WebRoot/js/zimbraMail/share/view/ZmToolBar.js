@@ -147,13 +147,13 @@ function(button) {
 };
 
 ZmToolBar.prototype.autoAdjustWidth =
-function(refElement) {
+function(refElement, reset) {
 	if (!refElement) { return; }
     var el = this.getHtmlElement();
 	if (!el) { return; }
     var off1 = refElement.offsetWidth;
-    var off2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
-    if(off2 > off1) {
+    var off2 = el.firstChild ? el.firstChild.offsetWidth : off1;
+    if(off2 > off1 || reset) { //reset: the buttons that have _toggleText gets filled if we have enough space.
         for (var i in this._buttons) {
             var offset1 = refElement.offsetWidth;
             var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
