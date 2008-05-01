@@ -96,7 +96,7 @@ function(id, params) {
 		params.textClassName = params.textClassName || "ZWidgetTitle";
 		b = new DwtText({parent:this, className:params.textClassName, id:id});
 	} else {
-		params.id = this._context ? ZmId.getToolbarButtonId(this._context, id, this._toolbarType) : null;
+		params.id = this._context ? ZmId.getButtonId(this._context, id, this._toolbarType) : null;
 		b = this.createButton(id, params);
 	}
 	b.setData(ZmOperation.KEY_ID, id);

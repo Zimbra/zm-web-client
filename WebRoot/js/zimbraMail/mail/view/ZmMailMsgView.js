@@ -23,18 +23,19 @@ ZmMailMsgView = function(params) {
 	DwtComposite.call(this, params);
 
 	this._mode = params.mode;
+	this._context = DwtId.getContext(this._mode, ZmId.MSG_VIEW);
 	this._controller = params.controller;
 
-	this._displayImagesId = Dwt.getNextId();
-	this._msgTruncatedId = Dwt.getNextId();
-	this._infoBarId = Dwt.getNextId();
-	this._tagRowId = Dwt.getNextId();
-	this._tagCellId = Dwt.getNextId();
-	this._attLinksId = Dwt.getNextId();
+	this._displayImagesId	= ZmId.getMsgViewId(this._mode, ZmId.MV_DISPLAY_IMAGES);
+	this._msgTruncatedId	= ZmId.getMsgViewId(this._mode, ZmId.MV_MSG_TRUNC);
+	this._infoBarId			= ZmId.getMsgViewId(this._mode, ZmId.MV_INFO_BAR);
+	this._tagRowId			= ZmId.getMsgViewId(this._mode, ZmId.MV_TAG_ROW);
+	this._tagCellId			= ZmId.getMsgViewId(this._mode, ZmId.MV_TAG_CELL);
+	this._attLinksId		= ZmId.getMsgViewId(this._mode, ZmId.MV_ATT_LINKS);
 
 	// expand/collapse vars
 	this._expandHeader = true;
-	this._expandDivId = Dwt.getNextId();
+	this._expandDivId = ZmId.getMsgViewId(this._mode, ZmId.MV_EXPAND_DIV);
 
 	// do we add a close button in the header section?
 	this._hasHeaderCloseBtn = (this._mode == ZmId.VIEW_MSG && !appCtxt.isChildWindow);
@@ -68,7 +69,8 @@ ZmMailMsgView = function(params) {
 	if (!AjxEnv.isPrism) {
 		this._setAllowSelection();
 	}
-	this._expandButton = new DwtToolBarButton({parent:this});
+	var id = ZmId.getButtonId(this._context, ZmId.OP_EXPAND);
+	this._expandButton = new DwtToolBarButton({parent:this, id:id});
     this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener));
     this._expandButton.setDisplay(Dwt.DISPLAY_NONE);
 
@@ -694,7 +696,7 @@ function(origText) {
 	(function() {
 		var infoBarDiv = document.getElementById(self._infoBarId);
 		if (infoBarDiv) {
-			self._highlightObjectsId = Dwt.getNextId();
+			self._highlightObjectsId = ZmId.getMsgViewId(self._mode, ZmId.MV_HIGHLIGHT_OBJ);
 			var subs = {
 				id: self._highlightObjectsId,
 				text: ZmMsg.objectsNotDisplayed,
@@ -791,6 +793,7 @@ function(container, html, isTextMsg, isTruncated) {
 	var params = {
 		parent: this,
 		className: "MsgBody",
+		id: ZmId.getMsgViewId(this._mode, ZmId.MV_MSG_BODY),
 		hidden: true,
 		html: html,
 		styles: inner_styles,
@@ -937,20 +940,33 @@ function(msg, container, callback) {
     var hasAttachments = msg.getAttachmentLinks(true);
     hasAttachments = ( hasAttachments.length != 0 );
 
+	this._hdrTableId		= ZmId.getMsgViewId(this._mode, ZmId.MV_HDR_TABLE);
+	this._closeBtnCellId	= ZmId.getMsgViewId(this._mode, ZmId.MV_CLOSE_BTN_CELL);
+	this._reportBtnCellId	= ZmId.getMsgViewId(this._mode, ZmId.MV_REPORT_BTN_CELL);
+	this._expandRowId		= ZmId.getMsgViewId(this._mode, ZmId.MV_EXPAND_ROW);
+	this._expandHeaderId	= ZmId.getMsgViewId(this._mode, ZmId.MV_EXPAND_HDR);
+
     var subs = {
-		id: this._htmlElId,
-		subject: subject,
-		dateString: dateString,
-		sentBy: sentBy,
-		sentByNormal: sentByAddr,
-		sentByIcon: sentByIcon,
-		obo: obo,
-		participants: participants,
-		hasHeaderCloseBtn: this._hasHeaderCloseBtn,
-		infoBarId: this._infoBarId,
-        hasAttachments: hasAttachments,
-        attachId: this._attLinksId,
-		isSyncFailureMsg: (appCtxt.getById(msg.folderId).nId == ZmOrganizer.ID_SYNC_FAILURES)
+		id:					this._htmlElId,
+		hdrTableId:			this._hdrTableId,
+		hdrTableTopRowId:	ZmId.getMsgViewId(this._mode, ZmId.MV_HDR_TABLE_TOP_ROW),
+		closeBtnCellId:		this._closeBtnCellId,
+		reportBtnCellId:	this._reportBtnCellId,
+		expandRowId:		this._expandRowId,
+		expandHeaderId:		this._expandHeaderId,
+        attachId:			this._attLinksId,
+		infoBarId:			this._infoBarId,
+
+		subject:			subject,
+		dateString:			dateString,
+		sentBy:				sentBy,
+		sentByNormal:		sentByAddr,
+		sentByIcon:			sentByIcon,
+		obo:				obo,
+		participants:		participants,
+		hasHeaderCloseBtn:	this._hasHeaderCloseBtn,
+        hasAttachments:		hasAttachments,
+		isSyncFailureMsg:	(appCtxt.getById(msg.folderId).nId == ZmOrganizer.ID_SYNC_FAILURES)
 	};
 
 	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
@@ -963,39 +979,36 @@ function(msg, container, callback) {
 	/* Add to DOM based on Id's used to generate HTML via templates           */
 	/**************************************************************************/
 
-	var expandHeaderId	= this._htmlElId + "_expandHeader";
-	this._hdrTableId	= this._htmlElId + "_hdrTable";
-	this._expandRowId	= this._htmlElId + "_expandRow";
-
 	// add the expand/collapse arrow button now that we have add to the DOM tree
-	var expandHeaderEl = document.getElementById(expandHeaderId);
+	var expandHeaderEl = document.getElementById(this._expandHeaderId);
 	if (expandHeaderEl) {
 		var image = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
 		this._expandButton.setImage(image);
-		this._expandButton.reparentHtmlElement(expandHeaderId);
+		this._expandButton.reparentHtmlElement(this._expandHeaderId);
         this._expandButton.setVisible(Dwt.DISPLAY_BLOCK);
 	}
 
 
 	// add the close button if applicable
 	if (this._hasHeaderCloseBtn) {
-		var closeBtnCellId	= this._htmlElId + "_closeBtnCell";
-		this._closeButton = new DwtButton({parent:this});
+		var id = ZmId.getButtonId(this._context, ZmOperation.CLOSE);
+		this._closeButton = new DwtButton({parent:this, id:id});
 		this._closeButton.setImage("Close");
 		this._closeButton.setText(ZmMsg.close);
-		this._closeButton.reparentHtmlElement(closeBtnCellId);
+		this._closeButton.reparentHtmlElement(this._closeBtnCellId);
 		this._closeButton.addSelectionListener(new AjxListener(this, this._closeButtonListener));
 	}
 
 	// add the report button if applicable
-	var reportBtnCell = document.getElementById(this._htmlElId + "_reportBtnCell");
+	var reportBtnCell = document.getElementById(this._reportBtnCellId);
 	if (reportBtnCell) {
+		var id = ZmId.getButtonId(this._context, ZmId.REPORT);
 		var reportBtn = new DwtButton({parent:this, parentElement:reportBtnCell});
 		reportBtn.setText(ZmMsg.reportSyncFailure);
 		reportBtn.addSelectionListener(new AjxListener(this, this._reportButtonListener, msg));
 	}
 
-	// if multiple body parts, screw the prefs and just append everything
+	// if multiple body parts, ignore prefs and just append everything
 	var bodyParts = msg.getBodyParts();
 	var len = bodyParts.length;
 	if (len > 1) {
@@ -1181,14 +1194,14 @@ function() {
 	if (attLinks.length == 0) { return; }
 
 	// prevent appending attachment links more than once
-	var attLinksTable = document.getElementById(this._attLinksId+"_table");
+	var attLinksTable = document.getElementById(this._attLinksId + "_table");
 	if (attLinksTable) { return; }
 
 	var htmlArr = [];
 	var idx = 0;
 
     var dividx = idx;	// we might get back here
-	htmlArr[idx++] = "<table id='"+this._attLinksId+"_table' border=0 cellpadding=0 cellspacing=0>";
+	htmlArr[idx++] = "<table id='" + this._attLinksId + "_table' border=0 cellpadding=0 cellspacing=0>";
 
 	var rows = 0;
 	if (attLinks.length > 1) {

@@ -182,10 +182,11 @@ ZmMsgController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {
 		var params = {
-			parent: this._container,
-			posStyle: Dwt.ABSOLUTE_STYLE,
-			mode: ZmId.VIEW_MSG,
-			controller: this
+			parent:		this._container,
+			id:			ZmId.getMsgViewId(view),
+			posStyle:	Dwt.ABSOLUTE_STYLE,
+			mode:		ZmId.VIEW_MSG,
+			controller:	this
 		};
 		this._listView[view] = new ZmMailMsgView(params);
 		this._listView[view].addInviteReplyListener(this._inviteReplyListener);

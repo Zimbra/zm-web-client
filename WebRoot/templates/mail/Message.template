@@ -3,10 +3,10 @@
 		<table class='MsgHeaderTable' cellspacing=0 cellpadding=0 border=0 width=100%>
 			<tr>
 				<td>
-					<table id='${id}_hdrTable' cellspacing=0 cellpadding=0 border=0 width=100%>
-						<tr>
+					<table id='${hdrTableId}' cellspacing=0 cellpadding=0 border=0 width=100%>
+						<tr id='${hdrTableTopRowId}'>
 							<$ if (data.hasHeaderCloseBtn) { $>
-								<td id='${id}_closeBtnCell'></td>
+								<td id='${closeBtnCellId}'></td>
 								<td>&nbsp;</td>
 							<$ } $>
 							<td class='SubjectCol LabelColName' valign=top>
@@ -16,16 +16,16 @@
 								<$= data.subject $>
 							</td>
 							<$ if (data.isSyncFailureMsg) { $>
-								<td id='${id}_reportBtnCell'></td>
+								<td id='${reportBtnCellId}'></td>
 								<td>&nbsp;</td>
 							<$ } $>
 						</tr>
 
-						<tr id='${id}_expandRow'>
+						<tr id='${expandRowId}'>
 							<td>
 								<table align=right border=0 cellpadding=0 cellspacing=0>
 									<tr>
-										<td valign=top id='${id}_expandHeader' class='arrowbtn'></td>
+										<td valign=top id='${expandHeaderId}' class='arrowbtn'></td>
 										<td class='LabelColName' style='vertical-align:middle'><$= ZmMsg.sentBy $> </td>
 									</tr>
 								</table>
