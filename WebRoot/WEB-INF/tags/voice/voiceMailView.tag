@@ -28,7 +28,7 @@
 			<c:set var="heard" value="${zm:actionSet(param, 'actionMarkHeard')}"/>
 		</c:when>
 		<c:otherwise>
-			<zm:markVoiceMailHeard var="ignored" id="${param.voiceId}" phone="${param.phone}" heard="true"/>
+			<zm:markVoiceMailHeard var="ignored" id="${message.id}" phone="${param.phone}" heard="true"/>
 			<c:set var="autostart" value="true"/>
 		</c:otherwise>
 	</c:choose>
