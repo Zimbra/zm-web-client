@@ -757,7 +757,9 @@ function(view, firstTime) {
 		if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 			var viewButton = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 			viewButton.setMenu(new AjxCallback(this, this._setupGroupByMenuItems, [view]));
-		}
+		} else {
+                        this._setupReadingPaneMenuItem(view, null, this.isReadingPaneOn());
+                }
 
 		btn = this._toolbar[view].getButton(ZmOperation.VIEW_MENU);
 		if (btn) {
