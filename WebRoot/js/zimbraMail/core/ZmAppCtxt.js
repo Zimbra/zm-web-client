@@ -777,7 +777,7 @@ function(key) {
 
 ZmAppCtxt.prototype.getById =
 function(id) {
-	return this._itemCache ? this._itemCache.get(id) : null;
+	return this._itemCache && this._itemCache.get(id) || (window.opener ? window.opener.appCtxt.getById(id) : null);
 };
 
 ZmAppCtxt.prototype.getKeyboardMgr =
