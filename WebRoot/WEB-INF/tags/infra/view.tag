@@ -214,7 +214,7 @@
 						</div></td>
                         <td id='skin_td_search' align='right'>
                             <!-- search box -->				
-                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}"/>					
+                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}" voice="${voice}"/>					
 						</td>
 						<c:if test="${mailbox.features.webSearchEnabled}">
 	                        <td>

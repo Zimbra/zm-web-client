@@ -25,7 +25,7 @@
         <form method="get" action="${fn:escapeXml(searchUrl)}">
             <c:set var="query">${fn:escapeXml((!empty query and mailbox.prefs.showSearchString) ? query : param.sq)}</c:set>
             <c:if test="${voice}">
-                <c:set var="query"></c:set>
+                <c:set var="query"/>
             </c:if>
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr>

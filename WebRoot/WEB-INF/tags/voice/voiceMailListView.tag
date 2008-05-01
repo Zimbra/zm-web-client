@@ -57,9 +57,12 @@
 									<td nowrap>${hit.voiceMailItemHit.displayCaller}</td>
 									<c:choose>
 										<c:when test="${!empty hit.voiceMailItemHit.soundUrl}">
-											<c:url var="url" value="/h/voicemail">
+											<c:url var="url" value="/h/search">
+												<c:param name="st" value="voicemail"/>
+												<c:param name="sq" value="phone:${phone} in:\"Voicemail Inbox\""/>
+												<c:param name="action" value="listen"/>
 												<c:param name="phone" value="${phone}"/>
-												<c:param name="id" value="${hit.voiceMailItemHit.id}"/>
+												<c:param name="voiceId" value="${hit.voiceMailItemHit.serialize}"/>
 											</c:url>
 											<td nowrap><a href="${url}"><app:img src="voicemail/ImgPlayMessage.gif" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>
 										</c:when>

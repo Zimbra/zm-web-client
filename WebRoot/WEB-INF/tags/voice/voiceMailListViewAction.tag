@@ -5,16 +5,24 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<c:set var="showMovedTrash" value="${param.action eq 'actionMessageMovedTrash'}"/>
 <app:handleError>
-<zm:requirePost/>
-<zm:checkCrumb crumb="${param.crumb}"/>
-<zm:getMailbox var="mailbox"/>
-<c:set var="ids" value="${zm:deserializeVoiceMailItemIds(paramValues.voiceId, paramValues.phone)}"/>
-<c:set var="phone" value="${fn:join(paramValues.phone, ',')}"/>
-<c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
-<c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
+	<c:if test="${not showMovedTrash}">
+		<zm:requirePost/>
+		<zm:checkCrumb crumb="${param.crumb}"/>
+		<zm:getMailbox var="mailbox"/>
+		<c:set var="ids" value="${zm:deserializeVoiceMailItemIds(paramValues.voiceId, paramValues.phone)}"/>
+		<c:set var="phone" value="${fn:join(paramValues.phone, ',')}"/>
+		<c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
+		<c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
+	</c:if>
 
 <c:choose>
+	<c:when test="${showMovedTrash}">
+		<app:status>	
+			<fmt:message key="actionVoiceMailMovedTrash1"/>
+		</app:status>
+	</c:when>
     <c:when test="${zm:actionSet(param, 'actionDelete')}">
         <zm:trashVoiceMail var="result" phone="${phone}" id="${ids}"/>
         <app:status>
@@ -39,47 +47,6 @@
 			</fmt:message>
         </app:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionReplyByEmail') or zm:actionSet(param, 'actionForwardByEmail')}">
-        <c:set var="hits" value="${zm:deserializeVoiceMailItemHits(paramValues.voiceId, paramValues.phone)}"/>
-        <c:choose>
-            <c:when test="${empty paramValues.voiceId}">
-                <app:status style="Warning">
-                    <fmt:message key="actionNoVoiceMailMessageSelected"/>
-                </app:status>
-            </c:when>
-            <c:when test="${fn:length(paramValues.voiceId) gt 1}">
-                <app:status style="Warning">
-                    <fmt:message key="actionVoiceMailTooMany"/>
-                </app:status>
-            </c:when>
-            <c:when test="${hits[0].isPrivate}">
-                <app:status style="Warning">
-                    <fmt:message key="actionVoiceMailPrivate"/>
-                </app:status>
-            </c:when>
-            <c:otherwise>
-                <zm:uploadVoiceMail var="uploadId" phone="${phone}" id="${ids}"/>
-                <c:choose>
-                    <c:when test="${zm:actionSet(param, 'actionReplyByEmail')}">
-                        <c:set var="vmop" value="reply"/>
-                    </c:when>
-                    <c:otherwise>
-                        <c:set var="vmop" value="forward"/>
-                    </c:otherwise>
-                </c:choose>
-                <fmt:message key="voiceMailBody" var="body">
-                    <fmt:param value="${hits[0].displayCaller}"/>
-                    <fmt:param value="${zm:displayDuration(pageContext, hits[0].duration)}"/>
-                    <fmt:param value="${zm:displayMsgDate(pageContext, hits[0].date)}"/>
-                </fmt:message>
-                <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
-                                     action="compose" paction="view" css="${param.css}"
-                                     phone="${phone}" voiceid="${param.voiceId}" vmop="${vmop}"
-                                     attachId="${uploadId}" attachName="voicemail.wav" attachUrl="${hits[0].soundUrl}"/>
-                <c:redirect url="${composeUrl}"/>
-            </c:otherwise>
-        </c:choose>
-    </c:when>
     <c:when test="${zm:actionSet(param, 'actionMarkHeard')}">
         <zm:markVoiceMailHeard var="result" phone="${phone}" id="${ids}" heard="true"/>
         <app:status>
@@ -97,6 +64,9 @@
             </fmt:message>
         </app:status>
     </c:when>
+	<c:otherwise>
+		<app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
+	</c:otherwise>
 </c:choose>
 
 </app:handleError>

@@ -50,7 +50,10 @@
              <app:contactListViewAction/>
          </c:when>
          <c:when test="${not empty param.doVoiceMailListViewAction}">
-             <app:voiceMailListViewAction/>
+			 <app:voiceMailListViewAction/>
+         </c:when>
+         <c:when test="${not empty param.doVoiceMailViewAction}">
+             <app:voiceMailViewAction/>
          </c:when>
      </c:choose>
 
@@ -159,6 +162,9 @@
     <c:when test="${context.isTaskSearch}">
         <app:taskListView context="${context}"/>
     </c:when>
+	<c:when test="${context.isVoiceMailSearch and action eq 'listen'}">
+		<app:voiceMailView context="${context}"/>
+	</c:when>
     <c:when test="${context.isVoiceMailSearch}">
         <app:voiceMailListView context="${context}"/>
     </c:when>

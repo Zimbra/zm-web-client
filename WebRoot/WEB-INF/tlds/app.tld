@@ -647,6 +647,21 @@
         <path>/WEB-INF/tags/voice/voiceMailListViewAction.tag</path>
     </tag-file>
 
+	<tag-file>
+		<name>voiceMailView</name>
+		<path>/WEB-INF/tags/voice/voiceMailView.tag</path>
+	</tag-file>
+
+	<tag-file>
+		<name>voiceMailViewAction</name>
+		<path>/WEB-INF/tags/voice/voiceMailViewAction.tag</path>
+	</tag-file>
+
+	<tag-file>
+		<name>voiceMailViewToolbar</name>
+		<path>/WEB-INF/tags/voice/voiceMailViewToolbar.tag</path>
+	</tag-file>
+
     <tag-file>
         <name>voiceFolderTree</name>
         <path>/WEB-INF/tags/voice/voiceFolderTree.tag</path>
