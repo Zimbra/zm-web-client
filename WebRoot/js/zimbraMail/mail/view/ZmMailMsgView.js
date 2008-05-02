@@ -639,10 +639,10 @@ function(msg, idoc, id, iframe) {
 	var self = this;
 	return function() {
 		var images = idoc.getElementsByTagName("img");
-                var onload = AjxCallback.simpleClosure(function() {
+                var onload = function() {
                         ZmMailMsgView._resetIframeHeight(self, iframe);
                         this.onload = null; // *this* is reference to <img> el.
-                }, null);
+                };
 		for (var i = 0; i < images.length; i++) {
 			if (images[i].getAttribute("dfsrc")) {
 				// If we just loop through the images, IE for some reason,
