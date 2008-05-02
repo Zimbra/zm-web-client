@@ -199,36 +199,30 @@ function() {
 */
 ZmMailMsg.prototype.getReplyAddresses =
 function(mode, aliases) {
-	var invAddr;
+
 	// reply-to has precedence over everything else
 	var addrVec = this._addrs[AjxEmailAddress.REPLY_TO];
 	if (!addrVec && this.isInvite() && this.needsRsvp()) {
 		var invEmail = this.invite.getOrganizerEmail(0);
-		if (invEmail)
-			invAddr = new AjxEmailAddress(invEmail);
+		if (invEmail) {
+			return AjxVector.fromArray([new AjxEmailAddress(invEmail)]);
+		}
 	}
-	if (invAddr) {
-		return AjxVector.fromArray([invAddr]);
-    }
 
 	if (!(addrVec && addrVec.size())) {
-        if (mode == ZmOperation.REPLY_CANCEL ||
-			this.isSent && mode == ZmOperation.REPLY_ALL)
-		{
-			addrVec = this.isInvite()
-				? this._getAttendees()
-				: this._addrs[AjxEmailAddress.TO];
-        }
-        else
-		{
+        if (mode == ZmOperation.REPLY_CANCEL || (this.isSent && mode == ZmOperation.REPLY_ALL)) {
+			addrVec = this.isInvite() ? this._getAttendees() : this._addrs[AjxEmailAddress.TO];
+        } else {
             addrVec = this._addrs[AjxEmailAddress.FROM];
-
 			if (aliases) {
 				var from = addrVec.get(0);
 				// make sure we're not replying to ourself
 				if (from && aliases[from.address]) {
-					var sender = this._addrs[AjxEmailAddress.SENDER];
-					addrVec = (sender.size() > 0) ? sender : this._addrs[AjxEmailAddress.TO];
+					addrVec = this._addrs[AjxEmailAddress.SENDER];
+					if (!(addrVec && addrVec.size())) {
+						var addrs = this._addrs[AjxEmailAddress.TO].getArray();
+						addrVec = AjxVector.fromArray(addrs.slice(0, 1));
+					}
 				}
 			}
 		}
