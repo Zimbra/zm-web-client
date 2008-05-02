@@ -501,6 +501,9 @@ function() {
  */
 ZmApp.prototype._accordionSelectionListener =
 function(ev) {
+	// before loading the selected account, "unload" the existing one
+	appCtxt.getActiveAccount().unload();
+
 	this._expandAccordionItem(ev.detail, true);
 	return true;
 };

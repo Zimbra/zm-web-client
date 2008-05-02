@@ -140,7 +140,9 @@ function(actionCode) {
 
 		case ZmKeyMap.GOTO_TAG:
 			if (appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
-				var tag = shortcut ? appCtxt.getById(shortcut.arg) : null;
+				var tagId = (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain)
+					? ZmOrganizer.getSystemId(shortcut.arg) : shortcut.arg;
+				var tag = shortcut ? appCtxt.getById(tagId) : null;
 				if (tag) {
 					appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
 				}

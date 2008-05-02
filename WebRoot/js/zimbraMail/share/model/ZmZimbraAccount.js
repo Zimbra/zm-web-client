@@ -234,8 +234,20 @@ function(callback, batchCmd) {
 		var errorCallback = new AjxCallback(this, this._handleErrorLoad);
 		this.settings.loadUserSettings(respCallback, errorCallback, this.name, batchCmd);
 	} else {
+		// always reload account-specific shortcuts
+		this.settings.loadShortcuts();
+
 		if (callback) {	callback.run(); }
 	}
+};
+
+/**
+ * Removes any account-specific data stored globally
+ */
+ZmZimbraAccount.prototype.unload =
+function() {
+	// unset account-specific shortcuts
+	this.settings.loadShortcuts(true);
 };
 
 ZmZimbraAccount.prototype.save =

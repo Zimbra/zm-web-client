@@ -193,7 +193,9 @@ function(actionCode) {
 		case ZmKeyMap.TAG:
 			var items = listView.getSelection();
 			if (items && items.length && shortcut) {
-				var tag = appCtxt.getById(shortcut.arg);
+				var tagId = (appCtxt.multiAccounts && !appCtxt.getActiveAccount().isMain)
+					? ZmOrganizer.getSystemId(shortcut.arg) : shortcut.arg;
+				var tag = appCtxt.getById(tagId);
 				if (tag) {
 					this._doTag(items, tag, true);
 				}

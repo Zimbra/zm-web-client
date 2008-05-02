@@ -263,7 +263,7 @@ function(callback, accountName, result) {
 	}
 
 	// load shortcuts
-	this._loadShortcuts();
+	this.loadShortcuts();
 
 	// DONE
 	this.userSettingsLoaded = true;
@@ -452,9 +452,12 @@ function() {
 /**
  * Loads the user's custom shortcuts, which consist of key bindings for organizers
  * that have aliases.
+ *
+ * @param unload	[Boolean]*		If set, removes user-defined shortcuts from global kmm
  */
-ZmSettings.prototype._loadShortcuts =
-function() {
+ZmSettings.prototype.loadShortcuts =
+function(unload) {
+	// NOTE: the key map mgr is *global* (i.e. singleton object)
 	var kmm = appCtxt.getAppController().getKeyMapMgr();
 	var scString = this.get(ZmSetting.SHORTCUTS);
 	if (!scString || !kmm) { return; }
@@ -462,8 +465,13 @@ function() {
 	var maps = {};
 	for (var i = 0, count = shortcuts.length; i < count; i++) {
 		var sc = shortcuts[i];
-		kmm.setMapping(sc.mapName, sc.keySequence, sc.action);
-		kmm.setArg(sc.mapName, sc.action, sc.arg);
+		if (unload) {
+			kmm.removeMapping(sc.mapName, sc.keySequence);
+			kmm.removeArg(sc.mapName, sc.action);
+		} else {
+			kmm.setMapping(sc.mapName, sc.keySequence, sc.action);
+			kmm.setArg(sc.mapName, sc.action, sc.arg);
+		}
 		maps[sc.mapName] = true;
 	}
 
@@ -702,7 +710,7 @@ function(ev) {
 		cd.popup();
 	} else if (id == ZmSetting.SHORTCUTS) {
 		appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap());
-		this._loadShortcuts();
+		this.loadShortcuts();
 	} else if (id == ZmSetting.CHILD_ACCTS_VISIBLE) {
 		var cd = appCtxt.getYesNoMsgDialog();
 		cd.reset();
