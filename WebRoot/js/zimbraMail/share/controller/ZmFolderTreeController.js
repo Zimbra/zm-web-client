@@ -273,7 +273,7 @@ function(folder) {
 			folder._showFoldersCallback.run();
 			return;
 		}
-		var searchFor = ZmSearchToolBar.FOR_MAIL_MI;
+		var searchFor = ZmId.SEARCH_MAIL;
 		if (folder.isInTrash()) {
 			var app = appCtxt.getCurrentAppName();
 			// if other apps add Trash to their folder tree, set appropriate type here:

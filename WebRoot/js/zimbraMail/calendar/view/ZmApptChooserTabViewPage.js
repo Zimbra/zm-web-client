@@ -559,7 +559,7 @@ function(sortBy) {
 		var searchFor = this._selectDiv.getValue();
 		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 			? ZmItem.CONTACT
-			: ZmSearchToolBar.FOR_GAL_MI;
+			: ZmId.SEARCH_GAL;
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
 			queryHint = ZmSearchController.generateQueryHint([ZmId.ITEM_CONTACT]) || "is:local";
 		} else if (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS) {
@@ -568,7 +568,7 @@ function(sortBy) {
 	} else {
 		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
 			? ZmItem.CONTACT
-			: ZmSearchToolBar.FOR_GAL_MI;
+			: ZmId.SEARCH_GAL;
 
 		if (this._contactSource == ZmItem.CONTACT) {
 			queryHint = "is:local";

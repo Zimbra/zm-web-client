@@ -156,7 +156,7 @@ function(params) {
 ZmSearch.prototype._executeSoap =
 function(params) {
 
-	this.isGalSearch = (this.contactSource && (this.contactSource == ZmSearchToolBar.FOR_GAL_MI));
+	this.isGalSearch = (this.contactSource && (this.contactSource == ZmId.SEARCH_GAL));
 	this.isCalResSearch = (this.conds != null);
 	if (!this.query && !this.isCalResSearch) return;
 
@@ -267,7 +267,7 @@ function(params) {
 ZmSearch.prototype._executeJson =
 function(params) {
 
-	this.isGalSearch = (this.contactSource && (this.contactSource == ZmSearchToolBar.FOR_GAL_MI));
+	this.isGalSearch = (this.contactSource && (this.contactSource == ZmId.SEARCH_GAL));
 	this.isCalResSearch = (this.conds != null);
 	if (!this.query && !this.isCalResSearch) { return; }
 

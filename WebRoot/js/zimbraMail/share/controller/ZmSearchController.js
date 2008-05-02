@@ -22,7 +22,7 @@ ZmSearchController = function(container) {
 	this._inited = false;
 
 	// default menu values
-	this._searchFor = ZmSearchToolBar.FOR_MAIL_MI;
+	this._searchFor = ZmId.SEARCH_MAIL;
 	this._contactSource = ZmItem.CONTACT;
 	this._results = null;
 
@@ -80,7 +80,7 @@ function(name) {
 
 ZmSearchController.prototype._handleLoadFromBrowse =
 function(name, bv) {
-	this.setDefaultSearchType(ZmSearchToolBar.FOR_MAIL_MI);
+	this.setDefaultSearchType(ZmId.SEARCH_MAIL);
 	bv.removeAllPickers();
 	this._browseViewController.removeAllPickers();
 	var picker = this._browseViewController.addPicker(ZmPicker.BASIC);
@@ -194,7 +194,7 @@ function(menu) {
 		item.addSelectionListener(searchMenuListener);
 		var mi = item.getData(ZmSearchToolBar.MENUITEM_ID);
 		// set mail as default search
-     	if (mi == ZmSearchToolBar.FOR_MAIL_MI) {
+     	if (mi == ZmId.SEARCH_MAIL) {
     		item.setChecked(true, true);
      	}
     }
@@ -289,15 +289,15 @@ function(params) {
 	var searchFor = params.searchFor || this._searchFor;
 
 	var groupBy;
-	if ((searchFor == ZmSearchToolBar.FOR_MAIL_MI || searchFor == ZmSearchToolBar.FOR_ANY_MI) &&
+	if ((searchFor == ZmId.SEARCH_MAIL || searchFor == ZmId.SEARCH_ANY) &&
 		appCtxt.get(ZmSetting.MAIL_ENABLED))
 	{
 		groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	}
 
-	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI) {
+	if (searchFor == ZmId.SEARCH_MAIL) {
 		types.add(groupBy);
-	} else if (searchFor == ZmSearchToolBar.FOR_ANY_MI)	{
+	} else if (searchFor == ZmId.SEARCH_ANY)	{
 		if (groupBy && appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 			types.add(groupBy);
 		}
@@ -314,7 +314,7 @@ function(params) {
 			types.add(ZmItem.PAGE);
 			types.add(ZmItem.DOCUMENT);
 		}
-	} else if (searchFor == ZmSearchToolBar.FOR_PAS_MI)	{
+	} else if (searchFor == ZmId.SEARCH_PAS)	{
 		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 			types.add(ZmItem.CONTACT);
 		}
@@ -378,12 +378,12 @@ function(params, noRender, callback, errorCallback) {
 	if (types instanceof Array) { // convert array to AjxVector if necessary
 		types = AjxVector.fromArray(types);
 	}
-	if (params.searchFor == ZmSearchToolBar.FOR_MAIL_MI) {
+	if (params.searchFor == ZmId.SEARCH_MAIL) {
 		params = appCtxt.getApp(ZmApp.MAIL).getSearchParams(params);
 	}
 
 	// if the user explicitly searched for all types, force mixed view
-	var isMixed = (params.searchFor == ZmSearchToolBar.FOR_ANY_MI);
+	var isMixed = (params.searchFor == ZmId.SEARCH_ANY);
 
 	// a query hint is part of the query that the user does not see
 	if (this._inclSharedItems) {
@@ -391,7 +391,7 @@ function(params, noRender, callback, errorCallback) {
 	}
 
 	// only set contact source if we are searching for contacts
-	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmSearchToolBar.FOR_GAL_MI)) ? this._contactSource : null;
+	params.contactSource = (types.contains(ZmItem.CONTACT) || types.contains(ZmId.SEARCH_GAL)) ? this._contactSource : null;
 
 	// find suitable sort by value if not given one (and if applicable)
 	params.sortBy = params.sortBy || this._getSuitableSortBy(types);
@@ -456,7 +456,7 @@ function(results, search, isMixed) {
 
 	// determine if we need to default to mixed view
 	var folder = appCtxt.getById(search.folderId);
-	var isInGal = (this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
+	var isInGal = (this._contactSource == ZmId.SEARCH_GAL);
 	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		var saveBtn = this._searchToolBar ? this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON) : null;
 		if (saveBtn) {
@@ -583,7 +583,7 @@ function(ev) {
 
 	var params = {
 		search: this._results ? this._results.search : null,
-		showOverview: (this._searchFor == ZmSearchToolBar.FOR_MAIL_MI)
+		showOverview: (this._searchFor == ZmId.SEARCH_MAIL)
 	};
 	ZmController.showDialog(stc._getNewDialog(), stc._newCb, params);
 }
@@ -604,11 +604,11 @@ function(ev, id) {
 	if (!item || (!!(item._style & DwtMenuItem.SEPARATOR_STYLE))) { return; }
 	id = item.getData(ZmSearchToolBar.MENUITEM_ID);
 
-	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_SHARED_MI);
+	var sharedMI = menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED);
 
 	// enable shared menu item if not a gal search
-	if (id == ZmSearchToolBar.FOR_GAL_MI) {
-		this._contactSource = ZmSearchToolBar.FOR_GAL_MI;
+	if (id == ZmId.SEARCH_GAL) {
+		this._contactSource = ZmId.SEARCH_GAL;
 		if (sharedMI) {
 			sharedMI.setChecked(false, true);
 			sharedMI.setEnabled(false);
@@ -617,7 +617,7 @@ function(ev, id) {
 		if (sharedMI) {
 			// we allow user to check "Shared Items" for appointments since it
 			// is based on whats checked in their tree view
-			if (id == ZmItem.APPT || id == ZmSearchToolBar.CUSTOM_MI) {
+			if (id == ZmItem.APPT || id == ZmId.SEARCH_CUSTOM) {
 				sharedMI.setChecked(false, true);
 				sharedMI.setEnabled(false);
 			} else {
@@ -629,7 +629,7 @@ function(ev, id) {
 
 	this._inclSharedItems = sharedMI ? sharedMI.getChecked() : false;
 
-	if (id == ZmSearchToolBar.FOR_SHARED_MI) {
+	if (id == ZmId.SEARCH_SHARED) {
 		var icon = menu.getSelectedItem().getImage();
 		if (this._inclSharedItems) {
 			var selItem = menu.getSelectedItem();
@@ -649,7 +649,7 @@ function(ev, id) {
 			var selItemId = selItem ? selItem.getData(ZmSearchToolBar.MENUITEM_ID) : null;
 			icon = (selItemId && ZmSearchToolBar.SHARE_ICON[selItemId])
 				? ZmSearchToolBar.SHARE_ICON[selItemId]
-				: ZmSearchToolBar.ICON[ZmSearchToolBar.FOR_SHARED_MI];
+				: ZmSearchToolBar.ICON[ZmId.SEARCH_SHARED];
 		}
 		btn.setImage(icon);
 		btn.setText(item.getText());
@@ -657,7 +657,7 @@ function(ev, id) {
 
 	// set button tooltip
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
-	if (id == ZmSearchToolBar.FOR_MAIL_MI) {
+	if (id == ZmId.SEARCH_MAIL) {
 		var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
 	}

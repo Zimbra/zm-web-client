@@ -20,14 +20,16 @@ ZmSearchToolBar = function(parent, id) {
 	DwtComposite.call(this, {parent:parent, className:"ZmSearchToolbar", id:id});
 
 	// set up "search all" menu item
+	var id = ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_ANY);
 	var params = { msgKey:"searchAll", tooltipKey:"searchForAny", icon:"Globe",
-				   setting:ZmSetting.MIXED_VIEW_ENABLED, index:0, id:ZmId.SEARCH_MENU_ALL };
-	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_ANY_MI, params);
+				   setting:ZmSetting.MIXED_VIEW_ENABLED, index:0, id:id };
+	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_ANY, params);
 
 	// set up "incl. shared items" menu item
+	id = ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_SHARED);
 	params = { msgKey:"searchShared", tooltipKey:"searchShared", icon:"Group",
-			   setting:ZmSetting.SHARING_ENABLED, id:ZmId.SEARCH_MENU_SHARED };
-	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_SHARED_MI, params);
+			   setting:ZmSetting.SHARING_ENABLED, id:id };
+	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_SHARED, params);
 
 	this._createHtml();
 };
@@ -44,9 +46,6 @@ ZmSearchToolBar.SAVE_BUTTON 			= 3;
 ZmSearchToolBar.BROWSE_BUTTON 			= 4;
 
 ZmSearchToolBar.MENUITEM_ID 			= "_menuItemId";						// menu item key
-ZmSearchToolBar.FOR_ANY_MI				= "FOR_ANY";							// search all item types menu item
-ZmSearchToolBar.FOR_SHARED_MI			= "FOR_SHARED";							// incl. shared items menu item
-ZmSearchToolBar.CUSTOM_MI				= "CUSTOM_SEARCH";						// custom search
 ZmSearchToolBar.SETTING 				= {};									// required setting for menu item to appear
 ZmSearchToolBar.MENU_ITEMS 				= [];									// list of menu items
 ZmSearchToolBar.MSG_KEY 				= {};									// text for menu item
@@ -242,7 +241,7 @@ function(icon, text, listener, id) {
 				params.text = data[1];
 				item = DwtMenuItem.create(params);
 				item.setData("CustomSearchItem", data);
-				item.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.CUSTOM_MI);
+				item.setData(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_CUSTOM);
 				item.setChecked(true, true);
 				item.addSelectionListener(this._customSearchListener);
 			}
@@ -273,7 +272,7 @@ function(menu, icon, text, listener, id) {
 				  radioGroupId:0, index:0, id:id};
 	mi = DwtMenuItem.create(params);
 	mi.setData("CustomSearchItem", [icon, text, listener]);
-	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.CUSTOM_MI);
+	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_CUSTOM);
 	mi.addSelectionListener(this._customSearchListener);
 
 	// only add separator if this is the first custom search menu item
@@ -298,7 +297,7 @@ function(ev) {
 		this._searchMenuButton.setToolTipContent(data[1]);
 
 		var menu = item.parent;
-		var shareMenuItem = menu ? menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_SHARED_MI) : null;
+		var shareMenuItem = menu ? menu.getItemById(ZmSearchToolBar.MENUITEM_ID, ZmId.SEARCH_SHARED) : null;
 		if (shareMenuItem) {
 			shareMenuItem.setChecked(false, true);
 			shareMenuItem.setEnabled(false);
@@ -385,7 +384,7 @@ function() {
 		var id = ZmSearchToolBar.MENU_ITEMS[i];
 
 		// add separator *before* "shared" menu item
-		if (id == ZmSearchToolBar.FOR_SHARED_MI) {
+		if (id == ZmId.SEARCH_SHARED) {
 			if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
 			mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
 		}
@@ -393,7 +392,7 @@ function() {
 		var setting = ZmSearchToolBar.SETTING[id];
 		if (setting && !appCtxt.get(setting)) { continue; }
 
-		params.style = (id == ZmSearchToolBar.FOR_SHARED_MI) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
+		params.style = (id == ZmId.SEARCH_SHARED) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
 		params.imageInfo = ZmSearchToolBar.ICON[id];
 		params.text = ZmMsg[ZmSearchToolBar.MSG_KEY[id]];
 		params.id = ZmSearchToolBar.ID[id];
@@ -401,7 +400,7 @@ function() {
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
 
 		// add separator *after* "all" menu item
-		if (id == ZmSearchToolBar.FOR_ANY_MI) {
+		if (id == ZmId.SEARCH_ANY) {
 			if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
 			mi = new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
 		}

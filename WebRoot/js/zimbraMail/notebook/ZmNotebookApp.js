@@ -152,7 +152,7 @@ function() {
 								 icon:			"Notebook",
 								 shareIcon:		"SharedNotebook",
 								 setting:		ZmSetting.NOTEBOOK_ENABLED,							 
-								 id:			ZmId.SEARCH_MENU_PAGES
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_PAGE)
 								});
 };
 

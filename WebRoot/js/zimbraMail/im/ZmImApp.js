@@ -140,7 +140,7 @@ function() {
 			    nameKey	      : "imAppTitle",
 			    icon	      : "ImStartChat",
 			    chooserTooltipKey : "goToIm",
-			    defaultSearch     : ZmSearchToolBar.FOR_MAIL_MI,
+			    defaultSearch     : ZmId.SEARCH_MAIL,
 			    gotoActionCode    : ZmKeyMap.GOTO_IM,
 			    chooserSort	      : 40,
 			    defaultSort	      : 50,

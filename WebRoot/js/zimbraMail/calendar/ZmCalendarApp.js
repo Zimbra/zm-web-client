@@ -286,7 +286,7 @@ function() {
 								 icon:			"Appointment",
 								 shareIcon:		"SharedCalendarFolder",
 								 setting:		ZmSetting.CALENDAR_ENABLED,
-								 id:			ZmId.SEARCH_MENU_APPTS
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_APPOINTMENT)
 								});
 };
 

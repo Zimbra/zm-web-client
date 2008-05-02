@@ -137,7 +137,7 @@ function() {
 							  icon:					"VoicemailApp",
 							  qsArg:				"voicemail",
 							  chooserTooltipKey:	"goToVoice",
-							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
+							  defaultSearch:		ZmId.SEARCH_MAIL,
 							  overviewTrees:		[ZmOrganizer.VOICE],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.VOICEMAIL],

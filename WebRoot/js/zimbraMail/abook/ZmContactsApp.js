@@ -246,16 +246,15 @@ function() {
 								 tooltipKey:	"searchPersonalContacts",
 								 icon:			"ContactsFolder",
 								 shareIcon:		"SharedContactsFolder",
-								 id:			ZmId.SEARCH_MENU_CONTACTS
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_CONTACT)
 								});
 
-	ZmSearchToolBar.FOR_GAL_MI 	= "FOR GAL";
-	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_GAL_MI,
+	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_GAL,
 								{msgKey:		"searchGALContacts",
 								 tooltipKey:	"searchGALContacts",
 								 icon:			"GAL",
 								 setting:		ZmSetting.GAL_ENABLED,
-								 id:			ZmId.SEARCH_MENU_GAL
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_GAL)
 								});
 };
 
@@ -270,9 +269,6 @@ function() {
 
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_CONTACT] = ZmOperation.NEW_CONTACT;
-
-	// bug fix #22603 - redefine since new window does not setup a search toolbar
-	ZmSearchToolBar.FOR_GAL_MI 	= "FOR GAL";
 
 	ZmApp.registerApp(ZmApp.CONTACTS,
 							 {mainPkg:				"Contacts",

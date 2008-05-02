@@ -135,7 +135,7 @@ function(tag) {
                 case ZmApp.CALENDAR:    searchFor = ZmItem.APPT; break;
                 case ZmApp.BRIEFCASE:   searchFor = ZmItem.PAGE; break;
                 case ZmApp.TASKS:       searchFor = ZmItem.TASK; break;
-                default:                searchFor = ZmSearchToolBar.FOR_MAIL_MI; break;
+                default:                searchFor = ZmId.SEARCH_MAIL; break;
         }
 
 	var sc = appCtxt.getSearchController();

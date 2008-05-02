@@ -142,7 +142,7 @@ function(colItem, ascending) {
 		var searchFor = this._selectDiv.getValue();
 		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 			? ZmItem.CONTACT
-			: ZmSearchToolBar.FOR_GAL_MI;
+			: ZmId.SEARCH_GAL;
 
 		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
 			queryHint = ZmSearchController.generateQueryHint([ZmId.ITEM_CONTACT]) || "is:local";
@@ -154,7 +154,7 @@ function(colItem, ascending) {
 	} else {
 		this._contactSource = appCtxt.get(ZmSetting.CONTACTS_ENABLED)
 			? ZmItem.CONTACT
-			: ZmSearchToolBar.FOR_GAL_MI;
+			: ZmId.SEARCH_GAL;
 
 		if (this._contactSource == ZmItem.CONTACT) {
 			queryHint = "is:local";
@@ -275,7 +275,7 @@ function(ev) {
 ZmContactPicker.prototype._handleResponseSearch =
 function(result) {
 	var resp = result.getResponse();
-	var isGal = this._contactSource == ZmSearchToolBar.FOR_GAL_MI;
+	var isGal = (this._contactSource == ZmId.SEARCH_GAL);
 	var more = resp.getAttribute("more");
 
 	// GAL results cannot be paged

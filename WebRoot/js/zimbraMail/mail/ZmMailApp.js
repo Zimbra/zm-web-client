@@ -636,13 +636,12 @@ function() {
 ZmMailApp.prototype._setupSearchToolbar =
 function() {
     if(appCtxt.get(ZmSetting.MAIL_ENABLED)){
-    ZmSearchToolBar.FOR_MAIL_MI = "FOR MAIL";
-	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_MAIL_MI,
+	ZmSearchToolBar.addMenuItem(ZmId.SEARCH_MAIL,
 								{msgKey:		"searchMail",
 								 tooltipKey:	"searchMail",
 								 icon:			"Message",
 								 shareIcon:		"SharedMailFolder",
-								 id:			ZmId.SEARCH_MENU_MAIL
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.SEARCH_MAIL)
 								});
     }
 };
@@ -667,7 +666,7 @@ function() {
 							  icon:					"MailApp",
 							  chooserTooltipKey:	"goToMail",
 							  viewTooltipKey:		"displayMailToolTip",
-							  defaultSearch:		appCtxt.isChildWindow ? null : ZmSearchToolBar.FOR_MAIL_MI,
+							  defaultSearch:		appCtxt.isChildWindow ? null : ZmId.SEARCH_MAIL,
 							  organizer:			ZmOrganizer.FOLDER,
 							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,

@@ -35,7 +35,7 @@
  */
 ZmActionMenu = function(params) {
 
-    var id = params.context ? ZmId.getActionMenuId(params.context, params.menuType) : null;
+    var id = params.context ? ZmId.getMenuId(params.context, params.menuType) : null;
 	ZmPopupMenu.call(this, params.parent, null, id);
 
 	// standard menu items default to Tag/Print/Delete
@@ -75,7 +75,7 @@ function() {
  */
 ZmActionMenu.prototype.createOp =
 function(id, params) {
-	params.id = this._context ? ZmId.getActionMenuItemId(this._context, id, this._menuType) : null;
+	params.id = this._context ? ZmId.getMenuItemId(this._context, id, this._menuType) : null;
 	var mi = this.createMenuItem(id, params);
 	mi.setData(ZmOperation.KEY_ID, id);
 

@@ -109,7 +109,7 @@ function() {
 								 icon:			"TaskList",
 								 shareIcon:		"SharedTaskList",
 								 setting:		ZmSetting.TASKS_ENABLED,
-								 id:			ZmId.SEARCH_MENU_TASKS
+								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_TASK)
 								});
 };
 
