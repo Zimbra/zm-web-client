@@ -18,7 +18,7 @@
 ZmMailMsgView = function(params) {
 
 	if (arguments.length == 0) { return; }
-	
+
 	params.className = params.className || "ZmMailMsgView";
 	DwtComposite.call(this, params);
 
@@ -639,10 +639,10 @@ function(msg, idoc, id, iframe) {
 	var self = this;
 	return function() {
 		var images = idoc.getElementsByTagName("img");
-                var onload = AjxCallback.simpleClosure(function() {
+                var onload = function() {
                         ZmMailMsgView._resetIframeHeight(self, iframe);
                         this.onload = null; // *this* is reference to <img> el.
-                }, null);
+                };
 		for (var i = 0; i < images.length; i++) {
 			if (images[i].getAttribute("dfsrc")) {
 				// If we just loop through the images, IE for some reason,
@@ -662,11 +662,11 @@ function(msg, idoc, id, iframe) {
 		if (diEl)
 			diEl.style.display = "none";
 		this._htmlBody = idoc.documentElement.innerHTML;
-        if(msg){
-            msg.setHtmlContent(this._htmlBody);
-            msg.showImages = true;
-        }
-    };
+                if (msg) {
+                        msg.setHtmlContent(this._htmlBody);
+                        msg.showImages = true;
+                }
+        };
 };
 
 ZmMailMsgView.prototype._resetIframeHeightOnTimer =
@@ -1437,7 +1437,7 @@ function(msg, ev) {
 	var errorCallback = new AjxCallback(this, this._sendReportError);
 	proxy.send(null, null, respCallback, errorCallback, null, true);
 };
-	
+
 ZmMailMsgView.prototype._sendReportCallback =
 function(msg) {
 	this._controller._doDelete(msg, true);
