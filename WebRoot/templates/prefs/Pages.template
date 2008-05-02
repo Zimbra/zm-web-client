@@ -626,7 +626,8 @@ and the container element is replaced with that control.
 <template id='prefs.Pages#Export'>
 	<table border=0 cellpadding=3 cellspacing=3>
 		<tr>
-			<td class='ZOptionsLabel'>&nbsp;</td>
+            <td class='ZOptionsLabel'>&nbsp;</td>
+            <td class='ZOptionsInfo'><div id='${id}_options'></div></td>
 			<td class='ZOptionsInfo'><div id='${id}_button'></div></td>
 		</tr>
 	</table>
