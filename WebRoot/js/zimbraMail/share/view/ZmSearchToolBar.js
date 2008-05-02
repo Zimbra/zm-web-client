@@ -219,8 +219,10 @@ function(icon, text, listener, id) {
 	var customSearchBtn = document.getElementById(this._htmlElId + "_customSearchButton");
 	if (customSearchBtn) {
 		if (!this._customSearchBtn) {
-			this._customSearchBtn = this._addButton({ tdId:"_customSearchButton", buttonId:ZmId.CUSTOM_SEARCH_BUTTON,
-													  lbl:text, icon:icon, id:id} );
+			this._customSearchBtn = this._addButton({ tdId:		"_customSearchButton",
+													  buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_CUSTOM),
+													  lbl:		text,
+													  icon:		icon });
 			this._customSearchBtn.setData("CustomSearchItem", [ icon, text, listener ]);
 			this._customSearchBtn.addSelectionListener(this._customSearchListener);
 
@@ -235,7 +237,7 @@ function(icon, text, listener, id) {
 			var params = {parent:menu, enabled:true, style:DwtMenuItem.RADIO_STYLE, radioGroupId:0, id:id};
 			if (!menu) {
 				var data = this._customSearchBtn.getData("CustomSearchItem");
-				menu = new DwtMenu({parent:this._customSearchBtn, className:"ActionMenu"});
+				menu = new DwtMenu({parent:this._customSearchBtn, className:"ActionMenu", id:ZmId.getMenuId(ZmId.SEARCH, ZmId.SEARCH_CUSTOM)});
 				this._customSearchBtn.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 				params.imageInfo = data[0];
 				params.text = data[1];
@@ -331,47 +333,48 @@ function() {
 	var searchMenuBtnId = this._htmlElId + "_searchMenuButton";
 	var searchMenuBtn = document.getElementById(searchMenuBtnId);
 	if (searchMenuBtn) {
-		if(!appCtxt.get(ZmSetting.MAIL_ENABLED)){
-            this._searchMenuButton = this._addButton({ tdId:"_searchMenuButton", buttonId:ZmId.SEARCH_MENU_BUTTON,
-                                                    lbl:ZmMsg.searchAll, icon:"Globe"} );
-        }else{
-            this._searchMenuButton = this._addButton({ tdId:"_searchMenuButton", buttonId:ZmId.SEARCH_MENU_BUTTON,
-                                                               lbl:ZmMsg.searchMail, icon:"Message"} );
-        }
+		var mailEnabled = appCtxt.get(ZmSetting.MAIL_ENABLED);
+        this._searchMenuButton = this._addButton({ tdId:		"_searchMenuButton",
+        										   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_MENU),
+												   lbl:			mailEnabled ? ZmMsg.searchMail : ZmMsg.searchAll,
+												   icon:		mailEnabled ? "Message" : "Globe" });
         var menu = new AjxCallback(this, this._createSearchMenu);
 		this._searchMenuButton.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 		this._searchMenuButton.reparentHtmlElement(searchMenuBtnId);
 	}
 
 	// add search button
-	this._searchButton = this._addButton({ tdId:"_searchButton", buttonId:ZmId.SEARCH_BUTTON,
-										   lbl:ZmMsg.search, icon:"Search", tooltip:ZmMsg.searchTooltip} );
+	this._searchButton = this._addButton({ tdId:		"_searchButton",
+										   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SEARCH),
+										   lbl:			ZmMsg.search,
+										   icon:		"Search",
+										   tooltip:		ZmMsg.searchTooltip });
 
 	// add save search button if saved-searches enabled
-	this._saveButton = this._addButton({ setting:ZmSetting.SAVED_SEARCHES_ENABLED,
-										 tdId:"_saveButton",
-										 buttonId:ZmId.SAVE_SEARCH_BUTTON,
-										 lbl:ZmMsg.save,
-										 icon:"Save",
-  										 type:"toolbar",
-										 tooltip:ZmMsg.saveSearchTooltip} );
+	this._saveButton = this._addButton({ setting:	ZmSetting.SAVED_SEARCHES_ENABLED,
+										 tdId:		"_saveButton",
+										 buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_SAVE),
+										 lbl:		ZmMsg.save,
+										 icon:		"Save",
+  										 type:		"toolbar",
+										 tooltip:	ZmMsg.saveSearchTooltip });
 			
 
 
 	// add advanced search button
-	this._browseButton = this._addButton({ setting:ZmSetting.BROWSE_ENABLED,
-										   tdId:"_advancedButton",
-										   buttonId:ZmId.ADVANCED_SEARCH_BUTTON,
-										   style: (DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE),
-										   lbl:ZmMsg.searchBuilder,
-										   icon:"SearchBuilder",
-										   type:"toolbar",
-										   tooltip:ZmMsg.openSearchBuilder } );
+	this._browseButton = this._addButton({ setting:		ZmSetting.BROWSE_ENABLED,
+										   tdId:		"_advancedButton",
+										   buttonId:	ZmId.getButtonId(ZmId.SEARCH, ZmId.SEARCH_ADVANCED),
+										   style:		(DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE),
+										   lbl:			ZmMsg.searchBuilder,
+										   icon:		"SearchBuilder",
+										   type:		"toolbar",
+										   tooltip:		ZmMsg.openSearchBuilder });
 };
 
 ZmSearchToolBar.prototype._createSearchMenu =
 function() {
-	var menu = new DwtMenu({parent:this._searchMenuButton, className:"ActionMenu"});
+	var menu = new DwtMenu({parent:this._searchMenuButton, className:"ActionMenu", id:ZmId.getMenuId(ZmId.SEARCH)});
 	var mi;
 	if (this._customSearchMenuItems) {
 		for (var i = 0; i < this._customSearchMenuItems.length; i++) {

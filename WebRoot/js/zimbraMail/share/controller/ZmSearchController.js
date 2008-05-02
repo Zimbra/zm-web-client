@@ -314,10 +314,6 @@ function(params) {
 			types.add(ZmItem.PAGE);
 			types.add(ZmItem.DOCUMENT);
 		}
-	} else if (searchFor == ZmId.SEARCH_PAS)	{
-		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-			types.add(ZmItem.CONTACT);
-		}
 	} else {
 		types.add(searchFor);
 		if (searchFor == ZmItem.PAGE) {

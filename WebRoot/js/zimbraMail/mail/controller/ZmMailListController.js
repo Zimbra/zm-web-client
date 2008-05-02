@@ -338,7 +338,7 @@ function(view) {
 };
 
 ZmMailListController.prototype._initializeParticipantActionMenu =
-function(view) {
+function() {
 	if (!this._participantActionMenu) {
 		var menuItems = this._participantOps();
 		menuItems.push(ZmOperation.SEP);
@@ -347,7 +347,7 @@ function(view) {
 			menuItems = menuItems.concat(ops);
 		}
     	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems,
-    													context:view, menuType:ZmId.MENU_PARTICIPANT});
+    													context:this._currentView, menuType:ZmId.MENU_PARTICIPANT});
     	this._addMenuListeners(this._participantActionMenu);
 		this._participantActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._participantActionMenu);
@@ -356,13 +356,13 @@ function(view) {
 };
 
 ZmMailListController.prototype._initializeDraftsActionMenu =
-function(view) {
+function() {
 	if (!this._draftsActionMenu) {
 		var menuItems = [ZmOperation.EDIT];
 		menuItems.push(ZmOperation.SEP);
 		menuItems.push(ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT);
     	this._draftsActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems,
-    											   context:view, menuType:ZmId.MENU_DRAFTS});
+    											   context:this._currentView, menuType:ZmId.MENU_DRAFTS});
     	this._addMenuListeners(this._draftsActionMenu);
 		this._draftsActionMenu.addPopdownListener(this._menuPopdownListener);
 		this._setupTagMenu(this._draftsActionMenu);

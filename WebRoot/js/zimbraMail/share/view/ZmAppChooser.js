@@ -101,7 +101,7 @@ ZmAppChooser.prototype._createButton =
 function(id, isLast) {
 	var text = ZmMsg[ZmApp.NAME[id]];
     var outerClass = null;
-    var buttonId = ZmId.getAppChooserButtonId(id);
+    var buttonId = ZmId.getButtonId(ZmId.APP, id);
     var b = new ZmChicletButton(this, outerClass, ZmApp.ICON[id], text, isLast, buttonId);
 	b.setToolTipContent(ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]]);
 	b.setData(Dwt.KEY_ID, id);

@@ -23,7 +23,6 @@ ZmMailMsgView = function(params) {
 	DwtComposite.call(this, params);
 
 	this._mode = params.mode;
-	this._context = DwtId.getContext(this._mode, ZmId.MSG_VIEW);
 	this._controller = params.controller;
 
 	this._displayImagesId	= ZmId.getMsgViewId(this._mode, ZmId.MV_DISPLAY_IMAGES);
@@ -69,7 +68,7 @@ ZmMailMsgView = function(params) {
 	if (!AjxEnv.isPrism) {
 		this._setAllowSelection();
 	}
-	var id = ZmId.getButtonId(this._context, ZmId.OP_EXPAND);
+	var id = ZmId.getButtonId(this._mode, ZmId.OP_EXPAND, ZmId.MSG_VIEW);
 	this._expandButton = new DwtToolBarButton({parent:this, id:id});
     this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener));
     this._expandButton.setDisplay(Dwt.DISPLAY_NONE);
@@ -990,7 +989,7 @@ function(msg, container, callback) {
 
 	// add the close button if applicable
 	if (this._hasHeaderCloseBtn) {
-		var id = ZmId.getButtonId(this._context, ZmOperation.CLOSE);
+		var id = ZmId.getButtonId(this._mode, ZmOperation.CLOSE, ZmId.MSG_VIEW);
 		this._closeButton = new DwtButton({parent:this, id:id});
 		this._closeButton.setImage("Close");
 		this._closeButton.setText(ZmMsg.close);
@@ -1001,7 +1000,7 @@ function(msg, container, callback) {
 	// add the report button if applicable
 	var reportBtnCell = document.getElementById(this._reportBtnCellId);
 	if (reportBtnCell) {
-		var id = ZmId.getButtonId(this._context, ZmId.REPORT);
+		var id = ZmId.getButtonId(this._mode, ZmId.REPORT, ZmId.MSG_VIEW);
 		var reportBtn = new DwtButton({parent:this, parentElement:reportBtnCell});
 		reportBtn.setText(ZmMsg.reportSyncFailure);
 		reportBtn.addSelectionListener(new AjxListener(this, this._reportButtonListener, msg));
