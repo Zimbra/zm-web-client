@@ -137,8 +137,8 @@ function() {
 	});
 
 	ZmPref.registerPref("EXPORT", {
-		displayName:		ZmMsg.exportToCSV,
-		displayContainer:	ZmPref.TYPE_EXPORT
+        loadFunction:       ZmPref.loadCsvFormats,     
+        displayContainer:	ZmPref.TYPE_EXPORT
 	});
 
 	ZmPref.registerPref("GAL_AUTOCOMPLETE", {

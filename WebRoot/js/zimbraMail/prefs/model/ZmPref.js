@@ -60,6 +60,17 @@ function(setup) {
 	}
 };
 
+ZmPref.loadCsvFormats =
+function(setup){
+    var formats = appCtxt.get(ZmSetting.AVAILABLE_CSVFORMATS);
+    setup.options = [];
+    setup.displayOptions=[];
+    for(var i=0; i<formats.length; i++){
+        setup.options.push(formats[i]);        
+        setup.displayOptions.push((ZmMsg['csvformat-'+formats[i]] || formats[i]));
+    }
+};
+
 ZmPref.validateEmail =
 function(emailStr) {
 	if (emailStr) {

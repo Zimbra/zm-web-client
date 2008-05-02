@@ -308,7 +308,23 @@ function(callback) {
 	var localeCallback = new AjxCallback(this, this._handleResponseGetAllLocales);
 	command.addNewRequestParams(localeDoc, localeCallback);
 
-	command.run(callback);
+    var csvFormatsDoc = AjxSoapDoc.create("GetAvailableCsvFormatsRequest", "urn:zimbraAccount");
+    var csvFormatsCallback = new AjxCallback(this, this._handleResponseGetAvailableCsvFormats);
+    command.addNewRequestParams(csvFormatsDoc, csvFormatsCallback);
+
+    command.run(callback);
+};
+
+ZmSettings.prototype._handleResponseGetAvailableCsvFormats =
+function(result){
+    var formats = result.getResponse().GetAvailableCsvFormatsResponse.csv;
+    var setting = appCtxt.getMainAccount().settings.getSetting(ZmSetting.AVAILABLE_CSVFORMATS);
+    if(formats && formats.length){
+        var csvformat;
+        for(var i=0; i<formats.length; i++){
+            setting.setValue(formats[i].name);
+        }
+    };
 };
 
 ZmSettings.prototype._handleResponseLoadAvailableSkins =
@@ -508,7 +524,8 @@ function() {
 	// COS SETTINGS
 	this.registerSetting("ATTACHMENTS_BLOCKED",				{name:"zimbraAttachmentsBlocked", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("AVAILABLE_SKINS",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST, isGlobal:true});
-	this.registerSetting("BROWSE_ENABLED",					{name:"zimbraFeatureAdvancedSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    this.registerSetting("AVAILABLE_CSVFORMATS",            {type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST, isGlobal:true});
+    this.registerSetting("BROWSE_ENABLED",					{name:"zimbraFeatureAdvancedSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name:"zimbraFeatureChangePasswordEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("DISPLAY_NAME",					{name:"displayName", type:ZmSetting.T_COS});
     this.registerSetting("FLAGGING_ENABLED",				{name:"zimbraFeatureFlaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
