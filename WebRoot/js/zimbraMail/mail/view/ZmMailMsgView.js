@@ -637,13 +637,18 @@ function(msg, idoc) {
 ZmMailMsgView.prototype._createDisplayImageClickClosure =
 function(msg, idoc, id, iframe) {
 	var self = this;
-	var func = function() {
+	return function() {
 		var images = idoc.getElementsByTagName("img");
+                var onload = AjxCallback.simpleClosure(function() {
+                        ZmMailMsgView._resetIframeHeight(self, iframe);
+                        this.onload = null; // *this* is reference to <img> el.
+                }, null);
 		for (var i = 0; i < images.length; i++) {
 			if (images[i].getAttribute("dfsrc")) {
 				// If we just loop through the images, IE for some reason,
 				// doesn't fetch the image. By launching them off in the
 				// background we seem to kick IE's engine a bit.
+                                images[i].onload = onload;
 				if (AjxEnv.isIE) {
 					var args = [images[i], i, images.length, msg, idoc, iframe, self];
 					var act = new AjxTimedAction(null, ZmMailMsgView._swapIdAndSrc, args);
@@ -653,21 +658,15 @@ function(msg, idoc, id, iframe) {
 				}
 			}
 		}
-		diEl = document.getElementById(id);
+		var diEl = document.getElementById(id);
 		if (diEl)
 			diEl.style.display = "none";
 		this._htmlBody = idoc.documentElement.innerHTML;
-		if (!AjxEnv.isIE) {
-			self._resetIframeHeightOnTimer(iframe);
-		}
-
-		ZmMailMsgView._resetIframeHeight(self, iframe);
         if(msg){
             msg.setHtmlContent(this._htmlBody);
             msg.showImages = true;
         }
     };
-	return func;
 };
 
 ZmMailMsgView.prototype._resetIframeHeightOnTimer =
