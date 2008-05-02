@@ -14,7 +14,7 @@
         <td><div class='vertSep'></div></td>
 		<c:choose>
 			<c:when test="${isTrash}">
-				<app:button id="OPUNDELETE" text="actionUntrashVoiceMail" name="actionUndelete" tooltip="actionUntrashVoiceMail" src="startup/ImgMoveToFolder.gif"/>
+				<app:button id="OPUNDELETE" text="actionUntrashVoiceMail" name="actionUndelete" tooltip="actionUntrashVoiceMail" src="voicemail/ImgUnDelete.gif"/>
 			</c:when>
 			<c:otherwise>
 				<app:button id="OPDELETE" text="actionDelete" name="actionDelete" tooltip="actionTrashTT" src="startup/ImgDelete.gif"/>
