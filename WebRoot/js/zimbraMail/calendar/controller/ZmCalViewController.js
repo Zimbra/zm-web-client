@@ -502,45 +502,18 @@ function(viewId) {
  */
 ZmCalViewController.prototype._createMiniCalendar =
 function(date) {
-	date = date ? date : new Date();
-
-	this._miniCalendar = new DwtCalendar({parent:this._container, posStyle:DwtControl.ABSOLUTE_STYLE,
-										  firstDayOfWeek:this.firstDayOfWeek()});
-	this._miniCalendar.setDate(date);
-	this._miniCalendar.setScrollStyle(Dwt.CLIP);
-	this._miniCalendar.addSelectionListener(new AjxListener(this, this._miniCalSelectionListener));
-	this._miniCalendar.addActionListener(new AjxListener(this, this._miniCalActionListener));
-	this._miniCalendar.addDateRangeListener(new AjxListener(this, this._miniCalDateRangeListener));
-	this._miniCalendar.setMouseOverDayCallback(new AjxCallback(this, this._miniCalMouseOverDayCallback));
-    this._miniCalendar.setMouseOutDayCallback(new AjxCallback(this, this._miniCalMouseOutDayCallback));
-
-    var list = [];
-	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		list.push("ZmMailMsg");
-		list.push("ZmConv");
-	}
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		list.push("ZmContact");
-	}
-	this._miniCalDropTarget = new DwtDropTarget(list);
-	this._miniCalDropTarget.addDropListener(new AjxListener(this, this._miniCalDropTargetListener));
-	this._miniCalendar.setDropTarget(this._miniCalDropTarget);
-
-	var workingWeek = [];
-	var fdow = this.firstDayOfWeek();
-	for (var i = 0; i < 7; i++) {
-		var d = (i + fdow) % 7
-		workingWeek[i] = (d > 0 && d < 6);
-	}
-	this._miniCalendar.setWorkingWeek(workingWeek);
-	if (!this._skipMiniCalMarkingOnCreate) {
-		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL);
-	}
-
-	// add mini-calendar to skin
-	var components = {};
-	components[ZmAppViewMgr.C_TREE_FOOTER] = this._miniCalendar;
-	appCtxt.getAppViewMgr().addComponents(components, true);
+    var calMgr = appCtxt.getCalManager();
+    if(calMgr._miniCalendar == null) {
+        calMgr._createMiniCalendar(date);
+        this._miniCalendar = calMgr.getMiniCalendar();
+    }else {
+        this._miniCalendar = calMgr.getMiniCalendar();
+        if(date != null) {
+            this._miniCalendar.setDate(date, true);
+        }
+    }
+    this._minicalMenu = calMgr._miniCalMenu;
+    this._miniCalDropTarget = calMgr._miniCalDropTarget;
 };
 
 ZmCalViewController.prototype._miniCalDropTargetListener =
@@ -835,42 +808,6 @@ function(date, duration, roll) {
 ZmCalViewController.prototype._dateSelectionListener =
 function(ev) {
 	this.setDate(ev.detail, 0, ev.force);
-};
-
-ZmCalViewController.prototype._miniCalActionListener =
-function(ev) {
-	var mm = this._getMiniCalActionMenu();
-	mm.__detail = ev.detail;
-	mm.popup(0, ev.docX, ev.docY);
-};
-
-ZmCalViewController.prototype._getMiniCalActionMenu =
-function() {
-	if (this._minicalMenu == null) {
-
-		this.postInitListeners();
-
-		var list = [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT, ZmOperation.SEP, ZmOperation.SEARCH_MAIL];
-		//Zimlet hack
-		var zimletOps = ZmZimlet.actionMenus ? ZmZimlet.actionMenus["ZmCalViewController"] : null;
-		if (zimletOps && zimletOps.length) {
-			for (var i = 0; i < zimletOps.length; i++) {
-				var op = zimletOps[i];
-				ZmOperation.defineOperation(null, op);
-				list.push(op.id);
-			}
-		}
-		var params = {parent:this._shell, menuItems:list};
-		this._minicalMenu = new ZmActionMenu(params);
-		list = this._minicalMenu.opList;
-		var cnt = list.length;
-		for(var ix=0; ix < cnt; ix++) {
-			if(this._listeners[list[ix]]) {
-				this._minicalMenu.addSelectionListener(list[ix], this._listeners[list[ix]]);
-			}
-		}
-	}
-	return this._minicalMenu;
 };
 
 ZmCalViewController.prototype._miniCalSelectionListener =
@@ -1371,37 +1308,6 @@ function(ev) {
 	this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
 };
 
-ZmCalViewController.prototype._miniCalMouseOverDayCallback =
-function(control, day) {
-	this._currentMouseOverDay = day;
-	var action = new AjxTimedAction(this, this._getDayToolTipOnDelay, [control, day]);
-	AjxTimedAction.scheduleAction(action, 1000);
-
-};
-
-ZmCalViewController.prototype._miniCalMouseOutDayCallback =
-function(control) {
-	this._currentMouseOverDay = null;
-};
-
-ZmCalViewController.prototype._getDayToolTipOnDelay =
-function(control, day) {
-	if(!this._currentMouseOverDay) { return; }
-	if((this._currentMouseOverDay.getDate() == day.getDate()) && (this._currentMouseOverDay.getMonth() == day.getMonth())) {
-		this._currentMouseOverDay = null;
-		control.setToolTipContent(this.getDayToolTipText(day));
-		var mouseEv = DwtShell.mouseEvent;
-		if(mouseEv && mouseEv.docX > 0 && mouseEv.docY > 0) {
-			var shell = DwtShell.getShell(window);
-			var tooltip = shell.getToolTip();
-			tooltip.setContent(this.getDayToolTipText(day));
-			tooltip.popup(mouseEv.docX, mouseEv.docY);
-			control.__tooltipClosed = false;
-		}
-	}
-};
-
-
 ZmCalViewController.prototype._getViewType =
 function() {
 	return ZmId.VIEW_CAL;
@@ -1770,7 +1676,7 @@ function(soapDoc) {
 */
 ZmCalViewController.prototype.getApptSummaries =
 function(params) {
-	if (!params.folderIds) {
+    if (!params.folderIds) {
 		params.folderIds = this.getCheckedCalendarFolderIds();
 	}
 	params.query = this._userQuery;
@@ -2115,4 +2021,10 @@ function() {
 		this._miniCalCache = new ZmMiniCalCache(this);
 	}
 	return this._miniCalCache;
+};
+
+ZmCalViewController.prototype.getCalendarName =
+function(folderId) {
+   var cal = appCtxt.getById(folderId);
+   return cal ? cal.getName() : null;
 };

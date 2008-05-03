@@ -146,7 +146,7 @@ function(list) {
 		return;
 	}
 	this._cachedAppts = list.clone();
-	ZmApptList.sortVector(this._cachedAppts);
+    this._cachedAppts.sort(ZmCalBaseItem.compareByTimeAndDuration);
 	this._activeAppts.removeAll();
 	// cancel outstanding timed action and update now...
 	this._cancelHousekeepingAction();
@@ -179,7 +179,7 @@ function() {
 	if (cachedSize == 0 && activeSize == 0) return;
 
 	var numNotify = 0;
-	
+
 	// look for appts that fall with startTime/endTime
 	var startTime = (new Date()).getTime();
 	var endTime = startTime + (this._warningTime * 60 * 1000);
@@ -201,7 +201,7 @@ function() {
 			}
 		}
 		
-		if (!appt || appt.isAllDayEvent() || appt.ptst == ZmCalItem.PSTATUS_DECLINED) {
+		if (!appt || appt.isAllDayEvent() || appt.ptst == ZmCalBaseItem.PSTATUS_DECLINED) {
 			toRemove.push(appt);
 		} else if (appt.alarm && appt.isAlarmInRange()) {			
 			var uid = appt.getUniqueId(true);

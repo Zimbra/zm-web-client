@@ -834,3 +834,11 @@ function() {
 	}
 	return this._printView;
 };
+
+ZmAppCtxt.prototype.getCalManager =
+function() {
+	if (!this._calMgr) {
+		this._calMgr = new ZmCalMgr(this._shell);
+	}
+	return this._calMgr;
+};

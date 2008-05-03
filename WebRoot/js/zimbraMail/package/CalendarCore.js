@@ -39,6 +39,5 @@ AjxPackage.require("zimbraMail.calendar.model.ZmMiniCalCache");
 AjxPackage.require("zimbraMail.calendar.model.ZmResource");
 AjxPackage.require("zimbraMail.calendar.model.ZmResourceList");
 AjxPackage.require("zimbraMail.calendar.view.ZmApptViewHelper");
-AjxPackage.require("zimbraMail.calendar.view.ZmReminderDialog");
 AjxPackage.require("zimbraMail.calendar.controller.ZmCalViewController");
-AjxPackage.require("zimbraMail.calendar.controller.ZmReminderController");
+

@@ -336,28 +336,6 @@ function() {
 
 ZmCalendarApp.prototype.startup =
 function(result) {
-	
-	if(!appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL) && (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) == 0) ) {
-		return;
-	}
-	
-	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
-		var miniCalAction = new AjxTimedAction(this, function() {
-				var calController = AjxDispatcher.run("GetCalController");
-				calController._refreshReminder = true;
-				calController._skipMiniCalMarkingOnCreate = true;
-				var reminderController = AjxDispatcher.run("GetReminderController");
-				reminderController._refreshDelay = ZmCalendarApp.REMINDER_START_DELAY;				
-				AjxDispatcher.run("ShowMiniCalendar", true);
-				reminderController.refresh(true);
-			});
-		AjxTimedAction.scheduleAction(miniCalAction, ZmCalendarApp.MINICAL_DELAY);
-	}else {
-		var refreshAction = new AjxTimedAction(this, function() {
-				AjxDispatcher.run("GetReminderController").refresh(true);
-			});
-		AjxTimedAction.scheduleAction(refreshAction, ZmCalendarApp.REMINDER_START_DELAY);
-	}
 };
 
 ZmCalendarApp.prototype.refresh =
@@ -539,9 +517,11 @@ function() {
 
 ZmCalendarApp.prototype.getReminderController =
 function() {
-	if (!this._reminderController) {
+    if (!this._reminderController) {
 		AjxDispatcher.require("CalendarCore");
-		this._reminderController = new ZmReminderController(AjxDispatcher.run("GetCalController"));
+        var calMgr = appCtxt.getCalManager();
+        this._reminderController = calMgr.getReminderController();
+        this._reminderController._calController = this.getCalController();
 	}
 	return this._reminderController;
 };

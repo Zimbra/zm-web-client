@@ -18,41 +18,16 @@ ZmCalItem = function(type, list, id, folderId) {
 
 	if (arguments.length == 0) { return; }
 
-	ZmItem.call(this, type, id, list);
+	ZmCalBaseItem.call(this, type, list, id, folderId);
 
-	this.id = id || -1;
-	this.uid = -1; // iCal uid of appt
-
-	this.folderId = folderId || this._getDefaultFolderId();
-	this.fragment = "";
-	this.name = "";
 	this.notesTopPart = null; // ZmMimePart containing children w/ message parts
 	this.attachments = null;
-
-	this.allDayEvent = "0";
-	this.startDate = null;
-	this.endDate = null;
-	this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-
-	this.alarm = false;
-	this.isException = false;
-	this.recurring = false;
-	this.priority = null;
-	this.ptst = null; // participant status
-	this.status = ZmCalendarApp.STATUS_CONF;
 	this.viewMode = ZmCalItem.MODE_NEW;
-
 	this._recurrence = new ZmRecurrence(this);
 	this._noBusyOverlay = null;
-	
-	this._reminderMinutes = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
-	
-	if(this._reminderMinutes == null) {
-		this._reminderMinutes = 0;
-	}
 };
 
-ZmCalItem.prototype = new ZmItem;
+ZmCalItem.prototype = new ZmCalBaseItem;
 ZmCalItem.prototype.constructor = ZmCalItem;
 
 // Consts
@@ -109,11 +84,8 @@ function() {
 // Getters
 
 ZmCalItem.prototype.getCompNum			= function() { return this.compNum || "0"; }
-ZmCalItem.prototype.getDuration 		= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
-ZmCalItem.prototype.getEndTime 			= function() { return this.endDate.getTime(); }; 	// end time in ms
 ZmCalItem.prototype.getFolder			= function() { /* override */ };
 ZmCalItem.prototype.getLocation			= function() { /* override */ };
-ZmCalItem.prototype.getName 			= function() { return this.name || ""; };			// name (aka Subject) of appt
 ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
 ZmCalItem.prototype.getSentBy           = function() { return this.sentBy || ""; };
 ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate || this.startDate; };
@@ -121,12 +93,10 @@ ZmCalItem.prototype.getOrigStartTime 	= function() { return this.getOrigStartDat
 ZmCalItem.prototype.getOrigTimezone     = function() { return this._origTimezone || this.timezone; };
 ZmCalItem.prototype.getRecurBlurb		= function() { return this._recurrence.getBlurb(); };
 ZmCalItem.prototype.getRecurType		= function() { return this._recurrence.repeatType; };
-ZmCalItem.prototype.getStartTime 		= function() { return this.startDate.getTime(); }; 	// start time in ms
 ZmCalItem.prototype.getTimezone         = function() { return this.timezone; };
 ZmCalItem.prototype.getSummary			= function(isHtml) { /* override */ };
 ZmCalItem.prototype.getToolTip			= function(controller) { /* override */ };
 
-ZmCalItem.prototype.isAllDayEvent 		= function() { return this.allDayEvent == "1"; };
 ZmCalItem.prototype.isCustomRecurrence 	= function() { return this._recurrence.repeatCustom == "1" || this._recurrence.repeatEndType != "N"; };
 ZmCalItem.prototype.isOrganizer 		= function() { return (typeof(this.isOrg) === 'undefined') || (this.isOrg == true); };
 ZmCalItem.prototype.isRecurring 		= function() { return (this.recurring || (this._rawRecurrences != null)); };
@@ -199,18 +169,6 @@ function(mode) {
 
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
 		this._recurrence.repeatType = "NON";
-};
-
-ZmCalItem.prototype.getUniqueId =
-function(useStartTime) {
-	if (useStartTime) {
-		if (!this._startTimeUniqId) this._startTimeUniqId = this.id + "_" + this.getStartTime();
-		return this._startTimeUniqId;
-	} else {
-		if (this._uniqId == null)
-			this._uniqId = Dwt.getNextId();
-		return (this.id + "_" + this._uniqId);
-	}
 };
 
 /**
@@ -310,34 +268,6 @@ function(startTime, endTime) {
 	return (tst < endTime && tet > startTime);
 };
 
-ZmCalItem.prototype.setAlarmData =
-function(alarmData) {
-	this.alarmData = alarmData;
-};
-
-ZmCalItem.prototype.isAlarmInRange =
-function() {
-	
-	if(!this.alarm || !this.alarmData) { return false; }
-	
-	var alarmData = this.alarmData[0];
-	
-	this._nextAlarmTime = alarmData.nextAlarm;
-	this._alarmInstStart = alarmData.alarmInstStart;
-	
-	var startTime = (new Date()).getTime();
-	//var endTime = startTime + (this._warningTime * 60 * 1000);
-	
-	var tst = this.getStartTime();
-	var tet = this.getEndTime();
-	if(this._alarmInstStart == tst) {
-		return (startTime > this._nextAlarmTime && startTime < tet);
-	}else {
-		//remind older alarms
-		return (startTime> this._nextAlarmTime);
-	}
-};
-
 ZmCalItem.prototype.parseAlarmData =
 function() {
 	if(!this.alarmData){ return; }
@@ -406,24 +336,6 @@ function(instance, current, refPath) {
 };
 
 /**
- * true if startDate and endDate are on different days
- */
-ZmCalItem.prototype.isMultiDay =
-function() {
-	var start = this.startDate;
-	var end = this.endDate;
-	if (end.getHours() == 0 && end.getMinutes() == 0 && end.getSeconds() == 0) {
-		// if end is the beginning of day, then disregard that it
-		// technically crossed a day boundary for the purpose of
-		// determining if it is a multi-day appt
-		end = new Date(end.getTime() - 2 * AjxDateUtil.MSEC_PER_HOUR);
-	}
-	return (start.getDate() != end.getDate()) ||
-		   (start.getMonth() != end.getMonth()) ||
-		   (start.getFullYear() != end.getFullYear());
-};
-
-/**
  * accepts a comma delimeted string of ids
  */
 ZmCalItem.prototype.setAttachments =
@@ -463,28 +375,6 @@ function(part) {
 			}
 		}
 	}
-};
-
-ZmCalItem.prototype.getDurationText =
-function(emptyAllDay,startOnly) {
-	var isAllDay = this.isAllDayEvent();
-	var isMultiDay = this.isMultiDay();
-	if (isAllDay) {
-		if (emptyAllDay) return "";
-
-		var start = this.startDate;
-		var end = new Date(this.endDate.getTime() - (isMultiDay ? 2 * AjxDateUtil.MSEC_PER_HOUR : 0));
-
-		var pattern = isMultiDay ? ZmMsg.apptTimeAllDayMulti : ZmMsg.apptTimeAllDay;
-		return AjxMessageFormat.format(pattern, [start, end]);
-	}
-
-	if (startOnly) {
-		return ZmCalItem._getTTHour(this.startDate);
-	}
-
-	var pattern = isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance;
-	return AjxMessageFormat.format(pattern, [this.startDate, this.endDate, ""]);
 };
 
 ZmCalItem.prototype.getShortStartHour =
@@ -1414,13 +1304,14 @@ function(calItemNode, instNode) {
 	var itemAllDay		= calItemNode.allDay;
 	var instAllDay		= instNode.allDay;
 	var dur				= this._getAttr(calItemNode, instNode, "dur");
-	this.allDayEvent	= (instAllDay || itemAllDay) ? "1" : "0";
 
-	if (!instAllDay && this.isException) {
-		this.allDayEvent = "0";
-	}
+    if(instAllDay != null) {
+        this.allDayEvent = instAllDay ? "1" : "0";
+    }else {
+        this.allDayEvent = itemAllDay ? "1" : "0";
+    }
 
-	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
+    this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
 	this.alarmData 		= this._getAttr(calItemNode, instNode, "alarmData");	
 	this.parseAlarmData(this.alarmData);
 	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
@@ -1452,12 +1343,6 @@ function(calItemNode, instNode) {
 		this._parseTags(calItemNode.t);
 	}
 };
-
-ZmCalItem.prototype._getAttr =
-function(calItem, inst, name) {
-	return inst[name] || calItem[name];
-};
-
 
 // Callbacks
 

@@ -352,13 +352,28 @@ function(params) {
 		var callback = new AjxCallback(this,
 			function() {
 				AjxDispatcher.require("Startup2");
-			});
+                this.handleCalendarComponents();
+            });
 		this.addPostRenderCallback(callback, 0, 0, true);
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
 	this._errorCallback = new AjxCallback(this, this._handleErrorStartup, params);
 	this._settings.loadUserSettings(respCallback, this._errorCallback, null, params.getInfoResponse);
+};
+
+ZmZimbraMail.prototype.showMiniCalendar =
+function() {
+	var calMgr = appCtxt.getCalManager();
+	calMgr.getMiniCalendar();
+	appCtxt.getAppViewMgr().showTreeFooter(true);
+};
+
+ZmZimbraMail.prototype.showReminder =
+function() {
+    var calMgr = appCtxt.getCalManager();
+    var reminderController = calMgr.getReminderController();
+    reminderController.refresh();
 };
 
 ZmZimbraMail.prototype._handleErrorStartup =
@@ -440,6 +455,23 @@ function(params, result) {
 	this.addPostRenderCallback(callback, 6, 100);
 
 	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
+
+    if (!this._doingPostRenderStartup && (params.startApp != ZmApp.CALENDAR)) {
+        this.handleCalendarComponents();
+    }
+};
+
+//Creates mini calendar and shows reminders on delay
+ZmZimbraMail.prototype.handleCalendarComponents =
+function() {
+        if(appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {            
+            this.showMiniCalendar();
+        }
+        //reminder controlled by calendar preferences setting
+        if(appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) != 0) {
+            var reminderAction = new AjxTimedAction(this,this.showReminder);
+            AjxTimedAction.scheduleAction(reminderAction, ZmCalendarApp.REMINDER_START_DELAY);
+        }
 };
 
 /**

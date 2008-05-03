@@ -123,8 +123,8 @@ function(html, appt, data, needSep) {
 	data.deltaId = Dwt.getNextId();
 	data.rowIds = [];
 
-	var cal = appt.folderId != ZmOrganizer.ID_CALENDAR && this._calController
-			? this._calController.getCalendar(appt.folderId) : null;
+    var calName = appt.folderId != ZmOrganizer.ID_CALENDAR && this._calController
+            ? this._calController.getCalendarName(appt.folderId) : null;
 	
 	if (needSep) html.append("<tr id='", this._rowId(data), "'><td colspan=4><div class=horizSep></div></td></tr>");
 	html.append("<tr width=100% id='", this._rowId(data), "'>");
@@ -138,7 +138,7 @@ function(html, appt, data, needSep) {
 	html.append("<td align=right id='", data.buttonId, "'></td>");	
 	html.append("</tr>");
 	if (appt.hasOtherAttendees()) this._addAttr(html, ZmMsg.status, appt.getParticipantStatusStr(), data);
-	if (cal) this._addAttr(html, ZmMsg.calendar, cal.getName(), data);	
+	if (calName) this._addAttr(html, ZmMsg.calendar, calName, data);	
 	this._addAttr(html, ZmMsg.location, appt.getLocation(), data);
 };
  
