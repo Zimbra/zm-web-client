@@ -90,7 +90,14 @@ function() {
 	Dwt.setTitle(this._title);
 	this._controller._resetOperations(this._controller._toolbar, this._view);
 	var dirty = this._controller.isDirty(this._view);
-	if (this._hasRendered && !dirty) { return; }
+
+	if (this._hasRendered && !dirty) {
+		// always re-render shortcuts table if in multi-account mode
+		if (appCtxt.multiAccounts) {
+			this._scTabView.reRenderShortcutsTable();
+		}
+		return;
+	}
 
 	this._prefPresent = {};
 	this._prefPresent[this._prefId] = true;
@@ -194,10 +201,6 @@ ZmShortcutsPageTabView = function(parent, controller, organizers, prefId) {
 
 	this._scTabView = {};
 	this._hasRendered = false;
-
-	this._setting = appCtxt.get(prefId);
-	var kmm = appCtxt.getAppController().getKeyMapMgr();
-	this._shortcuts = kmm ? ZmShortcut.parse(this._setting, kmm) : null;
 };
 
 ZmShortcutsPageTabView.SHORTCUTS_LIST = "list";
@@ -220,28 +223,41 @@ ZmShortcutsPageTabView.prototype.show =
 function() {
 	if (this._hasRendered) { return; }
 
-	var context = ZmId.VIEW_SHORTCUTS;
+	var view;
+	var viewObj;
 
 	// shortcut list
 	if (appCtxt.get(ZmSetting.SHORTCUT_LIST_ENABLED)) {
-		var view = ZmShortcutsPageTabView.SHORTCUTS_LIST;
-		var viewObj = new ZmShortcutsPageTabViewList(this._parent, this._controller);
+		view = ZmShortcutsPageTabView.SHORTCUTS_LIST;
+		viewObj = new ZmShortcutsPageTabViewList(this._parent, this._controller);
 		this._scTabView[view] = viewObj;
-		var tabButtonId = ZmId.getTabId(context, view);
+		var tabButtonId = ZmId.getTabId(ZmId.VIEW_SHORTCUTS, view);
 		this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view], tabButtonId);
 	}
 
-	// custom shortcuts
 	for (var i = 0; i < this._organizers.length; i++) {
 		view = this._organizers[i];
-        viewObj = new ZmShortcutsPageTabViewCustom(this._parent, view, this._controller, this._setting, this._shortcuts);
+        viewObj = new ZmShortcutsPageTabViewCustom(this._parent, view, this._controller);
 		this._scTabView[view] = viewObj;
-		var tabButtonId = ZmId.getTabId(context, view);
+		var tabButtonId = ZmId.getTabId(ZmId.VIEW_SHORTCUTS, view);
 		this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view], tabButtonId);
 	}
 
 	this._resetSize();
 	this._hasRendered = true;
+};
+
+ZmShortcutsPageTabView.prototype.reRenderShortcutsTable =
+function() {
+	for (var i = 0; i < this._organizers.length; i++) {
+		var view = this._organizers[i];
+		var tabView = this._scTabView[view];
+		while (tabView._table.rows.length > 0) {
+			tabView._table.deleteRow(0);
+		}
+		tabView._inputs = {};
+		tabView._renderTable();
+	}
 };
 
 // Grabs the shortcuts from the pages and returns them.
@@ -259,10 +275,9 @@ function() {
 
 ZmShortcutsPageTabView.prototype._getShortcutsFromSetting =
 function(org) {
+	var setting = appCtxt.get(ZmSetting.SHORTCUTS);
+	var sc = setting ? setting.split("|") : [];
 	var shortcuts = [];
-	if (!this._setting) { return shortcuts; }
-	var sc = this._setting.split("|");
-	if (!(sc && sc.length)) { return shortcuts; }
 	for (var i = 0, count = sc.length; i < count; i++) {
 		var p = sc[i].split(",");
 		if (p[0] == ZmShortcut.ORG_KEY[org]) {
@@ -493,17 +508,13 @@ function(key) {
  * @param parent			[DwtControl]				the containing widget
  * @param organizer			[constant]					which organizer this page handles
  * @param controller		[ZmPrefController]			prefs controller
- * @param setting			[string]					value of user's custom shortcuts pref
- * @param shortcuts			[array]						list of ZmShortcut (parsed from setting)
  */
-ZmShortcutsPageTabViewCustom = function(parent, organizer, controller, setting, shortcuts) {
+ZmShortcutsPageTabViewCustom = function(parent, organizer, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmShortcutsPageTabViewCustom");
 	
 	this._organizer = organizer;
 	this._controller = controller;
-	this._setting = setting;
-	this._shortcuts = shortcuts;
 
 	this._dwtObjects = {};
 	this._createShortcutsPageHtml();
@@ -555,6 +566,11 @@ ZmShortcutsPageTabViewCustom.COL3_WIDTH = 60;
 
 ZmShortcutsPageTabViewCustom.prototype = new DwtTabViewPage;
 ZmShortcutsPageTabViewCustom.prototype.constructor = ZmShortcutsPageTabViewCustom;
+
+ZmShortcutsPageTabViewCustom.prototype.toString =
+function() {
+	return "ZmShortcutsPageTabViewCustom";
+};
 
 ZmShortcutsPageTabViewCustom.prototype.showMe =
 function() {
@@ -796,10 +812,15 @@ function(ev) {
 */
 ZmShortcutsPageTabViewCustom.prototype._renderTable =
 function() {
+	// always pull fresh copy of shortcuts in case accounts have changed
+	var kmm = appCtxt.getAppController().getKeyMapMgr();
+	var setting = appCtxt.get(ZmSetting.SHORTCUTS);
+	var shortcuts = kmm ? ZmShortcut.parse(setting, kmm) : null;
+
 	var org = this._organizer;
 	var done = {};
-	for (var i = 0, count = this._shortcuts.length; i < count; i++) {
-		var sc = this._shortcuts[i];
+	for (var i = 0, count = shortcuts.length; i < count; i++) {
+		var sc = shortcuts[i];
 		if (sc.orgType != org || done[sc.num]) { continue; }
 		var html = this._getRowHtml(sc);
 		var row = Dwt.parseHtmlFragment(html, true);
@@ -957,7 +978,7 @@ function(ev) {
 		var rowId = id.substr(5);
 		tv._removeRow(rowId);
 		return false; // disables following of link
-	} else {
-		return true;
 	}
+
+	return true;
 };
