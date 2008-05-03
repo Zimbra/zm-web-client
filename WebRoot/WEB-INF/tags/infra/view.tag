@@ -448,6 +448,7 @@
 							<a href='<c:url value="/?client=advanced"/>'><fmt:message key="switchToAdvancedClient" /></a>
 						</td>
 						<td>
+							
 						</td>
 						<td  align='center' class='ZhAppSwitchLink'>
 							<span id="switch_to_offline"><a href="<fmt:message key="switchToOfflineURL"/>" target="_new" ><fmt:message key="switchToOfflineClient" /></a></span>
