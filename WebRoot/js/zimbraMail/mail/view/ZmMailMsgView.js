@@ -25,16 +25,16 @@ ZmMailMsgView = function(params) {
 	this._mode = params.mode;
 	this._controller = params.controller;
 
-	this._displayImagesId	= ZmId.getMsgViewId(this._mode, ZmId.MV_DISPLAY_IMAGES);
-	this._msgTruncatedId	= ZmId.getMsgViewId(this._mode, ZmId.MV_MSG_TRUNC);
-	this._infoBarId			= ZmId.getMsgViewId(this._mode, ZmId.MV_INFO_BAR);
-	this._tagRowId			= ZmId.getMsgViewId(this._mode, ZmId.MV_TAG_ROW);
-	this._tagCellId			= ZmId.getMsgViewId(this._mode, ZmId.MV_TAG_CELL);
-	this._attLinksId		= ZmId.getMsgViewId(this._mode, ZmId.MV_ATT_LINKS);
+	this._displayImagesId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_DISPLAY_IMAGES, this._mode);
+	this._msgTruncatedId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_MSG_TRUNC, this._mode);
+	this._infoBarId			= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_INFO_BAR, this._mode);
+	this._tagRowId			= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_TAG_ROW, this._mode);
+	this._tagCellId			= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_TAG_CELL, this._mode);
+	this._attLinksId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_ATT_LINKS, this._mode);
 
 	// expand/collapse vars
 	this._expandHeader = true;
-	this._expandDivId = ZmId.getMsgViewId(this._mode, ZmId.MV_EXPAND_DIV);
+	this._expandDivId = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_DIV, this._mode);
 
 	// do we add a close button in the header section?
 	this._hasHeaderCloseBtn = (this._mode == ZmId.VIEW_MSG && !appCtxt.isChildWindow);
@@ -694,7 +694,7 @@ function(origText) {
 	(function() {
 		var infoBarDiv = document.getElementById(self._infoBarId);
 		if (infoBarDiv) {
-			self._highlightObjectsId = ZmId.getMsgViewId(self._mode, ZmId.MV_HIGHLIGHT_OBJ);
+			self._highlightObjectsId = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HIGHLIGHT_OBJ, self._mode);
 			var subs = {
 				id: self._highlightObjectsId,
 				text: ZmMsg.objectsNotDisplayed,
@@ -791,7 +791,7 @@ function(container, html, isTextMsg, isTruncated) {
 	var params = {
 		parent: this,
 		className: "MsgBody",
-		id: ZmId.getMsgViewId(this._mode, ZmId.MV_MSG_BODY),
+		id: ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_MSG_BODY, this._mode),
 		hidden: true,
 		html: html,
 		styles: inner_styles,
@@ -938,16 +938,16 @@ function(msg, container, callback) {
     var hasAttachments = msg.getAttachmentLinks(true);
     hasAttachments = ( hasAttachments.length != 0 );
 
-	this._hdrTableId		= ZmId.getMsgViewId(this._mode, ZmId.MV_HDR_TABLE);
-	this._closeBtnCellId	= ZmId.getMsgViewId(this._mode, ZmId.MV_CLOSE_BTN_CELL);
-	this._reportBtnCellId	= ZmId.getMsgViewId(this._mode, ZmId.MV_REPORT_BTN_CELL);
-	this._expandRowId		= ZmId.getMsgViewId(this._mode, ZmId.MV_EXPAND_ROW);
-	this._expandHeaderId	= ZmId.getMsgViewId(this._mode, ZmId.MV_EXPAND_HDR);
+	this._hdrTableId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE, this._mode);
+	this._closeBtnCellId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_CLOSE_BTN_CELL, this._mode);
+	this._reportBtnCellId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_REPORT_BTN_CELL, this._mode);
+	this._expandRowId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_ROW, this._mode);
+	this._expandHeaderId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_HDR, this._mode);
 
     var subs = {
 		id:					this._htmlElId,
 		hdrTableId:			this._hdrTableId,
-		hdrTableTopRowId:	ZmId.getMsgViewId(this._mode, ZmId.MV_HDR_TABLE_TOP_ROW),
+		hdrTableTopRowId:	ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
 		closeBtnCellId:		this._closeBtnCellId,
 		reportBtnCellId:	this._reportBtnCellId,
 		expandRowId:		this._expandRowId,

@@ -28,7 +28,9 @@
  */
 ZmComposeView = function(parent, controller, composeMode) {
 
-	DwtComposite.call(this, {parent:parent, className:"ZmComposeView", posStyle:Dwt.ABSOLUTE_STYLE});
+	this._view = ZmId.VIEW_COMPOSE;
+	DwtComposite.call(this, {parent:parent, className:"ZmComposeView", posStyle:Dwt.ABSOLUTE_STYLE,
+							 id:ZmId.getViewId(this._view)});
 
 	ZmComposeView.ADDR_SETTING[AjxEmailAddress.BCC]	= ZmSetting.SHOW_BCC;
 
@@ -87,6 +89,11 @@ ZmComposeView.REFANG_RE				= new RegExp("(<img[^>]*)dfsrc\s*=([^>]*>)", "ig");
 ZmComposeView.REFANG_RE_REPLACE		= "$1src=$2";
 ZmComposeView.ADDR_SETTING			= {}; // XXX: may not be necessary anymore?
 ZmComposeView.WRAP_LENGTH			= 72;
+
+ZmComposeView.OP = {};
+ZmComposeView.OP[AjxEmailAddress.TO]	= ZmId.CMP_TO;
+ZmComposeView.OP[AjxEmailAddress.CC]	= ZmId.CMP_CC;
+ZmComposeView.OP[AjxEmailAddress.BCC]	= ZmId.CMP_BCC;
 
 //
 // Data
@@ -1543,7 +1550,26 @@ function(composeMode) {
 
 ZmComposeView.prototype._createHtml =
 function(templateId) {
-	var data = { id: this._htmlElId };
+	var data = { id:				this._htmlElId,
+				 headerId:			ZmId.getViewId(this._view, ZmId.CMP_HEADER),
+				 toRowId:			ZmId.getViewId(this._view, ZmId.CMP_TO_ROW),
+				 toPickerId:		ZmId.getViewId(this._view, ZmId.CMP_TO_PICKER),
+				 toInputId:			ZmId.getViewId(this._view, ZmId.CMP_TO_INPUT),
+				 ccRowId:			ZmId.getViewId(this._view, ZmId.CMP_CC_ROW),
+				 ccPickerId:		ZmId.getViewId(this._view, ZmId.CMP_CC_PICKER),
+				 ccInputId:			ZmId.getViewId(this._view, ZmId.CMP_CC_INPUT),
+				 bccRowId:			ZmId.getViewId(this._view, ZmId.CMP_BCC_ROW),
+				 bccPickerId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_PICKER),
+				 bccInputId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_INPUT),
+				 bccToggleId:		ZmId.getViewId(this._view, ZmId.CMP_BCC_TOGGLE),
+				 subjectRowId:		ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_ROW),
+				 subjectInputId:	ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_INPUT),
+				 identityRowId:		ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_ROW),
+				 priorityId:		ZmId.getViewId(this._view, ZmId.CMP_PRIORITY),
+				 attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
+				 attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV)
+				};
+
 	this._createHtmlFromTemplate(templateId || this.TEMPLATE, data);
 };
 
@@ -1552,7 +1578,7 @@ function(templateId, data) {
 	DwtComposite.prototype._createHtmlFromTemplate.call(this, templateId, data);
 
 	// global identifiers
-	this._identityDivId = data.id + "_identity_row";
+	this._identityDivId = data.identityRowId;
 
 	// init autocomplete list
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
@@ -1574,7 +1600,7 @@ function(templateId, data) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		var typeStr = AjxEmailAddress.TYPE_STRING[type];
 
-		// save identitifiers
+		// save identifiers
 		this._divId[type] = [data.id, typeStr, "row"].join("_");
 		this._buttonTdId[type] = [data.id, typeStr, "picker"].join("_");
 		this._fieldId[type] = [data.id, typeStr, "control"].join("_");
@@ -1592,7 +1618,8 @@ function(templateId, data) {
 			var pickerId = this._buttonTdId[type];
 			var pickerEl = document.getElementById(pickerId);
 			if (pickerEl) {
-				var button = new DwtButton({parent:this});
+				var buttonId = ZmId.getButtonId(this._view, ZmComposeView.OP[type]);
+				var button = new DwtButton({parent:this, id:buttonId});
 				button.setText(pickerEl.innerHTML);
 				button.replaceElement(pickerEl);
 
@@ -1612,9 +1639,9 @@ function(templateId, data) {
 	}
 
 	// save reference to DOM objects per ID's
-	this._headerEl = document.getElementById(data.id+"_header");
-	this._subjectField = document.getElementById(data.id+"_subject_control");
-	this._attcDiv = document.getElementById(data.id+"_attachments_div");
+	this._headerEl = document.getElementById(data.headerId);
+	this._subjectField = document.getElementById(data.subjectInputId);
+	this._attcDiv = document.getElementById(data.attDivId);
 
 	// initialize identity select
 	var identityOptions = this._getIdentityOptions();
@@ -1627,20 +1654,22 @@ function(templateId, data) {
 	}
 	identityCollection.addChangeListener(this._identityChangeListenerObj);
 
-	this.identitySelect.replaceElement(data.id+"_identity_control");
+	this.identitySelect.replaceElement(data.identitySelectId);
 	this._setIdentityVisible();
 
     if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        this._priorityButton = new DwtButton({parent:this});
+		var buttonId = ZmId.getButtonId(this._view, ZmId.CMP_PRIORITY);
+        this._priorityButton = new DwtButton({parent:this, id:buttonId});
         this._priorityButton.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
-        this._priorityButton.reparentHtmlElement(data.id + "_priority");
+        this._priorityButton.reparentHtmlElement(data.priorityId);
 		this._priorityButton.setToolTipContent(ZmMsg.setPriority);
 	}
 
     //Toggle BCC
-    this._toggleBccEl = document.getElementById(data.id+"_toggle_bcc");
-    Dwt.setHandler(this._toggleBccEl,DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
-
+    this._toggleBccEl = document.getElementById(data.bccToggleId);
+    if (this._toggleBccEl) {
+	    Dwt.setHandler(this._toggleBccEl,DwtEvent.ONCLICK, AjxCallback.simpleClosure(this._toggleBccField, this));
+    }
 };
 
 ZmComposeView.prototype._toggleBccField = function(ev, force){
@@ -1820,12 +1849,6 @@ function(msg, action, replyPref) {
 	}
 	
 	this._attcDiv.innerHTML = html;
-};
-
-ZmComposeView._removeAttachment = function(ev) {
-	ev = ev || window.event;
-	var el = DwtUiEvent.getTarget(ev);
-	Dwt.findAncestor(el,"_attach_table").deleteRow(Dwt.findAncestor(el,"_attach_tr").rowIndex);
 };
 
 // Miscellaneous methods

@@ -183,7 +183,7 @@ function(view) {
 	if (!this._listView[view]) {
 		var params = {
 			parent:		this._container,
-			id:			ZmId.getMsgViewId(view),
+			id:			ZmId.getViewId(ZmId.VIEW_MSG, null, view),
 			posStyle:	Dwt.ABSOLUTE_STYLE,
 			mode:		ZmId.VIEW_MSG,
 			controller:	this

@@ -251,30 +251,35 @@ function(overviewId, organizerId, type) {
 };
 
 /**
- * Returns an ID for a view that fills the content area.
+ * Returns an ID for a view that fills the content area, or for a component of that
+ * view. A context should be provided if the view is not a singleton (for example,
+ * message view may appear within several double-pane views). The component name
+ * is not joined with the "|" character in order to preserve backward compatibility.
  * 
- * Examples: zv|TV 
+ * Examples: zv|COMPOSE zv|TV zv|TV|MSG zv|TV|MSG_hdrTable
  * 
- * @param context		[constant]		view identifier (ZmId.VIEW_*)
+ * @param viewId		[constant]		view identifier (ZmId.VIEW_*)
+ * @param component		[constant]*		component identifier (ZmId.MV_*)
+ * @param context		[constant]*		ID of owning view
  */
 ZmId.getViewId =
-function(context) {
-	return DwtId._makeId(ZmId.WIDGET_VIEW, context);
+function(viewId, component, context) {
+	var id = DwtId._makeId(ZmId.WIDGET_VIEW, context, viewId);
+	return component ? [id, component].join("") : id;
 };
 
 /**
- * Returns an ID for a msg view within another view, or for a component within the
- * msg view. The component name is not joined with the "|" character for backward
- * compatibility.
+ * Returns an ID for the compose view, or for a component within the compose view. Since
+ * only one compose view is created, there is no need for a context to make the ID unique.
+ * The component name is not joined with the "|" character for backward compatibility.
  * 
- * Examples: z|TV|MsgView z|TV|MsgView_hdrTable
+ * Examples: z|ComposeView z|ComposeView_header z|ComposeView_to_row
  * 
- * @param context		[constant]		owning view identifier (ZmId.VIEW_*)
- * @param component		[constant]*		component identifier (ZmId.MV_*)
+ * @param component		[constant]*		component identifier (ZmId.CMP_*)
  */
-ZmId.getMsgViewId =
-function(context, component) {
-	var id = DwtId._makeId(ZmId.WIDGET, context, ZmId.MSG_VIEW);
+ZmId.getComposeViewId =
+function(component) {
+	var id = DwtId._makeId(ZmId.WIDGET, ZmId.COMPOSE_VIEW);
 	return component ? [id, component].join("") : id;
 };
 
@@ -460,18 +465,25 @@ ZmId.TREEITEM_BRIEFCASE				= "zti|Briefcase|16";
  * A message view displays an email message. There are several different instances of message views, which
  * makes it necessary to include a context (owning view) to be able to identify each one of them.
  * 
- * To get the ID for a message view, pass the constant for the owning view, which can be 
+ * The function to use is:
+ * 
+ * 		ZmId.getViewId(ZmId.VIEW_MSG, component, context)
+ * 
+ * Since message views are not singletons, a context is always necessary. Omit the component only when getting
+ * an ID for a message view itself.
+ * 
+ * To get the ID for a message view, pass the constant for the message view as well as the context, which can be
  * ZmId.VIEW_CONVLIST, ZmId.VIEW_CONV, ZmId.VIEW_MSG, or ZmId.VIEW_TRAD:
  * 
- * 		ZmId.getMsgViewId(ZmId.VIEW_TRAD)
+ * 		ZmId.getViewId(ZmId.VIEW_MSG, null, ZmId.VIEW_TRAD)
  * 
  * There are also many components within a message view which are useful to retrieve. To get the ID for a
  * message view component, pass the component ID (ZmId.MV_*):
  * 
- * 		ZmId.getMsgViewId(ZmId.VIEW_TRAD, ZmId.MV_HDR_TABLE_TOP_ROW)
- * 		ZmId.getMsgViewId(ZmId.VIEW_TRAD, ZmId.MV_ATT_LINKS)
+ * 		ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE_TOP_ROW, ZmId.VIEW_TRAD)
+ * 		ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_ATT_LINKS, ZmId.VIEW_TRAD)
  * 
- * 		var bodyId = ZmId.getMsgViewId(ZmId.VIEW_TRAD, ZmId.MV_MSG_BODY)
+ * 		var bodyId = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_MSG_BODY, ZmId.VIEW_TRAD)
  * 
  * will return the ID for the DIV containing the msg body iframe. To get the ID of the IFRAME element
  * itself, pass that ID as the context for the IFRAME:
@@ -481,12 +493,9 @@ ZmId.TREEITEM_BRIEFCASE				= "zti|Briefcase|16";
  * For buttons within msg view, pass the context and operation as usual, and add the identifier for
  * message view (which distinguishes its buttons from, say, those on the VIEW_TRAD toolbar).
  * 
- * 		ZmId.getButtonId(ZmId.VIEW_CONV, ZmId.OP_CLOSE, ZmId.MSG_VIEW)
- * 		ZmId.getButtonId(ZmId.VIEW_MSG, ZmId.OP_EXPAND, ZmId.MSG_VIEW)
+ * 		ZmId.getButtonId(ZmId.VIEW_MSG, ZmId.OP_CLOSE, ZmId.VIEW_CONV)
+ * 		ZmId.getButtonId(ZmId.VIEW_MSG, ZmId.OP_EXPAND, ZmId.VIEW_TRAD)
  */
-
-// context
-ZmId.MSG_VIEW				= "MsgView";			// identifier for msg view
 
 // components that are part of the template
 ZmId.MV_HDR_TABLE			= "_hdrTable";			// TABLE that holds header elements
@@ -507,7 +516,60 @@ ZmId.MV_TAG_ROW				= "_tagRow";			// TR for tags
 ZmId.MV_TAG_CELL			= "_tagCell";			// TD for tags
 ZmId.MV_MSG_BODY			= "_body";				// DIV that contains content iframe
 
+/**
+ * ------------
+ * Compose view
+ * ------------
+ * 
+ * Compose is used to create an email message - a reply, a forward, or a new message.
+ * 
+ * The function to use is:
+ * 
+ * 		ZmId.getViewId(ZmId.VIEW_COMPOSE, component)
+ * 
+ * To get the ID for the compose view:
+ * 
+ * 		ZmId.getViewId(ZmId.VIEW_COMPOSE)
+ * 
+ * There are also many components within the compose view which are useful to retrieve. To get the ID for a
+ * compose view component, pass the component ID (ZmId.CMP_*):
+ * 
+ * 		ZmId.getViewId(ZmId.VIEW_COMPOSE, ZmId.CMP_HEADER)
+ * 		ZmId.getViewId(ZmId.VIEW_COMPOSE, ZmId.CMP_CC_ROW)
+ * 
+ * To get the ID of one of the address field buttons, provide the operation:
+ * 
+ * 		ZmId.getButtonId(ZmId.VIEW_COMPOSE, ZmId.CMP_TO)
+ * 
+ * To get the ID of the Priority button:
+ * 
+ * 		ZmId.getButtonId(ZmId.VIEW_COMPOSE, ZmId.CMP_PRIORITY)
+ */
 
+// components from the template
+ZmId.CMP_HEADER				= "_header";
+ZmId.CMP_TO_ROW				= "_to_row";
+ZmId.CMP_TO_PICKER			= "_to_picker";
+ZmId.CMP_TO_INPUT			= "_to_control";
+ZmId.CMP_CC_ROW				= "_cc_row";
+ZmId.CMP_CC_PICKER			= "_cc_picker";
+ZmId.CMP_CC_INPUT			= "_cc_control";
+ZmId.CMP_BCC_ROW			= "_bcc_row";
+ZmId.CMP_BCC_PICKER			= "_bcc_picker";
+ZmId.CMP_BCC_INPUT			= "_bcc_control";
+ZmId.CMP_BCC_TOGGLE			= "_toggle_bcc";
+ZmId.CMP_SUBJECT_ROW		= "_subject_row";
+ZmId.CMP_SUBJECT_INPUT		= "_subject_control";
+ZmId.CMP_IDENTITY_ROW		= "_identity_row";
+ZmId.CMP_IDENTITY_SELECT	= "_identity_control";
+ZmId.CMP_PRIORITY			= "_priority";
+ZmId.CMP_ATT_ROW			= "_attachments_row";
+ZmId.CMP_ATT_DIV			= "_attachments_div";
+
+// compose operations
+ZmId.CMP_TO					= "TO";
+ZmId.CMP_CC					= "CC";
+ZmId.CMP_BCC				= "BCC";
 
 /**************************************************************************
  * 
@@ -515,7 +577,7 @@ ZmId.MV_MSG_BODY			= "_body";				// DIV that contains content iframe
  * 
  **************************************************************************/
 
-// app
+// apps
 ZmId.APP_BRIEFCASE		= "Briefcase";
 ZmId.APP_CALENDAR		= "Calendar";
 ZmId.APP_CONTACTS		= "Contacts";
