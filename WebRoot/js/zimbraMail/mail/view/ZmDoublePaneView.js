@@ -32,7 +32,7 @@ ZmDoublePaneView = function(params) {
 								 threshold:ZmDoublePaneView.SASH_THRESHOLD, posStyle:Dwt.ABSOLUTE_STYLE});
 	params.parent = this;
 	params.className = null;
-	params.id = ZmId.getMsgViewId(view);
+	params.id = ZmId.getViewId(ZmId.VIEW_MSG, null, view);
 	this._msgView = new ZmMailMsgView(params);
 
 	if (!this._controller.isReadingPaneOn()) {

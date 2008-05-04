@@ -130,49 +130,49 @@
 	<$ var labelStyle = "width:"+(AjxEnv.isIE ? 60 : 64)+"px; overflow:visible; white-space:nowrap"; $>
 	<$ var inputStyle = AjxEnv.isSafari && !AjxEnv.isSafariNightly ? "height:52px;" : "height:21px; overflow:hidden" $> 
 	<!-- header -->
-	<table id='${id}_header' border=0 cellpadding=2 cellspacing=2 width=100%>
-		<tr id='${id}_to_row'>
+	<table id='${headerId}' border=0 cellpadding=2 cellspacing=2 width=100%>
+		<tr id='${toRowId}'>
 			<td align=right valign=top style='<$=labelStyle$>'>
-				<div id='${id}_to_picker'><$=ZmMsg.toLabel$></div>
+				<div id='${toPickerId}'><$=ZmMsg.toLabel$></div>
 			</td>
 			<td width='96%' colspan=2>
-				<textarea id='${id}_to_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<textarea id='${toInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
 			</td>
 		</tr>
 
-		<tr id='${id}_cc_row' style='display:none;'>
+		<tr id='${ccRowId}' style='display:none;'>
 			<td align=right valign=top style='<$=labelStyle$>'>
-				<div id='${id}_cc_picker'><$=ZmMsg.ccLabel$></div>
+				<div id='${ccPickerId}'><$=ZmMsg.ccLabel$></div>
 			</td>
 			<td>
-				<textarea id='${id}_cc_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<textarea id='${ccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
 			</td>
             <td width='5%'>
-                <div><a href='#' id='${id}_toggle_bcc'><$=ZmMsg.showBCC$></a></div>
+                <div><a href='#' id='${bccToggleId}'><$=ZmMsg.showBCC$></a></div>
             </td>
         </tr>
 
-		<tr id='${id}_bcc_row' style='display:none;'>
+		<tr id='${bccRowId}' style='display:none;'>
 			<td align=right valign=top style='<$=labelStyle$>'>
-				<div id='${id}_bcc_picker'><$=ZmMsg.bccLabel$></div>
+				<div id='${bccPickerId}'><$=ZmMsg.bccLabel$></div>
 			</td>
 			<td colspan='2'>
-				<textarea id='${id}_bcc_control' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
+				<textarea id='${bccInputId}' class='addresses' style='<$=inputStyle$>' rows=1></textarea>
 			</td>
         </tr>
 
-		<tr id='${id}_subject_row'>
+		<tr id='${subjectRowId}'>
 			<td align=right style='<$=labelStyle$>'><$=ZmMsg.subjectLabel$></td>
 			<td colspan='2'>
 				<table border=0 cellpadding=0 cellspacing=0 width='100%'>
 				<tr>
 					<td style='padding-right:4px;'>
-						<input id='${id}_subject_control' class='subjectField' autocomplete=off>
+						<input id='${subjectInputId}' class='subjectField' autocomplete=off>
 					</td>
-					<td id='${id}_identity_row' nowrap width='45%' style='display:none;'>
+					<td id='${identityRowId}' nowrap width='45%' style='display:none;'>
 						<table border=0 cellspacing=0 cellpadding=0>
 							<tr><td align=right style='<$=labelStyle$>'><$=ZmMsg.accountLabel$>&nbsp;</td>
-								<td width="*"><select id='${id}_identity_control'></select></td>
+								<td width="*"><select id='${identitySelectId}'></select></td>
 							</tr>
 						</table>
 					</td>
@@ -181,7 +181,7 @@
                         <table border=0 cellspacing=0 cellpadding=0>
                             <tr>
                                 <td style='<$=labelStyle$>' nowrap="nowrap"><$=ZmMsg.priorityLabel$>&nbsp;</td>
-                                <td id="${id}_priority"></td>
+                                <td id="${priorityId}"></td>
                             </tr>
                         </table>
                     </td>
@@ -191,8 +191,8 @@
 			</td>
 		</tr>
 
-		<tr id='${id}_attachments_row'>
-			<td colspan=3><div id='${id}_attachments_div'></div></td>
+		<tr id='${attRowId}'>
+			<td colspan=3><div id='${attDivId}'></div></td>
 		</tr>
 	</table>
 	<div align='right' id='zdnd_tooltip' style='display:none; padding-right:10px; color:#666666;'><$=ZmMsg.dndTooltip$></div>
