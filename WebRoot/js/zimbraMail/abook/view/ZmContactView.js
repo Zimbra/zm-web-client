@@ -710,6 +710,15 @@ ZmContactView.prototype._uploadImage =
 function() {
 	if (this._imageInput.value == "") { return; }
 
+        if (!/\.(jpe?g|png|gif|bmp|tiff?)$/i.test(this._imageInput.value)) {
+                var dlg = appCtxt.getErrorDialog();
+                dlg.reset();
+                dlg.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
+                dlg.setMessage(ZmMsg.errorNotImageFile, null, DwtMessageDialog.WARNING_STYLE, ZmMsg.errorCap);
+                dlg.popup();
+                return;
+        }
+
 	var formEl = document.getElementById(this._imageCellId + "_form");
 	if (!formEl) { return; }
 
