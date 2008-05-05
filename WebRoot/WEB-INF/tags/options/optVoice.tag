@@ -90,8 +90,8 @@
 						<tr>
 							<td class="ZhOptVoiceCBCell">
 								<input id="callForwardingAllActive" type=checkbox name="callForwardingAllActive" value="TRUE"
-									<c:if test="${!features.callForwardingAll.isSubscribed}">disabled</c:if>
-									<c:if test="${features.callForwardingAll.isActive}">checked</c:if>
+									<c:if test="${!features.callForwardingAll.isSubscribed}"> disabled</c:if>
+									<c:if test="${features.callForwardingAll.isActive}"> checked</c:if>
 								>
 							</td>
 							<td>
