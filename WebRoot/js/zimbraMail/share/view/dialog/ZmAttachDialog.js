@@ -397,7 +397,7 @@ ZmMyComputerTabViewPage.prototype.hideMe = function() {
 //Create UI for MyComputer
 ZmMyComputerTabViewPage.prototype._createHtml = function() {
 
-    this._uri = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+    this._uri = appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI);
 
     var attachmentTableId = this._attachmentTableId = Dwt.getNextId();
     var uploadFormId = this._uploadFormId = Dwt.getNextId();

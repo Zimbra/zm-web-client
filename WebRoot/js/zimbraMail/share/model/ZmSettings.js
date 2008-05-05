@@ -430,10 +430,14 @@ function() {
 	this._settings[ZmSetting.CSFE_MSG_FETCHER_URI].setValue(value, null, false, true);
 	
 	// CSFE_UPLOAD_URI
-	value = AjxUtil.formatUrl({host:document.domain, path:"/service/upload", qsReset:true});
+	value = AjxUtil.formatUrl({host:document.domain, path:"/service/upload", qsReset:true, qsArgs:{lbfums:""}});
 	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value, null, false, true);
-	
-	// CSFE EXPORT URI
+
+    // CSFE_ATTACHMENT_UPLOAD_URI
+	value = AjxUtil.formatUrl({host:document.domain, path:"/service/upload", qsReset:true});
+	this._settings[ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI].setValue(value, null, false, true);
+
+    // CSFE EXPORT URI
 	value = AjxUtil.formatUrl({host:document.domain, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co", id:"{0}", fmt:"csv"}});
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 	
@@ -498,7 +502,8 @@ function() {
 	this.registerSetting("CSFE_MSG_FETCHER_URI",			{type:ZmSetting.T_CONFIG});
 	this.registerSetting("CSFE_SERVER_URI",					{type:ZmSetting.T_CONFIG});
 	this.registerSetting("CSFE_UPLOAD_URI",					{type:ZmSetting.T_CONFIG});
-	this.registerSetting("DEV",								{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+    this.registerSetting("CSFE_ATTACHMENT_UPLOAD_URI",		{type:ZmSetting.T_CONFIG});
+    this.registerSetting("DEV",								{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("FORCE_CAL_OFF",					{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("HELP_URI",						{type:ZmSetting.T_CONFIG, defaultValue:appContextPath + ZmMsg.helpURI});
 	this.registerSetting("INSTANT_NOTIFY_TIMEOUT",			{type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_INT, defaultValue:300}); // seconds
