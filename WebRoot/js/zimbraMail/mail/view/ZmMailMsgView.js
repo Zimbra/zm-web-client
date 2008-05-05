@@ -1012,9 +1012,14 @@ function(msg, container, callback) {
 	if (len > 1) {
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
-			if (ZmMimeTable.isRenderableImage(bp.ct)) {
-				var imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
-				this._makeIframeProxy(el, imgHtml);
+            if (ZmMimeTable.isRenderableImage(bp.ct)) {
+                var imgHtml = null;
+                if(bp.content){  //Hack: (Bug:27320) Done specifically for sMime implementationu are.
+                    imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");   
+                }else{
+                    imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
+                }
+                this._makeIframeProxy(el, imgHtml);
 			} else {
 				this._makeIframeProxy(el, bp.content, bp.ct == ZmMimeTable.TEXT_PLAIN, bp.truncated)
 			}
