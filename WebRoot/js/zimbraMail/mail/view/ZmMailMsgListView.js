@@ -138,7 +138,8 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
 	
 			// default to FROM addresses if no TO: found
-			if (!(addrs && addrs.length)) {
+            //#Bug:24423 //Removed Defaulting for DRAFTS alone.
+            if (!(folder.isUnder(ZmFolder.ID_DRAFTS) || (addrs && addrs.length))) {
 				addrs = msg.getAddresses(AjxEmailAddress.FROM).getArray();
 			}
 			
