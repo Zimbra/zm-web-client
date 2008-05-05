@@ -21,7 +21,7 @@
 						<zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
 						<zm:currentResultUrl var="delRedirectUrl" value="/h/search" context="${context}" />
 						<input type="hidden" value="${delRedirectUrl}" name="delRedirectUrl" />
-						<a href="${fn:escapeXml(closeurl)}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.gif" alt="close"/> <span>&nbsp;${fn:escapeXml(context.backTo)}&nbsp;</span></a>
+						<a href="${fn:escapeXml(closeurl)}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.gif" alt="close"/> <span>&nbsp;<fmt:message key="backToVoiceMail"/>&nbsp;</span></a>
 					</td>
 					<td><div class='vertSep'></div></td>
 					<app:button id="${keys ? 'OPDELETE' :''}" name="actionDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT"/>
