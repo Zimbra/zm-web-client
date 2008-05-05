@@ -10,6 +10,7 @@
 	<zm:checkVoiceStatus var="voiceStatus"/>
 	<app:searchTitle var="title" context="${context}"/>
     <c:set var="phone">${zm:getPhoneFromVoiceQuery(context.query)}</c:set>
+	<c:set var="selectedRow" value="${not empty param.selectedRow ? param.selectedRow : 0}"/>
 </app:handleError>
 <app:view editmode="${voiceStatus eq 'false' ? 'true' : ''}" mailbox="${mailbox}" title="${title}" selected='voice' voice="true" folders="false" tags="false" searches="false" context="${context}" keys="true">
 	<c:if test="${voiceStatus}">
@@ -44,7 +45,7 @@
 								</tr>
 
 								<c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
-								<tr class='ZhRow ${hit.voiceMailItemHit.isUnheard ? ' Unread':''}'>
+								<tr onclick='zSelectRow(event,"A${status.index}")' id="R${status.index}" class='ZhRow ${hit.voiceMailItemHit.isUnheard ? ' Unread':''} ${ selectedRow eq status.index ? ' RowSelected' : ''}'>
 									<td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="voiceId" value="${hit.voiceMailItemHit.serialize}"></td>
 									<td class='Img' nowrap>
 										<c:choose>
@@ -64,7 +65,7 @@
 												<c:param name="phone" value="${phone}"/>
 												<c:param name="voiceId" value="${hit.voiceMailItemHit.serialize}"/>
 											</c:url>
-											<td nowrap><a href="${url}"><app:img src="voicemail/ImgPlayMessage.gif" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>
+											<td nowrap><a id="A${status.index}" href="${url}"><app:img src="voicemail/ImgPlayMessage.gif" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>
 										</c:when>
 										<c:otherwise>
 											<td nowrap>&nbsp;</td>
@@ -89,10 +90,24 @@
 			<input type="hidden" name="doVoiceMailListViewAction" value="1"/>
 			<input type="hidden" name="phone" value="${phone}"/>
 			<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+			<input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : zm:cook(selectedRow)}"/>
 		</form>
 
 		<SCRIPT TYPE="text/javascript">
 			<!--
+			var zrc = ${context.searchResult.size};
+			var zsr = ${zm:cookInt(selectedRow, 0)};
+			var zss = function(r,s) {
+				var e = document.getElementById("R"+r);
+				if (e == null) return;
+				if (s) {
+					if (e.className.indexOf(" RowSelected") == -1) e.className = e.className + " RowSelected";
+					var e2 = document.getElementById("sr"); if (e2) e2.value = r;
+				}
+				else { if (e.className.indexOf(" RowSelected") != -1) e.className = e.className.replace(" RowSelected", "");}
+			}
+			var zsn = function() {if (zrc == 0 || (zsr+1 == zrc)) return; zss(zsr, false); zss(++zsr, true);}
+			var zsp = function() {if (zrc == 0 || (zsr == 0)) return; zss(zsr, false); zss(--zsr, true);}
 			var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
 			var zdelete = function() { zclick("SOPDELETE"); }
 			var zreply = function() { zclick("SOPREPLYBYEMAIL"); }
@@ -101,10 +116,8 @@
 			var zunheard = function() { zclick("SOPUNHEARD"); }
 			var zprint = function() { var e = document.getElementById("OPPRINT"); window.open(e.href, e.target); }
 			var zcallManager = function() { var e = document.getElementById("OPCALLMANAGER"); window.location = e.href; }
-			<%-- Still need to implement the listen method, and document it in ZhKeys.
-			     For now it's just a no-op to prevent enter key from submitting the form (which does a delete)
-			--%>
-			var zlisten = function() { };
+			function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){ var a = document.getElementById(id); if (a) window.location = a.href; } }
+			var zlisten = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
 			//-->
 		</SCRIPT>
 
@@ -117,6 +130,10 @@
 			<zm:bindKey message="voicemail.Print" func="zprint"/>
 			<zm:bindKey message="voicemail.CallManager" func="zcallManager"/>
 			<zm:bindKey message="voicemail.Listen" func="zlisten"/>
+			<zm:bindKey message="global.PreviousItem" func="zsp"/>
+			<zm:bindKey message="global.NextItem" func="zsn"/>
+			<zm:bindKey message="global.PreviousPage" id="PREV_PAGE"/>
+			<zm:bindKey message="global.NextPage" id="NEXT_PAGE"/>
 		</app:keyboard>
 	</c:if>
 </app:view>
