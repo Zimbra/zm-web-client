@@ -199,7 +199,7 @@
                             </c:if>
                             <tr>
                                 <td colspan="3"  width="100%" >
-                                    <textarea class='MsgCompose' name="body" id="body" rows="30" cols="80" style='visibility: hidden;width:100%'>${fn:escapeXml(isHtml ? (empty compose.htmlContent ?  compose.content : compose.htmlContent) : compose.content)}</textarea>
+                                    <textarea class='MsgCompose' name="body" id="body" rows="30" cols="80" style='<c:if test="${isHtml}">visibility:hidden;</c:if>width:100%'>${fn:escapeXml(isHtml ? (empty compose.htmlContent ?  compose.content : compose.htmlContent) : compose.content)}</textarea>
                                     <!-- <textarea class='MsgCompose' name="body"  rows="30" cols="80" style='width:100%'>${fn:escapeXml(compose.content)}</textarea> -->
                                    <input type="hidden" id="bodyText" class='MsgCompose' name="bodyText" value="" style='width:100%' /> 
                                     
