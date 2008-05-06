@@ -441,12 +441,16 @@ function(message) {
 	// only contain known locations)
 	this._attendees[ZmCalItem.LOCATION] = [];
 	this._origLocations = [];
-	var locations = AjxEmailAddress.split(message.invite.getLocation());
+    this._ptstLocationMap = {};
+
+    var locations = AjxEmailAddress.split(message.invite.getLocation());
 	if (locations) {
 		for (var i = 0; i < locations.length; i++) {
 			var location = ZmApptViewHelper.getAttendeeFromItem(locations[i], ZmCalItem.LOCATION);
 			if (location && location.isLocation()) {
-				this._attendees[ZmCalItem.LOCATION].push(location);
+                this._ptstLocationMap[locations[i]] = location;
+                location.setAttr("participationStatus",locations[i].ptst);
+                this._attendees[ZmCalItem.LOCATION].push(location);
 				this._origLocations.push(location);
 			}
 		}
@@ -458,14 +462,20 @@ function(message) {
 	var resources = message.invite.getResources();	// returns all the invite's resources
 	if (resources) {
 		for (var i = 0; i < resources.length; i++) {
+            var resourceName = resources[i].d;
+            var ptst = resources[i].ptst; 
+            if( resourceName && ptst && (this._ptstLocationMap[resourceName] != null)) {
+               this._ptstLocationMap[resourceName].setAttr("participationStatus",ptst);
+            }
 			// see if it's a known location
 			var location = ZmApptViewHelper.getAttendeeFromItem(resources[i].url, ZmCalItem.LOCATION, true, true);
 			if (location) {
-				continue;
+                continue;
 			}
 			var equipment = ZmApptViewHelper.getAttendeeFromItem(resources[i].url, ZmCalItem.EQUIPMENT);
 			if (equipment) {
-				this._attendees[ZmCalItem.EQUIPMENT].push(equipment);
+                equipment.setAttr("participationStatus",resources[i].ptst);
+                this._attendees[ZmCalItem.EQUIPMENT].push(equipment);
 				this._origEquipment.push(equipment);
 			}
 		}
