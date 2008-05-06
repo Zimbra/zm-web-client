@@ -836,9 +836,24 @@ function(startDate, duration, folderId) {
 	newAppt.resetRepeatYearlyMonthsList(startDate.getMonth()+1);
 	newAppt.resetRepeatCustomDayOfWeek();
 
-	if (folderId)
+	if (folderId) {
 		newAppt.setFolderId(folderId);
-	return newAppt;
+    }else {
+        //bug: 27646 case where only one calendar is checked
+        var checkedFolderIds = this.getCheckedCalendarFolderIds();
+        if(checkedFolderIds && checkedFolderIds.length == 1) {
+            var calId = checkedFolderIds[0];
+            var cal = appCtxt.getById(calId);
+            // don't use calendar if feed, or remote and don't have write perms
+		    if(cal) {
+                var skipCal = (cal.isFeed() || (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()));
+                if(cal && !skipCal) {
+                    newAppt.setFolderId(calId);
+                }
+            }
+        }
+    }
+    return newAppt;
 };
 
 ZmCalViewController.prototype._timeSelectionListener =
