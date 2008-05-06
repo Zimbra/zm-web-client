@@ -1565,6 +1565,7 @@ function(templateId) {
 				 subjectRowId:		ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_ROW),
 				 subjectInputId:	ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_INPUT),
 				 identityRowId:		ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_ROW),
+                 identitySelectId:  ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_SELECT),   
 				 priorityId:		ZmId.getViewId(this._view, ZmId.CMP_PRIORITY),
 				 attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 				 attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV)
