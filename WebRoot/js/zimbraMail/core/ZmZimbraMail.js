@@ -229,7 +229,7 @@ function() {
 			childWin.win.close();
 		}
 	}
-	window._zimbraMail = window.onload = window.onresize = window.document.onkeypress = null;
+	window._zimbraMail = window.onload = window.onunload = window.onresize = window.document.onkeypress = null;
 };
 
 /**
@@ -328,8 +328,8 @@ function(params) {
 			girJSON.Body = {};
 			girJSON.Body.GetInfoResponse = br.GetInfoResponse[0];
 			girJSON.Header = params.batchInfoResponse.Header;
-			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.sessionId) {
-				ZmCsfeCommand.setSessionId(girJSON.Header.context.sessionId);
+			if (girJSON.Header && girJSON.Header.context && girJSON.Header.context.session) {
+				ZmCsfeCommand.setSessionId(girJSON.Header.context.session);
 			}
 			DBG.println(AjxDebug.DBG1, ["<H4> RESPONSE (from JSP tag)</H4>"].join(""), "GetInfoResponse");
 			DBG.dumpObj(AjxDebug.DBG1, girJSON, -1);
@@ -1292,7 +1292,7 @@ function() {
 			logoutIcon: (appCtxt.get(ZmSetting.SKIN_HINTS, "logoutButton.hideIcon") ? null : "Logoff"),
 			logoutText: (appCtxt.isOffline ? ZmMsg.setup : ZmMsg.logOff)
 		}
-		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data)
+		el.innerHTML = AjxTemplate.expand("share.App#UserInfo", data);
 	}
 };
 
@@ -1714,6 +1714,21 @@ function(actionCode, ev) {
 			break;
 		}
 
+		case ZmKeyMap.CANCEL: {
+			// see if there's a current drag operation we can cancel
+			var handled = false;
+			var captureObj = (DwtMouseEventCapture.getId() == "DwtControl") ? DwtMouseEventCapture.getCaptureObj() : null;
+			var obj = captureObj && captureObj.targetObj;
+			if (obj && (obj._dragging == DwtControl._DRAGGING)) {
+				captureObj.release();
+				obj.__lastDestDwtObj = null;
+				obj._setDragProxyState(false);					// turn dnd icon red so user knows no drop is happening
+				DwtControl.__badDrop(obj, DwtShell.mouseEvent);	// shell's mouse ev should have latest info
+				handled = true;
+			}
+			if (handled) { break; }
+		}
+
 		default: {
 			var ctlr = appCtxt.getCurrentController();
 			return (ctlr && ctlr.handleKeyAction)
@@ -1812,6 +1827,9 @@ function() {
 			errorCallback: errorCallback
 		};
 		self.sendRequest(args);
+		if (DBG) {
+			DBG._clear();
+		}
 	}
 };
 
