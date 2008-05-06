@@ -1081,6 +1081,7 @@ function(query, callback, response) {
 	types.add(this.getGroupMailBy());
 
 	var params = {
+        searchFor: ZmId.SEARCH_MAIL,
 		query: query,
 		types: types,
 		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),

@@ -379,7 +379,7 @@ function(types) {
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
-	params.searchFor = params.searchFor || this._searchFor;
+	params.searchFor = this._searchFor = params.searchFor || this._searchFor;
 	if (appCtxt.zimletsPresent()) {
 		appCtxt.getZimletMgr().notifyZimlets("onSearch", params.query);
 	}
