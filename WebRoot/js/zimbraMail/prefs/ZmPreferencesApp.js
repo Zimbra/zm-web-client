@@ -217,7 +217,7 @@ function() {
 		options: 			["Arial", "Times New Roman", "Courier", "Verdana"],
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
-    //Yuck: Should add funcationality in Pref. to add prefix/postfix to all options. Meanwhile... 
+    //Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile... 
     var fontSizeOptions = ["8", "10", "12", "14", "18", "24", "36"];
     for(var i=0; i<fontSizeOptions.length; i++){
         fontSizeOptions[i] = fontSizeOptions[i] + ZmMsg.pt;
@@ -254,6 +254,17 @@ function() {
 		precondition:		ZmSetting.LOCALE_CHANGE_ENABLED
 	});
 
+	var markReadTime = AjxMessageFormat.format(ZmMsg.messageReadTime, DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
+	ZmPref.registerPref("MARK_MSG_READ", {
+		displayName:		ZmMsg.messageReadLabel,
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		displayFunction:	ZmPref.markMsgReadDisplay,
+        orientation:        ZmPref.ORIENT_VERTICAL,
+        displayOptions:     [ZmMsg.messageReadNow, markReadTime, ZmMsg.messageReadNone],
+        options:            [ZmSetting.MARK_READ_NOW, ZmSetting.MARK_READ_TIME, ZmSetting.MARK_READ_NONE],
+        valueFunction:		ZmPref.markMsgReadValue
+    });
+
 	ZmPref.registerPref("NEW_WINDOW_COMPOSE", {
 		displayName:		ZmMsg.composeInNewWin,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
@@ -272,7 +283,7 @@ function() {
 		precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED
 	});
 
-    //Polling Interval Options - Dynamically consturcted accord. to MIN_POLLING_INTERVAL,POLLING_INTERVAL
+    // Polling Interval Options - Dynamically constructed according to MIN_POLLING_INTERVAL,POLLING_INTERVAL
     var options = [ 525600 ]; 
     var startValue   = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL));
     if(startValue < 1) startValue = 1;

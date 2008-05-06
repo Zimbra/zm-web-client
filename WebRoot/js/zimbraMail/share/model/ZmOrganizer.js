@@ -530,7 +530,7 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
     if (this.nId == ZmFolder.ID_ROOT) {
 		return ZmOrganizer.LABEL[this.type] ? ZmMsg[ZmOrganizer.LABEL[this.type]] : "";
     }
-	var name = (useSystemName && this._systemName) ? this._systemName : this.name;
+	var name = (useSystemName && this._systemName) ? this._systemName : this.name || "";
     if (ZmOrganizer.PATH_IN_NAME[this.type] && this.path) {
     	name = [this.path, name].join("/");
     }

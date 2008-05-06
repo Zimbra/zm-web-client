@@ -80,6 +80,7 @@ function(msg, args) {
  *        getHtml			[boolean]*		if true, return HTML part for inlined msg
  *        getFirstMsg		[boolean]*		if true, retrieve the content of the first matching msg
  *											in the conv as a side effect of the search
+ *        markRead			[boolean]*		if true, mark that msg read
  * @param callback			[AjxCallback]*	callback to run with results
  */
 ZmConv.prototype.load =
@@ -121,7 +122,7 @@ function(params, callback) {
 		var searchParams = {query:query, types:types, sortBy:sortBy, offset:offset, limit:limit, getHtml:getHtml};
 		var search = this.search = new ZmSearch(searchParams);
 		var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, callback]);
-		search.getConv(this.id, respCallback, fetchId);
+		search.getConv({cid:this.id, callback:respCallback, fetchId:fetchId, markRead:params.markRead});
 	}
 };
 
@@ -442,8 +443,7 @@ function(params, callback) {
 			msg = new ZmMailMsg(this.msgIds[0]);
 		}
 		var respCallback = new AjxCallback(this, this._handleResponseLoadMsg, [msg, callback]);
-		var getHtml = params.getHtml || appCtxt.get(ZmSetting.VIEW_AS_HTML);
-		msg.load(getHtml, false, respCallback);
+		msg.load({getHtml:params.getHtml, callback:respCallback});
 	}
 };
 

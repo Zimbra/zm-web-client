@@ -1471,7 +1471,7 @@ function() {
 		getHtml: appCtxt.get(ZmSetting.VIEW_AS_HTML),
 		callback: (new AjxCallback(this, this._handleResponseMsgTruncated)),
 		noBusyOverlay: true,
-		dontTruncate: true
+		noTruncate: true
 	};
 	ZmMailMsg.fetchMsg(params);
 };

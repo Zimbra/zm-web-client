@@ -87,6 +87,18 @@ ZmMailPrefsPage.prototype._createControls = function() {
 		this._handleEnableVacationMsg(cbox);
     }
 
+	// Break the link between the label and the radio button for MARK_READ_TIME, so that when the user clicks on the
+	// text input, focus doesn't immediately go to the radio button
+	var input = Dwt.byId(DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
+	var lbl = input && input.parentNode;
+	if (lbl) {
+		lbl.htmlFor = "";
+	}
+	// If pref's value is number of seconds, populate the input
+	var value = appCtxt.get(ZmSetting.MARK_MSG_READ);
+	if (value > 0) {
+		input.value = value;
+	}
 };
 
 ZmMailPrefsPage.prototype._dateButtonListener =

@@ -157,15 +157,18 @@ and the container element is replaced with that control.
 					<td class='ZOptionsField'><div id='${id}_SHOW_FRAGMENTS' tabindex='70'></div></td>
 				</tr>
 
-				<tr><td class='ZOptionsLabel'>
-					</td>
+				<tr><td class='ZOptionsLabel'></td>
 					<td class='ZOptionsField'><div id='${id}_OPEN_MAIL_IN_NEW_WIN' tabindex='80'></div></td>
 				</tr>
 
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.imagesLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_DISPLAY_EXTERNAL_IMAGES' tabindex='90'></div></td>
 				</tr>
-
+				
+				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.messageReadLabel$></td>
+					<td class='ZOptionsField'><select id='${id}_MARK_MSG_READ' tabindex='95'></select></td>
+				</tr>
+				
 				<tr><td colspan=2><hr></td></tr>
 
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.initialMailSearchLabel$></td>

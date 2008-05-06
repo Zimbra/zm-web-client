@@ -359,7 +359,7 @@ function(id, setup, control) {
 };
 
 /**
- * Returns the value of the preference control.
+ * Sets the value of the preference control.
  *
  * @param id		[string]		The preference identifier.
  * @param value		[ANY]			The preference value.

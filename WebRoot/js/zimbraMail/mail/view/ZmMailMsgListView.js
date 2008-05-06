@@ -343,8 +343,7 @@ function(columnItem, bSortAsc) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	if (this.getList().size() > 1 && this._sortByString) {
-		var controller = AjxDispatcher.run((this._mode == ZmId.VIEW_CONV) ? "GetConvController" :
-																					"GetTradController");
+		var controller = AjxDispatcher.run((this._mode == ZmId.VIEW_CONV) ? "GetConvController" : "GetTradController");
 		var searchString = controller.getSearchString();
 
 		if (this._mode == ZmId.VIEW_CONV) {

@@ -197,6 +197,22 @@ ZmPref.approximateLifetime = function(prefId, duration, validateFunc1/*, ..., va
 	return duration != "0"  ? parseInt(duration, 10) : 0;
 };
 
+ZmPref.markMsgReadDisplay =
+function(value) {
+	return (value > 0) ? 1 : value;
+};
+
+ZmPref.markMsgReadValue =
+function(value) {
+	if (value == ZmSetting.MARK_READ_TIME) {
+		var input = Dwt.byId(DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));
+		if (input) {
+			return input.value;
+		}
+	}
+	return value;
+};
+
 // Comparators
 
 ZmPref.__BY_NUMBER = function(a, b) {

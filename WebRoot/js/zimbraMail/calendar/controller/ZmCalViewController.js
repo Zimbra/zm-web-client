@@ -609,7 +609,7 @@ function(mailItem, date) {
 	if (mailItem instanceof ZmConv) {
 		mailItem = mailItem.getFirstHotMsg();
 	}
-	mailItem.load(false, false, new AjxCallback(this, this._msgLoadedCallback, [mailItem, date, subject]));
+	mailItem.load({getHtml:false, callback:new AjxCallback(this, this._msgLoadedCallback, [mailItem, date, subject])});
 };
 
 ZmCalViewController.prototype._msgLoadedCallback =

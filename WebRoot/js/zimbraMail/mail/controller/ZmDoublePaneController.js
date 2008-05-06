@@ -290,15 +290,45 @@ ZmDoublePaneController.prototype._displayMsg =
 function(msg) {
 	if (!msg._loaded) { return; }
 
+	// cancel timed mark read action on previous msg
+	if (appCtxt.markReadActionId > 0) {
+		AjxTimedAction.cancelAction(appCtxt.markReadActionId);
+		appCtxt.markReadActionId = -1;
+	}
+
 	this._doublePaneView.setMsg(msg);
 	if (msg.isUnread) {
 		var folder = appCtxt.getById(msg.folderId);
 		var readOnly = folder ? folder.isReadOnly() : false;
 		if (!readOnly) {
-			// msg was cached, then marked unread
-			this._doMarkRead([msg], true);
+			var markRead = appCtxt.get(ZmSetting.MARK_MSG_READ);
+			if (markRead == ZmSetting.MARK_READ_NOW) {
+				// msg was cached, then marked unread
+				this._doMarkRead([msg], true);
+			} else if (markRead > 0) {
+				if (!appCtxt.markReadAction) {
+					appCtxt.markReadAction = new AjxTimedAction(this, this._markReadAction);
+				}
+				appCtxt.markReadAction.args = [ msg ];
+				appCtxt.markReadActionId = AjxTimedAction.scheduleAction(appCtxt.markReadAction, markRead * 1000);
+			}
 		}
 	}
+};
+
+ZmDoublePaneController.prototype._markReadAction =
+function(msg) {
+	this._doMarkRead([msg], true);
+};
+
+ZmDoublePaneController.prototype._preHideCallback =
+function() {
+	// cancel timed mark read action on view change
+	if (appCtxt.markReadActionId > 0) {
+		AjxTimedAction.cancelAction(appCtxt.markReadActionId);
+		appCtxt.markReadActionId = -1;
+	}
+	return ZmController.prototype._preHideCallback.call(this);
 };
 
 // Adds a "Reading Pane" checked menu item to a view menu
@@ -401,7 +431,7 @@ function(msg) {
 	msg._loadPending = true;
 	this._pendingMsg = msg.id;
 	var respCallback = new AjxCallback(this, this._handleResponseDoGetMsg, msg);
-	msg.load(appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, null, true);
+	msg.load({callback:respCallback, noBusyOverlay:true});
 };
 
 ZmDoublePaneController.prototype._handleResponseDoGetMsg =
@@ -502,7 +532,9 @@ function(ev) {
 
 ZmDoublePaneController.prototype._handleResponseListSelectionListener =
 function(item) {
-	if (item.type == ZmItem.MSG && item._loaded && item.isUnread) {
+	if (item.type == ZmItem.MSG && item._loaded && item.isUnread &&
+		(appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW)) {
+
 		this._list.markRead([item], true);
 	}
 	// make sure correct msg is displayed in msg pane when user returns
@@ -522,7 +554,8 @@ function() {
 	var selCnt = this._listView[this._currentView].getSelectionCount();
 	if (selCnt == 1) {
 		var respCallback = new AjxCallback(this, this._handleResponseSetSelectedItem);
-		this._getLoadedMsg(null, respCallback);
+		var markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
+		this._getLoadedMsg({markRead:markRead}, respCallback);
 	}
 };
 

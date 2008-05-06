@@ -391,28 +391,39 @@ function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result)
 	}
 };
 
-// searching w/in a conv (to get its messages) has its own special command
+/**
+ * Fetches a conv from the server.
+ * 
+ * @param params		[hash]				hash of params:
+ *        cid			[string]*			conv ID
+ *        callback		[AjxCallback]*		callback to run with result
+ *        fetchId		[string]*			ID of msg to load
+ *        markRead		[boolean]*			if true, mark msg read
+ *        noTruncate	[boolean]*			if true, do not limit size of msg
+ */
 ZmSearch.prototype.getConv = 
-function(cid, callback, fetchId, dontTruncate) {
-	if (!this.query || !cid) { return; }
+function(params) {
+	if (!this.query || !params.cid) { return; }
 
 	var jsonObj = {SearchConvRequest:{_jsns:"urn:zimbraMail"}};
 	var request = jsonObj.SearchConvRequest;
 	this._getStandardMethodJson(request);
-	request.cid = cid;
-	if (fetchId) {
-		request.fetch = fetchId;	// fetch content of this msg
-		request.read = 1;			// mark that msg read
+	request.cid = params.cid;
+	if (params.fetchId) {
+		request.fetch = params.fetchId;	// fetch content of this msg
+		if (params.markRead) {
+			request.read = 1;			// mark that msg read
+		}
 		if (this.getHtml) {
 			request.html = 1;		// get it as HTML
 		}
 	}
 
-	if (!dontTruncate) {
+	if (!params.noTruncate) {
 		request.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE);
 	}
 
-	var respCallback = new AjxCallback(this, this._handleResponseGetConv, callback);
+	var respCallback = new AjxCallback(this, this._handleResponseGetConv, params.callback);
 	appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
 };
 
