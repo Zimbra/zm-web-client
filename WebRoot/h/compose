@@ -156,8 +156,8 @@
                                         </td>
                                     </c:when>
                                     <c:otherwise>
-                                        <td colspan="2" nowrap><input style='width:99%' type="text" size="100" name="subject" id="subjectField"
-                                                                    value="${fn:escapeXml(compose.subject)}"></td>
+                                        <td colspan="2" nowrap><input style='width:99%' type="text" size="100" onkeydown="return handleEnter(event);"
+                                        	onkeypress="return handleEnter(event);" name="subject" id="subjectField" value="${fn:escapeXml(compose.subject)}"></td>
                                     </c:otherwise>
                                 </c:choose>
                             </tr>
