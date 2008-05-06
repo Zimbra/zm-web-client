@@ -52,7 +52,7 @@
 </app:status>
 </c:if>
 
-<c:set var="fullname" value="${fn:escapeXml(mailbox.defaultIdentity.fromDisplay)}"/>            
+<c:set var="fullname" value="${fn:escapeXml(mailbox.name)}"/>            
 <c:set var="folder" value="${mailbox.inbox}"/>
 <fmt:message key="inbox" var="label"/>
 <c:url var="url" value="/h/${empty base ? 'search' : base}">
