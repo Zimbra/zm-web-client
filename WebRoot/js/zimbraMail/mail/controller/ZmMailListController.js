@@ -884,8 +884,7 @@ function(params, callback) {
 		this._pendingMsg = msg.id;
 		// use prototype in callback because these functions are overridden by ZmConvListController
 		var respCallback = new AjxCallback(this, ZmMailListController.prototype._handleResponseGetLoadedMsg, [callback, msg]);
-		var getHtml = params.getHtml || appCtxt.get(ZmSetting.VIEW_AS_HTML);
-		msg.load(getHtml, false, respCallback, null, true);
+		msg.load({getHtml:params.getHtml, markRead:params.markRead, callback:respCallback, noBusyOverlay:true});
 	}
 };
 
@@ -1007,6 +1006,10 @@ function(ev, callback) {
 			ZmMailMsgView.detachMsgInNewWindow(msg);
 		} else {
 			ZmMailMsgView.rfc822Callback(msg.id);
+		}
+		// always mark a msg read if it is displayed in its own window
+		if (msg.isUnread) {
+			msg.list.markRead([msg], true);
 		}
 	}
 	if (callback) { callback.run(); }

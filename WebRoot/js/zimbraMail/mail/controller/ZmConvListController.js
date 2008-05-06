@@ -260,6 +260,7 @@ function(params, callback) {
 	var sel = this._listView[this._currentView].getSelection();
 	var item = (sel && sel.length) ? sel[0] : null;
 	if (item) {
+		params.markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
 		if (item.type == ZmItem.CONV) {
 			var respCallback = new AjxCallback(this, this._handleResponseGetLoadedMsg, callback);
 			item.getFirstHotMsg(params, respCallback);

@@ -416,7 +416,7 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 		var respErrorCallback = !ignoreOutOfDate
 			? (new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]))
 			: errorCallback;
-		this.message.load(appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, respErrorCallback, this._noBusyOverlay);
+		this.message.load({callback:respCallback, errorCallback:respErrorCallback, noBusyOverlay:this._noBusyOverlay});
 	} else {
 		this.setFromMessage(this.message, mode);
 		if (callback)

@@ -292,7 +292,7 @@ function(msg, date) {
 	if (msg instanceof ZmConv) {
 		msg = msg.getFirstHotMsg();
 	}
-	msg.load(false, false, new AjxCallback(this, this._msgLoadedCallback, [msg, date, subject]));
+	msg.load({getHtml:false, callback:new AjxCallback(this, this._msgLoadedCallback, [msg, date, subject])});
 };
 
 ZmTasksApp.prototype._msgLoadedCallback =

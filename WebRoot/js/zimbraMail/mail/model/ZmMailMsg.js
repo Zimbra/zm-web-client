@@ -85,10 +85,11 @@ ZmMailMsg.requestHeaders = {};
  *        msgId			[int]			ID of the msg to be fetched.
  *        partId 		[int]* 			msg part ID (if retrieving attachment part, i.e. rfc/822)
  *        getHtml		[boolean]*		if true, try to fetch html from the server
+ *        markRead		[boolean]*		if true, mark msg read
  *        callback		[AjxCallback]*	async callback
  *        errorCallback	[AjxCallback]*	async error callback
  *        noBusyOverlay	[boolean]*		don't put up busy overlay during request
- *        dontTruncate	[boolean]*		don't truncate message body
+ *        noTruncate	[boolean]*		don't truncate message body
  */
 ZmMailMsg.fetchMsg =
 function(params) {
@@ -99,7 +100,9 @@ function(params) {
 	if (params.partId) {
 		m.part = params.partId;
 	}
-	m.read = 1;
+	if (params.markRead) {
+		m.read = 1;
+	}
 	if (params.getHtml) {
 		m.html = 1;
 	}
@@ -109,7 +112,7 @@ function(params) {
         request.header.push({n:hdr});
 	}
 
-	if (!params.dontTruncate) {
+	if (!params.noTruncate) {
 		m.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE);
 	}
 
@@ -470,38 +473,35 @@ function(node, args) {
  * Gets the full message object from the back end based on the current message ID, and
  * fills in the message.
  *
- * @param getHtml		[boolean]*		if true, try to fetch html from the server
- * @param forceLoad		[boolean]*		if true, get msg from server
- * @param callback		[AjxCallback]*	async callback
- * @param errorCallback	[AjxCallback]*	async error callback
- * @param noBusyOverlay	[boolean]*		don't put up busy overlay during request
- * @param dontTruncate	[boolean]*		don't set max limit on size of msg body
+ * @param params		[hash]			hash of params:
+ *        getHtml		[boolean]*		if true, try to fetch html from the server
+ *        markRead		[boolean]*		if true, mark msg read
+ *        forceLoad		[boolean]*		if true, get msg from server
+ *        callback		[AjxCallback]*	async callback
+ *        errorCallback	[AjxCallback]*	async error callback
+ *        noBusyOverlay	[boolean]*		don't put up busy overlay during request
+ *        noTruncate	[boolean]*		don't set max limit on size of msg body
  */
 ZmMailMsg.prototype.load =
-function(getHtml, forceLoad, callback, errorCallback, noBusyOverlay, dontTruncate) {
+function(params) {
 	// If we are already loaded, then don't bother loading
-	if (!this._loaded || forceLoad) {
-		var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
-		var params = {
-			sender: appCtxt.getAppController(),
-			msgId: this.id,
-			getHtml: getHtml,
-			callback: respCallback,
-			errorCallback: errorCallback,
-			noBusyOverlay: noBusyOverlay,
-			dontTruncate: dontTruncate
-		};
+	if (!this._loaded || params.forceLoad) {
+		var respCallback = new AjxCallback(this, this._handleResponseLoad, [params, params.callback]);
+		params.getHtml = (params.getHtml == undefined) ? appCtxt.get(ZmSetting.VIEW_AS_HTML) : params.getHtml;
+		params.sender = appCtxt.getAppController();
+		params.msgId = this.id;
+		params.callback = respCallback;
 		ZmMailMsg.fetchMsg(params);
 	} else {
 		this._markReadLocal(true);
-		if (callback) {
-			callback.run(new ZmCsfeResult()); // return exceptionless result
+		if (params.callback) {
+			params.callback.run(new ZmCsfeResult()); // return exceptionless result
 		}
 	}
 };
 
 ZmMailMsg.prototype._handleResponseLoad =
-function(callback, result) {
+function(params, callback, result) {
 	var response = result.getResponse().GetMsgResponse;
 
 	this.clearAddresses();
@@ -515,7 +515,7 @@ function(callback, result) {
 	this.attachments.length = 0;
 
 	this._loadFromDom(response.m[0]);
-	if (!this.isReadOnly()) {
+	if (!this.isReadOnly() && params.markRead) {
 		this._markReadLocal(true);
 	}
 

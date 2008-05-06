@@ -68,7 +68,7 @@ function(msg, mode, callback) {
 			// so that multiple GetMsgRequest's aren't made
 			msg._loadCallback = respCallback;
 		} else {
-			msg.load(appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
+			msg.load({callback:respCallback});
 		}
 	} else {
 		this._handleResponseShow(callback);
@@ -78,6 +78,10 @@ function(msg, mode, callback) {
 ZmMsgController.prototype._handleResponseShow = 
 function(callback, result) {
 	this._showMsg();
+	// always mark a msg read if it is displayed in MV
+	if (this._msg.isUnread) {
+		this._msg.list.markRead([this._msg], true);
+	}
 	if (callback) {
 		callback.run();
 	}
