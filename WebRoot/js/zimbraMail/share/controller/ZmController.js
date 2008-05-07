@@ -66,10 +66,13 @@ function(msg, ex, noExecReset, hideReportButton)  {
 		// in case an Error makes it here
 		detailStr = ex;
 	} else if (ex instanceof Object) {
+		var details = [];
+		ex.msg = ex.msg || msg;
 		for (var prop in ex) {
 			if (typeof ex[prop] == "function") { continue; }
-			detailStr = [detailStr, prop, ": ", ex[prop], "<br/>\n"].join("");
+			details.push([prop, ": ", ex[prop], "<br/>\n"].join(""));
 		}
+		detailStr = details.join("");
 	}
 	var errorDialog = appCtxt.getErrorDialog();
 	errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
