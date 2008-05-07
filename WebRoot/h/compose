@@ -114,7 +114,7 @@
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhACTo">
                                     <textarea  id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" 
-                                                               name="to" onkeydown="return handleEnter(event);" onkeypress="return handleEnter(event);">${fn:escapeXml(compose.to)}</textarea>
+                                                               name="to" >${fn:escapeXml(compose.to)}</textarea>
                                         <br><div class='ZhACCont' id="toContainer" style='width:99%;top:3em;'></div></div>
                                 </td>
                             </tr>
@@ -123,8 +123,7 @@
                                 <app:button  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="cc"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhACCc">
-                                    	<textarea id="ccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="cc" onkeydown="return handleEnter(event);" 
-                                    		onkeypress="return handleEnter(event);">${fn:escapeXml(compose.cc)}</textarea>
+                                    	<textarea id="ccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="cc" >${fn:escapeXml(compose.cc)}</textarea>
                                         <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
                                     </div>
                                 </td>
@@ -133,8 +132,7 @@
                                 <app:button  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="bcc"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhAcBcc">
-                                        <textarea id="bccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="bcc" onkeydown="return handleEnter(event);" 
-                                        	onkeypress="return handleEnter(event);">${fn:escapeXml(compose.bcc)}</textarea>
+                                        <textarea id="bccField" rows="2" style='width:99%;height:40px;position:relative;' cols='80' name="bcc" >${fn:escapeXml(compose.bcc)}</textarea>
                                         <br><div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
                                     </div>
                                 </td>
