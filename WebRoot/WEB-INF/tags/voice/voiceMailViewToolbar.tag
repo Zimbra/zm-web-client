@@ -23,15 +23,15 @@
 						<input type="hidden" value="${delRedirectUrl}" name="delRedirectUrl" />
 						<a href="${fn:escapeXml(closeurl)}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/ImgClose.gif" alt="close"/> <span>&nbsp;<fmt:message key="backToVoiceMail"/>&nbsp;</span></a>
 					</td>
-					<td><div class='vertSep'></div></td>
+					<td><div class='vertSep'/></td>
 					<app:button id="${keys ? 'OPDELETE' :''}" name="actionDelete" src="startup/ImgDelete.gif" text="actionDelete" tooltip="actionTrashTT"/>
-					<td><div class='vertSep'></div></td>
+					<td><div class='vertSep'/></td>
 					<c:set var="disableMailButtons" value="${(mailbox.features.mail ne true) or isPrivate}"/>
 					<app:button id="OPREPLYBYEMAIL" name="actionReplyByEmail" text="actionReplyByEmail" src="startup/ImgReply.gif" tooltip="actionReplyByEmailTT" disabled="${disableMailButtons}"/>
 					<app:button id="OPFORWARDBYEMAIL" name="actionForwardByEmail" text="actionForwardByEmail" src="startup/ImgForward.gif" tooltip="actionForwardByEmailTT" disabled="${disableMailButtons}"/>
-					<td><div class='vertSep'></div></td>
-					<app:button id="OPHEARD" name="actionMarkHeard" text="actionMarkHeard" src="voicemail/ImgMarkAsHeard.gif" tooltip="actionMarkHeardTT" disabled="${isTrash or not heard}"/>
-					<app:button id="OPUNHEARD" name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/ImgMarkAsUnheard.gif" tooltip="actionMarkUnheardTT" disabled="${isTrash or heard}"/>
+					<td><div class='vertSep'/></td>
+					<app:button id="OPHEARD" name="actionMarkHeard" text="actionMarkHeard" src="voicemail/ImgMarkAsHeard.gif" tooltip="actionMarkHeardTT" disabled="${isTrash or heard}"/>
+					<app:button id="OPUNHEARD" name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/ImgMarkAsUnheard.gif" tooltip="actionMarkUnheardTT" disabled="${isTrash or not heard}"/>
 				</tr>
 			</table>
 		</td>

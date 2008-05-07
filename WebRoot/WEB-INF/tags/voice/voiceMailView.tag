@@ -19,7 +19,6 @@
 	<fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
 
 	<c:set var="message" value="${zm:deserializeVoiceMailItemHit(param.voiceId, param.phone)}"/>
-	<c:set var="heard" value="${not message.isUnheard}"/>
 
 	<c:set var="heardChanged" value="${zm:actionSet(param, 'actionMarkHeard') or zm:actionSet(param, 'actionMarkUnheard')}"/>
 	<c:choose>
@@ -30,6 +29,7 @@
 		<c:otherwise>
 			<zm:markVoiceMailHeard var="ignored" id="${message.id}" phone="${param.phone}" heard="true"/>
 			<c:set var="autostart" value="true"/>
+			<c:set var="heard" value="${true}"/>
 		</c:otherwise>
 	</c:choose>
 	<zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
@@ -37,14 +37,17 @@
 
 </app:handleError>
 
-
 <app:view editmode="${voiceStatus eq 'false' ? 'true' : ''}" mailbox="${mailbox}" title="${title}" selected='voice' voice="true" folders="false" tags="false" searches="false" context="${context}" keys="true">
-	<zm:currentResultUrl var="currentUrl" value="" action="listen" context="${context}"/>
+	<c:url var="currentUrl" value="/h/search">
+		<c:param name="st" value="voicemail"/>
+		<c:param name="sq" value="phone:${param.phone} in:\"Voicemail Inbox\""/>
+		<c:param name="action" value="listen"/>
+	</c:url>
 	<form action="${fn:escapeXml(currentUrl)}" method="post">
 		<table width="100%" cellpadding="0" cellspacing="0">
 			<tr>
 				<td class='TbTop'>
-					<app:voiceMailViewToolbar context="${context}" cursor="${cursor}" keys="false" heard="${heard}" isPrivate="${message.isPrivate}"/>
+					<app:voiceMailViewToolbar context="${context}" cursor="${cursor}" keys="true" heard="${heard}" isPrivate="${message.isPrivate}"/>
 				</td>
 			</tr>
 			<tr>
@@ -82,4 +85,24 @@
 		<input type="hidden" name="phone" value="${param.phone}"/>
 		<input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
 	</form>
+
+	<SCRIPT TYPE="text/javascript">
+		<!--
+		var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+		var zdelete = function() { zclick("SOPDELETE"); }
+		var zreply = function() { zclick("SOPREPLYBYEMAIL"); }
+		var zforward = function() { zclick("SOPFORWARDBYEMAIL"); }
+		var zheard = function() { zclick("SOPHEARD"); }
+		var zunheard = function() { zclick("SOPUNHEARD"); }
+		//-->
+	</SCRIPT>
+
+	<app:keyboard cache="voice.voiceMailView" globals="true" mailbox="${mailbox}" tags="false" folders="false">
+		<zm:bindKey message="voicemail.Delete" func="zdelete"/>
+		<zm:bindKey message="voicemail.Reply" func="zreply"/>
+		<zm:bindKey message="voicemail.Forward" func="zforward"/>
+		<zm:bindKey message="voicemail.MarkHeard" func="zheard"/>
+		<zm:bindKey message="voicemail.MarkUnheard" func="zunheard"/>
+		<zm:bindKey message="mail.Close" id="CLOSE_ITEM"/>
+	</app:keyboard>
 </app:view>

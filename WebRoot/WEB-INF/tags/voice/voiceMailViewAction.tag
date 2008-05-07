@@ -13,7 +13,6 @@
 <c:set var="phone" value="${fn:join(paramValues.phone, ',')}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
-
 <c:choose>
     <c:when test="${zm:actionSet(param, 'actionDelete')}">
         <zm:trashVoiceMail var="result" phone="${phone}" id="${ids}"/>
@@ -89,9 +88,8 @@
             <fmt:message key="actionVoiceMailMarkedHeard">
                 <fmt:param value="${result.idCount}"/>
             </fmt:message>
-
         </app:status>
-    </c:when>
+	</c:when>
     <c:when test="${zm:actionSet(param, 'actionMarkUnheard')}">
         <zm:markVoiceMailHeard var="result" phone="${phone}" id="${ids}" heard="false"/>
         <app:status>
@@ -100,6 +98,9 @@
             </fmt:message>
         </app:status>
     </c:when>
+	<c:otherwise>
+		<app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
+	</c:otherwise>
 </c:choose>
 
 </app:handleError>
