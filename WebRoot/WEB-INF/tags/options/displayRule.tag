@@ -39,7 +39,7 @@
                     <c:set var="sz" value="${zm:getSize(condition)}"/>
 
                     <fmt:message key="FILT_COND_SIZE_${sz.sizeOp}">
-                        <fmt:param>${fn:escapeXml(sz.size)}</fmt:param>
+                        <fmt:param>${fn:escapeXml(sz.sizeNoUnits)}</fmt:param>
                         <fmt:param>
                             <c:choose>
                                 <c:when test="${sz.units eq 'M'}">MB</c:when>
