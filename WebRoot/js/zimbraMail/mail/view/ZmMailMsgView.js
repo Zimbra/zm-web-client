@@ -68,10 +68,11 @@ ZmMailMsgView = function(params) {
 	if (!AjxEnv.isPrism) {
 		this._setAllowSelection();
 	}
-	var id = ZmId.getButtonId(this._mode, ZmId.OP_EXPAND, ZmId.MSG_VIEW);
-	this._expandButton = new DwtToolBarButton({parent:this, id:id});
-    this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener));
-    this._expandButton.setDisplay(Dwt.DISPLAY_NONE);
+    //Commented for bug 26579. Now creating this control in renderMessage
+    //var id = ZmId.getButtonId(this._mode, ZmId.OP_EXPAND, ZmId.MSG_VIEW);
+	//this._expandButton = new DwtToolBarButton({parent:this, id:id});
+    //this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener));
+    //this._expandButton.setDisplay(Dwt.DISPLAY_NONE);
 
 }
 
@@ -128,7 +129,7 @@ function() {
 	if (this._expandButton) {
                 this._expandButton.setVisible(Dwt.DISPLAY_NONE);
                 this._expandButton.reparentHtmlElement(this.getHtmlElement());
-        }
+    }
 	if (this._ifw) {
 		this._ifw.dispose();
 		this._ifw = null;
@@ -980,10 +981,17 @@ function(msg, container, callback) {
 	// add the expand/collapse arrow button now that we have add to the DOM tree
 	var expandHeaderEl = document.getElementById(this._expandHeaderId);
 	if (expandHeaderEl) {
-		var image = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
-		this._expandButton.setImage(image);
+        var image = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
+        //Added for bug 26579. Creating this control at object level was not working in IE
+        var id = ZmId.getButtonId(this._mode, ZmId.OP_EXPAND, ZmId.MSG_VIEW);
+        if(this._expandButton) {
+                    this._expandButton.dispose();
+        }
+        this._expandButton = new DwtToolBarButton({parent:this, id:id});
+		this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener));
+        this._expandButton.setImage(image);
 		this._expandButton.reparentHtmlElement(this._expandHeaderId);
-        this._expandButton.setVisible(Dwt.DISPLAY_BLOCK);
+		this._expandButton.setVisible(Dwt.DISPLAY_BLOCK);
 	}
 
 
@@ -1015,7 +1023,7 @@ function(msg, container, callback) {
             if (ZmMimeTable.isRenderableImage(bp.ct)) {
                 var imgHtml = null;
                 if(bp.content){  //Hack: (Bug:27320) Done specifically for sMime implementationu are.
-                    imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");   
+                    imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");
                 }else{
                     imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
                 }
@@ -1398,6 +1406,7 @@ function(ev) {
 ZmMailMsgView.prototype._expandRows =
 function(expand) {
 	this._expandHeader = expand;
+	if(this._expandButton)
 	this._expandButton.setImage(expand ? "HeaderExpanded" : "HeaderCollapsed");
 
 	var expandRow = document.getElementById(this._expandRowId);
