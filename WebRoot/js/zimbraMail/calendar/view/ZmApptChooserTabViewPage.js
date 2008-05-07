@@ -474,14 +474,14 @@ function() {
 		var sf = fields[i];
 		var searchField = this._searchFields[sf] = document.getElementById(this._searchFieldIds[sf]);
 		if (searchField) {
-			Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmApptChooserTabViewPage._keyPressHdlr);
-			Dwt.setHandler(searchField, DwtEvent.ONKEYUP, ZmApptChooserTabViewPage._keyUpHdlr);
+			searchField.onkeypress = AjxCallback.simpleClosure(this._handleKeyPress, this);
+			searchField.onkeyup = AjxCallback.simpleClosure(this._handleKeyUp, this);
 		}
 	}
 	
 	if (this._multLocsCheckboxId) {
 		var cb = document.getElementById(this._multLocsCheckboxId);
-		Dwt.setHandler(cb, DwtEvent.ONCLICK, ZmApptChooserTabViewPage._multLocsCheckboxHdlr);
+		cb.onclick = AjxCallback.simpleClosure(this._handleMultiLocsCheckbox, this);
 	}
 };
 
@@ -663,38 +663,35 @@ function() {
 	return this._searchFields[fields[0]];
 };
 
-ZmApptChooserTabViewPage._keyPressHdlr =
+ZmApptChooserTabViewPage.prototype._handleKeyPress =
 function(ev) {
-    var tvp = DwtControl.getTargetControl(ev);
 	var charCode = DwtKeyEvent.getCharCode(ev);
-	if (tvp._keyPressCallback && (charCode == 13 || charCode == 3)) {
-		tvp._keyPressCallback.run();
+	if (this._keyPressCallback && (charCode == 13 || charCode == 3)) {
+		this._keyPressCallback.run();
 	    return false;
 	}
-
 	return true;
 };
 
-ZmApptChooserTabViewPage._keyUpHdlr =
+ZmApptChooserTabViewPage.prototype._handleKeyUp =
 function(ev) {
-    var tvp = DwtControl.getTargetControl(ev);
 	var field = DwtUiEvent.getTarget(ev);
-	if (tvp.type == ZmCalItem.PERSON) {
-		tvp._searchButton.setEnabled(field && field.value);
+	if (this.type == ZmCalItem.PERSON) {
+		this._searchButton.setEnabled(field && field.value);
 	}
-	
+
 	return true;
 };
 
-ZmApptChooserTabViewPage._multLocsCheckboxHdlr =
+ZmApptChooserTabViewPage.prototype._handleMultiLocsCheckbox =
 function(ev) {
 	var cb = DwtUiEvent.getTarget(ev);
-    var tvp = DwtControl.getTargetControl(ev);
-    if (tvp) {
-		tvp._chooser.setSelectStyle(cb.checked ? DwtChooser.MULTI_SELECT : DwtChooser.SINGLE_SELECT, true);
-		var pSize = tvp.parent.getSize();
-		tvp.resize(pSize.x, pSize.y); // force resize to adjust chooser layout
+	this._chooser.setSelectStyle(cb.checked ? DwtChooser.MULTI_SELECT : DwtChooser.SINGLE_SELECT, true);
+	if (!cb.checked) {
+		this.parent.updateAttendees(this._chooser.getItems(), ZmCalItem.LOCATION);
 	}
+	var pSize = this.parent.getSize();
+	this.resize(pSize.x, pSize.y); // force resize to adjust chooser layout
 };
 
 /***********************************************************************************/
