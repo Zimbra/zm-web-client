@@ -184,18 +184,9 @@
 	<tr>
 	<td width="100%" valign="top">
 	<table id='skin_table_outer' width='100%' border=0 class='skin_table' cellspacing=0 cellpadding=0>
-			<colgroup>
-				<col id='skin_col_L'>
-				<col id='skin_col_tree'>
-				<col id='skin_col_sash'>
-				<col id='skin_col_main'>
-				<col id='skin_col_R'>
-			</colgroup>
-			
 			<tr id='skin_R2'>
-				<td><div class='ImgSkin_Chrome_R2_L'></div></td>
-				<td class='ImgSkin_Chrome_R2' colspan=3>
-					
+				<td style="width:8px;"><div class='ImgSkin_Chrome_R2_L'></div></td>
+				<td class='ImgSkin_Chrome_R2 Row2width' colspan=3>
 					<table width=100%  cellspacing=0 cellpadding=0 border='0'>
 					<tr>
 						<td align="left">
@@ -209,7 +200,7 @@
 							</c:choose>
 						</td>
 						<td id='skin_container_app_name'></td>
-						<td width='98%'><div class='float'> 
+						<td width='100%'><div class='float'> 
 						<app:appStatus/>
 						</div></td>
                         <td id='skin_td_search' align='right'>
@@ -217,9 +208,6 @@
                             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}" voice="${voice}"/>					
 						</td>
 						<c:if test="${mailbox.features.webSearchEnabled}">
-	                        <td>
-	                            <app:appTopYSearch keys="${keys}" />
-	                        </td>
 	                    </c:if>
                     </tr>
 					</table>
@@ -228,11 +216,9 @@
 			</tr>
 	
 			<tr id='skin_R3'>
-				<td style=""><div class='ImgSkin_Chrome_R3_L'></div></td>
+				<td style="width:8px;"><div class='ImgSkin_Chrome_R3_L'></div></td>
 				<td class='ImgSkin_Chrome_R3'>
-					<div style='position:relative;width:150px;;height:100%;'>
-						<div id='skin_container_current_app' class='skin_container'></div>
-					</div>
+						<div style='width:100px;height:100%;' id='skin_container_current_app' class='skin_container'></div>
 				</td>
 				<td class='ImgSkin_Chrome_R3'>&nbsp;</td>
 				<td class='ImgSkin_Chrome_R3' style='padding:0px;'>
