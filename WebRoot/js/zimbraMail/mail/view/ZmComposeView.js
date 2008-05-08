@@ -456,7 +456,7 @@ function(attId, isDraft) {
 	var forwardAttIds = this._getForwardAttIds(ZmComposeView.FORWARD_ATT_NAME);
 	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME);
 
-	//Handle Inline Attachments as a part of forwardAttIds
+	// Handle Inline Attachments as a part of forwardAttIds
 	if (this._msg && this._msg.getAttachments()) {
 		var atts = this._msg.getAttachments();
 		var filteredForwardAttIds = this._filterInlineAmongForwardAttIds(msg,atts,forwardAttIds);
@@ -568,7 +568,7 @@ function(attId, isDraft) {
 	}
 
 	if (this._msg) {
-		// replied/forw msg or draft shouldn't have att ID (a repl/forw voicemail mail msg may)
+	// replied/forw msg or draft shouldn't have att ID (a repl/forw voicemail mail msg may)
 		var msgAttId = this._msg.getAttachmentId();
 		if (msgAttId) {
 			msg.addAttachmentId(msgAttId);
@@ -871,23 +871,23 @@ ZmComposeView.prototype.applySignature =
 function(content, replaceSignatureId){
 	content = content || "";
 	var signature = this.getSignatureContent();
-	var sep = this._getSignatureSeparator();
 	var newLine = this._getSignatureNewLine();
 	var isAbove = this.getSignatureStyle() == ZmSetting.SIG_OUTLOOK;
-	if (replaceSignatureId) {
+
         var replaceSignature;
         //Check if there is change if mode of editor
-        if(this._previousSignatureMode && this._previousSignatureMode != this._htmlEditor.getMode()){
+        if (replaceSignatureId) {
+                if(replaceSignatureId && this._previousSignatureMode && this._previousSignatureMode != this._htmlEditor.getMode()){
             replaceSignature = ( this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML )
                     ? AjxStringUtil.convertToHtml(this._previousSignature)
                     : AjxStringUtil.convertHtml2Text(this._previousSignature);
         }else{
-            replaceSignature = this.getSignatureContent(replaceSignatureId);
+                        replaceSignature = replaceSignatureId ? this.getSignatureContent(replaceSignatureId) : "";
         }
         
-		var replaceRe = AjxStringUtil.regExEscape(replaceSignature);
+	        var replaceRe = "(" + AjxStringUtil.regExEscape(newLine) + ")*" + AjxStringUtil.regExEscape(replaceSignature);
 		if (!isAbove) {
-			replaceRe += "\\s*";
+		        replaceRe += "\\s*(" + AjxStringUtil.regExEscape(newLine) + ")*";
 			if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
 				replaceRe += "</body></html>";
 			}
@@ -897,7 +897,7 @@ function(content, replaceSignatureId){
 		}
 		content = content.replace(new RegExp(replaceRe, "i"), signature);
 	} else {
-		content = this._insertSignature(content, this.getSignatureStyle(), signature, sep, newLine);
+		content = this._insertSignature(content, this.getSignatureStyle(), signature, newLine);
 	}
 	this._htmlEditor.setContent(content);
 
@@ -938,35 +938,40 @@ function(content) {
 	// since HTML composing in new window doesnt guarantee the html editor
 	// widget will be initialized when this code is running.
 	content = content || "";
-	var sig = this._getSignature();
-	var sep = this._getSignatureSeparator();
-	var newLine = this._getSignatureNewLine();
 	var identity = this.getIdentity();
-	content = this._insertSignature(content, identity.getSignatureStyle(), sig, sep, newLine);
+	content = this._insertSignature(content, identity.getSignatureStyle(),
+                                        this.getSignatureContent(),
+                                        this._getSignatureNewLine());
 
 	this._htmlEditor.setContent(content);
 };
 
 ZmComposeView.prototype._insertSignature =
-function(content, sigStyle, sig, sep, newLine) {
+function(content, sigStyle, sig, newLine) {
+
+        var re_newlines = "(" + AjxStringUtil.regExEscape(newLine) + ")+";
+        {
+                // get rid of all trailing newlines
+                var re = re_newlines;
+                if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
+                        re += "</body></html>";
+                }
+                re += "$";
+                re = new RegExp(re, "i");
+                content = content.replace(re, '');
+        }
 
     if (sigStyle == ZmSetting.SIG_OUTLOOK) {
-
-		var regexp = ZmComposeView.QUOTED_CONTENT_RE;
 		var repl = "----- ";
-	
-		if (this._composeMode == DwtHtmlEditor.HTML) {
-			regexp = ZmComposeView.HTML_QUOTED_CONTENT_RE;
-			repl = "<br>----- ";
-		}
+                var regexp = new RegExp(re_newlines + repl, "i");
 	
 		if (content.match(regexp)) {
-			content = content.replace(regexp, [sep, sig, newLine, repl].join(""));
+			content = content.replace(regexp, [sig, newLine, repl].join(""));
 		} else {
-			content = [content, sep, sig].join("");
+			content = [content, sig].join("");
 		}
 	} else {
-		content = [content, sep, sig].join("");
+		content = [content, sig].join("");
 	}
 	
 	return content;
@@ -996,7 +1001,7 @@ function() {
 	var newLine = this._getSignatureNewLine();
 	var sep = newLine + newLine;
 	if (this.getIdentity().getSignatureStyle() == ZmSetting.SIG_INTERNET) {
-		sep = sep + "-- " + newLine;
+		sep += "-- " + newLine;
 	}
 	return sep;
 };
@@ -1478,8 +1483,8 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				if (inv) {
 					var organizer = "";
 					if (inv)
-					cancelledParts.push(ZmMsg.organizer+": "+inv.getOrganizerName()+crlf);
-					cancelledParts.push(ZmMsg.time+": "+inv.getServerStartDate()+crlf);
+						cancelledParts.push(ZmMsg.organizer + ": " + inv.getOrganizerName() + crlf);
+						cancelledParts.push(ZmMsg.time + ": " + inv.getServerStartDate() + crlf);
 					}
 				cancelledParts.push(ZmItem.NOTES_SEPARATOR);
 				value = cancelledParts.join("");
@@ -1694,7 +1699,7 @@ function(templateId, data) {
 	this._identitySelect.replaceElement(data.identitySelectId);
 	this._setIdentityVisible();
 
-    if  (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
+    if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
 		var buttonId = ZmId.getButtonId(this._view, ZmId.CMP_PRIORITY);
         this._priorityButton = new DwtButton({parent:this, id:buttonId});
         this._priorityButton.setMenu(new AjxCallback(this, this._priorityButtonMenuCallback));
