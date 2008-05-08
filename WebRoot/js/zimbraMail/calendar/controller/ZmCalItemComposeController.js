@@ -60,7 +60,7 @@ function(calItem, mode, isDirty) {
 ZmCalItemComposeController.prototype._preHideCallback =
 function(view, force) {
 	ZmController.prototype._preHideCallback.call(this);
-	return force ? true : this.popShield();
+    return force ? true : this.popShield();
 };
 
 ZmCalItemComposeController.prototype._preUnloadCallback =
@@ -302,7 +302,10 @@ function(calItem, attId, notifyList) {
         var callback = new AjxCallback(this, this._handleResponseSave, calItem);
 		var errorCallback = new AjxCallback(this, this._handleErrorSave);
 		calItem.save(attId, callback, errorCallback, notifyList);
-	}
+	}else {
+        //bug: 27600 clean up edit view to avoid stagnant attendees
+        this._composeView.cleanup();
+    }
 };
 
 ZmCalItemComposeController.prototype._handleResponseSave =
