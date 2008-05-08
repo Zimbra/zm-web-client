@@ -18,29 +18,31 @@
                         <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
                         <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
                     </td>
-                            <td><div class='vertSep'></div></td>
-                    <td nowrap>
-                     <c:choose>
-                        <c:when test="${not empty context}">
-                            <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:url var="composeUrl" value="/h/search?action=compose"/>
-                        </c:otherwise>
-                    </c:choose>
-                    <a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgNewMessage.gif" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
-                    </td>
                     <td><div class='vertSep'></div></td>
-	                <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-	                     <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-	                </td>
-	                <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-	                     <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-	                </td>
-	                     <%--
-	                     <zm:currentResultUrl var="refreshUrl" value="/h/printconversations" context="${context}" refresh="true" />
-                        <a id="OPPRINT" target="_blank" href="${refreshUrl}"><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/>&nbsp;<fmt:message key="actionPrint"/></a>
-                        --%>
+                    <c:if test="${skin ne 'velodrome2'}">
+                        <td nowrap>
+                            <c:choose>
+                                <c:when test="${not empty context}">
+                                    <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:url var="composeUrl" value="/h/search?action=compose"/>
+                                </c:otherwise>
+                            </c:choose>
+                            <a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgNewMessage.gif" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
+                        </td>
+                        <td><div class='vertSep'></div></td>
+                    </c:if>
+                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+                    </td>
+                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+                        <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+                    </td>
+                    <%--
+                     <zm:currentResultUrl var="refreshUrl" value="/h/printconversations" context="${context}" refresh="true" />
+                    <a id="OPPRINT" target="_blank" href="${refreshUrl}"><app:img src="startup/ImgPrint.gif" altkey="actionPrint"/>&nbsp;<fmt:message key="actionPrint"/></a>
+                    --%>
                     <td><div class='vertSep'></div></td>
                     <c:choose>
                         <c:when test="${context.isFolderSearch and context.folder.isTrash}">
@@ -52,19 +54,19 @@
                     </c:choose>
                     <td><div class='vertSep'></div></td>
                     <c:if test="${!context.folder.isDrafts}">
-                    <td nowrap valign="middle">
-                        <select name="folderId" onchange="zclick('SOPMOVE')">
-                            <option value="" selected><fmt:message key="moveAction"/>
-                            <option disabled><fmt:message key="actionOptSep"/>
-                            <zm:forEachFolder var="folder">
-                                <c:if test="${folder.isConversationMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${fn:escapeXml(zm:getFolderPath(pageContext, folder.id))}
-                                </c:if>
-                            </zm:forEachFolder>
-                        </select>
-                    </td>
-                    <app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
-                    <td><div class='vertSep'></div></td>
+                        <td nowrap valign="middle">
+                            <select name="folderId" onchange="zclick('SOPMOVE')">
+                                <option value="" selected><fmt:message key="moveAction"/>
+                                <option disabled><fmt:message key="actionOptSep"/>
+                                    <zm:forEachFolder var="folder">
+                                    <c:if test="${folder.isConversationMoveTarget and !folder.isTrash and !folder.isSpam}">
+                                <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}">${fn:escapeXml(zm:getFolderPath(pageContext, folder.id))}
+                                    </c:if>
+                                    </zm:forEachFolder>
+                            </select>
+                        </td>
+                        <app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
+                        <td><div class='vertSep'></div></td>
                     </c:if>
                     <td  nowrap valign="middle">
                         <select name="actionOp" onchange="zclick('SOPGO')">
@@ -72,10 +74,10 @@
                             <option <c:if test="${keys}">id="OPREAD" </c:if> value="read"/><fmt:message key="actionMarkRead"/>
                             <option <c:if test="${keys}">id="OPUNREAD" </c:if> value="unread"/><fmt:message key="actionMarkUnread"/>
                             <c:if test="${mailbox.features.flagging}">
-                                <option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"><fmt:message key="actionAddFlag"/>
-                                <option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"><fmt:message key="actionRemoveFlag"/>
-                            </c:if>
-                            <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
+                            <option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"><fmt:message key="actionAddFlag"/>
+                            <option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"><fmt:message key="actionRemoveFlag"/>
+                                </c:if>
+                                <app:tagOptions mailbox="${mailbox}" keys="${keys}"/>
                         </select>
                     </td>
                     <app:button id="${keys ? 'OPGO' : ''}" name="action" tooltip="actionConvGoTT" text="actionGo"/>

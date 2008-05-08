@@ -20,18 +20,20 @@
                         <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
                     </td>
                     <td><div class='vertSep'></div></td>
-                    <td nowrap>
-                    <c:choose>
-                        <c:when test="${not empty context}">
-                            <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
-                        </c:when>
-                        <c:otherwise>
-                            <c:url var="composeUrl" value="/h/search?action=compose"/>
-                        </c:otherwise>
-                    </c:choose>
-                    <a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgNewMessage.gif" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
-                    </td>
-                    <td><div class='vertSep'></div></td>
+                    <c:if test="${skin ne 'velodrome2'}">
+                        <td nowrap>
+                            <c:choose>
+                                <c:when test="${not empty context}">
+                                    <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:url var="composeUrl" value="/h/search?action=compose"/>
+                                </c:otherwise>
+                            </c:choose>
+                            <a href="${fn:escapeXml(composeUrl)}" <c:if test="${keys}"></c:if>><app:img src="startup/ImgNewMessage.gif" altkey="compose"/><span>&nbsp;<fmt:message key="compose"/></span></a>
+                        </td>
+                        <td><div class='vertSep'></div></td>
+                    </c:if>
                     <c:choose>
                         <c:when test="${context.isFolderSearch and context.folder.isTrash}">
                             <app:button id="${keys ? 'OPDELETE' : ''}" name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT" src="startup/ImgDelete.gif"/>
@@ -42,27 +44,27 @@
                     </c:choose>
                     <td><div class='vertSep'></div></td>
                     <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-	                     <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-	                </td>
-	                <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
-	                     <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
-	                </td>
+                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+                    </td>
+                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+                        <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+                    </td>
                     <td><div class='vertSep'></div></td>
                     <c:if test="${!context.folder.isDrafts}">
-                    <td  nowrap valign=middle>
-                        <select name="folderId" onchange="zclick('SOPMOVE')">
-                            <option value="" selected/><fmt:message key="moveAction"/>
-                            <option disabled /><fmt:message key="actionOptSep"/>
-                            <zm:forEachFolder var="folder">
-                                <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                                    <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}" />${fn:escapeXml(zm:getFolderPath(pageContext, folder.id))}
-                                </c:if>
-                            </zm:forEachFolder>
-                        </select>
-                    </td>
-                    <app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
-                    <td><div class='vertSep'></div></td>
-                    </c:if>    
+                        <td  nowrap valign=middle>
+                            <select name="folderId" onchange="zclick('SOPMOVE')">
+                                <option value="" selected/><fmt:message key="moveAction"/>
+                                <option disabled /><fmt:message key="actionOptSep"/>
+                                <zm:forEachFolder var="folder">
+                                    <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                                        <option <c:if test="${keys}">id="OPFLDR${folder.id}"</c:if> value="m:${folder.id}" />${fn:escapeXml(zm:getFolderPath(pageContext, folder.id))}
+                                    </c:if>
+                                </zm:forEachFolder>
+                            </select>
+                        </td>
+                        <app:button id="${keys ? 'OPMOVE' : ''}" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
+                        <td><div class='vertSep'></div></td>
+                    </c:if>
                     <td  nowrap valign=middle>
                         <select name="actionOp"  onchange="zclick('SOPGO')">
                             <option value="" selected/><fmt:message key="moreActions"/>
