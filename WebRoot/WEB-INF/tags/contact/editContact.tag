@@ -41,27 +41,29 @@
                             <input name='isgroup' type='hidden' value="true"/>
                             <input name='nickname' id="nickname" type='text' autocomplete='off' size='35' value="${fn:escapeXml(not empty param.nickname ? param.nickname : contact.nickname)}">
                         </td>
-                        <td align=right>
-                            <table  border="0" cellspacing='5'>
-                                <tbody>
-                                    <tr>
-                                        <td valign='center' class="editContactLabel"><label for="folderSelect"><fmt:message key="addressBook"/> :</label></td>
-                                        <td>
-                                            <input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
-                                            <select name="folderid" id="folderSelect">
-                                                <zm:forEachFolder var="folder">
-                                                    <c:if test="${folder.isContactCreateTarget}">
-                                                        <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}" />
-                                                        ${fn:escapeXml(folder.rootRelativePath)}
-                                                    </c:if>
-                                                </zm:forEachFolder>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
+						<c:if test="${mailbox.features.newAddrBookEnabled}">
+							<td align=right>
+								<table  border="0" cellspacing='5'>
+									<tbody>
+										<tr>
+											<td valign='center' class="editContactLabel"><label for="folderSelect"><fmt:message key="addressBook"/> :</label></td>
+											<td>
+												<input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
+												<select name="folderid" id="folderSelect">
+													<zm:forEachFolder var="folder">
+														<c:if test="${folder.isContactCreateTarget}">
+															<option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}" />
+															${fn:escapeXml(folder.rootRelativePath)}
+														</c:if>
+													</zm:forEachFolder>
+												</select>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</td>
+						</c:if>
+					</tr>
                 </table>
             </td>
         </tr>
@@ -112,7 +114,7 @@
                                     <option <c:if test="${selected eq '4'}">selected</c:if> value="4"><fmt:message key="AB_FILE_AS_lastFirstCompany"/>
                                     <option <c:if test="${selected eq '5'}">selected</c:if> value="5"><fmt:message key="AB_FILE_AS_firstLastCompany"/>
                                     <option <c:if test="${selected eq '6'}">selected</c:if> value="6"><fmt:message key="AB_FILE_AS_companyLastFirst"/>
-                                    <option <c:if test="${selected eq '7'}">selected</c:if> value="7"><fmt:message key="AB_FILE_AS_companyFirstLast"/>                                    
+                                    <option <c:if test="${selected eq '7'}">selected</c:if> value="7"><fmt:message key="AB_FILE_AS_companyFirstLast"/>
                                 </select>
                             </td>
                         </tr>
