@@ -397,7 +397,7 @@ ZmMyComputerTabViewPage.prototype.hideMe = function() {
 //Create UI for MyComputer
 ZmMyComputerTabViewPage.prototype._createHtml = function() {
 
-    this._uri = appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI);
+    this._uri = appCtxt.get(ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI) + "?fmt=extended";
 
     var attachmentTableId = this._attachmentTableId = Dwt.getNextId();
     var uploadFormId = this._uploadFormId = Dwt.getNextId();
@@ -460,9 +460,9 @@ ZmMyComputerTabViewPage.prototype.getUploadForm = function() {
     return this._uploadForm;
 };
 
-ZmMyComputerTabViewPage.prototype._handleInline = function(inline) {
-    this._uploadForm.setAttribute("action", this._uri + (inline? "?fmt=extended" : ""));
-};
+/*ZmMyComputerTabViewPage.prototype._handleInline = function(inline) {
+    this._uploadForm.setAttribute("action", this._uri + "?fmt=extended");
+};*/
 
 //Attachments
 ZmMyComputerTabViewPage.prototype.addAttachmentField = function(noRemoveLink) {

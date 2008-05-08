@@ -390,13 +390,17 @@ function(attId, isDraft) {
 	// Create Msg Object
 	var msg = new ZmMailMsg();
 	msg.setSubject(subject);
-	
+
+    var zeroSizedAttachments = false;
 	// handle Inline Attachments
 	var inline = this._isInline();
-	
 	if (this._attachDialog && inline && attId) {
 		for (var i = 0; i < attId.length; i++) {
 			var att = attId[i];
+            if( att.s == 0 ){
+                zeroSizedAttachments = true;
+                continue;
+            }
 			var contentType = att.ct;
 			if (contentType && contentType.indexOf("image") != -1) {
 				var cid = Dwt.getNextId();
@@ -408,11 +412,23 @@ function(attId, isDraft) {
 		}
 	} else if (attId && typeof attId != "string") {
 		for (var i = 0; i < attId.length; i++) {
+            if( attId[i].s == 0 ){
+                zeroSizedAttachments = true;
+                continue;
+            }
 			msg.addAttachmentId(attId[i].aid);
 		}
 	} else if (attId) {
 		msg.addAttachmentId(attId);
 	}
+
+    if(zeroSizedAttachments){
+        if (appCtxt.isChildWindow && window.parentController) {
+            window.parentController.setStatusMsg(ZmMsg.zeroSizedAtts);
+        } else {
+            appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
+        }
+    }
 
 	// check if this is a resend
 	if (this.sendUID && this.backupForm) {
