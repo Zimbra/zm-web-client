@@ -104,7 +104,7 @@ ZmSignaturesPage.prototype.reset = function(useDefaults) {
 		var compEl = document.getElementById(elemId);
 		compEl.parentNode.removeChild(compEl);
 	}
-	this._populateSignatures();
+	this._populateSignatures(true);
 };
 
 // saving
@@ -217,7 +217,7 @@ ZmSignaturesPage.prototype._setupCustom = function(id, setup, value) {
 	return ZmPreferencesPage.prototype._setupCustom.apply(this, arguments);
 };
 
-ZmSignaturesPage.prototype._populateSignatures = function() {
+ZmSignaturesPage.prototype._populateSignatures = function(reset) {
 	this._signatureComps = {};
 	this._deletedSignatures = {};
 
@@ -226,7 +226,7 @@ ZmSignaturesPage.prototype._populateSignatures = function() {
 	var lessThanEqual = sigNames.length <= this._maxEntries;
 	var count = lessThanEqual ? sigNames.length : this._maxEntries;
 	for (var i = 0; i < count; i++) {
-		this._addSignature(signatures[sigNames[i]]);
+		this._addSignature(signatures[sigNames[i]], reset);
 	}
 	for (var i = count; i < this._minEntries; i++) {
         this._addNewSignature();
@@ -246,15 +246,21 @@ ZmSignaturesPage.prototype._addNewSignature = function(skipControls) {
 	return signature;
 };
 
-ZmSignaturesPage.prototype._addSignature = function(signature) {
+ZmSignaturesPage.prototype._addSignature = function(signature, reset) {
 
     signature._htmlElId = [this._htmlElId, Dwt.getNextId()].join("_");
 
     if(!signature._new){
-        signature._orig = {
-            name:  signature.name,
-            value: signature.getValue(),
-            contentType:  signature.getContentType()
+        if(reset){
+            signature.name = signature._orig.name;
+            signature.value = signature._orig.value;
+            signature.setContentType(signature._orig.contentType);
+        }else if(!signature._orig){
+            signature._orig = {
+                name:  signature.name,
+                value: signature.getValue(),
+                contentType:  signature.getContentType()
+            }
         }
     }
     
