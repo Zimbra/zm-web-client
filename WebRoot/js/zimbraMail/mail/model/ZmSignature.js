@@ -97,9 +97,6 @@ ZmSignature.prototype.setContentType = function(ct){
 ZmSignature.prototype.getValue = function(outputType) {
 	
     var isHtml = this.contentType == ZmMimeTable.TEXT_HTML;
-    //Commented: Considering this code should not belong here.
-	//var prefix = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET ? "-- " : "";
-	//var newline = isHtml ? "<br>" : "\n";
 	var value = this.value;
 
 	var type = outputType || this.contentType;
@@ -108,8 +105,6 @@ ZmSignature.prototype.getValue = function(outputType) {
 	}
 
     return value;
-
-    //return [prefix, newline, value].join(newline);
 };
 
 
