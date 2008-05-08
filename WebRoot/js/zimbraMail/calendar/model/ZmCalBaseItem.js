@@ -15,23 +15,19 @@
  * ***** END LICENSE BLOCK *****
  */
 ZmCalBaseItem = function(type, list, id, folderId) {
-
 	if (arguments.length == 0) { return; }
 
 	ZmItem.call(this, type, id, list);
 
 	this.id = id || -1;
 	this.uid = -1; // iCal uid of appt
-
 	this.folderId = folderId || this._getDefaultFolderId();
 	this.fragment = "";
 	this.name = "";
-
 	this.allDayEvent = "0";
 	this.startDate = null;
 	this.endDate = null;
 	this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-
 	this.alarm = false;
 	this.alarmData = null;
 	this.isException = false;
@@ -39,7 +35,6 @@ ZmCalBaseItem = function(type, list, id, folderId) {
 	this.priority = null;
 	this.ptst = null; // participant status
 	this.status = ZmCalendarApp.STATUS_CONF;
-
 	this._reminderMinutes = 0;
 	this.otherAttendees = false;	
 };
@@ -52,40 +47,27 @@ function() {
 	return "ZmCalBaseItem";
 };
 
-ZmCalBaseItem.prototype._getDefaultFolderId =
-function() {
-	return ZmOrganizer.ID_CALENDAR;
-};
 
-ZmCalBaseItem.prototype.getUniqueId =
-function(useStartTime) {
-	if (useStartTime) {
-		if (!this._startTimeUniqId) this._startTimeUniqId = this.id + "_" + this.getStartTime();
-		return this._startTimeUniqId;
-	} else {
-		if (this._uniqId == null)
-			this._uniqId = Dwt.getNextId();
-		return (this.id + "_" + this._uniqId);
-	}
-};
+// consts
 
-ZmCalBaseItem.prototype.setAlarmData =
-function(alarmData) {
-	this.alarmData = alarmData;
-};
+ZmCalBaseItem.PERSON				= 1;
+ZmCalBaseItem.LOCATION				= 2;
+ZmCalBaseItem.EQUIPMENT				= 3;
 
-ZmCalBaseItem.prototype.hasOtherAttendees	= function() { return this.otherAttendees; };
-ZmCalBaseItem.prototype.getName 			= function() { return this.name || ""; };			// name (aka Subject) of appt
-ZmCalBaseItem.prototype.getEndTime 			= function() { return this.endDate.getTime(); }; 	// end time in ms
-ZmCalBaseItem.prototype.getStartTime 		= function() { return this.startDate.getTime(); }; 	// start time in ms
-ZmCalBaseItem.prototype.getDuration 		= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
-ZmCalBaseItem.prototype.getLocation			= function(inclDispName) {	
-	return this._location;
-};
+ZmCalBaseItem.PSTATUS_ACCEPT		= "AC";			// vevent, vtodo
+ZmCalBaseItem.PSTATUS_DECLINED		= "DE";			// vevent, vtodo
+ZmCalBaseItem.PSTATUS_DEFERRED		= "DF";			// vtodo					[outlook]
+ZmCalBaseItem.PSTATUS_DELEGATED		= "DG";			// vevent, vtodo
+ZmCalBaseItem.PSTATUS_NEEDS_ACTION	= "NE";			// vevent, vtodo
+ZmCalBaseItem.PSTATUS_COMPLETED		= "CO";			// vtodo
+ZmCalBaseItem.PSTATUS_TENTATIVE		= "TE";			// vevent, vtodo
+ZmCalBaseItem.PSTATUS_WAITING		= "WA";			// vtodo					[outlook]
 
-ZmCalBaseItem.PERSON					= 1;
-ZmCalBaseItem.LOCATION					= 2;
-ZmCalBaseItem.EQUIPMENT					= 3;
+ZmCalBaseItem.FBA_TO_PTST = {
+	B: ZmCalBaseItem.PSTATUS_ACCEPT,
+	F: ZmCalBaseItem.PSTATUS_DECLINED,
+	T: ZmCalBaseItem.PSTATUS_TENTATIVE
+};
 
 ZmCalBaseItem._pstatusString = {
 	NE: ZmMsg._new,
@@ -95,12 +77,55 @@ ZmCalBaseItem._pstatusString = {
 	DG: ZmMsg.delegated
 };
 
-ZmCalBaseItem.prototype.getParticipantStatusStr= 
+/**
+* Compares two appts. sort by (starting date, duration)
+* sort methods.
+*
+* @param a		an appt
+* @param b		an appt
+*/
+ZmCalBaseItem.compareByTimeAndDuration =
+function(a, b) {
+	if (a.getStartTime() > b.getStartTime()) 	return 1;
+	if (a.getStartTime() < b.getStartTime()) 	return -1;
+	if (a.getDuration() < b.getDuration()) 		return 1;
+	if (a.getDuration() > b.getDuration()) 		return -1;
+	return 0;
+};
+
+ZmCalBaseItem.createFromDom =
+function(apptNode, args, instNode) {
+	var appt = new ZmCalBaseItem(ZmItem.APPT, args.list);
+	appt._loadFromDom(apptNode, (instNode || {}));
+	return appt;
+};
+
+ZmCalBaseItem.prototype.getName 		= function() { return this.name || ""; };			// name (aka Subject) of appt
+ZmCalBaseItem.prototype.getEndTime 		= function() { return this.endDate.getTime(); }; 	// end time in ms
+ZmCalBaseItem.prototype.getStartTime 	= function() { return this.startDate.getTime(); }; 	// start time in ms
+ZmCalBaseItem.prototype.getDuration 	= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
+ZmCalBaseItem.prototype.getLocation		= function() { return this.location || ""; };
+ZmCalBaseItem.prototype.isAllDayEvent	= function() { return this.allDayEvent == "1"; };
+
+ZmCalBaseItem.prototype.getParticipantStatusStr =
 function() { 
 	return ZmCalBaseItem._pstatusString[this.ptst]; 
 };
 
-ZmCalBaseItem.prototype.isAllDayEvent = function() { return this.allDayEvent == "1"; };
+ZmCalBaseItem.prototype.getUniqueId =
+function(useStartTime) {
+	if (useStartTime) {
+		if (!this._startTimeUniqId) {
+			this._startTimeUniqId = this.id + "_" + this.getStartTime();
+		}
+		return this._startTimeUniqId;
+	} else {
+		if (this._uniqId == null) {
+			this._uniqId = Dwt.getNextId();
+		}
+		return (this.id + "_" + this._uniqId);
+	}
+};
 
 /**
  * true if startDate and endDate are on different days
@@ -142,56 +167,20 @@ function(emptyAllDay,startOnly) {
 	return AjxMessageFormat.format(pattern, [this.startDate, this.endDate, ""]);
 };
 
-ZmCalBaseItem._getTTHour =
-function(d) {
-	var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-	return formatter.format(d);
-};
-
 ZmCalBaseItem.prototype.isAlarmInRange =
 function() {
-	
-	if(!this.alarm || !this.alarmData) { return false; }
-	
+	if (!this.alarm || !this.alarmData) { return false; }
+
 	var alarmData = this.alarmData[0];
-	
 	this._nextAlarmTime = alarmData.nextAlarm;
 	this._alarmInstStart = alarmData.alarmInstStart;
-	
+
 	var currentTime = (new Date()).getTime();
-	
-	var tst = this.getStartTime();
-	var tet = this.getEndTime();
-	if(this._alarmInstStart == tst) {
-		return (currentTime > this._nextAlarmTime && currentTime < tet);
-	}else {
-		//remind older alarms
-		return (currentTime > this._nextAlarmTime);
-	}
+
+	return (this._alarmInstStart == this.getStartTime())
+		? (currentTime > this._nextAlarmTime && currentTime < this.getEndTime())
+		: (currentTime > this._nextAlarmTime); // remind older alarms
 };
-
-ZmCalBaseItem.PSTATUS_ACCEPT			= "AC";			// vevent, vtodo
-ZmCalBaseItem.PSTATUS_DECLINED			= "DE";			// vevent, vtodo
-ZmCalBaseItem.PSTATUS_DEFERRED			= "DF";			// vtodo					[outlook]
-ZmCalBaseItem.PSTATUS_DELEGATED			= "DG";			// vevent, vtodo
-ZmCalBaseItem.PSTATUS_NEEDS_ACTION		= "NE";			// vevent, vtodo
-ZmCalBaseItem.PSTATUS_COMPLETED			= "CO";			// vtodo
-ZmCalBaseItem.PSTATUS_TENTATIVE			= "TE";			// vevent, vtodo
-ZmCalBaseItem.PSTATUS_WAITING			= "WA";			// vtodo					[outlook]
-
-ZmCalBaseItem.FBA_TO_PTST = {
-	B: ZmCalBaseItem.PSTATUS_ACCEPT,
-	F: ZmCalBaseItem.PSTATUS_DECLINED,
-	T: ZmCalBaseItem.PSTATUS_TENTATIVE
-};
-
-ZmCalBaseItem.createFromDom =
-function(apptNode, args, instNode) {
-	var appt = new ZmCalBaseItem(ZmItem.APPT, args.list);
-	appt._loadFromDom(apptNode, (instNode || {}));
-	return appt;
-};
-
 
 ZmCalBaseItem.prototype._loadFromDom =
 function(calItemNode, instNode) {
@@ -201,19 +190,10 @@ function(calItemNode, instNode) {
 	this.id 			= this._getAttr(calItemNode, instNode, "id");
 	this.name 			= this._getAttr(calItemNode, instNode, "name");
 	this.fragment 		= this._getAttr(calItemNode, instNode, "fr");
-
     this.status 		= this._getAttr(calItemNode, instNode, "status");
 	this.ptst 			= this._getAttr(calItemNode, instNode, "ptst");
 	this.isException 	= this._getAttr(calItemNode, instNode, "ex");
-	var itemAllDay		= calItemNode.allDay;
-	var instAllDay		= instNode.allDay;
-	var dur				= this._getAttr(calItemNode, instNode, "dur");
-
-    if(instAllDay != null) {
-        this.allDayEvent = instAllDay ? "1" : "0";
-    }else {
-        this.allDayEvent = itemAllDay ? "1" : "0";
-    }
+	this.allDayEvent	= (instNode.allDay || calItemNode.allDay)  ? "1" : "0";
 
 	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
 	this.alarmData 		= this._getAttr(calItemNode, instNode, "alarmData");	
@@ -236,13 +216,19 @@ function(calItemNode, instNode) {
 		this.uniqStartTime = this.startDate.getTime();
 	}
 
+	var dur = this._getAttr(calItemNode, instNode, "dur");
 	if (dur) {
 		var endTime = startTime + (parseInt(dur));
 		this.endDate = new Date(endTime);
 	}
 	
 	this.otherAttendees = this._getAttr(calItemNode, instNode, "otherAtt");
-	this._location = this._getAttr(calItemNode, instNode, "loc");
+	this.location = this._getAttr(calItemNode, instNode, "loc");
+};
+
+ZmCalBaseItem.prototype._getDefaultFolderId =
+function() {
+	return ZmOrganizer.ID_CALENDAR;
 };
 
 ZmCalBaseItem.prototype._getAttr =
@@ -250,11 +236,13 @@ function(calItem, inst, name) {
 	return inst[name] || calItem[name];
 };
 
-ZmCalBaseItem.compareByTimeAndDuration =
-function(a, b) {
-	if (a.getStartTime() > b.getStartTime()) 	return 1;
-	if (a.getStartTime() < b.getStartTime()) 	return -1;
-	if (a.getDuration() < b.getDuration()) 		return 1;
-	if (a.getDuration() > b.getDuration()) 		return -1;
-	return 0;
+ZmCalBaseItem.prototype._addLocationToSoap =
+function(inv) {
+	inv.setAttribute("loc", this.getLocation());
+};
+
+ZmCalBaseItem._getTTHour =
+function(d) {
+	var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
+	return formatter.format(d);
 };

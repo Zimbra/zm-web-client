@@ -259,7 +259,7 @@ function(appt) {
 	html[idx++] = "<table border=0 width=100%>";
 
 	var organizer = appt.getOrganizer();
-	var attendees = appt.getAttendeesText();
+	var attendees = appt.getAttendeesText(ZmCalBaseItem.PERSON);
 
 	if (organizer && attendees) {
 		html[idx++] = "<tr><td width=1% style='" + style + "'><u>" + ZmMsg.organizerLabel + "</u></td>";
@@ -658,9 +658,9 @@ function(appt) {
 ZmCalColView._setApptOpacity =
 function(appt, div) {
 	switch (appt.ptst) {
-		case ZmCalItem.PSTATUS_DECLINED:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DECLINED); break;
-		case ZmCalItem.PSTATUS_TENTATIVE:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
-		default:							Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_NORMAL); break;
+		case ZmCalBaseItem.PSTATUS_DECLINED:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DECLINED); break;
+		case ZmCalBaseItem.PSTATUS_TENTATIVE:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
+		default:								Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_NORMAL); break;
 	}
 };
 
@@ -729,8 +729,8 @@ function(appt) {
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
 
-	var isNew = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION;
-	var isAccepted = appt.ptst == ZmCalItem.PSTATUS_ACCEPT;
+	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
+	var isAccepted = appt.ptst == ZmCalBaseItem.PSTATUS_ACCEPT;
 	var id = this._getItemId(appt);
 	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
 	var calendar = appCtxt.getById(appt.folderId);
@@ -764,7 +764,7 @@ function(appt) {
 		bodyColor: color + (isNew ? "" : "Bg"),
 		name: apptName,
 		starttime: appt.getDurationText(true, true),
-		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate)),
+		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate)),
 		location: location,
 		status: (appt.isOrganizer() ? "" : appt.getParticipantStatusStr()),
 		icon: ((appt.isPrivate()) ? "ReadOnly" : null),
@@ -1188,7 +1188,7 @@ function(colIndex, data) {
 ZmCalColView.prototype._computeAllDayApptLayout =
 function() {
 	var adlist = this._allDayApptsList;
-	adlist.sort(ZmCalItem.compareByTimeAndDuration);
+	adlist.sort(ZmCalBaseItem.compareByTimeAndDuration);
 
 	for (var i=0; i < adlist.length; i++) {
 		var appt = adlist[i];
@@ -1913,7 +1913,7 @@ function(data) {
 	var appt = data.appt;
 	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
 	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
-	if (appt.ptst != ZmCalItem.PSTATUS_NEEDS_ACTION) {
+	if (appt.ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION) {
 		color += "Bg";
 	}
 
@@ -2057,8 +2057,8 @@ function(ev) {
 				data.view._layoutAppt(null, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
 				data.startDate = newDate;
 				data.snap = snap;
-				if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalItem._getTTHour(data.startDate);
-				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalItem._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()));
+				if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.startDate);
+				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()));
 			}
 		}
 	}
@@ -2082,10 +2082,10 @@ function(data) {
 	var lo = data.appt._layout;
 	data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
 	if (data.startTimeEl) {
-		data.startTimeEl.innerHTML = ZmCalItem._getTTHour(data.appt.startDate);
+		data.startTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.appt.startDate);
 	}
     if (data.endTimeEl) {
-		data.endTimeEl.innerHTML = ZmCalItem._getTTHour(data.appt.endDate);
+		data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.appt.endDate);
 	}
 	ZmCalColView._setApptOpacity(data.appt, data.apptEl);
 };
@@ -2286,7 +2286,7 @@ function(ev) {
 					Dwt.setSize(data.apptBodyEl, Dwt.DEFAULT, Math.floor(newHeight));
 					data.lastDelta = delta;
 					data.startDate.setTime(data.appt.getStartTime() + (delta15 * AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES)); // num msecs in 15 minutes
-					if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalItem._getTTHour(data.startDate);
+					if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.startDate);
 				}
 			} else {
 				var newHeight = data.origHeight + delta;
@@ -2298,7 +2298,7 @@ function(ev) {
 
 					data.lastDelta = delta;
 					data.endDate.setTime(data.appt.getEndTime() + (delta15 * AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES)); // num msecs in 15 minutes
-					if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalItem._getTTHour(data.endDate);
+					if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.endDate);
 				}
 			}
 		}
@@ -2503,8 +2503,8 @@ function(ev) {
 		if (bounds == null) return false;
 		data.view._layoutAppt(null, e, newStart.x, newStart.y, bounds.width, bounds.height);
 		Dwt.setVisible(e, true);
-		if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalItem._getTTHour(data.startDate);
-		if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalItem._getTTHour(data.endDate);
+		if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.startDate);
+		if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalBaseItem._getTTHour(data.endDate);
 	}
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;

@@ -60,7 +60,7 @@ function() {
 	appt.setEndDate(this._apptData.endDate ? this._apptData.endDate : this._apptData.startDate);
 	appt.setAllDayEvent(this._apptData.startTime == null);
 
-	if (this._apptData.location) appt.setAttendees(AjxEmailAddress.split(this._apptData.location), ZmCalItem.LOCATION);
+	if (this._apptData.location) appt.setAttendees(AjxEmailAddress.split(this._apptData.location), ZmCalBaseItem.LOCATION);
 	if (this._apptData.notes) appt.setTextNotes(this._apptData.notes);
 	if (this._apptData.subject) appt.setName(this._apptData.subject);
 	return appt;

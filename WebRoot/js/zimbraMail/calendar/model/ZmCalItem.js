@@ -15,7 +15,6 @@
  * ***** END LICENSE BLOCK *****
  */
 ZmCalItem = function(type, list, id, folderId) {
-
 	if (arguments.length == 0) { return; }
 
 	ZmCalBaseItem.call(this, type, list, id, folderId);
@@ -29,6 +28,11 @@ ZmCalItem = function(type, list, id, folderId) {
 
 ZmCalItem.prototype = new ZmCalBaseItem;
 ZmCalItem.prototype.constructor = ZmCalItem;
+
+ZmCalItem.prototype.toString =
+function() {
+	return "ZmCalItem";
+};
 
 // Consts
 
@@ -47,45 +51,20 @@ ZmCalItem.PRIORITY_LOW				= 9;
 ZmCalItem.PRIORITY_NORMAL			= 5;
 ZmCalItem.PRIORITY_HIGH				= 1;
 
-ZmCalItem.PSTATUS_ACCEPT			= "AC";			// vevent, vtodo
-ZmCalItem.PSTATUS_DECLINED			= "DE";			// vevent, vtodo
-ZmCalItem.PSTATUS_DEFERRED			= "DF";			// vtodo					[outlook]
-ZmCalItem.PSTATUS_DELEGATED			= "DG";			// vevent, vtodo
-ZmCalItem.PSTATUS_NEEDS_ACTION		= "NE";			// vevent, vtodo
-ZmCalItem.PSTATUS_COMPLETED			= "CO";			// vtodo
-ZmCalItem.PSTATUS_TENTATIVE			= "TE";			// vevent, vtodo
-ZmCalItem.PSTATUS_WAITING			= "WA";			// vtodo					[outlook]
-
 ZmCalItem.ROLE_CHAIR				= "CHA";
 ZmCalItem.ROLE_REQUIRED				= "REQ";
 ZmCalItem.ROLE_OPTIONAL				= "OPT";
 ZmCalItem.ROLE_NON_PARTICIPANT		= "NON";
 
-ZmCalItem.PERSON					= 1;
-ZmCalItem.LOCATION					= 2;
-ZmCalItem.EQUIPMENT					= 3;
-
 ZmCalItem.SERVER_WEEK_DAYS			= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 
 ZmCalItem.ATTACHMENT_CHECKBOX_NAME	= "__calAttCbox__";
-
-ZmCalItem.FBA_TO_PTST = {
-	B: ZmCalItem.PSTATUS_ACCEPT,
-	F: ZmCalItem.PSTATUS_DECLINED,
-	T: ZmCalItem.PSTATUS_TENTATIVE
-};
-
-ZmCalItem.prototype.toString =
-function() {
-	return "ZmCalItem";
-};
 
 
 // Getters
 
 ZmCalItem.prototype.getCompNum			= function() { return this.compNum || "0"; }
-ZmCalItem.prototype.getFolder			= function() { /* override */ };
-ZmCalItem.prototype.getLocation			= function() { /* override */ };
+ZmCalItem.prototype.getFolder			= function() { };						// override if necessary
 ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
 ZmCalItem.prototype.getSentBy           = function() { return this.sentBy || ""; };
 ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate || this.startDate; };
@@ -94,15 +73,15 @@ ZmCalItem.prototype.getOrigTimezone     = function() { return this._origTimezone
 ZmCalItem.prototype.getRecurBlurb		= function() { return this._recurrence.getBlurb(); };
 ZmCalItem.prototype.getRecurType		= function() { return this._recurrence.repeatType; };
 ZmCalItem.prototype.getTimezone         = function() { return this.timezone; };
-ZmCalItem.prototype.getSummary			= function(isHtml) { /* override */ };
-ZmCalItem.prototype.getToolTip			= function(controller) { /* override */ };
+ZmCalItem.prototype.getSummary			= function(isHtml) { };					// override if necessary
+ZmCalItem.prototype.getToolTip			= function(controller) { };				// override if necessary
 
 ZmCalItem.prototype.isCustomRecurrence 	= function() { return this._recurrence.repeatCustom == "1" || this._recurrence.repeatEndType != "N"; };
 ZmCalItem.prototype.isOrganizer 		= function() { return (typeof(this.isOrg) === 'undefined') || (this.isOrg == true); };
 ZmCalItem.prototype.isRecurring 		= function() { return (this.recurring || (this._rawRecurrences != null)); };
 ZmCalItem.prototype.hasAttachments 		= function() { return this.getAttachments() != null; };
-ZmCalItem.prototype.hasAttendees		= function() { return false; } // override if necessary
-ZmCalItem.prototype.hasPersonAttendees	= function() { return false; } // override if necessary
+ZmCalItem.prototype.hasAttendeeForType	= function(type) { return false; }		// override if necessary
+ZmCalItem.prototype.hasPersonAttendees	= function() { return false; }			// override if necessary
 
 // Setters
 ZmCalItem.prototype.setAllDayEvent 		= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
@@ -143,20 +122,26 @@ function(startDate, keepCache) {
 		this._origStartDate = new Date(this.startDate.getTime());
 	}
 	this.startDate = new Date(startDate instanceof Date ? startDate.getTime() : startDate);
-	if (!keepCache)
+
+	if (!keepCache) {
 		this._resetCached();
-    if(this.recurring && this._recurrence){                    //Recurrence shuld reflect start date.
-        this._recurrence._startDate = this.startDate;        
-    }
+	}
+
+	// recurrence should reflect start date
+	if (this.recurring && this._recurrence) {
+		this._recurrence._startDate = this.startDate;
+	}
 };
 
-ZmCalItem.prototype.setTimezone = function(timezone, keepCache) {
-    if (this._origTimezone == null) {
-        this._origTimezone = timezone;
-    }
-    this.timezone = timezone;
-    if (!keepCache)
-        this._resetCached();
+ZmCalItem.prototype.setTimezone =
+function(timezone, keepCache) {
+	if (this._origTimezone == null) {
+		this._origTimezone = timezone;
+	}
+	this.timezone = timezone;
+	if (!keepCache) {
+		this._resetCached();
+	}
 };
 
 /**
@@ -173,7 +158,8 @@ function(mode) {
 
 /**
  * Walks the notesParts array looking for the first part that matches given
- * content type - for now, returns the content (but we could just return the whole part?)
+ * content type - for now, returns the content (but we could just return the
+ * whole part?)
 */
 ZmCalItem.prototype.getNotesPart =
 function(contentType) {
@@ -223,19 +209,21 @@ function() {
 		isLinkAndReadOnly = share && !share.isWrite();
 	}
 
-	return !this.isOrganizer() || isLinkAndReadOnly;
+	return (!this.isOrganizer() || isLinkAndReadOnly);
 };
 
 ZmCalItem.prototype.resetRepeatWeeklyDays =
 function() {
-	if (this.startDate)
+	if (this.startDate) {
 		this._recurrence.repeatWeeklyDays = [ZmCalItem.SERVER_WEEK_DAYS[this.startDate.getDay()]];
+	}
 };
 
 ZmCalItem.prototype.resetRepeatMonthlyDayList =
 function() {
-	if (this.startDate)
+	if (this.startDate) {
 		this._recurrence.repeatMonthlyDayList = [this.startDate.getDate()];
+	}
 };
 
 ZmCalItem.prototype.resetRepeatYearlyMonthsList =
@@ -245,13 +233,14 @@ function(mo) {
 
 ZmCalItem.prototype.resetRepeatCustomDayOfWeek =
 function() {
-	if (this.startDate)
+	if (this.startDate) {
 		this._recurrence.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[this.startDate.getDay()];
+	}
 };
 
 ZmCalItem.prototype.isOverlapping =
 function(other, checkFolder) {
-	if (checkFolder && this.folderId != other.folderId) return false;
+	if (checkFolder && this.folderId != other.folderId) { return false; }
 
 	var tst = this.getStartTime();
 	var tet = this.getEndTime();
@@ -270,30 +259,30 @@ function(startTime, endTime) {
 
 ZmCalItem.prototype.parseAlarmData =
 function() {
-	if(!this.alarmData){ return; }
-	
-	for(var i in this.alarmData) {
+	if (!this.alarmData) { return; }
+
+	for (var i in this.alarmData) {
 		var alarm = this.alarmData[i].alarm;
-		if(alarm) {
-			var m,h,d;
-			for(var j in alarm) {
+		if (alarm) {
+			var m, h, d;
+			for (var j in alarm) {
 				var tmp = alarm[j];
 				var trigger = (tmp) ? tmp.trigger : null;
 				var rel = (trigger && (trigger.length > 0)) ? trigger[0].rel : null;				
 				m = (rel && (rel.length > 0)) ? rel[0].m : null;
 				d = (rel && (rel.length > 0)) ? rel[0].d : null;
 				h = (rel && (rel.length > 0)) ? rel[0].h : null;
-								
-				this._reminderMinutes = 0;		
-				if(tmp && (tmp.action == "DISPLAY")){
-					if(m != null) {
+
+				this._reminderMinutes = 0;
+				if (tmp && (tmp.action == "DISPLAY")) {
+					if (m != null) {
 						this._reminderMinutes = m;
 					}
-					if(h !=null) {
+					if (h != null) {
 						h = parseInt(h);
 						this._reminderMinutes = h*60;
 					}
-					if(d !=null) {
+					if (d != null) {
 						d = parseInt(d);
 						this._reminderMinutes = d*24*60;
 					}					
@@ -410,7 +399,7 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 
 	var seriesMode = mode == ZmCalItem.MODE_EDIT_SERIES;
 	if (this.message == null) {
-		var id = seriesMode ? (this._seriesInvId || this.invId) : this.invId;
+		var id = seriesMode ? (this.seriesInvId || this.invId) : this.invId;
 		this.message = new ZmMailMsg(id);
 		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, this.message, callback]);
 		var respErrorCallback = !ignoreOutOfDate
@@ -458,10 +447,9 @@ function(mode, callback, errorCallback, result) {
 
 ZmCalItem.prototype.setFromMessage =
 function(message, viewMode) {
-	if (message == this._currentlyLoaded)
-		return;
+	if (message == this._currentlyLoaded) { return; }
 
-	if(message.invite){
+	if (message.invite) {
 		this.isOrg = message.invite.isOrganizer();
 		this.organizer = message.invite.getOrganizerEmail();
     	this.sentBy = message.invite.getSentBy();
@@ -723,9 +711,9 @@ function(mode, msg, callback, errorCallback) {
 		// To get the attendees for this appointment, we have to get the message.
 		var respCallback = new AjxCallback(this, this._doCancel, [mode, callback, null]);
 		var cancelErrorCallback = new AjxCallback(this, this._handleCancelError, [mode, callback, errorCallback]);
-		if(this._blobInfoMissing && mode != ZmCalItem.MODE_DELETE_SERIES) {
+		if (this._blobInfoMissing && mode != ZmCalItem.MODE_DELETE_SERIES) {
 			this.showBlobMissingDlg();		
-		}else {
+		} else {
 			this.getDetails(null, respCallback, cancelErrorCallback);
 		}		
 	}
@@ -743,21 +731,21 @@ function(mode, callback, errorCallback, ex) {
 
 	if (ex.code == "mail.NO_SUCH_BLOB") {
  		//bug: 19033, cannot delete instance of appt with missing blob info
- 		if(this.isRecurring() && mode != ZmCalItem.MODE_DELETE_SERIES) {
+ 		if (this.isRecurring() && mode != ZmCalItem.MODE_DELETE_SERIES) {
 			this._blobInfoMissing = true;
 			this.showBlobMissingDlg();
 			return true;
- 		}else {
+ 		} else {
 	 		this._doCancel(mode, callback, this.message);
  		}
  		return true;
  	}
 	
-	if(errorCallback){
+	if (errorCallback) {
 		return errorCallback.run(ex);
 	}
-	
-	return false;	
+
+	return false;
 };
 
 ZmCalItem.prototype._doCancel =
@@ -792,9 +780,10 @@ function(mode, callback, msg, result) {
 			if (msg) {
 				for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 					var type = ZmMailMsg.ADDRS[i];
+
 					// if on-behalf-of, dont set the from address
-					if (accountName && type == AjxEmailAddress.FROM)
-						continue;
+					if (accountName && type == AjxEmailAddress.FROM) { continue; }
+
 					var vector = msg.getAddresses(type);
 					var count = vector.size();
 					for (var j = 0; j < count; j++) {
@@ -992,8 +981,8 @@ function(d) {
 ZmCalItem.prototype._addInviteAndCompNum =
 function(soapDoc) {
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SERIES || this.viewMode == ZmCalItem.MODE_DELETE_SERIES) {
-		if (this.recurring && this._seriesInvId != null) {
-			soapDoc.setMethodAttribute("id", this._seriesInvId);
+		if (this.recurring && this.seriesInvId != null) {
+			soapDoc.setMethodAttribute("id", this.seriesInvId);
 			soapDoc.setMethodAttribute("comp", this.getCompNum());
 		}
 	} else {
@@ -1035,12 +1024,6 @@ function(cancel, isHtml) {
 
 	return buf.join("");
 };
-
-ZmCalItem.prototype._getDefaultFolderId =
-function() {
-	// override
-};
-
 
 // Server request calls
 
@@ -1125,54 +1108,47 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 
 ZmCalItem.prototype._addExtrasToSoap =
 function(soapDoc, inv, comp) {
-	if (this.priority) comp.setAttribute("priority", this.priority);
+	if (this.priority) {
+		comp.setAttribute("priority", this.priority);
+	}
 	comp.setAttribute("status", this.status);
 };
 
 ZmCalItem.prototype._addXPropsToSoap =
 function(soapDoc, inv, comp) {
-	
 	var message = this.message ? this.message : null;
 	var invite = (message && message.invite) ? message.invite : null;
-	
-	if(!invite) { return; }
-	
-	var xprops = invite.getXProp();
-	
-	if(!xprops) { return; }
-	
-	//bug 16024: preserve x props	
+	var xprops = invite ? invite.getXProp() : null;
+	if (!xprops) { return; }
+
+	// bug 16024: preserve x props
 	xprops = (xprops instanceof Array) ? xprops : [xprops];
-	
-	var xprop = null;
-	for(var i in xprops) {
-		xprop = xprops[i];
-		if(xprop && xprop.name) {
+
+	for (var i in xprops) {
+		var xprop = xprops[i];
+		if (xprop && xprop.name) {
 			var x = soapDoc.set("xprop", null, comp);
 			x.setAttribute("name", xprop.name);
-			if(xprop.value != null) {
+			if (xprop.value != null) {
 				x.setAttribute("value", xprop.value);
 			}
 			this._addXParamToSoap(soapDoc, x, xprop.xparam);
 		}		
 	}
-	
 };
 
 ZmCalItem.prototype._addXParamToSoap = 
 function(soapDoc, xprop, xparams)  {
-	
-	if(!xparams){ return; }
-	
+	if (!xparams) { return; }
+
 	xparams = (xparams instanceof Array) ? xparams : [xparams]
-	
-	var xparam = null;
-	for(var j in xparams) {
-		xparam = xparams[j];
-		if(xparam && xparam.name) {
+
+	for (var j in xparams) {
+		var xparam = xparams[j];
+		if (xparam && xparam.name) {
 			var x = soapDoc.set("xparam", null, xprop);
 			x.setAttribute("name", xparam.name);
-			if(xparam.value != null) {
+			if (xparam.value != null) {
 				x.setAttribute("value", xparam.value);
         	}
 		}
@@ -1226,11 +1202,6 @@ function(soapDoc, inv, comp) {
 	}
 };
 
-ZmCalItem.prototype._addLocationToSoap =
-function(inv) {
-	// override
-};
-
 ZmCalItem.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	// if this appt is on-behalf-of, set the from address to that person
@@ -1244,7 +1215,7 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 ZmCalItem.prototype._addNotesToSoap =
 function(soapDoc, m, cancel) {
 
-	var hasAttendees = this.hasPersonAttendees();
+	var hasAttendees = this.hasAttendeeForType(ZmCalBaseItem.PERSON);
 	var tprefix = hasAttendees ? this._getDefaultBlurb(cancel) : "";
 	var hprefix = hasAttendees ? this._getDefaultBlurb(cancel, true) : "";
 
@@ -1286,58 +1257,16 @@ function(soapDoc, accountName, callback, errorCallback) {
 
 ZmCalItem.prototype._loadFromDom =
 function(calItemNode, instNode) {
+	ZmCalBaseItem.prototype._loadFromDom.call(this, calItemNode, instNode);
 
-	this.uid 			= calItemNode.uid;
-	this.folderId 		= calItemNode.l || this._getDefaultFolderId();
-	this.id 			= this._getAttr(calItemNode, instNode, "id");
-	this.name 			= this._getAttr(calItemNode, instNode, "name");
-	this.fragment 		= this._getAttr(calItemNode, instNode, "fr");
 	this.isOrg 			= this._getAttr(calItemNode, instNode, "isOrg");
     var org             = calItemNode.or;
     this.organizer      = org && org.a;
     this.sentBy         = org && org.sentBy;
-    this.status 		= this._getAttr(calItemNode, instNode, "status");
-	this.ptst 			= this._getAttr(calItemNode, instNode, "ptst");
 	this.invId 			= this._getAttr(calItemNode, instNode, "invId");
 	this.compNum 		= this._getAttr(calItemNode, instNode, "compNum") || "0";
-	this.isException 	= this._getAttr(calItemNode, instNode, "ex");
-	var itemAllDay		= calItemNode.allDay;
-	var instAllDay		= instNode.allDay;
-	var dur				= this._getAttr(calItemNode, instNode, "dur");
-
-    if(instAllDay != null) {
-        this.allDayEvent = instAllDay ? "1" : "0";
-    }else {
-        this.allDayEvent = itemAllDay ? "1" : "0";
-    }
-
-    this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
-	this.alarmData 		= this._getAttr(calItemNode, instNode, "alarmData");	
 	this.parseAlarmData(this.alarmData);
-	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
-
-	this.recurring 		= instNode.recur != null ? instNode.recur : calItemNode.recur; // TEST for null since recur can be FALSE
-	this._seriesInvId 	= this.recurring ? calItemNode.invId : null;
-
-	// override ptst for this instance if map-able and is not NEEDS-ACTION
-    var fba = this._getAttr(calItemNode, instNode, "fba");
-	if (fba && this.ptst != ZmCalItem.PSTATUS_NEEDS_ACTION && ZmCalItem.FBA_TO_PTST[fba]) {
-		this.ptst = ZmCalItem.FBA_TO_PTST[fba];
-	}
-
-	var sd = this._getAttr(calItemNode, instNode, "s");
-	if (sd) {
-        var tzo = instNode.tzo != null ? instNode.tzo : calItemNode.tzo;
-		var adjustMs = this.isAllDayEvent() ? (tzo + new Date(instNode.s).getTimezoneOffset()*60*1000) : 0;
-		var startTime = parseInt(sd,10) + adjustMs;
-		this.startDate = new Date(startTime);
-		this.uniqStartTime = this.startDate.getTime();
-	}
-
-	if (dur) {
-		var endTime = startTime + (parseInt(dur));
-		this.endDate = new Date(endTime);
-	}
+	this.seriesInvId 	= this.recurring ? calItemNode.invId : null;
 
 	if (calItemNode.t) {
 		this._parseTags(calItemNode.t);
@@ -1352,8 +1281,9 @@ function(respName, callback, result) {
 
 	// branch for different responses
 	var response = resp[respName];
-	if (response.uid != null)
+	if (response.uid != null) {
 		this.uid = response.uid;
+	}
 
 	if (response.m != null) {
 		var oldInvId = this.invId;
@@ -1364,8 +1294,9 @@ function(respName, callback, result) {
 
 	this._messageNode = null;
 
-	if (callback)
+	if (callback) {
 		callback.run();
+	}
 };
 
 ZmCalItem.prototype._handleResponseGetDetails =
@@ -1377,22 +1308,6 @@ function(mode, message, callback, result) {
 
 
 // Static methods
-
-/**
-* Compares two appts. sort by (starting date, duration)
-* sort methods.
-*
-* @param a		an appt
-* @param b		an appt
-*/
-ZmCalItem.compareByTimeAndDuration =
-function(a, b) {
-	if (a.getStartTime() > b.getStartTime()) 	return 1;
-	if (a.getStartTime() < b.getStartTime()) 	return -1;
-	if (a.getDuration() < b.getDuration()) 		return 1;
-	if (a.getDuration() > b.getDuration()) 		return -1;
-	return 0;
-};
 
 ZmCalItem.getLabelForPriority =
 function(priority) {
@@ -1435,14 +1350,14 @@ function(status) {
 ZmCalItem.getLabelForParticipationStatus =
 function(status) {
 	switch (status) {
-		case ZmCalItem.PSTATUS_ACCEPT: return ZmMsg.ptstAccept;
-		case ZmCalItem.PSTATUS_DECLINED: return ZmMsg.ptstDeclined;
-		case ZmCalItem.PSTATUS_DEFERRED: return ZmMsg.ptstDeferred;
-		case ZmCalItem.PSTATUS_DELEGATED: return ZmMsg.ptstDelegated;
-		case ZmCalItem.PSTATUS_NEEDS_ACTION: return ZmMsg.ptstNeedsAction;
-		case ZmCalItem.PSTATUS_COMPLETED:  return ZmMsg.completed;
-		case ZmCalItem.PSTATUS_TENTATIVE: return ZmMsg.ptstTentative;
-		case ZmCalItem.PSTATUS_WAITING: return ZmMsg.ptstWaiting;
+		case ZmCalBaseItem.PSTATUS_ACCEPT:		return ZmMsg.ptstAccept;
+		case ZmCalBaseItem.PSTATUS_DECLINED:	return ZmMsg.ptstDeclined;
+		case ZmCalBaseItem.PSTATUS_DEFERRED:	return ZmMsg.ptstDeferred;
+		case ZmCalBaseItem.PSTATUS_DELEGATED:	return ZmMsg.ptstDelegated;
+		case ZmCalBaseItem.PSTATUS_NEEDS_ACTION:return ZmMsg.ptstNeedsAction;
+		case ZmCalBaseItem.PSTATUS_COMPLETED:	return ZmMsg.completed;
+		case ZmCalBaseItem.PSTATUS_TENTATIVE:	return ZmMsg.ptstTentative;
+		case ZmCalBaseItem.PSTATUS_WAITING:		return ZmMsg.ptstWaiting;
 	}
 	return "";
 };
@@ -1450,22 +1365,16 @@ function(status) {
 ZmCalItem.getParticipationStatusIcon =
 function(status) {
 	switch (status) {
-		case ZmCalItem.PSTATUS_ACCEPT: return "Check";
-		case ZmCalItem.PSTATUS_DECLINED: return "Cancel";
-		case ZmCalItem.PSTATUS_DEFERRED: return "QuestionMark";
-		case ZmCalItem.PSTATUS_DELEGATED: return "Plus";
-		case ZmCalItem.PSTATUS_NEEDS_ACTION: return "QuestionMark";
-		case ZmCalItem.PSTATUS_COMPLETED: return "Completed";		
-		case ZmCalItem.PSTATUS_TENTATIVE: return "QuestionMark";
-		case ZmCalItem.PSTATUS_WAITING: return "Minus";
+		case ZmCalBaseItem.PSTATUS_ACCEPT:		return "Check";
+		case ZmCalBaseItem.PSTATUS_DECLINED:	return "Cancel";
+		case ZmCalBaseItem.PSTATUS_DEFERRED:	return "QuestionMark";
+		case ZmCalBaseItem.PSTATUS_DELEGATED:	return "Plus";
+		case ZmCalBaseItem.PSTATUS_NEEDS_ACTION:return "QuestionMark";
+		case ZmCalBaseItem.PSTATUS_COMPLETED:	return "Completed";
+		case ZmCalBaseItem.PSTATUS_TENTATIVE:	return "QuestionMark";
+		case ZmCalBaseItem.PSTATUS_WAITING:		return "Minus";
 	}
 	return "";
-};
-
-ZmCalItem._getTTHour =
-function(d) {
-	var formatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-	return formatter.format(d);
 };
 
 ZmCalItem._getTTDay =

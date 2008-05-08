@@ -47,10 +47,10 @@ ZmSchedTabViewPage = function(parent, attendees, controller, dateInfo) {
 	this._allAttendeesStatus = [];
 	this._allAttendeesSlot = null;
 
-	this._attTypes = [ZmCalItem.PERSON];
+	this._attTypes = [ZmCalBaseItem.PERSON];
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		this._attTypes.push(ZmCalItem.LOCATION);
-		this._attTypes.push(ZmCalItem.EQUIPMENT);
+		this._attTypes.push(ZmCalBaseItem.LOCATION);
+		this._attTypes.push(ZmCalBaseItem.EQUIPMENT);
 	}
 
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
@@ -73,19 +73,19 @@ ZmSchedTabViewPage.STATUS_UNKNOWN			= 5;
 
 // Pre-cache the status css class names
 ZmSchedTabViewPage.STATUS_CLASSES = [];
-ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_FREE] = 	"ZmScheduler-free";
-ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_BUSY] =		"ZmScheduler-busy";
-ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_TENTATIVE]= "ZmScheduler-tentative";
-ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_OUT] = 		"ZmScheduler-outOfOffice";
-ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_UNKNOWN] = 	"ZmScheduler-unknown";
+ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_FREE]		= "ZmScheduler-free";
+ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_BUSY]		= "ZmScheduler-busy";
+ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_TENTATIVE]	= "ZmScheduler-tentative";
+ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_OUT]		= "ZmScheduler-outOfOffice";
+ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_UNKNOWN]	= "ZmScheduler-unknown";
 
 ZmSchedTabViewPage.PSTATUS_CLASSES = [];
-ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_DECLINED]      = "ZmSchedulerPTST-declined";
-ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_DEFERRED]      = "ZmSchedulerPTST-deferred";
-ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_DELEGATED]     = "ZmSchedulerPTST-delegated";
-ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_NEEDS_ACTION]  = "ZmSchedulerPTST-needsaction";
-ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_TENTATIVE]     = "ZmSchedulerPTST-tentative";
-ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalItem.PSTATUS_WAITING]       = "ZmSchedulerPTST-waiting";
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalBaseItem.PSTATUS_DECLINED]      = "ZmSchedulerPTST-declined";
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalBaseItem.PSTATUS_DEFERRED]      = "ZmSchedulerPTST-deferred";
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalBaseItem.PSTATUS_DELEGATED]     = "ZmSchedulerPTST-delegated";
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]  = "ZmSchedulerPTST-needsaction";
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalBaseItem.PSTATUS_TENTATIVE]     = "ZmSchedulerPTST-tentative";
+ZmSchedTabViewPage.PSTATUS_CLASSES[ZmCalBaseItem.PSTATUS_WAITING]       = "ZmSchedulerPTST-waiting";
 
 // Hold on to this one separately because we use it often
 ZmSchedTabViewPage.FREE_CLASS = ZmSchedTabViewPage.STATUS_CLASSES[ZmSchedTabViewPage.STATUS_FREE];
@@ -272,7 +272,7 @@ function() {
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader, separator: "",
 					  matchValue: ZmContactsApp.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback, smartPos: true};
 		this._acContactsList = new ZmAutocompleteListView(params);
-		this._acList[ZmCalItem.PERSON] = this._acContactsList;
+		this._acList[ZmCalBaseItem.PERSON] = this._acContactsList;
 	}
 	// autocomplete for locations/equipment
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
@@ -280,10 +280,10 @@ function() {
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations, separator: "",
 					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback, smartPos: true};
 		this._acLocationsList = new ZmAutocompleteListView(params);
-		this._acList[ZmCalItem.LOCATION] = this._acLocationsList;
+		this._acList[ZmCalBaseItem.LOCATION] = this._acLocationsList;
 		params.dataLoader = resourcesClass.getEquipment;
 		this._acEquipmentList = new ZmAutocompleteListView(params);
-		this._acList[ZmCalItem.EQUIPMENT] = this._acEquipmentList;
+		this._acList[ZmCalBaseItem.EQUIPMENT] = this._acEquipmentList;
 	}
 };
 
@@ -392,9 +392,9 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		var selectDiv = document.getElementById(selectId);
 		if (selectDiv) {
 			select = new DwtSelect({parent:this});
-			select.addOption(new DwtSelectOption(ZmCalItem.PERSON, true, null, null, null, "Person"));
-			select.addOption(new DwtSelectOption(ZmCalItem.LOCATION, false, null, null, null, "Location"));
-			select.addOption(new DwtSelectOption(ZmCalItem.EQUIPMENT, false, null, null, null, "Resource"));
+			select.addOption(new DwtSelectOption(ZmCalBaseItem.PERSON, true, null, null, null, "Person"));
+			select.addOption(new DwtSelectOption(ZmCalBaseItem.LOCATION, false, null, null, null, "Location"));
+			select.addOption(new DwtSelectOption(ZmCalBaseItem.EQUIPMENT, false, null, null, null, "Resource"));
 			select.reparentHtmlElement(selectId);
 			select.addChangeListener(this._selectChangeListener);
 			select.setSize("50");
@@ -409,7 +409,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 			var inputEl = dwtInputField.getInputElement();
 			inputEl.className = "ZmSchedulerInput";
 			inputEl.id = sched.dwtInputId;
-			sched.attType = inputEl._attType = ZmCalItem.PERSON;
+			sched.attType = inputEl._attType = ZmCalBaseItem.PERSON;
 			sched.inputObj = dwtInputField;
 			if (select) {
 				select.dwtInputField = dwtInputField;
@@ -608,7 +608,7 @@ function(inputEl, attendee, useException) {
 
 ZmSchedTabViewPage.prototype._setAttendeeToolTip =
 function(sched, attendee, type) {
-	if (type != ZmCalItem.PERSON) return;
+	if (type != ZmCalBaseItem.PERSON) return;
 
 	var name = attendee.getFullName();
 	var email = attendee.getEmail();
@@ -686,8 +686,8 @@ function(organizer, attendees) {
 	this.cleanup();
 	var emails = [];
 	// create a slot for the organizer
-	this._organizerIndex = this._addAttendeeRow(false, organizer.getAttendeeText(ZmCalItem.PERSON, true), false);
-	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmCalItem.PERSON, true));
+	this._organizerIndex = this._addAttendeeRow(false, organizer.getAttendeeText(ZmCalBaseItem.PERSON, true), false);
+	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmCalBaseItem.PERSON, true));
 
 	// create slots for each of the other attendees/resources
 	for (var t = 0; t < this._attTypes.length; t++) {
@@ -792,7 +792,7 @@ function(sched, resetSelect, type, noClear) {
 	if (resetSelect) {
 		var select = AjxCore.objectWithId(sched.selectObjId);
 		if (select) {
-			select.setSelectedValue(ZmCalItem.PERSON);
+			select.setSelectedValue(ZmCalBaseItem.PERSON);
 		}
 	}
 
@@ -976,11 +976,11 @@ function(ev) {
 
 	// reset autocomplete handler
 	var inputEl = input.getInputElement();
-	if (type == ZmCalItem.PERSON && svp._acContactsList) {
+	if (type == ZmCalBaseItem.PERSON && svp._acContactsList) {
 		svp._acContactsList.handle(inputEl);
-	} else if (type == ZmCalItem.LOCATION && svp._acLocationsList) {
+	} else if (type == ZmCalBaseItem.LOCATION && svp._acLocationsList) {
 		svp._acLocationsList.handle(inputEl);
-	} else if (type == ZmCalItem.EQUIPMENT && svp._acEquipmentList) {
+	} else if (type == ZmCalBaseItem.EQUIPMENT && svp._acEquipmentList) {
 		svp._acEquipmentList.handle(inputEl);
 	}
 };
@@ -1006,7 +1006,8 @@ function(status, slots, table, sched) {
 					if (status != ZmSchedTabViewPage.STATUS_UNKNOWN) {
 						this._allAttendees[j] = this._allAttendees[j] + 1;
 						this.updateAllAttendeeCellStatus(j, status);
-					}					sched._coloredCells.push(row.cells[j]);
+					}
+					sched._coloredCells.push(row.cells[j]);
 					row.cells[j].className = className;
 				}
 			}

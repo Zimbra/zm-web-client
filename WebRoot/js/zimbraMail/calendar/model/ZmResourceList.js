@@ -54,7 +54,7 @@ function() {
 ZmResourceList.prototype.load =
 function(batchCmd) {
 	var conds = [];
-	var value = (this.resType == ZmCalItem.LOCATION) ? ZmResource.ATTR_LOCATION : ZmResource.ATTR_EQUIPMENT;
+	var value = (this.resType == ZmCalBaseItem.LOCATION) ? ZmResource.ATTR_LOCATION : ZmResource.ATTR_EQUIPMENT;
 	conds.push({attr: ZmResource.F_type, op: "eq", value: value});
 	var params = {conds: conds, join: ZmSearch.JOIN_OR, attrs: ZmResourceList.ATTRS};
 	var search = new ZmSearch(params);

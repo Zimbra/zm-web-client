@@ -150,7 +150,7 @@ function(date, list, controller, noheader, emptyMsg) {
 		if (!ao.isAllDayEvent()) {
 		
 			var color = ZmCalendarApp.COLORS[controller.getCalendarColor(ao.folderId)];
-			var isNew = ao.status == ZmCalItem.PSTATUS_NEEDS_ACTION;
+			var isNew = ao.status == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 
 			html.append("<tr><td class='calendar_month_day_item'><div class='", color, isNew ? "DarkC" : "C", "'>");		
 			if (isNew) html.append("<b>");
@@ -214,7 +214,7 @@ function(item, type, strictText, strictEmail) {
 
 		// Bug 7837: preserve the email address as it was typed
 		//           instead of using the contact's primary email.
-		if (attendee && type == ZmCalItem.PERSON) {
+		if (attendee && type == ZmCalBaseItem.PERSON) {
 			attendee = AjxUtil.createProxy(attendee);
 			attendee._inviteAddress = addr;
 			attendee.getEmail = function() {
@@ -224,7 +224,7 @@ function(item, type, strictText, strictEmail) {
 
 		if (!attendee && !strictEmail) {
 			// AjxEmailAddress has name and email, init a new contact/resource from those
-			attendee = (type == ZmCalItem.PERSON) ? new ZmContact(null) :
+			attendee = (type == ZmCalBaseItem.PERSON) ? new ZmContact(null) :
 													new ZmResource(type);
 			attendee.initFromEmail(item, true);
 		}
@@ -238,19 +238,19 @@ function(item, type, strictText, strictEmail) {
 	 		// is it a contact/resource we already know about?
 			attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
 			if (!attendee && !strictEmail) {
-				if (type == ZmCalItem.PERSON) {
+				if (type == ZmCalBaseItem.PERSON) {
 					attendee = new ZmContact(null);
-				} else if (type == ZmCalItem.LOCATION) {
-					attendee = new ZmResource(null, ZmApptViewHelper._locations, ZmCalItem.LOCATION);
-				} else if (type == ZmCalItem.EQUIPMENT) {
-					attendee = new ZmResource(null, ZmApptViewHelper._equipment, ZmCalItem.EQUIPMENT);
+				} else if (type == ZmCalBaseItem.LOCATION) {
+					attendee = new ZmResource(null, ZmApptViewHelper._locations, ZmCalBaseItem.LOCATION);
+				} else if (type == ZmCalBaseItem.EQUIPMENT) {
+					attendee = new ZmResource(null, ZmApptViewHelper._equipment, ZmCalBaseItem.EQUIPMENT);
 				}
 				attendee.initFromEmail(email, true);
-			} else if (type == ZmCalItem.PERSON) {
+			} else if (type == ZmCalBaseItem.PERSON) {
 				// remember actual address (in case it's email2 or email3)
 				attendee._inviteAddress = addr;
 			}
-		} else if (type != ZmCalItem.PERSON) {
+		} else if (type != ZmCalBaseItem.PERSON) {
 			// check if it's a location or piece of equipment we know by name
 			if (ZmApptViewHelper._locations) {
 				attendee = ZmApptViewHelper._locations.getResourceByName(item);
@@ -261,8 +261,8 @@ function(item, type, strictText, strictEmail) {
 		}
 		// non-email string: initialize as a resource if it's a location, since
 		// those can be free-text
-		if (!attendee && type == ZmCalItem.LOCATION && !strictText && ZmApptViewHelper._locations) {
-			attendee = new ZmResource(null, ZmApptViewHelper._locations, ZmCalItem.LOCATION);
+		if (!attendee && type == ZmCalBaseItem.LOCATION && !strictText && ZmApptViewHelper._locations) {
+			attendee = new ZmResource(null, ZmApptViewHelper._locations, ZmCalBaseItem.LOCATION);
 			attendee.setAttr(ZmResource.F_name, item);
 			attendee.setAttr(ZmResource.F_type, ZmResource.ATTR_LOCATION);
 			ZmApptViewHelper._locations.updateHashes(attendee);
@@ -274,11 +274,11 @@ function(item, type, strictText, strictEmail) {
 ZmApptViewHelper._getAttendeeFromAddr =
 function(addr, type) {
 	var attendee = null;
-	if ((type == ZmCalItem.PERSON) && ZmApptViewHelper._contacts) {
+	if ((type == ZmCalBaseItem.PERSON) && ZmApptViewHelper._contacts) {
 		attendee = ZmApptViewHelper._contacts.getContactByEmail(addr);
-	} else if ((type == ZmCalItem.LOCATION) && ZmApptViewHelper._locations) {
+	} else if ((type == ZmCalBaseItem.LOCATION) && ZmApptViewHelper._locations) {
 		attendee = ZmApptViewHelper._locations.getResourceByEmail(addr);
-	} else if ((type == ZmCalItem.EQUIPMENT) && ZmApptViewHelper._equipment) {
+	} else if ((type == ZmCalBaseItem.EQUIPMENT) && ZmApptViewHelper._equipment) {
 		attendee = ZmApptViewHelper._equipment.getResourceByEmail(addr);
 	}
 	return attendee;
@@ -326,8 +326,8 @@ function(list, type, includeDisplayName) {
 
 ZmApptViewHelper._allDayItemHtml =
 function(appt, id, body_style, controller) {
-	var isNew = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION;
-	var isAccepted = appt.ptst == ZmCalItem.PSTATUS_ACCEPT;
+	var isNew = appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
+	var isAccepted = appt.ptst == ZmCalBaseItem.PSTATUS_ACCEPT;
 	var color = ZmCalendarApp.COLORS[controller.getCalendarColor(appt.folderId)];
 	var subs = {
 		id: id,
@@ -338,7 +338,7 @@ function(appt, id, body_style, controller) {
 		name: AjxStringUtil.htmlEncode(appt.getName()),
 //		tag: isNew ? "NEW" : "",		//  HACK: i18n
 		starttime: appt.getDurationText(true, true),
-		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate),
+		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalBaseItem._getTTHour(appt.endDate),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr(),
 		icon: appt.isPrivate() ? "ReadOnly" : null

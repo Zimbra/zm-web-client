@@ -224,7 +224,7 @@ function(node, args) {
 */
 ZmContactList.prototype._realizeContact =
 function(contact, idx) {
-	if (contact instanceof ZmContact)
+	if ((contact instanceof ZmContact) || (contact instanceof ZmResource))
 		return contact;
 
 	var args = {list:this};
@@ -907,7 +907,11 @@ function(contact) {
 */
 ZmContactList.prototype._testAcMatch =
 function(contact, str, doMarkup) {
-	contact = (contact instanceof ZmContact) ? contact : (contact && contact.id) ? this.getById(contact.id) : this.getById(contact);
+	contact = ((contact instanceof ZmContact) || (contact instanceof ZmResource))
+		? contact
+		: (contact && contact.id)
+			? this.getById(contact.id)
+			: this.getById(contact);
 
 	if (!contact || ZmContact.isInTrash(contact)) return false;
 
@@ -1001,7 +1005,12 @@ function(a, b) {
 */
 ZmContactList.prototype._getMatches =
 function(contact, str) {
-	contact = (contact instanceof ZmContact) ? contact : (contact && contact.id) ? this.getById(contact.id) : this.getById(contact);
+	contact = ((contact instanceof ZmContact) || (contact instanceof ZmResource))
+		? contact
+		: (contact && contact.id)
+			? this.getById(contact.id)
+			: this.getById(contact);
+
 	var match = this._testAcMatch(contact, str, true);
 	if (!match) {
 		DBG.println(AjxDebug.DBG1, "Matched contact with ID " + contact.id + " no longer matches '" + str + "' (possibly deleted)");

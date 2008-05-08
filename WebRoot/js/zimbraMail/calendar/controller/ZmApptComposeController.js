@@ -72,12 +72,12 @@ function(attId) {
 			return false;
 		}
 		
-		var origAttendees = appt.getOrigAttendees();				// bug fix #4160
+		var origAttendees = appt.origAttendees;						// bug fix #4160
 		if (origAttendees && origAttendees.length > 0 && 			// make sure we're not u/l'ing a file
 			attId == null) 											// make sure we are editing an existing appt w/ attendees
 		{
 			if (!this._composeView.getApptTab().isDirty(true)) {	// make sure other fields (besides attendees field) have not changed
-				var attendees = appt.getAttendees();
+				var attendees = appt.getAttendees(ZmCalBaseItem.PERSON);
 				if (attendees.length > 0) {
 					// check whether organizer has added/removed any attendees
 					if (this._attendeesUpdated(appt, attId, attendees, origAttendees))

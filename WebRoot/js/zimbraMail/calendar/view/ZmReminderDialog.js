@@ -130,14 +130,14 @@ function(html, appt, data, needSep) {
 	html.append("<tr width=100% id='", this._rowId(data), "'>");
 	html.append("<td colspan=2>");
 	html.append("<table cellpadding=0 cellspacing=0 border=0><tr>");
-	html.append("<td width=25px>", AjxImg.getImageHtml(appt.hasOtherAttendees() ? "ApptMeeting" : "Appointment"), "</td>");
+	html.append("<td width=25px>", AjxImg.getImageHtml(appt.otherAttendees ? "ApptMeeting" : "Appointment"), "</td>");
 	html.append("<td><b>",  AjxStringUtil.htmlEncode(appt.getName()), "</b> (", appt.getDurationText(false, false),")</td>");
 	html.append("</tr></table>");
 	html.append("</td>");
 	html.append("<td id='", data.deltaId, "'></td>");
 	html.append("<td align=right id='", data.buttonId, "'></td>");	
 	html.append("</tr>");
-	if (appt.hasOtherAttendees()) this._addAttr(html, ZmMsg.status, appt.getParticipantStatusStr(), data);
+	if (appt.otherAttendees) this._addAttr(html, ZmMsg.status, appt.getParticipantStatusStr(), data);
 	if (calName) this._addAttr(html, ZmMsg.calendar, calName, data);	
 	this._addAttr(html, ZmMsg.location, appt.getLocation(), data);
 };

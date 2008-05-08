@@ -103,7 +103,7 @@ function() {
 
 ZmCalItemView.prototype.getPrintHtml =
 function() {
-	var attendees = this._calItem.getAttendeesText();
+	var attendees = this._calItem.getAttendeesText(ZmCalBaseItem.PERSON);
 	var organizer = attendees ? this._calItem.getOrganizer() : null;
 
 	var hasHtmlPart = (this._calItem.notesTopPart && this._calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
@@ -114,8 +114,8 @@ function() {
 	var subs = {
 		subject: this._calItem.getName(),
 		dateStr: this._getTimeString(this._calItem),
-		location: this._calItem.getLocation(true),
-		equipment: this._calItem.getEquipmentText(true),
+		location: this._calItem.getAttendeesText(ZmCalBaseItem.LOCATION, true),
+		equipment: this._calItem.getAttendeesText(ZmCalBaseItem.EQUIPMENT, true),
 		attendees: attendees,
 		organizer: organizer,
 		recurStr: this._calItem.getRecurBlurb(),
@@ -236,7 +236,7 @@ function() {
 ZmApptView.prototype.getTitle =
 function() {
 	var name = this._calItem.getName();
-	var attendees = this._calItem.getAttendeesText();
+	var attendees = this._calItem.getAttendeesText(ZmCalBaseItem.PERSON);
 	var title = attendees ? ZmMsg.meeting : ZmMsg.appointment;
 	return [ZmMsg.zimbraTitle, title, name].join(": ");
 };
@@ -257,11 +257,11 @@ function(x, y, width, height) {
 ZmApptView.prototype._getSubs =
 function(calItem) {
 	var subject = calItem.getName();
-	var location = calItem.getLocation(true);
-	var equipment = calItem.getEquipmentText(true);
+	var location = calItem.getAttendeesText(ZmCalBaseItem.LOCATION, true);
+	var equipment = calItem.getAttendeesText(ZmCalBaseItem.EQUIPMENT, true);
 	var isException = calItem._orig.isException;
 	var dateStr = this._getTimeString(calItem);
-	var attendees = calItem.getAttendeesText();
+	var attendees = calItem.getAttendeesText(ZmCalBaseItem.PERSON);
 	var org, obo;
 	var recurStr = calItem.isRecurring() ? calItem.getRecurBlurb() : null;
 	var attachStr = ZmCalItemView._getAttachString(calItem);
@@ -372,7 +372,7 @@ function() {
 ZmTaskView.prototype._getSubs =
 function(calItem) {
 	var subject = calItem.getName();
-	var location = calItem.getLocation(true);
+	var location = calItem.getAttendeesText(ZmCalBaseItem.LOCATION, true);
 	var isException = calItem._orig ? calItem._orig.isException : calItem.isException;
 	var startDate = calItem.startDate ? AjxDateFormat.getDateInstance().format(calItem.startDate) : null;
 	var dueDate = calItem.endDate ? AjxDateFormat.getDateInstance().format(calItem.endDate) : null;

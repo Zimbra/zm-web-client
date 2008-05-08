@@ -17,7 +17,7 @@
 ZmAppt = function(list, noinit) {
 
 	ZmCalItem.call(this, ZmItem.APPT, list);
-	if (noinit) return;
+	if (noinit) { return; }
 
 	this.freeBusy = "B"; 														// Free/Busy status (F|B|T|O) (free/busy/tentative/outofoffice)
 	this.privacy = "PUB";														// Privacy class (PUB|PRI|CON) (public/private/confidential)
@@ -28,13 +28,13 @@ ZmAppt = function(list, noinit) {
 
 	// attendees by type
 	this._attendees = {};
-	this._attendees[ZmCalItem.PERSON]	= [];
-	this._attendees[ZmCalItem.LOCATION]	= [];
-	this._attendees[ZmCalItem.EQUIPMENT]= [];
+	this._attendees[ZmCalBaseItem.PERSON]	= [];
+	this._attendees[ZmCalBaseItem.LOCATION]	= [];
+	this._attendees[ZmCalBaseItem.EQUIPMENT]= [];
 
-	this._origAttendees = null;	// list of ZmContact
-	this._origLocations = null;	// list of ZmResource
-	this._origEquipment = null;	// list of ZmResource
+	this.origAttendees = null;	// list of ZmContact
+	this.origLocations = null;	// list of ZmResource
+	this.origEquipment = null;	// list of ZmResource
 };
 
 ZmAppt.prototype = new ZmCalItem;
@@ -46,14 +46,6 @@ ZmAppt.prototype.constructor = ZmAppt;
 ZmAppt.MODE_DRAG_OR_SASH		= ++ZmCalItem.MODE_LAST;
 ZmAppt.ATTENDEES_SEPARATOR		= "; ";
 
-ZmAppt._pstatusString = {
-	NE: ZmMsg._new,
-	TE: ZmMsg.tentative,
-	AC: ZmMsg.accepted,
-	DE: ZmMsg.declined,
-	DG: ZmMsg.delegated
-};
-
 
 // Public methods
 
@@ -62,34 +54,26 @@ function() {
 	return "ZmAppt";
 };
 
+ZmAppt.prototype.getAttendees =
+function(type) {
+	return this._attendees[type];
+};
 
-// Getters
-ZmAppt.prototype.getAttendees			= function() { return this._attendees[ZmCalItem.PERSON]; };
-ZmAppt.prototype.getAttendeesText		= function() { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalItem.PERSON], ZmCalItem.PERSON); };
-ZmAppt.prototype.getEquipment			= function() { return this._attendees[ZmCalItem.EQUIPMENT]; };
-ZmAppt.prototype.getLocations			= function() { return this._attendees[ZmCalItem.LOCATION]; };
-ZmAppt.prototype.getOrigAttendees 		= function() { return this._origAttendees; };
-ZmAppt.prototype.getOrigLocations 		= function() { return this._origLocations; };
-ZmAppt.prototype.getOrigEquipment 		= function() { return this._origEquipment; };
-ZmAppt.prototype.getParticipantStatusStr= function() { return ZmAppt._pstatusString[this.ptst]; };
+ZmAppt.prototype.getAttendeesText =
+function(type, inclDispName) {
+	return ZmApptViewHelper.getAttendeesString(this._attendees[type], type, inclDispName);
+};
 
-ZmAppt.prototype.getEquipmentText		= function(inclDispName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalItem.EQUIPMENT], ZmCalItem.EQUIPMENT, inclDispName); };
-ZmAppt.prototype.getLocationsText		= function(inclDispName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalItem.LOCATION], ZmCalItem.LOCATION, inclDispName); };
-ZmAppt.prototype.getLocation			= function(inclDispName) { return this.getLocationsText(inclDispName); };
-ZmAppt.prototype.getOrigLocationsText	= function(inclDispName) { return ZmApptViewHelper.getAttendeesString(this._origLocations, ZmCalItem.LOCATION, inclDispName); };
-ZmAppt.prototype.getOrigLocation		= function(inclDispName) { return this.getOrigLocationsText(inclDispName); };
-ZmAppt.prototype.getOrigEquipmentText	= function(inclDispName) { return ZmApptViewHelper.getAttendeesString(this._origEquipment, ZmCalItem.EQUIPMENT, inclDispName); };
+ZmAppt.prototype.hasAttendeeForType =
+function(type) {
+	return ((this._attendees[type] && this._attendees[type].length));
+};
 
-ZmAppt.prototype.hasOtherAttendees 		= function() { return this.otherAttendees; };
 ZmAppt.prototype.hasAttendees =
 function() {
-	return ((this._attendees[ZmCalItem.PERSON] && this._attendees[ZmCalItem.PERSON].length) ||
-			(this._attendees[ZmCalItem.LOCATION] && this._attendees[ZmCalItem.LOCATION].length) ||
-			(this._attendees[ZmCalItem.EQUIPMENT] && this._attendees[ZmCalItem.EQUIPMENT].length));
-};
-ZmAppt.prototype.hasPersonAttendees =
-function() {
-	return ((this._attendees[ZmCalItem.PERSON] && this._attendees[ZmCalItem.PERSON].length));
+	return this.hasAttendeeForType(ZmCalBaseItem.PERSON) ||
+		   this.hasAttendeeForType(ZmCalBaseItem.LOCATION) ||
+		   this.hasAttendeeForType(ZmCalBaseItem.EQUIPMENT);
 };
 
 // Public methods
@@ -108,14 +92,14 @@ function(appt) {
 	newAppt.endDate = new Date(appt.endDate.getTime());
 	newAppt._uniqId = Dwt.getNextId();
 
-	newAppt._origAttendees = AjxUtil.createProxy(appt.getOrigAttendees());
-	newAppt._origLocations = AjxUtil.createProxy(appt.getOrigLocations());
-	newAppt._origEquipment = AjxUtil.createProxy(appt.getOrigEquipment());
+	newAppt.origAttendees = AjxUtil.createProxy(appt.origAttendees);
+	newAppt.origLocations = AjxUtil.createProxy(appt.origLocations);
+	newAppt.origEquipment = AjxUtil.createProxy(appt.origEquipment);
 	newAppt._validAttachments = AjxUtil.createProxy(appt._validAttachments);
 
-	if (newAppt._orig == null) 
+	if (newAppt._orig == null) {
 		newAppt._orig = appt;
-
+	}
 	newAppt.type = ZmItem.APPT;
 
 	return newAppt;
@@ -139,8 +123,9 @@ function() {
 */
 ZmAppt.prototype.getToolTip =
 function(controller, force) {
-	if (this._orig)
+	if (this._orig) {
 		return this._orig.getToolTip(controller, force);
+	}
 
 	if (!this._toolTip || force) {
         var organizer = this.getOrganizer();
@@ -188,17 +173,17 @@ function(controller, force) {
             organizer: organizer,
             sentBy: sentBy,
             when: this.getDurationText(false, false),
-			location: this.getLocation(true),
+			location: this.getLocation(),
             width: "250",
             showAttendeeStatus: (this._ptstHashMap != null)
         };
 
-		if(this._ptstHashMap != null){
+		if (this._ptstHashMap != null) {
 			var ptstStatus = {};
-			ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalItem.PSTATUS_ACCEPT]);
-			ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalItem.PSTATUS_DECLINED]);
-			ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalItem.PSTATUS_TENTATIVE]);
-			ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalItem.PSTATUS_NEEDS_ACTION]);
+			ptstStatus[ZmMsg.ptstAccept] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_ACCEPT]);
+			ptstStatus[ZmMsg.ptstDeclined] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_DECLINED]);
+			ptstStatus[ZmMsg.ptstTentative] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_TENTATIVE]);
+			ptstStatus[ZmMsg.ptstNeedsAction] = this.getAttendeeToolTipString(this._ptstHashMap[ZmCalBaseItem.PSTATUS_NEEDS_ACTION]);
 			params.ptstStatus = ptstStatus;
 		}
 
@@ -211,20 +196,19 @@ function(controller, force) {
 
 ZmAppt.prototype.getAttendeeToolTipString =
 function(val) {
-	var str = null;
+	var str;
 	var maxLimit = 10;
-	if(val && val.length>maxLimit){
-		var len = val.length;
-		var newParts = val.splice(0,maxLimit);
-		str = newParts.join(",") + " ("+ (len-maxLimit) +" more)" ;
-	}else if(val){
-		str = val.join(",");	
+	if (val && val.length > maxLimit) {
+		var newParts = val.splice(0, maxLimit);
+		str = newParts.join(",") + " ("+ (val.length - maxLimit) +" more)" ;
+	} else if (val) {
+		str = val.join(",");
 	}
-	return str;	
+	return str;
 }
 
 ZmAppt.prototype.setAttendeeToolTipData =
-function (ptstHashMap) {
+function(ptstHashMap) {
 	this._ptstHashMap = ptstHashMap;
 };
 
@@ -272,17 +256,19 @@ function(isHtml) {
 		buf[i++] = "<p>\n<table border='0'>\n";
 	}
 	
-	var location = this.getLocation(true);
+	var location = this.getAttendees(ZmCalBaseItem.LOCATION, true)
 	if (location) {
-		modified = isEdit && (this.getOrigLocation(true) != location);
+		var origLocationText = ZmApptViewHelper.getAttendeesString(this.origLocations, ZmCalBaseItem.LOCATION, true);
+		modified = (isEdit && (origLocationText != location));
 		params = [ ZmMsg.locationLabel, location, modified ? ZmMsg.apptModifiedStamp : "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
 	
-	var equipment = this.getEquipmentText(true);
+	var equipment = this.getAttendeesText(ZmCalBaseItem.EQUIPMENT, true);
 	if (equipment) {
-		modified = isEdit && (this.getOrigEquipmentText(true) != equipment);
+		var origEquipmentText = ZmApptViewHelper.getAttendeesString(this.origEquipment, ZmCalBaseItem.EQUIPMENT, true);
+		modified = (isEdit && (origEquipmentText != equipment));
 		params = [ ZmMsg.resourcesLabel, equipment, modified ? ZmMsg.apptModifiedStamp : "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
@@ -350,13 +336,13 @@ function(isHtml) {
 		buf[i++] = "\n";
 	}
 
-	if (this._attendees[ZmCalItem.PERSON] && this._attendees[ZmCalItem.PERSON].length) {
+	if (this._attendees[ZmCalBaseItem.PERSON] && this._attendees[ZmCalBaseItem.PERSON].length) {
 		if (isHtml) {
 			buf[i++] = "</table>\n<p>\n<table border='0'>";
 		}
 		buf[i++] = "\n";
-		var attString = ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalItem.PERSON].slice(0, 10), ZmCalItem.PERSON);
-		if (this._attendees[ZmCalItem.PERSON].length > 10) {
+		var attString = ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.PERSON].slice(0, 10), ZmCalBaseItem.PERSON);
+		if (this._attendees[ZmCalBaseItem.PERSON].length > 10) {
 			attString += ", ...";
 		}
 		params = [ ZmMsg.invitees + ":", attString, "" ];
@@ -401,7 +387,7 @@ function(message, subject) {
 	var addrs = message.getAddresses(AjxEmailAddress.FROM, used, true);
 	addrs.addList(message.getAddresses(AjxEmailAddress.CC, used, true));
 	addrs.addList(message.getAddresses(AjxEmailAddress.TO, used, true));
-	this._attendees[ZmCalItem.PERSON] = addrs.getArray();
+	this._attendees[ZmCalBaseItem.PERSON] = addrs.getArray();
 };
 
 ZmAppt.prototype.isPrivate =
@@ -419,78 +405,58 @@ function(message) {
 	this.privacy = message.invite.getPrivacy();
 
 	// parse out attendees for this invite
-	this._attendees[ZmCalItem.PERSON] = [];
-	this._origAttendees = [];
+	this._attendees[ZmCalBaseItem.PERSON] = [];
+	this.origAttendees = [];
 	var attendees = message.invite.getAttendees();
 	if (attendees) {
 		for (var i = 0; i < attendees.length; i++) {
 			var addr = attendees[i].url;
 			var name = attendees[i].d;
 			var email = new AjxEmailAddress(addr, null, name);
-			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalItem.PERSON);
+			var attendee = ZmApptViewHelper.getAttendeeFromItem(email, ZmCalBaseItem.PERSON);
 			if (attendee) {
-				attendee.setAttr("participationStatus",attendees[i].ptst);               
-                this._attendees[ZmCalItem.PERSON].push(attendee);
-				this._origAttendees.push(attendee);
+				attendee.setAttr("participationStatus", attendees[i].ptst);
+				this._attendees[ZmCalBaseItem.PERSON].push(attendee);
+				this.origAttendees.push(attendee);
 			}
 		}
 	}
 
-	// Locations can be free-text or known, so we parse the "loc" string to
-	// get them rather than looking at the invite's resources (which will
-	// only contain known locations)
-	this._attendees[ZmCalItem.LOCATION] = [];
-	this._origLocations = [];
+	// location/equpiment are known as resources now
+	this._attendees[ZmCalBaseItem.LOCATION] = [];
+	this.origLocations = [];
     this._ptstLocationMap = {};
 
-    var locations = AjxEmailAddress.split(message.invite.getLocation());
-	if (locations) {
-		for (var i = 0; i < locations.length; i++) {
-			var location = ZmApptViewHelper.getAttendeeFromItem(locations[i], ZmCalItem.LOCATION);
-			if (location && location.isLocation()) {
-                this._ptstLocationMap[locations[i]] = location;
-                location.setAttr("participationStatus",locations[i].ptst);
-                this._attendees[ZmCalItem.LOCATION].push(location);
-				this._origLocations.push(location);
-			}
-		}
-	}
+	this._attendees[ZmCalBaseItem.EQUIPMENT] = [];
+	this.origEquipment = [];
 
-	// Get equipment by email, make sure to exclude location resources
-	this._attendees[ZmCalItem.EQUIPMENT] = [];
-	this._origEquipment = [];
 	var resources = message.invite.getResources();	// returns all the invite's resources
 	if (resources) {
 		for (var i = 0; i < resources.length; i++) {
-            var resourceName = resources[i].d;
-            var ptst = resources[i].ptst; 
-            if( resourceName && ptst && (this._ptstLocationMap[resourceName] != null)) {
-               this._ptstLocationMap[resourceName].setAttr("participationStatus",ptst);
-            }
-
-            var resourceURL =  resources[i].url;
-
-            var parts = AjxEmailAddress.split(resourceURL);
-
-            //if multiple alias is present select the first one
-            if(parts && (parts instanceof Array) && parts.length > 0) {
-                resourceURL = parts[0];
-            }
-            
-            // see if it's a known location
-			var location = ZmApptViewHelper.getAttendeeFromItem(resourceURL, ZmCalItem.LOCATION, true, true);
-			if (location) {
-                continue;
+			var resourceName = resources[i].d;
+			var ptst = resources[i].ptst;
+			if (resourceName && ptst && (this._ptstLocationMap[resourceName] != null)) {
+				this._ptstLocationMap[resourceName].setAttr("participationStatus", ptst);
 			}
-			var equipment = ZmApptViewHelper.getAttendeeFromItem(resourceURL, ZmCalItem.EQUIPMENT);
-			if (equipment) {
-                equipment.setAttr("participationStatus",resources[i].ptst);
-                this._attendees[ZmCalItem.EQUIPMENT].push(equipment);
-				this._origEquipment.push(equipment);
+
+			// if multiple resources are present (i.e. aliases) select first one
+			var resourceURL = AjxEmailAddress.split(resources[i].url)[0];
+
+			var location = ZmApptViewHelper.getAttendeeFromItem(resourceURL, ZmCalBaseItem.LOCATION);
+			if (location) {
+				location.setAttr("participationStatus", ptst);
+				this._attendees[ZmCalBaseItem.LOCATION].push(location);
+				this.origLocations.push(location);
+			} else {
+				var equipment = ZmApptViewHelper.getAttendeeFromItem(resourceURL, ZmCalBaseItem.EQUIPMENT);
+				if (equipment) {
+					equipment.setAttr("participationStatus", ptst);
+					this._attendees[ZmCalBaseItem.EQUIPMENT].push(equipment);
+					this.origEquipment.push(equipment);
+				}
 			}
 		}
 	}
-
 };
 
 ZmAppt.prototype._getTextSummaryTime =
@@ -532,11 +498,6 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	return buf.join("");
 };
 
-ZmAppt.prototype._getDefaultFolderId =
-function() {
-	return ZmOrganizer.ID_CALENDAR;
-};
-
 ZmAppt.prototype._loadFromDom =
 function(calItemNode, instNode) {
 	ZmCalItem.prototype._loadFromDom.call(this, calItemNode, instNode);
@@ -544,7 +505,7 @@ function(calItemNode, instNode) {
 	this.privacy = this._getAttr(calItemNode, instNode, "class");
 	this.transparency = this._getAttr(calItemNode, instNode, "transp");
 	this.otherAttendees = this._getAttr(calItemNode, instNode, "otherAtt");
-	this.setAttendees(this._getAttr(calItemNode, instNode, "loc"), ZmCalItem.LOCATION);
+	this.location = this._getAttr(calItemNode, instNode, "loc");
 };
 
 ZmAppt.prototype._getSoapForMode =
@@ -585,13 +546,6 @@ function(soapDoc, inv, comp) {
 	comp.setAttribute("transp", this.transparency);
 };
 
-ZmAppt.prototype._addLocationToSoap =
-function(inv) {
-	if (this._attendees[ZmCalItem.LOCATION] && this._attendees[ZmCalItem.LOCATION].length) {
-		inv.setAttribute("loc", this.getLocation());
-	}
-};
-
 ZmAppt.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	for (var x in this._attendees) {
@@ -630,33 +584,33 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 	if (inv) {
 		at = soapDoc.set("at", null, inv);
 		// for now make attendees optional, until UI has a way of setting this
-		at.setAttribute("role", (type == ZmCalItem.PERSON) ? ZmCalItem.ROLE_REQUIRED : ZmCalItem.ROLE_NON_PARTICIPANT);
+		at.setAttribute("role", (type == ZmCalBaseItem.PERSON) ? ZmCalItem.ROLE_REQUIRED : ZmCalItem.ROLE_NON_PARTICIPANT);
 		
-		var ptst = ZmCalItem.PSTATUS_NEEDS_ACTION;
-		if(notifyList){
+		var ptst = ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
+		if (notifyList) {
 			var attendeeFound = false;
-			for(var i in notifyList) {
-				if(address == notifyList[i]) {
+			for (var i in notifyList) {
+				if (address == notifyList[i]) {
 					attendeeFound = true;
 					break;
 				}
 			}
-			var newptst =  attendee.getAttr("participationStatus") || ZmCalItem.PSTATUS_NEEDS_ACTION;
-			ptst = (attendeeFound ? ZmCalItem.PSTATUS_NEEDS_ACTION : newptst);
+			ptst = attendeeFound
+				? ZmCalBaseItem.PSTATUS_NEEDS_ACTION
+				: (attendee.getAttr("participationStatus") || ZmCalBaseItem.PSTATUS_NEEDS_ACTION);
 		}
 		at.setAttribute("ptst", ptst);
 		
-		var cutype = (type == ZmCalItem.PERSON) ? null : ZmCalendarApp.CUTYPE_RESOURCE;
-		if (cutype) {
-			at.setAttribute("cutype", cutype);
+		if (type != ZmCalBaseItem.PERSON) {
+			at.setAttribute("cutype", ZmCalendarApp.CUTYPE_RESOURCE);
 		}
 		at.setAttribute("rsvp", "1");
 
-        if(address instanceof Array) {
-            address = address[0];
-        }
+		if (address instanceof Array) {
+			address = address[0];
+		}
+		at.setAttribute("a", address);
 
-        at.setAttribute("a", address);
 		if (dispName) {
 			at.setAttribute("d", dispName);
 		}
@@ -672,7 +626,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
 
 		// bug fix #9768 - auto add attendee if not in addrbook
-		if (type == ZmCalItem.PERSON &&
+		if (type == ZmCalBaseItem.PERSON &&
 			appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 			appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS))
 		{
@@ -690,25 +644,21 @@ function(result) {
 
 ZmAppt.prototype._updateParticipantStatus =
 function() {
-	
-	if(this._orig)
+	if (this._orig) {
 		return this._orig._updateParticipantStatus();
-	
-	var ptstHashMap = {};	
-	var attendees = this._attendees;
-	var personAttendees = (this._attendees && this._attendees[ZmCalItem.PERSON]) ? this._attendees[ZmCalItem.PERSON] : null;
-	if(personAttendees){
-		var attendee = null;
-		var ptst = null;
-		for(var i=0; i<personAttendees.length; i++){
-			attendee = personAttendees[i];
-			ptst = attendee.getAttr("participationStatus") || "NE";				
-			if(!ptstHashMap[ptst]){
-				ptstHashMap[ptst] = new Array();
-			}
-			ptstHashMap[ptst].push(attendee.getAttendeeText(null, true));				
+	}
+
+	var ptstHashMap = {};
+	var personAttendees = (this._attendees && this._attendees[ZmCalBaseItem.PERSON])
+		? this._attendees[ZmCalBaseItem.PERSON] : [];
+
+	for (var i = 0; i < personAttendees.length; i++) {
+		var attendee = personAttendees[i];
+		var ptst = attendee.getAttr("participationStatus") || "NE";
+		if (!ptstHashMap[ptst]) {
+			ptstHashMap[ptst] = [];
 		}
+		ptstHashMap[ptst].push(attendee.getAttendeeText(null, true));
 	}
 	this.setAttendeeToolTipData(ptstHashMap);
 };
-		
