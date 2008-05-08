@@ -504,7 +504,13 @@ function(params) {
 	this.runAppFunction("addComponents", false, this._components);
 
 	// next line makes the UI appear
+    var viewComponents = this._appViewMgr._components;
 	this._appViewMgr.addComponents(this._components, true);
+    if(viewComponents){
+        //While adding the basic components we need to make sure the already set view components are again fitted to perfection.
+        //bug:
+        this._appViewMgr.addComponents(viewComponents, true);
+    }
 
 	if (appCtxt.get(ZmSetting.LICENSE_STATUS) != ZmSetting.LICENSE_GOOD) {
 		var dlg = appCtxt.getMsgDialog();
