@@ -1594,9 +1594,9 @@ function(msg, preferHtml, callback) {
 		var sizeText = "";
 		var size = attach.s;
 		if (size && size > 0) {
-		    if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
-            else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;";
-            else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;";
+		        if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
+                        else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;";
+                        else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;";
 		}
 
 		html[idx++] = "<tr><td nowrap='nowrap' style='font-size:14px'>";
@@ -1658,20 +1658,10 @@ function(msg, preferHtml, callback) {
 	}
 };
 
-ZmMailMsgView._fixMultipartRelatedImagesInContent = function(msg,content){
-    var inlineImgs = content.match(/dfsrc=\"cid:\w*\"/ig);
-    if(inlineImgs){
-        for(var i=0; i<inlineImgs.length; i++){
-            var dfsrc = inlineImgs[i];
-            var tmp =   dfsrc.split(':');
-            var cid = tmp[1].substring(0,tmp[1].length-1);
-            var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, ("<" + cid + ">"));
-            if(src){
-                content = content.replace(dfsrc,"src='"+ src +"'");
-            }
-        }
-    }
-    return content;
+ZmMailMsgView._fixMultipartRelatedImagesInContent = function(msg, content) {
+        return content.replace(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
+                return "src=" + q + msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, ("<" + cid + ">")) + q;
+        });
 };
 
 ZmMailMsgView._swapIdAndSrc =
