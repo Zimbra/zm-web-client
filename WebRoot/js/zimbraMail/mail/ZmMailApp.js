@@ -107,10 +107,9 @@ function(settings) {
 	settings.registerSetting("FILTERS_ENABLED",					{name:"zimbraFeatureFiltersEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:false});
 	settings.registerSetting("FORWARD_INCLUDE_ORIG",			{name:"zimbraPrefForwardIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INCLUDE});
 	settings.registerSetting("FORWARD_MENU_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("GROUP_MAIL_BY",					{type:ZmSetting.T_PREF, defaultValue:ZmSetting.GROUP_BY_MESSAGE});
+	settings.registerSetting("GROUP_MAIL_BY",					{name:"zimbraPrefGroupMailBy", type:ZmSetting.T_PREF, defaultValue:ZmSetting.GROUP_BY_MESSAGE, isImplicit:true});
     settings.registerSetting("HTML_SIGNATURE_ENABLED",          {type:ZmSetting.T_PREF,dataType:ZmSetting.D_BOOLEAN,defaultValue:true});
     settings.registerSetting("IDENTITIES_ENABLED",				{name:"zimbraFeatureIdentitiesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	settings.registerSetting("INITIAL_GROUP_MAIL_BY",			{name:"zimbraPrefGroupMailBy", type:ZmSetting.T_PREF, defaultValue:ZmSetting.GROUP_BY_MESSAGE});
 	settings.registerSetting("INITIAL_SEARCH",					{name:"zimbraPrefMailInitialSearch", type:ZmSetting.T_PREF, defaultValue:"in:inbox"});
 	settings.registerSetting("INITIAL_SEARCH_ENABLED",			{name:"zimbraFeatureInitialSearchPreferenceEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_ALIASES",					{name:"zimbraMailAlias", type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST});
@@ -135,7 +134,7 @@ function(settings) {
 	settings.registerSetting("NOTIF_FEATURE_ENABLED",			{name:"zimbraFeatureNewMailNotificationEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("OPEN_MAIL_IN_NEW_WIN",			{name:"zimbraPrefOpenMailInNewWindow", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("PAGE_SIZE",						{name:"zimbraPrefMailItemsPerPage", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:25});
-	settings.registerSetting("READING_PANE_ENABLED",			{name:"zimbraPrefReadingPaneEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("READING_PANE_ENABLED",			{name:"zimbraPrefReadingPaneEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isImplicit:true});
 	settings.registerSetting("REPLY_INCLUDE_ORIG",				{name:"zimbraPrefReplyIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INCLUDE});
 	settings.registerSetting("REPLY_MENU_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("REPLY_PREFIX",					{name:"zimbraPrefForwardReplyPrefixChar", type:ZmSetting.T_PREF, defaultValue:">"});
@@ -174,7 +173,6 @@ function() {
 			prefs: [
 				ZmSetting.DEDUPE_MSG_TO_SELF,
 				ZmSetting.DISPLAY_EXTERNAL_IMAGES,
-				ZmSetting.INITIAL_GROUP_MAIL_BY,
 				ZmSetting.INITIAL_SEARCH,
 				ZmSetting.MAIL_FORWARDING_ADDRESS,
 				ZmSetting.MAIL_LIFETIME_INBOX_READ,
@@ -270,14 +268,6 @@ function() {
 	ZmPref.registerPref("DISPLAY_EXTERNAL_IMAGES", {
 		displayName:		ZmMsg.showExternalImages,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
-	ZmPref.registerPref("INITIAL_GROUP_MAIL_BY", {
-		displayName:		ZmMsg.groupMailBy,
-		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.message, ZmMsg.conversation],
-		options:			[ZmSetting.GROUP_BY_MESSAGE, ZmSetting.GROUP_BY_CONV],
-		precondition:		ZmSetting.CONVERSATIONS_ENABLED
 	});
 
 	ZmPref.registerPref("INITIAL_SEARCH", {
@@ -1378,14 +1368,6 @@ function(ev) {
 		if (setting.id == ZmSetting.PAGE_SIZE) {
 			if (curView != ZmId.VIEW_MSG) {
 				newView = groupByView || curView;
-			}
-		} else if (setting.id == ZmSetting.INITIAL_GROUP_MAIL_BY) {
-			if (curView == ZmId.VIEW_CONVLIST || curView == ZmId.VIEW_TRAD) {
-				var value = appCtxt.get(setting.id);
-				var view = (value == ZmSetting.GROUP_BY_CONV) ? ZmId.VIEW_CONVLIST : ZmId.VIEW_TRAD;
-				if (view != curView) {
-					groupByView = view;
-				}
 			}
 		} else if (setting.id == ZmSetting.SHOW_FRAGMENTS) {
 			if (curView != ZmId.VIEW_MSG) {

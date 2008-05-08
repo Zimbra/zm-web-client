@@ -16,24 +16,25 @@
  */
 
 /**
-* Creates a setting.
-* @constructor
-* @class
-* This class represents a single setting. A setting's default value never changes; it
-* is available in case the user wishes to restore the current value to the default.
-* Most but not all settings have a corollary on the server side. Settings that don't
-* will depend on the environment or user activity to get their value.
-*
-* @author Conrad Damon
-* 
-* @param id				a unique ID
-* @param params			hash:
-*        name			the name of the pref or attr on the server
-*        type			config, pref, or COS
-*        dataType		string, int, or boolean
-*        defaultValue	default value
-*        isGlobal		whether this setting is global across accounts
-*/
+ * Creates a setting.
+ * @constructor
+ * @class
+ * This class represents a single setting. A setting's default value never changes; it
+ * is available in case the user wishes to restore the current value to the default.
+ * Most but not all settings have a corollary on the server side. Settings that don't
+ * will depend on the environment or user activity to get their value.
+ *
+ * @author Conrad Damon
+ * 
+ * @param id				a unique ID
+ * @param params			hash:
+ *        name				the name of the pref or attr on the server
+ *        type				config, pref, or COS
+ *        dataType			string, int, or boolean
+ *        defaultValue		default value
+ *        isGlobal			true if this setting is global across accounts
+ *        isImplicit		true if this setting is not represented in Preferences
+ */
 ZmSetting = function(id, params) {
 
 	if (arguments.length == 0) return;
@@ -46,6 +47,9 @@ ZmSetting = function(id, params) {
 	this.defaultValue = params.defaultValue;
 	if (params.isGlobal) {
 		ZmSetting.IS_GLOBAL[id] = true;
+	}
+	if (params.isImplicit) {
+		ZmSetting.IS_IMPLICIT[id] = true;
 	}
 	
 	if (this.dataType == ZmSetting.D_HASH) {
@@ -154,6 +158,12 @@ ZmSetting.APP_LETTER[ZmSetting.VOICE_ENABLED]		= "v";
 // hash of global settings
 ZmSetting.IS_GLOBAL = {};
 
+// hash of implicit settings
+ZmSetting.IS_IMPLICIT = {};
+
+// hash of implicit settings that have been changed during the current session
+ZmSetting.CHANGED_IMPLICIT = {};
+
 ZmSetting.prototype.toString =
 function() {
 	return this.name + ": " + this.value;
@@ -195,6 +205,9 @@ function(key) {
 */
 ZmSetting.prototype.setValue =
 function(value, key, setDefault, skipNotify) {
+	if (ZmSetting.IS_IMPLICIT[this.id]) {
+		ZmSetting.CHANGED_IMPLICIT[this.id] = true;
+	}
 	if (this.dataType == ZmSetting.D_STRING) {
 		this.value = value;
 	} else if (this.dataType == ZmSetting.D_INT) {
@@ -237,10 +250,11 @@ function(value, key, setDefault, skipNotify) {
 	}
 
 	if (setDefault) {
-		if (key)
+		if (key) {
 			this.defaultValue[key] = this.value[key];
-		else
+		} else {
 			this.defaultValue = this.value;
+		}
 	}
 	
 	// Setting an internal pref is equivalent to saving it, so we should notify

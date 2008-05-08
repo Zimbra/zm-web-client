@@ -598,8 +598,6 @@ function(ev) {
 	var setting = ZmOrganizer.OPEN_SETTING[this.type];
 	if (setting) {
 		appCtxt.set(setting, expanded);
-		var settings = appCtxt.getSettings();
-		settings.save([settings.getSetting(setting)]);
 	}
 };
 

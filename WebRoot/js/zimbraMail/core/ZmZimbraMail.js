@@ -1811,6 +1811,7 @@ function() {
 	// Let the server know that the session is ending.
 	var self = window._zimbraMail;
 	if (self) {
+		self._settings.saveImplicitPrefs();
 		var errorCallback = new AjxCallback(null, function() { return true; } ); // Ignores any error.
 		var args = {
 			jsonObj: { EndSessionRequest: { _jsns: "urn:zimbraAccount" } },

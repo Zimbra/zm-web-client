@@ -118,6 +118,9 @@ function(list) {
 		var setting = this._settings[this._nameToId[i]];
 		if (setting) {
 			setting.setValue(val);
+			if (ZmSetting.IS_IMPLICIT[setting.id]) {
+				setting.origValue = setting.getValue();
+			}
 		} else {
 			DBG.println(AjxDebug.DBG3, "*** Unrecognized setting: " + i);
 		}
@@ -169,8 +172,12 @@ function(callback, accountName, result) {
     if (obj.rest)			this._settings[ZmSetting.REST_URL].setValue(obj.rest);
 	if (obj.license)		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
 
-    if (obj.prefs && obj.prefs._attrs) 	this.createFromJs(obj.prefs._attrs);
-	if (obj.attrs && obj.attrs._attrs)	this.createFromJs(obj.attrs._attrs);
+    if (obj.prefs && obj.prefs._attrs) {
+    	this.createFromJs(obj.prefs._attrs);
+    }
+	if (obj.attrs && obj.attrs._attrs) {
+		this.createFromJs(obj.attrs._attrs);
+	}
 
     // Create the main account. In the normal case, that is the only account, and
 	// represents the user who logged in. If family mailbox is enabled, that account
@@ -206,14 +213,7 @@ function(callback, accountName, result) {
 	}
 
 	// handle settings whose values may depend on other settings
-	var setting = this._settings[ZmSetting.GROUP_MAIL_BY];
-	if (setting) {
-		setting.setValue(this.get(ZmSetting.INITIAL_GROUP_MAIL_BY), null, true);
-		if ((this.get(ZmSetting.GROUP_MAIL_BY) == ZmSetting.GROUP_BY_CONV) && !this.get(ZmSetting.CONVERSATIONS_ENABLED)) {
-			setting.setValue(ZmSetting.GROUP_BY_MESSAGE, null, true);
-		}
-	}
-	setting = this._settings[ZmSetting.REPLY_TO_ADDRESS];
+	var setting = this._settings[ZmSetting.REPLY_TO_ADDRESS];
 	if (setting) {
 		setting.defaultValue = this.get(ZmSetting.USERNAME);
 	}
@@ -542,7 +542,7 @@ function() {
 	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name:"zimbraFeatureChangePasswordEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("DISPLAY_NAME",					{name:"displayName", type:ZmSetting.T_COS});
     this.registerSetting("FLAGGING_ENABLED",				{name:"zimbraFeatureFlaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("FOLDER_TREE_OPEN",				{name:"zimbraPrefFolderTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	this.registerSetting("FOLDER_TREE_OPEN",				{name:"zimbraPrefFolderTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isImplicit:true});
 	this.registerSetting("GAL_AUTOCOMPLETE_ENABLED",		{name:"zimbraFeatureGalAutoCompleteEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:false});
 	this.registerSetting("GAL_ENABLED",						{name:"zimbraFeatureGalEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:true});
 	this.registerSetting("GROUP_CALENDAR_ENABLED",			{name:"zimbraFeatureGroupCalendarEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -561,12 +561,12 @@ function() {
 	this.registerSetting("PWD_MIN_LENGTH",					{name:"zimbraPasswordMinLength", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:6});
 	this.registerSetting("QUOTA",							{name:"zimbraMailQuota", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:0});
 	this.registerSetting("SAVED_SEARCHES_ENABLED",			{name:"zimbraFeatureSavedSearchesEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	this.registerSetting("SEARCH_TREE_OPEN",				{name:"zimbraPrefSearchTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	this.registerSetting("SEARCH_TREE_OPEN",				{name:"zimbraPrefSearchTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isImplicit:true});
 	this.registerSetting("SHARING_ENABLED",					{name:"zimbraFeatureSharingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SHORTCUT_ALIASES_ENABLED",		{name:"zimbraFeatureShortcutAliasesEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SIGNATURES_ENABLED",				{name:"zimbraFeatureSignaturesEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SKIN_CHANGE_ENABLED",				{name:"zimbraFeatureSkinChangeEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
-	this.registerSetting("TAG_TREE_OPEN",					{name:"zimbraPrefTagTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	this.registerSetting("TAG_TREE_OPEN",					{name:"zimbraPrefTagTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isImplicit:true});
 	this.registerSetting("TAGGING_ENABLED",					{name:"zimbraFeatureTaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("VIEW_ATTACHMENT_AS_HTML",			{name:"zimbraFeatureViewInHtmlEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("WEB_SEARCH_ENABLED",				{name:"zimbraFeatureWebSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -740,4 +740,18 @@ function(dialog) {
     window.onbeforeunload = null;
     var url = AjxUtil.formatUrl({});
     ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
+};
+
+ZmSettings.prototype.saveImplicitPrefs =
+function() {
+	var list = [];
+	for (var id in ZmSetting.CHANGED_IMPLICIT) {
+		var setting = this.getSetting(id);
+		if (setting.getValue() != setting.origValue) {
+			list.push(setting);
+		}
+	}
+	if (list && list.length) {
+		this.save(list);
+	}
 };

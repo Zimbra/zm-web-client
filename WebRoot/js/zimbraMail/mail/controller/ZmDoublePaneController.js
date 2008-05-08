@@ -142,24 +142,6 @@ function(force) {
 	} else if (this.isReadingPaneOn() == checked) {
 		return;
 	}
-
-	this._saveReadingPanePref(checked);
-};
-
-ZmDoublePaneController.prototype._saveReadingPanePref =
-function(checked) {
-	// persist user pref for reading pane
-	var prefName = appCtxt.getSettings().getSetting(ZmSetting.READING_PANE_ENABLED).name;
-	var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
-	var node = soapDoc.set("pref", (checked ? "TRUE" : "FALSE"));
-	node.setAttribute("name", prefName);
-
-	var respCallback = new AjxCallback(this, this._handleResponseReadingPane, [checked]);
-	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback: respCallback});
-};
-
-ZmDoublePaneController.prototype._handleResponseReadingPane =
-function(checked) {
 	appCtxt.set(ZmSetting.READING_PANE_ENABLED, checked);
 
 	this._doublePaneView.toggleView();
