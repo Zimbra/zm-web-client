@@ -153,6 +153,7 @@ function(actionCode) {
 
 	var folderId = this._getSearchFolderId();
 	var folder = folderId ? appCtxt.getById(folderId) : null;
+	var isSyncFailures = (folder && (folder.nId == ZmOrganizer.ID_SYNC_FAILURES));
 
 	var isDrafts = (folderId == ZmFolder.ID_DRAFTS);
 	var lv = this._listView[this._currentView];
@@ -170,7 +171,7 @@ function(actionCode) {
 		case ZmKeyMap.REPLY_ALL:
 		case ZmKeyMap.FORWARD_INLINE:
 		case ZmKeyMap.FORWARD_ATT:
-			if (!isDrafts && num == 1 && folder.nId != ZmOrganizer.ID_SYNC_FAILURES) {
+			if (!isDrafts && (num == 1) && !isSyncFailures) {
 				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode]});
 			}
 			break;
@@ -192,7 +193,7 @@ function(actionCode) {
 		case ZmKeyMap.MOVE_TO_INBOX:
 		case ZmKeyMap.MOVE_TO_TRASH:
 		case ZmKeyMap.MOVE_TO_JUNK:
-			if (folder.nId == ZmOrganizer.ID_SYNC_FAILURES) break;
+			if (isSyncFailures) { break; }
 			if (num && !(isDrafts && actionCode != ZmKeyMap.MOVE_TO_TRASH)) {
 				folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
 				folder = appCtxt.getById(folderId);
@@ -202,7 +203,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SPAM:
-			if (num && !isDrafts && folder.nId != ZmOrganizer.ID_SYNC_FAILURES) {
+			if (num && !isDrafts && !isSyncFailures) {
 				this._spamListener();
 			}
 			break;
@@ -220,13 +221,13 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.VIEW_BY_CONV:
-			if (folder.nId != ZmOrganizer.ID_SYNC_FAILURES) {
+			if (!isSyncFailures) {
 				this.switchView(ZmId.VIEW_CONVLIST);
 			}
 			break;
 
 		case ZmKeyMap.VIEW_BY_MSG:
-			if (folder.nId != ZmOrganizer.ID_SYNC_FAILURES) {
+			if (!isSyncFailures) {
 				this.switchView(ZmId.VIEW_TRAD);
 			}
 			break;
@@ -309,7 +310,7 @@ function(actionCode) {
 
 		case ZmKeyMap.MOVE_TO_FOLDER:
 			// Handle action code like "MoveToFolder3"
-			if (folder.nId == ZmOrganizer.ID_SYNC_FAILURES) break;
+			if (isSyncFailures) { break; }
 			if (!folder || (folder && !folder.isReadOnly())) {
 				if (num && !isDrafts) {
 					folder = appCtxt.getById(shortcut.arg);
