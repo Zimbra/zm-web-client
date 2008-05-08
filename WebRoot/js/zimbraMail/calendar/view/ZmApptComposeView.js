@@ -50,15 +50,15 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 
 	// centralized attendee data
 	this._attendees = {};
-	this._attendees[ZmCalItem.PERSON]	= new AjxVector();	// list of ZmContact
-	this._attendees[ZmCalItem.LOCATION]	= new AjxVector();	// list of ZmResource
-	this._attendees[ZmCalItem.EQUIPMENT]= new AjxVector();	// list of ZmResource
+	this._attendees[ZmCalBaseItem.PERSON]	= new AjxVector();	// list of ZmContact
+	this._attendees[ZmCalBaseItem.LOCATION]	= new AjxVector();	// list of ZmResource
+	this._attendees[ZmCalBaseItem.EQUIPMENT]= new AjxVector();	// list of ZmResource
 
 	// set of attendee keys (for preventing duplicates)
 	this._attendeeKeys = {};
-	this._attendeeKeys[ZmCalItem.PERSON]	= {};
-	this._attendeeKeys[ZmCalItem.LOCATION]	= {};
-	this._attendeeKeys[ZmCalItem.EQUIPMENT]	= {};
+	this._attendeeKeys[ZmCalBaseItem.PERSON]	= {};
+	this._attendeeKeys[ZmCalBaseItem.LOCATION]	= {};
+	this._attendeeKeys[ZmCalBaseItem.EQUIPMENT]	= {};
 
 	// for attendees change events
 	this._evt = new ZmEvent(ZmEvent.S_CONTACT);
@@ -152,13 +152,13 @@ function(appt, mode, isDirty) {
 ZmApptComposeView.prototype.cleanup = 
 function() {
 	// clear attendees lists
-	this._attendees[ZmCalItem.PERSON]		= new AjxVector();
-	this._attendees[ZmCalItem.LOCATION]		= new AjxVector();
-	this._attendees[ZmCalItem.EQUIPMENT]	= new AjxVector();
+	this._attendees[ZmCalBaseItem.PERSON]		= new AjxVector();
+	this._attendees[ZmCalBaseItem.LOCATION]		= new AjxVector();
+	this._attendees[ZmCalBaseItem.EQUIPMENT]	= new AjxVector();
 
-	this._attendeeKeys[ZmCalItem.PERSON]	= {};
-	this._attendeeKeys[ZmCalItem.LOCATION]	= {};
-	this._attendeeKeys[ZmCalItem.EQUIPMENT]	= {};
+	this._attendeeKeys[ZmCalBaseItem.PERSON]	= {};
+	this._attendeeKeys[ZmCalBaseItem.LOCATION]	= {};
+	this._attendeeKeys[ZmCalBaseItem.EQUIPMENT]	= {};
 
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
@@ -310,6 +310,7 @@ function(attendees, type, mode, index) {
 	mode = mode ? mode : ZmApptComposeView.MODE_REPLACE;
 	if (mode == ZmApptComposeView.MODE_REPLACE) {
 		this._attendees[type] = new AjxVector();
+		this._attendeeKeys[type] = {};
 		for (var i = 0; i < attendees.length; i++) {
 			var attendee = attendees[i];
 			this._attendees[type].add(attendee);
@@ -403,7 +404,7 @@ function(msg, style, cb, cbObj, cbArgs) {
 
 // Private / Protected methods
 
-ZmApptComposeView.prototype._initialize = 
+ZmApptComposeView.prototype._initialize =
 function() {
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
@@ -459,15 +460,15 @@ function(id) {
 			break;
 		}
 		case ZmApptComposeView.TAB_ATTENDEES : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalItem.PERSON);
+			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.PERSON);
 			break;
 		}
 		case ZmApptComposeView.TAB_LOCATIONS : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalItem.LOCATION);
+			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.LOCATION);
 			break;
 		}
 		case ZmApptComposeView.TAB_EQUIPMENT : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalItem.EQUIPMENT);
+			tabPage = new ZmApptChooserTabViewPage(this, this._attendees, this._controller, ZmCalBaseItem.EQUIPMENT);
 			break;
 		}
 	}

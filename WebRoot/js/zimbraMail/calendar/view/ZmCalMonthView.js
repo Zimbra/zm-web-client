@@ -411,7 +411,7 @@ function(appt) {
 		appt: appt,
 		duration: appt.getShortStartHour(),
 		color: ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)] +
-				(appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION ? "Dark" : "Bg"),
+				(appt.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION ? "Dark" : "Bg"),
 		multiday: appt._fanoutFirst != null,
 		first: appt._fanoutFirst,
 		last: appt._fanoutLast
@@ -674,7 +674,7 @@ function(date, list, controller, noheader) {
 	for (var i=0; i < size; i++) {
 		var ao = list.get(i);
 		if (!ao.isAllDayEvent()) {
-			var isNew = ao.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION
+			var isNew = ao.ptst == ZmCalBaseItem.PSTATUS_NEEDS_ACTION;
 			var dur = ao.getDurationText(false, false);
 
 			html[idx++] = "<tr><td class='calendar_month_day_item'><div class='";

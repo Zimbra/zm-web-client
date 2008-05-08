@@ -22,7 +22,7 @@
 								</tr>
 								<tr>
 									<td width="1%" class='ZmApptTabViewPageField'><nobr><$= ZmMsg.locationLabel $></nobr></td>
-									<td id='${locationId}'></td>
+									<td id='${id}_location'></td>
 								</tr>
 								<$ if (data.isAppt) { $>
 								<tr>
@@ -94,26 +94,32 @@
 					</fieldset>
 				</td>
 			</tr>
-			<$ if (data.personId || data.equipmentId) { $>
 			<tr>
 				<td colspan=2>
 					<!-- appointment attendees / resources -->
 					<table border=0 width=100%>
 						<tr>
 							<td width='1%' align='right' valign='top' class='ZmApptTabViewPageField'><$= ZmMsg.attendeesLabel $></td>
-							<td id='${personId}'></td>
+							<td id='${id}_person'></td>
 						</tr>
 
 					<$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
 						<tr>
-							<td width=1% align=right class='ZmApptTabViewPageField'><$= ZmMsg.resourcesLabel $></td>
-							<td id='${equipmentId}'></td>
+							<td colspan=2>
+								<div id='${id}_resourcesContainer' style='display:none'>
+									<table border=0 cellpadding=0 cellspacing=0 width=100%>
+										<tr>
+											<td valign=top width=1% align=right class='ZmApptTabViewPageField'><$= ZmMsg.resourcesLabel $></td>
+											<td id='${id}_resourcesData'></td>
+										</tr>
+									</table>
+								</div>
+							</td>
 						</tr>
 					<$ } $>
 					</table>
 				</td>
 			</tr>
-			<$ } $>
 		</table>
 	</div>
 	<!-- appointment notes -->
@@ -363,7 +369,7 @@
 								<!-- IMGHACK - added outer table for new image changes -->
 								<div style='white-space:nowrap'>
 									<table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>
-									<$ if (data.appt.hasOtherAttendees()) { $>
+									<$ if (data.appt.otherAttendees) { $>
 										<td><$= AjxImg.getImageHtml("ApptMeeting") $></td>
 									<$ } $>
 									<$ if (data.appt.isException) { $>
@@ -421,7 +427,7 @@
     </tr>
   <$ } $>
 
-  <$ if (data.appt.hasOtherAttendees()) { $>
+  <$ if (data.appt.otherAttendees) { $>
 		<tr valign='top'>
 			<td align='right' style='padding-right:5px;'>
 				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.statusLabel) $></div></b>
@@ -465,7 +471,7 @@
 		</tr>
 	<$ } $>
 
-  <$ if (data.appt.isOrganizer() && data.appt.hasOtherAttendees()) { $>
+  <$ if (data.appt.isOrganizer() && data.appt.otherAttendees) { $>
 		<tr valign='center'>
 			<td colspan=2 align='left'>
 				<div style='border-bottom:1px solid black;'>

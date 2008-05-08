@@ -57,7 +57,7 @@ function(obj) {
 
 ZmApptList.sortVector = 
 function(vec) {
-	vec.sort(ZmCalItem.compareByTimeAndDuration);
+	vec.sort(ZmCalBaseItem.compareByTimeAndDuration);
 };
 
 // merge all the sorted vectors in the specified array into a single sorted vector

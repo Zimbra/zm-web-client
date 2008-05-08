@@ -43,10 +43,10 @@ function(node, args) {
 	var resource = new ZmResource(node.id, args.list);
 	resource._loadFromDom(node);
 	resource.resType = (resource.getAttr(ZmResource.F_type) == ZmResource.ATTR_LOCATION) ?
-						ZmCalItem.LOCATION : ZmCalItem.EQUIPMENT;
+						ZmCalBaseItem.LOCATION : ZmCalBaseItem.EQUIPMENT;
 	if (!resource.list) {
 		var calApp = appCtxt.getApp(ZmApp.CALENDAR);
-		resource.list = (resource.resType == ZmCalItem.LOCATION) ? calApp.getLocations() :
+		resource.list = (resource.resType == ZmCalBaseItem.LOCATION) ? calApp.getLocations() :
 																   calApp.getEquipment();
 	}
 	
@@ -63,7 +63,7 @@ function() {
 
 ZmResource.prototype.isLocation =
 function() {
-	return (this.resType == ZmCalItem.LOCATION);
+	return (this.resType == ZmCalBaseItem.LOCATION);
 };
 
 ZmResource.prototype.getEmail =

@@ -341,31 +341,27 @@ function (soapDoc, request, params) {
 
 ZmReminderController.prototype._handleDismissAppt =
 function(list, result) {
-	if(result.isException()) return;
+	if (result.isException()) { return; }
+
 	var response = result.getResponse();
 	var dismissResponse = response.DismissCalendarItemAlarmResponse;
-	
-	if(!dismissResponse){ return; }
-	
-	var appts = dismissResponse.appt;
-	
+	var appts = dismissResponse ? dismissResponse.appt : null;
+	if (!appts) { return; }
+
 	var updateData = {};
-	
-	if(!appts) { return; }
-	
-	for(var i in appts) {
+	for (var i in appts) {
 		var appt = appts[i];
-		if(appt && appt.calItemId) {
+		if (appt && appt.calItemId) {
 			updateData[appt.calItemId] = appt.alarmData ? appt.alarmData : {};
 		}
 	}
 
 	var size = list.size();
-	for(var i=0;i<size; i++) {
+	for (var i = 0; i < size; i++) {
 		var appt = list.get(i);
-		if(appt) {
-			if(updateData[appt.id]) {
-				appt.setAlarmData((updateData[appt.id] != {})? updateData[appt.id] : null);
+		if (appt) {
+			if (updateData[appt.id]) {
+				appt.alarmData = (updateData[appt.id] != {}) ? updateData[appt.id] : null;
 			}
 		}
 	}

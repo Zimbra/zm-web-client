@@ -647,7 +647,7 @@ function(contact, date) {
 
 	if (emails.length > 0) {
 		var newAppt = this._newApptObject(date);
-		newAppt.setAttendees(emails, ZmCalItem.PERSON);
+		newAppt.setAttendees(emails, ZmCalBaseItem.PERSON);
 		this.newAppointment(newAppt, ZmCalItem.MODE_NEW);
 	}
 };
@@ -663,7 +663,7 @@ function(emailAddr, date) {
 	if (!emailAddr || emailAddr == "") {return; }
 
 	var newAppt = this._newApptObject(date);
-	newAppt.setAttendees(emailAddr, ZmCalItem.PERSON);
+	newAppt.setAttendees(emailAddr, ZmCalBaseItem.PERSON);
 	this.newAppointment(newAppt, ZmCalItem.MODE_NEW);
 };
 
@@ -913,7 +913,7 @@ function(appt, mode) {
 	var cancelNoReplyCallback = new AjxCallback(this, this._continueDelete, [appt, mode]);
 
 	var confirmDialog = appCtxt.getConfirmationDialog();
-	if (appt.isOrganizer() && appt.hasOtherAttendees()) {
+	if (appt.isOrganizer() && appt.otherAttendees) {
 		confirmDialog.popup(ZmMsg.confirmCancelApptReply, cancelReplyCallback, cancelNoReplyCallback);
 	} else {
 		confirmDialog.popup(ZmMsg.confirmCancelAppt, cancelNoReplyCallback);
@@ -1182,7 +1182,7 @@ function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 ZmCalViewController.prototype._handleResponseUpdateApptDate =
 function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
 	// skip prompt if no attendees
-	if (!appt.hasOtherAttendees()) {
+	if (!appt.otherAttendees) {
 		this._handleResponseUpdateApptDateSave.apply(this, arguments);
 		return;
 	}
@@ -1581,9 +1581,9 @@ function(appt, actionMenu) {
 	var enabled = !isOrganizer && workflow && !isPrivate;
 
 	// reply action menu
-	actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && appt.ptst != ZmCalItem.PSTATUS_ACCEPT);
-	actionMenu.enable(ZmOperation.REPLY_DECLINE, enabled && appt.ptst != ZmCalItem.PSTATUS_DECLINED);
-	actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && appt.ptst != ZmCalItem.PSTATUS_TENTATIVE);
+	actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
+	actionMenu.enable(ZmOperation.REPLY_DECLINE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
+	actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
 	actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled);
 
 	// edit reply menu
@@ -1592,15 +1592,15 @@ function(appt, actionMenu) {
 		if (mi) {
 			var editReply = mi.getMenu();
 			if (editReply) {
-				editReply.enable(ZmOperation.EDIT_REPLY_ACCEPT, appt.ptst != ZmCalItem.PSTATUS_ACCEPT);
-				editReply.enable(ZmOperation.EDIT_REPLY_DECLINE, appt.ptst != ZmCalItem.PSTATUS_DECLINED);
-				editReply.enable(ZmOperation.EDIT_REPLY_TENTATIVE, appt.ptst != ZmCalItem.PSTATUS_TENTATIVE);
+				editReply.enable(ZmOperation.EDIT_REPLY_ACCEPT, appt.ptst != ZmCalBaseItem.PSTATUS_ACCEPT);
+				editReply.enable(ZmOperation.EDIT_REPLY_DECLINE, appt.ptst != ZmCalBaseItem.PSTATUS_DECLINED);
+				editReply.enable(ZmOperation.EDIT_REPLY_TENTATIVE, appt.ptst != ZmCalBaseItem.PSTATUS_TENTATIVE);
 			}
 		}
 	}
 
 	var del = actionMenu.getMenuItem(ZmOperation.DELETE);
-	del.setText((isOrganizer && appt.hasOtherAttendees()) ? ZmMsg.cancel : ZmMsg.del);
+	del.setText((isOrganizer && appt.otherAttendees) ? ZmMsg.cancel : ZmMsg.del);
 	var isSynced = Boolean(calendar.url);
 	del.setEnabled(!calendar.isReadOnly() && !isSynced && !isPrivate);
 

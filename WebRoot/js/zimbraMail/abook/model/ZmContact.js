@@ -333,7 +333,7 @@ function(customFileAs) {
 *  anonymous object is upgraded to a ZmContact when needed. */
 ZmContact.getAttr =
 function(contact, attr) {
-	return (contact instanceof ZmContact)
+	return ((contact instanceof ZmContact) || (contact instanceof ZmResource))
 		? contact.getAttr(attr)
 		: (contact && contact._attrs) ? contact._attrs[attr] : null;
 };
@@ -1094,7 +1094,7 @@ function(type, shortForm) {
 	var text = "";
 	var name = this.getFullName();
 	var email = this.getEmail();
-	if (shortForm || (type && type != ZmCalItem.PERSON)) {
+	if (shortForm || (type && type != ZmCalBaseItem.PERSON)) {
 		text = name || email || "";
 	} else {
 		var e = new AjxEmailAddress(email, null, name);

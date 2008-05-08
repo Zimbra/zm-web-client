@@ -199,10 +199,9 @@ function(ev, div) {
 	
 	if (item instanceof ZmAppt) {			
 		this.setToolTipContent(item.getToolTip(this._controller));
-		if (item.hasOtherAttendees() && (item._ptstHashMap == null)){
-
-			//getDetails of original appt will reset the start date and time
-			//and will break the ui layout
+		if (item.otherAttendees && (item._ptstHashMap == null)) {
+			// getDetails of original appt will reset the start date and time
+			// and will break the ui layout
 			var clone = ZmAppt.quickClone(item);
 			var callback = new AjxCallback(this, this._loadParticipantStatus, [clone,item, obj]);
 			var errorCallback = new AjxCallback(this, this._handleParticipantStatusError, [clone, item]);
@@ -210,7 +209,7 @@ function(ev, div) {
 			var uid = clone.getUniqueId();
 			this._currentMouseOverApptId  = uid;
 			AjxTimedAction.scheduleAction(new AjxTimedAction(this, this.getApptDetails, [clone, callback, errorCallback, uid]),2000);			
-		}else {
+		} else {
 			this._currentMouseOverApptId  = null;
 		}
 	} else {
@@ -616,7 +615,7 @@ ZmCalBaseView.prototype._addApptIcons =
 function(appt, html, idx) {
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
 
-	if (appt.hasOtherAttendees()) {
+	if (appt.otherAttendees) {
 		html[idx++] = "<td>";
 		html[idx++] = AjxImg.getImageHtml("ApptMeeting");
 		html[idx++] = "</td>";

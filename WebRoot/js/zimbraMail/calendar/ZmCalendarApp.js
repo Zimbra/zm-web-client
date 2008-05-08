@@ -540,12 +540,12 @@ function() {
 ZmCalendarApp.prototype.initResources =
 function() {
 	if (!this._locations) {
-		this._locations = new ZmResourceList(ZmCalItem.LOCATION);
+		this._locations = new ZmResourceList(ZmCalBaseItem.LOCATION);
 		this._locations.isCanonical = true;
 	}
 
 	if (!this._equipment) {
-		this._equipment = new ZmResourceList(ZmCalItem.EQUIPMENT);
+		this._equipment = new ZmResourceList(ZmCalBaseItem.EQUIPMENT);
 		this._equipment.isCanonical = true;
 	}
 }
@@ -582,8 +582,8 @@ function() {
 */
 ZmCalendarApp.prototype.getEquipment = 
 function() {
-     this.initResources();
-    return this._equipment;
+	this.initResources();
+	return this._equipment;
 };
 
 ZmCalendarApp.prototype._setMiniCalForActiveAccount =

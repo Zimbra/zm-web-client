@@ -81,7 +81,6 @@ function() {
 
 // Getters
 ZmTask.prototype.getIcon				= function() { return "Task"; };
-ZmTask.prototype.getLocation			= function() { return this.location || ""; };
 ZmTask.prototype.getFolder =
 function() {
 	return appCtxt.getById(this.folderId);
@@ -179,33 +178,32 @@ function(node, instNode) {
 	if (node.dueDate) {
 		this.endDate = new Date(parseInt(node.dueDate,10));
 	} else {
-		var part = this._getPart(node, comp, "e");
+		var part = this._getAttr(node, comp, "e");
 		var ed = (part && part.length) ? part[0].d : null;
 		this.endDate = ed ? AjxDateUtil.parseServerDateTime(ed) : null;
-		if (this.endDate)
+		if (this.endDate) {
 			this.endDate.setHours(0,0,0);
+		}
 	}
 
-	if (node.name || comp) this.name = this._getPart(node, comp, "name");
-	if (node.loc || comp) this.location = this._getPart(node, comp, "loc");
-	if (node.allDay || comp) this.setAllDayEvent(this._getPart(node, comp, "allDay"));
-	if (node.priority || comp) this.priority = parseInt(this._getPart(node, comp, "priority"));
-	if (node.percentComplete || comp) this.pComplete = parseInt(this._getPart(node, comp, "percentComplete"));
-	if (node.status || comp) this.status = this._getPart(node, comp, "status");
-	if (node.isOrg || comp) this.isOrg = this._getPart(node, comp, "isOrg");
-	if (node.or || comp) this.organizer = node.or ? node.or.a : (comp.or ? comp.or.a : null);
-	if (node.ptst || comp) this.ptst = this._getPart(node, comp, "ptst");
-	if (node.compNum != null) this.compNum = (this._getPart(node, comp, "compNum") || "0");
+	if (node.name || comp)				this.name		= this._getAttr(node, comp, "name");
+	if (node.loc || comp)				this.location	= this._getAttr(node, comp, "loc");
+	if (node.allDay || comp)			this.setAllDayEvent(this._getAttr(node, comp, "allDay"));
+	if (node.priority || comp)			this.priority	= parseInt(this._getAttr(node, comp, "priority"));
+	if (node.percentComplete || comp)	this.pComplete	= parseInt(this._getAttr(node, comp, "percentComplete"));
+	if (node.status || comp)			this.status	= this._getAttr(node, comp, "status");
+	if (node.isOrg || comp)				this.isOrg		= this._getAttr(node, comp, "isOrg");
+	if (node.or || comp)				this.organizer	= node.or ? node.or.a : (comp.or ? comp.or.a : null);
+	if (node.ptst || comp)				this.ptst		= this._getAttr(node, comp, "ptst");
+	if (node.compNum != null)			this.compNum	= (this._getAttr(node, comp, "compNum") || "0");
 
 	if (node.f)	this._parseFlags(node.f);
 	if (node.t)	this._parseTags(node.t);
 };
 
-ZmTask.prototype._getPart =
+ZmTask.prototype._getAttr =
 function(node, comp, name) {
-	if (node[name] != null) return node[name];
-	if (comp) return comp[name];
-	return null;
+	return (node[name] || comp[name]);
 };
 
 ZmTask.prototype._setExtrasFromMessage =
@@ -247,11 +245,6 @@ function(soapDoc, inv, comp) {
 	comp.setAttribute("percentComplete", this.pComplete);
 
 	// TODO - set "completed" if applicable
-};
-
-ZmTask.prototype._addLocationToSoap =
-function(inv) {
-	inv.setAttribute("loc", this.location);
 };
 
 ZmTask.prototype._getInviteFromError =

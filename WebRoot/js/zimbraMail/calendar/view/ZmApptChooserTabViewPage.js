@@ -73,14 +73,14 @@ ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CAPACITY]	= 50;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_NOTES]		= 30;
 
 ZmApptChooserTabViewPage.COLS = {};
-ZmApptChooserTabViewPage.COLS[ZmCalItem.PERSON] =
+ZmApptChooserTabViewPage.COLS[ZmCalBaseItem.PERSON] =
 	[ZmItem.F_FOLDER, ZmItem.F_NAME, ZmItem.F_EMAIL,
 	 ZmItem.F_WORK_PHONE, ZmItem.F_HOME_PHONE];
-ZmApptChooserTabViewPage.COLS[ZmCalItem.LOCATION] =
+ZmApptChooserTabViewPage.COLS[ZmCalBaseItem.LOCATION] =
 	[ZmItem.F_NAME, ZmItem.F_LOCATION,
 	 ZmItem.F_CONTACT, ZmItem.F_CAPACITY,
 	 ZmItem.F_NOTES];
-ZmApptChooserTabViewPage.COLS[ZmCalItem.EQUIPMENT] =
+ZmApptChooserTabViewPage.COLS[ZmCalBaseItem.EQUIPMENT] =
 	[ZmItem.F_NAME, ZmItem.F_LOCATION,
 	 ZmItem.F_CONTACT, ZmItem.F_NOTES];
 
@@ -124,45 +124,45 @@ ZmApptChooserTabViewPage.SF_OP[ZmApptChooserTabViewPage.SF_CAPACITY]	= "ge";
 ZmApptChooserTabViewPage.SF_OP[ZmApptChooserTabViewPage.SF_FLOOR]		= "eq";
 
 ZmApptChooserTabViewPage.ATTRS = {};
-ZmApptChooserTabViewPage.ATTRS[ZmCalItem.LOCATION] =
+ZmApptChooserTabViewPage.ATTRS[ZmCalBaseItem.LOCATION] =
 	["displayName", "mail", "zimbraCalResLocationDisplayName",
 	 "zimbraCalResCapacity", "zimbraCalResContactEmail", "description"];
-ZmApptChooserTabViewPage.ATTRS[ZmCalItem.EQUIPMENT] =
+ZmApptChooserTabViewPage.ATTRS[ZmCalBaseItem.EQUIPMENT] =
 	["displayName", "mail", "zimbraCalResLocationDisplayName",
 	 "zimbraCalResContactEmail", "description"];
 
 ZmApptChooserTabViewPage.SEARCH_FIELDS = {};
-ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalItem.PERSON] =
+ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalBaseItem.PERSON] =
 	[ZmApptChooserTabViewPage.SF_ATT_NAME, ZmApptChooserTabViewPage.SF_SOURCE];
-ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalItem.LOCATION] =
+ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalBaseItem.LOCATION] =
 	[ZmApptChooserTabViewPage.SF_NAME, ZmApptChooserTabViewPage.SF_SITE,
 	 ZmApptChooserTabViewPage.SF_CAPACITY, ZmApptChooserTabViewPage.SF_BUILDING,
 	 ZmApptChooserTabViewPage.SF_NOTES, ZmApptChooserTabViewPage.SF_FLOOR];
-ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalItem.EQUIPMENT] =
+ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalBaseItem.EQUIPMENT] =
 	[ZmApptChooserTabViewPage.SF_NAME, ZmApptChooserTabViewPage.SF_SITE,
 	 ZmApptChooserTabViewPage.SF_NOTES, ZmApptChooserTabViewPage.SF_BUILDING,
 	 ZmApptChooserTabViewPage.SF_CONTACT, ZmApptChooserTabViewPage.SF_FLOOR];
 
 ZmApptChooserTabViewPage.SORT_BY = {};
-ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.PERSON]				= ZmSearch.NAME_ASC;
-ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.LOCATION]			= ZmSearch.NAME_ASC;
-ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.EQUIPMENT]			= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmCalBaseItem.PERSON]				= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmCalBaseItem.LOCATION]			= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmCalBaseItem.EQUIPMENT]			= ZmSearch.NAME_ASC;
 
 ZmApptChooserTabViewPage.TOP_LEGEND = {};
-ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.PERSON]			= ZmMsg.findAttendees;
-ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.LOCATION]			= ZmMsg.findLocations;
-ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.EQUIPMENT]		= ZmMsg.findResources;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalBaseItem.PERSON]			= ZmMsg.findAttendees;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalBaseItem.LOCATION]			= ZmMsg.findLocations;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.findResources;
 
 ZmApptChooserTabViewPage.BOTTOM_LEGEND = {};
-ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalItem.PERSON]		= ZmMsg.apptAttendees;
-ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalItem.LOCATION]		= ZmMsg.apptLocations;
-ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalItem.EQUIPMENT]		= ZmMsg.apptResources;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalBaseItem.PERSON]		= ZmMsg.apptAttendees;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalBaseItem.LOCATION]		= ZmMsg.apptLocations;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalBaseItem.EQUIPMENT]		= ZmMsg.apptResources;
 
 // images for the bottom fieldset legend
 ZmApptChooserTabViewPage.ICON = {};
-ZmApptChooserTabViewPage.ICON[ZmCalItem.PERSON]					= appContextPath+"/img/hiRes/calendar/ApptMeeting.gif";
-ZmApptChooserTabViewPage.ICON[ZmCalItem.LOCATION]				= appContextPath+"/img/hiRes/calendar/Location.gif";
-ZmApptChooserTabViewPage.ICON[ZmCalItem.EQUIPMENT]				= appContextPath+"/img/hiRes/calendar/Resource.gif";
+ZmApptChooserTabViewPage.ICON[ZmCalBaseItem.PERSON]					= appContextPath+"/img/hiRes/calendar/ApptMeeting.gif";
+ZmApptChooserTabViewPage.ICON[ZmCalBaseItem.LOCATION]				= appContextPath+"/img/hiRes/calendar/Location.gif";
+ZmApptChooserTabViewPage.ICON[ZmCalBaseItem.EQUIPMENT]				= appContextPath+"/img/hiRes/calendar/Resource.gif";
 
 
 ZmApptChooserTabViewPage.prototype = new DwtTabViewPage;
@@ -182,7 +182,7 @@ function() {
 	this._setAttendees();
 	this._controller._setComposeTabGroup(true);
 
-	if (this._isClean && this.type == ZmCalItem.PERSON) {
+	if (this._isClean && this.type == ZmCalBaseItem.PERSON) {
 		this._isClean = false;
 		this.searchContacts();
 	}
@@ -306,10 +306,10 @@ function() {
 		}
 		var sf = fields[j];
 		var addButton = (j == 1);
-		var addMultLocsCheckbox = (this.type == ZmCalItem.LOCATION && j == fields.length - 1);
+		var addMultLocsCheckbox = (this.type == ZmCalBaseItem.LOCATION && j == fields.length - 1);
 		i = this._getSearchFieldHtml(sf, html, i, addButton, addMultLocsCheckbox);
 		if (!isEven || j == fields.length - 1) {
-			if (this.type == ZmCalItem.PERSON) {
+			if (this.type == ZmCalBaseItem.PERSON) {
 				this._prevButtonId = Dwt.getNextId();
 				this._nextButtonId = Dwt.getNextId();
 				html[i++] = "<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>";
@@ -399,9 +399,11 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 		html[i++] = "<td><table border=0 cellpadding=0 cellspacing=0><tr><td>";
 		html[i++] = "<input type='checkbox' id='";
 		html[i++] = this._multLocsCheckboxId;
-		html[i++] = "' /></td><td class='ZmFieldLabelLeft'>&nbsp;";
+		html[i++] = "' /></td><td class='ZmFieldLabelLeft'>&nbsp;<label for='";
+		html[i++] = this._multLocsCheckboxId;
+		html[i++] = "'>";
 		html[i++] = ZmMsg.allowMultipleLocations;
-		html[i++] = "</td></tr></table></td>";
+		html[i++] = "</label></td></tr></table></td>";
 	}
 
 	return i;
@@ -418,7 +420,7 @@ function() {
 		searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
 		element.appendChild(searchButton.getHtmlElement());
 		// attendees tab: search button enabled only if there is search field input
-		if (this.type == ZmCalItem.PERSON) {
+		if (this.type == ZmCalBaseItem.PERSON) {
 			searchButton.setEnabled(false);
 		}
 	}
@@ -497,7 +499,7 @@ function(tabGroup) {
 
 ZmApptChooserTabViewPage.prototype._searchButtonListener = 
 function(ev) {
-	if (this.type == ZmCalItem.PERSON) {
+	if (this.type == ZmCalBaseItem.PERSON) {
 		this._offset = 0;
 		this.searchContacts();
 	} else {
@@ -533,6 +535,11 @@ ZmApptChooserTabViewPage.prototype._setAttendees =
 function() {
 	var attendees = this._attendees[this.type].getArray();
 	if (attendees.length) {
+		if (this.type == ZmCalBaseItem.LOCATION && attendees.length > 1) {
+			this.enableMultipleLocations(true);
+			var pSize = this.parent.getSize();
+			this.resize(pSize.x, pSize.y);
+		}
 		this._chooser.setItems(attendees, DwtChooserListView.TARGET);
 	} else {
 		this._chooser.reset(DwtChooserListView.TARGET);
@@ -629,7 +636,7 @@ ZmApptChooserTabViewPage.prototype.searchCalendarResources =
 function(sortBy) {
 	var fields = ZmApptChooserTabViewPage.SEARCH_FIELDS[this.type];
 	var conds = [];
-	var value = (this.type == ZmCalItem.LOCATION) ? "Location" : "Equipment";
+	var value = (this.type == ZmCalBaseItem.LOCATION) ? "Location" : "Equipment";
 	conds.push({attr: "zimbraCalResType", op: "eq", value: value});
 	var gotValue = false;
 	for (var i = 0; i < fields.length; i++) {
@@ -676,7 +683,7 @@ function(ev) {
 ZmApptChooserTabViewPage.prototype._handleKeyUp =
 function(ev) {
 	var field = DwtUiEvent.getTarget(ev);
-	if (this.type == ZmCalItem.PERSON) {
+	if (this.type == ZmCalBaseItem.PERSON) {
 		this._searchButton.setEnabled(field && field.value);
 	}
 
@@ -688,7 +695,7 @@ function(ev) {
 	var cb = DwtUiEvent.getTarget(ev);
 	this._chooser.setSelectStyle(cb.checked ? DwtChooser.MULTI_SELECT : DwtChooser.SINGLE_SELECT, true);
 	if (!cb.checked) {
-		this.parent.updateAttendees(this._chooser.getItems(), ZmCalItem.LOCATION);
+		this.parent.updateAttendees(this._chooser.getItems(), ZmCalBaseItem.LOCATION);
 	}
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y); // force resize to adjust chooser layout
@@ -703,7 +710,7 @@ function(ev) {
  * @param buttonInfo		[array]			transfer button IDs and labels
  */
 ZmApptChooser = function(parent, buttonInfo) {
-	var selectStyle = (parent.type == ZmCalItem.LOCATION) ? DwtChooser.SINGLE_SELECT : null;
+	var selectStyle = (parent.type == ZmCalBaseItem.LOCATION) ? DwtChooser.SINGLE_SELECT : null;
 	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.VERT_STYLE,
 						   mode: DwtChooser.MODE_MOVE, selectStyle: selectStyle, allButtons: true});
 };
@@ -792,7 +799,7 @@ function(html, idx, item, field, colIdx, params) {
 		}
 		html[idx++] = name;
 	} else if (field == ZmItem.F_NAME) {
-		var name = (this._chooserType == ZmCalItem.PERSON) ? item.getFullName() : item.getAttr(ZmResource.F_name);
+		var name = (this._chooserType == ZmCalBaseItem.PERSON) ? item.getFullName() : item.getAttr(ZmResource.F_name);
 		html[idx++] = name;
 	} else if (field == ZmItem.F_EMAIL) {
 		html[idx++] = item.getEmail();
