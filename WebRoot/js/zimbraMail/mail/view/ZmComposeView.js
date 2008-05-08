@@ -1,24 +1,24 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
 /**
  * Creates a new compose view. The view does not display itself on construction.
  * @constructor
- * @class        
+ * @class
  * This class provides a form for composing a message.
  *
  * @author Conrad Damon
@@ -473,11 +473,11 @@ function(attId, isDraft) {
 		var defangedContent = this._htmlEditor.getContent(true);
 		var refangedContent = defangedContent.replace(ZmComposeView.REFANG_RE, ZmComposeView.REFANG_RE_REPLACE);
 		htmlPart.setContent(refangedContent);
-		
+
 		//Support for Inline
 		if (inline) {
 			var relatedPart = new ZmMimePart();
-			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);			
+			relatedPart.setContentType(ZmMimeTable.MULTI_RELATED);
 			relatedPart.children.add(htmlPart);
 			top.children.add(relatedPart);
 		} else {
@@ -561,7 +561,7 @@ function(attId, isDraft) {
 	}
 
 	if (this._msgAttId) {
-		if(forwardMsgIds.length > 0) { 
+		if(forwardMsgIds.length > 0) {
 			//Check if the MsgId is already present in the fwdMsgIds list.
 			var i = 0;
 			while(forwardMsgIds[i] && forwardMsgIds[i] != this._msgAttId){
@@ -574,14 +574,14 @@ function(attId, isDraft) {
 			forwardMsgIds.push(this._msgAttId);
 		}
 	}
-	
+
 	msg.setMessageAttachmentId(forwardMsgIds);
 
     var priority = this._getPriority();
     if (priority) {
         msg.flagLocal(priority, true);
     }
-    
+
     return msg;
 };
 
@@ -605,7 +605,7 @@ function(type, addr) {
 	// Use a timed action so that first time through, addr textarea
 	// has been sized by browser based on content before we try to
 	// adjust it (bug 20926)
-	AjxTimedAction.scheduleAction(new AjxTimedAction(this, 
+	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
 		function() {
 			this._adjustAddrHeight(this._field[type]);
 		}), 0);
@@ -737,7 +737,7 @@ function(msg, idoc) {
 				num++;
 				var cid = "<" + dfsrc.substring(4) + ">";
 				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
-				//Cache cleared, becoz part id's may change. 
+				//Cache cleared, becoz part id's may change.
 				src = src + "&t=" + (new Date()).getTime();
 				if (src) {
 					images[i].src = src;
@@ -855,41 +855,41 @@ function(mimePart) {
 ZmComposeView.prototype.applySignature =
 function(content, replaceSignatureId){
 	content = content || "";
-	var signature = this.getSignatureContent();
-	var sep = this._getSignatureSeparator();
+        var signature = this.getSignatureContent();
 	var newLine = this._getSignatureNewLine();
 	var isAbove = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_OUTLOOK;
-	if (replaceSignatureId) {
+
         var replaceSignature;
         //Check if there is change if mode of editor
-        if(this._previousSignatureMode && this._previousSignatureMode != this._htmlEditor.getMode()){
-            replaceSignature = ( this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML )
-                    ? AjxStringUtil.convertToHtml(this._previousSignature)
-                    : AjxStringUtil.convertHtml2Text(this._previousSignature);
-        }else{
-            replaceSignature = this.getSignatureContent(replaceSignatureId);
-        }
-        
-		var replaceRe = AjxStringUtil.regExEscape(replaceSignature);
-		if (!isAbove) {
-			replaceRe += "\\s*";
-			if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
-				replaceRe += "</body></html>";
-			}
-			replaceRe += "$";
-		} else {
-			signature = signature || newLine;
-		}
-		content = content.replace(new RegExp(replaceRe, "i"), signature);
+        if (replaceSignatureId) {
+                if(replaceSignatureId && this._previousSignatureMode && this._previousSignatureMode != this._htmlEditor.getMode()){
+                        replaceSignature = ( this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML )
+                                ? AjxStringUtil.convertToHtml(this._previousSignature)
+                                : AjxStringUtil.convertHtml2Text(this._previousSignature);
+                }else{
+                        replaceSignature = replaceSignatureId ? this.getSignatureContent(replaceSignatureId) : "";
+                }
+
+	        var replaceRe = "(" + AjxStringUtil.regExEscape(newLine) + ")*" + AjxStringUtil.regExEscape(replaceSignature);
+	        if (!isAbove) {
+		        replaceRe += "\\s*(" + AjxStringUtil.regExEscape(newLine) + ")*";
+		        if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
+			        replaceRe += "</body></html>";
+		        }
+		        replaceRe += "$";
+	        } else {
+		        signature = signature || newLine;
+	        }
+	        content = content.replace(new RegExp(replaceRe, "i"), signature);
 	} else {
-		content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE), signature, sep, newLine);
+		content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE), signature, newLine);
 	}
 	this._htmlEditor.setContent(content);
 
-    //Caching previous Signature state.
-    this._previousSignature = signature;
-    this._previousSignatureMode = this._htmlEditor.getMode();
-    
+        //Caching previous Signature state.
+        this._previousSignature = signature;
+        this._previousSignatureMode = this._htmlEditor.getMode();
+
 };
 
 ZmComposeView.prototype.getSignatureContent = function(signatureId) {
@@ -907,9 +907,9 @@ ZmComposeView.prototype.getSignatureContent = function(signatureId) {
  * Adds the user's signature to the message body. An "internet" style signature
  * is prefixed by a special line and added to the bottom. An "outlook" style
  * signature is added before quoted content.
- * 
- * This method is only used to add an 
- * 
+ *
+ * This method is only used to add an
+ *
  * @content 			optional content to use
  */
 ZmComposeView.prototype.addSignature =
@@ -918,37 +918,41 @@ function(content) {
 	// since HTML composing in new window doesnt guarantee the html editor
 	// widget will be initialized when this code is running.
 	content = content || "";
-	var sig = this._getSignature();
-	var sep = this._getSignatureSeparator();
-	var newLine = this._getSignatureNewLine();
-	var identity = this.getIdentity();
-	content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE), sig, sep, newLine);
+	content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE),
+                                        this.getSignatureContent(),
+                                        this._getSignatureNewLine());
 
 	this._htmlEditor.setContent(content);
 };
 
 ZmComposeView.prototype._insertSignature =
-function(content, sigStyle, sig, sep, newLine) {
+function(content, sigStyle, sig, newLine) {
 
-    if (sigStyle == ZmSetting.SIG_OUTLOOK) {
+        var re_newlines = "(" + AjxStringUtil.regExEscape(newLine) + ")+";
+        {
+                // get rid of all trailing newlines
+                var re = re_newlines;
+                if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
+                        re += "</body></html>";
+                }
+                re += "$";
+                re = new RegExp(re, "i");
+                content = content.replace(re, '');
+        }
 
-		var regexp = ZmComposeView.QUOTED_CONTENT_RE;
-		var repl = "----- ";
-	
-		if (this._composeMode == DwtHtmlEditor.HTML) {
-			regexp = ZmComposeView.HTML_QUOTED_CONTENT_RE;
-			repl = "<br>----- ";
-		}
-	
+        if (sigStyle == ZmSetting.SIG_OUTLOOK) {
+                var repl = "----- ";
+                var regexp = new RegExp(re_newlines + repl, "i");
+
 		if (content.match(regexp)) {
-			content = content.replace(regexp, [sep, sig, newLine, repl].join(""));
+			content = content.replace(regexp, [sig, newLine, repl].join(""));
 		} else {
-			content = [content, sep, sig].join("");
+			content = [content, sig].join("");
 		}
 	} else {
-		content = [content, sep, sig].join("");
+		content = [content, sig].join("");
 	}
-	
+
 	return content;
 };
 
@@ -967,16 +971,16 @@ function(signatureId) {
 
 	var signature = appCtxt.getSignatureCollection().getById(signatureId);
 	var newLine = this._getSignatureNewLine();
-    var sig = signature.getValue( (this._composeMode == DwtHtmlEditor.HTML) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN );
+        var sig = signature.getValue( (this._composeMode == DwtHtmlEditor.HTML) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN );
 	return sig + newLine;
 };
 
 ZmComposeView.prototype._getSignatureSeparator =
 function() {
-	var newLine = this._getSignatureNewLine();
+        var newLine = this._getSignatureNewLine();
 	var sep = newLine + newLine;
 	if (appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET) {
-		sep = sep + "-- " + newLine;
+		sep += "-- " + newLine;
 	}
 	return sep;
 };
@@ -1016,7 +1020,7 @@ function(incAddrs, incSubject) {
 	return (curFormValue != this._origFormValue);
 };
 
-ZmComposeView.prototype.cleanupAttachments = 
+ZmComposeView.prototype.cleanupAttachments =
 function(all) {
 	var attachDialog = this._attachDialog;
 	if (attachDialog && attachDialog.isPoppedUp()) {
@@ -1084,8 +1088,8 @@ function(bodyPart, encodeSpace) {
 			delete dwtIframe;
 		}
 	} else {
-		text = encodeSpace 
-			? AjxStringUtil.convertToHtml(bodyPart.content) 
+		text = encodeSpace
+			? AjxStringUtil.convertToHtml(bodyPart.content)
 			: bodyPart.content;
 	}
 
@@ -1248,7 +1252,7 @@ function(action, msg, subjOverride) {
 	if ((action == ZmOperation.NEW_MESSAGE && subjOverride == null)) {
 		return;
 	}
-	
+
 	var subj = subjOverride || ( (msg) ? msg.subject : "" );
 
 	if (action != ZmOperation.DRAFT && subj) {
@@ -1302,7 +1306,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 			body = bodyPart ? bodyPart.content : null;
 		}
 		this._htmlEditor.setContent(body);
-		
+
 		if (!isInviteReply) {
 			this._showForwardField(msg, action);
 			this._fixMultipartRelatedImages(msg,this._htmlEditor._getIframeDoc());
@@ -1470,10 +1474,10 @@ function(action, msg, extraBodyText, incOption, nosig) {
 	if (!nosig && sigStyle == ZmSetting.SIG_INTERNET) {
 		this.addSignature(value);
 	} else {
-		value = value || (composingHtml ? "<br>" : "");		
+		value = value || (composingHtml ? "<br>" : "");
 		this._htmlEditor.setContent(value);
 	}
-	
+
 	this._showForwardField(msg, action, incOption);
 	this._fixMultipartRelatedImages(msg,this._htmlEditor._getIframeDoc());
 };
@@ -1581,7 +1585,7 @@ function(templateId) {
 				 subjectRowId:		ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_ROW),
 				 subjectInputId:	ZmId.getViewId(this._view, ZmId.CMP_SUBJECT_INPUT),
 				 identityRowId:		ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_ROW),
-                 identitySelectId:  ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_SELECT),   
+                 identitySelectId:  ZmId.getViewId(this._view, ZmId.CMP_IDENTITY_SELECT),
 				 priorityId:		ZmId.getViewId(this._view, ZmId.CMP_PRIORITY),
 				 attRowId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_ROW),
 				 attDivId:			ZmId.getViewId(this._view, ZmId.CMP_ATT_DIV)
@@ -1765,7 +1769,7 @@ ZmComposeView.prototype._getIdentityText =
 function(identity) {
 	var name = identity.name;
 	if (identity.isDefault && name == ZmIdentity.DEFAULT_NAME) {
-		name = ZmMsg.accountDefault;  
+		name = ZmMsg.accountDefault;
 	}
 	if (identity.sendFromDisplay) {
 		return [name,  ' ("', identity.sendFromDisplay, '" <', identity.sendFromAddress, '>)'].join("");
@@ -1785,7 +1789,7 @@ function(ev) {
 		var option = new DwtSelectOptionData(identity.id, text);
 		this.identitySelect.addOption(option);
 	} else if (ev.event == ZmEvent.E_DELETE) {
-		// DwtSelect doesn't support removing an option, so recreate the whole thing.		
+		// DwtSelect doesn't support removing an option, so recreate the whole thing.
 		this.identitySelect.clearOptions();
 		var options = this._getIdentityOptions();
 		for (var i = 0, count = options.length; i < count; i++)	 {
@@ -1820,7 +1824,7 @@ function() {
 
 ZmComposeView.prototype._showForwardField =
 function(msg, action, replyPref) {
-	
+
 	var html = "";
 	if (!(this._msgIds && this._msgIds.length) &&
 		(replyPref == ZmSetting.INCLUDE_ATTACH || action == ZmOperation.FORWARD_ATT))
@@ -1864,7 +1868,7 @@ function(msg, action, replyPref) {
 		}
 		this._attachCount = messages.length;
 	}
-	
+
 	this._attcDiv.innerHTML = html;
 };
 
@@ -1893,7 +1897,7 @@ function(type, show, skipNotify, skipFocus) {
 		appCtxt.set(setting, show, null, false, skipNotify);
 	}
     if(type == AjxEmailAddress.BCC){
-       Dwt.setInnerHtml(this._toggleBccEl, show ? ZmMsg.hideBCC : ZmMsg.showBCC ); 
+       Dwt.setInnerHtml(this._toggleBccEl, show ? ZmMsg.hideBCC : ZmMsg.showBCC );
     }
 	this._resetBodySize();
 };
