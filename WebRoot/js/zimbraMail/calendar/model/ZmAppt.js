@@ -467,12 +467,22 @@ function(message) {
             if( resourceName && ptst && (this._ptstLocationMap[resourceName] != null)) {
                this._ptstLocationMap[resourceName].setAttr("participationStatus",ptst);
             }
-			// see if it's a known location
-			var location = ZmApptViewHelper.getAttendeeFromItem(resources[i].url, ZmCalItem.LOCATION, true, true);
+
+            var resourceURL =  resources[i].url;
+
+            var parts = AjxEmailAddress.split(resourceURL);
+
+            //if multiple alias is present select the first one
+            if(parts && (parts instanceof Array) && parts.length > 0) {
+                resourceURL = parts[0];
+            }
+            
+            // see if it's a known location
+			var location = ZmApptViewHelper.getAttendeeFromItem(resourceURL, ZmCalItem.LOCATION, true, true);
 			if (location) {
                 continue;
 			}
-			var equipment = ZmApptViewHelper.getAttendeeFromItem(resources[i].url, ZmCalItem.EQUIPMENT);
+			var equipment = ZmApptViewHelper.getAttendeeFromItem(resourceURL, ZmCalItem.EQUIPMENT);
 			if (equipment) {
                 equipment.setAttr("participationStatus",resources[i].ptst);
                 this._attendees[ZmCalItem.EQUIPMENT].push(equipment);
@@ -641,7 +651,12 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 			at.setAttribute("cutype", cutype);
 		}
 		at.setAttribute("rsvp", "1");
-		at.setAttribute("a", address);
+
+        if(address instanceof Array) {
+            address = address[0];
+        }
+
+        at.setAttribute("a", address);
 		if (dispName) {
 			at.setAttribute("d", dispName);
 		}
