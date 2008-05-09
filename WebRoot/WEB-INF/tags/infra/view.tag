@@ -43,7 +43,7 @@
         <table cellpadding="2" cellspacing="0" width="100%">
             <tr>
                 <td>
-                    <b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>
+                    <b>${fn:escapeXml(mailbox.name)}</b>
                 </td>
             </tr>
         </table>
