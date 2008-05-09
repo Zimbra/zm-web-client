@@ -280,7 +280,7 @@
                 focusAtStart: true,
                 </c:if>
                 css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
-				extracss: '.yui-spellcheck { background-color: yellow; }',
+				extracss: '.yui-spellcheck { background-color: yellow; }'
             });
 			enableSpellCheck(myEditor);
 			myEditor.on('editorContentLoaded', function() {
