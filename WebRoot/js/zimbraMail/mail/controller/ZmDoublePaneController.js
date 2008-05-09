@@ -194,12 +194,13 @@ function() {
 	var list = this._standardToolBarOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._msgOps());
-	list.push(ZmOperation.SEP,
-				ZmOperation.SPAM,
-				ZmOperation.SEP,
-				ZmOperation.TAG_MENU);
+	list.push(ZmOperation.EDIT,			// hidden except for Drafts
+			  ZmOperation.SEP,
+			  ZmOperation.SPAM,
+			  ZmOperation.SEP,
+			  ZmOperation.TAG_MENU);
 
-    if(appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)){
+    if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
         list.push(ZmOperation.SEP, ZmOperation.DETACH);
     }
 

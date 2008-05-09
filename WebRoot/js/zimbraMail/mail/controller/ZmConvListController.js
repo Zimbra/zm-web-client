@@ -149,22 +149,6 @@ function() {
 									 controller:this, dropTgt:this._dropTgt});
 };
 
-ZmConvListController.prototype._getToolBarOps =
-function() {
-	var list = this._standardToolBarOps();
-	list.push(ZmOperation.SEP);
-	list = list.concat(this._msgOps());
-	list.push(ZmOperation.SEP,
-				ZmOperation.SPAM,
-				ZmOperation.SEP,
-				ZmOperation.TAG_MENU);
-    if(appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)){
-        list.push(ZmOperation.SEP, ZmOperation.DETACH);
-    }
-    list.push(ZmOperation.SEP,ZmOperation.VIEW_MENU);
-	return list;
-};
-
 ZmConvListController.prototype._getViewType =
 function() {
 	return ZmId.VIEW_CONVLIST;

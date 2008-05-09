@@ -509,7 +509,8 @@ function(ev) {
 	var address = (ev.field == ZmItem.F_PARTICIPANT) ? ev.detail :
 		((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null);
 
-	if (this._getSearchFolderId() == ZmFolder.ID_DRAFTS) {
+	var item = (items && items.length == 1) ? items[0] : null;
+	if ((this._getSearchFolderId() == ZmFolder.ID_DRAFTS) || (item && item.isDraft)) {
 		// show drafts menu
 		this._initializeDraftsActionMenu();
 		this._setTagMenu(this._draftsActionMenu);
@@ -1126,9 +1127,13 @@ function(parent, num) {
 			var isDrafts = (item && item.isDraft) || (folderId == ZmFolder.ID_DRAFTS);
 			var isFeed = (folder && folder.isFeed());
 			parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL], (!isDrafts && !isFeed && num == 1));
-            parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
-            parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.FORWARD], (!isDrafts && num > 0));
-            parent.enable([appCtxt.isOffline ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL, ZmOperation.VIEW_MENU], true);
+			parent.enable(ZmOperation.DETACH, (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED) && !isDrafts && num == 1));
+			parent.enable([ZmOperation.SPAM, ZmOperation.MOVE, ZmOperation.FORWARD], (!isDrafts && num > 0));
+			parent.enable([appCtxt.isOffline ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL, ZmOperation.VIEW_MENU], true);
+			var editButton = parent.getOp(ZmOperation.EDIT);
+			if (editButton) {
+				editButton.setVisible(isDrafts);
+			}
 		}
 	} else {
 		if (folder && folder.isReadOnly() && num > 0) {
