@@ -178,7 +178,7 @@ function(msg) {
 		? new Date(msg.sentDate)
 		: new Date(msg.date);
 
-	var invite = msg.invite;
+	var invite = msg.getInvite();
 
 	if ((appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
 		invite && invite.type != "task" &&
@@ -581,7 +581,7 @@ ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
 
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
-	var attachments = this._msg.attachments;
+	var attachments = this._msg.getAttachments();
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
 	for (var i = 0; i < attachments.length; i++) {
@@ -1582,7 +1582,7 @@ function(msg, preferHtml, callback) {
 	}
 
 	// bug fix# 3928
-	var attachments = msg.attachments;
+	var attachments = msg.getAttachments();
 	for (var i = 0; i < attachments.length; i++) {
 		var attach = attachments[i];
 		if (!msg.isRealAttachment(attach))
@@ -1594,9 +1594,9 @@ function(msg, preferHtml, callback) {
 		var sizeText = "";
 		var size = attach.s;
 		if (size && size > 0) {
-		        if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
-                        else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;";
-                        else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;";
+		    if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
+            else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;";
+            else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;";
 		}
 
 		html[idx++] = "<tr><td nowrap='nowrap' style='font-size:14px'>";
@@ -1658,7 +1658,7 @@ function(msg, preferHtml, callback) {
 	}
 };
 
-ZmMailMsgView._fixMultipartRelatedImagesInContent = function(msg, content) {
+ZmMailMsgView._fixMultipartRelatedImagesInContent = function(msg,content){
         return content.replace(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
                 return "src=" + q + msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, ("<" + cid + ">")) + q;
         });
