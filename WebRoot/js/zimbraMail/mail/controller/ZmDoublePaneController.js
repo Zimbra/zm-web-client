@@ -356,7 +356,8 @@ function(item, view, callback) {
 		if (!conv._loaded) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadConv, [view, callback]);
 			var getFirstMsg = this.isReadingPaneOn();
-			conv.load({getFirstMsg:getFirstMsg}, respCallback);
+			var markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
+			conv.load({getFirstMsg:getFirstMsg, markRead:markRead}, respCallback);
 		} else {
 			this._handleResponseLoadConv(view, callback, conv._createResult());
 		}
