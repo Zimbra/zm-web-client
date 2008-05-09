@@ -394,7 +394,7 @@ ZmImApp.prototype.addComponents =
 function(components) {
 	// Set up the presence indicator next to the user info & quota.
 	var container = Dwt.byId(ZmId.SKIN_PRESENCE);
-	if (container && !AjxEnv.isIE) {
+	if (container) {
 		var buttonArgs = {
 			parent: appCtxt.getShell(),
 			id: ZmId.PRESENCE,
