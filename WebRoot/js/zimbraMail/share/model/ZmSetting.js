@@ -105,6 +105,7 @@ ZmSetting.GROUP_BY_MESSAGE	= "message";
 ZmSetting.INCLUDE_NONE		= "includeNone";			// zimbraPrefForwardIncludeOriginalText
 ZmSetting.INCLUDE			= "includeBody";
 ZmSetting.INCLUDE_PREFIX	= "includeBodyWithPrefix";
+ZmSetting.INCLUDE_PREFIX_FULL   = "includeBodyAndHeadersWithPrefix";
 ZmSetting.INCLUDE_ATTACH	= "includeAsAttachment";
 ZmSetting.INCLUDE_SMART		= "includeSmart";
 ZmSetting.LICENSE_BAD		= "bad";					// license status (network only)

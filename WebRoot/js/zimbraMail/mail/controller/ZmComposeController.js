@@ -44,6 +44,7 @@ ZmComposeController = function(container, mailApp) {
 	ZmComposeController.RADIO_GROUP[ZmOperation.INC_NO_PREFIX]	= 3;
 	ZmComposeController.RADIO_GROUP[ZmOperation.INC_NONE]		= 3;
 	ZmComposeController.RADIO_GROUP[ZmOperation.INC_PREFIX]		= 3;
+        ZmComposeController.RADIO_GROUP[ZmOperation.INC_PREFIX_FULL]	= 3;
 	ZmComposeController.RADIO_GROUP[ZmOperation.INC_SMART]		= 3;
 
 	// translate between include preferences and operations
@@ -52,6 +53,7 @@ ZmComposeController = function(container, mailApp) {
 	ZmComposeController.INC_OP[ZmSetting.INCLUDE]			= ZmOperation.INC_NO_PREFIX;
 	ZmComposeController.INC_OP[ZmSetting.INCLUDE_NONE]		= ZmOperation.INC_NONE;
 	ZmComposeController.INC_OP[ZmSetting.INCLUDE_PREFIX]	= ZmOperation.INC_PREFIX;
+        ZmComposeController.INC_OP[ZmSetting.INCLUDE_PREFIX_FULL]	= ZmOperation.INC_PREFIX_FULL;
 	ZmComposeController.INC_OP[ZmSetting.INCLUDE_SMART]		= ZmOperation.INC_SMART;
 	ZmComposeController.INC_MAP = {};
 	for (var i in ZmComposeController.INC_OP)
@@ -749,9 +751,9 @@ function(action) {
 	}
 	if (isReply) {
 		list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_ATTACHMENT, ZmOperation.INC_NO_PREFIX,
-				  ZmOperation.INC_PREFIX, ZmOperation.INC_SMART);
+			  ZmOperation.INC_PREFIX, ZmOperation.INC_PREFIX_FULL, ZmOperation.INC_SMART);
 	} else if (isForward) {
-		list.push(ZmOperation.SEP, ZmOperation.INC_ATTACHMENT, ZmOperation.INC_NO_PREFIX, ZmOperation.INC_PREFIX);
+		list.push(ZmOperation.SEP, ZmOperation.INC_ATTACHMENT, ZmOperation.INC_NO_PREFIX, ZmOperation.INC_PREFIX, ZmOperation.INC_PREFIX_FULL);
 	}
 
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
@@ -1016,8 +1018,8 @@ function(op) {
 	if (incOption) {
 		var curText = this._getBodyContent();
 		if (this._curIncOption == ZmOperation.INC_NO_PREFIX || this._curIncOption == ZmOperation.INC_PREFIX ||
-			this._curIncOption == ZmOperation.INC_SMART) {
-
+                    this._curIncOption == ZmOperation.INC_PREFIX_FULL ||
+		    this._curIncOption == ZmOperation.INC_SMART) {
 			var idx = curText.indexOf(this._composeView._includedPreface.replace(/\s+$/, ""));
 			if (idx) {
 				var crlf = (this._composeView.getComposeMode() == DwtHtmlEditor.HTML) ? "<br>" : "\\r?\\n";

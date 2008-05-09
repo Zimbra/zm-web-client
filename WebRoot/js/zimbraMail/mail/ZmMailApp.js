@@ -548,6 +548,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_INC_NONE, {textKey:"includeMenuNone"});
 	ZmOperation.registerOp(ZmId.OP_INC_NO_PREFIX, {textKey:"includeMenuNoPrefix"});
 	ZmOperation.registerOp(ZmId.OP_INC_PREFIX, {textKey:"includeMenuPrefix"});
+        ZmOperation.registerOp(ZmId.OP_INC_PREFIX_FULL, {textKey:"includeMenuPrefixFull"});
 	ZmOperation.registerOp(ZmId.OP_INC_SMART, {textKey:"includeMenuSmart"});
 	ZmOperation.registerOp(ZmId.OP_MARK_READ, {textKey:"markAsRead", image:"ReadMessage"});
 	ZmOperation.registerOp(ZmId.OP_MARK_UNREAD, {textKey:"markAsUnread", image:"UnreadMessage"});

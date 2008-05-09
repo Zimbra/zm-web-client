@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -217,7 +217,7 @@ function() {
 		options: 			["Arial", "Times New Roman", "Courier", "Verdana"],
 		precondition:		[ZmSetting.HTML_COMPOSE_ENABLED, ZmSetting.NOTEBOOK_ENABLED]
 	});
-    //Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile... 
+    //Yuck: Should add functionality in Pref. to add prefix/postfix to all options. Meanwhile...
     var fontSizeOptions = ["8", "10", "12", "14", "18", "24", "36"];
     for(var i=0; i<fontSizeOptions.length; i++){
         fontSizeOptions[i] = fontSizeOptions[i] + ZmMsg.pt;
@@ -237,8 +237,8 @@ function() {
 	ZmPref.registerPref("FORWARD_INCLUDE_ORIG", {
 		displayName:		ZmMsg.forwardInclude,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.includeInBody, ZmMsg.includePrefix, ZmMsg.includeOriginalAsAttach],
-		options:			[ZmSetting.INCLUDE, ZmSetting.INCLUDE_PREFIX, ZmSetting.INCLUDE_ATTACH]
+                displayOptions:		[ZmMsg.includeInBody, ZmMsg.includePrefix, ZmMsg.includePrefixFull, ZmMsg.includeOriginalAsAttach],
+                options:		[ZmSetting.INCLUDE, ZmSetting.INCLUDE_PREFIX, ZmSetting.INCLUDE_PREFIX_FULL, ZmSetting.INCLUDE_ATTACH]
 	});
 
 	ZmPref.registerPref("DEFAULT_TIMEZONE", {
@@ -284,7 +284,7 @@ function() {
 	});
 
     // Polling Interval Options - Dynamically constructed according to MIN_POLLING_INTERVAL,POLLING_INTERVAL
-    var options = [ 525600 ]; 
+    var options = [ 525600 ];
     var startValue   = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL));
     if(startValue < 1) startValue = 1;
     else startValue = Math.round(startValue)
@@ -315,7 +315,7 @@ function() {
     while(displayOptions.length <= count){
         displayOptions.push(ZmMsg.pollEveryNMinutes);
     }
-    
+
     ZmPref.registerPref("POLLING_INTERVAL", {
 		displayName:		ZmMsg.pollingInterval,
 		displayContainer:	ZmPref.TYPE_SELECT,
@@ -335,13 +335,15 @@ function() {
 		displayName:		ZmMsg.replyInclude,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		[ZmMsg.dontInclude,
-							 ZmMsg.includeInBody, ZmMsg.includePrefix,
-							 ZmMsg.includeOriginalAsAttach,
-							 ZmMsg.smartInclude],
+					 ZmMsg.includeInBody,
+                                         ZmMsg.includePrefix, ZmMsg.includePrefixFull,
+					 ZmMsg.includeOriginalAsAttach,
+					 ZmMsg.smartInclude],
 		options:			[ZmSetting.INCLUDE_NONE,
-							 ZmSetting.INCLUDE, ZmSetting.INCLUDE_PREFIX, 
-							 ZmSetting.INCLUDE_ATTACH,
-							 ZmSetting.INCLUDE_SMART]
+						 ZmSetting.INCLUDE,
+                                                 ZmSetting.INCLUDE_PREFIX, ZmSetting.INCLUDE_PREFIX_FULL,
+						 ZmSetting.INCLUDE_ATTACH,
+						 ZmSetting.INCLUDE_SMART]
 	});
 
 	ZmPref.registerPref("REPLY_PREFIX", {
