@@ -203,7 +203,9 @@ function(node, instNode) {
 
 ZmTask.prototype._getAttr =
 function(node, comp, name) {
-	return (node[name] || comp[name]);
+	if (node[name] != null) return node[name];
+	if (comp) return comp[name];
+	return null;
 };
 
 ZmTask.prototype._setExtrasFromMessage =
