@@ -224,8 +224,7 @@ function(node, args) {
 */
 ZmContactList.prototype._realizeContact =
 function(contact, idx) {
-	if ((contact instanceof ZmContact) || (contact instanceof ZmResource))
-		return contact;
+	if (contact instanceof ZmContact) { return contact; }
 
 	var args = {list:this};
 	var obj = eval(ZmList.ITEM_CLASS[this.type]);
@@ -907,7 +906,7 @@ function(contact) {
 */
 ZmContactList.prototype._testAcMatch =
 function(contact, str, doMarkup) {
-	contact = ((contact instanceof ZmContact) || (contact instanceof ZmResource))
+	contact = (contact instanceof ZmContact)
 		? contact
 		: (contact && contact.id)
 			? this.getById(contact.id)
@@ -1005,7 +1004,7 @@ function(a, b) {
 */
 ZmContactList.prototype._getMatches =
 function(contact, str) {
-	contact = ((contact instanceof ZmContact) || (contact instanceof ZmResource))
+	contact = (contact instanceof ZmContact)
 		? contact
 		: (contact && contact.id)
 			? this.getById(contact.id)

@@ -26,8 +26,6 @@
  */
 AjxPackage.require("ajax.dwt.widgets.DwtChooser");
 
-AjxPackage.require("zimbraMail.calendar.model.ZmResource");
-
 AjxPackage.require("zimbraMail.abook.model.ZmAddrBook");
 AjxPackage.require("zimbraMail.abook.model.ZmContact");
 AjxPackage.require("zimbraMail.abook.model.ZmContactList");
