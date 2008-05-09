@@ -559,10 +559,15 @@ function() {
 	var options = pref.options;
 	var displayOptions = pref.displayOptions;
 	var pattern = displayOptions[options[0] == ZmAccountsPage.DOWNLOAD_TO_INBOX ? 1 : 0];
-	var text = AjxMessageFormat.format(pattern, this._getControlValue("NAME", section));
+	var name = this._getControlValue("NAME", section);
+	var text = AjxMessageFormat.format(pattern, name);
 
 	var radioButton = radioGroup.getRadioButtonByValue(ZmAccountsPage.DOWNLOAD_TO_FOLDER);
 	radioButton.setText(text);
+
+	var isInbox = name.match(/^\s*inbox\s*$/i);
+	var value = isInbox ? ZmAccountsPage.DOWNLOAD_TO_INBOX : ZmAccountsPage.DOWNLOAD_TO_FOLDER;
+	this._setControlValue("DOWNLOAD_TO", section, value);
 };
 
 ZmAccountsPage.prototype._setPortControls =
@@ -1500,13 +1505,23 @@ function(continueCallback) {
 				// avoid folder create if it already exists
 				var folder = root.getByName(name);
 				if (folder) {
+					var folderId = folder.id;
+					if (folderId != ZmOrganizer.ID_INBOX && Number(folderId) < 256) {
+						var params = {
+							msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [name]),
+							level: ZmStatusView.LEVEL_CRITICAL
+						};
+						appCtxt.setStatusMsg(params);
+						continueCallback.run(false);
+						return;
+					}
 					account.folderId = folder.id;
 					continue;
 				}
 
 				// this means user modified name of the folder, so let's rename it
 				folder = appCtxt.getById(account.folderId);
-				if (folder) {
+				if (folder && Number(account.folderId) >= 256) {
 					if (folder.name != name) {
 						var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
 						var actionNode = soapDoc.set("action");
