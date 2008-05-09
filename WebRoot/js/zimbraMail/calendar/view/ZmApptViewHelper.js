@@ -204,7 +204,7 @@ function(item, type, strictText, strictEmail) {
 	}
 
 	var attendee = null;
-	if ((item instanceof ZmContact) || (item instanceof ZmResource)) {
+	if (item instanceof ZmContact) {
 		// it's already a contact or resource, return it as is
 		attendee = item;
 	} else if (item instanceof AjxEmailAddress) {

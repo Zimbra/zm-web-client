@@ -333,7 +333,7 @@ function(customFileAs) {
 *  anonymous object is upgraded to a ZmContact when needed. */
 ZmContact.getAttr =
 function(contact, attr) {
-	return ((contact instanceof ZmContact) || (contact instanceof ZmResource))
+	return (contact instanceof ZmContact)
 		? contact.getAttr(attr)
 		: (contact && contact._attrs) ? contact._attrs[attr] : null;
 };
