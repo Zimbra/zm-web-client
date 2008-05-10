@@ -1021,20 +1021,26 @@ function(msg, container, callback) {
 	var bodyParts = msg.getBodyParts();
 	var len = bodyParts.length;
 	if (len > 1) {
+                var html = [];
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
-            if (ZmMimeTable.isRenderableImage(bp.ct)) {
-                var imgHtml = null;
-                if(bp.content){  //Hack: (Bug:27320) Done specifically for sMime implementationu are.
-                    imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");
-                }else{
-                    imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
-                }
-                this._makeIframeProxy(el, imgHtml);
+                        if (ZmMimeTable.isRenderableImage(bp.ct)) {
+                                var imgHtml = null;
+                                if(bp.content){  //Hack: (Bug:27320) Done specifically for sMime implementationu are.
+                                        imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");
+                                }else{
+                                        imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
+                                }
+                                html.push(imgHtml);
 			} else {
-				this._makeIframeProxy(el, bp.content, bp.ct == ZmMimeTable.TEXT_PLAIN, bp.truncated)
+                                if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
+                                        html.push("<pre>", bp.content, "</pre>");
+                                } else {
+                                        html.push(bp.content);
+                                }
 			}
 		}
+                this._makeIframeProxy(el, html.join(""));
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
