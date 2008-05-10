@@ -352,7 +352,9 @@ function(params) {
 		var callback = new AjxCallback(this,
 			function() {
 				AjxDispatcher.require("Startup2");
-                this.handleCalendarComponents();
+				if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+					this.handleCalendarComponents();
+				}
             });
 		this.addPostRenderCallback(callback, 0, 0, true);
 	}

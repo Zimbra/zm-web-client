@@ -33,8 +33,11 @@ ZmReminderController = function(calController) {
 	this._refreshTimedAction = new AjxTimedAction(this, this.refresh);
 	var settings = appCtxt.getSettings();
 	var listener = new AjxListener(this, this._settingChangeListener);
-	settings.getSetting(ZmSetting.CAL_REMINDER_WARNING_TIME).addChangeListener(listener);
-	this._warningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+	var setting = settings.getSetting(ZmSetting.CAL_REMINDER_WARNING_TIME);
+	if (setting) {
+		setting.addChangeListener(listener);
+		this._warningTime = appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME);
+	}
 };
 
 ZmReminderController.prototype.constructor = ZmReminderController;
