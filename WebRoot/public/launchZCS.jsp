@@ -129,7 +129,12 @@
 <fmt:setLocale value='${locale}' scope='request' />
 <fmt:setBundle basename="/messages/ZmMsg" scope="request" force="true" />
 <title><fmt:message key="zimbraTitle"/></title>
-<link href="${contextPath}/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin?v=${vers}${isDebug?"&debug=1":""}&skin=${skin}" rel="stylesheet" type="text/css" />
+<link href="<c:url value="/css/images,common,dwt,msgview,login,zm,spellcheck,wiki,skin.css">
+	<c:param name="v" value="${vers}" />
+	<c:param name="debug" value='${isDebug?"1":""}' />
+	<c:param name="skin" value="${skin}" />
+	<c:param name="locale" value="${locale}" />
+</c:url>" rel="stylesheet" type="text/css" />
 <fmt:message key="favIconUrl" var="favIconUrl"/>
 <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 <script>
