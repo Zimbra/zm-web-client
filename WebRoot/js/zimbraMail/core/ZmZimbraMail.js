@@ -694,7 +694,7 @@ function(funcName, force) {
 		var setting = ZmApp.SETTING[appName];
 		if (!setting || appCtxt.get(setting) || force) {
 			var app = appCtxt.getApp(appName);
-			var func = app[funcName];
+			var func = app && app[funcName];
 			if (func && (typeof(func) == "function")) {
 				func.apply(app, args);
 			}
@@ -713,7 +713,6 @@ function(apps) {
 	for (var app in ZmApp.CLASS) {
 		if (!apps || apps[app]) {
 			ZmApp.APPS.push(app);
-			ZmApp.ENABLED_APPS[app] = true;
 		}
 	}
 	ZmApp.APPS.sort(function(a, b) {
@@ -728,6 +727,7 @@ function(apps) {
 		var appEnabled = ZmApp.SETTING[app] && appCtxt.get(ZmApp.SETTING[app]);
 		var upsellEnabled = ZmApp.UPSELL_SETTING[app] && appCtxt.get(ZmApp.UPSELL_SETTING[app]);
 		if (appEnabled || upsellEnabled) {
+			ZmApp.ENABLED_APPS[app] = true;
 			this._createApp(app);
 			this._apps[app].isUpsell = (!appEnabled && upsellEnabled);
 		}
