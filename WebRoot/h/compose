@@ -113,8 +113,8 @@
                                 <app:button  name="actionContactAdd" width="1%" clazz="tobutton" tooltip="addFromContacts" text="to"/>
                                 <td colspan="2" nowrap>
                                     <div class="ZhAC ZhACTo">
-                                    <textarea  id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" 
-                                                               name="to" >${fn:escapeXml(compose.to)}</textarea>
+                                    <textarea  id="toField" rows="2" style='width:99%;height:40px;position:relative;' cols="80" onkeydown="return handleEnter(event, this);"
+                                        	onkeypress="return handleEnter(event, this);" name="to" >${fn:escapeXml(compose.to)}</textarea>
                                         <br><div class='ZhACCont' id="toContainer" style='width:99%;top:3em;'></div></div>
                                 </td>
                             </tr>
@@ -384,10 +384,15 @@ function trim(strVal){
 }
 
 
-function handleEnter (ev) {
+function handleEnter (ev, _field) {
 	var keyCode = ev.keyCode ? ev.keyCode : ev.which ? ev.which : ev.charCode;
-	if (keyCode == 13) 	return false;
-	else return true;
+    if (keyCode == 13){
+    if(_field){
+    if (trim(_field.value) == "") { return false } else return true ;
+    }else
+    return false;
+    }
+    else return true;
 }
 
 var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
