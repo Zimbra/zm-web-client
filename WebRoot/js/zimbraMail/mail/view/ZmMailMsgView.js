@@ -1021,6 +1021,7 @@ function(msg, container, callback) {
 	var bodyParts = msg.getBodyParts();
 	var len = bodyParts.length;
 	if (len > 1) {
+                var html = [];
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
             if (ZmMimeTable.isRenderableImage(bp.ct)) {
@@ -1030,11 +1031,16 @@ function(msg, container, callback) {
                 }else{
                     imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
                 }
-                this._makeIframeProxy(el, imgHtml);
+                                html.push(imgHtml);
 			} else {
-				this._makeIframeProxy(el, bp.content, bp.ct == ZmMimeTable.TEXT_PLAIN, bp.truncated)
+                                if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
+                                        html.push("<pre>", bp.content, "</pre>");
+                                } else {
+                                        html.push(bp.content);
 			}
 		}
+		}
+                this._makeIframeProxy(el, html.join(""));
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
@@ -1597,9 +1603,9 @@ function(msg, preferHtml, callback) {
 		var sizeText = "";
 		var size = attach.s;
 		if (size && size > 0) {
-		    if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
-            else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;";
-            else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;";
+		        if (size < 1024)		sizeText = " (" + size + "B)&nbsp;";
+                        else if (size < 1024^2)	sizeText = " (" + Math.round((size/1024) * 10) / 10 + "KB)&nbsp;";
+                        else 					sizeText = " (" + Math.round((size / (1024*1024)) * 10) / 10 + "MB)&nbsp;";
 		}
 
 		html[idx++] = "<tr><td nowrap='nowrap' style='font-size:14px'>";
@@ -1661,7 +1667,7 @@ function(msg, preferHtml, callback) {
 	}
 };
 
-ZmMailMsgView._fixMultipartRelatedImagesInContent = function(msg,content){
+ZmMailMsgView._fixMultipartRelatedImagesInContent = function(msg, content) {
         return content.replace(/dfsrc=([\x27\x22])cid:([^\x27\x22]+)\1/ig, function(s, q, cid) {
                 return "src=" + q + msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, ("<" + cid + ">")) + q;
         });
