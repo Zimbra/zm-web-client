@@ -384,7 +384,8 @@ function(callback,folderId,results) {
 
 ZmBriefcaseController.prototype.searchFolder =
 function(folderId,callback) {
-	var search = 'inid:"'+folderId+'"';
+	var idText = AjxUtil.isNumeric(folderId) ? folderId : ['"', folderId, '"'].join("");
+	var search = 'inid:"' + idText + '"';
 
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", ZmSearch.TYPE[ZmItem.BRIEFCASE]);

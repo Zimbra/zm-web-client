@@ -282,9 +282,11 @@ function(params) {
 		var rid = folder ? folder.getRemoteId() : systemFolderId;
 		folderIdMapper[rid] = systemFolderId;
 
-		if (query.length)
+		if (query.length) {
 			query += " OR ";
-		query += "inid:" + fid;
+		}
+		var idText = AjxUtil.isNumeric(fid) ? fid : ['"', fid, '"'].join("");
+		query += "inid:" + idText;
 		
 	}
 	params.queryHint = query;
