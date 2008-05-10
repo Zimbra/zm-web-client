@@ -26,7 +26,7 @@ ZmItem.MIXED	= "MIXED"; // special type for heterogeneous list
 // App-related constants
 ZmApp.MIXED						= ZmId.APP_MIXED;
 ZmApp.CLASS[ZmApp.MIXED]		= "ZmMixedApp";
-ZmApp.SETTING[ZmApp.MIXED]		= null;	// so it gets instantiated
+ZmApp.SETTING[ZmApp.MIXED]		= ZmSetting.MIXED_VIEW_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.MIXED]	= 50;
 
 ZmMixedApp.prototype = new ZmApp;

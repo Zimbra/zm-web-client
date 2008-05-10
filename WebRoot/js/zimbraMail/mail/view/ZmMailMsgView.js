@@ -877,7 +877,10 @@ ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
 
 	var acctId = appCtxt.getActiveAccount().id;
-	var cl = appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded[acctId] ? AjxDispatcher.run("GetContacts") : null;
+	var cl = null;
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		cl = appCtxt.getApp(ZmApp.CONTACTS).contactsLoaded[acctId] ? AjxDispatcher.run("GetContacts") : null;
+	}
 	var subject = msg.subject || ZmMsg.noSubject;
 	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.LONG, AjxDateFormat.SHORT);
 	var dateString = msg.sentDate ? dateFormatter.format(new Date(msg.sentDate)) : "";
