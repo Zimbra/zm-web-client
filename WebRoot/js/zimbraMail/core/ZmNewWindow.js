@@ -139,6 +139,7 @@ function() {
 
 	if (!this._appViewMgr) {
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
+        this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
 
 	var rootTg = appCtxt.getRootTabGroup();
@@ -213,7 +214,7 @@ function() {
 
 	// setup zimlets
 	if (target) {
-		var zimletArray = this.__hack_zimletArray();
+		var zimletArray = this.__hack_zimletArray() || [];
 		if (this.__hack_hasZimletsForTarget(zimletArray, target)) {
 			var zimletMgr = appCtxt.getZimletMgr();
 			var userProps = this.__hack_userProps();
@@ -281,10 +282,13 @@ function(params) {
 */
 ZmNewWindow.prototype.setStatusMsg =
 function(params) {
-	if (window.parentController) {
+    //bug: 26478. Changed status msg to be displayed within the child window.
+    params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
+    this._statusView.setStatusMsg(params);
+    /*if (window.parentController) {
                 params = Dwt.getParams(arguments, ZmStatusView.MSG_PARAMS);
 		window.parentController.setStatusMsg(params);
-	}
+	}*/
 };
 
 /**
