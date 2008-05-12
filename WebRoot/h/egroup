@@ -163,7 +163,11 @@
 <SCRIPT TYPE="text/javascript">
 <!--
 var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
+
+var checkEnter = function(f,e) {var k;if (window.event) k = window.event.keyCode;else if (e) k = e.which;else return true;
+if (k == 13) { document.getElementById("doSearch").click();return false;} else {return true;}}
 //-->
+
 </SCRIPT>
 <app:keyboard cache="ab.econtact" globals="false" passspecial="true" mailbox="${mailbox}">
 <zm:bindKey message="editContact.Save" func="function() { zclick('SOPSAVE')}"/>
