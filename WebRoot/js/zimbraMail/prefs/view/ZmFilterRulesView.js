@@ -124,8 +124,6 @@ ZmFilterListView = function(parent, controller) {
 ZmFilterListView.COL_ACTIVE	= "ac";
 ZmFilterListView.COL_NAME	= "na";
 
-ZmFilterListView.COL_WIDTH_ACTIVE = 50;
-
 ZmFilterListView.prototype = new DwtListView;
 ZmFilterListView.prototype.constructor = ZmFilterListView;
 
@@ -155,7 +153,7 @@ function(list) {
 ZmFilterListView.prototype._getHeaderList =
 function() {
 	return [
-		(new DwtListHeaderItem({field:ZmFilterListView.COL_ACTIVE, text:ZmMsg.active, width:ZmFilterListView.COL_WIDTH_ACTIVE})),
+		(new DwtListHeaderItem({field:ZmFilterListView.COL_ACTIVE, text:ZmMsg.active, width:ZmMsg.COLUMN_WIDTH_ACTIVE})),
 		(new DwtListHeaderItem({field:ZmFilterListView.COL_NAME, text:ZmMsg.filterName}))
 	];
 };
