@@ -942,6 +942,9 @@ function(msg, container, callback) {
     var hasAttachments = msg.getAttachmentLinks(true);
     hasAttachments = ( hasAttachments.length != 0 );
 
+	var folder = appCtxt.getById(msg.folderId);
+	var isSyncFailureMsg = folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES;
+
 	this._hdrTableId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE, this._mode);
 	this._closeBtnCellId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_CLOSE_BTN_CELL, this._mode);
 	this._reportBtnCellId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_REPORT_BTN_CELL, this._mode);
@@ -968,7 +971,7 @@ function(msg, container, callback) {
 		participants:		participants,
 		hasHeaderCloseBtn:	this._hasHeaderCloseBtn,
         hasAttachments:		hasAttachments,
-		isSyncFailureMsg:	(appCtxt.getById(msg.folderId).nId == ZmOrganizer.ID_SYNC_FAILURES)
+		isSyncFailureMsg:	isSyncFailureMsg
 	};
 
 	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
@@ -1021,26 +1024,24 @@ function(msg, container, callback) {
 	var bodyParts = msg.getBodyParts();
 	var len = bodyParts.length;
 	if (len > 1) {
-                var html = [];
+		var html = [];
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
-                        if (ZmMimeTable.isRenderableImage(bp.ct)) {
-                                var imgHtml = null;
-                                if(bp.content){  //Hack: (Bug:27320) Done specifically for sMime implementationu are.
-                                        imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");
-                                }else{
-                                        imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
-                                }
-                                html.push(imgHtml);
+			if (ZmMimeTable.isRenderableImage(bp.ct)) {
+				// Hack: (Bug:27320) Done specifically for sMime implementationu are.
+				var imgHtml = (bp.content)
+					? ["<img class='InlineImage' src='", bp.content, "'>"].join("")
+					: ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
+				html.push(imgHtml);
 			} else {
-                                if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
-                                        html.push("<pre>", bp.content, "</pre>");
-                                } else {
-                                        html.push(bp.content);
-                                }
+				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
+					html.push("<pre>", bp.content, "</pre>");
+				} else {
+					html.push(bp.content);
+				}
 			}
 		}
-                this._makeIframeProxy(el, html.join(""));
+		this._makeIframeProxy(el, html.join(""));
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
@@ -1712,22 +1713,21 @@ function(self, iframe, attempt) {
 			substract(self._inviteToolbar.getHtmlElement());
 		iframe.style.height = h + "px";
 	} else {
-                if (attempt == null)
-                        attempt = 0;
+		if (attempt == null)
+			attempt = 0;
 		try {
 			if (!iframe.contentWindow || !iframe.contentWindow.document) {
-                                if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
-                                        self._resetIframeHeightOnTimer(iframe, attempt);
-                                return; // give up
-                        }
+				if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
+					self._resetIframeHeightOnTimer(iframe, attempt);
+				return; // give up
+			}
 		} catch(ex) {
-                        if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
-			        self._resetIframeHeightOnTimer(iframe, attempt++); // for IE
-                        return; // give up
+			if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
+				self._resetIframeHeightOnTimer(iframe, attempt++); // for IE
+			return; // give up
 		}
 
 		var doc = iframe.contentWindow.document;
-
 		var origHeight = AjxEnv.isIE ? doc.body.scrollHeight : 0;
 
 		// first off, make it wide enough to fill ZmMailMsgView.
