@@ -49,6 +49,7 @@ ZmMimeTable.MULTI_ALT			= "multipart/alternative"; 		// IGNORE
 ZmMimeTable.MULTI_MIXED			= "multipart/mixed"; 			// IGNORE
 ZmMimeTable.MULTI_RELATED		= "multipart/related"; 			// IGNORE
 ZmMimeTable.MULTI_APPLE_DBL 	= "multipart/appledouble"; 		// IGNORE
+ZmMimeTable.MULTI_DIGEST		= "multipart/digest";			// IGNORE
 ZmMimeTable.TEXT				= "text";
 ZmMimeTable.TEXT_RTF			= "text/enriched";
 ZmMimeTable.TEXT_HTML			= "text/html";

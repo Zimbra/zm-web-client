@@ -106,6 +106,10 @@ function(parentNode) {
 		return true;
 	}
 
+	if (this.node.ct == ZmMimeTable.MULTI_DIGEST) {
+		return true;
+	}
+
 	return false;
 };
 
