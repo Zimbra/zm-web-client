@@ -417,11 +417,15 @@ function(components) {
 ZmImApp.prototype.startup =
 function() {
 	// Keep track of focus on the app.
-	var listener = new AjxListener(this, this._focusListener);
-	DwtShell.getShell(window).addFocusListener(listener);
-	DwtShell.getShell(window).addBlurListener(listener);
-    
-    // Implement auto login.
+	var focusListener = new AjxListener(this, this._focusListener);
+	DwtShell.getShell(window).addFocusListener(focusListener);
+	DwtShell.getShell(window).addBlurListener(focusListener);
+
+	var globalEventListener = new AjxListener(this, this._globalEventListener);
+	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, globalEventListener);
+	DwtEventManager.addListener(DwtEvent.ONKEYDOWN, globalEventListener);
+
+	// Implement auto login.
 	if (appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN)) {
 		// Do the auto login after a short delay. I chose 1000ms because that means
 		// im login will happen after zimlets are loaded.
@@ -647,6 +651,12 @@ function(ev) {
 	if (this._clientHasFocus) {
 		this.stopAlert(ZmImApp.ALERT_CLIENT);
 	}
+};
+
+ZmImApp.prototype._globalEventListener =
+function() {
+	this._clientHasFocus = true;
+	this.stopAlert(ZmImApp.ALERT_CLIENT);
 };
 
 ZmImApp.prototype._createImPresenceMenu =
