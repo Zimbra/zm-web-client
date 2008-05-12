@@ -81,9 +81,39 @@ function() {
 	return this._folder ? this._folder.callType : ZmVoiceFolder.VOICEMAIL;
 };
 
+ZmVoiceListView.prototype.set =
+function(list, sortField) {
+	ZmListView.prototype.set.call(this, list, sortField);
+	var contactList = AjxDispatcher.run("GetContacts");
+	if (!contactList.isLoaded) {
+		this._contactsLoadedCallbackObj = this._contactsLoadedCallbackObj || new AjxCallback(this, this._contactsLoadedCallback);
+		contactList.addLoadedCallback(this._contactsLoadedCallbackObj);
+	}
+};
+
+ZmVoiceListView.prototype._contactsLoadedCallback =
+function() {
+	var list = this.getList().getArray();
+	for (var i = 0, count = list.length; i < count; i++) {
+		var item = list[i];
+		var element = this._getElement(item, ZmVoiceListView.F_CALLER);
+		element.innerHTML = this._getCallerNameHtml(item); 
+	}
+	delete this._contactsLoadedCallbackObj;
+};
+
 ZmVoiceListView.prototype._getRowClass =
 function(voicemail, params) {
 	return voicemail.isUnheard ? "Unread" : "";
+};
+
+ZmVoiceListView.prototype._getCellId =
+function(item, field) {
+	if (field == ZmVoiceListView.F_CALLER) {
+		return this._getFieldId(item, field);
+	} else {
+		return ZmListView.prototype._getCellId.apply(this, arguments);
+	}
 };
 
 ZmVoiceListView.prototype._getCellContents =
@@ -109,7 +139,6 @@ function(voicemail) {
 	}
 	if (data) {
 		this._addToContactMap(data.contact, voicemail);
-// TODO: Seems like this should go on ZmVoicemail?!?!?		
 		voicemail.participants.getArray()[0] = data.contact;
 		if (!ZmVoiceListView._callerFormat) {
 			ZmVoiceListView._callerFormat = new AjxMessageFormat(ZmMsg.callingPartyFormat);
