@@ -178,7 +178,7 @@ function(msg) {
 		? new Date(msg.sentDate)
 		: new Date(msg.date);
 
-	var invite = msg.invite;
+	var invite = msg.getInvite();
 
 	if ((appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
 		invite && invite.type != "task" &&
@@ -581,7 +581,7 @@ ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
 
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
-	var attachments = this._msg.attachments;
+	var attachments = this._msg.getAttachments();
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
 	for (var i = 0; i < attachments.length; i++) {
@@ -1024,21 +1024,21 @@ function(msg, container, callback) {
                 var html = [];
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
-                        if (ZmMimeTable.isRenderableImage(bp.ct)) {
-                                var imgHtml = null;
-                                if(bp.content){  //Hack: (Bug:27320) Done specifically for sMime implementationu are.
-                                        imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");
-                                }else{
-                                        imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
-                                }
+            if (ZmMimeTable.isRenderableImage(bp.ct)) {
+                var imgHtml = null;
+                if(bp.content){  //Hack: (Bug:27320) Done specifically for sMime implementationu are.
+                    imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");
+                }else{
+                    imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
+                }
                                 html.push(imgHtml);
 			} else {
                                 if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
                                         html.push("<pre>", bp.content, "</pre>");
                                 } else {
                                         html.push(bp.content);
-                                }
 			}
+		}
 		}
                 this._makeIframeProxy(el, html.join(""));
 	} else {
@@ -1591,7 +1591,7 @@ function(msg, preferHtml, callback) {
 	}
 
 	// bug fix# 3928
-	var attachments = msg.attachments;
+	var attachments = msg.getAttachments();
 	for (var i = 0; i < attachments.length; i++) {
 		var attach = attachments[i];
 		if (!msg.isRealAttachment(attach))
