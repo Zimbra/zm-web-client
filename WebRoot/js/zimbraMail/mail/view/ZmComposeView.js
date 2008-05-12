@@ -86,7 +86,6 @@ ZmComposeView.SUBJ_PREFIX_RE		= new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd
 ZmComposeView.QUOTED_CONTENT_RE		= new RegExp("^----- ", "m");
 ZmComposeView.HTML_QUOTED_CONTENT_RE= new RegExp("<br>----- ", "i");
 ZmComposeView.REFANG_RE				= new RegExp("(<img[^>]*)dfsrc\s*=([^>]*>)", "ig");
-ZmComposeView.REFANG_RE_REPLACE		= "$1src=$2";
 ZmComposeView.ADDR_SETTING			= {}; // XXX: may not be necessary anymore?
 ZmComposeView.WRAP_LENGTH			= 72;
 
@@ -471,7 +470,11 @@ function(attId, isDraft) {
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
 //		this._fixMultipartRelatedLinks(this._htmlEditor._getIframeDoc());
 		var defangedContent = this._htmlEditor.getContent(true);
-		var refangedContent = defangedContent.replace(ZmComposeView.REFANG_RE, ZmComposeView.REFANG_RE_REPLACE);
+		var refangedContent = defangedContent.replace(ZmComposeView.REFANG_RE, function(s, p1, p2) {
+                        // make sure we don't end up with 2 src attributes (bug 21959)
+                        p1 = p1.replace(/\bsrc=[^\s]*/i, "");
+                        return p1 + "src=" + p2;
+                });
 		htmlPart.setContent(refangedContent);
 
 		//Support for Inline
@@ -722,6 +725,20 @@ function(msgObj) {
 	var msg = (msgObj) ? msgObj : this._msg;
 	var iDoc = this._htmlEditor._getIframeDoc();
 	return (this._fixMultipartRelatedImages(msg,iDoc));
+};
+
+ZmComposeView.prototype._fixMultipartRelatedImages_onTimer = function(msg) {
+        // first time the editor is initialized, idoc.getElementsByTagName("img") is empty
+        // trial and error suggests 500ms is a safe bet.
+        if (!this._firstTimeFixImages) {
+                var self = this;
+                setTimeout(function() {
+                        self._fixMultipartRelatedImages(msg, self._htmlEditor._getIframeDoc());
+                }, 500);
+                this._firstTimeFixImages = true;
+        } else {
+                this._fixMultipartRelatedImages(msg, this._htmlEditor._getIframeDoc());
+        }
 };
 
 ZmComposeView.prototype._fixMultipartRelatedImages =
@@ -1309,7 +1326,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 
 		if (!isInviteReply) {
 			this._showForwardField(msg, action);
-			this._fixMultipartRelatedImages(msg,this._htmlEditor._getIframeDoc());
+			this._fixMultipartRelatedImages_onTimer(msg);
 			return;
 		}
 	}
@@ -1504,7 +1521,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 	}
 
 	this._showForwardField(msg, action, incOption);
-	this._fixMultipartRelatedImages(msg,this._htmlEditor._getIframeDoc());
+	this._fixMultipartRelatedImages_onTimer(msg);
 };
 
 ZmComposeView.prototype.resetBody =
