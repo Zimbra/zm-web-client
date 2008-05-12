@@ -41,28 +41,26 @@
                             <input name='isgroup' type='hidden' value="true"/>
                             <input name='nickname' id="nickname" type='text' autocomplete='off' size='35' value="${fn:escapeXml(not empty param.nickname ? param.nickname : contact.nickname)}">
                         </td>
-						<c:if test="${mailbox.features.newAddrBookEnabled}">
-							<td align=right>
-								<table  border="0" cellspacing='5'>
-									<tbody>
-										<tr>
-											<td valign='center' class="editContactLabel"><label for="folderSelect"><fmt:message key="addressBook"/> :</label></td>
-											<td>
-												<input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
-												<select name="folderid" id="folderSelect">
-													<zm:forEachFolder var="folder">
-														<c:if test="${folder.isContactCreateTarget}">
-															<option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}" />
-															${fn:escapeXml(folder.rootRelativePath)}
-														</c:if>
-													</zm:forEachFolder>
-												</select>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</td>
-						</c:if>
+						<td align=right>
+							<table  border="0" cellspacing='5'>
+								<tbody>
+									<tr>
+										<td valign='center' class="editContactLabel"><label for="folderSelect"><fmt:message key="addressBook"/> :</label></td>
+										<td>
+											<input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
+											<select name="folderid" id="folderSelect">
+												<zm:forEachFolder var="folder">
+													<c:if test="${folder.isContactCreateTarget}">
+														<option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}" />
+														${fn:escapeXml(folder.rootRelativePath)}
+													</c:if>
+												</zm:forEachFolder>
+											</select>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</td>
 					</tr>
                 </table>
             </td>
