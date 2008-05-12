@@ -539,7 +539,8 @@ function(types) {
 
 ZmSearchController.prototype._searchFieldCallback =
 function(queryString) {
-	this.search({query: queryString, userText: true});
+	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
+	this.search({query: queryString, userText: true, getHtml: getHtml});
 }
 
 /*********** Search Bar Callbacks */
@@ -561,7 +562,8 @@ function(ev) {
 		} else {
 			queryString = this._currentQuery;
 		}
-		this.search({query: queryString, userText: userText});
+		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
+		this.search({query: queryString, userText: userText, getHtml: getHtml});
 	}
 };
 
