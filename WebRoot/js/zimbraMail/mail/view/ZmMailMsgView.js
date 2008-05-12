@@ -942,6 +942,9 @@ function(msg, container, callback) {
     var hasAttachments = msg.getAttachmentLinks(true);
     hasAttachments = ( hasAttachments.length != 0 );
 
+	var folder = appCtxt.getById(msg.folderId);
+	var isSyncFailureMsg = folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES;
+
 	this._hdrTableId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE, this._mode);
 	this._closeBtnCellId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_CLOSE_BTN_CELL, this._mode);
 	this._reportBtnCellId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_REPORT_BTN_CELL, this._mode);
@@ -968,7 +971,7 @@ function(msg, container, callback) {
 		participants:		participants,
 		hasHeaderCloseBtn:	this._hasHeaderCloseBtn,
         hasAttachments:		hasAttachments,
-		isSyncFailureMsg:	(appCtxt.getById(msg.folderId).nId == ZmOrganizer.ID_SYNC_FAILURES)
+		isSyncFailureMsg:	isSyncFailureMsg
 	};
 
 	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
