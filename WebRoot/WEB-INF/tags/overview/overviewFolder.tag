@@ -32,7 +32,7 @@
         <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="startup/ImgNodeExpanded.gif"/></c:if></span>--%>
         <a href='${fn:escapeXml(url)}' id="FLDR${folder.id}">
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
-            <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${zm:truncate(fn:escapeXml(label),20,true)}<c:if test="${folder.hasUnread and types ne 'contact'}">
+            <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${zm:truncate(fn:escapeXml(label),15,true)}<c:if test="${folder.hasUnread and types ne 'contact'}">
                 (${folder.unreadCount}) </c:if></span>
         </a>
 

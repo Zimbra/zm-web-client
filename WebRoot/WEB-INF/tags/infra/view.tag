@@ -218,7 +218,7 @@
 			<tr id='skin_R3'>
 				<td style="width:8px;"><div class='ImgSkin_Chrome_R3_L'></div></td>
 				<td class='ImgSkin_Chrome_R3'>
-						<div style='width:100px;height:100%;' id='skin_container_current_app' class='skin_container'></div>
+						<div style='width:140px;height:100%;' id='skin_container_current_app' class='skin_container'></div>
 				</td>
 				<td class='ImgSkin_Chrome_R3'>&nbsp;</td>
 				<td class='ImgSkin_Chrome_R3' style='padding:0px;'>
