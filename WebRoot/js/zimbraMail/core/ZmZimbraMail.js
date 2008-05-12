@@ -458,7 +458,7 @@ function(params, result) {
 
 	this.activateApp(params.startApp, false, respCallback, this._errorCallback, params);
 
-    if (!this._doingPostRenderStartup && (params.startApp != ZmApp.CALENDAR)) {
+    if (appCtxt.get(ZmSetting.CALENDAR_ENABLED) && !this._doingPostRenderStartup && (params.startApp != ZmApp.CALENDAR)) {
         this.handleCalendarComponents();
     }
 };
