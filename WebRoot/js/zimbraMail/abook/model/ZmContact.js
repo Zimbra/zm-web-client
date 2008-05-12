@@ -1022,17 +1022,15 @@ function(text, delims) {
 ZmContact.prototype._addRequestAttr =
 function(attrs, name, value) {
 	var a = {n:name};
-	if (name == ZmContact.F_image) {
+	if (name == ZmContact.F_image && AjxUtil.isString(value) && value.length) {
 		// handle contact photo
-		if (AjxUtil.isString(value)) {
-			if (value.indexOf("aid_") != -1) {
-				a.aid = value.substring(4);
-			} else {
-				a.part = value.substring(5);
-			}
+		if (value.indexOf("aid_") != -1) {
+			a.aid = value.substring(4);
+		} else {
+			a.part = value.substring(5);
 		}
 	} else {
-		a._content = value;
+		a._content = value || "";
 	}
 	attrs.push(a);
 };
