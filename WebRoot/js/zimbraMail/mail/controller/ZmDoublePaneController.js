@@ -54,15 +54,16 @@ function() {
 };
 
 /**
-* Displays the given item in a two-pane view. The view is actually
-* created in _loadItem(), since it must execute last.
-*
-* @param search		[ZmSearch]		the current search results
-* @param item		[ZmItem]		a generic item
-* @param callback	[AjxCallback]*	client callback
-*/
+ * Displays the given item in a two-pane view. The view is actually
+ * created in _loadItem(), since it must execute last.
+ *
+ * @param search	[ZmSearch]		the current search results
+ * @param item		[ZmItem]		a generic item
+ * @param callback	[AjxCallback]*	client callback
+ * @param markRead	[boolean]*		if true, mark msg read
+ */
 ZmDoublePaneController.prototype.show =
-function(search, item, callback) {
+function(search, item, callback, markRead) {
 
 	ZmMailListController.prototype.show.call(this, search);
 	this.reset();
@@ -71,7 +72,7 @@ function(search, item, callback) {
 
 	// see if we have it cached? Check if conv loaded?
 	var respCallback = new AjxCallback(this, this._handleResponseShow, [item, callback]);
-	this._loadItem(item, this._currentView, respCallback);
+	this._loadItem(item, this._currentView, respCallback, markRead);
 };
 
 ZmDoublePaneController.prototype._handleResponseShow =
@@ -340,23 +341,24 @@ function(view, menu, checked) {
 };
 
 /*
-* Displays a list of messages. If passed a conv, loads its message
-* list. If passed a list, simply displays it. The first message will be 
-* selected, which will trigger a message load/display.
-*
-* @param item		[ZmConv or ZmMailList]		conv or list of msgs
-* @param view		[constant]					owning view type
-* @param callback	[AjxCallback]*				client callback
-*/
+ * Displays a list of messages. If passed a conv, loads its message
+ * list. If passed a list, simply displays it. The first message will be 
+ * selected, which will trigger a message load/display.
+ *
+ * @param item		[ZmConv or ZmMailList]		conv or list of msgs
+ * @param view		[constant]					owning view type
+ * @param callback	[AjxCallback]*				client callback
+ * @param markRead	[boolean]*					if true, mark msg read
+ */
 ZmDoublePaneController.prototype._loadItem =
-function(item, view, callback) {
+function(item, view, callback, markRead) {
 	if (item instanceof ZmMailItem) { // conv
 		var conv = item;
 		DBG.timePt("***** CONV: load", true);
 		if (!conv._loaded) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadConv, [view, callback]);
 			var getFirstMsg = this.isReadingPaneOn();
-			var markRead = (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
+			markRead = markRead || (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
 			conv.load({getFirstMsg:getFirstMsg, markRead:markRead}, respCallback);
 		} else {
 			this._handleResponseLoadConv(view, callback, conv._createResult());

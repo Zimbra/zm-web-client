@@ -1817,7 +1817,7 @@ function(msgId, msgPartId) {
 	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var sender = appCtxt.getAppController();
 	var callback = new AjxCallback(null, ZmMailMsgView._detachCallback);
-	ZmMailMsg.fetchMsg({ sender:sender, msgId:msgId, partId:msgPartId, getHtml:getHtml, callback:callback });
+	ZmMailMsg.fetchMsg({ sender:sender, msgId:msgId, partId:msgPartId, getHtml:getHtml, markRead:true, callback:callback });
 };
 
 ZmMailMsgView.contactIconCallback =

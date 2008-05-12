@@ -1006,12 +1006,12 @@ function(ev, callback) {
 	if (msg) {
 		if (msg._loaded) {
 			ZmMailMsgView.detachMsgInNewWindow(msg);
+			// always mark a msg read if it is displayed in its own window
+			if (msg.isUnread) {
+				msg.list.markRead([msg], true);
+			}
 		} else {
 			ZmMailMsgView.rfc822Callback(msg.id);
-		}
-		// always mark a msg read if it is displayed in its own window
-		if (msg.isUnread) {
-			msg.list.markRead([msg], true);
 		}
 	}
 	if (callback) { callback.run(); }

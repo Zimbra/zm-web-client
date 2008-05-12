@@ -51,17 +51,18 @@ function() {
 }
 
 /**
-* Displays the given conversation in a two-pane view. The view is actually
-* created in _loadConv(), since it is a scheduled method and must execute
-* last.
-*
-* @param activeSearch		[ZmSearch]				the current search results
-* @param conv				[ZmConv]				a conversation
-* @param parentController	[ZmMailController]*		controller that called this method
-* @param callback			[AjxCallback]*			client callback
-*/
+ * Displays the given conversation in a two-pane view. The view is actually
+ * created in _loadConv(), since it is a scheduled method and must execute
+ * last.
+ *
+ * @param activeSearch		[ZmSearch]				the current search results
+ * @param conv				[ZmConv]				a conversation
+ * @param parentController	[ZmMailController]*		controller that called this method
+ * @param callback			[AjxCallback]*			client callback
+ * @param markRead			[boolean]*				if true, mark msg read
+ */
 ZmConvController.prototype.show =
-function(activeSearch, conv, parentController, callback) {
+function(activeSearch, conv, parentController, callback, markRead) {
 	this._conv = conv;
 	var lv = this._listView[this._currentView];
 	// always reset offset & sortby to asc.
@@ -72,7 +73,7 @@ function(activeSearch, conv, parentController, callback) {
 	this._parentController = parentController;
 
 	// this._list will be set when conv is loaded
-	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv, callback);
+	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv, callback, markRead);
 };
 
 ZmConvController.prototype.getConv =
@@ -267,7 +268,7 @@ function(ev) {
 	var handled = ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
 	if (!handled && ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
-		AjxDispatcher.run("GetMsgController").show(item, this._msgControllerMode, respCallback);
+		AjxDispatcher.run("GetMsgController").show(item, this._msgControllerMode, respCallback, true);
 	}
 };
 

@@ -49,14 +49,15 @@ function() {
 };
 
 /**
-* Displays a message in the single-pane view.
-*
-* @param msg		the message to display
-* @param conv		the conv to which the message belongs, if any
-* @param callback	client callback
-*/
+ * Displays a message in the single-pane view.
+ *
+ * @param msg		[ZmMailMsg]		the message to display
+ * @param mode		[const]			owning view ID
+ * @param callback	[AjxCallback]*	client callback
+ * @param markRead	[boolean]*		if true, mark msg read
+ */
 ZmMsgController.prototype.show = 
-function(msg, mode, callback) {
+function(msg, mode, callback, markRead) {
 	this.setMsg(msg);
 	this._mode = mode;
 	this._currentView = this._getViewType();
@@ -68,7 +69,8 @@ function(msg, mode, callback) {
 			// so that multiple GetMsgRequest's aren't made
 			msg._loadCallback = respCallback;
 		} else {
-			msg.load({callback:respCallback});
+			markRead = markRead || (appCtxt.get(ZmSetting.MARK_MSG_READ) == ZmSetting.MARK_READ_NOW);
+			msg.load({callback:respCallback, markRead:markRead});
 		}
 	} else {
 		this._handleResponseShow(callback);
@@ -78,10 +80,6 @@ function(msg, mode, callback) {
 ZmMsgController.prototype._handleResponseShow = 
 function(callback, result) {
 	this._showMsg();
-	// always mark a msg read if it is displayed in MV
-	if (this._msg.isUnread) {
-		this._msg.list.markRead([this._msg], true);
-	}
 	if (callback) {
 		callback.run();
 	}
