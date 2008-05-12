@@ -160,7 +160,7 @@
                                 </c:choose>
                             </tr>
                             <c:set var="firstAttachment" value="${true}"/>
-                            <c:if test="${!empty compose.messageAttachments}">
+                            <c:if test="${not empty compose.messageAttachments and empty compose.draftId and empty requestScope.draftid}">
                                 <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
                                     <tr>
                                         <td align='right'>
@@ -184,7 +184,7 @@
                                 <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
                                     <app:attachment firstAttachment="${firstAttachment}" url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
                                             displayName="${part.displayName}" contentType="${part.contentType}"
-                                            checked="${compose.checkedAttachmentNames[part.partName]}" displaySize="${part.displaySize}"
+                                            checked="${compose.checkedAttachmentNames[part.partName] or (part.isMssage and not empty compose.messageAttachments)}" displaySize="${part.displaySize}"
                                             value="${part.partName}" name="originalAttachment"/>
                                     <c:set var="firstAttachment" value="${false}"/>
                                 </c:forEach>
