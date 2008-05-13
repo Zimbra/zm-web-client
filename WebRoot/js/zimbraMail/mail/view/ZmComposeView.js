@@ -404,7 +404,8 @@ function(attId, isDraft) {
 			if (contentType && contentType.indexOf("image") != -1) {
 				var cid = Dwt.getNextId();
 				msg.addInlineAttachmentId(cid, att.aid);
-				this._htmlEditor.insertImage("cid:" + cid);
+				if(AjxEnv.isIE) this._htmlEditor.insertImage("cid:" + cid, true, 300, 300);
+                else this._htmlEditor.insertImage("cid:" + cid);
 			} else {
 				msg.addAttachmentId(att.aid);
 			}
@@ -468,7 +469,6 @@ function(attId, isDraft) {
 
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-//		this._fixMultipartRelatedLinks(this._htmlEditor._getIframeDoc());
 		var defangedContent = this._htmlEditor.getContent(true);
 		var refangedContent = defangedContent.replace(ZmComposeView.REFANG_RE, function(s, p1, p2) {
                         // make sure we don't end up with 2 src attributes (bug 21959)
