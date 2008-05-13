@@ -471,15 +471,33 @@ function() {
 	return this._importDialog;
 };
 
-
 ZmAppCtxt.prototype.getAttachDialog =
 function() {
 	if (!this._attachDialog) {
 		AjxDispatcher.require("Share");
 		this._attachDialog = new ZmAttachDialog(this._shell);
+		this.runAttachDialogCallbacks();
 	}
 	return this._attachDialog;
 };
+
+ZmAppCtxt.prototype.runAttachDialogCallbacks =
+function() {
+	while(this._attachDialogCallback && this._attachDialogCallback.length > 0) {
+		var callback = this._attachDialogCallback.shift();
+		if(callback && (callback instanceof AjxCallback)) {
+			callback.run(this._attachDialog);
+		}
+	}
+};
+
+ZmAppCtxt.prototype.addAttachmentDialogCallback =
+function(callback) {
+	if(!this._attachDialogCallback) {
+		this._attachDialogCallback = [];
+	}
+	this._attachDialogCallback.push(callback);
+};                                              
 
 ZmAppCtxt.prototype.getUploadConflictDialog =
 function() {
