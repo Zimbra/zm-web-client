@@ -109,8 +109,8 @@ function(params) {
 	}
 
     for (var hdr in ZmMailMsg._requestHeaders) {
-		if(!request.header) request.header = [];
-        request.header.push({n:hdr});
+		if(!m.header) m.header = [];
+        m.header.push({n:hdr});
 	}
 
 	if (!params.noTruncate) {
