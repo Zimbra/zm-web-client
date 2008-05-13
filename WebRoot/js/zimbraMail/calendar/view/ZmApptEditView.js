@@ -81,7 +81,9 @@ ZmApptEditView.prototype.blur =
 function(useException) {
 	if (this._activeInputField) {
 		this._handleAttendeeField(this._activeInputField, useException);
-		this._activeInputField = null;
+		//bug: 15251 - to avoid race condition, active field will anyway be cleared
+        //by onblur handler for input field
+        //this._activeInputField = null;
 	}
 };
 
