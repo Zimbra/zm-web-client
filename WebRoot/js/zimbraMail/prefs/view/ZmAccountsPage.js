@@ -542,7 +542,7 @@ function(account, section) {
 	this._setControlValue("SSL", section, isSsl);
 	this._setControlEnabled("TEST", section, true);
 	this._setControlValue("DOWNLOAD_TO", section, isInbox ? ZmAccountsPage.DOWNLOAD_TO_INBOX : ZmAccountsPage.DOWNLOAD_TO_FOLDER);
-	this._setDownloadToFolder();
+	this._setDownloadToFolder(account);
 	this._setControlValue("DELETE_AFTER_DOWNLOAD", section, account.leaveOnServer);
 	this._setControlValue("CHANGE_PORT", section, isPortChanged);
 	this._setControlEnabled("PORT", section, isPortChanged);
@@ -550,7 +550,7 @@ function(account, section) {
 };
 
 ZmAccountsPage.prototype._setDownloadToFolder =
-function() {
+function(account) {
 	var section = this._currentSection;
 	var radioGroup = section.controls["DOWNLOAD_TO"];
 	if (!radioGroup) return;
@@ -565,9 +565,11 @@ function() {
 	var radioButton = radioGroup.getRadioButtonByValue(ZmAccountsPage.DOWNLOAD_TO_FOLDER);
 	radioButton.setText(text);
 
-	var isInbox = name.match(/^\s*inbox\s*$/i);
+	var isImap = account.type == ZmAccount.IMAP;
+	var isInbox = !isImap && name.match(/^\s*inbox\s*$/i);
 	var value = isInbox ? ZmAccountsPage.DOWNLOAD_TO_INBOX : ZmAccountsPage.DOWNLOAD_TO_FOLDER;
 	this._setControlValue("DOWNLOAD_TO", section, value);
+	this._setControlEnabled("DOWNLOAD_TO", section, !isImap);
 };
 
 ZmAccountsPage.prototype._setPortControls =
@@ -1284,7 +1286,7 @@ function(evt) {
 
 	var type = this._currentAccount.type;
 	if (type == ZmAccount.POP || type == ZmAccount.IMAP) {
-		this._setDownloadToFolder();
+		this._setDownloadToFolder(this._currentAccount);
 	}
 };
 
@@ -1456,6 +1458,20 @@ function(continueCallback) {
 			if (account._new || account._dirty) {
 				dirtyAccounts.push(account);
 			}
+		}
+	}
+
+	// test for invalid name
+	for (var i = 0; i < dirtyAccounts.length; i++) {
+		var account = dirtyAccounts[i];
+		if (account.type == ZmAccount.IMAP && account.name.match(/^\s*inbox\s*$/i)) {
+			var params = {
+				msg: AjxMessageFormat.format(ZmMsg.accountNameReserved, [account.name]),
+				level: ZmStatusView.LEVEL_CRITICAL
+			};
+			appCtxt.setStatusMsg(params);
+			continueCallback.run(false);
+			return;
 		}
 	}
 
