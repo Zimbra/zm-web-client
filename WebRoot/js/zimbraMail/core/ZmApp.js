@@ -286,11 +286,10 @@ function(name) {
 }
 
 ZmApp.prototype.addDeferredFolder =
-function(type, obj, tree, path) {
-	if (obj.id && !this._deferredFolderHash[obj.id]) {
-		var params = {type:type, obj:obj, tree:tree, path:path};
+function(params) {
+	if (params.obj && params.obj.id && !this._deferredFolderHash[params.obj.id]) {
 		this._deferredFolders.push(params);
-		this._deferredFolderHash[obj.id] = true;
+		this._deferredFolderHash[params.obj.id] = true;
 	}
 };
 
@@ -705,11 +704,9 @@ ZmApp.prototype._createDeferredFolders =
 function(type) {
 	for (var i = 0; i < this._deferredFolders.length; i++) {
 		var params = this._deferredFolders[i];
-		var nId = ZmOrganizer.normalizeId(params.obj.l);
-		var parent = params.tree.getById(nId);
-		var folder = ZmFolderTree.createFolder(params.type, parent, params.obj, params.tree, params.path);
-		parent.children.add(folder); // necessary?
-		folder.parent = parent;
+		var folder = ZmFolderTree.createFolder(params.type, params.parent, params.obj, params.tree, params.path, params.elementType);
+		params.parent.children.add(folder); // necessary?
+		folder.parent = params.parent;
 		ZmFolderTree._traverse(folder, params.obj, params.tree, params.path || []);
 	}
 	this._clearDeferredFolders();
