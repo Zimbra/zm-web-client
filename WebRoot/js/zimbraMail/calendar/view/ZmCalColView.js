@@ -50,6 +50,10 @@ ZmCalColView._OPACITY_APPT_DECLINED = 20;
 ZmCalColView._OPACITY_APPT_TENTATIVE = 60;
 ZmCalColView._OPACITY_APPT_DND = 70;
 
+ZmCalColView._OPACITY_APPT_FREE = 40;
+ZmCalColView._OPACITY_APPT_BUSY = 100;
+ZmCalColView._OPACITY_APPT_TENTATIVE = 60;
+
 ZmCalColView._HOURS_DIV_WIDTH = 40; // width of div holding hours text (1:00am, etc)
 ZmCalColView._UNION_DIV_WIDTH = 30; // width of div holding union in sched view
 
@@ -662,6 +666,15 @@ function(appt, div) {
 		case ZmCalBaseItem.PSTATUS_TENTATIVE:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
 		default:								Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_NORMAL); break;
 	}
+
+    //obey free busy status for organizer's appts
+    if(appt.fba && appt.isOrganizer()) {
+         switch(appt.fba) {
+            case "F":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_FREE); break;
+		    case "B":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_BUSY); break;
+            case "T":	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
+         }
+    }
 };
 
 // for the new appt when drag selecting time grid

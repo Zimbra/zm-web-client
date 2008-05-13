@@ -201,11 +201,7 @@ function(calItemNode, instNode) {
 
 	this.recurring 		= instNode.recur != null ? instNode.recur : calItemNode.recur; // TEST for null since recur can be FALSE
 
-	// override ptst for this instance if map-able and is not NEEDS-ACTION
-    var fba = this._getAttr(calItemNode, instNode, "fba");
-	if (fba && this.ptst != ZmCalBaseItem.PSTATUS_NEEDS_ACTION && ZmCalBaseItem.FBA_TO_PTST[fba]) {
-		this.ptst = ZmCalBaseItem.FBA_TO_PTST[fba];
-	}
+    this.fba = this._getAttr(calItemNode, instNode, "fba");
 
 	var sd = this._getAttr(calItemNode, instNode, "s");
 	if (sd) {
