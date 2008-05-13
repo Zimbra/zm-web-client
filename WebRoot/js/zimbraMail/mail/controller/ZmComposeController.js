@@ -320,7 +320,7 @@ function() {
 ZmComposeController.prototype._handleErrorSendMsg =
 function(ex) {
 	this.resetToolbarOperations();
-    this._composeView.enableInputs(false);
+    this._composeView.enableInputs(true);
 
 	if (!(ex && ex.code)) { return false; }
 
