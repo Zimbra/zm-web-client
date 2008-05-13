@@ -64,8 +64,9 @@ ZmMailMsgView = function(params) {
 	this._changeListener = new AjxListener(this, this._msgChangeListener);
 	this.addListener(DwtEvent.ONSELECTSTART, new AjxListener(this, this._selectStartListener));
 	this.addListener(DwtEvent.CONTROL, new AjxListener(this, this._controlEventListener));
-	// bug fix #25724 - disable right click selection for Prism
-	if (!AjxEnv.isPrism) {
+
+	// bug fix #25724 - disable right click selection for offline
+	if (!appCtxt.isOffline) {
 		this._setAllowSelection();
 	}
     //Commented for bug 26579. Now creating this control in renderMessage
