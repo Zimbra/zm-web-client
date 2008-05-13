@@ -86,9 +86,9 @@
                 <td>
                      <table border="0" cellpadding="0" cellspacing="0" width="100%">
         				<tr>
-       						 <td class="ImgAccountsHeader_L"></td>
-       						 <td class="ImgAccountsHeader__H AccountsHeader"><fmt:message key="mailHeader"/></td>
-       						 <td class="ImgAccountsHeader_R"></td>
+       						 <td class="ImgAccountsHeader_L" nowrap='nowrap'></td>
+       						 <td class="ImgAccountsHeader__H AccountsHeader" nowrap='nowrap'><fmt:message key="mailHeader"/></td>
+       						 <td class="ImgAccountsHeader_R" nowrap='nowrap'></td>
 				        </tr>
 				       </table>
                 </td>
@@ -125,11 +125,11 @@
 						<tr><td>
 							<table border="0" cellpadding="0" cellspacing="0" width="100%">
 								<tr>
-									<td class="ImgVoiceAccountsHeader_L"></td>
-									<td class="ImgVoiceAccountsHeader__H AccountsHeader">
+									<td class="ImgVoiceAccountsHeader_L" nowrap='nowrap'></td>
+									<td class="ImgVoiceAccountsHeader__H AccountsHeader" nowrap='nowrap'>
 										<fmt:message key="voiceHeader"/>
 									</td>
-									<td class="ImgVoiceAccountsHeader_R"></td>
+									<td class="ImgVoiceAccountsHeader_R" nowrap='nowrap'></td>
 								</tr>
 							</table>
 						</td></tr>
