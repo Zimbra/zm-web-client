@@ -86,6 +86,7 @@
 	// make variables available in page context (e.g. ${foo})
 	pageContext.setAttribute("contextPath", contextPath);
 	pageContext.setAttribute("skin", skin);
+	pageContext.setAttribute("ext", ext);
 	pageContext.setAttribute("vers", vers);
 	pageContext.setAttribute("locale", locale);
 	pageContext.setAttribute("isDevMode", isDevMode);
