@@ -65,7 +65,7 @@ ZmOrganizer = function(params) {
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 
 	var color = (this.parent && !params.color) ? this.parent.color : params.color;
-	this.color = color || ZmOrganizer.ORG_COLOR[id] || ZmOrganizer.DEFAULT_COLOR[this.type];
+	this.color = color || ZmOrganizer.ORG_COLOR[id] || ZmOrganizer.ORG_COLOR[this.nId] || ZmOrganizer.DEFAULT_COLOR[this.type];
 
 	if (id && params.tree) {
 		appCtxt.cacheSet(id, this);

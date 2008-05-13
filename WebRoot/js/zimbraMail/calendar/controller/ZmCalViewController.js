@@ -305,9 +305,9 @@ function() {
 		var cal = cc[i];
 		if (cal.isInvalidFolder) { continue; }
 
-		this._checkedCalendarFolderIds.push(cal.nId);
+		this._checkedCalendarFolderIds.push(cal.id);
 		if (cal.isRemote && !cal.isRemote()) {
-			this._checkedLocalCalendarFolderIds.push(cal.nId);
+			this._checkedLocalCalendarFolderIds.push(cal.id);
 		}
 	}
 	return cc;

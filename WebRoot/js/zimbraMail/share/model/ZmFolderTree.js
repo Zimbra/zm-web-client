@@ -101,7 +101,7 @@ function(parent, obj, tree, elementType, path) {
 		}
 		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type]) {
 			var app = appCtxt.getApp(ZmOrganizer.APP[type]);
-			app.addDeferredFolder(type, obj, tree, path);
+			app.addDeferredFolder({type:type, parent:parent, obj:obj, tree:tree, path:path, elementType:elementType});
 		} else {
 			var pkg = ZmOrganizer.ORG_PACKAGE[type];
 			if (pkg) {
