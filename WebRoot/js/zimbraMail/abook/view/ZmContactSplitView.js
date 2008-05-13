@@ -494,9 +494,25 @@ function(item, skipNotify) {
 
 ZmContactSimpleView.prototype._setNoResultsHtml =
 function() {
-	ZmContactsBaseView.prototype._setNoResultsHtml.call(this);
+	var contactList = AjxDispatcher.run("GetContacts");
+	if (contactList && !contactList.isLoaded) {
+		// Shows "Loading..."
+		ZmContactsBaseView.prototype._setNoResultsHtml.call(this);
+	} else {
+		// Shows "No Results", unless the skin has overridden to show links to plaxo.
+		var	div = document.createElement("div");
+		div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults");
+		this._addRow(div);
+	}
 	this.parent.clear();
 };
+
+DwtListView.prototype._getNoResultsMessage =
+function() {
+	var contactList = AjxDispatcher.run("GetContacts");
+	return contactList && !contactList.isLoaded ? ZmMsg.loading : AjxMsg.noResults;
+};
+
 
 ZmContactSimpleView.prototype._changeListener =
 function(ev) {
