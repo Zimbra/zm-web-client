@@ -148,25 +148,34 @@ function(button) {
 
 ZmToolBar.prototype.autoAdjustWidth =
 function(refElement, reset) {
-	if (!refElement) { return; }
-    var el = this.getHtmlElement();
-	if (!el) { return; }
-    var off1 = refElement.offsetWidth;
-    var off2 = el.firstChild ? el.firstChild.offsetWidth : off1;
-    if(off2 > off1 || reset) { //reset: the buttons that have _toggleText gets filled if we have enough space.
-        for (var i in this._buttons) {
-            var offset1 = refElement.offsetWidth;
-            var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
-            if (this._buttons[i].getImage() != null ) {
-                if (offset2 > offset1){
-                    this._buttons[i]._toggleText = (this._buttons[i]._toggleText != null && this._buttons[i]._toggleText != "") ? this._buttons[i]._toggleText : this._buttons[i].getText();
-                    this._buttons[i].setText("");
-                }
-                else if(this._buttons[i]._toggleText) {
-                    this._buttons[i].setText(this._buttons[i]._toggleText);
-                    this._buttons[i]._toggleText = null;
-                }
-            }
-        }
-    } 
+	var el = this.getHtmlElement();
+	if (!el || !refElement) { return; }
+
+	var offset1 = refElement.offsetWidth;
+	var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+
+	if ((offset1 > 0 && offset2 > offset1) || reset) {
+		for (var i in this._buttons) {
+			var b = this._buttons[i];
+			if (!b.getImage() || !b.getVisible()) { continue; }
+
+			if (offset2 > offset1) {
+				b._toggleText = (b._toggleText != null && b._toggleText != "")
+					? b._toggleText : b.getText();
+				b.setText("");
+			}
+			else if (b._toggleText) {
+				b.setText(b._toggleText);
+				// after adding back label, check if its bigger then avail space
+				if (el.firstChild && el.firstChild.offsetWidth > offset1) {
+					b.setText("");	// Nope. Back it out!
+					break;			// And bail. Chances are subsequent labels won't fit either
+				}
+				b._toggleText = null;
+			}
+
+			// re-calc firstChild offset since we may have removed its label
+			offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+		}
+	}
 };
