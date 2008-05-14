@@ -131,6 +131,13 @@
 			  <c:param name="date" value="${param.date}" />
 		  </c:redirect>
 	  </c:if>
+	  <c:if test="${(param.view eq 'msg') and (not empty param.id)}">
+		  <c:redirect url="/h/search">
+			  <c:param name="st" value='message'/>
+			  <c:param name="action" value='view'/>
+			  <c:param name="id" value='${param.id}'/>
+		  </c:redirect>
+	  </c:if>
   </c:if>
 
   <%-- end --%>
