@@ -972,7 +972,8 @@ function(msg, container, callback) {
 		participants:		participants,
 		hasHeaderCloseBtn:	this._hasHeaderCloseBtn,
         hasAttachments:		hasAttachments,
-		isSyncFailureMsg:	isSyncFailureMsg
+        attachmentsCount:   msg.getAttachmentLinks(true).length,
+        isSyncFailureMsg:	(appCtxt.getById(msg.folderId).nId == ZmOrganizer.ID_SYNC_FAILURES)
 	};
 
 	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
