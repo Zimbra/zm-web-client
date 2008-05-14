@@ -671,8 +671,8 @@ function(show) {
 };
 
 ZmAppViewMgr.prototype.fitAll =
-function() {
-	this._fitToContainer(ZmAppViewMgr.ALL_COMPONENTS);
+function(resetToolbar) {
+	this._fitToContainer(ZmAppViewMgr.ALL_COMPONENTS, resetToolbar);
 };
 
 /**
@@ -756,7 +756,7 @@ function() {
 
 // Locates and sizes the given list of components to fit within their containers.
 ZmAppViewMgr.prototype._fitToContainer =
-function(components) {
+function(components, resetToolbar) {
     for (var i = 0; i < components.length; i++) {
 		var cid = components[i];
 		DBG.println(AjxDebug.DBG3, "fitting to container: " + cid);
@@ -788,9 +788,9 @@ function(components) {
 					comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
                 }
 
-                if(cid == ZmAppViewMgr.C_TOOLBAR_TOP){
-                    this.fitAppToolbar(); //Fit Toolbar according to resolution.
-                }
+				if (cid == ZmAppViewMgr.C_TOOLBAR_TOP) {
+					this.fitAppToolbar(resetToolbar); // fit toolbar according to resolution.
+				}
             }
 		}
 	}
@@ -800,11 +800,13 @@ function(components) {
 	}
 };
 
-ZmAppViewMgr.prototype._getComponentPosition = function(cid) {
+ZmAppViewMgr.prototype._getComponentPosition =
+function(cid) {
 	return appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
 }
 
-ZmAppViewMgr.prototype._getContainerBounds = function(cid) {
+ZmAppViewMgr.prototype._getContainerBounds =
+function(cid) {
 	// ignore bounds for statically laid-out components
 	var position = this._getComponentPosition(cid);
 	if (position == Dwt.STATIC_STYLE) return null;
@@ -1000,7 +1002,7 @@ function(ev) {
 			}
 		} else {
 			if (deltaHeight && deltaWidth) {
-				this.fitAll();
+				this.fitAll(true);
 			} else if (deltaHeight) {
 				var list = [ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
 							ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL, 
@@ -1018,14 +1020,12 @@ function(ev) {
 };
 
 ZmAppViewMgr.prototype.fitAppToolbar =
-function(doOnce) {
+function(resetToolbar) {
 	// Assuming every view has a toolbar.
 	var toolbar = this._views[this._currentView][ZmAppViewMgr.C_TOOLBAR_TOP];
-	if (doOnce && toolbar._adjustWidth) { return; }
 
 	if (toolbar && toolbar.autoAdjustWidth) {
-		toolbar.autoAdjustWidth(this._containers[ZmAppViewMgr.C_TOOLBAR_TOP], true);
-		toolbar._adjustWidth = true;
+		toolbar.autoAdjustWidth(this._containers[ZmAppViewMgr.C_TOOLBAR_TOP], resetToolbar);
 	}
 };
 
