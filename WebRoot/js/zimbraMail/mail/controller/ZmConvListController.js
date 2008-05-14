@@ -241,6 +241,7 @@ function(params) {
  */
 ZmConvListController.prototype._getLoadedMsg =
 function(params, callback) {
+	params = params || {};
 	var sel = this._listView[this._currentView].getSelection();
 	var item = (sel && sel.length) ? sel[0] : null;
 	if (item) {
