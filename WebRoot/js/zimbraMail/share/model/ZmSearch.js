@@ -429,7 +429,7 @@ function(params) {
 
 ZmSearch.prototype._handleResponseGetConv = 
 function(callback, result) {
-	response = result.getResponse().SearchConvResponse;
+	var response = result.getResponse().SearchConvResponse;
 	var searchResult = new ZmSearchResult(this);
 	searchResult.set(response, null, true);
 	result.set(searchResult);
