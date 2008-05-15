@@ -30,11 +30,11 @@
 			<$ if (data.showStandardLink) { $>
 				<$ if (twoCells) { $>
 					<td id='skin_container_switch'>
-						<a href='javascript:;' onclick="switchToStandardClient()"><$= ZmMsg.switchToStandardClient $></a>
+						<a href="<$= appContextPath + '/?client=standard'$>"><$= ZmMsg.switchToStandardClient $></a>
 					</td>
 				<$ } else { $>
 					<td id='skin_container_switch' colspan=2>
-						<a href='javascript:;' onclick="switchToStandardClient()"><$= ZmMsg.switchToStandardClientEx $></a>
+						<a href="<$= appContextPath + '/?client=standard'$>"><$= ZmMsg.switchToStandardClientEx $></a>
 					</td>
 				<$ } $>
 			<$ } $>
