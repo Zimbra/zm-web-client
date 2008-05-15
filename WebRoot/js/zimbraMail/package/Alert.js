@@ -2,7 +2,7 @@
  * ***** BEGIN LICENSE BLOCK *****
  * 
  * Zimbra Collaboration Suite Web Client
- * Copyright (C) 2006, 2007 Zimbra, Inc.
+ * Copyright (C) 2007 Zimbra, Inc.
  * 
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
@@ -14,17 +14,12 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-
-P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
-   font-family: Tahoma,Ariel,Helvetica,sans-serif,mingliu;
-   font-size:16px;
-   *font-size:12px;
-}
-#ZLoginClientLevelContainer,#ZLoginLicenseContainer,#ZLoginWhatsThisAnchor{
-   font-family: Tahoma,Ariel,Helvetica,sans-serif,mingliu;
-   font-size:16px;
-   *font-size:12px;
-}
-#ZLoginPanel{
-   width: 600px;
-}
+/*
+ * Package: Alert
+ * 
+ * A few classes for flashing titles, icons, etc. 
+ */
+AjxPackage.require("zimbraMail.share.view.ZmAlert");
+AjxPackage.require("zimbraMail.share.view.ZmAppAlert");
+AjxPackage.require("zimbraMail.share.view.ZmBrowserAlert");
+AjxPackage.require("zimbraMail.share.view.ZmSoundAlert");
