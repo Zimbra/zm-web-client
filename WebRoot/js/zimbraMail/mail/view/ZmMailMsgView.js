@@ -98,7 +98,7 @@ ZmMailMsgView.OBJ_SIZE_TEXT 		= 50; // max. size of text emails that will automa
 ZmMailMsgView.OBJ_SIZE_HTML 		= 50; // similar for HTML emails.
 ZmMailMsgView.REPLY_INVITE_EVENT	= "inviteReply";
 ZmMailMsgView.SHARE_EVENT 			= "share";
-
+ZmMailMsgView.IMG_FIX_RE			= new RegExp("(<img\\s+.*dfsrc\\s*=\\s*)[\"']http[^'\"]+part=([\\d\\.]+)[\"']([^>]*>)", "gi");
 
 // Public methods
 
@@ -1048,7 +1048,22 @@ function(msg, container, callback) {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
 			if (bodyPart.ct == ZmMimeTable.TEXT_HTML && appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
-				this._makeIframeProxy(el, bodyPart.content, false, bodyPart.truncated);
+				var c = bodyPart.content;
+				// fix broken inline images - take one like this: <img dfsrc="http:...part=1.2.2">
+				// and make it look like this: <img dfsrc="cid:DWT123"> by looking up the cid for that part
+				if (msg._attachments && ZmMailMsgView.IMG_FIX_RE.test(c)) {
+					var partToCid = {};
+					for (var i = 0; i < msg._attachments.length; i++) {
+						var att = msg._attachments[i];
+						if (att.ci) {
+							partToCid[att.part] = att.ci.substring(1, att.ci.length - 1);
+						}
+					}
+					c = c.replace(ZmMailMsgView.IMG_FIX_RE, function(s, p1, p2, p3) {
+						return partToCid[p2] ? [p1, '"cid:', partToCid[p2], '"', p3].join("") : s;
+					});
+				}
+				this._makeIframeProxy(el, c, false, bodyPart.truncated);
 			} else {
 				// otherwise, get the text part if necessary
 				if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {

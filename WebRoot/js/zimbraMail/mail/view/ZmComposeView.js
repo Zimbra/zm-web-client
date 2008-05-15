@@ -85,7 +85,8 @@ ZmComposeView.EMPTY_FORM_RE			= /^[\s\|]*$/;
 ZmComposeView.SUBJ_PREFIX_RE		= new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
 ZmComposeView.QUOTED_CONTENT_RE		= new RegExp("^----- ", "m");
 ZmComposeView.HTML_QUOTED_CONTENT_RE= new RegExp("<br>----- ", "i");
-ZmComposeView.REFANG_RE				= new RegExp("(<img[^>]*)dfsrc\s*=([^>]*>)", "ig");
+ZmComposeView.IMG_FIX_RE1			= new RegExp("(<img[^>]*)\\s+src\\s*=\\s*\\S+(.*>)", "ig");
+ZmComposeView.IMG_FIX_RE2			= new RegExp("(<img[^>]*)\\s+dfsrc\\s*=\\s*(\\S+.*>)", "ig");
 ZmComposeView.ADDR_SETTING			= {}; // XXX: may not be necessary anymore?
 ZmComposeView.WRAP_LENGTH			= 72;
 
@@ -470,12 +471,13 @@ function(attId, isDraft) {
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
 		var defangedContent = this._htmlEditor.getContent(true);
-		var refangedContent = defangedContent.replace(ZmComposeView.REFANG_RE, function(s, p1, p2) {
-                        // make sure we don't end up with 2 src attributes (bug 21959)
-                        p1 = p1.replace(/\bsrc=[^\s]*/i, "");
-                        return p1 + "src=" + p2;
-                });
-		htmlPart.setContent(refangedContent);
+		if (ZmComposeView.IMG_FIX_RE1.test(defangedContent)) {
+			if (ZmComposeView.IMG_FIX_RE2.test(defangedContent)) {
+				defangedContent = defangedContent.replace(ZmComposeView.IMG_FIX_RE1, "$1$2");
+				defangedContent = defangedContent.replace(ZmComposeView.IMG_FIX_RE2, "$1 src=$2");
+			}
+		}
+		htmlPart.setContent(defangedContent);
 
 		//Support for Inline
 		if (inline) {
