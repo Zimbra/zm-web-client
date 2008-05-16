@@ -527,9 +527,8 @@ function(callback, errorCallback) {
 	} else {
 		if (callback && callback.run) {
 			callback.run(this._contactList[acctId]);
-		} else {
-			return this._contactList[acctId];
 		}
+		return this._contactList[acctId];
 	}
 };
 
