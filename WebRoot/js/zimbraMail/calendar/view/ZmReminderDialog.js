@@ -238,6 +238,9 @@ function(list) {
 
 ZmReminderDialog.prototype.popup =
 function() {
+	AjxPackage.require("Alert");
+	ZmBrowserAlert.getInstance().start(ZmMsg.appointmentReminder);
+	ZmSoundAlert.getInstance().start("/public/sounds/im/alert.wav");
 	DwtDialog.prototype.popup.call(this);
 	this._cancelSnooze();
 };
