@@ -374,10 +374,7 @@ function(clickedEl, ev) {
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) && ev.button == DwtMouseEvent.LEFT) {
 		if (!ev.shiftKey && !ev.ctrlKey) {
 			// get the field being clicked
-			var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1)
-				? ev.target.id : clickedEl.id;
-
-			// TODO - optimize by not calling parseId so much
+			var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1)	? ev.target.id : clickedEl.id;
 			var m = id ? this._parseId(id) : null;
 			if (m && m.field == ZmItem.F_SELECTION) {
 				if (this._selectedItems.size() == 1) {

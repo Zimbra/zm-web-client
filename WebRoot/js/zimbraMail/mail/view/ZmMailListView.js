@@ -417,3 +417,33 @@ function(ev) {
 	
 	this._relayout();
 };
+
+/**
+ * If we're showing content in the reading pane and there is exactly one item selected,
+ * make sure the content is for that selected item. Otherwise, clear the content.
+ */
+ZmMailListView.prototype._itemClicked =
+function(clickedEl, ev) {
+
+	ZmListView.prototype._itemClicked.apply(this, arguments);
+	
+	var ctlr = this._controller;
+	if (ctlr.isReadingPaneOn && ctlr.isReadingPaneOn()) {
+		if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) && ev.button == DwtMouseEvent.LEFT) {
+			if (!ev.shiftKey && !ev.ctrlKey) {
+				// get the field being clicked
+				var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1) ? ev.target.id : clickedEl.id;
+				var m = id ? this._parseId(id) : null;
+				if (m && m.field == ZmItem.F_SELECTION) {
+					if (this.getSelectionCount() == 1) {
+						var item = this.getSelection()[0];
+						var msg = (item instanceof ZmConv) ? item.getFirstHotMsg() : item;
+						if (msg && ctlr._curMsg && (msg.id != ctlr._curMsg.id)) {
+							ctlr.reset();
+						}
+					}
+				}
+			}
+		}
+	}
+};

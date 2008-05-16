@@ -281,6 +281,7 @@ function(msg) {
 	}
 
 	this._doublePaneView.setMsg(msg);
+	this._curMsg = msg;
 	if (msg.isUnread) {
 		var folder = appCtxt.getById(msg.folderId);
 		var readOnly = folder ? folder.isReadOnly() : false;
