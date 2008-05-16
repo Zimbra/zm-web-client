@@ -115,6 +115,7 @@ function() {
  *        showUnread	[boolean]*		if true, show unread counts
  *        omit			[object]*		hash of organizer IDs to ignore
  *        include		[object]*		hash of organizer IDs to include
+ *        omitParents	[boolean]*		do NOT insert parent nodes as needed
  *        searchTypes	[hash]*			types of saved searches to show
  *        noTooltips	[boolean]*		if true, don't show tooltips for tree items
  *        collapsed		[boolean]*		if true, initially leave the root collapsed
@@ -257,6 +258,7 @@ function(params) {
 			var allowed = ((org.nId == ZmOrganizer.ID_ROOT) && this.allowedTypes[child.type]) ||
 						  ((org.nId != ZmOrganizer.ID_ROOT) && this.allowedSubTypes[child.type]);
 			if (!allowed) {
+				if (params.omitParents) continue;
 				var proxy = AjxUtil.createProxy(params);
 				proxy.treeNode = null;
 				proxy.organizer = child;
@@ -269,6 +271,7 @@ function(params) {
 				continue;
 			}
 			if (this._allowedTypes && !this._allowedTypes[child.type]) {
+				if (params.omitParents) continue;
 				var proxy = AjxUtil.createProxy(params);
 				proxy.treeNode = null;
 				proxy.organizer = child;

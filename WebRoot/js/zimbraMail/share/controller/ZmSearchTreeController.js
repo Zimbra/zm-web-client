@@ -75,6 +75,7 @@ function(params) {
 		params.searchTypes = searchTypes;
 		params.omit = params.omit || {};
 		params.omit[ZmFolder.ID_TRASH] = true;
+		params.omitParents = true;
         var setting = ZmOrganizer.OPEN_SETTING[this.type];
         params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
 		this._treeView[id].set(params);
