@@ -33,7 +33,7 @@ ZmMailMsg = function(id, list, noCache) {
 	this._attHitList = [];
 	this._attachments = [];
 	this._bodyParts = [];
-	this._addrs = [];
+	this._addrs = {};
 
 	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
@@ -133,7 +133,7 @@ function(hdr) {
 ZmMailMsg.getAdditionalHeaders =
 function() {
 	return ZmMailMsg._requestHeaders;
-}
+	}
 
 
 ZmMailMsg._handleResponseFetchMsg =
@@ -440,19 +440,19 @@ function() {
 };
 
 ZmMailMsg.prototype.addInlineAttachmentId = function(cid,aid,part){
-	if(!this._inlineAtts) {
+	if (!this._inlineAtts) {
 		this._inlineAtts = [];
 	}
 	this._onChange("inlineAttachments",aid);
-	if(aid){
+	if (aid) {
 		this._inlineAtts.push({"cid":cid,"aid":aid});
-	}else if(part){
+	} else if (part) {
 		this._inlineAtts.push({"cid":cid,"part":part});
 	}
 };
 
 ZmMailMsg.prototype.setInlineAttachments = function(inlineAtts){
-	if(inlineAtts){
+	if (inlineAtts) {
 		this._inlineAtts = inlineAtts;
 	}
 };
