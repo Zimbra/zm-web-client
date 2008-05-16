@@ -88,7 +88,6 @@ function(mode, convert) {
 
 	if (mode == DwtHtmlEditor.HTML) {
 		this._createToolbars();
-		this._resetFormatControls();
 	}
 
 	// show/hide toolbars based on mode
@@ -656,6 +655,8 @@ function() {
 		this._createToolBar2(tb);
 
 		this._toolbars.push(tb);
+
+                this._resetFormatControls();
 	}
 };
 
