@@ -33,7 +33,7 @@ ZmMailMsg = function(id, list, noCache) {
 	this._attHitList = [];
 	this.attachments = [];
 	this._bodyParts = [];
-	this._addrs = [];
+	this._addrs = {};
 
 	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
