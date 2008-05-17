@@ -1109,7 +1109,8 @@ function(parent, num) {
 
 	if (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES) {
 		parent.enableAll(false);
-		parent.enable([ZmOperation.NEW_MENU, ZmOperation.CHECK_MAIL, ZmOperation.DELETE, ZmOperation.PRINT, ZmOperation.FORWARD], true);
+		parent.enable([ZmOperation.NEW_MENU, ZmOperation.SYNC_OFFLINE, ZmOperation.CHECK_MAIL], true);
+		parent.enable([ZmOperation.DELETE, ZmOperation.PRINT, ZmOperation.FORWARD], num > 0);
 		return;
 	}
 
