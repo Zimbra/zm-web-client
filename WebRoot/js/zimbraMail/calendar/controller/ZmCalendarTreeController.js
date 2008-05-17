@@ -165,9 +165,11 @@ function() {
 	ops.push(ZmOperation.CHECK_ALL);
 	ops.push(ZmOperation.CLEAR_ALL);
 
-    ops.push(ZmOperation.SEP,ZmOperation.FREE_BUSY_LINK);
+	if (!appCtxt.isOffline) {
+		ops.push(ZmOperation.SEP, ZmOperation.FREE_BUSY_LINK);
+	}
 
-    return ops;
+	return ops;
 };
 
 // Returns a list of desired action menu operations
