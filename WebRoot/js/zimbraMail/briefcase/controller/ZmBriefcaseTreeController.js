@@ -24,8 +24,9 @@ ZmBriefcaseTreeController = function(type) {
 	this._listeners[ZmOperation.NEW_BRIEFCASEITEM] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_BRIEFCASE] = new AjxListener(this, this._shareBriefcaseListener);
 	this._listeners[ZmOperation.MOUNT_BRIEFCASE] = new AjxListener(this, this._mountBriefcaseListener);
-   	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);	
-	this._eventMgrs = {};
+   	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
+    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
+    this._eventMgrs = {};
 	
 };
 
@@ -102,8 +103,9 @@ function() {
 	ops.push(
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SEP,
-		ZmOperation.REFRESH
-		/***
+		ZmOperation.REFRESH,
+        ZmOperation.BROWSE            
+        /***
 		ZmOperation.SEP,
 		ZmOperation.EDIT_NOTEBOOK_INDEX
 		ZmOperation.SEP,

@@ -416,16 +416,6 @@ function(components) {
 
 ZmImApp.prototype.startup =
 function() {
-	// Keep track of focus on the app.
-	var focusListener = new AjxListener(this, this._focusListener);
-	DwtShell.getShell(window).addFocusListener(focusListener);
-	DwtShell.getShell(window).addBlurListener(focusListener);
-
-	var globalEventListener = new AjxListener(this, this._globalEventListener);
-	DwtEventManager.addListener(DwtEvent.ONMOUSEDOWN, globalEventListener);
-	DwtEventManager.addListener(DwtEvent.ONKEYDOWN, globalEventListener);
-
-	// Implement auto login.
 	if (appCtxt.get(ZmSetting.IM_PREF_AUTO_LOGIN)) {
 		// Do the auto login after a short delay. I chose 1000ms because that means
 		// im login will happen after zimlets are loaded.
@@ -464,14 +454,6 @@ ZmImApp.prototype._handleLoadLaunch = function(callback) {
 	if (callback) {
 		callback.run();
 	}
-};
-
-ZmImApp.prototype.activate =
-function(active) {
-	if (active) {
-		this.stopAlert(ZmImApp.ALERT_APP_TAB);
-	}
-	return ZmApp.prototype.activate.call(this, active);
 };
 
 ZmImApp.prototype.getRosterTreeController = function() {
@@ -564,99 +546,26 @@ ZmImApp.prototype.getOverviewPanelContent = function() {
 
 ZmImApp.INCOMING_MSG_NOTIFICATION = "incoming";
 ZmImApp.prototype.playAlert = function(type){
-    switch(type){
-        case ZmImApp.INCOMING_MSG_NOTIFICATION:
-            appCtxt.getSimpleSoundPlayer().play(appContextPath+"/public/sounds/im/alert.wav");
-            break;
-    }
+	AjxDispatcher.require("Alert");
+	switch (type) {
+		case ZmImApp.INCOMING_MSG_NOTIFICATION:
+			ZmSoundAlert.getInstance().start("/public/sounds/im/alert.wav");
+			break;
+	}
 };
 
 ZmImApp.prototype.startAlert = function() {
-	var type = 0;
-	if (!this._clientHasFocus) {
-		type |= ZmImApp.ALERT_CLIENT;
-		if (!this._favIcon) {
-			this._favIcon = appContextPath + "/img/logo/favicon.ico";
-			this._blankIcon = appContextPath + "/img/logo/blank.ico";
-		}
-	}
-	if (appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
-		if (!this._active) {
-			type |= ZmImApp.ALERT_APP_TAB;
-			this._origImage = this._origImage || this._getAppButton().getImage();
-			this._getAppButton().showAlert(true);
-		}
-	}
-	this._alerts |= type;
-	if (this._alerts && !this._alertInterval) {
-		this._alertInterval = setInterval(AjxCallback.simpleClosure(this._alertTimerCallback, this), 333);
-	}
+	AjxDispatcher.require("Alert");
+	this._alert = this._alert || new ZmAppAlert(this);
+	this._alert.start();
+
+	ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
 };
 
 ZmImApp.prototype.stopAlert = function(type) {
-	// Reset the state of all the alerts being turned off here.
-	this._updateAlerts(false, type & this._alerts);
-
-	// If turning off app tab alert, take off the alert status.
-	if (type & this._alerts & ZmImApp.ALERT_APP_TAB) {
-		this._getAppButton().showAlert(false);
+	if ((type & ZmImApp.ALERT_APP_TAB) && this._alert) {
+		this._alert.stop();
 	}
-
-	// Update bits and stop loop if all alerts are off.
-	this._alerts = this._alerts & ~type; // Turn off the bit for type.
-	if (!this._alerts && this._alertInterval) {
-		clearInterval(this._alertInterval);
-		this._alertInterval = 0;
-	}
-};
-
-ZmImApp.prototype._alertTimerCallback = function() {
-	// Flash the im app tab.
-	this.__flashIconStatus = !this.__flashIconStatus;
-	this._updateAlerts(this.__flashIconStatus, this._alerts);
-};
-
-ZmImApp.prototype._updateAlerts = function(status, alerts) {
-	if (alerts & ZmImApp.ALERT_APP_TAB) {
-		this._getAppButton().setImage(status ? "Blank_16" : this._origImage);
-	}
-
-	// Flash the favicon.
-	if (alerts & ZmImApp.ALERT_CLIENT) {
-		Dwt.setFavIcon(status ? this._blankIcon : this._favIcon);
-	}
-
-	// Flash the title.
-	if (alerts & ZmImApp.ALERT_CLIENT) {
-		var doc = document;
-		if (status) {
-			this._origTitle = doc.title;
-			doc.title = ZmMsg.newMessage;
-		} else {
-			if (doc.title == ZmMsg.newMessage) {
-				doc.title = this._origTitle;
-			}
-			// else if someone else changed the title, just leave it.
-		}
-	}	
-};
-
-ZmImApp.prototype._getAppButton = function() {
-	return appCtxt.getAppController().getAppChooserButton("IM");
-};
-
-ZmImApp.prototype._focusListener =
-function(ev) {
-	this._clientHasFocus = ev.state == DwtFocusEvent.FOCUS;
-	if (this._clientHasFocus) {
-		this.stopAlert(ZmImApp.ALERT_CLIENT);
-	}
-};
-
-ZmImApp.prototype._globalEventListener =
-function() {
-	this._clientHasFocus = true;
-	this.stopAlert(ZmImApp.ALERT_CLIENT);
 };
 
 ZmImApp.prototype._createImPresenceMenu =

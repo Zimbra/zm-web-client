@@ -690,14 +690,6 @@ function() {
 	return this._uploadManager;
 };
 
-ZmAppCtxt.prototype.getSimpleSoundPlayer =
-function() {
-    if (!this._simpleSoundPlayer) {
-        this._simpleSoundPlayer = new DwtSimpleSoundPlayer(this.getShell());
-    }
-    return this._simpleSoundPlayer;
-};
-
 ZmAppCtxt.prototype.getCurrentAppToolbar =
 function() { 
 	return this._currentAppToolbar;
