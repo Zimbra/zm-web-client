@@ -18,8 +18,15 @@
             <jsp:forward page="/h/addcontacts"/>
         </c:when>
         <c:when test="${uploader.isAttachAdd}">
-            <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
-            <c:set scope="request" var="draftid" value="${draftResult.id}"/>
+            <c:choose>
+                <c:when test="${not empty uploader.compose.draftId}">
+                    <c:set scope="request" var="draftid" value="${uploader.compose.draftId}"/>
+                </c:when>
+                <c:otherwise>
+                    <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
+                    <c:set scope="request" var="draftid" value="${draftResult.id}"/>
+                </c:otherwise>
+            </c:choose>
             <jsp:forward page="/h/attachments"/>
         </c:when>
         <c:when test="${uploader.isAttachCancel}">
