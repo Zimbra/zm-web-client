@@ -820,14 +820,6 @@ function(active) {
 };
 
 /**
-* Returns true if this is the active app.
-*/
-ZmApp.prototype.isActive =
-function() {
-	return this._active;
-};
-
-/**
 * Clears an app's state.
 */
 ZmApp.prototype.reset =
