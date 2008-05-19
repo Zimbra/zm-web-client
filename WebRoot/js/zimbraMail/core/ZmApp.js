@@ -833,3 +833,24 @@ function() {
 ZmApp.prototype.reset =
 function(active) {
 };
+
+/**
+* Starts an alert on the app tab.
+*/
+ZmApp.prototype.startAlert =
+function() {
+	AjxDispatcher.require("Alert");
+	this._alert = this._alert || new ZmAppAlert(this);
+	this._alert.start();
+};
+
+/**
+* Sttops an alert on the app tab.
+*/
+ZmApp.prototype.stopAlert =
+function() {
+	if (this._alert) {
+		this._alert.stop();
+	}
+};
+

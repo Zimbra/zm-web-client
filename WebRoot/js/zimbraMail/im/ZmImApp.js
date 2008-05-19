@@ -46,9 +46,6 @@ ZmApp.SETTING[ZmApp.IM]		= ZmSetting.IM_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.IM]	= 47;
 ZmApp.QS_ARG[ZmApp.IM]		= "chat";
 
-ZmImApp.ALERT_CLIENT = 1;  // Displays an alert for entire web client, flashing favicon & document.title
-ZmImApp.ALERT_APP_TAB = 2; // Displays an alert for im app tab 
-
 ZmImApp.prototype = new ZmApp;
 ZmImApp.prototype.constructor = ZmImApp;
 
@@ -551,20 +548,6 @@ ZmImApp.prototype.playAlert = function(type){
 		case ZmImApp.INCOMING_MSG_NOTIFICATION:
 			ZmSoundAlert.getInstance().start("/public/sounds/im/alert.wav");
 			break;
-	}
-};
-
-ZmImApp.prototype.startAlert = function() {
-	AjxDispatcher.require("Alert");
-	this._alert = this._alert || new ZmAppAlert(this);
-	this._alert.start();
-
-	ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
-};
-
-ZmImApp.prototype.stopAlert = function(type) {
-	if ((type & ZmImApp.ALERT_APP_TAB) && this._alert) {
-		this._alert.stop();
 	}
 };
 

@@ -158,6 +158,7 @@ function(settings) {
     settings.registerSetting("VACATION_MSG",					{name:"zimbraPrefOutOfOfficeReply", type:ZmSetting.T_PREF});
 	settings.registerSetting("VACATION_MSG_ENABLED",			{name:"zimbraPrefOutOfOfficeReplyEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("VACATION_MSG_FEATURE_ENABLED",	{name:"zimbraFeatureOutOfOfficeReplyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("MAIL_NOTIFY_SOUNDS",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
     ZmMailApp._setGroupByMaps();
 };
@@ -825,7 +826,8 @@ function(notify) {
  */
 ZmMailApp.prototype.createNotify =
 function(creates, force) {
-	if (!creates["m"] && !creates["c"] && !creates["link"]) { return; }
+	var mailCreates = creates["m"];
+	if (!mailCreates && !creates["c"] && !creates["link"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
 	if (creates["link"]) {
@@ -837,16 +839,35 @@ function(creates, force) {
 		}
 	}
 
-	if (appCtxt.getCurrentController() == this._tradController) {
+	var alertNewMail = false;
+	if (this._tradController && (appCtxt.getCurrentController() == this._tradController)) {
 		// can't get to another controller without running a search
-		this._checkList(creates, this._tradController.getList(), this._tradController);
+		alertNewMail = this._checkList(creates, this._tradController.getList(), this._tradController);
 	} else {
 		// these two controllers can be active together without an intervening search
 		if (this._convListController) {
-			this._checkList(creates, this._convListController.getList(), this._convListController);
+			alertNewMail = this._checkList(creates, this._convListController.getList(), this._convListController);
 		}
 		if (this._convController) {
-			this._checkList(creates, this._convController.getList(), this._convController);
+			alertNewMail = this._checkList(creates, this._convController.getList(), this._convController) || alertNewMail;
+		}
+	}
+
+	// If we didn't display an alert-worthy new message, loop thru all creates looking for one.
+	if (!alertNewMail && mailCreates) {
+		for (var i = 0, count = mailCreates.length; i < count; i++) {
+			var mc = mailCreates[i];
+			if ((mc.l == ZmOrganizer.ID_INBOX) && mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1)) { // if (inInbox && isUnread)
+				alertNewMail = true;
+				break;
+			}
+		}
+	}
+	if (alertNewMail) {
+		this.startAlert();
+		ZmBrowserAlert.getInstance().start(ZmMsg.newMessage);
+		if (appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS)) {
+			ZmSoundAlert.getInstance().start("/public/sounds/im/alert.wav");
 		}
 	}
 };
@@ -859,6 +880,7 @@ function(creates, force) {
  * @param creates		[hash]					JSON create objects
  * @param list			[ZmMailList]			mail list to notify
  * @param controller	[ZmMailListController]	controller that owns list
+ * @return 				[boolean]	true if there's an alert-worthy new message
  */
 ZmMailApp.prototype._checkList =
 function(creates, list, controller) {
@@ -885,9 +907,10 @@ function(creates, list, controller) {
 	var gotConvs = this._checkType(creates, ZmItem.CONV, convs, list, sortBy, cutoff);
 	var gotMsgs = this._checkType(creates, ZmItem.MSG, msgs, list, sortBy, cutoff, convs);
 
-	if (gotConvs || gotMsgs) {
+	if (gotConvs.gotItem || gotMsgs.gotItem) {
 		list.notifyCreate(convs, msgs);
 	}
+	return gotMsgs.gotAlertMessage;
 };
 
 /**
@@ -900,13 +923,15 @@ function(creates, list, controller) {
  * @param sortBy	[constant]		sort order
  * @param cutoff	[int]			timestamp of last item in list
  * @param convs		[hash]			convs, so we can update folders from msgs
+ *
+ * @return	a hash with booleans gotItem and gotAlertMessage
  */
 ZmMailApp.prototype._checkType =
 function(creates, type, items, currList, sortBy, cutoff, convs) {
+	var result = { gotItem: false, gotAlertMessage: false};
 	var nodeName = ZmList.NODE[type];
 	var list = creates[nodeName];
-	if (!(list && list.length)) { return false; }
-	var gotMail = false;
+	if (!(list && list.length)) { return result; }
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		create._handled = true;
@@ -921,9 +946,12 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 		var itemClass = eval(ZmList.ITEM_CLASS[type]);
 		var item = itemClass.createFromDom(create, {}, true);
 		items[item.id] = item;
-		gotMail = true;
+		result.gotItem = true;
+		if (item.folderId == ZmOrganizer.ID_INBOX && item.isUnread) {
+			result.gotAlertMessage = true;
+		}
 	}
-	return gotMail;
+	return result;
 };
 
 /**
