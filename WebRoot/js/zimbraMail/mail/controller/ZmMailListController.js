@@ -946,6 +946,7 @@ ZmMailListController.prototype._sendInviteReply =
 function(type, componentId, instanceDate, accountName) {
 	var msg = new ZmMailMsg();
 	var contactList = AjxDispatcher.run("GetContacts");
+	AjxDispatcher.require("CalendarCore");
 
 	msg._origMsg = this._getMsg();
 	msg.inviteMode = type;
