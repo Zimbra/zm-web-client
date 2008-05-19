@@ -577,7 +577,7 @@ ZmChatWidget.prototype._setUnreadStatus = function() {
 		}
 
 		if (this.getChatWindow().isSticky()) {
-			ZmImApp.INSTANCE.stopAlert(ZmImApp.ALERT_APP_TAB);
+			ZmImApp.INSTANCE.stopAlert();
 		}
 	}
 };

@@ -377,6 +377,7 @@ function(im) {
 					if (chat) {
 						if (!chatMessage.fromMe) {
 							this._imApp.startAlert();
+							ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
 						}
 						chat.addMessage(chatMessage);
 					}
