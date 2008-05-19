@@ -471,12 +471,8 @@ function(attId, isDraft) {
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
 		var defangedContent = this._htmlEditor.getContent(true);
-		if (ZmComposeView.IMG_FIX_RE1.test(defangedContent)) {
-			if (ZmComposeView.IMG_FIX_RE2.test(defangedContent)) {
-				defangedContent = defangedContent.replace(ZmComposeView.IMG_FIX_RE1, "$1$2");
-				defangedContent = defangedContent.replace(ZmComposeView.IMG_FIX_RE2, "$1 src=$2");
-			}
-		}
+		defangedContent = defangedContent.replace(ZmComposeView.IMG_FIX_RE1, "$1$2");
+		defangedContent = defangedContent.replace(ZmComposeView.IMG_FIX_RE2, "$1 src=$2");
 		htmlPart.setContent(defangedContent);
 
 		//Support for Inline
