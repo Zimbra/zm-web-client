@@ -1358,9 +1358,8 @@ function(parent, num) {
 		var isShared = calendar ? calendar.isRemote() : false;
 		var disabled = isSynced || isReadOnly || (num == 0);
 		var isPrivate = appt && appt.isPrivate() && calendar.isRemote();
-		var isParent = appCtxt.getActiveAccount().isMain;
 		parent.enable(ZmOperation.DELETE, !disabled);
-		parent.enable(ZmOperation.TAG_MENU, (isParent && !isShared && !isSynced && num > 0));
+		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
 	}
 	// disable button for current view
