@@ -241,7 +241,7 @@ function() {
 	AjxPackage.require("Alert");
 	ZmBrowserAlert.getInstance().start(ZmMsg.appointmentReminder);
 	if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_SOUNDS)) {
-		ZmSoundAlert.getInstance().start("/public/sounds/im/alert.wav");
+		ZmSoundAlert.getInstance().start();
 	}
 	DwtDialog.prototype.popup.call(this);
 	this._cancelSnooze();

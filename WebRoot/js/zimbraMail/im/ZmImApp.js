@@ -546,7 +546,7 @@ ZmImApp.prototype.playAlert = function(type){
 	AjxDispatcher.require("Alert");
 	switch (type) {
 		case ZmImApp.INCOMING_MSG_NOTIFICATION:
-			ZmSoundAlert.getInstance().start("/public/sounds/im/alert.wav");
+			ZmSoundAlert.getInstance().start();
 			break;
 	}
 };
