@@ -94,8 +94,10 @@ function() {
 	this._attInputField[ZmCalBaseItem.PERSON].setValue("");
 	this._attInputField[ZmCalBaseItem.LOCATION].setValue("");
 
-	Dwt.setDisplay(this._resourcesContainer, Dwt.DISPLAY_NONE);
-	this._resourcesData.innerHTML = "";
+	if (this._resourcesContainer) {
+		Dwt.setDisplay(this._resourcesContainer, Dwt.DISPLAY_NONE);
+		this._resourcesData.innerHTML = "";
+	}
 
 	this._allDayCheckbox.checked = false;
 	this._showTimeFields(true);
@@ -349,6 +351,8 @@ function(calItem, mode) {
 
 ZmApptEditView.prototype._addResourcesDiv =
 function(calItem) {
+	if (!(this._resourcesData && this._resourcesContainer)) { return; }
+
 	var html = [];
 	var i = 0;
 	var location = ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalBaseItem.LOCATION].getArray(), ZmCalBaseItem.LOCATION);
