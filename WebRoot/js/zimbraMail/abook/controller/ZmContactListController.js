@@ -615,7 +615,7 @@ ZmContactListController.prototype._printAddrBookListener =
 function(ev) {
 	var printView = appCtxt.getPrintView();
 	if (this._folderId && !this._list._isShared) {
-		var subList = this._list.getSubList(0, null, this._folderId);
+		var subList = this._list.getSubList(0, this._list.size(), this._folderId);
 		printView.renderHtml(ZmContactCardsView.getPrintHtml(subList));
 	} else if ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0) {
 		printView.render(AjxDispatcher.run("GetContacts"));
