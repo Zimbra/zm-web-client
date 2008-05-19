@@ -507,7 +507,7 @@ function() {
 	this.parent.clear();
 };
 
-DwtListView.prototype._getNoResultsMessage =
+ZmContactSimpleView.prototype._getNoResultsMessage =
 function() {
 	var contactList = AjxDispatcher.run("GetContacts");
 	return contactList && !contactList.isLoaded ? ZmMsg.loading : AjxMsg.noResults;
