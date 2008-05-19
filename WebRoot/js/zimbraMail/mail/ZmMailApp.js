@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -408,7 +408,7 @@ function() {
 	ZmPref.registerPref("SIGNATURES", {
 		displayContainer:	ZmPref.TYPE_CUSTOM
 	});
-	
+
 	ZmPref.registerPref("VACATION_FROM", {
 		displayName:		ZmMsg.startDate,
 		displayContainer:	ZmPref.TYPE_INPUT,
@@ -867,7 +867,7 @@ function(creates, force) {
 		this.startAlert();
 		ZmBrowserAlert.getInstance().start(ZmMsg.newMessage);
 		if (appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS)) {
-			ZmSoundAlert.getInstance().start("/public/sounds/im/alert.wav");
+			ZmSoundAlert.getInstance().start();
 		}
 	}
 };
@@ -876,7 +876,7 @@ function(creates, force) {
  * We can only handle new mail notifications if:
  *  	- we are currently in a mail view
  *		- the view is the result of a simple folder search (except for CV)
- * 
+ *
  * @param creates		[hash]					JSON create objects
  * @param list			[ZmMailList]			mail list to notify
  * @param controller	[ZmMailListController]	controller that owns list
@@ -899,7 +899,7 @@ function(creates, list, controller) {
 	var a = list.getArray();
 	var listView = controller.getCurrentView();
 	var limit = listView ? listView.getLimit() : appCtxt.get(ZmSetting.PAGE_SIZE);
-	
+
 	var last = (a && a.length >= limit) ? a[a.length - 1] : null;
 	var cutoff = last ? last.date : null;
 	DBG.println(AjxDebug.DBG2, "cutoff = " + cutoff + ", list size = " + a.length);
@@ -935,7 +935,7 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		create._handled = true;
-		
+
 		// ignore stuff we already have
 		if (currList.getById(create.id) || create._wasVirtConv) { continue; }
 
@@ -1136,7 +1136,7 @@ function(results, callback) {
 		controller.selectFirstItem();
 		this._forceMsgView = false;
 	}
-	
+
 	if (callback) {
 		callback.run();
 	}
@@ -1405,7 +1405,7 @@ function(ev) {
 		}
 	}
 	newView = groupByView || newView;
-	
+
 	if (newView) {
 		mlc.switchView(newView, true);
 	}

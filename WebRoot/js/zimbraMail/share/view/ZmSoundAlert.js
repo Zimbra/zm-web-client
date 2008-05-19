@@ -37,6 +37,7 @@ ZmSoundAlert.prototype.start =
 function(soundFile) {
 	var time = new Date().getTime();
 	if (!this._lastTime || ((time - this._lastTime) > 5000)) {
+		soundFile = soundFile || "/public/sounds/im/alert.wav";
 		var url = appContextPath + soundFile;
 		var htmlArr = ["<embed src='", url, "' hidden=true autostart=true loop=false>"];
 		this._element.innerHTML = htmlArr.join("");
