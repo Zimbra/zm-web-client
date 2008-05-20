@@ -139,25 +139,25 @@ function(parent, type, id) {
     // are there any external accounts associated to this folder?
     var button = parent.getOp(ZmOperation.SYNC);
     if (button) {
-        if (folder.isFeed()) {
-            button.setEnabled(true);
-            button.setVisible(true);
-            button.setText(ZmMsg.checkFeed);
-            var button1 = parent.getOp(ZmOperation.SYNC_ALL);
-            if(button1){
-                button1.setEnabled(true);
-                button1.setVisible(true);
-                button1.setText(ZmMsg.checkAllFeed);
-            }
-        }else if(folder.hasFeeds()){
-            //button.setText(ZmMsg.checkAllFeed);
-            var button1 = parent.getOp(ZmOperation.SYNC_ALL);
-            if(button1){
-                button1.setEnabled(true);
-                button1.setVisible(true);
-                button1.setText(ZmMsg.checkAllFeed);
-            }
-        }
+		var syncAllButton = parent.getOp(ZmOperation.SYNC_ALL);
+		var hasFeeds = folder.hasFeeds();
+		if (folder.isFeed()) {
+			button.setEnabled(true);
+			button.setVisible(true);
+			button.setText(ZmMsg.checkFeed);
+			if (syncAllButton) {
+				syncAllButton.setEnabled(true);
+				syncAllButton.setVisible(true);
+				syncAllButton.setText(ZmMsg.checkAllFeed);
+			}
+		}
+		else if (hasFeeds) {
+			if (syncAllButton){
+				syncAllButton.setEnabled(true);
+				syncAllButton.setVisible(true);
+				syncAllButton.setText(ZmMsg.checkAllFeed);
+			}
+		}
 		else {
 			var isEnabled = appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED);
 			if (!appCtxt.isOffline && isEnabled) {
@@ -171,6 +171,10 @@ function(parent, type, id) {
 			}
 			else {
 				button.setVisible(false);
+			}
+
+			if (!hasFeeds && syncAllButton) {
+				syncAllButton.setVisible(false);
 			}
 		}
     }

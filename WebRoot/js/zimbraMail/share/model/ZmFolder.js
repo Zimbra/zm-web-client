@@ -300,11 +300,11 @@ function() {
 		if (a[i].isFeed()) {
 			return true;
 		}
-        if(a[i].children && a[i].children.size() > 0){
-            return a[i].hasFeeds && a[i].hasFeeds();
-        }
-    }
-    return false;
+		if (a[i].children && a[i].children.size() > 0) {
+			return (a[i].hasFeeds && a[i].hasFeeds());
+		}
+	}
+	return false;
 };
 
 ZmFolder.prototype.hasSearch =
