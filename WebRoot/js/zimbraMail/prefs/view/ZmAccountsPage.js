@@ -1681,7 +1681,7 @@ ZmAccountsListView = function(parent, className, posStyle, noMaximize) {
 	className += " ZOptionsItemsListView";
 	DwtListView.call(this, {parent:parent, className:className, posStyle:posStyle,
 							headerList:this._getHeaderList(), noMaximize:noMaximize});
-	this.setMultiSelect(false);
+	this.multiSelectEnabled = false;
 	this._view = ZmId.VIEW_ACCOUNT;
 };
 ZmAccountsListView.prototype = new DwtListView;

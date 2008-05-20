@@ -626,7 +626,7 @@ ZmPhoneList = function(parent) {
 	var headerList = [new DwtListHeaderItem({field:1, text:ZmMsg.number})];
 	DwtListView.call(this, {parent:parent, className:"ZmPhoneList", headerList:headerList});
 
-	this.setMultiSelect(false);
+	this.multiSelectEnabled = false;
 };
 
 ZmPhoneList.prototype = new DwtListView;
