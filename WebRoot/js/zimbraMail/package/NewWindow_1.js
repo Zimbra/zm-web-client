@@ -77,6 +77,8 @@ AjxPackage.require("ajax.dwt.events.DwtTreeEvent");
 AjxPackage.require("ajax.dwt.events.DwtHoverEvent");
 AjxPackage.require("ajax.dwt.events.DwtIdleTimer");
 
+AjxPackage.require("ajax.dwt.keyboard.DwtKeyMap");
+
 AjxPackage.require("ajax.dwt.widgets.DwtHoverMgr");
 AjxPackage.require("ajax.dwt.widgets.DwtControl");
 AjxPackage.require("ajax.dwt.widgets.DwtComposite");

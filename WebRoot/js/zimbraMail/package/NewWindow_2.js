@@ -26,7 +26,6 @@
  * might possibly be needed in a new window.
  */
 AjxPackage.require("ajax.dwt.keyboard.DwtTabGroupEvent");
-AjxPackage.require("ajax.dwt.keyboard.DwtKeyMap");
 AjxPackage.require("ajax.dwt.keyboard.DwtKeyMapMgr");
 AjxPackage.require("ajax.dwt.keyboard.DwtKeyboardMgr");
 AjxPackage.require("ajax.dwt.keyboard.DwtTabGroup");
