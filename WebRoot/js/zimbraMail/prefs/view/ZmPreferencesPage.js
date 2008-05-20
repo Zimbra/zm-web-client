@@ -919,7 +919,10 @@ function(ev) {
 		if (settingId == ZmSetting.IMPORT) {
 			AjxDispatcher.require(["ContactsCore", "Contacts"]);
             var noNew = !appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED);
-            dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, overviewId: overviewId, description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true, hideNewButton:noNew});
+			var omit = {};
+			omit[ZmFolder.ID_TRASH] = true;
+            dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, overviewId: overviewId,
+            			  description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true, hideNewButton:noNew, omit:omit});
 		} else {
 			AjxDispatcher.require(["CalendarCore", "Calendar"]);
 			dialog.popup({treeIds:[ZmOrganizer.CALENDAR], title:ZmMsg.chooseCalendar, overviewId: overviewId, description:ZmMsg.chooseCalendarToImport, skipReadOnly:true});
