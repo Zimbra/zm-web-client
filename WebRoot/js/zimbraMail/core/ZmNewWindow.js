@@ -164,8 +164,39 @@ function() {
 	var parentPrefsApp = parentAppCtxt.getApp(ZmApp.MAIL);
 	appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
 
-	// depending on the command, do the right thing
-	var target;
+    var kbMgr = appCtxt.getKeyboardMgr();
+	kbMgr.setTabGroup(rootTg);
+	kbMgr.grabFocus(startupFocusItem);
+
+    //Find target first.
+    var target;
+    if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
+         target = "compose-window";
+    }else if (window.newWindowCommand == "msgViewDetach") {
+         target = "view-window";
+    }
+
+    // setup zimlets, Load it first becoz.. zimlets has to get processed first.
+	if (target) {
+		var zimletArray = this.__hack_zimletArray() || [];
+		if (this.__hack_hasZimletsForTarget(zimletArray, target)) {
+			var zimletMgr = appCtxt.getZimletMgr();
+			var userProps = this.__hack_userProps();
+            var createViewCallback =  new AjxCallback(this, this._createView);
+            zimletMgr.loadZimlets(zimletArray, userProps, target, createViewCallback, true);
+            return;
+        }
+	}
+
+    this._createView();
+
+};
+
+ZmNewWindow.prototype._createView = function(){
+
+    var rootTg = appCtxt.getRootTabGroup();
+    
+    // depending on the command, do the right thing
 	if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
 		var cc = AjxDispatcher.run("GetComposeController");
 		cc.isChildWindow = true;
@@ -211,20 +242,6 @@ function() {
 
 		target = "view-window";
 	}
-
-	// setup zimlets
-	if (target) {
-		var zimletArray = this.__hack_zimletArray() || [];
-		if (this.__hack_hasZimletsForTarget(zimletArray, target)) {
-			var zimletMgr = appCtxt.getZimletMgr();
-			var userProps = this.__hack_userProps();
-			zimletMgr.loadZimlets(zimletArray, userProps, target);
-		}
-	}
-
-	var kbMgr = appCtxt.getKeyboardMgr();
-	kbMgr.setTabGroup(rootTg);
-	kbMgr.grabFocus(startupFocusItem);
 };
 
 /**

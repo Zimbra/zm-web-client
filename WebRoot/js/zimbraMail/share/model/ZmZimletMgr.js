@@ -44,19 +44,19 @@ function() {
 };
 
 ZmZimletMgr.prototype.loadZimlets =
-function(zimletArray, userProps, target, callback) {
+function(zimletArray, userProps, target, callback, sync) {
 	if(!zimletArray || !zimletArray.length) {
 		this.loaded = true;
 		return;
 	}
-	var packageCallback = callback ? new AjxCallback(this, this._loadZimlets, arguments) : null;
+	var packageCallback = callback ? new AjxCallback(this, this._loadZimlets, [zimletArray, userProps, target, callback, sync]) : null;
 	AjxPackage.require({ name: "Zimlet", callback: packageCallback });
 	if (!callback) {
 		this._loadZimlets.apply(this, arguments);
 	}
 }
 
-ZmZimletMgr.prototype._loadZimlets = function(zimletArray, userProps, target, callback) {
+ZmZimletMgr.prototype._loadZimlets = function(zimletArray, userProps, target, callback, sync) {
 	var z;
 	var loadZimletArray = [];
 	var targetRe = new RegExp("\\b"+(target || "main")+"\\b");
@@ -92,10 +92,10 @@ ZmZimletMgr.prototype._loadZimlets = function(zimletArray, userProps, target, ca
 
 	// load zimlet code/CSS
 	var zimletNames = this._getZimletNames(loadZimletArray);
-	this._loadIncludes(loadZimletArray, zimletNames);
+	this._loadIncludes(loadZimletArray, zimletNames, (sync ? callback : null) );
 	this._loadStyles(loadZimletArray, zimletNames);
 
-	if (callback) {
+	if (callback && !sync) {
 		callback.run();
 	}
 };
@@ -210,15 +210,15 @@ function(zimletArray) {
 };
 
 ZmZimletMgr.prototype._loadIncludes =
-function(zimletArray, zimletNames) {
+function(zimletArray, zimletNames, callback) {
 	var includes = this.__getIncludes(zimletArray, zimletNames, true);
-	var callback = new AjxCallback(this, this._finished_loadIncludes, [zimletNames]);
+	var includesCallback = new AjxCallback(this, this._finished_loadIncludes, [zimletNames, callback]);
 
-	AjxInclude(includes, null, callback, ZmZimletBase.PROXY);
+	AjxInclude(includes, null, includesCallback, ZmZimletBase.PROXY);
 };
 
 ZmZimletMgr.prototype._finished_loadIncludes =
-function(zimletNames) {
+function(zimletNames, callback) {
 	this.loaded = true;
 	var zimlets = this.getZimletsHash();
 	for (var i = 0; i < zimletNames.length; i++) {
@@ -228,17 +228,20 @@ function(zimletNames) {
 	if (appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
 		var params = {
 			name: "Portal",
-			callback: (new AjxCallback(this, this._finished_loadIncludes2))
+			callback: (new AjxCallback(this, this._finished_loadIncludes2, [callback]))
 		};
 		AjxPackage.require(params);
 	} else {
-		this._finished_loadIncludes2();
+		this._finished_loadIncludes2(callback);
 	}
 };
 
 ZmZimletMgr.prototype._finished_loadIncludes2 =
-function() {
+function(callback) {
 	appCtxt.allZimletsLoaded();
+    if(callback){
+        callback.run();
+    }
 };
 
 ZmZimletMgr.prototype._loadStyles =
