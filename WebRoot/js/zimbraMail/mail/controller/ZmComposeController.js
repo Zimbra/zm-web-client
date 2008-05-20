@@ -896,8 +896,8 @@ function(draftType, msg, resp) {
 		}
 	} else {
 		// TODO - disable save draft button indicating a draft was saved
-		if (appCtxt.isChildWindow && window.parentController) {
-			window.parentController.setStatusMsg(ZmMsg.draftSaved);
+		if (appCtxt.isChildWindow) {
+			appCtxt.setStatusMsg(ZmMsg.draftSaved);
 		} else {
 			var message;
 			var transitions;
