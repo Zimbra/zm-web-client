@@ -117,7 +117,7 @@ ZmFilterListView = function(parent, controller) {
 
 	this._controller = controller;
 	this._rules.addChangeListener(new AjxListener(this, this._changeListener));
-	this.setMultiSelect(false);	// single selection only
+	this.multiSelectEnabled = false; // single selection only
 	this._internalId = AjxCore.assignId(this);
 };
 
