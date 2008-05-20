@@ -468,7 +468,7 @@ function(soapDoc) {
 
 	if (ZmSearch._mailEnabled) {
 		var headerNode;
-		for (var hdr in ZmMailMsg.requestHeaders) {
+		for (var hdr in ZmMailMsg.getAdditionalHeaders()) {
 			headerNode = soapDoc.set('header', null, null);
 			headerNode.setAttribute('n', hdr);
 		}
@@ -527,7 +527,7 @@ function(req) {
 	}
 
 	if (ZmSearch._mailEnabled) {
-		var hdrs = ZmMailMsg.requestHeaders;
+		var hdrs = ZmMailMsg.getAdditionalHeaders();
 		if (hdrs && hdrs.length) {
 			req.header = [];
 			for (var hdr in hdrs) {
