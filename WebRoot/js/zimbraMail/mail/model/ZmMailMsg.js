@@ -221,11 +221,7 @@ function(mode, aliases) {
 				var from = addrVec.get(0);
 				// make sure we're not replying to ourself
 				if (from && aliases[from.address]) {
-					addrVec = this._addrs[AjxEmailAddress.SENDER];
-					if (!(addrVec && addrVec.size())) {
-						var addrs = this._addrs[AjxEmailAddress.TO].getArray();
-						addrVec = AjxVector.fromArray(addrs.slice(0, 1));
-					}
+					addrVec = this._addrs[AjxEmailAddress.TO];
 				}
 			}
 		}
