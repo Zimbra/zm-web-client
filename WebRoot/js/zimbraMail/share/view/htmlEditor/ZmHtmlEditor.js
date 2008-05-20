@@ -701,19 +701,19 @@ function(tb) {
 	var listener = new AjxListener(this, this._fontStyleListener);
 	this._boldButton = new DwtToolBarButton(params);
 	this._boldButton.setImage("Bold");
-	this._boldButton.setToolTipContent(ZmMsg.boldText);
+	this._boldButton.setToolTipContent(AjxKeys["editor.Bold.summary"]);
 	this._boldButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
 	this._boldButton.addSelectionListener(listener);
 
 	this._italicButton = new DwtToolBarButton(params);
 	this._italicButton.setImage("Italics");
-	this._italicButton.setToolTipContent(ZmMsg.italicText);
+	this._italicButton.setToolTipContent(AjxKeys["editor.Italic.summary"]);
 	this._italicButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
 	this._italicButton.addSelectionListener(listener);
 
 	this._underlineButton = new DwtToolBarButton(params);
 	this._underlineButton.setImage("Underline");
-	this._underlineButton.setToolTipContent(ZmMsg.underlineText);
+	this._underlineButton.setToolTipContent(AjxKeys["editor.Underline.summary"]);
 	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
 	this._underlineButton.addSelectionListener(listener);
 

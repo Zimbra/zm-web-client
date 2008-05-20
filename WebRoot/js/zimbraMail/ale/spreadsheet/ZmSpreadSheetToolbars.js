@@ -92,25 +92,25 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	b.setImage("Bold");
 	b.setData("SS", "Bold");
 	b.addSelectionListener(listener);
-	b.setToolTipContent(ZmMsg.boldText);
+	b.setToolTipContent(AjxKeys["editor.Bold.summary"]);
 
 	b = this._buttons.italic = new DwtToolBarButton(params);
 	b.setImage("Italics");
 	b.setData("SS", "Italic");
 	b.addSelectionListener(listener);
-	b.setToolTipContent(ZmMsg.italicText);
+	b.setToolTipContent(AjxKeys["editor.Italic.summary"]);
 
 	b = this._buttons.underline = new DwtToolBarButton(params);
 	b.setImage("Underline");
 	b.setData("SS", "Underline");
 	b.addSelectionListener(listener);
-	b.setToolTipContent(ZmMsg.underlineText);
+	b.setToolTipContent(AjxKeys["editor.Underline.summary"]);
 
 	b = this._buttons.strike = new DwtToolBarButton(params);
 	b.setImage("StrikeThru");
 	b.setData("SS", "Strike");
 	b.addSelectionListener(listener);
-	b.setToolTipContent(ZmMsg.strikeThruText);
+	b.setToolTipContent(AjxKeys["editor.Strikethru.summary"]);
 
 	new DwtControl({parent:toolbar, className:"vertSep"});
 
@@ -118,19 +118,19 @@ ZmSpreadSheetToolbars.prototype._createToolbar1 = function() {
 	b.setImage("LeftJustify");
 	b.setData("SS", "JustifyLeft");
 	b.addSelectionListener(listener);
-	b.setToolTipContent(ZmMsg.leftJustify);
+	b.setToolTipContent(AjxKeys["editor.LeftJustify.summary"]);
 
 	b = this._buttons.justifyCenter = new DwtToolBarButton(params);
 	b.setImage("CenterJustify");
 	b.setData("SS", "JustifyCenter");
 	b.addSelectionListener(listener);
-	b.setToolTipContent(ZmMsg.centerJustify);
+	b.setToolTipContent(AjxKeys["editor.CenterJustify.summary"]);
 
 	b = this._buttons.justifyRight = new DwtToolBarButton(params);
 	b.setImage("RightJustify");
 	b.setData("SS", "JustifyRight");
 	b.addSelectionListener(listener);
-	b.setToolTipContent(ZmMsg.rightJustify);
+	b.setToolTipContent(AjxKeys["editor.RightJustify.summary"]);
 
 	new DwtControl({parent:toolbar, className:"vertSep"});
 
