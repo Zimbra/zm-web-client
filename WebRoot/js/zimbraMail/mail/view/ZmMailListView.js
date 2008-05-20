@@ -355,7 +355,8 @@ function(folderId, htmlElementId) {
 ZmMailListView.prototype._handleToggleSync =
 function() {
 	appCtxt.getAppController().sendSync();
-	this._controller._checkMailListener();
+	// bug fix #27846 - just clear the list view and let instant notify populate
+	this.removeAll(true);
 };
 
 
