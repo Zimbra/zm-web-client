@@ -85,8 +85,6 @@ ZmComposeView.EMPTY_FORM_RE			= /^[\s\|]*$/;
 ZmComposeView.SUBJ_PREFIX_RE		= new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
 ZmComposeView.QUOTED_CONTENT_RE		= new RegExp("^----- ", "m");
 ZmComposeView.HTML_QUOTED_CONTENT_RE= new RegExp("<br>----- ", "i");
-ZmComposeView.IMG_FIX_RE1			= new RegExp("(<img[^>]*)\\s+src\\s*=\\s*\\S+(.*>)", "ig");
-ZmComposeView.IMG_FIX_RE2			= new RegExp("(<img[^>]*)\\s+dfsrc\\s*=\\s*(\\S+.*>)", "ig");
 ZmComposeView.ADDR_SETTING			= {}; // XXX: may not be necessary anymore?
 ZmComposeView.WRAP_LENGTH			= 72;
 
@@ -482,9 +480,13 @@ function(attId, isDraft) {
 
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
+
+		if (!isDraft) {
+			var idoc = this._htmlEditor._getIframeDoc();
+			this._restoreMultipartRelatedImages(idoc);
+		}
+
 		var defangedContent = this._htmlEditor.getContent(true);
-		defangedContent = defangedContent.replace(ZmComposeView.IMG_FIX_RE1, "$1$2");
-		defangedContent = defangedContent.replace(ZmComposeView.IMG_FIX_RE2, "$1 src=$2");
 		htmlPart.setContent(defangedContent);
 
 		//Support for Inline
@@ -754,6 +756,10 @@ ZmComposeView.prototype._fixMultipartRelatedImages_onTimer = function(msg) {
         }
 };
 
+/**
+ * Twiddle the img tags so that the HTML editor can display the images. Instead of
+ * a cid (which is relevant only within the MIME msg), point to the img with a URL.
+ */
 ZmComposeView.prototype._fixMultipartRelatedImages =
 function(msg, idoc) {
 	if (!idoc) { return; }
@@ -786,6 +792,32 @@ function(msg, idoc) {
 		}
 	}
 	return (num == images.length);
+};
+
+/**
+ * Change the src tags on inline img's to point to cid's, which is what we
+ * want for an outbound MIME msg.
+ */
+ZmComposeView.prototype._restoreMultipartRelatedImages =
+function(idoc) {
+	if (idoc) {
+		var images = idoc.getElementsByTagName("img");
+		var num = 0;
+		for (var i = 0; i < images.length; i++) {
+			var img = images[i];
+			var cid = "";
+			var dfsrc = img.getAttribute("dfsrc");
+			if (dfsrc && dfsrc.indexOf("cid:") == 0) {
+				cid = dfsrc;
+				img.removeAttribute("dfsrc");
+			} else if (img.src && img.src.indexOf("cid:") == 0) {
+				cid = img.src;
+			}
+			if (cid) {
+				img.src = cid;
+			}
+		}
+	}
 };
 
 ZmComposeView.prototype.showAttachmentDialog =
