@@ -89,6 +89,7 @@
 	<SCRIPT TYPE="text/javascript">
 		<!--
 		var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+		var zdownload = function() { var e = document.getElementById("IOPDOWNLOAD"); if (e) document.location = e.href; }
 		var zdelete = function() { zclick("SOPDELETE"); }
 		var zreply = function() { zclick("SOPREPLYBYEMAIL"); }
 		var zforward = function() { zclick("SOPFORWARDBYEMAIL"); }
@@ -98,6 +99,7 @@
 	</SCRIPT>
 
 	<app:keyboard cache="voice.voiceMailView" globals="true" mailbox="${mailbox}" tags="false" folders="false">
+		<zm:bindKey message="voicemail.Download" func="zdownload"/>
 		<zm:bindKey message="voicemail.Delete" func="zdelete"/>
 		<zm:bindKey message="voicemail.Reply" func="zreply"/>
 		<zm:bindKey message="voicemail.Forward" func="zforward"/>
