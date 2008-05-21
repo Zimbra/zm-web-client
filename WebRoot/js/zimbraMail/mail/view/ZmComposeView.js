@@ -895,7 +895,11 @@ function(content, replaceSignatureId){
 	        } else {
 		        signature = signature || newLine;
 	        }
-	        content = content.replace(new RegExp(replaceRe, "i"), signature);
+                if (AjxEnv.isIE) {
+                        replaceRe = replaceRe.replace(/\\n/g, "\\s*\\r?\\n\\r?\\s*");
+                }
+                replaceRe = new RegExp(replaceRe, "i");
+	        content = content.replace(replaceRe, signature);
 	} else {
 		content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE), signature, newLine);
 	}
