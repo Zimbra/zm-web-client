@@ -132,14 +132,14 @@ ZmSignaturesPage.prototype.validate = function() {
 	var maxLength = appCtxt.get(ZmSetting.SIGNATURE_MAX_LENGTH);
 	for (var i = 0; i < signatures.length; i++) {
         var signature = signatures[i];
-		if (signature.name.replace(/\s*/g,"") == "") {
-			if (signature.value.replace(/\s*/g,"") == "") {
-				this._handleDeleteButton(signature._htmlElId);
-			} else {
-				this._errorMsg = ZmMsg.errorMissingRequired;
-				return false;
-			}
-		}
+        var isNameEmpty = (signature.name.replace(/\s*/g,"") == "");
+        var isValueEmpty = (signature.value.replace(/\s*/g,"") == "");
+        if(isNameEmpty && isValueEmpty){
+            this._handleDeleteButton(signature._htmlElId);
+        }else if(isNameEmpty || isValueEmpty){
+            this._errorMsg = isNameEmpty ? ZmMsg.signatureNameMissingRequired : ZmMsg.signatureValueMissingRequired;
+			return false;
+        }
 		if (signature.value.length > maxLength) {
 			this._errorMsg = AjxMessageFormat.format(ZmMsg.errorSignatureTooLong, maxLength);
 			return false;
@@ -435,7 +435,7 @@ ZmSignaturesPage.prototype._resetDeleteButtons = function() {
         var signature = comps.signature;
         if (comps.doDelete) {
 			comps.doDelete.setText(text);
-            if( !this._deleteState && (signature.name == "" || signature.value == "") ){
+            if( !this._deleteState && (signature.name == "" && signature.value == "") ){
                 comps.doDelete.setEnabled(false);
             }else{
                 comps.doDelete.setEnabled(true);
