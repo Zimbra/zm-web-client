@@ -816,6 +816,7 @@ function(active) {
 			this._setActiveAcctForOffline();
 		}
 		this.setOverviewPanelContent();
+		this.stopAlert();
 	}
 };
 

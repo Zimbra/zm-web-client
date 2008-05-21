@@ -38,10 +38,6 @@ ZmAppAlert.prototype.start =
 function() {
 	if (!this.app.isActive()) {
 		var button = this._getAppButton();
-		if (!this._listener) {
-			this._listener = new AjxListener(this, this.stop);
-			button.addSelectionListener(this._listener);
-		}
 		this._origImage = button.getImage();
 		button.showAlert(true);
 		this._startLoop();
