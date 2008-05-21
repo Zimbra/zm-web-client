@@ -31,7 +31,7 @@
 					<app:button id="OPREPLYBYEMAIL" name="actionReplyByEmail" text="actionReplyByEmail" src="startup/ImgReply.gif" tooltip="actionReplyByEmailTT" disabled="${disableMailButtons}"/>
 					<app:button id="OPFORWARDBYEMAIL" name="actionForwardByEmail" text="actionForwardByEmail" src="startup/ImgForward.gif" tooltip="actionForwardByEmailTT" disabled="${disableMailButtons}"/>
 					<td><div class='vertSep'/></td>
-					<td><a id="OPDOWNLOAD" href="${saveAsUrl}"><app:img src="common/ImgSave.gif" altkey="actionDownload" clazz="${isPrivate ? 'ImgDisabled' : ''}" /></a></td>
+					<td><a id="IOPDOWNLOAD" href="${saveAsUrl}"><app:img src="common/ImgSave.gif" altkey="actionDownload" clazz="${isPrivate ? 'ImgDisabled' : ''}" /></a></td>
 					<td><div class='vertSep'/></td>
 					<app:button id="OPHEARD" name="actionMarkHeard" text="actionMarkHeard" src="voicemail/ImgMarkAsHeard.gif" tooltip="actionMarkHeardTT" disabled="${isTrash or heard}"/>
 					<app:button id="OPUNHEARD" name="actionMarkUnheard" text="actionMarkUnheard" src="voicemail/ImgMarkAsUnheard.gif" tooltip="actionMarkUnheardTT" disabled="${isTrash or not heard}"/>
