@@ -141,14 +141,14 @@ function(ev) {
 ZmContactsBaseView.prototype._setNextSelection =
 function() {
 	// set the next appropriate selected item
-	if (this._firstSelIndex < 0) {
-		this._firstSelIndex = 0;
+	if (this.firstSelIndex < 0) {
+		this.firstSelIndex = 0;
 	}
 
 	// get first valid item to select
 	var item;
 	if (this._list) {
-		item = this._list.get(this._firstSelIndex);
+		item = this._list.get(this.firstSelIndex);
 
 		// only get the first non-trash contact to select if we're not in Trash
 		if (this._controller.getFolderId() == ZmFolder.ID_TRASH) {
@@ -159,7 +159,7 @@ function() {
 			item = null;
 			var list = this._list.getArray();
 
-			if (this._firstSelIndex > 0 && this._firstSelIndex == list.length) {
+			if (this.firstSelIndex > 0 && this.firstSelIndex == list.length) {
 				item = list[list.length-1];
 			} else {
 				for (var i=0; i < list.length; i++) {
@@ -175,7 +175,7 @@ function() {
 				var div = document.getElementById(this._getItemId(item));
 				if (div) {
 					var data = this._data[div.id];
-					this._firstSelIndex = this._list ? this._list.indexOf(data.item) : -1;
+					this.firstSelIndex = this._list ? this._list.indexOf(data.item) : -1;
 				}
 			}
 		}

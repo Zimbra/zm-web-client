@@ -582,7 +582,7 @@ function(sortBy) {
 		}
 	}
 	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
-	this._chooser.sourceListView.enableSorting(this._contactSource == ZmItem.CONTACT);
+	this._chooser.sourceListView.sortingEnabled = (this._contactSource == ZmItem.CONTACT);
 
 	var params = {
 		query: query,

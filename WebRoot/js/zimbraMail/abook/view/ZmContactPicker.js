@@ -164,7 +164,7 @@ function(colItem, ascending) {
 	this._searchIcon.className = "DwtWait16Icon";
 
 	// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
-	this._chooser.sourceListView.enableSorting(this._contactSource == ZmItem.CONTACT);
+	this._chooser.sourceListView.sortingEnabled = (this._contactSource == ZmItem.CONTACT);
 	var params = {
 		obj: this,
 		ascending: ascending,
@@ -340,7 +340,7 @@ function(ev) {
 ZmContactPicker.prototype._resetColHeaders =
 function() {
 	var slv = this._chooser.sourceListView;
-	slv._headerColCreated = false;
+	slv.headerColCreated = false;
 
 	// find the participant column
 	var part = 0;

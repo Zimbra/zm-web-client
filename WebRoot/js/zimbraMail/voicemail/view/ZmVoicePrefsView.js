@@ -133,7 +133,7 @@ function() {
 	// Create the list view and the contents of the detail pane.
 	this._list = new ZmPhoneList(this);
 	this._list.replaceElement(id + "_list");
-	this._list.enableSorting(false);
+	this._list.sortingEnabled = false;
 
 	for(var i = 0, count = this._ui.length; i < count; i++) {
 		this._ui[i]._initialize(id);

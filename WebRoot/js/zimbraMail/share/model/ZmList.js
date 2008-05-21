@@ -733,8 +733,8 @@ function(ev) {
 			var viewId = appCtxt.getCurrentViewId();
 			ctlr.enablePagination(false, viewId);
 			var view = ctlr.getCurrentView();
-			if (view && view.enableSorting)
-				view.enableSorting(false);
+			if (view && view.sortingEnabled)
+				view.sortingEnabled = false;
 			if (viewId == ZmId.VIEW_CONVLIST)
 				ctlr._currentSearch.query = "is:read is:unread";
 			ctlr._currentSearch.tagId = null;

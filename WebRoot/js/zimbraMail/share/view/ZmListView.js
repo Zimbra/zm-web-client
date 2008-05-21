@@ -713,9 +713,11 @@ function(columnItem, bSortAsc) {
 ZmListView.prototype._setNextSelection =
 function() {
 	// set the next appropriate selected item
-	if (this._firstSelIndex < 0)
-		this._firstSelIndex = 0;
-	var item = this._list.get(this._firstSelIndex) || this._list.getLast();
-	if (item)
+	if (this.firstSelIndex < 0) {
+		this.firstSelIndex = 0;
+	}
+	var item = this._list.get(this.firstSelIndex) || this._list.getLast();
+	if (item) {
 		this.setSelection(item, false);
+	}
 };
