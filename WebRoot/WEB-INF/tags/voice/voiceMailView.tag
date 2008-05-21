@@ -47,7 +47,7 @@
 		<table width="100%" cellpadding="0" cellspacing="0">
 			<tr>
 				<td class='TbTop'>
-					<app:voiceMailViewToolbar context="${context}" cursor="${cursor}" keys="true" heard="${heard}" isPrivate="${message.isPrivate}"/>
+					<app:voiceMailViewToolbar context="${context}" cursor="${cursor}" keys="true" heard="${heard}" isPrivate="${message.isPrivate}" saveAsUrl="/service/extension/velodrome/voice/~/voicemail?phone=${param.phone}&id=${message.id}&disp=a"/>
 				</td>
 			</tr>
 			<tr>
