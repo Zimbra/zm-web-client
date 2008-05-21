@@ -100,6 +100,7 @@ ZmCalItemView.prototype.close =
 function() {
 	// override
 };
+ZmCalItemView.prototype.move = function() {}; // override
 
 ZmCalItemView.prototype.getPrintHtml =
 function() {
@@ -135,17 +136,34 @@ function(calItem) {
 
 	var subs = this._getSubs(calItem);
 	var closeBtnCellId = this._htmlElId + "_closeBtnCell";
+	var moveSelectId = this._htmlElId + "_folderCell";
 	this._hdrTableId = this._htmlElId + "_hdrTable";
 
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
 
 	// add the close button
-	this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
-	this._closeButton.setImage("Close");
-	this._closeButton.setText(ZmMsg.close);
+	if (!this._closeButton) {
+		this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
+		this._closeButton.setImage("Close");
+		this._closeButton.setText(ZmMsg.close);
+		this._closeButton.addSelectionListener(new AjxListener(this, this.close));
+	}
 	this._closeButton.reparentHtmlElement(closeBtnCellId);
-	this._closeButton.addSelectionListener(new AjxListener(this, this.close));
+
+	// add the move select
+	if (document.getElementById(moveSelectId) && subs.folders.length > 0) {
+		if (!this._moveSelect) {
+			this._moveSelect = new DwtSelect({parent: this});
+			this._moveSelect.addChangeListener(new AjxListener(this, this.move));
+		}
+		this._moveSelect.clearOptions();
+		for (var i = 0; i < subs.folders.length; i++) {
+			var folder = subs.folders[i];
+			this._moveSelect.addOption(folder.name, folder.id == calItem.folderId, folder.id);
+		}
+		this._moveSelect.replaceElement(moveSelectId);
+	}
 
 	// content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
@@ -156,6 +174,10 @@ function(calItem) {
 	if (bodyPart) {
 		this._makeIframeProxy(el, bodyPart, mode == ZmMimeTable.TEXT_PLAIN);
 	}
+};
+
+ZmCalItemView.__BY_NAME = function(a, b) {
+	return a.name.localeCompare(b.name);
 };
 
 ZmCalItemView.prototype._getSubs =
@@ -246,6 +268,51 @@ function() {
 	this._controller._viewMgr.setView(this._prevView);
 	this._controller._currentView = this._prevView;
 	this._controller._resetToolbarOperations();
+	// HACK: Since the appt read-only view is not a true view (in the
+	//       ZmAppViewMgr sense), we need to force a refresh, if needed.
+	if (this._controller._viewMgr.needsRefresh()) {
+		this._controller._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
+	}
+};
+
+ZmApptView.prototype.move = function(ev) {
+	var item = this._calItem 
+	var ofolder = item.folderId;
+	var nfolder = ev.item.parent.parent.getValue();
+	if (ofolder == nfolder) return;
+
+	var json = {
+		ItemActionRequest: {
+			_jsns: "urn:zimbraMail",
+			action: {
+				id:	item.id,
+				op:	"move",
+				l:	nfolder
+			}
+		}
+	};
+
+	var args = [ ofolder, nfolder ];
+	var params = {
+		jsonObj:		json,
+		asyncMode:		true,
+		callback:		new AjxCallback(this, this._handleMoveResponse, args),
+		errorCallback:	new AjxCallback(this, this._handleMoveError, args)
+	};
+	appCtxt.getAppController().sendRequest(params);
+};
+
+ZmApptView.prototype._handleMoveResponse = function(ofolder, nfolder, resp) {
+	// TODO: Should we display some confirmation?
+};
+ZmApptView.prototype._handleMoveError = function(ofolder, nfolder, resp) {
+	this._moveSelect.setSelectedValue(ofolder);
+	var params = {
+		msg:	ZmMsg.errorMoveAppt,
+		level:	ZmStatusView.LEVEL_CRITICAL
+	};
+	appCtxt.setStatusMsg(params);
+	return true;
 };
 
 ZmApptView.prototype.setBounds =
@@ -290,6 +357,17 @@ function(calItem) {
 		if (attendees) attendees = this._objectManager.findObjects(attendees, true);
 	}
 
+	var calendars = [];
+	if (!(String(calItem.id).match(/:/))) {
+		var organizers = appCtxt.getFolderTree().getByType(ZmOrganizer.CALENDAR);
+		for (var i = 0; i < organizers.length; i++) {
+			var organizer = organizers[i];
+			if (organizer.zid) continue;
+			calendars.push(organizer);
+		}
+		calendars.sort(ZmCalItemView.__BY_NAME);
+	}
+
 	return {
 		id: this._htmlElId,
 		subject: subject,
@@ -301,7 +379,10 @@ function(calItem) {
 		org: org,
 		obo: obo,
 		recurStr: recurStr,
-		attachStr: attachStr
+		attachStr: attachStr,
+		folder: appCtxt.getTree(ZmOrganizer.CALENDAR).getById(calItem.folderId),
+		folders: calendars,
+		folderLabel: ZmMsg.calendar
 	};
 };
 
