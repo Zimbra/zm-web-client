@@ -198,19 +198,19 @@ ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; };
 // stop      : true to avoid sending the message to server (useful for Zimbra Assistant)
 ZmRosterItem.prototype.handleInput = function(args) {
 	// by default we do typing notification
-// 	function clearTyping(chat) {
-// 		chat.sendMessage(null);
-// 		this._isTyping = null;
-// 	};
-// 	if (!this._isTyping) {
-// 		var typing = !args.enter;
-// 		this._isTyping = typing;
-// 		args.chat.sendMessage(null, typing);
-// 		if (this._clearTypingTimer)
-// 			clearTimeout(this._clearTypingTimer);
-// 		this._clearTypingTimer = setTimeout(AjxCallback.simpleClosure(clearTyping, this, args.chat),
-// 						    5000);
-// 	}
+ 	function clearTyping(chat) {
+ 		chat.sendMessage(null);
+ 		this._isTyping = null;
+ 	};
+ 	if (!this._isTyping) {
+ 		var typing = !args.enter;
+ 		this._isTyping = typing;
+ 		args.chat.sendMessage(null, typing);
+ 		if (this._clearTypingTimer)
+ 			clearTimeout(this._clearTypingTimer);
+ 		this._clearTypingTimer = setTimeout(AjxCallback.simpleClosure(clearTyping, this, args.chat),
+ 						    5000);
+ 	}
 };
 
 ZmRosterItem.prototype.chatStarted = function(chat, widget) {}; // called when a new ZmChat is started with this item
