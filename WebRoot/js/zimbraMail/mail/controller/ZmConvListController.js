@@ -399,8 +399,12 @@ function(items) {
  * @param msg	[ZmMailMsg]		saved draft
  */
 ZmConvListController.prototype._draftSaved =
-function(msg) {
-	var conv = appCtxt.getById(msg.cid);
+function(msg, resp) {
+    if(resp){
+        if(!msg) msg = new ZmMailMsg();
+        msg._loadFromDom(resp);
+    }
+    var conv = appCtxt.getById(msg.cid);
 	if (conv && conv.msgs && conv.msgs.size()) {
 		var a = conv.msgs.getArray();
 		for (var i = 0; i < a.length; i++) {
@@ -409,7 +413,7 @@ function(msg) {
 			}
 		}
 	}
-	ZmDoublePaneController.prototype._draftSaved.apply(this, arguments);
+	ZmDoublePaneController.prototype._draftSaved.apply(this, [msg]);
 };
 
 ZmConvListController.prototype._redrawDraftItemRows =
