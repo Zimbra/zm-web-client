@@ -921,7 +921,11 @@ function(type, instanceDate) {
 		case ZmOperation.REPLY_NEW_TIME: 	replyBody = ZmMsg.defaultInviteReplyNewTimeMessage;	break;
 	}
 
-	return replyBody;
+    //format the escaped apostrophe in ZmMsg entry
+    if (replyBody) {
+			replyBody =  AjxMessageFormat.format(replyBody, []);
+	}
+    return replyBody;
 };
 
 ZmMailListController.prototype._getInviteReplySubject =
