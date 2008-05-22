@@ -895,27 +895,37 @@ function(draftType, msg, resp) {
 			this._app.popView(true);
 		}
 	} else {
-		// TODO - disable save draft button indicating a draft was saved
-		if (appCtxt.isChildWindow) {
-			appCtxt.setStatusMsg(ZmMsg.draftSaved);
-		} else {
-			var message;
-			var transitions;
-			if (draftType == ZmComposeController.DRAFT_TYPE_AUTO) {
-				var time = AjxDateUtil.computeTimeString(new Date());
-				this._autoSaveFormat = this._autoSaveFormat || new AjxMessageFormat(ZmMsg.draftSavedAuto);
-				message = this._autoSaveFormat.format(time);
-				transitions = [ ZmToast.FADE_IN, ZmToast.IDLE, ZmToast.PAUSE, ZmToast.FADE_OUT ];
-			} else {
-				message = ZmMsg.draftSaved;
-			}
-			appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_INFO, null, transitions);
-		}
-		this._composeView.processMsgDraft(msg);
-		if (this._listController && this._listController._draftSaved) {
-			this._listController._draftSaved(msg);
-		}
-	}
+        // TODO - disable save draft button indicating a draft was saved
+        if (appCtxt.isChildWindow) {
+            appCtxt.setStatusMsg(ZmMsg.draftSaved);
+            this._composeView.processMsgDraft(msg);
+            //Check if Mail App view has been created and then update the MailListController
+            var pAppCtxt = window.parentAppCtxt;
+            if(pAppCtxt.getAppViewMgr().getAppView(ZmApp.MAIL)) {
+                var listController = pAppCtxt.getApp(ZmApp.MAIL).getMailListController();
+                if (listController && listController._draftSaved) {
+                    //Pass the mail response to the parent window such that the ZmMailMsg obj is created in the parent window. 
+                    listController._draftSaved(null, resp.m[0]);
+                }
+            }
+        } else {
+            var message;
+            var transitions;
+            if (draftType == ZmComposeController.DRAFT_TYPE_AUTO) {
+                var time = AjxDateUtil.computeTimeString(new Date());
+                this._autoSaveFormat = this._autoSaveFormat || new AjxMessageFormat(ZmMsg.draftSavedAuto);
+                message = this._autoSaveFormat.format(time);
+                transitions = [ ZmToast.FADE_IN, ZmToast.IDLE, ZmToast.PAUSE, ZmToast.FADE_OUT ];
+            } else {
+                message = ZmMsg.draftSaved;
+            }
+            appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_INFO, null, transitions);
+            this._composeView.processMsgDraft(msg);
+            if (this._listController && this._listController._draftSaved) {
+                this._listController._draftSaved(msg);
+            }
+        }
+    }
 };
 
 

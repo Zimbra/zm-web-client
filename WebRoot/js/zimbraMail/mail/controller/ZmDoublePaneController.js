@@ -613,7 +613,11 @@ function(ev) {
 };
 
 ZmDoublePaneController.prototype._draftSaved =
-function(msg) {
+function(msg, resp) {
+    if(resp){
+        if(!msg) msg = new ZmMailMsg();
+        msg._loadFromDom(resp);
+    }
 	appCtxt.cacheSet(msg.id, msg);
 	this._redrawDraftItemRows(msg);
 	var displayedMsg = this._doublePaneView.getMsg();
