@@ -396,17 +396,20 @@ function(items, folder, attrs, outOfTrash) {
 			if (contact.isLoaded) {
 				moveBatchCmd.add(this._getCopyCmd(contact, folder));
 			} else {
-				var loadCallback = new AjxCallback(this, this._handleResponseBatchLoad, [moveBatchCmd, folder]);
-				var cmd = new AjxCallback(contact, contact.load, [loadCallback, null]);
-				loadBatchCmd.add(cmd);
-			}
+				//var loadCallback = new AjxCallback(this, this._handleResponseBatchLoad, [moveBatchCmd, folder]);
+				//var cmd = new AjxCallback(contact, contact.load, [loadCallback, null]);
+				//loadBatchCmd.add(cmd);
+                contact.load(null,null);
+                moveBatchCmd.add(this._getCopyCmd(contact, folder));
+
+            }
 		} else {
 			softMove.push(contact);
 		}
 	}
 
 	if (hardMove.length > 0) {
-		if (loadBatchCmd.size()) {
+		if (loadBatchCmd.size()/*loadBatchCmd._cmds.length*/) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadMove, [moveBatchCmd, hardMove]);
 			loadBatchCmd.run(respCallback);
 		} else {
