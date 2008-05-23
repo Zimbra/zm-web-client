@@ -292,7 +292,7 @@ function() {
 */
 ZmMailMsg.prototype.setAddresses =
 function(type, addrs) {
-	this._onChange("adresses", type, addrs);
+	this._onChange("address", type, addrs);
 	this._addrs[type] = addrs;
 };
 
@@ -616,11 +616,12 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 
 ZmMailMsg.prototype._sendInviteReply =
 function(contactList, edited, componentId, callback, errorCallback, instanceDate, accountName) {
-	var soapDoc = AjxSoapDoc.create("SendInviteReplyRequest", "urn:zimbraMail");
+	var jsonObj = {SendInviteReplyRequest:{_jsns:"urn:zimbraMail"}};
+	var request = jsonObj.SendInviteReplyRequest;
 
 	var id = this._origMsg.id;
-	soapDoc.setMethodAttribute("id", id);
-	soapDoc.setMethodAttribute("compNum", componentId);
+	request.id = id;
+	request.compNum = componentId;
 
 	var verb = "ACCEPT";
 	switch (this.inviteMode) {
@@ -629,8 +630,7 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 		case ZmOperation.REPLY_TENTATIVE: 	verb = "TENTATIVE";	break;
 		case ZmOperation.REPLY_NEW_TIME: 	verb = "DELEGATED"; break; // XXX: WRONG MAPPING!
 	}
-
-	soapDoc.setMethodAttribute("verb", verb);
+	request.verb = verb;
 
 	var inv = this._origMsg.invite;
 	if (this.getAddress(AjxEmailAddress.TO) == null && !inv.isOrganizer()) {
@@ -638,24 +638,21 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 		this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
 	}
 
-	soapDoc.setMethodAttribute("updateOrganizer", "TRUE" );
+	request.updateOrganizer = "TRUE";
 	if (instanceDate) {
 		var serverDateTime = AjxDateUtil.getServerDateTime(instanceDate);
 		var timeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
         var clientId = AjxTimezone.getClientId(timeZone);
-        ZmTimezone.set(soapDoc, clientId, null, true);
-
-        var exceptIdNode = soapDoc.set("exceptId");
-        exceptIdNode.setAttribute("d", serverDateTime);
-		exceptIdNode.setAttribute("tz", timeZone);
+        ZmTimezone.set(request, clientId, null, true);
+		request.exceptId = {d:serverDateTime, tz:timeZone};
 	}
 
 	if (edited) {
-		this._createMessageNode(soapDoc, contactList, null, accountName);
+		this._createMessageNode(request, contactList, null, accountName);
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
-	return this._sendMessage({ soapDoc:soapDoc,
+	return this._sendMessage({ jsonObj:jsonObj,
 								isInvite:true,
 								isDraft:false,
 								callback:respCallback,
@@ -687,26 +684,33 @@ function(contactList, isDraft, callback, errorCallback, accountName, noSave) {
 	if (!aName) {
 		// only set the account name if this *isnt* the main/parent account
 		var acct = appCtxt.getActiveAccount();
-		if (acct && !acct.isMain)
+		if (acct && !acct.isMain) {
 			aName = acct.name;
+		}
 	}
 
-	// if we have an invite reply, we have to send a different soap message
+	// if we have an invite reply, we have to send a different message
 	if (this.isInviteReply && !isDraft) {
 		return this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate, aName);
 	} else {
-		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
-		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
-		if (!isDraft && this.sendUID) {
-			soapDoc.setMethodAttribute("suid", this.sendUID);
+		var jsonObj, request;
+		if (isDraft) {
+			jsonObj = {SaveDraftRequest:{_jsns:"urn:zimbraMail"}};
+			request = jsonObj.SaveDraftRequest;
+		} else {
+			jsonObj = {SendMsgRequest:{_jsns:"urn:zimbraMail"}};
+			request = jsonObj.SendMsgRequest;
+			if (this.sendUID) {
+				request.suid = this.sendUID;
+			}
 		}
 		if (noSave) {
-			soapDoc.setMethodAttribute("noSave", "1");
+			request.noSave = 1;
 		}
-		this._createMessageNode(soapDoc, contactList, isDraft, aName);
+		this._createMessageNode(request, contactList, isDraft, aName);
 
 		var params = {
-			soapDoc: soapDoc,
+			jsonObj: jsonObj,
 			isInvite: false,
 			isDraft: isDraft,
 			accountName: aName,
@@ -736,14 +740,14 @@ function(isDraft, callback, result) {
 }
 
 ZmMailMsg.prototype._createMessageNode =
-function(soapDoc, contactList, isDraft, accountName) {
+function(request, contactList, isDraft, accountName) {
 
-	var msgNode = soapDoc.set("m");
+	var msgNode = request.m = {};
 
 	// if origId is given, means we're saving a draft or sending a msg that was
 	// originally a reply/forward
 	if (this.origId) {
-		msgNode.setAttribute("origid", this.origId);
+		msgNode.origid = this.origId;
 	}
 
 	// if id is given, means we are re-saving a draft
@@ -756,128 +760,125 @@ function(soapDoc, contactList, isDraft, accountName) {
 			// this means we're sending a draft msg obo
 			if (from && from.address != mainAcct.getEmail()) {
 				oboDraftMsgId = [mainAcct.id, ":", this.id].join("");
-				msgNode.setAttribute("id", oboDraftMsgId);
+				msgNode.id = oboDraftMsgId;
 			} else {
-				msgNode.setAttribute("id", this.nId);
+				msgNode.id = this.nId;
 			}
 		} else {
-			msgNode.setAttribute("id", this.nId);
+			msgNode.id = this.nId;
 		}
 	}
 
 	if (this.isForwarded) {
-		msgNode.setAttribute("rt", "w");
+		msgNode.rt = "w";
 	} else if (this.isReplied) {
-		msgNode.setAttribute("rt", "r");
+		msgNode.rt = "r";
 	}
 	if (this.identity) {
-		msgNode.setAttribute("idnt", this.identity.id);
+		msgNode.idnt = this.identity.id;
 	}
 
     if (this.isHighPriority) {
-        msgNode.setAttribute("f", ZmItem.FLAG_HIGH_PRIORITY);
+		msgNode.f = ZmItem.FLAG_HIGH_PRIORITY;
     } else if (this.isLowPriority) {
-        msgNode.setAttribute("f", ZmItem.FLAG_LOW_PRIORITY);
+		msgNode.f = ZmItem.FLAG_LOW_PRIORITY;
     }
 
+	var addrNodes = msgNode.e = [];
     for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
-		this._addAddressNodes(soapDoc, msgNode, type, contactList, isDraft);
+		this._addAddressNodes(addrNodes, type, contactList, isDraft);
 	}
-	this._addFrom(soapDoc, msgNode, isDraft, accountName);
-	this._addReplyTo(soapDoc, msgNode);
+	this._addFrom(addrNodes, isDraft, accountName);
+	this._addReplyTo(addrNodes);
 
-	soapDoc.set("su", this.subject, msgNode);
+	msgNode.su = {_content:this.subject};
 
-	var topNode = soapDoc.set("mp", null, msgNode);
-	topNode.setAttribute("ct", this._topPart.getContentType());
+	var topNode = {ct:this._topPart.getContentType()};
+	msgNode.mp = [topNode];
 
     // if the top part has sub parts, add them as children
 	var numSubParts = this._topPart.children ? this._topPart.children.size() : 0;
 	if (numSubParts > 0) {
+		var partNodes = topNode.mp = [];
 		for (var i = 0; i < numSubParts; i++) {
 			var part = this._topPart.children.get(i);
 			var content = part.getContent();
 			var numSubSubParts = part.children ? part.children.size() : 0;
 			if (content == null && numSubSubParts == 0) { continue; }
 
-			var partNode = soapDoc.set("mp", null, topNode);
-			partNode.setAttribute("ct", part.getContentType());
+			var partNode = {ct:part.getContentType()};
 
 			if (numSubSubParts > 0) {
 				// If each part again has subparts, add them as children
+				var subPartNodes = partNode.mp = [];
 				for (var j = 0; j < numSubSubParts; j++) {
 					var subPart = part.children.get(j);
-					var subPartNode = soapDoc.set("mp",null,partNode);
-					subPartNode.setAttribute("ct",subPart.getContentType());
-					soapDoc.set("content",subPart.getContent(),subPartNode);
+					subPartNodes.push({ct:subPart.getContentType(), content:{_content:subPart.getContent()}});
 				}
 				// Handle Related SubPart , a specific condition
 				if (part.getContentType() == ZmMimeTable.MULTI_RELATED) {
 					// Handle Inline Attachments
 					var inlineAtts = this.getInlineAttachments() || [];
-					for (j = 0; j < inlineAtts.length; j++) {
-						var inlineAttNode = soapDoc.set("mp",null,partNode);
-						inlineAttNode.setAttribute("ci",inlineAtts[j].cid);
-						var attachNode = soapDoc.set("attach", null, inlineAttNode);
-						if (inlineAtts[j].aid) {
-							attachNode.setAttribute("aid", inlineAtts[j].aid);
-						} else {
-							var attachPartNode = soapDoc.set("mp",null,attachNode);
-							var id = (isDraft || this.isDraft)
-								? (oboDraftMsgId || this.id || this.origId)
-								: (this.origId || this.id);
-							attachPartNode.setAttribute("mid", id);
-							attachPartNode.setAttribute("part", inlineAtts[j].part);
+					if (inlineAtts.length) {
+						for (j = 0; j < inlineAtts.length; j++) {
+							var inlineAttNode = {ci:inlineAtts[j].cid};
+							var attachNode = inlineAttNode.attach = {};
+							if (inlineAtts[j].aid) {
+								attachNode.aid = inlineAtts[j].aid;
+							} else {
+								var id = (isDraft || this.isDraft)
+									? (oboDraftMsgId || this.id || this.origId)
+									: (this.origId || this.id);
+								attachNode.mp = [{mid:id, part:inlineAtts[j].part}];
+							}
+							subPartNodes.push(inlineAttNode);
 						}
 					}
 				}
 			} else {
-				soapDoc.set("content", content, partNode);
+				partNode.content = {_content:content};
 			}
+			partNodes.push(partNode);
 		}
 	} else {
-		soapDoc.set("content", this._topPart.getContent(), topNode);
+		topNode.content = {_content:this._topPart.getContent()};
 	}
 
 	if (this.irtMessageId) {
-		soapDoc.set("irt", this.irtMessageId, msgNode);
+		msgNode.irt = {_content:this.irtMessageId};
 	}
 
 	if (this.attId ||
 		(this._msgAttIds && this._msgAttIds.length) ||
 		(this._forAttIds && this._forAttIds.length))
 	{
-		var attachNode = soapDoc.set("attach", null, msgNode);
+		var attachNode = msgNode.attach = {};
 		if (this.attId) {
-			attachNode.setAttribute("aid", this.attId);
+			attachNode.aid = this._attId;
 		}
 
 		// attach mail msgs
-		if (this._msgAttIds) {
+		if (this._msgAttIds && this._msgAttIds.length) {
+			var msgs = attachNode.m = [];
 			for (var i = 0; i < this._msgAttIds.length; i++) {
-				var node = soapDoc.set("m", null, attachNode);
-				node.setAttribute("id", this._msgAttIds[i]);
+				msgs.push({id:this._msgAttIds[i]});
 			}
 		}
 
 		// attach msg attachments
-		if (this._forAttIds) {
+		if (this._forAttIds && this._forAttIds.length) {
 			var attIds = this._filteredFwdAttIds ||  this._forAttIds;
-            for (var i = 0; i < attIds.length; i++) {
-				// if multiple msgs needs to be attached...
-				//Bugi: Broken
-				/*if (!this.isDraft) {
-					var attNode = soapDoc.set("m", null, attachNode);
-					attNode.setAttribute("id", attIds[i]);
-				} else {*/
-					var msgPartNode = soapDoc.set("mp", null, attachNode);
+			if (attIds && attIds.length) {
+				var parts = attachNode.mp = [];
+	            for (var i = 0; i < attIds.length; i++) {
 					// XXX: this looks hacky but we cant send a null ID to the server!
 					var id = (isDraft || this.isDraft) ? (oboDraftMsgId || this.id || this.origId) : (this.origId || this.id);
-					if(!id && this._origMsg) id = this._origMsg.id;
-					msgPartNode.setAttribute("mid", id);
-					msgPartNode.setAttribute("part", attIds[i]);
-				//}
+					if (!id && this._origMsg) {
+						id = this._origMsg.id;
+					}
+					parts.push({mid:id, part:attIds[i]});
+				}
 			}
 		}
     }
@@ -887,7 +888,7 @@ function(soapDoc, contactList, isDraft, accountName) {
  * Sends this message to its recipients.
  *
  * @param params				[hash]			hash of params:
- *        soapDoc				[AjxSoapDoc]	SOAP document
+ *        jsonObj				[object]		JSON object
  *        isInvite				[boolean]		true if this message is an invite
  *        isDraft				[boolean]		true if this message is a draft
  *        callback				[AjxCallback]	async callback
@@ -900,7 +901,7 @@ function(params) {
 	// bug fix #4325 - its safer to make sync request when dealing w/ new window
 	if (window.parentController) {
 		var newParams = {
-			soapDoc: params.soapDoc,
+			jsonObj: params.jsonObj,
 			accountName: params.accountName,
 			errorCallback: params.errorCallback
 		};
@@ -917,7 +918,7 @@ function(params) {
 			return resp.SendMsgResponse;
 		}
 	} else {
-		appCtxt.getAppController().sendRequest({soapDoc:params.soapDoc,
+		appCtxt.getAppController().sendRequest({jsonObj:params.jsonObj,
 												asyncMode:true,
 												callback:respCallback,
 												errorCallback:params.errorCallback,
@@ -1237,38 +1238,39 @@ function () {
 
 // Adds child address nodes for the given address type.
 ZmMailMsg.prototype._addAddressNodes =
-function(soapDoc, parent, type, contactList, isDraft) {
+function(addrNodes, type, contactList, isDraft) {
 	var addrs = this._addrs[type];
 	var num = addrs.size();
-	for (var i = 0; i < num; i++) {
-		var addr = addrs.get(i);
-		var email = addr.getAddress();
-		var e = soapDoc.set("e", null, parent);
-		e.setAttribute("t", AjxEmailAddress.toSoapType[type]);
-		e.setAttribute("a", email);
-
-		// tell server to add this email to address book if not found
-		if (contactList && !isDraft && appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) &&
-			!contactList.getContactByEmail(email)) {
-
-			DBG.println(AjxDebug.DBG2, "adding contact: " + email);
-			e.setAttribute("add", "1");
+	if (num) {
+		for (var i = 0; i < num; i++) {
+			var addr = addrs.get(i);
+			var email = addr.getAddress();
+			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
+	
+			// tell server to add this email to address book if not found
+			if (contactList && !isDraft && appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) &&
+				!contactList.getContactByEmail(email)) {
+	
+				DBG.println(AjxDebug.DBG2, "adding contact: " + email);
+				addrNode.add = 1;
+			}
+			var name = addr.getName();
+			if (name) {
+				addrNode.p = name;
+			}
+			addrNodes.push(addrNode);
 		}
-		var name = addr.getName();
-		if (name)
-			e.setAttribute("p", name);
 	}
 };
 
 ZmMailMsg.prototype._addFrom =
-function(soapDoc, parent, isDraft, accountName) {
+function(addrNodes, isDraft, accountName) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 
 	// only use account name if we either dont have any identities to choose
 	// from or the one we have is the default anyway
-	if (accountName && (!this.identity || (this.identity && this.identity.isDefault)))
-	{
-        // when saving a draft, even if obo, we do it on the main account so reset the fro
+	if (accountName && (!this.identity || (this.identity && this.identity.isDefault))) {
+        // when saving a draft, even if obo, we do it on the main account so reset the from
         if (isDraft) {
 			var folder = appCtxt.getById(this.folderId);
 			if (folder && folder.isRemote()) {
@@ -1285,21 +1287,14 @@ function(soapDoc, parent, isDraft, accountName) {
 			}
 		}
 
-        var from = soapDoc.set("e", null, parent);
-		from.setAttribute("t", "f");
-		from.setAttribute("a", accountName);
+		addrNodes.push({t:"f", a:accountName});
 
 		if (!ac.isOffline) {
 			// the main account is *always* the sender
-			var sender = soapDoc.set("e", null, parent);
-			sender.setAttribute("t", "s");
-			sender.setAttribute("a", mainAcct);
+			addrNodes.push({t:"s", a:mainAcct});
 		}
-	}
-	else if (this.identity)
-	{
-		var e = soapDoc.set("e", null, parent);
-		e.setAttribute("t", "f");
+	} else if (this.identity) {
+		var addrNode = {t:"f"};
 
 		// bug fix #20630 - handling sending drafts obo
 		if (this._origMsg && this._origMsg.isDraft) {
@@ -1307,33 +1302,33 @@ function(soapDoc, parent, isDraft, accountName) {
 			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo
 			if (from && from.address != mainAcct) {
-				e.setAttribute("a", from.address);
+				addrNode.a = from.address;
+				addrNodes.push(addrNode);
 				// if sending obo, always set sender as main account
-				var sender = soapDoc.set("e", null, parent);
-				sender.setAttribute("t", "s");
-				sender.setAttribute("a", mainAcct);
+				addrNodes.push({t:"s", a:mainAcct});
+				parentNode.e = addrNodes;
 				return;
 			}
 		}
 
-		e.setAttribute("a", this.identity.sendFromAddress);
+		addrNode.a = this.identity.sendFromAddress;
 		var name = this.identity.sendFromDisplay;
 		if (name) {
-			e.setAttribute("p", name);
+			addrNode.p = name;
 		}
+		addrNodes.push(addrNode);
 	}
 };
 
 ZmMailMsg.prototype._addReplyTo =
-function(soapDoc, parent) {
+function(addrNodes) {
 	if (this.identity) {
 		if (this.identity.setReplyTo && this.identity.setReplyToAddress) {
-			var e = soapDoc.set("e", null, parent);
-			e.setAttribute("t", "r");
-			e.setAttribute("a", this.identity.setReplyToAddress);
+			var addrNode = {t:"r", a:this.identity.setReplyToAddress};
 			if (this.identity.setReplyToDisplay) {
-				e.setAttribute("p", this.identity.setReplyToDisplay);
+				addrNode.p = this.identity.setReplyToDisplay;
 			}
+			addrNodes.push(addrNode);
 		}
 	}
 };
@@ -1341,8 +1336,7 @@ function(soapDoc, parent) {
 ZmMailMsg.prototype._isAttInHitList =
 function(attach) {
 	for (var i = 0; i < this._attHitList.length; i++) {
-		if (attach.part == this._attHitList[i].part)
-			return true;
+		if (attach.part == this._attHitList[i].part) { return true; }
 	}
 
 	return false;
@@ -1350,8 +1344,9 @@ function(attach) {
 
 ZmMailMsg.prototype._onChange =
 function(what, a, b, c) {
-	if (this.onChange && this.onChange instanceof AjxCallback)
+	if (this.onChange && this.onChange instanceof AjxCallback) {
 		this.onChange.run(what, a, b, c);
+	}
 };
 
 ZmMailMsg.prototype.getPrintHtml =
