@@ -172,6 +172,7 @@ function(calItem) {
 
 	var bodyPart = calItem.getNotesPart(mode);
 	if (bodyPart) {
+		this._msg = this._msg || this._calItem._currentlyLoaded;
 		this._makeIframeProxy(el, bodyPart, mode == ZmMimeTable.TEXT_PLAIN);
 	}
 };
