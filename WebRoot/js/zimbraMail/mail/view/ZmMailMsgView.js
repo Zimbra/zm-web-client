@@ -179,7 +179,7 @@ function(msg) {
 		? new Date(msg.sentDate)
 		: new Date(msg.date);
 
-	var invite = msg.invite;
+	var invite = msg.getInvite();
 
 	if ((appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
 		invite && invite.type != "task" &&
@@ -583,7 +583,7 @@ ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
 	if (!this._msg) { return; }
-	var attachments = this._msg.attachments;
+	var attachments = this._msg.getAttachments();
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
 	for (var i = 0; i < attachments.length; i++) {
@@ -1027,24 +1027,26 @@ function(msg, container, callback) {
 	var bodyParts = msg.getBodyParts();
 	var len = bodyParts.length;
 	if (len > 1) {
-		var html = [];
+                var html = [];
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
-			if (ZmMimeTable.isRenderableImage(bp.ct)) {
-				// Hack: (Bug:27320) Done specifically for sMime implementationu are.
-				var imgHtml = (bp.content)
-					? ["<img class='InlineImage' src='", bp.content, "'>"].join("")
-					: ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
-				html.push(imgHtml);
+            if (ZmMimeTable.isRenderableImage(bp.ct)) {
+                var imgHtml = null;
+                if(bp.content){  //Hack: (Bug:27320) Done specifically for sMime implementationu are.
+                    imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");
+                }else{
+                    imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
+                }
+                                html.push(imgHtml);
 			} else {
-				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
-					html.push("<pre>", bp.content, "</pre>");
-				} else {
-					html.push(bp.content);
-				}
+                                if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
+                                        html.push("<pre>", bp.content, "</pre>");
+                                } else {
+                                        html.push(bp.content);
 			}
 		}
-		this._makeIframeProxy(el, html.join(""));
+		}
+                this._makeIframeProxy(el, html.join(""));
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
@@ -1610,7 +1612,7 @@ function(msg, preferHtml, callback) {
 	}
 
 	// bug fix# 3928
-	var attachments = msg.attachments;
+	var attachments = msg.getAttachments();
 	for (var i = 0; i < attachments.length; i++) {
 		var attach = attachments[i];
 		if (!msg.isRealAttachment(attach))
@@ -1731,21 +1733,22 @@ function(self, iframe, attempt) {
 			substract(self._inviteToolbar.getHtmlElement());
 		iframe.style.height = h + "px";
 	} else {
-		if (attempt == null)
-			attempt = 0;
+                if (attempt == null)
+                        attempt = 0;
 		try {
 			if (!iframe.contentWindow || !iframe.contentWindow.document) {
-				if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
-					self._resetIframeHeightOnTimer(iframe, attempt);
-				return; // give up
-			}
+                                if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
+                                        self._resetIframeHeightOnTimer(iframe, attempt);
+                                return; // give up
+                        }
 		} catch(ex) {
-			if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
-				self._resetIframeHeightOnTimer(iframe, attempt++); // for IE
-			return; // give up
+                        if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
+			        self._resetIframeHeightOnTimer(iframe, attempt++); // for IE
+                        return; // give up
 		}
 
 		var doc = iframe.contentWindow.document;
+
 		var origHeight = AjxEnv.isIE ? doc.body.scrollHeight : 0;
 
 		// first off, make it wide enough to fill ZmMailMsgView.

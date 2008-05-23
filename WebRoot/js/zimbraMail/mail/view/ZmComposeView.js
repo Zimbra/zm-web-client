@@ -125,7 +125,7 @@ function(params) {
 		msg.onChange = this._onMsgDataChange;
 	}
 	if (params.identity) {
-		this.identitySelect.setSelectedValue(params.identity.id);
+		this._identitySelect.setSelectedValue(params.identity.id);
 		if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
 			this._controller.setSelectedSignature(params.identity.signature || "");
 		}
@@ -192,8 +192,10 @@ function(params) {
 */
 ZmComposeView.prototype._onMsgDataChange =
 function(what, val) {
-	if (what == "subject") {
+	switch (what) {
+	    case "subject":
 		this._subjectField.value = val;
+		break;
 	}
 };
 
@@ -210,6 +212,11 @@ function() {
 ZmComposeView.prototype.getHtmlEditor =
 function() {
 	return this._htmlEditor;
+};
+
+ZmComposeView.prototype.getOrigMsg =
+function() {
+	return this._msg;
 };
 
 ZmComposeView.prototype.getTitle =
@@ -262,6 +269,11 @@ function() {
 	return attList;
 };
 
+ZmComposeView.prototype.getSendUID =
+function() {
+	return this._sendUID;
+};
+
 ZmComposeView.prototype.setBackupForm =
 function() {
 	this.backupForm = this._backupForm();
@@ -301,8 +313,8 @@ function() {
 		return false;
 	}
 
-	if (this._msg && this._msg.attachments) {
-		var atts = this._msg.attachments;
+	if (this._msg && this._msg.getAttachments()) {
+		var atts = this._msg.getAttachments();
 		for (var i = 0; i < atts.length; i++) {
 			if (atts[i].ci) {
 				return true;
@@ -433,13 +445,13 @@ function(attId, isDraft) {
     }
 
 	// check if this is a resend
-	if (this.sendUID && this.backupForm) {
+	if (this._sendUID && this.backupForm) {
 		// if so, check if user changed anything since canceling the send
 		if (isDraft || this._backupForm() != this.backupForm) {
-			this.sendUID = (new Date()).getTime();
+			this._sendUID = (new Date()).getTime();
 		}
 	} else {
-		this.sendUID = (new Date()).getTime();
+		this._sendUID = (new Date()).getTime();
 	}
 
 	// get list of message part id's for any forwarded attachements
@@ -447,8 +459,8 @@ function(attId, isDraft) {
 	var forwardMsgIds = this._getForwardAttIds(ZmComposeView.FORWARD_MSG_NAME);
 
 	// Handle Inline Attachments as a part of forwardAttIds
-	if (this._msg && this._msg.attachments) {
-		var atts = this._msg.attachments;
+	if (this._msg && this._msg.getAttachments()) {
+		var atts = this._msg.getAttachments();
 		var filteredForwardAttIds = this._filterInlineAmongForwardAttIds(msg,atts,forwardAttIds);
 		msg._setFilteredForwardAttIds(filteredForwardAttIds);
 	}
@@ -527,7 +539,7 @@ function(attId, isDraft) {
 		}
 	}
 	msg.identity = this.getIdentity();
-	msg.sendUID = this.sendUID;
+	msg.sendUID = this._sendUID;
 
 	// save a reference to the original message
 	msg._origMsg = this._msg;
@@ -559,9 +571,12 @@ function(attId, isDraft) {
 		msg.folderId = this._msg.folderId;
 	}
 
+	if (this._msg) {
 	// replied/forw msg or draft shouldn't have att ID (a repl/forw voicemail mail msg may)
-	if (this._msg && this._msg.attId) {
-		msg.addAttachmentId(this._msg.attId);
+		var msgAttId = this._msg.getAttachmentId();
+		if (msgAttId) {
+			msg.addAttachmentId(msgAttId);
+		}
 	}
 
 	if (this._msgAttId) {
@@ -683,11 +698,11 @@ function(params) {
 		this._attcDiv.innerHTML = params.forwardHtml;
 	}
 	if (params.identityId) {
-		this.identitySelect.setSelectedValue(params.identityId);
+		this._identitySelect.setSelectedValue(params.identityId);
 	}
 
 	this.backupForm = params.backupForm;
-	this.sendUID = params.sendUID;
+	this._sendUID = params.sendUID;
 
 	// bug 14322 -- in Windows Firefox, DEL/BACKSPACE don't work
 	// when composing in new window until we (1) enter some text
@@ -822,7 +837,7 @@ function() {
 ZmComposeView.prototype.reset =
 function(bEnableInputs) {
 	this.backupForm = null;
-	this.sendUID = null;
+	this._sendUID = null;
 
 	// reset autocomplete list
 	if (this._acAddrSelectList) {
@@ -862,10 +877,10 @@ function(bEnableInputs) {
 	this._controller.toggleSpellCheckButton(false);
 
 	if (this._accountChanged) {
-		this.identitySelect.clearOptions();
+		this._identitySelect.clearOptions();
 		var identityOptions = this._getIdentityOptions();
 		for (var i = 0; i < identityOptions.length; i++) {
-			this.identitySelect.addOption(identityOptions[i]);
+			this._identitySelect.addOption(identityOptions[i]);
 		}
 
 		this._accountChanged = false;
@@ -906,7 +921,7 @@ function(content, replaceSignatureId){
 	content = content || "";
         var signature = this.getSignatureContent();
 	var newLine = this._getSignatureNewLine();
-	var isAbove = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_OUTLOOK;
+	var isAbove = this.getSignatureStyle() == ZmSetting.SIG_OUTLOOK;
 
         var replaceSignature;
         //Check if there is change if mode of editor
@@ -935,7 +950,7 @@ function(content, replaceSignatureId){
                 replaceRe = new RegExp(replaceRe, "i");
 	        content = content.replace(replaceRe, signature);
 	} else {
-		content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE), signature, newLine);
+		content = this._insertSignature(content, this.getSignatureStyle(), signature, newLine);
 	}
 	this._htmlEditor.setContent(content);
 
@@ -951,9 +966,14 @@ ZmComposeView.prototype.getSignatureContent = function(signatureId) {
 
 	var sep = this._getSignatureSeparator();
 	var newLine = this._getSignatureNewLine();
-	var isAbove = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_OUTLOOK;
+	var isAbove = this.getSignatureStyle() == ZmSetting.SIG_OUTLOOK;
 	var isText = this.getHtmlEditor().getMode() == DwtHtmlEditor.TEXT;
 	return isAbove ? [sep, sig/*,  isText ? newLine : ""*/ ].join("") : sep + sig;
+};
+
+ZmComposeView.prototype.getSignatureStyle = function(identity) {
+	identity = identity || this.getIdentity();
+	return identity.getSignatureStyle();
 };
 
 /**
@@ -971,7 +991,8 @@ function(content) {
 	// since HTML composing in new window doesnt guarantee the html editor
 	// widget will be initialized when this code is running.
 	content = content || "";
-	content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE),
+	var identity = this.getIdentity();
+	content = this._insertSignature(content, identity.getSignatureStyle(),
                                         this.getSignatureContent(),
                                         this._getSignatureNewLine());
 
@@ -1032,7 +1053,7 @@ ZmComposeView.prototype._getSignatureSeparator =
 function() {
         var newLine = this._getSignatureNewLine();
 	var sep = newLine + newLine;
-	if (appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET) {
+	if (this.getIdentity().getSignatureStyle() == ZmSetting.SIG_INTERNET) {
 		sep += "-- " + newLine;
 	}
 	return sep;
@@ -1088,7 +1109,7 @@ function(all) {
 
 	// make sure att IDs don't get reused
 	if (this._msg) {
-		this._msg.attId = null;
+		this._msg._attId = null;
 	}
 };
 
@@ -1367,11 +1388,11 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		}
 	}
 
-	var sigStyle;
-	var sig;
+	var identity = this.getIdentity();
+	var sigStyle = null;
 	if (!nosig && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
-		sig = this._getSignature();
-		sigStyle = sig ? appCtxt.get(ZmSetting.SIGNATURE_STYLE) : null;
+		var sig = this._getSignature();
+		sigStyle = sig ? identity.getSignatureStyle() : null;
 	}
 	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? (this._getSignatureSeparator() + sig) : "";
 
@@ -1379,9 +1400,9 @@ function(action, msg, extraBodyText, incOption, nosig) {
 	if (!incOption) {
 		var isReply = (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
 		if (isReply || isInviteReply) {
-			incOption = appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
+			incOption = identity.getReplyOption();
 		} else if (action == ZmOperation.FORWARD_INLINE) {
-			incOption = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
+			incOption = identity.getForwardOption();
 			if (incOption == ZmSetting.INCLUDE_ATTACH) {
 				incOption = ZmSetting.INCLUDE;
 			}
@@ -1484,7 +1505,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 			}
 			this._includedPreface = preface;
 			preface = preface + (composingHtml ? '<br>' : '\n');
-			var prefix = appCtxt.get(ZmSetting.REPLY_PREFIX);
+			var prefix = identity.getPrefix();
 			var sep = composingHtml ? '<br>' : '\n';
 			var wrapParams = {text:body, len:ZmComposeView.WRAP_LENGTH, pre:prefix + " ", eol:sep, htmlMode:composingHtml};
 			if (incOption == ZmSetting.INCLUDE_PREFIX) {
@@ -1536,7 +1557,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				cancelledParts = [ leadingText ];
 				cancelledParts.push(crlf);
 				cancelledParts.push(ZmMsg.subjectLabel+" "+msg.subject+crlf);
-				var inv = (msg) ? msg.invite : null;
+				var inv = (msg) ? msg.getInvite() : null;
 				if (inv) {
 					var organizer = "";
 					if (inv)
@@ -1744,8 +1765,8 @@ function(templateId, data) {
 
 	// initialize identity select
 	var identityOptions = this._getIdentityOptions();
-	this.identitySelect = new DwtSelect({parent:this, options:identityOptions});
-	this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
+	this._identitySelect = new DwtSelect({parent:this, options:identityOptions});
+	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 
 	var identityCollection = appCtxt.getIdentityCollection();
 	if (!this._identityChangeListenerObj) {
@@ -1753,7 +1774,7 @@ function(templateId, data) {
 	}
 	identityCollection.addChangeListener(this._identityChangeListenerObj);
 
-	this.identitySelect.replaceElement(data.identitySelectId);
+	this._identitySelect.replaceElement(data.identitySelectId);
 	this._setIdentityVisible();
 
     if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
@@ -1811,8 +1832,10 @@ function(ev) {
 
 ZmComposeView.prototype._getPriority =
 function() {
-	return (this._priorityButton)
-		? (this._priorityButton._priorityFlag || "") : "";
+    if (this._priorityButton) {
+        return this._priorityButton._priorityFlag || "";
+    }
+    return "";
 };
 
 ZmComposeView.prototype._setPriority =
@@ -1823,6 +1846,7 @@ function(flag) {
         this._priorityButton._priorityFlag = flag;
     }
 };
+
 
 ZmComposeView.prototype._getIdentityOptions =
 function() {
@@ -1865,19 +1889,19 @@ function(ev) {
 		var identity = ev.getDetail("item");
 		var text = this._getIdentityText(identity);
 		var option = new DwtSelectOptionData(identity.id, text);
-		this.identitySelect.addOption(option);
+		this._identitySelect.addOption(option);
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		// DwtSelect doesn't support removing an option, so recreate the whole thing.
-		this.identitySelect.clearOptions();
+		this._identitySelect.clearOptions();
 		var options = this._getIdentityOptions();
 		for (var i = 0, count = options.length; i < count; i++)	 {
-			this.identitySelect.addOption(options[i]);
+			this._identitySelect.addOption(options[i]);
 		}
 		this._setIdentityVisible();
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var identity = ev.getDetail("item");
 		var text = this._getIdentityText(identity);
-		this.identitySelect.rename(identity.id, text);
+		this._identitySelect.rename(identity.id, text);
 	}
 };
 
@@ -1892,10 +1916,15 @@ function() {
 	Dwt.setVisible(div, visible);
 };
 
+ZmComposeView.prototype.getIdentitySelect =
+function() {
+	return this._identitySelect;
+};
+
 ZmComposeView.prototype.getIdentity =
 function() {
 	var identityCollection = appCtxt.getIdentityCollection();
-	var id = this.identitySelect.getValue();
+	var id = this._identitySelect.getValue();
 	var result = identityCollection.getById(id);
 	return result ? result : identityCollection.defaultIdentity;
 };
