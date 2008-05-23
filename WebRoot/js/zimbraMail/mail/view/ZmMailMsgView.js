@@ -582,6 +582,7 @@ ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
 
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
+	if (!this._msg) { return; }
 	var attachments = this._msg.attachments;
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
