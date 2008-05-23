@@ -191,7 +191,7 @@ ZmChat.prototype.sendMessage = function(text, typing) {
 		soapDoc.set("body", text, message);
 	}
 	// TODO: error handling
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj});
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj, noBusyOverlay: true});
         if (text != null) {
                 var msg = new ZmChatMessage({ thread : thread,
                                               from   : AjxDispatcher.run("GetRoster").getMyAddress(),
