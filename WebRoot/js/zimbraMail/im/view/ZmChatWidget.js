@@ -133,7 +133,7 @@ ZmChatWidget.prototype.handleMessage = function(msg) {
 	if(appCtxt.get(ZmSetting.IM_PREF_NOTIFY_SOUNDS) && !msg.fromMe){
         appCtxt.getApp("IM").playAlert(ZmImApp.INCOMING_MSG_NOTIFICATION);
     }
-    var str = msg.displayHtml(this._objectManager, this.chat, this.__lastFrom);
+    var str = msg.displayHtml(this.chat, this.__lastFrom);
 	this.__lastFrom = (msg.isSystem && !msg.from) ? "@@system" : msg.from;
 	if (!msg.isSystem) {
 		if (this.isImportant()) {
@@ -146,12 +146,15 @@ ZmChatWidget.prototype.handleMessage = function(msg) {
 		}
 		this._setUnreadStatus();
 	}
-	return this.handleHtmlMessage(str);
+	return this.handleHtmlMessage(str, true);
 };
 
-ZmChatWidget.prototype.handleHtmlMessage = function(str) {
+ZmChatWidget.prototype.handleHtmlMessage = function(str, useObjectManager) {
 	var div = document.createElement("div");
 	div.innerHTML = str;
+	if (useObjectManager) {
+		this._objectManager.findObjectsInNode(div);
+	}
 	return this.scrollTo(div, true);
 };
 
