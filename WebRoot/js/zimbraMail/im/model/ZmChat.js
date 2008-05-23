@@ -177,7 +177,7 @@ ZmChat.prototype.sendClose = function(text) {
         AjxDispatcher.run("GetRoster").modifyChatRequest(thread, "close");
 };
 
-ZmChat.prototype.sendMessage = function(text, typing) {
+ZmChat.prototype.sendMessage = function(text, html, typing) {
 	var soapDoc = AjxSoapDoc.create("IMSendMessageRequest", "urn:zimbraIM");
 	var method = soapDoc.getMethod();
 	var message = soapDoc.set("message");
@@ -187,22 +187,28 @@ ZmChat.prototype.sendMessage = function(text, typing) {
 	if (thread)
 		message.setAttribute("thread", thread);
 	message.setAttribute("addr", this.getRosterItem(0).getAddress());
-	if (text != null) {
-		soapDoc.set("body", text, message);
-	}
-	// TODO: error handling
-	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj, noBusyOverlay: true});
-        if (text != null) {
-                var msg = new ZmChatMessage({ thread : thread,
-                                              from   : AjxDispatcher.run("GetRoster").getMyAddress(),
-                                              to     : this.getRosterItem(0).getAddress(),
-                                              ts     : new Date().getTime() },
-                                            true, // from me
-                                            false // is system
-                                           );
-                msg.body = text;
+    if (text || html) {
+        var bodyNode = soapDoc.set("body", null, message);
+        if (text) {
+            soapDoc.set("text", text, bodyNode);
         }
-        return msg;
+        if (html) {
+            soapDoc.set("html", html, bodyNode);
+        }
+    }	// TODO: error handling
+	appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj, noBusyOverlay: true});
+	if (text || html) {
+		var bodyJson = html ? { _content: html, html: true } : { _content: text, html: false } 
+		var jsonObj = {
+			thread	: thread,
+			from 	: AjxDispatcher.run("GetRoster").getMyAddress(),
+			to		: this.getRosterItem(0).getAddress(),
+			ts		: new Date().getTime(),
+			body	: [bodyJson]
+		};
+		var msg = new ZmChatMessage(jsonObj, true, false);
+	}
+	return msg;
 };
 
 ZmChat.prototype.sendByEmail = function(mode) {
