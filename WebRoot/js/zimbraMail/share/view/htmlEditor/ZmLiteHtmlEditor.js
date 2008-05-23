@@ -109,7 +109,7 @@ ZmLiteHtmlEditor.prototype.getHtmlContent =
 function(tag){
 
 	var html = ["<span style='",this.getCSS(),"'>",
-				AjxStringUtil.htmlEncode(this.getTextContent()),
+				AjxStringUtil.htmlEncode(this.getTextContent(), true),
 				"</span>"];
 
 	return html.join("");
