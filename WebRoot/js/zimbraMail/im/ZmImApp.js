@@ -383,7 +383,11 @@ ZmImApp.prototype.handleOp = function(op) {
 ZmImApp.prototype.postNotify =
 function(notify) {
 	if (notify.im) {
-                AjxDispatcher.run("GetRoster").pushNotification(notify.im);
+		// Skip any notifications we've already seen.
+		if (!this._lastSeq || (notify.seq > this._lastSeq)) {
+			this._lastSeq = notify.seq;
+			AjxDispatcher.run("GetRoster").pushNotification(notify.im);
+		}
 	}
 };
 
