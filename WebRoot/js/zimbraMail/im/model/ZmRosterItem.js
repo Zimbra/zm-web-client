@@ -199,13 +199,13 @@ ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; };
 ZmRosterItem.prototype.handleInput = function(args) {
 	// by default we do typing notification
  	function clearTyping(chat) {
- 		chat.sendMessage(null);
+ 		chat.sendMessage(null, null, false);
  		this._isTyping = null;
  	};
  	if (!this._isTyping) {
  		var typing = !args.enter;
  		this._isTyping = typing;
- 		args.chat.sendMessage(null, typing);
+ 		args.chat.sendMessage(null, null, typing);
  		if (this._clearTypingTimer)
  			clearTimeout(this._clearTypingTimer);
  		this._clearTypingTimer = setTimeout(AjxCallback.simpleClosure(clearTyping, this, args.chat),

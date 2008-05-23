@@ -264,12 +264,14 @@ ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
 	return ret;
 };
 
-ZmChatWidget.prototype.sendInput = function(text) {
-    text = AjxStringUtil.trim(text);
-	if (text == "")
-		return;		// don't send empty strings
+ZmChatWidget.prototype.sendInput = function() {
+    var editor = this._liteEditor;
+    var text = AjxStringUtil.trim(editor.getTextContent());
+    if (text == "")
+        return;        // don't send empty strings
 
-	var msg = this.chat.sendMessage(text);
+    var html = editor.getMode() == ZmLiteHtmlEditor.HTML ? editor.getHtmlContent() : null;
+    var msg = this.chat.sendMessage(text, html);
     if (msg)
         this.handleMessage(msg);
 };
@@ -467,7 +469,7 @@ ZmChatWidget.prototype._inputKeyPress = function(ev) {
 			if (self) {
 				var ret = self._keypressNotifyItems(keyEvent.charCode, isEnter);
 				if (isEnter && !(ret && ret.stop)) {
-					self.sendInput(self.getEditorContent());
+					self.sendInput();
 					self.setEditorContent("");
 					stopEvent();
 				}

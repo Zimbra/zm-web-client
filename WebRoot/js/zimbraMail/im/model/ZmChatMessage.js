@@ -20,6 +20,7 @@ ZmChatMessage = function(notifyJs, fromMe, isSystem) {
 		this.subject = notifyJs.subject;
 		if (notifyJs.body != null && notifyJs.body.length > 0) {
 			this.body = notifyJs.body[0]._content;
+			this.isHtml = notifyJs.body[0].html;
 		}
 		this.from = notifyJs.from;
 		this.to = notifyJs.to;
@@ -30,7 +31,7 @@ ZmChatMessage = function(notifyJs, fromMe, isSystem) {
 	if (!this.ts) this.ts = new Date().getTime();
 	this.fromMe = fromMe;
 	this.isSystem = isSystem;
-	this.htmlEncode = true;
+	this.htmlEncode = !this.isHtml;
 	this.objectify = true;
 };
 
@@ -57,50 +58,14 @@ function() {
 ZmChatMessage.ALLOWED_HTML = /<(\x2f?)(span|font|a|b|strong|i|em|ding)(\s[^>]*)?>/ig;
 
 ZmChatMessage.prototype.getHtmlBody = function(objectManager) {
-	var body = this._htmlBody;
-	if (!body) {
-		var tmp = this.body;
-		var start = 0;
-		body = [];
-		var re = ZmChatMessage.ALLOWED_HTML;
-		while (true) {
-			var match = re.exec(tmp);
-			var text = tmp.substring(start, match ? match.index : tmp.length);
-			if (objectManager) {
-				text = objectManager.findObjects(text, this.htmlEncode);
-			}
-			body.push(text);
-
-			// END loop
-			if (!match)
-				break;
-
-			var isClosingTag = match[1] || "";
-			var tagName = match[2] || "";
-			var attrs = match[3] || "";
-			start = re.lastIndex;
-			if (tagName.toLowerCase() == "font" && attrs) {
-				attrs = attrs.replace(/size=([\x22\x27]?)([0-9]+)\1/g,
-						      function(s, p1, p2) {
-							      return 'style="font-size:' +
-								      (parseFloat(p2) + 1) + '"';
-						      }
-						     );
-			}
-			body.push("<" + isClosingTag + tagName + attrs + ">");
-		}
-		body = body.join("").replace(/\r?\n/g, "<br/>");
-		this._htmlBody = body;
-	}
-	return body;
-};
-
-ZmChatMessage.prototype.getTextBody = function() {
-	var body = this._textBody;
-	if (!body) {
-		this._textBody = body = this.body.replace(ZmChatMessage.ALLOWED_HTML, "");
-	}
-	return body;
+    if (!this._htmlBody) {
+        if (objectManager) {
+            this._htmlBody = objectManager.findObjects(this.body, this.htmlEncode);
+        } else {
+            this._htmlBody = this.htmlEncode ? AjxStringUtil.htmlEncode(this.body) : this.body;
+        }
+    }
+    return this._htmlBody;
 };
 
 ZmChatMessage.prototype.toText = function() {
