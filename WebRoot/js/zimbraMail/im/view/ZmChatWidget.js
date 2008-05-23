@@ -467,8 +467,9 @@ ZmChatWidget.prototype._inputKeyPress = function(ev) {
 			if (self) {
 				var ret = self._keypressNotifyItems(keyEvent.charCode, isEnter);
 				if (isEnter && !(ret && ret.stop)) {
-    					self.sendInput(self.getEditorContent());
-        				self.setEditorContent("");
+					self.sendInput(self.getEditorContent());
+					self.setEditorContent("");
+					stopEvent();
 				}
 			}
 			keyEvent = null;
