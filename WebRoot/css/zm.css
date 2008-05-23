@@ -1807,10 +1807,16 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /** Presence section **/
 #z_presence {
-	margin-top: 2px;
+	padding-top: 2px;
+#IFNDEF MSIE
+	padding-left: 2px;
+#ENDIF	
 }
 
 #z_presence_left_icon {
+#IFDEF MSIE
+	margin-top:2px;
+#endif
 	margin-left: 1px;
 	margin-right: 1px;
 	padding-left: 1px;
@@ -1820,6 +1826,9 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 #z_presence_dropdown {
+#IFDEF MSIE
+	margin-top:2px;
+#endif
 	margin-left: 1px;
 	margin-right: 1px;
 	padding-left: 1px;
