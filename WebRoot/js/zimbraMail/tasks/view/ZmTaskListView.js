@@ -114,8 +114,9 @@ function(list, noResultsOk) {
 		if (!hdr._visible) { continue; }
 
 		if (hdr._field == ZmItem.F_SUBJECT) {
+		    this.dId = Dwt.getNextId();
 			htmlArr[idx++] = "<td><div class='newTaskBanner' onclick='ZmTaskListView._handleOnClick(this)' id='";
-			htmlArr[idx++] = Dwt.getNextId(); 									// bug: 17653 - for QA
+			htmlArr[idx++] = this.dId; 									// bug: 17653 - for QA
 			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = ZmMsg.createNewTaskHint;
 			htmlArr[idx++] = "</div></td>";
@@ -377,6 +378,20 @@ function(ev) {
 	tlv.saveNewTask();
 };
 
+ZmTaskListView.prototype._selectItem =
+function(next, addSelect, kbNavEvent) {
+    DwtListView.prototype._selectItem.call(this,next,addSelect,kbNavEvent);
+    if(!next){
+       var itemDiv = (this._kbAnchor)
+		? this._getSiblingElement(this._kbAnchor, next)
+		: this._parentEl.firstChild;
+       if(itemDiv == this._parentEl.firstChild){
+           //this._emulateSingleClick({target:document.getElementById(this.dId), button:DwtMouseEvent.LEFT});
+           document.getElementById(this.dId).onclick();
+       }
+    }
+};
+
 ZmTaskListView._handleKeyPress =
 function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
@@ -387,6 +402,8 @@ function(ev) {
 	if (key == DwtKeyEvent.KEY_ENTER) {
 		tlv.saveNewTask(true);
 	} else if (key == DwtKeyEvent.KEY_ESCAPE) {
+		tlv.discardNewTask();
+	} else if (key == DwtKeyEvent.KEY_ESCAPE || key == 0x28) {
 		tlv.discardNewTask();
 	}
 };
