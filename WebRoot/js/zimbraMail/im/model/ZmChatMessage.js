@@ -32,7 +32,6 @@ ZmChatMessage = function(notifyJs, fromMe, isSystem) {
 	this.fromMe = fromMe;
 	this.isSystem = isSystem;
 	this.htmlEncode = !this.isHtml;
-	this.objectify = true;
 };
 
 ZmChatMessage.prototype.constructor = ZmChatMessage;
@@ -55,19 +54,6 @@ function() {
 	return formatter.format(new Date(this.ts));
 };
 
-ZmChatMessage.ALLOWED_HTML = /<(\x2f?)(span|font|a|b|strong|i|em|ding)(\s[^>]*)?>/ig;
-
-ZmChatMessage.prototype.getHtmlBody = function(objectManager) {
-    if (!this._htmlBody) {
-        if (objectManager) {
-            this._htmlBody = objectManager.findObjects(this.body, this.htmlEncode);
-        } else {
-            this._htmlBody = this.htmlEncode ? AjxStringUtil.htmlEncode(this.body) : this.body;
-        }
-    }
-    return this._htmlBody;
-};
-
 ZmChatMessage.prototype.toText = function() {
 	return AjxStringUtil.trim(AjxTemplate.expand("im.Chat#ChatMessagePlainText", this));
 };
@@ -77,15 +63,10 @@ ZmChatMessage.prototype.toHtml = function() {
 };
 
 ZmChatMessage.prototype.displayHtml =
-function(objectManager, chat, lastFrom) {
-	var body;
-	if (objectManager && this.objectify) {
-		body = this.getHtmlBody(objectManager);
-	} else {
-		body = this.body.replace(/\r?\n/g, "<br/>");
-		if (this.htmlEncode) {
-			body = AjxStringUtil.htmlEncode(body);
-		}
+function(chat, lastFrom) {
+	var body = this.body.replace(/\r?\n/g, "<br/>");
+	if (this.htmlEncode) {
+		body = AjxStringUtil.htmlEncode(body);
 	}
 	var params = { isSystem		 : this.isSystem,
 		       fromMe		 : this.fromMe,

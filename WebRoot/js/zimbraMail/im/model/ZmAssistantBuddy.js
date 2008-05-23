@@ -290,7 +290,6 @@ ZmAssistantBuddy.prototype.messageDialog = function(text, type) {
 				      body: [ { _content: text } ] // grr
 				    });
 	msg.htmlEncode = false;
-	msg.objectify = false;
 	this.__lastMsgDiv = this.__widget.handleMessage(msg);
 	this.__widget.focus();
 };
