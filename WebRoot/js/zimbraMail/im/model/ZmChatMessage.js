@@ -66,7 +66,7 @@ ZmChatMessage.prototype.displayHtml =
 function(chat, lastFrom) {
 	var body = this.body.replace(/\r?\n/g, "<br/>");
 	if (this.htmlEncode) {
-		body = AjxStringUtil.htmlEncode(body);
+		body = AjxStringUtil.htmlEncode(body, true);
 	}
 	var params = { isSystem		 : this.isSystem,
 		       fromMe		 : this.fromMe,
