@@ -10,6 +10,7 @@
 <%@ attribute name="state" rtexprvalue="true" required="false" %>
 <%@ attribute name="postalcode" rtexprvalue="true" required="false" %>
 <%@ attribute name="country" rtexprvalue="true" required="false" %>
+<%@ attribute name="noborder" rtexprvalue="true" required="false" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -17,12 +18,11 @@
 
 
 <c:if test="${(not empty value) or isaddress}">
-<div class="View">
-	<table cellpadding="0" cellspacing="0" border="0">
-    <fmt:message key="${label}" var="label"/>
+	<fmt:message key="${label}" var="label"/>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" <c:if test="${!noborder}">class="zo_m_list_row" </c:if> >
     <tr>
-        <td <c:if test="${isaddress}">valign="top"</c:if> class='label' width="35" nowrap="nowrap" align="right">${fn:escapeXml(label)}</td>
-        <td class="Padding">
+        <td <c:if test="${isaddress}">valign="top"</c:if> class='label' width="20%" nowrap="nowrap" align="right">${fn:escapeXml(label)}</td>
+        <td height="28" class="Padding" width="80%">
             <c:choose>
                 <c:when test="${isurl}">
                     <c:set var="prefix" value="${fn:contains(value,'//') ? '' : 'http://'}"/>
@@ -62,5 +62,4 @@
         </td>
     </tr>
     </table>
-    </div>
 </c:if>

@@ -36,9 +36,9 @@
                 ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
         </a>
     <%--</c:if>--%>
-    <c:if test="${(singleMessage == null || singleMessage)}">
+    <%--<c:if test="${(singleMessage == null || singleMessage)}">
         <!-- a class='zo_button' href="#action"><fmt:message key="MO_actions"/></a -->
-    </c:if>
+    </c:if>--%>
 </td>
 <c:if test="${isConv==null || !isConv }">
     <zm:currentResultUrl var="closeUrl" value="${urlTarget}" action='view' context="${context}"
@@ -134,9 +134,9 @@
 </td>
 <td class="Padding" align="right">
     <c:if test="${uiv != '1' && isTop != null && isTop}">
-                <a href="#action" class='zo_button'>
+                <%--<a href="#action" class='zo_button'>
                     <fmt:message key="MO_actions"/>
-                </a>
+                </a>--%>
             </c:if>
     <c:if test="${uiv == '1'}">
     <c:if test="${context.st=='message' || context.st=='conversation'}">

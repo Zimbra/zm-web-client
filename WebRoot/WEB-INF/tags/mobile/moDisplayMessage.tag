@@ -39,19 +39,32 @@
 <c:set var="to" value="${message.displayTo}"/>
 <c:set var="cc" value="${message.displayCc}"/>
 <c:set var="sender" value="${message.displaySender}"/>
-
-
+    <script type="text/javascript">
+        var toggleDetails = function(){
+            var s  = document.getElementById("d_div").style;
+            if(s && s.display && s.display != 'none'){
+                s.display = 'none';
+                document.getElementById("d_btn").innerHTML = '<fmt:message key="details"/>';
+                //document.getElementById("d_from").innerHTML = frm.substr(0,20)+'...';
+            }else{
+                s.display = 'block';
+                document.getElementById("d_btn").innerHTML = 'Hide';
+                //document.getElementById("d_from").innerHTML = frm;
+            }
+        }
+    </script>
+    <div class="View">
     <c:if test="${not empty from}">
-    
-	<div class="View">
 	<table width="100%" cellpadding="0" cellspacing="0">
     <tr>
         <td valign='top' class='label' width="35" nowrap="nowrap" align="right"><fmt:message key="from"/>:</td>
-        <td class="Padding" <c:if test="${uiv eq '1'}">style="font-size:small;"</c:if> >${fn:escapeXml(from)}</td>
+        <td class="Padding" <c:if test="${uiv eq '1'}">style="font-size:small;"</c:if> ><span id="d_from">${fn:escapeXml(from)}</span></td>
+        <td align="right" id="d_btn_td" style="display:none;" valign="top"><a id='d_btn' onclick="toggleDetails()"><fmt:message key="details"/></a></td>
     </tr>
     </table>
-    </div>
     </c:if>
+    </div>
+    <div id="d_div" style="display:block;">
     <c:if test="${not empty sender}">
        	<div class="View">
        	<table width="100%" cellpadding="0" cellspacing="0">
@@ -82,7 +95,12 @@
         </table>
         </div>
     </c:if>
-	<div class="View">
+    </div>
+    <script type="text/javascript">
+        document.getElementById('d_div').style.display = 'none';
+        document.getElementById('d_btn_td').style.display = 'block';
+    </script>
+    <div class="View">
       	<table cellspacing="2" cellpadding="0" border="0" align="center">
                     <tr>
  						<td valign="top"><mo:img src="startup/ImgReply.gif" alt="reply"/></td>	                   

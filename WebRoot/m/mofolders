@@ -85,7 +85,7 @@
         </tr>
 
         <zm:forEachTag var="tag">
-            <mo:overviewTag calendars="${false}" tag="${tag}"/>
+            <mo:overviewTag calendars="${false}" tag="${tag}" skiptypes="${uiv == '1'}"/>
         </zm:forEachTag>
     </table>
 </mo:view>

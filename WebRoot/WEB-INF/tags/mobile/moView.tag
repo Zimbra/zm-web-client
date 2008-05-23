@@ -17,6 +17,15 @@
     <mo:head mailbox="${mailbox}" title="${title}" scale="${scale}"/>
     <body onload="<c:if test="${not empty onload}">${onload}</c:if>" <c:if test="${not empty clazz}">class="${clazz}
     "</c:if>>
+    <zm:getUserAgent var="ua" session="true"/>
+    <c:if test="${ua.isiPhone or ua.isiPod}">
+        <script type="text/javascript" xml:space="preserve">
+            addEventListener("load", function()
+              {
+                setTimeout(function() { window.scrollTo(0, 1);}, 0);
+              }, false);
+        </script>
+    </c:if>    
     <c:set value="true" var="headIncluded" scope="request"/>
 </c:if>
 <c:if test="${not empty requestScope.statusMessage}">
@@ -31,11 +40,5 @@
 <jsp:doBody/>
 <c:if test="${!requestScope.headIncluded}">
     </body>
-    <script type="text/javascript" xml:space="preserve">
-        addEventListener("load", function()
-          {
-              window.scrollTo(0, 1);
-          }, false);
-    </script>
     </html>
 </c:if>

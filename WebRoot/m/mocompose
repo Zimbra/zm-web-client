@@ -82,6 +82,7 @@
                                                type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
                                         <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
                                     </td>
+                                    <script type="text/javascript">document.getElementById('actionCancel').style.display='';</script>
                                     <td
                                             <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
                                             class='zo_tb_submit'>
@@ -205,7 +206,7 @@
         <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
         <table width=100% cellspacing="0" cellpadding="0">
             <tr>
-                <td class="ToolbarBg">
+               <td class="ToolbarBg">
                             <table cellspacing="0" cellpadding="0">
                                 <tr>
                                     <td style='padding-left:5px' class='zo_tb_submit'>
@@ -216,6 +217,7 @@
                                                type="${uiv=='1'?'button':'submit'}" value="<fmt:message key="cancel"/>">
                                         <noscript><a href="${caction}"><fmt:message key="cancel"/></a></noscript>
                                     </td>
+                                    <script type="text/javascript">document.getElementById('actionCancel1').style.display='';</script>
                                     <td
                                             <c:if test="${uiv=='1'}">align="right"</c:if> style='padding-left:5px'
                                             class='zo_tb_submit'>
@@ -251,9 +253,4 @@
     initAuto("ccField","ccContainer");
 </mo:autoComplete>
 <a href="${caction}" id="_back_to" style="display:none;visibility:hidden">back</a>
-<script type="text/javascript">
-    document.getElementById('actionCancel').style.display='';
-    document.getElementById('actionCancel1').style.display='';
-
-</script>
 </mo:view>

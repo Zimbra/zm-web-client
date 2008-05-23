@@ -22,11 +22,11 @@
                                 <fmt:message key="MO_MAIN"/> 
                             </a>
                         </c:if>
-                        <c:if test="${uiv == '1'}">
+                        <%--<c:if test="${uiv == '1'}">
                         <a href="#action" class='zo_button'>
                             <fmt:message key="MO_actions"/>
                         </a>
-                        </c:if>
+                        </c:if>--%>
                     </td>
                     </c:if>    
                     <c:choose>
@@ -61,16 +61,26 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
+                    <c:if test="${uiv == '1' && isTop}">
+                        <td class="Padding" id='select_container' style="display:none;">
+                            <select onchange="changeListSize(this.value)">
+                                <option value="5" ${sessionScope.limit=='5'?'selected':''}>List 5</option>
+                                <option value="10" ${sessionScope.limit=='10'?'selected':''}>List 10</option>
+                                <option value="20" ${sessionScope.limit=='20'?'selected':''}>List 20</option>
+                            </select>
+                        </td>
+                        <script type="text/javascript">document.getElementById('select_container').style.display='';</script>
+                    </c:if>
                 </tr>
             </table>
         </td>
         <%--</c:if>--%>
         <td class="Padding" align="right">
-            <c:if test="${uiv != '1' && isTop != null && isTop}">
+            <%--<c:if test="${uiv != '1' && isTop != null && isTop}">
                 <a href="#action" class='zo_button'>
                     <fmt:message key="MO_actions"/>
                 </a>
-            </c:if>
+            </c:if>--%>
         <c:if test="${uiv == '1'}">
 
             <c:if test="${context.st=='message' || context.st=='conversation'}">

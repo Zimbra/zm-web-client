@@ -362,60 +362,48 @@
                     <td class='zo_m_list_row'>
                         <table cellspacing="0" cellpadding="4" width="100%">
                             <tr>
-                                <td class="zo_m_chk">
+                                <td class="zo_m_chk" width="1%">
                                     <c:set value=",${mhit.id}," var="stringToCheck"/>
                                     <input type="checkbox" ${fn:contains(requestScope._selectedIds,stringToCheck)?'checked="checked"':'unchecked'} name="id" value="${mhit.id}">
                                 </td>
-                                <td style='width:40px; ' valign="middle" align="center">
-                                    <table>
-                                        <tr>
-                                            <td><mo:img
-                                                    src="${(mhit.isUnread and hit.id == message.id) ? 'startup/ImgMsgStatusRead.gif' : mhit.statusImage}"
-                                                    alt="status"/></td>
-                                        </tr>
-                                        <c:if test="${mhit.isFlagged}">
-                                            <tr>
-                                                <td><mo:img src="startup/ImgFlagRed.gif" alt="falg"/></td>
-                                            </tr>
-                                        </c:if>
-                                        <c:if test="${mhit.hasTags}">
-                                            <tr>
-                                                <td><mo:miniTagImage ids="${mhit.tagIds}"/></td>
-                                            </tr>
-                                        </c:if>
-                                    </table>
+                                <td class="zo_m_chk" valign="middle" align="center" width="1%">
+                                    <mo:img src="${(mhit.isUnread and hit.id == message.id) ? 'startup/ImgMsgStatusRead.gif' : mhit.statusImage}"
+                                                    alt="status"/>
                                 </td>
                                 <td onclick='zClickLink("a${mhit.id}")'>
-                                    <table width="100%">
-                                        <tr
-                                                <c:if test="${mhit.isUnread}">
-                                                    class='zo_m_list_unread'
-                                                </c:if>
-                                                >
-                                            <td class='zo_m_list_from'>
+                                    <table cellspacing="0" width="100%" >
+                                        <tr class='zo_m_list_<c:if test="${mhit.isUnread}">un</c:if>read'>
+                                            <td width="95%">
                                                 <c:set var="sender" value="${mhit.displaySender}"/>
-                                                    ${fn:escapeXml(empty sender ? unknownSender : sender)}
+                                                <c:set var="_f" value="${empty sender ? unknownSender : sender}"/>
+                                                <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                                                <a class="zo_m_list_from" id="a${mhit.id}" href="${fn:escapeXml(msgUrl)}">${fn:escapeXml(_f)}</a>
+                                                <div class="zo_m_list_sub">
+                                                    <c:set var="_f" value="${mhit.subject}"/>
+                                                    <c:if test="${fn:length(_f) > 20}"><c:set var="_f" value="${fn:substring(_f, 0, 20)}..."/></c:if>
+                                                    ${fn:escapeXml(_f)}
+                                                </div>
+                                                <div class='zo_m_list_frag'>
+                                                    <c:set var="_f" value="${mhit.fragment}"/>
+                                                    <c:if test="${fn:length(_f) > 50}"><c:set var="_f" value="${fn:substring(_f, 0, 50)}..."/></c:if>
+                                                    ${fn:escapeXml(_f)}
+                                                </div>
                                             </td>
-                                            <td nowrap="nowrap" alimgn="right" valign="top" class='zo_m_list_size'>
-                                                <c:if test="${uiv == '1'}">
-                                                <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt"
-                                                                pattern="yyyyMMdd" value="${mhit.date}"/>
-                                                <a <c:if test="${mailbox.features.calendar}">href="${context_url}?st=cal&view=month&date=${on_dt}"</c:if>>
-                                                        ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
-                                                </a>
+                                            <td align="center" width="2%" valign="middle" style="padding-top: 5px;padding-left: 4px;">
+                                                <c:if test="${mhit.isFlagged}">
+                                                    <mo:img src="startup/ImgFlagRed.gif" alt="flag"/>
                                                 </c:if>
-                                                <c:if test="${uiv != '1'}">
-                                                    ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
+                                                <c:if test="${mhit.hasTags}">
+                                                    <mo:miniTagImage
+                                                            ids="${mhit.tagIds}"/>
                                                 </c:if>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <a class='zo_m_list_frag' id="a${mhit.id}"
-                                                   href="${fn:escapeXml(msgUrl)}">${fn:escapeXml(zm:truncate(mhit.fragment,100,true))}</a>
                                             </td>
                                             <td nowrap="nowrap" class='zo_m_list_size' align="right" valign="top">
-                                                    (${fn:escapeXml(zm:displaySize(mhit.size))})
+                                                <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${mhit.date}"/>
+                                                <a <c:if test="${sessionScope.uiv == '1' && mailbox.features.calendar}">href='${context_url}?st=cal&view=month&date=${on_dt}'</c:if>>
+                                                    ${fn:escapeXml(zm:displayMsgDate(pageContext, mhit.date))}
+                                                </a><br/>
+                                                 (${fn:escapeXml(zm:displaySize(mhit.size))})
                                             </td>
                                         </tr>
                                     </table>

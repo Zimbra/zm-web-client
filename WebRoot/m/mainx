@@ -12,6 +12,12 @@
 <c:if test="${param.ui == null || param.ui == ''}">
     <c:set var="uiv" value="1" scope="session"/>
 </c:if>
+<c:if test="${sessionScope.limit == null}">
+    <c:set var="limit" value="10" scope="session"/>
+</c:if>
+<c:if test="${(sessionScope.limit != param.limit && param.limit != null && param.limit != '')  }">
+    <c:set var="limit" value="${param.limit}" scope="session"/>
+</c:if>
 <script type="text/javascript">var selectedImgId = "mail_img";</script>
 <c:set var="context_url" value="${requestScope.baseURL!=null?requestScope.baseURL:'mainx'}"/>
 <%--<c:if test="${param.addContact != null}">
@@ -48,7 +54,7 @@
 <mo:view title="${mailbox.name}" context="${null}" mailbox="${mailbox}">
     <table border="0" cellpadding="0" cellspacing="0" width="100%" class="NavbarBg">
         <tr>
-            <td width="5%" align="center" valign="top" id="mails">
+            <td width="5%" align="center" valign="top">
             <!-- Tabs starts here -->
                         <c:set var="aurl" value="${context_url}?"/>
                         <a id="mails" href="${aurl}"><img id="mail_img" alt="<fmt:message key="mail"/>" src="<app:imgurl value='mobile/Mail${empty param.st || param.st == "message" || param.st == "conversation" ? "-sel" : ""}.gif' />" border="0" width="55" height="48">
@@ -57,8 +63,8 @@
                         </td>
                         <td align="center" width="5%" valign="top">
                         <c:if test="${mailbox.features.contacts}">
-                            <c:set var="aurl" value="${context_url}?st=contact"/>
-                            <a id="contacts" href="${aurl}"><img alt="<fmt:message key="contacts"/>" id="contact_img" src="<app:imgurl value='mobile/Contacts${param.st eq "contact" ? "-sel" : ""}.gif' />" border="0" width="55" height="48"></a>
+                            <c:set var="aurl" value="${context_url}?st=ab"/>
+                            <a id="contacts" href="${aurl}"><img alt="<fmt:message key="contacts"/>" id="contact_img" src="<app:imgurl value='mobile/Contacts${param.st eq "contact" || param.st eq "ab" ? "-sel" : ""}.gif' />" border="0" width="55" height="48"></a>
                         </c:if>
                         </td>
                         <td width="5%" align="center" valign="top">
@@ -89,12 +95,12 @@
                                         <td>
                                             <table cellspacing="1" cellpadding="1" width="100%" align="right">
                                                 <tr>
-                                                    <td>
+                                                    <td class="zo_m_list_row">
                                                         <%--<fmt:message key="in"/>--%>
-                                                        <select name="st" style="width:100%">
+                                                        <select name="st" style="width:100%;">
                                                             <option value="${(mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message')}"><fmt:message key="mail"/></option>
                                                             <c:if test="${mailbox.features.contacts}">
-                                                                <option value="contact" <c:if test="${param.st == 'contact'}">selected='selected'</c:if> ><fmt:message key="contacts"/></option>
+                                                                <option value="contact" <c:if test="${param.st == 'contact' || param.st == 'ab' }">selected='selected'</c:if> ><fmt:message key="contacts"/></option>
                                                             </c:if>
                                                             <c:if test="${mailbox.features.calendar}">
                                                                 <option value="cal" <c:if test="${param.st == 'cal'}">selected='selected'</c:if>><fmt:message key="calendar"/></option>
@@ -104,11 +110,11 @@
                                                     </td>
                                                     <td align="left" style="padding-right:2px;">
                                                         <input type="text"
-                                                               style="width:99%;height:20px;border:1px solid lightslategray;"
+                                                               style="width:99%;border:1px solid lightslategray;"
                                                                name="sq" value="${param.sq}"/>
                                                     </td>
                                                     <td align="right">
-                                                        <input type="submit" name="actionSearch" class="zo_button1"
+                                                        <input type="submit" name="actionSearch" 
                                                                value="<fmt:message key="search"/>"/>
                                                     </td>
                                                 </tr>
@@ -140,7 +146,7 @@
                                     <c:if test="${param.st == 'contact'}">
                                         <script type="text/javascript">selectedImgId = "contact_img";</script>
                                     </c:if>
-                                    <c:import url="/m/mosearch?sq_limit=${param.sq_limit!=null?param.sq_limit:'5'}"/>
+                                    <c:import url="/m/mosearch"/>
                                 </c:when>
                                 <c:when test="${param.st != null && param.st == 'cal'}">
                                     <c:if test="${param.sq == null}">
@@ -155,7 +161,10 @@
                                     <c:import url="/m/mofolders"/>
                                     <script type="text/javascript">selectedImgId = "folder_img";</script>
                                 </c:when>
-
+                                <c:when test="${param.st != null && param.st == 'ab'}">
+                                    <c:import url="/m/moaddrbooks"/>
+                                    <script type="text/javascript">selectedImgId = "contact_img";</script>
+                                </c:when>
                             </c:choose>
                         </mo:handleError>
             </td>
@@ -198,6 +207,19 @@
                 document.getElementById("search_img").src = "<app:imgurl value='mobile/Search-sel.gif' />";
                 document.getElementById(selectedImgId).src = document.getElementById(selectedImgId).src.replace("-sel","");
             }
-        }
+        };
+        var changeListSize = function(size){
+            var url = window.location.href;
+            url = url.replace(/sc=[0-9]+/i,"");
+            if(url.indexOf("limit=")>=0){
+                url = url.replace(/limit=[0-9]+/i,"limit="+size);
+            }else{
+                url = url.replace("?","?limit="+size+"&");
+            }
+            if(url.indexOf("so=") >=0 ){
+                url = url.replace(/so=[0-9]+/,"so="+size);
+            }
+            window.location.href = url;
+        };
     </script>
 </mo:view>

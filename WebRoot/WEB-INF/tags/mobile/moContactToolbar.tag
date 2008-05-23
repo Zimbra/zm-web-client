@@ -29,9 +29,9 @@
                         <a href="${editUrl}" id="_edit_link" style="display:none;visibility:hidden;">
                             <fmt:message key="edit"/>
                         </a>
-                        <c:if test="${uiv == '1'}">
+                        <%--<c:if test="${uiv == '1'}">
                         <a href="#action" class='zo_button'><fmt:message key="MO_actions"/> </a>
-                        </c:if>    
+                        </c:if>--%>    
                     </td>
                     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}"
                                             index="${context.currentItemIndex}"/>

@@ -87,21 +87,27 @@ html,body {
     background: url(/img/mobile/iPhoneToolbar.png) #6d84a2 repeat-x;
     height: 37px;
 }
+.ToolbarBg a{ font-size:medium;}
+.searchbar input[type='text']{height:20px;font-size:100%;}
 .ToolbarBg{
 	background: #e7e7e6 url("/img/mobile/ToolbarBg.gif") repeat-x top left;
 	height: 37px;
 }
-
-.zo_unread, .zo_m_list_unread .zo_m_list_from, .zo_m_list_unread .zo_m_cv_sub, .zo_m_list_unread .zo_m_list_from, .zo_m_list_unread .zo_m_list_sub a:link{
+.zo_m_list_from{
+    color:#000000;
+    padding:0px;
+}
+.zo_unread, .zo_m_list_unread .zo_m_cv_sub, .zo_m_list_unread .zo_m_list_sub,.zo_m_list_unread .zo_m_list_from{
     	font-weight: bold;
 }
-.zo_unread a:link,.Folders a:link{text-decoration: none; color:#333333; font-size: small;}
+.Folders{height:40px;}
+.zo_unread a:link,.Folders a{text-decoration: none; color:#333333; font-size: medium;}
 
 .Email,.zo_m_list_sub p{ font-weight: normal;line-height: 18px; margin-top: 2px;}
 
 .zo_m_list_sub a:link{text-decoration: none; color: #333333;font-size: small;}
 
-.zo_m_list_from{color: #999999; font-size:small;}
+.zo_m_list_sub{color: #777777; font-size:small;}
 
 .Email a,.zo_m_list_frag, .zo_m_list_size {font-size: small; color: #999999;}
 .Email a{text-decoration: none;}

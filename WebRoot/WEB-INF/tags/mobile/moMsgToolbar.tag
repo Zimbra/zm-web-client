@@ -22,11 +22,11 @@
                             ${fn:escapeXml(zm:truncate(context.shortBackTo,15,true))}
                         </a>
                     </td>
-                    <c:if test="${uiv == '1'}">
+                    <%--<c:if test="${uiv == '1'}">
                     <td>
                         <a class='zo_button' href="#action"><fmt:message key="MO_actions"/></a>
                     </td>
-                    </c:if>    
+                    </c:if>--%>    
                     <td>
                         <c:choose>
                             <c:when test="${cursor.hasPrev}">
@@ -63,11 +63,11 @@
             </table>
         </td>
         <td class="Padding" align="right">
-            <c:if test="${uiv != '1' && isTop != null && isTop}">
+            <%--<c:if test="${uiv != '1' && isTop != null && isTop}">
                 <a href="#action" class='zo_button'>
                     <fmt:message key="MO_actions"/>
                 </a>
-            </c:if>
+            </c:if>--%>
     <c:if test="${uiv == '1'}">
             <c:if test="${context.st=='message' || context.st=='conversation'}">
                 <c:url var="composeUrl" value="${urlTarget}?action=compose"/>

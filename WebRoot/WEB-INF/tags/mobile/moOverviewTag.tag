@@ -3,6 +3,7 @@
 <%@ attribute name="label" rtexprvalue="true" required="false" %>
 <%@ attribute name="icon" rtexprvalue="true" required="false" %>
 <%@ attribute name="types" rtexprvalue="true" required="false" %>
+<%@ attribute name="skiptypes" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -18,11 +19,11 @@
         <c:otherwise>
             <c:url value="${context_url}" var="url">
                 <c:param name="sti" value="${tag.id}"/>
-                <c:if test="${not empty types && uiv != '1'}"><c:param name='st' value='${types}'/></c:if>
+                <c:if test="${not empty types && !skiptypes}"><c:param name='st' value='${types}'/></c:if>
             </c:url>
         </c:otherwise>
     </c:choose>
-    <td class='Folders${tag.hasUnread ? ' zo_unread' : ''} zo_m_list_row' style='padding: 5px;'>
+    <td class='Folders${tag.hasUnread ? ' zo_unread' : ''} zo_m_list_row' style='height:28px;padding: 5px;'>
         <a id="TAG${tag.id}" href="${fn:escapeXml(url)}">
             <mo:img src="${tag.image}" alt='${fn:escapeXml(tag.name)}'/>
             ${fn:escapeXml(tag.name)}

@@ -16,7 +16,6 @@
         </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
-
     <mo:composeCheck/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
     <c:choose>
@@ -55,13 +54,12 @@
         </c:when>
         --%>
     </c:choose>
-    <c:if test="${param.sq_limit!=null}">
-        <zm:computeSearchContext var="context" usecache="true" query="${sq}" limit="${param.sq_limit}"/>
+    <c:if test="${uiv=='1'}">
+        <zm:computeSearchContext var="context" usecache="true" query="${sq}" limit="${sessionScope.limit}"/>
     </c:if>
-    <c:if test="${param.sq_limit==null}">
+    <c:if test="${uiv != '1'}">
         <zm:computeSearchContext var="context" usecache="true" query="${sq}"/>
     </c:if>
-
 </mo:handleError>
 
 <%-- switch based on context search types --%>
@@ -100,7 +98,14 @@
         <mo:messageListView context="${context}"/>
     </c:when>
     <c:when test="${context.isContactSearch and action eq'view'}">
-        <mo:contactView context="${context}"/>
+        <c:choose>
+        <c:when test="${!empty requestScope.op && requestScope.op eq 'x'}">
+            <mo:contactListView context="${context}"/>
+        </c:when>
+        <c:otherwise>
+            <mo:contactView context="${context}"/>             
+        </c:otherwise>
+        </c:choose>
     </c:when>
     <c:when test="${context.isContactSearch and action eq'edit'}">
         <mo:contactEdit context="${context}"/>

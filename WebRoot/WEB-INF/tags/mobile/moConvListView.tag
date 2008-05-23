@@ -83,7 +83,43 @@
                                 </td>
                                 <td onclick='zClickLink("a${chit.id}")'>
                                     <table cellspacing="0" width="100%">
-                                        <tr class='zo_m_list_<c:if test="${chit.isUnread}">un</c:if>read'>
+                                     <tr class='zo_m_list_<c:if test="${chit.isUnread}">un</c:if>read'>
+                                          <td width="95%">
+                                                <c:set var="dispRec" value="${chit.displayRecipients}"/>
+                                                <c:set var="_f" value="${empty dispRec ? unknownRecipient : dispRec}"/>
+                                                <c:if test="${fn:length(_f) > 25}"><c:set var="_f" value="${fn:substring(_f, 0, 25)}..."/></c:if>
+                                                <a class="zo_m_list_from" id="a${chit.id}" href="${fn:escapeXml(convUrl)}">${fn:escapeXml(_f)}</a>
+                                                <div class="zo_m_list_sub">
+                                                    <c:set var="_f" value="${empty chit.subject ? unknownSubject : chit.subject}"/>
+                                                    <c:if test="${fn:length(_f) > 25}"><c:set var="_f" value="${fn:substring(_f, 0, 25)}..."/></c:if>
+                                                    ${fn:escapeXml(_f)}
+                                                </div>
+                                                <div class='zo_m_list_frag'>
+                                                    <c:set var="_f" value="${chit.fragment}"/>
+                                                    <c:if test="${fn:length(_f) > 50}"><c:set var="_f" value="${fn:substring(_f, 0, 50)}..."/></c:if>
+                                                    ${fn:escapeXml(_f)}
+                                                </div>
+                                            </td>
+                                            <td align="center" width="2%" valign="middle" style="padding-top: 5px;padding-left: 4px;">
+                                                <c:if test="${chit.isFlagged}">
+                                                    <mo:img src="startup/ImgFlagRed.gif" alt="flag"/>
+                                                </c:if>
+                                                <c:if test="${chit.hasTags}">
+                                                    <mo:miniTagImage
+                                                            ids="${hit.conversationHit.tagIds}"/>
+                                                </c:if>
+                                            </td>
+                                            <td nowrap="nowrap" class='zo_m_list_size' align="right" valign="top">
+                                                <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" var="on_dt" pattern="yyyyMMdd" value="${chit.date}"/>
+                                                <a <c:if test="${sessionScope.uiv == '1' && mailbox.features.calendar}">href='${context_url}?st=cal&view=month&date=${on_dt}'</c:if>>
+                                                    ${fn:escapeXml(zm:displayMsgDate(pageContext, chit.date))}
+                                                </a><br/>
+                                                 <c:choose>
+                                                            <c:when test="${chit.messageCount gt 1}">(${chit.messageCount})</c:when>
+                                                            <c:otherwise>&nbsp;</c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                        <%--<tr class='zo_m_list_<c:if test="${chit.isUnread}">un</c:if>read'>
                                             <td class='zo_m_list_sub' width="95%">
                                                 <a id="a${chit.id}"
                                                    href="${fn:escapeXml(convUrl)}">${fn:escapeXml(empty chit.subject ? unknownSubject : zm:truncate(chit.subject,30,true))}
@@ -116,6 +152,7 @@
                                                 </c:choose>
                                             </td>
                                             <!--<td class="zo_ab_list_arrow">&nbsp;</td>-->
+                                        </tr>--%>
                                         </tr>
                                     </table>
                                 </td>
