@@ -869,7 +869,18 @@ function(mode) {
 		this._formatWarningDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		this._formatWarningDialog.popup(this._composeView._getDialogXY());
 	} else {
-		this._composeView.setComposeMode(mode);
+                // bug 26658: remove the signature before changing mode, and
+                //            add it back after
+                var tmp = this._currentSignatureId;
+                if (tmp) {
+                        this.setSelectedSignature("");
+                        this._composeView.applySignature(this._getBodyContent(), tmp);
+                }
+                this._composeView.setComposeMode(mode);
+                if (tmp) {
+                        this.setSelectedSignature(tmp);
+                        this._composeView.applySignature(this._getBodyContent(), tmp);
+                }
 	}
 };
 
@@ -904,7 +915,7 @@ function(draftType, msg, resp) {
             if(pAppCtxt.getAppViewMgr().getAppView(ZmApp.MAIL)) {
                 var listController = pAppCtxt.getApp(ZmApp.MAIL).getMailListController();
                 if (listController && listController._draftSaved) {
-                    //Pass the mail response to the parent window such that the ZmMailMsg obj is created in the parent window. 
+                    //Pass the mail response to the parent window such that the ZmMailMsg obj is created in the parent window.
                     listController._draftSaved(null, resp.m[0]);
                 }
             }
