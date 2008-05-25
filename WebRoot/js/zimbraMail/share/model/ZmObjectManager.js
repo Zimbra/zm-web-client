@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -21,7 +21,7 @@
  * @class
  *
  * @author Kevin Henrikson
- * 
+ *
  * @param view			the view this manager is going to hilite for
  * @param selectCallback AjxCallback triggered when user clicks on hilited object
  * 						(provide if you want to do something before the clicked
@@ -305,17 +305,17 @@ function(content, htmlEncode, type, isTextMsg) {
 };
 
 
-//Added this customized method for the sake of ZmMailMsgView performance. 
+//Added this customized method for the sake of ZmMailMsgView performance.
 //TODO: Integrate this method to findObjectsInNode()
 ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 
     var objectManager = this;
     var tmpdiv = doc.createElement("div");
 
-    doc || ( doc = node.ownerDocument ); 
+    doc || ( doc = node.ownerDocument );
 
 
-    recurse = function(node, handlers) {
+    var recurse = function(node, handlers) {
 		var tmp, i, val, next;
 		switch (node.nodeType) {
 		    case 1:	// ELEMENT_NODE
@@ -352,8 +352,13 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
 				// consider processed
 				node = next;
 			}
-                    
-            for (i = node.firstChild; i; i = recurse(i, handlers));
+
+                        // bug 28264: the only workaround possible seems to be
+                        // to remove textIndent styles that have a negative value:
+                        if (parseFloat(node.style.textIndent) < 0)
+                                node.style.textIndent = "";
+
+                        for (i = node.firstChild; i; i = recurse(i, handlers));
 			return node.nextSibling;
 
 		    case 3:	// TEXT_NODE
@@ -411,7 +416,7 @@ ZmObjectManager.prototype.processObjectsInNode = function(doc, node){
     for(var i=0; i<node.childNodes.length; i++){
         recurse(node.childNodes[i], true);
     }
-    
+
 };
 
 ZmObjectManager.prototype.findObjectsInNode =
@@ -423,7 +428,7 @@ function(node, re_discard, re_allow, callbacks) {
 
 	// This inner function does the actual work.  BEWARE that it return-s
 	// in various places, not only at the end.
-	recurse = function(node, handlers) {
+	var recurse = function(node, handlers) {
 		var tmp, i, val, next;
 		switch (node.nodeType) {
 		    case 1:	// ELEMENT_NODE
@@ -605,7 +610,7 @@ function(content, type) {
 // the server-side, but we check, just in case..).
 ZmObjectManager.prototype.processHtmlNode =
 function(node, handlers, discard, ignore) {
-	var doc = node.ownerDocument;	
+	var doc = node.ownerDocument;
 	handlers = handlers != null ? handlers : true;
 	var discardRe = discard instanceof RegExp ? discard : null;
 	if (!discardRe) {
