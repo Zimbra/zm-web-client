@@ -871,7 +871,18 @@ function(mode) {
 		this._formatWarningDialog.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		this._formatWarningDialog.popup(this._composeView._getDialogXY());
 	} else {
+                // bug 26658: remove the signature before changing mode, and
+                //            add it back after
+                var tmp = this._currentSignatureId;
+                if (tmp) {
+                        this.setSelectedSignature("");
+                        this._composeView.applySignature(this._getBodyContent(), tmp);
+                }
 		this._composeView.setComposeMode(mode);
+                if (tmp) {
+                        this.setSelectedSignature(tmp);
+                        this._composeView.applySignature(this._getBodyContent(), tmp);
+                }
 	}
 };
 
@@ -1031,7 +1042,7 @@ function(op) {
 		var curText = this._getBodyContent();
 		if (this._curIncOption == ZmOperation.INC_NO_PREFIX || this._curIncOption == ZmOperation.INC_PREFIX ||
                     this._curIncOption == ZmOperation.INC_PREFIX_FULL ||
-			this._curIncOption == ZmOperation.INC_SMART) {
+		    this._curIncOption == ZmOperation.INC_SMART) {
 			var idx = curText.indexOf(this._composeView._includedPreface.replace(/\s+$/, ""));
 			if (idx) {
 				var crlf = (this._composeView.getComposeMode() == DwtHtmlEditor.HTML) ? "<br>" : "\\r?\\n";
