@@ -904,44 +904,46 @@ function(mimePart) {
 ZmComposeView.prototype.applySignature =
 function(content, replaceSignatureId){
 	content = content || "";
-        var signature = this.getSignatureContent();
+    var signature = this.getSignatureContent();
 	var newLine = this._getSignatureNewLine();
 	var isAbove = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_OUTLOOK;
-
-        var replaceSignature;
+    var replaceSignature;
+    if (replaceSignatureId) {
         //Check if there is change if mode of editor
-        if (replaceSignatureId) {
-                if(replaceSignatureId && this._previousSignatureMode && this._previousSignatureMode != this._htmlEditor.getMode()){
-                        replaceSignature = ( this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML )
-                                ? AjxStringUtil.convertToHtml(this._previousSignature)
-                                : AjxStringUtil.convertHtml2Text(this._previousSignature);
-                }else{
-                        replaceSignature = replaceSignatureId ? this.getSignatureContent(replaceSignatureId) : "";
-                }
+        if(replaceSignatureId && this._previousSignatureMode && this._previousSignatureMode != this._htmlEditor.getMode()){
+            replaceSignature = ( this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML )
+                    ? AjxStringUtil.convertToHtml(this._previousSignature)
+                    : AjxStringUtil.convertHtml2Text(this._previousSignature);
+        }else{
+            replaceSignature = replaceSignatureId ? this.getSignatureContent(replaceSignatureId) : "";
+        }
+        var replaceRe = "(" + AjxStringUtil.regExEscape(newLine) + ")*" + AjxStringUtil.regExEscape(replaceSignature);
+        if (!isAbove) {
+            replaceRe += "\\s*(" + AjxStringUtil.regExEscape(newLine) + ")*";
+            if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
+                replaceRe += "</body></html>";
+            }
+            replaceRe += "$";
+        } else {
+            signature = signature || newLine;
+        }
+        if (AjxEnv.isIE) {
+            replaceRe = replaceRe.replace(/\\n/g, "\\s*\\r?\\n\\r?\\s*"); //
+            if(this._htmlEditor.getMode() == DwtHtmlEditor.HTML) {
+                replaceRe = replaceRe.replace(/\;/g,"\;?");  //style attrib. does not return semi-colon at the end
+                content = content.replace(/\>\s*\</g,"><"); //IE has white-space chars between the html elements.
+            }
+        }
+        replaceRe = new RegExp(replaceRe, "i");
+        content = content.replace(replaceRe, signature);
+    } else {
+        content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE), signature, newLine);
+    }
+    this._htmlEditor.setContent(content);
 
-	        var replaceRe = "(" + AjxStringUtil.regExEscape(newLine) + ")*" + AjxStringUtil.regExEscape(replaceSignature);
-	        if (!isAbove) {
-		        replaceRe += "\\s*(" + AjxStringUtil.regExEscape(newLine) + ")*";
-		        if (this.getHtmlEditor().getMode() == DwtHtmlEditor.HTML) {
-			        replaceRe += "</body></html>";
-		        }
-		        replaceRe += "$";
-	        } else {
-		        signature = signature || newLine;
-	        }
-                if (AjxEnv.isIE) {
-                        replaceRe = replaceRe.replace(/\\n/g, "\\s*\\r?\\n\\r?\\s*");
-                }
-                replaceRe = new RegExp(replaceRe, "i");
-	        content = content.replace(replaceRe, signature);
-	} else {
-		content = this._insertSignature(content, appCtxt.get(ZmSetting.SIGNATURE_STYLE), signature, newLine);
-	}
-	this._htmlEditor.setContent(content);
-
-        //Caching previous Signature state.
-        this._previousSignature = signature;
-        this._previousSignatureMode = this._htmlEditor.getMode();
+    //Caching previous Signature state.
+    this._previousSignature = signature;
+    this._previousSignatureMode = this._htmlEditor.getMode();
 
 };
 
