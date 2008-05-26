@@ -31,6 +31,8 @@ ZmTask = function(list, id, folderId) {
 	this.priority = ZmCalItem.PRIORITY_NORMAL;
 	this.pComplete = 0;
 	this.status = ZmCalendarApp.STATUS_NEED;
+    this.startDate = new Date();
+    this.endDate = this.startDate;
 };
 
 ZmTask.prototype = new ZmCalItem;
