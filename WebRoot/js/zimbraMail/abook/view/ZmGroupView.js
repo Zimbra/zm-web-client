@@ -93,7 +93,8 @@ function() {
 			foundOne = true;
 		}
 
-		if (folderId != this._contact.getFolderId()) {
+		var oldFolderId = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
+		if (folderId != oldFolderId) {
 			mods[ZmContact.F_folderId] = folderId;
 			foundOne = true;
 		}
@@ -168,7 +169,7 @@ function() {
 	this._prevButton.setEnabled(false);
 	this._nextButton.setEnabled(false);
     this._delButton.setEnabled(false);    
-    if(this._addNewField) this._addNewField.value = '';
+    if (this._addNewField) this._addNewField.value = '';
 };
 
 ZmGroupView.prototype.search =
@@ -393,11 +394,10 @@ function() {
 */
 ZmGroupView.prototype._getGroupMembers =
 function(asArray) {
+	var addrs = this._groupListView.getList();
+	if (!addrs) { return null; }
 
-    var addrs = this._groupListView.getList();
-
-    if(!addrs) return null;
-    addrs = addrs.getArray();
+	addrs = addrs.getArray();
 
 	// if there are any empty values, remove them
 	var i = 0;
@@ -498,13 +498,14 @@ ZmGroupView.prototype._delListener =
 function(ev){
 
 	if (ev.dwtObj == this._delButton) {
+		var items = this._groupListView.getSelection();
 		var list = this._groupListView.getSelectedItems();
-		while(list.get(0)){
+
+		while (list.get(0)) {
 			this._groupListView.removeItem(list.get(0));
 			list = this._groupListView.getSelectedItems();
 		}
 
-		var items = this._groupListView.getSelection();
 		for (var i = 0;  i < items.length; i++) {
 			this._groupListView.getList().remove(items[i]);
 		}
