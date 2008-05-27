@@ -1673,7 +1673,7 @@
  *
  ***************/
 
-.ZSelectAutoSizingContainer 		{ overflow: hidden; height: 22px; }		/* TODO: SIZE ASSUMPTION! */
+.ZSelectAutoSizingContainer 		{ overflow: visible; height: 22px; }		/* TODO: SIZE ASSUMPTION! */
 
 .ZSelect									{	@Select@		@SelectSpacing@			}
 .ZSelect .ZWidgetTitle						{	padding-left: 5px; text-align: left;	}
@@ -1694,7 +1694,7 @@
 
 
 
-.ZSelectPseudoItem    		        { padding-right: 23px; }
+.ZSelectPseudoItem    		        { padding-right: 23px; visibility: hidden; }
 
 /*
 .ZSelect .ZLeftIcon  DIV			{	position:relative; left:5px;}

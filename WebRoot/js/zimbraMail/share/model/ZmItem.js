@@ -421,6 +421,31 @@ function() {
 */
 ZmItem.prototype.deleteLocal = function() {};
 
+ZmItem.prototype.move = function(folderId, callback, errorCallback) {
+	return ZmItem.move(this.id, folderId, callback, errorCallback);
+};
+
+ZmItem.move = function(itemId, folderId, callback, errorCallback) {
+	var json = {
+		ItemActionRequest: {
+			_jsns: "urn:zimbraMail",
+			action: {
+				id:	itemId instanceof Array ? itemId.join() : itemId,
+				op:	"move",
+				l:	folderId
+			}
+		}
+	};
+
+	var params = {
+		jsonObj:		json,
+		asyncMode:		Boolean(callback),
+		callback:		callback,
+		errorCallback:	errorCallback
+	};
+	return appCtxt.getAppController().sendRequest(params);
+};
+
 /**
 * Updates the folder for this item.
 *

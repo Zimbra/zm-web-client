@@ -391,6 +391,22 @@ function(folderId) {
 	return appCtxt.getById(folderId);
 };
 
+ZmCalViewController.prototype.getCalendars = function(includeLinks) {
+	var calendars = [];
+	var organizers = appCtxt.getFolderTree().getByType(ZmOrganizer.CALENDAR);
+	for (var i = 0; i < organizers.length; i++) {
+		var organizer = organizers[i];
+		if (organizer.zid && !includeLinks) continue;
+		calendars.push(organizer);
+	}
+	calendars.sort(ZmCalViewController.__BY_NAME);
+	return calendars;
+};
+
+ZmCalViewController.__BY_NAME = function(a, b) {
+	return a.name.localeCompare(b.name);
+};
+
 // todo: change to currently "selected" calendar
 ZmCalViewController.prototype.getDefaultCalendarFolderId =
 function() {

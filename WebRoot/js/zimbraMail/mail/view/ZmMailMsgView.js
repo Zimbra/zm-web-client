@@ -193,8 +193,20 @@ function(msg) {
 		{
 			var topToolbar = this._getInviteToolbar();
             topToolbar.reparentHtmlElement(contentDiv);
-            topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
-        }
+			topToolbar.setVisible(Dwt.DISPLAY_BLOCK);
+
+			var calendars = appCtxt.getApp(ZmApp.CALENDAR).getCalController().getCalendars();
+			var visible = calendars.length > 1;
+			if (visible) {
+				this._inviteMoveSelect.clearOptions();
+				for (var i = 0; i < calendars.length; i++) {
+					var calendar = calendars[i];
+					this._inviteMoveSelect.addOption(calendar.name, calendar.id == ZmOrganizer.ID_CALENDAR, calendar.id);
+				}
+			}
+			this._inviteMoveSelect.setVisible(visible);
+			this._lastApptFolder = ZmOrganizer.ID_CALENDAR;
+		}
 	}
 	else if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 			 msg.share && msg.folderId != ZmFolder.ID_TRASH &&
@@ -377,7 +389,41 @@ function() {
 		button.setMenu(menu);
 	}
 
+	this._inviteToolbar.addFiller();
+	var label = new DwtText({ parent: this._inviteToolbar });
+	label.setText(AjxMessageFormat.format(ZmMsg.makeLabel, [ZmMsg.calendar]));
+
+	var select = new DwtSelect({ parent: this._inviteToolbar });
+	select.addChangeListener(new AjxListener(this, this._moveAppt));
+	this._inviteMoveSelect = select;
+
 	return this._inviteToolbar;
+};
+
+ZmMailMsgView.prototype._moveAppt = function(ev) {
+	var select = ev.item.parent.parent; 
+	var ofolder = this._lastApptFolder || ZmOrganizer.ID_CALENDAR;
+	var nfolder = select.getValue();
+	if (ofolder == nfolder) return;
+
+	var itemId = this._msg.invite.components[0].apptId;
+	var callback = new AjxCallback(this, this._handleMoveApptResponse, [ofolder, nfolder]);
+	var errorCallback = new AjxCallback(this, this._handleMoveApptError, [ofolder, nfolder, select]);
+	ZmItem.move(itemId, nfolder, callback, errorCallback);
+};
+
+ZmMailMsgView.prototype._handleMoveApptResponse = function(ofolder, nfolder, resp) {
+	this._lastApptFolder = nfolder;
+	// TODO: Display some sort of confirmation?
+};
+ZmMailMsgView.prototype._handleMoveApptError = function(ofolder, nfolder, select, resp) {
+	select.setSelectedValue(ofolder);
+	var params = {
+		msg:	ZmMsg.errorMoveAppt,
+		level:	ZmStatusView.LEVEL_CRITICAL
+	};
+	appCtxt.setStatusMsg(params);
+	return true;
 };
 
 ZmMailMsgView.prototype._getShareToolbar =
