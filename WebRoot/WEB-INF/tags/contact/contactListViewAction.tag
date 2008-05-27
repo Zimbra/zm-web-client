@@ -71,9 +71,6 @@
     <c:when test="${empty ids}">
         <app:status style="Warning"><fmt:message key="actionNoContactSelected"/></app:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionPrint')}">
-        <jsp:forward page="/h/printcontacts"/>
-    </c:when>
     <c:otherwise>
         <zm:checkCrumb crumb="${param.crumb}"/>
         <c:choose>
