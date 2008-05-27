@@ -43,7 +43,7 @@
                                <c:set var="isCurr" value="${hit.contactHit.id == context.currentItem.id}"/>
                                <tr onclick='zSelectRow(event,"A${status.index}")'
                                        class='${status.index mod 2 eq 1 ? 'ZhRowOdd' :'ZhRow'}${hit.contactHit.id == context.currentItem.id ? ' RowSelected': ''}'>
-                                   <td class='CB' nowrap><input <c:if test="${isCurr}">id="CURRCHECK"</c:if> type=checkbox  name="id" value="${hit.contactHit.id}"></td>
+                                   <td class='CB' nowrap><input id="C${status.index}" type=checkbox  name="id" value="${hit.contactHit.id}"></td>
                                    <c:if test="${mailbox.features.tagging}">
                                        <td class='Img'><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
                                    </c:if>
@@ -103,6 +103,23 @@
 
    <SCRIPT TYPE="text/javascript">
     <!--
+    var zrc = ${context.searchResult.size};
+    var zprint = function(){
+        try{
+        var idex = 0;
+        var c ="";
+        while (idex <= zrc )
+        {
+        if(document.getElementById("C"+idex).checked) {
+            cid = document.getElementById("C"+idex).value;
+            c += cid + ",";
+        }
+            idex++ ;
+        }
+        }catch(ex){
+        }
+        window.open("/h/printcontacts?id="+c);
+    }
     var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
     function zSelectRow(ev,id) {var t = ev.target || ev.srcElement;if (t&&t.nodeName != 'INPUT'){var a = document.getElementById(id); if (a) window.location = a.href;} }
