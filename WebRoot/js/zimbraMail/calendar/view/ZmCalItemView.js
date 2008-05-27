@@ -458,7 +458,7 @@ function() {
 ZmTaskView.prototype._getSubs =
 function(calItem) {
 	var subject = calItem.getName();
-	var location = calItem.getAttendeesText(ZmCalBaseItem.LOCATION, true);
+	var location = calItem.location;
 	var isException = calItem._orig ? calItem._orig.isException : calItem.isException;
 	var startDate = calItem.startDate ? AjxDateFormat.getDateInstance().format(calItem.startDate) : null;
 	var dueDate = calItem.endDate ? AjxDateFormat.getDateInstance().format(calItem.endDate) : null;
@@ -490,7 +490,9 @@ function(calItem) {
 		status: status,
 		pComplete: pComplete,
 		recurStr: recurStr,
-		attachStr: attachStr
+		attachStr: attachStr,
+		folder: appCtxt.getTree(ZmOrganizer.TASKS).getById(calItem.folderId),
+		folderLabel: ZmMsg.folder
 	};
 };
 
