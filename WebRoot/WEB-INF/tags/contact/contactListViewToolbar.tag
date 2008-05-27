@@ -24,8 +24,12 @@
                     <td><div class='vertSep'></div></td>
                     <app:button name="actionNewGroup" id="${keys ? 'NEW_GROUP' : ''}" src="mail/ImgNewGroup.gif" tooltip="newGroup" text="group"/>
                     <td><div class='vertSep'></div></td>
-                    <td nowrap>
-                    <app:button name="actionPrint" id="${keys ? 'OPPRINT' : ''}" src="startup/ImgPrint.gif" tooltip="actionPrint" text="actionPrint"/>
+                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+                        <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+                        <input onclick="zprint();return false;" id="${keys ? 'IOPPRINT' : ''}" name="actionPrint" type="image" src="${iconPath}/startup/ImgPrint.gif" alt='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
+                    </td>
+                    <td height="100%" nowrap valign="middle" style="padding: 0 2px 0 2px">
+                        <input onclick="zprint();return false;" id="${keys ? 'SOPPRINT' : ''}" name="actionPrint" type="submit" value='<fmt:message key="actionPrint" />' title='<fmt:message key="actionPrint" />' />
                     </td>
                     <c:if test="${not empty contact}">
                         <td><div class='vertSep'></div><input type='hidden' name="actionEditId" value="${contact.id}"></td>

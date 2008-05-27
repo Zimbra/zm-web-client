@@ -16,6 +16,7 @@
     </c:otherwise>
     </c:choose>
     <fmt:setBundle basename="/messages/ZhMsg" scope="request"/>
+    <c:set var="contactIds" value="${fn:join(paramValues.id, ',')}"/>
 </app:handleError>
 
 <html>
@@ -29,7 +30,7 @@
         <hr/>
 
     <table cellpadding="0" cellspacing="5" >
-    <c:forEach items="${paramValues.id}" var="contactId" varStatus="status">
+    <c:forEach items="${contactIds}" var="contactId" varStatus="status">
         <zm:getContact id="${contactId}" var="contact"/>
         <tr>
         <td>
