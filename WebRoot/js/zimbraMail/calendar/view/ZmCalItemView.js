@@ -143,20 +143,16 @@ function(calItem) {
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
 
 	// add the close button
-	if (!this._closeButton) {
-		this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
-		this._closeButton.setImage("Close");
-		this._closeButton.setText(ZmMsg.close);
-		this._closeButton.addSelectionListener(new AjxListener(this, this.close));
-	}
+	this._closeButton = new DwtButton({parent:this, className:"DwtToolbarButton"});
+	this._closeButton.setImage("Close");
+	this._closeButton.setText(ZmMsg.close);
+	this._closeButton.addSelectionListener(new AjxListener(this, this.close));
 	this._closeButton.reparentHtmlElement(closeBtnCellId);
 
 	// add the move select
 	if (document.getElementById(moveSelectId) && subs.folders.length > 0) {
-		if (!this._moveSelect) {
-			this._moveSelect = new DwtSelect({parent: this});
-			this._moveSelect.addChangeListener(new AjxListener(this, this.move));
-		}
+		this._moveSelect = new DwtSelect({parent: this});
+		this._moveSelect.addChangeListener(new AjxListener(this, this.move));
 		this._moveSelect.clearOptions();
 		for (var i = 0; i < subs.folders.length; i++) {
 			var folder = subs.folders[i];
@@ -175,10 +171,6 @@ function(calItem) {
 		this._msg = this._msg || this._calItem._currentlyLoaded;
 		this._makeIframeProxy(el, bodyPart, mode == ZmMimeTable.TEXT_PLAIN);
 	}
-};
-
-ZmCalItemView.__BY_NAME = function(a, b) {
-	return a.name.localeCompare(b.name);
 };
 
 ZmCalItemView.prototype._getSubs =
@@ -286,25 +278,10 @@ ZmApptView.prototype.move = function(ev) {
 	var nfolder = ev.item.parent.parent.getValue();
 	if (ofolder == nfolder) return;
 
-	var json = {
-		ItemActionRequest: {
-			_jsns: "urn:zimbraMail",
-			action: {
-				id:	item.id,
-				op:	"move",
-				l:	nfolder
-			}
-		}
-	};
-
 	var args = [ ofolder, nfolder ];
-	var params = {
-		jsonObj:		json,
-		asyncMode:		true,
-		callback:		new AjxCallback(this, this._handleMoveResponse, args),
-		errorCallback:	new AjxCallback(this, this._handleMoveError, args)
-	};
-	appCtxt.getAppController().sendRequest(params);
+	var callback = new AjxCallback(this, this._handleMoveResponse, args);
+	var errorCallback = new AjxCallback(this, this._handleMoveError, args);
+	item.move(nfolder, callback, errorCallback);
 };
 
 ZmApptView.prototype._handleMoveResponse = function(ofolder, nfolder, resp) {
@@ -362,17 +339,6 @@ function(calItem) {
 		if (attendees) attendees = this._objectManager.findObjects(attendees, true);
 	}
 
-	var calendars = [];
-	if (!(String(calItem.id).match(/:/))) {
-		var organizers = appCtxt.getFolderTree().getByType(ZmOrganizer.CALENDAR);
-		for (var i = 0; i < organizers.length; i++) {
-			var organizer = organizers[i];
-			if (organizer.zid) continue;
-			calendars.push(organizer);
-		}
-		calendars.sort(ZmCalItemView.__BY_NAME);
-	}
-
 	return {
 		id: this._htmlElId,
 		subject: subject,
@@ -386,7 +352,7 @@ function(calItem) {
 		recurStr: recurStr,
 		attachStr: attachStr,
 		folder: appCtxt.getTree(ZmOrganizer.CALENDAR).getById(calItem.folderId),
-		folders: calendars,
+		folders: String(calItem.id).match(/:/) ? [] : this._controller.getCalendars(),
 		folderLabel: ZmMsg.calendar
 	};
 };
