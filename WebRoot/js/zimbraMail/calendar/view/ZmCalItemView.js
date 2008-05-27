@@ -222,6 +222,10 @@ function(calItem) {
 	return str.join("");
 };
 
+ZmCalItemView.rfc822Callback = function(invId, partId){
+    AjxDispatcher.require("MailCore", false);
+    ZmMailMsgView.rfc822Callback(invId, partId);
+};
 
 
 

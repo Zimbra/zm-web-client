@@ -833,7 +833,6 @@ function() {
 ZmCalItem.prototype.getAttachListHtml =
 function(attach, hasCheckbox) {
   	var msgFetchUrl = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-	var hrefRoot = "href='" + msgFetchUrl + "&id=" + this.invId + "&amp;part=";
 
 	// gather meta data for this attachment
 	var mimeInfo = ZmMimeTable.getInfo(attach.ct);
@@ -858,16 +857,27 @@ function(attach, hasCheckbox) {
 		html[i++] = ZmCalItem.ATTACHMENT_CHECKBOX_NAME;
 		html[i++] = "'></td>";
 	}
-	html[i++] = "<td width=20><a target='_blank' class='AttLink' ";
+
+    var hrefRoot = "href='" + msgFetchUrl + "&id=" + this.invId + "&amp;part=";
+    html[i++] = "<td width=20><a target='_blank' class='AttLink' ";
 	html[i++] = hrefRoot;
 	html[i++] = attach.part;
 	html[i++] = "'>";
 	html[i++] = AjxImg.getImageHtml(icon);
 	html[i++] = "</a></td>";
 	html[i++] = "<td><a target='_blank' class='AttLink' ";
-	html[i++] = hrefRoot;
-	html[i++] = attach.part;
-	html[i++] = "'>";
+    if (  appCtxt.get(ZmSetting.MAIL_ENABLED) && attach.ct == ZmMimeTable.MSG_RFC822) {
+        html[i++] = " href='javascript:;' onclick='ZmCalItemView.rfc822Callback(";
+        html[i++] = '"';
+        html[i++] = this.invId;
+        html[i++] = '"';
+        html[i++] = ",\"";
+        html[i++] = attach.part;
+        html[i++] = "\"); return false;'";
+    }else{
+        html[i++] = hrefRoot + attach.part + "'";
+    }
+	html[i++] = ">";
 	html[i++] = attach.filename;
 	html[i++] = "</a>";
 
