@@ -515,9 +515,7 @@
 	<table border=0 class='MsgHeaderTable' id='${id}_hdrTable' cellspacing=0 cellpadding=0 width=100%>
 		<tr>
 			<td id='${id}_closeBtnCell'></td>
-			<td>&nbsp;</td>
-			<td class='SubjectCol LabelColName'><$= AjxStringUtil.htmlEncode(ZmMsg.subjectLabel) $></td>
-			<td class='SubjectCol LabelColValue' colspan=3 width=100%><$= data.subject $></td>
+			<td class='SubjectCol LabelColValue' colspan=100 width=100%><$= data.subject $></td>
 		</tr>
 
 		<$ if (data.location) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.location, val:data.location}) $><$ } $>
