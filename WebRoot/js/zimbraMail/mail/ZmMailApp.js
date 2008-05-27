@@ -158,7 +158,7 @@ function(settings) {
     settings.registerSetting("VACATION_MSG",					{name:"zimbraPrefOutOfOfficeReply", type:ZmSetting.T_PREF});
 	settings.registerSetting("VACATION_MSG_ENABLED",			{name:"zimbraPrefOutOfOfficeReplyEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("VACATION_MSG_FEATURE_ENABLED",	{name:"zimbraFeatureOutOfOfficeReplyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("MAIL_NOTIFY_SOUNDS",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("MAIL_NOTIFY_SOUNDS",				{name:"zimbraPrefMailSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
     ZmMailApp._setGroupByMaps();
 };
@@ -185,6 +185,7 @@ function() {
 				ZmSetting.MARK_MSG_READ,
 				ZmSetting.NOTIF_ADDRESS,
 				ZmSetting.NOTIF_ENABLED,
+				ZmSetting.MAIL_NOTIFY_SOUNDS,
 				ZmSetting.OPEN_MAIL_IN_NEW_WIN,
 				ZmSetting.PAGE_SIZE,
 				ZmSetting.POLLING_INTERVAL,
@@ -354,6 +355,11 @@ function() {
 		precondition:		ZmSetting.MAIL_FORWARDING_ENABLED,
 		validationFunction:	ZmMailApp.validateMailLocalDeliveryDisabled,
 		errorMessage:		ZmMsg.errorMissingFwdAddr
+	});
+
+	ZmPref.registerPref("MAIL_NOTIFY_SOUNDS", {
+		displayName:		ZmMsg.playSound,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
 	ZmPref.registerPref("NOTIF_ADDRESS", {
