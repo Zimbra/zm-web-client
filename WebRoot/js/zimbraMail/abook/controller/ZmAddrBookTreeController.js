@@ -31,6 +31,8 @@ ZmAddrBookTreeController = function() {
 	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
 	this._listeners[ZmOperation.MOUNT_ADDRBOOK] = new AjxListener(this, this._mountAddrBookListener);
+    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
+
 }
 
 ZmAddrBookTreeController.prototype = new ZmFolderTreeController;
@@ -139,7 +141,7 @@ function() {
 		ops.push(ZmOperation.MOUNT_ADDRBOOK);
 	}
 	ops.push(ZmOperation.EXPAND_ALL);
-
+	ops.push(ZmOperation.BROWSE);
 	return ops;
 };
 
