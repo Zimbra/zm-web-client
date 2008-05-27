@@ -1228,10 +1228,6 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 					<td class='ZOptionsField'><div id='${id}_IM_PREF_NOTIFY_SOUNDS' tabindex='35'></div></td>
 				</tr>
 
-                <tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><div id='${id}_IM_PREF_FLASH_ICON' tabindex='40'></div></td>
-				</tr>
-
 				<tr><td></td><td><hr></td></tr>
 
 				<tr><td class='ZOptionsLabel'>&nbsp;</td>
