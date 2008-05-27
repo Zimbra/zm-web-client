@@ -603,7 +603,8 @@ function(excludeAttendees) {
 	vals.push(this._showAsSelect.getValue());
 	vals.push(this._privacySelect.getValue());
 	vals.push(this._folderSelect.getValue());
-	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+    vals.push(this._reminderSelect.getValue());
+    var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 	startDate = this._startTimeSelect.getValue(startDate);
 	endDate = this._endTimeSelect.getValue(endDate);

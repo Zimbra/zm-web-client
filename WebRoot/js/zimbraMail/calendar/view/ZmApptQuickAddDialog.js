@@ -335,7 +335,8 @@ function() {
 	vals.push(this._locationField.getValue());
 	vals.push(this._startDateField.value);
 	vals.push(this._endDateField.value);
-	if (!this._appt.isAllDayEvent()) {
+    vals.push(this._reminderSelect.getValue());
+    if (!this._appt.isAllDayEvent()) {
 		vals.push(
 			AjxDateUtil.getServerDateTime(this._startTimeSelect.getValue()),
 			AjxDateUtil.getServerDateTime(this._endTimeSelect.getValue())
