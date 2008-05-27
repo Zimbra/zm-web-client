@@ -627,8 +627,12 @@ function(contact, params) {
 	htmlArr[idx++] = "</center></td>";
 
 	// file as
+	var fileAs = AjxStringUtil.htmlEncode(contact.getFileAs());
+	if (fileAs && !fileAs.length) {
+		fileAs = [AjxStringUtil.htmlEncode(ZmMsg.noName), contact.getEmail()].join(" ");
+	}
 	htmlArr[idx++] = "<td style='vertical-align:middle;'>&nbsp;";
-	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
+	htmlArr[idx++] = fileAs;
 	htmlArr[idx++] = "</td>";
 
 	if (!params.isDragProxy) {
