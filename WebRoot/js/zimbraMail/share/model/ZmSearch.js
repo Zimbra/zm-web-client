@@ -538,7 +538,12 @@ function(req) {
 
 	// bug 5771: add timezone and locale info
 	ZmTimezone.set(req, AjxTimezone.DEFAULT);
-	req.locale = {_content:appCtxt.get(ZmSetting.LOCALE_NAME)};
+	// bug 15878: We can't use appCtxt.get(ZmSetting.LOCALE) because that
+	//            will return the server's default locale if it is not set
+	//            set for the user or their COS. But AjxEnv.DEFAULT_LOCALE
+	//            is set to the browser's locale setting in the case when
+	//            the user's (or their COS) locale is not set.
+	req.locale = { _content: AjxEnv.DEFAULT_LOCALE };
 
 	if (this.lastId != null && this.lastSortVal) {
 		// cursor is used for paginated searches
