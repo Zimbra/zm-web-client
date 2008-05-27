@@ -277,10 +277,12 @@ function() {
 	if (selectCell) {
 		this._searchInSelect = new DwtSelect({parent:this});
 		this._searchInSelect.addOption(ZmMsg.contacts, true, ZmContactsApp.SEARCHFOR_CONTACTS);
-		if (appCtxt.get(ZmSetting.SHARING_ENABLED))
+		if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 			this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
-		if (appCtxt.get(ZmSetting.GAL_ENABLED))
+		}
+		if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+		}
 		if (!appCtxt.get(ZmSetting.INITIALLY_SEARCH_GAL) || !appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			this._searchInSelect.setSelectedValue(ZmContactsApp.SEARCHFOR_CONTACTS);
 		}
@@ -289,10 +291,9 @@ function() {
 	}
 
 	// add "Search" button
-	this._searchButton = new DwtButton({parent:this});
+	this._searchButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_searchButton")});
 	this._searchButton.setText(ZmMsg.search);
 	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
-	this._searchButton.reparentHtmlElement(this._htmlElId + "_searchButton");
 
 	// add list view for search results
 	this._listview = new ZmGroupListView(this);
@@ -301,67 +302,57 @@ function() {
 	this._listview.setUI(null, true); // renders headers and empty list
 	this._listview._initialized = true;
 
-    //add list view for group memebers
-    this._groupListView = new ZmGroupMembersListView(this);
-    this._groupListView.reparentHtmlElement(this._htmlElId+"_groupMembers");
-    this._groupListView.addSelectionListener(new AjxListener(this, this._groupMembersSelectionListener));
-    this._groupListView.setUI(null, true);
-    this._groupListView._initialized = true;    
+	// add list view for group memebers
+	this._groupListView = new ZmGroupMembersListView(this);
+	this._groupListView.reparentHtmlElement(this._htmlElId + "_groupMembers");
+	this._groupListView.addSelectionListener(new AjxListener(this, this._groupMembersSelectionListener));
+	this._groupListView.setUI(null, true);
+	this._groupListView._initialized = true;
 
-    //Delete Button & Listener
-    var delListener = new AjxListener(this, this._delListener);
-    this._delButton = new DwtButton({parent:this});
-    this._delButton.setText(ZmMsg.del);
-    this._delButton.addSelectionListener(delListener);
-    this._delButton.reparentHtmlElement(this._htmlElId + "_delButton");
-    this._delButton.setEnabled(false);
+	// add delete button
+	var delListener = new AjxListener(this, this._delListener);
+	this._delButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_delButton")});
+	this._delButton.setText(ZmMsg.del);
+	this._delButton.addSelectionListener(delListener);
+	this._delButton.setEnabled(false);
 
-    //DeleteAll Button & Listener
-    this._delAllButton = new DwtButton({parent:this});
-    this._delAllButton.setText(ZmMsg.delAll);
-    this._delAllButton.addSelectionListener(delListener);
-    this._delAllButton.reparentHtmlElement(this._htmlElId + "_delAllButton");
+	// add delete all button
+	this._delAllButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_delAllButton")});
+	this._delAllButton.setText(ZmMsg.delAll);
+	this._delAllButton.addSelectionListener(delListener);
 
-    //Add Button Listener
-    var addListener = new AjxListener(this, this._addListener);
+	var addListener = new AjxListener(this, this._addListener);
 	// add "Add" button
-	this._addButton = new DwtButton({parent:this});
+	this._addButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_addButton")});
 	this._addButton.setText(ZmMsg.add);
 	this._addButton.addSelectionListener(addListener);
-	this._addButton.reparentHtmlElement(this._htmlElId + "_addButton");
 	this._addButton.setEnabled(false);
 
 	// add "Add All" button
-	this._addAllButton = new DwtButton({parent:this});
+	this._addAllButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_addAllButton")});
 	this._addAllButton.setText(ZmMsg.addAll);
 	this._addAllButton.addSelectionListener(addListener);
-	this._addAllButton.reparentHtmlElement(this._htmlElId + "_addAllButton");
 	this._addAllButton.setEnabled(false);
 
 	var pageListener = new AjxListener(this, this._pageListener);
 	// add paging buttons
-	this._prevButton = new DwtButton({parent:this});
+	this._prevButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_prevButton")});
 	this._prevButton.setImage("LeftArrow");
 	this._prevButton.addSelectionListener(pageListener);
-	this._prevButton.reparentHtmlElement(this._htmlElId + "_prevButton");
 	this._prevButton.setEnabled(false);
 
-	this._nextButton = new DwtButton({parent:this});
+	this._nextButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_nextButton")});
 	this._nextButton.setImage("RightArrow");
 	this._nextButton.addSelectionListener(pageListener);
-	this._nextButton.reparentHtmlElement(this._htmlElId + "_nextButton");
 	this._nextButton.setEnabled(false);
 
-    //Add New Button
-    this._addNewField = document.getElementById(this._htmlElId + "_addNewField");
-    if(this._addNewField){
-        this._addNewButton = new DwtButton({parent:this});
-        this._addNewButton.setText(ZmMsg.add);
-        this._addNewButton.addSelectionListener(new AjxListener(this, this._addNewListener));
-        this._addNewButton.reparentHtmlElement(this._htmlElId + "_addNewButton");
-    }
-
-
+	// add New Button
+	this._addNewField = document.getElementById(this._htmlElId + "_addNewField");
+	if (this._addNewField) {
+		this._addNewButton = new DwtButton({parent:this, parentElement:(this._htmlElId + "_addNewButton")});
+		this._addNewButton.setText(ZmMsg.add);
+		this._addNewButton.addSelectionListener(new AjxListener(this, this._addNewListener));
+	}
 };
 
 ZmGroupView.prototype._installKeyHandlers =
@@ -506,44 +497,47 @@ function(ev) {
 ZmGroupView.prototype._delListener =
 function(ev){
 
-    if(ev.dwtObj == this._delButton){
-        var list = this._groupListView.getSelectedItems();
-        var items = this._groupListView.getSelection();
+	if (ev.dwtObj == this._delButton) {
+		var list = this._groupListView.getSelectedItems();
+		while(list.get(0)){
+			this._groupListView.removeItem(list.get(0));
+			list = this._groupListView.getSelectedItems();
+		}
 
-        while(list.get(0)){
-            this._groupListView.removeItem(list.get(0));
-        }
-        for(var i=0; i<items.length; i++){
-            this._groupListView.getList().remove(items[i]);
-        }
-    }else{
-        this._groupListView.removeAll(true);
-        this._groupListView.getList().removeAll();
-    }
+		var items = this._groupListView.getSelection();
+		for (var i = 0;  i < items.length; i++) {
+			this._groupListView.getList().remove(items[i]);
+		}
+	} else {
+		this._groupListView.removeAll(true);
+		this._groupListView.getList().removeAll();
+	}
 
-    this._isDirty = true;
+	this._groupMembersSelectionListener();
+	this._isDirty = true;
 };
 
 ZmGroupView.prototype._addNewListener =
 function(ev){
-    var emailStr = this._addNewField.value;
-    if(!emailStr || emailStr == '') return;
+	var emailStr = this._addNewField.value;
+	if (!emailStr || emailStr == '') { return; }
 
-    var addrs = AjxEmailAddress.parseEmailString(emailStr);
-    if(addrs && addrs.good){
-        var goodArry = addrs.good.getArray();
-        var goodAddr = [];
-        for(var i=0; i<goodArry.length; i++) goodAddr[i] = goodArry[i].toString();
-        this._setGroupMembersListView(goodAddr, true);
-    }
+	var addrs = AjxEmailAddress.parseEmailString(emailStr);
+	if (addrs && addrs.good) {
+		var goodArry = addrs.good.getArray();
+		var goodAddr = [];
+		for (var i = 0; i < goodArry.length; i++) {
+			goodAddr[i] = goodArry[i].toString();
+		}
+		this._setGroupMembersListView(goodAddr, true);
+	}
 
-    this._addNewField.value = '';
+	this._addNewField.value = '';
 };
 
 ZmGroupView.prototype._addListener =
 function(ev) {
-
-	var list = ev.dwtObj == this._addButton
+	var list = (ev.dwtObj == this._addButton)
 		? this._listview.getSelection()
 		: this._listview.getList().getArray();
 
@@ -552,8 +546,7 @@ function(ev) {
 
 ZmGroupView.prototype._addItems =
 function(list) {
-
-    if (list.length == 0) return;
+    if (list.length == 0) { return; }
 
     // we have to walk the results in case we hit a group which needs to be split
 	var items = [];
@@ -668,8 +661,7 @@ function(ev) {
 ZmGroupView._keyPressHdlr =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
-	if (ev.metaKey || ev.altKey || ev.ctrlKey)
-		return;
+	if (ev.metaKey || ev.altKey || ev.ctrlKey) { return; }
 
 	var e = DwtUiEvent.getTarget(ev);
 	var view = e ? Dwt.getObjectFromElement(e) : null;
@@ -688,18 +680,15 @@ function(contact, abridged) {
 	// make sure it's a real ZmContact
 	var real = contact.list._realizeContact(contact);
 	var members = real.getGroupMembers().good.getArray();
-
 	var size = (members.length <= 5 || !abridged)
 		? members.length
 		: Math.min(members.length, 5);
-
-	var hasMore = (abridged && size < members.length);
 
 	var subs = {
 		fileAs: real.getFileAs(),
 		members: members,
 		size: size,
-		hasMore: hasMore
+		hasMore: (abridged && size < members.length)
 	};
 	return (AjxTemplate.expand("abook.Contacts#PrintGroup", subs));
 };
@@ -713,14 +702,13 @@ function(contact, abridged) {
 * @param parent			[ZmGroupView]	containing widget
 */
 ZmGroupListView = function(parent) {
-	if (arguments.length == 0) return;
+	if (arguments.length == 0) { return; }
 	DwtListView.call(this, {parent:parent, className:"DwtChooserListView",
 							headerList:this._getHeaderList(parent), view:parent._view});
 };
 
 ZmGroupListView.prototype = new DwtListView;
 ZmGroupListView.prototype.constructor = ZmGroupListView;
-
 
 ZmGroupListView.prototype.setItems =
 function(items) {
@@ -734,12 +722,11 @@ function(items) {
 
 ZmGroupListView.prototype._getHeaderList =
 function() {
-	var view = this._view;
-	var headerList = [];
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_TYPE, icon:"Contact", width:20}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_NAME, text:ZmMsg._name, width:100}));
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email}));
-	return headerList;
+	return [
+		(new DwtListHeaderItem({field:ZmItem.F_TYPE,	icon:"Contact",		width:20})),
+		(new DwtListHeaderItem({field:ZmItem.F_NAME,	text:ZmMsg._name,	width:100})),
+		(new DwtListHeaderItem({field:ZmItem.F_EMAIL,	text:ZmMsg.email}))
+	];
 };
 
 ZmGroupListView.prototype._getCellContents =
@@ -750,12 +737,11 @@ function(html, idx, item, field, colIdx, params) {
 ZmGroupListView.prototype._itemClicked =
 function(clickedEl, ev) {
 	// Ignore right-clicks, we don't support action menus
-	if (!ev.shiftKey && !ev.ctrlKey && ev.button == DwtMouseEvent.RIGHT) {
-		return;
-	} else {
-		DwtListView.prototype._itemClicked.call(this, clickedEl, ev);
-	}
+	if (!ev.shiftKey && !ev.ctrlKey && ev.button == DwtMouseEvent.RIGHT) { return; }
+
+	DwtListView.prototype._itemClicked.call(this, clickedEl, ev);
 };
+
 
 /**
 * Creates a group members list view
@@ -764,12 +750,9 @@ function(clickedEl, ev) {
 *
 * @param parent			[ZmGroupView]	containing widget
 */
-
-
-ZmGroupMembersListView = function(parent){
-    if(arguments.length == 0) return;
-
-    ZmGroupListView.call(this, parent);
+ZmGroupMembersListView = function (parent) {
+	if (arguments.length == 0) { return; }
+	ZmGroupListView.call(this, parent);
 };
 
 ZmGroupMembersListView.prototype = new ZmGroupListView;
@@ -777,15 +760,19 @@ ZmGroupMembersListView.prototype.constructor = ZmGroupMembersListView;
 
 ZmGroupMembersListView.prototype._getHeaderList =
 function() {
-	var headerList = [];
-	headerList.push(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email, view:this._view}));
-	return headerList;
+	return [(new DwtListHeaderItem({field:ZmItem.F_EMAIL, text:ZmMsg.email, view:this._view}))];
 };
 
 ZmGroupMembersListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
-    if (field == ZmItem.F_EMAIL) {
+	if (field == ZmItem.F_EMAIL) {
 		html[idx++] = AjxStringUtil.htmlEncode(item, true);
 	}
 	return idx;
+};
+
+// override from base class since it is handled differently
+ZmGroupMembersListView.prototype._getItemId =
+function(item) {
+	return (item && item.id) ? item.id : Dwt.getNextId();
 };
