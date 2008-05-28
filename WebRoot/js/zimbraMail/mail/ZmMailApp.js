@@ -878,13 +878,17 @@ function(creates, force) {
 			}
 		}
 	}
+	// If any alert-worthy mail, beep.
+	if ((alertNewMail || accountAlerts) && appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS)){
+		AjxDispatcher.require("Alert");
+		ZmSoundAlert.getInstance().start();
+	}
+	// Do any alert on the mail app tab.
 	if (alertNewMail) {
 		this.startAlert();
 		ZmBrowserAlert.getInstance().start(ZmMsg.newMessage);
-		if (appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS)) {
-			ZmSoundAlert.getInstance().start();
-		}
 	}
+	// Do any alert on account accordion items.
 	if (accountAlerts) {
 		AjxDispatcher.require("Alert");
 		for (var accountId in accountAlerts) {
