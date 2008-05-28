@@ -293,9 +293,11 @@ function(addr) {
 	}
 
 	var aliases = appCtxt.get(ZmSetting.MAIL_ALIASES);
-	for (var i = 0; i < aliases.length; i++) {
-		if (addr == aliases[i])
-			return true;
+	if (aliases && aliases.length) {
+		for (var i = 0; i < aliases.length; i++) {
+			if (addr == aliases[i])
+				return true;
+		}
 	}
 
 	return false; 

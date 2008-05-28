@@ -46,6 +46,8 @@ ZmFolder = function(params) {
 ZmFolder.prototype = new ZmOrganizer;
 ZmFolder.prototype.constructor = ZmFolder;
 
+// needed to construct USER_ROOT if mail disabled
+ZmOrganizer.ORG_CLASS[ZmId.ORG_FOLDER] = "ZmFolder";
 
 ZmFolder.SEP 									= "/";							// path separator
 

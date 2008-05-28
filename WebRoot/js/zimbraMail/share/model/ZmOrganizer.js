@@ -61,11 +61,14 @@ ZmOrganizer = function(params) {
 	this.zid = params.zid;
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
-	if (params.perm) this.setPermissions(params.perm);
+	if (params.perm) {
+		this.setPermissions(params.perm);
+	}
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 
 	var color = (this.parent && !params.color) ? this.parent.color : params.color;
-	this.color = color || ZmOrganizer.ORG_COLOR[id] || ZmOrganizer.ORG_COLOR[this.nId] || ZmOrganizer.DEFAULT_COLOR[this.type];
+	this.color = color || ZmOrganizer.ORG_COLOR[id] || ZmOrganizer.ORG_COLOR[this.nId] ||
+				 ZmOrganizer.DEFAULT_COLOR[this.type] || ZmOrganizer.C_NONE;
 
 	if (id && params.tree) {
 		appCtxt.cacheSet(id, this);

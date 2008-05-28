@@ -323,9 +323,8 @@ ZmTreeView.prototype._addNew =
 function(parentNode, organizer, index, noTooltips) {
 	var ti;
 	// check if we're adding a datasource folder
-	var dss = (organizer.type == ZmOrganizer.FOLDER)
-		? appCtxt.getDataSourceCollection().getByFolderId(organizer.nId)
-		: null;
+	var dsColl = (organizer.type == ZmOrganizer.FOLDER) && appCtxt.getDataSourceCollection();
+	var dss = dsColl && dsColl.getByFolderId(organizer.nId);
 	var ds = (dss && dss.length > 0) ? dss[0] : null;
 
 	if (ds && ds.type == ZmAccount.IMAP) {
