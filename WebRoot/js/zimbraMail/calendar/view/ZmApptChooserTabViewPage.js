@@ -718,6 +718,40 @@ ZmApptChooser = function(parent, buttonInfo) {
 ZmApptChooser.prototype = new DwtChooser;
 ZmApptChooser.prototype.constructor = ZmApptChooser;
 
+ZmApptChooser.prototype.toString =
+function() {
+	return "ZmApptChooser";
+};
+
+// overload to handle contact groups - see bug 28398
+ZmApptChooser.prototype.addItems =
+function(items, view, skipNotify, id) {
+	var newList;
+
+	if (view == DwtChooserListView.TARGET) {
+		newList = [];
+		var list = (items instanceof AjxVector) ? items.getArray() : (items instanceof Array) ? items : [items];
+
+		for (var i = 0; i < list.length; i++) {
+			var item = list[i];
+			if (item instanceof ZmContact && item.isGroup()) {
+				var addrs = item.getGroupMembers().good.getArray();
+				for (var j = 0; j < addrs.length; j++) {
+					var contact = new ZmContact(null);
+					contact.initFromEmail(addrs[j]);
+					newList.push(contact);
+				}
+			} else {
+				newList.push(item);
+			}
+		}
+	} else {
+		newList = items;
+	}
+
+	DwtChooser.prototype.addItems.call(this, newList, view, skipNotify, id);
+};
+
 ZmApptChooser.prototype._createSourceListView =
 function() {
 	return new ZmApptChooserListView(this, DwtChooserListView.SOURCE, this.parent.type);
@@ -734,7 +768,7 @@ function(event, details) {
 	DwtChooser.prototype._notify.call(this, event, details);
 };
 
-/*
+/**
 * The item is a ZmContact or ZmResource. Its address is used for comparison.
 *
 * @param item	[ZmContact]			ZmContact or ZmResource
@@ -744,8 +778,6 @@ ZmApptChooser.prototype._isDuplicate =
 function(item, list) {
 	return list.containsLike(item, item.getEmail);
 };
-
-/***********************************************************************************/
 
 /**
  * This class creates a specialized source list view for the contact chooser. The items
