@@ -1137,6 +1137,7 @@ function(listView) {
 	} else {
 		listView.removeAll(true);
 		listView._setNoResultsHtml();
+		this._resetNavToolBarButtons(this._currentView);
 	}
 };
 
