@@ -513,6 +513,26 @@ function(id, type) {
 	return (type && (localId >= ZmOrganizer.FIRST_USER_ID[type])) ? id : localId;
 };
 
+/**
+ * Parses an id into an object with fields for account and normalized id
+ *
+ * @param id		[string]		ID of an organizer
+ * @param result	[Object]		Optional object in which the result is stored
+ */
+ZmOrganizer.parseId =
+function(id, result) {
+	result = result || {};
+	var idx = id.indexOf(":");
+	if (idx == -1) {
+		result.account = appCtxt.getMainAccount();
+		result.id = id ;
+	} else {
+		result.account = appCtxt.getAccount(id.substring(0, idx));
+		result.id = id.substr(idx + 1);
+	}
+	return result;
+};
+
 // Public methods
 
 ZmOrganizer.prototype.toString = 

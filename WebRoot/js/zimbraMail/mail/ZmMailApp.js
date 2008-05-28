@@ -860,12 +860,21 @@ function(creates, force) {
 	}
 
 	// If we didn't display an alert-worthy new message, loop thru all creates looking for one.
-	if (!alertNewMail && mailCreates) {
+	var accountAlerts;
+	if (mailCreates && (!alertNewMail || appCtxt.multiAccounts)) {
+		var parsedId;
 		for (var i = 0, count = mailCreates.length; i < count; i++) {
 			var mc = mailCreates[i];
-			if ((mc.l == ZmOrganizer.ID_INBOX) && mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1)) { // if (inInbox && isUnread)
-				alertNewMail = true;
-				break;
+			if (mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1)) {
+				parsedId = ZmOrganizer.parseId(mc.l, parsedId);
+				if (parsedId.id == ZmOrganizer.ID_INBOX) {
+					if (parsedId.account == appCtxt.getActiveAccount()) {
+						alertNewMail = true;
+					} else if (parsedId.account == appCtxt.getMainAccount()) { // Restricted to main account since we don't always get notifications for children.
+						accountAlerts = accountAlerts || {};
+						accountAlerts[parsedId.account.id] = parsedId.account; 
+					}
+				}
 			}
 		}
 	}
@@ -874,6 +883,12 @@ function(creates, force) {
 		ZmBrowserAlert.getInstance().start(ZmMsg.newMessage);
 		if (appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS)) {
 			ZmSoundAlert.getInstance().start();
+		}
+	}
+	if (accountAlerts) {
+		AjxDispatcher.require("Alert");
+		for (var accountId in accountAlerts) {
+			ZmAccountAlert.get(accountAlerts[accountId]).start();
 		}
 	}
 };

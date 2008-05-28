@@ -147,6 +147,22 @@ function(overviewId, treeId) {
 };
 
 /**
+ * Returns the accordion item for the account.
+ */
+ZmOverviewController.prototype.getAccordionItem =
+function(account) {
+	if (appCtxt.multiAccounts) {
+		for (var i in this._accordion) {
+			var accordionItem = this._accordion[i].getItem(account.itemId);
+			if (accordionItem) {
+				return accordionItem;
+			}
+		}
+	}
+	// return null;
+};
+
+/**
  * For offline/zdesktop, this method updates the status icon for each account
  * as returned by each server response in the context part of the SOAP header
  *
