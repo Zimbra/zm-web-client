@@ -264,31 +264,96 @@
 		<script type="text/javascript">
 			<!--
 
-			submitCompose = function(){
-				myEditor.saveHTML();
-				var stripHTML = /<\S[^><]*>/g;
-				var stripNBSP  = /&nbsp;/g
-				document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
-			}
-			var myEditor = new YAHOO.widget.Editor('body', {
-				height: '300px',
-				width: '100%',
-				dompath: false, //Turns on the bar at the bottom
-				animate: true, //Animates the opening, closing and moving of Editor windows
+            submitCompose = function(){
+                myEditor.saveHTML();
+                var stripHTML = /<\S[^><]*>/g;
+                var stripNBSP  = /&nbsp;/g
+                document.getElementById("bodyText").value = document.getElementById("body").value.replace(stripNBSP, ' ').replace(/<br>/gi, '\n').replace(stripHTML, '').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+            }
+            
+            var myEditor = new YAHOO.widget.Editor('body', {
+                height: '300px',
+                width: '100%',
+                dompath: false, //Turns on the bar at the bottom
+                animate: true, //Animates the opening, closing and moving of Editor windows
                 plainText: true,
                 <c:if test="${param.op eq 'reply' or param.op eq 'replyAll'}" >
-                focusAtStart: true,
+                           focusAtStart: true,
                 </c:if>
                 css: 'html {height: 95%;}body {height: 100%;padding: 7px; background-color: #fff; color:<c:out value="${mailbox.prefs.htmlEditorDefaultFontColor}"/>; font-size:${mailbox.prefs.htmlEditorDefaultFontSize}; font-family: <c:out value="${mailbox.prefs.htmlEditorDefaultFontFamily}"/>,helvetica,clean,sans-serif;}a {color: blue;text-decoration: underline;cursor: pointer;}.warning-localfile {border-bottom: 1px dashed red !important;}.yui-busy {cursor: wait !important;}img.selected { border: 2px dotted #808080;}img {cursor: pointer !important;border: none;}',
-				extracss: '.yui-spellcheck { background-color: yellow; }'
+                extracss: '.yui-spellcheck { background-color: yellow; }',
+                collapse: true,
+                draggable: false,
+                buttonType: 'advanced'
             });
-			enableSpellCheck(myEditor);
-			myEditor.on('editorContentLoaded', function() {
-					var b = document.getElementById('body');
-                    var html = b.innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-                    myEditor.setEditorHTML((html=="")? "<br/>" : html);
-			}, myEditor, true);
+            enableSpellCheck(myEditor);
+            myEditor.on('editorContentLoaded', function() {
+                var b = document.getElementById('body');
+                var html = b.innerHTML.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+                myEditor.setEditorHTML((html=="")? "<br/>" : html);
+            }, myEditor, true);
+
+            /*hide titlebar*/
             myEditor._defaultToolbar.titlebar = false;
+
+            /* insert span when no selection*/
+            myEditor.on('toolbarLoaded', function() {
+                 this.toolbar.on('fontnameClick', function(o) {
+                    if (!this._hasSelection()) {
+                        var button = o.button;
+                        this._createCurrentElement('span', {
+                            fontFamily: button.value
+                        });
+                        var el = this.currentElement[0];
+                        if (this.browser.webkit) {
+                            //Little Safari Hackery here..
+                            el.innerHTML = '<span class="yui-non"> </span>';
+                            el = el.firstChild;
+                            this._getSelection().setBaseAndExtent(el, 1, el, el.innerText.length);
+                        } else if (this.browser.ie || this.browser.opera) {
+                            el.innerHTML = ' ';
+                        }
+                        this._focusWindow();
+                        this._selectNode(el);
+                        return false;
+                    }
+                }, this, true);
+
+                this.toolbar.on('fontsizeClick', function(o) {
+                    if (!this._hasSelection()) {
+                        var button = o.button;
+                        this._createCurrentElement('span', {
+                            fontSize: button.get('label') + 'px'
+                        });
+                        var el = this.currentElement[0];
+                        if (this.browser.webkit) {
+                            //Little Safari Hackery here..
+                            el.innerHTML = '<span class="yui-non"> </span>';
+                            el = el.firstChild;
+                            this._getSelection().setBaseAndExtent(el, 1, el, el.innerText.length);
+                        } else if (this.browser.ie || this.browser.opera) {
+                            el.innerHTML = ' ';
+                        }
+                        this._focusWindow();
+                        this._selectNode(el);
+                        return false;
+                    }
+                }, this, true);
+            });
+            /*enable buttons that are disabled by default */
+            myEditor.on('afterNodeChange', function() {
+                this.toolbar.enableButton('fontname');
+                this.toolbar.enableButton('fontsize');
+                this.toolbar.enableButton('subscript');
+                this.toolbar.enableButton('superscript');
+                this.toolbar.enableButton('forecolor');
+                this.toolbar.enableButton('backcolor');
+                this.toolbar.enableButton('indent');
+                this.toolbar.enableButton('outdent');
+                this.toolbar.enableButton('heading');
+                this.toolbar.enableButton('createlink');
+
+            });
             myEditor.render();
 			// -->
 		</script>
