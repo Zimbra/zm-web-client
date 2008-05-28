@@ -1158,11 +1158,14 @@ function(appName, force, callback, errorCallback, params) {
 		if (!this._apps[appName]) {
 			this._createApp(appName);
 		}
-		var appEnabled = appCtxt.get(ZmApp.SETTING[appName]);
-		var upsellEnabled = appCtxt.get(ZmApp.UPSELL_SETTING[appName]);
-		if (!appEnabled && upsellEnabled) {
+
+		if (!appCtxt.get(ZmApp.SETTING[appName]) &&
+			appCtxt.get(ZmApp.UPSELL_SETTING[appName]))
+		{
 			this._createUpsellView(appName);
-		} else {
+		}
+		else
+		{
 			DBG.println(AjxDebug.DBG1, "Launching app " + appName);
 			var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback, appName]);
 			var eventType = [appName, ZmAppEvent.PRE_LAUNCH].join("_");
