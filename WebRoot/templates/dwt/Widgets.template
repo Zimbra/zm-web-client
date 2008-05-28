@@ -17,11 +17,11 @@
   <table cellpadding='2' cellspacing='0' border='0'>
     <tr>
       <td>
-        <label id='${id}_text_left' for='${id}_input' class='Test' style='text-align:right'></label>
+        <label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
       </td>
       <td> <input id='${id}_input' name='${name}' value='${value}' type='checkbox' ${checked}> </td>
       <td>
-        <label id='${id}_text_right' for='${id}_input' class='Test' style='text-align:left'></label>
+        <label id='${id}_text_right' for='${id}_input' class='Text' style='text-align:left'></label>
       </td>
     </tr>
   </table>
@@ -31,11 +31,11 @@
   <table cellpadding='2' cellspacing='0' border='0'>
     <tr>
       <td>
-        <label id='${id}_text_left' for='${id}_input' class='Test' style='text-align:right'></label>
+        <label id='${id}_text_left' for='${id}_input' class='Text' style='text-align:right'></label>
       </td>
       <td> <input id='${id}_input' name='${name}' value='${value}' type='radio' ${checked}> </td>
       <td>
-        <label id='${id}_text_right' for='${id}_input' class='Test' style='text-align:left'></label>
+        <label id='${id}_text_right' for='${id}_input' class='Text' style='text-align:left'></label>
       </td>
     </tr>
   </table>

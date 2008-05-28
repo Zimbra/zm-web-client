@@ -2219,6 +2219,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZOptionsLabelTop,
 .ZOptionsLabelNarrow,
 .ZOptionsTableLabel {
+	@Text@
 	width: 150px;
 	font-weight: bold;
 	white-space: nowrap;
