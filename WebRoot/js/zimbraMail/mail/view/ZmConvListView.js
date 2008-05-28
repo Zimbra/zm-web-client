@@ -250,6 +250,23 @@ function(conv, fieldId) {
 	var origLen = part1 ? part1.length : 0;
 	// might get a weird case where there are no participants in message
 	if (origLen > 0) {
+
+		// bug 23832 - create notif for conv in sent gives us sender as participant, we want recip
+		var folder = appCtxt.getById(this._folderId);
+		if ((origLen == 1) && (part1[0].type == AjxEmailAddress.FROM) && folder &&
+			(folder.isUnder(ZmFolder.ID_SENT) || folder.isUnder(ZmFolder.ID_DRAFTS) ||
+			folder.isUnder(ZmFolder.ID_OUTBOX))) {
+
+			var msg = conv.getFirstHotMsg();
+			if (msg) {
+				var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
+	            if (!(folder.isUnder(ZmFolder.ID_DRAFTS) || (addrs && addrs.length))) {
+					addrs = msg.getAddresses(AjxEmailAddress.FROM).getArray();
+				}
+				part1 = addrs;
+			}
+		}
+
 		var headerCol = this._headerHash[ZmItem.F_FROM];
 		var partColWidth = headerCol._width;
 		var part2 = this._fitParticipants(part1, conv.participantsElided, partColWidth);
