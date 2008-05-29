@@ -242,7 +242,7 @@
                                                                     <select name="classProp" id="markAs">
                                                                         <option <c:if test="${compose.classProp eq 'PUB'}">selected </c:if> value="PUB"><fmt:message key="public"/>
                                                                         <option <c:if test="${compose.classProp eq 'PRI'}">selected </c:if> value="PRI"><fmt:message key="private"/>
-                                                                        <option <c:if test="${compose.classProp eq 'CON'}">selected </c:if> value="CON"><fmt:message key="confidential"/>
+                                                                        <%--<option <c:if test="${compose.classProp eq 'CON'}">selected </c:if> value="CON"><fmt:message key="confidential"/>--%>
                                                                     </select>
                                                                 </td>
                                                             </tr>
