@@ -146,7 +146,10 @@ function() {
 		var inTable = false;
 		for (var j = 0; j < numAppts; j++) {
 			var appt = list.get(j);
-			if (appt.startDate.getDate() == nextDay.getDate() || numDays == 1) {
+			var apptStartTime = appt.startDate.getTime();
+			var apptEndTime = appt.endDate.getTime();
+			var dayTime = nextDay.getTime();
+			if ( (appt.startDate.getDate() == nextDay.getDate()) || ((dayTime >= apptStartTime) && (dayTime < apptEndTime)) || numDays == 1) {
 				var loc = appt.getLocation();
 				var status = appt.getParticipantStatusStr();
 				if (appt.isAllDayEvent()) {
