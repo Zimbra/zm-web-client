@@ -16,7 +16,7 @@
  */
 
 /**
- * Abstract base class of flahing alerts.
+ * Abstract base class of flashing alerts.
  */
 ZmAlert = function() {
 	this._isLooping = false;
@@ -55,6 +55,9 @@ function() {
 ZmAlertLoop = function() {
 	this._alerts = new AjxVector();
 	this._flashOn = false;
+	if (appCtxt.multiAccounts) {
+		appCtxt.addActiveAcountListener(new AjxListener(this, this._accountChangeListener), 0);
+	}
 };
 
 ZmAlertLoop.prototype._add =
@@ -79,6 +82,16 @@ function() {
 	this._flashOn = !this._flashOn;
 	for (var i = 0, count = this._alerts.size(); i < count; i++) {
 	    this._alerts.get(i)._update(this._flashOn);
+	}
+};
+
+ZmAlertLoop.prototype._accountChangeListener =
+function() {
+	// Stop all flashing alerts.
+	var array = this._alerts.getArray();
+	var alert;
+	while (alert = array.unshift()) {
+		alert.stop();
 	}
 };
 

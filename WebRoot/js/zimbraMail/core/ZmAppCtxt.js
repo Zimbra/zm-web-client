@@ -602,11 +602,22 @@ ZmAppCtxt.prototype.setActiveAccount =
 function(account, callback) {
 	this._activeAccount = account;
 	this._activeAccount.load(callback);
+	if (this._evtMgr) {
+		this._evt = this._evt || new ZmEvent();
+		this._evt.account = account;
+		this._evtMgr.notifyListeners("ACCOUNT", this._evt);
+	}
 };
 
 ZmAppCtxt.prototype.getActiveAccount =
 function() {
 	return this.isChildWindow ? parentAppCtxt._activeAccount : this._activeAccount;
+};
+
+ZmAppCtxt.prototype.addActiveAcountListener =
+function(listener, index) {
+	this._evtMgr = this._evtMgr || new AjxEventMgr();
+	return this._evtMgr.addListener("ACCOUNT", listener, index);
 };
 
 ZmAppCtxt.prototype.getIdentityCollection =

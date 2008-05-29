@@ -147,16 +147,19 @@ function(overviewId, treeId) {
 };
 
 /**
- * Returns the accordion item for the account.
+ * Returns the app's overview's accordion item.
+ *
+ * @param account	[ZmAccount]	The account
+ * @param app		[ZmApp]	The app
  */
 ZmOverviewController.prototype.getAccordionItem =
-function(account) {
+function(account, app) {
 	if (appCtxt.multiAccounts) {
-		for (var i in this._accordion) {
-			var accordionItem = this._accordion[i].getItem(account.itemId);
-			if (accordionItem) {
-				return accordionItem;
-			}
+		app = app || appCtxt.getCurrentApp(); 
+		var id = app.getOverviewPanelContentId();
+		var accordion = this._accordion[id];
+		if (accordion) {
+			return accordion.getItem(account.itemId);
 		}
 	}
 	// return null;
