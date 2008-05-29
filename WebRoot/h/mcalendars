@@ -38,6 +38,15 @@
     <c:if test="${empty selectedFolder or not selectedFolder.isAppointmentView}"><c:set var="selectedFolder" value="${mailbox.calendar}"/></c:if>
     <c:set var="newShared" value="${not empty uploader.params.actionNewSharedCalendar or param.action eq 'newShared'}"/>
     <c:set var="newCalendar" value="${not empty uploader.params.actionNewCalendar or not empty uploader.params.actionNewSubscribedCalendar or newShared}"/>
+    <c:set var="sendFreeBusy" value="${not empty uploader.params.actionSendFreeBusyLink}"/>
+
+    <c:if test="${sendFreeBusy}" >
+        <c:set var="bodyCont" value="${fn:substringBefore(fn:escapeXml(zm:getFolderRestURL(mailbox, selectedFolder)), '/Calendar')}" />
+        <c:set var="bodyCont" value="${bodyCont}?fmt=freebusy" />
+          <c:redirect url="/h/search?action=compose">
+			  <c:param name="body" value="${bodyCont}" />
+		  </c:redirect>
+    </c:if>
 
     <fmt:message var="title" key="manageCalendars"/>
 
@@ -78,6 +87,8 @@
                                         <app:button id="OPNEWSUB" name="actionNewSubscribedCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNewSubscribed" text="calendarNewSubscribed"/>
                                         <td><div class='vertSep'></div></td>
                                         <app:button id="OPNEWLINK" name="actionNewSharedCalendar" src="calendar/ImgNewAppointment.gif" tooltip="calendarNewShared" text="calendarNewShared"/>
+                                        <td><div class='vertSep'></div></td>
+                                        <app:button id="OPFREEBUSYLINK" name="actionSendFreeBusyLink" src="calendar/ImgNewAppointment.gif" tooltip="sendFreeBusyLink" text="sendFreeBusyLink"/>
                                     </tr>
                                 </table>
                             </td>
