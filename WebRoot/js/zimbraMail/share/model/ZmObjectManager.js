@@ -839,18 +839,25 @@ function(ev) {
 ZmObjectManager.prototype._rightClickListener =
 function(ev) {
 	ev.button = DwtMouseEvent.RIGHT;
-	this._mouseDownListener(ev);
+	return this._mouseDownListener(ev);
 };
 
 ZmObjectManager.prototype._mouseDownListener =
 function(ev) {
-	ev._returnValue = true;
-	ev._dontCallPreventDefault = true;
-	ev._stopPropagation = true;
+        ev._dontCallPreventDefault = true;
+        ev._returnValue = true;
+        ev._stopPropagation = false;
+
 	var span = this._findObjectSpan(ev.target);
-	if (!span) {return true;}
+	if (!span) {
+                return true;
+        }
 	var object = this._objects[span.id];
-	if (!object) {return true;}
+	if (!object) {
+                return true;
+        }
+
+	ev._stopPropagation = true;
 
 	var shell = DwtShell.getShell(window);
 	var manager = shell.getHoverMgr();
@@ -867,8 +874,8 @@ function(ev) {
 		var menu = object.handler.getActionMenu(object.object, span, object.context, isDialog);
 		if (menu) {
 			menu.popup(0, ev.docX, ev.docY);
-            return true;
-        }
+                        return true;
+                }
 	} else if (ev.button == DwtMouseEvent.LEFT) {
 		if (this._selectCallback) {
 			this._selectCallback.run();
