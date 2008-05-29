@@ -870,29 +870,31 @@ function(creates, force) {
 				if (parsedId.id == ZmOrganizer.ID_INBOX) {
 					if (parsedId.account == appCtxt.getActiveAccount()) {
 						alertNewMail = true;
-					} else if (parsedId.account == appCtxt.getMainAccount()) { // Restricted to main account since we don't always get notifications for children.
+					} else {
 						accountAlerts = accountAlerts || {};
-						accountAlerts[parsedId.account.id] = parsedId.account; 
+						accountAlerts[parsedId.account.id] = parsedId.account;
 					}
 				}
 			}
 		}
 	}
-	// If any alert-worthy mail, beep.
-	if ((alertNewMail || accountAlerts) && appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS)){
+	// If any alert-worthy mail, beep and flash browser.
+	if ((alertNewMail || accountAlerts)){
 		AjxDispatcher.require("Alert");
-		ZmSoundAlert.getInstance().start();
+		if (appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS)) {
+			ZmSoundAlert.getInstance().start();
+		}
+		ZmBrowserAlert.getInstance().start(ZmMsg.newMessage);
 	}
 	// Do any alert on the mail app tab.
-	if (alertNewMail) {
+	if (alertNewMail && (appCtxt.getActiveAccount() == appCtxt.getMainAccount())) {
 		this.startAlert();
-		ZmBrowserAlert.getInstance().start(ZmMsg.newMessage);
 	}
 	// Do any alert on account accordion items.
 	if (accountAlerts) {
 		AjxDispatcher.require("Alert");
 		for (var accountId in accountAlerts) {
-			ZmAccountAlert.get(accountAlerts[accountId]).start();
+			ZmAccountAlert.get(accountAlerts[accountId]).start(this);
 		}
 	}
 };
