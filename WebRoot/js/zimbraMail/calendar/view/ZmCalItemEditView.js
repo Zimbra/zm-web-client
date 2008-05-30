@@ -151,7 +151,7 @@ function(excludeAttendees) {
 		? this._origFormValueMinusAttendees
 		: this._origFormValue;
 
-	return (this._gotAttachments()) ||
+	return (this._gotAttachments() || this._removedAttachments()) ||
 			this._isDirty ||
 		   (this._formValue(excludeAttendees) != formValue);
 };
@@ -656,6 +656,18 @@ function() {
 
 	return false;
 };
+
+ZmCalItemEditView.prototype._removedAttachments =
+function(){
+    var attCheckboxes = document.getElementsByName(ZmCalItem.ATTACHMENT_CHECKBOX_NAME);
+		if (attCheckboxes && attCheckboxes.length > 0) {
+			for (var i = 0; i < attCheckboxes.length; i++) {
+				if (!attCheckboxes[i].checked)
+					return true;
+		}
+	}
+    return false;
+}
 
 ZmCalItemEditView.prototype._removeAttachment =
 function(removeId) {
