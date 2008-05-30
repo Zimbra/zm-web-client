@@ -59,6 +59,9 @@ function(calItem) {
 	if (calItem && calItem._orig)
 		calItem._orig.message = null;
 
+    //Cache the item for further processing
+    calItem.cache();
+
 	appCtxt.setStatusMsg(ZmMsg.taskSaved);
 };
 

@@ -216,6 +216,15 @@ function() {
 	this.tagHash = {};
 };
 
+ZmItem.prototype.cache =
+function(){
+  if(this.id){
+      appCtxt.cacheSet(this.id, this);
+      return true;
+  }
+  return false;  
+};
+
 /**
 * Returns true is this item has the given tag.
 *

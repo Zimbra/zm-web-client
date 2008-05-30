@@ -1098,18 +1098,25 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	if (orgName) org.setAttribute("d", orgName);
 
 	// handle attachments
+    //ZmItem.FLAG_PROP[ZmItem.FLAG_ATTACH]
+    this.flagLocal(ZmItem.FLAG_ATTACH, false);
+    //this.hasAttach = false;
 	this.getAttachments(); // bug 22874: make sure to populate _validAttachments
 	if (attachmentId != null || (this._validAttachments != null && this._validAttachments.length)) {
 		var attachNode = soapDoc.set("attach", null, m);
-		if (attachmentId)
+		if (attachmentId){
 			attachNode.setAttribute("aid", attachmentId);
+            this.flagLocal(ZmItem.FLAG_ATTACH, true);
+        }
 
 		if (this._validAttachments) {
-			for (var i = 0; i < this._validAttachments.length; i++) {
+            var validAttLen = this._validAttachments.length;
+            for (var i = 0; i < validAttLen; i++) {
 				var msgPartNode = soapDoc.set("mp", null, attachNode);
 				msgPartNode.setAttribute("mid", (this.invId || this.message.id));
 				msgPartNode.setAttribute("part", this._validAttachments[i].part);
 			}
+            if(validAttLen > 0)  this.flagLocal(ZmItem.FLAG_ATTACH, true);
 		}
 	}
 
