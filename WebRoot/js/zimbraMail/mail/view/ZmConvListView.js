@@ -101,7 +101,7 @@ function(defaultColumnSort) {
 	// Show "From" or "To" depending on which folder we're looking at
 	var isFolder = this._resetFromColumnLabel();
 	// set the received column name based on query string
-	colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
+	var colLabel = isFolder.sent ? ZmMsg.sentAt : isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received;
 	var headerCol = this._headerHash[ZmItem.F_DATE];
 	var recdColSpan = document.getElementById(DwtId.getListViewHdrId(DwtId.WIDGET_HDR_LABEL, this._view, headerCol._field));
 	if (recdColSpan) {
@@ -136,32 +136,33 @@ function(item) {
 
 ZmConvListView.prototype._getHeaderList =
 function(parent) {
-
 	var hList = [];
+
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON,
-										  name:ZmMsg.selection}));
+		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, resizeable:true}));
 	}
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_EXPAND, icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON,
-									  name:ZmMsg.expand}));
+
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_EXPAND, icon:"NodeCollapsed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.expand, resizeable:true}));
+
 	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_FLAG, icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON,
-										  name:ZmMsg.flag}));
+		hList.push(new DwtListHeaderItem({field:ZmItem.F_FLAG, icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, resizeable:true}));
 	}
+
     if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        hList.push(new DwtListHeaderItem({field:ZmItem.F_PRIORITY, icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON,
-        								  name:ZmMsg.priority}));
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_PRIORITY, icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, resizeable:true}));
     }
+
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag}));
+		hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, resizeable:true}));
 	}
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status}));
+
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status, resizeable:true}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.from, width:ZmConvListView.COL_WIDTH_FROM, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment}));
-    hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, resizeable:true}));
+    hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:ZmMsg.subject, sortable:ZmItem.F_SUBJECT, noRemove:true, resizeable:true}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true}));
 
 	return hList;
 };
