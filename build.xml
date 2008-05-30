@@ -245,8 +245,6 @@
         </copy>
 		<copy todir='${webapp.dir}/help'>
 			<fileset refid='help.fileset' />
-		</copy>
-		<copy todir='${webapp.dir}/help'>
 			<fileset refid='network.help.fileset' />
 		</copy>
 		<copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
@@ -941,14 +939,18 @@ if (ext == null) ext = "";
 				<!-- NOTE:	This allows us to exclude help dirs from the base
 							help dir that are replaced by the network help. -->
 				<dirset id='network.help.dirset' dir='${network.zwc.help.dir}' includes='*/*' />
-				<pathconvert property='network.help.excludes' pathsep=',' refid="network.help.dirset">
+				<pathconvert property='help.excludes2' pathsep=',' refid="network.help.dirset">
 					<regexpmapper from="^.*/WebRoot/help/(.*)$$" to="\1/**"/>
 				</pathconvert>
 			</then>
 		</if>
+		<exec command="pwd" />
+		<echo>help.includes: ${help.includes}</echo>
+		<echo>help.excludes: ${help.excludes}</echo>
+		<echo>help.excludes2: ${help.excludes2}</echo>
 		<fileset id='help.fileset' dir='${help.dir}'
 				 includes='${help.includes}'
-				 excludes='${help.excludes},${network.help.excludes}' 
+				 excludes='${help.excludes},${help.excludes2}' 
 		/>
 	</target>
 
