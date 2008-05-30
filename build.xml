@@ -944,10 +944,6 @@ if (ext == null) ext = "";
 				</pathconvert>
 			</then>
 		</if>
-		<exec command="pwd" />
-		<echo>help.includes: ${help.includes}</echo>
-		<echo>help.excludes: ${help.excludes}</echo>
-		<echo>help.excludes2: ${help.excludes2}</echo>
 		<fileset id='help.fileset' dir='${help.dir}'
 				 includes='${help.includes}'
 				 excludes='${help.excludes},${help.excludes2}' 
