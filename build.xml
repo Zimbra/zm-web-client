@@ -96,7 +96,7 @@
 
     <target name='common'>
 		<condition property='build.network'>
-			<equals arg1="${build.type}" arg2="NETWORK" />
+			<equals arg1="${zimbra.buildinfo.type}" arg2="NETWORK" />
 		</condition>
         <property name='common.web.includes' value='${custom.web.includes},js/**,css/**'/>
         <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**,**/AjxTimezoneData.js'/>
