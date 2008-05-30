@@ -332,7 +332,7 @@ ZmChatWidget.prototype._init = function() {
 		sendButton.setText(ZmMsg.send);
 		sendButton.addSelectionListener(new AjxListener(this, this.sendInput));
 		var sendStyle = sendButton.getHtmlElement().style;
-		sendStyle.bottom = 2; // Antoher hacky padding value
+		sendStyle.bottom = 1; // Antoher hacky padding value
 		sendStyle.right = 0;
 		sendStyle.width = sendParent.style.width;
 	}
