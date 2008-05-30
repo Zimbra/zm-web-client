@@ -634,7 +634,7 @@ function() {
 	this._attachDivId = Dwt.getNextId();
 
 	html[i++] = "<form style='margin:0;padding:0' method='POST' action='";
-	html[i++] = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
+	html[i++] = appCtxt.get(ZmSetting.CSFE_UPLOAD_URI)+"&fmt=extended";
 	html[i++] = "' id='";
 	html[i++] = this._uploadFormId;
 	html[i++] = "' enctype='multipart/form-data'><div id='";
@@ -956,12 +956,43 @@ function(ev) {
 
 ZmCalItemEditView.prototype._attsDoneCallback =
 function(status, attId) {
-	DBG.println(AjxDebug.DBG1, "Attachments: status = " + status + ", attId = " + attId);
-	if (status == 200) {
-		this._controller.saveCalItem(attId);
+    DBG.println(AjxDebug.DBG1, "Attachments: status = " + status + ", attId = " + attId);
+    if (status == AjxPost.SC_OK) {
+        //Checking for Zero sized/wrong path attachments
+        var zeroSizedAttachments = false;
+        if(typeof attId != "string"){
+            var attachmentIds = [];
+            for (var i = 0; i < attId.length; i++) {
+                var att = attId[i];
+                if (att.s == 0) {
+                    zeroSizedAttachments = true;
+                    continue;
+                }
+                attachmentIds.push(att.aid);
+            }
+            attId = attachmentIds.length > 0 ? attachmentIds.join(",") : null;
+        }
+        if (zeroSizedAttachments){
+            appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
+        }
+        this._controller.saveCalItem(attId);
+
+    } else if (status == AjxPost.SC_UNAUTHORIZED) {
+		// auth failed during att upload - let user relogin, continue with compose action
+		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
+		var callback = new AjxCallback(this._controller, isDraft ? this._controller._saveDraft : this._controller._send);
+		this._controller._handleException(ex, {continueCallback:callback});
 	} else {
-		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
-	}
+		// bug fix #2131 - handle errors during attachment upload.
+		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
+		switch (status) {
+			// add other error codes/message here as necessary
+			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
+			default: 									msg += " "; break;
+		}
+
+		this._controller.popupErrorDialog(msg + ZmMsg.errorTryAgain, null, null, true);		
+	}              
 };
 
 ZmCalItemEditView.prototype._getDefaultFocusItem =
