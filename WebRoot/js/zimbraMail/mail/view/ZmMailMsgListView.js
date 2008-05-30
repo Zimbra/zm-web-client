@@ -310,25 +310,25 @@ function(parent) {
 
 	var hList = [];
 	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection}));
+		hList.push(new DwtListHeaderItem({field:ZmItem.F_SELECTION, icon:"TaskCheckbox", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.selection, resizeable:true}));
 	}
 	if (appCtxt.get(ZmSetting.FLAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_FLAG, icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag}));
+		hList.push(new DwtListHeaderItem({field:ZmItem.F_FLAG, icon:"FlagRed", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.flag, resizeable:true}));
 	}
     if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
-        hList.push(new DwtListHeaderItem({field:ZmItem.F_PRIORITY, icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority}));
+        hList.push(new DwtListHeaderItem({field:ZmItem.F_PRIORITY, icon:"PriorityHigh_list", width:ZmListView.COL_WIDTH_NARROW_ICON, name:ZmMsg.priority, resizeable:true}));
     }
     if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag}));
+		hList.push(new DwtListHeaderItem({field:ZmItem.F_TAG, icon:"Tag", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.tag, resizeable:true}));
 	}
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_STATUS, icon:"MsgStatus", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.status, resizeable:true}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_FROM, text:ZmMsg.from, width:ZmMailMsgListView.COL_WIDTH_FROM, sortable:ZmItem.F_FROM, resizeable:true}));
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_ATTACHMENT, icon:"Attachment", width:ZmListView.COL_WIDTH_ICON, name:ZmMsg.attachment, resizeable:true}));
 
 	var isConvView = (this._mode == ZmId.VIEW_CONV);
 	var sortBy = isConvView ? null : ZmItem.F_SUBJECT;
 	var colName = isConvView ? ZmMsg.fragment : ZmMsg.subject;
-	hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:colName, sortable:sortBy, noRemove:true}));
+	hList.push(new DwtListHeaderItem({field:ZmItem.F_SUBJECT, text:colName, sortable:sortBy, noRemove:true, resizeable:true}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_FOLDER, text:ZmMsg.folder, width:ZmMsg.COLUMN_WIDTH_FOLDER, resizeable:true}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_SIZE, text:ZmMsg.size, width:ZmMsg.COLUMN_WIDTH_SIZE, resizeable:true}));
 	hList.push(new DwtListHeaderItem({field:ZmItem.F_DATE, text:ZmMsg.received, width:ZmMsg.COLUMN_WIDTH_DATE, sortable:ZmItem.F_DATE, resizeable:true}));
