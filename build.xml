@@ -8,12 +8,6 @@
 
 	<property file="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/build-custom.properties" />
 
-	<target name='test' depends='client'>
-		<echo>custom.web.includes: ${custom.web.includes}</echo>
-		<echo>common.web.includes: ${common.web.includes}</echo>
-		<echo>web.includes:        ${web.includes}</echo>
-	</target>
-
 	<property name='common.dir' value='../ZimbraCommon'/>
     <property name='common.lib.dir' value='${common.dir}/jars'/>
     <property name='common.build.dir' value='${common.dir}/build'/>
@@ -28,7 +22,11 @@
 	<property name='server.build.classes.dir' value='${server.build.dir}/classes'/>
     <property name='server.dist.dir' value='${server.build.dir}/dist'/>
 
-    <property name='license.dir' value='../ZimbraLicenses'/>
+	<property name='network.dir' value='../ZimbraNetwork' />
+	<property name='network.zwc.dir' value='${network.dir}/ZimbraWebClient' />
+	<property name='network.zwc.help.dir' value='${network.zwc.dir}/WebRoot/help' />
+
+	<property name='license.dir' value='../ZimbraLicenses'/>
 
     <property name='web.dir' value='WebRoot'/>
     <property name='js.dir' value='${web.dir}/js'/>
@@ -90,12 +88,16 @@
 
     <!-- pseudo-fileset so that targets that rely on it don't fail -->
     <fileset id='help.fileset' dir='${build.dir}' excludes='**'/>
+	<fileset id='network.help.fileset' dir='${build.dir}' excludes='**' />
 	<fileset id='customer.web.fileset' dir='${build.dir}' excludes='**'/>
 	<fileset id='customer.webinf.fileset' dir='${build.dir}' excludes='**'/>
 
     <!-- Targets -->
 
     <target name='common'>
+		<condition property='build.network'>
+			<equals arg1="${build.type}" arg2="NETWORK" />
+		</condition>
         <property name='common.web.includes' value='${custom.web.includes},js/**,css/**'/>
         <property name='common.web.excludes' value='${custom.web.excludes},js/*/package/**,**/AjxTimezoneData.js'/>
         <property name='common.jsp.includes' value='${custom.jsp.includes},**'/>
@@ -106,8 +108,8 @@
         <property name='common.template.excludes' value='${custom.template.excludes}'/>
         <property name='common.jam.includes' value='${custom.jam.includes},**/package/*.js'/>
         <property name='common.jam.excludes' value='${custom.jam.excludes},'/>
-        <property name='common.help.includes' value='${custom.help.includes},**'/>
-        <property name='common.help.excludes' value='${custom.help.excludes},**/*.zip'/>
+        <property name='common.help.includes' value='${custom.help.includes}'/>
+        <property name='common.help.excludes' value='${custom.help.excludes}'/>
         <property name='common.build.web.includes' value='${custom.build.web.includes},**'/>
         <property name='common.build.web.excludes'
                   value='${custom.web.build.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
@@ -129,8 +131,7 @@
         <property name='template.excludes' value=''/>
         <property name='jam.includes' value='**/ajax/package/*.js'/>
         <property name='jam.excludes' value=''/>
-        <property name='help.includes' value='${common.help.includes}'/>
-        <property name='help.excludes' value='${common.help.excludes}'/>
+		<property name='help.ignore' value='true' />
         <property name='build.web.includes'
                   value='js/**,img/dwt.gif,img/images.css,skin/**,public/**,templates/**'/>
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
@@ -153,7 +154,7 @@
         <property name='template.excludes' value='${common.template.excludes},admin/**'/>
         <property name='jam.includes' value='${common.jam.includes}'/>
         <property name='jam.excludes' value='${common.jam.excludes},**/zimbraAdmin/**'/>
-        <property name='help.includes' value='${common.help.includes}'/>
+        <property name='help.includes' value='${common.help.includes},*/standard/**,*/advanced/**'/>
         <property name='help.excludes' value='${common.help.excludes}'/>
         <property name='build.web.includes' value='${common.build.web.includes}'/>
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
@@ -182,14 +183,12 @@
         <property name='template.excludes' value='${common.template.excludes}'/>
         <property name='jam.includes' value='${common.jam.includes}'/>
         <property name='jam.excludes' value='${common.jam.excludes},**/zimbraMail/**'/>
+		<property name='help.includes' value='${common.help.includes},*/**'/>
+		<property name='help.excludes' value='${common.help.excludes},*/standard/**,*/advanced/**'/>
         <property name='build.web.includes' value='${common.build.web.includes}'/>
         <property name='build.web.excludes' value='${common.build.web.excludes}'/>
         <property name='webinf.includes' value='${common.webinf.includes}'/>
         <property name='webinf.excludes' value='${common.webinf.excludes},tags/**,tlds/**'/>
-
-        <fileset id='adminhelp.fileset'
-                 dir='${adminhelp.dir}' includes='${help.includes}' excludes='${help.excludes}'
-                />
     </target>
 
     <target name='dev'>
@@ -224,7 +223,8 @@
 			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
             <zipfileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' prefix='img'/>
             <zipfileset dir='${skins.dir}' prefix='skins'/>
-            <zipfileset refid='help.fileset'/>
+            <zipfileset refid='help.fileset' prefix='help' />
+			<zipfileset refid='network.help.fileset' prefix='help' />
         </war>
     </target>
 
@@ -243,7 +243,13 @@
         <copy todir='${webapp.dir}/skins' verbose='${sync.verbose}'>
             <fileset dir='${skins.dir}'/>
         </copy>
-        <copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
+		<copy todir='${webapp.dir}/help'>
+			<fileset refid='help.fileset' />
+		</copy>
+		<copy todir='${webapp.dir}/help'>
+			<fileset refid='network.help.fileset' />
+		</copy>
+		<copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
 			<fileset dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.excludes}'/>
 			<fileset refid='customer.webinf.fileset' />
         </copy>
@@ -927,60 +933,24 @@ if (ext == null) ext = "";
     </target>
 
     <target name='help' depends='init' if='build.prod' unless='help.ignore'>
-        <!-- TODO: This has to be fixed. -->
-	    <if>
-            <not>
-                <isset property='build.admin'/>
-            </not>
-	    	<then>
-	    		<mkdir dir='${build.help.dir}'/>
-	    	</then>
-	    </if>
-        <if>
-            <and>
-                <not>
-                    <isset property='build.ajax'/>
-                </not>
-                <not>
-                    <isset property='build.admin'/>
-                </not>
-            </and>
-            <then>
-                <property name='build.bhelp.dir' value='${build.help.dir}/../bhelp'/>
-                <property name='build.help.temp.dir' value='${build.dir}/help'/>
-                <property name='build.bhelp.temp.dir' value='${build.dir}/bhelp'/>
-
-                <mkdir dir='${build.help.temp.dir}'/>
-                <mkdir dir='${build.bhelp.temp.dir}'/>
-
-                <unzip dest="${build.help.temp.dir}" src="${help.dir}/WebHelp.zip"/>
-                <unzip dest="${build.bhelp.temp.dir}" src="${help.dir}/BasicWebHelp.zip"/>
-
-                <copy todir='${build.help.dir}'>
-                    <fileset dir='${build.help.temp.dir}/WebHelp'/>
-                </copy>
-                <mkdir dir='${build.bhelp.dir}'/>
-                <copy todir='${build.bhelp.dir}'>
-                    <fileset dir='${build.bhelp.temp.dir}/BasicWebHelp'/>
-                </copy>
-            </then>
-        </if>
-        <if>
-            <isset property='build.admin'/>
-            <then>
-                <property name='build.adminhelp.temp.dir' value='${build.adminhelp.dir}/html'/>
-
-                <mkdir dir='${build.adminhelp.temp.dir}'/>
-
-                <unzip dest='${build.adminhelp.temp.dir}' src='${adminhelp.dir}/html/ZimbraAdminOLH.zip'/>
-                
-                <copy todir="${build.adminhelp.dir}" overwrite="true" >
-			      <fileset dir="${adminhelp.dir}" includes="pdf/**"/>
-			    </copy>
-            </then>
-        </if>
-    </target>
-
+		<if><isset property='build.network' />
+			<then>
+				<fileset id='network.help.fileset' dir='${network.zwc.help.dir}'
+						 includes='${help.includes}' excludes='${help.excludes}' 
+				/>
+				<!-- NOTE:	This allows us to exclude help dirs from the base
+							help dir that are replaced by the network help. -->
+				<dirset id='network.help.dirset' dir='${network.zwc.help.dir}' includes='*/*' />
+				<pathconvert property='network.help.excludes' pathsep=',' refid="network.help.dirset">
+					<regexpmapper from="^.*/WebRoot/help/(.*)$$" to="\1/**"/>
+				</pathconvert>
+			</then>
+		</if>
+		<fileset id='help.fileset' dir='${help.dir}'
+				 includes='${help.includes}'
+				 excludes='${help.excludes},${network.help.excludes}' 
+		/>
+	</target>
 
     <target name='deploy' depends='war'>
         <ant dir="${server.dir}" target="stop-jetty" inheritAll="false"/>

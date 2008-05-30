@@ -1400,7 +1400,8 @@ function() {
 	var appCtxt = window.parentAppCtxt || window.appCtxt;
 	var url;
 	try { url = skin.hints.helpButton.url; } catch (e) { /* ignore */ }
-	window.open(url || appCtxt.get(ZmSetting.HELP_URI));
+	url = url || appCtxt.get(ZmSetting.HELP_URI);
+	window.open(url + "?locid=" + AjxEnv.DEFAULT_LOCALE);
 };
 
 ZmZimbraMail.sendRedirect =
