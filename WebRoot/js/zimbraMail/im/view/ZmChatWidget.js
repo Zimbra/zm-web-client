@@ -30,6 +30,10 @@ ZmChatWidget.prototype.toString = function(){
 	return "ZmChatWidget";
 };
 
+ZmChatWidget.prototype.getObjectManager = function() {
+	return this._objectManager;
+};
+
 ZmChatWidget.prototype._setChat = function(chat) {
 	this.chat = chat;
 	var item = chat.getRosterItem();
@@ -277,6 +281,8 @@ ZmChatWidget.prototype.sendInput = function() {
     var msg = this.chat.sendMessage(text, html);
     if (msg)
         this.handleMessage(msg);
+	this.setEditorContent("");
+	editor.focus();
 };
 
 ZmChatWidget.prototype._updateGroupChatTitle = function(force) {
@@ -294,19 +300,16 @@ ZmChatWidget.IDS = [
 	"convLayout",
 	"sash",
 	"inputLayout",
+	"sendButton",
 	"input"
 ];
 
 ZmChatWidget.prototype._initEditor = function(parent){
 	var liteEditor = this._liteEditor = new ZmLiteHtmlEditor(parent);
-        liteEditor.reparentHtmlElement(this._getElement("inputLayout"));
+	liteEditor.reparentHtmlElement(this._getElement("inputLayout"));
 	var keyPressListener = new AjxListener(this,this._inputKeyPress);
 	liteEditor.addKeyPressListener(keyPressListener);
-};
-
-ZmChatWidget.prototype._changeEditorModeListener = function(){
-        this._liteEditor.reverseMode();
-        this._doResize();
+	liteEditor.addModeChangeListener(new AjxListener(this, this._doResize));
 };
 
 ZmChatWidget.prototype.getEditor = function(){
@@ -323,7 +326,17 @@ ZmChatWidget.prototype._init = function() {
 	this.setContent(AjxTemplate.expand("im.Chat#ChatWidget", { id: base_id }));
 
 	this._initEditor(this);
-
+	var sendParent = this._getElement("sendButton");
+	if (sendParent) {
+		var sendButton = this._sendButton = new DwtButton({parent:this, parentElement: sendParent, posStyle:Dwt.ABSOLUTE_STYLE});
+		sendButton.setText(ZmMsg.send);
+		sendButton.addSelectionListener(new AjxListener(this, this.sendInput));
+		var sendStyle = sendButton.getHtmlElement().style;
+		sendStyle.bottom = 2; // Antoher hacky padding value
+		sendStyle.right = 0;
+		sendStyle.width = sendParent.style.width;
+	}
+	
 	this._toolbar = new DwtToolBar({parent:this, posStyle:Dwt.ABSOLUTE_STYLE});
 
 	this._close = new DwtLtIconButton(this._toolbar, null, "Close");
@@ -335,12 +348,6 @@ ZmChatWidget.prototype._init = function() {
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 
 	this._toolbar.addFiller();
-
-	var btn = this._changEditorModeBtn = new DwtLtIconButton(this._toolbar, null, "HtmlDoc");
-	btn.setToolTipContent(ZmMsg.changeEditorMode);
-	btn.addSelectionListener(new AjxListener(this,this._changeEditorModeListener));
-
-	new DwtControl({parent:this._toolbar, className:"vertSep"});
 
 	var btn = this._addToBuddyListBtn = new DwtLtIconButton(this._toolbar, null, "NewContact");
 	btn.setToolTipContent("-");
@@ -374,28 +381,11 @@ ZmChatWidget.prototype._init = function() {
 	];
 	this._content._setEventHdlrs(mouseEvents);
 
-// 	var dropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
-// 	this._content.setDropTarget(dropTgt);
-// 	dropTgt.addDropListener(new AjxListener(this, this._dropOnContentListener));
-
-        var dropTgt = new DwtDropTarget([ "ZmRosterItem", "ZmContact" ]);
-        this._liteEditor.setDropTarget(dropTgt);
-        dropTgt.addDropListener(new AjxListener(this, this._dropOnEditorListener));
+	var dropTgt = new DwtDropTarget([ "ZmRosterItem", "ZmContact" ]);
+	this._liteEditor.setDropTarget(dropTgt);
+	dropTgt.addDropListener(new AjxListener(this, this._dropOnEditorListener));
 
 	this._objectManager = new ZmObjectManager(this._content);
-
-	// add YM Emoticons if zimlet installed
-	try { // Try catch because I saw this fail on hosted demo, can't reproduce, probly a better way to fix.
-		var YM_smileys = appCtxt.getZimletMgr().zimletExists("com_zimbra_ymemoticons");
-		if (YM_smileys) {
-			this._objectManager.addHandler(YM_smileys.handlerObject);
-			this._objectManager.sortHandlers();
-		}
-	} catch (e) {
-		DBG.println("Error setting up smileys: " + e);
-	}
-
-	// this.parent.enableMoveWithElement(this._toolbar);
 
 	var dropTgt = new DwtDropTarget([ "ZmRosterItem", "ZmChatWidget" ]);
 	this._label.setDropTarget(dropTgt);
@@ -405,6 +395,11 @@ ZmChatWidget.prototype._init = function() {
 	this.addDisposeListener(new AjxListener(this, this._disposeListener));
 
 	this._setupSash();
+
+	// notify zimlets that a chat widget is being shown.
+	if (appCtxt.zimletsPresent()) {
+		appCtxt.getZimletMgr().notifyZimlets("onNewChatWidget", this);
+	}
 };
 
 ZmChatWidget.prototype._getAddToBuddyListTooltip = function() {
@@ -473,7 +468,6 @@ ZmChatWidget.prototype._inputKeyPress = function(ev) {
 				var ret = self._keypressNotifyItems(keyEvent.charCode, isEnter);
 				if (isEnter && !(ret && ret.stop)) {
 					self.sendInput();
-					self.setEditorContent("");
 					stopEvent();
 				}
 			}
@@ -529,6 +523,11 @@ ZmChatWidget.prototype._doResize = function() {
 
 	placeElement(this._toolbar, "toolbarLayout");
 	placeElement(this._content, "convLayout", 4);
+
+	if (this._sendButton) {
+		var editControl = this._liteEditor.getEditor();
+		this._sendButton.setSize(Dwt.DEFAULT,Dwt.getSize(editControl).y);
+	}
 };
 
 ZmChatWidget.prototype.setBounds =
