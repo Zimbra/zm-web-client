@@ -87,7 +87,7 @@
 	        <tr>
 	        <td valign="bottom" nowrap="nowrap"><app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/></td>
 	        <td><app:appStatus/></td>
-	        <td align="right" nowrap="nowrap"><a target="_new" href="<c:url value="/help/standard/Zimbra_Basic_User_Help.htm"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a>&nbsp;</td>
+	        <td align="right" nowrap="nowrap"><a target="_new" href="<c:url value="/help/standard/Zimbra_User_Help.htm"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a>&nbsp;</td>
 		    </tr>
 		    </table>
     	</td>
@@ -442,7 +442,7 @@
 					</tr>
 					<tr>
 						<td align="left" class="ZhAppLinks">
-							<a target="_new" href="<c:url value="/help/standard/Zimbra_Basic_User_Help.htm"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.gif"  border="0"/>&nbsp;<fmt:message key="help"/></a>
+							<a target="_new" href="<c:url value="/help/standard/Zimbra_User_Help.htm"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.gif"  border="0"/>&nbsp;<fmt:message key="help"/></a>
 						</td>
 						<td>
 							&nbsp;
