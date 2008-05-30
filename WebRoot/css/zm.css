@@ -1854,6 +1854,15 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWidget .ZToolbarTable .ZButton .ZLeftIcon div { margin-left: 2px; margin-right: 2px; }
 .ZmChatWidget .ZToolbarTable .ZButton .ZWidgetTitle { padding: 0; }
 
+.ZmSendButton {
+	width: 60px;
+	padding-left: 2px;
+}
+
+.ZmSendButton .ZHasText .ZButtonTable {
+	width: 60px;
+}
+
 .ZmChatDialogField {
 	@Label@
 	@NoWrap@

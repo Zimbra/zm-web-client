@@ -79,12 +79,6 @@ function() {
 	return "ZmLiteHtmlEditor";
 };
 
-//Can be useful as we proceed into different features of this editor.
-ZmLiteHtmlEditor.prototype.isSupported =
-function(){
-	return true;
-};
-
 ZmLiteHtmlEditor.prototype.getEditor =
 function(){
 	return this._textArea;
@@ -154,6 +148,11 @@ function() {
 	this._setDefaultStyles();
 }
 
+ZmLiteHtmlEditor.prototype.addModeChangeListener =
+function(listener){
+	this.addListener(DwtEvent.STATE_CHANGE, listener);
+};
+
 ZmLiteHtmlEditor.prototype.getMode =
 function(){
 	return this._mode;
@@ -171,7 +170,7 @@ function(mode, force) {
 	this._mode = mode;
 
 	if(mode == ZmLiteHtmlEditor.HTML) {
-                this._createToolbars();
+		this._createFormatToolBar();
 		this._enableToolbar(true);
 		this._setDefaultStyles();
 	}else{
@@ -180,6 +179,9 @@ function(mode, force) {
 	}
 
 	this.resetSize();
+
+	// Notify mode change listeners.
+	this.notifyListeners(DwtEvent.STATE_CHANGE);
 };
 
 ZmLiteHtmlEditor.prototype.isHtmlMode =
@@ -199,12 +201,12 @@ function( width, height ){
 };
 
 ZmLiteHtmlEditor.prototype.resetSize = function(){
-        var height = this.getHtmlElement().offsetHeight;
-	var toolbarHeight = 0;
+	var height = this.getHtmlElement().offsetHeight;
+	var toolbarHeight = this._basicToolBar.getSize().y;
 	if (this._mode == ZmLiteHtmlEditor.HTML) {
-		toolbarHeight = this._miniToolBar.getSize().y;
+		toolbarHeight += this._formatToolBar.getSize().y;
 	}
-        this._textArea.style.width = "100%";
+	this._textArea.style.width = "100%";
 	this._textArea.style.height = height - toolbarHeight - 2 + "px";
 };
 
@@ -221,6 +223,21 @@ function(enable){
 		this._textArea.disabled = (!enable);
 };
 
+ZmLiteHtmlEditor.prototype.insertText =
+function(text) {
+	if (this._textArea.createTextRange && this._textArea.selection) {
+		var textRange = this._textArea.selection;
+		textRange.text = (textRange.text.charAt(textRange.text.length-1) == '') ? smiley + ' ' : text;
+		textRange.selection = nulltext
+	} else {
+		this._textArea.value += text;
+	}
+};
+
+ZmLiteHtmlEditor.prototype.getBasicToolBar = function() {
+	return this._basicToolBar;
+};
+
 //Private Methods
 
 ZmLiteHtmlEditor.prototype._initialize = function(){
@@ -229,8 +246,10 @@ ZmLiteHtmlEditor.prototype._initialize = function(){
 
 	this._textArea[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = AjxCallback.simpleClosure(this._keyPressHandler,this);
 
+	this._basicToolBar = new ZmButtonToolBar({parent:this, posStyle:Dwt.RELATIVE_STYLE, buttons: [ZmOperation.IM_HTML], index:0});
+	this._basicToolBar.addSelectionListener(ZmOperation.IM_HTML, new AjxListener(this, this._changeEditorModeListener));
+	
 	this.setMode(this._mode, true);
-
 };
 
 ZmLiteHtmlEditor.prototype._initEditor = function(){
@@ -256,6 +275,11 @@ function(ev){
 		this._keyPressListener.run(ev);
 	}
 
+};
+
+ZmLiteHtmlEditor.prototype._changeEditorModeListener = function() {
+	this.reverseMode();
+	this.focus();
 };
 
 //Styles
@@ -290,21 +314,21 @@ function(property){
 
 //Toolbar
 
-ZmLiteHtmlEditor.prototype._createToolbars = function(){
-	if (!this._miniToolBar) {
-		var miniToolBar = this._miniToolBar = new DwtToolBar({parent:this, className:"ZToolbar",
+ZmLiteHtmlEditor.prototype._createFormatToolBar = function(){
+	if (!this._formatToolBar) {
+		var formatToolBar = this._formatToolBar = new DwtToolBar({parent:this, className:"ZToolbar",
 												  posStyle:DwtControl.RELATIVE_STYLE, cellSpacing:2, index:0});
-		this._createMiniToolBar(miniToolBar);
+		this._initFormatToolBar(formatToolBar);
 	}
 };
 
 ZmLiteHtmlEditor.prototype._enableToolbar =
 function(enable){
-        if (this._miniToolBar)
-	        this._miniToolBar.setVisible(!!enable);
+        if (this._formatToolBar)
+	        this._formatToolBar.setVisible(!!enable);
 };
 
-ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
+ZmLiteHtmlEditor.prototype._initFormatToolBar = function(tb){
 
 	this._createFontFamilyMenu(tb);
 
@@ -342,35 +366,6 @@ ZmLiteHtmlEditor.prototype._createMiniToolBar = function(tb){
 	this._fontColorButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.FONT_COLOR);
 	this._fontColorButton.setColor("#000000");
 	this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontStyleListener));
-
-	if(window["YMEmoticonsPickerButton"]){
-		this._smileyButton = new YMEmoticonsPickerButton(tb,null,"ZToolbarButton");
-		this._smileyButton.dontStealFocus();
-		this._smileyButton.setToolTipContent("Emoticons");
-		this._smileyButton.setData(ZmLiteHtmlEditor._VALUE, ZmLiteHtmlEditor.SMILEY);
-		this._smileyButton.setEmoticon(":)");
-		this._smileyButton.addSelectionListener(new AjxListener(this, this._smileyListener));
-	}
-};
-
-ZmLiteHtmlEditor.prototype._smileyListener = function(ev){
-	var obj = ev.item;
-	var smiley = obj.getSelectedSmiley();
-
-    if(smiley) smiley = smiley.text;
-    else return;
-
-
-    if (this._textArea.createTextRange && this._textArea.selection) {
-		var textRange = this._textArea.selection;
-		var text = textRange.text;
-		textRange.text = (textRange.text.charAt(textRange.text.length-1) == '') ? smiley + ' ' : smiley;
-		textRange.selection = null;
-	}else{
-		this._textArea.value += smiley;
-	}
-
-	this.focus();
 };
 
 ZmLiteHtmlEditor.prototype._createFontFamilyMenu =
@@ -422,6 +417,7 @@ function(ev) {
 	var id = ev.item.getData(ZmLiteHtmlEditor._VALUE);
 	this.setStyle("fontFamily",ZmLiteHtmlEditor.FONT_FAMILY[id].value);
 	this._fontFamilyButton.setText(ZmLiteHtmlEditor.FONT_FAMILY[id].name);
+	this.focus();
 };
 
 ZmLiteHtmlEditor.prototype._fontSizeListener =
@@ -430,6 +426,7 @@ function(ev) {
 	var size = ZmLiteHtmlEditor.FONT_SIZE_VALUES[num-1];
 	this.setStyle("fontSize",size);
 	this._fontSizeButton.setText(num + " (" + size + ")");
+	this.focus();
 };
 
 ZmLiteHtmlEditor.prototype._fontStyleListener =
@@ -449,11 +446,12 @@ function(ev) {
 	}else if(styleType == ZmLiteHtmlEditor.FONT_COLOR){
 		this.setStyle( style, ( ev.item.getColor() || "#000000" ) );
 	}
+	this.focus();
 };
 
 ZmLiteHtmlEditor.prototype.focus =
 function() {
-        this.getEditor().focus();
+	this.getEditor().focus();
 };
 
 ZmLiteHtmlEditorColorPicker = function(parent,style,className) {
