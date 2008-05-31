@@ -961,10 +961,14 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 	if (!(list && list.length)) { return result; }
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
+		if (create._handled) { continue; }
 		create._handled = true;
 
 		// ignore stuff we already have
 		if (currList.getById(create.id) || create._wasVirtConv) { continue; }
+
+		// new conv does not affect a list of msgs
+		if (currList.type == ZmItem.MSG && type == ZmItem.CONV) { continue; }
 
 		// perform stricter checking if we're in offline mode
 		if (appCtxt.isOffline && !this._checkCreate(create, type, currList, sortBy, cutoff)) { continue; }

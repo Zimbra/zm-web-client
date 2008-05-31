@@ -85,18 +85,15 @@ function() {
 	ZmDoublePaneView.prototype.reset.call(this);
 };
 
-/*
-* Handles a change of state in which the view cannot currently be shown. That happens via the
-* app view manager when the view is popped, or when it is removed from the hidden stack. The
-* view must be pushed again to become visible. Since convs and their msg lists are cached, we
-* want to remove their listeners; otherwise we have models that don't correspond to the 
-* current conv view calling the view's listeners.
-*/
+/**
+ * Remove this view's listeners on the conv and its msg list now that the view has been popped.
+ */
 ZmConvView.prototype.deactivate = 
 function() {
-	if (this._conv.msgs)
-		this._conv.msgs.removeAllChangeListeners();
-	this._conv.removeAllChangeListeners();
+	if (this._conv.msgs) {
+		this._conv.msgs.removeChangeListener(this._mailListView._listChangeListener);
+	}
+	this._conv.removeChangeListener(this._changeListener);
 };
 
 ZmConvView.prototype.getTitle =
