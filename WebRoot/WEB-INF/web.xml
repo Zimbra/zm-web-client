@@ -147,7 +147,58 @@
 		<url-pattern>/*</url-pattern>
     </filter-mapping>
 
-    <!-- not needed under jetty
+	<filter>
+		<filter-name>StandardRedirectHelp</filter-name>
+		<filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
+		<init-param>
+			<param-name>input.dir</param-name>
+			<param-value>/bhelp</param-value>
+		</init-param>
+		<init-param>
+			<param-name>output.dir</param-name>
+			<param-value>/help/{locale}/standard</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>StandardRedirectHelp</filter-name>
+		<url-pattern>/bhelp/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>AdvancedRedirectHelp</filter-name>
+		<filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
+		<init-param>
+			<param-name>input.dir</param-name>
+			<param-value>/help</param-value>
+		</init-param>
+		<init-param>
+			<param-name>output.dir</param-name>
+			<param-value>/help/{locale}</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>AdvancedRedirectHelp</filter-name>
+		<url-pattern>/help/*</url-pattern>
+	</filter-mapping>
+
+	<filter>
+		<filter-name>AdminRedirectHelp</filter-name>
+		<filter-class>com.zimbra.webClient.filters.RedirectHelp</filter-class>
+		<init-param>
+			<param-name>input.dir</param-name>
+			<param-value>/adminhelp</param-value>
+		</init-param>
+		<init-param>
+			<param-name>output.dir</param-name>
+			<param-value>/help/{locale}/admin</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>AdminRedirectHelp</filter-name>
+		<url-pattern>/adminhelp/*</url-pattern>
+	</filter-mapping>
+
+	<!-- not needed under jetty
     <filter>
         <filter-name>CharEncodingFilter</filter-name>
         <filter-class>
