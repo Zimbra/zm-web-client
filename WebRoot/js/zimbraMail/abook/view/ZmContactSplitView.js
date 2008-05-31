@@ -249,6 +249,8 @@ function(width, height) {
 	var size = Dwt.getSize(listviewCell);
 
 	if (this._contactTabView) {
+		var currTab = this._contactTabView.getTabView(this._contactTabView.getCurrentTab());
+		currTab.setSize(Dwt.DEFAULT, height-40);
 		this._listPart.setSize(size.x, height-20);
 		if (this._contact && this._contact.isGroup()) {
 			var fudge = AjxEnv.isIE ? 27 : 20;
@@ -357,6 +359,8 @@ function(contact, isGal, oldContact) {
 
 				this._tabViewHtml[tabIdx] = true;
 			}
+			var size = this.getSize();
+			this._sizeChildren(size.x, size.y);
 		} else {
 			this._contactView.getHtmlElement().innerHTML = AjxTemplate.expand("abook.Contacts#SplitView_content", subs);
 		}
