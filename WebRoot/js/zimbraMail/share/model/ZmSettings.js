@@ -633,7 +633,7 @@ function() {
 	this.registerSetting("SIGNATURES_MIN",					{name:"zimbraSignatureMinNumEntries", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1});
 	
 	// need to do this before loadUserSettings(), and zimlet settings are not tied to an app where it would normally be done
-	this.registerSetting("ZIMLET_TREE_OPEN",				{name:"zimbraPrefZimletTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("ZIMLET_TREE_OPEN",				{name:"zimbraPrefZimletTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isImplicit:true});
 };
 
 /**
