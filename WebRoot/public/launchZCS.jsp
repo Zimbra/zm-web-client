@@ -146,8 +146,9 @@
 	function switchToStandardClient() {
 		document.location = appContextPath + "/?client=standard";
 	}
-	
-	if (screen.width <= 800 && screen.height <= 600) {
+	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
+	var enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
+	if (enforceMinDisplay && (screen.width <= 800 && screen.height <= 600)) {
 		switchToStandardClient();
 	}
 </script>
