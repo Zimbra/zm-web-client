@@ -1287,7 +1287,12 @@ function(addrNodes, isDraft, accountName) {
 			}
 		}
 
-		addrNodes.push({t:"f", a:accountName});
+		var node = {t:"f", a:accountName};
+		var displayName = this.identity ? this.identity.sendFromDisplay : null;
+		if (displayName) {
+			node.p = displayName;
+		}
+		addrNodes.push(node);
 
 		if (!ac.isOffline) {
 			// the main account is *always* the sender
