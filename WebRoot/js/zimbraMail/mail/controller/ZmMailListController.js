@@ -169,15 +169,13 @@ function(actionCode) {
 	switch (actionCode) {
 		case ZmKeyMap.REPLY:
 		case ZmKeyMap.REPLY_ALL:
-		case ZmKeyMap.FORWARD_INLINE:
-		case ZmKeyMap.FORWARD_ATT:
 			if (!isDrafts && (num == 1) && !isSyncFailures) {
 				this._doAction({action:ZmMailListController.ACTION_CODE_TO_OP[actionCode]});
 			}
 			break;
 
 		case ZmKeyMap.FORWARD:
-			if (!isDrafts && num == 1) {
+			if (!isDrafts) {
 				this._doAction({action:ZmOperation.FORWARD});
 			}
 			break;
