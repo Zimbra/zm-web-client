@@ -62,9 +62,17 @@ ZmChatMessage.prototype.toHtml = function() {
         return AjxStringUtil.trim(AjxTemplate.expand("im.Chat#ChatMessageHTML", this));
 };
 
+ZmChatMessage.prototype.getHtmlBody = function() {
+	return this.htmlEncode ? AjxStringUtil.htmlEncode(this.body, true).replace(/\r?\n/g, "<br/>") : this.body;
+};
+
+ZmChatMessage.prototype.getTextBody = function() {
+	return this.isHtml ? AjxStringUtil.convertHtml2Text(this.body) : this.body;
+};
+
 ZmChatMessage.prototype.displayHtml =
 function(chat, lastFrom) {
-	var body = this.htmlEncode ? AjxStringUtil.htmlEncode(this.body, true).replace(/\r?\n/g, "<br/>") : this.body;
+	var body = this.getHtmlBody();
 	var params = { isSystem		 : this.isSystem,
 		       fromMe		 : this.fromMe,
 		       shortTime	 : AjxStringUtil.htmlEncode(this.getShortTime()),
