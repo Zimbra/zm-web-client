@@ -103,7 +103,7 @@ function(actionMenu, type, id) {
 		var nId;
 		if (calendar) {
 			nId = calendar.nId;
-			actionMenu.enable(ZmOperation.SHARE_CALENDAR, !calendar.link);
+			actionMenu.enable(ZmOperation.SHARE_CALENDAR, (!calendar.link || calendar.isAdmin()));
 			actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());
 		} else {
 			nId = ZmOrganizer.normalizeId(id);

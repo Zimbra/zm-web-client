@@ -1185,6 +1185,15 @@ function() {
 	return this._isReadOnly;
 };
 
+ZmOrganizer.prototype.isAdmin =
+function() {
+	if (!this._isAdmin) {
+		var share = this.shares ? this.shares[0] : null;
+		this._isAdmin = (this.isRemote() && share && share.isAdmin());
+	}
+	return this._isAdmin;
+};
+
 ZmOrganizer.prototype.isRemote =
 function() {
 	if (this._isRemote == null) {

@@ -67,7 +67,7 @@ function(actionMenu, type, id) {
 			menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_NOTEBOOK);
 			menuItem.setText(isNotebook ? ZmMsg.shareNotebook : ZmMsg.shareSection);
 			menuItem.setImage(isNotebook ? "Notebook" : "Section");
-			menuItem.setEnabled(!isLinkOrRemote);
+			menuItem.setEnabled(!isLinkOrRemote || notebook.isAdmin());
 		}
     }
     if (actionMenu) {

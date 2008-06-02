@@ -46,7 +46,7 @@ function(parent, type, id) {
 	if (folder) {
 		if ( folder.isSystem()) {
 			parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
-		} else if (folder.link) {
+		} else if (folder.link && !folder.isAdmin()) {
 			parent.enable([ZmOperation.SHARE_TASKFOLDER], false);
 		}
 	}
