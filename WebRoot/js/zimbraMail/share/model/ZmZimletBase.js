@@ -631,14 +631,23 @@ function(canvasData, url) {
 		var browserUrl = url;
 		if (browserUrl == null)
 			browserUrl = appContextPath+"/public/blank.html";
-		var props = [ "toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes" ];
-		if (canvasData.width)
-			props.push("width=" + canvasData.width);
-		if (canvasData.height)
-			props.push("height=" + canvasData.height);
-		props = props.join(",");
-		canvas = window.open(browserUrl, this.xmlObj("name"), props);
-		if (!url) {
+		var contentObject = this.xmlObj("contentObject");
+        if(contentObject) {
+            if(contentObject.onClick.canvas.props == "")
+                canvas = window.open(browserUrl);
+            else if(contentObject.onClick.canvas.props != "")
+                canvas = window.open(browserUrl, this.xmlObj("name"), contentObject.onClick.canvas.props);
+        }
+        else{
+            var props = canvasData.props || [ "toolbar=yes,location=yes,status=yes,menubar=yes,scrollbars=yes,resizable=yes"];
+            if (canvasData.width)
+                props.push("width=" + canvasData.width);
+            if (canvasData.height)
+                props.push("height=" + canvasData.height);
+            props = props.join(",");
+            canvas = window.open(browserUrl, this.xmlObj("name"), props);
+        }
+        if (!url) {
 			// TODO: add div element in the window.
 			//canvas.document.getHtmlElement().appendChild(div);
 		}
