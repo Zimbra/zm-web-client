@@ -868,11 +868,13 @@ function(creates, force) {
 			if (mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1)) {
 				parsedId = ZmOrganizer.parseId(mc.l, parsedId);
 				if (parsedId.id == ZmOrganizer.ID_INBOX) {
-					if (parsedId.account == appCtxt.getActiveAccount()) {
-						alertNewMail = true;
-					} else {
-						accountAlerts = accountAlerts || {};
-						accountAlerts[parsedId.account.id] = parsedId.account;
+					if (!parsedId.account.isOfflineInitialSync()) {
+						if (parsedId.account == appCtxt.getActiveAccount()) {
+							alertNewMail = true;
+						} else {
+							accountAlerts = accountAlerts || {};
+							accountAlerts[parsedId.account.id] = parsedId.account;
+						}
 					}
 				}
 			}
@@ -978,7 +980,7 @@ function(creates, type, items, currList, sortBy, cutoff, convs) {
 		var item = itemClass.createFromDom(create, {}, true);
 		items[item.id] = item;
 		result.gotItem = true;
-		if (item.folderId == ZmOrganizer.ID_INBOX && item.isUnread) {
+		if ((item.folderId == ZmOrganizer.ID_INBOX) && item.isUnread && !appCtxt.getActiveAccount().isOfflineInitialSync()) {
 			result.gotAlertMessage = true;
 		}
 	}
