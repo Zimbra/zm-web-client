@@ -127,6 +127,11 @@ function() {
 	return "";
 };
 
+ZmZimbraAccount.prototype.isOfflineInitialSync =
+function() {
+	return (appCtxt.isOffline && (!this.lastSync || (this.lastSync && this.lastSync == 0)));
+};
+
 ZmZimbraAccount.prototype.updateState =
 function(acctInfo) {
 	this.lastSync = acctInfo.lastsync;
