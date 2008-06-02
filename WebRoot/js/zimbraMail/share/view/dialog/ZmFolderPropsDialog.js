@@ -84,7 +84,7 @@ function(organizer) {
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED) &&
 		appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED))
 	{
-		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, !organizer.link);
+		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, (!organizer.link || organizer.isAdmin()));
 	}
    
 	DwtDialog.prototype.popup.call(this);
@@ -150,10 +150,18 @@ function(event) {
 	tmpShare.grantee.id = share.grantee.id;
 	tmpShare.grantee.email = (share.grantee.type == "guest")? share.grantee.id : share.grantee.name;
 	tmpShare.grantee.name = share.grantee.name;
-	tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID);
-	tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME);
-	tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME) || tmpShare.grantor.email;
-	tmpShare.link.id = share.object.id;
+    if(tmpShare.object.isRemote()) {
+		tmpShare.grantor.id = tmpShare.object.zid;
+		tmpShare.grantor.email = tmpShare.object.owner;
+		tmpShare.grantor.name = tmpShare.grantor.email;
+        tmpShare.link.id = tmpShare.object.rid;
+    }else {
+	    tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID);
+		tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME);
+		tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME) || tmpShare.grantor.email;
+        tmpShare.link.id = tmpShare.object.id;
+    }
+
 	tmpShare.link.name = share.object.name;
 	tmpShare.link.view = ZmOrganizer.getViewName(share.object.type);
 	tmpShare.link.perm = share.link.perm;
@@ -311,7 +319,7 @@ function(organizer) {
 
 	var link = organizer.link;
 	var shares = organizer.shares;
-	var visible = (!link && shares && shares.length > 0);
+	var visible = ((!link || organizer.isAdmin()) && shares && shares.length > 0);
 	if (visible) {
 		AjxDispatcher.require("Share");
 		var table = document.createElement("TABLE");

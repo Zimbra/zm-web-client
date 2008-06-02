@@ -108,6 +108,8 @@ function(mode, object, share) {
 		this._noneRadioEl.checked = true;
 	} else if (perm == this._managerRadioEl.value) {
 		this._managerRadioEl.checked = true;
+	} else if (perm == this._adminRadioEl.value) {
+		this._adminRadioEl.checked = true;
 	}
 
 	// Force a reply if new share
@@ -253,12 +255,19 @@ function(shares, result) {
 			tmpShare.grantee.name = share.grantee.name;
 
 			// REVISIT: What if you have delegated access???
-			tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID);
-			tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME);
-			tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME) || tmpShare.grantor.email;
-
-			tmpShare.link.perm = share.link.perm;
-			tmpShare.link.id = tmpShare.object.id;
+			if(tmpShare.object.isRemote()) {
+				tmpShare.grantor.id = tmpShare.object.zid;
+				tmpShare.grantor.email = tmpShare.object.owner;
+				tmpShare.grantor.name = tmpShare.grantor.email;
+                tmpShare.link.id = tmpShare.object.rid;
+			}else {
+				tmpShare.grantor.id = appCtxt.get(ZmSetting.USERID);
+				tmpShare.grantor.email = appCtxt.get(ZmSetting.USERNAME);
+				tmpShare.grantor.name = appCtxt.get(ZmSetting.DISPLAY_NAME) || tmpShare.grantor.email;
+                tmpShare.link.id = tmpShare.object.id;
+            }
+            
+            tmpShare.link.perm = share.link.perm;			
 			tmpShare.link.name = tmpShare.object.name;
 			tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
 			tmpShare.link.inh = this._inheritEl ? this._inheritEl.checked : true;
@@ -404,7 +413,8 @@ ZmSharePropsDialog.prototype._getSelectedRole =
 function() {
 	if (this._viewerRadioEl.checked) return ZmShare.ROLE_VIEWER;
 	if (this._managerRadioEl.checked) return ZmShare.ROLE_MANAGER;
-	return ZmShare.ROLE_NONE;
+    if (this._adminRadioEl.checked) return ZmShare.ROLE_ADMIN;
+    return ZmShare.ROLE_NONE;
 };
 
 ZmSharePropsDialog.prototype._handleCompletionData = 
@@ -514,7 +524,7 @@ function() {
 	var html = [];
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=3>";
 
-	var roles = [ ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER ];
+	var roles = [ ZmShare.ROLE_NONE, ZmShare.ROLE_VIEWER, ZmShare.ROLE_MANAGER, ZmShare.ROLE_ADMIN ];
 	for (var i=0; i<roles.length; i++) {
 		var perm = roles[i];
 
@@ -585,7 +595,7 @@ function() {
 	var inputEl = this._passwordInput.getInputElement();
 	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleEdit);
 
-	var radios = [ "_noneRadioEl", "_viewerRadioEl", "_managerRadioEl" ];
+	var radios = [ "_noneRadioEl", "_viewerRadioEl", "_managerRadioEl", "_adminRadioEl" ];
 	var radioEls = document.getElementsByName(roleRadioName);
 	for (var i = 0; i < radioEls.length; i++) {
 		this[radios[i]] = radioEls[i];

@@ -125,12 +125,15 @@ ZmShare.ROLE_NONE		= "";
 ZmShare.ROLE_VIEWER		= ZmShare.PERM_READ;
 ZmShare.ROLE_MANAGER	= [ZmShare.PERM_READ, ZmShare.PERM_WRITE, ZmShare.PERM_INSERT,
 						   ZmShare.PERM_DELETE, ZmShare.PERM_WORKFLOW].join("");
+ZmShare.ROLE_ADMIN		= [ZmShare.PERM_READ, ZmShare.PERM_WRITE, ZmShare.PERM_INSERT,
+						   ZmShare.PERM_DELETE, ZmShare.PERM_WORKFLOW, ZmShare.PERM_ADMIN].join("");
 
 // role names
 ZmShare.ROLES = {};
 ZmShare.ROLES[ZmShare.ROLE_NONE]	= ZmMsg.shareRoleNone;
 ZmShare.ROLES[ZmShare.ROLE_VIEWER]	= ZmMsg.shareRoleViewer;
 ZmShare.ROLES[ZmShare.ROLE_MANAGER]	= ZmMsg.shareRoleManager;
+ZmShare.ROLES[ZmShare.ROLE_ADMIN]	= ZmMsg.shareRoleAdmin;
 
 ZmShare.TYPE_ALL	= "all";
 ZmShare.TYPE_USER	= "usr";
@@ -177,7 +180,7 @@ function(perm) {
 			actions.push(ZmShare.PERMS[c]);
 		}
 	}
-	return actions.length > 0 ? actions.join(", ") : ZmMsg.shareActionNone;
+        return actions.length > 0 ? actions.join(", ") : ZmMsg.shareActionNone;
 };
 
 // role action names
@@ -185,6 +188,7 @@ ZmShare.ACTIONS = {};
 ZmShare.ACTIONS[ZmShare.ROLE_NONE]		= ZmShare.getRoleActions(ZmShare.ROLE_NONE);
 ZmShare.ACTIONS[ZmShare.ROLE_VIEWER]	= ZmShare.getRoleActions(ZmShare.ROLE_VIEWER);
 ZmShare.ACTIONS[ZmShare.ROLE_MANAGER]	= ZmShare.getRoleActions(ZmShare.ROLE_MANAGER);
+ZmShare.ACTIONS[ZmShare.ROLE_ADMIN]	= ZmShare.getRoleActions(ZmShare.ROLE_ADMIN);
 
 // Static methods
 
@@ -499,7 +503,11 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 	
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("op", operation);
-	actionNode.setAttribute("id", this.object.id);
+    if(this.object.rid && this.object.zid) {
+        actionNode.setAttribute("id", this.object.zid + ":" + this.object.rid);
+    }else {
+        actionNode.setAttribute("id", this.object.id);
+    }	
 	for (var attr in actionAttrs) {
 		actionNode.setAttribute(attr, actionAttrs[attr]);
 	}
