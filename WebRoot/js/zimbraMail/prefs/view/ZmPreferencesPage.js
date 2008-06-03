@@ -747,7 +747,7 @@ function(containerDiv, settingId, setup) {
     //Export Options
     var selFormat = null;
     var optionsDiv = document.getElementById(exportDivId+"_options");
-    if(optionsDiv) {
+    if(optionsDiv && (setup.options && setup.options.length > 0) ) {
         var selFormat = this._setupSelect(settingId, setup);
         this._replaceControlElement(optionsDiv, selFormat);
     }
