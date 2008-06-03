@@ -402,20 +402,27 @@ function(ev) {
 
 ZmVoiceApp.prototype.search =
 function(folder, callback, sortBy) {
-	if (!sortBy) {
-		var viewType = (folder.getSearchType() == ZmItem.VOICEMAIL) ? ZmId.VIEW_VOICEMAIL : ZmId.VIEW_CALL_LIST;
-		sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
+	var viewType = (folder.getSearchType() == ZmItem.VOICEMAIL) ? ZmId.VIEW_VOICEMAIL : ZmId.VIEW_CALL_LIST;
+	if ((viewType == ZmId.VIEW_VOICEMAIL) && !folder.phone.hasVoiceMail) {
+		AjxDispatcher.run("GetVoiceController").show(null, folder);
+		if (callback) {
+			callback.run(searchResult);
+		}
+	} else {
+		if (!sortBy) {
+			sortBy = appCtxt.get(ZmSetting.SORTING_PREF, viewType);
+		}
+		var searchParams = {
+			soapInfo: this.soapInfo,
+			types: AjxVector.fromArray([folder.getSearchType()]),
+			sortBy: sortBy,
+			query: folder.getSearchQuery(),
+			limit: appCtxt.get(ZmSetting.VOICE_PAGE_SIZE)
+		};
+		var search = new ZmSearch(searchParams);
+		var responseCallback = new AjxCallback(this, this._handleResponseSearch, [folder, callback]);
+		search.execute({ callback: responseCallback });
 	}
-	var searchParams = {
-		soapInfo: this.soapInfo,
-		types: AjxVector.fromArray([folder.getSearchType()]),
-		sortBy: sortBy,
-		query: folder.getSearchQuery(),
-		limit: appCtxt.get(ZmSetting.VOICE_PAGE_SIZE)
-	};
-	var search = new ZmSearch(searchParams);	
-	var responseCallback = new AjxCallback(this, this._handleResponseSearch, [folder, callback]);
-	search.execute({ callback: responseCallback });
 };
 
 ZmVoiceApp.prototype._handleResponseSearch =

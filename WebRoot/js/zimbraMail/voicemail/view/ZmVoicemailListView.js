@@ -172,6 +172,11 @@ function(skipNotify) {
 	ZmVoiceListView.prototype.removeAll.call(this, skipNotify);
 };
 
+ZmVoicemailListView.prototype._getNoResultsMessage =
+function() {
+	return this._folder && !this._folder.phone.hasVoiceMail ? ZmMsg.noVoiceMail : AjxMsg.noResults;
+};
+
 ZmVoicemailListView.prototype._resetList =
 function() {
 	this._clearPlayers();

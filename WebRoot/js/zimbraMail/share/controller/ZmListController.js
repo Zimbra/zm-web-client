@@ -1288,7 +1288,7 @@ ZmListController.prototype._getNavStartEnd =
 function(view) {
 	var lv = this._listView[view];
 	var limit = lv.getLimit();
-	var size = this._list.size();
+	var size = this._list ? this._list.size() : 0;
 
 	var start, end;
 	if (size > 0) {
