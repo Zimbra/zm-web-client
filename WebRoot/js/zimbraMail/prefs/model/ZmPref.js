@@ -80,6 +80,17 @@ function(emailStr) {
 	return true;
 };
 
+ZmPref.downloadSinceDisplay = function(dateStr) {
+	if (dateStr == "") return 0;
+	if (dateStr == appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE)) return 1;
+	return 2;
+};
+ZmPref.downloadSinceValue = function(value) {
+	if (value == 0) return "";
+	if (value == 1) return appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
+	return AjxDateFormat.format("yyyyMMddHHmmss'Z'", new Date());
+};
+
 ZmPref.validatePollingInterval =
 function(interval) {
 	var minimum = appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL);
