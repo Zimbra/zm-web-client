@@ -87,7 +87,7 @@
 	        <tr>
 	        <td valign="bottom" nowrap="nowrap"><app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/></td>
 	        <td><app:appStatus/></td>
-	        <td align="right" nowrap="nowrap"><a target="_new" href="<c:url value="/help/standard/Zimbra_User_Help.htm"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><fmt:message key="help"/></a>&nbsp;</td>
+	        <td align="right" nowrap="nowrap"><a target="_new" href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><fmt:message key="help"/></a>&nbsp;</td>
 		    </tr>
 		    </table>
     	</td>
@@ -386,7 +386,7 @@
 				<td id='skin_td_R4' class='ImgSkin_Chrome_R4' colspan="2">
 					<table width=100% id='skin_table_R4' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 						<tr>
-							<td style='text-align:left;padding-left:20px;'>&copy; 2007 Comcast Cable Communications</td>
+							<td style='text-align:left;padding-left:20px;'>&copy; 2008 Comcast Cable Communications</td>
 							<td><a href="http://www.comcast.net/privacy/" target="_new">Privacy Statement</a></td>
 							<td><a href="http://www.comcast.net/terms/" target="_new">Terms of Service</a></td>
 							<td><a href="http://www.comcast.net/help/contact" target="_new">Contact Us</a></td>
@@ -442,7 +442,7 @@
 					</tr>
 					<tr>
 						<td align="left" class="ZhAppLinks">
-							<a target="_new" href="<c:url value="/help/standard/Zimbra_User_Help.htm"><c:param name='locid'><fmt:getLocale /></c:param></c:url>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.gif"  border="0"/>&nbsp;<fmt:message key="help"/></a>
+							<a target="_new" href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><app:img altkey="ALT_APP_LINK_HELP" src="startup/ImgHelp.gif"  border="0"/>&nbsp;<fmt:message key="help"/></a>
 						</td>
 						<td>
 							&nbsp;
