@@ -134,6 +134,8 @@ function(settings) {
 	settings.registerSetting("NOTIF_FEATURE_ENABLED",			{name:"zimbraFeatureNewMailNotificationEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("OPEN_MAIL_IN_NEW_WIN",			{name:"zimbraPrefOpenMailInNewWindow", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("PAGE_SIZE",						{name:"zimbraPrefMailItemsPerPage", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:25});
+	settings.registerSetting("POP_ENABLED",						{name:"zimbraPop3Enabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("POP_DOWNLOAD_SINCE",				{name:"zimbraPrefPop3DownloadSince", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
 	settings.registerSetting("READING_PANE_ENABLED",			{name:"zimbraPrefReadingPaneEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isImplicit:true});
 	settings.registerSetting("REPLY_INCLUDE_ORIG",				{name:"zimbraPrefReplyIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INCLUDE});
 	settings.registerSetting("REPLY_MENU_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
@@ -188,6 +190,7 @@ function() {
 				ZmSetting.MAIL_NOTIFY_SOUNDS,
 				ZmSetting.OPEN_MAIL_IN_NEW_WIN,
 				ZmSetting.PAGE_SIZE,
+				ZmSetting.POP_DOWNLOAD_SINCE,
 				ZmSetting.POLLING_INTERVAL,
 				ZmSetting.SHOW_FRAGMENTS,
 				ZmSetting.VACATION_MSG_ENABLED,
@@ -383,6 +386,18 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
         precondition:      ZmSetting.DETACH_MAILVIEW_ENABLED
     });
+
+	ZmPref.registerPref("POP_DOWNLOAD_SINCE", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		displayOptions:		[	ZmMsg.externalAccessPopDownloadAll,
+								ZmMsg.externalAccessPopDownloadNoChange,
+								ZmMsg.externalAccessPopDownloadFromNow
+							],
+		options:			[0, 1, 2],
+		displayFunction:	ZmPref.downloadSinceDisplay,
+		valueFunction:		ZmPref.downloadSinceValue,
+		precondition:		ZmSetting.POP_ENABLED
+	});
 
 	ZmPref.registerPref("REPLY_TO_ADDRESS", {
 		displayName:		ZmMsg.replyToAddress,
