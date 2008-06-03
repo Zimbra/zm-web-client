@@ -364,7 +364,7 @@
 			var bodyEl = document.getElementById('body');
 			if (bodyEl.setSelectionRange) { <%-- FF --%>
 				bodyEl.setSelectionRange(0, 0);
-			} else if (bodyEl.createTextRange) { // IE
+			} else if (bodyEl.createTextRange && /\S/.test(bodyEl.value)) { // IE
 				var range = bodyEl.createTextRange();
 				range.collapse(true);
 				range.moveStart("character", -60000);
