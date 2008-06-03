@@ -529,6 +529,7 @@ function() {
 
 ZmEmailNotificationUI.prototype.setEnabled =
 function(enabled) {
+	this._checkbox.setEnabled(enabled);
 	this._comboBox.setEnabled(enabled);
 };
 
