@@ -55,7 +55,7 @@
 		<table border=0 width=100%>
 			<tr>
 				<td><font size=+1><$= data.task.getName() $></font></td>
-				<td align=right><font size=+1><$= (new Date(data.task.startDate)).toLocaleString() $></font></td>
+				<td align=right><font size=+1><$= ZmCalItem._getTTDay(data.task.startDate, AjxDateFormat.MEDIUM) $></font></td>
 			</tr>
 		</table>
 		<table border=0>
