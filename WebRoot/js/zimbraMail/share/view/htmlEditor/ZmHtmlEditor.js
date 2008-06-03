@@ -261,7 +261,10 @@ function(path) {
 		var head = doc.getElementsByTagName("head")[0];
 		if (!head) {
 			head = doc.createElement("head");
-			doc.documentElement.insertBefore(head, doc.documentElement.firstChild);
+			var docEl = doc.documentElement;
+			if (docEl) {
+				docEl.insertBefore(head, docEl.firstChild);
+			}
 		}
 		head.appendChild(style);
 	}
