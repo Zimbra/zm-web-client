@@ -87,6 +87,17 @@ ZmMailPrefsPage.prototype._createControls = function() {
 		this._handleEnableVacationMsg(cbox);
     }
 
+	// enable downloadSince appropriately based on presence of downloadSinceEnabled
+	var downloadSinceCbox = this.getFormObject(ZmSetting.POP_DOWNLOAD_SINCE_ENABLED);
+	if (downloadSinceCbox) {
+		var downloadSince = this.getFormObject(ZmSetting.POP_DOWNLOAD_SINCE);
+		if (downloadSince) {
+			var enabled = downloadSince.getValue() != "";
+			downloadSinceCbox.setSelected(enabled);
+			downloadSince.setEnabled(enabled);
+		}
+	}
+
 	// Break the link between the label and the radio button for MARK_READ_TIME, so that when the user clicks on the
 	// text input, focus doesn't immediately go to the radio button
 	var input = Dwt.byId(DwtId._makeId(ZmId.WIDGET_INPUT, ZmId.OP_MARK_READ));

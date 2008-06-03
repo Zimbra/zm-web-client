@@ -43,19 +43,11 @@
             </c:if>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
-		    <c:choose>
-	        	<c:when test="${!empty cookie.ZM_TEST}">
-		            <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-		                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-		                      prefs="${prefsToFetch}" attrs="${attrsToFetch}"
-							  requestedSkin="${param.skin}"/>
-		            <%-- continue on at not empty authResult test --%>
-		    	</c:when>
-		        <c:otherwise>
-		            <c:set var="errorCode" value="noCookies"/>
-		            <fmt:message var="errorMessage" key="errorCookiesDisabled"/>
-		        </c:otherwise>
-		    </c:choose>
+            <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
+                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
+                      prefs="${prefsToFetch}" attrs="${attrsToFetch}"
+					  requestedSkin="${param.skin}"/>
+            <%-- continue on at not empty authResult test --%>
 	    </c:when>
 	    <c:otherwise>
 	        <%-- try and use existing cookie if possible --%>
@@ -191,11 +183,6 @@ if (application.getInitParameter("offlineMode") != null)  {
         </c:forEach>
     </c:forEach>
 </c:url>
-
-<%
-	Cookie testCookie = new Cookie("ZM_TEST", "true");
-	response.addCookie(testCookie);
-%>
 
 
 <html>
