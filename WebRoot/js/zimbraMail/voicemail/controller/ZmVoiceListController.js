@@ -40,13 +40,13 @@ ZmVoiceListController.prototype.show =
 function(searchResult, folder) {
 	this._folder = folder;
 	ZmListController.prototype.show.call(this, searchResult);
-	this._list = searchResult.getResults(folder.getSearchType());
+	this._list = searchResult ? searchResult.getResults(folder.getSearchType()) : null;
 	if (this._list)
 		this._list.setHasMore(searchResult.getAttribute("more"));	
 	this._setup(this._currentView);
 
 	var lv = this._listView[this._currentView];
-	if (lv) {
+	if (lv && this._activeSearch) {
 		lv.offset = parseInt(this._activeSearch.getAttribute("offset"));
     }
     var elements = {};
