@@ -23,7 +23,8 @@ ZmNotebookTreeController = function() {
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);
 	this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
-	this._eventMgrs = {};
+    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
+    this._eventMgrs = {};
 };
 
 ZmNotebookTreeController.prototype = new ZmTreeController;
@@ -99,8 +100,9 @@ function() {
 	ops.push(
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SEP,
-		ZmOperation.REFRESH
-	);
+		ZmOperation.REFRESH,
+        ZmOperation.BROWSE    
+    );
 	return ops;
 };
 
