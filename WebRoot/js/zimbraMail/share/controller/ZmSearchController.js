@@ -560,7 +560,7 @@ function(ev) {
 		if (queryString) {
 			this._currentQuery = null;
 		} else {
-			queryString = this._currentQuery;
+			queryString = this._currentQuery ? this._currentQuery : "";
 		}
 		var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 		this.search({query: queryString, userText: userText, getHtml: getHtml});
