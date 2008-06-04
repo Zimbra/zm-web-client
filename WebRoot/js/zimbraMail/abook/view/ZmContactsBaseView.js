@@ -44,6 +44,7 @@ function(list, sortField, folderId) {
 	} else {
 		subList = list;
 	}
+    this._folderId = folderId;
 	DwtListView.prototype.set.call(this, subList, sortField);
 };
 

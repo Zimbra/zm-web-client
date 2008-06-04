@@ -503,9 +503,14 @@ function() {
 		// Shows "Loading..."
 		ZmContactsBaseView.prototype._setNoResultsHtml.call(this);
 	} else {
-		// Shows "No Results", unless the skin has overridden to show links to plaxo.
 		var	div = document.createElement("div");
-		div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults");
+        //bug:28365  Show custom "No Results" for Trash folder.
+        if(this._folderId == ZmFolder.ID_TRASH && AjxTemplate.getTemplate("abook.Contacts#SimpleView-NoResults-Trash") ){
+            div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults-Trash");
+        }else{
+            // Shows "No Results", unless the skin has overridden to show links to plaxo.
+		    div.innerHTML = AjxTemplate.expand("abook.Contacts#SimpleView-NoResults");
+        }
 		this._addRow(div);
 	}
 	this.parent.clear();
