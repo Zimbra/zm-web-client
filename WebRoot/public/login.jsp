@@ -43,11 +43,19 @@
             </c:if>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
-            <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-                      prefs="${prefsToFetch}" attrs="${attrsToFetch}"
-					  requestedSkin="${param.skin}"/>
-            <%-- continue on at not empty authResult test --%>
+		    <c:choose>
+	        	<c:when test="${!empty cookie.ZM_TEST}">
+		            <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
+		                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
+		                      prefs="${prefsToFetch}" attrs="${attrsToFetch}"
+							  requestedSkin="${param.skin}"/>
+		            <%-- continue on at not empty authResult test --%>
+		    	</c:when>
+		        <c:otherwise>
+		            <c:set var="errorCode" value="noCookies"/>
+		            <fmt:message var="errorMessage" key="errorCookiesDisabled"/>
+		        </c:otherwise>
+		    </c:choose>
 	    </c:when>
 	    <c:otherwise>
 	        <%-- try and use existing cookie if possible --%>
@@ -184,6 +192,11 @@ if (application.getInitParameter("offlineMode") != null)  {
     </c:forEach>
 </c:url>
 
+<%
+	Cookie testCookie = new Cookie("ZM_TEST", "true");
+	response.addCookie(testCookie);
+%>
+
 
 <html>
 <head>
@@ -215,7 +228,7 @@ if (application.getInitParameter("offlineMode") != null)  {
     <fmt:message key="favIconUrl" var="favIconUrl"/>
     <link rel="SHORTCUT ICON" href="<c:url value='${favIconUrl}'/>">
 </head>
-<body onload="document.loginForm.username.focus();">
+<body onload="onLoad();">
 <table width="100%" style="height:100%;">
     <tr>
         <td align="center" valign="middle">
@@ -319,24 +332,23 @@ if (application.getInitParameter("offlineMode") != null)  {
 												</select>
 												
 												<script TYPE="text/javascript">
-													// show a message if the should be using the 'standard' client, but have chosen 'advanced' instead
+													// show a message if they should be using the 'standard' client, but have chosen 'advanced' instead
 													function clientChange(selectValue) {
-                                                        var it = document.getElementById("ZLoginUnsupported");
-														<c:choose>
-															<c:when test="${zm:cook(client) == 'standard'}">
-																var useStandard = ${useStandard ? 'true' : 'false'};
-																it.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
-															</c:when>
-															<c:otherwise>
-																it.style.display = 'none';
-															</c:otherwise>
-														</c:choose>
+														var useStandard = ${useStandard ? 'true' : 'false'};
+														useStandard = useStandard || (screen.width <= 800 && screen.height <= 600);
+                                                        var div = document.getElementById("ZLoginUnsupported");
+														div.style.display = ((selectValue == 'advanced') && useStandard) ? 'block' : 'none';
 													}
 												
 													// if they have JS, write out a "what's this?" link that shows the message below
 													function showWhatsThis() {
-                                                        var it = document.getElementById("ZLoginWhatsThis");
-														it.style.display = (it.style.display == "block" ? "none" : "block");
+                                                        var div = document.getElementById("ZLoginWhatsThis");
+														div.style.display = (it.style.display == "block" ? "none" : "block");
+													}
+													
+													function onLoad() {
+														document.loginForm.username.focus();
+														clientChange("${client}");
 													}
 													document.write("<a href='#' onclick='showWhatsThis()' id='ZLoginWhatsThisAnchor'><fmt:message key="whatsThis"/><"+"/a>");
 												</script>
