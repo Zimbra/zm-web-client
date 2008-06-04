@@ -12,7 +12,7 @@ function ZmSkin(hints) {
         
         // specific components
         appChooser:    { direction: "LR" },
-        helpButton:    { style: "link", container: "quota" },
+        helpButton:    { style: "link", container: "quota", url: "@HelpAdvancedURL@" },
         logoutButton:  { style: "link", container: "quota" },
         toast:          { location: "N", transitions: [
             { type: "fade-in", step: 10, duration: 200 },

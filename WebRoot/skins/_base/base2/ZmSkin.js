@@ -38,7 +38,7 @@ ZmSkin.hints = {
 	
 
 	// specific components
-	helpButton:		{ style: "link", container: "quota" },		/*** TODO: this 'container' should be removed ??? ***/
+	helpButton:		{ style: "link", container: "quota", url: "@HelpAdvancedURL@" },		/*** TODO: this 'container' should be removed ??? ***/
 	logoutButton: 	{ style: "link", container: "quota" },		/*** TODO: this 'container' should be removed ??? ***/
 	appChooser:		{ position:"static", direction: "LR" },
 	toast:		 	{ location: "N", 
