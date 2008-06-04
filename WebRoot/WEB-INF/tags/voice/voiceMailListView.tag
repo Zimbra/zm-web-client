@@ -10,6 +10,8 @@
 	<zm:checkVoiceStatus var="voiceStatus"/>
 	<app:searchTitle var="title" context="${context}"/>
     <c:set var="phone">${zm:getPhoneFromVoiceQuery(context.query)}</c:set>
+	<c:set var="account" value="${zm:getPhoneAccount(pageContext, phone)}"/>
+	<c:set var="hasVoiceMail" value="${(not empty account) and account.hasVoiceMail}"/>
 	<c:set var="selectedRow" value="${not empty param.selectedRow ? param.selectedRow : 0}"/>
 </app:handleError>
 <app:view editmode="${voiceStatus eq 'false' ? 'true' : ''}" mailbox="${mailbox}" title="${title}" selected='voice' voice="true" folders="false" tags="false" searches="false" context="${context}" keys="true">
@@ -24,6 +26,7 @@
 				</tr>
 				<tr>
 					<td class='List'>
+						<c:if test="${hasVoiceMail}">
 							<table width=100% cellpadding=2 cellspacing=0>
 								<tr class='Header'>
 									<th nowrap><input id="CHALL" onClick="checkAll(document.zform.voiceId,this)" type=checkbox name="allids"/></th>
@@ -79,6 +82,10 @@
 							<c:if test="${context.searchResult.size == 0}">
 								<div class='NoResults'><fmt:message key="noResultsFound"/></div>
 							</c:if>
+						</c:if>
+						<c:if test="${!hasVoiceMail}">
+							<div class='NoResults'><fmt:message key="noVoiceMail"/></div>
+						</c:if>
 					</td>
 				</tr>
 				<tr>
