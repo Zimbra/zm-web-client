@@ -2538,6 +2538,9 @@ HTML>BODY .appt-selected .appt_allday_body
 /* POP Accounts */
 .ZmDataSourceTestDialog {
 }
+.ZmDataSourceTestDialog .DwtDialogBody {
+	width: 400px;
+}
 .ZmDataSourceTestTable {
     margin: 0.5em;
 }
