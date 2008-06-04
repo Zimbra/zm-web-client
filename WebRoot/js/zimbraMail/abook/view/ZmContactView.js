@@ -463,16 +463,15 @@ function() {
 
 	var folderTree = appCtxt.getFolderTree();
 	var folders = folderTree ? folderTree.getByType(ZmOrganizer.ADDRBOOK) : [];
+	folders.sort(ZmAddrBook.sortCompare);
 
 	// for now, always re-populate folders DwtSelect
 	this._folderSelect.clearOptions();
 
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
-		if (folder.nId == ZmFolder.ID_ROOT ||
-			folder.isInTrash() ||
-			folder.isReadOnly())
-		{
+		if (folder.nId == ZmFolder.ID_ROOT || folder.nId == ZmOrganizer.ID_MY_CARD ||
+			folder.isInTrash() || folder.isReadOnly()) {
 			continue;
 		}
 
