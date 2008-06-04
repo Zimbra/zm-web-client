@@ -105,6 +105,9 @@
                                         </c:if>
                                     </c:forEach>
                                 </c:forEach>
+                                <c:if test="${param.client eq 'advanced'}">
+	                                <c:param name='client' value='advanced'/>
+	                            </c:if>
                             </c:redirect>
                         </c:when>
                         <c:otherwise>
