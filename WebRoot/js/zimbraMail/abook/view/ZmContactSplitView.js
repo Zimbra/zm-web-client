@@ -481,9 +481,11 @@ function(list, defaultColumnSort, folderId) {
 		this.parent.clear();
 		var view = this._controller._getViewType();
 		this._controller._navToolBar[view].setText("");
+        this.parent.enableAlphabetBar(false);
+    }else{
+        this.parent.enableAlphabetBar(!list.isGal);
 	}
 
-	this.parent.enableAlphabetBar(!list.isGal);
 };
 
 ZmContactSimpleView.prototype.setSelection =
