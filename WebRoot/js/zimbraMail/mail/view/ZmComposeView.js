@@ -918,7 +918,7 @@ function(mimePart) {
  */
 ZmComposeView.prototype.applySignature =
 function(content, replaceSignatureId){
-	 content = content || "";
+	content = content || "";
     var signature = this.getSignatureContent();
 	var newLine = this._getSignatureNewLine();
 	var isAbove = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_OUTLOOK;
@@ -1042,9 +1042,15 @@ function() {
 ZmComposeView.prototype._getSignature =
 function(signatureId) {
 	signatureId = signatureId || this._controller.getSelectedSignature();
-	if (!signatureId) { return; }
+	if (!signatureId) {
+                return;
+        }
 
 	var signature = appCtxt.getSignatureCollection().getById(signatureId);
+        if (!signature) {
+                return;
+        }
+
 	var newLine = this._getSignatureNewLine();
         var sig = signature.getValue( (this._composeMode == DwtHtmlEditor.HTML) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN );
 	return sig + newLine;

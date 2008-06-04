@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -157,7 +157,7 @@ ZmSignaturesPage.prototype.addCommand = function(batchCommand) {
 	var deletedSigs = this.getDeletedSignatures();
 	for (var i = 0; i < deletedSigs.length; i++) {
 		var signature = deletedSigs[i];
-		var callback = new AjxCallback(this, this._handleDeleteResponse, [signature]); 
+		var callback = new AjxCallback(this, this._handleDeleteResponse, [signature]);
 		signature.doDelete(callback, null, batchCommand);
 	}
 
@@ -263,13 +263,13 @@ ZmSignaturesPage.prototype._addSignature = function(signature, reset) {
             }
         }
     }
-    
+
     // create html
 	var data = { id: signature._htmlElId };
 	var html = AjxTemplate.expand(ZmSignaturesPage.SIGNATURE_TEMPLATE, data);
 	var el = Dwt.parseHtmlFragment(html);
 
-	var listComp = this.getFormObject(ZmSetting.SIGNATURES); 
+	var listComp = this.getFormObject(ZmSetting.SIGNATURES);
 	var listEl = listComp.getHtmlElement();
 	listEl.appendChild(el);
 
@@ -291,7 +291,7 @@ ZmSignaturesPage.prototype._addSignature = function(signature, reset) {
 			};
 			var input = new DwtInputField(params);
             input.setEnabled(false);
-            
+
             this._replaceControlElement(nameEl, input);
 
             comps.name = input;
@@ -313,7 +313,7 @@ ZmSignaturesPage.prototype._addSignature = function(signature, reset) {
 			comps.isDefault = radio;
 		}
 
-        //Signature FORMAT 
+        //Signature FORMAT
         var formatEl = document.getElementById(signature._htmlElId+"_SIGNATURE_FORMAT");
         if(formatEl) {
             var select = new DwtSelect(listComp);
@@ -327,7 +327,7 @@ ZmSignaturesPage.prototype._addSignature = function(signature, reset) {
             comps.format = select;
         }
 
-        //Signature EDIT/DONE 
+        //Signature EDIT/DONE
         var actionEl = document.getElementById(signature._htmlElId+"_SIGNATURE_BUTTON");
 		if (actionEl) {
 			var button = new DwtButton({parent:listComp});
@@ -397,7 +397,7 @@ ZmSignaturesPage.prototype._resetSignature = function(signature, clear ) {
         comps.actionButton.addSelectionListener(new AjxListener(this, this._handleEditButton, [signature._htmlElId]));
         comps.actionButton.setEnabled(true);
     }
-    
+
     if (comps.isDefault) {
 		for (var id in this._signatureComps) {
 			var sigComps = this._signatureComps[id];
@@ -407,11 +407,11 @@ ZmSignaturesPage.prototype._resetSignature = function(signature, clear ) {
 		}
 		// TODO: Select this one if it's the default; and remember it
 	}
-    
+
     if (comps.value) {
         var signContent = signature.value;
         if(signature.getContentType() == ZmMimeTable.TEXT_PLAIN){
-           signContent = AjxStringUtil.convertToHtml(signContent); 
+           signContent = AjxStringUtil.convertToHtml(signContent);
         }
         comps.value.setContent((signContent || "&nbsp;"));
         comps.value.setEnabled(false);
@@ -428,7 +428,7 @@ ZmSignaturesPage.prototype._resetAddButton = function() {
 };
 
 ZmSignaturesPage.prototype._resetDeleteButtons = function() {
-	this._deleteState = this.getAllSignatures(true, true).length > this._minEntries; 
+	this._deleteState = this.getAllSignatures(true, true).length > this._minEntries;
 	var text = this._deleteState ? ZmMsg.del : ZmMsg.clear;
 	for (var id in this._signatureComps) {
 		var comps = this._signatureComps[id];
@@ -489,7 +489,7 @@ ZmSignaturesPage.prototype._handleEditButton = function(id, evt){
     }
 
     this._editState = signature;
-    
+
     //Make Edit button into Delete button
     comps.actionButton.setText(ZmMsg.done);
     comps.actionButton.removeSelectionListeners();
@@ -516,22 +516,31 @@ ZmSignaturesPage.prototype._setSignatureContent = function(editor, signature){
     editor.setContent(signature.value || "");
 };
 
+// ZmSignaturesPage.prototype.getPreSaveCallback = function() {
+//         return new AjxCallback(this, function(continueCallback) {
+//                 if (this._editState)
+//                         this._handleDoneButton(this._editState._htmlElId, null);
+//                 var batchCommand = new ZmBatchCommand(false);
+//                 batchCommand.run(continueCallback);
+//         });
+// };
+
 ZmSignaturesPage.prototype._handleDoneButton = function(id, evt){
-    
+
     var sigList = this.getFormObject(ZmSetting.SIGNATURES);
     var comps = this._signatureComps[id];
     if (comps) {
 	    var signature = comps.signature;
-	
+
 	    signature.name = comps.name.getValue();
-	
+
 	    var htmlEditor = this._getSignatureEditor();
 	    signature.value = htmlEditor.getContent(false, true);
 	    signature.setContentType((htmlEditor.getMode() == DwtHtmlEditor.HTML) ? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN);
-	
+
 	    htmlEditor.reparentHtmlElement(this.getHtmlElement());
 	    htmlEditor.setVisibility(false);
-	    
+
 	    this._resetSignature(signature);
     }
 
