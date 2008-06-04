@@ -72,11 +72,16 @@
 					<table border="0" cellpadding="0" cellspacing="0" >
 						<tr>
 							<td class="ZhOptVoiceCBCell">
-								<input id="emailNotificationActive" type=checkbox name="emailNotificationActive" value="TRUE" <c:if test="${!empty features.voiceMailPrefs.emailNotificationAddress}">checked</c:if>>
+								<input id="emailNotificationActive" type=checkbox name="emailNotificationActive" value="TRUE"
+									<c:if test="${!empty features.voiceMailPrefs.emailNotificationAddress}">checked</c:if>
+									<c:if test="${!account.hasVoiceMail}"> disabled</c:if>
+								>
 							</td>
 							<td>
 								<label for="emailNotificationActive"><fmt:message key="sendEmailNotification"/></label>&nbsp;&nbsp;
-								<input name="emailNotificationAddress" type="text" size="25" value="${features.voiceMailPrefs.emailNotificationAddress}">
+								<input name="emailNotificationAddress" type="text" size="25" value="${features.voiceMailPrefs.emailNotificationAddress}"
+									<c:if test="${!account.hasVoiceMail}"> disabled</c:if>
+								>
 							</td>
 						</tr>
 					</table>

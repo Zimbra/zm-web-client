@@ -32,10 +32,17 @@
 						<tr class="ZhHomeRow">
 							<td class="ZhHomeCell" >
 								<span style="font-weight:bold; font-size:12px;"><c:out value="${account.phone.display}"/><br></span>
-								<a style="text-decoration:none;" href='/h/search?st=voicemail&sq=phone:${phone}' target="_top">
-									${folder.unreadCount}&nbsp;<fmt:message key="unheard"/>
-								</a>
-								| ${folder.messageCount}&nbsp;<fmt:message key="total"/>
+								<c:choose>
+									<c:when test="${account.hasVoiceMail}">
+										<a style="text-decoration:none;" href='/h/search?st=voicemail&sq=phone:${phone}' target="_top">
+											${folder.unreadCount}&nbsp;<fmt:message key="unheard"/>
+										</a>
+										| ${folder.messageCount}&nbsp;<fmt:message key="total"/>
+									</c:when>
+									<c:otherwise>
+										<fmt:message key="noVoiceMail"/>
+									</c:otherwise>
+								</c:choose>
 							</td>
 						</tr>
 					</c:if>
