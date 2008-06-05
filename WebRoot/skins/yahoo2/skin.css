@@ -1,0 +1,36 @@
+#skin_container_app_chooser		{	margin-top:5px;					}
+#skin_container_app_main		{	border-left-width:1px;			}
+#skin_container_app_top_toolbar	{	border-left-width:1px;			}
+#skin_container_tree			{	border-width:1px; margin-top:6px;			}
+#skin_container_tree_footer		{	border-width:1px; margin-top:6px;			}
+#skin_spacing_search			{	width:46%;						}
+#skin_container_web_search		{	width:95%; height:20px;			}
+#skin_container_links			{
+	padding-right:10px;
+	white-space:nowrap;
+	overflow:hidden;
+}
+#skin_search_web_input			{
+	border:1px solid #99aabd;
+	border-right-width: 0px;
+	height:20px;
+}
+
+.ZAppTab						{	padding-left:3px;				}
+.ZAppTabBorder		 			{	border-width:0px !important;	}
+.ZmAppChooser .ZToolbarTable	{	margin-left:5px;				}
+.ZAppTabBorder .ZLeftIcon DIV	{	margin-top:4px;					}
+.BannerTextUser					{	text-align: left;				}
+.ZmAppChooser					{	margin-left:0px;				}
+
+
+/* Yahoo! skin-specific CSS */
+.skin_yahoo_userinfo			{	padding-left:10px;				}
+
+.skin_yahoo_websearch_button	{
+	border:1px solid #7f7f7f;
+	width:35px;
+	height:20px;
+	@trRadius@:4px;
+	@brRadius@:4px;
+}

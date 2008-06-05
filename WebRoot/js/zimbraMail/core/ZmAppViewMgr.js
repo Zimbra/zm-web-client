@@ -239,7 +239,11 @@ function(components, doFit, noSetZ) {
 					contEl = document.getElementById(contId);
 				}
 				if (!contEl) {
-					throw new AjxException("Skin container '" + contId + "' not found.");
+					// XXX: we no longer throw an exception b/c some skins want
+					// to omit certain containers (i.e. quota).
+					//throw new AjxException("Skin container '" + contId + "' not found.");
+					DBG.println("Skin container '" + contId + "' not found.");
+					continue;
 				}
 				this._containers[cid] = contEl;
 				if (doFit) {
