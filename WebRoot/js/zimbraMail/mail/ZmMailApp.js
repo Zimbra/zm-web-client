@@ -160,7 +160,9 @@ function(settings) {
     settings.registerSetting("VACATION_MSG",					{name:"zimbraPrefOutOfOfficeReply", type:ZmSetting.T_PREF});
 	settings.registerSetting("VACATION_MSG_ENABLED",			{name:"zimbraPrefOutOfOfficeReplyEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("VACATION_MSG_FEATURE_ENABLED",	{name:"zimbraFeatureOutOfOfficeReplyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-	settings.registerSetting("MAIL_NOTIFY_SOUNDS",				{name:"zimbraPrefMailSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("MAIL_NOTIFY_SOUNDS",				{name:"zimbraPrefMailSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("MAIL_NOTIFY_APP",					{name:"zimbraPrefMailFlashIcon", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("MAIL_NOTIFY_BROWSER",				{name:"zimbraPrefMailFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 
     ZmMailApp._setGroupByMaps();
 };
@@ -188,6 +190,8 @@ function() {
 				ZmSetting.NOTIF_ADDRESS,
 				ZmSetting.NOTIF_ENABLED,
 				ZmSetting.MAIL_NOTIFY_SOUNDS,
+				ZmSetting.MAIL_NOTIFY_APP,
+				ZmSetting.MAIL_NOTIFY_BROWSER,
 				ZmSetting.OPEN_MAIL_IN_NEW_WIN,
 				ZmSetting.PAGE_SIZE,
 				ZmSetting.POP_DOWNLOAD_SINCE,
@@ -362,6 +366,16 @@ function() {
 
 	ZmPref.registerPref("MAIL_NOTIFY_SOUNDS", {
 		displayName:		ZmMsg.playSound,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("MAIL_NOTIFY_APP", {
+		displayName:		ZmMsg.flashMailAppTab,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("MAIL_NOTIFY_BROWSER", {
+		displayName:		ZmMsg.flashBrowser,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 
@@ -874,44 +888,51 @@ function(creates, force) {
 		}
 	}
 
-	// If we didn't display an alert-worthy new message, loop thru all creates looking for one.
-	var accountAlerts;
-	if (mailCreates && (!alertNewMail || appCtxt.multiAccounts)) {
-		var parsedId;
-		for (var i = 0, count = mailCreates.length; i < count; i++) {
-			var mc = mailCreates[i];
-			if (mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1)) {
-				parsedId = ZmOrganizer.parseId(mc.l, parsedId);
-				if (parsedId.id == ZmOrganizer.ID_INBOX) {
-					if (!parsedId.account.isOfflineInitialSync()) {
-						if (parsedId.account == appCtxt.getActiveAccount()) {
-							alertNewMail = true;
-						} else {
-							accountAlerts = accountAlerts || {};
-							accountAlerts[parsedId.account.id] = parsedId.account;
+	var soundAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS);
+	var appAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_APP);
+	var browserAlertsOn = appCtxt.get(ZmSetting.MAIL_NOTIFY_BROWSER);
+	if (soundAlertsOn || appAlertsOn || browserAlertsOn) {   
+		// If we didn't display an alert-worthy new message, loop thru all creates looking for one.
+		var accountAlerts;
+		if (mailCreates && (!alertNewMail || appCtxt.multiAccounts)) {
+			var parsedId;
+			for (var i = 0, count = mailCreates.length; i < count; i++) {
+				var mc = mailCreates[i];
+				if (mc.f && (mc.f.indexOf(ZmItem.FLAG_UNREAD) != -1)) {
+					parsedId = ZmOrganizer.parseId(mc.l, parsedId);
+					if (parsedId.id == ZmOrganizer.ID_INBOX) {
+						if (!parsedId.account.isOfflineInitialSync()) {
+							if (parsedId.account == appCtxt.getActiveAccount()) {
+								alertNewMail = true;
+							} else {
+								accountAlerts = accountAlerts || {};
+								accountAlerts[parsedId.account.id] = parsedId.account;
+							}
 						}
 					}
 				}
 			}
 		}
-	}
-	// If any alert-worthy mail, beep and flash browser.
-	if ((alertNewMail || accountAlerts)){
-		AjxDispatcher.require("Alert");
-		if (appCtxt.get(ZmSetting.MAIL_NOTIFY_SOUNDS)) {
-			ZmSoundAlert.getInstance().start();
+		// If any alert-worthy mail, beep and flash browser.
+		if ((alertNewMail || accountAlerts)){
+			AjxDispatcher.require("Alert");
+			if (soundAlertsOn) {
+				ZmSoundAlert.getInstance().start();
+			}
+			if (browserAlertsOn) {
+				ZmBrowserAlert.getInstance().start(ZmMsg.newMessage);
+			}
 		}
-		ZmBrowserAlert.getInstance().start(ZmMsg.newMessage);
-	}
-	// Do any alert on the mail app tab.
-	if (alertNewMail && (appCtxt.getActiveAccount() == appCtxt.getMainAccount())) {
-		this.startAlert();
-	}
-	// Do any alert on account accordion items.
-	if (accountAlerts) {
-		AjxDispatcher.require("Alert");
-		for (var accountId in accountAlerts) {
-			ZmAccountAlert.get(accountAlerts[accountId]).start(this);
+		// Do any alert on the mail app tab.
+		if (appAlertsOn && alertNewMail && (appCtxt.getActiveAccount() == appCtxt.getMainAccount())) {
+			this.startAlert();
+		}
+		// Do any alert on account accordion items.
+		if (appAlertsOn && accountAlerts) {
+			AjxDispatcher.require("Alert");
+			for (var accountId in accountAlerts) {
+				ZmAccountAlert.get(accountAlerts[accountId]).start(this);
+			}
 		}
 	}
 };

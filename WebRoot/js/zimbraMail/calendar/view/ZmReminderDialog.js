@@ -238,9 +238,12 @@ function(list) {
 
 ZmReminderDialog.prototype.popup =
 function() {
-	AjxPackage.require("Alert");
-	ZmBrowserAlert.getInstance().start(ZmMsg.appointmentReminder);
+	if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_BROWSER)) {
+		AjxPackage.require("Alert");
+		ZmBrowserAlert.getInstance().start(ZmMsg.appointmentReminder);
+	}
 	if (appCtxt.get(ZmSetting.CAL_REMINDER_NOTIFY_SOUNDS)) {
+		AjxPackage.require("Alert");
 		ZmSoundAlert.getInstance().start();
 	}
 	DwtDialog.prototype.popup.call(this);

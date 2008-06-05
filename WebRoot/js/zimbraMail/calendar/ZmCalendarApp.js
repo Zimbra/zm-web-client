@@ -104,6 +104,7 @@ function(settings) {
 	settings.registerSetting("CALENDAR_INITIAL_VIEW",		{name: "zimbraPrefCalendarInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CAL_DAY});
 	settings.registerSetting("DELETE_INVITE_ON_REPLY",      {name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("CAL_REMINDER_NOTIFY_SOUNDS",	{name: "zimbraPrefCalendarReminderSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("CAL_REMINDER_NOTIFY_BROWSER",	{name: "zimbraPrefCalendarReminderFlashTitle", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 };
 
 ZmCalendarApp.prototype._registerPrefs =
@@ -121,6 +122,7 @@ function() {
                 ZmSetting.CAL_IMPORT,
                 ZmSetting.CAL_REMINDER_WARNING_TIME,
                 ZmSetting.CAL_REMINDER_NOTIFY_SOUNDS,
+                ZmSetting.CAL_REMINDER_NOTIFY_BROWSER,
                 ZmSetting.CAL_SHOW_TIMEZONE,
                 ZmSetting.CAL_USE_QUICK_ADD,
                 ZmSetting.CALENDAR_INITIAL_VIEW,
@@ -185,6 +187,11 @@ function() {
 
 	ZmPref.registerPref("CAL_REMINDER_NOTIFY_SOUNDS", {
 		displayName:		ZmMsg.playSound,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("CAL_REMINDER_NOTIFY_BROWSER", {
+		displayName:		ZmMsg.flashBrowser,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 };

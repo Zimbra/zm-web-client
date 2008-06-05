@@ -64,7 +64,7 @@ ZmAlertLoop.prototype._add =
 function(alert) {
 	this._alerts.add(alert, 0, true);
 	if (!this._alertInterval) {
-		this._alertInterval = setInterval(AjxCallback.simpleClosure(this._alertTimerCallback, this), 333);
+		this._alertInterval = setInterval(AjxCallback.simpleClosure(this._alertTimerCallback, this), 1500);
 	}
 };
 
