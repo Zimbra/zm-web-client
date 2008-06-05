@@ -893,7 +893,7 @@ function(request, contactList, isDraft, accountName) {
 	{
 		var attachNode = msgNode.attach = {};
 		if (this._attId) {
-			attachNode.aid = this.attId;
+			attachNode.aid = this._attId;
 		}
 
 		// attach mail msgs
