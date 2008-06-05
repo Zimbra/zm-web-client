@@ -988,12 +988,19 @@ function(str) {
 };
 
 /*
- * Sort autocomplete list by the displayed text (minus HTML)
+ * Sort autocomplete list by the displayed text (minus HTML). Put local contacts first.
  */
 ZmContactList.acSortCompare =
 function(a, b) {
-	if (a.plain.toLowerCase() > b.plain.toLowerCase()) return 1;
-	if (a.plain.toLowerCase() < b.plain.toLowerCase()) return -1;
+	var aIsGal = a.item && a.item.isGal;
+	var bIsGal = b.item && b.item.isGal;
+	if (aIsGal != bIsGal) {
+		return aIsGal ? 1 : -1;
+	}
+	var aPlain = a.plain ? a.plain.toLowerCase() : "";
+	var bPlain = b.plain ? b.plain.toLowerCase() : "";
+	if (aPlain > bPlain) { return 1; }
+	if (aPlain < bPlain) { return -1; }
 	return 0;
 };
 
