@@ -376,8 +376,12 @@ function(im) {
 					}
 					if (chat) {
 						if (!chatMessage.fromMe) {
-							this._imApp.startAlert();
-							ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
+							if (appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
+								this._imApp.startAlert();
+							}
+							if (appCtxt.get(ZmSetting.IM_PREF_FLASH_BROWSER))  {
+								ZmBrowserAlert.getInstance().start(ZmMsg.newInstantMessage);
+							}
 						}
 						chat.addMessage(chatMessage);
 					}
