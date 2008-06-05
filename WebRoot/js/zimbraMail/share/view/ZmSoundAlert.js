@@ -19,8 +19,16 @@
  * Alerts of an event by playing a sound.
  */
 ZmSoundAlert = function() {
-	this._element = document.createElement("DIV");
-	document.body.appendChild(this._element);
+	this.enabled = AjxPluginDetector.detectQuickTime() || AjxPluginDetector.detectWindowsMedia();
+	if (this.enabled) {
+		var element = this._element = document.createElement("DIV");
+		element.style.position = 'relative';
+		element.style.top = '-1000px';
+		element.style.left = '-1000px';
+		document.body.appendChild(this._element);
+	} else {
+		DBG.println("No QuickTime or Windows Media plugin detected. Sound alerts are disabled.")
+	}
 };
 
 ZmSoundAlert.prototype.toString =
@@ -35,12 +43,21 @@ function() {
 
 ZmSoundAlert.prototype.start =
 function(soundFile) {
-	var time = new Date().getTime();
-	if (!this._lastTime || ((time - this._lastTime) > 5000)) {
-		soundFile = soundFile || "/public/sounds/im/alert.wav";
-		var url = appContextPath + soundFile;
-		var htmlArr = ["<embed src='", url, "' hidden=true autostart=true loop=false>"];
-		this._element.innerHTML = htmlArr.join("");
-		this._lastTime = time;
+	if (this.enabled) {
+		var time = new Date().getTime();
+		if (!this._lastTime || ((time - this._lastTime) > 5000)) {
+			soundFile = soundFile || "/public/sounds/im/alert.wav";
+			var url = appContextPath + soundFile;
+			var htmlArr = [
+				"<object CLASSID='CLSID:6BF52A52-394A-11d3-B153-00C04F79FAA6' type='audio/wav'>",
+				"<param name='url' value='", url, "'>",
+				"<param name='autostart' value='true'>",
+				"<param name='controller' value='true'>",
+				"<embed src='", url, "' controller='true' autostart='true' type='audio/wav' />",
+				"</object>"
+			 ];
+			this._element.innerHTML = htmlArr.join("");
+			this._lastTime = time;
+		}
 	}
 };
