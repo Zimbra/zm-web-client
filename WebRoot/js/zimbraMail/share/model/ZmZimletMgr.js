@@ -225,11 +225,12 @@ function(zimletNames, callback) {
 		var name = zimletNames[i];
 		zimlets[name]._finished_loadIncludes();
 	}
-	if (appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
+	if (appCtxt.get(ZmSetting.PORTAL_ENABLED) && !appCtxt.isChildWindow) {
 		var params = {
 			name: "Portal",
 			callback: (new AjxCallback(this, this._finished_loadIncludes2, [callback]))
 		};
+		DBG.println("------------------- REQUIRING Portal (ZmZimletMgr)");
 		AjxPackage.require(params);
 	} else {
 		this._finished_loadIncludes2(callback);

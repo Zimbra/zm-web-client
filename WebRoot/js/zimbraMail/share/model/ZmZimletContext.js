@@ -193,11 +193,12 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	}
 
     // initialize portlets
-    if (appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
+    if (appCtxt.get(ZmSetting.PORTAL_ENABLED) && !appCtxt.isChildWindow) {
         var params = {
             name: "Portal",
             callback: new AjxCallback(this, this._finished_loadIncludes2)
         };
+		DBG.println("------------------- REQUIRING Portal (ZmZimletContext)");
         AjxPackage.require(params);
     }
 
