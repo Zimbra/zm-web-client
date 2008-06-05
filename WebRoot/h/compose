@@ -50,7 +50,7 @@
         </c:when>
         <c:when test="${uploader.isUpload and !empty message}">
             <c:if test="${!requestScope.uploadError}">
-                <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems or !empty uploader.compose.uploadedAttachment}"/>
+                <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems or not empty uploader.compose.uploadedAttachment or uploader.isDraft}"/>
             </c:if>
         </c:when>
     </c:choose>
