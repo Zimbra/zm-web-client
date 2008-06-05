@@ -1,0 +1,20 @@
+<template id="share.App#UserInfo">
+	<$ if (!appCtxt.isOffline) { $>
+		<a href='/zimbra/m/'>Mobile</a>&nbsp;<font color="gray">|</font>&nbsp;
+	<$ } else { $>
+		<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>Setup</a>&nbsp;<font color="gray">|</font>&nbsp;
+	<$ } $>
+	<a href='javascript:skin.gotoPrefs()'>Options</a>&nbsp;<font color="gray">|</font>&nbsp;
+	<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= ZmMsg.help $></a>
+
+	<!-- HACK HACK HACK -->
+	<!-- In Y! skin, when in offline mode, we want to hide standard place of "Sign Out" link   -->
+	<$
+		if (appCtxt.isOffline) {
+			var container = document.getElementById("skin_td_logoff");
+			if (container) {
+				container.innerHTML = "";
+			}
+		}
+	$>
+</template>

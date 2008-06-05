@@ -1,0 +1,34 @@
+<skin>
+	<common>
+		<substitutions>
+			<file>../_base/base2/skin.properties</file>
+			<file>skin.properties</file>
+		</substitutions>
+		<css>
+			<file>../_base/base2/skin.css</file>
+			<file>skin.css</file>
+			<file>dwt.css</file>
+		</css>
+    </common>
+
+    <advanced>
+	    <script>
+    	    <file>../_base/base2/ZmSkin.js</file>
+    	</script>
+		<html>
+			<file>../yahoo2/skin.html</file>
+			<file>../_base/base2/splash.html</file>
+		</html>
+		<templates>
+			<file>templates/dwt/Widgets.template</file>
+			<file>templates/share/App.template</file>
+			<file>templates/share/Widgets.template</file>
+		</templates>
+	</advanced>
+
+	<standard>
+        <css>
+            <file>../../css/zhtml.css</file>
+        </css>
+	</standard>
+</skin>

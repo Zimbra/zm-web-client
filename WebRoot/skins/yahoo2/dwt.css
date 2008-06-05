@@ -1,0 +1,17 @@
+/* text style for name of a selected tree item */
+.DwtTreeItem-selected {
+	color: #4d6795;
+}
+
+.DwtDialogTitle {
+	padding: 5px;
+}
+
+.WindowInnerContainer {
+	@tlRadius@:0px;
+	@trRadius@:0px;
+}
+
+.ZmSearchToolbarCell .ZWidgetTitle {
+	height: 18px;
+}
