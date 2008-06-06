@@ -437,21 +437,26 @@ function(ev, startSelect, endSelect, startDateField, endDateField) {
  * @param endDateField		[element]			end date field
  */
 ZmTimeSelect.validStartEnd =
-function(ss, es, startDateField, endDateField) {
+function(startDateField, endDateField, ss, es) {
 	var startDate = AjxDateUtil.simpleParseDateStr(startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(endDateField.value);
-	if (startDate && endDate) {
-		// bug fix #11329 - dont allow year to be more than the earth will be around :]
+
+    if (startDate && endDate) {
+        if((startDate.valueOf() > endDate.valueOf())){
+            return false;
+        }
+        // bug fix #11329 - dont allow year to be more than the earth will be around :]
 		if (startDate.getFullYear() > 9999 || endDate.getFullYear() > 9999) {
 			return false;
 		}
-
-		var startDateMs = ZmTimeSelect.getDateFromFields(ss.getHours(), ss.getMinutes(), ss.getAmPm(), startDate).getTime();
-		var endDateMs = ZmTimeSelect.getDateFromFields(es.getHours(), es.getMinutes(), es.getAmPm(), endDate).getTime();
-		if (startDateMs > endDateMs) {
-			return false;
-		}
-	} else {
+        if(ss && es){
+            var startDateMs = ZmTimeSelect.getDateFromFields(ss.getHours(), ss.getMinutes(), ss.getAmPm(), startDate).getTime();
+            var endDateMs = ZmTimeSelect.getDateFromFields(es.getHours(), es.getMinutes(), es.getAmPm(), endDate).getTime();
+            if (startDateMs > endDateMs) {
+                return false;
+            }
+        }
+    } else {
 		return false;
 	}
 	return true;

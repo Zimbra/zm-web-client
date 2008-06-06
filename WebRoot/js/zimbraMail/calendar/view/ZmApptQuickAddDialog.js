@@ -39,7 +39,9 @@ ZmApptQuickAddDialog = function(parent) {
 	ZmQuickAddDialog.call(this, parent, null, null, [moreDetailsButton]);
 	DBG.timePt("ZmQuickAddDialog constructor", true);
 
-	var html = AjxTemplate.expand("calendar.Appointment#ZmApptQuickAddDialog", {id: this._htmlElId});
+    AjxDispatcher.run("GetResources");
+
+    var html = AjxTemplate.expand("calendar.Appointment#ZmApptQuickAddDialog", {id: this._htmlElId});
 	this.setContent(html);
 	this.setTitle(ZmMsg.quickAddAppt);
 	DBG.timePt("create content");
@@ -130,7 +132,7 @@ function() {
 	var errorMsg = null;
 
 	if (subj && subj.length) {
-		if (!ZmTimeSelect.validStartEnd(this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField)) {
+		if (!ZmTimeSelect.validStartEnd( this._startDateField, this._endDateField, this._startTimeSelect, this._endTimeSelect)) {
 			errorMsg = ZmMsg.errorInvalidDates;
 		}
 	} else {
@@ -173,6 +175,12 @@ function(loc) {
 	DBG.timePt("ZmQuickAddDialog#popup", true);
 };
 
+ZmApptQuickAddDialog.prototype._autoCompCallback =
+function(text, el, match) {
+    if(match.item){
+        this._locationField.setValue(match.item.getFullName());
+    }
+};
 
 // Private / protected methods
 
@@ -188,14 +196,42 @@ function() {
 	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), "100%", "22px");
 
-	this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
+
+    this._locationField = new DwtInputField({parent:this, type:DwtInputField.STRING,
 											initialValue:null, size:null, maxLen:null,
 											errorIconStyle:DwtInputField.ERROR_ICON_NONE,
 											validationStyle:DwtInputField.ONEXIT_VALIDATION,
 											parentElement:(this._htmlElId + "_location")});
 	Dwt.setSize(this._locationField.getInputElement(), "100%", "22px");
 
-	// create DwtSelects
+    if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+        var acCallback = new AjxCallback(this, this._autoCompCallback);
+        var resourcesClass = appCtxt.getApp(ZmApp.CALENDAR);
+		var params = {
+            parent: appCtxt.getShell(),
+            dataClass: resourcesClass,
+            dataLoader: resourcesClass.getLocations,
+            separator: "",
+			matchValue: ZmResource.F_name,
+            compCallback: acCallback,
+            smartPos: true
+        };
+        this._acLocationsList = new ZmAutocompleteListView(params);
+        this._acLocationsList.handle(this._locationField.getInputElement());
+    }
+
+    /*var calClass = appCtxt.getApp(ZmApp.CALENDAR);
+    var params = {
+        parent: this,
+        dataClass: calClass,
+        dataLoader: calClass.getLocations,
+        matchValue: ZmResource.F_name//,
+        *//*compCallback: (new AjxCallback(this, this._acCompHandler)),*//*
+       *//* keyUpCallback: (new AjxCallback(this, this._acKeyupHandler))*//*
+    };
+    this._acLocSelectList = new ZmAutocompleteListView(params);
+*/
+    // create DwtSelects
 	this._showAsSelect = new DwtSelect({parent:this, parentElement:(this._htmlElId + "_showAs")});
 	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
 		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
