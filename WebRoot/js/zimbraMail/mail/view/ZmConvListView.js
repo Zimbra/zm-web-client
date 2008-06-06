@@ -277,11 +277,12 @@ function(conv, fieldId) {
 			} else if (part2.length > 1 && j > 0) {
 				html[idx++] = ", ";
 			}
-			var spanId = [fieldId, part2[j].index].join(DwtId.SEP);
+			var p2 = (part2 && part2[j] && part2[j].index) ? part2[j].index : "";
+			var spanId = [fieldId, p2].join(DwtId.SEP);
 			html[idx++] = "<span style='white-space: nowrap' id='";
 			html[idx++] = spanId;
 			html[idx++] = "'>";
-			html[idx++] = part2[j].name;
+			html[idx++] = (part2 && part2[j]) ? part2[j].name : "";
 			html[idx++] = "</span>";
 		}
 
