@@ -80,6 +80,9 @@
 
             <zm:pref name="zimbraPrefMessageViewHtmlPreferred" value="${param.zimbraPrefMessageViewHtmlPreferred eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <zm:pref name="zimbraPrefDedupeMessagesSentToSelf" value="${param.zimbraPrefDedupeMessagesSentToSelf}"/>
+			<c:if test="${mailbox.features.pop3Enabled}">
+				<zm:pref name="zimbraPrefPop3DownloadSince" value="${param.zimbraPrefPop3DownloadSince}" />
+			</c:if>
             <%-- for velodrome --%>
             <zm:pref name="zimbraPrefInboxUnreadLifetime" value="${param.zimbraPrefInboxUnreadLifetime}"/>
             <zm:pref name="zimbraPrefInboxReadLifetime" value="${param.zimbraPrefInboxReadLifetime}"/>

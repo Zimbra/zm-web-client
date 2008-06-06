@@ -320,6 +320,51 @@
 	</td>
 </tr>
 </table>
+<c:if test="${mailbox.features.pop3Enabled}">
+	<jsp:useBean id="now" class="java.util.Date" scope='page' />
+	<c:set var="pop3DownloadSince" value="${mailbox.prefs.pop3DownloadSince}" />
+	<br/>
+	<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+	<tr class="ZOptionsHeaderRow">
+		<td class="ImgPrefsHeader_L">&nbsp;</td>
+		<td class='ZOptionsHeader ImgPrefsHeader' ><fmt:message key="optionsAccess" /></td>
+		<td class="ImgPrefsHeader_R">&nbsp;</td>
+	</tr>
+	</table>
+	<table width="100%" cellpadding="3" class="ZOptionsSectionMain">
+	<tr>
+		<td class='ZOptionsTableLabel' style="vertical-align:top"><fmt:message key="optionsAccessPop" /></td>
+		<td>
+			<table cellspacing="0" cellpadding="0">
+				<tr>
+					<td><input id="pop3DownloadAll" name='zimbraPrefPop3DownloadSince' type="radio"
+							   value="" ${empty pop3DownloadSince ? "checked" : ""}>
+					</td>
+					<td style='padding-left:5px' nowrap>
+						<label for="pop3DownloadAll"><fmt:message key="optionsAccessPopDownloadAll" /></label>
+					</td>
+				</tr>
+				<tr>
+					<td><input id="pop3DownloadNoChange" name='zimbraPrefPop3DownloadSince' type="radio"
+							   value="${not empty pop3DownloadSince ? pop3DownloadSince : ""}" ${not empty pop3DownloadSince ? "checked" : ""}>
+					</td>
+					<td style='padding-left:5px' nowrap>
+						<label for="pop3DownloadNoChange"><fmt:message key="optionsAccessPopDownloadNoChange" /></label>
+					</td>
+				</tr>
+				<tr>
+					<td><input id="pop3DownloadFromNow" name='zimbraPrefPop3DownloadSince' type="radio"
+							   value="<fmt:formatDate value="${now}" pattern="yyyyMMddHHmmss'Z'" />">
+					</td>
+					<td style='padding-left:5px' nowrap>
+						<label for="pop3DownloadFromNow"><fmt:message key="optionsAccessPopDownloadFromNow" /></label>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>
+	</table>
+</c:if>
 </td>
 </tr>
 </table>
