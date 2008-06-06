@@ -639,7 +639,7 @@ function(contact, params) {
 
 	// file as
 	var fileAs = AjxStringUtil.htmlEncode(contact.getFileAs());
-	if (fileAs && !fileAs.length) {
+	if (!fileAs) {
 		fileAs = [AjxStringUtil.htmlEncode(ZmMsg.noName), contact.getEmail()].join(" ");
 	}
 	htmlArr[idx++] = "<td style='vertical-align:middle;'>&nbsp;";
