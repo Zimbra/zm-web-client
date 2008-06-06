@@ -33,7 +33,8 @@
 	<c:set var="helpUrl" value="${domainInfo.attrs.zimbraHelpStandardURL}" scope='request' />
 </c:if>
 <c:if test="${empty helpUrl}">
-	<c:url var='helpUrl' value="/help/standard/Zimbra_User_Help.htm" scope="request" />
+	<%-- we use <c:url> below to add the locid param so don't need to do it here --%>
+	<c:set var='helpUrl' value="/help/standard/Zimbra_User_Help.htm" scope="request" />
 </c:if>
 <c:choose>
 <c:when test="${skin eq 'yahoo'}">
