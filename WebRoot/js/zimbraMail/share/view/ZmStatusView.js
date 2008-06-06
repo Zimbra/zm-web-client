@@ -154,6 +154,7 @@ ZmToast.FADE_IN = { type: "fade-in" };
 ZmToast.FADE_OUT = { type: "fade-out" };
 ZmToast.PAUSE = { type: "pause" };
 ZmToast.IDLE = {type: "idle" };
+ZmToast.SHOW = {type: "show" };
 
 ZmToast.DEFAULT_TRANSITIONS = [ ZmToast.FADE_IN, ZmToast.PAUSE, ZmToast.FADE_OUT ];
 
