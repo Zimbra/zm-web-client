@@ -130,19 +130,13 @@ function() {
 	// check for required subject
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
 
-	if (subj && subj.length) {
-		if (this._allDayCheckbox.checked) {
-			var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-			var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-			if (!startDate || !endDate || (startDate.valueOf() > endDate.valueOf())) {
+	if (subj && subj.length) {		
+        var allDay = this._allDayCheckbox.checked
+        if (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField, ( allDay ? null : this._startTimeSelect ), ( allDay ? null : this._endTimeSelect) )) {
 				errorMsg = ZmMsg.errorInvalidDates;
-			}
-		} else {
-			if (!ZmTimeSelect.validStartEnd(this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField)) {
-				errorMsg = ZmMsg.errorInvalidDates;
-			}
 		}
-	} else {
+
+    } else {
 		errorMsg = ZmMsg.errorMissingSubject;
 	}
 

@@ -134,9 +134,20 @@ function(calItem) {
 
 ZmTaskEditView.prototype.isValid =
 function() {
-	var val = AjxStringUtil.trim(this._subjectField.getValue());
-	if (val.length == 0) {
-		throw ZmMsg.errorMissingSubject;
+	var errorMsg;
+	var subj = AjxStringUtil.trim(this._subjectField.getValue());
+
+	if (subj && subj.length) {
+        if (!ZmTimeSelect.validStartEnd(this._startDateField, this._endDateField) ) {
+				errorMsg = ZmMsg.errorInvalidDates;
+		}
+
+    } else {
+		errorMsg = ZmMsg.errorMissingSubject;
+	}
+
+	if (errorMsg) {
+		throw errorMsg;
 	}
 
 	return true;

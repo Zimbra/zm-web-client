@@ -130,7 +130,7 @@ function() {
 	var errorMsg = null;
 
 	if (subj && subj.length) {
-		if (!ZmTimeSelect.validStartEnd(this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField)) {
+		if (!ZmTimeSelect.validStartEnd( this._startDateField, this._endDateField, this._startTimeSelect, this._endTimeSelect)) {
 			errorMsg = ZmMsg.errorInvalidDates;
 		}
 	} else {
