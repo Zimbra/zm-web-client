@@ -16,7 +16,7 @@
     	    <file>../_base/base2/ZmSkin.js</file>
     	</script>
 		<html>
-			<file>../yahoo2/skin.html</file>
+			<file>../yahoo/skin.html</file>
 			<file>../_base/base2/splash.html</file>
 		</html>
 		<templates>
