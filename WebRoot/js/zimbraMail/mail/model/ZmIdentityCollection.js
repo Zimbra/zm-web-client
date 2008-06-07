@@ -28,7 +28,8 @@ ZmIdentityCollection = function() {
 ZmIdentityCollection.prototype = new ZmModel;
 ZmIdentityCollection.prototype.constructor = ZmIdentityCollection;
 
-ZmIdentityCollection.prototype.toString = function() {
+ZmIdentityCollection.prototype.toString =
+function() {
 	return "ZmIdentityCollection";
 };
 
@@ -97,32 +98,22 @@ function(identity) {
 
 ZmIdentityCollection.prototype.selectIdentity =
 function(mailMsg) {
-	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) {
-		return this.defaultIdentity;
-	}
-
-	if (!mailMsg) {
+	if (!appCtxt.get(ZmSetting.IDENTITIES_ENABLED) || !mailMsg) {
 		return this.defaultIdentity;
 	}
 
 	// Check if the a identity's address was in the to field.
 	var identity = this._selectIdentityFromAddresses(mailMsg, AjxEmailAddress.TO);
-	if (identity) {
-		return identity;
-	}
+	if (identity) { return identity; }
 
 	// Check if the a identity's address was in the cc field.
 	identity = this._selectIdentityFromAddresses(mailMsg, AjxEmailAddress.CC);
-	if (identity) {
-		return identity;
-	}
+	if (identity) { return identity; }
 
 	// Check if a identity's folder is the same as where the message lives.
-	var folder = mailMsg.folderId;
-	identity = this._folderToIdentity[folder];
-	if(identity) {
-		return identity;
-	}
+	var fid = ZmOrganizer.normalizeId(mailMsg.folderId);
+	identity = this._folderToIdentity[fid];
+	if (identity) { return identity; }
 
 	return this.defaultIdentity;
 };
