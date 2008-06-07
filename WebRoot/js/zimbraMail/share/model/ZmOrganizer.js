@@ -698,6 +698,12 @@ function() {
 	return true;
 };
 
+ZmOrganizer.prototype.supportsPrivatePermission =
+function() {
+	// overload per organizer type
+	return false;
+};
+
 // XXX: temp method until we get better *server* support post Birdseye! (see bug #4434)
 // DO NOT REMOVE OR I WILL HUNT YOU DOWN AND SHOOT YOU.
 ZmOrganizer.prototype.setPermissions =

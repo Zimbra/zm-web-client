@@ -172,3 +172,8 @@ function(calA, calB) {
 	if (calAName > calBName) return 1;
 	return 0;
 };
+
+ZmCalendar.prototype.supportsPrivatePermission =
+function() {
+	return true;
+};

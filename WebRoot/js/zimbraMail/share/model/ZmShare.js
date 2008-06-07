@@ -91,6 +91,7 @@ ZmShare.PERM_INSERT		= "i";
 ZmShare.PERM_DELETE		= "d";
 ZmShare.PERM_ADMIN		= "a";
 ZmShare.PERM_WORKFLOW	= "x";
+ZmShare.PERM_PRIVATE	= "p";
 
 // virtual permissions
 ZmShare.PERM_CREATE_SUBDIR	= "c";
@@ -134,6 +135,10 @@ ZmShare.ROLES[ZmShare.ROLE_NONE]	= ZmMsg.shareRoleNone;
 ZmShare.ROLES[ZmShare.ROLE_VIEWER]	= ZmMsg.shareRoleViewer;
 ZmShare.ROLES[ZmShare.ROLE_MANAGER]	= ZmMsg.shareRoleManager;
 ZmShare.ROLES[ZmShare.ROLE_ADMIN]	= ZmMsg.shareRoleAdmin;
+
+ZmShare.ROLES[ZmShare.ROLE_VIEWER + ZmShare.PERM_PRIVATE]	= ZmMsg.shareRoleViewer;
+ZmShare.ROLES[ZmShare.ROLE_MANAGER + ZmShare.PERM_PRIVATE]	= ZmMsg.shareRoleManager;
+ZmShare.ROLES[ZmShare.ROLE_ADMIN + ZmShare.PERM_PRIVATE]	= ZmMsg.shareRoleAdmin;
 
 ZmShare.TYPE_ALL	= "all";
 ZmShare.TYPE_USER	= "usr";

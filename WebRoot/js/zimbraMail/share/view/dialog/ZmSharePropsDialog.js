@@ -102,7 +102,17 @@ function(mode, object, share) {
 
 
 	var perm = share ? share.link.perm : null;
-	if (perm == null || perm == this._viewerRadioEl.value) {
+
+	if(perm != null) {
+		perm = perm.replace(/-./g, "");
+		this._privateEl.checked = (perm.indexOf(ZmShare.PERM_PRIVATE) != -1);
+		perm = perm.replace(/p/g, "");
+	}
+
+	this._privatePermissionEnabled = object.supportsPrivatePermission();
+	this._privatePermission.setVisible(object.supportsPrivatePermission());
+
+	if (perm == null || (perm == this._viewerRadioEl.value)) {
 		this._viewerRadioEl.checked = true;
 	} else if (perm == this._noneRadioEl.value) {
 		this._noneRadioEl.checked = true;
@@ -371,7 +381,9 @@ function(dialog) {
 	var isPublicShare = dialog._publicRadioEl.checked;
 	var isGuestShare = dialog._guestRadioEl.checked;
 
-	var hasEmail = AjxStringUtil.trim(dialog._granteeInput.getValue()) != "";
+    dialog._privatePermission.setVisible(dialog._privatePermissionEnabled && !dialog._noneRadioEl.checked && !isPublicShare);
+
+    var hasEmail = AjxStringUtil.trim(dialog._granteeInput.getValue()) != "";
 	var hasPassword = AjxStringUtil.trim(dialog._passwordInput.getValue()) != "";
 
 	var enabled = isEdit ||
@@ -399,8 +411,9 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 
 	this._rolesGroup.setVisible(isUserShare);
 	this._messageGroup.setVisible(!isPublicShare);
+    this._privatePermission.setVisible(this._privatePermissionEnabled && !isPublicShare);
 
-	this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
+    this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
 	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
 	this._props.setPropertyVisible(this._shareWithBreakId, !isPublicShare);
 
@@ -411,10 +424,20 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 
 ZmSharePropsDialog.prototype._getSelectedRole =
 function() {
-	if (this._viewerRadioEl.checked) return ZmShare.ROLE_VIEWER;
-	if (this._managerRadioEl.checked) return ZmShare.ROLE_MANAGER;
-    if (this._adminRadioEl.checked) return ZmShare.ROLE_ADMIN;
-    return ZmShare.ROLE_NONE;
+	var role = ZmShare.ROLE_NONE;
+	if (this._viewerRadioEl.checked) {
+		role = ZmShare.ROLE_VIEWER;
+	}
+	if (this._managerRadioEl.checked) {
+		role = ZmShare.ROLE_MANAGER;
+	}
+	if (this._adminRadioEl.checked) {
+		role = ZmShare.ROLE_ADMIN;
+	}
+	if(this._privatePermissionEnabled && this._privateEl.checked && role != "") {
+		role += ZmShare.PERM_PRIVATE;
+	}
+	return role;
 };
 
 ZmSharePropsDialog.prototype._handleCompletionData = 
@@ -455,6 +478,7 @@ function() {
 	var granteeId = Dwt.getNextId();
 	var inheritId = Dwt.getNextId();
 	var urlId = Dwt.getNextId();
+	var permissionId = Dwt.getNextId();
 
 	// radio names
 	var shareWithRadioName = this._htmlElId+"_shareWith";
@@ -544,6 +568,13 @@ function() {
 	this._rolesGroup = new DwtGrouper(view);
 	this._rolesGroup.setLabel(ZmMsg.role);
 	this._rolesGroup.setContent(html.join(""));
+
+	this._privatePermission = new DwtPropertySheet(view);
+	this._privatePermission._vAlign = "middle";
+	this._privatePermission.addProperty("<input type='checkbox' id='" + permissionId + "'/>",  ZmMsg.privatePermission);
+	this._privateEl = document.getElementById(permissionId);
+	Dwt.setHandler(this._privateEl, DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
+	Dwt.associateElementWithObject(this._privateEl, this);
 
 	// add message group
 	this._reply = new ZmShareReply(view);
