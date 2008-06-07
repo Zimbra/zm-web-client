@@ -29,9 +29,10 @@ ZmListView = function(params) {
 
 	// create listeners for changes to the list model, folder tree, and tag list
 	this._listChangeListener = new AjxListener(this, this._changeListener);
+	this._tagListChangeListener = new AjxListener(this, this._tagChangeListener);
 	var tagList = appCtxt.getTagTree();
 	if (tagList) {
-		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+		tagList.addChangeListener(this._tagListChangeListener);
 	}
 	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
@@ -76,6 +77,14 @@ function() {
 ZmListView.prototype.set =
 function(list, sortField) {
 	this.setSelectionHdrCbox(false);
+
+	// bug fix #28595 - in multi-account, reset tag list change listeners
+	if (appCtxt.multiAccounts) {
+		var tagList = appCtxt.getTagTree();
+		if (tagList) {
+			tagList.addChangeListener(this._tagListChangeListener);
+		}
+	}
 
 	var subList;
 	if (list instanceof ZmList) {
@@ -201,17 +210,18 @@ function(ev) {
 			if (item && item.tags && (item.tags.length == 1) && (item.tags[0] == tag.id))
 				this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
 		}
-	}else if(ev.event == ZmEvent.E_DELETE){
-        var divs = this._getChildren();
-        var tag = ev.getDetail("organizers")[0];
-        for(var i=0; i<divs.length; i++){
-            var item = this.getItemFromElement(divs[i]);
-            if(item && item.tags && item.hasTag(tag.id)){
-                 item.tagLocal(tag.id, false);
-                 this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
-            }
-        }
-    }
+	} else if(ev.event == ZmEvent.E_DELETE) {
+		var divs = this._getChildren();
+		var tag = ev.getDetail("organizers")[0];
+		for (var i=0; i < divs.length; i++) {
+			var item = this.getItemFromElement(divs[i]);
+			var nTagId = ZmOrganizer.normalizeId(tag.id);
+			if (item && item.tags && item.hasTag(nTagId)) {
+				 item.tagLocal(nTagId, false);
+				 this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
+			}
+		}
+	}
 }
 
 // returns all child divs for this list view

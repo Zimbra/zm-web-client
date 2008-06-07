@@ -491,7 +491,7 @@ ZmOrganizer.getSystemId =
 function(id, account) {
 	account = account || appCtxt.getActiveAccount();
 	if (account && !account.isMain) {
-		return ((typeof(id) == "string") && (id.indexOf(":") != -1))
+		return ((typeof(id) == "string") && (id.indexOf(":") != -1) || !id)
 			? id : ([account.id, id].join(":"));
 	}
 	return id;
