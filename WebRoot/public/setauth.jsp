@@ -3,7 +3,7 @@
   if (authToken != null) {
     Cookie c = new Cookie("ZM_AUTH_TOKEN", request.getParameter("authToken"));
     c.setMaxAge(30*24*60*60);  // 30 days
-    c.setPath("/");
+    com.zimbra.common.auth.AuthTokenCookie.setCookieDomainPath(c, "/");
     response.addCookie(c);
   }
 %>
