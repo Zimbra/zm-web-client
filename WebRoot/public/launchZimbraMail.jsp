@@ -52,7 +52,7 @@
 		}
 	} else {
 		Cookie c = new Cookie(AUTH_TOKEN_COOKIE_NAME, authToken);
-		c.setPath("/");
+		com.zimbra.common.auth.AuthTokenCookie.setCookieDomainPath(c, "/");
 		c.setMaxAge(-1);
 		response.addCookie(c);
 	}
