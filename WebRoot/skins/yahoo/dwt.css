@@ -1,6 +1,6 @@
 /* text style for name of a selected tree item */
 .DwtTreeItem-selected {
-	color: @Text@;
+	color: @darken(SelC,80)@;
 }
 
 .DwtDialogTitle {
