@@ -1373,7 +1373,7 @@ function(parent, num) {
 		var isSynced = Boolean(calendar && calendar.url);
 		var isShared = calendar ? calendar.isRemote() : false;
 		var disabled = isSynced || isReadOnly || (num == 0);
-		var isPrivate = appt && appt.isPrivate() && calendar.isRemote();
+		var isPrivate = appt && appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
 		parent.enable(ZmOperation.DELETE, !disabled);
 		parent.enable(ZmOperation.TAG_MENU, (!isShared && !isSynced && num > 0));
 		parent.enable(ZmOperation.VIEW_APPOINTMENT, !isPrivate);
@@ -1392,7 +1392,7 @@ function(ev) {
 		this._viewMgr.getCurrentView()._apptSelected();
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var appt = ev.item;
-		if (appt.isPrivate() && appt.getFolder().isRemote()) {
+		if (appt.isPrivate() && appt.getFolder().isRemote() && !appt.getFolder().hasPrivateAccess()) {
 			var msgDialog = appCtxt.getMsgDialog();
 			msgDialog.setMessage(ZmMsg.apptIsPrivate, DwtMessageDialog.INFO_STYLE);
 			msgDialog.popup();
@@ -1592,7 +1592,7 @@ function(appt, actionMenu) {
 	var calendar = this.getCheckedCalendar(appt.getLocalFolderId());
 	var share = calendar && calendar.link ? calendar.shares[0] : null;
 	var workflow = share ? share.isWorkflow() : true;
-	var isPrivate = appt.isPrivate() && calendar.isRemote();
+	var isPrivate = appt.isPrivate() && calendar.isRemote() && !calendar.hasPrivateAccess();
 	var enabled = !isOrganizer && workflow && !isPrivate;
 
 	// reply action menu
