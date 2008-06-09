@@ -101,7 +101,7 @@
 							</td>
 							<td>
 								<label for="callForwardingAllActive"><fmt:message key="forwardAllCalls"/></label>&nbsp;&nbsp;
-								<input name="callForwardingAllNumber" type="text" size="25" value="${features.callForwardingAll.forwardTo}"
+								<input name="callForwardingAllNumber" type="text" size="25" value="${not empty requestScope.badCallForwardingAll ? requestScope.badCallForwardingAll : features.callForwardingAll.forwardTo}"
 									<c:if test="${!features.callForwardingAll.isSubscribed}">disabled</c:if>
 								>
 							</td>
