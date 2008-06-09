@@ -463,10 +463,11 @@ function() {
 	if (!this._privacySelect || !this._folderSelect) { return; }
 
 	var value = this._privacySelect.getValue();
-	var calId = this._folderSelect.getValue();	
-	var isRemote = (calId.match(/:/));
+	var calId = this._folderSelect.getValue();
+    var cal = appCtxt.getById(calId);
+    var isRemote = (calId.match(/:/));
 
-	if (value == "PRI" && isRemote) {
+	if(value == "PRI" && isRemote && !cal.hasPrivateAccess()) {
 		this._privacySelect.setSelectedValue("PUB");
 		this._privacySelect.disable();
 	} else {

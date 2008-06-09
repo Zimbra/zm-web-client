@@ -1200,6 +1200,15 @@ function() {
 	return this._isAdmin;
 };
 
+ZmOrganizer.prototype.hasPrivateAccess =
+function() {
+	if (!this._hasPrivateAccess) {
+		var share = this.shares ? this.shares[0] : null;
+		this._hasPrivateAccess = (this.isRemote() && share && share.hasPrivateAccess());
+	}
+	return this._hasPrivateAccess;
+};
+
 ZmOrganizer.prototype.isRemote =
 function() {
 	if (this._isRemote == null) {

@@ -277,6 +277,7 @@ ZmShare.prototype.isInsert = function() { return this.isPermAllowed(ZmShare.PERM
 ZmShare.prototype.isDelete = function() { return this.isPermAllowed(ZmShare.PERM_DELETE); };
 ZmShare.prototype.isAdmin = function() { return this.isPermAllowed(ZmShare.PERM_ADMIN); };
 ZmShare.prototype.isWorkflow = function() { return this.isPermAllowed(ZmShare.PERM_WORKFLOW); };
+ZmShare.prototype.hasPrivateAccess = function() { return this.isPermAllowed(ZmShare.PERM_PRIVATE); };
 
 // Protected static methods
 

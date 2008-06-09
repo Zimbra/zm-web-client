@@ -263,10 +263,10 @@ function() {
 
 	var value = this._privacySelect.getValue();
 	var calId = this._calendarSelect.getValue();	
-	var cal = appCtxt.getById(cal);
+	var cal = appCtxt.getById(calId);
 	
 	var isRemote = (calId.match(/:/));
-	if(value == "PRI" && isRemote) {
+	if(value == "PRI" && isRemote && !cal.hasPrivateAccess()) {
 		this._privacySelect.setSelectedValue("PUB");
 		this._privacySelect.disable();
 	}else{
