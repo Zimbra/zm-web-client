@@ -291,7 +291,38 @@ ZmNewWindow.prototype.__hack_userProps = function() {
 */
 ZmNewWindow.prototype.sendRequest =
 function(params) {
+    //bypass error callback to get control over exceptions in the childwindow.
+    var errCallback = new AjxCallback(this, this._handleException, [( params.errorCallback || null )]);
+    params.errorCallback = errCallback;
 	return window.parentController ? window.parentController.sendRequest(params) : null;
+};
+
+ZmNewWindow.prototype._handleException =
+function(errCallback, ex){
+    var handled = false;
+    if(errCallback) {
+        handled = errCallback.run(ex);
+    }
+    if (!handled) {
+        ZmController.prototype._handleException.apply(this, [ex]);
+    }
+    return true;
+};
+
+ZmNewWindow.prototype.popupErrorDialog =
+function(msg, ex, noExecReset, hideReportButton)  {
+    //Since ex is from parent window, all the types seems like objects, so need to filter the functions
+    var detailStr = null;
+    if (ex instanceof Object || typeof ex == "object") {
+		var details = [];
+		ex.msg = ex.msg || msg;
+		for (var prop in ex) {
+            if (typeof ex[prop] == "function" || ( typeof ex[prop] == "object" && ex[prop].apply && ex[prop].call)) { continue; }
+			details.push([prop, ": ", ex[prop], "<br/>\n"].join(""));
+		}
+		detailStr = details.join("");
+	}
+    ZmController.prototype.popupErrorDialog.call(this, msg, ( detailStr || ex ), noExecReset, hideReportButton);
 };
 
 /**

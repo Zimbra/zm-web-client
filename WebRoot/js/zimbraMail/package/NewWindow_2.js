@@ -105,3 +105,5 @@ AjxPackage.require("zimbraMail.mail.view.ZmMailMsgView");
 AjxPackage.require("zimbraMail.mail.controller.ZmComposeController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMailListController");
 AjxPackage.require("zimbraMail.mail.controller.ZmMsgController");
+
+AjxPackage.require("zimbra.common.ZmErrorDialog");
