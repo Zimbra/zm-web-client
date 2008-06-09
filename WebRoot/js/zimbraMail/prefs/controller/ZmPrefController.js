@@ -379,6 +379,17 @@ function() {
 		if (viewPage) {
 			viewPage.showMe();
 		}
+
+		// add account name to toolbar
+		if (!this._acctInfoContainer) {
+			this._toolbar.addFiller();
+			this._acctInfoContainer = new DwtComposite({parent:this._toolbar});
+		}
+		this._acctInfoContainer.getHtmlElement().innerHTML = [
+			"<span class='ZOptionsAcctName'>",
+			ZmMsg.accountLabel, " ",
+			appCtxt.getActiveAccount().getDisplayName(),
+			"</span>"].join("");
 	}
 	// *always* return true!
 	return true;

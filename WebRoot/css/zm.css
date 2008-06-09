@@ -2289,6 +2289,11 @@ HTML>BODY .appt-selected .appt_allday_body
 	text-align: center;
 }
 
+.ZOptionsAcctName {
+	margin-right: 10px;
+	white-space: nowrap;
+}
+
 .ZmFilterRulesView .DwtListView-Rows {
 	/*overflow: visible;*/
 	height: auto;
