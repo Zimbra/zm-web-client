@@ -438,11 +438,7 @@ function(attId, isDraft) {
 	}
 
     if (zeroSizedAttachments){
-        if (appCtxt.isChildWindow && window.parentController) {
-            window.parentController.setStatusMsg(ZmMsg.zeroSizedAtts);
-        } else {
-            appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
-        }
+        appCtxt.setStatusMsg(ZmMsg.zeroSizedAtts);
     }
 
 	// check if this is a resend
