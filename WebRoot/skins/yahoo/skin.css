@@ -11,7 +11,7 @@
 	overflow:hidden;
 }
 #skin_search_web_input			{
-	border:1px solid #99aabd;
+	border:1px solid @SelC@;
 	border-right-width: 0px;
 	height:20px;
 }
