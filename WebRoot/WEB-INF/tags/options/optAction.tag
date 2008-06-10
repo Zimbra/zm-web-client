@@ -75,7 +75,7 @@
 
             <c:if test="${mailbox.features.mailForwarding}">
                 <zm:pref name="zimbraPrefMailForwardingAddress" value="${param.FORWARDCHECKED eq 'TRUE' ? param.zimbraPrefMailForwardingAddress : ''}"/>
-                <zm:pref name="zimbraPrefMailLocalDeliveryDisabled" value="${param.zimbraPrefMailLocalDeliveryDisabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
+                <zm:pref name="zimbraPrefMailLocalDeliveryDisabled" value="${param.zimbraPrefMailLocalDeliveryDisabled eq 'TRUE' and param.FORWARDCHECKED eq 'TRUE' and not empty param.zimbraPrefMailForwardingAddress ? 'TRUE' : 'FALSE'}"/>
             </c:if>
 
             <zm:pref name="zimbraPrefMessageViewHtmlPreferred" value="${param.zimbraPrefMessageViewHtmlPreferred eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
