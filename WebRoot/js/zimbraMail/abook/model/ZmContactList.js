@@ -650,7 +650,9 @@ function(contact, doAdd) {
 			root.children.add(addrBook);
 			addrBook._notify(ZmEvent.E_CREATE)
 		}
-		this._myCard = contact;
+		if (!this._myCard || (contact.id <= this._myCard.id)) {
+			this._myCard = contact;
+		}
 	}
 };
 
