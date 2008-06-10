@@ -238,8 +238,9 @@ function(creates, force) {
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
 	var bc = AjxDispatcher.run("GetBriefcaseController");
+    var needsRefresh = false;
 
-	for (var name in creates) {
+    for (var name in creates) {
 		var list = creates[name];
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
@@ -249,7 +250,10 @@ function(creates, force) {
 			} else if (name == "link") {
 				this._handleCreateLink(create, ZmOrganizer.BRIEFCASE);
 			} else if (name == "doc") {
-				//DBG.println(AjxDebug.DBG1, "ZmBriefcaseApp: handling CREATE for node: " + name);
+                if(create.l == bc._currentFolder) {
+					needsRefresh = true;
+				}
+                //DBG.println(AjxDebug.DBG1, "ZmBriefcaseApp: handling CREATE for node: " + name);
 				// REVISIT: use app context item cache
 				//var doc = new ZmBriefcaseItem();
 				//doc.set(create);
@@ -257,7 +261,9 @@ function(creates, force) {
 			}
 		}
 	}
-	//bc.refreshFolder();
+    if(needsRefresh) {
+        bc.reloadFolder();
+    }
 };
 
 ZmBriefcaseApp.prototype.modifyNotify =
