@@ -54,7 +54,7 @@ function(actionMenu, type, id) {
 		var isLinkOrRemote = isLink || briefcase.isRemote();
 
 		var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
-		menuItem.setEnabled(!isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(notebook.parent, ZmShare.PERM_DELETE)));
+		menuItem.setEnabled(!isBriefcase && (!isLinkOrRemote || (isLink && isTopLevel) || ZmBriefcaseTreeController.__isAllowed(briefcase.parent, ZmShare.PERM_DELETE)));
 
 		menuItem = actionMenu.getMenuItem(ZmOperation.NEW_BRIEFCASEITEM);
 		menuItem.setText(ZmMsg.newFolder);
