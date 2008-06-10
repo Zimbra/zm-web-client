@@ -383,6 +383,7 @@
         <input type="hidden" name="apptFolderId" value="${fn:escapeXml(compose.apptFolderId)}"/>
         <input type="hidden" name="invId" value="${fn:escapeXml(compose.inviteId)}"/>
         <input type="hidden" name="crumb" value="${fn:escapeXml(mailbox.accountInfo.crumb)}"/>
+        <input type="hidden" name="origOrganizer" value="${fn:escapeXml(compose.origOrganizer)}"/>
     </form>
 
     <SCRIPT TYPE="text/javascript">
