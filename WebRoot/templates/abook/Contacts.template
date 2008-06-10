@@ -1142,7 +1142,7 @@
 													AjxStringUtil.htmlEncode(fields[i].lbl)) $>
 					</td>
 					<td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>
-						<$= AjxStringUtil.htmlEncode(v) $>
+						<$= v $>
 					</td>
 				</tr>
 			<$ } $>
