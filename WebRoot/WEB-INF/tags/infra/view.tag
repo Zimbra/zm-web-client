@@ -195,30 +195,33 @@
 			<tr id='skin_R2'>
 				<td style="width:8px;"><div class='ImgSkin_Chrome_R2_L'></div></td>
 				<td class='ImgSkin_Chrome_R2 Row2width' colspan=3>
-					<table width=100%  cellspacing=0 cellpadding=0 border='0'>
-					<tr>
-						<td align="left">
-							<c:choose>
-								<c:when test="${mailbox.features.portalEnabled}">
-									 <a href="/h/home" ><div class='ImgSkin_Chrome_Logo'></div></a>
-								</c:when>
-								<c:otherwise>
-									 <a href="/h/search" ><div class='ImgSkin_Chrome_Logo'></div></a>
-								</c:otherwise>
-							</c:choose>
-						</td>
-						<td id='skin_container_app_name'></td>
-						<td width='100%'><div class='float'> 
-						<app:appStatus/>
-						</div></td>
-                        <td id='skin_td_search' align='right'>
-                            <!-- search box -->				
-                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}" voice="${voice}"/>					
-						</td>
-						<c:if test="${mailbox.features.webSearchEnabled}">
-	                    </c:if>
-                    </tr>
-					</table>
+                    <table width=100%  cellspacing=0 cellpadding=0 border='0'>
+                        <tr>
+                            <td align="left">
+                                <c:choose>
+                                    <c:when test="${mailbox.features.portalEnabled}">
+                                        <a href="/h/home" ><div class='ImgSkin_Chrome_Logo'></div></a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <a href="/h/search" ><div class='ImgSkin_Chrome_Logo'></div></a>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                            <td id='skin_container_app_name'></td>
+                            <td width='100%'><div class='float'>
+                                <app:appStatus/>
+                            </div></td>
+                            <td id='skin_td_search' align='right'>
+                                <!-- search box -->
+                                <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}" voice="${voice}"/>
+                            </td>
+                            <c:if test="${mailbox.features.webSearchEnabled}">
+                                <td>
+                                    <app:appTopYSearch keys="${keys}" />
+                                </td>
+                            </c:if>
+                        </tr>
+                    </table>
 				</td>
 				<td><div class='ImgSkin_Chrome_R2_R'></div></td>
 			</tr>
@@ -394,7 +397,7 @@
 				<td id='skin_td_R4' class='ImgSkin_Chrome_R4' colspan="2">
 					<table width=100% id='skin_table_R4' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 						<tr>
-							<td style='text-align:left;padding-left:20px;'>&copy; 2008 Comcast Cable Communications</td>
+							<td style='text-align:left;padding-left:20px;'>&copy; 2007 Comcast Cable Communications</td>
 							<td><a href="http://www.comcast.net/privacy/" target="_new">Privacy Statement</a></td>
 							<td><a href="http://www.comcast.net/terms/" target="_new">Terms of Service</a></td>
 							<td><a href="http://www.comcast.net/help/contact" target="_new">Contact Us</a></td>
@@ -428,9 +431,7 @@
                             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}"/>
                         </td>
 						<c:if test="${mailbox.features.webSearchEnabled}">
-	                        <td width="33%">
-	                            <app:appTopYSearch keys="${keys}" />
-	                        </td>
+	                     
 	                    </c:if>
                     </tr>
                 </table>
