@@ -14,10 +14,18 @@
         <td class="TbBt">
             <table cellspacing="0" cellpadding="0" class="Tb">
                 <tr>
-                    <td nowrap>
-                        <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-                        <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
-                    </td>
+                    <c:choose>
+                        <c:when test="${context.isFolderSearch and context.folder.isFeed}">
+                            <td><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
+                            <app:button name="actionLoadFeed" src="arrows/ImgRefresh.gif" tooltip="checkFeed" text="checkFeed"/>
+                        </c:when>
+                        <c:otherwise>
+                            <td norwap>
+                                <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
+                                <a href="${fn:escapeXml(refreshUrl)}" <c:if test="${keys}"></c:if>><app:img src="arrows/ImgRefresh.gif" altkey="refresh"/><span>&nbsp;<fmt:message key="refresh"/></span></a>
+                            </td>
+                        </c:otherwise>
+                    </c:choose>
                     <td><div class='vertSep'></div></td>
                     <c:if test="${skin ne 'velodrome2'}">
                         <td nowrap>
@@ -99,10 +107,6 @@
                             <c:when test="${context.folder.isSpam}">
                                 <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
                                 <app:button name="actionEmpty" src="mail/ImgEmptyFolder.gif" tooltip="emptyJunk" text="emptyJunk"/>
-                            </c:when>
-                            <c:when test="${context.folder.isFeed}">
-                                <td><div class='vertSep'></div><input type="hidden" name="contextFolderId" value="${context.selectedId}"></td>
-                                <app:button name="actionLoadFeed" src="arrows/ImgRefresh.gif" tooltip="checkFeed" text="checkFeed"/>
                             </c:when>
                         </c:choose>
                     </c:if>
