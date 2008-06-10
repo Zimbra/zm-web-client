@@ -48,3 +48,12 @@
 .ZmColListDivPad {
 width: 350px;
 }
+P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
+   font-family: ms pgothic,sans-serif;
+   font-size:12px;
+
+}
+#ZLoginClientLevelContainer,#ZLoginLicenseContainer,#ZLoginWhatsThisAnchor{
+   font-family: ms pgothic,sans-serif;
+   font-size:12px;
+}
