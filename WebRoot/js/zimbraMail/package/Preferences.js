@@ -38,13 +38,14 @@ AjxPackage.require("zimbraMail.mail.model.ZmSignatureCollection");
 
 AjxPackage.require("zimbraMail.prefs.view.ZmPreferencesPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmShortcutsPage");
-AjxPackage.require("zimbraMail.prefs.view.ZmAccountsPage");
-AjxPackage.require("zimbraMail.prefs.view.ZmAccountTestDialog");
-AjxPackage.require("zimbraMail.prefs.view.ZmMailPrefsPage");
 AjxPackage.require("zimbraMail.prefs.view.ZmPrefView");
 AjxPackage.require("zimbraMail.prefs.view.ZmFilterRulesView");
 AjxPackage.require("zimbraMail.prefs.view.ZmFilterRuleDialog");
-AjxPackage.require("zimbraMail.prefs.view.ZmSignaturesPage");
+
+AjxPackage.require("zimbraMail.mail.view.prefs.ZmAccountsPage");
+AjxPackage.require("zimbraMail.mail.view.prefs.ZmAccountTestDialog");
+AjxPackage.require("zimbraMail.mail.view.prefs.ZmMailPrefsPage");
+AjxPackage.require("zimbraMail.mail.view.prefs.ZmSignaturesPage");
 
 AjxPackage.require("zimbraMail.prefs.controller.ZmPrefController");
 AjxPackage.require("zimbraMail.prefs.controller.ZmFilterRulesController");
