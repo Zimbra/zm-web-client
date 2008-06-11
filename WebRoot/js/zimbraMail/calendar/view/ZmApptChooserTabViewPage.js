@@ -35,7 +35,7 @@ ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
 
 	this._attendees = attendees;
 	this._controller = controller;
-        this._editView = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT).getEditView();
+	this._editView = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT).getEditView();
 	this.type = type;
 
 	this.setScrollStyle(DwtControl.CLIP);
@@ -50,9 +50,9 @@ ZmApptChooserTabViewPage = function(parent, attendees, controller, type) {
 };
 
 ZmApptChooserTabViewPage.COL_LABEL = {};
-ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_FOLDER]	= "folder";
-ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_NAME]	= "_name";
-ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_EMAIL]	= "email";
+ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_FOLDER]		= "folder";
+ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_NAME]		= "_name";
+ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_EMAIL]		= "email";
 ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_WORK_PHONE]	= "AB_FIELD_workPhone";
 ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_HOME_PHONE]	= "AB_FIELD_homePhone";
 ZmApptChooserTabViewPage.COL_LABEL[ZmItem.F_LOCATION]	= "location";
@@ -73,19 +73,12 @@ ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_LOCATION]	= null;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CONTACT]	= 150;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_CAPACITY]	= 50;
 ZmApptChooserTabViewPage.COL_WIDTH[ZmItem.F_NOTES]		= 30;
-ZmApptChooserTabViewPage.COL_WIDTH["FBSTATUS"]  	= 60;
+ZmApptChooserTabViewPage.COL_WIDTH["FBSTATUS"]			= 60;
 
 ZmApptChooserTabViewPage.COLS = {};
-ZmApptChooserTabViewPage.COLS[ZmCalBaseItem.PERSON] =
-	[ZmItem.F_FOLDER, ZmItem.F_NAME, ZmItem.F_EMAIL,
-	 ZmItem.F_WORK_PHONE, ZmItem.F_HOME_PHONE, "FBSTATUS"];
-ZmApptChooserTabViewPage.COLS[ZmCalBaseItem.LOCATION] =
-	[ZmItem.F_NAME, ZmItem.F_LOCATION,
-	 ZmItem.F_CONTACT, ZmItem.F_CAPACITY,
-	 "FBSTATUS", ZmItem.F_NOTES];
-ZmApptChooserTabViewPage.COLS[ZmCalBaseItem.EQUIPMENT] =
-	[ZmItem.F_NAME, ZmItem.F_LOCATION,
-	 ZmItem.F_CONTACT, "FBSTATUS", ZmItem.F_NOTES];
+ZmApptChooserTabViewPage.COLS[ZmCalBaseItem.PERSON]		= [ZmItem.F_FOLDER, ZmItem.F_NAME, ZmItem.F_EMAIL, ZmItem.F_WORK_PHONE, ZmItem.F_HOME_PHONE, "FBSTATUS"];
+ZmApptChooserTabViewPage.COLS[ZmCalBaseItem.LOCATION]	= [ZmItem.F_NAME, ZmItem.F_LOCATION, ZmItem.F_CONTACT, ZmItem.F_CAPACITY, "FBSTATUS", ZmItem.F_NOTES];
+ZmApptChooserTabViewPage.COLS[ZmCalBaseItem.EQUIPMENT]	= [ZmItem.F_NAME, ZmItem.F_LOCATION, ZmItem.F_CONTACT, "FBSTATUS", ZmItem.F_NOTES];
 
 // search fields
 var i = 1;
@@ -632,9 +625,8 @@ function(result) {
 			list1.push(contact)
 		}
 	}
-        this._fillFreeBusy(list1, AjxCallback.simpleClosure(function(list1){
-                this._chooser.setItems(list1);
-        }, this));
+
+	this._fillFreeBusy(list1, AjxCallback.simpleClosure(function(list1) { this._chooser.setItems(list1); }, this));
 };
 
 ZmApptChooserTabViewPage.prototype.searchCalendarResources =
@@ -649,86 +641,93 @@ function(sortBy) {
 		var searchField = document.getElementById(this._searchFieldIds[sf]);
 		value = AjxStringUtil.trim(searchField.value);
 		if (value.length) {
-                        gotValue = true;
-                        var attr = ZmApptChooserTabViewPage.SF_ATTR[sf];
-                        var op = ZmApptChooserTabViewPage.SF_OP[sf] ? ZmApptChooserTabViewPage.SF_OP[sf] : "has";
+			gotValue = true;
+			var attr = ZmApptChooserTabViewPage.SF_ATTR[sf];
+			var op = ZmApptChooserTabViewPage.SF_OP[sf] ? ZmApptChooserTabViewPage.SF_OP[sf] : "has";
 			conds.push({attr: attr, op: op, value: value});
 		}
 	}
-        var params = { sortBy : sortBy,
-                       offset : 0,
-                       limit  : ZmContactsApp.SEARCHFOR_MAX,
-                       conds  : conds,
-                       attrs  : ZmApptChooserTabViewPage.ATTRS[this.type]
-                     };
-        var search = new ZmSearch(params);
-        search.execute({ callback: new AjxCallback(this, this._handleResponseSearchCalendarResources) });
+	var params = {
+		sortBy: sortBy,
+		offset: 0,
+		limit: ZmContactsApp.SEARCHFOR_MAX,
+		conds: conds,
+		attrs: ZmApptChooserTabViewPage.ATTRS[this.type]
+	};
+	var search = new ZmSearch(params);
+	search.execute({callback: new AjxCallback(this, this._handleResponseSearchCalendarResources)});
 };
 
-ZmApptChooserTabViewPage.prototype._getTimeFrame = function() {
-        var di = {};
-        ZmApptViewHelper.getDateInfo(this._editView, di);
-        var startDate = AjxDateUtil.simpleParseDateStr(di.startDate);
-        var endDate;
-        if (di.isAllDay) {
-                endDate = new Date(startDate);
-                endDate.setHours(23, 59, 0, 0);
-                startDate.setHours(0, 0, 0, 0);
-        } else {
-                endDate = AjxDateUtil.simpleParseDateStr(di.endDate);
-                startDate = this._editView._startTimeSelect.getValue(startDate);
-                endDate = this._editView._endTimeSelect.getValue(endDate);
-        }
-        return { start : startDate,
-                 end   : endDate };
+ZmApptChooserTabViewPage.prototype._getTimeFrame =
+function() {
+	var di = {};
+	ZmApptViewHelper.getDateInfo(this._editView, di);
+	var startDate = AjxDateUtil.simpleParseDateStr(di.startDate);
+	var endDate;
+	if (di.isAllDay) {
+		endDate = new Date(startDate);
+		endDate.setHours(23, 59, 0, 0);
+		startDate.setHours(0, 0, 0, 0);
+	} else {
+		endDate = AjxDateUtil.simpleParseDateStr(di.endDate);
+		startDate = this._editView._startTimeSelect.getValue(startDate);
+		endDate = this._editView._endTimeSelect.getValue(endDate);
+	}
+
+	return {start:startDate, end:endDate};
 };
 
-ZmApptChooserTabViewPage.prototype._fillFreeBusy = function(items, callback) {
-        var tf = this._getTimeFrame();
-        var list = (items instanceof AjxVector) ? items.getArray() : (items instanceof Array) ? items : [items];
-        var emails = [];
-        var items_by_id = {};
-        for (var i = list.length; --i >= 0;) {
-                var item = list[i];
-                emails[i] = item.getEmail();
-                items_by_id[emails[i]] = item;
-                item.__fbStatus = { txt: ZmMsg.unknown };
-        }
-        this._controller.getFreeBusyInfo(tf.start.getTime(),
-                                         tf.end.getTime(),
-                                         emails.join(","),
-                                         new AjxCallback(this, function(result) {
-                                                 var args = result.getResponse().GetFreeBusyResponse.usr;
-                                                 for (var i = args.length; --i >= 0;) {
-                                                         var el = args[i];
-                                                         var id = el.id;
-                                                         if (!id)
-                                                                 continue;
-                                                         var item = items_by_id[id];
-                                                         if (!item)
-                                                                 continue;
-                                                         var status = ZmMsg.free;
-                                                         item.__fbStatus.status = 0;
-                                                         if (el.b) {
-                                                                 status = "<b style='color: red'>" + ZmMsg.busy + "</b>";
-                                                                 item.__fbStatus.status = 1;
-                                                         } else if (el.u) {
-                                                                 status = "<b style='color: red'>" + ZmMsg.outOfOffice + "</b>";
-                                                                 item.__fbStatus.status = 2;
-                                                         }
-                                                         item.__fbStatus.txt = status;
-                                                 }
-                                                 callback(items);
-                                         }));
+ZmApptChooserTabViewPage.prototype._fillFreeBusy =
+function(items, callback) {
+	// bug fix #28693 - offline does not support free/busy yet
+	if (appCtxt.isOffline) {
+		if (callback) callback(items);
+		return;
+	}
+
+	var tf = this._getTimeFrame();
+	var list = (items instanceof AjxVector) ? items.getArray() : (items instanceof Array) ? items : [items];
+	var emails = [];
+	var items_by_id = {};
+	for (var i = list.length; --i >= 0;) {
+		var item = list[i];
+		emails[i] = item.getEmail();
+		items_by_id[emails[i]] = item;
+		item.__fbStatus = { txt: ZmMsg.unknown };
+	}
+	this._controller.getFreeBusyInfo(tf.start.getTime(),
+									 tf.end.getTime(),
+									 emails.join(","),
+									 new AjxCallback(this, function(result) {
+										 var args = result.getResponse().GetFreeBusyResponse.usr;
+										 for (var i = args.length; --i >= 0;) {
+											 var el = args[i];
+											 var id = el.id;
+											 if (!id) { continue; }
+											 var item = items_by_id[id];
+											 if (!item) { continue; }
+											 var status = ZmMsg.free;
+											 item.__fbStatus.status = 0;
+											 if (el.b) {
+												 status = "<b style='color: red'>" + ZmMsg.busy + "</b>";
+												 item.__fbStatus.status = 1;
+											 } else if (el.u) {
+												 status = "<b style='color: red'>" + ZmMsg.outOfOffice + "</b>";
+												 item.__fbStatus.status = 2;
+											 }
+											 item.__fbStatus.txt = status;
+										 }
+										 callback(items);
+									 }));
 };
 
 ZmApptChooserTabViewPage.prototype._handleResponseSearchCalendarResources =
 function(result) {
 	var resp = result.getResponse();
-        resp = resp.getResults(ZmItem.RESOURCE).getVector();
-        this._fillFreeBusy(resp, AjxCallback.simpleClosure(function(items) {
-                this._chooser.setItems(items);
-        }, this));
+	resp = resp.getResults(ZmItem.RESOURCE).getVector();
+	this._fillFreeBusy(resp, AjxCallback.simpleClosure(function(items) {
+		this._chooser.setItems(items);
+	}, this));
 };
 
 ZmApptChooserTabViewPage.prototype._getDefaultFocusItem =
