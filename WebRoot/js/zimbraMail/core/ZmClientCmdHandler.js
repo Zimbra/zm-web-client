@@ -107,8 +107,20 @@ function(cmdStr, searchController) {
 			      "    Build Date: " + appCtxt.get(ZmSetting.CLIENT_DATETIME));
 		}
 	} else if (arg0 == "refresh") {
-		ZmCsfeCommand.setSessionId(null);
-		appCtxt.getAppController().sendNoOp();
+	} else if (arg0 == "alert") {
+		//  $set:alert [sound/browser/app] [delay in seconds]
+		function doIt() {
+			if (argv[1] == "browser") {
+				AjxDispatcher.require("Alert");
+				ZmBrowserAlert.getInstance().start("Alert Test!");
+			} else if (argv[1] == "app") {
+				appCtxt.getApp(ZmApp.MAIL).startAlert();
+			} else {
+				AjxDispatcher.require("Alert");
+				ZmSoundAlert.getInstance().start();
+			}
+		}
+		setTimeout(doIt, Number(argv[2]) * 1000);
 	} else if (arg0 == "leak") {
 		if (!window.AjxLeakDetector) {
 			this._alert("AjxLeakDetector is not loaded", ZmStatusView.LEVEL_WARNING);
