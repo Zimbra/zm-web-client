@@ -789,7 +789,7 @@ function(request, contactList, isDraft, accountName) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		this._addAddressNodes(addrNodes, type, contactList, isDraft);
 	}
-	this._addFrom(addrNodes, isDraft, accountName);
+	this._addFrom(addrNodes, msgNode, isDraft, accountName);
 	this._addReplyTo(addrNodes);
 
 	msgNode.su = {_content:this.subject};
@@ -1264,7 +1264,7 @@ function(addrNodes, type, contactList, isDraft) {
 };
 
 ZmMailMsg.prototype._addFrom =
-function(addrNodes, isDraft, accountName) {
+function(addrNodes, parentNode, isDraft, accountName) {
 	var ac = window.parentAppCtxt || window.appCtxt;
 
 	// only use account name if we either dont have any identities to choose
