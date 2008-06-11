@@ -50,8 +50,9 @@
                                    <td class='Img'><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
                                    <td ><span style='padding:3px'>
                                        <zm:currentResultUrl var="contactUrl" value="/h/search" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
+                                       <c:set var="noName" value="<No Name> ${hit.contactHit.email}" />
                                        <a  href="${fn:escapeXml(contactUrl)}" id="A${status.index}">
-                                               ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '<None>' : hit.contactHit.fileAsStr)}
+                                               ${fn:escapeXml(empty hit.contactHit.fileAsStr ? noName : hit.contactHit.fileAsStr)}
                                        </a></span>
                                        <c:if test="${hit.contactHit.id == context.currentItem.id}">
                                            <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
