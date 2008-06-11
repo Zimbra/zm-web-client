@@ -214,16 +214,16 @@
                             <td align=left class="TbBt">
                                 <table cellspacing="0" cellpadding="0" class='Tb'>
                                     <tr>
-                                        <app:button name="actionSend" src="mail/ImgSend.gif" tooltip="send" text="send"/>
+                                        <app:button id="DOPSEND" name="actionSend" src="mail/ImgSend.gif" tooltip="send" text="send"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
+                                        <app:button id="DOPCANCEL" name="actionCancel" src="common/ImgCancel.gif" tooltip="cancel" text="cancel"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionDraft" src="startup/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
+                                        <app:button id="DOPDRAFT" name="actionDraft" src="startup/ImgDraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionAttachAdd" src="startup/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
+                                        <app:button id="DOPATTACH" name="actionAttachAdd" src="startup/ImgAttachment.gif" tooltip="addAttachments" text="addAttachments"/>
                                         <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
                                             <td><div class='vertSep'></div></td>
-                                            <app:button name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
+                                            <app:button id="DOPADDRECIP" name="actionContactAdd" src="contacts/ImgContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
                                         </c:if>
                                     </tr>
                                 </table>
@@ -399,42 +399,23 @@
 </c:choose>
 <script type="text/javascript">
 <!--
-// for AddRecipients button
-var eleD = document.getElementById("SOPADDRECIP");
-eleD.onclick = function () {
-	cancelOnbeforeUnload();
+/* List of IDs for which onbeforeunload has to be cancelled */
+var expElemts = new Array("SOPADDRECIP","SOPCANCEL","Stobutton","Sccbutton","Sbccbutton","SOPDRAFT","SOPATTACH","SDOPCANCEL","SDOPADDRECIP","SDOPDRAFT","SDOPATTACH");
+var x;
+for (x in expElemts){
+    var _elem = document.getElementById(expElemts[x]);
+    _elem.onclick = function () {
+        cancelOnbeforeUnload();
+    }
 }
 
-// for To button
-var eleD = document.getElementById("Stobutton");
-eleD.onclick = function () {
-	cancelOnbeforeUnload();
-}
-
-// for CC button
-var eleD = document.getElementById("Sccbutton");
-eleD.onclick = function () {
-	cancelOnbeforeUnload();
-}
-
-// for BCC button
-var eleD = document.getElementById("Sbccbutton");
-eleD.onclick = function () {
-	cancelOnbeforeUnload();
-}
-
-// for Save Draft
-var eleD = document.getElementById("SOPDRAFT");
-eleD.onclick = function () {
-	cancelOnbeforeUnload();
-}
-// for ATTACH
-var eleA = document.getElementById("SOPATTACH");
-eleA.onclick = function () {
-	cancelOnbeforeUnload();
-}
 // for Mail Send
 var ele = document.getElementById("SOPSEND");
+ele.onclick = function () {
+	cancelOnbeforeUnload();
+	return checkSubject();
+}
+var ele = document.getElementById("SDOPSEND");
 ele.onclick = function () {
 	cancelOnbeforeUnload();
 	return checkSubject();
