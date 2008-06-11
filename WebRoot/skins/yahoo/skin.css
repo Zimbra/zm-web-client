@@ -16,9 +16,8 @@
 	height:20px;
 }
 
-.ZAppTab						{	padding-left:3px;				}
+.ZAppTab						{	padding-right:3px;				}
 .ZAppTabBorder		 			{	border-width:0px !important;	}
-.ZmAppChooser .ZToolbarTable	{	margin-left:5px;				}
 .ZAppTabBorder .ZLeftIcon DIV	{	margin-top:4px;					}
 .BannerTextUser					{	text-align: left;				}
 .ZmAppChooser					{	margin-left:0px;				}
