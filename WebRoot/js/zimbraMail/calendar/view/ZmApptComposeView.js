@@ -66,7 +66,9 @@ ZmApptComposeView = function(parent, className, calApp, controller) {
 	
 	this._tabIds = [ZmApptComposeView.TAB_APPOINTMENT];
 	if (appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED)) {
-		this._tabIds.push(ZmApptComposeView.TAB_SCHEDULE);
+		if (!appCtxt.isOffline) {
+			this._tabIds.push(ZmApptComposeView.TAB_SCHEDULE);
+		}
 		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._tabIds.push(ZmApptComposeView.TAB_ATTENDEES);
 		}
