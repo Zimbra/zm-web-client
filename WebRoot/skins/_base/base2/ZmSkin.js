@@ -6,8 +6,8 @@ function ZmSkin(hints) {
 // default hints for all skins
 ZmSkin.hints = {
 	// info
-	name:	   "@SkinName@",
-	version:	"@SkinVersion@",
+	name:			"@SkinName@",
+	version:		"@SkinVersion@",
 	
 	// skin regions
 	skin:		  	{ containers: "skin_outer" },
@@ -51,7 +51,6 @@ ZmSkin.hints = {
 	fullScreen:     { containers : ["!skin_td_tree", "!skin_td_tree_app_sash"] },
 	
 	allAds :		{ containers: ["skin_tr_top_ad", "skin_td_sidebar_ad", "skin_tr_bottom_ad", "skin_tr_tree_top_ad", "skin_tr_tree_bottom_ad"] }
-
 };
 
 
@@ -252,9 +251,9 @@ ZmSkin.prototype = {
 		}
 	},
 	
-	_reflowApp : function () {
+	_reflowApp : function(resetToolbar) {
 		if (window._zimbraMail) {
-			window._zimbraMail.getAppViewMgr().fitAll();
+			window._zimbraMail.getAppViewMgr().fitAll(resetToolbar);
 		}
 	},
 	
