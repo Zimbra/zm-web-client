@@ -1,28 +1,36 @@
 <template id='share.Widgets#ZmToolBarSeparator'>
-  <table><tr>
-  <td id='${itemId}' valign='middle'><div class='vertSep'></div></td>
-  </tr></table>
+	<table>
+		<tr>
+			<td id='${itemId}' valign='middle'>
+				<div class='vertSep'></div>
+			</td>
+		</tr>
+	</table>
 </template>
 
 <template id='share.Widgets#ZmAppChooser' class='ZWidget'>
-  <table class='ZToolbarTable' border=0 cellpadding=0 cellspacing=0>
-    <tr valign='bottom' id='${id}_items'>
-      <td id='${id}_suffix' valign=bottom><div class='ZAppTabSpacer'></div></td>
-    </tr>
-  </table>
+	<table class='ZToolbarTable' border=0 cellpadding=0 cellspacing=0>
+		<tr valign='bottom' id='${id}_items'>
+			<td id='${id}_suffix' valign=bottom>
+				<div class='ZAppTabSpacer'></div>
+			</td>
+		</tr>
+	</table>
 </template>
 
 <template id='share.Widgets#ZmAppChooserItem'>
-  <$= AjxTemplate.expand("dwt.Widgets#ZToolbarItem", data) $>
+	<$= AjxTemplate.expand("dwt.Widgets#ZToolbarItem", data) $>
 </template>
 
 <template id='share.Widgets#ZmAppChooserButton' class='ZAppTab'>
-  <$ var buttonClass = data.buttonClass || "AppTab"; $>
-  <table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'><tr>
-		<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
-		<td id='${id}_title'		class='ZWidgetTitle'></td>
-		<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
-	</tr></table>
+	<$ var buttonClass = data.buttonClass || "AppTab"; $>
+	<table class='ZWidgetTable Z<$=buttonClass$>Table Z<$=buttonClass$>Border' cellspacing=0 cellpadding=0 style='table-layout:auto;'>
+		<tr>
+			<td id='${id}_left_icon'  	class='ZLeftIcon ZWidgetIcon'></td>
+			<td id='${id}_title'		class='ZWidgetTitle'></td>
+			<td id='${id}_right_icon' 	class='ZRightIcon ZWidgetIcon'></td>
+		</tr>
+	</table>
 </template>
 
 <template id='share.Widgets#ZmAppChooserSpacer'>
@@ -32,12 +40,12 @@
 
 
 <template id='share.Widgets#ZToast' class='ZToastInfo'>
-  <div class='ZToastBG'>
-    <div class='ZToastContent'>
-      <div id='${id}_icon' class='ZToastIcon'></div>
-      <div id='${id}_text' class='ZToastText'></div>
-    </div>
-  </div>
+	<div class='ZToastBG'>
+		<div class='ZToastContent'>
+			<div id='${id}_icon' class='ZToastIcon'></div>
+			<div id='${id}_text' class='ZToastText'></div>
+		</div>
+	</div>
 </template>
 
 <template id='share.Widgets#ZmSearchToolBar'>
@@ -54,6 +62,17 @@
 			<td id='${id}_saveButton' hint='text' class='ZmSearchToolbarCell'></td>
 			<td class='ZmSearchToolbarSeparatorCell'><div class='vertSep'></div></td>
 			<td id='${id}_advancedButton' hint='text' class='ZmSearchToolbarCell'></td>
+		</tr>
+	</table>
+</template>
+
+<template id='share.Widgets#ZmChooseFolderDialog'>
+	<table cellpadding=0 cellspacing=0 border=0 width=100%>
+		<tr>
+			<td class='Label' colspan=2 id='${id}_folderDesc'></td>
+		</tr>
+		<tr>
+			<td colspan=2 id='${id}_folderTreeCell'></td>
 		</tr>
 	</table>
 </template>

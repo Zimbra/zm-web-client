@@ -168,18 +168,10 @@ function() {
 
 ZmChooseFolderDialog.prototype._contentHtml =
 function() {
-	this._folderDescCellId = Dwt.getNextId();
-	this._folderTreeCellId = Dwt.getNextId();
-	var html = [];
-	var idx = 0;
-	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-	html[idx++] = "<tr><td class='Label' colspan=2 id='";
-	html[idx++] = this._folderDescCellId;
-	html[idx++] = "'></td></tr><tr><td colspan=2 id='";
-	html[idx++] = this._folderTreeCellId;
-	html[idx++] = "'/></tr></table>";
-	
-	return html.join("");
+	this._folderDescCellId = this._htmlElId + "_folderDesc";
+	this._folderTreeCellId = this._htmlElId + "_folderTreeCell";
+
+	return AjxTemplate.expand("share.Widgets#ZmChooseFolderDialog", {id:this._htmlElId});
 };
 
 ZmChooseFolderDialog.prototype._showNewDialog =
