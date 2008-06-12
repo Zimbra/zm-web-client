@@ -460,13 +460,17 @@ function() {
 	ZmPref.registerPref("VACATION_FROM", {
 		displayName:		ZmMsg.startDate,
 		displayContainer:	ZmPref.TYPE_INPUT,
-		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
+                displayFunction:        ZmPref.dateGMT2Local,
+                valueFunction:          ZmPref.dateLocal2GMT
 	});
 
-    ZmPref.registerPref("VACATION_UNTIL", {
+        ZmPref.registerPref("VACATION_UNTIL", {
 		displayName:		ZmMsg.endDate,
 		displayContainer:	ZmPref.TYPE_INPUT,
-		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
+                displayFunction:        ZmPref.dateGMT2Local,
+                valueFunction:          ZmPref.dateLocal2GMT
 	});
 
     ZmPref.registerPref("VACATION_MSG", {
