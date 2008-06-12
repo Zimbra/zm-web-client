@@ -21,6 +21,48 @@
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
     <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
 
+<%-- Deep linking  --%>
+  <c:if test="${not empty param.app}">
+	  <c:choose>
+		  <c:when test="${param.app eq 'calendar'}">
+			  <c:redirect url="/h/calendar" />
+		  </c:when>
+		  <c:when test="${param.app eq 'options'}">
+			  <c:redirect url="/h/options" />
+		  </c:when>
+		  <c:when test="${param.app eq 'contacts'}">
+			  <c:redirect url="/h/search?st=contact" />
+		  </c:when>
+		  <c:when test="${param.app eq 'tasks'}">
+			  <c:redirect url="/h/search?st=task" />
+		  </c:when>
+	  </c:choose>
+  </c:if>
+  <c:if test="${not empty param.view}">
+	  <c:if test="${param.view eq 'compose'}">
+		  <c:redirect url="/h/search?action=compose">
+			  <c:param name="subject" value="${param.subject}" />
+			  <c:param name="to" value="${param.to}" />
+			  <c:param name="body" value="${param.body}" />
+		  </c:redirect>
+	  </c:if>
+	  <c:if test="${(param.view eq 'day') or (param.view eq 'workWeek') or (param.view eq 'week') or (param.view eq 'month')}">
+		  <c:redirect url="/h/calendar" >
+			  <c:param name="view" value="${param.view}" />
+			  <c:param name="date" value="${param.date}" />
+		  </c:redirect>
+	  </c:if>
+	  <c:if test="${(param.view eq 'msg') and (not empty param.id)}">
+		  <c:redirect url="/h/search">
+			  <c:param name="st" value='message'/>
+			  <c:param name="action" value='view'/>
+			  <c:param name="id" value='${param.id}'/>
+		  </c:redirect>
+	  </c:if>
+  </c:if>
+
+  <%-- end --%>
+
      <c:if test="${not empty param.expand}">
          <c:set target="${sessionScope.expanded}" property="${param.expand}" value="expand"/>
      </c:if>
@@ -99,49 +141,6 @@
     </app:status>
 </c:when>
 </c:choose>
-
-<%-- Deep linking  --%>
-  <c:if test="${not empty param.app}">
-	  <c:choose>
-		  <c:when test="${param.app eq 'calendar'}">
-			  <c:redirect url="/h/calendar" />
-		  </c:when>
-		  <c:when test="${param.app eq 'options'}">
-			  <c:redirect url="/h/options" />
-		  </c:when>
-		  <c:when test="${param.app eq 'contacts'}">
-			  <c:redirect url="/h/search?st=contact" />
-		  </c:when>
-		  <c:when test="${param.app eq 'tasks'}">
-			  <c:redirect url="/h/search?st=task" />
-		  </c:when>
-	  </c:choose>
-  </c:if>
-  <c:if test="${not empty param.view}">
-	  <c:if test="${param.view eq 'compose'}">
-		  <c:redirect url="/h/search?action=compose">
-			  <c:param name="subject" value="${param.subject}" />
-			  <c:param name="to" value="${param.to}" />
-			  <c:param name="body" value="${param.body}" />
-		  </c:redirect>
-	  </c:if>
-	  <c:if test="${(param.view eq 'day') or (param.view eq 'workWeek') or (param.view eq 'week') or (param.view eq 'month')}">
-		  <c:redirect url="/h/calendar" >
-			  <c:param name="view" value="${param.view}" />
-			  <c:param name="date" value="${param.date}" />
-		  </c:redirect>
-	  </c:if>
-	  <c:if test="${(param.view eq 'msg') and (not empty param.id)}">
-		  <c:redirect url="/h/search">
-			  <c:param name="st" value='message'/>
-			  <c:param name="action" value='view'/>
-			  <c:param name="id" value='${param.id}'/>
-		  </c:redirect>
-	  </c:if>
-  </c:if>
-
-  <%-- end --%>
-		
 
  <%-- switch based on context search types --%>
 <c:choose>
