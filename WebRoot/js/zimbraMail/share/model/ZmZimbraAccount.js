@@ -36,6 +36,7 @@ ZmZimbraAccount = function(id, name, visible, list) {
 	this.settings = null;
 	this.trees = {};
 	this.loaded = false;
+	this.acl = new ZmAccessControlList();
 };
 
 ZmZimbraAccount.prototype = new ZmAccount;

@@ -190,20 +190,19 @@ function() {
 */
 ZmPrefView.prototype.getChangedPrefs =
 function(dirtyCheck, noValidation, batchCommand, prefView) {
-	var settings = appCtxt.getSettings();
 	var list = [];
-	var errorStr = "";
+	var errors= [];
 	var sections = ZmPref.getPrefSectionMap();
 	var pv = prefView || this.prefView;
 	for (var view in pv) {
 		var section = sections[view];
-		if (section.manageChanges) continue;
+		if (section.manageChanges) { continue; }
         
 		var viewPage = pv[view];
 		if (!viewPage || (viewPage && !viewPage.hasRendered())) { continue; }
 
 		if (section.manageDirty) {
-			var isDirty = viewPage.isDirty();
+			var isDirty = viewPage.isDirty(section, list, errors);
 			if (isDirty) {
 				if (dirtyCheck) {
 					return true;
@@ -217,89 +216,99 @@ function(dirtyCheck, noValidation, batchCommand, prefView) {
 				}
 			}
 			if (!dirtyCheck && batchCommand) {
-				pv[view].addCommand(batchCommand);
+				viewPage.addCommand(batchCommand);
 			}
 		}
 
-		var prefs = sections[view] && sections[view].prefs;
-		for (var j = 0, count = prefs ? prefs.length : 0; j < count; j++) {
-			var id = prefs[j];
-			if (!viewPage._prefPresent || !viewPage._prefPresent[id]) { continue; }
-			var setup = ZmPref.SETUP[id];
-			if (!this._controller.checkPreCondition(setup)) {
-				continue;
-			}
-
-			var type = setup ? setup.displayContainer : null;
-			// ignore non-form elements
-			if (type == ZmPref.TYPE_PASSWORD || type == ZmPref.TYPE_CUSTOM) {
-				continue;
-			}
-
-			// check if value has changed
-			try {
-				var value = viewPage.getFormValue(id);
-			} catch (e) {
-				if (dirtyCheck) {
-					return true;
-				} else {
-					throw e;
-				}
-			}
-			var pref = (appCtxt.isOffline && appCtxt.multiAccounts && section.id == "GENERAL")
-				? appCtxt.getMainAccount().settings.getSetting(id)
-				: settings.getSetting(id);
-			var origValue = pref.origValue;
-			if (setup.approximateFunction) {
-				if (setup.displayFunction) {
-					origValue = setup.displayFunction(origValue);
-				}
-				origValue = setup.approximateFunction(origValue);
-				if (setup.valueFunction) {
-					origValue = setup.valueFunction(origValue);
-				}
-			}
-			
-			var unchanged = (value == origValue);
-			// null and "" are the same string for our purposes
-			if (pref.dataType == ZmSetting.D_STRING) {
-				unchanged = unchanged || ((value == null || value == "") &&
-										  (origValue == null ||
-										   origValue == ""));
-			}
-			// don't try to update on server if it's client-side pref
-			var addToList = (!unchanged && (pref.name != null));
-
-			if (dirtyCheck) {
-				if (addToList) {
-					return true;
-				}
-			} else if (!unchanged) {
-				var maxLength = setup ? setup.maxLength : null
-				var validationFunc = setup ? setup.validationFunction : null;
-				var isValid = true;
-				if (!noValidation && maxLength && (value.length > maxLength)) {
-					isValid = false;
-				} else if (!noValidation && validationFunc) {
-					isValid = validationFunc(value);
-				}
-				if (isValid) {
-					pref.setValue(value);
-					if (addToList) {
-						list.push(pref);
-					}
-				} else {
-					errorStr += "\n" + AjxMessageFormat.format(setup.errorMessage, value);
-				}
-				this._controller.setDirty(view, true);
-			}
+		try {
+			var result = this._checkSection(section, viewPage, dirtyCheck, noValidation, list, errors, view);
+		} catch (e) {
+			throw(e);
 		}
-		// errorStr can only have a value if noValidation is false
-		if (errorStr) {
-			throw new AjxException(errorStr);
+		if (dirtyCheck && result) {
+			return true;
+		}
+		
+		// errors can only have a value if noValidation is false
+		if (errors.length) {
+			throw new AjxException(errors.join("\n"));
 		}
 	}
 	return dirtyCheck ? false : list;
+};
+
+ZmPrefView.prototype._checkSection =
+function(section, viewPage, dirtyCheck, noValidation, list, errors, view) {
+	var settings = appCtxt.getSettings();
+	var prefs = section && section.prefs;
+	for (var j = 0, count = prefs ? prefs.length : 0; j < count; j++) {
+		var id = prefs[j];
+		if (!viewPage._prefPresent || !viewPage._prefPresent[id]) { continue; }
+		var setup = ZmPref.SETUP[id];
+		if (!this._controller.checkPreCondition(setup)) { continue; }
+
+		var type = setup ? setup.displayContainer : null;
+		// ignore non-form elements
+		if (type == ZmPref.TYPE_PASSWORD || type == ZmPref.TYPE_CUSTOM) { continue;	}
+
+		// check if value has changed
+		try {
+			var value = viewPage.getFormValue(id);
+		} catch (e) {
+			if (dirtyCheck) {
+				return true;
+			} else {
+				throw e;
+			}
+		}
+		var pref = (appCtxt.isOffline && appCtxt.multiAccounts && section.id == "GENERAL")
+			? appCtxt.getMainAccount().settings.getSetting(id)
+			: settings.getSetting(id);
+		var origValue = pref.origValue;
+		if (setup.approximateFunction) {
+			if (setup.displayFunction) {
+				origValue = setup.displayFunction(origValue);
+			}
+			origValue = setup.approximateFunction(origValue);
+			if (setup.valueFunction) {
+				origValue = setup.valueFunction(origValue);
+			}
+		}
+		
+		var unchanged = (value == origValue);
+		// null and "" are the same string for our purposes
+		if (pref.dataType == ZmSetting.D_STRING) {
+			unchanged = unchanged || ((value == null || value == "") &&
+									  (origValue == null ||
+									   origValue == ""));
+		}
+		// don't try to update on server if it's client-side pref
+		var addToList = (!unchanged && (pref.name != null));
+
+		if (dirtyCheck) {
+			if (addToList) {
+				return true;
+			}
+		} else if (!unchanged) {
+			var maxLength = setup ? setup.maxLength : null
+			var validationFunc = setup ? setup.validationFunction : null;
+			var isValid = true;
+			if (!noValidation && maxLength && (value.length > maxLength)) {
+				isValid = false;
+			} else if (!noValidation && validationFunc) {
+				isValid = validationFunc(value);
+			}
+			if (isValid) {
+				pref.setValue(value);
+				if (addToList) {
+					list.push(pref);
+				}
+			} else {
+				errors.push(AjxMessageFormat.format(setup.errorMessage, value));
+			}
+			this._controller.setDirty(view, true);
+		}
+	}
 };
 
 /**

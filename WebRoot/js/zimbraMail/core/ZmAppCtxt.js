@@ -863,3 +863,9 @@ function() {
 	}
 	return this._calMgr;
 };
+
+ZmAppCtxt.prototype.getACL =
+function(account, callback) {
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmZimbraAccount.DEFAULT_ID;
+	return this._accounts[id] && this._accounts[id].acl;
+};

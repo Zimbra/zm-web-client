@@ -97,7 +97,11 @@ function(settings) {
 	settings.registerSetting("CAL_ALWAYS_SHOW_MINI_CAL",	{name: "zimbraPrefCalendarAlwaysShowMiniCal", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("CAL_EXPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_FIRST_DAY_OF_WEEK",		{name: "zimbraPrefCalendarFirstDayOfWeek", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0});
+	settings.registerSetting("CAL_FREE_BUSY_ACL",			{type: ZmSetting.T_PREF, defaultValue:ZmSetting.ACL_ALL});
+	settings.registerSetting("CAL_FREE_BUSY_ACL_USERS",		{type: ZmSetting.T_PREF});
 	settings.registerSetting("CAL_IMPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
+	settings.registerSetting("CAL_INVITE_ACL",				{type: ZmSetting.T_PREF, defaultValue:ZmSetting.ACL_ALL});
+	settings.registerSetting("CAL_INVITE_ACL_USERS",		{type: ZmSetting.T_PREF});
 	settings.registerSetting("CAL_REMINDER_WARNING_TIME",	{name: "zimbraPrefCalendarApptReminderWarningTime", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0});
 	settings.registerSetting("CAL_SHOW_TIMEZONE",			{name: "zimbraPrefUseTimeZoneListInCalendar", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
@@ -126,8 +130,16 @@ function() {
                 ZmSetting.CAL_SHOW_TIMEZONE,
                 ZmSetting.CAL_USE_QUICK_ADD,
                 ZmSetting.CALENDAR_INITIAL_VIEW,
-                ZmSetting.DELETE_INVITE_ON_REPLY
-            ]
+                ZmSetting.DELETE_INVITE_ON_REPLY,
+                ZmSetting.CAL_FREE_BUSY_ACL,
+                ZmSetting.CAL_FREE_BUSY_ACL_USERS,
+                ZmSetting.CAL_INVITE_ACL,
+                ZmSetting.CAL_INVITE_ACL_USERS
+            ],
+			manageDirty: true,
+			createView: function(parent, section, controller) {
+				return new ZmCalendarPrefsPage(parent, section, controller);
+			}
         }
     };
     for (var id in sections) {
@@ -151,9 +163,29 @@ function() {
 		options:			[0,1,2,3,4,5,6]
 	});
 
+	ZmPref.registerPref("CAL_FREE_BUSY_ACL", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		displayOptions:		[ZmMsg.freeBusyAllowAll, ZmMsg.freeBusyAllowSome],
+		options:			[ZmSetting.ACL_PUBLIC, ZmSetting.ACL_USER]
+	});
+
+    ZmPref.registerPref("CAL_FREE_BUSY_ACL_USERS", {
+		displayContainer:	ZmPref.TYPE_TEXTAREA
+	});
+
 	ZmPref.registerPref("CAL_IMPORT", {
 		displayName:		ZmMsg.importFromICS,
 		displayContainer:	ZmPref.TYPE_IMPORT
+	});
+
+	ZmPref.registerPref("CAL_INVITE_ACL", {
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		displayOptions:		[ZmMsg.invitesAllowAll, ZmMsg.invitesAllowSome],
+		options:			[ZmSetting.ACL_PUBLIC, ZmSetting.ACL_USER]
+	});
+
+    ZmPref.registerPref("CAL_INVITE_ACL_USERS", {
+		displayContainer:	ZmPref.TYPE_TEXTAREA
 	});
 
 	ZmPref.registerPref("CAL_REMINDER_WARNING_TIME", {
@@ -180,11 +212,6 @@ function() {
 		options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_SCHEDULE]
 	});
 	
-	ZmPref.registerPref("DELETE_INVITE_ON_REPLY",{
-		displayName: ZmMsg.deleteInviteOnReply,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
-	});
-
 	ZmPref.registerPref("CAL_REMINDER_NOTIFY_SOUNDS", {
 		displayName:		ZmMsg.playSound,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
@@ -192,6 +219,11 @@ function() {
 
 	ZmPref.registerPref("CAL_REMINDER_NOTIFY_BROWSER", {
 		displayName:		ZmMsg.flashBrowser,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("DELETE_INVITE_ON_REPLY", {
+		displayName: ZmMsg.deleteInviteOnReply,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 };

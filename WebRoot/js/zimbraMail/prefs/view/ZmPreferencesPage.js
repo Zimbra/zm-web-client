@@ -453,6 +453,10 @@ function(useDefaults) {
 	}
 };
 
+ZmPreferencesPage.prototype.isDirty = function() { return false; };
+ZmPreferencesPage.prototype.validate = function() {	return true; };
+ZmPreferencesPage.prototype.addCommand = function(batchCmd) {};
+
 ZmPreferencesPage.prototype.getPreSaveCallback =
 function() {
 	// in offline mode, general (aka global) prefs apply to the *parent* account

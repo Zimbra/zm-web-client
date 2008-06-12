@@ -42,6 +42,8 @@ AjxPackage.require("zimbraMail.prefs.view.ZmPrefView");
 AjxPackage.require("zimbraMail.prefs.view.ZmFilterRulesView");
 AjxPackage.require("zimbraMail.prefs.view.ZmFilterRuleDialog");
 
+AjxPackage.require("zimbraMail.calendar.view.ZmCalendarPrefsPage");
+
 AjxPackage.require("zimbraMail.mail.view.prefs.ZmAccountsPage");
 AjxPackage.require("zimbraMail.mail.view.prefs.ZmAccountTestDialog");
 AjxPackage.require("zimbraMail.mail.view.prefs.ZmMailPrefsPage");
