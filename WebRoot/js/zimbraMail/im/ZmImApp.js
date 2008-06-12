@@ -269,7 +269,7 @@ ZmImApp.prototype._registerPrefs = function() {
 	}
 
     ZmPref.registerPref("IM_PREF_NOTIFY_SOUNDS",{
-            displayName     :   ZmMsg.imPrefNotifySounds,
+            displayName     :   ZmMsg.playSound,
             displayContainer:   ZmPref.TYPE_CHECKBOX
     });
 
@@ -287,7 +287,7 @@ ZmImApp.prototype._registerPrefs = function() {
 			      displayContainer : ZmPref.TYPE_CHECKBOX });
 
 	ZmPref.registerPref("IM_PREF_FLASH_BROWSER",
-			    { displayName      : ZmMsg.flashBrowserIM,
+			    { displayName      : ZmMsg.flashBrowser,
 			      displayContainer : ZmPref.TYPE_CHECKBOX });
 
 	ZmPref.registerPref("IM_PREF_NOTIFY_PRESENCE",
