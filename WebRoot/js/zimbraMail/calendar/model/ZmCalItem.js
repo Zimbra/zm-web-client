@@ -682,6 +682,37 @@ function(soapDoc, comp) {
 	//default option is to remind before appt start
 	rel.setAttribute("related", "START");
 	rel.setAttribute("neg", "1");
+    
+    this._addXPropsToAlarm(soapDoc, alarm);
+};
+
+ZmCalItem.prototype._addXPropsToAlarm =
+function(soapDoc, alarmNode) {
+    if (!this.alarmData) { return; }
+    var alarmData = (this.alarmData && this.alarmData.length > 0)? this.alarmData[0] : null;
+    var alarm = alarmData ? alarmData.alarm : null;
+    var alarmInst = (alarm && alarm.length > 0) ? alarm[0] : null;
+    this._setAlarmXProps(alarmInst, soapDoc, alarmNode);
+};
+
+ZmCalItem.prototype._setAlarmXProps =
+function(alarmInst, soapDoc, alarmNode)  {
+   var xprops = (alarmInst && alarmInst.xprop) ? alarmInst.xprop : null;
+   if (!xprops) { return; }
+	// bug 28924: preserve x props
+	xprops = (xprops instanceof Array) ? xprops : [xprops];
+
+	for (var i in xprops) {
+		var xprop = xprops[i];
+		if (xprop && xprop.name) {
+			var x = soapDoc.set("xprop", null, alarmNode);
+			x.setAttribute("name", xprop.name);
+			if (xprop.value != null) {
+				x.setAttribute("value", xprop.value);
+			}
+            this._addXParamToSoap(soapDoc, x, xprop.xparam);
+        }
+	}
 };
 
 ZmCalItem.prototype.setReminderMinutes =
