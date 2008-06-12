@@ -925,10 +925,17 @@ function(content, replaceSignatureId){
             signature = signature || newLine;
         }
         if (AjxEnv.isIE) {
-            replaceRe = replaceRe.replace(/\\n/g, "\\s*\\r?\\n\\r?\\s*"); //
             if(this._htmlEditor.getMode() == DwtHtmlEditor.HTML) {
+                //Need to do all the crap to clean up HTML in both signature as well as Content.
+                //TODO: Simplify this with a better logic.
+                replaceRe = replaceRe.replace(/\\n/g, " ");
                 replaceRe = replaceRe.replace(/\;/g,"\;?");  //style attrib. does not return semi-colon at the end
+                replaceRe = replaceRe.replace(/\\\>\s*\\\</g,"\\>\\<"); //Remove white spaces between html tags.
+                content = content.replace(/\r\n/g," ");
+                content = content.replace(/\\n/g, " ");
                 content = content.replace(/\>\s*\</g,"><"); //IE has white-space chars between the html elements.
+            }else{                
+                replaceRe = replaceRe.replace(/(\\n|\\r)/g, "\\s*");
             }
         }
         replaceRe = new RegExp(replaceRe, "i");
