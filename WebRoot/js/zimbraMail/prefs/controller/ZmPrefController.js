@@ -398,11 +398,9 @@ function() {
 ZmPrefController.prototype._postShowCallback =
 function() {
 	ZmController.prototype._postShowCallback.call(this);
-	var tabKey = this._prefsView.getCurrentTab();
-	var viewPage = this._prefsView.getTabView(tabKey);
-	if (this.isDirty(viewPage._view)) {
-		viewPage.showMe();
-	}
+	// NOTE: Some pages need to know when they are being shown
+	//       again in order to display the state correctly.
+	this._prefsView.reset();
 };
 
 ZmPrefController.prototype.popShield =
