@@ -11,7 +11,7 @@
     <fmt:message var="emptySubject" key="noSubject"/>
     <c:set var="csi" value="${param.csi}"/>
 
-    <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
+    <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}" />
     <c:set var="convSummary" value="${convSearchResult.conversationSummary}"/>
     <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
     <c:set var="message" value="${null}"/>
@@ -25,7 +25,7 @@
         <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
             <c:set var="csi" value="0"/>
         </c:if>
-        <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${empty param.xim}"/>
+        <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
     </c:if>
 
     <%-- blah, optimize this later --%>
