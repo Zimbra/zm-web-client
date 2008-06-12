@@ -544,6 +544,7 @@ function(soapDoc, inv, comp) {
 	comp.setAttribute("fb", this.freeBusy);
 	comp.setAttribute("class", this.privacy);
 	comp.setAttribute("transp", this.transparency);
+    
 };
 
 ZmAppt.prototype._addAttendeesToSoap =
@@ -557,7 +558,7 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	}
 
 	// if we have a separate list of email addresses to notify, do it here
-	if (m && notifyList) {
+	if (this.isOrganizer() && m && notifyList) {
 		for (var i = 0; i < notifyList.length; i++) {
 			e = soapDoc.set("e", null, m);
 			e.setAttribute("a", notifyList[i]);
@@ -565,8 +566,10 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 		}
 	}
 
-	// call base class LAST
-	ZmCalItem.prototype._addAttendeesToSoap.call(this, soapDoc, inv, m, notifyList, onBehalfOf);
+    if(this.isOrganizer()) {
+        // call base class LAST
+	    ZmCalItem.prototype._addAttendeesToSoap.call(this, soapDoc, inv, m, notifyList, onBehalfOf);
+    }
 };
 
 ZmAppt.prototype._addAttendeeToSoap =
@@ -617,7 +620,7 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 	}
 
 	// set email to notify if notifyList not provided
-	if (m && !notifyList && !this.__newFolderId) {
+	if (this.isOrganizer() && m && !notifyList && !this.__newFolderId) {
 		e = soapDoc.set("e", null, m);
 		e.setAttribute("a", address);
 		if (dispName) {

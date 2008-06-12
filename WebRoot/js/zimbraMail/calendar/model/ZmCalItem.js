@@ -1096,9 +1096,9 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	var comp = soapDoc.set("comp", null, inv);
 
 	// attendees
-	if (this.isOrganizer()) {
+	//if (this.isOrganizer()) {
 		this._addAttendeesToSoap(soapDoc, comp, m, notifyList, onBehalfOf);
-	}
+	//}
 
 	this._addExtrasToSoap(soapDoc, inv, comp);
 
@@ -1121,10 +1121,14 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	var organizer = this.organizer || user;
 	var org = soapDoc.set("or", null, comp);
 	org.setAttribute("a", organizer);
-	// if on-behalf of, set sentBy
-	if (organizer != user) org.setAttribute("sentBy", user);
-	// set display name of organizer
-	var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
+    var calendar  = this.getFolder();
+    if(calendar.isRemote()) {
+        // if on-behalf of, set sentBy
+        org.setAttribute("sentBy", user);
+        //if (organizer != user) org.setAttribute("sentBy", user);
+	    // set display name of organizer
+    }
+    var orgEmail = ZmApptViewHelper.getOrganizerEmail(this.organizer);
 	var orgName = orgEmail.getName();
 	if (orgName) org.setAttribute("d", orgName);
 
@@ -1253,7 +1257,7 @@ function(soapDoc, inv, comp) {
 ZmCalItem.prototype._addAttendeesToSoap =
 function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	// if this appt is on-behalf-of, set the from address to that person
-	if (onBehalfOf) {
+	if (this.isOrganizer() && onBehalfOf) {
 		e = soapDoc.set("e", null, m);
 		e.setAttribute("a", onBehalfOf);
 		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);

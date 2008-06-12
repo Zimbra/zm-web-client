@@ -547,16 +547,26 @@
 		<$ if (data.recurStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.repeats, val:data.recurStr}) $><$ } $>
 		<$ if (data.attachStr) { $><$= AjxTemplate.expand("calendar.Appointment#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
 		<tr>
-			<td class='LabelColName'><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.folderLabel)) $> </td>
+			<td class='LabelColName' style="vertical-align:middle;"><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.folderLabel)) $> </td>
 			<td class='LabelColValue' colspan=100>
-				<$ if (data.folders && data.folders.length > 1) { $>
-					<div id='${id}_folderCell'><$= AjxStringUtil.htmlEncode(data.folder.name) $></div>
-				<$ } else { $>
-					<$= AjxStringUtil.htmlEncode(data.folder.name) $>
-				<$ } $>
-			</td>
+                <table border=0>
+					<tr>
+                    <td class='LabelColValue'>
+                    <$ if (data.folders && data.folders.length > 1) { $>
+					    <div id='${id}_folderCell'><$= AjxStringUtil.htmlEncode(data.folder.name) $></div>
+				    <$ } else { $>
+					    <$= AjxStringUtil.htmlEncode(data.folder.name) $>
+				    <$ } $>
+                    </td>
+                    <td class='LabelColName' style="vertical-align:middle;"><$= AjxMessageFormat.format(ZmMsg.makeLabel, AjxStringUtil.htmlEncode(data.reminderLabel)) $> </td>
+                    <td class='LabelColValue' colspan=100>
+                            <div id='${id}_reminderCell'></div>
+                    </td>
+                    </tr>
+                </table>
+            </td>
 		</tr>
-	</table>
+    </table>
 </template>
 
 <template id='calendar.Appointment#ReadOnlyPrint'>

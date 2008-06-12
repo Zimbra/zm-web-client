@@ -101,6 +101,7 @@ function() {
 	// override
 };
 ZmCalItemView.prototype.move = function() {}; // override
+ZmCalItemView.prototype.changeReminder = function() {}; // override
 
 ZmCalItemView.prototype.getPrintHtml =
 function() {
@@ -137,7 +138,8 @@ function(calItem) {
 	var subs = this._getSubs(calItem);
 	var closeBtnCellId = this._htmlElId + "_closeBtnCell";
 	var moveSelectId = this._htmlElId + "_folderCell";
-	this._hdrTableId = this._htmlElId + "_hdrTable";
+    var reminderSelectId = this._htmlElId + "_reminderCell";
+    this._hdrTableId = this._htmlElId + "_hdrTable";
 
 	var el = this.getHtmlElement();
 	el.innerHTML = AjxTemplate.expand("calendar.Appointment#ReadOnlyView", subs);
@@ -161,7 +163,22 @@ function(calItem) {
 		this._moveSelect.replaceElement(moveSelectId);
 	}
 
-	// content/body
+    // add the reminder select
+	if (document.getElementById(reminderSelectId)) {
+		var	displayOptions = [ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore, ZmMsg.apptRemindNHoursBefore ];
+	    var	options = this._reminderOptions = [0, 1, 5, 10, 15, 30, 45, 60, 120, 180, 240, 300, 1080];
+	    var	labels = [0, 1, 5, 10, 15, 30, 45, 60, 2, 3, 4, 5, 18];
+        this._reminderSelect = new DwtSelect({parent: this});
+		this._reminderSelect.addChangeListener(new AjxListener(this, this.changeReminder));
+		this._reminderSelect.clearOptions();
+        for (var j = 0; j < options.length; j++) {
+            var optLabel = ZmCalendarApp.__formatLabel(displayOptions[j], labels[j]);
+            this._reminderSelect.addOption(optLabel, (calItem._reminderMinutes == options[j]), options[j]);
+        }
+		this._reminderSelect.replaceElement(reminderSelectId);
+	}
+
+    // content/body
 	var hasHtmlPart = (calItem.notesTopPart && calItem.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
 	var mode = (hasHtmlPart && appCtxt.get(ZmSetting.VIEW_AS_HTML))
 		? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
@@ -284,6 +301,21 @@ ZmApptView.prototype.move = function(ev) {
 	item.move(nfolder, callback, errorCallback);
 };
 
+ZmApptView.prototype.changeReminder = function(ev) {
+	var item = this._calItem
+	var folderId = item.folderId;
+    var reminderMinutes = this._reminderSelect.getValue();
+    DBG.println("change Reminder Value: " + reminderMinutes);
+    item.setReminderMinutes(reminderMinutes);
+   	var viewMode = ZmCalItem.MODE_EDIT;
+    if (item.isRecurring()) {
+          viewMode = item.isException ?  ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
+    }	
+    item.setViewMode(viewMode);
+    //DBG.print
+    item.save();
+};
+
 ZmApptView.prototype._handleMoveResponse = function(ofolder, nfolder, resp) {
 	// TODO: Should we display some confirmation?
 };
@@ -353,8 +385,10 @@ function(calItem) {
 		attachStr: attachStr,
 		folder: appCtxt.getTree(ZmOrganizer.CALENDAR).getById(calItem.folderId),
 		folders: String(calItem.id).match(/:/) ? [] : this._controller.getCalendars(),
-		folderLabel: ZmMsg.calendar
-	};
+		folderLabel: ZmMsg.calendar,
+        reminderLabel: ZmMsg.reminder,
+        alarm: calItem.alarm
+    };
 };
 
 ZmApptView.prototype._getTimeString =
@@ -459,7 +493,7 @@ function(calItem) {
 		attachStr: attachStr,
 		folder: appCtxt.getTree(ZmOrganizer.TASKS).getById(calItem.folderId),
 		folderLabel: ZmMsg.folder
-	};
+    };
 };
 
 ZmTaskView.getPrintHtml =
