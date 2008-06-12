@@ -35,6 +35,25 @@ ZmMailPrefsPage.prototype.reset = function(useDefaults) {
 	if (cbox) {
 		this._handleEnableVacationMsg(cbox);
 	}
+	this._setPopDownloadSinceControls();
+};
+
+ZmMailPrefsPage.prototype._setPopDownloadSinceControls = function() {
+	var popDownloadSinceValue = this.getFormObject(ZmSetting.POP_DOWNLOAD_SINCE_VALUE);
+	if (popDownloadSinceValue) {
+		var value = appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
+		if (value) {
+			var date = AjxDateFormat.parse("yyyyMMddHHmmss'Z'", value);
+			date.setHours(date.getHours() + date.getTimezoneOffset());
+			value = date;
+		}
+		var pattern = value ? ZmMsg.externalAccessPopCurrentValue : ZmMsg.externalAccessPopNotSet;
+		popDownloadSinceValue.setText(AjxMessageFormat.format(pattern, value));
+	}
+	var popDownloadSince = this.getFormObject(ZmSetting.POP_DOWNLOAD_SINCE);
+	if (popDownloadSince) {
+		popDownloadSince.setSelectedValue(appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE));
+	}
 };
 
 ZmMailPrefsPage.prototype._createControls = function() {
@@ -110,6 +129,8 @@ ZmMailPrefsPage.prototype._createControls = function() {
 	if (value > 0) {
 		input.value = value;
 	}
+
+	this._setPopDownloadSinceControls();
 };
 
 ZmMailPrefsPage.prototype._dateButtonListener =
@@ -171,6 +192,15 @@ ZmMailPrefsPage.prototype._setupCheckbox = function(id, setup, value) {
 		cbox.addSelectionListener(new AjxListener(this, this._handleEnableVacationMsg, [cbox, id]));
 	}
 	return cbox;
+};
+ZmMailPrefsPage.prototype._setupRadioGroup = function(id, setup, value) {
+	var control = ZmPreferencesPage.prototype._setupRadioGroup.apply(this, arguments);
+	if (id == ZmSetting.POP_DOWNLOAD_SINCE) {
+		var radioGroup = this.getFormObject(id);
+		var radioButton = radioGroup.getRadioButtonByValue(ZmMailApp.POP_DOWNLOAD_SINCE_NO_CHANGE);
+		radioButton.setVisible(false);
+	}
+	return control;
 };
 
 //

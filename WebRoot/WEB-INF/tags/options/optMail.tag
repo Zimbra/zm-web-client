@@ -1,4 +1,4 @@
-<%@ tag body-content="empty" %>
+<%@ tag body-content="empty" import="java.util.Date,java.text.*" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -321,8 +321,23 @@
 </tr>
 </table>
 <c:if test="${mailbox.features.pop3Enabled}">
-	<jsp:useBean id="now" class="java.util.Date" scope='page' />
 	<c:set var="pop3DownloadSince" value="${mailbox.prefs.pop3DownloadSince}" />
+	<%	PageContext pageContext = (PageContext)jspContext;
+
+		// NOTE: We need to adjust to UTC for formatting purposes
+		Date now = new Date();
+		now.setHours(now.getHours() - now.getTimezoneOffset());
+		pageContext.setAttribute("now", now, PageContext.PAGE_SCOPE);
+
+		// NOTE: We need to adjust from UTC for formatting purposes
+		Date current = null;
+		String pop3DownloadSince = (String)pageContext.findAttribute("pop3DownloadSince");
+		if (pop3DownloadSince != null && pop3DownloadSince.length() > 0) {
+			current = new SimpleDateFormat("yyyyMMddHHmmss'Z'").parse(pop3DownloadSince);
+			current.setHours(current.getHours() + current.getTimezoneOffset());
+		}
+		pageContext.setAttribute("current", current, PageContext.PAGE_SCOPE);
+	%>
 	<br/>
 	<table class="ZOptionsSectionTable" border="0" cellpadding="0" cellspacing="0" width="100%">
 	<tr class="ZOptionsHeaderRow">
@@ -345,14 +360,6 @@
 					</td>
 				</tr>
 				<tr>
-					<td><input id="pop3DownloadNoChange" name='zimbraPrefPop3DownloadSince' type="radio"
-							   value="${not empty pop3DownloadSince ? pop3DownloadSince : ""}" ${not empty pop3DownloadSince ? "checked" : ""}>
-					</td>
-					<td style='padding-left:5px' nowrap>
-						<label for="pop3DownloadNoChange"><fmt:message key="optionsAccessPopDownloadNoChange" /></label>
-					</td>
-				</tr>
-				<tr>
 					<td><input id="pop3DownloadFromNow" name='zimbraPrefPop3DownloadSince' type="radio"
 							   value="<fmt:formatDate value="${now}" pattern="yyyyMMddHHmmss'Z'" />">
 					</td>
@@ -361,6 +368,20 @@
 					</td>
 				</tr>
 			</table>
+		</td>
+	</tr>
+	<tr><td></td>
+		<td class="ZOptionsHint">
+			<c:choose>
+				<c:when test="${empty current}">
+				    <fmt:message key="optionsAccessPopNotSet" />
+				</c:when>
+				<c:otherwise>
+					<fmt:message key="optionsAccessPopCurrentValue">
+						<fmt:param value="${current}" />
+					</fmt:message>
+				</c:otherwise>
+			</c:choose>
 		</td>
 	</tr>
 	</table>

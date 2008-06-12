@@ -58,6 +58,10 @@ ZmApp.QS_ARG[ZmApp.MAIL]			= "mail";
 
 ZmMailApp.DEFAULT_AUTO_SAVE_DRAFT_INTERVAL = 30;
 
+ZmMailApp.POP_DOWNLOAD_SINCE_ALL = 0;
+ZmMailApp.POP_DOWNLOAD_SINCE_NO_CHANGE = 1;
+ZmMailApp.POP_DOWNLOAD_SINCE_FROM_NOW = 2;
+
 ZmMailApp.prototype = new ZmApp;
 ZmMailApp.prototype.constructor = ZmMailApp;
 
@@ -135,6 +139,7 @@ function(settings) {
 	settings.registerSetting("OPEN_MAIL_IN_NEW_WIN",			{name:"zimbraPrefOpenMailInNewWindow", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("PAGE_SIZE",						{name:"zimbraPrefMailItemsPerPage", type:ZmSetting.T_PREF, dataType:ZmSetting.D_INT, defaultValue:25});
 	settings.registerSetting("POP_ENABLED",						{name:"zimbraPop3Enabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	settings.registerSetting("POP_DOWNLOAD_SINCE_VALUE",		{type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
 	settings.registerSetting("POP_DOWNLOAD_SINCE",				{name:"zimbraPrefPop3DownloadSince", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:""});
 	settings.registerSetting("READING_PANE_ENABLED",			{name:"zimbraPrefReadingPaneEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isImplicit:true});
 	settings.registerSetting("REPLY_INCLUDE_ORIG",				{name:"zimbraPrefReplyIncludeOriginalText", type:ZmSetting.T_PREF, defaultValue:ZmSetting.INCLUDE});
@@ -194,6 +199,7 @@ function() {
 				ZmSetting.MAIL_NOTIFY_BROWSER,
 				ZmSetting.OPEN_MAIL_IN_NEW_WIN,
 				ZmSetting.PAGE_SIZE,
+				ZmSetting.POP_DOWNLOAD_SINCE_VALUE,
 				ZmSetting.POP_DOWNLOAD_SINCE,
 				ZmSetting.POLLING_INTERVAL,
 				ZmSetting.SHOW_FRAGMENTS,
@@ -401,13 +407,20 @@ function() {
         precondition:      ZmSetting.DETACH_MAILVIEW_ENABLED
     });
 
+	ZmPref.registerPref("POP_DOWNLOAD_SINCE_VALUE", {
+		displayContainer:	ZmPref.TYPE_STATIC,
+		precondition:		ZmSetting.POP_ENABLED
+	});
 	ZmPref.registerPref("POP_DOWNLOAD_SINCE", {
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
 		displayOptions:		[	ZmMsg.externalAccessPopDownloadAll,
-								ZmMsg.externalAccessPopDownloadNoChange,
+								"*** NOT SHOWN ***",
 								ZmMsg.externalAccessPopDownloadFromNow
 							],
-		options:			[0, 1, 2],
+		options:			[	ZmMailApp.POP_DOWNLOAD_SINCE_ALL,
+								ZmMailApp.POP_DOWNLOAD_SINCE_NO_CHANGE,
+								ZmMailApp.POP_DOWNLOAD_SINCE_FROM_NOW
+							],
 		displayFunction:	ZmPref.downloadSinceDisplay,
 		valueFunction:		ZmPref.downloadSinceValue,
 		precondition:		ZmSetting.POP_ENABLED

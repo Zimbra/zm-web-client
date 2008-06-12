@@ -235,6 +235,9 @@ function() {
 				}
 				control = this._setupInput(id, setup, value);
 			}
+			else if (type == ZmPref.TYPE_STATIC) {
+				control = this._setupStatic(id, setup, value);
+			}
 			else if (type == ZmPref.TYPE_COLOR) {
 				control = this._setupColor(id, setup, value);
 			}
