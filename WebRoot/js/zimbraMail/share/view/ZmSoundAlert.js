@@ -48,16 +48,51 @@ function(soundFile) {
 		if (!this._lastTime || ((time - this._lastTime) > 5000)) {
 			soundFile = soundFile || "/public/sounds/im/alert.wav";
 			var url = appContextPath + soundFile;
+			var embedId = Dwt.getNextId();
 			var htmlArr = [
 				"<object CLASSID='CLSID:6BF52A52-394A-11d3-B153-00C04F79FAA6' type='audio/wav'>",
 				"<param name='url' value='", url, "'>",
 				"<param name='autostart' value='true'>",
 				"<param name='controller' value='true'>",
-				"<embed src='", url, "' controller='true' autostart='true' type='audio/wav' />",
+				"<embed id='", embedId, "' src='", url, "' controller='false' autostart='true' type='audio/wav'/>",
 				"</object>"
-			 ];
+			];
 			this._element.innerHTML = htmlArr.join("");
 			this._lastTime = time;
+
+			if (AjxEnv.isFirefox && AjxEnv.isWindows) {
+				// The quicktime plugin steals focus and breaks our keyboard nav.
+				// The best workaround I've found for this is to blur the embed
+				// element, and that only works after the sound plays.
+				//
+				// Unfortunately it seems that on a slow connection this prevents
+				// the sound from playing. I'm hoping this is less bad than killing
+				// keyboard focus.
+				//
+				// Mozilla bug: https://bugzilla.mozilla.org/show_bug.cgi?id=78414
+				if (this._blurActionId) {
+					AjxTimedAction.cancelAction(this._blurActionId);
+					this._blurActionId = null;
+				}
+				this._blurEmbedTimer(embedId, 0);
+			}
+		}
+	}
+};
+ZmSoundAlert.prototype._blurEmbedTimer =
+function(embedId, tries) {
+	var action = new AjxTimedAction(this, this._blurEmbed, [embedId, tries]);
+	this._blurActionId = AjxTimedAction.scheduleAction(action, 500);
+};
+
+ZmSoundAlert.prototype._blurEmbed =
+function(embedId, tries) {
+	this._blurActionId = null;
+	var embedEl = document.getElementById(embedId);
+	if (embedEl && embedEl.blur) {
+		embedEl.blur();
+		if (tries < 2) {
+			this._blurEmbedTimer(embedId, tries + 1);
 		}
 	}
 };
