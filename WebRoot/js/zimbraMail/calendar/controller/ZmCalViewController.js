@@ -1867,8 +1867,7 @@ function(params) {
 ZmCalViewController.prototype._maintGetApptCallback =
 function(work, view, list, skipMiniCalUpdate) {
 	// TODO: turn off shell busy
-
-	if (list instanceof ZmCsfeException) {
+    if (list instanceof ZmCsfeException) {
 		this._handleError(list, new AjxCallback(this, this._maintErrorHandler));
 		return;
 	}
@@ -1887,15 +1886,29 @@ function(work, view, list, skipMiniCalUpdate) {
 		this._scheduleMaintenance(pendingWork);
 	}
 	else if (work & ZmCalViewController.MAINT_VIEW) {
-		this._list = list;
-		view.set(list, skipMiniCalUpdate);
-		if (work & ZmCalViewController.MAINT_REMINDER) {
+        this._list = list;
+		var sel = view.getSelection();
+        view.set(list, skipMiniCalUpdate);
+        //For bug 27221, reset toolbar after refresh
+        view.deselectAll();
+        if(sel && sel.length > 0){
+            var id = sel[0].id;
+            for(i=0;i<this._list.size();i++){
+               if(this._list._array[i].id == id){
+                   view.setSelection(this._list._array[i],true);
+                   break;
+               }
+            }
+        }
+        this._resetToolbarOperations();
+        if (work & ZmCalViewController.MAINT_REMINDER) {
 			this._app.getReminderController().refresh();
 		}
-	}
+    }
 	else if (work & ZmCalViewController.MAINT_REMINDER) {
 		this._app.getReminderController().refresh();
 	}
+
 };
 
 ZmCalViewController.prototype._scheduleMaintenance =
@@ -1926,12 +1939,13 @@ function() {
 			var cb = new AjxCallback(this, this._maintGetApptCallback, [work, view]);
 			this.getApptSummaries({start:rt.start, end:rt.end, fanoutAllDay:view._fanoutAllDay(), callback:cb});
 			view.setNeedsRefresh(false);
-		}
+        }
 	}
 	else if (work & ZmCalViewController.MAINT_REMINDER)
 	{
 		this._app.getReminderController().refresh();
 	}
+    
 };
 
 ZmCalViewController.prototype.getKeyMapName =
