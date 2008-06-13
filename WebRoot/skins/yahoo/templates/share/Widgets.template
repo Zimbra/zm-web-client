@@ -1,15 +1,3 @@
-<template id='share.Widgets#ZmAppChooserButton' class='ZAppTab'>
-	<table id='${id}_select' class='ZWidgetTable ZWidgetBorder ZAppTabBorder' cellspacing=0 cellpadding=0>
-		<tr>
-			<td style='width:5px'><div class='ImgAppTab_L'></div></td>
-			<td id='${id}_left_icon' class='ImgAppTab ZLeftIcon ZWidgetIcon'></td>
-			<td id='${id}_title' class='ImgAppTab ZWidgetTitle'></td>
-			<td id='${id}_right_icon' class='ImgAppTab ZRightIcon ZWidgetIcon'></td>
-			<td style='width:5px'><div class='ImgAppTab_R'></div></td>
-		</tr>
-	</table>
-</template>
-
 <template id='share.Widgets#ZmSearchToolBar'>
 	<table border=0 cellpadding=0 cellspacing=0 width='100%' height='100%'>
 		<tr>
@@ -18,6 +6,16 @@
 			<td id='${id}_searchButton' hint='text' class='ZmSearchToolbarCell ZSearchButtonCell'></td>
 			<td id='${id}_saveButton' hint='text' class='ZmSearchToolbarCell ZmSearchLink'></td>
 			<td id='${id}_advancedButton' hint='text' class='ZmSearchToolbarCell ZmSearchLink'></td>
+		</tr>
+	</table>
+</template>
+
+<template id='share.Widgets#ZmAppChooser' class='ZWidget'>
+	<table class='ZToolbarTable' border=0 cellpadding=0 cellspacing=0 width=100%>
+		<tr valign='bottom' id='${id}_items'>
+			<td id='${id}_suffix' valign=bottom width=100%>
+				<div class='ZAppTabSpacer'></div>
+			</td>
 		</tr>
 	</table>
 </template>

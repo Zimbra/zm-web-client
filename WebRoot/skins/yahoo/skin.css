@@ -1,14 +1,23 @@
 #skin_container_app_chooser		{	margin-top:5px;					}
 #skin_container_app_main		{	border-left-width:1px;			}
-#skin_container_app_top_toolbar	{	border-left-width:1px;			}
 #skin_container_tree			{	border-width:1px; margin-top:6px;			}
 #skin_container_tree_footer		{	border-width:1px; margin-top:6px;			}
 #skin_spacing_search			{	width:46%;						}
 #skin_container_web_search		{	width:95%; height:20px;			}
+#skin_container_app_top_toolbar	{
+	border-left-width:1px;
+	border-left-color:@darken(AppC,50)@;
+	border-right-color:@darken(AppC,50)@;
+	background:@AppC@ url('/zimbra/skins/_base/base2/img/gradient/10x32,v,15-0,1,0_16-31,1,0.png') left top repeat-x !important;
+}
+#skin_container_tree_top		{
+	background:@AltC@ url('/zimbra/skins/_base/base2/img/gradient/10x32,v,15-0,2,0_16-31,2,0.png') left top repeat-x;
+}
 #skin_container_links			{
 	padding-right:10px;
 	white-space:nowrap;
 	overflow:hidden;
+	border-bottom:1px solid @darken(AppC,50)@;
 }
 #skin_search_web_input			{
 	border:1px solid @SelC@;
@@ -16,12 +25,25 @@
 	height:20px;
 }
 
-.ZAppTab						{	padding-right:3px;				}
-.ZAppTabBorder		 			{	border-width:0px !important;	}
+#skin_container_app_chooser .ZToolbarTable {
+	background-color:@AppC@;
+}
+
+.ZAppTab						{	margin-right:3px;				}
+.ZAppTabBorder		 			{
+	@AppTabRoundCorners@
+	border-width:1px !important;
+	border-color:@darken(AppC,50)@;
+	background:@AltC@ url('/zimbra/skins/_base/base2/img/gradient/10x32,v,15-0,2,0_16-31,2,0.png') left top repeat-x;
+}
+.ZSelected .ZAppTabBorder		{
+	border-bottom-width:0px !important;
+	background:@AppC@ url('/zimbra/skins/_base/base2/img/gradient/10x32,v,0-15,3,0.png') left top repeat-x;
+}
 .ZAppTabBorder .ZLeftIcon DIV	{	margin-top:4px;					}
 .BannerTextUser					{	text-align: left;				}
-.ZmAppChooser					{	margin-left:0px;				}
-
+.ZmAppChooser					{	margin-left:0px; 				}
+.ZAppTabSpacer					{	border-bottom:1px solid @darken(AppC,50)@; }
 
 /* Yahoo! skin-specific CSS */
 .skin_yahoo_userinfo			{	padding-left:10px;				}
@@ -32,4 +54,5 @@
 	height:20px;
 	@trRadius@:4px;
 	@brRadius@:4px;
+	background: #ffffff url('/zimbra/skins/_base/base2/img/gradient/10x32,v,0-15,3,0.png') left top repeat-x;
 }
