@@ -51,7 +51,7 @@
         <table cellpadding="2" cellspacing="0" width="100%">
             <tr>
                 <td>
-					<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}<b>
+					<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>
                 </td>
             </tr>
         </table>
@@ -163,6 +163,7 @@
 
 <c:when test="${skin eq 'velodrome2'}">
 	<c:set var="iconPath" value="/img" scope="request"/>
+<div class='${requestScope.statusClass}'><app:appStatus/></div>
 	<table width="100%" cellspacing="0" cellpadding="0" border="0" height="100%">
 	<tr>
 		<td class='ImgSkin_Chrome_R1' colspan="2">
@@ -195,33 +196,28 @@
 			<tr id='skin_R2'>
 				<td style="width:8px;"><div class='ImgSkin_Chrome_R2_L'></div></td>
 				<td class='ImgSkin_Chrome_R2 Row2width' colspan=3>
-                    <table width=100%  cellspacing=0 cellpadding=0 border='0'>
-                        <tr>
-                            <td align="left">
-                                <c:choose>
-                                    <c:when test="${mailbox.features.portalEnabled}">
-                                        <a href="/h/home" ><div class='ImgSkin_Chrome_Logo'></div></a>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <a href="/h/search" ><div class='ImgSkin_Chrome_Logo'></div></a>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                            <td id='skin_container_app_name'></td>
-                            <td width='100%'><div class='float'>
-                                <app:appStatus/>
-                            </div></td>
-                            <td id='skin_td_search' align='right'>
-                                <!-- search box -->
-                                <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}" voice="${voice}"/>
-                            </td>
-                            <c:if test="${mailbox.features.webSearchEnabled}">
-                                <td>
-                                    <app:appTopYSearch keys="${keys}" />
-                                </td>
-                            </c:if>
-                        </tr>
-                    </table>
+					<table width=100%  cellspacing=0 cellpadding=0 border='0'>
+					<tr>
+						<td align="left">
+							<c:choose>
+								<c:when test="${mailbox.features.portalEnabled}">
+									 <a href="/h/home" ><div class='ImgSkin_Chrome_Logo'></div></a>
+								</c:when>
+								<c:otherwise>
+									 <a href="/h/search" ><div class='ImgSkin_Chrome_Logo'></div></a>
+								</c:otherwise>
+							</c:choose>
+						</td>
+						<td id='skin_container_app_name'></td>
+						<td width='100%'>&nbsp;</td>
+                        <td id='skin_td_search' align='right'>
+                            <!-- search box -->				
+                            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" tasks="${tasks}" voice="${voice}"/>					
+						</td>
+						<c:if test="${mailbox.features.webSearchEnabled}">
+	                    </c:if>
+                    </tr>
+					</table>
 				</td>
 				<td><div class='ImgSkin_Chrome_R2_R'></div></td>
 			</tr>
