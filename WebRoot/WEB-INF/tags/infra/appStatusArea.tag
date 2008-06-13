@@ -6,17 +6,16 @@
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
 <c:set var="emptyStatus" value="${empty requestScope.statusMessage}"/>
-<table cellpadding=0 cellspacing=0>
+<c:if test="${param.dmsg == null && not emptyStatus}">
+<div id="app_st_msg_div" style="display:block;">
+    <table  class='${requestScope.statusClass}' cellpadding=2 cellspacing=2 width="100%" align="center">
     <tr>
-        <td class="${emptyStatus ? 'StatusEmpty' : 'Status'}">
-            <c:choose>
-                <c:when test="${emptyStatus}">
-                    <div>&nbsp;</div>
-                </c:when>
-                <c:otherwise>
-                    <div class='${requestScope.statusClass}'>${requestScope.statusHtml ? requestScope.statusMessage : fn:escapeXml(requestScope.statusMessage)}</div>
-                </c:otherwise>
-            </c:choose>
+        <td class="Status">
+            &nbsp;${requestScope.statusHtml ? requestScope.statusMessage : fn:escapeXml(requestScope.statusMessage)}
         </td>
+        <td width="20%" align="right"><a onclick="return dismissMsg();" href='?dmsg&${pageContext.request.queryString}'><fmt:message key="close"/></a>&nbsp;&nbsp;</td>
     </tr>
-</table>
+    </table>
+</div>
+</c:if>
+<script>var dismissMsg = function(){try{document.getElementById("app_st_msg_div").style.display='none;';return false;}catch(ex){return true;}}</script>
