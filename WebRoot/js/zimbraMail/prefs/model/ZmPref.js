@@ -80,12 +80,14 @@ function(emailStr) {
 	return true;
 };
 
-ZmPref.downloadSinceDisplay = function(dateStr) {
+ZmPref.downloadSinceDisplay =
+function(dateStr) {
 	if (dateStr == "") return 0;
 	if (dateStr == appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE)) return 1;
 	return 2;
 };
-ZmPref.downloadSinceValue = function(value) {
+ZmPref.downloadSinceValue =
+function(value) {
 	if (value == 0) return "";
 	if (value == 1) return appCtxt.get(ZmSetting.POP_DOWNLOAD_SINCE);
 	var date = new Date();
@@ -105,86 +107,98 @@ function(interval) {
 	}
 };
 
-ZmPref.pollingIntervalDisplay = function(seconds) {
+ZmPref.pollingIntervalDisplay =
+function(seconds) {
 	return seconds / 60;
 };
-ZmPref.pollingIntervalValue = function(minutes) {
+
+ZmPref.pollingIntervalValue =
+function(minutes) {
 	return minutes * 60;
 };
 
-ZmPref.dateLocal2GMT = function(value) {
-        var yr, mo, da, hr, mi, se; // really smart parsing.
-        yr = parseInt(value.substr(0,  4), 10);
-        mo = parseInt(value.substr(4,  2), 10);
-        da = parseInt(value.substr(6,  2), 10);
-        hr = parseInt(value.substr(8,  2), 10);
-        mi = parseInt(value.substr(10, 2), 10);
-        se = parseInt(value.substr(12, 2), 10);
-        var date = new Date(yr, mo - 1, da, hr, mi, se, 0);
-        yr = date.getUTCFullYear();
-        mo = date.getUTCMonth() + 1;
-        da = date.getUTCDate();
-        hr = date.getUTCHours();
-        mi = date.getUTCMinutes();
-        se = date.getUTCSeconds();
-        var a = [ yr, mo, da, hr, mi, se ];
-        for (var i = a.length; --i > 0;) {
-                var n = a[i];
-                if (n < 10)
-                        a[i] = "0" + n;
-        }
-        var gmt = a.join("") + "Z";
-        // console.log("GMT date: %o, local: %o", gmt, value);
-        return gmt;
-};
-ZmPref.dateGMT2Local = function(value) {
-        var yr, mo, da, hr, mi, se; // really smart parsing.
-        yr = parseInt(value.substr(0,  4), 10);
-        mo = parseInt(value.substr(4,  2), 10);
-        da = parseInt(value.substr(6,  2), 10);
-        hr = parseInt(value.substr(8,  2), 10);
-        mi = parseInt(value.substr(10, 2), 10);
-        se = parseInt(value.substr(12, 2), 10);
-        var date = new Date();
-        date.setUTCMilliseconds(0);
-        date.setUTCSeconds(se);
-        date.setUTCMinutes(mi);
-        date.setUTCHours(hr);
-        date.setUTCDate(da);
-        date.setUTCMonth(mo - 1);
-        date.setUTCFullYear(yr);
-        yr = date.getFullYear();
-        mo = date.getMonth() + 1;
-        da = date.getDate();
-        hr = date.getHours();
-        mi = date.getMinutes();
-        se = date.getSeconds();
-        var a = [ yr, mo, da, hr, mi, se ];
-        for (var i = a.length; --i > 0;) {
-                var n = a[i];
-                if (n < 10)
-                        a[i] = "0" + n;
-        }
-        var local = a.join("") + "Z";
-        // console.log("Local date: %o, gmt: %o", local, value);
-        return local;
+ZmPref.dateLocal2GMT =
+function(value) {
+	if (!value) { return ""; }
+
+	var yr, mo, da, hr, mi, se; // really smart parsing.
+	yr = parseInt(value.substr(0,  4), 10);
+	mo = parseInt(value.substr(4,  2), 10);
+	da = parseInt(value.substr(6,  2), 10);
+	hr = parseInt(value.substr(8,  2), 10);
+	mi = parseInt(value.substr(10, 2), 10);
+	se = parseInt(value.substr(12, 2), 10);
+	var date = new Date(yr, mo - 1, da, hr, mi, se, 0);
+	yr = date.getUTCFullYear();
+	mo = date.getUTCMonth() + 1;
+	da = date.getUTCDate();
+	hr = date.getUTCHours();
+	mi = date.getUTCMinutes();
+	se = date.getUTCSeconds();
+	var a = [ yr, mo, da, hr, mi, se ];
+	for (var i = a.length; --i > 0;) {
+		var n = a[i];
+		if (n < 10)
+			a[i] = "0" + n;
+	}
+	var gmt = a.join("") + "Z";
+	// console.log("GMT date: %o, local: %o", gmt, value);
+	return gmt;
 };
 
-ZmPref.int2DurationDay = function(intValue) {
+ZmPref.dateGMT2Local =
+function(value) {
+	if (!value) { return ""; }
+
+	var yr, mo, da, hr, mi, se; // really smart parsing.
+	yr = parseInt(value.substr(0,  4), 10);
+	mo = parseInt(value.substr(4,  2), 10);
+	da = parseInt(value.substr(6,  2), 10);
+	hr = parseInt(value.substr(8,  2), 10);
+	mi = parseInt(value.substr(10, 2), 10);
+	se = parseInt(value.substr(12, 2), 10);
+	var date = new Date();
+	date.setUTCMilliseconds(0);
+	date.setUTCSeconds(se);
+	date.setUTCMinutes(mi);
+	date.setUTCHours(hr);
+	date.setUTCDate(da);
+	date.setUTCMonth(mo - 1);
+	date.setUTCFullYear(yr);
+	yr = date.getFullYear();
+	mo = date.getMonth() + 1;
+	da = date.getDate();
+	hr = date.getHours();
+	mi = date.getMinutes();
+	se = date.getSeconds();
+	var a = [yr, mo, da, hr, mi, se];
+	for (var i = a.length; --i > 0;) {
+		var n = a[i];
+		if (n < 10)
+			a[i] = "0" + n;
+	}
+	return (a.join("") + "Z");
+};
+
+ZmPref.int2DurationDay =
+function(intValue) {
 	return intValue != null && intValue != 0 ? intValue + "d" : intValue;
 };
 
-ZmPref.durationDay2Int = function(durValue) {
+ZmPref.durationDay2Int =
+function(durValue) {
 	return parseInt(durValue, 10); // NOTE: parseInt ignores non-digits
 };
 
-ZmPref.approximateInterval = function(value) {
+ZmPref.approximateInterval =
+function(value) {
 	var values = [].concat(ZmPref.SETUP["POLLING_INTERVAL"].options);
 	values.sort(ZmPref.__BY_NUMBER);
 	return ZmPref.approximateValue(values, value);
 };
 
-ZmPref.approximateValue = function(sortedValues, value) {
+ZmPref.approximateValue =
+function(sortedValues, value) {
 	// find closest value
 	for (var i = 0; i < sortedValues.length + 1; i++) {
 		var a = sortedValues[i];
@@ -198,39 +212,54 @@ ZmPref.approximateValue = function(sortedValues, value) {
 	return sortedValues[sortedValues.length - 1];
 };
 
-ZmPref.validateLifetime = function(value) {
+ZmPref.validateLifetime =
+function(value) {
 	var globalValue = appCtxt.get(ZmSetting.MAIL_LIFETIME_GLOBAL);
 	if (globalValue == "0") return true;
 	return ZmPref.__BY_DURATION(value, globalValue) <= 0;
 };
-ZmPref.validateLifetimeJunk = function(value) {
+
+ZmPref.validateLifetimeJunk =
+function(value) {
 	var globalValue = appCtxt.get(ZmSetting.MAIL_LIFETIME_JUNK_GLOBAL);
 	if (globalValue == "0") return true;
 	return ZmPref.__BY_DURATION(value, globalValue) <= 0 && ZmPref.validateLifetime(value);
 };
-ZmPref.validateLifetimeTrash = function(value) {
+
+ZmPref.validateLifetimeTrash =
+function(value) {
 	var globalValue = appCtxt.get(ZmSetting.MAIL_LIFETIME_TRASH_GLOBAL);
 	if (globalValue == "0") return true;
 	return ZmPref.__BY_DURATION(value, globalValue) <= 0 && ZmPref.validateLifetime(value);
 };
 
-ZmPref.approximateLifetimeInboxRead = function(value) {
+ZmPref.approximateLifetimeInboxRead =
+function(value) {
 	return ZmPref.approximateLifetime("MAIL_LIFETIME_INBOX_READ", value, ZmPref.validateLifetime);
 };
-ZmPref.approximateLifetimeInboxUnread = function(value) {
+
+ZmPref.approximateLifetimeInboxUnread =
+function(value) {
 	return ZmPref.approximateLifetime("MAIL_LIFETIME_INBOX_UNREAD", value, ZmPref.validateLifetime);
 };
-ZmPref.approximateLifetimeJunk = function(value) {
+
+ZmPref.approximateLifetimeJunk =
+function(value) {
 	return ZmPref.approximateLifetime("MAIL_LIFETIME_JUNK", value, ZmPref.validateLifetimeJunk, ZmPref.validateLifetime);
 };
-ZmPref.approximateLifetimeSent = function(value) {
+
+ZmPref.approximateLifetimeSent =
+function(value) {
 	return ZmPref.approximateLifetime("MAIL_LIFETIME_SENT", value, ZmPref.validateLifetime);
 };
-ZmPref.approximateLifetimeTrash = function(value) {
+
+ZmPref.approximateLifetimeTrash =
+function(value) {
 	return ZmPref.approximateLifetime("MAIL_LIFETIME_TRASH", value, ZmPref.validateLifetimeTrash, ZmPref.validateLifetime);
 };
 
-ZmPref.approximateLifetime = function(prefId, duration, validateFunc1/*, ..., validateFuncN*/) {
+ZmPref.approximateLifetime =
+function(prefId, duration, validateFunc1/*, ..., validateFuncN*/) {
 	// convert durations to seconds
 	var values = [].concat(ZmPref.SETUP[prefId].options);
 	for (var i = 0; i < values.length; i++) {
@@ -286,13 +315,16 @@ function(value) {
 
 // Comparators
 
-ZmPref.__BY_NUMBER = function(a, b) {
+ZmPref.__BY_NUMBER =
+function(a, b) {
 	if (a == b) return 0;
 	if (a == Math.POSITIVE_INFINITY || b == Math.NEGATIVE_INFINITY) return 1;
 	if (b == Math.POSITIVE_INFINITY || a == Math.NEGATIVE_INFINITY) return -1;
 	return Number(a) - Number(b);
 };
-ZmPref.__BY_DURATION = function(a, b) {
+
+ZmPref.__BY_DURATION =
+function(a, b) {
 	if (a == b) return 0;
 	if (a == "0") return 1;
 	if (b == "0") return -1;
@@ -306,14 +338,16 @@ ZmPref.__BY_DURATION = function(a, b) {
 ZmPref.__DURMULT = { "s": 1, "m": 60, "h": 3600, "d": 86400/*, "w": 604800*/ };
 ZmPref.__DURDIV = { /*604800: "w",*/ 86400: "d", 3600: "h", 60: "m", 1: "s" };
 
-ZmPref.__DUR2SECS = function(duration) {
+ZmPref.__DUR2SECS =
+function(duration) {
 	if (duration == "0") return Number.POSITIVE_INFINITY;
 
 	var type = duration.substring(duration.length - 1).toLowerCase();
 	return parseInt(duration, 10) * ZmPref.__DURMULT[type];
 };
 
-ZmPref.__SECS2DUR = function(seconds, type) {
+ZmPref.__SECS2DUR =
+function(seconds, type) {
 	if (seconds == Number.POSITIVE_INFINITY) return "0";
 
 	var divisors = ZmPref.__DURDIV;
@@ -360,7 +394,8 @@ ZmPref.registerPref = function(id, params) {
 	ZmPref.SETUP[id] = params;
 };
 /** Clears all of the preference sections. */
-ZmPref.clearPrefSections = function() {
+ZmPref.clearPrefSections =
+function() {
     ZmPref._prefSectionMap = {};
     ZmPref._prefSectionArray = null;
 };
@@ -398,7 +433,8 @@ ZmPref.clearPrefSections = function() {
  *                                  ZmPrefView#getChangedPrefs will call
  *                                  isDirty() on the section view.
  */
-ZmPref.registerPrefSection = function(id, params) {
+ZmPref.registerPrefSection =
+function(id, params) {
     if (!id || !params) return;
 
     // set template for section
@@ -414,18 +450,21 @@ ZmPref.registerPrefSection = function(id, params) {
     ZmPref._prefSectionArray = null;
 };
 
-ZmPref.unregisterPrefSection = function(id) {
+ZmPref.unregisterPrefSection =
+function(id) {
 	delete ZmPref._prefSectionMap[id];
 	ZmPref._prefSectionArray = null;
 };
 
 /** Returns the pref sections map. */
-ZmPref.getPrefSectionMap = function() {
+ZmPref.getPrefSectionMap =
+function() {
     return ZmPref._prefSectionMap;
 };
 
 /** Returns a sorted array of pref sections (based on priority). */
-ZmPref.getPrefSectionArray = function() {
+ZmPref.getPrefSectionArray =
+function() {
     if (!ZmPref._prefSectionArray) {
         ZmPref._prefSectionArray = [];
         for (var id in ZmPref._prefSectionMap) {
@@ -437,7 +476,8 @@ ZmPref.getPrefSectionArray = function() {
 };
 
 /** Returns the section that contains the specified pref. */
-ZmPref.getPrefSectionWithPref = function(prefId) {
+ZmPref.getPrefSectionWithPref =
+function(prefId) {
     for (var sectionId in ZmPref._prefSectionMap) {
         var section = ZmPref._prefSectionMap[sectionId];
         if (!section.prefs) continue;
@@ -452,7 +492,8 @@ ZmPref.getPrefSectionWithPref = function(prefId) {
 };
 
 /** Returns true if <em>all</em> of the preconditions pass. */
-ZmPref.requireAllPreConditions = function(pre1 /* ..., preN */) {
+ZmPref.requireAllPreConditions =
+function(pre1 /* ..., preN */) {
 	var app = appCtxt.getApp(ZmApp.PREFERENCES);
 	var controller = app.getPrefController();
 
@@ -471,7 +512,8 @@ ZmPref.clearPrefSections();
 // Private functions
 //
 
-ZmPref.__BY_PRIORITY = function(a, b) {
+ZmPref.__BY_PRIORITY =
+function(a, b) {
     return Number(a.priority) - Number(b.priority);
 };
 

@@ -158,11 +158,11 @@ function(settings) {
 	settings.registerSetting("SPAM_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	settings.registerSetting("USER_FOLDERS_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
-    settings.registerSetting("START_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-    settings.registerSetting("END_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
-    settings.registerSetting("VACATION_FROM",       			{name:"zimbraPrefOutOfOfficeFromDate", type:ZmSetting.T_PREF});
-    settings.registerSetting("VACATION_UNTIL",       			{name:"zimbraPrefOutOfOfficeUntilDate", type:ZmSetting.T_PREF});
-    settings.registerSetting("VACATION_MSG",					{name:"zimbraPrefOutOfOfficeReply", type:ZmSetting.T_PREF});
+	settings.registerSetting("START_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("END_DATE_ENABLED",				{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	settings.registerSetting("VACATION_FROM",       			{name:"zimbraPrefOutOfOfficeFromDate", type:ZmSetting.T_PREF, defaultValue:""});
+	settings.registerSetting("VACATION_UNTIL",       			{name:"zimbraPrefOutOfOfficeUntilDate", type:ZmSetting.T_PREF, defaultValue:""});
+	settings.registerSetting("VACATION_MSG",					{name:"zimbraPrefOutOfOfficeReply", type:ZmSetting.T_PREF, defaultValue:""});
 	settings.registerSetting("VACATION_MSG_ENABLED",			{name:"zimbraPrefOutOfOfficeReplyEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("VACATION_MSG_FEATURE_ENABLED",	{name:"zimbraFeatureOutOfOfficeReplyEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	settings.registerSetting("MAIL_NOTIFY_SOUNDS",				{name:"zimbraPrefMailSoundsEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -461,16 +461,16 @@ function() {
 		displayName:		ZmMsg.startDate,
 		displayContainer:	ZmPref.TYPE_INPUT,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
-                displayFunction:        ZmPref.dateGMT2Local,
-                valueFunction:          ZmPref.dateLocal2GMT
+		displayFunction:	ZmPref.dateGMT2Local,
+		valueFunction:		ZmPref.dateLocal2GMT
 	});
 
         ZmPref.registerPref("VACATION_UNTIL", {
 		displayName:		ZmMsg.endDate,
 		displayContainer:	ZmPref.TYPE_INPUT,
 		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
-                displayFunction:        ZmPref.dateGMT2Local,
-                valueFunction:          ZmPref.dateLocal2GMT
+		displayFunction:	ZmPref.dateGMT2Local,
+		valueFunction:		ZmPref.dateLocal2GMT
 	});
 
     ZmPref.registerPref("VACATION_MSG", {
