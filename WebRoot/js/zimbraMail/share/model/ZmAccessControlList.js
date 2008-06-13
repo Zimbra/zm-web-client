@@ -104,24 +104,26 @@ function(aces, callback, batchCmd) {
 
 ZmAccessControlList.prototype._setPerms =
 function(aces, revoke, callback, batchCmd) {
-	aces = !aces ? [] : aces.length ? aces : [aces];
 	var reqName = revoke ? "RevokePermissionRequest" : "GrantPermissionRequest";
-	var jsonObj = {};
-	var request = jsonObj[reqName] = {_jsns:"urn:zimbraMail"};
-	request.ace = [];
+	var soapDoc = AjxSoapDoc.create(reqName, "urn:zimbraMail");
 	for (var i = 0; i < aces.length; i++) {
 		var ace = aces[i];
-		var obj = {right:ace.right, gt:ace.granteeType, d:ace.grantee, zid:ace.zid};
-		if (ace.negative) {
-			obj.deny = 1;
+		var aceNode = soapDoc.set("ace");
+		aceNode.setAttribute("right", ace.right);
+		aceNode.setAttribute("gt", ace.granteeType);
+		aceNode.setAttribute("d", ace.grantee);
+		if (ace.zid) {
+			aceNode.setAttribute("zid", ace.zid);
 		}
-		request.ace.push(obj);
+		if (ace.negative) {
+			aceNode.setAttribute("deny", 1);
+		}
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseSetPerms, [callback]);
 	if (batchCmd) {
-		batchCmd.addNewRequestParams(jsonObj, respCallback);
+		batchCmd.addNewRequestParams(soapDoc, respCallback);
 	} else {
-		appCtxt.getAppController().sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback});
+		appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	}
 };
 

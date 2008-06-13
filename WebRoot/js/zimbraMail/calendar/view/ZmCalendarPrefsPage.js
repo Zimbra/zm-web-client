@@ -182,7 +182,6 @@ function(setting, right) {
 
 ZmCalendarPrefsPage.prototype.addCommand =
 function(batchCmd) {
-	batchCmd._useJson = true;
 	if (this._grants.length) {
 		this._acl.grant(this._grants, null, batchCmd);
 	}
