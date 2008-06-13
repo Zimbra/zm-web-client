@@ -46,6 +46,7 @@ AjxPackage.require("zimbraMail.share.model.events.ZmEvent");
 AjxPackage.require("zimbraMail.share.model.events.ZmAppEvent");
 AjxPackage.require("zimbraMail.share.model.ZmModel");
 AjxPackage.require("zimbraMail.share.model.ZmSetting");
+AjxPackage.require("zimbraMail.share.model.ZmAccessControlList");
 AjxPackage.require("zimbraMail.core.ZmAppCtxt");
 AjxPackage.require("zimbraMail.core.ZmOperation");
 AjxPackage.require("zimbraMail.core.ZmMimeTable");
