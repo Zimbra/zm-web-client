@@ -18,7 +18,7 @@
     <c:if test="${empty csi}">
         <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
         <c:if test="${csi ge 0}">
-            <c:set var="message" value="${convSearchResult.hits[csi].messageHit.message}"/>
+            <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="${(context.folder.isMountPoint and context.folder.effectivePerm eq 'r') ? 'false' : 'true'}" neuterimages="${mailbox.prefs.displayExternalImages ? '1' : param.xim}"/>
         </c:if>
     </c:if>
     <c:if test="${message eq null}">
