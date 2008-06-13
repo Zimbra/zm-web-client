@@ -4,6 +4,7 @@
 #skin_container_tree_footer		{	border-width:1px; margin-top:6px;			}
 #skin_spacing_search			{	width:46%;						}
 #skin_container_web_search		{	width:95%; height:20px;			}
+#skin_container_offline_status	{	position:static;				}
 #skin_container_app_top_toolbar	{
 	border-left-width:1px;
 	border-left-color:@darken(AppC,50)@;
@@ -24,10 +25,10 @@
 	border-right-width: 0px;
 	height:20px;
 }
-
 #skin_container_app_chooser .ZToolbarTable {
 	background-color:@AppC@;
 }
+
 
 .ZAppTab						{	margin-right:3px;				}
 .ZAppTabBorder		 			{
@@ -44,6 +45,10 @@
 .BannerTextUser					{	text-align: left;				}
 .ZmAppChooser					{	margin-left:0px; 				}
 .ZAppTabSpacer					{	border-bottom:1px solid @darken(AppC,50)@; }
+.Row-Selected .ZmConvListFragment {
+	color:#dddddd;
+}
+
 
 /* Yahoo! skin-specific CSS */
 .skin_yahoo_userinfo			{	padding-left:10px;				}
