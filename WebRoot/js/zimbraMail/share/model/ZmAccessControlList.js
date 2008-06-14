@@ -118,6 +118,11 @@ function(aces, revoke, callback, batchCmd) {
 		if (ace.negative) {
 			aceNode.setAttribute("deny", 1);
 		}
+		if (revoke) {
+			this.remove(ace);
+		} else {
+			this.add(ace);
+		}
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseSetPerms, [callback]);
 	if (batchCmd) {
@@ -148,13 +153,15 @@ ZmAccessControlList.prototype.remove =
 function(ace) {
 	if (!ace) { return; }
 	var list = this._aces[ace.right];
+	var newList = [];
 	if (list && list.length) {
-		var newList = [];
 		for (var i = 0; i < list.length; i++) {
-			var cur = list[i];
-
+			if (list[i].grantee != ace.grantee) {
+				newList.push(list[i]);
+			}
 		}
 	}
+	this._aces[ace.right] = newList;
 };
 
 /**

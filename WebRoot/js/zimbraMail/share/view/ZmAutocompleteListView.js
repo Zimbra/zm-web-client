@@ -56,6 +56,7 @@
  * @param keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
  * @param keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
  * @param smartPos		    [boolean]*			if true, support smart positioning (top/bottom placement)
+ * @param options			[hash]*				additional options for autocompleteMatch()
  */
 ZmAutocompleteListView = function(params) {
 
@@ -71,7 +72,8 @@ ZmAutocompleteListView = function(params) {
 	this._compCallback = params.compCallback;
 	this._keyDownCallback = params.keyDownCallback;
 	this._keyUpCallback = params.keyUpCallback;
-    this._smartPositionMe = (params.smartPos && params.smartPos==true)?true:false;
+    this._smartPositionMe = params.smartPos;
+    this._options = params.options;
 
     // mouse event handling
 	this._setMouseEventHdlrs();
@@ -310,8 +312,8 @@ function(element) {
  * Enable/Disable smart positioning (top/bottom positioning) support.
  */
 ZmAutocompleteListView.prototype.setSmartPositioning =
-function(boolVal) {
-	this._smartPositionMe = boolVal?true:false;
+function(on) {
+	this._smartPositionMe = on;
 };
 
 /**
@@ -331,7 +333,7 @@ ZmAutocompleteListView.prototype.autocomplete =
 function(info) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: autocomplete");
 	if (!info || (info.text == "undefined")) { return; }
-	if (!this._dataLoaded) {
+	if (this._dataLoader && !this._dataLoaded) {
 		this._data = this._dataLoader.call(this._dataClass);
 		this._dataLoaded = true;
 	}
@@ -523,7 +525,7 @@ function(chunk, callback) {
 	this._removeAll();
 
 	var respCallback = new AjxCallback(this, this._handleResponseAutocomplete, [str, chunk, text, start, callback]);
-	this._data.autocompleteMatch(str, respCallback, this);
+	this._data.autocompleteMatch(str, respCallback, this, this._options);
 };
 
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =

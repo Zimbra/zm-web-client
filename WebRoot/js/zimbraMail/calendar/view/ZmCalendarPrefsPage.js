@@ -21,6 +21,10 @@ ZmCalendarPrefsPage = function(parent, section, controller) {
 	ZmCalendarPrefsPage.TEXTAREA = {};
 	ZmCalendarPrefsPage.TEXTAREA[ZmSetting.CAL_FREE_BUSY_ACL]	= ZmSetting.CAL_FREE_BUSY_ACL_USERS;
 	ZmCalendarPrefsPage.TEXTAREA[ZmSetting.CAL_INVITE_ACL]		= ZmSetting.CAL_INVITE_ACL_USERS;
+	ZmCalendarPrefsPage.SETTINGS	= [ZmSetting.CAL_FREE_BUSY_ACL, ZmSetting.CAL_INVITE_ACL];
+	ZmCalendarPrefsPage.RIGHTS		= [ZmSetting.RIGHT_VIEW_FREE_BUSY, ZmSetting.RIGHT_INVITE];
+
+	this._initAutocomplete();
 };
 
 ZmCalendarPrefsPage.prototype = new ZmPreferencesPage;
@@ -33,8 +37,10 @@ ZmCalendarPrefsPage.prototype.toString = function() {
 ZmCalendarPrefsPage.prototype.reset =
 function(useDefaults) {
 	ZmPreferencesPage.prototype.reset.apply(this, arguments);
-	this._checkPermTextarea(ZmSetting.CAL_FREE_BUSY_ACL);
-	this._checkPermTextarea(ZmSetting.CAL_INVITE_ACL);
+	var settings = ZmCalendarPrefsPage.SETTINGS;
+	for (var i = 0; i < settings.length; i++) {
+		this._checkPermTextarea(settings[i]);
+	}
 };
 
 ZmCalendarPrefsPage.prototype._createControls =
@@ -49,15 +55,24 @@ function() {
 
 ZmCalendarPrefsPage.prototype._handleResponseLoadACL =
 function() {
-	// Set values for calendar ACL-related settings
-	this._setACLValues(ZmSetting.CAL_FREE_BUSY_ACL, ZmSetting.RIGHT_VIEW_FREE_BUSY);
-	this._setACLValues(ZmSetting.CAL_INVITE_ACL, ZmSetting.RIGHT_INVITE);
-	
+	var settings = ZmCalendarPrefsPage.SETTINGS;
+	var rights = ZmCalendarPrefsPage.RIGHTS;
+	for (var i = 0; i < settings.length; i++) {
+		this._setACLValues(settings[i], rights[i]);
+	}
 	ZmPreferencesPage.prototype._createControls.apply(this, arguments);
-	this._checkPermTextarea(ZmSetting.CAL_FREE_BUSY_ACL);
-	this._checkPermTextarea(ZmSetting.CAL_INVITE_ACL);
+	for (var i = 0; i < settings.length; i++) {
+		var textarea = this.getFormObject(ZmCalendarPrefsPage.TEXTAREA[settings[i]]);
+		if (textarea) {
+			this._acList.handle(textarea.getInputElement());
+			this._checkPermTextarea(settings[i]);
+		}
+	}
 };
 
+/**
+ * Sets values for calendar ACL-related settings.
+ */
 ZmCalendarPrefsPage.prototype._setACLValues =
 function(setting, right) {
 	appCtxt.set(setting, this._acl.getGranteeType(right));
@@ -126,12 +141,16 @@ function() {
 
 ZmCalendarPrefsPage.prototype._preSave =
 function(callback) {
-	var result = this._getACLChanges(ZmSetting.CAL_FREE_BUSY_ACL, ZmSetting.RIGHT_VIEW_FREE_BUSY);
-	this._grants = result.grants;
-	this._revokes = result.revokes;
-	result = this._getACLChanges(ZmSetting.CAL_INVITE_ACL, ZmSetting.RIGHT_INVITE);
-	this._grants = this._grants.concat(result.grants);
-	this._revokes = this._revokes.concat(result.revokes);
+	var settings = ZmCalendarPrefsPage.SETTINGS;
+	var rights = ZmCalendarPrefsPage.RIGHTS;
+	this._grants = [];
+	this._revokes = [];
+	for (var i = 0; i < settings.length; i++) {
+		var result = this._getACLChanges(settings[i], rights[i]);
+		this._grants = this._grants.concat(result.grants);
+		this._revokes = this._revokes.concat(result.revokes);
+		this._setACLValues(settings[i], rights[i]);
+	}
 
 	if (callback) {
 		callback.run();
@@ -151,18 +170,21 @@ function(setting, right) {
 	if (newType == ZmSetting.ACL_USER) {
 		var textarea = this.getFormObject(ZmCalendarPrefsPage.TEXTAREA[setting]);
 		var val = textarea.getValue();
-		newUsers = val.split("\n");
+		newUsers = AjxEmailAddress.split(val);
 		newUsers.sort();
 	}
 	var newHash = AjxUtil.arrayAsHash(newUsers);
 	
+	var contacts = appCtxt.getApp(ZmApp.CONTACTS).getContactList();
 	var grants = [];
 	var revokes = [];
 	if (newUsers.length > 0) {
 		for (var i = 0; i < newUsers.length; i++) {
 			var user = newUsers[i];
 			if (!curHash[user]) {
-				var ace = new ZmAccessControlEntry({grantee:user, granteeType:ZmSetting.ACL_USER, right:right});
+				var contact = contacts.getContactByEmail(user);
+				var gt = (contact && contact.isGroup()) ? ZmSetting.ACL_GROUP : ZmSetting.ACL_USER;
+				var ace = new ZmAccessControlEntry({grantee:user, granteeType:gt, right:right});
 				grants.push(ace);
 			}
 		}
@@ -171,7 +193,9 @@ function(setting, right) {
 		for (var i = 0; i < curUsers.length; i++) {
 			var user = curUsers[i];
 			if (!newHash[user]) {
-				var ace = new ZmAccessControlEntry({grantee:user, granteeType:ZmSetting.ACL_USER, right:right});
+				var contact = contacts.getContactByEmail(user);
+				var gt = (contact && contact.isGroup()) ? ZmSetting.ACL_GROUP : ZmSetting.ACL_USER;
+				var ace = new ZmAccessControlEntry({grantee:user, granteeType:gt, right:right});
 				revokes.push(ace);
 			}
 		}
@@ -187,5 +211,16 @@ function(batchCmd) {
 	}
 	if (this._revokes.length) {
 		this._acl.revoke(this._revokes, null, batchCmd);
+	}
+};
+
+ZmCalendarPrefsPage.prototype._initAutocomplete =
+function() {
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) && appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED)) {
+		var contactsClass = appCtxt.getApp(ZmApp.CONTACTS);
+		var contactsLoader = contactsClass.getContactList;
+		var params = {parent:appCtxt.getShell(), dataClass:contactsClass, dataLoader:contactsLoader, separator:"",
+					  matchValue:ZmContactsApp.AC_VALUE_EMAIL, smartPos:true, options:{galOnly:true}};
+		this._acList = new ZmAutocompleteListView(params);
 	}
 };
