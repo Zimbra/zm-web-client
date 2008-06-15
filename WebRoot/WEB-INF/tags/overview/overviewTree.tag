@@ -17,7 +17,9 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="fmt" uri="com.zimbra.i18n" %>
 
+<c:if test="${mailbox.features.mail}">
 <c:if test="${folders}"><app:folderTree keys="${keys}" editmode="${editmode}"/></c:if>
+</c:if>    
 <c:if test="${calendars}"><app:calendarFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
 <c:if test="${tasks}"><app:taskFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
 <c:if test="${contacts}"><app:contactFolderTree keys="${keys}" editmode="${editmode}"/></c:if>
