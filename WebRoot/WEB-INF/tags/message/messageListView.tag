@@ -92,7 +92,7 @@
                                 </c:if>
                                 <td class='MsgStatusImg' align="center"><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
                                 <td><%-- allow wrap --%>
-                                    <c:set var="dispAddr" value="${hit.messageHit.displayAddresses}"/>${fn:escapeXml(empty dispAddr ? unknownRecipient :  dispAddr)}
+                                    <c:set var="dispAddr" value="${zm:truncate(hit.messageHit.displayAddresses,20,true)}"/>${fn:escapeXml(empty dispAddr ? unknownRecipient :  dispAddr)}
                                 </td>
                                 <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td > <%-- allow this col to wrap --%>
