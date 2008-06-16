@@ -425,6 +425,11 @@ eleI.onclick = function () {
 	cancelOnbeforeUnload();
 	return checkSubject();
 }
+var eleI = document.getElementById("IDOPSEND");
+eleI.onclick = function () {
+	cancelOnbeforeUnload();
+	return checkSubject();
+}
 function checkSubject() {
 	var elesub = document.getElementById("subjectField");
 	if(trim(elesub.value) == '') {
