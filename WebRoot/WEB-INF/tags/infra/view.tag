@@ -398,7 +398,7 @@
 							<td><a href="http://www.comcast.net/terms/" target="_new">Terms of Service</a></td>
 							<td><a href="http://www.comcast.net/help/contact" target="_new">Contact Us</a></td>
 							<td><a href="http://www.comcast.com/shop/buyflow/default.ashx" target="_new">Add Comcast Services</a></td>
-							<td><a href="http://www.comcastsupport.com/sdcxuser/lachat/user/webmailfeedback.asp" target="_new">Tell Us What You Think</a></td>
+							<td><a href="http://www.comcastsupport.com/forms/net/sccfeedback.asp" target="_new">Tell Us What You Think</a></td>
 							<td width=1 align=right><a href="http://www.comcast.net/" target="_new"><div class='ImgSkin_Customer_Logo_Bottom'></div></a></td>
 						</tr>
 					</table>
