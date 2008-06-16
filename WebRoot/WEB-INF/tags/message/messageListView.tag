@@ -99,7 +99,7 @@
 
                                     <a href="${fn:escapeXml(currentItemUrl)}" id="A${status.index}">
                                         <c:set var="subj" value="${empty hit.messageHit.subject ? noSubject : hit.messageHit.subject}"/>
-                                        <c:out value="${subj}"/>
+                                        <c:out value="${zm:truncate(subj,60,true)}"/>
                                         <c:if test="${mailbox.prefs.showFragments and not empty hit.messageHit.fragment and fn:length(subj) lt 90}">
                                             <span class='Fragment'> - <c:out value="${zm:truncate(hit.messageHit.fragment,100-fn:length(subj),true)}"/></span>
                                         </c:if>

@@ -83,7 +83,7 @@
                                     <td><%-- allow this column to wrap --%>
                                         <a href="${fn:escapeXml(convUrl)}" id="${aid}">
                                             <c:set var='subj' value="${empty convHit.subject ? unknownSubject : zm:truncate(convHit.subject,100,true)}"/>
-                                            <c:out value="${subj}"/>
+                                            <c:out value="${zm:truncate(subj,60,true)}"/>
                                             <c:if test="${mailbox.prefs.showFragments and not empty convHit.fragment and fn:length(subj) lt 90}">
                                                 <span class='Fragment'> - <c:out value="${zm:truncate(convHit.fragment,100-fn:length(subj),true)}"/></span>
                                             </c:if>
