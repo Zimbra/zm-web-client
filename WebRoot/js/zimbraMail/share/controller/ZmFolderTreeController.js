@@ -39,7 +39,7 @@ ZmFolderTreeController = function(type, dropTgt) {
 	this._listeners[ZmOperation.MOUNT_FOLDER] = new AjxListener(this, this._mountAddrBookListener);
 	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this, this._emptyListener);
 	this._listeners[ZmOperation.SYNC_OFFLINE_FOLDER] = new AjxListener(this, this._syncOfflineFolderListener);
-    this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
+	this._listeners[ZmOperation.BROWSE] = new AjxListener(this, this._browseListener);
 };
 
 ZmFolderTreeController.prototype = new ZmTreeController;
@@ -61,8 +61,8 @@ function(params) {
 	for (var id in ZmFolder.HIDE_ID) {
 		omit[id] = true;
 	}
-    var dataTree = this.getDataTree(params.account);
-    if (dataTree) {
+	var dataTree = this.getDataTree(params.account);
+	if (dataTree) {
 	    for (var name in ZmFolder.HIDE_NAME) {
 			var folder = dataTree.getByName(name);
 			if (folder) {
@@ -92,8 +92,8 @@ function(parent, type, id) {
 	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder()))	{
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed()/* || folder.hasFeeds()*/);
-        parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
-        parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], (!folder.link || folder.isAdmin()));
+		parent.enable(ZmOperation.SYNC_ALL, folder.isFeed() || folder.hasFeeds());
+		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], (!folder.link || folder.isAdmin()));
 		parent.enable(ZmOperation.EMPTY_FOLDER, (hasContent || folder.link));	// numTotal is not set for shared folders
 		parent.enable(ZmOperation.RENAME_FOLDER, !folder.isDataSource());		// dont allow datasource'd folder to be renamed via overview
 
@@ -136,9 +136,9 @@ function(parent, type, id) {
 		op.setText(emptyText);
 	}
 
-    // are there any external accounts associated to this folder?
-    var button = parent.getOp(ZmOperation.SYNC);
-    if (button) {
+	// are there any external accounts associated to this folder?
+	var button = parent.getOp(ZmOperation.SYNC);
+	if (button) {
 		var syncAllButton = parent.getOp(ZmOperation.SYNC_ALL);
 		var hasFeeds = folder.hasFeeds();
 		if (folder.isFeed()) {
@@ -165,6 +165,8 @@ function(parent, type, id) {
 				var dataSources = dsCollection.getItemsFor(ZmOrganizer.normalizeId(folder.id));
 				if (dataSources.length > 0) {
 					button.setText(ZmMsg.checkExternalMail);
+					button.setEnabled(true);
+					button.setVisible(true);
 				} else {
 					button.setVisible(false);
 				}
@@ -177,7 +179,7 @@ function(parent, type, id) {
 				syncAllButton.setVisible(false);
 			}
 		}
-    }
+	}
 
 	button = parent.getOp(ZmOperation.SYNC_OFFLINE_FOLDER);
 	if (button) {
@@ -191,7 +193,7 @@ function(parent, type, id) {
 			button.setText(text);
 		}
 	}
-    parent.enable(ZmOperation.BROWSE, true);
+	parent.enable(ZmOperation.BROWSE, true);
 };
 
 // Private methods
@@ -207,9 +209,9 @@ function() {
 	}
 	ops.push(ZmOperation.EXPAND_ALL);
 	ops.push(ZmOperation.SYNC);
-    ops.push(ZmOperation.BROWSE);
+	ops.push(ZmOperation.BROWSE);
 
-    return ops;
+	return ops;
 };
 
 /*
@@ -230,8 +232,8 @@ function() {
 	ops.push(ZmOperation.EDIT_PROPS,
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SYNC,
-        ZmOperation.SYNC_ALL,
-        ZmOperation.EMPTY_FOLDER,
+		ZmOperation.SYNC_ALL,
+		ZmOperation.EMPTY_FOLDER,
 		ZmOperation.SYNC_OFFLINE_FOLDER);
 
 	return ops;
@@ -300,16 +302,32 @@ function(folder) {
 
 ZmFolderTreeController.prototype._doSync =
 function(folder) {
-    var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+	var dsc = AjxDispatcher.run("GetDataSourceCollection");
 	var nFid = ZmOrganizer.normalizeId(folder.id);
-	var dataSources = dsCollection.getItemsFor(nFid);
+	var dataSources = dsc.getItemsFor(nFid);
 
-    if (dataSources.length > 0) {
-        dsCollection.importMailFor(nFid);
-    }
-    else {
-        ZmTreeController.prototype._doSync.call(this, folder);
-    }
+	if (dataSources.length > 0) {
+		dsc.importMailFor(nFid);
+	}
+	else {
+		ZmTreeController.prototype._doSync.call(this, folder);
+	}
+};
+
+ZmFolderTreeController.prototype._syncFeeds =
+function(folder) {
+	if (!appCtxt.isOffline && folder && !folder.isFeed()) {
+		var dataSources = (appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED) || appCtxt.get(ZmSetting.IMAP_ACCOUNTS_ENABLED))
+			? folder.getDataSources(null, true) : null;
+
+		if (dataSources) {
+			var dsc = AjxDispatcher.run("GetDataSourceCollection");
+			dsc.importMail(dataSources);
+			return;
+		}
+	}
+
+	ZmTreeController.prototype._syncFeeds.call(this, f);
 };
 
 /*
@@ -350,7 +368,7 @@ function(ev) {
 		var msg = AjxMessageFormat.format(confirm, organizer.getName());
 		ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		ds.popup();
-    } else {
+	} else {
 		this._doMove(organizer, appCtxt.getById(ZmFolder.ID_TRASH));
 	}
 };
@@ -381,6 +399,8 @@ function(ev) {
 	}
 };
 
+
+
 /*
 * Toggles on/off flag for syncing IMAP folder with server. Only for offline use.
 *
@@ -395,12 +415,12 @@ function(ev) {
 };
 ZmFolderTreeController.prototype._browseListener =
 function(ev){
-    var folder = this._getActionedOrganizer(ev);
-    if (folder) {
-        AjxPackage.require("zimbraMail.share.view.picker.ZmPicker");
-        appCtxt.getSearchController().showBrowsePickers([ZmPicker.FOLDER]);
-        //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
-    }
+	var folder = this._getActionedOrganizer(ev);
+	if (folder) {
+		AjxPackage.require("zimbraMail.share.view.picker.ZmPicker");
+		appCtxt.getSearchController().showBrowsePickers([ZmPicker.FOLDER]);
+		//appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
+	}
 }
 /*
 * Don't allow dragging of system folders.

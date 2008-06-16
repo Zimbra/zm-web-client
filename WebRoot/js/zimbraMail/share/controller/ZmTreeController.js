@@ -133,17 +133,17 @@ function(params) {
 	this._hideEmpty[id] = params.hideEmpty;
     var treeViewCreated = false;
 	if (!this._treeView[id] || params.forceCreate) {
-        this._treeView[id] = this._setup(id);
+		this._treeView[id] = this._setup(id);
 		treeViewCreated = true;
 	}
 	// bug fix #24241 - for offline, zimlet tree is re-used across accounts
 	var realAcct = (this.type == ZmOrganizer.ZIMLET && appCtxt.isOffline && appCtxt.multiAccounts)
 		? appCtxt.getMainAccount(true) : params.account;
 	var dataTree = this.getDataTree(realAcct);
-    if (dataTree) {
-        params.dataTree = dataTree;
-        var setting = ZmOrganizer.OPEN_SETTING[this.type];
-        params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
+	if (dataTree) {
+		params.dataTree = dataTree;
+		var setting = ZmOrganizer.OPEN_SETTING[this.type];
+		params.collapsed = !(!setting || (appCtxt.get(setting) !== false));
 		this._treeView[id].set(params);
 		this._checkTreeView(id, params.account);
 	}
@@ -853,23 +853,26 @@ function(ev) {
  */
 ZmTreeController.prototype._syncAllListener =
 function(ev) {
-    var f  = this._getActionedOrganizer(ev);
-    if(f.isFeed()){
-    // Loop over all the TreeViews
-        for(var overviewId in this._treeView){
-            var treeView = this.getTreeView(overviewId);
-            var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, appCtxt.getActiveAccount());
-            var rootTreeItem = treeView.getTreeItemById(rootId);
-            if (!rootTreeItem) { return; }
-            var treeItems = rootTreeItem.getItems();
-            if(treeItems && treeItems[i] && (treeItems[i].isFeed && treeItems[i].isFeed() || (treeItems[i].hasFeeds && treeItems[i].hasFeeds()))){
-                this._syncFeeds(treeItems[i]);
-            }
-        }
-    }else{
-        this._syncListener(ev);
-    }
+	var f = this._getActionedOrganizer(ev);
+	if (f.isFeed()) {
+		// Loop over all the TreeViews
+		for (var overviewId in this._treeView) {
+			var treeView = this.getTreeView(overviewId);
+			var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT, appCtxt.getActiveAccount());
+			var rootTreeItem = treeView.getTreeItemById(rootId);
+			if (!rootTreeItem) { return; }
+			var treeItems = rootTreeItem.getItems();
+			if (treeItems && treeItems[i] &&
+				(treeItems[i].isFeed && treeItems[i].isFeed() || (treeItems[i].hasFeeds && treeItems[i].hasFeeds())))
+			{
+				this._syncFeeds(treeItems[i]);
+			}
+		}
+	} else {
+		this._syncListener(ev);
+	}
 };
+
 /**
  * Syncs an organizer to its feed (URL).
  *
@@ -877,23 +880,23 @@ function(ev) {
  */
 ZmTreeController.prototype._syncListener =
 function(ev) {
-    var f  = this._getActionedOrganizer(ev);
-    this._syncFeeds(f);
+	var f = this._getActionedOrganizer(ev);
+	this._syncFeeds(f);
 };
 
 ZmTreeController.prototype._syncFeeds =
 function(f) {
-    if(f.isFeed()){
-        this._doSync(f);
-    }else if(f.hasFeeds()){
-        var a = f.children.getArray();
-        var sz = f.children.size();
-        for (var i = 0; i < sz; i++) {
-            if (a[i].isFeed() || (a[i].hasFeeds && a[i].hasFeeds())) {
-                this._syncFeeds(a[i]);
-            }
-        }
-    }
+	if (f.isFeed()) {
+		this._doSync(f);
+	} else if(f.hasFeeds()) {
+		var a = f.children.getArray();
+		var sz = f.children.size();
+		for (var i = 0; i < sz; i++) {
+			if (a[i].isFeed() || (a[i].hasFeeds && a[i].hasFeeds())) {
+				this._syncFeeds(a[i]);
+			}
+		}
+	}
 };
 
 /**
