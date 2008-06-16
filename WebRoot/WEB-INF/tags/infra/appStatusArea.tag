@@ -18,4 +18,4 @@
     </table>
 </div>
 </c:if>
-<script>var dismissMsg = function(){try{document.getElementById("app_st_msg_div").style.display='none;';return false;}catch(ex){return true;}}</script>
+<script>var dismissMsg = function(){try{document.getElementById("app_st_msg_div").style.display='none';return false;}catch(ex){return true;}}</script>
