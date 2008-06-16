@@ -109,6 +109,8 @@ for (var i = 0; i < ZmAutocompleteListView.DELIMS.length; i++) {
 }
 delete i;
 
+ZmAutocompleteListView.WAIT_ID = "wait";
+
 // Public static methods
 
 ZmAutocompleteListView.onKeyDown =
@@ -175,6 +177,8 @@ function(ev) {
 	if (ev.type == "keyup") {
 		DBG.println(AjxDebug.DBG3, "onKeyUp");
 	}
+	this._hasCompleted = false;
+
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
 	if (!element) {
 		return ZmAutocompleteListView._echoKey(true, ev);
@@ -409,8 +413,8 @@ function(on) {
 			// make sure we're visible if "waiting" row is the only one
 			this.show(true, this._loc);
 		}
-		this._waitDivId = Dwt.getNextId();
-		var div = this._getDiv(this._waitDivId);
+		var div = this._getDiv(ZmAutocompleteListView.WAIT_ID);
+		this._waitDivId = div.id;
 		this._addRow(div, ZmMsg.galAutocompleteWaiting, "DwtWait16Icon");
 		this.getHtmlElement().appendChild(div);
 	} else {
@@ -453,6 +457,7 @@ function(show, loc) {
 	if (show) {
 		this._popup(loc);
 	} else {
+		this._hasCompleted = false;
 		this._popdown();
 	}
 };
@@ -558,8 +563,12 @@ function(str, chunk, text, start, callback, list) {
 				change = true;
 			}
 		} else if (list && list.length) {
-			// show the list
-			this.show(true, this._loc);
+			// show the list, unless this is not the first time we're displaying results for
+			// this autocomplete string (eg GAL), and the user selected a result from the
+			// first time we showed the list (bug 28886)
+			if (!this._hasCompleted) {
+				this.show(true, this._loc);
+			}
 		}
 	
 		retValue = {text: text, start: start, match: match, change: change};
@@ -587,7 +596,7 @@ function(text, str, hasDelim) {
 	if (!match && str && hasDelim && this._data.quickComplete) {
 		match = this._data.quickComplete(str);
 	}
-	if (!match)	return;
+	if (!match)	{ return; }
 
 	var start = this._start;
 	var end = hasDelim ? this._end + 1 : this._end;
@@ -610,6 +619,7 @@ function(text, match) {
 	Dwt.setSelectionRange(el, text.length, text.length);
 
 	this.reset();
+	this._hasCompleted = true;
 	if (this._compCallback) {
 		this._compCallback.run(text, el, match);
 	}
@@ -699,7 +709,7 @@ function(id) {
 	// MOW: make class name for selected:  "Row Row-selected" instead of just "Row-selected"
 	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + " " + div[DwtListView._STYLE_CLASS] + "-" + DwtCssStyle.SELECTED;
 	div.className = div[DwtListView._STYLE_CLASS];
-	div.id = "AutoCompleteListViewDiv_"+id;
+	div.id = "AutoCompleteListViewDiv_" + id;
 	return div;
 };
 
