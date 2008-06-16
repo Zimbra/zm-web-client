@@ -58,7 +58,9 @@ ZmImOverview = function(parent, args) {
 
                 group : [ // ZmOperation.IM_NEW_GROUP_CHAT,
                           // ZmOperation.SEP,
-                          ZmOperation.NEW_ROSTER_ITEM ]
+                          ZmOperation.NEW_ROSTER_ITEM,
+						  ZmOperation.IM_DELETE_GROUP
+						]
 
         };
 
@@ -135,6 +137,7 @@ function(useActionedItem, ev) {
 					args.type = data.type;
 					args.buddy = data.buddy;
 					args.group = data.group;
+					args.actionedItem = this._actionedItem;
 				}
 				listener.handleEvent(args);
 			}

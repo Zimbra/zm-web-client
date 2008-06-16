@@ -35,6 +35,7 @@ ZmRosterTreeController = function() {
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.IM_BLOCK_BUDDY] = new AjxListener(this, this._blockBuddyListener);
 	this._listeners[ZmOperation.IM_UNBLOCK_BUDDY] = new AjxListener(this, this._unblockBuddyListener);
+	this._listeners[ZmOperation.IM_DELETE_GROUP] = new AjxListener(this, this._deleteGroupListener);
 };
 
 ZmRosterTreeController.prototype.toString = function() {
@@ -242,21 +243,32 @@ ZmRosterTreeController.prototype._imEditContactListener = function(ev) {
 };
 
 ZmRosterTreeController.prototype._blockBuddyListener = function(ev) {
-        var item = ev.buddy;
-        var roster = AjxDispatcher.run("GetRoster");
-        var pl = roster.getPrivacyList();
-        pl.block(item.getAddress());
-        var doc = AjxSoapDoc.create("IMSetPrivacyListRequest", "urn:zimbraIM");
-        pl.toSoap(doc);
-        appCtxt.getAppController().sendRequest({ soapDoc: doc, asyncMode: true });
+	var item = ev.buddy;
+	var roster = AjxDispatcher.run("GetRoster");
+	var pl = roster.getPrivacyList();
+	pl.block(item.getAddress());
+	var doc = AjxSoapDoc.create("IMSetPrivacyListRequest", "urn:zimbraIM");
+	pl.toSoap(doc);
+	appCtxt.getAppController().sendRequest({ soapDoc: doc, asyncMode: true });
 };
 
 ZmRosterTreeController.prototype._unblockBuddyListener = function(ev) {
-        var item = ev.buddy;
-        var roster = AjxDispatcher.run("GetRoster");
-        var pl = roster.getPrivacyList();
-        pl.unblock(item.getAddress());
-        var doc = AjxSoapDoc.create("IMSetPrivacyListRequest", "urn:zimbraIM");
-        pl.toSoap(doc);
-        appCtxt.getAppController().sendRequest({ soapDoc: doc, asyncMode: true });
+	var item = ev.buddy;
+	var roster = AjxDispatcher.run("GetRoster");
+	var pl = roster.getPrivacyList();
+	pl.unblock(item.getAddress());
+	var doc = AjxSoapDoc.create("IMSetPrivacyListRequest", "urn:zimbraIM");
+	pl.toSoap(doc);
+	appCtxt.getAppController().sendRequest({ soapDoc: doc, asyncMode: true });
+};
+
+ZmRosterTreeController.prototype._deleteGroupListener = function(ev) {
+	var treeItem = ev.actionedItem;
+	if (treeItem.getItemCount()) {
+		var dialog = appCtxt.getMsgDialog();
+		dialog.setMessage(ZmMsg.deleteGroupError, DwtMessageDialog.CRITICAL_STYLE);
+		dialog.popup();
+	} else {
+		treeItem.dispose();
+	}
 };
