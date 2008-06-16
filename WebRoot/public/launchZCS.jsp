@@ -142,15 +142,6 @@
 	appCurrentSkin = "${zm:jsEncode(skin)}";
 	appExtension   = "${zm:jsEncode(ext)}";
 	appDevMode     = ${isDevMode};
-
-	function switchToStandardClient() {
-		document.location = appContextPath + "/?client=standard";
-	}
-	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
-	var enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
-	if (enforceMinDisplay && (screen && (screen.width <= 800 && screen.height <= 600))) {
-		switchToStandardClient();
-	}
 </script>
 <noscript>
 <meta http-equiv="Refresh" content="0;url=public/noscript.jsp" >
@@ -194,6 +185,17 @@
 <jsp:include page="Boot.jsp"/>
 <script>
 	AjxEnv.DEFAULT_LOCALE = "${locale}";
+
+	function switchToStandardClient() {
+		document.location = appContextPath + "/?client=standard";
+	}
+
+	<c:set var="enforceMinDisplay" value="${requestScope.authResult.prefs.zimbraPrefAdvancedClientEnforceMinDisplay[0]}"/>
+	var enforceMinDisplay = ${enforceMinDisplay ne 'FALSE'};
+	var unsupported = (screen && (screen.width <= 800 && screen.height <= 600)) || (AjxEnv.isSafari && !AjxEnv.isSafari3);
+	if (enforceMinDisplay && unsupported) {
+		switchToStandardClient();
+	}
 </script>
 <%
 	String allPackages = "Startup1_1,Startup1_2";
