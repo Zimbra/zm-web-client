@@ -85,7 +85,7 @@ ZmVoiceListView.prototype.set =
 function(list, sortField) {
 	ZmListView.prototype.set.call(this, list, sortField);
 	var contactList = AjxDispatcher.run("GetContacts");
-	if (!contactList.isLoaded) {
+	if (contactList && !contactList.isLoaded) {
 		this._contactsLoadedCallbackObj = this._contactsLoadedCallbackObj || new AjxCallback(this, this._contactsLoadedCallback);
 		contactList.addLoadedCallback(this._contactsLoadedCallbackObj);
 	}
