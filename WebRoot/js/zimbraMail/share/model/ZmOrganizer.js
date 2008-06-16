@@ -770,8 +770,12 @@ function(newParent) {
 	{
 		return;
 	}
-
-	this._organizerAction({action: "move", attrs: {l: newId}});
+	if (newId == ZmOrganizer.ID_TRASH) {
+		this._organizerAction({action: "trash"});
+	}
+	else {
+		this._organizerAction({action: "move", attrs: {l: newId}});
+	}
 };
 
 /**
