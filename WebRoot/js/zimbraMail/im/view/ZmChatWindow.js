@@ -60,6 +60,11 @@ ZmChatWindow.prototype.isSticky = function() {
 	return this._sticky;
 };
 
+ZmChatWindow.prototype.popup = function() {
+    this.getCurrentChatWidget().prepopup();
+    DwtResizableWindow.prototype.popup.call(this);
+};
+
 ZmChatWindow.prototype._selectionListener = function(ev) {
 	if (ev.detail) {
 		this._tabs.getCurrentChatWidget().focus();

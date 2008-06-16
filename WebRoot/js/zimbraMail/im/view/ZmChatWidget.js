@@ -346,6 +346,7 @@ ZmChatWidget.prototype._init = function() {
 
         // XXX: does it work implementing a "light label" widget?
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
+	this._label.setScrollStyle(Dwt.CLIP);
 
 	this._toolbar.addFiller();
 
@@ -528,7 +529,34 @@ ZmChatWidget.prototype._doResize = function() {
 		var editControl = this._liteEditor.getEditor();
 		this._sendButton.setSize(Dwt.DEFAULT,Dwt.getSize(editControl).y);
 	}
+
+	this._updateLabelSize();
 };
+
+ZmChatWidget.prototype._updateLabelSize =
+function() {
+	var labelWidth = this.getW() - this._minToolBarSize;
+	this._label.setSize(labelWidth, Dwt.DEFAULT);
+};
+
+ZmChatWidget.prototype.prepopup =
+function() {
+	// Calculate the size of the toolbar excluding the label size.
+	// This value will be used when resizing so that the label doesn't
+	// Take up to much space.
+	var count = this._toolbar.getItemCount();
+	var width = 0;
+	for (var i = 0; i < count; i++) {
+		var item = this._toolbar.getItem(i);
+		if (item != this._label) {
+			width += item.getW();
+		}
+	}
+	this._minToolBarSize = width + 15; // width + a little extra padding to the right of the label.
+
+	this._updateLabelSize();
+};
+
 
 ZmChatWidget.prototype.setBounds =
 function(x, y, width, height) {
