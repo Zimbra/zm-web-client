@@ -77,7 +77,7 @@
                                         <td class='Img'><app:miniTagImage ids="${convHit.tagIds}"/></td>
                                     </c:if>
                                     <td><%-- allow this column to wrap --%>
-                                        <c:set var="dispRec" value="${convHit.displayRecipients}"/>${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}
+                                        <c:set var="dispRec" value="${zm:truncate(convHit.displayRecipients,20,true)}"/>${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}
                                     </td>
                                     <td class='Img'><app:attachmentImage attachment="${convHit.hasAttachment}"/></td>
                                     <td><%-- allow this column to wrap --%>
