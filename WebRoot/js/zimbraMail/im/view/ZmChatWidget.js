@@ -40,21 +40,23 @@ ZmChatWidget.prototype._setChat = function(chat) {
 	chat.addChangeListener(this._chatChangeListenerListener);
 	this._rosterItemChangeListener(item, null, true);
 	item.chatStarted(chat, this);
+	this._label.setToolTipContent(this.chat.getRosterItem().getToolTip());
+	
 	// TODO: clean up this interface!
 	for (var i = 0; i < chat._messages.length; i++) {
 		this.handleMessage(this.chat._messages[i]);
 	}
 	var listItem = AjxDispatcher.run("GetRoster").getRosterItem(item.getAddress());
 	this._addToBuddyListBtn.setVisible(!listItem);
-        if (chat.isZimbraAssistant()) {
-                // disallow HTML mode for assistant chats.  FIXME:
-                // clean this up.  If we're chatting with Zimbra
-                // Assistant, we should never even create the HTML
-                // toolbar in the first place.  Add a parameter to
-                // ZmLiteHtmlEditor for this (but we should have
-                // this.chat before _init()).
-                this._changEditorModeBtn.setVisible(false);
-        }
+	if (chat.isZimbraAssistant()) {
+		// disallow HTML mode for assistant chats.  FIXME:
+		// clean this up.  If we're chatting with Zimbra
+		// Assistant, we should never even create the HTML
+		// toolbar in the first place.  Add a parameter to
+		// ZmLiteHtmlEditor for this (but we should have
+		// this.chat before _init()).
+		this._changEditorModeBtn.setVisible(false);
+	}
 };
 
 ZmChatWidget.prototype.getIcon = function() {
