@@ -2,7 +2,9 @@
 <div id='skin_outer'>
 	<table id='skin_table_outer' class='skin_table' cellpadding=0 cellspacing=0 border=0>
 		<tr id='skin_tr_top_ad' class='skin_outer_ad'>
-			<td id='skin_spacing_top_ad'><div id='skin_container_top_ad' class='skin_container_ad'></div></td>
+			<td id='skin_spacing_top_ad'>
+				<div id='skin_container_top_ad' class='skin_container_ad'></div>
+			</td>
 		</tr>
 		<tr id='skin_tr_top'>
 			<td id='skin_spacing_top_row'>
@@ -27,8 +29,10 @@
 								<tr>
 									<td colspan=2>
 										<nobr>
-											<span id='skin_td_logoff'><a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>Sign Out</a>,</span>
-											<a href="/?client=standard">Mail Classic</a>
+											<span id='skin_td_logoff'>
+												<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>Sign Out</a>,
+												<a href="/?client=standard">Mail Classic</a>
+											</span>
 										</nobr>
 									</td>
 								</tr>
@@ -44,24 +48,6 @@
 						<td id='skin_spacing_search'>
 							<div id='skin_container_search' class='skin_container'></div>
 						</td>
-						<!--
-						<td id='skin_spacing_web_search'>
-							<div id='skin_container_web_search' class='skin_container'>
-								<table width=100% cellspacing=0 cellpadding=0>
-									<tr>
-										<td width='100%' class='DwtInputField-hint'>
-											<input id='skin_search_web_input' value='Search the Web...' style='width:100%;' onfocus='skin.searchWebFocus(event,this)' onblur='skin.searchWebBlur(event, this);' onkeypress='return skin.searchWebKey(event, this);'>
-										</td>
-										<td style='padding-left:3px;'>
-											<button class='DwtButton' style='height:24px' onclick='skin.searchWeb(skin._getEl("skin_search_web_input").value);'>
-												<div class='ImgWebSearch'></div>
-											</button>
-										</td>
-									</tr>
-								</table>
-							</div>
-						</td>
-						-->
 					</tr>
 				</table>
 			</td>
@@ -74,72 +60,103 @@
 				</div>
 			</td>
 		</tr>
-
-		<tr id='skin_tr_main'><td id='skin_outer_td_main' style='height:100%'>
-			<table class='skin_table' cellpadding=0 cellspacing=0 border=0><tr>
-				<td id='skin_td_tree'>
-					<table class='skin_table' cellspacing=0 cellpadding=0 border=0>
-						<tr>
-							<td id='skin_spacing_tree_top'>
-								<div id='skin_container_tree_top' class='skin_container'>
-									<table border=0 cellpadding=0 cellspacing=0 width=100%>
-										<tr>
-											<td>
-												<div id='skin_container_current_app' class='skin_container'></div>
-											</td>
-											<td>
-												<div id='skin_container_offline_status'></div>
-											</td>
-										</tr>
-									</table>
-									<center>
-										<div id='skin_container_web_search' class='skin_container'>
-											<table cellspacing=0 cellpadding=0>
+		<tr id='skin_tr_main'>
+			<td id='skin_outer_td_main' style='height:100%'>
+				<table class='skin_table' cellpadding=0 cellspacing=0 border=0>
+					<tr>
+						<td id='skin_td_tree'>
+							<table class='skin_table' cellspacing=0 cellpadding=0 border=0>
+								<tr>
+									<td id='skin_spacing_tree_top'>
+										<div id='skin_container_tree_top' class='skin_container'>
+											<table border=0 cellpadding=0 cellspacing=0 width=100%>
 												<tr>
-													<td width='100%' class='DwtInputField-hint'>
-														<input id='skin_search_web_input' value='Search the Web...' style='width:100%;' onfocus='skin.searchWebFocus(event,this)' onblur='skin.searchWebBlur(event, this);' onkeypress='return skin.searchWebKey(event, this);'>
+													<td>
+														<div id='skin_container_current_app' class='skin_container'></div>
 													</td>
 													<td>
-														<input type='button' class='skin_yahoo_websearch_button' value='Go' onclick='skin.searchWeb(skin._getEl("skin_search_web_input").value);'>
+														<div id='skin_container_offline_status'></div>
 													</td>
 												</tr>
 											</table>
+											<center>
+												<div id='skin_container_web_search' class='skin_container'>
+													<table cellspacing=0 cellpadding=0>
+														<tr>
+															<td width='100%' class='DwtInputField-hint'>
+																<input id='skin_search_web_input' value='Search the Web...' style='width:100%;' onfocus='skin.searchWebFocus(event,this)' onblur='skin.searchWebBlur(event, this);' onkeypress='return skin.searchWebKey(event, this);'>
+															</td>
+															<td>
+																<input type='button' class='skin_yahoo_websearch_button' value='Go' onclick='skin.searchWeb(skin._getEl("skin_search_web_input").value);'>
+															</td>
+														</tr>
+													</table>
+												</div>
+											</center>
 										</div>
-									</center>
-								</div>
-							</td>
-						</tr>
-						<tr id='skin_tr_tree_top_ad' class='skin_outer_ad'><td id='skin_spacing_tree_top_ad'><div id='skin_container_tree_top_ad' class='skin_container_ad'></div></td></tr>
-						<tr><td id='skin_spacing_tree'><div id='skin_container_tree' class='skin_container'></div></td></tr>
-						<tr id='skin_tr_tree_footer'><td id='skin_spacing_tree_footer'><div id='skin_container_tree_footer' class='skin_container'></div></td></tr>
-						<tr id='skin_tr_tree_bottom_ad' class='skin_outer_ad'><td id='skin_spacing_tree_bottom_ad'><div id='skin_container_tree_bottom_ad' class='skin_container_ad'></div></td></tr>
-					</table>
-				</td>
-				<td id='skin_td_tree_app_sash' id='skin_spacing_tree_app_sash'><div id='skin_container_tree_app_sash' class='skin_container'></div></td>
-
-				<td id='skin_td_main'>
-					<table class='skin_table' cellspacing=0 cellpadding=0 border=0 width=100%>
-						<tr id='skin_tr_app_chooser'>
-							<td id='skin_spacing_app_chooser' width=100%>
-								<div id='skin_border_app_chooser' class='skin_container'>
-									<div id='skin_container_app_chooser' class='skin_container'></div>
-								</div>
-							</td>
-							<td id='skin_container_links'>
-							</td>
-						</tr>
-						<tr id='skin_tr_toolbar'><td colspan=2 id='skin_spacing_app_top_toolbar'><div id='skin_container_app_top_toolbar'  class='skin_container'></div></td></tr>
-						<tr id='skin_tr_app_main'><td colspan=2 id='skin_spacing_app_main'><div id='skin_container_app_main' class='skin_container'></div></td></tr>
-					</table>
-				</td>
-				<td id='skin_td_sidebar_ad' class='skin_outer_ad'><div id='skin_container_sidebar_ad' class='skin_container'></div></td>
-			</tr></table>
-		</td></tr>
-		<tr id='skin_tr_bottom_ad' class='skin_outer_ad'><td id='skin_spacing_bottom_ad'><div id='skin_container_bottom_ad' class='skin_container'></div></td></td></tr>
+									</td>
+								</tr>
+								<tr id='skin_tr_tree_top_ad' class='skin_outer_ad'>
+									<td id='skin_spacing_tree_top_ad'>
+										<div id='skin_container_tree_top_ad' class='skin_container_ad'></div>
+									</td>
+								</tr>
+								<tr>
+									<td id='skin_spacing_tree'>
+										<div id='skin_container_tree' class='skin_container'></div>
+									</td>
+								</tr>
+								<tr id='skin_tr_tree_footer'>
+									<td id='skin_spacing_tree_footer'>
+										<div id='skin_container_tree_footer' class='skin_container'></div>
+									</td>
+								</tr>
+								<tr id='skin_tr_tree_bottom_ad' class='skin_outer_ad'>
+									<td id='skin_spacing_tree_bottom_ad'>
+										<div id='skin_container_tree_bottom_ad' class='skin_container_ad'></div>
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td id='skin_td_tree_app_sash' id='skin_spacing_tree_app_sash'>
+							<div id='skin_container_tree_app_sash' class='skin_container'></div>
+						</td>
+						<td id='skin_td_main'>
+							<table class='skin_table' cellspacing=0 cellpadding=0 border=0 width=100%>
+								<tr id='skin_tr_app_chooser'>
+									<td id='skin_spacing_app_chooser' width=100%>
+										<div id='skin_border_app_chooser' class='skin_container'>
+											<div id='skin_container_app_chooser' class='skin_container'></div>
+										</div>
+									</td>
+									<td id='skin_container_links'>
+									</td>
+								</tr>
+								<tr id='skin_tr_toolbar'>
+									<td colspan=2 id='skin_spacing_app_top_toolbar'>
+										<div id='skin_container_app_top_toolbar' class='skin_container'></div>
+									</td>
+								</tr>
+								<tr id='skin_tr_app_main'>
+									<td colspan=2 id='skin_spacing_app_main'>
+										<div id='skin_container_app_main' class='skin_container'></div>
+									</td>
+								</tr>
+							</table>
+						</td>
+						<td id='skin_td_sidebar_ad' class='skin_outer_ad'>
+							<div id='skin_container_sidebar_ad' class='skin_container'></div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr id='skin_tr_bottom_ad' class='skin_outer_ad'>
+			<td id='skin_spacing_bottom_ad'>
+				<div id='skin_container_bottom_ad' class='skin_container'></div>
+			</td>
+		</tr>
 	</table>
-	<!-- deprecated stuff -->
-		<div id='skin_container_status' style='display:none'></div>
-	<!-- end deprecated -->
 </div>
 <script>
 	var el = document.getElementById('skin_search_web_input');
