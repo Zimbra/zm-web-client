@@ -101,7 +101,7 @@
         document.getElementById('d_btn_td').style.display = 'block';
     </script>
     <div class="View">
-      	<table cellspacing="2" cellpadding="0" border="0" align="center">
+      	<table cellspacing="2" cellpadding="0" border="0">
                     <tr>
  						<td valign="top"><mo:img src="startup/ImgReply.gif" alt="reply"/></td>	                   
                         <td class="Padding">
