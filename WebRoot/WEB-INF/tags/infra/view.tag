@@ -38,7 +38,7 @@
 </c:if>
 <c:choose>
 <c:when test="${skin eq 'yahoo'}">
-<c:set value="/skins/yahoo/img/icons" var="iconPath" scope="request"/>
+<c:set value="/skins/yahoo/img/" var="iconPath" scope="request"/>
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
     <tr>
         <td valign="top" align="center" width="1%" style="padding-right: 8px;">
@@ -50,7 +50,7 @@
         <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
         <table cellpadding="2" cellspacing="0" width="100%">
             <tr>
-                <td>
+                <td width='25%'>
 					<b>${fn:escapeXml(empty mailbox.defaultIdentity.fromDisplay ? mailbox.name : mailbox.defaultIdentity.fromDisplay)}</b>
                 </td>
             </tr>
@@ -58,7 +58,7 @@
             <a href="<c:url value="/?loginOp=logout"/>"><fmt:message key="logOut"/></a>, <a href='<c:url value="/"/>'><fmt:message key="switchToAdvancedClient" /></a>, <a target="_blank" href="http://www.zimbra.com/products/desktop.html">Offline version</a>
         </td>
         
-        <td valign="top" class="TopContent" align="right" width="25%">
+        <td valign="top" class="TopContent" align="right">
             <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}" tasks="${tasks}"/>
         </td>
         <td align="right">
