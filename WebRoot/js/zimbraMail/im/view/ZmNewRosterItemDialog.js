@@ -92,69 +92,68 @@ ZmNewRosterItemDialog.prototype._getSelGroupsArray = function() {
 };
 
 ZmNewRosterItemDialog.prototype._groupsMenuItemListener = function(ev) {
-        var g = ev.item.getData("ZmImGroup");
-        var groups = this._getSelGroupsArray();
+	var g = ev.item.getData("ZmImGroup");
+	var groups = this._getSelGroupsArray();
         // remove it first
-        for (var i = groups.length; --i >= 0;)
-                if (groups[i].toLowerCase() == g.toLowerCase())
-                        groups.splice(i, 1);
+	for (var i = groups.length; --i >= 0;)
+		if (groups[i].toLowerCase() == g.toLowerCase())
+			groups.splice(i, 1);
 
-        if (ev.item.getChecked())
-                groups.push(g);
+	if (ev.item.getChecked())
+		groups.push(g);
 
-        this._groupsEntry.setValue(groups.join(", "));
+	this._groupsEntry.setValue(groups.join(", "));
 };
 
 ZmNewRosterItemDialog.prototype._getGroupsMenu = function() {
-        var menu = new ZmPopupMenu(this._groupsDropDown);
+	var menu = new ZmPopupMenu(this._groupsDropDown);
 
         // find groups currently defined in the buddy list
-	var groups = AjxDispatcher.run("GetRoster").getGroups();
-        groups.sort();
+	var groups = this._groups;
 
         // see what groups are currently selected
-        var tmp = this._getSelGroupsArray();
+	var tmp = this._getSelGroupsArray();
 
-        var selected_groups = {};
-        for (var i = 0; i < tmp.length; ++i)
-                selected_groups[tmp[i]] = 0;
+	var selected_groups = {};
+	for (var i = 0; i < tmp.length; ++i)
+		selected_groups[tmp[i]] = 0;
 
-        var itemListener = new AjxListener(this, this._groupsMenuItemListener);
+	var itemListener = new AjxListener(this, this._groupsMenuItemListener);
 
-        groups.foreach(function(label) {
-                var item = new DwtMenuItem({parent:menu, style:DwtMenuItem.CHECK_STYLE});
-                item.addSelectionListener(itemListener);
-                item.setText(label);
-                item.setData("ZmImGroup", label);
-                if (label in selected_groups) {
-                        selected_groups[label]++;
-                        item.setChecked(true, true);
-                }
-        });
+	groups.foreach(function(label) {
+		var item = new DwtMenuItem({parent:menu, style:DwtMenuItem.CHECK_STYLE});
+		item.addSelectionListener(itemListener);
+		item.setText(label);
+		item.setData("ZmImGroup", label);
+		if (label in selected_groups) {
+			selected_groups[label]++;
+			item.setChecked(true, true);
+		}
+	});
 
         // any additional groups?
-        var added = false;
-        for (var i in selected_groups) {
-                if (selected_groups[i] == 0) {
-                        // not encountered
-                        if (!added) {
-                                new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
-                                added = true;
-                        }
-                        var item = new DwtMenuItem({parent:menu, style:DwtMenuItem.CHECK_STYLE});
-                        item.addSelectionListener(itemListener);
-                        item.setText(i);
-                        item.setData("ZmImGroup", i);
+	var added = false;
+	for (var i in selected_groups) {
+		if (selected_groups[i] == 0) {
+			// not encountered
+			if (!added) {
+				new DwtMenuItem({parent:menu, style:DwtMenuItem.SEPARATOR_STYLE});
+				added = true;
+			}
+			var item = new DwtMenuItem({parent:menu, style:DwtMenuItem.CHECK_STYLE});
+			item.addSelectionListener(itemListener);
+			item.setText(i);
+			item.setData("ZmImGroup", i);
                         // checked, because it's in selected_groups
-                        item.setChecked(true, true);
-                }
-        }
+			item.setChecked(true, true);
+		}
+	}
 
         // make sure it's gone when it pops down; the groups can
-        // change very dinamically so we don't wanna cache this menu.
-        menu.addPopdownListener(new AjxListener(this, this._groupsPopdownListener, [menu]));
+	// change very dinamically so we don't wanna cache this menu.
+	menu.addPopdownListener(new AjxListener(this, this._groupsPopdownListener, [menu]));
 
-        return menu;
+	return menu;
 };
 
 ZmNewRosterItemDialog.prototype._groupsPopdownListener =
@@ -162,9 +161,9 @@ function(menu) {
 	// Dispose the menu on a timer, to make sure other listners get the popdown event
 	// before we dispose the menu.
 	var action = new AjxTimedAction(this, function() {
-			// force rebuild the next time.
-			this._groupsDropDown.setMenu(this._getGroupsMenu);
-			menu.dispose();
+		// force rebuild the next time.
+		this._groupsDropDown.setMenu(this._getGroupsMenu);
+		menu.dispose();
 	});
 	AjxTimedAction.scheduleAction(action, 0);
 };
@@ -195,6 +194,11 @@ ZmNewRosterItemDialog.prototype._popupListener = function() {
 			this._positionDialog();
 		}, this), 1);
 	}
+	// find groups currently defined in the buddy list
+	this._groups = AjxDispatcher.run("GetRoster").getGroups();
+	this._groups.sort();
+	this._groupsDropDown.setVisible(this._groups.size() > 0);
+
 };
 
 ZmNewRosterItemDialog.prototype._contentHtml = function() {
