@@ -632,7 +632,7 @@ function(canvasData, url) {
 		if (browserUrl == null)
 			browserUrl = appContextPath+"/public/blank.html";
 		var contentObject = this.xmlObj("contentObject");
-        if(contentObject) {
+        if(contentObject && !canvasData.width) {
             if(contentObject.onClick.canvas.props == "")
                 canvas = window.open(browserUrl);
             else if(contentObject.onClick.canvas.props != "")
