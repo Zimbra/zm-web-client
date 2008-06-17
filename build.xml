@@ -91,6 +91,7 @@
 	<fileset id='network.help.fileset' dir='${build.dir}' excludes='**' />
 	<fileset id='customer.web.fileset' dir='${build.dir}' excludes='**'/>
 	<fileset id='customer.webinf.fileset' dir='${build.dir}' excludes='**'/>
+    <fileset id='customer.package.fileset' dir='${build.dir}' excludes='**' />
 
     <!-- Targets -->
 
@@ -112,7 +113,7 @@
         <property name='common.help.excludes' value='${custom.help.excludes}'/>
         <property name='common.build.web.includes' value='${custom.build.web.includes},**'/>
         <property name='common.build.web.excludes'
-                  value='${custom.web.build.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
+                  value='${custom.build.web.excludes},js/*${depends.ext},js/*${nodebug.ext},js/*${jsmin.ext},js/*${license.ext}'/>
         <property name='common.webinf.includes' value='${custom.webinf.includes},**'/>
         <property name='common.webinf.excludes' value='${custom.webinf.excludes},web.*,lib/**'/>
     </target>
@@ -335,15 +336,9 @@
     </target>
 
     <target name='customer-init' if='env.CUSTOMER_SKIN'>
-        <if>
-            <and>
-                <not>
-                    <isset property='build.ajax'/>
-                </not>
-                <not>
-                    <isset property='build.admin'/>
-                </not>
-            </and>
+        <if><not>
+                <isset property='build.ajax'/>
+            </not>
             <then>
                 <property name='customer.dir' value='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}'/>
                 <property name='customer.web.dir' value='${customer.dir}/ZimbraWebClient/WebRoot'/>
@@ -374,7 +369,15 @@
 						</pathconvert>
 					</then>
 				</if>
-			</then>
+                <if><available file='${customer.web.dir}/js' />
+                    <then>
+                        <fileset id='customer.package.fileset'
+                                 dir='${customer.web.dir}/js'
+                                 includes='*/packages/*.js'
+                        />
+                    </then>
+                </if>
+            </then>
 		</if>
     </target>
 
@@ -730,6 +733,7 @@
 
         <copy todir='${build.js.dir}' flatten='true'>
             <fileset dir='${js.dir}' includes='${jam.includes}' excludes='${jam.excludes}'/>
+            <fileset refid='customer.package.fileset' />
         </copy>
 
         <taskdef name="packagedependset"
@@ -863,6 +867,7 @@ String ext = (String) request.getAttribute("fileExtension");
 if (ext == null) ext = "";
 %>]]></prefix>
                     <!-- NOTE: order is important; need to find generated files first -->
+                    <src dir='${customer.web.dir}/js'/>
                     <src dir='${build.js.dir}'/>
                     <src dir='${build.template.dir}'/>
                     <src dir='${js.dir}'/>
