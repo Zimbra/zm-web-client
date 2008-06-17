@@ -306,41 +306,44 @@ function(view) {
 	if (this._toolbar[view]) { return; }
 
 	var buttons = this._getToolBarOps();
-	if (!buttons) return;
-	this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:view});
-	// remove text for Print, Delete, and Move buttons
-	var list = [ZmOperation.PRINT, ZmOperation.MOVE];
-	for (var i = 0; i < list.length; i++) {
-		var button = this._toolbar[view].getButton(list[i]);
-		if (button) {
-			button.setText(null);
-		}
-	}
-	buttons = this._toolbar[view].opList;
-	for (var i = 0; i < buttons.length; i++) {
-		var button = buttons[i];
+	if (!buttons) { return; }
+
+	var tb = this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, context:view});
+
+	var button;
+	for (var i = 0; i < tb.opList.length; i++) {
+		button = tb.opList[i];
 		if (this._listeners[button]) {
-			this._toolbar[view].addSelectionListener(button, this._listeners[button]);
+			tb.addSelectionListener(button, this._listeners[button]);
 		}
 	}
 
-	var toolbar = this._toolbar[view];
-	var button = toolbar.getButton(ZmOperation.NEW_MENU);
+	button = tb.getButton(ZmOperation.PRINT);
 	if (button) {
-       	var listener = new AjxListener(toolbar, ZmListController._newDropDownListener);
-       	button.addDropDownSelectionListener(listener);
-       	toolbar._ZmListController_this = this;
-       	toolbar._ZmListController_newDropDownListener = listener;
-   	}
+		button.setText(null);
+	}
 
-	var tagMenuButton = this._toolbar[view].getButton(ZmOperation.TAG_MENU);
-	if (tagMenuButton) {
-		tagMenuButton.noMenuBar = true;
-		this._setupTagMenu(this._toolbar[view]);
+	button = tb.getButton(ZmOperation.MOVE);
+	if (button) {
+		button.setText(null);
+	}
+
+	button = tb.getButton(ZmOperation.NEW_MENU);
+	if (button) {
+		var listener = new AjxListener(tb, ZmListController._newDropDownListener);
+		button.addDropDownSelectionListener(listener);
+		tb._ZmListController_this = this;
+		tb._ZmListController_newDropDownListener = listener;
+	}
+
+	button = tb.getButton(ZmOperation.TAG_MENU);
+	if (button) {
+		button.noMenuBar = true;
+		this._setupTagMenu(tb);
 	}
 
 	if (appCtxt.zimletsPresent()) {
-		appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", this._app, this._toolbar[view]);
+		appCtxt.getZimletMgr().notifyZimlets("initializeToolbar", this._app, tb);
 	}
 };
 
@@ -1332,10 +1335,10 @@ function(event) {
 	var button = toolbar.getButton(ZmOperation.NEW_MENU);
 	var listener = toolbar._ZmListController_newDropDownListener;
 	button.removeDropDownSelectionListener(listener);
-    //Called explicitly as its a selection listener. Refer DwtButton._dropDownCellMouseDownHdlr()
-    button.popup();
+	//Called explicitly as its a selection listener. Refer DwtButton._dropDownCellMouseDownHdlr()
+	button.popup();
 
-    delete toolbar._ZmListController_this;
+	delete toolbar._ZmListController_this;
 	delete toolbar._ZmListController_newDropDownListener;
 };
 

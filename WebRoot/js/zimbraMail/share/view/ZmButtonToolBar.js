@@ -56,6 +56,12 @@ ZmButtonToolBar = function(params) {
 	}
 	// weed out disabled ops, save list of ones that make it
 	this.opList = ZmOperation.filterOperations(buttons);
+
+	// make a copy of opList and sort the copy by precedence value
+	this.precendenceList = new Array();
+	this.precendenceList = this.precendenceList.concat(this.opList);
+	this.precendenceList.sort(ZmOperation.sortByPrecendence);
+
 	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 };
 
@@ -132,6 +138,40 @@ function() {
 	var button = this.getButton(ZmOperation.TAG_MENU);
 	if (button) {
 		return button.getMenu();
+	}
+};
+
+ZmButtonToolBar.prototype.autoAdjustWidth =
+function(refElement, reset) {
+	var el = this.getHtmlElement();
+	if (!el || !refElement) { return; }
+
+	var offset1 = refElement.offsetWidth;
+	var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+
+	if ((offset1 > 0 && offset2 > offset1) || reset) {
+		for (var i = 0; i < this.precendenceList.length; i++) {
+			var b = this._buttons[this.precendenceList[i]];
+			if (!b || (b && (!b.getImage() || !b.getVisible()))) { continue; }
+
+			if (offset2 > offset1) {
+				b._toggleText = (b._toggleText != null && b._toggleText != "")
+					? b._toggleText : b.getText();
+				b.setText("");
+			}
+			else if (b._toggleText) {
+				b.setText(b._toggleText);
+				// after adding back label, check if its bigger then avail space
+				if (el.firstChild && el.firstChild.offsetWidth > offset1) {
+					b.setText("");	// Nope. Back it out!
+					break;			// And bail. Chances are subsequent labels won't fit either
+				}
+				b._toggleText = null;
+			}
+
+			// re-calc firstChild offset since we may have removed its label
+			offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
+		}
 	}
 };
 
