@@ -201,9 +201,9 @@ function() {
 			  ZmOperation.SEP,
 			  ZmOperation.TAG_MENU);
 
-    if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
-        list.push(ZmOperation.SEP, ZmOperation.DETACH);
-    }
+	if (appCtxt.get(ZmSetting.DETACH_MAILVIEW_ENABLED)) {
+		list.push(ZmOperation.SEP, ZmOperation.DETACH);
+	}
 
     list.push(ZmOperation.SEP,ZmOperation.VIEW_MENU);
 	return list;
@@ -507,13 +507,13 @@ function(ev) {
 			} else {
 				this._setSelectedItem();
 			}
-	    } else {
+		} else {
 			var msg = currView.getSelection()[0];
 			if (msg) {
 				this._doublePaneView.resetMsg(msg);
 			}
-	    }
-    }
+		}
+	}
 	DBG.timePt("***** CONV: msg selection");
 };
 
@@ -614,10 +614,12 @@ function(ev) {
 
 ZmDoublePaneController.prototype._draftSaved =
 function(msg, resp) {
-    if(resp){
-        if(!msg) msg = new ZmMailMsg();
-        msg._loadFromDom(resp);
-    }
+	if (resp) {
+		if (!msg) {
+			msg = new ZmMailMsg();
+		}
+		msg._loadFromDom(resp);
+	}
 	appCtxt.cacheSet(msg.id, msg);
 	this._redrawDraftItemRows(msg);
 	var displayedMsg = this._doublePaneView.getMsg();

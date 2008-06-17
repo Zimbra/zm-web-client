@@ -145,37 +145,3 @@ ZmToolBar.prototype._buttonId =
 function(button) {
 	return button.getData("_buttonId");
 };
-
-ZmToolBar.prototype.autoAdjustWidth =
-function(refElement, reset) {
-	var el = this.getHtmlElement();
-	if (!el || !refElement) { return; }
-
-	var offset1 = refElement.offsetWidth;
-	var offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
-
-	if ((offset1 > 0 && offset2 > offset1) || reset) {
-		for (var i in this._buttons) {
-			var b = this._buttons[i];
-			if (!b.getImage() || !b.getVisible()) { continue; }
-
-			if (offset2 > offset1) {
-				b._toggleText = (b._toggleText != null && b._toggleText != "")
-					? b._toggleText : b.getText();
-				b.setText("");
-			}
-			else if (b._toggleText) {
-				b.setText(b._toggleText);
-				// after adding back label, check if its bigger then avail space
-				if (el.firstChild && el.firstChild.offsetWidth > offset1) {
-					b.setText("");	// Nope. Back it out!
-					break;			// And bail. Chances are subsequent labels won't fit either
-				}
-				b._toggleText = null;
-			}
-
-			// re-calc firstChild offset since we may have removed its label
-			offset2 = el.firstChild ? el.firstChild.offsetWidth : offset1;
-		}
-	}
-};
