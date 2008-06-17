@@ -367,7 +367,7 @@
 			</tr>
 	
 			<tr id='skin_tr_main_full' style='display:none'>
-				<td id='skin_td_app_full_outer'  class='full_height' colspan='5' height='100%' style="background-color: white;">
+				<td id='skin_td_app_full_outer'  class='full_height' colspan='4' height='100%' style="background-color: white;">
 					<table id='skin_app_full_table' class='skin_table fullSize' cellspacing=0 cellpadding=0>
 						<tr>
 							<td id='skin_full_toolbar_container' >
@@ -384,10 +384,32 @@
 			</tr>
 			</table>
 			</td>
-			<jsp:include page="/h/sidebarads">
-				<jsp:param name="selected" value="${selected}"></jsp:param>
-			</jsp:include>
+			<c:forEach var="zimlets" items="${mailbox.attrs.zimbraZimletAvailableZimlets}">
+			    <c:if test="${zimlets eq 'comcast_adsrvc'}">
+			        <c:set var="comcast_adsrvc" value="true"/>    
+			    </c:if>
+			</c:forEach>
+
+			<c:if test="${(selected eq 'mail' or selected eq 'compose') and mailbox.features.portalEnabled and comcast_adsrvc}">
+			
+				<td id="_sidebarAd" colspan="1" width="160" valign="top" bgcolor="#f5f5f5" align="center">
+		  			  <iframe src="http://pn2.adserver.yahoo.com/a?f=2022363871&pn=comcast&p=com-mail&l=SKY&c=sh&bg=f5f5f5&no_expandable=1"
+		              marginwidth="0"
+		              marginheight="0"
+		              width="160"
+		              height="600"
+		              border="0"
+		              frameborder="0"
+		              style="border:none;"
+		              scrolling="no" align="center"></iframe>
+				
+				</td>
+			</c:if>
+	
 			</tr>
+
+
+
 	
 			<tr id='skin_R4'>
 				<td id='skin_td_R4' class='ImgSkin_Chrome_R4' colspan="2">
