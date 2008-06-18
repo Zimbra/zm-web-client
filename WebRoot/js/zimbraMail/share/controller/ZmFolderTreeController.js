@@ -327,7 +327,7 @@ function(folder) {
 		}
 	}
 
-	ZmTreeController.prototype._syncFeeds.call(this, f);
+	ZmTreeController.prototype._syncFeeds.call(this, folder);
 };
 
 /*
