@@ -60,9 +60,9 @@ ZmChatWindow.prototype.isSticky = function() {
 	return this._sticky;
 };
 
-ZmChatWindow.prototype.popup = function() {
+ZmChatWindow.prototype.popup = function(pos) {
     this.getCurrentChatWidget().prepopup();
-    DwtResizableWindow.prototype.popup.call(this);
+    DwtResizableWindow.prototype.popup.call(this, pos);
 };
 
 ZmChatWindow.prototype._selectionListener = function(ev) {
