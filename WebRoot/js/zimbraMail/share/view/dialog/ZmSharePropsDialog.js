@@ -368,9 +368,10 @@ function(event) {
 	if (dialog instanceof DwtInputField) {
 		dialog = dialog.getData(Dwt.KEY_OBJECT);
 	}
-
-	ZmSharePropsDialog._enableFieldsOnEdit(dialog);
-	return true;
+    if(dialog != null) {
+	    ZmSharePropsDialog._enableFieldsOnEdit(dialog);
+    }
+    return true;
 };
 
 ZmSharePropsDialog._enableFieldsOnEdit =
@@ -505,8 +506,9 @@ function() {
 	Dwt.setSize(this._granteeInput.getInputElement(), "100%");
 	this._granteeInput.setData(Dwt.KEY_OBJECT, this);
 	this._granteeInput.setRequired(true);
+    Dwt.associateElementWithObject(this._granteeInput.getInputElement(), this);
 
-	var password = new DwtComposite(this);
+    var password = new DwtComposite(this);
 	this._passwordInput = new DwtInputField({parent: password});
 	Dwt.setSize(this._passwordInput.getInputElement(), "100%");
 	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
@@ -514,8 +516,9 @@ function() {
 	this._passwordButton = new DwtButton({parent:password});
 	this._passwordButton.setText(ZmMsg.changePassword);
 	this._passwordButton.addSelectionListener(new AjxListener(this, this._handleChangeButton));
+    Dwt.associateElementWithObject(this._passwordInput.getInputElement(), this);
 
-	this._shareWithOptsProps = new DwtPropertySheet(this);
+    this._shareWithOptsProps = new DwtPropertySheet(this);
 	this._shareWithOptsProps.addProperty(ZmMsg.emailLabel, this._granteeInput);
 	this._passwordId = this._shareWithOptsProps.addProperty(ZmMsg.passwordLabel, password);
 
