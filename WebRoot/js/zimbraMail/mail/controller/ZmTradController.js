@@ -95,8 +95,8 @@ function(view, bPageForward, convIdx) {
 ZmTradController.prototype._resetNavToolBarButtons = 
 function(view) {
 	ZmDoublePaneController.prototype._resetNavToolBarButtons.call(this, view);
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
 };
 
 ZmTradController.prototype._getMoreSearchParams = 

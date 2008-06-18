@@ -483,8 +483,8 @@ function(view) {
 		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, this._list.hasMore());
 	}
 
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
 };
 
 ZmContactListController.prototype._getNavStartEnd =
