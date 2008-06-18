@@ -663,8 +663,9 @@ function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 	var div = DwtUiEvent.getTarget(ev);
 	div = Dwt.findAncestor(div, "_pos");
-	if (div)
+	if (div) {
 		this._setSelected(div._pos);
+	}
 	return true;
 };
 
@@ -698,8 +699,10 @@ function(list, sel) {
 			thisHtmlElement.appendChild(div);
 		}
 	}
-	this._selected = sel || 0;
-	this._setSelected(this._selected);
+	AjxTimedAction.scheduleAction(new AjxTimedAction(this,
+		function() {
+			this._setSelected(sel || 0);
+		}), 100);
 };
 
 ZmAutocompleteListView.prototype._getDiv = 
