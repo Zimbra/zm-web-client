@@ -373,7 +373,7 @@
                     <then>
                         <fileset id='customer.package.fileset'
                                  dir='${customer.web.dir}/js'
-                                 includes='*/packages/*.js'
+                                 includes='*/packages/*.js,*/package/*.js'
                         />
                     </then>
                 </if>
