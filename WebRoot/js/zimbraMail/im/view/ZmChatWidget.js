@@ -537,8 +537,10 @@ ZmChatWidget.prototype._doResize = function() {
 
 ZmChatWidget.prototype._updateLabelSize =
 function() {
-	var labelWidth = this.getW() - this._minToolBarSize;
-	this._label.setSize(labelWidth, Dwt.DEFAULT);
+	if (this._minToolBarSize) {
+		var labelWidth = this.getW() - this._minToolBarSize;
+		this._label.setSize(labelWidth, Dwt.DEFAULT);
+	}
 };
 
 ZmChatWidget.prototype.prepopup =
