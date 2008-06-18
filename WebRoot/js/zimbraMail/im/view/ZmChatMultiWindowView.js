@@ -50,14 +50,15 @@ ZmChatMultiWindowView.getInstance = function() {
 };
 
 ZmChatMultiWindowView.prototype.getWindowManager = function() {
-	if (!this._wm)
-		this._wm = new ZmChatWindowManager(this);
+	if (!this._wm) {
+		this._wm = new ZmChatWindowManager(this, Dwt.Z_VIEW_WINDOW_MANAGER);
+	}
 	return this._wm;
 };
 
 ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
 	if (!this._shellWm) {
-		this._shellWm = new ZmChatWindowManager(DwtShell.getShell(window));
+		this._shellWm = new ZmChatWindowManager(DwtShell.getShell(window), Dwt.Z_WINDOW_MANAGER);
 		if (Dwt.CARET_HACK_ENABLED) {
 			var caretHackListener = new AjxListener(this._shellWm, this._shellWm.applyCaretHack);
 			ZmZimbraMail.addListener(ZmAppEvent.ACTIVATE, caretHackListener);

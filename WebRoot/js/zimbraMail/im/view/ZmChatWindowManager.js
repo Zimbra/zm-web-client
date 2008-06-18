@@ -15,8 +15,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmChatWindowManager = function(parent) {
-	DwtWindowManager.call(this, parent);
+ZmChatWindowManager = function(parent, zIndex) {
+	DwtWindowManager.call(this, parent, zIndex);
 	var dt = new DwtDropTarget([ "ZmChatWidget" ]);
 	this.setDropTarget(dt);
 	dt.addDropListener(new AjxListener(this, this._dropListener));
