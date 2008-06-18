@@ -1699,11 +1699,13 @@ function(actionCode, ev) {
 		}
 
 		case ZmKeyMap.ASSISTANT: {
-			if (!this._assistantDialog) {
-				AjxDispatcher.require("Assistant");
-				this._assistantDialog = new ZmAssistantDialog();
+			if (appCtxt.get(ZmSetting.ASSISTANT_ENABLED)) {
+				if (!this._assistantDialog) {
+					AjxDispatcher.require("Assistant");
+					this._assistantDialog = new ZmAssistantDialog();
+				}
+				this._assistantDialog.popup();
 			}
-			this._assistantDialog.popup();
 			break;
 		}
 
