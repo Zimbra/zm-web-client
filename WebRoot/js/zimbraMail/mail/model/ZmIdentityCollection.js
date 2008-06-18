@@ -111,8 +111,7 @@ function(mailMsg) {
 	if (identity) { return identity; }
 
 	// Check if a identity's folder is the same as where the message lives.
-	var fid = ZmOrganizer.normalizeId(mailMsg.folderId);
-	identity = this._folderToIdentity[fid];
+	identity = this._folderToIdentity[mailMsg.folderId];
 	if (identity) { return identity; }
 
 	return this.defaultIdentity;
@@ -154,7 +153,11 @@ function(identity) {
 	if (identity.useWhenInFolder) {
 		var folders = identity.whenInFolderIds;
 		for (var i = 0, count = folders.length; i < count; i++) {
-			this._folderToIdentity[folders[i]] = identity;
+			var folder = appCtxt.getById(folders[i]);
+			if (folder) {
+				var fid = folder.getRemoteId();
+				this._folderToIdentity[fid] = identity;
+			}
 		}
 	}
 };
@@ -167,8 +170,11 @@ function(identity) {
 	}
 
 	for (var i = 0, count = identity.whenInFolderIds.length; i < count; i++) {
-		var folderId = identity.whenInFolderIds[i];
-		delete this._folderToIdentity[folderId];
+		var folder = appCtxt.getById(identity.whenInFolderIds[i]);
+		if (folder) {
+			var fid = folder.getRemoteId();
+			delete this._folderToIdentity[fid];
+		}
 	}
 };
 
