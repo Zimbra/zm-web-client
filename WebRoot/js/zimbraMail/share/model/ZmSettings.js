@@ -353,11 +353,12 @@ function(response) {
 };
 
 /**
-* Saves one or more settings.
-*
-* @param list			[array]				a list of ZmSetting
-* @param batchCommand	[ZmBatchCommand]	Batch command. Optional
-*/
+ * Saves one or more settings.
+ *
+ * @param list			[array]				a list of ZmSetting
+ * @param callback		[AjxCallback]		callback to run after response is received
+ * @param batchCommand	[ZmBatchCommand]*	batch command
+ */
 ZmSettings.prototype.save =
 function(list, callback, batchCommand) {
     if (!(list && list.length)) return;
@@ -391,11 +392,16 @@ function(list, callback, batchCommand) {
 	}
 
 	if (gotOne) {
-		var respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
+		var respCallback;
+		var asyncMode = false;
+		if (callback || batchCommand) {
+			respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
+			asyncMode = true;
+		}
 		if (batchCommand) {
 			batchCommand.addNewRequestParams(soapDoc, respCallback);
 		} else {
-			appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+			appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:asyncMode, callback:respCallback});
 		}
 	}
 };
@@ -742,6 +748,9 @@ function(dialog) {
     ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
+/**
+ * Saves implicit prefs. Because it's done onunload, the save is sync.
+ */
 ZmSettings.prototype.saveImplicitPrefs =
 function() {
 	var list = [];
