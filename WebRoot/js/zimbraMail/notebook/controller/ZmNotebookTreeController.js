@@ -136,7 +136,7 @@ function() {
 ZmNotebookTreeController.prototype._itemClicked =
 function(notebook) {
 	if (appCtxt.getCurrentViewId() != ZmId.VIEW_NOTEBOOK_PAGE) {
-		appCtxt.getAppViewMgr().setView(ZmId.VIEW_.NOTEBOOK_PAGE);
+		appCtxt.getAppViewMgr().setView(ZmId.VIEW_NOTEBOOK_PAGE);
 	};
 
 	var notebookController = AjxDispatcher.run("GetNotebookController");
