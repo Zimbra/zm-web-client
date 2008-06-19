@@ -27,9 +27,9 @@ ZmTaskListView.prototype.constructor = ZmTaskListView;
 
 // Consts
 ZmTaskListView.KEY_ID				= "_keyId";
-ZmTaskListView.COL_WIDTH_STATUS		= 145;
+ZmTaskListView.COL_WIDTH_STATUS		= 110;
 ZmTaskListView.COL_WIDTH_PCOMPLETE	= 75;
-ZmTaskListView.COL_WIDTH_DATE_DUE	= 75;
+ZmTaskListView.COL_WIDTH_DATE_DUE	= 110;
 
 
 // Public Methods
