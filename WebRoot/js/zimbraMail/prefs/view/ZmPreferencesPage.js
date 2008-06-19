@@ -890,7 +890,7 @@ function(formatSelectObj, ev) {
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
 
-	var overviewId = [this.toString, settingId].join("-");
+	var overviewId = [this.toString(), settingId].join("-");
 	if (settingId == ZmSetting.EXPORT) {
 		AjxDispatcher.require(["ContactsCore", "Contacts"]);
 		dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK],
@@ -922,7 +922,7 @@ function(ev) {
 		dialog.setTitle(ZmMsg._import);
 		dialog.registerCallback(DwtDialog.OK_BUTTON, this._importOkCallback, this, dialog);
 
-		var overviewId = [this.toString, settingId].join("-");
+		var overviewId = [this.toString(), settingId].join("-");
 		if (settingId == ZmSetting.IMPORT) {
 			AjxDispatcher.require(["ContactsCore", "Contacts"]);
             var noNew = !appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED);
