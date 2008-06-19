@@ -754,18 +754,23 @@ function(request, contactList, isDraft, accountName) {
     var oboDraftMsgId = null;   //On Behalf of Draft MsgId
     if ((isDraft || this.isDraft) && this.id) {
 		var ac = window.parentAppCtxt || window.appCtxt;
-		if (!ac.isOffline && !isDraft && this._origMsg && this._origMsg.isDraft) {
-            var mainAcct = ac.getMainAccount(true);
-			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
-			// this means we're sending a draft msg obo
-			if (from && from.address != mainAcct.getEmail()) {
-				oboDraftMsgId = [mainAcct.id, ":", this.id].join("");
-				msgNode.id = oboDraftMsgId;
+		// bug fix #26508 - check whether previously saved draft was moved to Trash
+		var msg = ac.getById(this.id);
+		var folder = msg ? ac.getById(msg.folderId) : null;
+		if (!folder || (folder && !folder.isInTrash())) {
+			if (!ac.isOffline && !isDraft && this._origMsg && this._origMsg.isDraft) {
+				var mainAcct = ac.getMainAccount(true);
+				var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
+				// this means we're sending a draft msg obo
+				if (from && from.address != mainAcct.getEmail()) {
+					oboDraftMsgId = [mainAcct.id, ":", this.id].join("");
+					msgNode.id = oboDraftMsgId;
+				} else {
+					msgNode.id = this.nId;
+				}
 			} else {
 				msgNode.id = this.nId;
 			}
-		} else {
-			msgNode.id = this.nId;
 		}
 	}
 
