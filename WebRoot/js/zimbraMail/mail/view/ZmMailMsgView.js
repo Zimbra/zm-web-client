@@ -1084,7 +1084,7 @@ function(msg, container, callback) {
 				html.push(imgHtml);
 			} else {
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
-					html.push("<pre>", bp.content, "</pre>");
+					html.push("<pre>", AjxStringUtil.htmlEncode(bp.content, true), "</pre>");
 				} else {
 					html.push(bp.content);
 				}
