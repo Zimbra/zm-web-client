@@ -29,7 +29,6 @@ ZmContactView = function(parent, controller, isMyCardView) {
 	this._currentTabIdx = 1;
 	this._dateCells = [];
 	this._isMyCardView = isMyCardView;
-	this._fileName = "";
 
 	this.setScrollStyle(Dwt.SCROLL);
 };
@@ -156,7 +155,7 @@ function() {
 				}
 			}
 			if (a == ZmContact.F_image) {
-				if (this._fileName != "") {
+				if (this._isDirty || this._imageInput.value != "") {
 					foundOne = true;
 					mods[a] = this._attr[a];
 				}
@@ -269,7 +268,6 @@ function() {
 		this._imageInput.removeAttribute("_size");
 		this._imageInput.removeAttribute("_ct");
 	}
-	this._fileName = "";
 };
 
 
@@ -562,9 +560,6 @@ function() {
 				this._attr[field] = (el.getAttribute("_aid")
 					? (["aid_",el.getAttribute("_aid")].join(""))
 					: (el.getAttribute("_part") ? ["part_", el.getAttribute("_part")].join("") : ""));
-				if (isImage) {
-					this._fileName = el.value;
-				}
 			} else if (el.value != "" || field == ZmContact.F_image) {
 				if (isDate) {
 					var pDate = AjxDateUtil.simpleParseDateStr(el.value);
