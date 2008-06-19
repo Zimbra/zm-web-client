@@ -1073,26 +1073,26 @@ function(msg, container, callback) {
 	var bodyParts = msg.getBodyParts();
 	var len = bodyParts.length;
 	if (len > 1) {
-                var html = [];
+		var html = [];
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
-            if (ZmMimeTable.isRenderableImage(bp.ct)) {
+			if (ZmMimeTable.isRenderableImage(bp.ct)) {
                 var imgHtml = null;
                 if(bp.content){  //Hack: (Bug:27320) Done specifically for sMime implementationu are.
                     imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");
                 }else{
                     imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
                 }
-                                html.push(imgHtml);
+				html.push(imgHtml);
 			} else {
-                                if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
-                                        html.push("<pre>", bp.content, "</pre>");
-                                } else {
-                                        html.push(bp.content);
+				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
+					html.push("<pre>", AjxStringUtil.htmlEncode(bp.content, true), "</pre>");
+				} else {
+					html.push(bp.content);
+				}
 			}
 		}
-		}
-                this._makeIframeProxy(el, html.join(""));
+		this._makeIframeProxy(el, html.join(""));
 	} else {
 		var bodyPart = msg.getBodyPart();
 		if (bodyPart) {
@@ -1779,18 +1779,18 @@ function(self, iframe, attempt) {
 			substract(self._inviteToolbar.getHtmlElement());
 		iframe.style.height = h + "px";
 	} else {
-                if (attempt == null)
-                        attempt = 0;
+		if (attempt == null)
+			attempt = 0;
 		try {
 			if (!iframe.contentWindow || !iframe.contentWindow.document) {
-                                if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
-                                        self._resetIframeHeightOnTimer(iframe, attempt);
-                                return; // give up
-                        }
+				if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
+					self._resetIframeHeightOnTimer(iframe, attempt);
+				return; // give up
+			}
 		} catch(ex) {
-                        if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
-			        self._resetIframeHeightOnTimer(iframe, attempt++); // for IE
-                        return; // give up
+			if (attempt++ < ZmMailMsgView.SETHEIGHT_MAX_TRIES)
+				self._resetIframeHeightOnTimer(iframe, attempt++); // for IE
+			return; // give up
 		}
 
 		var doc = iframe.contentWindow.document;
