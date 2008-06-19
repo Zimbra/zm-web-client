@@ -107,6 +107,8 @@ function(cmdStr, searchController) {
 			      "    Build Date: " + appCtxt.get(ZmSetting.CLIENT_DATETIME));
 		}
 	} else if (arg0 == "refresh") {
+		ZmCsfeCommand.setSessionId(null);
+		appCtxt.getAppController().sendNoOp();
 	} else if (arg0 == "alert") {
 		//  $set:alert [sound/browser/app] [delay in seconds]
 		function doIt() {
