@@ -203,7 +203,7 @@
 <template id='calendar.Appointment#TaskDueSection'>
 	<tr>
 		<td class='ZmFieldLabelRight'><input type='checkbox' id='${id}_status_cbox'></td>
-		<td width=150 id='${id}_status'></td>
+		<td width=175 id='${id}_status'></td>
 		<td id='${id}_complete'></td>
 	</tr>
 	<tr>
