@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -38,7 +38,7 @@ ZmApp.QS_ARG[ZmApp.NOTEBOOK]	= "documents";
 ZmNotebookApp.prototype = new ZmApp;
 ZmNotebookApp.prototype.constructor = ZmNotebookApp;
 
-ZmNotebookApp.prototype.toString = 
+ZmNotebookApp.prototype.toString =
 function() {
 	return "ZmNotebookApp";
 }
@@ -58,7 +58,7 @@ function() {
 	AjxDispatcher.registerMethod("GetNotebookController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookController));
 	AjxDispatcher.registerMethod("GetPageEditController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageEditController));
 	AjxDispatcher.registerMethod("GetNotebookCache", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookCache));
-	AjxDispatcher.registerMethod("GetPageVersionController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageVersionController));		
+	AjxDispatcher.registerMethod("GetPageVersionController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageVersionController));
 };
 
 ZmNotebookApp.prototype._registerOperations =
@@ -79,7 +79,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_IMPORT_FILE, {textKey:"_import", tooltipKey:"importDocs"});
 	ZmOperation.registerOp(ZmId.OP_SEND_PAGE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"}, ZmSetting.MAIL_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_NOTEBOOK, {textKey:"shareNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp(ZmId.OP_REVERT_PAGE, {textKey:"revert", tooltipKey:"restorePage", image:"Edit"});	
+	ZmOperation.registerOp(ZmId.OP_REVERT_PAGE, {textKey:"revert", tooltipKey:"restorePage", image:"Edit"});
 };
 
 ZmNotebookApp.prototype._registerItems =
@@ -133,7 +133,7 @@ function() {
 							 labelKey:			"notebooks",
 							 itemsKey:			"documents",
 							 hasColor:			true,
-							 defaultColor:		ZmOrganizer.C_NONE,							 			
+							 defaultColor:		ZmOrganizer.C_NONE,
 							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["wiki"],
 							 folderKey:			"notebookFolder",
@@ -151,7 +151,7 @@ function() {
 								 tooltipKey:	"searchForPages",
 								 icon:			"Notebook",
 								 shareIcon:		"SharedNotebook",
-								 setting:		ZmSetting.NOTEBOOK_ENABLED,							 
+								 setting:		ZmSetting.NOTEBOOK_ENABLED,
 								 id:			ZmId.getMenuItemId(ZmId.SEARCH, ZmId.ITEM_PAGE)
 								});
 };
@@ -208,55 +208,58 @@ function(ids, force) {
 	var overviewController = appCtxt.getOverviewController();
 	var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
 	var treeView = treeController.getTreeView(this.getOverviewId());
-	if(!treeView){
+	if (!treeView) {
 		return;
 	}
 	var cache = this.getNotebookCache();
-					
+
 	for (var i = 0; i < ids.length; i++) {
 		var tmp = treeView.getNextData(ids[i]);
-			//next node might also be in the delete list : parent deleted
-			if(tmp && idStr.indexOf(tmp.id+",")<0){
-				nextData = tmp;
-			}
-			if (shownPage && shownPage.id == ids[i]) {
-				pageInUse = true;				
-			}
-	}	
-				
-	for (var i = 0; i < ids.length; i++) {
+                //next node might also be in the delete list : parent deleted
+                if(tmp && idStr.indexOf(tmp.id+",")<0){
+                        nextData = tmp;
+                }
+                if (shownPage && shownPage.id == ids[i]) {
+                        pageInUse = true;
+                }
+	}
 
+	for (var i = 0; i < ids.length; i++) {
 		var page = cache.getPageById(ids[i]);
 		if (page) {
 			DBG.println(AjxDebug.DBG2, "ZmNotebookApp: handling delete notif for ID " + ids[i]);
 			cache.removePage(page);
-			page.notifyDelete();							
-		}
+			page.notifyDelete();
+		} else {
+                        var folder = appCtxt.getById(ids[i]);
+                        cache.removeItem(folder);
+                        folder.notifyDelete();
+                }
 		appCtxt.cacheRemove(ids[i]);
 	}
-	
+
 	if(pageInUse){
-	    var pageRef = { folderId: (nextData ? nextData.id : shownPage.folderId) , name: ZmNotebook.PAGE_INDEX };
-	    notebookController.gotoPage(pageRef);
+                var pageRef = { folderId: (nextData ? nextData.id : shownPage.folderId) , name: ZmNotebook.PAGE_INDEX };
+                notebookController.gotoPage(pageRef);
 	}
-	
-	
-		for (var i = 0; i < ids.length; i++) {
+
+
+        for (var i = 0; i < ids.length; i++) {
 		var tmp1 = treeView.getTreeItemById(ids[i]);
 		DBG.println("tmp1:"+tmp1+","+page);//cdebugs
 		if(tmp1){
 			tmp1.dispose();
 		}
 		ids[i] = null;
-			
+
 	}
-	
+
 };
 
 /**
  * Checks for the creation of a notebook or a mount point to one, or of a page
  * or document.
- * 
+ *
  * @param creates	[hash]		hash of create notifications
  */
 ZmNotebookApp.prototype.createNotify =
@@ -269,7 +272,7 @@ function(creates, force) {
 		for (var i = 0; i < list.length; i++) {
 			var create = list[i];
 			if (appCtxt.cacheGet(create.id)) { continue; }
-	
+
 			if (name == "folder") {
 				this._handleCreateFolder(create, ZmOrganizer.NOTEBOOK);
 			} else if (name == "link") {
@@ -281,9 +284,9 @@ function(creates, force) {
 				var page = new ZmPage();
 				page.set(create);
 				cache.putPage(page);
-	
+
 				// re-render current page, if necessary
-				var notebookController = AjxDispatcher.run("GetNotebookController");	
+				var notebookController = AjxDispatcher.run("GetNotebookController");
 				if(!notebookController.isIframeEnabled()){
 					var shownPage = notebookController.getPage();
 					if (shownPage && shownPage.name == ZmNotebook.PAGE_INDEX) {
@@ -307,14 +310,14 @@ function(modifies, force) {
 	if(!modifies) return;
 	if (!modifies["w"] && !modifies["doc"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("modify", list)) { return; }
-	
+
 	for (var name in modifies) {
 		var list = modifies[name];
 		for (var i = 0; i < list.length; i++) {
 			var mod = list[i];
 			var id = mod.id;
 			if (!id) { continue; }
-	
+
 			if (name == "w") {
 				DBG.println(AjxDebug.DBG2, "ZmNotebookApp: handling modified notif for ID " + id + ", node type = " + name);
 				// REVISIT: Use app context item cache
@@ -328,7 +331,7 @@ function(modifies, force) {
 					page.notifyModify(mod);
 					page.set(mod);
 				}
-				
+
 				// re-render current page, if necessary
 				var notebookController = AjxDispatcher.run("GetNotebookController");
 				if(!notebookController.isIframeEnabled()){
@@ -485,7 +488,7 @@ function(parent, name, color) {
 
 ZmNotebookApp.prototype.generateUniqueName =
 function(folderId) {
-	
+
 	var pages = this.getNotebookCache().getPagesInFolder(folderId);
 	var pagenames = [];
 	for (var p in pages) {
@@ -499,14 +502,14 @@ function(folderId) {
             return (ZmMsg.defaultPageName+i);
         }
     }
-	
+
 	return ZmMsg.untitled;
 };
 
-ZmNotebookApp.prototype.getPageVersionController = 
+ZmNotebookApp.prototype.getPageVersionController =
 function() {
 	if (!this._versionController) {
 		this._versionController = new ZmPageVersionController(this._container, this);
 	}
-	return this._versionController;	
+	return this._versionController;
 };
