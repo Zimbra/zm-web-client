@@ -15,7 +15,8 @@
 								<colgroup>
 									<col width='1%' />
 									<col />
-								</colgroup>
+                                    <col />
+                                </colgroup>
 								<tr>
 									<td width="1%" class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subjectLabel $></nobr></td>
 									<td id='${id}_subject'></td>
@@ -54,7 +55,17 @@
 									<td>&nbsp;</td>
 								</tr>
 								<$ } $>
-							</table>
+                                <$ if(!data.isAppt){$>
+                                <tr>
+                                <td></td>
+                                    <td colspan=2 id='${id}_due_message_dummy'></td>
+                                </tr>
+                                <tr>
+                                <td></td>
+                                    <td colspan=2 id='${id}_due_message_dummy'></td>
+                                </tr>
+                                <$ } $>
+                            </table>
 						</div>
 					</fieldset>
 				</td>
