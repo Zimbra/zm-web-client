@@ -401,7 +401,7 @@ function() {
 };
 
 ZmMailMsgView.prototype._moveAppt = function(ev) {
-	var select = ev.item.parent.parent; 
+	var select = ev.item.parent.parent;
 	var ofolder = this._lastApptFolder || ZmOrganizer.ID_CALENDAR;
 	var nfolder = select.getValue();
 	if (ofolder == nfolder) return;
@@ -592,26 +592,25 @@ function (node) {
 // the server-side, but we check, just in case..).
 ZmMailMsgView.prototype._processHtmlDoc =
 function(doc) {
-    DBG.timePt("Starting ZmMailMsgView.prototype._processHtmlDoc");
+        DBG.timePt("Starting ZmMailMsgView.prototype._processHtmlDoc");
 
-    if(!doc) return;
-    //bug 8632
-    var images = doc.getElementsByTagName("img");
-    if(images.length > 0){
-        var length = images.length;
-        for(var i=0; i<images.length; i++ ){
-            this._checkImgInAttachments(images[i]);
+        if(!doc) return;
+        //bug 8632
+        var images = doc.getElementsByTagName("img");
+        if(images.length > 0){
+                var length = images.length;
+                for(var i=0; i<images.length; i++ ){
+                        this._checkImgInAttachments(images[i]);
+                }
         }
-    }
 
-    //Find Zimlet Objects lazly
-    this.lazyFindMailMsgObjects(500, doc);
+        //Find Zimlet Objects lazly
+        this.lazyFindMailMsgObjects(500, doc);
 
-    DBG.timePt("-- END _processHtmlDoc");
+        DBG.timePt("-- END _processHtmlDoc");
 
 	// bug fix #8632 - finally, set the attachment links
 	this._setAttachmentLinks();
-
 };
 
 ZmMailMsgView.prototype.lazyFindMailMsgObjects = function(interval, doc ){
@@ -629,28 +628,41 @@ ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
 	if (!this._msg) { return; }
+        if (img.getAttribute("zmforced"))
+                return;
+
 	var attachments = this._msg.attachments;
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+        var src = img.getAttribute("src") || img.getAttribute("dfsrc");
+        var cid;
+
+        if (/^cid:(.*)/.test(src)) {
+                cid = "<" + RegExp.$1 + ">";
+        }
 
 	for (var i = 0; i < attachments.length; i++) {
 		var att = attachments[i];
 
-		if (att.foundInMsgBody) { continue; }
+		if (att.foundInMsgBody) {
+                        continue;
+                }
 
-		var src = img.getAttribute("src") || img.getAttribute("dfsrc");
-		if (src && src.indexOf(csfeMsgFetch) == 0) {
-			var mpId = src.substring(src.lastIndexOf("=") + 1);
-			if (mpId == att.part) {
-				att.foundInMsgBody = true;
-				break;
-			}
-		} else if (att.cl) {
-			var filename = src.substring(src.lastIndexOf("/") + 1);
-			if (filename == att.filename) {
-				att.foundInMsgBody = true;
-				break;
-			}
-		}
+                if (cid && att.ci == cid) {
+                        att.foundInMsgBody = true;
+                        break;
+                } else if (src && src.indexOf(csfeMsgFetch) == 0) {
+                        var mpId = src.substring(src.lastIndexOf("=") + 1);
+                        if (mpId == att.part) {
+                                att.foundInMsgBody = true;
+                                break;
+                        }
+                } else if (att.cl) {
+                        var filename = src.substring(src.lastIndexOf("/") + 1);
+                        if (filename == att.filename) {
+                                att.foundInMsgBody = true;
+                                break;
+                        }
+                }
 	}
 };
 
@@ -977,7 +989,7 @@ function(msg, container, callback) {
 					parts[idx++] = this._objectManager
 						? (this._objectManager.findObjects(email, true, ZmObjectManager.EMAIL))
 						: email.address;
-                } else {
+                                } else {
 					parts[idx++] = AjxStringUtil.htmlEncode(email.name);
 				}
 			}
@@ -987,40 +999,39 @@ function(msg, container, callback) {
 		}
 	}
 
-    var hasAttachments = msg.getAttachmentLinks(true);
-    hasAttachments = ( hasAttachments.length != 0 );
+        var attachmentsCount = msg.getAttachmentLinks(true).length;
+        var hasAttachments = attachmentsCount != 0;
 
 	var folder = appCtxt.getById(msg.folderId);
 	var isSyncFailureMsg = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
 
-	this._hdrTableId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE, this._mode);
-	this._closeBtnCellId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_CLOSE_BTN_CELL, this._mode);
-	this._reportBtnCellId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_REPORT_BTN_CELL, this._mode);
-	this._expandRowId		= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_ROW, this._mode);
-	this._expandHeaderId	= ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_HDR, this._mode);
+	this._hdrTableId       = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE, this._mode);
+	this._closeBtnCellId   = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_CLOSE_BTN_CELL, this._mode);
+	this._reportBtnCellId  = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_REPORT_BTN_CELL, this._mode);
+	this._expandRowId      = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_ROW, this._mode);
+	this._expandHeaderId   = ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_EXPAND_HDR, this._mode);
 
-    var subs = {
-		id:					this._htmlElId,
-		hdrTableId:			this._hdrTableId,
-		hdrTableTopRowId:	ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
-		closeBtnCellId:		this._closeBtnCellId,
-		reportBtnCellId:	this._reportBtnCellId,
-		expandRowId:		this._expandRowId,
-		expandHeaderId:		this._expandHeaderId,
-        attachId:			this._attLinksId,
-		infoBarId:			this._infoBarId,
-
-		subject:			subject,
-		dateString:			dateString,
-		sentBy:				sentBy,
-		sentByNormal:		sentByAddr,
-		sentByIcon:			sentByIcon,
-		obo:				obo,
-		participants:		participants,
-		hasHeaderCloseBtn:	this._hasHeaderCloseBtn,
-        hasAttachments:		hasAttachments,
-        attachmentsCount:   msg.getAttachmentLinks(true).length,
-        isSyncFailureMsg:	isSyncFailureMsg
+        var subs = {
+		id                : this._htmlElId,
+		hdrTableId        : this._hdrTableId,
+		hdrTableTopRowId  : ZmId.getViewId(ZmId.VIEW_MSG, ZmId.MV_HDR_TABLE_TOP_ROW, this._mode),
+		closeBtnCellId    : this._closeBtnCellId,
+		reportBtnCellId   : this._reportBtnCellId,
+		expandRowId       : this._expandRowId,
+		expandHeaderId    : this._expandHeaderId,
+                attachId          : this._attLinksId,
+		infoBarId         : this._infoBarId,
+		subject           : subject,
+		dateString        : dateString,
+		sentBy            : sentBy,
+		sentByNormal      : sentByAddr,
+		sentByIcon        : sentByIcon,
+		obo               : obo,
+		participants      : participants,
+		hasHeaderCloseBtn : this._hasHeaderCloseBtn,
+                hasAttachments    : hasAttachments,
+                attachmentsCount  : attachmentsCount,
+                isSyncFailureMsg  : isSyncFailureMsg
 	};
 
 	var html = AjxTemplate.expand("mail.Message#MessageHeader", subs);
@@ -1079,8 +1090,8 @@ function(msg, container, callback) {
 			if (ZmMimeTable.isRenderableImage(bp.ct)) {
 				// Hack: (Bug:27320) Done specifically for sMime implementationu are.
 				var imgHtml = (bp.content)
-					? ["<img class='InlineImage' src='", bp.content, "'>"].join("")
-					: ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
+					? ["<img zmforced='1' class='InlineImage' src='", bp.content, "'>"].join("")
+					: ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
 				html.push(imgHtml);
 			} else {
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
@@ -1276,6 +1287,9 @@ function(msg) {
 ZmMailMsgView.prototype._setAttachmentLinks =
 function() {
 	var attLinks = this._msg.getAttachmentLinks(true);
+        var el = document.getElementById(this._attLinksId + "_tr");
+        if (el)
+                el.style.display = attLinks.length == 0 ? "none" : "";
 	if (attLinks.length == 0) { return; }
 
 	// prevent appending attachment links more than once
@@ -1285,7 +1299,7 @@ function() {
 	var htmlArr = [];
 	var idx = 0;
 
-    var dividx = idx;	// we might get back here
+        var dividx = idx;	// we might get back here
 	htmlArr[idx++] = "<table id='" + this._attLinksId + "_table' border=0 cellpadding=0 cellspacing=0>";
 
 	var rows = 0;

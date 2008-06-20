@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2004, 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -758,20 +758,20 @@ function(request, contactList, isDraft, accountName) {
 		var msg = ac.getById(this.id);
 		var folder = msg ? ac.getById(msg.folderId) : null;
 		if (!folder || (folder && !folder.isInTrash())) {
-			if (!ac.isOffline && !isDraft && this._origMsg && this._origMsg.isDraft) {
-				var mainAcct = ac.getMainAccount(true);
-				var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
-				// this means we're sending a draft msg obo
-				if (from && from.address != mainAcct.getEmail()) {
-					oboDraftMsgId = [mainAcct.id, ":", this.id].join("");
-					msgNode.id = oboDraftMsgId;
-				} else {
-					msgNode.id = this.nId;
-				}
+		if (!ac.isOffline && !isDraft && this._origMsg && this._origMsg.isDraft) {
+            var mainAcct = ac.getMainAccount(true);
+			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
+			// this means we're sending a draft msg obo
+			if (from && from.address != mainAcct.getEmail()) {
+				oboDraftMsgId = [mainAcct.id, ":", this.id].join("");
+				msgNode.id = oboDraftMsgId;
 			} else {
 				msgNode.id = this.nId;
 			}
+		} else {
+			msgNode.id = this.nId;
 		}
+	}
 	}
 
 	if (this.isForwarded) {
@@ -1006,8 +1006,9 @@ function(contentPartType, contentPart) {
 ZmMailMsg.prototype.getAttachmentLinks =
 function(findHits) {
 	// cache the attachment links once they've been generated.
-	if (this._attLinks != null)
-		return this._attLinks;
+        // NOPE. foundInMsgBody can change after we call this function, it's safer not to cache the links
+	// if (this._attLinks != null)
+	// 	return this._attLinks;
 
 	this._attLinks = [];
 
@@ -1015,29 +1016,27 @@ function(findHits) {
 		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
 
 		for (var i = 0; i < this.attachments.length; i++) {
-    		var attach = this.attachments[i];
+                        var attach = this.attachments[i];
 
-			if (!this.isRealAttachment(attach) ||
-				(attach.body && ZmMimeTable.isRenderableImage(attach.ct)))
-			{
-				continue;
-			}
+                        if (!this.isRealAttachment(attach) || attach.foundInMsgBody) {
+                                continue;
+                        }
 
-			var props = {};
+                        var props = {};
 
-    		// set a viable label for this attachment
-    		props.label = attach.name || attach.filename || (ZmMsg.unknown + " <" + attach.ct + ">");
+                        // set a viable label for this attachment
+                        props.label = attach.name || attach.filename || (ZmMsg.unknown + " <" + attach.ct + ">");
 
-			// use content location instead of built href flag
-    		var useCL = false;
+                        // use content location instead of built href flag
+                        var useCL = false;
 			// set size info in any
-    		if (attach.s != null && attach.s >= 0) {
-    		    if (attach.s < 1024)		props.size = attach.s + " B";
-                else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " KB";
-                else 						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " MB";
-    		} else {
-    			useCL = attach.cl && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.cl));
-    		}
+                        if (attach.s != null && attach.s >= 0) {
+                                if (attach.s < 1024)		props.size = attach.s + " B";
+                                else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " KB";
+                                else 				props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " MB";
+                        } else {
+                                useCL = attach.cl && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.cl));
+                        }
 
 			// handle rfc/822 attachments differently
 			if (attach.ct == ZmMimeTable.MSG_RFC822) {
@@ -1059,26 +1058,26 @@ function(findHits) {
 				if (!useCL) {
 					var insertIdx = url.indexOf("?auth=co&");
 					var fn = AjxStringUtil.urlComponentEncode(attach.filename);
-					fn = fn.replace(/'/g, "%27");
+					fn = fn.replace(/\x27/g, "%27");
 					url = url.substring(0,insertIdx) + fn + url.substring(insertIdx);
 				}
 
 				props.link = "<a target='_blank' class='AttLink' href='" + url + "'>";
 				if (!useCL) {
 					props.download = [
-							"<a style='text-decoration:underline' class='AttLink' href='",
-							url,
-							appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)
-								? "' target='_blank'>"
-								: "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>"
-						].join("");
+                                                "<a style='text-decoration:underline' class='AttLink' href='",
+                                                url,
+                                                appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)
+                                                ? "' target='_blank'>"
+                                                : "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>"
+                                        ].join("");
 				}
 
-                var folder = appCtxt.getById(this.folderId);
-                if( (attach.name || attach.filename) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) && (folder && !folder.isRemote())){
-                    var partLabel = props.label;
-                    partLabel = partLabel.replace(/'/g,"\\'");
-                    var onclickStr1 = "ZmMailMsgView.briefcaseCallback(\"" + this.id + "\",\"" + attach.part + "\",\""+partLabel+"\");";
+                                var folder = appCtxt.getById(this.folderId);
+                                if( (attach.name || attach.filename) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) && (folder && !folder.isRemote())){
+                                        var partLabel = props.label;
+                                        partLabel = partLabel.replace(/\x27/g,"\\'");
+                                        var onclickStr1 = "ZmMailMsgView.briefcaseCallback(\"" + this.id + "\",\"" + attach.part + "\",\""+partLabel+"\");";
 					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
 				}
 
@@ -1090,7 +1089,7 @@ function(findHits) {
 						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
 					}
 					else if (ZmMimeTable.hasHtmlVersion(attach.ct) &&
-							 appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML))
+                                                 appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML))
 					{
 						// set the anchor html for the HTML version of this attachment on the server
 						props.htmlLink = "<a style='text-decoration:underline' target='_blank' class='AttLink' href='" + url + "&view=html" + "'>";
@@ -1108,7 +1107,7 @@ function(findHits) {
 			// set the link icon
 			var mimeInfo = ZmMimeTable.getInfo(attach.ct);
 			props.linkIcon = mimeInfo ? mimeInfo.image : "GenericDoc";
-	        props.ct = attach.ct;
+                        props.ct = attach.ct;
 
 			// set other meta info
 			props.isHit = findHits && this._isAttInHitList(attach);
@@ -1251,11 +1250,11 @@ function(addrNodes, type, contactList, isDraft) {
 			var addr = addrs.get(i);
 			var email = addr.getAddress();
 			var addrNode = {t:AjxEmailAddress.toSoapType[type], a:email};
-	
+
 			// tell server to add this email to address book if not found
 			if (contactList && !isDraft && appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) &&
 				!contactList.getContactByEmail(email)) {
-	
+
 				DBG.println(AjxDebug.DBG2, "adding contact: " + email);
 				addrNode.add = 1;
 			}

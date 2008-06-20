@@ -65,9 +65,9 @@
                             </tr>
                         <$ } $>
                         <$ if(data.hasAttachments) { $>
-                            <tr>
+                            <tr id="${attachId}_tr">
                                 <td width="100" class="LabelColName">
-                                    <$= ZmMsg.attachments$> :
+                                    <$= ZmMsg.attachments$>:
                                 </td>
                                 <td colspan="3">
                                     <div id="${attachId}" style='overflow: auto;'></div>
