@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2005, 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -139,7 +139,7 @@ function() {
 
 	if (!this._appViewMgr) {
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
-        this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
+                this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE, ZmId.STATUS_VIEW);
 	}
 
 	var rootTg = appCtxt.getRootTabGroup();
@@ -158,44 +158,43 @@ function() {
 	apps[ZmApp.MAIL] = true;
 	apps[ZmApp.CONTACTS] = true;
 	apps[ZmApp.PREFERENCES] = true;
-    this._createEnabledApps(apps);
+        this._createEnabledApps(apps);
 
 	// inherit parent's identity collection
 	var parentPrefsApp = parentAppCtxt.getApp(ZmApp.MAIL);
 	appCtxt.getApp(ZmApp.MAIL)._identityCollection = parentPrefsApp.getIdentityCollection();
 
-    var kbMgr = appCtxt.getKeyboardMgr();
-	kbMgr.setTabGroup(rootTg);
-	kbMgr.grabFocus(startupFocusItem);
+        //Find target first.
+        var target;
+        if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
+                target = "compose-window";
+        }else if (window.newWindowCommand == "msgViewDetach") {
+                target = "view-window";
+        }
 
-    //Find target first.
-    var target;
-    if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
-         target = "compose-window";
-    }else if (window.newWindowCommand == "msgViewDetach") {
-         target = "view-window";
-    }
-
-    // setup zimlets, Load it first becoz.. zimlets has to get processed first.
+        // setup zimlets, Load it first becoz.. zimlets has to get processed first.
 	if (target) {
 		var zimletArray = this.__hack_zimletArray() || [];
 		if (this.__hack_hasZimletsForTarget(zimletArray, target)) {
 			var zimletMgr = appCtxt.getZimletMgr();
 			var userProps = this.__hack_userProps();
-            var createViewCallback =  new AjxCallback(this, this._createView);
-            zimletMgr.loadZimlets(zimletArray, userProps, target, createViewCallback, true);
-            return;
-        }
+                        var createViewCallback =  new AjxCallback(this, this._createView);
+                        zimletMgr.loadZimlets(zimletArray, userProps, target, createViewCallback, true);
+                        return;
+                }
 	}
 
-    this._createView();
+        this._createView();
 
+        var kbMgr = appCtxt.getKeyboardMgr();
+	kbMgr.setTabGroup(rootTg);
+	kbMgr.grabFocus(startupFocusItem);
 };
 
 ZmNewWindow.prototype._createView = function(){
 
     var rootTg = appCtxt.getRootTabGroup();
-    
+
     // depending on the command, do the right thing
 	if (window.newWindowCommand == "compose" || window.newWindowCommand == "composeDetach") {
 		var cc = AjxDispatcher.run("GetComposeController");
@@ -229,6 +228,7 @@ ZmNewWindow.prototype._createView = function(){
 				parentCC._app.popView(true);
 			}
 		}
+                cc._setComposeTabGroup();
 		rootTg.addMember(cc.getTabGroup());
 		startupFocusItem = cc._composeView.getAddrFields()[0];
 
