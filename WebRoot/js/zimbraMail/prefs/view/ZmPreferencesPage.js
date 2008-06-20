@@ -155,14 +155,20 @@ function() {
 	// expand template
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._section.id);
 	var templateId = this._section.templateId;
+	this._createPageHtml(templateId, this._getTemplateData());
+	this.setVisible(false); // hide until ready
+};
+
+ZmPreferencesPage.prototype._getTemplateData =
+function() {
 	var data = {
 		id: this._htmlElId,
 		isMultiAccount: (appCtxt.numAccounts > 1)
 	};
 	data.isEnabled = AjxCallback.simpleClosure(this._isEnabled, this, data);
 	data.expandField = AjxCallback.simpleClosure(this._expandField, this, data);
-	this._createPageHtml(templateId, data);
-	this.setVisible(false); // hide until ready
+	
+	return data;
 };
 
 ZmPreferencesPage.prototype._createControls =

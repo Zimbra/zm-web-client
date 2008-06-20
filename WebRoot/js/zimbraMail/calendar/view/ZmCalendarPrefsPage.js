@@ -43,6 +43,13 @@ function(useDefaults) {
 	}
 };
 
+ZmCalendarPrefsPage.prototype._getTemplateData =
+function() {
+	var data = ZmPreferencesPage.prototype._getTemplateData.call(this);
+	data.domain = appCtxt.getUserDomain();
+	return data;
+};
+
 ZmCalendarPrefsPage.prototype._createControls =
 function() {
 	// First, load the user's ACL
@@ -83,33 +90,14 @@ function(setting, right) {
 /**
  * ZmPrefView.getChangedPrefs() doesn't quite work for performing a dirty check on this page since
  * it only returns true if a changed setting is stored in LDAP (has a 'name' property in its ZmSetting
- * object). This override checks the ACL-related settings to see if they changed. The only real difference
- * is that the final check is (!unchanged) rather than (addToList).
+ * object). This override checks the ACL-related settings to see if they changed.
  */
 ZmCalendarPrefsPage.prototype.isDirty =
 function(section, list, errors) {
 	var dirty = this._controller.getPrefsView()._checkSection(section, this, true, true, list, errors);
 	if (!dirty) {
-		var settings = appCtxt.getSettings();
-		var prefs = [ZmSetting.CAL_FREE_BUSY_ACL, ZmSetting.CAL_FREE_BUSY_ACL_USERS,
-					 ZmSetting.CAL_INVITE_ACL, ZmSetting.CAL_INVITE_ACL_USERS];
-		for (var i = 0; i < prefs.length; i++) {
-			var id = prefs[i];
-			var value = this.getFormValue(id);
-			var pref = settings.getSetting(id);
-			var origValue = pref.origValue;
-			var unchanged = (value == origValue);
-			// null and "" are the same string for our purposes
-			if (pref.dataType == ZmSetting.D_STRING) {
-				unchanged = unchanged || ((value == null || value == "") &&
-										  (origValue == null ||
-										   origValue == ""));
-			}
-	
-			if (!unchanged) {
-				return true;
-			}
-		}
+		this._findACLChanges();
+		dirty = (this._grants.length || this._revokes.length);
 	}
 	return dirty;
 };
@@ -141,6 +129,14 @@ function() {
 
 ZmCalendarPrefsPage.prototype._preSave =
 function(callback) {
+	this._findACLChanges();
+	if (callback) {
+		callback.run();
+	}
+};
+
+ZmCalendarPrefsPage.prototype._findACLChanges =
+function() {
 	var settings = ZmCalendarPrefsPage.SETTINGS;
 	var rights = ZmCalendarPrefsPage.RIGHTS;
 	this._grants = [];
@@ -149,11 +145,6 @@ function(callback) {
 		var result = this._getACLChanges(settings[i], rights[i]);
 		this._grants = this._grants.concat(result.grants);
 		this._revokes = this._revokes.concat(result.revokes);
-		this._setACLValues(settings[i], rights[i]);
-	}
-
-	if (callback) {
-		callback.run();
 	}
 };
 
@@ -170,7 +161,13 @@ function(setting, right) {
 	if (newType == ZmSetting.ACL_USER) {
 		var textarea = this.getFormObject(ZmCalendarPrefsPage.TEXTAREA[setting]);
 		var val = textarea.getValue();
-		newUsers = AjxEmailAddress.split(val);
+		var users = val.split(/[\n,;]/);
+		for (var i = 0; i < users.length; i++) {
+			var user = users[i];
+			if (!user) { continue; }
+			user = (user.indexOf('@') == -1) ? [user, appCtxt.getUserDomain()].join('@') : user;
+			newUsers.push(user);
+		}
 		newUsers.sort();
 	}
 	var newHash = AjxUtil.arrayAsHash(newUsers);
@@ -206,11 +203,23 @@ function(setting, right) {
 
 ZmCalendarPrefsPage.prototype.addCommand =
 function(batchCmd) {
-	if (this._grants.length) {
-		this._acl.grant(this._grants, null, batchCmd);
-	}
+	var respCallback = new AjxCallback(this, this._handleResponseACLChange);
 	if (this._revokes.length) {
-		this._acl.revoke(this._revokes, null, batchCmd);
+		this._acl.revoke(this._revokes, respCallback, batchCmd);
+	}
+	if (this._grants.length) {
+		this._acl.grant(this._grants, respCallback, batchCmd);
+	}
+};
+
+ZmCalendarPrefsPage.prototype._handleResponseACLChange =
+function(aces) {
+	if (aces && aces.length) {
+		for (var i = 0; i < aces.length; i++) {
+			var ace = aces[i];
+			var setting = (ace.right == ZmSetting.RIGHT_INVITE) ? ZmSetting.CAL_INVITE_ACL : ZmSetting.CAL_FREE_BUSY_ACL;
+			this._setACLValues(setting, ace.right);
+		}
 	}
 };
 

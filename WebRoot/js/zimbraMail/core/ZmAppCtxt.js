@@ -38,6 +38,7 @@ ZmAppCtxt = function() {
 	// account-specific
 	this.multiAccounts = false;
 	this.numAccounts = 1;	// init to 1 b/c there is always a main account
+	this.userDomain = "";
 };
 
 ZmAppCtxt.prototype.toString =
@@ -672,9 +673,21 @@ function(account) {
 };
 
 // Note: the username is an email address
-ZmAppCtxt.prototype.getUsername = 
+ZmAppCtxt.prototype.getUsername =
 function(account) { 
 	return this.get(ZmSetting.USERNAME, account);
+};
+
+ZmAppCtxt.prototype.getUserDomain =
+function(account) {
+	if (!this.userDomain) {
+		var username = this.getUsername(account);
+		if (username) {
+			var parts = username.split("@");
+			this.userDomain = (parts && parts.length) ? parts[1] : "";
+		}
+	}
+	return this.userDomain;
 };
 
 ZmAppCtxt.prototype.getUploadFrameId =

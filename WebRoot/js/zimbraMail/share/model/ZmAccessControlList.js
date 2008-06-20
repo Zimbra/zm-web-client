@@ -118,13 +118,8 @@ function(aces, revoke, callback, batchCmd) {
 		if (ace.negative) {
 			aceNode.setAttribute("deny", 1);
 		}
-		if (revoke) {
-			this.remove(ace);
-		} else {
-			this.add(ace);
-		}
 	}
-	var respCallback = new AjxCallback(this, this._handleResponseSetPerms, [callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseSetPerms, [revoke, callback]);
 	if (batchCmd) {
 		batchCmd.addNewRequestParams(soapDoc, respCallback);
 	} else {
@@ -133,9 +128,25 @@ function(aces, revoke, callback, batchCmd) {
 };
 
 ZmAccessControlList.prototype._handleResponseSetPerms =
-function(callback, result) {
+function(revoke, callback, result) {
+	var response = result.getResponse();
+	var resp = revoke ? response.RevokePermissionResponse : response.GrantPermissionResponse;
+	var aces = resp && resp.ace;
+	var aceList = [];
+	if (aces && aces.length) {
+		for (var i = 0; i < aces.length; i++) {
+			var ace = ZmAccessControlEntry.createFromDom(aces[i]);
+			aceList.push(ace);
+			if (revoke) {
+				this.remove(ace);
+			} else {
+				this.add(ace);
+			}
+		}
+	}
+
 	if (callback) {
-		callback.run();
+		callback.run(aceList);
 	}
 };
 
