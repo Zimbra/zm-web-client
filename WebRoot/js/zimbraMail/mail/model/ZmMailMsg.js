@@ -1045,8 +1045,9 @@ function(contentPartType, contentPart) {
 ZmMailMsg.prototype.getAttachmentLinks =
 function(findHits) {
 	// cache the attachment links once they've been generated.
-	if (this._attLinks != null)
-		return this._attLinks;
+        // NOPE. foundInMsgBody can change after we call this function, it's safer not to cache the links
+	// if (this._attLinks != null)
+	// 	return this._attLinks;
 
 	this._attLinks = [];
 
@@ -1056,9 +1057,7 @@ function(findHits) {
 		for (var i = 0; i < this._attachments.length; i++) {
     		var attach = this._attachments[i];
 
-			if (!this.isRealAttachment(attach) ||
-				(attach.body && ZmMimeTable.isRenderableImage(attach.ct)))
-			{
+                        if (!this.isRealAttachment(attach) || attach.foundInMsgBody) {
 				continue;
 			}
 
@@ -1098,7 +1097,7 @@ function(findHits) {
 				if (!useCL) {
 					var insertIdx = url.indexOf("?auth=co&");
 					var fn = AjxStringUtil.urlComponentEncode(attach.filename);
-					fn = fn.replace(/'/g, "%27");
+					fn = fn.replace(/\x27/g, "%27");
 					url = url.substring(0,insertIdx) + fn + url.substring(insertIdx);
 				}
 
@@ -1116,7 +1115,7 @@ function(findHits) {
                 var folder = appCtxt.getById(this.folderId);
                 if( (attach.name || attach.filename) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) && (folder && !folder.isRemote())){
                     var partLabel = props.label;
-                    partLabel = partLabel.replace(/'/g,"\\'");
+                                        partLabel = partLabel.replace(/\x27/g,"\\'");
                     var onclickStr1 = "ZmMailMsgView.briefcaseCallback(\"" + this.id + "\",\"" + attach.part + "\",\""+partLabel+"\");";
 					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
 				}

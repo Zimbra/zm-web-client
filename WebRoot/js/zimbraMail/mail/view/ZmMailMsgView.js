@@ -611,7 +611,6 @@ function(doc) {
 
 	// bug fix #8632 - finally, set the attachment links
 	this._setAttachmentLinks();
-
 };
 
 ZmMailMsgView.prototype.lazyFindMailMsgObjects = function(interval, doc ){
@@ -629,16 +628,29 @@ ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
 	if (!this._msg) { return; }
+        if (img.getAttribute("zmforced"))
+                return;
+
 	var attachments = this._msg.getAttachments();
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+        var src = img.getAttribute("src") || img.getAttribute("dfsrc");
+        var cid;
+
+        if (/^cid:(.*)/.test(src)) {
+                cid = "<" + RegExp.$1 + ">";
+        }
 
 	for (var i = 0; i < attachments.length; i++) {
 		var att = attachments[i];
 
-		if (att.foundInMsgBody) { continue; }
+		if (att.foundInMsgBody) {
+                        continue;
+                }
 
-		var src = img.getAttribute("src") || img.getAttribute("dfsrc");
-		if (src && src.indexOf(csfeMsgFetch) == 0) {
+                if (cid && att.ci == cid) {
+                        att.foundInMsgBody = true;
+                        break;
+                } else if (src && src.indexOf(csfeMsgFetch) == 0) {
 			var mpId = src.substring(src.lastIndexOf("=") + 1);
 			if (mpId == att.part) {
 				att.foundInMsgBody = true;
@@ -987,8 +999,8 @@ function(msg, container, callback) {
 		}
 	}
 
-    var hasAttachments = msg.getAttachmentLinks(true);
-    hasAttachments = ( hasAttachments.length != 0 );
+        var attachmentsCount = msg.getAttachmentLinks(true).length;
+        var hasAttachments = attachmentsCount != 0;
 
 	var folder = appCtxt.getById(msg.folderId);
 	var isSyncFailureMsg = (folder && folder.nId == ZmOrganizer.ID_SYNC_FAILURES);
@@ -1009,7 +1021,6 @@ function(msg, container, callback) {
 		expandHeaderId:		this._expandHeaderId,
         attachId:			this._attLinksId,
 		infoBarId:			this._infoBarId,
-
 		subject:			subject,
 		dateString:			dateString,
 		sentBy:				sentBy,
@@ -1019,7 +1030,7 @@ function(msg, container, callback) {
 		participants:		participants,
 		hasHeaderCloseBtn:	this._hasHeaderCloseBtn,
         hasAttachments:		hasAttachments,
-        attachmentsCount:   msg.getAttachmentLinks(true).length,
+                attachmentsCount  : attachmentsCount,
         isSyncFailureMsg:	isSyncFailureMsg
 	};
 
@@ -1077,12 +1088,10 @@ function(msg, container, callback) {
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
 			if (ZmMimeTable.isRenderableImage(bp.ct)) {
-                var imgHtml = null;
-                if(bp.content){  //Hack: (Bug:27320) Done specifically for sMime implementationu are.
-                    imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");
-                }else{
-                    imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
-                }
+                                // Hack: (Bug:27320) Done specifically for sMime implementationu are.
+                                var imgHtml = (bp.content)
+					? ["<img zmforced='1' class='InlineImage' src='", bp.content, "'>"].join("")
+					: ["<img zmforced='1' class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
 				html.push(imgHtml);
 			} else {
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
@@ -1278,6 +1287,9 @@ function(msg) {
 ZmMailMsgView.prototype._setAttachmentLinks =
 function() {
 	var attLinks = this._msg.getAttachmentLinks(true);
+        var el = document.getElementById(this._attLinksId + "_tr");
+        if (el)
+                el.style.display = attLinks.length == 0 ? "none" : "";
 	if (attLinks.length == 0) { return; }
 
 	// prevent appending attachment links more than once
