@@ -233,8 +233,8 @@ function(view) {
 		var bEnableForw = this._msg.list.hasMore() || (list.getLast() != this._msg);
 		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, bEnableForw);
 
-		this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.message);
-		this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.message);
+		this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMessage);
+		this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMessage);
 	}
 };
 

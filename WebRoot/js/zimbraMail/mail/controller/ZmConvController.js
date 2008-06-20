@@ -405,10 +405,10 @@ function(view) {
 	var enablePgDn = this._conv.list.hasMore() || (list.getLast() != this._conv);
 	this._navToolBar[view].enable(ZmOperation.PAGE_DBL_FORW, enablePgDn);
 
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_BACK, ZmMsg.previous + " " + ZmMsg.conversation);
-	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_FORW, ZmMsg.next + " " + ZmMsg.conversation);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousPage);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextPage);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_BACK, ZmMsg.previousConversation);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_FORW, ZmMsg.nextConversation);
 };
 
 ZmConvController.prototype._getNumTotal =
