@@ -463,7 +463,9 @@ function(accordionItem) {
 	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
 
 	// ensure contact list is loaded for the currently active account
-	var callback = new AjxCallback(this, this._handleResponseActivateAccordion);
+
+	var callback = (this._appViewMgr.getCurrentViewId() != ZmId.VIEW_GROUP)
+		? new AjxCallback(this, this._handleResponseActivateAccordion) : null;
 	this.getContactList(callback);
 };
 
