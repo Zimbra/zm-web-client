@@ -1003,7 +1003,7 @@ function(item, listView) {
 	var prop = [
 		{name:ZmMsg.briefcasePropName, value:item.name},
 		{name:ZmMsg.briefcasePropSize, value:AjxUtil.formatSize(item.size)},
-		{name:ZmMsg.briefcasePropModified, value:(item.modifyDate ? item.modifyDate+"" : "")},
+		{name:ZmMsg.briefcasePropModified, value:(item.modifyDate ? item.modifyDate+"" : "")}
 	];
 
 	var subs = {
