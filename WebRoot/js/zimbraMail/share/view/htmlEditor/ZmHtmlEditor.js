@@ -50,13 +50,25 @@ ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 // Consts
 ZmHtmlEditor._VALUE = "value";
 ZmHtmlEditor.FONT_SIZE_VALUES = ["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"];
-ZmHtmlEditor.FONT_FAMILY = [
-	{name:"Arial", 				value:"Arial, Helvetica, sans-serif" },
-	{name:"Times New Roman",	value:"Times New Roman, Times, serif" },
-	{name:"Courier", 			value:"Courier, Courier New, mono" },
-	{name:"Verdana",			value:"Verdana, Arial, Helvetica, sans-serif" }
-];
+ZmHtmlEditor.__makeFontName = function(value) {
+	return value.replace(/,.*/,"").replace(/\b[a-z]/g, ZmHtmlEditor.__toUpperCase);
+};
+ZmHtmlEditor.__toUpperCase = function(s) {
+	return s.toUpperCase();
+};
 
+ZmHtmlEditor.FONT_FAMILY = {};
+(function() {
+	var i, value;
+	for (i = 1; value = AjxMsg["fontFamilyIntl"+i]; i++) {
+		name = ZmHtmlEditor.__makeFontName(value);
+		ZmHtmlEditor.FONT_FAMILY[name] = {name:name, value:value};
+	}
+	for (i = 1; value = AjxMsg["fontFamilyBase"+i]; i++) {
+		name = ZmHtmlEditor.__makeFontName(value);
+		ZmHtmlEditor.FONT_FAMILY[name] = {name:name, value:value};
+	}
+})();
 
 // Big ugly RegExp, looking for iframe tags where the id starts with "ACE-"
 ZmHtmlEditor.ACE_IFRAME_RE = new RegExp("<iframe\\s+.*?\\bid\\s*=\\s*[\"']?(ace-[^\"'\\s]*).*?>.*?</iframe(\\s.*?)?>", "ig");
@@ -546,7 +558,7 @@ function(ev) {
 
 ZmHtmlEditor.prototype._fontFamilyListener =
 function(ev) {
-	var id = ev.item.getData(ZmHtmlEditor._VALUE);
+	var id = ZmHtmlEditor.__makeFontName(ev.item.getData(ZmHtmlEditor._VALUE));
 	this.setFont(ZmHtmlEditor.FONT_FAMILY[id].value);
 	this._fontFamilyButton.setText(ZmHtmlEditor.FONT_FAMILY[id].name);
 };
@@ -1175,11 +1187,11 @@ function(tb) {
 	var menu = new ZmPopupMenu(this._fontFamilyButton);
 	var listener = new AjxListener(this, this._fontFamilyListener);
 
-	for (var i = 0; i < ZmHtmlEditor.FONT_FAMILY.length; i++) {
-		var item = ZmHtmlEditor.FONT_FAMILY[i];
+	for (var id in ZmHtmlEditor.FONT_FAMILY) {
+		var item = ZmHtmlEditor.FONT_FAMILY[id];
 		var mi = menu.createMenuItem(item.name, {text:item.name});
 		mi.addSelectionListener(listener);
-		mi.setData(ZmHtmlEditor._VALUE, i);
+		mi.setData(ZmHtmlEditor._VALUE, item.value);
 	}
 
 	this._fontFamilyButton.setMenu(menu);
@@ -1255,7 +1267,7 @@ function(ev) {
                 // next; if you find a better solution please tell my son after about 12 years.  >:)
 
  	        if (ev.fontFamily)
- 		        this._fontFamilyButton.setText(ZmHtmlEditor.FONT_FAMILY[ev.fontFamily].name);
+ 		        this._fontFamilyButton.setText(ZmHtmlEditor.__makeFontName(ev.fontFamily));
 
  	        if (ev.fontSize) {
  		        var mi = this._fontSizeButton.getMenu().getItem(ev.fontSize-1);
