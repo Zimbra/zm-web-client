@@ -179,7 +179,7 @@ function(msg) {
 		? new Date(msg.sentDate)
 		: new Date(msg.date);
 
-	var invite = msg.getInvite();
+	var invite = msg.invite;
 
 	if ((appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
 		invite && invite.type != "task" &&
@@ -629,7 +629,7 @@ ZmMailMsgView.prototype._findMailMsgObjects = function(doc){
 ZmMailMsgView.prototype._checkImgInAttachments =
 function(img) {
 	if (!this._msg) { return; }
-	var attachments = this._msg.getAttachments();
+	var attachments = this._msg.attachments;
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 
 	for (var i = 0; i < attachments.length; i++) {
@@ -1077,12 +1077,10 @@ function(msg, container, callback) {
 		for (var i = 0; i < len; i++) {
 			var bp = bodyParts[i];
 			if (ZmMimeTable.isRenderableImage(bp.ct)) {
-                var imgHtml = null;
-                if(bp.content){  //Hack: (Bug:27320) Done specifically for sMime implementationu are.
-                    imgHtml = ["<img class='InlineImage' src='", bp.content, "'>"].join("");
-                }else{
-                    imgHtml = ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
-                }
+				// Hack: (Bug:27320) Done specifically for sMime implementationu are.
+				var imgHtml = (bp.content)
+					? ["<img class='InlineImage' src='", bp.content, "'>"].join("")
+					: ["<img class='InlineImage' src='", appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", msg.id, "&part=", bp.part, "'>"].join("");
 				html.push(imgHtml);
 			} else {
 				if (bp.ct == ZmMimeTable.TEXT_PLAIN) {
@@ -1658,7 +1656,7 @@ function(msg, preferHtml, callback) {
 	}
 
 	// bug fix# 3928
-	var attachments = msg.getAttachments();
+	var attachments = msg.attachments;
 	for (var i = 0; i < attachments.length; i++) {
 		var attach = attachments[i];
 		if (!msg.isRealAttachment(attach))
@@ -1794,7 +1792,6 @@ function(self, iframe, attempt) {
 		}
 
 		var doc = iframe.contentWindow.document;
-
 		var origHeight = AjxEnv.isIE ? doc.body.scrollHeight : 0;
 
 		// first off, make it wide enough to fill ZmMailMsgView.
