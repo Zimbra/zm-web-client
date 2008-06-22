@@ -1215,6 +1215,8 @@ NOTE: The tables inside of the filter rule sections MUST contain a tbody element
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
 		<tr><td class='ZOptionsSectionMain'>
 			<table width=100%>
+				<tr><td colspan=2><$= AjxMessageFormat.format(ZmMsg.calPermsNote, data.domain) $></td></tr>
+				<tr><td colspan=2>&nbsp;</td></tr>
 				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.freeBusyLabel$></td>
 					<td class='ZOptionsField'><div id='${id}_CAL_FREE_BUSY_ACL' tabindex='82'></div></td>
 				</tr>
