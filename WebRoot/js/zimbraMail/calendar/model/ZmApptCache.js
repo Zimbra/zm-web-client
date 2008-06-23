@@ -432,7 +432,10 @@ ZmApptCache.prototype._setSoapParams =
 function(request, params) {	
 	request.sortBy = "none";
 	request.limit = "500";
-	request.calExpandInstStart = params.start;
+    //AjxEnv.DEFAULT_LOCALE is set to the browser's locale setting in the case when
+    //the user's (or their COS) locale is not set.
+    request.locale = { _content: AjxEnv.DEFAULT_LOCALE };    
+    request.calExpandInstStart = params.start;
 	request.calExpandInstEnd = params.end;
 	request.types = ZmSearch.TYPE[ZmItem.APPT];
     request.offset = params.offset;
