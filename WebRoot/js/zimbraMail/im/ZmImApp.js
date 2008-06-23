@@ -46,6 +46,9 @@ ZmApp.SETTING[ZmApp.IM]		= ZmSetting.IM_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.IM]	= 47;
 ZmApp.QS_ARG[ZmApp.IM]		= "chat";
 
+ZmImApp.BUDDY_SORT_PRESENCE = "presence";
+ZmImApp.BUDDY_SORT_NAME 	= "name";
+
 ZmImApp.prototype = new ZmApp;
 ZmImApp.prototype.constructor = ZmImApp;
 
@@ -233,6 +236,14 @@ ZmImApp.prototype._registerSettings = function(settings) {
 								 { name			: "zimbraPrefIMCustomStatusMessage",
 								   type			: ZmSetting.T_PREF,
 								   dataType		: ZmSetting.D_LIST
+								 });
+
+	settings.registerSetting("IM_PREF_BUDDY_SORT",
+								 {
+								   type			: ZmSetting.T_PREF,
+								   dataType		: ZmSetting.D_STRING,
+								   defaultValue : ZmImApp.BUDDY_SORT_NAME,
+								   isImplicit	: true
 								 });
 
 

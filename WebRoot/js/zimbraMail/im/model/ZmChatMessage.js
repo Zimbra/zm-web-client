@@ -76,7 +76,7 @@ function(chat, lastFrom) {
 	var params = { isSystem		 : this.isSystem,
 		       fromMe		 : this.fromMe,
 		       shortTime	 : AjxStringUtil.htmlEncode(this.getShortTime()),
-		       body              : body
+		       body              : body || '&nbsp;'
 		     };
 	if (!lastFrom || lastFrom != this.from)
 		params.displayName = AjxStringUtil.htmlEncode(chat.getDisplayName(this.from, this.fromMe));
