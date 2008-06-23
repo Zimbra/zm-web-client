@@ -53,7 +53,9 @@
     <property name='build.dist.dir' value='${build.dir}/dist'/>
 
     <property name='build.img.dir' value='${build.web.dir}/img'/>
-    <property name="build.css.filename" value="images.css"/>
+	<property name="build.css.file" value="images"/>
+	<property name="build.css.ext" value=".css"/>
+    <property name="build.css.filename" value="${build.css.file}${build.css.ext}"/>
 
     <property name="depends.ext" value='.depends'/>
     <property name="license.ext" value='.license'/>
@@ -537,7 +539,8 @@
         <dependset>
             <srcfileset dir='${img.dir}'/>
             <srcfileset dir='${java.dir}' includes='**/img/*.java'/>
-            <targetfilelist dir='${build.img.dir}' files='${build.css.filename}'/>
+			<targetfilelist dir='${build.img.dir}' files='${build.css.filename}'/>
+			<targetfilelist dir='${build.img.dir}' files='${build.css.file}_*${build.css.ext}'/>
         </dependset>
 
         <if>
@@ -550,10 +553,30 @@
                 <!-- core images -->
                 <imagemerge destdir='${build.img.dir}' disable='true'
                             cssfile='${build.css.filename}' csspath='/${deploy.app}/img/'>
-                    <dirset dir='${web.dir}' includes='img/**'/>
+                    <dirset dir='${web.dir}' includes='img/**' excludes='**/?*_??,**/?*_??_??' />
                 </imagemerge>
-
                 <replace token="@jsVersion@" value="${build.simpleDate}" file='${build.img.dir}/${build.css.filename}'/>
+
+				<dirset id='images.l10n.dirset' dir='${web.dir}' includes='img/**/?*_??,img/**/?*_??_??' />
+				<pathconvert property='images.l10n.locales' refid='images.l10n.dirset' pathsep=','>
+					<regexpmapper from="^.*/.*?_(.*)" to="\1" />
+				</pathconvert>
+				<for list='${images.l10n.locales}' param='locale'>
+					<sequential>
+						<if><not><available file="${build.img.dir}/${build.css.file}_@{locale}${build.css.ext}" /></not>
+							<then>
+								<imagemerge destdir='${build.img.dir}' disable='true'
+											cssfile='${build.css.file}_@{locale}${build.css.ext}'
+											csspath='/${deploy.app}/img/'>
+									<dirset dir='${web.dir}' includes='img/**/?*_@{locale}' />
+								</imagemerge>
+								<replace token="@jsVersion@" value="${build.simpleDate}"
+										 file='${build.img.dir}/${build.css.file}_@{locale}${build.css.ext}'
+								/>
+							</then>
+						</if>
+					</sequential>
+				</for>
 
                 <!-- skin images -->
                 <dirset id='skins.dirset' dir='${skins.dir}' includes='*'/>
