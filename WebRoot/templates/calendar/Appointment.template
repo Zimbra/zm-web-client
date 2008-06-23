@@ -563,7 +563,7 @@
 			<td class='LabelColValue' colspan=100>
                 <table border=0>
 					<tr>
-                    <td class='LabelColValue'>
+                    <td class='LabelColValue' style='vertical-align:middle !important;'>
                     <$ if (data.folders && data.folders.length > 1) { $>
 					    <div id='${id}_folderCell'><$= AjxStringUtil.htmlEncode(data.folder.name) $></div>
 				    <$ } else { $>
