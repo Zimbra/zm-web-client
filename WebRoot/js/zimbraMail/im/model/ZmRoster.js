@@ -261,13 +261,16 @@ function(im) {
 			if (not.type == "roster") {
 				this.getRosterItemList().removeAllItems();
 				var list = this.getRosterItemList();
-				if (not.n) {
+				if (not.n && not.n.length) {
+					var rosterItems = [];
 					for (var rosterNum=0; rosterNum < not.n.length; rosterNum++) {
 						var rosterItem = not.n[rosterNum];
 						if (rosterItem.type == "subscribed" && rosterItem.to.indexOf("@") >= 0) {
-							var item = new ZmRosterItem(rosterItem.to, list, rosterItem.name, null, rosterItem.groups);
-							list.addItem(item);
+							rosterItems.push(new ZmRosterItem(rosterItem.to, list, rosterItem.name, null, rosterItem.groups));
 						}
+					}
+					if (rosterItems.length) {
+						list.addItems(rosterItems);
 					}
 				}
 				// ignore unsubscribed entries for now (TODO FIXME)

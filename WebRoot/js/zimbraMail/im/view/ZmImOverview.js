@@ -324,18 +324,18 @@ ZmImOverview.prototype._init = function() {
 	this.sort();
 
 	buddyList.addChangeListener(new AjxListener(this, function(ev) {
-		var buddies = AjxVector.fromArray(ev.getItems());
 		var fields = ev.getDetail("fields");
 		if (ev.event == ZmEvent.E_CREATE) {
+			var buddies = AjxVector.fromArray(ev.getItems());
 			buddies.foreach(createBuddy);
 			if (buddies.size()) {
 				this.sort();
 			}
 		} else if (ev.event == ZmEvent.E_MODIFY) {
-			buddies.foreach(AjxCallback.simpleClosure(this._modifyBuddy,
-					this, fields));
+			this._modifyBuddies(ev.getItems(), fields);
 		} else if (ev.event == ZmEvent.E_REMOVE ||
 				   ev.event == ZmEvent.E_DELETE) {
+			var buddies = AjxVector.fromArray(ev.getItems());
 			buddies.foreach(this._removeBuddy, this);
 		}
 	}));
@@ -417,39 +417,51 @@ ZmImOverview.prototype._createBuddy = function(type, buddy) {
         this.applyFilters(items);
 };
 
-ZmImOverview.prototype._modifyBuddy = function(fields, buddy) {
-        var items = this._itemsById[buddy.getAddress()];
-        if (items) {
-                var doGroups = ZmRosterItem.F_GROUPS in fields;
-                if (doGroups) {
-                        this._removeBuddy(buddy);
-                        this._createBuddy("buddy", buddy);
-                } else {
-                        var doShow    = ZmRosterItem.F_PRESENCE  in fields;
-                        var doUnread  = ZmRosterItem.F_UNREAD    in fields;
-                        var doName    = ZmRosterItem.F_NAME      in fields;
-                        var doTyping  = ZmRosterItem.F_TYPING    in fields;
-                        items.foreach(function(item) {
-                                if (doShow) {
-                                        item.setImage(this._getBuddyIcon(buddy));
-                                        item.setClassName(item.getClassName());
-                                        item.addClassName("ZmImPresence-" + buddy.getPresence().getShow());
-                                }
-                                if (doUnread || doName) {
-                                        var txt = buddy.getDisplayName();
-                                        if (buddy.getUnread()) {
-                                                txt += " (" + buddy.getUnread() + ")";
-                                                txt = txt.bold();
-                                        }
-                                        item.setText(txt);
-                                }
-                                if (doTyping) {
-                                        item.condClassName(fields[ZmRosterItem.F_TYPING], "ZmRosterItem-typing");
-                                }
-                        }, this);
-                        this.applyFilters(items.getArray());
-                }
-        }
+ZmImOverview.prototype._modifyBuddies = function(buddies, fields) {
+	var changedShow = false;
+	var changedName = false;
+	for (var i = 0,  count = buddies.length; i < count; i++) {
+		var buddy = buddies[i];
+		var items = this._itemsById[buddy.getAddress()];
+		if (items) {
+			var doGroups = ZmRosterItem.F_GROUPS in fields;
+			if (doGroups) {
+				this._removeBuddy(buddy);
+				this._createBuddy("buddy", buddy);
+			} else {
+				var doShow = ZmRosterItem.F_PRESENCE  in fields;
+				var doUnread = ZmRosterItem.F_UNREAD	in fields;
+				var doName = ZmRosterItem.F_NAME	  in fields;
+				var doTyping = ZmRosterItem.F_TYPING	in fields;
+				changedShow = changedShow || doShow;
+				changedName = changedName || doName;
+				items.foreach(function(item) {
+					if (doShow) {
+						item.setImage(this._getBuddyIcon(buddy));
+						item.setClassName(item.getClassName());
+						item.addClassName("ZmImPresence-" + buddy.getPresence().getShow());
+					}
+					if (doUnread || doName) {
+						var txt = buddy.getDisplayName();
+						if (buddy.getUnread()) {
+							txt += " (" + buddy.getUnread() + ")";
+							txt = txt.bold();
+						}
+						item.setText(txt);
+					}
+					if (doTyping) {
+						item.condClassName(fields[ZmRosterItem.F_TYPING], "ZmRosterItem-typing");
+					}
+				}, this);
+				this.applyFilters(items.getArray());
+			}
+		}
+	}
+
+	if ((changedShow && (this._sortBy == ZmImApp.BUDDY_SORT_PRESENCE)) ||
+		(changedName)) {
+		this.sort();
+	}
 };
 
 ZmImOverview.prototype._removeBuddy = function(buddy) {
