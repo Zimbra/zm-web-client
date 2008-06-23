@@ -128,55 +128,55 @@ function(controller, force) {
 	}
 
 	if (!this._toolTip || force) {
-        var organizer = this.getOrganizer();
-        var sentBy = this.getSentBy();
-        var userName = appCtxt.get(ZmSetting.USERNAME);
-        if (sentBy || (organizer && organizer != userName)) {
-            if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-                var contactsApp = appCtxt.getAppController().getApp(ZmApp.CONTACTS);
-                // NOTE: ZmContactsApp#getContactList expects to be called in an
-                //       asynchronous way but we need the data right away. Instead
-                //       of reworking this code or the getContactList method to be
-                //       able to work synchronously, I'm just going to use the
-                //       raw email address in the case where the contact list has
-                //       not been loaded, yet. By the next time a tooltip is
-                //       created, it will probably be available so it's not a big
-                //       deal.
-                var contactList = contactsApp.getContactList();
+		var organizer = this.getOrganizer();
+		var sentBy = this.getSentBy();
+		var userName = appCtxt.get(ZmSetting.USERNAME);
+		if (sentBy || (organizer && organizer != userName)) {
+			if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+				var contactsApp = appCtxt.getAppController().getApp(ZmApp.CONTACTS);
+				// NOTE: ZmContactsApp#getContactList expects to be called in an
+				//       asynchronous way but we need the data right away. Instead
+				//       of reworking this code or the getContactList method to be
+				//       able to work synchronously, I'm just going to use the
+				//       raw email address in the case where the contact list has
+				//       not been loaded, yet. By the next time a tooltip is
+				//       created, it will probably be available so it's not a big
+				//       deal.
+				var contactList = contactsApp.getContactList();
 
-                var addrs = [ organizer, sentBy ];
-                for (var i = 0; i < addrs.length; i++) {
-                    var addr = addrs[i];
-                    if (!addr) continue;
-                    
-                    if (addr == userName) {
-                        addrs[i] = appCtxt.get(ZmSetting.DISPLAY_NAME);
-                        continue;
-                    }
-                    var contact = contactList && contactList.getContactByEmail(addr);
-                    if (contact) {
-                        addrs[i] = contact.getFullName();
-                    }
-                }
+				var addrs = [ organizer, sentBy ];
+				for (var i = 0; i < addrs.length; i++) {
+					var addr = addrs[i];
+					if (!addr) continue;
 
-                organizer = addrs[0];
-                sentBy = addrs[1];
-            }
-        }
-        else {
-            organizer = null;
-            sentBy = null;
-        }
-        var params = {
-            appt: this,
+					if (addr == userName) {
+						addrs[i] = appCtxt.get(ZmSetting.DISPLAY_NAME);
+						continue;
+					}
+					var contact = contactList && contactList.getContactByEmail(addr);
+					if (contact) {
+						addrs[i] = contact.getFullName();
+					}
+				}
+
+				organizer = addrs[0];
+				sentBy = addrs[1];
+			}
+		}
+		else {
+			organizer = null;
+			sentBy = null;
+		}
+		var params = {
+			appt: this,
 			cal: (this.folderId != ZmOrganizer.ID_CALENDAR && controller) ? controller.getCalendar() : null,
-            organizer: organizer,
-            sentBy: sentBy,
-            when: this.getDurationText(false, false),
+			organizer: organizer,
+			sentBy: sentBy,
+			when: this.getDurationText(false, false),
 			location: this.getLocation(),
-            width: "250",
-            showAttendeeStatus: (this._ptstHashMap != null)
-        };
+			width: "250",
+			showAttendeeStatus: (this._ptstHashMap != null)
+		};
 
 		if (this._ptstHashMap != null) {
 			var ptstStatus = {};
@@ -255,21 +255,30 @@ function(isHtml) {
 	if (isHtml) {
 		buf[i++] = "<p>\n<table border='0'>\n";
 	}
-	
-	var location = this.getAttendees(ZmCalBaseItem.LOCATION, true)
-	if (location) {
-		var origLocationText = ZmApptViewHelper.getAttendeesString(this.origLocations, ZmCalBaseItem.LOCATION, true);
-		modified = (isEdit && (origLocationText != location));
-		params = [ ZmMsg.locationLabel, location, modified ? ZmMsg.apptModifiedStamp : "" ];
+
+	// bug fix #29249 - check if location *label* has changed
+	var locationLabel = this.getLocation();
+	var origLocationLabel = orig ? orig.getLocation() : "";
+	if (locationLabel != origLocationLabel) {
+		params = [ZmMsg.locationLabel, locationLabel, isEdit ? ZmMsg.apptModifiedStamp : ""];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
-	
+
+	var location = this.getAttendeesText(ZmCalBaseItem.LOCATION, true);
+	if (location) {
+		var origLocationText = ZmApptViewHelper.getAttendeesString(this.origLocations, ZmCalBaseItem.LOCATION, true);
+		modified = (isEdit && (origLocationText != location));
+		params = [ZmMsg.resourcesLabel, location, modified ? ZmMsg.apptModifiedStamp : ""];
+		buf[i++] = formatter.format(params);
+		buf[i++] = "\n";
+	}
+
 	var equipment = this.getAttendeesText(ZmCalBaseItem.EQUIPMENT, true);
 	if (equipment) {
 		var origEquipmentText = ZmApptViewHelper.getAttendeesString(this.origEquipment, ZmCalBaseItem.EQUIPMENT, true);
 		modified = (isEdit && (origEquipmentText != equipment));
-		params = [ ZmMsg.resourcesLabel, equipment, modified ? ZmMsg.apptModifiedStamp : "" ];
+		params = [ZmMsg.resourcesLabel, equipment, modified ? ZmMsg.apptModifiedStamp : "" ];
 		buf[i++] = formatter.format(params);
 		buf[i++] = "\n";
 	}
@@ -566,10 +575,10 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 		}
 	}
 
-    if(this.isOrganizer()) {
-        // call base class LAST
-	    ZmCalItem.prototype._addAttendeesToSoap.call(this, soapDoc, inv, m, notifyList, onBehalfOf);
-    }
+	if (this.isOrganizer()) {
+		// call base class LAST
+		ZmCalItem.prototype._addAttendeesToSoap.call(this, soapDoc, inv, m, notifyList, onBehalfOf);
+	}
 };
 
 ZmAppt.prototype._addAttendeeToSoap =
