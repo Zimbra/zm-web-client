@@ -645,8 +645,7 @@ function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 
 	var key = DwtKeyEvent.getCharCode(ev);
-	if (ev.metaKey || ev.altKey || ev.ctrlKey || DwtKeyMapMgr.isModifier(key) || key == DwtKeyMapMgr.TAB_KEYCODE)
-		return;
+	if (DwtKeyMapMgr.hasModifier(ev) || DwtKeyMapMgr.isModifier(key) ||	key == DwtKeyMapMgr.TAB_KEYCODE) { return; }
 
 	var e = DwtUiEvent.getTarget(ev);
 	var view = e ? Dwt.getObjectFromElement(e) : null;
@@ -662,7 +661,7 @@ function(ev) {
 ZmGroupView._keyPressHdlr =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
-	if (ev.metaKey || ev.altKey || ev.ctrlKey) { return; }
+	if (DwtKeyMapMgr.hasModifier(ev)) { return; }
 
 	var e = DwtUiEvent.getTarget(ev);
 	var view = e ? Dwt.getObjectFromElement(e) : null;

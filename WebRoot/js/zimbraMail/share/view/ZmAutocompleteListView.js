@@ -210,10 +210,7 @@ function(ev) {
 	// don't let the browser handle are ones that control the features of the autocomplete
 	// list.
 
-	if (DwtKeyMapMgr.isModifier(key)) {
-		return ZmAutocompleteListView._echoKey(true, ev);
-	}
-	if (ev.altKey || ev.ctrlKey || ev.metaKey) { // non-input key combos
+	if (DwtKeyMapMgr.isModifier(key) || DwtKeyMapMgr.hasModifier(ev)) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 	// if the field is empty, clear the list
