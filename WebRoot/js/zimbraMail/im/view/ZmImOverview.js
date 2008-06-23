@@ -24,7 +24,7 @@ ZmImOverview = function(parent, args) {
         this._groupItems = {};
         this._itemsById = {};
         this._options = args;
-        this._sortBy = "name";
+        this._sortBy = appCtxt.get("IM_PREF_BUDDY_SORT");
 
         this._actionMenuOps = {
 
@@ -98,11 +98,11 @@ function(useActionedItem, ev) {
 	switch (operation) {
 
 		case ZmOperation.IM_SORT_BY_PRESENCE:
-			this.sort("presence");
+			this.sort(ZmImApp.BUDDY_SORT_PRESENCE);
 			break;
 
 		case ZmOperation.IM_SORT_BY_NAME:
-			this.sort("name");
+			this.sort(ZmImApp.BUDDY_SORT_NAME);
 			break;
 
 		case ZmOperation.IM_TOGGLE_OFFLINE:
@@ -171,18 +171,20 @@ ZmImOverview.CMP_SORT_BY_PRESENCE = function(a, b) {
 };
 
 ZmImOverview.prototype.sort = function(by) {
-        if (by)
-                this._sortBy = by;
-        var root = this._rootItem;
+	if (by && (by != this._sortBy)) {
+		this._sortBy = by;
+		appCtxt.getSettings().getSetting("IM_PREF_BUDDY_SORT").setValue(by);
+	}
+	var root = this._rootItem;
         // groups are always sorted by name
-        var items = root.getItems();
-        var cmp = this._sortBy == "presence"
-                ? ZmImOverview.CMP_SORT_BY_PRESENCE
-                : ZmImOverview.CMP_SORT_BY_NAME;
-        for (var i = 0; i < items.length; ++i) {
-                var item = items[i];
-                item.sort(cmp);
-        }
+	var items = root.getItems();
+	var cmp = this._sortBy == ZmImApp.BUDDY_SORT_PRESENCE
+			? ZmImOverview.CMP_SORT_BY_PRESENCE
+			: ZmImOverview.CMP_SORT_BY_NAME;
+	for (var i = 0; i < items.length; ++i) {
+		var item = items[i];
+		item.sort(cmp);
+	}
 };
 
 ZmImOverview.prototype.chatWithBuddy = function(buddy) {
@@ -319,12 +321,16 @@ ZmImOverview.prototype._init = function() {
 
         // ZmRosterItemList might not be initially empty
 	buddyList.getVector().foreach(createBuddy);
+	this.sort();
 
 	buddyList.addChangeListener(new AjxListener(this, function(ev) {
 		var buddies = AjxVector.fromArray(ev.getItems());
 		var fields = ev.getDetail("fields");
 		if (ev.event == ZmEvent.E_CREATE) {
 			buddies.foreach(createBuddy);
+			if (buddies.size()) {
+				this.sort();
+			}
 		} else if (ev.event == ZmEvent.E_MODIFY) {
 			buddies.foreach(AjxCallback.simpleClosure(this._modifyBuddy,
 					this, fields));
@@ -486,12 +492,12 @@ ZmImOverview.prototype.getSortIndex = function(label, root) {
                 var data = item.getData("ZmImOverview.data");
                 if (type == "buddy") {
                         // label is a buddy here (ZmRosterItem)
-                        if (this._sortBy == "name") {
+                        if (this._sortBy == ZmImApp.BUDDY_SORT_NAME) {
                                 var txt = data.buddy.getDisplayName()
                                 // txt can be null if type is "assistant"
                                 if (txt && txt.toLowerCase() > label.getDisplayName())
                                         break;
-                        } else if (this._sortBy == "presence") {
+                        } else if (this._sortBy == ZmImApp.BUDDY_SORT_PRESENCE) {
                                 var a = ZmImOverview.PRESENCE_SORT_INDEX[data.buddy.getPresence().getShow()] || 100;
                                 var b = ZmImOverview.PRESENCE_SORT_INDEX[label.getPresence().getShow()] || 100;
                                 if (a > b)

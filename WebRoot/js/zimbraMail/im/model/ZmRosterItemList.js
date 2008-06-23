@@ -34,6 +34,13 @@ ZmRosterItemList.prototype.addItem = function(item, skipNotify, index) {
 	}
 };
 
+ZmRosterItemList.prototype.addItems = function(items) {
+	for (var i = 0, count = items.length; i < count; i++) {
+		this.add(items[i]);
+	}
+	this._notify(ZmEvent.E_CREATE, {items: items});
+};
+
 ZmRosterItemList.prototype.removeItem = function(item, skipNotify) {
 	if (!item.isDefaultBuddy()) {
 		this.remove(item);

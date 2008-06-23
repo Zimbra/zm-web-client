@@ -137,14 +137,17 @@ function(args) {
 	var list = this.getRosterItemList();
 	if (roster.items && roster.items.item) {
 		var items = roster.items.item;
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if (item.subscription == "TO" || item.subscription == "BOTH") {
-				var rp = new ZmRosterPresence();
-				rp.setFromJS(item.presence);
-				var rosterItem = new ZmRosterItem(item.addr, list, item.name, rp, item.groups);
-				list.addItem(rosterItem);
+		if (items.length) {
+			var rosterItems = new Array(items.length);
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				if (item.subscription == "TO" || item.subscription == "BOTH") {
+					var rp = new ZmRosterPresence();
+					rp.setFromJS(item.presence);
+					rosterItems[i] = new ZmRosterItem(item.addr, list, item.name, rp, item.groups);
+				}
 			}
+			list.addItems(rosterItems);
 		}
 	}
 	if (roster.presence) {
