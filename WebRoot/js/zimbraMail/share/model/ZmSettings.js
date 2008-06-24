@@ -203,7 +203,10 @@ function(callback, accountName, result) {
 			// find out whether this client supports registering mailto 
 			var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
 			if (setting) {
-				setting.setValue((AjxEnv.isPrism && window.platform && (AjxEnv.isMac || AjxEnv.isWindows)));
+				var supported = this.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER) &&
+								AjxEnv.isPrism && window.platform &&
+								(AjxEnv.isMac || AjxEnv.isWindows);
+				setting.setValue(supported);
 			}
 		}
 	}

@@ -464,6 +464,24 @@ function() {
 };
 
 /**
+ * Programmatically expands accordion item for given account
+ *
+ * @param account			[ZmZimbraAccount]	account to expand
+ * @param unloadCurrent		[Boolean]*			if true, calls unload on active account
+ * @param callback			[AjxCallback]*		callback to trigger once accordion has expanded
+ */
+ZmApp.prototype.expandAccordionForAccount =
+function(account, unloadCurrent, callback) {
+	var accordionItem = account ? this.getOverviewPanelContent().getItem(account.itemId) : null;
+	if (accordionItem) {
+		if (unloadCurrent) {
+			appCtxt.getActiveAccount().unload();
+		}
+		this._expandAccordionItem(accordionItem, false, callback);
+	}
+};
+
+/**
  * Returns the list of trees to show in the overview for this app. Don't show
  * Folders unless mail is enabled. Other organizer types won't be created unless
  * their apps are enabled, so we don't need to check for them.
@@ -517,7 +535,7 @@ function(ev) {
 };
 
 ZmApp.prototype._expandAccordionItem =
-function(accordionItem, byUser) {
+function(accordionItem, byUser, callback) {
 	if (accordionItem == this.accordionItem) { return; }
 
 	this.accordionItem = accordionItem;
@@ -549,12 +567,12 @@ function(accordionItem, byUser) {
 		}
 	}
 
-	var callback = new AjxCallback(this, this._handleSetActiveAccount, [this.accordionItem, byUser]);
-	appCtxt.setActiveAccount(activeAcct, callback);
+	var respCallback = new AjxCallback(this, this._handleSetActiveAccount, [this.accordionItem, byUser, callback]);
+	appCtxt.setActiveAccount(activeAcct, respCallback);
 };
 
 ZmApp.prototype._handleSetActiveAccount =
-function(accordionItem, byUser) {
+function(accordionItem, byUser, callback) {
 	if (byUser) {
 		// reset unread count for all accordion items
 		var accounts = appCtxt.getZimbraAccounts();
@@ -568,7 +586,7 @@ function(accordionItem, byUser) {
 
 	var ac = appCtxt.getAppController();
 	ac.setUserInfo();
-	this._activateAccordionItem(accordionItem);
+	this._activateAccordionItem(accordionItem, callback);
 	this._setMiniCalForActiveAccount(byUser);
 
 	// reset instant notify every time account changes
@@ -613,21 +631,6 @@ function(item) {
 		var overview = this._opc.createOverview(params);
 		overview.set(this._getOverviewTrees(), null, item.data.account);
 		accordion.setItemContent(item.id, overview);
-	}
-};
-
-/**
- * UGH: in offline mode, the main account is really the first non-main account
- * so reset the active account to it (spurs a GetInfoRequest and sets accordion)
- */
-ZmApp.prototype._setActiveAcctForOffline =
-function() {
-	var activeAcct = appCtxt.getMainAccount(true);
-	var accordionItem = activeAcct
-		? this.getOverviewPanelContent().getItem(activeAcct.itemId) : null;
-
-	if (accordionItem) {
-		this._expandAccordionItem(accordionItem);
 	}
 };
 
@@ -810,10 +813,10 @@ ZmApp.prototype.activate =
 function(active) {
 	this._active = active;
 	if (active) {
-		// during startup, if in offline mode and in multi-mbox scenario, set
-		// active the first non-main account
+		// during startup, if offline, and multi-mbox scenario, set active the
+		// first non-main account (spurs a GetInfoRequest and sets accordion)
 		if (appCtxt.inStartup && appCtxt.multiAccounts && appCtxt.isOffline) {
-			this._setActiveAcctForOffline();
+			this.expandAccordionForAccount(appCtxt.getMainAccount(true));
 		}
 		this.setOverviewPanelContent();
 		this.stopAlert();

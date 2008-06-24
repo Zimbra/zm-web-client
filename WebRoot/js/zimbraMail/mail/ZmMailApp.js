@@ -1177,7 +1177,7 @@ function(params, ex) {
 };
 
 ZmMailApp.prototype._activateAccordionItem =
-function(accordionItem) {
+function(accordionItem, callback) {
 	ZmApp.prototype._activateAccordionItem.call(this, accordionItem);
 
 	if (appCtxt.isOffline || !appCtxt.inStartup) {
@@ -1186,9 +1186,9 @@ function(accordionItem) {
 		// *reset* type for initial search
 		this._groupBy[appCtxt.getActiveAccount().name] = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 
-		var callback = (appCtxt.inStartup && appCtxt.multiAccounts)
-			? (new AjxCallback(this, this._handleOfflineMailSearch)) : null;
-		this._mailSearch(null, callback);
+		var respCallback = (appCtxt.inStartup && appCtxt.multiAccounts)
+			? (new AjxCallback(this, this._handleOfflineMailSearch)) : callback;
+		this._mailSearch(null, respCallback);
 	}
 };
 

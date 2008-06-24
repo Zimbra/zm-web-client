@@ -143,6 +143,12 @@ function(params) {
 	window.appCtxt = new ZmAppCtxt();
 	appCtxt.rememberMe = false;
 
+	// Handle offline mode
+	if (params.offlineMode) {
+		DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
+		appCtxt.isOffline = true;
+	}
+
 	// Create and initialize settings
 	var settings = new ZmSettings();
 	appCtxt.setSettings(settings);
@@ -173,10 +179,8 @@ function(params) {
 	// Create generic operations
 	ZmOperation.initialize();
 
-	// Handle offline mode
-	if (params.offlineMode) {
-		DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
-		appCtxt.isOffline = true;
+	// reset polling interval for offline
+	if (appCtxt.isOffline) {
 		appCtxt.set(ZmSetting.POLLING_INTERVAL, 60, null, null, true);
 	}
 
@@ -380,13 +384,21 @@ function() {
 
 ZmZimbraMail.prototype.handleOfflineMailTo =
 function(uri, callback) {
-	var mailApp = this.getApp(ZmApp.MAIL);
+	var mailApp = appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER)
+		? this.getApp(ZmApp.MAIL) : null;
 	var idx = (mailApp) ? (uri.indexOf("mailto")) : -1;
 	if (idx >= 0) {
 		var query = "to=" + decodeURIComponent(uri.substring(idx+7));
 		query = query.replace(/\?/g, "&");
-		mailApp._showComposeView(callback, query);
-		return true;
+
+		var preferredAcct = appCtxt.getAccount(appCtxt.get(ZmSetting.OFFLINE_MAILTO_ACCOUNT_ID));
+		if (preferredAcct && preferredAcct != appCtxt.getActiveAccount()) {
+			var respCallback = new AjxCallback(mailApp, mailApp._showComposeView, [callback, query]);
+			appCtxt.getCurrentApp().expandAccordionForAccount(preferredAcct, true, respCallback);
+		} else {
+			mailApp._showComposeView(callback, query);
+			return true;
+		}
 	}
 	return false;
 };
@@ -482,12 +494,13 @@ function(params, result) {
 	}
 };
 
-//Creates mini calendar and shows reminders on delay
+// creates mini calendar and shows reminders on delay
 ZmZimbraMail.prototype.handleCalendarComponents =
 function() {
 	if (appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
 		this.showMiniCalendar();
 	}
+
 	// reminder controlled by calendar preferences setting
 	if (appCtxt.get(ZmSetting.CAL_REMINDER_WARNING_TIME) != 0) {
 		var reminderAction = new AjxTimedAction(this, this.showReminder);
