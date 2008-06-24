@@ -164,13 +164,11 @@ function(acctInfo) {
 		}
 	}
 
-	if (this.visible &&
-		appCtxt.multiAccounts &&
-		acctInfo.unread != this.unread &&
-		appCtxt.getActiveAccount() != this)
-	{
+	if (this.visible && acctInfo.unread != this.unread) {
 		this.unread = acctInfo.unread;
-		appCtxt.getOverviewController().updateAccountTitle(this.itemId, this.getTitle());
+		if (appCtxt.multiAccounts && appCtxt.getActiveAccount() != this) {
+			appCtxt.getOverviewController().updateAccountTitle(this.itemId, this.getTitle());
+		}
 	}
 };
 

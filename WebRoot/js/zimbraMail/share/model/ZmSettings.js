@@ -200,13 +200,19 @@ function(callback, accountName, result) {
 		mainAcct.visible = !appCtxt.isOffline;
 
 		if (appCtxt.isOffline) {
-			// find out whether this client supports registering mailto 
+			var isPrismFriendly = AjxEnv.isPrism && window.platform && (AjxEnv.isMac || AjxEnv.isWindows);
+
+			// find out whether this client supports registering mailto
 			var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
 			if (setting) {
-				var supported = this.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER) &&
-								AjxEnv.isPrism && window.platform &&
-								(AjxEnv.isMac || AjxEnv.isWindows);
+				var supported = this.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER) && isPrismFriendly;
 				setting.setValue(supported);
+			}
+
+			// find out whether this client supports updating the OS dock
+			var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE];
+			if (setting) {
+				setting.setValue(isPrismFriendly);
 			}
 		}
 	}
@@ -670,6 +676,7 @@ function() {
 
 	// offline-specific
 	this.registerSetting("OFFLINE_SUPPORTS_MAILTO",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
+	this.registerSetting("OFFLINE_SUPPORTS_DOCK_UPDATE",	{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("OFFLINE_IS_MAILTO_HANDLER",		{name:"zimbraPrefMailtoHandlerEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("OFFLINE_MAILTO_ACCOUNT_ID",		{name:"zimbraPrefMailtoAccountId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, isGlobal:true});
 };
