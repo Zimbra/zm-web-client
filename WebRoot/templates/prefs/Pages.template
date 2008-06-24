@@ -14,7 +14,11 @@ and the container element is replaced with that control.
 <template id='prefs.Pages#General'>
 	<div align=right>
 		<table class='ZOptionsDefaultsTable'>
-			<tr><td class='ZOptionsDefaultsField'><div id='${id}_REVERT_PAGE' tabindex='10'></div></td></tr>
+			<tr>
+				<td class='ZOptionsDefaultsField'>
+					<div id='${id}_REVERT_PAGE' tabindex='10'></div>
+				</td>
+			</tr>
 		</table>
 	</div>
 
@@ -26,38 +30,39 @@ and the container element is replaced with that control.
 		</tr>
 	</table>
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr><td class='ZOptionsSectionMain'>
-			<table width=100%>
-			<$ if (!appCtxt.isOffline) { $>
-				<tr><td class='ZOptionsLabelTop'><$=ZmMsg.loginLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_CLIENT_TYPE' tabindex='20'></div></td>
-				</tr>
-            <$ } $>
-            
-			<$ if (data.isEnabled(ZmSetting.SKIN_CHANGE_ENABLED)) { $>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.themeLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_SKIN_NAME' tabindex='30'></div></td>
-				</tr>
-			<$ } $>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<table width=100%>
+				<$ if (!appCtxt.isOffline) { $>
+					<tr><td class='ZOptionsLabelTop'><$=ZmMsg.loginLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_CLIENT_TYPE' tabindex='20'></div></td>
+					</tr>
+				<$ } $>
 
-			<$ if (data.isEnabled(ZmSetting.LOCALE_NAME)) { $>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.languageLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_LOCALE_NAME' tabindex='40'></div></td>
-				</tr>
-			<$ } $>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.defualtTimezone$></td>
-					<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE' tabindex='45'></div></td>
-				</tr>
+				<$ if (data.isEnabled(ZmSetting.SKIN_CHANGE_ENABLED)) { $>
+					<tr><td class='ZOptionsLabel'><$=ZmMsg.themeLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_SKIN_NAME' tabindex='30'></div></td>
+					</tr>
+				<$ } $>
 
-			<$ if (!appCtxt.isOffline) { $>
-				<tr><td colspan=2><hr></td></tr>
-
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><div id='${id}_PASSWORD' tabindex='50'></div></td>
-				</tr>
-			<$ } $>
-			</table>
-		</td></tr>
+				<$ if (data.isEnabled(ZmSetting.LOCALE_NAME)) { $>
+					<tr><td class='ZOptionsLabel'><$=ZmMsg.languageLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_LOCALE_NAME' tabindex='40'></div></td>
+					</tr>
+				<$ } $>
+					<tr><td class='ZOptionsLabel'><$=ZmMsg.defualtTimezone$></td>
+						<td class='ZOptionsField'><div id='${id}_DEFAULT_TIMEZONE' tabindex='45'></div></td>
+					</tr>
+				<$ if (!appCtxt.isOffline) { $>
+					<tr><td colspan=2><hr></td></tr>
+					<tr>
+						<td class='ZOptionsLabel'>&nbsp;</td>
+						<td class='ZOptionsField'><div id='${id}_PASSWORD' tabindex='50'></div></td>
+					</tr>
+				<$ } $>
+				</table>
+			</td>
+		</tr>
 	</table>
 
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
@@ -67,31 +72,36 @@ and the container element is replaced with that control.
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
 	</table>
+
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr><td class='ZOptionsSectionMain'>
-			<table width=100%>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<table width=100%>
+					<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
+						<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM)) { $>
+							<tr>
+								<td class='ZOptionsLabel'><$=ZmMsg.searchSettingsLabel$></td>
+								<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SPAM' tabindex='60'></div></td>
+							</tr>
+						<$ } $>
 
-		<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
-			<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_SPAM)) { $>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.searchSettingsLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SPAM' tabindex='60'></div></td>
-				</tr>
-			<$ } $>
+						<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
+							<tr>
+								<td class='ZOptionsLabel'>&nbsp;</td>
+								<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_TRASH' tabindex='70'></div></td>
+							</tr>
+						<$ } $>
 
-			<$ if (data.isEnabled(ZmSetting.SEARCH_INCLUDES_TRASH)) { $>
-				<tr><td class='ZOptionsLabel'>&nbsp;</td>
-					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_TRASH' tabindex='70'></div></td>
-				</tr>
-			<$ } $>
+						<tr><td colspan=2><hr></td></tr>
+					<$ } $>
 
-				<tr><td colspan=2><hr></td></tr>
-		<$ } $>
-
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.searchLanguageLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_SHOW_SEARCH_STRING' tabindex='80'></div></td>
-				</tr>
-			</table>
-		</td></tr>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.searchLanguageLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_SHOW_SEARCH_STRING' tabindex='80'></div></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
 	</table>
 
 	<table border=0 cellspacing=0 cellpadding=0 width=100%>
@@ -100,15 +110,39 @@ and the container element is replaced with that control.
 			<td class='ZOptionsHeader ImgPrefsHeader'><$=ZmMsg.other$></td>
 			<td class='ZOptionsHeaderR'><div class='ImgPrefsHeader_R'></div></td>
 		</tr>
-		</table>
-		<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
-		<tr><td class='ZOptionsSectionMain'>
-			<table width=100%>
-				<tr><td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
-					<td class='ZOptionsField'><div id='${id}_SHOW_SELECTION_CHECKBOX' tabindex='90'></div></td>
-				</tr>
-			</table>
-		</td></tr>
+	</table>
+
+	<table class='ZOptionsSectionTable' border=0 cellspacing=0 cellpadding=0 width=100%>
+		<tr>
+			<td class='ZOptionsSectionMain'>
+				<table width=100%>
+					<tr>
+						<td class='ZOptionsLabel'><$=ZmMsg.settingsLabel$></td>
+						<td class='ZOptionsField'><div id='${id}_SHOW_SELECTION_CHECKBOX' tabindex='90'></div></td>
+					</tr>
+					<$ if (data.isEnabled(ZmSetting.OFFLINE_SUPPORTS_MAILTO)) { $>
+						<tr><td colspan=2><hr></td></tr>
+						<tr>
+							<td class='ZOptionsLabel'><$=ZmMsg.offlineRegisterMailTo$></td>
+							<td class='ZOptionsField'><div id='${id}_OFFLINE_IS_MAILTO_HANDLER' tabindex='100'></div></td>
+						</tr>
+						<tr>
+							<td class='ZOptionsLabel'></td>
+							<td class='ZOptionsField'>
+								<div id='${id}_OFFLINE_MAILTO_ACCOUNT_ID_CONTAINER'>
+									<table border=0>
+										<tr>
+											<td><$=ZmMsg.offlineDefaultMailToAcct$></td>
+											<td><div id='${id}_OFFLINE_MAILTO_ACCOUNT_ID' tabindex='110'></div></td>
+										</tr>
+									</table>
+								</div>
+							</td>
+						</tr>
+					<$ } $>
+				</table>
+			</td>
+		</tr>
 	</table>
 </template>
 

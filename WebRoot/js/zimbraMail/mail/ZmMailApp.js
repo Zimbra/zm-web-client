@@ -1137,18 +1137,25 @@ function(params, callback) {
 	var query;
 	params = params || {};
 
-	if (params.checkQS) {
-		if (location && (location.search.match(/\bview=compose\b/))) {
-			this._showComposeView(callback);
-			return;
-		} else if (location.search && (location.search.match(/\bview=msg\b/))) {
-			var match = location.search.match(/\bid=(\d+)/);
-			var id = match ? match[1] : null;
-			if (id) {
-				query = ["item:", id].join("");
-				params.searchResponse = null;
-				this._forceMsgView = true;
+	if (location && location.search) {
+		if (params.checkQS) {
+			if (location.search.match(/\bview=compose\b/)) {
+				this._showComposeView(callback);
+				return;
 			}
+			else if (location.search.match(/\bview=msg\b/)) {
+				var match = location.search.match(/\bid=(\d+)/);
+				var id = match ? match[1] : null;
+				if (id) {
+					query = ["item:", id].join("");
+					params.searchResponse = null;
+					this._forceMsgView = true;
+				}
+			}
+		}
+		else if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO) && !appCtxt.multiAccounts) {
+			if (appCtxt.getAppController().handleOfflineMailTo(location.search, callback))
+				return;
 		}
 	}
 
@@ -1175,9 +1182,13 @@ function(accordionItem) {
 
 	if (appCtxt.isOffline || !appCtxt.inStartup) {
 		this._addSettingsChangeListeners();
+
 		// *reset* type for initial search
 		this._groupBy[appCtxt.getActiveAccount().name] = appCtxt.get(ZmSetting.GROUP_MAIL_BY);
-		this._mailSearch();
+
+		var callback = (appCtxt.inStartup && appCtxt.multiAccounts)
+			? (new AjxCallback(this, this._handleOfflineMailSearch)) : null;
+		this._mailSearch(null, callback);
 	}
 };
 
@@ -1197,6 +1208,13 @@ function(query, callback, response) {
 	};
 	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
 	appCtxt.getSearchController().search(params);
+};
+
+ZmMailApp.prototype._handleOfflineMailSearch =
+function() {
+	if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO)) {
+		appCtxt.getAppController().handleOfflineMailTo(location.search);
+	}
 };
 
 ZmMailApp.prototype.getSearchParams =
@@ -1233,14 +1251,16 @@ function(results, callback) {
 };
 
 ZmMailApp.prototype._showComposeView =
-function(callback) {
+function(callback, queryStr) {
+	var qs = queryStr || location.search;
+
 	AjxDispatcher.require("Startup2");
 	var cc = AjxDispatcher.run("GetComposeController");
-	var match = location.search.match(/\bsubject=([^&]+)/);
+	var match = qs.match(/\bsubject=([^&]+)/);
 	var subject = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
-	match = location.search.match(/\bto=([^&]+)/);
+	match = qs.match(/\bto=([^&]+)/);
 	var to = match ? decodeURIComponent(match[1]) : null;
-	match = location.search.match(/\bbody=([^&]+)/);
+	match = qs.match(/\bbody=([^&]+)/);
 	var body = match ? (decodeURIComponent(match[1]).replace(/\+/g, " ")) : null;
 	var params = {
 		action: ZmOperation.NEW_MESSAGE,

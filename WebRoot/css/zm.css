@@ -456,6 +456,11 @@ td.DDSepInvisible div {
 }
 
 
+#zdnd_tooltip {
+	display:none;
+	color:#666666;
+	padding-left:70px;
+}
 
 /*
  * Message compose view
@@ -2196,6 +2201,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmPreferencesPage {
 	padding: 0.5em 2em;
+	width:99%;
 }
 
 /* table that holds the 'restore defaults' button */

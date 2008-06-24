@@ -47,7 +47,7 @@ ZmPreferencesPage.prototype.constructor = ZmPreferencesPage;
 
 ZmPreferencesPage.prototype.toString =
 function () {
-    return "ZmPreferencesPage";
+	return "ZmPreferencesPage";
 };
 
 //
@@ -222,7 +222,9 @@ function() {
 				control = this._setupCustom(id, setup, value);
 			}
 			else if (type == ZmPref.TYPE_SELECT) {
-				control = this._setupSelect(id, setup, value);
+				control = (id == ZmSetting.OFFLINE_MAILTO_ACCOUNT_ID)
+					? this._setupAccountSelect(id, setup, value)
+					: this._setupSelect(id, setup, value);
 			}
 			else if (type == ZmPref.TYPE_COMBOBOX) {
 				control = this._setupComboBox(id, setup, value);
@@ -539,6 +541,35 @@ function(id, setup, value) {
 	return text;
 };
 
+ZmPreferencesPage.prototype._setupAccountSelect =
+function(id, setup, value) {
+	if (!appCtxt.multiAccounts) { return; }
+
+	var selObj = new DwtSelect({parent:this});
+	this.setFormObject(id, selObj);
+
+	var accounts = appCtxt.getZimbraAccounts();
+	var first = appCtxt.getMainAccount(true);
+	for (var i in accounts) {
+		var acct = accounts[i];
+		if (acct.visible) {
+			selObj.addOption(acct.getDisplayName(), acct == first, acct.id);
+		}
+	}
+
+	if (selObj.size() > 1) {
+		selObj.setName(id);
+		selObj.setEnabled(appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER));
+		return selObj;
+	} else {
+		var htmlElId = [this._htmlElId, "_", id, "_CONTAINER"].join("");
+		var container = document.getElementById(htmlElId);
+		if (container) {
+			Dwt.setVisible(container, false);
+		}
+	}
+};
+
 ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
 	value = this._prepareValue(id, setup, value);
@@ -679,14 +710,16 @@ function(id, setup, value) {
 	else if (id == ZmSetting.NOTIF_ENABLED) {
 		this._handleNotifyChange();
 		checkbox.addSelectionListener(new AjxListener(this, this._handleNotifyChange));
+	} else if (id == ZmSetting.OFFLINE_IS_MAILTO_HANDLER) {
+		checkbox.addSelectionListener(new AjxListener(this, this._handleOfflineMailto));
 	}
 	return checkbox;
 };
 
 ZmPreferencesPage.prototype._setupInput =
 function(id, setup, value) {
-    value = this._prepareValue(id, setup, value);
-    var params = {
+	value = this._prepareValue(id, setup, value);
+	var params = {
 		parent: this, type: setup.type ? setup.type : DwtInputField.STRING, initialValue: value, size: setup.cols || 40,
 		rows: setup.rows, wrap: setup.wrap, maxLen:setup.maxLen
 	};
@@ -757,15 +790,15 @@ function(containerDiv, settingId, setup) {
 	var exportDivId = this._htmlElId+"_export";
 	containerDiv.innerHTML = AjxTemplate.expand("prefs.Pages#Export", exportDivId);
 
-    //Export Options
-    var selFormat = null;
-    var optionsDiv = document.getElementById(exportDivId+"_options");
-    if(optionsDiv && (setup.options && setup.options.length > 0) ) {
-        var selFormat = this._setupSelect(settingId, setup);
-        this._replaceControlElement(optionsDiv, selFormat);
-    }
+	//Export Options
+	var selFormat = null;
+	var optionsDiv = document.getElementById(exportDivId+"_options");
+	if(optionsDiv && (setup.options && setup.options.length > 0) ) {
+		var selFormat = this._setupSelect(settingId, setup);
+		this._replaceControlElement(optionsDiv, selFormat);
+	}
 
-    //Export Button
+	//Export Button
 	var buttonDiv = document.getElementById(exportDivId+"_button");
 	buttonDiv.setAttribute("tabindex", containerDiv.getAttribute("tabindex"));
 
@@ -794,19 +827,19 @@ function(id, setup, value) {
 
 ZmPreferencesPage.prototype._setupLocales =
 function(id, setup, value) {
-    var button = new DwtButton({parent:this});
-    button.setSize(60, Dwt.DEFAULT);
-    button.setMenu(new AjxListener(this, this._createLocalesMenu, [setup]));
-    this._showLocale(value, button);
+	var button = new DwtButton({parent:this});
+	button.setSize(60, Dwt.DEFAULT);
+	button.setMenu(new AjxListener(this, this._createLocalesMenu, [setup]));
+	this._showLocale(value, button);
 
-    this._dwtObjects[id] = button;
+	this._dwtObjects[id] = button;
 
 	return button;
 };
 
 ZmPreferencesPage.prototype._showLocale =
 function(localeId, button) {
-    var locale = ZmLocale.localeMap[localeId];
+	var locale = ZmLocale.localeMap[localeId];
 	button.setImage(locale ? locale.getImage() : null);
 	button.setText(locale ? locale.name : "");
 	button._localeId = localeId;
@@ -815,45 +848,45 @@ function(localeId, button) {
 ZmPreferencesPage.prototype._createLocalesMenu =
 function(setup) {
 
-    var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
-    var result = new DwtMenu({parent:button});
+	var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
+	var result = new DwtMenu({parent:button});
 
 	var listener = new AjxListener(this, this._localeSelectionListener);
-    for (var language in ZmLocale.languageMap) {
+	for (var language in ZmLocale.languageMap) {
 		var languageObj = ZmLocale.languageMap[language];
 		var array = languageObj.locales;
-        if (array && array.length == 1) {
-            this._createLocaleItem(result, array[0], listener);
-        } else if (array && array.length > 1) {
-            var menuItem = new DwtMenuItem({parent:result, style:DwtMenuItem.CASCADE_STYLE});
-            menuItem.setText(ZmLocale.languageMap[language].name)
-            var subMenu = new DwtMenu({parent:result, style:DwtMenu.DROPDOWN_STYLE});
-            menuItem.setMenu(subMenu);
-            for (var i = 0, count = array.length; i < count; i++) {
-                this._createLocaleItem(subMenu, array[i], listener);
-            }
-        } else {
+		if (array && array.length == 1) {
+			this._createLocaleItem(result, array[0], listener);
+		} else if (array && array.length > 1) {
+			var menuItem = new DwtMenuItem({parent:result, style:DwtMenuItem.CASCADE_STYLE});
+			menuItem.setText(ZmLocale.languageMap[language].name)
+			var subMenu = new DwtMenu({parent:result, style:DwtMenu.DROPDOWN_STYLE});
+			menuItem.setMenu(subMenu);
+			for (var i = 0, count = array.length; i < count; i++) {
+				this._createLocaleItem(subMenu, array[i], listener);
+			}
+		} else {
 			this._createLocaleItem(result, languageObj, listener);
 		}
-    }
-    return result;
+	}
+	return result;
 };
 
 ZmPreferencesPage.prototype._createLocaleItem =
 function(parent, locale, listener) {
-    var result = new DwtMenuItem({parent:parent});
-    result.setText(locale.name);
-    result.setImage(locale.getImage());
-    result._localeId = locale.id;
+	var result = new DwtMenuItem({parent:parent});
+	result.setText(locale.name);
+	result.setImage(locale.getImage());
+	result._localeId = locale.id;
 	result.addSelectionListener(listener);
-    return result;
+	return result;
 };
 
 ZmPreferencesPage.prototype._localeSelectionListener =
 function(ev) {
-    var item = ev.dwtObj;
-    var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
-    this._showLocale(item._localeId, button);
+	var item = ev.dwtObj;
+	var button = this._dwtObjects[ZmSetting.LOCALE_NAME];
+	this._showLocale(item._localeId, button);
 };
 
 ZmPreferencesPage.prototype._handleDontKeepCopyChange = function(ev) {
@@ -864,13 +897,23 @@ ZmPreferencesPage.prototype._handleDontKeepCopyChange = function(ev) {
 	}
 };
 
-ZmPreferencesPage.prototype._handleNotifyChange = function(ev) {
+ZmPreferencesPage.prototype._handleNotifyChange =
+function(ev) {
 	var input = this.getFormObject(ZmSetting.NOTIF_ADDRESS);
 	var checkbox = this.getFormObject(ZmSetting.NOTIF_ENABLED);
 	if (input && checkbox) {
 		input.setRequired(checkbox.isSelected());
 	}
 };
+
+ZmPreferencesPage.prototype._handleOfflineMailto =
+function(ev) {
+	var select = this.getFormObject(ZmSetting.OFFLINE_MAILTO_ACCOUNT_ID);
+	if (select) {
+		var cbox = this.getFormObject(ZmSetting.OFFLINE_IS_MAILTO_HANDLER);
+		select.setEnabled(cbox && cbox.isSelected());
+	}
+}
 
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
@@ -886,10 +929,10 @@ ZmPreferencesPage.prototype._exportButtonListener =
 function(formatSelectObj, ev) {
 	var settingId = ev.dwtObj.getData(Dwt.KEY_ID);
 
-    //Get Format
-    var format = formatSelectObj? formatSelectObj.getValue() : null;
+	//Get Format
+	var format = formatSelectObj? formatSelectObj.getValue() : null;
 
-    var dialog = appCtxt.getChooseFolderDialog();
+	var dialog = appCtxt.getChooseFolderDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._exportOkCallback, this, [dialog, settingId, format]);
 
@@ -931,11 +974,11 @@ function(ev) {
 		var overviewId = [this.toString(), settingId].join("-");
 		if (settingId == ZmSetting.IMPORT) {
 			AjxDispatcher.require(["ContactsCore", "Contacts"]);
-            var noNew = !appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED);
+			var noNew = !appCtxt.get(ZmSetting.NEW_ADDR_BOOK_ENABLED);
 			var omit = {};
 			omit[ZmFolder.ID_TRASH] = true;
-            dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, overviewId: overviewId,
-            			  description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true, hideNewButton:noNew, omit:omit});
+			dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, overviewId: overviewId,
+						  description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true, hideNewButton:noNew, omit:omit});
 		} else {
 			AjxDispatcher.require(["CalendarCore", "Calendar"]);
 			dialog.popup({treeIds:[ZmOrganizer.CALENDAR], title:ZmMsg.chooseCalendar, overviewId: overviewId, description:ZmMsg.chooseCalendarToImport, skipReadOnly:true});

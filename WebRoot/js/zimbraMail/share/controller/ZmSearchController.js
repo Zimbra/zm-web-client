@@ -56,8 +56,8 @@ function() {
 
 ZmSearchController.prototype.dateSearch =
 function(d) {
-    d = d || new Date();
-    var date = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+	d = d || new Date();
+	var date = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
 	var groupBy = appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	var query = "date:" + date;
 	this.search({query:query, types:[groupBy]});
@@ -84,19 +84,21 @@ function(name) {
  */
 ZmSearchController.prototype.showBrowsePickers =
 function(pickers,showBasic) {
-    showBasic = (!showBasic || showBasic == null)?true:showBasic;
-    //Pickers array
-    this.showBrowseView(true, null);
-    //now remove all pickers and add those from array
-    if(pickers instanceof Array){
-       this._browseViewController.removeAllPickers();
-       if(showBasic){ //
-           this._browseViewController.addPicker(ZmPicker.BASIC);
-       }
-       for(var i=0;i<pickers.length;i++){
-           this._browseViewController.addPicker(pickers[i]);
-       }
-    }
+	showBasic = (!showBasic || showBasic == null)?true:showBasic;
+
+	// Pickers array
+	this.showBrowseView(true, null);
+
+	// now remove all pickers and add those from array
+	if (pickers instanceof Array) {
+	   this._browseViewController.removeAllPickers();
+	   if (showBasic) { //
+			this._browseViewController.addPicker(ZmPicker.BASIC);
+	   }
+	   for (var i = 0; i < pickers.length; i++) {
+		   this._browseViewController.addPicker(pickers[i]);
+	   }
+	}
 }
 ZmSearchController.prototype._handleLoadFromBrowse =
 function(name, bv) {
@@ -194,7 +196,7 @@ function() {
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
 
-    // Button listeners
+	// Button listeners
 	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_BUTTON, new AjxListener(this, this._searchButtonListener));
 	if (appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
 		this._searchToolBar.addSelectionListener(ZmSearchToolBar.BROWSE_BUTTON, new AjxListener(this, this._browseButtonListener));
@@ -206,18 +208,18 @@ function() {
 
 ZmSearchController.prototype._addMenuListeners =
 function(menu) {
-    // Menu listeners
-    var searchMenuListener = new AjxListener(this, this._searchMenuListener);
-    var items = menu.getItems();
-    for (var i = 0; i < items.length; i++) {
-    	var item = items[i];
+	// Menu listeners
+	var searchMenuListener = new AjxListener(this, this._searchMenuListener);
+	var items = menu.getItems();
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
 		item.addSelectionListener(searchMenuListener);
 		var mi = item.getData(ZmSearchToolBar.MENUITEM_ID);
 		// set mail as default search
-     	if (mi == ZmId.SEARCH_MAIL) {
-    		item.setChecked(true, true);
-     	}
-    }
+		if (mi == ZmId.SEARCH_MAIL) {
+			item.setChecked(true, true);
+		}
+	}
 };
 
 /**
@@ -246,8 +248,7 @@ function(params) {
 	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
 		appCtxt.getClientCmdHandler().execute((params.query.substr(5)), this);
-
-		{ return; }
+		return;
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSearch, [params.callback]);
@@ -728,4 +729,4 @@ function(id) {
 	}
 
 	return nid;
-}
+};

@@ -195,7 +195,7 @@
 			<td colspan=3><div id='${attDivId}'></div></td>
 		</tr>
 	</table>
-	<div align='right' id='zdnd_tooltip' style='display:none; padding-right:10px; color:#666666;'><$=ZmMsg.dndTooltip$></div>
+	<div id='zdnd_tooltip'><$=ZmMsg.dndTooltip$></div>
 	<!-- compose editor is automatically appended below the header -->
 </template>
 
