@@ -102,7 +102,7 @@ ZmSearchTreeController.prototype._browseListener =
 function(ev){
     var search = this._getActionedOrganizer(ev);
     if (search) {
-        AjxPackage.require("zimbraMail.share.view.picker.ZmPicker");
+        AjxDispatcher.require("Browse");
         appCtxt.getSearchController().showBrowsePickers([ZmPicker.SEARCH]);
         //appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
     }
