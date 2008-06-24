@@ -148,7 +148,9 @@ function() {
 				ZmSetting.SHOW_SELECTION_CHECKBOX,
 				ZmSetting.SKIN_NAME,
 				ZmSetting.CLIENT_TYPE,
-				ZmSetting.DEFAULT_TIMEZONE
+				ZmSetting.DEFAULT_TIMEZONE,
+				ZmSetting.OFFLINE_IS_MAILTO_HANDLER,
+				ZmSetting.OFFLINE_MAILTO_ACCOUNT_ID
 			]
 		},
 		COMPOSING: {
@@ -283,44 +285,58 @@ function() {
 		precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED
 	});
 
-    // Polling Interval Options - Dynamically constructed according to MIN_POLLING_INTERVAL,POLLING_INTERVAL
-    var options = [ 525600 ];
-    var startValue   = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL));
-    if(startValue < 1) startValue = 1;
-    else startValue = Math.round(startValue)
-    var pollInterval = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.POLLING_INTERVAL));
-    pollInterval = Math.round(pollInterval);
+	if (appCtxt.isOffline) {
+		ZmPref.registerPref("OFFLINE_IS_MAILTO_HANDLER", {
+			displayName:		ZmMsg.offlineAllowMailTo,
+			displayContainer:	ZmPref.TYPE_CHECKBOX
+		});
 
-    while(startValue <= 10){
-        options.push(startValue);
-        startValue++;
-    }
-    startValue = startValue - 1;
-    var count = options.length;
-    while(count < 10){
-        startValue = startValue + 5;
-        options.push(startValue);
-        count++;
-    }
-    if(pollInterval > startValue){
-        var p = pollInterval%5;
-        if( p == 0 ) p = pollInterval;
-        else p = (pollInterval/5 + 1)*5;
-        options.push(p);
-    }else{
-        startValue = startValue + 5;
-        options.push(startValue);
-    }
-    var displayOptions = [ZmMsg.pollNever];
-    while(displayOptions.length <= count){
-        displayOptions.push(ZmMsg.pollEveryNMinutes);
-    }
+		ZmPref.registerPref("OFFLINE_MAILTO_ACCOUNT_ID", {
+			displayContainer:	ZmPref.TYPE_SELECT
+		});
+	}
 
-    ZmPref.registerPref("POLLING_INTERVAL", {
+	// Polling Interval Options - Dynamically constructed according to MIN_POLLING_INTERVAL,POLLING_INTERVAL
+	var options = [525600];
+
+	var startValue = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.MIN_POLLING_INTERVAL));
+	startValue = (startValue < 1) ? 1 : Math.round(startValue);
+
+	var pollInterval = ZmPref.pollingIntervalDisplay(appCtxt.get(ZmSetting.POLLING_INTERVAL));
+	pollInterval = Math.round(pollInterval);
+
+	while (startValue <= 10) {
+		options.push(startValue);
+		startValue++;
+	}
+	startValue = startValue - 1;
+
+	var count = options.length;
+	while (count < 10) {
+		startValue = startValue + 5;
+		options.push(startValue);
+		count++;
+	}
+
+	if (pollInterval > startValue) {
+		var p = pollInterval % 5;
+		p = (p == 0) ? pollInterval : ((pollInterval / 5 + 1) * 5);
+		options.push(p);
+	} else {
+		startValue = startValue + 5;
+		options.push(startValue);
+	}
+
+	var displayOptions = [ZmMsg.pollNever];
+	while (displayOptions.length <= count) {
+		displayOptions.push(ZmMsg.pollEveryNMinutes);
+	}
+
+	ZmPref.registerPref("POLLING_INTERVAL", {
 		displayName:		ZmMsg.pollingInterval,
 		displayContainer:	ZmPref.TYPE_SELECT,
-        displayOptions:     displayOptions,
-        //displayOptions:		[ ZmMsg.pollNever, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes ],
+		displayOptions:		displayOptions,
+		//displayOptions:		[ ZmMsg.pollNever, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes, ZmMsg.pollEveryNMinutes ],
 		// NOTE: 525600 is the number of minutes in a year. I think that's a
 		//       reasonable value for "never" since the server must have
 		//       *some* number.
@@ -335,15 +351,17 @@ function() {
 		displayName:		ZmMsg.replyInclude,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		[ZmMsg.dontInclude,
-					 ZmMsg.includeInBody,
-                                         ZmMsg.includePrefix, ZmMsg.includePrefixFull,
-					 ZmMsg.includeOriginalAsAttach,
-					 ZmMsg.smartInclude],
+							ZmMsg.includeInBody,
+							ZmMsg.includePrefix,
+							ZmMsg.includePrefixFull,
+							ZmMsg.includeOriginalAsAttach,
+							ZmMsg.smartInclude],
 		options:			[ZmSetting.INCLUDE_NONE,
-						 ZmSetting.INCLUDE,
-                                                 ZmSetting.INCLUDE_PREFIX, ZmSetting.INCLUDE_PREFIX_FULL,
-						 ZmSetting.INCLUDE_ATTACH,
-						 ZmSetting.INCLUDE_SMART]
+							ZmSetting.INCLUDE,
+							ZmSetting.INCLUDE_PREFIX,
+							ZmSetting.INCLUDE_PREFIX_FULL,
+							ZmSetting.INCLUDE_ATTACH,
+							ZmSetting.INCLUDE_SMART]
 	});
 
 	ZmPref.registerPref("REPLY_PREFIX", {
@@ -406,10 +424,10 @@ function() {
 	ZmPref.registerPref("VIEW_AS_HTML", {
 		displayName:		ZmMsg.displayMail,
 		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
-        orientation:        ZmPref.ORIENT_HORIZONTAL,
-        displayOptions:     [ZmMsg.displayAsHTML, ZmMsg.displayAsText],
-        options:            [true, false]
-    });
+		orientation:		ZmPref.ORIENT_HORIZONTAL,
+		displayOptions:		[ZmMsg.displayAsHTML, ZmMsg.displayAsText],
+		options:			[true, false]
+	});
 };
 
 // other

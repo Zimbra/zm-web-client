@@ -172,9 +172,9 @@ function(callback, accountName, result) {
     if (obj.rest)			this._settings[ZmSetting.REST_URL].setValue(obj.rest);
 	if (obj.license)		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
 
-    if (obj.prefs && obj.prefs._attrs) {
-    	this.createFromJs(obj.prefs._attrs);
-    }
+	if (obj.prefs && obj.prefs._attrs) {
+		this.createFromJs(obj.prefs._attrs);
+	}
 	if (obj.attrs && obj.attrs._attrs) {
 		this.createFromJs(obj.attrs._attrs);
 	}
@@ -198,8 +198,16 @@ function(callback, accountName, result) {
 
 		// set visibility last - based on offline-mode flag
 		mainAcct.visible = !appCtxt.isOffline;
+
+		if (appCtxt.isOffline) {
+			// find out whether this client supports registering mailto 
+			var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
+			if (setting) {
+				setting.setValue((AjxEnv.isPrism && window.platform && (AjxEnv.isMac || AjxEnv.isWindows)));
+			}
+		}
 	}
-	
+
 	var accounts = obj.childAccounts ? obj.childAccounts.childAccount : null;
 	if (accounts) {
 		// create a ZmZimbraAccount for each child account
@@ -208,6 +216,16 @@ function(callback, accountName, result) {
 			appCtxt.setAccount(acct);
 			if (acct.visible) {
 				appCtxt.multiAccounts = true;
+			}
+		}
+	}
+
+	// reset mailto account Id in case user has added removed accounts
+	if (accounts && appCtxt.isOffline) {
+		var setting = this._settings[ZmSetting.OFFLINE_MAILTO_ACCOUNT_ID];
+		if (setting) {
+			if (!appCtxt.getAccount(setting.getValue())) {
+				setting.setValue(appCtxt.getMainAccount(true).id);
 			}
 		}
 	}
@@ -279,20 +297,20 @@ function(zimlets, props) {
 
 	appCtxt.getZimletMgr().loadZimlets(zimlets, props);
 
-    if (zimlets && zimlets.length) {
-        // update overview tree
-        var activeApp = appCtxt.getCurrentApp();
-        var overview = activeApp ? activeApp.getOverview() : null;
-        if (overview) {
-        	overview.setTreeView(ZmOrganizer.ZIMLET);
-        }
+	if (zimlets && zimlets.length) {
+		// update overview tree
+		var activeApp = appCtxt.getCurrentApp();
+		var overview = activeApp ? activeApp.getOverview() : null;
+		if (overview) {
+			overview.setTreeView(ZmOrganizer.ZIMLET);
+		}
 
-        // create global portlets
-        if (appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
-            var portletMgr = appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
-            var portletIds = portletMgr.createPortlets(true);
-        }
-    }
+		// create global portlets
+		if (appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
+			var portletMgr = appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+			var portletIds = portletMgr.createPortlets(true);
+		}
+	}
 };
 
 ZmSettings.prototype.loadSkinsAndLocales =
@@ -308,23 +326,23 @@ function(callback) {
 	var localeCallback = new AjxCallback(this, this._handleResponseGetAllLocales);
 	command.addNewRequestParams(localeDoc, localeCallback);
 
-    var csvFormatsDoc = AjxSoapDoc.create("GetAvailableCsvFormatsRequest", "urn:zimbraAccount");
-    var csvFormatsCallback = new AjxCallback(this, this._handleResponseGetAvailableCsvFormats);
-    command.addNewRequestParams(csvFormatsDoc, csvFormatsCallback);
+	var csvFormatsDoc = AjxSoapDoc.create("GetAvailableCsvFormatsRequest", "urn:zimbraAccount");
+	var csvFormatsCallback = new AjxCallback(this, this._handleResponseGetAvailableCsvFormats);
+	command.addNewRequestParams(csvFormatsDoc, csvFormatsCallback);
 
-    command.run(callback);
+	command.run(callback);
 };
 
 ZmSettings.prototype._handleResponseGetAvailableCsvFormats =
 function(result){
-    var formats = result.getResponse().GetAvailableCsvFormatsResponse.csv;
-    var setting = appCtxt.getMainAccount().settings.getSetting(ZmSetting.AVAILABLE_CSVFORMATS);
-    if(formats && formats.length){
-        var csvformat;
-        for(var i=0; i<formats.length; i++){
-            setting.setValue(formats[i].name);
-        }
-    };
+	var formats = result.getResponse().GetAvailableCsvFormatsResponse.csv;
+	var setting = appCtxt.getMainAccount().settings.getSetting(ZmSetting.AVAILABLE_CSVFORMATS);
+	if(formats && formats.length){
+		var csvformat;
+		for(var i=0; i<formats.length; i++){
+			setting.setValue(formats[i].name);
+		}
+	};
 };
 
 ZmSettings.prototype._handleResponseLoadAvailableSkins =
@@ -361,10 +379,10 @@ function(response) {
  */
 ZmSettings.prototype.save =
 function(list, callback, batchCommand) {
-    if (!(list && list.length)) return;
-    
-    var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
-    var gotOne = false;
+	if (!(list && list.length)) return;
+
+	var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+	var gotOne = false;
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
 		if (setting.type != ZmSetting.T_PREF) {
@@ -439,11 +457,11 @@ function() {
 	value = AjxUtil.formatUrl({host:document.domain, path:"/service/upload", qsReset:true, qsArgs:{lbfums:""}});
 	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value, null, false, true);
 
-    // CSFE_ATTACHMENT_UPLOAD_URI
+	// CSFE_ATTACHMENT_UPLOAD_URI
 	value = AjxUtil.formatUrl({host:document.domain, path:"/service/upload", qsReset:true});
 	this._settings[ZmSetting.CSFE_ATTACHMENT_UPLOAD_URI].setValue(value, null, false, true);
 
-    // CSFE EXPORT URI
+	// CSFE EXPORT URI
 	value = AjxUtil.formatUrl({host:document.domain, path:"/service/home/~/", qsReset:true, qsArgs:{auth:"co", id:"{0}", fmt:"csv"}});
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 	
@@ -544,11 +562,11 @@ function() {
 	// COS SETTINGS
 	this.registerSetting("ATTACHMENTS_BLOCKED",				{name:"zimbraAttachmentsBlocked", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("AVAILABLE_SKINS",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST, isGlobal:true});
-    this.registerSetting("AVAILABLE_CSVFORMATS",            {type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST, isGlobal:true});
-    this.registerSetting("BROWSE_ENABLED",					{name:"zimbraFeatureAdvancedSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("AVAILABLE_CSVFORMATS",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_LIST, isGlobal:true});
+	this.registerSetting("BROWSE_ENABLED",					{name:"zimbraFeatureAdvancedSearchEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name:"zimbraFeatureChangePasswordEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("DISPLAY_NAME",					{name:"displayName", type:ZmSetting.T_COS});
-    this.registerSetting("FLAGGING_ENABLED",				{name:"zimbraFeatureFlaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
+	this.registerSetting("FLAGGING_ENABLED",				{name:"zimbraFeatureFlaggingEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("FOLDER_TREE_OPEN",				{name:"zimbraPrefFolderTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isImplicit:true});
 	this.registerSetting("GAL_AUTOCOMPLETE_ENABLED",		{name:"zimbraFeatureGalAutoCompleteEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:false});
 	this.registerSetting("GAL_ENABLED",						{name:"zimbraFeatureGalEnabled", type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN,	defaultValue:true});
@@ -588,9 +606,9 @@ function() {
 	this.registerSetting("LAST_ACCESS",						{type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
 	this.registerSetting("PREVIOUS_SESSION",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
 	this.registerSetting("RECENT_MESSAGES",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_INT});
-    this.registerSetting("REST_URL",                        {name:"rest" , type:ZmSetting.T_COS});
+	this.registerSetting("REST_URL",						{name:"rest" , type:ZmSetting.T_COS});
 
-    // CLIENT SIDE FEATURE SUPPORT
+	// CLIENT SIDE FEATURE SUPPORT
 	this.registerSetting("ATTACHMENT_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("ATT_VIEW_ENABLED",				{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
 	this.registerSetting("EVAL_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
@@ -603,7 +621,7 @@ function() {
 	this.registerSetting("SEARCH_ENABLED",					{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("SHORTCUT_LIST_ENABLED",			{type:ZmSetting.T_COS, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
-    // USER PREFERENCES (mutable)
+	// USER PREFERENCES (mutable)
 	
 	// general preferences
 	this.registerSetting("ACCOUNTS",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
@@ -614,6 +632,8 @@ function() {
 	this.registerSetting("COMPOSE_INIT_FONT_FAMILY",		{name:"zimbraPrefHtmlEditorDefaultFontFamily", type:ZmSetting.T_PREF, defaultValue:ZmSetting.COMPOSE_FONT_FAM});
 	this.registerSetting("COMPOSE_INIT_FONT_SIZE",			{name:"zimbraPrefHtmlEditorDefaultFontSize", type:ZmSetting.T_PREF, defaultValue:ZmSetting.COMPOSE_FONT_SIZE});
 	this.registerSetting("DEFAULT_TIMEZONE",				{name:"zimbraPrefTimeZoneId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, defaultValue:AjxTimezone.getServerId(AjxTimezone.DEFAULT), isGlobal:true});
+	this.registerSetting("FILTERS",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
+	this.registerSetting("IDENTITIES",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("INITIALLY_SEARCH_GAL",			{name:"zimbraPrefGalSearchEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("LOCALE_NAME",						{name:"zimbraPrefLocale", type:ZmSetting.T_PREF, defaultValue:"en_US", isGlobal:true});
 	this.registerSetting("SHOW_SELECTION_CHECKBOX",			{name:"zimbraPrefShowSelectionCheckbox", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true, isGlobal:true});
@@ -624,23 +644,31 @@ function() {
 	this.registerSetting("SEARCH_INCLUDES_TRASH",			{name:"zimbraPrefIncludeTrashInSearch", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
 	this.registerSetting("SHORTCUTS",						{name:"zimbraPrefShortcuts", type:ZmSetting.T_PREF});
 	this.registerSetting("SHOW_SEARCH_STRING",				{name:"zimbraPrefShowSearchString", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
+	this.registerSetting("SIGNATURES",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
+	this.registerSetting("SIGNATURES_MAX",					{name:"zimbraSignatureMaxNumEntries", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:20});
+	this.registerSetting("SIGNATURES_MIN",					{name:"zimbraSignatureMinNumEntries", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1});
 	this.registerSetting("SKIN_NAME",						{name:"zimbraPrefSkin", type:ZmSetting.T_PREF, defaultValue:"skin", isGlobal:true});
 	this.registerSetting("SORTING_PREF",					{type:ZmSetting.T_PREF, dataType:ZmSetting.D_HASH});
 	this.registerSetting("USE_KEYBOARD_SHORTCUTS",			{name:"zimbraPrefUseKeyboardShortcuts", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 	this.registerSetting("VIEW_AS_HTML",					{name:"zimbraPrefMessageViewHtmlPreferred", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false});
+	this.registerSetting("VOICE_ACCOUNTS",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("WARN_ON_EXIT",					{name:"zimbraPrefWarnOnExit", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:true});
 
+	this._registerOfflineSettings();
 	this._registerSkinHints();
 
-	this.registerSetting("FILTERS",							{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
-	this.registerSetting("IDENTITIES",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
-	this.registerSetting("VOICE_ACCOUNTS",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
-	this.registerSetting("SIGNATURES",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
-	this.registerSetting("SIGNATURES_MAX",					{name:"zimbraSignatureMaxNumEntries", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:20});
-	this.registerSetting("SIGNATURES_MIN",					{name:"zimbraSignatureMinNumEntries", type:ZmSetting.T_COS, dataType:ZmSetting.D_INT, defaultValue:1});
-	
 	// need to do this before loadUserSettings(), and zimlet settings are not tied to an app where it would normally be done
 	this.registerSetting("ZIMLET_TREE_OPEN",				{name:"zimbraPrefZimletTreeOpen", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isImplicit:true});
+};
+
+ZmSettings.prototype._registerOfflineSettings =
+function() {
+	if (!appCtxt.isOffline) { return; }
+
+	// offline-specific
+	this.registerSetting("OFFLINE_SUPPORTS_MAILTO",			{type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
+	this.registerSetting("OFFLINE_IS_MAILTO_HANDLER",		{name:"zimbraPrefMailtoHandlerEnabled", type:ZmSetting.T_PREF, dataType:ZmSetting.D_BOOLEAN, defaultValue:false, isGlobal:true});
+	this.registerSetting("OFFLINE_MAILTO_ACCOUNT_ID",		{name:"zimbraPrefMailtoAccountId", type:ZmSetting.T_PREF, dataType:ZmSetting.D_STRING, isGlobal:true});
 };
 
 /**
@@ -735,18 +763,18 @@ function(ev) {
 ZmSettings.prototype._newSkinYesCallback =
 function(skin, dialog) {
 	dialog.popdown();
-    window.onbeforeunload = null;
-    var url = AjxUtil.formatUrl({qsArgs:{skin:skin}});
+	window.onbeforeunload = null;
+	var url = AjxUtil.formatUrl({qsArgs:{skin:skin}});
 	DBG.println(AjxDebug.DBG1, "skin change, redirect to: " + url);
-    ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
+	ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
 ZmSettings.prototype._refreshBrowserCallback =
 function(dialog) {
 	dialog.popdown();
-    window.onbeforeunload = null;
-    var url = AjxUtil.formatUrl({});
-    ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
+	window.onbeforeunload = null;
+	var url = AjxUtil.formatUrl({});
+	ZmZimbraMail.sendRedirect(url); // redirect to self to force reload
 };
 
 /**
