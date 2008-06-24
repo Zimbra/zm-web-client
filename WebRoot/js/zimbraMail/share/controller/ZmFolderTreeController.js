@@ -417,7 +417,7 @@ ZmFolderTreeController.prototype._browseListener =
 function(ev){
 	var folder = this._getActionedOrganizer(ev);
 	if (folder) {
-		AjxPackage.require("zimbraMail.share.view.picker.ZmPicker");
+		AjxDispatcher.require("Browse");
 		appCtxt.getSearchController().showBrowsePickers([ZmPicker.FOLDER]);
 		//appCtxt.getSearchController()._browseViewController.addPicker(ZmPicker.FOLDER);
 	}
