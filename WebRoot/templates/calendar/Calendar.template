@@ -49,19 +49,19 @@
 
 <template id='calendar.Calendar#calendar_appt_30' width='4' height='4'>
 	<div id='${id}_body' class='appt_30_body ${headerColor}'>
-		<$ if (!AjxEnv.isIE && data.icon) { $>
+		<$ if (!AjxEnv.isIE && !AjxEnv.isFirefox3up && data.icon) { $>
 			<div class='appt_icon'><$= AjxImg.getImageHtml(data.icon, "width:16") $></div>
 		<$ } $>
-		<$ if (!AjxEnv.isIE && data.tagIcon) { $>
+		<$ if (!AjxEnv.isIE && !AjxEnv.isFirefox3up && data.tagIcon) { $>
 			<div class='appt_icon'><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></div>
 		<$ } $>
 		<table width=100% cellspacing=0 cellpadding=0>
 			<tr>
 				<td class=appt_30${newState}_name>${name}</td>
-				<$ if (AjxEnv.isIE && data.tagIcon) { $>
+				<$ if ((AjxEnv.isIE || AjxEnv.isFirefox3up) && data.tagIcon) { $>
 					<td valign=top width=16><$= AjxImg.getImageHtml(data.tagIcon, "width:16") $></td>
 				<$ } $>
-				<$ if (AjxEnv.isIE && data.icon) { $>
+				<$ if ((AjxEnv.isIE || AjxEnv.isFirefox3up) && data.icon) { $>
 					<td valign=top width=16><$= AjxImg.getImageHtml(data.icon, "width:16") $></td>
 				<$ } $>
 			</tr>
