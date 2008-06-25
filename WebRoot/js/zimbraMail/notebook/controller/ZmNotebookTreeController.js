@@ -1,28 +1,29 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
 ZmNotebookTreeController = function() {
-	
+
 	ZmTreeController.call(this, ZmOrganizer.NOTEBOOK);
 
 	this._listeners[ZmOperation.NEW_NOTEBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);
 	this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
+        this._listeners[ZmOperation.BROWSE_FOLDER] = new AjxListener(this, this._browseFolderListener);
     this._listeners[ZmOperation.BROWSE] = new AjxListener(this, function(){ appCtxt.getSearchController().fromBrowse(""); });
     this._eventMgrs = {};
 };
@@ -101,7 +102,7 @@ function() {
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SEP,
 		ZmOperation.REFRESH,
-        ZmOperation.BROWSE    
+        ZmOperation.BROWSE
     );
 	return ops;
 };
@@ -118,6 +119,7 @@ function() {
 		ops.push(ZmOperation.SHARE_NOTEBOOK);
 	}
 	ops.push(
+                ZmOperation.BROWSE_FOLDER,
 		ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.REFRESH
 	);
 	return ops;
@@ -173,7 +175,7 @@ function(ev, treeView, overviewId) {
     if (!organizers && ev.source)
         organizers = [ev.source];
 
-	notebookController.handleUpdate(ev,organizers);    
+	notebookController.handleUpdate(ev,organizers);
 };
 
 ZmNotebookTreeController.prototype._shareNotebookListener =
@@ -210,33 +212,39 @@ function(ev) {
 	}
 };
 
+ZmNotebookTreeController.prototype._browseFolderListener =
+function(ev) {
+        var folder = this._getActionedOrganizer(ev);
+        appCtxt.getSearchController().search({ query: "in:" + folder.name }); // FIXME: is there a better way to browse a folder?
+};
+
 ZmNotebookTreeController.prototype._editNotebookListener = function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
-	
+
 	var notebook = this._pendingActionData;
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 	if (op == ZmOperation.EDIT_NOTEBOOK_INDEX) {
 		op = ZmNotebook.PAGE_INDEX;
-		
+
 	} else if (op == ZmOperation.EDIT_NOTEBOOK_CHROME) {
 		op = ZmNotebook.PAGE_CHROME;
-		
+
 	} else if (op == ZmOperation.EDIT_NOTEBOOK_STYLES) {
 		op = ZmNotebook.PAGE_CHROME_STYLES;
-		
+
 	} else if (op == ZmOperation.EDIT_NOTEBOOK_HEADER) {
 		op = ZmNotebook.PAGE_HEADER;
-		
+
 	} else if (op == ZmOperation.EDIT_NOTEBOOK_FOOTER) {
 		op = ZmNotebook.PAGE_FOOTER;
-		
+
 	} else if (op == ZmOperation.EDIT_NOTEBOOK_SIDE_BAR) {
 		op = ZmNotebook.PAGE_SIDE_BAR;
 	}
 	var name = op;
-	
+
 	var cache = AjxDispatcher.run("GetNotebookCache");
-	
+
 	var pageEditController = AjxDispatcher.run("GetPageEditController");
 	var page = cache.getPageByName(notebook.id, name, true);
 	pageEditController.show(page);

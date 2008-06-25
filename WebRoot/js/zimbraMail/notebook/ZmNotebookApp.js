@@ -80,6 +80,7 @@ function() {
 	ZmOperation.registerOp(ZmId.OP_SEND_PAGE, {textKey:"send", tooltipKey:"sendPageTT", image:"Send"}, ZmSetting.MAIL_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_SHARE_NOTEBOOK, {textKey:"shareNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp(ZmId.OP_REVERT_PAGE, {textKey:"revert", tooltipKey:"restorePage", image:"Edit"});
+        ZmOperation.registerOp("BROWSE_FOLDER", {textKey:"browse", image:"Browse"});
 };
 
 ZmNotebookApp.prototype._registerItems =
