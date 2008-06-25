@@ -1375,6 +1375,7 @@ function(organizer) {
 			window.platform.icon().badgeText = (unreadCount > 0)
 				? unreadCount : null;
 		}
+		/*
 		else if (AjxEnv.isWindows) {
 			window.platform.icon().imageSpec = (unreadCount > 0)
 				? "resource://webapp/icons/default/newmail.png"
@@ -1382,6 +1383,7 @@ function(organizer) {
 			window.platform.icon().title = (unreadCount > 0)
 				? AjxMessageFormat.format(ZmMsg.unreadCount, unreadCount) : null;
 		}
+		*/
 	}
 };
 
