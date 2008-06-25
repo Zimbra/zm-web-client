@@ -346,7 +346,7 @@ function(view, force) {
 		this._currentView = view;
 		this._setup(view);
 	}
-	this._resetOperations(this._toolbar[view], 1);
+	this._resetOperations(this._toolbar[view], 0);
 
 	if (viewChanged) {
 		var elements = {};
@@ -811,7 +811,7 @@ function(folder) {
 
 ZmBriefcaseController.prototype._resetOpForCurrentView =
 function(num) {
-	this._resetOperations(this._toolbar[this._currentView], (num?num:0));
+	this._resetOperations(this._toolbar[this._currentView], num || 0);
 };
 
 ZmBriefcaseController.prototype._setupViewMenu =
