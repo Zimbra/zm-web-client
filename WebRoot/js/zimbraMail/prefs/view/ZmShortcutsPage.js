@@ -385,7 +385,7 @@ function(keys, mapNames, html, i) {
 					actionDesc[map] = {};
 					keySequences[map] = [];
 				}
-				var scKey = [map, action].join(".");
+				var scKey = [map, action, "display"].join(".");
 				var scValue = keys[scKey];
 				if (!scValue) { continue; }
 				keySequences[map].push(scKey);
@@ -728,15 +728,14 @@ function(html, i, closeLinkId) {
 	var shortcuts = ZmShortcutsPageTabViewCustom.SAMPLE_SHORTCUTS[this._organizer];
 	for (var j = 0; j < shortcuts.length; j++) {
 		html[i++] = "<li>";
-		var propName = shortcuts[j];
+		var propName = [shortcuts[j], "display"].join(".");
 		var value = ZmKeys[propName];
-		if (value) {
-			var keySeqs = ZmKeys[propName].split(/\s*;\s*/);
+		if (value) {			var keySeqs = ZmKeys[propName].split(/\s*;\s*/);
 			var ks = keySeqs[0];
 			var parts = ks.split(",");
 			var scText = AjxMessageFormat.format(ZmMsg.shortcutExample, [ZmShortcutsPageTabViewList._formatKeySequence(parts[0]),
 												 ZmShortcutsPageTabViewList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY)]);
-			var examplePropName = [propName, "example"].join(".");
+			var examplePropName = [shortcuts[j], "example"].join(".");
 			var exampleText = ZmKeys[examplePropName];
 			if (exampleText) {
 				var text = AjxMessageFormat.format(exampleText, [exampleOrg]);
