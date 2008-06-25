@@ -205,12 +205,11 @@ function(callback, accountName, result) {
 			// find out whether this client supports registering mailto
 			var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
 			if (setting) {
-				var supported = this.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER) && isPrismFriendly;
-				setting.setValue(supported);
+				setting.setValue(isPrismFriendly);
 			}
 
 			// find out whether this client supports updating the OS dock
-			var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE];
+			setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE];
 			if (setting) {
 				setting.setValue(isPrismFriendly);
 			}

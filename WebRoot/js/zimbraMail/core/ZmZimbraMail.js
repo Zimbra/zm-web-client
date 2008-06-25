@@ -384,9 +384,10 @@ function() {
 
 ZmZimbraMail.prototype.handleOfflineMailTo =
 function(uri, callback) {
-	var mailApp = appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER)
-		? this.getApp(ZmApp.MAIL) : null;
-	var idx = (mailApp) ? (uri.indexOf("mailto")) : -1;
+	if (!appCtxt.get(ZmSetting.OFFLINE_IS_MAILTO_HANDLER)) { return false; }
+
+	var mailApp = this.getApp(ZmApp.MAIL);
+	var idx = (uri.indexOf("mailto"));
 	if (idx >= 0) {
 		var query = "to=" + decodeURIComponent(uri.substring(idx+7));
 		query = query.replace(/\?/g, "&");
@@ -439,7 +440,9 @@ function(params, result) {
 		// register mailto: handler
 		if (appCtxt.get(ZmSetting.OFFLINE_SUPPORTS_MAILTO)) {
 			var callback = AjxCallback.simpleClosure(this.handleOfflineMailTo, this);
-			window.platform.registerProtocolHandler("mailto", "http://localhost:7633/desktop/login.jsp?mailto=%s", callback);
+			if (window.platform) { // do the check so we can still debug in FF
+				window.platform.registerProtocolHandler("mailto", "http://localhost:7633/desktop/login.jsp?mailto=%s", callback);
+			}
 		}
 	}
 
