@@ -1,17 +1,17 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
- * 
+ *
  * Zimbra Collaboration Suite Web Client
  * Copyright (C) 2006, 2007 Zimbra, Inc.
- * 
+ *
  * The contents of this file are subject to the Yahoo! Public License
  * Version 1.0 ("License"); you may not use this file except in
  * compliance with the License.  You may obtain a copy of the License at
  * http://www.zimbra.com/license.
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied.
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -25,6 +25,7 @@ ZmNotebookController = function(container, app) {
 	this._listeners[ZmOperation.SEND_PAGE] = new AjxListener(this, this._sendPageListener);
 	this._listeners[ZmOperation.DETACH] = new AjxListener(this, this._detachListener);
 	this._listeners[ZmOperation.IMPORT_FILE] = new AjxListener(this, this._importListener);
+        this._listeners[ZmOperation.BROWSE_FOLDER] = new AjxListener(this, this._browseFolderListener);
 }
 ZmNotebookController.prototype = new ZmListController;
 ZmNotebookController.prototype.constructor = ZmNotebookController;
@@ -97,6 +98,7 @@ ZmNotebookController.prototype._getBasicToolBarOps =
 function() {
 	var list = [ZmOperation.NEW_MENU];
 	list.push(ZmOperation.REFRESH, ZmOperation.EDIT);
+        list.push(ZmOperation.BROWSE_FOLDER);
     if(appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML)) {
 		list.push(ZmOperation.SEP);
 		list.push(ZmOperation.IMPORT_FILE);
@@ -174,12 +176,12 @@ ZmNotebookController.prototype.isDeletable = function(){
 	var page = this._object;
 	if(!page)
 	return false;
-	var writable = page && !page.isReadOnly();	
+	var writable = page && !page.isReadOnly();
 	if(!page.isIndex()){
 		return writable;
 	}
 	var id = page.id;
-	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);	
+	var rootId = ZmOrganizer.getSystemId(ZmOrganizer.ID_ROOT);
 	var notebook = appCtxt.getById(id);
 	var notebookId = ZmOrganizer.getSystemId(ZmOrganizer.ID_NOTEBOOK);
 	var isRoot = (notebook.id == rootId);
@@ -195,7 +197,7 @@ ZmNotebookController.prototype._getTagMenuMsg = function() {
 };
 
 ZmNotebookController.prototype._doDelete = function(items,delcallback) {
-	
+
 	if(!items){
 	items = this._listView[this._currentView].getSelection();
 	}
@@ -208,11 +210,11 @@ ZmNotebookController.prototype._doDelete = function(items,delcallback) {
 			var callback = new AjxCallback(treeController, treeController._deleteListener2, [ organizer ]);
 			var message = AjxMessageFormat.format(ZmMsg.confirmDeleteNotebook, organizer.name);
 			var dialog = appCtxt.getConfirmationDialog();
-			dialog.popup(message, callback);		
+			dialog.popup(message, callback);
 			return;
 		}
 	}
-	
+
 	var dialog = appCtxt.getConfirmationDialog();
 	var message = items instanceof Array && items.length > 1 ? ZmMsg.confirmDeleteItemList : null;
 	if (!message) {
@@ -339,7 +341,7 @@ ZmNotebookController.prototype._editListener = function(event) {
 };
 
 ZmNotebookController.prototype._importListener = function(event) {
-	
+
 	var folderId = this._object ? this._object.getFolderId() : ZmNotebookItem.DEFAULT_FOLDER;
 	var notebook = appCtxt.getById(folderId);
 	var callback = new AjxCallback(this, this._importCallback);
@@ -348,14 +350,14 @@ ZmNotebookController.prototype._importListener = function(event) {
 	dialog.popup(notebook, callback);
 };
 
-ZmNotebookController.prototype._importCallback = 
+ZmNotebookController.prototype._importCallback =
 function(uploadFolder, filenames, result, files) {
-	
+
 	var page = new ZmPage();
 	page.folderId = uploadFolder ? uploadFolder.id : ZmNotebookItem.DEFAULT_FOLDER;
 	page.name=this._app.generateUniqueName(page.folderId);
 	if(result.success) {
-		this.setImportedPageContent(page, result);	
+		this.setImportedPageContent(page, result);
 		var saveCallback = new AjxCallback(this, this._saveResponseHandler, [page, files]);
 		var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [page, files]);
 		this._importInProgress = true;
@@ -369,15 +371,15 @@ function(uploadFolder, filenames, result, files) {
 	}
 };
 
-ZmNotebookController.prototype.setImportedPageContent = 
+ZmNotebookController.prototype.setImportedPageContent =
 function(page, result) {
 		var pageContent = result.text;
 		pageContent = pageContent.replace(/.*<body>/,"");
 		pageContent = pageContent.replace(/<\/body>.*/,"");
-		page.setContent(pageContent);	
+		page.setContent(pageContent);
 };
 
-ZmNotebookController.prototype._saveResponseHandler = 
+ZmNotebookController.prototype._saveResponseHandler =
 function(page, files, response) {
 
 	var saveResp = response._data && response._data.SaveWikiResponse;
@@ -392,7 +394,7 @@ function(page, files, response) {
 		this.gotoPage(page);
 	}
 	this._importInProgress = false;
-	this.deleteImportedDocs(files);	
+	this.deleteImportedDocs(files);
 };
 
 ZmNotebookController.prototype.deleteImportedDocs =
@@ -405,7 +407,7 @@ function() {
 
 };
 
-ZmNotebookController.prototype._saveErrorResponseHandler = 
+ZmNotebookController.prototype._saveErrorResponseHandler =
 function(page, files, response) {
 
 	var msg = ZmMsg.importFailed + ": " + ZmMsg.unableToSavePage;
@@ -434,16 +436,16 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		var url = item.getRestUrl();
-		
+
 		if(item.remoteFolderId){
 			//fetching the remote URL
 			var cache = this._app.getNotebookCache();
 			var item1 = cache.getItemInfo({id:item.remoteFolderId,ignoreCaching:true});
-			if(item1){			
+			if(item1){
 			url = item1.getRestUrl();
 			}
-		}		
-		
+		}
+
 		urls.push(url);
 		names.push(ZmWikletProcessor.process(item, content));
 		if (noprompt) continue;
@@ -490,8 +492,8 @@ ZmNotebookController.prototype._detachListener = function(event) {
 		var item = items[i];
 
 		var winurl = item.getRestUrl();
-		var cache = this._app.getNotebookCache();		
-		winurl = cache.fixCrossDomainReference(winurl);		
+		var cache = this._app.getNotebookCache();
+		winurl = cache.fixCrossDomainReference(winurl);
 		var winname = "_new";
 		var winfeatures = [
 			"width=",(window.outerWidth || 640),",",
@@ -504,7 +506,13 @@ ZmNotebookController.prototype._detachListener = function(event) {
 	}
 };
 
-ZmNotebookController.prototype._getDefaultFocusItem = 
+ZmNotebookController.prototype._browseFolderListener = function() {
+        var folderId = this._object ? this._object.getFolderId() : ZmNotebookItem.DEFAULT_FOLDER;
+        var folder = appCtxt.getById(folderId);
+        appCtxt.getSearchController().search({ query: "in:" + folder.name }); // FIXME: is there a better way to browse a folder?
+};
+
+ZmNotebookController.prototype._getDefaultFocusItem =
 function() {
 	return this._toolbar[this._currentView];
 };
@@ -512,7 +520,7 @@ function() {
 //override
 ZmNotebookController.prototype.gotoPage =
 function(pageRef) {
-	
+
 };
 
 //
