@@ -30,6 +30,9 @@
 	background-color:@AppC@;
 }
 
+#skin_yahoo_links {
+	white-space:nowrap;
+}
 
 .ZAppTab						{	margin-right:3px;				}
 .ZAppTabBorder		 			{
