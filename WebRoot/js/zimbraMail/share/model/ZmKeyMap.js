@@ -429,7 +429,9 @@ function(str) {
 		baseAction = m[1];
 		num = m[2];
 	}
-	var params = {mapName:ZmKeyMap.MAP_NAME[p1[0]], keySequence:p[1], action:action, arg:p1[2],
+	var q = p[1].split(",");
+	var keySequence = [q[0], ZmShortcut._getKeyCodes(q[1])].join(",");
+	var params = {mapName:ZmKeyMap.MAP_NAME[p1[0]], keySequence:keySequence, action:action, arg:p1[2],
 				  baseAction:baseAction, num:num, orgType:ZmShortcut._getOrgType(baseAction)};
 	return new ZmShortcut(params);
 };
@@ -442,7 +444,8 @@ function(str) {
  * We need to apply that to all aliases related to the organizer type (in this case,
  * folders), so we have a one-to-many situation.
  * 
- * @param str	[string]	a shortcut encoded as above
+ * @param str	[string]		a shortcut encoded as above
+ * @param kmm	[DwtKeyMapMgr]	key map mgr
  */
 ZmShortcut._parseNew =
 function(str, kmm) {
@@ -465,7 +468,7 @@ function(str, kmm) {
 			if (keySequence.indexOf(ZmShortcut.ALIAS) == -1) { continue; }
 			var action = map[keySequence];
 			if (action.indexOf(actionKey) != -1) {
-				keySequence = keySequence.replace(ZmShortcut.ALIAS, alias);
+				keySequence = keySequence.replace(ZmShortcut.ALIAS, ZmShortcut._getKeyCodes(alias));
 				var fullAction = [action, alias].join("");
 				var params = {mapName:mapName, keySequence:keySequence, action:fullAction, arg:arg,
 							  baseAction:action, num:alias, orgType:ZmShortcut.ORG_TYPE[key]};
@@ -476,6 +479,17 @@ function(str, kmm) {
 	
 	return shortcuts;
 };
+
+ZmShortcut._getKeyCodes =
+function(str) {
+	if (!str || !(typeof str == "string")) { return ""; }
+	var digits = str.split("");
+	var list = [];
+	for (var i = 0; i < digits.length; i++) {
+		list.push(Number(digits[i]) + 48);	// assumes that keycodes for 0-9 are 48-57
+	}
+	return list.join(",");
+}
 
 ZmShortcut.parseAction =
 function(mapName, action) {
