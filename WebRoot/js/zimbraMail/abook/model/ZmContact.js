@@ -1051,11 +1051,6 @@ function(node) {
 	this.created = node.cd;
 	this.modified = node.md;
 
-	if (node.fileAsStr) {
-		this._fileAs = node.fileAsStr;
-		this._fileAsLC = node.fileAsStr.toLowerCase();
-	}
-
 	this.attr = node._attrs || {};
 
 	// for shared contacts, we get these fields outside of the attr part
@@ -1079,6 +1074,11 @@ function(node) {
 		// shared contacts are never fully loaded since we never cache them
 		this.isLoaded = false;
 	}
+
+	// bug: 22174
+	// We ignore the server's computed file-as property and instead
+	// format it based on the user's locale.
+	this._fileAs = ZmContact.computeFileAs(this);
 };
 
 /**
