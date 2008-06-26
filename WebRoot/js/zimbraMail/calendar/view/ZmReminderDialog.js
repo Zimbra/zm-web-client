@@ -131,7 +131,7 @@ function(html, appt, data, needSep) {
 	html.append("<td colspan=2>");
 	html.append("<table cellpadding=0 cellspacing=0 border=0><tr>");
 	html.append("<td width=25px>", AjxImg.getImageHtml(appt.otherAttendees ? "ApptMeeting" : "Appointment"), "</td>");
-	html.append("<td><b>",  AjxStringUtil.htmlEncode(appt.getName()), "</b> (", appt.getDurationText(false, false),")</td>");
+	html.append("<td><b>",  AjxStringUtil.htmlEncode(appt.getName()), "</b> (", this.getDurationText(appt),")</td>");
 	html.append("</tr></table>");
 	html.append("</td>");
 	html.append("<td id='", data.deltaId, "'></td>");
@@ -141,7 +141,25 @@ function(html, appt, data, needSep) {
 	if (calName) this._addAttr(html, ZmMsg.calendar, calName, data);	
 	this._addAttr(html, ZmMsg.location, appt.getLocation(), data);
 };
- 
+
+ZmReminderDialog.prototype.getDurationText =
+function(appt) {
+	var isMultiDay = appt.isMultiDay();
+    var start = appt._alarmInstStart ? new Date(appt._alarmInstStart) : appt.startDate;
+    //bug: 28598 - alarm for recurring appt might still point to old alarm time
+    //cannot take endTime directly
+    var endTime = appt._alarmInstStart ? (start.getTime() + appt.getDuration()) : appt.getEndTime();
+    var end = new Date(endTime); 
+
+    if (appt.isAllDayEvent()) {
+        end = new Date(endTime - (isMultiDay ? 2 * AjxDateUtil.MSEC_PER_HOUR : 0));
+		var pattern = isMultiDay ? ZmMsg.apptTimeAllDayMulti : ZmMsg.apptTimeAllDay;
+		return AjxMessageFormat.format(pattern, [start, end]);
+	}
+	var pattern = isMultiDay ? ZmMsg.apptTimeInstanceMulti : ZmMsg.apptTimeInstance;
+	return AjxMessageFormat.format(pattern, [start, end, ""]);
+};
+
 ZmReminderDialog.prototype.initialize = 
 function(list) {
 	this._list = list.clone();
