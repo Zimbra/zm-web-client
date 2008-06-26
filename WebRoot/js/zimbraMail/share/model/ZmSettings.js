@@ -179,9 +179,9 @@ function(callback, accountName, result) {
 		this.createFromJs(obj.attrs._attrs);
 	}
 
-    // Create the main account. In the normal case, that is the only account, and
-	// represents the user who logged in. If family mailbox is enabled, that account
-	// is a parent account with dominion over child accounts.
+	// Create the main account. In the normal case, that is the only account,
+	// and represents the user who logged in. If family mailbox is enabled, that
+	// account is a parent account with dominion over child accounts.
 	if (!accountName) {
 		var mainAcct = appCtxt.getMainAccount();
 		mainAcct.id = obj.id;
@@ -199,33 +199,36 @@ function(callback, accountName, result) {
 		// set visibility last - based on offline-mode flag
 		mainAcct.visible = !appCtxt.isOffline;
 
-		if (appCtxt.isOffline) {
-			var isPrismFriendly = AjxEnv.isPrism && window.platform && (AjxEnv.isMac || AjxEnv.isWindows);
-
-			// find out whether this client supports registering mailto
+		// for offline, find out whether this client supports prism-specific features
+		if (appCtxt.isOffline && AjxEnv.isPrism && window.platform &&
+			(AjxEnv.isMac || AjxEnv.isWindows))
+		{
 			var setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_MAILTO];
 			if (setting) {
-				setting.setValue(isPrismFriendly);
+				setting.setValue(true);
 			}
-
-			// find out whether this client supports updating the OS dock
 			setting = this._settings[ZmSetting.OFFLINE_SUPPORTS_DOCK_UPDATE];
 			if (setting) {
-				setting.setValue(isPrismFriendly);
+				setting.setValue(true);
 			}
 		}
 	}
 
 	var accounts = obj.childAccounts ? obj.childAccounts.childAccount : null;
 	if (accounts) {
+		// init visible account count - for offline, main account is always invisible
+		var count = appCtxt.isOffline ? 0 : 1;
+
 		// create a ZmZimbraAccount for each child account
 		for (var i = 0; i < accounts.length; i++) {
 			var acct = ZmZimbraAccount.createFromDom(accounts[i]);
 			appCtxt.setAccount(acct);
 			if (acct.visible) {
+				count++;
 				appCtxt.multiAccounts = true;
 			}
 		}
+		appCtxt.numVisibleAccounts = count;
 	}
 
 	// reset mailto account Id in case user has added removed accounts

@@ -37,7 +37,8 @@ ZmAppCtxt = function() {
 
 	// account-specific
 	this.multiAccounts = false;
-	this.numAccounts = 1;	// init to 1 b/c there is always a main account
+	this.numAccounts = 1;				// init to 1 b/c there is always a main account
+	this.numVisibleAccounts = 0;
 	this.userDomain = "";
 };
 
