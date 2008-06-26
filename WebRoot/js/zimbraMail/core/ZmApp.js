@@ -351,7 +351,8 @@ function() {
 				var params = {
 					title: acct.getTitle(),
 					data: data,
-					icon: acct.getStatusIcon()
+					icon: acct.getStatusIcon(),
+					hideHeader: (appCtxt.isOffline && appCtxt.numVisibleAccounts == 1)	// HACK
 				};
 				var item = accordion.addAccordionItem(params);
 				acct.itemId = item.id;
