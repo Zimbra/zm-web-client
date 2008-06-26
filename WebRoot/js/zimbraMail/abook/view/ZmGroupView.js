@@ -645,7 +645,7 @@ function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 
 	var key = DwtKeyEvent.getCharCode(ev);
-	if (DwtKeyMapMgr.hasModifier(ev) || DwtKeyMapMgr.isModifier(key) ||	key == DwtKeyMapMgr.TAB_KEYCODE) { return; }
+	if (DwtKeyMapMgr.hasModifier(ev) || DwtKeyMap.IS_MODIFIER[key] ||	key == DwtKeyMapMgr.TAB_KEYCODE) { return; }
 
 	var e = DwtUiEvent.getTarget(ev);
 	var view = e ? Dwt.getObjectFromElement(e) : null;
