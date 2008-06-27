@@ -31,7 +31,7 @@ ZmMailMsg = function(id, list, noCache) {
 
 	this._inHitList = false;
 	this._attHitList = [];
-	this._attachments = [];
+	this.attachments = [];
 	this._bodyParts = [];
 	this._addrs = {};
 
@@ -181,11 +181,6 @@ function(type, used, addAsContact) {
 		return AjxVector.fromArray(addrs);
 	}
 };
-
-ZmMailMsg.prototype.getAttachments =
-function() {
-	return this._attachments;
-}
 
 /**
 * Returns a Reply-To address if there is one, otherwise the From address
@@ -412,23 +407,15 @@ function(parts) {
 */
 ZmMailMsg.prototype.addAttachmentId =
 function(id) {
-	if (this._attId) {
-		id = this._attId + "," + id;
+	if (this.attId) {
+		id = this.attId + "," + id;
 	}
 	this._onChange("attachmentId", id);
-	this._attId = id;
+	this.attId = id;
 };
 
-/**
-* Returns the ID of any attachments which have already been uploaded.
-*
-*/
-ZmMailMsg.prototype.getAttachmentId = 
-function() {
-	return this._attId;
-};
-
-ZmMailMsg.prototype.addInlineAttachmentId = function(cid,aid,part){
+ZmMailMsg.prototype.addInlineAttachmentId =
+function (cid,aid,part) {
 	if (!this._inlineAtts) {
 		this._inlineAtts = [];
 	}
@@ -440,16 +427,17 @@ ZmMailMsg.prototype.addInlineAttachmentId = function(cid,aid,part){
 	}
 };
 
-ZmMailMsg.prototype.setInlineAttachments = function(inlineAtts){
+ZmMailMsg.prototype.setInlineAttachments =
+function(inlineAtts){
 	if (inlineAtts) {
 		this._inlineAtts = inlineAtts;
 	}
 };
 
-ZmMailMsg.prototype.getInlineAttachments = function(){
+ZmMailMsg.prototype.getInlineAttachments =
+function() {
 	return this._inlineAtts;
 };
-
 
 /**
 * Sets the IDs of messages to attach (as a forward)
@@ -539,7 +527,7 @@ function(params, callback, result) {
 	}
 
 	// clear all attachments
-	this._attachments.length = 0;
+	this.attachments.length = 0;
 
 	this._loadFromDom(response.m[0]);
 	if (!this.isReadOnly() && params.markRead) {
@@ -885,13 +873,13 @@ function(request, contactList, isDraft, accountName) {
 		msgNode.irt = {_content:this.irtMessageId};
 	}
 
-	if (this._attId ||
+	if (this.attId ||
 		(this._msgAttIds && this._msgAttIds.length) ||
 		(this._forAttIds && this._forAttIds.length))
 	{
 		var attachNode = msgNode.attach = {};
-		if (this._attId) {
-			attachNode.aid = this._attId;
+		if (this.attId) {
+			attachNode.setAttribute("aid", this.attId);
 		}
 
 		// attach mail msgs
@@ -1016,15 +1004,14 @@ function(attachment) {
 // this is a helper method to get an attachment url for multipart/related content
 ZmMailMsg.prototype.getContentPartAttachUrl =
 function(contentPartType, contentPart) {
-	if (this._attachments &&
-		this._attachments.length > 0 &&
+	if (this.attachments && this.attachments.length > 0 &&
 		(contentPartType == ZmMailMsg.CONTENT_PART_ID ||
 		 contentPartType == ZmMailMsg.CONTENT_PART_LOCATION))
 	{
-    	for (var i = 0; i < this._attachments.length; i++) {
-    		var attach = this._attachments[i];
+    	for (var i = 0; i < this.attachments.length; i++) {
+    		var attach = this.attachments[i];
 			if (attach[contentPartType] == contentPart) {
-    			return appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&id=" + this.id + "&part=" + attach.part;
+    			return [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", this.id, "&part=", attach.part].join("");
     		}
 		}
 	}
@@ -1044,11 +1031,11 @@ function(findHits) {
 
 	this._attLinks = [];
 
-	if (this._attachments && this._attachments.length > 0) {
+	if (this.attachments && this.attachments.length > 0) {
 		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
 
-		for (var i = 0; i < this._attachments.length; i++) {
-    		var attach = this._attachments[i];
+		for (var i = 0; i < this.attachments.length; i++) {
+    		var attach = this.attachments[i];
 
                         if (!this.isRealAttachment(attach) || attach.foundInMsgBody) {
 				continue;
@@ -1217,9 +1204,9 @@ function(msgNode) {
 	this._parseFlags(msgNode.f);
 
 	if (msgNode.mp) {
-		var params = {attachments: this._attachments, bodyParts: this._bodyParts};
+		var params = {attachments: this.attachments, bodyParts: this._bodyParts};
 		this._topPart = ZmMimePart.createFromDom(msgNode.mp, params);
-		this._loaded = this._bodyParts.length > 0 || this._attachments.length > 0;
+		this._loaded = this._bodyParts.length > 0 || this.attachments.length > 0;
 	}
 
 	if (msgNode.shr) {
@@ -1249,12 +1236,16 @@ function(msgNode) {
 		try {
 			this.invite = ZmInvite.createFromDom(msgNode.inv);
 			this.invite.setMessageId(this.id);
-			// bug fix #18613
-			var desc = this.invite.getComponentDescription();
-			if (desc && this._bodyParts.length == 0) {
-				var textPart = { ct:ZmMimeTable.TEXT_PLAIN, s:desc.length, content:desc };
-				this._bodyParts.push(textPart);
-			}
+            //bug:18613
+            var desc = this.invite.getComponentDescription();
+            if((this._bodyParts.length == 0) && desc){
+                var textPart = new Object();
+                textPart.ct = ZmMimeTable.TEXT_PLAIN;
+                textPart.s = desc.length;
+                textPart.content = desc;
+                this._bodyParts.push(textPart);
+            }
+            this._loaded = this._bodyParts.length > 0  || this.attachments.length > 0;
         } catch (ex) {
 			// do nothing - this means we're trying to load an ZmInvite in new
 			// window, which we dont currently load (re: support).

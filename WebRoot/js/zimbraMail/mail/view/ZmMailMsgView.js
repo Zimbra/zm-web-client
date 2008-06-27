@@ -631,7 +631,7 @@ function(img) {
         if (img.getAttribute("zmforced"))
                 return;
 
-	var attachments = this._msg.getAttachments();
+	var attachments = this._msg.attachments;
 	var csfeMsgFetch = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
         var src = img.getAttribute("src") || img.getAttribute("dfsrc");
         var cid;
@@ -1670,7 +1670,7 @@ function(msg, preferHtml, callback) {
 	}
 
 	// bug fix# 3928
-	var attachments = msg.getAttachments();
+	var attachments = msg.attachments;
 	for (var i = 0; i < attachments.length; i++) {
 		var attach = attachments[i];
 		if (!msg.isRealAttachment(attach))
