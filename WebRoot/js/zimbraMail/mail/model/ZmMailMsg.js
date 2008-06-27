@@ -75,8 +75,7 @@ ZmMailMsg.CONTENT_PART_ID = "ci";
 ZmMailMsg.CONTENT_PART_LOCATION = "cl";
 
 // Additional headers to request.  Also used by ZmConv and ZmSearch
-//     via getAdditionalHeaders().
-ZmMailMsg._requestHeaders = {};
+ZmMailMsg.requestHeaders = {};
 
 /**
  * Fetches a message from the server.
@@ -108,33 +107,27 @@ function(params) {
 		m.html = 1;
 	}
 
-    for (var hdr in ZmMailMsg._requestHeaders) {
-		if(!m.header) m.header = [];
-        m.header.push({n:hdr});
+	var hdrs = ZmMailMsg.requestHeaders;
+	if (hdrs && hdrs.length) {
+		req.header = [];
+		for (var hdr in hdrs) {
+			req.header.push({n:hdr});
+		}
 	}
 
 	if (!params.noTruncate) {
 		m.max = appCtxt.get(ZmSetting.MAX_MESSAGE_SIZE);
 	}
 
-	var respCallback = new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback]);
-	params.sender.sendRequest({jsonObj:jsonObj, asyncMode:true, callback:respCallback,
-							errorCallback:params.errorCallback, noBusyOverlay:params.noBusyOverlay});
-};
-
-/**
- * Request additional headers from the server.
- */
-ZmMailMsg.requestHeader =
-function(hdr) {
-	ZmMailMsg._requestHeaders[hdr] = hdr;
-};
-
-ZmMailMsg.getAdditionalHeaders =
-function() {
-	return ZmMailMsg._requestHeaders;
+	var newParams = {
+		jsonObj: jsonObj,
+		asyncMode: true,
+		callback: (new AjxCallback(null, ZmMailMsg._handleResponseFetchMsg, [params.callback])),
+		errorCallback: params.errorCallback,
+		noBusyOverlay: params.noBusyOverlay
 	}
-
+	params.sender.sendRequest(newParams);
+};
 
 ZmMailMsg._handleResponseFetchMsg =
 function(callback, result) {
