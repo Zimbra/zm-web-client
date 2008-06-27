@@ -125,7 +125,7 @@ function(params) {
 		msg.onChange = this._onMsgDataChange;
 	}
 	if (params.identity) {
-		this._identitySelect.setSelectedValue(params.identity.id);
+		this.identitySelect.setSelectedValue(params.identity.id);
 		if (appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
 			this._controller.setSelectedSignature(params.identity.signature || "");
 		}
@@ -193,10 +193,8 @@ function(params) {
 */
 ZmComposeView.prototype._onMsgDataChange =
 function(what, val) {
-	switch (what) {
-	    case "subject":
+	if (what == "subject") {
 		this._subjectField.value = val;
-		break;
 	}
 };
 
@@ -213,11 +211,6 @@ function() {
 ZmComposeView.prototype.getHtmlEditor =
 function() {
 	return this._htmlEditor;
-};
-
-ZmComposeView.prototype.getOrigMsg =
-function() {
-	return this._msg;
 };
 
 ZmComposeView.prototype.getTitle =
@@ -268,11 +261,6 @@ function() {
 		attList.push(atts[i].value);
 
 	return attList;
-};
-
-ZmComposeView.prototype.getSendUID =
-function() {
-	return this._sendUID;
 };
 
 ZmComposeView.prototype.setBackupForm =
@@ -442,13 +430,13 @@ function(attId, isDraft) {
     }
 
 	// check if this is a resend
-	if (this._sendUID && this.backupForm) {
+	if (this.sendUID && this.backupForm) {
 		// if so, check if user changed anything since canceling the send
 		if (isDraft || this._backupForm() != this.backupForm) {
-			this._sendUID = (new Date()).getTime();
+			this.sendUID = (new Date()).getTime();
 		}
 	} else {
-		this._sendUID = (new Date()).getTime();
+		this.sendUID = (new Date()).getTime();
 	}
 
 	// get list of message part id's for any forwarded attachements
@@ -536,7 +524,7 @@ function(attId, isDraft) {
 		}
 	}
 	msg.identity = this.getIdentity();
-	msg.sendUID = this._sendUID;
+	msg.sendUID = this.sendUID;
 
 	// save a reference to the original message
 	msg._origMsg = this._msg;
@@ -692,11 +680,11 @@ function(params) {
 		this._attcDiv.innerHTML = params.forwardHtml;
 	}
 	if (params.identityId) {
-		this._identitySelect.setSelectedValue(params.identityId);
+		this.identitySelect.setSelectedValue(params.identityId);
 	}
 
 	this.backupForm = params.backupForm;
-	this._sendUID = params.sendUID;
+	this.sendUID = params.sendUID;
 
 	// bug 14322 -- in Windows Firefox, DEL/BACKSPACE don't work
 	// when composing in new window until we (1) enter some text
@@ -831,7 +819,7 @@ function() {
 ZmComposeView.prototype.reset =
 function(bEnableInputs) {
 	this.backupForm = null;
-	this._sendUID = null;
+	this.sendUID = null;
 
 	// reset autocomplete list
 	if (this._acAddrSelectList) {
@@ -871,10 +859,10 @@ function(bEnableInputs) {
 	this._controller.toggleSpellCheckButton(false);
 
 	if (this._accountChanged) {
-		this._identitySelect.clearOptions();
+		this.identitySelect.clearOptions();
 		var identityOptions = this._getIdentityOptions();
 		for (var i = 0; i < identityOptions.length; i++) {
-			this._identitySelect.addOption(identityOptions[i]);
+			this.identitySelect.addOption(identityOptions[i]);
 		}
 
 		this._accountChanged = false;
@@ -968,14 +956,9 @@ ZmComposeView.prototype.getSignatureContent = function(signatureId) {
 
 	var sep = this._getSignatureSeparator();
 	var newLine = this._getSignatureNewLine();
-	var isAbove = this.getSignatureStyle() == ZmSetting.SIG_OUTLOOK;
+	var isAbove = appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_OUTLOOK;
 	var isText = this.getHtmlEditor().getMode() == DwtHtmlEditor.TEXT;
 	return isAbove ? [sep, sig/*,  isText ? newLine : ""*/ ].join("") : sep + sig;
-};
-
-ZmComposeView.prototype.getSignatureStyle = function(identity) {
-	identity = identity || this.getIdentity();
-	return identity.getSignatureStyle();
 };
 
 /**
@@ -1061,7 +1044,7 @@ ZmComposeView.prototype._getSignatureSeparator =
 function() {
         var newLine = this._getSignatureNewLine();
 	var sep = newLine + newLine;
-	if (this.getIdentity().getSignatureStyle() == ZmSetting.SIG_INTERNET) {
+	if (appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET) {
 		sep += "-- " + newLine;
 	}
 	return sep;
@@ -1402,11 +1385,11 @@ function(action, msg, extraBodyText, incOption, nosig) {
 		}
 	}
 
-	var identity = this.getIdentity();
-	var sigStyle = null;
+	var sigStyle;
+	var sig;
 	if (!nosig && appCtxt.get(ZmSetting.SIGNATURES_ENABLED)) {
-		var sig = this._getSignature();
-		sigStyle = sig ? identity.getSignatureStyle() : null;
+		sig = this._getSignature();
+		sigStyle = sig ? appCtxt.get(ZmSetting.SIGNATURE_STYLE) : null;
 	}
 	var value = (sigStyle == ZmSetting.SIG_OUTLOOK) ? (this._getSignatureSeparator() + sig) : "";
 
@@ -1414,9 +1397,9 @@ function(action, msg, extraBodyText, incOption, nosig) {
 	if (!incOption) {
 		var isReply = (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
 		if (isReply || isInviteReply) {
-			incOption = identity.getReplyOption();
+			incOption = appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
 		} else if (action == ZmOperation.FORWARD_INLINE) {
-			incOption = identity.getForwardOption();
+			incOption = appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
 			if (incOption == ZmSetting.INCLUDE_ATTACH) {
 				incOption = ZmSetting.INCLUDE;
 			}
@@ -1519,7 +1502,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 			}
 			this._includedPreface = preface;
 			preface = preface + (composingHtml ? '<br>' : '\n');
-			var prefix = identity.getPrefix();
+			var prefix = appCtxt.get(ZmSetting.REPLY_PREFIX);
 			var sep = composingHtml ? '<br>' : '\n';
 			var wrapParams = {text:body, len:ZmComposeView.WRAP_LENGTH, pre:prefix + " ", eol:sep, htmlMode:composingHtml};
 			if (incOption == ZmSetting.INCLUDE_PREFIX) {
@@ -1779,8 +1762,8 @@ function(templateId, data) {
 
 	// initialize identity select
 	var identityOptions = this._getIdentityOptions();
-	this._identitySelect = new DwtSelect({parent:this, options:identityOptions});
-	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
+	this.identitySelect = new DwtSelect({parent:this, options:identityOptions});
+	this.identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 
 	var identityCollection = appCtxt.getIdentityCollection();
 	if (!this._identityChangeListenerObj) {
@@ -1846,10 +1829,8 @@ function(ev) {
 
 ZmComposeView.prototype._getPriority =
 function() {
-    if (this._priorityButton) {
-        return this._priorityButton._priorityFlag || "";
-    }
-    return "";
+	return (this._priorityButton)
+		? (this._priorityButton._priorityFlag || "") : "";
 };
 
 ZmComposeView.prototype._setPriority =
@@ -1860,7 +1841,6 @@ function(flag) {
         this._priorityButton._priorityFlag = flag;
     }
 };
-
 
 ZmComposeView.prototype._getIdentityOptions =
 function() {
@@ -1903,19 +1883,19 @@ function(ev) {
 		var identity = ev.getDetail("item");
 		var text = this._getIdentityText(identity);
 		var option = new DwtSelectOptionData(identity.id, text);
-		this._identitySelect.addOption(option);
+		this.identitySelect.addOption(option);
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		// DwtSelect doesn't support removing an option, so recreate the whole thing.
-		this._identitySelect.clearOptions();
+		this.identitySelect.clearOptions();
 		var options = this._getIdentityOptions();
 		for (var i = 0, count = options.length; i < count; i++)	 {
-			this._identitySelect.addOption(options[i]);
+			this.identitySelect.addOption(options[i]);
 		}
 		this._setIdentityVisible();
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var identity = ev.getDetail("item");
 		var text = this._getIdentityText(identity);
-		this._identitySelect.rename(identity.id, text);
+		this.identitySelect.rename(identity.id, text);
 	}
 };
 
@@ -1930,15 +1910,10 @@ function() {
 	Dwt.setVisible(div, visible);
 };
 
-ZmComposeView.prototype.getIdentitySelect =
-function() {
-	return this._identitySelect;
-};
-
 ZmComposeView.prototype.getIdentity =
 function() {
 	var identityCollection = appCtxt.getIdentityCollection();
-	var id = this._identitySelect.getValue();
+	var id = this.identitySelect.getValue();
 	var result = identityCollection.getById(id);
 	return result ? result : identityCollection.defaultIdentity;
 };
