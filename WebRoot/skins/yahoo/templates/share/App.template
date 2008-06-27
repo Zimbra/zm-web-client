@@ -4,7 +4,7 @@
 	<$ } else { $>
 		<a href='javascript:;' onclick='ZmZimbraMail._onClickLogOff();'>Setup</a>&nbsp;<font color="gray">|</font>&nbsp;
 	<$ } $>
-	<a href='javascript:skin.gotoPrefs()'>Options</a>&nbsp;<font color="gray">|</font>&nbsp;
+	<span id="skin_yahoo_options_span"><a id="skin_yahoo_options" href='javascript:skin.gotoPrefs()'>Options</a>&nbsp;<font color="gray">|</font>&nbsp;</span>
 	<a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'><$= ZmMsg.help $></a>
 
 	<!-- HACK HACK HACK -->
