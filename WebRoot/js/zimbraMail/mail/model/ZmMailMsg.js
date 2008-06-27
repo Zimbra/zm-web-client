@@ -107,12 +107,9 @@ function(params) {
 		m.html = 1;
 	}
 
-	var hdrs = ZmMailMsg.requestHeaders;
-	if (hdrs && hdrs.length) {
-		req.header = [];
-		for (var hdr in hdrs) {
-			req.header.push({n:hdr});
-		}
+	for (var hdr in ZmMailMsg.requestHeaders) {
+		if (!m.header) { m.header = []; }
+		m.header.push({n:hdr});
 	}
 
 	if (!params.noTruncate) {
@@ -201,10 +198,10 @@ function(mode, aliases) {
 	}
 
 	if (!(addrVec && addrVec.size())) {
-        if (mode == ZmOperation.REPLY_CANCEL || (this.isSent && mode == ZmOperation.REPLY_ALL)) {
+		if (mode == ZmOperation.REPLY_CANCEL || (this.isSent && mode == ZmOperation.REPLY_ALL)) {
 			addrVec = this.isInvite() ? this._getAttendees() : this._addrs[AjxEmailAddress.TO];
-        } else {
-            addrVec = this._addrs[AjxEmailAddress.FROM];
+		} else {
+			addrVec = this._addrs[AjxEmailAddress.FROM];
 			if (aliases) {
 				var from = addrVec.get(0);
 				// make sure we're not replying to ourself
@@ -213,21 +210,20 @@ function(mode, aliases) {
 				}
 			}
 		}
-    }
-    return addrVec;
+	}
+	return addrVec;
 };
-
 
 ZmMailMsg.prototype._getAttendees =
 function() {
-    var attendees = this.invite.components[0].at;
-    var emails = new AjxVector();
-    for (var i = 0; i < attendees.length; i++) {
-        var at = attendees[i];
-        emails.add(new AjxEmailAddress(at.a, null, null, at.d));
-    }
+	var attendees = this.invite.components[0].at;
+	var emails = new AjxVector();
+	for (var i = 0; i < attendees.length; i++) {
+		var at = attendees[i];
+		emails.add(new AjxEmailAddress(at.a, null, null, at.d));
+	}
 
-    return emails;
+	return emails;
 };
 
 /**
@@ -645,8 +641,8 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 	if (instanceDate) {
 		var serverDateTime = AjxDateUtil.getServerDateTime(instanceDate);
 		var timeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-        var clientId = AjxTimezone.getClientId(timeZone);
-        ZmTimezone.set(request, clientId, null, true);
+		var clientId = AjxTimezone.getClientId(timeZone);
+		ZmTimezone.set(request, clientId, null, true);
 		request.exceptId = {d:serverDateTime, tz:timeZone};
 	}
 
@@ -754,8 +750,8 @@ function(request, contactList, isDraft, accountName) {
 	}
 
 	// if id is given, means we are re-saving a draft
-    var oboDraftMsgId = null;   //On Behalf of Draft MsgId
-    if ((isDraft || this.isDraft) && this.id) {
+	var oboDraftMsgId = null;   //On Behalf of Draft MsgId
+	if ((isDraft || this.isDraft) && this.id) {
 		var ac = window.parentAppCtxt || window.appCtxt;
 		// bug fix #26508 - check whether previously saved draft was moved to Trash
 		var msg = ac.getById(this.id);
@@ -786,14 +782,14 @@ function(request, contactList, isDraft, accountName) {
 		msgNode.idnt = this.identity.id;
 	}
 
-    if (this.isHighPriority) {
+	if (this.isHighPriority) {
 		msgNode.f = ZmItem.FLAG_HIGH_PRIORITY;
-    } else if (this.isLowPriority) {
+	} else if (this.isLowPriority) {
 		msgNode.f = ZmItem.FLAG_LOW_PRIORITY;
-    }
+	}
 
 	var addrNodes = msgNode.e = [];
-    for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
+	for (var i = 0; i < ZmMailMsg.COMPOSE_ADDRS.length; i++) {
 		var type = ZmMailMsg.COMPOSE_ADDRS[i];
 		this._addAddressNodes(addrNodes, type, contactList, isDraft);
 	}
@@ -992,11 +988,11 @@ function(contentPartType, contentPart) {
 		(contentPartType == ZmMailMsg.CONTENT_PART_ID ||
 		 contentPartType == ZmMailMsg.CONTENT_PART_LOCATION))
 	{
-    	for (var i = 0; i < this.attachments.length; i++) {
-    		var attach = this.attachments[i];
+		for (var i = 0; i < this.attachments.length; i++) {
+			var attach = this.attachments[i];
 			if (attach[contentPartType] == contentPart) {
-    			return [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", this.id, "&part=", attach.part].join("");
-    		}
+				return [appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI), "&id=", this.id, "&part=", attach.part].join("");
+			}
 		}
 	}
 	return null;
@@ -1009,7 +1005,7 @@ function(contentPartType, contentPart) {
 ZmMailMsg.prototype.getAttachmentLinks =
 function(findHits) {
 	// cache the attachment links once they've been generated.
-        // NOPE. foundInMsgBody can change after we call this function, it's safer not to cache the links
+	// NOPE. foundInMsgBody can change after we call this function, it's safer not to cache the links
 	// if (this._attLinks != null)
 	// 	return this._attLinks;
 
@@ -1019,27 +1015,27 @@ function(findHits) {
 		var hrefRoot = appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "&loc=" + AjxEnv.DEFAULT_LOCALE + "&id=" + this.id + "&part=";
 
 		for (var i = 0; i < this.attachments.length; i++) {
-    		var attach = this.attachments[i];
+			var attach = this.attachments[i];
 
-                        if (!this.isRealAttachment(attach) || attach.foundInMsgBody) {
+			if (!this.isRealAttachment(attach) || attach.foundInMsgBody) {
 				continue;
 			}
 
 			var props = {};
 
-    		// set a viable label for this attachment
-    		props.label = attach.name || attach.filename || (ZmMsg.unknown + " <" + attach.ct + ">");
+			// set a viable label for this attachment
+			props.label = attach.name || attach.filename || (ZmMsg.unknown + " <" + attach.ct + ">");
 
 			// use content location instead of built href flag
-    		var useCL = false;
+			var useCL = false;
 			// set size info in any
-    		if (attach.s != null && attach.s >= 0) {
-    		    if (attach.s < 1024)		props.size = attach.s + " B";
-                else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " KB";
-                else 						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " MB";
-    		} else {
-    			useCL = attach.cl && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.cl));
-    		}
+			if (attach.s != null && attach.s >= 0) {
+				if (attach.s < 1024)		props.size = attach.s + " B";
+				else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " KB";
+				else						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " MB";
+			} else {
+				useCL = attach.cl && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.cl));
+			}
 
 			// handle rfc/822 attachments differently
 			if (attach.ct == ZmMimeTable.MSG_RFC822) {
@@ -1071,22 +1067,26 @@ function(findHits) {
 							"<a style='text-decoration:underline' class='AttLink' href='",
 							url,
 							appCtxt.get(ZmSetting.ATTACHMENTS_BLOCKED)
-								? "' target='_blank'>"
-								: "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>"
-						].join("");
+							? "' target='_blank'>"
+							: "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>"
+					].join("");
 				}
 
-                var folder = appCtxt.getById(this.folderId);
-                if( (attach.name || attach.filename) && appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) && (folder && !folder.isRemote())){
-                    var partLabel = props.label;
-                                        partLabel = partLabel.replace(/\x27/g,"\\'");
-                    var onclickStr1 = "ZmMailMsgView.briefcaseCallback(\"" + this.id + "\",\"" + attach.part + "\",\""+partLabel+"\");";
+				var folder = appCtxt.getById(this.folderId);
+				if ((attach.name || attach.filename) &&
+					appCtxt.get(ZmSetting.BRIEFCASE_ENABLED) &&
+					(folder && !folder.isRemote()))
+				{
+					var partLabel = props.label;
+					partLabel = partLabel.replace(/\x27/g,"\\'");
+					var onclickStr1 = "ZmMailMsgView.briefcaseCallback(\"" + this.id + "\",\"" + attach.part + "\",\""+partLabel+"\");";
 					props.briefcaseLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr1 + "'>";
 				}
 
 				if (!useCL) {
 					// check for vcard *first* since we dont care to view it in HTML
-					if (attach.ct == ZmMimeTable.TEXT_VCARD || attach.ct == ZmMimeTable.TEXT_DIRECTORY)
+					if (attach.ct == ZmMimeTable.TEXT_VCARD ||
+						attach.ct == ZmMimeTable.TEXT_DIRECTORY)
 					{
 						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.id + ",\"" + attach.part + "\");";
 						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
@@ -1110,7 +1110,7 @@ function(findHits) {
 			// set the link icon
 			var mimeInfo = ZmMimeTable.getInfo(attach.ct);
 			props.linkIcon = mimeInfo ? mimeInfo.image : "GenericDoc";
-	        props.ct = attach.ct;
+			props.ct = attach.ct;
 
 			// set other meta info
 			props.isHit = findHits && this._isAttInHitList(attach);
@@ -1156,15 +1156,15 @@ function(msgNode) {
 	if (msgNode._attrs) { this.attrs = msgNode._attrs; }
 	if (msgNode.sf) 	{ this.sf = msgNode.sf; }
 
-    //Copying msg. header's
-    if(msgNode.header) {
-        this.headers = {};
-        for (var i = 0; i < msgNode.header.length; i++) {
-            this.headers[msgNode.header[i].n] = msgNode.header[i]._content;
+	//Copying msg. header's
+	if (msgNode.header) {
+		this.headers = {};
+		for (var i = 0; i < msgNode.header.length; i++) {
+			this.headers[msgNode.header[i].n] = msgNode.header[i]._content;
 		}
-    }
+	}
 
-    // set the "normalized" Id if this message belongs to a shared folder
+	// set the "normalized" Id if this message belongs to a shared folder
 	var idx = this.id.indexOf(":");
 	this.nId = (idx != -1) ? (this.id.substr(idx + 1)) : this.id;
 
@@ -1230,7 +1230,7 @@ function(msgNode) {
                 this._bodyParts.push(textPart);
             }
             this._loaded = this._bodyParts.length > 0  || this.attachments.length > 0;
-        } catch (ex) {
+		} catch (ex) {
 			// do nothing - this means we're trying to load an ZmInvite in new
 			// window, which we dont currently load (re: support).
 		}
@@ -1260,8 +1260,8 @@ function(addrNodes, type, contactList, isDraft) {
 	
 			// tell server to add this email to address book if not found
 			if (contactList && !isDraft && appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) &&
-				!contactList.getContactByEmail(email)) {
-	
+				!contactList.getContactByEmail(email))
+			{
 				DBG.println(AjxDebug.DBG2, "adding contact: " + email);
 				addrNode.add = 1;
 			}
@@ -1281,8 +1281,8 @@ function(addrNodes, parentNode, isDraft, accountName) {
 	// only use account name if we either dont have any identities to choose
 	// from or the one we have is the default anyway
 	if (accountName && (!this.identity || (this.identity && this.identity.isDefault))) {
-        // when saving a draft, even if obo, we do it on the main account so reset the from
-        if (isDraft) {
+		// when saving a draft, even if obo, we do it on the main account so reset the from
+		if (isDraft) {
 			var folder = appCtxt.getById(this.folderId);
 			if (folder && folder.isRemote()) {
 				accountName = folder.getOwner();
@@ -1291,7 +1291,7 @@ function(addrNodes, parentNode, isDraft, accountName) {
 
 		var mainAcct = ac.getMainAccount().getEmail();
 		if (this._origMsg && this._origMsg.isDraft) {
-            var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
+			var from = this._origMsg.getAddresses(AjxEmailAddress.FROM).get(0);
 			// this means we're sending a draft msg obo so reset account name
 			if (from && from.address != mainAcct) {
 				accountName = from.address;
