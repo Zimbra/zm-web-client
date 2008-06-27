@@ -242,7 +242,7 @@ ZmTreeView.prototype._render =
 function(params) {
 	var org = params.organizer;
 	var children = org.children.getArray();
-    if (org.isDataSource(ZmAccount.IMAP)) {
+	if (org.isDataSource(ZmAccount.IMAP)) {
 		children.sort(ZmImapAccount.sortCompare);
 	} else {
 		children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
@@ -279,7 +279,12 @@ function(params) {
 				continue;
 			}
 		}
-		
+
+		// bug fix #29342 - hide sync failures folder if there are no messages in it
+		if (child.nId == ZmFolder.ID_SYNC_FAILURES && child.numTotal == 0) {
+			continue;
+		}
+
 		// if there's a large number of folders to display, make user click on special placeholder
 		// to display remainder; we then display them MAX_ITEMS at a time
 		if (numItems >= ZmTreeView.MAX_ITEMS) {
@@ -406,25 +411,25 @@ function(parentNode, organizer, index, noTooltips) {
 ZmTreeView.prototype.getNextData =
 function(id) {
 	var treeItem = this.getTreeItemById(id);
-	if(!treeItem || !treeItem.parent) {	return null; }
-	
+	if(!treeItem || !treeItem.parent) { return null; }
+
 	while (treeItem && treeItem.parent) {
 		var parentN = treeItem.parent;
-		if(!(parentN instanceof DwtTreeItem)){
+		if (!(parentN instanceof DwtTreeItem)) {
 			return null;
-		}		
+		}
 		var treeItems = parentN.getItems();
 		var result = null;
 		if (treeItems && treeItems.length > 1) {
 			for(var i = 0; i < treeItems.length; i++) { 
-			    var tmp = treeItems[i]; 
-			    if (tmp == treeItem) { 
-			    	var nextData = this.findNext(treeItem, treeItems, i);
-			    	if (nextData) { return nextData; }
-			    	var prevData = this.findPrev(treeItem, treeItems, i);
-					if (prevData) {	return prevData; }		    	
+				var tmp = treeItems[i];
+				if (tmp == treeItem) {
+					var nextData = this.findNext(treeItem, treeItems, i);
+					if (nextData) { return nextData; }
+					var prevData = this.findPrev(treeItem, treeItems, i);
+					if (prevData) {	return prevData; }
 				}
-			}		
+			}
 		}
 		treeItem = treeItem.parent;
 	}
@@ -433,12 +438,12 @@ function(id) {
 
 ZmTreeView.prototype.findNext =
 function(treeItem,treeItems,i) {
-	for (var j = i + 1; j < treeItems.length; j++){
+	for (var j = i + 1; j < treeItems.length; j++) {
 		var next = treeItems[j];
-		if (next && next.getData){		    		
-			return next.getData(Dwt.KEY_OBJECT);   		
+		if (next && next.getData) {
+			return next.getData(Dwt.KEY_OBJECT);
 		}
-   	}
+	}
 	return null;
 };
 
@@ -446,10 +451,10 @@ ZmTreeView.prototype.findPrev =
 function(treeItem, treeItems, i) {
 	for (var j = i - 1; j >= 0; j--) {
 		var prev = treeItems[j];
-		if (prev && prev.getData){		    		
-			return prev.getData(Dwt.KEY_OBJECT);   		
+		if (prev && prev.getData) {
+			return prev.getData(Dwt.KEY_OBJECT);
 		}
-   	}
+	}
 	return null;
 };
 
