@@ -191,11 +191,6 @@ function(type, parent, obj, tree, path, elementType) {
 	ZmFolderTree._fillInFolder(folder, obj, path);
 	ZmFolderTree.IS_PARSED[type] = true;
 
-	// bug fix #29342 - hide sync failures folder if there are no messages in it
-	if (obj.id == ZmFolder.ID_SYNC_FAILURES && obj.n == 0) {
-		ZmFolder.HIDE_ID[ZmFolder.ID_SYNC_FAILURES] = true;
-	}
-
 	return folder;
 };
 
