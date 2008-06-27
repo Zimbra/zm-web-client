@@ -1771,7 +1771,7 @@ function(templateId, data) {
 	}
 	identityCollection.addChangeListener(this._identityChangeListenerObj);
 
-	this._identitySelect.replaceElement(data.identitySelectId);
+	this.identitySelect.replaceElement(data.identitySelectId);
 	this._setIdentityVisible();
 
     if (appCtxt.get(ZmSetting.MAIL_PRIORITY_ENABLED)) {
