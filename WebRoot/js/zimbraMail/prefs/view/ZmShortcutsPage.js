@@ -359,37 +359,31 @@ function() {
 
 ZmShortcutsPageTabViewList.prototype._getKeysHtml =
 function(keys, mapNames, html, i) {
-	var kmm = appCtxt.getKeyboardMgr().__keyMapMgr;	
+	var kmm = appCtxt.getKeyboardMgr().__keyMapMgr;
 	var mapDesc = {};
 	var maps = [];
-	var actionDesc = {};
 	var keySequences = {};
 	for (var propName in keys) {
 		var propValue = keys[propName];
-		if (typeof propValue != "string") { continue; }
+		if (!propValue || (typeof propValue != "string")) { continue; }
 		var parts = propName.split(".");
 		var map = parts[0];
-		var action = (DwtKeyMap.IS_DOC_KEY[parts[1]]) ? null : parts[1];
-		var skip = false;
-		// make sure shortcut is defined
+		var isMap = (parts.length == 2);
+		var action = isMap ? null : parts[1];
+		var field = parts[parts.length - 1];
+
 		if (action) {
+			// make sure shortcut is defined && available
 			var ks = kmm.getKeySequences(mapNames[map], action);
-			skip = !(ks && ks.length);
+			if (!(ks && ks.length)) { continue; }
 		}
-		if (!skip && (parts[1] == "description" || parts[2] == "description")) {
-			if (parts[1] == "description") {
+		if (field == "description") {
+			if (isMap) {
 				maps.push(map);
 				mapDesc[map] = propValue;
 			} else {
-				if (!actionDesc[map]) {
-					actionDesc[map] = {};
-					keySequences[map] = [];
-				}
-				var scKey = [map, action, "display"].join(".");
-				var scValue = keys[scKey];
-				if (!scValue) { continue; }
-				keySequences[map].push(scKey);
-				actionDesc[map][scKey] = propValue;
+				keySequences[map] = keySequences[map] || [];
+				keySequences[map].push([map, action].join("."));
 			}
 		}
 	}
@@ -401,6 +395,7 @@ function(keys, mapNames, html, i) {
 		var sortB = keys[sortPropNameB] ? Number(keys[sortPropNameB]) : 0;
 		return (sortA > sortB) ? 1 : (sortA < sortB) ? -1 : 0;
 	}
+
 	maps.sort(sortFunc);
 	var or = [" ", ZmMsg.or, " "].join("");
 	for (var j = 0; j < maps.length; j++) {
@@ -408,20 +403,21 @@ function(keys, mapNames, html, i) {
 		if (!keySequences[map]) { continue; }
 		html[i++] = "<table class='shortcutList' cellspacing=0 cellpadding=0>";
 		html[i++] = "<tr><td class='shortcutListHeader' colspan=2><div class='PanelHead'>";
-		html[i++] = mapDesc[map];
+		html[i++] = keys[[map, "description"].join(".")];
 		html[i++] = "</div></td></tr>";
 
-		keySequences[map].sort(sortFunc);
-		for (var k = 0; k < keySequences[map].length; k++) {
-			var scKey = keySequences[map][k];
-			var desc = actionDesc[map][scKey];
-			var ks = keys[scKey];
+		var actions = keySequences[map];
+		actions.sort(sortFunc);
+		for (var k = 0; k < actions.length; k++) {
+			var action = actions[k];
+			var ks = keys[[action, "display"].join(".")];
+			var desc = keys[[action, "description"].join(".")];
 
 			html[i++] = "<tr><td class='shortcutKeys'>";
 			var keySeq = ks.split(/\s*;\s*/);
 			var keySeq1 = [];
-			for (var l = 0; l < keySeq.length; l++) {
-				 keySeq1.push(ZmShortcutsPageTabViewList._formatKeySequence(keySeq[l]));
+			for (var m = 0; m < keySeq.length; m++) {
+				 keySeq1.push(ZmShortcutsPageTabViewList._formatKeySequence(keySeq[m]));
 			}
 			html[i++] = keySeq1.join(or);
 			html[i++] = "</span></td>";
@@ -444,47 +440,25 @@ function(ks) {
 	var i = 0;
 	html[i++] = "<span class='shortcutKeyCombo'>";
 
-	var keys = ks.split(",");
+	var keys = (ks[ks.length - 1] != DwtKeyMap.SEP) ? ks.split(DwtKeyMap.SEP) : [ks];
 	for (var j = 0; j < keys.length; j++) {
 		var key = keys[j];
-		var parts = key.split("+");
-		var mod = (parts.length == 2) ? parts[0] : null;
-		var modPlus = mod + "+";	// consts in DwtKeyMap add + to end
-		var base = mod ? parts[1] : parts[0];
-		var newParts = [], done = false;
-		if (modPlus == DwtKeyMap.CTRL || modPlus == DwtKeyMap.ALT || modPlus == DwtKeyMap.META) {
-			newParts.push(mod.toLowerCase());
-		} else if (modPlus == DwtKeyMap.SHIFT) {
-			if (/^[A-Z]$/.test(base)) {
-				newParts.push(base);
-			} else if (ZmKeyMap.SHIFT[base]) {
-				newParts.push(ZmKeyMap.SHIFT[base]);
-			} else if (ZmKeyMap.ENTITY[base]) {
-				newParts.push(mod.toLowerCase());
-				newParts.push(ZmKeyMap.ENTITY[base]);
-			} else {
-				newParts.push(mod.toLowerCase());
-				newParts.push(base);
-			}
-			done = true;
+		var parts = key.split(DwtKeyMap.JOIN);
+		var baseIdx = parts.length - 1;
+		// base can be: printable char, escaped char name (eg "Comma"), or NNN
+		var base = parts[baseIdx];
+		if (base == ZmShortcut.ALIAS) {
+			base = "[n]";
+		} else if (/^[A-Z]$/.test(base)) {
+		} else if (ZmKeyMap.ENTITY[base]) {
+			base = ZmKeyMap.ENTITY[base];
 		}
-		if (!done) {
-			// base can be: printable char, escaped char name (eg "Comma"), or NNN
-			if (base == ZmShortcut.ALIAS) {
-				newParts.push("[n]");
-			} else if (/^[A-Z]$/.test(base)) {
-				newParts.push(base.toLowerCase());
-			} else if (ZmKeyMap.ENTITY[base]) {
-				newParts.push(ZmKeyMap.ENTITY[base]);
-			} else {
-				newParts.push(base);
-			}
+		parts[baseIdx] = base;
+		var newParts = [];
+		for (var k = 0; k < parts.length; k++) {
+			newParts.push(ZmShortcutsPageTabViewList._formatKey(parts[k]));
 		}
-		var newParts1 = [];
-		for (var k = 0; k < newParts.length; k++) {
-			newParts1.push(ZmShortcutsPageTabViewList._formatKey(newParts[k]));
-		}
-		html[i++] = newParts1.join("+");
+		html[i++] = newParts.join("+");
 	}
 	html[i++] = "</span>";
 
