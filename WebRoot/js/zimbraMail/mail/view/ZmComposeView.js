@@ -1571,7 +1571,7 @@ function(action, msg, extraBodyText, incOption, nosig) {
 				cancelledParts = [ leadingText ];
 				cancelledParts.push(crlf);
 				cancelledParts.push(ZmMsg.subjectLabel+" "+msg.subject+crlf);
-				var inv = (msg) ? msg.getInvite() : null;
+				var inv = (msg) ? msg.invite : null;
 				if (inv) {
 					var organizer = "";
 					if (inv)
