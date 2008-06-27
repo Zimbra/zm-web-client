@@ -172,31 +172,6 @@ ZmKeyMap.UNTAG				= "Untag";
 ZmKeyMap.VIEW_BY_CONV		= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG		= "ViewByMessage";
 
-// shifted chars
-ZmKeyMap.SHIFT = {};
-ZmKeyMap.SHIFT["`"] = "~";
-ZmKeyMap.SHIFT["1"] = "!";
-ZmKeyMap.SHIFT["2"] = "@";
-ZmKeyMap.SHIFT["3"] = "#";
-ZmKeyMap.SHIFT["4"] = "$";
-ZmKeyMap.SHIFT["5"] = "%";
-ZmKeyMap.SHIFT["6"] = "^";
-ZmKeyMap.SHIFT["7"] = "&";
-ZmKeyMap.SHIFT["8"] = "*";
-ZmKeyMap.SHIFT["9"] = "(";
-ZmKeyMap.SHIFT["0"] = ")";
-ZmKeyMap.SHIFT["-"] = "_";
-ZmKeyMap.SHIFT["="] = "+";
-ZmKeyMap.SHIFT["["] = "{";
-ZmKeyMap.SHIFT["]"] = "}";
-ZmKeyMap.SHIFT[";"] = ":";
-ZmKeyMap.SHIFT["'"] = "\"";
-ZmKeyMap.SHIFT["."] = ">";
-ZmKeyMap.SHIFT["/"] = "?";
-ZmKeyMap.SHIFT[DwtKeyMap.COMMA]		= "<";
-ZmKeyMap.SHIFT[DwtKeyMap.SEMICOLON]	= ":";
-ZmKeyMap.SHIFT[DwtKeyMap.BACKSLASH] = "|";
-
 // HTML entities (used to display keys)
 ZmKeyMap.ENTITY = {};
 ZmKeyMap.ENTITY[DwtKeyMap.ARROW_LEFT]	= "&larr;"
