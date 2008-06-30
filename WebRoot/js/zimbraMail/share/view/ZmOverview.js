@@ -139,7 +139,7 @@ function(id, type) {
 	for (var i = 0; i < this._treeIds.length; i++) {
 		var treeView = this._treeHash[this._treeIds[i]];
 		if (treeView) {
-			var item = treeView.getTreeItemById(id);
+			var item = treeView.getTreeItemById && treeView.getTreeItemById(id);
 			if (item && (!type || (this._treeIds[i] == type))) {
 				return item;
 			}
