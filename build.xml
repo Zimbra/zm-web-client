@@ -92,6 +92,8 @@
     <fileset id='help.fileset' dir='${build.dir}' excludes='**'/>
 	<fileset id='network.help.fileset' dir='${build.dir}' excludes='**' />
 	<fileset id='customer.web.fileset' dir='${build.dir}' excludes='**'/>
+	<fileset id='customer.img.fileset' dir='${build.dir}' excludes='**' />
+	<fileset id='customer.skins.img.fileset' dir='${build.dir}' excludes='**' />
 	<fileset id='customer.webinf.fileset' dir='${build.dir}' excludes='**'/>
     <fileset id='customer.package.fileset' dir='${build.dir}' excludes='**' />
 
@@ -106,7 +108,7 @@
         <property name='common.jsp.includes' value='${custom.jsp.includes},**'/>
         <property name='common.jsp.excludes' value='${custom.jsp.excludes}'/>
         <property name='common.img.includes' value='${custom.img.includes},**'/>
-        <property name='common.img.excludes' value='${custom.img.excludes},_*/**,**/_*'/>
+		<property name='common.img.excludes' value='${custom.img.excludes},_*/**,**/_*,**/favicon.ico,**/apple-touch-icon.png'/>
         <property name='common.template.includes' value='${custom.template.includes},**/*.template'/>
         <property name='common.template.excludes' value='${custom.template.excludes}'/>
         <property name='common.jam.includes' value='${custom.jam.includes},**/package/*.js'/>
@@ -209,7 +211,7 @@
             depends='templates,timezones,images,styles,settings,jam-files,compress,help,webxml-package-replace'>
         <mkdir dir='${build.war.dir}'/>
         <war warfile="${build.war.file}" webxml='${build.dir}/web.xml' compress='${war.compress}'>
-            <webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.excludes}' />
+            <webinf dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.files}' />
 			<webinf refid='customer.webinf.fileset' />
             <classes dir='${build.classes.dir}' excludes='**/kabuki/tools/**,**/build/**'/>
 			<classes dir='${build.classes.dir}' includes='**/kabuki/util/**,**/kabuki/tools/img/**,**/kabuki/tools/templates/**' />
@@ -220,12 +222,12 @@
             <lib dir='${common.build.dir}' includes='zimbracommon.jar'/>
             <lib dir='${taglib.build.dir}' includes='zimbrataglib.jar'/>
             <lib dir='${server.build.dir}' includes='zimbrastore.jar'/>
-            <zipfileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.excludes}'/>
+            <zipfileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.files}'/>
 			<zipfileset refid='customer.web.fileset'/>
             <zipfileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}' prefix='public'/>
             <zipfileset dir='${build.web.dir}' includes='${build.web.includes}' excludes='${build.web.excludes}'/>
 			<zipfileset dir='${build.web.dir}' includes='js/Boot_all.js${jsmin.ext}' />
-            <zipfileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' prefix='img'/>
+            <!--<zipfileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}' prefix='img'/>-->
             <zipfileset dir='${skins.dir}' prefix='skins'/>
             <zipfileset refid='help.fileset' prefix='help' />
 			<zipfileset refid='network.help.fileset' prefix='help' />
@@ -234,16 +236,16 @@
 
     <target name='sync' depends='templates'>
         <copy todir='${webapp.dir}' verbose='${sync.verbose}'>
-            <fileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.excludes}' />
+            <fileset dir='${web.dir}' includes='${web.includes}' excludes='${web.excludes},${customer.web.files}' />
             <fileset dir='${build.web.dir}' excludes='js/*${depends.ext}'/>
             <fileset refid='customer.web.fileset'/>
         </copy>
         <copy todir='${webapp.dir}/public' verbose='${sync.verbose}'>
             <fileset dir='${jsp.dir}' includes='${jsp.includes}' excludes='${jsp.excludes}'/>
         </copy>
-        <copy todir='${webapp.dir}/img' verbose='${sync.verbose}'>
-            <fileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}'/>
-        </copy>
+        <!--<copy todir='${webapp.dir}/img' verbose='${sync.verbose}'>-->
+            <!--<fileset dir='${img.dir}' includes='${img.includes}' excludes='${img.excludes}'/>-->
+        <!--</copy>-->
         <copy todir='${webapp.dir}/skins' verbose='${sync.verbose}'>
             <fileset dir='${skins.dir}'/>
         </copy>
@@ -252,7 +254,7 @@
 			<fileset refid='network.help.fileset' />
 		</copy>
 		<copy todir='${webapp.dir}/WEB-INF' verbose='${sync.verbose}'>
-			<fileset dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.excludes}'/>
+			<fileset dir='${webinf.dir}' includes='${webinf.includes}' excludes='${webinf.excludes},${customer.webinf.files}'/>
 			<fileset refid='customer.webinf.fileset' />
         </copy>
         <copy todir='${webapp.dir}/WEB-INF/classes' verbose='${sync.verbose}'>
@@ -344,6 +346,7 @@
             <then>
                 <property name='customer.dir' value='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}'/>
                 <property name='customer.web.dir' value='${customer.dir}/ZimbraWebClient/WebRoot'/>
+				<property name='customer.img.dir' value='${customer.web.dir}/img' />
                 <property name='customer.skin.dir' value='${customer.web.dir}/skins'/>
                 <property name='customer.portal.dir' value='${customer.web.dir}/portals'/>
                 <property name='customer.zimlet.dir' value='${customer.dir}/Zimlet'/>
@@ -356,9 +359,30 @@
 								 includes='${custom.web.includes},h/**,m/**,skins/**,portals/**,js/**'
 								 excludes='${custom.web.excludes},**/*.template'
 						/>
-						<pathconvert property='customer.web.excludes' refid='customer.web.fileset' pathsep=','>
+						<pathconvert property='customer.web.files' refid='customer.web.fileset' pathsep=','>
 							<regexpmapper from="^.*/WebRoot/(.*)$$" to="\1"/>
 						</pathconvert>
+					</then>
+				</if>
+				<if><and>
+						<!-- NOTE: We require build.prod being set for this because
+						           they override the main images which could confuse
+						           developers. -->
+						<isset property="build.prod" />
+						<available file='${customer.img.dir}' />
+					</and>
+					<then>
+						<fileset id='customer.img.fileset' dir='${customer.img.dir}' excludes='_sourceimages/**' />
+						<pathconvert property='customer.img.files' refid='customer.img.fileset' pathsep=','>
+							<regexpmapper from="^.*/WebRoot/img/(.*)$$" to="\1"/>
+						</pathconvert>
+					</then>
+				</if>
+				<if><available file='${customer.skin.dir}' />
+					<then>
+						<fileset id='customer.skins.img.fileset' dir='${customer.web.dir}'
+								 includes='skins/*/img/**' excludes='skins/*/img/_sourceimages/**' 
+						/>
 					</then>
 				</if>
 				<if><available file='${customer.webinf.dir}' />
@@ -366,7 +390,7 @@
 						<fileset id='customer.webinf.fileset'
 								 dir='${customer.webinf.dir}' includes='tags/**,tlds/**'
 						/>
-						<pathconvert property='customer.webinf.excludes' refid='customer.webinf.fileset' pathsep=','>
+						<pathconvert property='customer.webinf.files' refid='customer.webinf.fileset' pathsep=','>
 							<regexpmapper from="^.*/WebRoot/WEB-INF/(.*)$$" to="\1"/>
 						</pathconvert>
 					</then>
@@ -526,73 +550,88 @@
         </if>
     </target>
 
-    <target name='images' depends='images-init'>
-        <!--<property name='img.css.dir' value='_compiled' />-->
-        <!--<property name='img.css.file' value='${build.css.filename}' />-->
-        <!--<property name='img.dir.ignore' value='animated,_*' />-->
-        <!--<property name='img.dir.nomerge' value='examples,logo,translate' />-->
-
-		<copy todir="${build.web.dir}" flatten="true">
-			<fileset dir='${img.dir}' includes='**/favicon.ico,**/apple-touch-icon.png'/>
+	<target name='images' depends='images-init'>
+		<mkdir dir='${build.img.dir}' />
+		<mkdir dir='${build.skin.dir}' />
+		<!-- copy images -->
+		<copy todir='${build.img.dir}' preservelastmodified="true" includeemptydirs="false">
+			<fileset dir='${img.dir}' excludes='_sourceimages/**,${customer.img.files}' />
 		</copy>
+		<copy todir='${build.img.dir}' preservelastmodified="true">
+			<fileset refid='customer.img.fileset' />
+		</copy>
+		<copy todir='${build.web.dir}' preservelastmodified='true' includeemptydirs="false">
+			<fileset dir='${web.dir}' includes='skins/*/img/**' excludes='skins/*/img/_sourceimages/**' />
+			<fileset refid='customer.skins.img.fileset' />
+		</copy>
+		<!-- merge base images -->
+		<antcall target='images-merge'>
+			<param name='srcdir' value='${build.img.dir}' />
+			<param name='destdir' value='${build.img.dir}' />
+			<param name='csspath' value='/${deploy.app}/img/' />
+		</antcall>
+		<!-- merge skin images -->
+		<dirset id='this.build.skins.dirset' dir='${build.skin.dir}' includes='*' />
+		<pathconvert property='this.build.skins.files' refid='this.build.skins.dirset' pathsep=','>
+			<flattenmapper />
+		</pathconvert>
+		<for list='${this.build.skins.files}' param='skinname'>
+			<sequential>
+				<antcall target="images-merge">
+					<param name='srcdir' value='${build.skin.dir}/@{skinname}/img' />
+					<param name='destdir' value='${build.skin.dir}/@{skinname}/img' />
+					<param name='csspath' value='/${deploy.app}/skins/@{skinname}/img/' />
+				</antcall>
+			</sequential>
+		</for>
+		<!-- copy icons -->
+		<copy todir="${build.web.dir}" flatten="true" overwrite="true">
+			<fileset dir='${img.dir}' includes='**/favicon.ico,**/apple-touch-icon.png'/>
+			<fileset dir='${customer.img.dir}' includes='**/favicon.ico,**/apple-touch-icon.png'/>
+		</copy>
+	</target>
 
-        <dependset>
-            <srcfileset dir='${img.dir}'/>
-            <srcfileset dir='${java.dir}' includes='**/img/*.java'/>
-			<targetfilelist dir='${build.img.dir}' files='${build.css.filename}'/>
-			<targetfilelist dir='${build.img.dir}' files='${build.css.file}_*${build.css.ext}'/>
-        </dependset>
+	<target name='images-merge'>
+		<!-- delete output files if files changed -->
+		<dependset>
+			<srcfileset dir='${srcdir}' includes='*/**' />
+			<srcfileset dir='${java.dir}' includes='**/img/*.java' />
+			<targetfileset dir='${destdir}' includes='${build.css.file}*${build.css.ext}' />
+		</dependset>
+		<!-- merge images, if needed -->
+		<if><not><available file='${destdir}/${build.css.filename}' /></not>
+			<then>
+				<!-- default locale images -->
+				<imagemerge destdir='${destdir}' disable='true'
+							cssfile='${build.css.filename}' csspath='${csspath}'>
+					<dirset dir='${srcdir}' includes='*' excludes='?*_??,?*_??_??' />
+				</imagemerge>
+				<replace token="@jsVersion@" value="${build.simpleDate}" file='${destdir}/${build.css.filename}'/>
 
-        <if>
-            <not>
-                <available file='${build.img.dir}/${build.css.filename}'/>
-            </not>
-            <then>
-                <mkdir dir="${build.img.dir}"/>
-
-                <!-- core images -->
-                <imagemerge destdir='${build.img.dir}' disable='true'
-                            cssfile='${build.css.filename}' csspath='/${deploy.app}/img/'>
-                    <dirset dir='${web.dir}' includes='img/**' excludes='**/?*_??,**/?*_??_??' />
-                </imagemerge>
-                <replace token="@jsVersion@" value="${build.simpleDate}" file='${build.img.dir}/${build.css.filename}'/>
-
-				<dirset id='images.l10n.dirset' dir='${web.dir}' includes='img/**/?*_??,img/**/?*_??_??' />
-				<pathconvert property='images.l10n.locales' refid='images.l10n.dirset' pathsep=','>
+				<!-- other locale images -->
+				<dirset id='this.images.l10n.dirset' dir='${srcdir}' includes='?*_??,?*_??_??' />
+				<pathconvert property='this.images.l10n.locales' refid='this.images.l10n.dirset' pathsep=','>
 					<regexpmapper from="^.*/.*?_(.*)" to="\1" />
 				</pathconvert>
-				<for list='${images.l10n.locales}' param='locale'>
+				<for list='${this.images.l10n.locales}' param='locale'>
 					<sequential>
-						<if><not><available file="${build.img.dir}/${build.css.file}_@{locale}${build.css.ext}" /></not>
+						<if><not><available file="${destdir}/${build.css.file}_@{locale}${build.css.ext}" /></not>
 							<then>
-								<imagemerge destdir='${build.img.dir}' disable='true'
+								<imagemerge destdir='${destdir}' disable='true'
 											cssfile='${build.css.file}_@{locale}${build.css.ext}'
-											csspath='/${deploy.app}/img/'>
-									<dirset dir='${web.dir}' includes='img/**/?*_@{locale}' />
+											csspath='${csspath}'>
+									<dirset dir='${srcdir}' includes='?*_@{locale}' />
 								</imagemerge>
 								<replace token="@jsVersion@" value="${build.simpleDate}"
-										 file='${build.img.dir}/${build.css.file}_@{locale}${build.css.ext}'
+										 file='${destdir}/${build.css.file}_@{locale}${build.css.ext}'
 								/>
 							</then>
 						</if>
 					</sequential>
 				</for>
-
-                <!-- skin images -->
-                <dirset id='skins.dirset' dir='${skins.dir}' includes='*'/>
-                <pathconvert property='skins.dirs' refid='skins.dirset' pathsep=','>
-                    <flattenmapper/>
-                </pathconvert>
-
-                <foreach list='${skins.dirs}' target='build-skin-images' param='skindir'>
-                    <param name="skinbasedir" value="WebRoot"/>
-                </foreach>
-
-                <!-- customer skin images -->
-                <antcall target='customer-skin-images'/>
-            </then>
-        </if>
-    </target>
+			</then>
+		</if>
+	</target>
 
     <target name='images-init' depends='compile'>
         <taskdef name='imagemerge'
