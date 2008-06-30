@@ -301,7 +301,9 @@ ZmImOverview.prototype._init = function() {
 	this._rootItem.setText(ZmMsg.buddyList);
 	this._rootItem.enableSelection(false);
 	if (this._options.expanded) {
-		this._rootItem.setExpanded(false);
+		this._rootItem.setExpanded(true);
+	} else {
+		tree.addTreeListener(new AjxListener(this, this._treeListener));
 	}
 
 	if (!this._options.noAssistant) {
@@ -333,6 +335,22 @@ ZmImOverview.prototype._init = function() {
 		this.addControlListener(new AjxListener(this, this._controlListener));
 	}
 
+};
+
+ZmImOverview.prototype._treeListener =
+function(ev) {
+	// The first time the root is expanded, also expand the "Buddies" group.
+	if (!this._didInitialExpand &&
+		(ev.detail == DwtTree.ITEM_EXPANDED) &&
+		ev.items.length &&
+		(ev.items[0] == this._rootItem))
+	{
+		var buddiesItem = this._groupItems[ZmMsg.buddies];
+		if (buddiesItem) {
+			buddiesItem.setExpanded(true);
+		}
+		this._didInitialExpand = true;
+	}
 };
 
 ZmImOverview.prototype._controlListener = function(ev) {
@@ -372,9 +390,10 @@ function(ev) {
 		this._roster = ZmImApp.INSTANCE.getRoster();
 	}
 	if (this._loggedOutItem) {
+		var expand = this._rootItem.getExpanded();
 		this._loggedOutItem.dispose();
 		this._loggedOutItem = null;
-		this._createFilterItem(true);
+		this._createFilterItem(expand);
 	}
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_CREATE) {
@@ -424,8 +443,7 @@ ZmImOverview.prototype._createBuddy = function(buddy) {
 
 ZmImOverview.prototype._createTreeItems = function(type, buddy) {
 	var groups = buddy.getGroups();
-	var defaultGroup = groups.length == 0;
-	if (defaultGroup) {
+	if (groups.length == 0) {
 		groups = type == "buddy"
 				? [ ZmMsg.buddies ] // default to "Buddies"
 				: [ null ]; // add to root item for type == i.e. "assistant"
@@ -433,6 +451,7 @@ ZmImOverview.prototype._createTreeItems = function(type, buddy) {
 	var label = buddy.getDisplayName();
 	var icon = this._getBuddyIcon(buddy);
 	var items = [];
+	var rootExpanded = this._rootItem.getExpanded();
 	for (var i = 0; i < groups.length; ++i) {
 		var parent = this.getGroupItem(groups[i]);
 		var item = new DwtTreeItem({parent:parent,
@@ -445,7 +464,7 @@ ZmImOverview.prototype._createTreeItems = function(type, buddy) {
 		item.setData("ZmImOverview.data", { type: type, buddy: buddy });
 		item.setDragSource(this._im_dragSrc);
 		items.push(item);
-		if (defaultGroup || this._options.expanded) {
+		if (this._options.expanded || (rootExpanded && (groups[i] == ZmMsg.buddies))) {
 			parent.setExpanded(true);
 		}
 		var a = this._itemsById[buddy.getAddress()];
