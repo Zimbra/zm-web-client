@@ -146,7 +146,7 @@ function() {
 					  chooserTooltipKey:	"gotoBriefcase",
 					  defaultSearch:		ZmItem.PAGE,
 					  organizer:			ZmOrganizer.BRIEFCASE,
-					  overviewTrees:		[ZmOrganizer.BRIEFCASE,ZmOrganizer.TAG],
+					  overviewTrees:		[ZmOrganizer.BRIEFCASE, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.TAG],
 					  showZimlets:			true,
 					  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
 					  newItemOps:			newItemOps,

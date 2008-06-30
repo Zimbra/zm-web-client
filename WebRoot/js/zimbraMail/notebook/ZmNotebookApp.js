@@ -181,7 +181,7 @@ function() {
 							  chooserTooltipKey:	"goToDocuments",
 							  defaultSearch:		ZmItem.PAGE,
 							  organizer:			ZmOrganizer.NOTEBOOK,
-							  overviewTrees:		[ZmOrganizer.NOTEBOOK, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.NOTEBOOK, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
 							  newItemOps:			newItemOps,

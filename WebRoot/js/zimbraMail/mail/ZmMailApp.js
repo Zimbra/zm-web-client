@@ -714,7 +714,7 @@ function() {
 							  viewTooltipKey:		"displayMailToolTip",
 							  defaultSearch:		appCtxt.isChildWindow ? null : ZmId.SEARCH_MAIL,
 							  organizer:			ZmOrganizer.FOLDER,
-							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  assistants:			{"ZmMailAssistant":"Mail"},
 							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],

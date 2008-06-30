@@ -56,7 +56,7 @@ function() {
 							 {mainPkg:			"Mixed",
 							  nameKey:			"zimbraTitle",
 							  icon:				"Globe",
-							  overviewTrees:	[ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  overviewTrees:	[ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:		true,
 							  searchTypes:		[ZmItem.MSG, ZmItem.CONV]
 							  });

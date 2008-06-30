@@ -278,7 +278,7 @@ function() {
 							  viewTooltipKey:		"displayContacts",
 							  defaultSearch:		ZmItem.CONTACT,
 							  organizer:			ZmOrganizer.ADDRBOOK,
-							  overviewTrees:		[ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.ADDRBOOK, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  assistants:			{"ZmContactAssistant":["ContactsCore", "Contacts"]},
 							  searchTypes:			[ZmItem.CONTACT],

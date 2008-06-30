@@ -137,7 +137,7 @@ function() {
 							  chooserTooltipKey:	"goToTasks",
 							  defaultSearch:		ZmItem.TASK,
 							  organizer:			ZmOrganizer.TASKS,
-							  overviewTrees:		[ZmOrganizer.TASKS, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.TASKS, ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  assistants:			{"ZmTaskAssistant": ["TasksCore", "Tasks"]},
 							  newItemOps:			newItemOps,
